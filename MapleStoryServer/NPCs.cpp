@@ -13,7 +13,9 @@
 
 hash_map <int, NPCsInfo> NPCs::info;
 
-
+void NPCs::addNPC(int id, NPCsInfo npc){
+	info[id] = npc;
+}
 
 void NPCs::showNPCs(Player* player){
 	for(unsigned int i=0; i<info[player->getMap()].size(); i++)
