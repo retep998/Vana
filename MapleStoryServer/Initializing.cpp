@@ -12,23 +12,6 @@
 #include "tchar.h"
 using namespace std;
 
-int strval(char* str){
-	if(strlen(str)==0)
-		return 0;
-	int sign = 0;
-	if(str[0] == '-')
-		sign = 1;
-	int ret=0;
-	for(unsigned int i=sign; i<strlen(str); i++){
-		ret*=10;
-		if(sign)
-			ret-=(str[i]-'0');
-		else
-			ret+=(str[i]-'0');
-	}
-	return ret;
-}
-
 void wtoc(const WCHAR* Source, char* to)
 {
 int i = 0;
@@ -55,13 +38,13 @@ void Initializing::initializeMob(char *name){
 	for( pElem; pElem; pElem=pElem->NextSiblingElement())
 	{
 		if(strcmp("HP", pElem->Value()) == 0){
-			mob.hp = strval((char*)pElem->GetText());
+			mob.hp = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("MP", pElem->Value()) == 0){
-			mob.mp = strval((char*)pElem->GetText());
+			mob.mp = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("exp", pElem->Value()) == 0){
-			mob.exp = strval((char*)pElem->GetText());
+			mob.exp = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Summon", pElem->Value()) == 0){
 			TiXmlElement* pCur;
@@ -69,12 +52,12 @@ void Initializing::initializeMob(char *name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("ID", pCur->Value()) == 0){
-					mob.summon.push_back(strval((char*)pCur->GetText()));
+					mob.summon.push_back(atoi((char*)pCur->GetText()));
 				}
 			}
 		}
 	}
-	int di=strval((char*)string(name).substr(0, string(name).find('.')).c_str());
+	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
 	Mobs::addMob(di, mob);
 }
 
@@ -101,26 +84,26 @@ void Initializing::initializeItem(char *name){
 	if(!pElem) return;
 	ItemInfo item;
 	item.consume = 0;
-	int di=strval((char*)string(name).substr(0, string(name).find('.')).c_str());
+	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
 	for( pElem; pElem; pElem=pElem->NextSiblingElement())
 	{
 		if(strcmp("Type", pElem->Value()) == 0){
-			item.type = strval((char*)pElem->GetText());
+			item.type = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Price", pElem->Value()) == 0){
-			item.price = strval((char*)pElem->GetText());
+			item.price = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("MaxSlot", pElem->Value()) == 0){
-			item.maxslot = strval((char*)pElem->GetText());
+			item.maxslot = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Quest", pElem->Value()) == 0){
-			if(strval((char*)pElem->GetText()) == 1)
+			if(atoi((char*)pElem->GetText()) == 1)
 				item.quest = 1;
 			else
 				item.quest = 0;
 		}
 		else if(strcmp("Consume", pElem->Value()) == 0){
-			if(strval((char*)pElem->GetText()) == 1)
+			if(atoi((char*)pElem->GetText()) == 1)
 				item.consume = 1;
 			else
 				item.consume = 0;
@@ -132,70 +115,70 @@ void Initializing::initializeItem(char *name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("HP", pCur->Value()) == 0){
-					cons.hp = strval((char*)pCur->GetText());
+					cons.hp = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("MP", pCur->Value()) == 0){
-					cons.mp = strval((char*)pCur->GetText());
+					cons.mp = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("HPR", pCur->Value()) == 0){
-					cons.hpr = strval((char*)pCur->GetText());
+					cons.hpr = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("MPR", pCur->Value()) == 0){
-					cons.mpr = strval((char*)pCur->GetText());
+					cons.mpr = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("moveTo", pCur->Value()) == 0){
-					cons.moveTo = strval((char*)pCur->GetText());
+					cons.moveTo = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("success", pCur->Value()) == 0){
-					cons.success = strval((char*)pCur->GetText());
+					cons.success = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("cursed", pCur->Value()) == 0){
-					cons.cursed = strval((char*)pCur->GetText());
+					cons.cursed = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iSTR", pCur->Value()) == 0){
-					cons.istr = strval((char*)pCur->GetText());
+					cons.istr = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iDEX", pCur->Value()) == 0){
-					cons.idex = strval((char*)pCur->GetText());
+					cons.idex = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iINT", pCur->Value()) == 0){
-					cons.iint = strval((char*)pCur->GetText());
+					cons.iint = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iLUK", pCur->Value()) == 0){
-					cons.iluk = strval((char*)pCur->GetText());
+					cons.iluk = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iHP", pCur->Value()) == 0){
-					cons.ihp = strval((char*)pCur->GetText());
+					cons.ihp = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iMP", pCur->Value()) == 0){
-					cons.imp = strval((char*)pCur->GetText());
+					cons.imp = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iWAtk", pCur->Value()) == 0){
-					cons.iwatk = strval((char*)pCur->GetText());
+					cons.iwatk = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iMAtk", pCur->Value()) == 0){
-					cons.imatk = strval((char*)pCur->GetText());
+					cons.imatk = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iWDef", pCur->Value()) == 0){
-					cons.iwdef = strval((char*)pCur->GetText());
+					cons.iwdef = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iMDef", pCur->Value()) == 0){
-					cons.imdef = strval((char*)pCur->GetText());
+					cons.imdef = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iAcc", pCur->Value()) == 0){
-					cons.iacc = strval((char*)pCur->GetText());
+					cons.iacc = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iAvo", pCur->Value()) == 0){
-					cons.iavo = strval((char*)pCur->GetText());
+					cons.iavo = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iHand", pCur->Value()) == 0){
-					cons.ihand = strval((char*)pCur->GetText());
+					cons.ihand = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iJump", pCur->Value()) == 0){
-					cons.ijump = strval((char*)pCur->GetText());
+					cons.ijump = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("iSpeed", pCur->Value()) == 0){
-					cons.ispeed = strval((char*)pCur->GetText());
+					cons.ispeed = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Mobs", pCur->Value()) == 0){
 					SummonBag s;
@@ -207,10 +190,10 @@ void Initializing::initializeItem(char *name){
   							pCur3 = pCur2->FirstChildElement();
 							for( pCur3; pCur3; pCur3=pCur3->NextSiblingElement()){
 								if(strcmp("ID", pCur3->Value()) == 0){
-									s.mobid = strval((char*)pCur3->GetText());
+									s.mobid = atoi((char*)pCur3->GetText());
 								}
 								else if(strcmp("Chance", pCur3->Value()) == 0){
-									s.chance = strval((char*)pCur3->GetText());
+									s.chance = atoi((char*)pCur3->GetText());
 								}
 							}
 						}
@@ -261,13 +244,13 @@ void Initializing::initializeDrop(char* name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("ID", pCur->Value()) == 0){
-					drop.id = strval((char*)pCur->GetText());
+					drop.id = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Chance", pCur->Value()) == 0){
-					drop.chance = strval((char*)pCur->GetText());
+					drop.chance = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Quest", pCur->Value()) == 0){
-					drop.quest = strval((char*)pCur->GetText());
+					drop.quest = atoi((char*)pCur->GetText());
 				}
 
 			}
@@ -279,13 +262,13 @@ void Initializing::initializeDrop(char* name){
 	for( pElem; pElem; pElem=pElem->NextSiblingElement())
 	{
 		if(strcmp("Min", pElem->Value()) == 0){
-			min = strval((char*)pElem->GetText());
+			min = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Max", pElem->Value()) == 0){
-			max = strval((char*)pElem->GetText());
+			max = atoi((char*)pElem->GetText());
 		}
 	}
-	int di=strval((char*)string(name).substr(0, string(name).find('.')).c_str());
+	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
 	Drops::addDrop(di, drops);
 	Mesos mesos;
 	mesos.min = min;
@@ -336,73 +319,73 @@ void Initializing::initializeEquip(char *name){
 	for( pElem; pElem; pElem=pElem->NextSiblingElement())
 	{
 		if(strcmp("Type", pElem->Value()) == 0){
-			equip.type = strval((char*)pElem->GetText());
+			equip.type = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Price", pElem->Value()) == 0){
-			equip.price = strval((char*)pElem->GetText());
+			equip.price = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Slots", pElem->Value()) == 0){
-			equip.slots = strval((char*)pElem->GetText());
+			equip.slots = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("STR", pElem->Value()) == 0){
-			equip.istr = strval((char*)pElem->GetText());
+			equip.istr = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("DEX", pElem->Value()) == 0){
-			equip.idex = strval((char*)pElem->GetText());
+			equip.idex = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("INT", pElem->Value()) == 0){
-			equip.iint = strval((char*)pElem->GetText());
+			equip.iint = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("LUK", pElem->Value()) == 0){
-			equip.iluk = strval((char*)pElem->GetText());
+			equip.iluk = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("HP", pElem->Value()) == 0){
-			equip.ihp = strval((char*)pElem->GetText());
+			equip.ihp = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("MP", pElem->Value()) == 0){
-			equip.imp = strval((char*)pElem->GetText());
+			equip.imp = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("WAtk", pElem->Value()) == 0){
-			equip.iwatk = strval((char*)pElem->GetText());
+			equip.iwatk = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("MAtk", pElem->Value()) == 0){
-			equip.imatk = strval((char*)pElem->GetText());
+			equip.imatk = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("WDef", pElem->Value()) == 0){
-			equip.iwdef = strval((char*)pElem->GetText());
+			equip.iwdef = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("MDef", pElem->Value()) == 0){
-			equip.imdef = strval((char*)pElem->GetText());
+			equip.imdef = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Acc", pElem->Value()) == 0){
-			equip.iacc = strval((char*)pElem->GetText());
+			equip.iacc = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Avo", pElem->Value()) == 0){
-			equip.iavo = strval((char*)pElem->GetText());
+			equip.iavo = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Hand", pElem->Value()) == 0){
-			equip.ihand = strval((char*)pElem->GetText());
+			equip.ihand = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Jump", pElem->Value()) == 0){
-			equip.ijump = strval((char*)pElem->GetText());
+			equip.ijump = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Speed", pElem->Value()) == 0){
-			equip.ispeed = strval((char*)pElem->GetText());
+			equip.ispeed = atoi((char*)pElem->GetText());
 		}
 		else if(strcmp("Cash", pElem->Value()) == 0){
-			if(strval((char*)pElem->GetText()) == 1)
+			if(atoi((char*)pElem->GetText()) == 1)
 				equip.cash = 1;
 			else
 				equip.cash = 0;
 		}
 		else if(strcmp("Quest", pElem->Value()) == 0){
-			if(strval((char*)pElem->GetText()) == 1)
+			if(atoi((char*)pElem->GetText()) == 1)
 				equip.quest = 1;
 			else
 				equip.quest = 0;
 		}
 	}
-	int di=strval((char*)string(name).substr(0, string(name).find('.')).c_str());
+	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
 	Drops::addEquip(di, equip);
 }
 
@@ -430,7 +413,7 @@ void Initializing::initializeShop(char* name){
 	hRoot=TiXmlHandle(pElem);
 	ShopInfo shop;
 	pElem=hRoot.FirstChildElement( "NPC" ).Element();
-	shop.npc = strval((char*)pElem->GetText());
+	shop.npc = atoi((char*)pElem->GetText());
 	pElem=hRoot.FirstChildElement( "Items" ).FirstChild().Element();
 	for( pElem; pElem; pElem=pElem->NextSiblingElement())
 	{
@@ -443,16 +426,16 @@ void Initializing::initializeShop(char* name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("ID", pCur->Value()) == 0){
-					item.id = strval((char*)pCur->GetText());
+					item.id = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Price", pCur->Value()) == 0){
-					item.price = strval((char*)pCur->GetText());
+					item.price = atoi((char*)pCur->GetText());
 				}
 			}
 			shop.items.push_back(item);
 		}
 	}
-	int di=strval((char*)string(name).substr(0, string(name).find('.')).c_str());
+	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
 	Shops::addShop(di, shop);
 }
 void Initializing::initializeShops(){
@@ -477,8 +460,8 @@ void Initializing::initializeQuest(char* name){
 	if(strcmp("Quest",pElem->Value()) != 0) return;
 	hRoot=TiXmlHandle(pElem);
 	pElem=hRoot.FirstChildElement( "NextQuest" ).Element();
-	int di=strval((char*)string(name).substr(0, string(name).find('.')).c_str());
-	Quests::setNextQuest(di, strval((char*)pElem->GetText()));
+	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
+	Quests::setNextQuest(di, atoi((char*)pElem->GetText()));
 	pElem=hRoot.FirstChildElement( "Requests" ).FirstChild().Element();
 	QuestRequestsInfo reqs;
 	for( pElem; pElem; pElem=pElem->NextSiblingElement())
@@ -495,28 +478,28 @@ void Initializing::initializeQuest(char* name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("Mob", pCur->Value()) == 0){
-					if(strval((char*)pCur->GetText()) == 1)
+					if(atoi((char*)pCur->GetText()) == 1)
 						req.ismob = 1;
 					else 
 						req.ismob = 0;
 				}
 				else if(strcmp("Item", pCur->Value()) == 0){
-					if(strval((char*)pCur->GetText()) == 1)
+					if(atoi((char*)pCur->GetText()) == 1)
 						req.isitem = 1;
 					else 
 						req.isitem = 0;
 				}
 				else if(strcmp("Quest", pCur->Value()) == 0){
-					if(strval((char*)pCur->GetText()) == 1)
+					if(atoi((char*)pCur->GetText()) == 1)
 						req.isquest = 1;
 					else 
 						req.isquest = 0;
 				}
 				else if(strcmp("ID", pCur->Value()) == 0){
-					req.id = strval((char*)pCur->GetText());
+					req.id = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Count", pCur->Value()) == 0){
-					req.count = strval((char*)pCur->GetText());
+					req.count = atoi((char*)pCur->GetText());
 				}
 			}
 			reqs.push_back(req);
@@ -543,49 +526,49 @@ void Initializing::initializeQuest(char* name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("Start", pCur->Value()) == 0){
-					if(strval((char*)pCur->GetText()) == 1)
+					if(atoi((char*)pCur->GetText()) == 1)
 						raw.start = 1;
 					else 
 						raw.start = 0;
 				}
 				else if(strcmp("Item", pCur->Value()) == 0){
-					if(strval((char*)pCur->GetText()) == 1)
+					if(atoi((char*)pCur->GetText()) == 1)
 						raw.isitem = 1;
 					else 
 						raw.isitem = 0;
 				}
 				else if(strcmp("EXP", pCur->Value()) == 0){
-					if(strval((char*)pCur->GetText()) == 1)
+					if(atoi((char*)pCur->GetText()) == 1)
 						raw.isexp = 1;
 					else 
 						raw.isexp = 0;
 				}
 				else if(strcmp("Mesos", pCur->Value()) == 0){
-					if(strval((char*)pCur->GetText()) == 1)
+					if(atoi((char*)pCur->GetText()) == 1)
 						raw.ismesos = 1;
 					else 
 						raw.ismesos = 0;
 				}
 				else if(strcmp("Fame", pCur->Value()) == 0){
-					if(strval((char*)pCur->GetText()) == 1)
+					if(atoi((char*)pCur->GetText()) == 1)
 						raw.isfame = 1;
 					else 
 						raw.isfame = 0;
 				}
 				else if(strcmp("ID", pCur->Value()) == 0){
-					raw.id = strval((char*)pCur->GetText());
+					raw.id = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Count", pCur->Value()) == 0){
-					raw.count = strval((char*)pCur->GetText());
+					raw.count = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Gender", pCur->Value()) == 0){
-					raw.gender = strval((char*)pCur->GetText());
+					raw.gender = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Job", pCur->Value()) == 0){
-					raw.job = strval((char*)pCur->GetText());
+					raw.job = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Prop", pCur->Value()) == 0){
-					raw.prop = strval((char*)pCur->GetText());
+					raw.prop = atoi((char*)pCur->GetText());
 				}
 			}
 			raws.push_back(raw);
@@ -645,59 +628,59 @@ void Initializing::initializeSkill(char* name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("Time", pCur->Value()) == 0){
-					level.time = strval((char*)pCur->GetText());
+					level.time = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("MP", pCur->Value()) == 0){
-					level.mp = strval((char*)pCur->GetText());
+					level.mp = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("HP", pCur->Value()) == 0){
-					level.hp = strval((char*)pCur->GetText());
+					level.hp = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Item", pCur->Value()) == 0){
-					level.item = strval((char*)pCur->GetText());
+					level.item = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("ItemCount", pCur->Value()) == 0){
-					level.itemcount = strval((char*)pCur->GetText());
+					level.itemcount = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("X", pCur->Value()) == 0){
-					level.x = strval((char*)pCur->GetText());
+					level.x = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Y", pCur->Value()) == 0){
-					level.y = strval((char*)pCur->GetText());
+					level.y = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Speed", pCur->Value()) == 0){
-					level.speed = strval((char*)pCur->GetText());
+					level.speed = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Jump", pCur->Value()) == 0){
-					level.jump = strval((char*)pCur->GetText());
+					level.jump = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("WAtk", pCur->Value()) == 0){
-					level.watk = strval((char*)pCur->GetText());
+					level.watk = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("WDef", pCur->Value()) == 0){
-					level.wdef = strval((char*)pCur->GetText());
+					level.wdef = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("MAtk", pCur->Value()) == 0){
-					level.matk = strval((char*)pCur->GetText());
+					level.matk = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("MDef", pCur->Value()) == 0){
-					level.mdef = strval((char*)pCur->GetText());
+					level.mdef = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Acc", pCur->Value()) == 0){
-					level.acc = strval((char*)pCur->GetText());
+					level.acc = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("Avo", pCur->Value()) == 0){
-					level.avo = strval((char*)pCur->GetText());
+					level.avo = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("HPP", pCur->Value()) == 0){
-					level.hpP = strval((char*)pCur->GetText());
+					level.hpP = atoi((char*)pCur->GetText());
 				}
 
 			}
 			skill[count++] = level;
 		}
 	}
-	int di=strval((char*)string(name).substr(0, string(name).find('.')).c_str());
+	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
 	Skills::addSkill(di, skill);
 }
 void Initializing::initializeSkills(){
@@ -712,7 +695,7 @@ void Initializing::initializeSkills(){
       }
 }
 void Initializing::initializeMap(char *name){
-	int di=strval((char*)string(name).substr(0, string(name).find('.')).c_str());
+	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
 	char id[20];
 	sprintf_s(id, 20, "Maps/%s", name);
 	TiXmlDocument doc(id);
@@ -726,7 +709,7 @@ void Initializing::initializeMap(char *name){
 	hRoot=TiXmlHandle(pElem);
 	MapInfo map;
 	pElem=hRoot.FirstChildElement( "returnMap" ).Element();
-	map.rm = strval((char*)pElem->GetText());
+	map.rm = atoi((char*)pElem->GetText());
 	pElem=hRoot.FirstChildElement( "NPCs" ).FirstChild().Element();
 	NPCsInfo npcs;
 	for( pElem; pElem; pElem=pElem->NextSiblingElement())
@@ -738,22 +721,22 @@ void Initializing::initializeMap(char *name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("id", pCur->Value()) == 0){
-					npc.id = strval((char*)pCur->GetText());
+					npc.id = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("x", pCur->Value()) == 0){
-					npc.x = strval((char*)pCur->GetText());
+					npc.x = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("cy", pCur->Value()) == 0){
-					npc.cy = strval((char*)pCur->GetText());
+					npc.cy = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("fh", pCur->Value()) == 0){
-					npc.fh = strval((char*)pCur->GetText());
+					npc.fh = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("rx0", pCur->Value()) == 0){
-					npc.rx0 = strval((char*)pCur->GetText());
+					npc.rx0 = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("rx1", pCur->Value()) == 0){
-					npc.rx1 = strval((char*)pCur->GetText());
+					npc.rx1 = atoi((char*)pCur->GetText());
 				}
 			}
 			npcs.push_back(npc);
@@ -772,16 +755,16 @@ void Initializing::initializeMap(char *name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("id", pCur->Value()) == 0){
-					spawn.id = strval((char*)pCur->GetText());
+					spawn.id = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("x", pCur->Value()) == 0){
-					spawn.x = strval((char*)pCur->GetText());
+					spawn.x = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("cy", pCur->Value()) == 0){
-					spawn.cy = strval((char*)pCur->GetText());
+					spawn.cy = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("fh", pCur->Value()) == 0){
-					spawn.fh = strval((char*)pCur->GetText());
+					spawn.fh = atoi((char*)pCur->GetText());
 				}
 			}
 			spawns.push_back(spawn);
@@ -799,7 +782,7 @@ void Initializing::initializeMap(char *name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("id", pCur->Value()) == 0){
-					portal.id = strval((char*)pCur->GetText());
+					portal.id = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("from", pCur->Value()) == 0){
 					sprintf_s(portal.from, 20,"%s",(char*)pCur->GetText());
@@ -808,16 +791,16 @@ void Initializing::initializeMap(char *name){
 					sprintf_s(portal.to, 20,"%s",(char*)pCur->GetText());
 				}
 				else if(strcmp("toid", pCur->Value()) == 0){
-					portal.toid = strval((char*)pCur->GetText());
+					portal.toid = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("type", pCur->Value()) == 0){
-					portal.type = strval((char*)pCur->GetText());
+					portal.type = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("x", pCur->Value()) == 0){
-					portal.x = strval((char*)pCur->GetText());
+					portal.x = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("y", pCur->Value()) == 0){
-					portal.y = strval((char*)pCur->GetText());
+					portal.y = atoi((char*)pCur->GetText());
 				}
 			}
 			portals.push_back(portal);
@@ -836,16 +819,16 @@ void Initializing::initializeMap(char *name){
 			for( pCur; pCur; pCur=pCur->NextSiblingElement())
 			{
 				if(strcmp("x1", pCur->Value()) == 0){
-					foot.x1 = strval((char*)pCur->GetText());
+					foot.x1 = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("y1", pCur->Value()) == 0){
-					foot.y1 = strval((char*)pCur->GetText());
+					foot.y1 = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("x2", pCur->Value()) == 0){
-					foot.x2 = strval((char*)pCur->GetText());
+					foot.x2 = atoi((char*)pCur->GetText());
 				}
 				else if(strcmp("y2", pCur->Value()) == 0){
-					foot.y2 = strval((char*)pCur->GetText());
+					foot.y2 = atoi((char*)pCur->GetText());
 				}
 			}
 			foots.push_back(foot);
