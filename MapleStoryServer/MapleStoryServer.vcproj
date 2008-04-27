@@ -331,10 +331,6 @@
 					RelativePath=".\Timer.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\TimerTest.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="NPCs"
