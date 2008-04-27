@@ -3,18 +3,17 @@
 
 class Player;
 
-class PlayerPacket {
-public:
-	static void connectData(Player* player);
-	static void newHP(Player* player, short hp);
-	static void showKeys(Player* player, int keys[90]);
-	static void newEXP(Player* player, int exp);
-	static void setSP(Player* player);
-	static void setJob(Player* player);
-	static void newMP(Player* player, short mp, bool is);
-	static void newHair(Player* player);
-	static void newEyes(Player* player);
-	static void newSkin(Player* player);
+namespace PlayerPacket {
+	void connectData(Player* player);
+	void newHP(Player* player, short hp);
+	void showKeys(Player* player, int keys[90]);
+	void newEXP(Player* player, int exp);
+	void setSP(Player* player);
+	void setJob(Player* player);
+	void newMP(Player* player, short mp, bool is);
+	void newHair(Player* player);
+	void newEyes(Player* player);
+	void newSkin(Player* player);
 };
 
 #endif

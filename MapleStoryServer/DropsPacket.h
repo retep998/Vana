@@ -9,16 +9,15 @@ class Player;
 class Drop;
 struct Dropped;
 
-class DropsPacket {
-public:
-	static void drop(vector <Player*> players, Drop* drop, Dropped dropper);
-	static void dropForPlayer(Player* player, Drop* drop, Dropped dropper);
-	static void showDrop(Player* player, Drop* drop);
-	static void takeNote(Player* player, int id, bool ismesos, short amount);
-	static void takeDrop(Player* player, vector <Player*> players, Drop* drop);
-	static void dontTake(Player* player);
-	static void removeDrop(vector <Player*> players, Drop* drop);
-	static void explodeDrop(vector <Player*> players, Drop* drop);
+namespace DropsPacket {
+	void drop(vector <Player*> players, Drop* drop, Dropped dropper);
+	void dropForPlayer(Player* player, Drop* drop, Dropped dropper);
+	void showDrop(Player* player, Drop* drop);
+	void takeNote(Player* player, int id, bool ismesos, short amount);
+	void takeDrop(Player* player, vector <Player*> players, Drop* drop);
+	void dontTake(Player* player);
+	void removeDrop(vector <Player*> players, Drop* drop);
+	void explodeDrop(vector <Player*> players, Drop* drop);
 };
 
 #endif
