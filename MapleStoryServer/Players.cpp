@@ -8,8 +8,8 @@
 #include "Drops.h"
 #include "Levels.h"
 #include "Server.h"
-//
 #include "SkillsPacket.h"
+#include "CharUtilities.h"
 
 hash_map <int, Player*> Players::players;
 hash_map <char*, Player*> Players::names;
@@ -17,16 +17,9 @@ short getShort(unsigned char* buf);
 int getInt(unsigned char* buf);
 void getString(unsigned char* buf, int len, char* out);
 
-char* toLow(char* s){
-	for(unsigned int i=0; i<strlen(s); i++)
-		if(s[i]>='A' && s[i]<='Z')
-			s[i]-=('A'-'a');
-	return s;
-}
-
 void Players::addPlayer(Player* player){
 	players[player->getPlayerid()] = player;
-	names[toLow(player->getName())] = player;
+	names[tolower(player->getName())] = player;
 }
 
 void Players::deletePlayer(Player* player){
@@ -39,10 +32,10 @@ void Players::deletePlayer(Player* player){
 				 }
 		}
 	}
-	if(names.find(toLow(player->getName())) != names.end()){
+	if(names.find(tolower(player->getName())) != names.end()){
 		for (hash_map<char*,Player*>::iterator iter = names.begin();
 			 iter != names.end(); iter++){
-				 if(strcmp(iter->first,toLow(player->getName())) == 0){
+				 if(strcmp(iter->first,tolower(player->getName())) == 0){
 					 names.erase(iter);
 					 break;
 				 }
@@ -282,11 +275,11 @@ void Players::searchPlayer(Player* player, unsigned char* packet){
 	char name[20];
 	getString(packet+3, namelen, name);
 	if(type == 5){ // find
-		if(names.find(toLow(name)) == names.end()){
+		if(names.find(tolower(name)) == names.end()){
 			PlayersPacket::findPlayer(player, name, 0);
 		}
 		else {
-			PlayersPacket::findPlayer(player, names[toLow(name)]->getName(), names[toLow(name)]->getMap());
+			PlayersPacket::findPlayer(player, names[tolower(name)]->getName(), names[tolower(name)]->getMap());
 		}
 	}
 
