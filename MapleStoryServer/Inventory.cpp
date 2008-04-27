@@ -315,7 +315,8 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 			for(int i=0; i<player->inv->getEquipNum(); i++){
 				if(player->inv->getEquip(i)->pos == slot && player->inv->getEquip(i)->id == item){
 					InventoryPacket::moveItem(player, 1, slot, 0);
-					player->inv->deleteEquip(i);	
+					player->inv->deleteEquip(i);
+					check = true;
 					break;
 				}
 			}
