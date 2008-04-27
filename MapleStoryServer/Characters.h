@@ -38,16 +38,14 @@ struct Character {
 
 class PlayerLogin;
 
-class Characters {
-private:
-	static void showEquips(int id, vector <CharEquip> &vec);
-	static void createEquip(int equipid, int type, int charid);
-public:
-	static void connectGame(PlayerLogin* player, unsigned char* packet);
-	static void checkCharacterName(PlayerLogin* player, unsigned char* packet);
-	static void createCharacter(PlayerLogin* player, unsigned char* packet);
-	static void deleteCharacter(PlayerLogin* player, unsigned char* packet);
-	static void showCharacters(PlayerLogin* player);
+namespace Characters {
+	void connectGame(PlayerLogin* player, unsigned char* packet);
+	void checkCharacterName(PlayerLogin* player, unsigned char* packet);
+	void createCharacter(PlayerLogin* player, unsigned char* packet);
+	void deleteCharacter(PlayerLogin* player, unsigned char* packet);
+	void showCharacters(PlayerLogin* player);
+	extern private void showEquips(int id, vector <CharEquip> &vec);
+	extern private void createEquip(int equipid, int type, int charid);
 };
 
 #endif

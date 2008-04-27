@@ -33,6 +33,10 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 		LoginPacket::loginError(player, 0x05);
 }
 
+void Login::setGender(PlayerLogin* player, unsigned char* packet){
+	//TODO
+}
+
 int Login::checkLogin(char *username, char *password){
 	char rpassword[13];
 	if(!MySQL::isString("users","username", username)){

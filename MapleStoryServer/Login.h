@@ -3,16 +3,14 @@
 
 class PlayerLogin;
 
-class Login {
-private:
-	static int checkLogin(char *username, char *password);
-	static void checkPin(PlayerLogin* player, unsigned char* packet);
-public:
-	static void loginUser(PlayerLogin* player, unsigned char* packet);
-	static void setGender(PlayerLogin* player, unsigned char* packet){}
-	static void handleLogin(PlayerLogin* player, unsigned char* packet);
-	static void registerPIN(PlayerLogin* player, unsigned char* packet);
-	static void loginBack(PlayerLogin* player);
+namespace Login {
+	void loginUser(PlayerLogin* player, unsigned char* packet);
+	void setGender(PlayerLogin* player, unsigned char* packet);
+	void handleLogin(PlayerLogin* player, unsigned char* packet);
+	void registerPIN(PlayerLogin* player, unsigned char* packet);
+	void loginBack(PlayerLogin* player);
+	extern private int checkLogin(char *username, char *password);
+	extern private void checkPin(PlayerLogin* player, unsigned char* packet);
 };
 
 #endif
