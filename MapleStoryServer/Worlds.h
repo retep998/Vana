@@ -9,11 +9,10 @@ struct World {
 	char id;
 };
 
-class Worlds {
-public:
-	static void channelSelect(PlayerLogin* player, unsigned char* packet);
-	static void selectWorld(PlayerLogin* player, unsigned char* packet);
-	static void showWorld(PlayerLogin* player);
+namespace Worlds {
+	void channelSelect(PlayerLogin* player, unsigned char* packet);
+	void selectWorld(PlayerLogin* player, unsigned char* packet);
+	void showWorld(PlayerLogin* player);
 };
 
 #endif
