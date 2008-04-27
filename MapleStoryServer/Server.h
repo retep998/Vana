@@ -3,16 +3,14 @@
 
 class Player;
 
-class Server {
-private: 
-	static char msg[100];
-	static int on;
-public:
-	static void showScrollingHeader(Player* player);
-	static void changeScrollingHeader(char* msg);
-	static void enableScrollingHeader();
-	static void disableScrollingHeader();
-	static void initialize();
+namespace Server {
+	extern private char msg[100];
+	extern private int on;
+	void showScrollingHeader(Player* player);
+	void changeScrollingHeader(char* msg);
+	void enableScrollingHeader();
+	void disableScrollingHeader();
+	void initialize();
 };
 
 #endif
