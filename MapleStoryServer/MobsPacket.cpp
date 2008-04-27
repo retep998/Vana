@@ -68,7 +68,7 @@ void MobsPacket::moveMob(Player* player, Mob* mob ,vector <Player*> players, uns
 	packet.addHeader(0x9C);
 	packet.addInt(mob->getID());
 	packet.addShort(getShort(pack+4));
-	packet.addByte(0);
+	packet.addByte(1);
 	packet.addInt(mob->getMP());
 	packet.packetSend(player);
 	packet = Packet();
