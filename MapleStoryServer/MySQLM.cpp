@@ -310,3 +310,12 @@ void MySQL::getKeys(int id, int keys[90]){
 	}
 	mysql_free_result(mres);
 }
+
+MYSQL_RES* MySQL::getRes(char *query){
+	MYSQL_RES *mres;
+	char sql[500];
+	strcpy_s(sql, 500, query);
+	mysql_real_query(&MySQL::maple_db, sql, strlen(sql));
+	mres = mysql_store_result(&MySQL::maple_db);
+	return mres;
+}

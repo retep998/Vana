@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <Winsock2.h>
+#include <vector>
 #include "mysql.h"
 
 class MySQL {
@@ -27,6 +28,7 @@ public:
 	static int getItems(int id, int equips[400][4]);
 	static void getKeys(int id, int keys[90]);
 	static int getSkills(int id, int skills[200][2]);
+	static MYSQL_RES* getRes(char *query);
 };
 
 #endif
