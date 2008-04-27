@@ -101,6 +101,12 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			Shops::showShop(player, 9999999);
 		}
 		else if(strcmp(command, "shop2") == 0){
+			Shops::showShop(player, 9999996);
+		}
+		else if(strcmp(command, "shop3") == 0){
+			Shops::showShop(player, 9999995);
+		}
+		else if(strcmp(command, "shop4") == 0){
 			Shops::showShop(player, 9999998);
 		}
 		else if(strcmp(command, "pos") == 0){
