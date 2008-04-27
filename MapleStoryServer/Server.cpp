@@ -1,7 +1,6 @@
 #include "Server.h"
 #include "ServerPacket.h"
 #include "Player.h"
-#include <windows.h>
 
 char Server::msg[100];
 int Server::on;
@@ -24,15 +23,4 @@ void Server::enableScrollingHeader(){
 void Server::disableScrollingHeader(){
 	on=0;
 	ServerPacket::scrollingHeaderOff();
-}
-
-__int64 Server::getServerTime(){
-	SYSTEMTIME systemTime;
-	GetSystemTime( &systemTime );
-	FILETIME fileTime; 
-	SystemTimeToFileTime( &systemTime, &fileTime );
-	ULARGE_INTEGER uli;
-	uli.LowPart = fileTime.dwLowDateTime; 
-	uli.HighPart = fileTime.dwHighDateTime;
-	return uli.QuadPart;
 }

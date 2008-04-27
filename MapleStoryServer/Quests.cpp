@@ -7,6 +7,7 @@
 #include "NPCs.h"
 #include "Server.h"
 #include "BufferUtilities.h"
+#include "TimeUtilities.h"
 
 hash_map <int, QuestInfo> Quests::quests;
 
@@ -164,7 +165,7 @@ void PlayerQuests::finishQuest(short questid, int npcid){
 	}
 	QuestComp quest;
 	quest.id = questid;
-	quest.time = Server::getServerTime();
+	quest.time = getServerTime();
 	questscomp.push_back(quest);
 	QuestsPacket::questFinish(player, Maps::info[player->getMap()].Players , questid, npcid, Quests::quests[questid].nextquest, quest.time);
 }
