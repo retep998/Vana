@@ -4,10 +4,10 @@
 #include "Inventory.h"
 #include "Maps.h"
 #include "BufferUtilities.h"
+#include "Timer.h"
 
 hash_map <int, SkillsLevelInfo> Skills::skills;
 hash_map <int, SkillsInfo> Skills::skillsinfo;
-#include "Timer.h"
 
 #define BEGINNER_SKILL(x) (x<10000)
 
@@ -340,6 +340,10 @@ void Skills::startTimer(){
 	skillsinfo[4101004].map.push_back(map);
 	skillsinfo[4201003].map.push_back(map);
 
+}
+
+void Skills::addSkill(int id, SkillsLevelInfo skill){
+	skills[id] = skill;
 }
 
 void Skills::addSkill(Player* player, unsigned char* packet){

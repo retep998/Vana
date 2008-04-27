@@ -3,7 +3,6 @@
 
 #include <hash_map>
 
-
 using namespace std;
 using namespace stdext;
 
@@ -84,23 +83,20 @@ struct SkillsInfo {
 };
 typedef hash_map <int, SkillLevelInfo> SkillsLevelInfo;
 
-class Skills{
-public:
-	static SkillTimer* timer;
-	static void startTimer();
-	static hash_map <int, SkillsLevelInfo> skills;
-	static hash_map <int, SkillsInfo> skillsinfo;
-	static void addSkill(int id, SkillsLevelInfo skill){
-		skills[id] = skill;
-	}
-	static void addSkill(Player* player, unsigned char* packet);
-	static void cancelSkill(Player* player, unsigned char* packet);
-	static void useSkill(Player* player, unsigned char* packet);
-	static void useAttackSkill(Player* player, int skillid);
-	static void stopTimerPlayer(Player* player);
-	static void heal(Player* player, short value, int skillid);
-	static void endSkill(Player* player, int skillid);
-	static void stopSkill(Player* player, int skillid);
+namespace Skills {
+	extern SkillTimer* timer;
+	void startTimer();
+	extern hash_map <int, SkillsLevelInfo> skills;
+	extern hash_map <int, SkillsInfo> skillsinfo;
+	void addSkill(int id, SkillsLevelInfo skill);
+	void addSkill(Player* player, unsigned char* packet);
+	void cancelSkill(Player* player, unsigned char* packet);
+	void useSkill(Player* player, unsigned char* packet);
+	void useAttackSkill(Player* player, int skillid);
+	void stopTimerPlayer(Player* player);
+	void heal(Player* player, short value, int skillid);
+	void endSkill(Player* player, int skillid);
+	void stopSkill(Player* player, int skillid);
 };
 
 class PlayerSkills {
