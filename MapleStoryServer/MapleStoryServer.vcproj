@@ -323,22 +323,6 @@
 					RelativePath=".\Initializing.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\tinystr.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\tinyxml.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\tinyxmlerror.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\tinyxmlparser.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Timer"
@@ -519,14 +503,6 @@
 				>
 				<File
 					RelativePath=".\Initializing.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tinystr.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tinyxml.h"
 					>
 				</File>
 			</Filter>
