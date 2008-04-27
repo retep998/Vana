@@ -310,6 +310,25 @@ void Drops::lootItem(Player* player, unsigned char*packet){
 	delete drop;
 }
 
+void Drops::addDrop(int id, MobDropsInfo drops){
+	dropsinfo[id] = drops;
+}
+void Drops::addEquip(int id, EquipInfo equip){
+	equips[id] = equip;
+}
+void Drops::addItem(int id, ItemInfo item){
+	items[id] = item;
+}
+void Drops::addConsume(int id, ConsumeInfo cons){
+	consumes[id] = cons;
+}
+void Drops::addMesos(int id, Mesos meso){
+	mesos[id] = meso;
+}
+void Drops::addFoothold(int id, FootholdsInfo foot){
+	foots[id] = foot;
+}
+
 void Drops::dropMesos(Player* player, unsigned char* packet){
 	int amount = getInt(packet+4);
 	if(amount < 10 || amount >50000){
