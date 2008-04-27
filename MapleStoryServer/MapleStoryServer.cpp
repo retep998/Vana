@@ -9,7 +9,7 @@
 
 void main(){
 	Initializing::initializing();
-	Server::initialize();
+
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 	if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n");

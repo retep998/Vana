@@ -26,11 +26,6 @@ void Server::disableScrollingHeader(){
 	ServerPacket::scrollingHeaderOff();
 }
 
-void Server::initialize(){
-	strcpy_s(msg, 100, "Welcome to MapleStory!");
-	on = 1;
-}
-
 __int64 Server::getServerTime(){
 	SYSTEMTIME systemTime;
 	GetSystemTime( &systemTime );
