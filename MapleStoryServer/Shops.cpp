@@ -37,3 +37,7 @@ int Shops::getPrice(Player* player, int itemid){
 	}
 	return 0;
 }
+
+void Shops::addShop(int id, ShopInfo shop){
+	shops[id] = shop;
+}

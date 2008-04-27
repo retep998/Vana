@@ -19,14 +19,11 @@ struct ShopInfo {
 	vector <ShopItemInfo> items;
 };
 
-class Shops{
-public:
-	static hash_map <int, ShopInfo> shops;
-	static void addShop(int id, ShopInfo shop){
-		shops[id] = shop;
-	}
-	static void showShop(Player* player, int id);
-	static int getPrice(Player* player, int itemid);
+namespace Shops{
+	extern hash_map <int, ShopInfo> shops;
+	void addShop(int id, ShopInfo shop);
+	void showShop(Player* player, int id);
+	int getPrice(Player* player, int itemid);
 };
 
 #endif
