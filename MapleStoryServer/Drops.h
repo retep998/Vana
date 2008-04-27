@@ -122,40 +122,27 @@ typedef vector<FootholdInfo> FootholdsInfo;
 
 class Drop;
 
-class Drops {
-public:
-	static hash_map <int, MobDropsInfo> dropsinfo;
-	static hash_map <int, Mesos> mesos;
-	static hash_map <int, EquipInfo> equips;
-	static hash_map <int, ItemInfo> items;
-	static hash_map <int, ConsumeInfo> consumes;
-	static hash_map <int, FootholdsInfo> foots;
-	static hash_map <int, int> objids;
-	static hash_map <int, vector<Drop*>> drops;
-	static void addDrop(int id, MobDropsInfo drops){
-		dropsinfo[id] = drops;
-	}
-	static void addEquip(int id, EquipInfo equip){
-		equips[id] = equip;
-	}
-	static void addItem(int id, ItemInfo item){
-		items[id] = item;
-	}
-	static void addConsume(int id, ConsumeInfo cons){
-		consumes[id] = cons;
-	}
-	static void addMesos(int id, Mesos meso){
-		mesos[id] = meso;
-	}
-	static void addFoothold(int id, FootholdsInfo foot){
-		foots[id] = foot;
-	}
-	static void dropMesos(Player* player, unsigned char* packet);
-	static void lootItem(Player* player, unsigned char* packet);
-	static void dropMob(Player* player, Mob* mob);
-	static void showDrops(Player* player);
-	static Pos findFloor(Pos pos, int map);
-	static void checkDrops(int mapid);
+namespace Drops {
+	extern hash_map <int, MobDropsInfo> dropsinfo;
+	extern hash_map <int, Mesos> mesos;
+	extern hash_map <int, EquipInfo> equips;
+	extern hash_map <int, ItemInfo> items;
+	extern hash_map <int, ConsumeInfo> consumes;
+	extern hash_map <int, FootholdsInfo> foots;
+	extern hash_map <int, int> objids;
+	extern hash_map <int, vector<Drop*>> drops;
+	void addDrop(int id, MobDropsInfo drops);
+	void addEquip(int id, EquipInfo equip);
+	void addItem(int id, ItemInfo item);
+	void addConsume(int id, ConsumeInfo cons);
+	void addMesos(int id, Mesos meso);
+	void addFoothold(int id, FootholdsInfo foot);
+	void dropMesos(Player* player, unsigned char* packet);
+	void lootItem(Player* player, unsigned char* packet);
+	void dropMob(Player* player, Mob* mob);
+	void showDrops(Player* player);
+	Pos findFloor(Pos pos, int map);
+	void checkDrops(int mapid);
 };
 
 class Drop {
