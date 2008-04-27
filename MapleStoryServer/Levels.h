@@ -3,13 +3,12 @@
 
 class Player;
 
-class Levels {
-public:
-	static int exps[200];
-	static void giveEXP(Player* player, int exp, char type=0);
-	static void addStat(Player* player, unsigned char* packet);
-	static void setLevel(Player* player, int level);
-	static void setJob(Player* player, int job);
+namespace Levels {
+	extern int exps[200];
+	void giveEXP(Player* player, int exp, char type=0);
+	void addStat(Player* player, unsigned char* packet);
+	void setLevel(Player* player, int level);
+	void setJob(Player* player, int job);
 };
 
 #endif
