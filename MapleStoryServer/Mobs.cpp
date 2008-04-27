@@ -48,6 +48,18 @@ void Mobs::monsterControl(Player* player, unsigned char* packet, int size){
 	}
 }
 
+void Mobs::addMob(int id, MobInfo mob){
+	mobinfo[id] = mob;
+}
+
+void Mobs::addSpawn(int id, SpawnsInfo spawns){
+	info[id] = spawns;
+}
+
+void Mobs::monsterControlSkill(Player* player, unsigned char* packet){
+	//TODO
+}
+
 void Mobs::checkSpawn(int mapid){
 	for(unsigned int i=0; i<info[mapid].size(); i++){
 		int check=0;
