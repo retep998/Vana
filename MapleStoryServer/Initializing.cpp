@@ -12,6 +12,7 @@ using namespace std;
 
 // Mobs
 void Initializing::initializeMobs(){
+	printf("Initializing Mobs... ");
 	MYSQL_RES *mobRes;
 	MYSQL_ROW mobRow;
 	mobRes = MySQL::getRes("SELECT mobdata.*, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
@@ -41,9 +42,11 @@ void Initializing::initializeMobs(){
 	if(previousid != -1){
 		Mobs::addMob(previousid, mob);
 	}
+	printf("DONE\n");
 }
 // Items
 void Initializing::initializeItems(){
+	printf("Initializing Items... ");
 	MYSQL_RES *itemRes;
 	MYSQL_ROW itemRow;
 	itemRes = MySQL::getRes("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
@@ -142,9 +145,11 @@ void Initializing::initializeItems(){
 		Drops::addItem(previousid, item);
 		cons.mobs.clear();
 	}
+	printf("DONE\n");
 }
 // Drops
 void Initializing::initializeDrops(){
+	printf("Initializing Drops... ");
 	// Get all the drops
 	MYSQL_RES *dropRes;
 	MYSQL_ROW dropRow;
@@ -182,9 +187,11 @@ void Initializing::initializeDrops(){
 		mesos.max = atoi(mesoRow[3]);
 		Drops::addMesos(atoi(mesoRow[1]), mesos);
 	}
+	printf("DONE\n");
 }
 // Equips
 void Initializing::initializeEquips(){
+	printf("Initializing Equips... ");
 	MYSQL_RES *equipRes;
 	MYSQL_ROW equipRow;
 	equipRes = MySQL::getRes("SELECT * FROM equipdata ORDER BY type ASC");
@@ -234,9 +241,11 @@ void Initializing::initializeEquips(){
 		// Add equip to the drops table
 		Drops::addEquip(equipID,equip);
 	}
+	printf("DONE\n");
 }
 // Shops
 void Initializing::initializeShops(){
+	printf("Initializing Shops... ");
 	MYSQL_RES *shopRes;
 	MYSQL_ROW shopRow;
 	// Col0 : RowID
@@ -273,9 +282,11 @@ void Initializing::initializeShops(){
 		Shops::addShop(previousid, shop);
 		shop.items.clear();
 	}
+	printf("DONE\n");
 }
 // Quests
 void Initializing::initializeQuests(){
+	printf("Initializing Quests... ");
 	// Quests
 	MYSQL_RES *questRes;
 	MYSQL_ROW questRow;
@@ -370,9 +381,11 @@ void Initializing::initializeQuests(){
 		Quests::addReward(previousid, rwas);
 		rwas.clear();
 	}
+	printf("DONE\n");
 }
 // Skills
 void Initializing::initializeSkills(){
+	printf("Initializing Skills... ");
 	MYSQL_RES *skillRes;
 	MYSQL_ROW skillRow;
 	skillRes = MySQL::getRes("SELECT * FROM skilldata ORDER BY skillid ASC");
@@ -432,9 +445,11 @@ void Initializing::initializeSkills(){
 		Skills::addSkill(previousid, skill);
 		skill.clear();
 	}
+	printf("DONE\n");
 }
 // Maps
 void Initializing::initializeMaps(){
+	printf("Initializing Maps... ");
 	// Maps and portals
 	MYSQL_RES *mapRes;
 	MYSQL_ROW mapRow;
@@ -589,30 +604,15 @@ void Initializing::initializeMaps(){
 		Drops::addFoothold(previousid, foots);
 		Drops::objids[previousid] = 100;
 	}
+	printf("DONE\n");
 }
 void Initializing::initializing(){
-	printf("Initializing Mobs... ");
 	initializeMobs();
-	printf("DONE\n");
-	printf("Initializing Items... ");
 	initializeItems();
-	printf("DONE\n");
-	printf("Initializing Drops... ");
 	initializeDrops();
-	printf("DONE\n");
-	printf("Initializing Equips... ");
 	initializeEquips();
-	printf("DONE\n");
-	printf("Initializing Shops... ");
 	initializeShops();
-	printf("DONE\n");
-	printf("Initializing Quests... ");
 	initializeQuests();
-	printf("DONE\n");
-	printf("Initializing Skills... ");
 	initializeSkills();
-	printf("DONE\n");
-	printf("Initializing Maps... ");
 	initializeMaps();
-	printf("DONE\n");
 }
