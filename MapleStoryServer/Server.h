@@ -1,12 +1,6 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <hash_map>
-#include <vector>
-
-using namespace std;
-using namespace stdext;
-
 class Player;
 
 class Server {
@@ -19,7 +13,6 @@ public:
 	static void enableScrollingHeader();
 	static void disableScrollingHeader();
 	static void initialize();
-	static __int64 getServerTime();
 };
 
 #endif

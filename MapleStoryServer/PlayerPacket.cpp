@@ -4,6 +4,7 @@
 #include "Inventory.h"
 #include "Skills.h"
 #include "Server.h"
+#include "TimeUtilities.h"
 
 void PlayerPacket::connectData(Player* player){
 	Packet packet = Packet();
@@ -177,7 +178,7 @@ void PlayerPacket::connectData(Player* player){
 	packet.addShort(0);
 	for(int i=0; i<15; i++)
 		packet.addBytes("FFC99A3B");
-	packet.addInt64(Server::getServerTime());
+	packet.addInt64(getServerTime());
 	packet.packetSend(player);
 }
 
