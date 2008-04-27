@@ -4,6 +4,7 @@
 class Initializing {
 public:
 	static void initializing();
+	static void initializeMySQL();
 	static void initializeMobs();
 	static void initializeDrops();
 	static void initializeMaps();
@@ -12,6 +13,7 @@ public:
 	static void initializeItems();
 	static void initializeQuests();
 	static void initializeSkills();
+	static void initializeTimers();
 };
 
 #endif

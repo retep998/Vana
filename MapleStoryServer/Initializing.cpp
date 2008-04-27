@@ -6,9 +6,20 @@
 #include "Shops.h"
 #include "Quests.h"
 #include "Skills.h"
+#include "Timer.h"
 #include <string>
 #include "MySQLM.h"
 using namespace std;
+
+void Initializing::initializeMySQL(){
+	printf("Initializing MySQL... ");
+	if(MySQL::connectToMySQL())
+		printf("DONE\n");
+	else{
+		printf("FAILED\n");
+		exit(1);
+	}
+}
 
 // Mobs
 void Initializing::initializeMobs(){
@@ -606,7 +617,17 @@ void Initializing::initializeMaps(){
 	}
 	printf("DONE\n");
 }
+
+void Initializing::initializeTimers(){
+	printf("Initializing Timers... ");
+	Timer::timer = new Timer();
+	Skills::startTimer();
+	Maps::startTimer();
+	printf("DONE\n");
+}
+
 void Initializing::initializing(){
+	initializeMySQL();
 	initializeMobs();
 	initializeItems();
 	initializeDrops();
@@ -615,4 +636,5 @@ void Initializing::initializing(){
 	initializeQuests();
 	initializeSkills();
 	initializeMaps();
+	initializeTimers();
 }
