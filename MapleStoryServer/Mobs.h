@@ -29,32 +29,25 @@ struct MobInfo {
 	vector<int> summon;
 };
 
-
-
-class Mobs {
-public:
-	static hash_map <int, MobInfo> mobinfo;
-	static hash_map <int, SpawnsInfo> info;
-	static hash_map <int, vector<Mob*>> mobs;
-	static int mobscount;
-	static void addMob(int id, MobInfo mob){
-		mobinfo[id] = mob;
-	}
-	static void addSpawn(int id, SpawnsInfo spawns){
-		info[id] = spawns;
-	}
-	static void damageMob(Player* player, unsigned char* packet);
-	static void damageMobS(Player* player, unsigned char* packet, int size);
-	static void damageMobSkill(Player* player, unsigned char* packet);
-	static void monsterControl(Player* player, unsigned char* packet, int size);
-	static void monsterControlSkill(Player* player, unsigned char* packet){}
-	static void checkSpawn(int mapid);
-	static void showMobs(Player* player);
-	static void updateSpawn(int mapid);
-	static void spawnMob(Player* player, int mobid);
-	static void dieMob(Player* player, Mob* mob);
-	static void spawnMobPos(Player* player, int mobid, int xx, int yy);
-	static Mob* getMobByID(int mobid, int map);
+namespace Mobs {
+	extern hash_map <int, MobInfo> mobinfo;
+	extern hash_map <int, SpawnsInfo> info;
+	extern hash_map <int, vector<Mob*>> mobs;
+	extern int mobscount;
+	void addMob(int id, MobInfo mob);
+	void addSpawn(int id, SpawnsInfo spawns);
+	void damageMob(Player* player, unsigned char* packet);
+	void damageMobS(Player* player, unsigned char* packet, int size);
+	void damageMobSkill(Player* player, unsigned char* packet);
+	void monsterControl(Player* player, unsigned char* packet, int size);
+	void monsterControlSkill(Player* player, unsigned char* packet);
+	void checkSpawn(int mapid);
+	void showMobs(Player* player);
+	void updateSpawn(int mapid);
+	void spawnMob(Player* player, int mobid);
+	void dieMob(Player* player, Mob* mob);
+	void spawnMobPos(Player* player, int mobid, int xx, int yy);
+	Mob* getMobByID(int mobid, int map);
 };
 
 class Mob {
