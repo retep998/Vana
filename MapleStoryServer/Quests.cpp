@@ -6,6 +6,7 @@
 #include "Inventory.h"
 #include "NPCs.h"
 #include "Server.h"
+#include "BufferUtilities.h"
 
 hash_map <int, QuestInfo> Quests::quests;
 

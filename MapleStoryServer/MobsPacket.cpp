@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Mobs.h"
 #include "MobsPacket.h"
+#include "BufferUtilities.h"
 
 void MobsPacket::controlMob(Player* player, Mob* mob){
 	Packet packet = Packet();

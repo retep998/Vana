@@ -8,9 +8,6 @@ using namespace std;
 class Player;
 struct Equip;
 struct Item;
-short getShort(unsigned char* buf);
-int getInt(unsigned char* buf);
-void getString(unsigned char* buf, int len, char* out);
 
 class InventoryPacket {
 public:

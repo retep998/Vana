@@ -9,6 +9,7 @@
 #include "Inventory.h"
 #include "Quests.h"
 #include "Levels.h"
+#include "BufferUtilities.h"
 
 hash_map <int, NPCsInfo> NPCs::info;
 

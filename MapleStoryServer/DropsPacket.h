@@ -9,10 +9,6 @@ class Player;
 class Drop;
 struct Dropped;
 
-short getShort(unsigned char* buf);
-int getInt(unsigned char* buf);
-void getString(unsigned char* buf, int len, char* out);
-
 class DropsPacket {
 public:
 	static void drop(vector <Player*> players, Drop* drop, Dropped dropper);
