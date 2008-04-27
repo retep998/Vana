@@ -4,9 +4,8 @@
 class Player;
 struct NPCInfo;
 
-class NPCPacket {
-public:
-	static void showNPC(Player* player, NPCInfo npc, int i);
+namespace NPCPacket {
+	void showNPC(Player* player, NPCInfo npc, int i);
 };
 
 #endif

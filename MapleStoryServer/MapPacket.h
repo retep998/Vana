@@ -4,14 +4,13 @@
 class Player;
 class Packet;
 
-class MapPacket {
-public:
-	static Packet playerPacket(Player* player);
-	static void showPlayer(Player* player, vector <Player*> players);
-	static void showPlayers(Player* player, vector <Player*> players);
-	static void removePlayer(Player* player, vector <Player*> players);
-	static void changeMap(Player* player);
-	static void makeApple(Player* player);
+namespace MapPacket {
+	Packet playerPacket(Player* player);
+	void showPlayer(Player* player, vector <Player*> players);
+	void showPlayers(Player* player, vector <Player*> players);
+	void removePlayer(Player* player, vector <Player*> players);
+	void changeMap(Player* player);
+	void makeApple(Player* player);
 };
 
 #endif

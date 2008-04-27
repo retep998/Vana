@@ -9,11 +9,10 @@ using namespace stdext;
 
 class Player;
 
-class ServerPacket {
-public:
-	static void showScrollingHeader(Player* player, char* msg);
-	static void changeScrollingHeader(char* msg);
-	static void scrollingHeaderOff();
+namespace ServerPacket {
+	void showScrollingHeader(Player* player, char* msg);
+	void changeScrollingHeader(char* msg);
+	void scrollingHeaderOff();
 };
 
 #endif

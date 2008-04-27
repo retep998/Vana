@@ -9,20 +9,19 @@ class Player;
 struct Equip;
 struct Item;
 
-class InventoryPacket {
-public:
-	static void moveItem(Player* player, char inv, short slot1, short slot2);
-	static void updatePlayer(Player* player);
-	static void addEquip(Player* player, Equip* equip, bool is);
-	static void bought(Player* player);
-	static void newMesos(Player* player, int mesos, bool is);
-	static void addItem(Player* player, Item* item, bool is);
-	static void addNewItem(Player* player, Item* item, bool is);
-	static void moveItemS(Player* player, char inv, short slot, short amount);
-	static void moveItemS2(Player* player, char inv, short slot1, short amount1, short slot2, short amount2);
-	static void sitChair(Player* player, vector <Player*> players, int chairid);
-	static void stopChair(Player* player, vector <Player*> players);
-	static void useScroll(Player* player, vector <Player*> players, char s);
+namespace InventoryPacket {
+	void moveItem(Player* player, char inv, short slot1, short slot2);
+	void updatePlayer(Player* player);
+	void addEquip(Player* player, Equip* equip, bool is);
+	void bought(Player* player);
+	void newMesos(Player* player, int mesos, bool is);
+	void addItem(Player* player, Item* item, bool is);
+	void addNewItem(Player* player, Item* item, bool is);
+	void moveItemS(Player* player, char inv, short slot, short amount);
+	void moveItemS2(Player* player, char inv, short slot1, short amount1, short slot2, short amount2);
+	void sitChair(Player* player, vector <Player*> players, int chairid);
+	void stopChair(Player* player, vector <Player*> players);
+	void useScroll(Player* player, vector <Player*> players, char s);
 };
 
 #endif

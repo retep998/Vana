@@ -7,13 +7,12 @@ class Player;
 using namespace std;
 struct SkillActiveInfo;
 
-class SkillsPacket {
-public:
-	static void addSkill(Player* player, int skillid, int level);
-	static void showSkill(Player* player, vector <Player*> players, int skillid);
-	static void useSkill(Player* player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
-	static void endSkill(Player* player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill);
-	static void healHP(Player* player, short hp);
+namespace SkillsPacket {
+	void addSkill(Player* player, int skillid, int level);
+	void showSkill(Player* player, vector <Player*> players, int skillid);
+	void useSkill(Player* player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
+	void endSkill(Player* player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill);
+	void healHP(Player* player, short hp);
 };
 
 #endif
