@@ -6,6 +6,7 @@
 #include "Quests.h"
 #include "Maps.h"
 #include "Mobs.h"
+#include "BufferUtilities.h"
 
 void Inventory::itemMove(Player* player, unsigned char* packet){
 	char inv = packet[4];

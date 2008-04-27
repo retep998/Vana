@@ -4,6 +4,7 @@
 #include "DropsPacket.h"
 #include "Inventory.h"
 #include "Quests.h"
+#include "BufferUtilities.h"
 #include <windows.h>
 
 hash_map <int, MobDropsInfo> Drops::dropsinfo;

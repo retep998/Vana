@@ -7,10 +7,6 @@ using namespace std;
 
 class Player;
 
-short getShort(unsigned char* buf);
-int getInt(unsigned char* buf);
-void getString(unsigned char* buf, int len, char* out);
-
 struct Quest;
 
 class QuestsPacket {

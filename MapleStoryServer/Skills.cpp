@@ -3,6 +3,7 @@
 #include "SkillsPacket.h"
 #include "Inventory.h"
 #include "Maps.h"
+#include "BufferUtilities.h"
 
 hash_map <int, SkillsLevelInfo> Skills::skills;
 hash_map <int, SkillsInfo> Skills::skillsinfo;

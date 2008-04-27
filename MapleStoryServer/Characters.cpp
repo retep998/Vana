@@ -1,6 +1,7 @@
 #include "Characters.h"
 #include "PlayerLogin.h"
 #include "LoginPacket.h"
+#include "BufferUtilities.h"
 #include "MySQLM.h"
 
 void Characters::showEquips(int id, vector <CharEquip> &vec){

@@ -1,6 +1,7 @@
 #include "Login.h"
 #include "LoginPacket.h"
 #include "MySQLM.h"
+#include "BufferUtilities.h"
 #include <stdio.h>
 #include "PlayerLogin.h"
 

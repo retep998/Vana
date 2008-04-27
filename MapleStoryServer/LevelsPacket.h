@@ -4,10 +4,6 @@
 #include <vector>
 using namespace std;
 
-short getShort(unsigned char* buf);
-int getInt(unsigned char* buf);
-void getString(unsigned char* buf, int len, char* out);
-
 class Player;
 
 class LevelsPacket {

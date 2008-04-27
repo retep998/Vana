@@ -348,6 +348,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Utilities"
+				>
+				<File
+					RelativePath=".\BufferUtilities.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -511,6 +519,14 @@
 				>
 				<File
 					RelativePath=".\Timer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Utilities"
+				>
+				<File
+					RelativePath=".\BufferUtilities.h"
 					>
 				</File>
 			</Filter>

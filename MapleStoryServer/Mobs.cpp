@@ -8,6 +8,7 @@
 #include "Quests.h"
 #include "Skills.h"
 #include "Inventory.h"
+#include "BufferUtilities.h"
 #include <math.h>
 hash_map <int, MobInfo> Mobs::mobinfo;
 hash_map <int, SpawnsInfo> Mobs::info;

@@ -11,9 +11,6 @@ class PlayerLogin;
 struct World;
 struct Character;
 
-short getShort(unsigned char* buf);
-int getInt(unsigned char* buf);
-void getString(unsigned char* buf, int len, char* out);
 class LoginPacket {
 public:
 	static void loginError(PlayerLogin* player, short errorid);
