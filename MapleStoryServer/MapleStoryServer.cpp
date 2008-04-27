@@ -10,13 +10,6 @@
 #include "Server.h"
 
 void main(){
-
-	Initializing::initializing();
-	printf("Initializing Timers... ");
-	Timer::timer = new Timer();
-	Skills::startTimer();
-	Maps::startTimer();
-	printf("DONE\n");
 	printf("Initializing MySQL... ");
 	if(MySQL::connectToMySQL())
 		printf("DONE\n");
@@ -24,6 +17,12 @@ void main(){
 		printf("FAILED\n");
 		exit(1);
 	}
+	Initializing::initializing();
+	printf("Initializing Timers... ");
+	Timer::timer = new Timer();
+	Skills::startTimer();
+	Maps::startTimer();
+	printf("DONE\n");
 	Server::initialize();
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);

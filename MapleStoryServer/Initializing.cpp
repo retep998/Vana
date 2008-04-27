@@ -1,5 +1,4 @@
 #include "Initializing.h"
-#include "tinyxml.h"
 #include "Mobs.h"
 #include "Drops.h"
 #include "Maps.h"
@@ -7,846 +6,589 @@
 #include "Shops.h"
 #include "Quests.h"
 #include "Skills.h"
-#include "windows.h"
 #include <string>
-#include "tchar.h"
+#include "MySQLM.h"
 using namespace std;
 
-void wtoc(const WCHAR* Source, char* to)
-{
-int i = 0;
-
-while(Source[i] != '\0')
-{
-to[i] = (CHAR)Source[i];
-++i;
-}
-to[i] = '\0';
-}
-
-void Initializing::initializeMob(char *name){
-	char id[18];
-	sprintf_s(id, 18, "Mobs/%s", name);
-	TiXmlDocument doc(id);
-	if(!doc.LoadFile()) return;
-	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem;
-	TiXmlHandle hRoot(0);
-	pElem=hDoc.FirstChildElement().FirstChild().Element();
-	if(!pElem) return;
-	MobInfo mob;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("HP", pElem->Value()) == 0){
-			mob.hp = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("MP", pElem->Value()) == 0){
-			mob.mp = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("exp", pElem->Value()) == 0){
-			mob.exp = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Summon", pElem->Value()) == 0){
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("ID", pCur->Value()) == 0){
-					mob.summon.push_back(atoi((char*)pCur->GetText()));
-				}
-			}
-		}
-	}
-	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
-	Mobs::addMob(di, mob);
-}
-
+// Mobs
 void Initializing::initializeMobs(){
-	WIN32_FIND_DATAA FindFileData;
-	
-	HANDLE hFind = FindFirstFileA("Mobs\\*.xml", &FindFileData);
-	initializeMob((char*)FindFileData.cFileName);
-	while (FindNextFileA(hFind, &FindFileData)) 
-	{
-		initializeMob((char*)FindFileData.cFileName);
+	MYSQL_RES *mobRes;
+	MYSQL_ROW mobRow;
+	mobRes = MySQL::getRes("SELECT mobdata.*, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+
+	int currentid = 0;
+	int previousid = -1;
+	MobInfo mob;
+	while((mobRow = mysql_fetch_row(mobRes))){
+		currentid = atoi(mobRow[1]);
+
+		if(currentid != previousid){
+			if(previousid != -1){
+				Mobs::addMob(previousid, mob);
+				mob.summon.clear();
+			}
+			mob.hp  = atoi(mobRow[2]);
+			mob.mp  = atoi(mobRow[3]);
+			mob.exp = atoi(mobRow[4]);
+		}
+
+		if(mobRow[5] != NULL){
+			mob.summon.push_back(atoi(mobRow[5]));
+		}
+		previousid = atoi(mobRow[1]);
+	}
+	// Add final entry
+	if(previousid != -1){
+		Mobs::addMob(previousid, mob);
 	}
 }
-
-void Initializing::initializeItem(char *name){
-	char id[25];
-	sprintf_s(id, 25, "Items/%s", name);
-	TiXmlDocument doc(id);
-	if(!doc.LoadFile()) return;
-	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem;
-	TiXmlHandle hRoot(0);
-	pElem=hDoc.FirstChildElement().FirstChild().Element();
-	if(!pElem) return;
-	ItemInfo item;
-	item.consume = 0;
-	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Type", pElem->Value()) == 0){
-			item.type = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Price", pElem->Value()) == 0){
-			item.price = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("MaxSlot", pElem->Value()) == 0){
-			item.maxslot = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Quest", pElem->Value()) == 0){
-			if(atoi((char*)pElem->GetText()) == 1)
-				item.quest = 1;
-			else
-				item.quest = 0;
-		}
-		else if(strcmp("Consume", pElem->Value()) == 0){
-			if(atoi((char*)pElem->GetText()) == 1)
-				item.consume = 1;
-			else
-				item.consume = 0;
-		}
-		else if(strcmp("Effect", pElem->Value()) == 0){	
-			ConsumeInfo cons;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("HP", pCur->Value()) == 0){
-					cons.hp = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("MP", pCur->Value()) == 0){
-					cons.mp = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("HPR", pCur->Value()) == 0){
-					cons.hpr = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("MPR", pCur->Value()) == 0){
-					cons.mpr = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("moveTo", pCur->Value()) == 0){
-					cons.moveTo = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("success", pCur->Value()) == 0){
-					cons.success = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("cursed", pCur->Value()) == 0){
-					cons.cursed = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iSTR", pCur->Value()) == 0){
-					cons.istr = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iDEX", pCur->Value()) == 0){
-					cons.idex = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iINT", pCur->Value()) == 0){
-					cons.iint = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iLUK", pCur->Value()) == 0){
-					cons.iluk = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iHP", pCur->Value()) == 0){
-					cons.ihp = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iMP", pCur->Value()) == 0){
-					cons.imp = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iWAtk", pCur->Value()) == 0){
-					cons.iwatk = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iMAtk", pCur->Value()) == 0){
-					cons.imatk = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iWDef", pCur->Value()) == 0){
-					cons.iwdef = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iMDef", pCur->Value()) == 0){
-					cons.imdef = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iAcc", pCur->Value()) == 0){
-					cons.iacc = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iAvo", pCur->Value()) == 0){
-					cons.iavo = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iHand", pCur->Value()) == 0){
-					cons.ihand = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iJump", pCur->Value()) == 0){
-					cons.ijump = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("iSpeed", pCur->Value()) == 0){
-					cons.ispeed = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Mobs", pCur->Value()) == 0){
-					SummonBag s;
-					TiXmlElement* pCur2;
-  					pCur2 = pCur->FirstChildElement();
-					for( pCur2; pCur2; pCur2=pCur2->NextSiblingElement()){
-						if(strcmp("Mob", pCur2->Value()) == 0){ 
-							TiXmlElement* pCur3;
-  							pCur3 = pCur2->FirstChildElement();
-							for( pCur3; pCur3; pCur3=pCur3->NextSiblingElement()){
-								if(strcmp("ID", pCur3->Value()) == 0){
-									s.mobid = atoi((char*)pCur3->GetText());
-								}
-								else if(strcmp("Chance", pCur3->Value()) == 0){
-									s.chance = atoi((char*)pCur3->GetText());
-								}
-							}
-						}
-						cons.mobs.push_back(s);
-					}
-				}	
-			}
-			Drops::addConsume(di, cons);
-		}
-	}	
-	Drops::addItem(di, item);
-}
-
+// Items
 void Initializing::initializeItems(){
-	WIN32_FIND_DATAA FindFileData;
-	HANDLE hFind = FindFirstFileA("Items\\*.xml", &FindFileData);
-	initializeItem((char*)FindFileData.cFileName);
-	while (FindNextFileA(hFind, &FindFileData)) 
-	{
-		initializeItem((char*)FindFileData.cFileName);
-	}
-}
-void Initializing::initializeNPCs(){
-}
-void Initializing::initializeDrop(char* name){
-	char id[18];
-	sprintf_s(id, 18, "Drops/%s", name);
-	TiXmlDocument doc(id);
-	if(!doc.LoadFile()) return;
-	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem;
-	TiXmlHandle hRoot(0);
-	pElem=hDoc.FirstChildElement().Element();
-	if(!pElem) return;
-	if(strcmp("Mob",pElem->Value()) != 0) return;
-	hRoot=TiXmlHandle(pElem);
-	pElem=hRoot.FirstChildElement( "Drops" ).FirstChild().Element();
-	MobDropsInfo drops;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Drop", pElem->Value()) == 0){
-			MobDropInfo drop;
-			drop.id = 0;
-			drop.chance = 0;
-			drop.quest = 0;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("ID", pCur->Value()) == 0){
-					drop.id = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Chance", pCur->Value()) == 0){
-					drop.chance = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Quest", pCur->Value()) == 0){
-					drop.quest = atoi((char*)pCur->GetText());
-				}
+	MYSQL_RES *itemRes;
+	MYSQL_ROW itemRow;
+	itemRes = MySQL::getRes("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
 
+	int currentid = 0;
+	int previousid = -1;
+	ConsumeInfo cons;
+	ItemInfo item;
+	SummonBag s;
+	while((itemRow = mysql_fetch_row(itemRes))){
+		// Col0 : Row ID
+		//    1 : Item ID
+		//    2 : Type
+		//    3 : Price
+		//    4 : Slots
+		//    5 : Quest
+		//    6 : Consume
+		//    7 : HP
+		//    8 : MP
+		//    9 : HP Rate
+		//   10 : MP Rate
+		//   11 : Move to
+		//   12 : Weapon Attack
+		//   13 : Magic Attack
+		//   14 : Avoidability
+		//   15 : Accuracy
+		//   16 : Weapon Defense
+		//   17 : Magic Defense
+		//   18 : Speed
+		//   19 : Jump
+		//   20 : Success
+		//   21 : Cursed
+		//   22 : Item STR
+		//   23 : Item DEX
+		//   24 : Item INT
+		//   25 : Item LUK
+		//   26 : Item HP
+		//   27 : Item MP
+		//   28 : Item Weapon Attack
+		//   29 : Item Magic Attack
+		//   30 : Item Weapon Defense
+		//   31 : Item Magic Defense
+		//   32 : Item Accuracy
+		//   33 : Item Avoid
+		//   34 : Item Hands
+		//   35 : Item Jump
+		//   36 : Item Speed
+		//   37 : Mob ID
+		//   38 : Chance
+		currentid = atoi(itemRow[1]);
+		if(currentid != previousid){
+			if(previousid != -1){ // Add the items into the cache
+				Drops::addConsume(previousid, cons);
+				Drops::addItem(previousid, item);
+				cons.mobs.clear();
 			}
-			drops.push_back(drop);
+			item.type = atoi(itemRow[2]);
+			item.price = atoi(itemRow[3]);
+			item.maxslot = atoi(itemRow[4]);
+			item.quest = atoi(itemRow[5]);
+			item.consume = atoi(itemRow[6]);
+			cons.hp = atoi(itemRow[7]);
+			cons.mp = atoi(itemRow[8]);
+			cons.hpr = atoi(itemRow[9]);
+			cons.mpr = atoi(itemRow[10]);
+			cons.moveTo = atoi(itemRow[11]);
+			// Scrolling
+			cons.success = atoi(itemRow[20]);
+			cons.cursed = atoi(itemRow[21]);
+			cons.istr = atoi(itemRow[22]);
+			cons.idex = atoi(itemRow[23]);
+			cons.iint = atoi(itemRow[24]);
+			cons.iluk = atoi(itemRow[25]);
+			cons.ihp = atoi(itemRow[26]);
+			cons.imp = atoi(itemRow[27]);
+			cons.iwatk = atoi(itemRow[28]);
+			cons.imatk = atoi(itemRow[29]);
+			cons.iwdef = atoi(itemRow[30]);
+			cons.imdef = atoi(itemRow[31]);
+			cons.iacc = atoi(itemRow[32]);
+			cons.iavo = atoi(itemRow[33]);
+			cons.ihand = atoi(itemRow[34]);
+			cons.ijump = atoi(itemRow[35]);
+			cons.ispeed = atoi(itemRow[36]);
 		}
+		if(itemRow[37] != NULL){
+			s.mobid = atoi(itemRow[37]);
+			s.chance = atoi(itemRow[38]);
+			cons.mobs.push_back(s);
+		}
+		previousid = atoi(itemRow[1]);
 	}
-	pElem=hRoot.FirstChild( "Mesos" ).FirstChild().Element();
-	int min=0, max=0;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Min", pElem->Value()) == 0){
-			min = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Max", pElem->Value()) == 0){
-			max = atoi((char*)pElem->GetText());
-		}
+	// Add the final entry
+	if(previousid != -1){
+		Drops::addConsume(previousid, cons);
+		Drops::addItem(previousid, item);
+		cons.mobs.clear();
 	}
-	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
-	Drops::addDrop(di, drops);
-	Mesos mesos;
-	mesos.min = min;
-	mesos.max = max;
-	Drops::addMesos(di, mesos);
 }
+// Drops
 void Initializing::initializeDrops(){
-  WIN32_FIND_DATAA FindFileData;
-   
-   HANDLE hFind = FindFirstFileA("Drops\\*.xml", &FindFileData);
-	initializeDrop((char*)FindFileData.cFileName);
-      while (FindNextFileA(hFind, &FindFileData)) 
-      {
-    	initializeDrop((char*)FindFileData.cFileName);
-      }
-}
-void Initializing::initializeEquip(char *name){
-	char id[25];
-	sprintf_s(id, 25, "Equips/%s", name);
-	TiXmlDocument doc(id);
-	if(!doc.LoadFile()) return;
-	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem;
-	TiXmlHandle hRoot(0);
-	pElem=hDoc.FirstChildElement().FirstChild().Element();
-	if(!pElem) return;
-	EquipInfo equip;
-	equip.slots = 0;
-	equip.type = 0;
-	equip.price = 0;
-	equip.istr = 0;
-	equip.idex = 0;
-	equip.iint = 0;
-	equip.iluk = 0;
-	equip.ihp = 0;
-	equip.imp = 0;
-	equip.iwatk = 0;
-	equip.imatk = 0;
-	equip.iwdef = 0;
-	equip.imdef = 0;
-	equip.iacc = 0;
-	equip.iavo = 0;
-	equip.ihand = 0;
-	equip.ijump = 0;
-	equip.ispeed = 0;
-	equip.cash = 0;
-	equip.quest = 0;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Type", pElem->Value()) == 0){
-			equip.type = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Price", pElem->Value()) == 0){
-			equip.price = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Slots", pElem->Value()) == 0){
-			equip.slots = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("STR", pElem->Value()) == 0){
-			equip.istr = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("DEX", pElem->Value()) == 0){
-			equip.idex = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("INT", pElem->Value()) == 0){
-			equip.iint = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("LUK", pElem->Value()) == 0){
-			equip.iluk = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("HP", pElem->Value()) == 0){
-			equip.ihp = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("MP", pElem->Value()) == 0){
-			equip.imp = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("WAtk", pElem->Value()) == 0){
-			equip.iwatk = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("MAtk", pElem->Value()) == 0){
-			equip.imatk = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("WDef", pElem->Value()) == 0){
-			equip.iwdef = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("MDef", pElem->Value()) == 0){
-			equip.imdef = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Acc", pElem->Value()) == 0){
-			equip.iacc = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Avo", pElem->Value()) == 0){
-			equip.iavo = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Hand", pElem->Value()) == 0){
-			equip.ihand = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Jump", pElem->Value()) == 0){
-			equip.ijump = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Speed", pElem->Value()) == 0){
-			equip.ispeed = atoi((char*)pElem->GetText());
-		}
-		else if(strcmp("Cash", pElem->Value()) == 0){
-			if(atoi((char*)pElem->GetText()) == 1)
-				equip.cash = 1;
-			else
-				equip.cash = 0;
-		}
-		else if(strcmp("Quest", pElem->Value()) == 0){
-			if(atoi((char*)pElem->GetText()) == 1)
-				equip.quest = 1;
-			else
-				equip.quest = 0;
-		}
-	}
-	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
-	Drops::addEquip(di, equip);
-}
+	// Get all the drops
+	MYSQL_RES *dropRes;
+	MYSQL_ROW dropRow;
+	dropRes = MySQL::getRes("SELECT * FROM dropdata ORDER BY mobid ASC");
+	int currentid = 0;
+	int previousid = -1;
+	MobDropsInfo drops;
+	while((dropRow = mysql_fetch_row(dropRes))){
+		currentid = atoi(dropRow[1]);
 
+		if(currentid != previousid && previousid != -1){
+			Drops::addDrop(previousid, drops);
+			drops.clear();
+		}
+		MobDropInfo drop;
+		drop.id = atoi(dropRow[2]);
+		drop.chance = atoi(dropRow[3]);
+		drop.quest = atoi(dropRow[4]);
+		drops.push_back(drop);
+
+		previousid = atoi(dropRow[1]);
+	}
+	if(previousid != -1){
+		Drops::addDrop(previousid, drops);
+		drops.clear();
+	}
+
+	// Mesos
+	MYSQL_RES *mesoRes;
+	MYSQL_ROW mesoRow;
+	mesoRes = MySQL::getRes("SELECT * FROM mesodropdata ORDER BY mobid ASC");
+	Mesos mesos = Mesos();
+	while((mesoRow = mysql_fetch_row(mesoRes))){
+		mesos.min = atoi(mesoRow[2]);
+		mesos.max = atoi(mesoRow[3]);
+		Drops::addMesos(atoi(mesoRow[1]), mesos);
+	}
+}
+// Equips
 void Initializing::initializeEquips(){
-	WIN32_FIND_DATAA FindFileData;
-	HANDLE hFind = FindFirstFileA("Equips\\*.xml", &FindFileData);
-	initializeEquip((char*)FindFileData.cFileName);
-	while (FindNextFileA(hFind, &FindFileData))
-	{
-		initializeEquip((char*)FindFileData.cFileName);
+	MYSQL_RES *equipRes;
+	MYSQL_ROW equipRow;
+	equipRes = MySQL::getRes("SELECT * FROM equipdata ORDER BY type ASC");
+	while ((equipRow = mysql_fetch_row(equipRes))){
+		EquipInfo equip = EquipInfo();
+		// Col0 : RowID
+		//    1 : EquipID
+		//    2 : Type
+		//    3 : Price
+		//    4 : Slots
+		//    5 : HP
+		//    6 : MP
+		//    7 : STR
+		//    8 : DEX
+		//    9 : INT
+		//   10 : LUK
+		//   11 : WAtk
+		//   12 : WDef
+		//   13 : MAtk
+		//   14 : MDef
+		//   15 : Acc
+		//   16 : Avo
+		//   17 : Jump
+		//   18 : Speed
+		//   19 : Cash
+		//   20 : Quest
+		int equipID = atoi(equipRow[1]); // This is the Equip ID
+		equip.type = atoi(equipRow[2]);
+		equip.price = atoi(equipRow[3]);
+		equip.slots = atoi(equipRow[4]);
+		equip.ihp = atoi(equipRow[5]);
+		equip.imp = atoi(equipRow[6]);
+		equip.istr = atoi(equipRow[7]);
+		equip.idex = atoi(equipRow[8]);
+		equip.iint = atoi(equipRow[9]);
+		equip.iluk = atoi(equipRow[10]);
+		equip.iwatk = atoi(equipRow[11]);
+		equip.iwdef = atoi(equipRow[12]);
+		equip.imatk = atoi(equipRow[13]);
+		equip.imdef = atoi(equipRow[14]);
+		equip.iacc = atoi(equipRow[15]);
+		equip.iavo = atoi(equipRow[16]);
+		equip.ijump = atoi(equipRow[17]);
+		equip.ispeed = atoi(equipRow[18]);
+		equip.cash = atoi(equipRow[19]);
+		equip.quest = atoi(equipRow[20]);
+		// Add equip to the drops table
+		Drops::addEquip(equipID,equip);
 	}
 }
-
-void Initializing::initializeShop(char* name){
-	char id[25];
-	sprintf_s(id, 25, "Shops/%s", name);
-	TiXmlDocument doc(id);
-	if(!doc.LoadFile()) return;
-	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem;
-	TiXmlHandle hRoot(0);
-	pElem=hDoc.FirstChildElement().Element();
-	if(!pElem) return;
-	if(strcmp("Shop",pElem->Value()) != 0) return;
-	hRoot=TiXmlHandle(pElem);
+// Shops
+void Initializing::initializeShops(){
+	MYSQL_RES *shopRes;
+	MYSQL_ROW shopRow;
+	// Col0 : RowID
+	//    1 : shopid
+	//    2 : NPC ID
+	//    3 : Item ID
+	//    4 : Price
+	shopRes = MySQL::getRes("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid, shopitemdata.id ASC");
+	int currentid = 0;
+	int previousid = -1;
 	ShopInfo shop;
-	pElem=hRoot.FirstChildElement( "NPC" ).Element();
-	shop.npc = atoi((char*)pElem->GetText());
-	pElem=hRoot.FirstChildElement( "Items" ).FirstChild().Element();
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Item", pElem->Value()) == 0){
-			ShopItemInfo item;
-			item.id = 0;
-			item.price = 1;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("ID", pCur->Value()) == 0){
-					item.id = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Price", pCur->Value()) == 0){
-					item.price = atoi((char*)pCur->GetText());
-				}
+	while((shopRow = mysql_fetch_row(shopRes))){
+		currentid = atoi(shopRow[1]);
+
+		if(currentid != previousid){
+			if(previousid != -1){
+				Shops::addShop(previousid, shop);
+				shop.items.clear();
 			}
+			shop.npc = atoi(shopRow[2]);
+		}
+		if(shopRow[3] != NULL){
+			ShopItemInfo item;
+			item.id = atoi(shopRow[3]);
+			item.price = atoi(shopRow[4]);
 			shop.items.push_back(item);
 		}
+		else printf("Warning: Shop %d does not have any shop items on record.", currentid);
+
+		previousid = atoi(shopRow[1]);
 	}
-	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
-	Shops::addShop(di, shop);
-}
-void Initializing::initializeShops(){
-	WIN32_FIND_DATAA FindFileData;
-	HANDLE hFind = FindFirstFileA("Shops\\*.xml", &FindFileData);
-	initializeShop((char*)FindFileData.cFileName);
-	while (FindNextFileA(hFind, &FindFileData))
-	{
-		initializeShop((char*)FindFileData.cFileName);
+	// Add final entry
+	if(previousid != -1){
+		Shops::addShop(previousid, shop);
+		shop.items.clear();
 	}
 }
-void Initializing::initializeQuest(char* name){
-	char id[18];
-	sprintf_s(id, 18, "Quests/%s", name);
-	TiXmlDocument doc(id);
-	if(!doc.LoadFile()) return;
-	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem;
-	TiXmlHandle hRoot(0);
-	pElem=hDoc.FirstChildElement().Element();
-	if(!pElem) return;
-	if(strcmp("Quest",pElem->Value()) != 0) return;
-	hRoot=TiXmlHandle(pElem);
-	pElem=hRoot.FirstChildElement( "NextQuest" ).Element();
-	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
-	Quests::setNextQuest(di, atoi((char*)pElem->GetText()));
-	pElem=hRoot.FirstChildElement( "Requests" ).FirstChild().Element();
-	QuestRequestsInfo reqs;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Request", pElem->Value()) == 0){
-			QuestRequestInfo req;
-			req.isitem = 0;
-			req.ismob = 0;
-			req.isquest = 0;
-			req.id = 0;
-			req.count = 0;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("Mob", pCur->Value()) == 0){
-					if(atoi((char*)pCur->GetText()) == 1)
-						req.ismob = 1;
-					else 
-						req.ismob = 0;
-				}
-				else if(strcmp("Item", pCur->Value()) == 0){
-					if(atoi((char*)pCur->GetText()) == 1)
-						req.isitem = 1;
-					else 
-						req.isitem = 0;
-				}
-				else if(strcmp("Quest", pCur->Value()) == 0){
-					if(atoi((char*)pCur->GetText()) == 1)
-						req.isquest = 1;
-					else 
-						req.isquest = 0;
-				}
-				else if(strcmp("ID", pCur->Value()) == 0){
-					req.id = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Count", pCur->Value()) == 0){
-					req.count = atoi((char*)pCur->GetText());
-				}
-			}
-			reqs.push_back(req);
-		}
-	}
-	pElem=hRoot.FirstChildElement( "Rewards" ).FirstChild().Element();
-	QuestRewardsInfo raws;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Reward", pElem->Value()) == 0){
-			QuestRewardInfo raw;
-			raw.start=0;
-			raw.ismesos=0;
-			raw.isitem=0;
-			raw.isexp=0;
-			raw.isfame=0;
-			raw.id=0;
-			raw.count=0;
-			raw.gender=0;
-			raw.job=0;
-			raw.prop=0;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("Start", pCur->Value()) == 0){
-					if(atoi((char*)pCur->GetText()) == 1)
-						raw.start = 1;
-					else 
-						raw.start = 0;
-				}
-				else if(strcmp("Item", pCur->Value()) == 0){
-					if(atoi((char*)pCur->GetText()) == 1)
-						raw.isitem = 1;
-					else 
-						raw.isitem = 0;
-				}
-				else if(strcmp("EXP", pCur->Value()) == 0){
-					if(atoi((char*)pCur->GetText()) == 1)
-						raw.isexp = 1;
-					else 
-						raw.isexp = 0;
-				}
-				else if(strcmp("Mesos", pCur->Value()) == 0){
-					if(atoi((char*)pCur->GetText()) == 1)
-						raw.ismesos = 1;
-					else 
-						raw.ismesos = 0;
-				}
-				else if(strcmp("Fame", pCur->Value()) == 0){
-					if(atoi((char*)pCur->GetText()) == 1)
-						raw.isfame = 1;
-					else 
-						raw.isfame = 0;
-				}
-				else if(strcmp("ID", pCur->Value()) == 0){
-					raw.id = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Count", pCur->Value()) == 0){
-					raw.count = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Gender", pCur->Value()) == 0){
-					raw.gender = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Job", pCur->Value()) == 0){
-					raw.job = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Prop", pCur->Value()) == 0){
-					raw.prop = atoi((char*)pCur->GetText());
-				}
-			}
-			raws.push_back(raw);
-		}
-	}
-	Quests::addRequest(di, reqs);
-	Quests::addReward(di, raws);
-}
+// Quests
 void Initializing::initializeQuests(){
-  WIN32_FIND_DATAA FindFileData;
-   
-   HANDLE hFind = FindFirstFileA("Quests\\*.xml", &FindFileData);
-   
-	initializeQuest((char*)FindFileData.cFileName);
-      while (FindNextFileA(hFind, &FindFileData))
-      {
-    	initializeQuest((char*)FindFileData.cFileName);
-      }
-}
-void Initializing::initializeSkill(char* name){
-	char id[50];
-	sprintf_s(id, 50, "Skills/%s", name);
-	TiXmlDocument doc(id);
-	if(!doc.LoadFile()) return;
-	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem;
-	TiXmlHandle hRoot(0);
-	pElem=hDoc.FirstChildElement().Element();
-	if(!pElem) return;
-	if(strcmp("Skill",pElem->Value()) != 0) return;
-	hRoot=TiXmlHandle(pElem);
-	pElem=hRoot.FirstChildElement( "Levels" ).FirstChild().Element();
-	SkillsLevelInfo skill;
-	int count=1;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Level", pElem->Value()) == 0){
-			SkillLevelInfo level;
-			level.item =0;
-			level.itemcount=0;
-			level.mp=0;
-			level.hp=0;
-			level.speed=0;
-			level.jump=0;
-			level.time=0;
-			level.x=0;
-			level.y=0;
-			level.watk=0;
-			level.wdef=0; 
-			level.matk=0;
-			level.mdef=0;
-			level.acc=0;
-			level.avo=0;
-			level.hpP=0;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("Time", pCur->Value()) == 0){
-					level.time = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("MP", pCur->Value()) == 0){
-					level.mp = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("HP", pCur->Value()) == 0){
-					level.hp = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Item", pCur->Value()) == 0){
-					level.item = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("ItemCount", pCur->Value()) == 0){
-					level.itemcount = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("X", pCur->Value()) == 0){
-					level.x = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Y", pCur->Value()) == 0){
-					level.y = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Speed", pCur->Value()) == 0){
-					level.speed = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Jump", pCur->Value()) == 0){
-					level.jump = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("WAtk", pCur->Value()) == 0){
-					level.watk = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("WDef", pCur->Value()) == 0){
-					level.wdef = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("MAtk", pCur->Value()) == 0){
-					level.matk = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("MDef", pCur->Value()) == 0){
-					level.mdef = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Acc", pCur->Value()) == 0){
-					level.acc = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("Avo", pCur->Value()) == 0){
-					level.avo = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("HPP", pCur->Value()) == 0){
-					level.hpP = atoi((char*)pCur->GetText());
-				}
-
-			}
-			skill[count++] = level;
-		}
+	// Quests
+	MYSQL_RES *questRes;
+	MYSQL_ROW questRow;
+	questRes = MySQL::getRes("SELECT * FROM questdata");
+	while((questRow = mysql_fetch_row(questRes))){
+		// Col0 : Row ID
+		//    1 : Quest ID
+		//    2 : Next Quest ID
+		Quests::setNextQuest(atoi(questRow[1]), atoi(questRow[2]));
 	}
-	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
-	Skills::addSkill(di, skill);
+
+	// Quest Requests
+	MYSQL_RES *requestRes;
+	MYSQL_ROW requestRow;
+	requestRes = MySQL::getRes("SELECT * FROM questrequestdata ORDER BY questid ASC");
+	int currentid = 0;
+	int previousid = -1;
+	QuestRequestsInfo reqs;
+	while((requestRow = mysql_fetch_row(requestRes))){
+		// Col0 : Row ID
+		//    1 : Quest ID
+		//    2 : Mob
+		//    3 : Item
+		//    4 : Quest
+		//    5 : Object ID
+		//    6 : Count
+		currentid = atoi(requestRow[1]);
+
+		if(currentid != previousid && previousid != -1){
+			Quests::addRequest(previousid, reqs);
+			reqs.clear();
+		}
+
+		QuestRequestInfo req;
+		req.ismob = atoi(requestRow[2]);
+		req.isitem = atoi(requestRow[3]);
+		req.isquest = atoi(requestRow[4]);
+		req.id = atoi(requestRow[5]);
+		req.count = atoi(requestRow[6]);
+		reqs.push_back(req);
+
+		previousid = atoi(requestRow[1]);
+	}
+	if(previousid != -1){
+		Quests::addRequest(previousid, reqs);
+		reqs.clear();
+	}
+
+	// Quest Rewards
+	MYSQL_RES *rewardRes;
+	MYSQL_ROW rewardRow;
+	rewardRes = MySQL::getRes("SELECT * FROM questrewarddata ORDER BY questid ASC");
+	currentid = 0;
+	previousid = -1;
+	QuestRewardsInfo rwas;
+	while((rewardRow = mysql_fetch_row(rewardRes))){
+		// Col0 : Row ID
+		//    1 : Quest ID
+		//    2 : Start
+		//    3 : Item
+		//    4 : EXP
+		//    5 : Mesos
+		//    6 : Fame
+		//    7 : Object ID
+		//    8 : Count
+		//    9 : Gender
+		//   10 : Job
+		//   11 : Prop
+		currentid = atoi(rewardRow[1]);
+
+		if(currentid != previousid && previousid != -1){
+			Quests::addReward(previousid, rwas);
+			rwas.clear();
+		}
+
+		QuestRewardInfo rwa;
+		rwa.start = atoi(rewardRow[2]);
+		rwa.isitem = atoi(rewardRow[3]);
+		rwa.isexp = atoi(rewardRow[4]);
+		rwa.ismesos = atoi(rewardRow[5]);
+		rwa.isfame = atoi(rewardRow[6]);
+		rwa.id = atoi(rewardRow[7]);
+		rwa.count = atoi(rewardRow[8]);
+		rwa.gender = atoi(rewardRow[9]);
+		rwa.job = atoi(rewardRow[10]);
+		rwa.prop = atoi(rewardRow[11]);
+		rwas.push_back(rwa);
+
+		previousid = atoi(rewardRow[1]);
+	}
+	if(previousid != -1){
+		Quests::addReward(previousid, rwas);
+		rwas.clear();
+	}
 }
+// Skills
 void Initializing::initializeSkills(){
-  WIN32_FIND_DATAA FindFileData;
-   
-   HANDLE hFind = FindFirstFileA("Skills\\*.xml", &FindFileData);
-   
-	initializeQuest((char*)FindFileData.cFileName);
-      while (FindNextFileA(hFind, &FindFileData))
-      {
-    	initializeSkill((char*)FindFileData.cFileName);
-      }
-}
-void Initializing::initializeMap(char *name){
-	int di=atoi((char*)string(name).substr(0, string(name).find('.')).c_str());
-	char id[20];
-	sprintf_s(id, 20, "Maps/%s", name);
-	TiXmlDocument doc(id);
-	if(!doc.LoadFile()) return;
-	TiXmlHandle hDoc(&doc);
-	TiXmlElement* pElem;
-	TiXmlHandle hRoot(0);
-	pElem=hDoc.FirstChildElement().Element();
-	if(!pElem) return;
-	if(strcmp("Map",pElem->Value()) != 0) return;
-	hRoot=TiXmlHandle(pElem);
-	MapInfo map;
-	pElem=hRoot.FirstChildElement( "returnMap" ).Element();
-	map.rm = atoi((char*)pElem->GetText());
-	pElem=hRoot.FirstChildElement( "NPCs" ).FirstChild().Element();
-	NPCsInfo npcs;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("NPC", pElem->Value()) == 0){
-			NPCInfo npc;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("id", pCur->Value()) == 0){
-					npc.id = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("x", pCur->Value()) == 0){
-					npc.x = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("cy", pCur->Value()) == 0){
-					npc.cy = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("fh", pCur->Value()) == 0){
-					npc.fh = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("rx0", pCur->Value()) == 0){
-					npc.rx0 = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("rx1", pCur->Value()) == 0){
-					npc.rx1 = atoi((char*)pCur->GetText());
-				}
-			}
-			npcs.push_back(npc);
+	MYSQL_RES *skillRes;
+	MYSQL_ROW skillRow;
+	skillRes = MySQL::getRes("SELECT * FROM skilldata ORDER BY skillid ASC");
+	int count = 1;
+	int currentid = 0;
+	int previousid = -1;
+	SkillsLevelInfo skill;
+	while((skillRow = mysql_fetch_row(skillRes))){
+		// Col0 : Row ID
+		//    1 : Skill ID
+		//    2 : Time
+		//    3 : MP
+		//    4 : HP
+		//    5 : Item
+		//    6 : Item Count
+		//    7 : Value X
+		//	  8 : Value Y
+		//    9 : Speed
+		//   10 : Jump
+		//   11 : Weapon Attack
+		//   12 : Weapon Defense
+		//   13 : Magic Attack
+		//   14 : Magic Defense
+		//   15 : Accuracy
+		//   16 : Avoid
+		//   17 : HPP
+		currentid = atoi(skillRow[1]);
+		if(currentid != previousid && previousid != -1){
+			Skills::addSkill(previousid, skill);
+			skill.clear();
+			count = 1;
 		}
-	}
-	NPCs::addNPC(di, npcs);
 
-	pElem=hRoot.FirstChildElement( "Mobs" ).FirstChild().Element();
-	SpawnsInfo spawns;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Mob", pElem->Value()) == 0){
-			SpawnInfo spawn;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("id", pCur->Value()) == 0){
-					spawn.id = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("x", pCur->Value()) == 0){
-					spawn.x = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("cy", pCur->Value()) == 0){
-					spawn.cy = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("fh", pCur->Value()) == 0){
-					spawn.fh = atoi((char*)pCur->GetText());
-				}
-			}
-			spawns.push_back(spawn);
-		}
+		SkillLevelInfo level;
+		level.time = atoi(skillRow[2]);
+		level.mp = atoi(skillRow[3]);
+		level.hp = atoi(skillRow[4]);
+		level.item = atoi(skillRow[5]);
+		level.itemcount = atoi(skillRow[6]);
+		level.x = atoi(skillRow[7]);
+		level.y = atoi(skillRow[8]);
+		level.speed = atoi(skillRow[9]);
+		level.jump = atoi(skillRow[10]);
+		level.watk = atoi(skillRow[11]);
+		level.wdef = atoi(skillRow[12]);
+		level.matk = atoi(skillRow[13]);
+		level.mdef = atoi(skillRow[14]);
+		level.acc = atoi(skillRow[15]);
+		level.avo = atoi(skillRow[16]);
+		level.hpP = atoi(skillRow[17]);
+		skill[count] = level;
+		count++;
+
+		previousid = atoi(skillRow[1]);
 	}
-	Mobs::addSpawn(di, spawns);
-	pElem=hRoot.FirstChildElement( "Portals" ).FirstChild().Element();
-	PortalsInfo portals;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Portal", pElem->Value()) == 0){
-			PortalInfo portal;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("id", pCur->Value()) == 0){
-					portal.id = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("from", pCur->Value()) == 0){
-					sprintf_s(portal.from, 20,"%s",(char*)pCur->GetText());
-				}
-				else if(strcmp("to", pCur->Value()) == 0){
-					sprintf_s(portal.to, 20,"%s",(char*)pCur->GetText());
-				}
-				else if(strcmp("toid", pCur->Value()) == 0){
-					portal.toid = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("type", pCur->Value()) == 0){
-					portal.type = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("x", pCur->Value()) == 0){
-					portal.x = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("y", pCur->Value()) == 0){
-					portal.y = atoi((char*)pCur->GetText());
-				}
-			}
-			portals.push_back(portal);
-		}
+	if(previousid != -1){
+		Skills::addSkill(previousid, skill);
+		skill.clear();
 	}
-	map.Portals = portals;
-	Maps::addMap(di, map);
-	pElem=hRoot.FirstChildElement( "Footholds" ).FirstChild().Element();
-	FootholdsInfo foots;
-	for( pElem; pElem; pElem=pElem->NextSiblingElement())
-	{
-		if(strcmp("Foothold", pElem->Value()) == 0){
-			FootholdInfo foot;
-			TiXmlElement* pCur;
-  			pCur = pElem->FirstChildElement();
-			for( pCur; pCur; pCur=pCur->NextSiblingElement())
-			{
-				if(strcmp("x1", pCur->Value()) == 0){
-					foot.x1 = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("y1", pCur->Value()) == 0){
-					foot.y1 = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("x2", pCur->Value()) == 0){
-					foot.x2 = atoi((char*)pCur->GetText());
-				}
-				else if(strcmp("y2", pCur->Value()) == 0){
-					foot.y2 = atoi((char*)pCur->GetText());
-				}
-			}
-			foots.push_back(foot);
-		}
-	}
-	Drops::addFoothold(di, foots);
-	Drops::objids[di] = 100;
 }
+// Maps
 void Initializing::initializeMaps(){
-	  WIN32_FIND_DATAA FindFileData;
-   
-   HANDLE hFind = FindFirstFileA(("Maps\\*.xml"), &FindFileData);
-   
-	initializeMap((char*)FindFileData.cFileName);
-      while (FindNextFileA(hFind, &FindFileData))
-      {
-    	initializeMap((char*)FindFileData.cFileName);
-      }
+	// Maps and portals
+	MYSQL_RES *mapRes;
+	MYSQL_ROW mapRow;
+	mapRes = MySQL::getRes("SELECT mapdata.*, portaldata.portalid, portaldata.pfrom, portaldata.pto, portaldata.toid, portaldata.type, portaldata.x, portaldata.y FROM mapdata LEFT JOIN portaldata ON mapdata.mapid=portaldata.mapid ORDER BY mapdata.mapid ASC");
+	int currentid = 0;
+	int previousid = -1;
+	MapInfo map;
+	while((mapRow = mysql_fetch_row(mapRes))){
+		// Col0 : Row ID
+		//    1 : Map ID
+		//    2 : Return Map
+		//    3 : Portal ID
+		//    4 : From
+		//    5 : To
+		//    6 : To ID
+		//    7 : Type
+		//    8 : x
+		//    9 : y
+		currentid = atoi(mapRow[1]);
+
+		if(currentid != previousid){
+			if(previousid != -1){
+				Maps::addMap(previousid, map);
+				map.Portals.clear();
+			}
+			map.rm = atoi(mapRow[2]);
+		}
+		PortalInfo portal;
+		if(mapRow[3] != NULL){
+			portal.id = atoi(mapRow[3]);
+			sprintf_s(portal.from, 20, "%s", mapRow[4]);
+			sprintf_s(portal.to, 20, "%s", mapRow[5]);
+			portal.toid = atoi(mapRow[6]);
+			portal.type = atoi(mapRow[7]);
+			portal.x = atoi(mapRow[8]);
+			portal.y = atoi(mapRow[9]);
+			map.Portals.push_back(portal);
+		}
+		else printf("Warning: Map %d has no portal data on record.", currentid);
+
+		previousid = atoi(mapRow[1]);
+	}
+	if(previousid != -1){
+		Maps::addMap(previousid, map);
+		map.Portals.clear();
+	}
+
+	// NPCs
+	MYSQL_RES *npcRes;
+	MYSQL_ROW npcRow;
+	npcRes = MySQL::getRes("SELECT * FROM mapnpcdata ORDER BY mapid ASC");
+	currentid = 0;
+	previousid = -1;
+	NPCsInfo npcs;
+	while((npcRow = mysql_fetch_row(npcRes))){
+		// Col0 : Row ID
+		//    1 : Map ID
+		//    2 : NPC ID
+		//    3 : x
+		//    4 : cy
+		//    5 : fh
+		//    6 : rx0
+		//    7 : rx1
+		currentid = atoi(npcRow[1]);
+
+		if(currentid != previousid && previousid != -1){
+			NPCs::addNPC(previousid, npcs);
+			npcs.clear();
+		}
+		NPCInfo npc;
+		npc.id = atoi(npcRow[2]);
+		npc.x = atoi(npcRow[3]);
+		npc.cy = atoi(npcRow[4]);
+		npc.fh = atoi(npcRow[5]);
+		npc.rx0 = atoi(npcRow[6]);
+		npc.rx1 = atoi(npcRow[7]);
+		npcs.push_back(npc);
+
+		previousid = atoi(npcRow[1]);
+	}
+	if(previousid != -1){
+		NPCs::addNPC(previousid, npcs);
+		npcs.clear();
+	}
+
+	// Mobs
+	MYSQL_RES *mobRes;
+	MYSQL_ROW mobRow;
+	mobRes = MySQL::getRes("SELECT * FROM mapmobdata ORDER BY mapid ASC");
+	currentid = 0;
+	previousid = -1;
+	SpawnsInfo spawns;
+	while((mobRow = mysql_fetch_row(mobRes))){
+		// Col0 : Row ID
+		//    1 : Map ID
+		//    2 : Mob ID
+		//    3 : x
+		//    4 : cy
+		//    5 : fh
+		currentid = atoi(mobRow[1]);
+
+		if(currentid != previousid && previousid != -1){
+			Mobs::addSpawn(previousid, spawns);
+			spawns.clear();
+		}
+		SpawnInfo spawn;
+		spawn.id = atoi(mobRow[2]);
+		spawn.x = atoi(mobRow[3]);
+		spawn.cy = atoi(mobRow[4]);
+		spawn.fh = atoi(mobRow[5]);
+		spawns.push_back(spawn);
+
+		previousid = atoi(mobRow[1]);
+	}
+	if(previousid != -1){
+		Mobs::addSpawn(previousid, spawns);
+		spawns.clear();
+	}
+
+	//Footholds
+	MYSQL_RES *footsRes;
+	MYSQL_ROW footsRow;
+	footsRes = MySQL::getRes("SELECT * FROM mapfootholddata ORDER BY mapid ASC");
+
+	currentid = 0;
+	previousid = -1;
+	FootholdsInfo foots;
+	while((footsRow = mysql_fetch_row(footsRes))) {
+		// Col0 : Row ID
+		//    1 : Map ID
+		//    2 : x1
+		//    3 : x2
+		//    4 : y1
+		//    5 : y2
+		currentid = atoi(footsRow[1]);
+		if(currentid != previousid && previousid != -1){
+			Drops::addFoothold(previousid, foots);
+			Drops::objids[previousid] = 100;
+			foots.clear();
+		}
+		FootholdInfo foot;
+		foot.x1 = atoi(footsRow[2]);
+		foot.x2 = atoi(footsRow[3]);
+		foot.y1 = atoi(footsRow[4]);
+		foot.y2 = atoi(footsRow[4]);
+		foots.push_back(foot);
+
+		previousid = atoi(footsRow[1]);
+	}
+	// Add final entry
+	if(previousid != -1){
+		Drops::addFoothold(previousid, foots);
+		Drops::objids[previousid] = 100;
+	}
 }
 void Initializing::initializing(){
 	printf("Initializing Mobs... ");
@@ -854,9 +596,6 @@ void Initializing::initializing(){
 	printf("DONE\n");
 	printf("Initializing Items... ");
 	initializeItems();
-	printf("DONE\n");
-	printf("Initializing NPCs... ");
-	initializeNPCs();
 	printf("DONE\n");
 	printf("Initializing Drops... ");
 	initializeDrops();
