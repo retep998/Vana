@@ -71,22 +71,36 @@ void PlayersPacket::showInfo(Player* player, Player* getinfo){
 	packet.packetSend(player);
 }
 
-void PlayersPacket::findPlayer(Player* player, char* name, int map){
+void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
 	Packet packet = Packet();
 	packet.addHeader(0x5E);
-	packet.addByte(9);
-	packet.addShort(strlen(name));
-	packet.addString(name, strlen(name));
-	if(map>0){
-		packet.addByte(1);
+	packet.addByte(0x12);
+	packet.addShort(strlen(player->getName()));
+	packet.addString(player->getName(),strlen(player->getName()));
+	packet.addShort(0);//channel maybe
+	packet.addShort(strlen(chat));
+	packet.addString(chat,strlen(chat));
+	packet.packetSend(target);
+}
+
+void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is){
+	Packet packet = Packet();
+	packet.addHeader(0x5E);
+	if(map != -1){
+		packet.addByte(0x09);
+		packet.addShort(strlen(name));
+		packet.addString(name,strlen(name));
+		packet.addByte(0x1);
 		packet.addInt(map);
-	}
-	else{
-		packet.addByte(0);
+		packet.addInt(0);
 		packet.addInt(0);
 	}
-	packet.addInt(0);
-	packet.addInt(-54);
-	packet.packetSend(player);
+	else {	
+		packet.addByte(0x0A);
+		packet.addShort(strlen(name));
+		packet.addString(name,strlen(name));
+		packet.addByte(is);
+	}
 
+	packet.packetSend(player);
 }

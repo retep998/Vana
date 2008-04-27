@@ -21,7 +21,7 @@ namespace Players {
 	void chatHandler(Player* player, unsigned char* packet);
 	void healPlayer(Player* player, unsigned char* packet);
 	void getPlayerInfo(Player* player, unsigned char* packet);
-	void searchPlayer(Player* player, unsigned char* packet);
+	void commandHandler(Player* player, unsigned char* packet);
 };
 
 #endif
