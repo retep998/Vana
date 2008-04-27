@@ -11,6 +11,7 @@
 #include "Skills.h"
 #include "Quests.h"
 #include "Server.h"
+#include "Fame.h"
 
 int distPos(Pos pos1, Pos pos2){
 	return (int)sqrt(pow((float)(pos1.x+pos2.x), 2)+pow((float)(pos1.y+pos2.y), 2));
@@ -61,6 +62,7 @@ void Player::handleRequest(unsigned char* buf, int len){
 		case 0x89: Drops::lootItem(this ,buf+2); break;
 		case 0x9D: Mobs::monsterControl(this ,buf+2, len-2); break;
 		case 0xA0: Mobs::monsterControlSkill(this ,buf+2); break;
+		case 0x69: Fame::handleFame(this, buf+2); break;
 	}
 }
 
