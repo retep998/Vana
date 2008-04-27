@@ -267,20 +267,31 @@ void Players::getPlayerInfo(Player* player, unsigned char* packet){
 	PlayersPacket::showInfo(player, players[getInt(packet+4)]);
 }
 
-void Players::searchPlayer(Player* player, unsigned char* packet){
-	char type = packet[0];
-	int namelen = getShort(packet+1);
-	if(namelen>15)
-		return;
+void Players::commandHandler(Player* player, unsigned char* packet){
+	unsigned char type = packet[0];
 	char name[20];
-	getString(packet+3, namelen, name);
-	if(type == 5){ // find
-		if(names.find(tolower(name)) == names.end()){
-			PlayersPacket::findPlayer(player, name, 0);
-		}
-		else {
-			PlayersPacket::findPlayer(player, names[tolower(name)]->getName(), names[tolower(name)]->getMap());
-		}
-	}
 
+	int namesize = getShort(packet+1);
+	getString(packet+3, namesize, name);
+		
+	hash_map <int, Player*>::iterator iter = Players::players.begin();
+	for ( iter = Players::players.begin(); iter != Players::players.end(); iter++){
+		if (_stricmp(iter->second->getName(),name) == 0){	
+			if(type == 0x06){
+				char chat[91];
+				int chatsize = getShort(packet+3+namesize);
+				getString(packet+5+namesize, chatsize, chat);
+
+				PlayersPacket::whisperPlayer(player,iter->second,chat);
+				PlayersPacket::findPlayer(player,iter->second->getName(),0,1);
+			}
+			else if(type == 0x05){
+				PlayersPacket::findPlayer(player, iter->second->getName(), iter->second->getMap());
+			}
+			break;
+		}
+	}	
+	if(iter == Players::players.end()){
+		PlayersPacket::findPlayer(player,name,-1);
+	}
 }
