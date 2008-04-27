@@ -1,28 +1,14 @@
 #include "../Connection/Acceptor.h"
 #include "PlayerLogin.h"
 #include "Player.h"
-#include "MySQLM.h"
 #include <stdlib.h>
 #include "Initializing.h"
-#include "Timer.h"
 #include "Skills.h"
 #include "Maps.h"
 #include "Server.h"
 
 void main(){
-	printf("Initializing MySQL... ");
-	if(MySQL::connectToMySQL())
-		printf("DONE\n");
-	else{
-		printf("FAILED\n");
-		exit(1);
-	}
 	Initializing::initializing();
-	printf("Initializing Timers... ");
-	Timer::timer = new Timer();
-	Skills::startTimer();
-	Maps::startTimer();
-	printf("DONE\n");
 	Server::initialize();
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
