@@ -11,6 +11,30 @@
 
 hash_map <int, QuestInfo> Quests::quests;
 
+void Quests::addRequest(int id, QuestRequestsInfo request){		
+	QuestInfo quest;
+	if(quests.find(id) != quests.end())
+		quest = quests[id];
+	quest.requests = request;
+	quests[id] = quest;
+}
+
+void Quests::addReward(int id, QuestRewardsInfo raws){		
+	QuestInfo quest;
+	if(quests.find(id) != quests.end())
+		quest = quests[id];
+	quest.rewards = raws;
+	quests[id] = quest;
+}
+
+void Quests::setNextQuest(int id, int questid){		
+	QuestInfo quest;
+	if(quests.find(id) != quests.end())
+		quest = quests[id];
+	quest.nextquest = questid;
+	quests[id] = quest;
+}
+
 void Quests::giveItem(Player* player, int itemid, int amount){
 	//Temp
 	QuestsPacket::giveItem(player, itemid, amount);

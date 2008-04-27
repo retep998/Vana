@@ -57,33 +57,14 @@ struct Quest {
 	vector <QuestMob> mobs;
 };
 
-class Quests{
-public:
-	static hash_map <int, QuestInfo> quests;
-	static void addRequest(int id, QuestRequestsInfo request){		
-		QuestInfo quest;
-		if(quests.find(id) != quests.end())
-			quest = quests[id];
-		quest.requests = request;
-		quests[id] = quest;
-	}
-	static void addReward(int id, QuestRewardsInfo raws){		
-		QuestInfo quest;
-		if(quests.find(id) != quests.end())
-			quest = quests[id];
-		quest.rewards = raws;
-		quests[id] = quest;
-	}
-	static void setNextQuest(int id, int questid){		
-		QuestInfo quest;
-		if(quests.find(id) != quests.end())
-			quest = quests[id];
-		quest.nextquest = questid;
-		quests[id] = quest;
-	}
-	static void getQuest(Player* player, unsigned char* packet);
-	static void giveItem(Player* player, int itemid, int amount);
-	static void giveMesos(Player* player, int amount);
+namespace Quests {
+	extern hash_map <int, QuestInfo> quests;
+	void addRequest(int id, QuestRequestsInfo request);
+	void addReward(int id, QuestRewardsInfo raws);
+	void setNextQuest(int id, int questid);
+	void getQuest(Player* player, unsigned char* packet);
+	void giveItem(Player* player, int itemid, int amount);
+	void giveMesos(Player* player, int amount);
 };
 
 class PlayerQuests {
