@@ -26,16 +26,13 @@ struct NPCInfo {
 
 typedef vector<NPCInfo> NPCsInfo;
 
-class NPCs {
-public:
-	static hash_map <int, NPCsInfo> info;
-	static void addNPC(int id, NPCsInfo npc){
-		info[id] = npc;
-	}
-	static void handleNPC(Player* player, unsigned char* packet);
-	static void handleQuestNPC(Player* player, int npcid, bool start);
-	static void showNPCs(Player* player);
-	static void handleNPCIn(Player* player, unsigned char* packet);
+namespace NPCs {
+	extern hash_map <int, NPCsInfo> info;
+	void addNPC(int id, NPCsInfo npc);
+	void handleNPC(Player* player, unsigned char* packet);
+	void handleQuestNPC(Player* player, int npcid, bool start);
+	void showNPCs(Player* player);
+	void handleNPCIn(Player* player, unsigned char* packet);
 };
 
 class NPC {
