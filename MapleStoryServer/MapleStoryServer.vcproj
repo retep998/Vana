@@ -356,6 +356,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CharUtilities.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\TimeUtilities.cpp"
 					>
 				</File>
@@ -531,6 +535,10 @@
 				>
 				<File
 					RelativePath=".\BufferUtilities.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CharUtilities.h"
 					>
 				</File>
 				<File
