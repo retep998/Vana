@@ -44,7 +44,7 @@ void PlayersPacket::damagePlayer(Player* player, vector <Player*> players, int d
 	packet.sendTo(player, players, 1);
 }
 
-void PlayersPacket::showMassage(char* msg, char type){
+void PlayersPacket::showMessage(char* msg, char type){
 	Packet packet = Packet();
 	packet.addHeader(0x2D); 
 	packet.addByte(type);
