@@ -34,6 +34,7 @@ namespace Maps {
 	void addMap(int id, MapInfo map);
 	void addPlayer(Player* player);
 	void moveMap(Player* player, unsigned char* packet);
+	void moveMapS(Player* player, unsigned char* packet);
 	void removePlayer(Player* player);
 	void changeMap(Player* player, int mapid, int pos);
 	void mapTimer(int mapid);

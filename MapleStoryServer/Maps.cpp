@@ -104,6 +104,37 @@ void Maps::moveMap(Player* player, unsigned char* packet){
 	changeMap(player, portal.toid, tonum);
 }
 
+void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map special
+	char portalname[10];
+	int namelen = packet[1];
+	getString(packet+3, namelen, portalname);;   
+	PortalInfo portal;
+	for(unsigned int i=0; i<info[player->getMap()].Portals.size(); i++)
+		if(strcmp(info[player->getMap()].Portals[i].from, portalname) == 0){
+			portal = info[player->getMap()].Portals[i];
+			break;
+		}
+	if (strcmp(portal.to, "out00") == 0 && portal.toid == 910000000){ // FM portals
+		player->setOrigin();
+	}
+	else if (player->getMap() == 910000000){ // Leaving FM
+		portal.toid = player->getOrigin();
+	}
+	else if (player->getMap() == 682000000){ // Haunted Mansion
+		portal.toid = 682000100;
+	}
+	int tonum = 0;
+	if(info.find(portal.toid) != info.end()){
+		for(unsigned int i=0; i<info[portal.toid].Portals.size(); i++){
+			if(strcmp(portal.to, info[portal.toid].Portals[i].from) ==0){
+				tonum = info[portal.toid].Portals[i].id;
+				break;
+			}
+		}
+	}
+	changeMap(player, portal.toid, tonum);
+}
+
 void Maps::changeMap(Player* player, int mapid, int pos){
 	removePlayer(player);
 	player->setMap(mapid);
