@@ -161,6 +161,12 @@ public:
 	int getMap(){
 		return this->map;
 	}
+	void setOrigin(){
+		this->origin=this->map;
+	}
+	int getOrigin(){
+		return this->origin;
+	}
 	void setMappos(char pos){
 		this->mappos = pos;
 	}
@@ -236,6 +242,7 @@ private:
 	int exp;
 	short fame;
 	int map;
+	int origin;
 	char mappos;
 	char type;
 	int keys[90];

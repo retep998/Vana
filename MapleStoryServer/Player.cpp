@@ -43,6 +43,7 @@ void Player::handleRequest(unsigned char* buf, int len){
 		case 0x35: Players::handleMoving(this ,buf+2, len-2); break;
 		case 0x36: Mobs::damageMobS(this ,buf+2, len-2); break;
 		case 0x44: Players::getPlayerInfo(this, buf+2); break;
+		case 0x47: Maps::moveMapS(this, buf+2); break; // Portals that cause scripted events
 		case 0x4B: Inventory::useSummonBag(this, buf+2); break;
 		case 0x4D: Skills::addSkill(this, buf+2); break;
 		case 0x4E: Skills::cancelSkill(this, buf+2); break;
@@ -88,6 +89,7 @@ void Player::playerConnect(){
 	exp = MySQL::getInt("characters", getPlayerid(), "exp");
 	fame = (short)MySQL::getInt("characters", getPlayerid(), "fame");
 	map = MySQL::getInt("characters", getPlayerid(), "map");
+	origin = MySQL::getInt("characters", getPlayerid(), "origin");
 	mappos = (char)MySQL::getInt("characters", getPlayerid(), "pos");
 	gm = MySQL::getInt("users", MySQL::getInt("characters", getPlayerid(), "userid"), "gm");
 	int equips[130][21];
@@ -257,7 +259,7 @@ void Player::save(){
 		strcat_s(sql, 10000, temp);
 	}
 	MySQL::insert(sql);
-	sprintf_s(sql, 10000, "update characters set level=%d, job=%d, str=%d, dex=%d, intt=%d, luk=%d, chp=%d, mhp=%d, cmp=%d, mmp=%d, ap=%d, sp=%d, exp=%d, fame=%d, map=%d, gender=%d, skin=%d, eyes=%d, hair=%d, mesos=%d where id=%d", getLevel(), getJob(), getStr(), getDex(), getInt(), getLuk(), getHP(), getRMHP(), getMP(), getRMMP(), getAp(), getSp(), getExp(), getFame(), getMap(), getGender(), getSkin(), getEyes(), getHair(), inv->getMesos() ,getPlayerid());
+	sprintf_s(sql, 10000, "update characters set level=%d, job=%d, str=%d, dex=%d, intt=%d, luk=%d, chp=%d, mhp=%d, cmp=%d, mmp=%d, ap=%d, sp=%d, exp=%d, fame=%d, map=%d, origin=%d, gender=%d, skin=%d, eyes=%d, hair=%d, mesos=%d where id=%d", getLevel(), getJob(), getStr(), getDex(), getInt(), getLuk(), getHP(), getRMHP(), getMP(), getRMMP(), getAp(), getSp(), getExp(), getFame(), getMap(), getOrigin(), getGender(), getSkin(), getEyes(), getHair(), inv->getMesos() ,getPlayerid());
 	MySQL::insert(sql);
 	char temp[1000];
 	sprintf_s(sql, 10000, "delete from equip where charid=%d;", getPlayerid());
