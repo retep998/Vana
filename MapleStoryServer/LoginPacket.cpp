@@ -17,8 +17,7 @@ void LoginPacket::loginConnect(PlayerLogin* player, char* username, int size){
 	packet.addHeader(0x00);
 	packet.addInt(0);
 	packet.addShort(0);
-	packet.addBytes("2A7949");
-	packet.addByte(0);
+	packet.addInt(player->getUserid());
 	if(player->getStatus() == 1)
 		packet.addByte(0x0A);
 	else
