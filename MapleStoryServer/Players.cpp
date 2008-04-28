@@ -260,7 +260,7 @@ void Players::damagePlayer(Player* player, unsigned char* packet){
 		else
 			reduc = Skills::skills[1201007][player->skills->getActiveSkillLevel(1201007)].x;
 		if(damage>0){
-			damage = damage-(damage*(reduc/100));
+			damage = (int) (damage-(damage*(reduc/100)));
 			player->setHP(player->getHP()-damage);
 		}
 	}
@@ -270,7 +270,7 @@ void Players::damagePlayer(Player* player, unsigned char* packet){
 		// Get the rate of meso loss in %
 		float mesorate = Skills::skills[4211005][player->skills->getActiveSkillLevel(4211005)].x;
 		mesorate = mesorate/100;
-		int mesoloss = (mesorate)*(damage/2);
+		int mesoloss = (int) (mesorate)*(damage/2);
 		// Only block damage if user has mesos
 		if(player->inv->getMesos() > 0)
 			player->setHP(hp-(damage/2));
