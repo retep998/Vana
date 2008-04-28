@@ -47,6 +47,7 @@ void Player::handleRequest(unsigned char* buf, int len){
 		case 0x4D: Skills::addSkill(this, buf+2); break;
 		case 0x4E: Skills::cancelSkill(this, buf+2); break;
 		case 0x51: Skills::useSkill(this, buf+2); break;
+		case 0x53: Inventory::useMegaphone(this, buf+2); break;
 		case 0x58: Players::commandHandler(this ,buf+2); break;
 		case 0x59: Mobs::damageMob(this ,buf+2); break;
 		case 0x5C: Players::faceExperiment(this ,buf+2); break;

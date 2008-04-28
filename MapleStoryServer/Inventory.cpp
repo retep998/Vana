@@ -537,3 +537,19 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 		InventoryPacket::addEquip(player, equip, 1);
 	InventoryPacket::updatePlayer(player); 
 }
+
+void Inventory::useMegaphone(Player* player, unsigned char *packet){
+	char type = packet[0];
+	int itemid = getInt(packet+2);
+	char msg[200];
+	int msgLength = getShort(packet+6);
+	getString(packet+8, msgLength, msg);
+	if(itemid == 5071000){ // Megaphone
+		InventoryPacket::showMegaphone(player, msg, 2);
+	}
+	else if(itemid == 5072000){ // Super Megaphone
+		int whisper = packet[8+msgLength];
+		InventoryPacket::showMegaphone(player, msg, 3, whisper);
+	}
+	Inventory::takeItem(player, itemid, 1);
+}

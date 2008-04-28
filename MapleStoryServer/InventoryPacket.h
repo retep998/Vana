@@ -22,6 +22,7 @@ namespace InventoryPacket {
 	void sitChair(Player* player, vector <Player*> players, int chairid);
 	void stopChair(Player* player, vector <Player*> players);
 	void useScroll(Player* player, vector <Player*> players, char s);
+	void showMegaphone(Player* player, char* msg, char type, int whisper = 0);
 };
 
 #endif

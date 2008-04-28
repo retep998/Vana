@@ -2,6 +2,7 @@
 #include "Inventory.h"
 #include "PacketCreator.h"
 #include "Player.h"
+#include "Players.h"
 #include "PlayerInventory.h"
 #include "Maps.h"
 
@@ -227,3 +228,22 @@ void InventoryPacket::useScroll(Player* player, vector <Player*> players, char s
 	packet.sendTo(player, players, 1);
 }
 
+void InventoryPacket::showMegaphone(Player* player, char* msg, char type, int whisper){
+	char fullMessage[255];
+	strcpy_s(fullMessage, 255, player->getName());
+	strcat_s(fullMessage, 255, " : ");
+	strcat_s(fullMessage, 255, msg);
+	Packet packet = Packet();
+	packet.addHeader(0x2D);
+	packet.addByte(type);
+	packet.addShort(strlen(fullMessage));
+	packet.addString(fullMessage, strlen(fullMessage));
+	if (type == 3) { // Super megaphone needs more info
+		packet.addByte(0); //TODO: Channel
+		packet.addByte(whisper); //TODO: Whisper on/off
+	}
+	for(hash_map<int,Player*>::iterator iter = Players::players.begin();
+		iter != Players::players.end(); iter++){
+			packet.packetSend(iter->second);
+	}
+}
