@@ -88,7 +88,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 		}
 		else if(strcmp(command, "notice") == 0){
 			if(strlen(next_token) == 0) return;
-			PlayersPacket::showMassage(next_token, 0);
+			PlayersPacket::showMessage(next_token, 0);
 		}
 		else if(strcmp(command, "shop") == 0){
 			Shops::showShop(player, 9999999);
@@ -105,7 +105,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 		else if(strcmp(command, "pos") == 0){
 			char text[50];
 			sprintf_s(text, 50, "X: %d Y: %d", player->getPos().x, player->getPos().y);
-			PlayersPacket::showMassage(text, 0);
+			PlayersPacket::showMessage(text, 0);
 		}
 		else if(strcmp(command, "item") == 0){
 			if(strlen(next_token) == 0) return;
