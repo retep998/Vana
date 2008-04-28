@@ -52,7 +52,8 @@ void PlayerPacket::connectData(Player* player){
 			packet.addInt(equip->id);
 			packet.addShort(equip->scrolls);
 			packet.addBytes("8005BB46E61702");
-			packet.addShort(equip->slots); // slots
+			packet.addByte(equip->slots); // slots
+			packet.addByte(equip->scrolls); // scrolls
 			packet.addShort(equip->istr); // STR
 			packet.addShort(equip->idex); // DEX
 			packet.addShort(equip->iint); // INT
@@ -85,7 +86,8 @@ void PlayerPacket::connectData(Player* player){
 			packet.addInt(equip->id);
 			packet.addShort(0);
 			packet.addBytes("8005BB46E61702");
-			packet.addShort(equip->slots); // slots
+			packet.addByte(equip->slots); // slots
+			packet.addByte(equip->scrolls); // scrolls
 			packet.addShort(equip->istr); // STR
 			packet.addShort(equip->idex); // DEX
 			packet.addShort(equip->iint); // INT
@@ -118,7 +120,8 @@ void PlayerPacket::connectData(Player* player){
 			packet.addInt(equip->id);
 			packet.addShort(0);
 			packet.addBytes("8005BB46E61702");
-			packet.addShort(equip->slots); // slots
+			packet.addByte(equip->slots); // slots
+			packet.addByte(equip->scrolls); // scrolls
 			packet.addShort(equip->istr); // STR
 			packet.addShort(equip->idex); // DEX
 			packet.addShort(equip->iint); // INT

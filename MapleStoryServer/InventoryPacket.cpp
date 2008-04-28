@@ -91,7 +91,8 @@ void InventoryPacket::addEquip(Player* player, Equip* equip, bool is){
 	packet.addInt(equip->id);
 	packet.addShort(0);
 	packet.addBytes("8005BB46E61702");
-	packet.addShort(equip->slots);
+	packet.addByte(equip->slots);
+	packet.addByte(equip->scrolls);
 	packet.addShort(equip->istr);
 	packet.addShort(equip->idex);
 	packet.addShort(equip->iint);
