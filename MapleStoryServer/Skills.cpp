@@ -339,7 +339,16 @@ void Skills::startTimer(){
 	map.val = true;
 	skillsinfo[4101004].map.push_back(map);
 	skillsinfo[4201003].map.push_back(map);
-
+	// 4211005 - Meso Guard
+	player.type = 0x10;
+	player.byte = 4;
+	player.value = SKILL_X;
+	skillsinfo[4211005].player.push_back(player);
+	map.type = 0x10;
+	map.byte = 4;
+	map.value = SKILL_X;
+	map.val = false;
+	skillsinfo[4211005].map.push_back(map);
 }
 
 void Skills::addSkill(int id, SkillsLevelInfo skill){
