@@ -236,6 +236,7 @@ void Players::damagePlayer(Player* player, unsigned char* packet){
 			break;
 		}
 
+	// Magic Guard
 	if(player->skills->getActiveSkillLevel(2001002) > 0){
 		unsigned short mp = player->getMP();
         unsigned short hp = player->getHP();
@@ -250,6 +251,38 @@ void Players::damagePlayer(Player* player, unsigned char* packet){
             player->setMP(mp - mpdamage);
             player->setHP(hp - hpdamage);
         }
+	}
+	// Power Guard
+	else if(player->skills->getActiveSkillLevel(1101007)>0 || player->skills->getActiveSkillLevel(1201007)>0){
+		float reduc;
+		if(player->skills->getActiveSkillLevel(1101007)>0)
+			reduc = Skills::skills[1101007][player->skills->getActiveSkillLevel(1101007)].x;
+		else
+			reduc = Skills::skills[1201007][player->skills->getActiveSkillLevel(1201007)].x;
+		if(damage>0){
+			damage = damage-(damage*(reduc/100));
+			player->setHP(player->getHP()-damage);
+		}
+	}
+	// Meso Guard
+	else if(player->skills->getActiveSkillLevel(4211005) > 0 && player->inv->getMesos() > 0){
+		unsigned short hp = player->getHP();
+		// Get the rate of meso loss in %
+		float mesorate = Skills::skills[4211005][player->skills->getActiveSkillLevel(4211005)].x;
+		mesorate = mesorate/100;
+		int mesoloss = (mesorate)*(damage/2);
+		// Only block damage if user has mesos
+		if(player->inv->getMesos() > 0)
+			player->setHP(hp-(damage/2));
+		else
+			player->setHP(hp-damage);
+		// Do not let mesos go negative
+		if(player->inv->getMesos()-mesoloss < 0){
+			player->inv->setMesos(0);
+		}
+		else{
+			player->inv->setMesos(player->inv->getMesos()-mesoloss);
+		}
 	}
 	else{
 		player->setHP(player->getHP()-damage);
