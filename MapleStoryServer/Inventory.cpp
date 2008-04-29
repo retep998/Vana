@@ -545,11 +545,11 @@ void Inventory::useMegaphone(Player* player, unsigned char *packet){
 	int msgLength = getShort(packet+6);
 	getString(packet+8, msgLength, msg);
 	if(itemid == 5071000){ // Megaphone
-		InventoryPacket::showMegaphone(player, msg, 2);
+		InventoryPacket::showMegaphone(player, Maps::info[player->getMap()].Players, msg);
 	}
 	else if(itemid == 5072000){ // Super Megaphone
 		int whisper = packet[8+msgLength];
-		InventoryPacket::showMegaphone(player, msg, 3, whisper);
+		InventoryPacket::showSuperMegaphone(player, msg, whisper);
 	}
 	Inventory::takeItem(player, itemid, 1);
 }
