@@ -60,7 +60,7 @@ void Player::handleRequest(unsigned char* buf, int len){
 		case 0x67: Players::healPlayer(this, buf+2); break;
 		case 0x68: Drops::dropMesos(this ,buf+2); break;
 		case 0x6B: Quests::getQuest(this, buf+2); break;
-		case 0x75: chaneKey(buf+2);
+		case 0x75: changeKey(buf+2);
 		case 0x89: Drops::lootItem(this ,buf+2); break;
 		case 0x9D: Mobs::monsterControl(this ,buf+2, len-2); break;
 		case 0xA0: Mobs::monsterControlSkill(this ,buf+2); break;
@@ -202,7 +202,7 @@ int getIntg(unsigned char* buf){
 	return buf[0] + buf[1]*0x100 + buf[2]*0x100*0x100 + buf[3]*0x100*0x100*0x100;
 }
 
-void Player::chaneKey(unsigned char* packet){
+void Player::changeKey(unsigned char* packet){
 	int howmany = getIntg(packet+4);
 	for(int i=0; i<howmany; i++){
 		int pos = getIntg(packet+8+i*9);
