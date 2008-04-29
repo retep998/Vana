@@ -260,6 +260,25 @@ void Player::addWarning(){
 	}
 }
 
+void Player::saveSkills() {
+	char sql[10000];
+	char temp[10000];
+	sprintf_s(sql, 10000, "DELETE FROM skills WHERE charid=%d;", getPlayerid());
+	MySQL::insert(sql);
+	bool firstrun = true;
+	for(int i=0; i<skills->getSkillsNum(); i++){
+		if(firstrun == true){
+			sprintf_s(sql, 10000, "INSERT INTO skills VALUES (%d, %d, %d)", getPlayerid(), skills->getSkillID(i), skills->getSkillLevel(skills->getSkillID(i)));
+			firstrun = false;
+		}
+		else{
+			sprintf_s(temp, 1000, ",(%d, %d, %d)", getPlayerid(), skills->getSkillID(i), skills->getSkillLevel(skills->getSkillID(i)));
+			strcat_s(sql, 10000, temp);
+		}
+	}
+	MySQL::insert(sql);
+}
+
 void Player::save(){
 	char sql[10000];
 	sprintf_s(sql, 10000, "update characters set level=%d, job=%d, str=%d, dex=%d, intt=%d, luk=%d, chp=%d, mhp=%d, cmp=%d, mmp=%d, ap=%d, sp=%d, exp=%d, fame=%d, map=%d, origin=%d, gender=%d, skin=%d, eyes=%d, hair=%d, mesos=%d where id=%d", getLevel(), getJob(), getStr(), getDex(), getInt(), getLuk(), getHP(), getRMHP(), getMP(), getRMMP(), getAp(), getSp(), getExp(), getFame(), getMap(), getOrigin(), getGender(), getSkin(), getEyes(), getHair(), inv->getMesos() ,getPlayerid());
@@ -279,20 +298,6 @@ void Player::save(){
 			sprintf_s(temp, 1000, ",(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)", inv->getEquip(i)->id, Drops::equips[inv->getEquip(i)->id].type ,getPlayerid(), inv->getEquipPos(i), inv->getEquip(i)->slots, inv->getEquip(i)->scrolls,
 				inv->getEquip(i)->istr, inv->getEquip(i)->idex, inv->getEquip(i)->iint, inv->getEquip(i)->iluk, inv->getEquip(i)->ihp, inv->getEquip(i)->imp, inv->getEquip(i)->iwatk, inv->getEquip(i)->imatk, inv->getEquip(i)->iwdef, 
 				inv->getEquip(i)->imdef, inv->getEquip(i)->iacc, inv->getEquip(i)->iavo, inv->getEquip(i)->ihand, inv->getEquip(i)->ijump, inv->getEquip(i)->ispeed);
-			strcat_s(sql, 10000, temp);
-		}
-	}
-	MySQL::insert(sql);
-	sprintf_s(sql, 10000, "delete from skills where charid=%d;", getPlayerid());
-	MySQL::insert(sql);
-	firstrun = true;
-	for(int i=0; i<skills->getSkillsNum(); i++){
-		if(firstrun == true){
-			sprintf_s(sql, 10000, "INSERT INTO skills VALUES (%d, %d, %d)", getPlayerid(), skills->getSkillID(i), skills->getSkillLevel(skills->getSkillID(i)));
-			firstrun = false;
-		}
-		else{
-			sprintf_s(temp, 1000, ",(%d, %d, %d)", getPlayerid(), skills->getSkillID(i), skills->getSkillLevel(skills->getSkillID(i)));
 			strcat_s(sql, 10000, temp);
 		}
 	}

@@ -213,6 +213,7 @@ public:
 		return skill;
 	}
 	void addWarning();
+	void saveSkills();
 	void save();
 	PlayerInventory* inv;
 	PlayerSkills* skills;

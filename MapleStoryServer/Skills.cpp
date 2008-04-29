@@ -365,6 +365,7 @@ void Skills::addSkill(Player* player, unsigned char* packet){
 		player->setSp(player->getSp()-1);
 	player->skills->addSkillLevel(skillid, 1);
 	SkillsPacket::addSkill(player, skillid, player->skills->getSkillLevel(skillid));
+	player->saveSkills();
 }
 void Skills::cancelSkill(Player* player, unsigned char* packet){
 	stopSkill(player, getInt(packet));
