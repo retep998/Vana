@@ -212,6 +212,19 @@ void Player::changeKey(unsigned char* packet){
 		if(pos>=0 && pos<90)
 			keys[pos] = key;
 	}
+
+	// Update to mysql
+	char sql[10000];
+	sprintf_s(sql, 10000, "update keymap set ");
+	for(int i=0; i<90; i++){
+		char temp[100];
+		if(i!=89)
+			sprintf_s(temp, 100, "pos%d=%d, ", i, keys[i]);
+		else
+			sprintf_s(temp, 100, "pos%d=%d where charid=%d; ", i, keys[i], getPlayerid());
+		strcat_s(sql, 10000, temp);
+	}
+	MySQL::insert(sql);
 }
 
 void Player::setHair(int id){
@@ -249,16 +262,6 @@ void Player::addWarning(){
 
 void Player::save(){
 	char sql[10000];
-	sprintf_s(sql, 10000, "update keymap set ");
-	for(int i=0; i<90; i++){
-		char temp[100];
-		if(i!=89)
-			sprintf_s(temp, 100, "pos%d=%d, ", i, keys[i]);
-		else
-			sprintf_s(temp, 100, "pos%d=%d where charid=%d; ", i, keys[i], getPlayerid());
-		strcat_s(sql, 10000, temp);
-	}
-	MySQL::insert(sql);
 	sprintf_s(sql, 10000, "update characters set level=%d, job=%d, str=%d, dex=%d, intt=%d, luk=%d, chp=%d, mhp=%d, cmp=%d, mmp=%d, ap=%d, sp=%d, exp=%d, fame=%d, map=%d, origin=%d, gender=%d, skin=%d, eyes=%d, hair=%d, mesos=%d where id=%d", getLevel(), getJob(), getStr(), getDex(), getInt(), getLuk(), getHP(), getRMHP(), getMP(), getRMMP(), getAp(), getSp(), getExp(), getFame(), getMap(), getOrigin(), getGender(), getSkin(), getEyes(), getHair(), inv->getMesos() ,getPlayerid());
 	MySQL::insert(sql);
 	char temp[1000];
