@@ -5,6 +5,7 @@
 #include "Players.h"
 #include "PlayerInventory.h"
 #include "Maps.h"
+#include "PlayerPacketHelper.h"
 
 void InventoryPacket::moveItem(Player* player, char inv, short slot1, short slot2){
 	Packet packet = Packet();
@@ -86,34 +87,7 @@ void InventoryPacket::addEquip(Player* player, Equip* equip, bool is){
 	packet.addByte(1);
 	packet.addByte(0);
 	packet.addByte(1);
-	packet.addShort(equip->pos);
-	packet.addByte(1);
-	packet.addInt(equip->id);
-	packet.addShort(0);
-	packet.addBytes("8005BB46E61702");
-	packet.addByte(equip->slots);
-	packet.addByte(equip->scrolls);
-	packet.addShort(equip->istr);
-	packet.addShort(equip->idex);
-	packet.addShort(equip->iint);
-	packet.addShort(equip->iluk);
-	packet.addShort(equip->ihp);
-	packet.addShort(equip->imp);
-	packet.addShort(equip->iwatk);
-	packet.addShort(equip->imatk);
-	packet.addShort(equip->iwdef);
-	packet.addShort(equip->imdef);
-	packet.addShort(equip->iacc);
-	packet.addShort(equip->iavo);
-	packet.addShort(equip->ihand);
-	packet.addShort(equip->ispeed);
-	packet.addShort(equip->ijump);
-	packet.addShort(0);
-	packet.addShort(0);
-	packet.addShort(0);
-	packet.addShort(0);
-	packet.addShort(0);
-	packet.addShort(0);
+	PlayerPacketHelper::addEquip(packet, equip, true);
 	packet.packetSend(player);
 }
 

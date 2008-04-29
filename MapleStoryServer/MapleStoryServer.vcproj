@@ -323,6 +323,14 @@
 					RelativePath=".\SkillsPacket.cpp"
 					>
 				</File>
+				<Filter
+					Name="Helpers"
+					>
+					<File
+						RelativePath=".\PlayerPacketHelper.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DataBaseLoading"
@@ -505,6 +513,14 @@
 					RelativePath=".\SkillsPacket.h"
 					>
 				</File>
+				<Filter
+					Name="Helpers"
+					>
+					<File
+						RelativePath=".\PlayerPacketHelper.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="LoginServer"
