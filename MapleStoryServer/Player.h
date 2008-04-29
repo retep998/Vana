@@ -258,7 +258,7 @@ private:
 		playerConnect();
 	}
 	void playerConnect();
-	void chaneKey(unsigned char* packet);
+	void changeKey(unsigned char* packet);
 	SkillMapEnterActiveInfo skill;
 };
 
