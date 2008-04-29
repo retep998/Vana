@@ -363,8 +363,6 @@ void Skills::addSkill(Player* player, unsigned char* packet){
 	}
 	if(!BEGINNER_SKILL(skillid))
 		player->setSp(player->getSp()-1);
-	else
-		player->setSp(player->getSp());
 	player->skills->addSkillLevel(skillid, 1);
 	SkillsPacket::addSkill(player, skillid, player->skills->getSkillLevel(skillid));
 }
