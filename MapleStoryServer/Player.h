@@ -214,6 +214,9 @@ public:
 	}
 	void addWarning();
 	void saveSkills();
+	void saveStats();
+	void saveEquips();
+	void saveItems();
 	void save();
 	PlayerInventory* inv;
 	PlayerSkills* skills;

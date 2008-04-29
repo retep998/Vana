@@ -279,12 +279,16 @@ void Player::saveSkills() {
 	MySQL::insert(sql);
 }
 
-void Player::save(){
+void Player::saveStats() {
 	char sql[10000];
 	sprintf_s(sql, 10000, "update characters set level=%d, job=%d, str=%d, dex=%d, intt=%d, luk=%d, chp=%d, mhp=%d, cmp=%d, mmp=%d, ap=%d, sp=%d, exp=%d, fame=%d, map=%d, origin=%d, gender=%d, skin=%d, eyes=%d, hair=%d, mesos=%d where id=%d", getLevel(), getJob(), getStr(), getDex(), getInt(), getLuk(), getHP(), getRMHP(), getMP(), getRMMP(), getAp(), getSp(), getExp(), getFame(), getMap(), getOrigin(), getGender(), getSkin(), getEyes(), getHair(), inv->getMesos() ,getPlayerid());
 	MySQL::insert(sql);
+}
+
+void Player::saveEquips() {
+	char sql[10000];
 	char temp[1000];
-	sprintf_s(sql, 10000, "delete from equip where charid=%d;", getPlayerid());
+	sprintf_s(sql, 10000, "DELETE FROM equip WHERE charid=%d;", getPlayerid());
 	MySQL::insert(sql);
 	bool firstrun = true;
 	for(int i=0; i<inv->getEquipNum(); i++){
@@ -302,9 +306,14 @@ void Player::save(){
 		}
 	}
 	MySQL::insert(sql);
+}
+
+void Player::saveItems(){
+	char sql[10000];
+	char temp[1000];
 	sprintf_s(sql, 10000, "DELETE FROM items WHERE charid=%d;", getPlayerid());
 	MySQL::insert(sql);
-	firstrun = true;
+	bool firstrun = true;
 	for(int i=0; i<inv->getItemNum(); i++){
 		if(firstrun == true){
 			sprintf_s(sql, 10000, "INSERT INTO items VALUES (%d, %d, %d, %d, %d)", inv->getItem(i)->id, getPlayerid() ,inv->getItem(i)->inv, inv->getItem(i)->pos, inv->getItem(i)->amount);
@@ -316,4 +325,11 @@ void Player::save(){
 		}
 	}
 	MySQL::insert(sql);
+}
+
+void Player::save() {
+	saveSkills();
+	saveStats();
+	saveEquips();
+	saveItems();
 }
