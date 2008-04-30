@@ -26,17 +26,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "Server.h"
 #include "SkillsPacket.h"
+#include "BufferUtilities.h"
 #include "CharUtilities.h"
 
 hash_map <int, Player*> Players::players;
-hash_map <char*, Player*> Players::names;
-short getShort(unsigned char* buf);
-int getInt(unsigned char* buf);
-void getString(unsigned char* buf, int len, char* out);
 
 void Players::addPlayer(Player* player){
 	players[player->getPlayerid()] = player;
-	names[tolower(player->getName())] = player;
 }
 
 void Players::deletePlayer(Player* player){
@@ -46,15 +42,6 @@ void Players::deletePlayer(Player* player){
 				 if(iter->first == player->getPlayerid()){
 					 players.erase(iter);
 					break;
-				 }
-		}
-	}
-	if(names.find(tolower(player->getName())) != names.end()){
-		for (hash_map<char*,Player*>::iterator iter = names.begin();
-			 iter != names.end(); iter++){
-				 if(strcmp(iter->first,tolower(player->getName())) == 0){
-					 names.erase(iter);
-					 break;
 				 }
 		}
 	}
