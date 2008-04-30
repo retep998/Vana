@@ -1,8 +1,8 @@
 #ifndef PLAYERLOGIN_H
 #define PLAYERLOGIN_H
 
-#include "../Connection/AbstractPlayer.h"
-#include "../Connection/PacketHandler.h"
+#include "Connection/AbstractPlayer.h"
+#include "Connection/PacketHandler.h"
 
 class PlayerLogin:public AbstractPlayer {
 public:
