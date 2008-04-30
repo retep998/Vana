@@ -376,6 +376,38 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Connection"
+				>
+				<File
+					RelativePath=".\Connection\Acceptor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Connection\PacketHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Connection\Selector.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Decoder"
+				>
+				<File
+					RelativePath=".\Decoder\AESEncryption.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Decoder\Decoder.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Decoder\MapleEncryption.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -571,6 +603,42 @@
 				</File>
 				<File
 					RelativePath=".\TimeUtilities.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Connection"
+				>
+				<File
+					RelativePath=".\Connection\AbstractPlayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Connection\Acceptor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Connection\PacketHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Connection\Selector.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Decoder"
+				>
+				<File
+					RelativePath=".\Decoder\AESEncryption.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Decoder\Decoder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Decoder\MapleEncryption.h"
 					>
 				</File>
 			</Filter>

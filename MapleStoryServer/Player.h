@@ -1,8 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "../Connection/AbstractPlayer.h"
-#include "../Connection/PacketHandler.h"
+#include "Connection/AbstractPlayer.h"
+#include "Connection/PacketHandler.h"
 #include "PlayerInventory.h"
 #include <string.h>
 #include <math.h>

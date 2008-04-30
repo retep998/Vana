@@ -1,4 +1,4 @@
-#include "../Connection/Acceptor.h"
+#include "Connection/Acceptor.h"
 #include "PlayerLogin.h"
 #include "Player.h"
 #include <stdlib.h>
