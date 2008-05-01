@@ -22,12 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include "Drops.h"
 #include "Timer.h"
-
+#include "BufferUtilities.h"
 
 hash_map <int, MapInfo> Maps::info;
-short getShort(unsigned char* buf);
-int getInt(unsigned char* buf);
-void getString(unsigned char* buf, int len, char* out);
 
 class MapTimer: public Timer::TimerHandler {
 public:
