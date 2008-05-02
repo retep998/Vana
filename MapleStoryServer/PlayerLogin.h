@@ -25,7 +25,6 @@ class PlayerLogin:public AbstractPlayer {
 public:
 	PlayerLogin () {
 		status=0;
-		idnum=0;
 	}
 
 	~PlayerLogin() {
@@ -68,18 +67,6 @@ public:
 	int getChannel(){
 		return this->channel;
 	}
-	void setIDs(int id[3], int idnum){
-		for(int i=0; i<idnum; i++){
-			IDs[i] = id[i];
-		}
-		this->idnum = idnum;
-	}
-	int getIDs(int id[3]){
-		for(int i=0; i<idnum; i++){
-			id[i] = IDs[i];
-		}
-		return idnum;
-	}
 	void sendPacket(unsigned char* buf, int len){ packetHandler->sendPacket(buf,len); }
 private:
 	int status;
@@ -87,10 +74,7 @@ private:
 	int pin;
 	char gender;
 	int server;
-	int channel;
-	int IDs[3];
-	int idnum;
-	
+	int channel;	
 };
 
 class PlayerLoginFactory:public AbstractPlayerFactory {

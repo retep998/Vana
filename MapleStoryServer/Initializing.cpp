@@ -29,7 +29,7 @@ using namespace std;
 
 void Initializing::initializeMySQL(){
 	printf("Initializing MySQL... ");
-	if(MySQL::connectToMySQL())
+	if(db.connect("maplestory", "localhost", "root", "")) //TODO: Use configuration file
 		printf("DONE\n");
 	else{
 		printf("FAILED\n");
@@ -40,14 +40,18 @@ void Initializing::initializeMySQL(){
 // Mobs
 void Initializing::initializeMobs(){
 	printf("Initializing Mobs... ");
-	MYSQL_RES *mobRes;
-	MYSQL_ROW mobRow;
-	mobRes = MySQL::getRes("SELECT mobdata.*, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = db.query("SELECT mobdata.*, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
 
 	int currentid = 0;
 	int previousid = -1;
 	MobInfo mob;
-	while((mobRow = mysql_fetch_row(mobRes))){
+	while (mysqlpp::Row mobRow = res.fetch_row()) {
 		currentid = atoi(mobRow[1]);
 
 		if(currentid != previousid){
@@ -60,7 +64,7 @@ void Initializing::initializeMobs(){
 			mob.exp = atoi(mobRow[4]);
 		}
 
-		if(mobRow[5] != NULL){
+		if(!mobRow[5].is_null()){
 			mob.summon.push_back(atoi(mobRow[5]));
 		}
 		previousid = atoi(mobRow[1]);
@@ -69,21 +73,26 @@ void Initializing::initializeMobs(){
 	if(previousid != -1){
 		Mobs::addMob(previousid, mob);
 	}
+
 	printf("DONE\n");
 }
 // Items
 void Initializing::initializeItems(){
 	printf("Initializing Items... ");
-	MYSQL_RES *itemRes;
-	MYSQL_ROW itemRow;
-	itemRes = MySQL::getRes("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
+	mysqlpp::Query query = db.query("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
 
 	int currentid = 0;
 	int previousid = -1;
 	ConsumeInfo cons;
 	ItemInfo item;
 	SummonBag s;
-	while((itemRow = mysql_fetch_row(itemRes))){
+	while (mysqlpp::Row itemRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Item ID
 		//    2 : Type
@@ -159,7 +168,7 @@ void Initializing::initializeItems(){
 			cons.ijump = atoi(itemRow[35]);
 			cons.ispeed = atoi(itemRow[36]);
 		}
-		if(itemRow[37] != NULL){
+		if(!itemRow[37].is_null()){
 			s.mobid = atoi(itemRow[37]);
 			s.chance = atoi(itemRow[38]);
 			cons.mobs.push_back(s);
@@ -178,13 +187,18 @@ void Initializing::initializeItems(){
 void Initializing::initializeDrops(){
 	printf("Initializing Drops... ");
 	// Get all the drops
-	MYSQL_RES *dropRes;
-	MYSQL_ROW dropRow;
-	dropRes = MySQL::getRes("SELECT * FROM dropdata ORDER BY mobid ASC");
+	mysqlpp::Query query = db.query("SELECT * FROM dropdata ORDER BY mobid ASC");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
 	int currentid = 0;
 	int previousid = -1;
 	MobDropsInfo drops;
-	while((dropRow = mysql_fetch_row(dropRes))){
+	while (mysqlpp::Row dropRow = res.fetch_row()) {
 		currentid = atoi(dropRow[1]);
 
 		if(currentid != previousid && previousid != -1){
@@ -205,11 +219,15 @@ void Initializing::initializeDrops(){
 	}
 
 	// Mesos
-	MYSQL_RES *mesoRes;
-	MYSQL_ROW mesoRow;
-	mesoRes = MySQL::getRes("SELECT * FROM mesodropdata ORDER BY mobid ASC");
+	query << "SELECT * FROM mesodropdata ORDER BY mobid ASC";
+	
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+	
 	Mesos mesos = Mesos();
-	while((mesoRow = mysql_fetch_row(mesoRes))){
+	while (mysqlpp::Row mesoRow = res.fetch_row()) {
 		mesos.min = atoi(mesoRow[2]);
 		mesos.max = atoi(mesoRow[3]);
 		Drops::addMesos(atoi(mesoRow[1]), mesos);
@@ -219,10 +237,15 @@ void Initializing::initializeDrops(){
 // Equips
 void Initializing::initializeEquips(){
 	printf("Initializing Equips... ");
-	MYSQL_RES *equipRes;
-	MYSQL_ROW equipRow;
-	equipRes = MySQL::getRes("SELECT * FROM equipdata ORDER BY type ASC");
-	while ((equipRow = mysql_fetch_row(equipRes))){
+	mysqlpp::Query query = db.query("SELECT * FROM equipdata ORDER BY type ASC");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
+	while (mysqlpp::Row equipRow = res.fetch_row()) {
 		EquipInfo equip = EquipInfo();
 		// Col0 : RowID
 		//    1 : EquipID
@@ -273,18 +296,23 @@ void Initializing::initializeEquips(){
 // Shops
 void Initializing::initializeShops(){
 	printf("Initializing Shops... ");
-	MYSQL_RES *shopRes;
-	MYSQL_ROW shopRow;
 	// Col0 : RowID
 	//    1 : shopid
 	//    2 : NPC ID
 	//    3 : Item ID
 	//    4 : Price
-	shopRes = MySQL::getRes("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid, shopitemdata.id ASC");
+	mysqlpp::Query query = db.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid, shopitemdata.id ASC");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
 	int currentid = 0;
 	int previousid = -1;
 	ShopInfo shop;
-	while((shopRow = mysql_fetch_row(shopRes))){
+	while (mysqlpp::Row shopRow = res.fetch_row()) {
 		currentid = atoi(shopRow[1]);
 
 		if(currentid != previousid){
@@ -294,7 +322,7 @@ void Initializing::initializeShops(){
 			}
 			shop.npc = atoi(shopRow[2]);
 		}
-		if(shopRow[3] != NULL){
+		if(!shopRow[3].is_null()){
 			ShopItemInfo item;
 			item.id = atoi(shopRow[3]);
 			item.price = atoi(shopRow[4]);
@@ -315,10 +343,15 @@ void Initializing::initializeShops(){
 void Initializing::initializeQuests(){
 	printf("Initializing Quests... ");
 	// Quests
-	MYSQL_RES *questRes;
-	MYSQL_ROW questRow;
-	questRes = MySQL::getRes("SELECT * FROM questdata");
-	while((questRow = mysql_fetch_row(questRes))){
+	mysqlpp::Query query = db.query("SELECT * FROM questdata");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
+	while (mysqlpp::Row questRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Quest ID
 		//    2 : Next Quest ID
@@ -326,13 +359,17 @@ void Initializing::initializeQuests(){
 	}
 
 	// Quest Requests
-	MYSQL_RES *requestRes;
-	MYSQL_ROW requestRow;
-	requestRes = MySQL::getRes("SELECT * FROM questrequestdata ORDER BY questid ASC");
+	query << "SELECT * FROM questrequestdata ORDER BY questid ASC";
+
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
 	int currentid = 0;
 	int previousid = -1;
 	QuestRequestsInfo reqs;
-	while((requestRow = mysql_fetch_row(requestRes))){
+	while (mysqlpp::Row requestRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Quest ID
 		//    2 : Mob
@@ -363,13 +400,17 @@ void Initializing::initializeQuests(){
 	}
 
 	// Quest Rewards
-	MYSQL_RES *rewardRes;
-	MYSQL_ROW rewardRow;
-	rewardRes = MySQL::getRes("SELECT * FROM questrewarddata ORDER BY questid ASC");
+	query << "SELECT * FROM questrewarddata ORDER BY questid ASC";
+
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
 	currentid = 0;
 	previousid = -1;
 	QuestRewardsInfo rwas;
-	while((rewardRow = mysql_fetch_row(rewardRes))){
+	while (mysqlpp::Row rewardRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Quest ID
 		//    2 : Start
@@ -413,14 +454,19 @@ void Initializing::initializeQuests(){
 // Skills
 void Initializing::initializeSkills(){
 	printf("Initializing Skills... ");
-	MYSQL_RES *skillRes;
-	MYSQL_ROW skillRow;
-	skillRes = MySQL::getRes("SELECT * FROM skilldata ORDER BY skillid ASC");
+	mysqlpp::Query query = db.query("SELECT * FROM skilldata ORDER BY skillid ASC");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
 	int count = 1;
 	int currentid = 0;
 	int previousid = -1;
 	SkillsLevelInfo skill;
-	while((skillRow = mysql_fetch_row(skillRes))){
+	while (mysqlpp::Row skillRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Skill ID
 		//    2 : Time
@@ -478,13 +524,18 @@ void Initializing::initializeSkills(){
 void Initializing::initializeMaps(){
 	printf("Initializing Maps... ");
 	// Maps and portals
-	MYSQL_RES *mapRes;
-	MYSQL_ROW mapRow;
-	mapRes = MySQL::getRes("SELECT mapdata.*, portaldata.portalid, portaldata.pfrom, portaldata.pto, portaldata.toid, portaldata.type, portaldata.x, portaldata.y FROM mapdata LEFT JOIN portaldata ON mapdata.mapid=portaldata.mapid ORDER BY mapdata.mapid ASC");
+	mysqlpp::Query query = db.query("SELECT mapdata.*, portaldata.portalid, portaldata.pfrom, portaldata.pto, portaldata.toid, portaldata.type, portaldata.x, portaldata.y FROM mapdata LEFT JOIN portaldata ON mapdata.mapid=portaldata.mapid ORDER BY mapdata.mapid ASC");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
 	int currentid = 0;
 	int previousid = -1;
 	MapInfo map;
-	while((mapRow = mysql_fetch_row(mapRes))){
+	while (mysqlpp::Row mapRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : Return Map
@@ -505,7 +556,7 @@ void Initializing::initializeMaps(){
 			map.rm = atoi(mapRow[2]);
 		}
 		PortalInfo portal;
-		if(mapRow[3] != NULL){
+		if(!mapRow[3].is_null()){
 			portal.id = atoi(mapRow[3]);
 			sprintf_s(portal.from, 20, "%s", mapRow[4]);
 			sprintf_s(portal.to, 20, "%s", mapRow[5]);
@@ -525,13 +576,17 @@ void Initializing::initializeMaps(){
 	}
 
 	// NPCs
-	MYSQL_RES *npcRes;
-	MYSQL_ROW npcRow;
-	npcRes = MySQL::getRes("SELECT * FROM mapnpcdata ORDER BY mapid ASC");
+	query << "SELECT * FROM mapnpcdata ORDER BY mapid ASC";
+
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
 	currentid = 0;
 	previousid = -1;
 	NPCsInfo npcs;
-	while((npcRow = mysql_fetch_row(npcRes))){
+	while (mysqlpp::Row npcRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : NPC ID
@@ -563,13 +618,17 @@ void Initializing::initializeMaps(){
 	}
 
 	// Mobs
-	MYSQL_RES *mobRes;
-	MYSQL_ROW mobRow;
-	mobRes = MySQL::getRes("SELECT * FROM mapmobdata ORDER BY mapid ASC");
+	query << "SELECT * FROM mapmobdata ORDER BY mapid ASC";
+
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
+
 	currentid = 0;
 	previousid = -1;
 	SpawnsInfo spawns;
-	while((mobRow = mysql_fetch_row(mobRes))){
+	while (mysqlpp::Row mobRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : Mob ID
@@ -597,14 +656,17 @@ void Initializing::initializeMaps(){
 	}
 
 	//Footholds
-	MYSQL_RES *footsRes;
-	MYSQL_ROW footsRow;
-	footsRes = MySQL::getRes("SELECT * FROM mapfootholddata ORDER BY mapid ASC");
+	query << "SELECT * FROM mapfootholddata ORDER BY mapid ASC";
+
+	if (!(res = query.use())) {
+		printf("FAILED\n");
+		exit(1);
+	}
 
 	currentid = 0;
 	previousid = -1;
 	FootholdsInfo foots;
-	while((footsRow = mysql_fetch_row(footsRes))) {
+	while (mysqlpp::Row footsRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : x1

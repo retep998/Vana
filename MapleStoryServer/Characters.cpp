@@ -22,46 +22,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 
 void Characters::showEquips(int id, vector <CharEquip> &vec){
-	int equips[30][2];
-	int many = MySQL::showEquips(id, equips);
-	for(int i=0; i<many; i++){
+	mysqlpp::Query query = db.query();
+	query << "SELECT equipid, type FROM equip WHERE charid = " << mysqlpp::quote << id << " AND pos < 0";
+	mysqlpp::StoreQueryResult res = query.store();
+
+	for (size_t i = 0; i < res.num_rows(); ++i) {
 		CharEquip equip; 
-		equip.id = equips[i][0];
-		equip.type = equips[i][1];
+		equip.id = res[i][0];
+		equip.type = (unsigned char) res[i][1];
 		vec.push_back(equip);
 	}	
 }
 
 void Characters::showCharacters(PlayerLogin* player){
-	int IDs[3];
-	int charnum = MySQL::getCharactersIDs(player->getUserid(), IDs);
-	player->setIDs(IDs, charnum);
+	mysqlpp::Query query = db.query();
+	query << "SELECT * FROM characters WHERE userid = " << mysqlpp::quote << player->getUserid();
+	mysqlpp::StoreQueryResult res = query.store();
+
 	vector <Character> chars;
-	for(int i=0; i<charnum; i++){
+	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Character charc;
-		charc.id = IDs[i];
-		MySQL::getStringI("characters", "ID", IDs[i], "name", charc.name);
-		charc.gender = MySQL::getInt("characters", IDs[i], "gender");
-		charc.skin = MySQL::getInt("characters", IDs[i], "skin");
-		charc.eyes = MySQL::getInt("characters", IDs[i], "eyes");
-		charc.hair = MySQL::getInt("characters", IDs[i], "hair");
-		charc.level = MySQL::getInt("characters", IDs[i], "level");
-		charc.job = MySQL::getInt("characters", IDs[i], "job");
-		charc.str = MySQL::getInt("characters", IDs[i], "str");
-		charc.dex = MySQL::getInt("characters", IDs[i], "dex");
-		charc.intt = MySQL::getInt("characters", IDs[i], "intt");
-		charc.luk = MySQL::getInt("characters", IDs[i], "luk");
-		charc.hp = MySQL::getInt("characters", IDs[i], "chp");
-		charc.mhp = MySQL::getInt("characters", IDs[i], "mhp");
-		charc.mp = MySQL::getInt("characters", IDs[i], "cmp");
-		charc.mmp = MySQL::getInt("characters", IDs[i], "mmp");
-		charc.ap = MySQL::getInt("characters", IDs[i], "ap");
-		charc.sp = MySQL::getInt("characters", IDs[i], "sp");
-		charc.exp= MySQL::getInt("characters", IDs[i], "exp");
-		charc.fame = MySQL::getInt("characters", IDs[i], "fame");
-		charc.map = MySQL::getInt("characters", IDs[i], "map");
-		charc.pos = MySQL::getInt("characters", IDs[i], "pos");
-		showEquips(IDs[i], charc.equips);
+		charc.id = res[i]["id"];
+		strcpy_s(charc.name, res[i]["name"]);
+		charc.gender = (unsigned char) res[i]["gender"];
+		charc.skin = (unsigned char) res[i]["skin"];
+		charc.eyes = res[i]["eyes"];
+		charc.hair = res[i]["hair"];
+		charc.level = (unsigned char) res[i]["level"];
+		charc.job = res[i]["job"];
+		charc.str = res[i]["str"];
+		charc.dex = res[i]["dex"];
+		charc.intt = res[i]["intt"];
+		charc.luk = res[i]["luk"];
+		charc.hp = res[i]["chp"];
+		charc.mhp = res[i]["mhp"];
+		charc.mp = res[i]["cmp"];
+		charc.mmp = res[i]["mmp"];
+		charc.ap = res[i]["ap"];
+		charc.sp = res[i]["sp"];
+		charc.exp= res[i]["exp"];
+		charc.fame = res[i]["fame"];
+		charc.map = res[i]["map"];
+		charc.pos = (unsigned char) res[i]["pos"];
+		showEquips(charc.id, charc.equips);
 		chars.push_back(charc);
 	}
 	LoginPacket::showCharacters(player, chars);
@@ -75,29 +78,31 @@ void Characters::checkCharacterName(PlayerLogin* player, unsigned char* packet){
 		return;
 	}
 	getString(packet+2, size, charactername);
-	if(MySQL::isString("characters", "name", charactername))
-		is = 1;
-	LoginPacket::checkName(player, is, charactername);
+	
+	mysqlpp::Query query = db.query();
+	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << charactername << " LIMIT 1";
+	mysqlpp::SimpleResult res = query.execute();
+
+	LoginPacket::checkName(player, res.rows() != 0, charactername);
 }
 
 void Characters::createEquip(int equipid, int type, int charid){
-	char query[255]; 
+	mysqlpp::Query query = db.query();
 	if(type==0x05)
-		sprintf_s(query, 255, "insert into equip(equipid,charid,type,iwdef,pos) values(%d, %d, %d, 3, %d);", equipid, charid, type, -type);
+		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << 3 << "," << mysqlpp::quote << -type << ")";
 	else if(type==0x06)
-		sprintf_s(query, 255, "insert into equip(equipid,charid,type,iwdef,pos) values(%d, %d, %d, 2, %d);", equipid, charid, type, -type);
+		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << 2 << "," << mysqlpp::quote << -type << ")";
 	else if(type==0x07)
-		sprintf_s(query, 255, "insert into equip(equipid,charid,type,iwdef,slots,pos) values(%d, %d, %d, 2, 5, %d);", equipid, charid, type, -type);
+		query << "INSERT INTO equip (equipid,charid,type,iwdef,slots,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << 3 << "," << 5 << "," << mysqlpp::quote << -type << ")";
 	else if(type==0x0b)
-		sprintf_s(query, 255, "insert into equip(equipid,charid,type,iwatk,pos) values(%d, %d, %d, 17, %d);", equipid, charid, type ,-type);
-	MySQL::insert(query);
+		query << "INSERT INTO equip (equipid,charid,type,iwatk,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << 17 << "," << mysqlpp::quote << -type << ")";
+	query.exec();
 }
 
 void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	Character charc;
+	vector <Character> chars;
 	char charactername[15];
-	int id = MySQL::setChar(player->getUserid());
-	charc.id = id;
 	int size = packet[0];
 	if(size>15){
 		return;
@@ -109,7 +114,26 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	int hair = getInt(packet+pos);
 	pos+=8;
 	int skin = getInt(packet+pos);
-	pos+=4;
+	pos+=20;
+	if(packet[pos+1] + packet[pos+2] + packet[pos+3] + packet[pos+4] != 25){
+		// hacking
+		return;
+	}
+	mysqlpp::Query query = db.query();
+	query << "INSERT INTO characters (name, eyes, hair, skin, gender, str, dex, intt, luk) VALUES (" 
+			<< mysqlpp::quote << charactername << ","
+			<< mysqlpp::quote << eyes << ","
+			<< mysqlpp::quote << hair << ","
+			<< mysqlpp::quote << skin << ","
+			<< mysqlpp::quote << packet[pos] << ","
+			<< mysqlpp::quote << packet[pos+1] << ","
+			<< mysqlpp::quote << packet[pos+2] << ","
+			<< mysqlpp::quote << packet[pos+3] << ","
+			<< mysqlpp::quote << packet[pos+4] << ")";
+	mysqlpp::SimpleResult res = query.execute();
+	int id = (int) res.insert_id();
+
+	pos -= 16;
 	createEquip(getInt(packet+pos), 0x05, id);
 	pos+=4;
 	createEquip(getInt(packet+pos), 0x06, id);
@@ -118,92 +142,85 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	pos+=4;
 	createEquip(getInt(packet+pos), 0x0b, id);
 	pos+=4;
-	if(packet[pos+1] + packet[pos+2] + packet[pos+3] + packet[pos+4] != 25){
-		// hacking
-		return;
-	}
-	char query[255]; 
-	sprintf_s(query, 255, "insert into items values(4161001, %d, 4, 1, 1);", id);
-	MySQL::insert(query);
-    sprintf_s(query, 255, "name='%s', eyes=%d, hair=%d, skin=%d, gender=%d, str=%d, dex=%d, intt=%d, luk=%d", charactername, eyes, hair, skin, packet[pos], packet[pos+1],packet[pos+2], packet[pos+3], packet[pos+4]);
-	MySQL::charInfo(query, id);
-    sprintf_s(query, 255, "insert into keymap(charid) values(%d);", id);
-	MySQL::insert(query);
-	MySQL::getStringI("characters", "ID", id, "name", charc.name);
-	charc.gender = MySQL::getInt("characters", id, "gender");
-	charc.skin = MySQL::getInt("characters", id, "skin");
-	charc.eyes = MySQL::getInt("characters", id, "eyes");
-	charc.hair = MySQL::getInt("characters", id, "hair");
-	charc.level = MySQL::getInt("characters", id, "level");
-	charc.job = MySQL::getInt("characters", id, "job");
-	charc.str = MySQL::getInt("characters", id, "str");
-	charc.dex = MySQL::getInt("characters", id, "dex");
-	charc.intt = MySQL::getInt("characters", id, "intt");
-	charc.luk = MySQL::getInt("characters", id, "luk");
-	charc.hp = MySQL::getInt("characters", id, "chp");
-	charc.mhp = MySQL::getInt("characters", id, "mhp");
-	charc.mp = MySQL::getInt("characters", id, "cmp");
-	charc.mmp = MySQL::getInt("characters", id, "mmp");
-	charc.ap = MySQL::getInt("characters", id, "ap");
-	charc.sp = MySQL::getInt("characters", id, "sp");
-	charc.exp= MySQL::getInt("characters", id, "exp");
-	charc.fame = MySQL::getInt("characters", id, "fame");
-	charc.map = MySQL::getInt("characters", id, "map");
-	charc.pos = MySQL::getInt("characters", id, "pos");
-	showEquips(id, charc.equips);
-	LoginPacket::showCharacter(player, charc);
-	int IDs[3];
-	int charnum = MySQL::getCharactersIDs(player->getUserid(), IDs);
-	player->setIDs(IDs, charnum);
+
+	query << "INSERT INTO items VALUES (4161001, " << mysqlpp::quote << id << ", 4, 1, 1)"; // Beginner Guide
+	query.exec();
+
+	query << "INSERT INTO keymap (charid) VALUES (" << mysqlpp::quote << id << ")"; // Default keymap
+	query.exec();
+
+	query << "SELECT * FROM characters WHERE id = " << mysqlpp::quote << id << " LIMIT 1"; //TODO: Refactorr
+	mysqlpp::StoreQueryResult res2 = query.store();
+
+	charc.id = res2[0]["id"];
+	strcpy_s(charc.name, res2[0]["name"]);
+	charc.gender = (unsigned char) res2[0]["gender"];
+	charc.skin = (unsigned char) res2[0]["skin"];
+	charc.eyes = res2[0]["eyes"];
+	charc.hair = res2[0]["hair"];
+	charc.level = (unsigned char) res2[0]["level"];
+	charc.job = res2[0]["job"];
+	charc.str = res2[0]["str"];
+	charc.dex = res2[0]["dex"];
+	charc.intt = res2[0]["intt"];
+	charc.luk = res2[0]["luk"];
+	charc.hp = res2[0]["chp"];
+	charc.mhp = res2[0]["mhp"];
+	charc.mp = res2[0]["cmp"];
+	charc.mmp = res2[0]["mmp"];
+	charc.ap = res2[0]["ap"];
+	charc.sp = res2[0]["sp"];
+	charc.exp= res2[0]["exp"];
+	charc.fame = res2[0]["fame"];
+	charc.map = res2[0]["map"];
+	charc.pos = (unsigned char) res2[0]["pos"];
+	showEquips(charc.id, charc.equips);
+	chars.push_back(charc);
 }
 
 void Characters::deleteCharacter(PlayerLogin* player, unsigned char *packet){
 	int data = getInt(packet);
-	int ID = getInt(packet+4);
-	bool check=false;
-	int ids[3];
-	int num = player->getIDs(ids);
-	for(int i=0; i<num; i++){
-		if(ids[i] == ID){
-			check=true;
-			break;
-		}
-	}
-	if(!check){
+	int id = getInt(packet+4);
+	
+	mysqlpp::Query query = db.query();
+	query << "SELECT true FROM characters WHERE id = " << mysqlpp::quote << id << " AND userid = " << mysqlpp::quote << player->getUserid();
+	mysqlpp::SimpleResult res = query.execute();
+
+	if(!res.rows()){
 		// hacking
 		return;
 	}
-	MySQL::deleteRow("characters", ID);
-	char sql[200];
-	sprintf_s(sql, 200, "delete from equip where charid=%d;", ID);
-	MySQL::insert(sql);
-	sprintf_s(sql, 200, "delete from keymap where charid=%d;", ID);
-	MySQL::insert(sql);
-	sprintf_s(sql, 200, "delete from items where charid=%d;", ID);
-	MySQL::insert(sql);
-	sprintf_s(sql, 200, "delete from skills where charid=%d;", ID);
-	MySQL::insert(sql);
-	LoginPacket::deleteCharacter(player, ID);
-	int IDs[3];
-	int charnum = MySQL::getCharactersIDs(player->getUserid(), IDs);
-	player->setIDs(IDs, charnum);
+
+	query << "DELETE FROM characters WHERE id = " << mysqlpp::quote << id;
+	query.exec();
+
+	query << "DELETE FROM equip WHERE charid = " << mysqlpp::quote << id;
+	query.exec();
+
+	query << "DELETE FROM keymap WHERE charid = " << mysqlpp::quote << id;
+	query.exec();
+
+	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << id;
+	query.exec();
+
+	query << "DELETE FROM skills WHERE charid = " << mysqlpp::quote << id;
+	query.exec();
+
+	LoginPacket::deleteCharacter(player, id);
 }
 
 
 void Characters::connectGame(PlayerLogin* player, unsigned char *packet){
-	int charid = getInt(packet);
-	bool check=false;
-	int ids[3];
-	int num = player->getIDs(ids);
-	for(int i=0; i<num; i++){
-		if(ids[i] == charid){
-			check=true;
-			break;
-		}
-	}
-	if(!check){
+	int id = getInt(packet);
+	
+	mysqlpp::Query query = db.query(); //TODO: Refactor
+	query << "SELECT true FROM characters WHERE id = " << mysqlpp::quote << id << " AND userid = " << mysqlpp::quote << player->getUserid();
+	mysqlpp::SimpleResult res = query.execute();
+
+	if(!res.rows()){
 		// hacking
 		return;
 	}
-	LoginPacket::connectIP(player, charid);
+
+	LoginPacket::connectIP(player, id);
 }

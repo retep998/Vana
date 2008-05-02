@@ -94,33 +94,32 @@ int Fame::canFame(Player* player, int to){
 }
 
 void Fame::addFameLog(int from, int to){
-	char query[255]; 
-    sprintf_s(query, 255, "INSERT INTO `fame_log` (`from`,`to`,`time`) VALUES ('%d','%d', NOW());", from, to);
-	MySQL::insert(query);
+	mysqlpp::Query query = db.query();
+	query << "INSERT INTO fame_log (`from`, `to`, `time`) VALUES (" 
+			<< mysqlpp::quote << from << ","
+			<< mysqlpp::quote << to << ", NOW())";
+    query.exec();
 }
 
 bool Fame::getLastFameLog(int from){ // Last fame from that char
-	MYSQL_RES *mres;
-	char query[255]; 
-	sprintf_s(query, 255, "SELECT `time` FROM `fame_log` WHERE `from`='%d' AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-86400 ORDER BY `time` DESC LIMIT 1;", from);
+	mysqlpp::Query query = db.query();
+	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-86400 ORDER BY `time` DESC LIMIT 1";
+	mysqlpp::StoreQueryResult res = query.store();
 	
-	if(mres = MySQL::getRes(query)){
-		int rows = (int) mysql_num_rows(mres);
-		mysql_free_result(mres);
-		return (rows == 0) ? false : true;
+	if(!res.empty()){
+		return (res.num_rows() == 0) ? false : true;
 	} else {
 		return false;
 	}
 }
 
 bool Fame::getLastFameSPLog(int from, int to){
-	MYSQL_RES *mres;
-	char query[255]; 
-    sprintf_s(query, 255, "SELECT `time` FROM `fame_log` WHERE `from`='%d' AND `to`='%d' AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1;", from, to);
-	if(mres = MySQL::getRes(query)){
-		int rows = (int) mysql_num_rows(mres);
-		mysql_free_result(mres);
-		return (rows == 0) ? false : true;
+	mysqlpp::Query query = db.query();
+    query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND `to`=" << mysqlpp::quote << to << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1";
+	mysqlpp::StoreQueryResult res = query.store();
+
+	if(!res.empty()){
+		return (res.num_rows() == 0) ? false : true;
 	} else {
 		return false;
 	}
