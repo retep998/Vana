@@ -44,7 +44,7 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	}
 	else {
 		printf("%s logged in.\n", username);
-		player->setUserid(res[0]["username"]);
+		player->setUserid(res[0]["id"]);
 		player->setPin(res[0]["pin"]);
 		int pin = player->getPin();
 		if(pin == -1)
