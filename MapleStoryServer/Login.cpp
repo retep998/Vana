@@ -31,38 +31,33 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	char username[MAX_FIELD_SIZE], password[MAX_FIELD_SIZE];
 	getString(packet+2, usersize, username);   
 	getString(packet+4+usersize, passsize, password);   
-	int s = checkLogin(username, password);
-	if(s == 1){
+
+	mysqlpp::Query query = db.query();
+	query << "SELECT * FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
+	mysqlpp::StoreQueryResult res = query.store();
+
+	if (res.empty()) {
+		LoginPacket::loginError(player, 0x05); //Invalid username
+	}
+	else if (strcmp(password, res[0]["password"])) {
+		LoginPacket::loginError(player, 0x04); //Invalid password
+	}
+	else {
 		printf("%s logged in.\n", username);
-		player->setUserid(MySQL::getUserID(username));
-		player->setPin(MySQL::getInt("users", player->getUserid(), "pin"));
+		player->setUserid(res[0]["username"]);
+		player->setPin(res[0]["pin"]);
 		int pin = player->getPin();
 		if(pin == -1)
 			player->setStatus(1); // New PIN
 		else
 			player->setStatus(2); // Ask for PIN
-		player->setGender(MySQL::getInt("users", player->getUserid(), "gender"));
+		player->setGender((unsigned char) res[0]["gender"]);
 		LoginPacket::loginConnect(player, username, usersize);
 	}
-	else if(s == 0)
-		LoginPacket::loginError(player, 0x04);
-	else if(s == -1)
-		LoginPacket::loginError(player, 0x05);
 }
 
 void Login::setGender(PlayerLogin* player, unsigned char* packet){
 	//TODO
-}
-
-int Login::checkLogin(char *username, char *password){
-	char rpassword[13];
-	if(!MySQL::isString("users","username", username)){
-		return -1;
-	}
-	MySQL::getString("users", "username",username,"password", rpassword);
-	if(strcmp(rpassword, password) == 0)
-		return 1;
-	return 0;
 }
 
 void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
@@ -115,7 +110,9 @@ void Login::registerPIN(PlayerLogin* player, unsigned char* packet){
 	}
 	int pin = (packet[3]-'0')*1000 + (packet[4]-'0')*100 + (packet[5]-'0')*10 + (packet[6]-'0');
 	player->setStatus(0);
-	MySQL::setInt("users", "pin", player->getUserid(), pin);
+	mysqlpp::Query query = db.query();
+	query << "UPDATE users SET pin = " << mysqlpp::quote << pin << " WHERE id = " << mysqlpp::quote << player->getUserid();
+	query.exec();
 	LoginPacket::processOk(player);
 }
 

@@ -86,77 +86,92 @@ void Player::handleRequest(unsigned char* buf, int len){
 }
 
 void Player::playerConnect(){
-	MySQL::getStringI("characters", "ID", getPlayerid(), "name", name);
-	gender = (char)MySQL::getInt("characters", getPlayerid(), "gender");
-	skin = (char)MySQL::getInt("characters", getPlayerid(), "skin");
-	eyes = MySQL::getInt("characters", getPlayerid(), "eyes");
-	hair = MySQL::getInt("characters", getPlayerid(), "hair");
-	level = (char)MySQL::getInt("characters", getPlayerid(), "level");
-	job = (short)MySQL::getInt("characters", getPlayerid(), "job");
-	str = (short)MySQL::getInt("characters", getPlayerid(), "str");
-	dex = (short)MySQL::getInt("characters", getPlayerid(), "dex");
-	intt = (short)MySQL::getInt("characters", getPlayerid(), "intt");
-	luk = (short)MySQL::getInt("characters", getPlayerid(), "luk");
-	hp = (short)MySQL::getInt("characters", getPlayerid(), "chp");
-	rmhp = mhp = (short)MySQL::getInt("characters", getPlayerid(), "mhp");
-	mp = (short)MySQL::getInt("characters", getPlayerid(), "cmp");
-	rmmp = mmp = (short)MySQL::getInt("characters", getPlayerid(), "mmp");
-	ap = (short)MySQL::getInt("characters", getPlayerid(), "ap");
-	sp = (short)MySQL::getInt("characters", getPlayerid(), "sp");
-	exp = MySQL::getInt("characters", getPlayerid(), "exp");
-	fame = (short)MySQL::getInt("characters", getPlayerid(), "fame");
-	map = MySQL::getInt("characters", getPlayerid(), "map");
-	origin = MySQL::getInt("characters", getPlayerid(), "origin");
-	mappos = (char)MySQL::getInt("characters", getPlayerid(), "pos");
-	gm = MySQL::getInt("users", MySQL::getInt("characters", getPlayerid(), "userid"), "gm");
-	int equips[130][21];
-	int many = MySQL::showEquipsIn(getPlayerid(), equips);
 	inv = new PlayerInventory();
 	skills = new PlayerSkills();
 	quests = new PlayerQuests();
 	quests->setPlayer(this);
-	for(int i=0; i<many; i++){
+
+	mysqlpp::Query query = db.query();
+	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << getPlayerid();
+	mysqlpp::StoreQueryResult res = query.store();
+
+	strcpy_s(name, res[0]["name"]);
+	gender = (unsigned char) res[0]["gender"];
+	skin = (unsigned char) res[0]["skin"];
+	eyes = res[0]["eyes"];
+	hair = res[0]["hair"];
+	level = (unsigned char) res[0]["level"];
+	job = (short) res[0]["job"];
+	str = (short) res[0]["str"];
+	dex = (short) res[0]["dex"];
+	intt = (short) res[0]["intt"];
+	luk = (short) res[0]["luk"];
+	hp = (short) res[0]["chp"];
+	rmhp = mhp = (short) res[0]["mhp"];
+	mp = (short) res[0]["cmp"];
+	rmmp = mmp = (short) res[0]["mmp"];
+	ap = (short) res[0]["ap"];
+	sp = (short) res[0]["sp"];
+	exp = res[0]["exp"];
+	fame = (short) res[0]["fame"];
+	map = res[0]["map"];
+	origin = res[0]["origin"];
+	mappos = (unsigned char) res[0]["pos"];
+	gm = res[0]["gm"];
+
+	inv->setMesosStart(res[0]["mesos"]);
+	inv->setPlayer(this);
+
+	query << "SELECT * FROM equip WHERE charid = " << mysqlpp::quote << getPlayerid();
+	res = query.store();
+
+	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Equip* equip = new Equip;
-		equip->id = equips[i][0];
-		equip->slots = equips[i][4];
-		equip->scrolls = equips[i][5];
-		equip->type = equips[i][1];
-		equip->pos = equips[i][3];
-		equip->istr = equips[i][6];
-		equip->idex = equips[i][7];
-		equip->iint = equips[i][8];
-		equip->iluk = equips[i][9];
-		equip->ihp = equips[i][10];
-		equip->imp = equips[i][11];
-		equip->iwatk = equips[i][12];
-		equip->imatk = equips[i][13];
-		equip->iwdef = equips[i][14];
-		equip->imdef = equips[i][15];
-		equip->iacc = equips[i][16];
-		equip->iavo = equips[i][17];
-		equip->ihand = equips[i][18];
-		equip->ijump = equips[i][19];
-		equip->ispeed = equips[i][20];
+		equip->id = (unsigned char) res[i][0];
+		equip->slots = (unsigned char) res[i][4];
+		equip->scrolls = res[i][5];
+		equip->type = (unsigned char) res[i][1];
+		equip->pos = res[i][3];
+		equip->istr = res[i][6];
+		equip->idex = res[i][7];
+		equip->iint = res[i][8];
+		equip->iluk = res[i][9];
+		equip->ihp = res[i][10];
+		equip->imp = res[i][11];
+		equip->iwatk = res[i][12];
+		equip->imatk = res[i][13];
+		equip->iwdef = res[i][14];
+		equip->imdef = res[i][15];
+		equip->iacc = res[i][16];
+		equip->iavo = res[i][17];
+		equip->ihand = res[i][18];
+		equip->ijump = res[i][19];
+		equip->ispeed = res[i][20];
 		inv->addEquip(equip);
 	}
-	int items[400][4];
-	many = MySQL::getItems(getPlayerid(), items);
-	for(int i=0; i<many; i++){
+
+	query << "SELECT * FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
+	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Item* item = new Item;
-		item->id = items[i][0];
-		item->inv = items[i][1];
-		item->pos = items[i][2];
-		item->amount = items[i][3];
+		item->id = res[i][0];
+		item->inv = (unsigned char) res[i][1];
+		item->pos = res[i][2];
+		item->amount = res[i][3];
 		inv->addItem(item);
 	}
-	int skill[200][2];
-	many = MySQL::getSkills(getPlayerid(), skill);
-	for(int i=0; i<many; i++){
-		skills->addSkillLevel(skill[i][0], skill[i][1]);
+
+	query << "SELECT * FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
+	for (size_t i = 0; i < res.num_rows(); ++i) {
+		skills->addSkillLevel(res[i][0], res[i][1]);
 	}
-	inv->setMesosStart(MySQL::getInt("characters", getPlayerid(), "mesos"));
-	inv->setPlayer(this);
-	MySQL::getKeys(getPlayerid(), keys);
+	
+	query << "SELECT * FROM keymap WHERE charid = " << mysqlpp::quote << getPlayerid();
+	res = query.store();
+	for (size_t i=0; i<90; i++) {
+		istringstream buffer(res[0][i+1]);
+		buffer >> keys[i];
+	}
+
 	PlayerPacket::connectData(this);
 	Server::showScrollingHeader(this);
 	if(Maps::info[map].Portals.size() > 0){
@@ -170,7 +185,6 @@ void Player::playerConnect(){
 	type=0;
 	PlayerPacket::showKeys(this, keys);
 	Maps::newMap(this);
-
 }
 
 void Player::setHP(int hp, bool is){
@@ -231,17 +245,16 @@ void Player::changeKey(unsigned char* packet){
 	}
 
 	// Update to mysql
-	char sql[10000];
-	sprintf_s(sql, 10000, "update keymap set ");
+	mysqlpp::Query query = db.query();
+	query << "UPDATE keymap SET ";
 	for(int i=0; i<90; i++){
-		char temp[100];
+		query << "pos" << mysqlpp::quote << i << "=" << mysqlpp::quote << keys[i];
 		if(i!=89)
-			sprintf_s(temp, 100, "pos%d=%d, ", i, keys[i]);
+			query << ",";
 		else
-			sprintf_s(temp, 100, "pos%d=%d where charid=%d; ", i, keys[i], getPlayerid());
-		strcat_s(sql, 10000, temp);
+			query << "WHERE charid = " << mysqlpp::quote << getPlayerid();
 	}
-	MySQL::insert(sql);
+	query.exec();
 }
 
 void Player::setHair(int id){
@@ -278,70 +291,137 @@ void Player::addWarning(){
 }
 
 void Player::saveSkills() {
-	char sql[10000];
-	char temp[10000];
-	sprintf_s(sql, 10000, "DELETE FROM skills WHERE charid=%d;", getPlayerid());
-	MySQL::insert(sql);
+	mysqlpp::Query query = db.query();
+	query << "DELETE FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
+	query.exec();
+
 	bool firstrun = true;
 	for(int i=0; i<skills->getSkillsNum(); i++){
 		if(firstrun == true){
-			sprintf_s(sql, 10000, "INSERT INTO skills VALUES (%d, %d, %d)", getPlayerid(), skills->getSkillID(i), skills->getSkillLevel(skills->getSkillID(i)));
+			query << "INSERT INTO skills VALUES (" << mysqlpp::quote << getPlayerid() << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << ")";
 			firstrun = false;
 		}
 		else{
-			sprintf_s(temp, 1000, ",(%d, %d, %d)", getPlayerid(), skills->getSkillID(i), skills->getSkillLevel(skills->getSkillID(i)));
-			strcat_s(sql, 10000, temp);
+			query << ",(" << mysqlpp::quote << getPlayerid() << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << ")";
 		}
 	}
-	MySQL::insert(sql);
+	query.exec();
 }
 
 void Player::saveStats() {
-	char sql[10000];
-	sprintf_s(sql, 10000, "update characters set level=%d, job=%d, str=%d, dex=%d, intt=%d, luk=%d, chp=%d, mhp=%d, cmp=%d, mmp=%d, ap=%d, sp=%d, exp=%d, fame=%d, map=%d, origin=%d, gender=%d, skin=%d, eyes=%d, hair=%d, mesos=%d where id=%d", getLevel(), getJob(), getStr(), getDex(), getInt(), getLuk(), getHP(), getRMHP(), getMP(), getRMMP(), getAp(), getSp(), getExp(), getFame(), getMap(), getOrigin(), getGender(), getSkin(), getEyes(), getHair(), inv->getMesos() ,getPlayerid());
-	MySQL::insert(sql);
+	mysqlpp::Query query = db.query();
+	query << "UPDATE characters SET "
+			<< "level = " << mysqlpp::quote << getLevel() << ","
+			<< "job = " << mysqlpp::quote << getJob() << ","
+			<< "str = " << mysqlpp::quote << getStr() << ","
+			<< "dex = " << mysqlpp::quote << getDex() << ","
+			<< "intt = " << mysqlpp::quote << getInt() << ","
+			<< "luk = " << mysqlpp::quote << getLuk() << ","
+			<< "chp = " << mysqlpp::quote << getHP() << ","
+			<< "mhp = " << mysqlpp::quote << getRMHP() << ","
+			<< "cmp = " << mysqlpp::quote << getMP() << ","
+			<< "mmp = " << mysqlpp::quote << getRMHP() << ","
+			<< "ap = " << mysqlpp::quote << getAp() << ","
+			<< "sp = " << mysqlpp::quote << getSp() << ","
+			<< "exp = " << mysqlpp::quote << getExp() << ","
+			<< "fame = " << mysqlpp::quote << getFame() << ","
+			<< "map = " << mysqlpp::quote << getMap() << ","
+			<< "origin = " << mysqlpp::quote << getOrigin() << ","
+			<< "gender = " << mysqlpp::quote << getGender() << ","
+			<< "skin = " << mysqlpp::quote << getSkin() << ","
+			<< "eyes = " << mysqlpp::quote << getEyes() << ","
+			<< "hair = " << mysqlpp::quote << getHair() << ","
+			<< "mesos = " << mysqlpp::quote << inv->getMesos()
+			<< " WHERE id = " << getPlayerid();
+	query.exec();
 }
 
 void Player::saveEquips() {
-	char sql[10000];
-	char temp[1000];
-	sprintf_s(sql, 10000, "DELETE FROM equip WHERE charid=%d;", getPlayerid());
-	MySQL::insert(sql);
+	mysqlpp::Query query = db.query();
+	query << "DELETE FROM equip WHERE charid = " << getPlayerid();
+	query.exec();
+
 	bool firstrun = true;
 	for(int i=0; i<inv->getEquipNum(); i++){
 		if(firstrun == true){
-			sprintf_s(sql, 10000, "INSERT INTO equip VALUES (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)", inv->getEquip(i)->id, Drops::equips[inv->getEquip(i)->id].type ,getPlayerid(), inv->getEquipPos(i), inv->getEquip(i)->slots, inv->getEquip(i)->scrolls,
-				inv->getEquip(i)->istr, inv->getEquip(i)->idex, inv->getEquip(i)->iint, inv->getEquip(i)->iluk, inv->getEquip(i)->ihp, inv->getEquip(i)->imp, inv->getEquip(i)->iwatk, inv->getEquip(i)->imatk, inv->getEquip(i)->iwdef, 
-				inv->getEquip(i)->imdef, inv->getEquip(i)->iacc, inv->getEquip(i)->iavo, inv->getEquip(i)->ihand, inv->getEquip(i)->ijump, inv->getEquip(i)->ispeed);
+			query << "INSERT INTO equip VALUES ("
+				<< mysqlpp::quote << inv->getEquip(i)->id << ","
+				<< mysqlpp::quote << Drops::equips[inv->getEquip(i)->id].type << ","
+				<< mysqlpp::quote << getPlayerid() << ","
+				<< mysqlpp::quote << inv->getEquipPos(i) << ","
+				<< mysqlpp::quote << inv->getEquip(i)->slots << ","
+				<< mysqlpp::quote << inv->getEquip(i)->scrolls << ","
+				<< mysqlpp::quote << inv->getEquip(i)->istr << ","
+				<< mysqlpp::quote << inv->getEquip(i)->idex << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iint << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iluk << ","
+				<< mysqlpp::quote << inv->getEquip(i)->ihp << ","
+				<< mysqlpp::quote << inv->getEquip(i)->imp << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iwatk << ","
+				<< mysqlpp::quote << inv->getEquip(i)->imatk << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iwdef << ","
+				<< mysqlpp::quote << inv->getEquip(i)->imdef << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iacc << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iavo << ","
+				<< mysqlpp::quote << inv->getEquip(i)->ihand << ","
+				<< mysqlpp::quote << inv->getEquip(i)->ijump << ","
+				<< mysqlpp::quote << inv->getEquip(i)->ispeed << ")";
 			firstrun = false;
 		}
 		else{
-			sprintf_s(temp, 1000, ",(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)", inv->getEquip(i)->id, Drops::equips[inv->getEquip(i)->id].type ,getPlayerid(), inv->getEquipPos(i), inv->getEquip(i)->slots, inv->getEquip(i)->scrolls,
-				inv->getEquip(i)->istr, inv->getEquip(i)->idex, inv->getEquip(i)->iint, inv->getEquip(i)->iluk, inv->getEquip(i)->ihp, inv->getEquip(i)->imp, inv->getEquip(i)->iwatk, inv->getEquip(i)->imatk, inv->getEquip(i)->iwdef, 
-				inv->getEquip(i)->imdef, inv->getEquip(i)->iacc, inv->getEquip(i)->iavo, inv->getEquip(i)->ihand, inv->getEquip(i)->ijump, inv->getEquip(i)->ispeed);
-			strcat_s(sql, 10000, temp);
+			query << ",("
+				<< mysqlpp::quote << inv->getEquip(i)->id << ","
+				<< mysqlpp::quote << Drops::equips[inv->getEquip(i)->id].type << ","
+				<< mysqlpp::quote << getPlayerid() << ","
+				<< mysqlpp::quote << inv->getEquipPos(i) << ","
+				<< mysqlpp::quote << inv->getEquip(i)->slots << ","
+				<< mysqlpp::quote << inv->getEquip(i)->scrolls << ","
+				<< mysqlpp::quote << inv->getEquip(i)->istr << ","
+				<< mysqlpp::quote << inv->getEquip(i)->idex << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iint << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iluk << ","
+				<< mysqlpp::quote << inv->getEquip(i)->ihp << ","
+				<< mysqlpp::quote << inv->getEquip(i)->imp << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iwatk << ","
+				<< mysqlpp::quote << inv->getEquip(i)->imatk << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iwdef << ","
+				<< mysqlpp::quote << inv->getEquip(i)->imdef << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iacc << ","
+				<< mysqlpp::quote << inv->getEquip(i)->iavo << ","
+				<< mysqlpp::quote << inv->getEquip(i)->ihand << ","
+				<< mysqlpp::quote << inv->getEquip(i)->ijump << ","
+				<< mysqlpp::quote << inv->getEquip(i)->ispeed << ")";
 		}
 	}
-	MySQL::insert(sql);
+	query.exec();
 }
 
 void Player::saveItems(){
-	char sql[10000];
-	char temp[1000];
-	sprintf_s(sql, 10000, "DELETE FROM items WHERE charid=%d;", getPlayerid());
-	MySQL::insert(sql);
+	mysqlpp::Query query = db.query();
+	query << "DELETE FROM items WHERE charid = " << getPlayerid();
+	query.exec();
+
 	bool firstrun = true;
 	for(int i=0; i<inv->getItemNum(); i++){
 		if(firstrun == true){
-			sprintf_s(sql, 10000, "INSERT INTO items VALUES (%d, %d, %d, %d, %d)", inv->getItem(i)->id, getPlayerid() ,inv->getItem(i)->inv, inv->getItem(i)->pos, inv->getItem(i)->amount);
+			query << "INSERT INTO items VALUES ("
+			<< mysqlpp::quote << inv->getItem(i)->id << ","
+			<< mysqlpp::quote << getPlayerid() << ","
+			<< mysqlpp::quote << inv->getItem(i)->inv << ","
+			<< mysqlpp::quote << inv->getItem(i)->pos << ","
+			<< mysqlpp::quote << inv->getItem(i)->amount << ")";
 			firstrun = false;
 		}
 		else{
-			sprintf_s(temp, 1000, ",(%d, %d, %d, %d, %d)", inv->getItem(i)->id, getPlayerid() ,inv->getItem(i)->inv, inv->getItem(i)->pos, inv->getItem(i)->amount);
-			strcat_s(sql, 10000, temp);
+			query << ",("
+			<< mysqlpp::quote << inv->getItem(i)->id << ","
+			<< mysqlpp::quote << getPlayerid() << ","
+			<< mysqlpp::quote << inv->getItem(i)->inv << ","
+			<< mysqlpp::quote << inv->getItem(i)->pos << ","
+			<< mysqlpp::quote << inv->getItem(i)->amount << ")";
 		}
 	}
-	MySQL::insert(sql);
+	query.exec();
 }
 
 void Player::save() {
