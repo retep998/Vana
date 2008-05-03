@@ -81,9 +81,9 @@ void Characters::checkCharacterName(PlayerLogin* player, unsigned char* packet){
 	
 	mysqlpp::Query query = db.query();
 	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << charactername << " LIMIT 1";
-	mysqlpp::SimpleResult res = query.execute();
+	mysqlpp::StoreQueryResult res = query.store();
 
-	LoginPacket::checkName(player, res.rows() != 0, charactername);
+	LoginPacket::checkName(player, res.num_rows() != 0, charactername);
 }
 
 void Characters::createEquip(int equipid, int type, int charid){
