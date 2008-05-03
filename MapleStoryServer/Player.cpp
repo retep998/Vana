@@ -170,8 +170,7 @@ void Player::playerConnect(){
 	query << "SELECT * FROM keymap WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 	for (size_t i=0; i<90; i++) {
-		istringstream buffer(res[0][i+1]);
-		buffer >> keys[i];
+		keys[i] = res[0][i+1];
 	}
 
 	PlayerPacket::connectData(this);
