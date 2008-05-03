@@ -150,7 +150,7 @@ void Player::playerConnect(){
 		inv->addEquip(equip);
 	}
 
-	query << "SELECT * FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
+	query << "SELECT itemid, inv, pos, amount FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Item* item = new Item;
