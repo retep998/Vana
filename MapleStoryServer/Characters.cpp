@@ -184,9 +184,9 @@ void Characters::deleteCharacter(PlayerLogin* player, unsigned char *packet){
 	
 	mysqlpp::Query query = db.query();
 	query << "SELECT true FROM characters WHERE id = " << mysqlpp::quote << id << " AND userid = " << mysqlpp::quote << player->getUserid();
-	mysqlpp::SimpleResult res = query.execute();
+	mysqlpp::StoreQueryResult res = query.store();
 
-	if(!res.rows()){
+	if(!res.num_rows()){
 		// hacking
 		return;
 	}
@@ -215,9 +215,9 @@ void Characters::connectGame(PlayerLogin* player, unsigned char *packet){
 	
 	mysqlpp::Query query = db.query(); //TODO: Refactor
 	query << "SELECT true FROM characters WHERE id = " << mysqlpp::quote << id << " AND userid = " << mysqlpp::quote << player->getUserid();
-	mysqlpp::SimpleResult res = query.execute();
+	mysqlpp::StoreQueryResult res = query.store();
 
-	if(!res.rows()){
+	if(!res.num_rows()){
 		// hacking
 		return;
 	}
