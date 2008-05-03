@@ -101,7 +101,6 @@ void Characters::createEquip(int equipid, int type, int charid){
 
 void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	Character charc;
-	vector <Character> chars;
 	char charactername[15];
 	int size = packet[0];
 	if(size>15){
@@ -176,7 +175,7 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	charc.map = res2[0]["map"];
 	charc.pos = (unsigned char) res2[0]["pos"];
 	showEquips(charc.id, charc.equips);
-	chars.push_back(charc);
+	LoginPacket::showCharacter(player, charc);
 }
 
 void Characters::deleteCharacter(PlayerLogin* player, unsigned char *packet){
