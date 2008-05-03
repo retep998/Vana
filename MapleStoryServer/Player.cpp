@@ -151,6 +151,7 @@ void Player::playerConnect(){
 	}
 
 	query << "SELECT * FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
+	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Item* item = new Item;
 		item->id = res[i][0];
@@ -161,6 +162,7 @@ void Player::playerConnect(){
 	}
 
 	query << "SELECT * FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
+	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		skills->addSkillLevel(res[i][0], res[i][1]);
 	}
