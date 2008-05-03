@@ -558,8 +558,8 @@ void Initializing::initializeMaps(){
 		PortalInfo portal;
 		if(!mapRow[3].is_null()){
 			portal.id = atoi(mapRow[3]);
-			sprintf_s(portal.from, 20, "%s", mapRow[4]);
-			sprintf_s(portal.to, 20, "%s", mapRow[5]);
+			strcpy_s(portal.from, mapRow[4]);
+			strcpy_s(portal.to, mapRow[5]);
 			portal.toid = atoi(mapRow[6]);
 			portal.type = atoi(mapRow[7]);
 			portal.x = atoi(mapRow[8]);
