@@ -345,33 +345,13 @@ void Player::saveEquips() {
 	bool firstrun = true;
 	for(int i=0; i<inv->getEquipNum(); i++){
 		if(firstrun == true){
-			query << "INSERT INTO equip VALUES ("
-				<< mysqlpp::quote << inv->getEquip(i)->id << ","
-				<< mysqlpp::quote << (short) Drops::equips[inv->getEquip(i)->id].type << ","
-				<< mysqlpp::quote << getPlayerid() << ","
-				<< mysqlpp::quote << (short) inv->getEquipPos(i) << ","
-				<< mysqlpp::quote << (short) inv->getEquip(i)->slots << ","
-				<< mysqlpp::quote << inv->getEquip(i)->scrolls << ","
-				<< mysqlpp::quote << inv->getEquip(i)->istr << ","
-				<< mysqlpp::quote << inv->getEquip(i)->idex << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iint << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iluk << ","
-				<< mysqlpp::quote << inv->getEquip(i)->ihp << ","
-				<< mysqlpp::quote << inv->getEquip(i)->imp << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iwatk << ","
-				<< mysqlpp::quote << inv->getEquip(i)->imatk << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iwdef << ","
-				<< mysqlpp::quote << inv->getEquip(i)->imdef << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iacc << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iavo << ","
-				<< mysqlpp::quote << inv->getEquip(i)->ihand << ","
-				<< mysqlpp::quote << inv->getEquip(i)->ijump << ","
-				<< mysqlpp::quote << inv->getEquip(i)->ispeed << ")";
+			query << "INSERT INTO equip VALUES (";
 			firstrun = false;
 		}
 		else{
-			query << ",("
-				<< mysqlpp::quote << inv->getEquip(i)->id << ","
+			query << ",(";
+		}
+		query << mysqlpp::quote << inv->getEquip(i)->id << ","
 				<< mysqlpp::quote << (short) Drops::equips[inv->getEquip(i)->id].type << ","
 				<< mysqlpp::quote << getPlayerid() << ","
 				<< mysqlpp::quote << (short) inv->getEquipPos(i) << ","
@@ -392,7 +372,6 @@ void Player::saveEquips() {
 				<< mysqlpp::quote << inv->getEquip(i)->ihand << ","
 				<< mysqlpp::quote << inv->getEquip(i)->ijump << ","
 				<< mysqlpp::quote << inv->getEquip(i)->ispeed << ")";
-		}
 	}
 	query.exec();
 }
@@ -405,22 +384,17 @@ void Player::saveItems(){
 	bool firstrun = true;
 	for(int i=0; i<inv->getItemNum(); i++){
 		if(firstrun == true){
-			query << "INSERT INTO items VALUES ("
-			<< mysqlpp::quote << inv->getItem(i)->id << ","
-			<< mysqlpp::quote << getPlayerid() << ","
-			<< mysqlpp::quote << (short) inv->getItem(i)->inv << ","
-			<< mysqlpp::quote << inv->getItem(i)->pos << ","
-			<< mysqlpp::quote << inv->getItem(i)->amount << ")";
+			query << "INSERT INTO items VALUES (";
 			firstrun = false;
 		}
 		else{
-			query << ",("
-			<< mysqlpp::quote << inv->getItem(i)->id << ","
-			<< mysqlpp::quote << getPlayerid() << ","
-			<< mysqlpp::quote << (short) inv->getItem(i)->inv << ","
-			<< mysqlpp::quote << inv->getItem(i)->pos << ","
-			<< mysqlpp::quote << inv->getItem(i)->amount << ")";
+			query << ",(";
 		}
+		query << mysqlpp::quote << inv->getItem(i)->id << ","
+				<< mysqlpp::quote << getPlayerid() << ","
+				<< mysqlpp::quote << (short) inv->getItem(i)->inv << ","
+				<< mysqlpp::quote << inv->getItem(i)->pos << ","
+				<< mysqlpp::quote << inv->getItem(i)->amount << ")";
 	}
 	query.exec();
 }
