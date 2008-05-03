@@ -89,13 +89,13 @@ void Characters::checkCharacterName(PlayerLogin* player, unsigned char* packet){
 void Characters::createEquip(int equipid, int type, int charid){
 	mysqlpp::Query query = db.query();
 	if(type==0x05)
-		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << 3 << "," << mysqlpp::quote << -type << ")";
+		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 3 << "," << mysqlpp::quote << -type << ")";
 	else if(type==0x06)
-		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << 2 << "," << mysqlpp::quote << -type << ")";
+		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 2 << "," << mysqlpp::quote << -type << ")";
 	else if(type==0x07)
-		query << "INSERT INTO equip (equipid,charid,type,iwdef,slots,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << 3 << "," << 5 << "," << mysqlpp::quote << -type << ")";
+		query << "INSERT INTO equip (equipid,charid,type,iwdef,slots,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 3 << "," << 5 << "," << mysqlpp::quote << -type << ")";
 	else if(type==0x0b)
-		query << "INSERT INTO equip (equipid,charid,type,iwatk,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << 17 << "," << mysqlpp::quote << -type << ")";
+		query << "INSERT INTO equip (equipid,charid,type,iwatk,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 17 << "," << mysqlpp::quote << -type << ")";
 	query.exec();
 }
 
@@ -120,7 +120,8 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 		return;
 	}
 	mysqlpp::Query query = db.query();
-	query << "INSERT INTO characters (name, eyes, hair, skin, gender, str, dex, intt, luk) VALUES (" 
+	query << "INSERT INTO characters (userid, name, eyes, hair, skin, gender, str, dex, intt, luk) VALUES (" 
+			<< mysqlpp::quote << player->getUserid() << ","
 			<< mysqlpp::quote << charactername << ","
 			<< mysqlpp::quote << eyes << ","
 			<< mysqlpp::quote << hair << ","
