@@ -127,7 +127,7 @@ void Player::playerConnect(){
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Equip* equip = new Equip;
-		equip->id = (unsigned char) res[i][0];
+		equip->id = res[i][0];
 		equip->slots = (unsigned char) res[i][4];
 		equip->scrolls = res[i][5];
 		equip->type = (unsigned char) res[i][1];
@@ -161,7 +161,7 @@ void Player::playerConnect(){
 		inv->addItem(item);
 	}
 
-	query << "SELECT * FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
+	query << "SELECT skillid, points FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		skills->addSkillLevel(res[i][0], res[i][1]);
