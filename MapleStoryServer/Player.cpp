@@ -253,7 +253,7 @@ void Player::changeKey(unsigned char* packet){
 		if(i!=89)
 			query << ",";
 		else
-			query << "WHERE charid = " << mysqlpp::quote << getPlayerid();
+			query << " WHERE charid = " << mysqlpp::quote << getPlayerid();
 	}
 	query.exec();
 }
