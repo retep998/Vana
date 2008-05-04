@@ -73,17 +73,12 @@ void Characters::showCharacters(PlayerLogin* player){
 void Characters::checkCharacterName(PlayerLogin* player, unsigned char* packet){
 	char charactername[15];
 	int size = packet[0];
-	char is = 0;
 	if(size>15){
 		return;
 	}
 	getString(packet+2, size, charactername);
 	
-	mysqlpp::Query query = db.query();
-	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << charactername << " LIMIT 1";
-	mysqlpp::StoreQueryResult res = query.store();
-
-	LoginPacket::checkName(player, res.num_rows() != 0, charactername);
+	LoginPacket::checkName(player, nameTaken(charactername), charactername);
 }
 
 void Characters::createEquip(int equipid, int type, int charid){
@@ -107,6 +102,11 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 		return;
 	}
 	getString(packet+2, size, charactername);
+	// Let's check our char name again just to be sure
+	if(nameTaken(charactername)) {
+		LoginPacket::checkName(player, 1, charactername);
+		return;
+	}
 	int pos = 2+size;
 	int eyes = getInt(packet+pos);
 	pos+=4;
@@ -205,3 +205,10 @@ bool Characters::ownerCheck(PlayerLogin* player, int id) {
 	return (res.num_rows() == 1) ? 1 : 0 ;
 }
 
+bool Characters::nameTaken(char *name) {
+	mysqlpp::Query query = db.query();
+	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name << " LIMIT 1";
+	mysqlpp::StoreQueryResult res = query.store();
+
+	return (res.num_rows() == 1) ? 1 : 0 ;
+}
