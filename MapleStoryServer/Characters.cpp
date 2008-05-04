@@ -16,10 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Characters.h"
-#include "PlayerLogin.h"
-#include "LoginPacket.h"
-#include "BufferUtilities.h"
-#include "MySQLM.h"
 
 void Characters::showEquips(int id, vector <CharEquip> &vec){
 	mysqlpp::Query query = db.query();
@@ -34,37 +30,41 @@ void Characters::showEquips(int id, vector <CharEquip> &vec){
 	}	
 }
 
+void Characters::loadCharacter(Character &charc, mysqlpp::Row row) {
+	charc.id = row["id"];
+	strcpy_s(charc.name, row["name"]);
+	charc.gender = (unsigned char) row["gender"];
+	charc.skin = (unsigned char) row["skin"];
+	charc.eyes = row["eyes"];
+	charc.hair = row["hair"];
+	charc.level = (unsigned char) row["level"];
+	charc.job = row["job"];
+	charc.str = row["str"];
+	charc.dex = row["dex"];
+	charc.intt = row["intt"];
+	charc.luk = row["luk"];
+	charc.hp = row["chp"];
+	charc.mhp = row["mhp"];
+	charc.mp = row["cmp"];
+	charc.mmp = row["mmp"];
+	charc.ap = row["ap"];
+	charc.sp = row["sp"];
+	charc.exp= row["exp"];
+	charc.fame = row["fame"];
+	charc.map = row["map"];
+	charc.pos = (unsigned char) row["pos"];
+	showEquips(charc.id, charc.equips);
+}
+
 void Characters::showCharacters(PlayerLogin* player){
 	mysqlpp::Query query = db.query();
 	query << "SELECT * FROM characters WHERE userid = " << mysqlpp::quote << player->getUserid();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	vector <Character> chars;
+	Character charc;
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		Character charc;
-		charc.id = res[i]["id"];
-		strcpy_s(charc.name, res[i]["name"]);
-		charc.gender = (unsigned char) res[i]["gender"];
-		charc.skin = (unsigned char) res[i]["skin"];
-		charc.eyes = res[i]["eyes"];
-		charc.hair = res[i]["hair"];
-		charc.level = (unsigned char) res[i]["level"];
-		charc.job = res[i]["job"];
-		charc.str = res[i]["str"];
-		charc.dex = res[i]["dex"];
-		charc.intt = res[i]["intt"];
-		charc.luk = res[i]["luk"];
-		charc.hp = res[i]["chp"];
-		charc.mhp = res[i]["mhp"];
-		charc.mp = res[i]["cmp"];
-		charc.mmp = res[i]["mmp"];
-		charc.ap = res[i]["ap"];
-		charc.sp = res[i]["sp"];
-		charc.exp= res[i]["exp"];
-		charc.fame = res[i]["fame"];
-		charc.map = res[i]["map"];
-		charc.pos = (unsigned char) res[i]["pos"];
-		showEquips(charc.id, charc.equips);
+		loadCharacter(charc, res[i]);
 		chars.push_back(charc);
 	}
 	LoginPacket::showCharacters(player, chars);
@@ -152,29 +152,7 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	query << "SELECT * FROM characters WHERE id = " << mysqlpp::quote << id << " LIMIT 1"; //TODO: Refactorr
 	mysqlpp::StoreQueryResult res2 = query.store();
 
-	charc.id = res2[0]["id"];
-	strcpy_s(charc.name, res2[0]["name"]);
-	charc.gender = (unsigned char) res2[0]["gender"];
-	charc.skin = (unsigned char) res2[0]["skin"];
-	charc.eyes = res2[0]["eyes"];
-	charc.hair = res2[0]["hair"];
-	charc.level = (unsigned char) res2[0]["level"];
-	charc.job = res2[0]["job"];
-	charc.str = res2[0]["str"];
-	charc.dex = res2[0]["dex"];
-	charc.intt = res2[0]["intt"];
-	charc.luk = res2[0]["luk"];
-	charc.hp = res2[0]["chp"];
-	charc.mhp = res2[0]["mhp"];
-	charc.mp = res2[0]["cmp"];
-	charc.mmp = res2[0]["mmp"];
-	charc.ap = res2[0]["ap"];
-	charc.sp = res2[0]["sp"];
-	charc.exp= res2[0]["exp"];
-	charc.fame = res2[0]["fame"];
-	charc.map = res2[0]["map"];
-	charc.pos = (unsigned char) res2[0]["pos"];
-	showEquips(charc.id, charc.equips);
+	loadCharacter(charc, res2[0]);
 	LoginPacket::showCharacter(player, charc);
 }
 
