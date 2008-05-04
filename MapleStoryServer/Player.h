@@ -235,7 +235,7 @@ public:
 	void saveEquips();
 	void saveItems();
 	void save();
-	void setOffline();
+	void setOnline(bool online);
 	PlayerInventory* inv;
 	PlayerSkills* skills;
 	PlayerQuests* quests;

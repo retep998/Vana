@@ -78,9 +78,7 @@ void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
 	else if(status == 4) {
 		LoginPacket::loginProcess(player, 0x00);
 		// The player successfully logged in, so let set the login column
-		mysqlpp::Query query = db.query();
-		query << "UPDATE users SET online = 1 WHERE id = " << mysqlpp::quote << player->getUserid();
-		query.exec();
+		player->setOnline(true);
 	}
 }
 void Login::checkPin(PlayerLogin* player, unsigned char* packet){
