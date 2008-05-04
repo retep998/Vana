@@ -27,9 +27,8 @@ public:
 		status=0;
 	}
 
-	~PlayerLogin() {
+	~PlayerLogin();
 
-	}
 	void handleRequest(unsigned char* buf, int len);
 	void setUserid(int id){
 		this->userid=id;
@@ -68,6 +67,7 @@ public:
 		return this->channel;
 	}
 	void sendPacket(unsigned char* buf, int len){ packetHandler->sendPacket(buf,len); }
+	void setOnline(bool online);
 private:
 	int status;
 	int userid;

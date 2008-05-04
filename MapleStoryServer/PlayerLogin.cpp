@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.h"
 #include "Login.h"
 #include "Worlds.h"
+#include "MySQLM.h"
 
 void PlayerLogin::handleRequest(unsigned char* buf, int len){
 	short header = buf[0] + buf[1]*0x100;
@@ -37,4 +38,14 @@ void PlayerLogin::handleRequest(unsigned char* buf, int len){
 		//case 0x07: Login::setGender(this, buf+2); break;
 		//case 0x09: Login::registerPIN(this, buf+2); break;
 	}
+}
+
+PlayerLogin::~PlayerLogin() {
+	setOnline(false);
+}
+
+void PlayerLogin::setOnline(bool online) {
+	mysqlpp::Query query = db.query();
+	query << "UPDATE users SET online = " << mysqlpp::quote << online << " WHERE id = " << mysqlpp::quote << getUserid();
+	query.exec();
 }
