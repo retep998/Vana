@@ -29,7 +29,7 @@ using namespace std;
 
 void Initializing::initializeMySQL(){
 	printf("Initializing MySQL... ");
-	if(db.connect("maplestory", "localhost", "root", "")) //TODO: Use configuration file
+	if(db.set_option(new mysqlpp::ReconnectOption(true)) && db.connect("maplestory", "localhost", "root", "")) //TODO: Use configuration file
 		printf("DONE\n");
 	else{
 		printf("FAILED\n");
