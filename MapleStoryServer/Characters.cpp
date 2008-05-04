@@ -62,8 +62,8 @@ void Characters::showCharacters(PlayerLogin* player){
 	mysqlpp::StoreQueryResult res = query.store();
 
 	vector <Character> chars;
-	Character charc;
 	for (size_t i = 0; i < res.num_rows(); ++i) {
+		Character charc;
 		loadCharacter(charc, res[i]);
 		chars.push_back(charc);
 	}
