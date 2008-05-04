@@ -30,6 +30,7 @@ struct Character;
 
 namespace LoginPacket {
 	void loginError(PlayerLogin* player, short errorid);
+	void loginBan(PlayerLogin* player, char reason, int expire);
 	void loginProcess(PlayerLogin* player, char id);
 	void loginConnect(PlayerLogin* player, char* username, int size);
 	void processOk(PlayerLogin* player);

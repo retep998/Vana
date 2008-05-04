@@ -29,6 +29,32 @@ void LoginPacket::loginError(PlayerLogin* player, short errorid){
 	packet.packetSendLogin(player);
 }
 
+void LoginPacket::loginBan(PlayerLogin* player, char reason, int expire){
+	/* Reasons:
+		00 -> This is an ID that has been deleted or blocked from connection
+		01 -> Your account has been blocked for hacking or illegal use of third-party programs
+		02 -> Your account has been blocked for using macro/auto-keyboard
+		03 -> Your account has been blocked for illicit promotion or advertising
+		04 -> Your account has been blocked for harassment
+		05 -> Your account has been blocked for using profane language
+		06 -> Your account has been blocked for scamming
+		07 -> Your account has been blocked for misconduct
+		08 -> Your account has been blocked for illegal cash transaction
+		09 -> Your account has been blocked for illegal charging/funding. Please contact customer support for further details
+		10 -> Your account has been blocked for temporary request. Please contact customer support for further details
+		11 -> Your account has been blocked for impersonating GM
+		12 -> Your account has been blocked for using illegal programs or violating the game policy
+		13 -> Your account has been blocked for one of cursing, scamming, or illegal trading via Megaphones.
+	*/
+	Packet packet = Packet();
+	packet.addHeader(0x00);
+	packet.addBytes("020000000000");
+	packet.addByte(reason);
+	packet.addBytes("00000000");
+	packet.addInt(expire); //Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
+	packet.packetSendLogin(player);
+}
+
 void LoginPacket::loginConnect(PlayerLogin* player, char* username, int size){
 	Packet packet = Packet();
 	packet.addHeader(0x00);
