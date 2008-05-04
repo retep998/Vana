@@ -68,6 +68,7 @@ namespace Characters {
 	extern private void loadCharacter(Character &charc, mysqlpp::Row row);
 	extern private void showEquips(int id, vector <CharEquip> &vec);
 	extern private void createEquip(int equipid, int type, int charid);
+	extern private bool ownerCheck(PlayerLogin* player, int id);
 };
 
 #endif
