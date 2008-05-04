@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BufferUtilities.h"
 #include <stdio.h>
 #include "PlayerLogin.h"
+#include "TimeUtilities.h"
 
 void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	int usersize = getShort(packet);
@@ -33,7 +34,7 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	getString(packet+4+usersize, passsize, password);   
 
 	mysqlpp::Query query = db.query();
-	query << "SELECT * FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
+	query << "SELECT id, password, online, pin, gender, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.empty()) {
@@ -44,6 +45,10 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	}
 	else if (atoi(res[0]["online"]) == 1) {
 		LoginPacket::loginError(player, 0x07); //Already logged in
+	}
+	else if (atoi(res[0]["banned"]) == 1) {
+		int time = tickToTick32(timeToTick((time_t) mysqlpp::DateTime(res[0]["ban_expire"])));
+		LoginPacket::loginBan(player, (unsigned char) res[0]["ban_reason"], time);
 	}
 	else {
 		printf("%s logged in.\n", username);

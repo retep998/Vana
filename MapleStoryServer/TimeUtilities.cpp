@@ -27,3 +27,30 @@ __int64 getServerTime(){
 	uli.HighPart = fileTime.dwHighDateTime;
 	return uli.QuadPart;
 }
+
+__int64 timeToTick(time_t time) {
+    struct tm timeinfo;
+    localtime_s(&timeinfo, &time);
+    unsigned __int64 ticks = 0;
+
+	// Calculate leap days
+	int leapdays = 0;
+	int years = timeinfo.tm_year + 299;
+	leapdays += (years/100)*24; // 24 more days for each 100 years
+	leapdays += (years/400); // and one more day for each 400 years
+	leapdays += ((years%100)/4); // and of course, 1 day for each 4 years in the current century
+
+    ticks += (timeinfo.tm_sec * 1);
+    ticks += (timeinfo.tm_min * 60);
+    ticks += (timeinfo.tm_hour * 3600);
+    ticks += (((__int64) timeinfo.tm_yday + leapdays) * 86400);
+    ticks += (__int64) years * 86400 * 365; // Exluding leap years
+
+	ticks *= 10000000; // Convert to 100-nanoseconds
+    return ticks;
+}
+
+int tickToTick32(__int64 tick) {
+	int tick32 = (int) (tick/4294967296 + 1); // Plus one to compensate for the loss of conversion
+	return tick32;
+}
