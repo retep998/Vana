@@ -149,7 +149,7 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	query << "INSERT INTO keymap (charid) VALUES (" << mysqlpp::quote << id << ")"; // Default keymap
 	query.exec();
 
-	query << "SELECT * FROM characters WHERE id = " << mysqlpp::quote << id << " LIMIT 1"; //TODO: Refactorr
+	query << "SELECT * FROM characters WHERE id = " << mysqlpp::quote << id << " LIMIT 1";
 	mysqlpp::StoreQueryResult res2 = query.store();
 
 	loadCharacter(charc, res2[0]);
