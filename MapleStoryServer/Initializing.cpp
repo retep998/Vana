@@ -35,6 +35,10 @@ void Initializing::initializeMySQL(){
 		printf("FAILED\n");
 		exit(1);
 	}
+	// Every user should be set to offline on startup
+	mysqlpp::Query query = db.query();
+	query << "UPDATE users SET online = 0";
+	query.exec();
 }
 
 // Mobs
