@@ -42,6 +42,9 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	else if (strcmp(password, res[0]["password"])) {
 		LoginPacket::loginError(player, 0x04); //Invalid password
 	}
+	else if (atoi(res[0]["online"]) == 1) {
+		LoginPacket::loginError(player, 0x07); //Already logged in
+	}
 	else {
 		printf("%s logged in.\n", username);
 		player->setUserid(res[0]["id"]);
@@ -67,13 +70,18 @@ void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
 	else if(status == 2){
 		//LoginPacket::loginProcess(player, 0x04);
 		//player->setStatus(3);
-		LoginPacket::loginProcess(player, 0x00);
 		player->setStatus(4);
+		handleLogin(player, packet);
 	}
 	else if(status == 3)
 		checkPin(player, packet);
-	else if(status == 4)
+	else if(status == 4) {
 		LoginPacket::loginProcess(player, 0x00);
+		// The player successfully logged in, so let set the login column
+		mysqlpp::Query query = db.query();
+		query << "UPDATE users SET online = 1 WHERE id = " << mysqlpp::quote << player->getUserid();
+		query.exec();
+	}
 }
 void Login::checkPin(PlayerLogin* player, unsigned char* packet){
 	if(packet[0] == 0x00){
@@ -83,8 +91,8 @@ void Login::checkPin(PlayerLogin* player, unsigned char* packet){
 		int pin = (packet[8]-'0')*1000 + (packet[9]-'0')*100 + (packet[10]-'0')*10 + (packet[11]-'0');
 		int curpin = player->getPin();
 		if(pin == curpin){
-			LoginPacket::loginProcess(player, 0x00);
 			player->setStatus(4);
+			handleLogin(player, packet);
 			printf("Pin: %d\n", pin);
 		}
 		else
@@ -94,7 +102,8 @@ void Login::checkPin(PlayerLogin* player, unsigned char* packet){
 		int pin = (packet[8]-'0')*1000 + (packet[9]-'0')*100 + (packet[10]-'0')*10 + (packet[11]-'0');
 		int curpin = player->getPin();
 		if(pin == curpin){
-			LoginPacket::loginProcess(player, 0x01);
+			player->setStatus(1);
+			handleLogin(player, packet);
 		}
 		else
 			LoginPacket::loginProcess(player, 0x02);

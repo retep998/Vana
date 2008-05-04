@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `online` TINYINT( 1 ) NOT NULL DEFAULT '0';

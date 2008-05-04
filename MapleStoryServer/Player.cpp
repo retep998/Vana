@@ -40,6 +40,7 @@ Player::~Player(){
 		Players::deletePlayer(this);
 		save();
 		Skills::stopTimerPlayer(this);
+		setOffline();
 		isconnect = false;
 	}
 }
@@ -404,4 +405,10 @@ void Player::save() {
 	saveStats();
 	saveEquips();
 	saveItems();
+}
+
+void Player::setOffline() {
+	mysqlpp::Query query = db.query();
+	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = 0 WHERE characters.id = " << mysqlpp::quote << getPlayerid();
+	query.exec();
 }
