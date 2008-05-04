@@ -160,14 +160,12 @@ void Characters::deleteCharacter(PlayerLogin* player, unsigned char *packet){
 	int data = getInt(packet);
 	int id = getInt(packet+4);
 	
-	mysqlpp::Query query = db.query();
-	query << "SELECT true FROM characters WHERE id = " << mysqlpp::quote << id << " AND userid = " << mysqlpp::quote << player->getUserid();
-	mysqlpp::StoreQueryResult res = query.store();
-
-	if(!res.num_rows()){
+	if(!ownerCheck(player, id)){
 		// hacking
 		return;
 	}
+
+	mysqlpp::Query query = db.query();
 
 	query << "DELETE FROM characters WHERE id = " << mysqlpp::quote << id;
 	query.exec();
@@ -190,15 +188,20 @@ void Characters::deleteCharacter(PlayerLogin* player, unsigned char *packet){
 
 void Characters::connectGame(PlayerLogin* player, unsigned char *packet){
 	int id = getInt(packet);
-	
-	mysqlpp::Query query = db.query(); //TODO: Refactor
-	query << "SELECT true FROM characters WHERE id = " << mysqlpp::quote << id << " AND userid = " << mysqlpp::quote << player->getUserid();
-	mysqlpp::StoreQueryResult res = query.store();
 
-	if(!res.num_rows()){
+	if(!ownerCheck(player, id)){
 		// hacking
 		return;
 	}
 
 	LoginPacket::connectIP(player, id);
 }
+
+bool Characters::ownerCheck(PlayerLogin* player, int id) {
+	mysqlpp::Query query = db.query();
+	query << "SELECT true FROM characters WHERE id = " << mysqlpp::quote << id << " AND userid = " << mysqlpp::quote << player->getUserid();
+	mysqlpp::StoreQueryResult res = query.store();
+
+	return (res.num_rows() == 1) ? 1 : 0 ;
+}
+
