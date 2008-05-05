@@ -26,7 +26,7 @@ namespace Login {
 	void handleLogin(PlayerLogin* player, unsigned char* packet);
 	void registerPIN(PlayerLogin* player, unsigned char* packet);
 	void loginBack(PlayerLogin* player);
-	extern private void checkPin(PlayerLogin* player, unsigned char* packet);
+	void checkPin(PlayerLogin* player, unsigned char* packet);
 };
 
 #endif
