@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Initializing.h"
+#include "Login.h"
 #include "Mobs.h"
 #include "Drops.h"
 #include "Maps.h"
@@ -710,6 +711,12 @@ void Initializing::initializeTimers(){
 	printf("DONE\n");
 }
 
+void Initializing::initializeConfig() {
+	printf("Initializing Configurations... ");
+	Login::loadConfig();
+	printf("DONE\n");
+}
+
 void Initializing::initializing(){
 	initializeMySQL();
 	initializeMobs();
@@ -721,4 +728,5 @@ void Initializing::initializing(){
 	initializeSkills();
 	initializeMaps();
 	initializeTimers();
+	initializeConfig();
 }

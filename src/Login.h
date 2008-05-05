@@ -18,6 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGIN_H
 #define LOGIN_H
 
+#include "LoginPacket.h"
+#include "MySQLM.h"
+#include "BufferUtilities.h"
+#include <stdio.h>
+#include "PlayerLogin.h"
+#include "TimeUtilities.h"
+#include "Config.h"
+
 class PlayerLogin;
 
 namespace Login {
@@ -27,6 +35,8 @@ namespace Login {
 	void registerPIN(PlayerLogin* player, unsigned char* packet);
 	void loginBack(PlayerLogin* player);
 	void checkPin(PlayerLogin* player, unsigned char* packet);
+	void loadConfig();
+	extern Config config;
 };
 
 #endif

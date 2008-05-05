@@ -16,12 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.h"
-#include "LoginPacket.h"
-#include "MySQLM.h"
-#include "BufferUtilities.h"
-#include <stdio.h>
-#include "PlayerLogin.h"
-#include "TimeUtilities.h"
+
+Config Login::config;
 
 void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	int usersize = getShort(packet);
@@ -53,15 +49,19 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	else {
 		printf("%s logged in.\n", username);
 		player->setUserid(res[0]["id"]);
-		if (res[0]["pin"].is_null())
-			player->setPin(-1);
+		if (config.getBool("pin")) {
+			if (res[0]["pin"].is_null())
+				player->setPin(-1);
+			else
+				player->setPin(res[0]["pin"]);
+			int pin = player->getPin();
+			if(pin == -1)
+				player->setStatus(1); // New PIN
+			else
+				player->setStatus(2); // Ask for PIN
+		}
 		else
-			player->setPin(res[0]["pin"]);
-		int pin = player->getPin();
-		if(pin == -1)
-			player->setStatus(1); // New PIN
-		else
-			player->setStatus(2); // Ask for PIN
+			player->setStatus(4);
 		player->setGender((unsigned char) res[0]["gender"]);
 		LoginPacket::loginConnect(player, username, usersize);
 	}
@@ -78,8 +78,6 @@ void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
 	else if(status == 2){
 		LoginPacket::loginProcess(player, 0x04);
 		player->setStatus(3);
-		//player->setStatus(4);
-		//handleLogin(player, packet);
 	}
 	else if(status == 3)
 		checkPin(player, packet);
@@ -90,6 +88,10 @@ void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
 	}
 }
 void Login::checkPin(PlayerLogin* player, unsigned char* packet){
+	if (!config.getBool("pin")) {
+		//hacking
+		return;
+	}
 	if(packet[0] == 0x00){
 		player->setStatus(2);
 	}
@@ -117,6 +119,10 @@ void Login::checkPin(PlayerLogin* player, unsigned char* packet){
 }
 
 void Login::registerPIN(PlayerLogin* player, unsigned char* packet){
+	if (!config.getBool("pin")) {
+		//hacking
+		return;
+	}
 	if(packet[0] == 0x00){
 		if(player->getPin() != -1){
 			player->setStatus(2);
@@ -133,4 +139,8 @@ void Login::registerPIN(PlayerLogin* player, unsigned char* packet){
 
 void Login::loginBack(PlayerLogin* player){
 	LoginPacket::logBack(player);
+}
+
+void Login::loadConfig() {
+	config.loadFile("conf/login.lua");
 }
