@@ -37,6 +37,7 @@ namespace Login {
 	void checkPin(PlayerLogin* player, unsigned char* packet);
 	void loadConfig();
 	extern Config config;
+	extern bool pin_enabled;
 };
 
 #endif
