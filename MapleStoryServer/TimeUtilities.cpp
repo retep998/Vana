@@ -29,6 +29,8 @@ __int64 getServerTime(){
 }
 
 __int64 timeToTick(time_t time) {
+	if (time == -1)
+		return -1;
     struct tm timeinfo;
     localtime_s(&timeinfo, &time);
     unsigned __int64 ticks = 0;
@@ -51,6 +53,10 @@ __int64 timeToTick(time_t time) {
 }
 
 int tickToTick32(__int64 tick) {
-	int tick32 = (int) (tick/4294967296 + 1); // Plus one to compensate for the loss of conversion
+	int tick32;
+	if (tick == -1)
+		tick32 = -1;
+	else
+		tick32 = (int) (tick/4294967296 + 1); // Plus one to compensate for the loss of conversion
 	return tick32;
 }
