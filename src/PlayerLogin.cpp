@@ -36,7 +36,7 @@ void PlayerLogin::handleRequest(unsigned char* buf, int len){
 		case 0x0f: Characters::deleteCharacter(this, buf+2); break;
 		case 0x1A: Login::loginBack(this); break;
 		//case 0x07: Login::setGender(this, buf+2); break;
-		//case 0x09: Login::registerPIN(this, buf+2); break;
+		case 0x05: Login::registerPIN(this, buf+2); break;
 	}
 }
 
