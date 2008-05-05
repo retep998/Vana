@@ -35,11 +35,19 @@ void Worlds::showWorld(PlayerLogin* player){
 }
 
 void Worlds::selectWorld(PlayerLogin* player, unsigned char* packet){
+	if(player->getStatus() != 4){
+		// hacking
+		return;
+	}
 	player->setServer(packet[0]);
 	LoginPacket::showChannels(player);
 }
 
 void Worlds::channelSelect(PlayerLogin* player, unsigned char* packet){
+	if(player->getStatus() != 4){
+		// hacking
+		return;
+	}
 	player->setChannel(packet[1]);
 	LoginPacket::channelSelect(player);
 	Characters::showCharacters(player);

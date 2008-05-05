@@ -72,9 +72,10 @@ private:
 	int status;
 	int userid;
 	int pin;
+	bool checked_pin;
 	char gender;
 	int server;
-	int channel;	
+	int channel;
 };
 
 class PlayerLoginFactory:public AbstractPlayerFactory {
