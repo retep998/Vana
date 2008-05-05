@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Login.h"
 
 Config Login::config;
+bool Login::pin_enabled;
 
 void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	int usersize = getShort(packet);
@@ -49,7 +50,7 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	else {
 		printf("%s logged in.\n", username);
 		player->setUserid(res[0]["id"]);
-		if (config.getBool("pin")) {
+		if (pin_enabled) {
 			if (res[0]["pin"].is_null())
 				player->setPin(-1);
 			else
@@ -88,7 +89,7 @@ void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
 	}
 }
 void Login::checkPin(PlayerLogin* player, unsigned char* packet){
-	if (!config.getBool("pin")) {
+	if (!pin_enabled) {
 		//hacking
 		return;
 	}
@@ -119,7 +120,7 @@ void Login::checkPin(PlayerLogin* player, unsigned char* packet){
 }
 
 void Login::registerPIN(PlayerLogin* player, unsigned char* packet){
-	if (!config.getBool("pin")) {
+	if (!pin_enabled) {
 		//hacking
 		return;
 	}
@@ -143,4 +144,5 @@ void Login::loginBack(PlayerLogin* player){
 
 void Login::loadConfig() {
 	config.loadFile("conf/login.lua");
+	pin_enabled = config.getBool("pin");
 }
