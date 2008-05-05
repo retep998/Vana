@@ -1,0 +1,5 @@
+host = "localhost";
+username = "root";
+password = "";
+database = "maplestory";
+port = 3306;
