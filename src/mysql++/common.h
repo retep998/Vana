@@ -3,9 +3,6 @@
 /// internal to the library, and outside it.  Contrast mysql++.h
 ///
 /// This file mostly takes care of platform differences.
-//
-// This file is modified to look at the parent directory for mysql libraries
-// This modification happened on 02/05/08 at 6:00AM (GMT+7)
 
 /***********************************************************************
  Copyright (c) 1998 by Kevin Atkinson, (c) 1999-2001 by MySQL AB, and
@@ -124,7 +121,7 @@
 #if defined(MYSQLPP_MYSQL_HEADERS_BURIED)
 #	include <mysql/mysql_version.h>
 #else
-#	include "../mysql_version.h"
+#	include <mysql_version.h>
 #endif
 
 namespace mysqlpp {
@@ -182,7 +179,7 @@ typedef unsigned long ulong;
 #if defined(MYSQLPP_MYSQL_HEADERS_BURIED)
 #	include <mysql/mysql.h>
 #else
-#	include "../mysql.h"
+#	include <mysql.h>
 #endif
 
 #endif // !defined(MYSQLPP_COMMON_H)

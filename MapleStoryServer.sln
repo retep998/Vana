@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MapleStoryServer", "MapleStoryServer\MapleStoryServer.vcproj", "{F07865A8-3A41-48D8-809C-056CC906A50B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MapleStoryServer", "MapleStoryServer.vcproj", "{F07865A8-3A41-48D8-809C-056CC906A50B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
