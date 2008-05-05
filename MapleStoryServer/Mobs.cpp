@@ -310,6 +310,8 @@ void Mobs::damageMobS(Player* player, unsigned char* packet, int size){
 		int hpRecover = ((totalDmg * Skills::skills[4101005][player->skills->getSkillLevel(4101005)].x)/100);
 		if (hpRecover > mhp)
 			hpRecover = mhp;
+		if (hpRecover > player->getMHP()/2)
+			hpRecover = player->getMHP()/2;
 		if(player->getHP()+hpRecover > player->getMHP())
 			player->setHP(player->getMHP());
 		else
