@@ -287,14 +287,16 @@ void Mobs::damageMobS(Player* player, unsigned char* packet, int size){
 		s3121004 = true;
 	if(skillid > 0)
 		Skills::useAttackSkill(player, skillid);
+	int damage, mhp;
+	int totalDmg = 0;
 	for(int i=0; i<howmany; i++){
 		int mobid = getInt(packet+19+4*s3121004+i*(22+4*(hits-1)));
 		Mob* mob = getMobByID(mobid, map);
 		for(int k=0; k<hits; k++){
-			int damage = getInt(packet+37+4*s3121004+i*(22+4*(hits-1))+k*4);
+			damage = getInt(packet+37+4*s3121004+i*(22+4*(hits-1))+k*4);
+			totalDmg += damage;
 			if(mob!=NULL){
 				mob->setHP(mob->getHP()-damage);
-				int mhp=-1;
 				mhp = mobinfo[mob->getMobID()].hp;
 				MobsPacket::showHP(player, mobid ,mob->getHP()*100/mhp);
 				if(mob->getHP() <= 0){
@@ -304,6 +306,15 @@ void Mobs::damageMobS(Player* player, unsigned char* packet, int size){
 			}
 		}
 	}	
+	if(skillid == 4101005){ // Drain
+		int hpRecover = ((totalDmg * Skills::skills[4101005][player->skills->getSkillLevel(4101005)].x)/100);
+		if (hpRecover > mhp)
+			hpRecover = mhp;
+		if(player->getHP()+hpRecover > player->getMHP())
+			player->setHP(player->getMHP());
+		else
+			player->setHP(player->getHP()+hpRecover);
+	}
 }
 
 void Mobs::spawnMob(Player* player, int mobid){
