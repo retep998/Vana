@@ -25,11 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Timer.h"
 #include "MySQLM.h"
+#include "Config.h"
 using namespace std;
 
 void Initializing::initializeMySQL(){
+	Config config("conf/mysql.lua");
 	printf("Initializing MySQL... ");
-	if(db.set_option(new mysqlpp::ReconnectOption(true)) && db.connect("maplestory", "localhost", "root", "")) //TODO: Use configuration file
+	if(db.set_option(new mysqlpp::ReconnectOption(true)) && db.connect(config.getString("database"), config.getString("host"), config.getString("username"), config.getString("password"), config.getInt("port")))
 		printf("DONE\n");
 	else{
 		printf("FAILED\n");

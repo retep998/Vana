@@ -61,8 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.x86.debug.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="lua"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				SubSystem="1"
@@ -117,6 +118,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -135,8 +137,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.x86.release.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="lua"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -261,6 +264,10 @@
 			<Filter
 				Name="DataBaseManager"
 				>
+				<File
+					RelativePath=".\Config.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\MySQLM.cpp"
 					>
@@ -483,6 +490,10 @@
 			<Filter
 				Name="DataBaseManager"
 				>
+				<File
+					RelativePath=".\Config.h"
+					>
+				</File>
 				<File
 					RelativePath=".\MySQLM.h"
 					>
