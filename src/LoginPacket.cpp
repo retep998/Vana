@@ -62,7 +62,7 @@ void LoginPacket::loginConnect(PlayerLogin* player, char* username, int size){
 	packet.addShort(0);
 	packet.addInt(player->getUserid());
 	if(player->getStatus() == 1)
-		packet.addByte(0x0A);
+		packet.addByte(0x0B);
 	else
 		packet.addByte(player->getGender());
 	packet.addBytes("0465");
@@ -81,12 +81,11 @@ void LoginPacket::loginProcess(PlayerLogin* player, char id){
 	packet.packetSendLogin(player);
 }
 
-void LoginPacket::processOk(PlayerLogin* player){
+void LoginPacket::pinAssigned(PlayerLogin* player){
 	Packet packet = Packet();
-	packet.addHeader(0x06);
+	packet.addHeader(0x11);
 	packet.addByte(0);
 	packet.packetSendLogin(player);
-
 }
 
 void LoginPacket::showWorld(PlayerLogin* player, World world){

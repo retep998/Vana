@@ -53,7 +53,10 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	else {
 		printf("%s logged in.\n", username);
 		player->setUserid(res[0]["id"]);
-		player->setPin(res[0]["pin"]);
+		if (res[0]["pin"].is_null())
+			player->setPin(-1);
+		else
+			player->setPin(res[0]["pin"]);
 		int pin = player->getPin();
 		if(pin == -1)
 			player->setStatus(1); // New PIN
@@ -73,10 +76,10 @@ void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
 	if(status == 1)
 		LoginPacket::loginProcess(player, 0x01);
 	else if(status == 2){
-		//LoginPacket::loginProcess(player, 0x04);
-		//player->setStatus(3);
-		player->setStatus(4);
-		handleLogin(player, packet);
+		LoginPacket::loginProcess(player, 0x04);
+		player->setStatus(3);
+		//player->setStatus(4);
+		//handleLogin(player, packet);
 	}
 	else if(status == 3)
 		checkPin(player, packet);
@@ -125,7 +128,7 @@ void Login::registerPIN(PlayerLogin* player, unsigned char* packet){
 	mysqlpp::Query query = db.query();
 	query << "UPDATE users SET pin = " << mysqlpp::quote << pin << " WHERE id = " << mysqlpp::quote << player->getUserid();
 	query.exec();
-	LoginPacket::processOk(player);
+	LoginPacket::pinAssigned(player);
 }
 
 void Login::loginBack(PlayerLogin* player){

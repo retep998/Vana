@@ -33,7 +33,7 @@ namespace LoginPacket {
 	void loginBan(PlayerLogin* player, char reason, int expire);
 	void loginProcess(PlayerLogin* player, char id);
 	void loginConnect(PlayerLogin* player, char* username, int size);
-	void processOk(PlayerLogin* player);
+	void pinAssigned(PlayerLogin* player);
 	void showWorld(PlayerLogin* player, World world);
 	void worldEnd(PlayerLogin* player);
 	void showChannels(PlayerLogin* player);
