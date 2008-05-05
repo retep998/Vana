@@ -34,7 +34,7 @@ void Initializing::initializeMySQL(){
 	if(db.set_option(new mysqlpp::ReconnectOption(true)) && db.connect(config.getString("database"), config.getString("host"), config.getString("username"), config.getString("password"), config.getInt("port")))
 		printf("DONE\n");
 	else{
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 	// Every user should be set to offline on startup
@@ -50,7 +50,7 @@ void Initializing::initializeMobs(){
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -89,7 +89,7 @@ void Initializing::initializeItems(){
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -197,7 +197,7 @@ void Initializing::initializeDrops(){
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -228,7 +228,7 @@ void Initializing::initializeDrops(){
 	query << "SELECT * FROM mesodropdata ORDER BY mobid ASC";
 	
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 	
@@ -247,7 +247,7 @@ void Initializing::initializeEquips(){
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -311,7 +311,7 @@ void Initializing::initializeShops(){
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -353,7 +353,7 @@ void Initializing::initializeQuests(){
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -368,7 +368,7 @@ void Initializing::initializeQuests(){
 	query << "SELECT * FROM questrequestdata ORDER BY questid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -409,7 +409,7 @@ void Initializing::initializeQuests(){
 	query << "SELECT * FROM questrewarddata ORDER BY questid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -464,7 +464,7 @@ void Initializing::initializeSkills(){
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -534,7 +534,7 @@ void Initializing::initializeMaps(){
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -585,7 +585,7 @@ void Initializing::initializeMaps(){
 	query << "SELECT * FROM mapnpcdata ORDER BY mapid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -627,7 +627,7 @@ void Initializing::initializeMaps(){
 	query << "SELECT * FROM mapmobdata ORDER BY mapid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
@@ -665,7 +665,7 @@ void Initializing::initializeMaps(){
 	query << "SELECT * FROM mapfootholddata ORDER BY mapid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED\n");
+		printf("FAILED: %s\n", db.error());
 		exit(1);
 	}
 
