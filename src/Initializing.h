@@ -30,6 +30,7 @@ namespace Initializing {
 	void initializeQuests();
 	void initializeSkills();
 	void initializeTimers();
+	void initializeConfig();
 };
 
 #endif
