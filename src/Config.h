@@ -27,11 +27,14 @@ extern "C" {
 class Config {
 public:
 	Config(char *filename);
+	Config();
+	void loadFile(char *filename);
 	int getInt(char *value);
 	char * getString(char *value);
 	bool getBool(char *value);
 private:
 	lua_State *luaVm;
+	void initialize();
 };
 
 #endif
