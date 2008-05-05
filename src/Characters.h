@@ -65,11 +65,11 @@ namespace Characters {
 	void createCharacter(PlayerLogin* player, unsigned char* packet);
 	void deleteCharacter(PlayerLogin* player, unsigned char* packet);
 	void showCharacters(PlayerLogin* player);
-	extern private void loadCharacter(Character &charc, mysqlpp::Row row);
-	extern private void showEquips(int id, vector <CharEquip> &vec);
-	extern private void createEquip(int equipid, int type, int charid);
-	extern private bool ownerCheck(PlayerLogin* player, int id);
-	extern private bool nameTaken(char *name);
+	void loadCharacter(Character &charc, mysqlpp::Row row);
+	void showEquips(int id, vector <CharEquip> &vec);
+	void createEquip(int equipid, int type, int charid);
+	bool ownerCheck(PlayerLogin* player, int id);
+	bool nameTaken(char *name);
 };
 
 #endif

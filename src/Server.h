@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace Server {
-	extern private char msg[100];
-	extern private int on;
+	extern char msg[100];
+	extern int on;
 	void showScrollingHeader(Player* player);
 	void changeScrollingHeader(char* msg);
 	void enableScrollingHeader();
