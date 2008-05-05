@@ -18,9 +18,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 
 Config::Config(char *filename) {
+	initialize();
+	loadFile(filename);
+}
+
+Config::Config() {
+	initialize();
+}
+
+void Config::initialize() {
 	luaVm = lua_open();
 	luaopen_base(luaVm);
+}
 
+void Config::loadFile(char *filename) {
 	luaL_dofile(luaVm, filename);
 }
 
