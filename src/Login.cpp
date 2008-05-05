@@ -120,7 +120,7 @@ void Login::checkPin(PlayerLogin* player, unsigned char* packet){
 }
 
 void Login::registerPIN(PlayerLogin* player, unsigned char* packet){
-	if (!pin_enabled) {
+	if (!pin_enabled || player->getStatus() != 1) {
 		//hacking
 		return;
 	}
