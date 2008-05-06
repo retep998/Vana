@@ -19,10 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PacketCreator.h"
 #include "Skills.h"
+#include "SendHeader.h"
 
 void SkillsPacket::addSkill(Player* player, int skillid, int level){
 	Packet packet = Packet();
-	packet.addHeader(0x2f);
+	packet.addHeader(SEND_ADD_SKILL);
 	packet.addByte(1);
 	packet.addShort(1);
 	packet.addInt(skillid);
@@ -35,7 +36,7 @@ void SkillsPacket::addSkill(Player* player, int skillid, int level){
 
 void SkillsPacket::showSkill(Player* player, vector <Player*> players, int skillid){
 	Packet packet = Packet();
-	packet.addHeader(0x85);
+	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(1);
 	packet.addInt(skillid);
@@ -46,7 +47,7 @@ void SkillsPacket::showSkill(Player* player, vector <Player*> players, int skill
 
 void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill){
 	Packet packet = Packet();
-	packet.addHeader(0x3a);
+	packet.addHeader(SEND_USE_SKILL);
 	packet.addByte(pskill.types[0]);
 	packet.addByte(pskill.types[1]);
 	packet.addByte(pskill.types[2]);
@@ -65,7 +66,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 	packet.packetSend(player);
 	if(mskill.vals.size()>0){
 		packet = Packet();
-		packet.addHeader(0x86);
+		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getPlayerid());
 		packet.addByte(mskill.types[0]);
 		packet.addByte(mskill.types[1]);
@@ -85,7 +86,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 
 void SkillsPacket::healHP(Player* player, short hp){
 	Packet packet = Packet();
-	packet.addHeader(0x67);
+	packet.addHeader(SEND_GAIN_ITEM);
 	packet.addByte(0xA);
 	packet.addShort(hp);
 	packet.packetSend(player);
@@ -93,7 +94,7 @@ void SkillsPacket::healHP(Player* player, short hp){
 
 void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill){
 	Packet packet = Packet();
-	packet.addHeader(0x24);
+	packet.addHeader(SEND_CANCEL_SKILL);
 	packet.addByte(pskill.types[0]);
 	packet.addByte(pskill.types[1]);
 	packet.addByte(pskill.types[2]);
@@ -106,7 +107,7 @@ void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiv
 	packet.packetSend(player);
 	if(mskill.vals.size()>0){
 		packet = Packet();
-		packet.addHeader(0x8A);
+		packet.addHeader(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getPlayerid());
 		packet.addByte(mskill.types[0]);
 		packet.addByte(mskill.types[1]);

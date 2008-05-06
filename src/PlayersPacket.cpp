@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Players.h"
 #include "PlayersPacket.h"
-
+#include "SendHeader.h"
 
 void PlayersPacket::showMoving(Player* player, vector <Player*> players, unsigned char* packett, int size){
 	Packet packet = Packet();
-	packet.addHeader(0x84);
+	packet.addHeader(SEND_MOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(0);
 	packet.addBytesHex(packett+5, size);
@@ -32,7 +32,7 @@ void PlayersPacket::showMoving(Player* player, vector <Player*> players, unsigne
 
 void PlayersPacket::faceExperiment(Player* player, vector <Player*> players, int face){
 	Packet packet = Packet();
-	packet.addHeader(0x8c);
+	packet.addHeader(SEND_FACE_EXPERIMENT);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(face);
 	packet.sendTo(player, players, 0);
@@ -40,7 +40,7 @@ void PlayersPacket::faceExperiment(Player* player, vector <Player*> players, int
 
 void PlayersPacket::showChat(Player* player, vector <Player*> players, char* msg){
 	Packet packet = Packet();
-	packet.addHeader(0x71);
+	packet.addHeader(SEND_CHAT);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(0);
 	packet.addShort(strlen(msg));
@@ -50,7 +50,7 @@ void PlayersPacket::showChat(Player* player, vector <Player*> players, char* msg
 
 void PlayersPacket::damagePlayer(Player* player, vector <Player*> players, int dmg, int mob){
 	Packet packet = Packet();
-	packet.addHeader(0x89);
+	packet.addHeader(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(-1);
 	packet.addInt(dmg);
@@ -63,7 +63,7 @@ void PlayersPacket::damagePlayer(Player* player, vector <Player*> players, int d
 
 void PlayersPacket::showMessage(char* msg, char type){
 	Packet packet = Packet();
-	packet.addHeader(0x2D); 
+	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addShort(strlen(msg));
 	packet.addString(msg, strlen(msg));
@@ -75,7 +75,7 @@ void PlayersPacket::showMessage(char* msg, char type){
 
 void PlayersPacket::showInfo(Player* player, Player* getinfo){
 	Packet packet = Packet();
-	packet.addHeader(0x2A);
+	packet.addHeader(SEND_PLAYER_INFO);
 	packet.addInt(getinfo->getPlayerid());
 	packet.addByte(getinfo->getLevel());
 	packet.addShort(getinfo->getJob());
@@ -90,7 +90,7 @@ void PlayersPacket::showInfo(Player* player, Player* getinfo){
 
 void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
 	Packet packet = Packet();
-	packet.addHeader(0x5E);
+	packet.addHeader(SEND_COMMAND_RESPEND);
 	packet.addByte(0x12);
 	packet.addShort(strlen(player->getName()));
 	packet.addString(player->getName(),strlen(player->getName()));
@@ -102,7 +102,7 @@ void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
 
 void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is){
 	Packet packet = Packet();
-	packet.addHeader(0x5E);
+	packet.addHeader(SEND_COMMAND_RESPEND);
 	if(map != -1){
 		packet.addByte(0x09);
 		packet.addShort(strlen(name));

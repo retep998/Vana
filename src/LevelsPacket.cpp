@@ -18,10 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LevelsPacket.h"
 #include "PacketCreator.h"
 #include "Player.h"
+#include "SendHeader.h"
 
 void LevelsPacket::showEXP(Player* player, int exp, char type){
 	Packet packet = Packet();
-	packet.addHeader(0x32);
+	packet.addHeader(SEND_NOTE);
 	packet.addByte(3);
 	packet.addByte(1);
 	packet.addInt(exp);
@@ -34,7 +35,7 @@ void LevelsPacket::showEXP(Player* player, int exp, char type){
 
 void LevelsPacket::levelUP(Player* player, vector <Player*> players){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addShort(0x7C10);
 	packet.addShort(1);
@@ -47,7 +48,7 @@ void LevelsPacket::levelUP(Player* player, vector <Player*> players){
 	packet.addInt(player->getExp());
 	packet.packetSend(player); // TODO
 	packet = Packet();
-	packet.addHeader(0x85);
+	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(0);
 	packet.sendTo(player, players, 0);
@@ -56,14 +57,14 @@ void LevelsPacket::levelUP(Player* player, vector <Player*> players){
 
 void LevelsPacket::statOK(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
 	packet.packetSend(player);
 }
 void LevelsPacket::changeStat(Player* player, int nam, short val){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(nam);
 	packet.addShort(val);
@@ -73,13 +74,13 @@ void LevelsPacket::changeStat(Player* player, int nam, short val){
 
 void LevelsPacket::jobChange(Player *player, std::vector<Player*> players){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x20);
 	packet.addShort(player->getJob());
 	packet.packetSend(player);
 	packet = Packet();
-	packet.addHeader(0x85);
+	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(8);
 	packet.sendTo(player, players, 0);

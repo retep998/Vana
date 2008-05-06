@@ -19,17 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Players.h"
+#include "SendHeader.h"
 
 void FamePacket::SendError(Player* player, int reason){
 	Packet packet = Packet();
-	packet.addHeader(0x31);
+	packet.addHeader(SEND_FAME);
 	packet.addInt(reason);
 	packet.packetSend(player);
 }
 
 void FamePacket::SendFame(Player* player, Player* player2, char* cFamer, int charLen, int FameDefame, int NewFame){
 	Packet packet = Packet();
-	packet.addHeader(0x31);
+	packet.addHeader(SEND_FAME);
 	packet.addByte(0x05);
 	packet.addShort(strlen(player->getName()));
 	packet.addString(player->getName(),strlen(player->getName()));
@@ -37,7 +38,7 @@ void FamePacket::SendFame(Player* player, Player* player2, char* cFamer, int cha
 	packet.packetSend(player2);
 
 	packet = Packet();
-	packet.addHeader(0x31);
+	packet.addHeader(SEND_FAME);
 	packet.addByte(0x00);
 	packet.addShort(strlen(player2->getName()));
 	packet.addString(player2->getName(),strlen(player2->getName()));
@@ -48,7 +49,7 @@ void FamePacket::SendFame(Player* player, Player* player2, char* cFamer, int cha
 
 void FamePacket::UpdateFame(Player* player) {
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addShort(0);
 	packet.addShort(2);

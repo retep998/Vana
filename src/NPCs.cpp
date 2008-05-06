@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Levels.h"
 #include "BufferUtilities.h"
+#include "SendHeader.h"
 
 hash_map <int, NPCsInfo> NPCs::info;
 
@@ -151,7 +152,7 @@ NPC::~NPC(){
 
 Packet NPC::npcPacket(char type){
 	Packet packet = Packet();
-	packet.addHeader(0xC2);
+	packet.addHeader(SEND_NPC_TALK);
 	packet.addByte(4);
 	packet.addInt(npcid);
 	packet.addByte(type);

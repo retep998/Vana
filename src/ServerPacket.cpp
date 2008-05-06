@@ -19,10 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Players.h"
+#include "SendHeader.h"
 
 void ServerPacket::showScrollingHeader(Player* player, char* msg){
 	Packet packet = Packet();
-	packet.addHeader(0x2D);
+	packet.addHeader(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(1);
 	packet.addShort(strlen(msg));
@@ -31,7 +32,7 @@ void ServerPacket::showScrollingHeader(Player* player, char* msg){
 }
 void ServerPacket::changeScrollingHeader(char* msg){
 	Packet packet = Packet();
-	packet.addHeader(0x2D);
+	packet.addHeader(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(1);
 	packet.addShort(strlen(msg));
@@ -44,7 +45,7 @@ void ServerPacket::changeScrollingHeader(char* msg){
 
 void ServerPacket::scrollingHeaderOff(){
 	Packet packet = Packet();
-	packet.addHeader(0x2D);
+	packet.addHeader(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(0);
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();

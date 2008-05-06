@@ -23,10 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Server.h"
 #include "TimeUtilities.h"
 #include "PlayerPacketHelper.h"
+#include "SendHeader.h"
 
 void PlayerPacket::connectData(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x4D);
+	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(0); // Channel
 	packet.addBytes("0101853D4B11F4836B3DBA9A4FA1");
 	packet.addShort(-1);
@@ -124,7 +125,7 @@ void PlayerPacket::connectData(Player* player){
 
 void PlayerPacket::newHP(Player* player, short hp){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(0);
 	packet.addShort(0);
 	packet.addShort(4);
@@ -135,7 +136,7 @@ void PlayerPacket::newHP(Player* player, short hp){
 
 void PlayerPacket::newMP(Player* player, short mp, bool is){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
 	packet.addShort(0);
 	packet.addShort(0x10);
@@ -146,7 +147,7 @@ void PlayerPacket::newMP(Player* player, short mp, bool is){
 
 void PlayerPacket::newEXP(Player* player, int exp){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addShort(0);
 	packet.addShort(1);
@@ -157,7 +158,7 @@ void PlayerPacket::newEXP(Player* player, int exp){
 
 void PlayerPacket::showKeys(Player* player, int keys[90]){
 	Packet packet = Packet();
-	packet.addHeader(0xf6);
+	packet.addHeader(SEND_KEYMAP);
 	packet.addByte(0);
 	for(int i=0; i<90; i++){
 		packet.addInt(keys[i]);
@@ -167,7 +168,7 @@ void PlayerPacket::showKeys(Player* player, int keys[90]){
 }
 void PlayerPacket::setSP(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addByte(0);
 	packet.addShort(0x80);
@@ -178,7 +179,7 @@ void PlayerPacket::setSP(Player* player){
 
 void PlayerPacket::setJob(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x20);
 	packet.addShort(player->getJob());
@@ -187,7 +188,7 @@ void PlayerPacket::setJob(Player* player){
 
 void PlayerPacket::newHair(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x4);
 	packet.addInt(player->getHair());
@@ -196,7 +197,7 @@ void PlayerPacket::newHair(Player* player){
 
 void PlayerPacket::newEyes(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x2);
 	packet.addInt(player->getEyes());
@@ -205,7 +206,7 @@ void PlayerPacket::newEyes(Player* player){
 
 void PlayerPacket::newSkin(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x23);
+	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x1);
 	packet.addByte(player->getSkin());

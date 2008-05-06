@@ -20,10 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "MapPacket.h"
 #include "Inventory.h"
+#include "SendHeader.h"
 
 Packet MapPacket::playerPacket(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x65);
+	packet.addHeader(SEND_SHOW_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addShort(strlen(player->getName()));
 	packet.addString(player->getName(), strlen(player->getName()));
@@ -114,7 +115,7 @@ void MapPacket::showPlayer(Player* player, vector <Player*> players){
 
 void MapPacket::removePlayer(Player* player, vector <Player*> players){
 	Packet packet = Packet();
-	packet.addHeader(0x70);
+	packet.addHeader(SEND_REMOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	for(unsigned int i=0; i<players.size(); i++){
 		if(player->getPlayerid() != players[i]->getPlayerid())
@@ -133,7 +134,7 @@ void MapPacket::showPlayers(Player* player, vector <Player*> players){
 
 void MapPacket::changeMap(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x4D);
+	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(0); // Channel
 	packet.addShort(0); // 2?
 	packet.addInt(player->getMap());
@@ -149,6 +150,6 @@ void MapPacket::changeMap(Player* player){
 
 void MapPacket::makeApple(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x5B);  
+	packet.addHeader(SEND_MAKE_APPLE);  
 	packet.packetSend(player);
 }
