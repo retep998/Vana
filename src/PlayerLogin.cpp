@@ -31,7 +31,7 @@ void PlayerLogin::handleRequest(unsigned char* buf, int len){
 		case RECV_LOGIN_PROCESS: Login::handleLogin(this, buf+2); break;
 		case RECV_SHOW_WORLD:
 		case RECV_SHOW_WORLD2: Worlds::showWorld(this); break;
-		case RECV_CONNECT_CHANNEL_SERVER: Characters::connectGame(this, buf+2); break;
+		case RECV_GET_CHANNEL_SERVER_INFO: Characters::connectGame(this, buf+2); break;
 		case RECV_CHECK_CHAR_NAME: Characters::checkCharacterName(this, buf+2); break;
 		case RECV_CREATE_CHAR: Characters::createCharacter(this, buf+2); break;
 		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, buf+2); break;
