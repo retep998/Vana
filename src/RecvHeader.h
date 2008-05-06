@@ -29,3 +29,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_DELETE_CHAR 0x0f
 #define RECV_RETURN_TO_LOGIN 0x1a
 #define RECV_REGISTER_PIN 0x05
+
+//Channel
+#define RECV_CHANNEL_LOGIN 0x14
+#define RECV_NPC_TALK_CONT 0x21 // i.e. clicking next on NPC
+#define RECV_SHOP_ENTER 0x22
+#define RECV_NPC_TALK 0x23
+#define RECV_DAMAGE_PLAYER 0x2a
+#define RECV_STOP_CHAIR 0x2b
+#define RECV_CHAT 0x2c
+#define RECV_USE_CHAIR 0x2d
+#define RECV_DAMAGE_MOB_SKILL 0x2e
+#define RECV_CHANGE_MAP 0x2f
+#define RECV_MOVE_PLAYER 0x35
+#define RECV_DAMAGE_MOB_RANGED 0x36
+#define RECV_GET_PLAYER_INFO 0x44
+#define RECV_CHANGE_MAP_SPECIAL 0x47
+#define RECV_USE_SUMMON_BAG 0x4b
+#define RECV_ADD_SKILL 0x4d
+#define RECV_CANCEL_SKILL 0x4e
+#define RECV_USE_SKILL 0x51
+#define RECV_USE_MEGAPHONE 0x53
+#define RECV_COMMAND 0x58 // / commands like "/find"
+#define RECV_DAMAGE_MOB 0x59
+#define RECV_FACE_EXPERIMENT 0x5c
+#define RECV_MOVE_ITEM 0x62
+#define RECV_USE_ITEM 0x63
+#define RECV_USE_RETURN_SCROLL 0x64
+#define RECV_USE_SCROLL 0x65
+#define RECV_ADD_STAT 0x66
+#define RECV_HEAL_PLAYER 0x67
+#define RECV_DROP_MESO 0x68
+#define RECV_FAME 0x69
+#define RECV_GET_QUEST 0x6b
+#define RECV_KEYMAP 0x75
+#define RECV_LOOT_ITEM 0x89
+#define RECV_CONTROL_MOB 0x9d
+#define RECV_CONTROL_MOB_SKILL 0xa0
