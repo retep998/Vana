@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="MapleStoryServer"
+	Name="ChannelServer"
 	ProjectGUID="{F07865A8-3A41-48D8-809C-056CC906A50B}"
-	RootNamespace="MapleStoryServer"
+	RootNamespace="ChannelServer"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -23,6 +23,7 @@
 			ConfigurationType="1"
 			CharacterSet="1"
 			ManagedExtensions="0"
+			BuildLogFile="$(IntDir)\BuildLog_Channel.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -179,31 +180,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\MapleStoryServer.cpp"
+				RelativePath=".\src\ChannelServer.cpp"
 				>
 			</File>
 			<Filter
-				Name="LoginServer"
-				>
-				<File
-					RelativePath=".\src\Characters.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Login.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\PlayerLogin.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Worlds.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="GameServer"
+				Name="ChannelServer"
 				>
 				<File
 					RelativePath=".\src\Drops.cpp"
@@ -294,10 +275,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\LoginPacket.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\MapPacket.cpp"
 					>
 				</File>
@@ -346,7 +323,11 @@
 				Name="DataBaseLoading"
 				>
 				<File
-					RelativePath=".\src\Initializing.cpp"
+					RelativePath=".\src\InitializeChannel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\InitializeCommon.cpp"
 					>
 				</File>
 			</Filter>
@@ -425,7 +406,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<Filter
-				Name="GameServer"
+				Name="ChannelServer"
 				>
 				<File
 					RelativePath=".\src\Drops.h"
@@ -520,10 +501,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\LoginPacket.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\MapPacket.h"
 					>
 				</File>
@@ -581,30 +558,14 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="LoginServer"
-				>
-				<File
-					RelativePath=".\src\Characters.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Login.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\PlayerLogin.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Worlds.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="DataBaseLoading"
 				>
 				<File
-					RelativePath=".\src\Initializing.h"
+					RelativePath=".\src\InitializeChannel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\InitializeCommon.h"
 					>
 				</File>
 			</Filter>
