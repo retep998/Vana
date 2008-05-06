@@ -39,7 +39,7 @@ public:
 	void addBytes(char* hex);
 	void addBytesHex(unsigned char* bytes, int len);
 	void packetSend(Player* player);	
-	void packetSendLogin(PlayerLogin* player);	
+	void packetSend(PlayerLogin* player);	
 	void sendTo(Player* player, vector <Player*> players, bool is);
 private:
 	int pos;
