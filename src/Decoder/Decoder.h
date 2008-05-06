@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <memory.h>
 #include <time.h>
+#include "../SendHeader.h"
 
 class Decoder {
 private:
@@ -42,8 +43,8 @@ public:
 		(*(short*)ivSend) = rand();
 		(*(short*)(ivRecv+2)) = rand();
 		(*(short*)(ivSend+2)) = rand();
-		(*(short*)connectBuffer) = 0x000D;
-		(*(int*)(connectBuffer+sizeof(short))) = 53;
+		(*(short*)connectBuffer) = SEND_IV;
+		(*(int*)(connectBuffer+sizeof(short))) = MAPLE_VERSION;
 		memcpy_s(connectBuffer+6, 4, ivRecv, 4);
 		memcpy_s(connectBuffer+10, 4, ivSend, 4);
 		connectBuffer[14] = 0x08;

@@ -16,6 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#define SEND_IV 0x0d
+#define MAPLE_VERSION 53
+
 // Login
 #define SEND_LOGIN_INFO_REPLY 0x00
 #define SEND_LOGIN_PROCESS 0x0d
