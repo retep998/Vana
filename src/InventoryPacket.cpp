@@ -245,7 +245,7 @@ void InventoryPacket::showSuperMegaphone(Player* player, char* msg, int whisper)
 	packet.addShort(strlen(fullMessage));
 	packet.addString(fullMessage, strlen(fullMessage));
 	packet.addByte(0); //TODO: Channel
-	packet.addByte(whisper); //TODO: Whisper on/off
+	packet.addByte(whisper);
 	for(hash_map<int,Player*>::iterator iter = Players::players.begin();
 		iter != Players::players.end(); iter++){
 			packet.packetSend(iter->second);
