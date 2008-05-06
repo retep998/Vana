@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Drops.h"
 #include "Inventory.h"
+#include "SendHeader.h"
 
 hash_map <int, ShopInfo> Shops::shops;
 
@@ -28,7 +29,7 @@ void Shops::showShop(Player* player, int id){
 	if(shops.find(id) == shops.end())
 		return;
 	Packet packet = Packet();
-	packet.addHeader(0xD6);
+	packet.addHeader(SEND_SHOP_OPEN);
 	packet.addInt(shops[id].npc);
 	packet.addShort(shops[id].items.size());
 	for(unsigned int i=0; i<shops[id].items.size(); i++){

@@ -19,10 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Drops.h"
+#include "SendHeader.h"
 
 void DropsPacket::drop(vector <Player*> players, Drop* drop, Dropped dropper){
 	Packet packet = Packet();
-	packet.addHeader(0xB8);
+	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getObjID());
 	packet.addByte(drop->getMesos());
@@ -44,7 +45,7 @@ void DropsPacket::drop(vector <Player*> players, Drop* drop, Dropped dropper){
 
 void DropsPacket::dropForPlayer(Player* player, Drop* drop, Dropped dropper){
 	Packet packet = Packet();
-	packet.addHeader(0xB8);
+	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getObjID());
 	packet.addByte(drop->getMesos());
@@ -66,7 +67,7 @@ void DropsPacket::dropForPlayer(Player* player, Drop* drop, Dropped dropper){
 
 void DropsPacket::showDrop(Player* player, Drop* drop){
 	Packet packet = Packet();
-	packet.addHeader(0xB8);
+	packet.addHeader(SEND_DROP_ITEM);
 	if(drop->getPlayer() == player->getPlayerid())
 		packet.addByte(1);
 	else
@@ -88,7 +89,7 @@ void DropsPacket::showDrop(Player* player, Drop* drop){
 
 void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount){
 	Packet packet = Packet();
-	packet.addHeader(0x32);
+	packet.addHeader(SEND_NOTE);
 	packet.addByte(0);
 	if(id==0)
 		packet.addByte(-1);
@@ -110,7 +111,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount){
 
 void DropsPacket::takeDrop(Player* player, vector <Player*> players, Drop* drop){
 	Packet packet = Packet();
-	packet.addHeader(0xB9);
+	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(2);
 	packet.addInt(drop->getObjID());
 	packet.addInt(player->getPlayerid());
@@ -124,14 +125,14 @@ void DropsPacket::takeDrop(Player* player, vector <Player*> players, Drop* drop)
 
 void DropsPacket::dontTake(Player* player){
 	Packet packet = Packet();
-	packet.addHeader(0x18);
+	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addShort(1);
 	packet.packetSend(player);
 }
 
 void DropsPacket::removeDrop(vector <Player*> players, Drop* drop){
 	Packet packet = Packet();
-	packet.addHeader(0xB9);
+	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(0);
 	packet.addInt(drop->getObjID());
 	packet.sendTo(NULL, players, 1);
@@ -139,7 +140,7 @@ void DropsPacket::removeDrop(vector <Player*> players, Drop* drop){
 
 void DropsPacket::explodeDrop(vector <Player*> players, Drop* drop){
 	Packet packet = Packet();
-	packet.addHeader(0xB9);
+	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(4);
 	packet.addInt(drop->getObjID());
 	packet.addShort(655);

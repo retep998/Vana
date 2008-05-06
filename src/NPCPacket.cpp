@@ -19,10 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "NPCs.h"
+#include "SendHeader.h"
 
 void NPCPacket::showNPC(Player* player, NPCInfo npc, int i){
 	Packet packet = Packet();
-	packet.addHeader(0xA7);
+	packet.addHeader(SEND_SHOW_NPC);
 	packet.addInt(i+0x64);
 	packet.addInt(npc.id);
 	packet.addShort(npc.x);
@@ -33,7 +34,7 @@ void NPCPacket::showNPC(Player* player, NPCInfo npc, int i){
 	packet.addShort(npc.rx1);
 	packet.packetSend(player);
 	packet = Packet();
-	packet.addHeader(0xAC);
+	packet.addHeader(SEND_SHOW_NPC2);
 	packet.addByte(1);
 	packet.addInt(i+0x64);
 	packet.addInt(npc.id);
