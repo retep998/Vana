@@ -15,22 +15,22 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INITIALIZE_H
-#define INITIALIZE_H
+#include "Connection/Acceptor.h"
+#include "PlayerLogin.h"
+#include <stdlib.h>
+#include "InitializeLogin.h"
 
-namespace Initializing {
-	void initializing();
-	void initializeMySQL();
-	void initializeMobs();
-	void initializeDrops();
-	void initializeMaps();
-	void initializeEquips();
-	void initializeShops();
-	void initializeItems();
-	void initializeQuests();
-	void initializeSkills();
-	void initializeTimers();
-	void initializeConfig();
-};
+void main(){
+	Initializing::initializing();
 
-#endif
+	WSADATA wsaData;
+	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+	if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n");
+
+	srand((unsigned char)time(0));
+
+	Selector* selector = new Selector();
+	Acceptor::Acceptor(8484, selector, new PlayerLoginFactory());
+
+	while(getchar()){}
+}
