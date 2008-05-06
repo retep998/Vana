@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="src/mysql"
+				AdditionalIncludeDirectories="src/Common;src/Common/mysql"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -65,7 +65,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.x86.debug.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="src/lua;src/mysql;src/mysql++"
+				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				SubSystem="1"
@@ -120,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="src/mysql"
+				AdditionalIncludeDirectories="src/Common;src/Common/mysql"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -141,7 +141,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.x86.release.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="src/lua;src/mysql;src/mysql++"
+				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -180,66 +180,66 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\ChannelServer.cpp"
+				RelativePath=".\src\ChannelServer\ChannelServer.cpp"
 				>
 			</File>
 			<Filter
 				Name="ChannelServer"
 				>
 				<File
-					RelativePath=".\src\Drops.cpp"
+					RelativePath=".\src\ChannelServer\Drops.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Fame.cpp"
+					RelativePath=".\src\ChannelServer\Fame.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Inventory.cpp"
+					RelativePath=".\src\ChannelServer\Inventory.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Levels.cpp"
+					RelativePath=".\src\ChannelServer\Levels.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Maps.cpp"
+					RelativePath=".\src\ChannelServer\Maps.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Mobs.cpp"
+					RelativePath=".\src\ChannelServer\Mobs.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\NPCs.cpp"
+					RelativePath=".\src\ChannelServer\NPCs.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Player.cpp"
+					RelativePath=".\src\ChannelServer\Player.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\PlayerInventory.cpp"
+					RelativePath=".\src\ChannelServer\PlayerInventory.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Players.cpp"
+					RelativePath=".\src\ChannelServer\Players.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Quests.cpp"
+					RelativePath=".\src\ChannelServer\Quests.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Server.cpp"
+					RelativePath=".\src\ChannelServer\Server.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Shops.cpp"
+					RelativePath=".\src\ChannelServer\Shops.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Skills.cpp"
+					RelativePath=".\src\ChannelServer\Skills.cpp"
 					>
 				</File>
 			</Filter>
@@ -247,11 +247,11 @@
 				Name="DataBaseManager"
 				>
 				<File
-					RelativePath=".\src\Config.cpp"
+					RelativePath=".\src\Common\Config.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\MySQLM.cpp"
+					RelativePath=".\src\Common\MySQLM.cpp"
 					>
 				</File>
 			</Filter>
@@ -259,62 +259,62 @@
 				Name="Packets"
 				>
 				<File
-					RelativePath=".\src\DropsPacket.cpp"
+					RelativePath=".\src\ChannelServer\DropsPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\FamePacket.cpp"
+					RelativePath=".\src\ChannelServer\FamePacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\InventoryPacket.cpp"
+					RelativePath=".\src\ChannelServer\InventoryPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\LevelsPacket.cpp"
+					RelativePath=".\src\ChannelServer\LevelsPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\MapPacket.cpp"
+					RelativePath=".\src\ChannelServer\MapPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\MobsPacket.cpp"
+					RelativePath=".\src\ChannelServer\MobsPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\NPCPacket.cpp"
+					RelativePath=".\src\ChannelServer\NPCPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\PacketCreator.cpp"
+					RelativePath=".\src\Common\PacketCreator.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\PlayerPacket.cpp"
+					RelativePath=".\src\ChannelServer\PlayerPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\PlayersPacket.cpp"
+					RelativePath=".\src\ChannelServer\PlayersPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\QuestsPacket.cpp"
+					RelativePath=".\src\ChannelServer\QuestsPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\ServerPacket.cpp"
+					RelativePath=".\src\ChannelServer\ServerPacket.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\SkillsPacket.cpp"
+					RelativePath=".\src\ChannelServer\SkillsPacket.cpp"
 					>
 				</File>
 				<Filter
 					Name="Helpers"
 					>
 					<File
-						RelativePath=".\src\PlayerPacketHelper.cpp"
+						RelativePath=".\src\ChannelServer\PlayerPacketHelper.cpp"
 						>
 					</File>
 				</Filter>
@@ -323,11 +323,11 @@
 				Name="DataBaseLoading"
 				>
 				<File
-					RelativePath=".\src\InitializeChannel.cpp"
+					RelativePath=".\src\ChannelServer\InitializeChannel.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\InitializeCommon.cpp"
+					RelativePath=".\src\Common\InitializeCommon.cpp"
 					>
 				</File>
 			</Filter>
@@ -335,7 +335,7 @@
 				Name="Timer"
 				>
 				<File
-					RelativePath=".\src\Timer.cpp"
+					RelativePath=".\src\ChannelServer\Timer.cpp"
 					>
 				</File>
 			</Filter>
@@ -343,11 +343,11 @@
 				Name="NPCs"
 				>
 				<File
-					RelativePath=".\src\GameMasters.cpp"
+					RelativePath=".\src\ChannelServer\GameMasters.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\MapleIsland.cpp"
+					RelativePath=".\src\ChannelServer\MapleIsland.cpp"
 					>
 				</File>
 			</Filter>
@@ -355,15 +355,15 @@
 				Name="Utilities"
 				>
 				<File
-					RelativePath=".\src\BufferUtilities.cpp"
+					RelativePath=".\src\Common\BufferUtilities.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\CharUtilities.cpp"
+					RelativePath=".\src\Common\CharUtilities.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\TimeUtilities.cpp"
+					RelativePath=".\src\Common\TimeUtilities.cpp"
 					>
 				</File>
 			</Filter>
@@ -371,15 +371,15 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Connection\Acceptor.cpp"
+					RelativePath=".\src\Common\Connection\Acceptor.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Connection\PacketHandler.cpp"
+					RelativePath=".\src\Common\Connection\PacketHandler.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Connection\Selector.cpp"
+					RelativePath=".\src\Common\Connection\Selector.cpp"
 					>
 				</File>
 			</Filter>
@@ -387,15 +387,15 @@
 				Name="Decoder"
 				>
 				<File
-					RelativePath=".\src\Decoder\AESEncryption.cpp"
+					RelativePath=".\src\Common\Decoder\AESEncryption.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Decoder\Decoder.cpp"
+					RelativePath=".\src\Common\Decoder\Decoder.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Decoder\MapleEncryption.cpp"
+					RelativePath=".\src\Common\Decoder\MapleEncryption.cpp"
 					>
 				</File>
 			</Filter>
@@ -409,63 +409,63 @@
 				Name="ChannelServer"
 				>
 				<File
-					RelativePath=".\src\Drops.h"
+					RelativePath=".\src\ChannelServer\Drops.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Fame.h"
+					RelativePath=".\src\ChannelServer\Fame.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Inventory.h"
+					RelativePath=".\src\ChannelServer\Inventory.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Levels.h"
+					RelativePath=".\src\ChannelServer\Levels.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Maps.h"
+					RelativePath=".\src\ChannelServer\Maps.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Mobs.h"
+					RelativePath=".\src\ChannelServer\Mobs.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\NPCs.h"
+					RelativePath=".\src\ChannelServer\NPCs.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\NPCsScripts.h"
+					RelativePath=".\src\ChannelServer\NPCsScripts.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Player.h"
+					RelativePath=".\src\ChannelServer\Player.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\PlayerInventory.h"
+					RelativePath=".\src\ChannelServer\PlayerInventory.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Players.h"
+					RelativePath=".\src\ChannelServer\Players.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Quests.h"
+					RelativePath=".\src\ChannelServer\Quests.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Server.h"
+					RelativePath=".\src\ChannelServer\Server.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Shops.h"
+					RelativePath=".\src\ChannelServer\Shops.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Skills.h"
+					RelativePath=".\src\ChannelServer\Skills.h"
 					>
 				</File>
 			</Filter>
@@ -473,11 +473,11 @@
 				Name="DataBaseManager"
 				>
 				<File
-					RelativePath=".\src\Config.h"
+					RelativePath=".\src\Common\Config.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\MySQLM.h"
+					RelativePath=".\src\Common\MySQLM.h"
 					>
 				</File>
 			</Filter>
@@ -485,62 +485,62 @@
 				Name="Packets"
 				>
 				<File
-					RelativePath=".\src\DropsPacket.h"
+					RelativePath=".\src\ChannelServer\DropsPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\FamePacket.h"
+					RelativePath=".\src\ChannelServer\FamePacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\InventoryPacket.h"
+					RelativePath=".\src\ChannelServer\InventoryPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\LevelsPacket.h"
+					RelativePath=".\src\ChannelServer\LevelsPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\MapPacket.h"
+					RelativePath=".\src\ChannelServer\MapPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\MobsPacket.h"
+					RelativePath=".\src\ChannelServer\MobsPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\NPCPacket.h"
+					RelativePath=".\src\ChannelServer\NPCPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\PacketCreator.h"
+					RelativePath=".\src\Common\PacketCreator.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\PlayerPacket.h"
+					RelativePath=".\src\ChannelServer\PlayerPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\PlayersPacket.h"
+					RelativePath=".\src\ChannelServer\PlayersPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\QuestsPacket.h"
+					RelativePath=".\src\ChannelServer\QuestsPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\ServerPacket.h"
+					RelativePath=".\src\ChannelServer\ServerPacket.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\SkillsPacket.h"
+					RelativePath=".\src\ChannelServer\SkillsPacket.h"
 					>
 				</File>
 				<Filter
 					Name="Helpers"
 					>
 					<File
-						RelativePath=".\src\PlayerPacketHelper.h"
+						RelativePath=".\src\ChannelServer\PlayerPacketHelper.h"
 						>
 					</File>
 				</Filter>
@@ -548,11 +548,11 @@
 					Name="Headers"
 					>
 					<File
-						RelativePath=".\src\RecvHeader.h"
+						RelativePath=".\src\Common\RecvHeader.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\SendHeader.h"
+						RelativePath=".\src\Common\SendHeader.h"
 						>
 					</File>
 				</Filter>
@@ -561,11 +561,11 @@
 				Name="DataBaseLoading"
 				>
 				<File
-					RelativePath=".\src\InitializeChannel.h"
+					RelativePath=".\src\ChannelServer\InitializeChannel.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\InitializeCommon.h"
+					RelativePath=".\src\Common\InitializeCommon.h"
 					>
 				</File>
 			</Filter>
@@ -573,7 +573,7 @@
 				Name="Timer"
 				>
 				<File
-					RelativePath=".\src\Timer.h"
+					RelativePath=".\src\ChannelServer\Timer.h"
 					>
 				</File>
 			</Filter>
@@ -581,15 +581,15 @@
 				Name="Utilities"
 				>
 				<File
-					RelativePath=".\src\BufferUtilities.h"
+					RelativePath=".\src\Common\BufferUtilities.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\CharUtilities.h"
+					RelativePath=".\src\Common\CharUtilities.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\TimeUtilities.h"
+					RelativePath=".\src\Common\TimeUtilities.h"
 					>
 				</File>
 			</Filter>
@@ -597,19 +597,19 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Connection\AbstractPlayer.h"
+					RelativePath=".\src\Common\Connection\AbstractPlayer.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Connection\Acceptor.h"
+					RelativePath=".\src\Common\Connection\Acceptor.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Connection\PacketHandler.h"
+					RelativePath=".\src\Common\Connection\PacketHandler.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Connection\Selector.h"
+					RelativePath=".\src\Common\Connection\Selector.h"
 					>
 				</File>
 			</Filter>
@@ -617,15 +617,15 @@
 				Name="Decoder"
 				>
 				<File
-					RelativePath=".\src\Decoder\AESEncryption.h"
+					RelativePath=".\src\Common\Decoder\AESEncryption.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Decoder\Decoder.h"
+					RelativePath=".\src\Common\Decoder\Decoder.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Decoder\MapleEncryption.h"
+					RelativePath=".\src\Common\Decoder\MapleEncryption.h"
 					>
 				</File>
 			</Filter>
