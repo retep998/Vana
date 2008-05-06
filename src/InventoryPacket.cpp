@@ -251,3 +251,26 @@ void InventoryPacket::showSuperMegaphone(Player* player, char* msg, int whisper)
 			packet.packetSend(iter->second);
 	}
 }
+
+void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char* msg3, char* msg4, unsigned char* displayInfo, int displayInfo_size, int itemid){
+	Packet packet = Packet();
+	packet.addHeader(SEND_SHOW_MESSENGER);
+	packet.addInt(itemid);
+	packet.addShort(strlen(player->getName()));
+	packet.addString(player->getName(), strlen(player->getName()));
+	packet.addShort(strlen(msg));
+	packet.addString(msg, strlen(msg));
+	packet.addShort(strlen(msg2));
+	packet.addString(msg2, strlen(msg2));
+	packet.addShort(strlen(msg3));
+	packet.addString(msg3, strlen(msg3));
+	packet.addShort(strlen(msg4));
+	packet.addString(msg4, strlen(msg4));
+	packet.addInt(0); //TODO: Channel
+	packet.addBytesHex(displayInfo, displayInfo_size);
+
+	for(hash_map<int,Player*>::iterator iter = Players::players.begin();
+		iter != Players::players.end(); iter++){
+			packet.packetSend(iter->second);
+	}
+}
