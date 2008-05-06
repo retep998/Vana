@@ -567,6 +567,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Headers"
+					>
+					<File
+						RelativePath=".\src\RecvHeader.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\SendHeader.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="LoginServer"

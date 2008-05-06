@@ -20,23 +20,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Login.h"
 #include "Worlds.h"
 #include "MySQLM.h"
+#include "RecvHeader.h"
 
 void PlayerLogin::handleRequest(unsigned char* buf, int len){
 	short header = buf[0] + buf[1]*0x100;
 	switch(header){
-		case 0x1b: Login::loginUser(this, buf+2); break;
-		case 0x19: Worlds::channelSelect(this, buf+2); break;
-		case 0x13: Worlds::selectWorld(this, buf+2); break;
-		case 0x03: Login::handleLogin(this, buf+2); break;
-		case 0x18: Worlds::showWorld(this); break;
-		case 0x02: Worlds::showWorld(this); break;
-		case 0x16: Characters::connectGame(this, buf+2); break;
-		case 0x09: Characters::checkCharacterName(this, buf+2); break;
-		case 0x0e: Characters::createCharacter(this, buf+2); break;
-		case 0x0f: Characters::deleteCharacter(this, buf+2); break;
-		case 0x1A: Login::loginBack(this); break;
-		//case 0x07: Login::setGender(this, buf+2); break;
-		case 0x05: Login::registerPIN(this, buf+2); break;
+		case RECV_LOGIN_INFO: Login::loginUser(this, buf+2); break;
+		case RECV_CHANNEL_SELECT: Worlds::channelSelect(this, buf+2); break;
+		case RECV_WORLD_SELECT: Worlds::selectWorld(this, buf+2); break;
+		case RECV_LOGIN_PROCESS: Login::handleLogin(this, buf+2); break;
+		case RECV_SHOW_WORLD:
+		case RECV_SHOW_WORLD2: Worlds::showWorld(this); break;
+		case RECV_CONNECT_CHANNEL_SERVER: Characters::connectGame(this, buf+2); break;
+		case RECV_CHECK_CHAR_NAME: Characters::checkCharacterName(this, buf+2); break;
+		case RECV_CREATE_CHAR: Characters::createCharacter(this, buf+2); break;
+		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, buf+2); break;
+		case RECV_RETURN_TO_LOGIN: Login::loginBack(this); break;
+		case RECV_REGISTER_PIN: Login::registerPIN(this, buf+2); break;
 	}
 }
 
