@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketCreator.h"
 #include <stdio.h>
-#include "Player.h"
 
 void Packet::addHeader(short headerid){
 	(*(short*)packet) = headerid;
@@ -77,25 +76,3 @@ void Packet::addBytesHex(unsigned char* bytes, int len){
 	pos+=len;
 }
 
-void Packet::packetSend(Player* player){
-	unsigned char tempbuf[10000]; 
-	for(int i=0; i<pos; i++){
-		tempbuf[i] = packet[i];
-	}
-	player->sendPacket(tempbuf, pos);
-}
-
-void Packet::packetSend(PlayerLogin* player){
-	unsigned char tempbuf[10000];
-	for(int i=0; i<pos; i++){
-		tempbuf[i] = packet[i];
-	}
-	player->sendPacket(tempbuf, pos);
-}
-
-void Packet::sendTo(Player* player, vector <Player*> players, bool is){
-	for(unsigned int i=0; i<players.size(); i++){
-		if((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
-			this->packetSend(players[i]);
-	}
-}

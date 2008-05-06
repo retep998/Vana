@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define MAX_LEN 10000
 #include <Winsock2.h>
-#include "PlayerLogin.h"
-#include "Player.h"
 #include <Vector>
 using namespace std;
 
@@ -38,9 +36,23 @@ public:
 	void addByte(unsigned char byte);
 	void addBytes(char* hex);
 	void addBytesHex(unsigned char* bytes, int len);
-	void packetSend(Player* player);	
-	void packetSend(PlayerLogin* player);	
-	void sendTo(Player* player, vector <Player*> players, bool is);
+
+	template <class T>
+	void sendTo(T* player, vector <T*> players, bool is) {
+		for(unsigned int i=0; i<players.size(); i++){
+			if((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
+				this->packetSend(players[i]);
+		}
+	}
+	
+	template <class T>
+	void packetSend(T* player) {
+		unsigned char tempbuf[10000]; 
+		for(int i=0; i<pos; i++){
+			tempbuf[i] = packet[i];
+		}
+		player->sendPacket(tempbuf, pos);
+	}
 private:
 	int pos;
 	SOCKET socketid;
