@@ -90,7 +90,7 @@ void PlayersPacket::showInfo(Player* player, Player* getinfo){
 
 void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
 	Packet packet = Packet();
-	packet.addHeader(SEND_COMMAND_RESPEND);
+	packet.addHeader(SEND_COMMAND_RESPOND);
 	packet.addByte(0x12);
 	packet.addShort(strlen(player->getName()));
 	packet.addString(player->getName(),strlen(player->getName()));
@@ -102,7 +102,7 @@ void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
 
 void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is){
 	Packet packet = Packet();
-	packet.addHeader(SEND_COMMAND_RESPEND);
+	packet.addHeader(SEND_COMMAND_RESPOND);
 	if(map != -1){
 		packet.addByte(0x09);
 		packet.addShort(strlen(name));

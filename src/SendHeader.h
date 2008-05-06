@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Channel
 #define SEND_MOVE_ITEM 0x18
+#define SEND_SHOW_MESSENGER 0x19 // Also known as avatar megaphone
 #define SEND_FINISH_QUEST 0x1f
 #define SEND_UPDATE_STAT 0x23
 #define SEND_CANCEL_SKILL 0x24
@@ -43,7 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_USE_SKILL 0x3a
 #define SEND_CHANGE_MAP 0x4d
 #define SEND_MAKE_APPLE 0x5b // Wear apple suit
-#define SEND_COMMAND_RESPEND 0x5e // Respond to / commands i.e. "/find"
+#define SEND_COMMAND_RESPOND 0x5e // Respond to / commands i.e. "/find"
 #define SEND_SHOW_PLAYER 0x65
 #define SEND_STOP_CHAIR 0x66
 #define SEND_GAIN_ITEM 0x67 // Gain item notice in chat
