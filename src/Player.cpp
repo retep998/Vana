@@ -96,6 +96,11 @@ void Player::playerConnect(){
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << getPlayerid();
 	mysqlpp::StoreQueryResult res = query.store();
 
+	if (res.empty()) {
+		//hacking
+		return;
+	}
+
 	strcpy_s(name, res[0]["name"]);
 	gender = (unsigned char) res[0]["gender"];
 	skin = (unsigned char) res[0]["skin"];
