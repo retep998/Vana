@@ -85,17 +85,17 @@ void Packet::packetSend(Player* player){
 	player->sendPacket(tempbuf, pos);
 }
 
-void Packet::sendTo(Player* player, vector <Player*> players, bool is){
-	for(unsigned int i=0; i<players.size(); i++){
-		if((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
-			this->packetSend(players[i]);
-	}
-}
-
-void Packet::packetSendLogin(PlayerLogin* player){
+void Packet::packetSend(PlayerLogin* player){
 	unsigned char tempbuf[10000];
 	for(int i=0; i<pos; i++){
 		tempbuf[i] = packet[i];
 	}
 	player->sendPacket(tempbuf, pos);
+}
+
+void Packet::sendTo(Player* player, vector <Player*> players, bool is){
+	for(unsigned int i=0; i<players.size(); i++){
+		if((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
+			this->packetSend(players[i]);
+	}
 }
