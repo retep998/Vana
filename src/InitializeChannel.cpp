@@ -180,7 +180,7 @@ void Initializing::initializeItems(){
 void Initializing::initializeDrops(){
 	printf("Initializing Drops... ");
 	// Get all the drops
-	mysqlpp::Query query = db.query("SELECT * FROM dropdata ORDER BY mobid ASC");
+	mysqlpp::Query query = db.query("SELECT * FROM itemdropdata ORDER BY mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
