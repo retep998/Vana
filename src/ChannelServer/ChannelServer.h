@@ -15,29 +15,31 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INITIALIZECHANNEL_H
-#define INITIALIZECHANNEL_H
+#ifndef CHANNELSERVER_H
+#define CHANNELSERVER_H
 
-#include "InitializeCommon.h"
-#include "Mobs.h"
-#include "Drops.h"
-#include "Maps.h"
-#include "NPCs.h"
-#include "Shops.h"
-#include "Quests.h"
-#include "Skills.h"
-#include "Timer.h"
+#include "AbstractServer.h"
+#include "InitializeChannel.h"
+#include "Player.h"
 
-namespace Initializing {
-	void initializeMobs();
-	void initializeDrops();
-	void initializeMaps();
-	void initializeEquips();
-	void initializeShops();
-	void initializeItems();
-	void initializeQuests();
-	void initializeSkills();
-	void initializeTimers();
-}
+// ChannelServer main application class, implemented as singleton
+class ChannelServer : public AbstractServer {
+public:
+	static ChannelServer * Instance() {
+		if (singleton == 0)
+			singleton = new ChannelServer;
+		return singleton;
+	}
+	void loadData();
+	void loadConfig();
+	void listen();
+private:
+	ChannelServer() {};
+	ChannelServer(const ChannelServer&);
+	ChannelServer& operator=(const ChannelServer&);
+	static ChannelServer *singleton;
+
+	int _port;
+};
 
 #endif

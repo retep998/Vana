@@ -15,22 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Connection/Acceptor.h"
-#include "Player.h"
+#include "ChannelServer.h"
 #include <stdlib.h>
-#include "InitializeChannel.h"
 
 void main(){
-	Initializing::initializing();
-
-	WSADATA wsaData;
-	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-	if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n");
-
-	srand((unsigned char)time(0));
-
-	Selector* selector = new Selector();
-	Acceptor::Acceptor(8888, selector, new PlayerFactory());
-
+	ChannelServer *server = ChannelServer::Instance();
+	server->initialize();
 	while(getchar()){}
 }
