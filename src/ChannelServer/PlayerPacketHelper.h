@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERPACKETHELPER_H
 #define PLAYERPACKETHELPER_H
 
-#include "Inventory.h"
+#include "PlayerInventory.h"
 #include "PacketCreator.h"
 
 namespace PlayerPacketHelper {
