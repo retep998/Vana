@@ -25,13 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketHandler: public Selector::SelectHandler {
 public:
-
 	PacketHandler(int socket, AbstractPlayer* player);
 	void handle (Selector* selector, int socket);
 	void sendPacket(unsigned char* buf, int len);
-
+	void disconnect(Selector *selector);
 private:
-
 	unsigned char* buffer;
 	int bytesInBuffer;
 	AbstractPlayer* player;

@@ -39,9 +39,7 @@ void PacketHandler::handle (Selector* selector, int socket) {
 		// read header
 		int l = recv(socket, (char*)(buffer + bytesInBuffer), HEADER_LEN - bytesInBuffer, 0);
 		if (l <= 0) {
-			selector->unregisterSocket(socket);
-			closesocket(socket);
-			delete player;
+			disconnect(selector);
 		}
 		bytesInBuffer += l;
 	}
@@ -50,9 +48,7 @@ void PacketHandler::handle (Selector* selector, int socket) {
 		int packetSize = Decoder::getLength(buffer);
 		int l = recv(socket, (char*)(buffer + bytesInBuffer), HEADER_LEN + packetSize - bytesInBuffer, 0);
 		if (l <= 0) {
-			selector->unregisterSocket(socket);
-			closesocket(socket);
-			delete player;
+			disconnect(selector);
 		}
 		bytesInBuffer += l;
 		if (bytesInBuffer == packetSize + HEADER_LEN){
@@ -72,4 +68,10 @@ void PacketHandler::sendPacket(unsigned char *buff, int size){
 	memcpy_s(bufs+4, size, buff, size);
 	decoder->next();
 	send(socket, (const char*)bufs, size+4, 0);
+}
+
+void PacketHandler::disconnect(Selector *selector) {
+	selector->unregisterSocket(socket);
+	closesocket(socket);
+	delete player;
 }
