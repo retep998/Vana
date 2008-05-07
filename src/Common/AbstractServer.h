@@ -27,10 +27,9 @@ public:
 	virtual void listen() = 0;
 	virtual void loadConfig() = 0;
 	virtual void loadData() = 0;
-
-	Selector* selector;
 protected:
 	AbstractServer();
+	Selector* selector;
 
 	int _port;
 };
