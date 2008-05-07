@@ -29,6 +29,7 @@ public:
 
 protected:
 	AbstractPlayerFactory* abstractPlayerFactory;
+	WSADATA wsaData;
 };
 
 #endif

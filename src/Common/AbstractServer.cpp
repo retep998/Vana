@@ -24,9 +24,5 @@ AbstractServer::AbstractServer() {
 void AbstractServer::initialize() {
 	loadData();
 	loadConfig();
-
-	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-	// if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n"); //TODO: Throw exception
-
 	listen();
 }

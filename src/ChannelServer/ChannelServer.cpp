@@ -21,7 +21,7 @@ ChannelServer* ChannelServer::singleton = 0;
 
 void ChannelServer::listen() {
 	selector = new Selector();
-	Acceptor::Acceptor(_port, selector, new PlayerFactory());
+	new Acceptor(_port, selector, new PlayerFactory());
 }
 
 void ChannelServer::loadData() {
