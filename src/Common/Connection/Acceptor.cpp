@@ -23,6 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Acceptor::Acceptor(int port, Selector* selector, AbstractPlayerFactory* apf) {
 	abstractPlayerFactory = apf;
 
+	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+	if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n"); //TODO: Throw exception
+
 	SOCKET acceptSocket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (acceptSocket == INVALID_SOCKET) {
 		printf ("socket error: %d\n", WSAGetLastError());

@@ -21,7 +21,7 @@ LoginServer* LoginServer::singleton = 0;
 
 void LoginServer::listen() {
 	selector = new Selector();
-	Acceptor::Acceptor(_port, selector, new PlayerLoginFactory());
+	new Acceptor(_port, selector, new PlayerLoginFactory());
 }
 
 void LoginServer::loadData() {

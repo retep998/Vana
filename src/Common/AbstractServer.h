@@ -29,7 +29,6 @@ public:
 	virtual void loadData() = 0;
 
 	Selector* selector;
-	WSADATA wsaData;
 protected:
 	AbstractServer();
 
