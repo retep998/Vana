@@ -182,10 +182,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\LoginServer\LoginServer.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\LoginServer\main.cpp"
 				>
 			</File>
@@ -198,6 +194,10 @@
 				</File>
 				<File
 					RelativePath=".\src\LoginServer\Login.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\LoginServer\LoginServer.cpp"
 					>
 				</File>
 				<File
@@ -295,10 +295,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\src\LoginServer\LoginServer.h"
-				>
-			</File>
 			<Filter
 				Name="DataBaseManager"
 				>
@@ -344,6 +340,10 @@
 				</File>
 				<File
 					RelativePath=".\src\LoginServer\Login.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\LoginServer\LoginServer.h"
 					>
 				</File>
 				<File
