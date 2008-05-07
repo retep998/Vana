@@ -64,7 +64,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.x86.debug.lib"
-				OutputFile="$(OutDir)\LoginServer.exe"
+				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
 				GenerateDebugInformation="true"
@@ -141,7 +141,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.x86.release.lib"
-				OutputFile="$(OutDir)\LoginServer.exe"
+				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
 				GenerateDebugInformation="true"
@@ -186,7 +186,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\LoginServer\main.cpp"
+				RelativePath=".\src\LoginServer\main_login.cpp"
 				>
 			</File>
 			<Filter

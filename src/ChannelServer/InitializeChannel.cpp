@@ -17,19 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeChannel.h"
 
-void Initializing::initializing(){
-	initializeMySQL();
-	initializeMobs();
-	initializeItems();
-	initializeDrops();
-	initializeEquips();
-	initializeShops();
-	initializeQuests();
-	initializeSkills();
-	initializeMaps();
-	initializeTimers();
-}
-
 // Mobs
 void Initializing::initializeMobs(){
 	printf("Initializing Mobs... ");
