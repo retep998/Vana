@@ -36,14 +36,14 @@ void MobsPacket::controlMob(Player* player, Mob* mob){
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
 	packet.addShort(-1);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 void MobsPacket::endControlMob(Player* player, Mob* mob){
 	Packet packet = Packet();
 	packet.addHeader(SEND_CONTROL_MOB);
 	packet.addByte(0);
 	packet.addInt(mob->getID());
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void MobsPacket::spawnMob(Player* player, Mob* mob, vector <Player*> players, bool isspawn){
@@ -62,7 +62,7 @@ void MobsPacket::spawnMob(Player* player, Mob* mob, vector <Player*> players, bo
 		packet.addShort(-1);
 	else
 		packet.addShort(-2);
-	packet.sendTo(player, players, 1);
+	packet.sendTo<Player>(player, players, 1);
 }
 
 void MobsPacket::showMob(Player* player, Mob* mob){
@@ -78,7 +78,7 @@ void MobsPacket::showMob(Player* player, Mob* mob){
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
 	packet.addShort(-1);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void MobsPacket::moveMob(Player* player, Mob* mob ,vector <Player*> players, unsigned char* pack, int pla){
@@ -88,7 +88,7 @@ void MobsPacket::moveMob(Player* player, Mob* mob ,vector <Player*> players, uns
 	packet.addShort(getShort(pack+4));
 	packet.addByte(1);
 	packet.addInt(mob->getMP());
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 	packet = Packet();
 	packet.addHeader(SEND_MOVE_MOB);
 	packet.addInt(mob->getID());
@@ -96,7 +96,7 @@ void MobsPacket::moveMob(Player* player, Mob* mob ,vector <Player*> players, uns
 	packet.addInt(0xFF);
 	packet.addByte(0);
 	packet.addBytesHex(pack+17, pla-17);
-	packet.sendTo(player, players, 0);
+	packet.sendTo<Player>(player, players, 0);
 }
 
 void MobsPacket::damageMob(Player* player, vector <Player*> players, unsigned char* pack){
@@ -129,7 +129,7 @@ void MobsPacket::damageMob(Player* player, vector <Player*> players, unsigned ch
 			packet.addInt(damage);
 		}
 	}
-	packet.sendTo(player, players, 0);
+	packet.sendTo<Player>(player, players, 0);
 }
 
 void MobsPacket::damageMobS(Player* player, vector <Player*> players, unsigned char* pack, int itemid){
@@ -162,7 +162,7 @@ void MobsPacket::damageMobS(Player* player, vector <Player*> players, unsigned c
 			packet.addInt(damage);
 		}
 	}
-	packet.sendTo(player, players, 0);
+	packet.sendTo<Player>(player, players, 0);
 }
 
 void MobsPacket::damageMobSkill(Player* player, vector <Player*> players, unsigned char* pack){
@@ -187,7 +187,7 @@ void MobsPacket::damageMobSkill(Player* player, vector <Player*> players, unsign
 			packet.addInt(damage);
 		}
 	}
-	packet.sendTo(player, players, 0);
+	packet.sendTo<Player>(player, players, 0);
 }
 
 void MobsPacket::showHP(Player* player, int mobid, char per){
@@ -195,7 +195,7 @@ void MobsPacket::showHP(Player* player, int mobid, char per){
 	packet.addHeader(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void MobsPacket::dieMob(Player* player, vector<Player*> players, Mob* mob, int mobid){
@@ -203,12 +203,12 @@ void MobsPacket::dieMob(Player* player, vector<Player*> players, Mob* mob, int m
 	packet.addHeader(SEND_KILL_MOB);
 	packet.addInt(mobid);
 	packet.addByte(1);
-	packet.sendTo(player, players, 1); 
+	packet.sendTo<Player>(player, players, 1); 
 	if(mob->getControl() != NULL && mob->getControl()->getMap() == player->getMap()){
 		Packet packet = Packet();
 		packet.addHeader(SEND_CONTROL_MOB);
 		packet.addByte(0);
 		packet.addInt(mobid);
-		packet.packetSend(mob->getControl());
+		packet.packetSend<Player>(mob->getControl());
 	}
 }

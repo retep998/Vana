@@ -120,7 +120,7 @@ void PlayerPacket::connectData(Player* player){
 	for(int i=0; i<15; i++)
 		packet.addBytes("FFC99A3B");
 	packet.addInt64(getServerTime());
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void PlayerPacket::newHP(Player* player, short hp){
@@ -131,7 +131,7 @@ void PlayerPacket::newHP(Player* player, short hp){
 	packet.addShort(4);
 	packet.addByte(0);
 	packet.addShort(hp); 
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void PlayerPacket::newMP(Player* player, short mp, bool is){
@@ -142,7 +142,7 @@ void PlayerPacket::newMP(Player* player, short mp, bool is){
 	packet.addShort(0x10);
 	packet.addByte(0);
 	packet.addShort(mp);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void PlayerPacket::newEXP(Player* player, int exp){
@@ -152,7 +152,7 @@ void PlayerPacket::newEXP(Player* player, int exp){
 	packet.addShort(0);
 	packet.addShort(1);
 	packet.addInt(exp);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 
@@ -164,7 +164,7 @@ void PlayerPacket::showKeys(Player* player, int keys[90]){
 		packet.addInt(keys[i]);
 		packet.addByte(0);
 	}
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 void PlayerPacket::setSP(Player* player){
 	Packet packet = Packet();
@@ -174,7 +174,7 @@ void PlayerPacket::setSP(Player* player){
 	packet.addShort(0x80);
 	packet.addByte(0);
 	packet.addShort(player->getSp());
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void PlayerPacket::setJob(Player* player){
@@ -183,7 +183,7 @@ void PlayerPacket::setJob(Player* player){
 	packet.addShort(0);
 	packet.addInt(0x20);
 	packet.addShort(player->getJob());
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void PlayerPacket::newHair(Player* player){
@@ -192,7 +192,7 @@ void PlayerPacket::newHair(Player* player){
 	packet.addShort(0);
 	packet.addInt(0x4);
 	packet.addInt(player->getHair());
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void PlayerPacket::newEyes(Player* player){
@@ -201,7 +201,7 @@ void PlayerPacket::newEyes(Player* player){
 	packet.addShort(0);
 	packet.addInt(0x2);
 	packet.addInt(player->getEyes());
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void PlayerPacket::newSkin(Player* player){
@@ -210,5 +210,5 @@ void PlayerPacket::newSkin(Player* player){
 	packet.addShort(0);
 	packet.addInt(0x1);
 	packet.addByte(player->getSkin());
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }

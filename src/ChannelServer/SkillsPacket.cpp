@@ -30,8 +30,8 @@ void SkillsPacket::addSkill(Player* player, int skillid, int level){
 	packet.addInt(level);
 	packet.addInt(0);
 	packet.addByte(1);
-	packet.packetSend(player);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
+	packet.packetSend<Player>(player);
 }
 
 void SkillsPacket::showSkill(Player* player, vector <Player*> players, int skillid){
@@ -41,7 +41,7 @@ void SkillsPacket::showSkill(Player* player, vector <Player*> players, int skill
 	packet.addByte(1);
 	packet.addInt(skillid);
 	packet.addByte(1); //TODO
-	packet.sendTo(player, players, 0);
+	packet.sendTo<Player>(player, players, 0);
 }
 
 
@@ -63,7 +63,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 	}
 	packet.addShort(0);
 	packet.addByte(0);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 	if(mskill.vals.size()>0){
 		packet = Packet();
 		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
@@ -80,7 +80,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 			packet.addShort(mskill.vals[i]);
 		}
 		packet.addByte(0);
-		packet.sendTo(player, players, 0);
+		packet.sendTo<Player>(player, players, 0);
 	}
 }
 
@@ -89,7 +89,7 @@ void SkillsPacket::healHP(Player* player, short hp){
 	packet.addHeader(SEND_GAIN_ITEM);
 	packet.addByte(0xA);
 	packet.addShort(hp);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill){
@@ -104,7 +104,7 @@ void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiv
 	packet.addByte(pskill.types[6]);
 	packet.addByte(pskill.types[7]);
 	packet.addByte(0);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 	if(mskill.vals.size()>0){
 		packet = Packet();
 		packet.addHeader(SEND_CANCEL_OTHERS_BUFF);
@@ -117,7 +117,7 @@ void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiv
 		packet.addByte(mskill.types[5]);
 		packet.addByte(mskill.types[6]);
 		packet.addByte(mskill.types[7]);
-		packet.sendTo(player, players, 0);
+		packet.sendTo<Player>(player, players, 0);
 
 	}
 }

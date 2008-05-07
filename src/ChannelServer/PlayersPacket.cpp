@@ -27,7 +27,7 @@ void PlayersPacket::showMoving(Player* player, vector <Player*> players, unsigne
 	packet.addInt(player->getPlayerid());
 	packet.addInt(0);
 	packet.addBytesHex(packett+5, size);
-	packet.sendTo(player, players, 0);
+	packet.sendTo<Player>(player, players, 0);
 }	
 
 void PlayersPacket::faceExperiment(Player* player, vector <Player*> players, int face){
@@ -35,7 +35,7 @@ void PlayersPacket::faceExperiment(Player* player, vector <Player*> players, int
 	packet.addHeader(SEND_FACE_EXPERIMENT);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(face);
-	packet.sendTo(player, players, 0);
+	packet.sendTo<Player>(player, players, 0);
 }
 
 void PlayersPacket::showChat(Player* player, vector <Player*> players, char* msg){
@@ -45,7 +45,7 @@ void PlayersPacket::showChat(Player* player, vector <Player*> players, char* msg
 	packet.addByte(0);
 	packet.addShort(strlen(msg));
 	packet.addString(msg, strlen(msg));
-	packet.sendTo(player, players, 1);
+	packet.sendTo<Player>(player, players, 1);
 }
 
 void PlayersPacket::damagePlayer(Player* player, vector <Player*> players, int dmg, int mob){
@@ -58,7 +58,7 @@ void PlayersPacket::damagePlayer(Player* player, vector <Player*> players, int d
 	packet.addShort(1);
 	packet.addByte(0);
 	packet.addInt(dmg);
-	packet.sendTo(player, players, 1);
+	packet.sendTo<Player>(player, players, 1);
 }
 
 void PlayersPacket::showMessage(char* msg, char type){
@@ -69,7 +69,7 @@ void PlayersPacket::showMessage(char* msg, char type){
 	packet.addString(msg, strlen(msg));
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
 		 iter != Players::players.end(); iter++){
-			 packet.packetSend(iter->second);
+			 packet.packetSend<Player>(iter->second);
 	}
 }
 
@@ -85,7 +85,7 @@ void PlayersPacket::showInfo(Player* player, Player* getinfo){
 	packet.addByte(0x2D); // Guild Name
 	packet.addShort(0);
 	packet.addByte(0);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
@@ -97,7 +97,7 @@ void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
 	packet.addShort(0);//channel maybe
 	packet.addShort(strlen(chat));
 	packet.addString(chat,strlen(chat));
-	packet.packetSend(target);
+	packet.packetSend<Player>(target);
 }
 
 void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is){
@@ -119,5 +119,5 @@ void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned cha
 		packet.addByte(is);
 	}
 
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
