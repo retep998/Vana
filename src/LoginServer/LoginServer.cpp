@@ -21,11 +21,11 @@ LoginServer* LoginServer::singleton = 0;
 
 LoginServer::LoginServer() {
 	srand((unsigned char)time(0));
-	loadConfig();
 }
 
 void LoginServer::initialize() {
-	Initializing::initializeMySQL();
+	loadConfig();
+	loadData();
 
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 	// if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n"); //TODO: Throw exception
@@ -42,4 +42,8 @@ void LoginServer::loadConfig() {
 	Config config("conf/login.lua");
 	_pinEnabled = config.getBool("pin");
 	_port = config.getInt("port");
+}
+
+void LoginServer::loadData() {
+	Initializing::initializeMySQL();
 }
