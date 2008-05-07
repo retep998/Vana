@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 #include "PlayerLogin.h"
 #include "TimeUtilities.h"
-#include "Config.h"
+#include "LoginServer.h"
 
 class PlayerLogin;
 
@@ -35,9 +35,6 @@ namespace Login {
 	void registerPIN(PlayerLogin* player, unsigned char* packet);
 	void loginBack(PlayerLogin* player);
 	void checkPin(PlayerLogin* player, unsigned char* packet);
-	void loadConfig();
-	extern Config config;
-	extern bool pin_enabled;
 };
 
 #endif

@@ -19,11 +19,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INITIALIZELOGIN_H
 
 #include "InitializeCommon.h"
-#include "Login.h"
-
-namespace Initializing {
-	void initializeConfig();
-	void initializing();
-}
 
 #endif

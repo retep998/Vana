@@ -64,6 +64,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.x86.debug.lib"
+				OutputFile="$(OutDir)\LoginServer.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
 				GenerateDebugInformation="true"
@@ -140,6 +141,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.x86.release.lib"
+				OutputFile="$(OutDir)\LoginServer.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
 				GenerateDebugInformation="true"
@@ -181,6 +183,10 @@
 			>
 			<File
 				RelativePath=".\src\LoginServer\LoginServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\LoginServer\main.cpp"
 				>
 			</File>
 			<Filter
@@ -232,10 +238,6 @@
 				>
 				<File
 					RelativePath=".\src\Common\InitializeCommon.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\InitializeLogin.cpp"
 					>
 				</File>
 			</Filter>
@@ -293,6 +295,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\src\LoginServer\LoginServer.h"
+				>
+			</File>
 			<Filter
 				Name="DataBaseManager"
 				>
