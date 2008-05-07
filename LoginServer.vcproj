@@ -293,6 +293,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Timer"
+				>
+				<File
+					RelativePath=".\src\Common\Timer.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -427,6 +435,14 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="Timer"
+			>
+			<File
+				RelativePath=".\src\Common\Timer.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

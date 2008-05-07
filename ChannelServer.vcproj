@@ -343,7 +343,7 @@
 				Name="Timer"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\Timer.cpp"
+					RelativePath=".\src\Common\Timer.cpp"
 					>
 				</File>
 			</Filter>
@@ -589,7 +589,7 @@
 				Name="Timer"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\Timer.h"
+					RelativePath=".\src\Common\Timer.h"
 					>
 				</File>
 			</Filter>
