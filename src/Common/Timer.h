@@ -27,14 +27,17 @@ using namespace stdext;
 
 class Timer {
 public:
-	static Timer* timer;
+	static Timer * Instance() {
+		if (singleton == 0)
+			singleton = new Timer;
+		return singleton;
+	}
 	class TimerHandler {
 	public:
 		virtual void handle (Timer* timer, int id) = 0;
 		virtual void remove (int id) = 0;
 	};
 
-	Timer ();
 	~Timer();
 
 	int setTimer 
@@ -45,6 +48,11 @@ public:
 	void timerThread();
 
 private:
+	Timer();
+	Timer(const Timer&);
+	Timer& operator=(const Timer&);
+	static Timer *singleton;
+
 	bool terminate;
 	class OneTimer {
 	public:

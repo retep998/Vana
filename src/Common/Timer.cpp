@@ -18,10 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include <Winbase.h>
 
+Timer *Timer::singleton = 0;
+
 void _timerThread (Timer* timerObject) {
 	timerObject->timerThread();
 }
-Timer* Timer::timer;
 
 Timer::Timer () {
 	id = 0;
