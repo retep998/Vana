@@ -40,7 +40,7 @@ void DropsPacket::drop(vector <Player*> players, Drop* drop, Dropped dropper){
 	if(!drop->getMesos()){
 		packet.addBytes("8005BB46E6170200");
 	}
-	packet.sendTo(NULL, players, 1);
+	packet.sendTo<Player>(NULL, players, 1);
 }
 
 void DropsPacket::dropForPlayer(Player* player, Drop* drop, Dropped dropper){
@@ -62,7 +62,7 @@ void DropsPacket::dropForPlayer(Player* player, Drop* drop, Dropped dropper){
 	if(!drop->getMesos()){
 		packet.addBytes("8005BB46E6170200");
 	}
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void DropsPacket::showDrop(Player* player, Drop* drop){
@@ -84,7 +84,7 @@ void DropsPacket::showDrop(Player* player, Drop* drop){
 	if(!drop->getMesos()){
 		packet.addBytes("8005BB46E6170200");
 	}
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount){
@@ -106,7 +106,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount){
 		packet.addInt(0);
 		packet.addInt(0);
 	}
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void DropsPacket::takeDrop(Player* player, vector <Player*> players, Drop* drop){
@@ -116,10 +116,10 @@ void DropsPacket::takeDrop(Player* player, vector <Player*> players, Drop* drop)
 	packet.addInt(drop->getObjID());
 	packet.addInt(player->getPlayerid());
 	if(!drop->isQuest()){
-		packet.sendTo(player, players, 1);
+		packet.sendTo<Player>(player, players, 1);
 	}
 	else{
-		packet.packetSend(player);
+		packet.packetSend<Player>(player);
 	}
 }
 
@@ -127,7 +127,7 @@ void DropsPacket::dontTake(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addShort(1);
-	packet.packetSend(player);
+	packet.packetSend<Player>(player);
 }
 
 void DropsPacket::removeDrop(vector <Player*> players, Drop* drop){
@@ -135,7 +135,7 @@ void DropsPacket::removeDrop(vector <Player*> players, Drop* drop){
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(0);
 	packet.addInt(drop->getObjID());
-	packet.sendTo(NULL, players, 1);
+	packet.sendTo<Player>(NULL, players, 1);
 }
 
 void DropsPacket::explodeDrop(vector <Player*> players, Drop* drop){
@@ -144,5 +144,5 @@ void DropsPacket::explodeDrop(vector <Player*> players, Drop* drop){
 	packet.addByte(4);
 	packet.addInt(drop->getObjID());
 	packet.addShort(655);
-	packet.sendTo(NULL, players, 1);
+	packet.sendTo<Player>(NULL, players, 1);
 }

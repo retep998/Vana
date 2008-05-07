@@ -41,7 +41,7 @@ public:
 	void sendTo(T* player, vector <T*> players, bool is) {
 		for(unsigned int i=0; i<players.size(); i++){
 			if((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
-				this->packetSend(players[i]);
+				this->packetSend<T>(players[i]);
 		}
 	}
 	
