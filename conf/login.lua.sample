@@ -1,2 +1,5 @@
 -- Use the pin system?
 pin = true;
+
+-- What port should the login server run on?
+port = 8484;
