@@ -16,10 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChannelServer.h"
-#include <stdlib.h>
+#include <iostream>
 
 void main(){
+	std::cout << "Starting Channel Server..." << std::endl;
 	ChannelServer *server = ChannelServer::Instance();
 	server->initialize();
+	std::cout << "Complete! Listening to connections." << std::endl;
 	while(getchar()){}
 }
