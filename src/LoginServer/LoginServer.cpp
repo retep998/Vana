@@ -19,31 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LoginServer* LoginServer::singleton = 0;
 
-LoginServer::LoginServer() {
-	srand((unsigned char)time(0));
-}
-
-void LoginServer::initialize() {
-	loadConfig();
-	loadData();
-
-	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-	// if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n"); //TODO: Throw exception
-
-	listen();
-}
-
 void LoginServer::listen() {
 	selector = new Selector();
 	Acceptor::Acceptor(_port, selector, new PlayerLoginFactory());
+}
+
+void LoginServer::loadData() {
+	Initializing::initializeMySQL();
 }
 
 void LoginServer::loadConfig() {
 	Config config("conf/login.lua");
 	_pinEnabled = config.getBool("pin");
 	_port = config.getInt("port");
-}
-
-void LoginServer::loadData() {
-	Initializing::initializeMySQL();
 }
