@@ -47,11 +47,7 @@ public:
 	
 	template <class T>
 	void packetSend(T* player) {
-		unsigned char tempbuf[10000]; 
-		for(int i=0; i<pos; i++){
-			tempbuf[i] = packet[i];
-		}
-		player->sendPacket(tempbuf, pos);
+		player->sendPacket(packet, pos);
 	}
 private:
 	int pos;
