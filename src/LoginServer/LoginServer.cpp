@@ -35,7 +35,7 @@ void LoginServer::initialize() {
 
 void LoginServer::listen() {
 	selector = new Selector();
-	Acceptor::Acceptor(port, selector, new PlayerLoginFactory());
+	Acceptor::Acceptor(_port, selector, new PlayerLoginFactory());
 }
 
 void LoginServer::loadConfig() {
