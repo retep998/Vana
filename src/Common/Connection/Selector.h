@@ -28,7 +28,7 @@ public:
 
 	class SelectHandler {
 	public:
-		virtual void handle (Selector* selector, int socket) = 0;
+		virtual void handle (int socket) = 0;
 	};
 
 	Selector ();

@@ -87,13 +87,13 @@ void Selector::selectThread () {
 				int socket = iter->first;
 				SelectHandler* handler = iter->second;
 				if (FD_ISSET(socket, &t_errorfds)) {
-					handler->handle(this, socket);
+					handler->handle(socket);
 				}
 				if (FD_ISSET(socket, &t_readfds)) {
-					handler->handle(this, socket);
+					handler->handle(socket);
 				}
 				if (FD_ISSET(socket, &t_writefds)) {
-					handler->handle(this, socket);
+					handler->handle(socket);
 				}
 				if(count > handlers.size())
 					break;
