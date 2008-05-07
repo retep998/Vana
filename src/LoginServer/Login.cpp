@@ -47,7 +47,7 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	else {
 		printf("%s logged in.\n", username);
 		player->setUserid(res[0]["id"]);
-		if (LoginServer::Instance()->pinEnabled()) {
+		if (LoginServer::Instance()->getPinEnabled()) {
 			if (res[0]["pin"].is_null())
 				player->setPin(-1);
 			else
@@ -86,7 +86,7 @@ void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
 	}
 }
 void Login::checkPin(PlayerLogin* player, unsigned char* packet){
-	if (!LoginServer::Instance()->pinEnabled()) {
+	if (!LoginServer::Instance()->getPinEnabled()) {
 		//hacking
 		return;
 	}
@@ -117,7 +117,7 @@ void Login::checkPin(PlayerLogin* player, unsigned char* packet){
 }
 
 void Login::registerPIN(PlayerLogin* player, unsigned char* packet){
-	if (!LoginServer::Instance()->pinEnabled() || player->getStatus() != 1) {
+	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != 1) {
 		//hacking
 		return;
 	}

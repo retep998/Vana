@@ -35,8 +35,8 @@ public:
 	void listen();
 	void loadConfig();
 
-	bool pinEnabled() { return _pinEnabled; }
-	void pinEnabled(bool enabled) { _pinEnabled = enabled; }
+	bool getPinEnabled() const { return _pinEnabled; }
+	void setPinEnabled(bool enabled) { _pinEnabled = enabled; }
 
 	Selector* selector;
 	WSADATA wsaData;
