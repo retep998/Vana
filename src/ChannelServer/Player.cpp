@@ -294,10 +294,12 @@ void Player::addWarning(){
 	warnings.push_back(t);
 	if(warnings.size()>50){
 		// Hacker - Temp DCing
-		int tmap = map;
-		Maps::changeMap(this, 999999999, 0);
-		Maps::changeMap(this, tmap, 0);
+		disconnect();
 	}
+}
+
+void Player::disconnect() {
+	packetHandler->disconnect();
 }
 
 void Player::saveSkills() {

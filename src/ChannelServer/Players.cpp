@@ -224,6 +224,9 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 				Server::disableScrollingHeader();
 			}
 		}
+		else if	(strcmp(command, "dc") == 0)	{
+			player->disconnect();
+		}
 		return;
 	}
 	PlayersPacket::showChat(player, Maps::info[player->getMap()].Players, chat);
