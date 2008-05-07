@@ -435,14 +435,14 @@
 					>
 				</File>
 			</Filter>
-		</Filter>
-		<Filter
-			Name="Timer"
-			>
-			<File
-				RelativePath=".\src\Common\Timer.h"
+			<Filter
+				Name="Timer"
 				>
-			</File>
+				<File
+					RelativePath=".\src\Common\Timer.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
