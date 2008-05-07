@@ -33,12 +33,12 @@ public:
 			if(ctimer[mapid])
 			return;
 		Maps::mapTimer(mapid);
-		timers[Timer::timer->setTimer(10000, this)] = mapid;
+		timers[Timer::Instance()->setTimer(10000, this)] = mapid;
 		ctimer[mapid] = 1;
 	}
 	void next(int mapid, int is){
 		if(is)
-			timers[Timer::timer->setTimer(10000, this)] = mapid;
+			timers[Timer::Instance()->setTimer(10000, this)] = mapid;
 		else
 			ctimer[mapid] = 0;
 	}

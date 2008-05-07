@@ -678,7 +678,6 @@ void Initializing::initializeMaps(){
 
 void Initializing::initializeTimers(){
 	printf("Initializing Timers... ");
-	Timer::timer = new Timer();
 	Skills::startTimer();
 	Maps::startTimer();
 	printf("DONE\n");
