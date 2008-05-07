@@ -18,37 +18,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGINSERVER_H
 #define LOGINSERVER_H
 
-#include "Connection/Acceptor.h"
+#include "AbstractServer.h"
 #include "InitializeLogin.h"
 #include "Config.h"
 #include "PlayerLogin.h"
 
 // LoginServer main application class, implemented as singleton
-class LoginServer {
+class LoginServer : public AbstractServer {
 public:
 	static LoginServer * Instance() {
 		if (singleton == 0)
 			singleton = new LoginServer;
 		return singleton;
 	}
-	void initialize();
-	void listen();
-	void loadConfig();
 	void loadData();
+	void loadConfig();
+	void listen();
 
 	bool getPinEnabled() const { return _pinEnabled; }
 	void setPinEnabled(bool enabled) { _pinEnabled = enabled; }
-
-	Selector* selector;
-	WSADATA wsaData;
 private:
-	LoginServer();
+	LoginServer() {};
 	LoginServer(const LoginServer&);
 	LoginServer& operator=(const LoginServer&);
 	static LoginServer *singleton;
-	
+
 	bool _pinEnabled;
-	int _port;
 };
 
 #endif
