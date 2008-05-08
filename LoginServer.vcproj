@@ -301,6 +301,10 @@
 				Name="Abstracts"
 				>
 				<File
+					RelativePath=".\src\Common\AbstractPlayer.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\AbstractServer.cpp"
 					>
 				</File>
@@ -443,7 +447,7 @@
 				Name="Abstracts"
 				>
 				<File
-					RelativePath=".\src\Common\Connection\AbstractPlayer.h"
+					RelativePath=".\src\Common\AbstractPlayer.h"
 					>
 				</File>
 				<File

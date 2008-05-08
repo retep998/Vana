@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERLOGIN_H
 #define PLAYERLOGIN_H
 
-#include "Connection/AbstractPlayer.h"
+#include "AbstractPlayer.h"
 #include "Connection/PacketHandler.h"
 
 class PlayerLogin:public AbstractPlayer {
