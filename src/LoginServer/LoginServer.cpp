@@ -21,7 +21,7 @@ LoginServer* LoginServer::singleton = 0;
 
 void LoginServer::listen() {
 	selector = new Selector();
-	new Acceptor(_port, selector, new PlayerLoginFactory());
+	new Acceptor(port, selector, new PlayerLoginFactory());
 }
 
 void LoginServer::loadData() {
@@ -30,8 +30,8 @@ void LoginServer::loadData() {
 
 void LoginServer::loadConfig() {
 	Config config("conf/login.lua");
-	_pinEnabled = config.getBool("pin");
-	_port = config.getInt("port");
+	pinEnabled = config.getBool("pin");
+	port = config.getInt("port");
 }
 
 void LoginServer::shutdown() {

@@ -41,7 +41,7 @@ private:
 	ChannelServer& operator=(const ChannelServer&);
 	static ChannelServer *singleton;
 
-	int _port;
+	int port;
 };
 
 #endif

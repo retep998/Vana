@@ -21,7 +21,7 @@ ChannelServer* ChannelServer::singleton = 0;
 
 void ChannelServer::listen() {
 	selector = new Selector();
-	new Acceptor(_port, selector, new PlayerFactory());
+	new Acceptor(port, selector, new PlayerFactory());
 }
 
 void ChannelServer::loadData() {
@@ -38,7 +38,7 @@ void ChannelServer::loadData() {
 }
 
 void ChannelServer::loadConfig() {
-	_port = 8888; //TODO: Get port from world server
+	port = 8888; //TODO: Get port from world server
 }
 
 void ChannelServer::shutdown() {
