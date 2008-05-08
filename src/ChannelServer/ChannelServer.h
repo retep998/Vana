@@ -19,9 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CHANNELSERVER_H
 
 #include "AbstractServer.h"
-#include "InitializeChannel.h"
-#include "Player.h"
-#include "Players.h"
 
 // ChannelServer main application class, implemented as singleton
 class ChannelServer : public AbstractServer {
@@ -35,6 +32,8 @@ public:
 	void loadConfig();
 	void listen();
 	void shutdown();
+
+	int getChannel() { return channel; }
 private:
 	ChannelServer() {};
 	ChannelServer(const ChannelServer&);
@@ -42,6 +41,7 @@ private:
 	static ChannelServer *singleton;
 
 	int port;
+	int channel;
 };
 
 #endif

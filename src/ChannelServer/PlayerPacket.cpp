@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void PlayerPacket::connectData(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_CHANGE_MAP);
-	packet.addInt(0); // Channel
+	packet.addInt(player->getChannel()); // Channel
 	packet.addBytes("0101853D4B11F4836B3DBA9A4FA1");
 	packet.addShort(-1);
 	packet.addInt(player->getPlayerid());

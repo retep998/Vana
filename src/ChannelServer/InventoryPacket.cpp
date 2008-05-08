@@ -244,9 +244,9 @@ void InventoryPacket::showSuperMegaphone(Player* player, char* msg, int whisper)
 	packet.addByte(3);
 	packet.addShort(strlen(fullMessage));
 	packet.addString(fullMessage, strlen(fullMessage));
-	packet.addByte(0); //TODO: Channel
+	packet.addByte(player->getChannel());
 	packet.addByte(whisper);
-	for(hash_map<int,Player*>::iterator iter = Players::players.begin();
+	for(hash_map<int,Player*>::iterator iter = Players::players.begin(); //TODO: Cross channel
 		iter != Players::players.end(); iter++){
 			packet.packetSend<Player>(iter->second);
 	}
@@ -266,7 +266,7 @@ void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char*
 	packet.addString(msg3, strlen(msg3));
 	packet.addShort(strlen(msg4));
 	packet.addString(msg4, strlen(msg4));
-	packet.addInt(0); //TODO: Channel
+	packet.addInt(player->getChannel());
 	packet.addBytesHex(displayInfo, displayInfo_size);
 
 	for(hash_map<int,Player*>::iterator iter = Players::players.begin();
