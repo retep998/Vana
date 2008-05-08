@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <math.h>
 #include <vector>
 #include "Skills.h"
+#include "ChannelServer.h"
 
 using namespace std;
 
@@ -45,6 +46,7 @@ class Player:public AbstractPlayer {
 public:
 	Player () {
 		isconnect=0;
+		channel=ChannelServer::Instance()->getChannel();
 		shop=0;
 		npc=NULL;
 		chair=0;
@@ -72,6 +74,9 @@ public:
 	}
 	char* getName(){
 		return this->name;
+	}
+	int getChannel() {
+		return this->channel;
 	}
 	char getGender(){
 		return this->gender;
@@ -243,6 +248,7 @@ private:
 	bool isconnect;
 	int id;
 	char name[15];
+	int channel;
 	char gender;
 	char skin;
 	int eyes;

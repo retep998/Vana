@@ -135,7 +135,7 @@ void MapPacket::showPlayers(Player* player, vector <Player*> players){
 void MapPacket::changeMap(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_CHANGE_MAP);
-	packet.addInt(0); // Channel
+	packet.addInt(player->getChannel()); // Channel
 	packet.addShort(0); // 2?
 	packet.addInt(player->getMap());
 	packet.addByte(player->getMappos());

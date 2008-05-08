@@ -16,6 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChannelServer.h"
+#include "InitializeChannel.h"
+#include "Player.h"
+#include "Players.h"
 
 ChannelServer* ChannelServer::singleton = 0;
 
@@ -39,6 +42,7 @@ void ChannelServer::loadData() {
 
 void ChannelServer::loadConfig() {
 	port = 8888; //TODO: Get port from world server
+	channel = 0; // Channel starts from 0 (i.e. channel 0 is displayed as channel 1) //TODO: Get channel from world server
 }
 
 void ChannelServer::shutdown() {
