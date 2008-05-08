@@ -298,10 +298,6 @@ void Player::addWarning(){
 	}
 }
 
-void Player::disconnect() {
-	packetHandler->disconnect();
-}
-
 void Player::saveSkills() {
 	mysqlpp::Query query = db.query();
 	query << "DELETE FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();

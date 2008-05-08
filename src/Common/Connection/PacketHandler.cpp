@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketHandler.h"
 //#include "Decoder.h"
+#include "AbstractPlayer.h"
 #include <Winsock2.h>
 
 #define HEADER_LEN 4

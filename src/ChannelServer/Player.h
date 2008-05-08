@@ -230,7 +230,6 @@ public:
 		return skill;
 	}
 	void addWarning();
-	void disconnect();
 	void saveSkills();
 	void saveStats();
 	void saveEquips();
