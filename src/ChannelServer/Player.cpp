@@ -46,7 +46,7 @@ Player::~Player(){
 	}
 }
 
-void Player::handleRequest(unsigned char* buf, int len){
+void Player::realHandleRequest(unsigned char* buf, int len){
 	short header = buf[0] + buf[1]*0x100;
 	switch(header){  
 		case RECV_CHANNEL_LOGIN: getUserID(buf+2); break;

@@ -29,7 +29,7 @@ public:
 
 	~PlayerLogin();
 
-	void handleRequest(unsigned char* buf, int len);
+	void realHandleRequest(unsigned char* buf, int len);
 	void setUserid(int id){
 		this->userid=id;
 	}
