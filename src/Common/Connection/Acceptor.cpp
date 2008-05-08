@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Acceptor.h"
 #include "PacketHandler.h"
 
-Acceptor::Acceptor(int port, Selector* selector, AbstractPlayerFactory* apf) {
-	this->selector = selector;
+Acceptor::Acceptor(int port, AbstractPlayerFactory* apf) {
+	selector = new Selector();
 	abstractPlayerFactory = apf;
 
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
