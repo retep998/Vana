@@ -31,8 +31,6 @@ public:
 protected:
 	AbstractServer();
 	Selector* selector;
-
-	int _port;
 };
 
 #endif

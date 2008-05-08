@@ -36,15 +36,16 @@ public:
 	void listen();
 	void shutdown();
 
-	bool getPinEnabled() const { return _pinEnabled; }
-	void setPinEnabled(bool enabled) { _pinEnabled = enabled; }
+	bool getPinEnabled() const { return pinEnabled; }
+	void setPinEnabled(bool enabled) { pinEnabled = enabled; }
 private:
 	LoginServer() {};
 	LoginServer(const LoginServer&);
 	LoginServer& operator=(const LoginServer&);
 	static LoginServer *singleton;
 
-	bool _pinEnabled;
+	bool pinEnabled;
+	int port;
 };
 
 #endif
