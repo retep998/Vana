@@ -180,10 +180,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\Common\AbstractServer.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\ChannelServer\main_channel.cpp"
 				>
 			</File>
@@ -407,16 +403,20 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Abstracts"
+				>
+				<File
+					RelativePath=".\src\Common\AbstractServer.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\src\Common\AbstractServer.h"
-				>
-			</File>
 			<Filter
 				Name="ChannelServer"
 				>
@@ -613,10 +613,6 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Common\Connection\AbstractPlayer.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Common\Connection\Acceptor.h"
 					>
 				</File>
@@ -642,6 +638,18 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\Decoder\MapleEncryption.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Abstracts"
+				>
+				<File
+					RelativePath=".\src\Common\Connection\AbstractPlayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\AbstractServer.h"
 					>
 				</File>
 			</Filter>
