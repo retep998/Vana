@@ -40,3 +40,14 @@ void ChannelServer::loadData() {
 void ChannelServer::loadConfig() {
 	_port = 8888; //TODO: Get port from world server
 }
+
+void ChannelServer::shutdown() {
+	// Note that we are not increasing an iterator because deleting a player would cause the iterator to fail
+	while (1) {
+		if (Players::players.empty())
+			break;
+		hash_map<int,Player*>::iterator iter = Players::players.begin();
+		iter->second->disconnect();
+	}
+	exit(0);
+}

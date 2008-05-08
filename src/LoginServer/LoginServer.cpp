@@ -33,3 +33,8 @@ void LoginServer::loadConfig() {
 	_pinEnabled = config.getBool("pin");
 	_port = config.getInt("port");
 }
+
+void LoginServer::shutdown() {
+	//TODO
+}
+
