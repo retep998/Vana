@@ -18,10 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "Connection/PacketHandler.h"
 
-void AbstractPlayer::setPacketHandler (PacketHandler *ph) { 
-	packetHandler = ph;
-}
-
 void AbstractPlayer::handleRequest (unsigned char* buf, int len) {
 	lastAction = time(0);
 	realHandleRequest(buf, len);

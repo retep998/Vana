@@ -19,14 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ABSTRACTPLAYER_H
 
 #include <ctime>
-
 class PacketHandler;
 
 class AbstractPlayer {
 public:
-	virtual void realHandleRequest (unsigned char *buf, int len) = 0;
-	void setPacketHandler (PacketHandler *ph);
-	void handleRequest (unsigned char *buf, int len);
+	virtual void setPacketHandler (PacketHandler* ph) { packetHandler = ph; }
+	virtual void realHandleRequest (unsigned char* buf, int len) = 0;
+	void handleRequest (unsigned char* buf, int len);
 	void disconnect();
 protected:
 	PacketHandler *packetHandler;
@@ -35,6 +34,6 @@ protected:
 
 class AbstractPlayerFactory {
 public:
-	virtual AbstractPlayer * createPlayer() = 0;
+	virtual AbstractPlayer* createPlayer () = 0;
 };
 #endif
