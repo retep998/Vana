@@ -29,7 +29,7 @@ void LoginServer::loadData() {
 }
 
 void LoginServer::loadConfig() {
-	Config config("conf/login.lua");
+	Config config("conf/loginserver.lua");
 	pinEnabled = config.getBool("pin");
 	port = config.getInt("port");
 }
