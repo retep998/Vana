@@ -23,8 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ChannelServer* ChannelServer::singleton = 0;
 
 void ChannelServer::listen() {
-	selector = new Selector();
-	new Acceptor(port, selector, new PlayerFactory());
+	new Acceptor(port, new PlayerFactory());
 }
 
 void ChannelServer::loadData() {

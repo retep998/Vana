@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Acceptor: public Selector::SelectHandler {
 public:
-	Acceptor (int port, Selector* selector, AbstractPlayerFactory* apf);
+	Acceptor (int port, AbstractPlayerFactory* apf);
 	virtual void handle (int socket);
 protected:
 	Selector* selector;

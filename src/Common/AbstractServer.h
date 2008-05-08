@@ -30,7 +30,6 @@ public:
 	virtual void shutdown() = 0;
 protected:
 	AbstractServer();
-	Selector* selector;
 };
 
 #endif
