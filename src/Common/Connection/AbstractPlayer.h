@@ -19,17 +19,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ABSTRACTPLAYER_H
 
 #include "PacketHandler.h"
+#include <time.h>
 
 class AbstractPlayer {
 public:
 	virtual void setPacketHandler (PacketHandler* packetHandler) {
 		this->packetHandler = packetHandler;
 	}
-	virtual void handleRequest (unsigned char* buf, int len) = 0;
+	virtual void realHandleRequest (unsigned char* buf, int len) = 0;
+	void handleRequest (unsigned char* buf, int len) { updateLastAction(); realHandleRequest (buf, len); }
 	virtual ~AbstractPlayer(){}
 	void disconnect() { packetHandler->disconnect(); }
+	void updateLastAction () { lastAction = time(0); }
 protected:
 	PacketHandler* packetHandler;
+	time_t lastAction;
 };
 
 class AbstractPlayerFactory {

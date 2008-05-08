@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 #include "RecvHeader.h"
 
-void PlayerLogin::handleRequest(unsigned char* buf, int len){
+void PlayerLogin::realHandleRequest(unsigned char* buf, int len){
 	short header = buf[0] + buf[1]*0x100;
 	switch(header){
 		case RECV_LOGIN_INFO: Login::loginUser(this, buf+2); break;
