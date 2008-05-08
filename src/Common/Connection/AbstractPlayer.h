@@ -18,7 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef ABSTRACTPLAYER_H
 #define ABSTRACTPLAYER_H
 
-class PacketHandler;
+#include "PacketHandler.h"
+
 class AbstractPlayer {
 public:
 	virtual void setPacketHandler (PacketHandler* packetHandler) {
@@ -26,6 +27,7 @@ public:
 	}
 	virtual void handleRequest (unsigned char* buf, int len) = 0;
 	virtual ~AbstractPlayer(){}
+	void disconnect() { packetHandler->disconnect(); }
 protected:
 	PacketHandler* packetHandler;
 };
