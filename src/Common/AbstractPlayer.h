@@ -31,7 +31,6 @@ public:
 	virtual ~AbstractPlayer() { };
 protected:
 	PacketHandler *packetHandler;
-	int lastAction;
 };
 
 class AbstractPlayerFactory {

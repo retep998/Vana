@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Connection/PacketHandler.h"
 
 void AbstractPlayer::handleRequest (unsigned char* buf, int len) {
-	lastAction = clock();
 	realHandleRequest(buf, len);
 }
 
