@@ -327,7 +327,7 @@ void Players::commandHandler(Player* player, unsigned char* packet){
 				getString(packet+5+namesize, chatsize, chat);
 
 				PlayersPacket::whisperPlayer(player,iter->second,chat);
-				PlayersPacket::findPlayer(player,iter->second->getName(),0,1);
+				PlayersPacket::findPlayer(player,iter->second->getName(),-1,1);
 			}
 			else if(type == 0x05){
 				PlayersPacket::findPlayer(player, iter->second->getName(), iter->second->getMap());
