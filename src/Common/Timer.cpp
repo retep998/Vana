@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Timer.h"
 #include <Winbase.h>
+#include <ctime>
 
 Timer *Timer::singleton = 0;
 
@@ -47,7 +48,7 @@ Timer::~Timer() {
 }
 
 int Timer::setTimer (int msec, TimerHandler* handler) {
-	timers.push_back(new OneTimer(msec+GetTickCount(), id, handler));
+	timers.push_back(new OneTimer(msec+clock(), id, handler));
 	SetEvent (timerEvent);
 	return id++;
 }
@@ -93,7 +94,7 @@ void Timer::timerThread () {
 		try {
 			// find minimum wakeup time
 			OneTimer* minTimer = findMin();
-			long msec = minTimer==NULL ? msec = 1000000000 : minTimer->t - GetTickCount();
+			long msec = minTimer==NULL ? msec = 1000000000 : minTimer->t - clock();
 			if (msec <= 0) {
 				minTimer->handler->handle(this, minTimer->id);
 				remove (minTimer->id);

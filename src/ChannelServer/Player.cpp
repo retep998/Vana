@@ -284,7 +284,7 @@ void Player::setSkin(char id){
 }
 
 void Player::addWarning(){
-	int t = GetTickCount();
+	int t = clock();
 	// Deleting old warnings
 	for(unsigned int i=0; i<warnings.size(); i++){
 		if(warnings[i] + 300000 < t){
