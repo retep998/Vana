@@ -21,8 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "../Decoder/Decoder.h"
 #include "../Decoder/MapleEncryption.h"
 #include "Selector.h"
-
-class AbstractPlayer;
+#include "AbstractPlayer.h"
 
 class PacketHandler: public Selector::SelectHandler {
 public:

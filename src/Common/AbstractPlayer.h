@@ -27,6 +27,8 @@ public:
 	virtual void realHandleRequest (unsigned char* buf, int len) = 0;
 	void handleRequest (unsigned char* buf, int len);
 	void disconnect();
+
+	virtual ~AbstractPlayer() { };
 protected:
 	PacketHandler *packetHandler;
 	time_t lastAction;
