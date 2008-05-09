@@ -43,6 +43,11 @@ Acceptor::Acceptor(int port, AbstractPlayerFactory* apf) {
 		return;
 	}
 
+	BOOL tcpnodelay = true;
+	if(setsockopt(acceptSocket, IPPROTO_TCP, TCP_NODELAY, (char *) &tcpnodelay, sizeof(tcpnodelay)) != NO_ERROR) {
+		printf("Warning: failed to disable nagle's algorithm: %d\n", WSAGetLastError());
+	}
+
 	if (listen( acceptSocket, 10 ) == SOCKET_ERROR) {
 		printf("listen() error: %d\n", WSAGetLastError());
 		closesocket(acceptSocket);
