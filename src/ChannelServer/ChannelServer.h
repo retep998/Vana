@@ -33,6 +33,7 @@ public:
 	void listen();
 	void shutdown();
 
+	char getWorld() { return world; }
 	int getChannel() { return channel; }
 private:
 	ChannelServer() {};
@@ -41,6 +42,7 @@ private:
 	static ChannelServer *singleton;
 
 	int port;
+	char world;
 	int channel;
 };
 
