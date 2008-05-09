@@ -41,6 +41,7 @@ void ChannelServer::loadData() {
 
 void ChannelServer::loadConfig() {
 	port = 8888; //TODO: Get port from world server
+	world = 0; //TODO: Get world from world server
 	channel = 0; // Channel starts from 0 (i.e. channel 0 is displayed as channel 1) //TODO: Get channel from world server
 }
 
