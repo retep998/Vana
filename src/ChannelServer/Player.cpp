@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Server.h"
 #include "Fame.h"
+#include "ChannelServer.h"
 #include "RecvHeader.h"
 
 int distPos(Pos pos1, Pos pos2){
@@ -414,7 +415,8 @@ void Player::save() {
 }
 
 void Player::setOnline(bool online) {
+	int onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
 	mysqlpp::Query query = db.query();
-	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << mysqlpp::quote << online << " WHERE characters.id = " << mysqlpp::quote << getPlayerid();
+	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << mysqlpp::quote << onlineid << " WHERE characters.id = " << mysqlpp::quote << getPlayerid();
 	query.exec();
 }

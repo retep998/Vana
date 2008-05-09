@@ -35,6 +35,7 @@ public:
 
 	char getWorld() { return world; }
 	int getChannel() { return channel; }
+	int getOnlineId() { return 20000 + (int) world * 1000 + channel * 10; }
 private:
 	ChannelServer() {};
 	ChannelServer(const ChannelServer&);
