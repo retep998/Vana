@@ -25,7 +25,7 @@ using namespace std;
 
 namespace Initializing {
 	void initializeMySQL();
-	void initializeConfig();
+	void setUsersOffline(int onlineid);
 };
 
 #endif

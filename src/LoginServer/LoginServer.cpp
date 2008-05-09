@@ -25,6 +25,7 @@ void LoginServer::listen() {
 
 void LoginServer::loadData() {
 	Initializing::initializeMySQL();
+	Initializing::setUsersOffline(1);
 }
 
 void LoginServer::loadConfig() {

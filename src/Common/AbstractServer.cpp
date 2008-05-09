@@ -22,7 +22,7 @@ AbstractServer::AbstractServer() {
 }
 
 void AbstractServer::initialize() {
-	loadData();
 	loadConfig();
+	loadData();
 	listen();
 }
