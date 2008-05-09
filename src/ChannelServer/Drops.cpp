@@ -70,7 +70,7 @@ Pos Drops::findFloor(Pos pos, int map){
 }
 
 void Drop::doDrop(Dropped dropped){
-	setDropped(GetTickCount());
+	setDropped(clock());
 	setPos(Drops::findFloor(getPos(), getMap()));
 	if(!isQuest())
 		DropsPacket::drop(Maps::info[getMap()].Players, this, dropped);
@@ -366,7 +366,7 @@ void Drops::dropMesos(Player* player, unsigned char* packet){
 }
 
 void Drops::checkDrops(int mapid){
-	int t = GetTickCount() - 60000;
+	int t = clock() - 60000;
 	for(unsigned int i=0; i<drops[mapid].size(); i++){
 		if(drops[mapid][i]->getDropped() < t){
 			DropsPacket::removeDrop(Maps::info[mapid].Players, drops[mapid][i]);
