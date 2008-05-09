@@ -28,3 +28,8 @@ void Initializing::initializeMySQL(){
 	}
 }
 
+void Initializing::setUsersOffline(int onlineid){
+	mysqlpp::Query query = db.query();
+	query << "UPDATE users SET online = 0 WHERE online = " << mysqlpp::quote << onlineid;
+	query.exec();
+}
