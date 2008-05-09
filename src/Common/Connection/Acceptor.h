@@ -26,7 +26,6 @@ public:
 	Acceptor (int port, AbstractPlayerFactory* apf);
 	virtual void handle (int socket);
 protected:
-	Selector* selector;
 	AbstractPlayerFactory* abstractPlayerFactory;
 	WSADATA wsaData;
 };

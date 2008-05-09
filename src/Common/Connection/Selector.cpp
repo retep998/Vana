@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Selector.h"
 #include <Winbase.h>
 
+Selector * Selector::singleton = 0;
+
 void _selectorThread (Selector* selectorObject) {
 	selectorObject->selectThread();
 }

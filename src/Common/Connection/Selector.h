@@ -25,13 +25,17 @@ using namespace stdext;
 
 class Selector {
 public:
+	static Selector * Instance() {
+		if (singleton == 0)
+			singleton = new Selector;
+		return singleton;
+	}
 
 	class SelectHandler {
 	public:
 		virtual void handle (int socket) = 0;
 	};
 
-	Selector ();
 	~Selector();
 
 	void registerSocket 
@@ -43,6 +47,11 @@ public:
 	void selectThread();
 
 private:
+	Selector();
+	Selector(const Selector&);
+	Selector& operator=(const Selector&);
+	static Selector *singleton;
+
 	bool terminate;
 	fd_set readfds;
     fd_set writefds;
