@@ -22,9 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define HEADER_LEN 4
 #define BUFFER_LEN 10000
 
-PacketHandler::PacketHandler(int socket, Selector* selector, AbstractPlayer* player) {
+PacketHandler::PacketHandler(int socket, AbstractPlayer* player) {
 	this->socket = socket;
-	this->selector = selector;
 	buffer = new unsigned char[BUFFER_LEN];
 	bytesInBuffer = 0;
 	this->player = player;
@@ -72,7 +71,7 @@ void PacketHandler::sendPacket(unsigned char *buff, int size){
 }
 
 void PacketHandler::disconnect() {
-	selector->unregisterSocket(socket);
+	Selector::Instance()->unregisterSocket(socket);
 	closesocket(socket);
 	delete player;
 }

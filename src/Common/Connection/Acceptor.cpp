@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketHandler.h"
 
 Acceptor::Acceptor(int port, AbstractPlayerFactory* apf) {
-	selector = new Selector();
 	abstractPlayerFactory = apf;
 
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -54,7 +53,7 @@ Acceptor::Acceptor(int port, AbstractPlayerFactory* apf) {
 		return;
 	}
 
-	selector->registerSocket (acceptSocket, true, false, true, this);
+	Selector::Instance()->registerSocket(acceptSocket, true, false, true, this);
 
 }
 
@@ -67,7 +66,7 @@ void Acceptor::handle (int socket) {
 	}
 
 	AbstractPlayer* player = abstractPlayerFactory->createPlayer();
-	PacketHandler* ph = new PacketHandler(sock, selector, player);
+	PacketHandler* ph = new PacketHandler(sock, player);
 	player->setPacketHandler(ph);
-	selector->registerSocket (sock, true, false, true, ph);
+	Selector::Instance()->registerSocket(sock, true, false, true, ph);
 }
