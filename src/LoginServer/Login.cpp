@@ -37,7 +37,7 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	else if (strcmp(password, res[0]["password"])) {
 		LoginPacket::loginError(player, 0x04); //Invalid password
 	}
-	else if (atoi(res[0]["online"]) == 1) {
+	else if (atoi(res[0]["online"]) != 0) {
 		LoginPacket::loginError(player, 0x07); //Already logged in
 	}
 	else if (atoi(res[0]["banned"]) == 1) {
