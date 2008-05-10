@@ -568,7 +568,7 @@ void Inventory::useMegaphone(Player* player, unsigned char *packet){
 		int whisper = packet[8+msgLength];
 		InventoryPacket::showSuperMegaphone(player, msg, whisper);
 	}
-	else if (itemid == 5390000 || itemid == 5390001 || itemid == 5390002) { // Messenger
+	else if (itemid/10000 == 539) { // Messenger
 		char msgs[3][15];
 		packet = packet + 8 + msgLength;
 		for (int i = 0; i < 3; i++) {
