@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Decoder.h"
 #include "AESEncryption.h"
 #include "MapleEncryption.h"
+#include "SendHeader.h"
 
 void Decoder::encrypt(unsigned char *buffer, int size){
 	MapleEncryption::mapleEncrypt(buffer, size);
@@ -46,7 +47,7 @@ void Decoder::decrypt(unsigned char *buffer, int size){
 
 void Decoder::createHeader (unsigned char* header, short size) {
 	short a = ivSend[3]*0x100 + ivSend[2];
-	a = a ^ -54;
+	a = a ^ -(MAPLE_VERSION+1);
 	short b = a ^ size; 
 	header[0] = a%0x100;
 	header[1] = (a-header[0])/0x100;

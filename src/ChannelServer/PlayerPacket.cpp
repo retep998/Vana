@@ -40,6 +40,10 @@ void PlayerPacket::connectData(Player* player){
 	packet.addInt(player->getHair());
 	packet.addInt(0);
 	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
 	packet.addByte(player->getLevel());
 	packet.addShort(player->getJob());
 	packet.addShort(player->getStr());
