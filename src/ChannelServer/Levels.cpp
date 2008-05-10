@@ -46,6 +46,7 @@ int Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3
 	1540197871, 1624600714, 1179575962, 1713628833, 1807535693, 1906558648, 2011069705, 2121276324};
 
 void Levels::giveEXP(Player* player, int exp, char type){
+	if (player->getLevel() >= 200) return; // Do not give EXP to characters level 200 or over
 	int cexp = player->getExp() + exp;
 	if(exp!=0)
 		LevelsPacket::showEXP(player, exp, type);
