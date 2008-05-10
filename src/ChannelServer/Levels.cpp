@@ -57,31 +57,39 @@ void Levels::giveEXP(Player* player, int exp, char type){
 		player->setExp(cexp, 0);
 		player->setLevel(player->getLevel()+1);
 		player->setAp(player->getAp()+5);
-		int job=player->getJob()/100;
-		if(job == 0){
-			player->setRMHP(player->getRMHP()+15);
-			player->setRMMP(player->getRMMP()+10);
-		}
-		else if(job == 1){
-			player->setRMHP(player->getRMHP()+25);
-			player->setRMMP(player->getRMMP()+15);
-			if(player->skills->getSkillLevel(1000001)>0){
-				player->setRMHP(player->getRMHP()+Skills::skills[1000001][player->skills->getSkillLevel(1000001)].x);
-			}
-		}
-		else if(job == 2){
-			player->setRMHP(player->getRMHP()+15);
-			player->setRMMP(player->getRMMP()+35);
-			if(player->skills->getSkillLevel(2000001)>0)
-				player->setMMP(player->getMMP()+Skills::skills[2000001][player->skills->getSkillLevel(2000001)].x);
-		} 
-		else{
-			player->setRMHP(player->getRMHP()+25);
-			player->setRMMP(player->getRMMP()+15);
-		}
-		player->setMHP(player->getRMHP());
-		player->setMMP(player->getRMMP());
-		LevelsPacket::levelUP(player, Maps::info[player->getMap()].Players);
+        int job = player->getJob() / 100;
+        short hpgain = 0;
+        short mpgain = 0;
+        short intt = player->getInt() / 10;
+        if (job == 0) {
+            hpgain = rand()%5 + 12;
+            mpgain = rand()%3 + 10 + intt;
+        }
+        else if (job == 1) {
+            int x = 0;
+            if (player->skills->getSkillLevel(1000001) > 0){ x = Skills::skills[1000001][player->skills->getSkillLevel(1000001)].x; }
+            hpgain = rand()%5 + 24 + x;
+            mpgain = rand()%3 + 4 + intt;
+        }
+        else if (job == 2) {
+            int x = 0;
+            if (player->skills->getSkillLevel(2000001) > 0) { x = Skills::skills[2000001][player->skills->getSkillLevel(2000001)].x; }
+            hpgain = rand()%5 + 10;
+            mpgain = rand()%3 + 22 + 2 * x + intt;
+        } 
+        else if (job == 5) {
+            hpgain = 150;
+            mpgain = 150;
+        }
+        else {
+            hpgain = rand()%5 + 20;
+            mpgain = rand()%3 + 14 + intt;
+        }
+        player->setRMHP(player->getRMHP() + hpgain);
+        player->setRMMP(player->getRMMP() + mpgain);
+        player->setMHP(player->getRMHP());
+        player->setMMP(player->getRMMP());
+        LevelsPacket::levelUP(player, Maps::info[player->getMap()].Players);  
 		player->setHP(player->getMHP());
 		player->setMP(player->getMMP());
 		if(player->getJob() > 0){
