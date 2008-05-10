@@ -92,6 +92,8 @@ void InventoryPacket::updatePlayer(Player* player){
 	}
 	packet.addByte(-1);
 	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0); 
 	packet.addByte(0);
 	packet.addShort(0);
 	packet.addInt(0);

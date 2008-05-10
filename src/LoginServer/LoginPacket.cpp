@@ -157,6 +157,10 @@ void LoginPacket::showCharacters(PlayerLogin* player, vector <Character> chars){
 		packet.addInt(chars[i].hair);
 		packet.addInt(0);
 		packet.addInt(0);
+		packet.addInt(0);
+		packet.addInt(0);
+		packet.addInt(0);
+		packet.addInt(0);
 		packet.addByte(chars[i].level);
 		packet.addShort(chars[i].job);
 		packet.addShort(chars[i].str);
@@ -183,6 +187,8 @@ void LoginPacket::showCharacters(PlayerLogin* player, vector <Character> chars){
 			packet.addInt(chars[i].equips[j].id);
 		}
 		packet.addShort(-1);
+		packet.addInt(0);
+		packet.addInt(0);
 		packet.addInt(0);
 		packet.addInt(0);
 		packet.addByte(0);
@@ -212,6 +218,10 @@ void LoginPacket::showCharacter(PlayerLogin* player, Character charc){
 	packet.addInt(charc.hair);
 	packet.addInt(0);
 	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
 	packet.addByte(charc.level);
 	packet.addShort(charc.job);
 	packet.addShort(charc.str);
@@ -238,6 +248,8 @@ void LoginPacket::showCharacter(PlayerLogin* player, Character charc){
 		packet.addInt(charc.equips[j].id);
 	}
 	packet.addShort(-1);
+	packet.addInt(0);
+	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addByte(0);

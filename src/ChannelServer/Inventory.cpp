@@ -583,7 +583,7 @@ void Inventory::useMegaphone(Player* player, unsigned char *packet){
 				ffcount++;
 			offset++;
 		}
-		InventoryPacket::showMessenger(player, msg, msgs[0], msgs[1], msgs[2], packet, offset+8, itemid);
+		InventoryPacket::showMessenger(player, msg, msgs[0], msgs[1], msgs[2], packet, offset+16, itemid);
 	}
 	Inventory::takeItem(player, itemid, 1);
 }

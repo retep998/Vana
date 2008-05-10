@@ -92,6 +92,8 @@ Packet MapPacket::playerPacket(Player* player){
 	packet.addInt(0);
 	packet.addInt(0);   
 	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
 	packet.addInt(0); 
 	packet.addInt(player->getChair());
 	packet.addShort(player->getPos().x);
