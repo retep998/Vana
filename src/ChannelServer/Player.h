@@ -134,11 +134,18 @@ public:
 		return this->mp;
 	}
 	void setMHP(int mhp){
-		this->mhp=mhp;
+		this->mhp = (mhp > 30000 ? 30000 : mhp);
 	}
 	unsigned short getMHP(){
-		return this->mhp;
+		unsigned short t = this->mhp + this->hpbonus;
+	return (t > 30000 ? 30000 : t);
 	}
+	void setHPBonus(unsigned short bonus) {
+		this->hpbonus = bonus;
+	}
+	unsigned short getHPBonus() {
+		return this->hpbonus;
+	} 
 	void setRMHP(int rmhp){
 		this->rmhp=rmhp;
 	}
@@ -146,10 +153,17 @@ public:
 		return this->rmhp;
 	}
 	void setMMP(int mmp){
-		this->mmp=mmp;
+		this->mmp = (mmp > 30000 ? 30000 : mmp);
 	}
 	unsigned short getMMP(){
-		return this->mmp;
+		unsigned short t = this->mmp + this->mpbonus;
+		return (t > 30000 ? 30000 : t);
+	}
+	void setMPBonus(unsigned short bonus) {
+		this->mpbonus = bonus;
+	}
+	unsigned short getMPBonus() {
+		return this->mpbonus;
 	}
 	void setRMMP(int rmmp){
 		this->rmmp=rmmp;
@@ -265,9 +279,11 @@ private:
 	unsigned short hp;
 	unsigned short mhp;
 	unsigned short rmhp;
+	unsigned short hpbonus;
 	unsigned short mp;
 	unsigned short mmp;
 	unsigned short rmmp;
+	unsigned short mpbonus;
 	short ap;
 	short sp;
 	int exp;

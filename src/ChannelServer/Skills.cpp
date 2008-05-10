@@ -418,8 +418,8 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 	SkillsPacket::showSkill(player, Maps::info[player->getMap()].Players, skillid); 
 	///
 	if(skillid == 1301007){ // Hyper Body
-		player->setMHP(player->getRMHP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].x)/100);
-		player->setMMP(player->getRMMP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].y)/100);
+		player->setMHP((player->getRMHP() * (100 + skills[skillid][player->skills->getSkillLevel(skillid)].x) / 100) + player->getHPBonus());
+		player->setMMP((player->getRMMP() * (100 + skills[skillid][player->skills->getSkillLevel(skillid)].y) / 100) + player->getMPBonus());
 	}
 	///
 	if(skillsinfo.find(skillid) == skillsinfo.end())
@@ -537,8 +537,8 @@ void Skills::useAttackSkill(Player* player, int skillid){
 void Skills::endSkill(Player* player, int skill){
 	/// 
 	if(skill == 1301007){ // Hyper Body
-		player->setMHP(player->getRMHP());
-		player->setMMP(player->getRMMP());
+		player->setMHP(player->getRMHP() + player->getHPBonus());
+		player->setMMP(player->getRMMP() + player->getMPBonus());
 		player->setHP(player->getHP());
 		player->setMP(player->getMP());
 	}
