@@ -225,7 +225,10 @@ public:
 	NPC* getNPC(){
 		return npc;
 	}
-	int isGM(){
+	bool isGM(){
+		return gm > 0;
+	}
+	int getGMLevel() {
 		return gm;
 	}
 	void setSkill(SkillMapEnterActiveInfo skill){
