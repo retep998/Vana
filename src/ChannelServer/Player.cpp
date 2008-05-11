@@ -248,6 +248,7 @@ int getIntg(unsigned char* buf){
 
 void Player::changeKey(unsigned char* packet){
 	int howmany = getIntg(packet+4);
+	if (howmany == 0) return;
 	for(int i=0; i<howmany; i++){
 		int pos = getIntg(packet+8+i*9);
 		int key = getIntg(packet+12+i*9);
