@@ -29,6 +29,7 @@ public:
 	void handle (int socket);
 	void sendPacket(unsigned char* buf, int len);
 	void disconnect();
+	void unregister();
 private:
 	unsigned char* buffer;
 	int bytesInBuffer;

@@ -29,7 +29,7 @@ public:
 	void sendPacket(unsigned char *buf, int len);
 	void disconnect();
 
-	virtual ~AbstractPlayer() { };
+	virtual ~AbstractPlayer();
 protected:
 	PacketHandler *packetHandler;
 };
