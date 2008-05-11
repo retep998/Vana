@@ -46,6 +46,9 @@ void PacketHandler::handle (int socket) {
 
 	if (bytesInBuffer >= HEADER_LEN) {
 		int packetSize = Decoder::getLength(buffer);
+		if (packetSize < 2) {
+			disconnect();
+		}
 		int l = recv(socket, (char*)(buffer + bytesInBuffer), HEADER_LEN + packetSize - bytesInBuffer, 0);
 		if (l <= 0) {
 			disconnect();
