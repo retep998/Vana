@@ -128,11 +128,20 @@ void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map speci
 			portal = info[player->getMap()].Portals[i];
 			break;
 		}
-	if (strcmp(portal.to, "out00") == 0 && portal.toid == 910000000){ // FM portals
-		player->setOrigin();
-	}
-	else if (player->getMap() == 910000000){ // Leaving FM
+	if (strcmp(portal.script, "market00") == 0) { // Leaving FM
 		portal.toid = player->getOrigin();
+		// Let's find where should we be standing on the other map
+		for(unsigned int i=0; i<info[portal.toid].Portals.size(); i++){
+			if(strncmp(info[portal.toid].Portals[i].script, "market", 6) ==0){
+				strcpy_s(portal.to, info[portal.toid].Portals[i].from);
+				break;
+			}
+		}
+	}
+	else if (strncmp(portal.script, "market", 6) == 0) { // FM portals
+		player->setOrigin();
+		portal.toid = 910000000;
+		strcpy_s(portal.to, "out00");
 	}
 	else if (player->getMap() == 682000000){ // Haunted Mansion
 		portal.toid = 682000100;
