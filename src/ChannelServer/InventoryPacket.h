@@ -38,6 +38,8 @@ namespace InventoryPacket {
 	void moveItemS2(Player* player, char inv, short slot1, short amount1, short slot2, short amount2);
 	void sitChair(Player* player, vector <Player*> players, int chairid);
 	void stopChair(Player* player, vector <Player*> players);
+	void useItem(Player* player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph); // Use buff item
+	void endItem(Player* player, unsigned char types[8]);
 	void useScroll(Player* player, vector <Player*> players, char s);
 	void showMegaphone(Player* player, vector <Player*> players, char* msg);
 	void showSuperMegaphone(Player* player, char* msg, int whisper = 0);

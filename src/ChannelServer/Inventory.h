@@ -21,12 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ISSTAR(x) (x/10000 == 207)
 
 class Player;
+class ItemTimer;
 struct Equip;
 struct Item;
 
 namespace Inventory {
+	void startTimer();
+	void stopTimerPlayer(Player* player);
 	extern int findSlot(Player* player, int itemid ,char inv, short amount);
 	extern int isCash(int itemid);
+	extern ItemTimer* timer;
 	extern Equip* setEquipStats(Player* player, int equipid);
 	void useShop(Player* player, unsigned char* packet);
 	void itemMove(Player* player, unsigned char* packet);
@@ -35,6 +39,8 @@ namespace Inventory {
 	void addNewItem(Player* player, int item, int howmany);
 	void takeItem(Player* player, int item, int howmany);
 	void useItem(Player* player, unsigned char* packet);
+	void cancelItem(Player* player, unsigned char* packet);
+	void endItem(Player* player, int itemid);
 	void takeItemSlot(Player* player, short slot, char inv, short amount);
 	void useChair(Player* player, unsigned char* packet);
 	void stopChair(Player* player, unsigned char* packet);

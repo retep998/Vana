@@ -38,10 +38,11 @@ int distPos(Pos pos1, Pos pos2){
 
 Player::~Player(){
 	if(isconnect){
-		Maps::removePlayer(this);
-		Players::deletePlayer(this);
 		save();
 		Skills::stopTimerPlayer(this);
+		Inventory::stopTimerPlayer(this);
+		Maps::removePlayer(this);
+		Players::deletePlayer(this);
 		setOnline(false);
 		isconnect = false;
 	}
@@ -74,6 +75,7 @@ void Player::realHandleRequest(unsigned char* buf, int len){
 		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this ,buf+2); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this ,buf+2); break;
 		case RECV_USE_ITEM: Inventory::useItem(this, buf+2); break;
+		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, buf+2); break;
 		case RECV_USE_RETURN_SCROLL: Inventory::useReturnScroll(this, buf+2); break; 
 		case RECV_USE_SCROLL: Inventory::useScroll(this, buf+2); break;
 		case RECV_ADD_STAT: Levels::addStat(this, buf+2); break;

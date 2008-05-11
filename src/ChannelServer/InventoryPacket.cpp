@@ -47,51 +47,46 @@ void InventoryPacket::updatePlayer(Player* player){
 	packet.addByte(player->getSkin());
 	packet.addInt(player->getEyes());
 	packet.addByte(1);
-	packet.addInt(player->getHair());	for(int i=0; i<player->inv->getEquipNum(); i++){
+	packet.addInt(player->getHair());
+	int equips[35][2];
+	for(int i=0; i<player->inv->getEquipNum(); i++){ //sort equips
 		Equip* equip = player->inv->getEquip(i);
 		if(equip->pos<0){
-			if(!Inventory::isCash(equip->id)){
-				bool check=true;
-				for(int j=0; j<player->inv->getEquipNum(); j++){
-					Equip* equip2 = player->inv->getEquip(j);
-					if(equip2->pos<0 && equip != equip2 && equip->type == equip2->type){
-						check=false;
-						break;
-					}
-				}	
-				if(check){
-					packet.addByte(equip->type);
-					packet.addInt(equip->id);
+			if(equips[equip->type][0]>0){
+				if(Inventory::isCash(equip->id)){
+					equips[equip->type][1] = equips[equip->type][0];
+					equips[equip->type][0] = equip->id;
+				}
+				else{
+					equips[equip->type][1] = equip->id;
 				}
 			}
 			else{
-				packet.addByte(equip->type);
-				packet.addInt(equip->id);
+				equips[equip->type][0] = equip->id;
 			}
 		}
 	}
-	packet.addByte(-1);
-	for(int i=0; i<player->inv->getEquipNum(); i++){
-		Equip* equip = player->inv->getEquip(i);
-		if(equip->pos<0){
-			if(!Inventory::isCash(equip->id)){
-				bool check=true;
-				for(int j=0; j<player->inv->getEquipNum(); j++){
-					Equip* equip2 = player->inv->getEquip(j);
-					if(equip2->pos<0 && equip != equip2 && equip->type == equip2->type){
-						check=false;	
-						break;
-					}
-				}	
-				if(!check){
-					packet.addByte(equip->type);
-					packet.addInt(equip->id);
-				}
-			}
+	for(int i=0; i<35; i++){ //shown items
+		if(equips[i][0]>0){
+			packet.addByte(i);
+			if(i == 11 && equips[i][1]>0) // normal weapons always here
+				packet.addInt(equips[i][1]);
+			else
+				packet.addInt(equips[i][0]);
 		}
 	}
 	packet.addByte(-1);
-	packet.addInt(0);
+	for(int i=0; i<35; i++){ //covered items
+		if(equips[i][1]>0 && i != 11){
+			packet.addByte(i);
+			packet.addInt(equips[i][1]);
+		}
+	}
+	packet.addByte(-1);
+	if(equips[11][1]>0) // cs weapon
+		packet.addInt(equips[11][0]);
+	else
+		packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0); 
 	packet.addByte(0);
@@ -275,4 +270,42 @@ void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char*
 		iter != Players::players.end(); iter++){
 			packet.packetSend<Player>(iter->second);
 	}
+}
+// Use buff item
+void InventoryPacket::useItem(Player* player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph){ // Test/Beta function, PoC only
+	Packet packet = Packet();
+	packet.addHeader(SEND_USE_SKILL);
+	packet.addByte(types[0]);
+	packet.addByte(types[1]);
+	packet.addByte(types[2]);
+	packet.addByte(types[3]);
+	packet.addByte(types[4]);
+	packet.addByte(types[5]);
+	packet.addByte(types[6]);
+	packet.addByte(types[7]);
+	for(unsigned int i=0; i<vals.size(); i++){
+		packet.addShort(vals[i]);
+		packet.addInt(itemid*-1);
+		packet.addInt(time);
+	}
+	packet.addShort(0);
+	if(morph)
+		packet.addByte(1);
+	else
+		packet.addByte(0);
+	packet.packetSend(player);
+}
+void InventoryPacket::endItem(Player* player, unsigned char types[8]){
+	Packet packet = Packet();
+	packet.addHeader(SEND_CANCEL_SKILL);
+	packet.addByte(types[0]);
+	packet.addByte(types[1]);
+	packet.addByte(types[2]);
+	packet.addByte(types[3]);
+	packet.addByte(types[4]);
+	packet.addByte(types[5]);
+	packet.addByte(types[6]);
+	packet.addByte(types[7]);
+	packet.addByte(0);
+	packet.packetSend(player);
 }

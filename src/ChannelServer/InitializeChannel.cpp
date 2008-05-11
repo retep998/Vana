@@ -35,6 +35,12 @@ void Initializing::initializeMobs(){
 		currentid = atoi(mobRow[1]);
 
 		if(currentid != previousid){
+			// Col0 : Row ID
+			//    1 : Mob ID
+			//    2 : HP
+			//    3 : MP
+			//    4 : EXP
+			//    5 : Boss
 			if(previousid != -1){
 				Mobs::addMob(previousid, mob);
 				mob.summon.clear();
@@ -42,6 +48,7 @@ void Initializing::initializeMobs(){
 			mob.hp  = atoi(mobRow[2]);
 			mob.mp  = atoi(mobRow[3]);
 			mob.exp = atoi(mobRow[4]);
+			mob.boss = atoi(mobRow[5]);
 		}
 
 		if(!mobRow[5].is_null()){
@@ -85,33 +92,34 @@ void Initializing::initializeItems(){
 		//    9 : HP Rate
 		//   10 : MP Rate
 		//   11 : Move to
-		//   12 : Weapon Attack
-		//   13 : Magic Attack
-		//   14 : Avoidability
-		//   15 : Accuracy
-		//   16 : Weapon Defense
-		//   17 : Magic Defense
-		//   18 : Speed
-		//   19 : Jump
-		//   20 : Success
-		//   21 : Cursed
-		//   22 : Item STR
-		//   23 : Item DEX
-		//   24 : Item INT
-		//   25 : Item LUK
-		//   26 : Item HP
-		//   27 : Item MP
-		//   28 : Item Weapon Attack
-		//   29 : Item Magic Attack
-		//   30 : Item Weapon Defense
-		//   31 : Item Magic Defense
-		//   32 : Item Accuracy
-		//   33 : Item Avoid
-		//   34 : Item Hands
-		//   35 : Item Jump
-		//   36 : Item Speed
-		//   37 : Mob ID
-		//   38 : Chance
+		//   12 : Time
+		//   13 : Weapon Attack
+		//   14 : Magic Attack
+		//   15 : Avoidability
+		//   16 : Accuracy
+		//   17 : Weapon Defense
+		//   18 : Magic Defense
+		//   19 : Speed
+		//   20 : Jump
+		//   21 : Morph
+		//   22 : Success
+		//   23 : Cursed
+		//   24 : Item STR
+		//   25 : Item DEX
+		//   26 : Item INT
+		//   27 : Item LUK
+		//   28 : Item HP
+		//   29 : Item MP
+		//   30 : Item Weapon Attack
+		//   31 : Item Magic Attack
+		//   32 : Item Weapon Defense
+		//   33 : Item Magic Defense
+		//   34 : Item Accuracy
+		//   35 : Item Avoid
+		//   36 : Item Jump
+		//   37 : Item Speed
+		//   38 : Mob ID
+		//   39 : Chance
 		currentid = atoi(itemRow[1]);
 		if(currentid != previousid){
 			if(previousid != -1){ // Add the items into the cache
@@ -129,28 +137,39 @@ void Initializing::initializeItems(){
 			cons.hpr = atoi(itemRow[9]);
 			cons.mpr = atoi(itemRow[10]);
 			cons.moveTo = atoi(itemRow[11]);
+			// Buffs
+			cons.time = atoi(itemRow[12]);
+			cons.watk = atoi(itemRow[13]);
+			cons.matk = atoi(itemRow[14]);
+			cons.avo = atoi(itemRow[15]);
+			cons.acc = atoi(itemRow[16]);
+			cons.wdef = atoi(itemRow[17]);
+			cons.mdef = atoi(itemRow[18]);
+			cons.speed = atoi(itemRow[19]);
+			cons.jump = atoi(itemRow[20]);
+			cons.morph = atoi(itemRow[21]);
 			// Scrolling
-			cons.success = atoi(itemRow[20]);
-			cons.cursed = atoi(itemRow[21]);
-			cons.istr = atoi(itemRow[22]);
-			cons.idex = atoi(itemRow[23]);
-			cons.iint = atoi(itemRow[24]);
-			cons.iluk = atoi(itemRow[25]);
-			cons.ihp = atoi(itemRow[26]);
-			cons.imp = atoi(itemRow[27]);
-			cons.iwatk = atoi(itemRow[28]);
-			cons.imatk = atoi(itemRow[29]);
-			cons.iwdef = atoi(itemRow[30]);
-			cons.imdef = atoi(itemRow[31]);
-			cons.iacc = atoi(itemRow[32]);
-			cons.iavo = atoi(itemRow[33]);
-			cons.ihand = atoi(itemRow[34]);
-			cons.ijump = atoi(itemRow[35]);
-			cons.ispeed = atoi(itemRow[36]);
+			cons.success = atoi(itemRow[22]);
+			cons.cursed = atoi(itemRow[23]);
+			cons.istr = atoi(itemRow[24]);
+			cons.idex = atoi(itemRow[25]);
+			cons.iint = atoi(itemRow[26]);
+			cons.iluk = atoi(itemRow[27]);
+			cons.ihp = atoi(itemRow[28]);
+			cons.imp = atoi(itemRow[29]);
+			cons.iwatk = atoi(itemRow[30]);
+			cons.imatk = atoi(itemRow[31]);
+			cons.iwdef = atoi(itemRow[32]);
+			cons.imdef = atoi(itemRow[33]);
+			cons.iacc = atoi(itemRow[34]);
+			cons.iavo = atoi(itemRow[35]);
+			cons.ijump = atoi(itemRow[36]);
+			cons.ispeed = atoi(itemRow[37]);
 		}
-		if(!itemRow[37].is_null()){
-			s.mobid = atoi(itemRow[37]);
-			s.chance = atoi(itemRow[38]);
+		// Summoning
+		if(!itemRow[38].is_null()){
+			s.mobid = atoi(itemRow[38]);
+			s.chance = atoi(itemRow[39]);
 			cons.mobs.push_back(s);
 		}
 		previousid = atoi(itemRow[1]);
@@ -246,8 +265,9 @@ void Initializing::initializeEquips(){
 		//   16 : Avo
 		//   17 : Jump
 		//   18 : Speed
-		//   19 : Cash
-		//   20 : Quest
+		//   19 : Taming Mob
+		//   20 : Cash
+		//   21 : Quest
 		int equipID = atoi(equipRow[1]); // This is the Equip ID
 		equip.type = atoi(equipRow[2]);
 		equip.price = atoi(equipRow[3]);
@@ -266,8 +286,9 @@ void Initializing::initializeEquips(){
 		equip.iavo = atoi(equipRow[16]);
 		equip.ijump = atoi(equipRow[17]);
 		equip.ispeed = atoi(equipRow[18]);
-		equip.cash = atoi(equipRow[19]);
-		equip.quest = atoi(equipRow[20]);
+		equip.tamingmob = atoi(equipRow[19]);
+		equip.cash = atoi(equipRow[20]);
+		equip.quest = atoi(equipRow[21]);
 		// Add equip to the drops table
 		Drops::addEquip(equipID,equip);
 	}
@@ -276,11 +297,6 @@ void Initializing::initializeEquips(){
 // Shops
 void Initializing::initializeShops(){
 	printf("Initializing Shops... ");
-	// Col0 : RowID
-	//    1 : shopid
-	//    2 : NPC ID
-	//    3 : Item ID
-	//    4 : Price
 	mysqlpp::Query query = db.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid, shopitemdata.id ASC");
 
 	mysqlpp::UseQueryResult res;
@@ -293,6 +309,11 @@ void Initializing::initializeShops(){
 	int previousid = -1;
 	ShopInfo shop;
 	while (mysqlpp::Row shopRow = res.fetch_row()) {
+		// Col0 : RowID
+		//    1 : shopid
+		//    2 : NPC ID
+		//    3 : Item ID
+		//    4 : Price
 		currentid = atoi(shopRow[1]);
 
 		if(currentid != previousid){
@@ -504,7 +525,7 @@ void Initializing::initializeSkills(){
 void Initializing::initializeMaps(){
 	printf("Initializing Maps... ");
 	// Maps and portals
-	mysqlpp::Query query = db.query("SELECT mapdata.*, portaldata.portalid, portaldata.pfrom, portaldata.pto, portaldata.toid, portaldata.type, portaldata.x, portaldata.y FROM mapdata LEFT JOIN portaldata ON mapdata.mapid=portaldata.mapid ORDER BY mapdata.mapid ASC");
+	mysqlpp::Query query = db.query("SELECT mapdata.*, mapportaldata.portalid, mapportaldata.pfrom, mapportaldata.pto, mapportaldata.toid, mapportaldata.type, mapportaldata.x, mapportaldata.y, mapportaldata.script FROM mapdata LEFT JOIN mapportaldata ON mapdata.mapid=mapportaldata.mapid ORDER BY mapdata.mapid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -519,13 +540,18 @@ void Initializing::initializeMaps(){
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : Return Map
-		//    3 : Portal ID
-		//    4 : From
-		//    5 : To
-		//    6 : To ID
-		//    7 : Type
-		//    8 : x
-		//    9 : y
+		//    3 : Forced Return Map
+		//    4 : Mob Spawn Rate
+		//    5 : Clock
+		//    6 : Ship Interval
+		//    7 : Portal ID
+		//    8 : From
+		//    9 : To
+		//   10 : To ID
+		//   11 : Type
+		//   12 : x
+		//   13 : y
+		//   14 : Script
 		currentid = atoi(mapRow[1]);
 
 		if(currentid != previousid){
@@ -534,16 +560,21 @@ void Initializing::initializeMaps(){
 				map.Portals.clear();
 			}
 			map.rm = atoi(mapRow[2]);
+			map.forcedReturn = atoi(mapRow[3]);
+			map.spawnrate = atof(mapRow[4]);
+			map.clock = atoi(mapRow[5]);
+			map.shipInterval = atoi(mapRow[6]);
 		}
 		PortalInfo portal;
 		if(!mapRow[3].is_null()){
-			portal.id = atoi(mapRow[3]);
-			strcpy_s(portal.from, mapRow[4]);
-			strcpy_s(portal.to, mapRow[5]);
-			portal.toid = atoi(mapRow[6]);
-			portal.type = atoi(mapRow[7]);
-			portal.x = atoi(mapRow[8]);
-			portal.y = atoi(mapRow[9]);
+			portal.id = atoi(mapRow[7]);
+			strcpy_s(portal.from, mapRow[8]);
+			strcpy_s(portal.to, mapRow[9]);
+			portal.toid = atoi(mapRow[10]);
+			portal.type = atoi(mapRow[11]);
+			portal.x = atoi(mapRow[12]);
+			portal.y = atoi(mapRow[13]);
+			strcpy_s(portal.script, mapRow[14]);
 			map.Portals.push_back(portal);
 		}
 		else printf("Warning: Map %d has no portal data on record.", currentid);
@@ -679,6 +710,7 @@ void Initializing::initializeMaps(){
 void Initializing::initializeTimers(){
 	printf("Initializing Timers... ");
 	Skills::startTimer();
+	Inventory::startTimer();
 	Maps::startTimer();
 	printf("DONE\n");
 }

@@ -43,6 +43,7 @@ struct MobInfo {
 	int hp;
 	int mp;
 	int exp;
+	bool boss;
 	vector<int> summon;
 };
 
