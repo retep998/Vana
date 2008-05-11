@@ -379,6 +379,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\Connection\Connector.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Connection\PacketHandler.cpp"
 					>
 				</File>
@@ -618,6 +622,10 @@
 				>
 				<File
 					RelativePath=".\src\Common\Connection\Acceptor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Connection\Connector.h"
 					>
 				</File>
 				<File
