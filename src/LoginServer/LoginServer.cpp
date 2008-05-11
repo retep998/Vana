@@ -21,6 +21,7 @@ LoginServer* LoginServer::singleton = 0;
 
 void LoginServer::listen() {
 	new Acceptor(port, new PlayerLoginFactory());
+	new Acceptor(inter_port, new LoginServerAcceptPlayerFactory());
 }
 
 void LoginServer::loadData() {
@@ -32,6 +33,7 @@ void LoginServer::loadConfig() {
 	Config config("conf/loginserver.lua");
 	pinEnabled = config.getBool("pin");
 	port = config.getInt("port");
+	inter_port = config.getInt("inter_port");
 }
 
 void LoginServer::shutdown() {

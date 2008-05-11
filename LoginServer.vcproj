@@ -313,6 +313,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="ServerToServer"
+				>
+				<File
+					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -345,6 +353,10 @@
 				<Filter
 					Name="Headers"
 					>
+					<File
+						RelativePath=".\src\Common\InterHeader.h"
+						>
+					</File>
 					<File
 						RelativePath=".\src\Common\RecvHeader.h"
 						>
@@ -466,6 +478,10 @@
 			<Filter
 				Name="ServerToServer"
 				>
+				<File
+					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Common\ServerPlayer.h"
 					>

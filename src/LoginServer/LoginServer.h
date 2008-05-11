@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeLogin.h"
 #include "Config.h"
 #include "PlayerLogin.h"
+#include "LoginServerAcceptPlayer.h"
 
 // LoginServer main application class, implemented as singleton
 class LoginServer : public AbstractServer {
@@ -46,6 +47,7 @@ private:
 
 	bool pinEnabled;
 	int port;
+	int inter_port;
 };
 
 #endif

@@ -3,3 +3,6 @@ pin = true;
 
 -- What port should the login server run on?
 port = 8484;
+
+-- What port should the login server accept inter-server connection?
+inter_port = 8485;
