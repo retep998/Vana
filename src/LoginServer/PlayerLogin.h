@@ -66,7 +66,6 @@ public:
 	int getChannel(){
 		return this->channel;
 	}
-	void sendPacket(unsigned char* buf, int len){ packetHandler->sendPacket(buf,len); }
 	void setOnline(bool online);
 private:
 	int status;

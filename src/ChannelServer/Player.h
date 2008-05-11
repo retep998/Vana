@@ -65,7 +65,6 @@ public:
 	~Player();
 
 	void realHandleRequest(unsigned char* buf, int len);
-	void sendPacket(unsigned char* buf, int len){ packetHandler->sendPacket(buf,len); }
 	void setPlayerid(int id){
 		this->id = id;
 	}
