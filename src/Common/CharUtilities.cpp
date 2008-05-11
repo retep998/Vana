@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CharUtilities.h"
 
-char* tolower(char* s){
+char * CharUtilities::tolower(char* s){
 	int i = 0;
 	while(s[i]){
-		s[i] = tolower(s[i]);
+		s[i] = std::tolower(s[i]);
 		i++;
 	}
 	return s;

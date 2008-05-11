@@ -373,7 +373,7 @@ void Skills::addSkill(int id, SkillsLevelInfo skill){
 }
 
 void Skills::addSkill(Player* player, unsigned char* packet){
-	int skillid = getInt(packet+4);
+	int skillid = BufferUtilities::getInt(packet+4);
 	if(!BEGINNER_SKILL(skillid) && player->getSp() == 0){
 		// hacking
 		return;
@@ -384,14 +384,14 @@ void Skills::addSkill(Player* player, unsigned char* packet){
 	SkillsPacket::addSkill(player, skillid, player->skills->getSkillLevel(skillid));
 }
 void Skills::cancelSkill(Player* player, unsigned char* packet){
-	stopSkill(player, getInt(packet));
+	stopSkill(player, BufferUtilities::getInt(packet));
 }
 void Skills::stopSkill(Player* player, int skillid){
 	timer->stop(player, skillid);
 	endSkill(player, skillid);
 }
 void Skills::useSkill(Player* player, unsigned char* packet){
-	int skillid = getInt(packet+4);
+	int skillid = BufferUtilities::getInt(packet+4);
 	short level = player->skills->getSkillLevel(skillid);
 	if(level == 0){
 		// hacking

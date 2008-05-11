@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Server.h"
 #include "Fame.h"
+#include "BufferUtilities.h"
 #include "ChannelServer.h"
 #include "RecvHeader.h"
 
@@ -242,16 +243,13 @@ void Player::setLevel(int level){
 	this->level=(unsigned char)level;
 
 }
-int getIntg(unsigned char* buf){
-	return buf[0] + buf[1]*0x100 + buf[2]*0x100*0x100 + buf[3]*0x100*0x100*0x100;
-}
 
 void Player::changeKey(unsigned char* packet){
-	int howmany = getIntg(packet+4);
+	int howmany = BufferUtilities::getInt(packet+4);
 	if (howmany == 0) return;
 	for(int i=0; i<howmany; i++){
-		int pos = getIntg(packet+8+i*9);
-		int key = getIntg(packet+12+i*9);
+		int pos = BufferUtilities::getInt(packet+8+i*9);
+		int key = BufferUtilities::getInt(packet+12+i*9);
 		if(packet[12+i*9] == 0) // TODO 1st type byte, than key int
 			key=0;
 		if(pos>=0 && pos<90)

@@ -113,7 +113,7 @@ void Levels::giveEXP(Player* player, long exp, char type){
 }
 
 void Levels::addStat(Player* player, unsigned char* packet){
-	int type = getInt(packet+4);
+	int type = BufferUtilities::getInt(packet+4);
 	if(player->getAp() == 0){
 		// hacking
 		return;

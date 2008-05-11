@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TimeUtilities.h"
 
-__int64 getServerTime(){
+__int64 TimeUtilities::getServerTime(){
 	return timeToTick(time(0));
 }
 
-__int64 timeToTick(time_t time) {
+__int64 TimeUtilities::timeToTick(time_t time) {
 	if (time == -1)
 		return -1;
     struct tm timeinfo;
@@ -45,7 +45,7 @@ __int64 timeToTick(time_t time) {
     return ticks;
 }
 
-int tickToTick32(__int64 tick) {
+int TimeUtilities::tickToTick32(__int64 tick) {
 	int tick32;
 	if (tick == -1)
 		tick32 = -1;

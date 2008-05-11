@@ -85,7 +85,7 @@ void MobsPacket::moveMob(Player* player, Mob* mob ,vector <Player*> players, uns
 	Packet packet = Packet();
 	packet.addHeader(SEND_MOVE_MOB2);
 	packet.addInt(mob->getID());
-	packet.addShort(getShort(pack+4));
+	packet.addShort(BufferUtilities::getShort(pack+4));
 	packet.addByte(1);
 	packet.addInt(mob->getMP());
 	packet.packetSend<Player>(player);
@@ -102,7 +102,7 @@ void MobsPacket::moveMob(Player* player, Mob* mob ,vector <Player*> players, uns
 void MobsPacket::damageMob(Player* player, vector <Player*> players, unsigned char* pack){
 	int howmany = pack[1]/0x10;
 	int hits = pack[1]%0x10;
-	int skillid = getInt(pack+2);
+	int skillid = BufferUtilities::getInt(pack+2);
 	bool s4211006 = false;
 	if(skillid == 4211006)
 		s4211006 = true;
@@ -110,9 +110,9 @@ void MobsPacket::damageMob(Player* player, vector <Player*> players, unsigned ch
 	packet.addHeader(SEND_DAMAGE_MOB);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(pack[1]);
-	if(getInt(pack+2)>0){
+	if(BufferUtilities::getInt(pack+2)>0){
 		packet.addByte(-1);
-		packet.addInt(getInt(pack+2));
+		packet.addInt(BufferUtilities::getInt(pack+2));
 	} 
 	else
 		packet.addByte(0);
@@ -121,11 +121,11 @@ void MobsPacket::damageMob(Player* player, vector <Player*> players, unsigned ch
 	packet.addByte(10);
 	packet.addInt(0);
 	for(int i=0; i<howmany; i++){
-		int mobid = getInt(pack+14+i*(22-s4211006+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(pack+14+i*(22-s4211006+4*(hits-1)));
 		packet.addInt(mobid);
 		packet.addByte(-1);
 		for(int j=0; j<hits; j++){
-			int damage = getInt(pack+32-s4211006+i*(22-s4211006+4*(hits-1))+j*4);
+			int damage = BufferUtilities::getInt(pack+32-s4211006+i*(22-s4211006+4*(hits-1))+j*4);
 			packet.addInt(damage);
 		}
 	}
@@ -135,7 +135,7 @@ void MobsPacket::damageMob(Player* player, vector <Player*> players, unsigned ch
 void MobsPacket::damageMobS(Player* player, vector <Player*> players, unsigned char* pack, int itemid){
 	int howmany = pack[1]/0x10;
 	int hits = pack[1]%0x10;
-	int skillid = getInt(pack+2);
+	int skillid = BufferUtilities::getInt(pack+2);
 	bool s3121004 = false;
 	if(skillid == 3121004 || skillid == 3221001)
 		s3121004 = true;
@@ -143,9 +143,9 @@ void MobsPacket::damageMobS(Player* player, vector <Player*> players, unsigned c
 	packet.addHeader(SEND_DAMAGE_MOB_RANGED);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(pack[1]);
-	if(getInt(pack+2)>0){
+	if(BufferUtilities::getInt(pack+2)>0){
 		packet.addByte(1);
-		packet.addInt(getInt(pack+2));
+		packet.addInt(BufferUtilities::getInt(pack+2));
 	} 
 	else
 		packet.addByte(0);
@@ -154,11 +154,11 @@ void MobsPacket::damageMobS(Player* player, vector <Player*> players, unsigned c
 	packet.addByte(pack[13]);
 	packet.addInt(itemid);
 	for(int i=0; i<howmany; i++){
-		int mobid = getInt(pack+19+4*s3121004+i*(22+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(pack+19+4*s3121004+i*(22+4*(hits-1)));
 		packet.addInt(mobid); 
 		packet.addByte(-1);
 		for(int j=0; j<hits; j++){
-			int damage = getInt(pack+37+4*s3121004+i*(22+4*(hits-1))+j*4);
+			int damage = BufferUtilities::getInt(pack+37+4*s3121004+i*(22+4*(hits-1))+j*4);
 			packet.addInt(damage);
 		}
 	}
@@ -173,17 +173,17 @@ void MobsPacket::damageMobSkill(Player* player, vector <Player*> players, unsign
 	packet.addInt(player->getPlayerid());
 	packet.addByte(pack[1]);
 	packet.addByte(1);
-	packet.addInt(getInt(pack+2));
+	packet.addInt(BufferUtilities::getInt(pack+2));
 	packet.addByte(pack[7]);
 	packet.addByte(pack[9]);
 	packet.addByte(0);
 	packet.addInt(0);
 	for(int i=0; i<howmany; i++){
-		int mobid = getInt(pack+14+i*(22+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(pack+14+i*(22+4*(hits-1)));
 		packet.addInt(mobid);
 		packet.addByte(-1);
 		for(int j=0; j<hits; j++){
-			int damage = getInt(pack+32+i*(22+4*(hits-1))+j*4);
+			int damage = BufferUtilities::getInt(pack+32+i*(22+4*(hits-1))+j*4);
 			packet.addInt(damage);
 		}
 	}

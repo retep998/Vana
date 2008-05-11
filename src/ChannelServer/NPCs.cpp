@@ -43,7 +43,7 @@ void NPCs::showNPCs(Player* player){
 void NPCs::handleNPC(Player* player, unsigned char* packet){
 	if(player->getNPC() != NULL)
 		return;
-	int npcid = info[player->getMap()][getInt(packet)-100].id;
+	int npcid = info[player->getMap()][BufferUtilities::getInt(packet)-100].id;
 	NPC* npc = new NPC(npcid, player);
 	NPCsScripts::handle(npcid, npc);
 	if(npc->isEnd())
@@ -86,13 +86,13 @@ void NPCs::handleNPCIn(Player* player, unsigned char* packet){
 	else if(type == 3){
 		npc->setState(npc->getState()+1);
 		if(packet[1] != 0){
-			short len = getShort(packet+2);
+			short len = BufferUtilities::getShort(packet+2);
 			if(len>100){
 				npc->end();
 				return;
 			}
 			char temp[101];
-			getString(packet+4, len, temp);
+			BufferUtilities::getString(packet+4, len, temp);
 			npc->setGetText(temp);
 		}
 		else
@@ -101,7 +101,7 @@ void NPCs::handleNPCIn(Player* player, unsigned char* packet){
 	else if(type == 4){
 		npc->setState(npc->getState()+1);
 		if(packet[1] == 1)
-			npc->setGetNumber(getInt(packet+2));
+			npc->setGetNumber(BufferUtilities::getInt(packet+2));
 		else
 			npc->end();
 	}
@@ -115,7 +115,7 @@ void NPCs::handleNPCIn(Player* player, unsigned char* packet){
 	else if(type == 7){
 		npc->setState(npc->getState()+1);
 		if(packet[1] == 1){
-			npc->setSelected(getShort(packet+2));
+			npc->setSelected(BufferUtilities::getShort(packet+2));
 		}
 		else 
 			npc->end();
