@@ -163,7 +163,7 @@ void Maps::changeMap(Player* player, int mapid, int pos){
 	if(mapid == 999999999 || mapid < 0){
 		mapid = player->getMap();
 		pos = 0;
-		PlayersPacket::showMessage("You have tried to enter an invalid map, you have been teleported back to your previous location.", 5);
+		PlayersPacket::showMessage("You have tried to enter an invalid portal and have been teleported back to your previous location.", 5);
 	}
 	removePlayer(player);
 	player->setMap(mapid);
