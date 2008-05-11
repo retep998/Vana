@@ -88,23 +88,7 @@ void Inventory::itemMove(Player* player, unsigned char* packet){
 				player->inv->setEquipPos(i, slot2);	
 				break;
 			}
-		}
-		unsigned short hpbonus = 0;
-		unsigned short mpbonus = 0;
-		for(int i=0; i<player->inv->getEquipNum();i++) {
-			if(player->inv->getEquipPos(i) < 0) {
-				Equip* equip = new Equip;
-				equip = player->inv->getEquip(i);
-				if (equip->pos < 0) {
-					if (equip->ihp > 0) { hpbonus += equip->ihp; }
-					if (equip->imp > 0) { mpbonus += equip->imp; }
-				}
-			}
-		}
-        player->setHPBonus(hpbonus);
-        player->setMPBonus(mpbonus);
-        if(player->getHP() > player->getMHP()) { player->setHP(player->getMHP()); }
-        if(player->getMP() > player->getMMP()) { player->setMP(player->getMMP()); } 
+		}	
 		InventoryPacket::moveItem(player, inv, slot1, slot2);
 		InventoryPacket::updatePlayer(player);
 	}
