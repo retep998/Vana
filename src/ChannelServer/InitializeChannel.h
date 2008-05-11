@@ -24,9 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "NPCs.h"
 #include "Shops.h"
+#include <string>
 #include "Quests.h"
 #include "Skills.h"
+#include "Inventory.h"
 #include "Timer.h"
+using namespace std;
 
 namespace Initializing {
 	void initializeMobs();

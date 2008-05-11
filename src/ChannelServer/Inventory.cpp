@@ -25,6 +25,74 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include "BufferUtilities.h"
 
+#include "Timer.h"
+
+class ItemTimer: public Timer::TimerHandler {
+public:
+	void setItemTimer(Player* player, int item, int time){
+		ITimer timer;
+		timer.id = Timer::Instance()->setTimer(time, this);;
+		timer.player = player;
+		timer.item = item;
+		timer.time = time;
+		timers.push_back(timer);
+	}
+	void stop(Player* player, int item){
+		for(unsigned int i=0; i<timers.size(); i++){
+			if(player == timers[i].player && timers[i].item == item){
+				Timer::Instance()->cancelTimer(timers[i].id);
+				break;
+			}
+		}
+	}
+	void stop(Player* player){
+		for(unsigned int i=timers.size(); i>0; i--){ // fix missing timer cancels
+			if(player == timers[i-1].player){
+				Timer::Instance()->cancelTimer(timers[i-1].id);
+			}
+		}
+	}
+private:
+	struct ITimer {
+		int id;
+		Player* player;
+		int item;
+		int time;
+	};
+	static vector <ITimer> timers;
+	void handle(Timer* timer, int id){
+		int item;
+		Player* player;
+		for(unsigned int i=0; i<timers.size(); i++){
+			if(timers[i].id == id){
+				player = timers[i].player;
+				item = timers[i].item;
+				break;
+			}
+		}
+		Inventory::endItem(player, item);
+	}
+	void remove (int id){
+		for(unsigned int i=0; i<timers.size(); i++){
+			if(timers[i].id == id){	
+				timers.erase(timers.begin()+i);	
+				return;
+			}
+		}
+	}
+};
+
+vector <ItemTimer::ITimer> ItemTimer::timers;
+ItemTimer* Inventory::timer;
+
+void Inventory::startTimer(){
+	timer = new ItemTimer();
+}
+
+void Inventory::stopTimerPlayer(Player* player){
+	timer->stop(player);
+}
+
 void Inventory::itemMove(Player* player, unsigned char* packet){
 	char inv = packet[4];
 	short slot1 = getShort(packet+5);
@@ -425,22 +493,129 @@ void Inventory::useItem(Player *player, unsigned char *packet){
 		return;
 	}
 	takeItemSlot(player, slot, 2, 1);
-	if(Drops::consumes[itemid].hp>0){
-		player->setHP(player->getHP()+Drops::consumes[itemid].hp);
+	// Alchemist
+	int alchemist = 0;
+	if(player->skills->getSkillLevel(4110000)>0){
+		alchemist = Skills::skills[4110000][player->skills->getSkillLevel(4110000)].x;
 	}
-	if(Drops::consumes[itemid].mp>0){ 
-		player->setMP(player->getMP()+Drops::consumes[itemid].mp);
+	if(Drops::consumes[itemid].hp>0){
+		player->setHP(player->getHP()+Drops::consumes[itemid].hp + ((Drops::consumes[itemid].hp * alchemist)/100));
+	}
+	if(Drops::consumes[itemid].mp>0){
+		player->setMP(player->getMP()+Drops::consumes[itemid].mp + ((Drops::consumes[itemid].mp * alchemist)/100));
 	}
 	else
 		player->setMP(player->getMP(), 1);
 	if(Drops::consumes[itemid].hpr>0){
-		player->setHP(player->getHP()+Drops::consumes[itemid].hpr*player->getMHP()/100);
+		player->setHP(player->getHP() + ((Drops::consumes[itemid].hpr*player->getMHP()/100) + ((Drops::consumes[itemid].hpr * alchemist)/100)));
 	}
 	if(Drops::consumes[itemid].mpr>0){
-		player->setMP(player->getMP()+Drops::consumes[itemid].mpr*player->getMMP()/100);
+		player->setMP(player->getMP() + ((Drops::consumes[itemid].mpr*player->getMMP()/100) + ((Drops::consumes[itemid].mpr * alchemist)/100)));
 	}
+	// Item buffs
+	if(Drops::consumes[itemid].time>0){
+		vector <short> vals;
+		unsigned char types[8];
+		// Set all types to 0 initially
+		types[0] = 0;
+		types[1] = 0;
+		types[2] = 0;
+		types[3] = 0;
+		types[4] = 0;
+		types[5] = 0;
+		types[6] = 0;
+		types[7] = 0;
 
-	
+		if(Drops::consumes[itemid].watk>0){
+			types[0] += 0x01;
+			vals.push_back(Drops::consumes[itemid].watk);
+		}
+		if(Drops::consumes[itemid].wdef>0){
+			types[0] += 0x02;
+			vals.push_back(Drops::consumes[itemid].wdef);
+		}
+		if(Drops::consumes[itemid].matk>0){
+			types[0] += 0x04;
+			vals.push_back(Drops::consumes[itemid].matk);
+		}
+		if(Drops::consumes[itemid].mdef>0){
+			types[0] += 0x08;
+			vals.push_back(Drops::consumes[itemid].mdef);
+		}
+		if(Drops::consumes[itemid].acc>0){
+			types[0] += 0x10;
+			vals.push_back(Drops::consumes[itemid].acc);
+		}
+		if(Drops::consumes[itemid].avo>0){
+			types[0] += 0x20;
+			vals.push_back(Drops::consumes[itemid].avo);
+		}
+		if(Drops::consumes[itemid].speed>0){
+			types[0] += 0x80;
+			vals.push_back(Drops::consumes[itemid].speed);
+		}
+		if(Drops::consumes[itemid].jump>0){
+			types[1] = 0x01;
+			vals.push_back(Drops::consumes[itemid].jump);
+		}
+		bool isMorph = false;
+		if(Drops::consumes[itemid].morph>0){
+			types[5] = 0x02;
+			vals.push_back(Drops::consumes[itemid].morph);
+			isMorph = true;
+		}
+		InventoryPacket::useItem(player, itemid, Drops::consumes[itemid].time*1000, types, vals, isMorph);
+		timer->stop(player, itemid);
+		timer->setItemTimer(player, itemid, Drops::consumes[itemid].time*1000);
+	}
+}
+// Cancel item buffs
+void Inventory::cancelItem(Player *player, unsigned char* packet){
+	int itemid = getInt(packet)*-1;
+	timer->stop(player, itemid);
+	Inventory::endItem(player, itemid);
+}
+// End item buffs
+void Inventory::endItem(Player *player, int itemid){
+	unsigned char types[8];
+	// Set all types to 0 initially
+	types[0] = 0;
+	types[1] = 0;
+	types[2] = 0;
+	types[3] = 0;
+	types[4] = 0;
+	types[5] = 0;
+	types[6] = 0;
+	types[7] = 0;
+
+	if(Drops::consumes[itemid].watk>0){
+		types[0] += 0x01;
+	}
+	if(Drops::consumes[itemid].wdef>0){
+		types[0] += 0x02;
+	}
+	if(Drops::consumes[itemid].matk>0){
+		types[0] += 0x04;
+	}
+	if(Drops::consumes[itemid].mdef>0){
+		types[0] += 0x08;
+	}
+	if(Drops::consumes[itemid].acc>0){
+		types[0] += 0x10;
+	}
+	if(Drops::consumes[itemid].avo>0){
+		types[0] += 0x20;
+	}
+	if(Drops::consumes[itemid].speed>0){
+		types[0] += 0x80;
+	}
+	if(Drops::consumes[itemid].jump>0){
+		types[1] = 0x01;
+	}
+	if(Drops::consumes[itemid].morph>0){
+		types[5] = 0x02;
+	}
+	InventoryPacket::endItem(player, types);
 }
 
 void Inventory::useChair(Player* player, unsigned char* packet){

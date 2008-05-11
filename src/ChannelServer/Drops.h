@@ -87,6 +87,7 @@ struct EquipInfo {
 	short ihand;
 	short ijump;
 	short ispeed;
+	short tamingmob;
 	bool cash; 
 	bool quest;
 };
@@ -110,6 +111,16 @@ struct ConsumeInfo {
 	short hpr;
 	short mpr;
 	int moveTo;
+	int time;
+	short watk;
+	short matk;
+	short avo;
+	short acc;
+	short wdef;
+	short mdef;
+	short speed;
+	short jump;
+	short morph;
 	int success;
 	int cursed;
 	short istr;

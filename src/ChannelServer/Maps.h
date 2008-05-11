@@ -35,11 +35,16 @@ struct PortalInfo {
 	int type;
 	short x;
 	short y;
+	char script[30];
 };
 typedef vector<PortalInfo> PortalsInfo;
 
 struct MapInfo {
 	int rm;
+	int forcedReturn;
+	double spawnrate;
+	bool clock;
+	int shipInterval;
 	PortalsInfo Portals;
 	vector<Player*> Players;
 };
