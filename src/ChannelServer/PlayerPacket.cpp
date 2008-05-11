@@ -31,9 +31,9 @@ void PlayerPacket::connectData(Player* player){
 	packet.addInt(player->getChannel()); // Channel
 	packet.addByte(1);
 	packet.addByte(1);
-	packet.addInt(rand());
-	packet.addInt(rand());
-	packet.addInt(rand());
+	packet.addInt(rand()); //
+	packet.addInt(rand()); // Possibly seeding maple's rng
+	packet.addInt(rand()); //
 	packet.addShort(-1);
 	packet.addInt(player->getPlayerid());
 	packet.addString(player->getName(), 12);
