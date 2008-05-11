@@ -30,7 +30,7 @@ public:
 	Config();
 	void loadFile(char *filename);
 	int getInt(char *value);
-	char * getString(char *value);
+	const char * getString(char *value);
 	bool getBool(char *value);
 private:
 	lua_State *luaVm;
