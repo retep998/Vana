@@ -30,6 +30,11 @@ hash_map <int, SkillsInfo> Skills::skillsinfo;
 
 class SkillTimer: public Timer::TimerHandler {
 public:
+	static SkillTimer * Instance() {
+		if (singleton == 0)
+			singleton = new SkillTimer;
+		return singleton;
+	}
 	void setSkillTimer(Player* player, int skill, int time){
 		STimer timer;
 		timer.id = Timer::Instance()->setTimer(time, this);
@@ -92,9 +97,13 @@ public:
         } 
 	}
 private:
+	static SkillTimer *singleton;
+	SkillTimer() {};
+	SkillTimer(const SkillTimer&);
+	SkillTimer& operator=(const SkillTimer&);
 	struct STimer {
 		int id;
-		Player* player;
+		Player* player;d
 		int skill;
 		int time;
 	};
@@ -168,15 +177,14 @@ private:
 vector <SkillTimer::STimer> SkillTimer::timers;
 vector <SkillTimer::SActTimer> SkillTimer::acttimers;
 hash_map <int, bool> SkillTimer::act;
-SkillTimer* Skills::timer;
+SkillTimer * SkillTimer::singleton = 0;
 
 void Skills::stopTimerPlayer(Player* player){
-	timer->stop(player);
+	SkillTimer::Instance()->stop(player);
 }
 
 void Skills::startTimer(){
 	// NOTE: type can be only 0x1/0x2/0x4/0x8/0x10/0x20/0x40/0x80.
-	timer = new SkillTimer();
 	SkillPlayerInfo player;
 	SkillMapInfo map;
 	SkillAct act;
@@ -387,7 +395,7 @@ void Skills::cancelSkill(Player* player, unsigned char* packet){
 	stopSkill(player, BufferUtilities::getInt(packet));
 }
 void Skills::stopSkill(Player* player, int skillid){
-	timer->stop(player, skillid);
+	SkillTimer::Instance()->stop(player, skillid);
 	endSkill(player, skillid);
 }
 void Skills::useSkill(Player* player, unsigned char* packet){
@@ -496,9 +504,9 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 	player->skills->setSkillPlayerInfo(skillid, playerskill);
 	player->skills->setSkillMapInfo(skillid, mapskill);
 	player->skills->setSkillMapEnterInfo(skillid, mapenterskill);
-	timer->stop(player, skillid);
+	SkillTimer::Instance()->stop(player, skillid);
 	if(skillsinfo[skillid].bact.size()>0){
-		timer->stop(player, skillid, skillsinfo[skillid].act.name);
+		SkillTimer::Instance()->stop(player, skillid, skillsinfo[skillid].act.name);
 	}
 	if(skillsinfo[skillid].bact.size()>0){
 		int value = 0;
@@ -513,10 +521,10 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 		}
-		timer->setSkillTimer(player, skillid, skillsinfo[skillid].act.name, value, skillsinfo[skillid].act.time);
+		SkillTimer::Instance()->setSkillTimer(player, skillid, skillsinfo[skillid].act.name, value, skillsinfo[skillid].act.time);
 	}
 	player->setSkill(player->skills->getSkillMapEnterInfo());
-	timer->setSkillTimer(player, skillid, skills[skillid][level].time*1000);
+	SkillTimer::Instance()->setSkillTimer(player, skillid, skills[skillid][level].time*1000);
 	player->skills->setActiveSkillLevel(skillid, level);
 }
 void Skills::useAttackSkill(Player* player, int skillid){
@@ -544,7 +552,7 @@ void Skills::endSkill(Player* player, int skill){
 	}
 	///
 	if(skillsinfo[skill].bact.size()>0){
-		timer->stop(player, skill, skillsinfo[skill].act.name);
+		SkillTimer::Instance()->stop(player, skill, skillsinfo[skill].act.name);
 	}
 	SkillsPacket::endSkill(player, Maps::info[player->getMap()].Players, player->skills->getSkillPlayerInfo(skill) ,player->skills->getSkillMapInfo(skill));
 	player->skills->deleteSkillMapEnterInfo(skill);
@@ -556,5 +564,5 @@ void Skills::heal(Player* player, short value, int skillid){
 		player->setHP(player->getHP()+ value);
 		SkillsPacket::healHP(player, value);
 	}
-	timer->setSkillTimer(player, skillid, "heal", value, 5000);
+	SkillTimer::Instance()->setSkillTimer(player, skillid, "heal", value, 5000);
 }
