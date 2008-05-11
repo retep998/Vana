@@ -18,9 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef TIMEUTILITIES_H
 #define TIMEUTILITIES_H
 
-#include <windows.h>
-#include <time.h>
-#include <math.h>
+#include <ctime>
 
 __int64 getServerTime();
 __int64 timeToTick(time_t time);

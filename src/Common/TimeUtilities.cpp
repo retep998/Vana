@@ -18,14 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 
 __int64 getServerTime(){
-	SYSTEMTIME systemTime;
-	GetSystemTime( &systemTime );
-	FILETIME fileTime; 
-	SystemTimeToFileTime( &systemTime, &fileTime );
-	ULARGE_INTEGER uli;
-	uli.LowPart = fileTime.dwLowDateTime; 
-	uli.HighPart = fileTime.dwHighDateTime;
-	return uli.QuadPart;
+	return timeToTick(time(0));
 }
 
 __int64 timeToTick(time_t time) {
