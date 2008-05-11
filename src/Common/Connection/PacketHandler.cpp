@@ -21,13 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define HEADER_LEN 4
 #define BUFFER_LEN 10000
 
-PacketHandler::PacketHandler(int socket, AbstractPlayer* player) {
+PacketHandler::PacketHandler(int socket, AbstractPlayer* player, bool isSend) {
 	this->socket = socket;
 	buffer = new unsigned char[BUFFER_LEN];
 	bytesInBuffer = 0;
 	this->player = player;
 	decoder = new Decoder();
-	int l = send(socket, (char*)(decoder->getConnectPacket()), Decoder::CONNECT_LENGTH, 0);
+	int l;
+	if (isSend) {
+		l = recv(socket, (char*)(buffer), Decoder::CONNECT_LENGTH, 0);
+		decoder->setIvSend(buffer+6);
+		decoder->setIvRecv(buffer+10);
+	}
+	else {
+		l = send(socket, (char*)(decoder->getConnectPacket()), Decoder::CONNECT_LENGTH, 0);
+	}
 	if (l < Decoder::CONNECT_LENGTH) {
 		//TODO
 	}

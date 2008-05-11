@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketHandler: public Selector::SelectHandler {
 public:
-	PacketHandler(int socket, AbstractPlayer* player);
+	PacketHandler(int socket, AbstractPlayer* player, bool isSend = false); // isSend = packet is initiated by the server or not
 	void handle (int socket);
 	void sendPacket(unsigned char* buf, int len);
 	void disconnect();
