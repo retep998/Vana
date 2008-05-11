@@ -50,6 +50,10 @@ public:
 		connectBuffer[14] = 0x08;
 		return connectBuffer;
 	}
+
+	void setIvRecv(unsigned char *iv) { memcpy_s(ivRecv, 4, iv, 4); }
+	void setIvSend(unsigned char *iv) { memcpy_s(ivSend, 4, iv, 4); }
+
 	void encrypt (unsigned char *buffer, int size);
 	void decrypt (unsigned char *buffer, int size);
 	void next ();
