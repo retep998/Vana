@@ -45,52 +45,46 @@ Packet MapPacket::playerPacket(Player* player){
 	packet.addInt(player->getEyes());
 	packet.addByte(1);
 	packet.addInt(player->getHair());
-	for(int i=0; i<player->inv->getEquipNum(); i++){
+	int equips[35][2];
+	for(int i=0; i<player->inv->getEquipNum(); i++){ //sort equips
 		Equip* equip = player->inv->getEquip(i);
 		if(equip->pos<0){
-			if(!Inventory::isCash(equip->id)){
-				bool check=true;
-				for(int j=0; j<player->inv->getEquipNum(); j++){
-					Equip* equip2 = player->inv->getEquip(j);
-					if(equip2->pos<0 && equip != equip2 && equip->type == equip2->type){
-						check=false;
-						break;
-					}
-				}	
-				if(check){
-					packet.addByte(equip->type);
-					packet.addInt(equip->id);
+			if(equips[equip->type][0]>0){
+				if(Inventory::isCash(equip->id)){
+					equips[equip->type][1] = equips[equip->type][0];
+					equips[equip->type][0] = equip->id;
+				}
+				else{
+					equips[equip->type][1] = equip->id;
 				}
 			}
 			else{
-				packet.addByte(equip->type);
-				packet.addInt(equip->id);
+				equips[equip->type][0] = equip->id;
 			}
 		}
 	}
-	packet.addByte(-1);
-	for(int i=0; i<player->inv->getEquipNum(); i++){
-		Equip* equip = player->inv->getEquip(i);
-		if(equip->pos<0){
-			if(!Inventory::isCash(equip->id)){
-				bool check=true;
-				for(int j=0; j<player->inv->getEquipNum(); j++){
-					Equip* equip2 = player->inv->getEquip(j);
-					if(equip2->pos<0 && equip != equip2 && equip->type == equip2->type){
-						check=false;	
-						break;
-					}
-				}	
-				if(!check){
-					packet.addByte(equip->type);
-					packet.addInt(equip->id);
-				}
-			}
+	for(int i=0; i<35; i++){ //shown items
+		if(equips[i][0]>0){
+			packet.addByte(i);
+			if(i == 11 && equips[i][1]>0) // normal weapons always here
+				packet.addInt(equips[i][1]);
+			else
+				packet.addInt(equips[i][0]);
 		}
 	}
 	packet.addByte(-1);
+	for(int i=0; i<35; i++){ //covered items
+		if(equips[i][1]>0 && i != 11){
+			packet.addByte(i);
+			packet.addInt(equips[i][1]);
+		}
+	}
+	packet.addByte(-1);
+	if(equips[11][1]>0) // cs weapon
+		packet.addInt(equips[11][0]);
+	else
+		packet.addInt(0);
 	packet.addInt(0);
-	packet.addInt(0);   
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
