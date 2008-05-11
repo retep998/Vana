@@ -155,12 +155,8 @@ void Player::playerConnect(){
 		equip->ihand = res[i][18];
 		equip->ijump = res[i][19];
 		equip->ispeed = res[i][20];
-        inv->addEquip(equip);
-        if (equip->pos < 0) {
-            if (equip->ihp > 0) { hpbonus += equip->ihp; }
-            if (equip->imp > 0) { mpbonus += equip->imp; }
-        }
-    }
+		inv->addEquip(equip);
+	}
 
 	query << "SELECT itemid, inv, pos, amount FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
@@ -203,23 +199,23 @@ void Player::playerConnect(){
 }
 
 void Player::setHP(int hp, bool is){
-	if (hp < 0)
-		this->hp = 0;
-	else if (hp > getMHP())
-		this->hp = getMHP();
+	if(hp<0)
+		this->hp=0;
+	else if(hp>mhp)
+		this->hp=mhp;
 	else
-		this->hp = hp;
-	if (is)
+		this->hp=hp;
+	if(is)
 		PlayerPacket::newHP(this, (short)this->hp);
 }
 
 void Player::setMP(int mp, bool is){
-	if (mp < 0)
-		this->mp = 0;
-	else if (mp > getMMP())
-		this->mp = getMMP();
+	if(mp<0)
+		this->mp=0;
+	else if(mp>mmp)
+		this->mp=mmp;
 	else
-		this->mp = mp;
+		this->mp=mp;
 	PlayerPacket::newMP(this, (short)this->mp, is);
 }
 
