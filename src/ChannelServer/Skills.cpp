@@ -103,7 +103,7 @@ private:
 	SkillTimer& operator=(const SkillTimer&);
 	struct STimer {
 		int id;
-		Player* player;d
+		Player* player;
 		int skill;
 		int time;
 	};
