@@ -566,7 +566,7 @@ void Initializing::initializeMaps(){
 			map.shipInterval = atoi(mapRow[6]);
 		}
 		PortalInfo portal;
-		if(!mapRow[3].is_null()){
+		if(!mapRow[7].is_null()){
 			portal.id = atoi(mapRow[7]);
 			strcpy_s(portal.from, mapRow[8]);
 			strcpy_s(portal.to, mapRow[9]);
