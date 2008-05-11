@@ -657,6 +657,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="ServerToServer"
+				>
+				<File
+					RelativePath=".\src\Common\ServerPlayer.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
