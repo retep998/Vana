@@ -18,14 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Login.h"
 
 void Login::loginUser(PlayerLogin* player, unsigned char* packet){
-	int usersize = getShort(packet);
-	int passsize = getShort(packet+usersize+2);
+	int usersize = BufferUtilities::getShort(packet);
+	int passsize = BufferUtilities::getShort(packet+usersize+2);
 	if(usersize > 15 || passsize > 15){
 		return;
 	}
 	char username[MAX_FIELD_SIZE], password[MAX_FIELD_SIZE];
-	getString(packet+2, usersize, username);   
-	getString(packet+4+usersize, passsize, password);   
+	BufferUtilities::getString(packet+2, usersize, username);   
+	BufferUtilities::getString(packet+4+usersize, passsize, password);   
 
 	mysqlpp::Query query = db.query();
 	query << "SELECT id, password, online, pin, gender, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
@@ -41,7 +41,7 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 		LoginPacket::loginError(player, 0x07); //Already logged in
 	}
 	else if (atoi(res[0]["banned"]) == 1) {
-		int time = tickToTick32(timeToTick((time_t) mysqlpp::DateTime(res[0]["ban_expire"])));
+		int time = TimeUtilities::tickToTick32(TimeUtilities::timeToTick((time_t) mysqlpp::DateTime(res[0]["ban_expire"])));
 		LoginPacket::loginBan(player, (unsigned char) res[0]["ban_reason"], time);
 	}
 	else {

@@ -68,11 +68,11 @@ void Quests::giveMesos(Player* player, int amount){
 
 
 void Quests::getQuest(Player *player, unsigned char *packet){
-	short questid = getShort(packet+1);
-	int npcid = getInt(packet+3);
+	short questid = BufferUtilities::getShort(packet+1);
+	int npcid = BufferUtilities::getInt(packet+3);
 	if(packet[0] == 0){	
-		QuestsPacket::giveItem(player, getInt(packet+7), npcid);
-		Inventory::addNewItem(player, getInt(packet+7), npcid);
+		QuestsPacket::giveItem(player, BufferUtilities::getInt(packet+7), npcid);
+		Inventory::addNewItem(player, BufferUtilities::getInt(packet+7), npcid);
 	}
 	else if(packet[0] == 1){
 		player->quests->addQuest(questid, npcid);
@@ -206,7 +206,7 @@ void PlayerQuests::finishQuest(short questid, int npcid){
 	}
 	QuestComp quest;
 	quest.id = questid;
-	quest.time = getServerTime();
+	quest.time = TimeUtilities::getServerTime();
 	questscomp.push_back(quest);
 	QuestsPacket::questFinish(player, Maps::info[player->getMap()].Players , questid, npcid, Quests::quests[questid].nextquest, quest.time);
 }

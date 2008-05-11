@@ -248,7 +248,7 @@ void Drops::showDrops(Player* player){
 int getDistance(Pos a, Pos b);
 
 void Drops::lootItem(Player* player, unsigned char*packet){
-	int itemid = getInt(packet+9);
+	int itemid = BufferUtilities::getInt(packet+9);
 	Drop* drop = Drop::getDrop(itemid, player->getMap());
 	if(drop == NULL){
 		DropsPacket::dontTake(player);
@@ -347,7 +347,7 @@ void Drops::addFoothold(int id, FootholdsInfo foot){
 }
 
 void Drops::dropMesos(Player* player, unsigned char* packet){
-	int amount = getInt(packet+4);
+	int amount = BufferUtilities::getInt(packet+4);
 	if(amount < 10 || amount >50000){
 		// hacking
 		return;

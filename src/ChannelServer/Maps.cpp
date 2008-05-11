@@ -88,7 +88,7 @@ void Maps::removePlayer(Player* player){
 }
 
 void Maps::moveMap(Player* player, unsigned char* packet){
-	if(getInt(packet+1) == 0){
+	if(BufferUtilities::getInt(packet+1) == 0){
 		int tomap;
 		if(info.find(player->getMap())==info.end())
 			tomap = player->getMap();
@@ -100,7 +100,7 @@ void Maps::moveMap(Player* player, unsigned char* packet){
 	}
 	int portalsize = packet[5];
 	char portalname[10];
-	getString(packet+7, portalsize, portalname);;   
+	BufferUtilities::getString(packet+7, portalsize, portalname);;   
 	PortalInfo portal;
 	for(unsigned int i=0; i<info[player->getMap()].Portals.size(); i++)
 		if(strcmp(info[player->getMap()].Portals[i].from, portalname) == 0){
@@ -122,7 +122,7 @@ void Maps::moveMap(Player* player, unsigned char* packet){
 void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map special
 	char portalname[10];
 	int namelen = packet[1];
-	getString(packet+3, namelen, portalname);;   
+	BufferUtilities::getString(packet+3, namelen, portalname);;   
 	PortalInfo portal;
 	for(unsigned int i=0; i<info[player->getMap()].Portals.size(); i++)
 		if(strcmp(info[player->getMap()].Portals[i].from, portalname) == 0){

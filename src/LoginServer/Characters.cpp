@@ -76,7 +76,7 @@ void Characters::checkCharacterName(PlayerLogin* player, unsigned char* packet){
 	if(size>15){
 		return;
 	}
-	getString(packet+2, size, charactername);
+	BufferUtilities::getString(packet+2, size, charactername);
 	
 	LoginPacket::checkName(player, nameTaken(charactername), charactername);
 }
@@ -101,18 +101,18 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	if(size>15){
 		return;
 	}
-	getString(packet+2, size, charactername);
+	BufferUtilities::getString(packet+2, size, charactername);
 	// Let's check our char name again just to be sure
 	if(nameTaken(charactername)) {
 		LoginPacket::checkName(player, 1, charactername);
 		return;
 	}
 	int pos = 2+size;
-	int eyes = getInt(packet+pos);
+	int eyes = BufferUtilities::getInt(packet+pos);
 	pos+=4;
-	int hair = getInt(packet+pos);
+	int hair = BufferUtilities::getInt(packet+pos);
 	pos+=8;
-	int skin = getInt(packet+pos);
+	int skin = BufferUtilities::getInt(packet+pos);
 	pos+=20;
 	if(packet[pos+1] + packet[pos+2] + packet[pos+3] + packet[pos+4] != 25){
 		// hacking
@@ -134,13 +134,13 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	int id = (int) res.insert_id();
 
 	pos -= 16;
-	createEquip(getInt(packet+pos), 0x05, id);
+	createEquip(BufferUtilities::getInt(packet+pos), 0x05, id);
 	pos+=4;
-	createEquip(getInt(packet+pos), 0x06, id);
+	createEquip(BufferUtilities::getInt(packet+pos), 0x06, id);
 	pos+=4;
-	createEquip(getInt(packet+pos), 0x07, id);
+	createEquip(BufferUtilities::getInt(packet+pos), 0x07, id);
 	pos+=4;
-	createEquip(getInt(packet+pos), 0x0b, id);
+	createEquip(BufferUtilities::getInt(packet+pos), 0x0b, id);
 	pos+=4;
 
 	query << "INSERT INTO items VALUES (4161001, " << mysqlpp::quote << id << ", 4, 1, 1)"; // Beginner Guide
@@ -157,8 +157,8 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 }
 
 void Characters::deleteCharacter(PlayerLogin* player, unsigned char *packet){
-	int data = getInt(packet);
-	int id = getInt(packet+4);
+	int data = BufferUtilities::getInt(packet);
+	int id = BufferUtilities::getInt(packet+4);
 	
 	if(!ownerCheck(player, id)){
 		// hacking
@@ -187,7 +187,7 @@ void Characters::deleteCharacter(PlayerLogin* player, unsigned char *packet){
 
 
 void Characters::connectGame(PlayerLogin* player, unsigned char *packet){
-	int id = getInt(packet);
+	int id = BufferUtilities::getInt(packet);
 
 	if(!ownerCheck(player, id)){
 		// hacking

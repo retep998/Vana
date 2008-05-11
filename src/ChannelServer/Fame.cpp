@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BufferUtilities.h"
 
 void Fame::handleFame(Player* player, unsigned char* packet){
-	int CharID = getInt(packet);
+	int CharID = BufferUtilities::getInt(packet);
 	int FameDefame = 0;
-	FameDefame = getInt(packet+4);
+	FameDefame = BufferUtilities::getInt(packet+4);
 	int NewFame = 0;
 
 	int checkResult = canFame(player,CharID);

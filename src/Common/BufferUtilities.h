@@ -20,8 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string.h>
 
-short getShort(unsigned char* buf);
-int getInt(unsigned char* buf);
-void getString(unsigned char* buf, int len, char* out);
+namespace BufferUtilities {
+	short getShort(unsigned char* buf);
+	int getInt(unsigned char* buf);
+	void getString(unsigned char* buf, int len, char* out);
+}
 
 #endif

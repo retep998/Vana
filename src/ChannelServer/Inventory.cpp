@@ -95,8 +95,8 @@ void Inventory::stopTimerPlayer(Player* player){
 
 void Inventory::itemMove(Player* player, unsigned char* packet){
 	char inv = packet[4];
-	short slot1 = getShort(packet+5);
-	short slot2 = getShort(packet+7);
+	short slot1 = BufferUtilities::getShort(packet+5);
+	short slot2 = BufferUtilities::getShort(packet+7);
 	if(inv == 1){
 		if(slot2 == 0){
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
@@ -162,7 +162,7 @@ void Inventory::itemMove(Player* player, unsigned char* packet){
 	}
 	else {
 		if(slot2 == 0){
-			short amount = getShort(packet+9);
+			short amount = BufferUtilities::getShort(packet+9);
 			Item* item = NULL;
 			int num;
 			for(int i=0; i<player->inv->getItemNum(); i++){
@@ -350,8 +350,8 @@ void Inventory::addItem(Player* player, Item* item, bool is){
 void Inventory::useShop(Player* player, unsigned char* packet){
 	char type = packet[0];
 	if(type == 0){
-		int item = getInt(packet+3);
-		short howmany = getShort(packet+7);
+		int item = BufferUtilities::getInt(packet+3);
+		short howmany = BufferUtilities::getShort(packet+7);
 		if(Shops::getPrice(player, item) == 0){
 			// hacking
 			return;
@@ -392,9 +392,9 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 		}
 	}
 	else if(type == 1){
-		short slot = getShort(packet+1);
-		int item = getInt(packet+3);
-		short amount = getShort(packet+7);
+		short slot = BufferUtilities::getShort(packet+1);
+		int item = BufferUtilities::getInt(packet+3);
+		short amount = BufferUtilities::getShort(packet+7);
 		char inv = item/1000000;
 		if(inv == 1){
 			bool check=false;
@@ -486,8 +486,8 @@ void Inventory::takeItemSlot(Player* player, short slot, char inv, short amount)
 }
 
 void Inventory::useItem(Player *player, unsigned char *packet){
-	short slot = getShort(packet+4);
-	int itemid = getInt(packet+6);
+	short slot = BufferUtilities::getShort(packet+4);
+	int itemid = BufferUtilities::getInt(packet+6);
 	if(player->inv->getItemBySlot(itemid, slot, 2) == 0){
 		// hacking
 		return;
@@ -571,7 +571,7 @@ void Inventory::useItem(Player *player, unsigned char *packet){
 }
 // Cancel item buffs
 void Inventory::cancelItem(Player *player, unsigned char* packet){
-	int itemid = getInt(packet)*-1;
+	int itemid = BufferUtilities::getInt(packet)*-1;
 	timer->stop(player, itemid);
 	Inventory::endItem(player, itemid);
 }
@@ -619,7 +619,7 @@ void Inventory::endItem(Player *player, int itemid){
 }
 
 void Inventory::useChair(Player* player, unsigned char* packet){
-	int chairid = getInt(packet);
+	int chairid = BufferUtilities::getInt(packet);
 	player->setChair(chairid);
 	InventoryPacket::sitChair(player, Maps::info[player->getMap()].Players, chairid);
 }
@@ -636,8 +636,8 @@ int Inventory::isCash(int itemid){
 }
 
 void Inventory::useSummonBag(Player* player, unsigned char* packet){
-	short slot = getShort(packet+4);
-	int itemid = getInt(packet+6);
+	short slot = BufferUtilities::getShort(packet+4);
+	int itemid = BufferUtilities::getInt(packet+6);
 	if(player->inv->getItemBySlot(itemid, slot, 2) == 0){
 		// hacking
 		return;
@@ -652,8 +652,8 @@ void Inventory::useSummonBag(Player* player, unsigned char* packet){
 	}
 }
 void Inventory::useReturnScroll(Player* player, unsigned char* packet){
-	short slot = getShort(packet+4);
-	int itemid = getInt(packet+6);
+	short slot = BufferUtilities::getShort(packet+4);
+	int itemid = BufferUtilities::getInt(packet+6);
 	if(player->inv->getItemBySlot(itemid, slot, 2) == 0){
 		// hacking
 		return;
@@ -668,8 +668,8 @@ void Inventory::useReturnScroll(Player* player, unsigned char* packet){
 		Maps::changeMap(player, map, 0);
 }
 void Inventory::useScroll(Player* player, unsigned char* packet){
-	short slot = getShort(packet+4);
-	short eslot = getShort(packet+6);
+	short slot = BufferUtilities::getShort(packet+4);
+	short eslot = BufferUtilities::getShort(packet+6);
 	int itemid=0;
 	Equip* equip = NULL;
 	for(int i=0; i<player->inv->getItemNum(); i++){
@@ -732,10 +732,10 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 
 void Inventory::useMegaphone(Player* player, unsigned char *packet){
 	char type = packet[0];
-	int itemid = getInt(packet+2);
+	int itemid = BufferUtilities::getInt(packet+2);
 	char msg[200];
-	int msgLength = getShort(packet+6);
-	getString(packet+8, msgLength, msg);
+	int msgLength = BufferUtilities::getShort(packet+6);
+	BufferUtilities::getString(packet+8, msgLength, msg);
 	if(itemid == 5071000){ // Megaphone
 		InventoryPacket::showMegaphone(player, Maps::info[player->getMap()].Players, msg);
 	}
@@ -747,8 +747,8 @@ void Inventory::useMegaphone(Player* player, unsigned char *packet){
 		char msgs[3][15];
 		packet = packet + 8 + msgLength;
 		for (int i = 0; i < 3; i++) {
-			msgLength = getShort(packet);
-			getString(packet+2, msgLength, msgs[i]);
+			msgLength = BufferUtilities::getShort(packet);
+			BufferUtilities::getString(packet+2, msgLength, msgs[i]);
 			packet = packet + 2 + msgLength;
 		}
 		int offset = 0;

@@ -129,7 +129,7 @@ void PlayerPacket::connectData(Player* player){
 	packet.addShort(0);
 	for(int i=0; i<15; i++)
 		packet.addBytes("FFC99A3B");
-	packet.addInt64(getServerTime());
+	packet.addInt64(TimeUtilities::getServerTime());
 	packet.packetSend<Player>(player);
 }
 

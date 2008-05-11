@@ -51,21 +51,21 @@ void Players::deletePlayer(Player* player){
 void Players::handleMoving(Player* player, unsigned char* packet, int size){
 	Pos cpos;
 	int pla = packet[5]*14+1;
-	cpos.x = getShort(packet+size-4);
-	cpos.y = getShort(packet+size-2);
+	cpos.x = BufferUtilities::getShort(packet+size-4);
+	cpos.y = BufferUtilities::getShort(packet+size-2);
 	player->setPos(cpos);
 	player->setType(packet[5+14*(packet[5]-1)+12]);
 	PlayersPacket::showMoving(player, Maps::info[player->getMap()].Players, packet, pla);
 }
 
 void Players::faceExperiment(Player* player, unsigned char* packet){
-	int face = getInt(packet);
+	int face = BufferUtilities::getInt(packet);
 	PlayersPacket::faceExperiment(player, Maps::info[player->getMap()].Players, face);
 }
 void Players::chatHandler(Player* player, unsigned char* packet){
 	char chat[91];
-	int chatsize = getShort(packet);
-	getString(packet+2, chatsize, chat);
+	int chatsize = BufferUtilities::getShort(packet);
+	BufferUtilities::getString(packet+2, chatsize, chat);
 	if(chat[0] == '!'){
 		if(!player->isGM()) return;
 		char* next_token;
@@ -246,8 +246,8 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 }
 
 void Players::damagePlayer(Player* player, unsigned char* packet){
-	int damage = getInt(packet+5);
-	int mobid = getInt(packet+13);
+	int damage = BufferUtilities::getInt(packet+5);
+	int mobid = BufferUtilities::getInt(packet+13);
 	Mob* mob = NULL;
 	for(unsigned int i=0; i<Mobs::mobs[player->getMap()].size(); i++)
 		if(Mobs::mobs[player->getMap()][i]->getID() == mobid){
@@ -311,28 +311,28 @@ void Players::damagePlayer(Player* player, unsigned char* packet){
 }
 
 void Players::healPlayer(Player* player, unsigned char* packet){
-	player->setHP(player->getHP()+getShort(packet+4));
-	player->setMP(player->getMP()+getShort(packet+6));
+	player->setHP(player->getHP()+BufferUtilities::getShort(packet+4));
+	player->setMP(player->getMP()+BufferUtilities::getShort(packet+6));
 }
 
 void Players::getPlayerInfo(Player* player, unsigned char* packet){
-	PlayersPacket::showInfo(player, players[getInt(packet+4)]);
+	PlayersPacket::showInfo(player, players[BufferUtilities::getInt(packet+4)]);
 }
 
 void Players::commandHandler(Player* player, unsigned char* packet){
 	unsigned char type = packet[0];
 	char name[20];
 
-	int namesize = getShort(packet+1);
-	getString(packet+3, namesize, name);
+	int namesize = BufferUtilities::getShort(packet+1);
+	BufferUtilities::getString(packet+3, namesize, name);
 		
 	hash_map <int, Player*>::iterator iter = Players::players.begin();
 	for ( iter = Players::players.begin(); iter != Players::players.end(); iter++){
 		if (_stricmp(iter->second->getName(),name) == 0){	
 			if(type == 0x06){
 				char chat[91];
-				int chatsize = getShort(packet+3+namesize);
-				getString(packet+5+namesize, chatsize, chat);
+				int chatsize = BufferUtilities::getShort(packet+3+namesize);
+				BufferUtilities::getString(packet+5+namesize, chatsize, chat);
 
 				PlayersPacket::whisperPlayer(player,iter->second,chat);
 				PlayersPacket::findPlayer(player,iter->second->getName(),-1,1);

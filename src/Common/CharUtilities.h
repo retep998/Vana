@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <cctype>
 
-char* tolower(char* s);
+namespace CharUtilities {
+	char *tolower(char* s);
+}
 
 #endif

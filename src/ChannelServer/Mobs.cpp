@@ -46,7 +46,7 @@ void Mob::setControl(Player* control){
 }
 
 void Mobs::monsterControl(Player* player, unsigned char* packet, int size){
-	int mobid = getInt(packet);
+	int mobid = BufferUtilities::getInt(packet);
 	Mob* mob = getMobByID(mobid, player->getMap());
 	if(mob == NULL)
 		return;	
@@ -54,8 +54,8 @@ void Mobs::monsterControl(Player* player, unsigned char* packet, int size){
 	//if(mob->getControl() != player)
 		//mob->setControl(player);
 		Pos cpos;
-		cpos.x = getShort(packet+size-4);
-		cpos.y = getShort(packet+size-2);
+		cpos.x = BufferUtilities::getShort(packet+size-4);
+		cpos.y = BufferUtilities::getShort(packet+size-2);
 		if(getDistance(cpos, mob->getPos()) > 300){
 			player->addWarning();
 		}
@@ -206,14 +206,14 @@ void Mobs::damageMobSkill(Player* player, unsigned char* packet){
 	int howmany = packet[1]/0x10;
 	int hits = packet[1]%0x10;
 	int map = player->getMap();
-	int skillid = getInt(packet+2);
+	int skillid = BufferUtilities::getInt(packet+2);
 	if(skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	for(int i=0; i<howmany; i++){
-		int mobid = getInt(packet+14+i*(22+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(packet+14+i*(22+4*(hits-1)));
 		Mob* mob = getMobByID(mobid, map);
 		for(int k=0; k<hits; k++){
-			int damage = getInt(packet+32+i*(22+4*(hits-1))+k*4);
+			int damage = BufferUtilities::getInt(packet+32+i*(22+4*(hits-1))+k*4);
 			if(mob!=NULL){
 				mob->setHP(mob->getHP()-damage);
 				int mhp=-1;
@@ -233,17 +233,17 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
 	int howmany = packet[1]/0x10;
 	int hits = packet[1]%0x10;
 	int map = player->getMap();
-	int skillid = getInt(packet+2);
+	int skillid = BufferUtilities::getInt(packet+2);
 	bool s4211006 = false;
 	if(skillid == 4211006)
 		s4211006 = true;
 	if(skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	for(int i=0; i<howmany; i++){
-        int mobid = getInt(packet+14+i*(22-s4211006+4*(hits-1)));
+        int mobid = BufferUtilities::getInt(packet+14+i*(22-s4211006+4*(hits-1)));
 		Mob* mob = getMobByID(mobid, map);
 		for(int k=0; k<hits; k++){
-			int damage = getInt(packet+32-s4211006+i*(22-s4211006+4*(hits-1))+k*4);
+			int damage = BufferUtilities::getInt(packet+32-s4211006+i*(22-s4211006+4*(hits-1))+k*4);
 			if(mob!=NULL){
 				if(getDistance(mob->getPos(), player->getPos()) > 300 && skillid == 0){
 					player->addWarning();
@@ -262,7 +262,7 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
 	if (s4211006){
         unsigned char howmanyitems = packet[(14+howmany*(21+4*(hits-1)))+4];
         for(int i=0; i<howmanyitems; i++){
-            int objID = getInt(packet+(14+howmany*(21+4*(hits-1)))+5+(5*i));
+            int objID = BufferUtilities::getInt(packet+(14+howmany*(21+4*(hits-1)))+5+(5*i));
             for(unsigned int i=0; i<Drops::drops[map].size(); i++){
                 if(Drops::drops[map][i]->getObjID() == objID){
                     DropsPacket::explodeDrop(Maps::info[map].Players, Drops::drops[map][i]);
@@ -275,7 +275,7 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
 }
 void Mobs::damageMobS(Player* player, unsigned char* packet, int size){
 	int itemid=0;
-	int pos=getInt(packet+14);
+	int pos=BufferUtilities::getInt(packet+14);
 	for(int i=0; i<player->inv->getItemNum(); i++){
 		if(player->inv->getItem(i)->pos == pos && player->inv->getItem(i)->inv == 2){
 			itemid = player->inv->getItem(i)->id;
@@ -287,7 +287,7 @@ void Mobs::damageMobS(Player* player, unsigned char* packet, int size){
 	int hits = packet[1]%0x10;
 	//Inventory::takeItemSlot(player, pos, 2, hits); // TODO
 	int map = player->getMap();
-	int skillid = getInt(packet+2);
+	int skillid = BufferUtilities::getInt(packet+2);
 	bool s3121004 = false;
 	if(skillid == 3121004 || skillid == 3221001)
 		s3121004 = true;
@@ -296,10 +296,10 @@ void Mobs::damageMobS(Player* player, unsigned char* packet, int size){
 	int damage, mhp;
 	int totalDmg = 0;
 	for(int i=0; i<howmany; i++){
-		int mobid = getInt(packet+19+4*s3121004+i*(22+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(packet+19+4*s3121004+i*(22+4*(hits-1)));
 		Mob* mob = getMobByID(mobid, map);
 		for(int k=0; k<hits; k++){
-			damage = getInt(packet+37+4*s3121004+i*(22+4*(hits-1))+k*4);
+			damage = BufferUtilities::getInt(packet+37+4*s3121004+i*(22+4*(hits-1))+k*4);
 			totalDmg += damage;
 			if(mob!=NULL){
 				mob->setHP(mob->getHP()-damage);
