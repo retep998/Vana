@@ -519,6 +519,7 @@ void Initializing::initializeSkills(){
 		Skills::addSkill(previousid, skill);
 		skill.clear();
 	}
+	Skills::init();
 	printf("DONE\n");
 }
 // Maps
@@ -709,7 +710,6 @@ void Initializing::initializeMaps(){
 
 void Initializing::initializeTimers(){
 	printf("Initializing Timers... ");
-	Skills::startTimer();
 	Inventory::startTimer();
 	Maps::startTimer();
 	printf("DONE\n");
