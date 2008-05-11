@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Player.h"
 #include "MapPacket.h"
+#include "PlayersPacket.h"
 #include "NPCs.h"
 #include "Mobs.h"
 #include "Drops.h"
@@ -159,6 +160,11 @@ void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map speci
 }
 
 void Maps::changeMap(Player* player, int mapid, int pos){
+	if(mapid == 999999999 || mapid < 0){
+		mapid = player->getMap();
+		pos = 0;
+		PlayersPacket::showMessage("You have tried to enter an invalid map, you have been teleported back to your previous location.", 5);
+	}
 	removePlayer(player);
 	player->setMap(mapid);
 	player->setMappos(pos);
