@@ -107,6 +107,9 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 		else if(strcmp(command, "shop4") == 0){
 			Shops::showShop(player, 9999998);
 		}
+		else if(strcmp(command, "shop5") == 0){
+			Shops::showShop(player, 9999997);
+		}
 		else if(strcmp(command, "pos") == 0){
 			char text[50];
 			sprintf_s(text, 50, "X: %d Y: %d", player->getPos().x, player->getPos().y);
