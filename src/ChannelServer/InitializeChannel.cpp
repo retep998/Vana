@@ -51,8 +51,8 @@ void Initializing::initializeMobs(){
 			mob.boss = atoi(mobRow[5]);
 		}
 
-		if(!mobRow[5].is_null()){
-			mob.summon.push_back(atoi(mobRow[5]));
+		if(!mobRow[6].is_null()){
+			mob.summon.push_back(atoi(mobRow[6]));
 		}
 		previousid = atoi(mobRow[1]);
 	}
