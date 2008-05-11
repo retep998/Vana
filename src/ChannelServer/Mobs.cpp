@@ -177,6 +177,26 @@ void Mobs::dieMob(Player* player, Mob* mob){
 						*/
 	Levels::giveEXP(player, mobinfo[mob->getMobID()].exp * 10);
 	Drops::dropMob(player, mob);
+	
+	// Spawn mobs it's supposed to spawn when it dies
+	vector<int>::iterator vi = mobinfo[mob->getMobID()].summon.begin();
+	while (vi != mobinfo[mob->getMobID()].summon.end()) {
+		int mobid = *vi++;
+		Mob* mobb = new Mob();
+		mobs[player->getMap()].push_back(mobb);
+		mobb->setPos(mob->getPos());
+		mobb->setID(mobscount++);
+		mobb->setMobID(mobid);
+		mobb->setMapID(-1);
+		mobb->setHP(mobinfo[mobid].hp);
+		mobb->setMP(mobinfo[mobid].mp);
+		mobb->setFH(0);
+		mobb->setControl(player);
+		mobb->setType(2);
+		for(unsigned int j=0; j<Maps::info[player->getMap()].Players.size(); j++)
+			MobsPacket::showMob(Maps::info[player->getMap()].Players[j], mobb);
+	}
+
 	player->quests->updateQuestMob(mob->getMobID());
 	for(unsigned int i=0; i<mobs[player->getMap()].size(); i++){
 		if(mobs[player->getMap()][i] == mob){
