@@ -48,6 +48,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_CHANGE_MAP 0x4e
 #define SEND_MAKE_APPLE 0x5c // Wear apple suit
 #define SEND_COMMAND_RESPOND 0x5f // Respond to / commands i.e. "/find"
+#define SEND_TIME 0x62 // For places with clock i.e. ship station
 #define SEND_SHOW_PLAYER 0x66
 #define SEND_STOP_CHAIR 0x67
 #define SEND_GAIN_ITEM 0x68 // Gain item notice in chat
