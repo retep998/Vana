@@ -81,7 +81,10 @@ void PacketHandler::sendPacket(unsigned char *buff, int size){
 }
 
 void PacketHandler::disconnect() {
-	Selector::Instance()->unregisterSocket(socket);
 	closesocket(socket);
 	delete player;
+}
+
+void PacketHandler::unregister() {
+	Selector::Instance()->unregisterSocket(socket);
 }

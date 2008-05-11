@@ -29,3 +29,7 @@ void AbstractPlayer::sendPacket(unsigned char *buf, int len) {
 void AbstractPlayer::disconnect() {
 	packetHandler->disconnect();
 }
+
+AbstractPlayer::~AbstractPlayer() {
+	packetHandler->unregister();
+}
