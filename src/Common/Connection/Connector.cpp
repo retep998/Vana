@@ -40,7 +40,7 @@ Connector::Connector(char *ip, int port, AbstractPlayerFactory* apf) {
 		return;
 	}
 
-	AbstractPlayer* player = apf->createPlayer();
+	player = apf->createPlayer();
 	PacketHandler* ph = new PacketHandler(sock, player, true);
 	player->setPacketHandler(ph);
 	Selector::Instance()->registerSocket(sock, true, false, true, ph);

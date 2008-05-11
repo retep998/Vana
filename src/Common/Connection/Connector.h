@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Connector {
 public:
 	Connector (char *ip, int port, AbstractPlayerFactory* apf);
+	AbstractPlayer * getPlayer() { return player; }
 protected:
+	AbstractPlayer *player;
 	WSADATA wsaData;
 };
 
