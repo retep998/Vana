@@ -21,18 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "Connection/PacketHandler.h"
 
-class ServerPlayer : public AbstractPlayer {
+class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
-	void realHandleRequest(unsigned char* buf, int len) {}
-private:
-	bool authenticated;
+	void sendAuth(char *pass) { /*TODO*/ }
 };
 
-class ServerPlayerFactory : public AbstractPlayerFactory {
+class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
-	AbstractPlayer *createPlayer() {
-		return new ServerPlayer();
-	}
+	void processAuth() { /*TODO*/ }
 };
 
 #endif
