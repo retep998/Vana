@@ -26,6 +26,7 @@ public:
 	virtual void setPacketHandler (PacketHandler* ph) { packetHandler = ph; }
 	virtual void realHandleRequest (unsigned char* buf, int len) = 0;
 	void handleRequest (unsigned char* buf, int len);
+	void sendPacket(unsigned char *buf, int len);
 	void disconnect();
 
 	virtual ~AbstractPlayer() { };

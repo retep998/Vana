@@ -22,6 +22,10 @@ void AbstractPlayer::handleRequest (unsigned char* buf, int len) {
 	realHandleRequest(buf, len);
 }
 
+void AbstractPlayer::sendPacket(unsigned char *buf, int len) {
+	packetHandler->sendPacket(buf, len);
+}
+
 void AbstractPlayer::disconnect() {
 	packetHandler->disconnect();
 }
