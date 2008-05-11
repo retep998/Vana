@@ -104,7 +104,7 @@ typedef hash_map <int, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
 	extern SkillTimer* timer;
-	void startTimer();
+	void init();
 	extern hash_map <int, SkillsLevelInfo> skills;
 	extern hash_map <int, SkillsInfo> skillsinfo;
 	void addSkill(int id, SkillsLevelInfo skill);
