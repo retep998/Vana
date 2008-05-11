@@ -161,20 +161,6 @@ void Mobs::updateSpawn(int mapid){
 }
 void Mobs::dieMob(Player* player, Mob* mob){
 	MobsPacket::dieMob(player, Maps::info[player->getMap()].Players, mob , mob->getID());
-	/*
-		for(unsigned int l=0; l< WZInitialize::MobsInfo[WZInitialize::MapsInfo[pd.map].Spawned[j].id].summon.size(); l++){
-		SpawnedInfo mob;
-		mob.id = WZInitialize::MobsInfo[WZInitialize::MapsInfo[pd.map].Spawned[j].id].summon[l];
-			mob.spid = -1;
-		mob.mid = WZInitialize::mobid++;
-		mob.x = WZInitialize::MapsInfo[pd.map].Spawned[j].x;
-		mob.cy = WZInitialize::MapsInfo[pd.map].Spawned[j].cy;	mob.fh = WZInitialize::MapsInfo[pd.map].Spawned[j].fh;
-							mob.hp = WZInitialize::MobsInfo[WZInitialize::MapsInfo[pd.map].Spawned[j].id].hp;
-							mob.mp = WZInitialize::MobsInfo[WZInitialize::MapsInfo[pd.map].Spawned[j].id].mp;
-							mob.by = pd.userid;
-							SpawnMob(mob, pd);
-						}
-						*/
 	Levels::giveEXP(player, mobinfo[mob->getMobID()].exp * 10);
 	Drops::dropMob(player, mob);
 	
