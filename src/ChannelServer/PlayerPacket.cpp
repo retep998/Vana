@@ -115,6 +115,8 @@ void PlayerPacket::connectData(Player* player){
 	for(int i=0; i<player->skills->getSkillsNum(); i++){
 		packet.addInt(player->skills->getSkillID(i));
 		packet.addInt(player->skills->getSkillLevel(player->skills->getSkillID(i)));
+		if(FORTHJOB_SKILL(player->skills->getSkillID(i)))
+			packet.addInt(0);
 	}
 	//End
 	packet.addInt(0);
