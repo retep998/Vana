@@ -161,6 +161,11 @@ void Players::chatHandler(Player* player, unsigned char* packet){
             player->setHP(player->getMHP());
             player->setMP(player->getMMP());
         }
+		else if(strcmp(command, "mesos") == 0){
+			if (strlen(next_token) == 0) return;
+			long mesos = atoi(strtok_s(NULL, " ",&next_token));
+			player->inv->setMesos(mesos);
+		}
 		else if(strcmp(command, "kill") == 0){
 			if(strcmp(next_token, "all") == 0){
 				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++){
