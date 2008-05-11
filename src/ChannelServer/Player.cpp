@@ -195,7 +195,7 @@ void Player::playerConnect(){
 	}
 	type=0;
 	PlayerPacket::showKeys(this, keys);
-	Maps::newMap(this);
+	Maps::newMap(this, map);
 
 	setOnline(true);
 }

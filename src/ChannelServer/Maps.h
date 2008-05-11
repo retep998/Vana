@@ -59,8 +59,9 @@ namespace Maps {
 	void moveMapS(Player* player, unsigned char* packet);
 	void removePlayer(Player* player);
 	void changeMap(Player* player, int mapid, int pos);
+	void showTime(Player* player);
 	void mapTimer(int mapid);
-	void newMap(Player* player);
+	void newMap(Player* player, int mapid);
 };
 
 #endif

@@ -144,6 +144,17 @@ void MapPacket::changeMap(Player* player){
 	packet.packetSend<Player>(player);
 }
 
+void MapPacket::showTime(Player* player, unsigned char hour, unsigned char min, unsigned char sec){
+	Packet packet = Packet();
+	packet.addHeader(SEND_TIME);
+	packet.addByte(1);
+	packet.addByte(hour);
+	packet.addByte(min);
+	packet.addByte(sec);
+
+	packet.packetSend(player);
+}
+
 void MapPacket::makeApple(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_MAKE_APPLE);  

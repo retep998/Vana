@@ -178,7 +178,15 @@ void Maps::changeMap(Player* player, int mapid, int pos){
 	}
 	player->setPos(cpos);
 	MapPacket::changeMap(player);
-	newMap(player);
+	newMap(player, mapid);
+}
+
+void Maps::showTime(Player* player){
+	time_t rawtime;
+	struct tm timeinfo;
+	time(&rawtime);
+	localtime_s(&timeinfo, &rawtime);
+	MapPacket::showTime(player, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
 }
 
 void Maps::mapTimer(int mapid){
@@ -195,11 +203,13 @@ void Maps::startTimer(){
 	timer = new MapTimer();
 }
 
-void Maps::newMap(Player* player){
+void Maps::newMap(Player* player, int mapid){
 	Players::addPlayer(player);
 	NPCs::showNPCs(player);
 	addPlayer(player);
 	Mobs::showMobs(player);
 	Drops::showDrops(player);
+	if(info[mapid].clock)
+		showTime(player);
 	timer->setMapTimer(player->getMap());
 }
