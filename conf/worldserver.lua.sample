@@ -1,0 +1,6 @@
+-- What port should the world server accept inter-server connection?
+inter_port = 8500;
+
+-- What ip and port should the world server use to connect to the login server?
+login_ip = "127.0.0.1";
+login_inter_port = 8485;
