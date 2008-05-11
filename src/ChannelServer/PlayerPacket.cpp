@@ -29,7 +29,11 @@ void PlayerPacket::connectData(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(player->getChannel()); // Channel
-	packet.addBytes("0101853D4B11F4836B3DBA9A4FA1");
+	packet.addByte(1);
+	packet.addByte(1);
+	packet.addInt(rand());
+	packet.addInt(rand());
+	packet.addInt(rand());
 	packet.addShort(-1);
 	packet.addInt(player->getPlayerid());
 	packet.addString(player->getName(), 12);
