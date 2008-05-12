@@ -69,7 +69,7 @@ namespace Characters {
 	void showEquips(int id, vector <CharEquip> &vec);
 	void createEquip(int equipid, int type, int charid);
 	bool ownerCheck(PlayerLogin* player, int id);
-	bool nameTaken(char *name);
+	bool nameTaken(PlayerLogin* player, char *name);
 };
 
 #endif

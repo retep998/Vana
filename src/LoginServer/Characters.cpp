@@ -58,7 +58,7 @@ void Characters::loadCharacter(Character &charc, mysqlpp::Row row) {
 
 void Characters::showCharacters(PlayerLogin* player){
 	mysqlpp::Query query = db.query();
-	query << "SELECT * FROM characters WHERE userid = " << mysqlpp::quote << player->getUserid();
+	query << "SELECT * FROM characters WHERE userid = " << mysqlpp::quote << player->getUserid() << " AND world_id = " << mysqlpp::quote << (int) player->getWorld();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	vector <Character> chars;
@@ -78,7 +78,7 @@ void Characters::checkCharacterName(PlayerLogin* player, unsigned char* packet){
 	}
 	BufferUtilities::getString(packet+2, size, charactername);
 	
-	LoginPacket::checkName(player, nameTaken(charactername), charactername);
+	LoginPacket::checkName(player, nameTaken(player, charactername), charactername);
 }
 
 void Characters::createEquip(int equipid, int type, int charid){
@@ -103,7 +103,7 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	}
 	BufferUtilities::getString(packet+2, size, charactername);
 	// Let's check our char name again just to be sure
-	if(nameTaken(charactername)) {
+	if(nameTaken(player, charactername)) {
 		LoginPacket::checkName(player, 1, charactername);
 		return;
 	}
@@ -119,8 +119,9 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 		return;
 	}
 	mysqlpp::Query query = db.query();
-	query << "INSERT INTO characters (userid, name, eyes, hair, skin, gender, str, dex, intt, luk) VALUES (" 
+	query << "INSERT INTO characters (userid, world_id, name, eyes, hair, skin, gender, str, dex, intt, luk) VALUES (" 
 			<< mysqlpp::quote << player->getUserid() << ","
+			<< mysqlpp::quote << (int) player->getWorld() << ","
 			<< mysqlpp::quote << charactername << ","
 			<< mysqlpp::quote << eyes << ","
 			<< mysqlpp::quote << hair << ","
@@ -205,9 +206,9 @@ bool Characters::ownerCheck(PlayerLogin* player, int id) {
 	return (res.num_rows() == 1) ? 1 : 0 ;
 }
 
-bool Characters::nameTaken(char *name) {
+bool Characters::nameTaken(PlayerLogin* player, char *name) {
 	mysqlpp::Query query = db.query();
-	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name << " LIMIT 1";
+	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name  << " AND world_id = " << mysqlpp::quote << (int) player->getWorld() << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	return (res.num_rows() == 1) ? 1 : 0 ;
