@@ -28,12 +28,7 @@ void Worlds::showWorld(PlayerLogin* player){
 		// hacking
 		return;
 	}
-	World world;
-	strcpy_s(world.name, 15, "Scania");
-	world.channels = 1;
-	world.id = 0;
-	world.ribbon = 0;
-	worlds[0] = world;
+
 	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
 		LoginPacket::showWorld(player, &iter->second);
 	LoginPacket::worldEnd(player);

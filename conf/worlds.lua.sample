@@ -1,0 +1,18 @@
+-- World name
+world0_name = "Scania";
+-- World channels
+world0_channels = 1;
+-- World ID (affects the icon of the world)
+world0_id = 0;
+-- World Ribbon
+--  0 = None
+--  1 = E
+--  2 = N
+--  3 = H
+world0_ribbon = 0;
+
+-- Uncomment for another world
+-- world1_name = "Bera";
+-- world1_channels = 1;
+-- world1_id = 1;
+-- world1_ribbon = 2;
