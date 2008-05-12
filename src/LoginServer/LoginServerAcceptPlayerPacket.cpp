@@ -26,3 +26,13 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, cha
 	packet.addInt(port);
 	packet.packetSend(player);
 }
+
+void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, char *ip, int port) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_LOGIN_CHANNEL_CONNECT);
+	packet.addByte(worldid);
+	packet.addShort(strlen(ip));
+	packet.addString(ip, strlen(ip));
+	packet.addInt(port);
+	packet.packetSend(player);
+}

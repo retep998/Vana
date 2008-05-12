@@ -322,6 +322,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="ServerToServer"
+					>
+					<File
+						RelativePath=".\src\Common\AuthenticationPacket.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DataBaseLoading"
@@ -418,6 +426,22 @@
 					RelativePath=".\src\Common\AbstractServer.cpp"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="ServerToServer"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.cpp"
+					>
+				</File>
+				<Filter
+					Name="Handlers"
+					>
+					<File
+						RelativePath=".\src\ChannelServer\WorldServerConnectHandler.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -580,6 +604,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="ServerToServer"
+					>
+					<File
+						RelativePath=".\src\Common\AuthenticationPacket.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DataBaseLoading"
@@ -672,6 +704,18 @@
 					RelativePath=".\src\Common\ServerPlayer.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.h"
+					>
+				</File>
+				<Filter
+					Name="Handlers"
+					>
+					<File
+						RelativePath=".\src\ChannelServer\WorldServerConnectHandler.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 	</Files>

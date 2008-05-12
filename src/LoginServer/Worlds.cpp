@@ -77,3 +77,24 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	}
 	return worldid;
 }
+
+char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
+	char worldid = -1;
+	int port;
+	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		if (iter->second.channels <= 20) {
+			worldid = iter->second.id;
+			port = iter->second.port;
+			break;
+		}
+	}
+	LoginServerAcceptPlayerPacket::connectChannel(player, worldid, "127.0.0.1", port); // TODO: Put proper ip
+	if (worldid != -1) {
+		std::cout << "Making char server connect to world server " << (int) worldid << "." << std::endl;
+	}
+	else {
+		std::cout << "Error: No more channel to assign." << std::endl;
+	}
+	player->disconnect();
+	return worldid;
+}

@@ -30,6 +30,9 @@ public:
 	void sendAuth(char *pass) {
 		AuthenticationPacket::sendPassword(this, pass);
 	}
+	char getType() { return type; }
+protected:
+	char type;
 };
 
 class AbstractServerAcceptPlayer : public AbstractPlayer {
@@ -38,11 +41,12 @@ public:
 		short header = buf[0] + buf[1]*0x100;
 		if (header == INTER_PASSWORD) {
 			char pass[255];
-			BufferUtilities::getString(buf+4, BufferUtilities::getShort(buf+2), pass);
+			short passlen = BufferUtilities::getShort(buf+2);
+			BufferUtilities::getString(buf+4, passlen, pass);
 			if(strcmp(pass, password) == 0) {
 				std::cout << "Server successfully authenticated." << std::endl;
 				is_authenticated = true;
-				authenticated();
+				authenticated(buf[2+2+passlen]);
 			}
 			else {
 				disconnect();
@@ -53,7 +57,7 @@ public:
 			disconnect();
 		}
 	}
-	virtual void authenticated() { }
+	virtual void authenticated(char type) = 0;
 private:
 	bool is_authenticated;
 };

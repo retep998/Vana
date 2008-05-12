@@ -25,5 +25,6 @@ void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, cha
 	packet.addHeader(INTER_PASSWORD);
 	packet.addShort(strlen(pass));
 	packet.addString(pass, strlen(pass));
+	packet.addByte(player->getType());
 	packet.packetSend(player);
 }

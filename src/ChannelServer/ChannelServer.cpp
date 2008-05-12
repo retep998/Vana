@@ -16,6 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChannelServer.h"
+#include "Connection/Acceptor.h"
+#include "Connection/Connector.h"
+#include "WorldServerConnectPlayer.h"
 #include "InitializeChannel.h"
 #include "Player.h"
 #include "Players.h"
@@ -24,6 +27,8 @@ ChannelServer* ChannelServer::singleton = 0;
 
 void ChannelServer::listen() {
 	new Acceptor(port, new PlayerFactory());
+	if (port)
+		Initializing::setUsersOffline(getOnlineId());
 }
 
 void ChannelServer::loadData() {
@@ -36,10 +41,23 @@ void ChannelServer::loadData() {
 	Initializing::initializeQuests();
 	Initializing::initializeSkills();
 	Initializing::initializeMaps();
-	Initializing::setUsersOffline(getOnlineId());
+
+	Connector *c = new Connector(login_ip, login_inter_port, new WorldServerConnectPlayerFactory());
+	WorldServerConnectPlayer *loginPlayer = (WorldServerConnectPlayer *) c->getPlayer();
+	loginPlayer->sendAuth(inter_password);
+}
+
+void ChannelServer::connectWorld() {
+	Connector *c = new Connector(world_ip, world_port, new WorldServerConnectPlayerFactory());
+	worldPlayer = (WorldServerConnectPlayer *) c->getPlayer();
+	worldPlayer->sendAuth(inter_password);
 }
 
 void ChannelServer::loadConfig() {
+	Config config("conf/channelserver.lua");
+	strcpy_s(login_ip, config.getString("login_ip"));
+	login_inter_port = config.getInt("login_inter_port");
+
 	port = 8888; //TODO: Get port from world server
 	world = 0; //TODO: Get world from world server
 	channel = 0; // Channel starts from 0 (i.e. channel 0 is displayed as channel 1) //TODO: Get channel from world server

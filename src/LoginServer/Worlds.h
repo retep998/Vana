@@ -39,6 +39,7 @@ namespace Worlds {
 	void selectWorld(PlayerLogin* player, unsigned char* packet);
 	void showWorld(PlayerLogin* player);
 	char connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
+	char connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server
 	extern hash_map <int, World> worlds;
 };
 

@@ -26,6 +26,11 @@ void LoginServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 	//switch(header){	}
 }
 
-void LoginServerAcceptPlayer::authenticated() {
-	Worlds::connectWorldServer(this);
+void LoginServerAcceptPlayer::authenticated(char type) {
+	if (type == INTER_WORLD_SERVER)
+		Worlds::connectWorldServer(this);
+	else if (type == INTER_CHANNEL_SERVER)
+		Worlds::connectChannelServer(this);
+	else
+		disconnect();
 }

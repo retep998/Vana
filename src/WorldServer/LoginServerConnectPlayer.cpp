@@ -19,6 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectHandler.h"
 #include "InterHeader.h"
 
+LoginServerConnectPlayer::LoginServerConnectPlayer() {
+	type = INTER_WORLD_SERVER;
+}
+
 void LoginServerConnectPlayer::realHandleRequest(unsigned char *buf, int len) {
 	short header = buf[0] + buf[1]*0x100;
 	switch(header) {

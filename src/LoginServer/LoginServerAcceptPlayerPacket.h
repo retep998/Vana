@@ -22,6 +22,7 @@ class LoginServerAcceptPlayer;
 
 namespace LoginServerAcceptPlayerPacket {
 	void connect(LoginServerAcceptPlayer *player, char worldid, int port);
+	void connectChannel(LoginServerAcceptPlayer *player, char worldid, char *ip, int port);
 };
 
 #endif
