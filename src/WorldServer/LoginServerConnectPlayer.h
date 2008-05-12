@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class LoginServerConnectPlayer : public AbstractServerConnectPlayer {
 public:
+	LoginServerConnectPlayer();
 	void realHandleRequest(unsigned char *buf, int len);
 };
 

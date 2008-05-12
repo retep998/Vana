@@ -15,9 +15,23 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#ifndef INTERHEADER_H
+#define INTERHEADER_H
 
 //Inter-server communication does not separate send and recv because the server does both
 #define INTER_PASSWORD 0xff
 
 // Login <--> World
 #define INTER_WORLD_CONNECT 0x1000
+
+// World <--> Channel
+#define INTER_LOGIN_CHANNEL_CONNECT 0x2000 // Login <--> Channel to get World server info
+#define INTER_CHANNEL_CONNECT 0x2001
+
+enum {
+	INTER_LOGIN_SERVER,
+	INTER_WORLD_SERVER,
+	INTER_CHANNEL_SERVER
+};
+
+#endif

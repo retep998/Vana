@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractServer.h"
 
+class WorldServerConnectPlayer;
+
 // ChannelServer main application class, implemented as singleton
 class ChannelServer : public AbstractServer {
 public:
@@ -31,10 +33,16 @@ public:
 	void loadData();
 	void loadConfig();
 	void listen();
+	void connectWorld();
 	void shutdown();
 
 	char getWorld() { return world; }
+	void setWorld(char id) { world = id; }
+	void setWorldIp(char *ip) { strcpy_s(world_ip, ip); }
+	void setWorldPort(int port) { world_port = port; }
 	int getChannel() { return channel; }
+	void setChannel(int channel) {}
+	void setPort(int port) { port = port; }
 	int getOnlineId() { return 20000 + (int) world * 1000 + channel * 10; }
 private:
 	ChannelServer() {};
@@ -42,8 +50,14 @@ private:
 	ChannelServer& operator=(const ChannelServer&);
 	static ChannelServer *singleton;
 
+	WorldServerConnectPlayer *worldPlayer;
+
+	char login_ip[15];
+	int login_inter_port;
 	int port;
 	char world;
+	char world_ip[15];
+	int world_port;
 	int channel;
 };
 
