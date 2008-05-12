@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, unsigned char *packet) {
-	if (packet[0] != -1) {
+	if (packet[0] != 0xFF) {
 		WorldServer::Instance()->setWorldId(packet[0]);
 		WorldServer::Instance()->setInterPort(BufferUtilities::getInt(packet+1));
 		WorldServer::Instance()->listen();
