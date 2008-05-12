@@ -42,7 +42,7 @@ void Worlds::selectWorld(PlayerLogin* player, unsigned char* packet){
 		// hacking
 		return;
 	}
-	player->setServer(packet[0]);
+	player->setWorld(packet[0]);
 	LoginPacket::showChannels(player);
 }
 

@@ -54,11 +54,11 @@ public:
 	char getGender(){
 		return this->gender;
 	}
-	void setServer(int server){
-		this->server=server;
+	void setWorld(char world){
+		this->world = world;
 	}
-	int getServer(){
-		return this->server;
+	char getWorld(){
+		return this->world;
 	}
 	void setChannel(int channel){
 		this->channel=channel;
@@ -73,7 +73,7 @@ private:
 	int pin;
 	bool checked_pin;
 	char gender;
-	int server;
+	char world;
 	int channel;
 };
 
