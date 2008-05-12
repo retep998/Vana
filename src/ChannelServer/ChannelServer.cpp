@@ -36,7 +36,6 @@ void ChannelServer::loadData() {
 	Initializing::initializeQuests();
 	Initializing::initializeSkills();
 	Initializing::initializeMaps();
-	Initializing::initializeTimers();
 	Initializing::setUsersOffline(getOnlineId());
 }
 

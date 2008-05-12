@@ -29,6 +29,11 @@ hash_map <int, MapInfo> Maps::info;
 
 class MapTimer: public Timer::TimerHandler {
 public:
+	static MapTimer * Instance() {
+		if (singleton == 0)
+			singleton = new MapTimer;
+		return singleton;
+	}
 	void setMapTimer(int mapid){
 		if(ctimer.find(mapid) != ctimer.end())
 			if(ctimer[mapid])
@@ -44,6 +49,11 @@ public:
 			ctimer[mapid] = 0;
 	}
 private:
+	static MapTimer *singleton;
+	MapTimer() {};
+	MapTimer(const MapTimer&);
+	MapTimer& operator=(const MapTimer&);
+
 	static hash_map <int, int> timers;
 	static hash_map <int, int> ctimer;
 	void handle (Timer* timer, int id) {
@@ -61,7 +71,7 @@ private:
 };
 hash_map <int,int> MapTimer::timers;
 hash_map <int,int> MapTimer::ctimer;
-MapTimer* Maps::timer;
+MapTimer * MapTimer::singleton = 0;
 
 void Maps::addMap(int id, MapInfo map){
 	info[id] = map;
@@ -197,16 +207,13 @@ void Maps::showTime(Player* player){
 
 void Maps::mapTimer(int mapid){
 	if(info[mapid].Players.size() == 0){
-		timer->next(mapid, 0);
+		MapTimer::Instance()->next(mapid, 0);
 		return;
 	}
 	else
-		timer->next(mapid, 1);
+		MapTimer::Instance()->next(mapid, 1);
 	Mobs::checkSpawn(mapid);
 	Drops::checkDrops(mapid);
-}
-void Maps::startTimer(){
-	timer = new MapTimer();
 }
 
 void Maps::newMap(Player* player, int mapid){
@@ -217,5 +224,5 @@ void Maps::newMap(Player* player, int mapid){
 	Drops::showDrops(player);
 	if(info[mapid].clock)
 		showTime(player);
-	timer->setMapTimer(player->getMap());
+	MapTimer::Instance()->setMapTimer(player->getMap());
 }

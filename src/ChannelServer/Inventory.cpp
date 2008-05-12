@@ -29,6 +29,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class ItemTimer: public Timer::TimerHandler {
 public:
+	static ItemTimer * Instance() {
+		if (singleton == 0)
+			singleton = new ItemTimer;
+		return singleton;
+	}
 	void setItemTimer(Player* player, int item, int time){
 		ITimer timer;
 		timer.id = Timer::Instance()->setTimer(time, this);;
@@ -53,6 +58,11 @@ public:
 		}
 	}
 private:
+	static ItemTimer *singleton;
+	ItemTimer() {};
+	ItemTimer(const ItemTimer&);
+	ItemTimer& operator=(const ItemTimer&);
+
 	struct ITimer {
 		int id;
 		Player* player;
@@ -83,14 +93,10 @@ private:
 };
 
 vector <ItemTimer::ITimer> ItemTimer::timers;
-ItemTimer* Inventory::timer;
-
-void Inventory::startTimer(){
-	timer = new ItemTimer();
-}
+ItemTimer * ItemTimer::singleton = 0;
 
 void Inventory::stopTimerPlayer(Player* player){
-	timer->stop(player);
+	ItemTimer::Instance()->stop(player);
 }
 
 void Inventory::itemMove(Player* player, unsigned char* packet){
@@ -565,14 +571,14 @@ void Inventory::useItem(Player *player, unsigned char *packet){
 			isMorph = true;
 		}
 		InventoryPacket::useItem(player, itemid, Drops::consumes[itemid].time*1000, types, vals, isMorph);
-		timer->stop(player, itemid);
-		timer->setItemTimer(player, itemid, Drops::consumes[itemid].time*1000);
+		ItemTimer::Instance()->stop(player, itemid);
+		ItemTimer::Instance()->setItemTimer(player, itemid, Drops::consumes[itemid].time*1000);
 	}
 }
 // Cancel item buffs
 void Inventory::cancelItem(Player *player, unsigned char* packet){
 	int itemid = BufferUtilities::getInt(packet)*-1;
-	timer->stop(player, itemid);
+	ItemTimer::Instance()->stop(player, itemid);
 	Inventory::endItem(player, itemid);
 }
 // End item buffs

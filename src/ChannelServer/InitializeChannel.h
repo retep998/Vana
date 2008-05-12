@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Skills.h"
 #include "Inventory.h"
-#include "Timer.h"
+
 using namespace std;
 
 namespace Initializing {
@@ -40,7 +40,6 @@ namespace Initializing {
 	void initializeItems();
 	void initializeQuests();
 	void initializeSkills();
-	void initializeTimers();
 }
 
 #endif
