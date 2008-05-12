@@ -15,13 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDSERVERPACKET_H
-#define WORLDSERVERPACKET_H
+#include "LoginServerAcceptPlayerPacket.h"
+#include "LoginServerAcceptPlayer.h"
+#include "PacketCreator.h"
 
-class LoginServerAcceptPlayer;
-
-namespace WorldServerPacket {
-	void connect(LoginServerAcceptPlayer *player, char worldid, int port);
-};
-
-#endif
+void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, char worldid, int port) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_WORLD_CONNECT);
+	packet.addByte(worldid);
+	packet.addInt(port);
+	packet.packetSend(player);
+}

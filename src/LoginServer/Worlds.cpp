@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Worlds.h"
 #include "LoginPacket.h"
-#include "WorldServerPacket.h"
+#include "LoginServerAcceptPlayerPacket.h"
 #include <string.h>
 #include "PlayerLogin.h"
 #include "LoginServerAcceptPlayer.h"
@@ -67,7 +67,7 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 			break;
 		}
 	}
-	WorldServerPacket::connect(player, worldid, port);
+	LoginServerAcceptPlayerPacket::connect(player, worldid, port);
 	if (worldid != -1) {
 		std::cout << "Assigned world " << (int) worldid << " to World Server." << std::endl;
 	}
