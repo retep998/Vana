@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
+#include "Worlds.h"
 
 LoginServer* LoginServer::singleton = 0;
 
@@ -34,6 +35,31 @@ void LoginServer::loadConfig() {
 	pinEnabled = config.getBool("pin");
 	port = config.getInt("port");
 	inter_port = config.getInt("inter_port");
+
+	// Let's load our worlds
+	config.loadFile("conf/worlds.lua");
+	size_t i = 0;
+	while (1) {
+		char buf[16];
+		sprintf(buf, "world%d_name", i);
+		if(!config.keyExist(buf))
+			break; //No more worlds
+
+		World world;
+		strcpy_s(world.name, 15, config.getString(buf));
+
+		sprintf(buf, "world%d_channels", i);
+		world.channels = config.getInt(buf);
+
+		sprintf(buf, "world%d_id", i);
+		world.id = config.getInt(buf);
+
+		sprintf(buf, "world%d_ribbon", i);
+		world.ribbon = config.getInt(buf);
+
+		Worlds::worlds[i] = world;
+		i++;
+	}
 }
 
 void LoginServer::shutdown() {
