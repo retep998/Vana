@@ -38,6 +38,7 @@ public:
 
 	char getWorldId() const { return worldId; }
 	void setWorldId(char id) { worldId = id; }
+	void setInterPort(int port) { inter_port = port; }
 private:
 	WorldServer() {};
 	WorldServer(const WorldServer&);

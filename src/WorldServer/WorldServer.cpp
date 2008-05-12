@@ -35,7 +35,7 @@ void WorldServer::loadConfig() {
 	Config config("conf/worldserver.lua");
 	strcpy_s(login_ip, config.getString("login_ip"));
 	login_inter_port = config.getInt("login_inter_port");
-	inter_port = config.getInt("inter_port");
+	inter_port = 0; // Will get from login server later
 }
 
 void WorldServer::shutdown() {

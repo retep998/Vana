@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class LoginServerAcceptPlayer;
 
 namespace WorldServerPacket {
-	void connect(LoginServerAcceptPlayer *player, char worldid);
+	void connect(LoginServerAcceptPlayer *player, char worldid, int port);
 };
 
 #endif

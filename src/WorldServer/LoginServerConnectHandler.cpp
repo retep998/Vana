@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, unsigned char *packet) {
 	if (packet[0] != -1) {
 		WorldServer::Instance()->setWorldId(packet[0]);
+		WorldServer::Instance()->setInterPort(BufferUtilities::getInt(packet+1));
+		WorldServer::Instance()->listen();
 		std::cout << "Handling world " << (int) packet[0] << std::endl;
 	}
 	else {

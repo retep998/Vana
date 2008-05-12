@@ -19,9 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayer.h"
 #include "PacketCreator.h"
 
-void WorldServerPacket::connect(LoginServerAcceptPlayer *player, char worldid) {
+void WorldServerPacket::connect(LoginServerAcceptPlayer *player, char worldid, int port) {
 	Packet packet = Packet();
 	packet.addHeader(INTER_WORLD_CONNECT);
 	packet.addByte(worldid);
+	packet.addInt(port);
 	packet.packetSend(player);
 }

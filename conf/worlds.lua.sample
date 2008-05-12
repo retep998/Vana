@@ -10,9 +10,12 @@ world0_id = 0;
 --  2 = N
 --  3 = H
 world0_ribbon = 0;
+-- What port should the world server listen on?
+world0_port = 7100;
 
 -- Uncomment for another world
 -- world1_name = "Bera";
 -- world1_channels = 1;
 -- world1_id = 1;
 -- world1_ribbon = 2;
+-- world1_port = 7200;
