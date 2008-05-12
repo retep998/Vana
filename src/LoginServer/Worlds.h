@@ -31,6 +31,7 @@ struct World {
 	char id;
 	char ribbon;
 	bool connected;
+	int port;
 };
 
 namespace Worlds {

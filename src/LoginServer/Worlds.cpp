@@ -58,14 +58,16 @@ void Worlds::channelSelect(PlayerLogin* player, unsigned char* packet){
 
 char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
+	int port;
 	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second.connected == 0) {
 			worldid = iter->second.id;
+			port = iter->second.port;
 			iter->second.connected = true;
 			break;
 		}
 	}
-	WorldServerPacket::connect(player, worldid);
+	WorldServerPacket::connect(player, worldid, port);
 	if (worldid != -1) {
 		std::cout << "Assigned world " << (int) worldid << " to World Server." << std::endl;
 	}

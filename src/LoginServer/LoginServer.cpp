@@ -57,6 +57,10 @@ void LoginServer::loadConfig() {
 		sprintf(buf, "world%d_ribbon", i);
 		world.ribbon = config.getInt(buf);
 
+		sprintf(buf, "world%d_port", i);
+		world.port = config.getInt(buf);
+
+		world.connected = false;
 		Worlds::worlds[i] = world;
 		i++;
 	}

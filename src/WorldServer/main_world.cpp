@@ -22,6 +22,6 @@ void main(){
 	std::cout << "Starting World Server..." << std::endl;
 	WorldServer *server = WorldServer::Instance();
 	server->initialize();
-	std::cout << "Complete! Listening to connections." << std::endl;
+	std::cout << "Complete!" << std::endl;
 	while(getchar()){}
 }
