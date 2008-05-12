@@ -69,7 +69,7 @@ void PlayersPacket::showMessage(char* msg, char type){
 	packet.addString(msg, strlen(msg));
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
 		 iter != Players::players.end(); iter++){
-			 packet.packetSend<Player>(iter->second);
+			 packet.packetSend(iter->second);
 	}
 }
 
@@ -85,7 +85,7 @@ void PlayersPacket::showInfo(Player* player, Player* getinfo){
 	packet.addByte(0x2D); // Guild Name
 	packet.addShort(0);
 	packet.addByte(0);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
@@ -97,7 +97,7 @@ void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
 	packet.addShort(0);//channel maybe
 	packet.addShort(strlen(chat));
 	packet.addString(chat,strlen(chat));
-	packet.packetSend<Player>(target);
+	packet.packetSend(target);
 }
 
 void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is){
@@ -119,5 +119,5 @@ void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned cha
 		packet.addByte(is);
 	}
 
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }

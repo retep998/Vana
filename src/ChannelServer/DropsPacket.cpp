@@ -62,7 +62,7 @@ void DropsPacket::dropForPlayer(Player* player, Drop* drop, Dropped dropper){
 	if(!drop->getMesos()){
 		packet.addBytes("8005BB46E6170200");
 	}
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void DropsPacket::showDrop(Player* player, Drop* drop){
@@ -84,7 +84,7 @@ void DropsPacket::showDrop(Player* player, Drop* drop){
 	if(!drop->getMesos()){
 		packet.addBytes("8005BB46E6170200");
 	}
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount){
@@ -106,7 +106,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount){
 		packet.addInt(0);
 		packet.addInt(0);
 	}
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void DropsPacket::takeDrop(Player* player, vector <Player*> players, Drop* drop){
@@ -119,7 +119,7 @@ void DropsPacket::takeDrop(Player* player, vector <Player*> players, Drop* drop)
 		packet.sendTo<Player>(player, players, 1);
 	}
 	else{
-		packet.packetSend<Player>(player);
+		packet.packetSend(player);
 	}
 }
 
@@ -127,7 +127,7 @@ void DropsPacket::dontTake(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addShort(1);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void DropsPacket::removeDrop(vector <Player*> players, Drop* drop){

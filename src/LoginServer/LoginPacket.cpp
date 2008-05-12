@@ -27,7 +27,7 @@ void LoginPacket::loginError(PlayerLogin* player, short errorid){
 	packet.addHeader(SEND_LOGIN_INFO_REPLY);
 	packet.addShort(errorid);
 	packet.addInt(0);
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::loginBan(PlayerLogin* player, char reason, int expire){
@@ -53,7 +53,7 @@ void LoginPacket::loginBan(PlayerLogin* player, char reason, int expire){
 	packet.addByte(reason);
 	packet.addBytes("00000000");
 	packet.addInt(expire); //Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::loginConnect(PlayerLogin* player, char* username, int size){
@@ -72,21 +72,21 @@ void LoginPacket::loginConnect(PlayerLogin* player, char* username, int size){
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addBytes("000000A6B89C2B4CC701");
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::loginProcess(PlayerLogin* player, char id){
 	Packet packet = Packet();
 	packet.addHeader(SEND_LOGIN_PROCESS);
 	packet.addByte(id);
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::pinAssigned(PlayerLogin* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_PIN_ASSIGNED);
 	packet.addByte(0);
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::showWorld(PlayerLogin* player, World *world){
@@ -114,21 +114,21 @@ void LoginPacket::showWorld(PlayerLogin* player, World *world){
 		packet.addByte(world->id);
 		packet.addShort(i);
 	}
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::worldEnd(PlayerLogin* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_SHOW_WORLD);
 	packet.addByte(0xFF);
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::showChannels(PlayerLogin* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_SHOW_CHANNEL);
 	packet.addShort(0x00);
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::channelSelect(PlayerLogin* player){
@@ -139,7 +139,7 @@ void LoginPacket::channelSelect(PlayerLogin* player){
 	packet.addBytes("9F227400");
 	packet.addInt(4);
 	packet.addBytes("AC227400544D0500F073790028BC0000");
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::showCharacters(PlayerLogin* player, vector <Character> chars){
@@ -193,7 +193,7 @@ void LoginPacket::showCharacters(PlayerLogin* player, vector <Character> chars){
 		packet.addInt(0);
 		packet.addByte(0);
 	}
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::checkName(PlayerLogin* player, char is, char* name){
@@ -202,7 +202,7 @@ void LoginPacket::checkName(PlayerLogin* player, char is, char* name){
 	packet.addShort(strlen(name));
 	packet.addString(name, strlen(name));
 	packet.addByte(is);
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::showCharacter(PlayerLogin* player, Character charc){
@@ -253,7 +253,7 @@ void LoginPacket::showCharacter(PlayerLogin* player, Character charc){
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addByte(0);
-	packet.packetSend<PlayerLogin>(player);	
+	packet.packetSend(player);	
 }
 
 void LoginPacket::deleteCharacter(PlayerLogin* player, int ID){
@@ -261,7 +261,7 @@ void LoginPacket::deleteCharacter(PlayerLogin* player, int ID){
 	packet.addHeader(SEND_DELETE_CHAR);
 	packet.addInt(ID);
 	packet.addByte(0);
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 void LoginPacket::connectIP(PlayerLogin* player, int charid){
@@ -278,7 +278,7 @@ void LoginPacket::connectIP(PlayerLogin* player, int charid){
 	packet.addInt(charid);
 	packet.addInt(0);
 	packet.addByte(0);
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }
 
 
@@ -286,5 +286,5 @@ void LoginPacket::logBack(PlayerLogin* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_RETURN_TO_LOGIN);
 	packet.addByte(1);
-	packet.packetSend<PlayerLogin>(player);
+	packet.packetSend(player);
 }

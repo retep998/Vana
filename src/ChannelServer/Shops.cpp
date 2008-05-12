@@ -45,7 +45,7 @@ void Shops::showShop(Player* player, int id){
 
 	//packet.addBytes("333333333333d33ff401f1951f00000000009a9999999999d93ff401f2951f0000000000000000000000e03fbc02f3951f00000000000333333333333e33ff401f4951f0000000000333333333333e33fe803f5951f0000000000666666666666e63fe803f6951f000000000009a9999999999e93f2003f7951f000000000000000000");
 	//Struct: unitPrice [6] unk [2] price [2] id [2] 0 [4]
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 int Shops::getPrice(Player* player, int itemid){
