@@ -37,8 +37,11 @@ public:
 		char pass[255];
 		BufferUtilities::getString(buf+4, BufferUtilities::getShort(buf+2), pass);
 		if(strcmp(pass, password) == 0) {
-			std::cout << "World Server successfully authenticated." << std::endl;
+			std::cout << "Server successfully authenticated." << std::endl;
 			authenticated = true;
+		}
+		else {
+			disconnect();
 		}
 	}
 private:
