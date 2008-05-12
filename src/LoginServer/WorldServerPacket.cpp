@@ -15,30 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDS_H
-#define WORLDS_H
+#include "WorldServerPacket.h"
+#include "LoginServerAcceptPlayer.h"
+#include "PacketCreator.h"
 
-#include <hash_map>
-
-using stdext::hash_map;
-
-class PlayerLogin;
-class LoginServerAcceptPlayer;
-
-struct World {
-	char name[15];
-	int channels;
-	char id;
-	char ribbon;
-	bool connected;
-};
-
-namespace Worlds {
-	void channelSelect(PlayerLogin* player, unsigned char* packet);
-	void selectWorld(PlayerLogin* player, unsigned char* packet);
-	void showWorld(PlayerLogin* player);
-	char connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
-	extern hash_map <int, World> worlds;
-};
-
-#endif
+void WorldServerPacket::connect(LoginServerAcceptPlayer *player, char worldid) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_WORLD_CONNECT);
+	packet.addByte(worldid);
+	packet.packetSend(player);
+}

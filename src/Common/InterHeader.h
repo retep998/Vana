@@ -18,3 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Inter-server communication does not separate send and recv because the server does both
 #define INTER_PASSWORD 0xff
+
+// Login <--> World
+#define INTER_WORLD_CONNECT 0x1000

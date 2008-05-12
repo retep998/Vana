@@ -17,8 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Worlds.h"
 #include "LoginPacket.h"
+#include "WorldServerPacket.h"
 #include <string.h>
 #include "PlayerLogin.h"
+#include "LoginServerAcceptPlayer.h"
 #include "Characters.h"
 
 hash_map <int, World> Worlds::worlds;
@@ -30,7 +32,8 @@ void Worlds::showWorld(PlayerLogin* player){
 	}
 
 	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
-		LoginPacket::showWorld(player, &iter->second);
+		if (iter->second.connected == true)
+			LoginPacket::showWorld(player, &iter->second);
 	LoginPacket::worldEnd(player);
 }
 
@@ -51,4 +54,24 @@ void Worlds::channelSelect(PlayerLogin* player, unsigned char* packet){
 	player->setChannel(packet[1]);
 	LoginPacket::channelSelect(player);
 	Characters::showCharacters(player);
+}
+
+char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
+	char worldid = -1;
+	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		if (iter->second.connected == 0) {
+			worldid = iter->second.id;
+			iter->second.connected = true;
+			break;
+		}
+	}
+	WorldServerPacket::connect(player, worldid);
+	if (worldid != -1) {
+		std::cout << "Assigned world " << (int) worldid << " to World Server." << std::endl;
+	}
+	else {
+		std::cout << "Error: No more world to assign." << std::endl;
+		player->disconnect();
+	}
+	return worldid;
 }

@@ -16,9 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectPlayer.h"
+#include "LoginServerConnectHandler.h"
 #include "InterHeader.h"
 
 void LoginServerConnectPlayer::realHandleRequest(unsigned char *buf, int len) {
 	short header = buf[0] + buf[1]*0x100;
-	//switch(header){	}
+	switch(header) {
+		case INTER_WORLD_CONNECT: LoginServerConnectHandler::connect(this, buf+2); break;
+	}
 }
