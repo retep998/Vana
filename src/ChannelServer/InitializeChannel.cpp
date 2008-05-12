@@ -490,7 +490,6 @@ void Initializing::initializeSkills(){
 		if(currentid != previousid && previousid != -1){
 			Skills::addSkill(previousid, skill);
 			skill.clear();
-			count = 1;
 		}
 
 		SkillLevelInfo level;
