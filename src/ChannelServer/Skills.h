@@ -47,16 +47,18 @@ struct SkillLevelInfo {
 	short hpP;
 };
 
-#define SKILL_X       1
-#define SKILL_Y       2
-#define SKILL_SPEED   3
-#define SKILL_JUMP    4
-#define SKILL_WATK    5
-#define SKILL_WDEF    6
-#define SKILL_MATK    7
-#define SKILL_MDEF    8
-#define SKILL_ACC     9
-#define SKILL_AVO    10
+enum {
+	SKILL_X,
+	SKILL_Y,
+	SKILL_SPEED,
+	SKILL_JUMP,
+	SKILL_WATK,
+	SKILL_WDEF,
+	SKILL_MATK,
+	SKILL_MDEF,
+	SKILL_ACC,
+	SKILL_AVO
+};
 
 struct SkillPlayerInfo {
 	unsigned char type;
