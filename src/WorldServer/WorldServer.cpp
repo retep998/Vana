@@ -39,6 +39,7 @@ void WorldServer::loadConfig() {
 }
 
 void WorldServer::shutdown() {
+	exit(0);
 	//TODO
 }
 

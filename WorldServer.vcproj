@@ -299,6 +299,14 @@
 					RelativePath=".\src\WorldServer\WorldServerAcceptPlayer.cpp"
 					>
 				</File>
+				<Filter
+					Name="Handlers"
+					>
+					<File
+						RelativePath=".\src\WorldServer\LoginServerConnectHandler.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -433,6 +441,14 @@
 					RelativePath=".\src\WorldServer\WorldServerAcceptPlayer.h"
 					>
 				</File>
+				<Filter
+					Name="Handlers"
+					>
+					<File
+						RelativePath=".\src\WorldServer\LoginServerConnectHandler.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 	</Files>

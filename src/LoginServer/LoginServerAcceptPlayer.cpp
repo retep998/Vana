@@ -18,9 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayer.h"
 #include "LoginServer.h"
 #include "InterHeader.h"
+#include "Worlds.h"
 
 void LoginServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 	processAuth(buf, (char *) LoginServer::Instance()->getInterPassword());
 	short header = buf[0] + buf[1]*0x100;
 	//switch(header){	}
+}
+
+void LoginServerAcceptPlayer::authenticated() {
+	Worlds::connectWorldServer(this);
 }

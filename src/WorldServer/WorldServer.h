@@ -35,6 +35,9 @@ public:
 	void loadConfig();
 	void listen();
 	void shutdown();
+
+	char getWorldId() const { return worldId; }
+	void setWorldId(char id) { worldId = id; }
 private:
 	WorldServer() {};
 	WorldServer(const WorldServer&);
@@ -45,6 +48,7 @@ private:
 	char login_ip[15];
 	int login_inter_port;
 	int inter_port;
+	char worldId;
 };
 
 #endif
