@@ -463,29 +463,29 @@ void Initializing::initializeSkills(){
 		exit(1);
 	}
 
-	int count = 1;
 	int currentid = 0;
 	int previousid = -1;
 	SkillsLevelInfo skill;
 	while (mysqlpp::Row skillRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Skill ID
-		//    2 : Time
-		//    3 : MP
-		//    4 : HP
-		//    5 : Item
-		//    6 : Item Count
-		//    7 : Value X
-		//	  8 : Value Y
-		//    9 : Speed
-		//   10 : Jump
-		//   11 : Weapon Attack
-		//   12 : Weapon Defense
-		//   13 : Magic Attack
-		//   14 : Magic Defense
-		//   15 : Accuracy
-		//   16 : Avoid
-		//   17 : HPP
+		//    2 : Level
+		//    3 : Time
+		//    4 : MP
+		//    5 : HP
+		//    6 : Item
+		//    7 : Item Count
+		//    8 : Value X
+		//	  9 : Value Y
+		//   10 : Speed
+		//   11 : Jump
+		//   12 : Weapon Attack
+		//   13 : Weapon Defense
+		//   14 : Magic Attack
+		//   15 : Magic Defense
+		//   16 : Accuracy
+		//   17 : Avoid
+		//   18 : HPP
 		currentid = atoi(skillRow[1]);
 		if(currentid != previousid && previousid != -1){
 			Skills::addSkill(previousid, skill);
@@ -494,24 +494,23 @@ void Initializing::initializeSkills(){
 		}
 
 		SkillLevelInfo level;
-		level.time = atoi(skillRow[2]);
-		level.mp = atoi(skillRow[3]);
-		level.hp = atoi(skillRow[4]);
-		level.item = atoi(skillRow[5]);
-		level.itemcount = atoi(skillRow[6]);
-		level.x = atoi(skillRow[7]);
-		level.y = atoi(skillRow[8]);
-		level.speed = atoi(skillRow[9]);
-		level.jump = atoi(skillRow[10]);
-		level.watk = atoi(skillRow[11]);
-		level.wdef = atoi(skillRow[12]);
-		level.matk = atoi(skillRow[13]);
-		level.mdef = atoi(skillRow[14]);
-		level.acc = atoi(skillRow[15]);
-		level.avo = atoi(skillRow[16]);
-		level.hpP = atoi(skillRow[17]);
-		skill[count] = level;
-		count++;
+		level.time = atoi(skillRow[3]);
+		level.mp = atoi(skillRow[4]);
+		level.hp = atoi(skillRow[5]);
+		level.item = atoi(skillRow[6]);
+		level.itemcount = atoi(skillRow[7]);
+		level.x = atoi(skillRow[8]);
+		level.y = atoi(skillRow[9]);
+		level.speed = atoi(skillRow[10]);
+		level.jump = atoi(skillRow[11]);
+		level.watk = atoi(skillRow[12]);
+		level.wdef = atoi(skillRow[13]);
+		level.matk = atoi(skillRow[14]);
+		level.mdef = atoi(skillRow[15]);
+		level.acc = atoi(skillRow[16]);
+		level.avo = atoi(skillRow[17]);
+		level.hpP = atoi(skillRow[18]);
+		skill[atoi(skillRow[2])] = level;
 
 		previousid = atoi(skillRow[1]);
 	}
