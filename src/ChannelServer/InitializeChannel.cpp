@@ -707,10 +707,3 @@ void Initializing::initializeMaps(){
 	}
 	printf("DONE\n");
 }
-
-void Initializing::initializeTimers(){
-	printf("Initializing Timers... ");
-	Inventory::startTimer();
-	Maps::startTimer();
-	printf("DONE\n");
-}
