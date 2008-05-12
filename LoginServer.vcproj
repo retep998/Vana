@@ -236,7 +236,7 @@
 					Name="ServerToServer"
 					>
 					<File
-						RelativePath=".\src\LoginServer\WorldServerPacket.cpp"
+						RelativePath=".\src\LoginServer\LoginServerAcceptPlayerPacket.cpp"
 						>
 					</File>
 				</Filter>
@@ -378,7 +378,7 @@
 					Name="ServerToServer"
 					>
 					<File
-						RelativePath=".\src\LoginServer\WorldServerPacket.h"
+						RelativePath=".\src\LoginServer\LoginServerAcceptPlayerPacket.h"
 						>
 					</File>
 				</Filter>
