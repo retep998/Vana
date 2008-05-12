@@ -28,7 +28,7 @@ void ServerPacket::showScrollingHeader(Player* player, char* msg){
 	packet.addByte(1);
 	packet.addShort(strlen(msg));
 	packet.addString(msg, strlen(msg));
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 void ServerPacket::changeScrollingHeader(char* msg){
 	Packet packet = Packet();
@@ -39,7 +39,7 @@ void ServerPacket::changeScrollingHeader(char* msg){
 	packet.addString(msg, strlen(msg));
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
 		 iter != Players::players.end(); iter++){
-			 packet.packetSend<Player>(iter->second);
+			 packet.packetSend(iter->second);
 	}
 }
 
@@ -50,6 +50,6 @@ void ServerPacket::scrollingHeaderOff(){
 	packet.addByte(0);
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
 		 iter != Players::players.end(); iter++){
-			 packet.packetSend<Player>(iter->second);
+			 packet.packetSend(iter->second);
 	}
 }

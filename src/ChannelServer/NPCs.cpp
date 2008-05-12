@@ -164,46 +164,46 @@ Packet NPC::npcPacket(char type){
 
 void NPC::sendSimple(){
 	Packet packet = npcPacket(5);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 void NPC::sendYesNo(){
 	Packet packet = npcPacket(1);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 void NPC::sendNext(){
 	Packet packet = npcPacket(0);
 	packet.addByte(0);
 	packet.addByte(1);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 void NPC::sendBackNext(){
 	Packet packet = npcPacket(0);
 	packet.addByte(1);
 	packet.addByte(1);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 void NPC::sendBackOK(){
 	Packet packet = npcPacket(0);
 	packet.addByte(1);
 	packet.addByte(0);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 void NPC::sendOK(){
 	Packet packet = npcPacket(0);
 	packet.addShort(0);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void NPC::sendAcceptDecline(){
 	Packet packet = npcPacket(2);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void NPC::sendGetText(){
 	Packet packet = npcPacket(3);
 	packet.addInt(0);
 	packet.addInt(0);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void NPC::sendGetNumber(int def, int min, int max){
@@ -212,7 +212,7 @@ void NPC::sendGetNumber(int def, int min, int max){
 	packet.addInt(min);
 	packet.addInt(max);
 	packet.addInt(0);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void NPC::sendStyle(int styles[], char size){
@@ -220,7 +220,7 @@ void NPC::sendStyle(int styles[], char size){
 	packet.addByte(size);
 	for(int i=0; i<size; i++)
 		packet.addInt(styles[i]);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void NPC::teleport(int mapid){

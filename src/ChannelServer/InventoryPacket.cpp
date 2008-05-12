@@ -35,7 +35,7 @@ void InventoryPacket::moveItem(Player* player, char inv, short slot1, short slot
 	packet.addShort(slot1);
 	packet.addShort(slot2);
 	packet.addByte(1);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void InventoryPacket::updatePlayer(Player* player){
@@ -103,14 +103,14 @@ void InventoryPacket::addEquip(Player* player, Equip* equip, bool is){
 	packet.addByte(0);
 	packet.addByte(1);
 	PlayerPacketHelper::addEquip(packet, equip, true);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void InventoryPacket::bought(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_SHOP_BOUGHT);
 	packet.addByte(0);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void InventoryPacket::newMesos(Player* player, int mesos, bool is){
@@ -120,7 +120,7 @@ void InventoryPacket::newMesos(Player* player, int mesos, bool is){
 	packet.addShort(0);
 	packet.addShort(4);
 	packet.addInt(mesos);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void InventoryPacket::addNewItem(Player* player, Item* item, bool is){
@@ -143,7 +143,7 @@ void InventoryPacket::addNewItem(Player* player, Item* item, bool is){
 		packet.addByte(0);
 		packet.addByte(0x34);
 	}
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 void InventoryPacket::addItem(Player* player, Item* item, bool is){
 	Packet packet = Packet();
@@ -154,7 +154,7 @@ void InventoryPacket::addItem(Player* player, Item* item, bool is){
 	packet.addByte(item->inv);
 	packet.addShort(item->pos);
 	packet.addShort(item->amount);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void InventoryPacket::moveItemS(Player* player, char inv, short slot, short amount){
@@ -166,7 +166,7 @@ void InventoryPacket::moveItemS(Player* player, char inv, short slot, short amou
 	packet.addByte(inv);
 	packet.addShort(slot);
 	packet.addShort(amount);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void InventoryPacket::moveItemS2(Player* player, char inv, short slot1, short amount1, short slot2, short amount2){
@@ -182,7 +182,7 @@ void InventoryPacket::moveItemS2(Player* player, char inv, short slot1, short am
 	packet.addByte(inv);
 	packet.addShort(slot2);
 	packet.addShort(amount2);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 }
 
 void InventoryPacket::sitChair(Player* player, vector <Player*> players, int chairid){
@@ -190,7 +190,7 @@ void InventoryPacket::sitChair(Player* player, vector <Player*> players, int cha
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 	packet = Packet();
 	packet.addHeader(SEND_SIT_CHAIR);
 	packet.addInt(player->getPlayerid());
@@ -203,7 +203,7 @@ void InventoryPacket::stopChair(Player* player, vector <Player*> players){
 	Packet packet = Packet();
 	packet.addHeader(SEND_STOP_CHAIR);
 	packet.addByte(0);
-	packet.packetSend<Player>(player);
+	packet.packetSend(player);
 	packet = Packet();
 	packet.addHeader(SEND_SIT_CHAIR);
 	packet.addInt(player->getPlayerid());
@@ -245,7 +245,7 @@ void InventoryPacket::showSuperMegaphone(Player* player, char* msg, int whisper)
 	packet.addByte(whisper);
 	for(hash_map<int,Player*>::iterator iter = Players::players.begin(); //TODO: Cross channel
 		iter != Players::players.end(); iter++){
-			packet.packetSend<Player>(iter->second);
+			packet.packetSend(iter->second);
 	}
 }
 
@@ -268,7 +268,7 @@ void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char*
 
 	for(hash_map<int,Player*>::iterator iter = Players::players.begin();
 		iter != Players::players.end(); iter++){
-			packet.packetSend<Player>(iter->second);
+			packet.packetSend(iter->second);
 	}
 }
 // Use buff item
