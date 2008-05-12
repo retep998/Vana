@@ -24,6 +24,7 @@ struct World {
 	char name[15];
 	int channels;
 	char id;
+	char ribbon;
 };
 
 namespace Worlds {

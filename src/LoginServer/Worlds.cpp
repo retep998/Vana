@@ -30,6 +30,7 @@ void Worlds::showWorld(PlayerLogin* player){
 	strcpy_s(world.name, 15, "Scania");
 	world.channels = 1;
 	world.id = 0;
+	world.ribbon = 2;
 	LoginPacket::showWorld(player, world);
 	LoginPacket::worldEnd(player);
 }
