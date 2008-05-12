@@ -89,21 +89,21 @@ void LoginPacket::pinAssigned(PlayerLogin* player){
 	packet.packetSend<PlayerLogin>(player);
 }
 
-void LoginPacket::showWorld(PlayerLogin* player, World world){
+void LoginPacket::showWorld(PlayerLogin* player, World *world){
 	Packet packet = Packet();
 	packet.addHeader(SEND_SHOW_WORLD);
-	packet.addByte(world.id);
-	packet.addShort(strlen(world.name));
-	packet.addString(world.name, strlen(world.name));
-	packet.addByte(world.ribbon);
+	packet.addByte(world->id);
+	packet.addShort(strlen(world->name));
+	packet.addString(world->name, strlen(world->name));
+	packet.addByte(world->ribbon);
 	packet.addShort(0);
 	packet.addShort(100);
 	packet.addByte(100);
 	packet.addShort(0);
-	packet.addByte(world.channels);
-	for(int i=0; i<world.channels; i++){
+	packet.addByte(world->channels);
+	for(int i=0; i<world->channels; i++){
 		char channelname[15];
-		strcpy_s(channelname, 15, world.name);
+		strcpy_s(channelname, 15, world->name);
 		strcat_s(channelname, 15, "-");
 		char cid[15]={0};
 		cid[0] = i+'1';
@@ -111,7 +111,7 @@ void LoginPacket::showWorld(PlayerLogin* player, World world){
 		packet.addShort(strlen(channelname));
 		packet.addString(channelname, strlen(channelname));
 		packet.addInt(0x0); // Pop
-		packet.addByte(world.id);
+		packet.addByte(world->id);
 		packet.addShort(i);
 	}
 	packet.packetSend<PlayerLogin>(player);

@@ -18,6 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WORLDS_H
 #define WORLDS_H
 
+#include <hash_map>
+
+using stdext::hash_map;
+
 class PlayerLogin;
 
 struct World {
@@ -31,6 +35,7 @@ namespace Worlds {
 	void channelSelect(PlayerLogin* player, unsigned char* packet);
 	void selectWorld(PlayerLogin* player, unsigned char* packet);
 	void showWorld(PlayerLogin* player);
+	extern hash_map <int, World> worlds;
 };
 
 #endif

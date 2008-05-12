@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerLogin.h"
 #include "Characters.h"
 
+hash_map <int, World> Worlds::worlds;
+
 void Worlds::showWorld(PlayerLogin* player){
 	if(player->getStatus() != 4){
 		// hacking
@@ -30,8 +32,10 @@ void Worlds::showWorld(PlayerLogin* player){
 	strcpy_s(world.name, 15, "Scania");
 	world.channels = 1;
 	world.id = 0;
-	world.ribbon = 2;
-	LoginPacket::showWorld(player, world);
+	world.ribbon = 0;
+	worlds[0] = world;
+	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
+		LoginPacket::showWorld(player, &iter->second);
 	LoginPacket::worldEnd(player);
 }
 

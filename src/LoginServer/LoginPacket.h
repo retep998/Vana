@@ -34,7 +34,7 @@ namespace LoginPacket {
 	void loginProcess(PlayerLogin* player, char id);
 	void loginConnect(PlayerLogin* player, char* username, int size);
 	void pinAssigned(PlayerLogin* player);
-	void showWorld(PlayerLogin* player, World world);
+	void showWorld(PlayerLogin* player, World *world);
 	void worldEnd(PlayerLogin* player);
 	void showChannels(PlayerLogin* player);
 	void channelSelect(PlayerLogin* player);
