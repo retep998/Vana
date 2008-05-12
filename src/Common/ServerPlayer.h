@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Connection/PacketHandler.h"
 #include "AuthenticationPacket.h"
 #include "BufferUtilities.h"
+#include "InterHeader.h"
 #include <iostream>
 
 class AbstractServerConnectPlayer : public AbstractPlayer {
@@ -34,18 +35,27 @@ public:
 class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
 	void processAuth(unsigned char *buf, char *password) {
-		char pass[255];
-		BufferUtilities::getString(buf+4, BufferUtilities::getShort(buf+2), pass);
-		if(strcmp(pass, password) == 0) {
-			std::cout << "Server successfully authenticated." << std::endl;
-			authenticated = true;
+		short header = buf[0] + buf[1]*0x100;
+		if (header == INTER_PASSWORD) {
+			char pass[255];
+			BufferUtilities::getString(buf+4, BufferUtilities::getShort(buf+2), pass);
+			if(strcmp(pass, password) == 0) {
+				std::cout << "Server successfully authenticated." << std::endl;
+				is_authenticated = true;
+				authenticated();
+			}
+			else {
+				disconnect();
+			}
 		}
-		else {
+		else if (is_authenticated == false) {
+			// Trying to do something while unauthenticated? DC!
 			disconnect();
 		}
 	}
+	virtual void authenticated() { }
 private:
-	bool authenticated;
+	bool is_authenticated;
 };
 
 #endif
