@@ -20,15 +20,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractPlayer.h"
 #include "Connection/PacketHandler.h"
+#include "AuthenticationPacket.h"
+#include "BufferUtilities.h"
+#include <iostream>
 
 class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
-	void sendAuth(char *pass) { /*TODO*/ }
+	void sendAuth(char *pass) {
+		AuthenticationPacket::sendPassword(this, pass);
+	}
 };
 
 class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
-	void processAuth() { /*TODO*/ }
+	void processAuth(unsigned char *buf, char *password) {
+		char pass[255];
+		BufferUtilities::getString(buf+4, BufferUtilities::getShort(buf+2), pass);
+		if(strcmp(pass, password) == 0) {
+			std::cout << "World Server successfully authenticated." << std::endl;
+			authenticated = true;
+		}
+	}
+private:
+	bool authenticated;
 };
 
 #endif

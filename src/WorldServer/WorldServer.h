@@ -15,25 +15,36 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef ABSTRACTSERVER_H
-#define ABSTRACTSERVER_H
+#ifndef WORLDSERVER_H
+#define WORLDSERVER_H
 
-#include "Connection/Acceptor.h"
-#include <time.h>
+#include "AbstractServer.h"
+#include "LoginServerConnectPlayer.h"
+#include "WorldServerAcceptPlayer.h"
+#include "Config.h"
 
-class AbstractServer {
+// WorldServer main application class, implemented as singleton
+class WorldServer : public AbstractServer {
 public:
-	void initialize();
-	virtual void listen() = 0;
-	virtual void loadConfig() = 0;
-	virtual void loadData() = 0;
-	virtual void shutdown() = 0;
-	
-	const char * getInterPassword() const { return (char *) inter_password; }
-protected:
-	AbstractServer();
+	static WorldServer * Instance() {
+		if (singleton == 0)
+			singleton = new WorldServer;
+		return singleton;
+	}
+	void loadData();
+	void loadConfig();
+	void listen();
+	void shutdown();
+private:
+	WorldServer() {};
+	WorldServer(const WorldServer&);
+	WorldServer& operator=(const WorldServer&);
+	static WorldServer *singleton;
 
-	char inter_password[255];
+	LoginServerConnectPlayer *loginPlayer;
+	char login_ip[15];
+	int login_inter_port;
+	int inter_port;
 };
 
 #endif

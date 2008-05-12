@@ -2,10 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="LoginServer"
-	ProjectGUID="{B7FA2720-4A56-49D7-986E-FF358C398C72}"
-	RootNamespace="LoginServer"
-	Keyword="Win32Proj"
+	Name="WorldServer"
+	ProjectGUID="{045746E8-6588-437D-B8F7-5B5E9E42B9EF}"
+	RootNamespace="WorldServer"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -23,7 +22,7 @@
 			ConfigurationType="1"
 			CharacterSet="1"
 			ManagedExtensions="0"
-			BuildLogFile="$(IntDir)\BuildLog_Login.htm"
+			BuildLogFile="$(IntDir)\BuildLog_World.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -63,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.x86.debug.lib"
+				AdditionalDependencies="ws2_32.lib lua.x86.debug.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
@@ -140,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.x86.release.lib"
+				AdditionalDependencies="ws2_32.lib lua.x86.release.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
@@ -182,30 +181,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\LoginServer\main_login.cpp"
+				RelativePath=".\src\WorldServer\main_world.cpp"
 				>
 			</File>
 			<Filter
-				Name="LoginServer"
+				Name="WorldServer"
 				>
 				<File
-					RelativePath=".\src\LoginServer\Characters.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\Login.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\LoginServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\PlayerLogin.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\Worlds.cpp"
+					RelativePath=".\src\WorldServer\WorldServer.cpp"
 					>
 				</File>
 			</Filter>
@@ -216,18 +199,10 @@
 					RelativePath=".\src\Common\Config.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\src\Common\MySQLM.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Packets"
 				>
-				<File
-					RelativePath=".\src\LoginServer\LoginPacket.cpp"
-					>
-				</File>
 				<File
 					RelativePath=".\src\Common\PacketCreator.cpp"
 					>
@@ -235,15 +210,11 @@
 				<Filter
 					Name="ServerToServer"
 					>
+					<File
+						RelativePath=".\src\Common\AuthenticationPacket.cpp"
+						>
+					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="DataBaseLoading"
-				>
-				<File
-					RelativePath=".\src\Common\InitializeCommon.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Utilities"
@@ -321,7 +292,11 @@
 				Name="ServerToServer"
 				>
 				<File
-					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.cpp"
+					RelativePath=".\src\WorldServer\LoginServerConnectPlayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\WorldServerAcceptPlayer.cpp"
 					>
 				</File>
 			</Filter>
@@ -338,18 +313,10 @@
 					RelativePath=".\src\Common\Config.h"
 					>
 				</File>
-				<File
-					RelativePath=".\src\Common\MySQLM.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Packets"
 				>
-				<File
-					RelativePath=".\src\LoginServer\LoginPacket.h"
-					>
-				</File>
 				<File
 					RelativePath=".\src\Common\PacketCreator.h"
 					>
@@ -361,53 +328,21 @@
 						RelativePath=".\src\Common\InterHeader.h"
 						>
 					</File>
-					<File
-						RelativePath=".\src\Common\RecvHeader.h"
-						>
-					</File>
-					<File
-						RelativePath=".\src\Common\SendHeader.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="ServerToServer"
 					>
+					<File
+						RelativePath=".\src\Common\AuthenticationPacket.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
-				Name="LoginServer"
+				Name="WorldServer"
 				>
 				<File
-					RelativePath=".\src\LoginServer\Characters.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\Login.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\LoginServer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\PlayerLogin.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\Worlds.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="DataBaseLoading"
-				>
-				<File
-					RelativePath=".\src\Common\InitializeCommon.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\InitializeLogin.h"
+					RelativePath=".\src\WorldServer\WorldServer.h"
 					>
 				</File>
 			</Filter>
@@ -487,11 +422,15 @@
 				Name="ServerToServer"
 				>
 				<File
-					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.h"
+					RelativePath=".\src\WorldServer\LoginServerConnectPlayer.h"
 					>
 				</File>
 				<File
 					RelativePath=".\src\Common\ServerPlayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\WorldServerAcceptPlayer.h"
 					>
 				</File>
 			</Filter>
