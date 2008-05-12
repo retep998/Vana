@@ -15,12 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptPlayer.h"
-#include "LoginServer.h"
-#include "InterHeader.h"
+#ifndef AUTHENTICATIONPACKET_H
+#define AUTHENTICATIONPACKET_H
 
-void LoginServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
-	processAuth(buf, (char *) LoginServer::Instance()->getInterPassword());
-	short header = buf[0] + buf[1]*0x100;
-	//switch(header){	}
+class AbstractServerConnectPlayer;
+
+namespace AuthenticationPacket {
+	void sendPassword(AbstractServerConnectPlayer *player, char *pass);
 }
+
+#endif

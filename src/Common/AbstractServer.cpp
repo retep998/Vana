@@ -16,12 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServer.h"
+#include "Config.h"
 
 AbstractServer::AbstractServer() {
 	srand((unsigned char)time(0));
 }
 
 void AbstractServer::initialize() {
+	Config config("conf/inter_password.lua");
+	strcpy_s(inter_password, config.getString("inter_password"));
+
 	loadConfig();
 	loadData();
 	listen();

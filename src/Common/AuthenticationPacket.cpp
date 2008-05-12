@@ -15,12 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptPlayer.h"
-#include "LoginServer.h"
+#include "AuthenticationPacket.h"
+#include "ServerPlayer.h"
 #include "InterHeader.h"
+#include "PacketCreator.h"
 
-void LoginServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
-	processAuth(buf, (char *) LoginServer::Instance()->getInterPassword());
-	short header = buf[0] + buf[1]*0x100;
-	//switch(header){	}
+void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, char *pass) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_PASSWORD);
+	packet.addShort(strlen(pass));
+	packet.addString(pass, strlen(pass));
+	packet.packetSend(player);
 }

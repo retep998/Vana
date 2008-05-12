@@ -15,25 +15,30 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef ABSTRACTSERVER_H
-#define ABSTRACTSERVER_H
-
+#include "WorldServer.h"
 #include "Connection/Acceptor.h"
-#include <time.h>
+#include "Connection/Connector.h"
 
-class AbstractServer {
-public:
-	void initialize();
-	virtual void listen() = 0;
-	virtual void loadConfig() = 0;
-	virtual void loadData() = 0;
-	virtual void shutdown() = 0;
-	
-	const char * getInterPassword() const { return (char *) inter_password; }
-protected:
-	AbstractServer();
+WorldServer* WorldServer::singleton = 0;
 
-	char inter_password[255];
-};
+void WorldServer::listen() {
+	new Acceptor(inter_port, new WorldServerAcceptPlayerFactory());
+}
 
-#endif
+void WorldServer::loadData() {
+	Connector *c = new Connector(login_ip, login_inter_port, new LoginServerConnectPlayerFactory());
+	loginPlayer = (LoginServerConnectPlayer *) c->getPlayer();
+	loginPlayer->sendAuth(inter_password);
+}
+
+void WorldServer::loadConfig() {
+	Config config("conf/worldserver.lua");
+	strcpy_s(login_ip, config.getString("login_ip"));
+	login_inter_port = config.getInt("login_inter_port");
+	inter_port = config.getInt("inter_port");
+}
+
+void WorldServer::shutdown() {
+	//TODO
+}
+
