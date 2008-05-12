@@ -29,6 +29,7 @@ public:
 	Config(char *filename);
 	Config();
 	void loadFile(char *filename);
+	bool keyExist(char *value);
 	int getInt(char *value);
 	const char * getString(char *value);
 	bool getBool(char *value);

@@ -31,6 +31,11 @@ void Config::loadFile(char *filename) {
 	luaL_dofile(luaVm, filename);
 }
 
+bool Config::keyExist(char *value) {
+	lua_getglobal(luaVm, value);
+	return !lua_isnil(luaVm, -1);
+}
+
 int Config::getInt(char *value) {
 	lua_getglobal(luaVm, value);
 	return lua_tointeger(luaVm, -1);
