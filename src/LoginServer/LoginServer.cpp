@@ -62,7 +62,7 @@ void LoginServer::loadConfig() {
 		world.port = config.getInt(buf);
 
 		world.connected = false;
-		Worlds::worlds[i] = world;
+		Worlds::worlds[world.id] = world;
 		i++;
 	}
 }
