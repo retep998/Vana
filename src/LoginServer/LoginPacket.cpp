@@ -263,18 +263,22 @@ void LoginPacket::deleteCharacter(PlayerLogin* player, int ID){
 	packet.addByte(0);
 	packet.packetSend(player);
 }
-
+#include <iostream>
 void LoginPacket::connectIP(PlayerLogin* player, int charid){
 	Packet packet = Packet();
 	packet.addHeader(SEND_CHANNEL_SERVER_INFO);
-	packet.addShort(0); // IP
+	packet.addShort(0);
 	
-	packet.addByte(127); // IP
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(1);
+	char ip[15];
+	strcpy_s(ip, Worlds::worlds[player->getWorld()].channels[player->getChannel()]->ip);
+	char *next_token;
 
-	packet.addShort(8888 + player->getChannel());
+	packet.addByte(atoi(strtok_s(ip, ".", &next_token))); // IP
+	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
+	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
+	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
+
+	packet.addShort(Worlds::worlds[player->getWorld()].channels[player->getChannel()]->port);
 	packet.addInt(charid);
 	packet.addInt(0);
 	packet.addByte(0);
