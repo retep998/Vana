@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginPacketHelper.h"
 #include "Characters.h"
 #include "PacketCreator.h"
+#include <queue>
 
 void LoginPacketHelper::addCharacter(Packet &packet, Character charc) {
 	packet.addInt(charc.id);
@@ -55,19 +56,39 @@ void LoginPacketHelper::addCharacter(Packet &packet, Character charc) {
 	packet.addByte(1);
 	packet.addInt(charc.hair);
 	int cashweapon = 0;
+	queue <int> hiddenEquips;
 	for(int j=0; j<(int)charc.equips.size(); j++){
 		if (charc.equips[j].pos != -111) {
-			packet.addByte(charc.equips[j].type);
-			packet.addInt(charc.equips[j].id);
+			if (j == 0 || charc.equips[j].type == 11 || charc.equips[j].type != charc.equips[j-1].type) { // Normal weapons always appear here
+				addEquip(packet, charc.equips[j]);
+			}
+			else {
+				hiddenEquips.push(j);
+			}
 		}
 		else {
 			cashweapon = charc.equips[j].id;
 		}
 	}
-	packet.addShort(-1);
+	packet.addByte(-1);
+	while (!hiddenEquips.empty()) {
+		int j = hiddenEquips.front();
+		addEquip(packet, charc.equips[j]);
+		hiddenEquips.pop();
+	}
+	packet.addByte(-1);
 	packet.addInt(cashweapon);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addByte(0);
+}
+
+inline
+void LoginPacketHelper::addEquip(Packet &packet, CharEquip &equip) {
+	int pos = -equip.pos;
+	if (pos > 100)
+		pos -= 100;
+	packet.addByte(pos);
+	packet.addInt(equip.id);
 }
