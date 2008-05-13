@@ -15,25 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptPlayer.h"
 #include "LoginServerAcceptHandler.h"
-#include "LoginServer.h"
-#include "InterHeader.h"
+#include "LoginServerAcceptPlayer.h"
+#include "BufferUtilities.h"
 #include "Worlds.h"
+#include <iostream>
 
-void LoginServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
-	processAuth(buf, (char *) LoginServer::Instance()->getInterPassword());
-	short header = buf[0] + buf[1]*0x100;
-	switch(header) {
-		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, buf+2);
-	}
-}
-
-void LoginServerAcceptPlayer::authenticated(char type) {
-	if (type == INTER_WORLD_SERVER)
-		Worlds::connectWorldServer(this);
-	else if (type == INTER_CHANNEL_SERVER)
-		Worlds::connectChannelServer(this);
-	else
-		disconnect();
+void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, unsigned char *packet) {
+	int channel = BufferUtilities::getInt(packet);
+	short iplen = BufferUtilities::getShort(packet+4);
+	Channel chan;
+	BufferUtilities::getString(packet+6, iplen, chan.ip);
+	chan.port = BufferUtilities::getInt(packet+6+iplen);
+	Worlds::worlds[player->getWorldId()].channels[channel] = &chan;
+	std::cout << "Registering channel " << channel << " with IP " << chan.ip << " and port " << chan.port << std::endl;
 }

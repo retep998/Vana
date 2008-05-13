@@ -328,6 +328,14 @@
 					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.cpp"
 					>
 				</File>
+				<Filter
+					Name="Handlers"
+					>
+					<File
+						RelativePath=".\src\LoginServer\LoginServerAcceptHandler.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -502,6 +510,14 @@
 					RelativePath=".\src\Common\ServerPlayer.h"
 					>
 				</File>
+				<Filter
+					Name="Handlers"
+					>
+					<File
+						RelativePath=".\src\LoginServer\LoginServerAcceptHandler.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 	</Files>

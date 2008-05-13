@@ -36,6 +36,7 @@ public:
 	void listen();
 	void shutdown();
 
+	LoginServerConnectPlayer * getLoginPlayer() const { return loginPlayer; }
 	char getWorldId() const { return worldId; }
 	void setWorldId(char id) { worldId = id; }
 	int getInterPort() const { return inter_port; }
