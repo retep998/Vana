@@ -29,6 +29,7 @@ using namespace std;
 struct CharEquip {
 	char type;
 	int id;
+	short pos;
 };
 
 struct Character {

@@ -19,13 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void Characters::showEquips(int id, vector <CharEquip> &vec){
 	mysqlpp::Query query = db.query();
-	query << "SELECT equipid, type FROM equip WHERE charid = " << mysqlpp::quote << id << " AND pos < 0 ORDER BY pos DESC";
+	query << "SELECT equipid, type, pos FROM equip WHERE charid = " << mysqlpp::quote << id << " AND pos < 0 ORDER BY pos DESC";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		CharEquip equip; 
 		equip.id = res[i][0];
 		equip.type = (unsigned char) res[i][1];
+		equip.pos = res[i][2];
 		vec.push_back(equip);
 	}	
 }

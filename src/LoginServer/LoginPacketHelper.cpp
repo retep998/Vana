@@ -54,12 +54,18 @@ void LoginPacketHelper::addCharacter(Packet &packet, Character charc) {
 	packet.addInt(charc.eyes);
 	packet.addByte(1);
 	packet.addInt(charc.hair);
+	int cashweapon = 0;
 	for(int j=0; j<(int)charc.equips.size(); j++){
-		packet.addByte(charc.equips[j].type);
-		packet.addInt(charc.equips[j].id);
+		if (charc.equips[j].pos != -111) {
+			packet.addByte(charc.equips[j].type);
+			packet.addInt(charc.equips[j].id);
+		}
+		else {
+			cashweapon = charc.equips[j].id;
+		}
 	}
 	packet.addShort(-1);
-	packet.addInt(0);
+	packet.addInt(cashweapon);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
