@@ -161,7 +161,17 @@ void Mobs::updateSpawn(int mapid){
 }
 void Mobs::dieMob(Player* player, Mob* mob){
 	MobsPacket::dieMob(player, Maps::info[player->getMap()].Players, mob , mob->getID());
-	Levels::giveEXP(player, mobinfo[mob->getMobID()].exp * 10);
+
+	// Account for Holy Symbol
+	int hsrate = 0;
+	if(player->skills->getActiveSkillLevel(2311003)>0){
+		hsrate = Skills::skills[2311003][player->skills->getActiveSkillLevel(2311003)].x;
+	}
+	else if(player->skills->getActiveSkillLevel(5101002)>0){
+		hsrate = Skills::skills[5101002][player->skills->getActiveSkillLevel(5101002)].x;
+	}
+
+	Levels::giveEXP(player, (mobinfo[mob->getMobID()].exp + ((mobinfo[mob->getMobID()].exp*hsrate)/100)) * 10);
 	Drops::dropMob(player, mob);
 	
 	// Spawn mobs it's supposed to spawn when it dies
@@ -237,6 +247,7 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
 	bool s4211006 = false;
 	if(skillid == 4211006)
 		s4211006 = true;
+	int totaldmg = 0;
 	if(skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	for(int i=0; i<howmany; i++){
@@ -244,6 +255,7 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
 		Mob* mob = getMobByID(mobid, map);
 		for(int k=0; k<hits; k++){
 			int damage = BufferUtilities::getInt(packet+32-s4211006+i*(22-s4211006+4*(hits-1))+k*4);
+			totaldmg = totaldmg + damage;
 			if(mob!=NULL){
 				if(getDistance(mob->getPos(), player->getPos()) > 300 && skillid == 0){
 					player->addWarning();
@@ -272,6 +284,12 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
             }
         }
     }
+	if (skillid == 1111003 || skillid == 1111004 || skillid == 1111005 || skillid == 1111006){ // Combo finishing moves
+		Skills::clearCombo(player);
+	}
+	else if(totaldmg > 0){ // Only add orbs for attacks that did damage
+		Skills::addCombo(player, 1);
+	}
 }
 void Mobs::damageMobS(Player* player, unsigned char* packet, int size){
 	int itemid=0;

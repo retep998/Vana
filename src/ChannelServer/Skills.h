@@ -105,7 +105,6 @@ struct SkillsInfo {
 typedef hash_map <int, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
-	extern SkillTimer* timer;
 	void init();
 	extern hash_map <int, SkillsLevelInfo> skills;
 	extern hash_map <int, SkillsInfo> skillsinfo;
@@ -118,6 +117,8 @@ namespace Skills {
 	void heal(Player* player, short value, int skillid);
 	void endSkill(Player* player, int skillid);
 	void stopSkill(Player* player, int skillid);
+	void addCombo(Player* player, int hits); // Combo Attack 
+	void clearCombo(Player* player); // Combo Attack
 };
 
 class PlayerSkills {

@@ -46,6 +46,7 @@ public:
 	void cancelTimer (int id);
 
 	void timerThread();
+	int timeLeft (int id); // check timer time
 
 private:
 	Timer();

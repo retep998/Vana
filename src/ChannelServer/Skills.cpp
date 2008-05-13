@@ -94,7 +94,16 @@ public:
             if(player == acttimers[i-1].player){
                 Timer::Instance()->cancelTimer(acttimers[i-1].id);
             }
-        } 
+        }
+	}
+	int skillTime(Player* player, int skillid){ // Get skill time
+		int timeleft = 0;
+		for(unsigned int i=0; i<timers.size(); i++){
+			if(player == timers[i].player && timers[i].skill == skillid){
+				timeleft = Timer::Instance()->timeLeft(timers[i].id);
+			}
+		}
+		return timeleft;
 	}
 private:
 	static SkillTimer *singleton;
@@ -347,33 +356,123 @@ void Skills::init(){
 	map.val = false;
 	skillsinfo[3101004].map.push_back(map);
 	skillsinfo[3201004].map.push_back(map);
-	// 4101004 & 4201003 - Haste
+	// 4101004, 4201003, 5001000, 5101001 - Haste
 	player.type = 0x80;
 	player.byte = 1;
 	player.value = SKILL_SPEED;
 	skillsinfo[4101004].player.push_back(player);
 	skillsinfo[4201003].player.push_back(player);
+	skillsinfo[5001000].player.push_back(player);
+	skillsinfo[5101001].player.push_back(player);
 	player.type = 0x1;
 	player.byte = 2;
 	player.value = SKILL_JUMP;
 	skillsinfo[4101004].player.push_back(player);
 	skillsinfo[4201003].player.push_back(player);
+	skillsinfo[5001000].player.push_back(player);
+	skillsinfo[5101001].player.push_back(player);
 	map.type = 0x80;
 	map.byte = 1;
 	map.value = SKILL_SPEED;
 	map.val = true;
 	skillsinfo[4101004].map.push_back(map);
 	skillsinfo[4201003].map.push_back(map);
+	skillsinfo[5001000].map.push_back(map);
+	skillsinfo[5101001].map.push_back(map);
 	// 4211005 - Meso Guard
 	player.type = 0x10;
 	player.byte = 4;
 	player.value = SKILL_X;
 	skillsinfo[4211005].player.push_back(player);
-	map.type = 0x10;
+	// 1311008 - Dragon Blood
+	player.type = 0x1;
+	player.byte = 1;
+	player.value = SKILL_WATK;
+	skillsinfo[1311008].player.push_back(player);
+	// 3121002 & 3221002 - Sharp Eyes
+	player.type = 0x20;
+	player.byte = 5;
+	player.value = SKILL_X;
+	skillsinfo[3121002].player.push_back(player);
+	skillsinfo[3221002].player.push_back(player);
+	// 4111002 - Shadow Partner
+	player.type = 0x4;
+	player.byte = 4;
+	player.value = SKILL_X;
+	skillsinfo[4111002].player.push_back(player);
+	map.type = 0x4;
 	map.byte = 4;
 	map.value = SKILL_X;
 	map.val = false;
-	skillsinfo[4211005].map.push_back(map);
+	skillsinfo[4111002].map.push_back(map);
+	// WK/Paladin Charges - 1211003, 1211004, 1211005, 1211006, 1211007, 1211008, 1221003, 1221004
+	player.type = 0x4;
+	player.byte = 1;
+	player.value = SKILL_MATK;
+	skillsinfo[1211003].player.push_back(player);
+	skillsinfo[1211004].player.push_back(player);
+	skillsinfo[1211005].player.push_back(player);
+	skillsinfo[1211006].player.push_back(player);
+	skillsinfo[1211007].player.push_back(player);
+	skillsinfo[1211008].player.push_back(player);
+	skillsinfo[1221003].player.push_back(player);
+	skillsinfo[1221004].player.push_back(player);
+	player.type = 0x40;
+	player.byte = 3;
+	player.value = SKILL_MATK;
+	skillsinfo[1211003].player.push_back(player);
+	skillsinfo[1211004].player.push_back(player);
+	skillsinfo[1211005].player.push_back(player);
+	skillsinfo[1211006].player.push_back(player);
+	skillsinfo[1211007].player.push_back(player);
+	skillsinfo[1211008].player.push_back(player);
+	skillsinfo[1221003].player.push_back(player);
+	skillsinfo[1221004].player.push_back(player);
+	// Maple Warrior - All Classes
+	player.type = 0x8;
+	player.byte = 5;
+	player.value = SKILL_X;
+	skillsinfo[1121000].player.push_back(player);
+	skillsinfo[1221000].player.push_back(player);
+	skillsinfo[1321000].player.push_back(player);
+	skillsinfo[2121000].player.push_back(player);
+	skillsinfo[2221000].player.push_back(player);
+	skillsinfo[2321000].player.push_back(player);
+	skillsinfo[3121000].player.push_back(player);
+	skillsinfo[3221000].player.push_back(player);
+	skillsinfo[4121000].player.push_back(player);
+	skillsinfo[4221000].player.push_back(player);
+	// 2311003 & 5101002 - Holy Symbol
+	player.type = 0x1;
+	player.byte = 4;
+	player.value = SKILL_X;
+	skillsinfo[2311003].player.push_back(player); // Priest
+	skillsinfo[5101002].player.push_back(player); // Super GM
+	// 1111002 - Combo Attack
+	player.type = 0x20;
+	player.byte = 3;
+	player.value = SKILL_X;
+	skillsinfo[1111002].player.push_back(player);
+	/*map.type = 0x20; // Currently causes dc issues when other people enter a map with someone using combo attack, so disable map for now
+	map.byte = 3;
+	map.value = SKILL_X;
+	map.val = false;
+	skillsinfo[1111002].map.push_back(map);*/
+	// 1121010 - Enrage
+	player.type = 0x1;
+	player.byte = 1;
+	player.value = SKILL_WATK;
+	skillsinfo[1121010].player.push_back(player);
+	// 3121008 - Concentration
+	player.type = 0x1;
+	player.byte = 1;
+	player.value = SKILL_WATK;
+	skillsinfo[3121008].player.push_back(player);
+	// 4211003 - Pickpocket TODO: Add server-side to make it drop mesos
+	player.type = 0x8;
+	player.byte = 4;
+	player.value = SKILL_X;
+	skillsinfo[4211003].player.push_back(player);
 }
 
 void Skills::addSkill(int id, SkillsLevelInfo skill){
@@ -406,7 +505,13 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 		return;
 	}
 	if(skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0){
-		player->setMP(player->getMP()-skills[skillid][player->skills->getSkillLevel(skillid)].mp, 1);
+		if(player->skills->getActiveSkillLevel(3121008)>0){ // Reduced MP useage for Concentration
+			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
+			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp*mprate)/100;
+			player->setMP(player->getMP()-mploss, 1);
+		}
+		else
+			player->setMP(player->getMP()-skills[skillid][player->skills->getSkillLevel(skillid)].mp, 1);
 	}
 	else
 		player->setMP(player->getMP(), 1);
@@ -430,6 +535,25 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 		player->setMMP(player->getRMMP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].y)/100);
 	}
 	///
+	else if(skillid == 5101000){ // GM Heal+Dispell
+		player->setHP(player->getMHP());
+		player->setMP(player->getMMP());
+	}
+	else if(skillid == 1121010){ // Enrage
+		if(player->getCombo() == 10)
+			Skills::clearCombo(player);
+		else
+			return;
+	}
+	else if(skillid == 5101005){ // GM Resurrection
+		for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++){
+			Player* resplayer;
+			resplayer = Maps::info[player->getMap()].Players[x];
+			if(resplayer->getHP()<=0){
+				resplayer->setHP(resplayer->getMHP());
+			}
+		}
+	}
 	if(skillsinfo.find(skillid) == skillsinfo.end())
 		return;
 	SkillActiveInfo playerskill;
@@ -467,6 +591,16 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 		}
+		if(skillid == 3121002 || skillid == 3221002){ // For Sharp Eyes
+			value = skills[skillid][level].x*256+skills[skillid][level].y;
+		}
+		else if(skillid == 4111002){ // For Shadow Partner
+			value = skills[skillid][level].x*256+skills[skillid][level].y;
+		}
+		else if(skillid == 1111002){ // For Combo Attack
+			player->setCombo(0);
+			value = player->getCombo()+1;
+		}
 		playerskill.vals.push_back(value);
 	}
 	for(unsigned int i=0; i<skillsinfo[skillid].map.size(); i++){
@@ -484,6 +618,12 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 			case SKILL_MDEF: value = skills[skillid][level].mdef; break;
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
+		}
+		if(skillid == 4111002){ // For Shadow Partner
+			value = skills[skillid][level].x*256+skills[skillid][level].y;
+		}
+		else if(skillid == 1111002){ // For Combo Attack
+			value = player->getCombo()+1;
 		}
 		mapskill.vals.push_back(value);
 		SkillMapActiveInfo map;
@@ -521,6 +661,15 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 		}
+		if(skillid == 3121002 || skillid == 3221002){ // For Sharp Eyes
+			value = skills[skillid][level].x*256+skills[skillid][level].y;
+		}
+		else if(skillid == 4111002){ // For Shadow Partner
+			value = skills[skillid][level].x*256+skills[skillid][level].y;
+		}
+		else if(skillid == 1111002){ // For Combo Attack
+			value = player->getCombo()+1;
+		}
 		SkillTimer::Instance()->setSkillTimer(player, skillid, skillsinfo[skillid].act.name, value, skillsinfo[skillid].act.time);
 	}
 	player->setSkill(player->skills->getSkillMapEnterInfo());
@@ -531,7 +680,13 @@ void Skills::useAttackSkill(Player* player, int skillid){
 	if(skills.find(skillid) == skills.end())
 		return;
 	if(skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0){
-		player->setMP(player->getMP()-skills[skillid][player->skills->getSkillLevel(skillid)].mp);
+		if(player->skills->getActiveSkillLevel(3121008)>0){ // Reduced MP useage for Concentration
+			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
+			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp*mprate)/100;
+			player->setMP(player->getMP()-mploss, 1);
+		}
+		else
+			player->setMP(player->getMP()-skills[skillid][player->skills->getSkillLevel(skillid)].mp, 1);
 	}
 	if(skills[skillid][player->skills->getSkillLevel(skillid)].hp > 0){
 		player->setHP(player->getHP()-skills[skillid][player->skills->getSkillLevel(skillid)].hp);
@@ -565,4 +720,30 @@ void Skills::heal(Player* player, short value, int skillid){
 		SkillsPacket::healHP(player, value);
 	}
 	SkillTimer::Instance()->setSkillTimer(player, skillid, "heal", value, 5000);
+}
+// Combo attack stuff
+void Skills::addCombo(Player* player, int hits){ // add combo orbs 
+	if(player->skills->getActiveSkillLevel(1111002)>0){
+		if(player->getCombo()<0) player->setCombo(0);
+        int maxcombo = 0;
+		if(player->skills->getSkillLevel(1120003)>0) maxcombo = Skills::skills[1120003][player->skills->getSkillLevel(1120003)].x;
+		else maxcombo = Skills::skills[1111002][player->skills->getSkillLevel(1111002)].x;
+		if(player->getCombo()>=maxcombo){
+			player->setCombo(maxcombo);
+		}
+		else{
+			for(int i=0; i<hits; i++){
+				player->setCombo(player->getCombo()+1);
+				if(player->skills->getSkillLevel(1120003)>0 && rand()%100<30+player->skills->getSkillLevel(1120003))
+					player->setCombo(player->getCombo()+1); // 4th job skill gives chance to add second orb
+			}
+			if(player->getCombo()>=maxcombo) player->setCombo(maxcombo);
+			SkillsPacket::showCombo(player, Maps::info[player->getMap()].Players, SkillTimer::Instance()->skillTime(player, 1111002));
+		}
+	}
+}
+
+void Skills::clearCombo(Player* player){ // finishing moves panic coma
+	player->setCombo(0);
+	SkillsPacket::showCombo(player, Maps::info[player->getMap()].Players, SkillTimer::Instance()->skillTime(player, 1111002));
 }
