@@ -28,5 +28,6 @@ void WorldServerConnectPlayer::realHandleRequest(unsigned char *buf, int len) {
 	switch(header) {
 		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, buf+2); break;
 		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, buf+2); break;
+		case INTER_CHANNEL_NUM: WorldServerConnectHandler::channelNum(this, buf+2); break;
 	}
 }

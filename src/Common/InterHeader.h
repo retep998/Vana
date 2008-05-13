@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // World <--> Channel
 #define INTER_LOGIN_CHANNEL_CONNECT 0x2000 // Login <--> Channel to get World server info
 #define INTER_CHANNEL_CONNECT 0x2001
+#define INTER_CHANNEL_NUM 0x2002
 
 enum {
 	INTER_LOGIN_SERVER,

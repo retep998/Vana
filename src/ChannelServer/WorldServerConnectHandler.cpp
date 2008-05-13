@@ -52,3 +52,7 @@ void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, unsign
 		ChannelServer::Instance()->shutdown();
 	}
 }
+
+void WorldServerConnectHandler::channelNum(WorldServerConnectPlayer *player, unsigned char *packet) {
+	ChannelServer::Instance()->setChannelNum(BufferUtilities::getInt(packet));
+}

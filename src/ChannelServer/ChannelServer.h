@@ -36,11 +36,13 @@ public:
 	void connectWorld();
 	void shutdown();
 
-	char getWorld() { return world; }
+	int getChannelNum() const { return channelNum; }
+	void setChannelNum(int num) { channelNum = num; }
+	char getWorld() const { return world; }
 	void setWorld(char id) { world = id; }
 	void setWorldIp(char *ip) { strcpy_s(world_ip, ip); }
 	void setWorldPort(int port) { world_port = port; }
-	int getChannel() { return channel; }
+	int getChannel() const { return channel; }
 	void setChannel(int channel) {}
 	void setPort(int port) { this->port = port; }
 	int getOnlineId() { return 20000 + (int) world * 1000 + channel * 10; }
@@ -59,6 +61,7 @@ private:
 	char world_ip[15];
 	int world_port;
 	int channel;
+	int channelNum;
 };
 
 #endif
