@@ -88,7 +88,7 @@ char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	int port;
 	char ip[15];
 	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
-		if (iter->second.channels.size() <= (size_t) iter->second.maxChannels) {
+		if (iter->second.channels.size() < (size_t) iter->second.maxChannels && iter->second.connected) {
 			worldid = iter->second.id;
 			port = iter->second.port;
 			strcpy_s(ip, iter->second.ip);
