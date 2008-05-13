@@ -32,7 +32,9 @@ struct World {
 	char id;
 	char ribbon;
 	bool connected;
+	char ip[15];
 	int port;
+	LoginServerAcceptPlayer *player;
 };
 
 namespace Worlds {
