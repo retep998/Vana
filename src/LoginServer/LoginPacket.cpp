@@ -263,7 +263,7 @@ void LoginPacket::deleteCharacter(PlayerLogin* player, int ID){
 	packet.addByte(0);
 	packet.packetSend(player);
 }
-#include <iostream>
+
 void LoginPacket::connectIP(PlayerLogin* player, int charid){
 	Packet packet = Packet();
 	packet.addHeader(SEND_CHANNEL_SERVER_INFO);
