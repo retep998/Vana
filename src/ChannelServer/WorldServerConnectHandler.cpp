@@ -39,12 +39,13 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, u
 }
 
 void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, unsigned char *packet) {
-	int channel = BufferUtilities::getShort(packet);
+	int channel = BufferUtilities::getInt(packet);
 	if (channel != -1) {
 		ChannelServer::Instance()->setChannel(channel);
-		ChannelServer::Instance()->setPort(BufferUtilities::getInt(packet+4));
+		int port = BufferUtilities::getInt(packet+4);
+		ChannelServer::Instance()->setPort(port);
 		ChannelServer::Instance()->listen();
-		std::cout << "Handling channel " << (int) packet[0] << std::endl;
+		std::cout << "Handling channel " << (int) packet[0] << " on port " << port <<  std::endl;
 	}
 	else {
 		std::cout << "Error: No channel to handle" << std::endl;

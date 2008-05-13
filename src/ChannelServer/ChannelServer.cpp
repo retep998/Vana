@@ -27,8 +27,7 @@ ChannelServer* ChannelServer::singleton = 0;
 
 void ChannelServer::listen() {
 	new Acceptor(port, new PlayerFactory());
-	if (port)
-		Initializing::setUsersOffline(getOnlineId());
+	Initializing::setUsersOffline(getOnlineId());
 }
 
 void ChannelServer::loadData() {
@@ -58,9 +57,9 @@ void ChannelServer::loadConfig() {
 	strcpy_s(login_ip, config.getString("login_ip"));
 	login_inter_port = config.getInt("login_inter_port");
 
-	port = 8888; //TODO: Get port from world server
-	world = 0; //TODO: Get world from world server
-	channel = 0; // Channel starts from 0 (i.e. channel 0 is displayed as channel 1) //TODO: Get channel from world server
+	world = 0; // Will get from login server
+	port = 0; // Will get from world server
+	channel = 0; // Will get from world server
 }
 
 void ChannelServer::shutdown() {

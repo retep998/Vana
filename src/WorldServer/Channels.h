@@ -36,6 +36,7 @@ public:
 		return singleton;
 	}
 	void registerChannel(WorldServerAcceptPlayer *player, int channel);
+	int size();
 private:
 	Channels() {};
 	Channels(const Channels&);

@@ -25,6 +25,7 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, unsign
 	if (packet[0] != 0xFF) {
 		WorldServer::Instance()->setWorldId(packet[0]);
 		WorldServer::Instance()->setInterPort(BufferUtilities::getInt(packet+1));
+		WorldServer::Instance()->setMaxChannels(BufferUtilities::getInt(packet+5));
 		WorldServer::Instance()->listen();
 		std::cout << "Handling world " << (int) packet[0] << std::endl;
 	}

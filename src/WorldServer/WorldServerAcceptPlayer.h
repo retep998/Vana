@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class WorldServerAcceptPlayer : public AbstractServerAcceptPlayer {
 public:
 	void realHandleRequest(unsigned char *buf, int len);
-	void authenticated(char type) { }
+	void authenticated(char type);
 };
 
 class WorldServerAcceptPlayerFactory : public AbstractPlayerFactory {

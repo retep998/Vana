@@ -59,15 +59,17 @@ void Worlds::channelSelect(PlayerLogin* player, unsigned char* packet){
 char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
 	int port;
+	int maxchan;
 	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second.connected == 0) {
 			worldid = iter->second.id;
 			port = iter->second.port;
+			maxchan = iter->second.maxChannels;
 			iter->second.connected = true;
 			break;
 		}
 	}
-	LoginServerAcceptPlayerPacket::connect(player, worldid, port);
+	LoginServerAcceptPlayerPacket::connect(player, worldid, port, maxchan);
 	if (worldid != -1) {
 		std::cout << "Assigned world " << (int) worldid << " to World Server." << std::endl;
 	}
@@ -82,7 +84,7 @@ char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
 	int port;
 	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
-		if (iter->second.channels <= 20) {
+		if (iter->second.channels <= iter->second.maxChannels) {
 			worldid = iter->second.id;
 			port = iter->second.port;
 			break;

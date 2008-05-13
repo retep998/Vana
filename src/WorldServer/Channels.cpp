@@ -24,3 +24,7 @@ void Channels::registerChannel(WorldServerAcceptPlayer *player, int channel) {
 	chan.player = player;
 	channels[channel] = &chan;
 }
+
+int Channels::size() {
+	return channels.size();
+}

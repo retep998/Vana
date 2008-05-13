@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #ifndef LOGINSERVERACCEPTPLAYERPACKET_H
-#define LOGINSERVERACCEPTPLAYERPACKETt_H
+#define LOGINSERVERACCEPTPLAYERPACKET_H
 
 class LoginServerAcceptPlayer;
 
 namespace LoginServerAcceptPlayerPacket {
-	void connect(LoginServerAcceptPlayer *player, char worldid, int port);
+	void connect(LoginServerAcceptPlayer *player, char worldid, int port, int maxchan);
 	void connectChannel(LoginServerAcceptPlayer *player, char worldid, char *ip, int port);
 };
 

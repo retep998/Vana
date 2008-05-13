@@ -16,11 +16,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPlayer.h"
+#include "WorldServerAcceptPlayerPacket.h"
 #include "WorldServer.h"
 #include "InterHeader.h"
+#include "Channels.h"
+#include <iostream>
 
 void WorldServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 	processAuth(buf, (char *) WorldServer::Instance()->getInterPassword());
 	short header = buf[0] + buf[1]*0x100;
 	//switch(header){	}
+}
+
+void WorldServerAcceptPlayer::authenticated(char type) {
+	if (Channels::Instance()->size() < WorldServer::Instance()->getMaxChannels()) {
+		int channel = Channels::Instance()->size();
+		int port = WorldServer::Instance()->getInterPort()+channel+1;
+		Channels::Instance()->registerChannel(this, channel);
+		WorldServerAcceptPlayerPacket::connect(this, channel, port);
+		std::cout << "Assigned channel " << channel << " to channel server.";
+	}
+	else {
+		WorldServerAcceptPlayerPacket::connect(this, -1, 0);
+		std::cout << "Error: No more channel to assign.";
+		disconnect();
+	}
 }

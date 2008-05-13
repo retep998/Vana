@@ -33,6 +33,7 @@ public:
 protected:
 	AbstractServer();
 
+	bool to_listen;
 	char inter_password[255];
 };
 

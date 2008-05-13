@@ -28,6 +28,7 @@ class LoginServerAcceptPlayer;
 struct World {
 	char name[15];
 	int channels;
+	int maxChannels;
 	char id;
 	char ribbon;
 	bool connected;
