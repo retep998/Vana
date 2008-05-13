@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, unsigned char *packet) {
 	int channel = BufferUtilities::getInt(packet);
 	short iplen = BufferUtilities::getShort(packet+4);
-	Channel chan;
-	BufferUtilities::getString(packet+6, iplen, chan.ip);
-	chan.port = BufferUtilities::getInt(packet+6+iplen);
-	Worlds::worlds[player->getWorldId()].channels[channel] = &chan;
-	std::cout << "Registering channel " << channel << " with IP " << chan.ip << " and port " << chan.port << std::endl;
+	Channel *chan = new Channel();
+	BufferUtilities::getString(packet+6, iplen, chan->ip);
+	chan->port = BufferUtilities::getInt(packet+6+iplen);
+	Worlds::worlds[player->getWorldId()].channels[channel] = chan;
+	std::cout << "Registering channel " << channel << " with IP " << chan->ip << " and port " << chan->port << std::endl;
 }
