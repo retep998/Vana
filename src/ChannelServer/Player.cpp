@@ -133,7 +133,7 @@ void Player::playerConnect(){
 	inv->setMesosStart(res[0]["mesos"]);
 	inv->setPlayer(this);
 
-	query << "SELECT * FROM equip WHERE charid = " << mysqlpp::quote << getPlayerid() << " ORDER BY pos ASC";
+	query << "SELECT * FROM equip WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
