@@ -50,7 +50,6 @@ void LoginServer::loadConfig() {
 		strcpy_s(world.name, 15, config.getString(buf));
 
 		sprintf(buf, "world%d_channels", i);
-		world.channels = 0;
 		world.maxChannels = config.getInt(buf);
 
 		sprintf(buf, "world%d_id", i);

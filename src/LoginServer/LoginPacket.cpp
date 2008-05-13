@@ -100,8 +100,8 @@ void LoginPacket::showWorld(PlayerLogin* player, World *world){
 	packet.addShort(100);
 	packet.addByte(100);
 	packet.addShort(0);
-	packet.addByte(world->channels);
-	for(int i=0; i<world->channels; i++){
+	packet.addByte(world->channels.size());
+	for(size_t i=0; i<world->channels.size(); i++){
 		char channelname[15];
 		strcpy_s(channelname, 15, world->name);
 		strcat_s(channelname, 15, "-");
