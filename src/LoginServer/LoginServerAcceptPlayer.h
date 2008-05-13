@@ -24,6 +24,11 @@ class LoginServerAcceptPlayer : public AbstractServerAcceptPlayer {
 public:
 	void realHandleRequest(unsigned char *buf, int len);
 	void authenticated(char type);
+
+	char getWorldId() const { return worldId; }
+	void setWorldId(char id) { worldId = id; }
+private:
+	char worldId;
 };
 
 class LoginServerAcceptPlayerFactory : public AbstractPlayerFactory {

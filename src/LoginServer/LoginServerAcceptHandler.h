@@ -15,25 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptPlayer.h"
-#include "LoginServerAcceptHandler.h"
-#include "LoginServer.h"
-#include "InterHeader.h"
-#include "Worlds.h"
+#ifndef LOGINSERVERACCEPTHANDLER_H
+#define LOGINSERVERACCEPTHANDLER_H
 
-void LoginServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
-	processAuth(buf, (char *) LoginServer::Instance()->getInterPassword());
-	short header = buf[0] + buf[1]*0x100;
-	switch(header) {
-		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, buf+2);
-	}
+class LoginServerAcceptPlayer;
+
+namespace LoginServerAcceptHandler {
+	void registerChannel(LoginServerAcceptPlayer *player, unsigned char *packet);
 }
 
-void LoginServerAcceptPlayer::authenticated(char type) {
-	if (type == INTER_WORLD_SERVER)
-		Worlds::connectWorldServer(this);
-	else if (type == INTER_CHANNEL_SERVER)
-		Worlds::connectChannelServer(this);
-	else
-		disconnect();
-}
+#endif

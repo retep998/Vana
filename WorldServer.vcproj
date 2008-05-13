@@ -219,6 +219,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\WorldServer\LoginServerConnectPlayerPacket.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\src\WorldServer\WorldServerAcceptPlayerPacket.cpp"
 						>
 					</File>
@@ -354,6 +358,10 @@
 					>
 					<File
 						RelativePath=".\src\Common\AuthenticationPacket.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\LoginServerConnectPlayerPacket.h"
 						>
 					</File>
 					<File
