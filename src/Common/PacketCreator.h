@@ -26,7 +26,7 @@ using namespace std;
 class Packet {
 public:
 	Packet(){
-		this->pos=2;
+		pos = 0;
 	}
 	void addHeader(short headerid);
 	void addInt(int intg);
