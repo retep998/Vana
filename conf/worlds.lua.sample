@@ -2,7 +2,7 @@
 world0_name = "Scania";
 -- World channels
 world0_channels = 1;
--- World ID (affects the icon of the world)
+-- World ID (also affects the icon of the world)
 world0_id = 0;
 -- World Ribbon
 --  0 = None
@@ -11,6 +11,8 @@ world0_id = 0;
 --  3 = H
 world0_ribbon = 0;
 -- What port should the world server listen on?
+-- Channels will run on port world port + channel number
+-- i.e. channel one will run on 7101 and channel 2 will run on 7102
 world0_port = 7100;
 
 -- Uncomment for another world
