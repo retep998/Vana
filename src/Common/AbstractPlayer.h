@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ABSTRACTPLAYER_H
 
 #include <ctime>
+#include <cstring>
+
 class PacketHandler;
 
 class AbstractPlayer {
@@ -29,9 +31,13 @@ public:
 	void sendPacket(unsigned char *buf, int len);
 	void disconnect();
 
+	char * getIP() { return ip; }
+	void setIP(char *ip) { strcpy_s(this->ip, ip); }
+
 	virtual ~AbstractPlayer();
 protected:
 	PacketHandler *packetHandler;
+	char ip[15];
 };
 
 class AbstractPlayerFactory {
