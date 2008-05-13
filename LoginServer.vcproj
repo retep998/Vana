@@ -240,6 +240,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Helpers"
+					>
+					<File
+						RelativePath=".\src\LoginServer\LoginPacketHelper.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DataBaseLoading"
@@ -387,6 +395,14 @@
 					>
 					<File
 						RelativePath=".\src\LoginServer\LoginServerAcceptPlayerPacket.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Helpers"
+					>
+					<File
+						RelativePath=".\src\LoginServer\LoginPacketHelper.h"
 						>
 					</File>
 				</Filter>

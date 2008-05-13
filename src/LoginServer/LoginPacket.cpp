@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginPacket.h"
+#include "LoginPacketHelper.h"
 #include "PlayerLogin.h"
 #include "PacketCreator.h"
 #include "Worlds.h"
@@ -148,50 +149,7 @@ void LoginPacket::showCharacters(PlayerLogin* player, vector <Character> chars){
 	packet.addByte(0);
 	packet.addByte(chars.size());
 	for(int i=0; i<(int)chars.size(); i++){
-		packet.addInt(chars[i].id);
-		packet.addString(chars[i].name, 12);
-		packet.addByte(0);
-		packet.addByte(chars[i].gender);
-		packet.addByte(chars[i].skin);
-		packet.addInt(chars[i].eyes);
-		packet.addInt(chars[i].hair);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addByte(chars[i].level);
-		packet.addShort(chars[i].job);
-		packet.addShort(chars[i].str);
-		packet.addShort(chars[i].dex);
-		packet.addShort(chars[i].intt);
-		packet.addShort(chars[i].luk);
-		packet.addShort(chars[i].hp);
-		packet.addShort(chars[i].mhp);
-		packet.addShort(chars[i].mp);
-		packet.addShort(chars[i].mmp);
-		packet.addShort(chars[i].ap);
-		packet.addShort(chars[i].sp);
-		packet.addInt(chars[i].exp);
-		packet.addShort(chars[i].fame);
-		packet.addInt(chars[i].map);
-		packet.addByte(chars[i].pos);
-		packet.addByte(chars[i].gender);
-		packet.addByte(chars[i].skin);
-		packet.addInt(chars[i].eyes);
-		packet.addByte(1);
-		packet.addInt(chars[i].hair);
-		for(int j=0; j<(int)chars[i].equips.size(); j++){
-			packet.addByte(chars[i].equips[j].type);
-			packet.addInt(chars[i].equips[j].id);
-		}
-		packet.addShort(-1);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addByte(0);
+		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
 	packet.packetSend(player);
 }
@@ -209,50 +167,7 @@ void LoginPacket::showCharacter(PlayerLogin* player, Character charc){
 	Packet packet = Packet();
 	packet.addHeader(SEND_SHOW_CHARACTER);
 	packet.addByte(0);
-	packet.addInt(charc.id);
-	packet.addString(charc.name, 12);
-	packet.addByte(0);
-	packet.addByte(charc.gender);
-	packet.addByte(charc.skin);
-	packet.addInt(charc.eyes);
-	packet.addInt(charc.hair);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addByte(charc.level);
-	packet.addShort(charc.job);
-	packet.addShort(charc.str);
-	packet.addShort(charc.dex);
-	packet.addShort(charc.intt);
-	packet.addShort(charc.luk);
-	packet.addShort(charc.hp);
-	packet.addShort(charc.mhp);
-	packet.addShort(charc.mp);
-	packet.addShort(charc.mmp);
-	packet.addShort(charc.ap);
-	packet.addShort(charc.sp);
-	packet.addInt(charc.exp);
-	packet.addShort(charc.fame);
-	packet.addInt(charc.map);
-	packet.addByte(charc.pos);
-	packet.addByte(charc.gender);
-	packet.addByte(charc.skin);
-	packet.addInt(charc.eyes);
-	packet.addByte(1);
-	packet.addInt(charc.hair);
-	for(int j=0; j<(int)charc.equips.size(); j++){
-		packet.addByte(charc.equips[j].type);
-		packet.addInt(charc.equips[j].id);
-	}
-	packet.addShort(-1);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addByte(0);
+	LoginPacketHelper::addCharacter(packet, charc);
 	packet.packetSend(player);	
 }
 
