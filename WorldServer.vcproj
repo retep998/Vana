@@ -188,6 +188,10 @@
 				Name="WorldServer"
 				>
 				<File
+					RelativePath=".\src\WorldServer\Channels.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\WorldServer\WorldServer.cpp"
 					>
 				</File>
@@ -310,6 +314,10 @@
 						RelativePath=".\src\WorldServer\LoginServerConnectHandler.cpp"
 						>
 					</File>
+					<File
+						RelativePath=".\src\WorldServer\WorldServerAcceptHandler.cpp"
+						>
+					</File>
 				</Filter>
 			</Filter>
 		</Filter>
@@ -353,6 +361,10 @@
 			<Filter
 				Name="WorldServer"
 				>
+				<File
+					RelativePath=".\src\WorldServer\Channels.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\WorldServer\WorldServer.h"
 					>
@@ -454,6 +466,10 @@
 					>
 					<File
 						RelativePath=".\src\WorldServer\LoginServerConnectHandler.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\WorldServerAcceptHandler.h"
 						>
 					</File>
 				</Filter>
