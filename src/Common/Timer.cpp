@@ -68,6 +68,10 @@ void Timer::cancelTimer (int id) {
 	SetEvent (timerEvent);
 }
 
+int Timer::timeLeft(int id){ // check timer time
+	return getTimer(id)->t - GetTickCount();
+}
+
 Timer::OneTimer* Timer::findMin(){
 	if(timers.size() == 0)
 		return NULL;

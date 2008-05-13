@@ -233,6 +233,12 @@ public:
 	void setSkill(SkillMapEnterActiveInfo skill){
 		this->skill = skill;
 	}
+	void setCombo(int combo){ // Combo Attack
+		this->combo = combo;
+	}
+	int getCombo(){ // Combo Attack
+		return combo;
+	}
 	SkillMapEnterActiveInfo getSkill(){
 		return skill;
 	}
@@ -289,6 +295,7 @@ private:
 	}
 	void playerConnect();
 	void changeKey(unsigned char* packet);
+	int combo; // Combo Attack
 	SkillMapEnterActiveInfo skill;
 };
 
