@@ -356,6 +356,10 @@
 						RelativePath=".\src\Common\AuthenticationPacket.h"
 						>
 					</File>
+					<File
+						RelativePath=".\src\WorldServer\WorldServerAcceptPlayerPacket.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -455,10 +459,6 @@
 				</File>
 				<File
 					RelativePath=".\src\WorldServer\WorldServerAcceptPlayer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\WorldServerAcceptPlayerPacket.h"
 					>
 				</File>
 				<Filter
