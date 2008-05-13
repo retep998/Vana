@@ -23,7 +23,6 @@ class WorldServerConnectPlayer;
 namespace WorldServerConnectHandler {
 	void connectLogin(WorldServerConnectPlayer *player, unsigned char *packet);
 	void connect(WorldServerConnectPlayer *player, unsigned char *packet);
-	void channelNum(WorldServerConnectPlayer *player, unsigned char *packet);
 }
 
 #endif
