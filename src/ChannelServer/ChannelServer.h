@@ -41,7 +41,7 @@ public:
 	void setWorldIp(char *ip) { strcpy_s(world_ip, ip); }
 	void setWorldPort(int port) { world_port = port; }
 	int getChannel() { return channel; }
-	void setChannel(int channel) {}
+	void setChannel(int channel) { this->channel = channel; }
 	void setPort(int port) { this->port = port; }
 	int getOnlineId() { return 20000 + (int) world * 1000 + channel * 10; }
 private:
