@@ -19,10 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Channels * Channels::singleton = 0;
 
-void Channels::registerChannel(WorldServerAcceptPlayer *player, int channel) {
-	Channel chan;
-	chan.player = player;
-	channels[channel] = &chan;
+void Channels::registerChannel(WorldServerAcceptPlayer *player, int channel, char *ip, int port) {
+	Channel *chan = new Channel();
+	chan->player = player;
+	strcpy_s(chan->ip, ip);
+	chan->port = port;
+	channels[channel] = chan;
+}
+
+Channel * Channels::getChannel(int num) {
+	return channels[num];
 }
 
 int Channels::size() {

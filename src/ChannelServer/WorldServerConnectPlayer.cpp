@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectPlayer.h"
+#include "WorldServerConnectPlayerPacket.h"
 #include "WorldServerConnectHandler.h"
 #include "InterHeader.h"
 
@@ -28,5 +29,10 @@ void WorldServerConnectPlayer::realHandleRequest(unsigned char *buf, int len) {
 	switch(header) {
 		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, buf+2); break;
 		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, buf+2); break;
+		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerConnectHandler::playerChangeChannel(this, buf+2); break;
 	}
+}
+
+void WorldServerConnectPlayer::playerChangeChannel(int playerid, int channel) {
+	WorldServerConnectPlayerPacket::playerChangeChannel(this, playerid, channel);
 }

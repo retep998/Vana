@@ -22,6 +22,7 @@ class WorldServerAcceptPlayer;
 
 namespace WorldServerAcceptPlayerPacket {
 	void connect(WorldServerAcceptPlayer *player, int channel, int port);
+	void playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, char *ip, int port);
 };
 
 #endif

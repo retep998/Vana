@@ -17,8 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectHandler.h"
 #include "WorldServerConnectPlayer.h"
+#include "PlayerPacket.h"
 #include "BufferUtilities.h"
 #include "ChannelServer.h"
+#include "Players.h"
+#include "Player.h"
 #include <iostream>
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, unsigned char *packet) {
@@ -51,4 +54,16 @@ void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, unsign
 		std::cout << "Error: No channel to handle" << std::endl;
 		ChannelServer::Instance()->shutdown();
 	}
+}
+
+void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *player, unsigned char *packet) {
+	int playerid = BufferUtilities::getInt(packet);
+	short iplen = BufferUtilities::getShort(packet+4);
+	char ip[15];
+	BufferUtilities::getString(packet+6, iplen, ip);
+	int port = BufferUtilities::getInt(packet+6+iplen);
+	hash_map <int, Player *>::iterator iter = Players::players.find(playerid);
+	if (iter == Players::players.end())
+		return;
+	PlayerPacket::changeChannel(iter->second, ip, port);
 }

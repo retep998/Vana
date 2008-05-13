@@ -26,6 +26,8 @@ class WorldServerAcceptPlayer;
 
 struct Channel {
 	WorldServerAcceptPlayer *player;
+	char ip[15];
+	int port;
 };
 
 class Channels {
@@ -35,7 +37,8 @@ public:
 			singleton = new Channels;
 		return singleton;
 	}
-	void registerChannel(WorldServerAcceptPlayer *player, int channel);
+	void registerChannel(WorldServerAcceptPlayer *player, int channel, char *ip, int port);
+	Channel * getChannel(int num);
 	int size();
 private:
 	Channels() {};

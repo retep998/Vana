@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class WorldServerAcceptPlayer;
 
-namespace WorldServerAcceptHandler { }
+namespace WorldServerAcceptHandler {
+	void playerChangeChannel(WorldServerAcceptPlayer *player, unsigned char *packet);
+}
 
 #endif

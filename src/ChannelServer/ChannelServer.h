@@ -40,6 +40,7 @@ public:
 	void setWorld(char id) { world = id; }
 	void setWorldIp(char *ip) { strcpy_s(world_ip, ip); }
 	void setWorldPort(int port) { world_port = port; }
+	WorldServerConnectPlayer * getWorldPlayer() { return worldPlayer; }
 	int getChannel() { return channel; }
 	void setChannel(int channel) { this->channel = channel; }
 	void setPort(int port) { this->port = port; }
