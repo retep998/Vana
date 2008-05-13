@@ -24,12 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
-#include "ChannelServer.h"
 
 void PlayerPacket::connectData(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_CHANGE_MAP);
-	packet.addInt(ChannelServer::Instance()->getChannelNum()); // Total Channels
+	packet.addInt(player->getChannel()); // Channel
 	packet.addByte(1);
 	packet.addByte(1);
 	packet.addInt(rand()); //

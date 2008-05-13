@@ -35,7 +35,6 @@ void WorldServerAcceptPlayer::authenticated(char type) {
 		int port = WorldServer::Instance()->getInterPort()+channel+1;
 		Channels::Instance()->registerChannel(this, channel);
 		WorldServerAcceptPlayerPacket::connect(this, channel, port);
-		WorldServerAcceptPlayerPacket::channelNum(Channels::Instance()->size());
 		LoginServerConnectPlayerPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);
 		std::cout << "Assigned channel " << channel << " to channel server.";
 	}
