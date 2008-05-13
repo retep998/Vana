@@ -48,7 +48,7 @@ void InventoryPacket::updatePlayer(Player* player){
 	packet.addInt(player->getEyes());
 	packet.addByte(1);
 	packet.addInt(player->getHair());
-	int equips[35][2];
+	int equips[35][2] = {0};
 	for(int i=0; i<player->inv->getEquipNum(); i++){ //sort equips
 		Equip* equip = player->inv->getEquip(i);
 		if(equip->pos<0){
