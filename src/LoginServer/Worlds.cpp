@@ -97,7 +97,7 @@ char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	}
 	LoginServerAcceptPlayerPacket::connectChannel(player, worldid, ip, port);
 	if (worldid != -1) {
-		std::cout << "Making char server connect to world server " << (int) worldid << "." << std::endl;
+		std::cout << "Assigning channel server to world server " << (int) worldid << "." << std::endl;
 	}
 	else {
 		std::cout << "Error: No more channel to assign." << std::endl;
