@@ -25,9 +25,14 @@ using stdext::hash_map;
 class PlayerLogin;
 class LoginServerAcceptPlayer;
 
+struct Channel {
+	char ip[15];
+	int port;
+};
+
 struct World {
 	char name[15];
-	int channels;
+	hash_map <int, Channel *> channels;
 	int maxChannels;
 	char id;
 	char ribbon;
