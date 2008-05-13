@@ -42,7 +42,7 @@ public:
 	void setWorldPort(int port) { world_port = port; }
 	int getChannel() { return channel; }
 	void setChannel(int channel) {}
-	void setPort(int port) { port = port; }
+	void setPort(int port) { this->port = port; }
 	int getOnlineId() { return 20000 + (int) world * 1000 + channel * 10; }
 private:
 	ChannelServer() {};

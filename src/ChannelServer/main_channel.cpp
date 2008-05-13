@@ -22,6 +22,6 @@ void main(){
 	std::cout << "Starting Channel Server..." << std::endl;
 	ChannelServer *server = ChannelServer::Instance();
 	server->initialize();
-	std::cout << "Complete! Listening to connections." << std::endl;
+	std::cout << "Complete!" << std::endl;
 	while(getchar()){}
 }

@@ -28,5 +28,6 @@ void AbstractServer::initialize() {
 
 	loadConfig();
 	loadData();
-	listen();
+	if (to_listen)
+		listen();
 }

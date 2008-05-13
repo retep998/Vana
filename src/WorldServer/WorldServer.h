@@ -38,7 +38,10 @@ public:
 
 	char getWorldId() const { return worldId; }
 	void setWorldId(char id) { worldId = id; }
+	int getInterPort() const { return inter_port; }
 	void setInterPort(int port) { inter_port = port; }
+	int getMaxChannels() const { return maxChannels; }
+	void setMaxChannels(int maxchan) { maxChannels = maxchan; }
 private:
 	WorldServer() {};
 	WorldServer(const WorldServer&);
@@ -50,6 +53,7 @@ private:
 	int login_inter_port;
 	int inter_port;
 	char worldId;
+	int maxChannels;
 };
 
 #endif

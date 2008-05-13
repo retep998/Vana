@@ -35,6 +35,7 @@ void LoginServer::loadConfig() {
 	pinEnabled = config.getBool("pin");
 	port = config.getInt("port");
 	inter_port = config.getInt("inter_port");
+	to_listen = true;
 
 	// Let's load our worlds
 	config.loadFile("conf/worlds.lua");
@@ -49,7 +50,8 @@ void LoginServer::loadConfig() {
 		strcpy_s(world.name, 15, config.getString(buf));
 
 		sprintf(buf, "world%d_channels", i);
-		world.channels = config.getInt(buf);
+		world.channels = 0;
+		world.maxChannels = config.getInt(buf);
 
 		sprintf(buf, "world%d_id", i);
 		world.id = config.getInt(buf);
