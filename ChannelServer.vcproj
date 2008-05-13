@@ -329,6 +329,10 @@
 						RelativePath=".\src\Common\AuthenticationPacket.cpp"
 						>
 					</File>
+					<File
+						RelativePath=".\src\ChannelServer\WorldServerConnectPlayerPacket.cpp"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -609,6 +613,10 @@
 					>
 					<File
 						RelativePath=".\src\Common\AuthenticationPacket.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\ChannelServer\WorldServerConnectPlayerPacket.h"
 						>
 					</File>
 				</Filter>

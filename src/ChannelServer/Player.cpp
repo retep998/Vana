@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BufferUtilities.h"
 #include "ChannelServer.h"
 #include "RecvHeader.h"
+#include "WorldServerConnectPlayer.h"
 
 int distPos(Pos pos1, Pos pos2){
 	return (int)sqrt(pow((float)(pos1.x+pos2.x), 2)+pow((float)(pos1.y+pos2.y), 2));
@@ -56,6 +57,7 @@ void Player::realHandleRequest(unsigned char* buf, int len){
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, buf+2); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, buf+2); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, buf+2); break;
+		case RECV_CHANGE_CHANNEL: changeChannel(buf[2]); break;
 		case RECV_DAMAGE_PLAYER: Players::damagePlayer(this, buf+2); break;
 		case RECV_STOP_CHAIR: Inventory::stopChair(this, buf+2); break;
 		case RECV_CHAT: Players::chatHandler(this, buf+2); break;
@@ -242,6 +244,10 @@ void Player::setExp(int exp, bool is){
 void Player::setLevel(int level){
 	this->level=(unsigned char)level;
 
+}
+
+void Player::changeChannel(char channel) {
+	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel);
 }
 
 void Player::changeKey(unsigned char* packet){

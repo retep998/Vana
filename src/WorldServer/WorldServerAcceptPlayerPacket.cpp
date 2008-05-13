@@ -26,3 +26,13 @@ void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int
 	packet.addInt(port);
 	packet.packetSend(player);
 }
+
+void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, char *ip, int port) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_PLAYER_CHANGE_CHANNEL);
+	packet.addInt(playerid);
+	packet.addShort(strlen(ip));
+	packet.addString(ip, strlen(ip));
+	packet.addInt(port);
+	packet.packetSend(player);
+}

@@ -15,12 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerAcceptHandler.h"
-#include "WorldServerAcceptPlayerPacket.h"
-#include "BufferUtilities.h"
-#include "Channels.h"
+#include "WorldServerConnectPlayerPacket.h"
+#include "WorldServerConnectPlayer.h"
+#include "PacketCreator.h"
+#include "InterHeader.h"
 
-void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, unsigned char *packet) {
-	Channel *chan = Channels::Instance()->getChannel(BufferUtilities::getInt(packet+4));
-	WorldServerAcceptPlayerPacket::playerChangeChannel(player, BufferUtilities::getInt(packet), chan->ip, chan->port);
+void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_PLAYER_CHANGE_CHANNEL);
+	packet.addInt(playerid);
+	packet.addInt(channel);
+	packet.packetSend(player);
 }

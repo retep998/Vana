@@ -222,3 +222,11 @@ void PlayerPacket::newSkin(Player* player){
 	packet.addByte(player->getSkin());
 	packet.packetSend(player);
 }
+
+void PlayerPacket::changeChannel(Player *player, char *ip, int port) {
+	Packet packet = Packet();
+	packet.addHeader(SEND_CHANGE_CHANNEL);
+	packet.addByte(1);
+	PlayerPacketHelper::addIP(packet, ip, port);
+	packet.packetSend(player);
+}

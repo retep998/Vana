@@ -243,6 +243,7 @@ public:
 		return skill;
 	}
 	void addWarning();
+	void changeChannel(char channel);
 	void saveSkills();
 	void saveStats();
 	void saveEquips();

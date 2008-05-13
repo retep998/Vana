@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPlayer.h"
 #include "WorldServerAcceptPlayerPacket.h"
+#include "WorldSErverAcceptHandler.h"
 #include "LoginServerConnectPlayerPacket.h"
 #include "WorldServer.h"
 #include "InterHeader.h"
@@ -26,14 +27,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void WorldServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 	processAuth(buf, (char *) WorldServer::Instance()->getInterPassword());
 	short header = buf[0] + buf[1]*0x100;
-	//switch(header){	}
+	switch(header){
+		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, buf+2);
+	}
 }
 
 void WorldServerAcceptPlayer::authenticated(char type) {
 	if (Channels::Instance()->size() < WorldServer::Instance()->getMaxChannels()) {
 		int channel = Channels::Instance()->size();
 		int port = WorldServer::Instance()->getInterPort()+channel+1;
-		Channels::Instance()->registerChannel(this, channel);
+		Channels::Instance()->registerChannel(this, channel, ip, port);
 		WorldServerAcceptPlayerPacket::connect(this, channel, port);
 		LoginServerConnectPlayerPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);
 		std::cout << "Assigned channel " << channel << " to channel server.";

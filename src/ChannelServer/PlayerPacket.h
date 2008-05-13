@@ -31,6 +31,7 @@ namespace PlayerPacket {
 	void newHair(Player* player);
 	void newEyes(Player* player);
 	void newSkin(Player* player);
+	void changeChannel(Player *player, char *ip, int port);
 };
 
 #endif
