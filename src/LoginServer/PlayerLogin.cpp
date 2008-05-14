@@ -36,6 +36,7 @@ void PlayerLogin::realHandleRequest(unsigned char* buf, int len){
 		case RECV_CREATE_CHAR: Characters::createCharacter(this, buf+2); break;
 		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, buf+2); break;
 		case RECV_RETURN_TO_LOGIN: Login::loginBack(this); break;
+		case RECV_SET_GENDER: Login::setGender(this, buf+2); break;
 		case RECV_REGISTER_PIN: Login::registerPIN(this, buf+2); break;
 	}
 }

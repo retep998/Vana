@@ -63,10 +63,11 @@ void LoginPacket::loginConnect(PlayerLogin* player, char* username, int size){
 	packet.addInt(0);
 	packet.addShort(0);
 	packet.addInt(player->getUserid());
-	if(player->getStatus() == 1)
-		packet.addByte(0x0B);
-	else
-		packet.addByte(player->getGender());
+	switch (player->getStatus()) {
+		case 5: packet.addByte(0x0a); break; // Gender Select
+		case 1: packet.addByte(0x0b); break; // Pin Select
+		default: packet.addByte(player->getGender()); break;
+	}
 	packet.addBytes("0465");
 	packet.addShort(size);
 	packet.addString(username, size);
@@ -87,6 +88,14 @@ void LoginPacket::pinAssigned(PlayerLogin* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_PIN_ASSIGNED);
 	packet.addByte(0);
+	packet.packetSend(player);
+}
+
+void LoginPacket::genderDone(PlayerLogin* player, char gender){
+	Packet packet = Packet();
+	packet.addHeader(SEND_GENDER_DONE);
+	packet.addByte(gender);
+	packet.addByte(1);
 	packet.packetSend(player);
 }
 

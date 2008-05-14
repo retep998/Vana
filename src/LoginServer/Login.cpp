@@ -60,13 +60,30 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 		}
 		else
 			player->setStatus(4);
-		player->setGender((unsigned char) res[0]["gender"]);
+		if (res[0]["gender"].is_null())
+			player->setStatus(5);
+		else
+			player->setGender((unsigned char) res[0]["gender"]);
 		LoginPacket::loginConnect(player, username, usersize);
 	}
 }
 
 void Login::setGender(PlayerLogin* player, unsigned char* packet){
-	//TODO
+	if (player->getStatus() != 5) {
+		//hacking
+		return;
+	}
+	if (packet[0] == 1) {
+		player->setStatus(0);
+		mysqlpp::Query query = db.query();
+		query << "UPDATE users SET gender = " << mysqlpp::quote << packet[1] << " WHERE id = " << mysqlpp::quote << player->getUserid();
+		query.exec();
+		if (LoginServer::Instance()->getPinEnabled())
+			player->setStatus(1); // Set pin
+		else
+			player->setStatus(4);
+		LoginPacket::genderDone(player, packet[1]);
+	}
 }
 
 void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
