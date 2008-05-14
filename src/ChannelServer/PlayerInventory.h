@@ -71,6 +71,14 @@ public:
 	int getEquipNum(){
 		return equips.size();
 	}
+	int getEquipByPos(short pos){
+		for(int i=0; i<getEquipNum(); i++){ // Get Equips
+			Equip* equip = getEquip(i);
+			if(equip->pos == pos)
+				return equip->id;
+		}
+		return 0;
+	}
 	short getEquipPos(int equipid){
 		return equips[equipid]->pos;
 	}
