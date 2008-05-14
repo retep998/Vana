@@ -35,6 +35,7 @@ void WorldServerConnectPlayer::realHandleRequest(unsigned char *buf, int len) {
 		case INTER_FIND: WorldServerConnectHandler::findPlayer(buf+2); break;
 		case INTER_WHISPER: WorldServerConnectHandler::whisperPlayer(buf+2); break;
 		case INTER_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(buf+2); break;
+		case INTER_NEW_CONNECTABLE: WorldServerConnectHandler::newConnectable(buf+2); break;
 	}
 }
 

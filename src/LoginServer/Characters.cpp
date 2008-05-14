@@ -16,6 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Characters.h"
+#include "Worlds.h"
+#include "LoginServer.h"
+#include "LoginServerAcceptPlayerPacket.h"
 
 void Characters::showEquips(int id, vector <CharEquip> &vec){
 	mysqlpp::Query query = db.query();
@@ -196,6 +199,7 @@ void Characters::connectGame(PlayerLogin* player, unsigned char *packet){
 		return;
 	}
 
+	LoginServerAcceptPlayerPacket::newPlayer(Worlds::worlds[player->getWorld()].player, player->getChannel(), id);
 	LoginPacket::connectIP(player, id);
 }
 

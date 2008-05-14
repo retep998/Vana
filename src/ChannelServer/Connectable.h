@@ -15,31 +15,32 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Channels.h"
-#include "WorldServerAcceptPlayer.h"
-#include "PacketCreator.h"
+#ifndef CONNECTABLE_H
+#define CONNECTABLE_H
 
-Channels * Channels::singleton = 0;
+#include <hash_map>
 
-void Channels::registerChannel(WorldServerAcceptPlayer *player, int channel, char *ip, short port) {
-	Channel *chan = new Channel();
-	chan->player = player;
-	chan->id = channel;
-	strcpy_s(chan->ip, ip);
-	chan->port = port;
-	channels[channel] = chan;
-}
+using stdext::hash_map;
 
-Channel * Channels::getChannel(int num) {
-	return channels[num];
-}
+typedef hash_map <int, __int64> ConnectableMap;
 
-void Channels::sendToAll(Packet &packet) {
-	for(hash_map <int, Channel *>::iterator iter = channels.begin(); iter != channels.end(); iter++){
-			packet.packetSend(iter->second->player);
+class Connectable {
+public:
+	static Connectable * Instance() {
+		if (singleton == 0)
+			singleton = new Connectable;
+		return singleton;
 	}
-}
+	
+	void newPlayer(int id);
+	bool checkPlayer(int id);
+private:
+	Connectable() {};
+	Connectable(const Connectable&);
+	Connectable& operator=(const Connectable&);
+	static Connectable *singleton;
 
-int Channels::size() {
-	return channels.size();
-}
+	ConnectableMap map;
+};
+
+#endif

@@ -257,7 +257,10 @@ public:
 	PlayerInventory* inv;
 	PlayerSkills* skills;
 	PlayerQuests* quests;
-private:	
+private:
+	void playerConnect(unsigned char *packet);
+	void changeKey(unsigned char *packet);
+
 	bool isconnect;
 	int id;
 	char name[15];
@@ -293,13 +296,6 @@ private:
 	Pos pos;
 	NPC* npc;
 	vector <int> warnings;
-	void getUserID(unsigned char* buf){
-		isconnect=1;
-		setPlayerid(buf[0] + buf[1]*0x100 + buf[2]*0x100*0x100 + buf[3]*0x100*0x100*0x100);
-		playerConnect();
-	}
-	void playerConnect();
-	void changeKey(unsigned char* packet);
 	int combo; // Combo Attack
 	bool save_on_dc;
 	SkillMapEnterActiveInfo skill;

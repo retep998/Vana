@@ -37,3 +37,11 @@ void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *play
 	packet.addShort(port);
 	packet.packetSend(player);
 }
+
+void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, int channel, int charid) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_NEW_PLAYER);
+	packet.addInt(channel);
+	packet.addInt(charid);
+	packet.packetSend(player);
+}

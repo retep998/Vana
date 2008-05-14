@@ -77,3 +77,11 @@ void WorldServerAcceptPlayerPacket::scrollingHeader(char *message) {
 	
 	Channels::Instance()->sendToAll(packet);
 }
+
+void WorldServerAcceptPlayerPacket::newConnectable(int channel, int playerid) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_NEW_CONNECTABLE);
+	packet.addInt(playerid);
+
+	packet.packetSend(Channels::Instance()->getChannel(channel)->player);
+}

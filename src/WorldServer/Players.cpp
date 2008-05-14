@@ -33,7 +33,7 @@ void Players::registerPlayer(int id, char *name, int channel) {
 }
 
 void Players::remove(int id, int channel) {
-	if (channel == -1 || players[id]->channel == channel) {
+	if (players[id] && (channel == -1 || players[id]->channel == channel)) {
 		players.erase(id);
 	}
 }

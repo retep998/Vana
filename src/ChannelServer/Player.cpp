@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include "ServerPacket.h"
+#include "Connectable.h"
 
 int distPos(Pos pos1, Pos pos2){
 	return (int)sqrt(pow((float)(pos1.x+pos2.x), 2)+pow((float)(pos1.y+pos2.y), 2));
@@ -56,7 +57,7 @@ Player::~Player(){
 void Player::realHandleRequest(unsigned char* buf, int len){
 	short header = buf[0] + buf[1]*0x100;
 	switch(header){  
-		case RECV_CHANNEL_LOGIN: getUserID(buf+2); break;
+		case RECV_CHANNEL_LOGIN: playerConnect(buf+2); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, buf+2); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, buf+2); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, buf+2); break;
@@ -96,7 +97,14 @@ void Player::realHandleRequest(unsigned char* buf, int len){
 	}
 }
 
-void Player::playerConnect(){
+void Player::playerConnect(unsigned char *packet){
+	int id = BufferUtilities::getInt(packet);
+	if (!Connectable::Instance()->checkPlayer(id)) {
+		//hacking
+		disconnect();
+		return;
+	}
+	setPlayerid(id);
 	inv = new PlayerInventory();
 	skills = new PlayerSkills();
 	quests = new PlayerQuests();
@@ -108,6 +116,7 @@ void Player::playerConnect(){
 
 	if (res.empty()) {
 		//hacking
+		disconnect();
 		return;
 	}
 
@@ -208,6 +217,7 @@ void Player::playerConnect(){
 	Maps::newMap(this, map);
 
 	setOnline(true);
+	isconnect = true;
 	WorldServerConnectPlayerPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name);
 }
 

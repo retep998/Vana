@@ -190,6 +190,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Connectable.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Drops.cpp"
 					>
 				</File>
@@ -453,6 +457,10 @@
 				>
 				<File
 					RelativePath=".\src\ChannelServer\ChannelServer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Connectable.h"
 					>
 				</File>
 				<File

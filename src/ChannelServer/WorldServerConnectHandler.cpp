@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BufferUtilities.h"
 #include "ChannelServer.h"
 #include "PlayersPacket.h"
+#include "Connectable.h"
 #include "Players.h"
 #include "Player.h"
 #include <iostream>
@@ -103,4 +104,8 @@ void WorldServerConnectHandler::scrollingHeader(unsigned char *packet) {
 	char message[100];
 	BufferUtilities::getString(packet+2, messagelen, message);
 	ChannelServer::Instance()->setScrollingHeader(message);
+}
+
+void WorldServerConnectHandler::newConnectable(unsigned char *packet) {
+	Connectable::Instance()->newPlayer(BufferUtilities::getInt(packet));
 }
