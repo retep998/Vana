@@ -43,3 +43,14 @@ void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int len)
 	packet.addBytesHex(data, len);
 	Channels::Instance()->sendToAll(packet);
 }
+
+void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, char *findee) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_FIND);
+	packet.addInt(finder);
+	packet.addInt(channel);
+	packet.addShort(strlen(findee));
+	packet.addString(findee, strlen(findee));
+
+	packet.packetSend(player);
+}

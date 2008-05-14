@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "RecvHeader.h"
 #include "WorldServerConnectPlayer.h"
+#include "WorldServerConnectPlayerPacket.h"
 
 int distPos(Pos pos1, Pos pos2){
 	return (int)sqrt(pow((float)(pos1.x+pos2.x), 2)+pow((float)(pos1.y+pos2.y), 2));
@@ -47,6 +48,7 @@ Player::~Player(){
 		Players::deletePlayer(this);
 		setOnline(false);
 		isconnect = false;
+		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 	}
 }
 
@@ -201,6 +203,7 @@ void Player::playerConnect(){
 	Maps::newMap(this, map);
 
 	setOnline(true);
+	WorldServerConnectPlayerPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name);
 }
 
 void Player::setHP(int hp, bool is){

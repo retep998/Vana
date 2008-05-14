@@ -15,26 +15,36 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDSERVERACCEPTPLAYER_H
-#define WORLDSERVERACCEPTPLAYER_H
+#ifndef PLAYERS_H
+#define PLAYERS_H
 
-#include "ServerPlayer.h"
+#include <hash_map>
 
-class WorldServerAcceptPlayer : public AbstractServerAcceptPlayer {
-public:
-	void realHandleRequest(unsigned char *buf, int len);
-	void authenticated(char type);
+using stdext::hash_map;
 
-	int getChannel() { return channel; }
-private:
+struct Player {
+	char name[15];
 	int channel;
 };
 
-class WorldServerAcceptPlayerFactory : public AbstractPlayerFactory {
+class Players {
 public:
-	AbstractPlayer* createPlayer() {
-		return new WorldServerAcceptPlayer();
+	static Players * Instance() {
+		if (singleton == 0)
+			singleton = new Players;
+		return singleton;
 	}
+	void registerPlayer(int id, char *name, int channel);
+	void remove(int id, int channel = -1);
+	Player * getPlayerFromName(char *name);
+	int size();
+private:
+	Players() {};
+	Players(const Players&);
+	Players& operator=(const Players&);
+	static Players *singleton;
+
+	hash_map <int, Player *> players;
 };
 
 #endif

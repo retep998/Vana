@@ -29,7 +29,6 @@ struct Pos;
 
 namespace Players {
 	extern hash_map <int, Player*> players;
-	extern hash_map <char*, Player*> names;
 	void addPlayer(Player* player);
 	void deletePlayer(Player* player);
 	void handleMoving(Player* player, unsigned char* packet, int size);

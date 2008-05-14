@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 #include "BufferUtilities.h"
 #include "CharUtilities.h"
+#include "WorldServerConnectPlayerPacket.h"
 
 hash_map <int, Player*> Players::players;
 
@@ -328,7 +329,7 @@ void Players::commandHandler(Player* player, unsigned char* packet){
 		
 	hash_map <int, Player*>::iterator iter = Players::players.begin();
 	for ( iter = Players::players.begin(); iter != Players::players.end(); iter++){
-		if (_stricmp(iter->second->getName(),name) == 0){	
+		if (_stricmp(iter->second->getName(), name) == 0){	
 			if(type == 0x06){
 				char chat[91];
 				int chatsize = BufferUtilities::getShort(packet+3+namesize);
@@ -344,6 +345,9 @@ void Players::commandHandler(Player* player, unsigned char* packet){
 		}
 	}	
 	if(iter == Players::players.end()){
-		PlayersPacket::findPlayer(player,name,-1);
+		if (type == 0x05)
+			WorldServerConnectPlayerPacket::findPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), name); // Let's connect to the world server to see if the player is on any other channel
+		else
+			PlayersPacket::findPlayer(player,name,-1);
 	}
 }
