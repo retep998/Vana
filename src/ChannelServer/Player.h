@@ -46,6 +46,7 @@ class Player:public AbstractPlayer {
 public:
 	Player () {
 		isconnect=0;
+		save_on_dc = true;
 		channel=ChannelServer::Instance()->getChannel();
 		shop=0;
 		npc=NULL;
@@ -239,6 +240,9 @@ public:
 	int getCombo(){ // Combo Attack
 		return combo;
 	}
+	void setSaveOnDC(bool save) {
+		save_on_dc = save;
+	}
 	SkillMapEnterActiveInfo getSkill(){
 		return skill;
 	}
@@ -297,6 +301,7 @@ private:
 	void playerConnect();
 	void changeKey(unsigned char* packet);
 	int combo; // Combo Attack
+	bool save_on_dc;
 	SkillMapEnterActiveInfo skill;
 };
 

@@ -41,7 +41,8 @@ int distPos(Pos pos1, Pos pos2){
 
 Player::~Player(){
 	if(isconnect){
-		save();
+		if (save_on_dc)
+			save();
 		Skills::stopTimerPlayer(this);
 		Inventory::stopTimerPlayer(this);
 		Maps::removePlayer(this);
