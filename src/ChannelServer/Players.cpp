@@ -80,6 +80,16 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 					Maps::changeMap(player ,mapid, 0);
 			}
 		}
+		else if(strcmp(command, "addsp") == 0){
+			if(strlen(next_token) > 0){
+				int skillid = atoi(strtok_s(NULL, " ",&next_token));
+				int count = 1;
+				if(strlen(next_token) > 0)
+				count = atoi(next_token);
+				player->skills->addSkillLevel(skillid, count);
+				SkillsPacket::addSkill(player, skillid, player->skills->getSkillLevel(skillid));
+			}
+		}
 		else if(strcmp(command, "summon") == 0 || strcmp(command, "spawn") == 0){
 			if(strlen(next_token) == 0) return;
 			int mobid = atoi(strtok_s(NULL, " ",&next_token));
