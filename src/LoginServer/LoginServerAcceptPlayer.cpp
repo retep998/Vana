@@ -25,7 +25,7 @@ void LoginServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 	processAuth(buf, (char *) LoginServer::Instance()->getInterPassword());
 	short header = buf[0] + buf[1]*0x100;
 	switch(header) {
-		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, buf+2);
+		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, buf+2); break;
 	}
 }
 
