@@ -30,8 +30,8 @@ namespace MobsPacket {
 	void damageMob(Player* player, vector <Player*> players, unsigned char* pack);
 	void showHP(Player* player, int mobid, char per);
 	void dieMob(Player* player, vector<Player*> players, Mob* mob, int mobid);
-	void damageMobSkill(Player* player, vector <Player*> players, unsigned char* pack);
-	void damageMobS(Player* player, vector <Player*> players, unsigned char* pack, int itemid);
+	void damageMobSpell(Player* player, vector <Player*> players, unsigned char* pack);
+	void damageMobRanged(Player* player, vector <Player*> players, unsigned char* pack, int itemid);
 };
 
 #endif
