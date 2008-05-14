@@ -55,6 +55,7 @@ private:
 	short inter_port;
 	char worldId;
 	int maxChannels;
+	char external_ip[15];
 };
 
 #endif

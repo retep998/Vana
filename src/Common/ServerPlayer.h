@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
 	void sendAuth(char *pass) {
-		AuthenticationPacket::sendPassword(this, pass);
+		AuthenticationPacket::sendPassword(this, pass, getIP());
 	}
 	char getType() { return type; }
 protected:
@@ -46,6 +46,12 @@ public:
 			if(strcmp(pass, password) == 0) {
 				std::cout << "Server successfully authenticated." << std::endl;
 				is_authenticated = true;
+				short iplen = BufferUtilities::getShort(buf+5+passlen);
+				if (iplen) {
+					char ip[15];
+					BufferUtilities::getString(buf+7+passlen, iplen, ip);
+					setIP(ip); // setIP in abstractPlayer
+				}
 				authenticated(buf[2+2+passlen]);
 			}
 			else {
