@@ -336,15 +336,17 @@ void Players::commandHandler(Player* player, unsigned char* packet){
 
 	int namesize = BufferUtilities::getShort(packet+1);
 	BufferUtilities::getString(packet+3, namesize, name);
-		
+	
+	char chat[91];
+	if (type == 0x06) {
+		int chatsize = BufferUtilities::getShort(packet+3+namesize);
+		BufferUtilities::getString(packet+5+namesize, chatsize, chat);
+	}
+
 	hash_map <int, Player*>::iterator iter = Players::players.begin();
 	for ( iter = Players::players.begin(); iter != Players::players.end(); iter++){
 		if (_stricmp(iter->second->getName(), name) == 0){	
 			if(type == 0x06){
-				char chat[91];
-				int chatsize = BufferUtilities::getShort(packet+3+namesize);
-				BufferUtilities::getString(packet+5+namesize, chatsize, chat);
-
 				PlayersPacket::whisperPlayer(iter->second, player->getName(), player->getChannel(), chat);
 				PlayersPacket::findPlayer(player,iter->second->getName(),-1,1);
 			}
@@ -358,6 +360,6 @@ void Players::commandHandler(Player* player, unsigned char* packet){
 		if (type == 0x05)
 			WorldServerConnectPlayerPacket::findPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), name); // Let's connect to the world server to see if the player is on any other channel
 		else
-			PlayersPacket::findPlayer(player,name,-1);
+			WorldServerConnectPlayerPacket::whisperPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), name, chat);
 	}
 }

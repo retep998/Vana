@@ -25,6 +25,7 @@ namespace WorldServerConnectHandler {
 	void connect(WorldServerConnectPlayer *player, unsigned char *packet);
 	void playerChangeChannel(WorldServerConnectPlayer *player, unsigned char *packet);
 	void findPlayer(unsigned char *packet);
+	void whisperPlayer(unsigned char *packet);
 }
 
 #endif

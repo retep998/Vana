@@ -23,6 +23,7 @@ class WorldServerAcceptPlayer;
 namespace WorldServerAcceptHandler {
 	void playerChangeChannel(WorldServerAcceptPlayer *player, unsigned char *packet);
 	void findPlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
+	void whisperPlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
 	void registerPlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
 	void removePlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
 }

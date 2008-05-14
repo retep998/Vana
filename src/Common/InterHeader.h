@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INTER_REGISTER_PLAYER 0x2004
 #define INTER_REMOVE_PLAYER 0x2005
 #define INTER_FIND 0x2006 // "/find" command
+#define INTER_WHISPER 0x2007
 
 enum {
 	INTER_LOGIN_SERVER,

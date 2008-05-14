@@ -52,3 +52,14 @@ void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player
 	packet.addString(findee_name, strlen(findee_name));
 	packet.packetSend(player);
 }
+
+void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *player, int playerid, char *whisperee, char *message) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_WHISPER);
+	packet.addInt(playerid);
+	packet.addShort(strlen(whisperee));
+	packet.addString(whisperee, strlen(whisperee));
+	packet.addShort(strlen(message));
+	packet.addString(message, strlen(message));
+	packet.packetSend(player);
+}
