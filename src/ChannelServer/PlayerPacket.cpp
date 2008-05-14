@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Inventory.h"
 #include "Skills.h"
-#include "Server.h"
 #include "TimeUtilities.h"
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"

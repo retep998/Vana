@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.h"
+#include "WorldServerAcceptPlayerPacket.h"
 #include "Connection/Acceptor.h"
 #include "Connection/Connector.h"
 
@@ -45,3 +46,7 @@ void WorldServer::shutdown() {
 	//TODO
 }
 
+void WorldServer::setScrollingHeader(char *message) {
+	strcpy_s(scrollingHeader, message);
+	WorldServerAcceptPlayerPacket::scrollingHeader(message);
+}

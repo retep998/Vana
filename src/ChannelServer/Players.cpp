@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Drops.h"
 #include "Levels.h"
-#include "Server.h"
 #include "ChannelServer.h"
 #include "SkillsPacket.h"
 #include "BufferUtilities.h"
@@ -237,12 +236,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			Mobs::spawnMob(player, 8800010);
 		}
 		else if(strcmp(command, "header") == 0){
-			if(strlen(next_token) > 0){
-				Server::changeScrollingHeader(next_token);
-			}
-			else{
-				Server::disableScrollingHeader();
-			}
+			WorldServerConnectPlayerPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), next_token);
 		}
 		else if	(strcmp(command, "dc") == 0)	{
 			player->disconnect();

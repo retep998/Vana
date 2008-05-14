@@ -27,13 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "Skills.h"
 #include "Quests.h"
-#include "Server.h"
 #include "Fame.h"
 #include "BufferUtilities.h"
 #include "ChannelServer.h"
 #include "RecvHeader.h"
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPlayerPacket.h"
+#include "ServerPacket.h"
 
 int distPos(Pos pos1, Pos pos2){
 	return (int)sqrt(pow((float)(pos1.x+pos2.x), 2)+pow((float)(pos1.y+pos2.y), 2));
@@ -189,7 +189,11 @@ void Player::playerConnect(){
 	}
 
 	PlayerPacket::connectData(this);
-	Server::showScrollingHeader(this);
+	
+	if (strlen(ChannelServer::Instance()->getScrollingHeader()) > 0) {
+		ServerPacket::changeScrollingHeader(ChannelServer::Instance()->getScrollingHeader());
+	}
+
 	if(Maps::info[map].Portals.size() > 0){
 		pos.x = Maps::info[map].Portals[0].x;
 		pos.y = Maps::info[map].Portals[0].y;

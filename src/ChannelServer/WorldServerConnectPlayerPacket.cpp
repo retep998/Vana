@@ -63,3 +63,11 @@ void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *pla
 	packet.addString(message, strlen(message));
 	packet.packetSend(player);
 }
+
+void WorldServerConnectPlayerPacket::scrollingHeader(WorldServerConnectPlayer *player, char *message) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_SCROLLING_HEADER);
+	packet.addShort(strlen(message));
+	packet.addString(message, strlen(message));
+	packet.packetSend(player);
+}

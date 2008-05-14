@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPlayer.h"
 #include "InitializeChannel.h"
 #include "PacketCreator.h"
+#include "ServerPacket.h"
 #include "Player.h"
 #include "Players.h"
 
@@ -79,4 +80,16 @@ void ChannelServer::shutdown() {
 
 void ChannelServer::sendToWorld(Packet &packet) {
 	packet.packetSend(worldPlayer);
+}
+
+void ChannelServer::setScrollingHeader(char *message) {
+	if (strcmp(scrollingHeader, message) != 0) {
+		strcpy_s(scrollingHeader, message);
+		if (strlen(scrollingHeader) == 0) {
+			ServerPacket::scrollingHeaderOff();
+		}
+		else {
+			ServerPacket::changeScrollingHeader(scrollingHeader);
+		}
+	}
 }

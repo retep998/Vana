@@ -34,6 +34,7 @@ void WorldServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::removePlayer(this, buf+2); break;
 		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, buf+2); break;
 		case INTER_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, buf+2); break;
+		case INTER_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, buf+2); break;
 	}
 }
 
@@ -43,6 +44,7 @@ void WorldServerAcceptPlayer::authenticated(char type) {
 		short port = WorldServer::Instance()->getInterPort()+channel+1;
 		Channels::Instance()->registerChannel(this, channel, ip, port);
 		WorldServerAcceptPlayerPacket::connect(this, channel, port);
+		WorldServerAcceptPlayerPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 		LoginServerConnectPlayerPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);
 		std::cout << "Assigned channel " << channel << " to channel server.";
 	}

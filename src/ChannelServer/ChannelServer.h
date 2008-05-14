@@ -47,6 +47,8 @@ public:
 	void setChannel(int channel) { this->channel = channel; }
 	void setPort(short port) { this->port = port; }
 	int getOnlineId() { return 20000 + (int) world * 100 + channel * 10; }
+	char * getScrollingHeader() { return scrollingHeader; }
+	void setScrollingHeader(char *message);
 private:
 	ChannelServer() {};
 	ChannelServer(const ChannelServer&);
@@ -63,6 +65,7 @@ private:
 	short world_port;
 	int channel;
 	char external_ip[15];
+	char scrollingHeader[100];
 };
 
 #endif

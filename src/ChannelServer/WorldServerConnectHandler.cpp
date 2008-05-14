@@ -96,3 +96,10 @@ void WorldServerConnectHandler::whisperPlayer(unsigned char *packet) {
 
 	PlayersPacket::whisperPlayer(Players::players[whisperee], whisperer, channel, message);
 }
+
+void WorldServerConnectHandler::scrollingHeader(unsigned char *packet) {
+	short messagelen = BufferUtilities::getShort(packet);
+	char message[100];
+	BufferUtilities::getString(packet+2, messagelen, message);
+	ChannelServer::Instance()->setScrollingHeader(message);
+}

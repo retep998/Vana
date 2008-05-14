@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptHandler.h"
 #include "WorldServerAcceptPlayerPacket.h"
 #include "WorldServerAcceptPlayer.h"
+#include "WorldServer.h"
 #include "BufferUtilities.h"
 #include "Channels.h"
 #include "Players.h"
@@ -69,4 +70,12 @@ void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, u
 void WorldServerAcceptHandler::removePlayer(WorldServerAcceptPlayer *player, unsigned char *packet) {
 	int id = BufferUtilities::getShort(packet);
 	Players::Instance()->remove(id, player->getChannel());
+}
+
+void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptPlayer *player, unsigned char *packet) {
+	short messagelen = BufferUtilities::getShort(packet);
+	char message[100];
+	BufferUtilities::getString(packet+2, messagelen, message);
+
+	WorldServer::Instance()->setScrollingHeader(message);
 }
