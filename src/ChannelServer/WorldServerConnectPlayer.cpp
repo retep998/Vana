@@ -32,6 +32,7 @@ void WorldServerConnectPlayer::realHandleRequest(unsigned char *buf, int len) {
 		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, buf+2); break;
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerConnectHandler::playerChangeChannel(this, buf+2); break;
 		case INTER_TO_PLAYERS: PlayersPacket::sendToPlayers(buf+2, len-2); break;
+		case INTER_FIND: WorldServerConnectHandler::findPlayer(buf+2); break;
 	}
 }
 

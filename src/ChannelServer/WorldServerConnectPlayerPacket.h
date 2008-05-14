@@ -22,6 +22,9 @@ class WorldServerConnectPlayer;
 
 namespace WorldServerConnectPlayerPacket {
 	void playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel);
+	void registerPlayer(WorldServerConnectPlayer *player, int playerid, char *name);
+	void removePlayer(WorldServerConnectPlayer *player, int playerid);
+	void findPlayer(WorldServerConnectPlayer *player, int playerid, char *findee_name);
 };
 
 #endif

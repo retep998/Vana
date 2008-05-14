@@ -27,3 +27,28 @@ void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlaye
 	packet.addInt(channel);
 	packet.packetSend(player);
 }
+
+void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *player, int playerid, char *name) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_REGISTER_PLAYER);
+	packet.addInt(playerid);
+	packet.addShort(strlen(name));
+	packet.addString(name, strlen(name));
+	packet.packetSend(player);
+}
+
+void WorldServerConnectPlayerPacket::removePlayer(WorldServerConnectPlayer *player, int playerid) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_REMOVE_PLAYER);
+	packet.addInt(playerid);
+	packet.packetSend(player);
+}
+
+void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player, int playerid, char *findee_name) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_FIND);
+	packet.addInt(playerid);
+	packet.addShort(strlen(findee_name));
+	packet.addString(findee_name, strlen(findee_name));
+	packet.packetSend(player);
+}

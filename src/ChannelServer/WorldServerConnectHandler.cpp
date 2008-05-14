@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "BufferUtilities.h"
 #include "ChannelServer.h"
+#include "PlayersPacket.h"
 #include "Players.h"
 #include "Player.h"
 #include <iostream>
@@ -66,4 +67,18 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 	if (iter == Players::players.end())
 		return;
 	PlayerPacket::changeChannel(iter->second, ip, port);
+}
+
+void WorldServerConnectHandler::findPlayer(unsigned char *packet) {
+	int finder = BufferUtilities::getInt(packet);
+	int channel = BufferUtilities::getInt(packet+4);
+	int namelen = BufferUtilities::getShort(packet+8);
+	char name[15];
+	BufferUtilities::getString(packet+10, namelen, name);
+	if (channel == -1) {
+		PlayersPacket::findPlayer(Players::players[finder], name, -1);
+	}
+	else {
+		PlayersPacket::findPlayer(Players::players[finder], name, channel, 0, 1);
+	}
 }

@@ -100,14 +100,17 @@ void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
 	packet.packetSend(target);
 }
 
-void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is){
+void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is, bool is_channel){
 	Packet packet = Packet();
 	packet.addHeader(SEND_COMMAND_RESPOND);
 	if(map != -1){
 		packet.addByte(0x09);
 		packet.addShort(strlen(name));
 		packet.addString(name,strlen(name));
-		packet.addByte(0x1);
+		if (is_channel)
+			packet.addByte(0x03);
+		else
+			packet.addByte(0x01);
 		packet.addInt(map);
 		packet.addInt(0);
 		packet.addInt(0);

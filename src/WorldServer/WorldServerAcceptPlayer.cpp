@@ -30,12 +30,15 @@ void WorldServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 	switch(header){
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, buf+2); break;
 		case INTER_TO_PLAYERS: WorldServerAcceptPlayerPacket::sendToChannels(buf, len); break;
+		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::registerPlayer(this, buf+2); break;
+		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::removePlayer(this, buf+2); break;
+		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, buf+2); break;
 	}
 }
 
 void WorldServerAcceptPlayer::authenticated(char type) {
 	if (Channels::Instance()->size() < WorldServer::Instance()->getMaxChannels()) {
-		int channel = Channels::Instance()->size();
+		channel = Channels::Instance()->size();
 		short port = WorldServer::Instance()->getInterPort()+channel+1;
 		Channels::Instance()->registerChannel(this, channel, ip, port);
 		WorldServerAcceptPlayerPacket::connect(this, channel, port);
