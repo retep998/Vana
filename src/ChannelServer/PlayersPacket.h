@@ -33,7 +33,7 @@ namespace PlayersPacket {
 	void showMessage(char* msg, char type);
 	void showInfo(Player* player, Player* getinfo);
 	void findPlayer(Player* player, char* name, int map, unsigned char is = 0, bool is_channel = 0);
-	void whisperPlayer(Player* player, Player* target, char* message);
+	void whisperPlayer(Player *target, char *whisperer_name, int channel, char *message);
 	void sendToPlayers(unsigned char *data, int len);
 };
 

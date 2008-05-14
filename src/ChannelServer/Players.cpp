@@ -345,7 +345,7 @@ void Players::commandHandler(Player* player, unsigned char* packet){
 				int chatsize = BufferUtilities::getShort(packet+3+namesize);
 				BufferUtilities::getString(packet+5+namesize, chatsize, chat);
 
-				PlayersPacket::whisperPlayer(player,iter->second,chat);
+				PlayersPacket::whisperPlayer(iter->second, player->getName(), player->getChannel(), chat);
 				PlayersPacket::findPlayer(player,iter->second->getName(),-1,1);
 			}
 			else if(type == 0x05){
