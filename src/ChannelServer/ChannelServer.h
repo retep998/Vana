@@ -46,7 +46,7 @@ public:
 	int getChannel() { return channel; }
 	void setChannel(int channel) { this->channel = channel; }
 	void setPort(short port) { this->port = port; }
-	int getOnlineId() { return 20000 + (int) world * 1000 + channel * 10; }
+	int getOnlineId() { return 20000 + (int) world * 100 + channel * 10; }
 private:
 	ChannelServer() {};
 	ChannelServer(const ChannelServer&);
