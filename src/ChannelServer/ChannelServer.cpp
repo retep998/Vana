@@ -61,9 +61,9 @@ void ChannelServer::loadConfig() {
 	login_inter_port = config.getInt("login_inter_port");
 	strcpy_s(external_ip, config.getString("external_ip")); // External IP
 
-	world = 0; // Will get from login server
-	port = 0; // Will get from world server
-	channel = 0; // Will get from world server
+	world = -1; // Will get from login server
+	port = -1; // Will get from world server
+	channel = -1; // Will get from world server
 }
 
 void ChannelServer::shutdown() {
