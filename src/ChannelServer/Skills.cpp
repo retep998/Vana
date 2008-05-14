@@ -499,6 +499,11 @@ void Skills::init(){
 	player.byte = 4;
 	player.value = SKILL_X;
 	skillsinfo[4211003].player.push_back(player);
+	// 1004 - Monster Rider
+	player.type = 0x40;
+	player.byte = 6;
+	player.value = SKILL_X;
+	skillsinfo[1004].player.push_back(player);
 }
 
 void Skills::addSkill(int id, SkillsLevelInfo skill){
@@ -626,6 +631,11 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 		else if(skillid == 1111002){ // For Combo Attack
 			player->setCombo(0);
 			value = player->getCombo()+1;
+		}
+		else if(skillid == 1004){ // For Monster Rider
+			int mountid = player->inv->getEquipByPos(-18);
+			if(mountid == 0) return;
+			value = Drops::equips[mountid].tamingmob;
 		}
 		playerskill.vals.push_back(value);
 	}
