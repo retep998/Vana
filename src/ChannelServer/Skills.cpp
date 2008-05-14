@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 #include "Inventory.h"
 #include "Maps.h"
+#include "Drops.h"
 #include "BufferUtilities.h"
 #include "Timer.h"
 
@@ -344,6 +345,31 @@ void Skills::init(){
 	player.byte = 1;
 	player.value = SKILL_AVO;
 	skillsinfo[2301004].player.push_back(player);
+	// 5101003 - GM Bless
+	player.type = 0x1;
+	player.byte = 1;
+	player.value = SKILL_WATK;
+	skillsinfo[5101003].player.push_back(player);
+	player.type = 0x2;
+	player.byte = 1;
+	player.value = SKILL_WDEF;
+	skillsinfo[5101003].player.push_back(player);
+	player.type = 0x4;
+	player.byte = 1;
+	player.value = SKILL_MATK;
+	skillsinfo[5101003].player.push_back(player);
+	player.type = 0x8;
+	player.byte = 1;
+	player.value = SKILL_MDEF;
+	skillsinfo[5101003].player.push_back(player);
+	player.type = 0x10;
+	player.byte = 1;
+	player.value = SKILL_ACC;
+	skillsinfo[5101003].player.push_back(player);
+	player.type = 0x20;
+	player.byte = 1;
+	player.value = SKILL_AVO;
+	skillsinfo[5101003].player.push_back(player);
 	// 3101004 & 3201004 - Soul Arrow
 	player.type = 0x1;
 	player.byte = 3;
