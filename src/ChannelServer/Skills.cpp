@@ -617,16 +617,6 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 		}
-		if(skillid == 3121002 || skillid == 3221002){ // For Sharp Eyes
-			value = skills[skillid][level].x*256+skills[skillid][level].y;
-		}
-		else if(skillid == 4111002){ // For Shadow Partner
-			value = skills[skillid][level].x*256+skills[skillid][level].y;
-		}
-		else if(skillid == 1111002){ // For Combo Attack
-			player->setCombo(0);
-			value = player->getCombo()+1;
-		}
 		playerskill.vals.push_back(value);
 	}
 	for(unsigned int i=0; i<skillsinfo[skillid].map.size(); i++){
