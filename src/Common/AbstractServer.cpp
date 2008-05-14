@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 AbstractServer::AbstractServer() {
 	srand((unsigned char)time(0));
+	to_listen = false;
 }
 
 void AbstractServer::initialize() {
