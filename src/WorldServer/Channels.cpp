@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Channels.h"
+#include "WorldServerAcceptPlayer.h"
+#include "PacketCreator.h"
 
 Channels * Channels::singleton = 0;
 
@@ -29,6 +31,12 @@ void Channels::registerChannel(WorldServerAcceptPlayer *player, int channel, cha
 
 Channel * Channels::getChannel(int num) {
 	return channels[num];
+}
+
+void Channels::sendToAll(Packet &packet) {
+	for(hash_map <int, Channel *>::iterator iter = channels.begin(); iter != channels.end(); iter++){
+			packet.packetSend(iter->second->player);
+	}
 }
 
 int Channels::size() {

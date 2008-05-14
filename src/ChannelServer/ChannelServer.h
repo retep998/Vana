@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.h"
 
 class WorldServerConnectPlayer;
+class Packet;
 
 // ChannelServer main application class, implemented as singleton
 class ChannelServer : public AbstractServer {
@@ -35,6 +36,7 @@ public:
 	void listen();
 	void connectWorld();
 	void shutdown();
+	void sendToWorld(Packet &packet);
 
 	char getWorld() { return world; }
 	void setWorld(char id) { world = id; }

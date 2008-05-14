@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPlayerPacket.h"
 #include "WorldServerAcceptPlayer.h"
 #include "PacketCreator.h"
+#include "Channels.h"
 
 void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int channel, short port) {
 	Packet packet = Packet();
@@ -35,4 +36,10 @@ void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer 
 	packet.addString(ip, strlen(ip));
 	packet.addShort(port);
 	packet.packetSend(player);
+}
+
+void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int len) {
+	Packet packet = Packet();
+	packet.addBytesHex(data, len);
+	Channels::Instance()->sendToAll(packet);
 }

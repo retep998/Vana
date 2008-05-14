@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
+#include "InterHeader.h"
 
 void InventoryPacket::moveItem(Player* player, char inv, short slot1, short slot2){
 	Packet packet = Packet();
@@ -237,20 +238,19 @@ void InventoryPacket::showSuperMegaphone(Player* player, char* msg, int whisper)
 	strcat_s(fullMessage, 255, " : ");
 	strcat_s(fullMessage, 255, msg);
 	Packet packet = Packet();
+	packet.addHeader(INTER_TO_PLAYERS);
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(3);
 	packet.addShort(strlen(fullMessage));
 	packet.addString(fullMessage, strlen(fullMessage));
 	packet.addByte(player->getChannel());
 	packet.addByte(whisper);
-	for(hash_map<int,Player*>::iterator iter = Players::players.begin(); //TODO: Cross channel
-		iter != Players::players.end(); iter++){
-			packet.packetSend(iter->second);
-	}
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char* msg3, char* msg4, unsigned char* displayInfo, int displayInfo_size, int itemid){
 	Packet packet = Packet();
+	packet.addHeader(INTER_TO_PLAYERS);
 	packet.addHeader(SEND_SHOW_MESSENGER);
 	packet.addInt(itemid);
 	packet.addShort(strlen(player->getName()));
@@ -265,11 +265,7 @@ void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char*
 	packet.addString(msg4, strlen(msg4));
 	packet.addInt(player->getChannel());
 	packet.addBytesHex(displayInfo, displayInfo_size);
-
-	for(hash_map<int,Player*>::iterator iter = Players::players.begin();
-		iter != Players::players.end(); iter++){
-			packet.packetSend(iter->second);
-	}
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 // Use buff item
 void InventoryPacket::useItem(Player* player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph){ // Test/Beta function, PoC only

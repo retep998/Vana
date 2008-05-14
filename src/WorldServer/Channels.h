@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using stdext::hash_map;
 
 class WorldServerAcceptPlayer;
+class Packet;
 
 struct Channel {
 	WorldServerAcceptPlayer *player;
@@ -39,6 +40,7 @@ public:
 	}
 	void registerChannel(WorldServerAcceptPlayer *player, int channel, char *ip, short port);
 	Channel * getChannel(int num);
+	void sendToAll(Packet &packet);
 	int size();
 private:
 	Channels() {};

@@ -29,6 +29,7 @@ void WorldServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 	short header = buf[0] + buf[1]*0x100;
 	switch(header){
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, buf+2);
+		case INTER_TO_PLAYERS: WorldServerAcceptPlayerPacket::sendToChannels(buf, len);
 	}
 }
 
