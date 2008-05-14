@@ -55,8 +55,8 @@ namespace Mobs {
 	void addMob(int id, MobInfo mob);
 	void addSpawn(int id, SpawnsInfo spawns);
 	void damageMob(Player* player, unsigned char* packet);
-	void damageMobS(Player* player, unsigned char* packet, int size);
-	void damageMobSkill(Player* player, unsigned char* packet);
+	void damageMobRanged(Player* player, unsigned char* packet, int size);
+	void damageMobSpell(Player* player, unsigned char* packet);
 	void monsterControl(Player* player, unsigned char* packet, int size);
 	void monsterControlSkill(Player* player, unsigned char* packet);
 	void checkSpawn(int mapid);

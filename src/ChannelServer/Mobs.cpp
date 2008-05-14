@@ -211,8 +211,8 @@ Mob* Mobs::getMobByID(int mobid, int map){
 	}
 	return NULL;
 }
-void Mobs::damageMobSkill(Player* player, unsigned char* packet){
-	MobsPacket::damageMobSkill(player, Maps::info[player->getMap()].Players, packet);
+void Mobs::damageMobSpell(Player* player, unsigned char* packet){
+	MobsPacket::damageMobSpell(player, Maps::info[player->getMap()].Players, packet);
 	int howmany = packet[1]/0x10;
 	int hits = packet[1]%0x10;
 	int map = player->getMap();
@@ -291,7 +291,7 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
 		Skills::addCombo(player, 1);
 	}
 }
-void Mobs::damageMobS(Player* player, unsigned char* packet, int size){
+void Mobs::damageMobRanged(Player* player, unsigned char* packet, int size){
 	int itemid=0;
 	int pos=BufferUtilities::getInt(packet+14);
 	for(int i=0; i<player->inv->getItemNum(); i++){
@@ -300,7 +300,7 @@ void Mobs::damageMobS(Player* player, unsigned char* packet, int size){
 			break;
 		}
 	}
-	MobsPacket::damageMobS(player, Maps::info[player->getMap()].Players, packet, itemid);
+	MobsPacket::damageMobRanged(player, Maps::info[player->getMap()].Players, packet, itemid);
 	int howmany = packet[1]/0x10;
 	int hits = packet[1]%0x10;
 	//Inventory::takeItemSlot(player, pos, 2, hits); // TODO

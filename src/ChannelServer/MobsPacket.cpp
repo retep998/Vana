@@ -132,7 +132,7 @@ void MobsPacket::damageMob(Player* player, vector <Player*> players, unsigned ch
 	packet.sendTo<Player>(player, players, 0);
 }
 
-void MobsPacket::damageMobS(Player* player, vector <Player*> players, unsigned char* pack, int itemid){
+void MobsPacket::damageMobRanged(Player* player, vector <Player*> players, unsigned char* pack, int itemid){
 	int howmany = pack[1]/0x10;
 	int hits = pack[1]%0x10;
 	int skillid = BufferUtilities::getInt(pack+2);
@@ -165,11 +165,11 @@ void MobsPacket::damageMobS(Player* player, vector <Player*> players, unsigned c
 	packet.sendTo<Player>(player, players, 0);
 }
 
-void MobsPacket::damageMobSkill(Player* player, vector <Player*> players, unsigned char* pack){
+void MobsPacket::damageMobSpell(Player* player, vector <Player*> players, unsigned char* pack){
 	int howmany = pack[1]/0x10;
 	int hits = pack[1]%0x10;
 	Packet packet = Packet();
-	packet.addHeader(SEND_DAMAGE_MOB_SKILL);
+	packet.addHeader(SEND_DAMAGE_MOB_SPELL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(pack[1]);
 	packet.addByte(1);

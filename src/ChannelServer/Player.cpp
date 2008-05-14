@@ -62,10 +62,10 @@ void Player::realHandleRequest(unsigned char* buf, int len){
 		case RECV_STOP_CHAIR: Inventory::stopChair(this, buf+2); break;
 		case RECV_CHAT: Players::chatHandler(this, buf+2); break;
 		case RECV_USE_CHAIR: Inventory::useChair(this, buf+2); break;
-		case RECV_DAMAGE_MOB_SKILL: Mobs::damageMobSkill(this, buf+2); break;
+		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, buf+2); break;
 		case RECV_CHANGE_MAP: Maps::moveMap(this, buf+2); break;
 		case RECV_MOVE_PLAYER: Players::handleMoving(this, buf+2, len-2); break;
-		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobS(this, buf+2, len-2); break;
+		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, buf+2, len-2); break;
 		case RECV_GET_PLAYER_INFO: Players::getPlayerInfo(this, buf+2); break;
 		case RECV_CHANGE_MAP_SPECIAL: Maps::moveMapS(this, buf+2); break; // Portals that cause scripted events
 		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, buf+2); break;
