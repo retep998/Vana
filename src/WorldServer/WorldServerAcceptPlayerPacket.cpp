@@ -44,13 +44,27 @@ void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int len)
 	Channels::Instance()->sendToAll(packet);
 }
 
-void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, char *findee) {
+void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, char *findee, unsigned char is) {
 	Packet packet = Packet();
 	packet.addHeader(INTER_FIND);
 	packet.addInt(finder);
 	packet.addInt(channel);
 	packet.addShort(strlen(findee));
 	packet.addString(findee, strlen(findee));
+	packet.addByte(is);
+
+	packet.packetSend(player);
+}
+
+void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, char *whisperer, int channel, char *message) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_WHISPER);
+	packet.addInt(whisperee);
+	packet.addShort(strlen(whisperer));
+	packet.addString(whisperer, strlen(whisperer));
+	packet.addInt(channel);
+	packet.addShort(strlen(message));
+	packet.addString(message, strlen(message));
 
 	packet.packetSend(player);
 }

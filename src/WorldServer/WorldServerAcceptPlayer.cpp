@@ -33,6 +33,7 @@ void WorldServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::registerPlayer(this, buf+2); break;
 		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::removePlayer(this, buf+2); break;
 		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, buf+2); break;
+		case INTER_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, buf+2); break;
 	}
 }
 

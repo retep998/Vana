@@ -40,6 +40,24 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, unsig
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee_name);
 }
 
+void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, unsigned char *packet) {
+	int whisperer = BufferUtilities::getInt(packet);
+	short whisperee_namelen = BufferUtilities::getShort(packet+4);
+	char whisperee_name[15];
+	BufferUtilities::getString(packet+6, whisperee_namelen, whisperee_name);
+	short messagelen = BufferUtilities::getShort(packet+6+whisperee_namelen);
+	char message[91];
+	BufferUtilities::getString(packet+8+whisperee_namelen, messagelen, message);
+
+	Player *whisperee = Players::Instance()->getPlayerFromName(whisperee_name);
+	if (whisperee->channel != -1) {
+		WorldServerAcceptPlayerPacket::findPlayer(player, whisperer, -1, whisperee->name, 1);
+		WorldServerAcceptPlayerPacket::whisperPlayer(Channels::Instance()->getChannel(whisperee->channel)->player, whisperee->id, Players::Instance()->getPlayer(whisperer)->name, player->getChannel(),  message);
+	}
+	else
+		WorldServerAcceptPlayerPacket::findPlayer(player, whisperer, whisperee->channel, whisperee_name);
+}
+
 void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, unsigned char *packet) {
 	int id = BufferUtilities::getInt(packet);
 	short namelen = BufferUtilities::getShort(packet+4);

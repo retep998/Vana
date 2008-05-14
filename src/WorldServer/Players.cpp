@@ -22,6 +22,7 @@ Players * Players::singleton = 0;
 void Players::registerPlayer(int id, char *name, int channel) {
 	if (players.find(id) == players.end()) {
 		Player *player = new Player();
+		player->id = id;
 		strcpy_s(player->name, name);
 		player->channel = channel;
 		players[id] = player;

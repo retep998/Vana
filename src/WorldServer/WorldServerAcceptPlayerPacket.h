@@ -24,7 +24,8 @@ namespace WorldServerAcceptPlayerPacket {
 	void connect(WorldServerAcceptPlayer *player, int channel, short port);
 	void playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, char *ip, short port);
 	void sendToChannels(unsigned char *data, int len);
-	void findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, char *findee);
+	void findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, char *findee, unsigned char is = 0);
+	void whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, char *whisperer, int channel, char *message);
 };
 
 #endif

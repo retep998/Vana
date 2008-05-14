@@ -72,13 +72,26 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 void WorldServerConnectHandler::findPlayer(unsigned char *packet) {
 	int finder = BufferUtilities::getInt(packet);
 	int channel = BufferUtilities::getInt(packet+4);
-	int namelen = BufferUtilities::getShort(packet+8);
+	short namelen = BufferUtilities::getShort(packet+8);
 	char name[15];
 	BufferUtilities::getString(packet+10, namelen, name);
 	if (channel == -1) {
-		PlayersPacket::findPlayer(Players::players[finder], name, -1);
+		PlayersPacket::findPlayer(Players::players[finder], name, -1, packet[10+namelen]);
 	}
 	else {
-		PlayersPacket::findPlayer(Players::players[finder], name, channel, 0, 1);
+		PlayersPacket::findPlayer(Players::players[finder], name, channel, packet[10+namelen], 1);
 	}
+}
+
+void WorldServerConnectHandler::whisperPlayer(unsigned char *packet) {
+	int whisperee = BufferUtilities::getInt(packet);
+	short whispererlen = BufferUtilities::getShort(packet+4);
+	char whisperer[15];
+	BufferUtilities::getString(packet+6, whispererlen, whisperer);
+	int channel = BufferUtilities::getInt(packet+6+whispererlen);
+	short messagelen = BufferUtilities::getShort(packet+10+whispererlen);
+	char message[91];
+	BufferUtilities::getString(packet+12+whispererlen, messagelen, message);
+
+	PlayersPacket::whisperPlayer(Players::players[whisperee], whisperer, channel, message);
 }

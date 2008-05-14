@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using stdext::hash_map;
 
 struct Player {
+	int id;
 	char name[15];
 	int channel;
 };
@@ -37,6 +38,7 @@ public:
 	void registerPlayer(int id, char *name, int channel);
 	void remove(int id, int channel = -1);
 	Player * getPlayerFromName(char *name);
+	Player * getPlayer(int id) { return players[id]; }
 	int size();
 private:
 	Players() {};

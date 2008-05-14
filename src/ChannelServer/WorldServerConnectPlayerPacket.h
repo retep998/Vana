@@ -25,6 +25,7 @@ namespace WorldServerConnectPlayerPacket {
 	void registerPlayer(WorldServerConnectPlayer *player, int playerid, char *name);
 	void removePlayer(WorldServerConnectPlayer *player, int playerid);
 	void findPlayer(WorldServerConnectPlayer *player, int playerid, char *findee_name);
+	void whisperPlayer(WorldServerConnectPlayer *player, int playerid, char *whisperee, char *message);
 };
 
 #endif

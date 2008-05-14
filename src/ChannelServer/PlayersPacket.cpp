@@ -94,7 +94,7 @@ void PlayersPacket::whisperPlayer(Player *target, char *whisperer_name, int chan
 	packet.addByte(0x12);
 	packet.addShort(strlen(whisperer_name));
 	packet.addString(whisperer_name, strlen(whisperer_name));
-	packet.addShort(1);
+	packet.addShort(channel);
 	packet.addShort(strlen(message));
 	packet.addString(message, strlen(message));
 	packet.packetSend(target);
