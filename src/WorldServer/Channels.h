@@ -27,6 +27,7 @@ class Packet;
 
 struct Channel {
 	WorldServerAcceptPlayer *player;
+	int id;
 	char ip[15];
 	short port;
 };

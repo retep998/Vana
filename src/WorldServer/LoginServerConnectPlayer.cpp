@@ -27,5 +27,6 @@ void LoginServerConnectPlayer::realHandleRequest(unsigned char *buf, int len) {
 	short header = buf[0] + buf[1]*0x100;
 	switch(header) {
 		case INTER_WORLD_CONNECT: LoginServerConnectHandler::connect(this, buf+2); break;
+		case INTER_NEW_PLAYER: LoginServerConnectHandler::newPlayer(buf+2); break;
 	}
 }

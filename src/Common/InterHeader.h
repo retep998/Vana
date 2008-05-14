@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Login <--> World
 #define INTER_WORLD_CONNECT 0x1000
 #define INTER_REGISTER_CHANNEL 0x1001
+#define INTER_NEW_PLAYER 0x1002
 
 // World <--> Channel
 #define INTER_LOGIN_CHANNEL_CONNECT 0x2000 // Login <--> Channel to get World server info
@@ -35,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INTER_FIND 0x2006 // "/find" command
 #define INTER_WHISPER 0x2007
 #define INTER_SCROLLING_HEADER 0x2008
+#define INTER_NEW_CONNECTABLE 0x2009
 
 enum {
 	INTER_LOGIN_SERVER,

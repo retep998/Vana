@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.h"
 #include "LoginServerConnectPlayer.h"
+#include "WorldServerAcceptPlayerPacket.h"
 #include "BufferUtilities.h"
 #include "WorldServer.h"
 #include <iostream>
@@ -33,4 +34,11 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, unsign
 		std::cout << "Error: No world to handle" << std::endl;
 		WorldServer::Instance()->shutdown();
 	}
+}
+
+void LoginServerConnectHandler::newPlayer(unsigned char *packet) {
+	int channel = BufferUtilities::getInt(packet);
+	int playerid = BufferUtilities::getInt(packet+4);
+
+	WorldServerAcceptPlayerPacket::newConnectable(channel, playerid);
 }

@@ -22,6 +22,7 @@ class LoginServerConnectPlayer;
 
 namespace LoginServerConnectHandler {
 	void connect(LoginServerConnectPlayer *player, unsigned char *packet);
+	void newPlayer(unsigned char *packet);
 }
 
 #endif

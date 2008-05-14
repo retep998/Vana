@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, unsigned char *packet) {
 	Channel *chan = Channels::Instance()->getChannel(BufferUtilities::getInt(packet+4));
-	WorldServerAcceptPlayerPacket::playerChangeChannel(player, BufferUtilities::getInt(packet), chan->ip, chan->port);
+	int playerid = BufferUtilities::getInt(packet);
+	WorldServerAcceptPlayerPacket::newConnectable(chan->id, playerid);
+	WorldServerAcceptPlayerPacket::playerChangeChannel(player, playerid, chan->ip, chan->port);
 }
 
 void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, unsigned char *packet) {
