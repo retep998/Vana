@@ -354,7 +354,7 @@ void Player::saveStats() {
 			<< "chp = " << mysqlpp::quote << getHP() << ","
 			<< "mhp = " << mysqlpp::quote << getRMHP() << ","
 			<< "cmp = " << mysqlpp::quote << getMP() << ","
-			<< "mmp = " << mysqlpp::quote << getRMHP() << ","
+			<< "mmp = " << mysqlpp::quote << getRMMP() << ","
 			<< "ap = " << mysqlpp::quote << getAp() << ","
 			<< "sp = " << mysqlpp::quote << getSp() << ","
 			<< "exp = " << mysqlpp::quote << getExp() << ","
