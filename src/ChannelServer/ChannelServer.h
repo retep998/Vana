@@ -39,11 +39,11 @@ public:
 	char getWorld() { return world; }
 	void setWorld(char id) { world = id; }
 	void setWorldIp(char *ip) { strcpy_s(world_ip, ip); }
-	void setWorldPort(int port) { world_port = port; }
+	void setWorldPort(short port) { world_port = port; }
 	WorldServerConnectPlayer * getWorldPlayer() { return worldPlayer; }
 	int getChannel() { return channel; }
 	void setChannel(int channel) { this->channel = channel; }
-	void setPort(int port) { this->port = port; }
+	void setPort(short port) { this->port = port; }
 	int getOnlineId() { return 20000 + (int) world * 1000 + channel * 10; }
 private:
 	ChannelServer() {};
@@ -54,11 +54,11 @@ private:
 	WorldServerConnectPlayer *worldPlayer;
 
 	char login_ip[15];
-	int login_inter_port;
-	int port;
+	short login_inter_port;
+	short port;
 	char world;
 	char world_ip[15];
-	int world_port;
+	short world_port;
 	int channel;
 };
 

@@ -35,7 +35,7 @@ void WorldServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
 void WorldServerAcceptPlayer::authenticated(char type) {
 	if (Channels::Instance()->size() < WorldServer::Instance()->getMaxChannels()) {
 		int channel = Channels::Instance()->size();
-		int port = WorldServer::Instance()->getInterPort()+channel+1;
+		short port = WorldServer::Instance()->getInterPort()+channel+1;
 		Channels::Instance()->registerChannel(this, channel, ip, port);
 		WorldServerAcceptPlayerPacket::connect(this, channel, port);
 		LoginServerConnectPlayerPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);

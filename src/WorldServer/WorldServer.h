@@ -39,8 +39,8 @@ public:
 	LoginServerConnectPlayer * getLoginPlayer() const { return loginPlayer; }
 	char getWorldId() const { return worldId; }
 	void setWorldId(char id) { worldId = id; }
-	int getInterPort() const { return inter_port; }
-	void setInterPort(int port) { inter_port = port; }
+	short getInterPort() const { return inter_port; }
+	void setInterPort(short port) { inter_port = port; }
 	int getMaxChannels() const { return maxChannels; }
 	void setMaxChannels(int maxchan) { maxChannels = maxchan; }
 private:
@@ -51,8 +51,8 @@ private:
 
 	LoginServerConnectPlayer *loginPlayer;
 	char login_ip[15];
-	int login_inter_port;
-	int inter_port;
+	short login_inter_port;
+	short inter_port;
 	char worldId;
 	int maxChannels;
 };

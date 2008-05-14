@@ -27,7 +27,7 @@ class LoginServerAcceptPlayer;
 
 struct Channel {
 	char ip[15];
-	int port;
+	short port;
 };
 
 struct World {
@@ -38,7 +38,7 @@ struct World {
 	char ribbon;
 	bool connected;
 	char ip[15];
-	int port;
+	short port;
 	LoginServerAcceptPlayer *player;
 };
 

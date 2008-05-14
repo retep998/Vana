@@ -19,21 +19,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayer.h"
 #include "PacketCreator.h"
 
-void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, char worldid, int port, int maxchan) {
+void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan) {
 	Packet packet = Packet();
 	packet.addHeader(INTER_WORLD_CONNECT);
 	packet.addByte(worldid);
-	packet.addInt(port);
+	packet.addShort(port);
 	packet.addInt(maxchan);
 	packet.packetSend(player);
 }
 
-void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, char *ip, int port) {
+void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, char *ip, short port) {
 	Packet packet = Packet();
 	packet.addHeader(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.addByte(worldid);
 	packet.addShort(strlen(ip));
 	packet.addString(ip, strlen(ip));
-	packet.addInt(port);
+	packet.addShort(port);
 	packet.packetSend(player);
 }

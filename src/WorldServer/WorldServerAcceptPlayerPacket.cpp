@@ -19,20 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPlayer.h"
 #include "PacketCreator.h"
 
-void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int channel, int port) {
+void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int channel, short port) {
 	Packet packet = Packet();
 	packet.addHeader(INTER_CHANNEL_CONNECT);
 	packet.addInt(channel);
-	packet.addInt(port);
+	packet.addShort(port);
 	packet.packetSend(player);
 }
 
-void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, char *ip, int port) {
+void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, char *ip, short port) {
 	Packet packet = Packet();
 	packet.addHeader(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.addInt(playerid);
 	packet.addShort(strlen(ip));
 	packet.addString(ip, strlen(ip));
-	packet.addInt(port);
+	packet.addShort(port);
 	packet.packetSend(player);
 }

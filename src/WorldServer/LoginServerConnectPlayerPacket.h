@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class LoginServerConnectPlayer;
 
 namespace LoginServerConnectPlayerPacket {
-	void registerChannel(LoginServerConnectPlayer *player, int channel, char *ip, int port);
+	void registerChannel(LoginServerConnectPlayer *player, int channel, char *ip, short port);
 };
 
 #endif
