@@ -234,10 +234,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Server.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Shops.cpp"
 					>
 				</File>
@@ -505,10 +501,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Quests.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Server.h"
 					>
 				</File>
 				<File

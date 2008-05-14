@@ -43,8 +43,10 @@ public:
 	void setInterPort(short port) { inter_port = port; }
 	int getMaxChannels() const { return maxChannels; }
 	void setMaxChannels(int maxchan) { maxChannels = maxchan; }
+	char * getScrollingHeader() { return scrollingHeader; }
+	void setScrollingHeader(char *message);
 private:
-	WorldServer() {};
+	WorldServer() { strcpy_s(scrollingHeader, ""); };
 	WorldServer(const WorldServer&);
 	WorldServer& operator=(const WorldServer&);
 	static WorldServer *singleton;
@@ -56,6 +58,7 @@ private:
 	char worldId;
 	int maxChannels;
 	char external_ip[15];
+	char scrollingHeader[100];
 };
 
 #endif

@@ -26,6 +26,7 @@ namespace WorldServerAcceptHandler {
 	void whisperPlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
 	void registerPlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
 	void removePlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
+	void scrollingHeader(WorldServerAcceptPlayer *player, unsigned char *packet);
 }
 
 #endif

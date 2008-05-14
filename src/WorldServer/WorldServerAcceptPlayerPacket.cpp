@@ -68,3 +68,12 @@ void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *playe
 
 	packet.packetSend(player);
 }
+
+void WorldServerAcceptPlayerPacket::scrollingHeader(char *message) {
+	Packet packet = Packet();
+	packet.addHeader(INTER_SCROLLING_HEADER);
+	packet.addShort(strlen(message));
+	packet.addString(message, strlen(message));
+	
+	Channels::Instance()->sendToAll(packet);
+}
