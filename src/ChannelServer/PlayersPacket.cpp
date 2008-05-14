@@ -88,15 +88,15 @@ void PlayersPacket::showInfo(Player* player, Player* getinfo){
 	packet.packetSend(player);
 }
 
-void PlayersPacket::whisperPlayer(Player* player, Player* target, char* chat){
+void PlayersPacket::whisperPlayer(Player *target, char *whisperer_name, int channel, char *message) {
 	Packet packet = Packet();
 	packet.addHeader(SEND_COMMAND_RESPOND);
 	packet.addByte(0x12);
-	packet.addShort(strlen(player->getName()));
-	packet.addString(player->getName(),strlen(player->getName()));
-	packet.addShort(0);//channel maybe
-	packet.addShort(strlen(chat));
-	packet.addString(chat,strlen(chat));
+	packet.addShort(strlen(whisperer_name));
+	packet.addString(whisperer_name, strlen(whisperer_name));
+	packet.addShort(1);
+	packet.addShort(strlen(message));
+	packet.addString(message, strlen(message));
 	packet.packetSend(target);
 }
 
