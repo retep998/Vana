@@ -67,6 +67,7 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 	if (iter == Players::players.end())
 		return;
 	PlayerPacket::changeChannel(iter->second, ip, port);
+	iter->second->disconnect();
 }
 
 void WorldServerConnectHandler::findPlayer(unsigned char *packet) {
