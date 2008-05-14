@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INTER_LOGIN_CHANNEL_CONNECT 0x2000 // Login <--> Channel to get World server info
 #define INTER_CHANNEL_CONNECT 0x2001
 #define INTER_PLAYER_CHANGE_CHANNEL 0x2002
+#define INTER_TO_PLAYERS 0x2003 // Pass the content of the packet to player of all channel servers
 
 enum {
 	INTER_LOGIN_SERVER,

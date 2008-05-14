@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include "WorldServerConnectHandler.h"
+#include "PlayersPacket.h"
 #include "InterHeader.h"
 
 WorldServerConnectPlayer::WorldServerConnectPlayer() {
@@ -30,6 +31,7 @@ void WorldServerConnectPlayer::realHandleRequest(unsigned char *buf, int len) {
 		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, buf+2); break;
 		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, buf+2); break;
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerConnectHandler::playerChangeChannel(this, buf+2); break;
+		case INTER_TO_PLAYERS: PlayersPacket::sendToPlayers(buf+2, len-2); break;
 	}
 }
 

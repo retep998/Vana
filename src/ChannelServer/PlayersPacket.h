@@ -18,6 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERSPACK_H
 #define PLAYERSPACK_H
 
+#include <vector>
+
+using std::vector;
+
 class Player;
 class Packet;
 
@@ -30,6 +34,7 @@ namespace PlayersPacket {
 	void showInfo(Player* player, Player* getinfo);
 	void findPlayer(Player* player, char* name, int map, unsigned char is = 0);
 	void whisperPlayer(Player* player, Player* target, char* message);
+	void sendToPlayers(unsigned char *data, int len);
 };
 
 #endif

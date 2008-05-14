@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Connection/Connector.h"
 #include "WorldServerConnectPlayer.h"
 #include "InitializeChannel.h"
+#include "PacketCreator.h"
 #include "Player.h"
 #include "Players.h"
 
@@ -74,4 +75,8 @@ void ChannelServer::shutdown() {
 		iter->second->disconnect();
 	}
 	exit(0);
+}
+
+void ChannelServer::sendToWorld(Packet &packet) {
+	packet.packetSend(worldPlayer);
 }
