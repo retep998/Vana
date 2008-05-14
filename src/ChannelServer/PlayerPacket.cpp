@@ -223,7 +223,7 @@ void PlayerPacket::newSkin(Player* player){
 	packet.packetSend(player);
 }
 
-void PlayerPacket::changeChannel(Player *player, char *ip, int port) {
+void PlayerPacket::changeChannel(Player *player, char *ip, short port) {
 	Packet packet = Packet();
 	packet.addHeader(SEND_CHANGE_CHANNEL);
 	packet.addByte(1);

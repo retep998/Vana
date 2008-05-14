@@ -31,7 +31,7 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, u
 		int worldlen = BufferUtilities::getShort(packet+1);
 		BufferUtilities::getString(packet+3, worldlen, worldip);
 		ChannelServer::Instance()->setWorldIp(worldip);
-		ChannelServer::Instance()->setWorldPort(BufferUtilities::getInt(packet+3+worldlen));
+		ChannelServer::Instance()->setWorldPort(BufferUtilities::getShort(packet+3+worldlen));
 		std::cout << "Connecting to world " << (int) packet[0] << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}
@@ -45,7 +45,7 @@ void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, unsign
 	int channel = BufferUtilities::getInt(packet);
 	if (channel != -1) {
 		ChannelServer::Instance()->setChannel(channel);
-		int port = BufferUtilities::getInt(packet+4);
+		short port = BufferUtilities::getShort(packet+4);
 		ChannelServer::Instance()->setPort(port);
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << (int) packet[0] << " on port " << port <<  std::endl;
@@ -61,7 +61,7 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 	short iplen = BufferUtilities::getShort(packet+4);
 	char ip[15];
 	BufferUtilities::getString(packet+6, iplen, ip);
-	int port = BufferUtilities::getInt(packet+6+iplen);
+	short port = BufferUtilities::getShort(packet+6+iplen);
 	hash_map <int, Player *>::iterator iter = Players::players.find(playerid);
 	if (iter == Players::players.end())
 		return;

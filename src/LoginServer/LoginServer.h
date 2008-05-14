@@ -46,8 +46,8 @@ private:
 	static LoginServer *singleton;
 
 	bool pinEnabled;
-	int port;
-	int inter_port;
+	short port;
+	short inter_port;
 };
 
 #endif
