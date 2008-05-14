@@ -60,6 +60,7 @@ private:
 	char world_ip[15];
 	short world_port;
 	int channel;
+	char external_ip[15];
 };
 
 #endif

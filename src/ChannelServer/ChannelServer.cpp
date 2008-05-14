@@ -43,12 +43,14 @@ void ChannelServer::loadData() {
 
 	Connector *c = new Connector(login_ip, login_inter_port, new WorldServerConnectPlayerFactory());
 	WorldServerConnectPlayer *loginPlayer = (WorldServerConnectPlayer *) c->getPlayer();
+	loginPlayer->setIP(external_ip);
 	loginPlayer->sendAuth(inter_password);
 }
 
 void ChannelServer::connectWorld() {
 	Connector *c = new Connector(world_ip, world_port, new WorldServerConnectPlayerFactory());
 	worldPlayer = (WorldServerConnectPlayer *) c->getPlayer();
+	worldPlayer->setIP(external_ip);
 	worldPlayer->sendAuth(inter_password);
 }
 
@@ -56,6 +58,7 @@ void ChannelServer::loadConfig() {
 	Config config("conf/channelserver.lua");
 	strcpy_s(login_ip, config.getString("login_ip"));
 	login_inter_port = config.getInt("login_inter_port");
+	strcpy_s(external_ip, config.getString("external_ip")); // External IP
 
 	world = 0; // Will get from login server
 	port = 0; // Will get from world server

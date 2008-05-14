@@ -28,6 +28,7 @@ void WorldServer::listen() {
 void WorldServer::loadData() {
 	Connector *c = new Connector(login_ip, login_inter_port, new LoginServerConnectPlayerFactory());
 	loginPlayer = (LoginServerConnectPlayer *) c->getPlayer();
+	loginPlayer->setIP(external_ip);
 	loginPlayer->sendAuth(inter_password);
 }
 
@@ -35,6 +36,7 @@ void WorldServer::loadConfig() {
 	Config config("conf/worldserver.lua");
 	strcpy_s(login_ip, config.getString("login_ip"));
 	login_inter_port = config.getInt("login_inter_port");
+	strcpy_s(external_ip, config.getString("external_ip")); // External IP
 	inter_port = 0; // Will get from login server later
 }
 
