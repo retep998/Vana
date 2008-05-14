@@ -39,13 +39,15 @@ void Players::remove(int id, int channel) {
 
 Player * Players::getPlayerFromName(char *name) {
 	Player *player;
+	bool found;
 	for (hash_map <int, Player *>::iterator iter = players.begin(); iter != players.end(); iter++) {
 		if (_stricmp(iter->second->name, name) == 0) {
 			player = iter->second;
+			found = true;
 			break;
 		}
 	}
-	if (!player) {
+	if (!found) {
 		player = new Player;
 		player->channel = -1;
 	}
