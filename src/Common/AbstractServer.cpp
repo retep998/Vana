@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Config.h"
 
 AbstractServer::AbstractServer() {
-	srand((unsigned char)time(0));
+	srand((unsigned int)time(0));
 	to_listen = false;
 }
 
