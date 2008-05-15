@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Maps.h"
 #include "Mobs.h"
+#include "Randomizer.h"
 #include "BufferUtilities.h"
-
 #include "Timer.h"
 
 class ItemTimer: public Timer::TimerHandler {
@@ -652,7 +652,7 @@ void Inventory::useSummonBag(Player* player, unsigned char* packet){
 		return;
 	takeItemSlot(player, slot, 2, 1);
 	for(unsigned int i=0; i<Drops::consumes[itemid].mobs.size(); i++){
-		if(rand()%100<Drops::consumes[itemid].mobs[i].chance){
+		if(Randomizer::Instance()->randInt(99)<Drops::consumes[itemid].mobs[i].chance){
 			Mobs::spawnMob(player, Drops::consumes[itemid].mobs[i].mobid);
 		}
 	}
@@ -698,7 +698,7 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 			return;
 		takeItemSlot(player, slot, 2, 1);
 		equip->slots--;
-		if(rand()%100<Drops::consumes[itemid].success){
+		if(Randomizer::Instance()->randInt(99)<Drops::consumes[itemid].success){
 			InventoryPacket::useScroll(player, Maps::info[player->getMap()].Players ,true);
 			equip->istr+=Drops::consumes[itemid].istr;
 			equip->idex+=Drops::consumes[itemid].idex;
@@ -718,7 +718,7 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 			equip->scrolls++;
 		}
 		else{
-			if(rand()%100<Drops::consumes[itemid].cursed){
+			if(Randomizer::Instance()->randInt(99)<Drops::consumes[itemid].cursed){
 				cursed = true;
 				for(int i=0; i<player->inv->getEquipNum(); i++){
 					if(player->inv->getEquip(i)->pos == eslot){

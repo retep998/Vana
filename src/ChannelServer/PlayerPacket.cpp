@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "TimeUtilities.h"
 #include "PlayerPacketHelper.h"
+#include "Randomizer.h"
 #include "SendHeader.h"
 
 void PlayerPacket::connectData(Player* player){
@@ -30,9 +31,9 @@ void PlayerPacket::connectData(Player* player){
 	packet.addInt(player->getChannel()); // Channel
 	packet.addByte(1);
 	packet.addByte(1);
-	packet.addInt(rand()); //
-	packet.addInt(rand()); // Possibly seeding maple's rng
-	packet.addInt(rand()); //
+	packet.addInt(Randomizer::Instance()->randInt()); //
+	packet.addInt(Randomizer::Instance()->randInt()); // Possibly seeding maple's rng
+	packet.addInt(Randomizer::Instance()->randInt()); //
 	packet.addShort(-1);
 	packet.addInt(player->getPlayerid());
 	packet.addString(player->getName(), 12);

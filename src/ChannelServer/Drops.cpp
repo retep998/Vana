@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropsPacket.h"
 #include "Inventory.h"
 #include "Quests.h"
+#include "Randomizer.h"
 #include "BufferUtilities.h"
 #include <windows.h>
 
@@ -106,7 +107,7 @@ void Drops::dropMob(Player* player, Mob* mob){
 	MobDropsInfo drop = dropsinfo[mob->getMobID()];
 	int d=0;
 	for(unsigned int k=0; k<drop.size(); k++){
-		if(rand()%10000 < drop[k].chance){
+		if(Randomizer::Instance()->randInt(9999) < drop[k].chance){
 			if(drop[k].quest>0){
 				if(!player->quests->isQuestActive(drop[k].quest))
 					continue;
@@ -137,60 +138,60 @@ void Drops::dropMob(Player* player, Mob* mob){
 				dp.slots = ei.slots;
 				dp.scrolls = 0;
 				if(ei.istr > 0)
-					dp.istr = ei.istr + rand()%3-1;
+					dp.istr = ei.istr + Randomizer::Instance()->randInt(2)-1;
 				else
 					dp.istr = 0;
 				if(ei.idex > 0)
-					dp.idex = ei.idex + rand()%3-1;
+					dp.idex = ei.idex + Randomizer::Instance()->randInt(2)-1;
 				else
 					dp.idex = 0;
 				if(ei.iint > 0)
-					dp.iint = ei.iint + rand()%3-1;
+					dp.iint = ei.iint + Randomizer::Instance()->randInt(2)-1;
 				else
 					dp.iint = 0;
 				if(ei.iluk > 0)
-					dp.iluk = ei.iluk + rand()%3-1;
+					dp.iluk = ei.iluk + Randomizer::Instance()->randInt(2)-1;
 				else
 					dp.iluk = 0;
 				if(ei.ihp > 0)
-					dp.ihp = ei.ihp + rand()%11-5;
+					dp.ihp = ei.ihp + Randomizer::Instance()->randInt(10)-5;
 				else
 					dp.ihp = 0;
 				if(ei.imp > 0)
-					dp.imp = ei.imp + rand()%11-5;
+					dp.imp = ei.imp + Randomizer::Instance()->randInt(10)-5;
 				else
 					dp.imp = 0;
 				if(ei.iwatk > 0)
-					dp.iwatk = ei.iwatk + rand()%11-5;
+					dp.iwatk = ei.iwatk + Randomizer::Instance()->randInt(10)-5;
 				else
 					dp.iwatk = 0;
 				if(ei.imatk > 0)
-					dp.imatk = ei.imatk + rand()%11-5;
+					dp.imatk = ei.imatk + Randomizer::Instance()->randInt(10)-5;
 				else
 					dp.imatk = 0;
 				if(ei.iwdef > 0)
-					dp.iwdef = ei.iwdef + rand()%11-5;
+					dp.iwdef = ei.iwdef + Randomizer::Instance()->randInt(10)-5;
 				else
 					dp.iwdef = 0;
 				if(ei.imdef > 0)
-					dp.imdef = ei.imdef + rand()%11-5;
+					dp.imdef = ei.imdef + Randomizer::Instance()->randInt(10)-5;
 				else
 					dp.imdef = 0;
 				if(ei.iacc > 0)
-					dp.iacc = ei.iacc + rand()%3-1;
+					dp.iacc = ei.iacc + Randomizer::Instance()->randInt(2)-1;
 				else
 					dp.iacc = 0;
 				if(ei.iavo > 0)
-					dp.iavo = ei.iavo + rand()%3-1;
+					dp.iavo = ei.iavo + Randomizer::Instance()->randInt(2)-1;
 				else
 					dp.iavo = 0;
 				dp.ihand = ei.ihand;
 				if(ei.ijump > 0)
-					dp.ijump = ei.ijump + rand()%3-1;
+					dp.ijump = ei.ijump + Randomizer::Instance()->randInt(2)-1;
 				else
 					dp.ijump = 0;
 				if(ei.ispeed > 0)
-					dp.ispeed = ei.ispeed + rand()%3-1;	
+					dp.ispeed = ei.ispeed + Randomizer::Instance()->randInt(2)-1;	
 				else
 					dp.ispeed = 0;
 				drp->setDropInfo(dp);
@@ -218,7 +219,7 @@ void Drops::dropMob(Player* player, Mob* mob){
 	int xm = mesos[mob->getMobID()].max;	
 	if(xm > 0 && nm > 0){
 		Drop* drp = new Drop(player->getMap());
-		drp->setID(rand()%(xm-nm+1)+nm);
+		drp->setID(Randomizer::Instance()->randInt(xm-nm)+nm);
 		drp->setMesos(true);
 		drp->setOwner(player->getPlayerid());
 		drp->setTime(100);

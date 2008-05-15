@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Drops.h"
 #include "BufferUtilities.h"
+#include "Randomizer.h"
 #include "Timer.h"
 
 hash_map <int, SkillsLevelInfo> Skills::skills;
@@ -761,7 +762,7 @@ void Skills::addCombo(Player* player, int hits){ // add combo orbs
 		else{
 			for(int i=0; i<hits; i++){
 				player->setCombo(player->getCombo()+1);
-				if(player->skills->getSkillLevel(1120003)>0 && rand()%100<30+player->skills->getSkillLevel(1120003))
+				if(player->skills->getSkillLevel(1120003)>0 && Randomizer::Instance()->randInt(99)<30+player->skills->getSkillLevel(1120003))
 					player->setCombo(player->getCombo()+1); // 4th job skill gives chance to add second orb
 			}
 			if(player->getCombo()>=maxcombo) player->setCombo(maxcombo);

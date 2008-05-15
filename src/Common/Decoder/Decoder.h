@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef DECODER_H
 #define DECODER_H
 
-#define _CRT_RAND_S
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -38,18 +37,7 @@ public:
 	}
 	void createHeader (unsigned char* header, short size); 
 
-	unsigned char* getConnectPacket() {
-		(*(short*)ivRecv) = rand();
-		(*(short*)ivSend) = rand();
-		(*(short*)(ivRecv+2)) = rand();
-		(*(short*)(ivSend+2)) = rand();
-		(*(short*)connectBuffer) = SEND_IV;
-		(*(int*)(connectBuffer+sizeof(short))) = MAPLE_VERSION;
-		memcpy_s(connectBuffer+6, 4, ivRecv, 4);
-		memcpy_s(connectBuffer+10, 4, ivSend, 4);
-		connectBuffer[14] = 0x08;
-		return connectBuffer;
-	}
+	unsigned char* getConnectPacket();
 
 	void setIvRecv(unsigned char *iv) { memcpy_s(ivRecv, 4, iv, 4); }
 	void setIvSend(unsigned char *iv) { memcpy_s(ivSend, 4, iv, 4); }

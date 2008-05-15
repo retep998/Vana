@@ -15,19 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AbstractServer.h"
-#include "Config.h"
+#include "Randomizer.h"
 
-AbstractServer::AbstractServer() {
-	to_listen = false;
+Randomizer * Randomizer::singleton = 0;
+
+int Randomizer::randInt(int max) {
+	return mtrand.randInt(max);
 }
 
-void AbstractServer::initialize() {
-	Config config("conf/inter_password.lua");
-	strcpy_s(inter_password, config.getString("inter_password"));
-
-	loadConfig();
-	loadData();
-	if (to_listen)
-		listen();
+double Randomizer::rand() {
+	return mtrand.rand();
 }

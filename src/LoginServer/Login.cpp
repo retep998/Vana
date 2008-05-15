@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.h"
+#include "Randomizer.h"
 #include "sha1.h"
 
 void Login::loginUser(PlayerLogin* player, unsigned char* packet){
@@ -188,7 +189,7 @@ char * Login::hashPassword(const char *password, const char *salt) {
 char * Login::generateSalt(size_t length) {
 	char *salt = new char[length+1];
 	for (size_t i = 0; i < length; i++) {
-		salt[i] = 33 + (rand() % 94);
+		salt[i] = 33 + (Randomizer::Instance()->randInt(93));
 	}
 	salt[length] = 0;
 	return salt;
