@@ -27,7 +27,7 @@ Connector::Connector(char *ip, short port, AbstractPlayerFactory* apf) {
 	SOCKET sock = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sock == INVALID_SOCKET) {
 		printf ("socket error: %d\n", WSAGetLastError());
-		return;
+		exit(2);
 	}
 
 	sockaddr_in service;
@@ -37,7 +37,7 @@ Connector::Connector(char *ip, short port, AbstractPlayerFactory* apf) {
 
 	if (connect(sock, (SOCKADDR*) &service, sizeof(service)) == SOCKET_ERROR) {
 		printf("connect() error: %d\n", WSAGetLastError());
-		return;
+		exit(2);
 	}
 
 	player = apf->createPlayer();
