@@ -35,8 +35,14 @@ void Shops::showShop(Player* player, int id){
 	for(unsigned int i=0; i<shops[id].items.size(); i++){
 		packet.addInt(shops[id].items[i].id);
 		packet.addInt(shops[id].items[i].price);
-		if(ISSTAR(shops[id].items[i].id)) continue;
-		packet.addShort(1);
+		if(ISSTAR(shops[id].items[i].id)) {
+			packet.addShort(0);
+			packet.addInt(0);
+			packet.addShort(shops[id].items[i].price);
+		}
+		else {
+			packet.addShort(1);
+		}
 		if(Drops::items.find(shops[id].items[i].id) != Drops::items.end())
 			packet.addShort(Drops::items[shops[id].items[i].id].maxslot); 
 		else
