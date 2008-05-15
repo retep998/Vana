@@ -388,7 +388,10 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 				return;
 			char type = Drops::items[item].type;
 			Item* newitem = new Item;
-			newitem->amount = howmany;
+			if(ISSTAR(item))
+				newitem->amount = Drops::items[item].maxslot + player->skills->getSkillLevel(4100000)*10; // Take Claw Mastery into account
+			else
+				newitem->amount = howmany;
 			newitem->id = item;
 			newitem->inv = type;
 			newitem->pos = findSlot(player, item , type, howmany);
