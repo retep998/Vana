@@ -268,6 +268,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\sha1.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\TimeUtilities.cpp"
 					>
 				</File>
@@ -451,6 +455,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\CharUtilities.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\sha1.h"
 					>
 				</File>
 				<File

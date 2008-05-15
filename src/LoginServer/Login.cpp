@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.h"
+#include "sha1.h"
 
 void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	int usersize = BufferUtilities::getShort(packet);
@@ -28,44 +29,58 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	BufferUtilities::getString(packet+4+usersize, passsize, password);   
 
 	mysqlpp::Query query = db.query();
-	query << "SELECT id, password, online, pin, gender, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
+	query << "SELECT id, password, salt, online, pin, gender, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.empty()) {
 		LoginPacket::loginError(player, 0x05); //Invalid username
+		return;
 	}
-	else if (strcmp(password, res[0]["password"])) {
+	else if (res[0]["salt"].is_null()) {
+		// We have an unsalted password here
+		if (strcmp(password, res[0]["password"])) {
+			LoginPacket::loginError(player, 0x04); //Invalid password
+			return;
+		}
+		// We have a valid password here, so lets hash the password
+		char *salt = generateSalt(5);
+		char *hashed_pass = hashPassword(password, salt);
+		query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << mysqlpp::quote << res[0]["id"];
+		query.exec();
+	}
+	else if (strcmp(hashPassword(password, res[0]["salt"].c_str()), res[0]["password"].c_str())) {
 		LoginPacket::loginError(player, 0x04); //Invalid password
+		return;
 	}
 	else if (atoi(res[0]["online"]) != 0) {
 		LoginPacket::loginError(player, 0x07); //Already logged in
+		return;
 	}
 	else if (atoi(res[0]["banned"]) == 1) {
 		int time = TimeUtilities::tickToTick32(TimeUtilities::timeToTick((time_t) mysqlpp::DateTime(res[0]["ban_expire"])));
 		LoginPacket::loginBan(player, (unsigned char) res[0]["ban_reason"], time);
+		return;
 	}
-	else {
-		printf("%s logged in.\n", username);
-		player->setUserid(res[0]["id"]);
-		if (LoginServer::Instance()->getPinEnabled()) {
-			if (res[0]["pin"].is_null())
-				player->setPin(-1);
-			else
-				player->setPin(res[0]["pin"]);
-			int pin = player->getPin();
-			if(pin == -1)
-				player->setStatus(1); // New PIN
-			else
-				player->setStatus(2); // Ask for PIN
-		}
+	printf("%s logged in.\n", username);
+	player->setUserid(res[0]["id"]);
+	if (LoginServer::Instance()->getPinEnabled()) {
+		if (res[0]["pin"].is_null())
+			player->setPin(-1);
 		else
-			player->setStatus(4);
-		if (res[0]["gender"].is_null())
-			player->setStatus(5);
+			player->setPin(res[0]["pin"]);
+		int pin = player->getPin();
+		if(pin == -1)
+			player->setStatus(1); // New PIN
 		else
-			player->setGender((unsigned char) res[0]["gender"]);
-		LoginPacket::loginConnect(player, username, usersize);
+			player->setStatus(2); // Ask for PIN
 	}
+	else
+		player->setStatus(4);
+	if (res[0]["gender"].is_null())
+		player->setStatus(5);
+	else
+		player->setGender((unsigned char) res[0]["gender"]);
+	LoginPacket::loginConnect(player, username, usersize);
 }
 
 void Login::setGender(PlayerLogin* player, unsigned char* packet){
@@ -154,4 +169,27 @@ void Login::registerPIN(PlayerLogin* player, unsigned char* packet){
 
 void Login::loginBack(PlayerLogin* player){
 	LoginPacket::logBack(player);
+}
+
+char * Login::hashPassword(const char *password, const char *salt) {
+	SHA1 sha;
+	unsigned digest[5];
+	char salted[50];
+	sprintf_s(salted, "%s%s", salt, password);
+	sha.Reset();
+	sha.Input(salted, strlen(salted));
+	sha.Result(digest);
+	char *passhash = new char[45];
+	sprintf_s(passhash,45,"%08X%08X%08X%08X%08X", digest[0], digest[1], digest[2], digest[3], digest[4]);
+
+	return passhash;
+}
+
+char * Login::generateSalt(size_t length) {
+	char *salt = new char[length+1];
+	for (size_t i = 0; i < length; i++) {
+		salt[i] = 33 + (rand() % 94);
+	}
+	salt[length] = 0;
+	return salt;
 }
