@@ -48,7 +48,7 @@ void Initializing::initializeMobs(){
 			mob.hp  = atoi(mobRow[2]);
 			mob.mp  = atoi(mobRow[3]);
 			mob.exp = atoi(mobRow[4]);
-			mob.boss = atoi(mobRow[5]);
+			mob.boss = (bool) mobRow[5];
 		}
 
 		if(!mobRow[6].is_null()){
@@ -130,8 +130,8 @@ void Initializing::initializeItems(){
 			item.type = atoi(itemRow[2]);
 			item.price = atoi(itemRow[3]);
 			item.maxslot = atoi(itemRow[4]);
-			item.quest = atoi(itemRow[5]);
-			item.consume = atoi(itemRow[6]);
+			item.quest = (bool) itemRow[5];
+			item.consume = (bool) itemRow[6];
 			cons.hp = atoi(itemRow[7]);
 			cons.mp = atoi(itemRow[8]);
 			cons.hpr = atoi(itemRow[9]);
@@ -287,8 +287,8 @@ void Initializing::initializeEquips(){
 		equip.ijump = atoi(equipRow[17]);
 		equip.ispeed = atoi(equipRow[18]);
 		equip.tamingmob = atoi(equipRow[19]);
-		equip.cash = atoi(equipRow[20]);
-		equip.quest = atoi(equipRow[21]);
+		equip.cash = (bool) equipRow[20];
+		equip.quest = (bool) equipRow[21];
 		// Add equip to the drops table
 		Drops::addEquip(equipID,equip);
 	}
@@ -386,9 +386,9 @@ void Initializing::initializeQuests(){
 		}
 
 		QuestRequestInfo req;
-		req.ismob = atoi(requestRow[2]);
-		req.isitem = atoi(requestRow[3]);
-		req.isquest = atoi(requestRow[4]);
+		req.ismob = (bool) requestRow[2];
+		req.isitem = (bool) requestRow[3];
+		req.isquest = (bool) requestRow[4];
 		req.id = atoi(requestRow[5]);
 		req.count = atoi(requestRow[6]);
 		reqs.push_back(req);
@@ -432,11 +432,11 @@ void Initializing::initializeQuests(){
 		}
 
 		QuestRewardInfo rwa;
-		rwa.start = atoi(rewardRow[2]);
-		rwa.isitem = atoi(rewardRow[3]);
-		rwa.isexp = atoi(rewardRow[4]);
-		rwa.ismesos = atoi(rewardRow[5]);
-		rwa.isfame = atoi(rewardRow[6]);
+		rwa.start = (bool) rewardRow[2];
+		rwa.isitem = (bool) rewardRow[3];
+		rwa.isexp = (bool) rewardRow[4];
+		rwa.ismesos = (bool) rewardRow[5];
+		rwa.isfame = (bool) rewardRow[6];
 		rwa.id = atoi(rewardRow[7]);
 		rwa.count = atoi(rewardRow[8]);
 		rwa.gender = atoi(rewardRow[9]);
@@ -561,7 +561,7 @@ void Initializing::initializeMaps(){
 			map.rm = atoi(mapRow[2]);
 			map.forcedReturn = atoi(mapRow[3]);
 			map.spawnrate = atof(mapRow[4]);
-			map.clock = atoi(mapRow[5]);
+			map.clock = (bool) mapRow[5];
 			map.shipInterval = atoi(mapRow[6]);
 		}
 		PortalInfo portal;

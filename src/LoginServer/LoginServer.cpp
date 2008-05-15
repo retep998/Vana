@@ -42,23 +42,23 @@ void LoginServer::loadConfig() {
 	size_t i = 0;
 	while (1) {
 		char buf[16];
-		sprintf(buf, "world%d_name", i);
+		sprintf_s(buf, "world%d_name", i);
 		if(!config.keyExist(buf))
 			break; //No more worlds
 
 		World world;
 		strcpy_s(world.name, 15, config.getString(buf));
 
-		sprintf(buf, "world%d_channels", i);
+		sprintf_s(buf, "world%d_channels", i);
 		world.maxChannels = config.getInt(buf);
 
-		sprintf(buf, "world%d_id", i);
+		sprintf_s(buf, "world%d_id", i);
 		world.id = config.getInt(buf);
 
-		sprintf(buf, "world%d_ribbon", i);
+		sprintf_s(buf, "world%d_ribbon", i);
 		world.ribbon = config.getInt(buf);
 
-		sprintf(buf, "world%d_port", i);
+		sprintf_s(buf, "world%d_port", i);
 		world.port = config.getInt(buf);
 
 		world.connected = false;
