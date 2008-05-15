@@ -303,9 +303,12 @@ void Mobs::damageMobRanged(Player* player, unsigned char* packet, int size){
 	MobsPacket::damageMobRanged(player, Maps::info[player->getMap()].Players, packet, itemid);
 	int howmany = packet[1]/0x10;
 	int hits = packet[1]%0x10;
-	//Inventory::takeItemSlot(player, pos, 2, hits); // TODO
 	int map = player->getMap();
 	int skillid = BufferUtilities::getInt(packet+2);
+	if (skillid == 4111005) // Avenger
+		Inventory::takeItemSlot(player, pos, 2, 3);
+	else
+		Inventory::takeItemSlot(player, pos, 2, hits);
 	bool s3121004 = false;
 	if(skillid == 3121004 || skillid == 3221001)
 		s3121004 = true;
