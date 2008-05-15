@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Config.h"
 #include <cstring>
+#include <iostream>
+#include <sys/stat.h>
 
 Config::Config(char *filename) {
 	loadFile(filename);
@@ -25,6 +27,13 @@ Config::Config(char *filename) {
 Config::Config() { }
 
 void Config::loadFile(char *filename) {
+	// Check for file existance first
+	struct stat fileInfo;
+	if (stat(filename, &fileInfo)) {
+		std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
+		exit(1);
+	}
+
 	luaVm = lua_open();
 	luaopen_base(luaVm);
 
