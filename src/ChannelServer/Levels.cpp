@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LevelsPacket.h"
 #include "SkillsPacket.h"
 #include "Skills.h"
+#include "Randomizer.h"
 #include "BufferUtilities.h"
 
 int Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
@@ -68,28 +69,28 @@ void Levels::giveEXP(Player* player, long exp, char type){
 			short mpgain = 0;
 			short intt = player->getInt() / 10;
 			if (job == 0) {
-				hpgain = rand()%5 + 12;
-				mpgain = rand()%3 + 10 + intt;
+				hpgain = Randomizer::Instance()->randInt(4) + 12;
+				mpgain = Randomizer::Instance()->randInt(2) + 10 + intt;
 			}
 			else if (job == 1) {
 				int x = 0;
 				if (player->skills->getSkillLevel(1000001) > 0){ x = Skills::skills[1000001][player->skills->getSkillLevel(1000001)].x; }
-				hpgain = rand()%5 + 24 + x;
-				mpgain = rand()%3 + 4 + intt;
+				hpgain = Randomizer::Instance()->randInt(4) + 24 + x;
+				mpgain = Randomizer::Instance()->randInt(2) + 4 + intt;
 			}
 			else if (job == 2) {
 				int x = 0;
 				if (player->skills->getSkillLevel(2000001) > 0) { x = Skills::skills[2000001][player->skills->getSkillLevel(2000001)].x; }
-				hpgain = rand()%5 + 10;
-				mpgain = rand()%3 + 22 + 2 * x + intt;
+				hpgain = Randomizer::Instance()->randInt(4) + 10;
+				mpgain = Randomizer::Instance()->randInt(2) + 22 + 2 * x + intt;
 			} 
 			else if (job == 5) {
 				hpgain = 150;
 				mpgain = 150;
 			}
 			else {
-				hpgain = rand()%5 + 20;
-				mpgain = rand()%3 + 14 + intt;
+				hpgain = Randomizer::Instance()->randInt(4) + 20;
+				mpgain = Randomizer::Instance()->randInt(2) + 14 + intt;
 			}
 			player->setRMHP(player->getRMHP() + hpgain);
 			player->setRMMP(player->getRMMP() + mpgain);

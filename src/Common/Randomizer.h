@@ -15,19 +15,34 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AbstractServer.h"
-#include "Config.h"
+#ifndef RANDOMIZER_H
+#define RANDOMIZER_H
 
-AbstractServer::AbstractServer() {
-	to_listen = false;
-}
+#pragma warning(push)
+#pragma warning(disable : 4146)
+#pragma warning(disable : 4800)
+#pragma warning(disable : 4996)
+#include "MersenneTwister.h"
+#pragma warning(pop ) 
+class MTRand;
 
-void AbstractServer::initialize() {
-	Config config("conf/inter_password.lua");
-	strcpy_s(inter_password, config.getString("inter_password"));
+class Randomizer {
+public:
+	static Randomizer * Instance() {
+		if (singleton == 0)
+			singleton = new Randomizer;
+		return singleton;
+	}
 
-	loadConfig();
-	loadData();
-	if (to_listen)
-		listen();
-}
+	int randInt(int max = 0);
+	double rand();
+private:
+	Randomizer() {};
+	Randomizer(const Randomizer&);
+	Randomizer& operator=(const Randomizer&);
+	static Randomizer *singleton;
+
+	MTRand mtrand;
+};
+
+#endif

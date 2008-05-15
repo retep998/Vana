@@ -268,6 +268,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\Randomizer.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\sha1.cpp"
 					>
 				</File>
@@ -455,6 +459,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\CharUtilities.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Randomizer.h"
 					>
 				</File>
 				<File

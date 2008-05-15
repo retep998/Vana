@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "NPCs.h"
 #include "BufferUtilities.h"
+#include "Randomizer.h"
 #include "TimeUtilities.h"
 
 hash_map <int, QuestInfo> Quests::quests;
@@ -176,7 +177,7 @@ void PlayerQuests::finishQuest(short questid, int npcid){
 		}
 	}
 	if(chance>0){
-		int random = rand()%chance;
+		int random = Randomizer::Instance()->randInt(chance-1);
 		chance=0;
 		for(unsigned int i=0; i<Quests::quests[questid].rewards.size(); i++){
 			if(Quests::quests[questid].rewards[i].start){

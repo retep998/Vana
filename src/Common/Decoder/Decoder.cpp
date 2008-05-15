@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Decoder.h"
 #include "AESEncryption.h"
 #include "MapleEncryption.h"
+#include "Randomizer.h"
 #include "SendHeader.h"
 
 void Decoder::encrypt(unsigned char *buffer, int size){
@@ -53,4 +54,17 @@ void Decoder::createHeader (unsigned char* header, short size) {
 	header[1] = (a-header[0])/0x100;
 	header[2] = b%0x100;
 	header[3] = (b-header[2])/0x100;
+}
+
+unsigned char* Decoder::getConnectPacket() {
+	(*(short*)ivRecv) = Randomizer::Instance()->randInt();
+	(*(short*)ivSend) = Randomizer::Instance()->randInt();
+	(*(short*)(ivRecv+2)) = Randomizer::Instance()->randInt();
+	(*(short*)(ivSend+2)) = Randomizer::Instance()->randInt();
+	(*(short*)connectBuffer) = SEND_IV;
+	(*(int*)(connectBuffer+sizeof(short))) = MAPLE_VERSION;
+	memcpy_s(connectBuffer+6, 4, ivRecv, 4);
+	memcpy_s(connectBuffer+10, 4, ivSend, 4);
+	connectBuffer[14] = 0x08;
+	return connectBuffer;
 }
