@@ -29,7 +29,7 @@ Acceptor::Acceptor(short port, AbstractPlayerFactory* apf) {
 	SOCKET acceptSocket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (acceptSocket == INVALID_SOCKET) {
 		printf ("socket error: %d\n", WSAGetLastError());
-		return;
+		exit(2);
 	}
 
 	sockaddr_in service;
@@ -39,7 +39,7 @@ Acceptor::Acceptor(short port, AbstractPlayerFactory* apf) {
 
 	if (bind( acceptSocket, (SOCKADDR*) &service, sizeof(service)) == SOCKET_ERROR) {
 		printf("bind() error: %d\n", WSAGetLastError());
-		return;
+		exit(2);
 	}
 
 	BOOL tcpnodelay = true;
@@ -50,7 +50,7 @@ Acceptor::Acceptor(short port, AbstractPlayerFactory* apf) {
 	if (listen( acceptSocket, 10 ) == SOCKET_ERROR) {
 		printf("listen() error: %d\n", WSAGetLastError());
 		closesocket(acceptSocket);
-		return;
+		exit(2);
 	}
 
 	Selector::Instance()->registerSocket(acceptSocket, true, false, true, this);
