@@ -134,6 +134,7 @@ public:
 		return this->mp;
 	}
 	void setMHP(int mhp){
+		if (mhp>30000) { mhp = 30000; }
 		this->mhp=mhp;
 	}
 	unsigned short getMHP(){
@@ -146,6 +147,7 @@ public:
 		return this->rmhp;
 	}
 	void setMMP(int mmp){
+		if (mmp>30000) { mmp = 30000; }
 		this->mmp=mmp;
 	}
 	unsigned short getMMP(){
