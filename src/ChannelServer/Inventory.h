@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
+#define ISARROW(x) (x/10000 == 206)
 #define ISSTAR(x) (x/10000 == 207)
 
 class Player;

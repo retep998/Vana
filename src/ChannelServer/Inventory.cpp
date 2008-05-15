@@ -484,7 +484,7 @@ void Inventory::takeItemSlot(Player* player, short slot, char inv, short amount)
 		if(player->inv->getItem(i)->pos == slot && player->inv->getItem(i)->inv == inv){
 			Item* item = player->inv->getItem(i);
 			item->amount-=amount;
-			if(item->amount == 0){
+			if(item->amount == 0 && !ISSTAR(item->id) && !ISARROW(item->id)){
 				InventoryPacket::moveItem(player, item->inv, item->pos, 0);
 				player->inv->deleteItem(i);
 			}
