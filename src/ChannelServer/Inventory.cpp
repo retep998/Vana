@@ -423,12 +423,13 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 			player->inv->setMesos(player->inv->getMesos() + Drops::equips[item].price*amount);
 		}
 		else{
-			if(player->inv->getItemAmountBySlot(slot, inv) < amount){
+			Item *item = player->inv->getItemByPos(slot, inv);
+			if(item->amount < amount){
 				// hacking
 				return;
 			}
-			takeItemSlot(player, slot, Drops::items[item].type, amount);
-			player->inv->setMesos(player->inv->getMesos() + Drops::items[item].price*amount);
+			takeItemSlot(player, slot, Drops::items[item->id].type, amount, 1);
+			player->inv->setMesos(player->inv->getMesos() + Drops::items[item->id].price*amount);
 		}
 		InventoryPacket::bought(player);
 	}
@@ -488,12 +489,12 @@ void Inventory::takeItem(Player* player, int item, int howmany){
 		}
 }
 
-void Inventory::takeItemSlot(Player* player, short slot, char inv, short amount){
+void Inventory::takeItemSlot(Player* player, short slot, char inv, short amount, bool takeStar){
 	for(int i=0; i<player->inv->getItemNum(); i++)
 		if(player->inv->getItem(i)->pos == slot && player->inv->getItem(i)->inv == inv){
 			Item* item = player->inv->getItem(i);
 			item->amount-=amount;
-			if(item->amount == 0 && !ISSTAR(item->id)){
+			if (item->amount == 0 && !ISSTAR(item->id) || takeStar) {
 				InventoryPacket::moveItem(player, item->inv, item->pos, 0);
 				player->inv->deleteItem(i);
 			}
