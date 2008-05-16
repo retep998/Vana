@@ -422,7 +422,7 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 			player->inv->setMesos(player->inv->getMesos() + Drops::equips[item].price*amount);
 		}
 		else{
-			if(player->inv->getItemBySlot(item, slot, inv) < amount){
+			if(player->inv->getItemAmountBySlot(slot, inv) < amount){
 				// hacking
 				return;
 			}
@@ -497,7 +497,7 @@ void Inventory::takeItemSlot(Player* player, short slot, char inv, short amount)
 void Inventory::useItem(Player *player, unsigned char *packet){
 	short slot = BufferUtilities::getShort(packet+4);
 	int itemid = BufferUtilities::getInt(packet+6);
-	if(player->inv->getItemBySlot(itemid, slot, 2) == 0){
+	if(player->inv->getItemAmountBySlot(slot, 2) == 0){
 		// hacking
 		return;
 	}
@@ -647,7 +647,7 @@ int Inventory::isCash(int itemid){
 void Inventory::useSummonBag(Player* player, unsigned char* packet){
 	short slot = BufferUtilities::getShort(packet+4);
 	int itemid = BufferUtilities::getInt(packet+6);
-	if(player->inv->getItemBySlot(itemid, slot, 2) == 0){
+	if(player->inv->getItemAmountBySlot(slot, 2) == 0){
 		// hacking
 		return;
 	}
@@ -663,7 +663,7 @@ void Inventory::useSummonBag(Player* player, unsigned char* packet){
 void Inventory::useReturnScroll(Player* player, unsigned char* packet){
 	short slot = BufferUtilities::getShort(packet+4);
 	int itemid = BufferUtilities::getInt(packet+6);
-	if(player->inv->getItemBySlot(itemid, slot, 2) == 0){
+	if(player->inv->getItemAmountBySlot(slot, 2) == 0){
 		// hacking
 		return;
 	}
