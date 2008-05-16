@@ -34,16 +34,15 @@ public:
 	}
 	class TimerHandler {
 	public:
-		virtual void handle(Timer* timer, int id) = 0;
+		virtual void handle(Timer *timer, int id) = 0;
 		virtual void remove(int id) = 0;
 	};
 
 	~Timer();
 
-	int setTimer(int msec, TimerHandler* handler);
-
+	int setTimer(int msec, TimerHandler *handler);
 	void cancelTimer(int id);
-	
+	void resetTimer(int id);
 	void timerThread();
 	int timeLeft(int id); // check timer time
 private:
@@ -56,14 +55,16 @@ private:
 	class OneTimer {
 	public:
 		long t;
+		long msec;
 		int id;
 		TimerHandler* handler;
-		OneTimer(long t, int id, TimerHandler* handler) : t(t), id(id), handler(handler) {}
+		OneTimer(long msec, int id, TimerHandler* handler);
+		void reset();
 	};
-	vector<OneTimer*> timers;
+	hash_map <int, OneTimer *> timers;
 	HANDLE timerEvent;
-	OneTimer* findMin();
-	OneTimer* getTimer(int id);
+	OneTimer * findMin();
+	OneTimer * getTimer(int id);
 	void remove(int id);
 	int id;
 };

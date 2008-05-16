@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Timer *Timer::singleton = 0;
 
-void _timerThread(Timer* timerObject) {
+void _timerThread(Timer *timerObject) {
 	timerObject->timerThread();
 }
 
@@ -44,64 +44,60 @@ Timer::Timer() {
 
 Timer::~Timer() {
 	terminate = true;
-	SetEvent (timerEvent);
+	SetEvent(timerEvent);
 }
 
-int Timer::setTimer(int msec, TimerHandler* handler) {
-	timers.push_back(new OneTimer(msec+clock(), id, handler));
-	SetEvent (timerEvent);
+int Timer::setTimer(int msec, TimerHandler *handler) {
+	timers[id] = new OneTimer(msec, id, handler);
+	SetEvent(timerEvent);
 	return id++;
 }
 
 void Timer::remove(int id) {
 	getTimer(id)->handler->remove(id);
-	for(unsigned int i=0; i<timers.size(); i++){
-		if(timers[i]->id == id){
-			timers.erase(timers.begin()+i);
-			break;
-		}
-	}
+	timers.erase(id);
 }
 
 void Timer::cancelTimer(int id) {
 	remove(id);
-	SetEvent (timerEvent);
+	SetEvent(timerEvent);
+}
+
+void Timer::resetTimer(int id) {
+	getTimer(id)->reset();
+	SetEvent(timerEvent);
 }
 
 int Timer::timeLeft(int id) { // check timer time
-	return getTimer(id)->t - GetTickCount();
+	return getTimer(id)->t - clock();
 }
 
-Timer::OneTimer* Timer::findMin() {
+Timer::OneTimer * Timer::findMin() {
 	if(timers.size() == 0)
 		return NULL;
-	OneTimer* min=timers[0];
-	for(unsigned int i=1; i<timers.size(); i++){
-		if(timers[i]->t < min->t)
-			min = timers[i];
+	OneTimer *min;
+	for (hash_map <int, OneTimer *>::iterator iter = timers.begin(); iter != timers.end(); iter++) {
+		if (iter == timers.begin() || iter->second->t < min->t)
+			min = iter->second;
 	}
 	return min;
 }
 
-
-Timer::OneTimer* Timer::getTimer(int id) {
-	for(unsigned int i=0; i<timers.size(); i++){
-		if(timers[i]->id == id){
-			return timers[i];
-		}
-	}
+Timer::OneTimer * Timer::getTimer(int id) {
+	if(timers[id])
+		return timers[id];
 	return NULL;
 }
 
 void Timer::timerThread() {
 	while (!terminate) {
 		try {
-			// find minimum wakeup time
-			OneTimer* minTimer = findMin();
-			long msec = minTimer==NULL ? msec = 1000000000 : minTimer->t - clock();
+			// Find minimum wakeup time
+			OneTimer *minTimer = findMin();
+			long msec = (minTimer == NULL) ? msec = 1000000000 : minTimer->t - clock();
 			if (msec <= 0) {
 				minTimer->handler->handle(this, minTimer->id);
-				remove (minTimer->id);
+				remove(minTimer->id);
 				delete minTimer;
 				continue;
 			}
@@ -121,4 +117,15 @@ void Timer::timerThread() {
 			// TODO error
 		}
 	}
+}
+
+Timer::OneTimer::OneTimer(long msec, int id, TimerHandler* handler) {
+	this->msec = msec;
+	this->id = id;
+	this->handler = handler;
+	reset();
+}
+
+void Timer::OneTimer::reset() {
+	this->t = msec + clock();
 }
