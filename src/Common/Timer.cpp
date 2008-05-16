@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Timer *Timer::singleton = 0;
 
-void _timerThread (Timer* timerObject) {
+void _timerThread(Timer* timerObject) {
 	timerObject->timerThread();
 }
 
-Timer::Timer () {
+Timer::Timer() {
 	id = 0;
 	terminate = false;
 
@@ -47,13 +47,13 @@ Timer::~Timer() {
 	SetEvent (timerEvent);
 }
 
-int Timer::setTimer (int msec, TimerHandler* handler) {
+int Timer::setTimer(int msec, TimerHandler* handler) {
 	timers.push_back(new OneTimer(msec+clock(), id, handler));
 	SetEvent (timerEvent);
 	return id++;
 }
 
-void Timer::remove(int id){
+void Timer::remove(int id) {
 	getTimer(id)->handler->remove(id);
 	for(unsigned int i=0; i<timers.size(); i++){
 		if(timers[i]->id == id){
@@ -63,16 +63,16 @@ void Timer::remove(int id){
 	}
 }
 
-void Timer::cancelTimer (int id) {
+void Timer::cancelTimer(int id) {
 	remove(id);
 	SetEvent (timerEvent);
 }
 
-int Timer::timeLeft(int id){ // check timer time
+int Timer::timeLeft(int id) { // check timer time
 	return getTimer(id)->t - GetTickCount();
 }
 
-Timer::OneTimer* Timer::findMin(){
+Timer::OneTimer* Timer::findMin() {
 	if(timers.size() == 0)
 		return NULL;
 	OneTimer* min=timers[0];
@@ -84,7 +84,7 @@ Timer::OneTimer* Timer::findMin(){
 }
 
 
-Timer::OneTimer* Timer::getTimer(int id){
+Timer::OneTimer* Timer::getTimer(int id) {
 	for(unsigned int i=0; i<timers.size(); i++){
 		if(timers[i]->id == id){
 			return timers[i];
@@ -93,7 +93,7 @@ Timer::OneTimer* Timer::getTimer(int id){
 	return NULL;
 }
 
-void Timer::timerThread () {
+void Timer::timerThread() {
 	while (!terminate) {
 		try {
 			// find minimum wakeup time
