@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "BufferUtilities.h"
 #include "Timer.h"
+#include <cmath>
 
 class ItemTimer: public Timer::TimerHandler {
 public:
@@ -429,6 +430,14 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 			takeItemSlot(player, slot, Drops::items[item].type, amount);
 			player->inv->setMesos(player->inv->getMesos() + Drops::items[item].price*amount);
 		}
+		InventoryPacket::bought(player);
+	}
+	else if (type == 2) { // Recharge
+		short pos = BufferUtilities::getShort(packet+1);
+		Item *item = player->inv->getItemByPos(pos, 2);
+		item->amount = Drops::items[item->id].maxslot + player->skills->getSkillLevel(4100000)*10;;
+		player->inv->setMesos(player->inv->getMesos() - 1); // TODO: Calculate price, letting players recharge for 1 meso for now
+		InventoryPacket::moveItemS(player, item->inv, item->pos, item->amount);
 		InventoryPacket::bought(player);
 	}
 }

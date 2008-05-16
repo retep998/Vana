@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropsPacket.h"
 #include "Inventory.h"
 #include "Quests.h"
+#include "Shops.h"
 #include "Randomizer.h"
 #include "BufferUtilities.h"
 #include <windows.h>
@@ -336,6 +337,8 @@ void Drops::addEquip(int id, EquipInfo equip){
 }
 void Drops::addItem(int id, ItemInfo item){
 	items[id] = item;
+	if (ISSTAR(id))
+		Shops::rechargables.push_back(id);
 }
 void Drops::addConsume(int id, ConsumeInfo cons){
 	consumes[id] = cons;
