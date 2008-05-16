@@ -34,20 +34,18 @@ public:
 	}
 	class TimerHandler {
 	public:
-		virtual void handle (Timer* timer, int id) = 0;
-		virtual void remove (int id) = 0;
+		virtual void handle(Timer* timer, int id) = 0;
+		virtual void remove(int id) = 0;
 	};
 
 	~Timer();
 
-	int setTimer 
-		(int msec, TimerHandler* handler);
+	int setTimer(int msec, TimerHandler* handler);
 
-	void cancelTimer (int id);
-
+	void cancelTimer(int id);
+	
 	void timerThread();
-	int timeLeft (int id); // check timer time
-
+	int timeLeft(int id); // check timer time
 private:
 	Timer();
 	Timer(const Timer&);
@@ -60,7 +58,7 @@ private:
 		long t;
 		int id;
 		TimerHandler* handler;
-		OneTimer (long t, int id, TimerHandler* handler):t(t),id(id),handler(handler){}
+		OneTimer(long t, int id, TimerHandler* handler) : t(t), id(id), handler(handler) {}
 	};
 	vector<OneTimer*> timers;
 	HANDLE timerEvent;
