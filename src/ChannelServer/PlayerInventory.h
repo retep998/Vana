@@ -114,6 +114,12 @@ public:
 	Item* getItem(int id){
 		return items[id];
 	}
+	Item * getItemByPos(int pos, char inv) {
+		for(int i=0; i<getItemNum(); i++)
+			if(getItem(i)->pos == pos && getItem(i)->inv == inv)
+				return getItem(i);
+		return 0;
+	}
 	void setPlayer(Player* player){
 		this->player=player;
 	}
