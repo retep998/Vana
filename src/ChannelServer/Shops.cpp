@@ -51,13 +51,14 @@ void Shops::showShop(Player* player, int id){
 		else
 			packet.addShort(1000);
 	}
+
 	for (size_t i = 0; i < rechargables.size(); i++) {
 		packet.addInt(rechargables[i]);
 		packet.addInt(0);
 		packet.addShort(0);
 		packet.addInt(0);
 		packet.addShort(1);
-		packet.addShort(Drops::items[shops[id].items[i].id].maxslot + player->skills->getSkillLevel(4100000)*10);
+		packet.addShort(Drops::items[rechargables[i]].maxslot + player->skills->getSkillLevel(4100000)*10);
 	}
 
 	//packet.addBytes("333333333333d33ff401f1951f00000000009a9999999999d93ff401f2951f0000000000000000000000e03fbc02f3951f00000000000333333333333e33ff401f4951f0000000000333333333333e33fe803f5951f0000000000666666666666e63fe803f6951f000000000009a9999999999e93f2003f7951f000000000000000000");
