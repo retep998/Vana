@@ -211,11 +211,13 @@ void InventoryPacket::stopChair(Player* player, vector <Player*> players){
 	packet.addInt(0);
 	packet.sendTo<Player>(player, players, 0);
 }
-void InventoryPacket::useScroll(Player* player, vector <Player*> players, char s){
+void InventoryPacket::useScroll(Player* player, vector <Player*> players, bool succeed, bool destroy){
 	Packet packet = Packet();
 	packet.addHeader(SEND_USE_SCROLL);
 	packet.addInt(player->getPlayerid());
-	packet.addInt(s);
+	packet.addByte(succeed); // Succeed/Fail
+	packet.addByte(destroy); // Destroy/Not Destroy
+	packet.addShort(0);
 	packet.sendTo<Player>(player, players, 1);
 }
 
