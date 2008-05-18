@@ -444,14 +444,11 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 }
 
 void Inventory::addNewItem(Player* player, int item, int howmany){
-	bool isequip=false;
-	if(Drops::equips.find(item) != Drops::equips.end())
-		isequip = 1;
-	if(isequip){
+	if (Drops::equips.find(item) != Drops::equips.end()) {
 		Equip* equip = setEquipStats(player, item);
 		addEquip(player, equip);
 	}
-	else{
+	else {
 		if(Drops::items.find(item) == Drops::items.end())
 			return;
 		char type = Drops::items[item].type;
