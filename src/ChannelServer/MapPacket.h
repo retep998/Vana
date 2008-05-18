@@ -29,6 +29,7 @@ namespace MapPacket {
 	void changeMap(Player* player);
 	void showTime(Player* player, unsigned char hour, unsigned char min, unsigned char sec);
 	void makeApple(Player* player);
+	void changeMusic(vector <Player*> players, char *musicname); // Change map music
 };
 
 #endif

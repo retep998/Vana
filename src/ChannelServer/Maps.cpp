@@ -225,3 +225,9 @@ void Maps::newMap(Player* player, int mapid){
 		showTime(player);
 	MapTimer::Instance()->setMapTimer(player->getMap());
 }
+// Change Music
+void Maps::changeMusic(int mapid, char *musicname){
+	if(Maps::info.find(mapid) != Maps::info.end()){
+		MapPacket::changeMusic(info[mapid].Players, musicname);
+	}
+}
