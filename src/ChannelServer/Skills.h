@@ -110,6 +110,7 @@ namespace Skills {
 	extern hash_map <int, SkillsInfo> skillsinfo;
 	void addSkill(int id, SkillsLevelInfo skill);
 	void addSkill(Player* player, unsigned char* packet);
+	void updateSkill(Player* player, int skillid);
 	void cancelSkill(Player* player, unsigned char* packet);
 	void useSkill(Player* player, unsigned char* packet);
 	void useAttackSkill(Player* player, int skillid);
@@ -134,6 +135,23 @@ public:
 	}
 	int getSkillLevel(int skillid){
 		for (hash_map<int,int>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++){
+			if(iter->first == skillid){
+				return iter->second;
+			} 
+		}
+		return 0;
+	}
+	void setMaxSkillLevel(int skillid, int maxlevel){ // Set max level for 4th job skills
+		for(hash_map<int,int>::iterator iter = maxlevels.begin(); iter != maxlevels.end(); iter++){
+			if(iter->first == skillid){
+				iter->second = maxlevel;
+				return;
+			}
+		}
+		maxlevels[skillid] = maxlevel;
+	}
+	int getMaxSkillLevel(int skillid){ // Get max level for 4th job skills
+		for (hash_map<int,int>::iterator iter = maxlevels.begin(); iter != maxlevels.end(); iter++){
 			if(iter->first == skillid){
 				return iter->second;
 			} 
@@ -216,6 +234,7 @@ public:
 	}
 private:
 	hash_map <int, int> playerskills;
+	hash_map <int, int> maxlevels;
 	hash_map <int, SkillActiveInfo> activeplayerskill;
 	hash_map <int, SkillActiveInfo> activemapskill;
 	vector <SkillMapActiveInfo> activemapenterskill;

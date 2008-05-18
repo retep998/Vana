@@ -307,3 +307,15 @@ void InventoryPacket::endItem(Player* player, unsigned char types[8]){
 	packet.addByte(0);
 	packet.packetSend(player);
 }
+// Skill Books
+void InventoryPacket::useSkillbook(Player* player, vector <Player*> Players, int skillid, int newMaxLevel, bool use, bool succeed){
+	Packet packet = Packet();
+	packet.addHeader(SEND_USE_SKILLBOOK);
+	packet.addInt(player->getPlayerid());
+	packet.addByte(1); // Number of skills? Maybe just padding or random boolean
+	packet.addInt(skillid); // Skill ID
+	packet.addInt(newMaxLevel); // New max level
+	packet.addByte(use); // Use/Cannot use
+	packet.addByte(succeed); // Pass/Fail
+	packet.sendTo(player, Maps::info[player->getMap()].Players, 1);
+}

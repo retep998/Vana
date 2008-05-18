@@ -120,7 +120,7 @@ void PlayerPacket::connectData(Player* player){
 		packet.addInt(player->skills->getSkillID(i));
 		packet.addInt(player->skills->getSkillLevel(player->skills->getSkillID(i)));
 		if(FORTHJOB_SKILL(player->skills->getSkillID(i)))
-			packet.addInt(0); // TODO: Max Level
+			packet.addInt(player->skills->getMaxSkillLevel(player->skills->getSkillID(i))); // Max Level for 4th job skills
 	}
 	//End
 	packet.addInt(0);

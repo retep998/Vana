@@ -43,6 +43,7 @@ struct QuestRewardInfo {
 	bool isitem;
 	bool isexp;
 	bool isfame;
+	bool isskill;
 	int id;
 	short count;
 	char gender;

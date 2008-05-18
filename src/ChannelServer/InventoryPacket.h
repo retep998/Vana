@@ -40,6 +40,7 @@ namespace InventoryPacket {
 	void stopChair(Player* player, vector <Player*> players);
 	void useItem(Player* player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph); // Use buff item
 	void endItem(Player* player, unsigned char types[8]);
+	void useSkillbook(Player* player, vector<Player*> players, int skillid, int newMaxLevel, bool use, bool succeed);
 	void useScroll(Player* player, vector <Player*> players, bool succeed, bool destroy);
 	void showMegaphone(Player* player, vector <Player*> players, char* msg);
 	void showSuperMegaphone(Player* player, char* msg, int whisper = 0);

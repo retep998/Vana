@@ -105,6 +105,12 @@ struct SummonBag {
 	int chance;
 };
 
+struct Skillbook{
+	int skillid;
+	int reqlevel;
+	int maxlevel;
+};
+
 struct ConsumeInfo {
 	short hp;
 	short mp;
@@ -139,7 +145,9 @@ struct ConsumeInfo {
 	short ijump;
 	short ispeed;
 	vector <SummonBag> mobs;
+	vector <Skillbook> skills;
 };
+
 struct FootholdInfo {
 	short x1;
 	short y1;
