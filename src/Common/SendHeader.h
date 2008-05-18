@@ -46,8 +46,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_NOTICE 0x2d
 #define SEND_FAME 0x31
 #define SEND_NOTE 0x32 // Bottom-right corner notice
+#define SEND_USE_SKILLBOOK 0x34 // Skillbooks
 #define SEND_USE_SKILL 0x3b
 #define SEND_CHANGE_MAP 0x4e
+#define SEND_BOSS_ENV 0x54 // Change Music/Boss HP Bars
+#define SEND_USE_WEATHER 0x55 // Weather effects
 #define SEND_MAKE_APPLE 0x5c // Wear apple suit
 #define SEND_COMMAND_RESPOND 0x5f // Respond to / commands i.e. "/find"
 #define SEND_TIME 0x62 // For places with clock i.e. ship station

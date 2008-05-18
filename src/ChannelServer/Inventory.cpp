@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Player.h"
 #include "InventoryPacket.h"
+#include "Skills.h"
 #include "Drops.h"
 #include "Shops.h"
 #include "Quests.h"
@@ -641,7 +642,43 @@ void Inventory::endItem(Player *player, int itemid){
 	}
 	InventoryPacket::endItem(player, types);
 }
+// Skill books
+void Inventory::useSkillbook(Player *player, unsigned char *packet){
+	short slot = BufferUtilities::getShort(packet+4);
+	int itemid = BufferUtilities::getInt(packet+6);
 
+	if(player->inv->getItemAmountBySlot(slot, 2) == 0){
+		// hacking
+		return;
+	}
+
+	int skillid = 0;
+	int newMaxLevel = 0;
+	bool use = false;
+	bool succeed = false;
+
+	for(unsigned int i=0; i<Drops::consumes[itemid].skills.size(); i++){
+		skillid = Drops::consumes[itemid].skills[i].skillid;
+		newMaxLevel = Drops::consumes[itemid].skills[i].maxlevel;
+		if(player->getJob() == (int)Drops::consumes[itemid].skills[i].skillid/10000){ // Make sure the skill is for the person's job
+			if(player->skills->getSkillLevel(skillid) >= Drops::consumes[itemid].skills[i].reqlevel && player->skills->getMaxSkillLevel(skillid) < newMaxLevel)
+				use = true;
+		}
+		if(use){
+			if(Randomizer::Instance()->randInt(99)<Drops::consumes[itemid].success){
+				player->skills->setMaxSkillLevel(skillid, newMaxLevel);
+				succeed = true;
+			}
+			takeItemSlot(player, slot, 2, 1);
+			break;
+		}
+	}
+
+	if(skillid == 0) return;
+
+	InventoryPacket::useSkillbook(player, Maps::info[player->getMap()].Players, skillid, newMaxLevel, use, succeed);
+	Skills::updateSkill(player, skillid);
+}
 void Inventory::useChair(Player* player, unsigned char* packet){
 	int chairid = BufferUtilities::getInt(packet);
 	player->setChair(chairid);
