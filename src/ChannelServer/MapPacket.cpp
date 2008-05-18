@@ -160,3 +160,14 @@ void MapPacket::makeApple(Player* player){
 	packet.addHeader(SEND_MAKE_APPLE);  
 	packet.packetSend(player);
 }
+// Change music
+void MapPacket::changeMusic(vector <Player*> players, char *musicname){
+	Packet packet = Packet();
+	packet.addHeader(SEND_BOSS_ENV);
+	packet.addByte(0x06);
+	packet.addShort(strlen(musicname));
+	packet.addString(musicname, strlen(musicname));
+	for(unsigned int i=0; i < players.size(); i++){
+		packet.packetSend(players[i]);
+	}
+}

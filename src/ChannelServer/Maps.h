@@ -62,6 +62,7 @@ namespace Maps {
 	void showTime(Player* player);
 	void mapTimer(int mapid);
 	void newMap(Player* player, int mapid);
+	void changeMusic(int mapid, char *musicname);
 };
 
 #endif
