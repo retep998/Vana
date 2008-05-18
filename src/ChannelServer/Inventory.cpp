@@ -703,11 +703,12 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 		}
 	}
 	for(int i=0; i<player->inv->getEquipNum(); i++){
-		if(player->inv->getEquip(i)->pos == eslot)	{
+		if(player->inv->getEquip(i)->pos == eslot){
 			equip = player->inv->getEquip(i);
 			break;
 		}
 	}
+	bool succeed=false;
 	bool cursed=false;
 	if(itemid == 0 || equip == NULL)
 		return;
@@ -717,7 +718,7 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 		takeItemSlot(player, slot, 2, 1);
 		equip->slots--;
 		if(Randomizer::Instance()->randInt(99)<Drops::consumes[itemid].success){
-			InventoryPacket::useScroll(player, Maps::info[player->getMap()].Players ,true);
+			succeed = true;
 			equip->istr+=Drops::consumes[itemid].istr;
 			equip->idex+=Drops::consumes[itemid].idex;
 			equip->iint+=Drops::consumes[itemid].iint;
@@ -746,12 +747,12 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 					}
 				}
 			}
-			InventoryPacket::useScroll(player, Maps::info[player->getMap()].Players , false);
 		}
 	}
-	if(!cursed) 
+	InventoryPacket::useScroll(player, Maps::info[player->getMap()].Players, succeed, cursed);
+	if(!cursed)
 		InventoryPacket::addEquip(player, equip, 1);
-	InventoryPacket::updatePlayer(player); 
+	InventoryPacket::updatePlayer(player);
 }
 
 void Inventory::useMegaphone(Player* player, unsigned char *packet){
