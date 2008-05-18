@@ -228,7 +228,13 @@ void Mobs::damageMobSpell(Player* player, unsigned char* packet){
 				mob->setHP(mob->getHP()-damage);
 				int mhp=-1;
 				mhp = mobinfo[mob->getMobID()].hp;
-				MobsPacket::showHP(player, mobid ,mob->getHP()*100/mhp);
+				// HP Bars
+				if(mobinfo[mob->getMobID()].boss && mobinfo[mob->getMobID()].hpcolor > 0) // Boss HP bars
+					MobsPacket::showBossHP(player, Maps::info[map].Players, mob->getMobID(), mob->getHP(), mhp, mobinfo[mob->getMobID()].hpcolor, mobinfo[mob->getMobID()].hpbgcolor);
+				else if(mobinfo[mob->getMobID()].boss) // Miniboss HP bars
+					MobsPacket::showMinibossHP(player, Maps::info[map].Players, mobid, mob->getHP()*100/mhp);
+				else // Normal HP bars
+					MobsPacket::showHP(player, mobid, mob->getHP()*100/mhp);
 				if(mob->getHP() <= 0){
 					dieMob(player, mob);
 					break;
@@ -263,7 +269,13 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
 				mob->setHP(mob->getHP()-damage);
 				int mhp=-1;
 				mhp = mobinfo[mob->getMobID()].hp;
-				MobsPacket::showHP(player, mobid ,mob->getHP()*100/mhp);
+				// HP Bars
+				if(mobinfo[mob->getMobID()].boss && mobinfo[mob->getMobID()].hpcolor > 0) // Boss HP bars
+					MobsPacket::showBossHP(player, Maps::info[map].Players, mob->getMobID(), mob->getHP(), mhp, mobinfo[mob->getMobID()].hpcolor, mobinfo[mob->getMobID()].hpbgcolor);
+				else if(mobinfo[mob->getMobID()].boss) // Miniboss HP bars
+					MobsPacket::showMinibossHP(player, Maps::info[map].Players, mobid, mob->getHP()*100/mhp);
+				else // Normal HP bars
+					MobsPacket::showHP(player, mobid, mob->getHP()*100/mhp);
 				if(mob->getHP() <= 0){
 					dieMob(player, mob);
 					break;
@@ -300,10 +312,11 @@ void Mobs::damageMobRanged(Player* player, unsigned char* packet, int size){
 			break;
 		}
 	}
-	MobsPacket::damageMobRanged(player, Maps::info[player->getMap()].Players, packet, itemid);
+	int map = player->getMap();
+	MobsPacket::damageMobRanged(player, Maps::info[map].Players, packet, itemid);
+
 	int howmany = packet[1]/0x10;
 	int hits = packet[1]%0x10;
-	int map = player->getMap();
 	int skillid = BufferUtilities::getInt(packet+2);
 	if (skillid == 4111005) // Avenger
 		Inventory::takeItemSlot(player, pos, 2, 3);
@@ -325,7 +338,13 @@ void Mobs::damageMobRanged(Player* player, unsigned char* packet, int size){
 			if(mob!=NULL){
 				mob->setHP(mob->getHP()-damage);
 				mhp = mobinfo[mob->getMobID()].hp;
-				MobsPacket::showHP(player, mobid ,mob->getHP()*100/mhp);
+				// HP Bars
+				if(mobinfo[mob->getMobID()].boss && mobinfo[mob->getMobID()].hpcolor > 0) // Boss HP bars
+					MobsPacket::showBossHP(player, Maps::info[map].Players, mob->getMobID(), mob->getHP(), mhp, mobinfo[mob->getMobID()].hpcolor, mobinfo[mob->getMobID()].hpbgcolor);
+				else if(mobinfo[mob->getMobID()].boss) // Miniboss HP bars
+					MobsPacket::showMinibossHP(player, Maps::info[map].Players, mobid, mob->getHP()*100/mhp);
+				else // Normal HP bars
+					MobsPacket::showHP(player, mobid, mob->getHP()*100/mhp);
 				if(mob->getHP() <= 0){
 					dieMob(player, mob);
 					break;

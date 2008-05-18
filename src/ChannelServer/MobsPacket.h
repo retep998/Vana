@@ -29,6 +29,8 @@ namespace MobsPacket {
 	void moveMob(Player* player, Mob* mob ,vector <Player*> players, unsigned char* pack, int pla);
 	void damageMob(Player* player, vector <Player*> players, unsigned char* pack);
 	void showHP(Player* player, int mobid, char per);
+	void showMinibossHP(Player* player, vector <Player*> players, int mobid, char per); // For minor bosses
+	void showBossHP(Player* player, vector <Player*> players, int mobid, int currhp, int maxhp, short hpcolor, short hpbgcolor); // For major bosses
 	void dieMob(Player* player, vector<Player*> players, Mob* mob, int mobid);
 	void damageMobSpell(Player* player, vector <Player*> players, unsigned char* pack);
 	void damageMobRanged(Player* player, vector <Player*> players, unsigned char* pack, int itemid);
