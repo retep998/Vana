@@ -197,6 +197,26 @@ void MobsPacket::showHP(Player* player, int mobid, char per){
 	packet.addByte(per);
 	packet.packetSend(player);
 }
+// Miniboss HP
+void MobsPacket::showMinibossHP(Player* player, vector <Player*> players, int mobid, char per){
+	Packet packet = Packet();
+	packet.addHeader(SEND_SHOW_MOB_HP);
+	packet.addInt(mobid);
+	packet.addByte(per);
+	packet.sendTo(player, players, true);
+}
+// Boss hp
+void MobsPacket::showBossHP(Player* player, vector <Player*> players, int mobid, int currhp, int maxhp, short hpcolor, short hpbgcolor){
+	Packet packet = Packet();
+	packet.addHeader(SEND_BOSS_ENV);
+	packet.addByte(0x05);
+	packet.addInt(mobid);
+	packet.addInt(currhp);
+	packet.addInt(maxhp);
+	packet.addByte((char)hpcolor);
+	packet.addByte((char)hpbgcolor);
+	packet.sendTo(player, players, true);
+}
 
 void MobsPacket::dieMob(Player* player, vector<Player*> players, Mob* mob, int mobid){
 	Packet packet = Packet();
