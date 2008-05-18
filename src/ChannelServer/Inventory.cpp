@@ -456,15 +456,16 @@ void Inventory::addNewItem(Player* player, int item, int howmany){
 		if (ISSTAR(item))
 			max += player->skills->getSkillLevel(4100000)*10;
 		Item* newitem = new Item;
-		newitem->amount = howmany;
+		if (howmany - max > 0)
+			newitem->amount = max;
+		else
+			newitem->amount = howmany;
 		newitem->id = item;
 		newitem->inv = type;
 		newitem->pos = findSlot(player, item , type, howmany);
-		if (howmany - max > 0) {
-			newitem->amount = max;
-			addNewItem(player, item, howmany - max);	
-		}
 		addItem(player, newitem);
+		if (howmany - max >0)
+			addNewItem(player, item, howmany - max);
 	}
 }
 
