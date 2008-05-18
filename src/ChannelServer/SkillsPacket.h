@@ -25,7 +25,7 @@ using namespace std;
 struct SkillActiveInfo;
 
 namespace SkillsPacket {
-	void addSkill(Player* player, int skillid, int level, int maxlevel);
+	void addSkill(Player* player, int skillid, int level, int maxlevel = 0);
 	void showSkill(Player* player, vector <Player*> players, int skillid);
 	void showCombo(Player* player, vector <Player*> players, int time); // Combo Attack
 	void useSkill(Player* player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
