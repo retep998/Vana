@@ -505,6 +505,11 @@ void Skills::init(){
 	player.byte = 6;
 	player.value = SKILL_X;
 	skillsinfo[1004].player.push_back(player);
+	map.type = 0x40;
+	map.byte = 6;
+	map.value = SKILL_X;
+	map.val = false;
+	skillsinfo[1004].map.push_back(map);
 }
 
 void Skills::addSkill(int id, SkillsLevelInfo skill){
