@@ -436,7 +436,7 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 	else if (type == 2) { // Recharge
 		short pos = BufferUtilities::getShort(packet+1);
 		Item *item = player->inv->getItemByPos(pos, 2);
-		item->amount = Drops::items[item->id].maxslot + player->skills->getSkillLevel(4100000)*10;;
+		item->amount = Drops::items[item->id].maxslot + player->skills->getSkillLevel(4100000)*10;
 		player->inv->setMesos(player->inv->getMesos() - 1); // TODO: Calculate price, letting players recharge for 1 meso for now
 		InventoryPacket::moveItemS(player, item->inv, item->pos, item->amount);
 		InventoryPacket::bought(player);
