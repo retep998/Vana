@@ -41,6 +41,9 @@ void Initializing::initializeMobs(){
 			//    3 : MP
 			//    4 : EXP
 			//    5 : Boss
+			//    6 : HP Color
+			//    7 : HP BG Color
+			//    8 : Mob Summon
 			if(previousid != -1){
 				Mobs::addMob(previousid, mob);
 				mob.summon.clear();
@@ -49,10 +52,12 @@ void Initializing::initializeMobs(){
 			mob.mp  = atoi(mobRow[3]);
 			mob.exp = atoi(mobRow[4]);
 			mob.boss = (bool) mobRow[5];
+			mob.hpcolor = atoi(mobRow[6]);
+			mob.hpbgcolor = atoi(mobRow[7]);
 		}
 
-		if(!mobRow[6].is_null()){
-			mob.summon.push_back(atoi(mobRow[6]));
+		if(!mobRow[8].is_null()){
+			mob.summon.push_back(atoi(mobRow[8]));
 		}
 		previousid = atoi(mobRow[1]);
 	}
@@ -179,6 +184,29 @@ void Initializing::initializeItems(){
 		Drops::addConsume(previousid, cons);
 		Drops::addItem(previousid, item);
 		cons.mobs.clear();
+	}
+
+	// Item Skills
+
+	query << "SELECT * FROM itemskilldata ORDER BY itemid ASC";
+	
+	if (!(res = query.use())) {
+		printf("FAILED: %s\n", db.error());
+		exit(1);
+	}
+
+	while(mysqlpp::Row itemSkillRow = res.fetch_row()){
+		// Col0 : Row ID
+		//    1 : Item ID
+		//    2 : Skill ID
+		//    3 : Required Level
+		//    4 : Master Level
+
+		Skillbook skill;
+		skill.skillid = atoi(itemSkillRow[2]);
+		skill.reqlevel = atoi(itemSkillRow[3]);
+		skill.maxlevel = atoi(itemSkillRow[4]);
+		Drops::consumes[atoi(itemSkillRow[1])].skills.push_back(skill);
 	}
 	printf("DONE\n");
 }
@@ -419,11 +447,12 @@ void Initializing::initializeQuests(){
 		//    4 : EXP
 		//    5 : Mesos
 		//    6 : Fame
-		//    7 : Object ID
-		//    8 : Count
-		//    9 : Gender
-		//   10 : Job
-		//   11 : Prop
+		//    7 : Skill
+		//    8 : Object ID
+		//    9 : Count
+		//   10 : Gender
+		//   11 : Job
+		//   12 : Prop
 		currentid = atoi(rewardRow[1]);
 
 		if(currentid != previousid && previousid != -1){
@@ -437,11 +466,12 @@ void Initializing::initializeQuests(){
 		rwa.isexp = (bool) rewardRow[4];
 		rwa.ismesos = (bool) rewardRow[5];
 		rwa.isfame = (bool) rewardRow[6];
-		rwa.id = atoi(rewardRow[7]);
-		rwa.count = atoi(rewardRow[8]);
-		rwa.gender = atoi(rewardRow[9]);
-		rwa.job = atoi(rewardRow[10]);
-		rwa.prop = atoi(rewardRow[11]);
+		rwa.isskill = (bool) rewardRow[7];
+		rwa.id = atoi(rewardRow[8]);
+		rwa.count = atoi(rewardRow[9]);
+		rwa.gender = atoi(rewardRow[10]);
+		rwa.job = atoi(rewardRow[11]);
+		rwa.prop = atoi(rewardRow[12]);
 		rwas.push_back(rwa);
 
 		previousid = atoi(rewardRow[1]);
