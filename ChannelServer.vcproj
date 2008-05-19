@@ -362,10 +362,6 @@
 				Name="NPCs"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\GameMasters.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\MapleIsland.cpp"
 					>
 				</File>

@@ -64,16 +64,12 @@ public:
 		else {
 			switch(npcid){
 				case 2020005: npc_2020005(npc); break;
-				case 9900000: cosmeticNPC(npc); break;
 				default: npc->end(); break;
 			}
 		}
 	}
 private:
 	static void npc_2020005(NPC* npc);
-	static void maleCosmetics(NPC* npc);
-	static void femaleCosmetics(NPC* npc);
-	static void cosmeticNPC(NPC* npc);
 };
 
 #endif
