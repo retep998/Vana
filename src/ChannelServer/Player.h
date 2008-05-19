@@ -242,6 +242,9 @@ public:
 	SkillMapEnterActiveInfo getSkill(){
 		return skill;
 	}
+	void deleteVariable(string name) {
+		variables.erase(name);
+	}
 	void setVariable(string name, int val) {
 		variables[name] = val;
 	}
