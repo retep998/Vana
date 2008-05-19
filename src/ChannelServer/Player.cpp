@@ -141,7 +141,6 @@ void Player::playerConnect(unsigned char *packet){
 	exp = res[0]["exp"];
 	fame = (short) res[0]["fame"];
 	map = res[0]["map"];
-	origin = res[0]["origin"];
 	mappos = (unsigned char) res[0]["pos"];
 	gm = res[0]["gm"];
 
@@ -370,7 +369,6 @@ void Player::saveStats() {
 			<< "exp = " << mysqlpp::quote << getExp() << ","
 			<< "fame = " << mysqlpp::quote << getFame() << ","
 			<< "map = " << mysqlpp::quote << getMap() << ","
-			<< "origin = " << mysqlpp::quote << getOrigin() << ","
 			<< "gender = " << mysqlpp::quote << (short) getGender() << ","
 			<< "skin = " << mysqlpp::quote << (short) getSkin() << ","
 			<< "eyes = " << mysqlpp::quote << getEyes() << ","

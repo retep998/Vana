@@ -140,7 +140,7 @@ void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map speci
 			break;
 		}
 	if (strcmp(portal.script, "market00") == 0) { // Leaving FM
-		portal.toid = player->getOrigin();
+		portal.toid = player->getVariable("fm_origin");
 		// Let's find where should we be standing on the other map
 		for(unsigned int i=0; i<info[portal.toid].Portals.size(); i++){
 			if(strncmp(info[portal.toid].Portals[i].script, "market", 6) ==0){
@@ -150,7 +150,7 @@ void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map speci
 		}
 	}
 	else if (strncmp(portal.script, "market", 6) == 0) { // FM portals
-		player->setOrigin();
+		player->setVariable("fm_origin", player->getMap());
 		portal.toid = 910000000;
 		strcpy_s(portal.to, "out00");
 	}
