@@ -28,7 +28,7 @@ extern "C" {
 
 class LuaNPC {
 public:
-	LuaNPC(char *filename, NPC *npc);
+	LuaNPC(const char *filename, NPC *npc);
 };
 
 namespace LuaNPCExports {
