@@ -359,14 +359,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="NPCs"
-				>
-				<File
-					RelativePath=".\src\ChannelServer\MapleIsland.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Utilities"
 				>
 				<File

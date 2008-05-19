@@ -21,45 +21,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Shops.h"
 #include "LuaNPC.h"
 #include <sys/stat.h>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 class NPC;
 
-class QuestsScripts {
-public:
-	static void handle(int npcid, NPC* npc, bool start){
-		if(start){
-			switch(npcid){
-				case 2000: npc_2000s(npc); break;
-				default: npc->end(); break;
-			}
-		}
-		else{
-			switch(npcid){
-				case 2000: npc_2000e(npc); break;
-				default: npc->end(); break;
-			}
-		}
-	}
-private:
-	static void npc_2000s(NPC* npc);
-	static void npc_2000e(NPC* npc);
-};
-
 class NPCsScripts {
 public:
-	static void handle(int npcid, NPC* npc){
+	static void handle(int npcid, NPC *npc){
 		struct stat fileinfo;
-		char filename[255];
-		sprintf_s(filename, "scripts/npcs/%d.lua", npcid);
-		if(npc->isQuest()){
-			QuestsScripts::handle(npcid, npc, npc->isStart());
+		std::ostringstream filenameStream;
+		filenameStream << "scripts/npcs/" << npcid;
+		if (npc->isQuest()) {
+			if (npc->isStart())
+				filenameStream << "s";
+			else
+				filenameStream << "e";
 		}
-		else if (Shops::shops.find(npcid) != Shops::shops.end()) { // Shop
+		filenameStream << ".lua";
+		std::string filename = filenameStream.str();
+		if (Shops::shops.find(npcid) != Shops::shops.end()) { // Shop
 			npc->showShop();
 			npc->end();
 		}
-		else if (!stat(filename, &fileinfo)) { // Lua NPC
-			LuaNPC npc(filename, npc);
+		else if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC
+			LuaNPC npc(filename.c_str(), npc);
 		}
 	}
 };
