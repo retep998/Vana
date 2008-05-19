@@ -38,7 +38,7 @@ public:
 	}
 	void setItemTimer(Player* player, int item, int time){
 		ITimer timer;
-		timer.id = Timer::Instance()->setTimer(time, this);;
+		timer.id = Timer::Instance()->setTimer(time, this);
 		timer.player = player;
 		timer.item = item;
 		timer.time = time;
