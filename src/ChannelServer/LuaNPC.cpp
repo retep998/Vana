@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "LuaNPC.h"
+#include "NPCs.h"
 #include "Player.h"
 #include "Players.h"
 #include "Quests.h"
@@ -25,7 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacket.h"
 #include <string>
 
-LuaNPC::LuaNPC(const char *filename, int playerid) {
+hash_map <int, PortalInfo *> LuaNPCExports::portals;
+
+LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 	lua_State *luaVm = lua_open();
 
 	lua_pushinteger(luaVm, playerid); // Pushing id for reference from static functions
@@ -33,6 +36,9 @@ LuaNPC::LuaNPC(const char *filename, int playerid) {
 	if (Players::players[playerid]->getNPC() != NULL) {
 		lua_pushinteger(luaVm, Players::players[playerid]->getNPC()->getState());
 		lua_setglobal(luaVm, "state");
+	}
+	if (portal != NULL) {
+		LuaNPCExports::portals[playerid] = portal;
 	}
 
 	lua_register(luaVm, "addText", &LuaNPCExports::addText);
@@ -63,12 +69,15 @@ LuaNPC::LuaNPC(const char *filename, int playerid) {
 	lua_register(luaVm, "getText", &LuaNPCExports::getText);
 	lua_register(luaVm, "getVariable", &LuaNPCExports::getVariable);
 	lua_register(luaVm, "getPlayerVariable", &LuaNPCExports::getPlayerVariable);
+	lua_register(luaVm, "getPortalFrom", &LuaNPCExports::getPortalFrom);
 	lua_register(luaVm, "setState", &LuaNPCExports::setState);
 	lua_register(luaVm, "setStyle", &LuaNPCExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaNPCExports::setMap);
 	lua_register(luaVm, "setHP", &LuaNPCExports::setHP);
 	lua_register(luaVm, "setVariable", &LuaNPCExports::setVariable);
 	lua_register(luaVm, "setPlayerVariable", &LuaNPCExports::setPlayerVariable);
+	lua_register(luaVm, "setPortalTo", &LuaNPCExports::setPortalTo);
+	lua_register(luaVm, "setPortalToId", &LuaNPCExports::setPortalToId);
 	lua_register(luaVm, "addQuest", &LuaNPCExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaNPCExports::endQuest);
 	lua_register(luaVm, "endNPC", &LuaNPCExports::end); // end() doesn't work (reserved?)
@@ -79,6 +88,10 @@ LuaNPC::LuaNPC(const char *filename, int playerid) {
 
 NPC * LuaNPCExports::getNPC(lua_State *luaVm) {
 	return getPlayer(luaVm)->getNPC();
+}
+
+PortalInfo * LuaNPCExports::getPortal(lua_State *luaVm) {
+	return portals[getPlayer(luaVm)->getPlayerid()];
 }
 
 Player * LuaNPCExports::getPlayer(lua_State *luaVm) {
@@ -236,7 +249,12 @@ int LuaNPCExports::getVariable(lua_State *luaVm) {
 
 int LuaNPCExports::getPlayerVariable(lua_State *luaVm) {
 	std::string key = string(lua_tostring(luaVm, -1));
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getVariable(key));
+	lua_pushstring(luaVm, getPlayer(luaVm)->getVariable(key).c_str());
+	return 1;
+}
+
+int LuaNPCExports::getPortalFrom(lua_State *luaVm) {
+	lua_pushstring(luaVm, getPortal(luaVm)->from);
 	return 1;
 }
 
@@ -281,9 +299,20 @@ int LuaNPCExports::setVariable(lua_State *luaVm) {
 }
 
 int LuaNPCExports::setPlayerVariable(lua_State *luaVm) {
-	int value = lua_tointeger(luaVm, -1);
+	std::string value = string(lua_tostring(luaVm, -1));
 	std::string key = string(lua_tostring(luaVm, -2));
 	getPlayer(luaVm)->setVariable(key, value);
+	return 1;
+}
+
+int LuaNPCExports::setPortalTo(lua_State *luaVm) {
+	strcpy_s(getPortal(luaVm)->to, lua_tostring(luaVm, -1));
+	return 1;
+}
+
+int LuaNPCExports::setPortalToId(lua_State *luaVm) {
+	int toid = lua_tointeger(luaVm, -1);
+	getPortal(luaVm)->toid = toid;
 	return 1;
 }
 

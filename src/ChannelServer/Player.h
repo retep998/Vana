@@ -245,11 +245,11 @@ public:
 	void deleteVariable(string name) {
 		variables.erase(name);
 	}
-	void setVariable(string name, int val) {
+	void setVariable(string name, string val) {
 		variables[name] = val;
 	}
-	int getVariable(string name) {
-		return (variables.find(name) == variables.end()) ? 0 : variables[name];
+	string getVariable(string name) {
+		return (variables.find(name) == variables.end()) ? "0" : variables[name];
 	}
 	void addWarning();
 	void changeChannel(char channel);
@@ -303,7 +303,7 @@ private:
 	vector <int> warnings;
 	int combo; // Combo Attack
 	bool save_on_dc;
-	hash_map <string, int> variables;
+	hash_map <string, string> variables;
 	SkillMapEnterActiveInfo skill;
 };
 
