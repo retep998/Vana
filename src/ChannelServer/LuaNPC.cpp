@@ -285,6 +285,12 @@ int LuaNPCExports::setPlayerVariable(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaNPCExports::deletePlayerVariable(lua_State *luaVm) {
+	std::string key = string(lua_tostring(luaVm, -1));
+	getPlayer(luaVm)->deleteVariable(key);
+	return 1;
+}
+
 int LuaNPCExports::addQuest(lua_State *luaVm) {
 	int questid = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->quests->addQuest(questid, getNPC(luaVm)->getNpcID());

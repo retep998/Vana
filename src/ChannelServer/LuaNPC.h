@@ -75,6 +75,8 @@ namespace LuaNPCExports {
 	int setVariable(lua_State *luaVm);
 	int setPlayerVariable(lua_State *luaVm);
 
+	int deletePlayerVariable(lua_State *luaVm);
+
 	int addQuest(lua_State *luaVm);
 	int endQuest(lua_State *luaVm);
 
