@@ -134,23 +134,9 @@ public:
 	Player* getPlayer(){
 		return player;
 	}
-	short getGender();
-	void teleport(int mapid);
-	int getItemNum(int itemid);
-	int getMesos();
-	void giveItem(int itemid, short amount);
-	void giveMesos(int amount);
-	int getPlayerMap();
 	void showShop();
-	void setStyle(int id);
-	void setVariable(const char *name, int val) {
-		setVariable(string(name), val);
-	}
 	void setVariable(string name, int val) {
 		vars[name] = val;
-	}
-	int getVariable(const char *name) {
-		return getVariable(string(name));
 	}
 	int getVariable(string name) {
 		if(vars.find(name) == vars.end())
@@ -158,15 +144,6 @@ public:
 		else
 			return vars[name];
 	}
-	int getPlayerHair();
-	int getPlayerEyes();
-	void setPlayerHP(short hp);
-	short getPlayerHP();
-	void addQuest(short questid);
-	void endQuest(short questid);
-	void giveEXP(int exp);
-	int getLevel();
-
 };
 
 #endif

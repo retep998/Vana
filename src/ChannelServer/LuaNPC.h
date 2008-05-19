@@ -33,6 +33,7 @@ public:
 
 namespace LuaNPCExports {
 	NPC * getNPC(lua_State *luaVm);
+	Player * getPlayer(lua_State *luaVm);
 
 	// The exports
 	int addText(lua_State *luaVm);

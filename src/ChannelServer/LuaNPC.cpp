@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Levels.h"
 #include "InventoryPacket.h"
+#include <string>
 
 LuaNPC::LuaNPC(const char *filename, NPC *npc) {
 	lua_State *luaVm = lua_open();
@@ -73,8 +74,12 @@ LuaNPC::LuaNPC(const char *filename, NPC *npc) {
 }
 
 NPC * LuaNPCExports::getNPC(lua_State *luaVm) {
+	return getPlayer(luaVm)->getNPC();
+}
+
+Player * LuaNPCExports::getPlayer(lua_State *luaVm) {
 	lua_getglobal(luaVm, "playerid");
-	return Players::players[lua_tointeger(luaVm, -1)]->getNPC();
+	return Players::players[lua_tointeger(luaVm, -1)];
 }
 
 int LuaNPCExports::addText(lua_State *luaVm) {
@@ -165,42 +170,42 @@ int LuaNPCExports::giveEXP(lua_State *luaVm) {
 }
 
 int LuaNPCExports::getLevel(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getPlayer()->getLevel());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getLevel());
 	return 1;
 }
 
 int LuaNPCExports::getGender(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getPlayer()->getGender());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getGender());
 	return 1;
 }
 
 int LuaNPCExports::getItemAmount(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getPlayer()->inv->getItemAmount(lua_tointeger(luaVm, -1)));
+	lua_pushnumber(luaVm, getPlayer(luaVm)->inv->getItemAmount(lua_tointeger(luaVm, -1)));
 	return 1;
 }
 
 int LuaNPCExports::getMesos(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getPlayer()->inv->getMesos());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->inv->getMesos());
 	return 1;
 }
 
 int LuaNPCExports::getMap(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getPlayer()->getMap());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getMap());
 	return 1;
 }
 
 int LuaNPCExports::getHP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getPlayer()->getHP());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getHP());
 	return 1;
 }
 
 int LuaNPCExports::getHair(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getPlayer()->getHair());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getHair());
 	return 1;
 }
 
 int LuaNPCExports::getEyes(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getPlayer()->getEyes());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getEyes());
 	return 1;
 }
 
@@ -220,7 +225,8 @@ int LuaNPCExports::getText(lua_State *luaVm) {
 }
 
 int LuaNPCExports::getVariable(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getVariable(lua_tostring(luaVm, -1)));
+	std::string key = string(lua_tostring(luaVm, -1));
+	lua_pushnumber(luaVm, getNPC(luaVm)->getVariable(key));
 	return 1;
 }
 
@@ -232,13 +238,13 @@ int LuaNPCExports::setState(lua_State *luaVm) {
 int LuaNPCExports::setStyle(lua_State *luaVm) {
 	int id = lua_tointeger(luaVm, -1);
 	if(id/10000 == 0){
-		getNPC(luaVm)->getPlayer()->setSkin((char)id);
+		getPlayer(luaVm)->setSkin((char)id);
 	}
 	else if(id/10000 == 2){
-		getNPC(luaVm)->getPlayer()->setEyes(id);
+		getPlayer(luaVm)->setEyes(id);
 	}
 	else if(id/10000 == 3){
-		getNPC(luaVm)->getPlayer()->setHair(id);
+		getPlayer(luaVm)->setHair(id);
 	}
 	InventoryPacket::updatePlayer(getNPC(luaVm)->getPlayer());
 	return 1;
@@ -253,26 +259,26 @@ int LuaNPCExports::setMap(lua_State *luaVm) {
 
 int LuaNPCExports::setHP(lua_State *luaVm) {
 	int hp = lua_tointeger(luaVm, -1);
-	getNPC(luaVm)->getPlayer()->setHP(hp);
+	getPlayer(luaVm)->setHP(hp);
 	return 1;
 }
 
 int LuaNPCExports::setVariable(lua_State *luaVm) {
 	int value = lua_tointeger(luaVm, -1);
-	const char *key = lua_tostring(luaVm, -2);
+	std::string key = string(lua_tostring(luaVm, -2));
 	getNPC(luaVm)->setVariable(key, value);
 	return 1;
 }
 
 int LuaNPCExports::addQuest(lua_State *luaVm) {
 	int questid = lua_tointeger(luaVm, -1);
-	getNPC(luaVm)->getPlayer()->quests->addQuest(questid, getNPC(luaVm)->getNpcID());
+	getPlayer(luaVm)->quests->addQuest(questid, getNPC(luaVm)->getNpcID());
 	return 1;
 }
 
 int LuaNPCExports::endQuest(lua_State *luaVm) {
 	int questid = lua_tointeger(luaVm, -1);
-	getNPC(luaVm)->getPlayer()->quests->finishQuest(questid, getNPC(luaVm)->getNpcID());
+	getPlayer(luaVm)->quests->finishQuest(questid, getNPC(luaVm)->getNpcID());
 	return 1;
 }
 
