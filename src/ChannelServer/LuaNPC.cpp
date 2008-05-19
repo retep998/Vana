@@ -25,13 +25,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacket.h"
 #include <string>
 
-LuaNPC::LuaNPC(const char *filename, NPC *npc) {
+LuaNPC::LuaNPC(const char *filename, int playerid) {
 	lua_State *luaVm = lua_open();
 
-	lua_pushinteger(luaVm, npc->getPlayer()->getPlayerid()); // Pushing id for reference from static functions
+	lua_pushinteger(luaVm, playerid); // Pushing id for reference from static functions
 	lua_setglobal(luaVm, "playerid");
-	lua_pushinteger(luaVm, npc->getState());
-	lua_setglobal(luaVm, "state");
+	if (Players::players[playerid]->getNPC() != NULL) {
+		lua_pushinteger(luaVm, Players::players[playerid]->getNPC()->getState());
+		lua_setglobal(luaVm, "state");
+	}
 
 	lua_register(luaVm, "addText", &LuaNPCExports::addText);
 	lua_register(luaVm, "addChar", &LuaNPCExports::addChar);
