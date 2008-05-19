@@ -44,6 +44,25 @@ LuaNPC::LuaNPC(char *filename, NPC *npc) {
 	lua_register(luaVm, "sendGetText", &LuaNPCExports::sendGetText);
 	lua_register(luaVm, "sendGetNumber", &LuaNPCExports::sendGetNumber);
 	lua_register(luaVm, "sendStyle", &LuaNPCExports::sendStyle);
+	lua_register(luaVm, "giveItem", &LuaNPCExports::giveItem);
+	lua_register(luaVm, "giveMesos", &LuaNPCExports::giveMesos);
+	lua_register(luaVm, "giveEXP", &LuaNPCExports::giveEXP);
+	lua_register(luaVm, "getLevel", &LuaNPCExports::getLevel);
+	lua_register(luaVm, "getGender", &LuaNPCExports::getGender);
+	lua_register(luaVm, "getItemAmount", &LuaNPCExports::getItemAmount);
+	lua_register(luaVm, "getMesos", &LuaNPCExports::getMesos);
+	lua_register(luaVm, "getMap", &LuaNPCExports::getMap);
+	lua_register(luaVm, "getHP", &LuaNPCExports::getHP);
+	lua_register(luaVm, "getHair", &LuaNPCExports::getHair);
+	lua_register(luaVm, "getEyes", &LuaNPCExports::getEyes);
+	lua_register(luaVm, "getSelected", &LuaNPCExports::getSelected);
+	lua_register(luaVm, "getNumber", &LuaNPCExports::getNumber);
+	lua_register(luaVm, "getText", &LuaNPCExports::getText);
+	lua_register(luaVm, "setStyle", &LuaNPCExports::setStyle);
+	lua_register(luaVm, "setMap", &LuaNPCExports::setMap);
+	lua_register(luaVm, "setHP", &LuaNPCExports::setHP);
+	lua_register(luaVm, "addQuest", &LuaNPCExports::addQuest);
+	lua_register(luaVm, "endQuest", &LuaNPCExports::endQuest);
 	lua_register(luaVm, "endNPC", &LuaNPCExports::end); // end() doesn't work (reserved?)
 
 	luaL_dofile(luaVm, filename);
@@ -179,6 +198,21 @@ int LuaNPCExports::getHair(lua_State *luaVm) {
 
 int LuaNPCExports::getEyes(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getNPC(luaVm)->getPlayer()->getEyes());
+	return 1;
+}
+
+int LuaNPCExports::getSelected(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getNPC(luaVm)->getSelected());
+	return 1;
+}
+
+int LuaNPCExports::getNumber(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getNPC(luaVm)->getNumber());
+	return 1;
+}
+
+int LuaNPCExports::getText(lua_State *luaVm) {
+	lua_pushstring(luaVm, getNPC(luaVm)->getText());
 	return 1;
 }
 
