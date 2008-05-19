@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "InventoryPacket.h"
 
-LuaNPC::LuaNPC(char *filename, NPC *npc) {
+LuaNPC::LuaNPC(const char *filename, NPC *npc) {
 	lua_State *luaVm = lua_open();
 
 	lua_pushinteger(luaVm, npc->getPlayer()->getPlayerid()); // Pushing id for reference from static functions
@@ -252,22 +252,27 @@ int LuaNPCExports::setMap(lua_State *luaVm) {
 }
 
 int LuaNPCExports::setHP(lua_State *luaVm) {
-	getNPC(luaVm)->getPlayer()->setHP(lua_tointeger(luaVm, -1));
+	int hp = lua_tointeger(luaVm, -1);
+	getNPC(luaVm)->getPlayer()->setHP(hp);
 	return 1;
 }
 
 int LuaNPCExports::setVariable(lua_State *luaVm) {
-	getNPC(luaVm)->setVariable(lua_tostring(luaVm, -2), lua_tointeger(luaVm, -1));
+	int value = lua_tointeger(luaVm, -1);
+	const char *key = lua_tostring(luaVm, -2);
+	getNPC(luaVm)->setVariable(key, value);
 	return 1;
 }
 
 int LuaNPCExports::addQuest(lua_State *luaVm) {
-	getNPC(luaVm)->getPlayer()->quests->addQuest(lua_tointeger(luaVm, -1), getNPC(luaVm)->getNpcID());
+	int questid = lua_tointeger(luaVm, -1);
+	getNPC(luaVm)->getPlayer()->quests->addQuest(questid, getNPC(luaVm)->getNpcID());
 	return 1;
 }
 
 int LuaNPCExports::endQuest(lua_State *luaVm) {
-	getNPC(luaVm)->getPlayer()->quests->finishQuest(lua_tointeger(luaVm, -1), getNPC(luaVm)->getNpcID());
+	int questid = lua_tointeger(luaVm, -1);
+	getNPC(luaVm)->getPlayer()->quests->finishQuest(questid, getNPC(luaVm)->getNpcID());
 	return 1;
 }
 
