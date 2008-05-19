@@ -62,6 +62,7 @@ void QuestsScripts::npc_2000s(NPC* npc){
 		npc->end();
 	}
 }
+
 void QuestsScripts::npc_2000e(NPC* npc){
 	int state = npc->getState();
 	if(state == 0){
@@ -88,102 +89,6 @@ void QuestsScripts::npc_2000e(NPC* npc){
 	}
 
 }
-
-void NPCsScripts::npc_9101001(NPC* npc){
-	int state = npc->getState();
-	if(state == 0){
-		npc->addText("You have finished all your trainings. Good job. ");
-		npc->addText("You seem to be ready to start with the journey right away! Good , I will let you on to the next place.");
-		npc->sendNext();
-	}
-	else if(state == 1){
-		npc->addText("But remember, once you get out of here, you will enter a village full with monsters. Well them, good bye!");
-		npc->sendBackNext();
-	}
-	else if(state == 2){
-		npc->teleport(40000);
-		npc->end();
-
-	}
-}
-
-void NPCsScripts::npc_22000(NPC* npc){
-    int state = npc->getState();
-    if(state == 0){
-        npc->addText("Take this ship and you'll head off to a bigger continent.#e For 150 mesos#n, I'll take you to #bVictoria Island#k");
-        npc->addText(". The thing is, once you leave this place, you can't ever come back. What do you think? Do you want to go to Victoria Island?");
-        npc->sendYesNo();
-    }
-    else if(state == 1){
-        if(npc->getSelected() == YES){
-            npc->addText("Bored of this place? Here... Give me 150 mesos first...");
-            npc->sendNext();
-        }
-        else{
-            npc->addText("Hmm... I guess you still have things to do here?");
-            npc->sendOK();
-        }
-    }
-    else if(state == 2){
-        if(npc->getSelected() == YES){
-            if(npc->getLevel() > 6){
-                if(npc->getMesos() > 149){
-                    npc->giveMesos(-150);
-                    npc->addText("Awesome! #e150 mesos#n accepted! Alright, off to Victoria Island!");
-                    npc->sendNext();
-                }
-                else{
-                    npc->addText("What? You're telling me you wanted to go without any money? You're one weirdo...");
-                    npc->setSelected(NO);
-                    npc->sendOK();
-                }
-            }
-            else{
-                npc->addText("Let's see... I don't think you are strong enough. You'll have to be at least #bLevel 7#k ");
-                npc->addText("to go to Victoria Island.");
-                npc->setSelected(NO);
-                npc->sendOK();
-            }
-        }
-        else{
-            npc->end();
-        }
-    }
-    else if(state == 3){
-        if(npc->getSelected() == YES){
-            npc->teleport(104000000);
-        }
-        npc->end();
-    }
-}
-/*
-void NPCsScripts::npc_2100(NPC* npc){
-	char arr[2][90] = {"60000", "221000300"};
-	int state = npc->getState();
-	if(state == 0){
-		npc->addText("#bBe prepared#k ;)))");
-		npc->sendNext();
-	}
-	else if(state == 1){
-		npc->addText("CHOOOOOSE! BOHAHAHAHAHAH ;))#b");
-		for(int i=0; i<2; i++){
-			npc->addText("\r\n#L");
-			npc->addChar(i+'0');
-			npc->addText("##m");
-			npc->addText(arr[i]);
-			npc->addText("##l");
-		}
-		npc->sendSimple();
-	}
-	else if(state == 2){
-		npc->teleport(atoi(arr[npc->getSelected()]));
-		npc->end();
-	}
-}
-*/
-
-/// TEST
-
 
 void NPCsScripts::npc_2020005(NPC* npc){
 	char npcs[10][20] = {"0022000", "2012019", "2030002", "2030009", "2081006", "1061013", "2010003", "1052006", "1061000", "2060003"};
