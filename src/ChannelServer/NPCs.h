@@ -25,11 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 using namespace stdext;
 
-#define YES 1
-#define NO 0
-#define ACCEPT 1
-#define DECLINE 0
-
 class Player;
 class Packet;
 
