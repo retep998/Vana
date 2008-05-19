@@ -61,6 +61,9 @@ namespace LuaNPCExports {
 	int getHP(lua_State *luaVm);
 	int getHair(lua_State *luaVm);
 	int getEyes(lua_State *luaVm);
+	int getSelected(lua_State *luaVm);
+	int getNumber(lua_State *luaVm);
+	int getText(lua_State *luaVm);
 
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);
