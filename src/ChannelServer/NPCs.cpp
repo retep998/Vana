@@ -55,7 +55,7 @@ void NPCs::handleQuestNPC(Player* player, int npcid, bool start){
 		return;
 	NPC* npc = new NPC(npcid, player, 1);
 	npc->setIsStart(start);
-	QuestsScripts::handle(npcid, npc, start);
+	NPCsScripts::handle(npcid, npc);
 	if(npc->isEnd())
 		delete npc;
 }
