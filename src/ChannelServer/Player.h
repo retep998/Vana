@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "Connection/PacketHandler.h"
 #include "PlayerInventory.h"
-#include <string.h>
-#include <math.h>
-#include <vector>
 #include "Skills.h"
 #include "ChannelServer.h"
+#include <cmath>
+#include <vector>
+#include <string>
 
 using namespace std;
 
@@ -247,6 +247,12 @@ public:
 	}
 	SkillMapEnterActiveInfo getSkill(){
 		return skill;
+	}
+	void setVariable(string name, int val) {
+		variables[name] = val;
+	}
+	int getVariable(string name) {
+		return (variables.find(name) == variables.end()) ? 0 : variables[name];
 	}
 	void addWarning();
 	void changeChannel(char channel);
