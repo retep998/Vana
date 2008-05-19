@@ -63,7 +63,7 @@ LuaNPC::LuaNPC(char *filename, NPC *npc) {
 	lua_register(luaVm, "setStyle", &LuaNPCExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaNPCExports::setMap);
 	lua_register(luaVm, "setHP", &LuaNPCExports::setHP);
-	lua_register(luaVm, "setVariable", &LuaNPCExports::getVariable);
+	lua_register(luaVm, "setVariable", &LuaNPCExports::setVariable);
 	lua_register(luaVm, "addQuest", &LuaNPCExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaNPCExports::endQuest);
 	lua_register(luaVm, "endNPC", &LuaNPCExports::end); // end() doesn't work (reserved?)
