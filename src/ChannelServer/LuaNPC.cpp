@@ -25,7 +25,7 @@ LuaNPC::LuaNPC(char *filename, NPC *npc) {
 
 	lua_pushinteger(luaVm, npc->getPlayer()->getPlayerid()); // Pushing id for reference from static functions
 	lua_setglobal(luaVm, "playerid");
-	lua_pushinteger(luaVm, npc->getState();
+	lua_pushinteger(luaVm, npc->getState());
 	lua_setglobal(luaVm, "state");
 
 	lua_register(luaVm, "addText", &LuaNPCExports::addText);
