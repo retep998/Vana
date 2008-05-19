@@ -254,6 +254,7 @@ public:
 	void saveStats();
 	void saveEquips();
 	void saveItems();
+	void saveVariables();
 	void save();
 	void setOnline(bool online);
 	PlayerInventory* inv;
@@ -300,6 +301,7 @@ private:
 	vector <int> warnings;
 	int combo; // Combo Attack
 	bool save_on_dc;
+	hash_map <string, int> variables;
 	SkillMapEnterActiveInfo skill;
 };
 

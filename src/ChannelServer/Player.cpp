@@ -202,6 +202,12 @@ void Player::playerConnect(unsigned char *packet){
 		keys[i] = res[0][i+1];
 	}
 
+	query << "SELECT * FROM character_variables WHERE charid = " << mysqlpp::quote << getPlayerid();
+	res = query.store();
+	for (size_t i = 0; i < res.size(); i++) {
+		variables[(string) res[i]["key"]] = res[i]["value"];
+	}
+
 	PlayerPacket::connectData(this);
 	
 	if (strlen(ChannelServer::Instance()->getScrollingHeader()) > 0) {
@@ -436,11 +442,33 @@ void Player::saveItems(){
 	query.exec();
 }
 
+void Player::saveVariables() {
+	mysqlpp::Query query = db.query();
+	query << "DELETE FROM character_variables WHERE charid = " << getPlayerid();
+	query.exec();
+
+	bool firstrun = true;
+	for (hash_map <string, int>::iterator iter = variables.begin(); iter != variables.end(); iter++){
+		if (firstrun == true) {
+			query << "INSERT INTO character_variables VALUES (";
+			firstrun = false;
+		}
+		else{
+			query << ",(";
+		}
+		query << mysqlpp::quote << getPlayerid() << ","
+				<< mysqlpp::quote << iter->first << ","
+				<< mysqlpp::quote << iter->second << ")";
+	}
+	query.exec();
+}
+
 void Player::save() {
 	saveSkills();
 	saveStats();
 	saveEquips();
 	saveItems();
+	saveVariables();
 }
 
 void Player::setOnline(bool online) {
