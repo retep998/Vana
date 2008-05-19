@@ -18,32 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NPCs.h"
 #include "NPCsScripts.h"
 
-void NPCsScripts::npc_2101(NPC* npc){
-	int state = npc->getState();
-	if(state == 0){
-		npc->addText("Are you done with your training? ");
-		npc->addText("If you wish, I will send you out from this training camp.");
-		npc->sendYesNo();
-	}
-	else if(state == 1){
-		if(npc->getSelected() == YES){
-			npc->addText("Then, I will send you out from here. Good job.");
-			npc->sendNext();
-		}
-		else{
-			npc->addText("Haven't you finish the training program yet? ");
-			npc->addText("If you want to leave this place, please do not hesitate to tell me.");
-			npc->sendOK();
-		}
-	}
-	else if(state == 2){
-		if(npc->getSelected() == YES){
-			npc->teleport(3);
-		}
-		npc->end();
-	}
-}
-
 void QuestsScripts::npc_2000s(NPC* npc){
 	int state = npc->getState();
 	if(state == 0){

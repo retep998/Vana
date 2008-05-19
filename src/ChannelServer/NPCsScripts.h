@@ -63,7 +63,6 @@ public:
 		}
 		else {
 			switch(npcid){
-				case 2101: npc_2101(npc); break;
 				case 22000: npc_22000(npc); break;
 				case 2020005: npc_2020005(npc); break;
 				case 9101001: npc_9101001(npc); break;
@@ -73,7 +72,6 @@ public:
 		}
 	}
 private:
-	static void npc_2101(NPC* npc);
 	static void npc_22000(NPC* npc);
 	static void npc_2020005(NPC* npc);
 	static void npc_9101001(NPC* npc);
