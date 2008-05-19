@@ -125,38 +125,25 @@ namespace Skills {
 class PlayerSkills {
 public:
 	void addSkillLevel(int skillid, int level){
-		for (hash_map<int,int>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++){
-			if(iter->first == skillid){
-				iter->second += level;
-				return;
-			}
-		}
-		playerskills[skillid] = level;
+		if(playerskills.find(skillid) != playerskills.end())
+			playerskills[skillid] += level;
+		else
+			playerskills[skillid] = level;
 	}
 	int getSkillLevel(int skillid){
-		for (hash_map<int,int>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++){
-			if(iter->first == skillid){
-				return iter->second;
-			} 
-		}
-		return 0;
+		if(playerskills.find(skillid) != playerskills.end())
+			return playerskills[skillid];
+		else
+			return 0;
 	}
 	void setMaxSkillLevel(int skillid, int maxlevel){ // Set max level for 4th job skills
-		for(hash_map<int,int>::iterator iter = maxlevels.begin(); iter != maxlevels.end(); iter++){
-			if(iter->first == skillid){
-				iter->second = maxlevel;
-				return;
-			}
-		}
 		maxlevels[skillid] = maxlevel;
 	}
 	int getMaxSkillLevel(int skillid){ // Get max level for 4th job skills
-		for (hash_map<int,int>::iterator iter = maxlevels.begin(); iter != maxlevels.end(); iter++){
-			if(iter->first == skillid){
-				return iter->second;
-			} 
-		}
-		return 0;
+		if(maxlevels.find(skillid) != maxlevels.end())
+			return maxlevels[skillid];
+		else
+			return 0;
 	}
 	int getSkillsNum(){
 		return playerskills.size();
