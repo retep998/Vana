@@ -68,7 +68,7 @@ public:
 				case 22000: npc_22000(npc); break;
 				case 2020005: npc_2020005(npc); break;
 				case 9101001: npc_9101001(npc); break;
-				case 9900000: npc_9900000(npc); break;
+				case 9900000: cosmeticNPC(npc); break;
 				default: npc->end(); break;
 			}
 		}
@@ -79,7 +79,9 @@ private:
 	static void npc_22000(NPC* npc);
 	static void npc_2020005(NPC* npc);
 	static void npc_9101001(NPC* npc);
-	static void npc_9900000(NPC* npc);
+	static void maleCosmetics(NPC* npc);
+	static void femaleCosmetics(NPC* npc);
+	static void cosmeticNPC(NPC* npc);
 };
 
 #endif

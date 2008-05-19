@@ -133,6 +133,7 @@ public:
 	Player* getPlayer(){
 		return player;
 	}
+	short getGender();
 	void teleport(int mapid);
 	int getItemNum(int itemid);
 	int getMesos();

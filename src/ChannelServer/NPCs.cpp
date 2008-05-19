@@ -277,6 +277,10 @@ int NPC::getLevel(){
 	return player->getLevel();	
 }
 
+short NPC::getGender(){
+	return player->getGender();
+}
+
 void NPC::setStyle(int id){
 	if(id/10000 == 0){
 		player->setSkin((char)id);
