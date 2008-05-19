@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <hash_map>
 #include <vector>
+#include <string>
 
 using namespace std;
 using namespace stdext;
@@ -64,7 +65,7 @@ private:
 	char gettext[101];
 	bool isquest;
 	bool isstart;
-	hash_map <char*, int> vars;
+	hash_map <string, int> vars;
 public:
 	NPC(int npcid, Player* player, bool isquest = 0);
 	~NPC();
@@ -142,10 +143,16 @@ public:
 	int getPlayerMap();
 	void showShop();
 	void setStyle(int id);
-	void setVariable(char* name, int val){
+	void setVariable(char *name, int val) {
+		setVariable(string(name), val);
+	}
+	void setVariable(string name, int val) {
 		vars[name] = val;
 	}
-	int getVariable(char* name){
+	int getVariable(char *name) {
+		return getVariable(string(name));
+	}
+	int getVariable(string name) {
 		if(vars.find(name) == vars.end())
 			return 0;
 		else
