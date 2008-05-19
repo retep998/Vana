@@ -61,15 +61,7 @@ public:
 		else if (!stat(filename, &fileinfo)) { // Lua NPC
 			LuaNPC npc(filename, npc);
 		}
-		else {
-			switch(npcid){
-				case 2020005: npc_2020005(npc); break;
-				default: npc->end(); break;
-			}
-		}
 	}
-private:
-	static void npc_2020005(NPC* npc);
 };
 
 #endif
