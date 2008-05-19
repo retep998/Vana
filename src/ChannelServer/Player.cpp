@@ -441,24 +441,26 @@ void Player::saveItems(){
 }
 
 void Player::saveVariables() {
-	mysqlpp::Query query = db.query();
-	query << "DELETE FROM character_variables WHERE charid = " << getPlayerid();
-	query.exec();
+	if (variables.size() > 0) {
+		mysqlpp::Query query = db.query();
+		query << "DELETE FROM character_variables WHERE charid = " << getPlayerid();
+		query.exec();
 
-	bool firstrun = true;
-	for (hash_map <string, int>::iterator iter = variables.begin(); iter != variables.end(); iter++){
-		if (firstrun == true) {
-			query << "INSERT INTO character_variables VALUES (";
-			firstrun = false;
+		bool firstrun = true;
+		for (hash_map <string, int>::iterator iter = variables.begin(); iter != variables.end(); iter++){
+			if (firstrun == true) {
+				query << "INSERT INTO character_variables VALUES (";
+				firstrun = false;
+			}
+			else{
+				query << ",(";
+			}
+			query << mysqlpp::quote << getPlayerid() << ","
+					<< mysqlpp::quote << iter->first << ","
+					<< mysqlpp::quote << iter->second << ")";
 		}
-		else{
-			query << ",(";
-		}
-		query << mysqlpp::quote << getPlayerid() << ","
-				<< mysqlpp::quote << iter->first << ","
-				<< mysqlpp::quote << iter->second << ")";
+		query.exec();
 	}
-	query.exec();
 }
 
 void Player::save() {
