@@ -36,7 +36,39 @@ namespace LuaNPCExports {
 
 	// The exports
 	int addText(lua_State *luaVm);
+	int addChar(lua_State *luaVm);
+
 	int sendSimple(lua_State *luaVm);
+	int sendYesNo(lua_State *luaVm);
+	int sendNext(lua_State *luaVm);
+	int sendBackNext(lua_State *luaVm);
+	int sendBackOK(lua_State *luaVm);
+	int sendOK(lua_State *luaVm);
+	int sendAcceptDecline(lua_State *luaVm);
+	int sendGetText(lua_State *luaVm);
+	int sendGetNumber(lua_State *luaVm);
+	int sendStyle(lua_State *luaVm);
+
+	int giveItem(lua_State *luaVm);
+	int giveMesos(lua_State *luaVm);
+	int giveEXP(lua_State *luaVm);
+
+	int getLevel(lua_State *luaVm);
+	int getGender(lua_State *luaVm);
+	int getItemAmount(lua_State *luaVm);
+	int getMesos(lua_State *luaVm);
+	int getMap(lua_State *luaVm);
+	int getHP(lua_State *luaVm);
+	int getHair(lua_State *luaVm);
+	int getEyes(lua_State *luaVm);
+
+	int setStyle(lua_State *luaVm);
+	int setMap(lua_State *luaVm);
+	int setHP(lua_State *luaVm);
+
+	int addQuest(lua_State *luaVm);
+	int endQuest(lua_State *luaVm);
+
 	int end(lua_State *luaVm);
 };
 
