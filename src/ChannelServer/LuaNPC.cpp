@@ -58,6 +58,7 @@ LuaNPC::LuaNPC(char *filename, NPC *npc) {
 	lua_register(luaVm, "getSelected", &LuaNPCExports::getSelected);
 	lua_register(luaVm, "getNumber", &LuaNPCExports::getNumber);
 	lua_register(luaVm, "getText", &LuaNPCExports::getText);
+	lua_register(luaVm, "setState", &LuaNPCExports::setState);
 	lua_register(luaVm, "setStyle", &LuaNPCExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaNPCExports::setMap);
 	lua_register(luaVm, "setHP", &LuaNPCExports::setHP);
@@ -213,6 +214,11 @@ int LuaNPCExports::getNumber(lua_State *luaVm) {
 
 int LuaNPCExports::getText(lua_State *luaVm) {
 	lua_pushstring(luaVm, getNPC(luaVm)->getText());
+	return 1;
+}
+
+int LuaNPCExports::setState(lua_State *luaVm) {
+	getNPC(luaVm)->setState(lua_tointeger(luaVm, -1));
 	return 1;
 }
 
