@@ -58,10 +58,12 @@ LuaNPC::LuaNPC(char *filename, NPC *npc) {
 	lua_register(luaVm, "getSelected", &LuaNPCExports::getSelected);
 	lua_register(luaVm, "getNumber", &LuaNPCExports::getNumber);
 	lua_register(luaVm, "getText", &LuaNPCExports::getText);
+	lua_register(luaVm, "getVariable", &LuaNPCExports::getVariable);
 	lua_register(luaVm, "setState", &LuaNPCExports::setState);
 	lua_register(luaVm, "setStyle", &LuaNPCExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaNPCExports::setMap);
 	lua_register(luaVm, "setHP", &LuaNPCExports::setHP);
+	lua_register(luaVm, "setVariable", &LuaNPCExports::getVariable);
 	lua_register(luaVm, "addQuest", &LuaNPCExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaNPCExports::endQuest);
 	lua_register(luaVm, "endNPC", &LuaNPCExports::end); // end() doesn't work (reserved?)
@@ -217,6 +219,11 @@ int LuaNPCExports::getText(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaNPCExports::getVariable(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getNPC(luaVm)->getVariable(lua_tostring(luaVm, -1)));
+	return 1;
+}
+
 int LuaNPCExports::setState(lua_State *luaVm) {
 	getNPC(luaVm)->setState(lua_tointeger(luaVm, -1));
 	return 1;
@@ -246,6 +253,11 @@ int LuaNPCExports::setMap(lua_State *luaVm) {
 
 int LuaNPCExports::setHP(lua_State *luaVm) {
 	getNPC(luaVm)->getPlayer()->setHP(lua_tointeger(luaVm, -1));
+	return 1;
+}
+
+int LuaNPCExports::setVariable(lua_State *luaVm) {
+	getNPC(luaVm)->setVariable(lua_tostring(luaVm, -2), lua_tointeger(luaVm, -1));
 	return 1;
 }
 

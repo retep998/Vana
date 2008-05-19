@@ -64,11 +64,13 @@ namespace LuaNPCExports {
 	int getSelected(lua_State *luaVm);
 	int getNumber(lua_State *luaVm);
 	int getText(lua_State *luaVm);
+	int getVariable(lua_State *luaVm);
 
 	int setState(lua_State *luaVm);
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);
 	int setHP(lua_State *luaVm);
+	int setVariable(lua_State *luaVm);
 
 	int addQuest(lua_State *luaVm);
 	int endQuest(lua_State *luaVm);

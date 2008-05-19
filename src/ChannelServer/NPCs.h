@@ -143,13 +143,13 @@ public:
 	int getPlayerMap();
 	void showShop();
 	void setStyle(int id);
-	void setVariable(char *name, int val) {
+	void setVariable(const char *name, int val) {
 		setVariable(string(name), val);
 	}
 	void setVariable(string name, int val) {
 		vars[name] = val;
 	}
-	int getVariable(char *name) {
+	int getVariable(const char *name) {
 		return getVariable(string(name));
 	}
 	int getVariable(string name) {
