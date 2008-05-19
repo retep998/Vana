@@ -210,6 +210,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\LuaNPC.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Maps.cpp"
 					>
 				</File>
@@ -481,6 +485,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Levels.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaNPC.h"
 					>
 				</File>
 				<File

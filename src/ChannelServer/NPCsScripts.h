@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define NPCSSCRIPT_H
 
 #include "Shops.h"
+#include "LuaNPC.h"
+#include <sys/stat.h>
 
 class NPC;
 
@@ -46,12 +48,18 @@ private:
 class NPCsScripts {
 public:
 	static void handle(int npcid, NPC* npc){
+		struct stat fileinfo;
+		char filename[255];
+		sprintf_s(filename, "scripts/npcs/%d.lua", npcid);
 		if(npc->isQuest()){
 			QuestsScripts::handle(npcid, npc, npc->isStart());
 		}
 		else if (Shops::shops.find(npcid) != Shops::shops.end()) { // Shop
 			npc->showShop();
 			npc->end();
+		}
+		else if (!stat(filename, &fileinfo)) { // Lua NPC
+			LuaNPC npc(filename, npc);
 		}
 		else {
 			switch(npcid){
