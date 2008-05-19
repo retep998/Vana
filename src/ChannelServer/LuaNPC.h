@@ -65,6 +65,7 @@ namespace LuaNPCExports {
 	int getNumber(lua_State *luaVm);
 	int getText(lua_State *luaVm);
 
+	int setState(lua_State *luaVm);
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);
 	int setHP(lua_State *luaVm);
