@@ -23,7 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include "Drops.h"
 #include "Timer.h"
+#include "LuaNPC.h"
 #include "BufferUtilities.h"
+#include <iostream>
+#include <sstream>
+#include <string>
 
 hash_map <int, MapInfo> Maps::info;
 
@@ -139,25 +143,9 @@ void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map speci
 			portal = info[player->getMap()].Portals[i];
 			break;
 		}
-	if (strcmp(portal.script, "market00") == 0) { // Leaving FM
-		portal.toid = player->getVariable("fm_origin");
-		player->deleteVariable("fm_origin");
-		// Let's find where should we be standing on the other map
-		for(unsigned int i=0; i<info[portal.toid].Portals.size(); i++){
-			if(strncmp(info[portal.toid].Portals[i].script, "market", 6) ==0){
-				strcpy_s(portal.to, info[portal.toid].Portals[i].from);
-				break;
-			}
-		}
-	}
-	else if (strncmp(portal.script, "market", 6) == 0) { // FM portals
-		player->setVariable("fm_origin", player->getMap());
-		portal.toid = 910000000;
-		strcpy_s(portal.to, "out00");
-	}
-	else if (player->getMap() == 682000000){ // Haunted Mansion
-		portal.toid = 682000100;
-	}
+	std::ostringstream filenameStream;
+	filenameStream << "scripts/portals/" << portal.script << ".lua";
+	LuaNPC(filenameStream.str().c_str(), player->getPlayerid(), &portal);
 	int tonum = 0;
 	if(info.find(portal.toid) != info.end()){
 		for(unsigned int i=0; i<info[portal.toid].Portals.size(); i++){

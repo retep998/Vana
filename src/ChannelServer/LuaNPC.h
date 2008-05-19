@@ -24,15 +24,23 @@ extern "C" {
 	#include "lua/lauxlib.h"
 }
 
-#include "NPCs.h"
+#include <hash_map>
+
+using stdext::hash_map;
+
+class NPC;
+class Player;
+struct PortalInfo;
 
 class LuaNPC {
 public:
-	LuaNPC(const char *filename, int playerid);
+	LuaNPC(const char *filename, int playerid, PortalInfo *portal = NULL);
 };
 
 namespace LuaNPCExports {
 	NPC * getNPC(lua_State *luaVm);
+	PortalInfo * getPortal(lua_State *luaVm);
+	extern hash_map <int, PortalInfo *> portals;
 	Player * getPlayer(lua_State *luaVm);
 
 	// The exports
@@ -67,6 +75,8 @@ namespace LuaNPCExports {
 	int getText(lua_State *luaVm);
 	int getVariable(lua_State *luaVm);
 	int getPlayerVariable(lua_State *luaVm);
+	/* Portal script */
+	int getPortalFrom(lua_State *luaVm);
 
 	int setState(lua_State *luaVm);
 	int setStyle(lua_State *luaVm);
@@ -74,6 +84,9 @@ namespace LuaNPCExports {
 	int setHP(lua_State *luaVm);
 	int setVariable(lua_State *luaVm);
 	int setPlayerVariable(lua_State *luaVm);
+	/* Portal script */
+	int setPortalTo(lua_State *luaVm);
+	int setPortalToId(lua_State *luaVm);
 
 	int deletePlayerVariable(lua_State *luaVm);
 

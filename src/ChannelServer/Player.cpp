@@ -447,7 +447,7 @@ void Player::saveVariables() {
 		query.exec();
 
 		bool firstrun = true;
-		for (hash_map <string, int>::iterator iter = variables.begin(); iter != variables.end(); iter++){
+		for (hash_map <string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++){
 			if (firstrun == true) {
 				query << "INSERT INTO character_variables VALUES (";
 				firstrun = false;
