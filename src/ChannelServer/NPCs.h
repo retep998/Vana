@@ -68,7 +68,7 @@ private:
 public:
 	NPC(int npcid, Player* player, bool isquest = 0);
 	~NPC();
-	void addText(char* text){
+	void addText(const char *text){
 		strcat_s(this->text, strlen(text)+1+strlen(this->text), text);
 	}
 	void addChar(char cha){
