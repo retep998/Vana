@@ -170,6 +170,7 @@ void Initializing::initializeItems(){
 			cons.iavo = atoi(itemRow[35]);
 			cons.ijump = atoi(itemRow[36]);
 			cons.ispeed = atoi(itemRow[37]);
+			cons.ihand = 0;
 		}
 		// Summoning
 		if(!itemRow[38].is_null()){
@@ -317,6 +318,7 @@ void Initializing::initializeEquips(){
 		equip.tamingmob = atoi(equipRow[19]);
 		equip.cash = (bool) equipRow[20];
 		equip.quest = (bool) equipRow[21];
+		equip.ihand = 0;
 		// Add equip to the drops table
 		Drops::addEquip(equipID,equip);
 	}
