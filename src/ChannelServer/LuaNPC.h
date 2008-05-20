@@ -90,6 +90,8 @@ namespace LuaNPCExports {
 
 	int showShop(lua_State *luaVm);
 
+	int spawnMob(lua_State *luaVm);
+
 	int deletePlayerVariable(lua_State *luaVm);
 
 	int addQuest(lua_State *luaVm);

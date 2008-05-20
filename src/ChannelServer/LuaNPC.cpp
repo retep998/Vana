@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "Quests.h"
 #include "Maps.h"
+#include "Mobs.h"
 #include "Levels.h"
 #include "Shops.h"
 #include "InventoryPacket.h"
@@ -80,6 +81,7 @@ LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 	lua_register(luaVm, "setPortalTo", &LuaNPCExports::setPortalTo);
 	lua_register(luaVm, "setPortalToId", &LuaNPCExports::setPortalToId);
 	lua_register(luaVm, "showShop", &LuaNPCExports::showShop);
+	lua_register(luaVm, "spawnMob", &LuaNPCExports::spawnMob);
 	lua_register(luaVm, "addQuest", &LuaNPCExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaNPCExports::endQuest);
 	lua_register(luaVm, "endNPC", &LuaNPCExports::end); // end() doesn't work (reserved?)
@@ -321,6 +323,12 @@ int LuaNPCExports::setPortalToId(lua_State *luaVm) {
 int LuaNPCExports::showShop(lua_State *luaVm) {
 	int shopid = lua_tointeger(luaVm, -1);
 	Shops::showShop(getPlayer(luaVm), shopid);
+	return 1;
+}
+
+int LuaNPCExports::spawnMob(lua_State *luaVm) {
+	int mobid = lua_tointeger(luaVm, -1);
+	Mobs::spawnMob(getPlayer(luaVm), mobid);
 	return 1;
 }
 
