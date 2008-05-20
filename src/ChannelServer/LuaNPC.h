@@ -88,6 +88,8 @@ namespace LuaNPCExports {
 	int setPortalTo(lua_State *luaVm);
 	int setPortalToId(lua_State *luaVm);
 
+	int showShop(lua_State *luaVm);
+
 	int deletePlayerVariable(lua_State *luaVm);
 
 	int addQuest(lua_State *luaVm);
