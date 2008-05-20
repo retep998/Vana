@@ -24,7 +24,7 @@ AbstractServer::AbstractServer() {
 
 void AbstractServer::initialize() {
 	Config config("conf/inter_password.lua");
-	strcpy_s(inter_password, config.getString("inter_password"));
+	inter_password = config.getString("inter_password");
 
 	loadConfig();
 	loadData();

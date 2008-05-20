@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAX_FIELD_SIZE 15
 
 #include <vector>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 

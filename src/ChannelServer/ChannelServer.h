@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CHANNELSERVER_H
 
 #include "AbstractServer.h"
+#include <string>
+
+using std::string;
 
 class WorldServerConnectPlayer;
 class Packet;
@@ -47,7 +50,7 @@ public:
 	void setChannel(int channel) { this->channel = channel; }
 	void setPort(short port) { this->port = port; }
 	int getOnlineId() { return 20000 + (int) world * 100 + channel * 10; }
-	char * getScrollingHeader() { return scrollingHeader; }
+	const char * getScrollingHeader() { return scrollingHeader.c_str(); }
 	void setScrollingHeader(char *message);
 private:
 	ChannelServer() {};
@@ -57,15 +60,15 @@ private:
 
 	WorldServerConnectPlayer *worldPlayer;
 
-	char login_ip[15];
+	string login_ip;
 	short login_inter_port;
 	short port;
 	char world;
 	char world_ip[15];
 	short world_port;
 	int channel;
-	char external_ip[15];
-	char scrollingHeader[100];
+	string external_ip;
+	string scrollingHeader;
 };
 
 #endif

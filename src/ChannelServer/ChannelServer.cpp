@@ -43,24 +43,24 @@ void ChannelServer::loadData() {
 	Initializing::initializeSkills();
 	Initializing::initializeMaps();
 
-	Connector *c = new Connector(login_ip, login_inter_port, new WorldServerConnectPlayerFactory());
+	Connector *c = new Connector(login_ip.c_str(), login_inter_port, new WorldServerConnectPlayerFactory());
 	WorldServerConnectPlayer *loginPlayer = (WorldServerConnectPlayer *) c->getPlayer();
-	loginPlayer->setIP(external_ip);
-	loginPlayer->sendAuth(inter_password);
+	loginPlayer->setIP(external_ip.c_str());
+	loginPlayer->sendAuth(inter_password.c_str());
 }
 
 void ChannelServer::connectWorld() {
 	Connector *c = new Connector(world_ip, world_port, new WorldServerConnectPlayerFactory());
 	worldPlayer = (WorldServerConnectPlayer *) c->getPlayer();
-	worldPlayer->setIP(external_ip);
-	worldPlayer->sendAuth(inter_password);
+	worldPlayer->setIP(external_ip.c_str());
+	worldPlayer->sendAuth(inter_password.c_str());
 }
 
 void ChannelServer::loadConfig() {
 	Config config("conf/channelserver.lua");
-	strcpy_s(login_ip, config.getString("login_ip"));
+	login_ip = config.getString("login_ip");
 	login_inter_port = config.getInt("login_inter_port");
-	strcpy_s(external_ip, config.getString("external_ip")); // External IP
+	external_ip = config.getString("external_ip"); // External IP
 
 	world = -1; // Will get from login server
 	port = -1; // Will get from world server
@@ -83,13 +83,14 @@ void ChannelServer::sendToWorld(Packet &packet) {
 }
 
 void ChannelServer::setScrollingHeader(char *message) {
-	if (strcmp(scrollingHeader, message) != 0) {
-		strcpy_s(scrollingHeader, message);
-		if (strlen(scrollingHeader) == 0) {
+	string strMsg = string(message);
+	if (scrollingHeader != strMsg) {
+		scrollingHeader = strMsg;
+		if (scrollingHeader.size() == 0) {
 			ServerPacket::scrollingHeaderOff();
 		}
 		else {
-			ServerPacket::changeScrollingHeader(scrollingHeader);
+			ServerPacket::changeScrollingHeader(scrollingHeader.c_str());
 		}
 	}
 }

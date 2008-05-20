@@ -47,7 +47,7 @@ void LoginServer::loadConfig() {
 			break; //No more worlds
 
 		World world;
-		strcpy_s(world.name, 15, config.getString(buf));
+		world.name = config.getString(buf);
 
 		sprintf_s(buf, "world%d_channels", i);
 		world.maxChannels = config.getInt(buf);

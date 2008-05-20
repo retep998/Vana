@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
-	void sendAuth(char *pass) {
+	void sendAuth(const char *pass) {
 		AuthenticationPacket::sendPassword(this, pass, getIP());
 	}
 	char getType() { return type; }

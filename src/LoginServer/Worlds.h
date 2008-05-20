@@ -19,7 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define WORLDS_H
 
 #include <hash_map>
+#include <string>
 
+using std::string;
 using stdext::hash_map;
 
 class PlayerLogin;
@@ -31,7 +33,7 @@ struct Channel {
 };
 
 struct World {
-	char name[15];
+	string name;
 	hash_map <int, Channel *> channels;
 	int maxChannels;
 	char id;

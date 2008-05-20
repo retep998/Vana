@@ -24,15 +24,19 @@ extern "C" {
 	#include "lua/lauxlib.h"
 }
 
+#include <string>
+
+using std::string;
+
 class Config {
 public:
-	Config(char *filename);
+	Config(string filename);
 	Config();
-	void loadFile(char *filename);
-	bool keyExist(char *value);
-	int getInt(char *value);
-	const char * getString(char *value);
-	bool getBool(char *value);
+	void loadFile(string filename);
+	bool keyExist(string value);
+	int getInt(string value);
+	string getString(string value);
+	bool getBool(string value);
 private:
 	lua_State *luaVm;
 	void initialize();

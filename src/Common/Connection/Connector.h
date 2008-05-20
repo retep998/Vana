@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Connector {
 public:
-	Connector (char *ip, short port, AbstractPlayerFactory* apf);
+	Connector (const char *ip, short port, AbstractPlayerFactory* apf);
 	AbstractPlayer * getPlayer() { return player; }
 protected:
 	AbstractPlayer *player;

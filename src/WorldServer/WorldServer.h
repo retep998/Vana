@@ -22,6 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectPlayer.h"
 #include "WorldServerAcceptPlayer.h"
 #include "Config.h"
+#include <string>
+
+using std::string;
 
 // WorldServer main application class, implemented as singleton
 class WorldServer : public AbstractServer {
@@ -43,22 +46,22 @@ public:
 	void setInterPort(short port) { inter_port = port; }
 	int getMaxChannels() const { return maxChannels; }
 	void setMaxChannels(int maxchan) { maxChannels = maxchan; }
-	char * getScrollingHeader() { return scrollingHeader; }
-	void setScrollingHeader(char *message);
+	const char * getScrollingHeader() { return scrollingHeader.c_str(); }
+	void setScrollingHeader(const char *message);
 private:
-	WorldServer() { strcpy_s(scrollingHeader, ""); };
+	WorldServer() { scrollingHeader = ""; };
 	WorldServer(const WorldServer&);
 	WorldServer& operator=(const WorldServer&);
 	static WorldServer *singleton;
 
 	LoginServerConnectPlayer *loginPlayer;
-	char login_ip[15];
+	string login_ip;
 	short login_inter_port;
 	short inter_port;
 	char worldId;
 	int maxChannels;
-	char external_ip[15];
-	char scrollingHeader[100];
+	string external_ip;
+	string scrollingHeader;
 };
 
 #endif

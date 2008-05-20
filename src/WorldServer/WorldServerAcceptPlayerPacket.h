@@ -26,7 +26,7 @@ namespace WorldServerAcceptPlayerPacket {
 	void sendToChannels(unsigned char *data, int len);
 	void findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, char *findee, unsigned char is = 0);
 	void whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, char *whisperer, int channel, char *message);
-	void scrollingHeader(char *message);
+	void scrollingHeader(const char *message);
 	void newConnectable(int channel, int playerid);
 };
 

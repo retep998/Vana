@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "PacketCreator.h"
 
-void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, char *pass, char *ip) {
+void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, const char *pass, const char *ip) {
 	Packet packet = Packet();
 	packet.addHeader(INTER_PASSWORD);
 	packet.addShort(strlen(pass));

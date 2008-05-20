@@ -16,20 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Config.h"
-#include <cstring>
 #include <iostream>
 #include <sys/stat.h>
 
-Config::Config(char *filename) {
+Config::Config(string filename) {
 	loadFile(filename);
 }
 
 Config::Config() { }
 
-void Config::loadFile(char *filename) {
+void Config::loadFile(string filename) {
 	// Check for file existance first
 	struct stat fileInfo;
-	if (stat(filename, &fileInfo)) {
+	if (stat(filename.c_str(), &fileInfo)) {
 		std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
 		exit(1);
 	}
@@ -37,25 +36,25 @@ void Config::loadFile(char *filename) {
 	luaVm = lua_open();
 	luaopen_base(luaVm);
 
-	luaL_dofile(luaVm, filename);
+	luaL_dofile(luaVm, filename.c_str());
 }
 
-bool Config::keyExist(char *value) {
-	lua_getglobal(luaVm, value);
+bool Config::keyExist(string value) {
+	lua_getglobal(luaVm, value.c_str());
 	return !lua_isnil(luaVm, -1);
 }
 
-int Config::getInt(char *value) {
-	lua_getglobal(luaVm, value);
+int Config::getInt(string value) {
+	lua_getglobal(luaVm, value.c_str());
 	return lua_tointeger(luaVm, -1);
 }
 
-const char * Config::getString(char *value) {
-	lua_getglobal(luaVm, value);
-	return lua_tostring(luaVm, -1);
+string Config::getString(string value) {
+	lua_getglobal(luaVm, value.c_str());
+	return string(lua_tostring(luaVm, -1));
 }
 
-bool Config::getBool(char *value) {
-	lua_getglobal(luaVm, value);
+bool Config::getBool(string value) {
+	lua_getglobal(luaVm, value.c_str());
 	return (lua_toboolean(luaVm, -1) != 0);
 }

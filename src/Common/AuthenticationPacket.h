@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class AbstractServerConnectPlayer;
 
 namespace AuthenticationPacket {
-	void sendPassword(AbstractServerConnectPlayer *player, char *pass, char *ip);
+	void sendPassword(AbstractServerConnectPlayer *player, const char *pass, const char *ip);
 }
 
 #endif
