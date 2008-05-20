@@ -58,6 +58,9 @@ public:
 	PlayerInventory(){
 		maxslots=100;
 	}
+	int getMaxslots(){
+		return maxslots;
+	}
 	void setMesos(int mesos, bool is=0);
 	void setMesosStart(int mesos){
 		this->mesos=mesos;
