@@ -103,8 +103,8 @@ void LoginPacket::showWorld(PlayerLogin* player, World *world){
 	Packet packet = Packet();
 	packet.addHeader(SEND_SHOW_WORLD);
 	packet.addByte(world->id);
-	packet.addShort(strlen(world->name));
-	packet.addString(world->name, strlen(world->name));
+	packet.addShort(world->name.size());
+	packet.addString(world->name.c_str(), world->name.size());
 	packet.addByte(world->ribbon);
 	packet.addShort(0);
 	packet.addShort(100);
@@ -112,14 +112,11 @@ void LoginPacket::showWorld(PlayerLogin* player, World *world){
 	packet.addShort(0);
 	packet.addByte(world->channels.size());
 	for(size_t i=0; i<world->channels.size(); i++){
-		char channelname[15];
-		strcpy_s(channelname, 15, world->name);
-		strcat_s(channelname, 15, "-");
-		char cid[15]={0};
-		cid[0] = i+'1';
-		strcat_s(channelname, 15, cid);
-		packet.addShort(strlen(channelname));
-		packet.addString(channelname, strlen(channelname));
+		ostringstream cnStream;
+		cnStream << world->name << "-" << i+1;
+		string channelname = cnStream.str();
+		packet.addShort(channelname.size());
+		packet.addString(channelname.c_str(), channelname.size());
 		packet.addInt(0x0); // Pop
 		packet.addByte(world->id);
 		packet.addShort(i);

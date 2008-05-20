@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdio.h>
 #include <Winsock2.h>
 
-Connector::Connector(char *ip, short port, AbstractPlayerFactory* apf) {
+Connector::Connector(const char *ip, short port, AbstractPlayerFactory* apf) {
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 	if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n"); //TODO: Throw exception
 

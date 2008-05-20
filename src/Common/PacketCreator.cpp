@@ -63,7 +63,7 @@ void Packet::addBytes(char *hex){
 	}
 }
 
-void Packet::addString(char *str, int slen){
+void Packet::addString(const char *str, int slen){
 	int rlen = strlen(str);
 	strncpy_s((char*)packet+pos, slen+1, str, slen);
 	for(int i=rlen; i<slen; i++)

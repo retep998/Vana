@@ -19,7 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ABSTRACTSERVER_H
 
 #include "Connection/Acceptor.h"
-#include <time.h>
+#include <ctime>
+#include <string>
+
+using std::string;
 
 class AbstractServer {
 public:
@@ -29,12 +32,12 @@ public:
 	virtual void loadData() = 0;
 	virtual void shutdown() = 0;
 	
-	const char * getInterPassword() const { return (char *) inter_password; }
+	const char * getInterPassword() const { return inter_password.c_str(); }
 protected:
 	AbstractServer();
 
 	bool to_listen;
-	char inter_password[255];
+	string inter_password;
 };
 
 #endif

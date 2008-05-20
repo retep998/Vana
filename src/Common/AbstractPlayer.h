@@ -32,7 +32,7 @@ public:
 	void disconnect();
 
 	char * getIP() { return ip; }
-	void setIP(char *ip) { strcpy_s(this->ip, ip); }
+	void setIP(const char *ip) { strcpy_s(this->ip, ip); }
 
 	virtual ~AbstractPlayer();
 protected:
