@@ -239,3 +239,12 @@ void PlayerPacket::changeChannel(Player *player, char *ip, short port) {
 	PlayerPacketHelper::addIP(packet, ip, port);
 	packet.packetSend(player);
 }
+
+void PlayerPacket::showMessage(Player *player, char *msg, char type){
+	Packet packet = Packet();
+	packet.addHeader(SEND_NOTICE); 
+	packet.addByte(type);
+	packet.addShort(strlen(msg));
+	packet.addString(msg, strlen(msg));
+	packet.packetSend(player);
+}
