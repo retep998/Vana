@@ -213,15 +213,10 @@ void Player::playerConnect(unsigned char *packet){
 		ServerPacket::changeScrollingHeader(ChannelServer::Instance()->getScrollingHeader());
 	}
 
-	if(Maps::info[map].Portals.size() > 0){
-		pos.x = Maps::info[map].Portals[0].x;
-		pos.y = Maps::info[map].Portals[0].y;
-	}
-	else{
-		pos.x = 0;
-		pos.y = 0;
-	}
-	type=0;
+	pos.x = Maps::info[map].Portals[0].x;
+	pos.y = Maps::info[map].Portals[0].y;
+
+	type = 0;
 	PlayerPacket::showKeys(this, keys);
 	Maps::newMap(this, map);
 
