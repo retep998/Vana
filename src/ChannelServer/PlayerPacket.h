@@ -33,6 +33,7 @@ namespace PlayerPacket {
 	void newEyes(Player* player);
 	void newSkin(Player* player);
 	void changeChannel(Player *player, char *ip, short port);
+	void showMessage(Player *player, char *msg, char type);
 };
 
 #endif
