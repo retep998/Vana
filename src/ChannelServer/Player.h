@@ -159,16 +159,14 @@ public:
 	unsigned short getRMMP(){
 		return this->rmmp;
 	}
-	void setAp(short ap){
-		this->ap=ap;
-	}
 	short getAp(){
 		return this->ap;
 	}
-	void setSp(short sp);
 	short getSp(){
 		return this->sp;
 	}
+	void setAp(short ap);
+	void setSp(short sp);
 	void setFame(short fame){
 		this->fame=fame;
 	}

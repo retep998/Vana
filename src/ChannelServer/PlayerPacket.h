@@ -26,6 +26,7 @@ namespace PlayerPacket {
 	void showKeys(Player* player, int keys[90]);
 	void newEXP(Player* player, int exp);
 	void setSP(Player* player);
+	void setAP(Player* player);
 	void setJob(Player* player);
 	void newMP(Player* player, short mp, bool is);
 	void newHair(Player* player);

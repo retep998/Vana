@@ -256,6 +256,11 @@ void Player::setSp(short sp){
 	PlayerPacket::setSP(this);
 }
 
+void Player::setAp(short ap) {
+	this->ap = ap;
+	PlayerPacket::setAP(this);
+}
+
 void Player::setJob(short job){
 	this->job=job;
 	PlayerPacket::setJob(this);
