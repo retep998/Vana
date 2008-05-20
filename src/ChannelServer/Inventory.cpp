@@ -257,40 +257,33 @@ void Inventory::itemMove(Player* player, unsigned char* packet){
 }
 
 int Inventory::findSlot(Player* player, int itemid, char inv, short amount){
-	if(inv==1){
-		for(unsigned int i=1; i<=100; i++){
+	if(inv==1){ // Equips
+		for(int i=1; i<=player->inv->getMaxslots(); i++){
 			if(!player->inv->getEquipByPos(i))
 				return i;
-			else if(i == 100)
-				return 0;
 		}
 	}
-	else{
+	else{ // Items
 		int pos = 1;
-		if(ISSTAR(itemid)){
-			for(int i=1; i<=100; i++){
-				if(!player->inv->getItemByPos(i, 2))
+		if(ISSTAR(itemid)){ // Stars
+			for(int i=1; i<=player->inv->getMaxslots(); i++){
+				if(!player->inv->getItemByPos(i, inv))
 					return i;
 			}
 		}
-		else{
-			for(unsigned int i=1; i<=100; i++){
-				bool check=false;
-				for(int j=0; j<player->inv->getItemNum(); j++){
-					if(((player->inv->getItemPos(j) == i) && !(player->inv->getItem(j)->id == itemid && player->inv->getItem(j)->amount + amount <= Drops::items[itemid].maxslot)) && Drops::items[player->inv->getItem(j)->id].type == inv){
-						check = true;
-						if(i==100)
-							return 0;
-						break;
-					}
+		else{ // Other items
+			short freeslot = 0;
+			for(int i=1; i<=player->inv->getMaxslots(); i++){
+				if(player->inv->getItemByPos(i, inv)){
+					Item *curritem = player->inv->getItemByPos(i, inv);
+					if(curritem->id == itemid && curritem->amount + amount <= Drops::items[itemid].maxslot)
+						return i;
 				}
-				if(!check){
-					pos = i;
-					break;
-				}
+				else if(freeslot == 0)
+					freeslot = i;
 			}
+			return freeslot;
 		}
-		return pos;
 	}
 	return 0;
 }
