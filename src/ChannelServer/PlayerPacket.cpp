@@ -186,7 +186,16 @@ void PlayerPacket::setSP(Player* player){
 	packet.addShort(player->getSp());
 	packet.packetSend(player);
 }
-
+void PlayerPacket::setAP(Player* player){
+	Packet packet = Packet();
+	packet.addHeader(SEND_UPDATE_STAT);
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.addShort(0x40);
+	packet.addByte(0);
+	packet.addShort(player->getAp());
+	packet.packetSend(player);
+}
 void PlayerPacket::setJob(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_UPDATE_STAT);
