@@ -207,6 +207,10 @@ void Player::playerConnect(unsigned char *packet){
 		variables[(string) res[i]["key"]] = res[i]["value"];
 	}
 
+	if (Maps::info[map].forcedReturn != 999999999) {
+		map = Maps::info[map].forcedReturn;
+	}
+
 	PlayerPacket::connectData(this);
 	
 	if (strlen(ChannelServer::Instance()->getScrollingHeader()) > 0) {
