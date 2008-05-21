@@ -721,6 +721,7 @@ void Inventory::useReturnScroll(Player* player, unsigned char* packet){
 void Inventory::useScroll(Player* player, unsigned char* packet){
 	short slot = BufferUtilities::getShort(packet+4);
 	short eslot = BufferUtilities::getShort(packet+6);
+	short wscroll = BufferUtilities::getShort(packet+8);
 	int itemid=0;
 	Equip* equip = NULL;
 	for(int i=0; i<player->inv->getItemNum(); i++){
@@ -743,7 +744,8 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 		if(Drops::items.find(itemid) == Drops::items.end())
 			return;
 		takeItemSlot(player, slot, 2, 1);
-		equip->slots--;
+		if(wscroll == 2)
+			takeItem(player, 2340000, 1);
 		if(Randomizer::Instance()->randInt(99)<Drops::consumes[itemid].success){
 			succeed = true;
 			equip->istr+=Drops::consumes[itemid].istr;
@@ -762,6 +764,7 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 			equip->ijump+=Drops::consumes[itemid].ijump;
 			equip->ispeed+=Drops::consumes[itemid].ispeed;
 			equip->scrolls++;
+			equip->slots--;
 		}
 		else{
 			if(Randomizer::Instance()->randInt(99)<Drops::consumes[itemid].cursed){
@@ -774,6 +777,7 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 					}
 				}
 			}
+			else if(wscroll!=2) equip->slots--;
 		}
 	}
 	InventoryPacket::useScroll(player, Maps::info[player->getMap()].Players, succeed, cursed);
