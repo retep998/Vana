@@ -18,13 +18,13 @@ elseif state == 1 then
 	if what == 0 then
 		sendStyle(skins, 5);
 	elseif what == 1 then
-		sendStyle(hairs, 74);
+		sendStyle(hairs, #hairs);
 	elseif what == 2 then
 		cur = getHair()/10*10;
 		colors = {cur, cur+1, cur+2, cur+3, cur+4, cur+5, cur+6, cur+7};
 		sendStyle(colors, hairscolor[getHair()%1000/10]);
 	elseif what == 3 then
-		sendStyle(eyes, 23);
+		sendStyle(eyes, #eyes);
 	elseif what == 4 then
 		cur = getEyes()%100+20000;
 		colors = {cur, cur+100, cur+200, cur+300, cur+400, cur+500, cur+600, cur+700};
