@@ -64,13 +64,7 @@ private:
 		Maps::mapTimer(timers[id]);
 	}
 	void remove (int id){
-		for (hash_map<int, int>::iterator iter = timers.begin();
-			 iter != timers.end(); iter++){
-			if(iter->first == id){
-				timers.erase(iter);
-				break;
-			 }
-		}
+		timers.erase(id);
 	}
 };
 hash_map <int,int> MapTimer::timers;

@@ -175,13 +175,7 @@ private:
 				}
 			}
 		}
-		for (hash_map<int, bool>::iterator iter = act.begin();
-			 iter != act.end(); iter++){
-			if(iter->first == id){
-				act.erase(iter);
-				break;
-			 }
-		}
+		act.erase(id);
 	}
 };
 
