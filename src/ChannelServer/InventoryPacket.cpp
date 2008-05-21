@@ -319,3 +319,11 @@ void InventoryPacket::useSkillbook(Player* player, vector <Player*> Players, int
 	packet.addByte(succeed); // Pass/Fail
 	packet.sendTo(player, Maps::info[player->getMap()].Players, 1);
 }
+
+void InventoryPacket::useItemEffect(Player* player, vector <Player*> players, int itemid){
+	Packet packet = Packet();
+	packet.addHeader(SEND_SHOW_ITEM_EFFECT);
+	packet.addInt(player->getPlayerid());
+	packet.addInt(itemid);
+	packet.sendTo(player, players, 0);
+}

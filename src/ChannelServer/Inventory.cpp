@@ -818,3 +818,13 @@ void Inventory::useMegaphone(Player* player, unsigned char *packet){
 	}
 	Inventory::takeItem(player, itemid, 1);
 }
+
+void Inventory::useItemEffect(Player* player, unsigned char* packet){
+	int itemid = BufferUtilities::getInt(packet);
+	if(player->inv->getItemAmount(itemid) == 0){
+		// hacking
+		return;
+	}
+	player->setItemEffect(itemid);
+	InventoryPacket::useItemEffect(player, Maps::info[player->getMap()].Players, itemid);
+}

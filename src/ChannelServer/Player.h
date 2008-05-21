@@ -51,6 +51,7 @@ public:
 		shop=0;
 		npc=NULL;
 		chair=0;
+		itemEffect=0;
 		skill.types[0] = 0;
 		skill.types[1] = 0;
 		skill.types[2] = 0;
@@ -216,6 +217,12 @@ public:
 	int getChair(){
 		return chair;
 	}
+	void setItemEffect(int effect){
+		this->itemEffect = effect;
+	}
+	int getItemEffect(){
+		return this->itemEffect;
+	}
 	NPC* getNPC(){
 		return npc;
 	}
@@ -294,6 +301,7 @@ private:
 	char type;
 	int keys[90];
 	int shop;
+	int itemEffect;
 	int chair;
 	int gm;
 	Pos pos;
