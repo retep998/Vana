@@ -58,6 +58,8 @@ LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 	lua_register(luaVm, "giveItem", &LuaNPCExports::giveItem);
 	lua_register(luaVm, "giveMesos", &LuaNPCExports::giveMesos);
 	lua_register(luaVm, "giveEXP", &LuaNPCExports::giveEXP);
+	lua_register(luaVm, "giveSP", &LuaNPCExports::giveSP);
+	lua_register(luaVm, "giveAP", &LuaNPCExports::giveAP);
 	lua_register(luaVm, "getJob", &LuaNPCExports::getJob);
 	lua_register(luaVm, "getLevel", &LuaNPCExports::getLevel);
 	lua_register(luaVm, "getGender", &LuaNPCExports::getGender);
@@ -77,6 +79,7 @@ LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 	lua_register(luaVm, "setStyle", &LuaNPCExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaNPCExports::setMap);
 	lua_register(luaVm, "setHP", &LuaNPCExports::setHP);
+	lua_register(luaVm, "setJob", &LuaNPCExports::setJob);
 	lua_register(luaVm, "setVariable", &LuaNPCExports::setVariable);
 	lua_register(luaVm, "setPlayerVariable", &LuaNPCExports::setPlayerVariable);
 	lua_register(luaVm, "setPortalTo", &LuaNPCExports::setPortalTo);
@@ -177,17 +180,33 @@ int LuaNPCExports::sendStyle(lua_State *luaVm) {
 }
 
 int LuaNPCExports::giveItem(lua_State *luaVm) {
-	Quests::giveItem(getNPC(luaVm)->getPlayer(), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
+	int itemid = lua_tointeger(luaVm, -2);
+	int amount = lua_tointeger(luaVm, -1);
+	Quests::giveItem(getNPC(luaVm)->getPlayer(), itemid, amount);
 	return 1;
 }
 
 int LuaNPCExports::giveMesos(lua_State *luaVm) {
-	Quests::giveMesos(getNPC(luaVm)->getPlayer(), lua_tointeger(luaVm, -1));
+	int mesos = lua_tointeger(luaVm, -1);
+	Quests::giveMesos(getNPC(luaVm)->getPlayer(), mesos);
 	return 1;
 }
 
 int LuaNPCExports::giveEXP(lua_State *luaVm) {
-	Levels::giveEXP(getNPC(luaVm)->getPlayer(), lua_tointeger(luaVm, -1), 1);
+	int exp = lua_tointeger(luaVm, -1);
+	Levels::giveEXP(getNPC(luaVm)->getPlayer(), exp, 1);
+	return 1;
+}
+
+int LuaNPCExports::giveSP(lua_State *luaVm) {
+	short sp = lua_tointeger(luaVm, -1);
+	getNPC(luaVm)->getPlayer()->setSp(getNPC(luaVm)->getPlayer()->getSp()+sp);
+	return 1;
+}
+
+int LuaNPCExports::giveAP(lua_State *luaVm) {
+	short ap = lua_tointeger(luaVm, -1);
+	getNPC(luaVm)->getPlayer()->setAp(getNPC(luaVm)->getPlayer()->getAp()+ap);
 	return 1;
 }
 
@@ -298,6 +317,12 @@ int LuaNPCExports::setMap(lua_State *luaVm) {
 int LuaNPCExports::setHP(lua_State *luaVm) {
 	int hp = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setHP(hp);
+	return 1;
+}
+
+int LuaNPCExports::setJob(lua_State *luaVm) {
+	short job = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setJob(job);
 	return 1;
 }
 

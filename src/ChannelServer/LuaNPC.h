@@ -61,6 +61,8 @@ namespace LuaNPCExports {
 	int giveItem(lua_State *luaVm);
 	int giveMesos(lua_State *luaVm);
 	int giveEXP(lua_State *luaVm);
+	int giveSP(lua_State *luaVm);
+	int giveAP(lua_State *luaVm);
 
 	int getJob(lua_State *luaVm);
 	int getLevel(lua_State *luaVm);
@@ -83,6 +85,7 @@ namespace LuaNPCExports {
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);
 	int setHP(lua_State *luaVm);
+	int setJob(lua_State *luaVm);
 	int setVariable(lua_State *luaVm);
 	int setPlayerVariable(lua_State *luaVm);
 	/* Portal script */
