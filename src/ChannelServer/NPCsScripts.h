@@ -48,6 +48,9 @@ public:
 		else if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC
 			LuaNPC(filename.c_str(), npc->getPlayer()->getPlayerid());
 		}
+		else {
+			npc->end();
+		}
 	}
 };
 
