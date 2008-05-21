@@ -62,13 +62,7 @@ void Selector::unregisterSocket (int socket) {
 	FD_CLR(socket, &readfds);
 	FD_CLR(socket, &writefds);
 	FD_CLR(socket, &errorfds);
-	for (hash_map<int,SelectHandler*>::iterator iter = handlers.begin();
-				 iter != handlers.end(); iter++){
-					 if(iter->first == socket){
-						 handlers.erase(iter);
-						break;
-					 }
-	}
+	handlers.erase(socket);
 }
 
 

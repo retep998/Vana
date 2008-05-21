@@ -37,15 +37,7 @@ void Players::addPlayer(Player* player){
 }
 
 void Players::deletePlayer(Player* player){
-	if(players.find(player->getPlayerid()) != players.end()){
-		for (hash_map<int,Player*>::iterator iter = players.begin();
-			 iter != players.end(); iter++){
-				 if(iter->first == player->getPlayerid()){
-					 players.erase(iter);
-					break;
-				 }
-		}
-	}
+	players.erase(player->getPlayerid());
 }
 
 void Players::handleMoving(Player* player, unsigned char* packet, int size){
