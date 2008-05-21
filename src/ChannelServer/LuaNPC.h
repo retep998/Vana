@@ -62,6 +62,7 @@ namespace LuaNPCExports {
 	int giveMesos(lua_State *luaVm);
 	int giveEXP(lua_State *luaVm);
 
+	int getJob(lua_State *luaVm);
 	int getLevel(lua_State *luaVm);
 	int getGender(lua_State *luaVm);
 	int getItemAmount(lua_State *luaVm);

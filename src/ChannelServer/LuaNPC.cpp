@@ -58,6 +58,7 @@ LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 	lua_register(luaVm, "giveItem", &LuaNPCExports::giveItem);
 	lua_register(luaVm, "giveMesos", &LuaNPCExports::giveMesos);
 	lua_register(luaVm, "giveEXP", &LuaNPCExports::giveEXP);
+	lua_register(luaVm, "getJob", &LuaNPCExports::getJob);
 	lua_register(luaVm, "getLevel", &LuaNPCExports::getLevel);
 	lua_register(luaVm, "getGender", &LuaNPCExports::getGender);
 	lua_register(luaVm, "getItemAmount", &LuaNPCExports::getItemAmount);
@@ -187,6 +188,11 @@ int LuaNPCExports::giveMesos(lua_State *luaVm) {
 
 int LuaNPCExports::giveEXP(lua_State *luaVm) {
 	Levels::giveEXP(getNPC(luaVm)->getPlayer(), lua_tointeger(luaVm, -1), 1);
+	return 1;
+}
+
+int LuaNPCExports::getJob(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getJob());
 	return 1;
 }
 
