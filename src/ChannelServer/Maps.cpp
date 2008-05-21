@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "PlayersPacket.h"
 #include "NPCs.h"
+#include "Reactors.h"
 #include "Mobs.h"
 #include "Drops.h"
 #include "Timer.h"
@@ -201,6 +202,7 @@ void Maps::mapTimer(int mapid){
 void Maps::newMap(Player* player, int mapid){
 	Players::addPlayer(player);
 	NPCs::showNPCs(player);
+	Reactors::showReactors(player);
 	addPlayer(player);
 	Mobs::showMobs(player);
 	Drops::showDrops(player);

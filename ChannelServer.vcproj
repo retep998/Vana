@@ -242,6 +242,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Reactors.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Shops.cpp"
 					>
 				</File>
@@ -307,6 +311,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\QuestsPacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ReactorPacket.cpp"
 					>
 				</File>
 				<File
@@ -512,6 +520,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Reactors.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Shops.h"
 					>
 				</File>
@@ -577,6 +589,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\QuestsPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ReactorPacket.h"
 					>
 				</File>
 				<File

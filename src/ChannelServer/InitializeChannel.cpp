@@ -697,7 +697,47 @@ void Initializing::initializeMaps(){
 		spawns.clear();
 	}
 
-	//Footholds
+	// Reactors
+	query << "SELECT * FROM mapreactordata ORDER BY mapid ASC";
+
+	if (!(res = query.use())) {
+		printf("FAILED: %s\n", db.error());
+		exit(1);
+	}
+
+	currentid = 0;
+	previousid = -1;
+	ReactorsInfo reactors;
+	while (mysqlpp::Row reactorRow = res.fetch_row()) {
+		// Col0 : Row ID
+		//    1 : Map ID
+		//    2 : Reactor ID
+		//    3 : x
+		//    4 : y
+		//    5 : Time
+		//    6 : f
+		currentid = atoi(reactorRow[1]);
+		if(currentid != previousid && previousid != -1){
+			Reactors::addReactor(previousid, reactors);
+			reactors.clear();
+		}
+		ReactorInfo reactor;
+		reactor.id = atoi(reactorRow[2]);
+		reactor.x = atoi(reactorRow[3]);
+		reactor.y = atoi(reactorRow[4]);
+		reactor.time = atoi(reactorRow[5]);
+		reactor.f = atoi(reactorRow[6]);
+		reactors.push_back(reactor);
+
+		previousid = atoi(reactorRow[1]);
+	}
+
+	if(previousid != -1){
+		Reactors::addReactor(previousid, reactors);
+		reactors.clear();
+	}
+
+	// Footholds
 	query << "SELECT * FROM mapfootholddata ORDER BY mapid ASC";
 
 	if (!(res = query.use())) {
@@ -718,7 +758,7 @@ void Initializing::initializeMaps(){
 		currentid = atoi(footsRow[1]);
 		if(currentid != previousid && previousid != -1){
 			Drops::addFoothold(previousid, foots);
-			Drops::objids[previousid] = 100;
+			Drops::objids[previousid] = foots.size();
 			foots.clear();
 		}
 		FootholdInfo foot;
@@ -733,7 +773,7 @@ void Initializing::initializeMaps(){
 	// Add final entry
 	if(previousid != -1){
 		Drops::addFoothold(previousid, foots);
-		Drops::objids[previousid] = 100;
+		Drops::objids[previousid] = foots.size();
 	}
 	printf("DONE\n");
 }

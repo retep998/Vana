@@ -15,32 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INITIALIZECHANNEL_H
-#define INITIALIZECHANNEL_H
+#ifndef REACTORPACK_H
+#define REACTORPACK_H
 
-#include "InitializeCommon.h"
-#include "Mobs.h"
-#include "Drops.h"
-#include "Maps.h"
-#include "NPCs.h"
-#include "Reactors.h"
-#include "Shops.h"
-#include <string>
-#include "Quests.h"
-#include "Skills.h"
-#include "Inventory.h"
+class Player;
+struct ReactorInfo;
 
-using namespace std;
-
-namespace Initializing {
-	void initializeMobs();
-	void initializeDrops();
-	void initializeMaps();
-	void initializeEquips();
-	void initializeShops();
-	void initializeItems();
-	void initializeQuests();
-	void initializeSkills();
-}
+namespace ReactorPacket {
+	void showReactor(Player* player, ReactorInfo reactor, int i);
+};
 
 #endif
