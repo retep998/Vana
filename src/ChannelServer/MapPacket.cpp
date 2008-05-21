@@ -88,7 +88,7 @@ Packet MapPacket::playerPacket(Player* player){
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
-	packet.addInt(0); 
+	packet.addInt(player->getItemEffect()); 
 	packet.addInt(player->getChair());
 	packet.addShort(player->getPos().x);
 	packet.addShort(player->getPos().y);
@@ -107,7 +107,7 @@ void MapPacket::showPlayer(Player* player, vector <Player*> players){
 	for(unsigned int i=0; i<players.size(); i++){
 		packet.packetSend(players[i]);
 	}
-}	
+}
 
 void MapPacket::removePlayer(Player* player, vector <Player*> players){
 	Packet packet = Packet();
@@ -117,7 +117,7 @@ void MapPacket::removePlayer(Player* player, vector <Player*> players){
 		if(player->getPlayerid() != players[i]->getPlayerid())
 			packet.packetSend(players[i]);
 	}
-}	
+}
 
 void MapPacket::showPlayers(Player* player, vector <Player*> players){
 	for(unsigned int i=0; i<players.size(); i++){
@@ -126,7 +126,7 @@ void MapPacket::showPlayers(Player* player, vector <Player*> players){
 			packet.packetSend(player);
 		}
 	}
-}	
+}
 
 void MapPacket::changeMap(Player* player){
 	Packet packet = Packet();

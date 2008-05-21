@@ -68,6 +68,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_CANCEL_OTHERS_BUFF 0x8b // From other player
 #define SEND_FACE_EXPERIMENT 0x8d
 #define SEND_DAMAGE_MOB_RANGED 0x8e
+#define SEND_SHOW_ITEM_EFFECT 0x8f
 #define SEND_DAMAGE_PLAYER 0x8a
 #define SEND_SIT_CHAIR 0x92
 #define SEND_UPDATE_CHAR_LOOK 0x93
@@ -80,6 +81,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_KILL_MOB 0xa6
 #define SEND_SHOW_NPC 0xa8
 #define SEND_SHOW_NPC2 0xad
+#define SEND_SHOW_REACTOR 0xb3
 #define SEND_DROP_ITEM 0xb9
 #define SEND_TAKE_DROP 0xba
 #define SEND_NPC_TALK 0xc3
