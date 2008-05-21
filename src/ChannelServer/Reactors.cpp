@@ -15,32 +15,23 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INITIALIZECHANNEL_H
-#define INITIALIZECHANNEL_H
-
-#include "InitializeCommon.h"
-#include "Mobs.h"
-#include "Drops.h"
-#include "Maps.h"
-#include "NPCs.h"
 #include "Reactors.h"
-#include "Shops.h"
-#include <string>
-#include "Quests.h"
-#include "Skills.h"
+#include "Player.h"
+#include "ReactorPacket.h"
+#include "InventoryPacket.h"
+#include "PacketCreator.h"
+#include "Maps.h"
 #include "Inventory.h"
+#include "BufferUtilities.h"
+#include "SendHeader.h"
 
-using namespace std;
+hash_map <int, ReactorsInfo> Reactors::info;
 
-namespace Initializing {
-	void initializeMobs();
-	void initializeDrops();
-	void initializeMaps();
-	void initializeEquips();
-	void initializeShops();
-	void initializeItems();
-	void initializeQuests();
-	void initializeSkills();
+void Reactors::addReactor(int id, ReactorsInfo reactors){
+	info[id] = reactors;
 }
 
-#endif
+void Reactors::showReactors(Player *player){
+	for(unsigned int i=0; i<info[player->getMap()].size(); i++)
+		ReactorPacket::showReactor(player, info[player->getMap()][i], i);
+}
