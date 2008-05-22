@@ -72,8 +72,6 @@ void PacketHandler::handle (int socket) {
 
 
 void PacketHandler::sendPacket(unsigned char *buff, int size){
-	if (decoder == NULL)
-		return;
 	unsigned char bufs[BUFFER_LEN];
 	decoder->createHeader((unsigned char*)bufs, (short)(size));
 	decoder->encrypt(buff, size);
