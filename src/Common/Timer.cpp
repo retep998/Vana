@@ -47,8 +47,8 @@ Timer::~Timer() {
 	SetEvent(timerEvent);
 }
 
-int Timer::setTimer(int msec, TimerHandler *handler) {
-	timers[id] = new OneTimer(msec, id, handler);
+int Timer::setTimer(int msec, TimerHandler *handler, bool persistent) {
+	timers[id] = new OneTimer(msec, id, handler, persistent);
 	SetEvent(timerEvent);
 	return id++;
 }
@@ -97,8 +97,13 @@ void Timer::timerThread() {
 			long msec = (minTimer == NULL) ? msec = 1000000000 : minTimer->t - clock();
 			if (msec <= 0) {
 				minTimer->handler->handle(this, minTimer->id);
-				remove(minTimer->id);
-				delete minTimer;
+				if (minTimer->persistent) {
+					minTimer->reset();
+				}
+				else {
+					remove(minTimer->id);
+					delete minTimer;
+				}
 				continue;
 			}
 			DWORD r = WaitForSingleObject(timerEvent, msec);
@@ -109,8 +114,13 @@ void Timer::timerThread() {
 			}
 			if (minTimer != NULL) {
 				minTimer->handler->handle(this, minTimer->id);
-				remove (minTimer->id);
-				delete minTimer;
+				if (minTimer->persistent) {
+					minTimer->reset();
+				}
+				else {
+					remove(minTimer->id);
+					delete minTimer;
+				}
 			}
 		}
 		catch (...) {
@@ -119,10 +129,11 @@ void Timer::timerThread() {
 	}
 }
 
-Timer::OneTimer::OneTimer(long msec, int id, TimerHandler* handler) {
+Timer::OneTimer::OneTimer(long msec, int id, TimerHandler* handler, bool persistent) {
 	this->msec = msec;
 	this->id = id;
 	this->handler = handler;
+	this->persistent = persistent;
 	reset();
 }
 

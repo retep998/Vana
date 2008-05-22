@@ -214,6 +214,10 @@
 					RelativePath=".\src\Common\PacketCreator.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\src\Common\PingPacket.cpp"
+					>
+				</File>
 				<Filter
 					Name="ServerToServer"
 					>
@@ -350,6 +354,10 @@
 				>
 				<File
 					RelativePath=".\src\Common\PacketCreator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\PingPacket.h"
 					>
 				</File>
 				<Filter
