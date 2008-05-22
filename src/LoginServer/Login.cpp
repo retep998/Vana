@@ -45,7 +45,7 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 			valid = false;
 		}
 		// We have a valid password here, so lets hash the password
-		char *salt = generateSalt(5);
+		char *salt = Randomizer::Instance()->generateSalt(5);
 		char *hashed_pass = hashPassword(password, salt);
 		query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << mysqlpp::quote << res[0]["id"];
 		query.exec();
@@ -193,13 +193,4 @@ char * Login::hashPassword(const char *password, const char *salt) {
 	sprintf_s(passhash,45,"%08X%08X%08X%08X%08X", digest[0], digest[1], digest[2], digest[3], digest[4]);
 
 	return passhash;
-}
-
-char * Login::generateSalt(size_t length) {
-	char *salt = new char[length+1];
-	for (size_t i = 0; i < length; i++) {
-		salt[i] = 33 + (Randomizer::Instance()->randInt(93));
-	}
-	salt[length] = 0;
-	return salt;
 }

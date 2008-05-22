@@ -36,6 +36,7 @@ public:
 
 	int randInt(int max = 0);
 	double rand();
+	char * generateSalt(size_t length);
 private:
 	Randomizer() {};
 	Randomizer(const Randomizer&);
