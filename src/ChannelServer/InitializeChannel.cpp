@@ -726,7 +726,7 @@ void Initializing::initializeMaps(){
 		reactor.x = atoi(reactorRow[3]);
 		reactor.y = atoi(reactorRow[4]);
 		reactor.time = atoi(reactorRow[5]);
-		reactor.f = atoi(reactorRow[6]);
+		reactor.f = (unsigned char) reactorRow[6];
 		reactors.push_back(reactor);
 
 		previousid = atoi(reactorRow[1]);
