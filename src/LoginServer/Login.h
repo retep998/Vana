@@ -36,7 +36,6 @@ namespace Login {
 	void loginBack(PlayerLogin* player);
 	void checkPin(PlayerLogin* player, unsigned char* packet);
 	char * hashPassword(const char *password, const char *salt);
-	char * generateSalt(size_t length);
 };
 
 #endif

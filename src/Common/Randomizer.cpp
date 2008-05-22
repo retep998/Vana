@@ -26,3 +26,12 @@ int Randomizer::randInt(int max) {
 double Randomizer::rand() {
 	return mtrand.rand();
 }
+
+char * Randomizer::generateSalt(size_t length) {
+	char *salt = new char[length+1];
+	for (size_t i = 0; i < length; i++) {
+		salt[i] = 33 + randInt(93);
+	}
+	salt[length] = 0;
+	return salt;
+}
