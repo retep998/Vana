@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PlayerLogin:public AbstractPlayer {
 public:
 	PlayerLogin () {
-		status=0;
+		status = 0;
 		invalid_logins = 0;
 	}
 
