@@ -33,7 +33,7 @@ struct ReactorInfo {
 	short x;
 	short y;
 	short time;
-	short f;
+	unsigned char f;
 };
 
 typedef vector<ReactorInfo> ReactorsInfo;
