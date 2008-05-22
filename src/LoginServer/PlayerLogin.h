@@ -25,6 +25,7 @@ class PlayerLogin:public AbstractPlayer {
 public:
 	PlayerLogin () {
 		status=0;
+		invalid_logins = 0;
 	}
 
 	~PlayerLogin();
@@ -66,6 +67,7 @@ public:
 	int getChannel(){
 		return this->channel;
 	}
+	int addInvalidLogin() { return ++invalid_logins; }
 	void setOnline(bool online);
 private:
 	int status;
@@ -75,6 +77,7 @@ private:
 	char gender;
 	char world;
 	int channel;
+	int invalid_logins;
 };
 
 class PlayerLoginFactory:public AbstractPlayerFactory {

@@ -35,6 +35,7 @@ void LoginServer::loadConfig() {
 	pinEnabled = config.getBool("pin");
 	port = config.getInt("port");
 	inter_port = config.getInt("inter_port");
+	invalid_login_threshold = config.getInt("invalid_login_threshold");
 	to_listen = true;
 
 	// Let's load our worlds

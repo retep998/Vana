@@ -39,6 +39,7 @@ public:
 
 	bool getPinEnabled() const { return pinEnabled; }
 	void setPinEnabled(bool enabled) { pinEnabled = enabled; }
+	int getInvalidLoginThreshold() const { return invalid_login_threshold; }
 private:
 	LoginServer() {};
 	LoginServer(const LoginServer&);
@@ -48,6 +49,7 @@ private:
 	bool pinEnabled;
 	short port;
 	short inter_port;
+	int invalid_login_threshold;
 };
 
 #endif

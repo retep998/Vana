@@ -33,15 +33,16 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	query << "SELECT id, password, salt, online, pin, gender, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
+	bool valid = true;
 	if (res.empty()) {
 		LoginPacket::loginError(player, 0x05); //Invalid username
-		return;
+		valid = false;
 	}
 	else if (res[0]["salt"].is_null()) {
 		// We have an unsalted password here
 		if (strcmp(password, res[0]["password"])) {
 			LoginPacket::loginError(player, 0x04); //Invalid password
-			return;
+			valid = false;
 		}
 		// We have a valid password here, so lets hash the password
 		char *salt = generateSalt(5);
@@ -51,37 +52,45 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	}
 	else if (strcmp(hashPassword(password, res[0]["salt"].c_str()), res[0]["password"].c_str())) {
 		LoginPacket::loginError(player, 0x04); //Invalid password
-		return;
+		valid = false;
 	}
 	else if (atoi(res[0]["online"]) != 0) {
 		LoginPacket::loginError(player, 0x07); //Already logged in
-		return;
+		valid = false;
 	}
 	else if (atoi(res[0]["banned"]) == 1) {
 		int time = TimeUtilities::tickToTick32(TimeUtilities::timeToTick((time_t) mysqlpp::DateTime(res[0]["ban_expire"])));
 		LoginPacket::loginBan(player, (unsigned char) res[0]["ban_reason"], time);
-		return;
+		valid = false;
 	}
-	printf("%s logged in.\n", username);
-	player->setUserid(res[0]["id"]);
-	if (LoginServer::Instance()->getPinEnabled()) {
-		if (res[0]["pin"].is_null())
-			player->setPin(-1);
-		else
-			player->setPin(res[0]["pin"]);
-		int pin = player->getPin();
-		if(pin == -1)
-			player->setStatus(1); // New PIN
-		else
-			player->setStatus(2); // Ask for PIN
+	if(!valid) {
+		int threshold = LoginServer::Instance()->getInvalidLoginThreshold();
+		if (threshold != 0 && player->addInvalidLogin() >= threshold) {
+			player->disconnect(); // Too many invalid logins
+		}
 	}
-	else
-		player->setStatus(4);
-	if (res[0]["gender"].is_null())
-		player->setStatus(5);
-	else
-		player->setGender((unsigned char) res[0]["gender"]);
-	LoginPacket::loginConnect(player, username, usersize);
+	else {
+		printf("%s logged in.\n", username);
+		player->setUserid(res[0]["id"]);
+		if (LoginServer::Instance()->getPinEnabled()) {
+			if (res[0]["pin"].is_null())
+				player->setPin(-1);
+			else
+				player->setPin(res[0]["pin"]);
+			int pin = player->getPin();
+			if(pin == -1)
+				player->setStatus(1); // New PIN
+			else
+				player->setStatus(2); // Ask for PIN
+		}
+		else
+			player->setStatus(4);
+		if (res[0]["gender"].is_null())
+			player->setStatus(5);
+		else
+			player->setGender((unsigned char) res[0]["gender"]);
+		LoginPacket::loginConnect(player, username, usersize);
+	}
 }
 
 void Login::setGender(PlayerLogin* player, unsigned char* packet){
