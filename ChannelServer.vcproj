@@ -302,6 +302,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\PingPacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerPacket.cpp"
 					>
 				</File>
@@ -577,6 +581,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\PacketCreator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\PingPacket.h"
 					>
 				</File>
 				<File

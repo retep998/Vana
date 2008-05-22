@@ -17,8 +17,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractPlayer.h"
 #include "Connection/PacketHandler.h"
+#include "PingPacket.h"
+#include "Timer.h"
+#include "BufferUtilities.h"
+#include "SendHeader.h"
+
+class PingTimer: public Timer::TimerHandler {
+public:
+	static PingTimer * Instance() {
+		if (singleton == 0)
+			singleton = new PingTimer;
+		return singleton;
+	}
+
+	int set(AbstractPlayer *player) {
+		int id = Timer::Instance()->setTimer(15000, this, true);
+		timers[id] = player;
+		return id;
+	}
+
+	void reset(int id) {
+		Timer::Instance()->resetTimer(id);
+	}
+private:
+	static PingTimer *singleton;
+	PingTimer() {};
+	PingTimer(const PingTimer&);
+	PingTimer& operator=(const PingTimer&);
+
+	hash_map <int, AbstractPlayer *> timers;
+
+	void handle(Timer* timer, int id) {
+		if (timers.find(id) == timers.end())
+			return;
+
+		timers[id]->ping();
+	}
+
+	void remove(int id){
+		timers.erase(id);
+	}
+};
+
+PingTimer * PingTimer::singleton = 0;
+
+AbstractPlayer::AbstractPlayer() {
+	is_server = false;
+	is_pinged = false;
+	setTimer();
+}
 
 void AbstractPlayer::handleRequest (unsigned char* buf, int len) {
+	is_pinged = false;
+	PingTimer::Instance()->reset(timer);
+	if (BufferUtilities::getShort(buf) == SEND_PING)
+		PingPacket::pong(this);
 	realHandleRequest(buf, len);
 }
 
@@ -26,10 +79,23 @@ void AbstractPlayer::sendPacket(unsigned char *buf, int len) {
 	packetHandler->sendPacket(buf, len);
 }
 
+void AbstractPlayer::setTimer() {
+	timer = PingTimer::Instance()->set(this);
+}
+
+void AbstractPlayer::ping() {
+	if (is_pinged) { // We have a timeout now
+		disconnect();
+		return;
+	}
+	is_pinged = true;
+	PingPacket::ping(this);
+}
+
 void AbstractPlayer::disconnect() {
 	packetHandler->disconnect();
 }
 
 AbstractPlayer::~AbstractPlayer() {
-	packetHandler->unregister();
+	Timer::Instance()->cancelTimer(timer);
 }

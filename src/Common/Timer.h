@@ -40,7 +40,7 @@ public:
 
 	~Timer();
 
-	int setTimer(int msec, TimerHandler *handler);
+	int setTimer(int msec, TimerHandler *handler, bool persistent = false);
 	void cancelTimer(int id);
 	void resetTimer(int id);
 	void timerThread();
@@ -57,8 +57,9 @@ private:
 		long t;
 		long msec;
 		int id;
+		bool persistent;
 		TimerHandler* handler;
-		OneTimer(long msec, int id, TimerHandler* handler);
+		OneTimer(long msec, int id, TimerHandler* handler, bool persistent);
 		void reset();
 	};
 	hash_map <int, OneTimer *> timers;

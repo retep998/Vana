@@ -25,10 +25,14 @@ class PacketHandler;
 
 class AbstractPlayer {
 public:
+	AbstractPlayer();
+
 	virtual void setPacketHandler (PacketHandler* ph) { packetHandler = ph; }
 	virtual void realHandleRequest (unsigned char* buf, int len) = 0;
 	void handleRequest (unsigned char* buf, int len);
 	void sendPacket(unsigned char *buf, int len);
+	void setTimer();
+	void ping();
 	void disconnect();
 
 	char * getIP() { return ip; }
@@ -38,6 +42,10 @@ public:
 protected:
 	PacketHandler *packetHandler;
 	char ip[15];
+	bool is_server;
+private:
+	int timer;
+	bool is_pinged;
 };
 
 class AbstractPlayerFactory {
