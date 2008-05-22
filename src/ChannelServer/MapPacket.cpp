@@ -144,6 +144,14 @@ void MapPacket::changeMap(Player* player){
 	packet.packetSend(player);
 }
 
+void MapPacket::portalBlocked(Player* player){
+	Packet packet = Packet();
+	packet.addHeader(SEND_UPDATE_STAT);
+	packet.addShort(1);
+	packet.addInt(0);
+	packet.packetSend(player);
+}
+
 void MapPacket::showTime(Player* player, unsigned char hour, unsigned char min, unsigned char sec){
 	Packet packet = Packet();
 	packet.addHeader(SEND_TIME);
