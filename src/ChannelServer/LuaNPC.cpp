@@ -254,7 +254,8 @@ int LuaNPCExports::getGender(lua_State *luaVm) {
 }
 
 int LuaNPCExports::getItemAmount(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->inv->getItemAmount(lua_tointeger(luaVm, -1)));
+	int itemid = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->inv->getItemAmount(itemid));
 	return 1;
 }
 
