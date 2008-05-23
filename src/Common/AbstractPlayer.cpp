@@ -70,7 +70,7 @@ AbstractPlayer::AbstractPlayer() {
 void AbstractPlayer::handleRequest (unsigned char* buf, int len) {
 	is_pinged = false;
 	PingTimer::Instance()->reset(timer);
-	if (BufferUtilities::getShort(buf) == SEND_PING)
+	if (is_server && BufferUtilities::getShort(buf) == SEND_PING)
 		PingPacket::pong(this);
 	realHandleRequest(buf, len);
 }
