@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SKILLS_H
 
 #include <hash_map>
+#include "SkillsPacket.h"
 
 #define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)
 
@@ -124,11 +125,19 @@ namespace Skills {
 
 class PlayerSkills {
 public:
-	void addSkillLevel(int skillid, int level){
+	void addSkillLevel(int skillid, int level, bool sendpacket = true){
 		if(playerskills.find(skillid) != playerskills.end())
 			playerskills[skillid] += level;
 		else
 			playerskills[skillid] = level;
+		
+		if (sendpacket) {
+			int maxlevel = 0;
+			if(FORTHJOB_SKILL(skillid)){
+				maxlevel = getMaxSkillLevel(skillid);
+			}
+			SkillsPacket::addSkill(player, skillid, getSkillLevel(skillid), maxlevel);
+		}
 	}
 	int getSkillLevel(int skillid){
 		if(playerskills.find(skillid) != playerskills.end())
@@ -219,6 +228,8 @@ public:
 			return 0;
 		return activelevels[skillid];
 	}
+
+	void setPlayer(Player *player) { this->player = player; }
 private:
 	hash_map <int, int> playerskills;
 	hash_map <int, int> maxlevels;
@@ -226,6 +237,7 @@ private:
 	hash_map <int, SkillActiveInfo> activemapskill;
 	vector <SkillMapActiveInfo> activemapenterskill;
 	hash_map <int, int> activelevels;
+	Player *player;
 };
 
 #endif

@@ -514,12 +514,6 @@ void Skills::updateSkill(Player* player, int skillid){
 	if(player->skills->getSkillLevel(skillid) == 0){
 		player->skills->addSkillLevel(skillid, 0);
 	}
-
-	int maxlevel = 0;
-	if(FORTHJOB_SKILL(skillid)){
-		maxlevel = player->skills->getMaxSkillLevel(skillid);
-	}
-	SkillsPacket::addSkill(player, skillid, player->skills->getSkillLevel(skillid), maxlevel);
 }
 
 void Skills::addSkill(Player* player, unsigned char* packet){
@@ -531,11 +525,6 @@ void Skills::addSkill(Player* player, unsigned char* packet){
 	if(!BEGINNER_SKILL(skillid))
 		player->setSp(player->getSp()-1);
 	player->skills->addSkillLevel(skillid, 1);
-	int maxlevel = 0;
-	if(FORTHJOB_SKILL(skillid)){
-		maxlevel = player->skills->getMaxSkillLevel(skillid);
-	}
-	SkillsPacket::addSkill(player, skillid, player->skills->getSkillLevel(skillid), maxlevel);
 }
 void Skills::cancelSkill(Player* player, unsigned char* packet){
 	stopSkill(player, BufferUtilities::getInt(packet));
