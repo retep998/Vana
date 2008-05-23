@@ -60,6 +60,10 @@ LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 	lua_register(luaVm, "giveEXP", &LuaNPCExports::giveEXP);
 	lua_register(luaVm, "giveSP", &LuaNPCExports::giveSP);
 	lua_register(luaVm, "giveAP", &LuaNPCExports::giveAP);
+	lua_register(luaVm, "getSTR", &LuaNPCExports::getSTR);
+	lua_register(luaVm, "getDEX", &LuaNPCExports::getDEX);
+	lua_register(luaVm, "getINT", &LuaNPCExports::getINT);
+	lua_register(luaVm, "getLUK", &LuaNPCExports::getLUK);
 	lua_register(luaVm, "getJob", &LuaNPCExports::getJob);
 	lua_register(luaVm, "getLevel", &LuaNPCExports::getLevel);
 	lua_register(luaVm, "getGender", &LuaNPCExports::getGender);
@@ -79,6 +83,10 @@ LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 	lua_register(luaVm, "setStyle", &LuaNPCExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaNPCExports::setMap);
 	lua_register(luaVm, "setHP", &LuaNPCExports::setHP);
+	lua_register(luaVm, "setSTR", &LuaNPCExports::setSTR);
+	lua_register(luaVm, "setDEX", &LuaNPCExports::setDEX);
+	lua_register(luaVm, "setINT", &LuaNPCExports::setINT);
+	lua_register(luaVm, "setLUK", &LuaNPCExports::setLUK);
 	lua_register(luaVm, "setJob", &LuaNPCExports::setJob);
 	lua_register(luaVm, "setVariable", &LuaNPCExports::setVariable);
 	lua_register(luaVm, "setPlayerVariable", &LuaNPCExports::setPlayerVariable);
@@ -210,6 +218,26 @@ int LuaNPCExports::giveAP(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaNPCExports::getSTR(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStr());
+	return 1;
+}
+
+int LuaNPCExports::getDEX(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getDex());
+	return 1;
+}
+
+int LuaNPCExports::getINT(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInt());
+	return 1;
+}
+
+int LuaNPCExports::getLUK(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getLuk());
+	return 1;
+}
+
 int LuaNPCExports::getJob(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getJob());
 	return 1;
@@ -317,6 +345,30 @@ int LuaNPCExports::setMap(lua_State *luaVm) {
 int LuaNPCExports::setHP(lua_State *luaVm) {
 	int hp = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setHP(hp);
+	return 1;
+}
+
+int LuaNPCExports::setSTR(lua_State *luaVm) {
+	short str = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setStr(str);
+	return 1;
+}
+
+int LuaNPCExports::setDEX(lua_State *luaVm) {
+	short dex = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setDex(dex);
+	return 1;
+}
+
+int LuaNPCExports::setINT(lua_State *luaVm) {
+	short intt = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setInt(intt);
+	return 1;
+}
+
+int LuaNPCExports::setLUK(lua_State *luaVm) {
+	short luk = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setLuk(luk);
 	return 1;
 }
 

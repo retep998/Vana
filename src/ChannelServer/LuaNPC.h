@@ -64,6 +64,10 @@ namespace LuaNPCExports {
 	int giveSP(lua_State *luaVm);
 	int giveAP(lua_State *luaVm);
 
+	int getSTR(lua_State *luaVm);
+	int getDEX(lua_State *luaVm);
+	int getINT(lua_State *luaVm);
+	int getLUK(lua_State *luaVm);
 	int getJob(lua_State *luaVm);
 	int getLevel(lua_State *luaVm);
 	int getGender(lua_State *luaVm);
@@ -85,6 +89,10 @@ namespace LuaNPCExports {
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);
 	int setHP(lua_State *luaVm);
+	int setSTR(lua_State *luaVm);
+	int setDEX(lua_State *luaVm);
+	int setINT(lua_State *luaVm);
+	int setLUK(lua_State *luaVm);
 	int setJob(lua_State *luaVm);
 	int setVariable(lua_State *luaVm);
 	int setPlayerVariable(lua_State *luaVm);
