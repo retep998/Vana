@@ -78,7 +78,6 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 				if(strlen(next_token) > 0)
 				count = atoi(next_token);
 				player->skills->addSkillLevel(skillid, count);
-				SkillsPacket::addSkill(player, skillid, player->skills->getSkillLevel(skillid));
 			}
 		}
 		else if(strcmp(command, "summon") == 0 || strcmp(command, "spawn") == 0){

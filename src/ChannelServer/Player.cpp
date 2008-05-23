@@ -109,6 +109,7 @@ void Player::playerConnect(unsigned char *packet){
 	setPlayerid(id);
 	inv = new PlayerInventory();
 	skills = new PlayerSkills();
+	skills->setPlayer(this);
 	quests = new PlayerQuests();
 	quests->setPlayer(this);
 
@@ -190,7 +191,7 @@ void Player::playerConnect(unsigned char *packet){
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		skills->addSkillLevel(res[i][0], res[i][1]);
+		skills->addSkillLevel(res[i][0], res[i][1], false);
 		if(FORTHJOB_SKILL(res[i][0])){
 			skills->setMaxSkillLevel(res[i][0], res[i][2]);
 		}
