@@ -74,6 +74,7 @@ void LoginPacket::loginConnect(PlayerLogin* player, char* username, int size){
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addBytes("000000A6B89C2B4CC701");
+	packet.addInt(0);
 	packet.packetSend(player);
 }
 

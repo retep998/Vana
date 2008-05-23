@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #define SEND_IV 0x0d
-#define MAPLE_VERSION 54
+#define MAPLE_VERSION 55
 
 #define SEND_PING 0x09
 
