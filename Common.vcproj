@@ -2,10 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="LoginServer"
-	ProjectGUID="{B7FA2720-4A56-49D7-986E-FF358C398C72}"
-	RootNamespace="LoginServer"
-	Keyword="Win32Proj"
+	Name="Common"
+	ProjectGUID="{CFFE2EE8-4188-4E42-B76C-8005041C2877}"
+	RootNamespace="Common"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -20,7 +19,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)"
-			ConfigurationType="1"
+			ConfigurationType="4"
 			CharacterSet="1"
 			ManagedExtensions="0"
 			>
@@ -61,21 +60,10 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.x86.debug.lib common.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++;$(ConfigurationName)/Common"
-				GenerateDebugInformation="true"
-				AssemblyDebug="1"
-				SubSystem="1"
-				TargetMachine="1"
+				Name="VCLibrarianTool"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -85,9 +73,6 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -139,10 +124,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.x86.release.lib common.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
+				AdditionalDependencies="ws2_32.lib lua.x86.release.lib"
+				OutputFile=""
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++;$(ConfigurationName)/Common"
+				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -180,31 +165,23 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\src\LoginServer\main_login.cpp"
-				>
-			</File>
 			<Filter
-				Name="LoginServer"
+				Name="DataBaseLoading"
 				>
 				<File
-					RelativePath=".\src\LoginServer\Characters.cpp"
+					RelativePath=".\src\Common\InitializeCommon.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="DataBaseManager"
+				>
+				<File
+					RelativePath=".\src\Common\Config.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\LoginServer\Login.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\LoginServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\PlayerLogin.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\LoginServer\Worlds.cpp"
+					RelativePath=".\src\Common\MySQLM.cpp"
 					>
 				</File>
 			</Filter>
@@ -212,41 +189,101 @@
 				Name="Packets"
 				>
 				<File
-					RelativePath=".\src\LoginServer\LoginPacket.cpp"
+					RelativePath=".\src\Common\PacketCreator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\PingPacket.cpp"
 					>
 				</File>
 				<Filter
 					Name="ServerToServer"
 					>
 					<File
-						RelativePath=".\src\LoginServer\LoginServerAcceptPlayerPacket.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Helpers"
-					>
-					<File
-						RelativePath=".\src\LoginServer\LoginPacketHelper.cpp"
+						RelativePath=".\src\Common\AuthenticationPacket.cpp"
 						>
 					</File>
 				</Filter>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Utilities"
 				>
 				<File
-					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.cpp"
+					RelativePath=".\src\Common\BufferUtilities.cpp"
 					>
 				</File>
-				<Filter
-					Name="Handlers"
+				<File
+					RelativePath=".\src\Common\CharUtilities.cpp"
 					>
-					<File
-						RelativePath=".\src\LoginServer\LoginServerAcceptHandler.cpp"
-						>
-					</File>
-				</Filter>
+				</File>
+				<File
+					RelativePath=".\src\Common\Randomizer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\sha1.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\TimeUtilities.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Connection"
+				>
+				<File
+					RelativePath=".\src\Common\Connection\Acceptor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Connection\Connector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Connection\PacketHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Connection\Selector.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Decoder"
+				>
+				<File
+					RelativePath=".\src\Common\Decoder\AESEncryption.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Decoder\Decoder.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Decoder\MapleEncryption.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Timer"
+				>
+				<File
+					RelativePath=".\src\Common\Timer.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Abstracts"
+				>
+				<File
+					RelativePath=".\src\Common\AbstractPlayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\AbstractServer.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -255,58 +292,130 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<Filter
+				Name="DataBaseLoading"
+				>
+				<File
+					RelativePath=".\src\Common\InitializeCommon.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="DataBaseManager"
+				>
+				<File
+					RelativePath=".\src\Common\Config.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\MySQLM.h"
+					>
+				</File>
+			</Filter>
+			<Filter
 				Name="Packets"
 				>
 				<File
-					RelativePath=".\src\LoginServer\LoginPacket.h"
+					RelativePath=".\src\Common\PacketCreator.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\Common\PingPacket.h"
+					>
+				</File>
+				<Filter
+					Name="Headers"
+					>
+					<File
+						RelativePath=".\src\Common\InterHeader.h"
+						>
+					</File>
+				</Filter>
 				<Filter
 					Name="ServerToServer"
 					>
 					<File
-						RelativePath=".\src\LoginServer\LoginServerAcceptPlayerPacket.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Helpers"
-					>
-					<File
-						RelativePath=".\src\LoginServer\LoginPacketHelper.h"
+						RelativePath=".\src\Common\AuthenticationPacket.h"
 						>
 					</File>
 				</Filter>
 			</Filter>
 			<Filter
-				Name="LoginServer"
+				Name="Utilities"
 				>
 				<File
-					RelativePath=".\src\LoginServer\Characters.h"
+					RelativePath=".\src\Common\BufferUtilities.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\LoginServer\Login.h"
+					RelativePath=".\src\Common\CharUtilities.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\LoginServer\LoginServer.h"
+					RelativePath=".\src\Common\Randomizer.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\LoginServer\PlayerLogin.h"
+					RelativePath=".\src\Common\sha1.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\LoginServer\Worlds.h"
+					RelativePath=".\src\Common\TimeUtilities.h"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="DataBaseLoading"
+				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\LoginServer\InitializeLogin.h"
+					RelativePath=".\src\Common\Connection\Acceptor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Connection\Connector.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Connection\PacketHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Connection\Selector.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Decoder"
+				>
+				<File
+					RelativePath=".\src\Common\Decoder\AESEncryption.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Decoder\Decoder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Decoder\MapleEncryption.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Timer"
+				>
+				<File
+					RelativePath=".\src\Common\Timer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Abstracts"
+				>
+				<File
+					RelativePath=".\src\Common\AbstractPlayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\AbstractServer.h"
 					>
 				</File>
 			</Filter>
@@ -314,17 +423,9 @@
 				Name="ServerToServer"
 				>
 				<File
-					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.h"
+					RelativePath=".\src\Common\ServerPlayer.h"
 					>
 				</File>
-				<Filter
-					Name="Handlers"
-					>
-					<File
-						RelativePath=".\src\LoginServer\LoginServerAcceptHandler.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 		</Filter>
 	</Files>

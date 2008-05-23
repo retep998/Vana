@@ -62,9 +62,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.x86.debug.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.x86.debug.lib common.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
+				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++;$(ConfigurationName)/Common"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				SubSystem="1"
@@ -138,9 +138,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.x86.release.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.x86.release.lib common.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++"
+				AdditionalLibraryDirectories="src/Common/lua;src/Common/mysql;src/Common/mysql++;$(ConfigurationName)/Common"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -255,18 +255,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="DataBaseManager"
-				>
-				<File
-					RelativePath=".\src\Common\Config.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\MySQLM.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Packets"
 				>
 				<File
@@ -295,14 +283,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\NPCPacket.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\PacketCreator.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\PingPacket.cpp"
 					>
 				</File>
 				<File
@@ -341,10 +321,6 @@
 					Name="ServerToServer"
 					>
 					<File
-						RelativePath=".\src\Common\AuthenticationPacket.cpp"
-						>
-					</File>
-					<File
 						RelativePath=".\src\ChannelServer\WorldServerConnectPlayerPacket.cpp"
 						>
 					</File>
@@ -355,86 +331,6 @@
 				>
 				<File
 					RelativePath=".\src\ChannelServer\InitializeChannel.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\InitializeCommon.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Timer"
-				>
-				<File
-					RelativePath=".\src\Common\Timer.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Utilities"
-				>
-				<File
-					RelativePath=".\src\Common\BufferUtilities.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\CharUtilities.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Randomizer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\TimeUtilities.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Connection"
-				>
-				<File
-					RelativePath=".\src\Common\Connection\Acceptor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Connection\Connector.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Connection\PacketHandler.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Connection\Selector.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Decoder"
-				>
-				<File
-					RelativePath=".\src\Common\Decoder\AESEncryption.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Decoder\Decoder.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Decoder\MapleEncryption.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Abstracts"
-				>
-				<File
-					RelativePath=".\src\Common\AbstractPlayer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\AbstractServer.cpp"
 					>
 				</File>
 			</Filter>
@@ -537,18 +433,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="DataBaseManager"
-				>
-				<File
-					RelativePath=".\src\Common\Config.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\MySQLM.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Packets"
 				>
 				<File
@@ -577,14 +461,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\NPCPacket.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\PacketCreator.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\PingPacket.h"
 					>
 				</File>
 				<File
@@ -620,24 +496,8 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="Headers"
-					>
-					<File
-						RelativePath=".\src\Common\RecvHeader.h"
-						>
-					</File>
-					<File
-						RelativePath=".\src\Common\SendHeader.h"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="ServerToServer"
 					>
-					<File
-						RelativePath=".\src\Common\AuthenticationPacket.h"
-						>
-					</File>
 					<File
 						RelativePath=".\src\ChannelServer\WorldServerConnectPlayerPacket.h"
 						>
@@ -651,94 +511,10 @@
 					RelativePath=".\src\ChannelServer\InitializeChannel.h"
 					>
 				</File>
-				<File
-					RelativePath=".\src\Common\InitializeCommon.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Timer"
-				>
-				<File
-					RelativePath=".\src\Common\Timer.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Utilities"
-				>
-				<File
-					RelativePath=".\src\Common\BufferUtilities.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\CharUtilities.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Randomizer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\TimeUtilities.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Connection"
-				>
-				<File
-					RelativePath=".\src\Common\Connection\Acceptor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Connection\Connector.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Connection\PacketHandler.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Connection\Selector.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Decoder"
-				>
-				<File
-					RelativePath=".\src\Common\Decoder\AESEncryption.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Decoder\Decoder.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Decoder\MapleEncryption.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Abstracts"
-				>
-				<File
-					RelativePath=".\src\Common\AbstractPlayer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\AbstractServer.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="ServerToServer"
 				>
-				<File
-					RelativePath=".\src\Common\ServerPlayer.h"
-					>
-				</File>
 				<File
 					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.h"
 					>
