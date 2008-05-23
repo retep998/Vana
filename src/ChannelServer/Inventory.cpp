@@ -419,8 +419,8 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 				// hacking
 				return;
 			}
-			takeItemSlot(player, slot, Drops::items[item->id].type, amount, 1);
 			player->inv->setMesos(player->inv->getMesos() + Drops::items[item->id].price*amount);
+			takeItemSlot(player, slot, Drops::items[item->id].type, amount, 1);
 		}
 		InventoryPacket::bought(player);
 	}
