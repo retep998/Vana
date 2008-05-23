@@ -45,6 +45,7 @@ LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 
 	lua_register(luaVm, "addText", &LuaNPCExports::addText);
 	lua_register(luaVm, "addChar", &LuaNPCExports::addChar);
+	lua_register(luaVm, "addSkillLevel", &LuaNPCExports::addSkillLevel);
 	lua_register(luaVm, "sendSimple", &LuaNPCExports::sendSimple);
 	lua_register(luaVm, "sendYesNo", &LuaNPCExports::sendYesNo);
 	lua_register(luaVm, "sendNext", &LuaNPCExports::sendNext);
@@ -68,6 +69,7 @@ LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 	lua_register(luaVm, "getLevel", &LuaNPCExports::getLevel);
 	lua_register(luaVm, "getGender", &LuaNPCExports::getGender);
 	lua_register(luaVm, "getItemAmount", &LuaNPCExports::getItemAmount);
+	lua_register(luaVm, "getSkillLevel", &LuaNPCExports::getSkillLevel);
 	lua_register(luaVm, "getMesos", &LuaNPCExports::getMesos);
 	lua_register(luaVm, "getMap", &LuaNPCExports::getMap);
 	lua_register(luaVm, "getHP", &LuaNPCExports::getHP);
@@ -122,6 +124,13 @@ int LuaNPCExports::addText(lua_State *luaVm) {
 
 int LuaNPCExports::addChar(lua_State *luaVm) {
 	getNPC(luaVm)->addChar((char) lua_tointeger(luaVm, -1));
+	return 1;
+}
+
+int LuaNPCExports::addSkillLevel(lua_State *luaVm) {
+	int skillid = lua_tointeger(luaVm, -2);
+	int level = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->skills->addSkillLevel(skillid,level);
 	return 1;
 }
 
@@ -256,6 +265,12 @@ int LuaNPCExports::getGender(lua_State *luaVm) {
 int LuaNPCExports::getItemAmount(lua_State *luaVm) {
 	int itemid = lua_tointeger(luaVm, -1);
 	lua_pushnumber(luaVm, getPlayer(luaVm)->inv->getItemAmount(itemid));
+	return 1;
+}
+
+int LuaNPCExports::getSkillLevel(lua_State *luaVm) {
+	int skillid = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->skills->getSkillLevel(skillid));
 	return 1;
 }
 
