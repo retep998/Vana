@@ -46,6 +46,7 @@ namespace LuaNPCExports {
 	// The exports
 	int addText(lua_State *luaVm);
 	int addChar(lua_State *luaVm);
+	int addSkillLevel(lua_State *luaVm);
 
 	int sendSimple(lua_State *luaVm);
 	int sendYesNo(lua_State *luaVm);
@@ -72,6 +73,7 @@ namespace LuaNPCExports {
 	int getLevel(lua_State *luaVm);
 	int getGender(lua_State *luaVm);
 	int getItemAmount(lua_State *luaVm);
+	int getSkillLevel(lua_State *luaVm);
 	int getMesos(lua_State *luaVm);
 	int getMap(lua_State *luaVm);
 	int getHP(lua_State *luaVm);
