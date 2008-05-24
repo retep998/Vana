@@ -120,25 +120,82 @@ void Levels::addStat(Player* player, unsigned char* packet){
 		return;
 	}
 	LevelsPacket::statOK(player);
-	if(type == 0x40){
-		player->setStr(player->getStr()+1);
-		player->setAp(player->getAp()-1);
-		LevelsPacket::changeStat(player, type + 0x4000, player->getStr());
-	}
-	else if(type == 0x80){
-		player->setDex(player->getDex()+1);
-		player->setAp(player->getAp()-1);
-		LevelsPacket::changeStat(player, type + 0x4000, player->getDex());
-	}
-	else if(type == 0x100){
-		player->setInt(player->getInt()+1);
-		player->setAp(player->getAp()-1);
-		LevelsPacket::changeStat(player, type + 0x4000, player->getInt());
-	}
-	else if(type == 0x200){
-		player->setLuk(player->getLuk()+1);
-		player->setAp(player->getAp()-1);
-		LevelsPacket::changeStat(player, type + 0x4000, player->getLuk());
+	switch (type) {
+		case 0x40:
+			if (player->getStr() > 998) return;
+			player->setStr(player->getStr()+1);
+			player->setAp(player->getAp()-1);
+			LevelsPacket::changeStat(player, type + 0x4000, player->getStr());
+			break;
+		case 0x80:
+			if (player->getDex() > 998) return;
+			player->setDex(player->getDex()+1);
+			player->setAp(player->getAp()-1);
+			LevelsPacket::changeStat(player, type + 0x4000, player->getDex());
+			break;
+		case 0x100:
+			if (player->getInt() > 998) return;
+			player->setInt(player->getInt()+1);
+			player->setAp(player->getAp()-1);
+			LevelsPacket::changeStat(player, type + 0x4000, player->getInt());
+			break;
+		case 0x200:
+			if (player->getLuk() > 998) return;
+			player->setLuk(player->getLuk()+1);
+			player->setAp(player->getAp()-1);
+			LevelsPacket::changeStat(player, type + 0x4000, player->getLuk());
+			break;
+		case 0x800:
+		case 0x2000: {
+			if ((player->getRMHP() > 29999 && type == 0x800) || (player->getRMMP() > 29999 && type == 0x2000)) return;
+			int job = player->getJob() / 100;
+			short hpgain = 0;
+			short mpgain = 0;
+			switch (job) {
+				case 0:
+					hpgain = Randomizer::Instance()->randInt(4) + 8;
+					mpgain = Randomizer::Instance()->randInt(2) + 10;
+					break;
+				case 1: {
+					int y = 0;
+					if (player->skills->getSkillLevel(1000001) > 0) { y = Skills::skills[1000001][player->skills->getSkillLevel(1000001)].y; }
+					hpgain = Randomizer::Instance()->randInt(4) + 20 + y;
+					mpgain = Randomizer::Instance()->randInt(2) + 2;
+					break;
+				}
+				case 2: {
+					int y = 0;
+					if (player->skills->getSkillLevel(2000001) > 0) { y = Skills::skills[2000001][player->skills->getSkillLevel(2000001)].y; }
+					hpgain = Randomizer::Instance()->randInt(4) + 6;
+					mpgain = Randomizer::Instance()->randInt(2) + 18 + 2 * y;
+					break;
+				}
+				default:
+					hpgain = Randomizer::Instance()->randInt(4) + 16;
+					mpgain = Randomizer::Instance()->randInt(2) + 10;
+					break;
+			}
+			player->setAp(player->getAp()-1);
+			player->setHPMPAp(player->getHPMPAp()+1);
+			int sid = 1301007;
+			bool hb = false;
+			if (player->skills->getActiveSkillLevel(sid) != 0) { hb = true; }
+			switch (type) {
+				case 0x800:
+					player->setRMHP(player->getRMHP() + hpgain);
+					player->setMHP(player->getRMHP() * (hb ? (Skills::skills[sid][player->skills->getActiveSkillLevel(sid)].x / 100) : 1));
+					LevelsPacket::changeStat(player, type + 0x4000, player->getRMHP());
+					break;
+				case 0x2000:
+					player->setRMMP(player->getRMMP() + mpgain);
+					player->setMMP(player->getRMMP() * (hb ? (Skills::skills[sid][player->skills->getActiveSkillLevel(sid)].y / 100) : 1));
+					LevelsPacket::changeStat(player, type + 0x4000, player->getRMMP());
+					break;
+			}
+			break;
+		}
+		default:
+			break;
 	}
 }
 

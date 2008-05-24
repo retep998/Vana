@@ -160,6 +160,12 @@ public:
 	unsigned short getRMMP(){
 		return this->rmmp;
 	}
+	void setHPMPAp(unsigned short ap) {
+		hpmp_ap = ap;
+	}
+	unsigned short getHPMPAp() {
+		return hpmp_ap;
+	}
 	short getAp(){
 		return this->ap;
 	}
@@ -292,6 +298,7 @@ private:
 	unsigned short mp;
 	unsigned short mmp;
 	unsigned short rmmp;
+	unsigned short hpmp_ap;
 	short ap;
 	short sp;
 	int exp;

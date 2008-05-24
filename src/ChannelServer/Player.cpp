@@ -138,6 +138,7 @@ void Player::playerConnect(unsigned char *packet){
 	rmhp = mhp = (short) res[0]["mhp"];
 	mp = (short) res[0]["cmp"];
 	rmmp = mmp = (short) res[0]["mmp"];
+	hpmp_ap = (short) res[0]["hpmp_ap"];
 	ap = (short) res[0]["ap"];
 	sp = (short) res[0]["sp"];
 	exp = res[0]["exp"];
@@ -370,6 +371,7 @@ void Player::saveStats() {
 			<< "mhp = " << mysqlpp::quote << getRMHP() << ","
 			<< "cmp = " << mysqlpp::quote << getMP() << ","
 			<< "mmp = " << mysqlpp::quote << getRMMP() << ","
+			<< "hpmp_ap = " << mysqlpp::quote << getHPMPAp() << ","
 			<< "ap = " << mysqlpp::quote << getAp() << ","
 			<< "sp = " << mysqlpp::quote << getSp() << ","
 			<< "exp = " << mysqlpp::quote << getExp() << ","
