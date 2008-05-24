@@ -229,14 +229,6 @@
 					RelativePath=".\src\Common\Connection\MapleSocket.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\src\Common\Connection\PacketHandler.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Connection\Selector.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Decoder"
@@ -361,14 +353,6 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\Connection\MapleSocket.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Connection\PacketHandler.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Connection\Selector.h"
 					>
 				</File>
 			</Filter>

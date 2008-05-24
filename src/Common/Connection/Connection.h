@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include "Selector.h"
 #include "AbstractPlayer.h"
 #include "MapleSocket.h"
 #include <SocketHandler.h>
