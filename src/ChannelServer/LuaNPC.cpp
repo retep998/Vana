@@ -130,7 +130,7 @@ int LuaNPCExports::addChar(lua_State *luaVm) {
 int LuaNPCExports::addSkillLevel(lua_State *luaVm) {
 	int skillid = lua_tointeger(luaVm, -2);
 	int level = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->skills->addSkillLevel(skillid,level);
+	getPlayer(luaVm)->skills->addSkillLevel(skillid, level);
 	return 1;
 }
 
