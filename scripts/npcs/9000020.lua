@@ -24,10 +24,10 @@ if getMap() == 800000000 then
 			endNPC();
 		end
 	elseif state == 2 then
+		endNPC();
 		wt_origin = getPlayerVariable("wt_origin");
 		setMap(wt_origin);
 		deletePlayerVariable("wt_origin");
-		endNPC();
 	end
 else
 	if state == 0 then
