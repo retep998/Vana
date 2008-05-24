@@ -22,6 +22,6 @@ void main(){
 	std::cout << "Starting Login Server..." << std::endl;
 	LoginServer *server = LoginServer::Instance();
 	server->initialize();
-	std::cout << "Complete! Listening to connections." << std::endl;
-	while(getchar()){}
+
+	while (getchar()) {}
 }

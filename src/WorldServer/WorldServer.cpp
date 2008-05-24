@@ -17,18 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.h"
 #include "WorldServerAcceptPlayerPacket.h"
-#include "Connection/Acceptor.h"
-#include "Connection/Connector.h"
+#include "Connection/Connection.h"
 
 WorldServer* WorldServer::singleton = 0;
 
 void WorldServer::listen() {
-	new Acceptor(inter_port, new WorldServerAcceptPlayerFactory());
+	Connection::Instance()->accept(inter_port, new WorldServerAcceptPlayerFactory());
 }
 
 void WorldServer::loadData() {
-	Connector *c = new Connector(login_ip.c_str(), login_inter_port, new LoginServerConnectPlayerFactory());
-	loginPlayer = (LoginServerConnectPlayer *) c->getPlayer();
+	loginPlayer = dynamic_cast<LoginServerConnectPlayer *>(Connection::Instance()->connect(login_ip.c_str(), login_inter_port, new LoginServerConnectPlayerFactory()));
 	loginPlayer->setIP(external_ip.c_str());
 	loginPlayer->sendAuth(inter_password.c_str());
 }

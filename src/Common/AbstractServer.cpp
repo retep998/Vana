@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServer.h"
 #include "Config.h"
+#include <iostream>
 
 AbstractServer::AbstractServer() {
 	to_listen = false;
@@ -30,4 +31,5 @@ void AbstractServer::initialize() {
 	loadData();
 	if (to_listen)
 		listen();
+	std::cout << "Complete!" << std::endl;
 }

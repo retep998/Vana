@@ -21,13 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ctime>
 #include <cstring>
 
-class PacketHandler;
+class MapleSocket;
 
 class AbstractPlayer {
 public:
 	AbstractPlayer();
 
-	virtual void setPacketHandler (PacketHandler* ph) { packetHandler = ph; }
+	virtual void setSocket (MapleSocket* socket) { this->socket = socket; }
 	virtual void realHandleRequest (unsigned char* buf, int len) = 0;
 	void handleRequest (unsigned char* buf, int len);
 	void sendPacket(unsigned char *buf, int len);
@@ -40,7 +40,7 @@ public:
 
 	virtual ~AbstractPlayer();
 protected:
-	PacketHandler *packetHandler;
+	MapleSocket *socket;
 	char ip[15];
 	bool is_server;
 private:

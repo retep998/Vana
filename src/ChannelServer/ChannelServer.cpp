@@ -16,8 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChannelServer.h"
-#include "Connection/Acceptor.h"
-#include "Connection/Connector.h"
+#include "Connection/Connection.h"
 #include "WorldServerConnectPlayer.h"
 #include "InitializeChannel.h"
 #include "PacketCreator.h"
@@ -28,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ChannelServer* ChannelServer::singleton = 0;
 
 void ChannelServer::listen() {
-	new Acceptor(port, new PlayerFactory());
+	Connection::Instance()->accept(port, new PlayerFactory());
 	Initializing::setUsersOffline(getOnlineId());
 }
 
@@ -43,15 +42,13 @@ void ChannelServer::loadData() {
 	Initializing::initializeSkills();
 	Initializing::initializeMaps();
 
-	Connector *c = new Connector(login_ip.c_str(), login_inter_port, new WorldServerConnectPlayerFactory());
-	WorldServerConnectPlayer *loginPlayer = (WorldServerConnectPlayer *) c->getPlayer();
+	WorldServerConnectPlayer *loginPlayer = dynamic_cast<WorldServerConnectPlayer *>(Connection::Instance()->connect(login_ip.c_str(), login_inter_port, new WorldServerConnectPlayerFactory()));
 	loginPlayer->setIP(external_ip.c_str());
 	loginPlayer->sendAuth(inter_password.c_str());
 }
 
 void ChannelServer::connectWorld() {
-	Connector *c = new Connector(world_ip, world_port, new WorldServerConnectPlayerFactory());
-	worldPlayer = (WorldServerConnectPlayer *) c->getPlayer();
+	worldPlayer = dynamic_cast<WorldServerConnectPlayer *>(Connection::Instance()->connect(world_ip, world_port, new WorldServerConnectPlayerFactory()));
 	worldPlayer->setIP(external_ip.c_str());
 	worldPlayer->sendAuth(inter_password.c_str());
 }

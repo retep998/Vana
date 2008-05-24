@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractPlayer.h"
-#include "Connection/PacketHandler.h"
+#include "Connection/MapleSocket.h"
 #include "PingPacket.h"
 #include "Timer.h"
 #include "BufferUtilities.h"
@@ -76,7 +76,7 @@ void AbstractPlayer::handleRequest (unsigned char* buf, int len) {
 }
 
 void AbstractPlayer::sendPacket(unsigned char *buf, int len) {
-	packetHandler->sendPacket(buf, len);
+	socket->SendEncrypted(buf, len);
 }
 
 void AbstractPlayer::setTimer() {
@@ -93,7 +93,7 @@ void AbstractPlayer::ping() {
 }
 
 void AbstractPlayer::disconnect() {
-	packetHandler->disconnect();
+	socket->SetCloseAndDelete();
 }
 
 AbstractPlayer::~AbstractPlayer() {

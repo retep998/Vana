@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #define RECV_PONG 0x0a
+#define RECV_IV 0x0d
 
 //Login
 #define RECV_LOGIN_INFO 0x1b

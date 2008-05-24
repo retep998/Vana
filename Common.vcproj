@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="src/Common;src/Common/mysql"
+				AdditionalIncludeDirectories="src/Common;src/Common/mysql;src/Socket"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -61,6 +61,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="socket.lib"
+				AdditionalLibraryDirectories="$(ConfigurationName)/Socket"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -105,7 +107,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="src/Common;src/Common/mysql"
+				AdditionalIncludeDirectories="src/Common;src/Common/mysql;src/Socket"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -124,6 +126,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="socket.lib"
+				AdditionalLibraryDirectories="$(ConfigurationName)/Socket"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -218,11 +222,11 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Common\Connection\Acceptor.cpp"
+					RelativePath=".\src\Common\Connection\Connection.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connection\Connector.cpp"
+					RelativePath=".\src\Common\Connection\MapleSocket.cpp"
 					>
 				</File>
 				<File
@@ -352,11 +356,11 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Common\Connection\Acceptor.h"
+					RelativePath=".\src\Common\Connection\Connection.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connection\Connector.h"
+					RelativePath=".\src\Common\Connection\MapleSocket.h"
 					>
 				</File>
 				<File
