@@ -18,7 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "MapleSocket.h"
 #include "AbstractPlayer.h"
-#include "RecvHeader.h"
+#include "SendHeader.h"
+#include "BufferUtilities.h"
 #include <iostream>
 #include <string>
 
@@ -52,7 +53,6 @@ void MapleSocket::OnConnect() {
 	player = abstractPlayerFactory->createPlayer();
 	player->setSocket(this);
 	player->setIP(this->GetRemoteAddress().c_str());
-	ready = true;
 }
 
 void MapleSocket::OnRead() {
@@ -60,38 +60,40 @@ void MapleSocket::OnRead() {
 	size_t n = ibuf.GetLength();
 	size_t readed = 0;
 
-	while (readed < n) {
-		if (bytesInBuffer < HEADER_LEN) { // Read header
-			size_t left = HEADER_LEN - bytesInBuffer;
-			size_t read = (n < left) ? n : left;
-			ibuf.Read((char *) buffer + bytesInBuffer, read);
-			bytesInBuffer += read;
-			readed += read;
-		}
-
-		if ((short) buffer == RECV_IV) { // IV Packet
-			ibuf.Read((char *) buffer + HEADER_LEN, Decoder::CONNECT_LENGTH - HEADER_LEN);
-			decoder->setIvSend(buffer+6);
-			decoder->setIvRecv(buffer+10);
-		}
-
-		if (bytesInBuffer >= HEADER_LEN) {
-			int packetSize = Decoder::getLength(buffer);
-
-			if (packetSize < 2) {
-				SetCloseAndDelete();
+	if (!ready && n == Decoder::CONNECT_LENGTH) { // IV Packet
+		ibuf.Read((char *) buffer, Decoder::CONNECT_LENGTH);
+		decoder->setIvSend(buffer+6);
+		decoder->setIvRecv(buffer+10);
+		ready = true;
+	}
+	else {
+		while (readed < n) {
+			if (bytesInBuffer < HEADER_LEN) { // Read header
+				size_t left = HEADER_LEN - bytesInBuffer;
+				size_t read = (n < left) ? n : left;
+				ibuf.Read((char *) buffer + bytesInBuffer, read);
+				bytesInBuffer += read;
+				readed += read;
 			}
 
-			size_t left = HEADER_LEN + packetSize - bytesInBuffer;
-			size_t read = (n < left) ? n : left;
-			ibuf.Read((char *) buffer + bytesInBuffer, read);
-			bytesInBuffer += read;
-			readed += read;
+			if (bytesInBuffer >= HEADER_LEN) {
+				int packetSize = Decoder::getLength(buffer);
 
-			if (bytesInBuffer == packetSize + HEADER_LEN){
-				decoder->decrypt(buffer + HEADER_LEN, packetSize);
-				player->handleRequest(buffer + HEADER_LEN, packetSize);
-				bytesInBuffer = 0;
+				if (packetSize < 2) {
+					SetCloseAndDelete();
+				}
+
+				size_t left = HEADER_LEN + packetSize - bytesInBuffer;
+				size_t read = (n < left) ? n : left;
+				ibuf.Read((char *) buffer + bytesInBuffer, read);
+				bytesInBuffer += read;
+				readed += read;
+
+				if (bytesInBuffer == packetSize + HEADER_LEN){
+					decoder->decrypt(buffer + HEADER_LEN, packetSize);
+					player->handleRequest(buffer + HEADER_LEN, packetSize);
+					bytesInBuffer = 0;
+				}
 			}
 		}
 	}
