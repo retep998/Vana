@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void ReactorPacket::showReactor(Player* player, ReactorInfo reactor, int i) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_SHOW_REACTOR);
 	packet.addInt(i+0x64);
 	packet.addInt(reactor.id);

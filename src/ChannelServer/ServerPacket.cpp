@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void ServerPacket::showScrollingHeader(Player* player, const char *msg){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(1);
@@ -31,7 +31,7 @@ void ServerPacket::showScrollingHeader(Player* player, const char *msg){
 	packet.packetSend(player);
 }
 void ServerPacket::changeScrollingHeader(const char *msg){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(1);
@@ -44,7 +44,7 @@ void ServerPacket::changeScrollingHeader(const char *msg){
 }
 
 void ServerPacket::scrollingHeaderOff(){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(0);

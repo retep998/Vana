@@ -151,7 +151,7 @@ NPC::~NPC(){
 }
 
 Packet NPC::npcPacket(char type){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_NPC_TALK);
 	packet.addByte(4);
 	packet.addInt(npcid);

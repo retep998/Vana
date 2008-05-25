@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void PlayerPacket::connectData(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(player->getChannel()); // Channel
 	packet.addByte(1);
@@ -134,7 +134,7 @@ void PlayerPacket::connectData(Player* player){
 }
 
 void PlayerPacket::newHP(Player* player, short hp){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(0);
 	packet.addShort(0);
@@ -145,7 +145,7 @@ void PlayerPacket::newHP(Player* player, short hp){
 }
 
 void PlayerPacket::newMP(Player* player, short mp, bool is){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
 	packet.addShort(0);
@@ -156,7 +156,7 @@ void PlayerPacket::newMP(Player* player, short mp, bool is){
 }
 
 void PlayerPacket::newEXP(Player* player, int exp){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addShort(0);
@@ -167,7 +167,7 @@ void PlayerPacket::newEXP(Player* player, int exp){
 
 
 void PlayerPacket::showKeys(Player* player, int keys[90]){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_KEYMAP);
 	packet.addByte(0);
 	for(int i=0; i<90; i++){
@@ -177,7 +177,7 @@ void PlayerPacket::showKeys(Player* player, int keys[90]){
 	packet.packetSend(player);
 }
 void PlayerPacket::setSP(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addByte(0);
@@ -187,7 +187,7 @@ void PlayerPacket::setSP(Player* player){
 	packet.packetSend(player);
 }
 void PlayerPacket::setAP(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addByte(0);
@@ -197,7 +197,7 @@ void PlayerPacket::setAP(Player* player){
 	packet.packetSend(player);
 }
 void PlayerPacket::setJob(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x20);
@@ -206,7 +206,7 @@ void PlayerPacket::setJob(Player* player){
 }
 
 void PlayerPacket::newHair(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x4);
@@ -215,7 +215,7 @@ void PlayerPacket::newHair(Player* player){
 }
 
 void PlayerPacket::newEyes(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x2);
@@ -224,7 +224,7 @@ void PlayerPacket::newEyes(Player* player){
 }
 
 void PlayerPacket::newSkin(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x1);
@@ -233,7 +233,7 @@ void PlayerPacket::newSkin(Player* player){
 }
 
 void PlayerPacket::changeChannel(Player *player, char *ip, short port) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_CHANGE_CHANNEL);
 	packet.addByte(1);
 	PlayerPacketHelper::addIP(packet, ip, port);
@@ -241,7 +241,7 @@ void PlayerPacket::changeChannel(Player *player, char *ip, short port) {
 }
 
 void PlayerPacket::showMessage(Player *player, char *msg, char type){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addShort(strlen(msg));

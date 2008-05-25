@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void MobsPacket::controlMob(Player* player, Mob* mob){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_CONTROL_MOB);
 	packet.addByte(1);
 	packet.addInt(mob->getID());
@@ -39,7 +39,7 @@ void MobsPacket::controlMob(Player* player, Mob* mob){
 	packet.packetSend(player);
 }
 void MobsPacket::endControlMob(Player* player, Mob* mob){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_CONTROL_MOB);
 	packet.addByte(0);
 	packet.addInt(mob->getID());
@@ -47,7 +47,7 @@ void MobsPacket::endControlMob(Player* player, Mob* mob){
 }
 
 void MobsPacket::spawnMob(Player* player, Mob* mob, vector <Player*> players, bool isspawn){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
@@ -66,7 +66,7 @@ void MobsPacket::spawnMob(Player* player, Mob* mob, vector <Player*> players, bo
 }
 
 void MobsPacket::showMob(Player* player, Mob* mob){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
@@ -82,7 +82,7 @@ void MobsPacket::showMob(Player* player, Mob* mob){
 }
 
 void MobsPacket::moveMob(Player* player, Mob* mob ,vector <Player*> players, unsigned char* pack, int pla){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_MOVE_MOB2);
 	packet.addInt(mob->getID());
 	packet.addShort(BufferUtilities::getShort(pack+4));
@@ -106,7 +106,7 @@ void MobsPacket::damageMob(Player* player, vector <Player*> players, unsigned ch
 	bool s4211006 = false;
 	if(skillid == 4211006)
 		s4211006 = true;
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_DAMAGE_MOB);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(pack[1]);
@@ -139,7 +139,7 @@ void MobsPacket::damageMobRanged(Player* player, vector <Player*> players, unsig
 	bool s3121004 = false;
 	if(skillid == 3121004 || skillid == 3221001)
 		s3121004 = true;
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_DAMAGE_MOB_RANGED);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(pack[1]);
@@ -168,7 +168,7 @@ void MobsPacket::damageMobRanged(Player* player, vector <Player*> players, unsig
 void MobsPacket::damageMobSpell(Player* player, vector <Player*> players, unsigned char* pack){
 	int howmany = pack[1]/0x10;
 	int hits = pack[1]%0x10;
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_DAMAGE_MOB_SPELL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(pack[1]);
@@ -191,7 +191,7 @@ void MobsPacket::damageMobSpell(Player* player, vector <Player*> players, unsign
 }
 
 void MobsPacket::showHP(Player* player, int mobid, char per){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
@@ -199,7 +199,7 @@ void MobsPacket::showHP(Player* player, int mobid, char per){
 }
 // Miniboss HP
 void MobsPacket::showMinibossHP(Player* player, vector <Player*> players, int mobid, char per){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
@@ -207,7 +207,7 @@ void MobsPacket::showMinibossHP(Player* player, vector <Player*> players, int mo
 }
 // Boss hp
 void MobsPacket::showBossHP(Player* player, vector <Player*> players, int mobid, int currhp, int maxhp, short hpcolor, short hpbgcolor){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_BOSS_ENV);
 	packet.addByte(0x05);
 	packet.addInt(mobid);
@@ -219,13 +219,13 @@ void MobsPacket::showBossHP(Player* player, vector <Player*> players, int mobid,
 }
 
 void MobsPacket::dieMob(Player* player, vector<Player*> players, Mob* mob, int mobid){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_KILL_MOB);
 	packet.addInt(mobid);
 	packet.addByte(1);
 	packet.sendTo<Player>(player, players, 1); 
 	if(mob->getControl() != NULL && mob->getControl()->getMap() == player->getMap()){
-		Packet packet = Packet();
+		Packet packet;
 		packet.addHeader(SEND_CONTROL_MOB);
 		packet.addByte(0);
 		packet.addInt(mobid);

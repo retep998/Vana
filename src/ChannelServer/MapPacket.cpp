@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 Packet MapPacket::playerPacket(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_SHOW_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addShort(strlen(player->getName()));
@@ -110,7 +110,7 @@ void MapPacket::showPlayer(Player* player, vector <Player*> players){
 }
 
 void MapPacket::removePlayer(Player* player, vector <Player*> players){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_REMOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	for(unsigned int i=0; i<players.size(); i++){
@@ -129,7 +129,7 @@ void MapPacket::showPlayers(Player* player, vector <Player*> players){
 }
 
 void MapPacket::changeMap(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(player->getChannel()); // Channel
 	packet.addShort(0); // 2?
@@ -145,7 +145,7 @@ void MapPacket::changeMap(Player* player){
 }
 
 void MapPacket::portalBlocked(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
@@ -153,7 +153,7 @@ void MapPacket::portalBlocked(Player* player){
 }
 
 void MapPacket::showClock(Player* player, unsigned char hour, unsigned char min, unsigned char sec){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_TIME);
 	packet.addByte(1);
 	packet.addByte(hour);
@@ -173,14 +173,14 @@ void MapPacket::showTimer(Player *player, int sec) {
 }
 
 void MapPacket::makeApple(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_MAKE_APPLE);  
 	packet.packetSend(player);
 }
 
 // Change music
 void MapPacket::changeMusic(vector <Player*> players, char *musicname){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_BOSS_ENV);
 	packet.addByte(0x06);
 	packet.addShort(strlen(musicname));

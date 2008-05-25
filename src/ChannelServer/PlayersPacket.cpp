@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void PlayersPacket::showMoving(Player* player, vector <Player*> players, unsigned char* packett, int size){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_MOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(0);
@@ -31,7 +31,7 @@ void PlayersPacket::showMoving(Player* player, vector <Player*> players, unsigne
 }	
 
 void PlayersPacket::faceExperiment(Player* player, vector <Player*> players, int face){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_FACE_EXPERIMENT);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(face);
@@ -39,7 +39,7 @@ void PlayersPacket::faceExperiment(Player* player, vector <Player*> players, int
 }
 
 void PlayersPacket::showChat(Player* player, vector <Player*> players, char* msg){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_CHAT);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(0);
@@ -49,7 +49,7 @@ void PlayersPacket::showChat(Player* player, vector <Player*> players, char* msg
 }
 
 void PlayersPacket::damagePlayer(Player* player, vector <Player*> players, int dmg, int mob){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(-1);
@@ -62,7 +62,7 @@ void PlayersPacket::damagePlayer(Player* player, vector <Player*> players, int d
 }
 
 void PlayersPacket::showMessage(char* msg, char type){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addShort(strlen(msg));
@@ -74,7 +74,7 @@ void PlayersPacket::showMessage(char* msg, char type){
 }
 
 void PlayersPacket::showInfo(Player* player, Player* getinfo){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_PLAYER_INFO);
 	packet.addInt(getinfo->getPlayerid());
 	packet.addByte(getinfo->getLevel());
@@ -89,7 +89,7 @@ void PlayersPacket::showInfo(Player* player, Player* getinfo){
 }
 
 void PlayersPacket::whisperPlayer(Player *target, char *whisperer_name, int channel, char *message) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_COMMAND_RESPOND);
 	packet.addByte(0x12);
 	packet.addShort(strlen(whisperer_name));
@@ -101,7 +101,7 @@ void PlayersPacket::whisperPlayer(Player *target, char *whisperer_name, int chan
 }
 
 void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is, bool is_channel){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_COMMAND_RESPOND);
 	if(map != -1){
 		packet.addByte(0x09);
@@ -126,7 +126,7 @@ void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned cha
 }
 
 void PlayersPacket::sendToPlayers(unsigned char *data, int len) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addBytesHex(data, len);
 	for(hash_map<int,Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++){
 			packet.packetSend(iter->second);
