@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "ChannelServer.h"
 #include "SkillsPacket.h"
+#include "PacketCreator.h"
 #include "BufferUtilities.h"
 #include "CharUtilities.h"
 #include "WorldServerConnectPlayerPacket.h"
@@ -234,6 +235,11 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 		}
 		else if (strcmp(command, "shutdown") == 0) {
 			ChannelServer::Instance()->shutdown();
+		}
+		else if (strcmp(command, "packet") == 0) {
+			Packet packet;
+			packet.addBytes(next_token);
+			packet.packetSend(player);
 		}
 		return;
 	}
