@@ -69,7 +69,7 @@ void PlayersPacket::showMessage(char* msg, char type){
 	packet.addString(msg, strlen(msg));
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
 		 iter != Players::players.end(); iter++){
-			 packet.packetSend(iter->second);
+			 packet.send(iter->second);
 	}
 }
 
@@ -85,7 +85,7 @@ void PlayersPacket::showInfo(Player* player, Player* getinfo){
 	packet.addByte(0x2D); // Guild Name
 	packet.addShort(0);
 	packet.addByte(0);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void PlayersPacket::whisperPlayer(Player *target, char *whisperer_name, int channel, char *message) {
@@ -97,7 +97,7 @@ void PlayersPacket::whisperPlayer(Player *target, char *whisperer_name, int chan
 	packet.addShort(channel);
 	packet.addShort(strlen(message));
 	packet.addString(message, strlen(message));
-	packet.packetSend(target);
+	packet.send(target);
 }
 
 void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is, bool is_channel){
@@ -122,13 +122,13 @@ void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned cha
 		packet.addByte(is);
 	}
 
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void PlayersPacket::sendToPlayers(unsigned char *data, int len) {
 	Packet packet;
 	packet.addBytesHex(data, len);
 	for(hash_map<int,Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++){
-			packet.packetSend(iter->second);
+			packet.send(iter->second);
 	}
 }

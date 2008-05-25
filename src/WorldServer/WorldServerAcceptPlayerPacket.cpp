@@ -25,7 +25,7 @@ void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int
 	packet.addHeader(INTER_CHANNEL_CONNECT);
 	packet.addInt(channel);
 	packet.addShort(port);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, char *ip, short port) {
@@ -35,7 +35,7 @@ void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer 
 	packet.addShort(strlen(ip));
 	packet.addString(ip, strlen(ip));
 	packet.addShort(port);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int len) {
@@ -53,7 +53,7 @@ void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, 
 	packet.addString(findee, strlen(findee));
 	packet.addByte(is);
 
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, char *whisperer, int channel, char *message) {
@@ -66,7 +66,7 @@ void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *playe
 	packet.addShort(strlen(message));
 	packet.addString(message, strlen(message));
 
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void WorldServerAcceptPlayerPacket::scrollingHeader(const char *message) {
@@ -83,5 +83,5 @@ void WorldServerAcceptPlayerPacket::newConnectable(int channel, int playerid) {
 	packet.addHeader(INTER_NEW_CONNECTABLE);
 	packet.addInt(playerid);
 
-	packet.packetSend(Channels::Instance()->getChannel(channel)->player);
+	packet.send(Channels::Instance()->getChannel(channel)->player);
 }

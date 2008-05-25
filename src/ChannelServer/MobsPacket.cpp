@@ -36,14 +36,14 @@ void MobsPacket::controlMob(Player* player, Mob* mob){
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
 	packet.addShort(-1);
-	packet.packetSend(player);
+	packet.send(player);
 }
 void MobsPacket::endControlMob(Player* player, Mob* mob){
 	Packet packet;
 	packet.addHeader(SEND_CONTROL_MOB);
 	packet.addByte(0);
 	packet.addInt(mob->getID());
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void MobsPacket::spawnMob(Player* player, Mob* mob, vector <Player*> players, bool isspawn){
@@ -78,7 +78,7 @@ void MobsPacket::showMob(Player* player, Mob* mob){
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
 	packet.addShort(-1);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void MobsPacket::moveMob(Player* player, Mob* mob ,vector <Player*> players, unsigned char* pack, int pla){
@@ -88,7 +88,7 @@ void MobsPacket::moveMob(Player* player, Mob* mob ,vector <Player*> players, uns
 	packet.addShort(BufferUtilities::getShort(pack+4));
 	packet.addByte(1);
 	packet.addInt(mob->getMP());
-	packet.packetSend(player);
+	packet.send(player);
 	packet = Packet();
 	packet.addHeader(SEND_MOVE_MOB);
 	packet.addInt(mob->getID());
@@ -195,7 +195,7 @@ void MobsPacket::showHP(Player* player, int mobid, char per){
 	packet.addHeader(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
-	packet.packetSend(player);
+	packet.send(player);
 }
 // Miniboss HP
 void MobsPacket::showMinibossHP(Player* player, vector <Player*> players, int mobid, char per){
@@ -229,6 +229,6 @@ void MobsPacket::dieMob(Player* player, vector<Player*> players, Mob* mob, int m
 		packet.addHeader(SEND_CONTROL_MOB);
 		packet.addByte(0);
 		packet.addInt(mobid);
-		packet.packetSend(mob->getControl());
+		packet.send(mob->getControl());
 	}
 }

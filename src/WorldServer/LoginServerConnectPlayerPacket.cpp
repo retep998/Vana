@@ -26,5 +26,5 @@ void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *p
 	packet.addShort(strlen(ip));
 	packet.addString(ip, strlen(ip));
 	packet.addShort(port);
-	packet.packetSend(player);
+	packet.send(player);
 }

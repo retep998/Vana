@@ -28,5 +28,5 @@ void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, con
 	packet.addByte(player->getType());
 	packet.addShort(strlen(ip));
 	packet.addString(ip, strlen(ip));
-	packet.packetSend(player);
+	packet.send(player);
 }

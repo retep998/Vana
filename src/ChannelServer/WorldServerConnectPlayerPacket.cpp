@@ -25,7 +25,7 @@ void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlaye
 	packet.addHeader(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.addInt(playerid);
 	packet.addInt(channel);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *player, int playerid, char *name) {
@@ -34,14 +34,14 @@ void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *pl
 	packet.addInt(playerid);
 	packet.addShort(strlen(name));
 	packet.addString(name, strlen(name));
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void WorldServerConnectPlayerPacket::removePlayer(WorldServerConnectPlayer *player, int playerid) {
 	Packet packet;
 	packet.addHeader(INTER_REMOVE_PLAYER);
 	packet.addInt(playerid);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player, int playerid, char *findee_name) {
@@ -50,7 +50,7 @@ void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player
 	packet.addInt(playerid);
 	packet.addShort(strlen(findee_name));
 	packet.addString(findee_name, strlen(findee_name));
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *player, int playerid, char *whisperee, char *message) {
@@ -61,7 +61,7 @@ void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *pla
 	packet.addString(whisperee, strlen(whisperee));
 	packet.addShort(strlen(message));
 	packet.addString(message, strlen(message));
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void WorldServerConnectPlayerPacket::scrollingHeader(WorldServerConnectPlayer *player, char *message) {
@@ -69,5 +69,5 @@ void WorldServerConnectPlayerPacket::scrollingHeader(WorldServerConnectPlayer *p
 	packet.addHeader(INTER_SCROLLING_HEADER);
 	packet.addShort(strlen(message));
 	packet.addString(message, strlen(message));
-	packet.packetSend(player);
+	packet.send(player);
 }

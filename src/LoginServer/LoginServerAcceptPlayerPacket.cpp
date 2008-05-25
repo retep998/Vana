@@ -25,7 +25,7 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, cha
 	packet.addByte(worldid);
 	packet.addShort(port);
 	packet.addInt(maxchan);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, char *ip, short port) {
@@ -35,7 +35,7 @@ void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *play
 	packet.addShort(strlen(ip));
 	packet.addString(ip, strlen(ip));
 	packet.addShort(port);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, int channel, int charid) {
@@ -43,5 +43,5 @@ void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, i
 	packet.addHeader(INTER_NEW_PLAYER);
 	packet.addInt(channel);
 	packet.addInt(charid);
-	packet.packetSend(player);
+	packet.send(player);
 }

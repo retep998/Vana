@@ -30,8 +30,8 @@ void SkillsPacket::addSkill(Player* player, int skillid, int level, int maxlevel
 	packet.addInt(level); // Level
 	packet.addInt(maxlevel); // Master Level
 	packet.addByte(1);
-	packet.packetSend(player);
-	packet.packetSend(player);
+	packet.send(player);
+	packet.send(player);
 }
 
 void SkillsPacket::showSkill(Player* player, vector <Player*> players, int skillid){
@@ -63,7 +63,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 	}
 	packet.addShort(0);
 	packet.addByte(0);
-	packet.packetSend(player);
+	packet.send(player);
 	if(mskill.vals.size()>0){
 		packet = Packet();
 		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
@@ -89,7 +89,7 @@ void SkillsPacket::healHP(Player* player, short hp){
 	packet.addHeader(SEND_GAIN_ITEM);
 	packet.addByte(0xA);
 	packet.addShort(hp);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill){
@@ -104,7 +104,7 @@ void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiv
 	packet.addByte(pskill.types[6]);
 	packet.addByte(pskill.types[7]);
 	packet.addByte(0);
-	packet.packetSend(player);
+	packet.send(player);
 	if(mskill.vals.size()>0){
 		packet = Packet();
 		packet.addHeader(SEND_CANCEL_OTHERS_BUFF);
@@ -138,7 +138,7 @@ void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time)
     packet.addInt(time);
     packet.addShort(0);
     packet.addByte(0);
-    packet.packetSend(player);
+    packet.send(player);
     packet = Packet();
     packet.addHeader(SEND_SHOW_OTHERS_SKILL);
     packet.addInt(player->getPlayerid());

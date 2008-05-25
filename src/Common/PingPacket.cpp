@@ -25,11 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void PingPacket::ping(AbstractPlayer *player) {
 	Packet packet;
 	packet.addHeader(SEND_PING);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void PingPacket::pong(AbstractPlayer *player) {
 	Packet packet;
 	packet.addHeader(RECV_PONG);
-	packet.packetSend(player);
+	packet.send(player);
 }

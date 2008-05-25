@@ -41,12 +41,12 @@ public:
 	void sendTo(T* player, vector <T*> players, bool is) {
 		for(unsigned int i=0; i<players.size(); i++){
 			if((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
-				this->packetSend(players[i]);
+				this->send(players[i]);
 		}
 	}
 	
 	template <class T>
-	void packetSend(T* player) {
+	void send(T* player) {
 		unsigned char tempbuf[MAX_LEN];
 		memcpy_s(tempbuf, MAX_LEN, packet, MAX_LEN); // Copying to tempbuf so the packet doesn't get emptied on send and can be sent to other players
 		player->sendPacket(tempbuf, pos);

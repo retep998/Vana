@@ -79,7 +79,7 @@ void ChannelServer::shutdown() {
 }
 
 void ChannelServer::sendToWorld(Packet &packet) {
-	packet.packetSend(worldPlayer);
+	packet.send(worldPlayer);
 }
 
 void ChannelServer::setScrollingHeader(char *message) {
