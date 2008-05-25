@@ -29,7 +29,6 @@ MapleSocket::MapleSocket(ISocketHandler &h) : TcpSocket(h) {
 	bytesInBuffer = 0;
 	buffer = new unsigned char[BUFFER_LEN];
 	decoder = new Decoder();
-	SetDeleteByHandler();
 }
 
 Socket * MapleSocket::Create() {
