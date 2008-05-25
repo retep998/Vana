@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 MapleSocket::MapleSocket(ISocketHandler &h) : TcpSocket(h) {
+	player = 0;
 	ready = false;
 	bytesInBuffer = 0;
 	buffer = new unsigned char[BUFFER_LEN];
@@ -97,7 +98,9 @@ void MapleSocket::OnRead() {
 }
 
 void MapleSocket::OnDelete() {
-	delete player;
+	if (player) {
+		delete player;
+	}
 }
 
 void MapleSocket::SendEncrypted(unsigned char *buf, short len) {
