@@ -23,6 +23,10 @@ int Randomizer::randInt(int max) {
 	return mtrand.randInt(max);
 }
 
+int Randomizer::randInt() {
+	return mtrand.randInt();
+}
+
 double Randomizer::rand() {
 	return mtrand.rand();
 }
