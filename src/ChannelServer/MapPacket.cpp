@@ -105,7 +105,7 @@ Packet MapPacket::playerPacket(Player* player){
 void MapPacket::showPlayer(Player* player, vector <Player*> players){
 	Packet packet = playerPacket(player);
 	for(unsigned int i=0; i<players.size(); i++){
-		packet.packetSend(players[i]);
+		packet.send(players[i]);
 	}
 }
 
@@ -115,7 +115,7 @@ void MapPacket::removePlayer(Player* player, vector <Player*> players){
 	packet.addInt(player->getPlayerid());
 	for(unsigned int i=0; i<players.size(); i++){
 		if(player->getPlayerid() != players[i]->getPlayerid())
-			packet.packetSend(players[i]);
+			packet.send(players[i]);
 	}
 }
 
@@ -123,7 +123,7 @@ void MapPacket::showPlayers(Player* player, vector <Player*> players){
 	for(unsigned int i=0; i<players.size(); i++){
 		if(player->getPlayerid() != players[i]->getPlayerid()){
 			Packet packet = playerPacket(players[i]);
-			packet.packetSend(player);
+			packet.send(player);
 		}
 	}
 }
@@ -141,7 +141,7 @@ void MapPacket::changeMap(Player* player){
 	packet.addShort(-1);
 	packet.addByte(-1);
 	packet.addByte(1);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void MapPacket::portalBlocked(Player* player){
@@ -149,7 +149,7 @@ void MapPacket::portalBlocked(Player* player){
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void MapPacket::showClock(Player* player, unsigned char hour, unsigned char min, unsigned char sec){
@@ -160,7 +160,7 @@ void MapPacket::showClock(Player* player, unsigned char hour, unsigned char min,
 	packet.addByte(min);
 	packet.addByte(sec);
 
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void MapPacket::showTimer(Player *player, int sec) {
@@ -169,13 +169,13 @@ void MapPacket::showTimer(Player *player, int sec) {
 	packet.addByte(2);
 	packet.addInt(sec);
 
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 void MapPacket::makeApple(Player* player){
 	Packet packet;
 	packet.addHeader(SEND_MAKE_APPLE);  
-	packet.packetSend(player);
+	packet.send(player);
 }
 
 // Change music
@@ -186,6 +186,6 @@ void MapPacket::changeMusic(vector <Player*> players, char *musicname){
 	packet.addShort(strlen(musicname));
 	packet.addString(musicname, strlen(musicname));
 	for(unsigned int i=0; i < players.size(); i++){
-		packet.packetSend(players[i]);
+		packet.send(players[i]);
 	}
 }

@@ -240,7 +240,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 		else if (strcmp(command, "packet") == 0) {
 			Packet packet;
 			packet.addBytes(next_token);
-			packet.packetSend(player);
+			packet.send(player);
 		}
 		else if (strcmp(command, "timer") == 0) {
 			MapPacket::showTimer(player, atoi(next_token));

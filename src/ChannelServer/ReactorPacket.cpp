@@ -30,5 +30,5 @@ void ReactorPacket::showReactor(Player* player, ReactorInfo reactor, int i) {
 	packet.addShort(reactor.x);
 	packet.addShort(reactor.y);
 	packet.addByte(reactor.f);
-	packet.packetSend(player);
+	packet.send(player);
 }
