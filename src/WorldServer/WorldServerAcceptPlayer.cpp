@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPlayer.h"
 #include "WorldServerAcceptPlayerPacket.h"
-#include "WorldSErverAcceptHandler.h"
+#include "WorldServerAcceptHandler.h"
 #include "LoginServerConnectPlayerPacket.h"
 #include "WorldServer.h"
 #include "InterHeader.h"
