@@ -27,7 +27,6 @@ MapleSocket::MapleSocket(ISocketHandler &h) : TcpSocket(h) {
 	bytesInBuffer = 0;
 	buffer = new unsigned char[BUFFER_LEN];
 	decoder = new Decoder();
-	SetTcpNodelay();
 	SetDeleteByHandler();
 }
 
@@ -39,6 +38,7 @@ Socket * MapleSocket::Create() {
 
 void MapleSocket::OnAccept() {
 	std::cout << "Accepted connection." << std::endl;
+	SetTcpNodelay();
 	player = abstractPlayerFactory->createPlayer();
 	player->setSocket(this);
 	player->setIP(this->GetRemoteAddress().c_str());
@@ -47,6 +47,7 @@ void MapleSocket::OnAccept() {
 }
 
 void MapleSocket::OnConnect() {
+	SetTcpNodelay();
 	player = abstractPlayerFactory->createPlayer();
 	player->setSocket(this);
 	player->setIP(this->GetRemoteAddress().c_str());
