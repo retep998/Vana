@@ -35,7 +35,6 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, u
 		ChannelServer::Instance()->setWorldIp(worldip);
 		ChannelServer::Instance()->setWorldPort(BufferUtilities::getShort(packet+3+worldlen));
 		std::cout << "Connecting to world " << (int) packet[0] << std::endl;
-		ChannelServer::Instance()->connectWorld();
 	}
 	else {
 		std::cout << "Error: No world server to connect" << std::endl;

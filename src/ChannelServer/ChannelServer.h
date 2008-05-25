@@ -37,7 +37,6 @@ public:
 	void loadData();
 	void loadConfig();
 	void listen();
-	void connectWorld();
 	void shutdown();
 	void sendToWorld(Packet &packet);
 
@@ -53,7 +52,7 @@ public:
 	const char * getScrollingHeader() { return scrollingHeader.c_str(); }
 	void setScrollingHeader(char *message);
 private:
-	ChannelServer() {};
+	ChannelServer();
 	ChannelServer(const ChannelServer&);
 	ChannelServer& operator=(const ChannelServer&);
 	static ChannelServer *singleton;

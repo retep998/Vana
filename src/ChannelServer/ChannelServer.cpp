@@ -26,6 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ChannelServer* ChannelServer::singleton = 0;
 
+ChannelServer::ChannelServer() {
+	strcpy_s(world_ip, "");
+}
+
 void ChannelServer::listen() {
 	Connection::Instance()->accept(port, new PlayerFactory());
 	Initializing::setUsersOffline(getOnlineId());
@@ -45,9 +49,9 @@ void ChannelServer::loadData() {
 	WorldServerConnectPlayer *loginPlayer = dynamic_cast<WorldServerConnectPlayer *>(Connection::Instance()->connect(login_ip.c_str(), login_inter_port, new WorldServerConnectPlayerFactory()));
 	loginPlayer->setIP(external_ip.c_str());
 	loginPlayer->sendAuth(inter_password.c_str());
-}
 
-void ChannelServer::connectWorld() {
+	while (strcmp(world_ip, "") == 0) { } // Wait till we get the IP
+
 	worldPlayer = dynamic_cast<WorldServerConnectPlayer *>(Connection::Instance()->connect(world_ip, world_port, new WorldServerConnectPlayerFactory()));
 	worldPlayer->setIP(external_ip.c_str());
 	worldPlayer->sendAuth(inter_password.c_str());
