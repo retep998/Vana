@@ -34,7 +34,8 @@ public:
 		return singleton;
 	}
 
-	int randInt(int max = 0);
+	int randInt(int max);
+	int randInt();
 	double rand();
 	char * generateSalt(size_t length);
 private:
