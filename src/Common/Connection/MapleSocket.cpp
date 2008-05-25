@@ -57,36 +57,41 @@ void MapleSocket::OnConnect() {
 void MapleSocket::OnRead() {
 	TcpSocket::OnRead();
 	size_t n = ibuf.GetLength();
+	size_t readed = 0;
 
-	if (bytesInBuffer < HEADER_LEN) { // Read header
-		size_t left = HEADER_LEN - bytesInBuffer;
-		size_t read = (n < left) ? n : left;
-		ibuf.Read((char *) buffer + bytesInBuffer, read);
-		bytesInBuffer += read;
-	}
-
-	if ((short) buffer == RECV_IV) { // IV Packet
-		ibuf.Read((char *) buffer + HEADER_LEN, Decoder::CONNECT_LENGTH - HEADER_LEN);
-		decoder->setIvSend(buffer+6);
-		decoder->setIvRecv(buffer+10);
-	}
-
-	if (bytesInBuffer >= HEADER_LEN) {
-		int packetSize = Decoder::getLength(buffer);
-
-		if (packetSize < 2) {
-			SetCloseAndDelete();
+	while (readed < n) {
+		if (bytesInBuffer < HEADER_LEN) { // Read header
+			size_t left = HEADER_LEN - bytesInBuffer;
+			size_t read = (n < left) ? n : left;
+			ibuf.Read((char *) buffer + bytesInBuffer, read);
+			bytesInBuffer += read;
+			readed += read;
 		}
 
-		size_t left = HEADER_LEN + packetSize - bytesInBuffer;
-		size_t read = (n < left) ? n : left;
-		ibuf.Read((char *) buffer + bytesInBuffer, read);
-		bytesInBuffer += read;
+		if ((short) buffer == RECV_IV) { // IV Packet
+			ibuf.Read((char *) buffer + HEADER_LEN, Decoder::CONNECT_LENGTH - HEADER_LEN);
+			decoder->setIvSend(buffer+6);
+			decoder->setIvRecv(buffer+10);
+		}
 
-		if (bytesInBuffer == packetSize + HEADER_LEN){
-			decoder->decrypt(buffer + HEADER_LEN, packetSize);
-			player->handleRequest(buffer + HEADER_LEN, packetSize);
-			bytesInBuffer = 0;
+		if (bytesInBuffer >= HEADER_LEN) {
+			int packetSize = Decoder::getLength(buffer);
+
+			if (packetSize < 2) {
+				SetCloseAndDelete();
+			}
+
+			size_t left = HEADER_LEN + packetSize - bytesInBuffer;
+			size_t read = (n < left) ? n : left;
+			ibuf.Read((char *) buffer + bytesInBuffer, read);
+			bytesInBuffer += read;
+			readed += read;
+
+			if (bytesInBuffer == packetSize + HEADER_LEN){
+				decoder->decrypt(buffer + HEADER_LEN, packetSize);
+				player->handleRequest(buffer + HEADER_LEN, packetSize);
+				bytesInBuffer = 0;
+			}
 		}
 	}
 }
