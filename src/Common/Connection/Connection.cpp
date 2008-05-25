@@ -65,7 +65,7 @@ void Connection::startSelect() {
 void Connection::select() {
 	selecting = true;
 	while (!terminate) {
-		h.Select(0, 2000);
+		h.Select(1, 0);
 	}
 	selecting = false;
 }
