@@ -152,7 +152,7 @@ void MapPacket::portalBlocked(Player* player){
 	packet.packetSend(player);
 }
 
-void MapPacket::showTime(Player* player, unsigned char hour, unsigned char min, unsigned char sec){
+void MapPacket::showClock(Player* player, unsigned char hour, unsigned char min, unsigned char sec){
 	Packet packet = Packet();
 	packet.addHeader(SEND_TIME);
 	packet.addByte(1);

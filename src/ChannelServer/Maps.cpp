@@ -182,12 +182,12 @@ void Maps::changeMap(Player* player, int mapid, int pos){
 	newMap(player, mapid);
 }
 
-void Maps::showTime(Player* player){
+void Maps::showClock(Player* player){
 	time_t rawtime;
 	struct tm timeinfo;
 	time(&rawtime);
 	localtime_s(&timeinfo, &rawtime);
-	MapPacket::showTime(player, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+	MapPacket::showClock(player, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
 }
 
 void Maps::mapTimer(int mapid){
@@ -209,7 +209,7 @@ void Maps::newMap(Player* player, int mapid){
 	Mobs::showMobs(player);
 	Drops::showDrops(player);
 	if(info[mapid].clock)
-		showTime(player);
+		showClock(player);
 	MapTimer::Instance()->setMapTimer(player->getMap());
 }
 // Change Music

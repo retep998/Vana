@@ -28,7 +28,7 @@ namespace MapPacket {
 	void removePlayer(Player* player, vector <Player*> players);
 	void changeMap(Player* player);
 	void portalBlocked(Player* player); // Blocked portals
-	void showTime(Player* player, unsigned char hour, unsigned char min, unsigned char sec);
+	void showClock(Player* player, unsigned char hour, unsigned char min, unsigned char sec);
 	void makeApple(Player* player);
 	void changeMusic(vector <Player*> players, char *musicname); // Change map music
 };
