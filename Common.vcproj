@@ -314,6 +314,14 @@
 						RelativePath=".\src\Common\InterHeader.h"
 						>
 					</File>
+					<File
+						RelativePath=".\src\Common\RecvHeader.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\SendHeader.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="ServerToServer"
