@@ -163,11 +163,21 @@ void MapPacket::showClock(Player* player, unsigned char hour, unsigned char min,
 	packet.packetSend(player);
 }
 
+void MapPacket::showTimer(Player *player, int sec) {
+	Packet packet;
+	packet.addHeader(SEND_TIME);
+	packet.addByte(2);
+	packet.addInt(sec);
+
+	packet.packetSend(player);
+}
+
 void MapPacket::makeApple(Player* player){
 	Packet packet = Packet();
 	packet.addHeader(SEND_MAKE_APPLE);  
 	packet.packetSend(player);
 }
+
 // Change music
 void MapPacket::changeMusic(vector <Player*> players, char *musicname){
 	Packet packet = Packet();

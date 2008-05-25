@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "ChannelServer.h"
 #include "SkillsPacket.h"
+#include "MapPacket.h"
 #include "PacketCreator.h"
 #include "BufferUtilities.h"
 #include "CharUtilities.h"
@@ -240,6 +241,9 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			Packet packet;
 			packet.addBytes(next_token);
 			packet.packetSend(player);
+		}
+		else if (strcmp(command, "timer") == 0) {
+			MapPacket::showTimer(player, atoi(next_token));
 		}
 		return;
 	}
