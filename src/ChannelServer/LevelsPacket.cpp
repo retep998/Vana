@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void LevelsPacket::showEXP(Player* player, int exp, char type){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(3);
 	packet.addByte(1);
@@ -34,7 +34,7 @@ void LevelsPacket::showEXP(Player* player, int exp, char type){
 }
 
 void LevelsPacket::levelUP(Player* player, vector <Player*> players){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addShort(0x7C10);
@@ -56,14 +56,14 @@ void LevelsPacket::levelUP(Player* player, vector <Player*> players){
 }
 
 void LevelsPacket::statOK(Player* player){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
 	packet.packetSend(player);
 }
 void LevelsPacket::changeStat(Player* player, int nam, short val){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(nam);
@@ -73,7 +73,7 @@ void LevelsPacket::changeStat(Player* player, int nam, short val){
 }
 
 void LevelsPacket::jobChange(Player *player, std::vector<Player*> players){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
 	packet.addInt(0x20);

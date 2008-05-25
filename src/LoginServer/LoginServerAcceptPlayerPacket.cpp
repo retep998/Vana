@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 
 void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(INTER_WORLD_CONNECT);
 	packet.addByte(worldid);
 	packet.addShort(port);
@@ -29,7 +29,7 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, cha
 }
 
 void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, char *ip, short port) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.addByte(worldid);
 	packet.addShort(strlen(ip));
@@ -39,7 +39,7 @@ void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *play
 }
 
 void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, int channel, int charid) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(INTER_NEW_PLAYER);
 	packet.addInt(channel);
 	packet.addInt(charid);

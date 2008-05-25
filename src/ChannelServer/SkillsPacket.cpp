@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void SkillsPacket::addSkill(Player* player, int skillid, int level, int maxlevel){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_ADD_SKILL);
 	packet.addByte(1);
 	packet.addShort(1);
@@ -35,7 +35,7 @@ void SkillsPacket::addSkill(Player* player, int skillid, int level, int maxlevel
 }
 
 void SkillsPacket::showSkill(Player* player, vector <Player*> players, int skillid){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(1);
@@ -46,7 +46,7 @@ void SkillsPacket::showSkill(Player* player, vector <Player*> players, int skill
 
 
 void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_USE_SKILL);
 	packet.addByte(pskill.types[0]);
 	packet.addByte(pskill.types[1]);
@@ -85,7 +85,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 }
 
 void SkillsPacket::healHP(Player* player, short hp){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_GAIN_ITEM);
 	packet.addByte(0xA);
 	packet.addShort(hp);
@@ -93,7 +93,7 @@ void SkillsPacket::healHP(Player* player, short hp){
 }
 
 void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill){
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(SEND_CANCEL_SKILL);
 	packet.addByte(pskill.types[0]);
 	packet.addByte(pskill.types[1]);
@@ -123,7 +123,7 @@ void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiv
 }
 // For Combo Attack
 void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time){ // Show combos to everyone on map 
-    Packet packet = Packet();
+    Packet packet;
     packet.addHeader(SEND_USE_SKILL);
     packet.addByte(0);
     packet.addByte(0);
@@ -139,7 +139,7 @@ void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time)
     packet.addShort(0);
     packet.addByte(0);
     packet.packetSend(player);
-    packet= Packet();
+    packet = Packet();
     packet.addHeader(SEND_SHOW_OTHERS_SKILL);
     packet.addInt(player->getPlayerid());
     packet.addByte(0);

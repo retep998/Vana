@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 
 void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.addInt(playerid);
 	packet.addInt(channel);
@@ -29,7 +29,7 @@ void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlaye
 }
 
 void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *player, int playerid, char *name) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(INTER_REGISTER_PLAYER);
 	packet.addInt(playerid);
 	packet.addShort(strlen(name));
@@ -38,14 +38,14 @@ void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *pl
 }
 
 void WorldServerConnectPlayerPacket::removePlayer(WorldServerConnectPlayer *player, int playerid) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(INTER_REMOVE_PLAYER);
 	packet.addInt(playerid);
 	packet.packetSend(player);
 }
 
 void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player, int playerid, char *findee_name) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(INTER_FIND);
 	packet.addInt(playerid);
 	packet.addShort(strlen(findee_name));
@@ -54,7 +54,7 @@ void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player
 }
 
 void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *player, int playerid, char *whisperee, char *message) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(INTER_WHISPER);
 	packet.addInt(playerid);
 	packet.addShort(strlen(whisperee));
@@ -65,7 +65,7 @@ void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *pla
 }
 
 void WorldServerConnectPlayerPacket::scrollingHeader(WorldServerConnectPlayer *player, char *message) {
-	Packet packet = Packet();
+	Packet packet;
 	packet.addHeader(INTER_SCROLLING_HEADER);
 	packet.addShort(strlen(message));
 	packet.addString(message, strlen(message));
