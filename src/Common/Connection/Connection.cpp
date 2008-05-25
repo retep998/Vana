@@ -39,7 +39,7 @@ void Connection::accept(short port, AbstractPlayerFactory *apf) {
 	h.Add(l);
 
 	if (!selecting) {
-		h.Select(1, 0);
+		h.Select(0, 1);
 	}
 
 	startSelect();
@@ -52,7 +52,7 @@ AbstractPlayer * Connection::connect(const char *ip, short port, AbstractPlayerF
 	h.Add(s);
 
 	if (!selecting) {
-		h.Select(1, 0);
+		h.Select(0, 1);
 	}
 
 	startSelect();
@@ -73,7 +73,7 @@ void Connection::startSelect() {
 void Connection::select() {
 	selecting = true;
 	while (h.GetCount() && !terminate) {
-		h.Select(1, 0);
+		h.Select(0, 2000);
 	}
 	selecting = false;
 }
