@@ -29,6 +29,7 @@ namespace MapPacket {
 	void changeMap(Player* player);
 	void portalBlocked(Player* player); // Blocked portals
 	void showClock(Player* player, unsigned char hour, unsigned char min, unsigned char sec);
+	void showTimer(Player *player, int sec); // Show Timer like in PQ
 	void makeApple(Player* player);
 	void changeMusic(vector <Player*> players, char *musicname); // Change map music
 };
