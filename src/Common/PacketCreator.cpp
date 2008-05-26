@@ -50,7 +50,7 @@ void Packet::addString(string &str) {
 	int len = str.size();
 	addShort(len);
 	strcpy_s((char *) packet + pos, MAX_LEN - pos, str.c_str());
-	pos += len + 2;
+	pos += len;
 }
 
 void Packet::addString(string &str, int len) {
