@@ -18,10 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGINSERVERCONNECTPLAYERPACKET_H
 #define LOGINSERVERCONNECTPLAYERPACKET_H
 
+#include <string>
+
+using std::string;
+
 class LoginServerConnectPlayer;
 
 namespace LoginServerConnectPlayerPacket {
-	void registerChannel(LoginServerConnectPlayer *player, int channel, char *ip, short port);
+	void registerChannel(LoginServerConnectPlayer *player, int channel, string &ip, short port);
 };
 
 #endif

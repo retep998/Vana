@@ -19,7 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ABSTRACTPLAYER_H
 
 #include <ctime>
-#include <cstring>
+#include <string>
+
+using std::string;
 
 class PacketHandler;
 
@@ -35,13 +37,13 @@ public:
 	void ping();
 	void disconnect();
 
-	char * getIP() { return ip; }
-	void setIP(const char *ip) { strcpy_s(this->ip, ip); }
+	string getIP() { return ip; }
+	void setIP(string &ip) { this->ip = ip; }
 
 	virtual ~AbstractPlayer();
 protected:
 	PacketHandler *packetHandler;
-	char ip[15];
+	string ip;
 	bool is_server;
 private:
 	int timer;

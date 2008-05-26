@@ -20,6 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Selector.h"
 #include "AbstractPlayer.h"
+#include <iostream>
+#include <sstream>
+#include <string>
+
+using std::string;
+using std::ostringstream;
 
 class Acceptor: public Selector::SelectHandler {
 public:

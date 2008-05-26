@@ -46,15 +46,15 @@ void ChannelServer::loadData() {
 
 	Connector *c = new Connector(login_ip.c_str(), login_inter_port, new WorldServerConnectPlayerFactory());
 	WorldServerConnectPlayer *loginPlayer = (WorldServerConnectPlayer *) c->getPlayer();
-	loginPlayer->setIP(external_ip.c_str());
-	loginPlayer->sendAuth(inter_password.c_str());
+	loginPlayer->setIP(external_ip);
+	loginPlayer->sendAuth(inter_password);
 }
 
 void ChannelServer::connectWorld() {
 	Connector *c = new Connector(world_ip, world_port, new WorldServerConnectPlayerFactory());
 	worldPlayer = (WorldServerConnectPlayer *) c->getPlayer();
-	worldPlayer->setIP(external_ip.c_str());
-	worldPlayer->sendAuth(inter_password.c_str());
+	worldPlayer->setIP(external_ip);
+	worldPlayer->sendAuth(inter_password);
 }
 
 void ChannelServer::loadConfig() {

@@ -24,11 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BufferUtilities.h"
 #include "InterHeader.h"
 #include <iostream>
+#include <string>
+
+using std::string;
 
 class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
 	AbstractServerConnectPlayer() { is_server = true; }
-	void sendAuth(const char *pass) {
+	void sendAuth(string pass) {
 		AuthenticationPacket::sendPassword(this, pass, getIP());
 	}
 	char getType() { return type; }
@@ -52,7 +55,7 @@ public:
 				if (iplen) {
 					char ip[15];
 					BufferUtilities::getString(buf+7+passlen, iplen, ip);
-					setIP(ip); // setIP in abstractPlayer
+					setIP(string(ip)); // setIP in abstractPlayer
 				}
 				authenticated(buf[2+2+passlen]);
 			}
