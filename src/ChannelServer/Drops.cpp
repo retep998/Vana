@@ -100,8 +100,14 @@ void Drop::showDrop(Player* player){
 	DropsPacket::showDrop(player, this);
 }
 
-void Drop::removeDrop(){
-
+void Drop::removeDrop() {
+	for (unsigned int i=0; i<Drops::drops[this->getMap()].size(); i++) {
+		if (Drops::drops[this->getMap()][i] == this) {
+			Drops::drops[this->getMap()].erase(Drops::drops[this->getMap()].begin()+i);
+			break;
+		}
+	}
+	DropsPacket::removeDrop(Maps::info[this->getMap()].Players, this);
 }
 
 void Drops::dropMob(Player* player, Mob* mob){
