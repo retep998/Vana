@@ -18,10 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include <iostream>
 
-void main(){
+int main(){
 	std::cout << "Starting Channel Server..." << std::endl;
 	ChannelServer *server = ChannelServer::Instance();
 	server->initialize();
 	std::cout << "Complete!" << std::endl;
 	while(getchar()){}
+
+	server->shutdown();
+	return 0;
 }
