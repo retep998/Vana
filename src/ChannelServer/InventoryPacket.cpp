@@ -266,7 +266,7 @@ void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char*
 	packet.addShort(strlen(msg4));
 	packet.addString(msg4, strlen(msg4));
 	packet.addInt(player->getChannel());
-	packet.addBytesHex(displayInfo, displayInfo_size);
+	packet.addBuffer(displayInfo, displayInfo_size);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 // Use buff item

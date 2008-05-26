@@ -38,6 +38,14 @@ void Packet::addShort(short shrt){
 	
 }
 
+void Packet::addString(const char *str, int slen){
+	int rlen = strlen(str);
+	strncpy_s((char*)packet+pos, slen+1, str, slen);
+	for(int i=rlen; i<slen; i++)
+		packet[pos+i] = 0;
+	pos+=slen;
+}
+
 void Packet::addByte(unsigned char byte){
 	packet[pos++] = byte;
 }
@@ -63,15 +71,7 @@ void Packet::addBytes(char *hex){
 	}
 }
 
-void Packet::addString(const char *str, int slen){
-	int rlen = strlen(str);
-	strncpy_s((char*)packet+pos, slen+1, str, slen);
-	for(int i=rlen; i<slen; i++)
-		packet[pos+i] = 0;
-	pos+=slen;
-}
-
-void Packet::addBytesHex(unsigned char* bytes, int len){
+void Packet::addBuffer(unsigned char* bytes, int len){
 	memcpy_s(packet+pos, len, bytes, len);
 	pos+=len;
 }
