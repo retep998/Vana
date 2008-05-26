@@ -21,7 +21,7 @@ elseif state == 1 then
 elseif state == 2 then
 	where = getSelected();
 	setVariable("where", where);
-	if where > 0 then -- Lith Harbor
+	if where > 0 then
 		addText("You don’t have anything else to do here, huh? Do you really want to go to #b" .. places[where] .. "#k? It'll cost you #b" .. prices[where] .. " mesos#k.");
 		sendYesNo();
 	else
