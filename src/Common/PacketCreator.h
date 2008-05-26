@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define MAX_LEN 10000
 
-#include <Vector>
+#include <vector>
+#include <string>
 
-using namespace std;
+using std::vector;
+using std::string;
 
 class Packet {
 public:
@@ -35,6 +37,8 @@ public:
 	void addInt64(__int64 int64);
 	void addShort(short shrt);
 	void addString(const char *str, int slen);
+	void addString(string &str); // Dynamically-lengthed strings
+	void addString(string &str, int len); // Static-lengthed strings
 	void addByte(unsigned char byte);
 	void addBytes(char* hex);
 	void addBuffer(unsigned char* bytes, int len);
