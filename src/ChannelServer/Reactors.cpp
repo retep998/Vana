@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacket.h"
 #include "PacketCreator.h"
 #include "Maps.h"
+#include "Mobs.h"
 #include "Inventory.h"
 #include "BufferUtilities.h"
 #include "SendHeader.h"
@@ -91,7 +92,25 @@ void Reactors::hitReactor(Player *player, unsigned char *packet) {
 	}
 }
 
-void Reactors::triggerReactor(Player* player, Reactor* reactor, int state) {
-	reactor->setState(state);
-	ReactorPacket::triggerReactor(player, Maps::info[player->getMap()].Players, reactor);
+void Reactors::checkDrop(Player *player, Drop *drop) {
+	if (drop->getMesos())
+		return;
+	for (unsigned int i=0; i<reactors[drop->getMap()].size(); i++) {
+		Reactor* reactor = reactors[drop->getMap()][i];
+		for (unsigned int j=0; j<reactorinfo[reactors[drop->getMap()][i]->getReactorID()].size(); j++) {
+			ReactorEventInfo revent = reactorinfo[reactors[drop->getMap()][i]->getReactorID()][j];
+			if (reactor->getState() == revent.state && drop->getID() == revent.itemid) {
+				if ((drop->getPos().x >= reactor->getPos().x+revent.ltx && drop->getPos().x <= reactor->getPos().x+revent.rbx) && (drop->getPos().y >= reactor->getPos().y+revent.lty && drop->getPos().y <= reactor->getPos().y+revent.rby)) {
+					reactor->setState(revent.nextstate);
+					ReactorPacket::triggerReactor(player, Maps::info[player->getMap()].Players, reactor);
+					drop->removeDrop();
+					if (reactor->getReactorID() == 2201004) {
+						Maps::changeMusic(reactor->getMapID(), "Bgm09/TimeAttack");
+						Mobs::spawnMobPos(player, 8500000, -410, -400);
+					}
+				}
+				return;
+			}
+		}
+	}
 }

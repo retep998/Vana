@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "Shops.h"
 #include "Quests.h"
+#include "Reactors.h"
 #include "Maps.h"
 #include "Mobs.h"
 #include "Randomizer.h"
@@ -150,6 +151,7 @@ void Inventory::itemMove(Player* player, unsigned char* packet){
 			drop->setDropInfo(dropi);
 			drop->doDrop(dropper);
 			player->inv->deleteEquip(num);
+			Reactors::checkDrop(player, drop);
 			return;
 		}
 		for(int i=0; i<player->inv->getEquipNum(); i++){
@@ -203,6 +205,7 @@ void Inventory::itemMove(Player* player, unsigned char* packet){
 			drop->doDrop(dropper);
 			if(item->amount == 0)
 				player->inv->deleteItem(num);
+			Reactors::checkDrop(player, drop);
 			return;
 		}
 		int stack=0;
@@ -357,17 +360,13 @@ void Inventory::useShop(Player* player, unsigned char* packet){
 		bool isequip=false;
 		if(Drops::equips.find(item) != Drops::equips.end())
 			isequip = 1;
-		if(isequip){
-			if(player->inv->getMesos() < Shops::getPrice(player, item)){
-				// hacking
-				return;
-			}
+		if (isequip && player->inv->getMesos() < Shops::getPrice(player, item)) {
+			// hacking
+			return;
 		}
-		else{
-			if(player->inv->getMesos() < Shops::getPrice(player, item)*howmany){
-				// hacking
-				return;
-			}
+		else if (player->inv->getMesos() < Shops::getPrice(player, item) * howmany) {
+			// hacking
+			return;
 		}
 		if(isequip){
 			Equip* equip = setEquipStats(player, item);
