@@ -41,7 +41,7 @@ public:
 			singleton = new Channels;
 		return singleton;
 	}
-	void registerChannel(WorldServerAcceptPlayer *player, int channel, string &ip, short port);
+	void registerChannel(WorldServerAcceptPlayer *player, int channel, const string &ip, short port);
 	Channel * getChannel(int num);
 	void sendToAll(Packet &packet);
 	int size();

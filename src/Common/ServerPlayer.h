@@ -31,7 +31,7 @@ using std::string;
 class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
 	AbstractServerConnectPlayer() { is_server = true; }
-	void sendAuth(string pass) {
+	void sendAuth(const string &pass) {
 		AuthenticationPacket::sendPassword(this, pass, getIP());
 	}
 	char getType() { return type; }

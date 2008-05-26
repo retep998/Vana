@@ -130,10 +130,10 @@ public:
 		return player;
 	}
 	void showShop();
-	void setVariable(string name, int val) {
+	void setVariable(const string &name, int val) {
 		vars[name] = val;
 	}
-	int getVariable(string name) {
+	int getVariable(const string &name) {
 		if(vars.find(name) == vars.end())
 			return 0;
 		else
