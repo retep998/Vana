@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketCreator.h"
-#include <stdio.h>
+#include <iostream>
 
 void Packet::addHeader(short headerid){
 	addShort(headerid);
@@ -44,6 +44,25 @@ void Packet::addString(const char *str, int slen){
 	for(int i=rlen; i<slen; i++)
 		packet[pos+i] = 0;
 	pos+=slen;
+}
+
+void Packet::addString(string &str) {
+	int len = str.size();
+	addShort(len);
+	strcpy_s((char *) packet + pos, MAX_LEN - pos, str.c_str());
+	pos += len + 2;
+}
+
+void Packet::addString(string &str, int len) {
+	int slen = str.size();
+	if (len < slen) {
+		std::cout << "ERROR: addString used with lenth shorter than string size." << std::endl; // TODO: Throw exception
+	}
+	strncpy_s((char *) packet + pos, MAX_LEN -pos, str.c_str(), slen);
+	for(int i = slen; i < len; i++) {
+		packet[pos+i] = 0;
+	}
+	pos += len;
 }
 
 void Packet::addByte(unsigned char byte){
