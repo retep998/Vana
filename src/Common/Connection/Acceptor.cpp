@@ -61,8 +61,10 @@ void Acceptor::handle (int socket) {
 	sockaddr_in cli_addr;
 	int cli_len = sizeof(cli_addr);
 	SOCKET sock = accept(socket, (struct sockaddr *) &cli_addr, &cli_len);
-	char ip[15];
-	sprintf_s(ip, "%d.%d.%d.%d", cli_addr.sin_addr.S_un.S_un_b.s_b1, cli_addr.sin_addr.S_un.S_un_b.s_b2, cli_addr.sin_addr.S_un.S_un_b.s_b3, cli_addr.sin_addr.S_un.S_un_b.s_b4);
+
+	ostringstream ipStream;
+	ipStream << cli_addr.sin_addr.S_un.S_un_b.s_b1 << "." << cli_addr.sin_addr.S_un.S_un_b.s_b2 << "." << cli_addr.sin_addr.S_un.S_un_b.s_b3 << "." << cli_addr.sin_addr.S_un.S_un_b.s_b4;
+
 	printf ("accept\n");
 	if (sock == INVALID_SOCKET) {
 		printf("accept error: %d\n", WSAGetLastError());
@@ -72,6 +74,6 @@ void Acceptor::handle (int socket) {
 	AbstractPlayer* player = abstractPlayerFactory->createPlayer();
 	PacketHandler* ph = new PacketHandler(sock, player);
 	player->setPacketHandler(ph);
-	player->setIP(ip);
+	player->setIP(ipStream.str());
 	Selector::Instance()->registerSocket(sock, true, false, true, ph);
 }

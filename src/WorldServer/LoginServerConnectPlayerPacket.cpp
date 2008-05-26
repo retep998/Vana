@@ -19,12 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectPlayer.h"
 #include "PacketCreator.h"
 
-void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *player, int channel, char *ip, short port) {
+void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *player, int channel, string &ip, short port) {
 	Packet packet;
 	packet.addHeader(INTER_REGISTER_CHANNEL);
 	packet.addInt(channel);
-	packet.addShort(strlen(ip));
-	packet.addString(ip, strlen(ip));
+	packet.addString(ip);
 	packet.addShort(port);
 	packet.send(player);
 }

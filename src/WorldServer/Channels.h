@@ -19,7 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CHANNELS_H
 
 #include <hash_map>
+#include <string>
 
+using std::string;
 using stdext::hash_map;
 
 class WorldServerAcceptPlayer;
@@ -28,7 +30,7 @@ class Packet;
 struct Channel {
 	WorldServerAcceptPlayer *player;
 	int id;
-	char ip[15];
+	string ip;
 	short port;
 };
 
@@ -39,7 +41,7 @@ public:
 			singleton = new Channels;
 		return singleton;
 	}
-	void registerChannel(WorldServerAcceptPlayer *player, int channel, char *ip, short port);
+	void registerChannel(WorldServerAcceptPlayer *player, int channel, string &ip, short port);
 	Channel * getChannel(int num);
 	void sendToAll(Packet &packet);
 	int size();

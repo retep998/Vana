@@ -68,7 +68,7 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 			maxchan = iter->second.maxChannels;
 			iter->second.connected = true;
 			iter->second.player = player;
-			strcpy_s(iter->second.ip, player->getIP());
+			iter->second.ip = player->getIP();
 			break;
 		}
 	}
@@ -86,12 +86,12 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
 	short port;
-	char ip[15];
+	string ip;
 	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second.channels.size() < (size_t) iter->second.maxChannels && iter->second.connected) {
 			worldid = iter->second.id;
 			port = iter->second.port;
-			strcpy_s(ip, iter->second.ip);
+			ip = iter->second.ip;
 			break;
 		}
 	}
