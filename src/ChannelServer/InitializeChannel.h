@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "Mobs.h"
 #include "Drops.h"
+#include "Reactors.h"
 #include "Maps.h"
 #include "NPCs.h"
-#include "Reactors.h"
 #include "Shops.h"
 #include <string>
 #include "Quests.h"
@@ -35,12 +35,13 @@ using namespace std;
 namespace Initializing {
 	void initializeMobs();
 	void initializeDrops();
+	void initializeReactors();
 	void initializeMaps();
 	void initializeEquips();
 	void initializeShops();
 	void initializeItems();
 	void initializeQuests();
 	void initializeSkills();
-}
+};
 
 #endif

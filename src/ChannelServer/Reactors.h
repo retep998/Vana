@@ -25,23 +25,97 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 using namespace stdext;
 
+#include "Player.h"
+
 class Player;
 class Packet;
+class Reactor;
 
-struct ReactorInfo {
+struct ReactorSpawnInfo {
 	int id;
 	short x;
 	short y;
-	short time;
-	unsigned char f;
 };
+typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
 
-typedef vector<ReactorInfo> ReactorsInfo;
+struct ReactorEventInfo {
+	short state;
+	short type;
+	int itemid;
+	short ltx;
+	short lty;
+	short rbx;
+	short rby;
+	short nextstate;
+};
+typedef vector<ReactorEventInfo> ReactorEventsInfo;
 
 namespace Reactors {
-	extern hash_map <int, ReactorsInfo> info;
-	void addReactor(int id, ReactorsInfo reactors);
+	extern hash_map <int, ReactorEventsInfo> reactorinfo;
+	extern hash_map <int, ReactorSpawnsInfo> info;
+	extern hash_map <int, vector<Reactor*>> reactors;
+	extern int reactorscount;
+	void addReactorSpawn(int id, ReactorSpawnsInfo reactor);
+	void addReactorEventInfo(int id, ReactorEventInfo revent);
+	void loadReactors();
 	void showReactors(Player* player);
+	void hitReactor(Player* player, unsigned char *packet);
+	void triggerReactor(Player* player, Reactor* reactor, int state);
+	Reactor* getReactorByID(int id, int mapid);
+};
+
+class Reactor {
+public:
+	Reactor () {
+		alive = true;
+		state = 0;
+	}
+	void kill() {
+		this->alive = false;
+	}
+	void revive() {
+		this->alive = true;
+	}
+	bool isAlive() {
+		return this->alive;
+	}
+	void setID(int id) {
+		this->id = id;
+	}
+	int getID() {
+		return this->id;
+	}
+	void setReactorID(int reactorid) {
+		this->reactorid = reactorid;
+	}
+	int getReactorID() {
+		return this->reactorid;
+	}
+	void setMapID(int mapid) {
+		this->mapid = mapid;
+	}
+	int getMapID() {
+		return this->mapid;
+	}
+	void setState(int state) {
+		this->state = state;
+	}
+	int getState() {
+		return this->state;
+	}
+	void setPos(Pos pos) {
+		this->pos = pos;
+	}
+	Pos getPos() {
+		return this->pos;
+	}
+private:
+	Pos pos;
+	bool alive;
+	int id;
+	int reactorid;
+	int mapid;
+	int state;
 };
 
 #endif

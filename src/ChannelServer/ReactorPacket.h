@@ -18,11 +18,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef REACTORPACK_H
 #define REACTORPACK_H
 
+#include <vector>
+
+using namespace std;
+
 class Player;
-struct ReactorInfo;
+class Reactor;
 
 namespace ReactorPacket {
-	void showReactor(Player* player, ReactorInfo reactor, int i);
+	void showReactor(Player* player, Reactor *reactor);
+	void triggerReactor(Player* player, vector <Player*> players, Reactor *reactor);
+	void destroyReactor(Player* player, vector <Player*> players, Reactor *reactor);
 };
 
 #endif

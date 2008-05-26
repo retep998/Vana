@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeChannel.h"
 
 // Mobs
-void Initializing::initializeMobs(){
+void Initializing::initializeMobs() {
 	printf("Initializing Mobs... ");
 	mysqlpp::Query query = db.query("SELECT mobdata.*, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 
@@ -68,8 +68,47 @@ void Initializing::initializeMobs(){
 
 	printf("DONE\n");
 }
+// Reactors
+void Initializing::initializeReactors() {
+	printf("Initializing Reactors... ");
+	mysqlpp::Query query = db.query("SELECT * FROM reactoreventdata ORDER BY reactorid, state ASC");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		printf("FAILED: %s\n", db.error());
+		exit(1);
+	}
+
+	int currentid = 0;
+	int previousid = -1;
+	while (mysqlpp::Row reactorRow = res.fetch_row()) {
+		// Col0 : Row ID
+		//    1 : Reactor ID
+		//    2 : State
+		//    3 : Type
+		//    4 : Item ID
+		//    5 : LT X
+		//    6 : LT Y
+		//    7 : RB X
+		//    8 : RB Y
+		//    9 : Next State
+
+		ReactorEventInfo revent;
+		revent.state = atoi(reactorRow[2]);
+		revent.type = atoi(reactorRow[3]);
+		revent.itemid = atoi(reactorRow[4]);
+		revent.ltx = atoi(reactorRow[5]);
+		revent.lty = atoi(reactorRow[6]);
+		revent.rbx = atoi(reactorRow[7]);
+		revent.rby = atoi(reactorRow[8]);
+		revent.nextstate = atoi(reactorRow[9]);
+		Reactors::addReactorEventInfo(atoi(reactorRow[1]), revent);
+	}
+
+	printf("DONE\n");
+}
 // Items
-void Initializing::initializeItems(){
+void Initializing::initializeItems() {
 	printf("Initializing Items... ");
 	mysqlpp::Query query = db.query("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
 
@@ -707,35 +746,34 @@ void Initializing::initializeMaps(){
 
 	currentid = 0;
 	previousid = -1;
-	ReactorsInfo reactors;
+	ReactorSpawnsInfo reactors;
 	while (mysqlpp::Row reactorRow = res.fetch_row()) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : Reactor ID
 		//    3 : x
 		//    4 : y
-		//    5 : Time
-		//    6 : f
 		currentid = atoi(reactorRow[1]);
+
 		if(currentid != previousid && previousid != -1){
-			Reactors::addReactor(previousid, reactors);
+			Reactors::addReactorSpawn(previousid, reactors);
 			reactors.clear();
 		}
-		ReactorInfo reactor;
+		ReactorSpawnInfo reactor;
 		reactor.id = atoi(reactorRow[2]);
 		reactor.x = atoi(reactorRow[3]);
 		reactor.y = atoi(reactorRow[4]);
-		reactor.time = atoi(reactorRow[5]);
-		reactor.f = (unsigned char) reactorRow[6];
 		reactors.push_back(reactor);
 
 		previousid = atoi(reactorRow[1]);
 	}
 
 	if(previousid != -1){
-		Reactors::addReactor(previousid, reactors);
+		Reactors::addReactorSpawn(previousid, reactors);
 		reactors.clear();
 	}
+
+	Reactors::loadReactors();
 
 	// Footholds
 	query << "SELECT * FROM mapfootholddata ORDER BY mapid ASC";
