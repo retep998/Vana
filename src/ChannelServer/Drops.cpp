@@ -217,10 +217,15 @@ void Drops::dropMob(Player* player, Mob* mob){
 		}
 	}
 	int nm = mesos[mob->getMobID()].min;
-	int xm = mesos[mob->getMobID()].max;	
+	int xm = mesos[mob->getMobID()].max;
 	if(xm > 0 && nm > 0){
 		Drop* drp = new Drop(player->getMap());
-		drp->setID(Randomizer::Instance()->randInt(xm-nm)+nm);
+		int mesos = Randomizer::Instance()->randInt(xm-nm)+nm;
+		// For Meso up
+		if (player->skills->getActiveSkillLevel(4111001)>0) {
+			mesos = (mesos*Skills::skills[4111001][player->skills->getActiveSkillLevel(4111001)].x)/100;
+		}
+		drp->setID(mesos);
 		drp->setMesos(true);
 		drp->setOwner(player->getPlayerid());
 		drp->setTime(100);
