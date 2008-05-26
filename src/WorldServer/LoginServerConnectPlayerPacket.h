@@ -25,7 +25,7 @@ using std::string;
 class LoginServerConnectPlayer;
 
 namespace LoginServerConnectPlayerPacket {
-	void registerChannel(LoginServerConnectPlayer *player, int channel, string &ip, short port);
+	void registerChannel(LoginServerConnectPlayer *player, int channel, const string &ip, short port);
 };
 
 #endif

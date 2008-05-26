@@ -253,13 +253,13 @@ public:
 	SkillMapEnterActiveInfo getSkill(){
 		return skill;
 	}
-	void deleteVariable(string name) {
+	void deleteVariable(const string &name) {
 		variables.erase(name);
 	}
-	void setVariable(string name, string val) {
+	void setVariable(const string &name, const string &val) {
 		variables[name] = val;
 	}
-	string getVariable(string name) {
+	string getVariable(const string &name) {
 		return (variables.find(name) == variables.end()) ? "0" : variables[name];
 	}
 	void addWarning();

@@ -38,7 +38,7 @@ public:
 	void disconnect();
 
 	string getIP() { return ip; }
-	void setIP(string &ip) { this->ip = ip; }
+	void setIP(const string &ip) { this->ip = ip; }
 
 	virtual ~AbstractPlayer();
 protected:

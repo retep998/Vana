@@ -46,14 +46,14 @@ void Packet::addString(const char *str, int slen){
 	pos+=slen;
 }
 
-void Packet::addString(string &str) {
+void Packet::addString(const string &str) {
 	int len = str.size();
 	addShort(len);
 	strcpy_s((char *) packet + pos, MAX_LEN - pos, str.c_str());
 	pos += len;
 }
 
-void Packet::addString(string &str, int len) {
+void Packet::addString(const string &str, int len) {
 	int slen = str.size();
 	if (len < slen) {
 		std::cout << "ERROR: addString used with lenth shorter than string size." << std::endl; // TODO: Throw exception
