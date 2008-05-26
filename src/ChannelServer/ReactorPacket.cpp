@@ -21,14 +21,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "SendHeader.h"
 
-void ReactorPacket::showReactor(Player* player, ReactorInfo reactor, int i) {
+void ReactorPacket::showReactor(Player* player, Reactor *reactor) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_REACTOR);
-	packet.addInt(i+0x64);
-	packet.addInt(reactor.id);
+	packet.addInt(reactor->getID());
+	packet.addInt(reactor->getReactorID());
+	packet.addByte(reactor->getState());
+	packet.addShort(reactor->getPos().x);
+	packet.addShort(reactor->getPos().y);
 	packet.addByte(0);
-	packet.addShort(reactor.x);
-	packet.addShort(reactor.y);
-	packet.addByte(reactor.f);
 	packet.send(player);
+}
+
+void ReactorPacket::triggerReactor(Player *player, vector <Player*> players, Reactor *reactor) {
+	Packet packet = Packet();
+	packet.addHeader(SEND_TRIGGER_REACTOR);
+	packet.addInt(reactor->getID());
+	packet.addByte(reactor->getState()); // State
+	packet.addShort(reactor->getPos().x);
+	packet.addShort(reactor->getPos().y);
+	packet.addInt(player->getPlayerid());
+	packet.sendTo(player, players, 1);
+}
+
+void ReactorPacket::destroyReactor(Player *player, vector <Player*> players, Reactor *reactor) {
+	Packet packet = Packet();
+	packet.addHeader(SEND_DESTROY_REACTOR);
+	packet.addInt(reactor->getID());
+	packet.addByte(reactor->getState());
+	packet.addShort(reactor->getPos().x);
+	packet.addShort(reactor->getPos().y);
+	packet.sendTo(player, players, 1);
 }

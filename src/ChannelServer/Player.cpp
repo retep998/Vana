@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Mobs.h"
 #include "NPCs.h"
+#include "Reactors.h"
 #include "Players.h"
 #include "MySQLM.h"
 #include "PlayerPacket.h"
@@ -81,6 +82,7 @@ void Player::realHandleRequest(unsigned char* buf, int len){
 		case RECV_COMMAND: Players::commandHandler(this, buf+2); break;
 		case RECV_DAMAGE_MOB: Mobs::damageMob(this, buf+2); break;
 		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this, buf+2); break;
+		case RECV_HIT_REACTOR: Reactors::hitReactor(this, buf+2); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this, buf+2); break;
 		case RECV_USE_ITEM: Inventory::useItem(this, buf+2); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, buf+2); break;
