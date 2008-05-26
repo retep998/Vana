@@ -19,8 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PACKETCREATOR_H
 
 #define MAX_LEN 10000
-#include <Winsock2.h>
+
 #include <Vector>
+
 using namespace std;
 
 class Packet {
@@ -28,6 +29,7 @@ public:
 	Packet(){
 		pos = 0;
 	}
+
 	void addHeader(short headerid);
 	void addInt(int intg);
 	void addInt64(__int64 int64);
@@ -53,7 +55,6 @@ public:
 	}
 private:
 	int pos;
-	SOCKET socketid;
 	unsigned char packet[MAX_LEN];
 };
 
