@@ -504,6 +504,11 @@ void Skills::init(){
 	map.value = SKILL_X;
 	map.val = false;
 	skillsinfo[1004].map.push_back(map);
+	// 4111001 Hermit  Meso UP
+	player.type = 0x8;
+	player.byte = 4;
+	player.value = SKILL_X;
+	skillsinfo[4111001].player.push_back(player);
 }
 
 void Skills::addSkill(int id, SkillsLevelInfo skill){
