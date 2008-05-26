@@ -37,7 +37,7 @@ public:
 	void addString(const char *str, int slen);
 	void addByte(unsigned char byte);
 	void addBytes(char* hex);
-	void addBytesHex(unsigned char* bytes, int len);
+	void addBuffer(unsigned char* bytes, int len);
 
 	template <class T>
 	void sendTo(T* player, vector <T*> players, bool is) {

@@ -40,7 +40,7 @@ void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer 
 
 void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int len) {
 	Packet packet;
-	packet.addBytesHex(data, len);
+	packet.addBuffer(data, len);
 	Channels::Instance()->sendToAll(packet);
 }
 
