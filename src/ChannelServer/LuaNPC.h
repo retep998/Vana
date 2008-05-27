@@ -36,8 +36,8 @@ struct PortalInfo;
 
 class LuaNPC {
 public:
-	LuaNPC(string &filename, int playerid);
-	LuaNPC(string &filename, int playerid, PortalInfo *portal);
+	LuaNPC(const string &filename, int playerid);
+	LuaNPC(const string &filename, int playerid, PortalInfo *portal);
 	~LuaNPC();
 
 	void initialize();

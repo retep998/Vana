@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 hash_map <int, PortalInfo *> LuaNPCExports::portals;
 
-LuaNPC::LuaNPC(string &filename, int playerid) : filename(filename), playerid(playerid), portal(0), luaVm(lua_open()) {
+LuaNPC::LuaNPC(const string &filename, int playerid) : filename(filename), playerid(playerid), portal(0), luaVm(lua_open()) {
 	if (Players::players[playerid]->getNPC() != NULL) {
 		lua_pushinteger(luaVm, Players::players[playerid]->getNPC()->getState());
 		lua_setglobal(luaVm, "state");
@@ -39,7 +39,7 @@ LuaNPC::LuaNPC(string &filename, int playerid) : filename(filename), playerid(pl
 	run();
 }
 
-LuaNPC::LuaNPC(string &filename, int playerid, PortalInfo *portal) : filename(filename), playerid(playerid), portal(portal), luaVm(lua_open()) {
+LuaNPC::LuaNPC(const string &filename, int playerid, PortalInfo *portal) : filename(filename), playerid(playerid), portal(portal), luaVm(lua_open()) {
 	LuaNPCExports::portals[playerid] = portal;
 	initialize();
 	run();
