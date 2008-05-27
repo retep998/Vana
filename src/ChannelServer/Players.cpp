@@ -233,6 +233,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 		}
 		else if	(strcmp(command, "dc") == 0)	{
 			player->disconnect();
+			return;
 		}
 		else if (strcmp(command, "shutdown") == 0) {
 			ChannelServer::Instance()->shutdown();
@@ -248,7 +249,6 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 		return;
 	}
 	PlayersPacket::showChat(player, Maps::info[player->getMap()].Players, chat);
-
 }
 
 void Players::damagePlayer(Player* player, unsigned char* packet){
