@@ -51,7 +51,7 @@ void LuaReactor::initialize() {
 	lua_register(luaVm, "spawnMobPos", &LuaReactorExports::spawnMobPos);
 	lua_register(luaVm, "mapMessage", &LuaReactorExports::mapMessage);
 
-	lua_register(luaVm, "respawn", &LuaReactorExports::respawn);
+	lua_register(luaVm, "reset", &LuaReactorExports::reset);
 }
 
 void LuaReactor::run() {
@@ -96,7 +96,7 @@ int LuaReactorExports::setMap(lua_State *luaVm) {
 int LuaReactorExports::spawnMob(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
-	Mobs::spawnMobPos(getPlayer(luaVm), mobid, reactor->getPos().x, reactor->getPos().y);
+	Mobs::spawnMobPos(getPlayer(luaVm), mobid, reactor->getPos().x, reactor->getPos().y-10);
 	return 1;
 }
 
@@ -118,7 +118,7 @@ int LuaReactorExports::mapMessage(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaReactorExports::respawn(lua_State *luaVm) {
+int LuaReactorExports::reset(lua_State *luaVm) {
 	getReactor(luaVm)->revive();
 	getReactor(luaVm)->setState(0);
 	ReactorPacket::showReactor(getPlayer(luaVm), getReactor(luaVm));
