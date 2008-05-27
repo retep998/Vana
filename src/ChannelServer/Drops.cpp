@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "Mobs.h"
 #include "Maps.h"
+#include "Reactors.h"
 #include "DropsPacket.h"
 #include "Inventory.h"
 #include "Quests.h"
@@ -336,6 +337,7 @@ void Drops::lootItem(Player* player, unsigned char*packet){
 		}
 		DropsPacket::takeNote(player, drop->getID(), 0, drop->getAmount());
 	}
+	Reactors::checkLoot(drop);
 	drop->takeDrop(player);
 	delete drop;
 }

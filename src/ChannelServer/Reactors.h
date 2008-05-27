@@ -29,9 +29,9 @@ using namespace stdext;
 #include "Drops.h"
 
 class Player;
-class Packet;
 class Drop;
 class Reactor;
+class ReactionTimer;
 
 struct ReactorSpawnInfo {
 	int id;
@@ -63,6 +63,7 @@ namespace Reactors {
 	void showReactors(Player* player);
 	void hitReactor(Player* player, unsigned char *packet);
 	void checkDrop(Player* player, Drop *drop);
+	void checkLoot(Drop *drop);
 	Reactor* getReactorByID(int id, int mapid);
 };
 
