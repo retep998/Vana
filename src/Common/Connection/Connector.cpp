@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Connector.h"
 #include "PacketHandler.h"
+#include "AbstractPlayer.h"
 #include <iostream>
 
 Connector::Connector(const char *ip, short port, AbstractPlayerFactory* apf) {

@@ -16,12 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketHandler.h"
+#include "AbstractPlayer.h"
+#include "Decoder/Decoder.h"
+#include "Decoder/MapleEncryption.h"
 #include <Winsock2.h>
 
 #define HEADER_LEN 4
 #define BUFFER_LEN 10000
 
-PacketHandler::PacketHandler(int socket, AbstractPlayer* player, bool isSend) {
+PacketHandler::PacketHandler(int socket, AbstractPlayer *player, bool isSend) {
 	this->socket = socket;
 	buffer = new unsigned char[BUFFER_LEN];
 	bytesInBuffer = 0;
@@ -41,7 +44,7 @@ PacketHandler::PacketHandler(int socket, AbstractPlayer* player, bool isSend) {
 	}
 }
 
-void PacketHandler::handle (int socket) {
+void PacketHandler::handle(int socket) {
 	if (bytesInBuffer < HEADER_LEN) {
 		// read header
 		int l = recv(socket, (char*)(buffer + bytesInBuffer), HEADER_LEN - bytesInBuffer, 0);

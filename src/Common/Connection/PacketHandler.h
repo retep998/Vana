@@ -18,22 +18,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PACKETHANDLER_H
 #define PACKETHANDLER_H
 
-#include "../Decoder/Decoder.h"
-#include "../Decoder/MapleEncryption.h"
 #include "Selector.h"
-#include "AbstractPlayer.h"
 
-class PacketHandler: public Selector::SelectHandler {
+class AbstractPlayer;
+class Decoder;
+
+class PacketHandler : public Selector::SelectHandler {
 public:
-	PacketHandler(int socket, AbstractPlayer* player, bool isSend = false); // isSend = packet is initiated by the server or not
+	PacketHandler(int socket, AbstractPlayer *player, bool isSend = false); // isSend = packet is initiated by the server or not
 	void handle (int socket);
 	void sendPacket(unsigned char* buf, int len);
 	void disconnect();
 private:
-	unsigned char* buffer;
+	unsigned char *buffer;
 	int bytesInBuffer;
-	AbstractPlayer* player;
-	Decoder* decoder;
+	AbstractPlayer *player;
+	Decoder *decoder;
 	int socket;
 };
 
