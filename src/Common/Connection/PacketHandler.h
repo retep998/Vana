@@ -18,22 +18,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PACKETHANDLER_H
 #define PACKETHANDLER_H
 
-#include "Selector.h"
+#define HEADER_LEN 4
+#define BUFFER_LEN 10000
 
+#include "Selector.h"
+#include <memory>
+
+class AbstractPlayerFactory;
 class AbstractPlayer;
 class Decoder;
 
 class PacketHandler : public Selector::SelectHandler {
 public:
-	PacketHandler(int socket, AbstractPlayer *player, bool isSend = false); // isSend = packet is initiated by the server or not
+	PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend = false); // isSend = packet is initiated by the server or not
+	~PacketHandler();
 	void handle (int socket);
 	void sendPacket(unsigned char* buf, int len);
 	void disconnect();
+
+	AbstractPlayer * getPlayer() const { return player.get(); }
 private:
-	unsigned char *buffer;
+	unsigned char buffer[BUFFER_LEN];
 	int bytesInBuffer;
-	AbstractPlayer *player;
-	Decoder *decoder;
+	std::auto_ptr<AbstractPlayer> player;
+	std::auto_ptr<Decoder> decoder;
 	int socket;
 };
 

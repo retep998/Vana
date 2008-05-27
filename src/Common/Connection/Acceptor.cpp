@@ -74,8 +74,8 @@ void Acceptor::handle(int socket) {
 		std::cout << "Warning: failed to disable nagle's algorithm: " << WSAGetLastError() << std::endl;
 	}
 
-	AbstractPlayer *player = abstractPlayerFactory->createPlayer();
-	PacketHandler *ph = new PacketHandler(sock, player);
+	PacketHandler *ph = new PacketHandler(sock, abstractPlayerFactory);
+	AbstractPlayer *player = ph->getPlayer();
 	player->setPacketHandler(ph);
 	player->setIP(ip);
 	Selector::Instance()->registerSocket(sock, true, false, true, ph);

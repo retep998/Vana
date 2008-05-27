@@ -21,35 +21,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Decoder/MapleEncryption.h"
 #include <Winsock2.h>
 
-#define HEADER_LEN 4
-#define BUFFER_LEN 10000
-
-PacketHandler::PacketHandler(int socket, AbstractPlayer *player, bool isSend) {
-	this->socket = socket;
-	buffer = new unsigned char[BUFFER_LEN];
-	bytesInBuffer = 0;
-	this->player = player;
-	decoder = new Decoder();
-	int l;
+PacketHandler::PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend) :
+bytesInBuffer(0),
+player(abstractPlayerFactory->createPlayer()),
+decoder(new Decoder()),
+socket(socket)
+{
+	int len;
 	if (isSend) {
-		l = recv(socket, (char*)(buffer), Decoder::CONNECT_LENGTH, 0);
+		len = recv(socket, (char *) buffer, Decoder::CONNECT_LENGTH, 0);
 		decoder->setIvSend(buffer+6);
 		decoder->setIvRecv(buffer+10);
 	}
 	else {
-		l = send(socket, (char*)(decoder->getConnectPacket()), Decoder::CONNECT_LENGTH, 0);
+		len = send(socket, (char *) decoder->getConnectPacket(), Decoder::CONNECT_LENGTH, 0);
 	}
-	if (l < Decoder::CONNECT_LENGTH) {
+	if (len < Decoder::CONNECT_LENGTH) {
 		//TODO
 	}
+}
+
+PacketHandler::~PacketHandler() {
+	Selector::Instance()->unregisterSocket(socket);
 }
 
 void PacketHandler::handle(int socket) {
 	if (bytesInBuffer < HEADER_LEN) {
 		// read header
-		int l = recv(socket, (char*)(buffer + bytesInBuffer), HEADER_LEN - bytesInBuffer, 0);
+		int l = recv(socket, (char *)(buffer + bytesInBuffer), HEADER_LEN - bytesInBuffer, 0);
 		if (l <= 0) {
 			disconnect();
+			return;
 		}
 		bytesInBuffer += l;
 	}
@@ -58,10 +60,12 @@ void PacketHandler::handle(int socket) {
 		int packetSize = Decoder::getLength(buffer);
 		if (packetSize < 2) {
 			disconnect();
+			return;
 		}
-		int l = recv(socket, (char*)(buffer + bytesInBuffer), HEADER_LEN + packetSize - bytesInBuffer, 0);
+		int l = recv(socket, (char *)(buffer + bytesInBuffer), HEADER_LEN + packetSize - bytesInBuffer, 0);
 		if (l <= 0) {
 			disconnect();
+			return;
 		}
 		bytesInBuffer += l;
 		if (bytesInBuffer == packetSize + HEADER_LEN){
@@ -70,21 +74,18 @@ void PacketHandler::handle(int socket) {
 			bytesInBuffer = 0;
 		}
 	}
-
 }
 
 
 void PacketHandler::sendPacket(unsigned char *buff, int size){
 	unsigned char bufs[BUFFER_LEN];
-	decoder->createHeader((unsigned char*)bufs, (short)(size));
+	decoder->createHeader((unsigned char *) bufs, (short) size);
 	decoder->encrypt(buff, size);
 	memcpy_s(bufs+4, size, buff, size);
 	decoder->next();
-	send(socket, (const char*)bufs, size+4, 0);
+	send(socket, (const char *) bufs, size+4, 0);
 }
 
 void PacketHandler::disconnect() {
-	closesocket(socket);
-	Selector::Instance()->unregisterSocket(socket);
-	delete player;
+	delete this;
 }
