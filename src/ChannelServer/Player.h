@@ -262,7 +262,7 @@ public:
 	string getVariable(const string &name) {
 		return (variables.find(name) == variables.end()) ? "0" : variables[name];
 	}
-	void addWarning();
+	int addWarning();
 	void changeChannel(char channel);
 	void saveSkills();
 	void saveStats();

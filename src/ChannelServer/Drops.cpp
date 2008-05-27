@@ -268,7 +268,7 @@ void Drops::lootItem(Player* player, unsigned char*packet){
 		return;
 	}
 	if(getDistance(drop->getPos(), player->getPos()) > 300){
-		player->addWarning();
+		if(player->addWarning()) return;
 	}
 	if(drop->isQuest()){
 		int request=0;

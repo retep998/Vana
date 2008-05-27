@@ -57,7 +57,7 @@ void Mobs::monsterControl(Player* player, unsigned char* packet, int size){
 		cpos.x = BufferUtilities::getShort(packet+size-4);
 		cpos.y = BufferUtilities::getShort(packet+size-2);
 		if(getDistance(cpos, mob->getPos()) > 300){
-			player->addWarning();
+			if(player->addWarning()) return;
 		}
 		mob->setPos(cpos);
 		mob->setType(packet[size-12]);
@@ -264,7 +264,7 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
 			totaldmg = totaldmg + damage;
 			if(mob!=NULL){
 				if(getDistance(mob->getPos(), player->getPos()) > 300 && skillid == 0){
-					player->addWarning();
+					if(player->addWarning()) return;
 				}
 				mob->setHP(mob->getHP()-damage);
 				int mhp=-1;
