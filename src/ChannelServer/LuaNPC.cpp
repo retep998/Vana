@@ -30,18 +30,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 hash_map <int, PortalInfo *> LuaNPCExports::portals;
 
-LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
-	lua_State *luaVm = lua_open();
-
-	lua_pushinteger(luaVm, playerid); // Pushing id for reference from static functions
-	lua_setglobal(luaVm, "playerid");
+LuaNPC::LuaNPC(string &filename, int playerid) : filename(filename), playerid(playerid), portal(0), luaVm(lua_open()) {
 	if (Players::players[playerid]->getNPC() != NULL) {
 		lua_pushinteger(luaVm, Players::players[playerid]->getNPC()->getState());
 		lua_setglobal(luaVm, "state");
 	}
-	if (portal != NULL) {
-		LuaNPCExports::portals[playerid] = portal;
-	}
+	initialize();
+	run();
+}
+
+LuaNPC::LuaNPC(string &filename, int playerid, PortalInfo *portal) : filename(filename), playerid(playerid), portal(portal), luaVm(lua_open()) {
+	LuaNPCExports::portals[playerid] = portal;
+	initialize();
+	run();
+}
+
+LuaNPC::~LuaNPC() {
+	lua_close(luaVm);
+}
+
+void LuaNPC::initialize() {
+	lua_pushinteger(luaVm, playerid); // Pushing id for reference from static functions
+	lua_setglobal(luaVm, "playerid");
 
 	lua_register(luaVm, "addText", &LuaNPCExports::addText);
 	lua_register(luaVm, "addChar", &LuaNPCExports::addChar);
@@ -99,9 +109,10 @@ LuaNPC::LuaNPC(const char *filename, int playerid, PortalInfo *portal) {
 	lua_register(luaVm, "addQuest", &LuaNPCExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaNPCExports::endQuest);
 	lua_register(luaVm, "endNPC", &LuaNPCExports::end); // end() doesn't work (reserved?)
+}
 
-	luaL_dofile(luaVm, filename);
-	lua_close(luaVm);
+void LuaNPC::run() {
+	luaL_dofile(luaVm, filename.c_str());
 }
 
 NPC * LuaNPCExports::getNPC(lua_State *luaVm) {

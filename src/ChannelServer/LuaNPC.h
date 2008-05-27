@@ -25,8 +25,10 @@ extern "C" {
 }
 
 #include <hash_map>
+#include <string>
 
 using stdext::hash_map;
+using std::string;
 
 class NPC;
 class Player;
@@ -34,7 +36,17 @@ struct PortalInfo;
 
 class LuaNPC {
 public:
-	LuaNPC(const char *filename, int playerid, PortalInfo *portal = NULL);
+	LuaNPC(string &filename, int playerid);
+	LuaNPC(string &filename, int playerid, PortalInfo *portal);
+	~LuaNPC();
+
+	void initialize();
+	void run();
+private:
+	string filename;
+	int playerid;
+	PortalInfo *portal;
+	lua_State *luaVm;
 };
 
 namespace LuaNPCExports {

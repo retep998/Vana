@@ -141,7 +141,7 @@ void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map speci
 		}
 	std::ostringstream filenameStream;
 	filenameStream << "scripts/portals/" << portal.script << ".lua";
-	LuaNPC(filenameStream.str().c_str(), player->getPlayerid(), &portal);
+	LuaNPC(filenameStream.str(), player->getPlayerid(), &portal);
 	int tonum = 0;
 	if(info.find(portal.toid) != info.end()){
 		for(unsigned int i=0; i<info[portal.toid].Portals.size(); i++){
