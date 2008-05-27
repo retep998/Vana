@@ -19,20 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ACCEPTOR_H
 
 #include "Selector.h"
-#include "AbstractPlayer.h"
-#include <iostream>
-#include <sstream>
-#include <string>
+#include <Winsock2.h>
 
-using std::string;
-using std::ostringstream;
+class AbstractPlayerFactory;
 
 class Acceptor: public Selector::SelectHandler {
 public:
-	Acceptor (short port, AbstractPlayerFactory* apf);
-	virtual void handle (int socket);
+	Acceptor(short port, AbstractPlayerFactory *apf);
+	virtual void handle(int socket);
 protected:
-	AbstractPlayerFactory* abstractPlayerFactory;
+	AbstractPlayerFactory *abstractPlayerFactory;
 	WSADATA wsaData;
 };
 

@@ -17,8 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Connector.h"
 #include "PacketHandler.h"
-#include <stdio.h>
-#include <Winsock2.h>
+#include <iostream>
 
 Connector::Connector(const char *ip, short port, AbstractPlayerFactory* apf) {
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -26,7 +25,7 @@ Connector::Connector(const char *ip, short port, AbstractPlayerFactory* apf) {
 
 	SOCKET sock = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sock == INVALID_SOCKET) {
-		printf ("socket error: %d\n", WSAGetLastError());
+		std::cout << "Socket error: " << WSAGetLastError() << std::endl;
 		exit(2);
 	}
 
@@ -35,13 +34,13 @@ Connector::Connector(const char *ip, short port, AbstractPlayerFactory* apf) {
 	service.sin_addr.s_addr = inet_addr(ip);
 	service.sin_port = htons(port);
 
-	if (connect(sock, (SOCKADDR*) &service, sizeof(service)) == SOCKET_ERROR) {
-		printf("connect() error: %d\n", WSAGetLastError());
+	if (connect(sock, (SOCKADDR *) &service, sizeof(service)) == SOCKET_ERROR) {
+		std::cout << "connect() error: " << WSAGetLastError() << std::endl;
 		exit(2);
 	}
 
 	player = apf->createPlayer();
-	PacketHandler* ph = new PacketHandler(sock, player, true);
+	PacketHandler *ph = new PacketHandler(sock, player, true);
 	player->setPacketHandler(ph);
 	Selector::Instance()->registerSocket(sock, true, false, true, ph);
 }
