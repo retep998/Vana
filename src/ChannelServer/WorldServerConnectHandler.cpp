@@ -32,7 +32,7 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, u
 		char worldip[255];
 		int worldlen = BufferUtilities::getShort(packet+1);
 		BufferUtilities::getString(packet+3, worldlen, worldip);
-		ChannelServer::Instance()->setWorldIp(worldip);
+		ChannelServer::Instance()->setWorldIp(string(worldip));
 		ChannelServer::Instance()->setWorldPort(BufferUtilities::getShort(packet+3+worldlen));
 		std::cout << "Connecting to world " << (int) packet[0] << std::endl;
 		ChannelServer::Instance()->connectWorld();

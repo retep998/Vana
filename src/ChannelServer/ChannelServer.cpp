@@ -44,7 +44,7 @@ void ChannelServer::loadData() {
 	Initializing::initializeSkills();
 	Initializing::initializeMaps();
 
-	Connector *c = new Connector(login_ip.c_str(), login_inter_port, new WorldServerConnectPlayerFactory());
+	Connector *c = new Connector(login_ip, login_inter_port, new WorldServerConnectPlayerFactory());
 	WorldServerConnectPlayer *loginPlayer = (WorldServerConnectPlayer *) c->getPlayer();
 	loginPlayer->setIP(external_ip);
 	loginPlayer->sendAuth(inter_password);
