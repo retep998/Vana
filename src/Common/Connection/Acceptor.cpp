@@ -15,20 +15,22 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include <stdio.h>
-#include <Winsock2.h>
 #include "Acceptor.h"
 #include "PacketHandler.h"
+#include <iostream>
+#include <sstream>
+#include <string>
 
-Acceptor::Acceptor(short port, AbstractPlayerFactory* apf) {
-	abstractPlayerFactory = apf;
+using std::string;
+using std::ostringstream;
 
+Acceptor::Acceptor(short port, AbstractPlayerFactory *apf) : abstractPlayerFactory(apf) {
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-	if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n"); //TODO: Throw exception
+	if (iResult != NO_ERROR) std::cout << "Error at WSAStartup()" << std::endl; //TODO: Throw exception
 
 	SOCKET acceptSocket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (acceptSocket == INVALID_SOCKET) {
-		printf ("socket error: %d\n", WSAGetLastError());
+		std::cout << "Socket error: " << WSAGetLastError() << std::endl;
 		exit(2);
 	}
 
@@ -37,43 +39,43 @@ Acceptor::Acceptor(short port, AbstractPlayerFactory* apf) {
 	service.sin_addr.s_addr = INADDR_ANY; //inet_addr("127.0.0.1");
 	service.sin_port = htons(port);
 
-	if (bind( acceptSocket, (SOCKADDR*) &service, sizeof(service)) == SOCKET_ERROR) {
-		printf("bind() error: %d\n", WSAGetLastError());
+	if (bind(acceptSocket, (SOCKADDR *) &service, sizeof(service)) == SOCKET_ERROR) {
+		std::cout << "bind() error: " << WSAGetLastError() << std::endl;
 		exit(2);
 	}
 
-	BOOL tcpnodelay = true;
-	if(setsockopt(acceptSocket, IPPROTO_TCP, TCP_NODELAY, (char *) &tcpnodelay, sizeof(tcpnodelay)) != NO_ERROR) {
-		printf("Warning: failed to disable nagle's algorithm: %d\n", WSAGetLastError());
-	}
-
-	if (listen( acceptSocket, 10 ) == SOCKET_ERROR) {
-		printf("listen() error: %d\n", WSAGetLastError());
+	if (listen(acceptSocket, 10) == SOCKET_ERROR) {
+		std::cout << "listen() error: " << WSAGetLastError() << std::endl;
 		closesocket(acceptSocket);
 		exit(2);
 	}
 
 	Selector::Instance()->registerSocket(acceptSocket, true, false, true, this);
-
 }
 
-void Acceptor::handle (int socket) {
+void Acceptor::handle(int socket) {
 	sockaddr_in cli_addr;
 	int cli_len = sizeof(cli_addr);
 	SOCKET sock = accept(socket, (struct sockaddr *) &cli_addr, &cli_len);
 
 	ostringstream ipStream;
-	ipStream << cli_addr.sin_addr.S_un.S_un_b.s_b1 << "." << cli_addr.sin_addr.S_un.S_un_b.s_b2 << "." << cli_addr.sin_addr.S_un.S_un_b.s_b3 << "." << cli_addr.sin_addr.S_un.S_un_b.s_b4;
+	ipStream << (short) cli_addr.sin_addr.S_un.S_un_b.s_b1 << "." << (short) cli_addr.sin_addr.S_un.S_un_b.s_b2 << "." << (short) cli_addr.sin_addr.S_un.S_un_b.s_b3 << "." << (short) cli_addr.sin_addr.S_un.S_un_b.s_b4;
+	string ip = ipStream.str();
 
-	printf ("accept\n");
+	std::cout << "Accepted connection from " << ip << std::endl;
 	if (sock == INVALID_SOCKET) {
-		printf("accept error: %d\n", WSAGetLastError());
+		std::cout << "Accept error: " << WSAGetLastError() << std::endl;
 		return;
 	}
 
-	AbstractPlayer* player = abstractPlayerFactory->createPlayer();
-	PacketHandler* ph = new PacketHandler(sock, player);
+	BOOL tcpnodelay = true;
+	if(setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, (char *) &tcpnodelay, sizeof(tcpnodelay)) != NO_ERROR) {
+		std::cout << "Warning: failed to disable nagle's algorithm: " << WSAGetLastError() << std::endl;
+	}
+
+	AbstractPlayer *player = abstractPlayerFactory->createPlayer();
+	PacketHandler *ph = new PacketHandler(sock, player);
 	player->setPacketHandler(ph);
-	player->setIP(ipStream.str());
+	player->setIP(ip);
 	Selector::Instance()->registerSocket(sock, true, false, true, ph);
 }

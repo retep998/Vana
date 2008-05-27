@@ -19,7 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CONNECTOR_H
 
 #include "Selector.h"
-#include "AbstractPlayer.h"
+#include <Winsock2.h>
+
+class AbstractPlayerFactory;
+class AbstractPlayer;
 
 class Connector {
 public:
