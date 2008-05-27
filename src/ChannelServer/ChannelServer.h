@@ -43,7 +43,7 @@ public:
 
 	char getWorld() { return world; }
 	void setWorld(char id) { world = id; }
-	void setWorldIp(char *ip) { strcpy_s(world_ip, ip); }
+	void setWorldIp(const string &ip) { world_ip = ip; }
 	void setWorldPort(short port) { world_port = port; }
 	WorldServerConnectPlayer * getWorldPlayer() { return worldPlayer; }
 	int getChannel() { return channel; }
@@ -64,7 +64,7 @@ private:
 	short login_inter_port;
 	short port;
 	char world;
-	char world_ip[15];
+	string world_ip;
 	short world_port;
 	int channel;
 	string external_ip;

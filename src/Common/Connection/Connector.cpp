@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include <iostream>
 
-Connector::Connector(const char *ip, short port, AbstractPlayerFactory *apf) {
+Connector::Connector(const string &ip, short port, AbstractPlayerFactory *apf) {
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 	if (iResult != NO_ERROR) std::cout << "Error at WSAStartup()" << std::endl; //TODO: Throw exception
 
@@ -32,7 +32,7 @@ Connector::Connector(const char *ip, short port, AbstractPlayerFactory *apf) {
 
 	sockaddr_in service;
 	service.sin_family = AF_INET;
-	service.sin_addr.s_addr = inet_addr(ip);
+	service.sin_addr.s_addr = inet_addr(ip.c_str());
 	service.sin_port = htons(port);
 
 	if (connect(sock, (SOCKADDR *) &service, sizeof(service)) == SOCKET_ERROR) {

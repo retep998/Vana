@@ -27,7 +27,7 @@ void WorldServer::listen() {
 }
 
 void WorldServer::loadData() {
-	Connector *c = new Connector(login_ip.c_str(), login_inter_port, new LoginServerConnectPlayerFactory());
+	Connector *c = new Connector(login_ip, login_inter_port, new LoginServerConnectPlayerFactory());
 	loginPlayer = (LoginServerConnectPlayer *) c->getPlayer();
 	loginPlayer->setIP(external_ip);
 	loginPlayer->sendAuth(inter_password);

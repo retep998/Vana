@@ -20,6 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Selector.h"
 #include <Winsock2.h>
+#include <string>
+
+using std::string;
 
 class AbstractPlayerFactory;
 class AbstractPlayer;
@@ -27,7 +30,7 @@ class PacketHandler;
 
 class Connector {
 public:
-	Connector (const char *ip, short port, AbstractPlayerFactory *apf);
+	Connector (const string &ip, short port, AbstractPlayerFactory *apf);
 	AbstractPlayer * getPlayer();
 protected:
 	WSADATA wsaData;
