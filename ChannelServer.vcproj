@@ -214,6 +214,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\LuaReactor.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Maps.cpp"
 					>
 				</File>
@@ -385,6 +389,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\LuaNPC.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaReactor.h"
 					>
 				</File>
 				<File

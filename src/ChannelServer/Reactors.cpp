@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Reactors.h"
+#include "LUAReactor.h"
 #include "Player.h"
 #include "ReactorPacket.h"
 #include "InventoryPacket.h"
@@ -24,7 +25,84 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include "Inventory.h"
 #include "BufferUtilities.h"
-#include "SendHeader.h"
+#include "Timer.h"
+#include <sys/stat.h>
+#include <iostream>
+#include <sstream>
+#include <string>
+
+class ReactionTimer: public Timer::TimerHandler {
+public:
+	static ReactionTimer * Instance() {
+		if (singleton == 0)
+			singleton = new ReactionTimer;
+		return singleton;
+	}
+	void setReactionTimer(Player *player, Reactor *reactor, Drop *drop, short state, int time) {
+		RTimer timer;
+		timer.id = Timer::Instance()->setTimer(time, this);
+		timer.state = state;
+		timer.player = player;
+		timer.reactor = reactor;
+		timer.drop = drop;
+		timer.time = time;
+		timers.push_back(timer);
+	}
+
+	void stop(Drop *drop) {
+		for (unsigned int i=0; i<timers.size(); i++) {
+			if (drop == timers[i].drop) {
+				Timer::Instance()->cancelTimer(timers[i].id);
+				break;
+			}
+		}
+	}
+private:
+	static ReactionTimer *singleton;
+	ReactionTimer() {};
+	ReactionTimer(const ItemTimer&);
+	ReactionTimer& operator=(const ItemTimer&);
+
+	struct RTimer {
+		int id;
+		short state;
+		Player *player;
+		Reactor *reactor;
+		Drop *drop;
+		int time;
+	};
+
+	static vector <RTimer> timers;
+	void handle(Timer* timer, int id){
+		for(unsigned int i=0; i<timers.size(); i++){
+			if(timers[i].id == id){
+				Reactor *reactor = timers[i].reactor;
+				Drop *drop = timers[i].drop;
+				Player *player = timers[i].player;
+				reactor->setState(timers[i].state);
+				drop->removeDrop();
+				ReactorPacket::triggerReactor(player, Maps::info[reactor->getMapID()].Players, reactor);
+				std::ostringstream filenameStream;
+				filenameStream << "scripts/reactors/" << reactor->getReactorID();
+				filenameStream << ".lua";
+				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID(), reactor->getMapID());
+				return;
+			}
+		}
+	}
+	void remove (int id){
+		for(unsigned int i=0; i<timers.size(); i++){
+			if(timers[i].id == id){	
+				timers.erase(timers.begin()+i);	
+				return;
+			}
+		}
+	}
+};
+
+vector <ReactionTimer::RTimer> ReactionTimer::timers;
+ReactionTimer *ReactionTimer::singleton = 0;
+// End of ReactionTimer
 
 hash_map <int, vector<ReactorEventInfo>> Reactors::reactorinfo;
 hash_map <int, ReactorSpawnsInfo> Reactors::info;
@@ -89,6 +167,10 @@ void Reactors::hitReactor(Player *player, unsigned char *packet) {
 		}
 		reactor->kill();
 		ReactorPacket::destroyReactor(player, Maps::info[player->getMap()].Players, reactor);
+		std::ostringstream filenameStream;
+		filenameStream << "scripts/reactors/" << reactor->getReactorID();
+		filenameStream << ".lua";
+		LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID(), reactor->getMapID());
 	}
 }
 
@@ -101,16 +183,14 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 			ReactorEventInfo revent = reactorinfo[reactors[drop->getMap()][i]->getReactorID()][j];
 			if (reactor->getState() == revent.state && drop->getID() == revent.itemid) {
 				if ((drop->getPos().x >= reactor->getPos().x+revent.ltx && drop->getPos().x <= reactor->getPos().x+revent.rbx) && (drop->getPos().y >= reactor->getPos().y+revent.lty && drop->getPos().y <= reactor->getPos().y+revent.rby)) {
-					reactor->setState(revent.nextstate);
-					ReactorPacket::triggerReactor(player, Maps::info[player->getMap()].Players, reactor);
-					drop->removeDrop();
-					if (reactor->getReactorID() == 2201004) {
-						Maps::changeMusic(reactor->getMapID(), "Bgm09/TimeAttack");
-						Mobs::spawnMobPos(player, 8500000, -410, -400);
-					}
+					ReactionTimer::Instance()->setReactionTimer(player, reactor, drop, revent.nextstate, 3000);
 				}
 				return;
 			}
 		}
 	}
+}
+
+void Reactors::checkLoot(Drop *drop) {
+	ReactionTimer::Instance()->stop(drop);
 }
