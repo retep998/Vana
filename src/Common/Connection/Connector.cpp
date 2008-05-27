@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include <iostream>
 
-Connector::Connector(const char *ip, short port, AbstractPlayerFactory* apf) {
+Connector::Connector(const char *ip, short port, AbstractPlayerFactory *apf) {
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-	if (iResult != NO_ERROR)  printf("Error at WSAStartup()\n"); //TODO: Throw exception
+	if (iResult != NO_ERROR) std::cout << "Error at WSAStartup()" << std::endl; //TODO: Throw exception
 
 	SOCKET sock = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sock == INVALID_SOCKET) {
@@ -40,8 +40,11 @@ Connector::Connector(const char *ip, short port, AbstractPlayerFactory* apf) {
 		exit(2);
 	}
 
-	player = apf->createPlayer();
-	PacketHandler *ph = new PacketHandler(sock, player, true);
-	player->setPacketHandler(ph);
-	Selector::Instance()->registerSocket(sock, true, false, true, ph);
+	packetHandler = new PacketHandler(sock, apf, true);
+	packetHandler->getPlayer()->setPacketHandler(packetHandler);
+	Selector::Instance()->registerSocket(sock, true, false, true, packetHandler);
+}
+
+AbstractPlayer * Connector::getPlayer() {
+	return packetHandler->getPlayer();
 }
