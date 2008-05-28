@@ -214,7 +214,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\LuaPortal.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\LuaReactor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaScriptable.cpp"
 					>
 				</File>
 				<File
@@ -392,7 +400,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\LuaPortal.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\LuaReactor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaScriptable.h"
 					>
 				</File>
 				<File

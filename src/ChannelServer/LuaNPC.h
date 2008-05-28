@@ -18,12 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LUANPC_H
 #define LUANPC_H
 
-extern "C" {
-	#include "lua/lua.h"
-	#include "lua/lualib.h"
-	#include "lua/lauxlib.h"
-}
-
+#include "LuaScriptable.h"
 #include <hash_map>
 #include <string>
 
@@ -31,34 +26,18 @@ using stdext::hash_map;
 using std::string;
 
 class NPC;
-class Player;
-struct PortalInfo;
 
-class LuaNPC {
+class LuaNPC : public LuaScriptable {
 public:
 	LuaNPC(const string &filename, int playerid);
-	LuaNPC(const string &filename, int playerid, PortalInfo *portal);
-	~LuaNPC();
-
-	void initialize();
-	void run();
-private:
-	string filename;
-	int playerid;
-	PortalInfo *portal;
-	lua_State *luaVm;
 };
 
-namespace LuaNPCExports {
+namespace LuaExports {
 	NPC * getNPC(lua_State *luaVm);
-	PortalInfo * getPortal(lua_State *luaVm);
-	extern hash_map <int, PortalInfo *> portals;
-	Player * getPlayer(lua_State *luaVm);
 
 	// The exports
 	int addText(lua_State *luaVm);
 	int addChar(lua_State *luaVm);
-	int addSkillLevel(lua_State *luaVm);
 
 	int sendSimple(lua_State *luaVm);
 	int sendYesNo(lua_State *luaVm);
@@ -77,53 +56,18 @@ namespace LuaNPCExports {
 	int giveSP(lua_State *luaVm);
 	int giveAP(lua_State *luaVm);
 
-	int getSTR(lua_State *luaVm);
-	int getDEX(lua_State *luaVm);
-	int getINT(lua_State *luaVm);
-	int getLUK(lua_State *luaVm);
-	int getJob(lua_State *luaVm);
-	int getLevel(lua_State *luaVm);
-	int getGender(lua_State *luaVm);
-	int getItemAmount(lua_State *luaVm);
-	int getSkillLevel(lua_State *luaVm);
-	int getMesos(lua_State *luaVm);
-	int getMap(lua_State *luaVm);
-	int getHP(lua_State *luaVm);
-	int getHair(lua_State *luaVm);
-	int getEyes(lua_State *luaVm);
 	int getSelected(lua_State *luaVm);
 	int getNumber(lua_State *luaVm);
 	int getText(lua_State *luaVm);
 	int getVariable(lua_State *luaVm);
-	int getPlayerVariable(lua_State *luaVm);
-	/* Portal script */
-	int getPortalFrom(lua_State *luaVm);
 
 	int setState(lua_State *luaVm);
-	int setStyle(lua_State *luaVm);
-	int setMap(lua_State *luaVm);
-	int setHP(lua_State *luaVm);
-	int setSTR(lua_State *luaVm);
-	int setDEX(lua_State *luaVm);
-	int setINT(lua_State *luaVm);
-	int setLUK(lua_State *luaVm);
-	int setJob(lua_State *luaVm);
 	int setVariable(lua_State *luaVm);
-	int setPlayerVariable(lua_State *luaVm);
-	/* Portal script */
-	int setPortalTo(lua_State *luaVm);
-	int setPortalToId(lua_State *luaVm);
-
-	int showShop(lua_State *luaVm);
-
-	int spawnMob(lua_State *luaVm);
-
-	int deletePlayerVariable(lua_State *luaVm);
 
 	int addQuest(lua_State *luaVm);
 	int endQuest(lua_State *luaVm);
 
-	int end(lua_State *luaVm);
+	int endNPC(lua_State *luaVm);
 };
 
 #endif
