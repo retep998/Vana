@@ -107,9 +107,10 @@ int LuaReactorExports::spawnMobPos(lua_State *luaVm) {
 }
 
 int LuaReactorExports::mapMessage(lua_State *luaVm) {
+	std::string msg = lua_tostring(luaVm, -2);
 	int type = lua_tointeger(luaVm, -1);
 	for (unsigned int i=0; i<Maps::info[getReactor(luaVm)->getMapID()].Players.size(); i++) {
-		PlayerPacket::showMessage(Maps::info[getReactor(luaVm)->getMapID()].Players[i], lua_tostring(luaVm, -2), type);
+		PlayerPacket::showMessage(Maps::info[getReactor(luaVm)->getMapID()].Players[i], msg, type);
 	}
 	return 1;
 }
