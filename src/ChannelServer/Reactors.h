@@ -54,11 +54,13 @@ typedef vector<ReactorEventInfo> ReactorEventsInfo;
 
 namespace Reactors {
 	extern hash_map <int, ReactorEventsInfo> reactorinfo;
+	extern hash_map <int, short> reactormaxstates;
 	extern hash_map <int, ReactorSpawnsInfo> info;
 	extern hash_map <int, vector<Reactor*>> reactors;
 	extern int reactorscount;
 	void addReactorSpawn(int id, ReactorSpawnsInfo reactor);
 	void addReactorEventInfo(int id, ReactorEventInfo revent);
+	void setReactorMaxstates(int id, short state);
 	void loadReactors();
 	void showReactors(Player* player);
 	void hitReactor(Player* player, unsigned char *packet);

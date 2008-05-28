@@ -73,15 +73,15 @@ private:
 	};
 
 	static vector <RTimer> timers;
-	void handle(Timer* timer, int id){
-		for(unsigned int i=0; i<timers.size(); i++){
-			if(timers[i].id == id){
+	void handle(Timer* timer, int id) {
+		for (unsigned int i=0; i<timers.size(); i++) {
+			if (timers[i].id == id) {
 				Reactor *reactor = timers[i].reactor;
 				Drop *drop = timers[i].drop;
 				Player *player = timers[i].player;
 				reactor->setState(timers[i].state);
 				drop->removeDrop();
-				ReactorPacket::triggerReactor(player, Maps::info[reactor->getMapID()].Players, reactor);
+				ReactorPacket::triggerReactor(Maps::info[reactor->getMapID()].Players, reactor);
 				std::ostringstream filenameStream;
 				filenameStream << "scripts/reactors/" << reactor->getReactorID();
 				filenameStream << ".lua";
@@ -90,10 +90,10 @@ private:
 			}
 		}
 	}
-	void remove (int id){
-		for(unsigned int i=0; i<timers.size(); i++){
-			if(timers[i].id == id){	
-				timers.erase(timers.begin()+i);	
+	void remove(int id) {
+		for (unsigned int i=0; i<timers.size(); i++) {
+			if (timers[i].id == id) {
+				timers.erase(timers.begin()+i);
 				return;
 			}
 		}
@@ -105,6 +105,7 @@ ReactionTimer *ReactionTimer::singleton = 0;
 // End of ReactionTimer
 
 hash_map <int, vector<ReactorEventInfo>> Reactors::reactorinfo;
+hash_map <int, short> Reactors::reactormaxstates;
 hash_map <int, ReactorSpawnsInfo> Reactors::info;
 hash_map <int, vector<Reactor*>> Reactors::reactors;
 int Reactors::reactorscount = 0x200;
@@ -115,6 +116,10 @@ void Reactors::addReactorSpawn(int id, ReactorSpawnsInfo reactorspawns) {
 
 void Reactors::addReactorEventInfo(int id, ReactorEventInfo revent) {
 	reactorinfo[id].push_back(revent);
+}
+
+void Reactors::setReactorMaxstates(int id, short state) {
+	reactormaxstates[id] = state;
 }
 
 void Reactors::loadReactors() {
@@ -157,20 +162,24 @@ void Reactors::hitReactor(Player *player, unsigned char *packet) {
 
 	if (reactor != NULL && reactor->isAlive()) {
 		for (unsigned int i=0; i<reactorinfo[reactor->getReactorID()].size(); i++) {
-			if (reactor->getState() == reactorinfo[reactor->getReactorID()][i].state) {
+			ReactorEventInfo revent = reactorinfo[reactor->getReactorID()][i];
+			if (reactor->getState() == revent.state && revent.state != reactormaxstates[reactor->getReactorID()]) {
 				if (reactorinfo[reactor->getReactorID()][i].type >= 100)
 					return;
 				reactor->setState(reactorinfo[reactor->getReactorID()][i].nextstate);
-				ReactorPacket::triggerReactor(player, Maps::info[player->getMap()].Players, reactor);
+				ReactorPacket::triggerReactor(Maps::info[player->getMap()].Players, reactor);
 				return;
 			}
+			else if (reactor->getState() == revent.state && revent.state == reactormaxstates[reactor->getReactorID()]) {
+				std::ostringstream filenameStream;
+				filenameStream << "scripts/reactors/" << reactor->getReactorID();
+				filenameStream << ".lua";
+				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID(), reactor->getMapID());
+				reactor->setState(revent.nextstate);
+				reactor->kill();
+				ReactorPacket::destroyReactor(Maps::info[player->getMap()].Players, reactor);
+			}
 		}
-		reactor->kill();
-		ReactorPacket::destroyReactor(player, Maps::info[player->getMap()].Players, reactor);
-		std::ostringstream filenameStream;
-		filenameStream << "scripts/reactors/" << reactor->getReactorID();
-		filenameStream << ".lua";
-		LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID(), reactor->getMapID());
 	}
 }
 

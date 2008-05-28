@@ -179,13 +179,44 @@ void MapPacket::makeApple(Player* player){
 }
 
 // Change music
-void MapPacket::changeMusic(vector <Player*> players, char *musicname){
+void MapPacket::changeMusic(vector <Player*> players, std::string musicname) {
 	Packet packet;
-	packet.addHeader(SEND_BOSS_ENV);
+	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
-	packet.addShort(strlen(musicname));
-	packet.addString(musicname, strlen(musicname));
-	for(unsigned int i=0; i < players.size(); i++){
+	packet.addString(musicname);
+	for (unsigned int i=0; i < players.size(); i++) {
+		packet.send(players[i]);
+	}
+}
+// Send Sound
+void MapPacket::sendSound(vector <Player*> players, std::string soundname) {
+	// Party1/Clear = Clear
+	// Party1/Failed = Wrong
+	// Cokeplay/Victory = Victory
+	// Cokeplay/Failed = Lose
+	// Coconut/Victory = Victory
+	// Coconut/Failed = Lose 
+	Packet packet = Packet();
+	packet.addHeader(SEND_MAP_EFFECT);
+	packet.addByte(0x04);
+	packet.addString(soundname);
+	for (unsigned int i=0; i < players.size(); i++) {
+		packet.send(players[i]);
+	}
+}
+// Send Event
+void MapPacket::sendEvent(vector <Player*> players, std::string eventname) {
+	// quest/party/clear = Clear
+	// quest/party/wrong_kor = Wrong
+	// quest/carnival/win = Win
+	// quest/carnival/lose = Lose
+	// event/coconut/victory = Victory
+	// event/coconut/lose = Lose
+	Packet packet = Packet();
+	packet.addHeader(SEND_MAP_EFFECT);
+	packet.addByte(0x03);
+	packet.addString(eventname);
+	for (unsigned int i=0; i < players.size(); i++) {
 		packet.send(players[i]);
 	}
 }
