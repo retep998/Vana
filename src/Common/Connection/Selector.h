@@ -33,7 +33,13 @@ public:
 
 	class SelectHandler {
 	public:
+		SelectHandler() : destroy (false) { }
+		virtual ~SelectHandler() { }
 		virtual void handle (int socket) = 0;
+		void setDestroy() { destroy = true; }
+		bool getDestroy() const { return destroy; }
+	private:
+		bool destroy;
 	};
 
 	~Selector();

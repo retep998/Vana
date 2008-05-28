@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketHandler.h"
 #include "AbstractPlayer.h"
 #include "Decoder/Decoder.h"
-#include "Decoder/MapleEncryption.h"
 #include <Winsock2.h>
 
 PacketHandler::PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend) :
@@ -39,10 +38,6 @@ socket(socket)
 	if (len < Decoder::CONNECT_LENGTH) {
 		//TODO
 	}
-}
-
-PacketHandler::~PacketHandler() {
-	Selector::Instance()->unregisterSocket(socket);
 }
 
 void PacketHandler::handle(int socket) {
@@ -87,5 +82,5 @@ void PacketHandler::sendPacket(unsigned char *buff, int size){
 }
 
 void PacketHandler::disconnect() {
-	delete this;
+	setDestroy();
 }

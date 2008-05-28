@@ -91,8 +91,13 @@ void Selector::selectThread () {
 				if (FD_ISSET(socket, &t_writefds)) {
 					handler->handle(socket);
 				}
-				if(count > handlers.size())
+				if (handler->getDestroy()) {
+					Selector::Instance()->unregisterSocket(socket);
+					delete handler;
+				}
+				if (count > handlers.size()) {
 					break;
+				}
 			}
 		}
 		catch (...) {
