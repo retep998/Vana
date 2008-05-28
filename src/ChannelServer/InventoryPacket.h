@@ -38,7 +38,7 @@ namespace InventoryPacket {
 	void moveItemS2(Player* player, char inv, short slot1, short amount1, short slot2, short amount2);
 	void sitChair(Player* player, vector <Player*> players, int chairid);
 	void stopChair(Player* player, vector <Player*> players);
-	void useItem(Player* player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph); // Use buff item
+	void useItem(Player* player, vector<Player*> players, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph); // Use buff item
 	void endItem(Player* player, unsigned char types[8]);
 	void useSkillbook(Player* player, vector<Player*> players, int skillid, int newMaxLevel, bool use, bool succeed);
 	void useScroll(Player* player, vector <Player*> players, bool succeed, bool destroy);

@@ -574,11 +574,11 @@ void Inventory::useItem(Player *player, unsigned char *packet){
 		}
 		bool isMorph = false;
 		if(Drops::consumes[itemid].morph>0){
-			types[5] = 0x02;
+			types[4] = 0x02;
 			vals.push_back(Drops::consumes[itemid].morph);
 			isMorph = true;
 		}
-		InventoryPacket::useItem(player, itemid, Drops::consumes[itemid].time*1000, types, vals, isMorph);
+		InventoryPacket::useItem(player, Maps::info[player->getMap()].Players, itemid, Drops::consumes[itemid].time*1000, types, vals, isMorph);
 		ItemTimer::Instance()->stop(player, itemid);
 		ItemTimer::Instance()->setItemTimer(player, itemid, Drops::consumes[itemid].time*1000);
 	}
@@ -627,7 +627,7 @@ void Inventory::endItem(Player *player, int itemid){
 		types[1] = 0x01;
 	}
 	if(Drops::consumes[itemid].morph>0){
-		types[5] = 0x02;
+		types[4] = 0x02;
 	}
 	InventoryPacket::endItem(player, types);
 }
