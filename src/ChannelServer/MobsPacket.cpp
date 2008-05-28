@@ -208,7 +208,7 @@ void MobsPacket::showMinibossHP(Player* player, vector <Player*> players, int mo
 // Boss hp
 void MobsPacket::showBossHP(Player* player, vector <Player*> players, int mobid, int currhp, int maxhp, short hpcolor, short hpbgcolor){
 	Packet packet;
-	packet.addHeader(SEND_BOSS_ENV);
+	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x05);
 	packet.addInt(mobid);
 	packet.addInt(currhp);

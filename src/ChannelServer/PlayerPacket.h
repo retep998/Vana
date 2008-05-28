@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERPACK_H
 #define PLAYERPACK_H
 
+#include <string>
+
 class Player;
 
 namespace PlayerPacket {
@@ -33,7 +35,7 @@ namespace PlayerPacket {
 	void newEyes(Player* player);
 	void newSkin(Player* player);
 	void changeChannel(Player *player, char *ip, short port);
-	void showMessage(Player *player, char *msg, char type);
+	void showMessage(Player *player, std::string msg, char type);
 };
 
 #endif

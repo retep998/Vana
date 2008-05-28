@@ -102,6 +102,7 @@ void Initializing::initializeReactors() {
 		revent.rbx = atoi(reactorRow[7]);
 		revent.rby = atoi(reactorRow[8]);
 		revent.nextstate = atoi(reactorRow[9]);
+		Reactors::setReactorMaxstates(atoi(reactorRow[1]), revent.state);
 		Reactors::addReactorEventInfo(atoi(reactorRow[1]), revent);
 	}
 

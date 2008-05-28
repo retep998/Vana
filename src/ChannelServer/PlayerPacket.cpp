@@ -240,11 +240,10 @@ void PlayerPacket::changeChannel(Player *player, char *ip, short port) {
 	packet.send(player);
 }
 
-void PlayerPacket::showMessage(Player *player, char *msg, char type){
+void PlayerPacket::showMessage(Player *player, std::string msg, char type){
 	Packet packet;
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
-	packet.addShort(strlen(msg));
-	packet.addString(msg, strlen(msg));
+	packet.addString(msg);
 	packet.send(player);
 }

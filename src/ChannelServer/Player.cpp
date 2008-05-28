@@ -326,7 +326,7 @@ void Player::setSkin(char id){
 	PlayerPacket::newSkin(this);
 }
 
-int Player::addWarning(){
+bool Player::addWarning(){
 	int t = clock();
 	// Deleting old warnings
 	for(unsigned int i=0; i<warnings.size(); i++){
@@ -339,9 +339,9 @@ int Player::addWarning(){
 	if(warnings.size()>50){
 		// Hacker - Temp DCing
 		disconnect();
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
 void Player::saveSkills() {

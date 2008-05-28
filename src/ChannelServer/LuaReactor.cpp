@@ -80,15 +80,13 @@ int LuaReactorExports::setState(lua_State *luaVm) {
 }
 
 int LuaReactorExports::setMusic(lua_State *luaVm) {
-	char musicname[100];
-	strcpy_s(musicname, 100, lua_tostring(luaVm, -1));
-	Maps::changeMusic(getReactor(luaVm)->getMapID(), musicname);
+	Maps::changeMusic(getReactor(luaVm)->getMapID(), lua_tostring(luaVm, -1));
 	return 1;
 }
 
 int LuaReactorExports::setMap(lua_State *luaVm) {
 	int mapid = lua_tointeger(luaVm, -1);
-	if(Maps::info.find(mapid) != Maps::info.end())
+	if (Maps::info.find(mapid) != Maps::info.end())
 		Maps::changeMap(getPlayer(luaVm), mapid, 0);
 	return 1;
 }
@@ -109,11 +107,9 @@ int LuaReactorExports::spawnMobPos(lua_State *luaVm) {
 }
 
 int LuaReactorExports::mapMessage(lua_State *luaVm) {
-	char message[500];
-	strcpy_s(message, 500, lua_tostring(luaVm, -2));
 	int type = lua_tointeger(luaVm, -1);
-	for(unsigned int i=0; i<Maps::info[getReactor(luaVm)->getMapID()].Players.size(); i++) {
-		PlayerPacket::showMessage(Maps::info[getReactor(luaVm)->getMapID()].Players[i], message, type);
+	for (unsigned int i=0; i<Maps::info[getReactor(luaVm)->getMapID()].Players.size(); i++) {
+		PlayerPacket::showMessage(Maps::info[getReactor(luaVm)->getMapID()].Players[i], lua_tostring(luaVm, -2), type);
 	}
 	return 1;
 }
