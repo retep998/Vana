@@ -60,6 +60,7 @@ namespace LuaReactorExports {
 	int setState(lua_State *luaVm);
 	int spawnMob(lua_State *luaVm);
 	int spawnMobPos(lua_State *luvaVm);
+	int killMob(lua_State *luaVm);
 	int mapMessage(lua_State *luaVm);
 
 	int reset(lua_State *luaVm);

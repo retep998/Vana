@@ -49,6 +49,7 @@ void LuaReactor::initialize() {
 	lua_register(luaVm, "setMap", &LuaReactorExports::setMap);
 	lua_register(luaVm, "spawnMob", &LuaReactorExports::spawnMob);
 	lua_register(luaVm, "spawnMobPos", &LuaReactorExports::spawnMobPos);
+	lua_register(luaVm, "killMob", &LuaReactorExports::killMob);
 	lua_register(luaVm, "mapMessage", &LuaReactorExports::mapMessage);
 
 	lua_register(luaVm, "reset", &LuaReactorExports::reset);
@@ -94,7 +95,7 @@ int LuaReactorExports::setMap(lua_State *luaVm) {
 int LuaReactorExports::spawnMob(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
-	Mobs::spawnMobPos(getPlayer(luaVm), mobid, reactor->getPos().x, reactor->getPos().y-10);
+	Mobs::spawnMobPos(getPlayer(luaVm), mobid, reactor->getPos().x, reactor->getPos().y-5);
 	return 1;
 }
 
@@ -103,6 +104,15 @@ int LuaReactorExports::spawnMobPos(lua_State *luaVm) {
 	short x = lua_tointeger(luaVm, -2);
 	short y = lua_tointeger(luaVm, -1);
 	Mobs::spawnMobPos(getPlayer(luaVm), mobid, x, y);
+	return 1;
+}
+
+int LuaReactorExports::killMob(lua_State *luaVm) {
+	int mobid = lua_tointeger(luaVm, -1);
+	for (unsigned int i=0; i<Mobs::mobs[getReactor(luaVm)->getMapID()].size(); i++) {
+		if (Mobs::mobs[getReactor(luaVm)->getMapID()][i]->getMobID() == mobid)
+			Mobs::dieMob(getPlayer(luaVm), Mobs::mobs[getReactor(luaVm)->getMapID()][i]);
+	}
 	return 1;
 }
 
