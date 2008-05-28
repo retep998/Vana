@@ -535,6 +535,8 @@ void Skills::cancelSkill(Player* player, unsigned char* packet){
 	stopSkill(player, BufferUtilities::getInt(packet));
 }
 void Skills::stopSkill(Player* player, int skillid){
+	if (skillid == 3121004 || skillid == 3221001) // Hurricane/Pierce
+		return;
 	SkillTimer::Instance()->stop(player, skillid);
 	endSkill(player, skillid);
 }
