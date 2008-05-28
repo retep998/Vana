@@ -42,7 +42,7 @@ protected:
 class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
 	AbstractServerAcceptPlayer() { is_server = true; }
-	void processAuth(unsigned char *buf, char *password) {
+	bool processAuth(unsigned char *buf, char *password) {
 		short header = buf[0] + buf[1]*0x100;
 		if (header == INTER_PASSWORD) {
 			char pass[255];
@@ -61,12 +61,15 @@ public:
 			}
 			else {
 				disconnect();
+				return false;
 			}
 		}
 		else if (is_authenticated == false) {
 			// Trying to do something while unauthenticated? DC!
 			disconnect();
+			return false;
 		}
+		return true;
 	}
 	virtual void authenticated(char type) = 0;
 private:

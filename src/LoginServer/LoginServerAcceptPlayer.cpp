@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 
 void LoginServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
-	processAuth(buf, (char *) LoginServer::Instance()->getInterPassword());
+	if(!processAuth(buf, (char *) LoginServer::Instance()->getInterPassword())) return;
 	short header = buf[0] + buf[1]*0x100;
 	switch(header) {
 		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, buf+2); break;
