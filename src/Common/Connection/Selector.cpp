@@ -93,6 +93,7 @@ void Selector::selectThread () {
 				}
 				if (handler->getDestroy()) {
 					Selector::Instance()->unregisterSocket(socket);
+					closesocket(socket);
 					delete handler;
 				}
 				if (count > handlers.size()) {
