@@ -270,7 +270,7 @@ void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char*
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 // Use buff item
-void InventoryPacket::useItem(Player* player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph){ // Test/Beta function, PoC only
+void InventoryPacket::useItem(Player* player, vector<Player*> players, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph){ // Test/Beta function, PoC only
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILL);
 	packet.addByte(types[0]);
@@ -292,6 +292,23 @@ void InventoryPacket::useItem(Player* player, int itemid, int time, unsigned cha
 	else
 		packet.addByte(0);
 	packet.send(player);
+	if (morph) {
+		Packet packet;
+		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
+		packet.addByte(types[0]);
+		packet.addByte(types[1]);
+		packet.addByte(types[2]);
+		packet.addByte(types[3]);
+		packet.addByte(types[4]);
+		packet.addByte(types[5]);
+		packet.addByte(types[6]);
+		packet.addByte(types[7]);
+		for(unsigned int i=0; i<vals.size(); i++){
+			packet.addShort(vals[i]);
+		}
+		packet.addShort(1);
+		packet.sendTo(player, players, 0);
+	}
 }
 void InventoryPacket::endItem(Player* player, unsigned char types[8]){
 	Packet packet;
