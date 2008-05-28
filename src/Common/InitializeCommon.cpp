@@ -16,6 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeCommon.h"
+#include "MySQLM.h"
+#include "Config.h"
+#include <string>
+
+using std::string;
 
 void Initializing::initializeMySQL(){
 	Config config("conf/mysql.lua");

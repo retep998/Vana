@@ -18,11 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef INITIALIZECOMMON_H
 #define INITIALIZECOMMON_H
 
-#include "MySQLM.h"
-#include "Config.h"
-
-using namespace std;
-
 namespace Initializing {
 	void initializeMySQL();
 	void setUsersOffline(int onlineid);

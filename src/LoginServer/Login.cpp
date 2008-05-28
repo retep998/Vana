@@ -16,8 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.h"
+#include "LoginServer.h"
+#include "LoginPacket.h"
+#include "BufferUtilities.h"
+#include "PlayerLogin.h"
+#include "TimeUtilities.h"
 #include "Randomizer.h"
+#include "MySQLM.h"
 #include "sha1.h"
+#include <stdio.h>
 
 void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	int usersize = BufferUtilities::getShort(packet);
