@@ -69,11 +69,6 @@ void Acceptor::handle(int socket) {
 		return;
 	}
 
-	BOOL tcpnodelay = true;
-	if(setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, (char *) &tcpnodelay, sizeof(tcpnodelay)) != NO_ERROR) {
-		std::cout << "Warning: failed to disable nagle's algorithm: " << WSAGetLastError() << std::endl;
-	}
-
 	PacketHandler *ph = new PacketHandler(sock, abstractPlayerFactory);
 	AbstractPlayer *player = ph->getPlayer();
 	player->setPacketHandler(ph);
