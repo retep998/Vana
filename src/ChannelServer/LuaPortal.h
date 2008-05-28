@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LUAREACTOR_H
-#define LUAREACTOR_H
+#ifndef LUAPORTAL_H
+#define LUAPORTAL_H
 
 #include "LuaScriptable.h"
 #include <hash_map>
@@ -25,23 +25,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using stdext::hash_map;
 using std::string;
 
-class Reactor;
+struct PortalInfo;
 
-class LuaReactor : LuaScriptable {
+class LuaPortal : public LuaScriptable {
 public:
-	LuaReactor(const string &filename, int playerid, int reactorid);
+	LuaPortal(const string &filename, int playerid, PortalInfo *portal);
 private:
-	int reactorid;
-	Reactor *reactor;
+	PortalInfo *portal;
 };
 
 namespace LuaExports {
-	Reactor * getReactor(lua_State *luaVm);
+	PortalInfo * getPortal(lua_State *luaVm);
+	extern hash_map <int, PortalInfo *> portals;
 
 	// The exports
-	int setReactorState(lua_State *luaVm);
-	int spawnMobReactor(lua_State *luaVm);
-	int reset(lua_State *luaVm);
+	int getPortalFrom(lua_State *luaVm);
+
+	int setPortalTo(lua_State *luaVm);
+	int setPortalToId(lua_State *luaVm);
 };
 
 #endif

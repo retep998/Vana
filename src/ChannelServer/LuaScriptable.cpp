@@ -1,0 +1,318 @@
+/*
+Copyright (C) 2008 Vana Development Team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; version 2
+of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+#include "LuaScriptable.h"
+#include "Player.h"
+#include "Players.h"
+#include "Maps.h"
+#include "Mobs.h"
+#include "Quests.h"
+#include "Levels.h"
+#include "Shops.h"
+#include "PlayerPacket.h"
+#include "InventoryPacket.h"
+
+LuaScriptable::LuaScriptable(const string &filename, int playerid) : filename(filename), playerid(playerid), luaVm(lua_open()) {
+	initialize();
+}
+
+LuaScriptable::~LuaScriptable() {
+	lua_close(luaVm);
+}
+
+void LuaScriptable::initialize() {
+	lua_pushinteger(luaVm, playerid); // Pushing id for reference from static functions
+	lua_setglobal(luaVm, "playerid");
+
+	lua_register(luaVm, "addSkillLevel", &LuaExports::addSkillLevel);
+	lua_register(luaVm, "giveItem", &LuaExports::giveItem);
+	lua_register(luaVm, "giveMesos", &LuaExports::giveMesos);
+	lua_register(luaVm, "giveEXP", &LuaExports::giveEXP);
+	lua_register(luaVm, "giveSP", &LuaExports::giveSP);
+	lua_register(luaVm, "giveAP", &LuaExports::giveAP);
+	lua_register(luaVm, "getSTR", &LuaExports::getSTR);
+	lua_register(luaVm, "getDEX", &LuaExports::getDEX);
+	lua_register(luaVm, "getINT", &LuaExports::getINT);
+	lua_register(luaVm, "getLUK", &LuaExports::getLUK);
+	lua_register(luaVm, "getJob", &LuaExports::getJob);
+	lua_register(luaVm, "getLevel", &LuaExports::getLevel);
+	lua_register(luaVm, "getGender", &LuaExports::getGender);
+	lua_register(luaVm, "getItemAmount", &LuaExports::getItemAmount);
+	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
+	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
+	lua_register(luaVm, "getMap", &LuaExports::getMap);
+	lua_register(luaVm, "getHP", &LuaExports::getHP);
+	lua_register(luaVm, "getHair", &LuaExports::getHair);
+	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
+	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
+	lua_register(luaVm, "killMob", &LuaExports::killMob);
+	lua_register(luaVm, "setStyle", &LuaExports::setStyle);
+	lua_register(luaVm, "setMap", &LuaExports::setMap);
+	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
+	lua_register(luaVm, "setHP", &LuaExports::setHP);
+	lua_register(luaVm, "setSTR", &LuaExports::setSTR);
+	lua_register(luaVm, "setDEX", &LuaExports::setDEX);
+	lua_register(luaVm, "setINT", &LuaExports::setINT);
+	lua_register(luaVm, "setLUK", &LuaExports::setLUK);
+	lua_register(luaVm, "setJob", &LuaExports::setJob);
+	lua_register(luaVm, "setPlayerVariable", &LuaExports::setPlayerVariable);
+	lua_register(luaVm, "showShop", &LuaExports::showShop);
+	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
+	lua_register(luaVm, "spawnMob", &LuaExports::spawnMob);
+	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
+}
+
+void LuaScriptable::run() {
+	luaL_dofile(luaVm, filename.c_str());
+}
+
+Player * LuaExports::getPlayer(lua_State *luaVm) {
+	lua_getglobal(luaVm, "playerid");
+	return Players::players[lua_tointeger(luaVm, -1)];
+}
+
+int LuaExports::addSkillLevel(lua_State *luaVm) {
+	int skillid = lua_tointeger(luaVm, -2);
+	int level = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->skills->addSkillLevel(skillid, level);
+	return 1;
+}
+
+int LuaExports::giveItem(lua_State *luaVm) {
+	int itemid = lua_tointeger(luaVm, -2);
+	int amount = lua_tointeger(luaVm, -1);
+	Quests::giveItem(getPlayer(luaVm), itemid, amount);
+	return 1;
+}
+
+int LuaExports::giveMesos(lua_State *luaVm) {
+	int mesos = lua_tointeger(luaVm, -1);
+	Quests::giveMesos(getPlayer(luaVm), mesos);
+	return 1;
+}
+
+int LuaExports::giveEXP(lua_State *luaVm) {
+	int exp = lua_tointeger(luaVm, -1);
+	Levels::giveEXP(getPlayer(luaVm), exp, 1);
+	return 1;
+}
+
+int LuaExports::giveSP(lua_State *luaVm) {
+	short sp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setSp(getPlayer(luaVm)->getSp()+sp);
+	return 1;
+}
+
+int LuaExports::giveAP(lua_State *luaVm) {
+	short ap = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setAp(getPlayer(luaVm)->getAp()+ap);
+	return 1;
+}
+
+int LuaExports::getSTR(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStr());
+	return 1;
+}
+
+int LuaExports::getDEX(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getDex());
+	return 1;
+}
+
+int LuaExports::getINT(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInt());
+	return 1;
+}
+
+int LuaExports::getLUK(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getLuk());
+	return 1;
+}
+
+int LuaExports::getJob(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getJob());
+	return 1;
+}
+
+int LuaExports::getLevel(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getLevel());
+	return 1;
+}
+
+int LuaExports::getGender(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getGender());
+	return 1;
+}
+
+int LuaExports::getItemAmount(lua_State *luaVm) {
+	int itemid = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->inv->getItemAmount(itemid));
+	return 1;
+}
+
+int LuaExports::getSkillLevel(lua_State *luaVm) {
+	int skillid = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->skills->getSkillLevel(skillid));
+	return 1;
+}
+
+int LuaExports::getMesos(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->inv->getMesos());
+	return 1;
+}
+
+int LuaExports::getMap(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getMap());
+	return 1;
+}
+
+int LuaExports::getHP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getHP());
+	return 1;
+}
+
+int LuaExports::getHair(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getHair());
+	return 1;
+}
+
+int LuaExports::getEyes(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getEyes());
+	return 1;
+}
+
+int LuaExports::getPlayerVariable(lua_State *luaVm) {
+	std::string key = string(lua_tostring(luaVm, -1));
+	lua_pushstring(luaVm, getPlayer(luaVm)->getVariable(key).c_str());
+	return 1;
+}
+
+int LuaExports::killMob(lua_State *luaVm) {
+	int mobid = lua_tointeger(luaVm, -1);
+	int map = getPlayer(luaVm)->getMap();
+	for (unsigned int i=0; i<Mobs::mobs[map].size(); i++) {
+		if (Mobs::mobs[map][i]->getMobID() == mobid)
+			Mobs::dieMob(getPlayer(luaVm), Mobs::mobs[map][i]);
+	}
+	return 1;
+}
+
+int LuaExports::setStyle(lua_State *luaVm) {
+	int id = lua_tointeger(luaVm, -1);
+	if(id/10000 == 0){
+		getPlayer(luaVm)->setSkin((char)id);
+	}
+	else if(id/10000 == 2){
+		getPlayer(luaVm)->setEyes(id);
+	}
+	else if(id/10000 == 3){
+		getPlayer(luaVm)->setHair(id);
+	}
+	InventoryPacket::updatePlayer(getPlayer(luaVm));
+	return 1;
+}
+
+int LuaExports::setMap(lua_State *luaVm) {
+	int mapid = lua_tointeger(luaVm, -1);
+	if(Maps::info.find(mapid) != Maps::info.end())
+		Maps::changeMap(getPlayer(luaVm), mapid, 0);
+	return 1;
+}
+
+int LuaExports::setMusic(lua_State *luaVm) {
+	Maps::changeMusic(getPlayer(luaVm)->getMap(), lua_tostring(luaVm, -1));
+	return 1;
+}
+
+int LuaExports::setHP(lua_State *luaVm) {
+	int hp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setHP(hp);
+	return 1;
+}
+
+int LuaExports::setSTR(lua_State *luaVm) {
+	short str = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setStr(str);
+	return 1;
+}
+
+int LuaExports::setDEX(lua_State *luaVm) {
+	short dex = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setDex(dex);
+	return 1;
+}
+
+int LuaExports::setINT(lua_State *luaVm) {
+	short intt = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setInt(intt);
+	return 1;
+}
+
+int LuaExports::setLUK(lua_State *luaVm) {
+	short luk = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setLuk(luk);
+	return 1;
+}
+
+int LuaExports::setJob(lua_State *luaVm) {
+	short job = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setJob(job);
+	return 1;
+}
+
+int LuaExports::setPlayerVariable(lua_State *luaVm) {
+	std::string value = string(lua_tostring(luaVm, -1));
+	std::string key = string(lua_tostring(luaVm, -2));
+	getPlayer(luaVm)->setVariable(key, value);
+	return 1;
+}
+
+int LuaExports::showShop(lua_State *luaVm) {
+	int shopid = lua_tointeger(luaVm, -1);
+	Shops::showShop(getPlayer(luaVm), shopid);
+	return 1;
+}
+
+int LuaExports::showMapMessage(lua_State *luaVm) {
+	std::string msg = lua_tostring(luaVm, -2);
+	int type = lua_tointeger(luaVm, -1);
+	int map = getPlayer(luaVm)->getMap();
+	for (unsigned int i=0; i<Maps::info[map].Players.size(); i++) {
+		PlayerPacket::showMessage(Maps::info[map].Players[i], msg, type);
+	}
+	return 1;
+}
+
+int LuaExports::spawnMob(lua_State *luaVm) {
+	int mobid = lua_tointeger(luaVm, -1);
+	Mobs::spawnMob(getPlayer(luaVm), mobid);
+	return 1;
+}
+
+int LuaExports::spawnMobPos(lua_State *luaVm) {
+	int mobid = lua_tointeger(luaVm, -3);
+	short x = lua_tointeger(luaVm, -2);
+	short y = lua_tointeger(luaVm, -1);
+	Mobs::spawnMobPos(getPlayer(luaVm), mobid, x, y);
+	return 1;
+}
+
+int LuaExports::deletePlayerVariable(lua_State *luaVm) {
+	std::string key = string(lua_tostring(luaVm, -1));
+	getPlayer(luaVm)->deleteVariable(key);
+	return 1;
+}

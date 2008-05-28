@@ -27,105 +27,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include <string>
 
-LuaReactor::LuaReactor(const string &filename, int playerid, int reactorid, int mapid) : filename(filename), playerid(playerid), reactorid(reactorid), mapid(mapid), luaVm(lua_open()) {
-	initialize();
+LuaReactor::LuaReactor(const string &filename, int playerid, int reactorid) : LuaScriptable(filename, playerid), reactorid(reactorid) {
+	lua_pushinteger(luaVm, reactorid);
+	lua_setglobal(luaVm, "reactorid");
+
+	lua_register(luaVm, "setState", &LuaExports::setReactorState);
+	lua_register(luaVm, "spawnMob", &LuaExports::spawnMobReactor);
+	lua_register(luaVm, "reset", &LuaExports::reset);
+
 	run();
 }
 
-LuaReactor::~LuaReactor() {
-	lua_close(luaVm);
-}
-
-void LuaReactor::initialize() {
-	lua_pushinteger(luaVm, playerid); // Pushing id for reference from static functions
-	lua_setglobal(luaVm, "playerid");
-	lua_pushinteger(luaVm, reactorid);
-	lua_setglobal(luaVm, "reactorid");
-	lua_pushinteger(luaVm, mapid);
-	lua_setglobal(luaVm, "mapid");
-
-	lua_register(luaVm, "getMap", &LuaReactorExports::getMap);
-	lua_register(luaVm, "setMusic", &LuaReactorExports::setMusic);
-	lua_register(luaVm, "setMap", &LuaReactorExports::setMap);
-	lua_register(luaVm, "spawnMob", &LuaReactorExports::spawnMob);
-	lua_register(luaVm, "spawnMobPos", &LuaReactorExports::spawnMobPos);
-	lua_register(luaVm, "killMob", &LuaReactorExports::killMob);
-	lua_register(luaVm, "mapMessage", &LuaReactorExports::mapMessage);
-
-	lua_register(luaVm, "reset", &LuaReactorExports::reset);
-}
-
-void LuaReactor::run() {
-	luaL_dofile(luaVm, filename.c_str());
-}
-
-Reactor * LuaReactorExports::getReactor(lua_State *luaVm) {
+Reactor * LuaExports::getReactor(lua_State *luaVm) {
 	lua_getglobal(luaVm, "reactorid");
-	lua_getglobal(luaVm, "mapid");
-	return Reactors::getReactorByID(lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
+	return Reactors::getReactorByID(lua_tointeger(luaVm, -1), getPlayer(luaVm)->getMap());
 }
 
-Player * LuaReactorExports::getPlayer(lua_State *luaVm) {
-	lua_getglobal(luaVm, "playerid");
-	return Players::players[lua_tointeger(luaVm, -1)];
-}
-
-int LuaReactorExports::getMap(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getReactor(luaVm)->getMapID());
-	return 1;
-}
-
-int LuaReactorExports::setState(lua_State *luaVm) {
+int LuaExports::setReactorState(lua_State *luaVm) {
 	getReactor(luaVm)->setState(lua_tointeger(luaVm, -1));
 	return 1;
 }
 
-int LuaReactorExports::setMusic(lua_State *luaVm) {
-	Maps::changeMusic(getReactor(luaVm)->getMapID(), lua_tostring(luaVm, -1));
-	return 1;
-}
-
-int LuaReactorExports::setMap(lua_State *luaVm) {
-	int mapid = lua_tointeger(luaVm, -1);
-	if (Maps::info.find(mapid) != Maps::info.end())
-		Maps::changeMap(getPlayer(luaVm), mapid, 0);
-	return 1;
-}
-
-int LuaReactorExports::spawnMob(lua_State *luaVm) {
+int LuaExports::spawnMobReactor(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
 	Mobs::spawnMobPos(getPlayer(luaVm), mobid, reactor->getPos().x, reactor->getPos().y-5);
 	return 1;
 }
 
-int LuaReactorExports::spawnMobPos(lua_State *luaVm) {
-	int mobid = lua_tointeger(luaVm, -3);
-	short x = lua_tointeger(luaVm, -2);
-	short y = lua_tointeger(luaVm, -1);
-	Mobs::spawnMobPos(getPlayer(luaVm), mobid, x, y);
-	return 1;
-}
-
-int LuaReactorExports::killMob(lua_State *luaVm) {
-	int mobid = lua_tointeger(luaVm, -1);
-	for (unsigned int i=0; i<Mobs::mobs[getReactor(luaVm)->getMapID()].size(); i++) {
-		if (Mobs::mobs[getReactor(luaVm)->getMapID()][i]->getMobID() == mobid)
-			Mobs::dieMob(getPlayer(luaVm), Mobs::mobs[getReactor(luaVm)->getMapID()][i]);
-	}
-	return 1;
-}
-
-int LuaReactorExports::mapMessage(lua_State *luaVm) {
-	std::string msg = lua_tostring(luaVm, -2);
-	int type = lua_tointeger(luaVm, -1);
-	for (unsigned int i=0; i<Maps::info[getReactor(luaVm)->getMapID()].Players.size(); i++) {
-		PlayerPacket::showMessage(Maps::info[getReactor(luaVm)->getMapID()].Players[i], msg, type);
-	}
-	return 1;
-}
-
-int LuaReactorExports::reset(lua_State *luaVm) {
+int LuaExports::reset(lua_State *luaVm) {
 	getReactor(luaVm)->revive();
 	getReactor(luaVm)->setState(0);
 	ReactorPacket::showReactor(getPlayer(luaVm), getReactor(luaVm));
