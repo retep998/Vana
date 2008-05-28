@@ -22,16 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define BUFFER_LEN 10000
 
 #include "Selector.h"
+#include "Decoder/Decoder.h" // Included because auto_ptr needs the destructor
+#include "AbstractPlayer.h" // Included because auto_ptr needs the destructor
 #include <memory>
 
 class AbstractPlayerFactory;
-class AbstractPlayer;
-class Decoder;
 
 class PacketHandler : public Selector::SelectHandler {
 public:
 	PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend = false); // isSend = packet is initiated by the server or not
-	~PacketHandler();
 	void handle (int socket);
 	void sendPacket(unsigned char* buf, int len);
 	void disconnect();
