@@ -16,6 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeChannel.h"
+#include "Mobs.h"
+#include "Drops.h"
+#include "Reactors.h"
+#include "Maps.h"
+#include "NPCs.h"
+#include "Shops.h"
+#include "Quests.h"
+#include "Skills.h"
+#include "Inventory.h"
+#include "MySQLM.h"
+#include <string>
+
+using std::string;
 
 // Mobs
 void Initializing::initializeMobs() {

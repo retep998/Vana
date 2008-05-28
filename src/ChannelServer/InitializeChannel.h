@@ -18,20 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef INITIALIZECHANNEL_H
 #define INITIALIZECHANNEL_H
 
-#include "InitializeCommon.h"
-#include "Mobs.h"
-#include "Drops.h"
-#include "Reactors.h"
-#include "Maps.h"
-#include "NPCs.h"
-#include "Shops.h"
-#include <string>
-#include "Quests.h"
-#include "Skills.h"
-#include "Inventory.h"
-
-using namespace std;
-
 namespace Initializing {
 	void initializeMobs();
 	void initializeDrops();

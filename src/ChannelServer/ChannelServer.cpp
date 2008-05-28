@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Connection/Connector.h"
 #include "WorldServerConnectPlayer.h"
 #include "InitializeChannel.h"
+#include "InitializeCommon.h"
+#include "Config.h"
 #include "PacketCreator.h"
 #include "ServerPacket.h"
 #include "Player.h"
