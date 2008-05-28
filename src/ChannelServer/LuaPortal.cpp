@@ -23,7 +23,6 @@ hash_map <int, PortalInfo *> LuaExports::portals;
 
 LuaPortal::LuaPortal(const string &filename, int playerid, PortalInfo *portal) : LuaScriptable(filename, playerid), portal(portal) {
 	LuaExports::portals[playerid] = portal;
-	initialize();
 
 	lua_register(luaVm, "getPortalFrom", &LuaExports::getPortalFrom);
 	lua_register(luaVm, "setPortalTo", &LuaExports::setPortalTo);

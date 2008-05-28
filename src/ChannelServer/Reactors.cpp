@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Reactors.h"
-#include "LUAReactor.h"
+#include "LuaReactor.h"
 #include "Player.h"
 #include "ReactorPacket.h"
 #include "InventoryPacket.h"
@@ -83,9 +83,8 @@ private:
 				drop->removeDrop();
 				ReactorPacket::triggerReactor(Maps::info[reactor->getMapID()].Players, reactor);
 				std::ostringstream filenameStream;
-				filenameStream << "scripts/reactors/" << reactor->getReactorID();
-				filenameStream << ".lua";
-				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID(), reactor->getMapID());
+				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
+				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID());
 				return;
 			}
 		}
@@ -172,9 +171,8 @@ void Reactors::hitReactor(Player *player, unsigned char *packet) {
 			}
 			else if (reactor->getState() == revent.state && revent.state == reactormaxstates[reactor->getReactorID()]) {
 				std::ostringstream filenameStream;
-				filenameStream << "scripts/reactors/" << reactor->getReactorID();
-				filenameStream << ".lua";
-				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID(), reactor->getMapID());
+				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
+				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID());
 				reactor->setState(revent.nextstate);
 				reactor->kill();
 				ReactorPacket::destroyReactor(Maps::info[player->getMap()].Players, reactor);

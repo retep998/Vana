@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 
 LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, playerid) {
-	initialize();
-
 	lua_pushinteger(luaVm, Players::players[playerid]->getNPC()->getState());
 	lua_setglobal(luaVm, "state");
 
