@@ -24,7 +24,7 @@ elseif state == 2 then
 			addText("There's a special 90% discount for all beginners. Alright, where would you like to go? #b\r\n#L1#Perion(120 mesos)#l\r\n#L2#Ellinia(120 mesos)#l\r\n#L3#Henesys(80 mesos)#l\r\n#L4#Kerning City(100 mesos)#l#k");
 			sendSimple();
 		else
-			addText("There's a special 90% discount for all beginners. Alright, where would you like to go? #b\r\n#L1#Perion(1200 mesos)\r\n#L12#Ellinia(1200 mesos)#l\r\n#L3#Henesys(800 mesos)#l\r\n#L4#Kerning City(1000 mesos)#l#k");
+			addText("There's a special 90% discount for all beginners. Alright, where would you like to go? #b\r\n#L1#Perion(1200 mesos)\r\n#L2#Ellinia(1200 mesos)#l\r\n#L3#Henesys(800 mesos)#l\r\n#L4#Kerning City(1000 mesos)#l#k");
 			sendSimple();
 		end
 	end
