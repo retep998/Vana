@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 #include "Inventory.h"
 #include "Maps.h"
+#include "MapPacket.h"
 #include "Drops.h"
 #include "BufferUtilities.h"
 #include "Randomizer.h"
@@ -365,6 +366,11 @@ void Skills::init(){
 	player.byte = 1;
 	player.value = SKILL_AVO;
 	skillsinfo[5101003].player.push_back(player);
+	// 5101004 - GM Hide
+	player.type = 0x40;
+	player.byte = 1;
+	player.value = 0;
+	skillsinfo[5101004].player.push_back(player);
 	// 3101004 & 3201004 - Soul Arrow
 	player.type = 0x1;
 	player.byte = 3;
@@ -714,6 +720,8 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 	player->setSkill(player->skills->getSkillMapEnterInfo());
 	SkillTimer::Instance()->setSkillTimer(player, skillid, skills[skillid][level].time*1000);
 	player->skills->setActiveSkillLevel(skillid, level);
+	if (skillid == 5101004) // GM Hide
+		MapPacket::removePlayer(player, Maps::info[player->getMap()].Players);
 }
 void Skills::useAttackSkill(Player* player, int skillid){
 	if(skills.find(skillid) == skills.end())
@@ -748,6 +756,8 @@ void Skills::endSkill(Player* player, int skill){
 	if(skillsinfo[skill].bact.size()>0){
 		SkillTimer::Instance()->stop(player, skill, skillsinfo[skill].act.name);
 	}
+	if (skill == 5101004) // GM Hide
+		MapPacket::showPlayer(player, Maps::info[player->getMap()].Players);
 	SkillsPacket::endSkill(player, Maps::info[player->getMap()].Players, player->skills->getSkillPlayerInfo(skill) ,player->skills->getSkillMapInfo(skill));
 	player->skills->deleteSkillMapEnterInfo(skill);
 	player->skills->setActiveSkillLevel(skill, 0);

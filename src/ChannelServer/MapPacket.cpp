@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "SendHeader.h"
 
-Packet MapPacket::playerPacket(Player* player){
+Packet MapPacket::playerPacket(Player* player) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_PLAYER);
 	packet.addInt(player->getPlayerid());
@@ -120,8 +120,8 @@ void MapPacket::removePlayer(Player* player, vector <Player*> players){
 }
 
 void MapPacket::showPlayers(Player* player, vector <Player*> players){
-	for(unsigned int i=0; i<players.size(); i++){
-		if(player->getPlayerid() != players[i]->getPlayerid()){
+	for (unsigned int i=0; i<players.size(); i++) {
+		if (player->getPlayerid() != players[i]->getPlayerid() && players[i]->skills->getActiveSkillLevel(5101004) == 0) {
 			Packet packet = playerPacket(players[i]);
 			packet.send(player);
 		}
