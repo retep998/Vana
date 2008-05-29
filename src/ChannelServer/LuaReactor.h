@@ -29,9 +29,10 @@ class Reactor;
 
 class LuaReactor : LuaScriptable {
 public:
-	LuaReactor(const string &filename, int playerid, int reactorid);
+	LuaReactor(const string &filename, int playerid, int reactorid, int mapid);
 private:
 	int reactorid;
+	int mapid;
 	Reactor *reactor;
 };
 
