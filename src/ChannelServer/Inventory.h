@@ -50,7 +50,7 @@ namespace Inventory {
 	void useSummonBag(Player* player, unsigned char* packet);
 	void useReturnScroll(Player* player, unsigned char* packet);
 	void useScroll(Player* player, unsigned char* packet);
-	void useMegaphone(Player* player, unsigned char *packet);
+	void useCashItem(Player* player, unsigned char *packet);
 };
 
 #endif

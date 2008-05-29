@@ -78,7 +78,7 @@ void Player::realHandleRequest(unsigned char* buf, int len){
 		case RECV_ADD_SKILL: Skills::addSkill(this, buf+2); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, buf+2); break;
 		case RECV_USE_SKILL: Skills::useSkill(this, buf+2); break;
-		case RECV_USE_MEGAPHONE: Inventory::useMegaphone(this, buf+2); break;
+		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, buf+2); break;
 		case RECV_COMMAND: Players::commandHandler(this, buf+2); break;
 		case RECV_DAMAGE_MOB: Mobs::damageMob(this, buf+2); break;
 		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this, buf+2); break;

@@ -785,7 +785,7 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 	InventoryPacket::updatePlayer(player);
 }
 
-void Inventory::useMegaphone(Player* player, unsigned char *packet){
+void Inventory::useCashItem(Player* player, unsigned char *packet){
 	char type = packet[0];
 	int itemid = BufferUtilities::getInt(packet+2);
 	char msg[200];
