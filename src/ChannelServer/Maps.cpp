@@ -77,12 +77,13 @@ void Maps::addMap(int id, MapInfo map){
 	info[id] = map;
 }
 
-void Maps::addPlayer(Player* player){
+void Maps::addPlayer(Player* player) {
 	if(player->getMap() == 1 || player->getMap() == 2)
 		MapPacket::makeApple(player);
 	info[player->getMap()].Players.push_back(player);
 	MapPacket::showPlayers(player, info[player->getMap()].Players);
-	MapPacket::showPlayer(player, info[player->getMap()].Players);
+	if (player->skills->getActiveSkillLevel(5101004) == 0)
+		MapPacket::showPlayer(player, info[player->getMap()].Players);
 }
 
 void Maps::removePlayer(Player* player){

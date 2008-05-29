@@ -39,7 +39,9 @@ void InventoryPacket::moveItem(Player* player, char inv, short slot1, short slot
 	packet.send(player);
 }
 
-void InventoryPacket::updatePlayer(Player* player){
+void InventoryPacket::updatePlayer(Player* player) {
+	if (player->skills->getActiveSkillLevel(5101004) > 0)
+		return;
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_CHAR_LOOK);
 	packet.addInt(player->getPlayerid());
