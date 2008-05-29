@@ -157,26 +157,26 @@ void Player::playerConnect(unsigned char *packet){
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Equip* equip = new Equip;
-		equip->id = res[i][0];
-		equip->slots = (unsigned char) res[i][4];
-		equip->scrolls = res[i][5];
-		equip->type = (unsigned char) res[i][1];
-		equip->pos = res[i][3];
-		equip->istr = res[i][6];
-		equip->idex = res[i][7];
-		equip->iint = res[i][8];
-		equip->iluk = res[i][9];
-		equip->ihp = res[i][10];
-		equip->imp = res[i][11];
-		equip->iwatk = res[i][12];
-		equip->imatk = res[i][13];
-		equip->iwdef = res[i][14];
-		equip->imdef = res[i][15];
-		equip->iacc = res[i][16];
-		equip->iavo = res[i][17];
-		equip->ihand = res[i][18];
-		equip->ijump = res[i][19];
-		equip->ispeed = res[i][20];
+		equip->id = res[i][1];
+		equip->type = (unsigned char) res[i][2];
+		equip->pos = res[i][4];
+		equip->slots = (unsigned char) res[i][5];
+		equip->scrolls = res[i][6];
+		equip->istr = res[i][7];
+		equip->idex = res[i][8];
+		equip->iint = res[i][9];
+		equip->iluk = res[i][10];
+		equip->ihp = res[i][11];
+		equip->imp = res[i][12];
+		equip->iwatk = res[i][13];
+		equip->imatk = res[i][14];
+		equip->iwdef = res[i][15];
+		equip->imdef = res[i][16];
+		equip->iacc = res[i][17];
+		equip->iavo = res[i][18];
+		equip->ihand = res[i][19];
+		equip->ijump = res[i][20];
+		equip->ispeed = res[i][21];
 		inv->addEquip(equip);
 	}
 
@@ -235,28 +235,28 @@ void Player::playerConnect(unsigned char *packet){
 }
 
 void Player::setHP(int hp, bool is){
-	if(hp<0)
-		this->hp=0;
-	else if(hp>mhp)
-		this->hp=mhp;
+	if (hp < 0)
+		this->hp = 0;
+	else if (hp > mhp)
+		this->hp = mhp;
 	else
-		this->hp=hp;
-	if(is)
+		this->hp = hp;
+	if (is)
 		PlayerPacket::newHP(this, (short)this->hp);
 }
 
 void Player::setMP(int mp, bool is){
-	if(mp<0)
-		this->mp=0;
-	else if(mp>mmp)
-		this->mp=mmp;
+	if (mp < 0)
+		this->mp = 0;
+	else if (mp > mmp)
+		this->mp = mmp;
 	else
-		this->mp=mp;
+		this->mp = mp;
 	PlayerPacket::newMP(this, (short)this->mp, is);
 }
 
 void Player::setSp(short sp){
-	this->sp=sp;
+	this->sp = sp;
 	PlayerPacket::setSP(this);
 }
 
@@ -265,43 +265,41 @@ void Player::setAp(short ap) {
 	PlayerPacket::setAP(this);
 }
 
-void Player::setJob(short job){
-	this->job=job;
+void Player::setJob(short job) {
+	this->job = job;
 	PlayerPacket::setJob(this);
 }
 
-
-void Player::setExp(int exp, bool is){
-	this->exp=exp;
-	if(is)
+void Player::setExp(int exp, bool is) {
+	this->exp = exp;
+	if (is)
 		PlayerPacket::newEXP(this, this->exp);
 }
 
-void Player::setLevel(int level){
-	this->level=(unsigned char)level;
-
+void Player::setLevel(int level) {
+	this->level = (unsigned char)level;
 }
 
 void Player::changeChannel(char channel) {
 	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel);
 }
 
-void Player::changeKey(unsigned char* packet){
+void Player::changeKey(unsigned char* packet) {
 	int howmany = BufferUtilities::getInt(packet+4);
 	if (howmany == 0) return;
-	for(int i=0; i<howmany; i++){
+	for (int i=0; i<howmany; i++) {
 		int pos = BufferUtilities::getInt(packet+8+i*9);
 		int key = BufferUtilities::getInt(packet+12+i*9);
-		if(packet[12+i*9] == 0) // TODO 1st type byte, than key int
-			key=0;
-		if(pos>=0 && pos<90)
+		if (packet[12+i*9] == 0) // TODO 1st type byte, than key int
+			key = 0;
+		if (pos>=0 && pos<90)
 			keys[pos] = key;
 	}
 
 	// Update to mysql
 	mysqlpp::Query query = db.query();
 	query << "UPDATE keymap SET ";
-	for(int i=0; i<90; i++){
+	for (int i=0; i<90; i++) {
 		query << "pos" << mysqlpp::quote << i << "=" << mysqlpp::quote << keys[i];
 		if(i!=89)
 			query << ",";
@@ -311,22 +309,22 @@ void Player::changeKey(unsigned char* packet){
 	query.exec();
 }
 
-void Player::setHair(int id){
+void Player::setHair(int id) {
 	this->hair = id;
 	PlayerPacket::newHair(this);
 }
 
-void Player::setEyes(int id){
+void Player::setEyes(int id) {
 	this->eyes = id;
 	PlayerPacket::newEyes(this);
 }
 
-void Player::setSkin(char id){
+void Player::setSkin(char id) {
 	this->skin = id;
 	PlayerPacket::newSkin(this);
 }
 
-bool Player::addWarning(){
+bool Player::addWarning() {
 	int t = clock();
 	// Deleting old warnings
 	for(unsigned int i=0; i<warnings.size(); i++){
@@ -336,7 +334,7 @@ bool Player::addWarning(){
 		}
 	}
 	warnings.push_back(t);
-	if(warnings.size()>50){
+	if (warnings.size()>50) {
 		// Hacker - Temp DCing
 		disconnect();
 		return true;
@@ -346,16 +344,14 @@ bool Player::addWarning(){
 
 void Player::saveSkills() {
 	mysqlpp::Query query = db.query();
-	query << "DELETE FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
-	query.exec();
 
 	bool firstrun = true;
-	for(int i=0; i<skills->getSkillsNum(); i++){
-		if(firstrun == true){
-			query << "INSERT INTO skills VALUES (" << mysqlpp::quote << getPlayerid() << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
+	for (int i=0; i<skills->getSkillsNum(); i++) {
+		if (firstrun) {
+			query << "REPLACE INTO skills VALUES (" << mysqlpp::quote << getPlayerid() << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
 			firstrun = false;
 		}
-		else{
+		else {
 			query << ",(" << mysqlpp::quote << getPlayerid() << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
 		}
 	}
@@ -396,13 +392,13 @@ void Player::saveEquips() {
 	query.exec();
 
 	bool firstrun = true;
-	for(int i=0; i<inv->getEquipNum(); i++){
-		if(firstrun == true){
-			query << "INSERT INTO equip VALUES (";
+	for (int i=0; i<inv->getEquipNum(); i++) {
+		if (firstrun) {
+			query << "INSERT INTO equip VALUES (DEFAULT, ";
 			firstrun = false;
 		}
-		else{
-			query << ",(";
+		else {
+			query << ",(DEFAULT, ";
 		}
 		query << mysqlpp::quote << inv->getEquip(i)->id << ","
 				<< mysqlpp::quote << (short) Drops::equips[inv->getEquip(i)->id].type << ","
@@ -429,19 +425,19 @@ void Player::saveEquips() {
 	query.exec();
 }
 
-void Player::saveItems(){
+void Player::saveItems() {
 	mysqlpp::Query query = db.query();
 	query << "DELETE FROM items WHERE charid = " << getPlayerid();
 	query.exec();
 
 	bool firstrun = true;
-	for(int i=0; i<inv->getItemNum(); i++){
-		if(firstrun == true){
-			query << "INSERT INTO items VALUES (";
+	for (int i=0; i<inv->getItemNum(); i++) {
+		if (firstrun) {
+			query << "INSERT INTO items VALUES (DEFAULT, ";
 			firstrun = false;
 		}
-		else{
-			query << ",(";
+		else {
+			query << ",(DEFAULT, ";
 		}
 		query << mysqlpp::quote << inv->getItem(i)->id << ","
 				<< mysqlpp::quote << getPlayerid() << ","
@@ -455,16 +451,14 @@ void Player::saveItems(){
 void Player::saveVariables() {
 	if (variables.size() > 0) {
 		mysqlpp::Query query = db.query();
-		query << "DELETE FROM character_variables WHERE charid = " << getPlayerid();
-		query.exec();
 
 		bool firstrun = true;
 		for (hash_map <string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++){
-			if (firstrun == true) {
-				query << "INSERT INTO character_variables VALUES (";
+			if (firstrun) {
+				query << "REPLACE INTO character_variables VALUES (";
 				firstrun = false;
 			}
-			else{
+			else {
 				query << ",(";
 			}
 			query << mysqlpp::quote << getPlayerid() << ","
