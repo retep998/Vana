@@ -54,7 +54,7 @@ typedef vector<ReactorEventInfo> ReactorEventsInfo;
 
 namespace Reactors {
 	extern hash_map <int, ReactorEventsInfo> reactorinfo;
-	extern hash_map <int, short> reactormaxstates;
+	extern hash_map <int, short> maxstates;
 	extern hash_map <int, ReactorSpawnsInfo> info;
 	extern hash_map <int, vector<Reactor*>> reactors;
 	extern int reactorscount;
@@ -102,17 +102,15 @@ public:
 	int getMapID() {
 		return this->mapid;
 	}
-	void setState(int state) {
-		this->state = state;
-	}
-	int getState() {
-		return this->state;
-	}
 	void setPos(Pos pos) {
 		this->pos = pos;
 	}
 	Pos getPos() {
 		return this->pos;
+	}
+	void setState(int state, bool is);
+	int getState() {
+		return this->state;
 	}
 private:
 	Pos pos;

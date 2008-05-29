@@ -79,12 +79,11 @@ private:
 				Reactor *reactor = timers[i].reactor;
 				Drop *drop = timers[i].drop;
 				Player *player = timers[i].player;
-				reactor->setState(timers[i].state);
+				reactor->setState(timers[i].state, 1);
 				drop->removeDrop();
-				ReactorPacket::triggerReactor(Maps::info[reactor->getMapID()].Players, reactor);
 				std::ostringstream filenameStream;
 				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
-				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID());
+				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID(), reactor->getMapID());
 				return;
 			}
 		}
@@ -104,7 +103,7 @@ ReactionTimer *ReactionTimer::singleton = 0;
 // End of ReactionTimer
 
 hash_map <int, vector<ReactorEventInfo>> Reactors::reactorinfo;
-hash_map <int, short> Reactors::reactormaxstates;
+hash_map <int, short> Reactors::maxstates;
 hash_map <int, ReactorSpawnsInfo> Reactors::info;
 hash_map <int, vector<Reactor*>> Reactors::reactors;
 int Reactors::reactorscount = 0x200;
@@ -118,7 +117,7 @@ void Reactors::addReactorEventInfo(int id, ReactorEventInfo revent) {
 }
 
 void Reactors::setReactorMaxstates(int id, short state) {
-	reactormaxstates[id] = state;
+	maxstates[id] = state;
 }
 
 void Reactors::loadReactors() {
@@ -128,7 +127,7 @@ void Reactors::loadReactors() {
 			Pos pos;
 			pos.x = iter->second[i].x;
 			pos.y = iter->second[i].y;
-			reactor->setID(Reactors::reactorscount++);
+			reactor->setID(reactorscount++);
 			reactor->setReactorID(iter->second[i].id);
 			reactor->setMapID(iter->first);
 			reactor->setPos(pos);
@@ -160,20 +159,20 @@ void Reactors::hitReactor(Player *player, unsigned char *packet) {
 	Reactor* reactor = getReactorByID(id, player->getMap());
 
 	if (reactor != NULL && reactor->isAlive()) {
-		for (unsigned int i=0; i<reactorinfo[reactor->getReactorID()].size(); i++) {
-			ReactorEventInfo revent = reactorinfo[reactor->getReactorID()][i];
-			if (reactor->getState() == revent.state && revent.state != reactormaxstates[reactor->getReactorID()]) {
-				if (reactorinfo[reactor->getReactorID()][i].type >= 100)
+		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
+			ReactorEventInfo revent = reactorinfo[reactor->getReactorID()][reactor->getState()];
+			if (revent.nextstate < maxstates[reactor->getReactorID()]) {
+				if (revent.type >= 100)
 					return;
-				reactor->setState(reactorinfo[reactor->getReactorID()][i].nextstate);
+				reactor->setState(revent.nextstate, true);
 				ReactorPacket::triggerReactor(Maps::info[player->getMap()].Players, reactor);
 				return;
 			}
-			else if (reactor->getState() == revent.state && revent.state == reactormaxstates[reactor->getReactorID()]) {
+			else {
 				std::ostringstream filenameStream;
 				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
-				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID());
-				reactor->setState(revent.nextstate);
+				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID(), reactor->getMapID());
+				reactor->setState(revent.nextstate, false);
 				reactor->kill();
 				ReactorPacket::destroyReactor(Maps::info[player->getMap()].Players, reactor);
 			}
@@ -186,9 +185,9 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 		return;
 	for (unsigned int i=0; i<reactors[drop->getMap()].size(); i++) {
 		Reactor* reactor = reactors[drop->getMap()][i];
-		for (unsigned int j=0; j<reactorinfo[reactors[drop->getMap()][i]->getReactorID()].size(); j++) {
-			ReactorEventInfo revent = reactorinfo[reactors[drop->getMap()][i]->getReactorID()][j];
-			if (reactor->getState() == revent.state && drop->getID() == revent.itemid) {
+		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
+			ReactorEventInfo revent = reactorinfo[reactor->getReactorID()][reactor->getState()];
+			if (revent.type == 100 && drop->getID() == revent.itemid) {
 				if ((drop->getPos().x >= reactor->getPos().x+revent.ltx && drop->getPos().x <= reactor->getPos().x+revent.rbx) && (drop->getPos().y >= reactor->getPos().y+revent.lty && drop->getPos().y <= reactor->getPos().y+revent.rby)) {
 					ReactionTimer::Instance()->setReactionTimer(player, reactor, drop, revent.nextstate, 3000);
 				}
@@ -200,4 +199,10 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 
 void Reactors::checkLoot(Drop *drop) {
 	ReactionTimer::Instance()->stop(drop);
+}
+
+void Reactor::setState(int state, bool is) {
+	this->state = state;
+	if (is)
+		ReactorPacket::triggerReactor(Maps::info[this->getMapID()].Players, this);
 }
