@@ -1,3 +1,4 @@
+-- Machine Apparatus (Origin of Clocktower)
 if state == 0 then
 	addText("Would you like to leave this place? I can take you somewhere safer.");
 	sendYesNo();
