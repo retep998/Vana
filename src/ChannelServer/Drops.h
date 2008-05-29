@@ -172,7 +172,7 @@ namespace Drops {
 	void addItem(int id, ItemInfo item);
 	void addConsume(int id, ConsumeInfo cons);
 	void addMesos(int id, Mesos meso);
-	void addFoothold(int id, FootholdsInfo foot);
+	void addFoothold(int id, FootholdInfo foot);
 	void dropMesos(Player* player, unsigned char* packet);
 	void lootItem(Player* player, unsigned char* packet);
 	void dropMob(Player* player, Mob* mob);

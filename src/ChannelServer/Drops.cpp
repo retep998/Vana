@@ -359,8 +359,8 @@ void Drops::addConsume(int id, ConsumeInfo cons){
 void Drops::addMesos(int id, Mesos meso){
 	mesos[id] = meso;
 }
-void Drops::addFoothold(int id, FootholdsInfo foot){
-	foots[id] = foot;
+void Drops::addFoothold(int id, FootholdInfo foot){
+	foots[id].push_back(foot);
 }
 
 void Drops::dropMesos(Player* player, unsigned char* packet){
