@@ -157,26 +157,26 @@ void Player::playerConnect(unsigned char *packet){
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Equip* equip = new Equip;
-		equip->id = res[i][1];
-		equip->type = (unsigned char) res[i][2];
-		equip->pos = res[i][4];
-		equip->slots = (unsigned char) res[i][5];
-		equip->scrolls = res[i][6];
-		equip->istr = res[i][7];
-		equip->idex = res[i][8];
-		equip->iint = res[i][9];
-		equip->iluk = res[i][10];
-		equip->ihp = res[i][11];
-		equip->imp = res[i][12];
-		equip->iwatk = res[i][13];
-		equip->imatk = res[i][14];
-		equip->iwdef = res[i][15];
-		equip->imdef = res[i][16];
-		equip->iacc = res[i][17];
-		equip->iavo = res[i][18];
-		equip->ihand = res[i][19];
-		equip->ijump = res[i][20];
-		equip->ispeed = res[i][21];
+		equip->id = res[i][0];
+		equip->type = (unsigned char) res[i][1];
+		equip->pos = res[i][3];
+		equip->slots = (unsigned char) res[i][4];
+		equip->scrolls = res[i][5];
+		equip->istr = res[i][6];
+		equip->idex = res[i][7];
+		equip->iint = res[i][8];
+		equip->iluk = res[i][9];
+		equip->ihp = res[i][10];
+		equip->imp = res[i][11];
+		equip->iwatk = res[i][12];
+		equip->imatk = res[i][13];
+		equip->iwdef = res[i][14];
+		equip->imdef = res[i][15];
+		equip->iacc = res[i][16];
+		equip->iavo = res[i][17];
+		equip->ihand = res[i][18];
+		equip->ijump = res[i][19];
+		equip->ispeed = res[i][20];
 		inv->addEquip(equip);
 	}
 
@@ -388,17 +388,15 @@ void Player::saveStats() {
 
 void Player::saveEquips() {
 	mysqlpp::Query query = db.query();
-	query << "DELETE FROM equip WHERE charid = " << getPlayerid();
-	query.exec();
 
 	bool firstrun = true;
 	for (int i=0; i<inv->getEquipNum(); i++) {
 		if (firstrun) {
-			query << "INSERT INTO equip VALUES (DEFAULT, ";
+			query << "REPLACE INTO equip VALUES (";
 			firstrun = false;
 		}
 		else {
-			query << ",(DEFAULT, ";
+			query << ",(";
 		}
 		query << mysqlpp::quote << inv->getEquip(i)->id << ","
 				<< mysqlpp::quote << (short) Drops::equips[inv->getEquip(i)->id].type << ","
@@ -427,17 +425,15 @@ void Player::saveEquips() {
 
 void Player::saveItems() {
 	mysqlpp::Query query = db.query();
-	query << "DELETE FROM items WHERE charid = " << getPlayerid();
-	query.exec();
 
 	bool firstrun = true;
 	for (int i=0; i<inv->getItemNum(); i++) {
 		if (firstrun) {
-			query << "INSERT INTO items VALUES (DEFAULT, ";
+			query << "REPLACE INTO items VALUES (";
 			firstrun = false;
 		}
 		else {
-			query << ",(DEFAULT, ";
+			query << ",(";
 		}
 		query << mysqlpp::quote << inv->getItem(i)->id << ","
 				<< mysqlpp::quote << getPlayerid() << ","
