@@ -31,7 +31,6 @@ namespace InventoryPacket {
 	void updatePlayer(Player* player);
 	void addEquip(Player* player, Equip* equip, bool is);
 	void bought(Player* player);
-	void newMesos(Player* player, int mesos, bool is);
 	void addItem(Player* player, Item* item, bool is);
 	void addNewItem(Player* player, Item* item, bool is);
 	void moveItemS(Player* player, char inv, short slot, short amount);

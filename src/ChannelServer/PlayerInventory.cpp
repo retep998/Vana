@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerInventory.h"
-#include "InventoryPacket.h"
+#include "PlayerPacket.h"
 
 void PlayerInventory::setMesos(int mesos, bool is){
-	this->mesos=mesos;
-	InventoryPacket::newMesos(player, mesos, is);
+	this->mesos = mesos;
+	PlayerPacket::updateStat(player, 0x40000, mesos, is);
 }

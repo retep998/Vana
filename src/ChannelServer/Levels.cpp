@@ -202,7 +202,6 @@ void Levels::addStat(Player* player, unsigned char* packet){
 void Levels::setLevel(Player* player, int level){
 	player->setLevel(level);
 	LevelsPacket::levelUP(player, Maps::info[player->getMap()].Players);
-	
 }
 
 void Levels::setJob(Player* player, int job){

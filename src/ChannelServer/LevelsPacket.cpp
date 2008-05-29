@@ -62,6 +62,7 @@ void LevelsPacket::statOK(Player* player){
 	packet.addInt(0);
 	packet.send(player);
 }
+
 void LevelsPacket::changeStat(Player* player, int nam, short val){
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
@@ -74,12 +75,6 @@ void LevelsPacket::changeStat(Player* player, int nam, short val){
 
 void LevelsPacket::jobChange(Player *player, std::vector<Player*> players){
 	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
-	packet.addInt(0x20);
-	packet.addShort(player->getJob());
-	packet.send(player);
-	packet = Packet();
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(8);

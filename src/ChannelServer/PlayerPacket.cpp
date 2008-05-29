@@ -133,40 +133,7 @@ void PlayerPacket::connectData(Player* player){
 	packet.send(player);
 }
 
-void PlayerPacket::newHP(Player* player, short hp){
-	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addByte(0);
-	packet.addShort(0);
-	packet.addShort(4);
-	packet.addByte(0);
-	packet.addShort(hp); 
-	packet.send(player);
-}
-
-void PlayerPacket::newMP(Player* player, short mp, bool is){
-	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addByte(is);
-	packet.addShort(0);
-	packet.addShort(0x10);
-	packet.addByte(0);
-	packet.addShort(mp);
-	packet.send(player);
-}
-
-void PlayerPacket::newEXP(Player* player, int exp){
-	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
-	packet.addShort(0);
-	packet.addShort(1);
-	packet.addInt(exp);
-	packet.send(player);
-}
-
-
-void PlayerPacket::showKeys(Player* player, int keys[90]){
+void PlayerPacket::showKeys(Player* player, int keys[90]) {
 	Packet packet;
 	packet.addHeader(SEND_KEYMAP);
 	packet.addByte(0);
@@ -176,32 +143,24 @@ void PlayerPacket::showKeys(Player* player, int keys[90]){
 	}
 	packet.send(player);
 }
-void PlayerPacket::setSP(Player* player){
+
+void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
+	packet.addByte(is);
 	packet.addByte(0);
-	packet.addShort(0x80);
-	packet.addByte(0);
-	packet.addShort(player->getSp());
+	packet.addInt(id);
+	packet.addInt(value);
 	packet.send(player);
 }
-void PlayerPacket::setAP(Player* player){
+
+void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
+	packet.addByte(is);
 	packet.addByte(0);
-	packet.addShort(0x40);
-	packet.addByte(0);
-	packet.addShort(player->getAp());
-	packet.send(player);
-}
-void PlayerPacket::setJob(Player* player){
-	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
-	packet.addInt(0x20);
-	packet.addShort(player->getJob());
+	packet.addInt(id);
+	packet.addShort(value);
 	packet.send(player);
 }
 

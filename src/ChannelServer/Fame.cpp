@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Fame.h"
 #include "FamePacket.h"
+#include "PlayerPacket.h"
 #include "Player.h"
 #include "Players.h"
 #include "MySQLM.h"
@@ -47,7 +48,7 @@ void Fame::handleFame(Player* player, unsigned char* packet){
 					Players::players[CharID]->setFame(NewFame);
 					addFameLog(player->getPlayerid(), CharID);
 					FamePacket::SendFame(player,Players::players[CharID],player->getName(),strlen(player->getName()),FameDefame,NewFame);
-					FamePacket::UpdateFame(Players::players[CharID]);
+					PlayerPacket::updateStat(Players::players[CharID], 0x20000, Players::players[CharID]->getFame());
 					PlayersPacket::showInfo(player, Players::players[CharID]);
 				}
 				else if(FameDefame == 0)
@@ -56,7 +57,7 @@ void Fame::handleFame(Player* player, unsigned char* packet){
 					Players::players[CharID]->setFame(NewFame);
 					addFameLog(player->getPlayerid(), CharID);
 					FamePacket::SendFame(player,Players::players[CharID],player->getName(),strlen(player->getName()),FameDefame,NewFame);
-					FamePacket::UpdateFame(Players::players[CharID]);
+					PlayerPacket::updateStat(Players::players[CharID], 0x20000, Players::players[CharID]->getFame());
 					PlayersPacket::showInfo(player, Players::players[CharID]);
 				}
 			}
