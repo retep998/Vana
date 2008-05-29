@@ -45,7 +45,7 @@ void Characters::loadCharacter(Character &charc, mysqlpp::Row row) {
 	charc.job = row["job"];
 	charc.str = row["str"];
 	charc.dex = row["dex"];
-	charc.intt = row["intt"];
+	charc.intt = row["int"];
 	charc.luk = row["luk"];
 	charc.hp = row["chp"];
 	charc.mhp = row["mhp"];
@@ -123,7 +123,7 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 		return;
 	}
 	mysqlpp::Query query = db.query();
-	query << "INSERT INTO characters (userid, world_id, name, eyes, hair, skin, gender, str, dex, intt, luk) VALUES (" 
+	query << "INSERT INTO characters (userid, world_id, name, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES (" 
 			<< mysqlpp::quote << player->getUserid() << ","
 			<< mysqlpp::quote << (int) player->getWorld() << ","
 			<< mysqlpp::quote << charactername << ","
@@ -135,6 +135,7 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 			<< mysqlpp::quote << packet[pos+2] << ","
 			<< mysqlpp::quote << packet[pos+3] << ","
 			<< mysqlpp::quote << packet[pos+4] << ")";
+	std::cout << query.str();
 	mysqlpp::SimpleResult res = query.execute();
 	int id = (int) res.insert_id();
 
