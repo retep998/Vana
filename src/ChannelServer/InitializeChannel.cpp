@@ -30,10 +30,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+bool atob(char *str) {
+	if (atoi(str) > 0)
+		return true;
+	else
+		return false;
+}
+
 // Mobs
 void Initializing::initializeMobs() {
 	printf("Initializing Mobs... ");
-	mysqlpp::Query query = db.query("SELECT mobdata.*, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = db.query("SELECT mobdata.id, mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -44,38 +51,37 @@ void Initializing::initializeMobs() {
 	int currentid = 0;
 	int previousid = -1;
 	MobInfo mob;
-	while (mysqlpp::Row mobRow = res.fetch_row()) {
+	MYSQL_ROW mobRow;
+	while ((mobRow = res.fetch_raw_row())) {
+		// Col0 : Row ID
+		//    1 : Mob ID
+		//    2 : HP
+		//    3 : MP
+		//    4 : EXP
+		//    5 : Boss
+		//    6 : HP Color
+		//    7 : HP BG Color
+		//    8 : Mob Summon
 		currentid = atoi(mobRow[1]);
 
-		if(currentid != previousid){
-			// Col0 : Row ID
-			//    1 : Mob ID
-			//    2 : HP
-			//    3 : MP
-			//    4 : EXP
-			//    5 : Boss
-			//    6 : HP Color
-			//    7 : HP BG Color
-			//    8 : Mob Summon
-			if(previousid != -1){
-				Mobs::addMob(previousid, mob);
-				mob.summon.clear();
-			}
-			mob.hp  = atoi(mobRow[2]);
-			mob.mp  = atoi(mobRow[3]);
-			mob.exp = atoi(mobRow[4]);
-			mob.boss = (bool) mobRow[5];
-			mob.hpcolor = atoi(mobRow[6]);
-			mob.hpbgcolor = atoi(mobRow[7]);
+		if (currentid != previousid && previousid != -1) {
+			Mobs::addMob(previousid, mob);
+			mob.summon.clear();
 		}
+		mob.hp  = atoi(mobRow[2]);
+		mob.mp  = atoi(mobRow[3]);
+		mob.exp = atoi(mobRow[4]);
+		mob.boss = atob(mobRow[5]);
+		mob.hpcolor = atoi(mobRow[6]);
+		mob.hpbgcolor = atoi(mobRow[7]);
 
-		if(!mobRow[8].is_null()){
-			mob.summon.push_back(atoi(mobRow[8]));
+		if (mobRow[7] != NULL) {
+			mob.summon.push_back(atoi(mobRow[7]));
 		}
 		previousid = atoi(mobRow[1]);
 	}
 	// Add final entry
-	if(previousid != -1){
+	if (previousid != -1) {
 		Mobs::addMob(previousid, mob);
 	}
 
@@ -94,7 +100,8 @@ void Initializing::initializeReactors() {
 
 	int currentid = 0;
 	int previousid = -1;
-	while (mysqlpp::Row reactorRow = res.fetch_row()) {
+	MYSQL_ROW reactorRow;
+	while ((reactorRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Reactor ID
 		//    2 : State
@@ -115,7 +122,7 @@ void Initializing::initializeReactors() {
 		revent.rbx = atoi(reactorRow[7]);
 		revent.rby = atoi(reactorRow[8]);
 		revent.nextstate = atoi(reactorRow[9]);
-		Reactors::setReactorMaxstates(atoi(reactorRow[1]), revent.state);
+		Reactors::setReactorMaxstates(atoi(reactorRow[1]), revent.nextstate);
 		Reactors::addReactorEventInfo(atoi(reactorRow[1]), revent);
 	}
 
@@ -137,7 +144,8 @@ void Initializing::initializeItems() {
 	ConsumeInfo cons;
 	ItemInfo item;
 	SummonBag s;
-	while (mysqlpp::Row itemRow = res.fetch_row()) {
+	MYSQL_ROW itemRow;
+	while ((itemRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Item ID
 		//    2 : Type
@@ -179,54 +187,52 @@ void Initializing::initializeItems() {
 		//   38 : Mob ID
 		//   39 : Chance
 		currentid = atoi(itemRow[1]);
-		if(currentid != previousid){
-			if(previousid != -1){ // Add the items into the cache
-				Drops::addConsume(previousid, cons);
-				Drops::addItem(previousid, item);
-				cons.mobs.clear();
-			}
-			item.type = atoi(itemRow[2]);
-			item.price = atoi(itemRow[3]);
-			item.maxslot = atoi(itemRow[4]);
-			item.quest = (bool) itemRow[5];
-			item.consume = (bool) itemRow[6];
-			cons.hp = atoi(itemRow[7]);
-			cons.mp = atoi(itemRow[8]);
-			cons.hpr = atoi(itemRow[9]);
-			cons.mpr = atoi(itemRow[10]);
-			cons.moveTo = atoi(itemRow[11]);
-			// Buffs
-			cons.time = atoi(itemRow[12]);
-			cons.watk = atoi(itemRow[13]);
-			cons.matk = atoi(itemRow[14]);
-			cons.avo = atoi(itemRow[15]);
-			cons.acc = atoi(itemRow[16]);
-			cons.wdef = atoi(itemRow[17]);
-			cons.mdef = atoi(itemRow[18]);
-			cons.speed = atoi(itemRow[19]);
-			cons.jump = atoi(itemRow[20]);
-			cons.morph = atoi(itemRow[21]);
-			// Scrolling
-			cons.success = atoi(itemRow[22]);
-			cons.cursed = atoi(itemRow[23]);
-			cons.istr = atoi(itemRow[24]);
-			cons.idex = atoi(itemRow[25]);
-			cons.iint = atoi(itemRow[26]);
-			cons.iluk = atoi(itemRow[27]);
-			cons.ihp = atoi(itemRow[28]);
-			cons.imp = atoi(itemRow[29]);
-			cons.iwatk = atoi(itemRow[30]);
-			cons.imatk = atoi(itemRow[31]);
-			cons.iwdef = atoi(itemRow[32]);
-			cons.imdef = atoi(itemRow[33]);
-			cons.iacc = atoi(itemRow[34]);
-			cons.iavo = atoi(itemRow[35]);
-			cons.ijump = atoi(itemRow[36]);
-			cons.ispeed = atoi(itemRow[37]);
-			cons.ihand = 0;
+		if (currentid != previousid && previousid != -1) { // Add the items into the cache
+			Drops::addConsume(previousid, cons);
+			Drops::addItem(previousid, item);
+			cons.mobs.clear();
 		}
+		item.type = atoi(itemRow[2]);
+		item.price = atoi(itemRow[3]);
+		item.maxslot = atoi(itemRow[4]);
+		item.quest = atob(itemRow[5]);
+		item.consume = atob(itemRow[6]);
+		cons.hp = atoi(itemRow[7]);
+		cons.mp = atoi(itemRow[8]);
+		cons.hpr = atoi(itemRow[9]);
+		cons.mpr = atoi(itemRow[10]);
+		cons.moveTo = atoi(itemRow[11]);
+		// Buffs
+		cons.time = atoi(itemRow[12]);
+		cons.watk = atoi(itemRow[13]);
+		cons.matk = atoi(itemRow[14]);
+		cons.avo = atoi(itemRow[15]);
+		cons.acc = atoi(itemRow[16]);
+		cons.wdef = atoi(itemRow[17]);
+		cons.mdef = atoi(itemRow[18]);
+		cons.speed = atoi(itemRow[19]);
+		cons.jump = atoi(itemRow[20]);
+		cons.morph = atoi(itemRow[21]);
+		// Scrolling
+		cons.success = atoi(itemRow[22]);
+		cons.cursed = atoi(itemRow[23]);
+		cons.istr = atoi(itemRow[24]);
+		cons.idex = atoi(itemRow[25]);
+		cons.iint = atoi(itemRow[26]);
+		cons.iluk = atoi(itemRow[27]);
+		cons.ihp = atoi(itemRow[28]);
+		cons.imp = atoi(itemRow[29]);
+		cons.iwatk = atoi(itemRow[30]);
+		cons.imatk = atoi(itemRow[31]);
+		cons.iwdef = atoi(itemRow[32]);
+		cons.imdef = atoi(itemRow[33]);
+		cons.iacc = atoi(itemRow[34]);
+		cons.iavo = atoi(itemRow[35]);
+		cons.ijump = atoi(itemRow[36]);
+		cons.ispeed = atoi(itemRow[37]);
+		cons.ihand = 0;
 		// Summoning
-		if(!itemRow[38].is_null()){
+		if(itemRow[38] != NULL){
 			s.mobid = atoi(itemRow[38]);
 			s.chance = atoi(itemRow[39]);
 			cons.mobs.push_back(s);
@@ -249,13 +255,13 @@ void Initializing::initializeItems() {
 		exit(1);
 	}
 
-	while(mysqlpp::Row itemSkillRow = res.fetch_row()){
+	MYSQL_ROW itemSkillRow;
+	while ((itemSkillRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Item ID
 		//    2 : Skill ID
 		//    3 : Required Level
 		//    4 : Master Level
-
 		Skillbook skill;
 		skill.skillid = atoi(itemSkillRow[2]);
 		skill.reqlevel = atoi(itemSkillRow[3]);
@@ -279,7 +285,8 @@ void Initializing::initializeDrops(){
 	int currentid = 0;
 	int previousid = -1;
 	MobDropsInfo drops;
-	while (mysqlpp::Row dropRow = res.fetch_row()) {
+	MYSQL_ROW dropRow;
+	while ((dropRow = res.fetch_raw_row())) {
 		currentid = atoi(dropRow[1]);
 
 		if(currentid != previousid && previousid != -1){
@@ -308,7 +315,8 @@ void Initializing::initializeDrops(){
 	}
 	
 	Mesos mesos = Mesos();
-	while (mysqlpp::Row mesoRow = res.fetch_row()) {
+	MYSQL_ROW mesoRow;
+	while ((mesoRow = res.fetch_raw_row())) {
 		mesos.min = atoi(mesoRow[2]);
 		mesos.max = atoi(mesoRow[3]);
 		Drops::addMesos(atoi(mesoRow[1]), mesos);
@@ -326,7 +334,8 @@ void Initializing::initializeEquips(){
 		exit(1);
 	}
 
-	while (mysqlpp::Row equipRow = res.fetch_row()) {
+	MYSQL_ROW equipRow;
+	while ((equipRow = res.fetch_raw_row())) {
 		EquipInfo equip = EquipInfo();
 		// Col0 : RowID
 		//    1 : EquipID
@@ -369,8 +378,8 @@ void Initializing::initializeEquips(){
 		equip.ijump = atoi(equipRow[17]);
 		equip.ispeed = atoi(equipRow[18]);
 		equip.tamingmob = atoi(equipRow[19]);
-		equip.cash = (bool) equipRow[20];
-		equip.quest = (bool) equipRow[21];
+		equip.cash = atob(equipRow[20]);
+		equip.quest = atob(equipRow[21]);
 		equip.ihand = 0;
 		// Add equip to the drops table
 		Drops::addEquip(equipID,equip);
@@ -391,7 +400,8 @@ void Initializing::initializeShops(){
 	int currentid = 0;
 	int previousid = -1;
 	ShopInfo shop;
-	while (mysqlpp::Row shopRow = res.fetch_row()) {
+	MYSQL_ROW shopRow;
+	while ((shopRow = res.fetch_raw_row())) {
 		// Col0 : RowID
 		//    1 : shopid
 		//    2 : NPC ID
@@ -399,14 +409,12 @@ void Initializing::initializeShops(){
 		//    4 : Price
 		currentid = atoi(shopRow[1]);
 
-		if(currentid != previousid){
-			if(previousid != -1){
-				Shops::addShop(previousid, shop);
-				shop.items.clear();
-			}
-			shop.npc = atoi(shopRow[2]);
+		if (currentid != previousid && previousid != -1) {
+			Shops::addShop(previousid, shop);
+			shop.items.clear();
 		}
-		if(!shopRow[3].is_null()){
+		shop.npc = atoi(shopRow[2]);
+		if (shopRow[3] != NULL) {
 			ShopItemInfo item;
 			item.id = atoi(shopRow[3]);
 			item.price = atoi(shopRow[4]);
@@ -435,7 +443,8 @@ void Initializing::initializeQuests(){
 		exit(1);
 	}
 
-	while (mysqlpp::Row questRow = res.fetch_row()) {
+	MYSQL_ROW questRow;
+	while ((questRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Quest ID
 		//    2 : Next Quest ID
@@ -453,7 +462,8 @@ void Initializing::initializeQuests(){
 	int currentid = 0;
 	int previousid = -1;
 	QuestRequestsInfo reqs;
-	while (mysqlpp::Row requestRow = res.fetch_row()) {
+	MYSQL_ROW requestRow;
+	while ((requestRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Quest ID
 		//    2 : Mob
@@ -469,9 +479,9 @@ void Initializing::initializeQuests(){
 		}
 
 		QuestRequestInfo req;
-		req.ismob = (bool) requestRow[2];
-		req.isitem = (bool) requestRow[3];
-		req.isquest = (bool) requestRow[4];
+		req.ismob = atob(requestRow[2]);
+		req.isitem = atob(requestRow[3]);
+		req.isquest = atob(requestRow[4]);
 		req.id = atoi(requestRow[5]);
 		req.count = atoi(requestRow[6]);
 		reqs.push_back(req);
@@ -494,7 +504,8 @@ void Initializing::initializeQuests(){
 	currentid = 0;
 	previousid = -1;
 	QuestRewardsInfo rwas;
-	while (mysqlpp::Row rewardRow = res.fetch_row()) {
+	MYSQL_ROW rewardRow;
+	while ((rewardRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Quest ID
 		//    2 : Start
@@ -516,12 +527,12 @@ void Initializing::initializeQuests(){
 		}
 
 		QuestRewardInfo rwa;
-		rwa.start = (bool) rewardRow[2];
-		rwa.isitem = (bool) rewardRow[3];
-		rwa.isexp = (bool) rewardRow[4];
-		rwa.ismesos = (bool) rewardRow[5];
-		rwa.isfame = (bool) rewardRow[6];
-		rwa.isskill = (bool) rewardRow[7];
+		rwa.start = atob(rewardRow[2]);
+		rwa.isitem = atob(rewardRow[3]);
+		rwa.isexp = atob(rewardRow[4]);
+		rwa.ismesos = atob(rewardRow[5]);
+		rwa.isfame = atob(rewardRow[6]);
+		rwa.isskill = atob(rewardRow[7]);
 		rwa.id = atoi(rewardRow[8]);
 		rwa.count = atoi(rewardRow[9]);
 		rwa.gender = atoi(rewardRow[10]);
@@ -551,7 +562,8 @@ void Initializing::initializeSkills(){
 	int currentid = 0;
 	int previousid = -1;
 	SkillsLevelInfo skill;
-	while (mysqlpp::Row skillRow = res.fetch_row()) {
+	MYSQL_ROW skillRow;
+	while ((skillRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Skill ID
 		//    2 : Level
@@ -620,7 +632,8 @@ void Initializing::initializeMaps(){
 	int currentid = 0;
 	int previousid = -1;
 	MapInfo map;
-	while (mysqlpp::Row mapRow = res.fetch_row()) {
+	MYSQL_ROW mapRow;
+	while ((mapRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : Return Map
@@ -646,11 +659,11 @@ void Initializing::initializeMaps(){
 			map.rm = atoi(mapRow[2]);
 			map.forcedReturn = atoi(mapRow[3]);
 			map.spawnrate = atof(mapRow[4]);
-			map.clock = (bool) mapRow[5];
+			map.clock = atob(mapRow[5]);
 			map.shipInterval = atoi(mapRow[6]);
 		}
 		PortalInfo portal;
-		if(!mapRow[7].is_null()){
+		if(mapRow[7] != NULL){
 			portal.id = atoi(mapRow[7]);
 			strcpy_s(portal.from, mapRow[8]);
 			strcpy_s(portal.to, mapRow[9]);
@@ -681,7 +694,8 @@ void Initializing::initializeMaps(){
 	currentid = 0;
 	previousid = -1;
 	NPCsInfo npcs;
-	while (mysqlpp::Row npcRow = res.fetch_row()) {
+	MYSQL_ROW npcRow;
+	while ((npcRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : NPC ID
@@ -723,7 +737,8 @@ void Initializing::initializeMaps(){
 	currentid = 0;
 	previousid = -1;
 	SpawnsInfo spawns;
-	while (mysqlpp::Row mobRow = res.fetch_row()) {
+	MYSQL_ROW mobRow;
+	while ((mobRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : Mob ID
@@ -761,7 +776,8 @@ void Initializing::initializeMaps(){
 	currentid = 0;
 	previousid = -1;
 	ReactorSpawnsInfo reactors;
-	while (mysqlpp::Row reactorRow = res.fetch_row()) {
+	MYSQL_ROW reactorRow;
+	while ((reactorRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : Reactor ID
@@ -799,33 +815,21 @@ void Initializing::initializeMaps(){
 
 	currentid = 0;
 	previousid = -1;
-	FootholdsInfo foots;
-	while (mysqlpp::Row footsRow = res.fetch_row()) {
+	MYSQL_ROW footsRow;
+	while ((footsRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
 		//    1 : Map ID
 		//    2 : x1
 		//    3 : x2
 		//    4 : y1
 		//    5 : y2
-		currentid = atoi(footsRow[1]);
-		if(currentid != previousid && previousid != -1){
-			Drops::addFoothold(previousid, foots);
-			Drops::objids[previousid] = foots.size();
-			foots.clear();
-		}
 		FootholdInfo foot;
 		foot.x1 = atoi(footsRow[2]);
 		foot.x2 = atoi(footsRow[3]);
 		foot.y1 = atoi(footsRow[4]);
 		foot.y2 = atoi(footsRow[4]);
-		foots.push_back(foot);
-
-		previousid = atoi(footsRow[1]);
-	}
-	// Add final entry
-	if(previousid != -1){
-		Drops::addFoothold(previousid, foots);
-		Drops::objids[previousid] = foots.size();
+		Drops::addFoothold(atoi(footsRow[1]), foot);
+		Drops::objids[atoi(footsRow[1])] = Drops::foots[atoi(footsRow[1])].size();
 	}
 	printf("DONE\n");
 }
