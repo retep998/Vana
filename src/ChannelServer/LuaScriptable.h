@@ -72,12 +72,15 @@ namespace LuaExports {
 	int getHair(lua_State *luaVm);
 	int getEyes(lua_State *luaVm);
 	int getPlayerVariable(lua_State *luaVm);
+	int getNumPlayers(lua_State *luaVm);
+	int getReactorState(lua_State *luaVm);
 
 	int killMob(lua_State *luaVm);
 
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);
 	int setMusic(lua_State *luaVm);
+	int setReactorsState(lua_State *luaVm);
 	int setHP(lua_State *luaVm);
 	int setSTR(lua_State *luaVm);
 	int setDEX(lua_State *luaVm);
@@ -87,6 +90,7 @@ namespace LuaExports {
 	int setPlayerVariable(lua_State *luaVm);
 
 	int showShop(lua_State *luaVm);
+	int showMessage(lua_State *luaVm);
 	int showMapMessage(lua_State *luaVm);
 
 	int spawnMob(lua_State *luaVm);

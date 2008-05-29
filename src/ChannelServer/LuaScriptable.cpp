@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "Maps.h"
 #include "Mobs.h"
+#include "Reactors.h"
 #include "Quests.h"
 #include "Levels.h"
 #include "Shops.h"
@@ -59,10 +60,13 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getHair", &LuaExports::getHair);
 	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
 	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
+	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
+	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
 	lua_register(luaVm, "killMob", &LuaExports::killMob);
 	lua_register(luaVm, "setStyle", &LuaExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaExports::setMap);
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
+	lua_register(luaVm, "setReactorsState", &LuaExports::setReactorsState);
 	lua_register(luaVm, "setHP", &LuaExports::setHP);
 	lua_register(luaVm, "setSTR", &LuaExports::setSTR);
 	lua_register(luaVm, "setDEX", &LuaExports::setDEX);
@@ -71,6 +75,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setJob", &LuaExports::setJob);
 	lua_register(luaVm, "setPlayerVariable", &LuaExports::setPlayerVariable);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
+	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMob);
 	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
@@ -201,6 +206,25 @@ int LuaExports::getPlayerVariable(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getNumPlayers(lua_State *luaVm) {
+	int mapid = lua_tointeger(luaVm, -1);
+	lua_pushinteger(luaVm, Maps::info[mapid].Players.size());
+	return 1;
+}
+
+int LuaExports::getReactorState(lua_State *luaVm) {
+	int mapid = lua_tointeger(luaVm, -2);
+	int reactorid = lua_tointeger(luaVm, -1);
+	for (unsigned int i=0; i<Reactors::reactors[mapid].size(); i++) {
+		if (Reactors::reactors[mapid][i]->getReactorID() == reactorid) {
+			lua_pushinteger(luaVm, Reactors::reactors[mapid][i]->getState());
+			return 1;
+		}
+	}
+	lua_pushinteger(luaVm, 0);
+	return 1;
+}
+
 int LuaExports::killMob(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
@@ -235,6 +259,20 @@ int LuaExports::setMap(lua_State *luaVm) {
 
 int LuaExports::setMusic(lua_State *luaVm) {
 	Maps::changeMusic(getPlayer(luaVm)->getMap(), lua_tostring(luaVm, -1));
+	return 1;
+}
+
+int LuaExports::setReactorsState(lua_State *luaVm) {
+	int mapid = lua_tointeger(luaVm, -3);
+	int reactorid = lua_tointeger(luaVm, -2);
+	int state = lua_tointeger(luaVm, -1);
+	for (unsigned int i=0; i<Reactors::reactors[mapid].size(); i++) {
+		Reactor *reactor = Reactors::reactors[mapid][i];
+		if (reactor->getReactorID() == reactorid) {
+			reactor->setState(state, true);
+			break;
+		}
+	}
 	return 1;
 }
 
@@ -284,6 +322,13 @@ int LuaExports::setPlayerVariable(lua_State *luaVm) {
 int LuaExports::showShop(lua_State *luaVm) {
 	int shopid = lua_tointeger(luaVm, -1);
 	Shops::showShop(getPlayer(luaVm), shopid);
+	return 1;
+}
+
+int LuaExports::showMessage(lua_State *luaVm) {
+	std::string msg = lua_tostring(luaVm, -2);
+	int type = lua_tointeger(luaVm, -1);
+	PlayerPacket::showMessage(getPlayer(luaVm), msg, type);
 	return 1;
 }
 
