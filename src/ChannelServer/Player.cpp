@@ -47,11 +47,11 @@ Player::~Player(){
 			save();
 		Skills::stopTimerPlayer(this);
 		Inventory::stopTimerPlayer(this);
+		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::removePlayer(this);
 		Players::deletePlayer(this);
 		setOnline(false);
 		isconnect = false;
-		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 	}
 }
 
