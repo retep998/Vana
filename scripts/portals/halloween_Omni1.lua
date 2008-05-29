@@ -1,1 +1,2 @@
-setPortalToId(682000100);
+showMessage("It seems to be locked.", 5);
+setPortalToId(-1);
