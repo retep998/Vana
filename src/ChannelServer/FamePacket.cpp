@@ -46,13 +46,3 @@ void FamePacket::SendFame(Player* player, Player* player2, char* cFamer, int cha
 	packet.addInt(NewFame);
 	packet.send(player);
 }
-
-void FamePacket::UpdateFame(Player* player) {
-	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
-	packet.addShort(0);
-	packet.addShort(2);
-	packet.addShort(player->getFame());
-	packet.send(player);
-}

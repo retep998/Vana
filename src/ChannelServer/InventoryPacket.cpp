@@ -114,16 +114,6 @@ void InventoryPacket::bought(Player* player){
 	packet.send(player);
 }
 
-void InventoryPacket::newMesos(Player* player, int mesos, bool is){
-	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(is);
-	packet.addShort(0);
-	packet.addShort(4);
-	packet.addInt(mesos);
-	packet.send(player);
-}
-
 void InventoryPacket::addNewItem(Player* player, Item* item, bool is){
 	Packet packet;
 	packet.addHeader(SEND_MOVE_ITEM);

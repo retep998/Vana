@@ -242,7 +242,7 @@ void Player::setHP(int hp, bool is){
 	else
 		this->hp = hp;
 	if (is)
-		PlayerPacket::newHP(this, (short)this->hp);
+		PlayerPacket::updateStat(this, 0x400, static_cast<short>(this->hp));
 }
 
 void Player::setMP(int mp, bool is){
@@ -252,32 +252,32 @@ void Player::setMP(int mp, bool is){
 		this->mp = mmp;
 	else
 		this->mp = mp;
-	PlayerPacket::newMP(this, (short)this->mp, is);
+	PlayerPacket::updateStat(this, 0x1000, static_cast<short>(this->mp), is);
 }
 
 void Player::setSp(short sp){
 	this->sp = sp;
-	PlayerPacket::setSP(this);
+	PlayerPacket::updateStat(this, 0x8000, sp);
 }
 
 void Player::setAp(short ap) {
 	this->ap = ap;
-	PlayerPacket::setAP(this);
+	PlayerPacket::updateStat(this, 0x4000, ap);
 }
 
 void Player::setJob(short job) {
 	this->job = job;
-	PlayerPacket::setJob(this);
+	PlayerPacket::updateStat(this, 0x20, job);
 }
 
 void Player::setExp(int exp, bool is) {
 	this->exp = exp;
 	if (is)
-		PlayerPacket::newEXP(this, this->exp);
+		PlayerPacket::updateStat(this, 0x10000, exp);
 }
 
 void Player::setLevel(int level) {
-	this->level = (unsigned char)level;
+	this->level = (unsigned char) level;
 }
 
 void Player::changeChannel(char channel) {

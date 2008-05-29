@@ -61,7 +61,7 @@ public:
 	int getMaxslots(){
 		return maxslots;
 	}
-	void setMesos(int mesos, bool is=0);
+	void setMesos(int mesos, bool is = 0);
 	void setMesosStart(int mesos){
 		this->mesos=mesos;
 	}
