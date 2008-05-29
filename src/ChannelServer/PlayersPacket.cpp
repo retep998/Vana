@@ -42,7 +42,7 @@ void PlayersPacket::showChat(Player* player, vector <Player*> players, char* msg
 	Packet packet;
 	packet.addHeader(SEND_CHAT);
 	packet.addInt(player->getPlayerid());
-	packet.addByte(0);
+	packet.addByte(player->isGM());
 	packet.addShort(strlen(msg));
 	packet.addString(msg, strlen(msg));
 	packet.sendTo<Player>(player, players, 1);
