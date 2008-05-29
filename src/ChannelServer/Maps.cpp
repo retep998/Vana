@@ -132,13 +132,16 @@ void Maps::moveMap(Player* player, unsigned char* packet){
 void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map special
 	char portalname[10];
 	int namelen = packet[1];
-	BufferUtilities::getString(packet+3, namelen, portalname);;   
+	BufferUtilities::getString(packet+3, namelen, portalname);
+
 	PortalInfo portal;
-	for(unsigned int i=0; i<info[player->getMap()].Portals.size(); i++)
-		if(strcmp(info[player->getMap()].Portals[i].from, portalname) == 0){
+	for (unsigned int i=0; i<info[player->getMap()].Portals.size(); i++) {
+		if (strcmp(info[player->getMap()].Portals[i].from, portalname) == 0) {
 			portal = info[player->getMap()].Portals[i];
 			break;
 		}
+	}
+
 	std::ostringstream filenameStream;
 	filenameStream << "scripts/portals/" << portal.script << ".lua";
 	LuaPortal(filenameStream.str(), player->getPlayerid(), &portal);
@@ -155,8 +158,12 @@ void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map speci
 }
 
 void Maps::changeMap(Player* player, int mapid, int pos){
-	if(mapid == 999999999 || mapid < 0){
+	if (mapid == 999999999) {
 		PlayerPacket::showMessage(player, "This portal is currently unavailable.", 5);
+		MapPacket::portalBlocked(player);
+		return;
+	}
+	else if (mapid < 0) {
 		MapPacket::portalBlocked(player);
 		return;
 	}
