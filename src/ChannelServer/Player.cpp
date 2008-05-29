@@ -388,11 +388,13 @@ void Player::saveStats() {
 
 void Player::saveEquips() {
 	mysqlpp::Query query = db.query();
+	query << "DELETE FROM equip WHERE charid = " << getPlayerid();
+	query.exec();
 
 	bool firstrun = true;
 	for (int i=0; i<inv->getEquipNum(); i++) {
 		if (firstrun) {
-			query << "REPLACE INTO equip VALUES (";
+			query << "INSERT INTO equip VALUES (";
 			firstrun = false;
 		}
 		else {
@@ -425,11 +427,13 @@ void Player::saveEquips() {
 
 void Player::saveItems() {
 	mysqlpp::Query query = db.query();
+	query << "DELETE FROM items WHERE charid = " << getPlayerid();
+	query.exec();
 
 	bool firstrun = true;
 	for (int i=0; i<inv->getItemNum(); i++) {
 		if (firstrun) {
-			query << "REPLACE INTO items VALUES (";
+			query << "INSERT INTO items VALUES (";
 			firstrun = false;
 		}
 		else {
@@ -445,13 +449,17 @@ void Player::saveItems() {
 }
 
 void Player::saveVariables() {
+	mysqlpp::Query query = db.query();
+	query << "DELETE FROM character_variables WHERE charid = " << getPlayerid();
+	query.exec();
+
 	if (variables.size() > 0) {
 		mysqlpp::Query query = db.query();
 
 		bool firstrun = true;
 		for (hash_map <string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++){
 			if (firstrun) {
-				query << "REPLACE INTO character_variables VALUES (";
+				query << "INSERT INTO character_variables VALUES (";
 				firstrun = false;
 			}
 			else {
