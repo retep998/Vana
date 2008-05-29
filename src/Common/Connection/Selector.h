@@ -44,12 +44,9 @@ public:
 
 	~Selector();
 
-	void registerSocket 
-		(int socket, 
-		bool selectRead, bool selectWrite, bool selectError, 
-		SelectHandler* handler);
+	void registerSocket(int socket, bool selectRead, bool selectWrite, bool selectError, SelectHandler *handler);
 
-	void unregisterSocket (int socket);
+	void unregisterSocket(int socket);
 	void selectThread();
 
 private:
@@ -63,7 +60,7 @@ private:
     fd_set writefds;
 	fd_set errorfds;
 	struct timeval timeout;
-	hash_map<int, SelectHandler*> handlers;
+	hash_map<int, SelectHandler *> handlers;
 };
 
 #endif

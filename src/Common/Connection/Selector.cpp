@@ -20,12 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Selector * Selector::singleton = 0;
 
-void _selectorThread (Selector* selectorObject) {
+void _selectorThread(Selector* selectorObject) {
 	selectorObject->selectThread();
 }
 
-Selector::Selector () {
-	terminate = false;
+Selector::Selector() : terminate(false) {
 	timeout.tv_sec = 1;
 	timeout.tv_usec = 0;
 	FD_ZERO(&readfds);
@@ -43,9 +42,7 @@ Selector::~Selector() {
 	terminate = true;
 }
 
-void Selector::registerSocket (int socket, 
-		bool selectRead, bool selectWrite, bool selectError, 
-		SelectHandler* handler) {
+void Selector::registerSocket(int socket, bool selectRead, bool selectWrite, bool selectError, SelectHandler *handler) {
 	if (selectRead) {
 		FD_SET(socket, &readfds);
 	}
@@ -58,7 +55,7 @@ void Selector::registerSocket (int socket,
 	handlers[socket] = handler;
 }
 
-void Selector::unregisterSocket (int socket) {
+void Selector::unregisterSocket(int socket) {
 	FD_CLR(socket, &readfds);
 	FD_CLR(socket, &writefds);
 	FD_CLR(socket, &errorfds);
@@ -66,7 +63,7 @@ void Selector::unregisterSocket (int socket) {
 }
 
 
-void Selector::selectThread () {
+void Selector::selectThread() {
 	fd_set t_readfds;
     fd_set t_writefds;
 	fd_set t_errorfds;
