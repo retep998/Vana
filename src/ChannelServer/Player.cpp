@@ -134,7 +134,7 @@ void Player::playerConnect(unsigned char *packet){
 	job = (short) res[0]["job"];
 	str = (short) res[0]["str"];
 	dex = (short) res[0]["dex"];
-	intt = (short) res[0]["intt"];
+	intt = (short) res[0]["int"];
 	luk = (short) res[0]["luk"];
 	hp = (short) res[0]["chp"];
 	rmhp = mhp = (short) res[0]["mhp"];
@@ -365,7 +365,7 @@ void Player::saveStats() {
 			<< "job = " << mysqlpp::quote << getJob() << ","
 			<< "str = " << mysqlpp::quote << getStr() << ","
 			<< "dex = " << mysqlpp::quote << getDex() << ","
-			<< "intt = " << mysqlpp::quote << getInt() << ","
+			<< "`int` = " << mysqlpp::quote << getInt() << ","
 			<< "luk = " << mysqlpp::quote << getLuk() << ","
 			<< "chp = " << mysqlpp::quote << getHP() << ","
 			<< "mhp = " << mysqlpp::quote << getRMHP() << ","
@@ -388,13 +388,11 @@ void Player::saveStats() {
 
 void Player::saveEquips() {
 	mysqlpp::Query query = db.query();
-	query << "DELETE FROM equip WHERE charid = " << getPlayerid();
-	query.exec();
 
 	bool firstrun = true;
 	for (int i=0; i<inv->getEquipNum(); i++) {
 		if (firstrun) {
-			query << "INSERT INTO equip VALUES (";
+			query << "REPLACE INTO equip VALUES (";
 			firstrun = false;
 		}
 		else {
@@ -427,13 +425,11 @@ void Player::saveEquips() {
 
 void Player::saveItems() {
 	mysqlpp::Query query = db.query();
-	query << "DELETE FROM items WHERE charid = " << getPlayerid();
-	query.exec();
 
 	bool firstrun = true;
 	for (int i=0; i<inv->getItemNum(); i++) {
 		if (firstrun) {
-			query << "INSERT INTO items VALUES (";
+			query << "REPLACE INTO items VALUES (";
 			firstrun = false;
 		}
 		else {
@@ -449,17 +445,13 @@ void Player::saveItems() {
 }
 
 void Player::saveVariables() {
-	mysqlpp::Query query = db.query();
-	query << "DELETE FROM character_variables WHERE charid = " << getPlayerid();
-	query.exec();
-
 	if (variables.size() > 0) {
 		mysqlpp::Query query = db.query();
 
 		bool firstrun = true;
 		for (hash_map <string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++){
 			if (firstrun) {
-				query << "INSERT INTO character_variables VALUES (";
+				query << "REPLACE INTO character_variables VALUES (";
 				firstrun = false;
 			}
 			else {

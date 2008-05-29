@@ -61,7 +61,7 @@ public:
 	int getMaxslots(){
 		return maxslots;
 	}
-	void setMesos(int mesos, bool is = 0);
+	void setMesos(int mesos, bool is=0);
 	void setMesosStart(int mesos){
 		this->mesos=mesos;
 	}
@@ -88,10 +88,7 @@ public:
 	void setEquipPos(int equipid, short pos){
 		equips[equipid]->pos = pos;
 	}
-	void deleteEquip(int equipid){
-		delete equips[equipid];
-		equips.erase(equips.begin()+equipid);
-	}
+	void deleteEquip(int equipid);
 	Equip* getEquip(int id){
 		return equips[id];
 	}
@@ -107,10 +104,7 @@ public:
 	void setItemPos(int itemid, short pos){
 		items[itemid]->pos = pos;
 	}
-	void deleteItem(int itemid){
-		delete items[itemid];
-		items.erase(items.begin()+itemid);
-	}
+	void deleteItem(int itemid);
 	void setItem(Item* item, int itemid){
 		items[itemid] = item;
 	}
