@@ -75,8 +75,8 @@ void Initializing::initializeMobs() {
 		mob.hpcolor = atoi(mobRow[6]);
 		mob.hpbgcolor = atoi(mobRow[7]);
 
-		if (mobRow[7] != NULL) {
-			mob.summon.push_back(atoi(mobRow[7]));
+		if (mobRow[8] != NULL) {
+			mob.summon.push_back(atoi(mobRow[8]));
 		}
 		previousid = atoi(mobRow[1]);
 	}
