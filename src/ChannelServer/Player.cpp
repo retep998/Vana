@@ -51,7 +51,6 @@ Player::~Player(){
 		Maps::removePlayer(this);
 		Players::deletePlayer(this);
 		setOnline(false);
-		isconnect = false;
 	}
 }
 
