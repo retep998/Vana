@@ -172,6 +172,22 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			long mesos = atoi(strtok_s(NULL, " ",&next_token));
 			player->inv->setMesos(mesos);
 		}
+		else if (strcmp(command, "cleardrops") == 0) {
+			while (Drops::drops[player->getMap()].size() != 0) {
+				Drops::drops[player->getMap()][0]->removeDrop();
+			}
+		}
+		else if (strcmp(command, "save") == 0) {
+			player->save();
+			PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
+		}
+		else if (strcmp(command, "warpto") == 0) {
+			char *name = strtok_s(NULL, " ",&next_token);
+			if (strlen(name) > 0)
+				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
+					if (strcmp(iter->second->getName(), name) == 0)
+						Maps::changeMap(player , iter->second->getMap(), iter->second->getMappos());
+		}
 		else if(strcmp(command, "kill") == 0){
 			if(strcmp(next_token, "all") == 0){
 				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++){
