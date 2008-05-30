@@ -47,23 +47,23 @@ void LoginServer::loadConfig() {
 		if(!config.keyExist(buf))
 			break; //No more worlds
 
-		World world;
-		world.name = config.getString(buf);
+		World *world = new World();
+		world->name = config.getString(buf);
 
 		sprintf_s(buf, "world%d_channels", i);
-		world.maxChannels = config.getInt(buf);
+		world->maxChannels = config.getInt(buf);
 
 		sprintf_s(buf, "world%d_id", i);
-		world.id = config.getInt(buf);
+		world->id = config.getInt(buf);
 
 		sprintf_s(buf, "world%d_ribbon", i);
-		world.ribbon = config.getInt(buf);
+		world->ribbon = config.getInt(buf);
 
 		sprintf_s(buf, "world%d_port", i);
-		world.port = config.getInt(buf);
+		world->port = config.getInt(buf);
 
-		world.connected = false;
-		Worlds::worlds[world.id] = world;
+		world->connected = false;
+		Worlds::worlds[world->id] = world;
 		i++;
 	}
 }

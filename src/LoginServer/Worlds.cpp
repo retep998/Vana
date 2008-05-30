@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayer.h"
 #include "Characters.h"
 
-hash_map <int, World> Worlds::worlds;
+hash_map <int, World *> Worlds::worlds;
 
 void Worlds::showWorld(PlayerLogin* player){
 	if(player->getStatus() != 4){
@@ -31,9 +31,9 @@ void Worlds::showWorld(PlayerLogin* player){
 		return;
 	}
 
-	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
-		if (iter->second.connected == true)
-			LoginPacket::showWorld(player, &iter->second);
+	for (hash_map <int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
+		if (iter->second->connected == true)
+			LoginPacket::showWorld(player, iter->second);
 	LoginPacket::worldEnd(player);
 }
 
@@ -60,15 +60,15 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
 	short port;
 	int maxchan;
-	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
-		if (iter->second.connected == 0) {
+	for (hash_map <int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		if (iter->second->connected == 0) {
 			player->setWorldId(iter->first);
-			worldid = iter->second.id;
-			port = iter->second.port;
-			maxchan = iter->second.maxChannels;
-			iter->second.connected = true;
-			iter->second.player = player;
-			iter->second.ip = player->getIP();
+			worldid = iter->second->id;
+			port = iter->second->port;
+			maxchan = iter->second->maxChannels;
+			iter->second->connected = true;
+			iter->second->player = player;
+			iter->second->ip = player->getIP();
 			break;
 		}
 	}
@@ -87,11 +87,11 @@ char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
 	short port;
 	string ip;
-	for (hash_map <int, World>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
-		if (iter->second.channels.size() < (size_t) iter->second.maxChannels && iter->second.connected) {
-			worldid = iter->second.id;
-			port = iter->second.port;
-			ip = iter->second.ip;
+	for (hash_map <int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		if (iter->second->channels.size() < (size_t) iter->second->maxChannels && iter->second->connected) {
+			worldid = iter->second->id;
+			port = iter->second->port;
+			ip = iter->second->ip;
 			break;
 		}
 	}
