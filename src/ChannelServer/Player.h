@@ -22,10 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Connection/PacketHandler.h"
 #include "PlayerInventory.h"
 #include "Skills.h"
+#include "Quests.h"
 #include "ChannelServer.h"
 #include <cmath>
 #include <vector>
 #include <string>
+#include <memory>
 
 using namespace std;
 
@@ -35,23 +37,15 @@ struct Pos {
 };
 
 class NPC;
-class PlayerSkills;
-class PlayerQuests;
 
 int distPos(Pos pos1, Pos pos2);
 
 struct SkillMapEnterActiveInfo;
 
-class Player:public AbstractPlayer {
+class Player : public AbstractPlayer {
 public:
-	Player () {
-		isconnect=0;
-		save_on_dc = true;
-		channel=ChannelServer::Instance()->getChannel();
-		shop=0;
-		npc=NULL;
-		chair=0;
-		itemEffect=0;
+	Player() : isconnect(false), save_on_dc(false), shop(0), npc(0), chair(0), itemEffect(0) {
+		channel = ChannelServer::Instance()->getChannel();
 		skill.types[0] = 0;
 		skill.types[1] = 0;
 		skill.types[2] = 0;
@@ -271,9 +265,9 @@ public:
 	void saveVariables();
 	void save();
 	void setOnline(bool online);
-	PlayerInventory* inv;
-	PlayerSkills* skills;
-	PlayerQuests* quests;
+	auto_ptr<PlayerInventory> inv;
+	auto_ptr<PlayerSkills> skills;
+	auto_ptr<PlayerQuests> quests;
 private:
 	void playerConnect(unsigned char *packet);
 	void changeKey(unsigned char *packet);

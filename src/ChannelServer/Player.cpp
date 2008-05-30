@@ -108,10 +108,10 @@ void Player::playerConnect(unsigned char *packet){
 		return;
 	}
 	setPlayerid(id);
-	inv = new PlayerInventory();
-	skills = new PlayerSkills();
+	inv.reset(new PlayerInventory);
+	skills.reset(new PlayerSkills);
+	quests.reset(new PlayerQuests);
 	skills->setPlayer(this);
-	quests = new PlayerQuests();
 	quests->setPlayer(this);
 
 	mysqlpp::Query query = db.query();
