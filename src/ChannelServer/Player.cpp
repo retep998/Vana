@@ -388,11 +388,13 @@ void Player::saveStats() {
 
 void Player::saveEquips() {
 	mysqlpp::Query query = db.query();
+	query << "DELETE FROM equip WHERE charid = " << mysqlpp::quote << this->getPlayerid();
+	query.exec();
 
 	bool firstrun = true;
 	for (int i=0; i<inv->getEquipNum(); i++) {
 		if (firstrun) {
-			query << "REPLACE INTO equip VALUES (";
+			query << "INSERT INTO equip VALUES (";
 			firstrun = false;
 		}
 		else {
@@ -425,11 +427,13 @@ void Player::saveEquips() {
 
 void Player::saveItems() {
 	mysqlpp::Query query = db.query();
+	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << this->getPlayerid();
+	query.exec();
 
 	bool firstrun = true;
 	for (int i=0; i<inv->getItemNum(); i++) {
 		if (firstrun) {
-			query << "REPLACE INTO items VALUES (";
+			query << "INSERT INTO items VALUES (";
 			firstrun = false;
 		}
 		else {
