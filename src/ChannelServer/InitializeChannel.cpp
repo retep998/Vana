@@ -32,10 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 bool atob(char *str) {
-	if (atoi(str) > 0)
-		return true;
-	else
-		return false;
+	return atoi(str) > 0;
 }
 
 // Mobs
