@@ -118,10 +118,15 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			else if (strcmp("grandpa", next_token) == 0) mapid = 801040100;
 			else if (strcmp("anego", next_token) == 0) mapid = 801040003;
 			else if (strcmp("tengu", next_token) == 0) mapid = 800020130;
-			else mapid = atoi(next_token);
+			else { 
+				char *endptr;
+				mapid = strtol(next_token, &endptr, 0);
+				if (strlen(endptr) != 0) mapid = -1;
+			}
 			if (Maps::info.find(mapid) != Maps::info.end())
 				Maps::changeMap(player, mapid, 0);
-			if(strlen(next_token) == 0) return;
+			else
+				PlayerPacket::showMessage(player, "Invalid map entered.", 5);
 		}
 		else if(strcmp(command, "addsp") == 0){
 			if(strlen(next_token) > 0){
