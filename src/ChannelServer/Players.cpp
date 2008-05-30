@@ -71,18 +71,10 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			if (strlen(next_token) == 0) {
 				char msg[60];
 				sprintf_s(msg, 60, "Current Map: %i", player->getMap());
+				PlayerPacket::showMessage(player, msg, 6);
 				return;
 			}
-			int mapid = atoi(strtok_s(NULL, " ",&next_token));
-			if (Maps::info.find(mapid) != Maps::info.end())
-				Maps::changeMap(player ,mapid, 0);
-		}
-		// Portal recalls
-		else if (strcmp(command, "port") == 0) {
-			if(strlen(next_token) == 0) return;
 			int mapid = -1;
-			
-			// Towns and etc
 			if (strcmp("town", next_token) == 0) mapid = Maps::info[player->getMap()].rm;
 			else if (strcmp("gm", next_token) == 0) mapid = 180000000;
 			else if (strcmp("fm", next_token) == 0) mapid = 910000000;
@@ -126,8 +118,10 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			else if (strcmp("grandpa", next_token) == 0) mapid = 801040100;
 			else if (strcmp("anego", next_token) == 0) mapid = 801040003;
 			else if (strcmp("tengu", next_token) == 0) mapid = 800020130;
-			if(mapid != -1)
+			else mapid = atoi(next_token);
+			if (Maps::info.find(mapid) != Maps::info.end())
 				Maps::changeMap(player, mapid, 0);
+			if(strlen(next_token) == 0) return;
 		}
 		else if(strcmp(command, "addsp") == 0){
 			if(strlen(next_token) > 0){
@@ -186,7 +180,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 		}
 		else if(strcmp(command, "level") == 0){
 			if(strlen(next_token) == 0) return;
-			Levels::setLevel(player, atoi(strtok_s(NULL, " ",&next_token)));
+			Levels::setLevel(player, atoi(next_token));
 		}
 		// Jobs
 		else if (strcmp(command, "job") == 0) {
@@ -235,24 +229,24 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			else if (strcmp(next_token, "shadower") == 0) job = 422;
 			else if (strcmp(next_token, "gm") == 0) job = 500;
 			else if (strcmp(next_token, "sgm") == 0) job = 510;
-			else job = atoi(strtok_s(NULL, " ", &next_token));
+			else job = atoi(next_token);
 
 			if (job >= 0)
 				Levels::setJob(player, job);
 		}
 		else if(strcmp(command, "ap") == 0){
 			if(strlen(next_token) == 0) return;
-			player->setAp(player->getAp()+atoi(strtok_s(NULL, " ",&next_token)));
+			player->setAp(player->getAp()+atoi(next_token));
 		}
 		else if(strcmp(command, "sp") == 0){
 			if(strlen(next_token) == 0) return;
-			player->setSp(player->getSp()+atoi(strtok_s(NULL, " ",&next_token)));
+			player->setSp(player->getSp()+atoi(next_token));
 		}
 		else if(strcmp(command, "killnpc") == 0){
 			player->setNPC(NULL);
 		}
 		else if(strcmp(command, "killall") == 0){
-			int size=Mobs::mobs[player->getMap()].size();
+			int size = Mobs::mobs[player->getMap()].size();
 			for (int j=0; j<size; j++){
 				Mobs::dieMob(player, Mobs::mobs[player->getMap()][0]);
 			}
@@ -273,7 +267,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
         }
 		else if(strcmp(command, "mesos") == 0){
 			if (strlen(next_token) == 0) return;
-			long mesos = atoi(strtok_s(NULL, " ",&next_token));
+			long mesos = atoi(next_token);
 			player->inv->setMesos(mesos);
 		}
 		else if (strcmp(command, "cleardrops") == 0) {
@@ -286,7 +280,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
 		}
 		else if (strcmp(command, "warp") == 0) {
-			char *name = strtok_s(NULL, " ",&next_token);
+			char *name = strtok_s(NULL, " ", &next_token);
 			if (strlen(next_token) == 0) return;
 			if (strlen(name) > 0)
 				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
@@ -294,23 +288,21 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 						if (strlen(next_token) > 0) {
 							int mapid = atoi(strtok_s(NULL, " ", &next_token));
 							if(Maps::info.find(mapid) != Maps::info.end()){
-								Maps::changeMap(iter->second ,mapid, 0);
+								Maps::changeMap(iter->second, mapid, 0);
 								break;
 							}
 						}
 		}
 		else if (strcmp(command, "warpto") == 0) {
-			char *name = strtok_s(NULL, " ",&next_token);
-			if (strlen(name) > 0)
+			if (strlen(next_token) > 0)
 				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
-					if (strcmp(iter->second->getName(), name) == 0)
+					if (strcmp(iter->second->getName(), next_token) == 0)
 						Maps::changeMap(player , iter->second->getMap(), iter->second->getMappos());
 		}
 		else if (strcmp(command, "mwarpto") == 0) {
-			char *name = strtok_s(NULL, " ",&next_token);
-			if (strlen(name) > 0)
+			if (strlen(next_token) > 0)
 				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
-					if (strcmp(iter->second->getName(), name) == 0) {
+					if (strcmp(iter->second->getName(), next_token) == 0) {
 						Maps::changeMap(iter->second, player->getMap(), player->getMappos());
 						break;
 					}
@@ -320,7 +312,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			if (strlen(next_token) == 0)
 				mapid = player->getMap();
 			else
-				mapid = atoi(strtok_s(NULL, "", &next_token));
+				mapid = atoi(next_token);
 
 			for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++){
 				if(Maps::info.find(mapid) != Maps::info.end()){
