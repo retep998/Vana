@@ -27,6 +27,6 @@ void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, 
 	Channel *chan = new Channel();
 	BufferUtilities::getString(packet+6, iplen, chan->ip);
 	chan->port = BufferUtilities::getShort(packet+6+iplen);
-	Worlds::worlds[player->getWorldId()].channels[channel] = chan;
+	Worlds::worlds[player->getWorldId()]->channels[channel] = chan;
 	std::cout << "Registering channel " << channel << " with IP " << chan->ip << " and port " << chan->port << std::endl;
 }

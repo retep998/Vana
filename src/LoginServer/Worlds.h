@@ -50,7 +50,7 @@ namespace Worlds {
 	void showWorld(PlayerLogin* player);
 	char connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
 	char connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server
-	extern hash_map <int, World> worlds;
+	extern hash_map <int, World *> worlds;
 };
 
 #endif

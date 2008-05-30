@@ -200,7 +200,7 @@ void Characters::connectGame(PlayerLogin* player, unsigned char *packet){
 		return;
 	}
 
-	LoginServerAcceptPlayerPacket::newPlayer(Worlds::worlds[player->getWorld()].player, player->getChannel(), id);
+	LoginServerAcceptPlayerPacket::newPlayer(Worlds::worlds[player->getWorld()]->player, player->getChannel(), id);
 	LoginPacket::connectIP(player, id);
 }
 
