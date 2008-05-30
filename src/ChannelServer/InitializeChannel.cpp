@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Inventory.h"
 #include "MySQLM.h"
+#include <iostream>
 #include <string>
 
 using std::string;
@@ -39,12 +40,12 @@ bool atob(char *str) {
 
 // Mobs
 void Initializing::initializeMobs() {
-	printf("Initializing Mobs... ");
+	std::cout << "Initializing Mobs... ";
 	mysqlpp::Query query = db.query("SELECT mobdata.id, mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -85,16 +86,16 @@ void Initializing::initializeMobs() {
 		Mobs::addMob(previousid, mob);
 	}
 
-	printf("DONE\n");
+	std::cout << "DONE" << std::endl;
 }
 // Reactors
 void Initializing::initializeReactors() {
-	printf("Initializing Reactors... ");
+	std::cout << "Initializing Reactors... ";
 	mysqlpp::Query query = db.query("SELECT * FROM reactoreventdata ORDER BY reactorid, state ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -126,16 +127,16 @@ void Initializing::initializeReactors() {
 		Reactors::addReactorEventInfo(atoi(reactorRow[1]), revent);
 	}
 
-	printf("DONE\n");
+	std::cout << "DONE" << std::endl;
 }
 // Items
 void Initializing::initializeItems() {
-	printf("Initializing Items... ");
+	std::cout << "Initializing Items... ";
 	mysqlpp::Query query = db.query("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -251,7 +252,7 @@ void Initializing::initializeItems() {
 	query << "SELECT * FROM itemskilldata ORDER BY itemid ASC";
 	
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -268,17 +269,17 @@ void Initializing::initializeItems() {
 		skill.maxlevel = atoi(itemSkillRow[4]);
 		Drops::consumes[atoi(itemSkillRow[1])].skills.push_back(skill);
 	}
-	printf("DONE\n");
+	std::cout << "DONE" << std::endl;
 }
 // Drops
 void Initializing::initializeDrops(){
-	printf("Initializing Drops... ");
+	std::cout << "Initializing Drops... ";
 	// Get all the drops
 	mysqlpp::Query query = db.query("SELECT * FROM itemdropdata ORDER BY mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -310,7 +311,7 @@ void Initializing::initializeDrops(){
 	query << "SELECT * FROM mesodropdata ORDER BY mobid ASC";
 	
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 	
@@ -321,16 +322,16 @@ void Initializing::initializeDrops(){
 		mesos.max = atoi(mesoRow[3]);
 		Drops::addMesos(atoi(mesoRow[1]), mesos);
 	}
-	printf("DONE\n");
+	std::cout << "DONE" << std::endl;
 }
 // Equips
 void Initializing::initializeEquips(){
-	printf("Initializing Equips... ");
+	std::cout << "Initializing Equips... ";
 	mysqlpp::Query query = db.query("SELECT * FROM equipdata ORDER BY type ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -384,16 +385,16 @@ void Initializing::initializeEquips(){
 		// Add equip to the drops table
 		Drops::addEquip(equipID,equip);
 	}
-	printf("DONE\n");
+	std::cout << "DONE" << std::endl;
 }
 // Shops
 void Initializing::initializeShops(){
-	printf("Initializing Shops... ");
+	std::cout << "Initializing Shops... ";
 	mysqlpp::Query query = db.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid, shopitemdata.id ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -420,7 +421,7 @@ void Initializing::initializeShops(){
 			item.price = atoi(shopRow[4]);
 			shop.items.push_back(item);
 		}
-		else printf("Warning: Shop %d does not have any shop items on record.", currentid);
+		else std::cout << "Warning: Shop " << currentid << " does not have any shop items on record.";
 
 		previousid = atoi(shopRow[1]);
 	}
@@ -429,17 +430,17 @@ void Initializing::initializeShops(){
 		Shops::addShop(previousid, shop);
 		shop.items.clear();
 	}
-	printf("DONE\n");
+	std::cout << "DONE" << std::endl;
 }
 // Quests
 void Initializing::initializeQuests(){
-	printf("Initializing Quests... ");
+	std::cout << "Initializing Quests... ";
 	// Quests
 	mysqlpp::Query query = db.query("SELECT * FROM questdata");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -455,7 +456,7 @@ void Initializing::initializeQuests(){
 	query << "SELECT * FROM questrequestdata ORDER BY questid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -497,7 +498,7 @@ void Initializing::initializeQuests(){
 	query << "SELECT * FROM questrewarddata ORDER BY questid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -546,16 +547,16 @@ void Initializing::initializeQuests(){
 		Quests::addReward(previousid, rwas);
 		rwas.clear();
 	}
-	printf("DONE\n");
+	std::cout << "DONE" << std::endl;
 }
 // Skills
 void Initializing::initializeSkills(){
-	printf("Initializing Skills... ");
+	std::cout << "Initializing Skills... ";
 	mysqlpp::Query query = db.query("SELECT * FROM skilldata ORDER BY skillid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -615,17 +616,17 @@ void Initializing::initializeSkills(){
 		skill.clear();
 	}
 	Skills::init();
-	printf("DONE\n");
+	std::cout << "DONE" << std::endl;
 }
 // Maps
 void Initializing::initializeMaps(){
-	printf("Initializing Maps... ");
+	std::cout << "Initializing Maps... ";
 	// Maps and portals
 	mysqlpp::Query query = db.query("SELECT mapdata.*, mapportaldata.portalid, mapportaldata.pfrom, mapportaldata.pto, mapportaldata.toid, mapportaldata.type, mapportaldata.x, mapportaldata.y, mapportaldata.script FROM mapdata LEFT JOIN mapportaldata ON mapdata.mapid=mapportaldata.mapid ORDER BY mapdata.mapid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -674,7 +675,7 @@ void Initializing::initializeMaps(){
 			strcpy_s(portal.script, mapRow[14]);
 			map.Portals.push_back(portal);
 		}
-		else printf("Warning: Map %d has no portal data on record.", currentid);
+		else std::cout << "Warning: Map " << currentid << " has no portal data on record.";
 
 		previousid = atoi(mapRow[1]);
 	}
@@ -687,7 +688,7 @@ void Initializing::initializeMaps(){
 	query << "SELECT * FROM mapnpcdata ORDER BY mapid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -730,7 +731,7 @@ void Initializing::initializeMaps(){
 	query << "SELECT * FROM mapmobdata ORDER BY mapid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -769,7 +770,7 @@ void Initializing::initializeMaps(){
 	query << "SELECT * FROM mapreactordata ORDER BY mapid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -809,7 +810,7 @@ void Initializing::initializeMaps(){
 	query << "SELECT * FROM mapfootholddata ORDER BY mapid ASC";
 
 	if (!(res = query.use())) {
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
@@ -831,5 +832,5 @@ void Initializing::initializeMaps(){
 		Drops::addFoothold(atoi(footsRow[1]), foot);
 		Drops::objids[atoi(footsRow[1])] = Drops::foots[atoi(footsRow[1])].size();
 	}
-	printf("DONE\n");
+	std::cout << "DONE" << std::endl;
 }

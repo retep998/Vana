@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "MySQLM.h"
 #include "Config.h"
+#include <iostream>
 #include <string>
 
 using std::string;
@@ -26,9 +27,9 @@ void Initializing::initializeMySQL(){
 	Config config("conf/mysql.lua");
 	printf("Initializing MySQL... ");
 	if(db.set_option(new mysqlpp::ReconnectOption(true)) && db.connect(config.getString("database").c_str(), config.getString("host").c_str(), config.getString("username").c_str(), config.getString("password").c_str(), config.getInt("port")))
-		printf("DONE\n");
+		std::cout << "DONE" << std::endl;
 	else{
-		printf("FAILED: %s\n", db.error());
+		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 }
