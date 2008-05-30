@@ -22,28 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 
 void PlayerInventory::setMesos(int mesos, bool is) {
-	this->mesos=mesos;
+	this->mesos = mesos;
 	PlayerPacket::updateStat(player, 0x40000, mesos, is);
-}
-
-void PlayerInventory::deleteEquip(int equipid) {
-	mysqlpp::Query query = db.query();
-
-	query << "DELETE FROM equip WHERE charid=" << mysqlpp::quote << player->getPlayerid()
-		<< " and pos=" << mysqlpp::quote << equips[equipid]->pos;
-	query.exec();
-	delete equips[equipid];
-	equips.erase(equips.begin()+equipid);
-}
-
-void PlayerInventory::deleteItem(int itemid) {
-	mysqlpp::Query query = db.query();
-
-	query << "DELETE FROM items WHERE charid=" << mysqlpp::quote << player->getPlayerid()
-		<< " and inv=" << mysqlpp::quote << (short) items[itemid]->inv
-		<< " and pos=" << mysqlpp::quote << items[itemid]->pos;
-	query.exec();
-
-	delete items[itemid];
-	items.erase(items.begin()+itemid);
 }
