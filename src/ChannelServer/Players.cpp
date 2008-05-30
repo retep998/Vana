@@ -171,7 +171,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 		else if(strcmp(command, "pos") == 0){
 			char text[50];
 			sprintf_s(text, 50, "X: %d Y: %d", player->getPos().x, player->getPos().y);
-			PlayersPacket::showMessage(text, 0);
+			PlayerPacket::showMessage(player, text, 6);
 		}
 		else if(strcmp(command, "item") == 0){
 			if(strlen(next_token) == 0) return;
