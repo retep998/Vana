@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 void WorldServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
-	if(!processAuth(packet, (char *) WorldServer::Instance()->getInterPassword())) return;
+	if(!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
 	switch(packet->getShort()){
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet->getBuffer()); break;
 		case INTER_TO_PLAYERS: packet->reset(); WorldServerAcceptPlayerPacket::sendToChannels(packet->getBuffer(), packet->getBufferLength()); break;

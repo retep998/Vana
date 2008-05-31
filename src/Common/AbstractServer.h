@@ -32,7 +32,7 @@ public:
 	virtual void loadData() = 0;
 	virtual void shutdown() = 0;
 	
-	const char * getInterPassword() const { return inter_password.c_str(); }
+	string getInterPassword() const { return inter_password; }
 protected:
 	AbstractServer();
 
