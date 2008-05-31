@@ -87,14 +87,17 @@ void Maps::addPlayer(Player* player) {
 }
 
 void Maps::removePlayer(Player* player){
-	for(unsigned int i=0; i<info[player->getMap()].Players.size(); i++)
-		if(info[player->getMap()].Players[i]->getPlayerid() == player->getPlayerid()){
+	for(unsigned int i=0; i<info[player->getMap()].Players.size(); i++) {
+		if(info[player->getMap()].Players[i]->getPlayerid() == player->getPlayerid()) {
 			info[player->getMap()].Players.erase(info[player->getMap()].Players.begin()+i);
 		}
+	}
 	MapPacket::removePlayer(player, info[player->getMap()].Players);
-	for(unsigned int i=0; i<Mobs::mobs[player->getMap()].size(); i++)
-		if(Mobs::mobs[player->getMap()][i]->getControl() == player)
+	for(unsigned int i=0; i<Mobs::mobs[player->getMap()].size(); i++) {
+		if(Mobs::mobs[player->getMap()][i]->getControl() == player) {
 			Mobs::mobs[player->getMap()][i]->setControl(NULL);
+		}
+	}
 	Mobs::updateSpawn(player->getMap());
 }
 
