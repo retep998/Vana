@@ -52,7 +52,7 @@ struct MobInfo {
 namespace Mobs {
 	extern hash_map <int, MobInfo> mobinfo;
 	extern hash_map <int, SpawnsInfo> info;
-	extern hash_map <int, vector<Mob*>> mobs;
+	extern hash_map <int, hash_map<int, Mob *>> mobs;
 	extern int mobscount;
 	void addMob(int id, MobInfo mob);
 	void addSpawn(int id, SpawnsInfo spawns);
@@ -67,14 +67,12 @@ namespace Mobs {
 	void spawnMob(Player* player, int mobid);
 	void dieMob(Player* player, Mob* mob);
 	void spawnMobPos(Player* player, int mobid, int xx, int yy);
-	Mob* getMobByID(int mobid, int map);
+	Mob * getMob(int mobid, int map);
 };
 
 class Mob {
 public:
-	Mob (){
-		control=NULL;
-	}
+	Mob() : control(0) { }
 	void setPos(Pos pos){
 		this->pos = pos;
 	}
@@ -126,7 +124,7 @@ public:
 		return type;
 	}
 	void setControl(Player* control);
-	Player* getControl(){
+	Player * getControl(){
 		return control;
 	}
 private:

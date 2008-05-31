@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <math.h>
 hash_map <int, MobInfo> Mobs::mobinfo;
 hash_map <int, SpawnsInfo> Mobs::info;
-hash_map <int, vector<Mob*>> Mobs::mobs;
+hash_map <int, hash_map<int, Mob *>> Mobs::mobs;
 int Mobs::mobscount=0x200;
 
 int getDistance(Pos a, Pos b){
@@ -47,12 +47,10 @@ void Mob::setControl(Player* control){
 
 void Mobs::monsterControl(Player* player, unsigned char* packet, int size){
 	int mobid = BufferUtilities::getInt(packet);
-	Mob* mob = getMobByID(mobid, player->getMap());
+	Mob *mob = getMob(mobid, player->getMap());
 	if(mob == NULL)
 		return;	
 	if(mob->getControl() == player){
-	//if(mob->getControl() != player)
-		//mob->setControl(player);
 		Pos cpos;
 		cpos.x = BufferUtilities::getShort(packet+size-4);
 		cpos.y = BufferUtilities::getShort(packet+size-2);
@@ -77,23 +75,18 @@ void Mobs::monsterControlSkill(Player* player, unsigned char* packet){
 	//TODO
 }
 
-void Mobs::checkSpawn(int mapid){
-	for(unsigned int i=0; i<info[mapid].size(); i++){
-		int check=0;
-		for(unsigned int j=0; j<mobs[mapid].size(); j++){
-			if(i == mobs[mapid][j]->getMapID()){
-				check=1;
-				break;
-			}
-		}
-		if(!check){
-			Mob* mob = new Mob();
-			mobs[mapid].push_back(mob);
+void Mobs::checkSpawn(int mapid) {
+	for (size_t i = 0; i < info[mapid].size(); i++) {
+		// (Re-)spawn Mobs
+		int id = i + 100;
+		if (mobs[mapid].find(id) == mobs[mapid].end()) {
+			Mob *mob = new Mob();
+			mobs[mapid][id] = mob;
 			Pos mobpos;
 			mobpos.x = info[mapid][i].x;
 			mobpos.y = info[mapid][i].cy;
 			mob->setPos(mobpos);
-			mob->setID(i+100);
+			mob->setID(id);
 			mob->setMobID(info[mapid][i].id);
 			mob->setMapID(i);
 			mob->setHP(mobinfo[info[mapid][i].id].hp);
@@ -103,64 +96,40 @@ void Mobs::checkSpawn(int mapid){
 			if(Maps::info[mapid].Players.size()>0)
 				MobsPacket::spawnMob(Maps::info[mapid].Players[0], mob, Maps::info[mapid].Players, 1);
 		}
-		Mob* mob = NULL;
-		for(unsigned int j=0; j<mobs[mapid].size(); j++)
-			if(i == mobs[mapid][j]->getMapID()){
-				mob = mobs[mapid][j];
-				break;
-			}
-			
-		if(mob == NULL){
-			for(unsigned int j=0; j<mobs[mapid].size(); j++)
-				if(i == mobs[mapid][j]->getMapID()){
-					mob = mobs[mapid][j];
-					break;
-				}
-			if(mob == NULL)
-				continue;
-		}
-		if(Maps::info[mapid].Players.size() > 0 && mob->getControl()==0){
-			int maxpos = distPos(mob->getPos(), Maps::info[mapid].Players[0]->getPos());
-			int posi = 0;
-			for(unsigned int k=0; k<Maps::info[mapid].Players.size(); k++){
-				int curpos = distPos(mob->getPos(), Maps::info[mapid].Players[k]->getPos());
-				if(curpos < maxpos){
-					maxpos = curpos;
-					posi = k;
-				}
-			}
-			mob->setControl(Maps::info[mapid].Players[posi]);
-		}
 	}
+	updateSpawn(mapid);
 }	
 
 void Mobs::showMobs(Player* player){
 	updateSpawn(player->getMap()); 
-	for(unsigned int i=0; i<mobs[player->getMap()].size(); i++){
-		MobsPacket::showMob(player, mobs[player->getMap()][i]);
+	for (hash_map<int, Mob *>::iterator iter = Mobs::mobs[player->getMap()].begin(); iter != Mobs::mobs[player->getMap()].end(); iter++) {
+		MobsPacket::showMob(player, iter->second);
 	}
 }
 
 void Mobs::updateSpawn(int mapid){
-	for(unsigned int i=0; i<mobs[mapid].size(); i++){
-		if(Maps::info[mapid].Players.size() > 0 && mobs[mapid][i]->getControl()==NULL){
-			int maxpos = distPos(mobs[mapid][i]->getPos(), Maps::info[mapid].Players[0]->getPos());
-			int posi = 0;
-			for(unsigned int k=0; k<Maps::info[mapid].Players.size(); k++){
-				int curpos = distPos(mobs[mapid][i]->getPos(), Maps::info[mapid].Players[k]->getPos());
-				if(curpos < maxpos){
+	for (hash_map<int, Mob *>::iterator iter = Mobs::mobs[mapid].begin(); iter != Mobs::mobs[mapid].end(); iter++) {
+		Mob *mob = iter->second;
+		if (Maps::info[mapid].Players.size() > 0 && mob->getControl() == 0) {
+			bool check = false;
+			int maxpos = distPos(mob->getPos(), Maps::info[mapid].Players[0]->getPos());
+			for(unsigned int j = 0; j < Maps::info[mapid].Players.size(); j++){
+				int curpos = distPos(mob->getPos(), Maps::info[mapid].Players[j]->getPos());
+				if(curpos <= maxpos){
 					maxpos = curpos;
-					posi = k;
+					mob->setControl(Maps::info[mapid].Players[j]);
+					check = true;
+					break;
 				}
 			}
-			mobs[mapid][i]->setControl(Maps::info[mapid].Players[posi]);
+			if (!check) {
+				mob->setControl(0);
+			}
 		}
-		else if(Maps::info[mapid].Players.size() == 0)
-			mobs[mapid][i]->setControl(NULL);
 	}
 }
 void Mobs::dieMob(Player* player, Mob* mob){
-	MobsPacket::dieMob(player, Maps::info[player->getMap()].Players, mob , mob->getID());
+	MobsPacket::dieMob(player, Maps::info[player->getMap()].Players, mob, mob->getID());
 
 	// Account for Holy Symbol
 	int hsrate = 0;
@@ -175,13 +144,12 @@ void Mobs::dieMob(Player* player, Mob* mob){
 	Drops::dropMob(player, mob);
 	
 	// Spawn mobs it's supposed to spawn when it dies
-	vector<int>::iterator vi = mobinfo[mob->getMobID()].summon.begin();
-	while (vi != mobinfo[mob->getMobID()].summon.end()) {
-		int mobid = *vi++;
-		Mob* mobb = new Mob();
-		mobs[player->getMap()].push_back(mobb);
+	for (vector<int>::iterator vi = mobinfo[mob->getMobID()].summon.begin(); vi != mobinfo[mob->getMobID()].summon.end(); vi++) {
+		int mobid = *vi;
+		Mob *mobb = new Mob();
+		mobs[player->getMap()][mobscount] = mobb;
 		mobb->setPos(mob->getPos());
-		mobb->setID(mobscount++);
+		mobb->setID(mobscount);
 		mobb->setMobID(mobid);
 		mobb->setMapID(-1);
 		mobb->setHP(mobinfo[mobid].hp);
@@ -189,25 +157,19 @@ void Mobs::dieMob(Player* player, Mob* mob){
 		mobb->setFH(0);
 		mobb->setControl(player);
 		mobb->setType(2);
+		mobscount++;
 		for(unsigned int j=0; j<Maps::info[player->getMap()].Players.size(); j++)
 			MobsPacket::showMob(Maps::info[player->getMap()].Players[j], mobb);
 	}
 
 	player->quests->updateQuestMob(mob->getMobID());
-	for(unsigned int i=0; i<mobs[player->getMap()].size(); i++){
-		if(mobs[player->getMap()][i] == mob){
-			mobs[player->getMap()].erase(mobs[player->getMap()].begin()+i);
-			break;
-		}
-	}
+	mobs[player->getMap()].erase(mob->getID());
 	delete mob;
 }
 
-Mob* Mobs::getMobByID(int mobid, int map){
-	for(unsigned int i=0; i<mobs[map].size(); i++){
-		if(mobs[map][i]->getID() == mobid){
-			return mobs[map][i];
-		}
+Mob * Mobs::getMob(int mobid, int map){
+	if(mobs[map].find(mobid) != mobs[map].end()) {
+		return mobs[map][mobid];
 	}
 	return NULL;
 }
@@ -221,7 +183,7 @@ void Mobs::damageMobSpell(Player* player, unsigned char* packet){
 		Skills::useAttackSkill(player, skillid);
 	for(int i=0; i<howmany; i++){
 		int mobid = BufferUtilities::getInt(packet+14+i*(22+4*(hits-1)));
-		Mob* mob = getMobByID(mobid, map);
+		Mob* mob = getMob(mobid, map);
 		for(int k=0; k<hits; k++){
 			int damage = BufferUtilities::getInt(packet+32+i*(22+4*(hits-1))+k*4);
 			if(mob!=NULL){
@@ -258,7 +220,7 @@ void Mobs::damageMob(Player* player, unsigned char* packet){
 		Skills::useAttackSkill(player, skillid);
 	for(int i=0; i<howmany; i++){
         int mobid = BufferUtilities::getInt(packet+14+i*(22-s4211006+4*(hits-1)));
-		Mob* mob = getMobByID(mobid, map);
+		Mob* mob = getMob(mobid, map);
 		for(int k=0; k<hits; k++){
 			int damage = BufferUtilities::getInt(packet+32-s4211006+i*(22-s4211006+4*(hits-1))+k*4);
 			totaldmg = totaldmg + damage;
@@ -331,7 +293,7 @@ void Mobs::damageMobRanged(Player* player, unsigned char* packet, int size){
 	int totalDmg = 0;
 	for(int i=0; i<howmany; i++){
 		int mobid = BufferUtilities::getInt(packet+19+4*s3121004+i*(22+4*(hits-1)));
-		Mob* mob = getMobByID(mobid, map);
+		Mob* mob = getMob(mobid, map);
 		for(int k=0; k<hits; k++){
 			damage = BufferUtilities::getInt(packet+37+4*s3121004+i*(22+4*(hits-1))+k*4);
 			totalDmg += damage;
@@ -365,30 +327,18 @@ void Mobs::damageMobRanged(Player* player, unsigned char* packet, int size){
 	}
 }
 
-void Mobs::spawnMob(Player* player, int mobid){
-	Mob* mob = new Mob();
-	mobs[player->getMap()].push_back(mob);
-	mob->setPos(player->getPos());
-	mob->setID(mobscount++);
-	mob->setMobID(mobid);
-	mob->setMapID(-1);
-	mob->setHP(mobinfo[mobid].hp);
-	mob->setMP(mobinfo[mobid].mp);
-	mob->setFH(0);
-	mob->setType(2);
-	mob->setControl(player);
-	for(unsigned int j=0; j<Maps::info[player->getMap()].Players.size(); j++)
-		MobsPacket::showMob(Maps::info[player->getMap()].Players[j], mob);
+void Mobs::spawnMob(Player* player, int mobid) {
+	spawnMobPos(player, mobid, player->getPos().x, player->getPos().y);
 }
 
-void Mobs::spawnMobPos(Player* player, int mobid, int xx, int yy){
-    Mob* mob = new Mob();
-    mobs[player->getMap()].push_back(mob);
+void Mobs::spawnMobPos(Player* player, int mobid, int xx, int yy) {
+    Mob *mob = new Mob();
+    mobs[player->getMap()][mobscount] = mob;
     Pos spawnPos;
     spawnPos.x = xx;
     spawnPos.y = yy;
     mob->setPos(spawnPos);
-    mob->setID(mobscount++);
+    mob->setID(mobscount);
     mob->setMobID(mobid);
     mob->setMapID(-1);
     mob->setHP(mobinfo[mobid].hp);
@@ -396,6 +346,7 @@ void Mobs::spawnMobPos(Player* player, int mobid, int xx, int yy){
     mob->setFH(0);
     mob->setControl(player);
     mob->setType(2);
+	mobscount++;
 	for(unsigned int j=0; j<Maps::info[player->getMap()].Players.size(); j++)
 		MobsPacket::showMob(Maps::info[player->getMap()].Players[j], mob);
 }

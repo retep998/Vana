@@ -251,9 +251,12 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			player->setNPC(NULL);
 		}
 		else if(strcmp(command, "killall") == 0){
-			int size = Mobs::mobs[player->getMap()].size();
-			for (int j=0; j<size; j++){
-				Mobs::dieMob(player, Mobs::mobs[player->getMap()][0]);
+			while (1) {
+				hash_map<int, Mob *>::iterator iter = Mobs::mobs[player->getMap()].begin();
+				if (iter == Mobs::mobs[player->getMap()].end()) {
+					break;
+				}
+				Mobs::dieMob(player, iter->second);
 			}
 		}
 		else if(strcmp(command, "horntail") == 0){
@@ -412,12 +415,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 void Players::damagePlayer(Player* player, unsigned char* packet){
 	int damage = BufferUtilities::getInt(packet+5);
 	int mobid = BufferUtilities::getInt(packet+13);
-	Mob* mob = NULL;
-	for(unsigned int i=0; i<Mobs::mobs[player->getMap()].size(); i++)
-		if(Mobs::mobs[player->getMap()][i]->getID() == mobid){
-			mob = Mobs::mobs[player->getMap()][i];
-			break;
-		}
+	Mob *mob = Mobs::mobs[player->getMap()][mobid];
 
 	// Magic Guard
 	if(player->skills->getActiveSkillLevel(2001002) > 0){
