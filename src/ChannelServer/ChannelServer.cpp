@@ -85,15 +85,14 @@ void ChannelServer::sendToWorld(Packet &packet) {
 	packet.send(worldPlayer);
 }
 
-void ChannelServer::setScrollingHeader(char *message) {
-	string strMsg = string(message);
-	if (scrollingHeader != strMsg) {
-		scrollingHeader = strMsg;
+void ChannelServer::setScrollingHeader(const string &message) {
+	if (scrollingHeader != message) {
+		scrollingHeader = message;
 		if (scrollingHeader.size() == 0) {
 			ServerPacket::scrollingHeaderOff();
 		}
 		else {
-			ServerPacket::changeScrollingHeader(scrollingHeader.c_str());
+			ServerPacket::changeScrollingHeader(scrollingHeader);
 		}
 	}
 }

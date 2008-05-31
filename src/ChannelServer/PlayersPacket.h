@@ -15,11 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERSPACK_H
-#define PLAYERSPACK_H
+#ifndef PLAYERSPACKET_H
+#define PLAYERSPACKET_H
 
+#include <string>
 #include <vector>
 
+using std::string;
 using std::vector;
 
 class Player;
@@ -32,8 +34,8 @@ namespace PlayersPacket {
 	void damagePlayer(Player* player, vector <Player*> players, int dmg, int mob);
 	void showMessage(char* msg, char type);
 	void showInfo(Player* player, Player* getinfo);
-	void findPlayer(Player* player, char* name, int map, unsigned char is = 0, bool is_channel = 0);
-	void whisperPlayer(Player *target, char *whisperer_name, int channel, char *message);
+	void findPlayer(Player* player, const string &name, int map, unsigned char is = 0, bool is_channel = 0);
+	void whisperPlayer(Player *target, const string &whisperer_name, int channel, const string &message);
 	void sendToPlayers(unsigned char *data, int len);
 };
 

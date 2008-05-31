@@ -28,14 +28,14 @@ WorldServerConnectPlayer::WorldServerConnectPlayer() {
 
 void WorldServerConnectPlayer::realHandleRequest(ReadPacket *packet) {
 	switch(packet->getShort()) {
-		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet->getBuffer()); break;
-		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet->getBuffer()); break;
-		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerConnectHandler::playerChangeChannel(this, packet->getBuffer()); break;
+		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
+		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
+		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerConnectHandler::playerChangeChannel(this, packet); break;
 		case INTER_TO_PLAYERS: PlayersPacket::sendToPlayers(packet->getBuffer(), packet->getBufferLength()); break;
-		case INTER_FIND: WorldServerConnectHandler::findPlayer(packet->getBuffer()); break;
-		case INTER_WHISPER: WorldServerConnectHandler::whisperPlayer(packet->getBuffer()); break;
-		case INTER_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet->getBuffer()); break;
-		case INTER_NEW_CONNECTABLE: WorldServerConnectHandler::newConnectable(packet->getBuffer()); break;
+		case INTER_FIND: WorldServerConnectHandler::findPlayer(packet); break;
+		case INTER_WHISPER: WorldServerConnectHandler::whisperPlayer(packet); break;
+		case INTER_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet); break;
+		case INTER_NEW_CONNECTABLE: WorldServerConnectHandler::newConnectable(packet); break;
 	}
 }
 

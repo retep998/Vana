@@ -27,8 +27,8 @@ using namespace stdext;
 class Player;
 
 namespace ServerPacket {
-	void showScrollingHeader(Player* player, const char *msg);
-	void changeScrollingHeader(const char *msg);
+	void showScrollingHeader(Player* player, const string &msg);
+	void changeScrollingHeader(const string &msg);
 	void scrollingHeaderOff();
 };
 
