@@ -20,10 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ServerPlayer.h"
 
+class ReadPacket;
+
 class LoginServerConnectPlayer : public AbstractServerConnectPlayer {
 public:
 	LoginServerConnectPlayer();
-	void realHandleRequest(unsigned char *buf, int len);
+	void realHandleRequest(ReadPacket *packet);
 };
 
 class LoginServerConnectPlayerFactory : public AbstractPlayerFactory {

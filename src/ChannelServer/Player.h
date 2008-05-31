@@ -37,6 +37,7 @@ struct Pos {
 };
 
 class NPC;
+class ReadPacket;
 
 int distPos(Pos pos1, Pos pos2);
 
@@ -60,7 +61,7 @@ public:
 
 	~Player();
 
-	void realHandleRequest(unsigned char* buf, int len);
+	void realHandleRequest(ReadPacket *packet);
 	void setPlayerid(int id){
 		this->id = id;
 	}

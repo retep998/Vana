@@ -15,16 +15,33 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AuthenticationPacket.h"
-#include "ServerPlayer.h"
-#include "InterHeader.h"
-#include "PacketCreator.h"
+#ifndef READPACKET_H
+#define READPACKET_H
 
-void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, string pass, string ip) {
-	Packet packet;
-	packet.addHeader(INTER_PASSWORD);
-	packet.addString(pass);
-	packet.addString(ip);
-	packet.addByte(player->getType());
-	packet.send(player);
-}
+#include <memory>
+#include <string>
+
+using std::string;
+
+class ReadPacket {
+public:
+	ReadPacket(unsigned char *buffer, size_t length);
+	
+	unsigned char getByte();
+	void skipBytes(size_t len);
+	int getInt();
+	short getHeader(); // Basically getShort that always read at start
+	short getShort();
+	string getString();
+	string getString(size_t len);
+	unsigned char * getBuffer();
+	size_t getBufferLength();
+
+	void reset();
+private:
+	unsigned char *buffer;
+	size_t length;
+	size_t pos;
+};
+
+#endif

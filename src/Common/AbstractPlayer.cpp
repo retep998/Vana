@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractPlayer.h"
 #include "PacketHandler.h"
+#include "ReadPacket.h"
 #include "PingPacket.h"
 #include "Timer.h"
 #include "BufferUtilities.h"
@@ -67,12 +68,12 @@ AbstractPlayer::AbstractPlayer() {
 	setTimer();
 }
 
-void AbstractPlayer::handleRequest (unsigned char* buf, int len) {
+void AbstractPlayer::handleRequest(ReadPacket *packet) {
 	is_pinged = false;
 	PingTimer::Instance()->reset(timer);
-	if (is_server && BufferUtilities::getShort(buf) == SEND_PING)
+	if (is_server && packet->getHeader() == SEND_PING)
 		PingPacket::pong(this);
-	realHandleRequest(buf, len);
+	realHandleRequest(packet);
 }
 
 void AbstractPlayer::sendPacket(unsigned char *buf, int len) {
