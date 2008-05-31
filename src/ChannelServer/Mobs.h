@@ -64,6 +64,7 @@ namespace Mobs {
 	void checkSpawn(int mapid);
 	void showMobs(Player* player);
 	void updateSpawn(int mapid);
+	void updateSpawn(int mapid, Mob *mob);
 	void spawnMob(Player* player, int mobid);
 	void dieMob(Player* player, Mob* mob);
 	void spawnMobPos(Player* player, int mobid, int xx, int yy);

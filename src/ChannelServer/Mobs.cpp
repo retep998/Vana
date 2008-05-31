@@ -93,11 +93,12 @@ void Mobs::checkSpawn(int mapid) {
 			mob->setMP(mobinfo[info[mapid][i].id].mp);
 			mob->setFH(info[mapid][i].fh);
 			mob->setType(2);
-			if(Maps::info[mapid].Players.size()>0)
+			if (Maps::info[mapid].Players.size() > 0) {
 				MobsPacket::spawnMob(Maps::info[mapid].Players[0], mob, Maps::info[mapid].Players, 1);
+				updateSpawn(mapid, mob);
+			}
 		}
 	}
-	updateSpawn(mapid);
 }	
 
 void Mobs::showMobs(Player* player){
@@ -109,25 +110,29 @@ void Mobs::showMobs(Player* player){
 
 void Mobs::updateSpawn(int mapid){
 	for (hash_map<int, Mob *>::iterator iter = Mobs::mobs[mapid].begin(); iter != Mobs::mobs[mapid].end(); iter++) {
-		Mob *mob = iter->second;
-		if (Maps::info[mapid].Players.size() > 0 && mob->getControl() == 0) {
-			bool check = false;
-			int maxpos = distPos(mob->getPos(), Maps::info[mapid].Players[0]->getPos());
-			for(unsigned int j = 0; j < Maps::info[mapid].Players.size(); j++){
-				int curpos = distPos(mob->getPos(), Maps::info[mapid].Players[j]->getPos());
-				if(curpos <= maxpos){
-					maxpos = curpos;
-					mob->setControl(Maps::info[mapid].Players[j]);
-					check = true;
-					break;
-				}
+		updateSpawn(mapid, iter->second);
+	}
+}
+
+void Mobs::updateSpawn(int mapid, Mob *mob) {
+	if (Maps::info[mapid].Players.size() > 0 && mob->getControl() == 0) {
+		bool check = false;
+		int maxpos = distPos(mob->getPos(), Maps::info[mapid].Players[0]->getPos());
+		for(unsigned int j = 0; j < Maps::info[mapid].Players.size(); j++){
+			int curpos = distPos(mob->getPos(), Maps::info[mapid].Players[j]->getPos());
+			if(curpos <= maxpos){
+				maxpos = curpos;
+				mob->setControl(Maps::info[mapid].Players[j]);
+				check = true;
+				break;
 			}
-			if (!check) {
-				mob->setControl(0);
-			}
+		}
+		if (!check) {
+			mob->setControl(0);
 		}
 	}
 }
+
 void Mobs::dieMob(Player* player, Mob* mob){
 	MobsPacket::dieMob(player, Maps::info[player->getMap()].Players, mob, mob->getID());
 
