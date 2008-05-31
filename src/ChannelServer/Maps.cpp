@@ -45,14 +45,8 @@ public:
 			if(ctimer[mapid])
 			return;
 		Maps::mapTimer(mapid);
-		timers[Timer::Instance()->setTimer(10000, this)] = mapid;
+		timers[Timer::Instance()->setTimer(10000, this, true)] = mapid;
 		ctimer[mapid] = 1;
-	}
-	void next(int mapid, int is){
-		if(is)
-			timers[Timer::Instance()->setTimer(10000, this)] = mapid;
-		else
-			ctimer[mapid] = 0;
 	}
 private:
 	static MapTimer *singleton;
@@ -201,13 +195,7 @@ void Maps::showClock(Player* player){
 	MapPacket::showClock(player, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
 }
 
-void Maps::mapTimer(int mapid){
-	if(info[mapid].Players.size() == 0){
-		MapTimer::Instance()->next(mapid, 0);
-		return;
-	}
-	else
-		MapTimer::Instance()->next(mapid, 1);
+void Maps::mapTimer(int mapid) {
 	Mobs::checkSpawn(mapid);
 	Drops::checkDrops(mapid);
 }
