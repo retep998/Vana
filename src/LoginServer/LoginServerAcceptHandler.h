@@ -19,9 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LOGINSERVERACCEPTHANDLER_H
 
 class LoginServerAcceptPlayer;
+class ReadPacket;
 
 namespace LoginServerAcceptHandler {
-	void registerChannel(LoginServerAcceptPlayer *player, unsigned char *packet);
+	void registerChannel(LoginServerAcceptPlayer *player, ReadPacket *packet);
 }
 
 #endif

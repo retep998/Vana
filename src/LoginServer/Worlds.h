@@ -28,7 +28,7 @@ class PlayerLogin;
 class LoginServerAcceptPlayer;
 
 struct Channel {
-	char ip[15];
+	string ip;
 	short port;
 };
 

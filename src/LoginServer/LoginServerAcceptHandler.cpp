@@ -19,14 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayer.h"
 #include "BufferUtilities.h"
 #include "Worlds.h"
+#include "ReadPacket.h"
 #include <iostream>
 
-void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, unsigned char *packet) {
-	int channel = BufferUtilities::getInt(packet);
-	short iplen = BufferUtilities::getShort(packet+4);
+void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, ReadPacket *packet) {
+	int channel = packet->getInt();
 	Channel *chan = new Channel();
-	BufferUtilities::getString(packet+6, iplen, chan->ip);
-	chan->port = BufferUtilities::getShort(packet+6+iplen);
+	chan->ip = packet->getString();
+	chan->port = packet->getShort();
 	Worlds::worlds[player->getWorldId()]->channels[channel] = chan;
 	std::cout << "Registering channel " << channel << " with IP " << chan->ip << " and port " << chan->port << std::endl;
 }
