@@ -228,10 +228,13 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 int LuaExports::killMob(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
-	for (unsigned int i=0; i<Mobs::mobs[map].size(); i++) {
-		if (Mobs::mobs[map][i]->getMobID() == mobid) {
-			Mobs::dieMob(getPlayer(luaVm), Mobs::mobs[map][i]);
-			i--;
+	while (1) {
+		hash_map<int, Mob *>::iterator iter = Mobs::mobs[map].begin();
+		if (iter == Mobs::mobs[map].end()) {
+			break;
+		}
+		if (iter->second->getMobID() == mobid) {
+			Mobs::dieMob(getPlayer(luaVm), iter->second);
 		}
 	}
 	return 1;
