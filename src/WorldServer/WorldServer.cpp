@@ -46,7 +46,7 @@ void WorldServer::shutdown() {
 	//TODO
 }
 
-void WorldServer::setScrollingHeader(const char *message) {
-	scrollingHeader = string(message);
+void WorldServer::setScrollingHeader(const string &message) {
+	scrollingHeader = message;
 	WorldServerAcceptPlayerPacket::scrollingHeader(message);
 }

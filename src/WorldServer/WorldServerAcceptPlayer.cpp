@@ -28,13 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void WorldServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
 	if(!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
 	switch(packet->getShort()){
-		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet->getBuffer()); break;
+		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet); break;
 		case INTER_TO_PLAYERS: packet->reset(); WorldServerAcceptPlayerPacket::sendToChannels(packet->getBuffer(), packet->getBufferLength()); break;
-		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::registerPlayer(this, packet->getBuffer()); break;
-		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::removePlayer(this, packet->getBuffer()); break;
-		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, packet->getBuffer()); break;
-		case INTER_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet->getBuffer()); break;
-		case INTER_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet->getBuffer()); break;
+		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::registerPlayer(this, packet); break;
+		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::removePlayer(this, packet); break;
+		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
+		case INTER_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
+		case INTER_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet); break;
 	}
 }
 

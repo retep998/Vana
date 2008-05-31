@@ -28,9 +28,9 @@ namespace WorldServerAcceptPlayerPacket {
 	void connect(WorldServerAcceptPlayer *player, int channel, short port);
 	void playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, const string &ip, short port);
 	void sendToChannels(unsigned char *data, int len);
-	void findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, char *findee, unsigned char is = 0);
-	void whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, char *whisperer, int channel, char *message);
-	void scrollingHeader(const char *message);
+	void findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, const string &findee, unsigned char is = 0);
+	void whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, const string &whisperer, int channel, const string &message);
+	void scrollingHeader(const string &message);
 	void newConnectable(int channel, int playerid);
 };
 

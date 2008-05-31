@@ -43,36 +43,32 @@ void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int len)
 	Channels::Instance()->sendToAll(packet);
 }
 
-void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, char *findee, unsigned char is) {
+void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, const string &findee, unsigned char is) {
 	Packet packet;
 	packet.addHeader(INTER_FIND);
 	packet.addInt(finder);
 	packet.addInt(channel);
-	packet.addShort(strlen(findee));
-	packet.addString(findee, strlen(findee));
+	packet.addString(findee);
 	packet.addByte(is);
 
 	packet.send(player);
 }
 
-void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, char *whisperer, int channel, char *message) {
+void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, const string &whisperer, int channel, const string &message) {
 	Packet packet;
 	packet.addHeader(INTER_WHISPER);
 	packet.addInt(whisperee);
-	packet.addShort(strlen(whisperer));
-	packet.addString(whisperer, strlen(whisperer));
+	packet.addString(whisperer);
 	packet.addInt(channel);
-	packet.addShort(strlen(message));
-	packet.addString(message, strlen(message));
+	packet.addString(message);
 
 	packet.send(player);
 }
 
-void WorldServerAcceptPlayerPacket::scrollingHeader(const char *message) {
+void WorldServerAcceptPlayerPacket::scrollingHeader(const string &message) {
 	Packet packet;
 	packet.addHeader(INTER_SCROLLING_HEADER);
-	packet.addShort(strlen(message));
-	packet.addString(message, strlen(message));
+	packet.addString(message);
 	
 	Channels::Instance()->sendToAll(packet);
 }

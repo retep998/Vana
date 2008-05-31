@@ -20,15 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPlayerPacket.h"
 #include "BufferUtilities.h"
 #include "WorldServer.h"
+#include "ReadPacket.h"
 #include <iostream>
 
-void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, unsigned char *packet) {
-	if (packet[0] != 0xFF) {
-		WorldServer::Instance()->setWorldId(packet[0]);
-		WorldServer::Instance()->setInterPort(BufferUtilities::getShort(packet+1));
-		WorldServer::Instance()->setMaxChannels(BufferUtilities::getInt(packet+3));
+void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPacket *packet) {
+	char worldid = packet->getByte();
+	if (worldid != 0xFF) {
+		WorldServer::Instance()->setWorldId(worldid);
+		WorldServer::Instance()->setInterPort(packet->getShort());
+		WorldServer::Instance()->setMaxChannels(packet->getInt());
 		WorldServer::Instance()->listen();
-		std::cout << "Handling world " << (int) packet[0] << std::endl;
+		std::cout << "Handling world " << (int) worldid << std::endl;
 	}
 	else {
 		std::cout << "Error: No world to handle" << std::endl;
@@ -36,9 +38,9 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, unsign
 	}
 }
 
-void LoginServerConnectHandler::newPlayer(unsigned char *packet) {
-	int channel = BufferUtilities::getInt(packet);
-	int playerid = BufferUtilities::getInt(packet+4);
+void LoginServerConnectHandler::newPlayer(ReadPacket *packet) {
+	int channel = packet->getInt();
+	int playerid = packet->getInt();
 
 	WorldServerAcceptPlayerPacket::newConnectable(channel, playerid);
 }
