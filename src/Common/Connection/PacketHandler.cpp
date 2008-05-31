@@ -72,13 +72,19 @@ void PacketHandler::handle(int socket) {
 }
 
 
-void PacketHandler::sendPacket(unsigned char *buff, int size){
-	unsigned char bufs[BUFFER_LEN];
-	decoder->createHeader((unsigned char *) bufs, (short) size);
-	decoder->encrypt(buff, size);
-	memcpy_s(bufs+4, size, buff, size);
-	decoder->next();
-	send(socket, (const char *) bufs, size+4, 0);
+bool PacketHandler::sendPacket(unsigned char *buff, int size) {
+	if (getDestroy()) {
+		return false;
+	}
+	else {
+		unsigned char bufs[BUFFER_LEN];
+		decoder->createHeader((unsigned char *) bufs, (short) size);
+		decoder->encrypt(buff, size);
+		memcpy_s(bufs+4, size, buff, size);
+		decoder->next();
+		send(socket, (const char *) bufs, size+4, 0);
+		return true;
+	}
 }
 
 void PacketHandler::disconnect() {
