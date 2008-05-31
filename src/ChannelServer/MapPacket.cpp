@@ -113,10 +113,7 @@ void MapPacket::removePlayer(Player* player, vector <Player*> players){
 	Packet packet;
 	packet.addHeader(SEND_REMOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
-	for(unsigned int i=0; i<players.size(); i++){
-		if(player->getPlayerid() != players[i]->getPlayerid())
-			packet.send(players[i]);
-	}
+	packet.sendTo(player, players, false);
 }
 
 void MapPacket::showPlayers(Player* player, vector <Player*> players){
