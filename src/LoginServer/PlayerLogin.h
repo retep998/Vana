@@ -21,53 +21,52 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "PacketHandler.h"
 
-class PlayerLogin:public AbstractPlayer {
+class PlayerLogin : public AbstractPlayer {
 public:
-	PlayerLogin () {
-		status = 0;
-		invalid_logins = 0;
-	}
+	PlayerLogin() : status(0), invalid_logins(0) { }
 
 	~PlayerLogin();
 
 	void realHandleRequest(unsigned char* buf, int len);
-	void setUserid(int id){
+	void setUserid(int id) {
 		this->userid=id;
 	}
-	int getUserid(){
+	int getUserid() const {
 		return this->userid;
 	}
-	void setStatus(int status){
+	void setStatus(int status) {
 		this->status=status;
 	}
-	int getStatus(){
+	int getStatus() const {
 		return this->status;
 	}
-	void setPin(int pin){
+	void setPin(int pin) {
 		this->pin=pin;
 	}
-	int getPin(){
+	int getPin() const {
 		return this->pin;
 	}
-	void setGender(char gender){
+	void setGender(char gender) {
 		this->gender=gender;
 	}
-	char getGender(){
+	char getGender() const {
 		return this->gender;
 	}
-	void setWorld(char world){
+	void setWorld(char world) {
 		this->world = world;
 	}
-	char getWorld(){
+	char getWorld() const {
 		return this->world;
 	}
-	void setChannel(int channel){
+	void setChannel(int channel) {
 		this->channel=channel;
 	}
-	int getChannel(){
+	int getChannel() const {
 		return this->channel;
 	}
-	int addInvalidLogin() { return ++invalid_logins; }
+	int addInvalidLogin() {
+		return ++invalid_logins;
+	}
 	void setOnline(bool online);
 private:
 	int status;
@@ -80,9 +79,9 @@ private:
 	int invalid_logins;
 };
 
-class PlayerLoginFactory:public AbstractPlayerFactory {
+class PlayerLoginFactory : public AbstractPlayerFactory {
 public:
-	AbstractPlayer* createPlayer() {
+	AbstractPlayer * createPlayer() {
 		return new PlayerLogin();
 	}
 };
