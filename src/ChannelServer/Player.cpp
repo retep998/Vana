@@ -217,7 +217,7 @@ void Player::playerConnect(unsigned char *packet){
 
 	PlayerPacket::connectData(this);
 	
-	if (strlen(ChannelServer::Instance()->getScrollingHeader()) > 0) {
+	if (ChannelServer::Instance()->getScrollingHeader().size() > 0) {
 		ServerPacket::changeScrollingHeader(ChannelServer::Instance()->getScrollingHeader());
 	}
 

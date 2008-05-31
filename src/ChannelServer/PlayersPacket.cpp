@@ -88,25 +88,22 @@ void PlayersPacket::showInfo(Player* player, Player* getinfo){
 	packet.send(player);
 }
 
-void PlayersPacket::whisperPlayer(Player *target, char *whisperer_name, int channel, char *message) {
+void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, int channel, const string &message) {
 	Packet packet;
 	packet.addHeader(SEND_COMMAND_RESPOND);
 	packet.addByte(0x12);
-	packet.addShort(strlen(whisperer_name));
-	packet.addString(whisperer_name, strlen(whisperer_name));
+	packet.addString(whisperer_name);
 	packet.addShort(channel);
-	packet.addShort(strlen(message));
-	packet.addString(message, strlen(message));
+	packet.addString(message);
 	packet.send(target);
 }
 
-void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned char is, bool is_channel){
+void PlayersPacket::findPlayer(Player* player, const string &name, int map, unsigned char is, bool is_channel){
 	Packet packet;
 	packet.addHeader(SEND_COMMAND_RESPOND);
 	if(map != -1){
 		packet.addByte(0x09);
-		packet.addShort(strlen(name));
-		packet.addString(name,strlen(name));
+		packet.addString(name);
 		if (is_channel)
 			packet.addByte(0x03);
 		else
@@ -117,8 +114,7 @@ void PlayersPacket::findPlayer(Player* player, char* name, int map, unsigned cha
 	}
 	else {	
 		packet.addByte(0x0A);
-		packet.addShort(strlen(name));
-		packet.addString(name,strlen(name));
+		packet.addString(name);
 		packet.addByte(is);
 	}
 

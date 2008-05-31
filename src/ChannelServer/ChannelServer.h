@@ -50,8 +50,8 @@ public:
 	void setChannel(int channel) { this->channel = channel; }
 	void setPort(short port) { this->port = port; }
 	int getOnlineId() { return 20000 + (int) world * 100 + channel * 10; }
-	const char * getScrollingHeader() { return scrollingHeader.c_str(); }
-	void setScrollingHeader(char *message);
+	string getScrollingHeader() { return scrollingHeader; }
+	void setScrollingHeader(const string &message);
 private:
 	ChannelServer() {};
 	ChannelServer(const ChannelServer&);

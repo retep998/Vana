@@ -57,10 +57,12 @@ void PlayerPacketHelper::addEquip(Packet &packet, Equip* equip, bool pos_is_shor
 	packet.addShort(0);
 }
 
-void PlayerPacketHelper::addIP(Packet &packet, char *ip, short port) {
+void PlayerPacketHelper::addIP(Packet &packet, const string &ip, short port) {
+	char ip_[15];
+	strcpy_s(ip_, ip.c_str());
 	char *next_token;
 
-	packet.addByte(atoi(strtok_s(ip, ".", &next_token)));
+	packet.addByte(atoi(strtok_s(ip_, ".", &next_token)));
 	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
 	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
 	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));

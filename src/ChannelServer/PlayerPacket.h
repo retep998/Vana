@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string>
 
+using std::string;
+
 class Player;
 
 namespace PlayerPacket {
@@ -30,8 +32,8 @@ namespace PlayerPacket {
 	void newHair(Player* player);
 	void newEyes(Player* player);
 	void newSkin(Player* player);
-	void changeChannel(Player *player, char *ip, short port);
-	void showMessage(Player *player, std::string msg, char type);
+	void changeChannel(Player *player, const string &ip, short port);
+	void showMessage(Player *player, const string &msg, char type);
 };
 
 #endif

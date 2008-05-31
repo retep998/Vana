@@ -191,7 +191,7 @@ void PlayerPacket::newSkin(Player* player){
 	packet.send(player);
 }
 
-void PlayerPacket::changeChannel(Player *player, char *ip, short port) {
+void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
 	Packet packet;
 	packet.addHeader(SEND_CHANGE_CHANNEL);
 	packet.addByte(1);
@@ -199,7 +199,7 @@ void PlayerPacket::changeChannel(Player *player, char *ip, short port) {
 	packet.send(player);
 }
 
-void PlayerPacket::showMessage(Player *player, std::string msg, char type){
+void PlayerPacket::showMessage(Player *player, const string &msg, char type){
 	Packet packet;
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
