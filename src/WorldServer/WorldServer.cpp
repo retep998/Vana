@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.h"
 #include "WorldServerAcceptPlayerPacket.h"
-#include "Connection/Acceptor.h"
-#include "Connection/Connector.h"
+#include "Acceptor.h"
+#include "Connector.h"
 
 WorldServer* WorldServer::singleton = 0;
 
