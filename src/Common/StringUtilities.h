@@ -15,40 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERS_H
-#define PLAYERS_H
+#ifndef STRINGUTILITIES_H
+#define STRINGUTILITIES_H
 
-#include <hash_map>
 #include <string>
 
 using std::string;
-using stdext::hash_map;
 
-struct Player {
-	int id;
-	string name;
-	int channel;
-};
-
-class Players {
-public:
-	static Players * Instance() {
-		if (singleton == 0)
-			singleton = new Players;
-		return singleton;
-	}
-	void registerPlayer(int id, const string &name, int channel);
-	void remove(int id, int channel = -1);
-	Player * getPlayerFromName(const string &name);
-	Player * getPlayer(int id) { return players[id]; }
-	int size();
-private:
-	Players() {};
-	Players(const Players&);
-	Players& operator=(const Players&);
-	static Players *singleton;
-
-	hash_map <int, Player *> players;
-};
+namespace StringUtilities {
+	int noCaseCompare(const string &s1, const string &s2);
+}
 
 #endif

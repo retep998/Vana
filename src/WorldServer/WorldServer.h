@@ -46,8 +46,8 @@ public:
 	void setInterPort(short port) { inter_port = port; }
 	int getMaxChannels() const { return maxChannels; }
 	void setMaxChannels(int maxchan) { maxChannels = maxchan; }
-	const char * getScrollingHeader() { return scrollingHeader.c_str(); }
-	void setScrollingHeader(const char *message);
+	string getScrollingHeader() { return scrollingHeader.c_str(); }
+	void setScrollingHeader(const string &message);
 private:
 	WorldServer() { scrollingHeader = ""; };
 	WorldServer(const WorldServer&);

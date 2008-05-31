@@ -18,15 +18,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WORLDSERVERACCEPTHANDLER_H
 #define WORLDSERVERACCEPTHANDLER_H
 
+#include <string>
+
+using std::string;
+
 class WorldServerAcceptPlayer;
+class ReadPacket;
 
 namespace WorldServerAcceptHandler {
-	void playerChangeChannel(WorldServerAcceptPlayer *player, unsigned char *packet);
-	void findPlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
-	void whisperPlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
-	void registerPlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
-	void removePlayer(WorldServerAcceptPlayer *player, unsigned char *packet);
-	void scrollingHeader(WorldServerAcceptPlayer *player, unsigned char *packet);
+	void playerChangeChannel(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void findPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void whisperPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void registerPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void removePlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void scrollingHeader(WorldServerAcceptPlayer *player, ReadPacket *packet);
 }
 
 #endif

@@ -15,40 +15,26 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERS_H
-#define PLAYERS_H
+#include "StringUtilities.h"
 
-#include <hash_map>
-#include <string>
+int StringUtilities::noCaseCompare(const string &s1, const string &s2) {
+	string::const_iterator iter1 = s1.begin();
+	string::const_iterator iter2 = s2.begin();
 
-using std::string;
-using stdext::hash_map;
-
-struct Player {
-	int id;
-	string name;
-	int channel;
-};
-
-class Players {
-public:
-	static Players * Instance() {
-		if (singleton == 0)
-			singleton = new Players;
-		return singleton;
+	while ((iter1 != s1.end()) && (iter2 != s2.end())) { 
+		if(toupper(*iter1) != toupper(*iter2)) {
+			return (toupper(*iter1)  < toupper(*iter2)) ? -1 : 1; 
+		}
+		iter1++;
+		iter2++;
 	}
-	void registerPlayer(int id, const string &name, int channel);
-	void remove(int id, int channel = -1);
-	Player * getPlayerFromName(const string &name);
-	Player * getPlayer(int id) { return players[id]; }
-	int size();
-private:
-	Players() {};
-	Players(const Players&);
-	Players& operator=(const Players&);
-	static Players *singleton;
 
-	hash_map <int, Player *> players;
-};
-
-#endif
+	// The letters are the same, so lets return based on size
+	size_t l1 = s1.size(), l2 = s2.size();
+	if (l1 == l2) {
+		return 0;
+	}
+	else {
+		return (l1 < l2) ? -1 : 1;
+	}
+}

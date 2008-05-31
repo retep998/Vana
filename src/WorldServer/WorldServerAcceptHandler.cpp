@@ -22,19 +22,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BufferUtilities.h"
 #include "Channels.h"
 #include "Players.h"
+#include "ReadPacket.h"
 
-void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, unsigned char *packet) {
-	Channel *chan = Channels::Instance()->getChannel(BufferUtilities::getInt(packet+4));
-	int playerid = BufferUtilities::getInt(packet);
+void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, ReadPacket *packet) {
+	int playerid = packet->getInt();
+	Channel *chan = Channels::Instance()->getChannel(packet->getInt());
 	WorldServerAcceptPlayerPacket::newConnectable(chan->id, playerid);
 	WorldServerAcceptPlayerPacket::playerChangeChannel(player, playerid, chan->ip, chan->port);
 }
 
-void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, unsigned char *packet) {
-	int finder = BufferUtilities::getInt(packet);
-	short findee_namelen = BufferUtilities::getShort(packet+4);
-	char findee_name[15];
-	BufferUtilities::getString(packet+6, findee_namelen, findee_name);
+void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet) {
+	int finder = packet->getInt();
+	string findee_name = packet->getString();
 
 	Player *findee = Players::Instance()->getPlayerFromName(findee_name);
 	if (findee->channel != -1)
@@ -43,14 +42,10 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, unsig
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee_name);
 }
 
-void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, unsigned char *packet) {
-	int whisperer = BufferUtilities::getInt(packet);
-	short whisperee_namelen = BufferUtilities::getShort(packet+4);
-	char whisperee_name[15];
-	BufferUtilities::getString(packet+6, whisperee_namelen, whisperee_name);
-	short messagelen = BufferUtilities::getShort(packet+6+whisperee_namelen);
-	char message[91];
-	BufferUtilities::getString(packet+8+whisperee_namelen, messagelen, message);
+void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet) {
+	int whisperer = packet->getInt();
+	string whisperee_name = packet->getString();
+	string message = packet->getString();
 
 	Player *whisperee = Players::Instance()->getPlayerFromName(whisperee_name);
 	if (whisperee->channel != -1) {
@@ -61,23 +56,18 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, un
 		WorldServerAcceptPlayerPacket::findPlayer(player, whisperer, whisperee->channel, whisperee_name);
 }
 
-void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, unsigned char *packet) {
-	int id = BufferUtilities::getInt(packet);
-	short namelen = BufferUtilities::getShort(packet+4);
-	char name[15];
-	BufferUtilities::getString(packet+6, namelen, name);
+void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet) {
+	int id = packet->getInt();
+	string name = packet->getString();
 	Players::Instance()->registerPlayer(id, name, player->getChannel());
 }
 
-void WorldServerAcceptHandler::removePlayer(WorldServerAcceptPlayer *player, unsigned char *packet) {
-	int id = BufferUtilities::getShort(packet);
+void WorldServerAcceptHandler::removePlayer(WorldServerAcceptPlayer *player, ReadPacket *packet) {
+	int id = packet->getInt();
 	Players::Instance()->remove(id, player->getChannel());
 }
 
-void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptPlayer *player, unsigned char *packet) {
-	short messagelen = BufferUtilities::getShort(packet);
-	char message[100];
-	BufferUtilities::getString(packet+2, messagelen, message);
-
+void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptPlayer *player, ReadPacket *packet) {
+	string message = packet->getString();
 	WorldServer::Instance()->setScrollingHeader(message);
 }

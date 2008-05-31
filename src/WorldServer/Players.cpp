@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Players.h"
+#include "StringUtilities.h"
 
 Players * Players::singleton = 0;
 
-void Players::registerPlayer(int id, char *name, int channel) {
+void Players::registerPlayer(int id, const string &name, int channel) {
 	if (players.find(id) == players.end()) {
 		Player *player = new Player();
 		player->id = id;
-		strcpy_s(player->name, name);
+		player->name = name;
 		player->channel = channel;
 		players[id] = player;
 	}
@@ -38,11 +39,11 @@ void Players::remove(int id, int channel) {
 	}
 }
 
-Player * Players::getPlayerFromName(char *name) {
+Player * Players::getPlayerFromName(const string &name) {
 	Player *player;
 	bool found = false;
 	for (hash_map <int, Player *>::iterator iter = players.begin(); iter != players.end(); iter++) {
-		if (_stricmp(iter->second->name, name) == 0) {
+		if (StringUtilities::noCaseCompare(iter->second->name, name) == 0) {
 			player = iter->second;
 			found = true;
 			break;
