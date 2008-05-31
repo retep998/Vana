@@ -229,8 +229,10 @@ int LuaExports::killMob(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
 	for (unsigned int i=0; i<Mobs::mobs[map].size(); i++) {
-		if (Mobs::mobs[map][i]->getMobID() == mobid)
+		if (Mobs::mobs[map][i]->getMobID() == mobid) {
 			Mobs::dieMob(getPlayer(luaVm), Mobs::mobs[map][i]);
+			i--;
+		}
 	}
 	return 1;
 }
