@@ -43,10 +43,9 @@ protected:
 class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
 	AbstractServerAcceptPlayer() { is_server = true; }
-	bool processAuth(ReadPacket *packet, char *password) {
+	bool processAuth(ReadPacket *packet, const string &pass) {
 		if (packet->getShort() == INTER_PASSWORD) {
-			string pass = packet->getString();
-			if(strcmp(pass.c_str(), password) == 0) {
+			if(packet->getString() == pass) {
 				std::cout << "Server successfully authenticated." << std::endl;
 				is_authenticated = true;
 				short iplen = packet->getShort();
