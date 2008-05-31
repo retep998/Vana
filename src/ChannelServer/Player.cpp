@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPlayerPacket.h"
 #include "ServerPacket.h"
 #include "Connectable.h"
+#include "ReadPacket.h"
 
 int distPos(Pos pos1, Pos pos2){
 	return (int)sqrt(pow((float)(pos1.x+pos2.x), 2)+pow((float)(pos1.y+pos2.y), 2));
@@ -54,49 +55,48 @@ Player::~Player(){
 	}
 }
 
-void Player::realHandleRequest(unsigned char* buf, int len){
-	short header = buf[0] + buf[1]*0x100;
-	switch(header){  
-		case RECV_CHANNEL_LOGIN: playerConnect(buf+2); break;
-		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, buf+2); break;
-		case RECV_SHOP_ENTER: Inventory::useShop(this, buf+2); break;
-		case RECV_NPC_TALK: NPCs::handleNPC(this, buf+2); break;
-		case RECV_CHANGE_CHANNEL: changeChannel(buf[2]); break;
-		case RECV_DAMAGE_PLAYER: Players::damagePlayer(this, buf+2); break;
-		case RECV_STOP_CHAIR: Inventory::stopChair(this, buf+2); break;
-		case RECV_CHAT: Players::chatHandler(this, buf+2); break;
-		case RECV_USE_CHAIR: Inventory::useChair(this, buf+2); break;
-		case RECV_USE_ITEM_EFFECT: Inventory::useItemEffect(this, buf+2); break;
-		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, buf+2); break;
-		case RECV_CHANGE_MAP: Maps::moveMap(this, buf+2); break;
-		case RECV_MOVE_PLAYER: Players::handleMoving(this, buf+2, len-2); break;
-		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, buf+2, len-2); break;
-		case RECV_GET_PLAYER_INFO: Players::getPlayerInfo(this, buf+2); break;
-		case RECV_CHANGE_MAP_SPECIAL: Maps::moveMapS(this, buf+2); break; // Portals that cause scripted events
-		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, buf+2); break;
-		case RECV_ADD_SKILL: Skills::addSkill(this, buf+2); break;
-		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, buf+2); break;
-		case RECV_USE_SKILL: Skills::useSkill(this, buf+2); break;
-		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, buf+2); break;
-		case RECV_COMMAND: Players::commandHandler(this, buf+2); break;
-		case RECV_DAMAGE_MOB: Mobs::damageMob(this, buf+2); break;
-		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this, buf+2); break;
-		case RECV_HIT_REACTOR: Reactors::hitReactor(this, buf+2); break;
-		case RECV_MOVE_ITEM: Inventory::itemMove(this, buf+2); break;
-		case RECV_USE_ITEM: Inventory::useItem(this, buf+2); break;
-		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, buf+2); break;
-		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, buf+2); break; // Skillbooks
-		case RECV_USE_RETURN_SCROLL: Inventory::useReturnScroll(this, buf+2); break; 
-		case RECV_USE_SCROLL: Inventory::useScroll(this, buf+2); break;
-		case RECV_ADD_STAT: Levels::addStat(this, buf+2); break;
-		case RECV_HEAL_PLAYER: Players::healPlayer(this, buf+2); break;
-		case RECV_DROP_MESO: Drops::dropMesos(this ,buf+2); break;
-		case RECV_FAME: Fame::handleFame(this, buf+2); break;
-		case RECV_GET_QUEST: Quests::getQuest(this, buf+2); break;
-		case RECV_KEYMAP: changeKey(buf+2);
-		case RECV_LOOT_ITEM: Drops::lootItem(this, buf+2); break;
-		case RECV_CONTROL_MOB: Mobs::monsterControl(this, buf+2, len-2); break;
-		case RECV_CONTROL_MOB_SKILL: Mobs::monsterControlSkill(this, buf+2); break;
+void Player::realHandleRequest(ReadPacket *packet){
+	switch(packet->getShort()) {  
+		case RECV_CHANNEL_LOGIN: playerConnect(packet->getBuffer()); break;
+		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet->getBuffer()); break;
+		case RECV_SHOP_ENTER: Inventory::useShop(this, packet->getBuffer()); break;
+		case RECV_NPC_TALK: NPCs::handleNPC(this, packet->getBuffer()); break;
+		case RECV_CHANGE_CHANNEL: changeChannel(packet->getByte()); break;
+		case RECV_DAMAGE_PLAYER: Players::damagePlayer(this, packet->getBuffer()); break;
+		case RECV_STOP_CHAIR: Inventory::stopChair(this, packet->getBuffer()); break;
+		case RECV_CHAT: Players::chatHandler(this, packet->getBuffer()); break;
+		case RECV_USE_CHAIR: Inventory::useChair(this, packet->getBuffer()); break;
+		case RECV_USE_ITEM_EFFECT: Inventory::useItemEffect(this, packet->getBuffer()); break;
+		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet->getBuffer()); break;
+		case RECV_CHANGE_MAP: Maps::moveMap(this, packet->getBuffer()); break;
+		case RECV_MOVE_PLAYER: Players::handleMoving(this, packet->getBuffer(), packet->getBufferLength()); break;
+		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet->getBuffer(), packet->getBufferLength()); break;
+		case RECV_GET_PLAYER_INFO: Players::getPlayerInfo(this, packet->getBuffer()); break;
+		case RECV_CHANGE_MAP_SPECIAL: Maps::moveMapS(this, packet->getBuffer()); break; // Portals that cause scripted events
+		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet->getBuffer()); break;
+		case RECV_ADD_SKILL: Skills::addSkill(this, packet->getBuffer()); break;
+		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet->getBuffer()); break;
+		case RECV_USE_SKILL: Skills::useSkill(this, packet->getBuffer()); break;
+		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, packet->getBuffer()); break;
+		case RECV_COMMAND: Players::commandHandler(this, packet->getBuffer()); break;
+		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet->getBuffer()); break;
+		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this, packet->getBuffer()); break;
+		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet->getBuffer()); break;
+		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet->getBuffer()); break;
+		case RECV_USE_ITEM: Inventory::useItem(this, packet->getBuffer()); break;
+		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet->getBuffer()); break;
+		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, packet->getBuffer()); break; // Skillbooks
+		case RECV_USE_RETURN_SCROLL: Inventory::useReturnScroll(this, packet->getBuffer()); break; 
+		case RECV_USE_SCROLL: Inventory::useScroll(this, packet->getBuffer()); break;
+		case RECV_ADD_STAT: Levels::addStat(this, packet->getBuffer()); break;
+		case RECV_HEAL_PLAYER: Players::healPlayer(this, packet->getBuffer()); break;
+		case RECV_DROP_MESO: Drops::dropMesos(this ,packet->getBuffer()); break;
+		case RECV_FAME: Fame::handleFame(this, packet->getBuffer()); break;
+		case RECV_GET_QUEST: Quests::getQuest(this, packet->getBuffer()); break;
+		case RECV_KEYMAP: changeKey(packet->getBuffer());
+		case RECV_LOOT_ITEM: Drops::lootItem(this, packet->getBuffer()); break;
+		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet->getBuffer(), packet->getBufferLength()); break;
+		case RECV_CONTROL_MOB_SKILL: Mobs::monsterControlSkill(this, packet->getBuffer()); break;
 	}
 }
 

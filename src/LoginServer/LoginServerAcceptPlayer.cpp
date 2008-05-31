@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.h"
 #include "InterHeader.h"
 #include "Worlds.h"
+#include "ReadPacket.h"
 
-void LoginServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
-	if(!processAuth(buf, (char *) LoginServer::Instance()->getInterPassword())) return;
-	short header = buf[0] + buf[1]*0x100;
-	switch(header) {
-		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, buf+2); break;
+void LoginServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
+	if(!processAuth(packet, (char *) LoginServer::Instance()->getInterPassword())) return;
+	switch(packet->getShort()) {
+		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet->getBuffer()); break;
 	}
 }
 

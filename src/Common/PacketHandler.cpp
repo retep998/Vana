@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketHandler.h"
 #include "AbstractPlayer.h"
 #include "Decoder.h"
+#include "ReadPacket.h"
 #include <Winsock2.h>
 
 PacketHandler::PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend) :
@@ -65,7 +66,9 @@ void PacketHandler::handle(int socket) {
 		bytesInBuffer += l;
 		if (bytesInBuffer == packetSize + HEADER_LEN){
 			decoder->decrypt(buffer + HEADER_LEN, packetSize);
-			player->handleRequest(buffer + HEADER_LEN, packetSize);
+			ReadPacket *packet = new ReadPacket(buffer + HEADER_LEN, packetSize);
+			player->handleRequest(packet);
+			delete packet;
 			bytesInBuffer = 0;
 		}
 	}

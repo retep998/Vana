@@ -20,24 +20,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Login.h"
 #include "Worlds.h"
 #include "MySQLM.h"
+#include "ReadPacket.h"
 #include "RecvHeader.h"
 
-void PlayerLogin::realHandleRequest(unsigned char* buf, int len){
-	short header = buf[0] + buf[1]*0x100;
-	switch(header){
-		case RECV_LOGIN_INFO: Login::loginUser(this, buf+2); break;
-		case RECV_CHANNEL_SELECT: Worlds::channelSelect(this, buf+2); break;
-		case RECV_WORLD_SELECT: Worlds::selectWorld(this, buf+2); break;
-		case RECV_LOGIN_PROCESS: Login::handleLogin(this, buf+2); break;
+void PlayerLogin::realHandleRequest(ReadPacket *packet){
+	switch(packet->getShort()) {
+		case RECV_LOGIN_INFO: Login::loginUser(this, packet->getBuffer()); break;
+		case RECV_CHANNEL_SELECT: Worlds::channelSelect(this, packet->getBuffer()); break;
+		case RECV_WORLD_SELECT: Worlds::selectWorld(this, packet->getBuffer()); break;
+		case RECV_LOGIN_PROCESS: Login::handleLogin(this, packet->getBuffer()); break;
 		case RECV_SHOW_WORLD:
 		case RECV_SHOW_WORLD2: Worlds::showWorld(this); break;
-		case RECV_GET_CHANNEL_SERVER_INFO: Characters::connectGame(this, buf+2); break;
-		case RECV_CHECK_CHAR_NAME: Characters::checkCharacterName(this, buf+2); break;
-		case RECV_CREATE_CHAR: Characters::createCharacter(this, buf+2); break;
-		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, buf+2); break;
+		case RECV_GET_CHANNEL_SERVER_INFO: Characters::connectGame(this, packet->getBuffer()); break;
+		case RECV_CHECK_CHAR_NAME: Characters::checkCharacterName(this, packet->getBuffer()); break;
+		case RECV_CREATE_CHAR: Characters::createCharacter(this, packet->getBuffer()); break;
+		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, packet->getBuffer()); break;
 		case RECV_RETURN_TO_LOGIN: Login::loginBack(this); break;
-		case RECV_SET_GENDER: Login::setGender(this, buf+2); break;
-		case RECV_REGISTER_PIN: Login::registerPIN(this, buf+2); break;
+		case RECV_SET_GENDER: Login::setGender(this, packet->getBuffer()); break;
+		case RECV_REGISTER_PIN: Login::registerPIN(this, packet->getBuffer()); break;
 	}
 }
 

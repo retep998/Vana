@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ServerPlayer.h"
 
+class ReadPacket;
+
 class LoginServerAcceptPlayer : public AbstractServerAcceptPlayer {
 public:
-	void realHandleRequest(unsigned char *buf, int len);
+	void realHandleRequest(ReadPacket *packet);
 	void authenticated(char type);
 
 	char getWorldId() const { return worldId; }

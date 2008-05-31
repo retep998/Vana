@@ -22,19 +22,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include "InterHeader.h"
 #include "Channels.h"
+#include "ReadPacket.h"
 #include <iostream>
 
-void WorldServerAcceptPlayer::realHandleRequest(unsigned char *buf, int len) {
-	if(!processAuth(buf, (char *) WorldServer::Instance()->getInterPassword())) return;
-	short header = buf[0] + buf[1]*0x100;
-	switch(header){
-		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, buf+2); break;
-		case INTER_TO_PLAYERS: WorldServerAcceptPlayerPacket::sendToChannels(buf, len); break;
-		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::registerPlayer(this, buf+2); break;
-		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::removePlayer(this, buf+2); break;
-		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, buf+2); break;
-		case INTER_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, buf+2); break;
-		case INTER_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, buf+2); break;
+void WorldServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
+	if(!processAuth(packet, (char *) WorldServer::Instance()->getInterPassword())) return;
+	switch(packet->getShort()){
+		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet->getBuffer()); break;
+		case INTER_TO_PLAYERS: packet->reset(); WorldServerAcceptPlayerPacket::sendToChannels(packet->getBuffer(), packet->getBufferLength()); break;
+		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::registerPlayer(this, packet->getBuffer()); break;
+		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::removePlayer(this, packet->getBuffer()); break;
+		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, packet->getBuffer()); break;
+		case INTER_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet->getBuffer()); break;
+		case INTER_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet->getBuffer()); break;
 	}
 }
 

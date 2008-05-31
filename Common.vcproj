@@ -230,6 +230,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\ReadPacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Selector.cpp"
 					>
 				</File>
@@ -369,6 +373,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\PacketHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ReadPacket.h"
 					>
 				</File>
 				<File

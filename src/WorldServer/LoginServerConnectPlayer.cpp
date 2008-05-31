@@ -18,15 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectPlayer.h"
 #include "LoginServerConnectHandler.h"
 #include "InterHeader.h"
+#include "ReadPacket.h"
 
 LoginServerConnectPlayer::LoginServerConnectPlayer() {
 	type = INTER_WORLD_SERVER;
 }
 
-void LoginServerConnectPlayer::realHandleRequest(unsigned char *buf, int len) {
-	short header = buf[0] + buf[1]*0x100;
-	switch(header) {
-		case INTER_WORLD_CONNECT: LoginServerConnectHandler::connect(this, buf+2); break;
-		case INTER_NEW_PLAYER: LoginServerConnectHandler::newPlayer(buf+2); break;
+void LoginServerConnectPlayer::realHandleRequest(ReadPacket *packet) {
+	switch(packet->getShort()) {
+		case INTER_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet->getBuffer()); break;
+		case INTER_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet->getBuffer()); break;
 	}
 }

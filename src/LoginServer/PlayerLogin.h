@@ -21,13 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "PacketHandler.h"
 
+class ReadPacket;
+
 class PlayerLogin : public AbstractPlayer {
 public:
 	PlayerLogin() : status(0), invalid_logins(0) { }
 
 	~PlayerLogin();
 
-	void realHandleRequest(unsigned char* buf, int len);
+	void realHandleRequest(ReadPacket *packet);
 	void setUserid(int id) {
 		this->userid=id;
 	}

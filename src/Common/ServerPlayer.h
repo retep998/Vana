@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AuthenticationPacket.h"
 #include "BufferUtilities.h"
 #include "InterHeader.h"
+#include "ReadPacket.h"
 #include <iostream>
 #include <string>
 
@@ -42,22 +43,17 @@ protected:
 class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
 	AbstractServerAcceptPlayer() { is_server = true; }
-	bool processAuth(unsigned char *buf, char *password) {
-		short header = buf[0] + buf[1]*0x100;
-		if (header == INTER_PASSWORD) {
-			char pass[255];
-			short passlen = BufferUtilities::getShort(buf+2);
-			BufferUtilities::getString(buf+4, passlen, pass);
-			if(strcmp(pass, password) == 0) {
+	bool processAuth(ReadPacket *packet, char *password) {
+		if (packet->getShort() == INTER_PASSWORD) {
+			string pass = packet->getString();
+			if(strcmp(pass.c_str(), password) == 0) {
 				std::cout << "Server successfully authenticated." << std::endl;
 				is_authenticated = true;
-				short iplen = BufferUtilities::getShort(buf+5+passlen);
+				short iplen = packet->getShort();
 				if (iplen) {
-					char ip[15];
-					BufferUtilities::getString(buf+7+passlen, iplen, ip);
-					setIP(string(ip)); // setIP in abstractPlayer
+					setIP(packet->getString(iplen)); // setIP in abstractPlayer
 				}
-				authenticated(buf[2+2+passlen]);
+				authenticated(packet->getByte());
 			}
 			else {
 				disconnect();
@@ -69,6 +65,7 @@ public:
 			disconnect();
 			return false;
 		}
+		packet->reset();
 		return true;
 	}
 	virtual void authenticated(char type) = 0;
