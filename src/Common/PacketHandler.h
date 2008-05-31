@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define BUFFER_LEN 10000
 
 #include "Selector.h"
-#include "Decoder/Decoder.h" // Included because auto_ptr needs the destructor
+#include "Decoder.h" // Included because auto_ptr needs the destructor
 #include "AbstractPlayer.h" // Included because auto_ptr needs the destructor
 #include <memory>
 

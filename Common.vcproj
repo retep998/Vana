@@ -218,19 +218,19 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Common\Connection\Acceptor.cpp"
+					RelativePath=".\src\Common\Acceptor.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connection\Connector.cpp"
+					RelativePath=".\src\Common\Connector.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connection\PacketHandler.cpp"
+					RelativePath=".\src\Common\PacketHandler.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connection\Selector.cpp"
+					RelativePath=".\src\Common\Selector.cpp"
 					>
 				</File>
 			</Filter>
@@ -238,15 +238,15 @@
 				Name="Decoder"
 				>
 				<File
-					RelativePath=".\src\Common\Decoder\AESEncryption.cpp"
+					RelativePath=".\src\Common\AESEncryption.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Decoder\Decoder.cpp"
+					RelativePath=".\src\Common\Decoder.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Decoder\MapleEncryption.cpp"
+					RelativePath=".\src\Common\MapleEncryption.cpp"
 					>
 				</File>
 			</Filter>
@@ -360,19 +360,19 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Common\Connection\Acceptor.h"
+					RelativePath=".\src\Common\Acceptor.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connection\Connector.h"
+					RelativePath=".\src\Common\Connector.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connection\PacketHandler.h"
+					RelativePath=".\src\Common\PacketHandler.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connection\Selector.h"
+					RelativePath=".\src\Common\Selector.h"
 					>
 				</File>
 			</Filter>
@@ -380,15 +380,15 @@
 				Name="Decoder"
 				>
 				<File
-					RelativePath=".\src\Common\Decoder\AESEncryption.h"
+					RelativePath=".\src\Common\AESEncryption.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Decoder\Decoder.h"
+					RelativePath=".\src\Common\Decoder.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Decoder\MapleEncryption.h"
+					RelativePath=".\src\Common\MapleEncryption.h"
 					>
 				</File>
 			</Filter>

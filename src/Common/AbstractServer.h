@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef ABSTRACTSERVER_H
 #define ABSTRACTSERVER_H
 
-#include "Connection/Acceptor.h"
+#include "Acceptor.h"
 #include <ctime>
 #include <string>
 
