@@ -116,20 +116,20 @@ void Mobs::updateSpawn(int mapid){
 
 void Mobs::updateSpawn(int mapid, Mob *mob) {
 	if (Maps::info[mapid].Players.size() > 0 && mob->getControl() == 0) {
-		bool check = false;
 		int maxpos = distPos(mob->getPos(), Maps::info[mapid].Players[0]->getPos());
+		int player = 0;
 		for(unsigned int j = 0; j < Maps::info[mapid].Players.size(); j++){
 			int curpos = distPos(mob->getPos(), Maps::info[mapid].Players[j]->getPos());
-			if(curpos <= maxpos){
+			if(curpos < maxpos){
 				maxpos = curpos;
-				mob->setControl(Maps::info[mapid].Players[j]);
-				check = true;
+				player = j;
 				break;
 			}
+			mob->setControl(Maps::info[mapid].Players[player]);
 		}
-		if (!check) {
-			mob->setControl(0);
-		}
+	}
+	else if (Maps::info[mapid].Players.size() == 0) {
+		mob->setControl(0);
 	}
 }
 
