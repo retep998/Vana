@@ -75,8 +75,10 @@ void Mobs::checkSpawn(int mapid) {
 		// (Re-)spawn Mobs
 		bool spawn = true;
 		for (hash_map<int, Mob *>::iterator iter = mobs[mapid].begin(); iter != mobs[mapid].end(); iter++) {
-			if (iter->second->getMapID() == i) {
-				spawn = false;
+			if (iter->second != NULL) {
+				if (iter->second->getMapID() == i) {
+					spawn = false;
+				}
 			}
 		}
 		if (spawn) {
@@ -147,9 +149,8 @@ void Mobs::dieMob(Player *player, Mob* mob) {
 	Drops::dropMob(player, mob);
 	
 	// Spawn mobs it's supposed to spawn when it dies
-	for (vector<int>::iterator vi = mobinfo[mob->getMobID()].summon.begin(); vi != mobinfo[mob->getMobID()].summon.end(); vi++) {
-		int mobid = *vi;
-		spawnMobPos(player->getMap(), mobid, mob->getPosX(), mob->getPosY());
+	for (unsigned int i = 0; i < mobinfo[mob->getMapID()].summon.size(); i++) {
+		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY());
 	}
 
 	player->quests->updateQuestMob(mob->getMobID());
