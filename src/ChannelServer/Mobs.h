@@ -76,7 +76,7 @@ namespace Mobs {
 
 class Mob {
 public:
-	Mob() : control(0) { }
+	Mob() : control(NULL) { }
 	void setPos(Pos pos) {
 		this->pos = pos;
 	}
