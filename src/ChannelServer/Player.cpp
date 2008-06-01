@@ -275,6 +275,38 @@ void Player::setExp(int exp, bool is) {
 		PlayerPacket::updateStat(this, 0x10000, exp);
 }
 
+void Player::setStr(short str) {
+	this->str = str;
+	PlayerPacket::updateStat(this, 0x40, str);
+}
+
+void Player::setDex(short dex) {
+	this->dex = dex;
+	PlayerPacket::updateStat(this, 0x80, dex);
+}
+
+void Player::setInt(short intt) {
+	this->intt = intt;
+	PlayerPacket::updateStat(this, 0x100, intt);
+}
+
+void Player::setLuk(short luk) {
+	this->luk = luk;
+	PlayerPacket::updateStat(this, 0x200, luk);
+}
+
+void Player::setMHP(int mhp){
+	if (mhp > 30000) { mhp = 30000; }
+	this->mhp = mhp;
+	PlayerPacket::updateStat(this, 0x800, getRMHP());
+}
+
+void Player::setMMP(int mmp){
+	if (mmp > 30000) { mmp = 30000; }
+	this->mmp = mmp;
+	PlayerPacket::updateStat(this, 0x2000, getRMMP());
+}
+
 void Player::setLevel(int level) {
 	this->level = (unsigned char) level;
 }

@@ -125,25 +125,21 @@ void Levels::addStat(Player* player, unsigned char* packet){
 			if (player->getStr() > 998) return;
 			player->setStr(player->getStr()+1);
 			player->setAp(player->getAp()-1);
-			LevelsPacket::changeStat(player, type + 0x4000, player->getStr());
 			break;
 		case 0x80:
 			if (player->getDex() > 998) return;
 			player->setDex(player->getDex()+1);
 			player->setAp(player->getAp()-1);
-			LevelsPacket::changeStat(player, type + 0x4000, player->getDex());
 			break;
 		case 0x100:
 			if (player->getInt() > 998) return;
 			player->setInt(player->getInt()+1);
 			player->setAp(player->getAp()-1);
-			LevelsPacket::changeStat(player, type + 0x4000, player->getInt());
 			break;
 		case 0x200:
 			if (player->getLuk() > 998) return;
 			player->setLuk(player->getLuk()+1);
 			player->setAp(player->getAp()-1);
-			LevelsPacket::changeStat(player, type + 0x4000, player->getLuk());
 			break;
 		case 0x800:
 		case 0x2000: {
@@ -177,19 +173,15 @@ void Levels::addStat(Player* player, unsigned char* packet){
 			}
 			player->setAp(player->getAp()-1);
 			player->setHPMPAp(player->getHPMPAp()+1);
-			int sid = 1301007;
-			bool hb = false;
-			if (player->skills->getActiveSkillLevel(sid) != 0) { hb = true; }
+			int hb = player->skills->getActiveSkillLevel(1301007);
 			switch (type) {
 				case 0x800:
 					player->setRMHP(player->getRMHP() + hpgain);
-					player->setMHP(player->getRMHP() * (hb ? (Skills::skills[sid][player->skills->getActiveSkillLevel(sid)].x / 100) : 1));
-					LevelsPacket::changeStat(player, type + 0x4000, player->getRMHP());
+					player->setMHP(player->getRMHP() * (hb ? (Skills::skills[1301007][hb].x / 100) : 1));
 					break;
 				case 0x2000:
 					player->setRMMP(player->getRMMP() + mpgain);
-					player->setMMP(player->getRMMP() * (hb ? (Skills::skills[sid][player->skills->getActiveSkillLevel(sid)].y / 100) : 1));
-					LevelsPacket::changeStat(player, type + 0x4000, player->getRMMP());
+					player->setMMP(player->getRMMP() * (hb ? (Skills::skills[1301007][hb].y / 100) : 1));
 					break;
 			}
 			break;
