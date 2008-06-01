@@ -76,7 +76,7 @@ void Login::loginUser(PlayerLogin* player, ReadPacket *packet){
 		}
 	}
 	else {
-		printf("%s logged in.\n", username);
+		std::cout << username << " logged in." << std::endl;
 		player->setUserid(res[0]["id"]);
 		if (LoginServer::Instance()->getPinEnabled()) {
 			if (res[0]["pin"].is_null())
@@ -150,7 +150,6 @@ void Login::checkPin(PlayerLogin* player, ReadPacket *packet){
 		if(pin == curpin){
 			player->setStatus(4);
 			handleLogin(player, packet);
-			printf("Pin: %d\n", pin);
 		}
 		else
 			LoginPacket::loginProcess(player, 0x02);
