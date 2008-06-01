@@ -256,8 +256,8 @@ public:
 	auto_ptr<PlayerSkills> skills;
 	auto_ptr<PlayerQuests> quests;
 private:
-	void playerConnect(unsigned char *packet);
-	void changeKey(unsigned char *packet);
+	void playerConnect(ReadPacket *packet);
+	void changeKey(ReadPacket *packet);
 
 	bool isconnect;
 	int id;
@@ -287,7 +287,6 @@ private:
 	int map;
 	char mappos;
 	char type;
-	int keys[90];
 	int shop;
 	int itemEffect;
 	int chair;
@@ -297,13 +296,13 @@ private:
 	vector <int> warnings;
 	int combo; // Combo Attack
 	bool save_on_dc;
-	hash_map <string, string> variables;
+	hash_map<string, string> variables;
 	SkillMapEnterActiveInfo skill;
 };
 
-class PlayerFactory:public AbstractPlayerFactory {
+class PlayerFactory : public AbstractPlayerFactory {
 public:
-	AbstractPlayer* createPlayer() {
+	AbstractPlayer * createPlayer() {
 		return new Player();
 	}
 };
