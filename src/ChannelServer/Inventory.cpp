@@ -721,6 +721,7 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 	short slot = BufferUtilities::getShort(packet+4);
 	short eslot = BufferUtilities::getShort(packet+6);
 	short wscroll = BufferUtilities::getShort(packet+8);
+	bool legendary_spirit = (packet[10] != 0);
 	int itemid=0;
 	Equip* equip = NULL;
 	for(int i=0; i<player->inv->getItemNum(); i++){
@@ -779,7 +780,7 @@ void Inventory::useScroll(Player* player, unsigned char* packet){
 			else if(wscroll!=2) equip->slots--;
 		}
 	}
-	InventoryPacket::useScroll(player, Maps::info[player->getMap()].Players, succeed, cursed);
+	InventoryPacket::useScroll(player, Maps::info[player->getMap()].Players, succeed, cursed, legendary_spirit);
 	if(!cursed)
 		InventoryPacket::addEquip(player, equip, 1);
 	InventoryPacket::updatePlayer(player);
