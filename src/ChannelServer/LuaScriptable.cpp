@@ -357,7 +357,7 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -3);
 	short x = lua_tointeger(luaVm, -2);
 	short y = lua_tointeger(luaVm, -1);
-	Mobs::spawnMobPos(getPlayer(luaVm), mobid, x, y);
+	Mobs::spawnMobPos(getPlayer(luaVm)->getMap(), mobid, x, y);
 	return 1;
 }
 
