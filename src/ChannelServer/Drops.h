@@ -173,10 +173,10 @@ namespace Drops {
 	void addConsume(int id, ConsumeInfo cons);
 	void addMesos(int id, Mesos meso);
 	void addFoothold(int id, FootholdInfo foot);
-	void dropMesos(Player* player, unsigned char* packet);
-	void lootItem(Player* player, unsigned char* packet);
-	void dropMob(Player* player, Mob* mob);
-	void showDrops(Player* player);
+	void dropMesos(Player *player, unsigned char* packet);
+	void lootItem(Player *player, unsigned char* packet);
+	void dropMob(Player *player, Mob* mob);
+	void showDrops(Player *player);
 	Pos findFloor(Pos pos, int map);
 	void checkDrops(int mapid);
 };
@@ -198,7 +198,7 @@ private:
 	Pos pos;
 	DropInfo info;
 public:
-	Drop(int mapid){
+	Drop(int mapid) {
 		quest=0;
 		playerid = 0;
 		ismeso=0;
@@ -207,98 +207,98 @@ public:
 		questid=0;
 		dropped=0;
 		objid = Drops::objids[mapid]++;
-		if(Drops::drops.find(mapid) == Drops::drops.end())
+		if (Drops::drops.find(mapid) == Drops::drops.end())
 			Drops::drops[mapid];
 		Drops::drops[mapid].push_back(this);
 	}
-	void setID(int id){
+	void setID(int id) {
 		this->id = id;
 	}
-	int getID(){
+	int getID() {
 		return id;
 	}
-	void setObjID(int objid){
+	void setObjID(int objid) {
 		this->objid = objid;
 	}
-	int getObjID(){
+	int getObjID() {
 		return objid;
 	}
-	void setIsQuest(bool is){
+	void setIsQuest(bool is) {
 		quest = is;
 	}
-	void setPlayer(int playerid){
+	void setPlayer(int playerid) {
 		this->playerid = playerid;
 	}
-	int getPlayer(){
+	int getPlayer() {
 		return playerid;
 	}
-	bool isQuest(){
+	bool isQuest() {
 		return quest;
 	}
-	void setQuest(int questid){
+	void setQuest(int questid) {
 		this->questid = questid;
 	}
-	int getQuest(){
+	int getQuest() {
 		return questid;
 	}
-	void setTime(int time){
+	void setTime(int time) {
 		this->time = time;
 	}
-	int getTime(){
+	int getTime() {
 		return time;
 	}
-	void setOwner(int owner){
+	void setOwner(int owner) {
 		this->owner = owner;
 	}
-	int getOwner(){
+	int getOwner() {
 		return owner;
 	}
-	void setMap(int map){
+	void setMap(int map) {
 		this->map = map;
 	}
-	int getMap(){
+	int getMap() {
 		return map;
 	}
-	void setMesos(bool mesos){
+	void setMesos(bool mesos) {
 		this->ismeso = mesos;
 	}
-	bool getMesos(){
+	bool getMesos() {
 		return ismeso;
 	}
-	void setAmount(short amount){
+	void setAmount(short amount) {
 		this->amount = amount;
 	}
-	short getAmount(){
+	short getAmount() {
 		return amount;
 	}
-	void setEquip(bool isequip){
+	void setEquip(bool isequip) {
 		this->isequip = isequip;
 	}
-	bool getEquip(){
+	bool getEquip() {
 		return isequip;
 	}
-	void setPos(Pos pos){
+	void setPos(Pos pos) {
 		this->pos = pos;
 	}
-	Pos getPos(){
+	Pos getPos() {
 		return pos;
 	}
-	void setDropInfo(DropInfo info){
+	void setDropInfo(DropInfo info) {
 		this->info = info;
 	}
-	DropInfo getDropInfo(){
+	DropInfo getDropInfo() {
 		return info;
 	}
-	void setDropped(int time){
+	void setDropped(int time) {
 		dropped=time;
 	}
-	int getDropped(){
+	int getDropped() {
 		return dropped;
 	}
 	static Drop* getDrop(int objid, int mapid);
 	void doDrop(Dropped dropped);
-	void showDrop(Player* player);
-	void takeDrop(Player* player);
+	void showDrop(Player *player);
+	void takeDrop(Player *player);
 	void removeDrop();
 	void setStats(int id);
 	void setRandomStats(int id);

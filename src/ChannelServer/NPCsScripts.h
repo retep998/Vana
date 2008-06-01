@@ -29,7 +29,7 @@ class NPC;
 
 class NPCsScripts {
 public:
-	static void handle(int npcid, NPC *npc){
+	static void handle(int npcid, NPC *npc) {
 		struct stat fileinfo;
 		std::ostringstream filenameStream;
 		filenameStream << "scripts/npcs/" << npcid;

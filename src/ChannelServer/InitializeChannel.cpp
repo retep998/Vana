@@ -231,7 +231,7 @@ void Initializing::initializeItems() {
 		cons.ispeed = atoi(itemRow[37]);
 		cons.ihand = 0;
 		// Summoning
-		if(itemRow[38] != NULL){
+		if (itemRow[38] != NULL) {
 			s.mobid = atoi(itemRow[38]);
 			s.chance = atoi(itemRow[39]);
 			cons.mobs.push_back(s);
@@ -239,7 +239,7 @@ void Initializing::initializeItems() {
 		previousid = atoi(itemRow[1]);
 	}
 	// Add the final entry
-	if(previousid != -1){
+	if (previousid != -1) {
 		Drops::addConsume(previousid, cons);
 		Drops::addItem(previousid, item);
 		cons.mobs.clear();
@@ -270,7 +270,7 @@ void Initializing::initializeItems() {
 	std::cout << "DONE" << std::endl;
 }
 // Drops
-void Initializing::initializeDrops(){
+void Initializing::initializeDrops() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Drops... ";
 	// Get all the drops
 	mysqlpp::Query query = db.query("SELECT * FROM itemdropdata ORDER BY mobid ASC");
@@ -288,7 +288,7 @@ void Initializing::initializeDrops(){
 	while ((dropRow = res.fetch_raw_row())) {
 		currentid = atoi(dropRow[1]);
 
-		if(currentid != previousid && previousid != -1){
+		if (currentid != previousid && previousid != -1) {
 			Drops::addDrop(previousid, drops);
 			drops.clear();
 		}
@@ -300,7 +300,7 @@ void Initializing::initializeDrops(){
 
 		previousid = atoi(dropRow[1]);
 	}
-	if(previousid != -1){
+	if (previousid != -1) {
 		Drops::addDrop(previousid, drops);
 		drops.clear();
 	}
@@ -323,7 +323,7 @@ void Initializing::initializeDrops(){
 	std::cout << "DONE" << std::endl;
 }
 // Equips
-void Initializing::initializeEquips(){
+void Initializing::initializeEquips() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Equips... ";
 	mysqlpp::Query query = db.query("SELECT * FROM equipdata ORDER BY type ASC");
 
@@ -386,7 +386,7 @@ void Initializing::initializeEquips(){
 	std::cout << "DONE" << std::endl;
 }
 // Shops
-void Initializing::initializeShops(){
+void Initializing::initializeShops() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
 	mysqlpp::Query query = db.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid, shopitemdata.id ASC");
 
@@ -424,14 +424,14 @@ void Initializing::initializeShops(){
 		previousid = atoi(shopRow[1]);
 	}
 	// Add final entry
-	if(previousid != -1){
+	if (previousid != -1) {
 		Shops::addShop(previousid, shop);
 		shop.items.clear();
 	}
 	std::cout << "DONE" << std::endl;
 }
 // Quests
-void Initializing::initializeQuests(){
+void Initializing::initializeQuests() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Quests... ";
 	// Quests
 	mysqlpp::Query query = db.query("SELECT * FROM questdata");
@@ -472,7 +472,7 @@ void Initializing::initializeQuests(){
 		//    6 : Count
 		currentid = atoi(requestRow[1]);
 
-		if(currentid != previousid && previousid != -1){
+		if (currentid != previousid && previousid != -1) {
 			Quests::addRequest(previousid, reqs);
 			reqs.clear();
 		}
@@ -487,7 +487,7 @@ void Initializing::initializeQuests(){
 
 		previousid = atoi(requestRow[1]);
 	}
-	if(previousid != -1){
+	if (previousid != -1) {
 		Quests::addRequest(previousid, reqs);
 		reqs.clear();
 	}
@@ -520,7 +520,7 @@ void Initializing::initializeQuests(){
 		//   12 : Prop
 		currentid = atoi(rewardRow[1]);
 
-		if(currentid != previousid && previousid != -1){
+		if (currentid != previousid && previousid != -1) {
 			Quests::addReward(previousid, rwas);
 			rwas.clear();
 		}
@@ -541,14 +541,14 @@ void Initializing::initializeQuests(){
 
 		previousid = atoi(rewardRow[1]);
 	}
-	if(previousid != -1){
+	if (previousid != -1) {
 		Quests::addReward(previousid, rwas);
 		rwas.clear();
 	}
 	std::cout << "DONE" << std::endl;
 }
 // Skills
-void Initializing::initializeSkills(){
+void Initializing::initializeSkills() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Skills... ";
 	mysqlpp::Query query = db.query("SELECT * FROM skilldata ORDER BY skillid ASC");
 
@@ -583,7 +583,7 @@ void Initializing::initializeSkills(){
 		//   17 : Avoid
 		//   18 : HPP
 		currentid = atoi(skillRow[1]);
-		if(currentid != previousid && previousid != -1){
+		if (currentid != previousid && previousid != -1) {
 			Skills::addSkill(previousid, skill);
 			skill.clear();
 		}
@@ -609,7 +609,7 @@ void Initializing::initializeSkills(){
 
 		previousid = atoi(skillRow[1]);
 	}
-	if(previousid != -1){
+	if (previousid != -1) {
 		Skills::addSkill(previousid, skill);
 		skill.clear();
 	}
@@ -617,7 +617,7 @@ void Initializing::initializeSkills(){
 	std::cout << "DONE" << std::endl;
 }
 // Maps
-void Initializing::initializeMaps(){
+void Initializing::initializeMaps() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Maps... ";
 	// Maps and portals
 	mysqlpp::Query query = db.query("SELECT mapdata.*, mapportaldata.portalid, mapportaldata.pfrom, mapportaldata.pto, mapportaldata.toid, mapportaldata.type, mapportaldata.x, mapportaldata.y, mapportaldata.script FROM mapdata LEFT JOIN mapportaldata ON mapdata.mapid=mapportaldata.mapid ORDER BY mapdata.mapid ASC");
@@ -650,8 +650,8 @@ void Initializing::initializeMaps(){
 		//   14 : Script
 		currentid = atoi(mapRow[1]);
 
-		if(currentid != previousid){
-			if(previousid != -1){
+		if (currentid != previousid) {
+			if (previousid != -1) {
 				Maps::addMap(previousid, map);
 				map.Portals.clear();
 			}
@@ -662,7 +662,7 @@ void Initializing::initializeMaps(){
 			map.shipInterval = atoi(mapRow[6]);
 		}
 		PortalInfo portal;
-		if(mapRow[7] != NULL){
+		if (mapRow[7] != NULL) {
 			portal.id = atoi(mapRow[7]);
 			strcpy_s(portal.from, mapRow[8]);
 			strcpy_s(portal.to, mapRow[9]);
@@ -677,7 +677,7 @@ void Initializing::initializeMaps(){
 
 		previousid = atoi(mapRow[1]);
 	}
-	if(previousid != -1){
+	if (previousid != -1) {
 		Maps::addMap(previousid, map);
 		map.Portals.clear();
 	}
@@ -705,7 +705,7 @@ void Initializing::initializeMaps(){
 		//    7 : rx1
 		currentid = atoi(npcRow[1]);
 
-		if(currentid != previousid && previousid != -1){
+		if (currentid != previousid && previousid != -1) {
 			NPCs::addNPC(previousid, npcs);
 			npcs.clear();
 		}
@@ -720,7 +720,7 @@ void Initializing::initializeMaps(){
 
 		previousid = atoi(npcRow[1]);
 	}
-	if(previousid != -1){
+	if (previousid != -1) {
 		NPCs::addNPC(previousid, npcs);
 		npcs.clear();
 	}
@@ -746,7 +746,7 @@ void Initializing::initializeMaps(){
 		//    5 : fh
 		currentid = atoi(mobRow[1]);
 
-		if(currentid != previousid && previousid != -1){
+		if (currentid != previousid && previousid != -1) {
 			Mobs::addSpawn(previousid, spawns);
 			spawns.clear();
 		}
@@ -759,7 +759,7 @@ void Initializing::initializeMaps(){
 
 		previousid = atoi(mobRow[1]);
 	}
-	if(previousid != -1){
+	if (previousid != -1) {
 		Mobs::addSpawn(previousid, spawns);
 		spawns.clear();
 	}
@@ -784,7 +784,7 @@ void Initializing::initializeMaps(){
 		//    4 : y
 		currentid = atoi(reactorRow[1]);
 
-		if(currentid != previousid && previousid != -1){
+		if (currentid != previousid && previousid != -1) {
 			Reactors::addReactorSpawn(previousid, reactors);
 			reactors.clear();
 		}
@@ -797,7 +797,7 @@ void Initializing::initializeMaps(){
 		previousid = atoi(reactorRow[1]);
 	}
 
-	if(previousid != -1){
+	if (previousid != -1) {
 		Reactors::addReactorSpawn(previousid, reactors);
 		reactors.clear();
 	}

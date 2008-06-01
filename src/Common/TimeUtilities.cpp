@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TimeUtilities.h"
 
-__int64 TimeUtilities::getServerTime(){
+__int64 TimeUtilities::getServerTime() {
 	return timeToTick(time(0));
 }
 

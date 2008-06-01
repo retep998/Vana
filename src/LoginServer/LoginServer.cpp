@@ -44,7 +44,7 @@ void LoginServer::loadConfig() {
 	while (1) {
 		char buf[16];
 		sprintf_s(buf, "world%d_name", i);
-		if(!config.keyExist(buf))
+		if (!config.keyExist(buf))
 			break; //No more worlds
 
 		World *world = new World();

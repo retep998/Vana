@@ -21,26 +21,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "SendHeader.h"
 
-void Decoder::encrypt(unsigned char *buffer, int size){
+void Decoder::encrypt(unsigned char *buffer, int size) {
 	MapleEncryption::mapleEncrypt(buffer, size);
 	int pos=0,first=1;
-	while(size > pos){
-		if(size>pos+1460-first*4){
+	while (size > pos) {
+		if (size>pos+1460-first*4) {
 			decryptofb(buffer+pos, Decoder::ivSend, 1460 - first*4);
 		}
 		else
 			decryptofb(buffer+pos, Decoder::ivSend, size-pos);
 		pos+=1460-first*4;
-		if(first)
+		if (first)
 			first=0;
 	}
 } 
  
-void Decoder::next(){
+void Decoder::next() {
 	MapleEncryption::nextIV(Decoder::ivSend);
 }
 
-void Decoder::decrypt(unsigned char *buffer, int size){
+void Decoder::decrypt(unsigned char *buffer, int size) {
 	decryptofb(buffer, Decoder::ivRecv, size);
 	MapleEncryption::nextIV(Decoder::ivRecv); 
 	MapleEncryption::mapleDecrypt(buffer, size);

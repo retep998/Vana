@@ -46,17 +46,17 @@ int Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3
 	1005114529, 1060194805, 1118293480, 1244216724, 1312399800, 1384319309, 1460180007,
 	1540197871, 1624600714, 1179575962, 1713628833, 1807535693, 1906558648, 2011069705, 2121276324};
 
-void Levels::giveEXP(Player* player, long exp, char type){
-	if(player->getLevel() >= 200) return; // Do not give EXP to characters level 200 or over
+void Levels::giveEXP(Player *player, long exp, char type) {
+	if (player->getLevel() >= 200) return; // Do not give EXP to characters level 200 or over
 	long cexp = player->getExp() + exp;
-	if(cexp<0)
+	if (cexp<0)
 		cexp = cexp*(-1);
-	if(exp!=0)
+	if (exp!=0)
 		LevelsPacket::showEXP(player, exp, type);
 	player->setExp(cexp, 1);
-	if(cexp >= exps[player->getLevel()-1]){
-		while(cexp>=exps[player->getLevel()-1]){
-			if(player->getLevel()>=200){ // Do not let people level past the level 200 cap
+	if (cexp >= exps[player->getLevel()-1]) {
+		while (cexp>=exps[player->getLevel()-1]) {
+			if (player->getLevel()>=200) { // Do not let people level past the level 200 cap
 				player->setExp(0, 0);
 				break;
 			}
@@ -74,7 +74,7 @@ void Levels::giveEXP(Player* player, long exp, char type){
 			}
 			else if (job == 1) {
 				int x = 0;
-				if (player->skills->getSkillLevel(1000001) > 0){ x = Skills::skills[1000001][player->skills->getSkillLevel(1000001)].x; }
+				if (player->skills->getSkillLevel(1000001) > 0) { x = Skills::skills[1000001][player->skills->getSkillLevel(1000001)].x; }
 				hpgain = Randomizer::Instance()->randInt(4) + 24 + x;
 				mpgain = Randomizer::Instance()->randInt(2) + 4 + intt;
 			}
@@ -95,12 +95,12 @@ void Levels::giveEXP(Player* player, long exp, char type){
 			player->setRMHP(player->getRMHP() + hpgain);
 			player->setRMMP(player->getRMMP() + mpgain);
 			LevelsPacket::levelUP(player, Maps::info[player->getMap()].Players);
-			if(player->getJob() > 0){
+			if (player->getJob() > 0) {
 				player->setSp(player->getSp()+3);
 			}
 		}
 		// Let hyperbody remain on if on during a level up, as it should
-		if(player->skills->getActiveSkillLevel(1301007)>0){
+		if (player->skills->getActiveSkillLevel(1301007)>0) {
 			player->setMHP(player->getRMHP()*(100 + Skills::skills[1301007][player->skills->getActiveSkillLevel(1301007)].x)/100);
 			player->setMMP(player->getRMMP()*(100 + Skills::skills[1301007][player->skills->getActiveSkillLevel(1301007)].y)/100);
 		}
@@ -113,9 +113,9 @@ void Levels::giveEXP(Player* player, long exp, char type){
 	}
 }
 
-void Levels::addStat(Player* player, unsigned char* packet){
+void Levels::addStat(Player *player, unsigned char* packet) {
 	int type = BufferUtilities::getInt(packet+4);
-	if(player->getAp() == 0){
+	if (player->getAp() == 0) {
 		// hacking
 		return;
 	}
@@ -191,12 +191,12 @@ void Levels::addStat(Player* player, unsigned char* packet){
 	}
 }
 
-void Levels::setLevel(Player* player, int level){
+void Levels::setLevel(Player *player, int level) {
 	player->setLevel(level);
 	LevelsPacket::levelUP(player, Maps::info[player->getMap()].Players);
 }
 
-void Levels::setJob(Player* player, int job){
+void Levels::setJob(Player *player, int job) {
 	player->setJob(job);
 	LevelsPacket::jobChange(player, Maps::info[player->getMap()].Players);
 }

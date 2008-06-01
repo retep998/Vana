@@ -80,9 +80,9 @@ namespace Quests {
 	void addRequest(int id, QuestRequestsInfo request);
 	void addReward(int id, QuestRewardsInfo raws);
 	void setNextQuest(int id, int questid);
-	void getQuest(Player* player, unsigned char* packet);
-	void giveItem(Player* player, int itemid, int amount);
-	void giveMesos(Player* player, int amount);
+	void getQuest(Player *player, unsigned char* packet);
+	void giveItem(Player *player, int itemid, int amount);
+	void giveMesos(Player *player, int amount);
 };
 
 class PlayerQuests {
@@ -91,19 +91,19 @@ public:
 	void updateQuestMob(int mobid);
 	void checkDone(Quest &quest);
 	void finishQuest(short questid, int npcid);
-	void setPlayer(Player* player){
+	void setPlayer(Player *player) {
 		this->player=player;
 	}
-	bool isQuestActive(short questid){
-		for(unsigned int i=0; i<quests.size(); i++){
-			if(quests[i].id == questid){
+	bool isQuestActive(short questid) {
+		for (unsigned int i=0; i<quests.size(); i++) {
+			if (quests[i].id == questid) {
 				return 1;
 			}
 		}
 		return 0;
 	}
 private:
-	Player* player;
+	Player *player;
 	vector <Quest> quests;
 	vector <QuestComp> questscomp;
 };

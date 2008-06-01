@@ -25,12 +25,12 @@ using namespace std;
 struct SkillActiveInfo;
 
 namespace SkillsPacket {
-	void addSkill(Player* player, int skillid, int level, int maxlevel = 0);
-	void showSkill(Player* player, vector <Player*> players, int skillid);
-	void showCombo(Player* player, vector <Player*> players, int time); // Combo Attack
-	void useSkill(Player* player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
-	void endSkill(Player* player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill);
-	void healHP(Player* player, short hp);
+	void addSkill(Player *player, int skillid, int level, int maxlevel = 0);
+	void showSkill(Player *player, vector <Player*> players, int skillid);
+	void showCombo(Player *player, vector <Player*> players, int time); // Combo Attack
+	void useSkill(Player *player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
+	void endSkill(Player *player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill);
+	void healHP(Player *player, short hp);
 };
 
 #endif

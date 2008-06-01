@@ -54,14 +54,14 @@ namespace Maps {
 	extern hash_map <int, MapInfo> info;
 	void startTimer();
 	void addMap(int id, MapInfo map);
-	void addPlayer(Player* player);
-	void moveMap(Player* player, unsigned char* packet);
-	void moveMapS(Player* player, unsigned char* packet);
-	void removePlayer(Player* player);
-	void changeMap(Player* player, int mapid, int pos);
-	void showClock(Player* player);
+	void addPlayer(Player *player);
+	void moveMap(Player *player, unsigned char* packet);
+	void moveMapS(Player *player, unsigned char* packet);
+	void removePlayer(Player *player);
+	void changeMap(Player *player, int mapid, int pos);
+	void showClock(Player *player);
 	void mapTimer(int mapid);
-	void newMap(Player* player, int mapid);
+	void newMap(Player *player, int mapid);
 	void changeMusic(int mapid, std::string musicname);
 };
 

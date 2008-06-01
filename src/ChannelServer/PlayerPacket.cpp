@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "SendHeader.h"
 
-void PlayerPacket::connectData(Player* player){
+void PlayerPacket::connectData(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(player->getChannel()); // Channel
@@ -71,31 +71,31 @@ void PlayerPacket::connectData(Player* player){
 	packet.addByte(100);
 	packet.addByte(100);
 	packet.addByte(100);
-	for(int i=0; i<player->inv->getEquipNum(); i++){
+	for (int i=0; i<player->inv->getEquipNum(); i++) {
 		Equip* equip = player->inv->getEquip(i);
-		if(equip->pos<0 && !Inventory::isCash(equip->id)){
+		if (equip->pos<0 && !Inventory::isCash(equip->id)) {
 			PlayerPacketHelper::addEquip(packet, equip);
 		}
 	}
 	packet.addByte(0);
-	for(int i=0; i<player->inv->getEquipNum(); i++){
+	for (int i=0; i<player->inv->getEquipNum(); i++) {
 		Equip* equip = player->inv->getEquip(i);
-		if(equip->pos<0 && Inventory::isCash(equip->id)){
+		if (equip->pos<0 && Inventory::isCash(equip->id)) {
 			PlayerPacketHelper::addEquip(packet, equip);
 		}
 	}
 	packet.addByte(0);
-	for(int i=0; i<player->inv->getEquipNum(); i++){
+	for (int i=0; i<player->inv->getEquipNum(); i++) {
 		Equip* equip = player->inv->getEquip(i);
-		if(equip->pos>0){
+		if (equip->pos>0) {
 			PlayerPacketHelper::addEquip(packet, equip);
 		}
 	}
 	packet.addByte(0);
-	for(int j=2; j<=5; j++){
-		for(int i=0; i<player->inv->getItemNum(); i++){
+	for (int j=2; j<=5; j++) {
+		for (int i=0; i<player->inv->getItemNum(); i++) {
 			Item* item = player->inv->getItem(i);
-			if(item->inv == j){
+			if (item->inv == j) {
 				packet.addByte((char)item->pos);
 				packet.addByte(2);
 				packet.addInt(item->id);
@@ -103,7 +103,7 @@ void PlayerPacket::connectData(Player* player){
 				packet.addBytes("8005BB46E61702");
 				packet.addShort(item->amount); // slots
 				packet.addInt(0);			
-				if(ISSTAR(item->id)){
+				if (ISSTAR(item->id)) {
 					packet.addInt(2);
 					packet.addShort(0x54);
 					packet.addByte(0);
@@ -116,10 +116,10 @@ void PlayerPacket::connectData(Player* player){
 	}
 	//Skills
 	packet.addShort(player->skills->getSkillsNum());
-	for(int i=0; i<player->skills->getSkillsNum(); i++){
+	for (int i=0; i<player->skills->getSkillsNum(); i++) {
 		packet.addInt(player->skills->getSkillID(i));
 		packet.addInt(player->skills->getSkillLevel(player->skills->getSkillID(i)));
-		if(FORTHJOB_SKILL(player->skills->getSkillID(i)))
+		if (FORTHJOB_SKILL(player->skills->getSkillID(i)))
 			packet.addInt(player->skills->getMaxSkillLevel(player->skills->getSkillID(i))); // Max Level for 4th job skills
 	}
 	//End
@@ -127,17 +127,17 @@ void PlayerPacket::connectData(Player* player){
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addShort(0);
-	for(int i=0; i<15; i++)
+	for (int i=0; i<15; i++)
 		packet.addBytes("FFC99A3B");
 	packet.addInt64(TimeUtilities::getServerTime());
 	packet.send(player);
 }
 
-void PlayerPacket::showKeys(Player* player, int keys[90]) {
+void PlayerPacket::showKeys(Player *player, int keys[90]) {
 	Packet packet;
 	packet.addHeader(SEND_KEYMAP);
 	packet.addByte(0);
-	for(int i=0; i<90; i++){
+	for (int i=0; i<90; i++) {
 		packet.addInt(keys[i]);
 		packet.addByte(0);
 	}
@@ -164,7 +164,7 @@ void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
 	packet.send(player);
 }
 
-void PlayerPacket::newHair(Player* player){
+void PlayerPacket::newHair(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
@@ -173,7 +173,7 @@ void PlayerPacket::newHair(Player* player){
 	packet.send(player);
 }
 
-void PlayerPacket::newEyes(Player* player){
+void PlayerPacket::newEyes(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
@@ -182,7 +182,7 @@ void PlayerPacket::newEyes(Player* player){
 	packet.send(player);
 }
 
-void PlayerPacket::newSkin(Player* player){
+void PlayerPacket::newSkin(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
@@ -199,7 +199,7 @@ void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
 	packet.send(player);
 }
 
-void PlayerPacket::showMessage(Player *player, const string &msg, char type){
+void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
 	Packet packet;
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);

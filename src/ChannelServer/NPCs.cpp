@@ -28,112 +28,106 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "BufferUtilities.h"
 #include "SendHeader.h"
+#include "ReadPacket.h"
 
 hash_map <int, NPCsInfo> NPCs::info;
 
-void NPCs::addNPC(int id, NPCsInfo npc){
+void NPCs::addNPC(int id, NPCsInfo npc) {
 	info[id] = npc;
 }
 
-void NPCs::showNPCs(Player* player){
-	for(unsigned int i=0; i<info[player->getMap()].size(); i++)
+void NPCs::showNPCs(Player *player) {
+	for (unsigned int i=0; i<info[player->getMap()].size(); i++)
 		NPCPacket::showNPC(player, info[player->getMap()][i], i);
 }
 
-void NPCs::handleNPC(Player* player, unsigned char* packet){
-	if(player->getNPC() != NULL)
+void NPCs::handleNPC(Player *player, ReadPacket *packet) {
+	if (player->getNPC() != NULL)
 		return;
-	int npcid = info[player->getMap()][BufferUtilities::getInt(packet)-100].id;
+	int npcid = info[player->getMap()][packet->getInt()-100].id;
 	NPC* npc = new NPC(npcid, player);
 	NPCsScripts::handle(npcid, npc);
-	if(npc->isEnd())
+	if (npc->isEnd())
 		delete npc;
 }
 
-void NPCs::handleQuestNPC(Player* player, int npcid, bool start){
-	if(player->getNPC() != NULL)
+void NPCs::handleQuestNPC(Player *player, int npcid, bool start) {
+	if (player->getNPC() != NULL)
 		return;
 	NPC* npc = new NPC(npcid, player, 1);
 	npc->setIsStart(start);
 	NPCsScripts::handle(npcid, npc);
-	if(npc->isEnd())
+	if (npc->isEnd())
 		delete npc;
 }
-void NPCs::handleNPCIn(Player* player, unsigned char* packet){
+void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 	NPC* npc = player->getNPC();
-	if(npc == NULL)
+	if (npc == NULL)
 		return;
-	char type = packet[0];
-	if(type == 0){
-		char what = packet[1];
-		if(what == 0)
+	char type = packet->getByte();
+	char what = packet->getByte();
+	if (type == 0) {
+		if (what == 0)
 			npc->setState(npc->getState()-1);
-		else if(what == 1)
+		else if (what == 1)
 			npc->setState(npc->getState()+1);
-		else if(what == -1)
+		else if (what == -1)
 			npc->end();
 	}
-	else if(type == 1 || type == 2){
+	else if (type == 1 || type == 2) {
 		npc->setState(npc->getState()+1);
-		char what = packet[1];
-		if(what == 0)
+		if (what == 0)
 			npc->setSelected(0);
-		else if(what == 1)
+		else if (what == 1)
 			npc->setSelected(1);
-		else if(what == -1)
+		else if (what == -1)
 			npc->end();
 	}
-	else if(type == 3){
+	else if (type == 3) {
 		npc->setState(npc->getState()+1);
-		if(packet[1] != 0){
-			short len = BufferUtilities::getShort(packet+2);
-			if(len>100){
-				npc->end();
-				return;
-			}
-			char temp[101];
-			BufferUtilities::getString(packet+4, len, temp);
-			npc->setGetText(temp);
+		if (what != 0) {
+			npc->setGetText(packet->getString());
 		}
 		else
 			npc->end();
 	}
-	else if(type == 4){
+	else if (type == 4) {
 		npc->setState(npc->getState()+1);
-		if(packet[1] == 1)
-			npc->setGetNumber(BufferUtilities::getInt(packet+2));
+		if (what == 1)
+			npc->setGetNumber(packet->getInt());
 		else
 			npc->end();
 	}
-	else if(type == 5){
+	else if (type == 5) {
 		npc->setState(npc->getState()+1);
-		if(packet[1] == 0)
+		if (what == 0)
 			npc->end();
 		else
-			npc->setSelected(packet[2]);
+			npc->setSelected(packet->getByte());
 	}
-	else if(type == 7){
+	else if (type == 7) {
 		npc->setState(npc->getState()+1);
-		if(packet[1] == 1){
-			npc->setSelected(BufferUtilities::getShort(packet+2));
+		if (what == 1) {
+			npc->setSelected(packet->getShort());
 		}
 		else 
 			npc->end();
 	}
-	else
+	else {
 		npc->end();
-	if(npc->isEnd()){
+	}
+	if (npc->isEnd()) {
 		delete npc;
 		return;
 	}
 	NPCsScripts::handle(npc->getNpcID(), npc);
-	if(npc->isEnd()){
+	if (npc->isEnd()) {
 		delete npc;
 		return;
 	}
 }
 
-NPC::NPC(int npcid, Player* player, bool isquest){
+NPC::NPC(int npcid, Player *player, bool isquest) {
 	this->isquest = isquest;
 	getnum=0;
 	gettext[0] = '\0';
@@ -146,11 +140,11 @@ NPC::NPC(int npcid, Player* player, bool isquest){
 	player->setNPC(this);
 }
 
-NPC::~NPC(){
+NPC::~NPC() {
 	player->setNPC(NULL);
 }
 
-Packet NPC::npcPacket(char type){
+Packet NPC::npcPacket(char type) {
 	Packet packet;
 	packet.addHeader(SEND_NPC_TALK);
 	packet.addByte(4);
@@ -162,51 +156,51 @@ Packet NPC::npcPacket(char type){
 	return packet;
 }
 
-void NPC::sendSimple(){
+void NPC::sendSimple() {
 	Packet packet = npcPacket(5);
 	packet.send(player);
 }
-void NPC::sendYesNo(){
+void NPC::sendYesNo() {
 	Packet packet = npcPacket(1);
 	packet.send(player);
 }
-void NPC::sendNext(){
+void NPC::sendNext() {
 	Packet packet = npcPacket(0);
 	packet.addByte(0);
 	packet.addByte(1);
 	packet.send(player);
 }
-void NPC::sendBackNext(){
+void NPC::sendBackNext() {
 	Packet packet = npcPacket(0);
 	packet.addByte(1);
 	packet.addByte(1);
 	packet.send(player);
 }
-void NPC::sendBackOK(){
+void NPC::sendBackOK() {
 	Packet packet = npcPacket(0);
 	packet.addByte(1);
 	packet.addByte(0);
 	packet.send(player);
 }
-void NPC::sendOK(){
+void NPC::sendOK() {
 	Packet packet = npcPacket(0);
 	packet.addShort(0);
 	packet.send(player);
 }
 
-void NPC::sendAcceptDecline(){
+void NPC::sendAcceptDecline() {
 	Packet packet = npcPacket(2);
 	packet.send(player);
 }
 
-void NPC::sendGetText(){
+void NPC::sendGetText() {
 	Packet packet = npcPacket(3);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.send(player);
 }
 
-void NPC::sendGetNumber(int def, int min, int max){
+void NPC::sendGetNumber(int def, int min, int max) {
 	Packet packet = npcPacket(4);
 	packet.addInt(def);
 	packet.addInt(min);
@@ -215,14 +209,14 @@ void NPC::sendGetNumber(int def, int min, int max){
 	packet.send(player);
 }
 
-void NPC::sendStyle(int styles[], char size){
+void NPC::sendStyle(int styles[], char size) {
 	Packet packet = npcPacket(7);
 	packet.addByte(size);
-	for(int i=0; i<size; i++)
+	for (int i=0; i<size; i++)
 		packet.addInt(styles[i]);
 	packet.send(player);
 }
 
-void NPC::showShop(){
+void NPC::showShop() {
 	Shops::showShop(player, getNpcID());
 }

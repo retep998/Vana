@@ -64,7 +64,7 @@ void PacketHandler::handle(int socket) {
 			return;
 		}
 		bytesInBuffer += l;
-		if (bytesInBuffer == packetSize + HEADER_LEN){
+		if (bytesInBuffer == packetSize + HEADER_LEN) {
 			decoder->decrypt(buffer + HEADER_LEN, packetSize);
 			ReadPacket *packet = new ReadPacket(buffer + HEADER_LEN, packetSize);
 			player->handleRequest(packet);

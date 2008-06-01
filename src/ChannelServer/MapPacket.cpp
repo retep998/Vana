@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "SendHeader.h"
 
-Packet MapPacket::playerPacket(Player* player) {
+Packet MapPacket::playerPacket(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_PLAYER);
 	packet.addInt(player->getPlayerid());
@@ -38,7 +38,7 @@ Packet MapPacket::playerPacket(Player* player) {
 	packet.addByte(player->getSkill().types[5]);
 	packet.addByte(player->getSkill().types[6]);
 	packet.addByte(player->getSkill().types[7]);
-	if(player->getSkill().isval)
+	if (player->getSkill().isval)
 		packet.addByte(player->getSkill().val);
 	packet.addByte(player->getGender());
 	packet.addByte(player->getSkin());
@@ -46,11 +46,11 @@ Packet MapPacket::playerPacket(Player* player) {
 	packet.addByte(1);
 	packet.addInt(player->getHair());
 	int equips[35][2] = {0};
-	for(int i=0; i<player->inv->getEquipNum(); i++){ //sort equips
+	for (int i=0; i<player->inv->getEquipNum(); i++) { //sort equips
 		Equip* equip = player->inv->getEquip(i);
-		if(equip->pos<0){
-			if(equips[equip->type][0]>0){
-				if(Inventory::isCash(equip->id)){
+		if (equip->pos<0) {
+			if (equips[equip->type][0]>0) {
+				if (Inventory::isCash(equip->id)) {
 					equips[equip->type][1] = equips[equip->type][0];
 					equips[equip->type][0] = equip->id;
 				}
@@ -63,24 +63,24 @@ Packet MapPacket::playerPacket(Player* player) {
 			}
 		}
 	}
-	for(int i=0; i<35; i++){ //shown items
-		if(equips[i][0]>0){
+	for (int i=0; i<35; i++) { //shown items
+		if (equips[i][0]>0) {
 			packet.addByte(i);
-			if(i == 11 && equips[i][1]>0) // normal weapons always here
+			if (i == 11 && equips[i][1]>0) // normal weapons always here
 				packet.addInt(equips[i][1]);
 			else
 				packet.addInt(equips[i][0]);
 		}
 	}
 	packet.addByte(-1);
-	for(int i=0; i<35; i++){ //covered items
-		if(equips[i][1]>0 && i != 11){
+	for (int i=0; i<35; i++) { //covered items
+		if (equips[i][1]>0 && i != 11) {
 			packet.addByte(i);
 			packet.addInt(equips[i][1]);
 		}
 	}
 	packet.addByte(-1);
-	if(equips[11][1]>0) // cs weapon
+	if (equips[11][1]>0) // cs weapon
 		packet.addInt(equips[11][0]);
 	else
 		packet.addInt(0);
@@ -102,21 +102,21 @@ Packet MapPacket::playerPacket(Player* player) {
 	return packet;
 }
 
-void MapPacket::showPlayer(Player* player, vector <Player*> players){
+void MapPacket::showPlayer(Player *player, vector <Player*> players) {
 	Packet packet = playerPacket(player);
-	for(unsigned int i=0; i<players.size(); i++){
+	for (unsigned int i=0; i<players.size(); i++) {
 		packet.send(players[i]);
 	}
 }
 
-void MapPacket::removePlayer(Player* player, vector <Player*> players){
+void MapPacket::removePlayer(Player *player, vector <Player*> players) {
 	Packet packet;
 	packet.addHeader(SEND_REMOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.sendTo(player, players, false);
 }
 
-void MapPacket::showPlayers(Player* player, vector <Player*> players){
+void MapPacket::showPlayers(Player *player, vector <Player*> players) {
 	for (unsigned int i=0; i<players.size(); i++) {
 		if (player->getPlayerid() != players[i]->getPlayerid() && players[i]->skills->getActiveSkillLevel(5101004) == 0) {
 			Packet packet = playerPacket(players[i]);
@@ -125,7 +125,7 @@ void MapPacket::showPlayers(Player* player, vector <Player*> players){
 	}
 }
 
-void MapPacket::changeMap(Player* player){
+void MapPacket::changeMap(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(player->getChannel()); // Channel
@@ -141,7 +141,7 @@ void MapPacket::changeMap(Player* player){
 	packet.send(player);
 }
 
-void MapPacket::portalBlocked(Player* player){
+void MapPacket::portalBlocked(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
@@ -149,7 +149,7 @@ void MapPacket::portalBlocked(Player* player){
 	packet.send(player);
 }
 
-void MapPacket::showClock(Player* player, unsigned char hour, unsigned char min, unsigned char sec){
+void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec) {
 	Packet packet;
 	packet.addHeader(SEND_TIME);
 	packet.addByte(1);
@@ -169,7 +169,7 @@ void MapPacket::showTimer(Player *player, int sec) {
 	packet.send(player);
 }
 
-void MapPacket::makeApple(Player* player){
+void MapPacket::makeApple(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_MAKE_APPLE);  
 	packet.send(player);

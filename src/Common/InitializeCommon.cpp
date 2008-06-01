@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-void Initializing::initializeMySQL(){
+void Initializing::initializeMySQL() {
 	Config config("conf/mysql.lua");
 	std::cout << std::setw(outputWidth) << std::left << "Initializing MySQL... ";
-	if(db.set_option(new mysqlpp::ReconnectOption(true)) && db.connect(config.getString("database").c_str(), config.getString("host").c_str(), config.getString("username").c_str(), config.getString("password").c_str(), config.getInt("port")))
+	if (db.set_option(new mysqlpp::ReconnectOption(true)) && db.connect(config.getString("database").c_str(), config.getString("host").c_str(), config.getString("username").c_str(), config.getString("password").c_str(), config.getInt("port")))
 		std::cout << "DONE" << std::endl;
 	else{
 		std::cout << "FAILED: " << db.error() << std::endl;
@@ -34,7 +34,7 @@ void Initializing::initializeMySQL(){
 	}
 }
 
-void Initializing::setUsersOffline(int onlineid){
+void Initializing::setUsersOffline(int onlineid) {
 	mysqlpp::Query query = db.query();
 	query << "UPDATE users SET online = 0 WHERE online = " << mysqlpp::quote << onlineid;
 	query.exec();

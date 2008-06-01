@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "SendHeader.h"
 
-void ServerPacket::showScrollingHeader(Player* player, const string &msg){
+void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
 	Packet packet;
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(4);
@@ -30,25 +30,25 @@ void ServerPacket::showScrollingHeader(Player* player, const string &msg){
 	packet.send(player);
 }
 
-void ServerPacket::changeScrollingHeader(const string &msg){
+void ServerPacket::changeScrollingHeader(const string &msg) {
 	Packet packet;
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(1);
 	packet.addString(msg);
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
-		 iter != Players::players.end(); iter++){
+		 iter != Players::players.end(); iter++) {
 			 packet.send(iter->second);
 	}
 }
 
-void ServerPacket::scrollingHeaderOff(){
+void ServerPacket::scrollingHeaderOff() {
 	Packet packet;
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(0);
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
-		 iter != Players::players.end(); iter++){
+		 iter != Players::players.end(); iter++) {
 			 packet.send(iter->second);
 	}
 }

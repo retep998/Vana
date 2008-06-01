@@ -40,8 +40,8 @@ namespace Shops{
 	extern hash_map <int, ShopInfo> shops;
 	extern vector <int> rechargables; // IDs of items which are rechargable i.e. stars
 	void addShop(int id, ShopInfo shop);
-	void showShop(Player* player, int id);
-	int getPrice(Player* player, int itemid);
+	void showShop(Player *player, int id);
+	int getPrice(Player *player, int itemid);
 };
 
 #endif

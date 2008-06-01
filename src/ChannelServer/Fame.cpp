@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "BufferUtilities.h"
 
-void Fame::handleFame(Player* player, unsigned char* packet){
+void Fame::handleFame(Player *player, unsigned char* packet) {
 	int CharID = BufferUtilities::getInt(packet);
 	int FameDefame = 0;
 	FameDefame = BufferUtilities::getInt(packet+4);
@@ -32,17 +32,17 @@ void Fame::handleFame(Player* player, unsigned char* packet){
 
 	int checkResult = canFame(player,CharID);
 
-	if(player->getPlayerid() > 0)
+	if (player->getPlayerid() > 0)
 	{
-		if(player->getPlayerid() != CharID)
+		if (player->getPlayerid() != CharID)
 		{
-			if(checkResult >= 1 && checkResult <= 4)
+			if (checkResult >= 1 && checkResult <= 4)
 			{
 				FamePacket::SendError(player,checkResult);
 			}
 			else
 			{
-				if(FameDefame == 1)
+				if (FameDefame == 1)
 				{
 					NewFame = Players::players[CharID]->getFame()+1;
 					Players::players[CharID]->setFame(NewFame);
@@ -51,7 +51,7 @@ void Fame::handleFame(Player* player, unsigned char* packet){
 					PlayerPacket::updateStat(Players::players[CharID], 0x20000, Players::players[CharID]->getFame());
 					PlayersPacket::showInfo(player, Players::players[CharID]);
 				}
-				else if(FameDefame == 0)
+				else if (FameDefame == 0)
 				{
 					NewFame = Players::players[CharID]->getFame()-1;
 					Players::players[CharID]->setFame(NewFame);
@@ -74,17 +74,17 @@ void Fame::handleFame(Player* player, unsigned char* packet){
 	}
 }
 
-int Fame::canFame(Player* player, int to){
+int Fame::canFame(Player *player, int to) {
 	int from = player->getPlayerid();
 	if (player->getLevel() < 15)
 	{
 		return 2;
 	}
-	else if(getLastFameLog(from))
+	else if (getLastFameLog(from))
 	{
 		return 3;
 	}
-	else if(getLastFameSPLog(from, to))
+	else if (getLastFameSPLog(from, to))
 	{
 		return 4;
 	}
@@ -94,7 +94,7 @@ int Fame::canFame(Player* player, int to){
 	}
 }
 
-void Fame::addFameLog(int from, int to){
+void Fame::addFameLog(int from, int to) {
 	mysqlpp::Query query = db.query();
 	query << "INSERT INTO fame_log (`from`, `to`, `time`) VALUES (" 
 			<< mysqlpp::quote << from << ","
@@ -102,24 +102,24 @@ void Fame::addFameLog(int from, int to){
     query.exec();
 }
 
-bool Fame::getLastFameLog(int from){ // Last fame from that char
+bool Fame::getLastFameLog(int from) { // Last fame from that char
 	mysqlpp::Query query = db.query();
 	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-86400 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	
-	if(!res.empty()){
+	if (!res.empty()) {
 		return (res.num_rows() == 0) ? false : true;
 	} else {
 		return false;
 	}
 }
 
-bool Fame::getLastFameSPLog(int from, int to){
+bool Fame::getLastFameSPLog(int from, int to) {
 	mysqlpp::Query query = db.query();
     query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND `to`=" << mysqlpp::quote << to << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
-	if(!res.empty()){
+	if (!res.empty()) {
 		return (res.num_rows() == 0) ? false : true;
 	} else {
 		return false;

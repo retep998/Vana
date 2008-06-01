@@ -137,7 +137,7 @@ int LuaExports::getNumber(lua_State *luaVm) {
 }
 
 int LuaExports::getText(lua_State *luaVm) {
-	lua_pushstring(luaVm, getNPC(luaVm)->getText());
+	lua_pushstring(luaVm, getNPC(luaVm)->getText().c_str());
 	return 1;
 }
 

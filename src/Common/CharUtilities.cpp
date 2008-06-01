@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CharUtilities.h"
 
-char * CharUtilities::tolower(char* s){
+char * CharUtilities::tolower(char* s) {
 	int i = 0;
-	while(s[i]){
+	while (s[i]) {
 		s[i] = std::tolower(s[i]);
 		i++;
 	}

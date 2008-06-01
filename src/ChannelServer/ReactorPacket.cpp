@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "SendHeader.h"
 
-void ReactorPacket::showReactor(Player* player, Reactor *reactor) {
+void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_REACTOR);
 	packet.addInt(reactor->getID());

@@ -170,21 +170,21 @@ void expandKey(unsigned char *expandedKey,
         /* every 16,24,32 bytes we apply the core schedule to t
          * and increment rconIteration afterwards
          */
-        if(currentSize % size == 0)
+        if (currentSize % size == 0)
         {
             core(t, rconIteration++);
         }
 
         /* For 256-bit keys, we add an extra sbox to the calculation */
-        if(size == SIZE_32 && ((currentSize % size) == 16)) {
-            for(i = 0; i < 4; i++)
+        if (size == SIZE_32 && ((currentSize % size) == 16)) {
+            for (i = 0; i < 4; i++)
                 t[i] = getSBoxValue(t[i]);
         }
 
         /* We XOR t with the four-byte block 16,24,32 bytes before the new expanded key.
          * This becomes the next four bytes in the expanded key.
          */
-        for(i = 0; i < 4; i++) {
+        for (i = 0; i < 4; i++) {
             expandedKey[currentSize] = expandedKey[currentSize - size] ^ t[i];
             currentSize++;
         }
@@ -236,12 +236,12 @@ unsigned char galois_multiplication(unsigned char a, unsigned char b)
     unsigned char p = 0;
 	unsigned char counter;
 	unsigned char hi_bit_set;
-	for(counter = 0; counter < 8; counter++) {
-		if((b & 1) == 1)
+	for (counter = 0; counter < 8; counter++) {
+		if ((b & 1) == 1)
 			p ^= a;
 		hi_bit_set = (a & 0x80);
 		a <<= 1;
-		if(hi_bit_set == 0x80)
+		if (hi_bit_set == 0x80)
 			a ^= 0x1b;
 		b >>= 1;
 	}
@@ -252,7 +252,7 @@ void mixColumn(unsigned char *column)
 {
     unsigned char cpy[4];
 	int i;
-	for(i = 0; i < 4; i++)
+	for (i = 0; i < 4; i++)
     {
 		cpy[i] = column[i];
     }
@@ -425,7 +425,7 @@ void decryptofb(unsigned char* buffer, unsigned char* vec, int bsize)
     unsigned char output[16] = {0};
     unsigned char plaintext[16] = {0};
 	unsigned char IV[16];
-	for(int i=0; i<16; i++){
+	for (int i=0; i<16; i++) {
 		IV[i] = vec[i%4];
 	}
     //unsigned char IV[16] = {0xa5, 0x5d ,0xe6 ,0x2f,0xa5, 0x5d ,0xe6 ,0x2f,0xa5, 0x5d ,0xe6 ,0x2f,0xa5, 0x5d ,0xe6 ,0x2f};
@@ -438,7 +438,7 @@ void decryptofb(unsigned char* buffer, unsigned char* vec, int bsize)
 
     int i,j;
 
- 	for(j=0; j<bsize/16 + 1; j++)
+ 	for (j=0; j<bsize/16 + 1; j++)
     {
 		if (firstRound)
 		{

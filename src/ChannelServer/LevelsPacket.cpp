@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void LevelsPacket::showEXP(Player* player, int exp, char type){
+void LevelsPacket::showEXP(Player *player, int exp, char type) {
 	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(3);
@@ -33,7 +33,7 @@ void LevelsPacket::showEXP(Player* player, int exp, char type){
 	packet.send(player);
 }
 
-void LevelsPacket::levelUP(Player* player, vector <Player*> players){
+void LevelsPacket::levelUP(Player *player, vector <Player*> players) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(0);
@@ -55,7 +55,7 @@ void LevelsPacket::levelUP(Player* player, vector <Player*> players){
 
 }
 
-void LevelsPacket::statOK(Player* player){
+void LevelsPacket::statOK(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
@@ -63,7 +63,7 @@ void LevelsPacket::statOK(Player* player){
 	packet.send(player);
 }
 
-void LevelsPacket::jobChange(Player *player, std::vector<Player*> players){
+void LevelsPacket::jobChange(Player *player, std::vector<Player*> players) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());

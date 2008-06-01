@@ -242,13 +242,13 @@ int LuaExports::killMob(lua_State *luaVm) {
 
 int LuaExports::setStyle(lua_State *luaVm) {
 	int id = lua_tointeger(luaVm, -1);
-	if(id/10000 == 0){
+	if (id/10000 == 0) {
 		getPlayer(luaVm)->setSkin((char)id);
 	}
-	else if(id/10000 == 2){
+	else if (id/10000 == 2) {
 		getPlayer(luaVm)->setEyes(id);
 	}
-	else if(id/10000 == 3){
+	else if (id/10000 == 3) {
 		getPlayer(luaVm)->setHair(id);
 	}
 	InventoryPacket::updatePlayer(getPlayer(luaVm));
@@ -257,7 +257,7 @@ int LuaExports::setStyle(lua_State *luaVm) {
 
 int LuaExports::setMap(lua_State *luaVm) {
 	int mapid = lua_tointeger(luaVm, -1);
-	if(Maps::info.find(mapid) != Maps::info.end())
+	if (Maps::info.find(mapid) != Maps::info.end())
 		Maps::changeMap(getPlayer(luaVm), mapid, 0);
 	return 1;
 }

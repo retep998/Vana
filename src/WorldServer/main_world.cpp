@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include <iostream>
 
-int main(){
+int main() {
 	std::cout << "Starting World Server..." << std::endl;
 	WorldServer *server = WorldServer::Instance();
 	server->initialize();
 	std::cout << "Complete!" << std::endl;
-	while(getchar()){}
+	while (getchar()) {}
 
 	server->shutdown();
 	return 0;

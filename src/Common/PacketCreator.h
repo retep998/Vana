@@ -28,7 +28,7 @@ using std::string;
 
 class Packet {
 public:
-	Packet(){
+	Packet() {
 		pos = 0;
 	}
 
@@ -45,8 +45,8 @@ public:
 
 	template <class T>
 	void sendTo(T* player, vector <T*> players, bool is) {
-		for(unsigned int i=0; i<players.size(); i++){
-			if((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
+		for (unsigned int i=0; i<players.size(); i++) {
+			if ((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
 				this->send(players[i]);
 		}
 	}

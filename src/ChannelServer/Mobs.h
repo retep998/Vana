@@ -58,17 +58,17 @@ namespace Mobs {
 	extern int mobscount;
 	void addMob(int id, MobInfo mob);
 	void addSpawn(int id, SpawnsInfo spawns);
-	void damageMob(Player* player, unsigned char* packet);
-	void damageMobRanged(Player* player, unsigned char* packet, int size);
-	void damageMobSpell(Player* player, unsigned char* packet);
-	void monsterControl(Player* player, unsigned char* packet, int size);
-	void monsterControlSkill(Player* player, unsigned char* packet);
+	void damageMob(Player *player, unsigned char* packet);
+	void damageMobRanged(Player *player, unsigned char* packet, int size);
+	void damageMobSpell(Player *player, unsigned char* packet);
+	void monsterControl(Player *player, unsigned char* packet, int size);
+	void monsterControlSkill(Player *player, unsigned char* packet);
 	void checkSpawn(int mapid);
-	void showMobs(Player* player);
+	void showMobs(Player *player);
 	void updateSpawn(int mapid);
 	void updateSpawn(int mapid, Mob *mob);
-	void spawnMob(Player* player, int mobid, int amount=1);
-	void dieMob(Player* player, Mob* mob);
+	void spawnMob(Player *player, int mobid, int amount=1);
+	void dieMob(Player *player, Mob* mob);
 	void spawnMobPos(int mapid, int mobid, int xx, int yy);
 	int nextMobId(int mapid);
 	Mob * getMob(int mobid, int map);
@@ -84,7 +84,7 @@ public:
 		pos.x = x;
 		pos.y = y;
 	}
-	Pos getPos(){
+	Pos getPos() {
 		return pos;
 	}
 	int getPosX() {
@@ -119,7 +119,7 @@ public:
 	}
 	void setHP(int hp) {
 		this->hp=hp;
-		if(this->hp<0)
+		if (this->hp<0)
 			this->hp=0;
 	}
 	int getHP() {
