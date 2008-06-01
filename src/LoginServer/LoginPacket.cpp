@@ -57,7 +57,7 @@ void LoginPacket::loginBan(PlayerLogin* player, char reason, int expire){
 	packet.send(player);
 }
 
-void LoginPacket::loginConnect(PlayerLogin* player, char* username, int size){
+void LoginPacket::loginConnect(PlayerLogin* player, const string &username){
 	Packet packet;
 	packet.addHeader(SEND_LOGIN_INFO_REPLY);
 	packet.addInt(0);
@@ -69,8 +69,7 @@ void LoginPacket::loginConnect(PlayerLogin* player, char* username, int size){
 		default: packet.addByte(player->getGender()); break;
 	}
 	packet.addBytes("0465");
-	packet.addShort(size);
-	packet.addString(username, size);
+	packet.addString(username);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addBytes("000000A6B89C2B4CC701");
@@ -161,11 +160,10 @@ void LoginPacket::showCharacters(PlayerLogin* player, vector <Character> chars){
 	packet.send(player);
 }
 
-void LoginPacket::checkName(PlayerLogin* player, char is, char* name){
+void LoginPacket::checkName(PlayerLogin* player, char is, const string &name){
 	Packet packet;
 	packet.addHeader(SEND_CHECK_NAME);
-	packet.addShort(strlen(name));
-	packet.addString(name, strlen(name));
+	packet.addString(name);
 	packet.addByte(is);
 	packet.send(player);
 }

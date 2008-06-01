@@ -24,6 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma warning(disable : 4996)
 #include "MersenneTwister.h"
 #pragma warning(pop) 
+
+#include <string>
+
+using std::string;
+
 class MTRand;
 
 class Randomizer {
@@ -37,7 +42,7 @@ public:
 	int randInt(int max);
 	int randInt();
 	double rand();
-	char * generateSalt(size_t length);
+	string generateSalt(size_t length);
 private:
 	Randomizer() {};
 	Randomizer(const Randomizer&);

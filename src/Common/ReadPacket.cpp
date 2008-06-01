@@ -23,7 +23,7 @@ unsigned char ReadPacket::getByte() {
 	return buffer[pos++];
 }
 
-void ReadPacket::skipBytes(size_t len) {
+void ReadPacket::skipBytes(int len) {
 	pos += len;
 }
 

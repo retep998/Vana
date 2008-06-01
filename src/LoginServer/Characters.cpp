@@ -16,11 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Characters.h"
+#include "PlayerLogin.h"
+#include "LoginPacket.h"
+#include "MySQLM.h"
 #include "Worlds.h"
 #include "LoginServer.h"
 #include "LoginServerAcceptPlayerPacket.h"
 
-void Characters::showEquips(int id, vector <CharEquip> &vec){
+void Characters::showEquips(int id, vector<CharEquip> &vec){
 	mysqlpp::Query query = db.query();
 	query << "SELECT equipid, type, pos FROM equip WHERE charid = " << mysqlpp::quote << id << " AND pos < 0 ORDER BY type ASC, pos ASC";
 	mysqlpp::StoreQueryResult res = query.store();
@@ -34,9 +37,9 @@ void Characters::showEquips(int id, vector <CharEquip> &vec){
 	}	
 }
 
-void Characters::loadCharacter(Character &charc, mysqlpp::Row row) {
+void Characters::loadCharacter(Character &charc, mysqlpp::Row &row) {
 	charc.id = row["id"];
-	strcpy_s(charc.name, row["name"]);
+	charc.name = row["name"];
 	charc.gender = (unsigned char) row["gender"];
 	charc.skin = (unsigned char) row["skin"];
 	charc.eyes = row["eyes"];
@@ -74,15 +77,13 @@ void Characters::showCharacters(PlayerLogin* player){
 	LoginPacket::showCharacters(player, chars);
 }
 
-void Characters::checkCharacterName(PlayerLogin* player, unsigned char* packet){
-	char charactername[15];
-	int size = packet[0];
-	if(size>15){
+void Characters::checkCharacterName(PlayerLogin* player, ReadPacket *packet){
+	string name = packet->getString();
+	if (name.size() > 15){
 		return;
 	}
-	BufferUtilities::getString(packet+2, size, charactername);
 	
-	LoginPacket::checkName(player, nameTaken(player, charactername), charactername);
+	LoginPacket::checkName(player, nameTaken(player, name), name);
 }
 
 void Characters::createEquip(int equipid, int type, int charid){
@@ -98,27 +99,32 @@ void Characters::createEquip(int equipid, int type, int charid){
 	query.exec();
 }
 
-void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
+void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet){
 	Character charc;
-	char charactername[15];
-	int size = packet[0];
-	if(size>15){
+	string name = packet->getString();
+	if (name.size() > 15) {
 		return;
 	}
-	BufferUtilities::getString(packet+2, size, charactername);
+
 	// Let's check our char name again just to be sure
-	if(nameTaken(player, charactername)) {
-		LoginPacket::checkName(player, 1, charactername);
+	if(nameTaken(player, name)) {
+		LoginPacket::checkName(player, 1, name);
 		return;
 	}
-	int pos = 2+size;
-	int eyes = BufferUtilities::getInt(packet+pos);
-	pos+=4;
-	int hair = BufferUtilities::getInt(packet+pos);
-	pos+=8;
-	int skin = BufferUtilities::getInt(packet+pos);
-	pos+=20;
-	if(packet[pos+1] + packet[pos+2] + packet[pos+3] + packet[pos+4] != 25){
+
+	int eyes = packet->getInt();
+	int hair = packet->getInt();
+	packet->skipBytes(4);
+	int skin = packet->getInt();
+	packet->skipBytes(16);
+
+	char gender = packet->getByte();
+	char str = packet->getByte();
+	char dex = packet->getByte();
+	char intt = packet->getByte();
+	char luk = packet->getByte();
+
+	if(str + dex + intt + luk != 25){
 		// hacking
 		return;
 	}
@@ -126,28 +132,23 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	query << "INSERT INTO characters (userid, world_id, name, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES (" 
 			<< mysqlpp::quote << player->getUserid() << ","
 			<< mysqlpp::quote << (int) player->getWorld() << ","
-			<< mysqlpp::quote << charactername << ","
+			<< mysqlpp::quote << name << ","
 			<< mysqlpp::quote << eyes << ","
 			<< mysqlpp::quote << hair << ","
 			<< mysqlpp::quote << skin << ","
-			<< mysqlpp::quote << packet[pos] << ","
-			<< mysqlpp::quote << packet[pos+1] << ","
-			<< mysqlpp::quote << packet[pos+2] << ","
-			<< mysqlpp::quote << packet[pos+3] << ","
-			<< mysqlpp::quote << packet[pos+4] << ")";
-	std::cout << query.str();
+			<< mysqlpp::quote << (int) gender << ","
+			<< mysqlpp::quote << (int) str << ","
+			<< mysqlpp::quote << (int) dex << ","
+			<< mysqlpp::quote << (int) intt << ","
+			<< mysqlpp::quote << (int) luk << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	int id = (int) res.insert_id();
 
-	pos -= 16;
-	createEquip(BufferUtilities::getInt(packet+pos), 0x05, id);
-	pos+=4;
-	createEquip(BufferUtilities::getInt(packet+pos), 0x06, id);
-	pos+=4;
-	createEquip(BufferUtilities::getInt(packet+pos), 0x07, id);
-	pos+=4;
-	createEquip(BufferUtilities::getInt(packet+pos), 0x0b, id);
-	pos+=4;
+	packet->skipBytes(-21);
+	createEquip(packet->getInt(), 0x05, id);
+	createEquip(packet->getInt(), 0x06, id);
+	createEquip(packet->getInt(), 0x07, id);
+	createEquip(packet->getInt(), 0x0b, id);
 
 	query << "INSERT INTO items VALUES (4161001, " << mysqlpp::quote << id << ", 4, 1, 1)"; // Beginner Guide
 	query.exec();
@@ -162,9 +163,9 @@ void Characters::createCharacter(PlayerLogin* player, unsigned char* packet){
 	LoginPacket::showCharacter(player, charc);
 }
 
-void Characters::deleteCharacter(PlayerLogin* player, unsigned char *packet){
-	int data = BufferUtilities::getInt(packet);
-	int id = BufferUtilities::getInt(packet+4);
+void Characters::deleteCharacter(PlayerLogin* player, ReadPacket *packet){
+	int data = packet->getInt();
+	int id = packet->getInt();
 	
 	if(!ownerCheck(player, id)){
 		// hacking
@@ -192,8 +193,8 @@ void Characters::deleteCharacter(PlayerLogin* player, unsigned char *packet){
 }
 
 
-void Characters::connectGame(PlayerLogin* player, unsigned char *packet){
-	int id = BufferUtilities::getInt(packet);
+void Characters::connectGame(PlayerLogin* player, ReadPacket *packet){
+	int id = packet->getInt();
 
 	if(!ownerCheck(player, id)){
 		// hacking
@@ -212,7 +213,7 @@ bool Characters::ownerCheck(PlayerLogin* player, int id) {
 	return (res.num_rows() == 1) ? 1 : 0 ;
 }
 
-bool Characters::nameTaken(PlayerLogin* player, char *name) {
+bool Characters::nameTaken(PlayerLogin* player, const string &name) {
 	mysqlpp::Query query = db.query();
 	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name  << " AND world_id = " << mysqlpp::quote << (int) player->getWorld() << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();

@@ -18,16 +18,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGIN_H
 #define LOGIN_H
 
+#include <string>
+
+using std::string;
+using std::ostringstream;
+
 class PlayerLogin;
+class ReadPacket;
 
 namespace Login {
-	void loginUser(PlayerLogin* player, unsigned char* packet);
-	void setGender(PlayerLogin* player, unsigned char* packet);
-	void handleLogin(PlayerLogin* player, unsigned char* packet);
-	void registerPIN(PlayerLogin* player, unsigned char* packet);
+	void loginUser(PlayerLogin* player, ReadPacket *packet);
+	void setGender(PlayerLogin* player, ReadPacket *packet);
+	void handleLogin(PlayerLogin* player, ReadPacket *packet);
+	void registerPIN(PlayerLogin* player, ReadPacket *packet);
 	void loginBack(PlayerLogin* player);
-	void checkPin(PlayerLogin* player, unsigned char* packet);
-	char * hashPassword(const char *password, const char *salt);
+	void checkPin(PlayerLogin* player, ReadPacket *packet);
+	string hashPassword(const string &password, const string &salt);
 };
 
 #endif
