@@ -33,6 +33,7 @@ hash_map<int, hash_map<int, Mob *>> Mobs::mobs;
 hash_map<int, LoopingId *> Mobs::loopingIds;
 
 void Mob::setControl(Player* control) {
+	if (this == NULL) return;
 	if (this->control != NULL)
 		MobsPacket::endControlMob(this->control, this);
 	this->control = control;
@@ -129,7 +130,7 @@ void Mobs::updateSpawn(int mapid, Mob *mob) {
 		}
 	}
 	else if (Maps::info[mapid].Players.size() == 0) {
-		mob->setControl(0);
+		mob->setControl(NULL);
 	}
 }
 
