@@ -36,12 +36,12 @@ int getDistance(Pos a, Pos b){
 	return (int)sqrt((double)(pow((double)(a.x-b.x), 2.0) + pow((double)(a.y-b.y), 2.0)));
 }
 
-void Mob::setControl(Player* control){
-	if(this->control != NULL)
+void Mob::setControl(Player* control) {
+	if (this->control != NULL)
 		MobsPacket::endControlMob(this->control, this);
 
 	this->control = control;
-	if(control != NULL)
+	if (control != NULL)
 		MobsPacket::controlMob(control, this);
 }
 
@@ -149,9 +149,8 @@ void Mobs::dieMob(Player* player, Mob* mob){
 	for (vector<int>::iterator vi = mobinfo[mob->getMobID()].summon.begin(); vi != mobinfo[mob->getMobID()].summon.end(); vi++) {
 		int mobid = *vi;
 		Mob *mobb = new Mob();
-		mobs[player->getMap()][mobscount] = mobb;
 		mobb->setPos(mob->getPos());
-		mobb->setID(mobscount);
+		mobb->setID(mobscount++);
 		mobb->setMobID(mobid);
 		mobb->setMapID(-1);
 		mobb->setHP(mobinfo[mobid].hp);
@@ -159,7 +158,7 @@ void Mobs::dieMob(Player* player, Mob* mob){
 		mobb->setFH(0);
 		mobb->setControl(player);
 		mobb->setType(2);
-		mobscount++;
+		mobs[player->getMap()][mobscount] = mobb;
 		for(unsigned int j=0; j<Maps::info[player->getMap()].Players.size(); j++)
 			MobsPacket::showMob(Maps::info[player->getMap()].Players[j], mobb);
 	}
@@ -329,23 +328,22 @@ void Mobs::damageMobRanged(Player* player, unsigned char* packet, int size){
 	}
 }
 
-void Mobs::spawnMob(Player* player, int mobid) {
-	spawnMobPos(player, mobid, player->getPos().x, player->getPos().y);
+void Mobs::spawnMob(Player* player, int mobid, int amount) {
+	for (int i = 0; i < amount; i++)
+		spawnMobPos(player->getMap(), mobid, player->getPos().x, player->getPos().y);
 }
 
-void Mobs::spawnMobPos(Player* player, int mobid, int xx, int yy) {
-    Mob *mob = new Mob();
-    mobs[player->getMap()][mobscount] = mob;
-    mob->setPos(xx, yy);
-    mob->setID(mobscount);
-    mob->setMobID(mobid);
-    mob->setMapID(-1);
-    mob->setHP(mobinfo[mobid].hp);
-    mob->setMP(mobinfo[mobid].mp);
-    mob->setFH(0);
-    mob->setControl(player);
-    mob->setType(2);
-	mobscount++;
-	for(unsigned int j=0; j<Maps::info[player->getMap()].Players.size(); j++)
-		MobsPacket::showMob(Maps::info[player->getMap()].Players[j], mob);
+void Mobs::spawnMobPos(int mapid, int mobid, int xx, int yy) {
+	Mob *mob = new Mob();
+	mob->setPos(xx, yy);
+	mob->setID(mobscount++);
+	mob->setMobID(mobid);
+	mob->setMapID(-1);
+	mob->setHP(mobinfo[mobid].hp);
+	mob->setMP(mobinfo[mobid].mp);
+	mob->setFH(0);
+	mob->setType(2);
+	mobs[mapid][mobscount] = mob;
+	for(unsigned int j=0; j<Maps::info[mapid].Players.size(); j++)
+		MobsPacket::showMob(Maps::info[mapid].Players[j], mob);
 }

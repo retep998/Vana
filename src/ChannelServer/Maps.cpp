@@ -88,7 +88,7 @@ void Maps::removePlayer(Player* player){
 	}
 	MapPacket::removePlayer(player, info[player->getMap()].Players);
 	for (hash_map<int, Mob *>::iterator iter = Mobs::mobs[player->getMap()].begin(); iter != Mobs::mobs[player->getMap()].end(); iter++) {
-		if(iter->second->getControl() == player) {
+		if(iter->second != NULL && iter->second->getControl() == player) {
 			iter->second->setControl(NULL);
 		}
 	}

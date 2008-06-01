@@ -65,9 +65,9 @@ namespace Mobs {
 	void showMobs(Player* player);
 	void updateSpawn(int mapid);
 	void updateSpawn(int mapid, Mob *mob);
-	void spawnMob(Player* player, int mobid);
+	void spawnMob(Player* player, int mobid, int amount=1);
 	void dieMob(Player* player, Mob* mob);
-	void spawnMobPos(Player* player, int mobid, int xx, int yy);
+	void spawnMobPos(int mapid, int mobid, int xx, int yy);
 	Mob * getMob(int mobid, int map);
 };
 
@@ -84,52 +84,52 @@ public:
 	Pos getPos(){
 		return pos;
 	}
-	void setID(int id){
+	void setID(int id) {
 		this->id=id;
 	}
-	int getID(){
+	int getID() {
 		return id;
 	}
-	void setMobID(int mobid){
+	void setMobID(int mobid) {
 		this->mobid=mobid;
 	}
-	int getMobID(){
+	int getMobID() {
 		return mobid;
 	}
-	void setMapID(int mapid){
+	void setMapID(int mapid) {
 		this->mapid=mapid;
 	}
-	int getMapID(){
+	int getMapID() {
 		return mapid;
 	}
-	void setFH(short fh){
+	void setFH(short fh) {
 		this->fh=fh;
 	}
-	short getFH(){
+	short getFH() {
 		return fh;
 	}
-	void setHP(int hp){
+	void setHP(int hp) {
 		this->hp=hp;
 		if(this->hp<0)
 			this->hp=0;
 	}
-	int getHP(){
+	int getHP() {
 		return hp;
 	}
-	void setMP(int mp){
+	void setMP(int mp) {
 		this->mp=mp;
 	}
-	int getMP(){
+	int getMP() {
 		return mp;
 	}
-	void setType(char type){
+	void setType(char type) {
 		this->type=type;
 	}
-	char getType(){
+	char getType() {
 		return type;
 	}
 	void setControl(Player* control);
-	Player * getControl(){
+	Player * getControl() {
 		return control;
 	}
 private:
