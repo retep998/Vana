@@ -352,6 +352,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\LoopingId.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Randomizer.h"
 					>
 				</File>
