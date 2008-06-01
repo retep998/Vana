@@ -5,7 +5,7 @@ if state == 0 then
 	sendYesNo();
 elseif state == 1 then
 	if getSelected() == 1 then
-		if getNumPlayers(220080001) == 0 then
+		if getNumPlayers(220080001) == 1 then
 			setReactorsState(220080000, 2208001, 0);
 			setReactorsState(220080000, 2208003, 0);
 			setReactorsState(220080001, 2201004, 0);
