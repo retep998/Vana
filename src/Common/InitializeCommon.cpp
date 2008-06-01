@@ -25,7 +25,7 @@ using std::string;
 
 void Initializing::initializeMySQL(){
 	Config config("conf/mysql.lua");
-	printf("Initializing MySQL... ");
+	std::cout << std::setw(outputWidth) << std::left << "Initializing MySQL... ";
 	if(db.set_option(new mysqlpp::ReconnectOption(true)) && db.connect(config.getString("database").c_str(), config.getString("host").c_str(), config.getString("username").c_str(), config.getString("password").c_str(), config.getInt("port")))
 		std::cout << "DONE" << std::endl;
 	else{
