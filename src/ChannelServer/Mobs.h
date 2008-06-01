@@ -18,13 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MOBS_H
 #define MOBS_H
 
+#include "Player.h"
+#include "Pos.h"
 #include <hash_map>
 #include <vector>
 
 using namespace std;
 using namespace stdext;
-
-#include "Player.h"
 
 class Player;
 class Mob;

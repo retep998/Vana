@@ -37,10 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerPacket.h"
 #include "Connectable.h"
 #include "ReadPacket.h"
-
-int distPos(Pos pos1, Pos pos2) {
-	return (int)sqrt(pow((float)(pos1.x+pos2.x), 2)+pow((float)(pos1.y+pos2.y), 2));
-}
+#include "Pos.h"
 
 Player::~Player() {
 	if (isconnect) {

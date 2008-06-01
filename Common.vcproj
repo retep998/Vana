@@ -432,6 +432,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Structs"
+				>
+				<File
+					RelativePath=".\src\Common\Pos.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

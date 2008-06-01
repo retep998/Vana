@@ -24,22 +24,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Quests.h"
 #include "ChannelServer.h"
-#include <cmath>
+#include "Pos.h"
 #include <vector>
 #include <string>
 #include <memory>
 
 using namespace std;
 
-struct Pos {
-	short x;
-	short y;
-};
-
 class NPC;
 class ReadPacket;
-
-int distPos(Pos pos1, Pos pos2);
 
 struct SkillMapEnterActiveInfo;
 

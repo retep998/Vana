@@ -27,15 +27,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "BufferUtilities.h"
 #include "LoopingId.h"
-#include <cmath>
 hash_map<int, MobInfo> Mobs::mobinfo;
 hash_map<int, SpawnsInfo> Mobs::info;
 hash_map<int, hash_map<int, Mob *>> Mobs::mobs;
 hash_map<int, LoopingId *> Mobs::loopingIds;
-
-int getDistance(Pos a, Pos b) {
-	return (int)sqrt((double)(pow((double)(a.x-b.x), 2.0) + pow((double)(a.y-b.y), 2.0)));
-}
 
 void Mob::setControl(Player* control) {
 	if (this->control != NULL)
@@ -54,7 +49,7 @@ void Mobs::monsterControl(Player *player, unsigned char* packet, int size) {
 		Pos cpos;
 		cpos.x = BufferUtilities::getShort(packet+size-4);
 		cpos.y = BufferUtilities::getShort(packet+size-2);
-		if (getDistance(cpos, mob->getPos()) > 300) {
+		if (cpos - mob->getPos() > 300) {
 			if (player->addWarning()) return;
 		}
 		mob->setPos(cpos);
@@ -119,10 +114,10 @@ void Mobs::updateSpawn(int mapid) {
 
 void Mobs::updateSpawn(int mapid, Mob *mob) {
 	if (Maps::info[mapid].Players.size() > 0 && mob->getControl() == 0) {
-		int maxpos = distPos(mob->getPos(), Maps::info[mapid].Players[0]->getPos());
+		int maxpos = mob->getPos() - Maps::info[mapid].Players[0]->getPos();
 		int player = 0;
 		for (unsigned int j = 0; j < Maps::info[mapid].Players.size(); j++) {
-			int curpos = distPos(mob->getPos(), Maps::info[mapid].Players[j]->getPos());
+			int curpos = mob->getPos() - Maps::info[mapid].Players[j]->getPos();
 			if (curpos < maxpos) {
 				maxpos = curpos;
 				player = j;
@@ -220,7 +215,7 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 			int damage = BufferUtilities::getInt(packet+32-s4211006+i*(22-s4211006+4*(hits-1))+k*4);
 			totaldmg = totaldmg + damage;
 			if (mob!=NULL) {
-				if (getDistance(mob->getPos(), player->getPos()) > 300 && skillid == 0) {
+				if (mob->getPos() - player->getPos() > 300 && skillid == 0) {
 					if (player->addWarning()) return;
 				}
 				mob->setHP(mob->getHP()-damage);
