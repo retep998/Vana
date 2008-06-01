@@ -28,7 +28,7 @@ public:
 	ReadPacket(unsigned char *buffer, size_t length);
 	
 	unsigned char getByte();
-	void skipBytes(size_t len);
+	void skipBytes(int len);
 	int getInt();
 	short getHeader(); // Basically getShort that always read at start
 	short getShort();

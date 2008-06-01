@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 #include "LoginPacket.h"
 #include "LoginServerAcceptPlayerPacket.h"
-#include <string.h>
 #include "PlayerLogin.h"
 #include "LoginServerAcceptPlayer.h"
 #include "Characters.h"
+#include "ReadPacket.h"
 
 hash_map <int, World *> Worlds::worlds;
 
@@ -37,21 +37,22 @@ void Worlds::showWorld(PlayerLogin* player){
 	LoginPacket::worldEnd(player);
 }
 
-void Worlds::selectWorld(PlayerLogin* player, unsigned char* packet){
+void Worlds::selectWorld(PlayerLogin* player, ReadPacket *packet){
 	if(player->getStatus() != 4){
 		// hacking
 		return;
 	}
-	player->setWorld(packet[0]);
+	player->setWorld(packet->getByte());
 	LoginPacket::showChannels(player);
 }
 
-void Worlds::channelSelect(PlayerLogin* player, unsigned char* packet){
+void Worlds::channelSelect(PlayerLogin* player, ReadPacket *packet){
 	if(player->getStatus() != 4){
 		// hacking
 		return;
 	}
-	player->setChannel(packet[1]);
+	packet->skipBytes(1);
+	player->setChannel(packet->getByte());
 	LoginPacket::channelSelect(player);
 	Characters::showCharacters(player);
 }

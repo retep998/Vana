@@ -18,12 +18,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef STRINGUTILITIES_H
 #define STRINGUTILITIES_H
 
+#include <sstream>
 #include <string>
 
 using std::string;
 
 namespace StringUtilities {
 	int noCaseCompare(const string &s1, const string &s2);
+	int toInt(const string &s);
 }
+
+inline int StringUtilities::toInt(const string &s) {
+	std::istringstream i(s);
+	int x;
+	i >> x;
+	return x;
+} 
 
 #endif

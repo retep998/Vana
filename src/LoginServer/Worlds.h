@@ -26,6 +26,7 @@ using stdext::hash_map;
 
 class PlayerLogin;
 class LoginServerAcceptPlayer;
+class ReadPacket;
 
 struct Channel {
 	string ip;
@@ -45,8 +46,8 @@ struct World {
 };
 
 namespace Worlds {
-	void channelSelect(PlayerLogin* player, unsigned char* packet);
-	void selectWorld(PlayerLogin* player, unsigned char* packet);
+	void channelSelect(PlayerLogin* player, ReadPacket *packet);
+	void selectWorld(PlayerLogin* player, ReadPacket *packet);
 	void showWorld(PlayerLogin* player);
 	char connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
 	char connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server

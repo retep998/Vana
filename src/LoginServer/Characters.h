@@ -18,13 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CHARACTERS_H
 #define CHARACTERS_H
 
-#include "PlayerLogin.h"
-#include "LoginPacket.h"
-#include "BufferUtilities.h"
-#include "MySQLM.h"
+#include <string>
 #include <vector>
 
-using namespace std;
+using std::string;
+using std::vector;
+
+namespace mysqlpp { class Row; };
+class PlayerLogin;
+class ReadPacket;
 
 struct CharEquip {
 	char type;
@@ -34,7 +36,7 @@ struct CharEquip {
 
 struct Character {
 	int id;
-	char name[15];
+	string name;
 	char gender;
 	char skin;
 	int eyes;
@@ -58,19 +60,17 @@ struct Character {
 	vector <CharEquip> equips;
 };
 
-class PlayerLogin;
-
 namespace Characters {
-	void connectGame(PlayerLogin* player, unsigned char* packet);
-	void checkCharacterName(PlayerLogin* player, unsigned char* packet);
-	void createCharacter(PlayerLogin* player, unsigned char* packet);
-	void deleteCharacter(PlayerLogin* player, unsigned char* packet);
+	void connectGame(PlayerLogin* player, ReadPacket *packet);
+	void checkCharacterName(PlayerLogin* player, ReadPacket *packet);
+	void createCharacter(PlayerLogin* player, ReadPacket *packet);
+	void deleteCharacter(PlayerLogin* player, ReadPacket *packet);
 	void showCharacters(PlayerLogin* player);
-	void loadCharacter(Character &charc, mysqlpp::Row row);
+	void loadCharacter(Character &charc, mysqlpp::Row &row);
 	void showEquips(int id, vector <CharEquip> &vec);
 	void createEquip(int equipid, int type, int charid);
 	bool ownerCheck(PlayerLogin* player, int id);
-	bool nameTaken(PlayerLogin* player, char *name);
+	bool nameTaken(PlayerLogin* player, const string &name);
 };
 
 #endif

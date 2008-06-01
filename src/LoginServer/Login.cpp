@@ -24,17 +24,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "MySQLM.h"
 #include "sha1.h"
-#include <stdio.h>
+#include "StringUtilities.h"
+#include <iostream>
 
-void Login::loginUser(PlayerLogin* player, unsigned char* packet){
-	int usersize = BufferUtilities::getShort(packet);
-	int passsize = BufferUtilities::getShort(packet+usersize+2);
-	if(usersize > 15 || passsize > 15){
+void Login::loginUser(PlayerLogin* player, ReadPacket *packet){
+	string username = packet->getString();
+	string password = packet->getString();
+
+	if (username.size() > 15 || password.size() > 15){
 		return;
-	}
-	char username[MAX_FIELD_SIZE], password[MAX_FIELD_SIZE];
-	BufferUtilities::getString(packet+2, usersize, username);   
-	BufferUtilities::getString(packet+4+usersize, passsize, password);   
+	} 
 
 	mysqlpp::Query query = db.query();
 	query << "SELECT id, password, salt, online, pin, gender, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
@@ -47,17 +46,17 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 	}
 	else if (res[0]["salt"].is_null()) {
 		// We have an unsalted password here
-		if (strcmp(password, res[0]["password"])) {
+		if (res[0]["password"] != password) {
 			LoginPacket::loginError(player, 0x04); //Invalid password
 			valid = false;
 		}
 		// We have a valid password here, so lets hash the password
-		char *salt = Randomizer::Instance()->generateSalt(5);
-		char *hashed_pass = hashPassword(password, salt);
+		string salt = Randomizer::Instance()->generateSalt(5);
+		string hashed_pass = hashPassword(password, salt);
 		query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << mysqlpp::quote << res[0]["id"];
 		query.exec();
 	}
-	else if (strcmp(hashPassword(password, res[0]["salt"].c_str()), res[0]["password"].c_str())) {
+	else if (res[0]["password"] != hashPassword(password, string(res[0]["salt"].data()))) {
 		LoginPacket::loginError(player, 0x04); //Invalid password
 		valid = false;
 	}
@@ -96,29 +95,30 @@ void Login::loginUser(PlayerLogin* player, unsigned char* packet){
 			player->setStatus(5);
 		else
 			player->setGender((unsigned char) res[0]["gender"]);
-		LoginPacket::loginConnect(player, username, usersize);
+		LoginPacket::loginConnect(player, username);
 	}
 }
 
-void Login::setGender(PlayerLogin* player, unsigned char* packet){
+void Login::setGender(PlayerLogin* player, ReadPacket *packet){
 	if (player->getStatus() != 5) {
 		//hacking
 		return;
 	}
-	if (packet[0] == 1) {
+	if (packet->getByte() == 1) {
 		player->setStatus(0);
+		char gender = packet->getByte();
 		mysqlpp::Query query = db.query();
-		query << "UPDATE users SET gender = " << mysqlpp::quote << packet[1] << " WHERE id = " << mysqlpp::quote << player->getUserid();
+		query << "UPDATE users SET gender = " << mysqlpp::quote << (int) gender << " WHERE id = " << mysqlpp::quote << player->getUserid();
 		query.exec();
 		if (LoginServer::Instance()->getPinEnabled())
 			player->setStatus(1); // Set pin
 		else
 			player->setStatus(4);
-		LoginPacket::genderDone(player, packet[1]);
+		LoginPacket::genderDone(player, gender);
 	}
 }
 
-void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
+void Login::handleLogin(PlayerLogin* player, ReadPacket *packet){
 	int status = player->getStatus();
 	if(status == 1)
 		LoginPacket::loginProcess(player, 0x01);
@@ -134,16 +134,18 @@ void Login::handleLogin(PlayerLogin* player, unsigned char* packet){
 		player->setOnline(true);
 	}
 }
-void Login::checkPin(PlayerLogin* player, unsigned char* packet){
+void Login::checkPin(PlayerLogin* player, ReadPacket *packet){
 	if (!LoginServer::Instance()->getPinEnabled()) {
 		//hacking
 		return;
 	}
-	if(packet[0] == 0x00){
+	char act = packet->getByte();
+	packet->skipBytes(5);
+	if (act == 0x00){
 		player->setStatus(2);
 	}
-	else if(packet[0] == 0x01){
-		int pin = (packet[8]-'0')*1000 + (packet[9]-'0')*100 + (packet[10]-'0')*10 + (packet[11]-'0');
+	else if (act == 0x01){
+		int pin = StringUtilities::toInt(packet->getString());
 		int curpin = player->getPin();
 		if(pin == curpin){
 			player->setStatus(4);
@@ -153,8 +155,8 @@ void Login::checkPin(PlayerLogin* player, unsigned char* packet){
 		else
 			LoginPacket::loginProcess(player, 0x02);
 	}
-	else if(packet[0] == 0x02){
-		int pin = (packet[8]-'0')*1000 + (packet[9]-'0')*100 + (packet[10]-'0')*10 + (packet[11]-'0');
+	else if (act == 0x02){
+		int pin = StringUtilities::toInt(packet->getString());
 		int curpin = player->getPin();
 		if(pin == curpin){
 			player->setStatus(1);
@@ -165,18 +167,18 @@ void Login::checkPin(PlayerLogin* player, unsigned char* packet){
 	}
 }
 
-void Login::registerPIN(PlayerLogin* player, unsigned char* packet){
+void Login::registerPIN(PlayerLogin* player, ReadPacket *packet){
 	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != 1) {
 		//hacking
 		return;
 	}
-	if(packet[0] == 0x00){
+	if (packet->getByte() == 0x00){
 		if(player->getPin() != -1){
 			player->setStatus(2);
 		}
 		return;
 	}
-	int pin = (packet[3]-'0')*1000 + (packet[4]-'0')*100 + (packet[5]-'0')*10 + (packet[6]-'0');
+	int pin = StringUtilities::toInt(packet->getString());
 	player->setStatus(0);
 	mysqlpp::Query query = db.query();
 	query << "UPDATE users SET pin = " << mysqlpp::quote << pin << " WHERE id = " << mysqlpp::quote << player->getUserid();
@@ -188,16 +190,15 @@ void Login::loginBack(PlayerLogin* player){
 	LoginPacket::logBack(player);
 }
 
-char * Login::hashPassword(const char *password, const char *salt) {
+string Login::hashPassword(const string &password, const string &salt) {
 	SHA1 sha;
+	string salted = salt + password;
 	unsigned digest[5];
-	char salted[50];
-	sprintf_s(salted, "%s%s", salt, password);
 	sha.Reset();
-	sha.Input(salted, strlen(salted));
+	sha.Input(salted.c_str(), salted.size());
 	sha.Result(digest);
-	char *passhash = new char[45];
-	sprintf_s(passhash,45,"%08X%08X%08X%08X%08X", digest[0], digest[1], digest[2], digest[3], digest[4]);
+	char passhash[45];
+	sprintf_s(passhash, 45, "%08X%08X%08X%08X%08X", digest[0], digest[1], digest[2], digest[3], digest[4]);
 
-	return passhash;
+	return string(passhash);
 }
