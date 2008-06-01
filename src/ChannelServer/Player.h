@@ -97,27 +97,19 @@ public:
 	short getJob(){
 		return this->job;
 	}
-	void setStr(short str){
-		this->str=str;
-	}
+	void setStr(short str);
 	short getStr(){
 		return this->str;
 	}
-	void setDex(short dex){
-		this->dex=dex;
-	}
+	void setDex(short dex);
 	short getDex(){
 		return this->dex;
 	}
-	void setInt(short intt){
-		this->intt=intt;
-	}
+	void setInt(short intt);
 	short getInt(){
 		return this->intt;
 	}
-	void setLuk(short luk){
-		this->luk=luk;
-	}
+	void setLuk(short luk);
 	short getLuk(){
 		return this->luk;
 	}
@@ -129,10 +121,7 @@ public:
 	unsigned short getMP(){
 		return this->mp;
 	}
-	void setMHP(int mhp){
-		if (mhp>30000) { mhp = 30000; }
-		this->mhp=mhp;
-	}
+	void setMHP(int mhp);
 	unsigned short getMHP(){
 		return this->mhp;
 	}
@@ -142,10 +131,7 @@ public:
 	unsigned short getRMHP(){
 		return this->rmhp;
 	}
-	void setMMP(int mmp){
-		if (mmp>30000) { mmp = 30000; }
-		this->mmp=mmp;
-	}
+	void setMMP(int mmp);
 	unsigned short getMMP(){
 		return this->mmp;
 	}

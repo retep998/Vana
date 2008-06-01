@@ -28,7 +28,6 @@ namespace LevelsPacket {
 	void levelUP(Player* player, vector <Player*> players);
 	void jobChange(Player* player, vector <Player*> players);
 	void statOK(Player* player);
-	void changeStat(Player* player, int nam, short val);
 };
 
 #endif
