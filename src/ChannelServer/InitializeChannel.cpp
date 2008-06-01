@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeChannel.h"
+#include "InitializeCommon.h"
 #include "Mobs.h"
 #include "Drops.h"
 #include "Reactors.h"
@@ -37,7 +38,7 @@ bool atob(char *str) {
 
 // Mobs
 void Initializing::initializeMobs() {
-	std::cout << "Initializing Mobs... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
 	mysqlpp::Query query = db.query("SELECT mobdata.id, mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 
 	mysqlpp::UseQueryResult res;
@@ -87,7 +88,7 @@ void Initializing::initializeMobs() {
 }
 // Reactors
 void Initializing::initializeReactors() {
-	std::cout << "Initializing Reactors... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Reactors... ";
 	mysqlpp::Query query = db.query("SELECT * FROM reactoreventdata ORDER BY reactorid, state ASC");
 
 	mysqlpp::UseQueryResult res;
@@ -128,7 +129,7 @@ void Initializing::initializeReactors() {
 }
 // Items
 void Initializing::initializeItems() {
-	std::cout << "Initializing Items... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Items... ";
 	mysqlpp::Query query = db.query("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
 
 	mysqlpp::UseQueryResult res;
@@ -270,7 +271,7 @@ void Initializing::initializeItems() {
 }
 // Drops
 void Initializing::initializeDrops(){
-	std::cout << "Initializing Drops... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Drops... ";
 	// Get all the drops
 	mysqlpp::Query query = db.query("SELECT * FROM itemdropdata ORDER BY mobid ASC");
 
@@ -323,7 +324,7 @@ void Initializing::initializeDrops(){
 }
 // Equips
 void Initializing::initializeEquips(){
-	std::cout << "Initializing Equips... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Equips... ";
 	mysqlpp::Query query = db.query("SELECT * FROM equipdata ORDER BY type ASC");
 
 	mysqlpp::UseQueryResult res;
@@ -386,7 +387,7 @@ void Initializing::initializeEquips(){
 }
 // Shops
 void Initializing::initializeShops(){
-	std::cout << "Initializing Shops... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
 	mysqlpp::Query query = db.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid, shopitemdata.id ASC");
 
 	mysqlpp::UseQueryResult res;
@@ -431,7 +432,7 @@ void Initializing::initializeShops(){
 }
 // Quests
 void Initializing::initializeQuests(){
-	std::cout << "Initializing Quests... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Quests... ";
 	// Quests
 	mysqlpp::Query query = db.query("SELECT * FROM questdata");
 
@@ -548,7 +549,7 @@ void Initializing::initializeQuests(){
 }
 // Skills
 void Initializing::initializeSkills(){
-	std::cout << "Initializing Skills... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Skills... ";
 	mysqlpp::Query query = db.query("SELECT * FROM skilldata ORDER BY skillid ASC");
 
 	mysqlpp::UseQueryResult res;
@@ -617,7 +618,7 @@ void Initializing::initializeSkills(){
 }
 // Maps
 void Initializing::initializeMaps(){
-	std::cout << "Initializing Maps... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Maps... ";
 	// Maps and portals
 	mysqlpp::Query query = db.query("SELECT mapdata.*, mapportaldata.portalid, mapportaldata.pfrom, mapportaldata.pto, mapportaldata.toid, mapportaldata.type, mapportaldata.x, mapportaldata.y, mapportaldata.script FROM mapdata LEFT JOIN mapportaldata ON mapdata.mapid=mapportaldata.mapid ORDER BY mapdata.mapid ASC");
 
