@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Shops.h"
 #include "Randomizer.h"
 #include "BufferUtilities.h"
+#include "Pos.h"
 #include <windows.h>
 
 hash_map <int, MobDropsInfo> Drops::dropsinfo;
@@ -259,8 +260,6 @@ void Drops::showDrops(Player *player) {
 	}
 }
 
-int getDistance(Pos a, Pos b);
-
 void Drops::lootItem(Player *player, unsigned char*packet) {
 	int itemid = BufferUtilities::getInt(packet+9);
 	Drop* drop = Drop::getDrop(itemid, player->getMap());
@@ -268,7 +267,7 @@ void Drops::lootItem(Player *player, unsigned char*packet) {
 		DropsPacket::dontTake(player);
 		return;
 	}
-	if (getDistance(drop->getPos(), player->getPos()) > 300) {
+	if (drop->getPos() - player->getPos() > 300) {
 		if (player->addWarning()) return;
 	}
 	if (drop->isQuest()) {
