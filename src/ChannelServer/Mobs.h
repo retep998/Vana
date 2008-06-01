@@ -28,6 +28,7 @@ using namespace stdext;
 
 class Player;
 class Mob;
+class LoopingId;
 
 struct SpawnInfo {
 	int id;
@@ -50,9 +51,10 @@ struct MobInfo {
 };
 
 namespace Mobs {
-	extern hash_map <int, MobInfo> mobinfo;
-	extern hash_map <int, SpawnsInfo> info;
-	extern hash_map <int, hash_map<int, Mob *>> mobs;
+	extern hash_map<int, MobInfo> mobinfo;
+	extern hash_map<int, SpawnsInfo> info;
+	extern hash_map<int, hash_map<int, Mob *>> mobs;
+	extern hash_map<int, LoopingId *> loopingIds;
 	extern int mobscount;
 	void addMob(int id, MobInfo mob);
 	void addSpawn(int id, SpawnsInfo spawns);
@@ -68,6 +70,7 @@ namespace Mobs {
 	void spawnMob(Player* player, int mobid, int amount=1);
 	void dieMob(Player* player, Mob* mob);
 	void spawnMobPos(int mapid, int mobid, int xx, int yy);
+	int nextMobId(int mapid);
 	Mob * getMob(int mobid, int map);
 };
 
@@ -83,6 +86,12 @@ public:
 	}
 	Pos getPos(){
 		return pos;
+	}
+	int getPosX() {
+		return pos.x;
+	}
+	int getPosY() {
+		return pos.y;
 	}
 	void setID(int id) {
 		this->id=id;

@@ -26,11 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Inventory.h"
 #include "BufferUtilities.h"
-#include <math.h>
-hash_map <int, MobInfo> Mobs::mobinfo;
-hash_map <int, SpawnsInfo> Mobs::info;
-hash_map <int, hash_map<int, Mob *>> Mobs::mobs;
-int Mobs::mobscount=0x200;
+#include "LoopingId.h"
+#include <cmath>
+hash_map<int, MobInfo> Mobs::mobinfo;
+hash_map<int, SpawnsInfo> Mobs::info;
+hash_map<int, hash_map<int, Mob *>> Mobs::mobs;
+hash_map<int, LoopingId *> Mobs::loopingIds;
 
 int getDistance(Pos a, Pos b){
 	return (int)sqrt((double)(pow((double)(a.x-b.x), 2.0) + pow((double)(a.y-b.y), 2.0)));
@@ -39,7 +40,6 @@ int getDistance(Pos a, Pos b){
 void Mob::setControl(Player* control) {
 	if (this->control != NULL)
 		MobsPacket::endControlMob(this->control, this);
-
 	this->control = control;
 	if (control != NULL)
 		MobsPacket::controlMob(control, this);
@@ -78,10 +78,15 @@ void Mobs::monsterControlSkill(Player* player, unsigned char* packet){
 void Mobs::checkSpawn(int mapid) {
 	for (size_t i = 0; i < info[mapid].size(); i++) {
 		// (Re-)spawn Mobs
-		int id = i + 100;
-		if (mobs[mapid].find(id) == mobs[mapid].end()) {
+		bool spawn = true;
+		for (hash_map<int, Mob *>::iterator iter = mobs[mapid].begin(); iter != mobs[mapid].end(); iter++) {
+			if (iter->second->getMapID() == i) {
+				spawn = false;
+			}
+		}
+		if (spawn) {
 			Mob *mob = new Mob();
-			mobs[mapid][id] = mob;
+			int id = nextMobId(mapid);
 			mob->setPos(info[mapid][i].x, info[mapid][i].cy);
 			mob->setID(id);
 			mob->setMobID(info[mapid][i].id);
@@ -90,6 +95,7 @@ void Mobs::checkSpawn(int mapid) {
 			mob->setMP(mobinfo[info[mapid][i].id].mp);
 			mob->setFH(info[mapid][i].fh);
 			mob->setType(2);
+			mobs[mapid][id] = mob;
 			if (Maps::info[mapid].Players.size() > 0) {
 				MobsPacket::spawnMob(Maps::info[mapid].Players[0], mob, Maps::info[mapid].Players, 1);
 				updateSpawn(mapid, mob);
@@ -148,19 +154,7 @@ void Mobs::dieMob(Player* player, Mob* mob){
 	// Spawn mobs it's supposed to spawn when it dies
 	for (vector<int>::iterator vi = mobinfo[mob->getMobID()].summon.begin(); vi != mobinfo[mob->getMobID()].summon.end(); vi++) {
 		int mobid = *vi;
-		Mob *mobb = new Mob();
-		mobb->setPos(mob->getPos());
-		mobb->setID(mobscount++);
-		mobb->setMobID(mobid);
-		mobb->setMapID(-1);
-		mobb->setHP(mobinfo[mobid].hp);
-		mobb->setMP(mobinfo[mobid].mp);
-		mobb->setFH(0);
-		mobb->setControl(player);
-		mobb->setType(2);
-		mobs[player->getMap()][mobscount] = mobb;
-		for(unsigned int j=0; j<Maps::info[player->getMap()].Players.size(); j++)
-			MobsPacket::showMob(Maps::info[player->getMap()].Players[j], mobb);
+		spawnMobPos(player->getMap(), mobid, mob->getPosX(), mob->getPosY());
 	}
 
 	player->quests->updateQuestMob(mob->getMobID());
@@ -335,16 +329,24 @@ void Mobs::spawnMob(Player* player, int mobid, int amount) {
 
 void Mobs::spawnMobPos(int mapid, int mobid, int xx, int yy) {
 	Mob *mob = new Mob();
+	int id = nextMobId(mapid);
 	mob->setPos(xx, yy);
-	mob->setID(mobscount++);
+	mob->setID(id);
 	mob->setMobID(mobid);
 	mob->setMapID(-1);
 	mob->setHP(mobinfo[mobid].hp);
 	mob->setMP(mobinfo[mobid].mp);
 	mob->setFH(0);
 	mob->setType(2);
-	mobs[mapid][mobscount] = mob;
+	mobs[mapid][id] = mob;
 	updateSpawn(mapid, mob);
 	for(unsigned int j=0; j<Maps::info[mapid].Players.size(); j++)
 		MobsPacket::showMob(Maps::info[mapid].Players[j], mob);
+}
+
+inline int Mobs::nextMobId(int mapid) {
+	if (loopingIds.find(mapid) == loopingIds.end()) {
+		loopingIds[mapid] = new LoopingId(100);
+	}
+	return loopingIds[mapid]->next();
 }
