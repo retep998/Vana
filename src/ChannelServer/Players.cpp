@@ -230,7 +230,7 @@ void Players::chatHandler(Player* player, unsigned char* packet){
 			else if (strcmp(next_token, "hermit") == 0) job = 411;
 			else if (strcmp(next_token, "nl") == 0) job = 412;
 			else if (strcmp(next_token, "dit") == 0) job = 420;
-			else if (strcmp(next_token, "cb") == 0) job = 412;
+			else if (strcmp(next_token, "cb") == 0) job = 421;
 			else if (strcmp(next_token, "shadower") == 0) job = 422;
 			else if (strcmp(next_token, "gm") == 0) job = 500;
 			else if (strcmp(next_token, "sgm") == 0) job = 510;
