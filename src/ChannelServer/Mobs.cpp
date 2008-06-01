@@ -82,10 +82,7 @@ void Mobs::checkSpawn(int mapid) {
 		if (mobs[mapid].find(id) == mobs[mapid].end()) {
 			Mob *mob = new Mob();
 			mobs[mapid][id] = mob;
-			Pos mobpos;
-			mobpos.x = info[mapid][i].x;
-			mobpos.y = info[mapid][i].cy;
-			mob->setPos(mobpos);
+			mob->setPos(info[mapid][i].x, info[mapid][i].cy);
 			mob->setID(id);
 			mob->setMobID(info[mapid][i].id);
 			mob->setMapID(i);
@@ -339,10 +336,7 @@ void Mobs::spawnMob(Player* player, int mobid) {
 void Mobs::spawnMobPos(Player* player, int mobid, int xx, int yy) {
     Mob *mob = new Mob();
     mobs[player->getMap()][mobscount] = mob;
-    Pos spawnPos;
-    spawnPos.x = xx;
-    spawnPos.y = yy;
-    mob->setPos(spawnPos);
+    mob->setPos(xx, yy);
     mob->setID(mobscount);
     mob->setMobID(mobid);
     mob->setMapID(-1);
