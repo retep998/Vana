@@ -189,6 +189,9 @@ void Characters::deleteCharacter(PlayerLogin* player, ReadPacket *packet){
 	query << "DELETE FROM skills WHERE charid = " << mysqlpp::quote << id;
 	query.exec();
 
+	query << "DELETE FROM character_variables WHERE charid = " << mysqlpp::quote << id;
+	query.exec();
+
 	LoginPacket::deleteCharacter(player, id);
 }
 
