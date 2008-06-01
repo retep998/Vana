@@ -74,8 +74,12 @@ namespace Mobs {
 class Mob {
 public:
 	Mob() : control(0) { }
-	void setPos(Pos pos){
+	void setPos(Pos pos) {
 		this->pos = pos;
+	}
+	void setPos(int x, int y) {
+		pos.x = x;
+		pos.y = y;
 	}
 	Pos getPos(){
 		return pos;
