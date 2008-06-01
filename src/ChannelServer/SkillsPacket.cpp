@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "SendHeader.h"
 
-void SkillsPacket::addSkill(Player* player, int skillid, int level, int maxlevel){
+void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel) {
 	Packet packet;
 	packet.addHeader(SEND_ADD_SKILL);
 	packet.addByte(1);
@@ -34,7 +34,7 @@ void SkillsPacket::addSkill(Player* player, int skillid, int level, int maxlevel
 	packet.send(player);
 }
 
-void SkillsPacket::showSkill(Player* player, vector <Player*> players, int skillid){
+void SkillsPacket::showSkill(Player *player, vector <Player*> players, int skillid) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
@@ -45,7 +45,7 @@ void SkillsPacket::showSkill(Player* player, vector <Player*> players, int skill
 }
 
 
-void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill){
+void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill) {
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILL);
 	packet.addByte(pskill.types[0]);
@@ -56,7 +56,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 	packet.addByte(pskill.types[5]);
 	packet.addByte(pskill.types[6]);
 	packet.addByte(pskill.types[7]);
-	for(unsigned int i=0; i<pskill.vals.size(); i++){
+	for (unsigned int i=0; i<pskill.vals.size(); i++) {
 		packet.addShort(pskill.vals[i]);
 		packet.addInt(skillid);
 		packet.addInt(time);
@@ -64,7 +64,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 	packet.addShort(0);
 	packet.addByte(0);
 	packet.send(player);
-	if(mskill.vals.size()>0){
+	if (mskill.vals.size()>0) {
 		packet = Packet();
 		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getPlayerid());
@@ -76,7 +76,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 		packet.addByte(mskill.types[5]);
 		packet.addByte(mskill.types[6]);
 		packet.addByte(mskill.types[7]);
-		for(unsigned int i=0; i<mskill.vals.size(); i++){
+		for (unsigned int i=0; i<mskill.vals.size(); i++) {
 			packet.addShort(mskill.vals[i]);
 		}
 		packet.addByte(0);
@@ -84,7 +84,7 @@ void SkillsPacket::useSkill(Player* player, vector <Player*> players, int skilli
 	}
 }
 
-void SkillsPacket::healHP(Player* player, short hp){
+void SkillsPacket::healHP(Player *player, short hp) {
 	Packet packet;
 	packet.addHeader(SEND_GAIN_ITEM);
 	packet.addByte(0xA);
@@ -92,7 +92,7 @@ void SkillsPacket::healHP(Player* player, short hp){
 	packet.send(player);
 }
 
-void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill){
+void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill) {
 	Packet packet;
 	packet.addHeader(SEND_CANCEL_SKILL);
 	packet.addByte(pskill.types[0]);
@@ -105,7 +105,7 @@ void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiv
 	packet.addByte(pskill.types[7]);
 	packet.addByte(0);
 	packet.send(player);
-	if(mskill.vals.size()>0){
+	if (mskill.vals.size()>0) {
 		packet = Packet();
 		packet.addHeader(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getPlayerid());
@@ -122,7 +122,7 @@ void SkillsPacket::endSkill(Player* player, vector <Player*> players, SkillActiv
 	}
 }
 // For Combo Attack
-void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time){ // Show combos to everyone on map 
+void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time) { // Show combos to everyone on map 
     Packet packet;
     packet.addHeader(SEND_USE_SKILL);
     packet.addByte(0);

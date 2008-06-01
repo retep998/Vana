@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "SendHeader.h"
 
-void QuestsPacket::acceptQuest(Player* player, short questid, int npcid){
+void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
 	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(1);
@@ -40,7 +40,7 @@ void QuestsPacket::acceptQuest(Player* player, short questid, int npcid){
 	packet.send(player);
 }
 
-void QuestsPacket::updateQuest(Player* player, Quest quest){
+void QuestsPacket::updateQuest(Player *player, Quest quest) {
 	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(1);
@@ -48,7 +48,7 @@ void QuestsPacket::updateQuest(Player* player, Quest quest){
 	packet.addByte(1);
 	char info[50];
 	strcpy_s(info, 50, "");
-	for(unsigned int i=0; i<quest.mobs.size(); i++){
+	for (unsigned int i=0; i<quest.mobs.size(); i++) {
 		char temp[4];
 		temp[0] = quest.mobs[i].count/100+'0';
 		temp[1] = quest.mobs[i].count/10%10+'0';
@@ -63,14 +63,14 @@ void QuestsPacket::updateQuest(Player* player, Quest quest){
 	packet.send(player);
 }
 
-void QuestsPacket::doneQuest(Player* player, int questid){
+void QuestsPacket::doneQuest(Player *player, int questid) {
 	Packet packet;
 	packet.addHeader(SEND_FINISH_QUEST);
 	packet.addShort(questid);
 	packet.send(player);
 }
 
-void QuestsPacket::questFinish(Player* player, vector <Player*> players,short questid, int npcid, short nextquest, __int64 time){
+void QuestsPacket::questFinish(Player *player, vector <Player*> players,short questid, int npcid, short nextquest, __int64 time) {
 	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(1);
@@ -96,7 +96,7 @@ void QuestsPacket::questFinish(Player* player, vector <Player*> players,short qu
 	packet.sendTo<Player>(player, players, 0);
 }
 
-void QuestsPacket::giveItem(Player* player, int itemid, int amount){
+void QuestsPacket::giveItem(Player *player, int itemid, int amount) {
 	Packet packet;
 	packet.addHeader(SEND_GAIN_ITEM); 
 	packet.addByte(3);
@@ -106,7 +106,7 @@ void QuestsPacket::giveItem(Player* player, int itemid, int amount){
 	packet.send(player);
 }
 
-void QuestsPacket::giveMesos(Player* player, int amount){
+void QuestsPacket::giveMesos(Player *player, int amount) {
 	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(5);

@@ -26,7 +26,7 @@ class Player;
 class Reactor;
 
 namespace ReactorPacket {
-	void showReactor(Player* player, Reactor *reactor);
+	void showReactor(Player *player, Reactor *reactor);
 	void triggerReactor(vector <Player*> players, Reactor *reactor);
 	void destroyReactor(vector <Player*> players, Reactor *reactor);
 };

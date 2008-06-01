@@ -24,10 +24,10 @@ using namespace std;
 class Player;
 
 namespace LevelsPacket {
-	void showEXP(Player* player, int exp, char type);
-	void levelUP(Player* player, vector <Player*> players);
-	void jobChange(Player* player, vector <Player*> players);
-	void statOK(Player* player);
+	void showEXP(Player *player, int exp, char type);
+	void levelUP(Player *player, vector <Player*> players);
+	void jobChange(Player *player, vector <Player*> players);
+	void statOK(Player *player);
 };
 
 #endif

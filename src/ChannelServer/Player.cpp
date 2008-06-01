@@ -38,12 +38,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Connectable.h"
 #include "ReadPacket.h"
 
-int distPos(Pos pos1, Pos pos2){
+int distPos(Pos pos1, Pos pos2) {
 	return (int)sqrt(pow((float)(pos1.x+pos2.x), 2)+pow((float)(pos1.y+pos2.y), 2));
 }
 
-Player::~Player(){
-	if(isconnect){
+Player::~Player() {
+	if (isconnect) {
 		if (save_on_dc)
 			save();
 		Skills::stopTimerPlayer(this);
@@ -55,12 +55,12 @@ Player::~Player(){
 	}
 }
 
-void Player::realHandleRequest(ReadPacket *packet){
+void Player::realHandleRequest(ReadPacket *packet) {
 	switch(packet->getShort()) {  
 		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
-		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet->getBuffer()); break;
+		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet->getBuffer()); break;
-		case RECV_NPC_TALK: NPCs::handleNPC(this, packet->getBuffer()); break;
+		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_CHANGE_CHANNEL: changeChannel(packet->getByte()); break;
 		case RECV_DAMAGE_PLAYER: Players::damagePlayer(this, packet->getBuffer()); break;
 		case RECV_STOP_CHAIR: Inventory::stopChair(this, packet->getBuffer()); break;
@@ -100,7 +100,7 @@ void Player::realHandleRequest(ReadPacket *packet){
 	}
 }
 
-void Player::playerConnect(ReadPacket *packet){
+void Player::playerConnect(ReadPacket *packet) {
 	int id = packet->getInt();
 	if (!Connectable::Instance()->checkPlayer(id)) {
 		//hacking
@@ -194,7 +194,7 @@ void Player::playerConnect(ReadPacket *packet){
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		skills->addSkillLevel(res[i][0], res[i][1], false);
-		if(FORTHJOB_SKILL(res[i][0])){
+		if (FORTHJOB_SKILL(res[i][0])) {
 			skills->setMaxSkillLevel(res[i][0], res[i][2]);
 		}
 	}
@@ -234,7 +234,7 @@ void Player::playerConnect(ReadPacket *packet){
 	WorldServerConnectPlayerPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name);
 }
 
-void Player::setHP(int hp, bool is){
+void Player::setHP(int hp, bool is) {
 	if (hp < 0)
 		this->hp = 0;
 	else if (hp > mhp)
@@ -245,7 +245,7 @@ void Player::setHP(int hp, bool is){
 		PlayerPacket::updateStat(this, 0x400, static_cast<short>(this->hp));
 }
 
-void Player::setMP(int mp, bool is){
+void Player::setMP(int mp, bool is) {
 	if (mp < 0)
 		this->mp = 0;
 	else if (mp > mmp)
@@ -255,7 +255,7 @@ void Player::setMP(int mp, bool is){
 	PlayerPacket::updateStat(this, 0x1000, static_cast<short>(this->mp), is);
 }
 
-void Player::setSp(short sp){
+void Player::setSp(short sp) {
 	this->sp = sp;
 	PlayerPacket::updateStat(this, 0x8000, sp);
 }
@@ -296,13 +296,13 @@ void Player::setLuk(short luk) {
 	PlayerPacket::updateStat(this, 0x200, luk);
 }
 
-void Player::setMHP(int mhp){
+void Player::setMHP(int mhp) {
 	if (mhp > 30000) { mhp = 30000; }
 	this->mhp = mhp;
 	PlayerPacket::updateStat(this, 0x800, getRMHP());
 }
 
-void Player::setMMP(int mmp){
+void Player::setMMP(int mmp) {
 	if (mmp > 30000) { mmp = 30000; }
 	this->mmp = mmp;
 	PlayerPacket::updateStat(this, 0x2000, getRMMP());
@@ -334,7 +334,7 @@ void Player::changeKey(ReadPacket *packet) {
 	query << "UPDATE keymap SET ";
 	for (int i=0; i<90; i++) {
 		query << "pos" << mysqlpp::quote << i << "=" << mysqlpp::quote << keys[i];
-		if(i!=89)
+		if (i!=89)
 			query << ",";
 		else
 			query << " WHERE charid = " << mysqlpp::quote << getPlayerid();
@@ -360,8 +360,8 @@ void Player::setSkin(char id) {
 bool Player::addWarning() {
 	int t = clock();
 	// Deleting old warnings
-	for(unsigned int i=0; i<warnings.size(); i++){
-		if(warnings[i] + 300000 < t){
+	for (unsigned int i=0; i<warnings.size(); i++) {
+		if (warnings[i] + 300000 < t) {
 			warnings.erase(warnings.begin()+i);
 			i--;
 		}
@@ -486,7 +486,7 @@ void Player::saveVariables() {
 		mysqlpp::Query query = db.query();
 
 		bool firstrun = true;
-		for (hash_map <string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++){
+		for (hash_map <string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++) {
 			if (firstrun) {
 				query << "REPLACE INTO character_variables VALUES (";
 				firstrun = false;

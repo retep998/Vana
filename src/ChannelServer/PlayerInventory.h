@@ -55,88 +55,88 @@ struct Item {
 
 class PlayerInventory {
 public:
-	PlayerInventory(){
+	PlayerInventory() {
 		maxslots=100;
 	}
-	int getMaxslots(){
+	int getMaxslots() {
 		return maxslots;
 	}
 	void setMesos(int mesos, bool is=0);
-	void setMesosStart(int mesos){
+	void setMesosStart(int mesos) {
 		this->mesos=mesos;
 	}
-	int getMesos(){
+	int getMesos() {
 		return this->mesos;
 	}
-	void addEquip(Equip* equip){
+	void addEquip(Equip* equip) {
 		equips.push_back(equip);
 	}
-	int getEquipNum(){
+	int getEquipNum() {
 		return equips.size();
 	}
-	int getEquipByPos(short pos){
-		for(int i=0; i<getEquipNum(); i++){ // Get Equips
+	int getEquipByPos(short pos) {
+		for (int i=0; i<getEquipNum(); i++) { // Get Equips
 			Equip* equip = getEquip(i);
-			if(equip->pos == pos)
+			if (equip->pos == pos)
 				return equip->id;
 		}
 		return 0;
 	}
-	short getEquipPos(int equipid){
+	short getEquipPos(int equipid) {
 		return equips[equipid]->pos;
 	}
-	void setEquipPos(int equipid, short pos){
+	void setEquipPos(int equipid, short pos) {
 		equips[equipid]->pos = pos;
 	}
 	void deleteEquip(int equipid) {
 		delete equips[equipid];
 		equips.erase(equips.begin()+equipid);
 	}
-	Equip* getEquip(int id){
+	Equip* getEquip(int id) {
 		return equips[id];
 	}
-	void addItem(Item* item){
+	void addItem(Item* item) {
 		items.push_back(item);
 	}
-	int getItemNum(){
+	int getItemNum() {
 		return items.size();
 	}
-	short getItemPos(int itemid){
+	short getItemPos(int itemid) {
 		return items[itemid]->pos;
 	}
-	void setItemPos(int itemid, short pos){
+	void setItemPos(int itemid, short pos) {
 		items[itemid]->pos = pos;
 	}
 	void deleteItem(int itemid) {
 		delete items[itemid];
 		items.erase(items.begin()+itemid);
 	}
-	void setItem(Item* item, int itemid){
+	void setItem(Item* item, int itemid) {
 		items[itemid] = item;
 	}
-	Item* getItem(int id){
+	Item* getItem(int id) {
 		return items[id];
 	}
 	Item * getItemByPos(int pos, char inv) {
-		for(int i=0; i<getItemNum(); i++)
-			if(getItem(i)->pos == pos && getItem(i)->inv == inv)
+		for (int i=0; i<getItemNum(); i++)
+			if (getItem(i)->pos == pos && getItem(i)->inv == inv)
 				return getItem(i);
 		return 0;
 	}
-	void setPlayer(Player* player){
+	void setPlayer(Player *player) {
 		this->player=player;
 	}
-	int getItemAmount(int itemid){
+	int getItemAmount(int itemid) {
 		int amount=0;
-		for(int i=0; i<getItemNum(); i++)
-			if(getItem(i)->id == itemid)
+		for (int i=0; i<getItemNum(); i++)
+			if (getItem(i)->id == itemid)
 				amount+=getItem(i)->amount;
 		return amount;
 	}
-	int getItemAmountBySlot(int slot, char inv){
+	int getItemAmountBySlot(int slot, char inv) {
 		int amount=0;
-		for(int i=0; i<getItemNum(); i++)
-			if(getItem(i)->pos == slot && getItem(i)->inv == inv){
+		for (int i=0; i<getItemNum(); i++)
+			if (getItem(i)->pos == slot && getItem(i)->inv == inv) {
 				amount=getItem(i)->amount;
 				break;
 			}
@@ -145,7 +145,7 @@ public:
 private:
 	int maxslots;
 	int mesos;
-	Player* player;
+	Player *player;
 	vector <Equip*> equips;
 	vector <Item*> items;
 };

@@ -29,15 +29,15 @@ struct Pos;
 
 namespace Players {
 	extern hash_map <int, Player*> players;
-	void addPlayer(Player* player);
-	void deletePlayer(Player* player);
-	void handleMoving(Player* player, unsigned char* packet, int size);
-	void damagePlayer(Player* player, unsigned char* packet);
-	void faceExperiment(Player* player, unsigned char* packet);
-	void chatHandler(Player* player, unsigned char* packet);
-	void healPlayer(Player* player, unsigned char* packet);
-	void getPlayerInfo(Player* player, unsigned char* packet);
-	void commandHandler(Player* player, unsigned char* packet);
+	void addPlayer(Player *player);
+	void deletePlayer(Player *player);
+	void handleMoving(Player *player, unsigned char* packet, int size);
+	void damagePlayer(Player *player, unsigned char* packet);
+	void faceExperiment(Player *player, unsigned char* packet);
+	void chatHandler(Player *player, unsigned char* packet);
+	void healPlayer(Player *player, unsigned char* packet);
+	void getPlayerInfo(Player *player, unsigned char* packet);
+	void commandHandler(Player *player, unsigned char* packet);
 };
 
 #endif

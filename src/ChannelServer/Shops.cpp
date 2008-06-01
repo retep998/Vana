@@ -25,18 +25,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 hash_map <int, ShopInfo> Shops::shops;
 vector <int> Shops::rechargables;
 
-void Shops::showShop(Player* player, int id){
+void Shops::showShop(Player *player, int id) {
 	player->setShop(id);
-	if(shops.find(id) == shops.end())
+	if (shops.find(id) == shops.end())
 		return;
 	Packet packet;
 	packet.addHeader(SEND_SHOP_OPEN);
 	packet.addInt(shops[id].npc);
 	packet.addShort(shops[id].items.size() + rechargables.size());
-	for(unsigned int i=0; i<shops[id].items.size(); i++){
+	for (unsigned int i=0; i<shops[id].items.size(); i++) {
 		packet.addInt(shops[id].items[i].id);
 		packet.addInt(shops[id].items[i].price);
-		if(ISSTAR(shops[id].items[i].id)) {
+		if (ISSTAR(shops[id].items[i].id)) {
 			packet.addShort(0);
 			packet.addInt(0);
 			packet.addShort(shops[id].items[i].price);
@@ -46,7 +46,7 @@ void Shops::showShop(Player* player, int id){
 		}
 		if (ISSTAR(shops[id].items[i].id))
 			packet.addShort(Drops::items[shops[id].items[i].id].maxslot + player->skills->getSkillLevel(4100000)*10);
-		else if(Drops::items.find(shops[id].items[i].id) != Drops::items.end())
+		else if (Drops::items.find(shops[id].items[i].id) != Drops::items.end())
 			packet.addShort(Drops::items[shops[id].items[i].id].maxslot); 
 		else
 			packet.addShort(1000);
@@ -66,14 +66,14 @@ void Shops::showShop(Player* player, int id){
 	packet.send(player);
 }
 
-int Shops::getPrice(Player* player, int itemid){
-	for(unsigned int i=0; i<shops[player->getShop()].items.size(); i++){
-		if(shops[player->getShop()].items[i].id == itemid)
+int Shops::getPrice(Player *player, int itemid) {
+	for (unsigned int i=0; i<shops[player->getShop()].items.size(); i++) {
+		if (shops[player->getShop()].items[i].id == itemid)
 			return shops[player->getShop()].items[i].price;
 	}
 	return 0;
 }
 
-void Shops::addShop(int id, ShopInfo shop){
+void Shops::addShop(int id, ShopInfo shop) {
 	shops[id] = shop;
 }

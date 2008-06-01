@@ -55,7 +55,7 @@ private:
 		timers[id]->ping();
 	}
 
-	void remove(int id){
+	void remove(int id) {
 		timers.erase(id);
 	}
 };

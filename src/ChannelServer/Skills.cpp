@@ -38,7 +38,7 @@ public:
 			singleton = new SkillTimer;
 		return singleton;
 	}
-	void setSkillTimer(Player* player, int skill, int time){
+	void setSkillTimer(Player *player, int skill, int time) {
 		STimer timer;
 		timer.id = Timer::Instance()->setTimer(time, this);
 		timer.player = player;
@@ -47,7 +47,7 @@ public:
 		timers.push_back(timer);
 		act[timer.id] = false;
 	}
-	void setSkillTimer(Player* player, int skill, char* name, short value, int time){
+	void setSkillTimer(Player *player, int skill, char* name, short value, int time) {
 		SActTimer timer;
 		timer.id = Timer::Instance()->setTimer(time, this);
 		timer.player = player;
@@ -58,51 +58,51 @@ public:
 		acttimers.push_back(timer);
 		act[timer.id] = true;
 	}
-	void stop (Player* player, int skill){
-		for(unsigned int i=0; i<timers.size(); i++){
-			if(player == timers[i].player && timers[i].skill == skill){
+	void stop (Player *player, int skill) {
+		for (unsigned int i=0; i<timers.size(); i++) {
+			if (player == timers[i].player && timers[i].skill == skill) {
 				Timer::Instance()->cancelTimer(timers[i].id);
 				break;
 			}
 		}
 	}
-	void stop (Player* player, int skill, char* name){
-		for(unsigned int i=0; i<acttimers.size(); i++){
-			if(player == acttimers[i].player && strcmp(acttimers[i].act, name) == 0 && skill == acttimers[i].skill){
+	void stop (Player *player, int skill, char* name) {
+		for (unsigned int i=0; i<acttimers.size(); i++) {
+			if (player == acttimers[i].player && strcmp(acttimers[i].act, name) == 0 && skill == acttimers[i].skill) {
 				Timer::Instance()->cancelTimer(acttimers[i].id);
 				break;
 			}
 		}
 	}
-	void stop (Player* player){
-        for(unsigned int i=timers.size(); i>0; i--){
-            if(player == timers[i-1].player){
+	void stop (Player *player) {
+        for (unsigned int i=timers.size(); i>0; i--) {
+            if (player == timers[i-1].player) {
                 Timer::Instance()->cancelTimer(timers[i-1].id);
             }
         } 
-        for(unsigned int i=acttimers.size(); i>0; i--){ 
-            if(player == acttimers[i-1].player){
+        for (unsigned int i=acttimers.size(); i>0; i--) { 
+            if (player == acttimers[i-1].player) {
                 Timer::Instance()->cancelTimer(acttimers[i-1].id);
             }
         } 
 	}
-	void stopKill (Player* player){
-        for(unsigned int i=timers.size(); i>0; i--){
-            if(player == timers[i-1].player){
+	void stopKill (Player *player) {
+        for (unsigned int i=timers.size(); i>0; i--) {
+            if (player == timers[i-1].player) {
 				Skills::endSkill(player, timers[i].id);
                 Timer::Instance()->cancelTimer(timers[i-1].id);
             }
         } 
-        for(unsigned int i=acttimers.size(); i>0; i--){ 
-            if(player == acttimers[i-1].player){
+        for (unsigned int i=acttimers.size(); i>0; i--) { 
+            if (player == acttimers[i-1].player) {
                 Timer::Instance()->cancelTimer(acttimers[i-1].id);
             }
         }
 	}
-	int skillTime(Player* player, int skillid){ // Get skill time
+	int skillTime(Player *player, int skillid) { // Get skill time
 		int timeleft = 0;
-		for(unsigned int i=0; i<timers.size(); i++){
-			if(player == timers[i].player && timers[i].skill == skillid){
+		for (unsigned int i=0; i<timers.size(); i++) {
+			if (player == timers[i].player && timers[i].skill == skillid) {
 				timeleft = Timer::Instance()->timeLeft(timers[i].id);
 			}
 		}
@@ -115,13 +115,13 @@ private:
 	SkillTimer& operator=(const SkillTimer&);
 	struct STimer {
 		int id;
-		Player* player;
+		Player *player;
 		int skill;
 		int time;
 	};
 	struct SActTimer {
 		int id;
-		Player* player;
+		Player *player;
 		int skill;
 		int time;
 		char act[50];
@@ -132,12 +132,12 @@ private:
 	static hash_map <int, bool> act;
 	void handle (Timer* timer, int id) {
 		int skill;
-		Player* player;
-		if(act[id]){
+		Player *player;
+		if (act[id]) {
 			char name[50];
 			short value;
-			for(unsigned int i=0; i<acttimers.size(); i++){
-				if(acttimers[i].id == id){
+			for (unsigned int i=0; i<acttimers.size(); i++) {
+				if (acttimers[i].id == id) {
 					player = acttimers[i].player;
 					skill = acttimers[i].skill;
 					strcpy_s(name, 50, acttimers[i].act);
@@ -145,12 +145,12 @@ private:
 					break;
 				}
 			}
-			if(strcmp(name, "heal") == 0) Skills::heal(player, value, skill);
-			// else if(...
+			if (strcmp(name, "heal") == 0) Skills::heal(player, value, skill);
+			// else if (...
 		}
 		else{
-			for(unsigned int i=0; i<timers.size(); i++){
-				if(timers[i].id == id){
+			for (unsigned int i=0; i<timers.size(); i++) {
+				if (timers[i].id == id) {
 					player = timers[i].player;
 					skill = timers[i].skill;
 					break;
@@ -159,18 +159,18 @@ private:
 			Skills::endSkill(player, skill);
 		}
 	}
-	void remove (int id){
-		if(act[id]){
-			for(unsigned int i=0; i<acttimers.size(); i++){
-				if(acttimers[i].id == id){	
+	void remove (int id) {
+		if (act[id]) {
+			for (unsigned int i=0; i<acttimers.size(); i++) {
+				if (acttimers[i].id == id) {	
 					acttimers.erase(acttimers.begin()+i);	
 					return;
 				}
 			}
 		}
 		else{
-			for(unsigned int i=0; i<timers.size(); i++){
-				if(timers[i].id == id){	
+			for (unsigned int i=0; i<timers.size(); i++) {
+				if (timers[i].id == id) {	
 					timers.erase(timers.begin()+i);	
 					return;
 				}
@@ -185,11 +185,11 @@ vector <SkillTimer::SActTimer> SkillTimer::acttimers;
 hash_map <int, bool> SkillTimer::act;
 SkillTimer * SkillTimer::singleton = 0;
 
-void Skills::stopTimerPlayer(Player* player){
+void Skills::stopTimerPlayer(Player *player) {
 	SkillTimer::Instance()->stop(player);
 }
 
-void Skills::init(){
+void Skills::init() {
 	// NOTE: type can be only 0x1/0x2/0x4/0x8/0x10/0x20/0x40/0x80.
 	SkillPlayerInfo player;
 	SkillMapInfo map;
@@ -517,44 +517,44 @@ void Skills::init(){
 	skillsinfo[4111001].player.push_back(player);
 }
 
-void Skills::addSkill(int id, SkillsLevelInfo skill){
+void Skills::addSkill(int id, SkillsLevelInfo skill) {
 	skills[id] = skill;
 }
 // Update skills - Primarily for 4th job skills
-void Skills::updateSkill(Player* player, int skillid){
-	if(player->skills->getSkillLevel(skillid) == 0){
+void Skills::updateSkill(Player *player, int skillid) {
+	if (player->skills->getSkillLevel(skillid) == 0) {
 		player->skills->addSkillLevel(skillid, 0);
 	}
 }
 
-void Skills::addSkill(Player* player, unsigned char* packet){
+void Skills::addSkill(Player *player, unsigned char* packet) {
 	int skillid = BufferUtilities::getInt(packet+4);
-	if(!BEGINNER_SKILL(skillid) && player->getSp() == 0){
+	if (!BEGINNER_SKILL(skillid) && player->getSp() == 0) {
 		// hacking
 		return;
 	}
-	if(!BEGINNER_SKILL(skillid))
+	if (!BEGINNER_SKILL(skillid))
 		player->setSp(player->getSp()-1);
 	player->skills->addSkillLevel(skillid, 1);
 }
-void Skills::cancelSkill(Player* player, unsigned char* packet){
+void Skills::cancelSkill(Player *player, unsigned char* packet) {
 	stopSkill(player, BufferUtilities::getInt(packet));
 }
-void Skills::stopSkill(Player* player, int skillid){
+void Skills::stopSkill(Player *player, int skillid) {
 	if (skillid == 3121004 || skillid == 3221001) // Hurricane/Pierce
 		return;
 	SkillTimer::Instance()->stop(player, skillid);
 	endSkill(player, skillid);
 }
-void Skills::useSkill(Player* player, unsigned char* packet){
+void Skills::useSkill(Player *player, unsigned char* packet) {
 	int skillid = BufferUtilities::getInt(packet+4);
 	short level = player->skills->getSkillLevel(skillid);
-	if(level == 0){
+	if (level == 0) {
 		// hacking
 		return;
 	}
-	if(skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0){
-		if(player->skills->getActiveSkillLevel(3121008)>0){ // Reduced MP useage for Concentration
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0) {
+		if (player->skills->getActiveSkillLevel(3121008)>0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
 			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp*mprate)/100;
 			player->setMP(player->getMP()-mploss, 1);
@@ -564,46 +564,46 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 	}
 	else
 		player->setMP(player->getMP(), 1);
-	if(skills[skillid][player->skills->getSkillLevel(skillid)].hp > 0){
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].hp > 0) {
 		player->setHP(player->getHP()-skills[skillid][player->skills->getSkillLevel(skillid)].hp);
 	}
-	if(skills[skillid][player->skills->getSkillLevel(skillid)].item > 0){	
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].item > 0) {	
 		Inventory::takeItem(player, skills[skillid][player->skills->getSkillLevel(skillid)].item, skills[skillid][player->skills->getSkillLevel(skillid)].itemcount);
 	}
-	if(skills[skillid][player->skills->getSkillLevel(skillid)].hpP > 0){	
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].hpP > 0) {	
 		//TODO PARTY
 		int healrate = skills[skillid][player->skills->getSkillLevel(skillid)].hpP/1;
-		if(healrate>100)
+		if (healrate>100)
 			healrate=100;
 		player->setHP(player->getHP() + healrate*player->getMHP()/100);
 	}
 	SkillsPacket::showSkill(player, Maps::info[player->getMap()].Players, skillid); 
 	///
-	if(skillid == 1301007){ // Hyper Body
+	if (skillid == 1301007) { // Hyper Body
 		player->setMHP(player->getRMHP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].x)/100);
 		player->setMMP(player->getRMMP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].y)/100);
 	}
 	///
-	else if(skillid == 5101000){ // GM Heal+Dispell
+	else if (skillid == 5101000) { // GM Heal+Dispell
 		player->setHP(player->getMHP());
 		player->setMP(player->getMMP());
 	}
-	else if(skillid == 1121010){ // Enrage
-		if(player->getCombo() == 10)
+	else if (skillid == 1121010) { // Enrage
+		if (player->getCombo() == 10)
 			Skills::clearCombo(player);
 		else
 			return;
 	}
-	else if(skillid == 5101005){ // GM Resurrection
-		for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++){
+	else if (skillid == 5101005) { // GM Resurrection
+		for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {
 			Player* resplayer;
 			resplayer = Maps::info[player->getMap()].Players[x];
-			if(resplayer->getHP()<=0){
+			if (resplayer->getHP()<=0) {
 				resplayer->setHP(resplayer->getMHP());
 			}
 		}
 	}
-	if(skillsinfo.find(skillid) == skillsinfo.end())
+	if (skillsinfo.find(skillid) == skillsinfo.end())
 		return;
 	SkillActiveInfo playerskill;
 	SkillActiveInfo mapskill;
@@ -624,11 +624,11 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 	mapskill.types[5] = 0;
 	mapskill.types[6] = 0;
 	mapskill.types[7] = 0;
-	for(unsigned int i=0; i<skillsinfo[skillid].player.size(); i++){
+	for (unsigned int i=0; i<skillsinfo[skillid].player.size(); i++) {
 		playerskill.types[skillsinfo[skillid].player[i].byte-1]+= skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
 		short value=0;
-		switch(val){
+		switch(val) {
 			case SKILL_X: value = skills[skillid][level].x; break;
 			case SKILL_Y: value = skills[skillid][level].y; break;
 			case SKILL_SPEED: value = skills[skillid][level].speed; break;
@@ -640,28 +640,28 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 		}
-		if(skillid == 3121002 || skillid == 3221002){ // For Sharp Eyes
+		if (skillid == 3121002 || skillid == 3221002) { // For Sharp Eyes
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
 		}
-		else if(skillid == 4111002){ // For Shadow Partner
+		else if (skillid == 4111002) { // For Shadow Partner
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
 		}
-		else if(skillid == 1111002){ // For Combo Attack
+		else if (skillid == 1111002) { // For Combo Attack
 			player->setCombo(0);
 			value = player->getCombo()+1;
 		}
-		else if(skillid == 1004){ // For Monster Rider
+		else if (skillid == 1004) { // For Monster Rider
 			int mountid = player->inv->getEquipByPos(-18);
-			if(mountid == 0) return;
+			if (mountid == 0) return;
 			value = Drops::equips[mountid].tamingmob;
 		}
 		playerskill.vals.push_back(value);
 	}
-	for(unsigned int i=0; i<skillsinfo[skillid].map.size(); i++){
+	for (unsigned int i=0; i<skillsinfo[skillid].map.size(); i++) {
 		mapskill.types[skillsinfo[skillid].map[i].byte-1]+= skillsinfo[skillid].map[i].type;
 		char val = skillsinfo[skillid].map[i].value;
 		short value=0;
-		switch(val){
+		switch(val) {
 			case SKILL_X: value = skills[skillid][level].x; break;
 			case SKILL_Y: value = skills[skillid][level].y; break;
 			case SKILL_SPEED: value = skills[skillid][level].speed; break;   
@@ -673,17 +673,17 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 		}
-		if(skillid == 4111002){ // For Shadow Partner
+		if (skillid == 4111002) { // For Shadow Partner
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
 		}
-		else if(skillid == 1111002){ // For Combo Attack
+		else if (skillid == 1111002) { // For Combo Attack
 			value = player->getCombo()+1;
 		}
 		mapskill.vals.push_back(value);
 		SkillMapActiveInfo map;
 		map.byte = skillsinfo[skillid].map[i].byte;
 		map.type = skillsinfo[skillid].map[i].type;
-		if(skillsinfo[skillid].map[i].val){
+		if (skillsinfo[skillid].map[i].val) {
 			map.value = (char)value;
 			map.isvalue = true;
 		}
@@ -699,12 +699,12 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 	player->skills->setSkillMapInfo(skillid, mapskill);
 	player->skills->setSkillMapEnterInfo(skillid, mapenterskill);
 	SkillTimer::Instance()->stop(player, skillid);
-	if(skillsinfo[skillid].bact.size()>0){
+	if (skillsinfo[skillid].bact.size()>0) {
 		SkillTimer::Instance()->stop(player, skillid, skillsinfo[skillid].act.name);
 	}
-	if(skillsinfo[skillid].bact.size()>0){
+	if (skillsinfo[skillid].bact.size()>0) {
 		int value = 0;
-		switch(skillsinfo[skillid].act.value){
+		switch(skillsinfo[skillid].act.value) {
 			case SKILL_X: value = skills[skillid][level].x; break;
 			case SKILL_Y: value = skills[skillid][level].y; break;
 			case SKILL_SPEED: value = skills[skillid][level].speed; break;
@@ -723,11 +723,11 @@ void Skills::useSkill(Player* player, unsigned char* packet){
 	if (skillid == 5101004) // GM Hide
 		MapPacket::removePlayer(player, Maps::info[player->getMap()].Players);
 }
-void Skills::useAttackSkill(Player* player, int skillid){
-	if(skills.find(skillid) == skills.end())
+void Skills::useAttackSkill(Player *player, int skillid) {
+	if (skills.find(skillid) == skills.end())
 		return;
-	if(skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0){
-		if(player->skills->getActiveSkillLevel(3121008)>0){ // Reduced MP useage for Concentration
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0) {
+		if (player->skills->getActiveSkillLevel(3121008)>0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
 			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp*mprate)/100;
 			player->setMP(player->getMP()-mploss, 1);
@@ -735,25 +735,25 @@ void Skills::useAttackSkill(Player* player, int skillid){
 		else
 			player->setMP(player->getMP()-skills[skillid][player->skills->getSkillLevel(skillid)].mp, 1);
 	}
-	if(skills[skillid][player->skills->getSkillLevel(skillid)].hp > 0){
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].hp > 0) {
 		player->setHP(player->getHP()-skills[skillid][player->skills->getSkillLevel(skillid)].hp);
 	}
-	if(skills[skillid][player->skills->getSkillLevel(skillid)].item > 0){	
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].item > 0) {	
 		Inventory::takeItem(player, skills[skillid][player->skills->getSkillLevel(skillid)].item, skills[skillid][player->skills->getSkillLevel(skillid)].itemcount);
 	}
 
 }
 
-void Skills::endSkill(Player* player, int skill){
+void Skills::endSkill(Player *player, int skill) {
 	/// 
-	if(skill == 1301007){ // Hyper Body
+	if (skill == 1301007) { // Hyper Body
 		player->setMHP(player->getRMHP());
 		player->setMMP(player->getRMMP());
 		player->setHP(player->getHP());
 		player->setMP(player->getMP());
 	}
 	///
-	if(skillsinfo[skill].bact.size()>0){
+	if (skillsinfo[skill].bact.size()>0) {
 		SkillTimer::Instance()->stop(player, skill, skillsinfo[skill].act.name);
 	}
 	if (skill == 5101004) // GM Hide
@@ -763,36 +763,36 @@ void Skills::endSkill(Player* player, int skill){
 	player->skills->setActiveSkillLevel(skill, 0);
 }
 
-void Skills::heal(Player* player, short value, int skillid){
-	if(player->getHP() < player->getMHP()){
+void Skills::heal(Player *player, short value, int skillid) {
+	if (player->getHP() < player->getMHP()) {
 		player->setHP(player->getHP()+ value);
 		SkillsPacket::healHP(player, value);
 	}
 	SkillTimer::Instance()->setSkillTimer(player, skillid, "heal", value, 5000);
 }
 // Combo attack stuff
-void Skills::addCombo(Player* player, int hits){ // add combo orbs 
-	if(player->skills->getActiveSkillLevel(1111002)>0){
-		if(player->getCombo()<0) player->setCombo(0);
+void Skills::addCombo(Player *player, int hits) { // add combo orbs 
+	if (player->skills->getActiveSkillLevel(1111002)>0) {
+		if (player->getCombo()<0) player->setCombo(0);
         int maxcombo = 0;
-		if(player->skills->getSkillLevel(1120003)>0) maxcombo = Skills::skills[1120003][player->skills->getSkillLevel(1120003)].x;
+		if (player->skills->getSkillLevel(1120003)>0) maxcombo = Skills::skills[1120003][player->skills->getSkillLevel(1120003)].x;
 		else maxcombo = Skills::skills[1111002][player->skills->getSkillLevel(1111002)].x;
-		if(player->getCombo()>=maxcombo){
+		if (player->getCombo()>=maxcombo) {
 			player->setCombo(maxcombo);
 		}
 		else{
-			for(int i=0; i<hits; i++){
+			for (int i=0; i<hits; i++) {
 				player->setCombo(player->getCombo()+1);
-				if(player->skills->getSkillLevel(1120003)>0 && Randomizer::Instance()->randInt(99)<30+player->skills->getSkillLevel(1120003))
+				if (player->skills->getSkillLevel(1120003)>0 && Randomizer::Instance()->randInt(99)<30+player->skills->getSkillLevel(1120003))
 					player->setCombo(player->getCombo()+1); // 4th job skill gives chance to add second orb
 			}
-			if(player->getCombo()>=maxcombo) player->setCombo(maxcombo);
+			if (player->getCombo()>=maxcombo) player->setCombo(maxcombo);
 			SkillsPacket::showCombo(player, Maps::info[player->getMap()].Players, SkillTimer::Instance()->skillTime(player, 1111002));
 		}
 	}
 }
 
-void Skills::clearCombo(Player* player){ // finishing moves panic coma
+void Skills::clearCombo(Player *player) { // finishing moves panic coma
 	player->setCombo(0);
 	SkillsPacket::showCombo(player, Maps::info[player->getMap()].Players, SkillTimer::Instance()->skillTime(player, 1111002));
 }

@@ -73,7 +73,7 @@ int Timer::timeLeft(int id) { // check timer time
 }
 
 Timer::OneTimer * Timer::findMin() {
-	if(timers.size() == 0)
+	if (timers.size() == 0)
 		return NULL;
 	OneTimer *min;
 	for (hash_map <int, OneTimer *>::iterator iter = timers.begin(); iter != timers.end(); iter++) {
@@ -84,7 +84,7 @@ Timer::OneTimer * Timer::findMin() {
 }
 
 Timer::OneTimer * Timer::getTimer(int id) {
-	if(timers[id])
+	if (timers[id])
 		return timers[id];
 	return NULL;
 }

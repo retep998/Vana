@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.h"
 #include "LoginServerAcceptPlayerPacket.h"
 
-void Characters::showEquips(int id, vector<CharEquip> &vec){
+void Characters::showEquips(int id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = db.query();
 	query << "SELECT equipid, type, pos FROM equip WHERE charid = " << mysqlpp::quote << id << " AND pos < 0 ORDER BY type ASC, pos ASC";
 	mysqlpp::StoreQueryResult res = query.store();
@@ -63,7 +63,7 @@ void Characters::loadCharacter(Character &charc, mysqlpp::Row &row) {
 	showEquips(charc.id, charc.equips);
 }
 
-void Characters::showCharacters(PlayerLogin* player){
+void Characters::showCharacters(PlayerLogin* player) {
 	mysqlpp::Query query = db.query();
 	query << "SELECT * FROM characters WHERE userid = " << mysqlpp::quote << player->getUserid() << " AND world_id = " << mysqlpp::quote << (int) player->getWorld();
 	mysqlpp::StoreQueryResult res = query.store();
@@ -77,29 +77,29 @@ void Characters::showCharacters(PlayerLogin* player){
 	LoginPacket::showCharacters(player, chars);
 }
 
-void Characters::checkCharacterName(PlayerLogin* player, ReadPacket *packet){
+void Characters::checkCharacterName(PlayerLogin* player, ReadPacket *packet) {
 	string name = packet->getString();
-	if (name.size() > 15){
+	if (name.size() > 15) {
 		return;
 	}
 	
 	LoginPacket::checkName(player, nameTaken(player, name), name);
 }
 
-void Characters::createEquip(int equipid, int type, int charid){
+void Characters::createEquip(int equipid, int type, int charid) {
 	mysqlpp::Query query = db.query();
-	if(type==0x05)
+	if (type==0x05)
 		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 3 << "," << mysqlpp::quote << -type << ")";
-	else if(type==0x06)
+	else if (type==0x06)
 		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 2 << "," << mysqlpp::quote << -type << ")";
-	else if(type==0x07)
+	else if (type==0x07)
 		query << "INSERT INTO equip (equipid,charid,type,iwdef,slots,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 3 << "," << 5 << "," << mysqlpp::quote << -type << ")";
-	else if(type==0x0b)
+	else if (type==0x0b)
 		query << "INSERT INTO equip (equipid,charid,type,iwatk,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 17 << "," << mysqlpp::quote << -type << ")";
 	query.exec();
 }
 
-void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet){
+void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet) {
 	Character charc;
 	string name = packet->getString();
 	if (name.size() > 15) {
@@ -107,7 +107,7 @@ void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet){
 	}
 
 	// Let's check our char name again just to be sure
-	if(nameTaken(player, name)) {
+	if (nameTaken(player, name)) {
 		LoginPacket::checkName(player, 1, name);
 		return;
 	}
@@ -124,7 +124,7 @@ void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet){
 	char intt = packet->getByte();
 	char luk = packet->getByte();
 
-	if(str + dex + intt + luk != 25){
+	if (str + dex + intt + luk != 25) {
 		// hacking
 		return;
 	}
@@ -163,11 +163,11 @@ void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet){
 	LoginPacket::showCharacter(player, charc);
 }
 
-void Characters::deleteCharacter(PlayerLogin* player, ReadPacket *packet){
+void Characters::deleteCharacter(PlayerLogin* player, ReadPacket *packet) {
 	int data = packet->getInt();
 	int id = packet->getInt();
 	
-	if(!ownerCheck(player, id)){
+	if (!ownerCheck(player, id)) {
 		// hacking
 		return;
 	}
@@ -196,10 +196,10 @@ void Characters::deleteCharacter(PlayerLogin* player, ReadPacket *packet){
 }
 
 
-void Characters::connectGame(PlayerLogin* player, ReadPacket *packet){
+void Characters::connectGame(PlayerLogin* player, ReadPacket *packet) {
 	int id = packet->getInt();
 
-	if(!ownerCheck(player, id)){
+	if (!ownerCheck(player, id)) {
 		// hacking
 		return;
 	}

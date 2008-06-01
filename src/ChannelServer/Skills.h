@@ -110,90 +110,90 @@ namespace Skills {
 	extern hash_map <int, SkillsLevelInfo> skills;
 	extern hash_map <int, SkillsInfo> skillsinfo;
 	void addSkill(int id, SkillsLevelInfo skill);
-	void addSkill(Player* player, unsigned char* packet);
-	void updateSkill(Player* player, int skillid);
-	void cancelSkill(Player* player, unsigned char* packet);
-	void useSkill(Player* player, unsigned char* packet);
-	void useAttackSkill(Player* player, int skillid);
-	void stopTimerPlayer(Player* player);
-	void heal(Player* player, short value, int skillid);
-	void endSkill(Player* player, int skillid);
-	void stopSkill(Player* player, int skillid);
-	void addCombo(Player* player, int hits); // Combo Attack 
-	void clearCombo(Player* player); // Combo Attack
+	void addSkill(Player *player, unsigned char* packet);
+	void updateSkill(Player *player, int skillid);
+	void cancelSkill(Player *player, unsigned char* packet);
+	void useSkill(Player *player, unsigned char* packet);
+	void useAttackSkill(Player *player, int skillid);
+	void stopTimerPlayer(Player *player);
+	void heal(Player *player, short value, int skillid);
+	void endSkill(Player *player, int skillid);
+	void stopSkill(Player *player, int skillid);
+	void addCombo(Player *player, int hits); // Combo Attack 
+	void clearCombo(Player *player); // Combo Attack
 };
 
 class PlayerSkills {
 public:
-	void addSkillLevel(int skillid, int level, bool sendpacket = true){
-		if(playerskills.find(skillid) != playerskills.end())
+	void addSkillLevel(int skillid, int level, bool sendpacket = true) {
+		if (playerskills.find(skillid) != playerskills.end())
 			playerskills[skillid] += level;
 		else
 			playerskills[skillid] = level;
 		
 		if (sendpacket) {
 			int maxlevel = 0;
-			if(FORTHJOB_SKILL(skillid)){
+			if (FORTHJOB_SKILL(skillid)) {
 				maxlevel = getMaxSkillLevel(skillid);
 			}
 			SkillsPacket::addSkill(player, skillid, getSkillLevel(skillid), maxlevel);
 		}
 	}
-	int getSkillLevel(int skillid){
-		if(playerskills.find(skillid) != playerskills.end())
+	int getSkillLevel(int skillid) {
+		if (playerskills.find(skillid) != playerskills.end())
 			return playerskills[skillid];
 		else
 			return 0;
 	}
-	void setMaxSkillLevel(int skillid, int maxlevel){ // Set max level for 4th job skills
+	void setMaxSkillLevel(int skillid, int maxlevel) { // Set max level for 4th job skills
 		maxlevels[skillid] = maxlevel;
 	}
-	int getMaxSkillLevel(int skillid){ // Get max level for 4th job skills
-		if(maxlevels.find(skillid) != maxlevels.end())
+	int getMaxSkillLevel(int skillid) { // Get max level for 4th job skills
+		if (maxlevels.find(skillid) != maxlevels.end())
 			return maxlevels[skillid];
 		else
 			return 0;
 	}
-	int getSkillsNum(){
+	int getSkillsNum() {
 		return playerskills.size();
 	}
-	int getSkillID(int i){
+	int getSkillID(int i) {
 		int j=0;
-		for (hash_map<int,int>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++){
-			if(j == i){
+		for (hash_map<int,int>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
+			if (j == i) {
 				return iter->first;
 			} 
 			j++;
 		}
 		return 0;
 	}
-	void setSkillPlayerInfo(int skillid, SkillActiveInfo skill){
+	void setSkillPlayerInfo(int skillid, SkillActiveInfo skill) {
 		activeplayerskill[skillid] = skill;
 	}
-	void setSkillMapInfo(int skillid, SkillActiveInfo skill){
+	void setSkillMapInfo(int skillid, SkillActiveInfo skill) {
 		activemapskill[skillid] = skill;
 	}
-	void setSkillMapEnterInfo(int skillid, vector <SkillMapActiveInfo> skill){
+	void setSkillMapEnterInfo(int skillid, vector <SkillMapActiveInfo> skill) {
 		// TEMP //
-		for (unsigned int i=0; i<activemapenterskill.size(); i++){ 
-			if(activemapenterskill[i].isvalue){
+		for (unsigned int i=0; i<activemapenterskill.size(); i++) { 
+			if (activemapenterskill[i].isvalue) {
 				activemapenterskill.erase(activemapenterskill.begin()+i);
 				break;
 			}
 		}
 		//////////
-		for (unsigned int i=0; i<skill.size(); i++){
+		for (unsigned int i=0; i<skill.size(); i++) {
 			activemapenterskill.push_back(skill[i]);
 		}
 	}
-	void deleteSkillMapEnterInfo(int skillid){
-		for (unsigned int i=0; i<activemapenterskill.size(); i++){
-			if(activemapenterskill[i].skill == skillid){
+	void deleteSkillMapEnterInfo(int skillid) {
+		for (unsigned int i=0; i<activemapenterskill.size(); i++) {
+			if (activemapenterskill[i].skill == skillid) {
 				activemapenterskill.erase(activemapenterskill.begin()+i);
 			}
 		}
 	}
-	SkillMapEnterActiveInfo getSkillMapEnterInfo(){
+	SkillMapEnterActiveInfo getSkillMapEnterInfo() {
 		SkillMapEnterActiveInfo skill;
 		skill.types[0] = 0;
 		skill.types[1] = 0;
@@ -205,26 +205,26 @@ public:
 		skill.types[7] = 0;
 		skill.val = 0;
 		skill.isval = false;
-		for (unsigned int i=0; i<activemapenterskill.size(); i++){
+		for (unsigned int i=0; i<activemapenterskill.size(); i++) {
 			 skill.types[activemapenterskill[i].byte-1] += activemapenterskill[i].type;
-			if(activemapenterskill[i].isvalue){
+			if (activemapenterskill[i].isvalue) {
 				skill.val = activemapenterskill[i].value;
 				skill.isval = true;
 			}
 		}
 		return skill;
 	}
-	SkillActiveInfo getSkillPlayerInfo(int skillid){
+	SkillActiveInfo getSkillPlayerInfo(int skillid) {
 		return activeplayerskill[skillid];
 	}
-	SkillActiveInfo getSkillMapInfo(int skillid){
+	SkillActiveInfo getSkillMapInfo(int skillid) {
 		return activemapskill[skillid];
 	}
-	void setActiveSkillLevel(int skillid, int level){
+	void setActiveSkillLevel(int skillid, int level) {
 		activelevels[skillid] = level;
 	}
-	int getActiveSkillLevel(int skillid){
-		if(activelevels.find(skillid) == activelevels.end())
+	int getActiveSkillLevel(int skillid) {
+		if (activelevels.find(skillid) == activelevels.end())
 			return 0;
 		return activelevels[skillid];
 	}

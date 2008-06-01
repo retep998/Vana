@@ -62,83 +62,83 @@ public:
 	~Player();
 
 	void realHandleRequest(ReadPacket *packet);
-	void setPlayerid(int id){
+	void setPlayerid(int id) {
 		this->id = id;
 	}
-	int getPlayerid(){
+	int getPlayerid() {
 		return this->id;
 	}
-	char* getName(){
+	char* getName() {
 		return this->name;
 	}
 	int getChannel() {
 		return this->channel;
 	}
-	char getGender(){
+	char getGender() {
 		return this->gender;
 	}
 	void setSkin(char id);
-	char getSkin(){
+	char getSkin() {
 		return this->skin;
 	}
 	void setEyes(int id);
-	int getEyes(){
+	int getEyes() {
 		return this->eyes;
 	}
 	void setHair(int id);
-	int getHair(){
+	int getHair() {
 		return this->hair;
 	}
 	void setLevel(int level);
-	unsigned char getLevel(){
+	unsigned char getLevel() {
 		return this->level;
 	}
 	void setJob(short job);
-	short getJob(){
+	short getJob() {
 		return this->job;
 	}
 	void setStr(short str);
-	short getStr(){
+	short getStr() {
 		return this->str;
 	}
 	void setDex(short dex);
-	short getDex(){
+	short getDex() {
 		return this->dex;
 	}
 	void setInt(short intt);
-	short getInt(){
+	short getInt() {
 		return this->intt;
 	}
 	void setLuk(short luk);
-	short getLuk(){
+	short getLuk() {
 		return this->luk;
 	}
 	void setHP(int hp, bool is=1);
-	unsigned short getHP(){
+	unsigned short getHP() {
 		return this->hp;
 	}
 	void setMP(int mp, bool is=0);
-	unsigned short getMP(){
+	unsigned short getMP() {
 		return this->mp;
 	}
 	void setMHP(int mhp);
-	unsigned short getMHP(){
+	unsigned short getMHP() {
 		return this->mhp;
 	}
-	void setRMHP(int rmhp){
+	void setRMHP(int rmhp) {
 		this->rmhp=rmhp;
 	}
-	unsigned short getRMHP(){
+	unsigned short getRMHP() {
 		return this->rmhp;
 	}
 	void setMMP(int mmp);
-	unsigned short getMMP(){
+	unsigned short getMMP() {
 		return this->mmp;
 	}
-	void setRMMP(int rmmp){
+	void setRMMP(int rmmp) {
 		this->rmmp=rmmp;
 	}
-	unsigned short getRMMP(){
+	unsigned short getRMMP() {
 		return this->rmmp;
 	}
 	void setHPMPAp(unsigned short ap) {
@@ -147,91 +147,91 @@ public:
 	unsigned short getHPMPAp() {
 		return hpmp_ap;
 	}
-	short getAp(){
+	short getAp() {
 		return this->ap;
 	}
-	short getSp(){
+	short getSp() {
 		return this->sp;
 	}
 	void setAp(short ap);
 	void setSp(short sp);
-	void setFame(short fame){
+	void setFame(short fame) {
 		this->fame=fame;
 	}
-	short getFame(){
+	short getFame() {
 		return this->fame;
 	}
 	void setExp(int exp, bool is);
-	int getExp(){
+	int getExp() {
 		return this->exp;
 	}
-	void setMap(int map){
+	void setMap(int map) {
 		this->map=map;
 	}
-	int getMap(){
+	int getMap() {
 		return this->map;
 	}
-	void setMappos(char pos){
+	void setMappos(char pos) {
 		this->mappos = pos;
 	}
-	char getMappos(){
+	char getMappos() {
 		return this->mappos;
 	}
-	Pos getPos(){
+	Pos getPos() {
 		return this->pos;
 	}
-	void setPos(Pos pos){
+	void setPos(Pos pos) {
 		this->pos = pos;
 	}
-	void setType(char type){
+	void setType(char type) {
 		this->type=type;
 	}
-	char getType(){
+	char getType() {
 		return this->type;
 	}
-	void setShop(int shopid){
+	void setShop(int shopid) {
 		shop=shopid;
 	}
-	int getShop(){
+	int getShop() {
 		return shop;
 	}
-	void setNPC(NPC* npc){
+	void setNPC(NPC* npc) {
 		this->npc = npc;
 	}
-	void setChair(int chair){
+	void setChair(int chair) {
 		this->chair = chair;
 	}
-	int getChair(){
+	int getChair() {
 		return chair;
 	}
-	void setItemEffect(int effect){
+	void setItemEffect(int effect) {
 		this->itemEffect = effect;
 	}
-	int getItemEffect(){
+	int getItemEffect() {
 		return this->itemEffect;
 	}
-	NPC* getNPC(){
+	NPC* getNPC() {
 		return npc;
 	}
-	bool isGM(){
+	bool isGM() {
 		return gm > 0;
 	}
 	int getGMLevel() {
 		return gm;
 	}
-	void setSkill(SkillMapEnterActiveInfo skill){
+	void setSkill(SkillMapEnterActiveInfo skill) {
 		this->skill = skill;
 	}
-	void setCombo(int combo){ // Combo Attack
+	void setCombo(int combo) { // Combo Attack
 		this->combo = combo;
 	}
-	int getCombo(){ // Combo Attack
+	int getCombo() { // Combo Attack
 		return combo;
 	}
 	void setSaveOnDC(bool save) {
 		save_on_dc = save;
 	}
-	SkillMapEnterActiveInfo getSkill(){
+	SkillMapEnterActiveInfo getSkill() {
 		return skill;
 	}
 	void deleteVariable(const string &name) {

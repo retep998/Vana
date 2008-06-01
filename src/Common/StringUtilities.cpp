@@ -22,7 +22,7 @@ int StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 	string::const_iterator iter2 = s2.begin();
 
 	while ((iter1 != s1.end()) && (iter2 != s2.end())) { 
-		if(toupper(*iter1) != toupper(*iter2)) {
+		if (toupper(*iter1) != toupper(*iter2)) {
 			return (toupper(*iter1)  < toupper(*iter2)) ? -1 : 1; 
 		}
 		iter1++;

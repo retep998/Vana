@@ -24,15 +24,15 @@ class Player;
 class Packet;
 
 namespace MapPacket {
-	Packet playerPacket(Player* player);
-	void showPlayer(Player* player, vector <Player*> players);
-	void showPlayers(Player* player, vector <Player*> players);
-	void removePlayer(Player* player, vector <Player*> players);
-	void changeMap(Player* player);
-	void portalBlocked(Player* player); // Blocked portals
-	void showClock(Player* player, unsigned char hour, unsigned char min, unsigned char sec);
+	Packet playerPacket(Player *player);
+	void showPlayer(Player *player, vector <Player*> players);
+	void showPlayers(Player *player, vector <Player*> players);
+	void removePlayer(Player *player, vector <Player*> players);
+	void changeMap(Player *player);
+	void portalBlocked(Player *player); // Blocked portals
+	void showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec);
 	void showTimer(Player *player, int sec); // Show Timer like in PQ
-	void makeApple(Player* player);
+	void makeApple(Player *player);
 	void changeMusic(vector <Player*> players, std::string musicname); // Change map music
 	void sendSound(vector <Player*> players, std::string soundname); // Send sound - clear/wrong/etc
 	void sendEvent(vector <Player*> players, std::string eventname); // Send event - clear/wrong/etc

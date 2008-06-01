@@ -40,9 +40,9 @@ public:
 			singleton = new MapTimer;
 		return singleton;
 	}
-	void setMapTimer(int mapid){
-		if(ctimer.find(mapid) != ctimer.end())
-			if(ctimer[mapid])
+	void setMapTimer(int mapid) {
+		if (ctimer.find(mapid) != ctimer.end())
+			if (ctimer[mapid])
 			return;
 		Maps::mapTimer(mapid);
 		timers[Timer::Instance()->setTimer(10000, this, true)] = mapid;
@@ -59,7 +59,7 @@ private:
 	void handle (Timer* timer, int id) {
 		Maps::mapTimer(timers[id]);
 	}
-	void remove (int id){
+	void remove (int id) {
 		timers.erase(id);
 	}
 };
@@ -67,12 +67,12 @@ hash_map <int,int> MapTimer::timers;
 hash_map <int,int> MapTimer::ctimer;
 MapTimer * MapTimer::singleton = 0;
 
-void Maps::addMap(int id, MapInfo map){
+void Maps::addMap(int id, MapInfo map) {
 	info[id] = map;
 }
 
-void Maps::addPlayer(Player* player) {
-	if(player->getMap() == 1 || player->getMap() == 2)
+void Maps::addPlayer(Player *player) {
+	if (player->getMap() == 1 || player->getMap() == 2)
 		MapPacket::makeApple(player);
 	info[player->getMap()].Players.push_back(player);
 	MapPacket::showPlayers(player, info[player->getMap()].Players);
@@ -80,25 +80,25 @@ void Maps::addPlayer(Player* player) {
 		MapPacket::showPlayer(player, info[player->getMap()].Players);
 }
 
-void Maps::removePlayer(Player* player){
-	for(unsigned int i=0; i<info[player->getMap()].Players.size(); i++) {
-		if(info[player->getMap()].Players[i]->getPlayerid() == player->getPlayerid()) {
+void Maps::removePlayer(Player *player) {
+	for (unsigned int i=0; i<info[player->getMap()].Players.size(); i++) {
+		if (info[player->getMap()].Players[i]->getPlayerid() == player->getPlayerid()) {
 			info[player->getMap()].Players.erase(info[player->getMap()].Players.begin()+i);
 		}
 	}
 	MapPacket::removePlayer(player, info[player->getMap()].Players);
 	for (hash_map<int, Mob *>::iterator iter = Mobs::mobs[player->getMap()].begin(); iter != Mobs::mobs[player->getMap()].end(); iter++) {
-		if(iter->second != NULL && iter->second->getControl() == player) {
+		if (iter->second != NULL && iter->second->getControl() == player) {
 			iter->second->setControl(NULL);
 		}
 	}
 	Mobs::updateSpawn(player->getMap());
 }
 
-void Maps::moveMap(Player* player, unsigned char* packet){
-	if(BufferUtilities::getInt(packet+1) == 0){
+void Maps::moveMap(Player *player, unsigned char* packet) {
+	if (BufferUtilities::getInt(packet+1) == 0) {
 		int tomap;
-		if(info.find(player->getMap())==info.end())
+		if (info.find(player->getMap())==info.end())
 			tomap = player->getMap();
 		else
 			tomap = info[player->getMap()].rm;
@@ -110,15 +110,15 @@ void Maps::moveMap(Player* player, unsigned char* packet){
 	char portalname[10];
 	BufferUtilities::getString(packet+7, portalsize, portalname);;   
 	PortalInfo portal;
-	for(unsigned int i=0; i<info[player->getMap()].Portals.size(); i++)
-		if(strcmp(info[player->getMap()].Portals[i].from, portalname) == 0){
+	for (unsigned int i=0; i<info[player->getMap()].Portals.size(); i++)
+		if (strcmp(info[player->getMap()].Portals[i].from, portalname) == 0) {
 			portal = info[player->getMap()].Portals[i];
 			break;
 		}
 	int tonum = 0;
-	if(info.find(portal.toid) != info.end()){
-		for(unsigned int i=0; i<info[portal.toid].Portals.size(); i++){
-			if(strcmp(portal.to, info[portal.toid].Portals[i].from) ==0){
+	if (info.find(portal.toid) != info.end()) {
+		for (unsigned int i=0; i<info[portal.toid].Portals.size(); i++) {
+			if (strcmp(portal.to, info[portal.toid].Portals[i].from) ==0) {
 				tonum = info[portal.toid].Portals[i].id;
 				break;
 			}
@@ -127,7 +127,7 @@ void Maps::moveMap(Player* player, unsigned char* packet){
 	changeMap(player, portal.toid, tonum);
 }
 
-void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map special
+void Maps::moveMapS(Player *player, unsigned char* packet) { // Move to map special
 	char portalname[10];
 	int namelen = packet[1];
 	BufferUtilities::getString(packet+3, namelen, portalname);
@@ -144,9 +144,9 @@ void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map speci
 	filenameStream << "scripts/portals/" << portal.script << ".lua";
 	LuaPortal(filenameStream.str(), player->getPlayerid(), &portal);
 	int tonum = 0;
-	if(info.find(portal.toid) != info.end()){
-		for(unsigned int i=0; i<info[portal.toid].Portals.size(); i++){
-			if(strcmp(portal.to, info[portal.toid].Portals[i].from) ==0){
+	if (info.find(portal.toid) != info.end()) {
+		for (unsigned int i=0; i<info[portal.toid].Portals.size(); i++) {
+			if (strcmp(portal.to, info[portal.toid].Portals[i].from) ==0) {
 				tonum = info[portal.toid].Portals[i].id;
 				break;
 			}
@@ -155,7 +155,7 @@ void Maps::moveMapS(Player* player, unsigned char* packet){ // Move to map speci
 	changeMap(player, portal.toid, tonum);
 }
 
-void Maps::changeMap(Player* player, int mapid, int pos){
+void Maps::changeMap(Player *player, int mapid, int pos) {
 	if (mapid == 999999999) {
 		PlayerPacket::showMessage(player, "This portal is currently unavailable.", 5);
 		MapPacket::portalBlocked(player);
@@ -170,11 +170,11 @@ void Maps::changeMap(Player* player, int mapid, int pos){
 	player->setMappos(pos);
 	player->setType(0);
 	Pos cpos;
-	if((unsigned int)pos<info[mapid].Portals.size()){
+	if ((unsigned int)pos<info[mapid].Portals.size()) {
 		cpos.x = info[mapid].Portals[pos].x;
 		cpos.y = info[mapid].Portals[pos].y;
 	}
-	else if(info[mapid].Portals.size() > 0){
+	else if (info[mapid].Portals.size() > 0) {
 		cpos.x = info[mapid].Portals[0].x;
 		cpos.y = info[mapid].Portals[0].y;
 	}
@@ -187,7 +187,7 @@ void Maps::changeMap(Player* player, int mapid, int pos){
 	newMap(player, mapid);
 }
 
-void Maps::showClock(Player* player){
+void Maps::showClock(Player *player) {
 	time_t rawtime;
 	struct tm timeinfo;
 	time(&rawtime);
@@ -200,20 +200,20 @@ void Maps::mapTimer(int mapid) {
 	Drops::checkDrops(mapid);
 }
 
-void Maps::newMap(Player* player, int mapid){
+void Maps::newMap(Player *player, int mapid) {
 	Players::addPlayer(player);
 	NPCs::showNPCs(player);
 	Reactors::showReactors(player);
 	addPlayer(player);
 	Mobs::showMobs(player);
 	Drops::showDrops(player);
-	if(info[mapid].clock)
+	if (info[mapid].clock)
 		showClock(player);
 	MapTimer::Instance()->setMapTimer(player->getMap());
 }
 // Change Music
-void Maps::changeMusic(int mapid, std::string musicname){
-	if(Maps::info.find(mapid) != Maps::info.end()){
+void Maps::changeMusic(int mapid, std::string musicname) {
+	if (Maps::info.find(mapid) != Maps::info.end()) {
 		MapPacket::changeMusic(info[mapid].Players, musicname);
 	}
 }

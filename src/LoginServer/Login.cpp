@@ -27,11 +27,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.h"
 #include <iostream>
 
-void Login::loginUser(PlayerLogin* player, ReadPacket *packet){
+void Login::loginUser(PlayerLogin* player, ReadPacket *packet) {
 	string username = packet->getString();
 	string password = packet->getString();
 
-	if (username.size() > 15 || password.size() > 15){
+	if (username.size() > 15 || password.size() > 15) {
 		return;
 	} 
 
@@ -69,7 +69,7 @@ void Login::loginUser(PlayerLogin* player, ReadPacket *packet){
 		LoginPacket::loginBan(player, (unsigned char) res[0]["ban_reason"], time);
 		valid = false;
 	}
-	if(!valid) {
+	if (!valid) {
 		int threshold = LoginServer::Instance()->getInvalidLoginThreshold();
 		if (threshold != 0 && player->addInvalidLogin() >= threshold) {
 			player->disconnect(); // Too many invalid logins
@@ -84,7 +84,7 @@ void Login::loginUser(PlayerLogin* player, ReadPacket *packet){
 			else
 				player->setPin(res[0]["pin"]);
 			int pin = player->getPin();
-			if(pin == -1)
+			if (pin == -1)
 				player->setStatus(1); // New PIN
 			else
 				player->setStatus(2); // Ask for PIN
@@ -99,7 +99,7 @@ void Login::loginUser(PlayerLogin* player, ReadPacket *packet){
 	}
 }
 
-void Login::setGender(PlayerLogin* player, ReadPacket *packet){
+void Login::setGender(PlayerLogin* player, ReadPacket *packet) {
 	if (player->getStatus() != 5) {
 		//hacking
 		return;
@@ -118,46 +118,46 @@ void Login::setGender(PlayerLogin* player, ReadPacket *packet){
 	}
 }
 
-void Login::handleLogin(PlayerLogin* player, ReadPacket *packet){
+void Login::handleLogin(PlayerLogin* player, ReadPacket *packet) {
 	int status = player->getStatus();
-	if(status == 1)
+	if (status == 1)
 		LoginPacket::loginProcess(player, 0x01);
-	else if(status == 2){
+	else if (status == 2) {
 		LoginPacket::loginProcess(player, 0x04);
 		player->setStatus(3);
 	}
-	else if(status == 3)
+	else if (status == 3)
 		checkPin(player, packet);
-	else if(status == 4) {
+	else if (status == 4) {
 		LoginPacket::loginProcess(player, 0x00);
 		// The player successfully logged in, so let set the login column
 		player->setOnline(true);
 	}
 }
-void Login::checkPin(PlayerLogin* player, ReadPacket *packet){
+void Login::checkPin(PlayerLogin* player, ReadPacket *packet) {
 	if (!LoginServer::Instance()->getPinEnabled()) {
 		//hacking
 		return;
 	}
 	char act = packet->getByte();
 	packet->skipBytes(5);
-	if (act == 0x00){
+	if (act == 0x00) {
 		player->setStatus(2);
 	}
-	else if (act == 0x01){
+	else if (act == 0x01) {
 		int pin = StringUtilities::toInt(packet->getString());
 		int curpin = player->getPin();
-		if(pin == curpin){
+		if (pin == curpin) {
 			player->setStatus(4);
 			handleLogin(player, packet);
 		}
 		else
 			LoginPacket::loginProcess(player, 0x02);
 	}
-	else if (act == 0x02){
+	else if (act == 0x02) {
 		int pin = StringUtilities::toInt(packet->getString());
 		int curpin = player->getPin();
-		if(pin == curpin){
+		if (pin == curpin) {
 			player->setStatus(1);
 			handleLogin(player, packet);
 		}
@@ -166,13 +166,13 @@ void Login::checkPin(PlayerLogin* player, ReadPacket *packet){
 	}
 }
 
-void Login::registerPIN(PlayerLogin* player, ReadPacket *packet){
+void Login::registerPIN(PlayerLogin* player, ReadPacket *packet) {
 	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != 1) {
 		//hacking
 		return;
 	}
-	if (packet->getByte() == 0x00){
-		if(player->getPin() != -1){
+	if (packet->getByte() == 0x00) {
+		if (player->getPin() != -1) {
 			player->setStatus(2);
 		}
 		return;
@@ -185,7 +185,7 @@ void Login::registerPIN(PlayerLogin* player, ReadPacket *packet){
 	LoginPacket::pinAssigned(player);
 }
 
-void Login::loginBack(PlayerLogin* player){
+void Login::loginBack(PlayerLogin* player) {
 	LoginPacket::logBack(player);
 }
 

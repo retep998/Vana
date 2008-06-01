@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "SendHeader.h"
 
-void DropsPacket::drop(vector <Player*> players, Drop* drop, Dropped dropper){
+void DropsPacket::drop(vector <Player*> players, Drop* drop, Dropped dropper) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
@@ -37,13 +37,13 @@ void DropsPacket::drop(vector <Player*> players, Drop* drop, Dropped dropper){
 	packet.addShort(dropper.pos.y);
 	packet.addShort(0);
 	packet.addByte(0);
-	if(!drop->getMesos()){
+	if (!drop->getMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
 	packet.sendTo<Player>(NULL, players, 1);
 }
 
-void DropsPacket::dropForPlayer(Player* player, Drop* drop, Dropped dropper){
+void DropsPacket::dropForPlayer(Player *player, Drop* drop, Dropped dropper) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
@@ -59,16 +59,16 @@ void DropsPacket::dropForPlayer(Player* player, Drop* drop, Dropped dropper){
 	packet.addShort(dropper.pos.y);
 	packet.addShort(0);
 	packet.addByte(0);
-	if(!drop->getMesos()){
+	if (!drop->getMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
 	packet.send(player);
 }
 
-void DropsPacket::showDrop(Player* player, Drop* drop){
+void DropsPacket::showDrop(Player *player, Drop* drop) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
-	if(drop->getPlayer() == player->getPlayerid())
+	if (drop->getPlayer() == player->getPlayerid())
 		packet.addByte(1);
 	else
 		packet.addByte(2);
@@ -81,41 +81,41 @@ void DropsPacket::showDrop(Player* player, Drop* drop){
 	packet.addShort(drop->getPos().y);
 	packet.addInt(drop->getOwner());
 	packet.addByte(0);
-	if(!drop->getMesos()){
+	if (!drop->getMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
 	packet.send(player);
 }
 
-void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount){
+void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(0);
-	if(id==0)
+	if (id==0)
 		packet.addByte(-1);
 	else{
 		packet.addByte(ismesos);
 		packet.addInt(id);
-		if(ismesos){
+		if (ismesos) {
 			packet.addShort(0); // Internet Cafe Bonus
 		}
-		else if(id/1000000 != 1)
+		else if (id/1000000 != 1)
 			packet.addShort(amount);
 	}
-	if(!ismesos){
+	if (!ismesos) {
 		packet.addInt(0);
 		packet.addInt(0);
 	}
 	packet.send(player);
 }
 
-void DropsPacket::takeDrop(Player* player, vector <Player*> players, Drop* drop){
+void DropsPacket::takeDrop(Player *player, vector <Player*> players, Drop* drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(2);
 	packet.addInt(drop->getObjID());
 	packet.addInt(player->getPlayerid());
-	if(!drop->isQuest()){
+	if (!drop->isQuest()) {
 		packet.sendTo<Player>(player, players, 1);
 	}
 	else{
@@ -123,14 +123,14 @@ void DropsPacket::takeDrop(Player* player, vector <Player*> players, Drop* drop)
 	}
 }
 
-void DropsPacket::dontTake(Player* player){
+void DropsPacket::dontTake(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addShort(1);
 	packet.send(player);
 }
 
-void DropsPacket::removeDrop(vector <Player*> players, Drop* drop){
+void DropsPacket::removeDrop(vector <Player*> players, Drop* drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(0);
@@ -138,7 +138,7 @@ void DropsPacket::removeDrop(vector <Player*> players, Drop* drop){
 	packet.sendTo<Player>(NULL, players, 1);
 }
 
-void DropsPacket::explodeDrop(vector <Player*> players, Drop* drop){
+void DropsPacket::explodeDrop(vector <Player*> players, Drop* drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(4);

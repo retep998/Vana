@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "SendHeader.h"
 
-void PlayersPacket::showMoving(Player* player, vector <Player*> players, unsigned char* packett, int size){
+void PlayersPacket::showMoving(Player *player, vector <Player*> players, unsigned char* packett, int size) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
@@ -30,7 +30,7 @@ void PlayersPacket::showMoving(Player* player, vector <Player*> players, unsigne
 	packet.sendTo<Player>(player, players, 0);
 }	
 
-void PlayersPacket::faceExperiment(Player* player, vector <Player*> players, int face){
+void PlayersPacket::faceExperiment(Player *player, vector <Player*> players, int face) {
 	Packet packet;
 	packet.addHeader(SEND_FACE_EXPERIMENT);
 	packet.addInt(player->getPlayerid());
@@ -38,7 +38,7 @@ void PlayersPacket::faceExperiment(Player* player, vector <Player*> players, int
 	packet.sendTo<Player>(player, players, 0);
 }
 
-void PlayersPacket::showChat(Player* player, vector <Player*> players, char* msg){
+void PlayersPacket::showChat(Player *player, vector <Player*> players, char* msg) {
 	Packet packet;
 	packet.addHeader(SEND_CHAT);
 	packet.addInt(player->getPlayerid());
@@ -48,7 +48,7 @@ void PlayersPacket::showChat(Player* player, vector <Player*> players, char* msg
 	packet.sendTo<Player>(player, players, 1);
 }
 
-void PlayersPacket::damagePlayer(Player* player, vector <Player*> players, int dmg, int mob){
+void PlayersPacket::damagePlayer(Player *player, vector <Player*> players, int dmg, int mob) {
 	Packet packet;
 	packet.addHeader(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getPlayerid());
@@ -61,19 +61,19 @@ void PlayersPacket::damagePlayer(Player* player, vector <Player*> players, int d
 	packet.sendTo<Player>(player, players, 1);
 }
 
-void PlayersPacket::showMessage(char* msg, char type){
+void PlayersPacket::showMessage(char* msg, char type) {
 	Packet packet;
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addShort(strlen(msg));
 	packet.addString(msg, strlen(msg));
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
-		 iter != Players::players.end(); iter++){
+		 iter != Players::players.end(); iter++) {
 			 packet.send(iter->second);
 	}
 }
 
-void PlayersPacket::showInfo(Player* player, Player* getinfo){
+void PlayersPacket::showInfo(Player *player, Player* getinfo) {
 	Packet packet;
 	packet.addHeader(SEND_PLAYER_INFO);
 	packet.addInt(getinfo->getPlayerid());
@@ -98,10 +98,10 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, 
 	packet.send(target);
 }
 
-void PlayersPacket::findPlayer(Player* player, const string &name, int map, unsigned char is, bool is_channel){
+void PlayersPacket::findPlayer(Player *player, const string &name, int map, unsigned char is, bool is_channel) {
 	Packet packet;
 	packet.addHeader(SEND_COMMAND_RESPOND);
-	if(map != -1){
+	if (map != -1) {
 		packet.addByte(0x09);
 		packet.addString(name);
 		if (is_channel)
@@ -124,7 +124,7 @@ void PlayersPacket::findPlayer(Player* player, const string &name, int map, unsi
 void PlayersPacket::sendToPlayers(unsigned char *data, int len) {
 	Packet packet;
 	packet.addBuffer(data, len);
-	for(hash_map<int,Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++){
+	for (hash_map<int,Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++) {
 			packet.send(iter->second);
 	}
 }

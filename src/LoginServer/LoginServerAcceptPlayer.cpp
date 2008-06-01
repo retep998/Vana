@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 
 void LoginServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
-	if(!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
+	if (!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
 	switch(packet->getShort()) {
 		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
 	}

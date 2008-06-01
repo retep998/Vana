@@ -45,7 +45,7 @@ public:
 	AbstractServerAcceptPlayer() { is_server = true; }
 	bool processAuth(ReadPacket *packet, const string &pass) {
 		if (packet->getShort() == INTER_PASSWORD) {
-			if(packet->getString() == pass) {
+			if (packet->getString() == pass) {
 				std::cout << "Server successfully authenticated." << std::endl;
 				is_authenticated = true;
 				short iplen = packet->getShort();

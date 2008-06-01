@@ -27,6 +27,7 @@ using namespace stdext;
 
 class Player;
 class Packet;
+class ReadPacket;
 
 struct NPCInfo {
 	int id;
@@ -42,32 +43,32 @@ typedef vector<NPCInfo> NPCsInfo;
 namespace NPCs {
 	extern hash_map <int, NPCsInfo> info;
 	void addNPC(int id, NPCsInfo npc);
-	void handleNPC(Player* player, unsigned char* packet);
-	void handleQuestNPC(Player* player, int npcid, bool start);
-	void showNPCs(Player* player);
-	void handleNPCIn(Player* player, unsigned char* packet);
+	void handleNPC(Player *player, ReadPacket *packet);
+	void handleQuestNPC(Player *player, int npcid, bool start);
+	void showNPCs(Player *player);
+	void handleNPCIn(Player *player, ReadPacket *packet);
 };
 
 class NPC {
 private:
 	int npcid;
-	Player* player;
+	Player *player;
 	char text[1000];	
 	int state;
 	int selected;
 	bool cend;
 	int getnum;
-	char gettext[101];
+	string gettext;
 	bool isquest;
 	bool isstart;
 	hash_map <string, int> vars;
 public:
-	NPC(int npcid, Player* player, bool isquest = 0);
+	NPC(int npcid, Player *player, bool isquest = 0);
 	~NPC();
-	void addText(const char *text){
+	void addText(const char *text) {
 		strcat_s(this->text, strlen(text)+1+strlen(this->text), text);
 	}
-	void addChar(char cha){
+	void addChar(char cha) {
 		char temp[2]={0};
 		temp[0] = cha;
 		addText(temp);
@@ -84,49 +85,49 @@ public:
 	void sendGetText();
 	void sendGetNumber(int def, int min, int max);
 	void sendStyle(int styles[], char size);
-	bool isQuest(){
+	bool isQuest() {
 		return isquest;
 	}
-	bool isStart(){
+	bool isStart() {
 		return isstart;
 	}
-	void setIsStart(bool what){
+	void setIsStart(bool what) {
 		isstart = what;
 	}
-	void setState(int state){
+	void setState(int state) {
 		this->state = state;
 	}
-	int getState(){
+	int getState() {
 		return state;
 	}
-	int getSelected(){
+	int getSelected() {
 		return selected;
 	}
-	void setSelected(int selected){
-		this->selected=selected;
+	void setSelected(int selected) {
+		this->selected = selected;
 	}
-	void setGetNumber(int num){
+	void setGetNumber(int num) {
 		this->getnum = num;
 	}
-	int getNumber(){
+	int getNumber() {
 		return getnum;
 	}
-	void setGetText(char* text){
-		strcpy_s(this->gettext, strlen(text)+1, text);
+	void setGetText(const string &text) {
+		gettext = text;
 	}
-	char* getText(){
+	string & getText() {
 		return gettext;
 	}
-	void end(){
+	void end() {
 		cend=true;
 	}
-	bool isEnd(){
+	bool isEnd() {
 		return cend;
 	}
-	int getNpcID(){
+	int getNpcID() {
 		return npcid;
 	}
-	Player* getPlayer(){
+	Player* getPlayer() {
 		return player;
 	}
 	void showShop();
@@ -134,7 +135,7 @@ public:
 		vars[name] = val;
 	}
 	int getVariable(const string &name) {
-		if(vars.find(name) == vars.end())
+		if (vars.find(name) == vars.end())
 			return 0;
 		else
 			return vars[name];

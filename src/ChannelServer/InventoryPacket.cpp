@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "InterHeader.h"
 
-void InventoryPacket::moveItem(Player* player, char inv, short slot1, short slot2){
+void InventoryPacket::moveItem(Player *player, char inv, short slot1, short slot2) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(1);
@@ -39,7 +39,7 @@ void InventoryPacket::moveItem(Player* player, char inv, short slot1, short slot
 	packet.send(player);
 }
 
-void InventoryPacket::updatePlayer(Player* player) {
+void InventoryPacket::updatePlayer(Player *player) {
 	if (player->skills->getActiveSkillLevel(5101004) > 0)
 		return;
 	Packet packet;
@@ -52,11 +52,11 @@ void InventoryPacket::updatePlayer(Player* player) {
 	packet.addByte(1);
 	packet.addInt(player->getHair());
 	int equips[35][2] = {0};
-	for(int i=0; i<player->inv->getEquipNum(); i++){ //sort equips
+	for (int i=0; i<player->inv->getEquipNum(); i++) { //sort equips
 		Equip* equip = player->inv->getEquip(i);
-		if(equip->pos<0){
-			if(equips[equip->type][0]>0){
-				if(Inventory::isCash(equip->id)){
+		if (equip->pos<0) {
+			if (equips[equip->type][0]>0) {
+				if (Inventory::isCash(equip->id)) {
 					equips[equip->type][1] = equips[equip->type][0];
 					equips[equip->type][0] = equip->id;
 				}
@@ -69,24 +69,24 @@ void InventoryPacket::updatePlayer(Player* player) {
 			}
 		}
 	}
-	for(int i=0; i<35; i++){ //shown items
-		if(equips[i][0]>0){
+	for (int i=0; i<35; i++) { //shown items
+		if (equips[i][0]>0) {
 			packet.addByte(i);
-			if(i == 11 && equips[i][1]>0) // normal weapons always here
+			if (i == 11 && equips[i][1]>0) // normal weapons always here
 				packet.addInt(equips[i][1]);
 			else
 				packet.addInt(equips[i][0]);
 		}
 	}
 	packet.addByte(-1);
-	for(int i=0; i<35; i++){ //covered items
-		if(equips[i][1]>0 && i != 11){
+	for (int i=0; i<35; i++) { //covered items
+		if (equips[i][1]>0 && i != 11) {
 			packet.addByte(i);
 			packet.addInt(equips[i][1]);
 		}
 	}
 	packet.addByte(-1);
-	if(equips[11][1]>0) // cs weapon
+	if (equips[11][1]>0) // cs weapon
 		packet.addInt(equips[11][0]);
 	else
 		packet.addInt(0);
@@ -98,7 +98,7 @@ void InventoryPacket::updatePlayer(Player* player) {
 	packet.sendTo<Player>(player, Maps::info[player->getMap()].Players, 0);
 }
 
-void InventoryPacket::addEquip(Player* player, Equip* equip, bool is){
+void InventoryPacket::addEquip(Player *player, Equip* equip, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(is);
@@ -109,14 +109,14 @@ void InventoryPacket::addEquip(Player* player, Equip* equip, bool is){
 	packet.send(player);
 }
 
-void InventoryPacket::bought(Player* player){
+void InventoryPacket::bought(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_SHOP_BOUGHT);
 	packet.addByte(0);
 	packet.send(player);
 }
 
-void InventoryPacket::addNewItem(Player* player, Item* item, bool is){
+void InventoryPacket::addNewItem(Player *player, Item* item, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(is);
@@ -130,7 +130,7 @@ void InventoryPacket::addNewItem(Player* player, Item* item, bool is){
 	packet.addBytes("8005BB46E61702");
 	packet.addShort(item->amount);
 	packet.addInt(0);
-	if(ISSTAR(item->id)){
+	if (ISSTAR(item->id)) {
 		packet.addInt(2);
 		packet.addShort(0x54);
 		packet.addByte(0);
@@ -138,7 +138,7 @@ void InventoryPacket::addNewItem(Player* player, Item* item, bool is){
 	}
 	packet.send(player);
 }
-void InventoryPacket::addItem(Player* player, Item* item, bool is){
+void InventoryPacket::addItem(Player *player, Item* item, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(is);
@@ -150,7 +150,7 @@ void InventoryPacket::addItem(Player* player, Item* item, bool is){
 	packet.send(player);
 }
 
-void InventoryPacket::moveItemS(Player* player, char inv, short slot, short amount){
+void InventoryPacket::moveItemS(Player *player, char inv, short slot, short amount) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(1);
@@ -162,7 +162,7 @@ void InventoryPacket::moveItemS(Player* player, char inv, short slot, short amou
 	packet.send(player);
 }
 
-void InventoryPacket::moveItemS2(Player* player, char inv, short slot1, short amount1, short slot2, short amount2){
+void InventoryPacket::moveItemS2(Player *player, char inv, short slot1, short amount1, short slot2, short amount2) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(1);
@@ -178,7 +178,7 @@ void InventoryPacket::moveItemS2(Player* player, char inv, short slot1, short am
 	packet.send(player);
 }
 
-void InventoryPacket::sitChair(Player* player, vector <Player*> players, int chairid){
+void InventoryPacket::sitChair(Player *player, vector <Player*> players, int chairid) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
@@ -192,7 +192,7 @@ void InventoryPacket::sitChair(Player* player, vector <Player*> players, int cha
 
 }
 
-void InventoryPacket::stopChair(Player* player, vector <Player*> players){
+void InventoryPacket::stopChair(Player *player, vector <Player*> players) {
 	Packet packet;
 	packet.addHeader(SEND_STOP_CHAIR);
 	packet.addByte(0);
@@ -203,7 +203,7 @@ void InventoryPacket::stopChair(Player* player, vector <Player*> players){
 	packet.addInt(0);
 	packet.sendTo<Player>(player, players, 0);
 }
-void InventoryPacket::useScroll(Player* player, vector <Player*> players, bool succeed, bool destroy, bool legendary_spirit){
+void InventoryPacket::useScroll(Player *player, vector <Player*> players, bool succeed, bool destroy, bool legendary_spirit) {
 	Packet packet;
 	packet.addHeader(SEND_USE_SCROLL);
 	packet.addInt(player->getPlayerid());
@@ -214,7 +214,7 @@ void InventoryPacket::useScroll(Player* player, vector <Player*> players, bool s
 	packet.sendTo<Player>(player, players, 1);
 }
 
-void InventoryPacket::showMegaphone(Player* player, vector <Player*> players, char* msg){
+void InventoryPacket::showMegaphone(Player *player, vector <Player*> players, char* msg) {
 	char fullMessage[255];
 	strcpy_s(fullMessage, 255, player->getName());
 	strcat_s(fullMessage, 255, " : ");
@@ -227,7 +227,7 @@ void InventoryPacket::showMegaphone(Player* player, vector <Player*> players, ch
 	packet.sendTo<Player>(player, players, 1);
 }
 
-void InventoryPacket::showSuperMegaphone(Player* player, char* msg, int whisper){
+void InventoryPacket::showSuperMegaphone(Player *player, char* msg, int whisper) {
 	char fullMessage[255];
 	strcpy_s(fullMessage, 255, player->getName());
 	strcat_s(fullMessage, 255, " : ");
@@ -243,7 +243,7 @@ void InventoryPacket::showSuperMegaphone(Player* player, char* msg, int whisper)
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char* msg3, char* msg4, unsigned char* displayInfo, int displayInfo_size, int itemid){
+void InventoryPacket::showMessenger(Player *player, char* msg, char* msg2, char* msg3, char* msg4, unsigned char* displayInfo, int displayInfo_size, int itemid) {
 	Packet packet;
 	packet.addHeader(INTER_TO_PLAYERS);
 	packet.addHeader(SEND_SHOW_MESSENGER);
@@ -263,7 +263,7 @@ void InventoryPacket::showMessenger(Player* player, char* msg, char* msg2, char*
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 // Use buff item
-void InventoryPacket::useItem(Player* player, vector<Player*> players, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph){ // Test/Beta function, PoC only
+void InventoryPacket::useItem(Player *player, vector<Player*> players, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph) { // Test/Beta function, PoC only
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILL);
 	packet.addByte(types[0]);
@@ -274,13 +274,13 @@ void InventoryPacket::useItem(Player* player, vector<Player*> players, int itemi
 	packet.addByte(types[5]);
 	packet.addByte(types[6]);
 	packet.addByte(types[7]);
-	for(unsigned int i=0; i<vals.size(); i++){
+	for (unsigned int i=0; i<vals.size(); i++) {
 		packet.addShort(vals[i]);
 		packet.addInt(itemid*-1);
 		packet.addInt(time);
 	}
 	packet.addShort(0);
-	if(morph)
+	if (morph)
 		packet.addByte(1);
 	else
 		packet.addByte(0);
@@ -296,14 +296,14 @@ void InventoryPacket::useItem(Player* player, vector<Player*> players, int itemi
 		packet.addByte(types[5]);
 		packet.addByte(types[6]);
 		packet.addByte(types[7]);
-		for(unsigned int i=0; i<vals.size(); i++){
+		for (unsigned int i=0; i<vals.size(); i++) {
 			packet.addShort(vals[i]);
 		}
 		packet.addShort(1);
 		packet.sendTo(player, players, 0);
 	}
 }
-void InventoryPacket::endItem(Player* player, unsigned char types[8]){
+void InventoryPacket::endItem(Player *player, unsigned char types[8]) {
 	Packet packet;
 	packet.addHeader(SEND_CANCEL_SKILL);
 	packet.addByte(types[0]);
@@ -318,7 +318,7 @@ void InventoryPacket::endItem(Player* player, unsigned char types[8]){
 	packet.send(player);
 }
 // Skill Books
-void InventoryPacket::useSkillbook(Player* player, vector <Player*> Players, int skillid, int newMaxLevel, bool use, bool succeed){
+void InventoryPacket::useSkillbook(Player *player, vector <Player*> Players, int skillid, int newMaxLevel, bool use, bool succeed) {
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILLBOOK);
 	packet.addInt(player->getPlayerid());
@@ -330,7 +330,7 @@ void InventoryPacket::useSkillbook(Player* player, vector <Player*> Players, int
 	packet.sendTo(player, Maps::info[player->getMap()].Players, 1);
 }
 
-void InventoryPacket::useItemEffect(Player* player, vector <Player*> players, int itemid){
+void InventoryPacket::useItemEffect(Player *player, vector <Player*> players, int itemid) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_ITEM_EFFECT);
 	packet.addInt(player->getPlayerid());
