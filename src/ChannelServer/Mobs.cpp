@@ -344,6 +344,7 @@ void Mobs::spawnMobPos(int mapid, int mobid, int xx, int yy) {
 	mob->setFH(0);
 	mob->setType(2);
 	mobs[mapid][mobscount] = mob;
+	updateSpawn(mapid, mob);
 	for(unsigned int j=0; j<Maps::info[mapid].Players.size(); j++)
 		MobsPacket::showMob(Maps::info[mapid].Players[j], mob);
 }
