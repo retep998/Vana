@@ -250,7 +250,7 @@ public:
 	auto_ptr<PlayerQuests> quests;
 private:
 	void playerConnect(ReadPacket *packet);
-	void changeKey(ReadPacket *packet);
+	void changeKey(unsigned char *packet);
 
 	bool isconnect;
 	int id;
