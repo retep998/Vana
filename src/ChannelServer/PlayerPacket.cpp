@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 #include "Randomizer.h"
 #include "SendHeader.h"
+#include "KeyMaps.h"
 
 void PlayerPacket::connectData(Player *player) {
 	Packet packet;
@@ -133,13 +134,20 @@ void PlayerPacket::connectData(Player *player) {
 	packet.send(player);
 }
 
-void PlayerPacket::showKeys(Player *player, int keys[90]) {
+void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 	Packet packet;
 	packet.addHeader(SEND_KEYMAP);
 	packet.addByte(0);
-	for (int i=0; i<90; i++) {
-		packet.addInt(keys[i]);
-		packet.addByte(0);
+	for (size_t i = 0; i < KeyMaps::size; i++) {
+		KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i);
+		if (keyMap != 0) {
+			packet.addByte(keyMap->type);
+			packet.addInt(keyMap->action);
+		}
+		else {
+			packet.addByte(0);
+			packet.addInt(0);
+		}
 	}
 	packet.send(player);
 }

@@ -153,9 +153,6 @@ void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet) {
 	query << "INSERT INTO items VALUES (4161001, " << mysqlpp::quote << id << ", 4, 1, 1)"; // Beginner Guide
 	query.exec();
 
-	query << "INSERT INTO keymap (charid) VALUES (" << mysqlpp::quote << id << ")"; // Default keymap
-	query.exec();
-
 	query << "SELECT * FROM characters WHERE id = " << mysqlpp::quote << id << " LIMIT 1";
 	mysqlpp::StoreQueryResult res2 = query.store();
 
