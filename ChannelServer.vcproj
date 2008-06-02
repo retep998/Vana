@@ -206,6 +206,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\KeyMaps.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Levels.cpp"
 					>
 				</File>
@@ -389,6 +393,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Inventory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\KeyMaps.h"
 					>
 				</File>
 				<File

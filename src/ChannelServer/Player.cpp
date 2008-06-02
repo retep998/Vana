@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Connectable.h"
 #include "ReadPacket.h"
 #include "Pos.h"
+#include "KeyMaps.h"
 
 Player::~Player() {
 	if (isconnect) {
@@ -196,11 +197,8 @@ void Player::playerConnect(ReadPacket *packet) {
 		}
 	}
 
-	query << "SELECT * FROM keymap WHERE charid = " << mysqlpp::quote << getPlayerid();
-	res = query.store();
-	for (size_t i=0; i<90; i++) {
-		keys[i] = res[0][i+1];
-	}
+	KeyMaps keyMaps;
+	keyMaps.load(getPlayerid());
 
 	query << "SELECT * FROM character_variables WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
@@ -222,7 +220,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	pos.y = Maps::info[map].Portals[0].y;
 
 	type = 0;
-	PlayerPacket::showKeys(this, keys);
+	PlayerPacket::showKeys(this, &keyMaps);
 	Maps::newMap(this, map);
 
 	setOnline(true);
@@ -316,25 +314,17 @@ void Player::changeKey(ReadPacket *packet) {
 	packet->skipBytes(4);
 	int howmany = packet->getInt();
 	if (howmany == 0) return;
+
+	KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
 	for (int i = 0; i < howmany; i++) {
 		int pos = packet->getInt();
-		int key = packet->getInt();
-		packet->getByte(); // TODO: type then key
-		if (pos >= 0 && pos < 90)
-			keys[pos] = key;
+		char type = packet->getByte();
+		int action = packet->getInt();
+		keyMaps.add(pos, new KeyMaps::KeyMap(type, action));
 	}
 
-	// Update to mysql
-	mysqlpp::Query query = db.query();
-	query << "UPDATE keymap SET ";
-	for (int i=0; i<90; i++) {
-		query << "pos" << mysqlpp::quote << i << "=" << mysqlpp::quote << keys[i];
-		if (i!=89)
-			query << ",";
-		else
-			query << " WHERE charid = " << mysqlpp::quote << getPlayerid();
-	}
-	query.exec();
+	// Update to MySQL
+	keyMaps.save(getPlayerid());
 }
 
 void Player::setHair(int id) {

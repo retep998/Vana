@@ -281,7 +281,6 @@ private:
 	char mappos;
 	char type;
 	int shop;
-	int keys[90];
 	int itemEffect;
 	int chair;
 	int gm;
