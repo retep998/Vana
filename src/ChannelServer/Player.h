@@ -250,7 +250,7 @@ public:
 	auto_ptr<PlayerQuests> quests;
 private:
 	void playerConnect(ReadPacket *packet);
-	void changeKey(unsigned char *packet);
+	void changeKey(ReadPacket *packet);
 
 	bool isconnect;
 	int id;
@@ -281,6 +281,7 @@ private:
 	char mappos;
 	char type;
 	int shop;
+	int keys[90];
 	int itemEffect;
 	int chair;
 	int gm;
