@@ -39,7 +39,6 @@ struct SkillMapEnterActiveInfo;
 class Player : public AbstractPlayer {
 public:
 	Player() : isconnect(false), save_on_dc(true), shop(0), npc(0), chair(0), itemEffect(0) {
-		channel = ChannelServer::Instance()->getChannel();
 		skill.types[0] = 0;
 		skill.types[1] = 0;
 		skill.types[2] = 0;
@@ -63,9 +62,6 @@ public:
 	}
 	char* getName() {
 		return this->name;
-	}
-	int getChannel() {
-		return this->channel;
 	}
 	char getGender() {
 		return this->gender;
@@ -255,7 +251,6 @@ private:
 	bool isconnect;
 	int id;
 	char name[15];
-	int channel;
 	char gender;
 	char skin;
 	int eyes;

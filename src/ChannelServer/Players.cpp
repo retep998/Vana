@@ -497,7 +497,7 @@ void Players::commandHandler(Player *player, unsigned char* packet) {
 	for ( iter = Players::players.begin(); iter != Players::players.end(); iter++) {
 		if (_stricmp(iter->second->getName(), name) == 0) {	
 			if (type == 0x06) {
-				PlayersPacket::whisperPlayer(iter->second, player->getName(), player->getChannel(), chat);
+				PlayersPacket::whisperPlayer(iter->second, player->getName(), ChannelServer::Instance()->getChannel(), chat);
 				PlayersPacket::findPlayer(player,iter->second->getName(),-1,1);
 			}
 			else if (type == 0x05) {
