@@ -150,7 +150,7 @@ void Mobs::dieMob(Player *player, Mob* mob) {
 	Drops::dropMob(player, mob);
 	
 	// Spawn mobs it's supposed to spawn when it dies
-	for (unsigned int i = 0; i < mobinfo[mob->getMapID()].summon.size(); i++) {
+	for (unsigned int i = 0; i < mobinfo[mob->getMobID()].summon.size(); i++) {
 		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY());
 	}
 
