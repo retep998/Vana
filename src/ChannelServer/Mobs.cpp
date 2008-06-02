@@ -33,7 +33,7 @@ hash_map<int, hash_map<int, Mob *>> Mobs::mobs;
 hash_map<int, LoopingId *> Mobs::loopingIds;
 
 void Mob::setControl(Player* control) {
-	if (this == NULL) return;
+	if (this == 0) return;
 	if (this->control != NULL)
 		MobsPacket::endControlMob(this->control, this);
 	this->control = control;
@@ -116,6 +116,7 @@ void Mobs::updateSpawn(int mapid) {
 }
 
 void Mobs::updateSpawn(int mapid, Mob *mob) {
+	if (mob == 0) return;
 	if (Maps::info[mapid].Players.size() > 0 && mob->getControl() == 0) {
 		int maxpos = mob->getPos() - Maps::info[mapid].Players[0]->getPos();
 		int player = 0;
@@ -149,9 +150,9 @@ void Mobs::dieMob(Player *player, Mob* mob) {
 	Levels::giveEXP(player, (mobinfo[mob->getMobID()].exp + ((mobinfo[mob->getMobID()].exp*hsrate)/100)) * 10);
 	Drops::dropMob(player, mob);
 	
-	// Spawn mobs it's supposed to spawn when it dies
+	// Spawn mob(s) the mob is supposed to spawn when it dies
 	for (unsigned int i = 0; i < mobinfo[mob->getMobID()].summon.size(); i++) {
-		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY());
+		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY()-1);
 	}
 
 	player->quests->updateQuestMob(mob->getMobID());
