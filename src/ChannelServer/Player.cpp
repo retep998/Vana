@@ -90,7 +90,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_DROP_MESO: Drops::dropMesos(this ,packet->getBuffer()); break;
 		case RECV_FAME: Fame::handleFame(this, packet->getBuffer()); break;
 		case RECV_GET_QUEST: Quests::getQuest(this, packet->getBuffer()); break;
-		case RECV_KEYMAP: changeKey(packet->getBuffer());
+		case RECV_KEYMAP: changeKey(packet);
 		case RECV_LOOT_ITEM: Drops::lootItem(this, packet->getBuffer()); break;
 		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet->getBuffer(), packet->getBufferLength()); break;
 		case RECV_CONTROL_MOB_SKILL: Mobs::monsterControlSkill(this, packet->getBuffer()); break;
@@ -198,7 +198,6 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	query << "SELECT * FROM keymap WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
-	int keys[90];
 	for (size_t i=0; i<90; i++) {
 		keys[i] = res[0][i+1];
 	}
@@ -313,22 +312,14 @@ void Player::changeChannel(char channel) {
 	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel);
 }
 
-void Player::changeKey(unsigned char *packet) { // ReadPacket class method is currently not working. Reverted for now.
-	//packet->skipBytes(4);
-	//int howmany = packet->getInt();
-	int howmany = BufferUtilities::getInt(packet+4);
+void Player::changeKey(ReadPacket *packet) {
+	packet->skipBytes(4);
+	int howmany = packet->getInt();
 	if (howmany == 0) return;
-	int keys[90];
 	for (int i = 0; i < howmany; i++) {
-		//int pos = packet->getInt();
-		//int key = packet->getInt();
-		//packet->getByte(); // TODO: type then key
-
-		int pos = BufferUtilities::getInt(packet+8+i*9);
-		int key = BufferUtilities::getInt(packet+12+i*9);
-		if(packet[12+i*9] == 0) // TODO 1st type byte, than key int
-			key=0;
-
+		int pos = packet->getInt();
+		int key = packet->getInt();
+		packet->getByte(); // TODO: type then key
 		if (pos >= 0 && pos < 90)
 			keys[pos] = key;
 	}
