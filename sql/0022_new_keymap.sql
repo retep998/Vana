@@ -1,11 +1,8 @@
-DROP TABLE `keymap`;
+DROP TABLE IF EXISTS `keymap`;
 CREATE TABLE `keymap` (
 `charid` INT NOT NULL ,
 `pos` INT NOT NULL ,
 `type` TINYINT UNSIGNED NOT NULL ,
-`action` INT NOT NULL
+`action` INT NOT NULL,
+primary key (`charid`, `pos`)
 );
-ALTER TABLE `keymap` ADD UNIQUE (
-`charid` ,
-`pos`
-) ;
