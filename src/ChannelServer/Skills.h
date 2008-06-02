@@ -92,6 +92,11 @@ struct SkillMapActiveInfo {
 	int skill;
 };
 struct SkillMapEnterActiveInfo {
+	SkillMapEnterActiveInfo() : val(0), isval(false) {
+		for (size_t i = 0; i < 8; i++) {
+			types[i] = 0;
+		}
+	}
 	unsigned char types[8];
 	char val;
 	bool isval;
@@ -195,16 +200,6 @@ public:
 	}
 	SkillMapEnterActiveInfo getSkillMapEnterInfo() {
 		SkillMapEnterActiveInfo skill;
-		skill.types[0] = 0;
-		skill.types[1] = 0;
-		skill.types[2] = 0;
-		skill.types[3] = 0;
-		skill.types[4] = 0;
-		skill.types[5] = 0;
-		skill.types[6] = 0;
-		skill.types[7] = 0;
-		skill.val = 0;
-		skill.isval = false;
 		for (unsigned int i=0; i<activemapenterskill.size(); i++) {
 			 skill.types[activemapenterskill[i].byte-1] += activemapenterskill[i].type;
 			if (activemapenterskill[i].isvalue) {
