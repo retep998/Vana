@@ -53,7 +53,7 @@ Player::~Player() {
 }
 
 void Player::realHandleRequest(ReadPacket *packet) {
-	switch(packet->getShort()) {  
+	switch(packet->getShort()) {
 		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet->getBuffer()); break;
@@ -83,14 +83,14 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_USE_ITEM: Inventory::useItem(this, packet->getBuffer()); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet->getBuffer()); break;
 		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, packet->getBuffer()); break; // Skillbooks
-		case RECV_USE_RETURN_SCROLL: Inventory::useReturnScroll(this, packet->getBuffer()); break; 
+		case RECV_USE_RETURN_SCROLL: Inventory::useReturnScroll(this, packet->getBuffer()); break;
 		case RECV_USE_SCROLL: Inventory::useScroll(this, packet->getBuffer()); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet->getBuffer()); break;
 		case RECV_HEAL_PLAYER: Players::healPlayer(this, packet->getBuffer()); break;
 		case RECV_DROP_MESO: Drops::dropMesos(this ,packet->getBuffer()); break;
 		case RECV_FAME: Fame::handleFame(this, packet->getBuffer()); break;
 		case RECV_GET_QUEST: Quests::getQuest(this, packet->getBuffer()); break;
-		case RECV_KEYMAP: changeKey(packet);
+		case RECV_KEYMAP: changeKey(packet->getBuffer());
 		case RECV_LOOT_ITEM: Drops::lootItem(this, packet->getBuffer()); break;
 		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet->getBuffer(), packet->getBufferLength()); break;
 		case RECV_CONTROL_MOB_SKILL: Mobs::monsterControlSkill(this, packet->getBuffer()); break;
@@ -195,7 +195,7 @@ void Player::playerConnect(ReadPacket *packet) {
 			skills->setMaxSkillLevel(res[i][0], res[i][2]);
 		}
 	}
-	
+
 	query << "SELECT * FROM keymap WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 	int keys[90];
@@ -313,15 +313,22 @@ void Player::changeChannel(char channel) {
 	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel);
 }
 
-void Player::changeKey(ReadPacket *packet) {
-	packet->skipBytes(4);
-	int howmany = packet->getInt();
+void Player::changeKey(unsigned char *packet) { // ReadPacket class method is currently not working. Reverted for now.
+	//packet->skipBytes(4);
+	//int howmany = packet->getInt();
+	int howmany = BufferUtilities::getInt(packet+4);
 	if (howmany == 0) return;
 	int keys[90];
 	for (int i = 0; i < howmany; i++) {
-		int pos = packet->getInt();
-		int key = packet->getInt();
-		packet->getByte(); // TODO: type then key
+		//int pos = packet->getInt();
+		//int key = packet->getInt();
+		//packet->getByte(); // TODO: type then key
+
+		int pos = BufferUtilities::getInt(packet+8+i*9);
+		int key = BufferUtilities::getInt(packet+12+i*9);
+		if(packet[12+i*9] == 0) // TODO 1st type byte, than key int
+			key=0;
+
 		if (pos >= 0 && pos < 90)
 			keys[pos] = key;
 	}
