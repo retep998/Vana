@@ -38,18 +38,7 @@ struct SkillMapEnterActiveInfo;
 
 class Player : public AbstractPlayer {
 public:
-	Player() : isconnect(false), save_on_dc(true), shop(0), npc(0), chair(0), itemEffect(0) {
-		skill.types[0] = 0;
-		skill.types[1] = 0;
-		skill.types[2] = 0;
-		skill.types[3] = 0;
-		skill.types[4] = 0;
-		skill.types[5] = 0;
-		skill.types[6] = 0;
-		skill.types[7] = 0;
-		skill.val = 0;
-		skill.isval = false;
-	}
+	Player() : isconnect(false), save_on_dc(true), shop(0), npc(0), chair(0), itemEffect(0) { }
 
 	~Player();
 
