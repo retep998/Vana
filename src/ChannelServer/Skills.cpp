@@ -522,7 +522,7 @@ void Skills::addSkill(int id, SkillsLevelInfo skill) {
 }
 // Update skills - Primarily for 4th job skills
 void Skills::updateSkill(Player *player, int skillid) {
-	if (player->skills->getSkillLevel(skillid) == 0) {
+	if (player->skills->getSkillLevel(skillid) == player->skills->getMaxSkillLevel(skillid)) {
 		player->skills->addSkillLevel(skillid, 0);
 	}
 }
