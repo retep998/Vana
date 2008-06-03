@@ -105,18 +105,19 @@ void Mobs::checkSpawn(int mapid) {
 void Mobs::showMobs(Player *player) {
 	updateSpawn(player->getMap()); 
 	for (hash_map<int, Mob *>::iterator iter = Mobs::mobs[player->getMap()].begin(); iter != Mobs::mobs[player->getMap()].end(); iter++) {
-		MobsPacket::showMob(player, iter->second);
+		if (iter->second != 0)
+			MobsPacket::showMob(player, iter->second);
 	}
 }
 
 void Mobs::updateSpawn(int mapid) {
 	for (hash_map<int, Mob *>::iterator iter = Mobs::mobs[mapid].begin(); iter != Mobs::mobs[mapid].end(); iter++) {
-		updateSpawn(mapid, iter->second);
+		if (iter->second != 0)
+			updateSpawn(mapid, iter->second);
 	}
 }
 
 void Mobs::updateSpawn(int mapid, Mob *mob) {
-	if (mob == 0) return;
 	if (Maps::info[mapid].Players.size() > 0 && mob->getControl() == 0) {
 		int maxpos = mob->getPos() - Maps::info[mapid].Players[0]->getPos();
 		int player = 0;
