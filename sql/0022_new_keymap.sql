@@ -4,5 +4,5 @@ CREATE TABLE `keymap` (
 `pos` INT NOT NULL ,
 `type` TINYINT UNSIGNED NOT NULL ,
 `action` INT NOT NULL,
-primary key (`charid`, `pos`)
+unique key (`charid`, `pos`)
 );
