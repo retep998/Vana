@@ -27,6 +27,7 @@ public:
 	struct KeyMap;
 
 	KeyMaps();
+	~KeyMaps();
 
 	void add(int pos, KeyMap *map);
 	void defaultMap();
@@ -49,6 +50,12 @@ struct KeyMaps::KeyMap {
 };
 
 inline KeyMaps::KeyMaps() : maxValue(-1) { }
+
+inline KeyMaps::~KeyMaps() {
+	for (hash_map<int, KeyMap *>::iterator iter = keyMaps.begin(); iter != keyMaps.end(); iter++) {
+		delete iter->second;
+	}
+}
 
 inline void KeyMaps::add(int pos, KeyMap *map) {
 	keyMaps[pos] = map;
