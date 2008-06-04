@@ -462,11 +462,11 @@ void Inventory::addNewItem(Player *player, int item, int howmany) {
 void Inventory::takeItem(Player *player, int item, int howmany) {
 	for (int i=0; i<player->inv->getItemNum(); i++)
 		if (player->inv->getItem(i)->id == item) {
-			if (player->inv->getItem(i)->amount>=howmany) {
+			if (player->inv->getItem(i)->amount >= howmany) {
 				Item* item = player->inv->getItem(i);
 				item->amount-=howmany;
 				howmany=0;
-				if (item->amount == 0) {
+				if (item->amount == 0 && !ISSTAR(item->id)) {
 					InventoryPacket::moveItem(player, item->inv, item->pos, 0);
 					player->inv->deleteItem(i);
 				}
@@ -474,10 +474,10 @@ void Inventory::takeItem(Player *player, int item, int howmany) {
 					InventoryPacket::moveItemS(player, item->inv, item->pos, item->amount);
 				break;
 			}
-			else{
+			else if (!ISSTAR(player->inv->getItem(i)->id)) {
 				Item* item = player->inv->getItem(i);
-				howmany-=item->amount;
-				item->amount=0;
+				howmany -= item->amount;
+				item->amount = 0;
 				InventoryPacket::moveItem(player, item->inv, item->pos, 0);
 				player->inv->deleteItem(i);
 			}
@@ -772,7 +772,7 @@ void Inventory::useScroll(Player *player, unsigned char* packet) {
 				for (int i=0; i<player->inv->getEquipNum(); i++) {
 					if (player->inv->getEquip(i)->pos == eslot) {
 						InventoryPacket::moveItem(player, 1, eslot, 0);
-						player->inv->deleteEquip(i);	
+						player->inv->deleteEquip(i);
 						break;
 					}
 				}

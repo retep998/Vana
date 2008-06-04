@@ -377,12 +377,7 @@ void Skills::init() {
 	player.value = SKILL_X;
 	skillsinfo[3101004].player.push_back(player);
 	skillsinfo[3201004].player.push_back(player);
-	map.type = 0x1;
-	map.byte = 3;
-	map.value = SKILL_X;
-	map.val = false;
-	skillsinfo[3101004].map.push_back(map);
-	skillsinfo[3201004].map.push_back(map);
+	// Map value for soul arrow causes DCs. Looking into the proper way to update it
 	// 4101004, 4201003, 5001000, 5101001 - Haste
 	player.type = 0x80;
 	player.byte = 1;
@@ -510,11 +505,28 @@ void Skills::init() {
 	map.value = SKILL_X;
 	map.val = false;
 	skillsinfo[1004].map.push_back(map);
-	// 4111001 Hermit  Meso UP
+	// 4111001 - Meso Up
 	player.type = 0x8;
 	player.byte = 4;
 	player.value = SKILL_X;
 	skillsinfo[4111001].player.push_back(player);
+	// 4121006 - Shadow claw
+	player.type = 0x01;
+	player.byte = 6;
+	player.value = SKILL_X;
+	skillsinfo[4121006].player.push_back(player);
+	// 2121004, 2221004, 2321004 - Infinity
+	player.type = 0x2;
+	player.byte = 6;
+	player.value = SKILL_X;
+	skillsinfo[2121004].player.push_back(player);
+	skillsinfo[2221004].player.push_back(player);
+	skillsinfo[2321004].player.push_back(player);
+	// 1005 - Echo of Hero
+	player.type = 0x1;
+	player.byte = 7;
+	player.value = SKILL_X;
+	skillsinfo[1005].player.push_back(player);
 }
 
 void Skills::addSkill(int id, SkillsLevelInfo skill) {
@@ -553,13 +565,13 @@ void Skills::useSkill(Player *player, unsigned char* packet) {
 		// hacking
 		return;
 	}
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0) {
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0 && !(player->skills->getActiveSkillLevel(2121004) > 0 || player->skills->getActiveSkillLevel(2221004) > 0 || player->skills->getActiveSkillLevel(2321004) > 0)) {
 		if (player->skills->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
 			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp * mprate) / 100;
 			player->setMP(player->getMP() - mploss, 1);
 		}
-		else 
+		else
 			player->setMP(player->getMP() - skills[skillid][player->skills->getSkillLevel(skillid)].mp, 1);
 	}
 	else
@@ -608,26 +620,13 @@ void Skills::useSkill(Player *player, unsigned char* packet) {
 	SkillActiveInfo playerskill;
 	SkillActiveInfo mapskill;
 	vector <SkillMapActiveInfo> mapenterskill;
-	playerskill.types[0] = 0;
-	playerskill.types[1] = 0;
-	playerskill.types[2] = 0;
-	playerskill.types[3] = 0;
-	playerskill.types[4] = 0;
-	playerskill.types[5] = 0;
-	playerskill.types[6] = 0;
-	playerskill.types[7] = 0;
-	mapskill.types[0] = 0;
-	mapskill.types[1] = 0;
-	mapskill.types[2] = 0;
-	mapskill.types[3] = 0;
-	mapskill.types[4] = 0;
-	mapskill.types[5] = 0;
-	mapskill.types[6] = 0;
-	mapskill.types[7] = 0;
+	// Reset player/map types to 0
+	memset(playerskill.types, 0, 8*sizeof(unsigned char));
+	memset(mapskill.types, 0, 8*sizeof(unsigned char));
 	for (unsigned int i=0; i<skillsinfo[skillid].player.size(); i++) {
-		playerskill.types[skillsinfo[skillid].player[i].byte-1]+= skillsinfo[skillid].player[i].type;
+		playerskill.types[skillsinfo[skillid].player[i].byte-1] += skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
-		short value=0;
+		short value = 0;
 		switch(val) {
 			case SKILL_X: value = skills[skillid][level].x; break;
 			case SKILL_Y: value = skills[skillid][level].y; break;
@@ -654,6 +653,15 @@ void Skills::useSkill(Player *player, unsigned char* packet) {
 			int mountid = player->inv->getEquipByPos(-18);
 			if (mountid == 0) return;
 			value = Drops::equips[mountid].tamingmob;
+		}
+		else if (skillid == 4121006) { // For Shadow Claw
+			for (int i = 0; i < player->inv->getItemNum(); i++) {
+				if (ISSTAR(player->inv->getItem(i)->id) && player->inv->getItem(i)->amount >= 200) {
+					Inventory::takeItem(player, player->inv->getItem(i)->id, 200);
+					value = (player->inv->getItem(i)->id % 10000) + 1;
+					break;
+				}
+			}
 		}
 		playerskill.vals.push_back(value);
 	}
@@ -726,7 +734,7 @@ void Skills::useSkill(Player *player, unsigned char* packet) {
 void Skills::useAttackSkill(Player *player, int skillid) {
 	if (skills.find(skillid) == skills.end())
 		return;
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0) {
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0 && !(player->skills->getActiveSkillLevel(2121004) > 0 || player->skills->getActiveSkillLevel(2221004) > 0 || player->skills->getActiveSkillLevel(2321004) > 0)) {
 		if (player->skills->getActiveSkillLevel(3121008)>0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
 			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp*mprate)/100;
