@@ -113,8 +113,7 @@ void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet) {
 	}
 
 	int eyes = packet->getInt();
-	int hair = packet->getInt();
-	packet->skipBytes(4);
+	int hair = packet->getInt() + packet->getInt(); // Hair+hair colour
 	int skin = packet->getInt();
 	packet->skipBytes(16);
 
@@ -150,7 +149,7 @@ void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet) {
 	createEquip(packet->getInt(), 0x07, id);
 	createEquip(packet->getInt(), 0x0b, id);
 
-	query << "INSERT INTO items VALUES (4161001, " << mysqlpp::quote << id << ", 4, 1, 1)"; // Beginner Guide
+	query << "INSERT INTO items VALUES (" << mysqlpp::quote << id << ", 4, 1, 4161001, 1)"; // Beginner Guide
 	query.exec();
 
 	query << "SELECT * FROM characters WHERE id = " << mysqlpp::quote << id << " LIMIT 1";
