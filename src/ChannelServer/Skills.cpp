@@ -541,6 +541,7 @@ void Skills::updateSkill(Player *player, int skillid) {
 }
 
 void Skills::addSkill(Player *player, ReadPacket *packet) {
+	packet->skipBytes(4);
 	int skillid = packet->getInt();
 	if (!BEGINNER_SKILL(skillid) && player->getSp() == 0) {
 		// hacking
@@ -560,6 +561,7 @@ void Skills::stopSkill(Player *player, int skillid) {
 	endSkill(player, skillid);
 }
 void Skills::useSkill(Player *player, ReadPacket *packet) {
+	packet->skipBytes(4);
 	int skillid = packet->getInt();
 	short level = player->skills->getSkillLevel(skillid);
 	if (level == 0) {
