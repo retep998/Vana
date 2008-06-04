@@ -214,50 +214,38 @@ void InventoryPacket::useScroll(Player *player, vector <Player*> players, bool s
 	packet.sendTo<Player>(player, players, 1);
 }
 
-void InventoryPacket::showMegaphone(Player *player, vector <Player*> players, char* msg) {
-	char fullMessage[255];
-	strcpy_s(fullMessage, 255, player->getName());
-	strcat_s(fullMessage, 255, " : ");
-	strcat_s(fullMessage, 255, msg);
+void InventoryPacket::showMegaphone(Player *player, vector <Player*> players, const string & msg) {
+	string fullMessage = string(player->getName()) + " : " + msg;
 	Packet packet;
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(2);
-	packet.addShort(strlen(fullMessage));
-	packet.addString(fullMessage, strlen(fullMessage));
+	packet.addString(fullMessage);
 	packet.sendTo<Player>(player, players, 1);
 }
 
-void InventoryPacket::showSuperMegaphone(Player *player, char* msg, int whisper) {
-	char fullMessage[255];
-	strcpy_s(fullMessage, 255, player->getName());
-	strcat_s(fullMessage, 255, " : ");
-	strcat_s(fullMessage, 255, msg);
+void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, int whisper) {
+	string fullMessage = string(player->getName()) + " : " + msg;
 	Packet packet;
 	packet.addHeader(INTER_TO_PLAYERS);
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(3);
-	packet.addShort(strlen(fullMessage));
-	packet.addString(fullMessage, strlen(fullMessage));
+	packet.addString(fullMessage);
 	packet.addByte(ChannelServer::Instance()->getChannel());
 	packet.addByte(whisper);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void InventoryPacket::showMessenger(Player *player, char* msg, char* msg2, char* msg3, char* msg4, unsigned char* displayInfo, int displayInfo_size, int itemid) {
+void InventoryPacket::showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int displayInfo_size, int itemid) {
 	Packet packet;
 	packet.addHeader(INTER_TO_PLAYERS);
 	packet.addHeader(SEND_SHOW_MESSENGER);
 	packet.addInt(itemid);
 	packet.addShort(strlen(player->getName()));
 	packet.addString(player->getName(), strlen(player->getName()));
-	packet.addShort(strlen(msg));
-	packet.addString(msg, strlen(msg));
-	packet.addShort(strlen(msg2));
-	packet.addString(msg2, strlen(msg2));
-	packet.addShort(strlen(msg3));
-	packet.addString(msg3, strlen(msg3));
-	packet.addShort(strlen(msg4));
-	packet.addString(msg4, strlen(msg4));
+	packet.addString(msg);
+	packet.addString(msg2);
+	packet.addString(msg3);
+	packet.addString(msg4);
 	packet.addInt(ChannelServer::Instance()->getChannel());
 	packet.addBuffer(displayInfo, displayInfo_size);
 	ChannelServer::Instance()->sendToWorld(packet);

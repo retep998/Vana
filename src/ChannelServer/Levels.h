@@ -19,11 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LEVELS_H
 
 class Player;
+class ReadPacket;
 
 namespace Levels {
 	extern int exps[200];
 	void giveEXP(Player *player, long exp, char type=0);
-	void addStat(Player *player, unsigned char* packet);
+	void addStat(Player *player, ReadPacket *packet);
 	void setLevel(Player *player, int level);
 	void setJob(Player *player, int job);
 };

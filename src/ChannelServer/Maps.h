@@ -26,6 +26,7 @@ using namespace stdext;
 
 class Player;
 class MapTimer;
+class ReadPacket;
 
 struct PortalInfo {
 	int id;
@@ -55,8 +56,8 @@ namespace Maps {
 	void startTimer();
 	void addMap(int id, MapInfo map);
 	void addPlayer(Player *player);
-	void moveMap(Player *player, unsigned char* packet);
-	void moveMapS(Player *player, unsigned char* packet);
+	void moveMap(Player *player, ReadPacket *packet);
+	void moveMapS(Player *player, ReadPacket *packet);
 	void removePlayer(Player *player);
 	void changeMap(Player *player, int mapid, int pos);
 	void showClock(Player *player);

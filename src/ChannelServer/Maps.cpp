@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include "LuaPortal.h"
 #include "BufferUtilities.h"
+#include "ReadPacket.h"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -95,23 +96,22 @@ void Maps::removePlayer(Player *player) {
 	Mobs::updateSpawn(player->getMap());
 }
 
-void Maps::moveMap(Player *player, unsigned char* packet) {
-	if (BufferUtilities::getInt(packet+1) == 0) {
+void Maps::moveMap(Player *player, ReadPacket *packet) {
+	packet->skipBytes(1);
+	if (packet->getInt() == 0) { // Dead
 		int tomap;
-		if (info.find(player->getMap())==info.end())
+		if (info.find(player->getMap()) == info.end())
 			tomap = player->getMap();
 		else
 			tomap = info[player->getMap()].rm;
 		player->setHP(50, 0);
-		changeMap(player, tomap, 0); // TODO - Random
+		changeMap(player, tomap, 0);
 		return;
 	}
-	int portalsize = packet[5];
-	char portalname[10];
-	BufferUtilities::getString(packet+7, portalsize, portalname);;   
+	string portalname = packet->getString();
 	PortalInfo portal;
 	for (unsigned int i=0; i<info[player->getMap()].Portals.size(); i++)
-		if (strcmp(info[player->getMap()].Portals[i].from, portalname) == 0) {
+		if (strcmp(info[player->getMap()].Portals[i].from, portalname.c_str()) == 0) {
 			portal = info[player->getMap()].Portals[i];
 			break;
 		}
@@ -127,14 +127,13 @@ void Maps::moveMap(Player *player, unsigned char* packet) {
 	changeMap(player, portal.toid, tonum);
 }
 
-void Maps::moveMapS(Player *player, unsigned char* packet) { // Move to map special
-	char portalname[10];
-	int namelen = packet[1];
-	BufferUtilities::getString(packet+3, namelen, portalname);
+void Maps::moveMapS(Player *player, ReadPacket *packet) { // Move to map special
+	packet->skipBytes(1);
+	string portalname = packet->getString();
 
 	PortalInfo portal;
 	for (unsigned int i=0; i<info[player->getMap()].Portals.size(); i++) {
-		if (strcmp(info[player->getMap()].Portals[i].from, portalname) == 0) {
+		if (strcmp(info[player->getMap()].Portals[i].from, portalname.c_str()) == 0) {
 			portal = info[player->getMap()].Portals[i];
 			break;
 		}

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Randomizer.h"
 #include "BufferUtilities.h"
+#include "ReadPacket.h"
 
 int Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
 	5460, 7050, 8840, 11040, 13716, 16680, 20216, 24402, 28980, 34320, 40512, 47216, 54900,
@@ -113,8 +114,8 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 	}
 }
 
-void Levels::addStat(Player *player, unsigned char* packet) {
-	int type = BufferUtilities::getInt(packet+4);
+void Levels::addStat(Player *player, ReadPacket *packet) {
+	int type = packet->getInt();
 	if (player->getAp() == 0) {
 		// hacking
 		return;
