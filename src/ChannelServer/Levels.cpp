@@ -115,6 +115,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 }
 
 void Levels::addStat(Player *player, ReadPacket *packet) {
+	packet->skipBytes(4);
 	int type = packet->getInt();
 	if (player->getAp() == 0) {
 		// hacking
