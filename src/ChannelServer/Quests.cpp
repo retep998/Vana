@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BufferUtilities.h"
 #include "Randomizer.h"
 #include "TimeUtilities.h"
+#include "ReadPacket.h"
 
 hash_map <int, QuestInfo> Quests::quests;
 
@@ -67,23 +68,25 @@ void Quests::giveMesos(Player *player, int amount) {
 }
 
 
-void Quests::getQuest(Player *player, unsigned char *packet) {
-	short questid = BufferUtilities::getShort(packet+1);
-	int npcid = BufferUtilities::getInt(packet+3);
-	if (packet[0] == 0) {	
-		QuestsPacket::giveItem(player, BufferUtilities::getInt(packet+7), npcid);
-		Inventory::addNewItem(player, BufferUtilities::getInt(packet+7), npcid);
+void Quests::getQuest(Player *player, ReadPacket *packet) {
+	char act = packet->getByte();
+	short questid = packet->getShort();
+	int npcid = packet->getInt();
+	if (act == 0) {	
+		int item = packet->getInt();
+		QuestsPacket::giveItem(player, item, npcid);
+		Inventory::addNewItem(player, item, npcid);
 	}
-	else if (packet[0] == 1) {
+	else if (act == 1) {
 		player->quests->addQuest(questid, npcid);
 	}
-	else if (packet[0] == 2) {
+	else if (act == 2) {
 		player->quests->finishQuest(questid, npcid);
 	}
-	else if (packet[0] == 4) {
+	else if (act == 4) {
 		NPCs::handleQuestNPC(player, npcid, 1);
 	}
-	else if (packet[0] == 5) {
+	else if (act == 5) {
 		NPCs::handleQuestNPC(player, npcid, 0);
 	}
 }

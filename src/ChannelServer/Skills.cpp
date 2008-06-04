@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BufferUtilities.h"
 #include "Randomizer.h"
 #include "Timer.h"
+#include "ReadPacket.h"
 
 hash_map <int, SkillsLevelInfo> Skills::skills;
 hash_map <int, SkillsInfo> Skills::skillsinfo;
@@ -539,8 +540,8 @@ void Skills::updateSkill(Player *player, int skillid) {
 	}
 }
 
-void Skills::addSkill(Player *player, unsigned char* packet) {
-	int skillid = BufferUtilities::getInt(packet+4);
+void Skills::addSkill(Player *player, ReadPacket *packet) {
+	int skillid = packet->getInt();
 	if (!BEGINNER_SKILL(skillid) && player->getSp() == 0) {
 		// hacking
 		return;
@@ -549,8 +550,8 @@ void Skills::addSkill(Player *player, unsigned char* packet) {
 		player->setSp(player->getSp()-1);
 	player->skills->addSkillLevel(skillid, 1);
 }
-void Skills::cancelSkill(Player *player, unsigned char* packet) {
-	stopSkill(player, BufferUtilities::getInt(packet));
+void Skills::cancelSkill(Player *player, ReadPacket *packet) {
+	stopSkill(player, packet->getInt());
 }
 void Skills::stopSkill(Player *player, int skillid) {
 	if (skillid == 3121004 || skillid == 3221001) // Hurricane/Pierce
@@ -558,8 +559,8 @@ void Skills::stopSkill(Player *player, int skillid) {
 	SkillTimer::Instance()->stop(player, skillid);
 	endSkill(player, skillid);
 }
-void Skills::useSkill(Player *player, unsigned char* packet) {
-	int skillid = BufferUtilities::getInt(packet+4);
+void Skills::useSkill(Player *player, ReadPacket *packet) {
+	int skillid = packet->getInt();
 	short level = player->skills->getSkillLevel(skillid);
 	if (level == 0) {
 		// hacking

@@ -72,9 +72,9 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_GET_PLAYER_INFO: Players::getPlayerInfo(this, packet->getBuffer()); break;
 		case RECV_CHANGE_MAP_SPECIAL: Maps::moveMapS(this, packet->getBuffer()); break; // Portals that cause scripted events
 		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet->getBuffer()); break;
-		case RECV_ADD_SKILL: Skills::addSkill(this, packet->getBuffer()); break;
-		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet->getBuffer()); break;
-		case RECV_USE_SKILL: Skills::useSkill(this, packet->getBuffer()); break;
+		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
+		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
+		case RECV_USE_SKILL: Skills::useSkill(this, packet); break;
 		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, packet->getBuffer()); break;
 		case RECV_COMMAND: Players::commandHandler(this, packet->getBuffer()); break;
 		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet->getBuffer()); break;
@@ -89,8 +89,8 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_ADD_STAT: Levels::addStat(this, packet->getBuffer()); break;
 		case RECV_HEAL_PLAYER: Players::healPlayer(this, packet->getBuffer()); break;
 		case RECV_DROP_MESO: Drops::dropMesos(this ,packet->getBuffer()); break;
-		case RECV_FAME: Fame::handleFame(this, packet->getBuffer()); break;
-		case RECV_GET_QUEST: Quests::getQuest(this, packet->getBuffer()); break;
+		case RECV_FAME: Fame::handleFame(this, packet); break;
+		case RECV_GET_QUEST: Quests::getQuest(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet);
 		case RECV_LOOT_ITEM: Drops::lootItem(this, packet->getBuffer()); break;
 		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet->getBuffer(), packet->getBufferLength()); break;

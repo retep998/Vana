@@ -22,9 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 
 class Player;
+class ReadPacket;
 	
 namespace Fame{
-	void handleFame(Player *player, unsigned char* packet);
+	void handleFame(Player *player, ReadPacket *packet);
 	int canFame(Player *player, int to);
 	void addFameLog(int from, int to);
 	bool getLastFameLog(int from);
