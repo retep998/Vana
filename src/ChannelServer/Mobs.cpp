@@ -273,7 +273,7 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 	int hits = packet[1]%0x10;
 	int skillid = BufferUtilities::getInt(packet+2);
 
-	bool s3121004 = (skillid == 3121004 || skillid == 3221001); // Hurricane
+	bool s3121004 = (skillid == 3121004 || skillid == 3221001); // Hurricane/Pierce
 	bool s4121006 = (player->skills->getActiveSkillLevel(4121006) > 0); // Shadow Claw
 
 	if (!s4121006) {
@@ -287,10 +287,10 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 	int damage, mhp;
 	int totalDmg = 0;
 	for (int i = 0; i < howmany; i++) {
-		int mobid = BufferUtilities::getInt(packet+19+4*s4121006+s3121004+i*(22+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(packet+19+4*(s4121006+s3121004)+i*(22+4*(hits-1)));
 		Mob* mob = getMob(mobid, map);
 		for (int k = 0; k < hits; k++) {
-			damage = BufferUtilities::getInt(packet+37+4*s4121006+s3121004+i*(22+4*(hits-1))+k*4);
+			damage = BufferUtilities::getInt(packet+37+4*(s4121006+s3121004)+i*(22+4*(hits-1))+k*4);
 			totalDmg += damage;
 			if (mob != NULL) {
 				mob->setHP(mob->getHP()-damage);
