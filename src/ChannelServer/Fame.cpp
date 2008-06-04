@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 #include "PlayersPacket.h"
 #include "BufferUtilities.h"
+#include "ReadPacket.h"
 
-void Fame::handleFame(Player *player, unsigned char* packet) {
-	int CharID = BufferUtilities::getInt(packet);
-	int FameDefame = 0;
-	FameDefame = BufferUtilities::getInt(packet+4);
+void Fame::handleFame(Player *player, ReadPacket *packet) {
+	int CharID = packet->getInt();
+	int FameDefame = packet->getInt();
 	int NewFame = 0;
 
 	int checkResult = canFame(player,CharID);

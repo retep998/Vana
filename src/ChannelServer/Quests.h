@@ -25,6 +25,7 @@ using namespace std;
 using namespace stdext;
 
 class Player;
+class ReadPacket;
 
 struct QuestRequestInfo {
 	bool ismob;
@@ -80,7 +81,7 @@ namespace Quests {
 	void addRequest(int id, QuestRequestsInfo request);
 	void addReward(int id, QuestRewardsInfo raws);
 	void setNextQuest(int id, int questid);
-	void getQuest(Player *player, unsigned char* packet);
+	void getQuest(Player *player, ReadPacket *packet);
 	void giveItem(Player *player, int itemid, int amount);
 	void giveMesos(Player *player, int amount);
 };

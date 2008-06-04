@@ -28,6 +28,7 @@ using namespace stdext;
 
 class Player;
 class SkillTimer;
+class ReadPacket;
 
 struct SkillLevelInfo {
 	int time;
@@ -117,10 +118,10 @@ namespace Skills {
 	extern hash_map <int, SkillsLevelInfo> skills;
 	extern hash_map <int, SkillsInfo> skillsinfo;
 	void addSkill(int id, SkillsLevelInfo skill);
-	void addSkill(Player *player, unsigned char* packet);
+	void addSkill(Player *player, ReadPacket *packet);
 	void updateSkill(Player *player, int skillid);
-	void cancelSkill(Player *player, unsigned char* packet);
-	void useSkill(Player *player, unsigned char* packet);
+	void cancelSkill(Player *player, ReadPacket *packet);
+	void useSkill(Player *player, ReadPacket *packet);
 	void useAttackSkill(Player *player, int skillid);
 	void stopTimerPlayer(Player *player);
 	void heal(Player *player, short value, int skillid);
