@@ -154,9 +154,9 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Equip* equip = new Equip;
-		equip->id = res[i][0];
-		equip->type = (unsigned char) res[i][1];
-		equip->pos = res[i][3];
+		equip->pos = res[i][1];
+		equip->id = res[i][2];
+		equip->type = (unsigned char) res[i][3];
 		equip->slots = (unsigned char) res[i][4];
 		equip->scrolls = res[i][5];
 		equip->istr = res[i][6];
@@ -177,13 +177,13 @@ void Player::playerConnect(ReadPacket *packet) {
 		inv->addEquip(equip);
 	}
 
-	query << "SELECT itemid, inv, pos, amount FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
+	query << "SELECT inv, pos, itemid, amount FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Item* item = new Item;
-		item->id = res[i][0];
-		item->inv = (unsigned char) res[i][1];
-		item->pos = res[i][2];
+		item->inv = (unsigned char) res[i][0];
+		item->pos = res[i][1];
+		item->id = res[i][2];
 		item->amount = res[i][3];
 		inv->addItem(item);
 	}
@@ -418,10 +418,10 @@ void Player::saveEquips() {
 		else {
 			query << ",(";
 		}
-		query << mysqlpp::quote << inv->getEquip(i)->id << ","
-				<< mysqlpp::quote << (short) Drops::equips[inv->getEquip(i)->id].type << ","
-				<< mysqlpp::quote << getPlayerid() << ","
+		query << mysqlpp::quote << getPlayerid() << ","
 				<< mysqlpp::quote << (short) inv->getEquipPos(i) << ","
+				<< mysqlpp::quote << inv->getEquip(i)->id << ","
+				<< mysqlpp::quote << (short) Drops::equips[inv->getEquip(i)->id].type << ","
 				<< mysqlpp::quote << (short) inv->getEquip(i)->slots << ","
 				<< mysqlpp::quote << inv->getEquip(i)->scrolls << ","
 				<< mysqlpp::quote << inv->getEquip(i)->istr << ","
@@ -457,10 +457,10 @@ void Player::saveItems() {
 		else {
 			query << ",(";
 		}
-		query << mysqlpp::quote << inv->getItem(i)->id << ","
-				<< mysqlpp::quote << getPlayerid() << ","
+		query << mysqlpp::quote << getPlayerid() << ","
 				<< mysqlpp::quote << (short) inv->getItem(i)->inv << ","
 				<< mysqlpp::quote << inv->getItem(i)->pos << ","
+				<< mysqlpp::quote << inv->getItem(i)->id << ","
 				<< mysqlpp::quote << inv->getItem(i)->amount << ")";
 	}
 	query.exec();
