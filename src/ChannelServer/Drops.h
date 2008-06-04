@@ -167,7 +167,7 @@ namespace Drops {
 	extern hash_map <int, FootholdsInfo> foots;
 	extern hash_map <int, int> objids;
 	extern hash_map <int, vector<Drop*>> drops;
-	void addDrop(int id, MobDropsInfo drops);
+	void addDrop(int id, MobDropInfo drop);
 	void addEquip(int id, EquipInfo equip);
 	void addItem(int id, ItemInfo item);
 	void addConsume(int id, ConsumeInfo cons);

@@ -46,6 +46,8 @@ struct SkillLevelInfo {
 	short acc;
 	short avo;
 	short hpP;
+	short prop;
+	int cooltime;
 };
 
 enum {

@@ -39,7 +39,7 @@ bool atob(char *str) {
 // Mobs
 void Initializing::initializeMobs() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
-	mysqlpp::Query query = db.query("SELECT mobdata.id, mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = db.query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -52,32 +52,31 @@ void Initializing::initializeMobs() {
 	MobInfo mob;
 	MYSQL_ROW mobRow;
 	while ((mobRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Mob ID
-		//    2 : HP
-		//    3 : MP
-		//    4 : EXP
-		//    5 : Boss
-		//    6 : HP Color
-		//    7 : HP BG Color
-		//    8 : Mob Summon
-		currentid = atoi(mobRow[1]);
+		// Col0 : Mob ID
+		//    1 : HP
+		//    2 : MP
+		//    3 : EXP
+		//    4 : Boss
+		//    5 : HP Color
+		//    6 : HP BG Color
+		//    7 : Mob Summon
+		currentid = atoi(mobRow[0]);
 
 		if (currentid != previousid && previousid != -1) {
 			Mobs::addMob(previousid, mob);
 			mob.summon.clear();
 		}
-		mob.hp  = atoi(mobRow[2]);
-		mob.mp  = atoi(mobRow[3]);
-		mob.exp = atoi(mobRow[4]);
-		mob.boss = atob(mobRow[5]);
-		mob.hpcolor = atoi(mobRow[6]);
-		mob.hpbgcolor = atoi(mobRow[7]);
+		mob.hp  = atoi(mobRow[1]);
+		mob.mp  = atoi(mobRow[2]);
+		mob.exp = atoi(mobRow[3]);
+		mob.boss = atob(mobRow[4]);
+		mob.hpcolor = atoi(mobRow[5]);
+		mob.hpbgcolor = atoi(mobRow[6]);
 
-		if (mobRow[8] != NULL) {
-			mob.summon.push_back(atoi(mobRow[8]));
+		if (mobRow[7] != NULL) {
+			mob.summon.push_back(atoi(mobRow[7]));
 		}
-		previousid = atoi(mobRow[1]);
+		previousid = atoi(mobRow[0]);
 	}
 	// Add final entry
 	if (previousid != -1) {
@@ -145,98 +144,99 @@ void Initializing::initializeItems() {
 	SummonBag s;
 	MYSQL_ROW itemRow;
 	while ((itemRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Item ID
-		//    2 : Type
-		//    3 : Price
-		//    4 : Slots
-		//    5 : Quest
-		//    6 : Consume
-		//    7 : HP
-		//    8 : MP
-		//    9 : HP Rate
-		//   10 : MP Rate
-		//   11 : Move to
-		//   12 : Time
-		//   13 : Weapon Attack
-		//   14 : Magic Attack
-		//   15 : Avoidability
-		//   16 : Accuracy
-		//   17 : Weapon Defense
-		//   18 : Magic Defense
-		//   19 : Speed
-		//   20 : Jump
-		//   21 : Morph
-		//   22 : Success
-		//   23 : Cursed
-		//   24 : Item STR
-		//   25 : Item DEX
-		//   26 : Item INT
-		//   27 : Item LUK
-		//   28 : Item HP
-		//   29 : Item MP
-		//   30 : Item Weapon Attack
-		//   31 : Item Magic Attack
-		//   32 : Item Weapon Defense
-		//   33 : Item Magic Defense
-		//   34 : Item Accuracy
-		//   35 : Item Avoid
-		//   36 : Item Jump
-		//   37 : Item Speed
-		//   38 : Mob ID
-		//   39 : Chance
-		currentid = atoi(itemRow[1]);
+		// Col0 : Item ID
+		//    1 : Type
+		//    2 : Price
+		//    3 : Slots
+		//    4 : Quest
+		//    5 : Consume
+		//    6 : HP
+		//    7 : MP
+		//    8 : HP Rate
+		//    9 : MP Rate
+		//   10 : Move to
+		//   11 : Time
+		//   12 : Weapon Attack
+		//   13 : Magic Attack
+		//   14 : Avoidability
+		//   15 : Accuracy
+		//   16 : Weapon Defense
+		//   17 : Magic Defense
+		//   18 : Speed
+		//   19 : Jump
+		//   20 : Morph
+		//   21 : Success
+		//   22 : Cursed
+		//   23 : Item STR
+		//   24 : Item DEX
+		//   25 : Item INT
+		//   26 : Item LUK
+		//   27 : Item HP
+		//   28 : Item MP
+		//   29 : Item Weapon Attack
+		//   30 : Item Magic Attack
+		//   31 : Item Weapon Defense
+		//   32 : Item Magic Defense
+		//   33 : Item Accuracy
+		//   34 : Item Avoid
+		//   35 : Item Jump
+		//   36 : Item Speed
+		//   37 : Mob ID
+		//   38 : Chance
+		currentid = atoi(itemRow[0]);
+
 		if (currentid != previousid && previousid != -1) { // Add the items into the cache
 			Drops::addConsume(previousid, cons);
 			Drops::addItem(previousid, item);
 			cons.mobs.clear();
 		}
-		item.type = atoi(itemRow[2]);
-		item.price = atoi(itemRow[3]);
-		item.maxslot = atoi(itemRow[4]);
-		item.quest = atob(itemRow[5]);
-		item.consume = atob(itemRow[6]);
-		cons.hp = atoi(itemRow[7]);
-		cons.mp = atoi(itemRow[8]);
-		cons.hpr = atoi(itemRow[9]);
-		cons.mpr = atoi(itemRow[10]);
-		cons.moveTo = atoi(itemRow[11]);
+		item.type = atoi(itemRow[1]);
+		item.price = atoi(itemRow[2]);
+		item.maxslot = atoi(itemRow[3]);
+		item.quest = atob(itemRow[4]);
+		item.consume = atob(itemRow[5]);
+		cons.hp = atoi(itemRow[6]);
+		cons.mp = atoi(itemRow[7]);
+		cons.hpr = atoi(itemRow[8]);
+		cons.mpr = atoi(itemRow[9]);
+		cons.moveTo = atoi(itemRow[10]);
 		// Buffs
-		cons.time = atoi(itemRow[12]);
-		cons.watk = atoi(itemRow[13]);
-		cons.matk = atoi(itemRow[14]);
-		cons.avo = atoi(itemRow[15]);
-		cons.acc = atoi(itemRow[16]);
-		cons.wdef = atoi(itemRow[17]);
-		cons.mdef = atoi(itemRow[18]);
-		cons.speed = atoi(itemRow[19]);
-		cons.jump = atoi(itemRow[20]);
-		cons.morph = atoi(itemRow[21]);
+		cons.time = atoi(itemRow[11]);
+		cons.watk = atoi(itemRow[12]);
+		cons.matk = atoi(itemRow[13]);
+		cons.avo = atoi(itemRow[14]);
+		cons.acc = atoi(itemRow[15]);
+		cons.wdef = atoi(itemRow[16]);
+		cons.mdef = atoi(itemRow[17]);
+		cons.speed = atoi(itemRow[18]);
+		cons.jump = atoi(itemRow[19]);
+		cons.morph = atoi(itemRow[20]);
 		// Scrolling
-		cons.success = atoi(itemRow[22]);
-		cons.cursed = atoi(itemRow[23]);
-		cons.istr = atoi(itemRow[24]);
-		cons.idex = atoi(itemRow[25]);
-		cons.iint = atoi(itemRow[26]);
-		cons.iluk = atoi(itemRow[27]);
-		cons.ihp = atoi(itemRow[28]);
-		cons.imp = atoi(itemRow[29]);
-		cons.iwatk = atoi(itemRow[30]);
-		cons.imatk = atoi(itemRow[31]);
-		cons.iwdef = atoi(itemRow[32]);
-		cons.imdef = atoi(itemRow[33]);
-		cons.iacc = atoi(itemRow[34]);
-		cons.iavo = atoi(itemRow[35]);
-		cons.ijump = atoi(itemRow[36]);
-		cons.ispeed = atoi(itemRow[37]);
+		cons.success = atoi(itemRow[21]);
+		cons.cursed = atoi(itemRow[22]);
+		cons.istr = atoi(itemRow[23]);
+		cons.idex = atoi(itemRow[24]);
+		cons.iint = atoi(itemRow[25]);
+		cons.iluk = atoi(itemRow[26]);
+		cons.ihp = atoi(itemRow[27]);
+		cons.imp = atoi(itemRow[28]);
+		cons.iwatk = atoi(itemRow[29]);
+		cons.imatk = atoi(itemRow[30]);
+		cons.iwdef = atoi(itemRow[31]);
+		cons.imdef = atoi(itemRow[32]);
+		cons.iacc = atoi(itemRow[33]);
+		cons.iavo = atoi(itemRow[34]);
+		cons.ijump = atoi(itemRow[35]);
+		cons.ispeed = atoi(itemRow[36]);
 		cons.ihand = 0;
 		// Summoning
-		if (itemRow[38] != NULL) {
-			s.mobid = atoi(itemRow[38]);
-			s.chance = atoi(itemRow[39]);
+		if (itemRow[37] != NULL) {
+			s.mobid = atoi(itemRow[37]);
+			s.chance = atoi(itemRow[38]);
 			cons.mobs.push_back(s);
 		}
-		previousid = atoi(itemRow[1]);
+
+		previousid = atoi(itemRow[0]);
 	}
 	// Add the final entry
 	if (previousid != -1) {
@@ -246,7 +246,6 @@ void Initializing::initializeItems() {
 	}
 
 	// Item Skills
-
 	query << "SELECT * FROM itemskilldata ORDER BY itemid ASC";
 	
 	if (!(res = query.use())) {
@@ -256,24 +255,23 @@ void Initializing::initializeItems() {
 
 	MYSQL_ROW itemSkillRow;
 	while ((itemSkillRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Item ID
-		//    2 : Skill ID
-		//    3 : Required Level
-		//    4 : Master Level
+		// Col0 : Item ID
+		//    1 : Skill ID
+		//    2 : Required Level
+		//    3 : Master Level
 		Skillbook skill;
-		skill.skillid = atoi(itemSkillRow[2]);
-		skill.reqlevel = atoi(itemSkillRow[3]);
-		skill.maxlevel = atoi(itemSkillRow[4]);
-		Drops::consumes[atoi(itemSkillRow[1])].skills.push_back(skill);
+		skill.skillid = atoi(itemSkillRow[1]);
+		skill.reqlevel = atoi(itemSkillRow[2]);
+		skill.maxlevel = atoi(itemSkillRow[3]);
+		Drops::consumes[atoi(itemSkillRow[0])].skills.push_back(skill);
 	}
 	std::cout << "DONE" << std::endl;
 }
 // Drops
 void Initializing::initializeDrops() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Drops... ";
-	// Get all the drops
-	mysqlpp::Query query = db.query("SELECT * FROM itemdropdata ORDER BY mobid ASC");
+	// Mob drops
+	mysqlpp::Query query = db.query("SELECT * FROM mobdropdata ORDER BY mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -283,43 +281,32 @@ void Initializing::initializeDrops() {
 
 	int currentid = 0;
 	int previousid = -1;
-	MobDropsInfo drops;
 	MYSQL_ROW dropRow;
 	while ((dropRow = res.fetch_raw_row())) {
-		currentid = atoi(dropRow[1]);
+		// Col0 : Row ID
+		//    1 : Mob ID
+		//    2 : Item ID
+		//    3 : Chance
+		//    4 : Quest
+		//    5 : Mesos?
+		//    6 : Min mesos
+		//    7 : Max mesos
 
-		if (currentid != previousid && previousid != -1) {
-			Drops::addDrop(previousid, drops);
-			drops.clear();
+		if (atob(dropRow[5])) {
+			Mesos mesos;
+			mesos.min = atoi(dropRow[6]);
+			mesos.max = atoi(dropRow[7]);
+			Drops::addMesos(atoi(dropRow[1]), mesos);
 		}
-		MobDropInfo drop;
-		drop.id = atoi(dropRow[2]);
-		drop.chance = atoi(dropRow[3]);
-		drop.quest = atoi(dropRow[4]);
-		drops.push_back(drop);
-
-		previousid = atoi(dropRow[1]);
-	}
-	if (previousid != -1) {
-		Drops::addDrop(previousid, drops);
-		drops.clear();
+		else {
+			MobDropInfo drop;
+			drop.id = atoi(dropRow[2]);
+			drop.chance = atoi(dropRow[3]);
+			drop.quest = atoi(dropRow[4]);
+			Drops::addDrop(atoi(dropRow[1]), drop);
+		}
 	}
 
-	// Mesos
-	query << "SELECT * FROM mesodropdata ORDER BY mobid ASC";
-	
-	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
-		exit(1);
-	}
-	
-	Mesos mesos = Mesos();
-	MYSQL_ROW mesoRow;
-	while ((mesoRow = res.fetch_raw_row())) {
-		mesos.min = atoi(mesoRow[2]);
-		mesos.max = atoi(mesoRow[3]);
-		Drops::addMesos(atoi(mesoRow[1]), mesos);
-	}
 	std::cout << "DONE" << std::endl;
 }
 // Equips
@@ -336,59 +323,58 @@ void Initializing::initializeEquips() {
 	MYSQL_ROW equipRow;
 	while ((equipRow = res.fetch_raw_row())) {
 		EquipInfo equip = EquipInfo();
-		// Col0 : RowID
-		//    1 : EquipID
-		//    2 : Type
-		//    3 : Price
-		//    4 : Slots
-		//    5 : HP
-		//    6 : MP
-		//    7 : STR
-		//    8 : DEX
-		//    9 : INT
-		//   10 : LUK
-		//   11 : WAtk
-		//   12 : WDef
-		//   13 : MAtk
-		//   14 : MDef
-		//   15 : Acc
-		//   16 : Avo
-		//   17 : Jump
-		//   18 : Speed
-		//   19 : Taming Mob
-		//   20 : Cash
-		//   21 : Quest
-		int equipID = atoi(equipRow[1]); // This is the Equip ID
-		equip.type = atoi(equipRow[2]);
-		equip.price = atoi(equipRow[3]);
-		equip.slots = atoi(equipRow[4]);
-		equip.ihp = atoi(equipRow[5]);
-		equip.imp = atoi(equipRow[6]);
-		equip.istr = atoi(equipRow[7]);
-		equip.idex = atoi(equipRow[8]);
-		equip.iint = atoi(equipRow[9]);
-		equip.iluk = atoi(equipRow[10]);
-		equip.iwatk = atoi(equipRow[11]);
-		equip.iwdef = atoi(equipRow[12]);
-		equip.imatk = atoi(equipRow[13]);
-		equip.imdef = atoi(equipRow[14]);
-		equip.iacc = atoi(equipRow[15]);
-		equip.iavo = atoi(equipRow[16]);
-		equip.ijump = atoi(equipRow[17]);
-		equip.ispeed = atoi(equipRow[18]);
-		equip.tamingmob = atoi(equipRow[19]);
-		equip.cash = atob(equipRow[20]);
-		equip.quest = atob(equipRow[21]);
+		// Col0 : EquipID
+		//    1 : Type
+		//    2 : Price
+		//    3 : Slots
+		//    4 : HP
+		//    5 : MP
+		//    6 : STR
+		//    7 : DEX
+		//    8 : INT
+		//    9 : LUK
+		//   10 : WAtk
+		//   11 : WDef
+		//   12 : MAtk
+		//   13 : MDef
+		//   14 : Acc
+		//   15 : Avo
+		//   16 : Jump
+		//   17 : Speed
+		//   18 : Taming Mob
+		//   19 : Cash
+		//   20 : Quest
+		int equipID = atoi(equipRow[0]); // This is the Equip ID
+		equip.type = atoi(equipRow[1]);
+		equip.price = atoi(equipRow[2]);
+		equip.slots = atoi(equipRow[3]);
+		equip.ihp = atoi(equipRow[4]);
+		equip.imp = atoi(equipRow[5]);
+		equip.istr = atoi(equipRow[6]);
+		equip.idex = atoi(equipRow[7]);
+		equip.iint = atoi(equipRow[8]);
+		equip.iluk = atoi(equipRow[9]);
+		equip.iwatk = atoi(equipRow[10]);
+		equip.iwdef = atoi(equipRow[11]);
+		equip.imatk = atoi(equipRow[12]);
+		equip.imdef = atoi(equipRow[13]);
+		equip.iacc = atoi(equipRow[14]);
+		equip.iavo = atoi(equipRow[15]);
+		equip.ijump = atoi(equipRow[16]);
+		equip.ispeed = atoi(equipRow[17]);
+		equip.tamingmob = atoi(equipRow[18]);
+		equip.cash = atob(equipRow[19]);
+		equip.quest = atob(equipRow[20]);
 		equip.ihand = 0;
 		// Add equip to the drops table
-		Drops::addEquip(equipID,equip);
+		Drops::addEquip(equipID, equip);
 	}
 	std::cout << "DONE" << std::endl;
 }
 // Shops
 void Initializing::initializeShops() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
-	mysqlpp::Query query = db.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid, shopitemdata.id ASC");
+	mysqlpp::Query query = db.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -401,27 +387,26 @@ void Initializing::initializeShops() {
 	ShopInfo shop;
 	MYSQL_ROW shopRow;
 	while ((shopRow = res.fetch_raw_row())) {
-		// Col0 : RowID
-		//    1 : shopid
-		//    2 : NPC ID
-		//    3 : Item ID
-		//    4 : Price
-		currentid = atoi(shopRow[1]);
+		// Col0 : Shop ID
+		//    1 : NPC ID
+		//    2 : Item ID
+		//    3 : Price
+		currentid = atoi(shopRow[0]);
 
 		if (currentid != previousid && previousid != -1) {
 			Shops::addShop(previousid, shop);
 			shop.items.clear();
 		}
-		shop.npc = atoi(shopRow[2]);
-		if (shopRow[3] != NULL) {
+		shop.npc = atoi(shopRow[1]);
+		if (shopRow[2] != NULL) {
 			ShopItemInfo item;
-			item.id = atoi(shopRow[3]);
-			item.price = atoi(shopRow[4]);
+			item.id = atoi(shopRow[2]);
+			item.price = atoi(shopRow[3]);
 			shop.items.push_back(item);
 		}
 		else std::cout << "Warning: Shop " << currentid << " does not have any shop items on record.";
 
-		previousid = atoi(shopRow[1]);
+		previousid = atoi(shopRow[0]);
 	}
 	// Add final entry
 	if (previousid != -1) {
@@ -444,10 +429,9 @@ void Initializing::initializeQuests() {
 
 	MYSQL_ROW questRow;
 	while ((questRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Quest ID
-		//    2 : Next Quest ID
-		Quests::setNextQuest(atoi(questRow[1]), atoi(questRow[2]));
+		// Col0 : Quest ID
+		//    1 : Next Quest ID
+		Quests::setNextQuest(atoi(questRow[0]), atoi(questRow[1]));
 	}
 
 	// Quest Requests
@@ -560,54 +544,58 @@ void Initializing::initializeSkills() {
 
 	int currentid = 0;
 	int previousid = -1;
-	SkillsLevelInfo skill;
 	MYSQL_ROW skillRow;
+	SkillsLevelInfo skill;
 	while ((skillRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Skill ID
-		//    2 : Level
-		//    3 : Time
-		//    4 : MP
-		//    5 : HP
-		//    6 : Item
-		//    7 : Item Count
-		//    8 : Value X
-		//	  9 : Value Y
-		//   10 : Speed
-		//   11 : Jump
-		//   12 : Weapon Attack
-		//   13 : Weapon Defense
-		//   14 : Magic Attack
-		//   15 : Magic Defense
-		//   16 : Accuracy
-		//   17 : Avoid
-		//   18 : HPP
-		currentid = atoi(skillRow[1]);
+		// Col0 : Skill ID
+		//    1 : Level
+		//    2 : Time
+		//    3 : MP
+		//    4 : HP
+		//    5 : Item
+		//    6 : Item Count
+		//    7 : Value X
+		//	  8 : Value Y
+		//    9 : Speed
+		//   10 : Jump
+		//   11 : Weapon Attack
+		//   12 : Weapon Defense
+		//   13 : Magic Attack
+		//   14 : Magic Defense
+		//   15 : Accuracy
+		//   16 : Avoid
+		//   17 : HPP
+		//   18 : Prop(% chance)
+		//   19 : Cooldown time
+		currentid = atoi(skillRow[0]);
+
 		if (currentid != previousid && previousid != -1) {
 			Skills::addSkill(previousid, skill);
 			skill.clear();
 		}
 
 		SkillLevelInfo level;
-		level.time = atoi(skillRow[3]);
-		level.mp = atoi(skillRow[4]);
-		level.hp = atoi(skillRow[5]);
-		level.item = atoi(skillRow[6]);
-		level.itemcount = atoi(skillRow[7]);
-		level.x = atoi(skillRow[8]);
-		level.y = atoi(skillRow[9]);
-		level.speed = atoi(skillRow[10]);
-		level.jump = atoi(skillRow[11]);
-		level.watk = atoi(skillRow[12]);
-		level.wdef = atoi(skillRow[13]);
-		level.matk = atoi(skillRow[14]);
-		level.mdef = atoi(skillRow[15]);
-		level.acc = atoi(skillRow[16]);
-		level.avo = atoi(skillRow[17]);
-		level.hpP = atoi(skillRow[18]);
-		skill[atoi(skillRow[2])] = level;
+		level.time = atoi(skillRow[2]);
+		level.mp = atoi(skillRow[3]);
+		level.hp = atoi(skillRow[4]);
+		level.item = atoi(skillRow[5]);
+		level.itemcount = atoi(skillRow[6]);
+		level.x = atoi(skillRow[7]);
+		level.y = atoi(skillRow[8]);
+		level.speed = atoi(skillRow[9]);
+		level.jump = atoi(skillRow[10]);
+		level.watk = atoi(skillRow[11]);
+		level.wdef = atoi(skillRow[12]);
+		level.matk = atoi(skillRow[13]);
+		level.mdef = atoi(skillRow[14]);
+		level.acc = atoi(skillRow[15]);
+		level.avo = atoi(skillRow[16]);
+		level.hpP = atoi(skillRow[17]);
+		level.prop = atoi(skillRow[18]);
+		level.cooltime = atoi(skillRow[19]);
+		skill[atoi(skillRow[1])] = level;
 
-		previousid = atoi(skillRow[1]);
+		previousid = atoi(skillRow[0]);
 	}
 	if (previousid != -1) {
 		Skills::addSkill(previousid, skill);
@@ -633,49 +621,48 @@ void Initializing::initializeMaps() {
 	MapInfo map;
 	MYSQL_ROW mapRow;
 	while ((mapRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Map ID
-		//    2 : Return Map
-		//    3 : Forced Return Map
-		//    4 : Mob Spawn Rate
-		//    5 : Clock
-		//    6 : Ship Interval
-		//    7 : Portal ID
-		//    8 : From
-		//    9 : To
-		//   10 : To ID
-		//   11 : Type
-		//   12 : x
-		//   13 : y
-		//   14 : Script
-		currentid = atoi(mapRow[1]);
+		// Col0 : Map ID
+		//    1 : Return Map
+		//    2 : Forced Return Map
+		//    3 : Mob Spawn Rate
+		//    4 : Clock
+		//    5 : Ship Interval
+		//    6 : Portal ID
+		//    7 : From
+		//    8 : To
+		//    9 : To ID
+		//   10 : Type
+		//   11 : x
+		//   12 : y
+		//   13 : Script
+		currentid = atoi(mapRow[0]);
 
 		if (currentid != previousid) {
 			if (previousid != -1) {
 				Maps::addMap(previousid, map);
 				map.Portals.clear();
 			}
-			map.rm = atoi(mapRow[2]);
-			map.forcedReturn = atoi(mapRow[3]);
-			map.spawnrate = atof(mapRow[4]);
-			map.clock = atob(mapRow[5]);
-			map.shipInterval = atoi(mapRow[6]);
+			map.rm = atoi(mapRow[1]);
+			map.forcedReturn = atoi(mapRow[2]);
+			map.spawnrate = atof(mapRow[3]);
+			map.clock = atob(mapRow[4]);
+			map.shipInterval = atoi(mapRow[2]);
 		}
 		PortalInfo portal;
-		if (mapRow[7] != NULL) {
-			portal.id = atoi(mapRow[7]);
-			strcpy_s(portal.from, mapRow[8]);
-			strcpy_s(portal.to, mapRow[9]);
-			portal.toid = atoi(mapRow[10]);
-			portal.type = atoi(mapRow[11]);
-			portal.x = atoi(mapRow[12]);
-			portal.y = atoi(mapRow[13]);
-			strcpy_s(portal.script, mapRow[14]);
+		if(mapRow[6] != NULL){
+			portal.id = atoi(mapRow[6]);
+			strcpy_s(portal.from, mapRow[7]);
+			strcpy_s(portal.to, mapRow[8]);
+			portal.toid = atoi(mapRow[9]);
+			portal.type = atoi(mapRow[10]);
+			portal.x = atoi(mapRow[11]);
+			portal.y = atoi(mapRow[12]);
+			strcpy_s(portal.script, mapRow[13]);
 			map.Portals.push_back(portal);
 		}
 		else std::cout << "Warning: Map " << currentid << " has no portal data on record.";
 
-		previousid = atoi(mapRow[1]);
+		previousid = atoi(mapRow[0]);
 	}
 	if (previousid != -1) {
 		Maps::addMap(previousid, map);
