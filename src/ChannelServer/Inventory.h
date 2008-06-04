@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Player;
 class ItemTimer;
+class ReadPacket;
 struct Equip;
 struct Item;
 
@@ -33,24 +34,24 @@ namespace Inventory {
 	extern int isCash(int itemid);
 	extern ItemTimer* timer;
 	extern Equip* setEquipStats(Player *player, int equipid);
-	void useShop(Player *player, unsigned char* packet);
-	void itemMove(Player *player, unsigned char* packet);
+	void useShop(Player *player, ReadPacket *packet);
+	void itemMove(Player *player, ReadPacket *packet);
 	void addEquip(Player *player, Equip* equip, bool is=0);
 	void addItem(Player *player, Item* item, bool is=0);
 	void addNewItem(Player *player, int item, int howmany);
 	void takeItem(Player *player, int item, int howmany);
-	void useItem(Player *player, unsigned char* packet);
-	void cancelItem(Player *player, unsigned char* packet);
+	void useItem(Player *player, ReadPacket *packet);
+	void cancelItem(Player *player, ReadPacket *packet);
 	void endItem(Player *player, int itemid);
-	void useSkillbook(Player *player, unsigned char* packet);
+	void useSkillbook(Player *player, ReadPacket *packet);
 	void takeItemSlot(Player *player, short slot, char inv, short amount, bool takeStar = false);
-	void useChair(Player *player, unsigned char* packet);
-	void useItemEffect(Player *player, unsigned char* packet);
-	void stopChair(Player *player, unsigned char* packet);
-	void useSummonBag(Player *player, unsigned char* packet);
-	void useReturnScroll(Player *player, unsigned char* packet);
-	void useScroll(Player *player, unsigned char* packet);
-	void useCashItem(Player *player, unsigned char *packet);
+	void useChair(Player *player, ReadPacket *packet);
+	void useItemEffect(Player *player, ReadPacket *packet);
+	void stopChair(Player *player, ReadPacket *packet);
+	void useSummonBag(Player *player, ReadPacket *packet);
+	void useReturnScroll(Player *player, ReadPacket *packet);
+	void useScroll(Player *player, ReadPacket *packet);
+	void useCashItem(Player *player, ReadPacket *packet);
 };
 
 #endif

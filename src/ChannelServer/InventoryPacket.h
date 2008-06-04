@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INVPACK_H
 
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -41,9 +42,9 @@ namespace InventoryPacket {
 	void endItem(Player *player, unsigned char types[8]);
 	void useSkillbook(Player *player, vector<Player*> players, int skillid, int newMaxLevel, bool use, bool succeed);
 	void useScroll(Player *player, vector <Player*> players, bool succeed, bool destroy, bool legendary_spirit);
-	void showMegaphone(Player *player, vector <Player*> players, char* msg);
-	void showSuperMegaphone(Player *player, char* msg, int whisper = 0);
-	void showMessenger(Player *player, char* msg, char* msg2, char* msg3, char* msg4, unsigned char* displayInfo, int displayInfo_size, int itemid);
+	void showMegaphone(Player *player, vector <Player*> players, const string & msg);
+	void showSuperMegaphone(Player *player, const string & msg, int whisper = 0);
+	void showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int displayInfo_size, int itemid);
 	void useItemEffect(Player *player, vector <Player*> players, int itemid);
 };
 
