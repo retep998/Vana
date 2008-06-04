@@ -148,9 +148,9 @@ void Mobs::dieMob(Player *player, Mob* mob) {
 		hsrate = Skills::skills[5101002][player->skills->getActiveSkillLevel(5101002)].x;
 	}
 
-	Levels::giveEXP(player, (mobinfo[mob->getMobID()].exp + ((mobinfo[mob->getMobID()].exp*hsrate)/100)) * 10);
+	Levels::giveEXP(player, (mobinfo[mob->getMobID()].exp + ((mobinfo[mob->getMobID()].exp*hsrate)/100)) * ChannelServer::Instance()->getExprate());
 	Drops::dropMob(player, mob);
-	
+
 	// Spawn mob(s) the mob is supposed to spawn when it dies
 	for (unsigned int i = 0; i < mobinfo[mob->getMobID()].summon.size(); i++) {
 		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY()-1);

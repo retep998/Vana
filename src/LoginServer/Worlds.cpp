@@ -78,7 +78,7 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 		std::cout << "Assigned world " << (int) worldid << " to World Server." << std::endl;
 	}
 	else {
-		std::cout << "Error: No more world to assign." << std::endl;
+		std::cout << "Error: No more worlds to assign." << std::endl;
 		player->disconnect();
 	}
 	return worldid;
@@ -88,20 +88,28 @@ char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
 	short port;
 	string ip;
+	int exprate = 1;
+	int questexprate = 1;
+	int mesorate = 1;
+	int droprate = 1;
 	for (hash_map <int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->channels.size() < (size_t) iter->second->maxChannels && iter->second->connected) {
 			worldid = iter->second->id;
 			port = iter->second->port;
 			ip = iter->second->ip;
+			exprate = iter->second->exprate;
+			questexprate = iter->second->questexprate;
+			mesorate = iter->second->mesorate;
+			droprate = iter->second->droprate;
 			break;
 		}
 	}
-	LoginServerAcceptPlayerPacket::connectChannel(player, worldid, ip, port);
+	LoginServerAcceptPlayerPacket::connectChannel(player, worldid, ip, port, exprate, questexprate, mesorate, droprate);
 	if (worldid != -1) {
 		std::cout << "Assigning channel server to world server " << (int) worldid << "." << std::endl;
 	}
 	else {
-		std::cout << "Error: No more channel to assign." << std::endl;
+		std::cout << "Error: No more channels to assign." << std::endl;
 	}
 	player->disconnect();
 	return worldid;

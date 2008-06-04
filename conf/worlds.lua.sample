@@ -10,6 +10,11 @@ world0_id = 0;
 --  2 = N
 --  3 = H
 world0_ribbon = 0;
+-- Server rates
+world0_exprate = 1;
+world0_questexprate = 1;
+world0_mesorate = 1;
+world0_droprate = 1;
 -- What port should the world server listen on?
 -- Channels will run on port world port + channel number
 -- i.e. channel one will run on 7101 and channel 2 will run on 7102
@@ -20,4 +25,8 @@ world0_port = 7100;
 -- world1_channels = 1;
 -- world1_id = 1;
 -- world1_ribbon = 2;
+-- world1_exprate = 1;
+-- world1_questexprate = 1;
+-- world1_mesorate = 1;
+-- world1_droprate = 1;
 -- world1_port = 7200;

@@ -28,12 +28,16 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, cha
 	packet.send(player);
 }
 
-void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port) {
+void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port, int exprate, int questexprate, int mesorate, int droprate) {
 	Packet packet;
 	packet.addHeader(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.addByte(worldid);
 	packet.addString(ip);
 	packet.addShort(port);
+	packet.addInt(exprate);
+	packet.addInt(questexprate);
+	packet.addInt(mesorate);
+	packet.addInt(droprate);
 	packet.send(player);
 }
 

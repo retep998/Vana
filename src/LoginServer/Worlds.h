@@ -43,6 +43,11 @@ struct World {
 	string ip;
 	short port;
 	LoginServerAcceptPlayer *player;
+	// Rates
+	int exprate;
+	int questexprate;
+	int mesorate;
+	int droprate;
 };
 
 namespace Worlds {
