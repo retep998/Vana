@@ -151,7 +151,7 @@ void PlayerQuests::finishQuest(short questid, int npcid) {
 	for (unsigned int i=0; i<Quests::quests[questid].rewards.size(); i++) {
 		if (Quests::quests[questid].rewards[i].start) {
 			if (Quests::quests[questid].rewards[i].isexp) {
-				Levels::giveEXP(player, Quests::quests[questid].rewards[i].id, 1);
+				Levels::giveEXP(player, Quests::quests[questid].rewards[i].id * ChannelServer::Instance()->getQuestExprate(), 1);
 			}
 			else if (Quests::quests[questid].rewards[i].isitem) {
 				if (Quests::quests[questid].rewards[i].prop == 0) {

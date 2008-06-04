@@ -42,7 +42,7 @@ void LoginServer::loadConfig() {
 	config.loadFile("conf/worlds.lua");
 	size_t i = 0;
 	while (1) {
-		char buf[16];
+		char buf[25];
 		sprintf_s(buf, "world%d_name", i);
 		if (!config.keyExist(buf))
 			break; //No more worlds
@@ -61,6 +61,18 @@ void LoginServer::loadConfig() {
 
 		sprintf_s(buf, "world%d_port", i);
 		world->port = config.getInt(buf);
+
+		sprintf_s(buf, "world%d_exprate", i);
+		world->exprate = config.getInt(buf);
+
+		sprintf_s(buf, "world%d_questexprate", i);
+		world->questexprate = config.getInt(buf);
+
+		sprintf_s(buf, "world%d_mesorate", i);
+		world->mesorate = config.getInt(buf);
+
+		sprintf_s(buf, "world%d_droprate", i);
+		world->droprate = config.getInt(buf);
 
 		world->connected = false;
 		Worlds::worlds[world->id] = world;

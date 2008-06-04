@@ -115,7 +115,7 @@ void Drops::dropMob(Player *player, Mob* mob) {
 	MobDropsInfo drop = dropsinfo[mob->getMobID()];
 	int d=0;
 	for (unsigned int k=0; k<drop.size(); k++) {
-		if (Randomizer::Instance()->randInt(9999) < drop[k].chance) {
+		if (Randomizer::Instance()->randInt(9999) < drop[k].chance * ChannelServer::Instance()->getDroprate()) {
 			if (drop[k].quest>0) {
 				if (!player->quests->isQuestActive(drop[k].quest))
 					continue;
@@ -223,8 +223,8 @@ void Drops::dropMob(Player *player, Mob* mob) {
 			d++;
 		}
 	}
-	int nm = mesos[mob->getMobID()].min;
-	int xm = mesos[mob->getMobID()].max;
+	int nm = mesos[mob->getMobID()].min * ChannelServer::Instance()->getMesorate();
+	int xm = mesos[mob->getMobID()].max * ChannelServer::Instance()->getMesorate();
 	if (xm > 0 && nm > 0) {
 		Drop* drp = new Drop(player->getMap());
 		int mesos = Randomizer::Instance()->randInt(xm-nm)+nm;

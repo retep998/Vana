@@ -33,6 +33,10 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, R
 		ChannelServer::Instance()->setWorld(worldid);
 		ChannelServer::Instance()->setWorldIp(packet->getString());
 		ChannelServer::Instance()->setWorldPort(packet->getShort());
+		ChannelServer::Instance()->setExprate(packet->getInt());
+		ChannelServer::Instance()->setQuestExprate(packet->getInt());
+		ChannelServer::Instance()->setMesorate(packet->getInt());
+		ChannelServer::Instance()->setDroprate(packet->getInt());
 		std::cout << "Connecting to world " << (int) worldid << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}

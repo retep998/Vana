@@ -68,6 +68,10 @@ void ChannelServer::loadConfig() {
 	world = -1; // Will get from login server
 	port = -1; // Will get from world server
 	channel = -1; // Will get from world server
+	exprate = 1; // Will get from world server
+	questexprate = 1; // Will get from world server
+	mesorate = 1; // Will get from world server
+	droprate = 1; // Will get from world server
 }
 
 void ChannelServer::shutdown() {

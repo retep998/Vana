@@ -26,7 +26,7 @@ class LoginServerAcceptPlayer;
 
 namespace LoginServerAcceptPlayerPacket {
 	void connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan);
-	void connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port);
+	void connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port, int exprate, int questexprate, int mesorate, int droprate);
 	void newPlayer(LoginServerAcceptPlayer *player, int channel, int charid);
 };
 
