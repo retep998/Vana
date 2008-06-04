@@ -206,9 +206,7 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 	int hits = packet[1]%0x10;
 	int map = player->getMap();
 	int skillid = BufferUtilities::getInt(packet+2);
-	bool s4211006 = false;
-	if (skillid == 4211006)
-		s4211006 = true;
+	bool s4211006 = (skillid == 4211006);
 	int totaldmg = 0;
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
@@ -260,9 +258,9 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 	}
 }
 void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
-	int itemid=0;
-	int pos=BufferUtilities::getInt(packet+14);
-	for (int i=0; i<player->inv->getItemNum(); i++) {
+	int itemid = 0;
+	int pos = BufferUtilities::getInt(packet+14);
+	for (int i = 0; i < player->inv->getItemNum(); i++) {
 		if (player->inv->getItem(i)->pos == pos && player->inv->getItem(i)->inv == 2) {
 			itemid = player->inv->getItem(i)->id;
 			break;
@@ -274,24 +272,27 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 	int howmany = packet[1]/0x10;
 	int hits = packet[1]%0x10;
 	int skillid = BufferUtilities::getInt(packet+2);
-	if (skillid == 4111005) // Avenger
-		Inventory::takeItemSlot(player, pos, 2, 3);
-	else
-		Inventory::takeItemSlot(player, pos, 2, hits);
-	bool s3121004 = false;
-	if (skillid == 3121004 || skillid == 3221001)
-		s3121004 = true;
+
+	bool s3121004 = (skillid == 3121004 || skillid == 3221001); // Hurricane
+	bool s4121006 = (player->skills->getActiveSkillLevel(4121006) > 0); // Shadow Claw
+
+	if (!s4121006) {
+		if (skillid == 4111005) // Avenger
+			Inventory::takeItemSlot(player, pos, 2, 3*hits);
+		else
+			Inventory::takeItemSlot(player, pos, 2, hits);
+	}
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	int damage, mhp;
 	int totalDmg = 0;
-	for (int i=0; i<howmany; i++) {
-		int mobid = BufferUtilities::getInt(packet+19+4*s3121004+i*(22+4*(hits-1)));
+	for (int i = 0; i < howmany; i++) {
+		int mobid = BufferUtilities::getInt(packet+19+4*s4121006+s3121004+i*(22+4*(hits-1)));
 		Mob* mob = getMob(mobid, map);
-		for (int k=0; k<hits; k++) {
-			damage = BufferUtilities::getInt(packet+37+4*s3121004+i*(22+4*(hits-1))+k*4);
+		for (int k = 0; k < hits; k++) {
+			damage = BufferUtilities::getInt(packet+37+4*s4121006+s3121004+i*(22+4*(hits-1))+k*4);
 			totalDmg += damage;
-			if (mob!=NULL) {
+			if (mob != NULL) {
 				mob->setHP(mob->getHP()-damage);
 				mhp = mobinfo[mob->getMobID()].hp;
 				// HP Bars
