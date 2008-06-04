@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 hash_map <int, SkillsLevelInfo> Skills::skills;
 hash_map <int, SkillsInfo> Skills::skillsinfo;
 
-#define BEGINNER_SKILL(x) (x<10000)
+#define BEGINNER_SKILL(x) (x<1003)
 
 class SkillTimer: public Timer::TimerHandler {
 public:
