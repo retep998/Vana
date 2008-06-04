@@ -18,7 +18,7 @@ elseif state == 1 then
 	elseif what == 1 then
 		sendStyle(hairs, #hairs);
 	elseif what == 2 then
-		hair = getHair()
+		hair = getHair();
 		cur = hair - hair%10;
 		colors = {cur, cur+1, cur+2, cur+3, cur+4, cur+5, cur+6, cur+7};
 		sendStyle(colors, #colors);
@@ -43,7 +43,9 @@ elseif state == 2 then
 				setStyle(hairs[getSelected()+1]);
 			end
 		elseif what == 2 then
-			setStyle(getHair()/10*10 + getSelected());
+			hair = getHair();
+			cur = hair - hair%10;
+			setStyle(cur + getSelected());
 		elseif what == 3 then
 			setStyle(eyes[getSelected()+1]);
 		elseif what == 4 then
