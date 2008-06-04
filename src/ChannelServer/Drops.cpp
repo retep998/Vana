@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "BufferUtilities.h"
 #include "Pos.h"
-#include <windows.h>
 
 hash_map <int, MobDropsInfo> Drops::dropsinfo;
 hash_map <int, Mesos> Drops::mesos;
@@ -341,8 +340,8 @@ void Drops::lootItem(Player *player, unsigned char*packet) {
 	delete drop;
 }
 
-void Drops::addDrop(int id, MobDropsInfo drops) {
-	dropsinfo[id] = drops;
+void Drops::addDrop(int id, MobDropInfo drop) {
+	dropsinfo[id].push_back(drop);
 }
 void Drops::addEquip(int id, EquipInfo equip) {
 	equips[id] = equip;
