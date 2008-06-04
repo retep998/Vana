@@ -79,6 +79,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMob);
 	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
+	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
 }
 
 void LuaScriptable::run() {
