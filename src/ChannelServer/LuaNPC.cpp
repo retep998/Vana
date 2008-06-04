@@ -42,7 +42,9 @@ LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, p
 	lua_register(luaVm, "getNumber", &LuaExports::getNumber);
 	lua_register(luaVm, "getText", &LuaExports::getText);
 	lua_register(luaVm, "getVariable", &LuaExports::getVariable);
+	lua_register(luaVm, "getMaxSkillLevel", &LuaExports::getMaxSkillLevel);
 	lua_register(luaVm, "setVariable", &LuaExports::setVariable);
+	lua_register(luaVm, "setMaxSkillLevel", &LuaExports::setMaxSkillLevel);
 	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaExports::endQuest);
 	lua_register(luaVm, "endNPC", &LuaExports::endNPC); // end() is reserved.
@@ -147,6 +149,12 @@ int LuaExports::getVariable(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getMaxSkillLevel(lua_State *luaVm) {
+	int skillid = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->skills->getMaxSkillLevel(skillid));
+	return 1;
+}
+
 int LuaExports::setState(lua_State *luaVm) {
 	getNPC(luaVm)->setState(lua_tointeger(luaVm, -1));
 	return 1;
@@ -157,6 +165,13 @@ int LuaExports::setVariable(lua_State *luaVm) {
 	int value = lua_tointeger(luaVm, -1);
 	std::string key = string(lua_tostring(luaVm, -2));
 	getNPC(luaVm)->setVariable(key, value);
+	return 1;
+}
+
+int LuaExports::setMaxSkillLevel(lua_State *luaVm) {
+	int skillid = lua_tointeger(luaVm, -2);
+	int level = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->skills->setMaxSkillLevel(skillid, level);
 	return 1;
 }
 

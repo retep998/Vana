@@ -60,9 +60,11 @@ namespace LuaExports {
 	int getNumber(lua_State *luaVm);
 	int getText(lua_State *luaVm);
 	int getVariable(lua_State *luaVm);
+	int getMaxSkillLevel(lua_State *luaVm);
 
 	int setState(lua_State *luaVm);
 	int setVariable(lua_State *luaVm);
+	int setMaxSkillLevel(lua_State *luaVm);
 
 	int addQuest(lua_State *luaVm);
 	int endQuest(lua_State *luaVm);
