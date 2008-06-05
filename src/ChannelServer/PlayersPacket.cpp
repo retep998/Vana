@@ -48,16 +48,19 @@ void PlayersPacket::showChat(Player *player, vector <Player*> players, char* msg
 	packet.sendTo<Player>(player, players, 1);
 }
 
-void PlayersPacket::damagePlayer(Player *player, vector <Player*> players, int dmg, int mob) {
+void PlayersPacket::damagePlayer(Player *player, vector <Player*> players, int dmg, int mob, unsigned char hit, unsigned char type, int fake) {
 	Packet packet;
 	packet.addHeader(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getPlayerid());
-	packet.addByte(-1);
+	packet.addByte(type);
 	packet.addInt(dmg);
 	packet.addInt(mob);
-	packet.addShort(1);
-	packet.addByte(0);
+	packet.addByte(hit);
+	packet.addShort(0);
 	packet.addInt(dmg);
+	if (fake > 0) {
+		packet.addInt(fake);
+	}
 	packet.sendTo<Player>(player, players, 1);
 }
 
