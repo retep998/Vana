@@ -19,15 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define KEYMAPS_H
 
 #include <hash_map>
+#include <boost/shared_ptr.hpp>
 
 using stdext::hash_map;
+using boost::shared_ptr;
 
 class KeyMaps {
 public:
 	struct KeyMap;
 
 	KeyMaps();
-	~KeyMaps();
 
 	void add(int pos, KeyMap *map);
 	void defaultMap();
@@ -39,7 +40,7 @@ public:
 
 	static const size_t size = 90;
 private:
-	hash_map<int, KeyMap *> keyMaps;
+	hash_map<int, shared_ptr<KeyMap>> keyMaps;
 	int maxValue; // Cache max value
 };
 
@@ -51,14 +52,8 @@ struct KeyMaps::KeyMap {
 
 inline KeyMaps::KeyMaps() : maxValue(-1) { }
 
-inline KeyMaps::~KeyMaps() {
-	for (hash_map<int, KeyMap *>::iterator iter = keyMaps.begin(); iter != keyMaps.end(); iter++) {
-		delete iter->second;
-	}
-}
-
 inline void KeyMaps::add(int pos, KeyMap *map) {
-	keyMaps[pos] = map;
+	keyMaps[pos].reset(map);
 	if (maxValue < pos) {
 		maxValue = pos;
 	}
@@ -66,7 +61,7 @@ inline void KeyMaps::add(int pos, KeyMap *map) {
 
 inline KeyMaps::KeyMap * KeyMaps::getKeyMap(int pos) {
 	if (keyMaps.find(pos) != keyMaps.end()) {
-		return keyMaps[pos];
+		return keyMaps[pos].get();
 	}
 	else {
 		return 0;
