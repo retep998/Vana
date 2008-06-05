@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "MobsPacket.h"
 #include "DropsPacket.h"
+#include "SkillsPacket.h"
 #include "Drops.h"
 #include "Levels.h"
 #include "Quests.h"
@@ -27,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "BufferUtilities.h"
 #include "LoopingId.h"
+#include "Randomizer.h"
+
 hash_map<int, MobInfo> Mobs::mobinfo;
 hash_map<int, SpawnsInfo> Mobs::info;
 hash_map<int, hash_map<int, Mob *>> Mobs::mobs;
@@ -173,6 +176,19 @@ void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 	int hits = packet[1]%0x10;
 	int map = player->getMap();
 	int skillid = BufferUtilities::getInt(packet+2);
+
+	int mpeater = 0;
+	int mpeater_lv = 0;
+	int mpeater_success;
+	int mpeater_x;
+	bool mpeated = false;
+	if (player->getJob()/100 == 2) {
+		mpeater = (player->getJob() / 10) * 100000;
+		mpeater_lv = player->skills->getSkillLevel(mpeater);
+		mpeater_success = Skills::skills[mpeater][mpeater_lv].prop;
+		mpeater_x = Skills::skills[mpeater][mpeater_lv].x;
+	}
+
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	for (int i=0; i<howmany; i++) {
@@ -180,10 +196,25 @@ void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 		Mob* mob = getMob(mobid, map);
 		for (int k=0; k<hits; k++) {
 			int damage = BufferUtilities::getInt(packet+32+i*(22+4*(hits-1))+k*4);
-			if (mob!=NULL) {
-				mob->setHP(mob->getHP()-damage);
-				int mhp=-1;
-				mhp = mobinfo[mob->getMobID()].hp;
+			if (mob != NULL) {
+ 				mob->setHP(mob->getHP()-damage);
+				int mhp = -1;
+ 				mhp = mobinfo[mob->getMobID()].hp;
+				int cmp = -1;
+				cmp = mob->getMP();
+				int mmp = -1;
+				mmp = mobinfo[mob->getMobID()].mp;
+
+				if ((mpeater_lv > 0) && (!mpeated) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < mpeater_success)) {
+					// MP Eater
+					mpeated = true;
+					short mp = mmp * mpeater_x / 100;
+					if (mp > cmp) mp = cmp;
+					mob->setMP(cmp - mp);
+					player->setMP(player->getMP() + mp);
+					SkillsPacket::showMPEater(player, Maps::info[map].Players, mpeater);
+				}
+
 				// HP Bars
 				if (mobinfo[mob->getMobID()].boss && mobinfo[mob->getMobID()].hpcolor > 0) // Boss HP bars
 					MobsPacket::showBossHP(player, Maps::info[map].Players, mob->getMobID(), mob->getHP(), mhp, mobinfo[mob->getMobID()].hpcolor, mobinfo[mob->getMobID()].hpbgcolor);
@@ -197,7 +228,7 @@ void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 				}
 			}
 		}
-	}	
+	}
 }
 
 void Mobs::damageMob(Player *player, unsigned char* packet) {

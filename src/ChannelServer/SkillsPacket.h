@@ -31,6 +31,7 @@ namespace SkillsPacket {
 	void useSkill(Player *player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
 	void endSkill(Player *player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill);
 	void healHP(Player *player, short hp);
+	void showMPEater(Player *player, vector <Player*> players, int skillid);
 };
 
 #endif

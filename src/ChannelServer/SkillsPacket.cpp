@@ -154,3 +154,19 @@ void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time)
     packet.addByte(0);
     packet.sendTo(player, players, 0);
 }
+
+void SkillsPacket::showMPEater(Player *player, vector <Player*> players,int skillid) {
+    Packet packet;
+    packet.addHeader(SEND_GAIN_ITEM);
+	packet.addByte(1);
+	packet.addInt(skillid);
+	packet.addByte(1);
+	packet.send<Player>(player);
+	packet = Packet();
+	packet.addHeader(SEND_SHOW_SKILL);
+	packet.addInt(player->getPlayerid());
+	packet.addByte(1);
+	packet.addInt(skillid);
+	packet.addByte(1);
+	packet.sendTo(player, players, 0);
+}
