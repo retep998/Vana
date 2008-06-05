@@ -414,6 +414,16 @@ void Players::chatHandler(Player *player, unsigned char* packet) {
 void Players::damagePlayer(Player *player, unsigned char* packet) {
 	int damage = BufferUtilities::getInt(packet+5);
 	int mobid = BufferUtilities::getInt(packet+13);
+	unsigned char type = packet[4]; // 0xFF = bump, 0xFE = fall, 0x00-0x0* = mob skill ID
+	int fake = 0;
+	if (damage == -1) { // 0 = regular miss, this = Fake
+		short job = player->getJob() / 10 - 40;
+		if (player->skills->getSkillLevel(4020002 + (job * 100000)) > 0) { fake = 4020002 + (job * 100000); }
+		else {
+			//hacking
+			return;
+		}
+	}
 	Mob *mob = Mobs::mobs[player->getMap()][mobid];
 
 	// Magic Guard
@@ -468,7 +478,7 @@ void Players::damagePlayer(Player *player, unsigned char* packet) {
 		player->setHP(player->getHP()-damage);
 	}
 	if (mob != NULL)
-		PlayersPacket::damagePlayer(player, Maps::info[player->getMap()].Players, damage, mob->getMobID());
+		PlayersPacket::damagePlayer(player, Maps::info[player->getMap()].Players, damage, mob->getMobID(), packet[25], type, fake);
 }
 
 void Players::healPlayer(Player *player, unsigned char* packet) {
