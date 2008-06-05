@@ -74,6 +74,7 @@ namespace LuaExports {
 	int getPlayerVariable(lua_State *luaVm);
 	int getNumPlayers(lua_State *luaVm);
 	int getReactorState(lua_State *luaVm);
+	int getRandomNumber(lua_State *luaVm);
 
 	int killMob(lua_State *luaVm);
 

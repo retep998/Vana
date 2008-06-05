@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Shops.h"
 #include "PlayerPacket.h"
 #include "InventoryPacket.h"
+#include "Randomizer.h"
 
 LuaScriptable::LuaScriptable(const string &filename, int playerid) : filename(filename), playerid(playerid), luaVm(lua_open()) {
 	initialize();
@@ -62,6 +63,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
 	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
+	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
 	lua_register(luaVm, "killMob", &LuaExports::killMob);
 	lua_register(luaVm, "setStyle", &LuaExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaExports::setMap);
@@ -223,6 +225,12 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 		}
 	}
 	lua_pushinteger(luaVm, 0);
+	return 1;
+}
+
+int LuaExports::getRandomNumber(lua_State *luaVm) {
+	int number = lua_tointeger(luaVm, -1);
+	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number-1)+1);
 	return 1;
 }
 
