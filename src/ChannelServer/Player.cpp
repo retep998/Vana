@@ -79,7 +79,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_COMMAND: Players::commandHandler(this, packet->getBuffer()); break;
 		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet->getBuffer()); break;
 		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this, packet->getBuffer()); break;
-		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet->getBuffer()); break;
+		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
 		case RECV_USE_ITEM: Inventory::useItem(this, packet); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;

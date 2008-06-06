@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "BufferUtilities.h"
 #include "Timer.h"
+#include "ReadPacket.h"
+#include "LoopingId.h"
 #include <sys/stat.h>
 #include <iostream>
 #include <sstream>
@@ -102,11 +104,11 @@ vector <ReactionTimer::RTimer> ReactionTimer::timers;
 ReactionTimer *ReactionTimer::singleton = 0;
 // End of ReactionTimer
 
-hash_map <int, vector<ReactorEventInfo>> Reactors::reactorinfo;
-hash_map <int, short> Reactors::maxstates;
-hash_map <int, ReactorSpawnsInfo> Reactors::info;
-hash_map <int, vector<Reactor*>> Reactors::reactors;
-int Reactors::reactorscount = 0x200;
+hash_map<int, vector<ReactorEventInfo>> Reactors::reactorinfo;
+hash_map<int, short> Reactors::maxstates;
+hash_map<int, ReactorSpawnsInfo> Reactors::info;
+hash_map<int, vector<Reactor *>> Reactors::reactors;
+hash_map<int, LoopingId *> Reactors::loopingIds;
 
 void Reactors::addReactorSpawn(int id, ReactorSpawnsInfo reactorspawns) {
 	info[id] = reactorspawns;
@@ -122,12 +124,12 @@ void Reactors::setReactorMaxstates(int id, short state) {
 
 void Reactors::loadReactors() {
 	for (hash_map<int, ReactorSpawnsInfo>::iterator iter = Reactors::info.begin(); iter != Reactors::info.end(); iter++) {
-		for (unsigned int i=0; i<iter->second.size(); i++) {
+		for (size_t i=0; i < iter->second.size(); i++) {
 			Reactor *reactor = new Reactor();
 			Pos pos;
 			pos.x = iter->second[i].x;
 			pos.y = iter->second[i].y;
-			reactor->setID(reactorscount++);
+			reactor->setID(nextReactorId(iter->first));
 			reactor->setReactorID(iter->second[i].id);
 			reactor->setMapID(iter->first);
 			reactor->setPos(pos);
@@ -137,15 +139,15 @@ void Reactors::loadReactors() {
 }
 
 void Reactors::showReactors(Player *player) {
-	for (unsigned int i=0; i<reactors[player->getMap()].size(); i++) {
+	for (size_t i=0; i<reactors[player->getMap()].size(); i++) {
 		if (reactors[player->getMap()][i]->isAlive()) {
 			ReactorPacket::showReactor(player, reactors[player->getMap()][i]);
 		}
 	}
 }
 
-Reactor* Reactors::getReactorByID(int id, int mapid) {
-	for (unsigned int i=0; i<reactors[mapid].size(); i++) {
+Reactor * Reactors::getReactorByID(int id, int mapid) {
+	for (size_t i = 0; i < reactors[mapid].size(); i++) {
 		if (reactors[mapid][i]->getID() == id) {
 			return reactors[mapid][i];
 		}
@@ -153,10 +155,10 @@ Reactor* Reactors::getReactorByID(int id, int mapid) {
 	return NULL;
 }
 
-void Reactors::hitReactor(Player *player, unsigned char *packet) {
-	int id = BufferUtilities::getInt(packet);
+void Reactors::hitReactor(Player *player, ReadPacket *packet) {
+	int id = packet->getInt();
 
-	Reactor* reactor = getReactorByID(id, player->getMap());
+	Reactor *reactor = getReactorByID(id, player->getMap());
 
 	if (reactor != NULL && reactor->isAlive()) {
 		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
@@ -184,7 +186,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 	if (drop->getMesos())
 		return;
 	for (unsigned int i=0; i<reactors[drop->getMap()].size(); i++) {
-		Reactor* reactor = reactors[drop->getMap()][i];
+		Reactor *reactor = reactors[drop->getMap()][i];
 		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
 			ReactorEventInfo revent = reactorinfo[reactor->getReactorID()][reactor->getState()];
 			if (revent.type == 100 && drop->getID() == revent.itemid) {
@@ -205,4 +207,11 @@ void Reactor::setState(int state, bool is) {
 	this->state = state;
 	if (is)
 		ReactorPacket::triggerReactor(Maps::info[this->getMapID()].Players, this);
+}
+
+inline int Reactors::nextReactorId(int mapid) {
+	if (loopingIds.find(mapid) == loopingIds.end()) {
+		loopingIds[mapid] = new LoopingId(100);
+	}
+	return loopingIds[mapid]->next();
 }
