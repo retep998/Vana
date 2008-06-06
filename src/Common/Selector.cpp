@@ -68,34 +68,29 @@ void Selector::selectThread() {
     fd_set t_writefds;
 	fd_set t_errorfds;
 	while (!terminate) {
-		try {
-			t_readfds = readfds;
-			t_writefds = writefds;
-			t_errorfds = errorfds;
-			int result = select(0, &t_readfds, &t_writefds, &t_errorfds, &timeout);
-			if (result == 0) continue;
-			for (hash_map<int,SelectHandler*>::iterator iter = handlers.begin(); iter != handlers.end(); iter++) {
-				int socket = iter->first;
-				SelectHandler *handler = iter->second;
-				if (FD_ISSET(socket, &t_errorfds)) {
-					handler->handle(socket);
-				}
-				if (FD_ISSET(socket, &t_readfds)) {
-					handler->handle(socket);
-				}
-				if (FD_ISSET(socket, &t_writefds)) {
-					handler->handle(socket);
-				}
-				if (handler->getDestroy()) {
-					unregisterSocket(socket);
-					closesocket(socket);
-					delete handler;
-					break;
-				}
+		t_readfds = readfds;
+		t_writefds = writefds;
+		t_errorfds = errorfds;
+		int result = select(0, &t_readfds, &t_writefds, &t_errorfds, &timeout);
+		if (result == 0) continue;
+		for (hash_map<int, SelectHandler *>::iterator iter = handlers.begin(); iter != handlers.end(); iter++) {
+			int socket = iter->first;
+			SelectHandler *handler = iter->second;
+			if (FD_ISSET(socket, &t_errorfds)) {
+				handler->handle(socket);
 			}
-		}
-		catch (...) {
-			// TODO error
+			if (FD_ISSET(socket, &t_readfds)) {
+				handler->handle(socket);
+			}
+			if (FD_ISSET(socket, &t_writefds)) {
+				handler->handle(socket);
+			}
+			if (handler->getDestroy()) {
+				unregisterSocket(socket);
+				closesocket(socket);
+				delete handler;
+				break;
+			}
 		}
 	}
 }
