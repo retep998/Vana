@@ -16,7 +16,7 @@ if state == 0 then
 		addText("You have a #bGachapon Ticket#k. Would you like to use it?");
 		sendYesNo();
 	else
-		addText("Here lies the Gachapon...");
+		addText("Here's Gachapon.");
 		sendOK();
 		endNPC();
 	end
