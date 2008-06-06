@@ -91,40 +91,35 @@ Timer::OneTimer * Timer::getTimer(int id) {
 
 void Timer::timerThread() {
 	while (!terminate) {
-		try {
-			// Find minimum wakeup time
-			OneTimer *minTimer = findMin();
-			long msec = (minTimer == NULL) ? msec = 1000000000 : minTimer->t - clock();
-			if (msec <= 0) {
-				minTimer->handler->handle(this, minTimer->id);
-				if (minTimer->persistent) {
-					minTimer->reset();
-				}
-				else {
-					remove(minTimer->id);
-					delete minTimer;
-				}
-				continue;
+		// Find minimum wakeup time
+		OneTimer *minTimer = findMin();
+		long msec = (minTimer == NULL) ? msec = 1000000000 : minTimer->t - clock();
+		if (msec <= 0) {
+			minTimer->handler->handle(this, minTimer->id);
+			if (minTimer->persistent) {
+				minTimer->reset();
 			}
-			DWORD r = WaitForSingleObject(timerEvent, msec);
-			if (r == WAIT_OBJECT_0) continue;
-			if (r == WAIT_FAILED) {
-				// TODO: write message
-				return;
+			else {
+				remove(minTimer->id);
+				delete minTimer;
 			}
-			if (minTimer != NULL) {
-				minTimer->handler->handle(this, minTimer->id);
-				if (minTimer->persistent) {
-					minTimer->reset();
-				}
-				else {
-					remove(minTimer->id);
-					delete minTimer;
-				}
-			}
+			continue;
 		}
-		catch (...) {
-			// TODO error
+		DWORD r = WaitForSingleObject(timerEvent, msec);
+		if (r == WAIT_OBJECT_0) continue;
+		if (r == WAIT_FAILED) {
+			// TODO: write message
+			return;
+		}
+		if (minTimer != NULL) {
+			minTimer->handler->handle(this, minTimer->id);
+			if (minTimer->persistent) {
+				minTimer->reset();
+			}
+			else {
+				remove(minTimer->id);
+				delete minTimer;
+			}
 		}
 	}
 }
