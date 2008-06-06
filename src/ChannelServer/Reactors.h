@@ -28,10 +28,12 @@ using namespace stdext;
 #include "Player.h"
 #include "Drops.h"
 
+class LoopingId;
 class Player;
 class Drop;
 class Reactor;
 class ReactionTimer;
+class ReadPacket;
 
 struct ReactorSpawnInfo {
 	int id;
@@ -53,28 +55,26 @@ struct ReactorEventInfo {
 typedef vector<ReactorEventInfo> ReactorEventsInfo;
 
 namespace Reactors {
-	extern hash_map <int, ReactorEventsInfo> reactorinfo;
-	extern hash_map <int, short> maxstates;
-	extern hash_map <int, ReactorSpawnsInfo> info;
-	extern hash_map <int, vector<Reactor*>> reactors;
-	extern int reactorscount;
+	extern hash_map<int, ReactorEventsInfo> reactorinfo;
+	extern hash_map<int, short> maxstates;
+	extern hash_map<int, ReactorSpawnsInfo> info;
+	extern hash_map<int, vector<Reactor *>> reactors;
+	extern hash_map<int, LoopingId *> loopingIds;
 	void addReactorSpawn(int id, ReactorSpawnsInfo reactor);
 	void addReactorEventInfo(int id, ReactorEventInfo revent);
 	void setReactorMaxstates(int id, short state);
 	void loadReactors();
 	void showReactors(Player *player);
-	void hitReactor(Player *player, unsigned char *packet);
+	void hitReactor(Player *player, ReadPacket *packet);
 	void checkDrop(Player *player, Drop *drop);
 	void checkLoot(Drop *drop);
-	Reactor* getReactorByID(int id, int mapid);
+	Reactor * getReactorByID(int id, int mapid);
+	int nextReactorId(int mapid);
 };
 
 class Reactor {
 public:
-	Reactor () {
-		alive = true;
-		state = 0;
-	}
+	Reactor () : alive(true), state(0) { }
 	void kill() {
 		this->alive = false;
 	}
