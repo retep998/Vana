@@ -88,11 +88,11 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_USE_SCROLL: Inventory::useScroll(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
 		case RECV_HEAL_PLAYER: Players::healPlayer(this, packet->getBuffer()); break;
-		case RECV_DROP_MESO: Drops::dropMesos(this ,packet->getBuffer()); break;
+		case RECV_DROP_MESO: Drops::dropMesos(this, packet); break;
 		case RECV_FAME: Fame::handleFame(this, packet); break;
 		case RECV_GET_QUEST: Quests::getQuest(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet);
-		case RECV_LOOT_ITEM: Drops::lootItem(this, packet->getBuffer()); break;
+		case RECV_LOOT_ITEM: Drops::lootItem(this, packet); break;
 		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet->getBuffer(), packet->getBufferLength()); break;
 		case RECV_CONTROL_MOB_SKILL: Mobs::monsterControlSkill(this, packet->getBuffer()); break;
 	}

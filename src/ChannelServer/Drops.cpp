@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "BufferUtilities.h"
 #include "Pos.h"
+#include "ReadPacket.h"
 
 hash_map <int, MobDropsInfo> Drops::dropsinfo;
 hash_map <int, Mesos> Drops::mesos;
@@ -259,8 +260,9 @@ void Drops::showDrops(Player *player) {
 	}
 }
 
-void Drops::lootItem(Player *player, unsigned char*packet) {
-	int itemid = BufferUtilities::getInt(packet+9);
+void Drops::lootItem(Player *player, ReadPacket *packet) {
+	packet->skipBytes(9);
+	int itemid = packet->getInt();
 	Drop* drop = Drop::getDrop(itemid, player->getMap());
 	if (drop == NULL) {
 		DropsPacket::dontTake(player);
@@ -361,8 +363,9 @@ void Drops::addFoothold(int id, FootholdInfo foot) {
 	foots[id].push_back(foot);
 }
 
-void Drops::dropMesos(Player *player, unsigned char* packet) {
-	int amount = BufferUtilities::getInt(packet+4);
+void Drops::dropMesos(Player *player, ReadPacket *packet) {
+	packet->skipBytes(4);
+	int amount = packet->getInt();
 	if (amount < 10 || amount >50000) {
 		// hacking
 		return;
