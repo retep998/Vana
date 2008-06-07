@@ -29,6 +29,7 @@ using namespace stdext;
 
 class Player;
 class Mob;
+class ReadPacket;
 
 struct Dropped {
 	int id;
@@ -173,8 +174,8 @@ namespace Drops {
 	void addConsume(int id, ConsumeInfo cons);
 	void addMesos(int id, Mesos meso);
 	void addFoothold(int id, FootholdInfo foot);
-	void dropMesos(Player *player, unsigned char* packet);
-	void lootItem(Player *player, unsigned char* packet);
+	void dropMesos(Player *player, ReadPacket *packet);
+	void lootItem(Player *player, ReadPacket *packet);
 	void dropMob(Player *player, Mob* mob);
 	void showDrops(Player *player);
 	Pos findFloor(Pos pos, int map);
