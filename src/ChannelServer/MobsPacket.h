@@ -26,7 +26,8 @@ namespace MobsPacket {
 	void endControlMob(Player *player, Mob* mob);
 	void spawnMob(Player *player, Mob* mob, vector <Player*> players, bool isspawn);
 	void showMob(Player *player, Mob* mob);
-	void moveMob(Player *player, Mob* mob ,vector <Player*> players, unsigned char* pack, int pla);
+	void moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp);
+	void moveMob(Player *player, vector <Player*> players, int mobid, bool useskill, int skill, unsigned char *buf, int len);
 	void damageMob(Player *player, vector <Player*> players, unsigned char* pack);
 	void showHP(Player *player, int mobid, char per);
 	void showMinibossHP(Player *player, vector <Player*> players, int mobid, char per); // For minor bosses

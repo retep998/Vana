@@ -81,21 +81,24 @@ void MobsPacket::showMob(Player *player, Mob* mob) {
 	packet.send(player);
 }
 
-void MobsPacket::moveMob(Player *player, Mob* mob ,vector <Player*> players, unsigned char* pack, int pla) {
+void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_MOB2);
-	packet.addInt(mob->getID());
-	packet.addShort(BufferUtilities::getShort(pack+4));
-	packet.addByte(1);
-	packet.addInt(mob->getMP());
+	packet.addInt(mobid);
+	packet.addShort(moveid);
+	packet.addByte(useskill);
+	packet.addInt(mp);
 	packet.send(player);
-	packet = Packet();
+}
+
+void MobsPacket::moveMob(Player *player, vector <Player*> players, int mobid, bool useskill, int skill, unsigned char *buf, int len) {
+	Packet packet;
 	packet.addHeader(SEND_MOVE_MOB);
-	packet.addInt(mob->getID());
-	packet.addByte(1);
-	packet.addInt(BufferUtilities::getShort(pack+7));
+	packet.addInt(mobid);
+	packet.addByte(useskill);
+	packet.addInt(skill);
 	packet.addByte(0);
-	packet.addBuffer(pack+17, pla-17);
+	packet.addBuffer(buf, len);
 	packet.sendTo<Player>(player, players, 0);
 }
 
