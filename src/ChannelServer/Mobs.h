@@ -29,6 +29,7 @@ using namespace stdext;
 class Player;
 class Mob;
 class LoopingId;
+class ReadPacket;
 
 struct SpawnInfo {
 	int id;
@@ -61,7 +62,7 @@ namespace Mobs {
 	void damageMob(Player *player, unsigned char* packet);
 	void damageMobRanged(Player *player, unsigned char* packet, int size);
 	void damageMobSpell(Player *player, unsigned char* packet);
-	void monsterControl(Player *player, unsigned char* packet, int size);
+	void monsterControl(Player *player, ReadPacket* packet);
 	void checkSpawn(int mapid);
 	void showMobs(Player *player);
 	void updateSpawn(int mapid);

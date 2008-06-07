@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BufferUtilities.h"
 #include "LoopingId.h"
 #include "Randomizer.h"
+#include "ReadPacket.h"
 
 hash_map<int, MobInfo> Mobs::mobinfo;
 hash_map<int, SpawnsInfo> Mobs::info;
@@ -44,22 +45,39 @@ void Mob::setControl(Player* control) {
 		MobsPacket::controlMob(control, this);
 }
 
-void Mobs::monsterControl(Player *player, unsigned char* packet, int size) {
-	int mobid = BufferUtilities::getInt(packet);
+void Mobs::monsterControl(Player *player, ReadPacket* packet) {
+	int mobid = packet->getInt();
+
 	Mob *mob = getMob(mobid, player->getMap());
-	if (mob == NULL)
+
+	if (mob == NULL || mob->getControl() != player) {
 		return;	
-	if (mob->getControl() == player) {
-		Pos cpos;
-		cpos.x = BufferUtilities::getShort(packet+size-4);
-		cpos.y = BufferUtilities::getShort(packet+size-2);
-		if (cpos - mob->getPos() > 300) {
-			if (player->addWarning()) return;
-		}
-		mob->setPos(cpos);
-		mob->setType(packet[size-12]);
-		MobsPacket::moveMob(player, mob, Maps::info[player->getMap()].Players, packet, size);
 	}
+
+	short moveid = packet->getShort();
+	bool useskill = (packet->getByte() != 0);
+	int skill = packet->getInt();
+	
+	packet->reset();
+	packet->skipBytes(packet->getBufferLength()-12);
+	char type = packet->getByte();
+
+	packet->reset();
+	packet->skipBytes(packet->getBufferLength()-4);
+
+	Pos cpos;
+	cpos.x = packet->getShort();
+	cpos.y = packet->getShort();
+	if (cpos - mob->getPos() > 300) {
+		if (player->addWarning()) return;
+	}
+	mob->setPos(cpos);
+	mob->setType(type);
+
+	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMP());
+	packet->reset();
+	packet->skipBytes(17);
+	MobsPacket::moveMob(player, Maps::info[player->getMap()].Players, mobid, useskill, skill, packet->getBuffer(), packet->getBufferLength());
 }
 
 void Mobs::addMob(int id, MobInfo mob) {
