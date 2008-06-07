@@ -45,7 +45,7 @@ void Mob::setControl(Player* control) {
 		MobsPacket::controlMob(control, this);
 }
 
-void Mobs::monsterControl(Player *player, ReadPacket* packet) {
+void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 	int mobid = packet->getInt();
 
 	Mob *mob = getMob(mobid, player->getMap());
@@ -76,7 +76,7 @@ void Mobs::monsterControl(Player *player, ReadPacket* packet) {
 
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMP());
 	packet->reset();
-	packet->skipBytes(17);
+	packet->skipBytes(19);
 	MobsPacket::moveMob(player, Maps::info[player->getMap()].Players, mobid, useskill, skill, packet->getBuffer(), packet->getBufferLength());
 }
 
