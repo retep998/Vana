@@ -62,7 +62,6 @@ namespace Mobs {
 	void damageMobRanged(Player *player, unsigned char* packet, int size);
 	void damageMobSpell(Player *player, unsigned char* packet);
 	void monsterControl(Player *player, unsigned char* packet, int size);
-	void monsterControlSkill(Player *player, unsigned char* packet);
 	void checkSpawn(int mapid);
 	void showMobs(Player *player);
 	void updateSpawn(int mapid);

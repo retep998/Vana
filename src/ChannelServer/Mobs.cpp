@@ -70,10 +70,6 @@ void Mobs::addSpawn(int id, SpawnsInfo spawns) {
 	info[id] = spawns;
 }
 
-void Mobs::monsterControlSkill(Player *player, unsigned char* packet) {
-	//TODO
-}
-
 void Mobs::checkSpawn(int mapid) {
 	for (size_t i = 0; i < info[mapid].size(); i++) {
 		// (Re-)spawn Mobs
