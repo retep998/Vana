@@ -198,7 +198,7 @@ void Skills::init() {
 	//Booster
 	player.type = 0x08;
 	player.byte = 2;
-	player.value = SKILL_X;;
+	player.value = SKILL_X;
 	//
 	skillsinfo[1101004].player.push_back(player); // Sword Booster
 	skillsinfo[1101005].player.push_back(player); // Axe Booster
@@ -512,7 +512,7 @@ void Skills::init() {
 	player.value = SKILL_X;
 	skillsinfo[4111001].player.push_back(player);
 	// 4121006 - Shadow claw
-	player.type = 0x01;
+	player.type = 0x1;
 	player.byte = 6;
 	player.value = SKILL_X;
 	skillsinfo[4121006].player.push_back(player);
@@ -528,6 +528,13 @@ void Skills::init() {
 	player.byte = 7;
 	player.value = SKILL_X;
 	skillsinfo[1005].player.push_back(player);
+	// Stance - 1121002, 1221002, and 1321002
+	player.type = 0x10;
+	player.byte = 5;
+	player.value = SKILL_PROP;
+	skillsinfo[1121002].player.push_back(player);
+	skillsinfo[1221002].player.push_back(player);
+	skillsinfo[1321002].player.push_back(player);
 }
 
 void Skills::addSkill(int id, SkillsLevelInfo skill) {
@@ -639,6 +646,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_MDEF: value = skills[skillid][level].mdef; break;
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
+			case SKILL_PROP: value = skills[skillid][level].prop; printf("Value: %i\n", value); break;
 		}
 		if (skillid == 3121002 || skillid == 3221002) { // For Sharp Eyes
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
@@ -681,6 +689,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_MDEF: value = skills[skillid][level].mdef; break;
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
+			case SKILL_PROP: value = skills[skillid][level].prop; break;
 		}
 		if (skillid == 4111002) { // For Shadow Partner
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
@@ -723,6 +732,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_MDEF: value = skills[skillid][level].mdef; break;
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
+			case SKILL_PROP: value = skills[skillid][level].prop; break;
 		}
 		SkillTimer::Instance()->setSkillTimer(player, skillid, skillsinfo[skillid].act.name, value, skillsinfo[skillid].act.time);
 	}
