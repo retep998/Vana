@@ -51,13 +51,13 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 	Mob *mob = getMob(mobid, player->getMap());
 
 	if (mob == NULL || mob->getControl() != player) {
-		return;	
+		return;
 	}
 
 	short moveid = packet->getShort();
 	bool useskill = (packet->getByte() != 0);
 	int skill = packet->getInt();
-	
+
 	packet->reset(-12);
 	char type = packet->getByte();
 
@@ -101,10 +101,8 @@ void Mobs::checkSpawn(int mapid) {
 			mob->setType(2);
 			mobs[mapid][id] = mob;
 			info[mapid][i].spawned = true;
-			if (Maps::info[mapid].Players.size() > 0) {
-				MobsPacket::spawnMob(Maps::info[mapid].Players[0], mob, Maps::info[mapid].Players, true);
-				updateSpawn(mapid, mob);
-			}
+			MobsPacket::spawnMob(Maps::info[mapid].Players, mob);
+			updateSpawn(mapid, mob);
 		}
 	}
 }
@@ -144,6 +142,7 @@ void Mobs::updateSpawn(int mapid, Mob *mob) {
 }
 
 void Mobs::dieMob(Player *player, Mob* mob) {
+	if (mob == NULL) return;
 	MobsPacket::dieMob(player, Maps::info[player->getMap()].Players, mob, mob->getID());
 
 	// Account for Holy Symbol
@@ -398,8 +397,7 @@ void Mobs::spawnMobPos(int mapid, int mobid, int xx, int yy) {
 	mob->setType(2);
 	mobs[mapid][id] = mob;
 	updateSpawn(mapid, mob);
-	for (unsigned int j=0; j<Maps::info[mapid].Players.size(); j++)
-		MobsPacket::showMob(Maps::info[mapid].Players[j], mob);
+	MobsPacket::spawnMob(Maps::info[mapid].Players, mob);
 }
 
 inline int Mobs::nextMobId(int mapid) {

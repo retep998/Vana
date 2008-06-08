@@ -46,7 +46,7 @@ void MobsPacket::endControlMob(Player *player, Mob* mob) {
 	packet.send(player);
 }
 
-void MobsPacket::spawnMob(Player *player, Mob* mob, vector <Player*> players, bool isspawn) {
+void MobsPacket::spawnMob(vector <Player*> players, Mob* mob) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
@@ -58,11 +58,8 @@ void MobsPacket::spawnMob(Player *player, Mob* mob, vector <Player*> players, bo
 	packet.addByte(mob->getType());
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
-	if (!isspawn)
-		packet.addShort(-1);
-	else
-		packet.addShort(-2);
-	packet.sendTo<Player>(player, players, 1);
+	packet.addShort(-2);
+	packet.sendTo<Player>(NULL, players, true);
 }
 
 void MobsPacket::showMob(Player *player, Mob* mob) {
@@ -113,7 +110,7 @@ void MobsPacket::damageMob(Player *player, vector <Player*> players, unsigned ch
 	packet.addHeader(SEND_DAMAGE_MOB);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(pack[1]);
-	if (BufferUtilities::getInt(pack+2)>0) {
+	if (BufferUtilities::getInt(pack+2) > 0) {
 		packet.addByte(-1);
 		packet.addInt(BufferUtilities::getInt(pack+2));
 	} 
