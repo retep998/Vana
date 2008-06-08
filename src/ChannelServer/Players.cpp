@@ -265,13 +265,13 @@ void Players::chatHandler(Player *player, unsigned char* packet) {
 			Mobs::spawnMob(player, 8810005);
 			Mobs::spawnMob(player, 8810006);
 			Mobs::spawnMob(player, 8810007);
-            Mobs::spawnMob(player, 8810008);
-            Mobs::spawnMob(player, 8810009);
-        }
+			Mobs::spawnMob(player, 8810008);
+			Mobs::spawnMob(player, 8810009);
+		}
 		else if (strcmp(command, "heal") == 0) {
-            player->setHP(player->getMHP());
-            player->setMP(player->getMMP());
-        }
+			player->setHP(player->getMHP());
+			player->setMP(player->getMMP());
+		}
 		else if (strcmp(command, "mesos") == 0) {
 			if (strlen(next_token) == 0) return;
 			long mesos = atoi(next_token);
@@ -429,18 +429,18 @@ void Players::damagePlayer(Player *player, unsigned char* packet) {
 	// Magic Guard
 	if (player->skills->getActiveSkillLevel(2001002) > 0) {
 		unsigned short mp = player->getMP();
-        unsigned short hp = player->getHP();
-        unsigned short reduc = Skills::skills[2001002][player->skills->getActiveSkillLevel(2001002)].x;
-        int mpdamage = ((damage * reduc) / 100);
-        int hpdamage = damage - mpdamage;
-        if (mpdamage >= mp) {
-            player->setMP(0);
-            player->setHP(hp - (hpdamage + (mpdamage - mp)));
-        }
-        if (mpdamage < mp) {
-            player->setMP(mp - mpdamage);
-            player->setHP(hp - hpdamage);
-        }
+		unsigned short hp = player->getHP();
+		unsigned short reduc = Skills::skills[2001002][player->skills->getActiveSkillLevel(2001002)].x;
+		int mpdamage = ((damage * reduc) / 100);
+		int hpdamage = damage - mpdamage;
+		if (mpdamage >= mp) {
+			player->setMP(0);
+			player->setHP(hp - (hpdamage + (mpdamage - mp)));
+		}
+		if (mpdamage < mp) {
+			player->setMP(mp - mpdamage);
+			player->setHP(hp - hpdamage);
+		}
 	}
 	// Power Guard
 	else if (player->skills->getActiveSkillLevel(1101007)>0 || player->skills->getActiveSkillLevel(1201007)>0) {

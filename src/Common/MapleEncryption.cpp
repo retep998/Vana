@@ -78,9 +78,9 @@ unsigned char MapleEncryption::rol(unsigned char val, int num) {
   int highbit;
   for (int i=0; i<num; i++) {
 	if (val & 0x80)
-	    highbit = 1;
+		highbit = 1;
 	else
-	    highbit = 0;
+		highbit = 0;
 	val <<= 1;
 	val |= highbit;
   }

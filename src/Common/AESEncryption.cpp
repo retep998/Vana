@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void expandKey(unsigned char *expandedKey, unsigned char *key, enum keySize, size_t expandedKeySize);
 
 unsigned char sbox[256] =   {
-//0     1    2      3     4    5     6     7      8    9     A      B    C     D     E     F
+//0	 1	2	  3	 4	5	 6	 7	  8	9	 A	  B	C	 D	 E	 F
 0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76, //0
 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, //1
 0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15, //2
@@ -60,12 +60,12 @@ unsigned char rsbox[256] =
 
 unsigned char getSBoxValue(unsigned char num)
 {
-    return sbox[num];
+	return sbox[num];
 }
 
 unsigned char getSBoxInvert(unsigned char num)
 {
-    return rsbox[num];
+	return rsbox[num];
 }
 
 /* Rijndael's key schedule rotate operation
@@ -77,13 +77,13 @@ unsigned char getSBoxInvert(unsigned char num)
  */
 void rotate(unsigned char *word)
 {
-    unsigned char c;
-    int i;
+	unsigned char c;
+	int i;
 
-    c = word[0];
-    for (i = 0; i < 3; i++)
-        word[i] = word[i+1];
-    word[3] = c;
+	c = word[0];
+	for (i = 0; i < 3; i++)
+		word[i] = word[i+1];
+	word[3] = c;
 }
 
 unsigned char Rcon[255] = {
@@ -111,24 +111,24 @@ unsigned char Rcon[255] = {
 
 unsigned char getRconValue(unsigned char num)
 {
-    return Rcon[num];
+	return Rcon[num];
 }
 
 void core(unsigned char *word, int iteration)
 {
-    int i;
+	int i;
 
-    /* rotate the 32-bit word 8 bits to the left */
-    rotate(word);
+	/* rotate the 32-bit word 8 bits to the left */
+	rotate(word);
 
-    /* apply S-Box substitution on all 4 parts of the 32-bit word */
-    for (i = 0; i < 4; ++i)
-    {
-        word[i] = getSBoxValue(word[i]);
-    }
+	/* apply S-Box substitution on all 4 parts of the 32-bit word */
+	for (i = 0; i < 4; ++i)
+	{
+		word[i] = getSBoxValue(word[i]);
+	}
 
-    /* XOR the output of the rcon operation with i to the first part (leftmost) only */
-    word[0] = word[0]^getRconValue(iteration);
+	/* XOR the output of the rcon operation with i to the first part (leftmost) only */
+	word[0] = word[0]^getRconValue(iteration);
 }
 
 /* Rijndael's key expansion
@@ -138,102 +138,102 @@ void core(unsigned char *word, int iteration)
  * key is a pointer to a non-expanded key
  */
 enum keySize{
-    SIZE_16 = 16,
-    SIZE_24 = 24,
-    SIZE_32 = 32
-    };
+	SIZE_16 = 16,
+	SIZE_24 = 24,
+	SIZE_32 = 32
+	};
 
 void expandKey(unsigned char *expandedKey,
-               unsigned char *key,
-               enum keySize size,
-               size_t expandedKeySize)
+			   unsigned char *key,
+			   enum keySize size,
+			   size_t expandedKeySize)
 {
-    /* current expanded keySize, in bytes */
-    int currentSize = 0;
-    int rconIteration = 1;
-    int i;
-    unsigned char t[4] = {0};   // temporary 4-byte variable
+	/* current expanded keySize, in bytes */
+	int currentSize = 0;
+	int rconIteration = 1;
+	int i;
+	unsigned char t[4] = {0};   // temporary 4-byte variable
 
-    /* set the 16,24,32 bytes of the expanded key to the input key */
-    for (i = 0; i < size; i++)
-        expandedKey[i] = key[i];
-    currentSize += size;
+	/* set the 16,24,32 bytes of the expanded key to the input key */
+	for (i = 0; i < size; i++)
+		expandedKey[i] = key[i];
+	currentSize += size;
 
-    while ((unsigned)currentSize < (unsigned)expandedKeySize)
-    {
-        /* assign the previous 4 bytes to the temporary value t */
-        for (i = 0; i < 4; i++)
-        {
-            t[i] = expandedKey[(currentSize - 4) + i];
-        }
+	while ((unsigned)currentSize < (unsigned)expandedKeySize)
+	{
+		/* assign the previous 4 bytes to the temporary value t */
+		for (i = 0; i < 4; i++)
+		{
+			t[i] = expandedKey[(currentSize - 4) + i];
+		}
 
-        /* every 16,24,32 bytes we apply the core schedule to t
-         * and increment rconIteration afterwards
-         */
-        if (currentSize % size == 0)
-        {
-            core(t, rconIteration++);
-        }
+		/* every 16,24,32 bytes we apply the core schedule to t
+		 * and increment rconIteration afterwards
+		 */
+		if (currentSize % size == 0)
+		{
+			core(t, rconIteration++);
+		}
 
-        /* For 256-bit keys, we add an extra sbox to the calculation */
-        if (size == SIZE_32 && ((currentSize % size) == 16)) {
-            for (i = 0; i < 4; i++)
-                t[i] = getSBoxValue(t[i]);
-        }
+		/* For 256-bit keys, we add an extra sbox to the calculation */
+		if (size == SIZE_32 && ((currentSize % size) == 16)) {
+			for (i = 0; i < 4; i++)
+				t[i] = getSBoxValue(t[i]);
+		}
 
-        /* We XOR t with the four-byte block 16,24,32 bytes before the new expanded key.
-         * This becomes the next four bytes in the expanded key.
-         */
-        for (i = 0; i < 4; i++) {
-            expandedKey[currentSize] = expandedKey[currentSize - size] ^ t[i];
-            currentSize++;
-        }
-    }
+		/* We XOR t with the four-byte block 16,24,32 bytes before the new expanded key.
+		 * This becomes the next four bytes in the expanded key.
+		 */
+		for (i = 0; i < 4; i++) {
+			expandedKey[currentSize] = expandedKey[currentSize - size] ^ t[i];
+			currentSize++;
+		}
+	}
 }
 
 void subBytes(unsigned char *state)
 {
-    int i;
-    /* substitute all the values from the state with the value in the SBox
-     * using the state value as index for the SBox
-     */
-    for (i = 0; i < 16; i++)
-        state[i] = getSBoxValue(state[i]);
+	int i;
+	/* substitute all the values from the state with the value in the SBox
+	 * using the state value as index for the SBox
+	 */
+	for (i = 0; i < 16; i++)
+		state[i] = getSBoxValue(state[i]);
 }
 
 void shiftRow(unsigned char *state, unsigned char nbr)
 {
-    int i, j;
-    unsigned char tmp;
-    /* each iteration shifts the row to the left by 1 */
-    for (i = 0; i < nbr; i++)
-    {
-        tmp = state[0];
-        for (j = 0; j < 3; j++)
-            state[j] = state[j+1];
-        state[3] = tmp;
-    }
+	int i, j;
+	unsigned char tmp;
+	/* each iteration shifts the row to the left by 1 */
+	for (i = 0; i < nbr; i++)
+	{
+		tmp = state[0];
+		for (j = 0; j < 3; j++)
+			state[j] = state[j+1];
+		state[3] = tmp;
+	}
 }
 
 void shiftRows(unsigned char *state)
 {
-    int i;
-    /* iterate over the 4 rows and call shiftRow() with that row */
-    for (i = 0; i < 4; i++)
-        shiftRow(state+i*4, i);
+	int i;
+	/* iterate over the 4 rows and call shiftRow() with that row */
+	for (i = 0; i < 4; i++)
+		shiftRow(state+i*4, i);
 }
 
 
 void addRoundKey(unsigned char *state, unsigned char *roundKey)
 {
-    int i;
-    for (i = 0; i < 16; i++)
-        state[i] = state[i] ^ roundKey[i] ;
+	int i;
+	for (i = 0; i < 16; i++)
+		state[i] = state[i] ^ roundKey[i] ;
 }
 
 unsigned char galois_multiplication(unsigned char a, unsigned char b)
 {
-    unsigned char p = 0;
+	unsigned char p = 0;
 	unsigned char counter;
 	unsigned char hi_bit_set;
 	for (counter = 0; counter < 8; counter++) {
@@ -250,213 +250,213 @@ unsigned char galois_multiplication(unsigned char a, unsigned char b)
 
 void mixColumn(unsigned char *column)
 {
-    unsigned char cpy[4];
+	unsigned char cpy[4];
 	int i;
 	for (i = 0; i < 4; i++)
-    {
+	{
 		cpy[i] = column[i];
-    }
+	}
 	column[0] = galois_multiplication(cpy[0],2) ^
-                galois_multiplication(cpy[3],1) ^
-                galois_multiplication(cpy[2],1) ^
-                galois_multiplication(cpy[1],3);
+				galois_multiplication(cpy[3],1) ^
+				galois_multiplication(cpy[2],1) ^
+				galois_multiplication(cpy[1],3);
 
 	column[1] = galois_multiplication(cpy[1],2) ^
-                galois_multiplication(cpy[0],1) ^
-                galois_multiplication(cpy[3],1) ^
-                galois_multiplication(cpy[2],3);
+				galois_multiplication(cpy[0],1) ^
+				galois_multiplication(cpy[3],1) ^
+				galois_multiplication(cpy[2],3);
 
 	column[2] = galois_multiplication(cpy[2],2) ^
-                galois_multiplication(cpy[1],1) ^
-                galois_multiplication(cpy[0],1) ^
-                galois_multiplication(cpy[3],3);
+				galois_multiplication(cpy[1],1) ^
+				galois_multiplication(cpy[0],1) ^
+				galois_multiplication(cpy[3],3);
 
 	column[3] = galois_multiplication(cpy[3],2) ^
-                galois_multiplication(cpy[2],1) ^
-                galois_multiplication(cpy[1],1) ^
-                galois_multiplication(cpy[0],3);
+				galois_multiplication(cpy[2],1) ^
+				galois_multiplication(cpy[1],1) ^
+				galois_multiplication(cpy[0],3);
 }
 
 void mixColumns(unsigned char *state)
 {
-    int i, j;
-    unsigned char column[4];
+	int i, j;
+	unsigned char column[4];
 
-    /* iterate over the 4 columns */
-    for (i = 0; i < 4; i++)
-    {
-        /* construct one column by iterating over the 4 rows */
-        for (j = 0; j < 4; j++)
-        {
-            column[j] = state[(j*4)+i];
-        }
+	/* iterate over the 4 columns */
+	for (i = 0; i < 4; i++)
+	{
+		/* construct one column by iterating over the 4 rows */
+		for (j = 0; j < 4; j++)
+		{
+			column[j] = state[(j*4)+i];
+		}
 
-        /* apply the mixColumn on one column */
-        mixColumn(column);
+		/* apply the mixColumn on one column */
+		mixColumn(column);
 
-        /* put the values back into the state */
-        for (j = 0; j < 4; j++)
-        {
-            state[(j*4)+i] = column[j];
-        }
-    }
+		/* put the values back into the state */
+		for (j = 0; j < 4; j++)
+		{
+			state[(j*4)+i] = column[j];
+		}
+	}
 }
 
 void aes_round(unsigned char *state, unsigned char *roundKey)
 {
-    subBytes(state);
-    shiftRows(state);
-    mixColumns(state);
-    addRoundKey(state, roundKey);
+	subBytes(state);
+	shiftRows(state);
+	mixColumns(state);
+	addRoundKey(state, roundKey);
 }
 void createRoundKey(unsigned char *expandedKey, unsigned char *roundKey)
 {
-    int i,j;
-    /* iterate over the columns */
-    for (i = 0; i < 4; i++)
-    {
-        /* iterate over the rows */
-        for (j = 0; j < 4; j++)
-            roundKey[(i+(j*4))] = expandedKey[(i*4)+j];
-    }
+	int i,j;
+	/* iterate over the columns */
+	for (i = 0; i < 4; i++)
+	{
+		/* iterate over the rows */
+		for (j = 0; j < 4; j++)
+			roundKey[(i+(j*4))] = expandedKey[(i*4)+j];
+	}
 }
 
 
 void aes_main(unsigned char *state, unsigned char *expandedKey, int nbrRounds)
 {
-    int i = 0;
+	int i = 0;
 
-    unsigned char roundKey[16];
+	unsigned char roundKey[16];
 
-    createRoundKey(expandedKey, roundKey);
-    addRoundKey(state, roundKey);
+	createRoundKey(expandedKey, roundKey);
+	addRoundKey(state, roundKey);
 
-    for (i = 1; i < nbrRounds; i++) {
-        createRoundKey(expandedKey + 16*i, roundKey);
-        aes_round(state, roundKey);
-    }
+	for (i = 1; i < nbrRounds; i++) {
+		createRoundKey(expandedKey + 16*i, roundKey);
+		aes_round(state, roundKey);
+	}
 
-    createRoundKey(expandedKey + 16*nbrRounds, roundKey);
-    subBytes(state);
-    shiftRows(state);
-    addRoundKey(state, roundKey);
+	createRoundKey(expandedKey + 16*nbrRounds, roundKey);
+	subBytes(state);
+	shiftRows(state);
+	addRoundKey(state, roundKey);
 }
 char aes_encrypt(unsigned char *input,
-                 unsigned char *output,
-                 unsigned char *key,
-                 enum keySize size)
+				 unsigned char *output,
+				 unsigned char *key,
+				 enum keySize size)
 {
-    /* the expanded keySize */
-    int expandedKeySize;
+	/* the expanded keySize */
+	int expandedKeySize;
 
-    /* the number of rounds */
-    int nbrRounds;
+	/* the number of rounds */
+	int nbrRounds;
 
-    /* the expanded key */
-    unsigned char *expandedKey;
+	/* the expanded key */
+	unsigned char *expandedKey;
 
-    /* the 128 bit block to encode */
-    unsigned char block[16];
+	/* the 128 bit block to encode */
+	unsigned char block[16];
 
-    int i,j;
+	int i,j;
 
-    /* set the number of rounds */
-    switch (size)
-    {
-        case SIZE_16:
-            nbrRounds = 10;
-            break;
-        case SIZE_24:
-            nbrRounds = 12;
-            break;
-        case SIZE_32:
-            nbrRounds = 14;
-            break;
-        default:
-            return -2;
-            break;
-    }
+	/* set the number of rounds */
+	switch (size)
+	{
+		case SIZE_16:
+			nbrRounds = 10;
+			break;
+		case SIZE_24:
+			nbrRounds = 12;
+			break;
+		case SIZE_32:
+			nbrRounds = 14;
+			break;
+		default:
+			return -2;
+			break;
+	}
 
-    expandedKeySize = (16*(nbrRounds+1));
+	expandedKeySize = (16*(nbrRounds+1));
 
 	expandedKey = new unsigned char[expandedKeySize * sizeof(char)];
 
-    /* Set the block values, for the block:
-     * a0,0 a0,1 a0,2 a0,3
-     * a1,0 a1,1 a1,2 a1,3
-     * a2,0 a2,1 a2,2 a2,3
-     * a3,0 a3,1 a3,2 a3,3
-     * the mapping order is a0,0 a1,0 a2,0 a3,0 a0,1 a1,1 ... a2,3 a3,3
-     */
+	/* Set the block values, for the block:
+	 * a0,0 a0,1 a0,2 a0,3
+	 * a1,0 a1,1 a1,2 a1,3
+	 * a2,0 a2,1 a2,2 a2,3
+	 * a3,0 a3,1 a3,2 a3,3
+	 * the mapping order is a0,0 a1,0 a2,0 a3,0 a0,1 a1,1 ... a2,3 a3,3
+	 */
 
-    /* iterate over the columns */
-    for (i = 0; i < 4; i++)
-    {
-        /* iterate over the rows */
-        for (j = 0; j < 4; j++)
-            block[(i+(j*4))] = input[(i*4)+j];
-    }
+	/* iterate over the columns */
+	for (i = 0; i < 4; i++)
+	{
+		/* iterate over the rows */
+		for (j = 0; j < 4; j++)
+			block[(i+(j*4))] = input[(i*4)+j];
+	}
 
-    /* expand the key into an 176, 208, 240 bytes key */
-    expandKey(expandedKey, key, size, expandedKeySize);
+	/* expand the key into an 176, 208, 240 bytes key */
+	expandKey(expandedKey, key, size, expandedKeySize);
 
-    /* encrypt the block using the expandedKey */
-    aes_main(block, expandedKey, nbrRounds);
+	/* encrypt the block using the expandedKey */
+	aes_main(block, expandedKey, nbrRounds);
 
-    /* unmap the block again into the output */
-    for (i = 0; i < 4; i++)
-    {
-        /* iterate over the rows */
-        for (j = 0; j < 4; j++)
-            output[(i*4)+j] = block[(i+(j*4))];
-    }
+	/* unmap the block again into the output */
+	for (i = 0; i < 4; i++)
+	{
+		/* iterate over the rows */
+		for (j = 0; j < 4; j++)
+			output[(i*4)+j] = block[(i+(j*4))];
+	}
 	delete[] expandedKey;
-    return 0;
+	return 0;
 }
 
 void decryptofb(unsigned char* buffer, unsigned char* vec, int bsize)
 {
-    /* the non-expanded keySize */
-    enum keySize size = SIZE_32;
+	/* the non-expanded keySize */
+	enum keySize size = SIZE_32;
 
-    /* the AES input/output */
-    unsigned char ciphertext[16] = {0};
-    unsigned char input[16] = {0};
-    unsigned char output[16] = {0};
-    unsigned char plaintext[16] = {0};
+	/* the AES input/output */
+	unsigned char ciphertext[16] = {0};
+	unsigned char input[16] = {0};
+	unsigned char output[16] = {0};
+	unsigned char plaintext[16] = {0};
 	unsigned char IV[16];
 	for (int i=0; i<16; i++) {
 		IV[i] = vec[i%4];
 	}
-    //unsigned char IV[16] = {0xa5, 0x5d ,0xe6 ,0x2f,0xa5, 0x5d ,0xe6 ,0x2f,0xa5, 0x5d ,0xe6 ,0x2f,0xa5, 0x5d ,0xe6 ,0x2f};
+	//unsigned char IV[16] = {0xa5, 0x5d ,0xe6 ,0x2f,0xa5, 0x5d ,0xe6 ,0x2f,0xa5, 0x5d ,0xe6 ,0x2f,0xa5, 0x5d ,0xe6 ,0x2f};
 
-    /* the AES key */
-    unsigned char key[32] = {0x13,0x00,0x00,0x00,0x08,0x00,0x00,0x00,0x06,0x00,0x00,0x00,0xB4,0x00,0x00,0x00,0x1B,0x00,0x00,0x00,0x0F,0x00,0x00,0x00,0x33,0x00,0x00,0x00,0x52,0x00,0x00,0x00};
+	/* the AES key */
+	unsigned char key[32] = {0x13,0x00,0x00,0x00,0x08,0x00,0x00,0x00,0x06,0x00,0x00,0x00,0xB4,0x00,0x00,0x00,0x1B,0x00,0x00,0x00,0x0F,0x00,0x00,0x00,0x33,0x00,0x00,0x00,0x52,0x00,0x00,0x00};
 
-    /* char firstRound */
-    char firstRound = 1;
+	/* char firstRound */
+	char firstRound = 1;
 
-    int i,j;
+	int i,j;
 
  	for (j=0; j<bsize/16 + 1; j++)
-    {
+	{
 		if (firstRound)
 		{
 			aes_encrypt(IV, output, key, size);
 			firstRound = 0;
 		}
-        else
-        {
-		    aes_encrypt(input, output, key, size);
-        }
-        for (i = 0; i < 16; i++)
-        {
+		else
+		{
+			aes_encrypt(input, output, key, size);
+		}
+		for (i = 0; i < 16; i++)
+		{
 			plaintext[i] = output[i] ^ buffer[j*16+i];
-        }
+		}
 		if (j == bsize/16)
 			memcpy_s(buffer+(j*16), bsize%16 ,plaintext, bsize%16);
 		else
 			memcpy_s(buffer+(j*16), 16 ,plaintext, 16);
 		memcpy(input, output, 16*sizeof(unsigned char));
-    }
+	}
 }

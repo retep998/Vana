@@ -24,9 +24,9 @@ __int64 TimeUtilities::getServerTime() {
 __int64 TimeUtilities::timeToTick(time_t time) {
 	if (time == -1)
 		return -1;
-    struct tm timeinfo;
-    localtime_s(&timeinfo, &time);
-    unsigned __int64 ticks = 0;
+	struct tm timeinfo;
+	localtime_s(&timeinfo, &time);
+	unsigned __int64 ticks = 0;
 
 	// Calculate leap days
 	int leapdays = 0;
@@ -35,14 +35,14 @@ __int64 TimeUtilities::timeToTick(time_t time) {
 	leapdays += (years/400); // and one more day for each 400 years
 	leapdays += ((years%100)/4); // and of course, 1 day for each 4 years in the current century
 
-    ticks += (timeinfo.tm_sec * 1);
-    ticks += (timeinfo.tm_min * 60);
-    ticks += (timeinfo.tm_hour * 3600);
-    ticks += (((__int64) timeinfo.tm_yday + leapdays) * 86400);
-    ticks += (__int64) years * 86400 * 365; // Exluding leap years
+	ticks += (timeinfo.tm_sec * 1);
+	ticks += (timeinfo.tm_min * 60);
+	ticks += (timeinfo.tm_hour * 3600);
+	ticks += (((__int64) timeinfo.tm_yday + leapdays) * 86400);
+	ticks += (__int64) years * 86400 * 365; // Exluding leap years
 
 	ticks *= 10000000; // Convert to 100-nanoseconds
-    return ticks;
+	return ticks;
 }
 
 int TimeUtilities::tickToTick32(__int64 tick) {

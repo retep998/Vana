@@ -36,10 +36,10 @@ Timer::Timer() {
 		NULL);
 
 	timerEvent = CreateEvent( 
-            NULL,     // no security attributes
-            FALSE,    // auto-reset event
-            FALSE,    // initial state is not signaled
-            NULL);    // object not named
+			NULL,	// no security attributes
+			FALSE,	// auto-reset event
+			FALSE,	// initial state is not signaled
+			NULL);	// object not named
 }
 
 Timer::~Timer() {

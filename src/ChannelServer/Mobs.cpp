@@ -256,7 +256,7 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	for (int i=0; i<howmany; i++) {
-        int mobid = BufferUtilities::getInt(packet+14+i*(22-s4211006+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(packet+14+i*(22-s4211006+4*(hits-1)));
 		Mob* mob = getMob(mobid, map);
 		for (int k=0; k<hits; k++) {
 			int damage = BufferUtilities::getInt(packet+32-s4211006+i*(22-s4211006+4*(hits-1))+k*4);
@@ -283,18 +283,18 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 		}
 	}
 	if (s4211006) {
-        unsigned char howmanyitems = packet[(14+howmany*(21+4*(hits-1)))+4];
-        for (int i=0; i<howmanyitems; i++) {
-            int objID = BufferUtilities::getInt(packet+(14+howmany*(21+4*(hits-1)))+5+(5*i));
-            for (unsigned int i=0; i<Drops::drops[map].size(); i++) {
-                if (Drops::drops[map][i]->getObjID() == objID) {
-                    DropsPacket::explodeDrop(Maps::info[map].Players, Drops::drops[map][i]);
-                    Drops::drops[map].erase(Drops::drops[map].begin()+i);
-                    break;
-                }
-            }
-        }
-    }
+		unsigned char howmanyitems = packet[(14+howmany*(21+4*(hits-1)))+4];
+		for (int i=0; i<howmanyitems; i++) {
+			int objID = BufferUtilities::getInt(packet+(14+howmany*(21+4*(hits-1)))+5+(5*i));
+			for (unsigned int i=0; i<Drops::drops[map].size(); i++) {
+				if (Drops::drops[map][i]->getObjID() == objID) {
+					DropsPacket::explodeDrop(Maps::info[map].Players, Drops::drops[map][i]);
+					Drops::drops[map].erase(Drops::drops[map].begin()+i);
+					break;
+				}
+			}
+		}
+	}
 	if (skillid == 1111003 || skillid == 1111004 || skillid == 1111005 || skillid == 1111006) { // Combo finishing moves
 		Skills::clearCombo(player);
 	}
