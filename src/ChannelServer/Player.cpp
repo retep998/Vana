@@ -94,6 +94,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_KEYMAP: changeKey(packet);
 		case RECV_LOOT_ITEM: Drops::lootItem(this, packet); break;
 		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet); break;
+		case RECV_SPECIAL_SKILL: Players::handleSpecialSkills(this, packet->getBuffer()); break;
 	}
 }
 

@@ -38,6 +38,7 @@ namespace Players {
 	void healPlayer(Player *player, unsigned char* packet);
 	void getPlayerInfo(Player *player, unsigned char* packet);
 	void commandHandler(Player *player, unsigned char* packet);
+	void handleSpecialSkills(Player *player, unsigned char* packet);
 };
 
 #endif

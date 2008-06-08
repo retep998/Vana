@@ -221,6 +221,15 @@ public:
 	string getVariable(const string &name) {
 		return (variables.find(name) == variables.end()) ? "0" : variables[name];
 	}
+	void setSpecialSkill(SpecialSkillInfo info) {
+		this->info = info;
+	}
+	int getSpecialSkill() {
+		return this->info.skillid;
+	}
+	SpecialSkillInfo getSpecialSkillInfo() {
+		return this->info;
+	}
 	bool addWarning();
 	void changeChannel(char channel);
 	void saveSkills();
@@ -275,6 +284,7 @@ private:
 	bool save_on_dc;
 	hash_map<string, string> variables;
 	SkillMapEnterActiveInfo skill;
+	SpecialSkillInfo info; // Hurricane/Pierce
 };
 
 class PlayerFactory : public AbstractPlayerFactory {

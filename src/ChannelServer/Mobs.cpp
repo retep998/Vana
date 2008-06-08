@@ -302,11 +302,17 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 	int itemid = 0;
 	int pos = BufferUtilities::getInt(packet+14);
-	for (int i = 0; i < player->inv->getItemNum(); i++) {
-		if (player->inv->getItem(i)->pos == pos && player->inv->getItem(i)->inv == 2) {
-			itemid = player->inv->getItem(i)->id;
-			break;
+	bool s4121006 = (packet[6] == 0x40 ? true : false); // Shadow Claw
+	if (!s4121006) {
+		for (int i = 0; i < player->inv->getItemNum(); i++) {
+			if (player->inv->getItem(i)->pos == pos && player->inv->getItem(i)->inv == 2) {
+				itemid = player->inv->getItem(i)->id;
+				break;
+			}
 		}
+	}
+	else {
+		itemid = BufferUtilities::getInt(packet+20);
 	}
 	int map = player->getMap();
 	MobsPacket::damageMobRanged(player, Maps::info[map].Players, packet, itemid);
@@ -314,11 +320,24 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 	int howmany = packet[1]/0x10;
 	int hits = packet[1]%0x10;
 	int skillid = BufferUtilities::getInt(packet+2);
-
-	bool s3121004 = (skillid == 3121004 || skillid == 3221001); // Hurricane/Pierce
-	bool s4121006 = (player->skills->getActiveSkillLevel(4121006) > 0); // Shadow Claw
-
-	if (!s4121006) {
+	short offset = 0;
+	if (skillid == 3121004 || skillid == 3221001) {
+		offset = 4; // Hurricane/Pierce add 4 bytes after skill ID, value represents charge time (0 for Hurricane)
+		if (skillid == 3121004) { // Only Hurricane constantly does damage
+			if (player->getSpecialSkill() == 0) { // Display it if not displayed
+				SpecialSkillInfo info;
+				info.skillid = skillid;
+				info.direction = packet[7+offset];
+				info.w_speed = packet[9+offset];
+				info.level = player->skills->getSkillLevel(info.skillid);
+				player->setSpecialSkill(info);
+				SkillsPacket::showSpecialSkill(player, Maps::info[map].Players, info);
+			}	
+		}
+	}
+	if (s4121006)
+		offset = 4; // Shadow Claw's offset only matters for damage, adds a 4 byte star ID at the end of the normal packet before damage
+	else {
 		if (skillid == 4111005) // Avenger
 			Inventory::takeItemSlot(player, pos, 2, 3*hits);
 		else
@@ -329,10 +348,10 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 	int damage, mhp;
 	int totalDmg = 0;
 	for (int i = 0; i < howmany; i++) {
-		int mobid = BufferUtilities::getInt(packet+19+4*(s4121006+s3121004)+i*(22+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(packet+19+offset+i*(22+4*(hits-1)));
 		Mob* mob = getMob(mobid, map);
 		for (int k = 0; k < hits; k++) {
-			damage = BufferUtilities::getInt(packet+37+4*(s4121006+s3121004)+i*(22+4*(hits-1))+k*4);
+			damage = BufferUtilities::getInt(packet+37+offset+i*(22+4*(hits-1))+k*4);
 			totalDmg += damage;
 			if (mob != NULL) {
 				mob->setHP(mob->getHP()-damage);
