@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INITIALIZECHANNEL_H
 
 namespace Initializing {
+	void checkVEDBVersion();
 	void initializeMobs();
 	void initializeDrops();
 	void initializeReactors();
@@ -28,6 +29,9 @@ namespace Initializing {
 	void initializeItems();
 	void initializeQuests();
 	void initializeSkills();
+
+	const int vedb_version = 9;
+	const int vedb_subversion = 0;
 };
 
 #endif
