@@ -34,6 +34,47 @@ void Initializing::initializeMySQL() {
 	}
 }
 
+void Initializing::checkSchemaVersion(bool update) {
+	// vana_info table for checking database version (currently checking and updating unimplemented)
+	mysqlpp::Query query = db.query();
+	query << "SELECT * FROM vana_info LIMIT 1";
+	mysqlpp::StoreQueryResult res = query.store();
+
+	bool succeed = false;
+	int version;
+	if (res.size() == 0) {
+		if (update) {
+			// Table doesn't exist or there's no record in the table, so lets create it
+			query << "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED)";
+			query.exec();
+
+			// Insert a default record of NULL
+			query << "INSERT INTO vana_info VALUES (NULL)";
+			query.exec();
+		}
+		
+		version = -1;
+	}
+	else {
+		version = res[0][0].is_null() ? -1 : (int) res[0][0];
+	}
+
+	// TODO: Compare version (and run SQL files if update is true)
+	succeed = true;
+
+	if (!succeed && !update) {
+		// Wrong version and we're not allowed to update, so lets quit
+		std::cout << "Wrong version of database, please run Login Server to update.";
+		exit(4);
+	}
+	else if (!succeed) {
+		// Failed but we can update it
+		// TODO: Update the schema
+		std::cout << "Wrong version of database, updating...";
+		succeed = true;
+	}
+}
+
 void Initializing::setUsersOffline(int onlineid) {
 	mysqlpp::Query query = db.query();
 	query << "UPDATE users SET online = 0 WHERE online = " << mysqlpp::quote << onlineid;

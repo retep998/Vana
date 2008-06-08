@@ -27,6 +27,7 @@ void LoginServer::listen() {
 
 void LoginServer::loadData() {
 	Initializing::initializeMySQL();
+	Initializing::checkSchemaVersion(true);
 	Initializing::setUsersOffline(1);
 }
 

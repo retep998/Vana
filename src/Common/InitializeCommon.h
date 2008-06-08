@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Initializing {
 	void initializeMySQL();
+	void checkSchemaVersion(bool update = false);
 	void setUsersOffline(int onlineid);
 	const int outputWidth = 25;
 };
