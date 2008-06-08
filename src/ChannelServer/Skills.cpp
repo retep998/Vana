@@ -646,7 +646,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_MDEF: value = skills[skillid][level].mdef; break;
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
-			case SKILL_PROP: value = skills[skillid][level].prop; printf("Value: %i\n", value); break;
+			case SKILL_PROP: value = skills[skillid][level].prop; break;
 		}
 		if (skillid == 3121002 || skillid == 3221002) { // For Sharp Eyes
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
