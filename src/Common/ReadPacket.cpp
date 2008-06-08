@@ -61,6 +61,11 @@ size_t ReadPacket::getBufferLength() {
 	return length - pos;
 }
 
-void ReadPacket::reset() {
-	pos = 0;
+void ReadPacket::reset(int len) {
+	if (len >= 0) {
+		pos = len;
+	}
+	else {
+		pos = length + len; // In this case, len is negative here so we take the total length and plus (minus) it by len
+	}
 }
