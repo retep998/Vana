@@ -36,6 +36,26 @@ bool atob(char *str) {
 	return atoi(str) > 0;
 }
 
+void Initializing::checkVEDBVersion() {
+	mysqlpp::Query query = db.query("SELECT * FROM vedb_info LIMIT 1");
+	mysqlpp::StoreQueryResult res;
+
+	if (!(res = query.store())) {
+		std::cout << "FAILED: " << db.error() << std::endl;
+		exit(1);
+	}
+
+	int version = (int) res[0]["version"];
+	int subversion = (int) res[0]["subversion"];
+
+	if (version != vedb_version || subversion < vedb_subversion) {
+		// VEDB too old
+		std::cout << "ERROR: VEDB too old. Expected: " << vedb_version << "." << vedb_subversion << " ";
+		std::cout << "Have: " << version << "." << subversion << std::endl;
+		exit(4);
+	}
+}
+
 // Mobs
 void Initializing::initializeMobs() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
