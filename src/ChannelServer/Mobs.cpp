@@ -58,12 +58,10 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 	bool useskill = (packet->getByte() != 0);
 	int skill = packet->getInt();
 	
-	packet->reset();
-	packet->skipBytes(packet->getBufferLength()-12);
+	packet->reset(-12);
 	char type = packet->getByte();
 
-	packet->reset();
-	packet->skipBytes(packet->getBufferLength()-4);
+	packet->reset(-4);
 
 	Pos cpos;
 	cpos.x = packet->getShort();
@@ -75,8 +73,7 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 	mob->setType(type);
 
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMP());
-	packet->reset();
-	packet->skipBytes(19);
+	packet->reset(19);
 	MobsPacket::moveMob(player, Maps::info[player->getMap()].Players, mobid, useskill, skill, packet->getBuffer(), packet->getBufferLength());
 }
 

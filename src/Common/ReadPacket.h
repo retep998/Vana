@@ -37,7 +37,7 @@ public:
 	unsigned char * getBuffer();
 	size_t getBufferLength();
 
-	void reset();
+	void reset(int len = 0);
 private:
 	unsigned char *buffer;
 	size_t length;
