@@ -36,6 +36,7 @@ void ChannelServer::listen() {
 
 void ChannelServer::loadData() {
 	Initializing::initializeMySQL();
+	Initializing::checkSchemaVersion();
 	Initializing::initializeMobs();
 	Initializing::initializeReactors();
 	Initializing::initializeItems();
