@@ -24,7 +24,7 @@ class Mob;
 namespace MobsPacket {
 	void controlMob(Player *player, Mob* mob);
 	void endControlMob(Player *player, Mob* mob);
-	void spawnMob(Player *player, Mob* mob, vector <Player*> players, bool isspawn);
+	void spawnMob(vector <Player*> players, Mob* mob);
 	void showMob(Player *player, Mob* mob);
 	void moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp);
 	void moveMob(Player *player, vector <Player*> players, int mobid, bool useskill, int skill, unsigned char *buf, int len);
