@@ -60,9 +60,9 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_CHANGE_CHANNEL: changeChannel(packet->getByte()); break;
-		case RECV_DAMAGE_PLAYER: Players::damagePlayer(this, packet->getBuffer()); break;
+		case RECV_DAMAGE_PLAYER: Players::damagePlayer(this, packet); break;
 		case RECV_STOP_CHAIR: Inventory::stopChair(this, packet); break;
-		case RECV_CHAT: Players::chatHandler(this, packet->getBuffer()); break;
+		case RECV_CHAT: Players::chatHandler(this, packet); break;
 		case RECV_USE_CHAIR: Inventory::useChair(this, packet); break;
 		case RECV_USE_ITEM_EFFECT: Inventory::useItemEffect(this, packet); break;
 		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet->getBuffer()); break;
@@ -76,7 +76,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
 		case RECV_USE_SKILL: Skills::useSkill(this, packet); break;
 		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, packet); break;
-		case RECV_COMMAND: Players::commandHandler(this, packet->getBuffer()); break;
+		case RECV_COMMAND: Players::commandHandler(this, packet); break;
 		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet->getBuffer()); break;
 		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this, packet); break;
 		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;

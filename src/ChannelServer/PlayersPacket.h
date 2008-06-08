@@ -30,7 +30,7 @@ class Packet;
 namespace PlayersPacket {
 	void showMoving(Player *player, vector <Player*> players, unsigned char *buf, size_t size);
 	void faceExperiment(Player *player, vector <Player*> players, int face);
-	void showChat(Player *player, vector <Player*> players, char* msg);
+	void showChat(Player *player, vector <Player*> players, const string &msg);
 	void damagePlayer(Player *player, vector <Player*> players, int dmg, int mob, unsigned char hit, unsigned char type, int fake);
 	void showMessage(char* msg, char type);
 	void showInfo(Player *player, Player* getinfo);

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERS_H
 
 #include <hash_map>
+#include <string>
 
 using namespace std;
 using namespace stdext;
@@ -32,12 +33,12 @@ namespace Players {
 	void addPlayer(Player *player);
 	void deletePlayer(Player *player);
 	void handleMoving(Player *player, ReadPacket *packet);
-	void damagePlayer(Player *player, unsigned char* packet);
+	void damagePlayer(Player *player, ReadPacket *packet);
 	void faceExperiment(Player *player, ReadPacket *packet);
-	void chatHandler(Player *player, unsigned char* packet);
+	void chatHandler(Player *player, ReadPacket *packet);
 	void healPlayer(Player *player, ReadPacket *packet);
 	void getPlayerInfo(Player *player, ReadPacket *packet);
-	void commandHandler(Player *player, unsigned char* packet);
+	void commandHandler(Player *player, ReadPacket *packet);
 	void handleSpecialSkills(Player *player, ReadPacket *packet);
 };
 

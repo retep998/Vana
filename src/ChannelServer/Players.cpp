@@ -64,10 +64,10 @@ void Players::faceExperiment(Player *player, ReadPacket *packet) {
 	PlayersPacket::faceExperiment(player, Maps::info[player->getMap()].Players, face);
 }
 
-void Players::chatHandler(Player *player, unsigned char* packet) {
-	char chat[91];
-	int chatsize = BufferUtilities::getShort(packet);
-	BufferUtilities::getString(packet+2, chatsize, chat);
+void Players::chatHandler(Player *player, ReadPacket *packet) {
+	string message = packet->getString();
+	char *chat = const_cast<char *>(message.c_str()); // Leaving chat as char[] for GM commands for now
+	size_t chatsize = message.size(); // See above line
 	if (chat[0] == '!') {
 		if (!player->isGM()) return;
 		char* next_token;
@@ -416,13 +416,18 @@ void Players::chatHandler(Player *player, unsigned char* packet) {
 		}
 		return;
 	}
-	PlayersPacket::showChat(player, Maps::info[player->getMap()].Players, chat);
+	PlayersPacket::showChat(player, Maps::info[player->getMap()].Players, message);
 }
 
-void Players::damagePlayer(Player *player, unsigned char* packet) {
-	int damage = BufferUtilities::getInt(packet+5);
-	int mobid = BufferUtilities::getInt(packet+13);
-	unsigned char type = packet[4]; // 0xFF = bump, 0xFE = fall, 0x00-0x0* = mob skill ID
+void Players::damagePlayer(Player *player, ReadPacket *packet) {
+	packet->skipBytes(4);
+	unsigned char type = packet->getByte(); // 0xFF = bump, 0xFE = fall, 0x00-0x0* = mob skill ID
+	int damage = packet->getInt();
+	packet->skipBytes(4);
+	int mobid = packet->getInt();
+	packet->skipBytes(8);
+	unsigned char hits = packet->getByte();
+	
 	int fake = 0;
 	if (damage == -1) { // 0 = regular miss, this = Fake
 		short job = player->getJob() / 10 - 40;
@@ -486,7 +491,7 @@ void Players::damagePlayer(Player *player, unsigned char* packet) {
 		player->setHP(player->getHP()-damage);
 	}
 	if (mob != NULL)
-		PlayersPacket::damagePlayer(player, Maps::info[player->getMap()].Players, damage, mob->getMobID(), packet[25], type, fake);
+		PlayersPacket::damagePlayer(player, Maps::info[player->getMap()].Players, damage, mob->getMobID(), hits, type, fake);
 }
 
 void Players::healPlayer(Player *player, ReadPacket *packet) {
@@ -501,22 +506,18 @@ void Players::getPlayerInfo(Player *player, ReadPacket *packet) {
 	PlayersPacket::showInfo(player, players[packet->getInt()]);
 }
 
-void Players::commandHandler(Player *player, unsigned char* packet) {
-	unsigned char type = packet[0];
-	char name[20];
+void Players::commandHandler(Player *player, ReadPacket *packet) {
+	unsigned char type = packet->getByte();
+	string name = packet->getString();
 
-	int namesize = BufferUtilities::getShort(packet+1);
-	BufferUtilities::getString(packet+3, namesize, name);
-	
-	char chat[91];
+	string chat;
 	if (type == 0x06) {
-		int chatsize = BufferUtilities::getShort(packet+3+namesize);
-		BufferUtilities::getString(packet+5+namesize, chatsize, chat);
+		chat = packet->getString();
 	}
 
-	hash_map <int, Player*>::iterator iter = Players::players.begin();
+	hash_map<int, Player*>::iterator iter = Players::players.begin();
 	for ( iter = Players::players.begin(); iter != Players::players.end(); iter++) {
-		if (_stricmp(iter->second->getName(), name) == 0) {	
+		if (_stricmp(iter->second->getName(), name.c_str()) == 0) {	
 			if (type == 0x06) {
 				PlayersPacket::whisperPlayer(iter->second, player->getName(), ChannelServer::Instance()->getChannel(), chat);
 				PlayersPacket::findPlayer(player,iter->second->getName(),-1,1);

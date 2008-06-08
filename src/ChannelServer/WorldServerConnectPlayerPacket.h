@@ -18,15 +18,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WORLDSERVERCONNECTPLAYERPACKET_H
 #define WORLDSERVERCONNECTPLAYERPACKET_H
 
+#include <string>
+
+using std::string;
+
 class WorldServerConnectPlayer;
 
 namespace WorldServerConnectPlayerPacket {
 	void playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel);
-	void registerPlayer(WorldServerConnectPlayer *player, int playerid, char *name);
+	void registerPlayer(WorldServerConnectPlayer *player, int playerid, const string &name);
 	void removePlayer(WorldServerConnectPlayer *player, int playerid);
-	void findPlayer(WorldServerConnectPlayer *player, int playerid, char *findee_name);
-	void whisperPlayer(WorldServerConnectPlayer *player, int playerid, char *whisperee, char *message);
-	void scrollingHeader(WorldServerConnectPlayer *player, char *message);
+	void findPlayer(WorldServerConnectPlayer *player, int playerid, const string &findee_name);
+	void whisperPlayer(WorldServerConnectPlayer *player, int playerid, const string &whisperee, const string &message);
+	void scrollingHeader(WorldServerConnectPlayer *player, const string &message);
 };
 
 #endif
