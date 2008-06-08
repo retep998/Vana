@@ -38,6 +38,7 @@ struct SpawnInfo {
 	short fh;
 	int rate;
 	int last;
+	bool spawned;
 };
 typedef vector<SpawnInfo> SpawnsInfo;
 
@@ -76,7 +77,7 @@ namespace Mobs {
 
 class Mob {
 public:
-	Mob() : control(0) { }
+	Mob() : control(0), mapid(-1) { }
 	void setPos(Pos pos) {
 		this->pos = pos;
 	}

@@ -762,6 +762,7 @@ void Initializing::initializeMaps() {
 		spawn.x = atoi(mobRow[3]);
 		spawn.cy = atoi(mobRow[4]);
 		spawn.fh = atoi(mobRow[5]);
+		spawn.spawned = false;
 		spawns.push_back(spawn);
 
 		previousid = atoi(mobRow[1]);
