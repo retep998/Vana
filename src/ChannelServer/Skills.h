@@ -87,6 +87,7 @@ struct SkillActiveInfo {
 	unsigned char types[8];
 	vector <short> vals;
 };
+
 struct SkillMapActiveInfo {
 	char byte;
 	char type;
@@ -94,6 +95,7 @@ struct SkillMapActiveInfo {
 	bool isvalue;
 	int skill;
 };
+
 struct SkillMapEnterActiveInfo {
 	SkillMapEnterActiveInfo() : val(0), isval(false) {
 		for (size_t i = 0; i < 8; i++) {
@@ -103,6 +105,14 @@ struct SkillMapEnterActiveInfo {
 	unsigned char types[8];
 	char val;
 	bool isval;
+};
+
+struct SpecialSkillInfo {
+	SpecialSkillInfo() : skillid(0), level(0), w_speed(0), direction(0) { }
+	unsigned char level;
+	unsigned char w_speed;
+	unsigned char direction;
+	int skillid;
 };
 
 struct SkillsInfo {

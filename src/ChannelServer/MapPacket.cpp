@@ -121,6 +121,8 @@ void MapPacket::showPlayers(Player *player, vector <Player*> players) {
 		if (player->getPlayerid() != players[i]->getPlayerid() && players[i]->skills->getActiveSkillLevel(5101004) == 0) {
 			Packet packet = playerPacket(players[i]);
 			packet.send(player);
+			// Bug in global; would be fixed here: 
+			// Hurricane/Pierce do not display properly if using when someone enters the map
 		}
 	}
 }

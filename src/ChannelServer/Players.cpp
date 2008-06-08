@@ -523,3 +523,21 @@ void Players::commandHandler(Player *player, unsigned char* packet) {
 			WorldServerConnectPlayerPacket::whisperPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), name, chat);
 	}
 }
+
+void Players::handleSpecialSkills(Player *player, unsigned char* packet) {
+	int skillid = BufferUtilities::getInt(packet);
+	switch (skillid) {
+		case 3221001: { // Pierce
+			SpecialSkillInfo info;
+			info.skillid = skillid;
+			info.level = packet[4];
+			info.direction = packet[5];
+			info.w_speed = packet[6];
+			player->setSpecialSkill(info);
+			SkillsPacket::showSpecialSkill(player, Maps::info[player->getMap()].Players, info);
+			break;
+		}
+		case 4211001: // Chakra, unknown heal formula
+			break;
+	}
+}

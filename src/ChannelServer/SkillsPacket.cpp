@@ -170,3 +170,22 @@ void SkillsPacket::showMPEater(Player *player, vector <Player*> players,int skil
 	packet.addByte(1);
 	packet.sendTo(player, players, 0);
 }
+
+void SkillsPacket::showSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info) { // Hurricane, Pierce
+	Packet packet;
+	packet.addHeader(SEND_SPECIAL_SKILL);
+	packet.addInt(player->getPlayerid());
+	packet.addInt(info.skillid);
+	packet.addByte(info.level);
+	packet.addByte(info.direction);
+	packet.addByte(info.w_speed);
+	packet.sendTo(player, players, 0);
+}
+
+void SkillsPacket::endSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info) {
+	Packet packet;
+	packet.addHeader(SEND_SPECIAL_SKILL_END);
+	packet.addInt(player->getPlayerid());
+	packet.addInt(info.skillid);
+	packet.sendTo(player, players, 0);
+}
