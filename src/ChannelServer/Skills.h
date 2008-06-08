@@ -119,7 +119,6 @@ namespace Skills {
 	extern hash_map <int, SkillsInfo> skillsinfo;
 	void addSkill(int id, SkillsLevelInfo skill);
 	void addSkill(Player *player, ReadPacket *packet);
-	void updateSkill(Player *player, int skillid);
 	void cancelSkill(Player *player, ReadPacket *packet);
 	void useSkill(Player *player, ReadPacket *packet);
 	void useAttackSkill(Player *player, int skillid);

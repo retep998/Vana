@@ -650,16 +650,20 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 	int newMaxLevel = 0;
 	bool use = false;
 	bool succeed = false;
+	bool update = false;
 
 	for (unsigned int i=0; i<Drops::consumes[itemid].skills.size(); i++) {
 		skillid = Drops::consumes[itemid].skills[i].skillid;
 		newMaxLevel = Drops::consumes[itemid].skills[i].maxlevel;
-		if (player->getJob() == (int)Drops::consumes[itemid].skills[i].skillid/10000) { // Make sure the skill is for the person's job
+		if (player->getJob() == Drops::consumes[itemid].skills[i].skillid/10000) { // Make sure the skill is for the person's job
 			if (player->skills->getSkillLevel(skillid) >= Drops::consumes[itemid].skills[i].reqlevel && player->skills->getMaxSkillLevel(skillid) < newMaxLevel)
 				use = true;
 		}
 		if (use) {
 			if (Randomizer::Instance()->randInt(99)<Drops::consumes[itemid].success) {
+				if (player->skills->getSkillLevel(skillid) == player->skills->getMaxSkillLevel(skillid)) {
+					update = true;
+				}
 				player->skills->setMaxSkillLevel(skillid, newMaxLevel);
 				succeed = true;
 			}
@@ -671,7 +675,9 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 	if (skillid == 0) return;
 
 	InventoryPacket::useSkillbook(player, Maps::info[player->getMap()].Players, skillid, newMaxLevel, use, succeed);
-	Skills::updateSkill(player, skillid);
+	if (update) {
+		player->skills->addSkillLevel(skillid, 0);
+	}
 }
 void Inventory::useChair(Player *player, ReadPacket *packet) {
 	int chairid = packet->getInt();
