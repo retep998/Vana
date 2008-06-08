@@ -30,9 +30,7 @@ namespace PlayerPacket {
 	void showKeys(Player *player, KeyMaps *keymaps);
 	void updateStat(Player *player, int id, int value, bool is = 0);
 	void updateStat(Player *player, int id, short value, bool is = 0);
-	void newHair(Player *player);
-	void newEyes(Player *player);
-	void newSkin(Player *player);
+	void updateStat(Player *player, int id, char value, bool is = 0);
 	void changeChannel(Player *player, const string &ip, short port);
 	void showMessage(Player *player, const string &msg, char type);
 };

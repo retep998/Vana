@@ -172,30 +172,13 @@ void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
 	packet.send(player);
 }
 
-void PlayerPacket::newHair(Player *player) {
+void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
-	packet.addInt(0x4);
-	packet.addInt(player->getHair());
-	packet.send(player);
-}
-
-void PlayerPacket::newEyes(Player *player) {
-	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
-	packet.addInt(0x2);
-	packet.addInt(player->getEyes());
-	packet.send(player);
-}
-
-void PlayerPacket::newSkin(Player *player) {
-	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
-	packet.addInt(0x1);
-	packet.addByte(player->getSkin());
+	packet.addByte(is);
+	packet.addByte(0);
+	packet.addInt(id);
+	packet.addByte(value);
 	packet.send(player);
 }
 
