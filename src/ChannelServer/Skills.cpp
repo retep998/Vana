@@ -533,12 +533,6 @@ void Skills::init() {
 void Skills::addSkill(int id, SkillsLevelInfo skill) {
 	skills[id] = skill;
 }
-// Update skills - Primarily for 4th job skills
-void Skills::updateSkill(Player *player, int skillid) {
-	if (player->skills->getSkillLevel(skillid) == player->skills->getMaxSkillLevel(skillid)) {
-		player->skills->addSkillLevel(skillid, 0);
-	}
-}
 
 void Skills::addSkill(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
