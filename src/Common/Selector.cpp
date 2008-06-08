@@ -65,7 +65,7 @@ void Selector::unregisterSocket(int socket) {
 
 void Selector::selectThread() {
 	fd_set t_readfds;
-    fd_set t_writefds;
+	fd_set t_writefds;
 	fd_set t_errorfds;
 	while (!terminate) {
 		t_readfds = readfds;

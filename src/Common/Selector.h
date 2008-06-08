@@ -57,7 +57,7 @@ private:
 
 	bool terminate;
 	fd_set readfds;
-    fd_set writefds;
+	fd_set writefds;
 	fd_set errorfds;
 	struct timeval timeout;
 	hash_map<int, SelectHandler *> handlers;

@@ -99,7 +99,7 @@ void Fame::addFameLog(int from, int to) {
 	query << "INSERT INTO fame_log (`from`, `to`, `time`) VALUES (" 
 			<< mysqlpp::quote << from << ","
 			<< mysqlpp::quote << to << ", NOW())";
-    query.exec();
+	query.exec();
 }
 
 bool Fame::getLastFameLog(int from) { // Last fame from that char
@@ -116,7 +116,7 @@ bool Fame::getLastFameLog(int from) { // Last fame from that char
 
 bool Fame::getLastFameSPLog(int from, int to) {
 	mysqlpp::Query query = db.query();
-    query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND `to`=" << mysqlpp::quote << to << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1";
+	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND `to`=" << mysqlpp::quote << to << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (!res.empty()) {

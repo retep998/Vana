@@ -123,41 +123,41 @@ void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiv
 }
 // For Combo Attack
 void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time) { // Show combos to everyone on map 
-    Packet packet;
-    packet.addHeader(SEND_USE_SKILL);
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addByte((char)0x20);
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addShort(player->getCombo()+1);
-    packet.addInt(1111002);
-    packet.addInt(time);
-    packet.addShort(0);
-    packet.addByte(0);
-    packet.send(player);
-    packet = Packet();
-    packet.addHeader(SEND_SHOW_OTHERS_SKILL);
-    packet.addInt(player->getPlayerid());
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addByte((char)0x20);
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addByte(0);
-    packet.addShort(player->getCombo()+1);
-    packet.addByte(0);
-    packet.sendTo(player, players, 0);
+	Packet packet;
+	packet.addHeader(SEND_USE_SKILL);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte((char)0x20);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addShort(player->getCombo()+1);
+	packet.addInt(1111002);
+	packet.addInt(time);
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.send(player);
+	packet = Packet();
+	packet.addHeader(SEND_SHOW_OTHERS_SKILL);
+	packet.addInt(player->getPlayerid());
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte((char)0x20);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addShort(player->getCombo()+1);
+	packet.addByte(0);
+	packet.sendTo(player, players, 0);
 }
 
 void SkillsPacket::showMPEater(Player *player, vector <Player*> players,int skillid) {
-    Packet packet;
-    packet.addHeader(SEND_GAIN_ITEM);
+	Packet packet;
+	packet.addHeader(SEND_GAIN_ITEM);
 	packet.addByte(1);
 	packet.addInt(skillid);
 	packet.addByte(1);

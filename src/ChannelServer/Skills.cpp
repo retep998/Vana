@@ -76,29 +76,29 @@ public:
 		}
 	}
 	void stop (Player *player) {
-        for (unsigned int i=timers.size(); i>0; i--) {
-            if (player == timers[i-1].player) {
-                Timer::Instance()->cancelTimer(timers[i-1].id);
-            }
-        } 
-        for (unsigned int i=acttimers.size(); i>0; i--) { 
-            if (player == acttimers[i-1].player) {
-                Timer::Instance()->cancelTimer(acttimers[i-1].id);
-            }
-        } 
+		for (unsigned int i=timers.size(); i>0; i--) {
+			if (player == timers[i-1].player) {
+				Timer::Instance()->cancelTimer(timers[i-1].id);
+			}
+		} 
+		for (unsigned int i=acttimers.size(); i>0; i--) { 
+			if (player == acttimers[i-1].player) {
+				Timer::Instance()->cancelTimer(acttimers[i-1].id);
+			}
+		} 
 	}
 	void stopKill (Player *player) {
-        for (unsigned int i=timers.size(); i>0; i--) {
-            if (player == timers[i-1].player) {
+		for (unsigned int i=timers.size(); i>0; i--) {
+			if (player == timers[i-1].player) {
 				Skills::endSkill(player, timers[i].id);
-                Timer::Instance()->cancelTimer(timers[i-1].id);
-            }
-        } 
-        for (unsigned int i=acttimers.size(); i>0; i--) { 
-            if (player == acttimers[i-1].player) {
-                Timer::Instance()->cancelTimer(acttimers[i-1].id);
-            }
-        }
+				Timer::Instance()->cancelTimer(timers[i-1].id);
+			}
+		} 
+		for (unsigned int i=acttimers.size(); i>0; i--) { 
+			if (player == acttimers[i-1].player) {
+				Timer::Instance()->cancelTimer(acttimers[i-1].id);
+			}
+		}
 	}
 	int skillTime(Player *player, int skillid) { // Get skill time
 		int timeleft = 0;
@@ -785,7 +785,7 @@ void Skills::heal(Player *player, short value, int skillid) {
 void Skills::addCombo(Player *player, int hits) { // add combo orbs 
 	if (player->skills->getActiveSkillLevel(1111002)>0) {
 		if (player->getCombo()<0) player->setCombo(0);
-        int maxcombo = 0;
+		int maxcombo = 0;
 		if (player->skills->getSkillLevel(1120003)>0) maxcombo = Skills::skills[1120003][player->skills->getSkillLevel(1120003)].x;
 		else maxcombo = Skills::skills[1111002][player->skills->getSkillLevel(1111002)].x;
 		if (player->getCombo()>=maxcombo) {
