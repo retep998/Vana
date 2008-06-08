@@ -24,21 +24,21 @@ using namespace std;
 using namespace stdext;
 
 class Player;
-
+class ReadPacket;
 struct Pos;
 
 namespace Players {
 	extern hash_map <int, Player*> players;
 	void addPlayer(Player *player);
 	void deletePlayer(Player *player);
-	void handleMoving(Player *player, unsigned char* packet, int size);
+	void handleMoving(Player *player, ReadPacket *packet);
 	void damagePlayer(Player *player, unsigned char* packet);
-	void faceExperiment(Player *player, unsigned char* packet);
+	void faceExperiment(Player *player, ReadPacket *packet);
 	void chatHandler(Player *player, unsigned char* packet);
-	void healPlayer(Player *player, unsigned char* packet);
-	void getPlayerInfo(Player *player, unsigned char* packet);
+	void healPlayer(Player *player, ReadPacket *packet);
+	void getPlayerInfo(Player *player, ReadPacket *packet);
 	void commandHandler(Player *player, unsigned char* packet);
-	void handleSpecialSkills(Player *player, unsigned char* packet);
+	void handleSpecialSkills(Player *player, ReadPacket *packet);
 };
 
 #endif

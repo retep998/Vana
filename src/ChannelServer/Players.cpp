@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "PacketCreator.h"
 #include "BufferUtilities.h"
+#include "ReadPacket.h"
 #include "WorldServerConnectPlayerPacket.h"
 
 hash_map <int, Player*> Players::players;
@@ -42,20 +43,27 @@ void Players::deletePlayer(Player *player) {
 	players.erase(player->getPlayerid());
 }
 
-void Players::handleMoving(Player *player, unsigned char* packet, int size) {
+void Players::handleMoving(Player *player, ReadPacket *packet) {
+	packet->reset(-12);
+	char type = packet->getByte();
+
 	Pos cpos;
-	int pla = packet[5]*14+1;
-	cpos.x = BufferUtilities::getShort(packet+size-4);
-	cpos.y = BufferUtilities::getShort(packet+size-2);
+	packet->reset(-4);
+	cpos.x = packet->getShort();
+	cpos.y = packet->getShort();
+
 	player->setPos(cpos);
-	player->setType(packet[5+14*(packet[5]-1)+12]);
-	PlayersPacket::showMoving(player, Maps::info[player->getMap()].Players, packet, pla);
+	player->setType(type);
+
+	packet->reset(7);
+	PlayersPacket::showMoving(player, Maps::info[player->getMap()].Players, packet->getBuffer(), packet->getBufferLength());
 }
 
-void Players::faceExperiment(Player *player, unsigned char* packet) {
-	int face = BufferUtilities::getInt(packet);
+void Players::faceExperiment(Player *player, ReadPacket *packet) {
+	int face = packet->getInt();
 	PlayersPacket::faceExperiment(player, Maps::info[player->getMap()].Players, face);
 }
+
 void Players::chatHandler(Player *player, unsigned char* packet) {
 	char chat[91];
 	int chatsize = BufferUtilities::getShort(packet);
@@ -481,13 +489,16 @@ void Players::damagePlayer(Player *player, unsigned char* packet) {
 		PlayersPacket::damagePlayer(player, Maps::info[player->getMap()].Players, damage, mob->getMobID(), packet[25], type, fake);
 }
 
-void Players::healPlayer(Player *player, unsigned char* packet) {
-	player->setHP(player->getHP()+BufferUtilities::getShort(packet+4));
-	player->setMP(player->getMP()+BufferUtilities::getShort(packet+6));
+void Players::healPlayer(Player *player, ReadPacket *packet) {
+	packet->skipBytes(4);
+	short hp = packet->getShort();
+	short mp = packet->getShort();
+	player->setHP(player->getHP() + hp);
+	player->setMP(player->getMP() + mp);
 }
 
-void Players::getPlayerInfo(Player *player, unsigned char* packet) {
-	PlayersPacket::showInfo(player, players[BufferUtilities::getInt(packet+4)]);
+void Players::getPlayerInfo(Player *player, ReadPacket *packet) {
+	PlayersPacket::showInfo(player, players[packet->getInt()]);
 }
 
 void Players::commandHandler(Player *player, unsigned char* packet) {
@@ -524,15 +535,15 @@ void Players::commandHandler(Player *player, unsigned char* packet) {
 	}
 }
 
-void Players::handleSpecialSkills(Player *player, unsigned char* packet) {
-	int skillid = BufferUtilities::getInt(packet);
+void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
+	int skillid = packet->getInt();
 	switch (skillid) {
 		case 3221001: { // Pierce
 			SpecialSkillInfo info;
 			info.skillid = skillid;
-			info.level = packet[4];
-			info.direction = packet[5];
-			info.w_speed = packet[6];
+			info.level = packet->getByte();
+			info.direction = packet->getByte();
+			info.w_speed = packet->getByte();
 			player->setSpecialSkill(info);
 			SkillsPacket::showSpecialSkill(player, Maps::info[player->getMap()].Players, info);
 			break;

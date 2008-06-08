@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "SendHeader.h"
 
-void PlayersPacket::showMoving(Player *player, vector <Player*> players, unsigned char* packett, int size) {
+void PlayersPacket::showMoving(Player *player, vector <Player*> players, unsigned char *buf, size_t size) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(0);
-	packet.addBuffer(packett+5, size);
+	packet.addBuffer(buf, size);
 	packet.sendTo<Player>(player, players, 0);
 }	
 
