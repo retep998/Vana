@@ -328,17 +328,17 @@ void Player::changeKey(ReadPacket *packet) {
 
 void Player::setHair(int id) {
 	this->hair = id;
-	PlayerPacket::newHair(this);
+	PlayerPacket::updateStat(this, 0x04, id);
 }
 
 void Player::setEyes(int id) {
 	this->eyes = id;
-	PlayerPacket::newEyes(this);
+	PlayerPacket::updateStat(this, 0x02, id);
 }
 
 void Player::setSkin(char id) {
 	this->skin = id;
-	PlayerPacket::newSkin(this);
+	PlayerPacket::updateStat(this, 0x01, id);
 }
 
 bool Player::addWarning() {
