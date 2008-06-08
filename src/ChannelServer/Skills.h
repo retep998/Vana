@@ -61,7 +61,8 @@ enum {
 	SKILL_MATK,
 	SKILL_MDEF,
 	SKILL_ACC,
-	SKILL_AVO
+	SKILL_AVO,
+	SKILL_PROP
 };
 
 struct SkillPlayerInfo {
