@@ -88,15 +88,7 @@ void Mobs::addSpawn(int id, SpawnsInfo spawns) {
 void Mobs::checkSpawn(int mapid) {
 	for (size_t i = 0; i < info[mapid].size(); i++) {
 		// (Re-)spawn Mobs
-		bool spawn = true;
-		for (hash_map<int, Mob *>::iterator iter = mobs[mapid].begin(); iter != mobs[mapid].end(); iter++) {
-			if (iter->second != NULL) {
-				if (iter->second->getMapID() == i) {
-					spawn = false;
-				}
-			}
-		}
-		if (spawn) {
+		if (!info[mapid][i].spawned) {
 			Mob *mob = new Mob();
 			int id = nextMobId(mapid);
 			mob->setPos(info[mapid][i].x, info[mapid][i].cy);
@@ -108,25 +100,26 @@ void Mobs::checkSpawn(int mapid) {
 			mob->setFH(info[mapid][i].fh);
 			mob->setType(2);
 			mobs[mapid][id] = mob;
+			info[mapid][i].spawned = true;
 			if (Maps::info[mapid].Players.size() > 0) {
-				MobsPacket::spawnMob(Maps::info[mapid].Players[0], mob, Maps::info[mapid].Players, 1);
+				MobsPacket::spawnMob(Maps::info[mapid].Players[0], mob, Maps::info[mapid].Players, true);
 				updateSpawn(mapid, mob);
 			}
 		}
 	}
-}	
+}
 
 void Mobs::showMobs(Player *player) {
-	updateSpawn(player->getMap()); 
+	updateSpawn(player->getMap());
 	for (hash_map<int, Mob *>::iterator iter = Mobs::mobs[player->getMap()].begin(); iter != Mobs::mobs[player->getMap()].end(); iter++) {
-		if (iter->second != 0)
+		if (iter->second != NULL)
 			MobsPacket::showMob(player, iter->second);
 	}
 }
 
 void Mobs::updateSpawn(int mapid) {
 	for (hash_map<int, Mob *>::iterator iter = Mobs::mobs[mapid].begin(); iter != Mobs::mobs[mapid].end(); iter++) {
-		if (iter->second != 0)
+		if (iter->second != NULL)
 			updateSpawn(mapid, iter->second);
 	}
 }
@@ -170,6 +163,9 @@ void Mobs::dieMob(Player *player, Mob* mob) {
 		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY()-1);
 	}
 
+	if (mob->getMapID() > -1) // Set spawned value to false if mob was spawned by spawn point
+		info[player->getMap()][mob->getMapID()].spawned = false;
+
 	player->quests->updateQuestMob(mob->getMobID());
 	mobs[player->getMap()].erase(mob->getID());
 	delete mob;
@@ -181,6 +177,7 @@ Mob * Mobs::getMob(int mobid, int map) {
 	}
 	return NULL;
 }
+
 void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 	MobsPacket::damageMobSpell(player, Maps::info[player->getMap()].Players, packet);
 	int howmany = packet[1]/0x10;
