@@ -199,18 +199,11 @@ private:
 	Pos pos;
 	DropInfo info;
 public:
-	Drop(int mapid) {
-		quest=0;
-		playerid = 0;
-		ismeso=0;
-		isequip=0;
-		map = mapid;
-		questid=0;
-		dropped=0;
-		objid = Drops::objids[mapid]++;
-		if (Drops::drops.find(mapid) == Drops::drops.end())
-			Drops::drops[mapid];
-		Drops::drops[mapid].push_back(this);
+	Drop(int map) : quest(0), playerid(0), ismeso(0), isequip(0), map(map), questid(0), dropped(0) {
+		objid = Drops::objids[map]++;
+		if (Drops::drops.find(map) == Drops::drops.end())
+			Drops::drops[map];
+		Drops::drops[map].push_back(this);
 	}
 	void setID(int id) {
 		this->id = id;
