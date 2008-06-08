@@ -302,7 +302,7 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 	int itemid = 0;
 	int pos = BufferUtilities::getInt(packet+14);
-	bool s4121006 = (packet[6] == 0x40 ? true : false); // Shadow Claw
+	bool s4121006 = (packet[6] == 0x40 || packet[6] == 0x48); // Shadow Claw
 	if (!s4121006) {
 		for (int i = 0; i < player->inv->getItemNum(); i++) {
 			if (player->inv->getItem(i)->pos == pos && player->inv->getItem(i)->inv == 2) {
@@ -322,7 +322,7 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 	int skillid = BufferUtilities::getInt(packet+2);
 	short offset = 0;
 	if (skillid == 3121004 || skillid == 3221001) {
-		offset = 4; // Hurricane/Pierce add 4 bytes after skill ID, value represents charge time (0 for Hurricane)
+		offset += 4; // Hurricane/Pierce add 4 bytes after skill ID, value represents charge time (0 for Hurricane)
 		if (skillid == 3121004) { // Only Hurricane constantly does damage
 			if (player->getSpecialSkill() == 0) { // Display it if not displayed
 				SpecialSkillInfo info;
@@ -336,7 +336,7 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 		}
 	}
 	if (s4121006)
-		offset = 4; // Shadow Claw's offset only matters for damage, adds a 4 byte star ID at the end of the normal packet before damage
+		offset += 4; // Shadow Claw's offset only matters for damage, adds a 4 byte star ID at the end of the normal packet before damage
 	else {
 		if (skillid == 4111005) // Avenger
 			Inventory::takeItemSlot(player, pos, 2, 3*hits);
