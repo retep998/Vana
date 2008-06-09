@@ -503,6 +503,7 @@ void Players::healPlayer(Player *player, ReadPacket *packet) {
 }
 
 void Players::getPlayerInfo(Player *player, ReadPacket *packet) {
+	packet->skipBytes(4);
 	PlayersPacket::showInfo(player, players[packet->getInt()]);
 }
 
