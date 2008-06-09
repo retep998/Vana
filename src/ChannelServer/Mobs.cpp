@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 hash_map<int, MobInfo> Mobs::mobinfo;
 hash_map<int, SpawnsInfo> Mobs::info;
+hash_map<int, queue<int>> Mobs::respawns;
 hash_map<int, hash_map<int, Mob *>> Mobs::mobs;
 hash_map<int, LoopingId *> Mobs::loopingIds;
 
@@ -83,27 +84,28 @@ void Mobs::addMob(int id, MobInfo mob) {
 
 void Mobs::addSpawn(int id, SpawnsInfo spawns) {
 	info[id] = spawns;
+	for (size_t i = 0; i < info[id].size(); i++) // Queue up all spawn points for initial spawning
+		respawns[id].push(i);
 }
 
 void Mobs::checkSpawn(int mapid) {
-	for (size_t i = 0; i < info[mapid].size(); i++) {
-		// (Re-)spawn Mobs
-		if (!info[mapid][i].spawned) {
-			Mob *mob = new Mob();
-			int id = nextMobId(mapid);
-			mob->setPos(info[mapid][i].x, info[mapid][i].cy);
-			mob->setID(id);
-			mob->setMobID(info[mapid][i].id);
-			mob->setMapID(i);
-			mob->setHP(mobinfo[info[mapid][i].id].hp);
-			mob->setMP(mobinfo[info[mapid][i].id].mp);
-			mob->setFH(info[mapid][i].fh);
-			mob->setType(2);
-			mobs[mapid][id] = mob;
-			info[mapid][i].spawned = true;
-			MobsPacket::spawnMob(Maps::info[mapid].Players, mob);
-			updateSpawn(mapid, mob);
-		}
+	// (Re-)spawn Mobs
+	while (!respawns[mapid].empty()) {
+		int i = respawns[mapid].front();
+		Mob *mob = new Mob();
+		int id = nextMobId(mapid);
+		mob->setPos(info[mapid][i].x, info[mapid][i].cy);
+		mob->setID(id);
+		mob->setMobID(info[mapid][i].id);
+		mob->setMapID(i);
+		mob->setHP(mobinfo[info[mapid][i].id].hp);
+		mob->setMP(mobinfo[info[mapid][i].id].mp);
+		mob->setFH(info[mapid][i].fh);
+		mob->setType(2);
+		mobs[mapid][id] = mob;
+		MobsPacket::spawnMob(Maps::info[mapid].Players, mob);
+		updateSpawn(mapid, mob);
+		respawns[mapid].pop();
 	}
 }
 
@@ -150,7 +152,7 @@ void Mobs::dieMob(Player *player, Mob* mob) {
 	if (player->skills->getActiveSkillLevel(2311003)>0) {
 		hsrate = Skills::skills[2311003][player->skills->getActiveSkillLevel(2311003)].x;
 	}
-	else if (player->skills->getActiveSkillLevel(5101002)>0) {
+	else if (player->skills->getActiveSkillLevel(5101002) > 0) {
 		hsrate = Skills::skills[5101002][player->skills->getActiveSkillLevel(5101002)].x;
 	}
 
@@ -162,8 +164,8 @@ void Mobs::dieMob(Player *player, Mob* mob) {
 		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY()-1);
 	}
 
-	if (mob->getMapID() > -1) // Set spawned value to false if mob was spawned by spawn point
-		info[player->getMap()][mob->getMapID()].spawned = false;
+	if (mob->getMapID() > -1) // Add spawn point to respawns queue if mob was spawned by a spawn point.
+		respawns[player->getMap()].push(mob->getMapID());
 
 	player->quests->updateQuestMob(mob->getMobID());
 	mobs[player->getMap()].erase(mob->getID());

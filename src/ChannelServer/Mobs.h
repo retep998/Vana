@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include <hash_map>
 #include <vector>
+#include <queue>
 
 using namespace std;
 using namespace stdext;
@@ -38,7 +39,6 @@ struct SpawnInfo {
 	short fh;
 	int rate;
 	int last;
-	bool spawned;
 };
 typedef vector<SpawnInfo> SpawnsInfo;
 
@@ -55,9 +55,9 @@ struct MobInfo {
 namespace Mobs {
 	extern hash_map<int, MobInfo> mobinfo;
 	extern hash_map<int, SpawnsInfo> info;
+	extern hash_map<int, queue<int>> respawns;
 	extern hash_map<int, hash_map<int, Mob *>> mobs;
 	extern hash_map<int, LoopingId *> loopingIds;
-	extern int mobscount;
 	void addMob(int id, MobInfo mob);
 	void addSpawn(int id, SpawnsInfo spawns);
 	void damageMob(Player *player, unsigned char* packet);
