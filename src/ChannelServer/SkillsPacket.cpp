@@ -34,13 +34,15 @@ void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel
 	packet.send(player);
 }
 
-void SkillsPacket::showSkill(Player *player, vector <Player*> players, int skillid) {
-	Packet packet;
-	packet.addHeader(SEND_SHOW_SKILL);
-	packet.addInt(player->getPlayerid());
-	packet.addByte(1);
-	packet.addInt(skillid);
-	packet.addByte(1); //TODO
+void SkillsPacket::showSkill(Player *player, vector <Player*> players, int skillid, unsigned char level, unsigned char direction) {
+ 	Packet packet;
+ 	packet.addHeader(SEND_SHOW_SKILL);
+ 	packet.addInt(player->getPlayerid());
+ 	packet.addByte(1);
+ 	packet.addInt(skillid);
+	packet.addByte(level); //TODO
+	if (direction != 0xFF)
+		packet.addByte(direction);
 	packet.sendTo<Player>(player, players, 0);
 }
 
@@ -187,5 +189,13 @@ void SkillsPacket::endSpecialSkill(Player *player, vector <Player*> players, Spe
 	packet.addHeader(SEND_SPECIAL_SKILL_END);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(info.skillid);
+	packet.sendTo(player, players, 0);
+}
+
+void SkillsPacket::showMagnet(Player *player, vector <Player*> players, int mobid, unsigned char success) {  // Monster Magnet
+	Packet packet;
+	packet.addHeader(SEND_SHOW_MAGNET);
+	packet.addInt(mobid);
+	packet.addByte(success);
 	packet.sendTo(player, players, 0);
 }

@@ -27,7 +27,7 @@ struct SpecialSkillInfo;
 
 namespace SkillsPacket {
 	void addSkill(Player *player, int skillid, int level, int maxlevel = 0);
-	void showSkill(Player *player, vector <Player*> players, int skillid);
+	void showSkill(Player *player, vector <Player*> players, int skillid, unsigned char level, unsigned char direction);
 	void showCombo(Player *player, vector <Player*> players, int time); // Combo Attack
 	void useSkill(Player *player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
 	void endSkill(Player *player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill);
@@ -35,6 +35,7 @@ namespace SkillsPacket {
 	void showMPEater(Player *player, vector <Player*> players, int skillid);
 	void showSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info); // Hurricane/Pierce
 	void endSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info);
+	void showMagnet(Player *player, vector <Player*> players, int mobid, unsigned char success); // Monster Magnet
 };
 
 #endif
