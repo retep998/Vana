@@ -311,7 +311,7 @@ void Player::changeChannel(char channel) {
 }
 
 void Player::changeKey(ReadPacket *packet) {
-	packet->skipBytes(3);
+	packet->skipBytes(4);
 	int howmany = packet->getInt();
 	if (howmany == 0) return;
 
