@@ -91,7 +91,14 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_DROP_MESO: Drops::dropMesos(this, packet); break;
 		case RECV_FAME: Fame::handleFame(this, packet); break;
 		case RECV_GET_QUEST: Quests::getQuest(this, packet); break;
-		case RECV_KEYMAP: changeKey(packet);
+		case RECV_KEYMAP: {
+			unsigned char id = packet->getByte();
+			switch (id) {
+				case 0x00: changeKey(packet); break;
+				default: break; // handlePet(id,packet); break;
+			}
+			break;
+		}
 		case RECV_LOOT_ITEM: Drops::lootItem(this, packet); break;
 		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet); break;
 		case RECV_SPECIAL_SKILL: Players::handleSpecialSkills(this, packet); break;
@@ -311,7 +318,7 @@ void Player::changeChannel(char channel) {
 }
 
 void Player::changeKey(ReadPacket *packet) {
-	packet->skipBytes(4);
+	packet->skipBytes(3);
 	int howmany = packet->getInt();
 	if (howmany == 0) return;
 
