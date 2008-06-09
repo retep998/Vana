@@ -174,20 +174,26 @@ void MobsPacket::damageMobSpell(Player *player, vector <Player*> players, unsign
 	packet.addInt(player->getPlayerid());
 	packet.addByte(pack[1]);
 	packet.addByte(1);
-	packet.addInt(BufferUtilities::getInt(pack+2));
-	packet.addByte(pack[7]);
-	packet.addByte(pack[9]);
+	int skillid = BufferUtilities::getInt(pack+2);
+	packet.addInt(skillid);
+	short offset = 0;
+	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
+		offset = 4;
+	packet.addByte(pack[7+offset]);
+	packet.addByte(pack[9+offset]);
 	packet.addByte(0);
 	packet.addInt(0);
 	for (int i=0; i<howmany; i++) {
-		int mobid = BufferUtilities::getInt(pack+14+i*(22+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(pack+14+offset+i*(22+4*(hits-1)));
 		packet.addInt(mobid);
 		packet.addByte(-1);
 		for (int j=0; j<hits; j++) {
-			int damage = BufferUtilities::getInt(pack+32+i*(22+4*(hits-1))+j*4);
+			int damage = BufferUtilities::getInt(pack+32+offset+i*(22+4*(hits-1))+j*4);
 			packet.addInt(damage);
 		}
 	}
+	if (offset)
+		packet.addInt(BufferUtilities::getInt(pack+6));
 	packet.sendTo<Player>(player, players, 0);
 }
 

@@ -556,7 +556,7 @@ void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 	stopSkill(player, packet->getInt());
 }
 void Skills::stopSkill(Player *player, int skillid) {
-	if (skillid == 3121004 || skillid == 3221001) { // Hurricane/Pierce
+	if (skillid == 3121004 || skillid == 3221001 || skillid == 2121001 || skillid == 2221001 || skillid == 2321001) { // Hurricane/Pierce/Big Bang x3
 		SkillsPacket::endSpecialSkill(player, Maps::info[player->getMap()].Players, player->getSpecialSkillInfo());
 		SpecialSkillInfo info;
 		player->setSpecialSkill(info);

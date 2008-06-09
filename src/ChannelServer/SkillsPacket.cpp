@@ -173,7 +173,7 @@ void SkillsPacket::showMPEater(Player *player, vector <Player*> players,int skil
 	packet.sendTo(player, players, 0);
 }
 
-void SkillsPacket::showSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info) { // Hurricane, Pierce
+void SkillsPacket::showSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang
 	Packet packet;
 	packet.addHeader(SEND_SPECIAL_SKILL);
 	packet.addInt(player->getPlayerid());

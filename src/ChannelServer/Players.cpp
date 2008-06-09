@@ -540,7 +540,10 @@ void Players::commandHandler(Player *player, ReadPacket *packet) {
 void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 	int skillid = packet->getInt();
 	switch (skillid) {
-		case 3221001: { // Pierce
+		case 3221001: // Pierce
+		case 2121001: // Big Bang x3
+		case 2221001:
+		case 2321001: {
 			SpecialSkillInfo info;
 			info.skillid = skillid;
 			info.level = packet->getByte();
