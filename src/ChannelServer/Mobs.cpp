@@ -185,7 +185,9 @@ void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 	int hits = packet[1]%0x10;
 	int map = player->getMap();
 	int skillid = BufferUtilities::getInt(packet+2);
-
+	short offset = 0;
+	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
+		offset = 4;
 	int mpeater = 0;
 	int mpeater_lv = 0;
 	int mpeater_success;
@@ -201,10 +203,10 @@ void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	for (int i=0; i<howmany; i++) {
-		int mobid = BufferUtilities::getInt(packet+14+i*(22+4*(hits-1)));
+		int mobid = BufferUtilities::getInt(packet+14+offset+i*(22+4*(hits-1)));
 		Mob* mob = getMob(mobid, map);
 		for (int k=0; k<hits; k++) {
-			int damage = BufferUtilities::getInt(packet+32+i*(22+4*(hits-1))+k*4);
+			int damage = BufferUtilities::getInt(packet+32+offset+i*(22+4*(hits-1))+k*4);
 			if (mob != NULL) {
  				mob->setHP(mob->getHP()-damage);
 				int mhp = -1;
