@@ -224,7 +224,7 @@ void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 				player->setMP(player->getMP() + mp);
 				SkillsPacket::showMPEater(player, Maps::info[map].Players, mpeater);
 			}
-			MobHPInfoStruct hpinfo; 
+			MobHPInfo hpinfo; 
 			hpinfo.hp = mob->getHP();
 			hpinfo.mhp = mobinfo[mobid].hp;
 			hpinfo.boss = mobinfo[mobid].boss;
@@ -265,7 +265,7 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 				if (player->addWarning()) return;
 			}
 			mob->setHP(mob->getHP() - damage);
-			MobHPInfoStruct hpinfo; 
+			MobHPInfo hpinfo; 
 			hpinfo.hp = mob->getHP();
 			hpinfo.mhp = mobinfo[mobid].hp;
 			hpinfo.boss = mobinfo[mobid].boss;
@@ -358,7 +358,7 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 			if (mob == NULL)
 				return;
 			mob->setHP(mob->getHP() - damage);
-			MobHPInfoStruct hpinfo; 
+			MobHPInfo hpinfo; 
 			hpinfo.hp = mob->getHP();
 			mhp = hpinfo.mhp = mobinfo[mobid].hp;
 			hpinfo.boss = mobinfo[mobid].boss;
@@ -393,7 +393,7 @@ void Mobs::damageMobPG(Player *player, int damage, Mob *mob) {
 	if (mob == NULL)
 		return;
 	mob->setHP(mob->getHP() - damage);
-	MobHPInfoStruct hpinfo;
+	MobHPInfo hpinfo;
 	hpinfo.hp = mob->getHP();
 	hpinfo.mhp = mobinfo[mobid].hp;
 	hpinfo.boss = mobinfo[mobid].boss;
@@ -434,7 +434,7 @@ inline int Mobs::nextMobId(int mapid) {
 	return loopingIds[mapid]->next();
 }
 
-void Mobs::displayHPBars(Player* player, vector <Player*> players, const MobHPInfoStruct &mob) {
+void Mobs::displayHPBars(Player* player, vector <Player*> players, const MobHPInfo &mob) {
 	if (mob.boss && mob.hpcolor > 0) // Boss HP bars
 		MobsPacket::showBossHP(player, players, mob);
 	else if (mob.boss) // Miniboss HP bars
