@@ -27,11 +27,13 @@ using std::vector;
 class Player;
 class Packet;
 
+struct PowerGuardInfo;
+
 namespace PlayersPacket {
 	void showMoving(Player *player, vector <Player*> players, unsigned char *buf, size_t size);
 	void faceExperiment(Player *player, vector <Player*> players, int face);
 	void showChat(Player *player, vector <Player*> players, const string &msg);
-	void damagePlayer(Player *player, vector <Player*> players, int dmg, int mob, unsigned char hit, unsigned char type, int fake);
+	void damagePlayer(Player *player, vector <Player*> players, int dmg, int mob, unsigned char hit, unsigned char type, int fake, PowerGuardInfo pg);
 	void showMessage(char* msg, char type);
 	void showInfo(Player *player, Player* getinfo);
 	void findPlayer(Player *player, const string &name, int map, unsigned char is = 0, bool is_channel = 0);

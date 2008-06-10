@@ -420,14 +420,28 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 }
 
 void Players::damagePlayer(Player *player, ReadPacket *packet) {
-	packet->skipBytes(4);
-	unsigned char type = packet->getByte(); // 0xFF = bump, 0xFE = fall, 0x00-0x0* = mob skill ID
+	packet->skipBytes(4); // Ticks
+	unsigned char type = packet->getByte(); // 0xFF = bump, 0xFE = fall/map damage, 0x00-0x0* = mob skill ID
 	int damage = packet->getInt();
-	packet->skipBytes(4);
-	int mobid = packet->getInt();
-	packet->skipBytes(8);
-	unsigned char hits = packet->getByte();
-	
+	int mobid = packet->getInt(); // Actual Mob ID - i.e. 8800000 for Zak
+	int mapmobid = packet->getInt(); // Map Mob ID
+	packet->skipBytes(4); // No clue yet
+	packet->skipBytes(1); // Knock direction
+	PowerGuardInfo pg;
+	pg.reduction = packet->getByte();
+	packet->skipBytes(1); // Possible Mana Reflection?
+	if (pg.reduction != 0x00 && type == 0xFF) {
+		packet->skipBytes(1); // Power Guard exists?
+		pg.mapmobid = packet->getInt();
+		packet->skipBytes(1); // 0x06, damage coming up
+		packet->skipBytes(4); // Mob position garbage
+		pg.pos_x = packet->getShort();
+		pg.pos_y = packet->getShort();
+		pg.damage = damage;
+		damage = (damage - (damage * pg.reduction / 100));
+	}
+	packet->skipBytes(1); // Stance
+	unsigned char hit = packet->getByte();
 	int fake = 0;
 	if (damage == -1) { // 0 = regular miss, this = Fake
 		short job = player->getJob() / 10 - 40;
@@ -437,10 +451,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			return;
 		}
 	}
-	Mob *mob = Mobs::mobs[player->getMap()][mobid];
-
-	// Magic Guard
-	if (player->skills->getActiveSkillLevel(2001002) > 0) {
+	if (player->skills->getActiveSkillLevel(2001002) > 0) { // Magic Guard
 		unsigned short mp = player->getMP();
 		unsigned short hp = player->getHP();
 		unsigned short reduc = Skills::skills[2001002][player->skills->getActiveSkillLevel(2001002)].x;
@@ -455,44 +466,26 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			player->setHP(hp - hpdamage);
 		}
 	}
-	// Power Guard
-	else if (player->skills->getActiveSkillLevel(1101007)>0 || player->skills->getActiveSkillLevel(1201007)>0) {
-		float reduc;
-		if (player->skills->getActiveSkillLevel(1101007)>0)
-			reduc = Skills::skills[1101007][player->skills->getActiveSkillLevel(1101007)].x;
-		else
-			reduc = Skills::skills[1201007][player->skills->getActiveSkillLevel(1201007)].x;
-		if (damage>0) {
-			damage = (int) (damage-(damage*(reduc/100)));
-			player->setHP(player->getHP()-damage);
-		}
-	}
-	// Meso Guard
-	else if (player->skills->getActiveSkillLevel(4211005) > 0 && player->inv->getMesos() > 0) {
+	else if (player->skills->getActiveSkillLevel(4211005) > 0 && player->inv->getMesos() > 0) { // Meso Guard
 		unsigned short hp = player->getHP();
-		// Get the rate of meso loss in %
-		float mesorate = Skills::skills[4211005][player->skills->getActiveSkillLevel(4211005)].x;
-		mesorate = mesorate/100;
-		int mesoloss = (int) (mesorate)*(damage/2);
-		// Only block damage if user has mesos
-		if (player->inv->getMesos() > 0)
-			player->setHP(hp-(damage/2));
+		int mesorate = Skills::skills[4211005][player->skills->getActiveSkillLevel(4211005)].x;
+		int mesoloss = (int)((mesorate / 100) * damage / 2);
+		if (player->inv->getMesos() > 0)	// Only block damage if user has mesos
+			player->setHP(hp - (damage / 2));
 		else
-			player->setHP(hp-damage);
-		// Do not let mesos go negative
-		if (player->inv->getMesos()-mesoloss < 0) {
-			player->inv->setMesos(0);
-		}
-		else{
-			player->inv->setMesos(player->inv->getMesos()-mesoloss);
-		}
-	}
-	else{
-		player->setHP(player->getHP()-damage);
-	}
-	if (mob != NULL)
-		PlayersPacket::damagePlayer(player, Maps::info[player->getMap()].Players, damage, mob->getMobID(), hits, type, fake);
-}
+			player->setHP(hp - damage);
+		if (player->inv->getMesos() - mesoloss < 0)	// Do not let mesos go negative
+ 			player->inv->setMesos(0);
+		else
+			player->inv->setMesos(player->inv->getMesos() - mesoloss);
+ 	}
+	else
+		player->setHP(player->getHP() - damage);
+	if (type == 0xFF && pg.reduction != 0x00) // Remove that damage, HP warrior!
+		Mobs::damageMobPG(player, (pg.damage * pg.reduction / 100), Mobs::mobs[player->getMap()][mapmobid]);
+	if (type != 0xFE) // Fall damage and map damage don't play by these rules
+		PlayersPacket::damagePlayer(player, Maps::info[player->getMap()].Players, damage, mobid, hit, type, fake, pg);
+ }
 
 void Players::healPlayer(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
