@@ -116,6 +116,14 @@ struct SpecialSkillInfo {
 	int skillid;
 };
 
+struct PowerGuardInfo {
+	PowerGuardInfo() : reduction(0), pos_x(0), pos_y(0), damage(0), mapmobid(0) { }
+	unsigned char reduction;
+	short pos_x;
+	short pos_y;
+	int damage;
+	int mapmobid;
+};
 struct SkillsInfo {
 	vector <SkillPlayerInfo> player;
 	vector <SkillMapInfo> map;

@@ -383,6 +383,26 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 	}
 }
 
+void Mobs::damageMobPG(Player *player, int damage, Mob *mob) {
+	int map = player->getMap();
+	int mobid = mob->getMobID();
+	int mapmobid = mob->getID();
+	if (mob != NULL) {
+		mob->setHP(mob->getHP() - damage);
+		int mhp = -1;
+		mhp = mobinfo[mobid].hp;
+		// HP Bars
+		if (mobinfo[mobid].boss && mobinfo[mobid].hpcolor > 0) // Boss HP bars
+			MobsPacket::showBossHP(player, Maps::info[map].Players, mapmobid, mob->getHP(), mhp, mobinfo[mobid].hpcolor, mobinfo[mobid].hpbgcolor);
+		else if (mobinfo[mobid].boss) // Miniboss HP bars
+			MobsPacket::showMinibossHP(player, Maps::info[map].Players, mapmobid, mob->getHP() * 100 / mhp);
+		else // Normal HP bars
+			MobsPacket::showHP(player, mapmobid, mob->getHP() * 100 / mhp);
+		if (mob->getHP() <= 0)
+			dieMob(player, mob);
+	}
+}
+
 void Mobs::spawnMob(Player *player, int mobid, int amount) {
 	for (int i = 0; i < amount; i++)
 		spawnMobPos(player->getMap(), mobid, player->getPos().x, player->getPos().y);
