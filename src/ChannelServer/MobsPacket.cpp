@@ -213,7 +213,7 @@ void MobsPacket::showMinibossHP(Player *player, vector <Player*> players, int mo
 	packet.sendTo(player, players, true);
 }
 // Boss hp
-void MobsPacket::showBossHP(Player *player, vector <Player*> players, MobHPInfoStruct mob) {
+void MobsPacket::showBossHP(Player *player, vector <Player*> players, const MobHPInfoStruct &mob) {
 	Packet packet;
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x05);
