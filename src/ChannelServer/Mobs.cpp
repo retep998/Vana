@@ -434,7 +434,7 @@ inline int Mobs::nextMobId(int mapid) {
 	return loopingIds[mapid]->next();
 }
 
-void Mobs::displayHPBars(Player* player, vector <Player*> players, MobHPInfoStruct mob) {
+void Mobs::displayHPBars(Player* player, vector <Player*> players, const MobHPInfoStruct &mob) {
 	if (mob.boss && mob.hpcolor > 0) // Boss HP bars
 		MobsPacket::showBossHP(player, players, mob);
 	else if (mob.boss) // Miniboss HP bars
