@@ -52,6 +52,17 @@ struct MobInfo {
 	vector<int> summon;
 };
 
+struct MobHPInfoStruct {
+	MobHPInfoStruct() : hp(0), mhp(0), mapmobid(0), mobid(0), hpcolor(0), hpbgcolor(0), boss(0) { }
+	int hp;
+	int mhp;
+	int mapmobid;
+	int mobid;
+	short hpcolor;
+	short hpbgcolor;
+	bool boss;
+};
+
 namespace Mobs {
 	extern hash_map<int, MobInfo> mobinfo;
 	extern hash_map<int, SpawnsInfo> info;
@@ -64,6 +75,7 @@ namespace Mobs {
 	void damageMobRanged(Player *player, unsigned char* packet, int size);
 	void damageMobSpell(Player *player, unsigned char* packet);
 	void damageMobPG(Player *player, int damage, Mob *mob);
+	void displayHPBars(Player *player, vector <Player*> players, MobHPInfoStruct mob);
 	void monsterControl(Player *player, ReadPacket* packet);
 	void checkSpawn(int mapid);
 	void showMobs(Player *player);
