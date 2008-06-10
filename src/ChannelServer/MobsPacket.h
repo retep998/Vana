@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 class Mob;
 
-struct MobHPInfoStruct;
+struct MobHPInfo;
 
 namespace MobsPacket {
 	void controlMob(Player *player, Mob* mob);
@@ -33,7 +33,7 @@ namespace MobsPacket {
 	void damageMob(Player *player, vector <Player*> players, unsigned char* pack);
 	void showHP(Player *player, int mobid, char per);
 	void showMinibossHP(Player *player, vector <Player*> players, int mobid, char per); // For minor bosses
-	void showBossHP(Player *player, vector <Player*> players, const MobHPInfoStruct &mob); // For major bosses
+	void showBossHP(Player *player, vector <Player*> players, const MobHPInfo &mob); // For major bosses
 	void dieMob(Player *player, vector<Player*> players, Mob* mob, int mobid);
 	void damageMobSpell(Player *player, vector <Player*> players, unsigned char* pack);
 	void damageMobRanged(Player *player, vector <Player*> players, unsigned char* pack, int itemid);
