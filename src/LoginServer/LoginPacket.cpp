@@ -118,7 +118,7 @@ void LoginPacket::showWorld(PlayerLogin* player, World *world) {
 		packet.addShort(channelname.size());
 		packet.addString(channelname.c_str(), channelname.size());
 		packet.addInt(world->channels[i]->population);
-		packet.addByte(world->id);
+		packet.addByte(1); // Char creation (the part that is server-decided)
 		packet.addShort(i);
 	}
 	packet.send(player);
