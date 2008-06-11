@@ -26,6 +26,7 @@ void LoginServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
 	if (!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
 	switch(packet->getShort()) {
 		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
+		case INTER_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
 	}
 }
 

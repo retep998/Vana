@@ -23,6 +23,7 @@ class ReadPacket;
 
 namespace LoginServerAcceptHandler {
 	void registerChannel(LoginServerAcceptPlayer *player, ReadPacket *packet);
+	void updateChannelPop(LoginServerAcceptPlayer *player, ReadPacket *packet);
 }
 
 #endif

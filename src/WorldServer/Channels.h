@@ -28,10 +28,13 @@ class WorldServerAcceptPlayer;
 class Packet;
 
 struct Channel {
+	Channel() : players(0) { }
+
 	WorldServerAcceptPlayer *player;
 	int id;
 	string ip;
 	short port;
+	int players;
 };
 
 class Channels {

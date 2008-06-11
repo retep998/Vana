@@ -16,7 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Players.h"
+#include "Channels.h"
+#include "WorldServer.h"
 #include "StringUtilities.h"
+#include "LoginServerConnectPlayerPacket.h"
 
 Players * Players::singleton = 0;
 
@@ -27,6 +30,8 @@ void Players::registerPlayer(int id, const string &name, int channel) {
 		player->name = name;
 		player->channel = channel;
 		players[id] = player;
+
+		LoginServerConnectPlayerPacket::updateChannelPop(WorldServer::Instance()->getLoginPlayer(), channel, ++Channels::Instance()->getChannel(channel)->players);
 	}
 	else {
 		players[id]->channel = channel;
@@ -36,6 +41,7 @@ void Players::registerPlayer(int id, const string &name, int channel) {
 void Players::remove(int id, int channel) {
 	if (channel == -1 || players[id]->channel == channel) {
 		players.erase(id);
+		LoginServerConnectPlayerPacket::updateChannelPop(WorldServer::Instance()->getLoginPlayer(), channel, --Channels::Instance()->getChannel(channel)->players);
 	}
 }
 

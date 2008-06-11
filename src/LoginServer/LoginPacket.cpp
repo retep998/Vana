@@ -117,7 +117,7 @@ void LoginPacket::showWorld(PlayerLogin* player, World *world) {
 		string channelname = cnStream.str();
 		packet.addShort(channelname.size());
 		packet.addString(channelname.c_str(), channelname.size());
-		packet.addInt(0x0); // Pop
+		packet.addInt(world->channels[i]->population);
 		packet.addByte(world->id);
 		packet.addShort(i);
 	}

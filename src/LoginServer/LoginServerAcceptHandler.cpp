@@ -30,3 +30,10 @@ void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, 
 	Worlds::worlds[player->getWorldId()]->channels[channel] = chan;
 	std::cout << "Registering channel " << channel << " with IP " << chan->ip << " and port " << chan->port << std::endl;
 }
+
+void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptPlayer *player, ReadPacket *packet) {
+	int channel = packet->getInt();
+	int population = packet->getInt();
+
+	Worlds::worlds[player->getWorldId()]->channels[channel]->population = population;
+}
