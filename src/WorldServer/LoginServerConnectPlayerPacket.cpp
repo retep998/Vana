@@ -27,3 +27,12 @@ void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *p
 	packet.addShort(port);
 	packet.send(player);
 }
+
+void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *player, int channel, int population) {
+	Packet packet;
+	packet.addHeader(INTER_UPDATE_CHANNEL_POP);
+	packet.addInt(channel);
+	packet.addInt(population);
+	
+	packet.send(player);
+}

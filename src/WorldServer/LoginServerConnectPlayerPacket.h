@@ -26,6 +26,7 @@ class LoginServerConnectPlayer;
 
 namespace LoginServerConnectPlayerPacket {
 	void registerChannel(LoginServerConnectPlayer *player, int channel, const string &ip, short port);
+	void updateChannelPop(LoginServerConnectPlayer *player, int channel, int population);
 };
 
 #endif

@@ -29,8 +29,10 @@ class LoginServerAcceptPlayer;
 class ReadPacket;
 
 struct Channel {
+	Channel() : population(0) { }
 	string ip;
 	short port;
+	int population;
 };
 
 struct World {

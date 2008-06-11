@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INTER_WORLD_CONNECT 0x1000
 #define INTER_REGISTER_CHANNEL 0x1001
 #define INTER_NEW_PLAYER 0x1002
+#define INTER_UPDATE_CHANNEL_POP 0x1003
 
 // World <--> Channel
 #define INTER_LOGIN_CHANNEL_CONNECT 0x2000 // Login <--> Channel to get World server info
