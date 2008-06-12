@@ -97,7 +97,7 @@ void Mobs::checkSpawn(int mapid) {
 		int id = nextMobId(mapid);
 		mob->setID(id);
 		mob->setMobID(info[mapid][i].id);
-		mob->setMapID(i);
+		mob->setSpawnID(i);
 		mob->setPos(info[mapid][i].x, info[mapid][i].cy);
 		mob->setHP(mobinfo[mob->getMobID()].hp);
 		mob->setMP(mobinfo[mob->getMobID()].mp);
@@ -164,8 +164,8 @@ void Mobs::dieMob(Player *player, Mob* mob) {
 		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY()-1);
 	}
 
-	if (mob->getMapID() > -1) // Add spawn point to respawns queue if mob was spawned by a spawn point.
-		respawns[player->getMap()].push(mob->getMapID());
+	if (mob->getSpawnID() > -1) // Add spawn point to respawns queue if mob was spawned by a spawn point.
+		respawns[player->getMap()].push(mob->getSpawnID());
 
 	player->quests->updateQuestMob(mob->getMobID());
 	mobs[player->getMap()].erase(mob->getID());
@@ -416,7 +416,7 @@ void Mobs::spawnMobPos(int mapid, int mobid, int xx, int yy) {
 	int id = nextMobId(mapid);
 	mob->setID(id);
 	mob->setMobID(mobid);
-	mob->setMapID(-1);
+	mob->setSpawnID(-1);
 	mob->setHP(mobinfo[mobid].hp);
 	mob->setMP(mobinfo[mobid].mp);
 	mob->setPos(xx, yy);
