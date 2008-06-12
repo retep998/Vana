@@ -43,7 +43,7 @@ void SkillsPacket::showSkill(Player *player, vector <Player*> players, int skill
 	packet.addByte(level); //TODO
 	if (direction != 0xFF)
 		packet.addByte(direction);
-	packet.sendTo<Player>(player, players, 0);
+	packet.sendTo(player, players, 0);
 }
 
 
@@ -58,7 +58,7 @@ void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skilli
 	packet.addByte(pskill.types[5]);
 	packet.addByte(pskill.types[6]);
 	packet.addByte(pskill.types[7]);
-	for (unsigned int i=0; i<pskill.vals.size(); i++) {
+	for (unsigned int i = 0; i < pskill.vals.size(); i++) {
 		packet.addShort(pskill.vals[i]);
 		packet.addInt(skillid);
 		packet.addInt(time);
@@ -66,7 +66,7 @@ void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skilli
 	packet.addShort(0);
 	packet.addByte(0);
 	packet.send(player);
-	if (mskill.vals.size()>0) {
+	if (mskill.vals.size() > 0) {
 		packet = Packet();
 		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getPlayerid());
@@ -78,11 +78,11 @@ void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skilli
 		packet.addByte(mskill.types[5]);
 		packet.addByte(mskill.types[6]);
 		packet.addByte(mskill.types[7]);
-		for (unsigned int i=0; i<mskill.vals.size(); i++) {
+		for (unsigned int i = 0; i < mskill.vals.size(); i++) {
 			packet.addShort(mskill.vals[i]);
 		}
 		packet.addByte(0);
-		packet.sendTo<Player>(player, players, 0);
+		packet.sendTo(player, players, 0);
 	}
 }
 
@@ -107,7 +107,7 @@ void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiv
 	packet.addByte(pskill.types[7]);
 	packet.addByte(0);
 	packet.send(player);
-	if (mskill.vals.size()>0) {
+	if (mskill.vals.size() > 0) {
 		packet = Packet();
 		packet.addHeader(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getPlayerid());
@@ -119,7 +119,7 @@ void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiv
 		packet.addByte(mskill.types[5]);
 		packet.addByte(mskill.types[6]);
 		packet.addByte(mskill.types[7]);
-		packet.sendTo<Player>(player, players, 0);
+		packet.sendTo(player, players, 0);
 
 	}
 }
