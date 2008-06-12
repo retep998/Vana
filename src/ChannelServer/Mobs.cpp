@@ -205,11 +205,11 @@ void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 	for (int i = 0; i < howmany; i++) {
 		int mapmobid = BufferUtilities::getInt(packet+14+offset+i*(22+4*(hits-1)));
 		Mob* mob = getMob(mapmobid, map);
+		if (mob == NULL)
+			return;
 		int mobid = mob->getMobID();
 		for (int k=0; k<hits; k++) {
 			int damage = BufferUtilities::getInt(packet+32+offset+i*(22+4*(hits-1))+k*4);
-			if (mob == NULL)
-				return;
 			mob->setHP(mob->getHP()-damage);
 			int cmp = -1;
 			cmp = mob->getMP();
@@ -300,63 +300,74 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 		Skills::addCombo(player, 1);
 	}
 }
-void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
-	int itemid = 0;
-	int pos = BufferUtilities::getInt(packet+14);
-	bool s4121006 = (packet[6] == 0x40 || packet[6] == 0x48); // Shadow Claw
-	if (!s4121006) {
-		for (int i = 0; i < player->inv->getItemNum(); i++) {
-			if (player->inv->getItem(i)->pos == pos && player->inv->getItem(i)->inv == 2) {
-				itemid = player->inv->getItem(i)->id;
-				break;
-			}
-		}
-	}
-	else {
-		itemid = BufferUtilities::getInt(packet+20);
-	}
+void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	int map = player->getMap();
-	MobsPacket::damageMobRanged(player, Maps::info[map].Players, packet, itemid);
-
-	int howmany = packet[1]/0x10;
-	int hits = packet[1]%0x10;
-	int skillid = BufferUtilities::getInt(packet+2);
-	short offset = 0;
+	MobsPacket::damageMobRanged(player, Maps::info[map].Players, packet);
+	packet->reset(2); // Passing to the display function causes the buffer to be eaten, we need it
+	packet->skipBytes(1); // Number of portals taken (not kidding)
+	char targets = 0;
+	char hits = 0;
+	if (1) { // Don't need this variable for more than a couple operations
+		unsigned char tbyte = packet->getByte();
+		targets = tbyte / 0x10;
+		hits = tbyte % 0x10;
+	}
+	int skillid = packet->getInt();
+	unsigned char display = 0;
 	if (skillid == 3121004 || skillid == 3221001) {
-		offset += 4; // Hurricane/Pierce add 4 bytes after skill ID, value represents charge time (0 for Hurricane)
+		packet->skipBytes(4); // Charge time
+		display = packet->getByte();
 		if (skillid == 3121004) { // Only Hurricane constantly does damage
 			if (player->getSpecialSkill() == 0) { // Display it if not displayed
 				SpecialSkillInfo info;
 				info.skillid = skillid;
-				info.direction = packet[7+offset];
-				info.w_speed = packet[9+offset];
+				info.direction = packet->getByte();
+				packet->skipBytes(1); // Weapon subclass
+				info.w_speed = packet->getByte();
 				info.level = player->skills->getSkillLevel(info.skillid);
 				player->setSpecialSkill(info);
 				SkillsPacket::showSpecialSkill(player, Maps::info[map].Players, info);
 			}	
 		}
+		else
+			packet->skipBytes(3);
 	}
-	if (s4121006)
-		offset += 4; // Shadow Claw's offset only matters for damage, adds a 4 byte star ID at the end of the normal packet before damage
 	else {
+		display = packet->getByte(); // Projectile display
+		packet->skipBytes(1); // Direction/animation
+		packet->skipBytes(1); // Weapon subclass
+		packet->skipBytes(1); // Weapon speed
+	}
+	packet->skipBytes(4); // Ticks
+	short pos = packet->getShort();
+	packet->skipBytes(2); // Cash Shop star cover
+	packet->skipBytes(1); // 0x00 = AoE, 0x41 = other
+	if (!(display == 0x40 || display == 0x48)) { // Shadow Claw doesn't take stars
 		if (skillid == 4111005) // Avenger
 			Inventory::takeItemSlot(player, pos, 2, 3*hits);
 		else
 			Inventory::takeItemSlot(player, pos, 2, hits);
 	}
+	else
+		packet->skipBytes(4); // Star ID added by Shadow Claw
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	int damage, mhp;
-	int totaldmg = 0;
-	for (int i = 0; i < howmany; i++) {
-		int mapmobid = BufferUtilities::getInt(packet+19+offset+i*(22+4*(hits-1)));
+	unsigned int totaldmg = 0;
+	for (char i = 0; i < targets; i++) {
+		int mapmobid = packet->getInt();
+		packet->skipBytes(1); // Always 0x06
+		packet->skipBytes(2); // Animation garbage, don't need for damage
+		packet->skipBytes(1); // State, this changes depending on enemy buffs (super wdef up, etc.), might need later
+		packet->skipBytes(8); // Positioning - first 4 = mob, second 4 = damage
+		packet->skipBytes(2); // Distance, might be helpful for catching hacking
 		Mob* mob = getMob(mapmobid, map);
+		if (mob == NULL)
+			return;
 		int mobid = mob->getMobID();
-		for (int k = 0; k < hits; k++) {
-			damage = BufferUtilities::getInt(packet+37+offset+i*(22+4*(hits-1))+k*4);
+		for (char k = 0; k < hits; k++) {
+			damage = packet->getInt();
 			totaldmg = totaldmg + damage;
-			if (mob == NULL)
-				return;
 			mob->setHP(mob->getHP() - damage);
 			MobHPInfo hpinfo;
 			hpinfo.hp = mob->getHP();
@@ -372,7 +383,8 @@ void Mobs::damageMobRanged(Player *player, unsigned char* packet, int size) {
 				break;
 			}
 		}
-	}	
+	}
+	// packet->skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 	if (skillid == 4101005) { // Drain
 		int hpRecover = ((totaldmg * Skills::skills[4101005][player->skills->getSkillLevel(4101005)].x)/100);
 		if (hpRecover > mhp)

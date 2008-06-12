@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobsPacket.h"
 #include "BufferUtilities.h"
 #include "SendHeader.h"
+#include "ReadPacket.h"
 
 void MobsPacket::controlMob(Player *player, Mob* mob) {
 	Packet packet;
@@ -133,34 +134,54 @@ void MobsPacket::damageMob(Player *player, vector <Player*> players, unsigned ch
 }
 
 
-void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, unsigned char* pack, int itemid) {
-	int howmany = pack[1]/0x10;
-	int hits = pack[1]%0x10;
-	int skillid = BufferUtilities::getInt(pack+2);
-	short offset = 0;
+void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadPacket *pack) {
+	pack->skipBytes(1);
+	unsigned char tbyte = pack->getByte();
+	char targets = tbyte / 0x10;
+	char hits = tbyte % 0x10;
+	int skillid = pack->getInt();
 	if (skillid == 3121004 || skillid == 3221001)
-		offset = 4;
+		pack->skipBytes(4);
 	Packet packet;
 	packet.addHeader(SEND_DAMAGE_MOB_RANGED);
 	packet.addInt(player->getPlayerid());
-	packet.addByte(pack[1]);
-	if (BufferUtilities::getInt(pack+2)>0) {
+	packet.addByte(tbyte);
+	if (skillid > 0) {
 		packet.addByte(1);
-		packet.addInt(BufferUtilities::getInt(pack+2));
+		packet.addInt(skillid);
 	} 
 	else
 		packet.addByte(0);
-	packet.addByte(pack[7+offset]);
-	packet.addByte(pack[9+offset]);
-	packet.addByte(pack[13+offset]);
+	unsigned char display = pack->getByte(); // Projectile display
+	packet.addByte(pack->getByte()); // Direction/animation
+	pack->skipBytes(1); // Weapon subclass
+	packet.addByte(pack->getByte()); // Weapon speed
+	pack->skipBytes(4); // Ticks
+	unsigned char pos = pack->getByte();
+	pack->skipBytes(1); // The other pos byte,
+	pack->skipBytes(2); // Cash Shop star
+	int itemid = 0;
+	if (!(display == 0x40 || display == 0x48)) { // Shadow Claw puts the item ID in the packet
+		for (unsigned char i = 0; i < player->inv->getItemNum(); i++) {
+			if (player->inv->getItem(i)->pos == pos && player->inv->getItem(i)->inv == 2) {
+				itemid = player->inv->getItem(i)->id;
+				break;
+			}
+		}
+	}
+	else
+		itemid = pack->getInt();
+	packet.addByte(pos); // Inventory slot, I guess?
 	packet.addInt(itemid);
-	for (int i=0; i<howmany; i++) {
-		int mobid = BufferUtilities::getInt(pack+19+offset+i*(22+4*(hits-1)));
+	pack->skipBytes(1); // 0x00 = AoE, 0x41 = other
+	for (char i = 0; i < targets; i++) {
+		int mobid = pack->getInt();
 		packet.addInt(mobid);
 		packet.addByte(-1);
-		for (int j=0; j<hits; j++) {
-			int damage = BufferUtilities::getInt(pack+37+offset+i*(22+4*(hits-1))+j*4);
-			packet.addInt(damage);
+		pack->skipBytes(14);
+		for (char j = 0; j < hits; j++) {
+			int damage = pack->getInt();
+			packet.addInt(damage); // Critical damage = 0x80000000 + damage
 		}
 	}
 	packet.sendTo<Player>(player, players, 0);
