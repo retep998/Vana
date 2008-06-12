@@ -71,18 +71,18 @@ namespace Mobs {
 	extern hash_map<int, LoopingId *> loopingIds;
 	void addMob(int id, MobInfo mob);
 	void addSpawn(int id, SpawnsInfo spawns);
-	void damageMob(Player *player, unsigned char* packet);
-	void damageMobRanged(Player *player, ReadPacket* packet);
-	void damageMobSpell(Player *player, unsigned char* packet);
+	void damageMob(Player *player, ReadPacket *packet);
+	void damageMobRanged(Player *player, ReadPacket *packet);
+	void damageMobSpell(Player *player, unsigned char *packet);
 	void damageMobPG(Player *player, int damage, Mob *mob);
 	void displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob);
-	void monsterControl(Player *player, ReadPacket* packet);
+	void monsterControl(Player *player, ReadPacket *packet);
 	void checkSpawn(int mapid);
 	void showMobs(Player *player);
 	void updateSpawn(int mapid);
 	void updateSpawn(int mapid, Mob *mob);
 	void spawnMob(Player *player, int mobid, int amount=1);
-	void dieMob(Player *player, Mob* mob);
+	void dieMob(Player *player, Mob *mob);
 	void spawnMobPos(int mapid, int mobid, int xx, int yy);
 	int nextMobId(int mapid);
 	Mob * getMob(int mobid, int map);
@@ -151,7 +151,7 @@ public:
 	char getType() {
 		return type;
 	}
-	void setControl(Player* control);
+	void setControl(Player *control);
 	Player * getControl() {
 		return control;
 	}

@@ -24,18 +24,18 @@ class Mob;
 struct MobHPInfo;
 
 namespace MobsPacket {
-	void controlMob(Player *player, Mob* mob);
-	void endControlMob(Player *player, Mob* mob);
-	void spawnMob(vector <Player*> players, Mob* mob);
-	void showMob(Player *player, Mob* mob);
+	void controlMob(Player *player, Mob *mob);
+	void endControlMob(Player *player, Mob *mob);
+	void spawnMob(vector <Player*> players, Mob *mob);
+	void showMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp);
 	void moveMob(Player *player, vector <Player*> players, int mobid, bool useskill, int skill, unsigned char *buf, int len);
-	void damageMob(Player *player, vector <Player*> players, unsigned char* pack);
 	void showHP(Player *player, int mobid, char per);
 	void showMinibossHP(Player *player, vector <Player*> players, int mobid, char per); // For minor bosses
 	void showBossHP(Player *player, vector <Player*> players, const MobHPInfo &mob); // For major bosses
 	void dieMob(Player *player, vector<Player*> players, Mob* mob, int mobid);
-	void damageMobSpell(Player *player, vector <Player*> players, unsigned char* pack);
+	void damageMob(Player *player, vector <Player*> players, ReadPacket *pack);
+	void damageMobSpell(Player *player, vector <Player*> players, unsigned char *pack);
 	void damageMobRanged(Player *player, vector <Player*> players, ReadPacket *pack);
 };
 

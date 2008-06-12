@@ -37,7 +37,7 @@ hash_map<int, queue<int>> Mobs::respawns;
 hash_map<int, hash_map<int, Mob *>> Mobs::mobs;
 hash_map<int, LoopingId *> Mobs::loopingIds;
 
-void Mob::setControl(Player* control) {
+void Mob::setControl(Player *control) {
 	if (this == 0) return;
 	if (this->control != NULL)
 		MobsPacket::endControlMob(this->control, this);
@@ -143,7 +143,7 @@ void Mobs::updateSpawn(int mapid, Mob *mob) {
 	}
 }
 
-void Mobs::dieMob(Player *player, Mob* mob) {
+void Mobs::dieMob(Player *player, Mob *mob) {
 	if (mob == NULL) return;
 	MobsPacket::dieMob(player, Maps::info[player->getMap()].Players, mob, mob->getID());
 
@@ -179,7 +179,7 @@ Mob * Mobs::getMob(int mobid, int map) {
 	return 0;
 }
 
-void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
+void Mobs::damageMobSpell(Player *player, unsigned char *packet) {
 	MobsPacket::damageMobSpell(player, Maps::info[player->getMap()].Players, packet);
 	int howmany = packet[1]/0x10;
 	int hits = packet[1]%0x10;
@@ -204,7 +204,7 @@ void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 		Skills::useAttackSkill(player, skillid);
 	for (int i = 0; i < howmany; i++) {
 		int mapmobid = BufferUtilities::getInt(packet+14+offset+i*(22+4*(hits-1)));
-		Mob* mob = getMob(mapmobid, map);
+		Mob *mob = getMob(mapmobid, map);
 		if (mob == NULL)
 			return;
 		int mobid = mob->getMobID();
@@ -241,29 +241,40 @@ void Mobs::damageMobSpell(Player *player, unsigned char* packet) {
 	}
 }
 
-void Mobs::damageMob(Player *player, unsigned char* packet) {
-	MobsPacket::damageMob(player, Maps::info[player->getMap()].Players, packet);
-	int howmany = packet[1]/0x10;
-	int hits = packet[1]%0x10;
+void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	int map = player->getMap();
-	int skillid = BufferUtilities::getInt(packet+2);
-	short offset = 0;
-	bool s4211006 = (skillid == 4211006);
-	int totaldmg = 0;
+	MobsPacket::damageMob(player, Maps::info[map].Players, packet);
+	packet->reset(2);
+	packet->skipBytes(1); // Useless
+	char targets = 0;
+	char hits = 0;
+	if (1) {
+		unsigned char tbyte = packet->getByte();
+		targets = tbyte / 0x10;
+		hits = tbyte % 0x10;
+	}
+	int skillid = packet->getInt();
+	// if (skillid == 1221011) {
+	// Heaven's Hammer will require tons of special code, it only sends 0x01 as the damage for any hit
+	// }
+	packet->skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
+	unsigned int totaldmg = 0;
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
-	for (int i = 0; i < howmany; i++) {
-		int mapmobid = BufferUtilities::getInt(packet+14+offset+i*(22-s4211006+4*(hits-1)));
-		Mob* mob = getMob(mapmobid, map);
-		int mobid = mob->getMobID();
-		for (int k = 0; k < hits; k++) {
-			int damage = BufferUtilities::getInt(packet+32+offset-s4211006+i*(22-s4211006+4*(hits-1))+k*4);
+	for (char i = 0; i < targets; i++) {
+		int mapmobid = packet->getInt();
+		Mob *mob = getMob(mapmobid, map);
+		if (mob == NULL)
+			return;
+		packet->skipBytes(12); // 0x06 [1], Mob animation [1], Mob animation frame [1], State [1], Mob pos [4], Damage pos [4]
+		if (skillid == 4211006)
+			packet->skipBytes(1); // Meso Explosion is weird
+		else
+			packet->skipBytes(2); // Distance
+		int mobid = mob->getMobID();		
+		for (char k = 0; k < hits; k++) {
+			int damage = packet->getInt();
 			totaldmg = totaldmg + damage;
-			if (mob == NULL)
-				return;
-			if (mob->getPos() - player->getPos() > 300 && skillid == 0) {
-				if (player->addWarning()) return;
-			}
 			mob->setHP(mob->getHP() - damage);
 			MobHPInfo hpinfo;
 			hpinfo.hp = mob->getHP();
@@ -275,29 +286,44 @@ void Mobs::damageMob(Player *player, unsigned char* packet) {
 			hpinfo.mobid = mobid;
 			displayHPBars(player, Maps::info[map].Players, hpinfo);
 			if (mob->getHP() <= 0) {
+				packet->skipBytes(4*(hits-1-k));
 				dieMob(player, mob);
 				break;
 			}
 		}
 	}
-	if (s4211006) {
-		unsigned char howmanyitems = packet[(14+howmany*(21+4*(hits-1)))+4];
-		for (int i=0; i<howmanyitems; i++) {
-			int objID = BufferUtilities::getInt(packet+(14+howmany*(21+4*(hits-1)))+5+(5*i));
-			for (unsigned int i=0; i<Drops::drops[map].size(); i++) {
-				if (Drops::drops[map][i]->getObjID() == objID) {
-					DropsPacket::explodeDrop(Maps::info[map].Players, Drops::drops[map][i]);
-					Drops::drops[map].erase(Drops::drops[map].begin()+i);
-					break;
+	packet->skipBytes(4); // Character positioning, normal end of packet
+	switch (skillid) {
+		case 4211006: { // Meso Explosion
+			unsigned char items = packet->getByte();
+			for (unsigned char i = 0; i < items; i++) {
+				int objID = packet->getInt();
+				packet->skipBytes(1); // Boolean for hit a monster
+				for (unsigned int j = 0; j < Drops::drops[map].size(); j++) {
+					if (Drops::drops[map][j]->getObjID() == objID) {
+						DropsPacket::explodeDrop(Maps::info[map].Players, Drops::drops[map][j]);
+						Drops::drops[map].erase(Drops::drops[map].begin() + j);
+						break;
+					}
 				}
-			}
+			}			
+			break;
 		}
-	}
-	if (skillid == 1111003 || skillid == 1111004 || skillid == 1111005 || skillid == 1111006) { // Combo finishing moves
-		Skills::clearCombo(player);
-	}
-	else if (totaldmg > 0) { // Only add orbs for attacks that did damage
-		Skills::addCombo(player, 1);
+		case 1111003: // Crusader finishers
+		case 1111004:
+		case 1111005:
+		case 1111006:
+			Skills::clearCombo(player);
+			break;
+		case 1121006: // Rush
+		case 1121008: // Brandish
+		case 1100002: // Final Attack
+		case 1100003: // Final Attack
+		case 1001005: // Slash Blast
+		case 1001004: // Power Strike - Only skills that charge Combo
+			if (totaldmg > 0)
+				Skills::addCombo(player, 1);
+			break;
 	}
 }
 void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
@@ -361,7 +387,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 		packet->skipBytes(1); // State, this changes depending on enemy buffs (super wdef up, etc.), might need later
 		packet->skipBytes(8); // Positioning - first 4 = mob, second 4 = damage
 		packet->skipBytes(2); // Distance, might be helpful for catching hacking
-		Mob* mob = getMob(mapmobid, map);
+		Mob *mob = getMob(mapmobid, map);
 		if (mob == NULL)
 			return;
 		int mobid = mob->getMobID();
@@ -379,6 +405,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			hpinfo.mobid = mobid;
 			displayHPBars(player, Maps::info[map].Players, hpinfo);
 			if (mob->getHP() <= 0) {
+				packet->skipBytes(4*(hits-1-k));
 				dieMob(player, mob);
 				break;
 			}
@@ -446,7 +473,7 @@ inline int Mobs::nextMobId(int mapid) {
 	return loopingIds[mapid]->next();
 }
 
-void Mobs::displayHPBars(Player* player, vector <Player*> players, const MobHPInfo &mob) {
+void Mobs::displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob) {
 	if (mob.boss && mob.hpcolor > 0) // Boss HP bars
 		MobsPacket::showBossHP(player, players, mob);
 	else if (mob.boss) // Miniboss HP bars
