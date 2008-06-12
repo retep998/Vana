@@ -90,7 +90,7 @@ namespace Mobs {
 
 class Mob {
 public:
-	Mob() : control(0), mapid(-1) { }
+	Mob() : control(0), spawnid(-1) { }
 	void setPos(Pos pos) {
 		this->pos = pos;
 	}
@@ -108,45 +108,45 @@ public:
 		return pos.y;
 	}
 	void setID(int id) {
-		this->id=id;
+		this->id = id;
 	}
 	int getID() {
 		return id;
 	}
 	void setMobID(int mobid) {
-		this->mobid=mobid;
+		this->mobid = mobid;
 	}
 	int getMobID() {
 		return mobid;
 	}
-	void setMapID(int mapid) {
-		this->mapid=mapid;
+	void setSpawnID(int spawnid) {
+		this->spawnid = spawnid;
 	}
-	int getMapID() {
-		return mapid;
+	int getSpawnID() {
+		return spawnid;
 	}
 	void setFH(short fh) {
-		this->fh=fh;
+		this->fh = fh;
 	}
 	short getFH() {
 		return fh;
 	}
 	void setHP(int hp) {
-		this->hp=hp;
-		if (this->hp<0)
-			this->hp=0;
+		this->hp = hp;
+		if (this->hp < 0)
+			this->hp = 0;
 	}
 	int getHP() {
 		return hp;
 	}
 	void setMP(int mp) {
-		this->mp=mp;
+		this->mp = mp;
 	}
 	int getMP() {
 		return mp;
 	}
 	void setType(char type) {
-		this->type=type;
+		this->type = type;
 	}
 	char getType() {
 		return type;
@@ -158,13 +158,13 @@ public:
 private:
 	Pos pos;
 	int id;
-	int mapid;
+	int spawnid;
 	int mobid;
 	short fh;
 	int hp;
 	int mp;
 	char type;
-	Player* control;
+	Player *control;
 };
 
 #endif
