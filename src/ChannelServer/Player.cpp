@@ -68,7 +68,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet->getBuffer()); break;
 		case RECV_CHANGE_MAP: Maps::moveMap(this, packet); break;
 		case RECV_MOVE_PLAYER: Players::handleMoving(this, packet); break;
-		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet->getBuffer(), packet->getBufferLength()); break;
+		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet); break;
 		case RECV_GET_PLAYER_INFO: Players::getPlayerInfo(this, packet); break;
 		case RECV_CHANGE_MAP_SPECIAL: Maps::moveMapS(this, packet); break; // Portals that cause scripted events
 		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet); break;
