@@ -246,13 +246,9 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	MobsPacket::damageMob(player, Maps::info[map].Players, packet);
 	packet->reset(2);
 	packet->skipBytes(1); // Useless
-	char targets = 0;
-	char hits = 0;
-	if (1) {
-		unsigned char tbyte = packet->getByte();
-		targets = tbyte / 0x10;
-		hits = tbyte % 0x10;
-	}
+	unsigned char tbyte = packet->getByte();
+	char targets = tbyte / 0x10;
+	char hits = tbyte % 0x10;
 	int skillid = packet->getInt();
 	// if (skillid == 1221011) {
 	// Heaven's Hammer will require tons of special code, it only sends 0x01 as the damage for any hit
@@ -264,7 +260,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	for (char i = 0; i < targets; i++) {
 		int mapmobid = packet->getInt();
 		Mob *mob = getMob(mapmobid, map);
-		if (mob == NULL)
+		if (mob == 0)
 			return;
 		packet->skipBytes(12); // 0x06 [1], Mob animation [1], Mob animation frame [1], State [1], Mob pos [4], Damage pos [4]
 		if (skillid == 4211006)
@@ -315,14 +311,12 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		case 1111006:
 			Skills::clearCombo(player);
 			break;
-		case 1121006: // Rush
-		case 1121008: // Brandish
-		case 1100002: // Final Attack
-		case 1100003: // Final Attack
-		case 1001005: // Slash Blast
-		case 1001004: // Power Strike - Only skills that charge Combo
+		case 1111008: // Shout
+		case 1311006: // Dragon Roar
+		case 5001001: break; // Super Dragon Roar
+		default:
 			if (totaldmg > 0)
-				Skills::addCombo(player, 1);
+				Skills::addCombo(player);
 			break;
 	}
 }
@@ -388,7 +382,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 		packet->skipBytes(8); // Positioning - first 4 = mob, second 4 = damage
 		packet->skipBytes(2); // Distance, might be helpful for catching hacking
 		Mob *mob = getMob(mapmobid, map);
-		if (mob == NULL)
+		if (mob == 0)
 			return;
 		int mobid = mob->getMobID();
 		for (char k = 0; k < hits; k++) {
