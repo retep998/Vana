@@ -39,10 +39,10 @@ hash_map<int, LoopingId *> Mobs::loopingIds;
 
 void Mob::setControl(Player *control) {
 	if (this == 0) return;
-	if (this->control != NULL)
+	if (this->control != 0)
 		MobsPacket::endControlMob(this->control, this);
 	this->control = control;
-	if (control != NULL)
+	if (control != 0)
 		MobsPacket::controlMob(control, this);
 }
 
@@ -51,7 +51,7 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 
 	Mob *mob = getMob(mobid, player->getMap());
 
-	if (mob == NULL || mob->getControl() != player) {
+	if (mob == 0 || mob->getControl() != player) {
 		return;
 	}
 
@@ -144,7 +144,7 @@ void Mobs::updateSpawn(int mapid, Mob *mob) {
 }
 
 void Mobs::dieMob(Player *player, Mob *mob) {
-	if (mob == NULL) return;
+	if (mob == 0) return;
 	MobsPacket::dieMob(player, Maps::info[player->getMap()].Players, mob, mob->getID());
 
 	// Account for Holy Symbol
@@ -209,7 +209,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	for (char i = 0; i < targets; i++) {
 		int mapmobid = packet->getInt();
 		Mob *mob = getMob(mapmobid, map);
-		if (mob == NULL)
+		if (mob == 0)
 			return;
 		int mobid = mob->getMobID();
 		packet->skipBytes(3); // Useless
