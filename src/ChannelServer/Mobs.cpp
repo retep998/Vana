@@ -232,7 +232,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 				player->setMP(player->getMP() + mp);
 				SkillsPacket::showMPEater(player, Maps::info[map].Players, mpeater);
 			}
-			MobHPInfo hpinfo; 
+			MobHPInfo hpinfo;
 			hpinfo.hp = mob->getHP();
 			hpinfo.mhp = mobinfo[mobid].hp;
 			hpinfo.boss = mobinfo[mobid].boss;

@@ -97,7 +97,7 @@ void MobsPacket::moveMob(Player *player, vector <Player*> players, int mobid, bo
 	packet.addInt(skill);
 	packet.addByte(0);
 	packet.addBuffer(buf, len);
-	packet.sendTo<Player>(player, players, 0);
+	packet.sendTo(player, players, 0);
 }
 
 void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket *pack) {
@@ -144,7 +144,7 @@ void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket 
 			packet.addInt(damage);
 		}
 	}
-	packet.sendTo<Player>(player, players, 0);
+	packet.sendTo(player, players, 0);
 }
 
 
@@ -198,7 +198,7 @@ void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadP
 			packet.addInt(damage); // Critical damage = 0x80000000 + damage
 		}
 	}
-	packet.sendTo<Player>(player, players, 0);
+	packet.sendTo(player, players, 0);
 }
 
 void MobsPacket::damageMobSpell(Player *player, vector <Player*> players, ReadPacket *pack) {
@@ -230,14 +230,14 @@ void MobsPacket::damageMobSpell(Player *player, vector <Player*> players, ReadPa
 		pack->skipBytes(3); // Useless crap for display
 		pack->skipBytes(1); // State
 		pack->skipBytes(10); // Useless crap for display continued
-		for (int j = 0; j < hits; j++) {
+		for (char j = 0; j < hits; j++) {
 			int damage = pack->getInt();
 			packet.addInt(damage);
 		}
 	}
 	if (charge > 0)
 		packet.addInt(charge);
-	packet.sendTo<Player>(player, players, 0);
+	packet.sendTo(player, players, 0);
 }
 
 void MobsPacket::showHP(Player *player, int mobid, char per) {
