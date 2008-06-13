@@ -147,7 +147,6 @@ void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket 
 	packet.sendTo(player, players, 0);
 }
 
-
 void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadPacket *pack) {
 	pack->skipBytes(1);
 	unsigned char tbyte = pack->getByte();
@@ -172,10 +171,15 @@ void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadP
 	packet.addByte(pack->getByte()); // Weapon speed
 	pack->skipBytes(4); // Ticks
 	unsigned char pos = pack->getByte();
-	pack->skipBytes(1); // The other pos byte,
-	pack->skipBytes(2); // Cash Shop star
+	pack->skipBytes(1); // The other pos byte
+	short csstar = pack->getShort(); // Cash Shop star
 	int itemid = 0;
-	if (!(display == 0x40 || display == 0x48)) { // Shadow Claw puts the item ID in the packet
+	if (csstar > 0) {
+		itemid = player->inv->getItemByPos(csstar, 5)->id;
+		if (display == 0x40 || display == 0x48) // Skip itemid for Shadow Claw
+			pack->skipBytes(4);
+	}
+	else if (!(display == 0x40 || display == 0x48)) { // Shadow Claw puts the item ID in the packet
 		for (unsigned char i = 0; i < player->inv->getItemNum(); i++) {
 			if (player->inv->getItem(i)->pos == pos && player->inv->getItem(i)->inv == 2) {
 				itemid = player->inv->getItem(i)->id;
