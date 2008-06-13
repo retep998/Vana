@@ -642,9 +642,13 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	// Reset player/map types to 0
 	memset(playerskill.types, 0, 8*sizeof(unsigned char));
 	memset(mapskill.types, 0, 8*sizeof(unsigned char));
-	for (unsigned int i=0; i<skillsinfo[skillid].player.size(); i++) {
+	for (unsigned int i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		playerskill.types[skillsinfo[skillid].player[i].byte-1] += skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
+		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed change for maxed darksight
+			playerskill.types[0] = 0;
+			continue;
+		}
 		short value = 0;
 		switch(val) {
 			case SKILL_X: value = skills[skillid][level].x; break;
@@ -685,10 +689,14 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		}
 		playerskill.vals.push_back(value);
 	}
-	for (unsigned int i=0; i<skillsinfo[skillid].map.size(); i++) {
+	for (unsigned int i = 0; i < skillsinfo[skillid].map.size(); i++) {
 		mapskill.types[skillsinfo[skillid].map[i].byte-1]+= skillsinfo[skillid].map[i].type;
 		char val = skillsinfo[skillid].map[i].value;
-		short value=0;
+		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed update for maxed darksight
+			mapskill.types[0] = 0;
+			continue;
+		}
+		short value = 0;
 		switch(val) {
 			case SKILL_X: value = skills[skillid][level].x; break;
 			case SKILL_Y: value = skills[skillid][level].y; break;
