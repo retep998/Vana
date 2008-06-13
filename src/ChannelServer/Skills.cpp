@@ -810,17 +810,20 @@ void Skills::heal(Player *player, short value, int skillid) {
 void Skills::addCombo(Player *player) { // add combo orbs 
 	if (player->skills->getActiveSkillLevel(1111002) > 0) {
 		int maxcombo = 0;
-		if (player->skills->getSkillLevel(1120003) > 0) maxcombo = Skills::skills[1120003][player->skills->getSkillLevel(1120003)].x;
+		int advcombo = player->skills->getSkillLevel(1120003);
+		if (advcombo > 0) maxcombo = Skills::skills[1120003][advcombo].x;
 		else maxcombo = Skills::skills[1111002][player->skills->getSkillLevel(1111002)].x;
 		if (player->getCombo() == maxcombo) {
 			return;
 		}
 		else {
-			if (player->skills->getSkillLevel(1120003) > 0 && Randomizer::Instance()->randInt(99) < skills[1120003][player->skills->getSkillLevel(1120003)].prop)
+			if (advcombo > 0 && Randomizer::Instance()->randInt(99) < skills[1120003][advcombo].prop)
 				player->setCombo(player->getCombo()+2); // 4th job skill gives chance to add second orb
 			else
 				player->setCombo(player->getCombo()+1);
 		}
+		if (player->getCombo() > maxcombo)
+			player->setCombo(maxcombo);
 		SkillsPacket::showCombo(player, Maps::info[player->getMap()].Players, SkillTimer::Instance()->skillTime(player, 1111002));
 	}
 }
