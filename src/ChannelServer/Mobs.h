@@ -73,7 +73,7 @@ namespace Mobs {
 	void addSpawn(int id, SpawnsInfo spawns);
 	void damageMob(Player *player, ReadPacket *packet);
 	void damageMobRanged(Player *player, ReadPacket *packet);
-	void damageMobSpell(Player *player, unsigned char *packet);
+	void damageMobSpell(Player *player, ReadPacket *packet);
 	void damageMobPG(Player *player, int damage, Mob *mob);
 	void displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob);
 	void monsterControl(Player *player, ReadPacket *packet);
