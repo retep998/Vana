@@ -179,19 +179,21 @@ Mob * Mobs::getMob(int mobid, int map) {
 	return 0;
 }
 
-void Mobs::damageMobSpell(Player *player, unsigned char *packet) {
-	MobsPacket::damageMobSpell(player, Maps::info[player->getMap()].Players, packet);
-	int howmany = packet[1]/0x10;
-	int hits = packet[1]%0x10;
+void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	int map = player->getMap();
-	int skillid = BufferUtilities::getInt(packet+2);
-	short offset = 0;
+	MobsPacket::damageMobSpell(player, Maps::info[map].Players, packet);
+	packet->reset(2);
+	packet->skipBytes(1);
+	unsigned char tbyte = packet->getByte();
+	char targets = tbyte / 0x10;
+	char hits = tbyte % 0x10;
+	int skillid = packet->getInt();
 	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
-		offset = 4;
+		packet->skipBytes(4);
 	int mpeater = 0;
 	int mpeater_lv = 0;
-	int mpeater_success;
-	int mpeater_x;
+	short mpeater_success;
+	short mpeater_x;
 	bool mpeated = false;
 	if (player->getJob()/100 == 2) {
 		mpeater = (player->getJob() / 10) * 100000;
@@ -199,18 +201,24 @@ void Mobs::damageMobSpell(Player *player, unsigned char *packet) {
 		mpeater_success = Skills::skills[mpeater][mpeater_lv].prop;
 		mpeater_x = Skills::skills[mpeater][mpeater_lv].x;
 	}
-
+	packet->skipBytes(2); // Display, direction/animation
+	packet->skipBytes(2); // Weapon subclass, casting speed
+	packet->skipBytes(4); // Ticks
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
-	for (int i = 0; i < howmany; i++) {
-		int mapmobid = BufferUtilities::getInt(packet+14+offset+i*(22+4*(hits-1)));
+	for (char i = 0; i < targets; i++) {
+		int mapmobid = packet->getInt();
 		Mob *mob = getMob(mapmobid, map);
 		if (mob == NULL)
 			return;
 		int mobid = mob->getMobID();
-		for (int k=0; k<hits; k++) {
-			int damage = BufferUtilities::getInt(packet+32+offset+i*(22+4*(hits-1))+k*4);
-			mob->setHP(mob->getHP()-damage);
+		packet->skipBytes(3); // Useless
+		packet->skipBytes(1); // State
+		packet->skipBytes(8); // Useless
+		packet->skipBytes(2); // Distance
+		for (char k = 0; k < hits; k++) {
+			int damage = packet->getInt();
+			mob->setHP(mob->getHP() - damage);
 			int cmp = -1;
 			cmp = mob->getMP();
 			int mmp = -1;
@@ -234,6 +242,7 @@ void Mobs::damageMobSpell(Player *player, unsigned char *packet) {
 			hpinfo.mobid = mobid;
 			displayHPBars(player, Maps::info[map].Players, hpinfo);
 			if (mob->getHP() <= 0) {
+				packet->skipBytes(4*(hits-1-k));
 				dieMob(player, mob);
 				break;
 			}

@@ -65,7 +65,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_CHAT: Players::chatHandler(this, packet); break;
 		case RECV_USE_CHAIR: Inventory::useChair(this, packet); break;
 		case RECV_USE_ITEM_EFFECT: Inventory::useItemEffect(this, packet); break;
-		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet->getBuffer()); break;
+		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet); break;
 		case RECV_CHANGE_MAP: Maps::moveMap(this, packet); break;
 		case RECV_MOVE_PLAYER: Players::handleMoving(this, packet); break;
 		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet); break;
