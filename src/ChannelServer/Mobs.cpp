@@ -329,6 +329,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			break;
 	}
 }
+
 void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	int map = player->getMap();
 	MobsPacket::damageMobRanged(player, Maps::info[map].Players, packet);
