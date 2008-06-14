@@ -347,17 +347,15 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	if (skillid == 3121004 || skillid == 3221001) {
 		packet->skipBytes(4); // Charge time
 		display = packet->getByte();
-		if (skillid == 3121004) { // Only Hurricane constantly does damage
-			if (player->getSpecialSkill() == 0) { // Display it if not displayed
-				SpecialSkillInfo info;
-				info.skillid = skillid;
-				info.direction = packet->getByte();
-				packet->skipBytes(1); // Weapon subclass
-				info.w_speed = packet->getByte();
-				info.level = player->skills->getSkillLevel(info.skillid);
-				player->setSpecialSkill(info);
-				SkillsPacket::showSpecialSkill(player, Maps::info[map].Players, info);
-			}	
+		if (skillid == 3121004 && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
+			SpecialSkillInfo info;
+			info.skillid = skillid;
+			info.direction = packet->getByte();
+			packet->skipBytes(1); // Weapon subclass
+			info.w_speed = packet->getByte();
+			info.level = player->skills->getSkillLevel(info.skillid);
+			player->setSpecialSkill(info);
+			SkillsPacket::showSpecialSkill(player, Maps::info[map].Players, info);
 		}
 		else
 			packet->skipBytes(3);
