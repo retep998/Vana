@@ -123,14 +123,14 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			if (equip == 0)
 				return;
 			Drop *drop = new Drop(player->getMap());
-			drop->setID(equip->id);
+			drop->setObjectID(equip->id);
 			drop->setOwner(player->getPlayerid());
 			drop->setTime(0);
 			drop->setEquip(true);
 			Dropped dropper;
 			dropper.id = player->getPlayerid();
-			dropper.pos = player->getPos();
 			drop->setPos(player->getPos());
+			dropper.pos = drop->getPos();
 			DropInfo dropi;
 			dropi.type = equip->type;
 			dropi.scrolls = equip->scrolls;
@@ -195,7 +195,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 				InventoryPacket::moveItemS(player, inv, slot1, item->amount);
 			}
 			Drop *drop = new Drop(player->getMap());
-			drop->setID(item->id);
+			drop->setObjectID(item->id);
 			drop->setOwner(player->getPlayerid());
 			drop->setTime(0);
 			drop->setAmount(amount);
@@ -581,7 +581,7 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 			vals.push_back(Drops::consumes[itemid].morph);
 			isMorph = true;
 		}
-		InventoryPacket::useItem(player, Maps::info[player->getMap()].Players, itemid, Drops::consumes[itemid].time*1000, types, vals, isMorph);
+		InventoryPacket::useItem(player, Maps::maps[player->getMap()]->getPlayers(), itemid, Drops::consumes[itemid].time*1000, types, vals, isMorph);
 		ItemTimer::Instance()->stop(player, itemid);
 		ItemTimer::Instance()->setItemTimer(player, itemid, Drops::consumes[itemid].time*1000);
 	}
@@ -673,7 +673,7 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 
 	if (skillid == 0) return;
 
-	InventoryPacket::useSkillbook(player, Maps::info[player->getMap()].Players, skillid, newMaxLevel, use, succeed);
+	InventoryPacket::useSkillbook(player, Maps::maps[player->getMap()]->getPlayers(), skillid, newMaxLevel, use, succeed);
 	if (update) {
 		player->skills->addSkillLevel(skillid, 0);
 	}
@@ -681,12 +681,12 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 void Inventory::useChair(Player *player, ReadPacket *packet) {
 	int chairid = packet->getInt();
 	player->setChair(chairid);
-	InventoryPacket::sitChair(player, Maps::info[player->getMap()].Players, chairid);
+	InventoryPacket::sitChair(player, Maps::maps[player->getMap()]->getPlayers(), chairid);
 }
 
 void Inventory::stopChair(Player *player, ReadPacket *packet) {
 	player->setChair(0);
-	InventoryPacket::stopChair(player, Maps::info[player->getMap()].Players);
+	InventoryPacket::stopChair(player, Maps::maps[player->getMap()]->getPlayers());
 }
 
 int Inventory::isCash(int itemid) {
@@ -725,7 +725,7 @@ void Inventory::useReturnScroll(Player *player, ReadPacket *packet) {
 	takeItemSlot(player, slot, 2, 1);
 	int map = Drops::consumes[itemid].moveTo;
 	if (map == 999999999)
-		Maps::changeMap(player, Maps::info[player->getMap()].rm, 0);
+		Maps::changeMap(player, Maps::maps[player->getMap()]->getInfo().rm, 0);
 	else
 		Maps::changeMap(player, map, 0);
 }
@@ -793,7 +793,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			else if (wscroll!=2) equip->slots--;
 		}
 	}
-	InventoryPacket::useScroll(player, Maps::info[player->getMap()].Players, succeed, cursed, legendary_spirit);
+	InventoryPacket::useScroll(player, Maps::maps[player->getMap()]->getPlayers(), succeed, cursed, legendary_spirit);
 	if (!cursed)
 		InventoryPacket::addEquip(player, equip, 1);
 	InventoryPacket::updatePlayer(player);
@@ -805,7 +805,7 @@ void Inventory::useCashItem(Player *player, ReadPacket *packet) {
 	int itemid = packet->getInt();
 	string msg = packet->getString();
 	if (itemid == 5071000) { // Megaphone
-		InventoryPacket::showMegaphone(player, Maps::info[player->getMap()].Players, msg);
+		InventoryPacket::showMegaphone(player, Maps::maps[player->getMap()]->getPlayers(), msg);
 	}
 	else if (itemid == 5072000) { // Super Megaphone
 		int whisper = packet->getByte();
@@ -828,5 +828,5 @@ void Inventory::useItemEffect(Player *player, ReadPacket *packet) {
 		return;
 	}
 	player->setItemEffect(itemid);
-	InventoryPacket::useItemEffect(player, Maps::info[player->getMap()].Players, itemid);
+	InventoryPacket::useItemEffect(player, Maps::maps[player->getMap()]->getPlayers(), itemid);
 }

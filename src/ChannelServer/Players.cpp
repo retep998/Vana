@@ -56,12 +56,12 @@ void Players::handleMoving(Player *player, ReadPacket *packet) {
 	player->setType(type);
 
 	packet->reset(7);
-	PlayersPacket::showMoving(player, Maps::info[player->getMap()].Players, packet->getBuffer(), packet->getBufferLength());
+	PlayersPacket::showMoving(player, Maps::maps[player->getMap()]->getPlayers(), packet->getBuffer(), packet->getBufferLength());
 }
 
 void Players::faceExperiment(Player *player, ReadPacket *packet) {
 	int face = packet->getInt();
-	PlayersPacket::faceExperiment(player, Maps::info[player->getMap()].Players, face);
+	PlayersPacket::faceExperiment(player, Maps::maps[player->getMap()]->getPlayers(), face);
 }
 
 void Players::chatHandler(Player *player, ReadPacket *packet) {
@@ -82,7 +82,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				return;
 			}
 			int mapid = -1;
-			if (strcmp("town", next_token) == 0) mapid = Maps::info[player->getMap()].rm;
+			if (strcmp("town", next_token) == 0) mapid = Maps::maps[player->getMap()]->getInfo().rm;
 			else if (strcmp("gm", next_token) == 0) mapid = 180000000;
 			else if (strcmp("fm", next_token) == 0) mapid = 910000000;
 			else if (strcmp("4th", next_token) == 0) mapid = 240010501;
@@ -130,7 +130,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				mapid = strtol(next_token, &endptr, 0);
 				if (strlen(endptr) != 0) mapid = -1;
 			}
-			if (Maps::info.find(mapid) != Maps::info.end())
+			if (Maps::maps.find(mapid) != Maps::maps.end())
 				Maps::changeMap(player, mapid, 0);
 			else
 				PlayerPacket::showMessage(player, "Invalid map entered.", 5);
@@ -258,9 +258,9 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			player->setNPC(NULL);
 		}
 		else if (strcmp(command, "killall") == 0) {
-			while (1) {
-				hash_map<int, Mob *>::iterator iter = Mobs::mobs[player->getMap()].begin();
-				if (iter == Mobs::mobs[player->getMap()].end()) {
+			while (true) {
+				hash_map <int, Mob *>::iterator iter = Maps::maps[player->getMap()]->getMobs().begin();
+				if (iter == Maps::maps[player->getMap()]->getMobs().end()) {
 					break;
 				}
 				Mobs::dieMob(player, iter->second);
@@ -286,8 +286,13 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			player->inv->setMesos(mesos);
 		}
 		else if (strcmp(command, "cleardrops") == 0) {
-			while (Drops::drops[player->getMap()].size() != 0) {
-				Drops::drops[player->getMap()][0]->removeDrop();
+			hash_map <int, Drop *> drops = Maps::maps[player->getMap()]->getDrops();
+			while (true) {
+				hash_map <int, Drop *>::iterator iter = drops.begin();
+				if (iter == drops.end())
+					break;
+				Maps::maps[player->getMap()]->removeDrop(iter->second);
+				iter->second->removeDrop();
 			}
 		}
 		else if (strcmp(command, "save") == 0) {
@@ -302,7 +307,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 					if (strcmp(iter->second->getName(), name) == 0)
 						if (strlen(next_token) > 0) {
 							int mapid = atoi(strtok_s(NULL, " ", &next_token));
-							if (Maps::info.find(mapid) != Maps::info.end()) {
+							if (Maps::maps.find(mapid) != Maps::maps.end()) {
 								Maps::changeMap(iter->second, mapid, 0);
 								break;
 							}
@@ -330,7 +335,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				mapid = atoi(next_token);
 
 			for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++) {
-				if (Maps::info.find(mapid) != Maps::info.end()) {
+				if (Maps::maps.find(mapid) != Maps::maps.end()) {
 					if (mapid == player->getMap()) {
 						if (strcmp(player->getName(), iter->second->getName())!=0)
 							Maps::changeMap(iter->second, mapid, 0);
@@ -342,18 +347,18 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "kill") == 0) {
 			if (strcmp(next_token, "all") == 0) {
-				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {
+				for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {
 					Player *killpsa;
-					killpsa = Maps::info[player->getMap()].Players[x];
+					killpsa = Maps::maps[player->getMap()]->getPlayers()[i];
 					if (killpsa != player) {
 						killpsa->setHP(0);
 					}
 				}
 			}
 			else if (strcmp(next_token, "gm") == 0) {
-				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {	
+				for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {
 					Player *killpsa;
-					killpsa = Maps::info[player->getMap()].Players[x];
+					killpsa = Maps::maps[player->getMap()]->getPlayers()[i];
 					if (killpsa != player) {
 						if (killpsa->isGM()) {	
 							killpsa->setHP(0);
@@ -362,9 +367,9 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				}
 			}
 			else if (strcmp(next_token, "players") == 0) {
-				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {	
+				for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {	
 					Player *killpsa;
-					killpsa = Maps::info[player->getMap()].Players[x];
+					killpsa = Maps::maps[player->getMap()]->getPlayers()[i];
 					if (killpsa != player) {
 						if (!killpsa->isGM()) {
 							killpsa->setHP(0);
@@ -376,9 +381,9 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				player->setHP(0);
 			}
 			else {
-				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {
+				for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {
 					Player *killpsa;
-					killpsa = Maps::info[player->getMap()].Players[x];
+					killpsa = Maps::maps[player->getMap()]->getPlayers()[i];
 					if (killpsa != player) {
 						killpsa->setHP(0);
 					}
@@ -416,7 +421,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		return;
 	}
-	PlayersPacket::showChat(player, Maps::info[player->getMap()].Players, message);
+	PlayersPacket::showChat(player, Maps::maps[player->getMap()]->getPlayers(), message);
 }
 
 void Players::damagePlayer(Player *player, ReadPacket *packet) {
@@ -482,9 +487,9 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	else
 		player->setHP(player->getHP() - damage);
 	if (type == 0xFF && pg.reduction != 0x00) // Remove that damage, HP warrior!
-		Mobs::damageMobPG(player, (pg.damage * pg.reduction / 100), Mobs::mobs[player->getMap()][mapmobid]);
+		Mobs::damageMobPG(player, (pg.damage * pg.reduction / 100), Maps::maps[player->getMap()]->getMob(mapmobid));
 	if (type != 0xFE) // Fall damage and map damage don't play by these rules
-		PlayersPacket::damagePlayer(player, Maps::info[player->getMap()].Players, damage, mobid, hit, type, fake, pg);
+		PlayersPacket::damagePlayer(player, Maps::maps[player->getMap()]->getPlayers(), damage, mobid, hit, type, fake, pg);
  }
 
 void Players::healPlayer(Player *player, ReadPacket *packet) {
@@ -543,7 +548,7 @@ void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			info.direction = packet->getByte();
 			info.w_speed = packet->getByte();
 			player->setSpecialSkill(info);
-			SkillsPacket::showSpecialSkill(player, Maps::info[player->getMap()].Players, info);
+			SkillsPacket::showSpecialSkill(player, Maps::maps[player->getMap()]->getPlayers(), info);
 			break;
 		}
 		case 4211001: // Chakra, unknown heal formula

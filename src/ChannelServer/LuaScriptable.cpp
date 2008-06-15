@@ -211,16 +211,16 @@ int LuaExports::getPlayerVariable(lua_State *luaVm) {
 
 int LuaExports::getNumPlayers(lua_State *luaVm) {
 	int mapid = lua_tointeger(luaVm, -1);
-	lua_pushinteger(luaVm, Maps::info[mapid].Players.size());
+	lua_pushinteger(luaVm, Maps::maps[mapid]->getPlayers().size());
 	return 1;
 }
 
 int LuaExports::getReactorState(lua_State *luaVm) {
 	int mapid = lua_tointeger(luaVm, -2);
 	int reactorid = lua_tointeger(luaVm, -1);
-	for (unsigned int i=0; i<Reactors::reactors[mapid].size(); i++) {
-		if (Reactors::reactors[mapid][i]->getReactorID() == reactorid) {
-			lua_pushinteger(luaVm, Reactors::reactors[mapid][i]->getState());
+	for (unsigned int i = 0; i < Maps::maps[mapid]->getReactors().size(); i++) {
+		if (Maps::maps[mapid]->getReactors()[i]->getReactorID() == reactorid) {
+			lua_pushinteger(luaVm, Maps::maps[mapid]->getReactors()[i]->getState());
 			return 1;
 		}
 	}
@@ -238,8 +238,8 @@ int LuaExports::killMob(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
 	while (1) {
-		hash_map<int, Mob *>::iterator iter = Mobs::mobs[map].begin();
-		if (iter == Mobs::mobs[map].end()) {
+		hash_map<int, Mob *>::iterator iter = Maps::maps[map]->getMobs().begin();
+		if (iter == Maps::maps[map]->getMobs().end()) {
 			break;
 		}
 		if (iter->second->getMobID() == mobid) {
@@ -266,7 +266,7 @@ int LuaExports::setStyle(lua_State *luaVm) {
 
 int LuaExports::setMap(lua_State *luaVm) {
 	int mapid = lua_tointeger(luaVm, -1);
-	if (Maps::info.find(mapid) != Maps::info.end())
+	if (Maps::maps.find(mapid) != Maps::maps.end())
 		Maps::changeMap(getPlayer(luaVm), mapid, 0);
 	return 1;
 }
@@ -280,8 +280,8 @@ int LuaExports::setReactorsState(lua_State *luaVm) {
 	int mapid = lua_tointeger(luaVm, -3);
 	int reactorid = lua_tointeger(luaVm, -2);
 	int state = lua_tointeger(luaVm, -1);
-	for (unsigned int i=0; i<Reactors::reactors[mapid].size(); i++) {
-		Reactor *reactor = Reactors::reactors[mapid][i];
+	for (size_t i = 0; i < Maps::maps[mapid]->getReactors().size(); i++) {
+		Reactor *reactor = Maps::maps[mapid]->getReactor(i);
 		if (reactor->getReactorID() == reactorid) {
 			reactor->setState(state, true);
 			break;
@@ -350,8 +350,8 @@ int LuaExports::showMapMessage(lua_State *luaVm) {
 	std::string msg = lua_tostring(luaVm, -2);
 	int type = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
-	for (unsigned int i=0; i<Maps::info[map].Players.size(); i++) {
-		PlayerPacket::showMessage(Maps::info[map].Players[i], msg, type);
+	for (unsigned int i = 0; i < Maps::maps[map]->getPlayers().size(); i++) {
+		PlayerPacket::showMessage(Maps::maps[map]->getPlayers()[i], msg, type);
 	}
 	return 1;
 }

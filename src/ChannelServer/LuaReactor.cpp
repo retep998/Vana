@@ -45,7 +45,7 @@ Reactor * LuaExports::getReactor(lua_State *luaVm) {
 	lua_getglobal(luaVm, "mapid");
 	int reactorid = lua_tointeger(luaVm, -2);
 	int mapid = lua_tointeger(luaVm, -1);
-	return Reactors::getReactorByID(reactorid, mapid);
+	return Maps::maps[mapid]->getReactor(reactorid);
 }
 
 int LuaExports::setReactorState(lua_State *luaVm) {
@@ -63,6 +63,6 @@ int LuaExports::spawnMobReactor(lua_State *luaVm) {
 int LuaExports::reset(lua_State *luaVm) {
 	getReactor(luaVm)->revive();
 	getReactor(luaVm)->setState(0, true);
-	ReactorPacket::triggerReactor(Maps::info[getPlayer(luaVm)->getMap()].Players, getReactor(luaVm));
+	ReactorPacket::triggerReactor(Maps::maps[getPlayer(luaVm)->getMap()]->getPlayers(), getReactor(luaVm));
 	return 1;
 }

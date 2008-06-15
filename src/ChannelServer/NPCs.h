@@ -37,12 +37,10 @@ struct NPCInfo {
 	short rx0;
 	short rx1; 
 };
-
 typedef vector<NPCInfo> NPCsInfo;
 
 namespace NPCs {
-	extern hash_map <int, NPCsInfo> info;
-	void addNPC(int id, NPCsInfo npc);
+	void addNPC(int id, NPCInfo npc);
 	void handleNPC(Player *player, ReadPacket *packet);
 	void handleQuestNPC(Player *player, int npcid, bool start);
 	void showNPCs(Player *player);
@@ -53,7 +51,7 @@ class NPC {
 private:
 	int npcid;
 	Player *player;
-	char text[1000];	
+	char text[1000];
 	int state;
 	int selected;
 	bool cend;
@@ -63,7 +61,7 @@ private:
 	bool isstart;
 	hash_map <string, int> vars;
 public:
-	NPC(int npcid, Player *player, bool isquest = 0);
+	NPC(int npcid, Player *player, bool isquest = false);
 	~NPC();
 	void addText(const char *text) {
 		strcat_s(this->text, strlen(text)+1+strlen(this->text), text);
@@ -119,7 +117,7 @@ public:
 		return gettext;
 	}
 	void end() {
-		cend=true;
+		cend = true;
 	}
 	bool isEnd() {
 		return cend;

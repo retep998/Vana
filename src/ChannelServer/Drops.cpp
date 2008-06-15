@@ -33,24 +33,14 @@ hash_map <int, Mesos> Drops::mesos;
 hash_map <int, EquipInfo> Drops::equips;
 hash_map <int, ItemInfo> Drops::items;
 hash_map <int, FootholdsInfo> Drops::foots;
-hash_map <int, int> Drops::objids;
-hash_map <int, vector<Drop*>> Drops::drops;
 hash_map <int, ConsumeInfo> Drops::consumes;
-
-Drop * Drop::getDrop(int objid, int mapid) {
-	for (unsigned int i=0; i<Drops::drops[mapid].size(); i++) {
-		if (Drops::drops[mapid][i]->getObjID() == objid)
-			return Drops::drops[mapid][i];
-	}
-	return NULL;
-}
 
 Pos Drops::findFloor(Pos pos, int map) {
 	short x = pos.x;
-	short y = pos.y-100;
-	bool first=1;
+	short y = pos.y - 100;
+	bool first = 1;
 	short maxy;
-	for (unsigned int i=0; i<Drops::foots[map].size(); i++) {
+	for (unsigned int i = 0; i < Drops::foots[map].size(); i++) {
 		if ((x>Drops::foots[map][i].x1 && x<Drops::foots[map][i].x2) || (x>Drops::foots[map][i].x2 && x<Drops::foots[map][i].x1)) {
 			if (first) {
 				maxy = (short) ( (float)( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) * x - Drops::foots[map][i].x1 * (float) ( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) + Drops::foots[map][i].y1 );
@@ -77,8 +67,8 @@ void Drop::doDrop(Dropped dropped) {
 	setDropped(clock());
 	setPos(Drops::findFloor(getPos(), getMap()));
 	if (!isQuest())
-		DropsPacket::drop(Maps::info[getMap()].Players, this, dropped);
-	else{
+		DropsPacket::drop(Maps::maps[getMap()]->getPlayers(), this, dropped);
+	else {
 		if (Players::players.find(playerid) == Players::players.end())
 			return;
 		if (Players::players[playerid]->getMap() == getMap())
@@ -87,13 +77,9 @@ void Drop::doDrop(Dropped dropped) {
 }
 
 void Drop::takeDrop(Player *player) {
-	for (unsigned int i=0; i<Drops::drops[player->getMap()].size(); i++) {
-		if (Drops::drops[player->getMap()][i] == this) {
-			Drops::drops[player->getMap()].erase(Drops::drops[player->getMap()].begin()+i);
-			break;
-		}
-	}
-	DropsPacket::takeDrop(player, Maps::info[player->getMap()].Players, this);
+	Maps::maps[player->getMap()]->removeDrop(this);
+	DropsPacket::takeDrop(player, Maps::maps[player->getMap()]->getPlayers(), this);
+	delete this;
 }
 
 void Drop::showDrop(Player *player) {
@@ -103,24 +89,20 @@ void Drop::showDrop(Player *player) {
 }
 
 void Drop::removeDrop() {
-	for (unsigned int i=0; i<Drops::drops[this->getMap()].size(); i++) {
-		if (Drops::drops[this->getMap()][i] == this) {
-			Drops::drops[this->getMap()].erase(Drops::drops[this->getMap()].begin()+i);
-			break;
-		}
-	}
-	DropsPacket::removeDrop(Maps::info[this->getMap()].Players, this);
+	Maps::maps[this->getMap()]->removeDrop(this);
+	DropsPacket::removeDrop(Maps::maps[this->getMap()]->getPlayers(), this);
+	delete this;
 }
 
 void Drops::dropMob(Player *player, Mob *mob) {
 	MobDropsInfo drop = dropsinfo[mob->getMobID()];
-	int d=0;
-	for (unsigned int k=0; k<drop.size(); k++) {
+	int d = 0;
+	for (unsigned int k = 0; k < drop.size(); k++) {
 		if (Randomizer::Instance()->randInt(9999) < drop[k].chance * ChannelServer::Instance()->getDroprate()) {
 			if (drop[k].quest>0) {
 				if (!player->quests->isQuestActive(drop[k].quest))
 					continue;
-				int request=0;
+				int request = 0;
 				for (unsigned int i=0; i<Quests::quests[drop[k].quest].rewards.size(); i++) {
 					if (Quests::quests[drop[k].quest].rewards[i].id == drop[k].id) {
 						request = Quests::quests[drop[k].quest].rewards[i].count;
@@ -135,12 +117,12 @@ void Drops::dropMob(Player *player, Mob *mob) {
 				drp->setPlayer(player->getPlayerid());
 				drp->setQuest(drop[k].quest);
 			}
-			drp->setID(drop[k].id);
+			drp->setObjectID(drop[k].id);
 			drp->setAmount(1);
 			drp->setOwner(player->getPlayerid());
 			if (drop[k].id/1000000 == 1) {
 				drp->setEquip(true);
-				EquipInfo ei = equips[drp->getID()];
+				EquipInfo ei = equips[drp->getObjectID()];
 				DropInfo dp;
 				dp.scrolls = 0;
 				dp.type =  ei.type;
@@ -214,7 +196,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 				pos.x = mob->getPos().x+25*((d+1)/2);
 				pos.y = mob->getPos().y;
 			}
-			else{
+			else {
 				pos.x = mob->getPos().x-25*(d/2);
 				pos.y = mob->getPos().y;
 			}
@@ -233,7 +215,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 		if (player->skills->getActiveSkillLevel(4111001)>0) {
 			mesos = (mesos*Skills::skills[4111001][player->skills->getActiveSkillLevel(4111001)].x)/100;
 		}
-		drp->setID(mesos);
+		drp->setObjectID(mesos);
 		drp->setMesos(true);
 		drp->setOwner(player->getPlayerid());
 		drp->setTime(100);
@@ -245,7 +227,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 			pos.x = mob->getPos().x+25*((d+1)/2);
 			pos.y = mob->getPos().y;
 		}
-		else{
+		else {
 			pos.x = mob->getPos().x-25*(d/2);
 			pos.y = mob->getPos().y;
 		}
@@ -255,16 +237,18 @@ void Drops::dropMob(Player *player, Mob *mob) {
 }
 
 void Drops::showDrops(Player *player) {
-	for (unsigned int i=0; i<drops[player->getMap()].size(); i++) {
-		drops[player->getMap()][i]->showDrop(player);
+	hash_map <int, Drop *> drops = Maps::maps[player->getMap()]->getDrops();
+	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+		if (iter->second != 0)
+			iter->second->showDrop(player);
 	}
 }
 
 void Drops::lootItem(Player *player, ReadPacket *packet) {
 	packet->skipBytes(9);
 	int itemid = packet->getInt();
-	Drop *drop = Drop::getDrop(itemid, player->getMap());
-	if (drop == NULL) {
+	Drop* drop = Maps::maps[player->getMap()]->getDrop(itemid);
+	if (drop == 0) {
 		DropsPacket::dontTake(player);
 		return;
 	}
@@ -274,29 +258,29 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 	if (drop->isQuest()) {
 		int request=0;
 		for (unsigned int i=0; i<Quests::quests[drop->getQuest()].rewards.size(); i++) {
-			if (Quests::quests[drop->getQuest()].rewards[i].id == drop->getID()) {
+			if (Quests::quests[drop->getQuest()].rewards[i].id == drop->getObjectID()) {
 				request = Quests::quests[drop->getQuest()].rewards[i].count;
 			}
 		}
-		if (player->inv->getItemAmount(drop->getID()) > request || !player->quests->isQuestActive(drop->getQuest())) {
+		if (player->inv->getItemAmount(drop->getObjectID()) > request || !player->quests->isQuestActive(drop->getQuest())) {
 			DropsPacket::takeNote(player, 0, 0, 0);
 			DropsPacket::dontTake(player);
 			return;
 		}
 	}
 	if (drop->getMesos()) {
-		player->inv->setMesos(player->inv->getMesos() + drop->getID(), 1);
-		DropsPacket::takeNote(player, drop->getID(), 1, 0);
+		player->inv->setMesos(player->inv->getMesos() + drop->getObjectID(), 1);
+		DropsPacket::takeNote(player, drop->getObjectID(), 1, 0);
 	}
 	else{
 		if (drop->getEquip()) {
 			Equip *equip = new Equip;
 			DropInfo ei = drop->getDropInfo();
-			equip->id = drop->getID();
+			equip->id = drop->getObjectID();
 			equip->slots = ei.slots;
 			equip->scrolls = ei.scrolls;
 			equip->type = ei.type;
-			equip->pos = Inventory::findSlot(player, drop->getID(), 1, 1);
+			equip->pos = Inventory::findSlot(player, drop->getObjectID(), 1, 1);
 			if (equip->pos == 0) {
 				DropsPacket::takeNote(player, 0, 0, 0);
 				DropsPacket::dontTake(player);
@@ -321,12 +305,12 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 			Inventory::addEquip(player, equip, 1);
 		}
 		else{
-			char type = Drops::items[drop->getID()].type;
+			char type = Drops::items[drop->getObjectID()].type;
 			Item *newitem = new Item;
 			newitem->amount = drop->getAmount();
-			newitem->id = drop->getID();
+			newitem->id = drop->getObjectID();
 			newitem->inv = type;
-			newitem->pos = Inventory::findSlot(player, drop->getID() , type, drop->getAmount());
+			newitem->pos = Inventory::findSlot(player, drop->getObjectID() , type, drop->getAmount());
 			if (newitem->pos == 0) {
 				DropsPacket::takeNote(player, 0, 0, 0);
 				DropsPacket::dontTake(player);	
@@ -335,11 +319,10 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 			}
 			Inventory::addItem(player, newitem, 1);
 		}
-		DropsPacket::takeNote(player, drop->getID(), 0, drop->getAmount());
+		DropsPacket::takeNote(player, drop->getObjectID(), 0, drop->getAmount());
 	}
 	Reactors::checkLoot(drop);
 	drop->takeDrop(player);
-	delete drop;
 }
 
 void Drops::addDrop(int id, MobDropInfo drop) {
@@ -366,13 +349,13 @@ void Drops::addFoothold(int id, FootholdInfo foot) {
 void Drops::dropMesos(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	int amount = packet->getInt();
-	if (amount < 10 || amount >50000) {
+	if (amount < 10 || amount > 50000) {
 		// hacking
 		return;
 	}
 	player->inv->setMesos(player->inv->getMesos()-amount, 1);
 	Drop *drop = new Drop(player->getMap());
-	drop->setID(amount);
+	drop->setObjectID(amount);
 	drop->setMesos(true);
 	drop->setOwner(player->getPlayerid());
 	drop->setTime(0);
@@ -385,11 +368,11 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 
 void Drops::checkDrops(int mapid) {
 	int t = clock() - 60000;
-	for (unsigned int i=0; i<drops[mapid].size(); i++) {
-		if (drops[mapid][i]->getDropped() < t) {
-			DropsPacket::removeDrop(Maps::info[mapid].Players, drops[mapid][i]);
-			drops[mapid].erase(drops[mapid].begin()+i);
-			i--;
+	hash_map <int, Drop *> drops = Maps::maps[mapid]->getDrops();
+	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+		if (iter->second->getDropped() < t) {
+			DropsPacket::removeDrop(Maps::maps[mapid]->getPlayers(), iter->second);
+			Maps::maps[mapid]->removeDrop(iter->second);
 		}
 	}
 }

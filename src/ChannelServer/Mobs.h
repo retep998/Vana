@@ -64,11 +64,9 @@ struct MobHPInfo {
 };
 
 namespace Mobs {
-	extern hash_map<int, MobInfo> mobinfo;
-	extern hash_map<int, SpawnsInfo> info;
-	extern hash_map<int, queue<int>> respawns;
-	extern hash_map<int, hash_map<int, Mob *>> mobs;
-	extern hash_map<int, LoopingId *> loopingIds;
+	extern hash_map <int, MobInfo> mobinfo;
+	extern hash_map <int, SpawnsInfo> info;
+	extern hash_map <int, queue<int>> respawns;
 	void addMob(int id, MobInfo mob);
 	void addSpawn(int id, SpawnsInfo spawns);
 	void damageMob(Player *player, ReadPacket *packet);
@@ -84,8 +82,6 @@ namespace Mobs {
 	void spawnMob(Player *player, int mobid, int amount=1);
 	void dieMob(Player *player, Mob *mob);
 	void spawnMobPos(int mapid, int mobid, int xx, int yy);
-	int nextMobId(int mapid);
-	Mob * getMob(int mobid, int map);
 };
 
 class Mob {

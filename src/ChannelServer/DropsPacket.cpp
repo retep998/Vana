@@ -25,9 +25,9 @@ void DropsPacket::drop(vector <Player*> players, Drop *drop, Dropped dropper) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
-	packet.addInt(drop->getObjID());
-	packet.addByte(drop->getMesos());
 	packet.addInt(drop->getID());
+	packet.addByte(drop->getMesos());
+	packet.addInt(drop->getObjectID());
 	packet.addInt(dropper.id);
 	packet.addByte(0);
 	packet.addShort(drop->getPos().x);
@@ -47,9 +47,9 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Dropped dropper) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
-	packet.addInt(drop->getObjID());
-	packet.addByte(drop->getMesos());
 	packet.addInt(drop->getID());
+	packet.addByte(drop->getMesos());
+	packet.addInt(drop->getObjectID());
 	packet.addInt(dropper.id);
 	packet.addByte(0);
 	packet.addShort(drop->getPos().x);
@@ -72,9 +72,9 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 		packet.addByte(1);
 	else
 		packet.addByte(2);
-	packet.addInt(drop->getObjID());
-	packet.addByte(drop->getMesos());
 	packet.addInt(drop->getID());
+	packet.addByte(drop->getMesos());
+	packet.addInt(drop->getObjectID());
 	packet.addInt(0); //TODO Dropper
 	packet.addByte(0);
 	packet.addShort(drop->getPos().x);
@@ -113,7 +113,7 @@ void DropsPacket::takeDrop(Player *player, vector <Player*> players, Drop *drop)
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(2);
-	packet.addInt(drop->getObjID());
+	packet.addInt(drop->getID());
 	packet.addInt(player->getPlayerid());
 	if (!drop->isQuest()) {
 		packet.sendTo<Player>(player, players, 1);
@@ -134,7 +134,7 @@ void DropsPacket::removeDrop(vector <Player*> players, Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(0);
-	packet.addInt(drop->getObjID());
+	packet.addInt(drop->getID());
 	packet.sendTo<Player>(NULL, players, 1);
 }
 
@@ -142,7 +142,7 @@ void DropsPacket::explodeDrop(vector <Player*> players, Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(4);
-	packet.addInt(drop->getObjID());
+	packet.addInt(drop->getID());
 	packet.addShort(655);
 	packet.sendTo<Player>(NULL, players, 1);
 }

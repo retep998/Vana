@@ -26,10 +26,12 @@ using namespace stdext;
 
 #include "Players.h"
 #include "Player.h"
+#include "Maps.h"
 
 class Player;
 class Mob;
 class ReadPacket;
+class Map;
 
 struct Dropped {
 	int id;
@@ -166,8 +168,6 @@ namespace Drops {
 	extern hash_map <int, ItemInfo> items;
 	extern hash_map <int, ConsumeInfo> consumes;
 	extern hash_map <int, FootholdsInfo> foots;
-	extern hash_map <int, int> objids;
-	extern hash_map <int, vector<Drop*>> drops;
 	void addDrop(int id, MobDropInfo drop);
 	void addEquip(int id, EquipInfo equip);
 	void addItem(int id, ItemInfo item);
@@ -185,7 +185,7 @@ namespace Drops {
 class Drop {
 private:
 	int id;
-	int objid;
+	int objectid;
 	int owner;
 	int map;
 	short amount;
@@ -199,11 +199,8 @@ private:
 	Pos pos;
 	DropInfo info;
 public:
-	Drop(int map) : quest(0), playerid(0), ismeso(0), isequip(0), map(map), questid(0), dropped(0) {
-		objid = Drops::objids[map]++;
-		if (Drops::drops.find(map) == Drops::drops.end())
-			Drops::drops[map];
-		Drops::drops[map].push_back(this);
+	Drop (int map) : quest(0), playerid(0), ismeso(0), isequip(0), map(map), questid(0), dropped(0) {
+		Maps::maps[map]->addDrop(this);
 	}
 	void setID(int id) {
 		this->id = id;
@@ -211,11 +208,11 @@ public:
 	int getID() {
 		return id;
 	}
-	void setObjID(int objid) {
-		this->objid = objid;
+	void setObjectID(int objectid) {
+		this->objectid = objectid;
 	}
-	int getObjID() {
-		return objid;
+	int getObjectID() {
+		return this->objectid;
 	}
 	void setIsQuest(bool is) {
 		quest = is;
@@ -284,12 +281,11 @@ public:
 		return info;
 	}
 	void setDropped(int time) {
-		dropped=time;
+		dropped = time;
 	}
 	int getDropped() {
 		return dropped;
 	}
-	static Drop * getDrop(int objid, int mapid);
 	void doDrop(Dropped dropped);
 	void showDrop(Player *player);
 	void takeDrop(Player *player);

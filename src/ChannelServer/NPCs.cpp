@@ -30,21 +30,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "ReadPacket.h"
 
-hash_map <int, NPCsInfo> NPCs::info;
-
-void NPCs::addNPC(int id, NPCsInfo npc) {
-	info[id] = npc;
+void NPCs::addNPC(int id, NPCInfo npc) {
+	Maps::maps[id]->addNPC(npc);
 }
 
 void NPCs::showNPCs(Player *player) {
-	for (unsigned int i=0; i<info[player->getMap()].size(); i++)
-		NPCPacket::showNPC(player, info[player->getMap()][i], i);
+	for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getNpcs().size(); i++)
+		NPCPacket::showNPC(player, Maps::maps[player->getMap()]->getNpc(i), i);
 }
 
 void NPCs::handleNPC(Player *player, ReadPacket *packet) {
-	if (player->getNPC() != NULL)
+	if (player->getNPC() != 0)
 		return;
-	int npcid = info[player->getMap()][packet->getInt()-100].id;
+	int npcid = Maps::maps[player->getMap()]->getNpc(packet->getInt()-100).id;
 	NPC *npc = new NPC(npcid, player);
 	NPCsScripts::handle(npcid, npc);
 	if (npc->isEnd())
@@ -52,7 +50,7 @@ void NPCs::handleNPC(Player *player, ReadPacket *packet) {
 }
 
 void NPCs::handleQuestNPC(Player *player, int npcid, bool start) {
-	if (player->getNPC() != NULL)
+	if (player->getNPC() != 0)
 		return;
 	NPC *npc = new NPC(npcid, player, 1);
 	npc->setIsStart(start);
@@ -62,7 +60,7 @@ void NPCs::handleQuestNPC(Player *player, int npcid, bool start) {
 }
 void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 	NPC *npc = player->getNPC();
-	if (npc == NULL)
+	if (npc == 0)
 		return;
 	char type = packet->getByte();
 	char what = packet->getByte();
@@ -129,10 +127,10 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 
 NPC::NPC(int npcid, Player *player, bool isquest) {
 	this->isquest = isquest;
-	getnum=0;
+	getnum = 0;
 	gettext[0] = '\0';
-	state=0;
-	selected=-1;
+	state = 0;
+	selected = -1;
 	cend = false;
 	this->npcid = npcid;
 	this->player = player;
@@ -141,7 +139,7 @@ NPC::NPC(int npcid, Player *player, bool isquest) {
 }
 
 NPC::~NPC() {
-	player->setNPC(NULL);
+	player->setNPC(0);
 }
 
 Packet NPC::npcPacket(char type) {
@@ -212,7 +210,7 @@ void NPC::sendGetNumber(int def, int min, int max) {
 void NPC::sendStyle(int styles[], char size) {
 	Packet packet = npcPacket(7);
 	packet.addByte(size);
-	for (int i=0; i<size; i++)
+	for (int i = 0; i < size; i++)
 		packet.addInt(styles[i]);
 	packet.send(player);
 }
