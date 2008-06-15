@@ -255,12 +255,13 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			player->setSp(player->getSp()+atoi(next_token));
 		}
 		else if (strcmp(command, "killnpc") == 0) {
-			player->setNPC(NULL);
+			player->setNPC(0);
 		}
 		else if (strcmp(command, "killall") == 0) {
-			while (true) {
-				hash_map <int, Mob *>::iterator iter = Maps::maps[player->getMap()]->getMobs().begin();
-				if (iter == Maps::maps[player->getMap()]->getMobs().end()) {
+			hash_map <int, Mob *> mobs = Maps::maps[player->getMap()]->getMobs();
+			while (true) { // Use while loop to kill mobs until there are none.
+				hash_map <int, Mob *>::iterator iter = mobs.begin();
+				if (iter == mobs.end()) {
 					break;
 				}
 				Mobs::dieMob(player, iter->second);
@@ -287,12 +288,9 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "cleardrops") == 0) {
 			hash_map <int, Drop *> drops = Maps::maps[player->getMap()]->getDrops();
-			while (true) {
-				hash_map <int, Drop *>::iterator iter = drops.begin();
-				if (iter == drops.end())
-					break;
-				Maps::maps[player->getMap()]->removeDrop(iter->second);
-				iter->second->removeDrop();
+			for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+				if (iter->second != 0) // Check just in case drop is removed by timer
+					iter->second->removeDrop();
 			}
 		}
 		else if (strcmp(command, "save") == 0) {
@@ -300,13 +298,13 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
 		}
 		else if (strcmp(command, "warp") == 0) {
-			char *name = strtok_s(NULL, " ", &next_token);
+			char *name = strtok_s(0, " ", &next_token);
 			if (strlen(next_token) == 0) return;
 			if (strlen(name) > 0)
 				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
 					if (strcmp(iter->second->getName(), name) == 0)
 						if (strlen(next_token) > 0) {
-							int mapid = atoi(strtok_s(NULL, " ", &next_token));
+							int mapid = atoi(strtok_s(0, " ", &next_token));
 							if (Maps::maps.find(mapid) != Maps::maps.end()) {
 								Maps::changeMap(iter->second, mapid, 0);
 								break;

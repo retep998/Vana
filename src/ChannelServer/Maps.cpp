@@ -131,54 +131,36 @@ void Maps::moveMap(Player *player, ReadPacket *packet) {
 			tomap = player->getMap();
 		else
 			tomap = maps[player->getMap()]->getInfo().rm;
-		player->setHP(50, 0);
+		player->setHP(50, false);
 		changeMap(player, tomap, 0);
 		return;
 	}
 	string portalname = packet->getString();
-	PortalInfo portal;
-	for (unsigned int i = 0; i < maps[player->getMap()]->portals.size(); i++)
-		if (strcmp(maps[player->getMap()]->portals[i].from, portalname.c_str()) == 0) {
-			portal = maps[player->getMap()]->portals[i];
-			break;
-		}
-	int tonum = 0;
-	if (maps.find(portal.toid) != maps.end()) {
-		for (unsigned int i = 0; i < maps[portal.toid]->portals.size(); i++) {
-			if (strcmp(portal.to, maps[portal.toid]->portals[i].from) ==0) {
-				tonum = maps[portal.toid]->portals[i].id;
-				break;
-			}
-		}
-	}
-	changeMap(player, portal.toid, tonum);
+
+	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname.c_str());
+	if (portal == 0) // Exit the function if portal is not found
+		return;
+
+	int tonum = maps[portal->toid]->getPortal(portal->to)->id;
+
+	changeMap(player, portal->toid, tonum);
 }
 
 void Maps::moveMapS(Player *player, ReadPacket *packet) { // Move to map special
 	packet->skipBytes(1);
 	string portalname = packet->getString();
 
-	PortalInfo portal;
-	for (unsigned int i = 0; i < maps[player->getMap()]->portals.size(); i++) {
-		if (strcmp(maps[player->getMap()]->portals[i].from, portalname.c_str()) == 0) {
-			portal = maps[player->getMap()]->portals[i];
-			break;
-		}
-	}
+	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname.c_str());
+	if (portal == 0) // Exit the function if portal is not found
+		return;
 
 	std::ostringstream filenameStream;
-	filenameStream << "scripts/portals/" << portal.script << ".lua";
-	LuaPortal(filenameStream.str(), player->getPlayerid(), &portal);
-	int tonum = 0;
-	if (maps.find(portal.toid) != maps.end()) {
-		for (unsigned int i = 0; i < maps[portal.toid]->portals.size(); i++) {
-			if (strcmp(portal.to, maps[portal.toid]->portals[i].from) ==0) {
-				tonum = maps[portal.toid]->portals[i].id;
-				break;
-			}
-		}
-	}
-	changeMap(player, portal.toid, tonum);
+	filenameStream << "scripts/portals/" << portal->script << ".lua";
+	LuaPortal(filenameStream.str(), player->getPlayerid(), portal);
+
+	int tonum = maps[portal->toid]->getPortal(portal->to)->id;
+
+	changeMap(player, portal->toid, tonum);
 }
 
 void Maps::changeMap(Player *player, int mapid, int pos) {
@@ -196,15 +178,15 @@ void Maps::changeMap(Player *player, int mapid, int pos) {
 	player->setMappos(pos);
 	player->setType(0);
 	Pos cpos;
-	if ((unsigned int)pos < maps[mapid]->portals.size()) {
-		cpos.x = maps[mapid]->portals[pos].x;
-		cpos.y = maps[mapid]->portals[pos].y;
+	if ((unsigned int)pos < maps[mapid]->getNumPortals()) {
+		cpos.x = maps[mapid]->getPortalByID(pos)->x;
+		cpos.y = maps[mapid]->getPortalByID(pos)->y;
 	}
-	else if (maps[mapid]->portals.size() > 0) {
-		cpos.x = maps[mapid]->portals[0].x;
-		cpos.y = maps[mapid]->portals[0].y;
+	else if (maps[mapid]->getNumPortals() > 0) {
+		cpos.x = maps[mapid]->getPortalByID(0)->x;
+		cpos.y = maps[mapid]->getPortalByID(0)->y;
 	}
-	else{
+	else {
 		cpos.x = 0;
 		cpos.y = 0;
 	}

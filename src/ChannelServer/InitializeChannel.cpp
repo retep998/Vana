@@ -627,8 +627,8 @@ void Initializing::initializeSkills() {
 // Maps
 void Initializing::initializeMaps() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Maps... ";
-	// Maps and portals
-	mysqlpp::Query query = db.query("SELECT mapdata.*, mapportaldata.portalid, mapportaldata.pfrom, mapportaldata.pto, mapportaldata.toid, mapportaldata.type, mapportaldata.x, mapportaldata.y, mapportaldata.script FROM mapdata LEFT JOIN mapportaldata ON mapdata.mapid=mapportaldata.mapid ORDER BY mapdata.mapid ASC");
+	// Maps
+	mysqlpp::Query query = db.query("SELECT mapid, returnmap, forcedreturn, mobrate, clock, ship FROM mapdata ORDER BY mapid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -636,8 +636,6 @@ void Initializing::initializeMaps() {
 		exit(1);
 	}
 
-	int currentid = 0;
-	int previousid = -1;
 	MYSQL_ROW mapRow;
 	while ((mapRow = res.fetch_raw_row())) {
 		// Col0 : Map ID
@@ -646,41 +644,48 @@ void Initializing::initializeMaps() {
 		//    3 : Mob Spawn Rate
 		//    4 : Clock
 		//    5 : Ship Interval
-		//    6 : Portal ID
-		//    7 : From
-		//    8 : To
-		//    9 : To ID
-		//   10 : Type
-		//   11 : x
-		//   12 : y
-		//   13 : Script
-		currentid = atoi(mapRow[0]);
 
-		if (currentid != previousid) {
-			Maps::addMap(currentid);
-			MapInfo map;
-			map.rm = atoi(mapRow[1]);
-			map.forcedReturn = atoi(mapRow[2]);
-			map.spawnrate = atof(mapRow[3]);
-			map.clock = atob(mapRow[4]);
-			map.shipInterval = atoi(mapRow[2]);
-			Maps::maps[currentid]->setInfo(map);
-		}
+		int mapid = atoi(mapRow[0]);
+		Maps::addMap(mapid);
+		MapInfo map;
+		map.rm = atoi(mapRow[1]);
+		map.forcedReturn = atoi(mapRow[2]);
+		map.spawnrate = atof(mapRow[3]);
+		map.clock = atob(mapRow[4]);
+		map.shipInterval = atoi(mapRow[2]);
+		Maps::maps[mapid]->setInfo(map);
+	}
+
+	// Portals
+	query << "SELECT mapid, portalid, pfrom, pto, toid, type, x, y, script FROM mapportaldata";
+
+	if (!(res = query.use())) {
+		std::cout << "FAILED: " << db.error() << std::endl;
+		exit(1);
+	}
+
+	MYSQL_ROW portalRow;
+	while ((portalRow = res.fetch_raw_row())) {
+		// Col0 : Map ID
+		//    1 : Portal ID
+		//    2 : From
+		//    3 : To
+		//    4 : To ID
+		//    5 : Type
+		//    6 : x
+		//    7 : y
+		//    8 : Script
+
 		PortalInfo portal;
-		if (mapRow[6] != 0) {
-			portal.id = atoi(mapRow[6]);
-			strcpy_s(portal.from, mapRow[7]);
-			strcpy_s(portal.to, mapRow[8]);
-			portal.toid = atoi(mapRow[9]);
-			portal.type = atoi(mapRow[10]);
-			portal.x = atoi(mapRow[11]);
-			portal.y = atoi(mapRow[12]);
-			strcpy_s(portal.script, mapRow[13]);
-			Maps::maps[currentid]->portals.push_back(portal);
-		}
-		else std::cout << "Warning: Map " << currentid << " has no portal data on record.";
-
-		previousid = atoi(mapRow[0]);
+		portal.id = atoi(portalRow[1]);
+		strcpy_s(portal.from, portalRow[2]);
+		strcpy_s(portal.to, portalRow[3]);
+		portal.toid = atoi(portalRow[4]);
+		portal.type = atoi(portalRow[5]);
+		portal.x = atoi(portalRow[6]);
+		portal.y = atoi(portalRow[7]);
+		strcpy_s(portal.script, portalRow[8]);
+		Maps::maps[atoi(portalRow[0])]->addPortal(portal);
 	}
 
 	// NPCs

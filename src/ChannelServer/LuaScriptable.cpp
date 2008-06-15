@@ -237,11 +237,8 @@ int LuaExports::getRandomNumber(lua_State *luaVm) {
 int LuaExports::killMob(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
-	while (1) {
-		hash_map<int, Mob *>::iterator iter = Maps::maps[map]->getMobs().begin();
-		if (iter == Maps::maps[map]->getMobs().end()) {
-			break;
-		}
+	hash_map <int, Mob *> mobs = Maps::maps[map]->getMobs();
+	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second->getMobID() == mobid) {
 			Mobs::dieMob(getPlayer(luaVm), iter->second);
 		}

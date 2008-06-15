@@ -46,7 +46,7 @@ struct PortalInfo {
 	short y;
 	char script[30];
 };
-typedef vector<PortalInfo> PortalsInfo;
+typedef vector <PortalInfo> PortalsInfo;
 
 struct MapInfo {
 	int rm;
@@ -80,6 +80,23 @@ public:
 	}
 	MapInfo getInfo() {
 		return this->info;
+	}
+	// Portals
+	void addPortal(PortalInfo portal) {
+		portals.push_back(portal);
+	}
+	PortalInfo * getPortal(const char *from) {
+		for (size_t i = 0; i < portals.size(); i++) {
+			if (strcmp(portals[i].from, from) == 0)
+				return &portals[i];
+		}
+		return 0;
+	}
+	PortalInfo * getPortalByID(int id) {
+		return &portals[id];
+	}
+	size_t getNumPortals() {
+		return portals.size();
 	}
 	// Players
 	void addPlayer(Player *player) {
@@ -134,10 +151,9 @@ public:
 		return this->drops;
 	}
 	void removeDrop(Drop *drop);
-	// Portals
-	PortalsInfo portals;
 private:
 	MapInfo info;
+	PortalsInfo portals;
 	vector <Player *> players;
 	vector <NPCInfo> npcs;
 	vector <Reactor *> reactors;
