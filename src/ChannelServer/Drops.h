@@ -26,7 +26,6 @@ using namespace stdext;
 
 #include "Players.h"
 #include "Player.h"
-#include "Maps.h"
 
 class Player;
 class Mob;
@@ -187,7 +186,7 @@ private:
 	int id;
 	int objectid;
 	int owner;
-	int map;
+	int mapid;
 	short amount;
 	bool ismeso;
 	bool isequip;
@@ -199,9 +198,7 @@ private:
 	Pos pos;
 	DropInfo info;
 public:
-	Drop (int map) : quest(0), playerid(0), ismeso(0), isequip(0), map(map), questid(0), dropped(0) {
-		Maps::maps[map]->addDrop(this);
-	}
+	Drop (int mapid);
 	void setID(int id) {
 		this->id = id;
 	}
@@ -244,11 +241,8 @@ public:
 	int getOwner() {
 		return owner;
 	}
-	void setMap(int map) {
-		this->map = map;
-	}
 	int getMap() {
-		return map;
+		return mapid;
 	}
 	void setMesos(bool mesos) {
 		this->ismeso = mesos;

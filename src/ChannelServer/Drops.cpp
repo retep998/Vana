@@ -35,32 +35,9 @@ hash_map <int, ItemInfo> Drops::items;
 hash_map <int, FootholdsInfo> Drops::foots;
 hash_map <int, ConsumeInfo> Drops::consumes;
 
-Pos Drops::findFloor(Pos pos, int map) {
-	short x = pos.x;
-	short y = pos.y - 100;
-	bool first = 1;
-	short maxy;
-	for (unsigned int i = 0; i < Drops::foots[map].size(); i++) {
-		if ((x>Drops::foots[map][i].x1 && x<Drops::foots[map][i].x2) || (x>Drops::foots[map][i].x2 && x<Drops::foots[map][i].x1)) {
-			if (first) {
-				maxy = (short) ( (float)( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) * x - Drops::foots[map][i].x1 * (float) ( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) + Drops::foots[map][i].y1 );
-				if (maxy >= y)
-					first=0;
-			}
-			else{
-				short cmax = (short) ( (float)( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) * x - Drops::foots[map][i].x1 * (float) ( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) + Drops::foots[map][i].y1 );
-				if (cmax < maxy && cmax >= y)
-					maxy = cmax;
-			}
-		}
-	}
-	if (!first) {
-		Pos newpos;
-		newpos.x = x;
-		newpos.y = maxy;
-		return newpos;
-	}
-	return pos;
+// Drop class
+Drop::Drop (int mapid) : quest(0), playerid(0), ismeso(0), isequip(0), mapid(mapid), questid(0), dropped(0) {
+	Maps::maps[mapid]->addDrop(this);
 }
 
 void Drop::doDrop(Dropped dropped) {
@@ -92,6 +69,35 @@ void Drop::removeDrop() {
 	Maps::maps[this->getMap()]->removeDrop(this);
 	DropsPacket::removeDrop(Maps::maps[this->getMap()]->getPlayers(), this);
 	delete this;
+}
+
+// Drops namespace
+Pos Drops::findFloor(Pos pos, int map) {
+	short x = pos.x;
+	short y = pos.y - 100;
+	bool first = 1;
+	short maxy;
+	for (unsigned int i = 0; i < Drops::foots[map].size(); i++) {
+		if ((x>Drops::foots[map][i].x1 && x<Drops::foots[map][i].x2) || (x>Drops::foots[map][i].x2 && x<Drops::foots[map][i].x1)) {
+			if (first) {
+				maxy = (short) ( (float)( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) * x - Drops::foots[map][i].x1 * (float) ( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) + Drops::foots[map][i].y1 );
+				if (maxy >= y)
+					first=0;
+			}
+			else{
+				short cmax = (short) ( (float)( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) * x - Drops::foots[map][i].x1 * (float) ( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) + Drops::foots[map][i].y1 );
+				if (cmax < maxy && cmax >= y)
+					maxy = cmax;
+			}
+		}
+	}
+	if (!first) {
+		Pos newpos;
+		newpos.x = x;
+		newpos.y = maxy;
+		return newpos;
+	}
+	return pos;
 }
 
 void Drops::dropMob(Player *player, Mob *mob) {
@@ -370,9 +376,8 @@ void Drops::checkDrops(int mapid) {
 	int t = clock() - 60000;
 	hash_map <int, Drop *> drops = Maps::maps[mapid]->getDrops();
 	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-		if (iter->second->getDropped() < t) {
-			DropsPacket::removeDrop(Maps::maps[mapid]->getPlayers(), iter->second);
-			Maps::maps[mapid]->removeDrop(iter->second);
-		}
+		if (iter->second != 0)
+			if (iter->second->getDropped() < t)
+				iter->second->removeDrop();
 	}
 }

@@ -216,8 +216,8 @@ void Player::playerConnect(ReadPacket *packet) {
 		ServerPacket::changeScrollingHeader(ChannelServer::Instance()->getScrollingHeader());
 	}
 
-	pos.x = Maps::maps[map]->portals[0].x;
-	pos.y = Maps::maps[map]->portals[0].y;
+	pos.x = Maps::maps[map]->getPortalByID(0)->x;
+	pos.y = Maps::maps[map]->getPortalByID(0)->y;
 
 	type = 0;
 	PlayerPacket::showKeys(this, &keyMaps);
