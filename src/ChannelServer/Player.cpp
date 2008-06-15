@@ -47,7 +47,7 @@ Player::~Player() {
 		Skills::stopTimerPlayer(this);
 		Inventory::stopTimerPlayer(this);
 		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
-		Maps::removePlayer(this);
+		Maps::maps[this->getMap()]->removePlayer(this);
 		Players::deletePlayer(this);
 		setOnline(false);
 	}
@@ -206,8 +206,8 @@ void Player::playerConnect(ReadPacket *packet) {
 		variables[(string) res[i]["key"]] = res[i]["value"];
 	}
 
-	if (Maps::info[map].forcedReturn != 999999999) {
-		map = Maps::info[map].forcedReturn;
+	if (Maps::maps[map]->getInfo().forcedReturn != 999999999) {
+		map = Maps::maps[map]->getInfo().forcedReturn;
 	}
 
 	PlayerPacket::connectData(this);
@@ -216,8 +216,8 @@ void Player::playerConnect(ReadPacket *packet) {
 		ServerPacket::changeScrollingHeader(ChannelServer::Instance()->getScrollingHeader());
 	}
 
-	pos.x = Maps::info[map].Portals[0].x;
-	pos.y = Maps::info[map].Portals[0].y;
+	pos.x = Maps::maps[map]->portals[0].x;
+	pos.y = Maps::maps[map]->portals[0].y;
 
 	type = 0;
 	PlayerPacket::showKeys(this, &keyMaps);

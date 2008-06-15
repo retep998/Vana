@@ -95,7 +95,7 @@ void InventoryPacket::updatePlayer(Player *player) {
 	packet.addByte(0);
 	packet.addShort(0);
 	packet.addInt(0);
-	packet.sendTo<Player>(player, Maps::info[player->getMap()].Players, 0);
+	packet.sendTo(player, Maps::maps[player->getMap()]->getPlayers(), 0);
 }
 
 void InventoryPacket::addEquip(Player *player, Equip *equip, bool is) {
@@ -262,7 +262,7 @@ void InventoryPacket::useItem(Player *player, vector<Player*> players, int itemi
 	packet.addByte(types[5]);
 	packet.addByte(types[6]);
 	packet.addByte(types[7]);
-	for (unsigned int i=0; i<vals.size(); i++) {
+	for (unsigned int i = 0; i < vals.size(); i++) {
 		packet.addShort(vals[i]);
 		packet.addInt(itemid*-1);
 		packet.addInt(time);
@@ -284,7 +284,7 @@ void InventoryPacket::useItem(Player *player, vector<Player*> players, int itemi
 		packet.addByte(types[5]);
 		packet.addByte(types[6]);
 		packet.addByte(types[7]);
-		for (unsigned int i=0; i<vals.size(); i++) {
+		for (unsigned int i = 0; i < vals.size(); i++) {
 			packet.addShort(vals[i]);
 		}
 		packet.addShort(1);
@@ -306,7 +306,7 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8]) {
 	packet.send(player);
 }
 // Skill Books
-void InventoryPacket::useSkillbook(Player *player, vector <Player*> Players, int skillid, int newMaxLevel, bool use, bool succeed) {
+void InventoryPacket::useSkillbook(Player *player, vector <Player *> players, int skillid, int newMaxLevel, bool use, bool succeed) {
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILLBOOK);
 	packet.addInt(player->getPlayerid());
@@ -315,7 +315,7 @@ void InventoryPacket::useSkillbook(Player *player, vector <Player*> Players, int
 	packet.addInt(newMaxLevel); // New max level
 	packet.addByte(use); // Use/Cannot use
 	packet.addByte(succeed); // Pass/Fail
-	packet.sendTo(player, Maps::info[player->getMap()].Players, 1);
+	packet.sendTo(player, players, 1);
 }
 
 void InventoryPacket::useItemEffect(Player *player, vector <Player*> players, int itemid) {

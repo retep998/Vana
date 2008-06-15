@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Maps.h"
+#include "MapPacket.h"
 #include "Player.h"
 #include "PlayerPacket.h"
-#include "MapPacket.h"
 #include "PlayersPacket.h"
 #include "NPCs.h"
 #include "Reactors.h"
@@ -28,11 +28,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaPortal.h"
 #include "BufferUtilities.h"
 #include "ReadPacket.h"
+#include "LoopingId.h"
 #include <iostream>
 #include <sstream>
 #include <string>
 
-hash_map <int, MapInfo> Maps::info;
+hash_map <int, Map *> Maps::maps;
 
 class MapTimer: public Timer::TimerHandler {
 public:
@@ -68,53 +69,86 @@ hash_map <int,int> MapTimer::timers;
 hash_map <int,int> MapTimer::ctimer;
 MapTimer * MapTimer::singleton = 0;
 
-void Maps::addMap(int id, MapInfo map) {
-	info[id] = map;
+// Map class
+Map::Map () {
+	mobids = new LoopingId(100);
+	dropids = new LoopingId(100);
+}
+
+void Map::removePlayer(Player *player) {
+	for (size_t i = 0; i < this->players.size(); i++) {
+		if (this->players[i]->getPlayerid() == player->getPlayerid()) {
+			this->players.erase(this->players.begin() + i);
+			break;
+		}
+	}
+	MapPacket::removePlayer(player, this->getPlayers());
+	Mobs::updateSpawn(player->getMap());
+}
+
+void Map::addReactor(Reactor *reactor) {
+	this->reactors.push_back(reactor);
+	reactor->setID(this->reactors.size() - 1 + 200);
+}
+
+void Map::addMob(Mob *mob) {
+	int id = this->mobids->next();
+	this->mobs[id] = mob;
+	mob->setID(id);
+}
+
+void Map::removeMob(Mob *mob) {
+	this->mobs.erase(mob->getID());
+}
+
+void Map::addDrop(Drop *drop) {
+	int id = dropids->next();
+	this->drops[id] = drop;
+	drop->setID(id);
+}
+
+void Map::removeDrop(Drop *drop) {
+	this->drops.erase(drop->getID());
+}
+
+// Maps namespace
+void Maps::addMap(int id) {
+	maps[id] = new Map();
 }
 
 void Maps::addPlayer(Player *player) {
 	if (player->getMap() == 1 || player->getMap() == 2)
 		MapPacket::makeApple(player);
-	info[player->getMap()].Players.push_back(player);
-	MapPacket::showPlayers(player, info[player->getMap()].Players);
+	maps[player->getMap()]->addPlayer(player);
+	MapPacket::showPlayers(player, maps[player->getMap()]->getPlayers());
 	if (player->skills->getActiveSkillLevel(5101004) == 0)
-		MapPacket::showPlayer(player, info[player->getMap()].Players);
-}
-
-void Maps::removePlayer(Player *player) {
-	for (unsigned int i=0; i<info[player->getMap()].Players.size(); i++) {
-		if (info[player->getMap()].Players[i]->getPlayerid() == player->getPlayerid()) {
-			info[player->getMap()].Players.erase(info[player->getMap()].Players.begin()+i);
-		}
-	}
-	MapPacket::removePlayer(player, info[player->getMap()].Players);
-	Mobs::updateSpawn(player->getMap());
+		MapPacket::showPlayer(player, maps[player->getMap()]->getPlayers());
 }
 
 void Maps::moveMap(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1);
 	if (packet->getInt() == 0) { // Dead
 		int tomap;
-		if (info.find(player->getMap()) == info.end())
+		if (maps.find(player->getMap()) == maps.end())
 			tomap = player->getMap();
 		else
-			tomap = info[player->getMap()].rm;
+			tomap = maps[player->getMap()]->getInfo().rm;
 		player->setHP(50, 0);
 		changeMap(player, tomap, 0);
 		return;
 	}
 	string portalname = packet->getString();
 	PortalInfo portal;
-	for (unsigned int i=0; i<info[player->getMap()].Portals.size(); i++)
-		if (strcmp(info[player->getMap()].Portals[i].from, portalname.c_str()) == 0) {
-			portal = info[player->getMap()].Portals[i];
+	for (unsigned int i = 0; i < maps[player->getMap()]->portals.size(); i++)
+		if (strcmp(maps[player->getMap()]->portals[i].from, portalname.c_str()) == 0) {
+			portal = maps[player->getMap()]->portals[i];
 			break;
 		}
 	int tonum = 0;
-	if (info.find(portal.toid) != info.end()) {
-		for (unsigned int i=0; i<info[portal.toid].Portals.size(); i++) {
-			if (strcmp(portal.to, info[portal.toid].Portals[i].from) ==0) {
-				tonum = info[portal.toid].Portals[i].id;
+	if (maps.find(portal.toid) != maps.end()) {
+		for (unsigned int i = 0; i < maps[portal.toid]->portals.size(); i++) {
+			if (strcmp(portal.to, maps[portal.toid]->portals[i].from) ==0) {
+				tonum = maps[portal.toid]->portals[i].id;
 				break;
 			}
 		}
@@ -127,9 +161,9 @@ void Maps::moveMapS(Player *player, ReadPacket *packet) { // Move to map special
 	string portalname = packet->getString();
 
 	PortalInfo portal;
-	for (unsigned int i=0; i<info[player->getMap()].Portals.size(); i++) {
-		if (strcmp(info[player->getMap()].Portals[i].from, portalname.c_str()) == 0) {
-			portal = info[player->getMap()].Portals[i];
+	for (unsigned int i = 0; i < maps[player->getMap()]->portals.size(); i++) {
+		if (strcmp(maps[player->getMap()]->portals[i].from, portalname.c_str()) == 0) {
+			portal = maps[player->getMap()]->portals[i];
 			break;
 		}
 	}
@@ -138,10 +172,10 @@ void Maps::moveMapS(Player *player, ReadPacket *packet) { // Move to map special
 	filenameStream << "scripts/portals/" << portal.script << ".lua";
 	LuaPortal(filenameStream.str(), player->getPlayerid(), &portal);
 	int tonum = 0;
-	if (info.find(portal.toid) != info.end()) {
-		for (unsigned int i=0; i<info[portal.toid].Portals.size(); i++) {
-			if (strcmp(portal.to, info[portal.toid].Portals[i].from) ==0) {
-				tonum = info[portal.toid].Portals[i].id;
+	if (maps.find(portal.toid) != maps.end()) {
+		for (unsigned int i = 0; i < maps[portal.toid]->portals.size(); i++) {
+			if (strcmp(portal.to, maps[portal.toid]->portals[i].from) ==0) {
+				tonum = maps[portal.toid]->portals[i].id;
 				break;
 			}
 		}
@@ -159,18 +193,18 @@ void Maps::changeMap(Player *player, int mapid, int pos) {
 		MapPacket::portalBlocked(player);
 		return;
 	}
-	removePlayer(player);
+	maps[player->getMap()]->removePlayer(player);
 	player->setMap(mapid);
 	player->setMappos(pos);
 	player->setType(0);
 	Pos cpos;
-	if ((unsigned int)pos<info[mapid].Portals.size()) {
-		cpos.x = info[mapid].Portals[pos].x;
-		cpos.y = info[mapid].Portals[pos].y;
+	if ((unsigned int)pos < maps[mapid]->portals.size()) {
+		cpos.x = maps[mapid]->portals[pos].x;
+		cpos.y = maps[mapid]->portals[pos].y;
 	}
-	else if (info[mapid].Portals.size() > 0) {
-		cpos.x = info[mapid].Portals[0].x;
-		cpos.y = info[mapid].Portals[0].y;
+	else if (maps[mapid]->portals.size() > 0) {
+		cpos.x = maps[mapid]->portals[0].x;
+		cpos.y = maps[mapid]->portals[0].y;
 	}
 	else{
 		cpos.x = 0;
@@ -201,13 +235,13 @@ void Maps::newMap(Player *player, int mapid) {
 	addPlayer(player);
 	Mobs::showMobs(player);
 	Drops::showDrops(player);
-	if (info[mapid].clock)
+	if (maps[mapid]->getInfo().clock)
 		showClock(player);
 	MapTimer::Instance()->setMapTimer(player->getMap());
 }
 // Change Music
 void Maps::changeMusic(int mapid, std::string musicname) {
-	if (Maps::info.find(mapid) != Maps::info.end()) {
-		MapPacket::changeMusic(info[mapid].Players, musicname);
+	if (Maps::maps.find(mapid) != Maps::maps.end()) {
+		MapPacket::changeMusic(maps[mapid]->getPlayers(), musicname);
 	}
 }

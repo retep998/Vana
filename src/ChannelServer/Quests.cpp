@@ -211,7 +211,7 @@ void PlayerQuests::finishQuest(short questid, int npcid) {
 	quest.id = questid;
 	quest.time = TimeUtilities::getServerTime();
 	questscomp.push_back(quest);
-	QuestsPacket::questFinish(player, Maps::info[player->getMap()].Players , questid, npcid, Quests::quests[questid].nextquest, quest.time);
+	QuestsPacket::questFinish(player, Maps::maps[player->getMap()]->getPlayers(), questid, npcid, Quests::quests[questid].nextquest, quest.time);
 }
 
 void PlayerQuests::addQuest(int questid, int npcid) {

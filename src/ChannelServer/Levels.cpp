@@ -95,7 +95,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			}
 			player->setRMHP(player->getRMHP() + hpgain);
 			player->setRMMP(player->getRMMP() + mpgain);
-			LevelsPacket::levelUP(player, Maps::info[player->getMap()].Players);
+			LevelsPacket::levelUP(player, Maps::maps[player->getMap()]->getPlayers());
 			if (player->getJob() > 0) {
 				player->setSp(player->getSp()+3);
 			}
@@ -195,10 +195,10 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 
 void Levels::setLevel(Player *player, int level) {
 	player->setLevel(level);
-	LevelsPacket::levelUP(player, Maps::info[player->getMap()].Players);
+	LevelsPacket::levelUP(player, Maps::maps[player->getMap()]->getPlayers());
 }
 
 void Levels::setJob(Player *player, int job) {
 	player->setJob(job);
-	LevelsPacket::jobChange(player, Maps::info[player->getMap()].Players);
+	LevelsPacket::jobChange(player, Maps::maps[player->getMap()]->getPlayers());
 }

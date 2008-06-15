@@ -658,18 +658,16 @@ void Initializing::initializeMaps() {
 		currentid = atoi(mapRow[0]);
 
 		if (currentid != previousid) {
-			if (previousid != -1) {
-				Maps::addMap(previousid, map);
-				map.Portals.clear();
-			}
+			Maps::addMap(currentid);
 			map.rm = atoi(mapRow[1]);
 			map.forcedReturn = atoi(mapRow[2]);
 			map.spawnrate = atof(mapRow[3]);
 			map.clock = atob(mapRow[4]);
 			map.shipInterval = atoi(mapRow[2]);
+			Maps::maps[currentid]->setInfo(map);
 		}
 		PortalInfo portal;
-		if(mapRow[6] != NULL){
+		if (mapRow[6] != 0) {
 			portal.id = atoi(mapRow[6]);
 			strcpy_s(portal.from, mapRow[7]);
 			strcpy_s(portal.to, mapRow[8]);
@@ -678,15 +676,11 @@ void Initializing::initializeMaps() {
 			portal.x = atoi(mapRow[11]);
 			portal.y = atoi(mapRow[12]);
 			strcpy_s(portal.script, mapRow[13]);
-			map.Portals.push_back(portal);
+			Maps::maps[currentid]->portals.push_back(portal);
 		}
 		else std::cout << "Warning: Map " << currentid << " has no portal data on record.";
 
 		previousid = atoi(mapRow[0]);
-	}
-	if (previousid != -1) {
-		Maps::addMap(previousid, map);
-		map.Portals.clear();
 	}
 
 	// NPCs
@@ -699,7 +693,6 @@ void Initializing::initializeMaps() {
 
 	currentid = 0;
 	previousid = -1;
-	NPCsInfo npcs;
 	MYSQL_ROW npcRow;
 	while ((npcRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
@@ -710,12 +703,7 @@ void Initializing::initializeMaps() {
 		//    5 : fh
 		//    6 : rx0
 		//    7 : rx1
-		currentid = atoi(npcRow[1]);
 
-		if (currentid != previousid && previousid != -1) {
-			NPCs::addNPC(previousid, npcs);
-			npcs.clear();
-		}
 		NPCInfo npc;
 		npc.id = atoi(npcRow[2]);
 		npc.x = atoi(npcRow[3]);
@@ -723,13 +711,7 @@ void Initializing::initializeMaps() {
 		npc.fh = atoi(npcRow[5]);
 		npc.rx0 = atoi(npcRow[6]);
 		npc.rx1 = atoi(npcRow[7]);
-		npcs.push_back(npc);
-
-		previousid = atoi(npcRow[1]);
-	}
-	if (previousid != -1) {
-		NPCs::addNPC(previousid, npcs);
-		npcs.clear();
+		NPCs::addNPC(atoi(npcRow[1]), npc);
 	}
 
 	// Mobs
@@ -835,7 +817,6 @@ void Initializing::initializeMaps() {
 		foot.y1 = atoi(footsRow[4]);
 		foot.y2 = atoi(footsRow[4]);
 		Drops::addFoothold(atoi(footsRow[1]), foot);
-		Drops::objids[atoi(footsRow[1])] = Drops::foots[atoi(footsRow[1])].size();
 	}
 	std::cout << "DONE" << std::endl;
 }
