@@ -35,6 +35,17 @@ hash_map <int, MobInfo> Mobs::mobinfo;
 hash_map <int, SpawnsInfo> Mobs::info;
 hash_map <int, queue<int>> Mobs::respawns;
 
+// Mob class
+Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : control(0), spawnid(-1), type(2) {
+	this->mobid = mobid;
+	this->spawnid = spawnid;
+	this->hp = Mobs::mobinfo[mobid].hp;
+	this->mp = Mobs::mobinfo[mobid].mp;
+	this->pos = pos;
+	this->fh = fh;
+	Maps::maps[mapid]->addMob(this);
+}
+
 void Mob::setControl(Player *control) {
 	if (this == 0) return;
 	if (this->control != 0)
@@ -44,6 +55,7 @@ void Mob::setControl(Player *control) {
 		MobsPacket::controlMob(control, this);
 }
 
+// Mobs namespace
 void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 	int mobid = packet->getInt();
 
@@ -80,10 +92,10 @@ void Mobs::addMob(int id, MobInfo mob) {
 	mobinfo[id] = mob;
 }
 
-void Mobs::addSpawn(int id, SpawnsInfo spawns) {
-	info[id] = spawns;
-	for (size_t i = 0; i < info[id].size(); i++) // Queue up all spawn points for initial spawning
-		respawns[id].push(i);
+void Mobs::addSpawn(int id, SpawnInfo spawn) {
+	info[id].push_back(spawn);
+	// Queue up spawn point for initial spawning
+	respawns[id].push(info[id].size() - 1);
 }
 
 void Mobs::checkSpawn(int mapid) {
@@ -91,15 +103,7 @@ void Mobs::checkSpawn(int mapid) {
 	while (!respawns[mapid].empty()) {
 		int i = respawns[mapid].front();
 		respawns[mapid].pop();
-		Mob *mob = new Mob();
-		mob->setMobID(info[mapid][i].id);
-		mob->setSpawnID(i);
-		mob->setPos(info[mapid][i].x, info[mapid][i].cy);
-		mob->setHP(mobinfo[mob->getMobID()].hp);
-		mob->setMP(mobinfo[mob->getMobID()].mp);
-		mob->setFH(info[mapid][i].fh);
-		mob->setType(2);
-		Maps::maps[mapid]->addMob(mob);
+		Mob *mob = new Mob(mapid, info[mapid][i].id, info[mapid][i].pos, i, info[mapid][i].fh);
 		MobsPacket::spawnMob(Maps::maps[mapid]->getPlayers(), mob);
 		updateSpawn(mapid, mob);
 	}
@@ -442,16 +446,11 @@ void Mobs::spawnMob(Player *player, int mobid, int amount) {
 		spawnMobPos(player->getMap(), mobid, player->getPos().x, player->getPos().y);
 }
 
-void Mobs::spawnMobPos(int mapid, int mobid, int xx, int yy) {
-	Mob *mob = new Mob();
-	mob->setMobID(mobid);
-	mob->setSpawnID(-1);
-	mob->setHP(mobinfo[mobid].hp);
-	mob->setMP(mobinfo[mobid].mp);
-	mob->setPos(xx, yy);
-	mob->setFH(0);
-	mob->setType(2);
-	Maps::maps[mapid]->addMob(mob);
+void Mobs::spawnMobPos(int mapid, int mobid, int x, int y) {
+	Pos mobpos;
+	mobpos.x = x;
+	mobpos.y = y;
+	Mob *mob = new Mob(mapid, mobid, mobpos);
 	MobsPacket::spawnMob(Maps::maps[mapid]->getPlayers(), mob);
 	updateSpawn(mapid, mob);
 }

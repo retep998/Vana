@@ -34,8 +34,7 @@ class ReadPacket;
 
 struct SpawnInfo {
 	int id;
-	short x;
-	short cy;
+	Pos pos;
 	short fh;
 	int rate;
 	int last;
@@ -68,7 +67,7 @@ namespace Mobs {
 	extern hash_map <int, SpawnsInfo> info;
 	extern hash_map <int, queue<int>> respawns;
 	void addMob(int id, MobInfo mob);
-	void addSpawn(int id, SpawnsInfo spawns);
+	void addSpawn(int id, SpawnInfo spawn);
 	void damageMob(Player *player, ReadPacket *packet);
 	void damageMobRanged(Player *player, ReadPacket *packet);
 	void damageMobSpell(Player *player, ReadPacket *packet);
@@ -81,18 +80,14 @@ namespace Mobs {
 	void updateSpawn(int mapid, Mob *mob);
 	void spawnMob(Player *player, int mobid, int amount=1);
 	void dieMob(Player *player, Mob *mob);
-	void spawnMobPos(int mapid, int mobid, int xx, int yy);
+	void spawnMobPos(int mapid, int mobid, int x, int y);
 };
 
 class Mob {
 public:
-	Mob() : control(0), spawnid(-1) { }
+	Mob(int mapid, int mobid, Pos pos, int spawnid = -1, int fh = 0);
 	void setPos(Pos pos) {
 		this->pos = pos;
-	}
-	void setPos(int x, int y) {
-		pos.x = x;
-		pos.y = y;
 	}
 	Pos getPos() {
 		return pos;
@@ -108,9 +103,6 @@ public:
 	}
 	int getID() {
 		return id;
-	}
-	void setMobID(int mobid) {
-		this->mobid = mobid;
 	}
 	int getMobID() {
 		return mobid;

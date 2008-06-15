@@ -722,9 +722,6 @@ void Initializing::initializeMaps() {
 		exit(1);
 	}
 
-	currentid = 0;
-	previousid = -1;
-	SpawnsInfo spawns;
 	MYSQL_ROW mobRow;
 	while ((mobRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
@@ -733,24 +730,13 @@ void Initializing::initializeMaps() {
 		//    3 : x
 		//    4 : cy
 		//    5 : fh
-		currentid = atoi(mobRow[1]);
 
-		if (currentid != previousid && previousid != -1) {
-			Mobs::addSpawn(previousid, spawns);
-			spawns.clear();
-		}
 		SpawnInfo spawn;
 		spawn.id = atoi(mobRow[2]);
-		spawn.x = atoi(mobRow[3]);
-		spawn.cy = atoi(mobRow[4]);
+		spawn.pos.x = atoi(mobRow[3]);
+		spawn.pos.y = atoi(mobRow[4]);
 		spawn.fh = atoi(mobRow[5]);
-		spawns.push_back(spawn);
-
-		previousid = atoi(mobRow[1]);
-	}
-	if (previousid != -1) {
-		Mobs::addSpawn(previousid, spawns);
-		spawns.clear();
+		Mobs::addSpawn(atoi(mobRow[1]), spawn);
 	}
 
 	// Reactors
