@@ -221,7 +221,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 				if (mp > cmp) mp = cmp;
 				mob->setMP(cmp - mp);
 				player->setMP(player->getMP() + mp);
-				SkillsPacket::showMPEater(player, Maps::maps[map]->getPlayers(), mpeater);
+				SkillsPacket::showSkillEffect(player, Maps::maps[map]->getPlayers(), mpeater);
 			}
 			MobHPInfo hpinfo;
 			hpinfo.hp = mob->getHP();

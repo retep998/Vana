@@ -157,20 +157,42 @@ void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time)
 	packet.sendTo(player, players, 0);
 }
 
-void SkillsPacket::showMPEater(Player *player, vector <Player*> players,int skillid) {
+void SkillsPacket::showSkillEffect(Player *player, vector <Player*> players,int skillid) {
 	Packet packet;
-	packet.addHeader(SEND_GAIN_ITEM);
-	packet.addByte(1);
-	packet.addInt(skillid);
-	packet.addByte(1);
-	packet.send<Player>(player);
+	packet.addHeader(SEND_GAIN_ITEM); // For the player themselves
+	bool sendto = false;
+	switch (skillid) { 
+		case 2100000:
+		case 2200000:
+		case 2300000: // MP Eater
+			packet.addByte(1);
+			packet.addInt(skillid);
+			packet.addByte(1);
+			sendto = true;
+			break;
+	}
+	if (sendto)
+		packet.send<Player>(player);
 	packet = Packet();
-	packet.addHeader(SEND_SHOW_SKILL);
+	sendto = false;
+	packet.addHeader(SEND_SHOW_SKILL);  // For others
 	packet.addInt(player->getPlayerid());
-	packet.addByte(1);
-	packet.addInt(skillid);
-	packet.addByte(1);
-	packet.sendTo(player, players, 0);
+	switch (skillid) {
+		case 2100000:
+		case 2200000:
+		case 2300000: // MP Eater
+			packet.addByte(1);
+			packet.addInt(skillid);
+			packet.addByte(1);
+			sendto = true;
+			break;
+		case 4211005: // Meso Guard
+			packet.addByte(5);
+			packet.addInt(skillid);
+			sendto = true;
+	}
+	if (sendto)
+		packet.sendTo(player, players, 0);
 }
 
 void SkillsPacket::showSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang
