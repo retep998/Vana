@@ -21,35 +21,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "SendHeader.h"
 
+void ReactorPacket::spawnReactor(vector <Player *> players, Reactor *reactor) {
+	Packet packet;
+	packet.addHeader(SEND_SHOW_REACTOR);
+	packet.addInt(reactor->getID());
+	packet.addInt(reactor->getReactorID());
+	packet.addByte(reactor->getState());
+	packet.addShort(reactor->getPos()->x);
+	packet.addShort(reactor->getPos()->y);
+	packet.addByte(0);
+	packet.sendTo<Player>(0, players, true);
+}
+
 void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addInt(reactor->getReactorID());
 	packet.addByte(reactor->getState());
-	packet.addShort(reactor->getPos().x);
-	packet.addShort(reactor->getPos().y);
+	packet.addShort(reactor->getPos()->x);
+	packet.addShort(reactor->getPos()->y);
 	packet.addByte(0);
 	packet.send(player);
 }
 
-void ReactorPacket::triggerReactor(vector <Player*> players, Reactor *reactor) {
+void ReactorPacket::triggerReactor(vector <Player *> players, Reactor *reactor) {
 	Packet packet = Packet();
 	packet.addHeader(SEND_TRIGGER_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addByte(reactor->getState()); // State
-	packet.addShort(reactor->getPos().x);
-	packet.addShort(reactor->getPos().y);
+	packet.addShort(reactor->getPos()->x);
+	packet.addShort(reactor->getPos()->y);
 	packet.addInt(0);
 	packet.sendTo<Player>(0, players, true);
 }
 
-void ReactorPacket::destroyReactor(vector <Player*> players, Reactor *reactor) {
+void ReactorPacket::destroyReactor(vector <Player *> players, Reactor *reactor) {
 	Packet packet = Packet();
 	packet.addHeader(SEND_DESTROY_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addByte(reactor->getState());
-	packet.addShort(reactor->getPos().x);
-	packet.addShort(reactor->getPos().y);
+	packet.addShort(reactor->getPos()->x);
+	packet.addShort(reactor->getPos()->y);
 	packet.sendTo<Player>(0, players, true);
 }

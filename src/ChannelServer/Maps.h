@@ -119,8 +119,8 @@ public:
 		else
 			return 0;
 	}
-	vector <Reactor *> getReactors() {
-		return this->reactors;
+	size_t getNumReactors() {
+		return this->reactors.size();
 	}
 	// Drops
 	void addDrop(Drop *drop);
