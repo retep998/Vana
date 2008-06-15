@@ -57,7 +57,7 @@ private:
 
 	static hash_map <int, int> timers;
 	static hash_map <int, int> ctimer;
-	void handle (Timer* timer, int id) {
+	void handle (Timer *timer, int id) {
 		Maps::mapTimer(timers[id]);
 	}
 	void remove (int id) {

@@ -47,7 +47,7 @@ Packet MapPacket::playerPacket(Player *player) {
 	packet.addInt(player->getHair());
 	int equips[35][2] = {0};
 	for (int i=0; i<player->inv->getEquipNum(); i++) { //sort equips
-		Equip* equip = player->inv->getEquip(i);
+		Equip *equip = player->inv->getEquip(i);
 		if (equip->pos<0) {
 			if (equips[equip->type][0]>0) {
 				if (Inventory::isCash(equip->id)) {

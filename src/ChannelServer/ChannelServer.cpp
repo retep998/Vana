@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Players.h"
 
-ChannelServer* ChannelServer::singleton = 0;
+ChannelServer * ChannelServer::singleton = 0;
 
 void ChannelServer::listen() {
 	new Acceptor(port, new PlayerFactory());

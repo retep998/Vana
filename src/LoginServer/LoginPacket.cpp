@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.h"
 #include "SendHeader.h"
 
-void LoginPacket::loginError(PlayerLogin* player, short errorid) {
+void LoginPacket::loginError(PlayerLogin *player, short errorid) {
 	Packet packet;
 	packet.addHeader(SEND_LOGIN_INFO_REPLY);
 	packet.addShort(errorid);
@@ -31,7 +31,7 @@ void LoginPacket::loginError(PlayerLogin* player, short errorid) {
 	packet.send(player);
 }
 
-void LoginPacket::loginBan(PlayerLogin* player, char reason, int expire) {
+void LoginPacket::loginBan(PlayerLogin *player, char reason, int expire) {
 	/* Reasons:
 		00 -> This is an ID that has been deleted or blocked from connection
 		01 -> Your account has been blocked for hacking or illegal use of third-party programs
@@ -57,7 +57,7 @@ void LoginPacket::loginBan(PlayerLogin* player, char reason, int expire) {
 	packet.send(player);
 }
 
-void LoginPacket::loginConnect(PlayerLogin* player, const string &username) {
+void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 	Packet packet;
 	packet.addHeader(SEND_LOGIN_INFO_REPLY);
 	packet.addInt(0);
@@ -77,21 +77,21 @@ void LoginPacket::loginConnect(PlayerLogin* player, const string &username) {
 	packet.send(player);
 }
 
-void LoginPacket::loginProcess(PlayerLogin* player, char id) {
+void LoginPacket::loginProcess(PlayerLogin *player, char id) {
 	Packet packet;
 	packet.addHeader(SEND_LOGIN_PROCESS);
 	packet.addByte(id);
 	packet.send(player);
 }
 
-void LoginPacket::pinAssigned(PlayerLogin* player) {
+void LoginPacket::pinAssigned(PlayerLogin *player) {
 	Packet packet;
 	packet.addHeader(SEND_PIN_ASSIGNED);
 	packet.addByte(0);
 	packet.send(player);
 }
 
-void LoginPacket::genderDone(PlayerLogin* player, char gender) {
+void LoginPacket::genderDone(PlayerLogin *player, char gender) {
 	Packet packet;
 	packet.addHeader(SEND_GENDER_DONE);
 	packet.addByte(gender);
@@ -99,7 +99,7 @@ void LoginPacket::genderDone(PlayerLogin* player, char gender) {
 	packet.send(player);
 }
 
-void LoginPacket::showWorld(PlayerLogin* player, World *world) {
+void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_WORLD);
 	packet.addByte(world->id);
@@ -124,21 +124,21 @@ void LoginPacket::showWorld(PlayerLogin* player, World *world) {
 	packet.send(player);
 }
 
-void LoginPacket::worldEnd(PlayerLogin* player) {
+void LoginPacket::worldEnd(PlayerLogin *player) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_WORLD);
 	packet.addByte(0xFF);
 	packet.send(player);
 }
 
-void LoginPacket::showChannels(PlayerLogin* player) {
+void LoginPacket::showChannels(PlayerLogin *player) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_CHANNEL);
 	packet.addShort(0x00);
 	packet.send(player);
 }
 
-void LoginPacket::channelSelect(PlayerLogin* player) {
+void LoginPacket::channelSelect(PlayerLogin *player) {
 	Packet packet;
 	packet.addHeader(SEND_CHANNEL_SELECT);
 	packet.addBytes("000500001040008612340097227400");
@@ -149,7 +149,7 @@ void LoginPacket::channelSelect(PlayerLogin* player) {
 	packet.send(player);
 }
 
-void LoginPacket::showCharacters(PlayerLogin* player, vector <Character> chars) {
+void LoginPacket::showCharacters(PlayerLogin *player, vector <Character> chars) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_CHARACTERS);
 	packet.addByte(0);
@@ -160,7 +160,7 @@ void LoginPacket::showCharacters(PlayerLogin* player, vector <Character> chars) 
 	packet.send(player);
 }
 
-void LoginPacket::checkName(PlayerLogin* player, char is, const string &name) {
+void LoginPacket::checkName(PlayerLogin *player, char is, const string &name) {
 	Packet packet;
 	packet.addHeader(SEND_CHECK_NAME);
 	packet.addString(name);
@@ -168,7 +168,7 @@ void LoginPacket::checkName(PlayerLogin* player, char is, const string &name) {
 	packet.send(player);
 }
 
-void LoginPacket::showCharacter(PlayerLogin* player, Character charc) {
+void LoginPacket::showCharacter(PlayerLogin *player, Character charc) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_CHARACTER);
 	packet.addByte(0);
@@ -176,7 +176,7 @@ void LoginPacket::showCharacter(PlayerLogin* player, Character charc) {
 	packet.send(player);	
 }
 
-void LoginPacket::deleteCharacter(PlayerLogin* player, int ID) {
+void LoginPacket::deleteCharacter(PlayerLogin *player, int ID) {
 	Packet packet;
 	packet.addHeader(SEND_DELETE_CHAR);
 	packet.addInt(ID);
@@ -184,7 +184,7 @@ void LoginPacket::deleteCharacter(PlayerLogin* player, int ID) {
 	packet.send(player);
 }
 
-void LoginPacket::connectIP(PlayerLogin* player, int charid) {
+void LoginPacket::connectIP(PlayerLogin *player, int charid) {
 	Packet packet;
 	packet.addHeader(SEND_CHANNEL_SERVER_INFO);
 	packet.addShort(0);
@@ -206,7 +206,7 @@ void LoginPacket::connectIP(PlayerLogin* player, int charid) {
 }
 
 
-void LoginPacket::logBack(PlayerLogin* player) {
+void LoginPacket::logBack(PlayerLogin *player) {
 	Packet packet;
 	packet.addHeader(SEND_RETURN_TO_LOGIN);
 	packet.addByte(1);

@@ -31,7 +31,7 @@ public:
 
 class WorldServerConnectPlayerFactory : public AbstractPlayerFactory {
 public:
-	AbstractPlayer* createPlayer() {
+	AbstractPlayer * createPlayer() {
 		return new WorldServerConnectPlayer();
 	}
 };

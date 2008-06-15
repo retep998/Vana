@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 hash_map <int, World *> Worlds::worlds;
 
-void Worlds::showWorld(PlayerLogin* player) {
+void Worlds::showWorld(PlayerLogin *player) {
 	if (player->getStatus() != 4) {
 		// hacking
 		return;
@@ -37,7 +37,7 @@ void Worlds::showWorld(PlayerLogin* player) {
 	LoginPacket::worldEnd(player);
 }
 
-void Worlds::selectWorld(PlayerLogin* player, ReadPacket *packet) {
+void Worlds::selectWorld(PlayerLogin *player, ReadPacket *packet) {
 	if (player->getStatus() != 4) {
 		// hacking
 		return;
@@ -46,7 +46,7 @@ void Worlds::selectWorld(PlayerLogin* player, ReadPacket *packet) {
 	LoginPacket::showChannels(player);
 }
 
-void Worlds::channelSelect(PlayerLogin* player, ReadPacket *packet) {
+void Worlds::channelSelect(PlayerLogin *player, ReadPacket *packet) {
 	if (player->getStatus() != 4) {
 		// hacking
 		return;

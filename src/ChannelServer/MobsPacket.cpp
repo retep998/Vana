@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "ReadPacket.h"
 
-void MobsPacket::controlMob(Player *player, Mob* mob) {
+void MobsPacket::controlMob(Player *player, Mob *mob) {
 	Packet packet;
 	packet.addHeader(SEND_CONTROL_MOB);
 	packet.addByte(1);
@@ -39,7 +39,7 @@ void MobsPacket::controlMob(Player *player, Mob* mob) {
 	packet.addShort(-1);
 	packet.send(player);
 }
-void MobsPacket::endControlMob(Player *player, Mob* mob) {
+void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	Packet packet;
 	packet.addHeader(SEND_CONTROL_MOB);
 	packet.addByte(0);
@@ -47,7 +47,7 @@ void MobsPacket::endControlMob(Player *player, Mob* mob) {
 	packet.send(player);
 }
 
-void MobsPacket::spawnMob(vector <Player*> players, Mob* mob) {
+void MobsPacket::spawnMob(vector <Player*> players, Mob *mob) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
@@ -63,7 +63,7 @@ void MobsPacket::spawnMob(vector <Player*> players, Mob* mob) {
 	packet.sendTo<Player>(NULL, players, true);
 }
 
-void MobsPacket::showMob(Player *player, Mob* mob) {
+void MobsPacket::showMob(Player *player, Mob *mob) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());

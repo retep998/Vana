@@ -40,11 +40,11 @@ public:
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, int len); // Static-lengthed strings
 	void addByte(unsigned char byte);
-	void addBytes(char* hex);
-	void addBuffer(unsigned char* bytes, int len);
+	void addBytes(char *hex);
+	void addBuffer(unsigned char *bytes, int len);
 
 	template <class T>
-	void sendTo(T* player, vector <T*> players, bool is) {
+	void sendTo(T *player, vector <T*> players, bool is) {
 		for (unsigned int i=0; i<players.size(); i++) {
 			if ((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
 				this->send(players[i]);
@@ -52,7 +52,7 @@ public:
 	}
 	
 	template <class T>
-	void send(T* player) {
+	void send(T *player) {
 		unsigned char tempbuf[MAX_LEN];
 		memcpy_s(tempbuf, MAX_LEN, packet, MAX_LEN); // Copying to tempbuf so the packet doesn't get emptied on send and can be sent to other players
 		player->sendPacket(tempbuf, pos);

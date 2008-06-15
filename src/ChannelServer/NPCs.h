@@ -127,7 +127,7 @@ public:
 	int getNpcID() {
 		return npcid;
 	}
-	Player* getPlayer() {
+	Player * getPlayer() {
 		return player;
 	}
 	void showShop();

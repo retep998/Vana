@@ -48,7 +48,7 @@ public:
 		timers.push_back(timer);
 		act[timer.id] = false;
 	}
-	void setSkillTimer(Player *player, int skill, char* name, short value, int time) {
+	void setSkillTimer(Player *player, int skill, char *name, short value, int time) {
 		SActTimer timer;
 		timer.id = Timer::Instance()->setTimer(time, this);
 		timer.player = player;
@@ -67,7 +67,7 @@ public:
 			}
 		}
 	}
-	void stop (Player *player, int skill, char* name) {
+	void stop (Player *player, int skill, char *name) {
 		for (unsigned int i=0; i<acttimers.size(); i++) {
 			if (player == acttimers[i].player && strcmp(acttimers[i].act, name) == 0 && skill == acttimers[i].skill) {
 				Timer::Instance()->cancelTimer(acttimers[i].id);
@@ -131,7 +131,7 @@ private:
 	static vector <STimer> timers;
 	static vector <SActTimer> acttimers;
 	static hash_map <int, bool> act;
-	void handle (Timer* timer, int id) {
+	void handle (Timer *timer, int id) {
 		int skill;
 		Player *player;
 		if (act[id]) {
@@ -627,7 +627,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	}
 	else if (skillid == 5101005) { // GM Resurrection
 		for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {
-			Player* resplayer;
+			Player *resplayer;
 			resplayer = Maps::info[player->getMap()].Players[x];
 			if (resplayer->getHP()<=0) {
 				resplayer->setHP(resplayer->getMHP());

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.h"
 #include <iostream>
 
-void Login::loginUser(PlayerLogin* player, ReadPacket *packet) {
+void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 	string username = packet->getString();
 	string password = packet->getString();
 
@@ -99,7 +99,7 @@ void Login::loginUser(PlayerLogin* player, ReadPacket *packet) {
 	}
 }
 
-void Login::setGender(PlayerLogin* player, ReadPacket *packet) {
+void Login::setGender(PlayerLogin *player, ReadPacket *packet) {
 	if (player->getStatus() != 5) {
 		//hacking
 		return;
@@ -118,7 +118,7 @@ void Login::setGender(PlayerLogin* player, ReadPacket *packet) {
 	}
 }
 
-void Login::handleLogin(PlayerLogin* player, ReadPacket *packet) {
+void Login::handleLogin(PlayerLogin *player, ReadPacket *packet) {
 	int status = player->getStatus();
 	if (status == 1)
 		LoginPacket::loginProcess(player, 0x01);
@@ -134,7 +134,7 @@ void Login::handleLogin(PlayerLogin* player, ReadPacket *packet) {
 		player->setOnline(true);
 	}
 }
-void Login::checkPin(PlayerLogin* player, ReadPacket *packet) {
+void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
 	if (!LoginServer::Instance()->getPinEnabled()) {
 		//hacking
 		return;
@@ -166,7 +166,7 @@ void Login::checkPin(PlayerLogin* player, ReadPacket *packet) {
 	}
 }
 
-void Login::registerPIN(PlayerLogin* player, ReadPacket *packet) {
+void Login::registerPIN(PlayerLogin *player, ReadPacket *packet) {
 	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != 1) {
 		//hacking
 		return;
@@ -185,7 +185,7 @@ void Login::registerPIN(PlayerLogin* player, ReadPacket *packet) {
 	LoginPacket::pinAssigned(player);
 }
 
-void Login::loginBack(PlayerLogin* player) {
+void Login::loginBack(PlayerLogin *player) {
 	LoginPacket::logBack(player);
 }
 

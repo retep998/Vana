@@ -48,7 +48,7 @@ private:
 
 	hash_map <int, AbstractPlayer *> timers;
 
-	void handle(Timer* timer, int id) {
+	void handle(Timer *timer, int id) {
 		if (timers.find(id) == timers.end())
 			return;
 

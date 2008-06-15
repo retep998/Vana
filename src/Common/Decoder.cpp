@@ -46,7 +46,7 @@ void Decoder::decrypt(unsigned char *buffer, int size) {
 	MapleEncryption::mapleDecrypt(buffer, size);
 }
 
-void Decoder::createHeader (unsigned char* header, short size) {
+void Decoder::createHeader (unsigned char *header, short size) {
 	short a = ivSend[3]*0x100 + ivSend[2];
 	a = a ^ -(MAPLE_VERSION+1);
 	short b = a ^ size; 
@@ -56,7 +56,7 @@ void Decoder::createHeader (unsigned char* header, short size) {
 	header[3] = (b-header[2])/0x100;
 }
 
-unsigned char* Decoder::getConnectPacket() {
+unsigned char * Decoder::getConnectPacket() {
 	(*(short*)ivRecv) = Randomizer::Instance()->randInt();
 	(*(short*)ivSend) = Randomizer::Instance()->randInt();
 	(*(short*)(ivRecv+2)) = Randomizer::Instance()->randInt();

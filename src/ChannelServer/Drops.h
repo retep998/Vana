@@ -176,7 +176,7 @@ namespace Drops {
 	void addFoothold(int id, FootholdInfo foot);
 	void dropMesos(Player *player, ReadPacket *packet);
 	void lootItem(Player *player, ReadPacket *packet);
-	void dropMob(Player *player, Mob* mob);
+	void dropMob(Player *player, Mob *mob);
 	void showDrops(Player *player);
 	Pos findFloor(Pos pos, int map);
 	void checkDrops(int mapid);
@@ -289,7 +289,7 @@ public:
 	int getDropped() {
 		return dropped;
 	}
-	static Drop* getDrop(int objid, int mapid);
+	static Drop * getDrop(int objid, int mapid);
 	void doDrop(Dropped dropped);
 	void showDrop(Player *player);
 	void takeDrop(Player *player);

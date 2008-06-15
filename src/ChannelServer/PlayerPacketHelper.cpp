@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacketHelper.h"
 
-void PlayerPacketHelper::addEquip(Packet &packet, Equip* equip, bool pos_is_short) {
+void PlayerPacketHelper::addEquip(Packet &packet, Equip *equip, bool pos_is_short) {
 	if (pos_is_short)
 		packet.addShort(equip->pos);
 	else if (equip->pos < 0) {

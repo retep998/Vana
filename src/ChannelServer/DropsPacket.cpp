@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "SendHeader.h"
 
-void DropsPacket::drop(vector <Player*> players, Drop* drop, Dropped dropper) {
+void DropsPacket::drop(vector <Player*> players, Drop *drop, Dropped dropper) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
@@ -43,7 +43,7 @@ void DropsPacket::drop(vector <Player*> players, Drop* drop, Dropped dropper) {
 	packet.sendTo<Player>(NULL, players, 1);
 }
 
-void DropsPacket::dropForPlayer(Player *player, Drop* drop, Dropped dropper) {
+void DropsPacket::dropForPlayer(Player *player, Drop *drop, Dropped dropper) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
@@ -65,7 +65,7 @@ void DropsPacket::dropForPlayer(Player *player, Drop* drop, Dropped dropper) {
 	packet.send(player);
 }
 
-void DropsPacket::showDrop(Player *player, Drop* drop) {
+void DropsPacket::showDrop(Player *player, Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	if (drop->getPlayer() == player->getPlayerid())
@@ -109,7 +109,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 	packet.send(player);
 }
 
-void DropsPacket::takeDrop(Player *player, vector <Player*> players, Drop* drop) {
+void DropsPacket::takeDrop(Player *player, vector <Player*> players, Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(2);
@@ -130,7 +130,7 @@ void DropsPacket::dontTake(Player *player) {
 	packet.send(player);
 }
 
-void DropsPacket::removeDrop(vector <Player*> players, Drop* drop) {
+void DropsPacket::removeDrop(vector <Player*> players, Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(0);
@@ -138,7 +138,7 @@ void DropsPacket::removeDrop(vector <Player*> players, Drop* drop) {
 	packet.sendTo<Player>(NULL, players, 1);
 }
 
-void DropsPacket::explodeDrop(vector <Player*> players, Drop* drop) {
+void DropsPacket::explodeDrop(vector <Player*> players, Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(4);

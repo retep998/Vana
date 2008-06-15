@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class MapleEncryption {
 public:
-	static void nextIV(unsigned char* vector);
-	static void mapleDecrypt(unsigned char* buf, int size);
-	static void mapleEncrypt(unsigned char* buf, int size);
+	static void nextIV(unsigned char *vector);
+	static void mapleDecrypt(unsigned char *buf, int size);
+	static void mapleEncrypt(unsigned char *buf, int size);
 	static unsigned char ror(unsigned char val, int num);
 	static unsigned char rol(unsigned char val, int num);
 };

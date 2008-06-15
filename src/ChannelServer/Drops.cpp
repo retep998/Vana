@@ -37,7 +37,7 @@ hash_map <int, int> Drops::objids;
 hash_map <int, vector<Drop*>> Drops::drops;
 hash_map <int, ConsumeInfo> Drops::consumes;
 
-Drop* Drop::getDrop(int objid, int mapid) {
+Drop * Drop::getDrop(int objid, int mapid) {
 	for (unsigned int i=0; i<Drops::drops[mapid].size(); i++) {
 		if (Drops::drops[mapid][i]->getObjID() == objid)
 			return Drops::drops[mapid][i];
@@ -112,7 +112,7 @@ void Drop::removeDrop() {
 	DropsPacket::removeDrop(Maps::info[this->getMap()].Players, this);
 }
 
-void Drops::dropMob(Player *player, Mob* mob) {
+void Drops::dropMob(Player *player, Mob *mob) {
 	MobDropsInfo drop = dropsinfo[mob->getMobID()];
 	int d=0;
 	for (unsigned int k=0; k<drop.size(); k++) {
@@ -129,7 +129,7 @@ void Drops::dropMob(Player *player, Mob* mob) {
 				if (player->inv->getItemAmount(drop[k].id) > request)
 					continue;
 			}
-			Drop* drp = new Drop(player->getMap());
+			Drop *drp = new Drop(player->getMap());
 			if (drop[k].quest>0) {
 				drp->setIsQuest(1);
 				drp->setPlayer(player->getPlayerid());
@@ -227,7 +227,7 @@ void Drops::dropMob(Player *player, Mob* mob) {
 	int nm = mesos[mob->getMobID()].min * ChannelServer::Instance()->getMesorate();
 	int xm = mesos[mob->getMobID()].max * ChannelServer::Instance()->getMesorate();
 	if (xm > 0 && nm > 0) {
-		Drop* drp = new Drop(player->getMap());
+		Drop *drp = new Drop(player->getMap());
 		int mesos = Randomizer::Instance()->randInt(xm-nm)+nm;
 		// For Meso up
 		if (player->skills->getActiveSkillLevel(4111001)>0) {
@@ -263,7 +263,7 @@ void Drops::showDrops(Player *player) {
 void Drops::lootItem(Player *player, ReadPacket *packet) {
 	packet->skipBytes(9);
 	int itemid = packet->getInt();
-	Drop* drop = Drop::getDrop(itemid, player->getMap());
+	Drop *drop = Drop::getDrop(itemid, player->getMap());
 	if (drop == NULL) {
 		DropsPacket::dontTake(player);
 		return;
@@ -290,7 +290,7 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 	}
 	else{
 		if (drop->getEquip()) {
-			Equip* equip = new Equip;
+			Equip *equip = new Equip;
 			DropInfo ei = drop->getDropInfo();
 			equip->id = drop->getID();
 			equip->slots = ei.slots;
@@ -322,7 +322,7 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		}
 		else{
 			char type = Drops::items[drop->getID()].type;
-			Item* newitem = new Item;
+			Item *newitem = new Item;
 			newitem->amount = drop->getAmount();
 			newitem->id = drop->getID();
 			newitem->inv = type;
@@ -371,7 +371,7 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 		return;
 	}
 	player->inv->setMesos(player->inv->getMesos()-amount, 1);
-	Drop* drop = new Drop(player->getMap());
+	Drop *drop = new Drop(player->getMap());
 	drop->setID(amount);
 	drop->setMesos(true);
 	drop->setOwner(player->getPlayerid());

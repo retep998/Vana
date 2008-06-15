@@ -76,7 +76,7 @@ void PlayersPacket::damagePlayer(Player *player, vector <Player*> players, int d
 	packet.sendTo<Player>(player, players, 1);
 }
 
-void PlayersPacket::showMessage(char* msg, char type) {
+void PlayersPacket::showMessage(char *msg, char type) {
 	Packet packet;
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
@@ -88,7 +88,7 @@ void PlayersPacket::showMessage(char* msg, char type) {
 	}
 }
 
-void PlayersPacket::showInfo(Player *player, Player* getinfo) {
+void PlayersPacket::showInfo(Player *player, Player *getinfo) {
 	Packet packet;
 	packet.addHeader(SEND_PLAYER_INFO);
 	packet.addInt(getinfo->getPlayerid());

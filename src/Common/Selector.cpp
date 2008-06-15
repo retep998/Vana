@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Selector * Selector::singleton = 0;
 
-void _selectorThread(Selector* selectorObject) {
+void _selectorThread(Selector *selectorObject) {
 	selectorObject->selectThread();
 }
 

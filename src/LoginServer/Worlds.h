@@ -53,9 +53,9 @@ struct World {
 };
 
 namespace Worlds {
-	void channelSelect(PlayerLogin* player, ReadPacket *packet);
-	void selectWorld(PlayerLogin* player, ReadPacket *packet);
-	void showWorld(PlayerLogin* player);
+	void channelSelect(PlayerLogin *player, ReadPacket *packet);
+	void selectWorld(PlayerLogin *player, ReadPacket *packet);
+	void showWorld(PlayerLogin *player);
 	char connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
 	char connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server
 	extern hash_map <int, World *> worlds;
