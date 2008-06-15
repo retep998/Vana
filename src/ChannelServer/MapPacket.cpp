@@ -178,7 +178,7 @@ void MapPacket::makeApple(Player *player) {
 }
 
 // Change music
-void MapPacket::changeMusic(vector <Player*> players, std::string musicname) {
+void MapPacket::changeMusic(vector <Player*> players, const string &musicname) {
 	Packet packet;
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
@@ -188,7 +188,7 @@ void MapPacket::changeMusic(vector <Player*> players, std::string musicname) {
 	}
 }
 // Send Sound
-void MapPacket::sendSound(vector <Player*> players, std::string soundname) {
+void MapPacket::sendSound(vector <Player*> players, const string &soundname) {
 	// Party1/Clear = Clear
 	// Party1/Failed = Wrong
 	// Cokeplay/Victory = Victory
@@ -204,7 +204,7 @@ void MapPacket::sendSound(vector <Player*> players, std::string soundname) {
 	}
 }
 // Send Event
-void MapPacket::sendEvent(vector <Player*> players, std::string eventname) {
+void MapPacket::sendEvent(vector <Player*> players, const string &eventname) {
 	// quest/party/clear = Clear
 	// quest/party/wrong_kor = Wrong
 	// quest/carnival/win = Win

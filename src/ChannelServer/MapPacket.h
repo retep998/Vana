@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string>
 
+using std::string;
+
 class Player;
 class Packet;
 
@@ -33,9 +35,9 @@ namespace MapPacket {
 	void showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec);
 	void showTimer(Player *player, int sec); // Show Timer like in PQ
 	void makeApple(Player *player);
-	void changeMusic(vector <Player*> players, std::string musicname); // Change map music
-	void sendSound(vector <Player*> players, std::string soundname); // Send sound - clear/wrong/etc
-	void sendEvent(vector <Player*> players, std::string eventname); // Send event - clear/wrong/etc
+	void changeMusic(vector <Player*> players, const string &musicname); // Change map music
+	void sendSound(vector <Player*> players, const string &soundname); // Send sound - clear/wrong/etc
+	void sendEvent(vector <Player*> players, const string &eventname); // Send event - clear/wrong/etc
 };
 
 #endif

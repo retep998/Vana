@@ -68,7 +68,7 @@ namespace Maps {
 	void showClock(Player *player);
 	void mapTimer(int mapid);
 	void newMap(Player *player, int mapid);
-	void changeMusic(int mapid, std::string musicname);
+	void changeMusic(int mapid, const string &musicname);
 };
 
 class Map {
