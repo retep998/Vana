@@ -140,8 +140,8 @@ void Initializing::initializeReactors() {
 		revent.rbx = atoi(reactorRow[7]);
 		revent.rby = atoi(reactorRow[8]);
 		revent.nextstate = atoi(reactorRow[9]);
-		Reactors::setReactorMaxstates(atoi(reactorRow[1]), revent.nextstate);
-		Reactors::addReactorEventInfo(atoi(reactorRow[1]), revent);
+		Reactors::setMaxstates(atoi(reactorRow[1]), revent.nextstate);
+		Reactors::addEventInfo(atoi(reactorRow[1]), revent);
 	}
 
 	std::cout << "DONE" << std::endl;
@@ -638,7 +638,6 @@ void Initializing::initializeMaps() {
 
 	int currentid = 0;
 	int previousid = -1;
-	MapInfo map;
 	MYSQL_ROW mapRow;
 	while ((mapRow = res.fetch_raw_row())) {
 		// Col0 : Map ID
@@ -659,6 +658,7 @@ void Initializing::initializeMaps() {
 
 		if (currentid != previousid) {
 			Maps::addMap(currentid);
+			MapInfo map;
 			map.rm = atoi(mapRow[1]);
 			map.forcedReturn = atoi(mapRow[2]);
 			map.spawnrate = atof(mapRow[3]);
@@ -691,8 +691,6 @@ void Initializing::initializeMaps() {
 		exit(1);
 	}
 
-	currentid = 0;
-	previousid = -1;
 	MYSQL_ROW npcRow;
 	while ((npcRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
@@ -747,9 +745,6 @@ void Initializing::initializeMaps() {
 		exit(1);
 	}
 
-	currentid = 0;
-	previousid = -1;
-	ReactorSpawnsInfo reactors;
 	MYSQL_ROW reactorRow;
 	while ((reactorRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
@@ -757,27 +752,13 @@ void Initializing::initializeMaps() {
 		//    2 : Reactor ID
 		//    3 : x
 		//    4 : y
-		currentid = atoi(reactorRow[1]);
 
-		if (currentid != previousid && previousid != -1) {
-			Reactors::addReactorSpawn(previousid, reactors);
-			reactors.clear();
-		}
 		ReactorSpawnInfo reactor;
 		reactor.id = atoi(reactorRow[2]);
-		reactor.x = atoi(reactorRow[3]);
-		reactor.y = atoi(reactorRow[4]);
-		reactors.push_back(reactor);
-
-		previousid = atoi(reactorRow[1]);
+		reactor.pos.x = atoi(reactorRow[3]);
+		reactor.pos.y = atoi(reactorRow[4]);
+		Reactors::addSpawn(atoi(reactorRow[1]), reactor);
 	}
-
-	if (previousid != -1) {
-		Reactors::addReactorSpawn(previousid, reactors);
-		reactors.clear();
-	}
-
-	Reactors::loadReactors();
 
 	// Footholds
 	query << "SELECT * FROM mapfootholddata ORDER BY mapid ASC";
@@ -787,8 +768,6 @@ void Initializing::initializeMaps() {
 		exit(1);
 	}
 
-	currentid = 0;
-	previousid = -1;
 	MYSQL_ROW footsRow;
 	while ((footsRow = res.fetch_raw_row())) {
 		// Col0 : Row ID

@@ -21,12 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <hash_map>
 #include <vector>
 #include <string>
+#include "Pos.h"
 
 using namespace std;
 using namespace stdext;
-
-#include "Player.h"
-#include "Drops.h"
 
 class LoopingId;
 class Player;
@@ -37,20 +35,19 @@ class ReadPacket;
 
 struct ReactorSpawnInfo {
 	int id;
-	short x;
-	short y;
+	Pos pos;
 };
 typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
 
 struct ReactorEventInfo {
-	short state;
+	char state;
 	short type;
 	int itemid;
 	short ltx;
 	short lty;
 	short rbx;
 	short rby;
-	short nextstate;
+	char nextstate;
 };
 typedef vector<ReactorEventInfo> ReactorEventsInfo;
 
@@ -58,10 +55,10 @@ namespace Reactors {
 	extern hash_map<int, ReactorEventsInfo> reactorinfo;
 	extern hash_map<int, short> maxstates;
 	extern hash_map<int, ReactorSpawnsInfo> info;
-	void addReactorSpawn(int id, ReactorSpawnsInfo reactor);
-	void addReactorEventInfo(int id, ReactorEventInfo revent);
-	void setReactorMaxstates(int id, short state);
-	void loadReactors();
+	void addSpawn(int id, ReactorSpawnInfo reactor);
+	void addEventInfo(int id, ReactorEventInfo revent);
+	void setMaxstates(int id, short state);
+	void loadReactors(int mapid);
 	void showReactors(Player *player);
 	void hitReactor(Player *player, ReadPacket *packet);
 	void checkDrop(Player *player, Drop *drop);
@@ -70,7 +67,7 @@ namespace Reactors {
 
 class Reactor {
 public:
-	Reactor () : alive(true), state(0) { }
+	Reactor (int mapid, int reactorid, Pos pos);
 	void kill() {
 		this->alive = false;
 	}
@@ -86,26 +83,17 @@ public:
 	int getID() {
 		return this->id;
 	}
-	void setReactorID(int reactorid) {
-		this->reactorid = reactorid;
-	}
 	int getReactorID() {
 		return this->reactorid;
-	}
-	void setMapID(int mapid) {
-		this->mapid = mapid;
 	}
 	int getMapID() {
 		return this->mapid;
 	}
-	void setPos(Pos pos) {
-		this->pos = pos;
+	Pos * getPos() {
+		return &this->pos;
 	}
-	Pos getPos() {
-		return this->pos;
-	}
-	void setState(int state, bool is);
-	int getState() {
+	void setState(char state, bool is);
+	char getState() {
 		return this->state;
 	}
 private:
@@ -114,7 +102,7 @@ private:
 	int id;
 	int reactorid;
 	int mapid;
-	int state;
+	char state;
 };
 
 #endif

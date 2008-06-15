@@ -23,11 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Maps.h"
 #include "Mobs.h"
+#include "Drops.h"
 #include "Inventory.h"
 #include "BufferUtilities.h"
 #include "Timer.h"
 #include "ReadPacket.h"
 #include "LoopingId.h"
+#include "Pos.h"
 #include <sys/stat.h>
 #include <iostream>
 #include <sstream>
@@ -40,7 +42,7 @@ public:
 			singleton = new ReactionTimer;
 		return singleton;
 	}
-	void setReactionTimer(Player *player, Reactor *reactor, Drop *drop, short state, int time) {
+	void setReactionTimer(Player *player, Reactor *reactor, Drop *drop, char state, int time) {
 		RTimer timer;
 		timer.id = Timer::Instance()->setTimer(time, this);
 		timer.state = state;
@@ -67,7 +69,7 @@ private:
 
 	struct RTimer {
 		int id;
-		short state;
+		char state;
 		Player *player;
 		Reactor *reactor;
 		Drop *drop;
@@ -104,39 +106,46 @@ vector <ReactionTimer::RTimer> ReactionTimer::timers;
 ReactionTimer *ReactionTimer::singleton = 0;
 // End of ReactionTimer
 
+// Reactor class
+Reactor::Reactor (int mapid, int reactorid, Pos pos) : alive(true), state(0) {
+	this->mapid = mapid;
+	this->reactorid = reactorid;
+	this->pos = pos;
+	Maps::maps[mapid]->addReactor(this);
+}
+
+void Reactor::setState(char state, bool is) {
+	this->state = state;
+	if (is)
+		ReactorPacket::triggerReactor(Maps::maps[this->getMapID()]->getPlayers(), this);
+}
+
+// Reactors namespace
 hash_map <int, vector<ReactorEventInfo>> Reactors::reactorinfo;
 hash_map <int, short> Reactors::maxstates;
 hash_map <int, ReactorSpawnsInfo> Reactors::info;
 
-void Reactors::addReactorSpawn(int id, ReactorSpawnsInfo reactorspawns) {
-	info[id] = reactorspawns;
+void Reactors::addSpawn(int id, ReactorSpawnInfo reactor) {
+	info[id].push_back(reactor);
 }
 
-void Reactors::addReactorEventInfo(int id, ReactorEventInfo revent) {
+void Reactors::addEventInfo(int id, ReactorEventInfo revent) {
 	reactorinfo[id].push_back(revent);
 }
 
-void Reactors::setReactorMaxstates(int id, short state) {
+void Reactors::setMaxstates(int id, short state) {
 	maxstates[id] = state;
 }
 
-void Reactors::loadReactors() {
-	for (hash_map <int, ReactorSpawnsInfo>::iterator iter = Reactors::info.begin(); iter != Reactors::info.end(); iter++) {
-		for (size_t i = 0; i < iter->second.size(); i++) {
-			Reactor *reactor = new Reactor();
-			Pos pos;
-			pos.x = iter->second[i].x;
-			pos.y = iter->second[i].y;
-			reactor->setReactorID(iter->second[i].id);
-			reactor->setMapID(iter->first);
-			reactor->setPos(pos);
-			Maps::maps[iter->first]->addReactor(reactor);
-		}
+void Reactors::loadReactors(int mapid) {
+	for (size_t i = 0; i < info[mapid].size(); i++) {
+		Reactor *reactor = new Reactor(mapid, info[mapid][i].id, info[mapid][i].pos);
+		ReactorPacket::spawnReactor(Maps::maps[mapid]->getPlayers(), reactor);
 	}
 }
 
 void Reactors::showReactors(Player *player) {
-	for (size_t i = 0; i < Maps::maps[player->getMap()]->getReactors().size(); i++) {
+	for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumReactors(); i++) {
 		ReactorPacket::showReactor(player, Maps::maps[player->getMap()]->getReactor(i));
 	}
 }
@@ -148,11 +157,11 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 
 	if (reactor != 0 && reactor->isAlive()) {
 		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
-			ReactorEventInfo revent = reactorinfo[reactor->getReactorID()][reactor->getState()];
-			if (revent.nextstate < maxstates[reactor->getReactorID()]) {
-				if (revent.type >= 100)
+			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
+			if (revent->nextstate < maxstates[reactor->getReactorID()]) {
+				if (revent->type >= 100)
 					return;
-				reactor->setState(revent.nextstate, true);
+				reactor->setState(revent->nextstate, true);
 				ReactorPacket::triggerReactor(Maps::maps[player->getMap()]->getPlayers(), reactor);
 				return;
 			}
@@ -160,7 +169,7 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 				std::ostringstream filenameStream;
 				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
 				LuaReactor(filenameStream.str(), player->getPlayerid(), id, reactor->getMapID());
-				reactor->setState(revent.nextstate, false);
+				reactor->setState(revent->nextstate, false);
 				reactor->kill();
 				ReactorPacket::destroyReactor(Maps::maps[player->getMap()]->getPlayers(), reactor);
 			}
@@ -171,13 +180,13 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 void Reactors::checkDrop(Player *player, Drop *drop) {
 	if (drop->getMesos())
 		return;
-	for (size_t i = 0; i < Maps::maps[drop->getMap()]->getReactors().size(); i++) {
+	for (size_t i = 0; i < Maps::maps[drop->getMap()]->getNumReactors(); i++) {
 		Reactor *reactor = Maps::maps[drop->getMap()]->getReactor(i);
 		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
-			ReactorEventInfo revent = reactorinfo[reactor->getReactorID()][reactor->getState()];
-			if (revent.type == 100 && drop->getObjectID() == revent.itemid) {
-				if ((drop->getPos().x >= reactor->getPos().x + revent.ltx && drop->getPos().x <= reactor->getPos().x + revent.rbx) && (drop->getPos().y >= reactor->getPos().y + revent.lty && drop->getPos().y <= reactor->getPos().y + revent.rby)) {
-					ReactionTimer::Instance()->setReactionTimer(player, reactor, drop, revent.nextstate, 3000);
+			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
+			if (revent->type == 100 && drop->getObjectID() == revent->itemid) {
+				if ((drop->getPos().x >= reactor->getPos()->x + revent->ltx && drop->getPos().x <= reactor->getPos()->x + revent->rbx) && (drop->getPos().y >= reactor->getPos()->y + revent->lty && drop->getPos().y <= reactor->getPos()->y + revent->rby)) {
+					ReactionTimer::Instance()->setReactionTimer(player, reactor, drop, revent->nextstate, 3000);
 				}
 				return;
 			}
@@ -187,10 +196,4 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 
 void Reactors::checkLoot(Drop *drop) {
 	ReactionTimer::Instance()->stop(drop);
-}
-
-void Reactor::setState(int state, bool is) {
-	this->state = state;
-	if (is)
-		ReactorPacket::triggerReactor(Maps::maps[this->getMapID()]->getPlayers(), this);
 }

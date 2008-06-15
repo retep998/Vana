@@ -56,7 +56,7 @@ int LuaExports::setReactorState(lua_State *luaVm) {
 int LuaExports::spawnMobReactor(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
-	Mobs::spawnMobPos(reactor->getMapID(), mobid, reactor->getPos().x, reactor->getPos().y-5);
+	Mobs::spawnMobPos(reactor->getMapID(), mobid, reactor->getPos()->x, reactor->getPos()->y-5);
 	return 1;
 }
 

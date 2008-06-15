@@ -46,6 +46,7 @@ public:
 		if (ctimer.find(mapid) != ctimer.end())
 			if (ctimer[mapid])
 			return;
+		Reactors::loadReactors(mapid);
 		Maps::mapTimer(mapid);
 		timers[Timer::Instance()->setTimer(10000, this, true)] = mapid;
 		ctimer[mapid] = 1;
@@ -54,7 +55,7 @@ private:
 	static MapTimer *singleton;
 	MapTimer() {};
 	MapTimer(const MapTimer&);
-	MapTimer& operator=(const MapTimer&);
+	MapTimer& operator = (const MapTimer&);
 
 	static hash_map <int, int> timers;
 	static hash_map <int, int> ctimer;
