@@ -70,10 +70,7 @@ hash_map <int,int> MapTimer::ctimer;
 MapTimer * MapTimer::singleton = 0;
 
 // Map class
-Map::Map () {
-	mobids = new LoopingId(100);
-	dropids = new LoopingId(100);
-}
+Map::Map () : mobids(new LoopingId(100)), dropids(new LoopingId(100)) { }
 
 void Map::removePlayer(Player *player) {
 	for (size_t i = 0; i < this->players.size(); i++) {

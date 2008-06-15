@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NPCs.h"
 #include <hash_map>
 #include <vector>
+#include <boost/scoped_ptr.hpp>
 
 using namespace std;
 using namespace stdext;
+using boost::scoped_ptr;
 
 class Map;
 class Player;
@@ -140,9 +142,9 @@ private:
 	vector <NPCInfo> npcs;
 	vector <Reactor *> reactors;
 	hash_map <int, Mob *> mobs;
-	LoopingId *mobids;
+	scoped_ptr<LoopingId> mobids;
 	hash_map <int, Drop *> drops;
-	LoopingId *dropids;
+	scoped_ptr<LoopingId> dropids;
 };
 
 #endif
