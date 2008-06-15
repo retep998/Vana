@@ -30,7 +30,7 @@ public:
 
 class LoginServerConnectPlayerFactory : public AbstractPlayerFactory {
 public:
-	AbstractPlayer* createPlayer() {
+	AbstractPlayer * createPlayer() {
 		return new LoginServerConnectPlayer();
 	}
 };

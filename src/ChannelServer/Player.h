@@ -49,7 +49,7 @@ public:
 	int getPlayerid() {
 		return this->id;
 	}
-	char* getName() {
+	char *getName() {
 		return this->name;
 	}
 	char getGender() {
@@ -173,7 +173,7 @@ public:
 	int getShop() {
 		return shop;
 	}
-	void setNPC(NPC* npc) {
+	void setNPC(NPC *npc) {
 		this->npc = npc;
 	}
 	void setChair(int chair) {
@@ -188,7 +188,7 @@ public:
 	int getItemEffect() {
 		return this->itemEffect;
 	}
-	NPC* getNPC() {
+	NPC * getNPC() {
 		return npc;
 	}
 	bool isGM() {
@@ -278,7 +278,7 @@ private:
 	int chair;
 	int gm;
 	Pos pos;
-	NPC* npc;
+	NPC *npc;
 	vector <int> warnings;
 	int combo; // Combo Attack
 	bool save_on_dc;

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleEncryption.h"
 
-void MapleEncryption::nextIV(unsigned char* vector) {
+void MapleEncryption::nextIV(unsigned char *vector) {
 	unsigned char values[256] = {0xEC, 0x3F, 0x77, 0xA4, 0x45, 0xD0, 0x71, 0xBF, 0xB7, 0x98, 0x20, 0xFC,
 		0x4B, 0xE9, 0xB3, 0xE1, 0x5C, 0x22, 0xF7, 0x0C,	0x44, 0x1B, 0x81, 0xBD, 0x63, 0x8D, 0xD4, 0xC3,
 		0xF2, 0x10, 0x19, 0xE0, 0xFB, 0xA1, 0x6E, 0x66,	0xEA, 0xAE, 0xD6, 0xCE, 0x06, 0x18, 0x4E, 0xEB,
@@ -100,7 +100,7 @@ unsigned char MapleEncryption::ror(unsigned char val, int num) {
 	return val;
 }
 
-void MapleEncryption::mapleEncrypt(unsigned char* buf, int size) {
+void MapleEncryption::mapleEncrypt(unsigned char *buf, int size) {
 	int i,j,a;
 	unsigned char c;
 	for (i=0; i<3; i++) {
@@ -132,7 +132,7 @@ void MapleEncryption::mapleEncrypt(unsigned char* buf, int size) {
 }
 
 
-void MapleEncryption::mapleDecrypt(unsigned char* buf, int size) {
+void MapleEncryption::mapleDecrypt(unsigned char *buf, int size) {
 	int i,j,a,b;
 	unsigned char c;
 	for (i=0; i<3; i++) {

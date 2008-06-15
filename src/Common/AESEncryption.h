@@ -18,6 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef AES_ENCRYPT_H
 #define AES_ENCRYPT_H
 
-void decryptofb(unsigned char* buffer, unsigned char* vec, int bsize);
+void decryptofb(unsigned char *buffer, unsigned char *vec, int bsize);
 
 #endif

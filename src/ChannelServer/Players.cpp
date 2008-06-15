@@ -70,7 +70,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 	size_t chatsize = message.size(); // See above line
 	if (chat[0] == '!') {
 		if (!player->isGM()) return;
-		char* next_token;
+		char *next_token;
 		char command[90] = "";
 		if (chatsize>2)
 			strcpy_s(command, 90, strtok_s(chat+1, " ", &next_token));
@@ -343,7 +343,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "kill") == 0) {
 			if (strcmp(next_token, "all") == 0) {
 				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {
-					Player* killpsa;
+					Player *killpsa;
 					killpsa = Maps::info[player->getMap()].Players[x];
 					if (killpsa != player) {
 						killpsa->setHP(0);
@@ -352,7 +352,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			}
 			else if (strcmp(next_token, "gm") == 0) {
 				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {	
-					Player* killpsa;
+					Player *killpsa;
 					killpsa = Maps::info[player->getMap()].Players[x];
 					if (killpsa != player) {
 						if (killpsa->isGM()) {	
@@ -363,7 +363,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			}
 			else if (strcmp(next_token, "players") == 0) {
 				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {	
-					Player* killpsa;
+					Player *killpsa;
 					killpsa = Maps::info[player->getMap()].Players[x];
 					if (killpsa != player) {
 						if (!killpsa->isGM()) {
@@ -377,7 +377,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			}
 			else {
 				for (unsigned int x=0; x<Maps::info[player->getMap()].Players.size(); x++) {
-					Player* killpsa;
+					Player *killpsa;
 					killpsa = Maps::info[player->getMap()].Players[x];
 					if (killpsa != player) {
 						killpsa->setHP(0);

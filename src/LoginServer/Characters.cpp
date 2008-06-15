@@ -63,7 +63,7 @@ void Characters::loadCharacter(Character &charc, mysqlpp::Row &row) {
 	showEquips(charc.id, charc.equips);
 }
 
-void Characters::showCharacters(PlayerLogin* player) {
+void Characters::showCharacters(PlayerLogin *player) {
 	mysqlpp::Query query = db.query();
 	query << "SELECT * FROM characters WHERE userid = " << mysqlpp::quote << player->getUserid() << " AND world_id = " << mysqlpp::quote << (int) player->getWorld();
 	mysqlpp::StoreQueryResult res = query.store();
@@ -77,7 +77,7 @@ void Characters::showCharacters(PlayerLogin* player) {
 	LoginPacket::showCharacters(player, chars);
 }
 
-void Characters::checkCharacterName(PlayerLogin* player, ReadPacket *packet) {
+void Characters::checkCharacterName(PlayerLogin *player, ReadPacket *packet) {
 	string name = packet->getString();
 	if (name.size() > 15) {
 		return;
@@ -99,7 +99,7 @@ void Characters::createEquip(int equipid, int type, int charid) {
 	query.exec();
 }
 
-void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet) {
+void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	Character charc;
 	string name = packet->getString();
 	if (name.size() > 15) {
@@ -159,7 +159,7 @@ void Characters::createCharacter(PlayerLogin* player, ReadPacket *packet) {
 	LoginPacket::showCharacter(player, charc);
 }
 
-void Characters::deleteCharacter(PlayerLogin* player, ReadPacket *packet) {
+void Characters::deleteCharacter(PlayerLogin *player, ReadPacket *packet) {
 	int data = packet->getInt();
 	int id = packet->getInt();
 	
@@ -192,7 +192,7 @@ void Characters::deleteCharacter(PlayerLogin* player, ReadPacket *packet) {
 }
 
 
-void Characters::connectGame(PlayerLogin* player, ReadPacket *packet) {
+void Characters::connectGame(PlayerLogin *player, ReadPacket *packet) {
 	int id = packet->getInt();
 
 	if (!ownerCheck(player, id)) {
@@ -204,7 +204,7 @@ void Characters::connectGame(PlayerLogin* player, ReadPacket *packet) {
 	LoginPacket::connectIP(player, id);
 }
 
-bool Characters::ownerCheck(PlayerLogin* player, int id) {
+bool Characters::ownerCheck(PlayerLogin *player, int id) {
 	mysqlpp::Query query = db.query();
 	query << "SELECT true FROM characters WHERE id = " << mysqlpp::quote << id << " AND userid = " << mysqlpp::quote << player->getUserid();
 	mysqlpp::StoreQueryResult res = query.store();
@@ -212,7 +212,7 @@ bool Characters::ownerCheck(PlayerLogin* player, int id) {
 	return (res.num_rows() == 1) ? 1 : 0 ;
 }
 
-bool Characters::nameTaken(PlayerLogin* player, const string &name) {
+bool Characters::nameTaken(PlayerLogin *player, const string &name) {
 	mysqlpp::Query query = db.query();
 	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name  << " AND world_id = " << mysqlpp::quote << (int) player->getWorld() << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();

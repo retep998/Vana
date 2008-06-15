@@ -28,7 +28,7 @@ void FamePacket::SendError(Player *player, int reason) {
 	packet.send(player);
 }
 
-void FamePacket::SendFame(Player *player, Player *player2, char* cFamer, int charLen, int FameDefame, int NewFame) {
+void FamePacket::SendFame(Player *player, Player *player2, char *cFamer, int charLen, int FameDefame, int NewFame) {
 	Packet packet;
 	packet.addHeader(SEND_FAME);
 	packet.addByte(0x05);

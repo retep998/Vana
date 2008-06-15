@@ -58,8 +58,8 @@ private:
 		long msec;
 		int id;
 		bool persistent;
-		TimerHandler* handler;
-		OneTimer(long msec, int id, TimerHandler* handler, bool persistent);
+		TimerHandler *handler;
+		OneTimer(long msec, int id, TimerHandler *handler, bool persistent);
 		void reset();
 	};
 	hash_map <int, OneTimer *> timers;

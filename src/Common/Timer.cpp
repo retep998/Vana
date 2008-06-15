@@ -124,7 +124,7 @@ void Timer::timerThread() {
 	}
 }
 
-Timer::OneTimer::OneTimer(long msec, int id, TimerHandler* handler, bool persistent) {
+Timer::OneTimer::OneTimer(long msec, int id, TimerHandler *handler, bool persistent) {
 	this->msec = msec;
 	this->id = id;
 	this->handler = handler;

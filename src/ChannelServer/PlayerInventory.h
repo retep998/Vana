@@ -68,7 +68,7 @@ public:
 	int getMesos() {
 		return this->mesos;
 	}
-	void addEquip(Equip* equip) {
+	void addEquip(Equip *equip) {
 		equips.push_back(equip);
 	}
 	int getEquipNum() {
@@ -76,7 +76,7 @@ public:
 	}
 	int getEquipByPos(short pos) {
 		for (int i=0; i<getEquipNum(); i++) { // Get Equips
-			Equip* equip = getEquip(i);
+			Equip *equip = getEquip(i);
 			if (equip->pos == pos)
 				return equip->id;
 		}
@@ -92,10 +92,10 @@ public:
 		delete equips[equipid];
 		equips.erase(equips.begin()+equipid);
 	}
-	Equip* getEquip(int id) {
+	Equip * getEquip(int id) {
 		return equips[id];
 	}
-	void addItem(Item* item) {
+	void addItem(Item *item) {
 		items.push_back(item);
 	}
 	int getItemNum() {
@@ -111,10 +111,10 @@ public:
 		delete items[itemid];
 		items.erase(items.begin()+itemid);
 	}
-	void setItem(Item* item, int itemid) {
+	void setItem(Item *item, int itemid) {
 		items[itemid] = item;
 	}
-	Item* getItem(int id) {
+	Item * getItem(int id) {
 		return items[id];
 	}
 	Item * getItemByPos(int pos, char inv) {

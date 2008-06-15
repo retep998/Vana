@@ -45,7 +45,7 @@ void NPCs::handleNPC(Player *player, ReadPacket *packet) {
 	if (player->getNPC() != NULL)
 		return;
 	int npcid = info[player->getMap()][packet->getInt()-100].id;
-	NPC* npc = new NPC(npcid, player);
+	NPC *npc = new NPC(npcid, player);
 	NPCsScripts::handle(npcid, npc);
 	if (npc->isEnd())
 		delete npc;
@@ -54,14 +54,14 @@ void NPCs::handleNPC(Player *player, ReadPacket *packet) {
 void NPCs::handleQuestNPC(Player *player, int npcid, bool start) {
 	if (player->getNPC() != NULL)
 		return;
-	NPC* npc = new NPC(npcid, player, 1);
+	NPC *npc = new NPC(npcid, player, 1);
 	npc->setIsStart(start);
 	NPCsScripts::handle(npcid, npc);
 	if (npc->isEnd())
 		delete npc;
 }
 void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
-	NPC* npc = player->getNPC();
+	NPC *npc = player->getNPC();
 	if (npc == NULL)
 		return;
 	char type = packet->getByte();

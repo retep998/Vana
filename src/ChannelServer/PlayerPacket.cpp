@@ -73,21 +73,21 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addByte(100);
 	packet.addByte(100);
 	for (int i=0; i<player->inv->getEquipNum(); i++) {
-		Equip* equip = player->inv->getEquip(i);
+		Equip *equip = player->inv->getEquip(i);
 		if (equip->pos<0 && !Inventory::isCash(equip->id)) {
 			PlayerPacketHelper::addEquip(packet, equip);
 		}
 	}
 	packet.addByte(0);
 	for (int i=0; i<player->inv->getEquipNum(); i++) {
-		Equip* equip = player->inv->getEquip(i);
+		Equip *equip = player->inv->getEquip(i);
 		if (equip->pos<0 && Inventory::isCash(equip->id)) {
 			PlayerPacketHelper::addEquip(packet, equip);
 		}
 	}
 	packet.addByte(0);
 	for (int i=0; i<player->inv->getEquipNum(); i++) {
-		Equip* equip = player->inv->getEquip(i);
+		Equip *equip = player->inv->getEquip(i);
 		if (equip->pos>0) {
 			PlayerPacketHelper::addEquip(packet, equip);
 		}
@@ -95,7 +95,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addByte(0);
 	for (int j=2; j<=5; j++) {
 		for (int i=0; i<player->inv->getItemNum(); i++) {
-			Item* item = player->inv->getItem(i);
+			Item *item = player->inv->getItem(i);
 			if (item->inv == j) {
 				packet.addByte((char)item->pos);
 				packet.addByte(2);

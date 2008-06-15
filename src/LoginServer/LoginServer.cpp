@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.h"
 #include "Worlds.h"
 
-LoginServer* LoginServer::singleton = 0;
+LoginServer * LoginServer::singleton = 0;
 
 void LoginServer::listen() {
 	new Acceptor(port, new PlayerLoginFactory());
@@ -84,4 +84,5 @@ void LoginServer::loadConfig() {
 void LoginServer::shutdown() {
 	//TODO
 }
+
 

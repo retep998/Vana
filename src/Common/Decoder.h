@@ -32,12 +32,12 @@ private:
 
 public:
 	static const int CONNECT_LENGTH = 15;
-	static int getLength (unsigned char* header) {
+	static int getLength (unsigned char *header) {
 		return ((header[0] + header[1]*0x100) ^ (header[2] + header[3]*0x100)); 
 	}
-	void createHeader (unsigned char* header, short size); 
+	void createHeader (unsigned char *header, short size); 
 
-	unsigned char* getConnectPacket();
+	unsigned char * getConnectPacket();
 
 	void setIvRecv(unsigned char *iv) { memcpy_s(ivRecv, 4, iv, 4); }
 	void setIvSend(unsigned char *iv) { memcpy_s(ivSend, 4, iv, 4); }

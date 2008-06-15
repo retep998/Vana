@@ -51,7 +51,7 @@ struct MapInfo {
 };
 
 namespace Maps {
-	extern MapTimer* timer;
+	extern MapTimer * timer;
 	extern hash_map <int, MapInfo> info;
 	void startTimer();
 	void addMap(int id, MapInfo map);

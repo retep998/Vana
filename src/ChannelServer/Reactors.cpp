@@ -75,7 +75,7 @@ private:
 	};
 
 	static vector <RTimer> timers;
-	void handle(Timer* timer, int id) {
+	void handle(Timer *timer, int id) {
 		for (unsigned int i=0; i<timers.size(); i++) {
 			if (timers[i].id == id) {
 				Reactor *reactor = timers[i].reactor;

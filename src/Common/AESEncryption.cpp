@@ -414,7 +414,7 @@ char aes_encrypt(unsigned char *input,
 	return 0;
 }
 
-void decryptofb(unsigned char* buffer, unsigned char* vec, int bsize)
+void decryptofb(unsigned char *buffer, unsigned char *vec, int bsize)
 {
 	/* the non-expanded keySize */
 	enum keySize size = SIZE_32;

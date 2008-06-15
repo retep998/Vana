@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Acceptor.h"
 #include "Connector.h"
 
-WorldServer* WorldServer::singleton = 0;
+WorldServer * WorldServer::singleton = 0;
 
 void WorldServer::listen() {
 	new Acceptor(inter_port, new WorldServerAcceptPlayerFactory());

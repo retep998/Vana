@@ -90,8 +90,9 @@ void Packet::addBytes(char *hex) {
 	}
 }
 
-void Packet::addBuffer(unsigned char* bytes, int len) {
+void Packet::addBuffer(unsigned char *bytes, int len) {
 	memcpy_s(packet+pos, len, bytes, len);
 	pos+=len;
 }
+
 

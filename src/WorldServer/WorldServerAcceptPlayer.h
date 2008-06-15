@@ -37,7 +37,7 @@ private:
 
 class WorldServerAcceptPlayerFactory : public AbstractPlayerFactory {
 public:
-	AbstractPlayer* createPlayer() {
+	AbstractPlayer * createPlayer() {
 		return new WorldServerAcceptPlayer();
 	}
 };

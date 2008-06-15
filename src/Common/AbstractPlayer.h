@@ -30,7 +30,7 @@ class AbstractPlayer {
 public:
 	AbstractPlayer();
 
-	virtual void setPacketHandler(PacketHandler* ph) { packetHandler = ph; }
+	virtual void setPacketHandler(PacketHandler *ph) { packetHandler = ph; }
 	virtual void realHandleRequest(ReadPacket *packet) = 0;
 	void handleRequest(ReadPacket *packet);
 	void sendPacket(unsigned char *buf, int len);
@@ -53,6 +53,6 @@ private:
 
 class AbstractPlayerFactory {
 public:
-	virtual AbstractPlayer* createPlayer () = 0;
+	virtual AbstractPlayer * createPlayer () = 0;
 };
 #endif

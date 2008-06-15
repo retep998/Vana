@@ -32,7 +32,7 @@ class PacketHandler : public Selector::SelectHandler {
 public:
 	PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend = false); // isSend = packet is initiated by the server or not
 	void handle (int socket);
-	bool sendPacket(unsigned char* buf, int len);
+	bool sendPacket(unsigned char *buf, int len);
 	void disconnect();
 
 	AbstractPlayer * getPlayer() const { return player.get(); }

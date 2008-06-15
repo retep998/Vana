@@ -153,7 +153,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		Equip* equip = new Equip;
+		Equip *equip = new Equip;
 		equip->pos = res[i][1];
 		equip->id = res[i][2];
 		equip->type = (unsigned char) res[i][3];
@@ -180,7 +180,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	query << "SELECT inv, pos, itemid, amount FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		Item* item = new Item;
+		Item *item = new Item;
 		item->inv = (unsigned char) res[i][0];
 		item->pos = res[i][1];
 		item->id = res[i][2];
