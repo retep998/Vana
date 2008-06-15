@@ -448,14 +448,20 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1); // Stance
 	unsigned char hit = packet->getByte();
 	int fake = 0;
-	if (damage == -1) { // 0 = regular miss, this = Fake
+	if (damage == 0xFFFFFFFF) { // 0 damage = regular miss, this = Fake
 		short job = player->getJob() / 10 - 40;
-		if (player->skills->getSkillLevel(4020002 + (job * 100000)) > 0) { fake = 4020002 + (job * 100000); }
-		else {
+		fake = 4020002 + (job * 100000);
+		if (player->skills->getSkillLevel(fake) < 0) {
 			//hacking
 			return;
 		}
 	}
+	packet->skipBytes(4); // 4 random bytes if hit
+	packet->skipBytes(4 * 10); // All take 4 bytes, in order: job, level, str, dex, int, luk, wdef, wdef buff, mdef, mdef buff
+	packet->skipBytes(4); // Invincible %
+	int mesorate = packet->getInt(); // Meso Guard meso %
+	packet->skipBytes(4); // Power Guard % again
+	packet->skipBytes(4); // Elemental/Partial Resistance %, normal end of packet
 	if (player->skills->getActiveSkillLevel(2001002) > 0) { // Magic Guard
 		unsigned short mp = player->getMP();
 		unsigned short hp = player->getHP();
@@ -471,21 +477,28 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			player->setHP(hp - hpdamage);
 		}
 	}
-	else if (player->skills->getActiveSkillLevel(4211005) > 0 && player->inv->getMesos() > 0) { // Meso Guard
+	else if (mesorate > 0 && player->inv->getMesos() > 0) { // Meso Guard
 		unsigned short hp = player->getHP();
-		int mesorate = Skills::skills[4211005][player->skills->getActiveSkillLevel(4211005)].x;
-		int mesoloss = (int)((mesorate / 100) * damage / 2);
-		if (player->inv->getMesos() > 0)	// Only block damage if user has mesos
-			player->setHP(hp - (damage / 2));
-		else
-			player->setHP(hp - damage);
-		if (player->inv->getMesos() - mesoloss < 0)	// Do not let mesos go negative
- 			player->inv->setMesos(0);
-		else
-			player->inv->setMesos(player->inv->getMesos() - mesoloss);
- 	}
-	else
+		int mesoloss = (int)(mesorate * (damage / 2) / 100);
+		int mesos = player->inv->getMesos();
+		int newmesos = mesos - mesoloss;
+		if (newmesos > -1) {
+			damage = (int)(damage / 2); // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
+		}
+		else { // Special damage calculation for not having enough mesos
+			double mesos2 = mesos + 0.0; // For some reason, you can't get a double from math involving 2 ints, even if a decimal results
+			double reduction = 2.0 - ((mesos2 / mesoloss) / 2);
+			damage = (int)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
+			newmesos = 0;
+		}
+		player->inv->setMesos(newmesos);
+		SkillsPacket::showSkillEffect(player, Maps::maps[player->getMap()]->getPlayers(), 4211005);
 		player->setHP(player->getHP() - damage);
+ 	}
+	else {
+		if (damage > 0)
+			player->setHP(player->getHP() - damage);
+	}
 	if (type == 0xFF && pg.reduction != 0x00) // Remove that damage, HP warrior!
 		Mobs::damageMobPG(player, (pg.damage * pg.reduction / 100), Maps::maps[player->getMap()]->getMob(mapmobid));
 	if (type != 0xFE) // Fall damage and map damage don't play by these rules
