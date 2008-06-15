@@ -237,7 +237,7 @@ void Maps::newMap(Player *player, int mapid) {
 	MapTimer::Instance()->setMapTimer(player->getMap());
 }
 // Change Music
-void Maps::changeMusic(int mapid, std::string musicname) {
+void Maps::changeMusic(int mapid, const string &musicname) {
 	if (Maps::maps.find(mapid) != Maps::maps.end()) {
 		MapPacket::changeMusic(maps[mapid]->getPlayers(), musicname);
 	}
