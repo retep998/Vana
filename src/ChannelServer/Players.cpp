@@ -259,12 +259,9 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "killall") == 0) {
 			hash_map <int, Mob *> mobs = Maps::maps[player->getMap()]->getMobs();
-			while (true) { // Use while loop to kill mobs until there are none.
-				hash_map <int, Mob *>::iterator iter = mobs.begin();
-				if (iter == mobs.end()) {
-					break;
-				}
-				Mobs::dieMob(player, iter->second);
+			for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loop causes problems
+				if (iter->second != 0)
+					Mobs::dieMob(player, iter->second);
 			}
 		}
 		else if (strcmp(command, "horntail") == 0) {
