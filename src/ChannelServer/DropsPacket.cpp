@@ -31,7 +31,7 @@ void DropsPacket::drop(vector <Player*> players, Drop *drop, Dropped dropper) {
 	packet.addInt(dropper.id);
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
-	packet.addInt(drop->getTime() - clock()); // Time till
+	packet.addInt(0); // Time till
 	packet.addPos(dropper.pos);
 	packet.addShort(0);
 	packet.addByte(0);
@@ -51,7 +51,7 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Dropped dropper) {
 	packet.addInt(dropper.id);
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
-	packet.addInt(drop->getTime() - clock()); // Time till
+	packet.addInt(0); // Time till
 	packet.addPos(dropper.pos);
 	packet.addShort(0);
 	packet.addByte(0);
@@ -71,7 +71,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 	packet.addInt(drop->getID());
 	packet.addByte(drop->getMesos());
 	packet.addInt(drop->getObjectID());
-	packet.addInt(0); //TODO Dropper's Player ID
+	packet.addInt(0); //TODO Owner ID
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
 	packet.addInt(drop->getOwner());
