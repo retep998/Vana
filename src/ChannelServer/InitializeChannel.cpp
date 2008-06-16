@@ -783,7 +783,7 @@ void Initializing::initializeMaps() {
 		foot.x1 = atoi(footsRow[2]);
 		foot.x2 = atoi(footsRow[3]);
 		foot.y1 = atoi(footsRow[4]);
-		foot.y2 = atoi(footsRow[4]);
+		foot.y2 = atoi(footsRow[5]);
 		Drops::addFoothold(atoi(footsRow[1]), foot);
 	}
 	std::cout << "DONE" << std::endl;
