@@ -93,7 +93,7 @@ void Initializing::initializeMobs() {
 		mob.hpcolor = atoi(mobRow[5]);
 		mob.hpbgcolor = atoi(mobRow[6]);
 
-		if (mobRow[7] != NULL) {
+		if (mobRow[7] != 0) {
 			mob.summon.push_back(atoi(mobRow[7]));
 		}
 		previousid = atoi(mobRow[0]);
@@ -250,7 +250,7 @@ void Initializing::initializeItems() {
 		cons.ispeed = atoi(itemRow[36]);
 		cons.ihand = 0;
 		// Summoning
-		if (itemRow[37] != NULL) {
+		if (itemRow[37] != 0) {
 			s.mobid = atoi(itemRow[37]);
 			s.chance = atoi(itemRow[38]);
 			cons.mobs.push_back(s);
@@ -418,7 +418,7 @@ void Initializing::initializeShops() {
 			shop.items.clear();
 		}
 		shop.npc = atoi(shopRow[1]);
-		if (shopRow[2] != NULL) {
+		if (shopRow[2] != 0) {
 			ShopItemInfo item;
 			item.id = atoi(shopRow[2]);
 			item.price = atoi(shopRow[3]);
