@@ -36,13 +36,9 @@ hash_map <int, SpawnsInfo> Mobs::info;
 hash_map <int, queue<int>> Mobs::respawns;
 
 // Mob class
-Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : control(0), spawnid(-1), type(2) {
-	this->mobid = mobid;
-	this->spawnid = spawnid;
+Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
 	this->hp = Mobs::mobinfo[mobid].hp;
 	this->mp = Mobs::mobinfo[mobid].mp;
-	this->pos = pos;
-	this->fh = fh;
 	Maps::maps[mapid]->addMob(this);
 }
 
