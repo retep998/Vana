@@ -74,7 +74,7 @@ hash_map <int,int> MapTimer::ctimer;
 MapTimer * MapTimer::singleton = 0;
 
 /** Map class **/
-Map::Map () : mobids(new LoopingId(100)), dropids(new LoopingId(100)) { }
+Map::Map (int mapid) : mapid(mapid), mobids(new LoopingId(100)), dropids(new LoopingId(100)) { }
 
 void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
@@ -100,23 +100,45 @@ void Map::addReactor(Reactor *reactor) {
 	reactor->setID(this->reactors.size() - 1 + 200);
 }
 
-void Map::addMob(Mob *mob) {
+// Mobs
+void Map::addMob(int mobid, Pos pos, int spawnid, short fh) {
 	int id = this->mobids->next();
+	Mob *mob = new Mob(this->mapid, id, mobid, pos, spawnid, fh);
 	this->mobs[id] = mob;
-	mob->setID(id);
 	MobsPacket::spawnMob(this->players, mob);
-	Mobs::updateSpawn(this->players, mob);
+	updateMobControl(mob);
 }
 
 void Map::updateMobControl() {
 	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
-			Mobs::updateSpawn(this->players, iter->second);
+			updateMobControl(iter->second);
 	}
 }
 
-void Map::removeMob(Mob *mob) {
-	this->mobs.erase(mob->getID());
+void Map::updateMobControl(Mob *mob) {
+	if (players.size() > 0 && mob->getControl() == 0) {
+		int maxpos = mob->getPos() - players[0]->getPos();
+		int player = 0;
+		for (size_t j = 0; j < players.size(); j++) {
+			int curpos = mob->getPos() - players[j]->getPos();
+			if (curpos < maxpos) {
+				maxpos = curpos;
+				player = j;
+			}
+		}
+		mob->setControl(players[player]);
+	}
+	else if (players.size() == 0) {
+		mob->setControl(0);
+	}
+}
+
+void Map::removeMob(int id) {
+	if (mobs.find(id) != mobs.end()) {
+		delete mobs[id];
+		this->mobs.erase(id);
+	}
 }
 
 void Map::killMobs(Player *player) {
@@ -136,6 +158,7 @@ void Map::killMobs(Player *player, int mobid) {
 	}
 }
 
+// Drops
 void Map::addDrop(Drop *drop) {
 	int id = dropids->next();
 	this->drops[id] = drop;
@@ -154,12 +177,12 @@ void Map::clearDrops() { // Clear all drops
 	}
 }
 
-void Map::clearDrops(int clock) { // Clear drops based on how long they have been in the map
-	clock -= 60000;
+void Map::clearDrops(int time) { // Clear drops based on how long they have been in the map
+	time -= 60000;
 	hash_map <int, Drop *> drops = this->drops;
 	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0)
-			if (iter->second->getDropped() < clock)
+			if (iter->second->getDropped() < time)
 				iter->second->removeDrop();
 	}
 }
@@ -192,7 +215,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 
 /** Maps namespace **/
 void Maps::addMap(int id) {
-	maps[id] = new Map();
+	maps[id] = new Map(id);
 }
 
 void Maps::moveMap(Player *player, ReadPacket *packet) {
