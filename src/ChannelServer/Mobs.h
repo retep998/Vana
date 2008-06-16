@@ -75,7 +75,6 @@ namespace Mobs {
 	void displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob);
 	void monsterControl(Player *player, ReadPacket *packet);
 	void checkSpawn(int mapid);
-	void updateSpawn(vector <Player *> players, Mob *mob);
 	void spawnMob(Player *player, int mobid, int amount=1);
 	void dieMob(Player *player, Mob *mob);
 	void spawnMobPos(int mapid, int mobid, int x, int y);
@@ -83,7 +82,7 @@ namespace Mobs {
 
 class Mob {
 public:
-	Mob(int mapid, int mobid, Pos pos, int spawnid = -1, int fh = 0);
+	Mob(int mapid, int id, int mobid, Pos pos, int spawnid, int fh);
 	void setPos(Pos pos) {
 		this->pos = pos;
 	}
@@ -107,9 +106,6 @@ public:
 	}
 	int getMobID() {
 		return mobid;
-	}
-	void setSpawnID(int spawnid) {
-		this->spawnid = spawnid;
 	}
 	int getSpawnID() {
 		return spawnid;

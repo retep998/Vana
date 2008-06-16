@@ -35,6 +35,7 @@ class Mob;
 class Reactor;
 class Drop;
 class LoopingId;
+struct Pos;
 
 struct PortalInfo {
 	int id;
@@ -72,7 +73,7 @@ namespace Maps {
 
 class Map {
 public:
-	Map();
+	Map(int mapid);
 	// Map Info
 	void setInfo(MapInfo info) {
 		this->info = info;
@@ -80,6 +81,7 @@ public:
 	MapInfo getInfo() {
 		return this->info;
 	}
+
 	// Portals
 	void addPortal(PortalInfo portal) {
 		portals.push_back(portal);
@@ -97,6 +99,7 @@ public:
 	size_t getNumPortals() {
 		return portals.size();
 	}
+
 	// Players
 	void addPlayer(Player *player);
 	vector <Player *> getPlayers() {
@@ -109,6 +112,7 @@ public:
 		return this->players[i];
 	}
 	void removePlayer(Player *player);
+
 	// NPCs
 	void addNPC(NPCInfo npc) {
 		this->npcs.push_back(npc);
@@ -116,18 +120,19 @@ public:
 	NPCInfo getNpc(int id) {
 		return this->npcs[id];
 	}
+
 	// Mobs
-	void addMob(Mob *mob);
-	void updateMobControl();
+	void addMob(int mobid, Pos pos, int spawnid = -1, short fh = 0);
 	Mob * getMob(int id) {
 		if (this->mobs.find(id) != mobs.end())
 			return this->mobs[id];
 		else
 			return 0;
 	}
-	void removeMob(Mob *mob);
+	void removeMob(int id);
 	void killMobs(Player *player);
 	void killMobs(Player *player, int mobid);
+
 	// Reactors
 	void addReactor(Reactor *reactor);
 	Reactor * getReactor(int id) {
@@ -139,6 +144,7 @@ public:
 	size_t getNumReactors() {
 		return this->reactors.size();
 	}
+
 	// Drops
 	void addDrop(Drop *drop);
 	Drop * getDrop(int id) {
@@ -149,10 +155,11 @@ public:
 	}
 	void removeDrop(Drop *drop);
 	void clearDrops();
-	void clearDrops(int clock);
+	void clearDrops(int time);
 	// Show all map objects
 	void showObjects(Player *player);
 private:
+	int mapid;
 	MapInfo info;
 	PortalsInfo portals;
 	vector <Player *> players;
@@ -162,6 +169,9 @@ private:
 	scoped_ptr<LoopingId> mobids;
 	hash_map <int, Drop *> drops;
 	scoped_ptr<LoopingId> dropids;
+
+	void updateMobControl();
+	void updateMobControl(Mob *mob);
 };
 
 #endif

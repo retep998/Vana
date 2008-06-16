@@ -36,10 +36,9 @@ hash_map <int, SpawnsInfo> Mobs::info;
 hash_map <int, queue<int>> Mobs::respawns;
 
 // Mob class
-Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : mapid(mapid), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
+Mob::Mob(int mapid, int id, int mobid, Pos pos, int spawnid, int fh) : mapid(mapid), id(id), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
 	this->hp = Mobs::mobinfo[mobid].hp;
 	this->mp = Mobs::mobinfo[mobid].mp;
-	Maps::maps[mapid]->addMob(this);
 }
 
 void Mob::setControl(Player *control) {
@@ -99,25 +98,7 @@ void Mobs::checkSpawn(int mapid) {
 	while (!respawns[mapid].empty()) {
 		int i = respawns[mapid].front();
 		respawns[mapid].pop();
-		Mob *mob = new Mob(mapid, info[mapid][i].id, info[mapid][i].pos, i, info[mapid][i].fh);
-	}
-}
-
-void Mobs::updateSpawn(vector <Player *> players, Mob *mob) {
-	if (players.size() > 0 && mob->getControl() == 0) {
-		int maxpos = mob->getPos() - players[0]->getPos();
-		int player = 0;
-		for (size_t j = 0; j < players.size(); j++) {
-			int curpos = mob->getPos() - players[j]->getPos();
-			if (curpos < maxpos) {
-				maxpos = curpos;
-				player = j;
-			}
-		}
-		mob->setControl(players[player]);
-	}
-	else if (players.size() == 0) {
-		mob->setControl(0);
+		Maps::maps[mapid]->addMob(info[mapid][i].id, info[mapid][i].pos, i, info[mapid][i].fh);
 	}
 }
 
@@ -146,8 +127,7 @@ void Mobs::dieMob(Player *player, Mob *mob) {
 		respawns[player->getMap()].push(mob->getSpawnID());
 
 	player->quests->updateQuestMob(mob->getMobID());
-	Maps::maps[player->getMap()]->removeMob(mob);
-	delete mob;
+	Maps::maps[player->getMap()]->removeMob(mob->getID());
 }
 
 void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
@@ -426,7 +406,7 @@ void Mobs::spawnMobPos(int mapid, int mobid, int x, int y) {
 	Pos mobpos;
 	mobpos.x = x;
 	mobpos.y = y;
-	Mob *mob = new Mob(mapid, mobid, mobpos);
+	Maps::maps[mapid]->addMob(mobid, mobpos);
 }
 
 void Mobs::displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob) {
