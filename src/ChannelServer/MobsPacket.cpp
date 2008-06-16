@@ -97,7 +97,7 @@ void MobsPacket::moveMob(Player *player, vector <Player*> players, int mobid, bo
 	packet.addInt(skill);
 	packet.addByte(0);
 	packet.addBuffer(buf, len);
-	packet.sendTo(player, players, 0);
+	packet.sendTo(player, players, false);
 }
 
 void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket *pack) {
@@ -144,7 +144,7 @@ void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket 
 			packet.addInt(damage);
 		}
 	}
-	packet.sendTo(player, players, 0);
+	packet.sendTo(player, players, false);
 }
 
 void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadPacket *pack) {
@@ -202,7 +202,7 @@ void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadP
 			packet.addInt(damage); // Critical damage = 0x80000000 + damage
 		}
 	}
-	packet.sendTo(player, players, 0);
+	packet.sendTo(player, players, false);
 }
 
 void MobsPacket::damageMobSpell(Player *player, vector <Player*> players, ReadPacket *pack) {
@@ -241,7 +241,7 @@ void MobsPacket::damageMobSpell(Player *player, vector <Player*> players, ReadPa
 	}
 	if (charge > 0)
 		packet.addInt(charge);
-	packet.sendTo(player, players, 0);
+	packet.sendTo(player, players, false);
 }
 
 void MobsPacket::showHP(Player *player, int mobid, char per) {
@@ -267,22 +267,18 @@ void MobsPacket::showBossHP(Player *player, vector <Player*> players, const MobH
 	packet.addInt(mob.mobid);
 	packet.addInt(mob.hp);
 	packet.addInt(mob.mhp);
-	packet.addByte((char)mob.hpcolor);
-	packet.addByte((char)mob.hpbgcolor);
+	packet.addByte(mob.hpcolor);
+	packet.addByte(mob.hpbgcolor);
 	packet.sendTo(player, players, true);
 }
 
-void MobsPacket::dieMob(Player *player, vector <Player*> players, Mob *mob, int mobid) {
+void MobsPacket::dieMob(vector <Player*> players, Mob *mob) {
 	Packet packet;
 	packet.addHeader(SEND_KILL_MOB);
-	packet.addInt(mobid);
+	packet.addInt(mob->getID());
 	packet.addByte(1);
-	packet.sendTo<Player>(player, players, 1); 
-	if (mob->getControl() != NULL && mob->getControl()->getMap() == player->getMap()) {
-		Packet packet;
-		packet.addHeader(SEND_CONTROL_MOB);
-		packet.addByte(0);
-		packet.addInt(mobid);
-		packet.send(mob->getControl());
-	}
+	packet.sendTo<Player>(0, players, true);
+	Player *control = mob->getControl();
+	if (control != 0 && control->getMap() == mob->getMapID())
+		endControlMob(control, mob);
 }

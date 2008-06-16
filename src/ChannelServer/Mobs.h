@@ -45,8 +45,8 @@ struct MobInfo {
 	int hp;
 	int mp;
 	int exp;
-	short hpcolor;
-	short hpbgcolor;
+	char hpcolor;
+	char hpbgcolor;
 	bool boss;
 	vector<int> summon;
 };
@@ -57,8 +57,8 @@ struct MobHPInfo {
 	int mhp;
 	int mapmobid;
 	int mobid;
-	short hpcolor;
-	short hpbgcolor;
+	char hpcolor;
+	char hpbgcolor;
 	bool boss;
 };
 
@@ -104,6 +104,9 @@ public:
 	int getID() {
 		return id;
 	}
+	int getMapID() {
+		return mapid;
+	}
 	int getMobID() {
 		return mobid;
 	}
@@ -146,6 +149,7 @@ public:
 private:
 	Pos pos;
 	int id;
+	int mapid;
 	int spawnid;
 	int mobid;
 	short fh;
