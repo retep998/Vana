@@ -403,10 +403,7 @@ void Mobs::spawnMob(Player *player, int mobid, int amount) {
 }
 
 void Mobs::spawnMobPos(int mapid, int mobid, int x, int y) {
-	Pos mobpos;
-	mobpos.x = x;
-	mobpos.y = y;
-	Maps::maps[mapid]->addMob(mobid, mobpos);
+	Maps::maps[mapid]->addMob(mobid, Pos(x, y));
 }
 
 void Mobs::displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob) {

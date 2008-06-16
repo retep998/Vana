@@ -736,8 +736,7 @@ void Initializing::initializeMaps() {
 
 		SpawnInfo spawn;
 		spawn.id = atoi(mobRow[2]);
-		spawn.pos.x = atoi(mobRow[3]);
-		spawn.pos.y = atoi(mobRow[4]);
+		spawn.pos = Pos(atoi(mobRow[3]), atoi(mobRow[4]));
 		spawn.fh = atoi(mobRow[5]);
 		Mobs::addSpawn(atoi(mobRow[1]), spawn);
 	}
@@ -760,8 +759,7 @@ void Initializing::initializeMaps() {
 
 		ReactorSpawnInfo reactor;
 		reactor.id = atoi(reactorRow[2]);
-		reactor.pos.x = atoi(reactorRow[3]);
-		reactor.pos.y = atoi(reactorRow[4]);
+		reactor.pos = Pos(atoi(reactorRow[3]), atoi(reactorRow[4]));
 		Reactors::addSpawn(atoi(reactorRow[1]), reactor);
 	}
 
