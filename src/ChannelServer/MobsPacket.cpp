@@ -60,7 +60,7 @@ void MobsPacket::spawnMob(vector <Player*> players, Mob *mob) {
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
 	packet.addShort(-2);
-	packet.sendTo<Player>(NULL, players, true);
+	packet.sendTo<Player>(0, players, true);
 }
 
 void MobsPacket::showMob(Player *player, Mob *mob) {
