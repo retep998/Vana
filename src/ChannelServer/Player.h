@@ -213,7 +213,8 @@ public:
 		return skill;
 	}
 	void deleteVariable(const string &name) {
-		variables.erase(name);
+		if (variables.find(name) != variables.end())
+			variables.erase(name);
 	}
 	void setVariable(const string &name, const string &val) {
 		variables[name] = val;
