@@ -179,7 +179,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
 			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectID() == revent->itemid) {
-				if ((drop->getPos().x >= reactor->getPos()->x + revent->ltx && drop->getPos().x <= reactor->getPos()->x + revent->rbx) && (drop->getPos().y >= reactor->getPos()->y + revent->lty && drop->getPos().y <= reactor->getPos()->y + revent->rby)) {
+				if ((drop->getPos().x >= reactor->getPos().x + revent->ltx && drop->getPos().x <= reactor->getPos().x + revent->rbx) && (drop->getPos().y >= reactor->getPos().y + revent->lty && drop->getPos().y <= reactor->getPos().y + revent->rby)) {
 					ReactionTimer::Instance()->setReactionTimer(player, reactor, drop, revent->nextstate, 3000);
 				}
 				return;

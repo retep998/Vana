@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::vector;
 using std::string;
 
+struct Pos;
+
 class Packet {
 public:
 	Packet() {
@@ -39,6 +41,7 @@ public:
 	void addString(const char *str, int slen);
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, int len); // Static-lengthed strings
+	void addPos(Pos pos); // Positions
 	void addByte(unsigned char byte);
 	void addBytes(char *hex);
 	void addBuffer(unsigned char *bytes, int len);

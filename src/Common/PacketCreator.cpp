@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketCreator.h"
+#include "Pos.h"
 #include <iostream>
 
 void Packet::addHeader(short headerid) {
@@ -24,26 +25,25 @@ void Packet::addHeader(short headerid) {
 
 void Packet::addInt(int intg) {
 	(*(int*)(packet+pos)) = intg;
-	pos+=4;
+	pos += 4;
 }
 
 void Packet::addInt64(__int64 int64) {
 	(*(__int64*)(packet+pos)) = int64;
-	pos+=8;
+	pos += 8;
 }
 
 void Packet::addShort(short shrt) {
 	(*(short*)(packet+pos)) = shrt;
-	pos+=2;
-	
+	pos += 2;
 }
 
 void Packet::addString(const char *str, int slen) {
 	int rlen = strlen(str);
 	strncpy_s((char*)packet+pos, slen+1, str, slen);
-	for (int i=rlen; i<slen; i++)
+	for (int i = rlen; i < slen; i++)
 		packet[pos+i] = 0;
-	pos+=slen;
+	pos += slen;
 }
 
 void Packet::addString(const string &str) {
@@ -63,6 +63,11 @@ void Packet::addString(const string &str, int len) {
 		packet[pos+i] = 0;
 	}
 	pos += len;
+}
+
+void Packet::addPos(Pos pos) {
+	addShort(pos.x);
+	addShort(pos.y);
 }
 
 void Packet::addByte(unsigned char byte) {
@@ -92,7 +97,5 @@ void Packet::addBytes(char *hex) {
 
 void Packet::addBuffer(unsigned char *bytes, int len) {
 	memcpy_s(packet+pos, len, bytes, len);
-	pos+=len;
+	pos += len;
 }
-
-

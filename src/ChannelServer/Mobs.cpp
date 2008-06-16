@@ -42,7 +42,6 @@ Mob::Mob(int mapid, int id, int mobid, Pos pos, int spawnid, int fh) : mapid(map
 }
 
 void Mob::setControl(Player *control) {
-	if (this == 0) return;
 	if (this->control != 0)
 		MobsPacket::endControlMob(this->control, this);
 	this->control = control;
@@ -120,7 +119,7 @@ void Mobs::dieMob(Player *player, Mob *mob) {
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
 	for (size_t i = 0; i < mobinfo[mob->getMobID()].summon.size(); i++) {
-		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY()-1);
+		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPos());
 	}
 
 	if (mob->getSpawnID() > -1) // Add spawn point to respawns queue if mob was spawned by a spawn point.
@@ -399,11 +398,11 @@ void Mobs::damageMobPG(Player *player, int damage, Mob *mob) {
 
 void Mobs::spawnMob(Player *player, int mobid, int amount) {
 	for (int i = 0; i < amount; i++)
-		spawnMobPos(player->getMap(), mobid, player->getPos().x, player->getPos().y);
+		spawnMobPos(player->getMap(), mobid, player->getPos());
 }
 
-void Mobs::spawnMobPos(int mapid, int mobid, int x, int y) {
-	Maps::maps[mapid]->addMob(mobid, Pos(x, y));
+void Mobs::spawnMobPos(int mapid, int mobid, Pos pos) {
+	Maps::maps[mapid]->addMob(mobid, pos);
 }
 
 void Mobs::displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob) {

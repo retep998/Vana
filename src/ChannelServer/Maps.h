@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPS_H
 
 #include "NPCs.h"
+#include "Pos.h"
 #include <hash_map>
 #include <vector>
 #include <boost/scoped_ptr.hpp>
@@ -35,7 +36,6 @@ class Mob;
 class Reactor;
 class Drop;
 class LoopingId;
-struct Pos;
 
 struct PortalInfo {
 	int id;
@@ -43,8 +43,7 @@ struct PortalInfo {
 	int toid;
 	char to[20];
 	int type;
-	short x;
-	short y;
+	Pos pos;
 	char script[30];
 };
 typedef vector <PortalInfo> PortalsInfo;
@@ -64,7 +63,7 @@ namespace Maps {
 	void addMap(int id);
 	void moveMap(Player *player, ReadPacket *packet);
 	void moveMapS(Player *player, ReadPacket *packet);
-	void changeMap(Player *player, int mapid, int pos);
+	void changeMap(Player *player, int mapid, int portalid);
 	void showClock(Player *player);
 	void mapTimer(int mapid);
 	void newMap(Player *player, int mapid);

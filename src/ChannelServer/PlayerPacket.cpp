@@ -72,28 +72,28 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addByte(100);
 	packet.addByte(100);
 	packet.addByte(100);
-	for (int i=0; i<player->inv->getEquipNum(); i++) {
+	for (int i = 0; i < player->inv->getEquipNum(); i++) {
 		Equip *equip = player->inv->getEquip(i);
-		if (equip->pos<0 && !Inventory::isCash(equip->id)) {
+		if (equip->pos < 0 && !Inventory::isCash(equip->id)) {
 			PlayerPacketHelper::addEquip(packet, equip);
 		}
 	}
 	packet.addByte(0);
-	for (int i=0; i<player->inv->getEquipNum(); i++) {
+	for (int i = 0; i < player->inv->getEquipNum(); i++) {
 		Equip *equip = player->inv->getEquip(i);
-		if (equip->pos<0 && Inventory::isCash(equip->id)) {
+		if (equip->pos < 0 && Inventory::isCash(equip->id)) {
 			PlayerPacketHelper::addEquip(packet, equip);
 		}
 	}
 	packet.addByte(0);
-	for (int i=0; i<player->inv->getEquipNum(); i++) {
+	for (int i = 0; i < player->inv->getEquipNum(); i++) {
 		Equip *equip = player->inv->getEquip(i);
-		if (equip->pos>0) {
+		if (equip->pos > 0) {
 			PlayerPacketHelper::addEquip(packet, equip);
 		}
 	}
 	packet.addByte(0);
-	for (int j=2; j<=5; j++) {
+	for (int j = 2; j <= 5; j++) {
 		for (int i=0; i<player->inv->getItemNum(); i++) {
 			Item *item = player->inv->getItem(i);
 			if (item->inv == j) {
@@ -117,7 +117,7 @@ void PlayerPacket::connectData(Player *player) {
 	}
 	//Skills
 	packet.addShort(player->skills->getSkillsNum());
-	for (int i=0; i<player->skills->getSkillsNum(); i++) {
+	for (int i = 0; i < player->skills->getSkillsNum(); i++) {
 		packet.addInt(player->skills->getSkillID(i));
 		packet.addInt(player->skills->getSkillLevel(player->skills->getSkillID(i)));
 		if (FORTHJOB_SKILL(player->skills->getSkillID(i)))
@@ -128,7 +128,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addShort(0);
-	for (int i=0; i<15; i++)
+	for (int i = 0; i < 15; i++)
 		packet.addBytes("FFC99A3B");
 	packet.addInt64(TimeUtilities::getServerTime());
 	packet.send(player);

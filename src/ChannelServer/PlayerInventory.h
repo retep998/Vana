@@ -27,7 +27,7 @@ struct Equip {
 	int id;
 	short pos;
 	char slots;
-	short scrolls;
+	char scrolls;
 	char type;
 	short istr;
 	short idex;
@@ -56,14 +56,14 @@ struct Item {
 class PlayerInventory {
 public:
 	PlayerInventory() {
-		maxslots=100;
+		maxslots = 100;
 	}
 	int getMaxslots() {
 		return maxslots;
 	}
-	void setMesos(int mesos, bool is=0);
+	void setMesos(int mesos, bool is = 0);
 	void setMesosStart(int mesos) {
-		this->mesos=mesos;
+		this->mesos = mesos;
 	}
 	int getMesos() {
 		return this->mesos;
@@ -75,7 +75,7 @@ public:
 		return equips.size();
 	}
 	int getEquipByPos(short pos) {
-		for (int i=0; i<getEquipNum(); i++) { // Get Equips
+		for (int i = 0; i < getEquipNum(); i++) { // Get Equips
 			Equip *equip = getEquip(i);
 			if (equip->pos == pos)
 				return equip->id;
@@ -118,19 +118,19 @@ public:
 		return items[id];
 	}
 	Item * getItemByPos(int pos, char inv) {
-		for (int i=0; i<getItemNum(); i++)
+		for (int i = 0; i < getItemNum(); i++)
 			if (getItem(i)->pos == pos && getItem(i)->inv == inv)
 				return getItem(i);
 		return 0;
 	}
 	void setPlayer(Player *player) {
-		this->player=player;
+		this->player = player;
 	}
 	int getItemAmount(int itemid) {
-		int amount=0;
-		for (int i=0; i<getItemNum(); i++)
+		int amount = 0;
+		for (int i = 0; i < getItemNum(); i++)
 			if (getItem(i)->id == itemid)
-				amount+=getItem(i)->amount;
+				amount += getItem(i)->amount;
 		return amount;
 	}
 	int getItemAmountBySlot(int slot, char inv) {

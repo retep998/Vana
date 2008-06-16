@@ -46,9 +46,9 @@ Packet MapPacket::playerPacket(Player *player) {
 	packet.addByte(1);
 	packet.addInt(player->getHair());
 	int equips[35][2] = {0};
-	for (int i=0; i<player->inv->getEquipNum(); i++) { //sort equips
+	for (int i = 0; i < player->inv->getEquipNum(); i++) { //sort equips
 		Equip *equip = player->inv->getEquip(i);
-		if (equip->pos<0) {
+		if (equip->pos < 0) {
 			if (equips[equip->type][0]>0) {
 				if (Inventory::isCash(equip->id)) {
 					equips[equip->type][1] = equips[equip->type][0];
@@ -63,24 +63,24 @@ Packet MapPacket::playerPacket(Player *player) {
 			}
 		}
 	}
-	for (int i=0; i<35; i++) { //shown items
-		if (equips[i][0]>0) {
+	for (int i = 0; i < 35; i++) { //shown items
+		if (equips[i][0] > 0) {
 			packet.addByte(i);
-			if (i == 11 && equips[i][1]>0) // normal weapons always here
+			if (i == 11 && equips[i][1] > 0) // normal weapons always here
 				packet.addInt(equips[i][1]);
 			else
 				packet.addInt(equips[i][0]);
 		}
 	}
 	packet.addByte(-1);
-	for (int i=0; i<35; i++) { //covered items
+	for (int i = 0; i < 35; i++) { //covered items
 		if (equips[i][1]>0 && i != 11) {
 			packet.addByte(i);
 			packet.addInt(equips[i][1]);
 		}
 	}
 	packet.addByte(-1);
-	if (equips[11][1]>0) // cs weapon
+	if (equips[11][1] > 0) // cs weapon
 		packet.addInt(equips[11][0]);
 	else
 		packet.addInt(0);
@@ -90,8 +90,7 @@ Packet MapPacket::playerPacket(Player *player) {
 	packet.addInt(0);
 	packet.addInt(player->getItemEffect()); 
 	packet.addInt(player->getChair());
-	packet.addShort(player->getPos().x);
-	packet.addShort(player->getPos().y);
+	packet.addPos(player->getPos());
 	packet.addByte(player->getType());
 	packet.addInt(0);
 	packet.addShort(1);
@@ -104,7 +103,7 @@ Packet MapPacket::playerPacket(Player *player) {
 
 void MapPacket::showPlayer(Player *player, vector <Player*> players) {
 	Packet packet = playerPacket(player);
-	for (unsigned int i=0; i<players.size(); i++) {
+	for (unsigned int i = 0; i < players.size(); i++) {
 		packet.send(players[i]);
 	}
 }
@@ -183,7 +182,7 @@ void MapPacket::changeMusic(vector <Player*> players, const string &musicname) {
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
 	packet.addString(musicname);
-	for (unsigned int i=0; i < players.size(); i++) {
+	for (unsigned int i = 0; i < players.size(); i++) {
 		packet.send(players[i]);
 	}
 }
@@ -199,7 +198,7 @@ void MapPacket::sendSound(vector <Player*> players, const string &soundname) {
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x04);
 	packet.addString(soundname);
-	for (unsigned int i=0; i < players.size(); i++) {
+	for (unsigned int i = 0; i < players.size(); i++) {
 		packet.send(players[i]);
 	}
 }
@@ -215,7 +214,7 @@ void MapPacket::sendEvent(vector <Player*> players, const string &eventname) {
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x03);
 	packet.addString(eventname);
-	for (unsigned int i=0; i < players.size(); i++) {
+	for (unsigned int i = 0; i < players.size(); i++) {
 		packet.send(players[i]);
 	}
 }

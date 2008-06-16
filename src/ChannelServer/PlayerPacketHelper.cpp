@@ -33,7 +33,7 @@ void PlayerPacketHelper::addEquip(Packet &packet, Equip *equip, bool pos_is_shor
 	packet.addShort(0);
 	packet.addBytes("8005BB46E61702");
 	packet.addByte(equip->slots); // slots
-	packet.addByte((char) equip->scrolls); // scrolls
+	packet.addByte(equip->scrolls); // scrolls
 	packet.addShort(equip->istr); // STR
 	packet.addShort(equip->idex); // DEX
 	packet.addShort(equip->iint); // INT
@@ -63,9 +63,9 @@ void PlayerPacketHelper::addIP(Packet &packet, const string &ip, short port) {
 	char *next_token;
 
 	packet.addByte(atoi(strtok_s(ip_, ".", &next_token)));
-	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
-	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
-	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
+	packet.addByte(atoi(strtok_s(0, ".", &next_token)));
+	packet.addByte(atoi(strtok_s(0, ".", &next_token)));
+	packet.addByte(atoi(strtok_s(0, ".", &next_token)));
 
 	packet.addShort(port);
 }

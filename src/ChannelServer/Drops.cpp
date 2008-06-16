@@ -78,11 +78,11 @@ Pos Drops::findFloor(Pos pos, int map) {
 	bool first = 1;
 	short maxy;
 	for (unsigned int i = 0; i < Drops::foots[map].size(); i++) {
-		if ((x>Drops::foots[map][i].x1 && x<Drops::foots[map][i].x2) || (x>Drops::foots[map][i].x2 && x<Drops::foots[map][i].x1)) {
+		if ((x > Drops::foots[map][i].x1 && x < Drops::foots[map][i].x2) || (x > Drops::foots[map][i].x2 && x < Drops::foots[map][i].x1)) {
 			if (first) {
 				maxy = (short) ( (float)( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) * x - Drops::foots[map][i].x1 * (float) ( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) + Drops::foots[map][i].y1 );
 				if (maxy >= y)
-					first=0;
+					first = 0;
 			}
 			else{
 				short cmax = (short) ( (float)( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) * x - Drops::foots[map][i].x1 * (float) ( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) + Drops::foots[map][i].y1 );
@@ -254,8 +254,8 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		if (player->addWarning()) return;
 	}
 	if (drop->isQuest()) {
-		int request=0;
-		for (unsigned int i=0; i<Quests::quests[drop->getQuest()].rewards.size(); i++) {
+		int request = 0;
+		for (unsigned int i = 0; i < Quests::quests[drop->getQuest()].rewards.size(); i++) {
 			if (Quests::quests[drop->getQuest()].rewards[i].id == drop->getObjectID()) {
 				request = Quests::quests[drop->getQuest()].rewards[i].count;
 			}
@@ -270,7 +270,7 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		player->inv->setMesos(player->inv->getMesos() + drop->getObjectID(), 1);
 		DropsPacket::takeNote(player, drop->getObjectID(), 1, 0);
 	}
-	else{
+	else {
 		if (drop->getEquip()) {
 			Equip *equip = new Equip;
 			DropInfo ei = drop->getDropInfo();

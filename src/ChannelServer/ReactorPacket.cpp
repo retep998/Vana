@@ -27,8 +27,7 @@ void ReactorPacket::spawnReactor(vector <Player *> players, Reactor *reactor) {
 	packet.addInt(reactor->getID());
 	packet.addInt(reactor->getReactorID());
 	packet.addByte(reactor->getState());
-	packet.addShort(reactor->getPos()->x);
-	packet.addShort(reactor->getPos()->y);
+	packet.addPos(reactor->getPos());
 	packet.addByte(0);
 	packet.sendTo<Player>(0, players, true);
 }
@@ -39,8 +38,7 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	packet.addInt(reactor->getID());
 	packet.addInt(reactor->getReactorID());
 	packet.addByte(reactor->getState());
-	packet.addShort(reactor->getPos()->x);
-	packet.addShort(reactor->getPos()->y);
+	packet.addPos(reactor->getPos());
 	packet.addByte(0);
 	packet.send(player);
 }
@@ -50,8 +48,7 @@ void ReactorPacket::triggerReactor(vector <Player *> players, Reactor *reactor) 
 	packet.addHeader(SEND_TRIGGER_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addByte(reactor->getState()); // State
-	packet.addShort(reactor->getPos()->x);
-	packet.addShort(reactor->getPos()->y);
+	packet.addPos(reactor->getPos());
 	packet.addInt(0);
 	packet.sendTo<Player>(0, players, true);
 }
@@ -61,7 +58,6 @@ void ReactorPacket::destroyReactor(vector <Player *> players, Reactor *reactor) 
 	packet.addHeader(SEND_DESTROY_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addByte(reactor->getState());
-	packet.addShort(reactor->getPos()->x);
-	packet.addShort(reactor->getPos()->y);
+	packet.addPos(reactor->getPos());
 	packet.sendTo<Player>(0, players, true);
 }
