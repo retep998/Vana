@@ -104,7 +104,7 @@ public:
 		return this->mhp;
 	}
 	void setRMHP(int rmhp) {
-		this->rmhp=rmhp;
+		this->rmhp = rmhp;
 	}
 	unsigned short getRMHP() {
 		return this->rmhp;
@@ -114,7 +114,7 @@ public:
 		return this->mmp;
 	}
 	void setRMMP(int rmmp) {
-		this->rmmp=rmmp;
+		this->rmmp = rmmp;
 	}
 	unsigned short getRMMP() {
 		return this->rmmp;
@@ -134,7 +134,7 @@ public:
 	void setAp(short ap);
 	void setSp(short sp);
 	void setFame(short fame) {
-		this->fame=fame;
+		this->fame = fame;
 	}
 	short getFame() {
 		return this->fame;
@@ -144,7 +144,7 @@ public:
 		return this->exp;
 	}
 	void setMap(int map) {
-		this->map=map;
+		this->map = map;
 	}
 	int getMap() {
 		return this->map;
@@ -162,13 +162,13 @@ public:
 		this->pos = pos;
 	}
 	void setType(char type) {
-		this->type=type;
+		this->type = type;
 	}
 	char getType() {
 		return this->type;
 	}
 	void setShop(int shopid) {
-		shop=shopid;
+		shop = shopid;
 	}
 	int getShop() {
 		return shop;
