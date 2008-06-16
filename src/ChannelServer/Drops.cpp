@@ -72,32 +72,38 @@ void Drop::removeDrop() {
 }
 
 // Drops namespace
-Pos Drops::findFloor(Pos pos, int map) {
+Pos Drops::findFloor(Pos pos, int mapid) {
 	short x = pos.x;
 	short y = pos.y - 100;
-	bool first = 1;
-	short maxy;
-	for (unsigned int i = 0; i < Drops::foots[map].size(); i++) {
-		if ((x > Drops::foots[map][i].x1 && x < Drops::foots[map][i].x2) || (x > Drops::foots[map][i].x2 && x < Drops::foots[map][i].x1)) {
+	bool first = true;
+	short maxy = pos.y;
+	FootholdsInfo footholds = Drops::foots[mapid];
+	unsigned int fh = 0;
+	for (size_t i = 0; i < footholds.size(); i++) {
+		if ((x > footholds[i].x1 && x < footholds[i].x2) || (x > footholds[i].x2 && x < footholds[i].x1)) {
 			if (first) {
-				maxy = (short) ( (float)( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) * x - Drops::foots[map][i].x1 * (float) ( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) + Drops::foots[map][i].y1 );
-				if (maxy >= y)
-					first = 0;
+				maxy = (short) ( (float)( footholds[i].y1 - footholds[i].y2 ) / ( footholds[i].x1 - footholds[i].x2 ) * x - footholds[i].x1 * (float) ( footholds[i].y1 - footholds[i].y2 ) / ( footholds[i].x1 - footholds[i].x2 ) + footholds[i].y1 );
+				if (maxy >= y) {
+					fh = i;
+					first = false;
+				}
 			}
-			else{
-				short cmax = (short) ( (float)( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) * x - Drops::foots[map][i].x1 * (float) ( Drops::foots[map][i].y1 - Drops::foots[map][i].y2 ) / ( Drops::foots[map][i].x1 - Drops::foots[map][i].x2 ) + Drops::foots[map][i].y1 );
-				if (cmax < maxy && cmax >= y)
+			else {
+				short cmax = (short) ( (float)( footholds[i].y1 - footholds[i].y2 ) / ( footholds[i].x1 - footholds[i].x2 ) * x - footholds[i].x1 * (float) ( footholds[i].y1 - footholds[i].y2 ) / ( footholds[i].x1 - footholds[i].x2 ) + footholds[i].y1 );
+				if (cmax < maxy && cmax >= y) {
+					fh = i;
 					maxy = cmax;
+				}
 			}
 		}
 	}
-	if (!first) {
-		Pos newpos;
-		newpos.x = x;
-		newpos.y = maxy;
-		return newpos;
+	if (footholds[fh].x1 == footholds[fh].x2) { // Walls
+		if (footholds[fh].x1 < 0 && x < footholds[fh].x1)
+			x = footholds[fh].x1 + 10;
+		else if (x > footholds[fh].x1)
+			x = footholds[fh].x1 - 10;
 	}
-	return pos;
+	return Pos(x, maxy);
 }
 
 void Drops::dropMob(Player *player, Mob *mob) {
@@ -109,7 +115,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 				if (!player->quests->isQuestActive(drop[k].quest))
 					continue;
 				int request = 0;
-				for (unsigned int i=0; i<Quests::quests[drop[k].quest].rewards.size(); i++) {
+				for (unsigned int i = 0; i < Quests::quests[drop[k].quest].rewards.size(); i++) {
 					if (Quests::quests[drop[k].quest].rewards[i].id == drop[k].id) {
 						request = Quests::quests[drop[k].quest].rewards[i].count;
 					}
