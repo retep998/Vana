@@ -36,7 +36,7 @@ hash_map <int, SpawnsInfo> Mobs::info;
 hash_map <int, queue<int>> Mobs::respawns;
 
 // Mob class
-Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
+Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : mapid(mapid), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
 	this->hp = Mobs::mobinfo[mobid].hp;
 	this->mp = Mobs::mobinfo[mobid].mp;
 	Maps::maps[mapid]->addMob(this);
@@ -123,27 +123,26 @@ void Mobs::updateSpawn(int mapid) {
 }
 
 void Mobs::updateSpawn(int mapid, Mob *mob) {
-	if (Maps::maps[mapid]->getPlayers().size() > 0 && mob->getControl() == 0) {
-		int maxpos = mob->getPos() - Maps::maps[mapid]->getPlayers()[0]->getPos();
+	if (Maps::maps[mapid]->getNumPlayers()> 0 && mob->getControl() == 0) {
+		int maxpos = mob->getPos() - Maps::maps[mapid]->getPlayer(0)->getPos();
 		int player = 0;
-		for (unsigned int j = 0; j < Maps::maps[mapid]->getPlayers().size(); j++) {
-			int curpos = mob->getPos() - Maps::maps[mapid]->getPlayers()[j]->getPos();
+		for (size_t j = 0; j < Maps::maps[mapid]->getNumPlayers(); j++) {
+			int curpos = mob->getPos() - Maps::maps[mapid]->getPlayer(j)->getPos();
 			if (curpos < maxpos) {
 				maxpos = curpos;
 				player = j;
-				break;
 			}
-			mob->setControl(Maps::maps[mapid]->getPlayers()[player]);
 		}
+		mob->setControl(Maps::maps[mapid]->getPlayer(player));
 	}
-	else if (Maps::maps[mapid]->getPlayers().size() == 0) {
+	else if (Maps::maps[mapid]->getNumPlayers() == 0) {
 		mob->setControl(0);
 	}
 }
 
 void Mobs::dieMob(Player *player, Mob *mob) {
 	if (mob == 0) return;
-	MobsPacket::dieMob(player, Maps::maps[player->getMap()]->getPlayers(), mob, mob->getID());
+	MobsPacket::dieMob(Maps::maps[player->getMap()]->getPlayers(), mob);
 
 	// Account for Holy Symbol
 	int hsrate = 0;
@@ -158,7 +157,7 @@ void Mobs::dieMob(Player *player, Mob *mob) {
 	Drops::dropMob(player, mob);
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
-	for (unsigned int i = 0; i < mobinfo[mob->getMobID()].summon.size(); i++) {
+	for (size_t i = 0; i < mobinfo[mob->getMobID()].summon.size(); i++) {
 		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPosX(), mob->getPosY()-1);
 	}
 
