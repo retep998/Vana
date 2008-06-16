@@ -47,10 +47,8 @@ void Players::handleMoving(Player *player, ReadPacket *packet) {
 	packet->reset(-12);
 	char type = packet->getByte();
 
-	Pos cpos;
 	packet->reset(-4);
-	cpos.x = packet->getShort();
-	cpos.y = packet->getShort();
+	Pos cpos(packet->getShort(), packet->getShort());
 
 	player->setPos(cpos);
 	player->setType(type);
@@ -72,7 +70,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		if (!player->isGM()) return;
 		char *next_token;
 		char command[90] = "";
-		if (chatsize>2)
+		if (chatsize > 2)
 			strcpy_s(command, 90, strtok_s(chat+1, " ", &next_token));
 		if (strcmp(command, "map") == 0) {
 			if (strlen(next_token) == 0) {
@@ -137,7 +135,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "addsp") == 0) {
 			if (strlen(next_token) > 0) {
-				int skillid = atoi(strtok_s(NULL, " ",&next_token));
+				int skillid = atoi(strtok_s(0, " ", &next_token));
 				int count = 1;
 				if (strlen(next_token) > 0)
 				count = atoi(next_token);
@@ -146,7 +144,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "summon") == 0 || strcmp(command, "spawn") == 0) {
 			if (strlen(next_token) == 0) return;
-			int mobid = atoi(strtok_s(NULL, " ",&next_token));
+			int mobid = atoi(strtok_s(0, " ", &next_token));
 			if (Mobs::mobinfo.find(mobid) == Mobs::mobinfo.end())
 				return;
 			int count = 1;
@@ -182,7 +180,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "item") == 0) {
 			if (strlen(next_token) == 0) return;
-			int itemid = atoi(strtok_s(NULL, " ",&next_token));
+			int itemid = atoi(strtok_s(0, " ",&next_token));
 			if (Drops::items.find(itemid) == Drops::items.end() && Drops::equips.find(itemid) == Drops::equips.end())
 				return;
 			int count = 1;
@@ -422,7 +420,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	PowerGuardInfo pg;
 	pg.reduction = packet->getByte();
 	packet->skipBytes(1); // Possible Mana Reflection?
-	if (pg.reduction != 0x00 && type == 0xFF) {
+	if (pg.reduction != 0 && type == -1) {
 		packet->skipBytes(1); // Power Guard exists?
 		pg.mapmobid = packet->getInt();
 		packet->skipBytes(1); // 0x06, damage coming up
@@ -435,7 +433,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1); // Stance
 	unsigned char hit = packet->getByte();
 	int fake = 0;
-	if (damage == 0xFFFFFFFF) { // 0 damage = regular miss, this = Fake
+	if (damage == -1) { // 0 damage = regular miss, this = Fake
 		short job = player->getJob() / 10 - 40;
 		fake = 4020002 + (job * 100000);
 		if (player->skills->getSkillLevel(fake) < 0) {
@@ -486,9 +484,9 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 		if (damage > 0)
 			player->setHP(player->getHP() - damage);
 	}
-	if (type == 0xFF && pg.reduction != 0x00) // Remove that damage, HP warrior!
+	if (type == -1 && pg.reduction != 0) // Remove that damage, HP warrior!
 		Mobs::damageMobPG(player, (pg.damage * pg.reduction / 100), Maps::maps[player->getMap()]->getMob(mapmobid));
-	if (type != 0xFE) // Fall damage and map damage don't play by these rules
+	if (type != -2) // Fall damage and map damage don't play by these rules
 		PlayersPacket::damagePlayer(player, Maps::maps[player->getMap()]->getPlayers(), damage, mobid, hit, type, fake, pg);
  }
 
