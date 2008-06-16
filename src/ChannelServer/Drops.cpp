@@ -242,14 +242,6 @@ void Drops::dropMob(Player *player, Mob *mob) {
 	}
 }
 
-void Drops::showDrops(Player *player) {
-	hash_map <int, Drop *> drops = Maps::maps[player->getMap()]->getDrops();
-	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-		if (iter->second != 0)
-			iter->second->showDrop(player);
-	}
-}
-
 void Drops::lootItem(Player *player, ReadPacket *packet) {
 	packet->skipBytes(9);
 	int itemid = packet->getInt();
@@ -370,14 +362,4 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 	dropper.pos = player->getPos();
 	drop->setPos(player->getPos());
 	drop->doDrop(dropper);
-}
-
-void Drops::checkDrops(int mapid) {
-	int t = clock() - 60000;
-	hash_map <int, Drop *> drops = Maps::maps[mapid]->getDrops();
-	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-		if (iter->second != 0)
-			if (iter->second->getDropped() < t)
-				iter->second->removeDrop();
-	}
 }

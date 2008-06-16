@@ -258,11 +258,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			player->setNPC(0);
 		}
 		else if (strcmp(command, "killall") == 0) {
-			hash_map <int, Mob *> mobs = Maps::maps[player->getMap()]->getMobs();
-			for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loop causes problems
-				if (iter->second != 0)
-					Mobs::dieMob(player, iter->second);
-			}
+			Maps::maps[player->getMap()]->killMobs(player);
 		}
 		else if (strcmp(command, "horntail") == 0) {
 			Mobs::spawnMob(player, 8810002);
@@ -284,11 +280,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			player->inv->setMesos(mesos);
 		}
 		else if (strcmp(command, "cleardrops") == 0) {
-			hash_map <int, Drop *> drops = Maps::maps[player->getMap()]->getDrops();
-			for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-				if (iter->second != 0) // Check just in case drop is removed by timer
-					iter->second->removeDrop();
-			}
+			Maps::maps[player->getMap()]->clearDrops();
 		}
 		else if (strcmp(command, "save") == 0) {
 			player->save();

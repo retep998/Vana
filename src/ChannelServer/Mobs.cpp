@@ -100,42 +100,23 @@ void Mobs::checkSpawn(int mapid) {
 		int i = respawns[mapid].front();
 		respawns[mapid].pop();
 		Mob *mob = new Mob(mapid, info[mapid][i].id, info[mapid][i].pos, i, info[mapid][i].fh);
-		MobsPacket::spawnMob(Maps::maps[mapid]->getPlayers(), mob);
-		updateSpawn(mapid, mob);
 	}
 }
 
-void Mobs::showMobs(Player *player) {
-	updateSpawn(player->getMap());
-	hash_map <int, Mob *> mobs = Maps::maps[player->getMap()]->getMobs();
-	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-		if (iter->second != 0)
-			MobsPacket::showMob(player, iter->second);
-	}
-}
-
-void Mobs::updateSpawn(int mapid) {
-	hash_map <int, Mob *> mobs = Maps::maps[mapid]->getMobs();
-	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-		if (iter->second != 0)
-			updateSpawn(mapid, iter->second);
-	}
-}
-
-void Mobs::updateSpawn(int mapid, Mob *mob) {
-	if (Maps::maps[mapid]->getNumPlayers()> 0 && mob->getControl() == 0) {
-		int maxpos = mob->getPos() - Maps::maps[mapid]->getPlayer(0)->getPos();
+void Mobs::updateSpawn(vector <Player *> players, Mob *mob) {
+	if (players.size() > 0 && mob->getControl() == 0) {
+		int maxpos = mob->getPos() - players[0]->getPos();
 		int player = 0;
-		for (size_t j = 0; j < Maps::maps[mapid]->getNumPlayers(); j++) {
-			int curpos = mob->getPos() - Maps::maps[mapid]->getPlayer(j)->getPos();
+		for (size_t j = 0; j < players.size(); j++) {
+			int curpos = mob->getPos() - players[j]->getPos();
 			if (curpos < maxpos) {
 				maxpos = curpos;
 				player = j;
 			}
 		}
-		mob->setControl(Maps::maps[mapid]->getPlayer(player));
+		mob->setControl(players[player]);
 	}
-	else if (Maps::maps[mapid]->getNumPlayers() == 0) {
+	else if (players.size() == 0) {
 		mob->setControl(0);
 	}
 }
@@ -446,8 +427,6 @@ void Mobs::spawnMobPos(int mapid, int mobid, int x, int y) {
 	mobpos.x = x;
 	mobpos.y = y;
 	Mob *mob = new Mob(mapid, mobid, mobpos);
-	MobsPacket::spawnMob(Maps::maps[mapid]->getPlayers(), mob);
-	updateSpawn(mapid, mob);
 }
 
 void Mobs::displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob) {

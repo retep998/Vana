@@ -176,9 +176,7 @@ namespace Drops {
 	void dropMesos(Player *player, ReadPacket *packet);
 	void lootItem(Player *player, ReadPacket *packet);
 	void dropMob(Player *player, Mob *mob);
-	void showDrops(Player *player);
 	Pos findFloor(Pos pos, int map);
-	void checkDrops(int mapid);
 };
 
 class Drop {

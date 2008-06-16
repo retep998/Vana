@@ -59,7 +59,6 @@ namespace Reactors {
 	void addEventInfo(int id, ReactorEventInfo revent);
 	void setMaxstates(int id, short state);
 	void loadReactors(int mapid);
-	void showReactors(Player *player);
 	void hitReactor(Player *player, ReadPacket *packet);
 	void checkDrop(Player *player, Drop *drop);
 	void checkLoot(Drop *drop);
