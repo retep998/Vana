@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 
 struct Pos {
-	Pos (short x, short y) : x(x), y(y) { }
-	Pos () : x(0), y(0) { }
+	Pos(short x, short y) : x(x), y(y) { }
+	Pos() : x(0), y(0) { }
 	short x;
 	short y;
 	int operator-(const Pos &p) {
