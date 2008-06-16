@@ -88,8 +88,8 @@ public:
 	int getMapID() {
 		return this->mapid;
 	}
-	Pos * getPos() {
-		return &this->pos;
+	Pos getPos() {
+		return this->pos;
 	}
 	void setState(char state, bool is);
 	char getState() {

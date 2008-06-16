@@ -30,17 +30,15 @@ void DropsPacket::drop(vector <Player*> players, Drop *drop, Dropped dropper) {
 	packet.addInt(drop->getObjectID());
 	packet.addInt(dropper.id);
 	packet.addByte(0);
-	packet.addShort(drop->getPos().x);
-	packet.addShort(drop->getPos().y);
-	packet.addInt(0); //Time till
-	packet.addShort(dropper.pos.x);
-	packet.addShort(dropper.pos.y);
+	packet.addPos(drop->getPos());
+	packet.addInt(drop->getTime() - clock()); // Time till
+	packet.addPos(dropper.pos);
 	packet.addShort(0);
 	packet.addByte(0);
 	if (!drop->getMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
-	packet.sendTo<Player>(NULL, players, 1);
+	packet.sendTo<Player>(0, players, true);
 }
 
 void DropsPacket::dropForPlayer(Player *player, Drop *drop, Dropped dropper) {
@@ -52,11 +50,9 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Dropped dropper) {
 	packet.addInt(drop->getObjectID());
 	packet.addInt(dropper.id);
 	packet.addByte(0);
-	packet.addShort(drop->getPos().x);
-	packet.addShort(drop->getPos().y);
-	packet.addInt(0); //Time till
-	packet.addShort(dropper.pos.x);
-	packet.addShort(dropper.pos.y);
+	packet.addPos(drop->getPos());
+	packet.addInt(drop->getTime() - clock()); // Time till
+	packet.addPos(dropper.pos);
 	packet.addShort(0);
 	packet.addByte(0);
 	if (!drop->getMesos()) {
@@ -75,10 +71,9 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 	packet.addInt(drop->getID());
 	packet.addByte(drop->getMesos());
 	packet.addInt(drop->getObjectID());
-	packet.addInt(0); //TODO Dropper
+	packet.addInt(0); //TODO Dropper's Player ID
 	packet.addByte(0);
-	packet.addShort(drop->getPos().x);
-	packet.addShort(drop->getPos().y);
+	packet.addPos(drop->getPos());
 	packet.addInt(drop->getOwner());
 	packet.addByte(0);
 	if (!drop->getMesos()) {
@@ -91,7 +86,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(0);
-	if (id==0)
+	if (id == 0)
 		packet.addByte(-1);
 	else{
 		packet.addByte(ismesos);
@@ -116,7 +111,7 @@ void DropsPacket::takeDrop(Player *player, vector <Player*> players, Drop *drop)
 	packet.addInt(drop->getID());
 	packet.addInt(player->getPlayerid());
 	if (!drop->isQuest()) {
-		packet.sendTo<Player>(player, players, 1);
+		packet.sendTo<Player>(player, players, true);
 	}
 	else{
 		packet.send(player);
@@ -135,7 +130,7 @@ void DropsPacket::removeDrop(vector <Player*> players, Drop *drop) {
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(0);
 	packet.addInt(drop->getID());
-	packet.sendTo<Player>(NULL, players, 1);
+	packet.sendTo<Player>(0, players, true);
 }
 
 void DropsPacket::explodeDrop(vector <Player*> players, Drop *drop) {
@@ -144,5 +139,5 @@ void DropsPacket::explodeDrop(vector <Player*> players, Drop *drop) {
 	packet.addByte(4);
 	packet.addInt(drop->getID());
 	packet.addShort(655);
-	packet.sendTo<Player>(NULL, players, 1);
+	packet.sendTo<Player>(0, players, true);
 }

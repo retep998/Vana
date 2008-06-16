@@ -682,8 +682,7 @@ void Initializing::initializeMaps() {
 		strcpy_s(portal.to, portalRow[3]);
 		portal.toid = atoi(portalRow[4]);
 		portal.type = atoi(portalRow[5]);
-		portal.x = atoi(portalRow[6]);
-		portal.y = atoi(portalRow[7]);
+		portal.pos = Pos(atoi(portalRow[6]), atoi(portalRow[7]));
 		strcpy_s(portal.script, portalRow[8]);
 		Maps::maps[atoi(portalRow[0])]->addPortal(portal);
 	}

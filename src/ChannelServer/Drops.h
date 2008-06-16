@@ -39,7 +39,7 @@ struct Dropped {
 
 struct DropInfo {
 	char slots;
-	short scrolls;
+	char scrolls;
 	char type;
 	short istr;
 	short idex;

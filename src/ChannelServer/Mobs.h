@@ -75,9 +75,9 @@ namespace Mobs {
 	void displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob);
 	void monsterControl(Player *player, ReadPacket *packet);
 	void checkSpawn(int mapid);
-	void spawnMob(Player *player, int mobid, int amount=1);
+	void spawnMob(Player *player, int mobid, int amount = 1);
+	void spawnMobPos(int mapid, int mobid, Pos pos);
 	void dieMob(Player *player, Mob *mob);
-	void spawnMobPos(int mapid, int mobid, int x, int y);
 };
 
 class Mob {

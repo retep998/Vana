@@ -158,7 +158,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		equip->id = res[i][2];
 		equip->type = (unsigned char) res[i][3];
 		equip->slots = (unsigned char) res[i][4];
-		equip->scrolls = res[i][5];
+		equip->scrolls = (unsigned char) res[i][5];
 		equip->istr = res[i][6];
 		equip->idex = res[i][7];
 		equip->iint = res[i][8];
@@ -216,8 +216,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		ServerPacket::changeScrollingHeader(ChannelServer::Instance()->getScrollingHeader());
 	}
 
-	pos.x = Maps::maps[map]->getPortalByID(0)->x;
-	pos.y = Maps::maps[map]->getPortalByID(0)->y;
+	pos = Maps::maps[map]->getPortalByID(0)->pos;
 
 	type = 0;
 	PlayerPacket::showKeys(this, &keyMaps);
@@ -345,14 +344,14 @@ void Player::setSkin(char id) {
 bool Player::addWarning() {
 	int t = clock();
 	// Deleting old warnings
-	for (unsigned int i=0; i<warnings.size(); i++) {
+	for (unsigned int i = 0; i < warnings.size(); i++) {
 		if (warnings[i] + 300000 < t) {
 			warnings.erase(warnings.begin()+i);
 			i--;
 		}
 	}
 	warnings.push_back(t);
-	if (warnings.size()>50) {
+	if (warnings.size() > 50) {
 		// Hacker - Temp DCing
 		disconnect();
 		return true;
@@ -364,7 +363,7 @@ void Player::saveSkills() {
 	mysqlpp::Query query = db.query();
 
 	bool firstrun = true;
-	for (int i=0; i<skills->getSkillsNum(); i++) {
+	for (int i = 0; i < skills->getSkillsNum(); i++) {
 		if (firstrun) {
 			query << "REPLACE INTO skills VALUES (" << mysqlpp::quote << getPlayerid() << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
 			firstrun = false;
@@ -423,7 +422,7 @@ void Player::saveEquips() {
 				<< mysqlpp::quote << inv->getEquip(i)->id << ","
 				<< mysqlpp::quote << (short) Drops::equips[inv->getEquip(i)->id].type << ","
 				<< mysqlpp::quote << (short) inv->getEquip(i)->slots << ","
-				<< mysqlpp::quote << inv->getEquip(i)->scrolls << ","
+				<< mysqlpp::quote << (short) inv->getEquip(i)->scrolls << ","
 				<< mysqlpp::quote << inv->getEquip(i)->istr << ","
 				<< mysqlpp::quote << inv->getEquip(i)->idex << ","
 				<< mysqlpp::quote << inv->getEquip(i)->iint << ","

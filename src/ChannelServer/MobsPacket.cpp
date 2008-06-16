@@ -31,8 +31,7 @@ void MobsPacket::controlMob(Player *player, Mob *mob) {
 	packet.addByte(1);
 	packet.addInt(mob->getMobID());
 	packet.addInt(0);
-	packet.addShort(mob->getPos().x);
-	packet.addShort(mob->getPos().y-1);
+	packet.addPos(mob->getPos());
 	packet.addByte(mob->getType());
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
@@ -54,8 +53,7 @@ void MobsPacket::spawnMob(vector <Player*> players, Mob *mob) {
 	packet.addByte(1);
 	packet.addInt(mob->getMobID());
 	packet.addInt(0);
-	packet.addShort(mob->getPos().x);
-	packet.addShort(mob->getPos().y-1);
+	packet.addPos(mob->getPos());
 	packet.addByte(mob->getType());
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
@@ -70,8 +68,7 @@ void MobsPacket::showMob(Player *player, Mob *mob) {
 	packet.addByte(1);
 	packet.addInt(mob->getMobID());
 	packet.addInt(0);
-	packet.addShort(mob->getPos().x);
-	packet.addShort(mob->getPos().y-1);
+	packet.addPos(mob->getPos());
 	packet.addByte(mob->getType());
 	packet.addShort(0);
 	packet.addShort(mob->getFH());

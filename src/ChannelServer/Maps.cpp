@@ -258,7 +258,7 @@ void Maps::moveMapS(Player *player, ReadPacket *packet) { // Move to map special
 	changeMap(player, portal->toid, tonum);
 }
 
-void Maps::changeMap(Player *player, int mapid, int pos) {
+void Maps::changeMap(Player *player, int mapid, int portalid) {
 	if (mapid == 999999999) {
 		PlayerPacket::showMessage(player, "This portal is currently unavailable.", 5);
 		MapPacket::portalBlocked(player);
@@ -270,22 +270,17 @@ void Maps::changeMap(Player *player, int mapid, int pos) {
 	}
 	maps[player->getMap()]->removePlayer(player);
 	player->setMap(mapid);
-	player->setMappos(pos);
+	player->setMappos(portalid);
 	player->setType(0);
-	Pos cpos;
-	if ((unsigned int)pos < maps[mapid]->getNumPortals()) {
-		cpos.x = maps[mapid]->getPortalByID(pos)->x;
-		cpos.y = maps[mapid]->getPortalByID(pos)->y;
+
+	Pos pos;
+	if ((unsigned int)portalid < maps[mapid]->getNumPortals()) {
+		pos = maps[mapid]->getPortalByID(portalid)->pos;
 	}
 	else if (maps[mapid]->getNumPortals() > 0) {
-		cpos.x = maps[mapid]->getPortalByID(0)->x;
-		cpos.y = maps[mapid]->getPortalByID(0)->y;
+		pos = maps[mapid]->getPortalByID(0)->pos;
 	}
-	else {
-		cpos.x = 0;
-		cpos.y = 0;
-	}
-	player->setPos(cpos);
+	player->setPos(pos);
 	MapPacket::changeMap(player);
 	newMap(player, mapid);
 }
