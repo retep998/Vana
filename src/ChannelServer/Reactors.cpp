@@ -144,12 +144,6 @@ void Reactors::loadReactors(int mapid) {
 	}
 }
 
-void Reactors::showReactors(Player *player) {
-	for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumReactors(); i++) {
-		ReactorPacket::showReactor(player, Maps::maps[player->getMap()]->getReactor(i));
-	}
-}
-
 void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 	int id = packet->getInt() - 200;
 

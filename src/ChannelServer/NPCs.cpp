@@ -34,11 +34,6 @@ void NPCs::addNPC(int id, NPCInfo npc) {
 	Maps::maps[id]->addNPC(npc);
 }
 
-void NPCs::showNPCs(Player *player) {
-	for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getNpcs().size(); i++)
-		NPCPacket::showNPC(player, Maps::maps[player->getMap()]->getNpc(i), i);
-}
-
 void NPCs::handleNPC(Player *player, ReadPacket *packet) {
 	if (player->getNPC() != 0)
 		return;

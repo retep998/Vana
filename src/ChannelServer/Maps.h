@@ -61,7 +61,6 @@ namespace Maps {
 	extern hash_map <int, Map *> maps;
 	void startTimer();
 	void addMap(int id);
-	void addPlayer(Player *player);
 	void moveMap(Player *player, ReadPacket *packet);
 	void moveMapS(Player *player, ReadPacket *packet);
 	void changeMap(Player *player, int mapid, int pos);
@@ -99,11 +98,15 @@ public:
 		return portals.size();
 	}
 	// Players
-	void addPlayer(Player *player) {
-		this->players.push_back(player);
-	}
+	void addPlayer(Player *player);
 	vector <Player *> getPlayers() {
 		return this->players;
+	}
+	size_t getNumPlayers() {
+		return this->players.size();
+	}
+	Player * getPlayer(unsigned int i) {
+		return this->players[i];
 	}
 	void removePlayer(Player *player);
 	// NPCs
@@ -113,21 +116,18 @@ public:
 	NPCInfo getNpc(int id) {
 		return this->npcs[id];
 	}
-	vector <NPCInfo> getNpcs() {
-		return this->npcs;
-	}
 	// Mobs
 	void addMob(Mob *mob);
+	void updateMobControl();
 	Mob * getMob(int id) {
 		if (this->mobs.find(id) != mobs.end())
 			return this->mobs[id];
 		else
 			return 0;
 	}
-	hash_map <int, Mob *> getMobs() {
-		return this->mobs;
-	}
 	void removeMob(Mob *mob);
+	void killMobs(Player *player);
+	void killMobs(Player *player, int mobid);
 	// Reactors
 	void addReactor(Reactor *reactor);
 	Reactor * getReactor(int id) {
@@ -147,10 +147,11 @@ public:
 		else
 			return 0;
 	}
-	hash_map <int, Drop *> getDrops() {
-		return this->drops;
-	}
 	void removeDrop(Drop *drop);
+	void clearDrops();
+	void clearDrops(int clock);
+	// Show all map objects
+	void showObjects(Player *player);
 private:
 	MapInfo info;
 	PortalsInfo portals;

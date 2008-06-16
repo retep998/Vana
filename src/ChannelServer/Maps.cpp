@@ -21,8 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "PlayersPacket.h"
 #include "NPCs.h"
+#include "NPCPacket.h"
 #include "Reactors.h"
+#include "ReactorPacket.h"
 #include "Mobs.h"
+#include "MobsPacket.h"
 #include "Drops.h"
 #include "Timer.h"
 #include "LuaPortal.h"
@@ -70,8 +73,16 @@ hash_map <int,int> MapTimer::timers;
 hash_map <int,int> MapTimer::ctimer;
 MapTimer * MapTimer::singleton = 0;
 
-// Map class
+/** Map class **/
 Map::Map () : mobids(new LoopingId(100)), dropids(new LoopingId(100)) { }
+
+void Map::addPlayer(Player *player) {
+	this->players.push_back(player);
+	if (player->getMap() == 1 || player->getMap() == 2)
+		MapPacket::makeApple(player);
+	if (player->skills->getActiveSkillLevel(5101004) == 0)
+		MapPacket::showPlayer(player, this->players);
+}
 
 void Map::removePlayer(Player *player) {
 	for (size_t i = 0; i < this->players.size(); i++) {
@@ -80,8 +91,8 @@ void Map::removePlayer(Player *player) {
 			break;
 		}
 	}
-	MapPacket::removePlayer(player, this->getPlayers());
-	Mobs::updateSpawn(player->getMap());
+	MapPacket::removePlayer(player, this->players);
+	updateMobControl();
 }
 
 void Map::addReactor(Reactor *reactor) {
@@ -93,10 +104,36 @@ void Map::addMob(Mob *mob) {
 	int id = this->mobids->next();
 	this->mobs[id] = mob;
 	mob->setID(id);
+	MobsPacket::spawnMob(this->players, mob);
+	Mobs::updateSpawn(this->players, mob);
+}
+
+void Map::updateMobControl() {
+	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+		if (iter->second != 0)
+			Mobs::updateSpawn(this->players, iter->second);
+	}
 }
 
 void Map::removeMob(Mob *mob) {
 	this->mobs.erase(mob->getID());
+}
+
+void Map::killMobs(Player *player) {
+	hash_map <int, Mob *> mobs = this->mobs;
+	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
+		if (iter->second != 0)
+			Mobs::dieMob(player, iter->second);
+	}
+}
+
+void Map::killMobs(Player *player, int mobid) {
+	hash_map <int, Mob *> mobs = this->mobs;
+	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+		if (iter->second != 0)
+			if (iter->second->getMobID() == mobid)
+				Mobs::dieMob(player, iter->second);
+	}
 }
 
 void Map::addDrop(Drop *drop) {
@@ -109,18 +146,53 @@ void Map::removeDrop(Drop *drop) {
 	this->drops.erase(drop->getID());
 }
 
-// Maps namespace
-void Maps::addMap(int id) {
-	maps[id] = new Map();
+void Map::clearDrops() { // Clear all drops
+	hash_map <int, Drop *> drops = this->drops;
+	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+		if (iter->second != 0) // Check just in case drop is removed by timer
+			iter->second->removeDrop();
+	}
 }
 
-void Maps::addPlayer(Player *player) {
-	if (player->getMap() == 1 || player->getMap() == 2)
-		MapPacket::makeApple(player);
-	maps[player->getMap()]->addPlayer(player);
-	MapPacket::showPlayers(player, maps[player->getMap()]->getPlayers());
-	if (player->skills->getActiveSkillLevel(5101004) == 0)
-		MapPacket::showPlayer(player, maps[player->getMap()]->getPlayers());
+void Map::clearDrops(int clock) { // Clear drops based on how long they have been in the map
+	clock -= 60000;
+	hash_map <int, Drop *> drops = this->drops;
+	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+		if (iter->second != 0)
+			if (iter->second->getDropped() < clock)
+				iter->second->removeDrop();
+	}
+}
+
+void Map::showObjects(Player *player) { // Show all Map Objects
+	// Players
+	MapPacket::showPlayers(player, this->players);
+	// NPCs
+	for (size_t i = 0; i < npcs.size(); i++) {
+		NPCPacket::showNPC(player, npcs[i], i);
+	}
+	// Reactors
+	for (size_t i = 0; i < reactors.size(); i++) {
+		ReactorPacket::showReactor(player, reactors[i]);
+	}
+	// Mobs
+	updateMobControl();
+	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+		if (iter->second != 0)
+			MobsPacket::showMob(player, iter->second);
+	}
+	// Drops
+	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+		if (iter->second != 0)
+			iter->second->showDrop(player);
+	}
+	if (this->info.clock)
+		Maps::showClock(player);
+}
+
+/** Maps namespace **/
+void Maps::addMap(int id) {
+	maps[id] = new Map();
 }
 
 void Maps::moveMap(Player *player, ReadPacket *packet) {
@@ -205,18 +277,13 @@ void Maps::showClock(Player *player) {
 
 void Maps::mapTimer(int mapid) {
 	Mobs::checkSpawn(mapid);
-	Drops::checkDrops(mapid);
+	maps[mapid]->clearDrops(clock());
 }
 
 void Maps::newMap(Player *player, int mapid) {
 	Players::addPlayer(player);
-	NPCs::showNPCs(player);
-	Reactors::showReactors(player);
-	addPlayer(player);
-	Mobs::showMobs(player);
-	Drops::showDrops(player);
-	if (maps[mapid]->getInfo().clock)
-		showClock(player);
+	maps[mapid]->addPlayer(player);
+	maps[mapid]->showObjects(player);
 	MapTimer::Instance()->setMapTimer(player->getMap());
 }
 // Change Music

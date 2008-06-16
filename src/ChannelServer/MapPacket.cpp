@@ -117,7 +117,7 @@ void MapPacket::removePlayer(Player *player, vector <Player*> players) {
 }
 
 void MapPacket::showPlayers(Player *player, vector <Player*> players) {
-	for (unsigned int i=0; i<players.size(); i++) {
+	for (unsigned int i = 0; i < players.size(); i++) {
 		if (player->getPlayerid() != players[i]->getPlayerid() && players[i]->skills->getActiveSkillLevel(5101004) == 0) {
 			Packet packet = playerPacket(players[i]);
 			packet.send(player);
