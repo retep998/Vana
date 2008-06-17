@@ -76,6 +76,7 @@ MapTimer * MapTimer::singleton = 0;
 /** Map class **/
 Map::Map (int mapid) : mapid(mapid), mobids(new LoopingId(100)), dropids(new LoopingId(100)) { }
 
+// Players
 void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
 	if (player->getMap() == 1 || player->getMap() == 2)
@@ -98,6 +99,40 @@ void Map::removePlayer(Player *player) {
 void Map::addReactor(Reactor *reactor) {
 	this->reactors.push_back(reactor);
 	reactor->setID(this->reactors.size() - 1 + 200);
+}
+
+// Footholds
+Pos Map::findFloor(Pos pos) {
+	short x = pos.x;
+	short y = pos.y - 100;
+	bool first = true;
+	short maxy = pos.y;
+	unsigned int fh = 0;
+	for (size_t i = 0; i < footholds.size(); i++) {
+		if ((x > footholds[i].pos1.x && x < footholds[i].pos2.x) || (x > footholds[i].pos2.x && x < footholds[i].pos1.x)) {
+			if (first) {
+				maxy = (short) ( (float)( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
+				if (maxy >= y) {
+					fh = i;
+					first = false;
+				}
+			}
+			else {
+				short cmax = (short) ( (float)( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
+				if (cmax < maxy && cmax >= y) {
+					fh = i;
+					maxy = cmax;
+				}
+			}
+		}
+	}
+	if (footholds[fh].pos1.x == footholds[fh].pos1.x) { // Walls
+		if (footholds[fh].next == 0 && x > footholds[fh].pos1.x)
+			x = footholds[fh].pos1.x;
+		else if (footholds[fh].prev == 0 && x < footholds[fh].pos1.x)
+			x = footholds[fh].pos1.x;
+	}
+	return Pos(x, maxy);
 }
 
 // Mobs

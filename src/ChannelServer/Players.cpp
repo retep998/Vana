@@ -48,9 +48,10 @@ void Players::handleMoving(Player *player, ReadPacket *packet) {
 	char type = packet->getByte();
 
 	packet->reset(-4);
-	Pos cpos(packet->getShort(), packet->getShort());
+	short x = packet->getShort();
+	short y = packet->getShort();
 
-	player->setPos(cpos);
+	player->setPos(Pos(x, y));
 	player->setType(type);
 
 	packet->reset(7);
@@ -411,7 +412,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 
 void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); // Ticks
-	unsigned char type = packet->getByte(); // 0xFF = bump, 0xFE = fall/map damage, 0x00-0x0* = mob skill ID
+	unsigned char type = packet->getByte(); // -1 = bump, -2 = fall/map damage, 0x00-0x0* = mob skill ID
 	int damage = packet->getInt();
 	int mobid = packet->getInt(); // Actual Mob ID - i.e. 8800000 for Zak
 	int mapmobid = packet->getInt(); // Map Mob ID
@@ -433,7 +434,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1); // Stance
 	unsigned char hit = packet->getByte();
 	int fake = 0;
-	if (damage == -1) { // 0 damage = regular miss, this = Fake
+	if (damage == -1) { // 0 damage = regular miss, -1 = Fake
 		short job = player->getJob() / 10 - 40;
 		fake = 4020002 + (job * 100000);
 		if (player->skills->getSkillLevel(fake) < 0) {
@@ -513,7 +514,7 @@ void Players::commandHandler(Player *player, ReadPacket *packet) {
 	}
 
 	hash_map<int, Player*>::iterator iter = Players::players.begin();
-	for ( iter = Players::players.begin(); iter != Players::players.end(); iter++) {
+	for (iter = Players::players.begin(); iter != Players::players.end(); iter++) {
 		if (_stricmp(iter->second->getName(), name.c_str()) == 0) {	
 			if (type == 0x06) {
 				PlayersPacket::whisperPlayer(iter->second, player->getName(), ChannelServer::Instance()->getChannel(), chat);

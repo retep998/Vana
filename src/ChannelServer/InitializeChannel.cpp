@@ -644,7 +644,6 @@ void Initializing::initializeMaps() {
 		//    3 : Mob Spawn Rate
 		//    4 : Clock
 		//    5 : Ship Interval
-
 		int mapid = atoi(mapRow[0]);
 		Maps::addMap(mapid);
 		MapInfo map;
@@ -675,7 +674,6 @@ void Initializing::initializeMaps() {
 		//    6 : x
 		//    7 : y
 		//    8 : Script
-
 		PortalInfo portal;
 		portal.id = atoi(portalRow[1]);
 		strcpy_s(portal.from, portalRow[2]);
@@ -688,7 +686,7 @@ void Initializing::initializeMaps() {
 	}
 
 	// NPCs
-	query << "SELECT * FROM mapnpcdata ORDER BY mapid ASC";
+	query << "SELECT mapid, npcid, x, cy, fh, rx0, rx1 FROM mapnpcdata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << db.error() << std::endl;
@@ -697,27 +695,25 @@ void Initializing::initializeMaps() {
 
 	MYSQL_ROW npcRow;
 	while ((npcRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Map ID
-		//    2 : NPC ID
-		//    3 : x
-		//    4 : cy
-		//    5 : fh
-		//    6 : rx0
-		//    7 : rx1
-
+		//    0 : Map ID
+		//    1 : NPC ID
+		//    2 : x
+		//    3 : cy
+		//    4 : fh
+		//    5 : rx0
+		//    6 : rx1
 		NPCInfo npc;
-		npc.id = atoi(npcRow[2]);
-		npc.x = atoi(npcRow[3]);
-		npc.cy = atoi(npcRow[4]);
-		npc.fh = atoi(npcRow[5]);
-		npc.rx0 = atoi(npcRow[6]);
-		npc.rx1 = atoi(npcRow[7]);
-		NPCs::addNPC(atoi(npcRow[1]), npc);
+		npc.id = atoi(npcRow[1]);
+		npc.x = atoi(npcRow[2]);
+		npc.cy = atoi(npcRow[3]);
+		npc.fh = atoi(npcRow[4]);
+		npc.rx0 = atoi(npcRow[5]);
+		npc.rx1 = atoi(npcRow[6]);
+		Maps::maps[atoi(npcRow[0])]->addNPC(npc);
 	}
 
 	// Mobs
-	query << "SELECT * FROM mapmobdata ORDER BY mapid ASC";
+	query << "SELECT mapid, mobid, x, cy, fh FROM mapmobdata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << db.error() << std::endl;
@@ -726,22 +722,20 @@ void Initializing::initializeMaps() {
 
 	MYSQL_ROW mobRow;
 	while ((mobRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Map ID
-		//    2 : Mob ID
-		//    3 : x
-		//    4 : cy
-		//    5 : fh
-
+		//    0 : Map ID
+		//    1 : Mob ID
+		//    2 : x
+		//    3 : cy
+		//    4 : fh
 		SpawnInfo spawn;
-		spawn.id = atoi(mobRow[2]);
-		spawn.pos = Pos(atoi(mobRow[3]), atoi(mobRow[4]));
-		spawn.fh = atoi(mobRow[5]);
-		Mobs::addSpawn(atoi(mobRow[1]), spawn);
+		spawn.id = atoi(mobRow[1]);
+		spawn.pos = Pos(atoi(mobRow[2]), atoi(mobRow[3]));
+		spawn.fh = atoi(mobRow[4]);
+		Mobs::addSpawn(atoi(mobRow[0]), spawn);
 	}
 
 	// Reactors
-	query << "SELECT * FROM mapreactordata ORDER BY mapid ASC";
+	query << "SELECT mapid, reactorid, x, y FROM mapreactordata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << db.error() << std::endl;
@@ -750,20 +744,18 @@ void Initializing::initializeMaps() {
 
 	MYSQL_ROW reactorRow;
 	while ((reactorRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Map ID
-		//    2 : Reactor ID
-		//    3 : x
-		//    4 : y
-
+		//    0 : Map ID
+		//    1 : Reactor ID
+		//    2 : x
+		//    3 : y
 		ReactorSpawnInfo reactor;
-		reactor.id = atoi(reactorRow[2]);
-		reactor.pos = Pos(atoi(reactorRow[3]), atoi(reactorRow[4]));
-		Reactors::addSpawn(atoi(reactorRow[1]), reactor);
+		reactor.id = atoi(reactorRow[1]);
+		reactor.pos = Pos(atoi(reactorRow[2]), atoi(reactorRow[3]));
+		Reactors::addSpawn(atoi(reactorRow[0]), reactor);
 	}
 
 	// Footholds
-	query << "SELECT * FROM mapfootholddata ORDER BY mapid ASC";
+	query << "SELECT mapid, x1, y1, x2, y2, prev, next FROM mapfootholddata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << db.error() << std::endl;
@@ -772,18 +764,19 @@ void Initializing::initializeMaps() {
 
 	MYSQL_ROW footsRow;
 	while ((footsRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Map ID
-		//    2 : x1
+		//    0 : Map ID
+		//    1 : x1
+		//    2 : y1
 		//    3 : x2
-		//    4 : y1
-		//    5 : y2
+		//    4 : y2
+		//    5 : Previous
+		//    6 : Next
 		FootholdInfo foot;
-		foot.x1 = atoi(footsRow[2]);
-		foot.x2 = atoi(footsRow[3]);
-		foot.y1 = atoi(footsRow[4]);
-		foot.y2 = atoi(footsRow[5]);
-		Drops::addFoothold(atoi(footsRow[1]), foot);
+		foot.pos1 = Pos(atoi(footsRow[1]), atoi(footsRow[2]));
+		foot.pos2 = Pos(atoi(footsRow[3]), atoi(footsRow[4]));
+		foot.prev = atoi(footsRow[5]);
+		foot.next = atoi(footsRow[6]);
+		Maps::maps[atoi(footsRow[0])]->addFoothold(foot);
 	}
 	std::cout << "DONE" << std::endl;
 }

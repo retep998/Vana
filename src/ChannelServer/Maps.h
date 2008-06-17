@@ -37,6 +37,14 @@ class Reactor;
 class Drop;
 class LoopingId;
 
+struct FootholdInfo {
+	Pos pos1;
+	Pos pos2;
+	int prev;
+	int next;
+};
+typedef vector<FootholdInfo> FootholdsInfo;
+
 struct PortalInfo {
 	int id;
 	char from[20];
@@ -80,6 +88,12 @@ public:
 	MapInfo getInfo() {
 		return this->info;
 	}
+
+	// Footholds
+	void addFoothold(FootholdInfo foothold) {
+		footholds.push_back(foothold);
+	}
+	Pos findFloor(Pos pos);
 
 	// Portals
 	void addPortal(PortalInfo portal) {
@@ -160,13 +174,14 @@ public:
 private:
 	int mapid;
 	MapInfo info;
+	FootholdsInfo footholds;
 	PortalsInfo portals;
 	vector <Player *> players;
 	vector <NPCInfo> npcs;
 	vector <Reactor *> reactors;
-	hash_map <int, Mob *> mobs;
+	hash_map<int, Mob *> mobs;
 	scoped_ptr<LoopingId> mobids;
-	hash_map <int, Drop *> drops;
+	hash_map<int, Drop *> drops;
 	scoped_ptr<LoopingId> dropids;
 
 	void updateMobControl();
