@@ -305,7 +305,7 @@ void Inventory::addItem(Player *player, Item *item, bool is) {
 				Item *olditem = player->inv->getItem(i);
 				if (item->amount + olditem->amount > Drops::items[item->id].maxslot) {
 					int amount = Drops::items[item->id].maxslot-olditem->amount;
-					item->amount-=amount;
+					item->amount -= amount;
 					olditem->amount = Drops::items[item->id].maxslot;
 					InventoryPacket::addItem(player, olditem, is);
 				}

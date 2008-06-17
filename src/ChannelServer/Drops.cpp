@@ -36,15 +36,15 @@ hash_map <int, ItemInfo> Drops::items;
 hash_map <int, ConsumeInfo> Drops::consumes;
 
 // Drop class
-Drop::Drop (int mapid, int mesos, Pos pos, int ownerid) : mapid(mapid), id(0), pos(pos), ismesos(true), isequip(false), mesos(mesos), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, int mesos, Pos pos, int ownerid) : mapid(mapid), pos(pos), ismesos(true), isequip(false), mesos(mesos), questid(0), dropped(0), playerid(0) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
-Drop::Drop (int mapid, Equip equip, Pos pos, int ownerid) : mapid(mapid), id(0), pos(pos), ismesos(false), isequip(true), equip(equip), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, Equip equip, Pos pos, int ownerid) : mapid(mapid), pos(pos), ismesos(false), isequip(true), equip(equip), questid(0), dropped(0), playerid(0) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
-Drop::Drop (int mapid, Item item, Pos pos, int ownerid) : mapid(mapid), id(0), pos(pos), ismesos(false), isequip(false), item(item), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, Item item, Pos pos, int ownerid) : mapid(mapid), pos(pos), ismesos(false), isequip(false), item(item), questid(0), dropped(0), playerid(0) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
