@@ -131,7 +131,6 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			dropper.pos = drop->getPos();
 			drop->doDrop(dropper);
 			player->inv->deleteEquip(num);
-			Reactors::checkDrop(player, drop);
 			return;
 		}
 		for (int i = 0; i < player->inv->getEquipNum(); i++) {
