@@ -115,7 +115,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			int num = 0;
 			for (int i = 0; i < player->inv->getEquipNum(); i++) { // Get Equips
 				Equip *currentequip = player->inv->getEquip(i);
-				if (equip->pos == slot2) {
+				if (equip->pos == slot1) {
 					equip = currentequip;
 					num = i;
 					break;
@@ -334,9 +334,9 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 			// hacking
 			return;
 		}
-		bool isequip=false;
+		bool isequip = false;
 		if (Drops::equips.find(item) != Drops::equips.end())
-			isequip = 1;
+			isequip = true;
 		if (isequip && player->inv->getMesos() < Shops::getPrice(player, item)) {
 			// hacking
 			return;
