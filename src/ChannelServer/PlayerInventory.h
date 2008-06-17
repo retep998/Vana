@@ -41,7 +41,7 @@ struct Equip {
 		iwdef = equip->iwdef;
 		imdef = equip->imdef;
 		iacc = equip->iacc;
-		iavo = equip->ihand;
+		iavo = equip->iavo;
 		ihand = equip->ihand;
 		ijump = equip->ijump;
 		ispeed = equip->ispeed;
@@ -69,7 +69,7 @@ struct Equip {
 };
 
 struct Item {
-	Item () : pos(0) {}
+	Item () : pos(0) { }
 	Item (Item *item) : pos(0) {
 		inv = item->inv;
 		id = item->id;
