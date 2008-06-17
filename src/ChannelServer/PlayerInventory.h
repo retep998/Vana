@@ -24,8 +24,30 @@ using namespace std;
 class Player;
 
 struct Equip {
-	int id;
+	Equip () : pos(0) { }
+	Equip (Equip *equip) : pos(0) {
+		id = equip->id;
+		slots = equip->slots;
+		scrolls = equip->scrolls;
+		type = equip->type;
+		istr = equip->istr;
+		idex = equip->idex;
+		iint = equip->iint;
+		iluk = equip->iluk;
+		ihp = equip->ihp;
+		imp = equip->imp;
+		iwatk = equip->iwatk;
+		imatk = equip->imatk;
+		iwdef = equip->iwdef;
+		imdef = equip->imdef;
+		iacc = equip->iacc;
+		iavo = equip->ihand;
+		ihand = equip->ihand;
+		ijump = equip->ijump;
+		ispeed = equip->ispeed;
+	}
 	short pos;
+	int id;
 	char slots;
 	char scrolls;
 	char type;
@@ -47,6 +69,12 @@ struct Equip {
 };
 
 struct Item {
+	Item () : pos(0) {}
+	Item (Item *item) : pos(0) {
+		inv = item->inv;
+		id = item->id;
+		amount = item->amount;
+	}
 	short pos;
 	char inv;
 	int id;
@@ -61,7 +89,7 @@ public:
 	int getMaxslots() {
 		return maxslots;
 	}
-	void setMesos(int mesos, bool is = 0);
+	void setMesos(int mesos, bool is = false);
 	void setMesosStart(int mesos) {
 		this->mesos = mesos;
 	}
@@ -74,11 +102,11 @@ public:
 	int getEquipNum() {
 		return equips.size();
 	}
-	int getEquipByPos(short pos) {
+	Equip * getEquipByPos(short pos) {
 		for (int i = 0; i < getEquipNum(); i++) { // Get Equips
 			Equip *equip = getEquip(i);
 			if (equip->pos == pos)
-				return equip->id;
+				return equip;
 		}
 		return 0;
 	}
@@ -134,10 +162,10 @@ public:
 		return amount;
 	}
 	int getItemAmountBySlot(int slot, char inv) {
-		int amount=0;
-		for (int i=0; i<getItemNum(); i++)
+		int amount = 0;
+		for (int i = 0; i < getItemNum(); i++)
 			if (getItem(i)->pos == slot && getItem(i)->inv == inv) {
-				amount=getItem(i)->amount;
+				amount = getItem(i)->amount;
 				break;
 			}
 		return amount;

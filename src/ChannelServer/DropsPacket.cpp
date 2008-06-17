@@ -26,16 +26,16 @@ void DropsPacket::drop(vector <Player*> players, Drop *drop, Dropped dropper) {
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getID());
-	packet.addByte(drop->getMesos());
+	packet.addByte(drop->isMesos());
 	packet.addInt(drop->getObjectID());
 	packet.addInt(dropper.id);
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
-	packet.addInt(0); // Time till
+	packet.addInt(0); // Owner
 	packet.addPos(dropper.pos);
 	packet.addShort(0);
 	packet.addByte(0);
-	if (!drop->getMesos()) {
+	if (!drop->isMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
 	packet.sendTo<Player>(0, players, true);
@@ -46,16 +46,16 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Dropped dropper) {
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getID());
-	packet.addByte(drop->getMesos());
+	packet.addByte(drop->isMesos());
 	packet.addInt(drop->getObjectID());
 	packet.addInt(dropper.id);
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
-	packet.addInt(0); // Time till
+	packet.addInt(0); // Owner
 	packet.addPos(dropper.pos);
 	packet.addShort(0);
 	packet.addByte(0);
-	if (!drop->getMesos()) {
+	if (!drop->isMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
 	packet.send(player);
@@ -64,19 +64,19 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Dropped dropper) {
 void DropsPacket::showDrop(Player *player, Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
-	if (drop->getPlayer() == player->getPlayerid())
+	if (drop->getOwner() == player->getPlayerid())
 		packet.addByte(1);
 	else
 		packet.addByte(2);
 	packet.addInt(drop->getID());
-	packet.addByte(drop->getMesos());
+	packet.addByte(drop->isMesos());
 	packet.addInt(drop->getObjectID());
-	packet.addInt(0); //TODO Owner ID
+	packet.addInt(drop->getOwner()); // TODO Owner ID
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
-	packet.addInt(drop->getOwner());
+	packet.addInt(0);
 	packet.addByte(0);
-	if (!drop->getMesos()) {
+	if (!drop->isMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
 	packet.send(player);
@@ -111,9 +111,9 @@ void DropsPacket::takeDrop(Player *player, vector <Player*> players, Drop *drop)
 	packet.addInt(drop->getID());
 	packet.addInt(player->getPlayerid());
 	if (!drop->isQuest()) {
-		packet.sendTo<Player>(player, players, true);
+		packet.sendTo(player, players, true);
 	}
-	else{
+	else {
 		packet.send(player);
 	}
 }

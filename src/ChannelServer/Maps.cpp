@@ -111,14 +111,14 @@ Pos Map::findFloor(Pos pos) {
 	for (size_t i = 0; i < footholds.size(); i++) {
 		if ((x > footholds[i].pos1.x && x < footholds[i].pos2.x) || (x > footholds[i].pos2.x && x < footholds[i].pos1.x)) {
 			if (first) {
-				maxy = (short) ( (float)( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
+				maxy = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
 				if (maxy >= y) {
 					fh = i;
 					first = false;
 				}
 			}
 			else {
-				short cmax = (short) ( (float)( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
+				short cmax = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
 				if (cmax < maxy && cmax >= y) {
 					fh = i;
 					maxy = cmax;
@@ -126,12 +126,10 @@ Pos Map::findFloor(Pos pos) {
 			}
 		}
 	}
-	if (footholds[fh].pos1.x == footholds[fh].pos1.x) { // Walls
-		if (footholds[fh].next == 0 && x > footholds[fh].pos1.x)
-			x = footholds[fh].pos1.x;
-		else if (footholds[fh].prev == 0 && x < footholds[fh].pos1.x)
-			x = footholds[fh].pos1.x;
-	}
+	if (x < footholds[fh].pos1.x)
+		x = footholds[fh].pos1.x;
+	else if (x > footholds[fh].pos2.x)
+		x = footholds[fh].pos2.x;
 	return Pos(x, maxy);
 }
 
@@ -196,12 +194,9 @@ void Map::killMobs(Player *player, int mobid) {
 // Drops
 void Map::addDrop(Drop *drop) {
 	int id = dropids->next();
-	this->drops[id] = drop;
 	drop->setID(id);
-}
-
-void Map::removeDrop(Drop *drop) {
-	this->drops.erase(drop->getID());
+	drop->setPos(findFloor(drop->getPos()));
+	this->drops[id] = drop;
 }
 
 void Map::clearDrops() { // Clear all drops

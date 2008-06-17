@@ -31,13 +31,13 @@ namespace Inventory {
 	void startTimer();
 	void stopTimerPlayer(Player *player);
 	extern int findSlot(Player *player, int itemid ,char inv, short amount);
-	extern int isCash(int itemid);
+	extern bool isCash(int itemid);
 	extern ItemTimer * timer;
 	extern Equip * setEquipStats(Player *player, int equipid);
 	void useShop(Player *player, ReadPacket *packet);
 	void itemMove(Player *player, ReadPacket *packet);
-	void addEquip(Player *player, Equip *equip, bool is=0);
-	void addItem(Player *player, Item *item, bool is=0);
+	void addEquip(Player *player, Equip *equip, bool is = false);
+	void addItem(Player *player, Item *item, bool is = false);
 	void addNewItem(Player *player, int item, int howmany);
 	void takeItem(Player *player, int item, int howmany);
 	void useItem(Player *player, ReadPacket *packet);

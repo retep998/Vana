@@ -31,31 +31,12 @@ class Player;
 class Mob;
 class ReadPacket;
 class Map;
+struct Equip;
+struct Item;
 
 struct Dropped {
 	int id;
 	Pos pos;
-};
-
-struct DropInfo {
-	char slots;
-	char scrolls;
-	char type;
-	short istr;
-	short idex;
-	short iint;
-	short iluk;
-	short ihp;
-	short imp;
-	short iwatk;
-	short imatk;
-	short iwdef;
-	short imdef;
-	short iacc;
-	short iavo;
-	short ihand;
-	short ijump;
-	short ispeed;
 };
 
 struct MobDropInfo {
@@ -170,45 +151,33 @@ namespace Drops {
 
 class Drop {
 private:
-	int id;
-	int objectid;
-	int owner;
 	int mapid;
-	short amount;
-	bool ismeso;
+	int id;
+	bool ismesos;
+	int mesos;
 	bool isequip;
+	Equip equip;
+	Item item;
+	int owner;
 	int time;
 	int questid;
-	bool quest;
-	int playerid;
 	int dropped;
+	int playerid;
 	Pos pos;
-	DropInfo info;
 public:
-	Drop (int mapid);
+	Drop (int mapid, int mesos, Pos pos, int ownerid);
+	Drop (int mapid, Equip equip, Pos pos, int ownerid);
+	Drop (int mapid, Item item, Pos pos, int ownerid);
 	void setID(int id) {
 		this->id = id;
 	}
 	int getID() {
 		return id;
 	}
-	void setObjectID(int objectid) {
-		this->objectid = objectid;
-	}
-	int getObjectID() {
-		return this->objectid;
-	}
-	void setIsQuest(bool is) {
-		quest = is;
-	}
-	void setPlayer(int playerid) {
-		this->playerid = playerid;
-	}
-	int getPlayer() {
-		return playerid;
-	}
+	int getObjectID();
+	int getAmount();
 	bool isQuest() {
-		return quest;
+		return questid > 0;
 	}
 	void setQuest(int questid) {
 		this->questid = questid;
@@ -222,32 +191,23 @@ public:
 	int getTime() {
 		return time;
 	}
-	void setOwner(int owner) {
-		this->owner = owner;
-	}
 	int getOwner() {
 		return owner;
 	}
 	int getMap() {
 		return mapid;
 	}
-	void setMesos(bool mesos) {
-		this->ismeso = mesos;
+	bool isMesos() {
+		return ismesos;
 	}
-	bool getMesos() {
-		return ismeso;
-	}
-	void setAmount(short amount) {
-		this->amount = amount;
-	}
-	short getAmount() {
-		return amount;
-	}
-	void setEquip(bool isequip) {
-		this->isequip = isequip;
-	}
-	bool getEquip() {
+	bool isEquip() {
 		return isequip;
+	}
+	Equip getEquip() {
+		return equip;
+	}
+	Item getItem() {
+		return item;
 	}
 	void setPos(Pos pos) {
 		this->pos = pos;
@@ -255,24 +215,19 @@ public:
 	Pos getPos() {
 		return pos;
 	}
-	void setDropInfo(DropInfo info) {
-		this->info = info;
-	}
-	DropInfo getDropInfo() {
-		return info;
-	}
 	void setDropped(int time) {
 		dropped = time;
 	}
 	int getDropped() {
 		return dropped;
 	}
+	void setPlayer(int playerid) {
+		playerid = playerid;
+	}
 	void doDrop(Dropped dropped);
 	void showDrop(Player *player);
 	void takeDrop(Player *player);
 	void removeDrop();
-	void setStats(int id);
-	void setRandomStats(int id);
 };
 
 #endif
