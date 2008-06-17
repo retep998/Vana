@@ -181,7 +181,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "item") == 0) {
 			if (strlen(next_token) == 0) return;
-			int itemid = atoi(strtok_s(0, " ",&next_token));
+			int itemid = atoi(strtok_s(0, " ", &next_token));
 			if (Drops::items.find(itemid) == Drops::items.end() && Drops::equips.find(itemid) == Drops::equips.end())
 				return;
 			int count = 1;

@@ -257,7 +257,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 				Drop *drop = Maps::maps[map]->getDrop(objID);
 				if (drop != 0) {
 					DropsPacket::explodeDrop(Maps::maps[map]->getPlayers(), drop);
-					Maps::maps[map]->removeDrop(drop);
+					Maps::maps[map]->removeDrop(drop->getID());
 					delete drop;
 				}
 			}			

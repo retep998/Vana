@@ -36,12 +36,12 @@ class Mob;
 class Reactor;
 class Drop;
 class LoopingId;
+struct Equip;
+struct Item;
 
 struct FootholdInfo {
 	Pos pos1;
 	Pos pos2;
-	int prev;
-	int next;
 };
 typedef vector<FootholdInfo> FootholdsInfo;
 
@@ -166,7 +166,10 @@ public:
 		else
 			return 0;
 	}
-	void removeDrop(Drop *drop);
+	void removeDrop(int id) {
+		if (drops.find(id) != drops.end())
+			drops.erase(id);
+	}
 	void clearDrops();
 	void clearDrops(int time);
 	// Show all map objects

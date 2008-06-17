@@ -755,7 +755,7 @@ void Initializing::initializeMaps() {
 	}
 
 	// Footholds
-	query << "SELECT mapid, x1, y1, x2, y2, prev, next FROM mapfootholddata";
+	query << "SELECT mapid, x1, y1, x2, y2 FROM mapfootholddata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << db.error() << std::endl;
@@ -774,8 +774,6 @@ void Initializing::initializeMaps() {
 		FootholdInfo foot;
 		foot.pos1 = Pos(atoi(footsRow[1]), atoi(footsRow[2]));
 		foot.pos2 = Pos(atoi(footsRow[3]), atoi(footsRow[4]));
-		foot.prev = atoi(footsRow[5]);
-		foot.next = atoi(footsRow[6]);
 		Maps::maps[atoi(footsRow[0])]->addFoothold(foot);
 	}
 	std::cout << "DONE" << std::endl;

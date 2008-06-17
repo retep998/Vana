@@ -172,7 +172,7 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 }
 
 void Reactors::checkDrop(Player *player, Drop *drop) {
-	if (drop->getMesos())
+	if (drop->isMesos())
 		return;
 	for (size_t i = 0; i < Maps::maps[drop->getMap()]->getNumReactors(); i++) {
 		Reactor *reactor = Maps::maps[drop->getMap()]->getReactor(i);

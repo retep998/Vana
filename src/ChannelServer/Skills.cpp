@@ -674,8 +674,9 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = player->getCombo()+1;
 		}
 		else if (skillid == 1004) { // For Monster Rider
-			int mountid = player->inv->getEquipByPos(-18);
-			if (mountid == 0) return;
+			Equip *equip = player->inv->getEquipByPos(-18);
+			if (equip == 0) return;
+			int mountid = equip->id;
 			value = Drops::equips[mountid].tamingmob;
 		}
 		else if (skillid == 4121006) { // For Shadow Claw
