@@ -115,7 +115,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			int num = 0;
 			for (int i = 0; i < player->inv->getEquipNum(); i++) { // Get Equips
 				Equip *currentequip = player->inv->getEquip(i);
-				if (equip->pos == slot1) {
+				if (currentequip->pos == slot1) {
 					equip = currentequip;
 					num = i;
 					break;
