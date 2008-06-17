@@ -30,10 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "ReadPacket.h"
 
-void NPCs::addNPC(int id, NPCInfo npc) {
-	Maps::maps[id]->addNPC(npc);
-}
-
 void NPCs::handleNPC(Player *player, ReadPacket *packet) {
 	if (player->getNPC() != 0)
 		return;

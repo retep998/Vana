@@ -150,14 +150,6 @@ struct ConsumeInfo {
 	vector <Skillbook> skills;
 };
 
-struct FootholdInfo {
-	short x1;
-	short y1;
-	short x2;
-	short y2;
-};
-typedef vector<FootholdInfo> FootholdsInfo;
-
 class Drop;
 
 namespace Drops {
@@ -166,17 +158,14 @@ namespace Drops {
 	extern hash_map <int, EquipInfo> equips;
 	extern hash_map <int, ItemInfo> items;
 	extern hash_map <int, ConsumeInfo> consumes;
-	extern hash_map <int, FootholdsInfo> foots;
 	void addDrop(int id, MobDropInfo drop);
 	void addEquip(int id, EquipInfo equip);
 	void addItem(int id, ItemInfo item);
 	void addConsume(int id, ConsumeInfo cons);
 	void addMesos(int id, Mesos meso);
-	void addFoothold(int id, FootholdInfo foot);
 	void dropMesos(Player *player, ReadPacket *packet);
 	void lootItem(Player *player, ReadPacket *packet);
 	void dropMob(Player *player, Mob *mob);
-	Pos findFloor(Pos pos, int mapid);
 };
 
 class Drop {

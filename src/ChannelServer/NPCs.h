@@ -40,7 +40,6 @@ struct NPCInfo {
 typedef vector<NPCInfo> NPCsInfo;
 
 namespace NPCs {
-	void addNPC(int id, NPCInfo npc);
 	void handleNPC(Player *player, ReadPacket *packet);
 	void handleQuestNPC(Player *player, int npcid, bool start);
 	void handleNPCIn(Player *player, ReadPacket *packet);

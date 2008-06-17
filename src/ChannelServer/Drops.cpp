@@ -32,7 +32,6 @@ hash_map <int, MobDropsInfo> Drops::dropsinfo;
 hash_map <int, Mesos> Drops::mesos;
 hash_map <int, EquipInfo> Drops::equips;
 hash_map <int, ItemInfo> Drops::items;
-hash_map <int, FootholdsInfo> Drops::foots;
 hash_map <int, ConsumeInfo> Drops::consumes;
 
 // Drop class
@@ -42,7 +41,7 @@ Drop::Drop (int mapid) : quest(0), playerid(0), ismeso(0), isequip(0), mapid(map
 
 void Drop::doDrop(Dropped dropped) {
 	setDropped(clock());
-	setPos(Drops::findFloor(getPos(), getMap()));
+	setPos(Maps::maps[getMap()]->findFloor(getPos()));
 	if (!isQuest())
 		DropsPacket::drop(Maps::maps[getMap()]->getPlayers(), this, dropped);
 	else {
@@ -72,40 +71,6 @@ void Drop::removeDrop() {
 }
 
 // Drops namespace
-Pos Drops::findFloor(Pos pos, int mapid) {
-	short x = pos.x;
-	short y = pos.y - 100;
-	bool first = true;
-	short maxy = pos.y;
-	FootholdsInfo footholds = Drops::foots[mapid];
-	unsigned int fh = 0;
-	for (size_t i = 0; i < footholds.size(); i++) {
-		if ((x > footholds[i].x1 && x < footholds[i].x2) || (x > footholds[i].x2 && x < footholds[i].x1)) {
-			if (first) {
-				maxy = (short) ( (float)( footholds[i].y1 - footholds[i].y2 ) / ( footholds[i].x1 - footholds[i].x2 ) * x - footholds[i].x1 * (float) ( footholds[i].y1 - footholds[i].y2 ) / ( footholds[i].x1 - footholds[i].x2 ) + footholds[i].y1 );
-				if (maxy >= y) {
-					fh = i;
-					first = false;
-				}
-			}
-			else {
-				short cmax = (short) ( (float)( footholds[i].y1 - footholds[i].y2 ) / ( footholds[i].x1 - footholds[i].x2 ) * x - footholds[i].x1 * (float) ( footholds[i].y1 - footholds[i].y2 ) / ( footholds[i].x1 - footholds[i].x2 ) + footholds[i].y1 );
-				if (cmax < maxy && cmax >= y) {
-					fh = i;
-					maxy = cmax;
-				}
-			}
-		}
-	}
-	if (footholds[fh].x1 == footholds[fh].x2) { // Walls
-		if (footholds[fh].x1 < 0 && x < footholds[fh].x1)
-			x = footholds[fh].x1 + 10;
-		else if (x > footholds[fh].x1)
-			x = footholds[fh].x1 - 10;
-	}
-	return Pos(x, maxy);
-}
-
 void Drops::dropMob(Player *player, Mob *mob) {
 	MobDropsInfo drop = dropsinfo[mob->getMobID()];
 	int d = 0;
@@ -345,9 +310,6 @@ void Drops::addConsume(int id, ConsumeInfo cons) {
 }
 void Drops::addMesos(int id, Mesos meso) {
 	mesos[id] = meso;
-}
-void Drops::addFoothold(int id, FootholdInfo foot) {
-	foots[id].push_back(foot);
 }
 
 void Drops::dropMesos(Player *player, ReadPacket *packet) {
