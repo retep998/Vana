@@ -128,6 +128,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 			if (drops[k].id/1000000 == 1) {
 				EquipInfo ei = equips[drops[k].id];
 				Equip equip;
+				equip.id = drops[k].id;
 				equip.type =  ei.type;
 				equip.slots = ei.slots;
 				equip.scrolls = 0;
