@@ -153,7 +153,10 @@ void Map::addMob(int mobid, Pos pos, int spawnid, short fh) {
 void Map::updateMobControl() {
 	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
-			updateMobControl(iter->second);
+			if (iter->second->getControl() != 0) // If one mob in a map has a control...
+				updateMobControl(iter->second);
+			else
+				break; // all others will due to the way things are setup
 	}
 }
 
