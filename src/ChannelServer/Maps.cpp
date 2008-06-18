@@ -125,18 +125,6 @@ Pos Map::findFloor(Pos pos) {
 			}
 		}
 	}
-	if (footholds[fh].pos1.x < footholds[fh].pos2.x) {
-		if (x < footholds[fh].pos1.x)
-			x = footholds[fh].pos1.x;
-		else if (x > footholds[fh].pos2.x)
-			x = footholds[fh].pos2.x;
-	}
-	else {
-		if (x > footholds[fh].pos1.x)
-			x = footholds[fh].pos1.x;
-		else if (x < footholds[fh].pos2.x)
-			x = footholds[fh].pos2.x;
-	}
 	return Pos(x, maxy);
 }
 
