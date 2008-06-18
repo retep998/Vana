@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::vector;
 using std::string;
 
+class ReadPacket;
 struct Pos;
 
 class Packet {
@@ -45,6 +46,7 @@ public:
 	void addByte(unsigned char byte);
 	void addBytes(char *hex);
 	void addBuffer(unsigned char *bytes, int len);
+	void addBuffer(ReadPacket *packet);
 
 	template <class T>
 	void sendTo(T *player, vector <T*> players, bool is) {

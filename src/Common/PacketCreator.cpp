@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketCreator.h"
 #include "Pos.h"
+#include "ReadPacket.h"
 #include <iostream>
 
 void Packet::addHeader(short headerid) {
@@ -98,4 +99,8 @@ void Packet::addBytes(char *hex) {
 void Packet::addBuffer(unsigned char *bytes, int len) {
 	memcpy_s(packet+pos, len, bytes, len);
 	pos += len;
+}
+
+void Packet::addBuffer(ReadPacket *packet) {
+	addBuffer(packet->getBuffer(), packet->getBufferLength());
 }
