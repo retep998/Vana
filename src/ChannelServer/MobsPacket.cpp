@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Mobs.h"
 #include "MobsPacket.h"
-#include "BufferUtilities.h"
 #include "SendHeader.h"
 #include "ReadPacket.h"
 

@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "MapPacket.h"
 #include "Drops.h"
-#include "BufferUtilities.h"
 #include "Randomizer.h"
 #include "Timer.h"
 #include "ReadPacket.h"

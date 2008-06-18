@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "Timer.h"
 #include "LuaPortal.h"
-#include "BufferUtilities.h"
 #include "ReadPacket.h"
 #include "LoopingId.h"
 #include <iostream>

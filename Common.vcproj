@@ -194,10 +194,6 @@
 				Name="Utilities"
 				>
 				<File
-					RelativePath=".\src\Common\BufferUtilities.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Common\Randomizer.cpp"
 					>
 				</File>
@@ -339,10 +335,6 @@
 			<Filter
 				Name="Utilities"
 				>
-				<File
-					RelativePath=".\src\Common\BufferUtilities.h"
-					>
-				</File>
 				<File
 					RelativePath=".\src\Common\LoopingId.h"
 					>

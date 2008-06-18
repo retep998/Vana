@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Login.h"
 #include "LoginServer.h"
 #include "LoginPacket.h"
-#include "BufferUtilities.h"
 #include "PlayerLogin.h"
 #include "TimeUtilities.h"
 #include "Randomizer.h"

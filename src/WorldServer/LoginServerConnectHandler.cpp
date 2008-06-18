@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectHandler.h"
 #include "LoginServerConnectPlayer.h"
 #include "WorldServerAcceptPlayerPacket.h"
-#include "BufferUtilities.h"
 #include "WorldServer.h"
 #include "ReadPacket.h"
 #include <iostream>
