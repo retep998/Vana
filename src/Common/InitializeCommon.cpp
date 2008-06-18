@@ -35,9 +35,9 @@ void Initializing::initializeMySQL() {
 }
 
 void Initializing::checkSchemaVersion(bool update) {
-	// vana_info table for checking database version (currently checking and updating unimplemented)
+	// Vana_info table for checking database version (currently checking and updating unimplemented)
 	mysqlpp::Query query = db.query();
-	query << "SELECT * FROM vana_info LIMIT 1";
+	query << "SELECT * FROM Vana_info LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	bool succeed = false;
@@ -45,11 +45,11 @@ void Initializing::checkSchemaVersion(bool update) {
 	if (res.size() == 0) {
 		if (update) {
 			// Table doesn't exist or there's no record in the table, so lets create it
-			query << "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED)";
+			query << "CREATE TABLE IF NOT EXISTS Vana_info (version INT UNSIGNED)";
 			query.exec();
 
 			// Insert a default record of NULL
-			query << "INSERT INTO vana_info VALUES (NULL)";
+			query << "INSERT INTO Vana_info VALUES (NULL)";
 			query.exec();
 		}
 		
