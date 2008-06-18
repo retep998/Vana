@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Quests.h"
 #include "Levels.h"
-#include "BufferUtilities.h"
 #include "SendHeader.h"
 #include "ReadPacket.h"
 

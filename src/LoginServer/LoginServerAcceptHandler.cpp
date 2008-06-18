@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptHandler.h"
 #include "LoginServerAcceptPlayer.h"
-#include "BufferUtilities.h"
 #include "Worlds.h"
 #include "ReadPacket.h"
 #include <iostream>

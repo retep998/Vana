@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 #include "Skills.h"
 #include "Randomizer.h"
-#include "BufferUtilities.h"
 #include "ReadPacket.h"
 
 int Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,

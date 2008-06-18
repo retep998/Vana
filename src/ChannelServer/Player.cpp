@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Quests.h"
 #include "Fame.h"
-#include "BufferUtilities.h"
 #include "ChannelServer.h"
 #include "RecvHeader.h"
 #include "WorldServerConnectPlayer.h"

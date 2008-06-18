@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 #include "MapPacket.h"
 #include "PacketCreator.h"
-#include "BufferUtilities.h"
 #include "ReadPacket.h"
 #include "WorldServerConnectPlayerPacket.h"
 

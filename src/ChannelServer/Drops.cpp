@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Shops.h"
 #include "Randomizer.h"
-#include "BufferUtilities.h"
 #include "Pos.h"
 #include "ReadPacket.h"
 

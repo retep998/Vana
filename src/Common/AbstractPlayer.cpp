@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "PingPacket.h"
 #include "Timer.h"
-#include "BufferUtilities.h"
 #include "SendHeader.h"
 
 class PingTimer: public Timer::TimerHandler {

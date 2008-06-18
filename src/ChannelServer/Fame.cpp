@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "MySQLM.h"
 #include "PlayersPacket.h"
-#include "BufferUtilities.h"
 #include "ReadPacket.h"
 
 void Fame::handleFame(Player *player, ReadPacket *packet) {
