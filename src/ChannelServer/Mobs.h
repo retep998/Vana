@@ -87,13 +87,13 @@ public:
 		this->pos = pos;
 	}
 	Pos getPos() {
-		return pos;
+		return Pos(pos.x, pos.y-1);
 	}
 	int getPosX() {
 		return pos.x;
 	}
 	int getPosY() {
-		return pos.y;
+		return pos.y - 1;
 	}
 	void setID(int id) {
 		this->id = id;
