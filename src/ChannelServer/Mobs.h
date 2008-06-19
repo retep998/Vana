@@ -82,7 +82,7 @@ namespace Mobs {
 
 class Mob {
 public:
-	Mob(int mapid, int id, int mobid, Pos pos, int spawnid, int fh);
+	Mob(int mapid, int mobid, Pos pos, int spawnid = -1, int fh = 0);
 	void setPos(Pos pos) {
 		this->pos = pos;
 	}

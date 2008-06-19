@@ -135,7 +135,7 @@ public:
 	}
 
 	// Mobs
-	void addMob(int mobid, Pos pos, int spawnid = -1, short fh = 0);
+	void addMob(Mob *mob);
 	Mob * getMob(int id) {
 		if (this->mobs.find(id) != mobs.end())
 			return this->mobs[id];
