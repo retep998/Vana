@@ -267,7 +267,7 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 	else {
 		if (drop->isEquip()) {
 			Equip *equip = new Equip(drop->getEquip());
-			short slot = Inventory::findSlot(player, equip->id, 1, 1);
+			short slot = Inventory::findSlot(player, 1, equip->id, 1);
 			if (slot == 0) {
 				DropsPacket::takeNote(player, 0, 0, 0);
 				DropsPacket::dontTake(player);
@@ -277,7 +277,7 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		}
 		else {
 			Item *item = new Item(drop->getItem());
-			short slot = Inventory::findSlot(player, item->id, item->id/1000000, item->amount);
+			short slot = Inventory::findSlot(player, item->id/1000000, item->id, item->amount);
 			if (slot == 0) {
 				DropsPacket::takeNote(player, 0, 0, 0);
 				DropsPacket::dontTake(player);

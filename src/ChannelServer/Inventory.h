@@ -30,7 +30,7 @@ struct Item;
 namespace Inventory {
 	void startTimer();
 	void stopTimerPlayer(Player *player);
-	extern int findSlot(Player *player, int itemid ,char inv, short amount);
+	extern int findSlot(Player *player, char inv, int itemid, short amount);
 	extern bool isCash(int itemid);
 	extern ItemTimer * timer;
 	extern Equip * setEquipStats(Player *player, int equipid);
