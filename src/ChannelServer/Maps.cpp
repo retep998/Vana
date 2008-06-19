@@ -282,10 +282,12 @@ void Maps::moveMapS(Player *player, ReadPacket *packet) { // Move to map special
 	LuaPortal(filenameStream.str(), player->getPlayerid(), portal);
 
 	int tonum = 0;
-	if (portal->toid >= 0 && portal->toid != 999999999) // Only check for new portal ID if a portal script returns a valid map
+	if (portal->toid >= 0 && portal->toid != 999999999) { // Only check for new portal ID if a portal script returns a valid map
 		PortalInfo *nextportal = maps[portal->toid]->getPortal(portal->to);
-	if (nextportal != 0)
-		tonum = nextportal->id;
+		if (nextportal != 0) {
+			tonum = nextportal->id;
+		}
+	}
 
 	changeMap(player, portal->toid, tonum);
 }
