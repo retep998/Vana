@@ -27,14 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Inventory.h"
 #include "MySQLM.h"
+#include "MiscUtilities.h"
 #include <iostream>
 #include <string>
 
 using std::string;
-
-bool atob(char *str) {
-	return atoi(str) > 0;
-}
+using MiscUtilities::atob;
 
 void Initializing::checkVEDBVersion() {
 	mysqlpp::Query query = db.query("SELECT * FROM vedb_info LIMIT 1");

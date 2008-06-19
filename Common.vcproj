@@ -340,6 +340,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\MiscUtilities.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Randomizer.h"
 					>
 				</File>
