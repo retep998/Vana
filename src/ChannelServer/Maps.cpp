@@ -129,9 +129,9 @@ Pos Map::findFloor(Pos pos) {
 }
 
 // Mobs
-void Map::addMob(int mobid, Pos pos, int spawnid, short fh) {
+void Map::addMob(Mob *mob) {
 	int id = this->mobids->next();
-	Mob *mob = new Mob(this->mapid, id, mobid, pos, spawnid, fh);
+	mob->setID(id);
 	this->mobs[id] = mob;
 	MobsPacket::spawnMob(this->players, mob);
 	updateMobControl(mob);
@@ -140,7 +140,7 @@ void Map::addMob(int mobid, Pos pos, int spawnid, short fh) {
 void Map::updateMobControl() {
 	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
-			if (iter->second->getControl() != 0) // If one mob in a map has a control...
+			if (iter->second->getControl() == 0) // If one mob in a map has a control...
 				updateMobControl(iter->second);
 			else
 				break; // all others will due to the way things are setup

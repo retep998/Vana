@@ -35,9 +35,10 @@ hash_map <int, SpawnsInfo> Mobs::info;
 hash_map <int, queue<int>> Mobs::respawns;
 
 // Mob class
-Mob::Mob(int mapid, int id, int mobid, Pos pos, int spawnid, int fh) : mapid(mapid), id(id), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
+Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : mapid(mapid), id(id), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
 	this->hp = Mobs::mobinfo[mobid].hp;
 	this->mp = Mobs::mobinfo[mobid].mp;
+	Maps::maps[mapid]->addMob(this);
 }
 
 void Mob::setControl(Player *control) {
@@ -96,7 +97,7 @@ void Mobs::checkSpawn(int mapid) {
 	while (!respawns[mapid].empty()) {
 		int i = respawns[mapid].front();
 		respawns[mapid].pop();
-		Maps::maps[mapid]->addMob(info[mapid][i].id, info[mapid][i].pos, i, info[mapid][i].fh);
+		new Mob(mapid, info[mapid][i].id, info[mapid][i].pos, i, info[mapid][i].fh);
 	}
 }
 
@@ -401,7 +402,7 @@ void Mobs::spawnMob(Player *player, int mobid, int amount) {
 }
 
 void Mobs::spawnMobPos(int mapid, int mobid, Pos pos) {
-	Maps::maps[mapid]->addMob(mobid, pos);
+	new Mob(mapid, mobid, pos);
 }
 
 void Mobs::displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob) {

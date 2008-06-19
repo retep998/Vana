@@ -121,10 +121,7 @@ public:
 	}
 	void addItem(char inv, short slot, Item *item) {
 		items[inv-2][slot] = item;
-		if (itemamounts.find(item->id) != itemamounts.end())
-			itemamounts[item->id] += item->amount;
-		else
-			itemamounts[item->id] = item->amount;
+		itemamounts[item->id] += item->amount;
 	}
 	Item * getItem(char inv, short slot) {
 		inv -= 2;
