@@ -43,7 +43,7 @@ struct FootholdInfo {
 	Pos pos1;
 	Pos pos2;
 };
-typedef vector<FootholdInfo> FootholdsInfo;
+typedef vector <FootholdInfo> FootholdsInfo;
 
 struct PortalInfo {
 	int id;

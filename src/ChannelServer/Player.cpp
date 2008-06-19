@@ -447,8 +447,8 @@ void Player::saveItems() {
 
 	bool firstrun = true;
 	for (char i = 2; i <= 5; i++) {
-		for (short j = 1; j <= inv->getMaxslots(); j++) {
-			Item *item = inv->getItem(i, j);
+		for (short s = 1; s <= inv->getMaxslots(i); s++) {
+			Item *item = inv->getItem(i, s);
 			if (item == 0)
 				continue;
 			if (firstrun) {
@@ -460,7 +460,7 @@ void Player::saveItems() {
 			}
 			query << mysqlpp::quote << getPlayerid() << ","
 				<< mysqlpp::quote << (short) i << ","
-				<< mysqlpp::quote << j << ","
+				<< mysqlpp::quote << s << ","
 				<< mysqlpp::quote << item->id << ","
 				<< mysqlpp::quote << item->amount << ")";
 		}
