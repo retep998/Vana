@@ -193,21 +193,21 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 
 int Inventory::findSlot(Player *player, int itemid, char inv, short amount) {
 	if (inv == 1) { // Equips
-		for (short i = 1; i <= player->inv->getMaxslots(); i++) {
+		for (short i = 1; i <= player->inv->getMaxslots(1); i++) {
 			if (!player->inv->getEquip(i))
 				return i;
 		}
 	}
 	else { // Items
 		if (ISSTAR(itemid)) { // Stars
-			for (short i = 1; i <= player->inv->getMaxslots(); i++) {
+			for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
 				if (!player->inv->getItem(inv, i))
 					return i;
 			}
 		}
 		else { // Other items
 			short freeslot = 0;
-			for (short i = 1; i <= player->inv->getMaxslots(); i++) {
+			for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
 				Item *curritem = player->inv->getItem(inv, i);
 				if (curritem != 0) {
 					if (curritem->id == itemid && curritem->amount + amount <= Drops::items[itemid].maxslot)
@@ -256,7 +256,7 @@ void Inventory::addEquip(Player *player, Equip *equip, bool is) {
 void Inventory::addItem(Player *player, Item *item, bool is) {
 	char inv = Drops::items[item->id].type;
 	if (!ISSTAR(item->id)) {
-		for (short i = 1; i <= player->inv->getMaxslots(); i++) {
+		for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
 			Item *olditem = player->inv->getItem(inv, i);
 			if (olditem == 0)
 				continue;
@@ -389,7 +389,7 @@ void Inventory::addNewItem(Player *player, int itemid, int howmany) {
 
 void Inventory::takeItem(Player *player, int itemid, int howmany) {
 	char inv = Drops::items[itemid].type;
-	for (short i = 1; i <= player->inv->getMaxslots(); i++) {
+	for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
 		Item *item = player->inv->getItem(inv, i);
 		if (item == 0)
 			continue;

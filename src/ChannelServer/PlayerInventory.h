@@ -83,14 +83,14 @@ typedef hash_map<short, Item *> iteminventory;
 class PlayerInventory {
 public:
 	PlayerInventory() {
-		maxslots = 100;
-		items[0] = use;
-		items[1] = setup;
-		items[2] = etc;
-		items[3] = cash;
+		maxslots[0] = 100; // Equip
+		maxslots[1] = 100; // Use
+		maxslots[2] = 100; // Setup
+		maxslots[3] = 100; // Etc
+		maxslots[4] = 100; // Cash
 	}
-	short getMaxslots() {
-		return maxslots;
+	char getMaxslots(char inv) {
+		return maxslots[inv-1];
 	}
 	void setPlayer(Player *player) {
 		this->player = player;
@@ -155,15 +155,11 @@ public:
 		return 0;
 	}
 private:
-	short maxslots;
+	char maxslots[5];
 	Player *player;
 	int mesos;
 	equipinventory equips;
 	iteminventory items[4];
-	iteminventory use;
-	iteminventory setup;
-	iteminventory etc;
-	iteminventory cash;
 	hash_map <int, int> itemamounts;
 };
 

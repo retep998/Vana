@@ -67,11 +67,11 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addByte(player->getMappos());
 	packet.addByte(0x14);
 	packet.addInt(player->inv->getMesos());
-	packet.addByte(100);
-	packet.addByte(100);
-	packet.addByte(100);
-	packet.addByte(100);
-	packet.addByte(100);
+	packet.addByte(player->inv->getMaxslots(1));
+	packet.addByte(player->inv->getMaxslots(2));
+	packet.addByte(player->inv->getMaxslots(3));
+	packet.addByte(player->inv->getMaxslots(4));
+	packet.addByte(player->inv->getMaxslots(5));
 	equipinventory *equips = player->inv->getEquips();
 	for (equipinventory::iterator iter = equips->begin(); iter != equips->end(); iter++) {
 		Equip *equip = iter->second;
@@ -95,11 +95,11 @@ void PlayerPacket::connectData(Player *player) {
 	}
 	packet.addByte(0);
 	for (char i = 2; i <= 5; i++) {
-		for (short j = 1; j <= player->inv->getMaxslots(); j++) {
-			Item *item = player->inv->getItem(i, j);
+		for (short s = 1; s <= player->inv->getMaxslots(i); s++) {
+			Item *item = player->inv->getItem(i, s);
 			if (item == 0)
 				continue;
-			packet.addByte((char) j);
+			packet.addByte((char) s);
 			packet.addByte(2);
 			packet.addInt(item->id);
 			packet.addShort(0);
