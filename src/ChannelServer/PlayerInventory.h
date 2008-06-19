@@ -18,14 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PINV_H
 #define PINV_H
 
-#include <vector>
+#include <hash_map>
 using namespace std;
+using namespace stdext;
 
 class Player;
 
 struct Equip {
-	Equip () : pos(0) { }
-	Equip (Equip *equip) : pos(0) {
+	Equip () { }
+	Equip (Equip *equip) {
 		id = equip->id;
 		slots = equip->slots;
 		scrolls = equip->scrolls;
@@ -46,7 +47,6 @@ struct Equip {
 		ijump = equip->ijump;
 		ispeed = equip->ispeed;
 	}
-	short pos;
 	int id;
 	char slots;
 	char scrolls;
@@ -67,115 +67,104 @@ struct Equip {
 	short ijump;
 	short ispeed;
 };
+typedef hash_map<short, Equip *> equipinventory;
 
 struct Item {
-	Item () : pos(0) { }
-	Item (Item *item) : pos(0) {
-		inv = item->inv;
+	Item () : id(0), amount(0) { }
+	Item (Item *item) {
 		id = item->id;
 		amount = item->amount;
 	}
-	short pos;
-	char inv;
 	int id;
 	int amount;
 };
+typedef hash_map<short, Item *> iteminventory;
 
 class PlayerInventory {
 public:
 	PlayerInventory() {
 		maxslots = 100;
+		items[0] = use;
+		items[1] = setup;
+		items[2] = etc;
+		items[3] = cash;
 	}
-	int getMaxslots() {
+	short getMaxslots() {
 		return maxslots;
-	}
-	void setMesos(int mesos, bool is = false);
-	void setMesosStart(int mesos) {
-		this->mesos = mesos;
-	}
-	int getMesos() {
-		return this->mesos;
-	}
-	void addEquip(Equip *equip) {
-		equips.push_back(equip);
-	}
-	int getEquipNum() {
-		return equips.size();
-	}
-	Equip * getEquipByPos(short pos) {
-		for (int i = 0; i < getEquipNum(); i++) { // Get Equips
-			Equip *equip = getEquip(i);
-			if (equip->pos == pos)
-				return equip;
-		}
-		return 0;
-	}
-	short getEquipPos(int equipid) {
-		return equips[equipid]->pos;
-	}
-	void setEquipPos(int equipid, short pos) {
-		equips[equipid]->pos = pos;
-	}
-	void deleteEquip(int equipid) {
-		delete equips[equipid];
-		equips.erase(equips.begin()+equipid);
-	}
-	Equip * getEquip(int id) {
-		return equips[id];
-	}
-	void addItem(Item *item) {
-		items.push_back(item);
-	}
-	int getItemNum() {
-		return items.size();
-	}
-	short getItemPos(int itemid) {
-		return items[itemid]->pos;
-	}
-	void setItemPos(int itemid, short pos) {
-		items[itemid]->pos = pos;
-	}
-	void deleteItem(int itemid) {
-		delete items[itemid];
-		items.erase(items.begin()+itemid);
-	}
-	void setItem(Item *item, int itemid) {
-		items[itemid] = item;
-	}
-	Item * getItem(int id) {
-		return items[id];
-	}
-	Item * getItemByPos(int pos, char inv) {
-		for (int i = 0; i < getItemNum(); i++)
-			if (getItem(i)->pos == pos && getItem(i)->inv == inv)
-				return getItem(i);
-		return 0;
 	}
 	void setPlayer(Player *player) {
 		this->player = player;
 	}
-	int getItemAmount(int itemid) {
-		int amount = 0;
-		for (int i = 0; i < getItemNum(); i++)
-			if (getItem(i)->id == itemid)
-				amount += getItem(i)->amount;
-		return amount;
+	void setMesosStart(int mesos) {
+		this->mesos = mesos;
 	}
-	int getItemAmountBySlot(int slot, char inv) {
-		int amount = 0;
-		for (int i = 0; i < getItemNum(); i++)
-			if (getItem(i)->pos == slot && getItem(i)->inv == inv) {
-				amount = getItem(i)->amount;
-				break;
-			}
-		return amount;
+	void setMesos(int mesos, bool is = false);
+	int getMesos() {
+		return this->mesos;
+	}
+	void addEquip(short pos, Equip *equip) {
+		equips[pos] = equip;
+	}
+	Equip * getEquip(short slot) {
+		if (equips.find(slot) != equips.end())
+			return equips[slot];
+		return 0;
+	}
+	void deleteEquip(short slot) {
+		if (equips.find(slot) != equips.end()) {
+			delete equips[slot];
+			equips.erase(slot);
+		}
+	}
+	equipinventory * getEquips() {
+		return &equips;
+	}
+	void addItem(char inv, short slot, Item *item) {
+		items[inv-2][slot] = item;
+		if (itemamounts.find(item->id) != itemamounts.end())
+			itemamounts[item->id] += item->amount;
+		else
+			itemamounts[item->id] = item->amount;
+	}
+	Item * getItem(char inv, short slot) {
+		inv -= 2;
+		if (items[inv].find(slot) != items[inv].end())
+			return items[inv][slot];
+		return 0;
+	}
+	void deleteItem(char inv, short slot) {
+		inv -= 2;
+		if (items[inv].find(slot) != items[inv].end()) {
+			itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
+			delete items[inv][slot];
+			items[inv].erase(slot);
+		}
+	}
+	void setItem(char inv, short slot, Item *item) {
+		items[inv-2][slot] = item;
+	}
+	int getItemAmountBySlot(char inv, short slot) {
+		inv -= 2;
+		if (items[inv].find(slot) != items[inv].end())
+			return items[inv][slot]->amount;
+		return 0;
+	}
+	int getItemAmount(int itemid) {
+		if (itemamounts.find(itemid) != itemamounts.end())
+			return itemamounts[itemid];
+		return 0;
 	}
 private:
-	int maxslots;
-	int mesos;
+	short maxslots;
 	Player *player;
-	vector <Equip*> equips;
-	vector <Item*> items;
+	int mesos;
+	equipinventory equips;
+	iteminventory items[4];
+	iteminventory use;
+	iteminventory setup;
+	iteminventory etc;
+	iteminventory cash;
+	hash_map <int, int> itemamounts;
 };
 
 #endif

@@ -673,16 +673,21 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = player->getCombo()+1;
 		}
 		else if (skillid == 1004) { // For Monster Rider
-			Equip *equip = player->inv->getEquipByPos(-18);
-			if (equip == 0) return;
+			Equip *equip = player->inv->getEquip(-18);
+			if (equip == 0)
+				// hacking
+				return;
 			int mountid = equip->id;
 			value = Drops::equips[mountid].tamingmob;
 		}
 		else if (skillid == 4121006) { // For Shadow Claw
-			for (int i = 0; i < player->inv->getItemNum(); i++) {
-				if (ISSTAR(player->inv->getItem(i)->id) && player->inv->getItem(i)->amount >= 200) {
-					Inventory::takeItem(player, player->inv->getItem(i)->id, 200);
-					value = (player->inv->getItem(i)->id % 10000) + 1;
+			for (short i = 1; i <= player->inv->getMaxslots(); i++) {
+				Item *item = player->inv->getItem(2, i);
+				if (item == 0)
+					continue;
+				if (ISSTAR(item->id) && item->amount >= 200) {
+					Inventory::takeItem(player, item->id, 200);
+					value = (item->id % 10000) + 1;
 					break;
 				}
 			}

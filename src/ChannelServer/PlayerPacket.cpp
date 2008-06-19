@@ -72,48 +72,48 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addByte(100);
 	packet.addByte(100);
 	packet.addByte(100);
-	for (int i = 0; i < player->inv->getEquipNum(); i++) {
-		Equip *equip = player->inv->getEquip(i);
-		if (equip->pos < 0 && !Inventory::isCash(equip->id)) {
-			PlayerPacketHelper::addEquip(packet, equip);
+	equipinventory *equips = player->inv->getEquips();
+	for (equipinventory::iterator iter = equips->begin(); iter != equips->end(); iter++) {
+		Equip *equip = iter->second;
+		if (iter->first < 0 && !Inventory::isCash(equip->id)) {
+			PlayerPacketHelper::addEquip(packet, iter->first, equip);
 		}
 	}
 	packet.addByte(0);
-	for (int i = 0; i < player->inv->getEquipNum(); i++) {
-		Equip *equip = player->inv->getEquip(i);
-		if (equip->pos < 0 && Inventory::isCash(equip->id)) {
-			PlayerPacketHelper::addEquip(packet, equip);
+	for (equipinventory::iterator iter = equips->begin(); iter != equips->end(); iter++) {
+		Equip *equip = iter->second;
+		if (iter->first < 0 && Inventory::isCash(equip->id)) {
+			PlayerPacketHelper::addEquip(packet, iter->first, equip);
 		}
 	}
 	packet.addByte(0);
-	for (int i = 0; i < player->inv->getEquipNum(); i++) {
-		Equip *equip = player->inv->getEquip(i);
-		if (equip->pos > 0) {
-			PlayerPacketHelper::addEquip(packet, equip);
+	for (equipinventory::iterator iter = equips->begin(); iter != equips->end(); iter++) {
+		Equip *equip = iter->second;
+		if (iter->first > 0) {
+			PlayerPacketHelper::addEquip(packet, iter->first, equip);
 		}
 	}
 	packet.addByte(0);
-	for (int j = 2; j <= 5; j++) {
-		for (int i=0; i<player->inv->getItemNum(); i++) {
-			Item *item = player->inv->getItem(i);
-			if (item->inv == j) {
-				packet.addByte((char)item->pos);
-				packet.addByte(2);
-				packet.addInt(item->id);
-				packet.addShort(0);
-				packet.addBytes("8005BB46E61702");
-				packet.addShort(item->amount); // slots
-				packet.addInt(0);			
-				if (ISSTAR(item->id)) {
-					packet.addInt(2);
-					packet.addShort(0x54);
-					packet.addByte(0);
-					packet.addByte(0x34);
-				}
+	for (char i = 2; i <= 5; i++) {
+		for (short j = 1; j <= player->inv->getMaxslots(); j++) {
+			Item *item = player->inv->getItem(i, j);
+			if (item == 0)
+				continue;
+			packet.addByte((char) j);
+			packet.addByte(2);
+			packet.addInt(item->id);
+			packet.addShort(0);
+			packet.addBytes("8005BB46E61702");
+			packet.addShort(item->amount); // slots
+			packet.addInt(0);
+			if (ISSTAR(item->id)) {
+				packet.addInt(2);
+				packet.addShort(0x54);
+				packet.addByte(0);
+				packet.addByte(0x34);
 			}
 		}
 		packet.addByte(0);
-
 	}
 	//Skills
 	packet.addShort(player->skills->getSkillsNum());

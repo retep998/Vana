@@ -38,8 +38,8 @@ namespace Inventory {
 	void itemMove(Player *player, ReadPacket *packet);
 	void addEquip(Player *player, Equip *equip, bool is = false);
 	void addItem(Player *player, Item *item, bool is = false);
-	void addNewItem(Player *player, int item, int howmany);
-	void takeItem(Player *player, int item, int howmany);
+	void addNewItem(Player *player, int itemid, int howmany);
+	void takeItem(Player *player, int itemid, int howmany);
 	void useItem(Player *player, ReadPacket *packet);
 	void cancelItem(Player *player, ReadPacket *packet);
 	void endItem(Player *player, int itemid);

@@ -166,26 +166,21 @@ void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadP
 	pack->skipBytes(1); // Weapon subclass
 	packet.addByte(pack->getByte()); // Weapon speed
 	pack->skipBytes(4); // Ticks
-	unsigned char pos = pack->getByte();
+	unsigned char slot = pack->getByte();
 	pack->skipBytes(1); // The other pos byte
 	short csstar = pack->getShort(); // Cash Shop star
 	int itemid = 0;
 	if (csstar > 0) {
-		itemid = player->inv->getItemByPos(csstar, 5)->id;
+		itemid = player->inv->getItem(5, csstar)->id;
 		if (display == 0x40 || display == 0x48) // Skip itemid for Shadow Claw
 			pack->skipBytes(4);
 	}
 	else if (!(display == 0x40 || display == 0x48)) { // Shadow Claw puts the item ID in the packet
-		for (unsigned char i = 0; i < player->inv->getItemNum(); i++) {
-			if (player->inv->getItem(i)->pos == pos && player->inv->getItem(i)->inv == 2) {
-				itemid = player->inv->getItem(i)->id;
-				break;
-			}
-		}
+		itemid = player->inv->getItem(2, slot)->id;
 	}
 	else
 		itemid = pack->getInt();
-	packet.addByte(pos); // Inventory slot, I guess?
+	packet.addByte(slot); // Inventory slot, I guess?
 	packet.addInt(itemid);
 	pack->skipBytes(1); // 0x00 = AoE, 0x41 = other
 	for (char i = 0; i < targets; i++) {

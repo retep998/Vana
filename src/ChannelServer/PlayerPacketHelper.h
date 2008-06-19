@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 
 namespace PlayerPacketHelper {
-	void addEquip(Packet &packet, Equip *equip, bool pos_is_short = false);
+	void addEquip(Packet &packet, short slot, Equip *equip, bool pos_is_short = false);
 	void addIP(Packet &packet, const string &ip, short port);
 }
 

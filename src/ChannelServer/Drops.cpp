@@ -195,7 +195,6 @@ void Drops::dropMob(Player *player, Mob *mob) {
 				Item item;
 				item.id = drops[k].id;
 				item.amount = 1;
-				item.inv = items[drops[k].id].type;
 				drop = new Drop(mob->getMapID(), item, pos, player->getPlayerid());
 			}
 
@@ -268,8 +267,8 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 	else {
 		if (drop->isEquip()) {
 			Equip *equip = new Equip(drop->getEquip());
-			equip->pos = Inventory::findSlot(player, equip->id, 1, 1);
-			if (equip->pos == 0) {
+			short slot = Inventory::findSlot(player, equip->id, 1, 1);
+			if (slot == 0) {
 				DropsPacket::takeNote(player, 0, 0, 0);
 				DropsPacket::dontTake(player);
 				return;
@@ -278,8 +277,8 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		}
 		else {
 			Item *item = new Item(drop->getItem());
-			item->pos = Inventory::findSlot(player, item->id, item->inv, item->amount);
-			if (item->pos == 0) {
+			short slot = Inventory::findSlot(player, item->id, item->id/1000000, item->amount);
+			if (slot == 0) {
 				DropsPacket::takeNote(player, 0, 0, 0);
 				DropsPacket::dontTake(player);
 				return;
