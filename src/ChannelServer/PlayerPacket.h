@@ -28,9 +28,9 @@ class KeyMaps;
 namespace PlayerPacket {
 	void connectData(Player *player);
 	void showKeys(Player *player, KeyMaps *keymaps);
-	void updateStat(Player *player, int id, int value, bool is = 0);
-	void updateStat(Player *player, int id, short value, bool is = 0);
-	void updateStat(Player *player, int id, char value, bool is = 0);
+	void updateStat(Player *player, int id, int value, bool is = false);
+	void updateStat(Player *player, int id, short value, bool is = false);
+	void updateStat(Player *player, int id, char value, bool is = false);
 	void changeChannel(Player *player, const string &ip, short port);
 	void showMessage(Player *player, const string &msg, char type);
 };

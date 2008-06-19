@@ -17,17 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacketHelper.h"
 
-void PlayerPacketHelper::addEquip(Packet &packet, Equip *equip, bool pos_is_short) {
+void PlayerPacketHelper::addEquip(Packet &packet, short slot, Equip *equip, bool pos_is_short) {
 	if (pos_is_short)
-		packet.addShort(equip->pos);
-	else if (equip->pos < 0) {
-		char pos = (char) -equip->pos;
-		if (pos > 100)
-			pos -= 100;
-		packet.addByte(pos);
+		packet.addShort(slot);
+	else if (slot < 0) {
+		char charslot = (char) -slot;
+		if (charslot > 100)
+			charslot -= 100;
+		packet.addByte(charslot);
 	}
 	else
-		packet.addByte((char) equip->pos);
+		packet.addByte((char) slot);
 	packet.addByte(1);
 	packet.addInt(equip->id);
 	packet.addShort(0);

@@ -30,10 +30,10 @@ struct Item;
 namespace InventoryPacket {
 	void moveItem(Player *player, char inv, short slot1, short slot2);
 	void updatePlayer(Player *player);
-	void addEquip(Player *player, Equip *equip, bool is);
+	void addEquip(Player *player, short pos, Equip *equip, bool is);
 	void bought(Player *player);
-	void addItem(Player *player, Item *item, bool is);
-	void addNewItem(Player *player, Item *item, bool is);
+	void addItem(Player *player, char inv, short slot, Item *item, bool is);
+	void addNewItem(Player *player, char inv, short slot, Item *item, bool is);
 	void moveItemS(Player *player, char inv, short slot, short amount);
 	void moveItemS2(Player *player, char inv, short slot1, short amount1, short slot2, short amount2);
 	void sitChair(Player *player, vector <Player*> players, int chairid);

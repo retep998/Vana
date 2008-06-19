@@ -148,43 +148,40 @@ void Player::playerConnect(ReadPacket *packet) {
 	inv->setMesosStart(res[0]["mesos"]);
 	inv->setPlayer(this);
 
-	query << "SELECT * FROM equip WHERE charid = " << mysqlpp::quote << getPlayerid();
+	query << "SELECT pos, equipid, type, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM equip WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Equip *equip = new Equip;
-		equip->pos = res[i][1];
-		equip->id = res[i][2];
-		equip->type = (unsigned char) res[i][3];
-		equip->slots = (unsigned char) res[i][4];
-		equip->scrolls = (unsigned char) res[i][5];
-		equip->istr = res[i][6];
-		equip->idex = res[i][7];
-		equip->iint = res[i][8];
-		equip->iluk = res[i][9];
-		equip->ihp = res[i][10];
-		equip->imp = res[i][11];
-		equip->iwatk = res[i][12];
-		equip->imatk = res[i][13];
-		equip->iwdef = res[i][14];
-		equip->imdef = res[i][15];
-		equip->iacc = res[i][16];
-		equip->iavo = res[i][17];
-		equip->ihand = res[i][18];
-		equip->ijump = res[i][19];
-		equip->ispeed = res[i][20];
-		inv->addEquip(equip);
+		equip->id = res[i][1];
+		equip->type = (unsigned char) res[i][2];
+		equip->slots = (unsigned char) res[i][3];
+		equip->scrolls = (unsigned char) res[i][4];
+		equip->istr = res[i][5];
+		equip->idex = res[i][6];
+		equip->iint = res[i][7];
+		equip->iluk = res[i][8];
+		equip->ihp = res[i][9];
+		equip->imp = res[i][10];
+		equip->iwatk = res[i][11];
+		equip->imatk = res[i][12];
+		equip->iwdef = res[i][13];
+		equip->imdef = res[i][14];
+		equip->iacc = res[i][15];
+		equip->iavo = res[i][16];
+		equip->ihand = res[i][17];
+		equip->ijump = res[i][18];
+		equip->ispeed = res[i][19];
+		inv->addEquip(res[i][0], equip);
 	}
 
 	query << "SELECT inv, pos, itemid, amount FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Item *item = new Item;
-		item->inv = (unsigned char) res[i][0];
-		item->pos = res[i][1];
 		item->id = res[i][2];
 		item->amount = res[i][3];
-		inv->addItem(item);
+		inv->addItem(atoi(res[i][0]), res[i][1], item);
 	}
 
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
@@ -408,7 +405,9 @@ void Player::saveEquips() {
 	query.exec();
 
 	bool firstrun = true;
-	for (int i=0; i<inv->getEquipNum(); i++) {
+	equipinventory *equips = inv->getEquips();
+	for (equipinventory::iterator iter = equips->begin(); iter != equips->end(); iter++) {
+		Equip *equip = iter->second;
 		if (firstrun) {
 			query << "INSERT INTO equip VALUES (";
 			firstrun = false;
@@ -417,26 +416,26 @@ void Player::saveEquips() {
 			query << ",(";
 		}
 		query << mysqlpp::quote << getPlayerid() << ","
-				<< mysqlpp::quote << (short) inv->getEquipPos(i) << ","
-				<< mysqlpp::quote << inv->getEquip(i)->id << ","
-				<< mysqlpp::quote << (short) Drops::equips[inv->getEquip(i)->id].type << ","
-				<< mysqlpp::quote << (short) inv->getEquip(i)->slots << ","
-				<< mysqlpp::quote << (short) inv->getEquip(i)->scrolls << ","
-				<< mysqlpp::quote << inv->getEquip(i)->istr << ","
-				<< mysqlpp::quote << inv->getEquip(i)->idex << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iint << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iluk << ","
-				<< mysqlpp::quote << inv->getEquip(i)->ihp << ","
-				<< mysqlpp::quote << inv->getEquip(i)->imp << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iwatk << ","
-				<< mysqlpp::quote << inv->getEquip(i)->imatk << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iwdef << ","
-				<< mysqlpp::quote << inv->getEquip(i)->imdef << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iacc << ","
-				<< mysqlpp::quote << inv->getEquip(i)->iavo << ","
-				<< mysqlpp::quote << inv->getEquip(i)->ihand << ","
-				<< mysqlpp::quote << inv->getEquip(i)->ijump << ","
-				<< mysqlpp::quote << inv->getEquip(i)->ispeed << ")";
+			<< mysqlpp::quote << iter->first << ","
+			<< mysqlpp::quote << equip->id << ","
+			<< mysqlpp::quote << (short) equip->type << ","
+			<< mysqlpp::quote << (short) equip->slots << ","
+			<< mysqlpp::quote << (short) equip->scrolls << ","
+			<< mysqlpp::quote << equip->istr << ","
+			<< mysqlpp::quote << equip->idex << ","
+			<< mysqlpp::quote << equip->iint << ","
+			<< mysqlpp::quote << equip->iluk << ","
+			<< mysqlpp::quote << equip->ihp << ","
+			<< mysqlpp::quote << equip->imp << ","
+			<< mysqlpp::quote << equip->iwatk << ","
+			<< mysqlpp::quote << equip->imatk << ","
+			<< mysqlpp::quote << equip->iwdef << ","
+			<< mysqlpp::quote << equip->imdef << ","
+			<< mysqlpp::quote << equip->iacc << ","
+			<< mysqlpp::quote << equip->iavo << ","
+			<< mysqlpp::quote << equip->ihand << ","
+			<< mysqlpp::quote << equip->ijump << ","
+			<< mysqlpp::quote << equip->ispeed << ")";
 	}
 	query.exec();
 }
@@ -447,19 +446,24 @@ void Player::saveItems() {
 	query.exec();
 
 	bool firstrun = true;
-	for (int i=0; i<inv->getItemNum(); i++) {
-		if (firstrun) {
-			query << "INSERT INTO items VALUES (";
-			firstrun = false;
+	for (char i = 2; i <= 5; i++) {
+		for (short j = 1; j <= inv->getMaxslots(); j++) {
+			Item *item = inv->getItem(i, j);
+			if (item == 0)
+				continue;
+			if (firstrun) {
+				query << "INSERT INTO items VALUES (";
+				firstrun = false;
+			}
+			else {
+				query << ",(";
+			}
+			query << mysqlpp::quote << getPlayerid() << ","
+				<< mysqlpp::quote << (short) i << ","
+				<< mysqlpp::quote << j << ","
+				<< mysqlpp::quote << item->id << ","
+				<< mysqlpp::quote << item->amount << ")";
 		}
-		else {
-			query << ",(";
-		}
-		query << mysqlpp::quote << getPlayerid() << ","
-				<< mysqlpp::quote << (short) inv->getItem(i)->inv << ","
-				<< mysqlpp::quote << inv->getItem(i)->pos << ","
-				<< mysqlpp::quote << inv->getItem(i)->id << ","
-				<< mysqlpp::quote << inv->getItem(i)->amount << ")";
 	}
 	query.exec();
 }
