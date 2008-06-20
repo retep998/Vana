@@ -126,10 +126,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		else {
 			Equip *equip1 = player->inv->getEquip(slot1);
 			Equip *equip2 = player->inv->getEquip(slot2);
-			if (equip2 == 0)
-				player->inv->deleteEquip(slot1, false);
-			else
-				player->inv->addEquip(slot1, equip2);
+			player->inv->addEquip(slot1, equip2);
 			player->inv->addEquip(slot2, equip1);
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 			InventoryPacket::updatePlayer(player);
@@ -180,10 +177,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 				}
 			}
 			else {
-				if (item2 == 0)
-					player->inv->deleteItem(inv, slot1, false);
-				else
-					player->inv->setItem(inv, slot1, item2);
+				player->inv->setItem(inv, slot1, item2);
 				player->inv->setItem(inv, slot2, item1);
 				InventoryPacket::moveItem(player, inv, slot1, slot2);
 			}
