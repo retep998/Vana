@@ -127,7 +127,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			Equip *equip1 = player->inv->getEquip(slot1);
 			Equip *equip2 = player->inv->getEquip(slot2);
 			if (equip2 == 0)
-				player->inv->deleteEquip(slot1);
+				player->inv->deleteEquip(slot1, false);
 			else
 				player->inv->addEquip(slot1, equip2);
 			player->inv->addEquip(slot2, equip1);
@@ -181,7 +181,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			}
 			else {
 				if (item2 == 0)
-					player->inv->deleteItem(inv, slot1);
+					player->inv->deleteItem(inv, slot1, false);
 				else
 					player->inv->setItem(inv, slot1, item2);
 				player->inv->setItem(inv, slot2, item1);
@@ -254,6 +254,7 @@ void Inventory::addEquip(Player *player, Equip *equip, bool is) {
 }
 
 void Inventory::addItem(Player *player, Item *item, bool is) {
+	player->inv->changeItemAmount(item->id, item->amount);
 	char inv = Drops::items[item->id].type;
 	if (!ISSTAR(item->id)) {
 		for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
@@ -278,8 +279,13 @@ void Inventory::addItem(Player *player, Item *item, bool is) {
 		}
 	}
 	short slot = findSlot(player, inv, item->id, item->amount);
-	player->inv->addItem(inv, slot, item);
-	InventoryPacket::addNewItem(player, inv, slot, item, is);
+	if (slot != 0) {
+		player->inv->addItem(inv, slot, item);
+		InventoryPacket::addNewItem(player, inv, slot, item, is);
+	}
+	else {
+		player->inv->changeItemAmount(item->id, -item->amount);
+	}
 }
 
 void Inventory::useShop(Player *player, ReadPacket *packet) {
@@ -332,7 +338,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 	}
 }
 
-void Inventory::addNewItem(Player *player, int itemid, int howmany) {
+void Inventory::addNewItem(Player *player, int itemid, int amount) {
 	if (Drops::equips.find(itemid) != Drops::equips.end()) {
 		Equip *equip = setEquipStats(player, itemid);
 		addEquip(player, equip);
@@ -344,18 +350,27 @@ void Inventory::addNewItem(Player *player, int itemid, int howmany) {
 		short max = Drops::items[itemid].maxslot;
 		Item *item = new Item();
 		item->id = itemid;
-		if (ISSTAR(itemid))
+		if (ISSTAR(itemid)) {
 			item->amount = max + player->skills->getSkillLevel(4100000)*10;
-		else
-			item->amount = howmany;
+			amount -= 1;
+		}
+		else if (amount - max > 0) {
+			item->amount = max;
+			amount -= max;
+		}
+		else {
+			item->amount = amount;
+			amount = 0;
+		}
 
 		addItem(player, item);
-		if (howmany - max > 0)
-			addNewItem(player, itemid, howmany - max);
+		if (amount > 0)
+			addNewItem(player, itemid, amount);
 	}
 }
 
 void Inventory::takeItem(Player *player, int itemid, int howmany) {
+	player->inv->changeItemAmount(itemid, -howmany);
 	char inv = Drops::items[itemid].type;
 	for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
 		Item *item = player->inv->getItem(inv, i);
@@ -392,8 +407,10 @@ void Inventory::takeItemSlot(Player *player, char inv, short slot, short amount,
 		InventoryPacket::moveItem(player, inv, slot, 0);
 		player->inv->deleteItem(inv, slot);
 	}
-	else
+	else {
+		player->inv->changeItemAmount(item->id, -item->amount);
 		InventoryPacket::moveItemS(player, inv, slot, item->amount);
+	}
 }
 
 void Inventory::useItem(Player *player, ReadPacket *packet) {
