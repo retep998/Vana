@@ -49,7 +49,7 @@ public:
 	int getChannel() { return channel; }
 	void setChannel(int channel) { this->channel = channel; }
 	void setPort(short port) { this->port = port; }
-	int getOnlineId() { return 20000 + (int) world * 100 + channel * 10; }
+	int getOnlineId() { return 20000 + (int) world * 100 + channel; }
 	string getScrollingHeader() { return scrollingHeader; }
 	void setScrollingHeader(const string &message);
 	// Server rates
