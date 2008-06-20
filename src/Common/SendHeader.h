@@ -49,6 +49,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_FAME 0x31
 #define SEND_NOTE 0x32 // Bottom-right corner notice
 #define SEND_USE_SKILLBOOK 0x34 // Skillbooks
+#define SEND_PARTY_ACTION 0x39
 #define SEND_USE_SKILL 0x3b
 #define SEND_CHANGE_MAP 0x4e
 #define SEND_MAP_EFFECT 0x54 // Change Music/Boss HP Bars

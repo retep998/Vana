@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaPortal.h"
 #include "ReadPacket.h"
 #include "LoopingId.h"
+#include "WorldServerConnectPlayerPacket.h"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -315,6 +316,7 @@ void Maps::changeMap(Player *player, int mapid, int portalid) {
 		pos = maps[mapid]->getPortalByID(0)->pos;
 	}
 	player->setPos(pos);
+	WorldServerConnectPlayerPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), mapid);
 	MapPacket::changeMap(player);
 	newMap(player, mapid);
 }

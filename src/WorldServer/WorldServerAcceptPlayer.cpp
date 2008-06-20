@@ -35,6 +35,10 @@ void WorldServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
 		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
 		case INTER_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
 		case INTER_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet); break;
+		case INTER_PARTY_OPERATION: WorldServerAcceptHandler::partyOperation(this, packet); break;
+		case INTER_UPDATE_LEVEL: WorldServerAcceptHandler::updateLevel(this, packet); break;
+		case INTER_UPDATE_JOB: WorldServerAcceptHandler::updateJob(this, packet); break;
+		case INTER_UPDATE_MAP: WorldServerAcceptHandler::updateMap(this, packet); break;
 	}
 }
 

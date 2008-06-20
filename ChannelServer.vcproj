@@ -242,6 +242,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Party.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Player.cpp"
 					>
 				</File>
@@ -433,6 +437,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\NPCsScripts.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Party.h"
 					>
 				</File>
 				<File
