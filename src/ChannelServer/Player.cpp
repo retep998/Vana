@@ -181,7 +181,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		Item *item = new Item;
 		item->id = res[i][2];
 		item->amount = res[i][3];
-		inv->addItem(atoi(res[i][0]), res[i][1], item);
+		inv->addItem((unsigned char) res[i][0], res[i][1], item);
 	}
 
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
