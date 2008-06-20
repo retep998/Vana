@@ -42,14 +42,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Player::~Player() {
 	if (isconnect) {
-		if (save_on_dc)
+		if (save_on_dc) {
 			save();
+			setOnline(false);
+		}
 		Skills::stopTimerPlayer(this);
 		Inventory::stopTimerPlayer(this);
 		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::maps[this->getMap()]->removePlayer(this);
 		Players::deletePlayer(this);
-		setOnline(false);
 	}
 }
 
