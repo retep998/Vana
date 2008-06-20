@@ -264,7 +264,10 @@ void Maps::moveMap(Player *player, ReadPacket *packet) {
 	if (portal == 0) // Exit the function if portal is not found
 		return;
 
-	int tonum = maps[portal->toid]->getPortal(portal->to)->id;
+	int tonum = 0;
+	PortalInfo * nextportal = maps[portal->toid]->getPortal(portal->to);
+	if (nextportal != 0)
+		tonum = nextportal->id;
 
 	changeMap(player, portal->toid, tonum);
 }
