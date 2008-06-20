@@ -500,6 +500,7 @@ void Player::save() {
 void Player::setOnline(bool online) {
 	int onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
 	mysqlpp::Query query = db.query();
-	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << mysqlpp::quote << onlineid << " WHERE characters.id = " << mysqlpp::quote << getPlayerid();
+	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << mysqlpp::quote << onlineid <<
+			", characters.online = " << mysqlpp::quote << online << " WHERE characters.id = " << mysqlpp::quote << getPlayerid();
 	query.exec();
 }
