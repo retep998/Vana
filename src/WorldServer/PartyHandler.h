@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef WORLDSERVERPARTYHANDLER_H
-#define WORLDSERVERPARTYHANDLER_H
+#ifndef PARTYHANDLER_H
+#define PARTYHANDLER_H
 
 #include <hash_map>
 #include <vector>
@@ -32,13 +32,12 @@ class WorldServerAcceptPlayer;
 
 #define PARTY_LEAVE 0x01
 #define PARTY_JOIN 0x02
-#define PARTY_DISBAND 0x03
-#define PARTY_SET_LEADER 0x04
-#define PARTY_SILENT_UPDATE 0x05
-#define PARTY_LOG_IN_OUT 0x06
-#define PARTY_EXPEL 0x07
+#define PARTY_SET_LEADER 0x03
+#define PARTY_SILENT_UPDATE 0x04
+#define PARTY_LOG_IN_OUT 0x05
+#define PARTY_EXPEL 0x06
 
-namespace WorldServerPartyHandler{
+namespace PartyHandler{
 	extern int partyCount;
 	extern hash_map <int, Party *> parties;
 	void createParty(WorldServerAcceptPlayer *player, int playerid);

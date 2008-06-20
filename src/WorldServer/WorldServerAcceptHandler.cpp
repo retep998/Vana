@@ -22,18 +22,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channels.h"
 #include "Players.h"
 #include "ReadPacket.h"
-#include "WorldServerPartyHandler.h"
+#include "PartyHandler.h"
 
 void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, ReadPacket *packet) {
 	char type = packet->getByte();
 	int playerid = packet->getInt();
 	switch(type) {
-		case 0x01: WorldServerPartyHandler::createParty(player, playerid); break;
-		case 0x02: WorldServerPartyHandler::leaveParty(player, playerid); break;
-		case 0x03: WorldServerPartyHandler::joinParty(player, playerid, packet->getInt()); break;
-		case 0x04: WorldServerPartyHandler::invitePlayer(player, playerid, packet->getString()); break;
-		case 0x05: WorldServerPartyHandler::expelPlayer(player, playerid, packet->getInt()); break;
-		case 0x06: WorldServerPartyHandler::giveLeader(player, playerid, packet->getInt(), 0); break;
+		case 0x01: PartyHandler::createParty(player, playerid); break;
+		case 0x02: PartyHandler::leaveParty(player, playerid); break;
+		case 0x03: PartyHandler::joinParty(player, playerid, packet->getInt()); break;
+		case 0x04: PartyHandler::invitePlayer(player, playerid, packet->getString()); break;
+		case 0x05: PartyHandler::expelPlayer(player, playerid, packet->getInt()); break;
+		case 0x06: PartyHandler::giveLeader(player, playerid, packet->getInt(), 0); break;
 	}
 }
 
@@ -93,7 +93,7 @@ void WorldServerAcceptHandler::updateJob(WorldServerAcceptPlayer *player, ReadPa
 	int job = packet->getInt();
 	Players::Instance()->getPlayer(id)->job = job;
 	if (Players::Instance()->getPlayer(id)->party != 0) {
-		WorldServerPartyHandler::silentUpdate(id);
+		PartyHandler::silentUpdate(id);
 	}
 }
 
@@ -102,7 +102,7 @@ void WorldServerAcceptHandler::updateLevel(WorldServerAcceptPlayer *player, Read
 	int level = packet->getInt();
 	Players::Instance()->getPlayer(id)->level = level;
 	if (Players::Instance()->getPlayer(id)->party != 0) {
-		WorldServerPartyHandler::silentUpdate(id);
+		PartyHandler::silentUpdate(id);
 	}
 }
 
@@ -111,6 +111,6 @@ void WorldServerAcceptHandler::updateMap(WorldServerAcceptPlayer *player, ReadPa
 	int map = packet->getInt();
 	Players::Instance()->getPlayer(id)->map = map;
 	if (Players::Instance()->getPlayer(id)->party != 0) {
-		WorldServerPartyHandler::silentUpdate(id);
+		PartyHandler::silentUpdate(id);
 	}
 }

@@ -211,11 +211,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerAcceptPlayerPacket.cpp"
+						RelativePath=".\src\WorldServer\PartyPacket.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerPartyPacket.cpp"
+						RelativePath=".\src\WorldServer\WorldServerAcceptPlayerPacket.cpp"
 						>
 					</File>
 				</Filter>
@@ -239,11 +239,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerAcceptHandler.cpp"
+						RelativePath=".\src\WorldServer\PartyHandler.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerPartyHandler.cpp"
+						RelativePath=".\src\WorldServer\WorldServerAcceptHandler.cpp"
 						>
 					</File>
 				</Filter>
@@ -265,11 +265,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerAcceptPlayerPacket.h"
+						RelativePath=".\src\WorldServer\PartyPacket.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerPartyPacket.h"
+						RelativePath=".\src\WorldServer\WorldServerAcceptPlayerPacket.h"
 						>
 					</File>
 				</Filter>
@@ -309,11 +309,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerAcceptHandler.h"
+						RelativePath=".\src\WorldServer\PartyHandler.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerPartyHandler.h"
+						RelativePath=".\src\WorldServer\WorldServerAcceptHandler.h"
 						>
 					</File>
 				</Filter>

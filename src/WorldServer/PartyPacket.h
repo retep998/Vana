@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDSERVERPARTYPACKET_H
-#define WORLDSERVERPARTYPACKET_H
+#ifndef PARTYPACKET_H
+#define PARTYPACKET_H
 
 #include <string>
 using std::string;
@@ -25,7 +25,7 @@ class WorldServerAcceptPlayer;
 class Party;
 class Packet;
 
-namespace WorldServerPartyPacket{
+namespace PartyPacket{
 	void createParty(WorldServerAcceptPlayer *player, int playerid);
 	void disbandParty(WorldServerAcceptPlayer *player, int playerid);
 	void partyError(WorldServerAcceptPlayer *player, int playerid, char error);

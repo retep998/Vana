@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerPartyPacket.h"
+#include "PartyPacket.h"
 #include "WorldServerAcceptPlayer.h"
-#include "WorldServerPartyHandler.h"
+#include "PartyHandler.h"
 #include "PacketCreator.h"
 #include "InterHeader.h"
 #include "Players.h"
 #include "Channels.h"
 
-void WorldServerPartyPacket::giveLeader(WorldServerAcceptPlayer *player, int playerid, int target, bool is) {
+void PartyPacket::giveLeader(WorldServerAcceptPlayer *player, int playerid, int target, bool is) {
 	Packet packet;
 	packet.addHeader(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -34,7 +34,7 @@ void WorldServerPartyPacket::giveLeader(WorldServerAcceptPlayer *player, int pla
 	packet.send(player);
 }
 
-void WorldServerPartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int playerid, const string &inviter) {
+void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int playerid, const string &inviter) {
 	Packet packet;
 	packet.addHeader(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -46,7 +46,7 @@ void WorldServerPartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int p
 	packet.send(player);
 }
 
-void WorldServerPartyPacket::createParty(WorldServerAcceptPlayer *player, int playerid) {
+void PartyPacket::createParty(WorldServerAcceptPlayer *player, int playerid) {
 	Packet packet;
 	packet.addHeader(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -58,7 +58,7 @@ void WorldServerPartyPacket::createParty(WorldServerAcceptPlayer *player, int pl
 	packet.send(player);
 }
 
-void WorldServerPartyPacket::disbandParty(WorldServerAcceptPlayer *player, int playerid) {
+void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int playerid) {
 	Packet packet;
 	packet.addHeader(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -66,14 +66,14 @@ void WorldServerPartyPacket::disbandParty(WorldServerAcceptPlayer *player, int p
 	packet.addByte(0x0C);
 	packet.addShort(0x8B);
 	packet.addShort(0x2);
-	packet.addInt(WorldServerPartyHandler::parties[Players::Instance()->getPlayer(playerid)->party]->getLeader());
+	packet.addInt(PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party]->getLeader());
 	packet.addByte(0);
 	packet.addInt(Players::Instance()->getPlayer(playerid)->party);
 
 	packet.send(player);
 }
 
-void WorldServerPartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int playerid, int target) {
+void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int playerid, int target) {
 	Packet packet;
 	packet.addHeader(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -112,12 +112,12 @@ void WorldServerPartyPacket::updateParty(WorldServerAcceptPlayer *player, char t
 			packet.addByte(0x14);
 			packet.addShort(0);
 	}
-	addParty(packet, WorldServerPartyHandler::parties[Players::Instance()->getPlayer(playerid)->party], Players::Instance()->getPlayer(playerid)->channel);
+	addParty(packet, PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party], Players::Instance()->getPlayer(playerid)->channel);
 
 	packet.send(player);
 }
 
-void WorldServerPartyPacket::partyError(WorldServerAcceptPlayer *player, int playerid, char error) {
+void PartyPacket::partyError(WorldServerAcceptPlayer *player, int playerid, char error) {
 	Packet packet;
 	packet.addHeader(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -127,7 +127,7 @@ void WorldServerPartyPacket::partyError(WorldServerAcceptPlayer *player, int pla
 	packet.send(player);
 }
 
-void WorldServerPartyPacket::addParty(Packet &packet, Party *party, int tochan) {
+void PartyPacket::addParty(Packet &packet, Party *party, int tochan) {
 	size_t offset = 6-party->members.size();
 	
 	//Add party member's ids to packet
