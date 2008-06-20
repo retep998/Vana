@@ -32,6 +32,10 @@ namespace WorldServerAcceptHandler {
 	void registerPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
 	void removePlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
 	void scrollingHeader(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void partyOperation(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void updateLevel(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void updateJob(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void updateMap(WorldServerAcceptPlayer *player, ReadPacket *packet);
 }
 
 #endif

@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "Player.h"
 #include "ReadPacket.h"
+#include "PacketCreator.h"
 #include <iostream>
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, ReadPacket *packet) {
@@ -101,4 +102,11 @@ void WorldServerConnectHandler::scrollingHeader(ReadPacket *packet) {
 
 void WorldServerConnectHandler::newConnectable(ReadPacket *packet) {
 	Connectable::Instance()->newPlayer(packet->getInt());
+}
+
+void WorldServerConnectHandler::forwardPacket(ReadPacket *packet) {
+	Packet ppacket;
+	int playerid = packet->getInt();
+	ppacket.addBuffer(packet);
+	ppacket.send(Players::players[playerid]);
 }

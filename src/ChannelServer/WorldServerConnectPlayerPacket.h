@@ -26,11 +26,16 @@ class WorldServerConnectPlayer;
 
 namespace WorldServerConnectPlayerPacket {
 	void playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel);
-	void registerPlayer(WorldServerConnectPlayer *player, int playerid, const string &name);
+	void registerPlayer(WorldServerConnectPlayer *player, int playerid, const string &name, int map, int job, int level);
 	void removePlayer(WorldServerConnectPlayer *player, int playerid);
 	void findPlayer(WorldServerConnectPlayer *player, int playerid, const string &findee_name);
 	void whisperPlayer(WorldServerConnectPlayer *player, int playerid, const string &whisperee, const string &message);
 	void scrollingHeader(WorldServerConnectPlayer *player, const string &message);
+	void partyOperation(WorldServerConnectPlayer *player, char type, int playerid, int target = 0);
+	void partyInvite(WorldServerConnectPlayer *player, int playerid, const string &invitee);
+	void updateLevel(WorldServerConnectPlayer *player, int playerid, int level);
+	void updateJob(WorldServerConnectPlayer *player, int playerid, int job);
+	void updateMap(WorldServerConnectPlayer *player, int playerid, int map);
 };
 
 #endif

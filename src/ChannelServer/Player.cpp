@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "Pos.h"
 #include "KeyMaps.h"
+#include "Party.h"
 
 Player::~Player() {
 	if (isconnect) {
@@ -67,6 +68,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet); break;
 		case RECV_CHANGE_MAP: Maps::moveMap(this, packet); break;
 		case RECV_MOVE_PLAYER: Players::handleMoving(this, packet); break;
+		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
 		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet); break;
 		case RECV_GET_PLAYER_INFO: Players::getPlayerInfo(this, packet); break;
 		case RECV_CHANGE_MAP_SPECIAL: Maps::moveMapS(this, packet); break; // Portals that cause scripted events
@@ -220,7 +222,7 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	setOnline(true);
 	isconnect = true;
-	WorldServerConnectPlayerPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name);
+	WorldServerConnectPlayerPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name, map, job, level);
 }
 
 void Player::setHP(int hp, bool is) {
@@ -256,6 +258,7 @@ void Player::setAp(short ap) {
 
 void Player::setJob(short job) {
 	this->job = job;
+	WorldServerConnectPlayerPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->getPlayerid(), job);
 	PlayerPacket::updateStat(this, 0x20, job);
 }
 

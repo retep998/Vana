@@ -36,6 +36,7 @@ void WorldServerConnectPlayer::realHandleRequest(ReadPacket *packet) {
 		case INTER_WHISPER: WorldServerConnectHandler::whisperPlayer(packet); break;
 		case INTER_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet); break;
 		case INTER_NEW_CONNECTABLE: WorldServerConnectHandler::newConnectable(packet); break;
+		case INTER_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
 	}
 }
 

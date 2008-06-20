@@ -20,6 +20,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "InterHeader.h"
 
+void WorldServerConnectPlayerPacket::updateLevel(WorldServerConnectPlayer *player, int playerid, int level) {
+	Packet packet;
+	packet.addHeader(INTER_UPDATE_LEVEL);
+	packet.addInt(playerid);
+	packet.addInt(level);
+	packet.send(player);
+}
+
+void WorldServerConnectPlayerPacket::updateJob(WorldServerConnectPlayer *player, int playerid, int job) {
+	Packet packet;
+	packet.addHeader(INTER_UPDATE_JOB);
+	packet.addInt(playerid);
+	packet.addInt(job);
+	packet.send(player);
+}
+
+void WorldServerConnectPlayerPacket::updateMap(WorldServerConnectPlayer *player, int playerid, int map) {
+	Packet packet;
+	packet.addHeader(INTER_UPDATE_MAP);
+	packet.addInt(playerid);
+	packet.addInt(map);
+	packet.send(player);
+}
+
+void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *player, char type, int playerid, int target) {
+	Packet packet;
+	packet.addHeader(INTER_PARTY_OPERATION);
+	packet.addByte(type);
+	packet.addInt(playerid);
+	if (target != 0) {
+		packet.addInt(target);
+	}
+	packet.send(player);
+}
+
+void WorldServerConnectPlayerPacket::partyInvite(WorldServerConnectPlayer *player, int playerid, const string &invitee) {
+	Packet packet;
+	packet.addHeader(INTER_PARTY_OPERATION);
+	packet.addByte(0x04);
+	packet.addInt(playerid);
+	packet.addString(invitee);
+	packet.send(player);
+}
+
 void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel) {
 	Packet packet;
 	packet.addHeader(INTER_PLAYER_CHANGE_CHANNEL);
@@ -28,11 +72,14 @@ void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlaye
 	packet.send(player);
 }
 
-void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *player, int playerid, const string &name) {
+void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *player, int playerid, const string &name, int map, int job, int level) {
 	Packet packet;
 	packet.addHeader(INTER_REGISTER_PLAYER);
 	packet.addInt(playerid);
 	packet.addString(name);
+	packet.addInt(map);
+	packet.addInt(job);
+	packet.addInt(level);
 	packet.send(player);
 }
 

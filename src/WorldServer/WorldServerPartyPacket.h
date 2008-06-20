@@ -15,45 +15,24 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERS_H
-#define PLAYERS_H
+#ifndef WORLDSERVERPARTYPACKET_H
+#define WORLDSERVERPARTYPACKET_H
 
-#include <hash_map>
 #include <string>
-
 using std::string;
-using stdext::hash_map;
 
-struct Player {
-	int id;
-	string name;
-	int channel;
-	int party;
-	int map;
-	int job;
-	int level;
-	bool online;
-};
+class WorldServerAcceptPlayer;
+class Party;
+class Packet;
 
-class Players {
-public:
-	static Players * Instance() {
-		if (singleton == 0)
-			singleton = new Players;
-		return singleton;
-	}
-	void registerPlayer(int id, const string &name, int channel, int map, int job, int level);
-	void remove(int id, int channel = -1);
-	Player * getPlayerFromName(const string &name);
-	Player * getPlayer(int id) { return players[id]; }
-	int size();
-private:
-	Players() {};
-	Players(const Players&);
-	Players& operator=(const Players&);
-	static Players *singleton;
-
-	hash_map <int, Player *> players;
+namespace WorldServerPartyPacket{
+	void createParty(WorldServerAcceptPlayer *player, int playerid);
+	void disbandParty(WorldServerAcceptPlayer *player, int playerid);
+	void partyError(WorldServerAcceptPlayer *player, int playerid, char error);
+	void giveLeader(WorldServerAcceptPlayer *player, int playerid, int target, bool is);
+	void invitePlayer(WorldServerAcceptPlayer *player, int playerid, const string &inviter);
+	void updateParty(WorldServerAcceptPlayer *player, char type, int playerid, int target = 0);
+	void addParty(Packet &packet, Party *party, int tochan);
 };
 
 #endif
