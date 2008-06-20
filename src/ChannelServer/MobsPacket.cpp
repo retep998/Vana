@@ -175,7 +175,7 @@ void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadP
 		if (display == 0x40 || display == 0x48) // Skip itemid for Shadow Claw
 			pack->skipBytes(4);
 	}
-	else if (!(display == 0x40 || display == 0x48)) { // Shadow Claw puts the item ID in the packet
+	else if (player->skills->getActiveSkillLevel(4121006)) { // Shadow Claw puts the item ID in the packet
 		itemid = player->inv->getItem(2, slot)->id;
 	}
 	else
