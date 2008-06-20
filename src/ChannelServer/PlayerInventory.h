@@ -107,9 +107,10 @@ public:
 			return equips[slot];
 		return 0;
 	}
-	void deleteEquip(short slot) {
+	void deleteEquip(short slot, bool destroy = true) {
 		if (equips.find(slot) != equips.end()) {
-			delete equips[slot];
+			if (destroy)
+				delete equips[slot];
 			equips.erase(slot);
 		}
 	}
@@ -126,11 +127,13 @@ public:
 			return items[inv][slot];
 		return 0;
 	}
-	void deleteItem(char inv, short slot) {
+	void deleteItem(char inv, short slot, bool destroy = true) {
 		inv -= 2;
 		if (items[inv].find(slot) != items[inv].end()) {
-			itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
-			delete items[inv][slot];
+			if (destroy) {
+				itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
+				delete items[inv][slot];
+			}
 			items[inv].erase(slot);
 		}
 	}
@@ -142,6 +145,9 @@ public:
 		if (items[inv].find(slot) != items[inv].end())
 			return items[inv][slot]->amount;
 		return 0;
+	}
+	void changeItemAmount(int itemid, short amount) {
+		itemamounts[itemid] += amount;
 	}
 	int getItemAmount(int itemid) {
 		if (itemamounts.find(itemid) != itemamounts.end())
