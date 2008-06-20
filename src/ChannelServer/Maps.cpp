@@ -140,10 +140,7 @@ void Map::addMob(Mob *mob) {
 void Map::updateMobControl() {
 	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
-			if (iter->second->getControl() == 0) // If one mob in a map has a control...
-				updateMobControl(iter->second);
-			else
-				break; // all others will due to the way things are setup
+			updateMobControl(iter->second);
 	}
 }
 
