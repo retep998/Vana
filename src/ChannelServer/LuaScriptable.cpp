@@ -193,6 +193,21 @@ int LuaExports::getHP(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getMHP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getMHP());
+	return 1;
+}
+
+int LuaExports::getMP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getMP());
+	return 1;
+}
+
+int LuaExports::getMMP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getMMP());
+	return 1;
+}
+
 int LuaExports::getHair(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getHair());
 	return 1;
@@ -285,6 +300,24 @@ int LuaExports::setReactorsState(lua_State *luaVm) {
 int LuaExports::setHP(lua_State *luaVm) {
 	int hp = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setHP(hp);
+	return 1;
+}
+
+int LuaExports::setMHP(lua_State *luaVm) {
+	int hp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setMHP(hp);
+	return 1;
+}
+
+int LuaExports::setMP(lua_State *luaVm) {
+	int mp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setMP(mp);
+	return 1;
+}
+
+int LuaExports::setMMP(lua_State *luaVm) {
+	int mp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setMMP(mp);
 	return 1;
 }
 
