@@ -76,7 +76,7 @@ struct Item {
 		amount = item->amount;
 	}
 	int id;
-	int amount;
+	short amount;
 };
 typedef hash_map<short, Item *> iteminventory;
 

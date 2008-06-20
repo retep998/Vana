@@ -321,9 +321,9 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1); // 0x00 = AoE, 0x41 = other
 	if (!(display == 0x40 || display == 0x48)) { // Shadow Claw doesn't take stars
 		if (skillid == 4111005) // Avenger
-			Inventory::takeItemSlot(player, pos, 2, 3*hits);
+			Inventory::takeItemSlot(player, 2, pos, 3*hits);
 		else
-			Inventory::takeItemSlot(player, pos, 2, hits);
+			Inventory::takeItemSlot(player, 2, pos, hits);
 	}
 	else
 		packet->skipBytes(4); // Star ID added by Shadow Claw

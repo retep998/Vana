@@ -293,38 +293,9 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 			// hacking
 			return;
 		}
-		bool isequip = false;
-		if (Drops::equips.find(itemid) != Drops::equips.end())
-			isequip = true;
-		if (isequip && player->inv->getMesos() < price) {
-			// hacking
-			return;
-		}
-		else if (player->inv->getMesos() < price * howmany) {
-			// hacking
-			return;
-		}
-		if (isequip) {
-			Equip *equip = setEquipStats(player, itemid);
-			short slot = findSlot(player, 1, itemid, 1);
-			addEquip(player, equip);
-			player->inv->setMesos(player->inv->getMesos() - price);
-			InventoryPacket::bought(player);
-		}
-		else {
-			if (Drops::items.find(itemid) == Drops::items.end())
-				return;
-			char type = Drops::items[itemid].type;
-			Item *item = new Item;
-			if (ISSTAR(itemid))
-				item->amount = Drops::items[itemid].maxslot + player->skills->getSkillLevel(4100000)*10; // Take Claw Mastery into account
-			else
-				item->amount = howmany;
-			item->id = itemid;
-			addItem(player, item);
-			player->inv->setMesos(player->inv->getMesos() - price * howmany);
-			InventoryPacket::bought(player);
-		}
+		addNewItem(player, itemid, howmany);
+		player->inv->setMesos(player->inv->getMesos() - price * howmany);
+		InventoryPacket::bought(player);
 	}
 	else if (type == 1) {
 		short slot = packet->getShort();
@@ -342,12 +313,12 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 		}
 		else {
 			Item *item = player->inv->getItem(inv, slot);
-			if (item->amount < amount) {
+			if (item == 0 || item->amount < amount) {
 				// hacking
 				return;
 			}
 			player->inv->setMesos(player->inv->getMesos() + Drops::items[itemid].price * amount);
-			takeItemSlot(player, slot, type, amount, true);
+			takeItemSlot(player, inv, slot, amount, true);
 		}
 		InventoryPacket::bought(player);
 	}
@@ -413,7 +384,7 @@ void Inventory::takeItem(Player *player, int itemid, int howmany) {
 	}
 }
 
-void Inventory::takeItemSlot(Player *player, short slot, char inv, short amount, bool takeStar) {
+void Inventory::takeItemSlot(Player *player, char inv, short slot, short amount, bool takeStar) {
 	Item *item = player->inv->getItem(inv, slot);
 	if (item == 0)
 		return;
@@ -435,7 +406,7 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 		// hacking
 		return;
 	}
-	takeItemSlot(player, slot, 2, 1);
+	takeItemSlot(player, 2, slot, 1);
 	// Alchemist
 	int alchemist = 0;
 	if (player->skills->getSkillLevel(4110000) > 0) {
@@ -592,7 +563,7 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 				player->skills->setMaxSkillLevel(skillid, newMaxLevel);
 				succeed = true;
 			}
-			takeItemSlot(player, slot, 2, 1);
+			takeItemSlot(player, 2, slot, 1);
 			break;
 		}
 	}
@@ -631,7 +602,7 @@ void Inventory::useSummonBag(Player *player, ReadPacket *packet) {
 	}
 	if (Drops::items.find(itemid) == Drops::items.end())
 		return;
-	takeItemSlot(player, slot, 2, 1);
+	takeItemSlot(player, 2, slot, 1);
 	for (size_t i = 0; i < Drops::consumes[itemid].mobs.size(); i++) {
 		if (Randomizer::Instance()->randInt(100) <= Drops::consumes[itemid].mobs[i].chance) {
 			Mobs::spawnMob(player, Drops::consumes[itemid].mobs[i].mobid);
@@ -648,7 +619,7 @@ void Inventory::useReturnScroll(Player *player, ReadPacket *packet) {
 	}
 	if (Drops::items.find(itemid) == Drops::items.end())
 		return;
-	takeItemSlot(player, slot, 2, 1);
+	takeItemSlot(player, 2, slot, 1);
 	int map = Drops::consumes[itemid].moveTo;
 	if (map == 999999999)
 		Maps::changeMap(player, Maps::maps[player->getMap()]->getInfo().rm, 0);
@@ -673,7 +644,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 	if (equip->slots > 0) {
 		if (Drops::items.find(itemid) == Drops::items.end())
 			return;
-		takeItemSlot(player, slot, 2, 1);
+		takeItemSlot(player, 2, slot, 1);
 		if (wscroll == 2)
 			takeItem(player, 2340000, 1);
 		if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].success) {
