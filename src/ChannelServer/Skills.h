@@ -151,6 +151,7 @@ namespace Skills {
 
 class PlayerSkills {
 public:
+	PlayerSkills(Player *player) : player(player) { }
 	void addSkillLevel(int skillid, int level, bool sendpacket = true) {
 		if (playerskills.find(skillid) != playerskills.end())
 			playerskills[skillid] += level;
@@ -244,8 +245,6 @@ public:
 			return 0;
 		return activelevels[skillid];
 	}
-
-	void setPlayer(Player *player) { this->player = player; }
 private:
 	hash_map <int, int> playerskills;
 	hash_map <int, int> maxlevels;

@@ -108,11 +108,9 @@ void Player::playerConnect(ReadPacket *packet) {
 		return;
 	}
 	setPlayerid(id);
-	inv.reset(new PlayerInventory);
-	skills.reset(new PlayerSkills);
-	quests.reset(new PlayerQuests);
-	skills->setPlayer(this);
-	quests->setPlayer(this);
+	inv.reset(new PlayerInventory(this));
+	skills.reset(new PlayerSkills(this));
+	quests.reset(new PlayerQuests(this));
 
 	mysqlpp::Query query = db.query();
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << getPlayerid();
@@ -149,7 +147,6 @@ void Player::playerConnect(ReadPacket *packet) {
 	gm = res[0]["gm"];
 
 	inv->setMesosStart(res[0]["mesos"]);
-	inv->setPlayer(this);
 
 	query << "SELECT pos, equipid, type, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM equip WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();

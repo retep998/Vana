@@ -82,7 +82,7 @@ typedef hash_map<short, Item *> iteminventory;
 
 class PlayerInventory {
 public:
-	PlayerInventory() {
+	PlayerInventory(Player *player) : player(player) {
 		maxslots[0] = 100; // Equip
 		maxslots[1] = 100; // Use
 		maxslots[2] = 100; // Setup
@@ -91,9 +91,6 @@ public:
 	}
 	char getMaxslots(char inv) {
 		return maxslots[inv-1];
-	}
-	void setPlayer(Player *player) {
-		this->player = player;
 	}
 	void setMesosStart(int mesos) {
 		this->mesos = mesos;

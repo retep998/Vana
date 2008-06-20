@@ -88,13 +88,11 @@ namespace Quests {
 
 class PlayerQuests {
 public:
+	PlayerQuests(Player *player) : player(player) { }
 	void addQuest(int questid, int npcid);
 	void updateQuestMob(int mobid);
 	void checkDone(Quest &quest);
 	void finishQuest(short questid, int npcid);
-	void setPlayer(Player *player) {
-		this->player=player;
-	}
 	bool isQuestActive(short questid) {
 		for (unsigned int i=0; i<quests.size(); i++) {
 			if (quests[i].id == questid) {
