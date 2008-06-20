@@ -186,6 +186,10 @@
 				Name="ChannelServer"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\BuddyList.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\ChannelServer.cpp"
 					>
 				</File>
@@ -379,6 +383,10 @@
 			<Filter
 				Name="ChannelServer"
 				>
+				<File
+					RelativePath=".\src\ChannelServer\BuddyList.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\ChannelServer\ChannelServer.h"
 					>

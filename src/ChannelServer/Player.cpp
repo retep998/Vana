@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "KeyMaps.h"
 #include "Party.h"
+#include "BuddyList.h"
 
 Player::~Player() {
 	if (isconnect) {
@@ -111,6 +112,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	inv.reset(new PlayerInventory(this));
 	skills.reset(new PlayerSkills(this));
 	quests.reset(new PlayerQuests(this));
+	buddyList.reset(new BuddyList(this));
 
 	mysqlpp::Query query = db.query();
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << getPlayerid();

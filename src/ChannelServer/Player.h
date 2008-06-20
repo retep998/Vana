@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Quests.h"
 #include "ChannelServer.h"
+#include "BuddyList.h"
 #include "Pos.h"
 #include <vector>
 #include <string>
@@ -243,6 +244,7 @@ public:
 	auto_ptr<PlayerInventory> inv;
 	auto_ptr<PlayerSkills> skills;
 	auto_ptr<PlayerQuests> quests;
+	auto_ptr<BuddyList> buddyList;
 private:
 	void playerConnect(ReadPacket *packet);
 	void changeKey(ReadPacket *packet);
