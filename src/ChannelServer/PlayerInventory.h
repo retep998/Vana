@@ -99,18 +99,20 @@ public:
 	int getMesos() {
 		return this->mesos;
 	}
-	void addEquip(short pos, Equip *equip) {
-		equips[pos] = equip;
+	void addEquip(short slot, Equip *equip) {
+		if (equip == 0)
+			equips.erase(slot);
+		else
+			equips[slot] = equip;
 	}
 	Equip * getEquip(short slot) {
 		if (equips.find(slot) != equips.end())
 			return equips[slot];
 		return 0;
 	}
-	void deleteEquip(short slot, bool destroy = true) {
+	void deleteEquip(short slot) {
 		if (equips.find(slot) != equips.end()) {
-			if (destroy)
-				delete equips[slot];
+			delete equips[slot];
 			equips.erase(slot);
 		}
 	}
@@ -127,18 +129,20 @@ public:
 			return items[inv][slot];
 		return 0;
 	}
-	void deleteItem(char inv, short slot, bool destroy = true) {
+	void deleteItem(char inv, short slot) {
 		inv -= 2;
 		if (items[inv].find(slot) != items[inv].end()) {
-			if (destroy) {
-				itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
-				delete items[inv][slot];
-			}
+			itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
+			delete items[inv][slot];
 			items[inv].erase(slot);
 		}
 	}
 	void setItem(char inv, short slot, Item *item) {
-		items[inv-2][slot] = item;
+		inv -= 2;
+		if (item == 0)
+			items[inv].erase(slot);
+		else
+			items[inv][slot] = item;
 	}
 	int getItemAmountBySlot(char inv, short slot) {
 		inv -= 2;
