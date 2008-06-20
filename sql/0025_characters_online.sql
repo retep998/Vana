@@ -1,0 +1,1 @@
+ALTER TABLE `characters` ADD COLUMN `online` TINYINT(1) DEFAULT 0;
