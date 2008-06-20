@@ -354,6 +354,10 @@
 				Name="DataBaseLoading"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\DataProvider.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\InitializeChannel.cpp"
 					>
 				</File>
@@ -555,6 +559,10 @@
 			<Filter
 				Name="DataBaseLoading"
 				>
+				<File
+					RelativePath=".\src\ChannelServer\DataProvider.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\ChannelServer\InitializeChannel.h"
 					>
