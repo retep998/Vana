@@ -341,13 +341,11 @@ void Inventory::addNewItem(Player *player, int itemid, int howmany) {
 		if (Drops::items.find(itemid) == Drops::items.end())
 			return;
 		char inv = Drops::items[itemid].type;
-		int max = Drops::items[itemid].maxslot;
-		if (ISSTAR(itemid))
-			max += player->skills->getSkillLevel(4100000)*10;
+		short max = Drops::items[itemid].maxslot;
 		Item *item = new Item();
 		item->id = itemid;
-		if (howmany - max > 0)
-			item->amount = max;
+		if (ISSTAR(itemid))
+			item->amount = max + player->skills->getSkillLevel(4100000)*10;
 		else
 			item->amount = howmany;
 
