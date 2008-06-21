@@ -70,8 +70,10 @@ namespace LuaExports {
 	int getMap(lua_State *luaVm);
 	int getHP(lua_State *luaVm);
 	int getMHP(lua_State *luaVm);
+	int getRMHP(lua_State *luaVm);
 	int getMP(lua_State *luaVm);
 	int getMMP(lua_State *luaVm);
+	int getRMMP(lua_State *luaVm);
 	int getHair(lua_State *luaVm);
 	int getEyes(lua_State *luaVm);
 	int getPlayerVariable(lua_State *luaVm);
@@ -87,8 +89,10 @@ namespace LuaExports {
 	int setReactorsState(lua_State *luaVm);
 	int setHP(lua_State *luaVm);
 	int setMHP(lua_State *luaVm);
+	int setRMHP(lua_State *luaVm);
 	int setMP(lua_State *luaVm);
 	int setMMP(lua_State *luaVm);
+	int setRMMP(lua_State *luaVm);
 	int setSTR(lua_State *luaVm);
 	int setDEX(lua_State *luaVm);
 	int setINT(lua_State *luaVm);
