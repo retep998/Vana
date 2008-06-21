@@ -59,8 +59,10 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMap", &LuaExports::getMap);
 	lua_register(luaVm, "getHP", &LuaExports::getHP);
 	lua_register(luaVm, "getMHP", &LuaExports::getMHP);
+	lua_register(luaVm, "getRMHP", &LuaExports::getRMHP);
 	lua_register(luaVm, "getMP", &LuaExports::getMP);
 	lua_register(luaVm, "getMMP", &LuaExports::getMMP);
+	lua_register(luaVm, "getRMMP", &LuaExports::getMMP);
 	lua_register(luaVm, "getHair", &LuaExports::getHair);
 	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
 	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
@@ -74,8 +76,10 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setReactorsState", &LuaExports::setReactorsState);
 	lua_register(luaVm, "setHP", &LuaExports::setHP);
 	lua_register(luaVm, "setMHP", &LuaExports::setMHP);
+	lua_register(luaVm, "setRMHP", &LuaExports::setRMHP);
 	lua_register(luaVm, "setMP", &LuaExports::setMP);
 	lua_register(luaVm, "setMMP", &LuaExports::setMMP);
+	lua_register(luaVm, "setRMMP", &LuaExports::setRMMP);
 	lua_register(luaVm, "setSTR", &LuaExports::setSTR);
 	lua_register(luaVm, "setDEX", &LuaExports::setDEX);
 	lua_register(luaVm, "setINT", &LuaExports::setINT);
@@ -204,6 +208,11 @@ int LuaExports::getMHP(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getRMHP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getRMHP());
+	return 1;
+}
+
 int LuaExports::getMP(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getMP());
 	return 1;
@@ -211,6 +220,11 @@ int LuaExports::getMP(lua_State *luaVm) {
 
 int LuaExports::getMMP(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getMMP());
+	return 1;
+}
+
+int LuaExports::getRMMP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getRMMP());
 	return 1;
 }
 
@@ -315,6 +329,13 @@ int LuaExports::setMHP(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::setRMHP(lua_State *luaVm) {
+	int hp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setRMHP(hp);
+	return 1;
+}
+
+
 int LuaExports::setMP(lua_State *luaVm) {
 	int mp = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setMP(mp);
@@ -324,6 +345,12 @@ int LuaExports::setMP(lua_State *luaVm) {
 int LuaExports::setMMP(lua_State *luaVm) {
 	int mp = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setMMP(mp);
+	return 1;
+}
+
+int LuaExports::setRMMP(lua_State *luaVm) {
+	int mp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setRMMP(mp);
 	return 1;
 }
 
