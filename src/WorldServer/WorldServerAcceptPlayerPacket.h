@@ -32,6 +32,7 @@ namespace WorldServerAcceptPlayerPacket {
 	void whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, const string &whisperer, int channel, const string &message);
 	void scrollingHeader(const string &message);
 	void newConnectable(int channel, int playerid);
+	void groupChat(WorldServerAcceptPlayer *player, int playerid, char type, const string &message, const string &sender);
 };
 
 #endif

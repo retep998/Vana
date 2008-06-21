@@ -20,6 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Channels.h"
 
+void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, int playerid, char type, const string &message, const string &sender) {
+	Packet packet;
+	packet.addHeader(INTER_FORWARD_TO);
+	packet.addInt(playerid);
+	packet.addShort(SEND_GROUP_CHAT);
+	packet.addByte(type);
+	packet.addString(sender);
+	packet.addString(message);
+	packet.send(player);
+}
+
 void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int channel, short port) {
 	Packet packet;
 	packet.addHeader(INTER_CHANNEL_CONNECT);

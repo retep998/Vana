@@ -36,6 +36,7 @@ namespace WorldServerConnectPlayerPacket {
 	void updateLevel(WorldServerConnectPlayer *player, int playerid, int level);
 	void updateJob(WorldServerConnectPlayer *player, int playerid, int job);
 	void updateMap(WorldServerConnectPlayer *player, int playerid, int map);
+	void groupChat(WorldServerConnectPlayer *player, char type, int playerid, string chat);
 };
 
 #endif
