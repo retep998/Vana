@@ -104,9 +104,7 @@ public:
 	unsigned short getMHP() {
 		return this->mhp;
 	}
-	void setRMHP(int rmhp) {
-		this->rmhp = rmhp;
-	}
+	void setRMHP(int rmhp);
 	unsigned short getRMHP() {
 		return this->rmhp;
 	}
@@ -114,9 +112,7 @@ public:
 	unsigned short getMMP() {
 		return this->mmp;
 	}
-	void setRMMP(int rmmp) {
-		this->rmmp = rmmp;
-	}
+	void setRMMP(int rmmp);
 	unsigned short getRMMP() {
 		return this->rmmp;
 	}
