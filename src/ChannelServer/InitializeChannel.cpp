@@ -35,7 +35,6 @@ using std::string;
 using MiscUtilities::atob;
 
 void Initializing::checkVEDBVersion() {
-	db.select_db("vedb");
 	mysqlpp::Query query = db.query("SELECT * FROM vedb_info LIMIT 1");
 	mysqlpp::StoreQueryResult res;
 
@@ -775,6 +774,5 @@ void Initializing::initializeMaps() {
 		foot.pos2 = Pos(atoi(footsRow[3]), atoi(footsRow[4]));
 		Maps::maps[atoi(footsRow[0])]->addFoothold(foot);
 	}
-	db.select_db("maplestory");
 	std::cout << "DONE" << std::endl;
 }
