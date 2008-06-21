@@ -144,7 +144,7 @@ public:
 		else
 			items[inv][slot] = item;
 	}
-	int getItemAmountBySlot(char inv, short slot) {
+	short getItemAmountBySlot(char inv, short slot) {
 		inv -= 2;
 		if (items[inv].find(slot) != items[inv].end())
 			return items[inv][slot]->amount;
