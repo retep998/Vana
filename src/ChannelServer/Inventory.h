@@ -30,14 +30,13 @@ struct Item;
 namespace Inventory {
 	void startTimer();
 	void stopTimerPlayer(Player *player);
-	extern int findSlot(Player *player, char inv, int itemid, short amount);
 	extern bool isCash(int itemid);
 	extern ItemTimer * timer;
 	extern Equip * setEquipStats(Player *player, int equipid);
 	void useShop(Player *player, ReadPacket *packet);
 	void itemMove(Player *player, ReadPacket *packet);
-	void addEquip(Player *player, Equip *equip, bool is = false);
-	void addItem(Player *player, Item *item, bool is = false);
+	bool addEquip(Player *player, Equip *equip, bool is = false);
+	short addItem(Player *player, Item *item, bool is = false);
 	void addNewItem(Player *player, int itemid, int amount);
 	void takeItem(Player *player, int itemid, int howmany);
 	void useItem(Player *player, ReadPacket *packet);

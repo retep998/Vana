@@ -185,37 +185,6 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 	}
 }
 
-int Inventory::findSlot(Player *player, char inv, int itemid, short amount) {
-	if (inv == 1) { // Equips
-		for (short i = 1; i <= player->inv->getMaxslots(1); i++) {
-			if (!player->inv->getEquip(i))
-				return i;
-		}
-	}
-	else { // Items
-		if (ISSTAR(itemid)) { // Stars
-			for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
-				if (!player->inv->getItem(inv, i))
-					return i;
-			}
-		}
-		else { // Other items
-			short freeslot = 0;
-			for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
-				Item *curritem = player->inv->getItem(inv, i);
-				if (curritem != 0) {
-					if (curritem->id == itemid && curritem->amount + amount <= Drops::items[itemid].maxslot)
-						return i;
-				}
-				else if (freeslot == 0)
-					freeslot = i;
-			}
-			return freeslot;
-		}
-	}
-	return 0;
-}
-
 Equip * Inventory::setEquipStats(Player *player, int equipid) {
 	EquipInfo ei = Drops::equips[equipid];
 	Equip *equip = new Equip;
@@ -241,44 +210,56 @@ Equip * Inventory::setEquipStats(Player *player, int equipid) {
 	return equip;
 }
 
-void Inventory::addEquip(Player *player, Equip *equip, bool is) {
-	char slot = findSlot(player, 1, equip->id, 1);
-	InventoryPacket::addEquip(player, slot, equip, is);
-	player->inv->addEquip(slot, equip);
+bool Inventory::addEquip(Player *player, Equip *equip, bool is) {
+	short slot = 0;
+	for (short i = 1; i <= player->inv->getMaxslots(1); i++) {
+		if (!player->inv->getEquip(i))
+			slot = i;
+	}
+	if (slot != 0) {
+		player->inv->addEquip(slot, equip);
+		InventoryPacket::addEquip(player, slot, equip, is);
+		return true;
+	}
+	return false;
 }
 
-void Inventory::addItem(Player *player, Item *item, bool is) {
+short Inventory::addItem(Player *player, Item *item, bool is) {
 	player->inv->changeItemAmount(item->id, item->amount);
 	char inv = Drops::items[item->id].type;
+	short freeslot = 0;
 	if (!ISSTAR(item->id)) {
-		for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
-			Item *olditem = player->inv->getItem(inv, i);
-			if (olditem == 0)
-				continue;
-			if (olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
-				if (item->amount + olditem->amount > Drops::items[item->id].maxslot) {
-					int amount = Drops::items[item->id].maxslot - olditem->amount;
-					item->amount -= amount;
-					olditem->amount = Drops::items[item->id].maxslot;
-					InventoryPacket::addItem(player, inv, i, olditem, is);
-				}
-				else {
-					item->amount += olditem->amount;
-					player->inv->deleteItem(inv, i);
-					player->inv->addItem(inv, i, item);
-					InventoryPacket::addItem(player, inv, i, item, is);
-					return;
+		for (short s = 1; s <= player->inv->getMaxslots(inv); s++) {
+			Item *olditem = player->inv->getItem(inv, s);
+			if (olditem != 0) {
+				if (olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
+					if (item->amount + olditem->amount > Drops::items[item->id].maxslot) {
+						int amount = Drops::items[item->id].maxslot - olditem->amount;
+						item->amount -= amount;
+						olditem->amount = Drops::items[item->id].maxslot;
+						InventoryPacket::addItem(player, inv, s, olditem, is);
+					}
+					else {
+						item->amount += olditem->amount;
+						player->inv->deleteItem(inv, s);
+						player->inv->addItem(inv, s, item);
+						InventoryPacket::addItem(player, inv, s, item, is);
+						return 0;
+					}
 				}
 			}
+			else if (!freeslot)
+				freeslot = s;
 		}
 	}
-	short slot = findSlot(player, inv, item->id, item->amount);
-	if (slot != 0) {
-		player->inv->addItem(inv, slot, item);
-		InventoryPacket::addNewItem(player, inv, slot, item, is);
+	if (freeslot != 0) {
+		player->inv->addItem(inv, freeslot, item);
+		InventoryPacket::addNewItem(player, inv, freeslot, item, is);
+		return 0;
 	}
 	else {
 		player->inv->changeItemAmount(item->id, -item->amount);
+		return item->amount;
 	}
 }
 
@@ -357,8 +338,7 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 			amount = 0;
 		}
 
-		addItem(player, item);
-		if (amount > 0)
+		if (addItem(player, item) == 0 && amount > 0)
 			addNewItem(player, itemid, amount);
 	}
 }
