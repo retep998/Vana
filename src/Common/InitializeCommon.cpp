@@ -77,6 +77,6 @@ void Initializing::checkSchemaVersion(bool update) {
 
 void Initializing::setUsersOffline(int onlineid) {
 	mysqlpp::Query query = db.query();
-	query << "UPDATE users SET online = 0 WHERE online = " << mysqlpp::quote << onlineid;
+	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = 0, characters.online = 0 WHERE users.online = " << mysqlpp::quote << onlineid;
 	query.exec();
 }
