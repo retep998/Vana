@@ -314,6 +314,7 @@ void Player::setRMMP(int rmmp) {
 
 void Player::setLevel(int level) {
 	this->level = (unsigned char) level;
+	WorldServerConnectPlayerPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), getPlayerid(), level);
 }
 
 void Player::changeChannel(char channel) {
