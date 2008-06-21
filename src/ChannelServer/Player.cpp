@@ -294,10 +294,22 @@ void Player::setMHP(int mhp) {
 	PlayerPacket::updateStat(this, 0x800, getRMHP());
 }
 
+void Player::setRMHP(int rmhp) {
+	if (rmhp > 30000) { rmhp = 30000; }
+	this->rmhp = rmhp;
+	PlayerPacket::updateStat(this, 0x800, rmhp);
+}
+
 void Player::setMMP(int mmp) {
 	if (mmp > 30000) { mmp = 30000; }
 	this->mmp = mmp;
-	PlayerPacket::updateStat(this, 0x2000, getRMMP());
+	PlayerPacket::updateStat(this, 0x800, getRMHP());
+}
+
+void Player::setRMMP(int rmmp) {
+	if (rmmp > 30000) { rmmp = 30000; }
+	this->rmmp = rmmp;
+	PlayerPacket::updateStat(this, 0x2000, rmmp);
 }
 
 void Player::setLevel(int level) {
