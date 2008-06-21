@@ -33,7 +33,7 @@ void Shops::showShop(Player *player, int id) {
 	packet.addHeader(SEND_SHOP_OPEN);
 	packet.addInt(shops[id].npc);
 	packet.addShort(shops[id].items.size() + rechargables.size());
-	for (unsigned int i=0; i<shops[id].items.size(); i++) {
+	for (size_t i = 0; i < shops[id].items.size(); i++) {
 		packet.addInt(shops[id].items[i].id);
 		packet.addInt(shops[id].items[i].price);
 		if (ISSTAR(shops[id].items[i].id)) {
