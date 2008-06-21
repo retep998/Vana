@@ -44,7 +44,7 @@ public:
 	}
 	void registerPlayer(int id, const string &name, int channel, int map, int job, int level);
 	void remove(int id, int channel = -1);
-	Player * getPlayerFromName(const string &name);
+	Player * getPlayerFromName(const string &name, bool includeOffline = false);
 	Player * getPlayer(int id) { return players[id]; }
 	int size();
 private:
