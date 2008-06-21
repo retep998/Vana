@@ -114,12 +114,9 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			if (equip == 0)
 				return;
 			Equip droppedequip = Equip(equip);
-			Drop *drop = new Drop(player->getMap(), droppedequip, player->getPos(), player->getPlayerid());
+			Drop *drop = new Drop(player->getMap(), droppedequip, player->getPos(), 0);
 			drop->setTime(0);
-			Dropped dropper;
-			dropper.id = player->getPlayerid();
-			dropper.pos = drop->getPos();
-			drop->doDrop(dropper);
+			drop->doDrop(player->getPos());
 			player->inv->deleteEquip(slot1);
 			Reactors::checkDrop(player, drop);
 		}
@@ -141,7 +138,6 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			if (ISSTAR(item->id)) amount = item->amount;
 			Item droppeditem = Item(item);
 			droppeditem.amount = amount;
-			Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getPlayerid());
 			if (item->amount - amount == 0) {
 				item->amount = 0;
 				InventoryPacket::moveItem(player, inv, slot1, slot2);
@@ -150,11 +146,9 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 				item->amount -= amount;
 				InventoryPacket::moveItemS(player, inv, slot1, item->amount);
 			}
+			Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), 0);
 			drop->setTime(0);
-			Dropped dropper;
-			dropper.id = player->getPlayerid();
-			dropper.pos = player->getPos();
-			drop->doDrop(dropper);
+			drop->doDrop(player->getPos());
 			if (item->amount == 0)
 				player->inv->deleteItem(inv, slot1);
 			Reactors::checkDrop(player, drop);
