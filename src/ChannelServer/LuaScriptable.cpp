@@ -58,6 +58,9 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
 	lua_register(luaVm, "getMap", &LuaExports::getMap);
 	lua_register(luaVm, "getHP", &LuaExports::getHP);
+	lua_register(luaVm, "getMHP", &LuaExports::getMHP);
+	lua_register(luaVm, "getMP", &LuaExports::getMP);
+	lua_register(luaVm, "getMMP", &LuaExports::getMMP);
 	lua_register(luaVm, "getHair", &LuaExports::getHair);
 	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
 	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
@@ -70,6 +73,9 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
 	lua_register(luaVm, "setReactorsState", &LuaExports::setReactorsState);
 	lua_register(luaVm, "setHP", &LuaExports::setHP);
+	lua_register(luaVm, "setMHP", &LuaExports::setMHP);
+	lua_register(luaVm, "setMP", &LuaExports::setMP);
+	lua_register(luaVm, "setMMP", &LuaExports::setMMP);
 	lua_register(luaVm, "setSTR", &LuaExports::setSTR);
 	lua_register(luaVm, "setDEX", &LuaExports::setDEX);
 	lua_register(luaVm, "setINT", &LuaExports::setINT);
