@@ -579,8 +579,9 @@ void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 
 void Players::groupChatHandler(Player *player, ReadPacket *packet) {
 	char type = packet->getByte();
-	packet->getByte();
-	packet->getInt();
+	char numRecipient = packet->getByte();
+	packet->skipBytes(4 * numRecipient); // TODO: It's an int for each recipient
+
 	string chat = packet->getString();
 	
 	WorldServerConnectPlayerPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getPlayerid(), chat);
