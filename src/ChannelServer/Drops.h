@@ -209,6 +209,9 @@ public:
 	Item getItem() {
 		return item;
 	}
+	void setItemAmount(short amount) {
+		this->item.amount = amount;
+	}
 	void setPos(Pos pos) {
 		this->pos = pos;
 	}
