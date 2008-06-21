@@ -21,18 +21,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "SendHeader.h"
 
-void DropsPacket::drop(vector <Player*> players, Drop *drop, Dropped dropper) {
+void DropsPacket::drop(vector <Player*> players, Drop *drop, Pos origin) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getID());
 	packet.addByte(drop->isMesos());
 	packet.addInt(drop->getObjectID());
-	packet.addInt(dropper.id);
+	packet.addInt(drop->getOwner());
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
 	packet.addInt(0); // Time till
-	packet.addPos(dropper.pos);
+	packet.addPos(origin);
 	packet.addShort(0);
 	packet.addByte(0);
 	if (!drop->isMesos()) {
@@ -41,18 +41,18 @@ void DropsPacket::drop(vector <Player*> players, Drop *drop, Dropped dropper) {
 	packet.sendTo<Player>(0, players, true);
 }
 
-void DropsPacket::dropForPlayer(Player *player, Drop *drop, Dropped dropper) {
+void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getID());
 	packet.addByte(drop->isMesos());
 	packet.addInt(drop->getObjectID());
-	packet.addInt(dropper.id);
+	packet.addInt(drop->getOwner());
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
 	packet.addInt(0); // Time till
-	packet.addPos(dropper.pos);
+	packet.addPos(origin);
 	packet.addShort(0);
 	packet.addByte(0);
 	if (!drop->isMesos()) {
@@ -64,14 +64,11 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Dropped dropper) {
 void DropsPacket::showDrop(Player *player, Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
-	if (drop->getOwner() == player->getPlayerid())
-		packet.addByte(1);
-	else
-		packet.addByte(2);
+	packet.addByte(2);
 	packet.addInt(drop->getID());
 	packet.addByte(drop->isMesos());
 	packet.addInt(drop->getObjectID());
-	packet.addInt(0); // TODO Dropper
+	packet.addInt(drop->getOwner()); // Owner of drop
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
 	packet.addInt(0);

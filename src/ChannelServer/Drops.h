@@ -34,11 +34,6 @@ class Map;
 struct Equip;
 struct Item;
 
-struct Dropped {
-	int id;
-	Pos pos;
-};
-
 struct MobDropInfo {
 	int id;
 	int chance;
@@ -165,9 +160,9 @@ private:
 	int playerid;
 	Pos pos;
 public:
-	Drop (int mapid, int mesos, Pos pos, int ownerid);
-	Drop (int mapid, Equip equip, Pos pos, int ownerid);
-	Drop (int mapid, Item item, Pos pos, int ownerid);
+	Drop (int mapid, int mesos, Pos pos, int owner);
+	Drop (int mapid, Equip equip, Pos pos, int owner);
+	Drop (int mapid, Item item, Pos pos, int owner);
 	void setID(int id) {
 		this->id = id;
 	}
@@ -227,7 +222,7 @@ public:
 	void setPlayer(int playerid) {
 		playerid = playerid;
 	}
-	void doDrop(Dropped dropped);
+	void doDrop(Pos origin);
 	void showDrop(Player *player);
 	void takeDrop(Player *player);
 	void removeDrop();

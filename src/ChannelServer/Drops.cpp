@@ -35,15 +35,15 @@ hash_map <int, ItemInfo> Drops::items;
 hash_map <int, ConsumeInfo> Drops::consumes;
 
 // Drop class
-Drop::Drop (int mapid, int mesos, Pos pos, int ownerid) : mapid(mapid), pos(pos), ismesos(true), isequip(false), mesos(mesos), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, int mesos, Pos pos, int owner) : mapid(mapid), pos(pos), ismesos(true), isequip(false), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
-Drop::Drop (int mapid, Equip equip, Pos pos, int ownerid) : mapid(mapid), pos(pos), ismesos(false), isequip(true), equip(equip), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, Equip equip, Pos pos, int owner) : mapid(mapid), pos(pos), ismesos(false), isequip(true), equip(equip), owner(owner), questid(0), dropped(0), playerid(0) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
-Drop::Drop (int mapid, Item item, Pos pos, int ownerid) : mapid(mapid), pos(pos), ismesos(false), isequip(false), item(item), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, Item item, Pos pos, int owner) : mapid(mapid), pos(pos), ismesos(false), isequip(false), item(item), owner(owner), questid(0), dropped(0), playerid(0) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
@@ -63,15 +63,15 @@ int Drop::getAmount() {
 		return item.amount;
 }
 
-void Drop::doDrop(Dropped dropped) {
+void Drop::doDrop(Pos origin) {
 	setDropped(clock());
 	if (!isQuest())
-		DropsPacket::drop(Maps::maps[mapid]->getPlayers(), this, dropped);
+		DropsPacket::drop(Maps::maps[mapid]->getPlayers(), this, origin);
 	else {
 		if (Players::players.find(playerid) == Players::players.end())
 			return;
 		if (Players::players[playerid]->getMap() == this->mapid)
-			DropsPacket::dropForPlayer(Players::players[playerid], this, dropped);
+			DropsPacket::dropForPlayer(Players::players[playerid], this, origin);
 	}
 }
 
@@ -202,11 +202,8 @@ void Drops::dropMob(Player *player, Mob *mob) {
 				drop->setPlayer(player->getPlayerid());
 				drop->setQuest(drops[k].quest);
 			}
-			Dropped dropper;
-			dropper.id = mob->getID();
-			dropper.pos = mob->getPos();
 			drop->setTime(100);
-			drop->doDrop(dropper);
+			drop->doDrop(mob->getPos());
 			d++;
 		}
 	}
@@ -218,9 +215,6 @@ void Drops::dropMob(Player *player, Mob *mob) {
 		if (player->skills->getActiveSkillLevel(4111001) > 0) {
 			mesos = (mesos*Skills::skills[4111001][player->skills->getActiveSkillLevel(4111001)].x)/100;
 		}
-		Dropped dropper;
-		dropper.id = mob->getID();
-		dropper.pos = mob->getPos();
 		Pos pos;
 		if (d%2) {
 			pos.x = mob->getPos().x+25*((d+1)/2);
@@ -232,7 +226,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 		}
 		Drop *drop = new Drop(player->getMap(), mesos, pos, player->getPlayerid());
 		drop->setTime(100);
-		drop->doDrop(dropper);
+		drop->doDrop(mob->getPos());
 	}
 }
 
@@ -319,10 +313,7 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 		return;
 	}
 	player->inv->setMesos(player->inv->getMesos() - amount, true);
-	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), player->getPlayerid());
+	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), 0);
 	drop->setTime(0);
-	Dropped dropper;
-	dropper.id = player->getPlayerid();
-	dropper.pos = player->getPos();
-	drop->doDrop(dropper);
+	drop->doDrop(player->getPos());
 }

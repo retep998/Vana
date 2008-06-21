@@ -25,10 +25,11 @@ using namespace std;
 class Player;
 class Drop;
 struct Dropped;
+struct Pos;
 
 namespace DropsPacket {
-	void drop(vector <Player*> players, Drop *drop, Dropped dropper);
-	void dropForPlayer(Player *player, Drop *drop, Dropped dropper);
+	void drop(vector <Player*> players, Drop *drop, Pos origin);
+	void dropForPlayer(Player *player, Drop *drop, Pos origin);
 	void showDrop(Player *player, Drop *drop);
 	void takeNote(Player *player, int id, bool ismesos, short amount);
 	void takeDrop(Player *player, vector <Player*> players, Drop *drop);
