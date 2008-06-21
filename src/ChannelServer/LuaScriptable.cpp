@@ -335,7 +335,6 @@ int LuaExports::setRMHP(lua_State *luaVm) {
 	return 1;
 }
 
-
 int LuaExports::setMP(lua_State *luaVm) {
 	int mp = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setMP(mp);
