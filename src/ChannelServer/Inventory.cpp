@@ -213,7 +213,7 @@ Equip * Inventory::setEquipStats(Player *player, int equipid) {
 bool Inventory::addEquip(Player *player, Equip *equip, bool is) {
 	short slot = 0;
 	for (short s = 1; s <= player->inv->getMaxslots(1); s++) {
-		if (!player->inv->getEquip(i)) {
+		if (!player->inv->getEquip(s)) {
 			slot = s;
 			break;
 		}
