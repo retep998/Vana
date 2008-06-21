@@ -20,6 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "InterHeader.h"
 
+void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player, char type, int playerid, string chat) {
+	Packet packet;
+	packet.addHeader(INTER_GROUP_CHAT);
+	packet.addInt(playerid);
+	packet.addByte(type);
+	packet.addString(chat);
+	packet.send(player);
+}
+
 void WorldServerConnectPlayerPacket::updateLevel(WorldServerConnectPlayer *player, int playerid, int level) {
 	Packet packet;
 	packet.addHeader(INTER_UPDATE_LEVEL);

@@ -48,6 +48,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_PARTY_ACTION 0x31
 #define RECV_MOVE_PLAYER 0x35
 #define RECV_DAMAGE_MOB_RANGED 0x36
+#define RECV_GROUP_CHAT 0x3A // Party, buddy and guild chat
 #define RECV_GET_PLAYER_INFO 0x44
 #define RECV_CHANGE_MAP_SPECIAL 0x47
 #define RECV_SPECIAL_SKILL 0x48 // Chakra, Pierce

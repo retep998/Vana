@@ -24,6 +24,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "PartyHandler.h"
 
+void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, ReadPacket *packet) {
+	int playerid = packet->getInt();
+	char type = packet->getByte(); // Buddy = 0 party = 1 guild = 2
+	string message = packet->getString();
+	if (type == 1) {
+		if (Players::Instance()->getPlayer(playerid)->party != 0) {
+			for (hash_map<int, Player *>::iterator iter = PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party]->members.begin(); iter != PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party]->members.end(); iter++) {
+				if (iter->second->online && iter->second->id != playerid) {
+					WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
+					WorldServerAcceptPlayerPacket::groupChat(channel, iter->second->id, type, message, Players::Instance()->getPlayer(playerid)->name);
+				}
+			}
+		}
+	}
+}
+
 void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, ReadPacket *packet) {
 	char type = packet->getByte();
 	int playerid = packet->getInt();

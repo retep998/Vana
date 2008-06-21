@@ -40,6 +40,7 @@ namespace Players {
 	void getPlayerInfo(Player *player, ReadPacket *packet);
 	void commandHandler(Player *player, ReadPacket *packet);
 	void handleSpecialSkills(Player *player, ReadPacket *packet);
+	void groupChatHandler(Player *player, ReadPacket *packet);
 };
 
 #endif

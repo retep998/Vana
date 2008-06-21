@@ -39,6 +39,7 @@ void WorldServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
 		case INTER_UPDATE_LEVEL: WorldServerAcceptHandler::updateLevel(this, packet); break;
 		case INTER_UPDATE_JOB: WorldServerAcceptHandler::updateJob(this, packet); break;
 		case INTER_UPDATE_MAP: WorldServerAcceptHandler::updateMap(this, packet); break;
+		case INTER_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
 	}
 }
 

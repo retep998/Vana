@@ -576,3 +576,12 @@ void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			break;
 	}
 }
+
+void Players::groupChatHandler(Player *player, ReadPacket *packet) {
+	char type = packet->getByte();
+	packet->getByte();
+	packet->getInt();
+	string chat = packet->getString();
+	
+	WorldServerConnectPlayerPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getPlayerid(), chat);
+}
