@@ -100,6 +100,13 @@ public:
 		return this->mesos;
 	}
 	void addEquip(short slot, Equip *equip) {
+		equips[slot] = equip;
+		if (itemamounts.find(equip->id) != itemamounts.end())
+			itemamounts[equip->id] += 1;
+		else
+			itemamounts[equip->id] = 1;
+	}
+	void setEquip(short slot, Equip *equip) {
 		if (equip == 0)
 			equips.erase(slot);
 		else
@@ -112,6 +119,7 @@ public:
 	}
 	void deleteEquip(short slot) {
 		if (equips.find(slot) != equips.end()) {
+			itemamounts[equips[slot]->id] -= 1;
 			delete equips[slot];
 			equips.erase(slot);
 		}
@@ -121,7 +129,10 @@ public:
 	}
 	void addItem(char inv, short slot, Item *item) {
 		items[inv-2][slot] = item;
-		itemamounts[item->id] += item->amount;
+		if (itemamounts.find(item->id) != itemamounts.end())
+			itemamounts[item->id] += item->amount;
+		else
+			itemamounts[item->id] = item->amount;
 	}
 	Item * getItem(char inv, short slot) {
 		inv -= 2;
