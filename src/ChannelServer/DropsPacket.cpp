@@ -31,7 +31,7 @@ void DropsPacket::drop(vector <Player*> players, Drop *drop, Pos origin) {
 	packet.addInt(drop->getOwner());
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
-	packet.addInt(0); // Time till
+	packet.addInt(drop->getTime()); // Time till
 	packet.addPos(origin);
 	packet.addShort(0);
 	packet.addByte(0);
@@ -51,7 +51,7 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
 	packet.addInt(drop->getOwner());
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
-	packet.addInt(0); // Time till
+	packet.addInt(drop->getTime()); // Time till
 	packet.addPos(origin);
 	packet.addShort(0);
 	packet.addByte(0);
@@ -71,7 +71,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 	packet.addInt(drop->getOwner()); // Owner of drop
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
-	packet.addInt(0);
+	packet.addInt(drop->getTime());
 	packet.addByte(0);
 	if (!drop->isMesos()) {
 		packet.addBytes("8005BB46E6170200");

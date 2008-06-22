@@ -114,7 +114,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			if (equip == 0)
 				return;
 			Equip droppedequip = Equip(equip);
-			Drop *drop = new Drop(player->getMap(), droppedequip, player->getPos(), 0);
+			Drop *drop = new Drop(player->getMap(), droppedequip, player->getPos(), player->getPlayerid());
 			drop->setTime(0);
 			drop->doDrop(player->getPos());
 			player->inv->deleteEquip(slot1);
@@ -146,7 +146,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 				item->amount -= amount;
 				InventoryPacket::moveItemS(player, inv, slot1, item->amount);
 			}
-			Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), 0);
+			Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getPlayerid());
 			drop->setTime(0);
 			drop->doDrop(player->getPos());
 			if (item->amount == 0)
