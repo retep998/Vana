@@ -16,22 +16,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#define RECV_PONG 0x0a
+#define RECV_PONG 0x18
 
 //Login
-#define RECV_LOGIN_INFO 0x1b
-#define RECV_CHANNEL_SELECT 0x19
-#define RECV_WORLD_SELECT 0x13
-#define RECV_LOGIN_PROCESS 0x03
-#define RECV_SHOW_WORLD 0x18
-#define RECV_SHOW_WORLD2 0x02 // Click back after select channel
-#define RECV_GET_CHANNEL_SERVER_INFO 0x16
-#define RECV_CHECK_CHAR_NAME 0x09
-#define RECV_CREATE_CHAR 0x0e
-#define RECV_DELETE_CHAR 0x0f
-#define RECV_RETURN_TO_LOGIN 0x1a
-#define RECV_SET_GENDER 0x17
-#define RECV_REGISTER_PIN 0x05
+#define RECV_LOGIN_INFO 0x01
+#define RECV_CHANNEL_SELECT 0x05
+#define RECV_WORLD_SELECT 0x06
+#define RECV_LOGIN_PROCESS 0x09
+#define RECV_SHOW_WORLD 0x0b
+#define RECV_SHOW_WORLD2 0x04 // Click back after select channel
+#define RECV_GET_CHANNEL_SERVER_INFO 0x13
+#define RECV_CHECK_CHAR_NAME 0x15
+#define RECV_CREATE_CHAR 0x16
+#define RECV_DELETE_CHAR 0x17
+#define RECV_SET_GENDER 0x08
+#define RECV_REGISTER_PIN 0x0a
 
 //Channel
 #define RECV_CHANNEL_LOGIN 0x14
