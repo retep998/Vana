@@ -123,8 +123,8 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		else {
 			Equip *equip1 = player->inv->getEquip(slot1);
 			Equip *equip2 = player->inv->getEquip(slot2);
-			player->inv->addEquip(slot1, equip2);
-			player->inv->addEquip(slot2, equip1);
+			player->inv->setEquip(slot1, equip2);
+			player->inv->setEquip(slot2, equip1);
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 			InventoryPacket::updatePlayer(player);
 		}
