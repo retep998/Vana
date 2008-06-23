@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <hash_map>
 #include "SkillsPacket.h"
+#include "Pos.h"
 
 #define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)
 
@@ -48,6 +49,8 @@ struct SkillLevelInfo {
 	short avo;
 	short hpP;
 	short prop;
+	Pos lt;
+	Pos rb;
 	int cooltime;
 };
 

@@ -44,6 +44,8 @@ typedef vector<SpawnInfo> SpawnsInfo;
 struct MobInfo {
 	int hp;
 	int mp;
+	int hprecovery;
+	int mprecovery;
 	int exp;
 	char hpcolor;
 	char hpbgcolor;
@@ -60,6 +62,14 @@ struct MobHPInfo {
 	char hpcolor;
 	char hpbgcolor;
 	bool boss;
+};
+
+struct MobAttackInfo {
+	short mpconsume;
+	int mpburn;
+	char disease;
+	char level;
+	bool deadly;
 };
 
 namespace Mobs {
