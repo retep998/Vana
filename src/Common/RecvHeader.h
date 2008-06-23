@@ -58,7 +58,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_USE_SKILL 0x53
 #define RECV_USE_CASH_ITEM 0x49
 #define RECV_USE_SKILLBOOK 0x4b
- #define RECV_COMMAND 0x58 // / commands like "/find"
+#define RECV_COMMAND 0x6b // / commands like "/find"
 #define RECV_DAMAGE_MOB 0x29
 #define RECV_FACE_EXPERIMENT 0x30
  #define RECV_USE_ITEM_EFFECT 0x5d
@@ -70,7 +70,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_HEAL_PLAYER 0x51
 #define RECV_DROP_MESO 0x56
 #define RECV_FAME 0x57
- #define RECV_GET_QUEST 0x6b
+ #define RECV_GET_QUEST 0xfffc
 #define RECV_KEYMAP 0x7a
 #define RECV_LOOT_ITEM 0xa8
 #define RECV_HIT_REACTOR 0xab
