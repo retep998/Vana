@@ -132,6 +132,7 @@ void MapPacket::changeMap(Player *player) {
 	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(ChannelServer::Instance()->getChannel()); // Channel
 	packet.addShort(0); // 2?
+	packet.addShort(0);
 	packet.addInt(player->getMap());
 	packet.addByte(player->getMappos());
 	packet.addShort(player->getHP());
