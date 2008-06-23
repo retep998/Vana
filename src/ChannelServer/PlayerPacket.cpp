@@ -32,10 +32,12 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addInt(ChannelServer::Instance()->getChannel()); // Channel
 	packet.addByte(1);
 	packet.addByte(1);
+	packet.addShort(0);
 	packet.addInt(Randomizer::Instance()->randInt()); //
 	packet.addInt(Randomizer::Instance()->randInt()); // Possibly seeding maple's rng
 	packet.addInt(Randomizer::Instance()->randInt()); //
-	packet.addShort(-1);
+	packet.addInt(-1);
+	packet.addInt(-1);
 	packet.addInt(player->getPlayerid());
 	packet.addString(player->getName(), 12);
 	packet.addByte(0);
@@ -130,6 +132,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addShort(0);
 	for (int i = 0; i < 15; i++)
 		packet.addBytes("FFC99A3B");
+	packet.addInt(0);
 	packet.addInt64(TimeUtilities::getServerTime());
 	packet.send(player);
 }
