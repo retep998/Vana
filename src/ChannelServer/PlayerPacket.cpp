@@ -159,7 +159,6 @@ void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
-	packet.addByte(0);
 	packet.addInt(id);
 	packet.addInt(value);
 	packet.send(player);
@@ -169,7 +168,6 @@ void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
-	packet.addByte(0);
 	packet.addInt(id);
 	packet.addShort(value);
 	packet.send(player);
@@ -179,7 +177,6 @@ void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
-	packet.addByte(0);
 	packet.addInt(id);
 	packet.addByte(value);
 	packet.send(player);

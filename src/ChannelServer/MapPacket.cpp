@@ -147,7 +147,7 @@ void MapPacket::changeMap(Player *player) {
 void MapPacket::portalBlocked(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(1);
+	packet.addByte(1);
 	packet.addInt(0);
 	packet.send(player);
 }
