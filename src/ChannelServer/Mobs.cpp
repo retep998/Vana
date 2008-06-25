@@ -103,6 +103,7 @@ void Mobs::checkSpawn(int mapid) {
 
 void Mobs::dieMob(Player *player, Mob *mob) {
 	if (mob == 0) return;
+	mob->setControl(0);
 	MobsPacket::dieMob(Maps::maps[player->getMap()]->getPlayers(), mob);
 
 	// Account for Holy Symbol
