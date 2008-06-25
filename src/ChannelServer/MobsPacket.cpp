@@ -29,14 +29,19 @@ void MobsPacket::controlMob(Player *player, Mob *mob) {
 	packet.addInt(mob->getID());
 	packet.addByte(1);
 	packet.addInt(mob->getMobID());
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.addByte(8);
 	packet.addInt(0);
 	packet.addPos(mob->getPos());
 	packet.addByte(mob->getType());
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
 	packet.addShort(-1);
+	packet.addInt(0);
 	packet.send(player);
 }
+
 void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	Packet packet;
 	packet.addHeader(SEND_CONTROL_MOB);
@@ -51,12 +56,16 @@ void MobsPacket::spawnMob(vector <Player*> players, Mob *mob) {
 	packet.addInt(mob->getID());
 	packet.addByte(1);
 	packet.addInt(mob->getMobID());
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.addByte(8);
 	packet.addInt(0);
 	packet.addPos(mob->getPos());
 	packet.addByte(mob->getType());
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
 	packet.addShort(-2);
+	packet.addInt(0);
 	packet.sendTo<Player>(0, players, true);
 }
 
@@ -66,18 +75,22 @@ void MobsPacket::showMob(Player *player, Mob *mob) {
 	packet.addInt(mob->getID());
 	packet.addByte(1);
 	packet.addInt(mob->getMobID());
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.addByte(8);
 	packet.addInt(0);
 	packet.addPos(mob->getPos());
 	packet.addByte(mob->getType());
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
 	packet.addShort(-1);
+	packet.addInt(0);
 	packet.send(player);
 }
 
 void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp) {
 	Packet packet;
-	packet.addHeader(SEND_MOVE_MOB2);
+	packet.addHeader(SEND_MOVE_MOB_RESPONSE);
 	packet.addInt(mobid);
 	packet.addShort(moveid);
 	packet.addByte(useskill);
