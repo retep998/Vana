@@ -123,8 +123,8 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		else {
 			Equip *equip1 = player->inv->getEquip(slot1);
 			Equip *equip2 = player->inv->getEquip(slot2);
-			player->inv->addEquip(slot1, equip2);
-			player->inv->addEquip(slot2, equip1);
+			player->inv->setEquip(slot1, equip2);
+			player->inv->setEquip(slot2, equip1);
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 			InventoryPacket::updatePlayer(player);
 		}
@@ -224,28 +224,29 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 	player->inv->changeItemAmount(item->id, item->amount);
 	char inv = Drops::items[item->id].type;
 	short freeslot = 0;
-	if (!ISSTAR(item->id)) {
-		for (short s = 1; s <= player->inv->getMaxslots(inv); s++) {
-			Item *olditem = player->inv->getItem(inv, s);
-			if (olditem != 0) {
-				if (olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
-					if (item->amount + olditem->amount > Drops::items[item->id].maxslot) {
-						int amount = Drops::items[item->id].maxslot - olditem->amount;
-						item->amount -= amount;
-						olditem->amount = Drops::items[item->id].maxslot;
-						InventoryPacket::addItem(player, inv, s, olditem, is);
-					}
-					else {
-						item->amount += olditem->amount;
-						player->inv->deleteItem(inv, s);
-						player->inv->addItem(inv, s, item);
-						InventoryPacket::addItem(player, inv, s, item, is);
-						return 0;
-					}
+	for (short s = 1; s <= player->inv->getMaxslots(inv); s++) {
+		Item *olditem = player->inv->getItem(inv, s);
+		if (olditem != 0) {
+			if (!ISSTAR(item->id) && olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
+				if (item->amount + olditem->amount > Drops::items[item->id].maxslot) {
+					short amount = Drops::items[item->id].maxslot - olditem->amount;
+					item->amount -= amount;
+					olditem->amount = Drops::items[item->id].maxslot;
+					InventoryPacket::addItem(player, inv, s, olditem, is);
+				}
+				else {
+					item->amount += olditem->amount;
+					player->inv->deleteItem(inv, s);
+					player->inv->addItem(inv, s, item);
+					InventoryPacket::addItem(player, inv, s, item, is);
+					return 0;
 				}
 			}
-			else if (!freeslot)
-				freeslot = s;
+		}
+		else if (!freeslot) {
+			freeslot = s;
+			if (ISSTAR(item->id))
+				break;
 		}
 	}
 	if (freeslot != 0) {
