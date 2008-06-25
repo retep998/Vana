@@ -237,8 +237,8 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			else if (strcmp(next_token, "dit") == 0) job = 420;
 			else if (strcmp(next_token, "cb") == 0) job = 421;
 			else if (strcmp(next_token, "shadower") == 0) job = 422;
-			else if (strcmp(next_token, "gm") == 0) job = 500;
-			else if (strcmp(next_token, "sgm") == 0) job = 510;
+			else if (strcmp(next_token, "gm") == 0) job = 900;
+			else if (strcmp(next_token, "sgm") == 0) job = 910;
 			else job = atoi(next_token);
 
 			if (job >= 0)
