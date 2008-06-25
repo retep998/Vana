@@ -30,7 +30,7 @@ namespace Initializing {
 	void initializeQuests();
 	void initializeSkills();
 
-	const int vedb_version = 9;
+	const int vedb_version = 10;
 	const int vedb_subversion = 0;
 };
 
