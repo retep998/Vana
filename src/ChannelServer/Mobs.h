@@ -36,8 +36,8 @@ struct SpawnInfo {
 	int id;
 	Pos pos;
 	short fh;
-	int rate;
 	int last;
+	int time;
 };
 typedef vector<SpawnInfo> SpawnsInfo;
 
