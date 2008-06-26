@@ -107,8 +107,6 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 		player->setLevel(level);
 		player->setAp(player->getAp() + apgain);
 		player->setSp(player->getSp() + spgain);
-		player->setHP(player->getMHP());
-		player->setMP(player->getMMP());
 
 		// Let hyperbody remain on if on during a level up, as it should
 		if (player->skills->getActiveSkillLevel(1301007)>0) {
@@ -120,6 +118,8 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			player->setMMP(player->getRMMP());
 		}
 
+		player->setHP(player->getMHP());
+		player->setMP(player->getMMP());
 		LevelsPacket::levelUP(player, Maps::maps[player->getMap()]->getPlayers());
 	}
 
