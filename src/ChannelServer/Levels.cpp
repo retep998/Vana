@@ -49,24 +49,28 @@ int Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3
 void Levels::giveEXP(Player *player, long exp, char type) {
 	if (player->getLevel() >= 200) return; // Do not give EXP to characters level 200 or over
 	long cexp = player->getExp() + exp;
-	if (cexp<0)
-		cexp = cexp*(-1);
-	if (exp!=0)
+	if (cexp < 0)
+		cexp = cexp * (-1);
+	if (exp != 0)
 		LevelsPacket::showEXP(player, exp, type);
-	player->setExp(cexp, 1);
-	if (cexp >= exps[player->getLevel()-1]) {
-		while (cexp>=exps[player->getLevel()-1]) {
-			if (player->getLevel()>=200) { // Do not let people level past the level 200 cap
-				player->setExp(0, 0);
+
+	int level = player->getLevel();
+	if (cexp >= exps[level-1]) {
+		short apgain = 0;
+		short spgain = 0;
+		short hpgain = 0;
+		short mpgain = 0;
+
+		while (cexp >= exps[level-1]) {
+			if (level >= 200) { // Do not let people level past the level 200 cap
+				cexp = 0;
 				break;
 			}
 			cexp -= exps[player->getLevel()-1];
-			player->setExp(cexp, 0);
-			player->setLevel(player->getLevel()+1);
-			player->setAp(player->getAp()+5);
+			level++;
+			apgain += 5;
+
 			int job = player->getJob() / 100;
-			short hpgain = 0;
-			short mpgain = 0;
 			short intt = player->getInt() / 10;
 			if (job == 0) {
 				hpgain = Randomizer::Instance()->randInt(4) + 12;
@@ -84,7 +88,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 				hpgain = Randomizer::Instance()->randInt(4) + 10;
 				mpgain = Randomizer::Instance()->randInt(2) + 22 + 2 * x + intt;
 			} 
-			else if (job == 5) {
+			else if (job == 9) {
 				hpgain = 150;
 				mpgain = 150;
 			}
@@ -92,13 +96,20 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 				hpgain = Randomizer::Instance()->randInt(4) + 20;
 				mpgain = Randomizer::Instance()->randInt(2) + 14 + intt;
 			}
-			player->setRMHP(player->getRMHP() + hpgain);
-			player->setRMMP(player->getRMMP() + mpgain);
-			LevelsPacket::levelUP(player, Maps::maps[player->getMap()]->getPlayers());
+
 			if (player->getJob() > 0) {
-				player->setSp(player->getSp()+3);
+				spgain += 3;
 			}
 		}
+
+		player->setRMHP(player->getRMHP() + hpgain);
+		player->setRMMP(player->getRMMP() + mpgain);
+		player->setLevel(level);
+		player->setAp(player->getAp() + apgain);
+		player->setSp(player->getSp() + spgain);
+		player->setHP(player->getMHP());
+		player->setMP(player->getMMP());
+
 		// Let hyperbody remain on if on during a level up, as it should
 		if (player->skills->getActiveSkillLevel(1301007)>0) {
 			player->setMHP(player->getRMHP()*(100 + Skills::skills[1301007][player->skills->getActiveSkillLevel(1301007)].x)/100);
@@ -108,9 +119,11 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			player->setMHP(player->getRMHP());
 			player->setMMP(player->getRMMP());
 		}
-		player->setHP(player->getMHP());
-		player->setMP(player->getMMP());
+
+		LevelsPacket::levelUP(player, Maps::maps[player->getMap()]->getPlayers());
 	}
+
+	player->setExp(cexp);
 }
 
 void Levels::addStat(Player *player, ReadPacket *packet) {

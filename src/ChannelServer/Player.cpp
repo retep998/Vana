@@ -263,10 +263,9 @@ void Player::setJob(short job) {
 	PlayerPacket::updateStat(this, 0x20, job);
 }
 
-void Player::setExp(int exp, bool is) {
+void Player::setExp(int exp) {
 	this->exp = exp;
-	if (is)
-		PlayerPacket::updateStat(this, 0x10000, exp);
+	PlayerPacket::updateStat(this, 0x10000, exp);
 }
 
 void Player::setStr(short str) {
@@ -313,8 +312,9 @@ void Player::setRMMP(int rmmp) {
 	PlayerPacket::updateStat(this, 0x2000, rmmp);
 }
 
-void Player::setLevel(int level) {
-	this->level = (unsigned char) level;
+void Player::setLevel(unsigned char level) {
+	this->level = level;
+	PlayerPacket::updateStat(this, 0x10, level);
 	WorldServerConnectPlayerPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), getPlayerid(), level);
 }
 

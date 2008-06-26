@@ -35,19 +35,6 @@ void LevelsPacket::showEXP(Player *player, int exp, char type) {
 
 void LevelsPacket::levelUP(Player *player, vector <Player*> players) {
 	Packet packet;
-	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(0);
-	packet.addShort(0x7C10);
-	packet.addShort(1);
-	packet.addByte(player->getLevel());
-	packet.addShort(player->getHP());
-	packet.addShort(player->getRMHP());
-	packet.addShort(player->getMP());
-	packet.addShort(player->getRMMP());
-	packet.addShort(player->getAp());
-	packet.addInt(player->getExp());
-	packet.send(player); // TODO
-	packet = Packet();
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(0);
