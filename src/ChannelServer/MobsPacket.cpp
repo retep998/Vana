@@ -77,8 +77,8 @@ void MobsPacket::showMob(Player *player, Mob *mob) {
 	packet.addInt(mob->getMobID());
 	packet.addShort(0);
 	packet.addByte(0);
-	packet.addInt(0);
 	packet.addByte(8);
+	packet.addInt(0);
 	packet.addPos(mob->getPos());
 	packet.addByte(mob->getType());
 	packet.addShort(0);
