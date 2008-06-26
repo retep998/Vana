@@ -63,23 +63,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  #define SEND_UPDATE_QUEST 0x6d
 #define SEND_REMOVE_PLAYER 0x78
 #define SEND_CHAT 0x79
- #define SEND_USE_SCROLL 0x7b
+#define SEND_USE_SCROLL 0x7d
 #define SEND_MOVE_PLAYER 0x8c
  #define SEND_SHOW_SKILL 0x86
  #define SEND_SHOW_OTHERS_SKILL 0x87 // From other player
- #define SEND_DAMAGE_MOB 0x88
+#define SEND_DAMAGE_MOB 0x8d
  #define SEND_CANCEL_OTHERS_BUFF 0x8b // From other player
 #define SEND_FACE_EXPERIMENT 0x94
- #define SEND_DAMAGE_MOB_RANGED 0x8e
+#define SEND_DAMAGE_MOB_RANGED 0x8e
  #define SEND_SHOW_ITEM_EFFECT 0x8f
- #define SEND_DAMAGE_PLAYER 0x8a
+#define SEND_DAMAGE_PLAYER 0x93
  #define SEND_SPECIAL_SKILL_END 0x89
  #define SEND_SPECIAL_SKILL 0x91
 #define SEND_SIT_CHAIR 0x96
  #define SEND_UPDATE_CHAR_LOOK 0x93
- #define SEND_DAMAGE_MOB_SPELL 0x94
+#define SEND_DAMAGE_MOB_SPELL 0x8f
 #define SEND_SHOW_MOB 0xad
- #define SEND_MOVE_MOB 0x98
+#define SEND_MOVE_MOB 0xb0
  #define SEND_SHOW_MOB_HP 0x99
  #define SEND_SHOW_MAGNET 0x9a
 #define SEND_MOVE_MOB_RESPONSE 0xb1

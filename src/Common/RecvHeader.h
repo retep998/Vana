@@ -47,7 +47,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_PARTY_ACTION 0x6f
 #define RECV_MOVE_PLAYER 0x26
 #define RECV_DAMAGE_MOB_RANGED 0x2a
- #define RECV_GROUP_CHAT 0x3A // Party, buddy and guild chat
+#define RECV_GROUP_CHAT 0x6a // Party, buddy and guild chat
 #define RECV_GET_PLAYER_INFO 0x59
 #define RECV_CHANGE_MAP_SPECIAL 0x5c
  #define RECV_SPECIAL_SKILL 0x48 // Chakra, Pierce
@@ -61,7 +61,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_COMMAND 0x6b // / commands like "/find"
 #define RECV_DAMAGE_MOB 0x29
 #define RECV_FACE_EXPERIMENT 0x30
- #define RECV_USE_ITEM_EFFECT 0x5d
+#define RECV_USE_ITEM_EFFECT 0x31
 #define RECV_MOVE_ITEM 0x42
 #define RECV_USE_ITEM 0x43
 #define RECV_USE_RETURN_SCROLL 0x4e
