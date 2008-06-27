@@ -98,8 +98,13 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo) {
 	packet.addByte(0); // Married
 	packet.addShort(1); // Guild Name Len
 	packet.addByte(0x2D); // Guild Name
-	packet.addShort(0);
-	packet.addByte(0);
+	packet.addShort(0); // Guide Alliance Name Len ?
+	packet.addInt(0);
+	packet.addInt(1);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
 	packet.send(player);
 }
 
