@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_CHANGE_CHANNEL 0x10
 #define SEND_MOVE_ITEM 0x1a
 #define SEND_SHOW_MESSENGER 0x54 // Also known as avatar megaphone
- #define SEND_FINISH_QUEST 0x1f
+#define SEND_FINISH_QUEST 0x2e
 #define SEND_UPDATE_STAT 0x1c
 #define SEND_CANCEL_SKILL 0x1e
 #define SEND_PLAYER_INFO 0x3a
