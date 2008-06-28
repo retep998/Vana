@@ -81,7 +81,7 @@ void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
 	if (player->getMap() == 1 || player->getMap() == 2)
 		MapPacket::makeApple(player);
-	if (player->skills->getActiveSkillLevel(5101004) == 0)
+	if (player->skills->getActiveSkillLevel(9101004) == 0)
 		MapPacket::showPlayer(player, this->players);
 }
 
