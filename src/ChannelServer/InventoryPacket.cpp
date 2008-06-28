@@ -221,7 +221,7 @@ void InventoryPacket::showMegaphone(Player *player, vector <Player*> players, co
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(2);
 	packet.addString(fullMessage);
-	packet.sendTo(player, players, false);
+	packet.sendTo(player, players, true);
 }
 
 void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, int whisper) {
