@@ -51,7 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_PARTY_ACTION 0x3b
 #define SEND_USE_SKILL 0x1d
 #define SEND_CHANGE_MAP 0x5b
- #define SEND_MAP_EFFECT 0x54 // Change Music/Boss HP Bars
+#define SEND_MAP_EFFECT 0x67 // Change Music/Boss HP Bars
 #define SEND_USE_WEATHER 0x68 // Weather effects
 #define SEND_GROUP_CHAT 0x63 // Groups like party, buddies and guild
 #define SEND_MAKE_APPLE 0x62 // Wear apple suit
