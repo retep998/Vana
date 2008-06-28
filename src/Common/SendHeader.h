@@ -41,7 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_SHOW_MESSENGER 0x54 // Also known as avatar megaphone
  #define SEND_FINISH_QUEST 0x1f
 #define SEND_UPDATE_STAT 0x1c
- #define SEND_CANCEL_SKILL 0x24
+#define SEND_CANCEL_SKILL 0x1e
 #define SEND_PLAYER_INFO 0x3a
 #define SEND_ADD_SKILL 0x21
 #define SEND_NOTICE 0x41
@@ -49,7 +49,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_NOTE 0x24 // Bottom-right corner notice
 #define SEND_USE_SKILLBOOK 0x30 // Skillbooks
 #define SEND_PARTY_ACTION 0x3b
- #define SEND_USE_SKILL 0x3b
+#define SEND_USE_SKILL 0x1d
 #define SEND_CHANGE_MAP 0x5b
  #define SEND_MAP_EFFECT 0x54 // Change Music/Boss HP Bars
  #define SEND_USE_WEATHER 0x55 // Weather effects
@@ -65,13 +65,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_CHAT 0x79
 #define SEND_USE_SCROLL 0x7d
 #define SEND_MOVE_PLAYER 0x8c
- #define SEND_SHOW_SKILL 0x86
+#define SEND_SHOW_SKILL 0x86
  #define SEND_SHOW_OTHERS_SKILL 0x87 // From other player
 #define SEND_DAMAGE_MOB 0x8d
  #define SEND_CANCEL_OTHERS_BUFF 0x8b // From other player
 #define SEND_FACE_EXPERIMENT 0x94
 #define SEND_DAMAGE_MOB_RANGED 0x8e
- #define SEND_SHOW_ITEM_EFFECT 0x8f
+#define SEND_SHOW_ITEM_EFFECT 0x31
 #define SEND_DAMAGE_PLAYER 0x93
  #define SEND_SPECIAL_SKILL_END 0x89
  #define SEND_SPECIAL_SKILL 0x91
