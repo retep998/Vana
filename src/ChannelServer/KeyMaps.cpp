@@ -23,7 +23,8 @@ void KeyMaps::defaultMap() {
 	add(3, new KeyMap(4, 12));
 	add(4, new KeyMap(4, 13));
 	add(5, new KeyMap(4, 18));
-	add(6, new KeyMap(4, 21));
+	add(6, new KeyMap(4, 24));
+	add(7, new KeyMap(4, 21));
 	add(16, new KeyMap(4, 8));
 	add(17, new KeyMap(4, 5));
 	add(18, new KeyMap(4, 0));
@@ -39,12 +40,15 @@ void KeyMaps::defaultMap() {
 	add(37, new KeyMap(4, 3));
 	add(38, new KeyMap(4, 20));
 	add(40, new KeyMap(4, 16));
+	add(41, new KeyMap(4, 23));
 	add(43, new KeyMap(4, 9));
 	add(44, new KeyMap(5, 50));
 	add(45, new KeyMap(5, 51));
 	add(46, new KeyMap(4, 6));
+	add(48, new KeyMap(4, 22));
 	add(50, new KeyMap(4, 7));
 	add(56, new KeyMap(5, 53));
+	add(57, new KeyMap(5, 54));
 	add(59, new KeyMap(6, 100));
 	add(60, new KeyMap(6, 101));
 	add(61, new KeyMap(6, 102));
