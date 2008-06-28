@@ -38,8 +38,9 @@ Packet MapPacket::playerPacket(Player *player) {
 	packet.addByte(player->getSkill().types[5]);
 	packet.addByte(player->getSkill().types[6]);
 	packet.addByte(player->getSkill().types[7]);
-	if (player->getSkill().isval)
+	if (player->getSkill().isval) {
 		packet.addByte(player->getSkill().val);
+	}
 
 	packet.addShort(0);
 	packet.addByte(0);
@@ -72,6 +73,7 @@ Packet MapPacket::playerPacket(Player *player) {
 	packet.addInt(player->getEyes());
 	packet.addByte(1);
 	packet.addInt(player->getHair());
+
 	int equips[35][2] = {0};
 	equipinventory *playerequips = player->inv->getEquips();
 	for (equipinventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
@@ -115,6 +117,7 @@ Packet MapPacket::playerPacket(Player *player) {
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
+
 	packet.addInt(0);
 	packet.addInt(player->getItemEffect()); 
 	packet.addInt(player->getChair());
