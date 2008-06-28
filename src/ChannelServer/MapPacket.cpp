@@ -40,6 +40,33 @@ Packet MapPacket::playerPacket(Player *player) {
 	packet.addByte(player->getSkill().types[7]);
 	if (player->getSkill().isval)
 		packet.addByte(player->getSkill().val);
+
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.addInt(0x7E);
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	for (size_t i = 0; i < 3; i++) {
+		packet.addShort(21613); // Unknown
+		packet.addInt(10028); // Unknown
+		packet.addInt(0);
+		packet.addInt(0);
+	}
+	packet.addShort(21613);
+	packet.addInt(10028);
+	packet.addInt(0);
+	packet.addShort(0);
+	packet.addShort(21613);
+	packet.addInt(10028);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addShort(21613);
+	packet.addInt(10028);
+	packet.addInt(0);
+
 	packet.addByte(player->getGender());
 	packet.addByte(player->getSkin());
 	packet.addInt(player->getEyes());
