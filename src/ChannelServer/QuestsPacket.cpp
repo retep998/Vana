@@ -100,7 +100,7 @@ void QuestsPacket::giveItem(Player *player, int itemid, int amount) {
 	Packet packet;
 	packet.addHeader(SEND_GAIN_ITEM); 
 	packet.addByte(3);
-	packet.addByte(1);
+	packet.addByte(1); // Number of different items (itemid and amount gets repeated)
 	packet.addInt(itemid);
 	packet.addInt(amount);
 	packet.send(player);
