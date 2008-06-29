@@ -197,3 +197,14 @@ void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
 	packet.addString(msg);
 	packet.send(player);
 }
+
+void PlayerPacket::instructionBubble(Player *player, const string &msg) {
+	Packet packet;
+	packet.addHeader(SEND_INSTRUCTION_BUBBLE);
+	packet.addString(msg);
+	packet.addShort(0xfa);
+	packet.addShort(0x05);
+	packet.addByte(1);
+
+	packet.send(player);
+}

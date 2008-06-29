@@ -404,6 +404,16 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "timer") == 0) {
 			MapPacket::showTimer(player, atoi(next_token));
 		}
+		else if (strcmp(command, "instruction") == 0) {
+			if (strlen(next_token) == 0) {
+				PlayerPacket::showMessage(player, "No instruction entered.", 5);
+				return;
+			}
+			for (size_t i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {
+				Player *p = Maps::maps[player->getMap()]->getPlayers()[i];
+				PlayerPacket::instructionBubble(p, next_token);
+			}
+		}
 		return;
 	}
 	PlayersPacket::showChat(player, Maps::maps[player->getMap()]->getPlayers(), message);
