@@ -46,7 +46,7 @@ public:
 		timers.push_back(timer);
 	}
 	void stop(Player *player, int item) {
-		for (unsigned int i=0; i<timers.size(); i++) {
+		for (size_t i = 0; i < timers.size(); i++) {
 			if (player == timers[i].player && timers[i].item == item) {
 				Timer::Instance()->cancelTimer(timers[i].id);
 				break;
@@ -54,7 +54,7 @@ public:
 		}
 	}
 	void stop(Player *player) {
-		for (unsigned int i=timers.size(); i>0; i--) { // fix missing timer cancels
+		for (size_t i = timers.size(); i > 0; i--) { // fix missing timer cancels
 			if (player == timers[i-1].player) {
 				Timer::Instance()->cancelTimer(timers[i-1].id);
 			}
@@ -76,7 +76,7 @@ private:
 	void handle(Timer *timer, int id) {
 		int item;
 		Player *player;
-		for (unsigned int i=0; i<timers.size(); i++) {
+		for (size_t i = 0; i < timers.size(); i++) {
 			if (timers[i].id == id) {
 				player = timers[i].player;
 				item = timers[i].item;
@@ -86,7 +86,7 @@ private:
 		Inventory::endItem(player, item);
 	}
 	void remove (int id) {
-		for (unsigned int i=0; i<timers.size(); i++) {
+		for (size_t i = 0; i < timers.size(); i++) {
 			if (timers[i].id == id) {	
 				timers.erase(timers.begin()+i);
 				return;

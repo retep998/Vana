@@ -59,7 +59,7 @@ public:
 		act[timer.id] = true;
 	}
 	void stop (Player *player, int skill) {
-		for (unsigned int i=0; i<timers.size(); i++) {
+		for (size_t i = 0; i < timers.size(); i++) {
 			if (player == timers[i].player && timers[i].skill == skill) {
 				Timer::Instance()->cancelTimer(timers[i].id);
 				break;
@@ -67,7 +67,7 @@ public:
 		}
 	}
 	void stop (Player *player, int skill, char *name) {
-		for (unsigned int i=0; i<acttimers.size(); i++) {
+		for (size_t i = 0; i < acttimers.size(); i++) {
 			if (player == acttimers[i].player && strcmp(acttimers[i].act, name) == 0 && skill == acttimers[i].skill) {
 				Timer::Instance()->cancelTimer(acttimers[i].id);
 				break;
@@ -75,25 +75,25 @@ public:
 		}
 	}
 	void stop (Player *player) {
-		for (unsigned int i=timers.size(); i>0; i--) {
+		for (size_t i = timers.size(); i > 0; i--) {
 			if (player == timers[i-1].player) {
 				Timer::Instance()->cancelTimer(timers[i-1].id);
 			}
 		} 
-		for (unsigned int i=acttimers.size(); i>0; i--) { 
+		for (size_t i = acttimers.size(); i > 0; i--) { 
 			if (player == acttimers[i-1].player) {
 				Timer::Instance()->cancelTimer(acttimers[i-1].id);
 			}
 		} 
 	}
 	void stopKill (Player *player) {
-		for (unsigned int i=timers.size(); i>0; i--) {
+		for (size_t i = timers.size(); i > 0; i--) {
 			if (player == timers[i-1].player) {
 				Skills::endSkill(player, timers[i].id);
 				Timer::Instance()->cancelTimer(timers[i-1].id);
 			}
 		} 
-		for (unsigned int i=acttimers.size(); i>0; i--) { 
+		for (size_t i = acttimers.size(); i > 0; i--) { 
 			if (player == acttimers[i-1].player) {
 				Timer::Instance()->cancelTimer(acttimers[i-1].id);
 			}
@@ -101,7 +101,7 @@ public:
 	}
 	int skillTime(Player *player, int skillid) { // Get skill time
 		int timeleft = 0;
-		for (unsigned int i=0; i<timers.size(); i++) {
+		for (size_t i = 0; i < timers.size(); i++) {
 			if (player == timers[i].player && timers[i].skill == skillid) {
 				timeleft = Timer::Instance()->timeLeft(timers[i].id);
 			}
@@ -136,7 +136,7 @@ private:
 		if (act[id]) {
 			char name[50];
 			short value;
-			for (unsigned int i=0; i<acttimers.size(); i++) {
+			for (size_t i = 0; i < acttimers.size(); i++) {
 				if (acttimers[i].id == id) {
 					player = acttimers[i].player;
 					skill = acttimers[i].skill;
@@ -149,7 +149,7 @@ private:
 			// else if (...
 		}
 		else{
-			for (unsigned int i=0; i<timers.size(); i++) {
+			for (size_t i = 0; i < timers.size(); i++) {
 				if (timers[i].id == id) {
 					player = timers[i].player;
 					skill = timers[i].skill;
@@ -161,7 +161,7 @@ private:
 	}
 	void remove (int id) {
 		if (act[id]) {
-			for (unsigned int i=0; i<acttimers.size(); i++) {
+			for (size_t i = 0; i < acttimers.size(); i++) {
 				if (acttimers[i].id == id) {	
 					acttimers.erase(acttimers.begin()+i);	
 					return;
@@ -169,7 +169,7 @@ private:
 			}
 		}
 		else{
-			for (unsigned int i=0; i<timers.size(); i++) {
+			for (size_t i = 0; i < timers.size(); i++) {
 				if (timers[i].id == id) {	
 					timers.erase(timers.begin()+i);	
 					return;
