@@ -198,12 +198,19 @@ void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
 	packet.send(player);
 }
 
-void PlayerPacket::instructionBubble(Player *player, const string &msg) {
+void PlayerPacket::instructionBubble(Player *player, const string &msg, short width, short height) {
+	if (width == -1) {
+		width = msg.size() * 10;
+		if (width < 40) {
+			width = 40; // Anything lower crashes client/doesn't look good
+		}
+	}
+
 	Packet packet;
 	packet.addHeader(SEND_INSTRUCTION_BUBBLE);
 	packet.addString(msg);
-	packet.addShort(0xfa);
-	packet.addShort(0x05);
+	packet.addShort(width);
+	packet.addShort(height);
 	packet.addByte(1);
 
 	packet.send(player);

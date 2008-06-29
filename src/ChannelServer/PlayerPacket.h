@@ -33,7 +33,7 @@ namespace PlayerPacket {
 	void updateStat(Player *player, int id, char value, bool is = false);
 	void changeChannel(Player *player, const string &ip, short port);
 	void showMessage(Player *player, const string &msg, char type);
-	void instructionBubble(Player *player, const string &msg);
+	void instructionBubble(Player *player, const string &msg, short width = -1, short height = 5);
 };
 
 #endif
