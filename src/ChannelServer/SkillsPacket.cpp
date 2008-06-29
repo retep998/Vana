@@ -43,13 +43,13 @@ void SkillsPacket::showSkill(Player *player, vector <Player*> players, int skill
 	packet.addByte(level); //TODO
 	if (direction != 0xFF)
 		packet.addByte(direction);
-	packet.sendTo(player, players, 0);
+	packet.sendTo(player, players, false);
 }
-
 
 void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill) {
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILL);
+	packet.addInt64(0);
 	packet.addByte(pskill.types[0]);
 	packet.addByte(pskill.types[1]);
 	packet.addByte(pskill.types[2]);
@@ -58,11 +58,13 @@ void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skilli
 	packet.addByte(pskill.types[5]);
 	packet.addByte(pskill.types[6]);
 	packet.addByte(pskill.types[7]);
-	for (unsigned int i = 0; i < pskill.vals.size(); i++) {
+	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.addShort(pskill.vals[i]);
 		packet.addInt(skillid);
 		packet.addInt(time);
 	}
+	packet.addShort(0);
+	packet.addByte(0);
 	packet.addShort(0);
 	packet.addByte(0);
 	packet.send(player);
@@ -78,11 +80,11 @@ void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skilli
 		packet.addByte(mskill.types[5]);
 		packet.addByte(mskill.types[6]);
 		packet.addByte(mskill.types[7]);
-		for (unsigned int i = 0; i < mskill.vals.size(); i++) {
+		for (size_t i = 0; i < mskill.vals.size(); i++) {
 			packet.addShort(mskill.vals[i]);
 		}
 		packet.addByte(0);
-		packet.sendTo(player, players, 0);
+		packet.sendTo(player, players, false);
 	}
 }
 
@@ -97,6 +99,7 @@ void SkillsPacket::healHP(Player *player, short hp) {
 void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill) {
 	Packet packet;
 	packet.addHeader(SEND_CANCEL_SKILL);
+	packet.addInt64(0);
 	packet.addByte(pskill.types[0]);
 	packet.addByte(pskill.types[1]);
 	packet.addByte(pskill.types[2]);
@@ -119,8 +122,7 @@ void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiv
 		packet.addByte(mskill.types[5]);
 		packet.addByte(mskill.types[6]);
 		packet.addByte(mskill.types[7]);
-		packet.sendTo(player, players, 0);
-
+		packet.sendTo(player, players, false);
 	}
 }
 // For Combo Attack
@@ -154,7 +156,7 @@ void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time)
 	packet.addByte(0);
 	packet.addShort(player->getCombo()+1);
 	packet.addByte(0);
-	packet.sendTo(player, players, 0);
+	packet.sendTo(player, players, false);
 }
 
 void SkillsPacket::showSkillEffect(Player *player, vector <Player*> players,int skillid) {
@@ -172,7 +174,7 @@ void SkillsPacket::showSkillEffect(Player *player, vector <Player*> players,int 
 			break;
 	}
 	if (sendto)
-		packet.send<Player>(player);
+		packet.send(player);
 	packet = Packet();
 	sendto = false;
 	packet.addHeader(SEND_SHOW_SKILL);  // For others
@@ -192,7 +194,7 @@ void SkillsPacket::showSkillEffect(Player *player, vector <Player*> players,int 
 			sendto = true;
 	}
 	if (sendto)
-		packet.sendTo(player, players, 0);
+		packet.sendTo(player, players, false);
 }
 
 void SkillsPacket::showSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang
@@ -203,7 +205,7 @@ void SkillsPacket::showSpecialSkill(Player *player, vector <Player*> players, Sp
 	packet.addByte(info.level);
 	packet.addByte(info.direction);
 	packet.addByte(info.w_speed);
-	packet.sendTo(player, players, 0);
+	packet.sendTo(player, players, false);
 }
 
 void SkillsPacket::endSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info) {
@@ -211,7 +213,7 @@ void SkillsPacket::endSpecialSkill(Player *player, vector <Player*> players, Spe
 	packet.addHeader(SEND_SPECIAL_SKILL_END);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(info.skillid);
-	packet.sendTo(player, players, 0);
+	packet.sendTo(player, players, false);
 }
 
 void SkillsPacket::showMagnet(Player *player, vector <Player*> players, int mobid, unsigned char success) {  // Monster Magnet
@@ -219,5 +221,5 @@ void SkillsPacket::showMagnet(Player *player, vector <Player*> players, int mobi
 	packet.addHeader(SEND_SHOW_MAGNET);
 	packet.addInt(mobid);
 	packet.addByte(success);
-	packet.sendTo(player, players, 0);
+	packet.sendTo(player, players, false);
 }

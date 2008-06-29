@@ -148,7 +148,7 @@ private:
 			if (strcmp(name, "heal") == 0) Skills::heal(player, value, skill);
 			// else if (...
 		}
-		else{
+		else {
 			for (size_t i = 0; i < timers.size(); i++) {
 				if (timers[i].id == id) {
 					player = timers[i].player;
@@ -168,7 +168,7 @@ private:
 				}
 			}
 		}
-		else{
+		else {
 			for (size_t i = 0; i < timers.size(); i++) {
 				if (timers[i].id == id) {	
 					timers.erase(timers.begin()+i);	
@@ -196,7 +196,7 @@ void Skills::init() {
 	SkillAct act;
 	//Booster
 	player.type = 0x08;
-	player.byte = 2;
+	player.byte = 6;
 	player.value = SKILL_X;
 	//
 	skillsinfo[1101004].player.push_back(player); // Sword Booster
