@@ -211,6 +211,8 @@ void Skills::init() {
 	skillsinfo[3201002].player.push_back(player); // Crossbow Booster
 	skillsinfo[4101003].player.push_back(player); // Claw Booster
 	skillsinfo[4201002].player.push_back(player); // Dagger Booster
+	skillsinfo[5101006].player.push_back(player); // Knuckle Booster
+	skillsinfo[5201003].player.push_back(player); // Gun Booster
 	// 1001 - Recovery
 	player.type = 0x4;
 	player.byte = 5;
