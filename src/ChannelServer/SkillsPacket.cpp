@@ -218,10 +218,21 @@ void SkillsPacket::endSpecialSkill(Player *player, vector <Player*> players, Spe
 	packet.sendTo(player, players, false);
 }
 
-void SkillsPacket::showMagnet(Player *player, vector <Player*> players, int mobid, unsigned char success) {  // Monster Magnet
+void SkillsPacket::showMagnet(Player *player, vector <Player*> players, SpecialSkillInfo info) {  // Monster Magnet
 	Packet packet;
 	packet.addHeader(SEND_SHOW_MAGNET);
-	packet.addInt(mobid);
+	packet.addInt(player->getPlayerid());
+	packet.addInt(info.skillid);
+	packet.addByte(info.level);
+	packet.addByte(info.direction);
+	packet.addByte(info.w_speed);
+	packet.sendTo(player, players, 0);
+}
+
+void SkillsPacket::showMagnetSuccess(Player *player, vector <Player*> players, int mapmobid, unsigned char success) {
+	Packet packet;
+	packet.addHeader(SEND_SHOW_DRAGGED);
+	packet.addInt(mapmobid);
 	packet.addByte(success);
 	packet.sendTo(player, players, false);
 }

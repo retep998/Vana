@@ -572,13 +572,19 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); //Ticks
 	int skillid = packet->getInt();
 	unsigned char level = packet->getByte();
-	int mobid = 0;
-	unsigned char success = 0xFF;
-	unsigned char direction = 0xFF;
-	if (skillid == 1121001 || skillid == 1221001 || skillid == 1321001) {
-		mobid = packet->getInt();
-		success = packet->getByte();
-		direction = packet->getByte();
+	unsigned char direction = 0xFF; // Deprecated, will remove later
+	switch (skillid) {
+		case 1121001: // Monster Magnet processing
+		case 1221001:
+		case 1321001: {
+			int mobs = packet->getInt();
+			for (char k = 0; k < mobs; k++) {
+				int mapmobid = packet->getInt();
+				unsigned char success = packet->getByte();
+				SkillsPacket::showMagnetSuccess(player, Maps::maps[player->getMap()]->getPlayers(), mapmobid, success);
+			}
+			break;
+		}
 	}
 	if (level == 0) {
 		// hacking
@@ -609,9 +615,6 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		player->setHP(player->getHP() + healrate*player->getMHP()/100);
 	}
 	SkillsPacket::showSkill(player, Maps::maps[player->getMap()]->getPlayers(), skillid, level, direction); 
-	if (mobid != 0)	// Monster Magnet display
-		SkillsPacket::showMagnet(player, Maps::maps[player->getMap()]->getPlayers(), mobid, success);
-
 	///
 	if (skillid == 1301007 || skillid == 9101008) { // Hyper Body
 		player->setMHP(player->getRMHP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].x)/100);

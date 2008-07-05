@@ -50,7 +50,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_GROUP_CHAT 0x6a // Party, buddy and guild chat
 #define RECV_GET_PLAYER_INFO 0x59
 #define RECV_CHANGE_MAP_SPECIAL 0x5c
-#define RECV_SPECIAL_SKILL 0x55 // Chakra, Pierce
+#define RECV_SPECIAL_SKILL 0x55 // Chakra, Pierce, Monster Magnet, Big Bang
 #define RECV_CANCEL_ITEM 0x44
 #define RECV_USE_SUMMON_BAG 0x46
 #define RECV_ADD_SKILL 0x52

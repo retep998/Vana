@@ -584,6 +584,16 @@ void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 		}
 		case 4211001: // Chakra, unknown heal formula
 			break;
+		case 1121001:
+		case 1221001:
+		case 1321001: // Monster Magnet
+			SpecialSkillInfo info;
+			info.skillid = skillid;
+			info.level = packet->getByte();
+			info.direction = packet->getByte();
+			info.w_speed = packet->getByte();
+			SkillsPacket::showMagnet(player, Maps::maps[player->getMap()]->getPlayers(), info);
+			break;
 	}
 }
 

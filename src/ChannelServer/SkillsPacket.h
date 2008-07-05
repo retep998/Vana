@@ -35,7 +35,8 @@ namespace SkillsPacket {
 	void showSkillEffect(Player *player, vector <Player*> players, int skillid);
 	void showSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info); // Hurricane/Pierce/Big Bang
 	void endSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info);
-	void showMagnet(Player *player, vector <Player*> players, int mobid, unsigned char success); // Monster Magnet
+	void showMagnet(Player *player, vector <Player*> players, SpecialSkillInfo info); // Monster Magnet
+	void showMagnetSuccess(Player *player, vector <Player*> players, int mapmobid, unsigned char success); // New packet in .56
 };
 
 #endif
