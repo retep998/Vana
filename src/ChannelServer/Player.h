@@ -244,6 +244,7 @@ public:
 private:
 	void playerConnect(ReadPacket *packet);
 	void changeKey(ReadPacket *packet);
+	void changeSkillMacros(ReadPacket *packet);
 
 	bool isconnect;
 	int id;

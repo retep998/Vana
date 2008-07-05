@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "Pos.h"
 #include "KeyMaps.h"
+#include "SkillMacros.h"
 #include "Party.h"
 #include "BuddyList.h"
 
@@ -99,6 +100,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_LOOT_ITEM: Drops::lootItem(this, packet); break;
 		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet); break;
 		case RECV_SPECIAL_SKILL: Players::handleSpecialSkills(this, packet); break;
+		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
 	}
 }
 
@@ -199,6 +201,9 @@ void Player::playerConnect(ReadPacket *packet) {
 	KeyMaps keyMaps;
 	keyMaps.load(getPlayerid());
 
+	SkillMacros skillMacros;
+	skillMacros.load(getPlayerid());
+
 	query << "SELECT * FROM character_variables WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 	for (size_t i = 0; i < res.size(); i++) {
@@ -219,6 +224,11 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	type = 0;
 	PlayerPacket::showKeys(this, &keyMaps);
+
+	if (skillMacros.getMax() > -1) {
+		PlayerPacket::showSkillMacros(this, &skillMacros);
+	}
+
 	Maps::newMap(this, map);
 
 	setOnline(true);
@@ -337,6 +347,23 @@ void Player::changeKey(ReadPacket *packet) {
 
 	// Update to MySQL
 	keyMaps.save(getPlayerid());
+}
+
+void Player::changeSkillMacros(ReadPacket *packet) {
+	unsigned char num = packet->getByte();
+	if (num == 0) return;
+
+	SkillMacros skillMacros;
+	for (unsigned char i = 0; i < num; i++) {
+		string name = packet->getString();
+		bool shout = packet->getByte() != 0;
+		int skill1 = packet->getInt();
+		int skill2 = packet->getInt();
+		int skill3 = packet->getInt();
+
+		skillMacros.add(i, new SkillMacros::SkillMacro(name, shout, skill1, skill2, skill3));
+	}
+	skillMacros.save(getPlayerid());
 }
 
 void Player::setHair(int id) {

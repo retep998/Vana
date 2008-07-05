@@ -24,10 +24,12 @@ using std::string;
 
 class Player;
 class KeyMaps;
+class SkillMacros;
 
 namespace PlayerPacket {
 	void connectData(Player *player);
 	void showKeys(Player *player, KeyMaps *keymaps);
+	void showSkillMacros(Player *player, SkillMacros *macros);
 	void updateStat(Player *player, int id, int value, bool is = false);
 	void updateStat(Player *player, int id, short value, bool is = false);
 	void updateStat(Player *player, int id, char value, bool is = false);

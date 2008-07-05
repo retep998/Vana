@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "SendHeader.h"
 #include "KeyMaps.h"
+#include "SkillMacros.h"
 
 void PlayerPacket::connectData(Player *player) {
 	Packet packet;
@@ -152,6 +153,31 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 			packet.addInt(0);
 		}
 	}
+	packet.send(player);
+}
+
+void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
+	Packet packet;
+	packet.addHeader(SEND_SKILL_MACRO);
+	packet.addByte(macros->getMax() + 1);
+	for (int i = 0; i <= macros->getMax();  i++) {
+		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
+		if (macro != 0) {
+			packet.addString(macro->name);
+			packet.addByte(macro->shout);
+			packet.addInt(macro->skill1);
+			packet.addInt(macro->skill2);
+			packet.addInt(macro->skill3);
+		}
+		else {
+			packet.addString("");
+			packet.addByte(0);
+			packet.addInt(0);
+			packet.addInt(0);
+			packet.addInt(0);
+		}
+	}
+	
 	packet.send(player);
 }
 
