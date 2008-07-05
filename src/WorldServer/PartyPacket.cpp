@@ -28,7 +28,7 @@ void PartyPacket::giveLeader(WorldServerAcceptPlayer *player, int playerid, int 
 	packet.addHeader(INTER_FORWARD_TO);
 	packet.addInt(playerid);
 	packet.addHeader(SEND_PARTY_ACTION);
-	packet.addByte(0x19);
+	packet.addByte(0x1A);
 	packet.addInt(target);
 	packet.addByte(is);
 	packet.send(player);
@@ -42,6 +42,7 @@ void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int playerid, co
 	packet.addByte(0x04);
 	packet.addInt(Players::Instance()->getPlayerFromName(inviter)->party);
 	packet.addString(inviter);
+	packet.addByte(0);
 
 	packet.send(player);
 }
@@ -102,12 +103,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int pl
 			break;	
 		case PARTY_SILENT_UPDATE:
 		case PARTY_LOG_IN_OUT:
-			if (type == PARTY_SILENT_UPDATE) {
-				packet.addByte(0x07);
-			}
-			else {
-				packet.addByte(0x1F);
-			}
+			packet.addByte(0x07);
 			packet.addByte(0xDD);
 			packet.addByte(0x14);
 			packet.addShort(0);
