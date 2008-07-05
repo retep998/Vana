@@ -33,7 +33,7 @@ void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
 	packet.send(player);
 	packet = Packet();
 	packet.addHeader(SEND_UPDATE_QUEST);
-	packet.addByte(6);
+	packet.addByte(8);
 	packet.addShort(questid);
 	packet.addInt(npcid);
 	packet.addInt(0);
@@ -80,7 +80,7 @@ void QuestsPacket::questFinish(Player *player, vector <Player*> players,short qu
 	packet.send(player);
 	packet = Packet();
 	packet.addHeader(SEND_UPDATE_QUEST);
-	packet.addByte(6);
+	packet.addByte(8);
 	packet.addShort(questid); 
 	packet.addInt(npcid); 
 	packet.addShort(nextquest); 
