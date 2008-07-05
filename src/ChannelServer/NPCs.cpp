@@ -54,7 +54,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 		return;
 	char type = packet->getByte();
 	char what = packet->getByte();
-	if (type == 0) {
+	if (type == NPCDialogs::normal) {
 		if (what == 0)
 			npc->setState(npc->getState()-1);
 		else if (what == 1)
@@ -62,7 +62,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 		else if (what == -1)
 			npc->end();
 	}
-	else if (type == 1 || type == 2) {
+	else if (type == NPCDialogs::yesNo || type == NPCDialogs::acceptDecline) {
 		npc->setState(npc->getState()+1);
 		if (what == 0)
 			npc->setSelected(0);
@@ -71,7 +71,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 		else if (what == -1)
 			npc->end();
 	}
-	else if (type == 3) {
+	else if (type == NPCDialogs::getText) {
 		npc->setState(npc->getState()+1);
 		if (what != 0) {
 			npc->setGetText(packet->getString());
@@ -79,21 +79,21 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 		else
 			npc->end();
 	}
-	else if (type == 4) {
+	else if (type == NPCDialogs::getNumber) {
 		npc->setState(npc->getState()+1);
 		if (what == 1)
 			npc->setGetNumber(packet->getInt());
 		else
 			npc->end();
 	}
-	else if (type == 5) {
+	else if (type == NPCDialogs::simple) {
 		npc->setState(npc->getState()+1);
 		if (what == 0)
 			npc->end();
 		else
 			npc->setSelected(packet->getByte());
 	}
-	else if (type == 7) {
+	else if (type == NPCDialogs::style) {
 		npc->setState(npc->getState()+1);
 		if (what == 1) {
 			npc->setSelected(packet->getShort());
@@ -145,51 +145,51 @@ Packet NPC::npcPacket(char type) {
 }
 
 void NPC::sendSimple() {
-	Packet packet = npcPacket(5);
+	Packet packet = npcPacket(NPCDialogs::simple);
 	packet.send(player);
 }
 void NPC::sendYesNo() {
-	Packet packet = npcPacket(1);
+	Packet packet = npcPacket(NPCDialogs::yesNo);
 	packet.send(player);
 }
 void NPC::sendNext() {
-	Packet packet = npcPacket(0);
+	Packet packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(0);
 	packet.addByte(1);
 	packet.send(player);
 }
 void NPC::sendBackNext() {
-	Packet packet = npcPacket(0);
+	Packet packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(1);
 	packet.send(player);
 }
 void NPC::sendBackOK() {
-	Packet packet = npcPacket(0);
+	Packet packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(0);
 	packet.send(player);
 }
 void NPC::sendOK() {
-	Packet packet = npcPacket(0);
+	Packet packet = npcPacket(NPCDialogs::normal);
 	packet.addShort(0);
 	packet.send(player);
 }
 
 void NPC::sendAcceptDecline() {
-	Packet packet = npcPacket(2);
+	Packet packet = npcPacket(NPCDialogs::acceptDecline);
 	packet.send(player);
 }
 
 void NPC::sendGetText() {
-	Packet packet = npcPacket(3);
+	Packet packet = npcPacket(NPCDialogs::getText);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.send(player);
 }
 
 void NPC::sendGetNumber(int def, int min, int max) {
-	Packet packet = npcPacket(4);
+	Packet packet = npcPacket(NPCDialogs::getNumber);
 	packet.addInt(def);
 	packet.addInt(min);
 	packet.addInt(max);
@@ -198,7 +198,7 @@ void NPC::sendGetNumber(int def, int min, int max) {
 }
 
 void NPC::sendStyle(int styles[], char size) {
-	Packet packet = npcPacket(7);
+	Packet packet = npcPacket(NPCDialogs::style);
 	packet.addByte(size);
 	for (int i = 0; i < size; i++)
 		packet.addInt(styles[i]);
