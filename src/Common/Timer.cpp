@@ -97,7 +97,7 @@ void Timer::timerThread() {
 		if (msec <= 0) {
 			minTimer->handler->handle(this, minTimer->id);
 			if (minTimer->persistent) {
-				minTimer->reset();
+				resetTimer(minTimer->id);
 			}
 			else {
 				remove(minTimer->id);
@@ -114,7 +114,7 @@ void Timer::timerThread() {
 		if (minTimer != NULL) {
 			minTimer->handler->handle(this, minTimer->id);
 			if (minTimer->persistent) {
-				minTimer->reset();
+				resetTimer(minTimer->id);
 			}
 			else {
 				remove(minTimer->id);
