@@ -215,7 +215,7 @@ void Skills::init() {
 	skillsinfo[5201003].player.push_back(player); // Gun Booster
 	// 1001 - Recovery
 	player.type = 0x4;
-	player.byte = 5;
+	player.byte = 1;
 	player.value = SKILL_X;
 	strcpy_s(act.name, 50, "heal");
 	act.time = 4900;
@@ -225,178 +225,180 @@ void Skills::init() {
 	skillsinfo[1001].bact.push_back(true);
 	// 1002 - Nimble Feet
 	player.type = 0x80;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_SPEED;
 	map.type = 0x80;
-	map.byte = 1;
+	map.byte = 5;
 	map.value = SKILL_SPEED;
 	map.val = true;
 	skillsinfo[1002].player.push_back(player);
 	skillsinfo[1002].map.push_back(map);
 	// 1001003 - Iron Body
 	player.type = 0x02;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WDEF;
 	skillsinfo[1001003].player.push_back(player);
 	// 2001002 - Magic Guard
 	player.type = 0x02;
-	player.byte = 2;
+	player.byte = 6;
 	player.value = SKILL_X;
 	skillsinfo[2001002].player.push_back(player);
 	// 2001003 - Magic Armor
 	player.type = 0x02;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WDEF;
 	skillsinfo[2001003].player.push_back(player);
 	// 3001003 - Focus
 	player.type = 0x10;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_ACC;
 	skillsinfo[3001003].player.push_back(player);
 	player.type = 0x20;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_AVO;
 	skillsinfo[3001003].player.push_back(player);
 	// 4001003 - Dark Sight
 	player.type = 0x80;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_SPEED;
 	skillsinfo[4001003].player.push_back(player);
 	player.type = 0x04;
-	player.byte = 2;
+	player.byte = 6;
 	player.value = SKILL_X;
 	skillsinfo[4001003].player.push_back(player);
 	map.type = 0x80;
-	map.byte = 1;
+	map.byte = 5;
 	map.value = SKILL_SPEED;
 	map.val = true;
 	skillsinfo[4001003].map.push_back(map);
 	map.type = 0x04;
-	map.byte = 2;
+	map.byte = 6;
 	map.value = SKILL_X;
 	map.val = false;
 	skillsinfo[4001003].map.push_back(map);
 	// 1101006 - Rage
 	player.type = 0x1;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WATK;
 	skillsinfo[1101006].player.push_back(player);
 	player.type = 0x2;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WDEF;
 	skillsinfo[1101006].player.push_back(player);
 	// 1101007 & 1201007 - Power Guard
 	player.type = 0x10;
-	player.byte = 2;
+	player.byte = 6;
 	player.value = SKILL_X;
 	skillsinfo[1101007].player.push_back(player);
 	skillsinfo[1201007].player.push_back(player);
 	map.type = 0x10;
-	map.byte = 2;
+	map.byte = 6;
 	map.value = SKILL_X;
 	map.val = false;
 	skillsinfo[1101007].map.push_back(map);
 	skillsinfo[1201007].map.push_back(map);
 	// 1301006 - Iron Will
 	player.type = 0x2;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WDEF;
 	skillsinfo[1301006].player.push_back(player);
 	player.type = 0x8;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_MDEF;
 	skillsinfo[1301006].player.push_back(player);
-	// 1301007 - Hyper Body
+	// 1301007 & 9101008 - Hyper Body
 	player.type = 0x20;
-	player.byte = 2;
+	player.byte = 6;
 	player.value = SKILL_X;
 	skillsinfo[1301007].player.push_back(player);
+	skillsinfo[9101008].player.push_back(player);
 	player.type = 0x40;
-	player.byte = 2;
+	player.byte = 6;
 	player.value = SKILL_Y;
 	skillsinfo[1301007].player.push_back(player);
+	skillsinfo[9101008].player.push_back(player);
 	// 2101001 & 2201001 - Meditation
 	player.type = 0x04;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_MATK;
 	skillsinfo[2101001].player.push_back(player);
 	skillsinfo[2201001].player.push_back(player);
 	// 2301003 - Invincible
 	player.type = 0x80;
-	player.byte = 2;
+	player.byte = 6;
 	player.value = SKILL_X;
 	skillsinfo[2301003].player.push_back(player);
 	// 2301004 - Bless
 	player.type = 0x2;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WDEF;
 	skillsinfo[2301004].player.push_back(player);
 	player.type = 0x8;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_MDEF;
 	skillsinfo[2301004].player.push_back(player);
 	player.type = 0x10;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_ACC;
 	skillsinfo[2301004].player.push_back(player);
 	player.type = 0x20;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_AVO;
 	skillsinfo[2301004].player.push_back(player);
 	// 9101003 - GM Bless
 	player.type = 0x1;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WATK;
 	skillsinfo[9101003].player.push_back(player);
 	player.type = 0x2;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WDEF;
 	skillsinfo[9101003].player.push_back(player);
 	player.type = 0x4;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_MATK;
 	skillsinfo[9101003].player.push_back(player);
 	player.type = 0x8;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_MDEF;
 	skillsinfo[9101003].player.push_back(player);
 	player.type = 0x10;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_ACC;
 	skillsinfo[9101003].player.push_back(player);
 	player.type = 0x20;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_AVO;
 	skillsinfo[9101003].player.push_back(player);
 	// 9101004 - GM Hide
 	player.type = 0x40;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = 0;
 	skillsinfo[9101004].player.push_back(player);
 	// 3101004 & 3201004 - Soul Arrow
 	player.type = 0x1;
-	player.byte = 3;
+	player.byte = 7;
 	player.value = SKILL_X;
 	skillsinfo[3101004].player.push_back(player);
 	skillsinfo[3201004].player.push_back(player);
 	// Map value for soul arrow causes DCs. Looking into the proper way to update it
 	// 4101004, 4201003, 9001000, 9101001 - Haste
 	player.type = 0x80;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_SPEED;
 	skillsinfo[4101004].player.push_back(player);
 	skillsinfo[4201003].player.push_back(player);
 	skillsinfo[9001000].player.push_back(player);
 	skillsinfo[9101001].player.push_back(player);
 	player.type = 0x1;
-	player.byte = 2;
+	player.byte = 6;
 	player.value = SKILL_JUMP;
 	skillsinfo[4101004].player.push_back(player);
 	skillsinfo[4201003].player.push_back(player);
 	skillsinfo[9001000].player.push_back(player);
 	skillsinfo[9101001].player.push_back(player);
 	map.type = 0x80;
-	map.byte = 1;
+	map.byte = 5;
 	map.value = SKILL_SPEED;
 	map.val = true;
 	skillsinfo[4101004].map.push_back(map);
@@ -405,33 +407,33 @@ void Skills::init() {
 	skillsinfo[9101001].map.push_back(map);
 	// 4211005 - Meso Guard
 	player.type = 0x10;
-	player.byte = 4;
+	player.byte = 8;
 	player.value = SKILL_X;
 	skillsinfo[4211005].player.push_back(player);
 	// 1311008 - Dragon Blood
 	player.type = 0x1;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WATK;
 	skillsinfo[1311008].player.push_back(player);
 	// 3121002 & 3221002 - Sharp Eyes
 	player.type = 0x20;
-	player.byte = 5;
+	player.byte = 1;
 	player.value = SKILL_X;
 	skillsinfo[3121002].player.push_back(player);
 	skillsinfo[3221002].player.push_back(player);
 	// 4111002 - Shadow Partner
 	player.type = 0x4;
-	player.byte = 4;
+	player.byte = 8;
 	player.value = SKILL_X;
 	skillsinfo[4111002].player.push_back(player);
 	map.type = 0x4;
-	map.byte = 4;
+	map.byte = 8;
 	map.value = SKILL_X;
 	map.val = false;
 	skillsinfo[4111002].map.push_back(map);
 	// WK/Paladin Charges - 1211003, 1211004, 1211005, 1211006, 1211007, 1211008, 1221003, 1221004
 	player.type = 0x4;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_MATK;
 	skillsinfo[1211003].player.push_back(player);
 	skillsinfo[1211004].player.push_back(player);
@@ -442,7 +444,7 @@ void Skills::init() {
 	skillsinfo[1221003].player.push_back(player);
 	skillsinfo[1221004].player.push_back(player);
 	player.type = 0x40;
-	player.byte = 3;
+	player.byte = 7;
 	player.value = SKILL_MATK;
 	skillsinfo[1211003].player.push_back(player);
 	skillsinfo[1211004].player.push_back(player);
@@ -454,7 +456,7 @@ void Skills::init() {
 	skillsinfo[1221004].player.push_back(player);
 	// Maple Warrior - All Classes
 	player.type = 0x8;
-	player.byte = 5;
+	player.byte = 1;
 	player.value = SKILL_X;
 	skillsinfo[1121000].player.push_back(player);
 	skillsinfo[1221000].player.push_back(player);
@@ -468,70 +470,70 @@ void Skills::init() {
 	skillsinfo[4221000].player.push_back(player);
 	// 2311003 & 9101002 - Holy Symbol
 	player.type = 0x1;
-	player.byte = 4;
+	player.byte = 8;
 	player.value = SKILL_X;
 	skillsinfo[2311003].player.push_back(player); // Priest
 	skillsinfo[9101002].player.push_back(player); // Super GM
 	// 1111002 - Combo Attack
 	player.type = 0x20;
-	player.byte = 3;
+	player.byte = 7;
 	player.value = SKILL_X;
 	skillsinfo[1111002].player.push_back(player);
 	/*map.type = 0x20; // Currently causes dc issues when other people enter a map with someone using combo attack, so disable map for now
-	map.byte = 3;
+	map.byte = 7;
 	map.value = SKILL_X;
 	map.val = false;
 	skillsinfo[1111002].map.push_back(map);*/
 	// 1121010 - Enrage
 	player.type = 0x1;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WATK;
 	skillsinfo[1121010].player.push_back(player);
 	// 3121008 - Concentration
 	player.type = 0x1;
-	player.byte = 1;
+	player.byte = 5;
 	player.value = SKILL_WATK;
 	skillsinfo[3121008].player.push_back(player);
 	// 4211003 - Pickpocket TODO: Add server-side to make it drop mesos
 	player.type = 0x8;
-	player.byte = 4;
+	player.byte = 8;
 	player.value = SKILL_X;
 	skillsinfo[4211003].player.push_back(player);
 	// 1004 - Monster Rider
 	player.type = 0x40;
-	player.byte = 6;
+	player.byte = 2;
 	player.value = SKILL_X;
 	skillsinfo[1004].player.push_back(player);
 	map.type = 0x40;
-	map.byte = 6;
+	map.byte = 2;
 	map.value = SKILL_X;
 	map.val = false;
 	skillsinfo[1004].map.push_back(map);
 	// 4111001 - Meso Up
 	player.type = 0x8;
-	player.byte = 4;
+	player.byte = 8;
 	player.value = SKILL_X;
 	skillsinfo[4111001].player.push_back(player);
 	// 4121006 - Shadow claw
 	player.type = 0x1;
-	player.byte = 6;
+	player.byte = 2;
 	player.value = SKILL_X;
 	skillsinfo[4121006].player.push_back(player);
 	// 2121004, 2221004, 2321004 - Infinity
 	player.type = 0x2;
-	player.byte = 6;
+	player.byte = 2;
 	player.value = SKILL_X;
 	skillsinfo[2121004].player.push_back(player);
 	skillsinfo[2221004].player.push_back(player);
 	skillsinfo[2321004].player.push_back(player);
 	// 1005 - Echo of Hero
 	player.type = 0x1;
-	player.byte = 7;
+	player.byte = 3;
 	player.value = SKILL_X;
 	skillsinfo[1005].player.push_back(player);
 	// Stance - 1121002, 1221002, and 1321002
 	player.type = 0x10;
-	player.byte = 5;
+	player.byte = 1;
 	player.value = SKILL_PROP;
 	skillsinfo[1121002].player.push_back(player);
 	skillsinfo[1221002].player.push_back(player);
@@ -611,7 +613,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		SkillsPacket::showMagnet(player, Maps::maps[player->getMap()]->getPlayers(), mobid, success);
 
 	///
-	if (skillid == 1301007) { // Hyper Body
+	if (skillid == 1301007 || skillid == 9101008) { // Hyper Body
 		player->setMHP(player->getRMHP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].x)/100);
 		player->setMMP(player->getRMMP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].y)/100);
 	}
@@ -797,7 +799,7 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 
 void Skills::endSkill(Player *player, int skill) {
 	/// 
-	if (skill == 1301007) { // Hyper Body
+	if (skill == 1301007 || skill == 9101008) { // Hyper Body
 		player->setMHP(player->getRMHP());
 		player->setMMP(player->getRMMP());
 		player->setHP(player->getHP());

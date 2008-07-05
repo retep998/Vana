@@ -72,6 +72,7 @@ void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skilli
 		packet = Packet();
 		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getPlayerid());
+		packet.addInt64(0);
 		packet.addByte(mskill.types[0]);
 		packet.addByte(mskill.types[1]);
 		packet.addByte(mskill.types[2]);
@@ -114,6 +115,7 @@ void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiv
 		packet = Packet();
 		packet.addHeader(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getPlayerid());
+		packet.addInt64(0);
 		packet.addByte(mskill.types[0]);
 		packet.addByte(mskill.types[1]);
 		packet.addByte(mskill.types[2]);

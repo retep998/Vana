@@ -109,11 +109,15 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 		player->setSp(player->getSp() + spgain);
 
 		// Let hyperbody remain on if on during a level up, as it should
-		if (player->skills->getActiveSkillLevel(1301007)>0) {
+		if (player->skills->getActiveSkillLevel(1301007) > 0) {
 			player->setMHP(player->getRMHP()*(100 + Skills::skills[1301007][player->skills->getActiveSkillLevel(1301007)].x)/100);
 			player->setMMP(player->getRMMP()*(100 + Skills::skills[1301007][player->skills->getActiveSkillLevel(1301007)].y)/100);
 		}
-		else{
+		else if (player->skills->getActiveSkillLevel(9101008) > 0) { // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
+			player->setMHP(player->getRMHP()*(100 + Skills::skills[9101008][player->skills->getActiveSkillLevel(9101008)].x)/100);
+			player->setMMP(player->getRMMP()*(100 + Skills::skills[9101008][player->skills->getActiveSkillLevel(9101008)].y)/100);
+		}
+		else {
 			player->setMHP(player->getRMHP());
 			player->setMMP(player->getRMMP());
 		}
@@ -188,14 +192,17 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 			player->setAp(player->getAp()-1);
 			player->setHPMPAp(player->getHPMPAp()+1);
 			int hb = player->skills->getActiveSkillLevel(1301007);
+			int gmhb = player->skills->getActiveSkillLevel(9101008); // Separating because any player may get a map-wide effect of GM Hyperbody
 			switch (type) {
 				case 0x800:
 					player->setRMHP(player->getRMHP() + hpgain);
 					player->setMHP(player->getRMHP() * (hb ? (Skills::skills[1301007][hb].x / 100) : 1));
+					player->setMHP(player->getRMHP() * (gmhb ? (Skills::skills[9101008][gmhb].x / 100) : 1));
 					break;
 				case 0x2000:
 					player->setRMMP(player->getRMMP() + mpgain);
 					player->setMMP(player->getRMMP() * (hb ? (Skills::skills[1301007][hb].y / 100) : 1));
+					player->setMHP(player->getRMHP() * (gmhb ? (Skills::skills[9101008][gmhb].x / 100) : 1));
 					break;
 			}
 			break;
