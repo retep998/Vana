@@ -193,11 +193,12 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 			hpinfo.mobid = mobid;
 			displayHPBars(player, Maps::maps[map]->getPlayers(), hpinfo);
 			if (mob->getHP() <= 0) {
-				packet->skipBytes(4*(hits-1-k));
+				packet->skipBytes(4 * (hits - 1 - k));
 				dieMob(player, mob);
 				break;
 			}
 		}
+		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 }
 
@@ -242,11 +243,12 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			hpinfo.mobid = mobid;
 			displayHPBars(player, Maps::maps[map]->getPlayers(), hpinfo);
 			if (mob->getHP() <= 0) {
-				packet->skipBytes(4*(hits-1-k));
+				packet->skipBytes(4 * (hits - 1 - k));
 				dieMob(player, mob);
 				break;
 			}
 		}
+		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 	packet->skipBytes(4); // Character positioning, normal end of packet
 	switch (skillid) {
@@ -357,11 +359,12 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			hpinfo.mobid = mobid;
 			displayHPBars(player, Maps::maps[map]->getPlayers(), hpinfo);
 			if (mob->getHP() <= 0) {
-				packet->skipBytes(4*(hits-1-k));
+				packet->skipBytes(4 * (hits - 1 - k));
 				dieMob(player, mob);
 				break;
 			}
 		}
+		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 	// packet->skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 	if (skillid == 4101005) { // Drain

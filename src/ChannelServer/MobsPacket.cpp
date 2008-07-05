@@ -152,6 +152,7 @@ void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket 
 			int damage = pack->getInt();
 			packet.addInt(damage);
 		}
+		pack->skipBytes(4);
 	}
 	packet.sendTo(player, players, false);
 }
@@ -205,6 +206,7 @@ void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadP
 			int damage = pack->getInt();
 			packet.addInt(damage); // Critical damage = 0x80000000 + damage
 		}
+		pack->skipBytes(4);
 	}
 	packet.sendTo(player, players, false);
 }
@@ -242,6 +244,7 @@ void MobsPacket::damageMobSpell(Player *player, vector <Player*> players, ReadPa
 			int damage = pack->getInt();
 			packet.addInt(damage);
 		}
+		pack->skipBytes(4);
 	}
 	if (charge > 0)
 		packet.addInt(charge);
