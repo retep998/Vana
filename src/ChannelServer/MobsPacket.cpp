@@ -135,6 +135,9 @@ void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket 
 	pack->skipBytes(1); // Weapon subclass
 	packet.addByte(pack->getByte()); // Weapon speed
 	pack->skipBytes(4); // Ticks
+	if (skillid == 5201002) {
+		pack->skipBytes(4); // Charge
+	}
 	packet.addByte(10);
 	packet.addInt(0);
 	for (char i = 0; i < targets; i++) {

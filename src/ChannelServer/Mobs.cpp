@@ -215,6 +215,9 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	// Heaven's Hammer will require tons of special code, it only sends 0x01 as the damage for any hit
 	// }
 	packet->skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
+	if (skillid == 5201002) {
+		packet->skipBytes(4); // Charge 
+	}
 	unsigned int totaldmg = 0;
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
