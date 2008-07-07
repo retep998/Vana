@@ -431,40 +431,40 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 		types[7] = 0;
 
 		if (Drops::consumes[itemid].watk > 0) {
-			types[0] += 0x01;
+			types[4] += 0x01;
 			vals.push_back(Drops::consumes[itemid].watk);
 		}
 		if (Drops::consumes[itemid].wdef > 0) {
-			types[0] += 0x02;
+			types[4] += 0x02;
 			vals.push_back(Drops::consumes[itemid].wdef);
 		}
 		if (Drops::consumes[itemid].matk > 0) {
-			types[0] += 0x04;
+			types[4] += 0x04;
 			vals.push_back(Drops::consumes[itemid].matk);
 		}
 		if (Drops::consumes[itemid].mdef > 0) {
-			types[0] += 0x08;
+			types[4] += 0x08;
 			vals.push_back(Drops::consumes[itemid].mdef);
 		}
 		if (Drops::consumes[itemid].acc > 0) {
-			types[0] += 0x10;
+			types[4] += 0x10;
 			vals.push_back(Drops::consumes[itemid].acc);
 		}
 		if (Drops::consumes[itemid].avo > 0) {
-			types[0] += 0x20;
+			types[4] += 0x20;
 			vals.push_back(Drops::consumes[itemid].avo);
 		}
 		if (Drops::consumes[itemid].speed > 0) {
-			types[0] += 0x80;
+			types[4] += 0x80;
 			vals.push_back(Drops::consumes[itemid].speed);
 		}
 		if (Drops::consumes[itemid].jump > 0) {
-			types[1] = 0x01;
+			types[5] = 0x01;
 			vals.push_back(Drops::consumes[itemid].jump);
 		}
 		bool isMorph = false;
 		if (Drops::consumes[itemid].morph > 0) {
-			types[4] = 0x02;
+			types[0] = 0x02;
 			vals.push_back(Drops::consumes[itemid].morph);
 			isMorph = true;
 		}
@@ -493,33 +493,36 @@ void Inventory::endItem(Player *player, int itemid) {
 	types[7] = 0;
 
 	if (Drops::consumes[itemid].watk > 0) {
-		types[0] += 0x01;
+		types[4] += 0x01;
 	}
 	if (Drops::consumes[itemid].wdef > 0) {
-		types[0] += 0x02;
+		types[4] += 0x02;
 	}
 	if (Drops::consumes[itemid].matk > 0) {
-		types[0] += 0x04;
+		types[4] += 0x04;
 	}
 	if (Drops::consumes[itemid].mdef > 0) {
-		types[0] += 0x08;
+		types[4] += 0x08;
 	}
 	if (Drops::consumes[itemid].acc > 0) {
-		types[0] += 0x10;
+		types[4] += 0x10;
 	}
 	if (Drops::consumes[itemid].avo > 0) {
-		types[0] += 0x20;
+		types[4] += 0x20;
 	}
 	if (Drops::consumes[itemid].speed > 0) {
-		types[0] += 0x80;
+		types[4] += 0x80;
 	}
 	if (Drops::consumes[itemid].jump > 0) {
-		types[1] = 0x01;
+		types[5] = 0x01;
 	}
+	bool isMorph = false;
 	if (Drops::consumes[itemid].morph > 0) {
-		types[4] = 0x02;
+		isMorph = true;
+		types[0] = 0x02;
 	}
-	InventoryPacket::endItem(player, types);
+
+	InventoryPacket::endItem(player, types, isMorph);
 }
 // Skill books
 void Inventory::useSkillbook(Player *player, ReadPacket *packet) {

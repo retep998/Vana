@@ -255,6 +255,7 @@ void InventoryPacket::showMessenger(Player *player, const string & msg, const st
 void InventoryPacket::useItem(Player *player, vector<Player*> players, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph) { // Test/Beta function, PoC only
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILL);
+	packet.addInt64(0);
 	packet.addByte(types[0]);
 	packet.addByte(types[1]);
 	packet.addByte(types[2]);
@@ -273,10 +274,14 @@ void InventoryPacket::useItem(Player *player, vector<Player*> players, int itemi
 		packet.addByte(1);
 	else
 		packet.addByte(0);
+	packet.addShort(0);
+	packet.addByte(0);
 	packet.send(player);
 	if (morph) {
 		Packet packet;
 		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
+		packet.addInt(player->getPlayerid());
+		packet.addInt64(0);
 		packet.addByte(types[0]);
 		packet.addByte(types[1]);
 		packet.addByte(types[2]);
@@ -288,13 +293,16 @@ void InventoryPacket::useItem(Player *player, vector<Player*> players, int itemi
 		for (unsigned int i = 0; i < vals.size(); i++) {
 			packet.addShort(vals[i]);
 		}
-		packet.addShort(1);
+		packet.addByte(1);
+		packet.addShort(0);
+		packet.addByte(0);
 		packet.sendTo(player, players, false);
 	}
 }
-void InventoryPacket::endItem(Player *player, unsigned char types[8]) {
+void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph) {
 	Packet packet;
 	packet.addHeader(SEND_CANCEL_SKILL);
+	packet.addInt64(0);
 	packet.addByte(types[0]);
 	packet.addByte(types[1]);
 	packet.addByte(types[2]);
@@ -305,6 +313,21 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8]) {
 	packet.addByte(types[7]);
 	packet.addByte(0);
 	packet.send(player);
+	if (morph) {
+		Packet packet;
+		packet.addHeader(SEND_CANCEL_OTHERS_BUFF);
+		packet.addInt(player->getPlayerid());
+		packet.addInt64(0);
+		packet.addByte(types[0]);
+		packet.addByte(types[1]);
+		packet.addByte(types[2]);
+		packet.addByte(types[3]);
+		packet.addByte(types[4]);
+		packet.addByte(types[5]);
+		packet.addByte(types[6]);
+		packet.addByte(types[7]);
+		packet.sendTo(player, Maps::maps[player->getMap()]->getPlayers(), false);
+	}
 }
 // Skill Books
 void InventoryPacket::useSkillbook(Player *player, vector <Player *> players, int skillid, int newMaxLevel, bool use, bool succeed) {
