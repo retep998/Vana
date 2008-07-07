@@ -600,7 +600,7 @@ void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 void Players::groupChatHandler(Player *player, ReadPacket *packet) {
 	vector<int> receivers;
 	char type = packet->getByte();
-	char amount = packet->getByte();
+	unsigned char amount = packet->getByte();
 	for (size_t i = 0; i < amount; i++) {
 		receivers.push_back(packet->getInt());
 	}
