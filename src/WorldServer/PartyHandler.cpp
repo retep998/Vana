@@ -78,19 +78,20 @@ void PartyHandler::giveLeader(WorldServerAcceptPlayer *player, int playerid, int
 
 void PartyHandler::expelPlayer(WorldServerAcceptPlayer *player, int playerid, int target) {
 	Player *pplayer = Players::Instance()->getPlayer(playerid);
+	Player *tplayer = Players::Instance()->getPlayer(target);
 	if (pplayer->party == 0 || !parties[pplayer->party]->isLeader(playerid)) {
 		return; //Hacking
 	}
 	Party *party = parties[pplayer->party];
-	party->deleteMember(Players::Instance()->getPlayer(target)); 
+	party->deleteMember(tplayer); 
 	for (hash_map<int, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
 			WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
 			PartyPacket::updateParty(channel, PARTY_EXPEL, playerid, target);
 		}
 	}
-	if (Players::Instance()->getPlayer(target)->online) {
-		WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(Players::Instance()->getPlayer(target)->channel)->player;
+	if (tplayer->online) {
+		WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(tplayer->channel)->player;
 		PartyPacket::updateParty(channel, PARTY_EXPEL, target, target);
 	}
 	Players::Instance()->getPlayer(target)->party = 0;

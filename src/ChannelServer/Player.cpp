@@ -217,7 +217,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	PlayerPacket::connectData(this);
 	
 	if (ChannelServer::Instance()->getScrollingHeader().size() > 0) {
-		ServerPacket::changeScrollingHeader(ChannelServer::Instance()->getScrollingHeader());
+		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
 	}
 
 	pos = Maps::maps[map]->getPortalByID(0)->pos;
