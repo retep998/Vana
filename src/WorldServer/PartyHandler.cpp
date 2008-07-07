@@ -90,7 +90,7 @@ void PartyHandler::expelPlayer(WorldServerAcceptPlayer *player, int playerid, in
 		}
 	}
 	if (Players::Instance()->getPlayer(target)->online) {
-		WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(target)->player;
+		WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(Players::Instance()->getPlayer(target)->channel)->player;
 		PartyPacket::updateParty(channel, PARTY_EXPEL, target, target);
 	}
 	Players::Instance()->getPlayer(target)->party = 0;
