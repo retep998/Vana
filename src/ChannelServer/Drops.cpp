@@ -295,7 +295,7 @@ void Drops::addEquip(int id, EquipInfo equip) {
 }
 void Drops::addItem(int id, ItemInfo item) {
 	items[id] = item;
-	if (ISSTAR(id))
+	if (ISRECHARGEABLE(id))
 		Shops::rechargables.push_back(id);
 }
 void Drops::addConsume(int id, ConsumeInfo cons) {

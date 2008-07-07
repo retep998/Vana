@@ -36,7 +36,7 @@ void Shops::showShop(Player *player, int id) {
 	for (size_t i = 0; i < shops[id].items.size(); i++) {
 		packet.addInt(shops[id].items[i].id);
 		packet.addInt(shops[id].items[i].price);
-		if (ISSTAR(shops[id].items[i].id)) {
+		if (ISRECHARGEABLE(shops[id].items[i].id)) {
 			packet.addShort(0);
 			packet.addInt(0);
 			packet.addShort(shops[id].items[i].price);
@@ -46,6 +46,8 @@ void Shops::showShop(Player *player, int id) {
 		}
 		if (ISSTAR(shops[id].items[i].id))
 			packet.addShort(Drops::items[shops[id].items[i].id].maxslot + player->skills->getSkillLevel(4100000)*10);
+		else if (ISBULLET(shops[id].items[i].id))
+			packet.addShort(Drops::items[shops[id].items[i].id].maxslot + player->skills->getSkillLevel(5200000)*10);
 		else if (Drops::items.find(shops[id].items[i].id) != Drops::items.end())
 			packet.addShort(Drops::items[shops[id].items[i].id].maxslot); 
 		else

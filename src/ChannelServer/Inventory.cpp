@@ -135,7 +135,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			Item *item = player->inv->getItem(inv, slot1);
 			if (item == 0)
 				return;
-			if (ISSTAR(item->id)) amount = item->amount;
+			if (ISRECHARGEABLE(item->id)) amount = item->amount;
 			Item droppeditem = Item(item);
 			droppeditem.amount = amount;
 			if (item->amount - amount == 0) {
@@ -157,7 +157,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			Item *item1 = player->inv->getItem(inv, slot1);
 			Item *item2 = player->inv->getItem(inv, slot2);
 
-			if (item2 != 0 && !ISSTAR(item1->id) && item1->id == item2->id) {
+			if (item2 != 0 && !ISRECHARGEABLE(item1->id) && item1->id == item2->id) {
 				if (item1->amount + item2->amount <= Drops::items[item1->id].maxslot) {
 					item2->amount += item1->amount;
 					player->inv->deleteItem(inv, slot1);
@@ -227,7 +227,7 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 	for (short s = 1; s <= player->inv->getMaxslots(inv); s++) {
 		Item *olditem = player->inv->getItem(inv, s);
 		if (olditem != 0) {
-			if (!ISSTAR(item->id) && olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
+			if (!ISRECHARGEABLE(item->id) && olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
 				if (item->amount + olditem->amount > Drops::items[item->id].maxslot) {
 					short amount = Drops::items[item->id].maxslot - olditem->amount;
 					item->amount -= amount;
@@ -245,7 +245,7 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 		}
 		else if (!freeslot) {
 			freeslot = s;
-			if (ISSTAR(item->id))
+			if (ISRECHARGEABLE(item->id))
 				break;
 		}
 	}
@@ -326,6 +326,10 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 			item->amount = max + player->skills->getSkillLevel(4100000)*10;
 			amount -= 1;
 		}
+		else if (ISBULLET(itemid)) {
+			item->amount = max + player->skills->getSkillLevel(5200000)*10;
+			amount -= 1;
+		}
 		else if (amount - max > 0) {
 			item->amount = max;
 			amount -= max;
@@ -350,7 +354,7 @@ void Inventory::takeItem(Player *player, int itemid, int howmany) {
 		if (item->id == itemid) {
 			if (item->amount >= howmany) {
 				item->amount -= howmany;
-				if (item->amount == 0 && !ISSTAR(item->id)) {
+				if (item->amount == 0 && !ISRECHARGEABLE(item->id)) {
 					InventoryPacket::moveItem(player, inv, i, 0);
 					player->inv->deleteItem(inv, i);
 				}
@@ -358,7 +362,7 @@ void Inventory::takeItem(Player *player, int itemid, int howmany) {
 					InventoryPacket::moveItemS(player, inv, i, item->amount);
 				break;
 			}
-			else if (!ISSTAR(item->id)) {
+			else if (!ISRECHARGEABLE(item->id)) {
 				howmany -= item->amount;
 				item->amount = 0;
 				InventoryPacket::moveItem(player, inv, i, 0);
@@ -374,7 +378,7 @@ void Inventory::takeItemSlot(Player *player, char inv, short slot, short amount,
 		return;
 
 	item->amount -= amount;
-	if (item->amount == 0 && !ISSTAR(item->id) || (takeStar && ISSTAR(item->id))) {
+	if (item->amount == 0 && !ISRECHARGEABLE(item->id) || (takeStar && ISRECHARGEABLE(item->id))) {
 		InventoryPacket::moveItem(player, inv, slot, 0);
 		player->inv->deleteItem(inv, slot);
 	}

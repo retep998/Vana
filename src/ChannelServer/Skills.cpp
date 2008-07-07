@@ -692,7 +692,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				Item *item = player->inv->getItem(2, s);
 				if (item == 0)
 					continue;
-				if (ISSTAR(item->id) && item->amount >= 200) {
+				if (ISRECHARGEABLE(item->id) && item->amount >= 200) {
 					Inventory::takeItemSlot(player, 2, s, 200);
 					value = (item->id % 10000) + 1;
 					break;

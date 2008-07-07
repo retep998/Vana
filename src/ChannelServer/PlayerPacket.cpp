@@ -109,7 +109,7 @@ void PlayerPacket::connectData(Player *player) {
 			packet.addBytes("8005BB46E61702");
 			packet.addShort(item->amount); // slots
 			packet.addInt(0);
-			if (ISSTAR(item->id)) {
+			if (ISRECHARGEABLE(item->id)) {
 				packet.addInt(2);
 				packet.addShort(0x54);
 				packet.addByte(0);

@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define ISARROW(x) (x/10000 == 206)
 #define ISSTAR(x) (x/10000 == 207)
+#define ISBULLET(x) (x/10000 == 233) //Actually bullets and capsules same time
+#define ISRECHARGEABLE(x) (ISSTAR(x) || ISBULLET(x))
 
 class Player;
 class ItemTimer;
