@@ -130,6 +130,7 @@ void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket 
 	} 
 	else
 		packet.addByte(0);
+	packet.addByte(0);
 	pack->skipBytes(1); // Projectile display
 	packet.addByte(pack->getByte()); // Direction/animation
 	pack->skipBytes(1); // Weapon subclass
@@ -178,6 +179,7 @@ void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadP
 	} 
 	else
 		packet.addByte(0);
+	packet.addByte(0);
 	unsigned char display = pack->getByte(); // Projectile display
 	packet.addByte(pack->getByte()); // Direction/animation
 	pack->skipBytes(1); // Weapon subclass
@@ -229,6 +231,7 @@ void MobsPacket::damageMobSpell(Player *player, vector <Player*> players, ReadPa
 	packet.addInt(skillid);
 	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
 		charge = pack->getInt();
+	packet.addByte(0);
 	pack->skipBytes(1); // Display
 	packet.addByte(pack->getByte()); // Direction/animation
 	pack->skipBytes(1); // Weapon subclass
