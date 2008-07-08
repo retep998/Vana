@@ -64,6 +64,8 @@ void Players::faceExperiment(Player *player, ReadPacket *packet) {
 
 void Players::chatHandler(Player *player, ReadPacket *packet) {
 	string message = packet->getString();
+	char bubbleOnly = packet->getByte(); // Skill Macros only display chat bubbles
+
 	char *chat = const_cast<char *>(message.c_str()); // Leaving chat as char[] for GM commands for now
 	size_t chatsize = message.size(); // See above line
 	if (chat[0] == '!') {
@@ -416,7 +418,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		return;
 	}
-	PlayersPacket::showChat(player, Maps::maps[player->getMap()]->getPlayers(), message);
+	PlayersPacket::showChat(player, Maps::maps[player->getMap()]->getPlayers(), message, bubbleOnly);
 }
 
 void Players::damagePlayer(Player *player, ReadPacket *packet) {

@@ -32,7 +32,7 @@ struct PowerGuardInfo;
 namespace PlayersPacket {
 	void showMoving(Player *player, vector <Player*> players, unsigned char *buf, size_t size);
 	void faceExperiment(Player *player, vector <Player*> players, int face);
-	void showChat(Player *player, vector <Player*> players, const string &msg);
+	void showChat(Player *player, vector <Player*> players, const string &msg, char isMacro);
 	void damagePlayer(Player *player, vector <Player*> players, int dmg, int mob, unsigned char hit, unsigned char type, int fake, PowerGuardInfo pg);
 	void showMessage(char *msg, char type);
 	void showInfo(Player *player, Player *getinfo);

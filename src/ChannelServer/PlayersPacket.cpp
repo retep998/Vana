@@ -38,13 +38,13 @@ void PlayersPacket::faceExperiment(Player *player, vector <Player*> players, int
 	packet.sendTo<Player>(player, players, 0);
 }
 
-void PlayersPacket::showChat(Player *player, vector <Player*> players, const string &msg) {
+void PlayersPacket::showChat(Player *player, vector <Player*> players, const string &msg, char bubbleOnly) {
 	Packet packet;
 	packet.addHeader(SEND_CHAT);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(player->isGM());
 	packet.addString(msg);
-	packet.addByte(0);
+	packet.addByte(isMacro);
 	packet.sendTo<Player>(player, players, 1);
 }
 
