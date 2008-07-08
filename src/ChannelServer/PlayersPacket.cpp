@@ -44,7 +44,7 @@ void PlayersPacket::showChat(Player *player, vector <Player*> players, const str
 	packet.addInt(player->getPlayerid());
 	packet.addByte(player->isGM());
 	packet.addString(msg);
-	packet.addByte(isMacro);
+	packet.addByte(bubbleOnly);
 	packet.sendTo<Player>(player, players, 1);
 }
 
