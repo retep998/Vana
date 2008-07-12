@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "SendHeader.h"
+#include "Maps.h"
 
 void LevelsPacket::showEXP(Player *player, int exp, char type) {
 	Packet packet;
@@ -33,13 +34,12 @@ void LevelsPacket::showEXP(Player *player, int exp, char type) {
 	packet.send(player);
 }
 
-void LevelsPacket::levelUP(Player *player, vector <Player*> players) {
+void LevelsPacket::levelUP(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(0);
-	packet.sendTo<Player>(player, players, 0);
-
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
 void LevelsPacket::statOK(Player *player) {
@@ -50,10 +50,10 @@ void LevelsPacket::statOK(Player *player) {
 	packet.send(player);
 }
 
-void LevelsPacket::jobChange(Player *player, std::vector<Player*> players) {
+void LevelsPacket::jobChange(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(8);
-	packet.sendTo<Player>(player, players, 0);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }

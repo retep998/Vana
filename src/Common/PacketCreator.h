@@ -55,8 +55,6 @@ public:
 	size_t getSize();
 
 	template <class T>
-	void sendTo(T *player, vector <T*> players, bool is);
-	template <class T>
 	void send(T *player);
 private:
 	size_t pos;
@@ -177,14 +175,6 @@ unsigned char * Packet::getBuffer() {
 inline
 size_t Packet::getSize() {
 	return pos;
-}
-
-template <class T>
-void Packet::sendTo(T *player, vector <T*> players, bool is) {
-	for (unsigned int i=0; i<players.size(); i++) {
-		if ((player != NULL && player->getPlayerid() != players[i]->getPlayerid() && !is) || is)
-			this->send(players[i]);
-	}
 }
 
 template <class T>

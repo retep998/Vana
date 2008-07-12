@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaPortal.h"
 #include "ReadPacket.h"
 #include "LoopingId.h"
+#include "PacketCreator.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include <iostream>
 #include <sstream>
@@ -82,7 +83,7 @@ void Map::addPlayer(Player *player) {
 	if (player->getMap() == 1 || player->getMap() == 2)
 		MapPacket::makeApple(player);
 	if (player->skills->getActiveSkillLevel(9101004) == 0)
-		MapPacket::showPlayer(player, this->players);
+		MapPacket::showPlayer(player);
 }
 
 void Map::removePlayer(Player *player) {
@@ -92,7 +93,7 @@ void Map::removePlayer(Player *player) {
 			break;
 		}
 	}
-	MapPacket::removePlayer(player, this->players);
+	MapPacket::removePlayer(player);
 	updateMobControl();
 }
 
@@ -134,7 +135,7 @@ void Map::addMob(Mob *mob) {
 	int id = this->mobids->next();
 	mob->setID(id);
 	this->mobs[id] = mob;
-	MobsPacket::spawnMob(this->players, mob);
+	MobsPacket::spawnMob(mob);
 	updateMobControl(mob);
 }
 
@@ -237,6 +238,14 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	}
 	if (this->info.clock)
 		Maps::showClock(player);
+}
+
+void Map::sendPacket(Packet &packet, Player *player) {
+	for (size_t i = 0; i < this->players.size(); i++) {
+		if (this->players[i] != player) {
+			packet.send(this->players[i]);
+		}
+	}
 }
 
 /** Maps namespace **/
@@ -343,6 +352,6 @@ void Maps::newMap(Player *player, int mapid) {
 // Change Music
 void Maps::changeMusic(int mapid, const string &musicname) {
 	if (Maps::maps.find(mapid) != Maps::maps.end()) {
-		MapPacket::changeMusic(maps[mapid]->getPlayers(), musicname);
+		MapPacket::changeMusic(mapid, musicname);
 	}
 }

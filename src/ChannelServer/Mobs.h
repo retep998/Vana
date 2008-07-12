@@ -82,7 +82,7 @@ namespace Mobs {
 	void damageMobRanged(Player *player, ReadPacket *packet);
 	void damageMobSpell(Player *player, ReadPacket *packet);
 	void damageMobPG(Player *player, int damage, Mob *mob);
-	void displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob);
+	void displayHPBars(Player *player, const MobHPInfo &mob);
 	void monsterControl(Player *player, ReadPacket *packet);
 	void checkSpawn(int mapid);
 	void spawnMob(Player *player, int mobid, int amount = 1);

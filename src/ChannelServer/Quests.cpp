@@ -146,8 +146,8 @@ void PlayerQuests::checkDone(Quest &quest) {
 }
 
 void PlayerQuests::finishQuest(short questid, int npcid) {
-	int chance=0;
-	for (unsigned int i=0; i<Quests::quests[questid].rewards.size(); i++) {
+	int chance = 0;
+	for (size_t i = 0; i < Quests::quests[questid].rewards.size(); i++) {
 		if (Quests::quests[questid].rewards[i].start) {
 			if (Quests::quests[questid].rewards[i].isexp) {
 				Levels::giveEXP(player, Quests::quests[questid].rewards[i].id * ChannelServer::Instance()->getQuestExprate(), 1);
@@ -178,10 +178,10 @@ void PlayerQuests::finishQuest(short questid, int npcid) {
 			}
 		}
 	}
-	if (chance>0) {
+	if (chance > 0) {
 		int random = Randomizer::Instance()->randInt(chance-1);
-		chance=0;
-		for (unsigned int i=0; i<Quests::quests[questid].rewards.size(); i++) {
+		chance = 0;
+		for (size_t i = 0; i < Quests::quests[questid].rewards.size(); i++) {
 			if (Quests::quests[questid].rewards[i].start) {
 				if (Quests::quests[questid].rewards[i].isitem) {
 					if (Quests::quests[questid].rewards[i].prop > 0) {
@@ -200,7 +200,7 @@ void PlayerQuests::finishQuest(short questid, int npcid) {
 			}
 		}
 	}
-	for (unsigned int i=0; i<quests.size(); i++) {
+	for (size_t i = 0; i < quests.size(); i++) {
 		if (quests[i].id == questid) {
 			quests.erase(quests.begin() + i);
 			break;
@@ -210,7 +210,7 @@ void PlayerQuests::finishQuest(short questid, int npcid) {
 	quest.id = questid;
 	quest.time = TimeUtilities::getServerTime();
 	questscomp.push_back(quest);
-	QuestsPacket::questFinish(player, Maps::maps[player->getMap()]->getPlayers(), questid, npcid, Quests::quests[questid].nextquest, quest.time);
+	QuestsPacket::questFinish(player, questid, npcid, Quests::quests[questid].nextquest, quest.time);
 }
 
 void PlayerQuests::addQuest(int questid, int npcid) {
@@ -218,7 +218,7 @@ void PlayerQuests::addQuest(int questid, int npcid) {
 	Quest quest;
 	quest.id = questid;
 	quest.done = 0;
-	for (unsigned int i=0; i<Quests::quests[questid].requests.size(); i++) {
+	for (size_t i = 0; i < Quests::quests[questid].requests.size(); i++) {
 		if (Quests::quests[questid].requests[i].ismob) {
 			QuestMob mob;
 			mob.id = Quests::quests[questid].requests[i].id;
@@ -226,7 +226,7 @@ void PlayerQuests::addQuest(int questid, int npcid) {
 			quest.mobs.push_back(mob);
 		}
 	}
-	for (unsigned int i=0; i<Quests::quests[questid].rewards.size(); i++) {
+	for (size_t i = 0; i < Quests::quests[questid].rewards.size(); i++) {
 		if (!Quests::quests[questid].rewards[i].start) {
 			if (Quests::quests[questid].rewards[i].isexp) {
 				Levels::giveEXP(player, Quests::quests[questid].rewards[i].id, 1);

@@ -560,7 +560,7 @@ void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 }
 void Skills::stopSkill(Player *player, int skillid) {
 	if (skillid == 3121004 || skillid == 3221001 || skillid == 2121001 || skillid == 2221001 || skillid == 2321001) { // Hurricane/Pierce/Big Bang x3
-		SkillsPacket::endSpecialSkill(player, Maps::maps[player->getMap()]->getPlayers(), player->getSpecialSkillInfo());
+		SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
 		SpecialSkillInfo info;
 		player->setSpecialSkill(info);
 		return;
@@ -581,7 +581,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			for (char k = 0; k < mobs; k++) {
 				int mapmobid = packet->getInt();
 				unsigned char success = packet->getByte();
-				SkillsPacket::showMagnetSuccess(player, Maps::maps[player->getMap()]->getPlayers(), mapmobid, success);
+				SkillsPacket::showMagnetSuccess(player, mapmobid, success);
 			}
 			break;
 		}
@@ -614,7 +614,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			healrate=100;
 		player->setHP(player->getHP() + healrate*player->getMHP()/100);
 	}
-	SkillsPacket::showSkill(player, Maps::maps[player->getMap()]->getPlayers(), skillid, level, direction); 
+	SkillsPacket::showSkill(player, skillid, level, direction); 
 	///
 	if (skillid == 1301007 || skillid == 9101008) { // Hyper Body
 		player->setMHP(player->getRMHP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].x)/100);
@@ -632,9 +632,9 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			return;
 	}
 	else if (skillid == 9101005) { // GM Resurrection
-		for (size_t i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {
+		for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
 			Player *resplayer;
-			resplayer = Maps::maps[player->getMap()]->getPlayers()[i];
+			resplayer = Maps::maps[player->getMap()]->getPlayer(i);
 			if (resplayer->getHP() <= 0) {
 				resplayer->setHP(resplayer->getMHP());
 			}
@@ -743,7 +743,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		map.skill = skillid;
 		mapenterskill.push_back(map);
 	}
-	SkillsPacket::useSkill(player, Maps::maps[player->getMap()]->getPlayers(), skillid, skills[skillid][level].time*1000, playerskill, mapskill);
+	SkillsPacket::useSkill(player, skillid, skills[skillid][level].time*1000, playerskill, mapskill);
 	player->skills->setSkillPlayerInfo(skillid, playerskill);
 	player->skills->setSkillMapInfo(skillid, mapskill);
 	player->skills->setSkillMapEnterInfo(skillid, mapenterskill);
@@ -771,7 +771,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	SkillTimer::Instance()->setSkillTimer(player, skillid, skills[skillid][level].time*1000);
 	player->skills->setActiveSkillLevel(skillid, level);
 	if (skillid == 9101004) // GM Hide
-		MapPacket::removePlayer(player, Maps::maps[player->getMap()]->getPlayers());
+		MapPacket::removePlayer(player);
 }
 void Skills::useAttackSkill(Player *player, int skillid) {
 	if (skills.find(skillid) == skills.end())
@@ -813,8 +813,8 @@ void Skills::endSkill(Player *player, int skill) {
 		SkillTimer::Instance()->stop(player, skill, skillsinfo[skill].act.name);
 	}
 	if (skill == 9101004) // GM Hide
-		MapPacket::showPlayer(player, Maps::maps[player->getMap()]->getPlayers());
-	SkillsPacket::endSkill(player, Maps::maps[player->getMap()]->getPlayers(), player->skills->getSkillPlayerInfo(skill) ,player->skills->getSkillMapInfo(skill));
+		MapPacket::showPlayer(player);
+	SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill) ,player->skills->getSkillMapInfo(skill));
 	player->skills->deleteSkillMapEnterInfo(skill);
 	player->skills->setActiveSkillLevel(skill, 0);
 }
@@ -844,11 +844,11 @@ void Skills::addCombo(Player *player) { // add combo orbs
 		}
 		if (player->getCombo() > maxcombo)
 			player->setCombo(maxcombo);
-		SkillsPacket::showCombo(player, Maps::maps[player->getMap()]->getPlayers(), SkillTimer::Instance()->skillTime(player, 1111002));
+		SkillsPacket::showCombo(player, SkillTimer::Instance()->skillTime(player, 1111002));
 	}
 }
 
 void Skills::clearCombo(Player *player) { // finishing moves panic coma
 	player->setCombo(0);
-	SkillsPacket::showCombo(player, Maps::maps[player->getMap()]->getPlayers(), SkillTimer::Instance()->skillTime(player, 1111002));
+	SkillsPacket::showCombo(player, SkillTimer::Instance()->skillTime(player, 1111002));
 }

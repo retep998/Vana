@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Quests.h"
 #include "SendHeader.h"
+#include "Maps.h"
 
 void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
 	Packet packet;
@@ -70,7 +71,7 @@ void QuestsPacket::doneQuest(Player *player, int questid) {
 	packet.send(player);
 }
 
-void QuestsPacket::questFinish(Player *player, vector <Player*> players,short questid, int npcid, short nextquest, __int64 time) {
+void QuestsPacket::questFinish(Player *player, short questid, int npcid, short nextquest, __int64 time) {
 	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(1);
@@ -93,7 +94,7 @@ void QuestsPacket::questFinish(Player *player, vector <Player*> players,short qu
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(9);
-	packet.sendTo<Player>(player, players, 0);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
 void QuestsPacket::giveItem(Player *player, int itemid, int amount) {

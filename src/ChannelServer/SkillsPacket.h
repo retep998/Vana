@@ -27,16 +27,16 @@ struct SpecialSkillInfo;
 
 namespace SkillsPacket {
 	void addSkill(Player *player, int skillid, int level, int maxlevel = 0);
-	void showSkill(Player *player, vector <Player*> players, int skillid, unsigned char level, unsigned char direction);
-	void showCombo(Player *player, vector <Player*> players, int time); // Combo Attack
-	void useSkill(Player *player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
-	void endSkill(Player *player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill);
+	void showSkill(Player *player, int skillid, unsigned char level, unsigned char direction);
+	void showCombo(Player *player, int time); // Combo Attack
+	void useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
+	void endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill);
 	void healHP(Player *player, short hp);
-	void showSkillEffect(Player *player, vector <Player*> players, int skillid);
-	void showSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info); // Hurricane/Pierce/Big Bang
-	void endSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info);
-	void showMagnet(Player *player, vector <Player*> players, SpecialSkillInfo info); // Monster Magnet
-	void showMagnetSuccess(Player *player, vector <Player*> players, int mapmobid, unsigned char success); // New packet in .56
+	void showSkillEffect(Player *player, int skillid);
+	void showSpecialSkill(Player *player, SpecialSkillInfo info); // Hurricane/Pierce/Big Bang
+	void endSpecialSkill(Player *player, SpecialSkillInfo info);
+	void showMagnet(Player *player, SpecialSkillInfo info); // Monster Magnet
+	void showMagnetSuccess(Player *player, int mapmobid, unsigned char success); // New packet in .56
 };
 
 #endif

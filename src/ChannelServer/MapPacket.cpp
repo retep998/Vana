@@ -132,22 +132,20 @@ Packet MapPacket::playerPacket(Player *player) {
 	return packet;
 }
 
-void MapPacket::showPlayer(Player *player, vector <Player*> players) {
+void MapPacket::showPlayer(Player *player) {
 	Packet packet = playerPacket(player);
-	for (unsigned int i = 0; i < players.size(); i++) {
-		packet.send(players[i]);
-	}
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MapPacket::removePlayer(Player *player, vector <Player*> players) {
+void MapPacket::removePlayer(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_REMOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
-	packet.sendTo(player, players, false);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
 void MapPacket::showPlayers(Player *player, vector <Player*> players) {
-	for (unsigned int i = 0; i < players.size(); i++) {
+	for (size_t i = 0; i < players.size(); i++) {
 		if (player->getPlayerid() != players[i]->getPlayerid() && players[i]->skills->getActiveSkillLevel(9101004) == 0) {
 			Packet packet = playerPacket(players[i]);
 			packet.send(player);
@@ -209,17 +207,15 @@ void MapPacket::makeApple(Player *player) {
 }
 
 // Change music
-void MapPacket::changeMusic(vector <Player*> players, const string &musicname) {
+void MapPacket::changeMusic(int mapid, const string &musicname) {
 	Packet packet;
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
 	packet.addString(musicname);
-	for (unsigned int i = 0; i < players.size(); i++) {
-		packet.send(players[i]);
-	}
+	Maps::maps[mapid]->sendPacket(packet);
 }
 // Send Sound
-void MapPacket::sendSound(vector <Player*> players, const string &soundname) {
+void MapPacket::sendSound(int mapid, const string &soundname) {
 	// Party1/Clear = Clear
 	// Party1/Failed = Wrong
 	// Cokeplay/Victory = Victory
@@ -230,12 +226,10 @@ void MapPacket::sendSound(vector <Player*> players, const string &soundname) {
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x04);
 	packet.addString(soundname);
-	for (unsigned int i = 0; i < players.size(); i++) {
-		packet.send(players[i]);
-	}
+	Maps::maps[mapid]->sendPacket(packet);
 }
 // Send Event
-void MapPacket::sendEvent(vector <Player*> players, const string &eventname) {
+void MapPacket::sendEvent(int mapid, const string &eventname) {
 	// quest/party/clear = Clear
 	// quest/party/wrong_kor = Wrong
 	// quest/carnival/win = Win
@@ -246,7 +240,5 @@ void MapPacket::sendEvent(vector <Player*> players, const string &eventname) {
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x03);
 	packet.addString(eventname);
-	for (unsigned int i = 0; i < players.size(); i++) {
-		packet.send(players[i]);
-	}
+	Maps::maps[mapid]->sendPacket(packet);
 }

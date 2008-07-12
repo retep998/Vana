@@ -79,7 +79,7 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMP());
 	packet->reset(19);
-	MobsPacket::moveMob(player, Maps::maps[player->getMap()]->getPlayers(), mobid, useskill, skill, packet->getBuffer(), packet->getBufferLength());
+	MobsPacket::moveMob(player, mobid, useskill, skill, packet->getBuffer(), packet->getBufferLength());
 }
 
 void Mobs::addMob(int id, MobInfo mob) {
@@ -104,7 +104,7 @@ void Mobs::checkSpawn(int mapid) {
 void Mobs::dieMob(Player *player, Mob *mob) {
 	if (mob == 0) return;
 	mob->setControl(0);
-	MobsPacket::dieMob(Maps::maps[player->getMap()]->getPlayers(), mob);
+	MobsPacket::dieMob(mob);
 
 	// Account for Holy Symbol
 	int hsrate = 0;
@@ -132,7 +132,7 @@ void Mobs::dieMob(Player *player, Mob *mob) {
 
 void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	int map = player->getMap();
-	MobsPacket::damageMobSpell(player, Maps::maps[map]->getPlayers(), packet);
+	MobsPacket::damageMobSpell(player, packet);
 	packet->reset(2);
 	packet->skipBytes(1);
 	unsigned char tbyte = packet->getByte();
@@ -181,7 +181,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 				if (mp > cmp) mp = cmp;
 				mob->setMP(cmp - mp);
 				player->setMP(player->getMP() + mp);
-				SkillsPacket::showSkillEffect(player, Maps::maps[map]->getPlayers(), mpeater);
+				SkillsPacket::showSkillEffect(player, mpeater);
 			}
 			MobHPInfo hpinfo;
 			hpinfo.hp = mob->getHP();
@@ -191,7 +191,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 			hpinfo.hpbgcolor = mobinfo[mobid].hpbgcolor;
 			hpinfo.mapmobid = mapmobid;
 			hpinfo.mobid = mobid;
-			displayHPBars(player, Maps::maps[map]->getPlayers(), hpinfo);
+			displayHPBars(player, hpinfo);
 			if (mob->getHP() <= 0) {
 				packet->skipBytes(4 * (hits - 1 - k));
 				dieMob(player, mob);
@@ -204,7 +204,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 
 void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	int map = player->getMap();
-	MobsPacket::damageMob(player, Maps::maps[map]->getPlayers(), packet);
+	MobsPacket::damageMob(player, packet);
 	packet->reset(2);
 	packet->skipBytes(1); // Useless
 	unsigned char tbyte = packet->getByte();
@@ -244,7 +244,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			hpinfo.hpbgcolor = mobinfo[mobid].hpbgcolor;
 			hpinfo.mapmobid = mapmobid;
 			hpinfo.mobid = mobid;
-			displayHPBars(player, Maps::maps[map]->getPlayers(), hpinfo);
+			displayHPBars(player, hpinfo);
 			if (mob->getHP() <= 0) {
 				packet->skipBytes(4 * (hits - 1 - k));
 				dieMob(player, mob);
@@ -262,7 +262,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 				packet->skipBytes(1); // Boolean for hit a monster
 				Drop *drop = Maps::maps[map]->getDrop(objID);
 				if (drop != 0) {
-					DropsPacket::explodeDrop(Maps::maps[map]->getPlayers(), drop);
+					DropsPacket::explodeDrop(drop);
 					Maps::maps[map]->removeDrop(drop->getID());
 					delete drop;
 				}
@@ -287,7 +287,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 
 void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	int map = player->getMap();
-	MobsPacket::damageMobRanged(player, Maps::maps[map]->getPlayers(), packet);
+	MobsPacket::damageMobRanged(player, packet);
 	packet->reset(2); // Passing to the display function causes the buffer to be eaten, we need it
 	packet->skipBytes(1); // Number of portals taken (not kidding)
 	char targets = 0;
@@ -310,7 +310,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			info.w_speed = packet->getByte();
 			info.level = player->skills->getSkillLevel(info.skillid);
 			player->setSpecialSkill(info);
-			SkillsPacket::showSpecialSkill(player, Maps::maps[map]->getPlayers(), info);
+			SkillsPacket::showSpecialSkill(player, info);
 		}
 		else
 			packet->skipBytes(3);
@@ -360,7 +360,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			hpinfo.hpbgcolor = mobinfo[mobid].hpbgcolor;
 			hpinfo.mapmobid = mapmobid;
 			hpinfo.mobid = mobid;
-			displayHPBars(player, Maps::maps[map]->getPlayers(), hpinfo);
+			displayHPBars(player, hpinfo);
 			if (mob->getHP() <= 0) {
 				packet->skipBytes(4 * (hits - 1 - k));
 				dieMob(player, mob);
@@ -398,7 +398,7 @@ void Mobs::damageMobPG(Player *player, int damage, Mob *mob) {
 	hpinfo.hpbgcolor = mobinfo[mobid].hpbgcolor;
 	hpinfo.mapmobid = mapmobid;
 	hpinfo.mobid = mobid;
-	displayHPBars(player, Maps::maps[map]->getPlayers(), hpinfo);
+	displayHPBars(player, hpinfo);
 	if (mob->getHP() <= 0)
 		dieMob(player, mob);
 }
@@ -412,11 +412,11 @@ void Mobs::spawnMobPos(int mapid, int mobid, Pos pos) {
 	new Mob(mapid, mobid, pos);
 }
 
-void Mobs::displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob) {
+void Mobs::displayHPBars(Player *player, const MobHPInfo &mob) {
 	if (mob.boss && mob.hpcolor > 0) // Boss HP bars
-		MobsPacket::showBossHP(player, players, mob);
+		MobsPacket::showBossHP(player, mob);
 	else if (mob.boss) // Miniboss HP bars
-		MobsPacket::showMinibossHP(player, players, mob.mobid, mob.hp * 100 / mob.mhp);
+		MobsPacket::showMinibossHP(player, mob.mobid, mob.hp * 100 / mob.mhp);
 	else // Normal HP bars
 		MobsPacket::showHP(player, mob.mapmobid, mob.hp * 100 / mob.mhp);
 }

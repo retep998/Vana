@@ -28,14 +28,14 @@ struct Dropped;
 struct Pos;
 
 namespace DropsPacket {
-	void drop(vector <Player*> players, Drop *drop, Pos origin);
+	void drop(Drop *drop, Pos origin);
 	void dropForPlayer(Player *player, Drop *drop, Pos origin);
 	void showDrop(Player *player, Drop *drop);
 	void takeNote(Player *player, int id, bool ismesos, short amount);
-	void takeDrop(Player *player, vector <Player*> players, Drop *drop);
+	void takeDrop(Player *player, Drop *drop);
 	void dontTake(Player *player);
-	void removeDrop(vector <Player*> players, Drop *drop);
-	void explodeDrop(vector <Player*> players, Drop *drop);
+	void removeDrop(Drop *drop);
+	void explodeDrop(Drop *drop);
 };
 
 #endif

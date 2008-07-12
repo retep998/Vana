@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobsPacket.h"
 #include "SendHeader.h"
 #include "ReadPacket.h"
+#include "Maps.h"
 
 void MobsPacket::controlMob(Player *player, Mob *mob) {
 	Packet packet;
@@ -50,7 +51,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	packet.send(player);
 }
 
-void MobsPacket::spawnMob(vector <Player*> players, Mob *mob) {
+void MobsPacket::spawnMob(Mob *mob) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
@@ -66,7 +67,7 @@ void MobsPacket::spawnMob(vector <Player*> players, Mob *mob) {
 	packet.addShort(mob->getFH());
 	packet.addShort(-2);
 	packet.addInt(0);
-	packet.sendTo<Player>(0, players, true);
+	Maps::maps[mob->getMapID()]->sendPacket(packet);
 }
 
 void MobsPacket::showMob(Player *player, Mob *mob) {
@@ -98,7 +99,7 @@ void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool u
 	packet.send(player);
 }
 
-void MobsPacket::moveMob(Player *player, vector <Player*> players, int mobid, bool useskill, int skill, unsigned char *buf, int len) {
+void MobsPacket::moveMob(Player *player, int mobid, bool useskill, int skill, unsigned char *buf, int len) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_MOB);
 	packet.addInt(mobid);
@@ -106,10 +107,10 @@ void MobsPacket::moveMob(Player *player, vector <Player*> players, int mobid, bo
 	packet.addInt(skill);
 	packet.addByte(0);
 	packet.addBuffer(buf, len);
-	packet.sendTo(player, players, false);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket *pack) {
+void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 	pack->skipBytes(1);
 	unsigned char tbyte = pack->getByte();
 	unsigned char targets = tbyte / 0x10;
@@ -158,10 +159,10 @@ void MobsPacket::damageMob(Player *player, vector <Player*> players, ReadPacket 
 		}
 		pack->skipBytes(4);
 	}
-	packet.sendTo(player, players, false);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadPacket *pack) {
+void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	pack->skipBytes(1);
 	unsigned char tbyte = pack->getByte();
 	char targets = tbyte / 0x10;
@@ -213,10 +214,10 @@ void MobsPacket::damageMobRanged(Player *player, vector <Player*> players, ReadP
 		}
 		pack->skipBytes(4);
 	}
-	packet.sendTo(player, players, false);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::damageMobSpell(Player *player, vector <Player*> players, ReadPacket *pack) {
+void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	pack->skipBytes(1);
 	unsigned char tbyte = pack->getByte();
 	char targets = tbyte / 0x10;
@@ -254,7 +255,7 @@ void MobsPacket::damageMobSpell(Player *player, vector <Player*> players, ReadPa
 	}
 	if (charge > 0)
 		packet.addInt(charge);
-	packet.sendTo(player, players, false);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
 void MobsPacket::showHP(Player *player, int mobid, char per) {
@@ -265,15 +266,15 @@ void MobsPacket::showHP(Player *player, int mobid, char per) {
 	packet.send(player);
 }
 // Miniboss HP
-void MobsPacket::showMinibossHP(Player *player, vector <Player*> players, int mobid, char per) {
+void MobsPacket::showMinibossHP(Player *player, int mobid, char per) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
-	packet.sendTo(player, players, true);
+	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 // Boss hp
-void MobsPacket::showBossHP(Player *player, vector <Player*> players, const MobHPInfo &mob) {
+void MobsPacket::showBossHP(Player *player, const MobHPInfo &mob) {
 	Packet packet;
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x05);
@@ -282,15 +283,15 @@ void MobsPacket::showBossHP(Player *player, vector <Player*> players, const MobH
 	packet.addInt(mob.mhp);
 	packet.addByte(mob.hpcolor);
 	packet.addByte(mob.hpbgcolor);
-	packet.sendTo(player, players, true);
+	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void MobsPacket::dieMob(vector <Player*> players, Mob *mob) {
+void MobsPacket::dieMob(Mob *mob) {
 	Packet packet;
 	packet.addHeader(SEND_KILL_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
-	packet.sendTo<Player>(0, players, true);
+	Maps::maps[mob->getMapID()]->sendPacket(packet);
 	Player *control = mob->getControl();
 	if (control != 0 && control->getMap() == mob->getMapID())
 		endControlMob(control, mob);

@@ -54,12 +54,12 @@ void Players::handleMoving(Player *player, ReadPacket *packet) {
 	player->setType(type);
 
 	packet->reset(7);
-	PlayersPacket::showMoving(player, Maps::maps[player->getMap()]->getPlayers(), packet->getBuffer(), packet->getBufferLength());
+	PlayersPacket::showMoving(player, packet->getBuffer(), packet->getBufferLength());
 }
 
 void Players::faceExperiment(Player *player, ReadPacket *packet) {
 	int face = packet->getInt();
-	PlayersPacket::faceExperiment(player, Maps::maps[player->getMap()]->getPlayers(), face);
+	PlayersPacket::faceExperiment(player, face);
 }
 
 void Players::chatHandler(Player *player, ReadPacket *packet) {
@@ -334,18 +334,18 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "kill") == 0) {
 			if (strcmp(next_token, "all") == 0) {
-				for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {
+				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
 					Player *killpsa;
-					killpsa = Maps::maps[player->getMap()]->getPlayers()[i];
+					killpsa = Maps::maps[player->getMap()]->getPlayer(i);
 					if (killpsa != player) {
 						killpsa->setHP(0);
 					}
 				}
 			}
 			else if (strcmp(next_token, "gm") == 0) {
-				for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {
+				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
 					Player *killpsa;
-					killpsa = Maps::maps[player->getMap()]->getPlayers()[i];
+					killpsa = Maps::maps[player->getMap()]->getPlayer(i);
 					if (killpsa != player) {
 						if (killpsa->isGM()) {	
 							killpsa->setHP(0);
@@ -354,9 +354,9 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				}
 			}
 			else if (strcmp(next_token, "players") == 0) {
-				for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {	
+				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {	
 					Player *killpsa;
-					killpsa = Maps::maps[player->getMap()]->getPlayers()[i];
+					killpsa = Maps::maps[player->getMap()]->getPlayer(i);
 					if (killpsa != player) {
 						if (!killpsa->isGM()) {
 							killpsa->setHP(0);
@@ -368,9 +368,9 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				player->setHP(0);
 			}
 			else {
-				for (unsigned int i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {
+				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
 					Player *killpsa;
-					killpsa = Maps::maps[player->getMap()]->getPlayers()[i];
+					killpsa = Maps::maps[player->getMap()]->getPlayer(i);
 					if (killpsa != player) {
 						killpsa->setHP(0);
 					}
@@ -411,14 +411,14 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				PlayerPacket::showMessage(player, "No instruction entered.", 5);
 				return;
 			}
-			for (size_t i = 0; i < Maps::maps[player->getMap()]->getPlayers().size(); i++) {
-				Player *p = Maps::maps[player->getMap()]->getPlayers()[i];
+			for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+				Player *p = Maps::maps[player->getMap()]->getPlayer(i);
 				PlayerPacket::instructionBubble(p, next_token);
 			}
 		}
 		return;
 	}
-	PlayersPacket::showChat(player, Maps::maps[player->getMap()]->getPlayers(), message, bubbleOnly);
+	PlayersPacket::showChat(player, message, bubbleOnly);
 }
 
 void Players::damagePlayer(Player *player, ReadPacket *packet) {
@@ -497,7 +497,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 					newmesos = 0;
 				}
 				player->inv->setMesos(newmesos);
-				SkillsPacket::showSkillEffect(player, Maps::maps[player->getMap()]->getPlayers(), 4211005);
+				SkillsPacket::showSkillEffect(player, 4211005);
 				player->setHP(player->getHP() - damage);
 				applieddamage = true;
 			}
@@ -522,7 +522,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	if (damage > 0 && applieddamage == false)
  		player->setHP(player->getHP() - damage);
 	if (type != 0xFE) // Fall damage and map damage don't play by these rules
- 		PlayersPacket::damagePlayer(player, Maps::maps[player->getMap()]->getPlayers(), damage, mobid, hit, (unsigned char) type, fake, pg); // FIXME: Maybe type will get sent to the player as short, as the s->c packet haven't been identified yet
+ 		PlayersPacket::damagePlayer(player, damage, mobid, hit, (unsigned char) type, fake, pg); // FIXME: Maybe type will get sent to the player as short, as the s->c packet haven't been identified yet
 }
 
 void Players::healPlayer(Player *player, ReadPacket *packet) {
@@ -581,7 +581,7 @@ void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			info.direction = packet->getByte();
 			info.w_speed = packet->getByte();
 			player->setSpecialSkill(info);
-			SkillsPacket::showSpecialSkill(player, Maps::maps[player->getMap()]->getPlayers(), info);
+			SkillsPacket::showSpecialSkill(player, info);
 			break;
 		}
 		case 4211001: // Chakra, unknown heal formula
@@ -594,7 +594,7 @@ void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			info.level = packet->getByte();
 			info.direction = packet->getByte();
 			info.w_speed = packet->getByte();
-			SkillsPacket::showMagnet(player, Maps::maps[player->getMap()]->getPlayers(), info);
+			SkillsPacket::showMagnet(player, info);
 			break;
 	}
 }

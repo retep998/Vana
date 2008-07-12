@@ -20,35 +20,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PlayersPacket.h"
 #include "SendHeader.h"
+#include "Maps.h"
 
-void PlayersPacket::showMoving(Player *player, vector <Player*> players, unsigned char *buf, size_t size) {
+void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
 	Packet packet;
 	packet.addHeader(SEND_MOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(0);
 	packet.addBuffer(buf, size);
-	packet.sendTo<Player>(player, players, 0);
-}	
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
+}
 
-void PlayersPacket::faceExperiment(Player *player, vector <Player*> players, int face) {
+void PlayersPacket::faceExperiment(Player *player, int face) {
 	Packet packet;
 	packet.addHeader(SEND_FACE_EXPERIMENT);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(face);
-	packet.sendTo<Player>(player, players, 0);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void PlayersPacket::showChat(Player *player, vector <Player*> players, const string &msg, char bubbleOnly) {
+void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly) {
 	Packet packet;
 	packet.addHeader(SEND_CHAT);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(player->isGM());
 	packet.addString(msg);
 	packet.addByte(bubbleOnly);
-	packet.sendTo<Player>(player, players, 1);
+	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, vector <Player*> players, int dmg, int mob, unsigned char hit, unsigned char type, int fake, PowerGuardInfo pg) {
+void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int fake, PowerGuardInfo pg) {
 	Packet packet;
 	packet.addHeader(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getPlayerid());
@@ -74,7 +75,7 @@ void PlayersPacket::damagePlayer(Player *player, vector <Player*> players, int d
 	if (fake > 0) {
 		packet.addInt(fake);
 	}
-	packet.sendTo<Player>(player, players, 1);
+	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
 void PlayersPacket::showMessage(char *msg, char type) {
