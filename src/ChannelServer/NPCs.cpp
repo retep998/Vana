@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NPCs.h"
+#include "LuaNPC.h"
 #include "Player.h"
 #include "NPCPacket.h"
 #include "InventoryPacket.h"
 #include "PacketCreator.h"
-#include "NPCsScripts.h"
 #include "Maps.h"
 #include "Shops.h"
 #include "Inventory.h"
@@ -28,148 +28,193 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "SendHeader.h"
 #include "ReadPacket.h"
+#include <sys/stat.h>
 
 void NPCs::handleNPC(Player *player, ReadPacket *packet) {
-	if (player->getNPC() != 0)
+	if (player->getNPC() != 0) {
 		return;
+	}
+
 	int npcid = Maps::maps[player->getMap()]->getNpc(packet->getInt()-100).id;
+	if (Shops::shops.find(npcid) != Shops::shops.end()) { // Shop
+		Shops::showShop(player, npcid);
+		return;
+	}
+
 	NPC *npc = new NPC(npcid, player);
-	NPCsScripts::handle(npcid, npc);
-	if (npc->isEnd())
-		delete npc;
+	npc->run();
 }
 
 void NPCs::handleQuestNPC(Player *player, int npcid, bool start) {
-	if (player->getNPC() != 0)
+	if (player->getNPC() != 0) {
 		return;
-	NPC *npc = new NPC(npcid, player, 1);
-	npc->setIsStart(start);
-	NPCsScripts::handle(npcid, npc);
-	if (npc->isEnd())
-		delete npc;
+	}
+
+	NPC *npc = new NPC(npcid, player, true, start);
+	npc->run();
 }
+
 void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 	NPC *npc = player->getNPC();
-	if (npc == 0)
+	if (npc == 0) {
 		return;
+	}
+
 	char type = packet->getByte();
 	char what = packet->getByte();
+
 	if (type == NPCDialogs::normal) {
-		if (what == 0)
-			npc->setState(npc->getState()-1);
-		else if (what == 1)
-			npc->setState(npc->getState()+1);
-		else if (what == -1)
-			npc->end();
+		switch (what) {
+			case 0: npc->setState(npc->getState() - 1); break;
+			case 1:	npc->setState(npc->getState() + 1); break;
+			default: npc->end(); break;
+		}
 	}
 	else if (type == NPCDialogs::yesNo || type == NPCDialogs::acceptDecline) {
-		npc->setState(npc->getState()+1);
-		if (what == 0)
-			npc->setSelected(0);
-		else if (what == 1)
-			npc->setSelected(1);
-		else if (what == -1)
-			npc->end();
+		npc->setState(npc->getState() + 1);
+		switch (what) {
+			case 0: npc->setSelected(0); break;
+			case 1:	npc->setSelected(1); break;
+			default: npc->end(); break;
+		}
 	}
 	else if (type == NPCDialogs::getText) {
 		npc->setState(npc->getState()+1);
 		if (what != 0) {
 			npc->setGetText(packet->getString());
 		}
-		else
+		else {
 			npc->end();
+		}
 	}
 	else if (type == NPCDialogs::getNumber) {
 		npc->setState(npc->getState()+1);
-		if (what == 1)
+		if (what == 1) {
 			npc->setGetNumber(packet->getInt());
-		else
+		}
+		else {
 			npc->end();
+		}
 	}
 	else if (type == NPCDialogs::simple) {
 		npc->setState(npc->getState()+1);
-		if (what == 0)
+		if (what == 0) {
 			npc->end();
-		else
+		}
+		else {
 			npc->setSelected(packet->getByte());
+		}
 	}
 	else if (type == NPCDialogs::style) {
 		npc->setState(npc->getState()+1);
 		if (what == 1) {
 			npc->setSelected(packet->getShort());
 		}
-		else 
+		else  {
 			npc->end();
+		}
 	}
 	else {
 		npc->end();
 	}
-	if (npc->isEnd()) {
-		delete npc;
-		return;
-	}
-	NPCsScripts::handle(npc->getNpcID(), npc);
-	if (npc->isEnd()) {
-		delete npc;
-		return;
-	}
+
+	npc->run();
 }
 
-NPC::NPC(int npcid, Player *player, bool isquest) {
-	this->isquest = isquest;
-	getnum = 0;
-	gettext[0] = '\0';
-	state = 0;
-	selected = -1;
-	cend = false;
-	this->npcid = npcid;
-	this->player = player;
-	strcpy_s(text, 2, "");
-	player->setNPC(this);
+NPC::NPC(int npcid, Player *player, bool isquest, bool isstart) :
+npcid(npcid),
+player(player),
+text(""),
+state(0),
+isquest(isquest),
+isstart(isstart),
+cend(false)
+{
+	struct stat fileinfo;
+	std::ostringstream filenameStream;
+	filenameStream << "scripts/npcs/" << npcid;
+	if (isquest) {
+		if (isstart)
+			filenameStream << "s";
+		else
+			filenameStream << "e";
+	}
+	filenameStream << ".lua";
+	std::string filename = filenameStream.str();
+
+	if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC exists
+		luaNPC.reset(new LuaNPC(filename, player->getPlayerid()));
+		player->setNPC(this);
+	}
 }
 
 NPC::~NPC() {
 	player->setNPC(0);
 }
 
-Packet NPC::npcPacket(char type) {
+bool NPC::checkEnd() {
+	if (isEnd()) {
+		delete this;
+		return true;
+	}
+
+	return false;
+}
+
+void NPC::run() {
+	if (checkEnd()) { //  NPC Ended
+		return;
+	}
+
+	luaNPC->run();	
+	checkEnd();
+}
+
+Packet & NPC::npcPacket(char type) {
 	Packet packet;
 	packet.addHeader(SEND_NPC_TALK);
 	packet.addByte(4);
 	packet.addInt(npcid);
 	packet.addByte(type);
-	packet.addShort(strlen(text));
-	packet.addString(text, strlen(text));
-	this->text[0] = '\0';
-	return packet;
+	packet.addString(text);
+	
+	text = "";
+
+	Packet &ret = packet;
+	return ret;
 }
 
 void NPC::sendSimple() {
 	Packet packet = npcPacket(NPCDialogs::simple);
 	packet.send(player);
 }
+
 void NPC::sendYesNo() {
 	Packet packet = npcPacket(NPCDialogs::yesNo);
 	packet.send(player);
 }
+
 void NPC::sendNext() {
 	Packet packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(0);
 	packet.addByte(1);
 	packet.send(player);
 }
+
 void NPC::sendBackNext() {
 	Packet packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(1);
 	packet.send(player);
 }
+
 void NPC::sendBackOK() {
 	Packet packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(0);
 	packet.send(player);
 }
+
 void NPC::sendOK() {
 	Packet packet = npcPacket(NPCDialogs::normal);
 	packet.addShort(0);
@@ -203,8 +248,4 @@ void NPC::sendStyle(int styles[], char size) {
 	for (int i = 0; i < size; i++)
 		packet.addInt(styles[i]);
 	packet.send(player);
-}
-
-void NPC::showShop() {
-	Shops::showShop(player, getNpcID());
 }

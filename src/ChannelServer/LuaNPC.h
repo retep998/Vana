@@ -30,6 +30,8 @@ class NPC;
 class LuaNPC : public LuaScriptable {
 public:
 	LuaNPC(const string &filename, int playerid);
+
+	void run();
 };
 
 namespace LuaExports {

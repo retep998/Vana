@@ -18,12 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef NPCS_H
 #define NPCS_H
 
+#include "LuaNPC.h"
 #include <hash_map>
 #include <vector>
 #include <string>
+#include <sstream>
+#include <boost/scoped_ptr.hpp>
 
 using namespace std;
 using namespace stdext;
+using boost::scoped_ptr;
 
 class Player;
 class Packet;
@@ -47,9 +51,11 @@ namespace NPCs {
 
 class NPC {
 private:
+	bool checkEnd();
+
 	int npcid;
 	Player *player;
-	char text[1000];
+	string text;
 	int state;
 	int selected;
 	bool cend;
@@ -57,20 +63,24 @@ private:
 	string gettext;
 	bool isquest;
 	bool isstart;
+	scoped_ptr<LuaNPC> luaNPC;
 	hash_map <string, int> vars;
 public:
-	NPC(int npcid, Player *player, bool isquest = false);
+	NPC(int npcid, Player *player, bool isquest = false, bool isstart = false);
 	~NPC();
-	void addText(const char *text) {
-		strcat_s(this->text, strlen(text)+1+strlen(this->text), text);
+
+	void run();
+
+	void addText(const string &text) {
+		this->text += text;
 	}
-	void addChar(char cha) {
-		char temp[2]={0};
-		temp[0] = cha;
-		addText(temp);
+	void addChar(const char cha) {
+		std::ostringstream strStream;
+		strStream << cha;
+		addText(strStream.str());
 	}
 
-	Packet npcPacket(char type);
+	Packet & npcPacket(char type);
 	void sendSimple();
 	void sendYesNo();
 	void sendNext();

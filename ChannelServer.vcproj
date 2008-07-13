@@ -452,10 +452,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\NPCsScripts.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Party.h"
 					>
 				</File>
