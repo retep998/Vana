@@ -93,7 +93,7 @@ void Timer::timerThread() {
 	while (!terminate) {
 		// Find minimum wakeup time
 		OneTimer *minTimer = findMin();
-		long msec = (minTimer == NULL) ? msec = 1000000000 : minTimer->t - clock();
+		long msec = (minTimer == 0) ? msec = 1000000000 : minTimer->t - clock();
 		if (msec <= 0) {
 			minTimer->handler->handle(this, minTimer->id);
 			if (minTimer->persistent) {
@@ -111,7 +111,7 @@ void Timer::timerThread() {
 			// TODO: write message
 			return;
 		}
-		if (minTimer != NULL) {
+		if (minTimer != 0 && minTimer->t - clock() <= 0) { // The timer may be resetted while we were checking for WAIT_OBJECT_0 and WAIT_FAILED (race condition)
 			minTimer->handler->handle(this, minTimer->id);
 			if (minTimer->persistent) {
 				resetTimer(minTimer->id);
