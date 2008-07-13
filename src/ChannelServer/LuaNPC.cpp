@@ -22,9 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 
 LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, playerid) {
-	lua_pushinteger(luaVm, Players::players[playerid]->getNPC()->getState());
-	lua_setglobal(luaVm, "state");
-
 	lua_register(luaVm, "addText", &LuaExports::addText);
 	lua_register(luaVm, "addChar", &LuaExports::addChar);
 	lua_register(luaVm, "sendSimple", &LuaExports::sendSimple);
@@ -48,8 +45,13 @@ LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, p
 	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaExports::endQuest);
 	lua_register(luaVm, "endNPC", &LuaExports::endNPC); // end() is reserved.
+}
 
-	run();
+void LuaNPC::run() {
+	lua_pushinteger(luaVm, Players::players[playerid]->getNPC()->getState());
+	lua_setglobal(luaVm, "state");
+
+	LuaScriptable::run();
 }
 
 NPC * LuaExports::getNPC(lua_State *luaVm) {

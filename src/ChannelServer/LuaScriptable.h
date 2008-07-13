@@ -38,7 +38,7 @@ public:
 	virtual ~LuaScriptable();
 
 	void initialize();
-	void run();
+	virtual void run();
 protected:
 	string filename;
 	int playerid;
