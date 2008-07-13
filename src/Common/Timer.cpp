@@ -111,7 +111,7 @@ void Timer::timerThread() {
 			// TODO: write message
 			return;
 		}
-		if (minTimer != 0 && minTimer->t - clock() <= 0) { // The timer may be resetted while we were checking for WAIT_OBJECT_0 and WAIT_FAILED (race condition)
+		if (minTimer != 0) {
 			minTimer->handler->handle(this, minTimer->id);
 			if (minTimer->persistent) {
 				resetTimer(minTimer->id);
