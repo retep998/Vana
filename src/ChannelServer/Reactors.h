@@ -36,6 +36,7 @@ class ReadPacket;
 struct ReactorSpawnInfo {
 	int id;
 	Pos pos;
+	int time;
 };
 typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
 

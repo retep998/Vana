@@ -63,6 +63,6 @@ int LuaExports::spawnMobReactor(lua_State *luaVm) {
 int LuaExports::reset(lua_State *luaVm) {
 	getReactor(luaVm)->revive();
 	getReactor(luaVm)->setState(0, true);
-	ReactorPacket::triggerReactor(Maps::maps[getPlayer(luaVm)->getMap()]->getPlayers(), getReactor(luaVm));
+	ReactorPacket::triggerReactor(getReactor(luaVm));
 	return 1;
 }

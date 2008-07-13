@@ -27,17 +27,17 @@ class Packet;
 
 namespace MapPacket {
 	Packet playerPacket(Player *player);
-	void showPlayer(Player *player, vector <Player*> players);
+	void showPlayer(Player *player);
 	void showPlayers(Player *player, vector <Player*> players);
-	void removePlayer(Player *player, vector <Player*> players);
+	void removePlayer(Player *player);
 	void changeMap(Player *player);
 	void portalBlocked(Player *player); // Blocked portals
 	void showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec);
 	void showTimer(Player *player, int sec); // Show Timer like in PQ
 	void makeApple(Player *player);
-	void changeMusic(vector <Player*> players, const string &musicname); // Change map music
-	void sendSound(vector <Player*> players, const string &soundname); // Send sound - clear/wrong/etc
-	void sendEvent(vector <Player*> players, const string &eventname); // Send event - clear/wrong/etc
+	void changeMusic(int mapid, const string &musicname); // Change map music
+	void sendSound(int mapid, const string &soundname); // Send sound - clear/wrong/etc
+	void sendEvent(int mapid, const string &eventname); // Send event - clear/wrong/etc
 };
 
 #endif

@@ -36,6 +36,7 @@ class Mob;
 class Reactor;
 class Drop;
 class LoopingId;
+class Packet;
 struct Equip;
 struct Item;
 
@@ -115,9 +116,6 @@ public:
 
 	// Players
 	void addPlayer(Player *player);
-	vector <Player *> getPlayers() {
-		return this->players;
-	}
 	size_t getNumPlayers() {
 		return this->players.size();
 	}
@@ -174,6 +172,7 @@ public:
 	void clearDrops(int time);
 	// Show all map objects
 	void showObjects(Player *player);
+	void sendPacket(Packet &packet, Player *player = 0);
 private:
 	int mapid;
 	MapInfo info;

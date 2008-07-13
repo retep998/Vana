@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Quests.h"
 #include "SendHeader.h"
+#include "Maps.h"
 
 void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
 	Packet packet;
@@ -33,7 +34,7 @@ void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
 	packet.send(player);
 	packet = Packet();
 	packet.addHeader(SEND_UPDATE_QUEST);
-	packet.addByte(6);
+	packet.addByte(8);
 	packet.addShort(questid);
 	packet.addInt(npcid);
 	packet.addInt(0);
@@ -70,7 +71,7 @@ void QuestsPacket::doneQuest(Player *player, int questid) {
 	packet.send(player);
 }
 
-void QuestsPacket::questFinish(Player *player, vector <Player*> players,short questid, int npcid, short nextquest, __int64 time) {
+void QuestsPacket::questFinish(Player *player, short questid, int npcid, short nextquest, __int64 time) {
 	Packet packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(1);
@@ -80,7 +81,7 @@ void QuestsPacket::questFinish(Player *player, vector <Player*> players,short qu
 	packet.send(player);
 	packet = Packet();
 	packet.addHeader(SEND_UPDATE_QUEST);
-	packet.addByte(6);
+	packet.addByte(8);
 	packet.addShort(questid); 
 	packet.addInt(npcid); 
 	packet.addShort(nextquest); 
@@ -93,14 +94,14 @@ void QuestsPacket::questFinish(Player *player, vector <Player*> players,short qu
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(9);
-	packet.sendTo<Player>(player, players, 0);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
 void QuestsPacket::giveItem(Player *player, int itemid, int amount) {
 	Packet packet;
 	packet.addHeader(SEND_GAIN_ITEM); 
 	packet.addByte(3);
-	packet.addByte(1);
+	packet.addByte(1); // Number of different items (itemid and amount gets repeated)
 	packet.addInt(itemid);
 	packet.addInt(amount);
 	packet.send(player);

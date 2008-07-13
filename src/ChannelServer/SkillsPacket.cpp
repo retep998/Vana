@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Skills.h"
 #include "SendHeader.h"
+#include "Maps.h"
 
 void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel) {
 	Packet packet;
@@ -34,7 +35,7 @@ void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel
 	packet.send(player);
 }
 
-void SkillsPacket::showSkill(Player *player, vector <Player*> players, int skillid, unsigned char level, unsigned char direction) {
+void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level, unsigned char direction) {
  	Packet packet;
  	packet.addHeader(SEND_SHOW_SKILL);
  	packet.addInt(player->getPlayerid());
@@ -43,13 +44,13 @@ void SkillsPacket::showSkill(Player *player, vector <Player*> players, int skill
 	packet.addByte(level); //TODO
 	if (direction != 0xFF)
 		packet.addByte(direction);
-	packet.sendTo(player, players, 0);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-
-void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill) {
+void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill) {
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILL);
+	packet.addInt64(0);
 	packet.addByte(pskill.types[0]);
 	packet.addByte(pskill.types[1]);
 	packet.addByte(pskill.types[2]);
@@ -58,11 +59,13 @@ void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skilli
 	packet.addByte(pskill.types[5]);
 	packet.addByte(pskill.types[6]);
 	packet.addByte(pskill.types[7]);
-	for (unsigned int i = 0; i < pskill.vals.size(); i++) {
+	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.addShort(pskill.vals[i]);
 		packet.addInt(skillid);
 		packet.addInt(time);
 	}
+	packet.addShort(0);
+	packet.addByte(0);
 	packet.addShort(0);
 	packet.addByte(0);
 	packet.send(player);
@@ -70,6 +73,7 @@ void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skilli
 		packet = Packet();
 		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getPlayerid());
+		packet.addInt64(0);
 		packet.addByte(mskill.types[0]);
 		packet.addByte(mskill.types[1]);
 		packet.addByte(mskill.types[2]);
@@ -78,11 +82,11 @@ void SkillsPacket::useSkill(Player *player, vector <Player*> players, int skilli
 		packet.addByte(mskill.types[5]);
 		packet.addByte(mskill.types[6]);
 		packet.addByte(mskill.types[7]);
-		for (unsigned int i = 0; i < mskill.vals.size(); i++) {
+		for (size_t i = 0; i < mskill.vals.size(); i++) {
 			packet.addShort(mskill.vals[i]);
 		}
 		packet.addByte(0);
-		packet.sendTo(player, players, 0);
+		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
 }
 
@@ -94,9 +98,10 @@ void SkillsPacket::healHP(Player *player, short hp) {
 	packet.send(player);
 }
 
-void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiveInfo pskill, SkillActiveInfo mskill) {
+void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill) {
 	Packet packet;
 	packet.addHeader(SEND_CANCEL_SKILL);
+	packet.addInt64(0);
 	packet.addByte(pskill.types[0]);
 	packet.addByte(pskill.types[1]);
 	packet.addByte(pskill.types[2]);
@@ -111,6 +116,7 @@ void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiv
 		packet = Packet();
 		packet.addHeader(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getPlayerid());
+		packet.addInt64(0);
 		packet.addByte(mskill.types[0]);
 		packet.addByte(mskill.types[1]);
 		packet.addByte(mskill.types[2]);
@@ -119,12 +125,11 @@ void SkillsPacket::endSkill(Player *player, vector <Player*> players, SkillActiv
 		packet.addByte(mskill.types[5]);
 		packet.addByte(mskill.types[6]);
 		packet.addByte(mskill.types[7]);
-		packet.sendTo(player, players, 0);
-
+		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
 }
 // For Combo Attack
-void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time) { // Show combos to everyone on map 
+void SkillsPacket::showCombo(Player *player, int time) { // Show combos to everyone on map 
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILL);
 	packet.addByte(0);
@@ -136,7 +141,7 @@ void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time)
 	packet.addByte(0);
 	packet.addByte(0);
 	packet.addShort(player->getCombo()+1);
-	packet.addInt(1111002);
+	packet.addInt(1111002); // Skill ID
 	packet.addInt(time);
 	packet.addShort(0);
 	packet.addByte(0);
@@ -154,13 +159,13 @@ void SkillsPacket::showCombo(Player *player, vector <Player*> players, int time)
 	packet.addByte(0);
 	packet.addShort(player->getCombo()+1);
 	packet.addByte(0);
-	packet.sendTo(player, players, 0);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::showSkillEffect(Player *player, vector <Player*> players,int skillid) {
+void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 	Packet packet;
 	packet.addHeader(SEND_GAIN_ITEM); // For the player themselves
-	bool sendto = false;
+	bool send = false;
 	switch (skillid) { 
 		case 2100000:
 		case 2200000:
@@ -168,13 +173,13 @@ void SkillsPacket::showSkillEffect(Player *player, vector <Player*> players,int 
 			packet.addByte(1);
 			packet.addInt(skillid);
 			packet.addByte(1);
-			sendto = true;
+			send = true;
 			break;
 	}
-	if (sendto)
-		packet.send<Player>(player);
+	if (send)
+		packet.send(player);
 	packet = Packet();
-	sendto = false;
+	send = false;
 	packet.addHeader(SEND_SHOW_SKILL);  // For others
 	packet.addInt(player->getPlayerid());
 	switch (skillid) {
@@ -184,18 +189,19 @@ void SkillsPacket::showSkillEffect(Player *player, vector <Player*> players,int 
 			packet.addByte(1);
 			packet.addInt(skillid);
 			packet.addByte(1);
-			sendto = true;
+			send = true;
 			break;
 		case 4211005: // Meso Guard
 			packet.addByte(5);
 			packet.addInt(skillid);
-			sendto = true;
+			send = true;
+			break;
 	}
-	if (sendto)
-		packet.sendTo(player, players, 0);
+	if (send)
+		Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::showSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang
+void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang
 	Packet packet;
 	packet.addHeader(SEND_SPECIAL_SKILL);
 	packet.addInt(player->getPlayerid());
@@ -203,21 +209,32 @@ void SkillsPacket::showSpecialSkill(Player *player, vector <Player*> players, Sp
 	packet.addByte(info.level);
 	packet.addByte(info.direction);
 	packet.addByte(info.w_speed);
-	packet.sendTo(player, players, 0);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::endSpecialSkill(Player *player, vector <Player*> players, SpecialSkillInfo info) {
+void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
 	Packet packet;
 	packet.addHeader(SEND_SPECIAL_SKILL_END);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(info.skillid);
-	packet.sendTo(player, players, 0);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::showMagnet(Player *player, vector <Player*> players, int mobid, unsigned char success) {  // Monster Magnet
+void SkillsPacket::showMagnet(Player *player, SpecialSkillInfo info) {  // Monster Magnet
 	Packet packet;
 	packet.addHeader(SEND_SHOW_MAGNET);
-	packet.addInt(mobid);
+	packet.addInt(player->getPlayerid());
+	packet.addInt(info.skillid);
+	packet.addByte(info.level);
+	packet.addByte(info.direction);
+	packet.addByte(info.w_speed);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
+}
+
+void SkillsPacket::showMagnetSuccess(Player *player, int mapmobid, unsigned char success) {
+	Packet packet;
+	packet.addHeader(SEND_SHOW_DRAGGED);
+	packet.addInt(mapmobid);
 	packet.addByte(success);
-	packet.sendTo(player, players, 0);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }

@@ -116,7 +116,7 @@ Reactor::Reactor (int mapid, int reactorid, Pos pos) : alive(true), state(0) {
 void Reactor::setState(char state, bool is) {
 	this->state = state;
 	if (is)
-		ReactorPacket::triggerReactor(Maps::maps[this->getMapID()]->getPlayers(), this);
+		ReactorPacket::triggerReactor(this);
 }
 
 // Reactors namespace
@@ -139,7 +139,7 @@ void Reactors::setMaxstates(int id, short state) {
 void Reactors::loadReactors(int mapid) {
 	for (size_t i = 0; i < info[mapid].size(); i++) {
 		Reactor *reactor = new Reactor(mapid, info[mapid][i].id, info[mapid][i].pos);
-		ReactorPacket::spawnReactor(Maps::maps[mapid]->getPlayers(), reactor);
+		ReactorPacket::spawnReactor(reactor);
 	}
 }
 
@@ -155,7 +155,7 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 				if (revent->type >= 100)
 					return;
 				reactor->setState(revent->nextstate, true);
-				ReactorPacket::triggerReactor(Maps::maps[player->getMap()]->getPlayers(), reactor);
+				ReactorPacket::triggerReactor(reactor);
 				return;
 			}
 			else {
@@ -164,7 +164,7 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 				LuaReactor(filenameStream.str(), player->getPlayerid(), id, reactor->getMapID());
 				reactor->setState(revent->nextstate, false);
 				reactor->kill();
-				ReactorPacket::destroyReactor(Maps::maps[player->getMap()]->getPlayers(), reactor);
+				ReactorPacket::destroyReactor(reactor);
 			}
 		}
 	}

@@ -38,13 +38,42 @@ Packet MapPacket::playerPacket(Player *player) {
 	packet.addByte(player->getSkill().types[5]);
 	packet.addByte(player->getSkill().types[6]);
 	packet.addByte(player->getSkill().types[7]);
-	if (player->getSkill().isval)
+	if (player->getSkill().isval) {
 		packet.addByte(player->getSkill().val);
+	}
+
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.addInt(0x7E);
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	for (size_t i = 0; i < 3; i++) {
+		packet.addShort(21613); // Unknown
+		packet.addInt(10028); // Unknown
+		packet.addInt(0);
+		packet.addInt(0);
+	}
+	packet.addShort(21613);
+	packet.addInt(10028);
+	packet.addInt(0);
+	packet.addShort(0);
+	packet.addShort(21613);
+	packet.addInt(10028);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addShort(21613);
+	packet.addInt(10028);
+	packet.addInt(0);
+
 	packet.addByte(player->getGender());
 	packet.addByte(player->getSkin());
 	packet.addInt(player->getEyes());
 	packet.addByte(1);
 	packet.addInt(player->getHair());
+
 	int equips[35][2] = {0};
 	equipinventory *playerequips = player->inv->getEquips();
 	for (equipinventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
@@ -88,6 +117,7 @@ Packet MapPacket::playerPacket(Player *player) {
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
+
 	packet.addInt(0);
 	packet.addInt(player->getItemEffect()); 
 	packet.addInt(player->getChair());
@@ -102,23 +132,21 @@ Packet MapPacket::playerPacket(Player *player) {
 	return packet;
 }
 
-void MapPacket::showPlayer(Player *player, vector <Player*> players) {
+void MapPacket::showPlayer(Player *player) {
 	Packet packet = playerPacket(player);
-	for (unsigned int i = 0; i < players.size(); i++) {
-		packet.send(players[i]);
-	}
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MapPacket::removePlayer(Player *player, vector <Player*> players) {
+void MapPacket::removePlayer(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_REMOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
-	packet.sendTo(player, players, false);
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
 void MapPacket::showPlayers(Player *player, vector <Player*> players) {
-	for (unsigned int i = 0; i < players.size(); i++) {
-		if (player->getPlayerid() != players[i]->getPlayerid() && players[i]->skills->getActiveSkillLevel(5101004) == 0) {
+	for (size_t i = 0; i < players.size(); i++) {
+		if (player->getPlayerid() != players[i]->getPlayerid() && players[i]->skills->getActiveSkillLevel(9101004) == 0) {
 			Packet packet = playerPacket(players[i]);
 			packet.send(player);
 			// Bug in global; would be fixed here: 
@@ -132,6 +160,7 @@ void MapPacket::changeMap(Player *player) {
 	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(ChannelServer::Instance()->getChannel()); // Channel
 	packet.addShort(0); // 2?
+	packet.addShort(0);
 	packet.addInt(player->getMap());
 	packet.addByte(player->getMappos());
 	packet.addShort(player->getHP());
@@ -146,7 +175,7 @@ void MapPacket::changeMap(Player *player) {
 void MapPacket::portalBlocked(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
-	packet.addShort(1);
+	packet.addByte(1);
 	packet.addInt(0);
 	packet.send(player);
 }
@@ -178,17 +207,15 @@ void MapPacket::makeApple(Player *player) {
 }
 
 // Change music
-void MapPacket::changeMusic(vector <Player*> players, const string &musicname) {
+void MapPacket::changeMusic(int mapid, const string &musicname) {
 	Packet packet;
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
 	packet.addString(musicname);
-	for (unsigned int i = 0; i < players.size(); i++) {
-		packet.send(players[i]);
-	}
+	Maps::maps[mapid]->sendPacket(packet);
 }
 // Send Sound
-void MapPacket::sendSound(vector <Player*> players, const string &soundname) {
+void MapPacket::sendSound(int mapid, const string &soundname) {
 	// Party1/Clear = Clear
 	// Party1/Failed = Wrong
 	// Cokeplay/Victory = Victory
@@ -199,12 +226,10 @@ void MapPacket::sendSound(vector <Player*> players, const string &soundname) {
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x04);
 	packet.addString(soundname);
-	for (unsigned int i = 0; i < players.size(); i++) {
-		packet.send(players[i]);
-	}
+	Maps::maps[mapid]->sendPacket(packet);
 }
 // Send Event
-void MapPacket::sendEvent(vector <Player*> players, const string &eventname) {
+void MapPacket::sendEvent(int mapid, const string &eventname) {
 	// quest/party/clear = Clear
 	// quest/party/wrong_kor = Wrong
 	// quest/carnival/win = Win
@@ -215,7 +240,5 @@ void MapPacket::sendEvent(vector <Player*> players, const string &eventname) {
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x03);
 	packet.addString(eventname);
-	for (unsigned int i = 0; i < players.size(); i++) {
-		packet.send(players[i]);
-	}
+	Maps::maps[mapid]->sendPacket(packet);
 }

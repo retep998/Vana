@@ -57,7 +57,7 @@ void Initializing::checkVEDBVersion() {
 // Mobs
 void Initializing::initializeMobs() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
-	mysqlpp::Query query = db.query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = db.query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -73,11 +73,13 @@ void Initializing::initializeMobs() {
 		// Col0 : Mob ID
 		//    1 : HP
 		//    2 : MP
-		//    3 : EXP
-		//    4 : Boss
-		//    5 : HP Color
-		//    6 : HP BG Color
-		//    7 : Mob Summon
+		//    3 : HP Recovery
+		//    4 : MP Recovery
+		//    6 : EXP
+		//    6 : Boss
+		//    7 : HP Color
+		//    8 : HP BG Color
+		//    9 : Mob Summon
 		currentid = atoi(mobRow[0]);
 
 		if (currentid != previousid && previousid != -1) {
@@ -86,13 +88,15 @@ void Initializing::initializeMobs() {
 		}
 		mob.hp  = atoi(mobRow[1]);
 		mob.mp  = atoi(mobRow[2]);
-		mob.exp = atoi(mobRow[3]);
-		mob.boss = atob(mobRow[4]);
-		mob.hpcolor = atoi(mobRow[5]);
-		mob.hpbgcolor = atoi(mobRow[6]);
+		mob.hprecovery = atoi(mobRow[3]);
+		mob.mprecovery = atoi(mobRow[4]);
+		mob.exp = atoi(mobRow[5]);
+		mob.boss = atob(mobRow[6]);
+		mob.hpcolor = atoi(mobRow[7]);
+		mob.hpbgcolor = atoi(mobRow[8]);
 
-		if (mobRow[7] != 0) {
-			mob.summon.push_back(atoi(mobRow[7]));
+		if (mobRow[9] != 0) {
+			mob.summon.push_back(atoi(mobRow[9]));
 		}
 		previousid = atoi(mobRow[0]);
 	}
@@ -584,7 +588,11 @@ void Initializing::initializeSkills() {
 		//   16 : Avoid
 		//   17 : HPP
 		//   18 : Prop(% chance)
-		//   19 : Cooldown time
+		//   19 : Left Top X
+		//   20 : Left Top Y
+		//   21 : Right Bottom X
+		//   22 : Right Bottom Y
+		//   23 : Cooldown time
 		currentid = atoi(skillRow[0]);
 
 		if (currentid != previousid && previousid != -1) {
@@ -610,7 +618,9 @@ void Initializing::initializeSkills() {
 		level.avo = atoi(skillRow[16]);
 		level.hpP = atoi(skillRow[17]);
 		level.prop = atoi(skillRow[18]);
-		level.cooltime = atoi(skillRow[19]);
+		level.lt = Pos(atoi(skillRow[19]), atoi(skillRow[20]));
+		level.rb = Pos(atoi(skillRow[21]), atoi(skillRow[22]));
+		level.cooltime = atoi(skillRow[23]);
 		skill[atoi(skillRow[1])] = level;
 
 		previousid = atoi(skillRow[0]);
@@ -683,57 +693,47 @@ void Initializing::initializeMaps() {
 		Maps::maps[atoi(portalRow[0])]->addPortal(portal);
 	}
 
-	// NPCs
-	query << "SELECT mapid, npcid, x, cy, fh, rx0, rx1 FROM mapnpcdata";
+	// Life [NPCs and Mobs]
+	query << "SELECT mapid, isnpc, lifeid, x, cy, fh, rx0, rx1, mobtime FROM maplifedata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << db.error() << std::endl;
 		exit(1);
 	}
 
-	MYSQL_ROW npcRow;
-	while ((npcRow = res.fetch_raw_row())) {
+	MYSQL_ROW lifeRow;
+	while ((lifeRow = res.fetch_raw_row())) {
 		//    0 : Map ID
-		//    1 : NPC ID
-		//    2 : x
-		//    3 : cy
-		//    4 : fh
-		//    5 : rx0
-		//    6 : rx1
-		NPCInfo npc;
-		npc.id = atoi(npcRow[1]);
-		npc.x = atoi(npcRow[2]);
-		npc.cy = atoi(npcRow[3]);
-		npc.fh = atoi(npcRow[4]);
-		npc.rx0 = atoi(npcRow[5]);
-		npc.rx1 = atoi(npcRow[6]);
-		Maps::maps[atoi(npcRow[0])]->addNPC(npc);
-	}
-
-	// Mobs
-	query << "SELECT mapid, mobid, x, cy, fh FROM mapmobdata";
-
-	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
-		exit(1);
-	}
-
-	MYSQL_ROW mobRow;
-	while ((mobRow = res.fetch_raw_row())) {
-		//    0 : Map ID
-		//    1 : Mob ID
-		//    2 : x
-		//    3 : cy
-		//    4 : fh
-		SpawnInfo spawn;
-		spawn.id = atoi(mobRow[1]);
-		spawn.pos = Pos(atoi(mobRow[2]), atoi(mobRow[3]));
-		spawn.fh = atoi(mobRow[4]);
-		Mobs::addSpawn(atoi(mobRow[0]), spawn);
+		//    1 : Is NPC?
+		//    2 : Life ID
+		//    3 : x
+		//    4 : cy
+		//    5 : fh
+		//    6 : rx0
+		//    7 : rx1
+		//    8 : Mob Time
+		if (atob(lifeRow[1])) {
+			NPCInfo npc;
+			npc.id = atoi(lifeRow[2]);
+			npc.x = atoi(lifeRow[3]);
+			npc.cy = atoi(lifeRow[4]);
+			npc.fh = atoi(lifeRow[5]);
+			npc.rx0 = atoi(lifeRow[6]);
+			npc.rx1 = atoi(lifeRow[7]);
+			Maps::maps[atoi(lifeRow[0])]->addNPC(npc);
+		}
+		else {
+			SpawnInfo spawn;
+			spawn.id = atoi(lifeRow[2]);
+			spawn.pos = Pos(atoi(lifeRow[3]), atoi(lifeRow[4]));
+			spawn.fh = atoi(lifeRow[5]);
+			spawn.time = atoi(lifeRow[8]);
+			Mobs::addSpawn(atoi(lifeRow[0]), spawn);
+		}
 	}
 
 	// Reactors
-	query << "SELECT mapid, reactorid, x, y FROM mapreactordata";
+	query << "SELECT mapid, reactorid, x, y, reactortime FROM mapreactordata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << db.error() << std::endl;
@@ -746,9 +746,11 @@ void Initializing::initializeMaps() {
 		//    1 : Reactor ID
 		//    2 : x
 		//    3 : y
+		//    4 : Reactor Time
 		ReactorSpawnInfo reactor;
 		reactor.id = atoi(reactorRow[1]);
 		reactor.pos = Pos(atoi(reactorRow[2]), atoi(reactorRow[3]));
+		reactor.time = atoi(reactorRow[4]);
 		Reactors::addSpawn(atoi(reactorRow[0]), reactor);
 	}
 

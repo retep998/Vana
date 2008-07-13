@@ -36,16 +36,16 @@ namespace InventoryPacket {
 	void addNewItem(Player *player, char inv, short slot, Item *item, bool is);
 	void moveItemS(Player *player, char inv, short slot, short amount);
 	void moveItemS2(Player *player, char inv, short slot1, short amount1, short slot2, short amount2);
-	void sitChair(Player *player, vector <Player*> players, int chairid);
-	void stopChair(Player *player, vector <Player*> players);
-	void useItem(Player *player, vector<Player*> players, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph); // Use buff item
-	void endItem(Player *player, unsigned char types[8]);
-	void useSkillbook(Player *player, vector <Player *> players, int skillid, int newMaxLevel, bool use, bool succeed);
-	void useScroll(Player *player, vector <Player *> players, bool succeed, bool destroy, bool legendary_spirit);
-	void showMegaphone(Player *player, vector <Player*> players, const string & msg);
+	void sitChair(Player *player, int chairid);
+	void stopChair(Player *player);
+	void useItem(Player *player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph); // Use buff item
+	void endItem(Player *player, unsigned char types[8], bool morph);
+	void useSkillbook(Player *player, int skillid, int newMaxLevel, bool use, bool succeed);
+	void useScroll(Player *player, bool succeed, bool destroy, bool legendary_spirit);
+	void showMegaphone(Player *player, const string & msg);
 	void showSuperMegaphone(Player *player, const string & msg, int whisper = 0);
 	void showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int displayInfo_size, int itemid);
-	void useItemEffect(Player *player, vector <Player*> players, int itemid);
+	void useItemEffect(Player *player, int itemid);
 };
 
 #endif

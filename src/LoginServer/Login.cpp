@@ -184,10 +184,6 @@ void Login::registerPIN(PlayerLogin *player, ReadPacket *packet) {
 	LoginPacket::pinAssigned(player);
 }
 
-void Login::loginBack(PlayerLogin *player) {
-	LoginPacket::logBack(player);
-}
-
 string Login::hashPassword(const string &password, const string &salt) {
 	SHA1 sha;
 	string salted = salt + password;

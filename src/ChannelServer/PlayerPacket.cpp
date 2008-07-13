@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "SendHeader.h"
 #include "KeyMaps.h"
+#include "SkillMacros.h"
 
 void PlayerPacket::connectData(Player *player) {
 	Packet packet;
@@ -32,10 +33,12 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addInt(ChannelServer::Instance()->getChannel()); // Channel
 	packet.addByte(1);
 	packet.addByte(1);
+	packet.addShort(0);
 	packet.addInt(Randomizer::Instance()->randInt()); //
 	packet.addInt(Randomizer::Instance()->randInt()); // Possibly seeding maple's rng
 	packet.addInt(Randomizer::Instance()->randInt()); //
-	packet.addShort(-1);
+	packet.addInt(-1);
+	packet.addInt(-1);
 	packet.addInt(player->getPlayerid());
 	packet.addString(player->getName(), 12);
 	packet.addByte(0);
@@ -106,7 +109,7 @@ void PlayerPacket::connectData(Player *player) {
 			packet.addBytes("8005BB46E61702");
 			packet.addShort(item->amount); // slots
 			packet.addInt(0);
-			if (ISSTAR(item->id)) {
+			if (ISRECHARGEABLE(item->id)) {
 				packet.addInt(2);
 				packet.addShort(0x54);
 				packet.addByte(0);
@@ -130,6 +133,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addShort(0);
 	for (int i = 0; i < 15; i++)
 		packet.addBytes("FFC99A3B");
+	packet.addInt(0);
 	packet.addInt64(TimeUtilities::getServerTime());
 	packet.send(player);
 }
@@ -152,11 +156,35 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 	packet.send(player);
 }
 
+void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
+	Packet packet;
+	packet.addHeader(SEND_SKILL_MACRO);
+	packet.addByte(macros->getMax() + 1);
+	for (int i = 0; i <= macros->getMax();  i++) {
+		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
+		if (macro != 0) {
+			packet.addString(macro->name);
+			packet.addByte(macro->shout);
+			packet.addInt(macro->skill1);
+			packet.addInt(macro->skill2);
+			packet.addInt(macro->skill3);
+		}
+		else {
+			packet.addString("");
+			packet.addByte(0);
+			packet.addInt(0);
+			packet.addInt(0);
+			packet.addInt(0);
+		}
+	}
+	
+	packet.send(player);
+}
+
 void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
-	packet.addByte(0);
 	packet.addInt(id);
 	packet.addInt(value);
 	packet.send(player);
@@ -166,7 +194,6 @@ void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
-	packet.addByte(0);
 	packet.addInt(id);
 	packet.addShort(value);
 	packet.send(player);
@@ -176,7 +203,6 @@ void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
 	Packet packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
-	packet.addByte(0);
 	packet.addInt(id);
 	packet.addByte(value);
 	packet.send(player);
@@ -195,5 +221,23 @@ void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addString(msg);
+	packet.send(player);
+}
+
+void PlayerPacket::instructionBubble(Player *player, const string &msg, short width, short height) {
+	if (width == -1) {
+		width = msg.size() * 10;
+		if (width < 40) {
+			width = 40; // Anything lower crashes client/doesn't look good
+		}
+	}
+
+	Packet packet;
+	packet.addHeader(SEND_INSTRUCTION_BUBBLE);
+	packet.addString(msg);
+	packet.addShort(width);
+	packet.addShort(height);
+	packet.addByte(1);
+
 	packet.send(player);
 }

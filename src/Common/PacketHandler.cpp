@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "Decoder.h"
 #include "ReadPacket.h"
+#include "PacketCreator.h"
 #include <Winsock2.h>
 
 PacketHandler::PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend) :
@@ -27,17 +28,36 @@ player(abstractPlayerFactory->createPlayer()),
 decoder(new Decoder()),
 socket(socket)
 {
-	int len;
 	if (isSend) {
-		len = recv(socket, (char *) buffer, Decoder::CONNECT_LENGTH, 0);
-		decoder->setIvSend(buffer+6);
-		decoder->setIvRecv(buffer+10);
+		size_t len = 0;
+		while (len != 2) {
+			len += recv(socket, (char *) buffer, 2 - len, 0); // IV header indicating size
+		}
+
+		unsigned short ivLen = buffer[0] + buffer[1] * 0x100;
+
+		len = 0;
+		while (len != ivLen) {
+			len += recv(socket, (char *) buffer, ivLen - len, 0);
+		}
+		ReadPacket packet(buffer, ivLen);
+
+		unsigned short version = packet.getShort(); // Maple Version, TODO: Verify it
+		packet.getString(); // Unknown
+
+		unsigned char *rawpacket = packet.getBuffer();
+
+		decoder->setIvSend(rawpacket);
+		decoder->setIvRecv(rawpacket + 4);
 	}
 	else {
-		len = send(socket, (char *) decoder->getConnectPacket(), Decoder::CONNECT_LENGTH, 0);
-	}
-	if (len < Decoder::CONNECT_LENGTH) {
-		//TODO
+		size_t len;
+		Packet packet = decoder->getConnectPacket();
+		len = send(socket, (char *) packet.getBuffer(), packet.getSize(), 0);
+
+		if (len < Decoder::CONNECT_LENGTH) {
+			//TODO
+		}
 	}
 }
 

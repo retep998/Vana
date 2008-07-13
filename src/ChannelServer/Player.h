@@ -68,7 +68,7 @@ public:
 	int getHair() {
 		return this->hair;
 	}
-	void setLevel(int level);
+	void setLevel(unsigned char level);
 	unsigned char getLevel() {
 		return this->level;
 	}
@@ -136,7 +136,7 @@ public:
 	short getFame() {
 		return this->fame;
 	}
-	void setExp(int exp, bool is);
+	void setExp(int exp);
 	int getExp() {
 		return this->exp;
 	}
@@ -244,6 +244,7 @@ public:
 private:
 	void playerConnect(ReadPacket *packet);
 	void changeKey(ReadPacket *packet);
+	void changeSkillMacros(ReadPacket *packet);
 
 	bool isconnect;
 	int id;

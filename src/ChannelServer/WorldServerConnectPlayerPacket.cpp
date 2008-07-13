@@ -20,12 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "InterHeader.h"
 
-void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player, char type, int playerid, string chat) {
+void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player, char type, int playerid, const vector<int> &receivers, const string &chat) {
 	Packet packet;
 	packet.addHeader(INTER_GROUP_CHAT);
 	packet.addInt(playerid);
 	packet.addByte(type);
 	packet.addString(chat);
+	packet.addByte(receivers.size());
+	for (size_t i = 0; i < receivers.size(); i++) {
+		packet.addInt(receivers[i]);
+	}
+
 	packet.send(player);
 }
 

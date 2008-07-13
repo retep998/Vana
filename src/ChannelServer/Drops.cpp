@@ -66,7 +66,7 @@ int Drop::getAmount() {
 void Drop::doDrop(Pos origin) {
 	setDropped(clock());
 	if (!isQuest())
-		DropsPacket::drop(Maps::maps[mapid]->getPlayers(), this, origin);
+		DropsPacket::drop(this, origin);
 	else {
 		if (Players::players.find(playerid) == Players::players.end())
 			return;
@@ -83,13 +83,13 @@ void Drop::showDrop(Player *player) {
 
 void Drop::takeDrop(Player *player) {
 	Maps::maps[mapid]->removeDrop(this->id);
-	DropsPacket::takeDrop(player, Maps::maps[mapid]->getPlayers(), this);
+	DropsPacket::takeDrop(player, this);
 	delete this;
 }
 
 void Drop::removeDrop() {
 	Maps::maps[this->mapid]->removeDrop(this->id);
-	DropsPacket::removeDrop(Maps::maps[this->mapid]->getPlayers(), this);
+	DropsPacket::removeDrop(this);
 	delete this;
 }
 
@@ -295,7 +295,7 @@ void Drops::addEquip(int id, EquipInfo equip) {
 }
 void Drops::addItem(int id, ItemInfo item) {
 	items[id] = item;
-	if (ISSTAR(id))
+	if (ISRECHARGEABLE(id))
 		Shops::rechargables.push_back(id);
 }
 void Drops::addConsume(int id, ConsumeInfo cons) {

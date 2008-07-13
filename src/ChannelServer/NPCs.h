@@ -138,4 +138,14 @@ public:
 	}
 };
 
+namespace NPCDialogs {
+	const unsigned char normal = 0x00;
+	const unsigned char yesNo = 0x01;
+	const unsigned char getText = 0x02;
+	const unsigned char getNumber = 0x03;
+	const unsigned char simple = 0x04;
+	const unsigned char style = 0x07;
+	const unsigned char acceptDecline = 0x0c;
+};
+
 #endif

@@ -36,14 +36,16 @@ struct SpawnInfo {
 	int id;
 	Pos pos;
 	short fh;
-	int rate;
 	int last;
+	int time;
 };
 typedef vector<SpawnInfo> SpawnsInfo;
 
 struct MobInfo {
 	int hp;
 	int mp;
+	int hprecovery;
+	int mprecovery;
 	int exp;
 	char hpcolor;
 	char hpbgcolor;
@@ -62,6 +64,14 @@ struct MobHPInfo {
 	bool boss;
 };
 
+struct MobAttackInfo {
+	short mpconsume;
+	int mpburn;
+	char disease;
+	char level;
+	bool deadly;
+};
+
 namespace Mobs {
 	extern hash_map <int, MobInfo> mobinfo;
 	extern hash_map <int, SpawnsInfo> info;
@@ -72,7 +82,7 @@ namespace Mobs {
 	void damageMobRanged(Player *player, ReadPacket *packet);
 	void damageMobSpell(Player *player, ReadPacket *packet);
 	void damageMobPG(Player *player, int damage, Mob *mob);
-	void displayHPBars(Player *player, vector <Player*> players, const MobHPInfo &mob);
+	void displayHPBars(Player *player, const MobHPInfo &mob);
 	void monsterControl(Player *player, ReadPacket *packet);
 	void checkSpawn(int mapid);
 	void spawnMob(Player *player, int mobid, int amount = 1);
