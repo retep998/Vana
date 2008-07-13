@@ -69,7 +69,6 @@ AbstractPlayer::AbstractPlayer() {
 
 void AbstractPlayer::handleRequest(ReadPacket *packet) {
 	is_pinged = false;
-	PingTimer::Instance()->reset(timer);
 	if (is_server && packet->getHeader() == SEND_PING)
 		PingPacket::pong(this);
 	realHandleRequest(packet);
