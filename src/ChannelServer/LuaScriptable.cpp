@@ -85,6 +85,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setINT", &LuaExports::setINT);
 	lua_register(luaVm, "setLUK", &LuaExports::setLUK);
 	lua_register(luaVm, "setJob", &LuaExports::setJob);
+	lua_register(luaVm, "setLevel", &LuaExports::setLevel);
 	lua_register(luaVm, "setPlayerVariable", &LuaExports::setPlayerVariable);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
 	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
@@ -380,6 +381,12 @@ int LuaExports::setLUK(lua_State *luaVm) {
 int LuaExports::setJob(lua_State *luaVm) {
 	short job = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setJob(job);
+	return 1;
+}
+
+int LuaExports::setLevel(lua_State *luaVm) {
+	int level = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setLevel(level);
 	return 1;
 }
 

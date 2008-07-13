@@ -98,6 +98,7 @@ namespace LuaExports {
 	int setINT(lua_State *luaVm);
 	int setLUK(lua_State *luaVm);
 	int setJob(lua_State *luaVm);
+	int setLevel(lua_State *luaVm);
 	int setPlayerVariable(lua_State *luaVm);
 
 	int showShop(lua_State *luaVm);
