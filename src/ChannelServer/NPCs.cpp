@@ -146,6 +146,9 @@ cend(false)
 		luaNPC.reset(new LuaNPC(filename, player->getPlayerid()));
 		player->setNPC(this);
 	}
+	else {
+		end();
+	}
 }
 
 NPC::~NPC() {
