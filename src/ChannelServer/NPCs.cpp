@@ -126,8 +126,6 @@ npcid(npcid),
 player(player),
 text(""),
 state(0),
-isquest(isquest),
-isstart(isstart),
 cend(false)
 {
 	struct stat fileinfo;
