@@ -61,8 +61,6 @@ private:
 	bool cend;
 	int getnum;
 	string gettext;
-	bool isquest;
-	bool isstart;
 	scoped_ptr<LuaNPC> luaNPC;
 	hash_map <string, int> vars;
 public:
@@ -91,15 +89,6 @@ public:
 	void sendGetText();
 	void sendGetNumber(int def, int min, int max);
 	void sendStyle(int styles[], char size);
-	bool isQuest() {
-		return isquest;
-	}
-	bool isStart() {
-		return isstart;
-	}
-	void setIsStart(bool what) {
-		isstart = what;
-	}
 	void setState(int state) {
 		this->state = state;
 	}
