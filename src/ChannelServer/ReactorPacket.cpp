@@ -20,8 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Reactors.h"
 #include "SendHeader.h"
+#include "Maps.h"
 
-void ReactorPacket::spawnReactor(vector <Player *> players, Reactor *reactor) {
+void ReactorPacket::spawnReactor(Reactor *reactor) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_REACTOR);
 	packet.addInt(reactor->getID());
@@ -29,7 +30,7 @@ void ReactorPacket::spawnReactor(vector <Player *> players, Reactor *reactor) {
 	packet.addByte(reactor->getState());
 	packet.addPos(reactor->getPos());
 	packet.addByte(0);
-	packet.sendTo<Player>(0, players, true);
+	Maps::maps[reactor->getMapID()]->sendPacket(packet);
 }
 
 void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
@@ -43,21 +44,21 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	packet.send(player);
 }
 
-void ReactorPacket::triggerReactor(vector <Player *> players, Reactor *reactor) {
+void ReactorPacket::triggerReactor(Reactor *reactor) {
 	Packet packet = Packet();
 	packet.addHeader(SEND_TRIGGER_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addByte(reactor->getState()); // State
 	packet.addPos(reactor->getPos());
 	packet.addInt(0);
-	packet.sendTo<Player>(0, players, true);
+	Maps::maps[reactor->getMapID()]->sendPacket(packet);
 }
 
-void ReactorPacket::destroyReactor(vector <Player *> players, Reactor *reactor) {
+void ReactorPacket::destroyReactor(Reactor *reactor) {
 	Packet packet = Packet();
 	packet.addHeader(SEND_DESTROY_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addByte(reactor->getState());
 	packet.addPos(reactor->getPos());
-	packet.sendTo<Player>(0, players, true);
+	Maps::maps[reactor->getMapID()]->sendPacket(packet);
 }

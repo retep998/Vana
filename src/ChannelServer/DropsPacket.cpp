@@ -17,11 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DropsPacket.h"
 #include "PacketCreator.h"
+#include "Maps.h"
 #include "Player.h"
 #include "Drops.h"
 #include "SendHeader.h"
 
-void DropsPacket::drop(vector <Player*> players, Drop *drop, Pos origin) {
+void DropsPacket::drop(Drop *drop, Pos origin) {
 	Packet packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
@@ -38,7 +39,7 @@ void DropsPacket::drop(vector <Player*> players, Drop *drop, Pos origin) {
 	if (!drop->isMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
-	packet.sendTo<Player>(0, players, true);
+	Maps::maps[drop->getMap()]->sendPacket(packet);
 }
 
 void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
@@ -101,14 +102,14 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 	packet.send(player);
 }
 
-void DropsPacket::takeDrop(Player *player, vector <Player*> players, Drop *drop) {
+void DropsPacket::takeDrop(Player *player, Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(2);
 	packet.addInt(drop->getID());
 	packet.addInt(player->getPlayerid());
 	if (!drop->isQuest()) {
-		packet.sendTo(player, players, true);
+		Maps::maps[player->getMap()]->sendPacket(packet);
 	}
 	else {
 		packet.send(player);
@@ -122,19 +123,19 @@ void DropsPacket::dontTake(Player *player) {
 	packet.send(player);
 }
 
-void DropsPacket::removeDrop(vector <Player*> players, Drop *drop) {
+void DropsPacket::removeDrop(Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(0);
 	packet.addInt(drop->getID());
-	packet.sendTo<Player>(0, players, true);
+	Maps::maps[drop->getMap()]->sendPacket(packet);
 }
 
-void DropsPacket::explodeDrop(vector <Player*> players, Drop *drop) {
+void DropsPacket::explodeDrop(Drop *drop) {
 	Packet packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(4);
 	packet.addInt(drop->getID());
 	packet.addShort(655);
-	packet.sendTo<Player>(0, players, true);
+	Maps::maps[drop->getMap()]->sendPacket(packet);
 }

@@ -246,7 +246,7 @@ int LuaExports::getPlayerVariable(lua_State *luaVm) {
 
 int LuaExports::getNumPlayers(lua_State *luaVm) {
 	int mapid = lua_tointeger(luaVm, -1);
-	lua_pushinteger(luaVm, Maps::maps[mapid]->getPlayers().size());
+	lua_pushinteger(luaVm, Maps::maps[mapid]->getNumPlayers());
 	return 1;
 }
 
@@ -407,8 +407,8 @@ int LuaExports::showMapMessage(lua_State *luaVm) {
 	std::string msg = lua_tostring(luaVm, -2);
 	int type = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
-	for (unsigned int i = 0; i < Maps::maps[map]->getPlayers().size(); i++) {
-		PlayerPacket::showMessage(Maps::maps[map]->getPlayers()[i], msg, type);
+	for (size_t i = 0; i < Maps::maps[map]->getNumPlayers(); i++) {
+		PlayerPacket::showMessage(Maps::maps[map]->getPlayer(i), msg, type);
 	}
 	return 1;
 }

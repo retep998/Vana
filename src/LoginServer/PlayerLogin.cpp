@@ -35,7 +35,6 @@ void PlayerLogin::realHandleRequest(ReadPacket *packet) {
 		case RECV_CHECK_CHAR_NAME: Characters::checkCharacterName(this, packet); break;
 		case RECV_CREATE_CHAR: Characters::createCharacter(this, packet); break;
 		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, packet); break;
-		case RECV_RETURN_TO_LOGIN: Login::loginBack(this); break;
 		case RECV_SET_GENDER: Login::setGender(this, packet); break;
 		case RECV_REGISTER_PIN: Login::registerPIN(this, packet); break;
 	}

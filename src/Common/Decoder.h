@@ -24,11 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <time.h>
 #include "../SendHeader.h"
 
+class Packet;
+
 class Decoder {
 private:
 	unsigned char ivRecv[4];
 	unsigned char ivSend[4];
-	unsigned char connectBuffer[15];
 
 public:
 	static const int CONNECT_LENGTH = 15;
@@ -37,7 +38,7 @@ public:
 	}
 	void createHeader (unsigned char *header, short size); 
 
-	unsigned char * getConnectPacket();
+	Packet & getConnectPacket();
 
 	void setIvRecv(unsigned char *iv) { memcpy_s(ivRecv, 4, iv, 4); }
 	void setIvSend(unsigned char *iv) { memcpy_s(ivSend, 4, iv, 4); }

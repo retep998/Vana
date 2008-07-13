@@ -26,17 +26,17 @@ struct MobHPInfo;
 namespace MobsPacket {
 	void controlMob(Player *player, Mob *mob);
 	void endControlMob(Player *player, Mob *mob);
-	void spawnMob(vector <Player*> players, Mob *mob);
+	void spawnMob(Mob *mob);
 	void showMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp);
-	void moveMob(Player *player, vector <Player*> players, int mobid, bool useskill, int skill, unsigned char *buf, int len);
+	void moveMob(Player *player, int mobid, bool useskill, int skill, unsigned char *buf, int len);
 	void showHP(Player *player, int mobid, char per);
-	void showMinibossHP(Player *player, vector <Player*> players, int mobid, char per); // For minor bosses
-	void showBossHP(Player *player, vector <Player*> players, const MobHPInfo &mob); // For major bosses
-	void dieMob(vector<Player*> players, Mob *mob);
-	void damageMob(Player *player, vector <Player*> players, ReadPacket *pack);
-	void damageMobSpell(Player *player, vector <Player*> players, ReadPacket *pack);
-	void damageMobRanged(Player *player, vector <Player*> players, ReadPacket *pack);
+	void showMinibossHP(Player *player, int mobid, char per); // For minor bosses
+	void showBossHP(Player *player, const MobHPInfo &mob); // For major bosses
+	void dieMob(Mob *mob);
+	void damageMob(Player *player, ReadPacket *pack);
+	void damageMobSpell(Player *player, ReadPacket *pack);
+	void damageMobRanged(Player *player, ReadPacket *pack);
 };
 
 #endif

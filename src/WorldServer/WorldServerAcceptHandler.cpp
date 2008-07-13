@@ -28,16 +28,13 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, ReadPa
 	int playerid = packet->getInt();
 	char type = packet->getByte(); // Buddy = 0 party = 1 guild = 2
 	string message = packet->getString();
-	if (type == 1) {
-		if (Players::Instance()->getPlayer(playerid)->party != 0) {
-			for (hash_map<int, Player *>::iterator iter = PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party]->members.begin(); iter != PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party]->members.end(); iter++) {
-				if (iter->second->online && iter->second->id != playerid) {
-					WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
-					WorldServerAcceptPlayerPacket::groupChat(channel, iter->second->id, type, message, Players::Instance()->getPlayer(playerid)->name);
-				}
-			}
-		}
-	}
+	char receivers = packet->getByte();
+	string sender = Players::Instance()->getPlayer(playerid)->name;
+	for (size_t i = 0; i < receivers; i++) {
+		int receiver = packet->getInt();
+		WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(Players::Instance()->getPlayer(receiver)->channel)->player;
+		WorldServerAcceptPlayerPacket::groupChat(channel, receiver, type, message, sender);
+	}	
 }
 
 void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, ReadPacket *packet) {

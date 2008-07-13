@@ -121,6 +121,7 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 		packet.addByte(1); // Char creation (the part that is server-decided)
 		packet.addShort(i);
 	}
+	packet.addShort(0);
 	packet.send(player);
 }
 
@@ -141,11 +142,8 @@ void LoginPacket::showChannels(PlayerLogin *player) {
 void LoginPacket::channelSelect(PlayerLogin *player) {
 	Packet packet;
 	packet.addHeader(SEND_CHANNEL_SELECT);
-	packet.addBytes("000500001040008612340097227400");
-	packet.addInt(4);
-	packet.addBytes("9F227400");
-	packet.addInt(4);
-	packet.addBytes("AC227400544D0500F073790028BC0000");
+	packet.addShort(0);
+	packet.addByte(0);
 	packet.send(player);
 }
 
@@ -154,9 +152,10 @@ void LoginPacket::showCharacters(PlayerLogin *player, vector <Character> chars) 
 	packet.addHeader(SEND_SHOW_CHARACTERS);
 	packet.addByte(0);
 	packet.addByte(chars.size());
-	for (int i=0; i<(int)chars.size(); i++) {
+	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
+	packet.addInt(3); // Max char you have have?
 	packet.send(player);
 }
 
@@ -202,13 +201,5 @@ void LoginPacket::connectIP(PlayerLogin *player, int charid) {
 	packet.addInt(charid);
 	packet.addInt(0);
 	packet.addByte(0);
-	packet.send(player);
-}
-
-
-void LoginPacket::logBack(PlayerLogin *player) {
-	Packet packet;
-	packet.addHeader(SEND_RETURN_TO_LOGIN);
-	packet.addByte(1);
 	packet.send(player);
 }

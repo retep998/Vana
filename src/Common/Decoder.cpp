@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleEncryption.h"
 #include "Randomizer.h"
 #include "SendHeader.h"
+#include "PacketCreator.h"
 
 void Decoder::encrypt(unsigned char *buffer, int size) {
 	MapleEncryption::mapleEncrypt(buffer, size);
@@ -56,15 +57,21 @@ void Decoder::createHeader (unsigned char *header, short size) {
 	header[3] = (b-header[2])/0x100;
 }
 
-unsigned char * Decoder::getConnectPacket() {
-	(*(short*)ivRecv) = Randomizer::Instance()->randInt();
-	(*(short*)ivSend) = Randomizer::Instance()->randInt();
-	(*(short*)(ivRecv+2)) = Randomizer::Instance()->randInt();
-	(*(short*)(ivSend+2)) = Randomizer::Instance()->randInt();
-	(*(short*)connectBuffer) = SEND_IV;
-	(*(int*)(connectBuffer+sizeof(short))) = MAPLE_VERSION;
-	memcpy_s(connectBuffer+6, 4, ivRecv, 4);
-	memcpy_s(connectBuffer+10, 4, ivSend, 4);
-	connectBuffer[14] = 0x08;
-	return connectBuffer;
+Packet & Decoder::getConnectPacket() {
+	(*(int *)ivRecv) = Randomizer::Instance()->randInt();
+	(*(int *)ivSend) = Randomizer::Instance()->randInt();
+
+	Packet packet;
+	packet.addShort(0); // Packet len, this will be added later in the packet
+	packet.addShort(MAPLE_VERSION);
+	packet.addString(""); // Unknown, the official login server sends a "0", the channel server sends nothing
+	packet.addInt(*(int *) ivRecv);
+	packet.addInt(*(int *) ivSend);
+	packet.addByte(0x08);
+
+	packet.setShort(packet.getSize() - 2, 0); // -2 as the size does not include the size of the size header
+
+
+	Packet &ret = packet;
+	return ret;
 }

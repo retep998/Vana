@@ -46,7 +46,7 @@ public:
 		timers.push_back(timer);
 	}
 	void stop(Player *player, int item) {
-		for (unsigned int i=0; i<timers.size(); i++) {
+		for (size_t i = 0; i < timers.size(); i++) {
 			if (player == timers[i].player && timers[i].item == item) {
 				Timer::Instance()->cancelTimer(timers[i].id);
 				break;
@@ -54,7 +54,7 @@ public:
 		}
 	}
 	void stop(Player *player) {
-		for (unsigned int i=timers.size(); i>0; i--) { // fix missing timer cancels
+		for (size_t i = timers.size(); i > 0; i--) { // fix missing timer cancels
 			if (player == timers[i-1].player) {
 				Timer::Instance()->cancelTimer(timers[i-1].id);
 			}
@@ -76,7 +76,7 @@ private:
 	void handle(Timer *timer, int id) {
 		int item;
 		Player *player;
-		for (unsigned int i=0; i<timers.size(); i++) {
+		for (size_t i = 0; i < timers.size(); i++) {
 			if (timers[i].id == id) {
 				player = timers[i].player;
 				item = timers[i].item;
@@ -86,7 +86,7 @@ private:
 		Inventory::endItem(player, item);
 	}
 	void remove (int id) {
-		for (unsigned int i=0; i<timers.size(); i++) {
+		for (size_t i = 0; i < timers.size(); i++) {
 			if (timers[i].id == id) {	
 				timers.erase(timers.begin()+i);
 				return;
@@ -135,7 +135,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			Item *item = player->inv->getItem(inv, slot1);
 			if (item == 0)
 				return;
-			if (ISSTAR(item->id)) amount = item->amount;
+			if (ISRECHARGEABLE(item->id)) amount = item->amount;
 			Item droppeditem = Item(item);
 			droppeditem.amount = amount;
 			if (item->amount - amount == 0) {
@@ -157,7 +157,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			Item *item1 = player->inv->getItem(inv, slot1);
 			Item *item2 = player->inv->getItem(inv, slot2);
 
-			if (item2 != 0 && !ISSTAR(item1->id) && item1->id == item2->id) {
+			if (item2 != 0 && !ISRECHARGEABLE(item1->id) && item1->id == item2->id) {
 				if (item1->amount + item2->amount <= Drops::items[item1->id].maxslot) {
 					item2->amount += item1->amount;
 					player->inv->deleteItem(inv, slot1);
@@ -227,7 +227,7 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 	for (short s = 1; s <= player->inv->getMaxslots(inv); s++) {
 		Item *olditem = player->inv->getItem(inv, s);
 		if (olditem != 0) {
-			if (!ISSTAR(item->id) && olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
+			if (!ISRECHARGEABLE(item->id) && olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
 				if (item->amount + olditem->amount > Drops::items[item->id].maxslot) {
 					short amount = Drops::items[item->id].maxslot - olditem->amount;
 					item->amount -= amount;
@@ -245,7 +245,7 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 		}
 		else if (!freeslot) {
 			freeslot = s;
-			if (ISSTAR(item->id))
+			if (ISRECHARGEABLE(item->id))
 				break;
 		}
 	}
@@ -326,6 +326,10 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 			item->amount = max + player->skills->getSkillLevel(4100000)*10;
 			amount -= 1;
 		}
+		else if (ISBULLET(itemid)) {
+			item->amount = max + player->skills->getSkillLevel(5200000)*10;
+			amount -= 1;
+		}
 		else if (amount - max > 0) {
 			item->amount = max;
 			amount -= max;
@@ -350,7 +354,7 @@ void Inventory::takeItem(Player *player, int itemid, int howmany) {
 		if (item->id == itemid) {
 			if (item->amount >= howmany) {
 				item->amount -= howmany;
-				if (item->amount == 0 && !ISSTAR(item->id)) {
+				if (item->amount == 0 && !ISRECHARGEABLE(item->id)) {
 					InventoryPacket::moveItem(player, inv, i, 0);
 					player->inv->deleteItem(inv, i);
 				}
@@ -358,7 +362,7 @@ void Inventory::takeItem(Player *player, int itemid, int howmany) {
 					InventoryPacket::moveItemS(player, inv, i, item->amount);
 				break;
 			}
-			else if (!ISSTAR(item->id)) {
+			else if (!ISRECHARGEABLE(item->id)) {
 				howmany -= item->amount;
 				item->amount = 0;
 				InventoryPacket::moveItem(player, inv, i, 0);
@@ -374,7 +378,7 @@ void Inventory::takeItemSlot(Player *player, char inv, short slot, short amount,
 		return;
 
 	item->amount -= amount;
-	if (item->amount == 0 && !ISSTAR(item->id) || (takeStar && ISSTAR(item->id))) {
+	if (item->amount == 0 && !ISRECHARGEABLE(item->id) || (takeStar && ISRECHARGEABLE(item->id))) {
 		InventoryPacket::moveItem(player, inv, slot, 0);
 		player->inv->deleteItem(inv, slot);
 	}
@@ -427,44 +431,44 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 		types[7] = 0;
 
 		if (Drops::consumes[itemid].watk > 0) {
-			types[0] += 0x01;
+			types[4] += 0x01;
 			vals.push_back(Drops::consumes[itemid].watk);
 		}
 		if (Drops::consumes[itemid].wdef > 0) {
-			types[0] += 0x02;
+			types[4] += 0x02;
 			vals.push_back(Drops::consumes[itemid].wdef);
 		}
 		if (Drops::consumes[itemid].matk > 0) {
-			types[0] += 0x04;
+			types[4] += 0x04;
 			vals.push_back(Drops::consumes[itemid].matk);
 		}
 		if (Drops::consumes[itemid].mdef > 0) {
-			types[0] += 0x08;
+			types[4] += 0x08;
 			vals.push_back(Drops::consumes[itemid].mdef);
 		}
 		if (Drops::consumes[itemid].acc > 0) {
-			types[0] += 0x10;
+			types[4] += 0x10;
 			vals.push_back(Drops::consumes[itemid].acc);
 		}
 		if (Drops::consumes[itemid].avo > 0) {
-			types[0] += 0x20;
+			types[4] += 0x20;
 			vals.push_back(Drops::consumes[itemid].avo);
 		}
 		if (Drops::consumes[itemid].speed > 0) {
-			types[0] += 0x80;
+			types[4] += 0x80;
 			vals.push_back(Drops::consumes[itemid].speed);
 		}
 		if (Drops::consumes[itemid].jump > 0) {
-			types[1] = 0x01;
+			types[5] = 0x01;
 			vals.push_back(Drops::consumes[itemid].jump);
 		}
 		bool isMorph = false;
 		if (Drops::consumes[itemid].morph > 0) {
-			types[4] = 0x02;
+			types[0] = 0x02;
 			vals.push_back(Drops::consumes[itemid].morph);
 			isMorph = true;
 		}
-		InventoryPacket::useItem(player, Maps::maps[player->getMap()]->getPlayers(), itemid, Drops::consumes[itemid].time*1000, types, vals, isMorph);
+		InventoryPacket::useItem(player, itemid, Drops::consumes[itemid].time*1000, types, vals, isMorph);
 		ItemTimer::Instance()->stop(player, itemid);
 		ItemTimer::Instance()->setItemTimer(player, itemid, Drops::consumes[itemid].time*1000);
 	}
@@ -489,33 +493,36 @@ void Inventory::endItem(Player *player, int itemid) {
 	types[7] = 0;
 
 	if (Drops::consumes[itemid].watk > 0) {
-		types[0] += 0x01;
+		types[4] += 0x01;
 	}
 	if (Drops::consumes[itemid].wdef > 0) {
-		types[0] += 0x02;
+		types[4] += 0x02;
 	}
 	if (Drops::consumes[itemid].matk > 0) {
-		types[0] += 0x04;
+		types[4] += 0x04;
 	}
 	if (Drops::consumes[itemid].mdef > 0) {
-		types[0] += 0x08;
+		types[4] += 0x08;
 	}
 	if (Drops::consumes[itemid].acc > 0) {
-		types[0] += 0x10;
+		types[4] += 0x10;
 	}
 	if (Drops::consumes[itemid].avo > 0) {
-		types[0] += 0x20;
+		types[4] += 0x20;
 	}
 	if (Drops::consumes[itemid].speed > 0) {
-		types[0] += 0x80;
+		types[4] += 0x80;
 	}
 	if (Drops::consumes[itemid].jump > 0) {
-		types[1] = 0x01;
+		types[5] = 0x01;
 	}
+	bool isMorph = false;
 	if (Drops::consumes[itemid].morph > 0) {
-		types[4] = 0x02;
+		isMorph = true;
+		types[0] = 0x02;
 	}
-	InventoryPacket::endItem(player, types);
+
+	InventoryPacket::endItem(player, types, isMorph);
 }
 // Skill books
 void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
@@ -556,7 +563,7 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 
 	if (skillid == 0) return;
 
-	InventoryPacket::useSkillbook(player, Maps::maps[player->getMap()]->getPlayers(), skillid, newMaxLevel, use, succeed);
+	InventoryPacket::useSkillbook(player, skillid, newMaxLevel, use, succeed);
 	if (update) {
 		player->skills->addSkillLevel(skillid, 0);
 	}
@@ -564,12 +571,12 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 void Inventory::useChair(Player *player, ReadPacket *packet) {
 	int chairid = packet->getInt();
 	player->setChair(chairid);
-	InventoryPacket::sitChair(player, Maps::maps[player->getMap()]->getPlayers(), chairid);
+	InventoryPacket::sitChair(player, chairid);
 }
 
 void Inventory::stopChair(Player *player, ReadPacket *packet) {
 	player->setChair(0);
-	InventoryPacket::stopChair(player, Maps::maps[player->getMap()]->getPlayers());
+	InventoryPacket::stopChair(player);
 }
 
 bool Inventory::isCash(int itemid) {
@@ -662,7 +669,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			else if (wscroll != 2) equip->slots--;
 		}
 	}
-	InventoryPacket::useScroll(player, Maps::maps[player->getMap()]->getPlayers(), succeed, cursed, legendary_spirit);
+	InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
 	if (!cursed)
 		InventoryPacket::addEquip(player, eslot, equip, true);
 	InventoryPacket::updatePlayer(player);
@@ -674,7 +681,7 @@ void Inventory::useCashItem(Player *player, ReadPacket *packet) {
 	int itemid = packet->getInt();
 	string msg = packet->getString();
 	if (itemid == 5071000) { // Megaphone
-		InventoryPacket::showMegaphone(player, Maps::maps[player->getMap()]->getPlayers(), msg);
+		InventoryPacket::showMegaphone(player, msg);
 	}
 	else if (itemid == 5072000) { // Super Megaphone
 		int whisper = packet->getByte();
@@ -697,5 +704,5 @@ void Inventory::useItemEffect(Player *player, ReadPacket *packet) {
 		return;
 	}
 	player->setItemEffect(itemid);
-	InventoryPacket::useItemEffect(player, Maps::maps[player->getMap()]->getPlayers(), itemid);
+	InventoryPacket::useItemEffect(player, itemid);
 }
