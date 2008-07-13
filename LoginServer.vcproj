@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="src/Common;src/Common/mysql;%ProgramFiles%/boost/boost_1_35_0/"
+				AdditionalIncludeDirectories="src/Common;src/Common/mysql;$(ProgramFiles)/boost/boost_1_35_0/"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -120,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="src/Common;src/Common/mysql;%ProgramFiles%/boost/boost_1_35_0/"
+				AdditionalIncludeDirectories="src/Common;src/Common/mysql;$(ProgramFiles)/boost/boost_1_35_0/"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
