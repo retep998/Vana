@@ -57,6 +57,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
 	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
 	lua_register(luaVm, "getMap", &LuaExports::getMap);
+	lua_register(luaVm, "getEXP", &LuaExports::getEXP);
 	lua_register(luaVm, "getHP", &LuaExports::getHP);
 	lua_register(luaVm, "getMHP", &LuaExports::getMHP);
 	lua_register(luaVm, "getRMHP", &LuaExports::getRMHP);
@@ -73,6 +74,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setStyle", &LuaExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaExports::setMap);
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
+	lua_register(luaVm, "setEXP", &LuaExports::setEXP);
 	lua_register(luaVm, "setReactorsState", &LuaExports::setReactorsState);
 	lua_register(luaVm, "setHP", &LuaExports::setHP);
 	lua_register(luaVm, "setMHP", &LuaExports::setMHP);
@@ -199,6 +201,11 @@ int LuaExports::getMap(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getEXP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getExp());
+	return 1;
+}
+
 int LuaExports::getHP(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getHP());
 	return 1;
@@ -301,6 +308,12 @@ int LuaExports::setMap(lua_State *luaVm) {
 
 int LuaExports::setMusic(lua_State *luaVm) {
 	Maps::changeMusic(getPlayer(luaVm)->getMap(), lua_tostring(luaVm, -1));
+	return 1;
+}
+
+int LuaExports::setEXP(lua_State *luaVm) {
+	int exp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setExp(exp);
 	return 1;
 }
 

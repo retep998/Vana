@@ -68,6 +68,7 @@ namespace LuaExports {
 	int getSkillLevel(lua_State *luaVm);
 	int getMesos(lua_State *luaVm);
 	int getMap(lua_State *luaVm);
+	int getEXP(lua_State *luaVm);
 	int getHP(lua_State *luaVm);
 	int getMHP(lua_State *luaVm);
 	int getRMHP(lua_State *luaVm);
@@ -86,6 +87,7 @@ namespace LuaExports {
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);
 	int setMusic(lua_State *luaVm);
+	int setEXP(lua_State *luaVm);
 	int setReactorsState(lua_State *luaVm);
 	int setHP(lua_State *luaVm);
 	int setMHP(lua_State *luaVm);
