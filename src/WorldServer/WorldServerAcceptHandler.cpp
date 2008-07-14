@@ -28,7 +28,7 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, ReadPa
 	int playerid = packet->getInt();
 	char type = packet->getByte(); // Buddy = 0 party = 1 guild = 2
 	string message = packet->getString();
-	char receivers = packet->getByte();
+	unsigned char receivers = packet->getByte();
 	string sender = Players::Instance()->getPlayer(playerid)->name;
 	for (size_t i = 0; i < receivers; i++) {
 		int receiver = packet->getInt();
