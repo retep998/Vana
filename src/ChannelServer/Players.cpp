@@ -453,8 +453,15 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 				pg.damage = damage;
 				damage = (damage - (damage * pg.reduction / 100));
 			}
-			if (pg.reduction != 0)
-				Mobs::damageMobPG(player, (pg.damage * pg.reduction / 100), Maps::maps[player->getMap()]->getMob(mapmobid));
+			if (pg.reduction != 0) { // Damage Mob with PG
+				Mob *mob = Maps::maps[player->getMap()]->getMob(mapmobid);
+				if (mob != 0) {
+					mob->setHP(mob->getHP() - (pg.damage * pg.reduction / 100));
+					Mobs::displayHPBars(player, mob);
+					if (mob->getHP() <= 0)
+						Mobs::dieMob(player, mob);
+				}
+			}
 			break;
 		default:
 			packet->skipBytes(2); // 0xFE: Status ailment ID?, normal end of packet, 0x0*: Power Guard/Mana Reflection? bytes
