@@ -118,7 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="0"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="src/Common;src/Common/mysql;$(ProgramFiles)/boost/boost_1_35_0/"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
