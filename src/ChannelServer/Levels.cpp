@@ -126,7 +126,6 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 
 		player->setHP(player->getMHP());
 		player->setMP(player->getMMP());
-		LevelsPacket::levelUP(player);
 	}
 
 	player->setExp(cexp);
@@ -212,14 +211,4 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 		default:
 			break;
 	}
-}
-
-void Levels::setLevel(Player *player, int level) {
-	player->setLevel(level);
-	LevelsPacket::levelUP(player);
-}
-
-void Levels::setJob(Player *player, int job) {
-	player->setJob(job);
-	LevelsPacket::jobChange(player);
 }

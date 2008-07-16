@@ -25,8 +25,6 @@ namespace Levels {
 	extern int exps[200];
 	void giveEXP(Player *player, long exp, char type=0);
 	void addStat(Player *player, ReadPacket *packet);
-	void setLevel(Player *player, int level);
-	void setJob(Player *player, int job);
 };
 
 #endif
