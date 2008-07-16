@@ -41,6 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillMacros.h"
 #include "Party.h"
 #include "BuddyList.h"
+#include "LevelsPacket.h"
 
 Player::~Player() {
 	if (isconnect) {
@@ -269,8 +270,9 @@ void Player::setAp(short ap) {
 
 void Player::setJob(short job) {
 	this->job = job;
-	WorldServerConnectPlayerPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->getPlayerid(), job);
 	PlayerPacket::updateStat(this, 0x20, job);
+	LevelsPacket::jobChange(this);
+	WorldServerConnectPlayerPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->getPlayerid(), job);
 }
 
 void Player::setExp(int exp) {
@@ -325,6 +327,7 @@ void Player::setRMMP(int rmmp) {
 void Player::setLevel(unsigned char level) {
 	this->level = level;
 	PlayerPacket::updateStat(this, 0x10, level);
+	LevelsPacket::levelUP(this);
 	WorldServerConnectPlayerPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), getPlayerid(), level);
 }
 

@@ -192,7 +192,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "level") == 0) {
 			if (strlen(next_token) == 0) return;
-			Levels::setLevel(player, atoi(next_token));
+			player->setLevel(atoi(next_token));
 		}
 		// Jobs
 		else if (strcmp(command, "job") == 0) {
@@ -244,7 +244,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			else job = atoi(next_token);
 
 			if (job >= 0)
-				Levels::setJob(player, job);
+				player->setJob(job);
 		}
 		else if (strcmp(command, "ap") == 0) {
 			if (strlen(next_token) == 0) return;
