@@ -65,7 +65,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 
 		while (cexp >= exps[level-1]) {
 			if (level >= 200) { // Do not let people level past the level 200 cap
-				player->setExp(0);
+				cexp = 0;
 				break;
 			}
 			cexp -= exps[player->getLevel()-1];
