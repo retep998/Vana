@@ -86,7 +86,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 	packet.addByte(0);
 	if (id == 0)
 		packet.addByte(-1);
-	else{
+	else {
 		packet.addByte(ismesos);
 		packet.addInt(id);
 		if (ismesos) {
