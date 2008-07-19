@@ -578,6 +578,9 @@ void Players::commandHandler(Player *player, ReadPacket *packet) {
 void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 	int skillid = packet->getInt();
 	switch (skillid) {
+		case 1121001: // Monster Magnet
+		case 1221001:
+		case 1321001:
 		case 3221001: // Pierce
 		case 2121001: // Big Bang x3
 		case 2221001:
@@ -592,16 +595,6 @@ void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 4211001: // Chakra, unknown heal formula
-			break;
-		case 1121001:
-		case 1221001:
-		case 1321001: // Monster Magnet
-			SpecialSkillInfo info;
-			info.skillid = skillid;
-			info.level = packet->getByte();
-			info.direction = packet->getByte();
-			info.w_speed = packet->getByte();
-			SkillsPacket::showMagnet(player, info);
 			break;
 	}
 }
