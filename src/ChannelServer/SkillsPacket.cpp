@@ -201,7 +201,7 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang
+void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang, Monster Magnet
 	Packet packet;
 	packet.addHeader(SEND_SPECIAL_SKILL);
 	packet.addInt(player->getPlayerid());
@@ -217,17 +217,6 @@ void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
 	packet.addHeader(SEND_SPECIAL_SKILL_END);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(info.skillid);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
-}
-
-void SkillsPacket::showMagnet(Player *player, SpecialSkillInfo info) {  // Monster Magnet
-	Packet packet;
-	packet.addHeader(SEND_SHOW_MAGNET);
-	packet.addInt(player->getPlayerid());
-	packet.addInt(info.skillid);
-	packet.addByte(info.level);
-	packet.addByte(info.direction);
-	packet.addByte(info.w_speed);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
