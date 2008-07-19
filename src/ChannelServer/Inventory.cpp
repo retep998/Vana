@@ -179,7 +179,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 	}
 }
 
-Equip * Inventory::setEquipStats(Player *player, int equipid) {
+Equip * Inventory::setEquipStats(int equipid) {
 	EquipInfo ei = Drops::equips[equipid];
 	Equip *equip = new Equip;
 	equip->id = equipid;
@@ -200,7 +200,7 @@ Equip * Inventory::setEquipStats(Player *player, int equipid) {
 	equip->iavo = ei.iavo;
 	equip->ihand = ei.ihand;
 	equip->ijump = ei.ijump;
-	equip->ispeed = ei.ispeed;	
+	equip->ispeed = ei.ispeed;
 	return equip;
 }
 
@@ -312,7 +312,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 
 void Inventory::addNewItem(Player *player, int itemid, int amount) {
 	if (Drops::equips.find(itemid) != Drops::equips.end()) {
-		Equip *equip = setEquipStats(player, itemid);
+		Equip *equip = setEquipStats(itemid);
 		addEquip(player, equip);
 	}
 	else {
@@ -602,6 +602,7 @@ void Inventory::useSummonBag(Player *player, ReadPacket *packet) {
 		}
 	}
 }
+
 void Inventory::useReturnScroll(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	short slot = packet->getShort();
@@ -619,6 +620,7 @@ void Inventory::useReturnScroll(Player *player, ReadPacket *packet) {
 	else
 		Maps::changeMap(player, map, 0);
 }
+
 void Inventory::useScroll(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	short slot = packet->getShort();
