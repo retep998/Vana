@@ -80,7 +80,7 @@ Map::Map (int mapid) : mapid(mapid), mobids(new LoopingId(100)), dropids(new Loo
 // Players
 void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
-	if (player->getMap() == 1 || player->getMap() == 2)
+	if (Maps::maps[player->getMap()]->getInfo().fieldType == 82)
 		MapPacket::makeApple(player);
 	if (player->skills->getActiveSkillLevel(9101004) == 0)
 		MapPacket::showPlayer(player);
