@@ -50,6 +50,10 @@ void Players::handleMoving(Player *player, ReadPacket *packet) {
 	short x = packet->getShort();
 	short y = packet->getShort();
 
+	if (y > Maps::maps[player->getMap()]->getInfo().fieldLimit) {
+		Maps::changeMap(player, player->getMap(), 0);
+	}
+
 	player->setPos(Pos(x, y));
 	player->setType(type);
 
