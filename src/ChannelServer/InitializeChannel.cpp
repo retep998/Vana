@@ -729,12 +729,12 @@ void Initializing::initializeMaps() {
 			Maps::maps[atoi(lifeRow[0])]->addNPC(npc);
 		}
 		else {
-			SpawnInfo spawn;
+			MobSpawnInfo spawn;
 			spawn.id = atoi(lifeRow[2]);
 			spawn.pos = Pos(atoi(lifeRow[3]), atoi(lifeRow[4]));
 			spawn.fh = atoi(lifeRow[5]);
 			spawn.time = atoi(lifeRow[8]);
-			Mobs::addSpawn(atoi(lifeRow[0]), spawn);
+			Maps::maps[atoi(lifeRow[0])]->addMobSpawn(spawn);
 		}
 	}
 
@@ -757,7 +757,7 @@ void Initializing::initializeMaps() {
 		reactor.id = atoi(reactorRow[1]);
 		reactor.pos = Pos(atoi(reactorRow[2]), atoi(reactorRow[3]));
 		reactor.time = atoi(reactorRow[4]);
-		Reactors::addSpawn(atoi(reactorRow[0]), reactor);
+		Maps::maps[atoi(reactorRow[0])]->addReactorSpawn(reactor);
 	}
 
 	// Footholds

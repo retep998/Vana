@@ -106,10 +106,7 @@ ReactionTimer *ReactionTimer::singleton = 0;
 // End of ReactionTimer
 
 // Reactor class
-Reactor::Reactor (int mapid, int reactorid, Pos pos) : alive(true), state(0) {
-	this->mapid = mapid;
-	this->reactorid = reactorid;
-	this->pos = pos;
+Reactor::Reactor (int mapid, int reactorid, Pos pos) : mapid(mapid), reactorid(reactorid), pos(pos), alive(true), state(0) {
 	Maps::maps[mapid]->addReactor(this);
 }
 
@@ -120,13 +117,8 @@ void Reactor::setState(char state, bool is) {
 }
 
 // Reactors namespace
-hash_map <int, vector<ReactorEventInfo>> Reactors::reactorinfo;
+hash_map <int, ReactorEventsInfo> Reactors::reactorinfo;
 hash_map <int, short> Reactors::maxstates;
-hash_map <int, ReactorSpawnsInfo> Reactors::info;
-
-void Reactors::addSpawn(int id, ReactorSpawnInfo reactor) {
-	info[id].push_back(reactor);
-}
 
 void Reactors::addEventInfo(int id, ReactorEventInfo revent) {
 	reactorinfo[id].push_back(revent);
@@ -134,13 +126,6 @@ void Reactors::addEventInfo(int id, ReactorEventInfo revent) {
 
 void Reactors::setMaxstates(int id, short state) {
 	maxstates[id] = state;
-}
-
-void Reactors::loadReactors(int mapid) {
-	for (size_t i = 0; i < info[mapid].size(); i++) {
-		Reactor *reactor = new Reactor(mapid, info[mapid][i].id, info[mapid][i].pos);
-		ReactorPacket::spawnReactor(reactor);
-	}
 }
 
 void Reactors::hitReactor(Player *player, ReadPacket *packet) {

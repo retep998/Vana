@@ -31,8 +31,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 
 hash_map <int, MobInfo> Mobs::mobinfo;
-hash_map <int, SpawnsInfo> Mobs::info;
-hash_map <int, queue<int>> Mobs::respawns;
 
 // Mob class
 Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : mapid(mapid), id(id), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
@@ -86,21 +84,6 @@ void Mobs::addMob(int id, MobInfo mob) {
 	mobinfo[id] = mob;
 }
 
-void Mobs::addSpawn(int id, SpawnInfo spawn) {
-	info[id].push_back(spawn);
-	// Queue up spawn point for initial spawning
-	respawns[id].push(info[id].size() - 1);
-}
-
-void Mobs::checkSpawn(int mapid) {
-	// (Re-)spawn Mobs
-	while (!respawns[mapid].empty()) {
-		int i = respawns[mapid].front();
-		respawns[mapid].pop();
-		new Mob(mapid, info[mapid][i].id, info[mapid][i].pos, i, info[mapid][i].fh);
-	}
-}
-
 void Mobs::dieMob(Player *player, Mob *mob) {
 	if (mob == 0) return;
 	mob->setControl(0);
@@ -124,7 +107,7 @@ void Mobs::dieMob(Player *player, Mob *mob) {
 	}
 
 	if (mob->getSpawnID() > -1) // Add spawn point to respawns queue if mob was spawned by a spawn point.
-		respawns[player->getMap()].push(mob->getSpawnID());
+		Maps::maps[player->getMap()]->queueMobSpawn(mob->getSpawnID());
 
 	player->quests->updateQuestMob(mob->getMobID());
 	Maps::maps[player->getMap()]->removeMob(mob->getID());

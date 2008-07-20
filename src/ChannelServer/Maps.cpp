@@ -50,7 +50,6 @@ public:
 		if (ctimer.find(mapid) != ctimer.end())
 			if (ctimer[mapid])
 			return;
-		Reactors::loadReactors(mapid);
 		Maps::mapTimer(mapid);
 		timers[Timer::Instance()->setTimer(10000, this, true)] = mapid;
 		ctimer[mapid] = 1;
@@ -97,6 +96,13 @@ void Map::removePlayer(Player *player) {
 	updateMobControl();
 }
 
+// Reactors
+void Map::addReactorSpawn(ReactorSpawnInfo spawn) {
+	reactorspawns.push_back(spawn);
+	Reactor *reactor = new Reactor(mapid, spawn.id, spawn.pos);
+	ReactorPacket::spawnReactor(reactor);
+}
+
 void Map::addReactor(Reactor *reactor) {
 	this->reactors.push_back(reactor);
 	reactor->setID(this->reactors.size() - 1 + 200);
@@ -131,6 +137,25 @@ Pos Map::findFloor(Pos pos) {
 }
 
 // Mobs
+void Map::addMobSpawn(MobSpawnInfo spawn) {
+	mobspawns.push_back(spawn);
+	// Queue up spawn point for initial spawning
+	respawns.push(mobspawns.size() - 1);
+}
+
+void Map::queueMobSpawn(int spawnid) {
+	respawns.push(spawnid);
+}
+
+void Map::checkSpawn() {
+	// (Re-)spawn Mobs
+	while (!respawns.empty()) {
+		int i = respawns.front();
+		respawns.pop();
+		new Mob(mapid, mobspawns[i].id, mobspawns[i].pos, i, mobspawns[i].fh);
+	}
+}
+
 void Map::addMob(Mob *mob) {
 	int id = this->mobids->next();
 	mob->setID(id);
@@ -339,7 +364,7 @@ void Maps::showClock(Player *player) {
 }
 
 void Maps::mapTimer(int mapid) {
-	Mobs::checkSpawn(mapid);
+	maps[mapid]->checkSpawn();
 	maps[mapid]->clearDrops(clock());
 }
 
