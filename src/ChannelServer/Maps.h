@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include <hash_map>
 #include <vector>
+#include <queue>
 #include <boost/scoped_ptr.hpp>
 
 using namespace std;
@@ -68,6 +69,22 @@ struct MapInfo {
 	int shipInterval;
 };
 
+struct ReactorSpawnInfo {
+	int id;
+	Pos pos;
+	int time;
+};
+typedef vector <ReactorSpawnInfo> ReactorSpawnsInfo;
+
+struct MobSpawnInfo {
+	int id;
+	Pos pos;
+	short fh;
+	int last;
+	int time;
+};
+typedef vector <MobSpawnInfo> MobSpawnsInfo;
+
 namespace Maps {
 	extern MapTimer *timer;
 	extern hash_map <int, Map *> maps;
@@ -90,7 +107,7 @@ public:
 		this->info = info;
 	}
 	MapInfo getInfo() {
-		return this->info;
+		return info;
 	}
 
 	// Footholds
@@ -136,6 +153,9 @@ public:
 	}
 
 	// Mobs
+	void addMobSpawn(MobSpawnInfo spawn);
+	void queueMobSpawn(int spawnid);
+	void checkSpawn();
 	void addMob(Mob *mob);
 	Mob * getMob(int id) {
 		if (this->mobs.find(id) != mobs.end())
@@ -148,6 +168,7 @@ public:
 	void killMobs(Player *player, int mobid);
 
 	// Reactors
+	void addReactorSpawn(ReactorSpawnInfo spawn);
 	void addReactor(Reactor *reactor);
 	Reactor * getReactor(int id) {
 		if ((unsigned int)id < this->reactors.size())
@@ -183,7 +204,10 @@ private:
 	PortalsInfo portals;
 	vector <Player *> players;
 	vector <NPCInfo> npcs;
+	ReactorSpawnsInfo reactorspawns;
 	vector <Reactor *> reactors;
+	MobSpawnsInfo mobspawns;
+	queue<int> respawns;
 	hash_map<int, Mob *> mobs;
 	scoped_ptr<LoopingId> mobids;
 	hash_map<int, Drop *> drops;

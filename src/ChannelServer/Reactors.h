@@ -33,13 +33,6 @@ class Reactor;
 class ReactionTimer;
 class ReadPacket;
 
-struct ReactorSpawnInfo {
-	int id;
-	Pos pos;
-	int time;
-};
-typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
-
 struct ReactorEventInfo {
 	char state;
 	short type;
@@ -50,16 +43,13 @@ struct ReactorEventInfo {
 	short rby;
 	char nextstate;
 };
-typedef vector<ReactorEventInfo> ReactorEventsInfo;
+typedef vector <ReactorEventInfo> ReactorEventsInfo;
 
 namespace Reactors {
-	extern hash_map<int, ReactorEventsInfo> reactorinfo;
-	extern hash_map<int, short> maxstates;
-	extern hash_map<int, ReactorSpawnsInfo> info;
-	void addSpawn(int id, ReactorSpawnInfo reactor);
+	extern hash_map <int, ReactorEventsInfo> reactorinfo;
+	extern hash_map <int, short> maxstates;
 	void addEventInfo(int id, ReactorEventInfo revent);
 	void setMaxstates(int id, short state);
-	void loadReactors(int mapid);
 	void hitReactor(Player *player, ReadPacket *packet);
 	void checkDrop(Player *player, Drop *drop);
 	void checkLoot(Drop *drop);
