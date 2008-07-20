@@ -132,13 +132,14 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 void SkillsPacket::showCombo(Player *player, int time) { // Show combos to everyone on map 
 	Packet packet;
 	packet.addHeader(SEND_USE_SKILL);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte((char)0x20);
-	packet.addByte(0);
+	packet.addInt64(0);
 	packet.addByte(0);
 	packet.addByte(0);
 	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0x20);
 	packet.addByte(0);
 	packet.addShort(player->getCombo()+1);
 	packet.addInt(1111002); // Skill ID
@@ -149,13 +150,14 @@ void SkillsPacket::showCombo(Player *player, int time) { // Show combos to every
 	packet = Packet();
 	packet.addHeader(SEND_SHOW_OTHERS_SKILL);
 	packet.addInt(player->getPlayerid());
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte((char)0x20);
-	packet.addByte(0);
+	packet.addInt64(0);
 	packet.addByte(0);
 	packet.addByte(0);
 	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0);
+	packet.addByte(0x20);
 	packet.addByte(0);
 	packet.addShort(player->getCombo()+1);
 	packet.addByte(0);
