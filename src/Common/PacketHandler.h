@@ -30,7 +30,7 @@ class AbstractPlayerFactory;
 
 class PacketHandler : public Selector::SelectHandler {
 public:
-	PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend = false); // isSend = packet is initiated by the server or not
+	PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend = false, string ivUnknown = ""); // isSend = packet is initiated by the server or not
 	void handle (int socket);
 	bool sendPacket(unsigned char *buf, int len);
 	void disconnect();

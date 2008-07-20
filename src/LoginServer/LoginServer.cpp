@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 LoginServer * LoginServer::singleton = 0;
 
 void LoginServer::listen() {
-	new Acceptor(port, new PlayerLoginFactory());
+	new Acceptor(port, new PlayerLoginFactory(), "0");
 	new Acceptor(inter_port, new LoginServerAcceptPlayerFactory());
 }
 

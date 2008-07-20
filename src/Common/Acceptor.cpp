@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::ostringstream;
 
-Acceptor::Acceptor(short port, AbstractPlayerFactory *apf) : abstractPlayerFactory(apf) {
+Acceptor::Acceptor(short port, AbstractPlayerFactory *apf, string ivUnknown) : abstractPlayerFactory(apf), ivUnknown(ivUnknown) {
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 	if (iResult != NO_ERROR) std::cout << "Error at WSAStartup()" << std::endl; //TODO: Throw exception
 
@@ -69,7 +69,7 @@ void Acceptor::handle(int socket) {
 		return;
 	}
 
-	PacketHandler *ph = new PacketHandler(sock, abstractPlayerFactory);
+	PacketHandler *ph = new PacketHandler(sock, abstractPlayerFactory, false, "0");
 	AbstractPlayer *player = ph->getPlayer();
 	player->setPacketHandler(ph);
 	player->setIP(ip);
