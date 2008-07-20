@@ -54,12 +54,15 @@ struct PortalInfo {
 	int type;
 	Pos pos;
 	char script[30];
+	bool onlyOnce;
 };
 typedef vector <PortalInfo> PortalsInfo;
 
 struct MapInfo {
 	int rm;
 	int forcedReturn;
+	char fieldType;
+	int fieldLimit;
 	double spawnrate;
 	bool clock;
 	int shipInterval;

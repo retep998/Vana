@@ -636,7 +636,7 @@ void Initializing::initializeSkills() {
 void Initializing::initializeMaps() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Maps... ";
 	// Maps
-	mysqlpp::Query query = db.query("SELECT mapid, returnmap, forcedreturn, mobrate, clock, ship FROM mapdata ORDER BY mapid ASC");
+	mysqlpp::Query query = db.query("SELECT mapid, returnmap, forcedreturn, fieldtype, fieldlimit, mobrate, clock, ship FROM mapdata ORDER BY mapid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -649,22 +649,26 @@ void Initializing::initializeMaps() {
 		// Col0 : Map ID
 		//    1 : Return Map
 		//    2 : Forced Return Map
-		//    3 : Mob Spawn Rate
-		//    4 : Clock
-		//    5 : Ship Interval
+		//    3 : Field Type
+		//    4 : Field Limit
+		//    5 : Mob Spawn Rate
+		//    6 : Clock
+		//    7 : Ship Interval
 		int mapid = atoi(mapRow[0]);
 		Maps::addMap(mapid);
 		MapInfo map;
 		map.rm = atoi(mapRow[1]);
 		map.forcedReturn = atoi(mapRow[2]);
-		map.spawnrate = atof(mapRow[3]);
-		map.clock = atob(mapRow[4]);
-		map.shipInterval = atoi(mapRow[2]);
+		map.fieldType = atoi(mapRow[3]); 
+		map.fieldLimit = atoi(mapRow[4]);
+		map.spawnrate = atof(mapRow[5]);
+		map.clock = atob(mapRow[6]);
+		map.shipInterval = atoi(mapRow[7]);
 		Maps::maps[mapid]->setInfo(map);
 	}
 
 	// Portals
-	query << "SELECT mapid, portalid, pfrom, pto, toid, type, x, y, script FROM mapportaldata";
+	query << "SELECT mapid, portalid, pfrom, pto, toid, type, x, y, script, onlyonce FROM mapportaldata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << db.error() << std::endl;
@@ -682,6 +686,7 @@ void Initializing::initializeMaps() {
 		//    6 : x
 		//    7 : y
 		//    8 : Script
+		//    9 : Only once
 		PortalInfo portal;
 		portal.id = atoi(portalRow[1]);
 		strcpy_s(portal.from, portalRow[2]);
@@ -690,6 +695,7 @@ void Initializing::initializeMaps() {
 		portal.type = atoi(portalRow[5]);
 		portal.pos = Pos(atoi(portalRow[6]), atoi(portalRow[7]));
 		strcpy_s(portal.script, portalRow[8]);
+		portal.onlyOnce = atob(portalRow[9]);
 		Maps::maps[atoi(portalRow[0])]->addPortal(portal);
 	}
 
