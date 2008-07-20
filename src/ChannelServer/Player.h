@@ -217,7 +217,7 @@ public:
 		variables[name] = val;
 	}
 	string getVariable(const string &name) {
-		return (variables.find(name) == variables.end()) ? "0" : variables[name];
+		return (variables.find(name) == variables.end()) ? "" : variables[name];
 	}
 	void setSpecialSkill(SpecialSkillInfo info) {
 		this->info = info;
