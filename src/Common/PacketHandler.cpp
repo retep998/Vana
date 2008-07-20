@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include <Winsock2.h>
 
-PacketHandler::PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend) :
+PacketHandler::PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend, string ivUnknown) :
 bytesInBuffer(0),
 player(abstractPlayerFactory->createPlayer()),
 decoder(new Decoder()),
@@ -52,7 +52,7 @@ socket(socket)
 	}
 	else {
 		size_t len;
-		Packet packet = decoder->getConnectPacket();
+		Packet packet = decoder->getConnectPacket(ivUnknown);
 		len = send(socket, (char *) packet.getBuffer(), packet.getSize(), 0);
 
 		if (len < Decoder::CONNECT_LENGTH) {

@@ -18,11 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef DECODER_H
 #define DECODER_H
 
+#include "../SendHeader.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
 #include <time.h>
-#include "../SendHeader.h"
+#include <string>
+
+using std::string;
 
 class Packet;
 
@@ -38,7 +41,7 @@ public:
 	}
 	void createHeader (unsigned char *header, short size); 
 
-	Packet & getConnectPacket();
+	Packet & getConnectPacket(string unknown = "");
 
 	void setIvRecv(unsigned char *iv) { memcpy_s(ivRecv, 4, iv, 4); }
 	void setIvSend(unsigned char *iv) { memcpy_s(ivSend, 4, iv, 4); }

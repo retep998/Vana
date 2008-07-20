@@ -19,15 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ACCEPTOR_H
 
 #include "Selector.h"
+#include <string>
 #include <Winsock2.h>
+
+using std::string;
 
 class AbstractPlayerFactory;
 
 class Acceptor : public Selector::SelectHandler {
 public:
-	Acceptor(short port, AbstractPlayerFactory *apf);
+	Acceptor(short port, AbstractPlayerFactory *apf, string ivUnknown = "");
 	virtual void handle(int socket);
 protected:
+	string ivUnknown;
 	AbstractPlayerFactory *abstractPlayerFactory;
 	WSADATA wsaData;
 };
