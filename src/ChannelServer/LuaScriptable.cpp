@@ -37,6 +37,8 @@ LuaScriptable::~LuaScriptable() {
 }
 
 void LuaScriptable::initialize() {
+	luaopen_base(luaVm);
+
 	lua_pushinteger(luaVm, playerid); // Pushing id for reference from static functions
 	lua_setglobal(luaVm, "playerid");
 
