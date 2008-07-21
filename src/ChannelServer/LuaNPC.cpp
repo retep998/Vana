@@ -47,13 +47,6 @@ LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, p
 	lua_register(luaVm, "endNPC", &LuaExports::endNPC); // end() is reserved.
 }
 
-void LuaNPC::run() {
-	lua_pushinteger(luaVm, Players::players[playerid]->getNPC()->getState());
-	lua_setglobal(luaVm, "state");
-
-	LuaScriptable::run();
-}
-
 NPC * LuaExports::getNPC(lua_State *luaVm) {
 	return getPlayer(luaVm)->getNPC();
 }
@@ -161,7 +154,6 @@ int LuaExports::setState(lua_State *luaVm) {
 	getNPC(luaVm)->setState(lua_tointeger(luaVm, -1));
 	return 1;
 }
-
 
 int LuaExports::setVariable(lua_State *luaVm) {
 	int value = lua_tointeger(luaVm, -1);
