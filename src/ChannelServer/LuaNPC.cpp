@@ -45,6 +45,7 @@ LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, p
 	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaExports::endQuest);
 	lua_register(luaVm, "endNPC", &LuaExports::endNPC); // end() is reserved.
+	lua_register(luaVm, "restart", &LuaExports::restart);
 }
 
 NPC * LuaExports::getNPC(lua_State *luaVm) {
@@ -183,5 +184,10 @@ int LuaExports::endQuest(lua_State *luaVm) {
 
 int LuaExports::endNPC(lua_State *luaVm) {
 	getNPC(luaVm)->end();
+	return 1;
+}
+
+int LuaExports::restart(lua_State *luaVm) {
+	getNPC(luaVm)->run();
 	return 1;
 }

@@ -70,6 +70,8 @@ namespace LuaExports {
 	int endQuest(lua_State *luaVm);
 
 	int endNPC(lua_State *luaVm);
+
+	int restart(lua_State *luaVm);
 };
 
 #endif
