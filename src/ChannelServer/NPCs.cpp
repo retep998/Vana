@@ -138,7 +138,7 @@ cend(false)
 			filenameStream << "e";
 	}
 	filenameStream << ".lua";
-	std::string filename = filenameStream.str();
+	string filename = filenameStream.str();
 
 	if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC exists
 		luaNPC.reset(new LuaNPC(filename, player->getPlayerid()));

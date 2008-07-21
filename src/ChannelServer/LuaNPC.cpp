@@ -140,7 +140,7 @@ int LuaExports::getText(lua_State *luaVm) {
 }
 
 int LuaExports::getVariable(lua_State *luaVm) {
-	std::string key = string(lua_tostring(luaVm, -1));
+	string key = string(lua_tostring(luaVm, -1));
 	lua_pushnumber(luaVm, getNPC(luaVm)->getVariable(key));
 	return 1;
 }
@@ -158,7 +158,7 @@ int LuaExports::setState(lua_State *luaVm) {
 
 int LuaExports::setVariable(lua_State *luaVm) {
 	int value = lua_tointeger(luaVm, -1);
-	std::string key = string(lua_tostring(luaVm, -2));
+	string key = string(lua_tostring(luaVm, -2));
 	getNPC(luaVm)->setVariable(key, value);
 	return 1;
 }

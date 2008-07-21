@@ -259,7 +259,7 @@ int LuaExports::getEyes(lua_State *luaVm) {
 }
 
 int LuaExports::getPlayerVariable(lua_State *luaVm) {
-	std::string key = string(lua_tostring(luaVm, -1));
+	string key = string(lua_tostring(luaVm, -1));
 	lua_pushstring(luaVm, getPlayer(luaVm)->getVariable(key).c_str());
 	return 1;
 }
@@ -416,8 +416,8 @@ int LuaExports::setLevel(lua_State *luaVm) {
 }
 
 int LuaExports::setPlayerVariable(lua_State *luaVm) {
-	std::string value = string(lua_tostring(luaVm, -1));
-	std::string key = string(lua_tostring(luaVm, -2));
+	string value = string(lua_tostring(luaVm, -1));
+	string key = string(lua_tostring(luaVm, -2));
 	getPlayer(luaVm)->setVariable(key, value);
 	return 1;
 }
@@ -429,14 +429,14 @@ int LuaExports::showShop(lua_State *luaVm) {
 }
 
 int LuaExports::showMessage(lua_State *luaVm) {
-	std::string msg = lua_tostring(luaVm, -2);
+	string msg = lua_tostring(luaVm, -2);
 	int type = lua_tointeger(luaVm, -1);
 	PlayerPacket::showMessage(getPlayer(luaVm), msg, type);
 	return 1;
 }
 
 int LuaExports::showMapMessage(lua_State *luaVm) {
-	std::string msg = lua_tostring(luaVm, -2);
+	string msg = lua_tostring(luaVm, -2);
 	int type = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
 	for (size_t i = 0; i < Maps::maps[map]->getNumPlayers(); i++) {
@@ -460,7 +460,7 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 }
 
 int LuaExports::deletePlayerVariable(lua_State *luaVm) {
-	std::string key = string(lua_tostring(luaVm, -1));
+	string key = string(lua_tostring(luaVm, -1));
 	getPlayer(luaVm)->deleteVariable(key);
 	return 1;
 }
