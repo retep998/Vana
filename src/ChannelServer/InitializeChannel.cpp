@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "Reactors.h"
 #include "Maps.h"
-#include "NPCs.h"
 #include "Shops.h"
 #include "Quests.h"
 #include "Skills.h"
@@ -659,7 +658,7 @@ void Initializing::initializeMaps() {
 		MapInfo map;
 		map.rm = atoi(mapRow[1]);
 		map.forcedReturn = atoi(mapRow[2]);
-		map.fieldType = atoi(mapRow[3]); 
+		map.fieldType = atoi(mapRow[3]);
 		map.fieldLimit = atoi(mapRow[4]);
 		map.spawnrate = atof(mapRow[5]);
 		map.clock = atob(mapRow[6]);
@@ -719,7 +718,7 @@ void Initializing::initializeMaps() {
 		//    7 : rx1
 		//    8 : Mob Time
 		if (atob(lifeRow[1])) {
-			NPCInfo npc;
+			NPCSpawnInfo npc;
 			npc.id = atoi(lifeRow[2]);
 			npc.x = atoi(lifeRow[3]);
 			npc.cy = atoi(lifeRow[4]);

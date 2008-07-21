@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define NPCPACK_H
 
 class Player;
-struct NPCInfo;
+struct NPCSpawnInfo;
 
 namespace NPCPacket {
-	void showNPC(Player *player, NPCInfo npc, int i);
+	void showNPC(Player *player, NPCSpawnInfo npc, int i);
 };
 
 #endif

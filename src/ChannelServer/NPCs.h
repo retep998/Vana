@@ -33,16 +33,6 @@ class Player;
 class Packet;
 class ReadPacket;
 
-struct NPCInfo {
-	int id;
-	short x;
-	short cy;
-	short fh;
-	short rx0;
-	short rx1; 
-};
-typedef vector<NPCInfo> NPCsInfo;
-
 namespace NPCs {
 	void handleNPC(Player *player, ReadPacket *packet);
 	void handleQuestNPC(Player *player, int npcid, bool start);
