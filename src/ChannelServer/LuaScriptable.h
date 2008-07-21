@@ -38,7 +38,10 @@ public:
 	virtual ~LuaScriptable();
 
 	void initialize();
-	virtual void run();
+	void run();
+
+	void setVariable(const string &name, int val);
+	void setVariable(const string &name, const string &val);
 protected:
 	string filename;
 	int playerid;

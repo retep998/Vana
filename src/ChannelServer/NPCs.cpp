@@ -143,6 +143,7 @@ cend(false)
 	if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC exists
 		luaNPC.reset(new LuaNPC(filename, player->getPlayerid()));
 		player->setNPC(this);
+		setState(state);
 	}
 	else {
 		end();
@@ -249,4 +250,9 @@ void NPC::sendStyle(int styles[], char size) {
 	for (int i = 0; i < size; i++)
 		packet.addInt(styles[i]);
 	packet.send(player);
+}
+
+void NPC::setState(int state) {
+	this->state = state;
+	luaNPC->setVariable("state", state);
 }

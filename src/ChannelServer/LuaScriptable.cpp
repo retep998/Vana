@@ -103,6 +103,16 @@ void LuaScriptable::run() {
 	luaL_dofile(luaVm, filename.c_str());
 }
 
+void LuaScriptable::setVariable(const string &name, int val) {
+	lua_pushinteger(luaVm, val);
+	lua_setglobal(luaVm, name.c_str());
+}
+
+void LuaScriptable::setVariable(const string &name, const string &val) {
+	lua_pushstring(luaVm, val.c_str());
+	lua_setglobal(luaVm, name.c_str());
+}
+
 Player * LuaExports::getPlayer(lua_State *luaVm) {
 	lua_getglobal(luaVm, "playerid");
 	return Players::players[lua_tointeger(luaVm, -1)];

@@ -89,9 +89,7 @@ public:
 	void sendGetText();
 	void sendGetNumber(int def, int min, int max);
 	void sendStyle(int styles[], char size);
-	void setState(int state) {
-		this->state = state;
-	}
+	void setState(int state);
 	int getState() {
 		return state;
 	}
