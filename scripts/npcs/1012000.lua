@@ -4,32 +4,29 @@ else
 	prices = {800, 1000, 1000, 1200};
 end
 
-places = {"Lith Harbor", "Perion", "Ellinia", "Kerning City"};
 maps = {104000000, 102000000, 101000000, 103000000};
 
 if state == 0 then
-	addText("Hi! I drive the Regular Cab. If you want to go from town to town safely and fast, then ride our cab. We’ll gladly take you to your destination with an affordable price.");
+	addText("Hi! I drive the #p1012000#. If you want to go from town to town safely and fast, then ride our cab. We'll gladly take you to your destination with an affordable price.");
 	sendNext();
 elseif state == 1 then
 	if getJob() == 0 then
-		addText("We have a special 90% discount for beginners. Choose your destination, for fees will change from place to place.#b\r\n#L1##bLith Harbor(80 mesos)#l\r\n#L2##bPerion(100 mesos)#l\r\n#L3##bEllinia(100 mesos)#l\r\n#L4##bKerning City(120 mesos)#l#k");
+		addText("We have a special 90% discount for beginners. Choose your destination, for fees will change from place to place.\r\n#b#L0##m104000000#(80 mesos)#l\r\n#L1##m102000000#(100 mesos)#l\r\n#L2##m101000000#(100 mesos)#l\r\n#L3##m103000000#(120 mesos)#l");
 		sendSimple();
 	else
-		addText("Choose your destination, for fees will change from place to place.#b\r\n#L1##bLith Harbor(800 mesos)\r\n#L2##bPerion(1,000 mesos)\r\n#L3##bEllinia(1,000 mesos)\r\n#L4##bKerning City(1,200 mesos)#k");
+		addText("Choose your destination, for fees will change from place to place.\r\n#b#L0##m104000000#(800 mesos)#l\r\n#L1##m102000000#(1,000 mesos)#l\r\n#L2##m101000000#(1,000 mesos)#l\r\n#L3##m103000000#(1,200 mesos)#l");
 		sendSimple();
 	end
 elseif state == 2 then
-	where = getSelected();
-	setVariable("where", where);
+	where = getSelected() + 1;
 	if where > 0 then
-		addText("You don’t have anything else to do here, huh? Do you really want to go to #b" .. places[where] .. "#k? It'll cost you #b" .. prices[where] .. " mesos#k.");
+		addText("You don't have anything else to do here, huh? Do you really want to go to #b#m" .. maps[where] .. "##k? It'll cost you #b" .. prices[where] .. " mesos#k.");
 		sendYesNo();
 	else
 		endNPC();
 	end
 elseif state == 3 then
 	if getSelected() == 1 then
-		where = getVariable("where");
 		if getMesos() >= prices[where] then
 			giveMesos(-prices[where]);
 			setMap(maps[where]);
