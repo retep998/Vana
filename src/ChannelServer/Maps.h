@@ -38,8 +38,6 @@ class Reactor;
 class Drop;
 class LoopingId;
 class Packet;
-struct Equip;
-struct Item;
 
 struct FootholdInfo {
 	Pos pos1;
@@ -68,6 +66,16 @@ struct MapInfo {
 	bool clock;
 	int shipInterval;
 };
+
+struct NPCSpawnInfo {
+	int id;
+	short x;
+	short cy;
+	short fh;
+	short rx0;
+	short rx1; 
+};
+typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 
 struct ReactorSpawnInfo {
 	int id;
@@ -145,10 +153,10 @@ public:
 	void removePlayer(Player *player);
 
 	// NPCs
-	void addNPC(NPCInfo npc) {
+	void addNPC(NPCSpawnInfo npc) {
 		this->npcs.push_back(npc);
 	}
-	NPCInfo getNpc(int id) {
+	NPCSpawnInfo getNpc(int id) {
 		return this->npcs[id];
 	}
 
@@ -203,7 +211,7 @@ private:
 	FootholdsInfo footholds;
 	PortalsInfo portals;
 	vector <Player *> players;
-	vector <NPCInfo> npcs;
+	NPCSpawnsInfo npcs;
 	ReactorSpawnsInfo reactorspawns;
 	vector <Reactor *> reactors;
 	MobSpawnsInfo mobspawns;
