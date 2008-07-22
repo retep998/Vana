@@ -384,6 +384,15 @@ void Player::setSkin(char id) {
 	PlayerPacket::updateStat(this, 0x01, id);
 }
 
+void Player::setFame(short fame) {
+	if (fame < -30000)
+		fame = -30000;
+	else if (fame > 30000)
+		fame = 30000;
+	this->fame = fame;
+	PlayerPacket::updateStat(this, 0x20000, fame);
+}
+
 bool Player::addWarning() {
 	int t = clock();
 	// Deleting old warnings
