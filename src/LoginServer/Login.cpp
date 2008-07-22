@@ -144,7 +144,7 @@ void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
 		player->setStatus(2);
 	}
 	else if (act == 0x01) {
-		int pin = StringUtilities::toInt(packet->getString());
+		int pin = StringUtilities::toType<int>(packet->getString());
 		int curpin = player->getPin();
 		if (pin == curpin) {
 			player->setStatus(4);
@@ -154,7 +154,7 @@ void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
 			LoginPacket::loginProcess(player, 0x02);
 	}
 	else if (act == 0x02) {
-		int pin = StringUtilities::toInt(packet->getString());
+		int pin = StringUtilities::toType<int>(packet->getString());
 		int curpin = player->getPin();
 		if (pin == curpin) {
 			player->setStatus(1);
@@ -176,7 +176,7 @@ void Login::registerPIN(PlayerLogin *player, ReadPacket *packet) {
 		}
 		return;
 	}
-	int pin = StringUtilities::toInt(packet->getString());
+	int pin = StringUtilities::toType<int>(packet->getString());
 	player->setStatus(0);
 	mysqlpp::Query query = db.query();
 	query << "UPDATE users SET pin = " << mysqlpp::quote << pin << " WHERE id = " << mysqlpp::quote << player->getUserid();
