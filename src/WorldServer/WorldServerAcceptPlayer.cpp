@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "Channels.h"
 #include "ReadPacket.h"
+#include "Rates.h"
 #include <iostream>
 
 void WorldServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
@@ -49,6 +50,7 @@ void WorldServerAcceptPlayer::authenticated(char type) {
 		short port = WorldServer::Instance()->getInterPort()+channel+1;
 		Channels::Instance()->registerChannel(this, channel, ip, port);
 		WorldServerAcceptPlayerPacket::connect(this, channel, port);
+		WorldServerAcceptPlayerPacket::sendRates(this, Rates::SetBits::all);
 		WorldServerAcceptPlayerPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 		LoginServerConnectPlayerPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);
 		std::cout << "Assigned channel " << channel << " to channel server.";

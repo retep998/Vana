@@ -18,26 +18,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayerPacket.h"
 #include "LoginServerAcceptPlayer.h"
 #include "PacketCreator.h"
+#include "Rates.h"
 
-void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan) {
+void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan, int exprate, int questexprate, int mesorate, int droprate) {
 	Packet packet;
 	packet.addHeader(INTER_WORLD_CONNECT);
 	packet.addByte(worldid);
 	packet.addShort(port);
 	packet.addInt(maxchan);
+	
+	packet.addInt(Rates::SetBits::all);
+	packet.addInt(exprate);
+	packet.addInt(questexprate);
+	packet.addInt(mesorate);
+	packet.addInt(droprate);
 	packet.send(player);
 }
 
-void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port, int exprate, int questexprate, int mesorate, int droprate) {
+void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port) {
 	Packet packet;
 	packet.addHeader(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.addByte(worldid);
 	packet.addString(ip);
 	packet.addShort(port);
-	packet.addInt(exprate);
-	packet.addInt(questexprate);
-	packet.addInt(mesorate);
-	packet.addInt(droprate);
 	packet.send(player);
 }
 

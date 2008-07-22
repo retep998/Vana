@@ -424,6 +424,10 @@
 				Name="ServerToServer"
 				>
 				<File
+					RelativePath=".\src\Common\Rates.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\ServerPlayer.h"
 					>
 				</File>

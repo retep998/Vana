@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPlayerPacket.h"
 #include "WorldServer.h"
 #include "ReadPacket.h"
+#include "Rates.h"
 #include <iostream>
 
 void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPacket *packet) {
@@ -28,6 +29,21 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPa
 		WorldServer::Instance()->setWorldId(worldid);
 		WorldServer::Instance()->setInterPort(packet->getShort());
 		WorldServer::Instance()->setMaxChannels(packet->getInt());
+
+		int ratesSetBit = packet->getInt();
+		if (ratesSetBit & Rates::SetBits::exp) {
+			WorldServer::Instance()->setExprate(packet->getInt());
+		}
+		if (ratesSetBit & Rates::SetBits::questExp) {
+			WorldServer::Instance()->setQuestExprate(packet->getInt());
+		}
+		if (ratesSetBit & Rates::SetBits::meso) {
+			WorldServer::Instance()->setMesorate(packet->getInt());
+		}
+		if (ratesSetBit & Rates::SetBits::drop) {
+			WorldServer::Instance()->setDroprate(packet->getInt());
+		}
+
 		WorldServer::Instance()->listen();
 		std::cout << "Handling world " << (int) worldid << std::endl;
 	}

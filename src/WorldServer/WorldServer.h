@@ -48,6 +48,15 @@ public:
 	void setMaxChannels(int maxchan) { maxChannels = maxchan; }
 	string getScrollingHeader() { return scrollingHeader.c_str(); }
 	void setScrollingHeader(const string &message);
+	// Server rates
+	void setExprate(int exprate) { this->exprate = exprate; }
+	void setQuestExprate(int questexprate) { this->questexprate = questexprate; }
+	void setMesorate (int mesorate) { this->mesorate = mesorate; }
+	void setDroprate (int droprate) { this->droprate = droprate; }
+	int getExprate() { return exprate; }
+	int getQuestExprate() { return questexprate; }
+	int getMesorate() { return mesorate; }
+	int getDroprate() { return droprate; }
 private:
 	WorldServer() { scrollingHeader = ""; };
 	WorldServer(const WorldServer&);
@@ -62,6 +71,11 @@ private:
 	int maxChannels;
 	string external_ip;
 	string scrollingHeader;
+	// Server rates
+	int exprate;
+	int questexprate;
+	int mesorate;
+	int droprate;
 };
 
 #endif

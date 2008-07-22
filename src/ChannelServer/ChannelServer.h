@@ -57,10 +57,10 @@ public:
 	void setQuestExprate(int questexprate) { this->questexprate = questexprate; }
 	void setMesorate (int mesorate) { this->mesorate = mesorate; }
 	void setDroprate (int droprate) { this->droprate = droprate; }
-	int getExprate() { return this->exprate; }
-	int getQuestExprate() { return this->questexprate; }
-	int getMesorate() { return this->mesorate; }
-	int getDroprate() { return this->droprate; }
+	int getExprate() { return exprate; }
+	int getQuestExprate() { return questexprate; }
+	int getMesorate() { return mesorate; }
+	int getDroprate() { return droprate; }
 private:
 	ChannelServer() {};
 	ChannelServer(const ChannelServer&);

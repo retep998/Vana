@@ -33,6 +33,7 @@ namespace WorldServerAcceptPlayerPacket {
 	void scrollingHeader(const string &message);
 	void newConnectable(int channel, int playerid);
 	void groupChat(WorldServerAcceptPlayer *player, int playerid, char type, const string &message, const string &sender);
+	void sendRates(WorldServerAcceptPlayer *player, int setBit);
 };
 
 #endif

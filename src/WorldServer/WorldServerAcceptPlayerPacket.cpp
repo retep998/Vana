@@ -17,8 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPlayerPacket.h"
 #include "WorldServerAcceptPlayer.h"
+#include "WorldServer.h"
 #include "PacketCreator.h"
 #include "Channels.h"
+#include "Rates.h"
 
 void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, int playerid, char type, const string &message, const string &sender) {
 	Packet packet;
@@ -90,4 +92,25 @@ void WorldServerAcceptPlayerPacket::newConnectable(int channel, int playerid) {
 	packet.addInt(playerid);
 
 	packet.send(Channels::Instance()->getChannel(channel)->player);
+}
+
+void WorldServerAcceptPlayerPacket::sendRates(WorldServerAcceptPlayer *player, int setBit) {
+	Packet packet;
+	packet.addHeader(INTER_SET_RATES);
+	packet.addInt(setBit);
+
+	if (setBit & Rates::SetBits::exp) {
+		packet.addInt(WorldServer::Instance()->getExprate());
+	}
+	if (setBit & Rates::SetBits::questExp) {
+		packet.addInt(WorldServer::Instance()->getQuestExprate());
+	}
+	if (setBit & Rates::SetBits::meso) {
+		packet.addInt(WorldServer::Instance()->getMesorate());
+	}
+	if (setBit & Rates::SetBits::drop) {
+		packet.addInt(WorldServer::Instance()->getDroprate());
+	}
+
+	packet.send(player);
 }

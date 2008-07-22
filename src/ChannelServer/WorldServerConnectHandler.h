@@ -30,6 +30,7 @@ namespace WorldServerConnectHandler {
 	void scrollingHeader(ReadPacket *packet);
 	void newConnectable(ReadPacket *packet);
 	void forwardPacket(ReadPacket *packet);
+	void setRates(ReadPacket *packet);
 }
 
 #endif
