@@ -212,7 +212,8 @@ void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
 	Packet packet;
 	packet.addHeader(SEND_CHANGE_CHANNEL);
 	packet.addByte(1);
-	PlayerPacketHelper::addIP(packet, ip, port);
+	packet.addIP(ip);
+	packet.addShort(port);
 	packet.send(player);
 }
 

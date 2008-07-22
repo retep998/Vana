@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Pos.h"
 #include "ReadPacket.h"
+#include "StringUtilities.h"
+#include <boost/tokenizer.hpp>
 
 void Packet::addPos(Pos pos) {
 	addShort(pos.x);
@@ -26,4 +28,16 @@ void Packet::addPos(Pos pos) {
 
 void Packet::addBuffer(ReadPacket *packet) {
 	addBuffer(packet->getBuffer(), packet->getBufferLength());
+}
+
+void Packet::addIP(const string &ip) { 
+	typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
+	typedef boost::char_separator<char> separator;
+
+	separator sep(".");
+	tokenizer tokens(ip, sep);
+
+	for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); iter++) {
+		addByte((unsigned char) StringUtilities::toType<short>(*iter)); // Using toType<unsigned char> would cause it to spit ASCII
+	}
 }
