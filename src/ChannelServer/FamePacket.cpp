@@ -21,28 +21,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "SendHeader.h"
 
-void FamePacket::SendError(Player *player, int reason) {
+void FamePacket::sendError(Player *player, int reason) {
 	Packet packet;
 	packet.addHeader(SEND_FAME);
 	packet.addInt(reason);
 	packet.send(player);
 }
 
-void FamePacket::SendFame(Player *player, Player *player2, char *cFamer, int charLen, int FameDefame, int NewFame) {
+void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame) {
 	Packet packet;
 	packet.addHeader(SEND_FAME);
 	packet.addByte(0x05);
 	packet.addShort(strlen(player->getName()));
-	packet.addString(player->getName(),strlen(player->getName()));
-	packet.addByte(FameDefame);
+	packet.addString(player->getName(), strlen(player->getName()));
+	packet.addByte(type);
 	packet.send(player2);
 
 	packet = Packet();
 	packet.addHeader(SEND_FAME);
 	packet.addByte(0x00);
 	packet.addShort(strlen(player2->getName()));
-	packet.addString(player2->getName(),strlen(player2->getName()));
-	packet.addByte(FameDefame);
-	packet.addInt(NewFame);
+	packet.addString(player2->getName(), strlen(player2->getName()));
+	packet.addByte(type);
+	packet.addInt(newFame);
 	packet.send(player);
 }
