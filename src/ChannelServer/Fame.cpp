@@ -25,23 +25,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 
 void Fame::handleFame(Player *player, ReadPacket *packet) {
-	int CharID = packet->getInt();
-	int FameDefame = packet->getInt();
+	int playerid = packet->getInt();
+	int type = packet->getInt();
 	if (player->getPlayerid() > 0) {
-		if (player->getPlayerid() != CharID) {
-			int checkResult = canFame(player, CharID);
+		if (player->getPlayerid() != playerid) {
+			int checkResult = canFame(player, playerid);
 			if (checkResult >= 1 && checkResult <= 4)
-				FamePacket::SendError(player,checkResult);
+				FamePacket::sendError(player, checkResult);
 			else {
-				int NewFame = 0;
-				if (FameDefame == 1)
-					NewFame = Players::players[CharID]->getFame() + 1;
-				else if (FameDefame == 0)
-					NewFame = Players::players[CharID]->getFame() - 1;
-				Players::players[CharID]->setFame(NewFame);
-				addFameLog(player->getPlayerid(), CharID);
-				FamePacket::SendFame(player, Players::players[CharID], player->getName(), strlen(player->getName()), FameDefame, NewFame);
-				PlayersPacket::showInfo(player, Players::players[CharID]);
+				int newFame = 0;
+				if (type == 1)
+					newFame = Players::players[playerid]->getFame() + 1;
+				else if (type == 0)
+					newFame = Players::players[playerid]->getFame() - 1;
+				Players::players[playerid]->setFame(newFame);
+				addFameLog(player->getPlayerid(), playerid);
+				FamePacket::sendFame(player, Players::players[playerid], type, newFame);
+				PlayersPacket::showInfo(player, Players::players[playerid]);
 			}
 		}
 		else {
@@ -50,7 +50,7 @@ void Fame::handleFame(Player *player, ReadPacket *packet) {
 		}
 	}
 	else
-		FamePacket::SendError(player,1);
+		FamePacket::sendError(player, 1);
 }
 
 int Fame::canFame(Player *player, int to) {
