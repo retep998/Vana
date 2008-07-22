@@ -16,13 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
-#include <iostream>
 
 int main() {
-	std::cout << "Starting Login Server..." << std::endl;
 	LoginServer *server = LoginServer::Instance();
 	server->initialize();
-	std::cout << "Complete! Listening to connections." << std::endl;
+	
 	while (getchar()) {}
 
 	server->shutdown();
