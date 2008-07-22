@@ -427,7 +427,8 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 
 void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); // Ticks
-	short type = packet->getShort();
+	unsigned char type = packet->getByte();
+	packet->skipBytes(1); // Unknown
 	int damage = packet->getInt();
 	int mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
 	int mapmobid = 0; // Map Mob ID
@@ -533,7 +534,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	if (damage > 0 && applieddamage == false)
  		player->setHP(player->getHP() - damage);
 	if (type != 0xFE) // Fall damage and map damage don't play by these rules
- 		PlayersPacket::damagePlayer(player, damage, mobid, hit, (unsigned char) type, fake, pg); // FIXME: Maybe type will get sent to the player as short, as the s->c packet haven't been identified yet
+ 		PlayersPacket::damagePlayer(player, damage, mobid, hit, type, fake, pg); // FIXME: Maybe type will get sent to the player as short, as the s->c packet haven't been identified yet
 }
 
 void Players::healPlayer(Player *player, ReadPacket *packet) {
