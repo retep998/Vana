@@ -25,12 +25,15 @@ using std::string;
 
 namespace StringUtilities {
 	int noCaseCompare(const string &s1, const string &s2);
-	int toInt(const string &s);
+
+	template <typename T>
+	T toType(const string &s);
 }
 
-inline int StringUtilities::toInt(const string &s) {
+template <typename T>
+inline T StringUtilities::toType(const string &s) {
 	std::istringstream i(s);
-	int x;
+	T x;
 	i >> x;
 	return x;
 } 
