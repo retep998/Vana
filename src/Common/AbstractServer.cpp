@@ -17,12 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServer.h"
 #include "Config.h"
+#include <ctime>
+#include <iostream>
+#include <iomanip>
 
 AbstractServer::AbstractServer() {
 	to_listen = false;
 }
 
 void AbstractServer::initialize() {
+	clock_t startTime = clock(); // Measures time it takes to start
+
 	Config config("conf/inter_password.lua");
 	inter_password = config.getString("inter_password");
 
@@ -30,4 +35,7 @@ void AbstractServer::initialize() {
 	loadData();
 	if (to_listen)
 		listen();
+
+	float loadingTime = (clock() - startTime) / (float) 1000;
+	std::cout << "Started in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
 }
