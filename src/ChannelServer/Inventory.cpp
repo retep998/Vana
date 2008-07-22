@@ -661,161 +661,70 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 		case 2049100: // Chaos Scroll
 			if (equip->slots > 0) {
 				if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].success) { // Add stats
-					int amount = Randomizer::Instance()->randInt(5);
+					char n = -1; // Default - Decrease stats
+					int amount = Randomizer::Instance()->randInt(5) * n;
 					// TODO: Make sure that Chaos Scrolls are working like they do in global
-					if (Randomizer::Instance()->randInt(99) < 50) { // Increase
-						// Gives 0-5 stats on every stat on the item
-						if (equip->istr > 0) { 
-							equip->istr += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->idex > 0) {
-							equip->idex += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iint > 0) {
-							equip->iint += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iluk > 0) {
-							equip->iluk += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iavo > 0) {
-							equip->iavo += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iacc > 0) {
-							equip->iacc += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->ihand > 0) {
-							equip->ihand += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->ijump > 0) {
-							equip->ijump += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->ispeed > 0) {
-							equip->ispeed += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->imatk > 0) {
-							equip->imatk += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iwatk > 0) {
-							equip->iwatk += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->imdef > 0) {
-							equip->imdef += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iwdef > 0) {
-							equip->iwdef += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->ihp > 0) {
-							equip->ihp += amount;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->imp > 0) {
-							equip->imp += amount;
-						}
+					if (Randomizer::Instance()->randInt(99) < 50) // Increase
+						n = 1;
+					// Gives 0-5 stats on every stat on the item
+					if (equip->istr > 0) { 
+						equip->istr += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
 					}
-					else { // Decrease
-						// Takes 0-5 stats on every stat on the item
-						if (equip->istr > 0) { 
-							equip->istr -= amount;
-							if (equip->istr < 0)
-								equip->istr = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->idex > 0) {
-							equip->idex -= amount;
-							if (equip->idex < 0)
-								equip->idex = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iint > 0) {
-							equip->iint -= amount;
-							if (equip->iint < 0)
-								equip->iint = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iluk > 0) {
-							equip->iluk -= amount;
-							if (equip->iluk < 0)
-								equip->iluk = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iavo > 0) {
-							equip->iavo -= amount;
-							if (equip->iavo < 0)
-								equip->iavo = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iacc > 0) {
-							equip->iacc -= amount;
-							if (equip->iacc < 0)
-								equip->iacc = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->ihand > 0) {
-							equip->ihand -= amount;
-							if (equip->ihand < 0)
-								equip->ihand = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->ijump > 0) {
-							equip->ijump -= amount;
-							if (equip->ijump < 0)
-								equip->ijump = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->ispeed > 0) {
-							equip->ispeed -= amount;
-							if (equip->ispeed < 0)
-								equip->ispeed = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->imatk > 0) {
-							equip->imatk -= amount;
-							if (equip->imatk < 0)
-								equip->imatk = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iwatk > 0) {
-							equip->iwatk -= amount;
-							if (equip->iwatk < 0)
-								equip->iwatk = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->imdef > 0) {
-							equip->imdef -= amount;
-							if (equip->imdef < 0)
-								equip->imdef = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->iwdef > 0) {
-							equip->iwdef -= amount;
-							if (equip->iwdef < 0)
-								equip->iwdef = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->ihp > 0) {
-							equip->ihp -= amount;
-							if (equip->ihp < 0)
-								equip->ihp = 0;
-							amount = Randomizer::Instance()->randInt(5);
-						}
-						if (equip->imp > 0) {
-							equip->imp -= amount;
-							if (equip->imp < 0)
-								equip->imp = 0;
-						}
+					if (equip->idex > 0) {
+						equip->idex += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->iint > 0) {
+						equip->iint += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->iluk > 0) {
+						equip->iluk += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->iavo > 0) {
+						equip->iavo += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->iacc > 0) {
+						equip->iacc += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->ihand > 0) {
+						equip->ihand += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->ijump > 0) {
+						equip->ijump += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->ispeed > 0) {
+						equip->ispeed += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->imatk > 0) {
+						equip->imatk += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->iwatk > 0) {
+						equip->iwatk += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->imdef > 0) {
+						equip->imdef += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->iwdef > 0) {
+						equip->iwdef += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->ihp > 0) {
+						equip->ihp += amount;
+						amount = Randomizer::Instance()->randInt(5) * n;
+					}
+					if (equip->imp > 0) {
+						equip->imp += amount;
 					}
 					equip->slots--;
 					equip->scrolls++;
