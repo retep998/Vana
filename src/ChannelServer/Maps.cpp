@@ -60,8 +60,8 @@ private:
 	MapTimer(const MapTimer&);
 	MapTimer& operator = (const MapTimer&);
 
-	static hash_map <int, int> timers;
-	static hash_map <int, int> ctimer;
+	hash_map <int, int> timers;
+	hash_map <int, int> ctimer;
 	void handle (Timer *timer, int id) {
 		Maps::mapTimer(timers[id]);
 	}
@@ -69,8 +69,6 @@ private:
 		timers.erase(id);
 	}
 };
-hash_map <int,int> MapTimer::timers;
-hash_map <int,int> MapTimer::ctimer;
 MapTimer * MapTimer::singleton = 0;
 
 /** Map class **/
