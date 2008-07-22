@@ -130,9 +130,7 @@ public:
 	}
 	void setAp(short ap);
 	void setSp(short sp);
-	void setFame(short fame) {
-		this->fame = fame;
-	}
+	void setFame(short fame);
 	short getFame() {
 		return this->fame;
 	}

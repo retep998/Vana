@@ -27,70 +27,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void Fame::handleFame(Player *player, ReadPacket *packet) {
 	int CharID = packet->getInt();
 	int FameDefame = packet->getInt();
-	int NewFame = 0;
-
-	int checkResult = canFame(player,CharID);
-
-	if (player->getPlayerid() > 0)
-	{
-		if (player->getPlayerid() != CharID)
-		{
+	if (player->getPlayerid() > 0) {
+		if (player->getPlayerid() != CharID) {
+			int checkResult = canFame(player, CharID);
 			if (checkResult >= 1 && checkResult <= 4)
-			{
 				FamePacket::SendError(player,checkResult);
-			}
-			else
-			{
+			else {
+				int NewFame = 0;
 				if (FameDefame == 1)
-				{
-					NewFame = Players::players[CharID]->getFame()+1;
-					Players::players[CharID]->setFame(NewFame);
-					addFameLog(player->getPlayerid(), CharID);
-					FamePacket::SendFame(player,Players::players[CharID],player->getName(),strlen(player->getName()),FameDefame,NewFame);
-					PlayerPacket::updateStat(Players::players[CharID], 0x20000, Players::players[CharID]->getFame());
-					PlayersPacket::showInfo(player, Players::players[CharID]);
-				}
+					NewFame = Players::players[CharID]->getFame() + 1;
 				else if (FameDefame == 0)
-				{
-					NewFame = Players::players[CharID]->getFame()-1;
-					Players::players[CharID]->setFame(NewFame);
-					addFameLog(player->getPlayerid(), CharID);
-					FamePacket::SendFame(player,Players::players[CharID],player->getName(),strlen(player->getName()),FameDefame,NewFame);
-					PlayerPacket::updateStat(Players::players[CharID], 0x20000, Players::players[CharID]->getFame());
-					PlayersPacket::showInfo(player, Players::players[CharID]);
-				}
+					NewFame = Players::players[CharID]->getFame() - 1;
+				Players::players[CharID]->setFame(NewFame);
+				addFameLog(player->getPlayerid(), CharID);
+				FamePacket::SendFame(player, Players::players[CharID], player->getName(), strlen(player->getName()), FameDefame, NewFame);
+				PlayersPacket::showInfo(player, Players::players[CharID]);
 			}
 		}
-		else
-		{
+		else {
 			// Hacking
 			return;
 		}
 	}
 	else
-	{
 		FamePacket::SendError(player,1);
-	}
 }
 
 int Fame::canFame(Player *player, int to) {
 	int from = player->getPlayerid();
 	if (player->getLevel() < 15)
-	{
 		return 2;
-	}
-	else if (getLastFameLog(from))
-	{
+	if (getLastFameLog(from))
 		return 3;
-	}
-	else if (getLastFameSPLog(from, to))
-	{
+	if (getLastFameSPLog(from, to))
 		return 4;
-	}
-	else
-	{
-		return 0;
-	}
+	return 0;
 }
 
 void Fame::addFameLog(int from, int to) {
@@ -105,22 +76,16 @@ bool Fame::getLastFameLog(int from) { // Last fame from that char
 	mysqlpp::Query query = db.query();
 	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-86400 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
-	
-	if (!res.empty()) {
+	if (!res.empty())
 		return (res.num_rows() == 0) ? false : true;
-	} else {
-		return false;
-	}
+	return false;
 }
 
 bool Fame::getLastFameSPLog(int from, int to) {
 	mysqlpp::Query query = db.query();
 	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND `to`=" << mysqlpp::quote << to << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
-
-	if (!res.empty()) {
+	if (!res.empty())
 		return (res.num_rows() == 0) ? false : true;
-	} else {
-		return false;
-	}
+	return false;
 }
