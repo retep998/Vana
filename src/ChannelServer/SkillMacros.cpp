@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 
 void SkillMacros::load(int charid) {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "SELECT * FROM skillmacros WHERE charid = " << mysqlpp::quote << charid;
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -37,7 +37,7 @@ void SkillMacros::load(int charid) {
 }
 
 void SkillMacros::save(int charid) {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "REPLACE INTO skillmacros VALUES ";
 	for (int i = 0; i <= getMax(); i++) {
 		SkillMacro *macro = getSkillMacro(i);
