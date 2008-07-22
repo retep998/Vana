@@ -59,7 +59,7 @@ void KeyMaps::defaultMap() {
 }
 
 void KeyMaps::load(int charid) {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "SELECT * FROM keymap WHERE charid = " << mysqlpp::quote << charid;
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -72,7 +72,7 @@ void KeyMaps::load(int charid) {
 }
 
 void KeyMaps::save(int charid) {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "REPLACE INTO keymap VALUES ";
 	for (size_t i = 0; i < KeyMaps::size; i++) {
 		KeyMap *keymap = getKeyMap(i);

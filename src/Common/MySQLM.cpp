@@ -17,4 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MySQLM.h"
 
-mysqlpp::Connection db(false);
+mysqlpp::Connection chardb(false);
+mysqlpp::Connection datadb(false);

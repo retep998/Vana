@@ -34,11 +34,11 @@ using std::string;
 using MiscUtilities::atob;
 
 void Initializing::checkVEDBVersion() {
-	mysqlpp::Query query = db.query("SELECT * FROM vedb_info LIMIT 1");
+	mysqlpp::Query query = datadb.query("SELECT * FROM vedb_info LIMIT 1");
 	mysqlpp::StoreQueryResult res;
 
 	if (!(res = query.store())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -56,11 +56,11 @@ void Initializing::checkVEDBVersion() {
 // Mobs
 void Initializing::initializeMobs() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
-	mysqlpp::Query query = db.query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = datadb.query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -109,11 +109,11 @@ void Initializing::initializeMobs() {
 // Reactors
 void Initializing::initializeReactors() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Reactors... ";
-	mysqlpp::Query query = db.query("SELECT * FROM reactoreventdata ORDER BY reactorid, state ASC");
+	mysqlpp::Query query = datadb.query("SELECT * FROM reactoreventdata ORDER BY reactorid, state ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -150,11 +150,11 @@ void Initializing::initializeReactors() {
 // Items
 void Initializing::initializeItems() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Items... ";
-	mysqlpp::Query query = db.query("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
+	mysqlpp::Query query = datadb.query("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -270,7 +270,7 @@ void Initializing::initializeItems() {
 	query << "SELECT * FROM itemskilldata ORDER BY itemid ASC";
 	
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -292,11 +292,11 @@ void Initializing::initializeItems() {
 void Initializing::initializeDrops() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Drops... ";
 	// Mob drops
-	mysqlpp::Query query = db.query("SELECT * FROM mobdropdata ORDER BY mobid ASC");
+	mysqlpp::Query query = datadb.query("SELECT * FROM mobdropdata ORDER BY mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -333,11 +333,11 @@ void Initializing::initializeDrops() {
 // Equips
 void Initializing::initializeEquips() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Equips... ";
-	mysqlpp::Query query = db.query("SELECT * FROM equipdata ORDER BY type ASC");
+	mysqlpp::Query query = datadb.query("SELECT * FROM equipdata ORDER BY type ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -395,11 +395,11 @@ void Initializing::initializeEquips() {
 // Shops
 void Initializing::initializeShops() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
-	mysqlpp::Query query = db.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
+	mysqlpp::Query query = datadb.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -440,11 +440,11 @@ void Initializing::initializeShops() {
 void Initializing::initializeQuests() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Quests... ";
 	// Quests
-	mysqlpp::Query query = db.query("SELECT * FROM questdata");
+	mysqlpp::Query query = datadb.query("SELECT * FROM questdata");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -459,7 +459,7 @@ void Initializing::initializeQuests() {
 	query << "SELECT * FROM questrequestdata ORDER BY questid ASC";
 
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -501,7 +501,7 @@ void Initializing::initializeQuests() {
 	query << "SELECT * FROM questrewarddata ORDER BY questid ASC";
 
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -555,11 +555,11 @@ void Initializing::initializeQuests() {
 // Skills
 void Initializing::initializeSkills() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Skills... ";
-	mysqlpp::Query query = db.query("SELECT * FROM skilldata ORDER BY skillid ASC");
+	mysqlpp::Query query = datadb.query("SELECT * FROM skilldata ORDER BY skillid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -635,11 +635,11 @@ void Initializing::initializeSkills() {
 void Initializing::initializeMaps() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Maps... ";
 	// Maps
-	mysqlpp::Query query = db.query("SELECT mapid, returnmap, forcedreturn, fieldtype, fieldlimit, mobrate, clock, ship FROM mapdata ORDER BY mapid ASC");
+	mysqlpp::Query query = datadb.query("SELECT mapid, returnmap, forcedreturn, fieldtype, fieldlimit, mobrate, clock, ship FROM mapdata ORDER BY mapid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -670,7 +670,7 @@ void Initializing::initializeMaps() {
 	query << "SELECT mapid, portalid, pfrom, pto, toid, type, x, y, script, onlyonce FROM mapportaldata";
 
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -702,7 +702,7 @@ void Initializing::initializeMaps() {
 	query << "SELECT mapid, isnpc, lifeid, x, cy, fh, rx0, rx1, mobtime FROM maplifedata";
 
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -741,7 +741,7 @@ void Initializing::initializeMaps() {
 	query << "SELECT mapid, reactorid, x, y, reactortime FROM mapreactordata";
 
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 
@@ -763,7 +763,7 @@ void Initializing::initializeMaps() {
 	query << "SELECT mapid, x1, y1, x2, y2 FROM mapfootholddata";
 
 	if (!(res = query.use())) {
-		std::cout << "FAILED: " << db.error() << std::endl;
+		std::cout << "FAILED: " << datadb.error() << std::endl;
 		exit(1);
 	}
 

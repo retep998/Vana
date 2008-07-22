@@ -1,5 +1,13 @@
-host = "localhost";
-username = "root";
-password = "";
-database = "maplestory";
-port = 3306;
+-- Character Database
+chardb_host = "localhost";
+chardb_username = "root";
+chardb_password = "";
+chardb_database = "maplestory";
+chardb_port = 3306;
+
+-- VEDB
+datadb_host = "localhost";
+datadb_username = "root";
+datadb_password = "";
+datadb_database = "vedb";
+datadb_port = 3306;

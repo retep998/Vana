@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 
 BuddyList::BuddyList(Player *player) : player(player) {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "SELECT buddylist.buddy_charid as buddy_charid, characters.name as name FROM buddylist INNER JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.charid = " << mysqlpp::quote << player->getPlayerid();
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -30,7 +30,7 @@ BuddyList::BuddyList(Player *player) : player(player) {
 }
 
 void BuddyList::add(int charid) {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "INSERT INTO buddylist (charid, buddy_charid) VALUES (" << mysqlpp::quote << player->getPlayerid() << ", " << mysqlpp::quote << charid << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	
@@ -41,7 +41,7 @@ void BuddyList::add(int charid) {
 }
 
 bool BuddyList::add(const string &name) {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "SELECT id FROM characters WHERE name = " << mysqlpp::quote << name;
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -54,7 +54,7 @@ bool BuddyList::add(const string &name) {
 }
 
 void BuddyList::remove(int charid) {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "DELETE FROM buddylist WHERE charid = " << mysqlpp::quote << player->getPlayerid() << " AND buddy_charid = " << mysqlpp::quote << charid;
 	query.exec();
 

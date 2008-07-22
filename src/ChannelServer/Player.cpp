@@ -118,7 +118,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	quests.reset(new PlayerQuests(this));
 	buddyList.reset(new BuddyList(this));
 
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << getPlayerid();
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -412,7 +412,7 @@ bool Player::addWarning() {
 }
 
 void Player::saveSkills() {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 
 	bool firstrun = true;
 	for (int i = 0; i < skills->getSkillsNum(); i++) {
@@ -428,7 +428,7 @@ void Player::saveSkills() {
 }
 
 void Player::saveStats() {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "UPDATE characters SET "
 			<< "level = " << mysqlpp::quote << getLevel() << ","
 			<< "job = " << mysqlpp::quote << getJob() << ","
@@ -456,7 +456,7 @@ void Player::saveStats() {
 }
 
 void Player::saveEquips() {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "DELETE FROM equip WHERE charid = " << mysqlpp::quote << this->getPlayerid();
 	query.exec();
 
@@ -497,7 +497,7 @@ void Player::saveEquips() {
 }
 
 void Player::saveItems() {
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << this->getPlayerid();
 	query.exec();
 
@@ -526,7 +526,7 @@ void Player::saveItems() {
 
 void Player::saveVariables() {
 	if (variables.size() > 0) {
-		mysqlpp::Query query = db.query();
+		mysqlpp::Query query = chardb.query();
 
 		bool firstrun = true;
 		for (hash_map <string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++) {
@@ -555,7 +555,7 @@ void Player::save() {
 
 void Player::setOnline(bool online) {
 	int onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
-	mysqlpp::Query query = db.query();
+	mysqlpp::Query query = chardb.query();
 	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << mysqlpp::quote << onlineid <<
 			", characters.online = " << mysqlpp::quote << online << " WHERE characters.id = " << mysqlpp::quote << getPlayerid();
 	query.exec();
