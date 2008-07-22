@@ -636,41 +636,69 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 	int itemid = item->id;
 	bool succeed = false;
 	bool cursed = false;
-	if (equip->slots > 0) {
-		if (Drops::items.find(itemid) == Drops::items.end())
-			return;
-		takeItemSlot(player, 2, slot, 1);
-		if (wscroll == 2)
-			takeItem(player, 2340000, 1);
-		if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].success) {
-			succeed = true;
-			equip->istr += Drops::consumes[itemid].istr;
-			equip->idex += Drops::consumes[itemid].idex;
-			equip->iint += Drops::consumes[itemid].iint;
-			equip->iluk += Drops::consumes[itemid].iluk;
-			equip->ihp += Drops::consumes[itemid].ihp;
-			equip->imp += Drops::consumes[itemid].imp;
-			equip->iwatk += Drops::consumes[itemid].iwatk;
-			equip->imatk += Drops::consumes[itemid].imatk;
-			equip->iwdef += Drops::consumes[itemid].iwdef;
-			equip->imdef += Drops::consumes[itemid].imdef;
-			equip->iacc += Drops::consumes[itemid].iacc;
-			equip->iavo += Drops::consumes[itemid].iavo;
-			equip->ihand += Drops::consumes[itemid].ihand;
-			equip->ijump += Drops::consumes[itemid].ijump;
-			equip->ispeed += Drops::consumes[itemid].ispeed;
-			equip->scrolls++;
-			equip->slots--;
-		}
-		else {
-			if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].cursed) {
-				cursed = true;
-				InventoryPacket::moveItem(player, 1, eslot, 0);
-				player->inv->deleteEquip(eslot);
+	bool scrolled = false;
+	if (Drops::items.find(itemid) == Drops::items.end())
+		return;
+	switch (itemid) {
+		case 2049000: // Clean Slate 1%
+		case 2049001: // Clean Slate 3%
+		case 2049002: // Clean Slate 5%
+			if ((Drops::equips[equip->id].slots - equip->scrolls) > equip->slots) {
+				if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].success) { // Give back a slot
+					equip->slots++;
+					succeed = true;
+				}
+				else {
+					if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].cursed) {
+						cursed = true;
+						InventoryPacket::moveItem(player, 1, eslot, 0);
+						player->inv->deleteEquip(eslot);
+					}
+				}
+				scrolled = true;
 			}
-			else if (wscroll != 2) equip->slots--;
-		}
+			break;
+		case 2049100: // Chaos Scroll
+			break;
+		default: // Most scrolls
+			if (equip->slots > 0) {
+				if (wscroll == 2)
+					takeItem(player, 2340000, 1);
+				if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].success) {
+					succeed = true;
+					equip->istr += Drops::consumes[itemid].istr;
+					equip->idex += Drops::consumes[itemid].idex;
+					equip->iint += Drops::consumes[itemid].iint;
+					equip->iluk += Drops::consumes[itemid].iluk;
+					equip->ihp += Drops::consumes[itemid].ihp;
+					equip->imp += Drops::consumes[itemid].imp;
+					equip->iwatk += Drops::consumes[itemid].iwatk;
+					equip->imatk += Drops::consumes[itemid].imatk;
+					equip->iwdef += Drops::consumes[itemid].iwdef;
+					equip->imdef += Drops::consumes[itemid].imdef;
+					equip->iacc += Drops::consumes[itemid].iacc;
+					equip->iavo += Drops::consumes[itemid].iavo;
+					equip->ihand += Drops::consumes[itemid].ihand;
+					equip->ijump += Drops::consumes[itemid].ijump;
+					equip->ispeed += Drops::consumes[itemid].ispeed;
+					equip->scrolls++;
+					equip->slots--;
+				}
+				else {
+					if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].cursed) {
+						cursed = true;
+						InventoryPacket::moveItem(player, 1, eslot, 0);
+						player->inv->deleteEquip(eslot);
+					}
+					else if (wscroll != 2) equip->slots--;
+				}
+				scrolled = true;
+			}
+			break;
 	}
+	// TODO: Figure out how global handles not being able to use Clean Slate Scrolls
+	if (scrolled)
+		takeItemSlot(player, 2, slot, 1);
 	InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
 	if (!cursed)
 		InventoryPacket::addEquip(player, eslot, equip, true);
