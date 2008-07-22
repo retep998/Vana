@@ -61,19 +61,27 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
 	short port;
 	int maxchan;
+	int exprate;
+	int questexprate;
+	int mesorate;
+	int droprate;
 	for (hash_map <int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->connected == 0) {
 			player->setWorldId(iter->first);
 			worldid = iter->second->id;
 			port = iter->second->port;
 			maxchan = iter->second->maxChannels;
+			exprate = iter->second->exprate;
+			questexprate = iter->second->questexprate;
+			mesorate = iter->second->mesorate;
+			droprate = iter->second->droprate;
 			iter->second->connected = true;
 			iter->second->player = player;
 			iter->second->ip = player->getIP();
 			break;
 		}
 	}
-	LoginServerAcceptPlayerPacket::connect(player, worldid, port, maxchan);
+	LoginServerAcceptPlayerPacket::connect(player, worldid, port, maxchan, exprate, questexprate, mesorate, droprate);
 	if (worldid != -1) {
 		std::cout << "Assigned world " << (int) worldid << " to World Server." << std::endl;
 	}
@@ -88,23 +96,15 @@ char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
 	short port;
 	string ip;
-	int exprate = 1;
-	int questexprate = 1;
-	int mesorate = 1;
-	int droprate = 1;
 	for (hash_map <int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->channels.size() < (size_t) iter->second->maxChannels && iter->second->connected) {
 			worldid = iter->second->id;
 			port = iter->second->port;
 			ip = iter->second->ip;
-			exprate = iter->second->exprate;
-			questexprate = iter->second->questexprate;
-			mesorate = iter->second->mesorate;
-			droprate = iter->second->droprate;
 			break;
 		}
 	}
-	LoginServerAcceptPlayerPacket::connectChannel(player, worldid, ip, port, exprate, questexprate, mesorate, droprate);
+	LoginServerAcceptPlayerPacket::connectChannel(player, worldid, ip, port);
 	if (worldid != -1) {
 		std::cout << "Assigning channel server to world server " << (int) worldid << "." << std::endl;
 	}

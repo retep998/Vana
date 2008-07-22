@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "ReadPacket.h"
 #include "PacketCreator.h"
+#include "Rates.h"
 #include <iostream>
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, ReadPacket *packet) {
@@ -33,10 +34,6 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, R
 		ChannelServer::Instance()->setWorld(worldid);
 		ChannelServer::Instance()->setWorldIp(packet->getString());
 		ChannelServer::Instance()->setWorldPort(packet->getShort());
-		ChannelServer::Instance()->setExprate(packet->getInt());
-		ChannelServer::Instance()->setQuestExprate(packet->getInt());
-		ChannelServer::Instance()->setMesorate(packet->getInt());
-		ChannelServer::Instance()->setDroprate(packet->getInt());
 		std::cout << "Connecting to world " << (int) worldid << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}
@@ -109,4 +106,20 @@ void WorldServerConnectHandler::forwardPacket(ReadPacket *packet) {
 	int playerid = packet->getInt();
 	ppacket.addBuffer(packet);
 	ppacket.send(Players::players[playerid]);
+}
+
+void WorldServerConnectHandler::setRates(ReadPacket *packet) {
+	int ratesSetBit = packet->getInt();
+	if (ratesSetBit & Rates::SetBits::exp) {
+		ChannelServer::Instance()->setExprate(packet->getInt());
+	}
+	if (ratesSetBit & Rates::SetBits::questExp) {
+		ChannelServer::Instance()->setQuestExprate(packet->getInt());
+	}
+	if (ratesSetBit & Rates::SetBits::meso) {
+		ChannelServer::Instance()->setMesorate(packet->getInt());
+	}
+	if (ratesSetBit & Rates::SetBits::drop) {
+		ChannelServer::Instance()->setDroprate(packet->getInt());
+	}
 }

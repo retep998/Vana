@@ -44,6 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INTER_UPDATE_MAP 0x2013
 #define INTER_FORWARD_TO 0x2014
 #define INTER_GROUP_CHAT 0x2015
+#define INTER_SET_RATES 0x2016
 
 enum {
 	INTER_LOGIN_SERVER,

@@ -15,19 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LOGINSERVERACCEPTPLAYERPACKET_H
-#define LOGINSERVERACCEPTPLAYERPACKET_H
+#ifndef RATES_H
+#define RATES_H
 
-#include <string>
-
-using std::string;
-
-class LoginServerAcceptPlayer;
-
-namespace LoginServerAcceptPlayerPacket {
-	void connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan, int exprate, int questexprate, int mesorate, int droprate);
-	void connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port);
-	void newPlayer(LoginServerAcceptPlayer *player, int channel, int charid);
-};
+namespace Rates {
+	namespace SetBits {
+		static int exp = 1;
+		static int questExp = 2;
+		static int meso = 4;
+		static int drop = 8;
+		static int all = exp + questExp + meso + drop;
+	}
+}
 
 #endif
