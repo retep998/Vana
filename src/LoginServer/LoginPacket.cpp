@@ -187,16 +187,7 @@ void LoginPacket::connectIP(PlayerLogin *player, int charid) {
 	Packet packet;
 	packet.addHeader(SEND_CHANNEL_SERVER_INFO);
 	packet.addShort(0);
-	
-	char ip[15];
-	strcpy_s(ip, Worlds::worlds[player->getWorld()]->channels[player->getChannel()]->ip.c_str());
-	char *next_token;
-
-	packet.addByte(atoi(strtok_s(ip, ".", &next_token))); // IP
-	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
-	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
-	packet.addByte(atoi(strtok_s(NULL, ".", &next_token)));
-
+	packet.addIP(Worlds::worlds[player->getWorld()]->channels[player->getChannel()]->ip);
 	packet.addShort(Worlds::worlds[player->getWorld()]->channels[player->getChannel()]->port);
 	packet.addInt(charid);
 	packet.addInt(0);

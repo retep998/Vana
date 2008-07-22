@@ -50,6 +50,7 @@ public:
 	void addBytes(char *hex);
 	void addBuffer(unsigned char *bytes, int len);
 	void addBuffer(ReadPacket *packet);
+	void addIP(const string &ip);
 
 	unsigned char * getBuffer();
 	size_t getSize();
