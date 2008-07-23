@@ -31,6 +31,16 @@ class Mob;
 class LoopingId;
 class ReadPacket;
 
+struct MobAttackInfo {
+	int mobid;
+	char id;
+	unsigned char mpconsume;
+	unsigned short mpburn;
+	unsigned char disease;
+	char level;
+	bool deadlyattack;
+};
+
 struct MobInfo {
 	int hp;
 	int mp;
@@ -41,6 +51,7 @@ struct MobInfo {
 	char hpbgcolor;
 	bool boss;
 	vector<int> summon;
+	vector<MobAttackInfo> skills;
 };
 
 struct MobHPInfo {
@@ -52,14 +63,6 @@ struct MobHPInfo {
 	char hpcolor;
 	char hpbgcolor;
 	bool boss;
-};
-
-struct MobAttackInfo {
-	short mpconsume;
-	int mpburn;
-	char disease;
-	char level;
-	bool deadly;
 };
 
 namespace Mobs {

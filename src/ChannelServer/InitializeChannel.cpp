@@ -56,7 +56,7 @@ void Initializing::checkVEDBVersion() {
 // Mobs
 void Initializing::initializeMobs() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
-	mysqlpp::Query query = datadb.query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = datadb.query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid, mobattackdata.attackid, mobattackdata.mpconsume, mobattackdata.mpburn, mobattackdata.disease, mobattackdata.level, mobattackdata.deadly FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid LEFT JOIN mobattackdata ON mobattackdata.mobid=mobdata.mobid ORDER BY mobdata.mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -67,6 +67,7 @@ void Initializing::initializeMobs() {
 	int currentid = 0;
 	int previousid = -1;
 	MobInfo mob;
+	MobAttackInfo mobattack;
 	MYSQL_ROW mobRow;
 	while ((mobRow = res.fetch_raw_row())) {
 		// Col0 : Mob ID
@@ -79,11 +80,19 @@ void Initializing::initializeMobs() {
 		//    7 : HP Color
 		//    8 : HP BG Color
 		//    9 : Mob Summon
+		//    10 : Mob Attack ID
+		//    11 : Mob Attack MP Consumption
+		//    12 : Mob Attack MP Burn
+		//    13 : Mob Attack MP Disease
+		//    14 : Mob Attack MP Level
+		//    15 : Mob Attack MP DeadlyAttack
+
 		currentid = atoi(mobRow[0]);
 
 		if (currentid != previousid && previousid != -1) {
 			Mobs::addMob(previousid, mob);
 			mob.summon.clear();
+			mob.skills.clear();
 		}
 		mob.hp  = atoi(mobRow[1]);
 		mob.mp  = atoi(mobRow[2]);
@@ -96,6 +105,15 @@ void Initializing::initializeMobs() {
 
 		if (mobRow[9] != 0) {
 			mob.summon.push_back(atoi(mobRow[9]));
+		}
+		if (mobRow[10] != 0) {
+			mobattack.id = atoi(mobRow[10]);
+			mobattack.mpconsume = atoi(mobRow[11]);
+			mobattack.mpburn = atoi(mobRow[12]);
+			mobattack.disease = atoi(mobRow[13]);
+			mobattack.level = atoi(mobRow[14]);
+			mobattack.deadlyattack = atob(mobRow[15]);
+			mob.skills.push_back(mobattack);
 		}
 		previousid = atoi(mobRow[0]);
 	}
