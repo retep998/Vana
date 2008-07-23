@@ -14,7 +14,6 @@ if state == 0 then
 	sendSimple();
 elseif state == 1 then
 	what = getSelected();
-	setVariable("what", what);
 	if what == 0 then
 		sendStyle(skins, 5);
 	elseif what == 1 then
@@ -34,7 +33,6 @@ elseif state == 1 then
 		endNPC();
 	end
 elseif state == 2 then
-	what = getVariable("what");
 	if getSelected() >=0 then
 		if what == 0 then
 			if skins[getSelected()+1] >= 0 then
