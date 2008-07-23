@@ -285,6 +285,18 @@ void Maps::moveMap(Player *player, ReadPacket *packet) {
 		else
 			tomap = maps[player->getMap()]->getInfo().rm;
 		player->setHP(50, false);
+		// In our current skill system, active skills are retained through death
+		// While not the most efficient way to do this, it works and until we fix the skill system, it'll have to do
+		// Active skills do not get deleted, merely set back to level 0 upon stopping
+		// Therefore, we hackishly trigger stopping of each active skill ID
+		// TODO: Fix skill system
+		unsigned int i = player->skills->getActiveSkillsNum();
+		while (i > 0) {
+			int skillid = player->skills->getActiveSkillsID(i - 1); // Indexes are 0-based
+			if (skillid > 0)
+				Skills::stopSkill(player, skillid);
+			i--;
+		}
 		changeMap(player, tomap, 0);
 		return;
 	}

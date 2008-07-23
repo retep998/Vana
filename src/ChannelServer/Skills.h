@@ -248,6 +248,23 @@ public:
 			return 0;
 		return activelevels[skillid];
 	}
+	int getActiveSkillsNum() {
+		int j = 0;
+		for (hash_map <int,int>::iterator iter = activelevels.begin(); iter != activelevels.end(); iter++) {
+			j++;
+		}
+		return j;
+	}
+	int getActiveSkillsID(int i) {
+		int j = 0;
+		for (hash_map <int,int>::iterator iter = activelevels.begin(); iter != activelevels.end(); iter++) {
+			if (j == i) {
+				return iter->first;
+			} 
+			j++;
+		}
+		return 0;
+	}
 private:
 	hash_map <int, int> playerskills;
 	hash_map <int, int> maxlevels;
