@@ -19,8 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PINV_H
 
 #include <hash_map>
-using namespace std;
-using namespace stdext;
+using stdext::hash_map;
 
 class Player;
 

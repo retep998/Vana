@@ -25,8 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <boost/scoped_ptr.hpp>
 
-using namespace std;
-using namespace stdext;
+using std::string;
+using std::vector;
+using stdext::hash_map;
 using boost::scoped_ptr;
 
 class Player;

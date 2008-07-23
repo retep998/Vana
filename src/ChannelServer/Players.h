@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <hash_map>
 #include <string>
 
-using namespace std;
-using namespace stdext;
+using std::string;
+using stdext::hash_map;
 
 class Player;
 class ReadPacket;

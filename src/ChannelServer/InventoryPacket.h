@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 #include <string>
 
-using namespace std;
+using std::string;
+using std::vector;
 
 class Player;
 struct Equip;

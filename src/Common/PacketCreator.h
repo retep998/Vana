@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <iostream>
 
-using std::vector;
 using std::string;
+using std::vector;
 
 class ReadPacket;
 struct Pos;
