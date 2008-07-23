@@ -18,11 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SERVERPACK_H
 #define SERVERPACK_H
 
+#include <string>
 #include <vector>
 #include <hash_map>
 
-using namespace std;
-using namespace stdext;
+using std::string;
+using std::vector;
+using stdext::hash_map;
 
 class Player;
 

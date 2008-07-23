@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Winsock2.h>
 #include <hash_map>
 
-using namespace stdext;
+using stdext::hash_map;
 
 class Selector {
 public:

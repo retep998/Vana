@@ -24,8 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)
 
-using namespace std;
-using namespace stdext;
+using stdext::hash_map;
 
 class Player;
 class SkillTimer;

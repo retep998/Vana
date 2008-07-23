@@ -112,7 +112,7 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 	packet.addShort(0);
 	packet.addByte(world->channels.size());
 	for (size_t i=0; i<world->channels.size(); i++) {
-		ostringstream cnStream;
+		std::ostringstream cnStream;
 		cnStream << world->name << "-" << i+1;
 		string channelname = cnStream.str();
 		packet.addShort(channelname.size());

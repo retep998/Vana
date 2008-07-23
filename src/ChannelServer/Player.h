@@ -30,7 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <memory>
 
-using namespace std;
+using std::auto_ptr;
+using std::string;
+using std::vector;
 
 class NPC;
 class ReadPacket;

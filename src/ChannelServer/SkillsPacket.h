@@ -18,10 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SKILLSPACK_H
 #define SKILLSPACK_H
 
-class Player;
-
 #include <vector>
-using namespace std;
+
+using std::vector;
+
+class Player;
 struct SkillActiveInfo;
 struct SpecialSkillInfo;
 
