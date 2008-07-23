@@ -32,6 +32,7 @@ class LoopingId;
 class ReadPacket;
 
 struct MobAttackInfo {
+	MobAttackInfo() : mobid(-1), id(0), mpconsume(0), mpburn(0), level(0), deadlyattack(false) { }
 	int mobid;
 	char id;
 	unsigned char mpconsume;
