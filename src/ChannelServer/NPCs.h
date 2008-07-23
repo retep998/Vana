@@ -52,7 +52,6 @@ private:
 	int getnum;
 	string gettext;
 	scoped_ptr<LuaNPC> luaNPC;
-	hash_map <string, int> vars;
 public:
 	NPC(int npcid, Player *player, bool isquest = false, bool isstart = false);
 	~NPC();
@@ -114,15 +113,6 @@ public:
 		return player;
 	}
 	void showShop();
-	void setVariable(const string &name, int val) {
-		vars[name] = val;
-	}
-	int getVariable(const string &name) {
-		if (vars.find(name) == vars.end())
-			return 0;
-		else
-			return vars[name];
-	}
 };
 
 namespace NPCDialogs {
