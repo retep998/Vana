@@ -24,7 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)
 
-using stdext::hash_map;
+using namespace std;
+using namespace stdext;
 
 class Player;
 class SkillTimer;
@@ -48,6 +49,7 @@ struct SkillLevelInfo {
 	short avo;
 	short hpP;
 	short prop;
+	short morph;
 	Pos lt;
 	Pos rb;
 	int cooltime;
@@ -65,6 +67,7 @@ enum {
 	SKILL_ACC,
 	SKILL_AVO,
 	SKILL_PROP,
+	SKILL_MORPH,
 	SKILL_LV
 };
 
