@@ -81,6 +81,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_INSTRUCTION_BUBBLE 0xa8
 #define SEND_SHOW_MOB 0xad
 #define SEND_KILL_MOB 0xae
+#define SEND_COOLDOWN 0xab // Skill cooldown
 #define SEND_CONTROL_MOB 0xaf
 #define SEND_MOVE_MOB 0xb0
 #define SEND_MOVE_MOB_RESPONSE 0xb1

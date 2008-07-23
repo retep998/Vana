@@ -37,6 +37,7 @@ namespace SkillsPacket {
 	void showSpecialSkill(Player *player, SpecialSkillInfo info); // Hurricane/Pierce/Big Bang/Monster Magnet
 	void endSpecialSkill(Player *player, SpecialSkillInfo info);
 	void showMagnetSuccess(Player *player, int mapmobid, unsigned char success); // New packet in .56
+	void sendCooldown(Player *player, int skillid, short time);
 };
 
 #endif
