@@ -28,9 +28,9 @@ struct SpecialSkillInfo;
 
 namespace SkillsPacket {
 	void addSkill(Player *player, int skillid, int level, int maxlevel = 0);
-	void showSkill(Player *player, int skillid, unsigned char level, unsigned char direction);
+	void showSkill(Player *player, int skillid, unsigned char level);
 	void showCombo(Player *player, int time); // Combo Attack
-	void useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill);
+	void useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill, short addedinfo);
 	void endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill);
 	void healHP(Player *player, short hp);
 	void showSkillEffect(Player *player, int skillid);
