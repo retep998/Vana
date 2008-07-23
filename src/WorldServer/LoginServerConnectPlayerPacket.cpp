@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 
 void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *player, int channel, const string &ip, short port) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_REGISTER_CHANNEL);
 	packet.addInt(channel);
 	packet.addString(ip);
@@ -29,7 +29,7 @@ void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *p
 }
 
 void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *player, int channel, int population) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_UPDATE_CHANNEL_POP);
 	packet.addInt(channel);
 	packet.addInt(population);

@@ -38,7 +38,7 @@ class Mob;
 class Reactor;
 class Drop;
 class LoopingId;
-class Packet;
+class PacketCreator;
 
 struct FootholdInfo {
 	Pos pos1;
@@ -205,7 +205,7 @@ public:
 	void clearDrops(int time);
 	// Show all map objects
 	void showObjects(Player *player);
-	void sendPacket(Packet &packet, Player *player = 0);
+	void sendPacket(PacketCreator &packet, Player *player = 0);
 private:
 	int mapid;
 	MapInfo info;

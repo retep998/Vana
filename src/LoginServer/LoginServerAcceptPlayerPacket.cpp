@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Rates.h"
 
 void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan, int exprate, int questexprate, int mesorate, int droprate) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_WORLD_CONNECT);
 	packet.addByte(worldid);
 	packet.addShort(port);
@@ -36,7 +36,7 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, cha
 }
 
 void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.addByte(worldid);
 	packet.addString(ip);
@@ -45,7 +45,7 @@ void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *play
 }
 
 void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, int channel, int charid) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_NEW_PLAYER);
 	packet.addInt(channel);
 	packet.addInt(charid);

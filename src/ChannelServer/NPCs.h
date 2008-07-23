@@ -31,7 +31,7 @@ using stdext::hash_map;
 using boost::scoped_ptr;
 
 class Player;
-class Packet;
+class PacketCreator;
 class ReadPacket;
 
 namespace NPCs {
@@ -68,7 +68,7 @@ public:
 		addText(strStream.str());
 	}
 
-	Packet & npcPacket(char type);
+	PacketCreator & npcPacket(char type);
 	void sendSimple();
 	void sendYesNo();
 	void sendNext();

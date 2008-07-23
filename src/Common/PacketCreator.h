@@ -30,9 +30,9 @@ using std::vector;
 class ReadPacket;
 struct Pos;
 
-class Packet {
+class PacketCreator {
 public:
-	Packet() : pos(0) { }
+	PacketCreator() : pos(0) { }
 
 	void addHeader(short headerid);
 	void addInt(int intg);
@@ -63,65 +63,65 @@ private:
 };
 
 inline
-void Packet::addHeader(short headerid) {
+void PacketCreator::addHeader(short headerid) {
 	addShort(headerid);
 }
 
 inline
-void Packet::addInt(int intg) {
+void PacketCreator::addInt(int intg) {
 	(*(int*)(packet+pos)) = intg;
 	pos += 4;
 }
 
 inline
-void Packet::setInt(int intg, size_t pos) {
+void PacketCreator::setInt(int intg, size_t pos) {
 	(*(int*)(packet+pos)) = intg;
 }
 
 inline
-void Packet::addInt64(__int64 int64) {
+void PacketCreator::addInt64(__int64 int64) {
 	(*(__int64*)(packet+pos)) = int64;
 	pos += 8;
 }
 
 inline
-void Packet::setInt64(__int64 int64, size_t pos) {
+void PacketCreator::setInt64(__int64 int64, size_t pos) {
 	(*(__int64*)(packet+pos)) = int64;
 }
 
 inline
-void Packet::addShort(short shrt) {
+void PacketCreator::addShort(short shrt) {
 	(*(short*)(packet+pos)) = shrt;
 	pos += 2;
 }
 
 inline
-void Packet::setShort(short shrt, size_t pos) {
+void PacketCreator::setShort(short shrt, size_t pos) {
 	(*(short*)(packet+pos)) = shrt;
 }
 
 inline
-void Packet::addByte(unsigned char byte) {
+void PacketCreator::addByte(unsigned char byte) {
 	packet[pos++] = byte;
 }
 
 inline
-void Packet::setByte(unsigned char byte, size_t pos) {
+void PacketCreator::setByte(unsigned char byte, size_t pos) {
 	packet[pos] = byte;
 }
 
 inline
-unsigned char * Packet::getBuffer() {
+unsigned char * PacketCreator::getBuffer() {
 	return packet;
 }
 
 inline
-size_t Packet::getSize() {
+size_t PacketCreator::getSize() {
 	return pos;
 }
 
 template <class T>
-void Packet::send(T *player) {
+void PacketCreator::send(T *player) {
 	unsigned char tempbuf[MAX_LEN];
 	memcpy_s(tempbuf, MAX_LEN, packet, MAX_LEN); // Copying to tempbuf so the packet doesn't get emptied on send and can be sent to other players
 	player->sendPacket(tempbuf, pos);

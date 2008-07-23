@@ -263,7 +263,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		Maps::showClock(player);
 }
 
-void Map::sendPacket(Packet &packet, Player *player) {
+void Map::sendPacket(PacketCreator &packet, Player *player) {
 	for (size_t i = 0; i < this->players.size(); i++) {
 		if (this->players[i] != player) {
 			packet.send(this->players[i]);

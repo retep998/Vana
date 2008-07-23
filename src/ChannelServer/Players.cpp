@@ -404,7 +404,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			ChannelServer::Instance()->shutdown();
 		}
 		else if (strcmp(command, "packet") == 0) {
-			Packet packet;
+			PacketCreator packet;
 			packet.addBytes(next_token);
 			packet.send(player);
 		}

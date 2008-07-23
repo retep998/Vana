@@ -25,7 +25,7 @@ using std::string;
 using std::vector;
 
 class Player;
-class Packet;
+class PacketCreator;
 
 struct PowerGuardInfo;
 

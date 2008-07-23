@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class Player;
-class Packet;
+class PacketCreator;
 
 namespace MapPacket {
-	Packet playerPacket(Player *player);
+	PacketCreator playerPacket(Player *player);
 	void showPlayer(Player *player);
 	void showPlayers(Player *player, vector <Player*> players);
 	void removePlayer(Player *player);

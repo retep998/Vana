@@ -57,11 +57,11 @@ void Decoder::createHeader (unsigned char *header, short size) {
 	header[3] = (b-header[2])/0x100;
 }
 
-Packet & Decoder::getConnectPacket(string unknown) {
+PacketCreator & Decoder::getConnectPacket(string unknown) {
 	(*(int *)ivRecv) = Randomizer::Instance()->randInt();
 	(*(int *)ivSend) = Randomizer::Instance()->randInt();
 
-	Packet packet;
+	PacketCreator packet;
 	packet.addShort(0); // Packet len, this will be added later in the packet
 	packet.addShort(MAPLE_VERSION);
 	packet.addString(unknown); // Unknown, the official login server sends a "0", the channel server sends nothing
@@ -72,6 +72,6 @@ Packet & Decoder::getConnectPacket(string unknown) {
 	packet.setShort(packet.getSize() - 2, 0); // -2 as the size does not include the size of the size header
 
 
-	Packet &ret = packet;
+	PacketCreator &ret = packet;
 	return ret;
 }

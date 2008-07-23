@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "SendHeader.h"
 
-Packet MapPacket::playerPacket(Player *player) {
-	Packet packet;
+PacketCreator MapPacket::playerPacket(Player *player) {
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addString(player->getName());
@@ -132,12 +132,12 @@ Packet MapPacket::playerPacket(Player *player) {
 }
 
 void MapPacket::showPlayer(Player *player) {
-	Packet packet = playerPacket(player);
+	PacketCreator packet = playerPacket(player);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
 void MapPacket::removePlayer(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_REMOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
@@ -146,7 +146,7 @@ void MapPacket::removePlayer(Player *player) {
 void MapPacket::showPlayers(Player *player, vector <Player*> players) {
 	for (size_t i = 0; i < players.size(); i++) {
 		if (player->getPlayerid() != players[i]->getPlayerid() && players[i]->skills->getActiveSkillLevel(9101004) == 0) {
-			Packet packet = playerPacket(players[i]);
+			PacketCreator packet = playerPacket(players[i]);
 			packet.send(player);
 			// Bug in global; would be fixed here: 
 			// Hurricane/Pierce do not display properly if using when someone enters the map
@@ -155,7 +155,7 @@ void MapPacket::showPlayers(Player *player, vector <Player*> players) {
 }
 
 void MapPacket::changeMap(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(ChannelServer::Instance()->getChannel()); // Channel
 	packet.addShort(0); // 2?
@@ -172,7 +172,7 @@ void MapPacket::changeMap(Player *player) {
 }
 
 void MapPacket::portalBlocked(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(1);
 	packet.addInt(0);
@@ -180,7 +180,7 @@ void MapPacket::portalBlocked(Player *player) {
 }
 
 void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_TIME);
 	packet.addByte(1);
 	packet.addByte(hour);
@@ -191,7 +191,7 @@ void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min,
 }
 
 void MapPacket::showTimer(Player *player, int sec) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_TIME);
 	packet.addByte(2);
 	packet.addInt(sec);
@@ -200,14 +200,14 @@ void MapPacket::showTimer(Player *player, int sec) {
 }
 
 void MapPacket::makeApple(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MAKE_APPLE);  
 	packet.send(player);
 }
 
 // Change music
 void MapPacket::changeMusic(int mapid, const string &musicname) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
 	packet.addString(musicname);
@@ -221,7 +221,7 @@ void MapPacket::sendSound(int mapid, const string &soundname) {
 	// Cokeplay/Failed = Lose
 	// Coconut/Victory = Victory
 	// Coconut/Failed = Lose 
-	Packet packet = Packet();
+	PacketCreator packet = PacketCreator();
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x04);
 	packet.addString(soundname);
@@ -235,7 +235,7 @@ void MapPacket::sendEvent(int mapid, const string &eventname) {
 	// quest/carnival/lose = Lose
 	// event/coconut/victory = Victory
 	// event/coconut/lose = Lose
-	Packet packet = Packet();
+	PacketCreator packet = PacketCreator();
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x03);
 	packet.addString(eventname);

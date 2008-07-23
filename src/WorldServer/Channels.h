@@ -25,7 +25,7 @@ using std::string;
 using stdext::hash_map;
 
 class WorldServerAcceptPlayer;
-class Packet;
+class PacketCreator;
 
 struct Channel {
 	Channel() : players(0) { }
@@ -46,7 +46,7 @@ public:
 	}
 	void registerChannel(WorldServerAcceptPlayer *player, int channel, const string &ip, short port);
 	Channel * getChannel(int num);
-	void sendToAll(Packet &packet);
+	void sendToAll(PacketCreator &packet);
 	int size();
 private:
 	Channels() {};

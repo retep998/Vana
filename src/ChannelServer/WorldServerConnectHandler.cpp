@@ -102,7 +102,7 @@ void WorldServerConnectHandler::newConnectable(ReadPacket *packet) {
 }
 
 void WorldServerConnectHandler::forwardPacket(ReadPacket *packet) {
-	Packet ppacket;
+	PacketCreator ppacket;
 	int playerid = packet->getInt();
 	ppacket.addBuffer(packet);
 	ppacket.send(Players::players[playerid]);
