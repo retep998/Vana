@@ -538,6 +538,13 @@ void Skills::init() {
 	skillsinfo[1121002].player.push_back(player);
 	skillsinfo[1221002].player.push_back(player);
 	skillsinfo[1321002].player.push_back(player);
+	// Mana Reflection - 2121002, 2221002, and 2321002
+	player.type = 0x40;
+	player.byte = 1;
+	player.value = SKILL_LV;
+	skillsinfo[2121002].player.push_back(player);
+	skillsinfo[2221002].player.push_back(player);
+	skillsinfo[2321002].player.push_back(player);
 }
 
 void Skills::addSkill(int id, SkillsLevelInfo skill) {
@@ -678,6 +685,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 			case SKILL_PROP: value = skills[skillid][level].prop; break;
+			case SKILL_LV: value = level; break;
 		}
 		if (skillid == 3121002 || skillid == 3221002) { // For Sharp Eyes
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
@@ -731,6 +739,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 			case SKILL_PROP: value = skills[skillid][level].prop; break;
+			case SKILL_LV: value = level; break;
 		}
 		if (skillid == 4111002) { // For Shadow Partner
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
@@ -774,6 +783,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 			case SKILL_PROP: value = skills[skillid][level].prop; break;
+			case SKILL_LV: value = level; break;
 		}
 		SkillTimer::Instance()->setSkillTimer(player, skillid, skillsinfo[skillid].act.name, value, skillsinfo[skillid].act.time);
 	}
