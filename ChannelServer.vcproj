@@ -262,6 +262,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerSkills.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Quests.cpp"
 					>
 				</File>
@@ -461,6 +465,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Players.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerSkills.h"
 					>
 				</File>
 				<File
