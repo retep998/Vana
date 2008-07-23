@@ -435,6 +435,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	int mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
 	int mapmobid = 0; // Map Mob ID
  	int fake = 0;
+	short job = player->getJob();
 	bool applieddamage = false;
  	PGMRInfo pgmr;
 	MobAttackInfo attack;
@@ -511,7 +512,9 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 		SkillsPacket::showSkillEffect(player, 4211005);
 		player->setHP(player->getHP() - damage);
 		if (attack.deadlyattack)
-			player->setMP(1);
+			if (player->getMP() > 0)
+				player->setMP(1);
+
 		if (attack.mpburn)
 			player->setMP(player->getMP() - attack.mpburn);
 		applieddamage = true;
@@ -542,14 +545,33 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 		}
 		applieddamage = true;
  	}
+	if (((job / 100) == 1) && ((job % 10) == 2)) { // Achilles for 4th job warriors
+		int achx = 1000;
+		int sid = 1120004;
+		switch (job) {
+			case 112: sid = 1120004; break;
+			case 122: sid = 1220005; break;
+			case 132: sid = 1230005; break;
+		}
+		int slv = player->skills->getSkillLevel(sid);
+		if (slv > 0) { achx = Skills::skills[sid][slv].x; }
+		double red = (2.0 - achx / 1000.0);
+		player->setHP(player->getHP() - (int)(damage / red));
+		if (attack.deadlyattack)
+			if (player->getMP() > 0)
+				player->setMP(1);
+		if (attack.mpburn > 0)
+			player->setMP(player->getMP() - attack.mpburn);
+		applieddamage = true;
+	}
 	if (attack.disease > 0) {
 		// Status ailment processing here
 	}
 	if (damage > 0 && applieddamage == false) {
 		if (attack.deadlyattack) {
-			player->setMP(1);
-			if (damage != 1)
-				player->setHP(player->getHP() - damage);
+			if (player->getMP() > 0)
+				player->setMP(1);
+			player->setHP(1);
 		}
 		else
 			player->setHP(player->getHP() - damage);
