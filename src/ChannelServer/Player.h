@@ -50,7 +50,7 @@ public:
 	int getPlayerid() {
 		return this->id;
 	}
-	char *getName() {
+	string getName() {
 		return this->name;
 	}
 	char getGender() {
@@ -246,7 +246,7 @@ private:
 
 	bool isconnect;
 	int id;
-	char name[15];
+	string name;
 	char gender;
 	char skin;
 	int eyes;

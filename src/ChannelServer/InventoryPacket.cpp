@@ -240,8 +240,7 @@ void InventoryPacket::showMessenger(Player *player, const string & msg, const st
 	packet.addHeader(INTER_TO_PLAYERS);
 	packet.addHeader(SEND_SHOW_MESSENGER);
 	packet.addInt(itemid);
-	packet.addShort(strlen(player->getName()));
-	packet.addString(player->getName(), strlen(player->getName()));
+	packet.addString(player->getName());
 	packet.addString(msg);
 	packet.addString(msg2);
 	packet.addString(msg3);

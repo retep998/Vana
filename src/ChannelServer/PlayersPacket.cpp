@@ -78,12 +78,11 @@ void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void PlayersPacket::showMessage(char *msg, char type) {
+void PlayersPacket::showMessage(const string &msg, char type) {
 	Packet packet;
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
-	packet.addShort(strlen(msg));
-	packet.addString(msg, strlen(msg));
+	packet.addString(msg);
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
 		 iter != Players::players.end(); iter++) {
 			 packet.send(iter->second);

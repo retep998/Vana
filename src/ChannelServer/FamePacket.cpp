@@ -32,16 +32,14 @@ void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame
 	Packet packet;
 	packet.addHeader(SEND_FAME);
 	packet.addByte(0x05);
-	packet.addShort(strlen(player->getName()));
-	packet.addString(player->getName(), strlen(player->getName()));
+	packet.addString(player->getName());
 	packet.addByte(type);
 	packet.send(player2);
 
 	packet = Packet();
 	packet.addHeader(SEND_FAME);
 	packet.addByte(0x00);
-	packet.addShort(strlen(player2->getName()));
-	packet.addString(player2->getName(), strlen(player2->getName()));
+	packet.addString(player2->getName());
 	packet.addByte(type);
 	packet.addInt(newFame);
 	packet.send(player);

@@ -34,7 +34,7 @@ namespace PlayersPacket {
 	void faceExperiment(Player *player, int face);
 	void showChat(Player *player, const string &msg, char bubbleOnly);
 	void damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int fake, PowerGuardInfo pg);
-	void showMessage(char *msg, char type);
+	void showMessage(const string &msg, char type);
 	void showInfo(Player *player, Player *getinfo);
 	void findPlayer(Player *player, const string &name, int map, unsigned char is = 0, bool is_channel = 0);
 	void whisperPlayer(Player *target, const string &whisperer_name, int channel, const string &message);
