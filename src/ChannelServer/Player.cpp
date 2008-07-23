@@ -393,6 +393,14 @@ void Player::setFame(short fame) {
 	PlayerPacket::updateStat(this, 0x20000, fame);
 }
 
+void Player::setVariable(const string &name, const string &val) {
+	variables[name] = val;
+}
+
+string Player::getVariable(const string &name) {
+	return (variables.find(name) == variables.end()) ? "" : variables[name];
+}
+
 bool Player::addWarning() {
 	int t = clock();
 	// Deleting old warnings

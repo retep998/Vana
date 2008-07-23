@@ -213,12 +213,8 @@ public:
 		if (variables.find(name) != variables.end())
 			variables.erase(name);
 	}
-	void setVariable(const string &name, const string &val) {
-		variables[name] = val;
-	}
-	string getVariable(const string &name) {
-		return (variables.find(name) == variables.end()) ? "" : variables[name];
-	}
+	void setVariable(const string &name, const string &val);
+	string getVariable(const string &name);
 	void setSpecialSkill(SpecialSkillInfo info) {
 		this->info = info;
 	}
