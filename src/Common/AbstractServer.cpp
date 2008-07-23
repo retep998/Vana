@@ -31,6 +31,11 @@ void AbstractServer::initialize() {
 	Config config("conf/inter_password.lua");
 	inter_password = config.getString("inter_password");
 
+	if (inter_password == "changeme") {
+		std::cerr << "ERROR: inter_password is not changed." << std::endl;
+		exit(1);
+	}
+
 	loadConfig();
 	loadData();
 	if (to_listen)
