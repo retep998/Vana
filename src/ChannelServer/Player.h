@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "PacketHandler.h"
 #include "PlayerInventory.h"
+#include "PlayerSkills.h"
 #include "Skills.h"
 #include "Quests.h"
 #include "ChannelServer.h"
