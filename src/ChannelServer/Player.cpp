@@ -128,7 +128,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		return;
 	}
 
-	strcpy_s(name, res[0]["name"]);
+	res[0]["name"].to_string(name);
 	gender = (unsigned char) res[0]["gender"];
 	skin = (unsigned char) res[0]["skin"];
 	eyes = res[0]["eyes"];

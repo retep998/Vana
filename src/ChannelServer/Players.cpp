@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "ReadPacket.h"
 #include "WorldServerConnectPlayerPacket.h"
+#include "StringUtilities.h"
 
 hash_map <int, Player*> Players::players;
 
@@ -295,7 +296,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			if (strlen(next_token) == 0) return;
 			if (strlen(name) > 0)
 				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
-					if (strcmp(iter->second->getName(), name) == 0)
+					if (iter->second->getName() == string(name))
 						if (strlen(next_token) > 0) {
 							int mapid = atoi(strtok_s(0, " ", &next_token));
 							if (Maps::maps.find(mapid) != Maps::maps.end()) {
@@ -307,13 +308,13 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "warpto") == 0) {
 			if (strlen(next_token) > 0)
 				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
-					if (strcmp(iter->second->getName(), next_token) == 0)
+					if (iter->second->getName() == string(next_token))
 						Maps::changeMap(player , iter->second->getMap(), iter->second->getMappos());
 		}
 		else if (strcmp(command, "mwarpto") == 0) {
 			if (strlen(next_token) > 0)
 				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
-					if (strcmp(iter->second->getName(), next_token) == 0) {
+					if (iter->second->getName() == string(next_token)) {
 						Maps::changeMap(iter->second, player->getMap(), player->getMappos());
 						break;
 					}
@@ -328,7 +329,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++) {
 				if (Maps::maps.find(mapid) != Maps::maps.end()) {
 					if (mapid == player->getMap()) {
-						if (strcmp(player->getName(), iter->second->getName())!=0)
+						if (player->getName() == iter->second->getName())
 							Maps::changeMap(iter->second, mapid, 0);
 					}
 					else
@@ -561,7 +562,7 @@ void Players::commandHandler(Player *player, ReadPacket *packet) {
 
 	hash_map<int, Player*>::iterator iter = Players::players.begin();
 	for (iter = Players::players.begin(); iter != Players::players.end(); iter++) {
-		if (_stricmp(iter->second->getName(), name.c_str()) == 0) {	
+		if (StringUtilities::noCaseCompare(iter->second->getName(), name) == 0) {	
 			if (type == 0x06) {
 				PlayersPacket::whisperPlayer(iter->second, player->getName(), ChannelServer::Instance()->getChannel(), chat);
 				PlayersPacket::findPlayer(player,iter->second->getName(),-1,1);

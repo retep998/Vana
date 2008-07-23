@@ -26,8 +26,7 @@ Packet MapPacket::playerPacket(Player *player) {
 	Packet packet;
 	packet.addHeader(SEND_SHOW_PLAYER);
 	packet.addInt(player->getPlayerid());
-	packet.addShort(strlen(player->getName()));
-	packet.addString(player->getName(), strlen(player->getName()));
+	packet.addString(player->getName());
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addByte(player->getSkill().types[0]);
