@@ -453,7 +453,8 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 		case 0xFE:
 			break;		
 		default: // Else: Power Guard/Mana Reflection
-			pgmr.reduction = packet->getShort();
+			pgmr.reduction = packet->getByte();
+			packet->skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 			if (pgmr.reduction != 0) {
 				if (packet->getByte() == 0)
 					pgmr.isphysical = false; // Initialized as true, so the opposite case doesn't matter
