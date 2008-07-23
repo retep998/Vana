@@ -436,7 +436,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	int mapmobid = 0; // Map Mob ID
  	int fake = 0;
 	bool applieddamage = false;
- 	PowerGuardInfo pg;
+ 	PGMRInfo pgmr;
 	switch (type) {
 		case 0xFE: // Map/fall damage is an oddball packet
 			break;
@@ -447,46 +447,47 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			break;
  	}
 	switch (type) { // Account for special sections of the damage packet
-		case 0xFF: // Bump
-			pg.reduction = packet->getByte();
-			packet->skipBytes(1); // Mana Reflection?
-			if (pg.reduction != 0) {
-				packet->skipBytes(1); // Possible Mana Reflection?
-				pg.mapmobid = packet->getInt();
-				packet->skipBytes(1); // 0x06, damage coming up
+		case 0xFE:
+			break;		
+		default: // Else: Power Guard/Mana Reflection
+			pgmr.reduction = packet->getShort();
+			if (pgmr.reduction != 0) {
+				if (packet->getByte() == 0)
+					pgmr.isphysical = false; // Initialized as true, so the opposite case doesn't matter
+				pgmr.mapmobid = packet->getInt();
+				packet->skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
 				packet->skipBytes(4); // Mob position garbage
-				pg.pos_x = packet->getShort();
-				pg.pos_y = packet->getShort();
-				pg.damage = damage;
-				damage = (damage - (damage * pg.reduction / 100));
+				pgmr.pos_x = packet->getShort();
+				pgmr.pos_y = packet->getShort();
+				pgmr.damage = damage;
+				if (pgmr.isphysical) // Mana Reflection does not decrease damage
+					damage = (damage - (damage * pgmr.reduction / 100)); 
 				Mob *mob = Maps::maps[player->getMap()]->getMob(mapmobid);
 				if (mob != 0) {
-					mob->setHP(mob->getHP() - (pg.damage * pg.reduction / 100));
+					mob->setHP(mob->getHP() - (pgmr.damage * pgmr.reduction / 100));
 					Mobs::displayHPBars(player, mob);
 					if (mob->getHP() <= 0)
 						Mobs::dieMob(player, mob);
 				}
 			}
 			break;
-		default:
-			packet->skipBytes(2); // 0xFE: Status ailment ID?, normal end of packet - 0x0*: Power Guard/Mana Reflection? bytes
-			break;
 	}
-	switch (type) { // Yes, another one
-		case 0xFE: // Most skills don't reduce map/fall damage and they can't miss
-			break; // Plus, nothing exists by this point in the packet
+	switch (type) { // Yes, another one, end of packets
+		case 0xFE:
+			packet->skipBytes(2); // Disease, normal end of packet
+			break;
 		default: 
 			packet->skipBytes(1); // Stance, normal end of packet
-			if (damage == -1) { // 0 damage = regular miss, -1 = Fake
-				short job = player->getJob() / 10 - 40;
-				fake = 4020002 + (job * 100000);
-				if (player->skills->getSkillLevel(fake) < 0) {
-					//hacking
-					return;
-				}
-			}
 			break;
  	}
+	if (damage == -1) { // 0 damage = regular miss, -1 = Fake
+		short job = player->getJob() / 10 - 40;
+		fake = 4020002 + (job * 100000);
+		if (player->skills->getSkillLevel(fake) < 0) {
+			//hacking
+			return;
+		}
+	}
 	if (player->skills->getActiveSkillLevel(4211005) > 0 && player->inv->getMesos() > 0) { // Meso Guard 
 		int mesorate = Skills::skills[4211005][player->skills->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
 		unsigned short hp = player->getHP();
@@ -526,7 +527,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	if (damage > 0 && applieddamage == false)
  		player->setHP(player->getHP() - damage);
 	if (type != 0xFE) // Fall damage and map damage don't play by these rules
- 		PlayersPacket::damagePlayer(player, damage, mobid, hit, type, fake, pg); // FIXME: Maybe type will get sent to the player as short, as the s->c packet haven't been identified yet
+ 		PlayersPacket::damagePlayer(player, damage, mobid, hit, type, fake, pgmr); // FIXME: Maybe type will get sent to the player as short, as the s->c packet haven't been identified yet
 }
 
 void Players::healPlayer(Player *player, ReadPacket *packet) {
