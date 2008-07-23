@@ -84,7 +84,7 @@ void ChannelServer::shutdown() {
 	exit(0);
 }
 
-void ChannelServer::sendToWorld(Packet &packet) {
+void ChannelServer::sendToWorld(PacketCreator &packet) {
 	packet.send(worldPlayer);
 }
 

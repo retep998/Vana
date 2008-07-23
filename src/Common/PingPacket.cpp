@@ -23,13 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RecvHeader.h"
 
 void PingPacket::ping(AbstractPlayer *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_PING);
 	packet.send(player);
 }
 
 void PingPacket::pong(AbstractPlayer *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(RECV_PONG);
 	packet.send(player);
 }

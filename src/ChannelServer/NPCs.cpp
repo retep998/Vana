@@ -172,8 +172,8 @@ void NPC::run() {
 	checkEnd();
 }
 
-Packet & NPC::npcPacket(char type) {
-	Packet packet;
+PacketCreator & NPC::npcPacket(char type) {
+	PacketCreator packet;
 	packet.addHeader(SEND_NPC_TALK);
 	packet.addByte(4);
 	packet.addInt(npcid);
@@ -182,61 +182,61 @@ Packet & NPC::npcPacket(char type) {
 	
 	text = "";
 
-	Packet &ret = packet;
+	PacketCreator &ret = packet;
 	return ret;
 }
 
 void NPC::sendSimple() {
-	Packet packet = npcPacket(NPCDialogs::simple);
+	PacketCreator packet = npcPacket(NPCDialogs::simple);
 	packet.send(player);
 }
 
 void NPC::sendYesNo() {
-	Packet packet = npcPacket(NPCDialogs::yesNo);
+	PacketCreator packet = npcPacket(NPCDialogs::yesNo);
 	packet.send(player);
 }
 
 void NPC::sendNext() {
-	Packet packet = npcPacket(NPCDialogs::normal);
+	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(0);
 	packet.addByte(1);
 	packet.send(player);
 }
 
 void NPC::sendBackNext() {
-	Packet packet = npcPacket(NPCDialogs::normal);
+	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(1);
 	packet.send(player);
 }
 
 void NPC::sendBackOK() {
-	Packet packet = npcPacket(NPCDialogs::normal);
+	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(0);
 	packet.send(player);
 }
 
 void NPC::sendOK() {
-	Packet packet = npcPacket(NPCDialogs::normal);
+	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addShort(0);
 	packet.send(player);
 }
 
 void NPC::sendAcceptDecline() {
-	Packet packet = npcPacket(NPCDialogs::acceptDecline);
+	PacketCreator packet = npcPacket(NPCDialogs::acceptDecline);
 	packet.send(player);
 }
 
 void NPC::sendGetText() {
-	Packet packet = npcPacket(NPCDialogs::getText);
+	PacketCreator packet = npcPacket(NPCDialogs::getText);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.send(player);
 }
 
 void NPC::sendGetNumber(int def, int min, int max) {
-	Packet packet = npcPacket(NPCDialogs::getNumber);
+	PacketCreator packet = npcPacket(NPCDialogs::getNumber);
 	packet.addInt(def);
 	packet.addInt(min);
 	packet.addInt(max);
@@ -245,7 +245,7 @@ void NPC::sendGetNumber(int def, int min, int max) {
 }
 
 void NPC::sendStyle(int styles[], char size) {
-	Packet packet = npcPacket(NPCDialogs::style);
+	PacketCreator packet = npcPacket(NPCDialogs::style);
 	packet.addByte(size);
 	for (int i = 0; i < size; i++)
 		packet.addInt(styles[i]);

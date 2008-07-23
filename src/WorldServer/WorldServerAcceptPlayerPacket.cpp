@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Rates.h"
 
 void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, int playerid, char type, const string &message, const string &sender) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_FORWARD_TO);
 	packet.addInt(playerid);
 	packet.addShort(SEND_GROUP_CHAT);
@@ -34,7 +34,7 @@ void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, i
 }
 
 void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int channel, short port) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_CHANNEL_CONNECT);
 	packet.addInt(channel);
 	packet.addShort(port);
@@ -42,7 +42,7 @@ void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int
 }
 
 void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, const string &ip, short port) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.addInt(playerid);
 	packet.addString(ip);
@@ -51,13 +51,13 @@ void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer 
 }
 
 void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int len) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addBuffer(data, len);
 	Channels::Instance()->sendToAll(packet);
 }
 
 void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, const string &findee, unsigned char is) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_FIND);
 	packet.addInt(finder);
 	packet.addInt(channel);
@@ -68,7 +68,7 @@ void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, 
 }
 
 void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, const string &whisperer, int channel, const string &message) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_WHISPER);
 	packet.addInt(whisperee);
 	packet.addString(whisperer);
@@ -79,7 +79,7 @@ void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *playe
 }
 
 void WorldServerAcceptPlayerPacket::scrollingHeader(const string &message) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_SCROLLING_HEADER);
 	packet.addString(message);
 	
@@ -87,7 +87,7 @@ void WorldServerAcceptPlayerPacket::scrollingHeader(const string &message) {
 }
 
 void WorldServerAcceptPlayerPacket::newConnectable(int channel, int playerid) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_NEW_CONNECTABLE);
 	packet.addInt(playerid);
 
@@ -95,7 +95,7 @@ void WorldServerAcceptPlayerPacket::newConnectable(int channel, int playerid) {
 }
 
 void WorldServerAcceptPlayerPacket::sendRates(WorldServerAcceptPlayer *player, int setBit) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_SET_RATES);
 	packet.addInt(setBit);
 

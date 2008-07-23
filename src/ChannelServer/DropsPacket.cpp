@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void DropsPacket::drop(Drop *drop, Pos origin) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getID());
@@ -43,7 +43,7 @@ void DropsPacket::drop(Drop *drop, Pos origin) {
 }
 
 void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getID());
@@ -63,7 +63,7 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
 }
 
 void DropsPacket::showDrop(Player *player, Drop *drop) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_DROP_ITEM);
 	packet.addByte(2);
 	packet.addInt(drop->getID());
@@ -81,7 +81,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 }
 
 void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(0);
 	if (id == 0)
@@ -103,7 +103,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 }
 
 void DropsPacket::takeDrop(Player *player, Drop *drop) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(2);
 	packet.addInt(drop->getID());
@@ -117,14 +117,14 @@ void DropsPacket::takeDrop(Player *player, Drop *drop) {
 }
 
 void DropsPacket::dontTake(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addShort(1);
 	packet.send(player);
 }
 
 void DropsPacket::removeDrop(Drop *drop) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(0);
 	packet.addInt(drop->getID());
@@ -132,7 +132,7 @@ void DropsPacket::removeDrop(Drop *drop) {
 }
 
 void DropsPacket::explodeDrop(Drop *drop) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_TAKE_DROP);
 	packet.addByte(4);
 	packet.addInt(drop->getID());

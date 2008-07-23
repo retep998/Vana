@@ -23,7 +23,7 @@ using std::string;
 
 class WorldServerAcceptPlayer;
 class Party;
-class Packet;
+class PacketCreator;
 
 namespace PartyPacket{
 	void createParty(WorldServerAcceptPlayer *player, int playerid);
@@ -32,7 +32,7 @@ namespace PartyPacket{
 	void giveLeader(WorldServerAcceptPlayer *player, int playerid, int target, bool is);
 	void invitePlayer(WorldServerAcceptPlayer *player, int playerid, const string &inviter);
 	void updateParty(WorldServerAcceptPlayer *player, char type, int playerid, int target = 0);
-	void addParty(Packet &packet, Party *party, int tochan);
+	void addParty(PacketCreator &packet, Party *party, int tochan);
 };
 
 #endif

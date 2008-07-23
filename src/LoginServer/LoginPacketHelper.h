@@ -18,13 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGINPACKETHELPER_H
 #define LOGINPACKETHELPER_H
 
-class Packet;
+class PacketCreator;
 struct Character;
 struct CharEquip;
 
 namespace LoginPacketHelper {
-	void addCharacter(Packet &packet, Character charc);
-	void addEquip(Packet &packet, CharEquip &equip);
+	void addCharacter(PacketCreator &packet, Character charc);
+	void addEquip(PacketCreator &packet, CharEquip &equip);
 }
 
 #endif

@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int i) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_NPC);
 	packet.addInt(i+0x64);
 	packet.addInt(npc.id);
@@ -34,7 +34,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int i) {
 	packet.addShort(npc.rx1);
 	packet.addByte(1);
 	packet.send(player);
-	packet = Packet();
+	packet = PacketCreator();
 	packet.addHeader(SEND_SHOW_NPC2);
 	packet.addByte(1);
 	packet.addInt(i+0x64);

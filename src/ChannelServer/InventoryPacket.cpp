@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 
 void InventoryPacket::moveItem(Player *player, char inv, short slot1, short slot2) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(1);
 	packet.addByte(1);
@@ -42,7 +42,7 @@ void InventoryPacket::moveItem(Player *player, char inv, short slot1, short slot
 void InventoryPacket::updatePlayer(Player *player) {
 	if (player->skills->getActiveSkillLevel(9101004) > 0)
 		return;
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_UPDATE_CHAR_LOOK);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(1);
@@ -100,7 +100,7 @@ void InventoryPacket::updatePlayer(Player *player) {
 }
 
 void InventoryPacket::addEquip(Player *player, short pos, Equip *equip, bool is) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(is);
 	packet.addByte(1);
@@ -111,14 +111,14 @@ void InventoryPacket::addEquip(Player *player, short pos, Equip *equip, bool is)
 }
 
 void InventoryPacket::bought(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOP_BOUGHT);
 	packet.addByte(0);
 	packet.send(player);
 }
 
 void InventoryPacket::addNewItem(Player *player, char inv, short slot, Item *item, bool is) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(is);
 	packet.addByte(1);
@@ -140,7 +140,7 @@ void InventoryPacket::addNewItem(Player *player, char inv, short slot, Item *ite
 	packet.send(player);
 }
 void InventoryPacket::addItem(Player *player, char inv, short slot, Item *item, bool is) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(is);
 	packet.addByte(1);
@@ -152,7 +152,7 @@ void InventoryPacket::addItem(Player *player, char inv, short slot, Item *item, 
 }
 
 void InventoryPacket::moveItemS(Player *player, char inv, short slot, short amount) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(1);
 	packet.addByte(1);
@@ -164,7 +164,7 @@ void InventoryPacket::moveItemS(Player *player, char inv, short slot, short amou
 }
 
 void InventoryPacket::moveItemS2(Player *player, char inv, short slot1, short amount1, short slot2, short amount2) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MOVE_ITEM);
 	packet.addByte(1);
 	packet.addByte(2);
@@ -180,12 +180,12 @@ void InventoryPacket::moveItemS2(Player *player, char inv, short slot1, short am
 }
 
 void InventoryPacket::sitChair(Player *player, int chairid) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
 	packet.send(player);
-	packet = Packet();
+	packet = PacketCreator();
 	packet.addHeader(SEND_SIT_CHAIR);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(chairid);
@@ -193,18 +193,18 @@ void InventoryPacket::sitChair(Player *player, int chairid) {
 }
 
 void InventoryPacket::stopChair(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_STOP_CHAIR);
 	packet.addByte(0);
 	packet.send(player);
-	packet = Packet();
+	packet = PacketCreator();
 	packet.addHeader(SEND_SIT_CHAIR);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(0);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 void InventoryPacket::useScroll(Player *player, bool succeed, bool destroy, bool legendary_spirit) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_USE_SCROLL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(succeed); // Succeed/Fail
@@ -216,7 +216,7 @@ void InventoryPacket::useScroll(Player *player, bool succeed, bool destroy, bool
 
 void InventoryPacket::showMegaphone(Player *player, const string & msg) {
 	string fullMessage = string(player->getName()) + " : " + msg;
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(2);
 	packet.addString(fullMessage);
@@ -225,7 +225,7 @@ void InventoryPacket::showMegaphone(Player *player, const string & msg) {
 
 void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, int whisper) {
 	string fullMessage = string(player->getName()) + " : " + msg;
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_TO_PLAYERS);
 	packet.addHeader(SEND_NOTICE);
 	packet.addByte(3);
@@ -236,7 +236,7 @@ void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, int
 }
 
 void InventoryPacket::showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int displayInfo_size, int itemid) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_TO_PLAYERS);
 	packet.addHeader(SEND_SHOW_MESSENGER);
 	packet.addInt(itemid);
@@ -251,7 +251,7 @@ void InventoryPacket::showMessenger(Player *player, const string & msg, const st
 }
 // Use buff item
 void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph) { // Test/Beta function, PoC only
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_USE_SKILL);
 	packet.addInt64(0);
 	packet.addByte(types[0]);
@@ -276,7 +276,7 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 	packet.addByte(0);
 	packet.send(player);
 	if (morph) {
-		Packet packet;
+		PacketCreator packet;
 		packet.addHeader(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getPlayerid());
 		packet.addInt64(0);
@@ -298,7 +298,7 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 	}
 }
 void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_CANCEL_SKILL);
 	packet.addInt64(0);
 	packet.addByte(types[0]);
@@ -312,7 +312,7 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 	packet.addByte(0);
 	packet.send(player);
 	if (morph) {
-		Packet packet;
+		PacketCreator packet;
 		packet.addHeader(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getPlayerid());
 		packet.addInt64(0);
@@ -329,7 +329,7 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 }
 // Skill Books
 void InventoryPacket::useSkillbook(Player *player, int skillid, int newMaxLevel, bool use, bool succeed) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_USE_SKILLBOOK);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(1); // Number of skills? Maybe just padding or random boolean
@@ -341,7 +341,7 @@ void InventoryPacket::useSkillbook(Player *player, int skillid, int newMaxLevel,
 }
 
 void InventoryPacket::useItemEffect(Player *player, int itemid) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_ITEM_EFFECT);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(itemid);

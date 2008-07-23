@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillMacros.h"
 
 void PlayerPacket::connectData(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_CHANGE_MAP);
 	packet.addInt(ChannelServer::Instance()->getChannel()); // Channel
 	packet.addByte(1);
@@ -139,7 +139,7 @@ void PlayerPacket::connectData(Player *player) {
 }
 
 void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_KEYMAP);
 	packet.addByte(0);
 	for (size_t i = 0; i < KeyMaps::size; i++) {
@@ -157,7 +157,7 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 }
 
 void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SKILL_MACRO);
 	packet.addByte(macros->getMax() + 1);
 	for (int i = 0; i <= macros->getMax();  i++) {
@@ -182,7 +182,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 }
 
 void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
 	packet.addInt(id);
@@ -191,7 +191,7 @@ void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
 }
 
 void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
 	packet.addInt(id);
@@ -200,7 +200,7 @@ void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
 }
 
 void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addByte(is);
 	packet.addInt(id);
@@ -209,7 +209,7 @@ void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
 }
 
 void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_CHANGE_CHANNEL);
 	packet.addByte(1);
 	packet.addIP(ip);
@@ -218,7 +218,7 @@ void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
 }
 
 void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addString(msg);
@@ -233,7 +233,7 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, short wi
 		}
 	}
 
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_INSTRUCTION_BUBBLE);
 	packet.addString(msg);
 	packet.addShort(width);

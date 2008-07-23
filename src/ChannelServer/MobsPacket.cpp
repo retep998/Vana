@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 
 void MobsPacket::controlMob(Player *player, Mob *mob) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_CONTROL_MOB);
 	packet.addByte(1);
 	packet.addInt(mob->getID());
@@ -44,7 +44,7 @@ void MobsPacket::controlMob(Player *player, Mob *mob) {
 }
 
 void MobsPacket::endControlMob(Player *player, Mob *mob) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_CONTROL_MOB);
 	packet.addByte(0);
 	packet.addInt(mob->getID());
@@ -52,7 +52,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 }
 
 void MobsPacket::spawnMob(Mob *mob) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
@@ -71,7 +71,7 @@ void MobsPacket::spawnMob(Mob *mob) {
 }
 
 void MobsPacket::showMob(Player *player, Mob *mob) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
@@ -90,7 +90,7 @@ void MobsPacket::showMob(Player *player, Mob *mob) {
 }
 
 void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MOVE_MOB_RESPONSE);
 	packet.addInt(mobid);
 	packet.addShort(moveid);
@@ -100,7 +100,7 @@ void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool u
 }
 
 void MobsPacket::moveMob(Player *player, int mobid, bool useskill, int skill, unsigned char *buf, int len) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MOVE_MOB);
 	packet.addInt(mobid);
 	packet.addByte(useskill);
@@ -121,7 +121,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 		tbyte = (targets * 0x10) + 0x0A;
 		s4211006 = true;
 	}
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_DAMAGE_MOB);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(tbyte);
@@ -170,7 +170,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	int skillid = pack->getInt();
 	if (skillid == 3121004 || skillid == 3221001)
 		pack->skipBytes(4);
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_DAMAGE_MOB_RANGED);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(tbyte);
@@ -222,7 +222,7 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	unsigned char tbyte = pack->getByte();
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_DAMAGE_MOB_SPELL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(tbyte);
@@ -259,7 +259,7 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 }
 
 void MobsPacket::showHP(Player *player, int mobid, char per) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
@@ -267,7 +267,7 @@ void MobsPacket::showHP(Player *player, int mobid, char per) {
 }
 // Miniboss HP
 void MobsPacket::showMinibossHP(Player *player, int mobid, char per) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
@@ -275,7 +275,7 @@ void MobsPacket::showMinibossHP(Player *player, int mobid, char per) {
 }
 // Boss hp
 void MobsPacket::showBossHP(Player *player, const MobHPInfo &mob) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_MAP_EFFECT);
 	packet.addByte(0x05);
 	packet.addInt(mob.mobid);
@@ -287,7 +287,7 @@ void MobsPacket::showBossHP(Player *player, const MobHPInfo &mob) {
 }
 
 void MobsPacket::dieMob(Mob *mob) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_KILL_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);

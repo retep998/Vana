@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include <queue>
 
-void LoginPacketHelper::addCharacter(Packet &packet, Character charc) {
+void LoginPacketHelper::addCharacter(PacketCreator &packet, Character charc) {
 	packet.addInt(charc.id);
 	packet.addString(charc.name, 12);
 	packet.addByte(0);
@@ -85,7 +85,7 @@ void LoginPacketHelper::addCharacter(Packet &packet, Character charc) {
 }
 
 inline
-void LoginPacketHelper::addEquip(Packet &packet, CharEquip &equip) {
+void LoginPacketHelper::addEquip(PacketCreator &packet, CharEquip &equip) {
 	int pos = -equip.pos;
 	if (pos > 100)
 		pos -= 100;

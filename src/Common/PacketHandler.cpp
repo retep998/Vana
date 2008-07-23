@@ -52,7 +52,7 @@ socket(socket)
 	}
 	else {
 		size_t len;
-		Packet packet = decoder->getConnectPacket(ivUnknown);
+		PacketCreator packet = decoder->getConnectPacket(ivUnknown);
 		len = send(socket, (char *) packet.getBuffer(), packet.getSize(), 0);
 
 		if (len < Decoder::CONNECT_LENGTH) {

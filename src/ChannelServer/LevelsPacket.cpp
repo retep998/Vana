@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 
 void LevelsPacket::showEXP(Player *player, int exp, char type) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_NOTE);
 	packet.addByte(3);
 	packet.addByte(1);
@@ -35,7 +35,7 @@ void LevelsPacket::showEXP(Player *player, int exp, char type) {
 }
 
 void LevelsPacket::levelUP(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(0);
@@ -43,7 +43,7 @@ void LevelsPacket::levelUP(Player *player) {
 }
 
 void LevelsPacket::statOK(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
@@ -51,7 +51,7 @@ void LevelsPacket::statOK(Player *player) {
 }
 
 void LevelsPacket::jobChange(Player *player) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(8);

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 
 void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, string pass, string ip) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(INTER_PASSWORD);
 	packet.addString(pass);
 	packet.addString(ip);

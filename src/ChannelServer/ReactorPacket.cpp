@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 
 void ReactorPacket::spawnReactor(Reactor *reactor) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addInt(reactor->getReactorID());
@@ -34,7 +34,7 @@ void ReactorPacket::spawnReactor(Reactor *reactor) {
 }
 
 void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
-	Packet packet;
+	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addInt(reactor->getReactorID());
@@ -45,7 +45,7 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 }
 
 void ReactorPacket::triggerReactor(Reactor *reactor) {
-	Packet packet = Packet();
+	PacketCreator packet = PacketCreator();
 	packet.addHeader(SEND_TRIGGER_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addByte(reactor->getState()); // State
@@ -55,7 +55,7 @@ void ReactorPacket::triggerReactor(Reactor *reactor) {
 }
 
 void ReactorPacket::destroyReactor(Reactor *reactor) {
-	Packet packet = Packet();
+	PacketCreator packet = PacketCreator();
 	packet.addHeader(SEND_DESTROY_REACTOR);
 	packet.addInt(reactor->getID());
 	packet.addByte(reactor->getState());
