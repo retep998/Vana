@@ -138,12 +138,8 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	packet->skipBytes(2); // Display, direction/animation
 	packet->skipBytes(2); // Weapon subclass, casting speed
 	packet->skipBytes(4); // Ticks
-	if (skillid > 0) {
+	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
-		int cooltime = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].cooltime;
-		if (cooltime > 0)
-			SkillsPacket::sendCooldown(player, skillid, cooltime);
-	}
 	for (char i = 0; i < targets; i++) {
 		int mapmobid = packet->getInt();
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
@@ -198,12 +194,8 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		packet->skipBytes(4); // Charge 
 	}
 	unsigned int totaldmg = 0;
-	if (skillid > 0) {
+	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
-		int cooltime = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].cooltime;
-		if (cooltime > 0)
-			SkillsPacket::sendCooldown(player, skillid, cooltime);
-	}
 	for (char i = 0; i < targets; i++) {
 		int mapmobid = packet->getInt();
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
@@ -308,12 +300,8 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	}
 	else
 		packet->skipBytes(4); // Star ID added by Shadow Claw
-	if (skillid > 0) {
+	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
-		int cooltime = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].cooltime;
-		if (cooltime > 0)
-			SkillsPacket::sendCooldown(player, skillid, cooltime);
-	}
 	int damage, mhp;
 	unsigned int totaldmg = 0;
 	for (char i = 0; i < targets; i++) {

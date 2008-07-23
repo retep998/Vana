@@ -154,6 +154,9 @@ namespace Skills {
 	void stopSkill(Player *player, int skillid);
 	void addCombo(Player *player); // Combo Attack 
 	void clearCombo(Player *player); // Combo Attack
+	void startCooldown(Player *player, int skillid, int cooltime);
+	void stopCooldown(Player *player, int skillid);
+	bool isCooling(Player *player, int skillid);
 };
 
 #endif
