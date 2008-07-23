@@ -38,9 +38,7 @@ LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, p
 	lua_register(luaVm, "getSelected", &LuaExports::getSelected);
 	lua_register(luaVm, "getNumber", &LuaExports::getNumber);
 	lua_register(luaVm, "getText", &LuaExports::getText);
-	lua_register(luaVm, "getVariable", &LuaExports::getVariable);
 	lua_register(luaVm, "getMaxSkillLevel", &LuaExports::getMaxSkillLevel);
-	lua_register(luaVm, "setVariable", &LuaExports::setVariable);
 	lua_register(luaVm, "setMaxSkillLevel", &LuaExports::setMaxSkillLevel);
 	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaExports::endQuest);
@@ -139,12 +137,6 @@ int LuaExports::getText(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaExports::getVariable(lua_State *luaVm) {
-	string key = string(lua_tostring(luaVm, -1));
-	lua_pushnumber(luaVm, getNPC(luaVm)->getVariable(key));
-	return 1;
-}
-
 int LuaExports::getMaxSkillLevel(lua_State *luaVm) {
 	int skillid = lua_tointeger(luaVm, -1);
 	lua_pushnumber(luaVm, getPlayer(luaVm)->skills->getMaxSkillLevel(skillid));
@@ -153,13 +145,6 @@ int LuaExports::getMaxSkillLevel(lua_State *luaVm) {
 
 int LuaExports::setState(lua_State *luaVm) {
 	getNPC(luaVm)->setState(lua_tointeger(luaVm, -1));
-	return 1;
-}
-
-int LuaExports::setVariable(lua_State *luaVm) {
-	int value = lua_tointeger(luaVm, -1);
-	string key = string(lua_tostring(luaVm, -2));
-	getNPC(luaVm)->setVariable(key, value);
 	return 1;
 }
 
