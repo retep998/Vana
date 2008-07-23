@@ -30,7 +30,7 @@ void Packet::addBuffer(ReadPacket *packet) {
 	addBuffer(packet->getBuffer(), packet->getBufferLength());
 }
 
-void Packet::addBuffer(unsigned char *bytes, size_t len){
+void Packet::addBuffer(unsigned char *bytes, size_t len) {
 	memcpy_s(packet+pos, len, bytes, len);
 	pos += len;
 }
