@@ -180,10 +180,92 @@ private:
 	}
 };
 
+class CoolTimer: public Timer::TimerHandler {
+public:
+	static CoolTimer * Instance() {
+		if (singleton == 0)
+			singleton = new CoolTimer;
+		return singleton;
+	}
+	void setCoolTimer(Player *player, int skill, int time) {
+		CTimer timer;
+		timer.id = Timer::Instance()->setTimer(time, this);
+		timer.player = player;
+		timer.skill = skill;
+		timer.time = time;
+		timers.push_back(timer);
+	}
+	void stop (Player *player, int skill) {
+		for (size_t i = 0; i < timers.size(); i++) {
+			if (player == timers[i].player && timers[i].skill == skill) {
+				Timer::Instance()->cancelTimer(timers[i].id);
+				break;
+			}
+		}
+	}
+	void stop (Player *player) {
+		for (size_t i = timers.size(); i > 0; i--) {
+			if (player == timers[i-1].player) {
+				Timer::Instance()->cancelTimer(timers[i-1].id);
+			}
+		} 
+	}
+	void stopKill (Player *player) {
+		for (size_t i = timers.size(); i > 0; i--) {
+			if (player == timers[i-1].player) {
+				Skills::stopCooldown(player, timers[i].id);
+				Timer::Instance()->cancelTimer(timers[i-1].id);
+			}
+		} 
+	}
+	int coolTime(Player *player, int skillid) {
+		int timeleft = 0;
+		for (size_t i = 0; i < timers.size(); i++) {
+			if (player == timers[i].player && timers[i].skill == skillid) {
+				timeleft = Timer::Instance()->timeLeft(timers[i].id);
+			}
+		}
+		return timeleft;
+	}
+private:
+	static CoolTimer *singleton;
+	CoolTimer() {};
+	CoolTimer(const SkillTimer&);
+	CoolTimer& operator=(const SkillTimer&);
+	struct CTimer {
+		int id;
+		Player *player;
+		int skill;
+		int time;
+	};
+	static vector <CTimer> timers;
+	void handle (Timer *timer, int id) {
+		int skill;
+		Player *player;
+		for (size_t i = 0; i < timers.size(); i++) {
+			if (timers[i].id == id) {
+				player = timers[i].player;
+				skill = timers[i].skill;
+				break;
+			}
+		}
+		Skills::stopCooldown(player, skill);
+	}
+	void remove (int id) {
+		for (size_t i = 0; i < timers.size(); i++) {
+			if (timers[i].id == id) {	
+				timers.erase(timers.begin()+i);	
+				return;
+			}
+		}
+	}
+};
 vector <SkillTimer::STimer> SkillTimer::timers;
 vector <SkillTimer::SActTimer> SkillTimer::acttimers;
+vector <CoolTimer::CTimer> CoolTimer::timers;
 hash_map <int, bool> SkillTimer::act;
 SkillTimer * SkillTimer::singleton = 0;
+CoolTimer * CoolTimer::singleton = 0;
 
 void Skills::stopTimerPlayer(Player *player) {
 	SkillTimer::Instance()->stop(player);
@@ -608,7 +690,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		return;
 	}
 	if (cooltime > 0)
-		SkillsPacket::sendCooldown(player, skillid, cooltime);
+		Skills::startCooldown(player, skillid, cooltime);
 	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0 && !(player->skills->getActiveSkillLevel(2121004) > 0 || player->skills->getActiveSkillLevel(2221004) > 0 || player->skills->getActiveSkillLevel(2321004) > 0)) {
 		if (player->skills->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
@@ -819,7 +901,9 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 	if (skills[skillid][player->skills->getSkillLevel(skillid)].item > 0) {	
 		Inventory::takeItem(player, skills[skillid][player->skills->getSkillLevel(skillid)].item, skills[skillid][player->skills->getSkillLevel(skillid)].itemcount);
 	}
-
+	int cooltime = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].cooltime;
+	if (cooltime > 0)
+		Skills::startCooldown(player, skillid, cooltime);
 }
 
 void Skills::endSkill(Player *player, int skill) {
@@ -836,7 +920,7 @@ void Skills::endSkill(Player *player, int skill) {
 	}
 	if (skill == 9101004) // GM Hide
 		MapPacket::showPlayer(player);
-	SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill) ,player->skills->getSkillMapInfo(skill));
+	SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill), player->skills->getSkillMapInfo(skill));
 	player->skills->deleteSkillMapEnterInfo(skill);
 	player->skills->setActiveSkillLevel(skill, 0);
 }
@@ -873,4 +957,23 @@ void Skills::addCombo(Player *player) { // add combo orbs
 void Skills::clearCombo(Player *player) { // finishing moves panic coma
 	player->setCombo(0);
 	SkillsPacket::showCombo(player, SkillTimer::Instance()->skillTime(player, 1111002));
+}
+
+void Skills::startCooldown(Player *player, int skillid, int cooltime) {
+	if (Skills::isCooling(player, skillid)) {
+		// Hacking
+		return;
+	}
+	SkillsPacket::sendCooldown(player, skillid, cooltime);
+	CoolTimer::Instance()->setCoolTimer(player, skillid, cooltime * 1000);
+}
+
+void Skills::stopCooldown(Player *player, int skillid) {
+	SkillsPacket::sendCooldown(player, skillid, 0);	
+}
+
+bool Skills::isCooling(Player *player, int skillid) {
+	if (CoolTimer::Instance()->coolTime(player, skillid) > 0)
+		return true;
+	return false;
 }
