@@ -437,12 +437,15 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
  	int fake = 0;
 	bool applieddamage = false;
  	PGMRInfo pgmr;
+	MobAttackInfo attack;
 	switch (type) {
 		case 0xFE: // Map/fall damage is an oddball packet
 			break;
 		default: // Code in common, minimizes repeated code
 			mobid = packet->getInt();
 			mapmobid = packet->getInt();
+			if (type != 0xFF)
+				attack = Mobs::mobinfo[mobid].skills[type];
 			hit = packet->getByte(); // Knock direction
 			break;
  	}
@@ -506,26 +509,52 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 		player->inv->setMesos(newmesos);
 		SkillsPacket::showSkillEffect(player, 4211005);
 		player->setHP(player->getHP() - damage);
+		if (attack.deadlyattack)
+			player->setMP(1);
+		if (attack.mpburn)
+			player->setMP(player->getMP() - attack.mpburn);
 		applieddamage = true;
 	}
  	if (player->skills->getActiveSkillLevel(2001002) > 0) { // Magic Guard
 		unsigned short mp = player->getMP();
 		unsigned short hp = player->getHP();
-		unsigned short reduc = Skills::skills[2001002][player->skills->getActiveSkillLevel(2001002)].x;
-		int mpdamage = ((damage * reduc) / 100);
-		int hpdamage = damage - mpdamage;
-		if (mpdamage >= mp) {
-			player->setMP(0);
-			player->setHP(hp - (hpdamage + (mpdamage - mp)));
+		if (attack.deadlyattack) {
+			if (mp > 0)
+				player->setMP(1);
+			player->setHP(1);
 		}
-		if (mpdamage < mp) {
-			player->setMP(mp - mpdamage);
-			player->setHP(hp - hpdamage);
+		else if (attack.mpburn > 0) {
+			player->setMP(mp - attack.mpburn);
+		}
+		else {
+			unsigned short reduc = Skills::skills[2001002][player->skills->getActiveSkillLevel(2001002)].x;
+			int mpdamage = ((damage * reduc) / 100);
+			int hpdamage = damage - mpdamage;
+			if (mpdamage >= mp) {
+				player->setMP(0);
+				player->setHP(hp - (hpdamage + (mpdamage - mp)));
+			}
+			if (mpdamage < mp) {
+				player->setMP(mp - mpdamage);
+				player->setHP(hp - hpdamage);
+			}
 		}
 		applieddamage = true;
  	}
-	if (damage > 0 && applieddamage == false)
- 		player->setHP(player->getHP() - damage);
+	if (attack.disease > 0) {
+		// Status ailment processing here
+	}
+	if (damage > 0 && applieddamage == false) {
+		if (attack.deadlyattack) {
+			player->setMP(1);
+			if (damage != 1)
+				player->setHP(player->getHP() - damage);
+		}
+		else
+			player->setHP(player->getHP() - damage);
+		if (attack.mpburn > 0)
+			player->setMP(player->getMP() - attack.mpburn);
+	}
 	if (type != 0xFE) // Fall damage and map damage don't play by these rules
  		PlayersPacket::damagePlayer(player, damage, mobid, hit, type, fake, pgmr); // FIXME: Maybe type will get sent to the player as short, as the s->c packet haven't been identified yet
 }

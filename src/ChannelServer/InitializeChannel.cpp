@@ -93,6 +93,7 @@ void Initializing::initializeMobs() {
 			Mobs::addMob(previousid, mob);
 			mob.summon.clear();
 			mob.skills.clear();
+			mobattack = MobAttackInfo();
 		}
 		mob.hp  = atoi(mobRow[1]);
 		mob.mp  = atoi(mobRow[2]);
