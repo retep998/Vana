@@ -581,7 +581,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	short addedinfo = 0;
 	unsigned char level = packet->getByte();
 	unsigned char type = 0;
-
+	int cooltime = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].cooltime;
 	switch (skillid) {
 		case 1121001: // Monster Magnet processing
 		case 1221001:
@@ -607,6 +607,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		// hacking
 		return;
 	}
+	if (cooltime > 0)
+		SkillsPacket::sendCooldown(player, skillid, cooltime);
 	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0 && !(player->skills->getActiveSkillLevel(2121004) > 0 || player->skills->getActiveSkillLevel(2221004) > 0 || player->skills->getActiveSkillLevel(2321004) > 0)) {
 		if (player->skills->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;

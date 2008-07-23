@@ -226,3 +226,11 @@ void SkillsPacket::showMagnetSuccess(Player *player, int mapmobid, unsigned char
 	packet.addByte(success);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
+
+void SkillsPacket::sendCooldown(Player *player, int skillid, short time) {
+	PacketCreator packet;
+	packet.addHeader(SEND_COOLDOWN);
+	packet.addInt(skillid);
+	packet.addShort(time);
+	packet.send(player);
+}
