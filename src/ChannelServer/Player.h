@@ -26,11 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "BuddyList.h"
 #include "Pos.h"
+#include <boost/scoped_ptr.hpp>
 #include <vector>
 #include <string>
-#include <memory>
 
-using std::auto_ptr;
 using std::string;
 using std::vector;
 
@@ -237,10 +236,10 @@ public:
 	void saveVariables();
 	void save();
 	void setOnline(bool online);
-	auto_ptr<PlayerInventory> inv;
-	auto_ptr<PlayerSkills> skills;
-	auto_ptr<PlayerQuests> quests;
-	auto_ptr<BuddyList> buddyList;
+	boost::scoped_ptr<PlayerInventory> inv;
+	boost::scoped_ptr<PlayerSkills> skills;
+	boost::scoped_ptr<PlayerQuests> quests;
+	boost::scoped_ptr<BuddyList> buddyList;
 private:
 	void playerConnect(ReadPacket *packet);
 	void changeKey(ReadPacket *packet);
