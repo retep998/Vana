@@ -35,19 +35,17 @@ void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel
 	packet.send(player);
 }
 
-void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level, unsigned char direction) {
+void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level) {
  	PacketCreator packet;
  	packet.addHeader(SEND_SHOW_SKILL);
  	packet.addInt(player->getPlayerid());
  	packet.addByte(1);
  	packet.addInt(skillid);
 	packet.addByte(level); //TODO
-	if (direction != 0xFF)
-		packet.addByte(direction);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill) {
+void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill, short addedinfo) {
 	PacketCreator packet;
 	packet.addHeader(SEND_USE_SKILL);
 	packet.addInt64(0);
@@ -65,9 +63,8 @@ void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveIn
 		packet.addInt(time);
 	}
 	packet.addShort(0);
-	packet.addByte(0);
-	packet.addShort(0);
-	packet.addByte(0);
+	packet.addShort(addedinfo);
+	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
 	packet.send(player);
 	if (mskill.vals.size() > 0) {
 		packet = PacketCreator();

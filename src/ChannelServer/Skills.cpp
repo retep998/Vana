@@ -571,8 +571,10 @@ void Skills::stopSkill(Player *player, int skillid) {
 void Skills::useSkill(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); //Ticks
 	int skillid = packet->getInt();
+	short addedinfo = 0;
 	unsigned char level = packet->getByte();
-	unsigned char direction = 0xFF; // Deprecated, will remove later
+	unsigned char type = 0;
+
 	switch (skillid) {
 		case 1121001: // Monster Magnet processing
 		case 1221001:
@@ -585,6 +587,14 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			}
 			break;
 		}
+		default:
+			type = packet->getByte();
+			switch (type) {
+				case 0x80:
+					addedinfo = packet->getShort();
+					break;
+			}
+			break;
 	}
 	if (level == 0) {
 		// hacking
@@ -614,7 +624,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			healrate=100;
 		player->setHP(player->getHP() + healrate*player->getMHP()/100);
 	}
-	SkillsPacket::showSkill(player, skillid, level, direction); 
+	SkillsPacket::showSkill(player, skillid, level); 
 	///
 	if (skillid == 1301007 || skillid == 9101008) { // Hyper Body
 		player->setMHP(player->getRMHP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].x)/100);
@@ -743,7 +753,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		map.skill = skillid;
 		mapenterskill.push_back(map);
 	}
-	SkillsPacket::useSkill(player, skillid, skills[skillid][level].time*1000, playerskill, mapskill);
+	SkillsPacket::useSkill(player, skillid, skills[skillid][level].time*1000, playerskill, mapskill, addedinfo);
 	player->skills->setSkillPlayerInfo(skillid, playerskill);
 	player->skills->setSkillMapInfo(skillid, mapskill);
 	player->skills->setSkillMapEnterInfo(skillid, mapenterskill);
