@@ -121,7 +121,7 @@ struct SpecialSkillInfo {
 
 struct PGMRInfo { // Power Guard/Mana Reflection
 	PGMRInfo() : reduction(0), pos_x(0), pos_y(0), damage(0), mapmobid(0), isphysical(true) { }
-	short reduction;
+	unsigned char reduction;
 	short pos_x;
 	short pos_y;
 	int damage;
