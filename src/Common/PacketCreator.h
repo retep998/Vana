@@ -41,14 +41,14 @@ public:
 	void setInt64(__int64 int64, size_t pos);
 	void addShort(short shrt);
 	void setShort(short shrt, size_t pos);
-	void addString(const char *str, int slen);
+	void addString(const char *str, size_t slen);
 	void addString(const string &str); // Dynamically-lengthed strings
-	void addString(const string &str, int len); // Static-lengthed strings
+	void addString(const string &str, size_t len); // Static-lengthed strings
 	void addPos(Pos pos); // Positions
 	void addByte(unsigned char byte);
 	void setByte(unsigned char byte, size_t pos);
 	void addBytes(char *hex);
-	void addBuffer(unsigned char *bytes, int len);
+	void addBuffer(unsigned char *bytes, size_t len);
 	void addBuffer(ReadPacket *packet);
 	void addIP(const string &ip);
 
@@ -101,36 +101,6 @@ void Packet::setShort(short shrt, size_t pos) {
 }
 
 inline
-void Packet::addString(const char *str, int slen) {
-	int rlen = strlen(str);
-	strncpy_s((char*)packet+pos, slen+1, str, slen);
-	for (int i = rlen; i < slen; i++)
-		packet[pos+i] = 0;
-	pos += slen;
-}
-
-inline
-void Packet::addString(const string &str) {
-	int len = str.size();
-	addShort(len);
-	strcpy_s((char *) packet + pos, MAX_LEN - pos, str.c_str());
-	pos += len;
-}
-
-inline
-void Packet::addString(const string &str, int len) {
-	int slen = str.size();
-	if (len < slen) {
-		std::cout << "ERROR: addString used with lenth shorter than string size." << std::endl; // TODO: Throw exception
-	}
-	strncpy_s((char *) packet + pos, MAX_LEN -pos, str.c_str(), slen);
-	for (int i = slen; i < len; i++) {
-		packet[pos+i] = 0;
-	}
-	pos += len;
-}
-
-inline
 void Packet::addByte(unsigned char byte) {
 	packet[pos++] = byte;
 }
@@ -138,34 +108,6 @@ void Packet::addByte(unsigned char byte) {
 inline
 void Packet::setByte(unsigned char byte, size_t pos) {
 	packet[pos] = byte;
-}
-
-inline
-void Packet::addBytes(char *hex) {
-	for (int i=0; i<(int)strlen(hex)/2; i++) {
-		unsigned char byte1 = hex[i*2];
-		unsigned char byte2 = hex[i*2+1];
-		if (byte1 >= 'A' && byte1 <= 'F')
-			byte1 -= 'A' - 0xa;
-		else if (byte1 >= 'a' && byte1 <= 'f')
-			byte1 -= 'a' - 0xa;
-		else if (byte1 >= '0' && byte1 <= '9')
-			byte1 -= '0';
-		if (byte2 >= 'A' && byte2 <= 'F')
-			byte2 -= 'A' - 0xa;
-		else if (byte2 >= 'a' && byte2 <= 'f')
-			byte2 -= 'a' - 0xa;
-		else if (byte2 >= '0' && byte2 <= '9')
-			byte2 -= '0';
-		unsigned char byte = byte1*0x10 + byte2;
-		packet[pos++] = byte;	
-	}
-}
-
-inline
-void Packet::addBuffer(unsigned char *bytes, int len) {
-	memcpy_s(packet+pos, len, bytes, len);
-	pos += len;
 }
 
 inline
