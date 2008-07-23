@@ -119,13 +119,14 @@ struct SpecialSkillInfo {
 	int skillid;
 };
 
-struct PowerGuardInfo {
-	PowerGuardInfo() : reduction(0), pos_x(0), pos_y(0), damage(0), mapmobid(0) { }
-	unsigned char reduction;
+struct PGMRInfo { // Power Guard/Mana Reflection
+	PGMRInfo() : reduction(0), pos_x(0), pos_y(0), damage(0), mapmobid(0), isphysical(true) { }
+	short reduction;
 	short pos_x;
 	short pos_y;
 	int damage;
 	int mapmobid;
+	bool isphysical;
 };
 struct SkillsInfo {
 	vector <SkillPlayerInfo> player;

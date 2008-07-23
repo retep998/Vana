@@ -49,32 +49,31 @@ void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly)
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int fake, PowerGuardInfo pg) {
+void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int fake, PGMRInfo pgmr) {
 	PacketCreator packet;
 	packet.addHeader(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(type);
-	if (pg.reduction)
-		packet.addInt(pg.damage);
+	if (pgmr.reduction)
+		packet.addInt(pgmr.damage);
 	else
 		packet.addInt(dmg);
 	packet.addInt(mob);
 	packet.addByte(hit);
-	if (pg.reduction) {
-		packet.addByte(pg.reduction);
-		packet.addByte(1);
-		packet.addInt(pg.mapmobid);
+	if (pgmr.reduction) {
+		packet.addByte(pgmr.reduction);
+		packet.addByte(pgmr.isphysical); // Maybe? No Mana Reflection on global to test with
+		packet.addInt(pgmr.mapmobid);
 		packet.addByte(6);
-		packet.addShort(pg.pos_x);
-		packet.addShort(pg.pos_y);
+		packet.addShort(pgmr.pos_x);
+		packet.addShort(pgmr.pos_y);
 		packet.addByte(0);
 	}
 	else
 		packet.addShort(0);
 	packet.addInt(dmg);
-	if (fake > 0) {
+	if (fake > 0)
 		packet.addInt(fake);
-	}
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
