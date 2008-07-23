@@ -166,19 +166,20 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			PlayersPacket::showMessage(next_token, 0);
 		}
 		else if (strcmp(command, "shop") == 0) {
-			Shops::showShop(player, 9999999);
-		}
-		else if (strcmp(command, "shop2") == 0) {
-			Shops::showShop(player, 9999996);
-		}
-		else if (strcmp(command, "shop3") == 0) {
-			Shops::showShop(player, 9999995);
-		}
-		else if (strcmp(command, "shop4") == 0) {
-			Shops::showShop(player, 9999998);
-		}
-		else if (strcmp(command, "shop5") == 0) {
-			Shops::showShop(player, 9999997);
+			int shopid = -1;
+			if (strcmp(next_token, "gear") == 0) shopid = 9999999;
+			else if (strcmp(next_token, "scrolls") == 0) shopid = 9999998;
+			else if (strcmp(next_token, "nx") == 0) shopid = 9999997;
+			else if (strcmp(next_token, "face") == 0) shopid = 9999996;
+			else if (strcmp(next_token, "ring") == 0) shopid = 9999995;
+			else if (strcmp(next_token, "chair") == 0) shopid = 9999994;
+			else if (strcmp(next_token, "mega") == 0) shopid = 9999993;
+			else shopid = atoi(next_token);
+
+			if (Shops::shops.find(shopid) != Shops::shops.end())
+				Shops::showShop(player, shopid);
+			else
+				PlayerPacket::showMessage(player, "Invalid shop.", 6);
 		}
 		else if (strcmp(command, "pos") == 0) {
 			char text[50];

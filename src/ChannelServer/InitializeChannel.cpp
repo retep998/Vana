@@ -606,11 +606,12 @@ void Initializing::initializeSkills() {
 		//   16 : Avoid
 		//   17 : HPP
 		//   18 : Prop(% chance)
-		//   19 : Left Top X
-		//   20 : Left Top Y
-		//   21 : Right Bottom X
-		//   22 : Right Bottom Y
-		//   23 : Cooldown time
+		//   19 : Morph
+		//   20 : Left Top X
+		//   21 : Left Top Y
+		//   22 : Right Bottom X
+		//   23 : Right Bottom Y
+		//   24 : Cooldown time
 		currentid = atoi(skillRow[0]);
 
 		if (currentid != previousid && previousid != -1) {
@@ -636,9 +637,10 @@ void Initializing::initializeSkills() {
 		level.avo = atoi(skillRow[16]);
 		level.hpP = atoi(skillRow[17]);
 		level.prop = atoi(skillRow[18]);
-		level.lt = Pos(atoi(skillRow[19]), atoi(skillRow[20]));
-		level.rb = Pos(atoi(skillRow[21]), atoi(skillRow[22]));
-		level.cooltime = atoi(skillRow[23]);
+		level.morph = atoi(skillRow[19]);
+		level.lt = Pos(atoi(skillRow[20]), atoi(skillRow[21]));
+		level.rb = Pos(atoi(skillRow[22]), atoi(skillRow[23]));
+		level.cooltime = atoi(skillRow[24]);
 		skill[atoi(skillRow[1])] = level;
 
 		previousid = atoi(skillRow[0]);
