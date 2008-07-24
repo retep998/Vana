@@ -358,8 +358,10 @@ void Inventory::takeItem(Player *player, int itemid, int howmany) {
 					InventoryPacket::moveItem(player, inv, i, 0);
 					player->inv->deleteItem(inv, i);
 				}
-				else
+				else {
 					InventoryPacket::moveItemS(player, inv, i, item->amount);
+					player->inv->changeItemAmount(item->id, -howmany);
+				}
 				break;
 			}
 			else if (!ISRECHARGEABLE(item->id)) {
