@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 hash_map <int, MobInfo> Mobs::mobinfo;
 
-// Mob class
+/* Mob class */
 Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : mapid(mapid), id(id), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
 	this->hp = Mobs::mobinfo[mobid].hp;
 	this->mp = Mobs::mobinfo[mobid].mp;
@@ -47,7 +47,32 @@ void Mob::setControl(Player *control) {
 		MobsPacket::controlMob(control, this);
 }
 
-// Mobs namespace
+void Mob::die(Player *player) {
+	if (this == 0) return;
+	setControl(0);
+
+	MobsPacket::dieMob(this);
+
+	// Account for Holy Symbol
+	int hsrate = 0;
+	if (player->skills->getActiveSkillLevel(2311003) > 0)
+		hsrate = Skills::skills[2311003][player->skills->getActiveSkillLevel(2311003)].x;
+	else if (player->skills->getActiveSkillLevel(5101002) > 0)
+		hsrate = Skills::skills[5101002][player->skills->getActiveSkillLevel(5101002)].x;
+
+	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp*hsrate)/100)) * ChannelServer::Instance()->getExprate());
+	Drops::dropMob(player, this);
+
+	// Spawn mob(s) the mob is supposed to spawn when it dies
+	for (size_t i = 0; i < Mobs::mobinfo[mobid].summon.size(); i++)
+		Mobs::spawnMobPos(mapid, Mobs::mobinfo[mobid].summon[i], pos);
+
+	player->quests->updateQuestMob(mobid);
+	Maps::maps[mapid]->removeMob(id);
+	delete this;
+}
+
+/* Mobs namespace */
 void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 	int mobid = packet->getInt();
 
@@ -82,32 +107,6 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 
 void Mobs::addMob(int id, MobInfo mob) {
 	mobinfo[id] = mob;
-}
-
-void Mobs::dieMob(Player *player, Mob *mob) {
-	if (mob == 0) return;
-	mob->setControl(0);
-	MobsPacket::dieMob(mob);
-
-	// Account for Holy Symbol
-	int hsrate = 0;
-	if (player->skills->getActiveSkillLevel(2311003)>0) {
-		hsrate = Skills::skills[2311003][player->skills->getActiveSkillLevel(2311003)].x;
-	}
-	else if (player->skills->getActiveSkillLevel(5101002) > 0) {
-		hsrate = Skills::skills[5101002][player->skills->getActiveSkillLevel(5101002)].x;
-	}
-
-	Levels::giveEXP(player, (mobinfo[mob->getMobID()].exp + ((mobinfo[mob->getMobID()].exp*hsrate)/100)) * ChannelServer::Instance()->getExprate());
-	Drops::dropMob(player, mob);
-
-	// Spawn mob(s) the mob is supposed to spawn when it dies
-	for (size_t i = 0; i < mobinfo[mob->getMobID()].summon.size(); i++) {
-		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPos());
-	}
-
-	player->quests->updateQuestMob(mob->getMobID());
-	Maps::maps[player->getMap()]->removeMob(mob->getID());
 }
 
 void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
@@ -166,7 +165,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 			displayHPBars(player, mob);
 			if (mob->getHP() <= 0) {
 				packet->skipBytes(4 * (hits - 1 - k));
-				dieMob(player, mob);
+				mob->die(player);
 				break;
 			}
 		}
@@ -211,7 +210,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			displayHPBars(player, mob);
 			if (mob->getHP() <= 0) {
 				packet->skipBytes(4 * (hits - 1 - k));
-				dieMob(player, mob);
+				mob->die(player);
 				break;
 			}
 		}
@@ -320,7 +319,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			displayHPBars(player, mob);
 			if (mob->getHP() <= 0) {
 				packet->skipBytes(4 * (hits - 1 - k));
-				dieMob(player, mob);
+				mob->die(player);
 				break;
 			}
 		}

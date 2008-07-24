@@ -110,30 +110,24 @@ void Map::addReactor(Reactor *reactor) {
 
 // Footholds
 Pos Map::findFloor(Pos pos) {
-	short x = pos.x;
-	short y = pos.y - 100;
-	bool first = true;
-	short maxy = pos.y;
-	unsigned int fh = 0;
+	// Determines where a drop falls using the footholds data
+	// to check the platforms and finds the correct one.
+	// Should have the point of origin passed as the pos parameter
+	short DROP_HEIGHT = 100;
+	short dropX = pos.x;
+	short dropY = pos.y;
+	short dropBounce = pos.y - DROP_HEIGHT;
 	for (size_t i = 0; i < footholds.size(); i++) {
-		if ((x > footholds[i].pos1.x && x < footholds[i].pos2.x) || (x > footholds[i].pos2.x && x < footholds[i].pos1.x)) {
-			if (first) {
-				maxy = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
-				if (maxy >= y) {
-					fh = i;
-					first = false;
-				}
-			}
-			else {
-				short cmax = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
-				if (cmax < maxy && cmax >= y) {
-					fh = i;
-					maxy = cmax;
-				}
+		if (dropX > footholds[i].pos1.x && dropX < footholds[i].pos2.x ||
+			dropX > footholds[i].pos2.x && dropX < footholds[i].pos1.x) {
+			short platformHeight = (short)((float) (dropX - footholds[i].pos1.x)) / (footholds[i].pos2.x - footholds[i].pos1.x) *
+				(footholds[i].pos2.y - footholds[i].pos1.y) + footholds[i].pos1.y;
+			if (dropBounce < platformHeight && platformHeight < dropY) {
+				dropY = platformHeight;
 			}
 		}
 	}
-	return Pos(x, maxy);
+	return Pos(dropX, dropY);
 }
 
 // Mobs
@@ -191,7 +185,6 @@ void Map::removeMob(int id) {
 	if (mobs.find(id) != mobs.end()) {
 		if (mobs[id]->getSpawnID() > -1 && mobspawns[mobs[id]->getSpawnID()].time > -1) // Add spawn point to respawns if mob was spawned by a spawn point.
 			mobrespawns.push_back(MobRespawnInfo(mobs[id]->getSpawnID(), clock()));
-		delete mobs[id];
 		this->mobs.erase(id);
 	}
 }
@@ -200,7 +193,7 @@ void Map::killMobs(Player *player) {
 	hash_map <int, Mob *> mobs = this->mobs;
 	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
 		if (iter->second != 0)
-			Mobs::dieMob(player, iter->second);
+			iter->second->die(player);
 	}
 }
 
@@ -209,7 +202,7 @@ void Map::killMobs(Player *player, int mobid) {
 	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
 			if (iter->second->getMobID() == mobid)
-				Mobs::dieMob(player, iter->second);
+				iter->second->die(player);
 	}
 }
 
@@ -241,7 +234,14 @@ void Map::clearDrops(int time) { // Clear drops based on how long they have been
 
 void Map::showObjects(Player *player) { // Show all Map Objects
 	// Players
-	MapPacket::showPlayers(player, this->players);
+	for (size_t i = 0; i < players.size(); i++) {
+		if (player != players[i] && players[i]->skills->getActiveSkillLevel(9101004) == 0) {
+			PacketCreator packet = MapPacket::playerPacket(players[i]);
+			packet.send(player);
+			// Bug in global; would be fixed here:
+			// Hurricane/Pierce do not display properly if using when someone enters the map
+		}
+	}
 	// NPCs
 	for (size_t i = 0; i < npcs.size(); i++) {
 		NPCPacket::showNPC(player, npcs[i], i);
@@ -261,7 +261,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		if (iter->second != 0)
 			iter->second->showDrop(player);
 	}
-	if (this->info.clock)
+	if (info.clock)
 		Maps::showClock(player);
 }
 
