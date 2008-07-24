@@ -170,25 +170,37 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	int skillid = pack->getInt();
 	if (skillid == 3121004 || skillid == 3221001)
 		pack->skipBytes(4);
+	unsigned char display = pack->getByte(); // Projectile display
+	unsigned char animation = pack->getByte(); // Direction/animation
+	unsigned char w_class = pack->getByte(); // Weapon subclass
+	unsigned char w_speed = pack->getByte(); // Weapon speed
+	pack->skipBytes(4); // Ticks
+	unsigned char slot = pack->getByte(); // Slot
+	pack->skipBytes(1); // second slot byte
+	short csstar = pack->getShort(); // Cash Shop star
+
 	PacketCreator packet;
 	packet.addHeader(SEND_DAMAGE_MOB_RANGED);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(tbyte);
 	if (skillid > 0) {
-		packet.addByte(1);
+		switch (w_class) { // No clue why it does this, but it does
+			case 0x03: packet.addByte(0x07); break; // Bow
+			case 0x04: packet.addByte(0x0D); break; // Crossbow
+			case 0x07: packet.addByte(0x0A); break; // Claw
+		}
 		packet.addInt(skillid);
 	} 
 	else
 		packet.addByte(0);
 	packet.addByte(0);
-	unsigned char display = pack->getByte(); // Projectile display
-	packet.addByte(pack->getByte()); // Direction/animation
-	pack->skipBytes(1); // Weapon subclass
-	packet.addByte(pack->getByte()); // Weapon speed
-	pack->skipBytes(4); // Ticks
-	unsigned char slot = pack->getByte();
-	pack->skipBytes(1); // The other pos byte
-	short csstar = pack->getShort(); // Cash Shop star
+	packet.addByte(animation); 
+	packet.addByte(w_speed);
+	switch (w_class) { // They seem to be static like above
+		case 0x03: packet.addByte(0x07); break;
+		case 0x04: packet.addByte(0x00); break;
+		case 0x07: packet.addByte(0x0A); break;
+	}
 	int itemid = 0;
 	if (csstar > 0) {
 		itemid = player->inv->getItem(5, csstar)->id;
@@ -200,13 +212,12 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	}
 	else
 		itemid = pack->getInt();
-	packet.addByte(slot); // Inventory slot, I guess?
 	packet.addInt(itemid);
 	pack->skipBytes(1); // 0x00 = AoE, 0x41 = other
 	for (char i = 0; i < targets; i++) {
 		int mobid = pack->getInt();
 		packet.addInt(mobid);
-		packet.addByte(-1);
+		packet.addByte(0x06);
 		pack->skipBytes(14);
 		for (char j = 0; j < hits; j++) {
 			int damage = pack->getInt();
