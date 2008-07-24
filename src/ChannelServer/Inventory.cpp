@@ -98,7 +98,7 @@ private:
 vector <ItemTimer::ITimer> ItemTimer::timers;
 ItemTimer * ItemTimer::singleton = 0;
 
-void Inventory::stopTimerPlayer(Player *player) {
+void Inventory::stopTimersPlayer(Player *player) {
 	ItemTimer::Instance()->stop(player);
 }
 
