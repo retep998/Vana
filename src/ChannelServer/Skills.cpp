@@ -31,7 +31,7 @@ hash_map <int, SkillsInfo> Skills::skillsinfo;
 
 #define BEGINNER_SKILL(x) (x<1003)
 
-class SkillTimer: public Timer::TimerHandler {
+class SkillTimer : public Timer::TimerHandler {
 public:
 	static SkillTimer * Instance() {
 		if (singleton == 0)
@@ -127,9 +127,9 @@ private:
 		char act[50];
 		short value;
 	};
-	static vector <STimer> timers;
-	static vector <SActTimer> acttimers;
-	static hash_map <int, bool> act;
+	vector <STimer> timers;
+	vector <SActTimer> acttimers;
+	hash_map <int, bool> act;
 	void handle (Timer *timer, int id) {
 		int skill;
 		Player *player;
@@ -179,8 +179,9 @@ private:
 		act.erase(id);
 	}
 };
+SkillTimer * SkillTimer::singleton = 0;
 
-class CoolTimer: public Timer::TimerHandler {
+class CoolTimer : public Timer::TimerHandler {
 public:
 	static CoolTimer * Instance() {
 		if (singleton == 0)
@@ -238,7 +239,7 @@ private:
 		int skill;
 		int time;
 	};
-	static vector <CTimer> timers;
+	vector <CTimer> timers;
 	void handle (Timer *timer, int id) {
 		int skill;
 		Player *player;
@@ -260,11 +261,6 @@ private:
 		}
 	}
 };
-vector <SkillTimer::STimer> SkillTimer::timers;
-vector <SkillTimer::SActTimer> SkillTimer::acttimers;
-vector <CoolTimer::CTimer> CoolTimer::timers;
-hash_map <int, bool> SkillTimer::act;
-SkillTimer * SkillTimer::singleton = 0;
 CoolTimer * CoolTimer::singleton = 0;
 
 void Skills::stopTimersPlayer(Player *player) {
