@@ -1,3 +1,4 @@
+-- Exit of Training Camp
 if state == 0 then
 	addText("You have finished all your trainings. Good job. ");
 	addText("You seem to be ready to start with the journey right away! Good , I will let you on to the next place.");

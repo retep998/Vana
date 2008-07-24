@@ -1,3 +1,4 @@
+-- Thomas Swift
 if getMap() == 100000000 then
 	if state == 0 then
 		addText("I can take you to Amoria Village. Are you ready to go?");
