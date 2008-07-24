@@ -41,7 +41,6 @@ public:
 	void setInt64(__int64 int64, size_t pos);
 	void addShort(short shrt);
 	void setShort(short shrt, size_t pos);
-	void addString(const char *str, size_t slen);
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
 	void addPos(Pos pos); // Positions

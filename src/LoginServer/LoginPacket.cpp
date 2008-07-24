@@ -103,8 +103,7 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 	PacketCreator packet;
 	packet.addHeader(SEND_SHOW_WORLD);
 	packet.addByte(world->id);
-	packet.addShort(world->name.size());
-	packet.addString(world->name.c_str(), world->name.size());
+	packet.addString(world->name);
 	packet.addByte(world->ribbon);
 	packet.addShort(0);
 	packet.addShort(100);
