@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaScriptable.h"
 #include "Player.h"
 #include "Players.h"
+#include "Map.h"
 #include "Maps.h"
 #include "Mobs.h"
 #include "Reactors.h"

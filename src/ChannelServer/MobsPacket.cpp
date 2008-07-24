@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobsPacket.h"
 #include "SendHeader.h"
 #include "ReadPacket.h"
+#include "Map.h"
 #include "Maps.h"
 
 void MobsPacket::controlMob(Player *player, Mob *mob) {

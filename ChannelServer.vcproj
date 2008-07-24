@@ -234,6 +234,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Map.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Maps.cpp"
 					>
 				</File>
@@ -441,6 +445,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\LuaScriptable.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Map.h"
 					>
 				</File>
 				<File

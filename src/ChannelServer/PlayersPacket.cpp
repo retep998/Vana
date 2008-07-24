@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PlayersPacket.h"
 #include "SendHeader.h"
+#include "Map.h"
 #include "Maps.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
