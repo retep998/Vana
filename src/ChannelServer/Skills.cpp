@@ -683,7 +683,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	short addedinfo = 0;
 	unsigned char level = packet->getByte();
 	unsigned char type = 0;
-	int cooltime = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].cooltime;
+	int cooltime = Skills::skills[skillid][level].cooltime;
 	switch (skillid) {
 		case 1121001: // Monster Magnet processing
 		case 1221001:
@@ -711,26 +711,26 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	}
 	if (cooltime > 0)
 		Skills::startCooldown(player, skillid, cooltime);
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0) {
+	if (skills[skillid][level].mp > 0) {
 		if (player->skills->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
-			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp * mprate) / 100;
+			int mploss = (skills[skillid][level].mp * mprate) / 100;
 			player->setMP(player->getMP() - mploss, 1);
 		}
 		else
-			player->setMP(player->getMP() - skills[skillid][player->skills->getSkillLevel(skillid)].mp, 1);
+			player->setMP(player->getMP() - skills[skillid][level].mp, 1);
 	}
 	else
 		player->setMP(player->getMP(), 1);
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].hp > 0) {
-		player->setHP(player->getHP()-skills[skillid][player->skills->getSkillLevel(skillid)].hp);
+	if (skills[skillid][level].hp > 0) {
+		player->setHP(player->getHP()-skills[skillid][level].hp);
 	}
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].item > 0) {	
-		Inventory::takeItem(player, skills[skillid][player->skills->getSkillLevel(skillid)].item, skills[skillid][player->skills->getSkillLevel(skillid)].itemcount);
+	if (skills[skillid][level].item > 0) {	
+		Inventory::takeItem(player, skills[skillid][level].item, skills[skillid][level].itemcount);
 	}
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].hpP > 0) {	
+	if (skills[skillid][level].hpP > 0) {	
 		//TODO PARTY
-		int healrate = skills[skillid][player->skills->getSkillLevel(skillid)].hpP/1;
+		int healrate = skills[skillid][level].hpP/1;
 		if (healrate > 100)
 			healrate = 100;
 		player->setHP(player->getHP() + healrate*player->getMHP()/100);
@@ -738,8 +738,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	SkillsPacket::showSkill(player, skillid, level); 
 	///
 	if (skillid == 1301007 || skillid == 9101008) { // Hyper Body
-		player->setMHP(player->getRMHP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].x)/100);
-		player->setMMP(player->getRMMP()*(100 + skills[skillid][player->skills->getSkillLevel(skillid)].y)/100);
+		player->setMHP(player->getRMHP()*(100 + skills[skillid][level].x)/100);
+		player->setMMP(player->getRMMP()*(100 + skills[skillid][level].y)/100);
 	}
 	///
 	else if (skillid == 9101000) { // GM Heal+Dispell
