@@ -347,3 +347,11 @@ void InventoryPacket::useItemEffect(Player *player, int itemid) {
 	packet.addInt(itemid);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
+
+void InventoryPacket::updateSlots(Player *player, char inventory, char slots) {
+	PacketCreator packet;
+	packet.addHeader(SEND_UPDATE_INVENTORY_SLOTS);
+	packet.addByte(inventory);
+	packet.addByte(slots);
+	packet.send(player);
+}

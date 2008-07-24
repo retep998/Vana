@@ -811,7 +811,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = Drops::equips[mountid].tamingmob;
 		}
 		else if (skillid == 4121006) { // For Shadow Claw
-			for (short s = 1; s <= player->inv->getMaxslots(2); s++) {
+			for (short s = 1; s <= player->inv->getMaxSlots(2); s++) {
 				Item *item = player->inv->getItem(2, s);
 				if (item == 0)
 					continue;

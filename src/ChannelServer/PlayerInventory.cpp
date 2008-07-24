@@ -25,3 +25,11 @@ void PlayerInventory::setMesos(int mesos, bool is) {
 	this->mesos = mesos;
 	PlayerPacket::updateStat(player, 0x40000, mesos, is);
 }
+void PlayerInventory::addMaxSlots(char inventory, char rows) { // Useful with .lua
+	maxslots[inventory - 1] += (rows * 4);
+	if (maxslots[inventory - 1] > 100)
+		maxslots[inventory - 1] = 100;
+	if (maxslots[inventory - 1] < 24) // Retard.
+		maxslots[inventory - 1] = 24;
+	InventoryPacket::updateSlots(player, inventory, maxslots[inventory - 1]);
+}

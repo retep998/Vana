@@ -206,7 +206,7 @@ Equip * Inventory::setEquipStats(int equipid) {
 
 bool Inventory::addEquip(Player *player, Equip *equip, bool is) {
 	short slot = 0;
-	for (short s = 1; s <= player->inv->getMaxslots(1); s++) {
+	for (short s = 1; s <= player->inv->getMaxSlots(1); s++) {
 		if (!player->inv->getEquip(s)) {
 			slot = s;
 			break;
@@ -224,7 +224,7 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 	player->inv->changeItemAmount(item->id, item->amount);
 	char inv = Drops::items[item->id].type;
 	short freeslot = 0;
-	for (short s = 1; s <= player->inv->getMaxslots(inv); s++) {
+	for (short s = 1; s <= player->inv->getMaxSlots(inv); s++) {
 		Item *olditem = player->inv->getItem(inv, s);
 		if (olditem != 0) {
 			if (!ISRECHARGEABLE(item->id) && olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
@@ -347,7 +347,7 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 void Inventory::takeItem(Player *player, int itemid, int howmany) {
 	player->inv->changeItemAmount(itemid, -howmany);
 	char inv = Drops::items[itemid].type;
-	for (short i = 1; i <= player->inv->getMaxslots(inv); i++) {
+	for (short i = 1; i <= player->inv->getMaxSlots(inv); i++) {
 		Item *item = player->inv->getItem(inv, i);
 		if (item == 0)
 			continue;

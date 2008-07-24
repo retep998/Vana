@@ -230,6 +230,7 @@ public:
 	void saveStats();
 	void saveEquips();
 	void saveItems();
+	void saveInventorySlots();
 	void saveVariables();
 	void save();
 	void setOnline(bool online);
