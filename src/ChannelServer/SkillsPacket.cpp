@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Skills.h"
 #include "SendHeader.h"
+#include "Map.h"
 #include "Maps.h"
 
 void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel) {

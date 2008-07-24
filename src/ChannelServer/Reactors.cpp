@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "InventoryPacket.h"
 #include "PacketCreator.h"
+#include "Map.h"
 #include "Maps.h"
 #include "Mobs.h"
 #include "Drops.h"
