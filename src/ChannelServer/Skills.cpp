@@ -89,7 +89,7 @@ public:
 	void stopSkills (Player *player) {
 		for (size_t i = timers.size(); i > 0; i--) {
 			if (player == timers[i-1].player) {
-				Skills::endSkill(player, timers[i-1].skill, true);
+				Skills::endSkill(player, timers[i-1].skill);
 				Timer::Instance()->cancelTimer(timers[i-1].id);
 			}
 		} 
