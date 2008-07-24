@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan, int exprate, int questexprate, int mesorate, int droprate) {
 	PacketCreator packet;
-	packet.addHeader(INTER_WORLD_CONNECT);
+	packet.addShort(INTER_WORLD_CONNECT);
 	packet.addByte(worldid);
 	packet.addShort(port);
 	packet.addInt(maxchan);
@@ -37,7 +37,7 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, cha
 
 void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port) {
 	PacketCreator packet;
-	packet.addHeader(INTER_LOGIN_CHANNEL_CONNECT);
+	packet.addShort(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.addByte(worldid);
 	packet.addString(ip);
 	packet.addShort(port);
@@ -46,7 +46,7 @@ void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *play
 
 void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, int channel, int charid) {
 	PacketCreator packet;
-	packet.addHeader(INTER_NEW_PLAYER);
+	packet.addShort(INTER_NEW_PLAYER);
 	packet.addInt(channel);
 	packet.addInt(charid);
 	packet.send(player);

@@ -23,21 +23,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void FamePacket::sendError(Player *player, int reason) {
 	PacketCreator packet;
-	packet.addHeader(SEND_FAME);
+	packet.addShort(SEND_FAME);
 	packet.addInt(reason);
 	packet.send(player);
 }
 
 void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame) {
 	PacketCreator packet;
-	packet.addHeader(SEND_FAME);
+	packet.addShort(SEND_FAME);
 	packet.addByte(0x05);
 	packet.addString(player->getName());
 	packet.addByte(type);
 	packet.send(player2);
 
 	packet = PacketCreator();
-	packet.addHeader(SEND_FAME);
+	packet.addShort(SEND_FAME);
 	packet.addByte(0x00);
 	packet.addString(player2->getName());
 	packet.addByte(type);

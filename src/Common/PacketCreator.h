@@ -34,7 +34,6 @@ class PacketCreator {
 public:
 	PacketCreator() : pos(0) { }
 
-	void addHeader(short headerid);
 	void addInt(int intg);
 	void setInt(int intg, size_t pos);
 	void addInt64(__int64 int64);
@@ -60,11 +59,6 @@ private:
 	size_t pos;
 	unsigned char packet[MAX_LEN];
 };
-
-inline
-void PacketCreator::addHeader(short headerid) {
-	addShort(headerid);
-}
 
 inline
 void PacketCreator::addInt(int intg) {

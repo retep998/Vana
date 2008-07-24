@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
 	PacketCreator packet;
-	packet.addHeader(SEND_NOTICE);
+	packet.addShort(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(1);
 	packet.addString(msg);
@@ -32,7 +32,7 @@ void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
 
 void ServerPacket::changeScrollingHeader(const string &msg) {
 	PacketCreator packet;
-	packet.addHeader(SEND_NOTICE);
+	packet.addShort(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(1);
 	packet.addString(msg);
@@ -44,7 +44,7 @@ void ServerPacket::changeScrollingHeader(const string &msg) {
 
 void ServerPacket::scrollingHeaderOff() {
 	PacketCreator packet;
-	packet.addHeader(SEND_NOTICE);
+	packet.addShort(SEND_NOTICE);
 	packet.addByte(4);
 	packet.addByte(0);
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();

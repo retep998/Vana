@@ -31,7 +31,7 @@ using std::vector;
 
 void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
 	PacketCreator packet;
-	packet.addHeader(SEND_NOTE);
+	packet.addShort(SEND_NOTE);
 	packet.addByte(1);
 	packet.addShort(questid);
 	packet.addByte(1);
@@ -40,7 +40,7 @@ void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
 	packet.addShort(0);
 	packet.send(player);
 	packet = PacketCreator();
-	packet.addHeader(SEND_UPDATE_QUEST);
+	packet.addShort(SEND_UPDATE_QUEST);
 	packet.addByte(8);
 	packet.addShort(questid);
 	packet.addInt(npcid);
@@ -50,7 +50,7 @@ void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
 
 void QuestsPacket::updateQuest(Player *player, Quest quest) {
 	PacketCreator packet;
-	packet.addHeader(SEND_NOTE);
+	packet.addShort(SEND_NOTE);
 	packet.addByte(1);
 	packet.addShort(quest.id);
 	packet.addByte(1);
@@ -67,32 +67,32 @@ void QuestsPacket::updateQuest(Player *player, Quest quest) {
 
 void QuestsPacket::doneQuest(Player *player, int questid) {
 	PacketCreator packet;
-	packet.addHeader(SEND_FINISH_QUEST);
+	packet.addShort(SEND_FINISH_QUEST);
 	packet.addShort(questid);
 	packet.send(player);
 }
 
 void QuestsPacket::questFinish(Player *player, short questid, int npcid, short nextquest, __int64 time) {
 	PacketCreator packet;
-	packet.addHeader(SEND_NOTE);
+	packet.addShort(SEND_NOTE);
 	packet.addByte(1);
 	packet.addShort(questid);
 	packet.addByte(2);
 	packet.addInt64(time);
 	packet.send(player);
 	packet = PacketCreator();
-	packet.addHeader(SEND_UPDATE_QUEST);
+	packet.addShort(SEND_UPDATE_QUEST);
 	packet.addByte(8);
 	packet.addShort(questid); 
 	packet.addInt(npcid); 
 	packet.addShort(nextquest); 
 	packet.send(player);
 	packet = PacketCreator();
-	packet.addHeader(SEND_GAIN_ITEM);
+	packet.addShort(SEND_GAIN_ITEM);
 	packet.addByte(9);
 	packet.send(player);
 	packet = PacketCreator();
-	packet.addHeader(SEND_SHOW_SKILL);
+	packet.addShort(SEND_SHOW_SKILL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(9);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
@@ -100,7 +100,7 @@ void QuestsPacket::questFinish(Player *player, short questid, int npcid, short n
 
 void QuestsPacket::giveItem(Player *player, int itemid, int amount) {
 	PacketCreator packet;
-	packet.addHeader(SEND_GAIN_ITEM); 
+	packet.addShort(SEND_GAIN_ITEM); 
 	packet.addByte(3);
 	packet.addByte(1); // Number of different items (itemid and amount gets repeated)
 	packet.addInt(itemid);
@@ -110,7 +110,7 @@ void QuestsPacket::giveItem(Player *player, int itemid, int amount) {
 
 void QuestsPacket::giveMesos(Player *player, int amount) {
 	PacketCreator packet;
-	packet.addHeader(SEND_NOTE);
+	packet.addShort(SEND_NOTE);
 	packet.addByte(5);
 	packet.addInt(amount);
 	packet.send(player);

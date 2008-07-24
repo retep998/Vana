@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player, char type, int playerid, const vector<int> &receivers, const string &chat) {
 	PacketCreator packet;
-	packet.addHeader(INTER_GROUP_CHAT);
+	packet.addShort(INTER_GROUP_CHAT);
 	packet.addInt(playerid);
 	packet.addByte(type);
 	packet.addString(chat);
@@ -36,7 +36,7 @@ void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player,
 
 void WorldServerConnectPlayerPacket::updateLevel(WorldServerConnectPlayer *player, int playerid, int level) {
 	PacketCreator packet;
-	packet.addHeader(INTER_UPDATE_LEVEL);
+	packet.addShort(INTER_UPDATE_LEVEL);
 	packet.addInt(playerid);
 	packet.addInt(level);
 	packet.send(player);
@@ -44,7 +44,7 @@ void WorldServerConnectPlayerPacket::updateLevel(WorldServerConnectPlayer *playe
 
 void WorldServerConnectPlayerPacket::updateJob(WorldServerConnectPlayer *player, int playerid, int job) {
 	PacketCreator packet;
-	packet.addHeader(INTER_UPDATE_JOB);
+	packet.addShort(INTER_UPDATE_JOB);
 	packet.addInt(playerid);
 	packet.addInt(job);
 	packet.send(player);
@@ -52,7 +52,7 @@ void WorldServerConnectPlayerPacket::updateJob(WorldServerConnectPlayer *player,
 
 void WorldServerConnectPlayerPacket::updateMap(WorldServerConnectPlayer *player, int playerid, int map) {
 	PacketCreator packet;
-	packet.addHeader(INTER_UPDATE_MAP);
+	packet.addShort(INTER_UPDATE_MAP);
 	packet.addInt(playerid);
 	packet.addInt(map);
 	packet.send(player);
@@ -60,7 +60,7 @@ void WorldServerConnectPlayerPacket::updateMap(WorldServerConnectPlayer *player,
 
 void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *player, char type, int playerid, int target) {
 	PacketCreator packet;
-	packet.addHeader(INTER_PARTY_OPERATION);
+	packet.addShort(INTER_PARTY_OPERATION);
 	packet.addByte(type);
 	packet.addInt(playerid);
 	if (target != 0) {
@@ -71,7 +71,7 @@ void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *pl
 
 void WorldServerConnectPlayerPacket::partyInvite(WorldServerConnectPlayer *player, int playerid, const string &invitee) {
 	PacketCreator packet;
-	packet.addHeader(INTER_PARTY_OPERATION);
+	packet.addShort(INTER_PARTY_OPERATION);
 	packet.addByte(0x04);
 	packet.addInt(playerid);
 	packet.addString(invitee);
@@ -80,7 +80,7 @@ void WorldServerConnectPlayerPacket::partyInvite(WorldServerConnectPlayer *playe
 
 void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel) {
 	PacketCreator packet;
-	packet.addHeader(INTER_PLAYER_CHANGE_CHANNEL);
+	packet.addShort(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.addInt(playerid);
 	packet.addInt(channel);
 	packet.send(player);
@@ -88,7 +88,7 @@ void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlaye
 
 void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *player, int playerid, const string &name, int map, int job, int level) {
 	PacketCreator packet;
-	packet.addHeader(INTER_REGISTER_PLAYER);
+	packet.addShort(INTER_REGISTER_PLAYER);
 	packet.addInt(playerid);
 	packet.addString(name);
 	packet.addInt(map);
@@ -99,14 +99,14 @@ void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *pl
 
 void WorldServerConnectPlayerPacket::removePlayer(WorldServerConnectPlayer *player, int playerid) {
 	PacketCreator packet;
-	packet.addHeader(INTER_REMOVE_PLAYER);
+	packet.addShort(INTER_REMOVE_PLAYER);
 	packet.addInt(playerid);
 	packet.send(player);
 }
 
 void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player, int playerid, const string &findee_name) {
 	PacketCreator packet;
-	packet.addHeader(INTER_FIND);
+	packet.addShort(INTER_FIND);
 	packet.addInt(playerid);
 	packet.addString(findee_name);
 	packet.send(player);
@@ -114,7 +114,7 @@ void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player
 
 void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *player, int playerid, const string &whisperee, const string &message) {
 	PacketCreator packet;
-	packet.addHeader(INTER_WHISPER);
+	packet.addShort(INTER_WHISPER);
 	packet.addInt(playerid);
 	packet.addString(whisperee);
 	packet.addString(message);
@@ -123,7 +123,7 @@ void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *pla
 
 void WorldServerConnectPlayerPacket::scrollingHeader(WorldServerConnectPlayer *player, const string &message) {
 	PacketCreator packet;
-	packet.addHeader(INTER_SCROLLING_HEADER);
+	packet.addShort(INTER_SCROLLING_HEADER);
 	packet.addString(message);
 	packet.send(player);
 }

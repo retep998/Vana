@@ -30,7 +30,7 @@ void Shops::showShop(Player *player, int id) {
 	if (shops.find(id) == shops.end())
 		return;
 	PacketCreator packet;
-	packet.addHeader(SEND_SHOP_OPEN);
+	packet.addShort(SEND_SHOP_OPEN);
 	packet.addInt(shops[id].npc);
 	packet.addShort(shops[id].items.size() + rechargables.size());
 	for (size_t i = 0; i < shops[id].items.size(); i++) {

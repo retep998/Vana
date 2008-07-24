@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, string pass, string ip) {
 	PacketCreator packet;
-	packet.addHeader(INTER_PASSWORD);
+	packet.addShort(INTER_PASSWORD);
 	packet.addString(pass);
 	packet.addString(ip);
 	packet.addByte(player->getType());

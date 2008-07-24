@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void DropsPacket::drop(Drop *drop, Pos origin) {
 	PacketCreator packet;
-	packet.addHeader(SEND_DROP_ITEM);
+	packet.addShort(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getID());
 	packet.addByte(drop->isMesos());
@@ -44,7 +44,7 @@ void DropsPacket::drop(Drop *drop, Pos origin) {
 
 void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
 	PacketCreator packet;
-	packet.addHeader(SEND_DROP_ITEM);
+	packet.addShort(SEND_DROP_ITEM);
 	packet.addByte(1);
 	packet.addInt(drop->getID());
 	packet.addByte(drop->isMesos());
@@ -64,7 +64,7 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
 
 void DropsPacket::showDrop(Player *player, Drop *drop) {
 	PacketCreator packet;
-	packet.addHeader(SEND_DROP_ITEM);
+	packet.addShort(SEND_DROP_ITEM);
 	packet.addByte(2);
 	packet.addInt(drop->getID());
 	packet.addByte(drop->isMesos());
@@ -82,7 +82,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 
 void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 	PacketCreator packet;
-	packet.addHeader(SEND_NOTE);
+	packet.addShort(SEND_NOTE);
 	packet.addByte(0);
 	if (id == 0)
 		packet.addByte(-1);
@@ -104,7 +104,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 
 void DropsPacket::takeDrop(Player *player, Drop *drop) {
 	PacketCreator packet;
-	packet.addHeader(SEND_TAKE_DROP);
+	packet.addShort(SEND_TAKE_DROP);
 	packet.addByte(2);
 	packet.addInt(drop->getID());
 	packet.addInt(player->getPlayerid());
@@ -118,14 +118,14 @@ void DropsPacket::takeDrop(Player *player, Drop *drop) {
 
 void DropsPacket::dontTake(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SEND_MOVE_ITEM);
+	packet.addShort(SEND_MOVE_ITEM);
 	packet.addShort(1);
 	packet.send(player);
 }
 
 void DropsPacket::removeDrop(Drop *drop) {
 	PacketCreator packet;
-	packet.addHeader(SEND_TAKE_DROP);
+	packet.addShort(SEND_TAKE_DROP);
 	packet.addByte(0);
 	packet.addInt(drop->getID());
 	Maps::maps[drop->getMap()]->sendPacket(packet);
@@ -133,7 +133,7 @@ void DropsPacket::removeDrop(Drop *drop) {
 
 void DropsPacket::explodeDrop(Drop *drop) {
 	PacketCreator packet;
-	packet.addHeader(SEND_TAKE_DROP);
+	packet.addShort(SEND_TAKE_DROP);
 	packet.addByte(4);
 	packet.addInt(drop->getID());
 	packet.addShort(655);
