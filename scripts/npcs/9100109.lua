@@ -26,6 +26,8 @@ elseif state == 1 then
 		giveItem(5220000, -1);
 		random = getRandomNumber(#items); -- generate random number between 1 and the amount of items in the items array
 		giveItem(items[random], 1);
+		addText("You have obtained #b#t" .. items[random] .. "##k.");
+		sendNext();
 		endNPC();
 	else
 		endNPC();
