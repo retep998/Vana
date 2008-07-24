@@ -115,7 +115,7 @@ Pos Map::findFloor(Pos pos) {
 	// Should have the point of origin passed as the pos parameter
 	short DROP_HEIGHT = 100;
 	short dropX = pos.x;
-	short dropY = pos.y;
+	short dropY = SHRT_MAX;
 	short dropBounce = pos.y - DROP_HEIGHT;
 	for (size_t i = 0; i < footholds.size(); i++) {
 		if (dropX > footholds[i].pos1.x && dropX < footholds[i].pos2.x ||
