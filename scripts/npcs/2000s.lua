@@ -1,5 +1,6 @@
+-- Roger: Apple Quest start
 if state == 0 then
-	addText("Hey there, Pretty~ I am Roger who teachs you adroable new Maplers with lots of information.");
+	addText("Hey there, Pretty~ I am Roger who teaches you adorable new Maplers lots of information.");
 	sendNext();
 elseif state == 1 then
 	addText("I know you are busy! Please spare me some time~ I can teach you some useful information! Ahahaha!");
@@ -17,7 +18,7 @@ elseif state == 3 then
 		addText("You will feel stronger. Open the Item window and double click to consume. Hey, It's very simple to open the Item window. Just press #bI#k on your keyboard.");
 		sendNext();
 	else
-		addText("I can't believe you just have turned down a attractive guys like me!");
+		addText("I can't believe you have just turned down an attractive guy like me!");
 		sendNext();
 		endNPC();
 	end
