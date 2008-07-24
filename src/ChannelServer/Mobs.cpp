@@ -240,7 +240,19 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			break;
 		case 1111008: // Shout
 		case 1311006: // Dragon Roar
-		case 5001001: break; // Super Dragon Roar
+		case 5001001: // Super Dragon Roar
+			break; 
+		case 1311005: { // Sacrifice
+			int level = player->skills->getSkillLevel(skillid);
+			int hp_damage_x = Skills::skills[skillid][level].x;
+			int hp_damage = totaldmg * hp_damage_x / 100;
+			int hp = player->getHP();
+			if (hp - hp_damage < 1)
+				player->setHP(1);
+			else
+				player->setHP(hp - hp_damage);
+			break;
+		}
 		default:
 			if (totaldmg > 0)
 				Skills::addCombo(player);
