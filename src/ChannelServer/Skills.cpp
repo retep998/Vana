@@ -620,6 +620,26 @@ void Skills::init() {
 	skillsinfo[1121002].player.push_back(player);
 	skillsinfo[1221002].player.push_back(player);
 	skillsinfo[1321002].player.push_back(player);
+	// Super Sayan thing[blue] - 5111005
+	player.type = 0x02;
+	player.byte = 1;
+	player.value = SKILL_MORPH;
+	skillsinfo[5111005].player.push_back(player);
+	map.type = 0x02;
+	map.byte = 1;
+	map.value = SKILL_MORPH;
+	map.val = false;
+	skillsinfo[5111005].map.push_back(map);
+	// Super Sayan thing[orange] - 5121003
+	player.type = 0x02;
+	player.byte = 1;
+	player.value = SKILL_MORPH;
+	skillsinfo[5121003].player.push_back(player);
+	map.type = 0x02;
+	map.byte = 1;
+	map.value = SKILL_MORPH;
+	map.val = false;
+	skillsinfo[5121003].map.push_back(map);
 	// Mana Reflection - 2121002, 2221002, and 2321002
 	player.type = 0x40;
 	player.byte = 1;
@@ -749,7 +769,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	// Reset player/map types to 0
 	memset(playerskill.types, 0, 8*sizeof(unsigned char));
 	memset(mapskill.types, 0, 8*sizeof(unsigned char));
-	for (unsigned int i = 0; i < skillsinfo[skillid].player.size(); i++) {
+	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		playerskill.types[skillsinfo[skillid].player[i].byte-1] += skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed change for maxed darksight
@@ -769,6 +789,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 			case SKILL_PROP: value = skills[skillid][level].prop; break;
+			case SKILL_MORPH: value = skills[skillid][level].morph; break;
 			case SKILL_LV: value = level; break;
 		}
 		if (skillid == 3121002 || skillid == 3221002) { // For Sharp Eyes
@@ -803,7 +824,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		}
 		playerskill.vals.push_back(value);
 	}
-	for (unsigned int i = 0; i < skillsinfo[skillid].map.size(); i++) {
+	for (size_t i = 0; i < skillsinfo[skillid].map.size(); i++) {
 		mapskill.types[skillsinfo[skillid].map[i].byte-1]+= skillsinfo[skillid].map[i].type;
 		char val = skillsinfo[skillid].map[i].value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed update for maxed darksight
@@ -823,6 +844,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 			case SKILL_PROP: value = skills[skillid][level].prop; break;
+			case SKILL_MORPH: value = skills[skillid][level].morph; break;
 			case SKILL_LV: value = level; break;
 		}
 		if (skillid == 4111002) { // For Shadow Partner
@@ -851,10 +873,10 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	player->skills->setSkillMapInfo(skillid, mapskill);
 	player->skills->setSkillMapEnterInfo(skillid, mapenterskill);
 	SkillTimer::Instance()->stop(player, skillid);
-	if (skillsinfo[skillid].bact.size()>0) {
+	if (skillsinfo[skillid].bact.size() > 0) {
 		SkillTimer::Instance()->stop(player, skillid, skillsinfo[skillid].act.name);
 	}
-	if (skillsinfo[skillid].bact.size()>0) {
+	if (skillsinfo[skillid].bact.size() > 0) {
 		int value = 0;
 		switch(skillsinfo[skillid].act.value) {
 			case SKILL_X: value = skills[skillid][level].x; break;
@@ -867,6 +889,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_ACC: value = skills[skillid][level].acc; break;
 			case SKILL_AVO: value = skills[skillid][level].avo; break;
 			case SKILL_PROP: value = skills[skillid][level].prop; break;
+			case SKILL_MORPH: value = skills[skillid][level].morph; break;
 			case SKILL_LV: value = level; break;
 		}
 		SkillTimer::Instance()->setSkillTimer(player, skillid, skillsinfo[skillid].act.name, value, skillsinfo[skillid].act.time);
