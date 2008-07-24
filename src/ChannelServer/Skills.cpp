@@ -208,12 +208,12 @@ public:
 			if (player == timers[i-1].player) {
 				Timer::Instance()->cancelTimer(timers[i-1].id);
 			}
-		} 
+		}
 	}
 	void stopKill (Player *player) {
 		for (size_t i = timers.size(); i > 0; i--) {
 			if (player == timers[i-1].player) {
-				Skills::stopCooldown(player, timers[i].id);
+				Skills::stopCooldown(player, timers[i-1].id);
 				Timer::Instance()->cancelTimer(timers[i-1].id);
 			}
 		} 
@@ -711,7 +711,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	}
 	if (cooltime > 0)
 		Skills::startCooldown(player, skillid, cooltime);
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0 && !(player->skills->getActiveSkillLevel(2121004) > 0 || player->skills->getActiveSkillLevel(2221004) > 0 || player->skills->getActiveSkillLevel(2321004) > 0)) {
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0) {
 		if (player->skills->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
 			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp * mprate) / 100;
@@ -903,11 +903,11 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 void Skills::useAttackSkill(Player *player, int skillid) {
 	if (skills.find(skillid) == skills.end())
 		return;
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0 && !(player->skills->getActiveSkillLevel(2121004) > 0 || player->skills->getActiveSkillLevel(2221004) > 0 || player->skills->getActiveSkillLevel(2321004) > 0)) {
-		if (player->skills->getActiveSkillLevel(3121008)>0) { // Reduced MP useage for Concentration
+	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0) {
+		if (player->skills->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
-			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp*mprate)/100;
-			player->setMP(player->getMP()-mploss, 1);
+			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp * mprate) / 100;
+			player->setMP(player->getMP() - mploss, 1);
 		}
 		else {
 			int sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
@@ -918,6 +918,8 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 				player->setMP(player->getMP() - skills[skillid][player->skills->getSkillLevel(skillid)].mp, 1);
 		}
 	}
+	else
+		player->setMP(player->getMP(), 1);
 	if (skills[skillid][player->skills->getSkillLevel(skillid)].hp > 0) {
 		player->setHP(player->getHP()-skills[skillid][player->skills->getSkillLevel(skillid)].hp);
 	}

@@ -257,12 +257,14 @@ void Player::setHP(int hp, bool is) {
 }
 
 void Player::setMP(int mp, bool is) {
-	if (mp < 0)
-		this->mp = 0;
-	else if (mp > mmp)
-		this->mp = mmp;
-	else
-		this->mp = mp;
+	if (!(skills->getActiveSkillLevel(2121004) > 0 || skills->getActiveSkillLevel(2221004) > 0 || skills->getActiveSkillLevel(2321004) > 0)) {
+		if (mp < 0)
+			this->mp = 0;
+		else if (mp > mmp)
+			this->mp = mmp;
+		else
+			this->mp = mp;
+	}
 	PlayerPacket::updateStat(this, 0x1000, static_cast<short>(this->mp), is);
 }
 
