@@ -267,7 +267,7 @@ hash_map <int, bool> SkillTimer::act;
 SkillTimer * SkillTimer::singleton = 0;
 CoolTimer * CoolTimer::singleton = 0;
 
-void Skills::stopTimerPlayer(Player *player) {
+void Skills::stopTimersPlayer(Player *player) {
 	SkillTimer::Instance()->stop(player);
 }
 
@@ -999,4 +999,8 @@ bool Skills::isCooling(Player *player, int skillid) {
 	if (CoolTimer::Instance()->coolTime(player, skillid) > 0)
 		return true;
 	return false;
+}
+
+void Skills::stopCooldownTimersPlayer(Player *player) {
+	CoolTimer::Instance()->stop(player);
 }

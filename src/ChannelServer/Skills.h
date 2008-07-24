@@ -148,7 +148,8 @@ namespace Skills {
 	void cancelSkill(Player *player, ReadPacket *packet);
 	void useSkill(Player *player, ReadPacket *packet);
 	void useAttackSkill(Player *player, int skillid);
-	void stopTimerPlayer(Player *player);
+	void stopTimersPlayer(Player *player);
+	void stopCooldownTimersPlayer(Player *player);
 	void heal(Player *player, short value, int skillid);
 	void endSkill(Player *player, int skillid);
 	void stopSkill(Player *player, int skillid);

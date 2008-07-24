@@ -31,7 +31,7 @@ struct Item;
 
 namespace Inventory {
 	void startTimer();
-	void stopTimerPlayer(Player *player);
+	void stopTimersPlayer(Player *player);
 	extern bool isCash(int itemid);
 	extern ItemTimer * timer;
 	extern Equip * setEquipStats(int equipid);
