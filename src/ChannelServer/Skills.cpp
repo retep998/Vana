@@ -731,8 +731,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	if (skills[skillid][player->skills->getSkillLevel(skillid)].hpP > 0) {	
 		//TODO PARTY
 		int healrate = skills[skillid][player->skills->getSkillLevel(skillid)].hpP/1;
-		if (healrate>100)
-			healrate=100;
+		if (healrate > 100)
+			healrate = 100;
 		player->setHP(player->getHP() + healrate*player->getMHP()/100);
 	}
 	SkillsPacket::showSkill(player, skillid, level); 
