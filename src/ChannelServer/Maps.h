@@ -22,11 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include <hash_map>
 #include <vector>
-#include <queue>
+#include <string>
+#include <time.h>
 #include <boost/scoped_ptr.hpp>
 
 using std::vector;
-using std::queue;
 using stdext::hash_map;
 using boost::scoped_ptr;
 
@@ -93,6 +93,13 @@ struct MobSpawnInfo {
 	int time;
 };
 typedef vector <MobSpawnInfo> MobSpawnsInfo;
+
+struct MobRespawnInfo {
+	MobRespawnInfo(int spawnid, clock_t killed) : spawnid(spawnid), killed(killed) {}
+	int spawnid;
+	clock_t killed;
+};
+typedef vector <MobRespawnInfo> MobRespawnsInfo;
 
 namespace Maps {
 	extern MapTimer *timer;
@@ -163,8 +170,7 @@ public:
 
 	// Mobs
 	void addMobSpawn(MobSpawnInfo spawn);
-	void queueMobSpawn(int spawnid);
-	void checkSpawn();
+	void checkSpawn(clock_t time);
 	void addMob(Mob *mob);
 	Mob * getMob(int id) {
 		if (this->mobs.find(id) != mobs.end())
@@ -205,7 +211,9 @@ public:
 	void clearDrops(int time);
 	// Show all map objects
 	void showObjects(Player *player);
+	// Packet Stuff
 	void sendPacket(PacketCreator &packet, Player *player = 0);
+	void showMessage(string message, char type);
 private:
 	int mapid;
 	MapInfo info;
@@ -216,7 +224,7 @@ private:
 	ReactorSpawnsInfo reactorspawns;
 	vector <Reactor *> reactors;
 	MobSpawnsInfo mobspawns;
-	queue<int> respawns;
+	MobRespawnsInfo mobrespawns;
 	hash_map<int, Mob *> mobs;
 	scoped_ptr<LoopingId> mobids;
 	hash_map<int, Drop *> drops;
