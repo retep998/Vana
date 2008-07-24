@@ -439,9 +439,7 @@ int LuaExports::showMapMessage(lua_State *luaVm) {
 	string msg = lua_tostring(luaVm, -2);
 	int type = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
-	for (size_t i = 0; i < Maps::maps[map]->getNumPlayers(); i++) {
-		PlayerPacket::showMessage(Maps::maps[map]->getPlayer(i), msg, type);
-	}
+	Maps::maps[map]->showMessage(msg, type);
 	return 1;
 }
 

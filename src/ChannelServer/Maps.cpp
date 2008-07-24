@@ -37,6 +37,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <string>
 
+using std::string;
+
 hash_map <int, Map *> Maps::maps;
 
 class MapTimer: public Timer::TimerHandler {
@@ -137,20 +139,18 @@ Pos Map::findFloor(Pos pos) {
 // Mobs
 void Map::addMobSpawn(MobSpawnInfo spawn) {
 	mobspawns.push_back(spawn);
-	// Queue up spawn point for initial spawning
-	respawns.push(mobspawns.size() - 1);
+	new Mob(mapid, spawn.id, spawn.pos, mobspawns.size()-1, spawn.fh);
 }
 
-void Map::queueMobSpawn(int spawnid) {
-	respawns.push(spawnid);
-}
-
-void Map::checkSpawn() {
+void Map::checkSpawn(clock_t time) {
 	// (Re-)spawn Mobs
-	while (!respawns.empty()) {
-		int i = respawns.front();
-		respawns.pop();
-		new Mob(mapid, mobspawns[i].id, mobspawns[i].pos, i, mobspawns[i].fh);
+	for (size_t i = 0; i < mobrespawns.size(); i++) {
+		int id = mobrespawns[i].spawnid;
+		if ((time - mobrespawns[i].killed) > (mobspawns[i].time * CLOCKS_PER_SEC)) {
+			new Mob(mapid, mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
+			mobrespawns.erase(mobrespawns.begin()+i);
+			i--;
+		}
 	}
 }
 
@@ -189,6 +189,8 @@ void Map::updateMobControl(Mob *mob) {
 
 void Map::removeMob(int id) {
 	if (mobs.find(id) != mobs.end()) {
+		if (mobs[id]->getSpawnID() > -1 && mobspawns[mobs[id]->getSpawnID()].time > -1) // Add spawn point to respawns if mob was spawned by a spawn point.
+			mobrespawns.push_back(MobRespawnInfo(mobs[id]->getSpawnID(), clock()));
 		delete mobs[id];
 		this->mobs.erase(id);
 	}
@@ -269,6 +271,11 @@ void Map::sendPacket(PacketCreator &packet, Player *player) {
 			packet.send(this->players[i]);
 		}
 	}
+}
+
+void Map::showMessage(string message, char type) {
+	for (size_t i = 0; i < players.size(); i++)
+		PlayerPacket::showMessage(players[i], message, type);
 }
 
 /** Maps namespace **/
@@ -374,7 +381,7 @@ void Maps::showClock(Player *player) {
 }
 
 void Maps::mapTimer(int mapid) {
-	maps[mapid]->checkSpawn();
+	maps[mapid]->checkSpawn(clock());
 	maps[mapid]->clearDrops(clock());
 }
 

@@ -106,9 +106,6 @@ void Mobs::dieMob(Player *player, Mob *mob) {
 		spawnMobPos(player->getMap(), mobinfo[mob->getMobID()].summon[i], mob->getPos());
 	}
 
-	if (mob->getSpawnID() > -1) // Add spawn point to respawns queue if mob was spawned by a spawn point.
-		Maps::maps[player->getMap()]->queueMobSpawn(mob->getSpawnID());
-
 	player->quests->updateQuestMob(mob->getMobID());
 	Maps::maps[player->getMap()]->removeMob(mob->getID());
 }
