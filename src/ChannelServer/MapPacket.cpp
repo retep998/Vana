@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SEND_SHOW_PLAYER);
+	packet.addShort(SEND_SHOW_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addString(player->getName());
 	packet.addInt(0);
@@ -138,14 +138,14 @@ void MapPacket::showPlayer(Player *player) {
 
 void MapPacket::removePlayer(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SEND_REMOVE_PLAYER);
+	packet.addShort(SEND_REMOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
 void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SEND_CHANGE_MAP);
+	packet.addShort(SEND_CHANGE_MAP);
 	packet.addInt(ChannelServer::Instance()->getChannel()); // Channel
 	packet.addShort(0); // 2?
 	packet.addShort(0);
@@ -162,7 +162,7 @@ void MapPacket::changeMap(Player *player) {
 
 void MapPacket::portalBlocked(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SEND_UPDATE_STAT);
+	packet.addShort(SEND_UPDATE_STAT);
 	packet.addByte(1);
 	packet.addInt(0);
 	packet.send(player);
@@ -170,7 +170,7 @@ void MapPacket::portalBlocked(Player *player) {
 
 void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec) {
 	PacketCreator packet;
-	packet.addHeader(SEND_TIME);
+	packet.addShort(SEND_TIME);
 	packet.addByte(1);
 	packet.addByte(hour);
 	packet.addByte(min);
@@ -181,7 +181,7 @@ void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min,
 
 void MapPacket::showTimer(Player *player, int sec) {
 	PacketCreator packet;
-	packet.addHeader(SEND_TIME);
+	packet.addShort(SEND_TIME);
 	packet.addByte(2);
 	packet.addInt(sec);
 
@@ -190,14 +190,14 @@ void MapPacket::showTimer(Player *player, int sec) {
 
 void MapPacket::makeApple(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SEND_MAKE_APPLE);  
+	packet.addShort(SEND_MAKE_APPLE);  
 	packet.send(player);
 }
 
 // Change music
 void MapPacket::changeMusic(int mapid, const string &musicname) {
 	PacketCreator packet;
-	packet.addHeader(SEND_MAP_EFFECT);
+	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
 	packet.addString(musicname);
 	Maps::maps[mapid]->sendPacket(packet);
@@ -211,7 +211,7 @@ void MapPacket::sendSound(int mapid, const string &soundname) {
 	// Coconut/Victory = Victory
 	// Coconut/Failed = Lose 
 	PacketCreator packet = PacketCreator();
-	packet.addHeader(SEND_MAP_EFFECT);
+	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x04);
 	packet.addString(soundname);
 	Maps::maps[mapid]->sendPacket(packet);
@@ -225,7 +225,7 @@ void MapPacket::sendEvent(int mapid, const string &eventname) {
 	// event/coconut/victory = Victory
 	// event/coconut/lose = Lose
 	PacketCreator packet = PacketCreator();
-	packet.addHeader(SEND_MAP_EFFECT);
+	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x03);
 	packet.addString(eventname);
 	Maps::maps[mapid]->sendPacket(packet);

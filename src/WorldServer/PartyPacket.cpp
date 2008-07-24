@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PartyPacket::giveLeader(WorldServerAcceptPlayer *player, int playerid, int target, bool is) {
 	PacketCreator packet;
-	packet.addHeader(INTER_FORWARD_TO);
+	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
-	packet.addHeader(SEND_PARTY_ACTION);
+	packet.addShort(SEND_PARTY_ACTION);
 	packet.addByte(0x1A);
 	packet.addInt(target);
 	packet.addByte(is);
@@ -36,9 +36,9 @@ void PartyPacket::giveLeader(WorldServerAcceptPlayer *player, int playerid, int 
 
 void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int playerid, const string &inviter) {
 	PacketCreator packet;
-	packet.addHeader(INTER_FORWARD_TO);
+	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
-	packet.addHeader(SEND_PARTY_ACTION);
+	packet.addShort(SEND_PARTY_ACTION);
 	packet.addByte(0x04);
 	packet.addInt(Players::Instance()->getPlayerFromName(inviter)->party);
 	packet.addString(inviter);
@@ -49,7 +49,7 @@ void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int playerid, co
 
 void PartyPacket::createParty(WorldServerAcceptPlayer *player, int playerid) {
 	PacketCreator packet;
-	packet.addHeader(INTER_FORWARD_TO);
+	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
 	packet.addShort(SEND_PARTY_ACTION);
 	packet.addByte(0x08);
@@ -61,7 +61,7 @@ void PartyPacket::createParty(WorldServerAcceptPlayer *player, int playerid) {
 
 void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int playerid) {
 	PacketCreator packet;
-	packet.addHeader(INTER_FORWARD_TO);
+	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
 	packet.addShort(SEND_PARTY_ACTION);
 	packet.addByte(0x0C);
@@ -76,7 +76,7 @@ void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int playerid) {
 
 void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int playerid, int target) {
 	PacketCreator packet;
-	packet.addHeader(INTER_FORWARD_TO);
+	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
 	packet.addShort(SEND_PARTY_ACTION);
 	switch(type){
@@ -115,7 +115,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int pl
 
 void PartyPacket::partyError(WorldServerAcceptPlayer *player, int playerid, char error) {
 	PacketCreator packet;
-	packet.addHeader(INTER_FORWARD_TO);
+	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
 	packet.addShort(SEND_PARTY_ACTION);
 	packet.addByte(error);

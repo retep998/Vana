@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int i) {
 	PacketCreator packet;
-	packet.addHeader(SEND_SHOW_NPC);
+	packet.addShort(SEND_SHOW_NPC);
 	packet.addInt(i+0x64);
 	packet.addInt(npc.id);
 	packet.addShort(npc.x);
@@ -35,7 +35,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int i) {
 	packet.addByte(1);
 	packet.send(player);
 	packet = PacketCreator();
-	packet.addHeader(SEND_SHOW_NPC2);
+	packet.addShort(SEND_SHOW_NPC2);
 	packet.addByte(1);
 	packet.addInt(i+0x64);
 	packet.addInt(npc.id);

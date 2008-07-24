@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
 	PacketCreator packet;
-	packet.addHeader(SEND_MOVE_PLAYER);
+	packet.addShort(SEND_MOVE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(0);
 	packet.addBuffer(buf, size);
@@ -33,7 +33,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 
 void PlayersPacket::faceExperiment(Player *player, int face) {
 	PacketCreator packet;
-	packet.addHeader(SEND_FACE_EXPERIMENT);
+	packet.addShort(SEND_FACE_EXPERIMENT);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(face);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
@@ -41,7 +41,7 @@ void PlayersPacket::faceExperiment(Player *player, int face) {
 
 void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly) {
 	PacketCreator packet;
-	packet.addHeader(SEND_CHAT);
+	packet.addShort(SEND_CHAT);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(player->isGM());
 	packet.addString(msg);
@@ -51,7 +51,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly)
 
 void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int fake, PGMRInfo pgmr) {
 	PacketCreator packet;
-	packet.addHeader(SEND_DAMAGE_PLAYER);
+	packet.addShort(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(type);
 	if (pgmr.reduction)
@@ -79,7 +79,7 @@ void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char
 
 void PlayersPacket::showMessage(const string &msg, char type) {
 	PacketCreator packet;
-	packet.addHeader(SEND_NOTICE); 
+	packet.addShort(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addString(msg);
 	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
@@ -90,7 +90,7 @@ void PlayersPacket::showMessage(const string &msg, char type) {
 
 void PlayersPacket::showInfo(Player *player, Player *getinfo) {
 	PacketCreator packet;
-	packet.addHeader(SEND_PLAYER_INFO);
+	packet.addShort(SEND_PLAYER_INFO);
 	packet.addInt(getinfo->getPlayerid());
 	packet.addByte(getinfo->getLevel());
 	packet.addShort(getinfo->getJob());
@@ -110,7 +110,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo) {
 
 void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, int channel, const string &message) {
 	PacketCreator packet;
-	packet.addHeader(SEND_COMMAND_RESPOND);
+	packet.addShort(SEND_COMMAND_RESPOND);
 	packet.addByte(0x12);
 	packet.addString(whisperer_name);
 	packet.addShort(channel);
@@ -120,7 +120,7 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, 
 
 void PlayersPacket::findPlayer(Player *player, const string &name, int map, unsigned char is, bool is_channel) {
 	PacketCreator packet;
-	packet.addHeader(SEND_COMMAND_RESPOND);
+	packet.addShort(SEND_COMMAND_RESPOND);
 	if (map != -1) {
 		packet.addByte(0x09);
 		packet.addString(name);

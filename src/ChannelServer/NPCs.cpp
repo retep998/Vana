@@ -174,7 +174,7 @@ void NPC::run() {
 
 PacketCreator & NPC::npcPacket(char type) {
 	PacketCreator packet;
-	packet.addHeader(SEND_NPC_TALK);
+	packet.addShort(SEND_NPC_TALK);
 	packet.addByte(4);
 	packet.addInt(npcid);
 	packet.addByte(type);

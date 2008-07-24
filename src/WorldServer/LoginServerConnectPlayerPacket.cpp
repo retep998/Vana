@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *player, int channel, const string &ip, short port) {
 	PacketCreator packet;
-	packet.addHeader(INTER_REGISTER_CHANNEL);
+	packet.addShort(INTER_REGISTER_CHANNEL);
 	packet.addInt(channel);
 	packet.addString(ip);
 	packet.addShort(port);
@@ -30,7 +30,7 @@ void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *p
 
 void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *player, int channel, int population) {
 	PacketCreator packet;
-	packet.addHeader(INTER_UPDATE_CHANNEL_POP);
+	packet.addShort(INTER_UPDATE_CHANNEL_POP);
 	packet.addInt(channel);
 	packet.addInt(population);
 	

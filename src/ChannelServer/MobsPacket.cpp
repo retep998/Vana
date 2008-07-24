@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void MobsPacket::controlMob(Player *player, Mob *mob) {
 	PacketCreator packet;
-	packet.addHeader(SEND_CONTROL_MOB);
+	packet.addShort(SEND_CONTROL_MOB);
 	packet.addByte(1);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
@@ -45,7 +45,7 @@ void MobsPacket::controlMob(Player *player, Mob *mob) {
 
 void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	PacketCreator packet;
-	packet.addHeader(SEND_CONTROL_MOB);
+	packet.addShort(SEND_CONTROL_MOB);
 	packet.addByte(0);
 	packet.addInt(mob->getID());
 	packet.send(player);
@@ -53,7 +53,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 
 void MobsPacket::spawnMob(Mob *mob) {
 	PacketCreator packet;
-	packet.addHeader(SEND_SHOW_MOB);
+	packet.addShort(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
 	packet.addInt(mob->getMobID());
@@ -72,7 +72,7 @@ void MobsPacket::spawnMob(Mob *mob) {
 
 void MobsPacket::showMob(Player *player, Mob *mob) {
 	PacketCreator packet;
-	packet.addHeader(SEND_SHOW_MOB);
+	packet.addShort(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
 	packet.addInt(mob->getMobID());
@@ -91,7 +91,7 @@ void MobsPacket::showMob(Player *player, Mob *mob) {
 
 void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp) {
 	PacketCreator packet;
-	packet.addHeader(SEND_MOVE_MOB_RESPONSE);
+	packet.addShort(SEND_MOVE_MOB_RESPONSE);
 	packet.addInt(mobid);
 	packet.addShort(moveid);
 	packet.addByte(useskill);
@@ -101,7 +101,7 @@ void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool u
 
 void MobsPacket::moveMob(Player *player, int mobid, bool useskill, int skill, unsigned char *buf, int len) {
 	PacketCreator packet;
-	packet.addHeader(SEND_MOVE_MOB);
+	packet.addShort(SEND_MOVE_MOB);
 	packet.addInt(mobid);
 	packet.addByte(useskill);
 	packet.addInt(skill);
@@ -122,7 +122,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 		s4211006 = true;
 	}
 	PacketCreator packet;
-	packet.addHeader(SEND_DAMAGE_MOB);
+	packet.addShort(SEND_DAMAGE_MOB);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(tbyte);
 	if (skillid > 0) {
@@ -180,7 +180,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	short csstar = pack->getShort(); // Cash Shop star
 
 	PacketCreator packet;
-	packet.addHeader(SEND_DAMAGE_MOB_RANGED);
+	packet.addShort(SEND_DAMAGE_MOB_RANGED);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(tbyte);
 	if (skillid > 0) {
@@ -234,7 +234,7 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
 	PacketCreator packet;
-	packet.addHeader(SEND_DAMAGE_MOB_SPELL);
+	packet.addShort(SEND_DAMAGE_MOB_SPELL);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(tbyte);
 	packet.addByte(1); // Spells are always a skill
@@ -271,7 +271,7 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 
 void MobsPacket::showHP(Player *player, int mobid, char per) {
 	PacketCreator packet;
-	packet.addHeader(SEND_SHOW_MOB_HP);
+	packet.addShort(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
 	packet.send(player);
@@ -279,7 +279,7 @@ void MobsPacket::showHP(Player *player, int mobid, char per) {
 // Miniboss HP
 void MobsPacket::showMinibossHP(Player *player, int mobid, char per) {
 	PacketCreator packet;
-	packet.addHeader(SEND_SHOW_MOB_HP);
+	packet.addShort(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
 	Maps::maps[player->getMap()]->sendPacket(packet);
@@ -287,7 +287,7 @@ void MobsPacket::showMinibossHP(Player *player, int mobid, char per) {
 // Boss hp
 void MobsPacket::showBossHP(Player *player, const MobHPInfo &mob) {
 	PacketCreator packet;
-	packet.addHeader(SEND_MAP_EFFECT);
+	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x05);
 	packet.addInt(mob.mobid);
 	packet.addInt(mob.hp);
@@ -299,7 +299,7 @@ void MobsPacket::showBossHP(Player *player, const MobHPInfo &mob) {
 
 void MobsPacket::dieMob(Mob *mob) {
 	PacketCreator packet;
-	packet.addHeader(SEND_KILL_MOB);
+	packet.addShort(SEND_KILL_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
 	Maps::maps[mob->getMapID()]->sendPacket(packet);
