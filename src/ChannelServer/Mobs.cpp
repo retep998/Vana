@@ -253,6 +253,36 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 				player->setHP(hp - hp_damage);
 			break;
 		}
+		case 1211002: { // Charged Blow
+			int acb_level = player->skills->getSkillLevel(1220010);
+			short acb_x = 0;
+			if (acb_level > 0)
+				acb_x = Skills::skills[1220010][acb_level].x;
+			int charge_id = 0;
+			if (player->skills->getActiveSkillLevel(1211003) > 0) // Fire - Sword
+				charge_id = 1211003;
+			else if (player->skills->getActiveSkillLevel(1211004) > 0) // Fire - BW
+				charge_id = 1211004;
+			else if (player->skills->getActiveSkillLevel(1211005) > 0) // Ice - Sword
+				charge_id = 1211005;
+			else if (player->skills->getActiveSkillLevel(1211006) > 0) // Ice - BW
+				charge_id = 1211006;
+			else if (player->skills->getActiveSkillLevel(1211007) > 0) // Lightning - Sword
+				charge_id = 1211007;
+			else if (player->skills->getActiveSkillLevel(1211008) > 0) // Lightning - BW
+				charge_id = 1211008;
+			else if (player->skills->getActiveSkillLevel(1221003) > 0) // Holy - Sword
+				charge_id = 1221003;
+			else if (player->skills->getActiveSkillLevel(1221004) > 0) // Holy - BW
+				charge_id = 1221004;
+			if (charge_id == 0) {
+				// Hacking
+				return;
+			}
+			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randInt(99) > (acb_x - 1))) 
+				Skills::endSkill(player, charge_id);
+			break;
+		}
 		default:
 			if (totaldmg > 0)
 				Skills::addCombo(player);
