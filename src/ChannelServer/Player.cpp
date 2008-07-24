@@ -50,7 +50,7 @@ Player::~Player() {
 			setOnline(false);
 		}
 		Skills::stopTimersPlayer(this);
-		//Skills::stopCooldownTimersPlayer(this);
+		Skills::stopCooldownTimersPlayer(this);
 		Inventory::stopTimersPlayer(this);
 		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::maps[this->getMap()]->removePlayer(this);

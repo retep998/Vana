@@ -192,13 +192,13 @@ public:
 		CTimer timer;
 		timer.id = Timer::Instance()->setTimer(time, this);
 		timer.player = player;
-		timer.skill = skill;
+		timer.skill = (skill + 10000000);
 		timer.time = time;
 		timers.push_back(timer);
 	}
 	void stop (Player *player, int skill) {
 		for (size_t i = 0; i < timers.size(); i++) {
-			if (player == timers[i].player && timers[i].skill == skill) {
+			if (player == timers[i].player && timers[i].skill == (skill + 10000000)) {
 				Timer::Instance()->cancelTimer(timers[i].id);
 				break;
 			}
@@ -222,7 +222,7 @@ public:
 	int coolTime(Player *player, int skillid) {
 		int timeleft = 0;
 		for (size_t i = 0; i < timers.size(); i++) {
-			if (player == timers[i].player && timers[i].skill == skillid) {
+			if (player == timers[i].player && timers[i].skill == (skillid + 10000000)) {
 				timeleft = Timer::Instance()->timeLeft(timers[i].id);
 			}
 		}
@@ -231,8 +231,8 @@ public:
 private:
 	static CoolTimer *singleton;
 	CoolTimer() {};
-	CoolTimer(const SkillTimer&);
-	CoolTimer& operator=(const SkillTimer&);
+	CoolTimer(const CoolTimer&);
+	CoolTimer& operator=(const CoolTimer&);
 	struct CTimer {
 		int id;
 		Player *player;
@@ -250,7 +250,7 @@ private:
 				break;
 			}
 		}
-		Skills::stopCooldown(player, skill);
+		Skills::stopCooldown(player, (skill - 10000000));
 	}
 	void remove (int id) {
 		for (size_t i = 0; i < timers.size(); i++) {
