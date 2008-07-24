@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Mobs.h"
-#include "Map.h"
 #include "Maps.h"
 #include "Player.h"
 #include "MobsPacket.h"

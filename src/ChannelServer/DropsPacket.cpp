@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DropsPacket.h"
 #include "PacketCreator.h"
-#include "Map.h"
 #include "Maps.h"
 #include "Player.h"
 #include "Drops.h"

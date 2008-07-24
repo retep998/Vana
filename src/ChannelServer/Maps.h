@@ -18,13 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MAPS_H
 #define MAPS_H
 
+#include "Map.h"
 #include <hash_map>
 #include <string>
 
 using std::string;
 using stdext::hash_map;
 
-class Map;
 class Player;
 class ReadPacket;
 
