@@ -140,7 +140,7 @@ void Map::checkSpawn(clock_t time) {
 	// (Re-)spawn Mobs
 	for (size_t i = 0; i < mobrespawns.size(); i++) {
 		int id = mobrespawns[i].spawnid;
-		if ((time - mobrespawns[i].killed) > (mobspawns[i].time * CLOCKS_PER_SEC)) {
+		if ((time - mobrespawns[i].killed) > (mobspawns[id].time * CLOCKS_PER_SEC)) {
 			new Mob(mapid, mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
 			mobrespawns.erase(mobrespawns.begin()+i);
 			i--;
