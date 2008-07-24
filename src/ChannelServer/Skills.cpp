@@ -86,10 +86,10 @@ public:
 			}
 		} 
 	}
-	void stopKill (Player *player) {
+	void stopSkills (Player *player) {
 		for (size_t i = timers.size(); i > 0; i--) {
 			if (player == timers[i-1].player) {
-				Skills::endSkill(player, timers[i].id);
+				Skills::endSkill(player, timers[i-1].skill, true);
 				Timer::Instance()->cancelTimer(timers[i-1].id);
 			}
 		} 
@@ -211,14 +211,6 @@ public:
 			}
 		}
 	}
-	void stopKill (Player *player) {
-		for (size_t i = timers.size(); i > 0; i--) {
-			if (player == timers[i-1].player) {
-				Skills::stopCooldown(player, timers[i-1].id);
-				Timer::Instance()->cancelTimer(timers[i-1].id);
-			}
-		} 
-	}
 	int coolTime(Player *player, int skillid) {
 		int timeleft = 0;
 		for (size_t i = 0; i < timers.size(); i++) {
@@ -265,6 +257,10 @@ CoolTimer * CoolTimer::singleton = 0;
 
 void Skills::stopTimersPlayer(Player *player) {
 	SkillTimer::Instance()->stop(player);
+}
+
+void Skills::stopAllBuffs(Player *player) {
+	SkillTimer::Instance()->stopSkills(player);
 }
 
 void Skills::init() {
@@ -927,7 +923,7 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 		Skills::startCooldown(player, skillid, cooltime);
 }
 
-void Skills::endSkill(Player *player, int skill) {
+void Skills::endSkill(Player *player, int skill, bool nodisplay) {
 	/// 
 	if (skill == 1301007 || skill == 9101008) { // Hyper Body
 		player->setMHP(player->getRMHP());
@@ -941,7 +937,8 @@ void Skills::endSkill(Player *player, int skill) {
 	}
 	if (skill == 9101004) // GM Hide
 		MapPacket::showPlayer(player);
-	SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill), player->skills->getSkillMapInfo(skill));
+	if (nodisplay)
+		SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill), player->skills->getSkillMapInfo(skill));
 	player->skills->deleteSkillMapEnterInfo(skill);
 	player->skills->setActiveSkillLevel(skill, 0);
 }

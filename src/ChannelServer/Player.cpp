@@ -591,3 +591,9 @@ void Player::setOnline(bool online) {
 			", characters.online = " << mysqlpp::quote << online << " WHERE characters.id = " << mysqlpp::quote << getPlayerid();
 	query.exec();
 }
+
+void Player::acceptDeath(int mapid) {
+	setHP(50, false);
+	Skills::stopAllBuffs(this);
+	Maps::changeMap(this, mapid, 0);
+}
