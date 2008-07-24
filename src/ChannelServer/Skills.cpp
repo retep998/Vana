@@ -949,8 +949,8 @@ void Skills::endSkill(Player *player, int skill) {
 }
 
 void Skills::heal(Player *player, short value, int skillid) {
-	if (player->getHP() < player->getMHP()) {
-		player->setHP(player->getHP()+ value);
+	if (player->getHP() < player->getMHP() && player->getHP() > 0) {
+		player->setHP(player->getHP() + value);
 		SkillsPacket::healHP(player, value);
 	}
 	SkillTimer::Instance()->setSkillTimer(player, skillid, "heal", value, 5000);
