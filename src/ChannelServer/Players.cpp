@@ -473,7 +473,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 					mob->setHP(mob->getHP() - (pgmr.damage * pgmr.reduction / 100));
 					Mobs::displayHPBars(player, mob);
 					if (mob->getHP() <= 0)
-						Mobs::dieMob(player, mob);
+						mob->die(player);
 				}
 			}
 			break;

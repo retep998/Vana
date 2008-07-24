@@ -143,17 +143,6 @@ void MapPacket::removePlayer(Player *player) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MapPacket::showPlayers(Player *player, vector <Player*> players) {
-	for (size_t i = 0; i < players.size(); i++) {
-		if (player->getPlayerid() != players[i]->getPlayerid() && players[i]->skills->getActiveSkillLevel(9101004) == 0) {
-			PacketCreator packet = playerPacket(players[i]);
-			packet.send(player);
-			// Bug in global; would be fixed here: 
-			// Hurricane/Pierce do not display properly if using when someone enters the map
-		}
-	}
-}
-
 void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
 	packet.addHeader(SEND_CHANGE_MAP);

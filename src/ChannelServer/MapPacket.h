@@ -28,7 +28,6 @@ class PacketCreator;
 namespace MapPacket {
 	PacketCreator playerPacket(Player *player);
 	void showPlayer(Player *player);
-	void showPlayers(Player *player, vector <Player*> players);
 	void removePlayer(Player *player);
 	void changeMap(Player *player);
 	void portalBlocked(Player *player); // Blocked portals

@@ -77,7 +77,6 @@ namespace Mobs {
 	void checkSpawn(int mapid);
 	void spawnMob(Player *player, int mobid, int amount = 1);
 	void spawnMobPos(int mapid, int mobid, Pos pos);
-	void dieMob(Player *player, Mob *mob);
 };
 
 class Mob {
@@ -140,6 +139,7 @@ public:
 	Player * getControl() {
 		return control;
 	}
+	void die(Player *player);
 private:
 	Pos pos;
 	int id;
