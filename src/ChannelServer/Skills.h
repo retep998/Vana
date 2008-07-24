@@ -149,9 +149,10 @@ namespace Skills {
 	void useSkill(Player *player, ReadPacket *packet);
 	void useAttackSkill(Player *player, int skillid);
 	void stopTimersPlayer(Player *player);
+	void stopAllBuffs(Player *player);
 	void stopCooldownTimersPlayer(Player *player);
 	void heal(Player *player, short value, int skillid);
-	void endSkill(Player *player, int skillid);
+	void endSkill(Player *player, int skillid, bool nodisplay = false);
 	void stopSkill(Player *player, int skillid);
 	void addCombo(Player *player); // Combo Attack 
 	void clearCombo(Player *player); // Combo Attack

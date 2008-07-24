@@ -235,6 +235,7 @@ public:
 	void saveVariables();
 	void save();
 	void setOnline(bool online);
+	void acceptDeath(int mapid);
 	boost::scoped_ptr<PlayerInventory> inv;
 	boost::scoped_ptr<PlayerSkills> skills;
 	boost::scoped_ptr<PlayerQuests> quests;

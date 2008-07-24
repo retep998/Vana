@@ -101,25 +101,6 @@ int PlayerSkills::getActiveSkillLevel(int skillid) {
 	return activelevels[skillid];
 }
 
-size_t PlayerSkills::getActiveSkillsNum() {
-	size_t j = 0;
-	for (hash_map<int, int>::iterator iter = activelevels.begin(); iter != activelevels.end(); iter++) {
-		j++;
-	}
-	return j;
-}
-
-int PlayerSkills::getActiveSkillsID(size_t i) {
-	size_t j = 0;
-	for (hash_map<int, int>::iterator iter = activelevels.begin(); iter != activelevels.end(); iter++) {
-		if (j == i) {
-			return iter->first;
-		} 
-		j++;
-	}
-	return 0;
-}
-
 void PlayerSkills::setSkillMapEnterInfo(int skillid, vector <SkillMapActiveInfo> skill) {
 	// TEMP //
 	for (unsigned int i=0; i<activemapenterskill.size(); i++) { 

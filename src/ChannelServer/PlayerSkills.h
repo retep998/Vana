@@ -47,8 +47,6 @@ public:
 	SkillActiveInfo getSkillPlayerInfo(int skillid);
 	SkillActiveInfo getSkillMapInfo(int skillid);
 	int getActiveSkillLevel(int skillid);
-	size_t getActiveSkillsNum();
-	int getActiveSkillsID(size_t i);
 
 	void setMaxSkillLevel(int skillid, int maxlevel) { // Set max level for 4th job skills
 		maxlevels[skillid] = maxlevel;
