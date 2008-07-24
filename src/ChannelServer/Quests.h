@@ -86,25 +86,4 @@ namespace Quests {
 	void giveMesos(Player *player, int amount);
 };
 
-class PlayerQuests {
-public:
-	PlayerQuests(Player *player) : player(player) { }
-	void addQuest(int questid, int npcid);
-	void updateQuestMob(int mobid);
-	void checkDone(Quest &quest);
-	void finishQuest(short questid, int npcid);
-	bool isQuestActive(short questid) {
-		for (unsigned int i=0; i<quests.size(); i++) {
-			if (quests[i].id == questid) {
-				return 1;
-			}
-		}
-		return 0;
-	}
-private:
-	Player *player;
-	vector <Quest> quests;
-	vector <QuestComp> questscomp;
-};
-
 #endif
