@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Player.h"
 #include "PlayerPacket.h"
-#include "Maps.h" 
+#include "Maps.h"
 #include "Mobs.h"
 #include "Shops.h"
 #include "Inventory.h"
@@ -185,8 +185,10 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "item") == 0) {
 			if (strlen(next_token) == 0) return;
 			int itemid = atoi(strtok_s(0, " ", &next_token));
-			if (Drops::items.find(itemid) == Drops::items.end() && Drops::equips.find(itemid) == Drops::equips.end())
+			if (Drops::items.find(itemid) == Drops::items.end() && Drops::equips.find(itemid) == Drops::equips.end()) {
+				PlayerPacket::showMessage(player, "Invalid item ID", 6);
 				return;
+			}
 			int count = 1;
 			if (strlen(next_token) > 0)
 				count = atoi(next_token);
