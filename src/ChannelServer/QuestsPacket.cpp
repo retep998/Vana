@@ -21,6 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "SendHeader.h"
 #include "Maps.h"
+#include <iomanip>
+#include <string>
+#include <sstream>
+#include <vector>
+
+using std::string;
+using std::vector;
 
 void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
 	PacketCreator packet;
@@ -47,18 +54,12 @@ void QuestsPacket::updateQuest(Player *player, Quest quest) {
 	packet.addByte(1);
 	packet.addShort(quest.id);
 	packet.addByte(1);
-	char info[50];
-	strcpy_s(info, 50, "");
-	for (unsigned int i=0; i<quest.mobs.size(); i++) {
-		char temp[4];
-		temp[0] = quest.mobs[i].count/100+'0';
-		temp[1] = quest.mobs[i].count/10%10+'0';
-		temp[2] = quest.mobs[i].count%10+'0';
-		temp[3] = '\0';
-		strcat_s(info, 50, temp);
+	
+	std::ostringstream info;
+	for (size_t i = 0; i < quest.mobs.size(); i++) {
+		info << std::setw(3) << std::setfill('0') << quest.mobs[i].count << '\0';
 	}
-	packet.addShort(strlen(info));
-	packet.addString(info, strlen(info));
+	packet.addString(info.str());
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.send(player);

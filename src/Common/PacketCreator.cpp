@@ -80,15 +80,6 @@ void PacketCreator::addString(const string &str, size_t len) {
 	pos += len;
 }
 
-void PacketCreator::addString(const char *str, size_t slen) {
-	size_t rlen = strlen(str);
-	strncpy_s((char*)packet+pos, slen+1, str, slen);
-	for (size_t i = rlen; i < slen; i++) {
-		packet[pos+i] = 0;
-	}
-	pos += slen;
-}
-
 void PacketCreator::addString(const string &str) {
 	size_t len = str.size();
 	addShort(len);

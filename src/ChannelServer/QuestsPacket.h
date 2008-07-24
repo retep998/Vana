@@ -18,12 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef QUESTSPACK_H
 #define QUESTSPACK_H
 
-#include <vector>
-
-using std::vector;
-
 class Player;
-
 struct Quest;
 
 namespace QuestsPacket {
