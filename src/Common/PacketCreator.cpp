@@ -74,7 +74,7 @@ void PacketCreator::addString(const string &str, size_t len) {
 		std::cout << "ERROR: addString used with length shorter than string size." << std::endl; // TODO: Throw exception
 	}
 	strncpy_s((char *) packet + pos, MAX_LEN -pos, str.c_str(), slen);
-	for (int i = slen; i < len; i++) {
+	for (size_t i = slen; i < len; i++) {
 		packet[pos+i] = 0;
 	}
 	pos += len;
