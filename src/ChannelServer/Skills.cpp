@@ -923,7 +923,7 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 		Skills::startCooldown(player, skillid, cooltime);
 }
 
-void Skills::endSkill(Player *player, int skill, bool nodisplay) {
+void Skills::endSkill(Player *player, int skill) {
 	/// 
 	if (skill == 1301007 || skill == 9101008) { // Hyper Body
 		player->setMHP(player->getRMHP());
@@ -937,8 +937,7 @@ void Skills::endSkill(Player *player, int skill, bool nodisplay) {
 	}
 	if (skill == 9101004) // GM Hide
 		MapPacket::showPlayer(player);
-	if (nodisplay)
-		SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill), player->skills->getSkillMapInfo(skill));
+	SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill), player->skills->getSkillMapInfo(skill));
 	player->skills->deleteSkillMapEnterInfo(skill);
 	player->skills->setActiveSkillLevel(skill, 0);
 }
