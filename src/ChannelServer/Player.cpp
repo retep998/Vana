@@ -107,6 +107,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 
 void Player::playerConnect(ReadPacket *packet) {
 	int id = packet->getInt();
+	unsigned char maxslots[5] = {0};
 	if (!Connectable::Instance()->checkPlayer(id)) {
 		//hacking
 		disconnect();
@@ -151,6 +152,12 @@ void Player::playerConnect(ReadPacket *packet) {
 	map = res[0]["map"];
 	mappos = (unsigned char) res[0]["pos"];
 	gm = res[0]["gm"];
+	maxslots[0] = (unsigned char)res[0]["i_equip_s"];
+	maxslots[1] = (unsigned char)res[0]["i_use_s"];
+	maxslots[2] = (unsigned char)res[0]["i_setup_s"];
+	maxslots[3] = (unsigned char)res[0]["i_etc_s"];
+	maxslots[4] = (unsigned char)res[0]["i_cash_s"];
+	inv->setMaxSlots(maxslots);
 
 	inv->setMesosStart(res[0]["mesos"]);
 
@@ -511,7 +518,7 @@ void Player::saveItems() {
 
 	bool firstrun = true;
 	for (char i = 2; i <= 5; i++) {
-		for (short s = 1; s <= inv->getMaxslots(i); s++) {
+		for (short s = 1; s <= inv->getMaxSlots(i); s++) {
 			Item *item = inv->getItem(i, s);
 			if (item == 0)
 				continue;
@@ -529,6 +536,18 @@ void Player::saveItems() {
 				<< mysqlpp::quote << item->amount << ")";
 		}
 	}
+	query.exec();
+}
+
+void Player::saveInventorySlots() {
+	mysqlpp::Query query = chardb.query();
+	query << "UPDATE characters SET "
+		  << "i_equip_s = " << mysqlpp::quote << inv->getMaxSlots(1) << ","
+		  << "i_use_s = "   << mysqlpp::quote << inv->getMaxSlots(2) << ","
+		  << "i_setup_s = " << mysqlpp::quote << inv->getMaxSlots(3) << ","
+		  << "i_etc_s = "   << mysqlpp::quote << inv->getMaxSlots(4) << ","
+		  << "i_cash_s = "  << mysqlpp::quote << inv->getMaxSlots(5)
+		  << " WHERE id = " << mysqlpp::quote << getPlayerid();
 	query.exec();
 }
 
@@ -558,6 +577,7 @@ void Player::save() {
 	saveStats();
 	saveEquips();
 	saveItems();
+	saveInventorySlots();
 	saveVariables();
 }
 

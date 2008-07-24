@@ -105,6 +105,7 @@ namespace LuaExports {
 	int setJob(lua_State *luaVm);
 	int setLevel(lua_State *luaVm);
 	int setPlayerVariable(lua_State *luaVm);
+	int addSlots(lua_State *luaVm);
 
 	int showShop(lua_State *luaVm);
 	int showMessage(lua_State *luaVm);
