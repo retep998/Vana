@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "Players.h"
 #include "Quests.h"
-#include "Map.h"
 #include "Maps.h"
 #include "Mobs.h"
 #include <string>

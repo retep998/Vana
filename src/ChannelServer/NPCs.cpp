@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NPCPacket.h"
 #include "InventoryPacket.h"
 #include "PacketCreator.h"
-#include "Map.h"
 #include "Maps.h"
 #include "Shops.h"
 #include "Inventory.h"

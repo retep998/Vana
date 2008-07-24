@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Drops.h"
 #include "Inventory.h"
-#include "Map.h"
 #include "Maps.h"
 #include "Mobs.h"
 #include "NPCs.h"
