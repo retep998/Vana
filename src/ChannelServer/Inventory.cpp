@@ -221,7 +221,6 @@ bool Inventory::addEquip(Player *player, Equip *equip, bool is) {
 }
 
 short Inventory::addItem(Player *player, Item *item, bool is) {
-	player->inv->changeItemAmount(item->id, item->amount);
 	char inv = Drops::items[item->id].type;
 	short freeslot = 0;
 	for (short s = 1; s <= player->inv->getMaxSlots(inv); s++) {
@@ -255,7 +254,6 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 		return 0;
 	}
 	else {
-		player->inv->changeItemAmount(item->id, -item->amount);
 		return item->amount;
 	}
 }
