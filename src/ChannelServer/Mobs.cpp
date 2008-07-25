@@ -68,7 +68,7 @@ void Mob::die(Player *player) {
 		Mobs::spawnMobPos(mapid, Mobs::mobinfo[mobid].summon[i], pos);
 
 	player->quests->updateQuestMob(mobid);
-	Maps::maps[mapid]->removeMob(id);
+	Maps::maps[mapid]->removeMob(id, spawnid);
 	delete this;
 }
 

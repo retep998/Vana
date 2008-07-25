@@ -136,10 +136,10 @@ void Map::updateMobControl(Mob *mob) {
 	}
 }
 
-void Map::removeMob(int id) {
+void Map::removeMob(int id, int spawnid) {
 	if (mobs.find(id) != mobs.end()) {
-		if (mobs[id]->getSpawnID() > -1 && mobspawns[mobs[id]->getSpawnID()].time > -1) // Add spawn point to respawns if mob was spawned by a spawn point.
-			mobrespawns.push_back(MobRespawnInfo(mobs[id]->getSpawnID(), clock()));
+		if (spawnid > -1 && mobspawns[spawnid].time > -1) // Add spawn point to respawns if mob was spawned by a spawn point.
+			mobrespawns.push_back(MobRespawnInfo(spawnid, clock()));
 		this->mobs.erase(id);
 	}
 }
