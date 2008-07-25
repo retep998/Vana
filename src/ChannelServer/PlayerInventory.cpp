@@ -27,6 +27,80 @@ void PlayerInventory::setMesos(int mesos, bool is) {
 	this->mesos = mesos;
 	PlayerPacket::updateStat(player, 0x40000, mesos, is);
 }
+void PlayerInventory::addEquip(short slot, Equip *equip) {
+	equips[slot] = equip;
+	if (itemamounts.find(equip->id) != itemamounts.end())
+		itemamounts[equip->id] += 1;
+	else
+		itemamounts[equip->id] = 1;
+}
+
+void PlayerInventory::setEquip(short slot, Equip *equip) {
+	if (equip == 0)
+		equips.erase(slot);
+	else
+		equips[slot] = equip;
+}
+
+Equip * PlayerInventory::getEquip(short slot) {
+	if (equips.find(slot) != equips.end())
+		return equips[slot];
+	return 0;
+}
+
+void PlayerInventory::deleteEquip(short slot) {
+	if (equips.find(slot) != equips.end()) {
+		itemamounts[equips[slot]->id] -= 1;
+		delete equips[slot];
+		equips.erase(slot);
+	}
+}
+
+void PlayerInventory::addItem(char inv, short slot, Item *item) {
+	items[inv-2][slot] = item;
+	if (itemamounts.find(item->id) != itemamounts.end())
+		itemamounts[item->id] += item->amount;
+	else
+		itemamounts[item->id] = item->amount;
+}
+
+Item * PlayerInventory::getItem(char inv, short slot) {
+	inv -= 2;
+	if (items[inv].find(slot) != items[inv].end())
+		return items[inv][slot];
+	return 0;
+}
+
+void PlayerInventory::deleteItem(char inv, short slot) {
+	inv -= 2;
+	if (items[inv].find(slot) != items[inv].end()) {
+		itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
+		delete items[inv][slot];
+		items[inv].erase(slot);
+	}
+}
+
+void PlayerInventory::setItem(char inv, short slot, Item *item) {
+	inv -= 2;
+	if (item == 0)
+		items[inv].erase(slot);
+	else
+		items[inv][slot] = item;
+}
+
+short PlayerInventory::getItemAmountBySlot(char inv, short slot) {
+	inv -= 2;
+	if (items[inv].find(slot) != items[inv].end())
+		return items[inv][slot]->amount;
+	return 0;
+}
+
+int PlayerInventory::getItemAmount(int itemid) {
+	if (itemamounts.find(itemid) != itemamounts.end())
+		return itemamounts[itemid];
+	return 0;
+}
+
 void PlayerInventory::addMaxSlots(char inventory, char rows) { // Useful with .lua
 	maxslots[inventory - 1] += (rows * 4);
 	if (maxslots[inventory - 1] > 100)
