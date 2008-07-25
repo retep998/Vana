@@ -71,22 +71,12 @@ Pos Map::findFloor(Pos pos) {
 	short y = pos.y - 100;
 	bool first = true;
 	short maxy = pos.y;
-	unsigned int fh = 0;
 	for (size_t i = 0; i < footholds.size(); i++) {
 		if ((x > footholds[i].pos1.x && x < footholds[i].pos2.x) || (x > footholds[i].pos2.x && x < footholds[i].pos1.x)) {
-			if (first) {
-				maxy = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
-				if (maxy >= y) {
-					fh = i;
-					first = false;
-				}
-			}
-			else {
-				short cmax = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
-				if (cmax < maxy && cmax >= y) {
-					fh = i;
-					maxy = cmax;
-				}
+			short cmax = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
+			if ((cmax < maxy || first) && cmax >= y) {
+				maxy = cmax;
+				first = false;
 			}
 		}
 	}
