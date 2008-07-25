@@ -69,14 +69,12 @@ Pos Map::findFloor(Pos pos) {
 	// to check the platforms and finds the correct one.
 	short x = pos.x;
 	short y = pos.y - 100;
-	bool first = true;
 	short maxy = pos.y;
 	for (size_t i = 0; i < footholds.size(); i++) {
 		if ((x > footholds[i].pos1.x && x < footholds[i].pos2.x) || (x > footholds[i].pos2.x && x < footholds[i].pos1.x)) {
 			short cmax = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
-			if ((cmax < maxy || first) && cmax >= y) {
+			if ((cmax < maxy || maxy == pos.y) && cmax >= y) {
 				maxy = cmax;
-				first = false;
 			}
 		}
 	}
