@@ -159,7 +159,7 @@ public:
 		else
 			return 0;
 	}
-	void removeMob(int id);
+	void removeMob(int id, int spawnid);
 	void killMobs(Player *player);
 	void killMobs(Player *player, int mobid);
 
