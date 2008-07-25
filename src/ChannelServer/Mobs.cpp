@@ -315,6 +315,9 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	}
 	int skillid = packet->getInt();
 	unsigned char display = 0;
+	bool shadow_meso = false;
+	if (skillid == 4111004)
+		shadow_meso = true;
 	if (skillid == 3121004 || skillid == 3221001) {
 		packet->skipBytes(4); // Charge time
 		display = packet->getByte();
@@ -341,14 +344,24 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	short pos = packet->getShort();
 	packet->skipBytes(2); // Cash Shop star cover
 	packet->skipBytes(1); // 0x00 = AoE, 0x41 = other
-	if (!(display == 0x40 || display == 0x48)) { // Shadow Claw doesn't take stars
-		if (skillid == 4111005) // Avenger
-			Inventory::takeItemSlot(player, 2, pos, 3*hits);
+	if (!shadow_meso) {
+		if (!(display == 0x40 || display == 0x48)) { // Shadow Claw doesn't take stars
+			if (skillid == 4111005) // Avenger
+				Inventory::takeItemSlot(player, 2, pos, 3*hits);
+			else
+				Inventory::takeItemSlot(player, 2, pos, hits);
+		}
 		else
-			Inventory::takeItemSlot(player, 2, pos, hits);
+			packet->skipBytes(4); // Star ID added by Shadow Claw
 	}
-	else
-		packet->skipBytes(4); // Star ID added by Shadow Claw
+	else {
+			int shadow_level = player->skills->getSkillLevel(skillid);
+			short mesos_min = 40 + (shadow_level * 10); // No data exists in the database
+			short mesos_max = 200 + (shadow_level * 20); // See above
+			short difference = mesos_max - mesos_min; // Add this to a random integer between 1 and minimum for amount
+			short amount = Randomizer::Instance()->randInt(mesos_min) + difference;
+			player->inv->setMesos(player->inv->getMesos() - amount);
+	}
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	int damage, mhp;
