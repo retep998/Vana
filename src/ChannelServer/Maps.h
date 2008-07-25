@@ -31,7 +31,7 @@ class ReadPacket;
 namespace Maps {
 	extern hash_map<int, Map *> maps;
 	void startTimer();
-	void addMap(int id);
+	void addMap(MapInfo info);
 	void moveMap(Player *player, ReadPacket *packet);
 	void moveMapS(Player *player, ReadPacket *packet);
 	void changeMap(Player *player, int mapid, int portalid);

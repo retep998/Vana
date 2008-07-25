@@ -674,17 +674,16 @@ void Initializing::initializeMaps() {
 		//    5 : Mob Spawn Rate
 		//    6 : Clock
 		//    7 : Ship Interval
-		int mapid = atoi(mapRow[0]);
-		Maps::addMap(mapid);
-		MapInfo map;
-		map.rm = atoi(mapRow[1]);
-		map.forcedReturn = atoi(mapRow[2]);
-		map.fieldType = atoi(mapRow[3]);
-		map.fieldLimit = atoi(mapRow[4]);
-		map.spawnrate = atof(mapRow[5]);
-		map.clock = atob(mapRow[6]);
-		map.shipInterval = atoi(mapRow[7]);
-		Maps::maps[mapid]->setInfo(map);
+		MapInfo mapinfo;
+		mapinfo.id = atoi(mapRow[0]);
+		mapinfo.rm = atoi(mapRow[1]);
+		mapinfo.forcedReturn = atoi(mapRow[2]);
+		mapinfo.fieldType = atoi(mapRow[3]);
+		mapinfo.fieldLimit = atoi(mapRow[4]);
+		mapinfo.spawnrate = atof(mapRow[5]);
+		mapinfo.clock = atob(mapRow[6]);
+		mapinfo.shipInterval = atoi(mapRow[7]);
+		Maps::addMap(mapinfo);
 	}
 
 	// Portals
