@@ -67,22 +67,30 @@ void Map::addReactor(Reactor *reactor) {
 Pos Map::findFloor(Pos pos) {
 	// Determines where a drop falls using the footholds data
 	// to check the platforms and finds the correct one.
-	// Should have the point of origin passed as the pos parameter
-	short DROP_HEIGHT = 100;
-	short dropX = pos.x;
-	short dropY = SHRT_MAX;
-	short dropBounce = pos.y - DROP_HEIGHT;
+	short x = pos.x;
+	short y = pos.y - 100;
+	bool first = true;
+	short maxy = pos.y;
+	unsigned int fh = 0;
 	for (size_t i = 0; i < footholds.size(); i++) {
-		if (dropX > footholds[i].pos1.x && dropX < footholds[i].pos2.x ||
-			dropX > footholds[i].pos2.x && dropX < footholds[i].pos1.x) {
-				short platformHeight = (short)((float) (dropX - footholds[i].pos1.x)) / (footholds[i].pos2.x - footholds[i].pos1.x) *
-					(footholds[i].pos2.y - footholds[i].pos1.y) + footholds[i].pos1.y;
-				if (dropBounce < platformHeight && platformHeight < dropY) {
-					dropY = platformHeight;
+		if ((x > footholds[i].pos1.x && x < footholds[i].pos2.x) || (x > footholds[i].pos2.x && x < footholds[i].pos1.x)) {
+			if (first) {
+				maxy = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
+				if (maxy >= y) {
+					fh = i;
+					first = false;
 				}
+			}
+			else {
+				short cmax = (short) ( (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) * x - footholds[i].pos1.x * (float) ( footholds[i].pos1.y - footholds[i].pos2.y ) / ( footholds[i].pos1.x - footholds[i].pos2.x ) + footholds[i].pos1.y );
+				if (cmax < maxy && cmax >= y) {
+					fh = i;
+					maxy = cmax;
+				}
+			}
 		}
 	}
-	return Pos(dropX, dropY);
+	return Pos(x, maxy);
 }
 
 // Mobs
