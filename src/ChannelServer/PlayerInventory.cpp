@@ -27,6 +27,7 @@ void PlayerInventory::setMesos(int mesos, bool is) {
 	this->mesos = mesos;
 	PlayerPacket::updateStat(player, 0x40000, mesos, is);
 }
+
 void PlayerInventory::addEquip(short slot, Equip *equip) {
 	equips[slot] = equip;
 	if (itemamounts.find(equip->id) != itemamounts.end())
