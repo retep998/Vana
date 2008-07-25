@@ -163,7 +163,7 @@ void SkillsPacket::showCombo(Player *player, int time) { // Show combos to every
 
 void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 	PacketCreator packet;
-	packet.addShort(SEND_GAIN_ITEM); // For the player themselves
+	packet.addShort(SEND_GAIN_ITEM); // For the using player
 	bool send = false;
 	switch (skillid) { 
 		case 2100000:
@@ -172,6 +172,11 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 			packet.addByte(1);
 			packet.addInt(skillid);
 			packet.addByte(1);
+			send = true;
+			break;
+		case 1311008: // Dragon Blood
+			packet.addByte(5);
+			packet.addInt(skillid);
 			send = true;
 			break;
 	}
@@ -191,6 +196,7 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 			send = true;
 			break;
 		case 4211005: // Meso Guard
+		case 1311008: // Dragon Blood
 			packet.addByte(5);
 			packet.addInt(skillid);
 			send = true;

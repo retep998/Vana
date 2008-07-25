@@ -146,6 +146,7 @@ private:
 				}
 			}
 			if (strcmp(name, "heal") == 0) Skills::heal(player, value, skill);
+			else if (strcmp(name, "hurt") == 0) Skills::hurt(player, value, skill);
 			// else if (...
 		}
 		else {
@@ -488,7 +489,12 @@ void Skills::init() {
 	player.type = 0x1;
 	player.byte = 5;
 	player.value = SKILL_WATK;
+	strcpy_s(act.name, 50, "hurt");
+	act.time = 4000;
+	act.value = SKILL_X;
 	skillsinfo[1311008].player.push_back(player);
+	skillsinfo[1311008].act = act;
+	skillsinfo[1311008].bact.push_back(true);
 	// 3121002 & 3221002 - Sharp Eyes
 	player.type = 0x20;
 	player.byte = 1;
@@ -942,12 +948,43 @@ void Skills::endSkill(Player *player, int skill) {
 	player->skills->setActiveSkillLevel(skill, 0);
 }
 
+void Skills::endBuff(Player *player, int skill) {
+	SkillTimer::Instance()->stop(player, skill);
+	/// 
+	if (skill == 1301007 || skill == 9101008) { // Hyper Body
+		player->setMHP(player->getRMHP());
+		player->setMMP(player->getRMMP());
+		player->setHP(player->getHP());
+		player->setMP(player->getMP());
+	}
+	///
+	if (skill == 9101004) // GM Hide
+		MapPacket::showPlayer(player);
+	SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill), player->skills->getSkillMapInfo(skill));
+	player->skills->deleteSkillMapEnterInfo(skill);
+	player->skills->setActiveSkillLevel(skill, 0);
+}
+
 void Skills::heal(Player *player, short value, int skillid) {
 	if (player->getHP() < player->getMHP() && player->getHP() > 0) {
 		player->setHP(player->getHP() + value);
 		SkillsPacket::healHP(player, value);
 	}
 	SkillTimer::Instance()->setSkillTimer(player, skillid, "heal", value, 5000);
+}
+
+void Skills::hurt(Player *player, short value, int skillid) {
+	if (player->getHP() > 1) {
+		if (player->getHP() - value > 1) {
+			player->setHP(player->getHP() - value);
+			SkillsPacket::showSkillEffect(player, skillid);
+			SkillTimer::Instance()->setSkillTimer(player, skillid, "hurt", value, 4000);
+		}
+		else
+			Skills::endBuff(player, skillid);
+	}
+	else
+		Skills::endBuff(player, skillid);
 }
 // Combo attack stuff
 void Skills::addCombo(Player *player) { // add combo orbs 

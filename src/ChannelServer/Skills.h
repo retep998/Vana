@@ -152,7 +152,9 @@ namespace Skills {
 	void stopAllBuffs(Player *player);
 	void stopCooldownTimersPlayer(Player *player);
 	void heal(Player *player, short value, int skillid);
+	void hurt(Player *player, short value, int skillid);
 	void endSkill(Player *player, int skillid);
+	void endBuff(Player *player, int skill);
 	void stopSkill(Player *player, int skillid);
 	void addCombo(Player *player); // Combo Attack 
 	void clearCombo(Player *player); // Combo Attack
