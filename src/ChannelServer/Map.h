@@ -56,6 +56,7 @@ struct PortalInfo {
 typedef vector <PortalInfo> PortalsInfo;
 
 struct MapInfo {
+	int id;
 	int rm;
 	int forcedReturn;
 	char fieldType;
@@ -100,11 +101,8 @@ typedef vector <MobRespawnInfo> MobRespawnsInfo;
 
 class Map {
 public:
-	Map(int mapid);
+	Map(MapInfo info);
 	// Map Info
-	void setInfo(MapInfo info) {
-		this->info = info;
-	}
 	MapInfo getInfo() {
 		return info;
 	}
@@ -198,7 +196,6 @@ public:
 	void sendPacket(PacketCreator &packet, Player *player = 0);
 	void showMessage(string message, char type);
 private:
-	int mapid;
 	MapInfo info;
 	FootholdsInfo footholds;
 	PortalsInfo portals;

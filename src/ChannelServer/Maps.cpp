@@ -61,8 +61,8 @@ private:
 };
 MapTimer * MapTimer::singleton = 0;
 
-void Maps::addMap(int id) {
-	maps[id] = new Map(id);
+void Maps::addMap(MapInfo info) {
+	maps[info.id] = new Map(info);
 }
 
 void Maps::moveMap(Player *player, ReadPacket *packet) {

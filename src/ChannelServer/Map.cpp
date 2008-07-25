@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "Reactors.h"
 
-Map::Map (int mapid) : mapid(mapid), mobids(new LoopingId(100)), dropids(new LoopingId(100)) { }
+Map::Map (MapInfo info) : info(info), mobids(new LoopingId(100)), dropids(new LoopingId(100)) { }
 
 // Players
 void Map::addPlayer(Player *player) {
@@ -54,7 +54,7 @@ void Map::removePlayer(Player *player) {
 // Reactors
 void Map::addReactorSpawn(ReactorSpawnInfo spawn) {
 	reactorspawns.push_back(spawn);
-	Reactor *reactor = new Reactor(mapid, spawn.id, spawn.pos);
+	Reactor *reactor = new Reactor(info.id, spawn.id, spawn.pos);
 	ReactorPacket::spawnReactor(reactor);
 }
 
@@ -88,7 +88,7 @@ Pos Map::findFloor(Pos pos) {
 // Mobs
 void Map::addMobSpawn(MobSpawnInfo spawn) {
 	mobspawns.push_back(spawn);
-	new Mob(mapid, spawn.id, spawn.pos, mobspawns.size()-1, spawn.fh);
+	new Mob(info.id, spawn.id, spawn.pos, mobspawns.size()-1, spawn.fh);
 }
 
 void Map::checkSpawn(clock_t time) {
@@ -96,7 +96,7 @@ void Map::checkSpawn(clock_t time) {
 	for (size_t i = 0; i < mobrespawns.size(); i++) {
 		int id = mobrespawns[i].spawnid;
 		if ((time - mobrespawns[i].killed) > (mobspawns[id].time * CLOCKS_PER_SEC)) {
-			new Mob(mapid, mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
+			new Mob(info.id, mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
 			mobrespawns.erase(mobrespawns.begin()+i);
 			i--;
 		}
