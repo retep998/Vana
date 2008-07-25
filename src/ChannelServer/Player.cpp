@@ -108,14 +108,12 @@ void Player::realHandleRequest(ReadPacket *packet) {
 
 void Player::playerConnect(ReadPacket *packet) {
 	int id = packet->getInt();
-	unsigned char maxslots[5] = {0};
 	if (!Connectable::Instance()->checkPlayer(id)) {
 		//hacking
 		disconnect();
 		return;
 	}
 	setPlayerid(id);
-	inv.reset(new PlayerInventory(this));
 	skills.reset(new PlayerSkills(this));
 	quests.reset(new PlayerQuests(this));
 	buddyList.reset(new BuddyList(this));
@@ -153,12 +151,14 @@ void Player::playerConnect(ReadPacket *packet) {
 	map = res[0]["map"];
 	mappos = (unsigned char) res[0]["pos"];
 	gm = res[0]["gm"];
-	maxslots[0] = (unsigned char)res[0]["equip_slots"];
-	maxslots[1] = (unsigned char)res[0]["use_slots"];
-	maxslots[2] = (unsigned char)res[0]["setup_slots"];
-	maxslots[3] = (unsigned char)res[0]["etc_slots"];
-	maxslots[4] = (unsigned char)res[0]["cash_slots"];
-	inv->setMaxSlots(maxslots);
+
+	unsigned char maxslots[5];
+	maxslots[0] = (unsigned char) res[0]["equip_slots"];
+	maxslots[1] = (unsigned char) res[0]["use_slots"];
+	maxslots[2] = (unsigned char) res[0]["setup_slots"];
+	maxslots[3] = (unsigned char) res[0]["etc_slots"];
+	maxslots[4] = (unsigned char) res[0]["cash_slots"];
+	inv.reset(new PlayerInventory(this, maxslots));
 
 	inv->setMesosStart(res[0]["mesos"]);
 

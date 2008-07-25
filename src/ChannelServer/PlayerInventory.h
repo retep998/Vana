@@ -81,12 +81,8 @@ typedef hash_map<short, Item *> iteminventory;
 
 class PlayerInventory {
 public:
-	PlayerInventory(Player *player) : player(player) {
-		maxslots[0] = 24; // Equip
-		maxslots[1] = 24; // Use
-		maxslots[2] = 24; // Setup
-		maxslots[3] = 24; // Etc
-		maxslots[4] = 48; // Cash
+	PlayerInventory(Player *player, unsigned char maxslots[5]) : player(player) {
+		memcpy_s(this->maxslots, sizeof(this->maxslots), maxslots, sizeof(this->maxslots));
 	}
 	unsigned char getMaxSlots(char inv) {
 		return maxslots[inv - 1];
@@ -167,10 +163,6 @@ public:
 		if (itemamounts.find(itemid) != itemamounts.end())
 			return itemamounts[itemid];
 		return 0;
-	}
-	void setMaxSlots(unsigned char amounts[5]) { // For playerConnect()
-		for (char i = 0; i < 5; i++)
-			maxslots[i] = amounts[i];
 	}
 	void PlayerInventory::addMaxSlots(char inventory, char rows);
 private:
