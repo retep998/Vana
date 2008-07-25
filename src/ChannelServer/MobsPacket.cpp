@@ -170,6 +170,12 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	int skillid = pack->getInt();
 	if (skillid == 3121004 || skillid == 3221001)
 		pack->skipBytes(4);
+	bool shadow_meso = false;
+	int shadow_level = 0;
+	if (skillid == 4111004) {
+		shadow_meso = true;
+		shadow_level = player->skills->getSkillLevel(skillid);
+	}
 	unsigned char display = pack->getByte(); // Projectile display
 	unsigned char animation = pack->getByte(); // Direction/animation
 	unsigned char w_class = pack->getByte(); // Weapon subclass
@@ -178,7 +184,6 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	unsigned char slot = pack->getByte(); // Slot
 	pack->skipBytes(1); // second slot byte
 	short csstar = pack->getShort(); // Cash Shop star
-
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_MOB_RANGED);
 	packet.addInt(player->getPlayerid());
@@ -187,7 +192,12 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 		switch (w_class) { // No clue why it does this, but it does
 			case 0x03: packet.addByte(0x07); break; // Bow
 			case 0x04: packet.addByte(0x0D); break; // Crossbow
-			case 0x07: packet.addByte(0x0A); break; // Claw
+			case 0x07: 
+				if (shadow_meso)
+					packet.addByte(shadow_level); // I think? It was 0x01 in my tests and that's incidentally its skill level on the characters I used
+				else
+					packet.addByte(0x0A);
+				break; // Claw
 		}
 		packet.addInt(skillid);
 	} 
@@ -202,16 +212,18 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 		case 0x07: packet.addByte(0x0A); break;
 	}
 	int itemid = 0;
-	if (csstar > 0) {
-		itemid = player->inv->getItem(5, csstar)->id;
-		if (display == 0x40 || display == 0x48) // Skip itemid for Shadow Claw
-			pack->skipBytes(4);
+	if (!shadow_meso) {
+		if (csstar > 0) {
+			itemid = player->inv->getItem(5, csstar)->id;
+			if (display == 0x40 || display == 0x48) // Skip itemid for Shadow Claw
+				pack->skipBytes(4);
+		}
+		else if (player->skills->getActiveSkillLevel(4121006)) { // Shadow Claw puts the item ID in the packet
+			itemid = player->inv->getItem(2, slot)->id;
+		}
+		else
+			itemid = pack->getInt();
 	}
-	else if (player->skills->getActiveSkillLevel(4121006)) { // Shadow Claw puts the item ID in the packet
-		itemid = player->inv->getItem(2, slot)->id;
-	}
-	else
-		itemid = pack->getInt();
 	packet.addInt(itemid);
 	pack->skipBytes(1); // 0x00 = AoE, 0x41 = other
 	for (char i = 0; i < targets; i++) {

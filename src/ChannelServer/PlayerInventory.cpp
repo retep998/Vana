@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 
 void PlayerInventory::setMesos(int mesos, bool is) {
+	if (mesos < 0)
+		mesos = 0;
 	this->mesos = mesos;
 	PlayerPacket::updateStat(player, 0x40000, mesos, is);
 }
