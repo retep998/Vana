@@ -182,13 +182,12 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
 	int skillid = packet->getInt();
-	// if (skillid == 1221011) {
-	// Heaven's Hammer will require tons of special code, it only sends 0x01 as the damage for any hit
-	// }
+	bool heavenHammer = false;
+	if (skillid == 1221011)
+		heavenHammer = true;	
 	packet->skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
-	if (skillid == 5201002) {
+	if (skillid == 5201002)
 		packet->skipBytes(4); // Charge 
-	}
 	unsigned int totaldmg = 0;
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
@@ -205,8 +204,20 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		int mobid = mob->getMobID();		
 		for (char k = 0; k < hits; k++) {
 			int damage = packet->getInt();
+			if (heavenHammer && Mobs::mobinfo[mob->getMobID()].boss) {
+				// Damage calculation goes in here, it's skill % * range
+				// Can't calculate range without weapon class
+				// Thus, can't calculate damage because there's no indication of weapon class anywhere
+				// Yes, I know "weapon subclass" is in the packet, but that doesn't segregate them
+				// 1H anything except wand/staff = 1. This could be a dagger, it could be a sword, it could be a mace, etc.
+			}
+			else {
+				if (heavenHammer)
+					mob->setHP(1);
+				else
+					mob->setHP(mob->getHP() - damage);
+			}
 			totaldmg = totaldmg + damage;
-			mob->setHP(mob->getHP() - damage);
 			displayHPBars(player, mob);
 			if (mob->getHP() <= 0) {
 				packet->skipBytes(4 * (hits - 1 - k));
