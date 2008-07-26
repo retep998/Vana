@@ -109,14 +109,19 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 	packet.addShort(100);
 	packet.addByte(100);
 	packet.addShort(0);
-	packet.addByte(world->channels.size());
-	for (size_t i=0; i<world->channels.size(); i++) {
+	packet.addByte(world->maxChannels);
+	for (size_t i = 0; i < world->maxChannels; i++) {
 		std::ostringstream cnStream;
 		cnStream << world->name << "-" << i+1;
 		string channelname = cnStream.str();
-		packet.addShort(channelname.size());
-		packet.addString(channelname.c_str(), channelname.size());
-		packet.addInt(world->channels[i]->population);
+		packet.addString(channelname);
+
+		if (world->channels.find(i) != world->channels.end()) {
+			packet.addInt(world->channels[i]->population);
+		}
+		else { // Channel doesn't exist
+			packet.addInt(0);
+		}
 		packet.addByte(1); // Char creation (the part that is server-decided)
 		packet.addShort(i);
 	}
@@ -186,8 +191,17 @@ void LoginPacket::connectIP(PlayerLogin *player, int charid) {
 	PacketCreator packet;
 	packet.addShort(SEND_CHANNEL_SERVER_INFO);
 	packet.addShort(0);
-	packet.addIP(Worlds::worlds[player->getWorld()]->channels[player->getChannel()]->ip);
-	packet.addShort(Worlds::worlds[player->getWorld()]->channels[player->getChannel()]->port);
+
+	World *world = Worlds::worlds[player->getWorld()];
+	if (world->channels.find(player->getChannel()) != world->channels.end()) {
+		Channel *channel = world->channels[player->getChannel()];
+		packet.addIP(channel->ip);
+		packet.addShort(channel->port);
+	}
+	else { // Channel does not exist, let's be mean and send something non-existant
+		packet.addIP("255.255.255.255");
+		packet.addShort(-1);
+	}
 	packet.addInt(charid);
 	packet.addInt(0);
 	packet.addByte(0);

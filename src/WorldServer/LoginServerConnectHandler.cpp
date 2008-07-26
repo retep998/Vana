@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectPlayer.h"
 #include "WorldServerAcceptPlayerPacket.h"
 #include "WorldServer.h"
+#include "Channels.h"
 #include "ReadPacket.h"
 #include "Rates.h"
 #include <iostream>
@@ -57,5 +58,7 @@ void LoginServerConnectHandler::newPlayer(ReadPacket *packet) {
 	int channel = packet->getInt();
 	int playerid = packet->getInt();
 
-	WorldServerAcceptPlayerPacket::newConnectable(channel, playerid);
+	if (Channels::Instance()->getChannel(channel)) {
+		WorldServerAcceptPlayerPacket::newConnectable(channel, playerid);
+	}
 }

@@ -38,7 +38,7 @@ struct Channel {
 struct World {
 	string name;
 	hash_map <int, Channel *> channels;
-	int maxChannels;
+	size_t maxChannels;
 	char id;
 	char ribbon;
 	bool connected;
