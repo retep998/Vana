@@ -15,29 +15,35 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef STRINGUTILITIES_H
-#define STRINGUTILITIES_H
+#ifndef DATABASEMIGRATION_H
+#define DATABASEMIGRATION_H
 
-#include <sstream>
+#include <map>
 #include <string>
 
+using std::map;
 using std::string;
 
-namespace StringUtilities {
-	int noCaseCompare(const string &s1, const string &s2);
-	void trim(string &s);
-	string trim(const string &s);
+class DatabaseMigration {
+public:
+	DatabaseMigration(bool update);
+	bool checkVersion();
+	void update();
+	void update(size_t version);
 
-	template <typename T>
-	T toType(const string &s);
-}
+	class Runner;
+private:
+	void loadDatabaseInfo();
+	void loadSQLFiles();
+	static void createInfoTable();
+	static void updateInfoTable(size_t version);
 
-template <typename T>
-inline T StringUtilities::toType(const string &s) {
-	std::istringstream i(s);
-	T x;
-	i >> x;
-	return x;
-} 
+	typedef map<int, string> SQLFiles;
+
+	size_t m_version;
+	size_t m_sql_version; // Version of the .sql files
+	bool m_update;
+	SQLFiles m_sql_files;
+};
 
 #endif

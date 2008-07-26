@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeCommon.h"
+#include "DatabaseMigration.h"
 #include "MySQLM.h"
 #include "Config.h"
 #include <iostream>
@@ -41,42 +42,22 @@ void Initializing::initializeMySQL() {
 }
 
 void Initializing::checkSchemaVersion(bool update) {
-	// vana_info table for checking database version (currently checking and updating unimplemented)
-	mysqlpp::Query query = chardb.query("SELECT * FROM vana_info LIMIT 1");
-	mysqlpp::StoreQueryResult res = query.store();
-
-	bool succeed = false;
-	int version;
-	if (res.size() == 0) {
-		if (update) {
-			// Table doesn't exist or there's no record in the table, so lets create it
-			query << "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED)";
-			query.exec();
-
-			// Insert a default record of NULL
-			query << "INSERT INTO vana_info VALUES (NULL)";
-			query.exec();
-		}
-		
-		version = -1;
-	}
-	else {
-		version = res[0][0].is_null() ? -1 : (int) res[0][0];
-	}
-
-	// TODO: Compare version (and run SQL files if update is true)
-	succeed = true;
+	DatabaseMigration dbMigration(update);
+	
+	bool succeed = dbMigration.checkVersion();
 
 	if (!succeed && !update) {
-		// Wrong version and we're not allowed to update, so lets quit
-		std::cout << "Wrong version of database, please run Login Server to update.";
+		// Wrong version and we're not allowed to update, so lets quit.
+		std::cout << "ERROR: Wrong version of database, please run Login Server to update." << std::endl;
 		exit(4);
 	}
 	else if (!succeed) {
-		// Failed but we can update it
-		// TODO: Update the schema
-		std::cout << "Wrong version of database, updating...";
-		succeed = true;
+		// Failed, but we can update it.
+		std::cout << std::setw(outputWidth) <<  "Updating database...";
+		
+		dbMigration.update();
+
+		std::cout << "DONE" << std::endl;
 	}
 }
 
