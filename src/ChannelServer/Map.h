@@ -206,9 +206,8 @@ private:
 	MobSpawnsInfo mobspawns;
 	MobRespawnsInfo mobrespawns;
 	hash_map<int, Mob *> mobs;
-	scoped_ptr<LoopingId> mobids;
 	hash_map<int, Drop *> drops;
-	scoped_ptr<LoopingId> dropids;
+	scoped_ptr<LoopingId> objectids;
 
 	void updateMobControl();
 	void updateMobControl(Mob *mob);

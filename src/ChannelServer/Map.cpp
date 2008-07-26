@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "Reactors.h"
 
-Map::Map (MapInfo info) : info(info), mobids(new LoopingId(100)), dropids(new LoopingId(100)) { }
+Map::Map (MapInfo info) : info(info), objectids(new LoopingId(1000)) { }
 
 // Players
 void Map::addPlayer(Player *player) {
@@ -100,7 +100,7 @@ void Map::checkSpawn(clock_t time) {
 }
 
 void Map::addMob(Mob *mob) {
-	int id = this->mobids->next();
+	int id = this->objectids->next();
 	mob->setID(id);
 	this->mobs[id] = mob;
 	MobsPacket::spawnMob(mob);
@@ -159,7 +159,7 @@ void Map::killMobs(Player *player, int mobid) {
 
 // Drops
 void Map::addDrop(Drop *drop) {
-	int id = dropids->next();
+	int id = objectids->next();
 	drop->setID(id);
 	drop->setPos(findFloor(drop->getPos()));
 	this->drops[id] = drop;
