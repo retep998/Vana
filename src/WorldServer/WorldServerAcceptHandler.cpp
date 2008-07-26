@@ -53,8 +53,14 @@ void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, R
 void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, ReadPacket *packet) {
 	int playerid = packet->getInt();
 	Channel *chan = Channels::Instance()->getChannel(packet->getInt());
-	WorldServerAcceptPlayerPacket::newConnectable(chan->id, playerid);
-	WorldServerAcceptPlayerPacket::playerChangeChannel(player, playerid, chan->ip, chan->port);
+
+	if (chan) {
+		WorldServerAcceptPlayerPacket::newConnectable(chan->id, playerid);
+		WorldServerAcceptPlayerPacket::playerChangeChannel(player, playerid, chan->ip, chan->port);
+	}
+	else { // Channel doesn't exist (offline)
+		WorldServerAcceptPlayerPacket::playerChangeChannel(player, playerid, "255.255.255.255", -1);
+	}
 }
 
 void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet) {

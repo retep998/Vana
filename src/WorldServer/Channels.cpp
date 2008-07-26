@@ -31,7 +31,12 @@ void Channels::registerChannel(WorldServerAcceptPlayer *player, int channel, con
 }
 
 Channel * Channels::getChannel(int num) {
-	return channels[num];
+	if (channels.find(num) != channels.end()) {
+		return channels[num];
+	}
+	else {
+		return 0;
+	}
 }
 
 void Channels::sendToAll(PacketCreator &packet) {
