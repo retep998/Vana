@@ -38,3 +38,18 @@ int StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 		return (l1 < l2) ? -1 : 1;
 	}
 }
+
+void StringUtilities::trim(string &s) {
+	s.erase(s.find_last_not_of(" ") + 1);
+	s.erase(0, s.find_first_not_of(" "));
+	s.erase(s.find_last_not_of("\r") + 1);
+	s.erase(0, s.find_first_not_of("\r"));
+	s.erase(s.find_last_not_of("\n") + 1);
+	s.erase(0, s.find_first_not_of("\n"));
+}
+
+string StringUtilities::trim(const string &s) {
+	string r = s;
+	trim(r);
+	return r;
+}

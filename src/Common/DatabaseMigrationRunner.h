@@ -15,29 +15,29 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef STRINGUTILITIES_H
-#define STRINGUTILITIES_H
+#ifndef DATABASEMIGRATIONRUNNER_H
+#define DATABASEMIGRATIONRUNNER_H
 
-#include <sstream>
+#include "DatabaseMigration.h"
+#include <fstream>
+#include <vector>
 #include <string>
 
 using std::string;
+using std::vector;
 
-namespace StringUtilities {
-	int noCaseCompare(const string &s1, const string &s2);
-	void trim(string &s);
-	string trim(const string &s);
+class DatabaseMigration::Runner {
+public:
+	Runner(const string &filename);
+	void run();
+private:
+	void loadFile();
 
-	template <typename T>
-	T toType(const string &s);
-}
+	typedef vector<string> Queries;
 
-template <typename T>
-inline T StringUtilities::toType(const string &s) {
-	std::istringstream i(s);
-	T x;
-	i >> x;
-	return x;
-} 
+	string m_filename;
+	std::ifstream m_filestream;
+	Queries m_queries;
+};
 
 #endif

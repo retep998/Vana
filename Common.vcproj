@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalLibraryDirectories="$(ProgramFiles)/boost/boost_1_35_0/lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -270,6 +271,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="DatabaseMigration"
+				>
+				<File
+					RelativePath=".\src\Common\DatabaseMigration.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\DatabaseMigrationRunner.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -437,6 +450,18 @@
 				>
 				<File
 					RelativePath=".\src\Common\Pos.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="DatabaseMigration"
+				>
+				<File
+					RelativePath=".\src\Common\DatabaseMigration.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\DatabaseMigrationRunner.h"
 					>
 				</File>
 			</Filter>
