@@ -74,9 +74,9 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addInt(player->getHair());
 
 	int equips[35][2] = {0};
-	equipinventory *playerequips = player->inv->getEquips();
-	for (equipinventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
-		Equip *equip = iter->second;
+	iteminventory *playerequips = player->inv->getItems(1);
+	for (iteminventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
+		Item *equip = iter->second;
 		if (iter->first < 0) {
 			if (equips[equip->type][0] > 0) {
 				if (Inventory::isCash(equip->id)) {

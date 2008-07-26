@@ -1,0 +1,11 @@
+ALTER TABLE items RENAME olditems;
+ALTER TABLE equip RENAME items;
+ALTER TABLE items ADD COLUMN inv SMALLINT NOT NULL AFTER charid;
+ALTER TABLE items CHANGE pos slot SMALLINT NOT NULL;
+ALTER TABLE items CHANGE equipid itemid INT NOT NULL;
+ALTER TABLE items ADD COLUMN amount INT NOT NULL AFTER itemid;
+ALTER TABLE items DROP KEY charid;
+ALTER TABLE items ADD PRIMARY KEY (charid, inv, slot);
+UPDATE items SET inv=1;
+INSERT INTO items (charid, inv, slot, itemid, amount) SELECT charid, inv, pos, itemid, amount FROM olditems;
+DROP TABLE olditems;

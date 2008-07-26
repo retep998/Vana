@@ -25,14 +25,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void Characters::showEquips(int id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = chardb.query();
-	query << "SELECT equipid, type, pos FROM equip WHERE charid = " << mysqlpp::quote << id << " AND pos < 0 ORDER BY type ASC, pos ASC";
+	query << "SELECT itemid, type, slot FROM items WHERE charid = " << mysqlpp::quote << id << " AND inv = 1 AND slot < 0 ORDER BY type ASC, slot ASC";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		CharEquip equip; 
+		CharEquip equip;
 		equip.id = res[i][0];
 		equip.type = (unsigned char) res[i][1];
-		equip.pos = res[i][2];
+		equip.slot = res[i][2];
 		vec.push_back(equip);
 	}	
 }
@@ -88,14 +88,12 @@ void Characters::checkCharacterName(PlayerLogin *player, ReadPacket *packet) {
 
 void Characters::createEquip(int equipid, int type, int charid) {
 	mysqlpp::Query query = chardb.query();
-	if (type==0x05)
-		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 3 << "," << mysqlpp::quote << -type << ")";
-	else if (type==0x06)
-		query << "INSERT INTO equip (equipid,charid,type,iwdef,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 2 << "," << mysqlpp::quote << -type << ")";
-	else if (type==0x07)
-		query << "INSERT INTO equip (equipid,charid,type,iwdef,slots,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 3 << "," << 5 << "," << mysqlpp::quote << -type << ")";
-	else if (type==0x0b)
-		query << "INSERT INTO equip (equipid,charid,type,iwatk,pos) VALUES (" << mysqlpp::quote << equipid << "," << mysqlpp::quote << charid << "," << mysqlpp::quote << type << "," << mysqlpp::quote << 17 << "," << mysqlpp::quote << -type << ")";
+	switch (type) {
+		case 0x05: query << "INSERT INTO items (charid, inv, slot, itemid, type, iwdef) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << type << "," << 3 << ")"; break;
+		case 0x06: query << "INSERT INTO items (charid, inv, slot, itemid, type, iwdef) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << type << "," << 2 << ")"; break;
+		case 0x07: query << "INSERT INTO items (charid, inv, slot, itemid, type, iwdef, slots) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << type << "," << 3 << "," << 5 << ")"; break;
+		case 0x0b: query << "INSERT INTO items (charid, inv, slot, itemid, type, iwatk) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << type << "," << 17 << ")"; break;
+	}
 	query.exec();
 }
 
@@ -149,7 +147,7 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	createEquip(packet->getInt(), 0x07, id);
 	createEquip(packet->getInt(), 0x0b, id);
 
-	query << "INSERT INTO items VALUES (" << mysqlpp::quote << id << ", 4, 1, 4161001, 1)"; // Beginner Guide
+	query << "INSERT INTO items (charid, inv, slot, itemid, amount) VALUES (" << mysqlpp::quote << id << ", 4, 1, 4161001, 1)"; // Beginner Guide
 	query.exec();
 
 	query << "SELECT * FROM characters WHERE id = " << mysqlpp::quote << id << " LIMIT 1";
@@ -171,9 +169,6 @@ void Characters::deleteCharacter(PlayerLogin *player, ReadPacket *packet) {
 	mysqlpp::Query query = chardb.query();
 
 	query << "DELETE FROM characters WHERE id = " << mysqlpp::quote << id;
-	query.exec();
-
-	query << "DELETE FROM equip WHERE charid = " << mysqlpp::quote << id;
 	query.exec();
 
 	query << "DELETE FROM keymap WHERE charid = " << mysqlpp::quote << id;

@@ -75,23 +75,23 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addByte(player->inv->getMaxSlots(3));
 	packet.addByte(player->inv->getMaxSlots(4));
 	packet.addByte(player->inv->getMaxSlots(5));
-	equipinventory *equips = player->inv->getEquips();
-	for (equipinventory::iterator iter = equips->begin(); iter != equips->end(); iter++) {
-		Equip *equip = iter->second;
+	iteminventory *items = player->inv->getItems(1);
+	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
+		Item *equip = iter->second;
 		if (iter->first < 0 && !Inventory::isCash(equip->id)) {
 			PlayerPacketHelper::addEquip(packet, iter->first, equip);
 		}
 	}
 	packet.addByte(0);
-	for (equipinventory::iterator iter = equips->begin(); iter != equips->end(); iter++) {
-		Equip *equip = iter->second;
+	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
+		Item *equip = iter->second;
 		if (iter->first < 0 && Inventory::isCash(equip->id)) {
 			PlayerPacketHelper::addEquip(packet, iter->first, equip);
 		}
 	}
 	packet.addByte(0);
-	for (equipinventory::iterator iter = equips->begin(); iter != equips->end(); iter++) {
-		Equip *equip = iter->second;
+	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
+		Item *equip = iter->second;
 		if (iter->first > 0) {
 			PlayerPacketHelper::addEquip(packet, iter->first, equip);
 		}

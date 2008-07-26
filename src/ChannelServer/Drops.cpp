@@ -35,32 +35,23 @@ hash_map <int, ItemInfo> Drops::items;
 hash_map <int, ConsumeInfo> Drops::consumes;
 
 // Drop class
-Drop::Drop (int mapid, int mesos, Pos pos, int owner) : mapid(mapid), pos(pos), ismesos(true), isequip(false), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, int mesos, Pos pos, int owner) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
-Drop::Drop (int mapid, Equip equip, Pos pos, int owner) : mapid(mapid), pos(pos), ismesos(false), isequip(true), equip(equip), owner(owner), questid(0), dropped(0), playerid(0) {
-	Maps::maps[mapid]->addDrop(this);
-}
-
-Drop::Drop (int mapid, Item item, Pos pos, int owner) : mapid(mapid), pos(pos), ismesos(false), isequip(false), item(item), owner(owner), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, Item item, Pos pos, int owner) : mapid(mapid), pos(pos), item(item), mesos(0), owner(owner), questid(0), dropped(0), playerid(0) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
 int Drop::getObjectID() {
-	if (ismesos)
+	if (mesos > 0)
 		return mesos;
-	else if (isequip)
-		return equip.id;
 	else
 		return item.id;
 }
 
 int Drop::getAmount() {
-	if (isequip)
-		return 1;
-	else
-		return item.amount;
+	return item.amount;
 }
 
 void Drop::doDrop(Pos origin) {
@@ -126,7 +117,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 
 			if (drops[k].id/1000000 == 1) {
 				EquipInfo ei = equips[drops[k].id];
-				Equip equip;
+				Item equip;
 				equip.id = drops[k].id;
 				equip.type =  ei.type;
 				equip.slots = ei.slots;
@@ -259,27 +250,17 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
 	}
 	else {
-		if (drop->isEquip()) {
-			Equip *equip = new Equip(drop->getEquip());
-			if (!Inventory::addEquip(player, equip, true)) {
-				DropsPacket::takeNote(player, 0, 0, 0);
-				DropsPacket::dontTake(player);
-				return;
+		Item *item = new Item(drop->getItem());
+		short dropAmount = drop->getAmount();
+		short amount = Inventory::addItem(player, item, true);
+		if (amount > 0) {
+			if (dropAmount - amount > 0) {
+				DropsPacket::takeNote(player, drop->getObjectID(), false, dropAmount - amount);
+				drop->setItemAmount(amount);
 			}
-		}
-		else {
-			Item *item = new Item(drop->getItem());
-			short dropAmount = drop->getAmount();
-			short amount = Inventory::addItem(player, item, true);
-			if (amount > 0) {
-				if (dropAmount - amount > 0) {
-					DropsPacket::takeNote(player, drop->getObjectID(), false, dropAmount - amount);
-					drop->setItemAmount(amount);
-				}
-				DropsPacket::takeNote(player, 0, 0, 0);
-				DropsPacket::dontTake(player);
-				return;
-			}
+			DropsPacket::takeNote(player, 0, 0, 0);
+			DropsPacket::dontTake(player);
+			return;
 		}
 		DropsPacket::takeNote(player, drop->getObjectID(), false, drop->getAmount());
 	}

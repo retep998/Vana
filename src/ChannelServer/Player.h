@@ -229,7 +229,6 @@ public:
 	void changeChannel(char channel);
 	void saveSkills();
 	void saveStats();
-	void saveEquips();
 	void saveItems();
 	void saveInventorySlots();
 	void saveVariables();

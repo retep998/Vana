@@ -801,7 +801,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = player->getCombo()+1;
 		}
 		else if (skillid == 1004) { // For Monster Rider
-			Equip *equip = player->inv->getEquip(-18);
+			Item *equip = player->inv->getItem(1, -18);
 			if (equip == 0)
 				// hacking
 				return;

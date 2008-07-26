@@ -52,9 +52,9 @@ void InventoryPacket::updatePlayer(Player *player) {
 	packet.addByte(1);
 	packet.addInt(player->getHair());
 	int equips[35][2] = {0};
-	equipinventory *playerequips = player->inv->getEquips();
-	for (equipinventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
-		Equip *equip = iter->second;
+	iteminventory *playerequips = player->inv->getItems(1);
+	for (iteminventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
+		Item *equip = iter->second;
 		if (iter->first < 0) {
 			if (equips[equip->type][0] > 0) {
 				if (Inventory::isCash(equip->id)) {
@@ -99,7 +99,7 @@ void InventoryPacket::updatePlayer(Player *player) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void InventoryPacket::addEquip(Player *player, short pos, Equip *equip, bool is) {
+void InventoryPacket::addEquip(Player *player, short pos, Item *equip, bool is) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(is);

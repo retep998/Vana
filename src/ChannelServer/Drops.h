@@ -31,7 +31,6 @@ class Player;
 class Mob;
 class ReadPacket;
 class Map;
-struct Equip;
 struct Item;
 
 struct MobDropInfo {
@@ -148,10 +147,7 @@ class Drop {
 private:
 	int mapid;
 	int id;
-	bool ismesos;
 	int mesos;
-	bool isequip;
-	Equip equip;
 	Item item;
 	int owner;
 	int time;
@@ -161,7 +157,6 @@ private:
 	Pos pos;
 public:
 	Drop (int mapid, int mesos, Pos pos, int owner);
-	Drop (int mapid, Equip equip, Pos pos, int owner);
 	Drop (int mapid, Item item, Pos pos, int owner);
 	void setID(int id) {
 		this->id = id;
@@ -193,13 +188,7 @@ public:
 		return mapid;
 	}
 	bool isMesos() {
-		return ismesos;
-	}
-	bool isEquip() {
-		return isequip;
-	}
-	Equip getEquip() {
-		return equip;
+		return mesos > 0;
 	}
 	Item getItem() {
 		return item;
