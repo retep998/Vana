@@ -1,18 +1,9 @@
-origins = {	["100000000"] = "Henesys",
-			["101000000"] = "Ellinia",
-			["102000000"] = "Perion",
-			["103000000"] = "Kerning Cirty",
-			["104000000"] = "Lith Harbor",
-			["200000000"] = "Orbis",
-			["220000000"] = "Ludibrium",
-			["240000000"] = "Leafre",
-			["250000000"] = "Mu Lung",
-			["680000000"] = "Amoria" };
-
 if getMap() == 800000000 then
 	if state == 0 then
 		wt_origin = getPlayerVariable("wt_origin");
-		addText("How's the traveling? Are you enjoying it? #b\r\n#L0#Yes, I'm done with traveling. Can I go back to " .. origins[wt_origin] .."?#k #b\r\n#L1#No, I'd like to continue exploring this place.#k");
+		addText("How's the traveling? Are you enjoying it?\r\n");
+		addText("#b#L0#Yes, I'm done with traveling. Can I go back to #m" .. wt_origin .."#? #l\r\n");
+		addText("#b#L1#No, I'd like to continue exploring this place.#l");
 		sendSimple();
 	elseif state == 1 then
 		if getSelected() == 0 then
@@ -39,7 +30,8 @@ else
 		end
 		sendNext();
 	elseif state == 1 then
-		addText("We currently offer this place for your traveling pleasure: #bMushroom Shrine of Japan#k. I'll be there serving you as the travel guide. Rest assured, the number of destinations will increase over time. Now, would you like to head over to the Mushroom Shrine? #b\r\n#L0##bYes, take me to Mushroom Shrine (Japan)#k");
+		addText("We currently offer this place for your traveling pleasure: #bMushroom Shrine of Japan#k. I'll be there serving you as the travel guide. Rest assured, the number of destinations will increase over time. Now, would you like to head over to the Mushroom Shrine?\r\n");
+		addText("#b#L0# Yes, take me to Mushroom Shrine (Japan)#k#l");
 		sendSimple();
 	elseif state == 2 then
 		if getSelected() == 0 then
