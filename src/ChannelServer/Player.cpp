@@ -169,7 +169,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		Item *item = new Item;
 		item->id = res[i][2];
 		item->amount = res[i][3];
-		item->type = res[i][4].is_null() ? 0 : (unsigned char) res[i][4];
+		item->type = (unsigned char) res[i][4];
 		item->slots = (unsigned char) res[i][5];
 		item->scrolls = (unsigned char) res[i][6];
 		item->istr = res[i][7];
