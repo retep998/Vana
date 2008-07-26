@@ -687,7 +687,7 @@ void Initializing::initializeMaps() {
 	}
 
 	// Portals
-	query << "SELECT mapid, id, pfrom, pto, toid, type, x, y, script, onlyonce FROM mapportaldata";
+	query << "SELECT mapid, portalid, pfrom, pto, toid, type, x, y, script, onlyonce FROM mapportaldata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << datadb.error() << std::endl;
