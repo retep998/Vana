@@ -118,67 +118,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 			if (GETINVENTORY(drops[k].id) == 1) {
 				EquipInfo ei = equips[drops[k].id];
 				Item equip;
-				equip.id = drops[k].id;
-				equip.type =  ei.type;
-				equip.slots = ei.slots;
-				equip.scrolls = 0;
-				if (ei.istr > 0)
-					equip.istr = ei.istr + Randomizer::Instance()->randInt(2)-1;
-				else
-					equip.istr = 0;
-				if (ei.idex > 0)
-					equip.idex = ei.idex + Randomizer::Instance()->randInt(2)-1;
-				else
-					equip.idex = 0;
-				if (ei.iint > 0)
-					equip.iint = ei.iint + Randomizer::Instance()->randInt(2)-1;
-				else
-					equip.iint = 0;
-				if (ei.iluk > 0)
-					equip.iluk = ei.iluk + Randomizer::Instance()->randInt(2)-1;
-				else
-					equip.iluk = 0;
-				if (ei.ihp > 0)
-					equip.ihp = ei.ihp + Randomizer::Instance()->randInt(10)-5;
-				else
-					equip.ihp = 0;
-				if (ei.imp > 0)
-					equip.imp = ei.imp + Randomizer::Instance()->randInt(10)-5;
-				else
-					equip.imp = 0;
-				if (ei.iwatk > 0)
-					equip.iwatk = ei.iwatk + Randomizer::Instance()->randInt(10)-5;
-				else
-					equip.iwatk = 0;
-				if (ei.imatk > 0)
-					equip.imatk = ei.imatk + Randomizer::Instance()->randInt(10)-5;
-				else
-					equip.imatk = 0;
-				if (ei.iwdef > 0)
-					equip.iwdef = ei.iwdef + Randomizer::Instance()->randInt(10)-5;
-				else
-					equip.iwdef = 0;
-				if (ei.imdef > 0)
-					equip.imdef = ei.imdef + Randomizer::Instance()->randInt(10)-5;
-				else
-					equip.imdef = 0;
-				if (ei.iacc > 0)
-					equip.iacc = ei.iacc + Randomizer::Instance()->randInt(2)-1;
-				else
-					equip.iacc = 0;
-				if (ei.iavo > 0)
-					equip.iavo = ei.iavo + Randomizer::Instance()->randInt(2)-1;
-				else
-					equip.iavo = 0;
-				equip.ihand = ei.ihand;
-				if (ei.ijump > 0)
-					equip.ijump = ei.ijump + Randomizer::Instance()->randInt(2)-1;
-				else
-					equip.ijump = 0;
-				if (ei.ispeed > 0)
-					equip.ispeed = ei.ispeed + Randomizer::Instance()->randInt(2)-1;	
-				else
-					equip.ispeed = 0;
+				Inventory::setEquipStats(drops[k].id, equip, true);
 				drop = new Drop(mob->getMapID(), equip, pos, player->getPlayerid());
 			}
 

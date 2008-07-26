@@ -35,7 +35,7 @@ namespace Inventory {
 	void stopTimersPlayer(Player *player);
 	extern bool isCash(int itemid);
 	extern ItemTimer * timer;
-	extern Item * setEquipStats(int equipid);
+	void setEquipStats(int equipid, Item &equip, bool random);
 	void useShop(Player *player, ReadPacket *packet);
 	void itemMove(Player *player, ReadPacket *packet);
 	short addItem(Player *player, Item *item, bool is = false);
