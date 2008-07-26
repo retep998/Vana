@@ -23,33 +23,36 @@ using stdext::hash_map;
 
 class Player;
 
-struct Equip {
-	Equip () { }
-	Equip (Equip *equip) {
-		id = equip->id;
-		slots = equip->slots;
-		scrolls = equip->scrolls;
-		type = equip->type;
-		istr = equip->istr;
-		idex = equip->idex;
-		iint = equip->iint;
-		iluk = equip->iluk;
-		ihp = equip->ihp;
-		imp = equip->imp;
-		iwatk = equip->iwatk;
-		imatk = equip->imatk;
-		iwdef = equip->iwdef;
-		imdef = equip->imdef;
-		iacc = equip->iacc;
-		iavo = equip->iavo;
-		ihand = equip->ihand;
-		ijump = equip->ijump;
-		ispeed = equip->ispeed;
+struct Item {
+	Item () : amount(1), slots(0), scrolls(0), type(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
+		imp(0), iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0) { }
+	Item (Item *item) {
+		id = item->id;
+		amount = item->amount;
+		slots = item->slots;
+		scrolls = item->scrolls;
+		type = item->type;
+		istr = item->istr;
+		idex = item->idex;
+		iint = item->iint;
+		iluk = item->iluk;
+		ihp = item->ihp;
+		imp = item->imp;
+		iwatk = item->iwatk;
+		imatk = item->imatk;
+		iwdef = item->iwdef;
+		imdef = item->imdef;
+		iacc = item->iacc;
+		iavo = item->iavo;
+		ihand = item->ihand;
+		ijump = item->ijump;
+		ispeed = item->ispeed;
 	}
 	int id;
+	short amount;
+	char type;
 	char slots;
 	char scrolls;
-	char type;
 	short istr;
 	short idex;
 	short iint;
@@ -65,17 +68,6 @@ struct Equip {
 	short ihand;
 	short ijump;
 	short ispeed;
-};
-typedef hash_map<short, Equip *> equipinventory;
-
-struct Item {
-	Item () : id(0), amount(0) { }
-	Item (Item *item) {
-		id = item->id;
-		amount = item->amount;
-	}
-	int id;
-	short amount;
 };
 typedef hash_map<short, Item *> iteminventory;
 
@@ -94,13 +86,7 @@ public:
 	int getMesos() {
 		return this->mesos;
 	}
-	void addEquip(short slot, Equip *equip);
-	void setEquip(short slot, Equip *equip);
-	Equip * getEquip(short slot);
-	void deleteEquip(short slot);
-	equipinventory * getEquips() {
-		return &equips;
-	}
+	void addMaxSlots(char inventory, char rows);
 	void addItem(char inv, short slot, Item *item);
 	Item * getItem(char inv, short slot);
 	void deleteItem(char inv, short slot);
@@ -110,14 +96,15 @@ public:
 		itemamounts[itemid] += amount;
 	}
 	int getItemAmount(int itemid);
-	void addMaxSlots(char inventory, char rows);
+	iteminventory * getItems(char inv) {
+		return &items[inv-1];
+	}
 private:
 	unsigned char maxslots[5];
 	Player *player;
 	int mesos;
-	equipinventory equips;
-	iteminventory items[4];
-	hash_map <int, int> itemamounts;
+	iteminventory items[5];
+	hash_map<int, int> itemamounts;
 };
 
 #endif

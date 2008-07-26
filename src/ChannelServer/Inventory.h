@@ -22,11 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ISSTAR(x) (x/10000 == 207)
 #define ISBULLET(x) (x/10000 == 233) // Pirate's bullets and capsules
 #define ISRECHARGEABLE(x) (ISSTAR(x) || ISBULLET(x))
+#define ISEQUIP(x) (x/1000000 == 1)
 
 class Player;
 class ItemTimer;
 class ReadPacket;
-struct Equip;
 struct Item;
 
 namespace Inventory {
@@ -34,10 +34,9 @@ namespace Inventory {
 	void stopTimersPlayer(Player *player);
 	extern bool isCash(int itemid);
 	extern ItemTimer * timer;
-	extern Equip * setEquipStats(int equipid);
+	extern Item * setEquipStats(int equipid);
 	void useShop(Player *player, ReadPacket *packet);
 	void itemMove(Player *player, ReadPacket *packet);
-	bool addEquip(Player *player, Equip *equip, bool is = false);
 	short addItem(Player *player, Item *item, bool is = false);
 	void addNewItem(Player *player, int itemid, int amount);
 	void takeItem(Player *player, int itemid, int howmany);

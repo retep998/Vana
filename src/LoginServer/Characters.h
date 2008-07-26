@@ -31,7 +31,7 @@ class ReadPacket;
 struct CharEquip {
 	char type;
 	int id;
-	short pos;
+	short slot;
 };
 
 struct Character {

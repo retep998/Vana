@@ -58,7 +58,7 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, Character charc) {
 	int cashweapon = 0;
 	std::queue <int> hiddenEquips;
 	for (int j = 0; j < (int) charc.equips.size(); j++) {
-		if (charc.equips[j].pos != -111) {
+		if (charc.equips[j].slot != -111) {
 			if (j == 0 || charc.equips[j].type == 11 || charc.equips[j].type != charc.equips[j-1].type) { // Normal weapons always appear here
 				addEquip(packet, charc.equips[j]);
 			}
@@ -86,9 +86,9 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, Character charc) {
 
 inline
 void LoginPacketHelper::addEquip(PacketCreator &packet, CharEquip &equip) {
-	int pos = -equip.pos;
-	if (pos > 100)
-		pos -= 100;
-	packet.addByte(pos);
+	short slot = -equip.slot;
+	if (slot > 100)
+		slot -= 100;
+	packet.addByte((unsigned char)slot);
 	packet.addInt(equip.id);
 }
