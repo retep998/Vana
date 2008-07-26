@@ -18,11 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
+#define GETINVENTORY(itemid) (itemid/1000000)
 #define ISARROW(x) (x/10000 == 206)
 #define ISSTAR(x) (x/10000 == 207)
 #define ISBULLET(x) (x/10000 == 233) // Pirate's bullets and capsules
 #define ISRECHARGEABLE(x) (ISSTAR(x) || ISBULLET(x))
-#define ISEQUIP(x) (x/1000000 == 1)
+#define ISEQUIP(x) (GETINVENTORY(x) == 1)
 
 class Player;
 class ItemTimer;

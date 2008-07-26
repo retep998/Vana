@@ -182,7 +182,7 @@ Item * Inventory::setEquipStats(int equipid) {
 }
 
 short Inventory::addItem(Player *player, Item *item, bool is) {
-	char inv = item->id/1000000;
+	char inv = GETINVENTORY(item->id);
 	short freeslot = 0;
 	for (short s = 1; s <= player->inv->getMaxSlots(inv); s++) {
 		Item *olditem = player->inv->getItem(inv, s);
@@ -241,7 +241,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 		short slot = packet->getShort();
 		int itemid = packet->getInt();
 		short amount = packet->getShort();
-		char inv = itemid/1000000;
+		char inv = GETINVENTORY(itemid);
 		Item *item = player->inv->getItem(inv, slot);
 		if (item == 0 || item->amount < amount) {
 			// hacking
@@ -264,7 +264,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 void Inventory::addNewItem(Player *player, int itemid, int amount) {
 	if (Drops::items.find(itemid) == Drops::items.end() && Drops::equips.find(itemid) == Drops::equips.end())
 		return;
-	char inv = itemid/1000000;
+	char inv = GETINVENTORY(itemid);
 	short max = Drops::items[itemid].maxslot;
 	Item *item = new Item();
 	item->id = itemid;

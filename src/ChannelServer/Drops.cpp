@@ -115,7 +115,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 
 			Drop *drop = 0;
 
-			if (drops[k].id/1000000 == 1) {
+			if (GETINVENTORY(drops[k].id) == 1) {
 				EquipInfo ei = equips[drops[k].id];
 				Item equip;
 				equip.id = drops[k].id;
