@@ -48,9 +48,6 @@ void Mob::setControl(Player *control) {
 }
 
 void Mob::die(Player *player) {
-	if (this == 0) return;
-	setControl(0);
-
 	MobsPacket::dieMob(this);
 
 	// Account for Holy Symbol
