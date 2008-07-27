@@ -48,7 +48,6 @@ void Mob::setControl(Player *control) {
 }
 
 void Mob::die(Player *player) {
-	setControl(0); // GMS tells the controlling player that the control end when the mob dies
 	MobsPacket::dieMob(this);
 
 	// Account for Holy Symbol
