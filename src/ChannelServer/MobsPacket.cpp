@@ -316,6 +316,4 @@ void MobsPacket::dieMob(Mob *mob) {
 	packet.addByte(1);
 	Maps::maps[mob->getMapID()]->sendPacket(packet);
 	Player *control = mob->getControl();
-	if (control != 0 && control->getMap() == mob->getMapID())
-		endControlMob(control, mob);
 }
