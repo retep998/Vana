@@ -59,50 +59,50 @@ Player::~Player() {
 }
 
 void Player::realHandleRequest(ReadPacket *packet) {
-	switch(packet->getShort()) {
-		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
-		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
-		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
-		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
-		case RECV_CHANGE_CHANNEL: changeChannel(packet->getByte()); break;
-		case RECV_DAMAGE_PLAYER: Players::damagePlayer(this, packet); break;
-		case RECV_STOP_CHAIR: Inventory::stopChair(this, packet); break;
-		case RECV_CHAT: Players::chatHandler(this, packet); break;
-		case RECV_USE_CHAIR: Inventory::useChair(this, packet); break;
-		case RECV_USE_ITEM_EFFECT: Inventory::useItemEffect(this, packet); break;
-		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet); break;
-		case RECV_CHANGE_MAP: Maps::moveMap(this, packet); break;
-		case RECV_MOVE_PLAYER: Players::handleMoving(this, packet); break;
-		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
-		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet); break;
-		case RECV_GROUP_CHAT: Players::groupChatHandler(this, packet); break;
-		case RECV_GET_PLAYER_INFO: Players::getPlayerInfo(this, packet); break;
-		case RECV_CHANGE_MAP_SPECIAL: Maps::moveMapS(this, packet); break; // Portals that cause scripted events
-		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet); break;
+	switch (packet->getShort()) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
-		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
-		case RECV_USE_SKILL: Skills::useSkill(this, packet); break;
-		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, packet); break;
-		case RECV_COMMAND: Players::commandHandler(this, packet); break;
-		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet); break;
-		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this, packet); break;
-		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
-		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
-		case RECV_USE_ITEM: Inventory::useItem(this, packet); break;
-		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
-		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, packet); break; // Skillbooks
-		case RECV_USE_RETURN_SCROLL: Inventory::useReturnScroll(this, packet); break;
-		case RECV_USE_SCROLL: Inventory::useScroll(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
-		case RECV_HEAL_PLAYER: Players::healPlayer(this, packet); break;
+		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
+		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
+		case RECV_CHANGE_CHANNEL: changeChannel(packet->getByte()); break;
+		case RECV_CHANGE_MAP: Maps::moveMap(this, packet); break;
+		case RECV_CHANGE_MAP_SPECIAL: Maps::moveMapS(this, packet); break; // Portals that cause scripted events
+		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
+		case RECV_CHAT: Players::chatHandler(this, packet); break;
+		case RECV_COMMAND: Players::commandHandler(this, packet); break;
+		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet); break;
+		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet); break;
+		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet); break;
+		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet); break;
+		case RECV_DAMAGE_PLAYER: Players::damagePlayer(this, packet); break;
 		case RECV_DROP_MESO: Drops::dropMesos(this, packet); break;
+		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this, packet); break;
 		case RECV_FAME: Fame::handleFame(this, packet); break;
+		case RECV_GET_PLAYER_INFO: Players::getPlayerInfo(this, packet); break;
 		case RECV_GET_QUEST: Quests::getQuest(this, packet); break;
+		case RECV_GROUP_CHAT: Players::groupChatHandler(this, packet); break;
+		case RECV_HEAL_PLAYER: Players::healPlayer(this, packet); break;
+		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet); break;
 		case RECV_LOOT_ITEM: Drops::lootItem(this, packet); break;
-		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet); break;
-		case RECV_SPECIAL_SKILL: Players::handleSpecialSkills(this, packet); break;
+		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
+		case RECV_MOVE_PLAYER: Players::handleMoving(this, packet); break;
+		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
+		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
+		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
+		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
+		case RECV_SPECIAL_SKILL: Players::handleSpecialSkills(this, packet); break;
+		case RECV_STOP_CHAIR: Inventory::stopChair(this, packet); break;
+		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, packet); break;
+		case RECV_USE_CHAIR: Inventory::useChair(this, packet); break;
+		case RECV_USE_ITEM: Inventory::useItem(this, packet); break;
+		case RECV_USE_ITEM_EFFECT: Inventory::useItemEffect(this, packet); break;
+		case RECV_USE_RETURN_SCROLL: Inventory::useReturnScroll(this, packet); break;
+		case RECV_USE_SCROLL: Inventory::useScroll(this, packet); break;
+		case RECV_USE_SKILL: Skills::useSkill(this, packet); break;
+		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, packet); break; // Skillbooks
+		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet); break;
 	}
 }
 
