@@ -15,20 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "Trade.h"
-#include "TradesPacket.h"
-#include "ReadPacket.h"
-#include <hash_map>
-#include "Players.h"
-#include "Player.h"
 
-
-ActiveTrade::ActiveTrade(Player *starter, Player *receiver) {
-	TradeInfo *infostarter = new TradeInfo();
-	TradeInfo *inforeceiver = new TradeInfo();
-	infostarter->player = starter;
-	inforeceiver->player = receiver;
-	this->starter = infostarter;
-	this->receiver = inforeceiver;
+ActiveTrade::ActiveTrade(Player *starter, Player *receiver) :
+starter(new TradeInfo(starter)),
+receiver(new TradeInfo(receiver))
+{
 }
