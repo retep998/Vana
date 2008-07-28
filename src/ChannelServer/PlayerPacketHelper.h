@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PlayerPacketHelper {
 	void addEquip(PacketCreator &packet, short slot, Item *equip, bool shortSlot = false);
+	void addItem(PacketCreator &packet, short slot, Item *item, bool shortSlot);
 }
 
 #endif

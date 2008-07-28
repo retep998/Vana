@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacketHelper.h"
+#include "Inventory.h"
 
 void PlayerPacketHelper::addEquip(PacketCreator &packet, short slot, Item *equip, bool shortSlot) {
 	if (shortSlot)
@@ -55,4 +56,23 @@ void PlayerPacketHelper::addEquip(PacketCreator &packet, short slot, Item *equip
 	packet.addShort(0);		
 	packet.addShort(0);		
 	packet.addShort(0);
+}
+
+void PlayerPacketHelper::addItem(PacketCreator &packet, short slot, Item *item, bool shortSlot) {
+	if (shortSlot)
+		packet.addShort(slot);
+	else
+		packet.addByte((char) slot);
+	packet.addByte(2);
+	packet.addInt(item->id);
+	packet.addShort(0);
+	packet.addBytes("8005BB46E61702");
+	packet.addShort(item->amount); // slots
+	packet.addInt(0);
+	if (ISRECHARGEABLE(item->id)) {
+		packet.addInt(2);
+		packet.addShort(0x54);
+		packet.addByte(0);
+		packet.addByte(0x34);
+	}
 }

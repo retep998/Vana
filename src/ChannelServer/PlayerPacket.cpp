@@ -102,19 +102,7 @@ void PlayerPacket::connectData(Player *player) {
 			Item *item = player->inv->getItem(i, s);
 			if (item == 0)
 				continue;
-			packet.addByte((char) s);
-			packet.addByte(2);
-			packet.addInt(item->id);
-			packet.addShort(0);
-			packet.addBytes("8005BB46E61702");
-			packet.addShort(item->amount); // slots
-			packet.addInt(0);
-			if (ISRECHARGEABLE(item->id)) {
-				packet.addInt(2);
-				packet.addShort(0x54);
-				packet.addByte(0);
-				packet.addByte(0x34);
-			}
+			PlayerPacketHelper::addItem(packet, s, item, false);
 		}
 		packet.addByte(0);
 	}
