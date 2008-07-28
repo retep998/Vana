@@ -547,6 +547,8 @@ void Skills::init() {
 	skillsinfo[3221000].player.push_back(player);
 	skillsinfo[4121000].player.push_back(player);
 	skillsinfo[4221000].player.push_back(player);
+	skillsinfo[5121000].player.push_back(player);
+	skillsinfo[5221000].player.push_back(player);
 	// 2311003 & 9101002 - Holy Symbol
 	player.type = 0x1;
 	player.byte = 8;
