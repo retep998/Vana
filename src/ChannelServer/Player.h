@@ -42,7 +42,7 @@ struct SkillMapEnterActiveInfo;
 
 class Player : public AbstractPlayer {
 public:
-	Player() : isconnect(false), save_on_dc(true), shop(0), npc(0), chair(0), itemEffect(0) { }
+	Player() : isconnect(false), save_on_dc(true), shop(0), npc(0), chair(0), itemEffect(0), tradestate(0) { }
 
 	~Player();
 
@@ -225,6 +225,24 @@ public:
 	SpecialSkillInfo getSpecialSkillInfo() {
 		return this->info;
 	}
+	void setTrading(char newstate) {
+		tradestate = newstate;
+	}
+	char isTrading() {
+		return tradestate;
+	}
+	void setTradeSendID(int id) {
+		this->tradesendid = id;
+	}
+	int getTradeSendID() {
+		return tradesendid;
+	}
+	void setTradeRecvID(int id) {
+		this->traderecvid = id;
+	}
+	int getTradeRecvID() {
+		return traderecvid;
+	}
 	bool addWarning();
 	void changeChannel(char channel);
 	void saveSkills();
@@ -275,6 +293,9 @@ private:
 	int itemEffect;
 	int chair;
 	int gm;
+	char tradestate;
+	int tradesendid;
+	int traderecvid;
 	Pos pos;
 	NPC *npc;
 	vector <int> warnings;

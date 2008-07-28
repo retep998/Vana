@@ -41,6 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillMacros.h"
 #include "Party.h"
 #include "BuddyList.h"
+#include "Trades.h"
+#include "TradesPacket.h"
 #include "LevelsPacket.h"
 
 Player::~Player() {
@@ -49,6 +51,8 @@ Player::~Player() {
 			save();
 			setOnline(false);
 		}
+		if (this->isTrading() == 1)
+			Trades::cancelTrade(this);
 		Skills::stopTimersPlayer(this);
 		Skills::stopCooldownTimersPlayer(this);
 		Inventory::stopTimersPlayer(this);
@@ -90,6 +94,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
 		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
+		case RECV_SHOP_ACTION: Trades::tradeHandler(this, packet); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
 		case RECV_SPECIAL_SKILL: Players::handleSpecialSkills(this, packet); break;
@@ -548,7 +553,7 @@ void Player::save() {
 	saveStats();
 	saveItems();
 	saveInventorySlots();
-	saveVariables();
+//	saveVariables();
 }
 
 void Player::setOnline(bool online) {

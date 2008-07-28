@@ -293,6 +293,14 @@
 					RelativePath=".\src\ChannelServer\Skills.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Trade.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Trades.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Packets"
@@ -347,6 +355,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\SkillsPacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\TradesPacket.cpp"
 					>
 				</File>
 				<Filter
@@ -507,6 +519,14 @@
 					RelativePath=".\src\ChannelServer\Skills.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Trade.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Trades.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Packets"
@@ -561,6 +581,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\SkillsPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\TradesPacket.h"
 					>
 				</File>
 				<Filter
