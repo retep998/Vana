@@ -553,7 +553,7 @@ void Player::save() {
 	saveStats();
 	saveItems();
 	saveInventorySlots();
-//	saveVariables();
+	saveVariables();
 }
 
 void Player::setOnline(bool online) {
