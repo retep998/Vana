@@ -333,3 +333,11 @@ void InventoryPacket::updateSlots(Player *player, char inventory, char slots) {
 	packet.addByte(slots);
 	packet.send(player);
 }
+
+void InventoryPacket::blankUpdate(Player *player) {
+	PacketCreator packet;
+	packet.addShort(SEND_MOVE_ITEM);
+	packet.addByte(0x01);
+	packet.addByte(0x00);
+	packet.send(player);
+}

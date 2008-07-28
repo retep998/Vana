@@ -691,12 +691,15 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			break;
 	}
 	// TODO: Figure out how global handles not being able to use Clean Slate Scrolls
-	if (scrolled)
+	if (scrolled) {
 		takeItemSlot(player, 2, slot, 1);
-	InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
-	if (!cursed)
-		InventoryPacket::addEquip(player, eslot, equip, true);
-	InventoryPacket::updatePlayer(player);
+		InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
+		if (!cursed)
+			InventoryPacket::addEquip(player, eslot, equip, true);
+		InventoryPacket::updatePlayer(player);
+	}
+	else 
+		InventoryPacket::blankUpdate(player);
 }
 
 void Inventory::useCashItem(Player *player, ReadPacket *packet) {

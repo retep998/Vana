@@ -47,6 +47,7 @@ namespace InventoryPacket {
 	void showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int displayInfo_size, int itemid);
 	void useItemEffect(Player *player, int itemid);
 	void updateSlots(Player *player, char inventory, char slots);
+	void blankUpdate(Player *player);
 };
 
 #endif
