@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "DatabaseMigration.h"
 #include "MySQLM.h"
-#include "Config.h"
 #include <iostream>
 #include <string>
 
@@ -26,18 +25,7 @@ using std::string;
 
 void Initializing::initializeMySQL() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing MySQL... ";
-	Config config("conf/mysql.lua");
-	bool failed = false;
-	// Character Database
-	if (!(chardb.set_option(new mysqlpp::ReconnectOption(true)) && chardb.connect(config.getString("chardb_database").c_str(), config.getString("chardb_host").c_str(), config.getString("chardb_username").c_str(), config.getString("chardb_password").c_str(), config.getInt("chardb_port")))) {
-		std::cout << "FAILED: " << chardb.error() << std::endl;
-		exit(1);
-	}
-	// Data Database
-	if (!(datadb.set_option(new mysqlpp::ReconnectOption(true)) && datadb.connect(config.getString("datadb_database").c_str(), config.getString("datadb_host").c_str(), config.getString("datadb_username").c_str(), config.getString("datadb_password").c_str(), config.getInt("datadb_port")))) {
-		std::cout << "FAILED: " << datadb.error() << std::endl;
-		exit(1);
-	}
+	Database::connect();
 	std::cout << "DONE" << std::endl;
 }
 
@@ -62,7 +50,7 @@ void Initializing::checkSchemaVersion(bool update) {
 }
 
 void Initializing::setUsersOffline(int onlineid) {
-	mysqlpp::Query query = chardb.query();
+	mysqlpp::Query query = Database::chardb.query();
 	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = 0, characters.online = 0 WHERE users.online = " << mysqlpp::quote << onlineid;
 	query.exec();
 }
