@@ -131,12 +131,14 @@ struct PGMRInfo { // Power Guard/Mana Reflection
 	int mapmobid;
 	bool isphysical;
 };
+
 struct SkillsInfo {
 	vector <SkillPlayerInfo> player;
 	vector <SkillMapInfo> map;
 	SkillAct act;
 	vector <bool> bact;
 };
+
 typedef hash_map <int, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
