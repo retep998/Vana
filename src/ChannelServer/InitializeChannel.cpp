@@ -417,7 +417,7 @@ void Initializing::initializeEquips() {
 // Shops
 void Initializing::initializeShops() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
-	mysqlpp::Query query = Database::datadb.query("SELECT shopdata.*, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
+	mysqlpp::Query query = Database::datadb.query("SELECT shopdata.shopid, shopdata.npcid, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -438,14 +438,12 @@ void Initializing::initializeShops() {
 
 		if (currentid != previousid && previousid != -1) {
 			Shops::addShop(previousid, shop);
-			shop.items.clear();
+			shop = ShopInfo();
 		}
 		shop.npc = atoi(shopRow[1]);
 		if (shopRow[2] != 0) {
-			ShopItemInfo item;
-			item.id = atoi(shopRow[2]);
-			item.price = atoi(shopRow[3]);
-			shop.items.push_back(item);
+			shop.items.push_back(atoi(shopRow[2]));
+			shop.prices[atoi(shopRow[2])] = atoi(shopRow[3]);
 		}
 		else std::cout << "Warning: Shop " << currentid << " does not have any shop items on record.";
 

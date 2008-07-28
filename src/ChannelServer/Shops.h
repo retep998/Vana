@@ -26,22 +26,18 @@ using stdext::hash_map;
 
 class Player;
 
-struct ShopItemInfo {
-	int id;
-	int price;
-};
-
 struct ShopInfo {
 	int npc;
-	vector <ShopItemInfo> items;
+	vector <int> items;
+	hash_map <int, int> prices;
 };
 
-namespace Shops{
+namespace Shops {
 	extern hash_map <int, ShopInfo> shops;
 	extern vector <int> rechargables; // IDs of items which are rechargable i.e. stars
 	void addShop(int id, ShopInfo shop);
 	void showShop(Player *player, int id);
-	int getPrice(Player *player, int itemid);
+	int getPrice(int shopid, int itemid);
 };
 
 #endif
