@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Maps.h"
 #include "MapPacket.h"
-#include "Drops.h"
 #include "Randomizer.h"
 #include "Timer.h"
 #include "ReadPacket.h"
@@ -806,7 +805,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				// hacking
 				return;
 			int mountid = equip->id;
-			value = Drops::equips[mountid].tamingmob;
+			value = Inventory::equips[mountid].tamingmob;
 		}
 		else if (skillid == 4121006) { // For Shadow Claw
 			for (short s = 1; s <= player->inv->getMaxSlots(2); s++) {
