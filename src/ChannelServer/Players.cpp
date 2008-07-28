@@ -148,18 +148,42 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "summon") == 0 || strcmp(command, "spawn") == 0) {
 			if (strlen(next_token) == 0) return;
 			int mobid = atoi(strtok_s(0, " ", &next_token));
-			if (Mobs::mobinfo.find(mobid) == Mobs::mobinfo.end())
+			if (Mobs::mobinfo.find(mobid) == Mobs::mobinfo.end()) {
+				PlayerPacket::showMessage(player, "Invalid Mob ID.", 5);
 				return;
+			}
 			int count = 1;
 			if (strlen(next_token) > 0)
 				count = atoi(next_token);
-			for (int i=0; i<count && i<100; i++) {
+			for (int i = 0; i < count && i < 100; i++) {
 				Mobs::spawnMob(player, mobid);
 			}
+		}
+		else if (strcmp(command, "addnpc") == 0) {
+			NPCSpawnInfo npc;
+			npc.id = atoi(next_token);
+			npc.fh = 0;
+			npc.x = player->getPos().x;
+			npc.cy = player->getPos().y;
+			npc.rx0 = npc.x - 50;
+			npc.rx1 = npc.x + 50;
+			Maps::maps[player->getMap()]->addNPC(npc);
 		}
 		else if (strcmp(command, "notice") == 0) {
 			if (strlen(next_token) == 0) return;
 			PlayersPacket::showMessage(next_token, 0);
+		}
+		else if (strcmp(command, "me") == 0) {
+			string msg = player->getName() + " : " + string(next_token);
+			PlayersPacket::showMessage(msg, 6);
+		}
+		else if (strcmp(command, "maxstats") == 0) {
+			player->setRMHP(30000);
+			player->setRMMP(30000);
+			player->setStr(30000);
+			player->setDex(30000);
+			player->setInt(30000);
+			player->setLuk(30000);
 		}
 		else if (strcmp(command, "shop") == 0) {
 			int shopid = -1;
@@ -243,6 +267,13 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			else if (strcmp(next_token, "dit") == 0) job = 420;
 			else if (strcmp(next_token, "cb") == 0) job = 421;
 			else if (strcmp(next_token, "shadower") == 0) job = 422;
+			else if (strcmp(next_token, "pirate") == 0) job = 500;
+			else if (strcmp(next_token, "infighter") == 0) job = 510;
+			else if (strcmp(next_token, "buccaneer") == 0) job = 511;
+			else if (strcmp(next_token, "viper") == 0) job = 512;
+			else if (strcmp(next_token, "gunslinger") == 0) job = 520;
+			else if (strcmp(next_token, "valkyrie") == 0) job = 521;
+			else if (strcmp(next_token, "captain") == 0) job = 522;
 			else if (strcmp(next_token, "gm") == 0) job = 900;
 			else if (strcmp(next_token, "sgm") == 0) job = 910;
 			else job = atoi(next_token);
