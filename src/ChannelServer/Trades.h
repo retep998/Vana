@@ -19,24 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef TRADES_H
 #define TRADES_H
 
-#include <hash_map>
 #include "Trade.h"
-#include <boost/scoped_ptr.hpp>
 #include "LoopingId.h"
+#include <hash_map>
+#include <boost/scoped_ptr.hpp>
 
-using namespace std;
-using namespace stdext;
+using stdext::hash_map;
 using boost::scoped_ptr;
 
 class Player;
 class ReadPacket;
-class Trade;
-class TradeTimer;
-
 struct TradeInfo;
 
 namespace Trades {
-	extern hash_map <int, ActiveTrade *> trades;
+	extern hash_map<int, ActiveTrade *> trades;
 	void tradeHandler(Player *player, ReadPacket *packet);
 	void addTrade(ActiveTrade *trade);
 	float getTaxLevel(int mesos);
@@ -47,7 +43,7 @@ namespace Trades {
 	void timeout(Player *starter, Player *receiver, int tradeid);
 	void stopTimeout(Player *starter, Player *receiver);
 	void startTimeout(Player *starter, Player *receiver, int tradeid);
-	bool canTrade(Player *player,TradeInfo *info);
+	bool canTrade(Player *player, TradeInfo *info);
 	ActiveTrade * getTrade(int id);
 };
 

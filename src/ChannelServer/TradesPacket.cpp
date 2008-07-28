@@ -17,16 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "TradesPacket.h"
+#include "Inventory.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "Inventory.h"
-#include "SendHeader.h"
 #include "PlayerPacketHelper.h"
-#include <string>
-#include <vector>
-
-using std::string;
-using std::vector;
+#include "SendHeader.h"
 
 void TradesPacket::sendOpenTrade(Player *player, const vector<Player *> &players, const vector<unsigned char> &pos) {
 	PacketCreator packet;

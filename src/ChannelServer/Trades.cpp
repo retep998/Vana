@@ -15,26 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-#include "Trade.h"
 #include "Trades.h"
-#include "TradesPacket.h"
-#include "InventoryPacket.h"
 #include "Inventory.h"
-#include "ReadPacket.h"
-#include <hash_map>
-#include "Players.h"
+#include "InventoryPacket.h"
 #include "Player.h"
+#include "Players.h"
+#include "ReadPacket.h"
+#include "Timer.h"
+#include "TradesPacket.h"
 #include <string>
 #include <vector>
-#include "Timer.h"
 
 using std::string;
 using std::vector;
-using namespace std;
-using namespace stdext;
 
-hash_map <int, ActiveTrade *> Trades::trades;
+hash_map<int, ActiveTrade *> Trades::trades;
 
 class TradeTimer : public Timer::TimerHandler {
 public:
@@ -112,8 +107,8 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 	unsigned char subopcode = packet->getByte();
 	switch (subopcode) {
 		case 0x00: { // Open trade - this usually comes with 03 00 - no clue why
-			vector <Player *> players;
-			vector <unsigned char> pos;
+			vector<Player *> players;
+			vector<unsigned char> pos;
 			players.push_back(player);
 			pos.push_back(0xFF);			
 			TradesPacket::sendOpenTrade(player, players, pos);

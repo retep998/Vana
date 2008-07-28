@@ -25,9 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-//using namespace std;
-//using namespace stdext;
-
 class Player;
 struct Item;
 
