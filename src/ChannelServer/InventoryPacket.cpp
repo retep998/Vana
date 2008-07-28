@@ -124,19 +124,7 @@ void InventoryPacket::addNewItem(Player *player, char inv, short slot, Item *ite
 	packet.addByte(1);
 	packet.addByte(0);
 	packet.addByte(inv);
-	packet.addShort(slot);
-	packet.addByte(2);
-	packet.addInt(item->id);
-	packet.addShort(0);
-	packet.addBytes("8005BB46E61702");
-	packet.addShort(item->amount);
-	packet.addInt(0);
-	if (ISRECHARGEABLE(item->id)) {
-		packet.addInt(2);
-		packet.addShort(0x54);
-		packet.addByte(0);
-		packet.addByte(0x34);
-	}
+	PlayerPacketHelper::addItem(packet, slot, item, true);
 	packet.send(player);
 }
 void InventoryPacket::addItem(Player *player, char inv, short slot, Item *item, bool is) {
@@ -151,31 +139,21 @@ void InventoryPacket::addItem(Player *player, char inv, short slot, Item *item, 
 	packet.send(player);
 }
 
-void InventoryPacket::moveItemS(Player *player, char inv, short slot, short amount) {
+void InventoryPacket::updateItemAmounts(Player *player, char inv, short slot1, short amount1, short slot2, short amount2) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(1);
-	packet.addByte(1);
-	packet.addByte(1);
-	packet.addByte(inv);
-	packet.addShort(slot);
-	packet.addShort(amount);
-	packet.send(player);
-}
-
-void InventoryPacket::moveItemS2(Player *player, char inv, short slot1, short amount1, short slot2, short amount2) {
-	PacketCreator packet;
-	packet.addShort(SEND_MOVE_ITEM);
-	packet.addByte(1);
-	packet.addByte(2);
+	packet.addByte((slot2 > 0) + 1);
 	packet.addByte(1);
 	packet.addByte(inv);
 	packet.addShort(slot1);
 	packet.addShort(amount1);
-	packet.addByte(1);
-	packet.addByte(inv);
-	packet.addShort(slot2);
-	packet.addShort(amount2);
+	if (slot2 > 0) {
+		packet.addByte(1);
+		packet.addByte(inv);
+		packet.addShort(slot2);
+		packet.addShort(amount2);
+	}
 	packet.send(player);
 }
 

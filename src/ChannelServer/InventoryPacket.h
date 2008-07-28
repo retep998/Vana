@@ -35,8 +35,7 @@ namespace InventoryPacket {
 	void bought(Player *player);
 	void addItem(Player *player, char inv, short slot, Item *item, bool is);
 	void addNewItem(Player *player, char inv, short slot, Item *item, bool is);
-	void moveItemS(Player *player, char inv, short slot, short amount);
-	void moveItemS2(Player *player, char inv, short slot1, short amount1, short slot2, short amount2);
+	void updateItemAmounts(Player *player, char inv, short slot1, short amount1, short slot2, short amount2);
 	void sitChair(Player *player, int chairid);
 	void stopChair(Player *player);
 	void useItem(Player *player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph); // Use buff item
