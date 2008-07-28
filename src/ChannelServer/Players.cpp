@@ -185,7 +185,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "item") == 0) {
 			if (strlen(next_token) == 0) return;
 			int itemid = atoi(strtok_s(0, " ", &next_token));
-			if (Drops::items.find(itemid) == Drops::items.end() && Drops::equips.find(itemid) == Drops::equips.end()) {
+			if (Inventory::items.find(itemid) == Inventory::items.end() && Inventory::equips.find(itemid) == Inventory::equips.end()) {
 				PlayerPacket::showMessage(player, "Invalid item ID", 6);
 				return;
 			}

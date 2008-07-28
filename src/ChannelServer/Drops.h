@@ -45,102 +45,16 @@ struct Mesos {
 	int max;
 };
 
-struct EquipInfo {
-	char slots;
-	char type;
-	int price;
-	short istr;
-	short idex;
-	short iint;
-	short iluk;
-	short ihp;
-	short imp;
-	short iwatk;
-	short imatk;
-	short iwdef;
-	short imdef;
-	short iacc;
-	short iavo;
-	short ihand;
-	short ijump;
-	short ispeed;
-	short tamingmob;
-	bool cash; 
-	bool quest;
-};
-
-struct ItemInfo {
-	char type;
-	short maxslot;
-	int price;
-	bool quest;
-	bool consume;
-};
-
-struct SummonBag {
-	int mobid;
-	int chance;
-};
-
-struct Skillbook{
-	int skillid;
-	int reqlevel;
-	int maxlevel;
-};
-
-struct ConsumeInfo {
-	short hp;
-	short mp;
-	short hpr;
-	short mpr;
-	int moveTo;
-	int time;
-	short watk;
-	short matk;
-	short avo;
-	short acc;
-	short wdef;
-	short mdef;
-	short speed;
-	short jump;
-	short morph;
-	int success;
-	int cursed;
-	short istr;
-	short idex;
-	short iint;
-	short iluk;
-	short ihp;
-	short imp;
-	short iwatk;
-	short imatk;
-	short iwdef;
-	short imdef;
-	short iacc;
-	short iavo;
-	short ihand;
-	short ijump;
-	short ispeed;
-	vector <SummonBag> mobs;
-	vector <Skillbook> skills;
-};
-
 class Drop;
 
 namespace Drops {
 	extern hash_map <int, MobDropsInfo> dropsinfo;
 	extern hash_map <int, Mesos> mesos;
-	extern hash_map <int, EquipInfo> equips;
-	extern hash_map <int, ItemInfo> items;
-	extern hash_map <int, ConsumeInfo> consumes;
 	void addDrop(int id, MobDropInfo drop);
-	void addEquip(int id, EquipInfo equip);
-	void addItem(int id, ItemInfo item);
-	void addConsume(int id, ConsumeInfo cons);
 	void addMesos(int id, Mesos meso);
+	void dropMob(Player *player, Mob *mob);
 	void dropMesos(Player *player, ReadPacket *packet);
 	void lootItem(Player *player, ReadPacket *packet);
-	void dropMob(Player *player, Mob *mob);
 };
 
 class Drop {

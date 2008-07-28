@@ -25,12 +25,105 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ISRECHARGEABLE(x) (ISSTAR(x) || ISBULLET(x))
 #define ISEQUIP(x) (GETINVENTORY(x) == 1)
 
+#include <hash_map>
+#include <vector>
+
+using std::vector;
+using stdext::hash_map;
+
 class Player;
 class ItemTimer;
 class ReadPacket;
 struct Item;
 
+struct EquipInfo {
+	char slots;
+	char type;
+	int price;
+	short istr;
+	short idex;
+	short iint;
+	short iluk;
+	short ihp;
+	short imp;
+	short iwatk;
+	short imatk;
+	short iwdef;
+	short imdef;
+	short iacc;
+	short iavo;
+	short ihand;
+	short ijump;
+	short ispeed;
+	short tamingmob;
+	bool cash; 
+	bool quest;
+};
+
+struct SummonBag {
+	int mobid;
+	int chance;
+};
+
+struct Skillbook{
+	int skillid;
+	int reqlevel;
+	int maxlevel;
+};
+
+struct ConsumeInfo {
+	short hp;
+	short mp;
+	short hpr;
+	short mpr;
+	int moveTo;
+	int time;
+	short watk;
+	short matk;
+	short avo;
+	short acc;
+	short wdef;
+	short mdef;
+	short speed;
+	short jump;
+	short morph;
+	int success;
+	int cursed;
+	short istr;
+	short idex;
+	short iint;
+	short iluk;
+	short ihp;
+	short imp;
+	short iwatk;
+	short imatk;
+	short iwdef;
+	short imdef;
+	short iacc;
+	short iavo;
+	short ihand;
+	short ijump;
+	short ispeed;
+	unsigned char types[8];
+	vector <short> vals;
+	vector <SummonBag> mobs;
+	vector <Skillbook> skills;
+};
+
+struct ItemInfo {
+	char type;
+	short maxslot;
+	int price;
+	bool quest;
+	bool consume;
+	ConsumeInfo cons;
+};
+
 namespace Inventory {
+	extern hash_map <int, EquipInfo> equips;
+	extern hash_map <int, ItemInfo> items;
+	void addEquipInfo(int id, EquipInfo equip);
+	void addItemInfo(int id, ItemInfo item);
 	void startTimer();
 	void stopTimersPlayer(Player *player);
 	extern bool isCash(int itemid);

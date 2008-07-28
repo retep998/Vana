@@ -30,9 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 hash_map <int, MobDropsInfo> Drops::dropsinfo;
 hash_map <int, Mesos> Drops::mesos;
-hash_map <int, EquipInfo> Drops::equips;
-hash_map <int, ItemInfo> Drops::items;
-hash_map <int, ConsumeInfo> Drops::consumes;
 
 // Drop class
 Drop::Drop (int mapid, int mesos, Pos pos, int owner) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0) {
@@ -85,6 +82,14 @@ void Drop::removeDrop() {
 }
 
 // Drops namespace
+void Drops::addDrop(int id, MobDropInfo drop) {
+	dropsinfo[id].push_back(drop);
+}
+
+void Drops::addMesos(int id, Mesos meso) {
+	mesos[id] = meso;
+}
+
 void Drops::dropMob(Player *player, Mob *mob) {
 	MobDropsInfo drops = dropsinfo[mob->getMobID()];
 	int d = 0;
@@ -116,7 +121,6 @@ void Drops::dropMob(Player *player, Mob *mob) {
 			Drop *drop = 0;
 
 			if (GETINVENTORY(drops[k].id) == 1) {
-				EquipInfo ei = equips[drops[k].id];
 				Item equip;
 				Inventory::setEquipStats(drops[k].id, equip, true);
 				drop = new Drop(mob->getMapID(), equip, pos, player->getPlayerid());
@@ -159,6 +163,19 @@ void Drops::dropMob(Player *player, Mob *mob) {
 		drop->setTime(100);
 		drop->doDrop(mob->getPos());
 	}
+}
+
+void Drops::dropMesos(Player *player, ReadPacket *packet) {
+	packet->skipBytes(4);
+	int amount = packet->getInt();
+	if (amount < 10 || amount > 50000) {
+		// hacking
+		return;
+	}
+	player->inv->setMesos(player->inv->getMesos() - amount, true);
+	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), 0);
+	drop->setTime(0);
+	drop->doDrop(player->getPos());
 }
 
 void Drops::lootItem(Player *player, ReadPacket *packet) {
@@ -206,35 +223,4 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 	}
 	Reactors::checkLoot(drop);
 	drop->takeDrop(player);
-}
-
-void Drops::addDrop(int id, MobDropInfo drop) {
-	dropsinfo[id].push_back(drop);
-}
-void Drops::addEquip(int id, EquipInfo equip) {
-	equips[id] = equip;
-}
-void Drops::addItem(int id, ItemInfo item) {
-	items[id] = item;
-	if (ISRECHARGEABLE(id))
-		Shops::rechargables.push_back(id);
-}
-void Drops::addConsume(int id, ConsumeInfo cons) {
-	consumes[id] = cons;
-}
-void Drops::addMesos(int id, Mesos meso) {
-	mesos[id] = meso;
-}
-
-void Drops::dropMesos(Player *player, ReadPacket *packet) {
-	packet->skipBytes(4);
-	int amount = packet->getInt();
-	if (amount < 10 || amount > 50000) {
-		// hacking
-		return;
-	}
-	player->inv->setMesos(player->inv->getMesos() - amount, true);
-	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), 0);
-	drop->setTime(0);
-	drop->doDrop(player->getPos());
 }

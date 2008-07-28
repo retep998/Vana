@@ -98,6 +98,66 @@ private:
 vector <ItemTimer::ITimer> ItemTimer::timers;
 ItemTimer * ItemTimer::singleton = 0;
 
+/* Inventory Namespace */
+hash_map <int, EquipInfo> Inventory::equips;
+hash_map <int, ItemInfo> Inventory::items;
+
+void Inventory::addEquipInfo(int id, EquipInfo equip) {
+	equips[id] = equip;
+}
+
+void Inventory::addItemInfo(int id, ItemInfo item) {
+	items[id] = item;
+	if (ISRECHARGEABLE(id))
+		Shops::rechargables.push_back(id);
+	// Set all types to 0 initially
+	item.cons.types[0] = 0;
+	item.cons.types[1] = 0;
+	item.cons.types[2] = 0;
+	item.cons.types[3] = 0;
+	item.cons.types[4] = 0;
+	item.cons.types[5] = 0;
+	item.cons.types[6] = 0;
+	item.cons.types[7] = 0;
+
+	if (item.cons.watk > 0) {
+		item.cons.types[4] += 0x01;
+		item.cons.vals.push_back(item.cons.watk);
+	}
+	if (item.cons.wdef > 0) {
+		item.cons.types[4] += 0x02;
+		item.cons.vals.push_back(item.cons.wdef);
+	}
+	if (item.cons.matk > 0) {
+		item.cons.types[4] += 0x04;
+		item.cons.vals.push_back(item.cons.matk);
+	}
+	if (item.cons.mdef > 0) {
+		item.cons.types[4] += 0x08;
+		item.cons.vals.push_back(item.cons.mdef);
+	}
+	if (item.cons.acc > 0) {
+		item.cons.types[4] += 0x10;
+		item.cons.vals.push_back(item.cons.acc);
+	}
+	if (item.cons.avo > 0) {
+		item.cons.types[4] += 0x20;
+		item.cons.vals.push_back(item.cons.avo);
+	}
+	if (item.cons.speed > 0) {
+		item.cons.types[4] += 0x80;
+		item.cons.vals.push_back(item.cons.speed);
+	}
+	if (item.cons.jump > 0) {
+		item.cons.types[5] = 0x01;
+		item.cons.vals.push_back(item.cons.jump);
+	}
+	if (item.cons.morph > 0) {
+		item.cons.types[0] = 0x02;
+		item.cons.vals.push_back(item.cons.morph);
+	}
+}
+
 void Inventory::stopTimersPlayer(Player *player) {
 	ItemTimer::Instance()->stop(player);
 }
@@ -136,15 +196,15 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		Item *item2 = player->inv->getItem(inv, slot2);
 
 		if (item2 != 0 && !ISRECHARGEABLE(item1->id) && !ISEQUIP(item1->id) && item1->id == item2->id) {
-			if (item1->amount + item2->amount <= Drops::items[item1->id].maxslot) {
+			if (item1->amount + item2->amount <= items[item1->id].maxslot) {
 				item2->amount += item1->amount;
 				player->inv->deleteItem(inv, slot1);
 				InventoryPacket::moveItemS(player, inv, slot2, item2->amount);
 				InventoryPacket::moveItem(player, inv, slot1, 0);
 			}
 			else {
-				item1->amount -= (Drops::items[item1->id].maxslot - item2->amount);
-				item2->amount = Drops::items[item2->id].maxslot;
+				item1->amount -= (items[item1->id].maxslot - item2->amount);
+				item2->amount = items[item2->id].maxslot;
 				InventoryPacket::moveItemS2(player, inv, slot1, item1->amount, slot2, item2->amount);
 			}
 		}
@@ -157,7 +217,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 }
 
 void Inventory::setEquipStats(int equipid, Item &equip, bool random) {
-	EquipInfo ei = Drops::equips[equipid];
+	EquipInfo ei = equips[equipid];
 	if (!random) {
 		equip.id = equipid;
 		equip.slots = ei.slots;
@@ -208,11 +268,11 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 	for (short s = 1; s <= player->inv->getMaxSlots(inv); s++) {
 		Item *olditem = player->inv->getItem(inv, s);
 		if (olditem != 0) {
-			if (!ISRECHARGEABLE(item->id) && !ISEQUIP(item->id) && olditem->id == item->id && olditem->amount < Drops::items[item->id].maxslot) {
-				if (item->amount + olditem->amount > Drops::items[item->id].maxslot) {
-					short amount = Drops::items[item->id].maxslot - olditem->amount;
+			if (!ISRECHARGEABLE(item->id) && !ISEQUIP(item->id) && olditem->id == item->id && olditem->amount < items[item->id].maxslot) {
+				if (item->amount + olditem->amount > items[item->id].maxslot) {
+					short amount = items[item->id].maxslot - olditem->amount;
 					item->amount -= amount;
-					olditem->amount = Drops::items[item->id].maxslot;
+					olditem->amount = items[item->id].maxslot;
 					InventoryPacket::addItem(player, inv, s, olditem, is);
 				}
 				else {
@@ -268,14 +328,17 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 			// hacking
 			return;
 		}
-		player->inv->setMesos(player->inv->getMesos() + Drops::items[itemid].price * amount);
+		player->inv->setMesos(player->inv->getMesos() + items[itemid].price * amount);
 		takeItemSlot(player, inv, slot, amount, true);
 		InventoryPacket::bought(player);
 	}
 	else if (type == 2) { // Recharge
 		short slot = packet->getShort();
 		Item *item = player->inv->getItem(2, slot);
-		item->amount = Drops::items[item->id].maxslot + player->skills->getSkillLevel(4100000)*10;
+		if (ISSTAR(item->id))
+			item->amount = items[item->id].maxslot + player->skills->getSkillLevel(4100000)*10;
+		else
+			item->amount = items[item->id].maxslot + player->skills->getSkillLevel(5200000)*10;
 		player->inv->setMesos(player->inv->getMesos() - 1); // TODO: Calculate price, letting players recharge for 1 meso for now
 		InventoryPacket::moveItemS(player, 2, slot, item->amount);
 		InventoryPacket::bought(player);
@@ -283,10 +346,10 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 }
 
 void Inventory::addNewItem(Player *player, int itemid, int amount) {
-	if (Drops::items.find(itemid) == Drops::items.end() && Drops::equips.find(itemid) == Drops::equips.end())
+	if (items.find(itemid) == items.end() && equips.find(itemid) == equips.end())
 		return;
 	char inv = GETINVENTORY(itemid);
-	short max = Drops::items[itemid].maxslot;
+	short max = items[itemid].maxslot;
 	Item item;
 	item.id = itemid;
 	if (ISSTAR(itemid)) {
@@ -316,7 +379,7 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 
 void Inventory::takeItem(Player *player, int itemid, int howmany) {
 	player->inv->changeItemAmount(itemid, -howmany);
-	char inv = Drops::items[itemid].type;
+	char inv = items[itemid].type;
 	for (short i = 1; i <= player->inv->getMaxSlots(inv); i++) {
 		Item *item = player->inv->getItem(inv, i);
 		if (item == 0)
@@ -369,80 +432,31 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 		return;
 	}
 	takeItemSlot(player, 2, slot, 1);
+	ItemInfo item = items[itemid];
 	// Alchemist
 	int alchemist = 0;
 	if (player->skills->getSkillLevel(4110000) > 0) {
 		alchemist = Skills::skills[4110000][player->skills->getSkillLevel(4110000)].x;
 	}
-	if (Drops::consumes[itemid].hp > 0) {
-		player->setHP(player->getHP()+Drops::consumes[itemid].hp + ((Drops::consumes[itemid].hp * alchemist)/100));
+	if (item.cons.hp > 0) {
+		player->setHP(player->getHP() + item.cons.hp + ((item.cons.hp * alchemist) / 100));
 	}
-	if (Drops::consumes[itemid].mp > 0) {
-		player->setMP(player->getMP()+Drops::consumes[itemid].mp + ((Drops::consumes[itemid].mp * alchemist)/100));
+	if (item.cons.mp > 0) {
+		player->setMP(player->getMP() + item.cons.mp + ((item.cons.mp * alchemist) / 100));
 	}
 	else
-		player->setMP(player->getMP(), 1);
-	if (Drops::consumes[itemid].hpr > 0) {
-		player->setHP(player->getHP() + ((Drops::consumes[itemid].hpr*player->getMHP()/100) + ((Drops::consumes[itemid].hpr * alchemist)/100)));
+		player->setMP(player->getMP(), true);
+	if (item.cons.hpr > 0) {
+		player->setHP(player->getHP() + (((item.cons.hpr + alchemist) * player->getMHP() / 100)));
 	}
-	if (Drops::consumes[itemid].mpr > 0) {
-		player->setMP(player->getMP() + ((Drops::consumes[itemid].mpr*player->getMMP()/100) + ((Drops::consumes[itemid].mpr * alchemist)/100)));
+	if (item.cons.mpr > 0) {
+		player->setMP(player->getMP() + (((item.cons.mpr + alchemist) * player->getMMP() / 100)));
 	}
 	// Item buffs
-	if (Drops::consumes[itemid].time > 0) {
-		vector <short> vals;
-		unsigned char types[8];
-		// Set all types to 0 initially
-		types[0] = 0;
-		types[1] = 0;
-		types[2] = 0;
-		types[3] = 0;
-		types[4] = 0;
-		types[5] = 0;
-		types[6] = 0;
-		types[7] = 0;
-
-		if (Drops::consumes[itemid].watk > 0) {
-			types[4] += 0x01;
-			vals.push_back(Drops::consumes[itemid].watk);
-		}
-		if (Drops::consumes[itemid].wdef > 0) {
-			types[4] += 0x02;
-			vals.push_back(Drops::consumes[itemid].wdef);
-		}
-		if (Drops::consumes[itemid].matk > 0) {
-			types[4] += 0x04;
-			vals.push_back(Drops::consumes[itemid].matk);
-		}
-		if (Drops::consumes[itemid].mdef > 0) {
-			types[4] += 0x08;
-			vals.push_back(Drops::consumes[itemid].mdef);
-		}
-		if (Drops::consumes[itemid].acc > 0) {
-			types[4] += 0x10;
-			vals.push_back(Drops::consumes[itemid].acc);
-		}
-		if (Drops::consumes[itemid].avo > 0) {
-			types[4] += 0x20;
-			vals.push_back(Drops::consumes[itemid].avo);
-		}
-		if (Drops::consumes[itemid].speed > 0) {
-			types[4] += 0x80;
-			vals.push_back(Drops::consumes[itemid].speed);
-		}
-		if (Drops::consumes[itemid].jump > 0) {
-			types[5] = 0x01;
-			vals.push_back(Drops::consumes[itemid].jump);
-		}
-		bool isMorph = false;
-		if (Drops::consumes[itemid].morph > 0) {
-			types[0] = 0x02;
-			vals.push_back(Drops::consumes[itemid].morph);
-			isMorph = true;
-		}
-		InventoryPacket::useItem(player, itemid, Drops::consumes[itemid].time*1000, types, vals, isMorph);
+	if (item.cons.time > 0) {
+		InventoryPacket::useItem(player, itemid, item.cons.time * 1000, item.cons.types, item.cons.vals, (item.cons.morph > 0));
 		ItemTimer::Instance()->stop(player, itemid);
-		ItemTimer::Instance()->setItemTimer(player, itemid, Drops::consumes[itemid].time*1000);
+		ItemTimer::Instance()->setItemTimer(player, itemid, item.cons.time * 1000);
 	}
 }
 // Cancel item buffs
@@ -453,48 +467,7 @@ void Inventory::cancelItem(Player *player, ReadPacket *packet) {
 }
 // End item buffs
 void Inventory::endItem(Player *player, int itemid) {
-	unsigned char types[8];
-	// Set all types to 0 initially
-	types[0] = 0;
-	types[1] = 0;
-	types[2] = 0;
-	types[3] = 0;
-	types[4] = 0;
-	types[5] = 0;
-	types[6] = 0;
-	types[7] = 0;
-
-	if (Drops::consumes[itemid].watk > 0) {
-		types[4] += 0x01;
-	}
-	if (Drops::consumes[itemid].wdef > 0) {
-		types[4] += 0x02;
-	}
-	if (Drops::consumes[itemid].matk > 0) {
-		types[4] += 0x04;
-	}
-	if (Drops::consumes[itemid].mdef > 0) {
-		types[4] += 0x08;
-	}
-	if (Drops::consumes[itemid].acc > 0) {
-		types[4] += 0x10;
-	}
-	if (Drops::consumes[itemid].avo > 0) {
-		types[4] += 0x20;
-	}
-	if (Drops::consumes[itemid].speed > 0) {
-		types[4] += 0x80;
-	}
-	if (Drops::consumes[itemid].jump > 0) {
-		types[5] = 0x01;
-	}
-	bool isMorph = false;
-	if (Drops::consumes[itemid].morph > 0) {
-		isMorph = true;
-		types[0] = 0x02;
-	}
-
-	InventoryPacket::endItem(player, types, isMorph);
+	InventoryPacket::endItem(player, items[itemid].cons.types, (items[itemid].cons.morph > 0));
 }
 // Skill books
 void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
@@ -513,15 +486,16 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 	bool succeed = false;
 	bool update = false;
 
-	for (size_t i = 0; i < Drops::consumes[itemid].skills.size(); i++) {
-		skillid = Drops::consumes[itemid].skills[i].skillid;
-		newMaxLevel = Drops::consumes[itemid].skills[i].maxlevel;
-		if (player->getJob() == Drops::consumes[itemid].skills[i].skillid/10000) { // Make sure the skill is for the person's job
-			if (player->skills->getSkillLevel(skillid) >= Drops::consumes[itemid].skills[i].reqlevel && player->skills->getMaxSkillLevel(skillid) < newMaxLevel)
+	ItemInfo item = items[itemid];
+	for (size_t i = 0; i < item.cons.skills.size(); i++) {
+		skillid = item.cons.skills[i].skillid;
+		newMaxLevel = item.cons.skills[i].maxlevel;
+		if (player->getJob() == item.cons.skills[i].skillid/10000) { // Make sure the skill is for the person's job
+			if (player->skills->getSkillLevel(skillid) >= item.cons.skills[i].reqlevel && player->skills->getMaxSkillLevel(skillid) < newMaxLevel)
 				use = true;
 		}
 		if (use) {
-			if (Randomizer::Instance()->randInt(100) <= Drops::consumes[itemid].success) {
+			if (Randomizer::Instance()->randInt(100) <= item.cons.success) {
 				if (player->skills->getSkillLevel(skillid) == player->skills->getMaxSkillLevel(skillid)) {
 					update = true;
 				}
@@ -552,7 +526,7 @@ void Inventory::stopChair(Player *player, ReadPacket *packet) {
 }
 
 bool Inventory::isCash(int itemid) {
-	if (Drops::equips.find(itemid) != Drops::equips.end() && Drops::equips[itemid].cash)
+	if (equips.find(itemid) != equips.end() && equips[itemid].cash)
 		return true;
 	return false;
 }
@@ -565,12 +539,12 @@ void Inventory::useSummonBag(Player *player, ReadPacket *packet) {
 		// hacking
 		return;
 	}
-	if (Drops::items.find(itemid) == Drops::items.end())
+	if (items.find(itemid) == items.end())
 		return;
 	takeItemSlot(player, 2, slot, 1);
-	for (size_t i = 0; i < Drops::consumes[itemid].mobs.size(); i++) {
-		if (Randomizer::Instance()->randInt(100) <= Drops::consumes[itemid].mobs[i].chance) {
-			Mobs::spawnMob(player, Drops::consumes[itemid].mobs[i].mobid);
+	for (size_t i = 0; i < items[itemid].cons.mobs.size(); i++) {
+		if (Randomizer::Instance()->randInt(100) <= items[itemid].cons.mobs[i].chance) {
+			Mobs::spawnMob(player, items[itemid].cons.mobs[i].mobid);
 		}
 	}
 }
@@ -583,10 +557,10 @@ void Inventory::useReturnScroll(Player *player, ReadPacket *packet) {
 		// hacking
 		return;
 	}
-	if (Drops::items.find(itemid) == Drops::items.end())
+	if (items.find(itemid) == items.end())
 		return;
 	takeItemSlot(player, 2, slot, 1);
-	int map = Drops::consumes[itemid].moveTo;
+	int map = items[itemid].cons.moveTo;
 	if (map == 999999999)
 		Maps::changeMap(player, Maps::maps[player->getMap()]->getInfo().rm, 0);
 	else
@@ -609,19 +583,19 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 	bool succeed = false;
 	bool cursed = false;
 	bool scrolled = false;
-	if (Drops::items.find(itemid) == Drops::items.end())
+	if (items.find(itemid) == items.end())
 		return;
 	switch (itemid) {
 		case 2049000: // Clean Slate 1%
 		case 2049001: // Clean Slate 3%
 		case 2049002: // Clean Slate 5%
-			if ((Drops::equips[equip->id].slots - equip->scrolls) > equip->slots) {
-				if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].success) { // Give back a slot
+			if ((equips[equip->id].slots - equip->scrolls) > equip->slots) {
+				if (Randomizer::Instance()->randInt(99) < items[itemid].cons.success) { // Give back a slot
 					equip->slots++;
 					succeed = true;
 				}
 				else {
-					if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].cursed) {
+					if (Randomizer::Instance()->randInt(99) < items[itemid].cons.cursed) {
 						cursed = true;
 						InventoryPacket::moveItem(player, 1, eslot, 0);
 						player->inv->deleteItem(1, eslot);
@@ -632,7 +606,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			break;
 		case 2049100: // Chaos Scroll
 			if (equip->slots > 0) {
-				if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].success) { // Add stats
+				if (Randomizer::Instance()->randInt(99) < items[itemid].cons.success) { // Add stats
 					char n = -1; // Default - Decrease stats
 					// TODO: Make sure that Chaos Scrolls are working like they do in global
 					if (Randomizer::Instance()->randInt(99) < 50) // Increase
@@ -684,28 +658,28 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			if (equip->slots > 0) {
 				if (wscroll == 2)
 					takeItem(player, 2340000, 1);
-				if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].success) {
+				if (Randomizer::Instance()->randInt(99) < items[itemid].cons.success) {
 					succeed = true;
-					equip->istr += Drops::consumes[itemid].istr;
-					equip->idex += Drops::consumes[itemid].idex;
-					equip->iint += Drops::consumes[itemid].iint;
-					equip->iluk += Drops::consumes[itemid].iluk;
-					equip->ihp += Drops::consumes[itemid].ihp;
-					equip->imp += Drops::consumes[itemid].imp;
-					equip->iwatk += Drops::consumes[itemid].iwatk;
-					equip->imatk += Drops::consumes[itemid].imatk;
-					equip->iwdef += Drops::consumes[itemid].iwdef;
-					equip->imdef += Drops::consumes[itemid].imdef;
-					equip->iacc += Drops::consumes[itemid].iacc;
-					equip->iavo += Drops::consumes[itemid].iavo;
-					equip->ihand += Drops::consumes[itemid].ihand;
-					equip->ijump += Drops::consumes[itemid].ijump;
-					equip->ispeed += Drops::consumes[itemid].ispeed;
+					equip->istr += items[itemid].cons.istr;
+					equip->idex += items[itemid].cons.idex;
+					equip->iint += items[itemid].cons.iint;
+					equip->iluk += items[itemid].cons.iluk;
+					equip->ihp += items[itemid].cons.ihp;
+					equip->imp += items[itemid].cons.imp;
+					equip->iwatk += items[itemid].cons.iwatk;
+					equip->imatk += items[itemid].cons.imatk;
+					equip->iwdef += items[itemid].cons.iwdef;
+					equip->imdef += items[itemid].cons.imdef;
+					equip->iacc += items[itemid].cons.iacc;
+					equip->iavo += items[itemid].cons.iavo;
+					equip->ihand += items[itemid].cons.ihand;
+					equip->ijump += items[itemid].cons.ijump;
+					equip->ispeed += items[itemid].cons.ispeed;
 					equip->scrolls++;
 					equip->slots--;
 				}
 				else {
-					if (Randomizer::Instance()->randInt(99) < Drops::consumes[itemid].cursed) {
+					if (Randomizer::Instance()->randInt(99) < items[itemid].cons.cursed) {
 						cursed = true;
 						InventoryPacket::moveItem(player, 1, eslot, 0);
 						player->inv->deleteItem(1, eslot);

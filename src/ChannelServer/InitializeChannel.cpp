@@ -179,9 +179,7 @@ void Initializing::initializeItems() {
 
 	int currentid = 0;
 	int previousid = -1;
-	ConsumeInfo cons;
 	ItemInfo item;
-	SummonBag s;
 	MYSQL_ROW itemRow;
 	while ((itemRow = res.fetch_raw_row())) {
 		// Col0 : Item ID
@@ -226,63 +224,62 @@ void Initializing::initializeItems() {
 		currentid = atoi(itemRow[0]);
 
 		if (currentid != previousid && previousid != -1) { // Add the items into the cache
-			Drops::addConsume(previousid, cons);
-			Drops::addItem(previousid, item);
-			cons.mobs.clear();
+			Inventory::addItemInfo(previousid, item);
+			item.cons.mobs.clear();
 		}
 		item.type = atoi(itemRow[1]);
 		item.price = atoi(itemRow[2]);
 		item.maxslot = atoi(itemRow[3]);
 		item.quest = atob(itemRow[4]);
 		item.consume = atob(itemRow[5]);
-		cons.hp = atoi(itemRow[6]);
-		cons.mp = atoi(itemRow[7]);
-		cons.hpr = atoi(itemRow[8]);
-		cons.mpr = atoi(itemRow[9]);
-		cons.moveTo = atoi(itemRow[10]);
+		item.cons.hp = atoi(itemRow[6]);
+		item.cons.mp = atoi(itemRow[7]);
+		item.cons.hpr = atoi(itemRow[8]);
+		item.cons.mpr = atoi(itemRow[9]);
+		item.cons.moveTo = atoi(itemRow[10]);
 		// Buffs
-		cons.time = atoi(itemRow[11]);
-		cons.watk = atoi(itemRow[12]);
-		cons.matk = atoi(itemRow[13]);
-		cons.avo = atoi(itemRow[14]);
-		cons.acc = atoi(itemRow[15]);
-		cons.wdef = atoi(itemRow[16]);
-		cons.mdef = atoi(itemRow[17]);
-		cons.speed = atoi(itemRow[18]);
-		cons.jump = atoi(itemRow[19]);
-		cons.morph = atoi(itemRow[20]);
+		item.cons.time = atoi(itemRow[11]);
+		item.cons.watk = atoi(itemRow[12]);
+		item.cons.matk = atoi(itemRow[13]);
+		item.cons.avo = atoi(itemRow[14]);
+		item.cons.acc = atoi(itemRow[15]);
+		item.cons.wdef = atoi(itemRow[16]);
+		item.cons.mdef = atoi(itemRow[17]);
+		item.cons.speed = atoi(itemRow[18]);
+		item.cons.jump = atoi(itemRow[19]);
+		item.cons.morph = atoi(itemRow[20]);
 		// Scrolling
-		cons.success = atoi(itemRow[21]);
-		cons.cursed = atoi(itemRow[22]);
-		cons.istr = atoi(itemRow[23]);
-		cons.idex = atoi(itemRow[24]);
-		cons.iint = atoi(itemRow[25]);
-		cons.iluk = atoi(itemRow[26]);
-		cons.ihp = atoi(itemRow[27]);
-		cons.imp = atoi(itemRow[28]);
-		cons.iwatk = atoi(itemRow[29]);
-		cons.imatk = atoi(itemRow[30]);
-		cons.iwdef = atoi(itemRow[31]);
-		cons.imdef = atoi(itemRow[32]);
-		cons.iacc = atoi(itemRow[33]);
-		cons.iavo = atoi(itemRow[34]);
-		cons.ijump = atoi(itemRow[35]);
-		cons.ispeed = atoi(itemRow[36]);
-		cons.ihand = 0;
+		item.cons.success = atoi(itemRow[21]);
+		item.cons.cursed = atoi(itemRow[22]);
+		item.cons.istr = atoi(itemRow[23]);
+		item.cons.idex = atoi(itemRow[24]);
+		item.cons.iint = atoi(itemRow[25]);
+		item.cons.iluk = atoi(itemRow[26]);
+		item.cons.ihp = atoi(itemRow[27]);
+		item.cons.imp = atoi(itemRow[28]);
+		item.cons.iwatk = atoi(itemRow[29]);
+		item.cons.imatk = atoi(itemRow[30]);
+		item.cons.iwdef = atoi(itemRow[31]);
+		item.cons.imdef = atoi(itemRow[32]);
+		item.cons.iacc = atoi(itemRow[33]);
+		item.cons.iavo = atoi(itemRow[34]);
+		item.cons.ijump = atoi(itemRow[35]);
+		item.cons.ispeed = atoi(itemRow[36]);
+		item.cons.ihand = 0;
 		// Summoning
 		if (itemRow[37] != 0) {
-			s.mobid = atoi(itemRow[37]);
-			s.chance = atoi(itemRow[38]);
-			cons.mobs.push_back(s);
+			SummonBag summon;
+			summon.mobid = atoi(itemRow[37]);
+			summon.chance = atoi(itemRow[38]);
+			item.cons.mobs.push_back(summon);
 		}
 
-		previousid = atoi(itemRow[0]);
+		previousid = currentid;
 	}
 	// Add the final entry
 	if (previousid != -1) {
-		Drops::addConsume(previousid, cons);
-		Drops::addItem(previousid, item);
-		cons.mobs.clear();
+		Inventory::addItemInfo(previousid, item);
+		item.cons.mobs.clear();
 	}
 
 	// Item Skills
@@ -303,7 +300,7 @@ void Initializing::initializeItems() {
 		skill.skillid = atoi(itemSkillRow[1]);
 		skill.reqlevel = atoi(itemSkillRow[2]);
 		skill.maxlevel = atoi(itemSkillRow[3]);
-		Drops::consumes[atoi(itemSkillRow[0])].skills.push_back(skill);
+		Inventory::items[atoi(itemSkillRow[0])].cons.skills.push_back(skill);
 	}
 	std::cout << "DONE" << std::endl;
 }
@@ -384,7 +381,6 @@ void Initializing::initializeEquips() {
 		//   18 : Taming Mob
 		//   19 : Cash
 		//   20 : Quest
-		int equipID = atoi(equipRow[0]); // This is the Equip ID
 		equip.type = atoi(equipRow[1]);
 		equip.price = atoi(equipRow[2]);
 		equip.slots = atoi(equipRow[3]);
@@ -406,8 +402,8 @@ void Initializing::initializeEquips() {
 		equip.cash = atob(equipRow[19]);
 		equip.quest = atob(equipRow[20]);
 		equip.ihand = 0;
-		// Add equip to the drops table
-		Drops::addEquip(equipID, equip);
+		// Add equip to the equip info table
+		Inventory::addEquipInfo(atoi(equipRow[0]), equip);
 	}
 	std::cout << "DONE" << std::endl;
 }
