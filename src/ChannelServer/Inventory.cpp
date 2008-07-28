@@ -309,7 +309,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 		packet->skipBytes(2);
 		int itemid = packet->getInt();
 		short howmany = packet->getShort();
-		int price = Shops::getPrice(player, itemid);
+		int price = Shops::getPrice(player->getShop(), itemid);
 		if (price == 0) {
 			// hacking
 			return;
