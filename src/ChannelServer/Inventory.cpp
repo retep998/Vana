@@ -182,7 +182,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		}
 		else {
 			item->amount -= amount;
-			InventoryPacket::updateItemSlots(player, inv, slot1, item->amount, 0, 0);
+			InventoryPacket::updateItemAmounts(player, inv, slot1, item->amount, 0, 0);
 		}
 		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getPlayerid());
 		drop->setTime(0);
@@ -199,13 +199,13 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			if (item1->amount + item2->amount <= items[item1->id].maxslot) {
 				item2->amount += item1->amount;
 				player->inv->deleteItem(inv, slot1);
-				InventoryPacket::updateItemSlots(player, inv, slot2, item2->amount, 0, 0);
+				InventoryPacket::updateItemAmounts(player, inv, slot2, item2->amount, 0, 0);
 				InventoryPacket::moveItem(player, inv, slot1, 0);
 			}
 			else {
 				item1->amount -= (items[item1->id].maxslot - item2->amount);
 				item2->amount = items[item2->id].maxslot;
-				InventoryPacket::updateItemSlots(player, inv, slot1, item1->amount, slot2, item2->amount);
+				InventoryPacket::updateItemAmounts(player, inv, slot1, item1->amount, slot2, item2->amount);
 			}
 		}
 		else {
@@ -340,7 +340,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 		else
 			item->amount = items[item->id].maxslot + player->skills->getSkillLevel(5200000)*10;
 		player->inv->setMesos(player->inv->getMesos() - 1); // TODO: Calculate price, letting players recharge for 1 meso for now
-		InventoryPacket::updateItemSlots(player, 2, slot, item->amount, 0, 0);
+		InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
 		InventoryPacket::bought(player);
 	}
 }
@@ -392,7 +392,7 @@ void Inventory::takeItem(Player *player, int itemid, int howmany) {
 					player->inv->deleteItem(inv, i);
 				}
 				else {
-					InventoryPacket::updateItemSlots(player, inv, i, item->amount, 0, 0);
+					InventoryPacket::updateItemAmounts(player, inv, i, item->amount, 0, 0);
 					player->inv->changeItemAmount(item->id, -howmany);
 				}
 				break;
@@ -419,7 +419,7 @@ void Inventory::takeItemSlot(Player *player, char inv, short slot, short amount,
 	}
 	else {
 		player->inv->changeItemAmount(item->id, -item->amount);
-		InventoryPacket::updateItemSlots(player, inv, slot, item->amount, 0, 0);
+		InventoryPacket::updateItemAmounts(player, inv, slot, item->amount, 0, 0);
 	}
 }
 
