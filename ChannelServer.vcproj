@@ -218,22 +218,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\LuaNPC.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\LuaPortal.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\LuaReactor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\LuaScriptable.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Map.cpp"
 					>
 				</File>
@@ -254,23 +238,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Player.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\PlayerInventory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\PlayerQuests.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Players.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\PlayerSkills.cpp"
 					>
 				</File>
 				<File
@@ -402,6 +370,46 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="Scripting"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\LuaNPC.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaPortal.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaReactor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaScriptable.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Player"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\Player.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerInventory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerQuests.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerSkills.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -444,22 +452,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\LuaNPC.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\LuaPortal.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\LuaReactor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\LuaScriptable.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Map.h"
 					>
 				</File>
@@ -480,23 +472,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Player.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\PlayerInventory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\PlayerQuests.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Players.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\PlayerSkills.h"
 					>
 				</File>
 				<File
@@ -627,6 +603,46 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Scripting"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\LuaNPC.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaPortal.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaReactor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\LuaScriptable.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Player"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\Player.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerInventory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerQuests.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerSkills.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>
