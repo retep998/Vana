@@ -23,7 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mysql++/mysql++.h"
 #pragma warning(pop)
 
-extern mysqlpp::Connection chardb;
-extern mysqlpp::Connection datadb;
+namespace Database {
+	extern mysqlpp::Connection chardb;
+	extern mysqlpp::Connection datadb;
+	void connect();
+	mysqlpp::Query getCharQuery();
+	mysqlpp::Query getDataQuery();
+};
 
 #endif
