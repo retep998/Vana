@@ -274,16 +274,18 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				mesos = trade->getReceiver()->mesos;
 				mesos += amount;
 				trade->getReceiver()->mesos = mesos;
+				two->inv->setMesos(two->inv->getMesos() - amount);
+				InventoryPacket::blankUpdate(two); // TODO: Remove when we have a better client
 				TradesPacket::sendAddMesos(one, 0x01, mesos);
 				TradesPacket::sendAddMesos(two, 0x00, mesos);
-				two->inv->setMesos(two->inv->getMesos() - amount);
 			}
 			else {
 				mesos += amount;
 				trade->getStarter()->mesos = mesos;
+				one->inv->setMesos(one->inv->getMesos() - amount);
+				InventoryPacket::blankUpdate(one); // TODO: Remove when we have a better client
 				TradesPacket::sendAddMesos(one, 0x00, mesos);
 				TradesPacket::sendAddMesos(two, 0x01, mesos);
-				one->inv->setMesos(one->inv->getMesos() - amount);
 			}
 			break;
 		}
@@ -360,7 +362,8 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 						for (char i = 0; i < 9; i++) {
 							if (send->slot[i]) {
 								Item *item = send->items[i];
-								Inventory::addItem(two, item);
+								Inventory::addItem(two, new Item(item));
+								delete item;
 							}
 						}
 					}
@@ -368,7 +371,8 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 						for (char i = 0; i < 9; i++) {
 							if (recv->slot[i]) {
 								Item *item = recv->items[i];
-								Inventory::addItem(one, item);
+								Inventory::addItem(one, new Item(item));
+								delete item;
 							}
 						}
 					}
@@ -482,7 +486,8 @@ void Trades::returnItems(Player *player, TradeInfo *info) {
 		for (char i = 0; i < 9; i++) {
 			if (info->slot[i]) {
 				Item *item = info->items[i];
-				Inventory::addItem(player, item);
+				Inventory::addItem(player, new Item(item));
+				delete item;
 			}
 		}
 	}
