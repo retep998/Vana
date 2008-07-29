@@ -215,6 +215,8 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 		}
 	}
+	if (slot1 < 0 || slot2 < 0)
+		InventoryPacket::updatePlayer(player);
 }
 
 void Inventory::setEquipStats(int equipid, Item &equip, bool random) {
