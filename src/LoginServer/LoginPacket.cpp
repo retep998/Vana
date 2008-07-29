@@ -163,11 +163,11 @@ void LoginPacket::showCharacters(PlayerLogin *player, vector <Character> chars) 
 	packet.send(player);
 }
 
-void LoginPacket::checkName(PlayerLogin *player, char is, const string &name) {
+void LoginPacket::checkName(PlayerLogin *player, const string &name, bool taken) {
 	PacketCreator packet;
 	packet.addShort(SEND_CHECK_NAME);
 	packet.addString(name);
-	packet.addByte(is);
+	packet.addByte(taken);
 	packet.send(player);
 }
 

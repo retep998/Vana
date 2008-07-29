@@ -82,8 +82,8 @@ void Characters::checkCharacterName(PlayerLogin *player, ReadPacket *packet) {
 	if (name.size() > 15) {
 		return;
 	}
-	
-	LoginPacket::checkName(player, nameTaken(player, name), name);
+
+	LoginPacket::checkName(player, name, nameTaken(player, name));
 }
 
 void Characters::createEquip(int equipid, int type, int charid) {
@@ -106,7 +106,7 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 
 	// Let's check our char name again just to be sure
 	if (nameTaken(player, name)) {
-		LoginPacket::checkName(player, 1, name);
+		LoginPacket::checkName(player, name, true);
 		return;
 	}
 
@@ -212,5 +212,5 @@ bool Characters::nameTaken(PlayerLogin *player, const string &name) {
 	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name  << " AND world_id = " << mysqlpp::quote << (int) player->getWorld() << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
-	return (res.num_rows() == 1) ? 1 : 0 ;
+	return (res.num_rows() == 1) ? true : false ;
 }

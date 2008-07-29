@@ -45,7 +45,7 @@ namespace LoginPacket {
 	void channelSelect(PlayerLogin *player);
 	void showCharacters(PlayerLogin *player, vector <Character> chars);
 	void showCharacter(PlayerLogin *player, Character charc);
-	void checkName(PlayerLogin *player, char is, const string &name);
+	void checkName(PlayerLogin *player, const string &name, bool taken);
 	void deleteCharacter(PlayerLogin *player, int ID);
 	void connectIP(PlayerLogin *player, int charid);
 };
