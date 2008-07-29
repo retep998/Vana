@@ -595,24 +595,26 @@ void Initializing::initializeSkills() {
 		//    4 : HP
 		//    5 : Item
 		//    6 : Item Count
-		//    7 : Value X
-		//	  8 : Value Y
-		//    9 : Speed
-		//   10 : Jump
-		//   11 : Weapon Attack
-		//   12 : Weapon Defense
-		//   13 : Magic Attack
-		//   14 : Magic Defense
-		//   15 : Accuracy
-		//   16 : Avoid
-		//   17 : HPP
-		//   18 : Prop(% chance)
-		//   19 : Morph
-		//   20 : Left Top X
-		//   21 : Left Top Y
-		//   22 : Right Bottom X
-		//   23 : Right Bottom Y
-		//   24 : Cooldown time
+		//    7 : Bullet Consume
+		//    8 : Money Consume
+		//    9 : Value X
+		//	 10 : Value Y
+		//   11 : Speed
+		//   12 : Jump
+		//   13 : Weapon Attack
+		//   14 : Weapon Defense
+		//   15 : Magic Attack
+		//   16 : Magic Defense
+		//   17 : Accuracy
+		//   18 : Avoid
+		//   19 : HPP
+		//   20 : Prop(% chance)
+		//   21 : Morph
+		//   22 : Left Top X
+		//   23 : Left Top Y
+		//   24 : Right Bottom X
+		//   25 : Right Bottom Y
+		//   26 : Cooldown time
 		currentid = atoi(skillRow[0]);
 
 		if (currentid != previousid && previousid != -1) {
@@ -626,22 +628,24 @@ void Initializing::initializeSkills() {
 		level.hp = atoi(skillRow[4]);
 		level.item = atoi(skillRow[5]);
 		level.itemcount = atoi(skillRow[6]);
-		level.x = atoi(skillRow[7]);
-		level.y = atoi(skillRow[8]);
-		level.speed = atoi(skillRow[9]);
-		level.jump = atoi(skillRow[10]);
-		level.watk = atoi(skillRow[11]);
-		level.wdef = atoi(skillRow[12]);
-		level.matk = atoi(skillRow[13]);
-		level.mdef = atoi(skillRow[14]);
-		level.acc = atoi(skillRow[15]);
-		level.avo = atoi(skillRow[16]);
-		level.hpP = atoi(skillRow[17]);
-		level.prop = atoi(skillRow[18]);
-		level.morph = atoi(skillRow[19]);
-		level.lt = Pos(atoi(skillRow[20]), atoi(skillRow[21]));
-		level.rb = Pos(atoi(skillRow[22]), atoi(skillRow[23]));
-		level.cooltime = atoi(skillRow[24]);
+		level.bulletcon = atoi(skillRow[7]);
+		level.moneycon = atoi(skillRow[8]);
+		level.x = atoi(skillRow[9]);
+		level.y = atoi(skillRow[10]);
+		level.speed = atoi(skillRow[11]);
+		level.jump = atoi(skillRow[12]);
+		level.watk = atoi(skillRow[13]);
+		level.wdef = atoi(skillRow[14]);
+		level.matk = atoi(skillRow[15]);
+		level.mdef = atoi(skillRow[16]);
+		level.acc = atoi(skillRow[17]);
+		level.avo = atoi(skillRow[18]);
+		level.hpP = atoi(skillRow[19]);
+		level.prop = atoi(skillRow[20]);
+		level.morph = atoi(skillRow[21]);
+		level.lt = Pos(atoi(skillRow[22]), atoi(skillRow[23]));
+		level.rb = Pos(atoi(skillRow[24]), atoi(skillRow[25]));
+		level.cooltime = atoi(skillRow[26]);
 		skill[atoi(skillRow[1])] = level;
 
 		previousid = currentid;
@@ -688,7 +692,7 @@ void Initializing::initializeMaps() {
 	}
 
 	// Portals
-	query << "SELECT mapid, portalid, pfrom, pto, toid, type, x, y, script, onlyonce FROM mapportaldata";
+	query << "SELECT mapid, id, pfrom, pto, toid, type, x, y, script, onlyonce FROM mapportaldata";
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::datadb.error() << std::endl;
