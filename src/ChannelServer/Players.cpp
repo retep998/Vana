@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include "StringUtilities.h"
+#include "MySQLM.h"
 
 hash_map <int, Player*> Players::players;
 
@@ -75,7 +76,35 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		char command[90] = "";
 		if (chatsize > 2)
 			strcpy_s(command, 90, strtok_s(chat+1, " ", &next_token));
-		if (strcmp(command, "map") == 0) {
+		if (strcmp(command, "lookup") == 0) {
+			short type = 0;
+			if (strlen(next_token) == 0) {
+				PlayerPacket::showMessage(player, "Sub Commands: item, skill, map, mob, npc", 6);
+				return;
+			}
+			char *subcommand = strtok_s(0, " ", &next_token);
+
+			if (string(subcommand) == "item") type = 1;
+			else if (string(subcommand) == "skill") type = 2;
+			else if (string(subcommand) == "map") type = 3;
+			else if (string(subcommand) == "mob") type = 4;
+			else if (string(subcommand) == "npc") type = 5;
+
+			if (type != 0 && strlen(next_token) == 0) {
+				PlayerPacket::showMessage(player, "You must specify a search string", 5);
+			}
+			else if (type != 0) {
+				mysqlpp::Query query = Database::getDataQuery();
+				query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE '%" << next_token << "%'";
+				mysqlpp::StoreQueryResult res = query.store();
+
+				for (size_t i = 0; i < res.num_rows(); i++) {
+					string msg = (string) res[i][0] + " : " + (string) res[i][1];
+					PlayerPacket::showMessage(player, msg, 6);
+				}
+			}
+		}
+		else if (strcmp(command, "map") == 0) {
 			if (strlen(next_token) == 0) {
 				char msg[60];
 				sprintf_s(msg, 60, "Current Map: %i", player->getMap());
