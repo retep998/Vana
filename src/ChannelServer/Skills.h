@@ -36,7 +36,9 @@ struct SkillLevelInfo {
 	short mp;
 	short hp;
 	int item;
-	int itemcount;
+	short itemcount;
+	short bulletcon;
+	short moneycon;
 	short x;
 	short y;
 	short speed;
