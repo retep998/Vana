@@ -293,10 +293,7 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 	}
 	if (freeslot != 0) {
 		player->inv->addItem(inv, freeslot, item);
-		if (ISEQUIP(item->id))
-			InventoryPacket::addEquip(player, freeslot, item, is);
-		else
-			InventoryPacket::addNewItem(player, inv, freeslot, item, is);
+		InventoryPacket::addNewItem(player, inv, freeslot, item, is);
 		return 0;
 	}
 	else {
@@ -705,7 +702,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 		takeItemSlot(player, 2, slot, 1);
 		InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
 		if (!cursed)
-			InventoryPacket::addEquip(player, eslot, equip, true);
+			InventoryPacket::addNewItem(player, 1, eslot, equip, true);
 		InventoryPacket::updatePlayer(player);
 	}
 	else 
