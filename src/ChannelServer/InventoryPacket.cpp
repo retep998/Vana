@@ -99,17 +99,6 @@ void InventoryPacket::updatePlayer(Player *player) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void InventoryPacket::addEquip(Player *player, short pos, Item *equip, bool is) {
-	PacketCreator packet;
-	packet.addShort(SEND_MOVE_ITEM);
-	packet.addByte(is);
-	packet.addByte(1);
-	packet.addByte(0);
-	packet.addByte(1);
-	PlayerPacketHelper::addItemInfo(packet, pos, equip, true);
-	packet.send(player);
-}
-
 void InventoryPacket::bought(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_BOUGHT);
