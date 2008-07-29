@@ -106,7 +106,7 @@ void InventoryPacket::addEquip(Player *player, short pos, Item *equip, bool is) 
 	packet.addByte(1);
 	packet.addByte(0);
 	packet.addByte(1);
-	PlayerPacketHelper::addEquip(packet, pos, equip, true);
+	PlayerPacketHelper::addItemInfo(packet, pos, equip, true);
 	packet.send(player);
 }
 
@@ -124,7 +124,7 @@ void InventoryPacket::addNewItem(Player *player, char inv, short slot, Item *ite
 	packet.addByte(1);
 	packet.addByte(0);
 	packet.addByte(inv);
-	PlayerPacketHelper::addItem(packet, slot, item, true);
+	PlayerPacketHelper::addItemInfo(packet, slot, item, true);
 	packet.send(player);
 }
 void InventoryPacket::addItem(Player *player, char inv, short slot, Item *item, bool is) {

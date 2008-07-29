@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "Player.h"
 #include "PlayerPacketHelper.h"
-#include "Inventory.h"
 
 void StoragePacket::showStorage(Player *player, int npcid) {
 	PacketCreator packet;
@@ -36,10 +35,7 @@ void StoragePacket::showStorage(Player *player, int npcid) {
 	vector <Item *> items = player->storage->getItems();
 	packet.addByte((char) items.size());
 	for (size_t i = 0; i < items.size(); i++) {
-		if (ISEQUIP(items[i]->id))
-			PlayerPacketHelper::addEquip(packet, i, items[i]);
-		else
-			PlayerPacketHelper::addItem(packet, i, items[i], false);
+		PlayerPacketHelper::addItemInfo(packet, i, items[i]);
 	}
 	packet.addByte(0);
 	packet.send(player);
