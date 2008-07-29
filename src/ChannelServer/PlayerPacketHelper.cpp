@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 #include "Inventory.h"
 
-void PlayerPacketHelper::addEquip(PacketCreator &packet, short slot, Item *equip, bool shortSlot) {
+void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *item, bool shortSlot) {
 	if (shortSlot)
 		packet.addShort(slot);
 	else if (slot < 0) {
@@ -29,50 +29,43 @@ void PlayerPacketHelper::addEquip(PacketCreator &packet, short slot, Item *equip
 	}
 	else
 		packet.addByte((char) slot);
-	packet.addByte(1);
-	packet.addInt(equip->id);
-	packet.addShort(0);
-	packet.addBytes("8005BB46E61702");
-	packet.addByte(equip->slots); // slots
-	packet.addByte(equip->scrolls); // scrolls
-	packet.addShort(equip->istr); // STR
-	packet.addShort(equip->idex); // DEX
-	packet.addShort(equip->iint); // INT
-	packet.addShort(equip->iluk); // LUK
-	packet.addShort(equip->ihp); // HP
-	packet.addShort(equip->imp); // MP
-	packet.addShort(equip->iwatk); // W.Atk
-	packet.addShort(equip->imatk); // M.Atk
-	packet.addShort(equip->iwdef); // W.def
-	packet.addShort(equip->imdef); // M.Def
-	packet.addShort(equip->iacc); // Acc		
-	packet.addShort(equip->iavo); // Avo		
-	packet.addShort(equip->ihand); // Hands		
-	packet.addShort(equip->ispeed); // Speed		
-	packet.addShort(equip->ijump); // Jump		
-	packet.addShort(0);		
-	packet.addShort(0);		
-	packet.addShort(0);		
-	packet.addShort(0);		
-	packet.addShort(0);		
-	packet.addShort(0);
-}
-
-void PlayerPacketHelper::addItem(PacketCreator &packet, short slot, Item *item, bool shortSlot) {
-	if (shortSlot)
-		packet.addShort(slot);
-	else
-		packet.addByte((char) slot);
-	packet.addByte(2);
+	packet.addByte(!ISEQUIP(item->id) + 1);
 	packet.addInt(item->id);
 	packet.addShort(0);
 	packet.addBytes("8005BB46E61702");
-	packet.addShort(item->amount); // slots
-	packet.addInt(0);
-	if (ISRECHARGEABLE(item->id)) {
-		packet.addInt(2);
-		packet.addShort(0x54);
-		packet.addByte(0);
-		packet.addByte(0x34);
+	if (ISEQUIP(item->id)) {
+		packet.addByte(item->slots); // Slots
+		packet.addByte(item->scrolls); // Scrolls
+		packet.addShort(item->istr); // STR
+		packet.addShort(item->idex); // DEX
+		packet.addShort(item->iint); // INT
+		packet.addShort(item->iluk); // LUK
+		packet.addShort(item->ihp); // HP
+		packet.addShort(item->imp); // MP
+		packet.addShort(item->iwatk); // W.Atk
+		packet.addShort(item->imatk); // M.Atk
+		packet.addShort(item->iwdef); // W.Def
+		packet.addShort(item->imdef); // M.Def
+		packet.addShort(item->iacc); // Acc
+		packet.addShort(item->iavo); // Avo
+		packet.addShort(item->ihand); // Hands
+		packet.addShort(item->ispeed); // Speed
+		packet.addShort(item->ijump); // Jump
+		packet.addShort(0);
+		packet.addShort(0);
+		packet.addShort(0);
+		packet.addShort(0);
+		packet.addShort(0);
+		packet.addShort(0);
+	}
+	else {
+		packet.addShort(item->amount); // slots
+		packet.addInt(0);
+		if (ISRECHARGEABLE(item->id)) {
+			packet.addInt(2);
+			packet.addShort(0x54);
+			packet.addByte(0);
+			packet.addByte(0x34);
+		}
 	}
 }

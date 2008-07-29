@@ -79,21 +79,21 @@ void PlayerPacket::connectData(Player *player) {
 	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
 		Item *equip = iter->second;
 		if (iter->first < 0 && !Inventory::isCash(equip->id)) {
-			PlayerPacketHelper::addEquip(packet, iter->first, equip);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, equip);
 		}
 	}
 	packet.addByte(0);
 	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
 		Item *equip = iter->second;
 		if (iter->first < 0 && Inventory::isCash(equip->id)) {
-			PlayerPacketHelper::addEquip(packet, iter->first, equip);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, equip);
 		}
 	}
 	packet.addByte(0);
 	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
 		Item *equip = iter->second;
 		if (iter->first > 0) {
-			PlayerPacketHelper::addEquip(packet, iter->first, equip);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, equip);
 		}
 	}
 	packet.addByte(0);
@@ -102,7 +102,7 @@ void PlayerPacket::connectData(Player *player) {
 			Item *item = player->inv->getItem(i, s);
 			if (item == 0)
 				continue;
-			PlayerPacketHelper::addItem(packet, s, item, false);
+			PlayerPacketHelper::addItemInfo(packet, s, item);
 		}
 		packet.addByte(0);
 	}
