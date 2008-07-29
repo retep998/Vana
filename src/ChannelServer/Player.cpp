@@ -96,6 +96,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
 		case RECV_SHOP_ACTION: Trades::tradeHandler(this, packet); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
+		case RECV_USE_STORAGE: Inventory::useStorage(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
 		case RECV_SPECIAL_SKILL: Players::handleSpecialSkills(this, packet); break;
 		case RECV_STOP_CHAIR: Inventory::stopChair(this, packet); break;
@@ -118,13 +119,14 @@ void Player::playerConnect(ReadPacket *packet) {
 		disconnect();
 		return;
 	}
-	setPlayerid(id);
+	this->id = id;
 	skills.reset(new PlayerSkills(this));
 	quests.reset(new PlayerQuests(this));
 	buddyList.reset(new BuddyList(this));
 
+	// Character info
 	mysqlpp::Query query = Database::chardb.query();
-	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << getPlayerid();
+	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << this->id;
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.empty()) {
@@ -133,6 +135,8 @@ void Player::playerConnect(ReadPacket *packet) {
 		return;
 	}
 
+	userid = res[0]["userid"];
+	world_id = (unsigned char) res[0]["world_id"];
 	res[0]["name"].to_string(name);
 	gender = (unsigned char) res[0]["gender"];
 	skin = (unsigned char) res[0]["skin"];
@@ -157,6 +161,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	mappos = (unsigned char) res[0]["pos"];
 	gm = res[0]["gm"];
 
+	// Inventory
 	unsigned char maxslots[5];
 	maxslots[0] = (unsigned char) res[0]["equip_slots"];
 	maxslots[1] = (unsigned char) res[0]["use_slots"];
@@ -167,7 +172,7 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	inv->setMesosStart(res[0]["mesos"]);
 
-	query << "SELECT inv, slot, itemid, amount, type, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM items WHERE charid = " << mysqlpp::quote << getPlayerid();
+	query << "SELECT inv, slot, itemid, amount, type, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM items WHERE charid = " << mysqlpp::quote << this->id;
 	res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -195,7 +200,8 @@ void Player::playerConnect(ReadPacket *packet) {
 		inv->addItem((unsigned char) res[i][0], res[i][1], item);
 	}
 
-	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << getPlayerid();
+	// Skills
+	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << this->id;
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		skills->addSkillLevel(res[i][0], res[i][1], false);
@@ -204,13 +210,22 @@ void Player::playerConnect(ReadPacket *packet) {
 		}
 	}
 
+	// Storage
+	query << "SELECT slots, mesos FROM storage WHERE userid = " << this->userid << " AND world_id = " << (short) this->world_id;
+	res = query.store();
+	if (res.num_rows() != 0)
+		storage.reset(new PlayerStorage(this, (unsigned char) res[0][0], res[0][1]));
+	else
+		storage.reset(new PlayerStorage(this, 4, 0));
+
 	KeyMaps keyMaps;
-	keyMaps.load(getPlayerid());
+	keyMaps.load(this->id);
 
 	SkillMacros skillMacros;
-	skillMacros.load(getPlayerid());
+	skillMacros.load(this->id);
 
-	query << "SELECT * FROM character_variables WHERE charid = " << mysqlpp::quote << getPlayerid();
+	// Character variables
+	query << "SELECT * FROM character_variables WHERE charid = " << this->id;
 	res = query.store();
 	for (size_t i = 0; i < res.size(); i++) {
 		variables[(string) res[i]["key"]] = res[i]["value"];
@@ -279,7 +294,7 @@ void Player::setJob(short job) {
 	this->job = job;
 	PlayerPacket::updateStat(this, 0x20, job);
 	LevelsPacket::jobChange(this);
-	WorldServerConnectPlayerPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->getPlayerid(), job);
+	WorldServerConnectPlayerPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->id, job);
 }
 
 void Player::setExp(int exp) {
@@ -335,7 +350,7 @@ void Player::setLevel(unsigned char level) {
 	this->level = level;
 	PlayerPacket::updateStat(this, 0x10, level);
 	LevelsPacket::levelUP(this);
-	WorldServerConnectPlayerPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), getPlayerid(), level);
+	WorldServerConnectPlayerPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), this->id, level);
 }
 
 void Player::changeChannel(char channel) {
@@ -356,7 +371,7 @@ void Player::changeKey(ReadPacket *packet) {
 	}
 
 	// Update to MySQL
-	keyMaps.save(getPlayerid());
+	keyMaps.save(this->id);
 }
 
 void Player::changeSkillMacros(ReadPacket *packet) {
@@ -373,7 +388,7 @@ void Player::changeSkillMacros(ReadPacket *packet) {
 
 		skillMacros.add(i, new SkillMacros::SkillMacro(name, shout, skill1, skill2, skill3));
 	}
-	skillMacros.save(getPlayerid());
+	skillMacros.save(this->id);
 }
 
 void Player::setHair(int id) {
@@ -432,11 +447,11 @@ void Player::saveSkills() {
 	bool firstrun = true;
 	for (int i = 0; i < skills->getSkillsNum(); i++) {
 		if (firstrun) {
-			query << "REPLACE INTO skills VALUES (" << mysqlpp::quote << getPlayerid() << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
+			query << "REPLACE INTO skills VALUES (" << mysqlpp::quote << this->id << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
 			firstrun = false;
 		}
 		else {
-			query << ",(" << mysqlpp::quote << getPlayerid() << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
+			query << ",(" << mysqlpp::quote << this->id << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
 		}
 	}
 	query.exec();
@@ -466,13 +481,13 @@ void Player::saveStats() {
 			<< "eyes = " << mysqlpp::quote << getEyes() << ","
 			<< "hair = " << mysqlpp::quote << getHair() << ","
 			<< "mesos = " << mysqlpp::quote << inv->getMesos()
-			<< " WHERE id = " << getPlayerid();
+			<< " WHERE id = " << this->id;
 	query.exec();
 }
 
 void Player::saveItems() {
 	mysqlpp::Query query = Database::chardb.query();
-	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << this->getPlayerid();
+	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << this->id;
 	query.exec();
 
 	bool firstrun = true;
@@ -487,7 +502,7 @@ void Player::saveItems() {
 			else {
 				query << ",(";
 			}
-			query << mysqlpp::quote << getPlayerid() << ","
+			query << mysqlpp::quote << this->id << ","
 				<< mysqlpp::quote << (short) i << ","
 				<< mysqlpp::quote << iter->first << ","
 				<< mysqlpp::quote << item->id << ","
@@ -515,6 +530,16 @@ void Player::saveItems() {
 	query.exec();
 }
 
+void Player::saveStorage() {
+	mysqlpp::Query query = Database::getCharQuery();
+	query << "REPLACE INTO storage VALUES ("
+		<< this->userid << ", "
+		<< (short) this->world_id << ", "
+		<< (short) storage->getSlots() << ", "
+		<< storage->getMesos() << ")";
+	query.exec();
+}
+
 void Player::saveInventorySlots() {
 	mysqlpp::Query query = Database::chardb.query();
 	query << "UPDATE characters SET "
@@ -523,7 +548,7 @@ void Player::saveInventorySlots() {
 		  << "setup_slots = " << mysqlpp::quote << inv->getMaxSlots(3) << ","
 		  << "etc_slots = "   << mysqlpp::quote << inv->getMaxSlots(4) << ","
 		  << "cash_slots = "  << mysqlpp::quote << inv->getMaxSlots(5)
-		  << " WHERE id = " << mysqlpp::quote << getPlayerid();
+		  << " WHERE id = " << mysqlpp::quote << this->id;
 	query.exec();
 }
 
@@ -540,7 +565,7 @@ void Player::saveVariables() {
 			else {
 				query << ",(";
 			}
-			query << mysqlpp::quote << getPlayerid() << ","
+			query << mysqlpp::quote << this->id << ","
 					<< mysqlpp::quote << iter->first << ","
 					<< mysqlpp::quote << iter->second << ")";
 		}
@@ -552,6 +577,7 @@ void Player::save() {
 	saveSkills();
 	saveStats();
 	saveItems();
+	saveStorage();
 	saveInventorySlots();
 	saveVariables();
 }
@@ -560,7 +586,7 @@ void Player::setOnline(bool online) {
 	int onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
 	mysqlpp::Query query = Database::chardb.query();
 	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << mysqlpp::quote << onlineid <<
-			", characters.online = " << mysqlpp::quote << online << " WHERE characters.id = " << mysqlpp::quote << getPlayerid();
+			", characters.online = " << mysqlpp::quote << online << " WHERE characters.id = " << mysqlpp::quote << this->id;
 	query.exec();
 }
 

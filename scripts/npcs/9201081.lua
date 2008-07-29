@@ -1,0 +1,2 @@
+showStorage();
+endNPC();

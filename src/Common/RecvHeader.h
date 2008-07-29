@@ -49,6 +49,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_NPC_TALK 0x36
 #define RECV_NPC_TALK_CONT 0x38 // i.e. clicking next on NPC
 #define RECV_SHOP_ENTER 0x39
+#define RECV_USE_STORAGE 0x3a
 #define RECV_MOVE_ITEM 0x42
 #define RECV_USE_ITEM 0x43
 #define RECV_CANCEL_ITEM 0x44

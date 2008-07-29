@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Player.h"
 #include "InventoryPacket.h"
+#include "StoragePacket.h"
 #include "Skills.h"
 #include "Drops.h"
 #include "Shops.h"
@@ -342,6 +343,16 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 		player->inv->setMesos(player->inv->getMesos() - 1); // TODO: Calculate price, letting players recharge for 1 meso for now
 		InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
 		InventoryPacket::bought(player);
+	}
+}
+
+void Inventory::useStorage(Player *player, ReadPacket *packet) {
+	char type = packet->getByte();
+
+	if (type == 0x07) {
+		int mesos = packet->getInt();
+		player->storage->changeMesos(mesos);
+		player->inv->setMesos(player->inv->getMesos() + mesos);
 	}
 }
 
