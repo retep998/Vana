@@ -49,6 +49,7 @@ namespace LuaExports {
 	int sendGetText(lua_State *luaVm);
 	int sendGetNumber(lua_State *luaVm);
 	int sendStyle(lua_State *luaVm);
+	int showStorage(lua_State *luaVm);
 
 	int giveItem(lua_State *luaVm);
 	int giveMesos(lua_State *luaVm);

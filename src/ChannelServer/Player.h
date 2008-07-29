@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "PacketHandler.h"
 #include "PlayerInventory.h"
+#include "PlayerStorage.h"
 #include "PlayerSkills.h"
 #include "PlayerQuests.h"
 #include "Skills.h"
@@ -47,9 +48,6 @@ public:
 	~Player();
 
 	void realHandleRequest(ReadPacket *packet);
-	void setPlayerid(int id) {
-		this->id = id;
-	}
 	int getPlayerid() {
 		return this->id;
 	}
@@ -248,12 +246,14 @@ public:
 	void saveSkills();
 	void saveStats();
 	void saveItems();
+	void saveStorage();
 	void saveInventorySlots();
 	void saveVariables();
 	void save();
 	void setOnline(bool online);
 	void acceptDeath(int mapid);
 	boost::scoped_ptr<PlayerInventory> inv;
+	boost::scoped_ptr<PlayerStorage> storage;
 	boost::scoped_ptr<PlayerSkills> skills;
 	boost::scoped_ptr<PlayerQuests> quests;
 	boost::scoped_ptr<BuddyList> buddyList;
@@ -262,8 +262,10 @@ private:
 	void changeKey(ReadPacket *packet);
 	void changeSkillMacros(ReadPacket *packet);
 
-	bool isconnect;
 	int id;
+	int userid;
+	char world_id;
+	bool isconnect;
 	string name;
 	char gender;
 	char skin;

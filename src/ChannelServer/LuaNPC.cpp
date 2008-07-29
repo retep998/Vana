@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Players.h"
 #include "Quests.h"
+#include "StoragePacket.h"
 
 LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, playerid) {
 	lua_register(luaVm, "addText", &LuaExports::addText);
@@ -34,6 +35,7 @@ LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, p
 	lua_register(luaVm, "sendGetText", &LuaExports::sendGetText);
 	lua_register(luaVm, "sendGetNumber", &LuaExports::sendGetNumber);
 	lua_register(luaVm, "sendStyle", &LuaExports::sendStyle);
+	lua_register(luaVm, "showStorage", &LuaExports::showStorage);
 	lua_register(luaVm, "setState", &LuaExports::setState);
 	lua_register(luaVm, "getSelected", &LuaExports::getSelected);
 	lua_register(luaVm, "getNumber", &LuaExports::getNumber);
@@ -64,7 +66,7 @@ int LuaExports::sendSimple(lua_State *luaVm) {
 	getNPC(luaVm)->sendSimple();
 	return 1;
 }
-	
+
 int LuaExports::sendYesNo(lua_State *luaVm) {
 	getNPC(luaVm)->sendYesNo();
 	return 1;
@@ -119,6 +121,11 @@ int LuaExports::sendStyle(lua_State *luaVm) {
 	}
 
 	getNPC(luaVm)->sendStyle(styles, size);
+	return 1;
+}
+
+int LuaExports::showStorage(lua_State *luaVm) {
+	StoragePacket::showStorage(getPlayer(luaVm), getNPC(luaVm)->getNpcID());
 	return 1;
 }
 

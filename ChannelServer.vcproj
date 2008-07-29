@@ -326,6 +326,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\StoragePacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\TradesPacket.cpp"
 					>
 				</File>
@@ -407,6 +411,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerSkills.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerStorage.cpp"
 					>
 				</File>
 			</Filter>
@@ -560,6 +568,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\StoragePacket.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\TradesPacket.h"
 					>
 				</File>
@@ -641,6 +653,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerSkills.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerStorage.h"
 					>
 				</File>
 			</Filter>
