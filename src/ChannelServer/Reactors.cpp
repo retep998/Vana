@@ -139,17 +139,17 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 			if (revent->nextstate < maxstates[reactor->getReactorID()]) {
 				if (revent->type >= 100)
 					return;
-				reactor->setState(revent->nextstate, true);
 				ReactorPacket::triggerReactor(reactor);
+				reactor->setState(revent->nextstate, true);
 				return;
 			}
 			else {
 				std::ostringstream filenameStream;
 				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
 				LuaReactor(filenameStream.str(), player->getPlayerid(), id, reactor->getMapID());
+				ReactorPacket::destroyReactor(reactor);
 				reactor->setState(revent->nextstate, false);
 				reactor->kill();
-				ReactorPacket::destroyReactor(reactor);
 			}
 		}
 	}
