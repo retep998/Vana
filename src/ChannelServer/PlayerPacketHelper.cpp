@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacketHelper.h"
+#include "PacketCreator.h"
+#include "Player.h"
 #include "Inventory.h"
 
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *item, bool shortSlot) {
@@ -68,4 +70,55 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *it
 			packet.addByte(0x34);
 		}
 	}
+}
+
+void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player) {
+	packet.addByte(player->getGender());
+	packet.addByte(player->getSkin());
+	packet.addInt(player->getEyes());
+	packet.addByte(1);
+	packet.addInt(player->getHair());
+	int equips[35][2] = {0};
+	iteminventory *playerequips = player->inv->getItems(1);
+	for (iteminventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
+		Item *equip = iter->second;
+		if (iter->first < 0) {
+			if (equips[equip->type][0] > 0) {
+				if (Inventory::isCash(equip->id)) {
+					equips[equip->type][1] = equips[equip->type][0];
+					equips[equip->type][0] = equip->id;
+				}
+				else {
+					equips[equip->type][1] = equip->id;
+				}
+			}
+			else {
+				equips[equip->type][0] = equip->id;
+			}
+		}
+	}
+	for (int i = 0; i < 35; i++) { //shown items
+		if (equips[i][0] > 0) {
+			packet.addByte(i);
+			if (i == 11 && equips[i][1] > 0) // normal weapons always here
+				packet.addInt(equips[i][1]);
+			else
+				packet.addInt(equips[i][0]);
+		}
+	}
+	packet.addByte(-1);
+	for (int i = 0; i < 35; i++) { //covered items
+		if (equips[i][1] > 0 && i != 11) {
+			packet.addByte(i);
+			packet.addInt(equips[i][1]);
+		}
+	}
+	packet.addByte(-1);
+	if (equips[11][1] > 0) // cs weapon
+		packet.addInt(equips[11][0]);
+	else
+		packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(0);
 }

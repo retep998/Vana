@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "TradesPacket.h"
+#include "PlayerPacketHelper.h"
 #include "Inventory.h"
 #include "PacketCreator.h"
 #include "Player.h"
@@ -31,54 +31,7 @@ void TradesPacket::sendOpenTrade(Player *player, const vector<Player *> &players
 	packet.addByte(0x02);
 	packet.addShort(players.size() - 1);
 	for (unsigned char c = 0; c < players.size(); c++) { // lol	
-		packet.addByte(players[c]->getGender());
-		packet.addByte(players[c]->getSkin());
-		packet.addInt(players[c]->getEyes());
-		packet.addByte(0);
-		packet.addInt(players[c]->getHair());
-		int equips[35][2] = {0};
-		iteminventory *playerequips = players[c]->inv->getItems(1);
-		for (iteminventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
-			Item *equip = iter->second;
-			if (iter->first < 0) {
-				if (equips[equip->type][0] > 0) {
-					if (Inventory::isCash(equip->id)) {
-						equips[equip->type][1] = equips[equip->type][0];
-						equips[equip->type][0] = equip->id;
-					}
-					else {
-						equips[equip->type][1] = equip->id;
-					}
-				}
-				else {
-					equips[equip->type][0] = equip->id;
-				}
-			}
-		}
-		for (int i = 0; i < 35; i++) { //shown items
-			if (equips[i][0] > 0) {
-				packet.addByte(i);
-				if (i == 11 && equips[i][1] > 0) // normal weapons always here
-					packet.addInt(equips[i][1]);
-				else
-					packet.addInt(equips[i][0]);
-			}
-		}
-		packet.addByte(-1);
-		for (int i = 0; i < 35; i++) { //covered items
-			if (equips[i][1] > 0 && i != 11) {
-				packet.addByte(i);
-				packet.addInt(equips[i][1]);
-			}
-		}
-		packet.addByte(-1);
-		if (equips[11][1] > 0) // cs weapon
-			packet.addInt(equips[11][0]);
-		else
-			packet.addInt(0);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addInt(0);
+		PlayerPacketHelper::addPlayerDisplay(packet, players[c]);
 		packet.addString(players[c]->getName());
 		packet.addByte(pos[c]); // Location in the window
 	}
@@ -128,54 +81,7 @@ void TradesPacket::sendAddUser(Player *original, Player *newb, char slot) {
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x04);
 	packet.addByte(slot);
-	packet.addByte(newb->getGender());
-	packet.addByte(newb->getSkin());
-	packet.addInt(newb->getEyes());
-	packet.addByte(0);
-	packet.addInt(newb->getHair());
-	int equips[35][2] = {0};
-	iteminventory *playerequips = newb->inv->getItems(1);
-	for (iteminventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
-		Item *equip = iter->second;
-		if (iter->first < 0) {
-			if (equips[equip->type][0] > 0) {
-				if (Inventory::isCash(equip->id)) {
-					equips[equip->type][1] = equips[equip->type][0];
-					equips[equip->type][0] = equip->id;
-				}
-				else {
-					equips[equip->type][1] = equip->id;
-				}
-			}
-			else {
-				equips[equip->type][0] = equip->id;
-			}
-		}
-	}
-	for (int i = 0; i < 35; i++) { //shown items
-		if (equips[i][0] > 0) {
-			packet.addByte(i);
-			if (i == 11 && equips[i][1] > 0) // normal weapons always here
-				packet.addInt(equips[i][1]);
-			else
-				packet.addInt(equips[i][0]);
-		}
-	}
-	packet.addByte(-1);
-	for (int i = 0; i < 35; i++) { //covered items
-		if (equips[i][1] > 0 && i != 11) {
-			packet.addByte(i);
-			packet.addInt(equips[i][1]);
-		}
-	}
-	packet.addByte(-1);
-	if (equips[11][1] > 0) // cs weapon
-		packet.addInt(equips[11][0]);
-	else
-		packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
+	PlayerPacketHelper::addPlayerDisplay(packet, newb);
 	packet.addString(newb->getName());
 	packet.send(original);
 }
@@ -225,14 +131,7 @@ void TradesPacket::sendAddItem(Player *destination, unsigned char player, char s
 	packet.addByte(0x0E);
 	packet.addByte(player);
 	packet.addByte(slot);
-	switch (inventory) {
-		case 0x01:
-			packet.addByte(0x01);
-			break;
-		default:
-			packet.addByte(0x02);
-			break;
-	}
+	packet.addByte((inventory != 1) + 1);
 	packet.addInt(item->id);
 	packet.addShort(0);
 	packet.addBytes("8005BB46E61702");

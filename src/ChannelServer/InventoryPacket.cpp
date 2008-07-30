@@ -46,56 +46,9 @@ void InventoryPacket::updatePlayer(Player *player) {
 	packet.addShort(SEND_UPDATE_CHAR_LOOK);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(1);
-	packet.addByte(player->getGender());
-	packet.addByte(player->getSkin());
-	packet.addInt(player->getEyes());
-	packet.addByte(1);
-	packet.addInt(player->getHair());
-	int equips[35][2] = {0};
-	iteminventory *playerequips = player->inv->getItems(1);
-	for (iteminventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
-		Item *equip = iter->second;
-		if (iter->first < 0) {
-			if (equips[equip->type][0] > 0) {
-				if (Inventory::isCash(equip->id)) {
-					equips[equip->type][1] = equips[equip->type][0];
-					equips[equip->type][0] = equip->id;
-				}
-				else {
-					equips[equip->type][1] = equip->id;
-				}
-			}
-			else {
-				equips[equip->type][0] = equip->id;
-			}
-		}
-	}
-	for (int i = 0; i < 35; i++) { //shown items
-		if (equips[i][0] > 0) {
-			packet.addByte(i);
-			if (i == 11 && equips[i][1] > 0) // normal weapons always here
-				packet.addInt(equips[i][1]);
-			else
-				packet.addInt(equips[i][0]);
-		}
-	}
-	packet.addByte(-1);
-	for (int i = 0; i < 35; i++) { //covered items
-		if (equips[i][1] > 0 && i != 11) {
-			packet.addByte(i);
-			packet.addInt(equips[i][1]);
-		}
-	}
-	packet.addByte(-1);
-	if (equips[11][1] > 0) // cs weapon
-		packet.addInt(equips[11][0]);
-	else
-		packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0); 
+	PlayerPacketHelper::addPlayerDisplay(packet, player);
 	packet.addByte(0);
 	packet.addShort(0);
-	packet.addInt(0);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
