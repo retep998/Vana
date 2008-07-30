@@ -1,30 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 2.11.6
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Jul 30, 2008 at 04:36 AM
--- Server version: 5.0.51
--- PHP Version: 5.2.6
-
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
---
--- Database: `maplestory`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `storageitems`
---
-
 CREATE TABLE IF NOT EXISTS `storageitems` (
   `userid` int(11) NOT NULL,
   `world_id` int(11) NOT NULL,
@@ -50,4 +23,4 @@ CREATE TABLE IF NOT EXISTS `storageitems` (
   `ispeed` smallint(6) NOT NULL default '0',
   `ijump` smallint(6) NOT NULL default '0',
   PRIMARY KEY  (`userid`,`world_id`,`slot`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+);
