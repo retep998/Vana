@@ -38,13 +38,13 @@ public:
 	void addItem(Item *item) {
 		items.push_back(item);
 	}
-	Item * getItem(short slot) {
-		return items[slot - 1];
+	Item * getItem(char slot) {
+		return items[slot];
 	}
-	vector <Item *> getItems() {
-		return items;
+	char getNumItems() {
+		return items.size();
 	}
-	void takeItem(short slot) {
+	void takeItem(char slot) {
 		items.erase(items.begin() + (slot - 1));
 	}
 	void setMesos(int mesos) {
