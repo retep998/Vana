@@ -49,7 +49,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addByte(0);
 	packet.addInt(0);
 	packet.addInt(0);
-	for (size_t i = 0; i < 3; i++) {
+	for (char i = 0; i < 3; i++) {
 		packet.addShort(21613); // Unknown
 		packet.addInt(10028); // Unknown
 		packet.addInt(0);
@@ -128,7 +128,6 @@ void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min,
 	packet.addByte(hour);
 	packet.addByte(min);
 	packet.addByte(sec);
-
 	packet.send(player);
 }
 
@@ -137,7 +136,6 @@ void MapPacket::showTimer(Player *player, int sec) {
 	packet.addShort(SEND_TIME);
 	packet.addByte(2);
 	packet.addInt(sec);
-
 	packet.send(player);
 }
 
@@ -147,16 +145,15 @@ void MapPacket::makeApple(Player *player) {
 	packet.send(player);
 }
 
-// Change music
-void MapPacket::changeMusic(int mapid, const string &musicname) {
+void MapPacket::changeMusic(int mapid, const string &musicname) { // Change music
 	PacketCreator packet;
 	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
 	packet.addString(musicname);
 	Maps::maps[mapid]->sendPacket(packet);
 }
-// Send Sound
-void MapPacket::sendSound(int mapid, const string &soundname) {
+
+void MapPacket::sendSound(int mapid, const string &soundname) { // Send Sound
 	// Party1/Clear = Clear
 	// Party1/Failed = Wrong
 	// Cokeplay/Victory = Victory
