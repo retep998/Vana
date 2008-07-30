@@ -159,7 +159,7 @@ void LoginPacket::showCharacters(PlayerLogin *player, vector <Character> chars) 
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
-	packet.addInt(3); // Max char you have have?
+	packet.addInt(6); // Max char you have have?
 	packet.send(player);
 }
 
@@ -205,5 +205,12 @@ void LoginPacket::connectIP(PlayerLogin *player, int charid) {
 	packet.addInt(charid);
 	packet.addInt(0);
 	packet.addByte(0);
+	packet.send(player);
+}
+
+void LoginPacket::relogResponse(PlayerLogin *player) {
+	PacketCreator packet;
+	packet.addShort(SEND_RELOG_RESPONSE);
+	packet.addByte(1);
 	packet.send(player);
 }
