@@ -203,7 +203,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	// Skills
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << this->id;
 	res = query.store();
-	for (size_t i = 0; i < res.num_rows(); ++i) {
+	for (size_t i = 0; i < res.num_rows(); i++) {
 		skills->addSkillLevel(res[i][0], res[i][1], false);
 		if (FORTHJOB_SKILL(res[i][0])) {
 			skills->setMaxSkillLevel(res[i][0], res[i][2]);
@@ -218,6 +218,34 @@ void Player::playerConnect(ReadPacket *packet) {
 	else
 		storage.reset(new PlayerStorage(this, 4, 0));
 
+	query << "SELECT itemid, amount, type, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM storageitems WHERE userid = " << mysqlpp::quote << this->userid << " AND world_id = " << (short) this->world_id << " ORDER BY slot ASC";
+	res = query.store();
+	for (size_t i = 0; i < res.num_rows(); i++) {
+		Item *item = new Item;
+		item->id = res[i][0];
+		item->amount = res[i][1];
+		item->type = (unsigned char) res[i][2];
+		item->slots = (unsigned char) res[i][3];
+		item->scrolls = (unsigned char) res[i][4];
+		item->istr = res[i][5];
+		item->idex = res[i][6];
+		item->iint = res[i][7];
+		item->iluk = res[i][8];
+		item->ihp = res[i][9];
+		item->imp = res[i][10];
+		item->iwatk = res[i][11];
+		item->imatk = res[i][12];
+		item->iwdef = res[i][13];
+		item->imdef = res[i][14];
+		item->iacc = res[i][15];
+		item->iavo = res[i][16];
+		item->ihand = res[i][17];
+		item->ijump = res[i][18];
+		item->ispeed = res[i][19];
+		storage->addItem(item);
+	}
+
+	// Key Maps and Macros
 	KeyMaps keyMaps;
 	keyMaps.load(this->id);
 
@@ -426,7 +454,7 @@ string Player::getVariable(const string &name) {
 bool Player::addWarning() {
 	int t = clock();
 	// Deleting old warnings
-	for (unsigned int i = 0; i < warnings.size(); i++) {
+	for (size_t i = 0; i < warnings.size(); i++) {
 		if (warnings[i] + 300000 < t) {
 			warnings.erase(warnings.begin()+i);
 			i--;
@@ -534,6 +562,7 @@ void Player::saveInventory() {
 				<< mysqlpp::quote << item->ihand << ","
 				<< mysqlpp::quote << item->ijump << ","
 				<< mysqlpp::quote << item->ispeed << ")";
+			delete item;
 		}
 	}
 	query.exec();
@@ -546,6 +575,46 @@ void Player::saveStorage() {
 		<< (short) this->world_id << ", "
 		<< (short) storage->getSlots() << ", "
 		<< storage->getMesos() << ")";
+	query.exec();
+
+	query << "DELETE FROM storageitems WHERE userid = " << this->userid << " AND world_id = " << (short) this->world_id;
+	query.exec();
+
+	bool firstrun = true;
+	for (char i = 0; i < this->storage->getNumItems(); i++) {
+		if (firstrun) {
+			query << "INSERT INTO storageitems VALUES (";
+			firstrun = false;
+		}
+		else {
+			query << ",(";
+		}
+		Item *item = this->storage->getItem(i);
+		query << mysqlpp::quote << this->userid << ","
+			<< mysqlpp::quote << (short) this->world_id << ","
+			<< mysqlpp::quote << (short) i << ","
+			<< mysqlpp::quote << item->id << ","
+			<< mysqlpp::quote << item->amount << ","
+			<< mysqlpp::quote << (short) item->type << ","
+			<< mysqlpp::quote << (short) item->slots << ","
+			<< mysqlpp::quote << (short) item->scrolls << ","
+			<< mysqlpp::quote << item->istr << ","
+			<< mysqlpp::quote << item->idex << ","
+			<< mysqlpp::quote << item->iint << ","
+			<< mysqlpp::quote << item->iluk << ","
+			<< mysqlpp::quote << item->ihp << ","
+			<< mysqlpp::quote << item->imp << ","
+			<< mysqlpp::quote << item->iwatk << ","
+			<< mysqlpp::quote << item->imatk << ","
+			<< mysqlpp::quote << item->iwdef << ","
+			<< mysqlpp::quote << item->imdef << ","
+			<< mysqlpp::quote << item->iacc << ","
+			<< mysqlpp::quote << item->iavo << ","
+			<< mysqlpp::quote << item->ihand << ","
+			<< mysqlpp::quote << item->ijump << ","
+			<< mysqlpp::quote << item->ispeed << ")";
+		delete item;
+	}
 	query.exec();
 }
 
