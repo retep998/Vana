@@ -495,7 +495,7 @@ void Trades::returnItems(Player *player, TradeInfo *info) {
 
 void Trades::returnMesos(Player *player, TradeInfo *info) {
 	if (info->mesos > 0)
-			player->inv->setMesos(player->inv->getMesos() + info->mesos);
+		player->inv->setMesos(player->inv->getMesos() + info->mesos);
 }
 
 void Trades::timeout(Player *starter, Player *receiver, int tradeid) {
