@@ -503,6 +503,10 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			break;
 		default: // Code in common, minimizes repeated code
 			mobid = packet->getInt();
+			if (Mobs::mobinfo.find(mobid) == Mobs::mobinfo.end()) {
+				// Hacking
+				return;
+			}
 			mapmobid = packet->getInt();
 			if (type != 0xFF)
 				attack = Mobs::mobinfo[mobid].skills[type];
