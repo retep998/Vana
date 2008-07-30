@@ -24,24 +24,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void StoragePacket::showStorage(Player *player, int npcid) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
-	packet.addByte(0x15);
+	packet.addByte(0x15); // Type of storage action
 	packet.addInt(npcid);
 	packet.addByte(player->storage->getSlots());
 	packet.addShort(0x7e);
 	packet.addShort(0);
 	packet.addInt(0);
 	packet.addInt(player->storage->getMesos());
-	packet.addBytes("000000");
-	vector <Item *> items = player->storage->getItems();
-	packet.addByte((char) items.size());
-	for (size_t i = 0; i < items.size(); i++) {
-		PlayerPacketHelper::addItemInfo(packet, i, items[i]);
+	packet.addShort(0);
+	packet.addByte(player->storage->getNumItems());
+	for (char i = 0; i < player->storage->getNumItems(); i++) {
+		PlayerPacketHelper::addItemInfo(packet, 0, player->storage->getItem(i));
 	}
+	packet.addShort(0);
 	packet.addByte(0);
 	packet.send(player);
 }
 
 void StoragePacket::addItem(Player *player, Item *item) {
+	PacketCreator packet;
+	packet.addShort(SEND_STORAGE_ACTION);
+	packet.addByte(0x0c);
+	packet.addByte(player->storage->getSlots());
 }
 
 void StoragePacket::takeItem(Player *player, short slot) {
