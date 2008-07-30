@@ -301,12 +301,7 @@ void Skills::init() {
 	player.type = 0x80;
 	player.byte = TYPE_1;
 	player.value = SKILL_SPEED;
-	map.type = 0x80;
-	map.byte = TYPE_1;
-	map.value = SKILL_SPEED;
-	map.val = true;
 	skillsinfo[1002].player.push_back(player);
-	skillsinfo[1002].map.push_back(map);
 	// 1001003 - Iron Body
 	player.type = 0x02;
 	player.byte = TYPE_1;
@@ -340,11 +335,6 @@ void Skills::init() {
 	player.byte = TYPE_2;
 	player.value = SKILL_X;
 	skillsinfo[4001003].player.push_back(player);
-	map.type = 0x80;
-	map.byte = TYPE_1;
-	map.value = SKILL_SPEED;
-	map.val = true;
-	skillsinfo[4001003].map.push_back(map);
 	map.type = 0x04;
 	map.byte = TYPE_2;
 	map.value = SKILL_X;
@@ -471,14 +461,6 @@ void Skills::init() {
 	skillsinfo[4201003].player.push_back(player);
 	skillsinfo[9001000].player.push_back(player);
 	skillsinfo[9101001].player.push_back(player);
-	map.type = 0x80;
-	map.byte = TYPE_1;
-	map.value = SKILL_SPEED;
-	map.val = true;
-	skillsinfo[4101004].map.push_back(map);
-	skillsinfo[4201003].map.push_back(map);
-	skillsinfo[9001000].map.push_back(map);
-	skillsinfo[9101001].map.push_back(map);
 	// 4211005 - Meso Guard
 	player.type = 0x10;
 	player.byte = TYPE_4;
