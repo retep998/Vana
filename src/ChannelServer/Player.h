@@ -245,9 +245,8 @@ public:
 	void changeChannel(char channel);
 	void saveSkills();
 	void saveStats();
-	void saveItems();
+	void saveInventory();
 	void saveStorage();
-	void saveInventorySlots();
 	void saveVariables();
 	void save();
 	void setOnline(bool online);
