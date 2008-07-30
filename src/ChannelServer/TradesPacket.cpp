@@ -130,37 +130,6 @@ void TradesPacket::sendAddItem(Player *destination, unsigned char player, char s
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x0E);
 	packet.addByte(player);
-	packet.addByte(slot);
-	packet.addByte((inventory != 1) + 1);
-	packet.addInt(item->id);
-	packet.addShort(0);
-	packet.addBytes("8005BB46E61702");
-	if (inventory == 1) {
-		packet.addByte(item->slots);
-		packet.addByte(item->scrolls);
-		packet.addShort(item->istr);
-		packet.addShort(item->idex);
-		packet.addShort(item->iint);
-		packet.addShort(item->iluk);
-		packet.addShort(item->ihp);
-		packet.addShort(item->imp);
-		packet.addShort(item->iwatk);
-		packet.addShort(item->imatk);
-		packet.addShort(item->iwdef);
-		packet.addShort(item->imdef);
-		packet.addShort(item->iacc);
-		packet.addShort(item->iavo);
-		packet.addShort(item->ihand);
-		packet.addShort(item->ijump);
-		packet.addShort(item->ispeed);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addInt(0);
-		packet.addShort(0);
-	}
-	else {
-		packet.addShort(item->amount);
-		packet.addInt(0);
-	}
+	PlayerPacketHelper::addItemInfo(packet, slot, item);
 	packet.send(destination);
 }
