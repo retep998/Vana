@@ -325,11 +325,6 @@ void Player::setJob(short job) {
 	WorldServerConnectPlayerPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->id, job);
 }
 
-void Player::setExp(int exp) {
-	this->exp = exp;
-	PlayerPacket::updateStat(this, 0x10000, exp);
-}
-
 void Player::setStr(short str) {
 	this->str = str;
 	PlayerPacket::updateStat(this, 0x40, str);
@@ -353,7 +348,7 @@ void Player::setLuk(short luk) {
 void Player::setMHP(int mhp) {
 	if (mhp > 30000) { mhp = 30000; }
 	this->mhp = mhp;
-	PlayerPacket::updateStat(this, 0x800, getRMHP());
+	PlayerPacket::updateStat(this, 0x800, mhp);
 }
 
 void Player::setRMHP(int rmhp) {
@@ -365,13 +360,18 @@ void Player::setRMHP(int rmhp) {
 void Player::setMMP(int mmp) {
 	if (mmp > 30000) { mmp = 30000; }
 	this->mmp = mmp;
-	PlayerPacket::updateStat(this, 0x800, getRMHP());
+	PlayerPacket::updateStat(this, 0x2000, mmp);
 }
 
 void Player::setRMMP(int rmmp) {
 	if (rmmp > 30000) { rmmp = 30000; }
 	this->rmmp = rmmp;
 	PlayerPacket::updateStat(this, 0x2000, rmmp);
+}
+
+void Player::setExp(int exp) {
+	this->exp = exp;
+	PlayerPacket::updateStat(this, 0x10000, exp);
 }
 
 void Player::setLevel(unsigned char level) {
@@ -488,28 +488,28 @@ void Player::saveSkills() {
 void Player::saveStats() {
 	mysqlpp::Query query = Database::chardb.query();
 	query << "UPDATE characters SET "
-			<< "level = " << mysqlpp::quote << getLevel() << ","
-			<< "job = " << mysqlpp::quote << getJob() << ","
-			<< "str = " << mysqlpp::quote << getStr() << ","
-			<< "dex = " << mysqlpp::quote << getDex() << ","
-			<< "`int` = " << mysqlpp::quote << getInt() << ","
-			<< "luk = " << mysqlpp::quote << getLuk() << ","
-			<< "chp = " << mysqlpp::quote << getHP() << ","
-			<< "mhp = " << mysqlpp::quote << getRMHP() << ","
-			<< "cmp = " << mysqlpp::quote << getMP() << ","
-			<< "mmp = " << mysqlpp::quote << getRMMP() << ","
-			<< "hpmp_ap = " << mysqlpp::quote << getHPMPAp() << ","
-			<< "ap = " << mysqlpp::quote << getAp() << ","
-			<< "sp = " << mysqlpp::quote << getSp() << ","
-			<< "exp = " << mysqlpp::quote << getExp() << ","
-			<< "fame = " << mysqlpp::quote << getFame() << ","
-			<< "map = " << mysqlpp::quote << getMap() << ","
-			<< "gender = " << mysqlpp::quote << (short) getGender() << ","
-			<< "skin = " << mysqlpp::quote << (short) getSkin() << ","
-			<< "eyes = " << mysqlpp::quote << getEyes() << ","
-			<< "hair = " << mysqlpp::quote << getHair() << ","
-			<< "mesos = " << mysqlpp::quote << inv->getMesos()
-			<< " WHERE id = " << this->id;
+		<< "level = " << mysqlpp::quote << this->level << ","
+		<< "job = " << mysqlpp::quote << this->job << ","
+		<< "str = " << mysqlpp::quote << this->str << ","
+		<< "dex = " << mysqlpp::quote << this->dex << ","
+		<< "`int` = " << mysqlpp::quote << this->intt << ","
+		<< "luk = " << mysqlpp::quote << this->luk << ","
+		<< "chp = " << mysqlpp::quote << this->hp << ","
+		<< "mhp = " << mysqlpp::quote << this->rmhp << ","
+		<< "cmp = " << mysqlpp::quote << this->mp << ","
+		<< "mmp = " << mysqlpp::quote << this->rmmp << ","
+		<< "hpmp_ap = " << mysqlpp::quote << this->hpmp_ap << ","
+		<< "ap = " << mysqlpp::quote << this->ap << ","
+		<< "sp = " << mysqlpp::quote << this->sp << ","
+		<< "exp = " << mysqlpp::quote << this->exp << ","
+		<< "fame = " << mysqlpp::quote << this->fame << ","
+		<< "map = " << mysqlpp::quote << this->map << ","
+		<< "gender = " << mysqlpp::quote << (short) this->gender << ","
+		<< "skin = " << mysqlpp::quote << (short) this->skin << ","
+		<< "eyes = " << mysqlpp::quote << this->eyes << ","
+		<< "hair = " << mysqlpp::quote << this->hair << ","
+		<< "mesos = " << mysqlpp::quote << inv->getMesos()
+		<< " WHERE id = " << this->id;
 	query.exec();
 }
 
