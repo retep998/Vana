@@ -71,7 +71,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
 
 	packet.addInt(0);
-	packet.addInt(player->getItemEffect()); 
+	packet.addInt(player->getItemEffect());
 	packet.addInt(player->getChair());
 	packet.addPos(player->getPos());
 	packet.addByte(player->getType());
@@ -141,7 +141,7 @@ void MapPacket::showTimer(Player *player, int sec) {
 
 void MapPacket::makeApple(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_MAKE_APPLE);  
+	packet.addShort(SEND_MAKE_APPLE);
 	packet.send(player);
 }
 
