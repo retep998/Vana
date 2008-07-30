@@ -21,16 +21,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *item, bool shortSlot) {
-	if (shortSlot)
-		packet.addShort(slot);
-	else if (slot < 0) {
-		char charslot = (char) -slot;
-		if (charslot > 100)
-			charslot -= 100;
-		packet.addByte(charslot);
+	if (slot != 0) {
+		if (shortSlot)
+			packet.addShort(slot);
+		else if (slot < 0) {
+			char charslot = (char) -slot;
+			if (charslot > 100)
+				charslot -= 100;
+			packet.addByte(charslot);
+		}
+		else
+			packet.addByte((char) slot);
 	}
-	else
-		packet.addByte((char) slot);
 	packet.addByte(!ISEQUIP(item->id) + 1);
 	packet.addInt(item->id);
 	packet.addShort(0);
@@ -53,7 +55,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *it
 		packet.addShort(item->ihand); // Hands
 		packet.addShort(item->ispeed); // Speed
 		packet.addShort(item->ijump); // Jump
-		packet.addShort(0);
+		packet.addShort(0); // Owner string goes here
 		packet.addShort(0);
 		packet.addShort(0);
 		packet.addShort(0);
@@ -61,7 +63,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *it
 		packet.addShort(0);
 	}
 	else {
-		packet.addShort(item->amount); // slots
+		packet.addShort(item->amount); // Amount
 		packet.addInt(0);
 		if (ISRECHARGEABLE(item->id)) {
 			packet.addInt(2);
@@ -80,7 +82,7 @@ void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player)
 	packet.addInt(player->getHair());
 	int equips[35][2] = {0};
 	iteminventory *playerequips = player->inv->getItems(1);
-	for (iteminventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { //sort equips
+	for (iteminventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { // Sort equips
 		Item *equip = iter->second;
 		if (iter->first < 0) {
 			if (equips[equip->type][0] > 0) {
@@ -97,24 +99,24 @@ void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player)
 			}
 		}
 	}
-	for (int i = 0; i < 35; i++) { //shown items
+	for (int i = 0; i < 35; i++) { // Shown items
 		if (equips[i][0] > 0) {
 			packet.addByte(i);
-			if (i == 11 && equips[i][1] > 0) // normal weapons always here
+			if (i == 11 && equips[i][1] > 0) // Normal weapons always here
 				packet.addInt(equips[i][1]);
 			else
 				packet.addInt(equips[i][0]);
 		}
 	}
 	packet.addByte(-1);
-	for (int i = 0; i < 35; i++) { //covered items
+	for (int i = 0; i < 35; i++) { // Covered items
 		if (equips[i][1] > 0 && i != 11) {
 			packet.addByte(i);
 			packet.addInt(equips[i][1]);
 		}
 	}
 	packet.addByte(-1);
-	if (equips[11][1] > 0) // cs weapon
+	if (equips[11][1] > 0) // Cash weapon
 		packet.addInt(equips[11][0]);
 	else
 		packet.addInt(0);
