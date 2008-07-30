@@ -389,7 +389,7 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 
 void Inventory::takeItem(Player *player, int itemid, int howmany) {
 	player->inv->changeItemAmount(itemid, -howmany);
-	char inv = items[itemid].type;
+	char inv = GETINVENTORY(itemid);
 	for (short i = 1; i <= player->inv->getMaxSlots(inv); i++) {
 		Item *item = player->inv->getItem(inv, i);
 		if (item == 0)
@@ -442,31 +442,31 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 		return;
 	}
 	takeItemSlot(player, 2, slot, 1);
-	ItemInfo item = items[itemid];
+	ItemInfo *item = &items[itemid];
 	// Alchemist
-	int alchemist = 0;
+	short alchemist = 0;
 	if (player->skills->getSkillLevel(4110000) > 0) {
 		alchemist = Skills::skills[4110000][player->skills->getSkillLevel(4110000)].x;
 	}
-	if (item.cons.hp > 0) {
-		player->setHP(player->getHP() + item.cons.hp + ((item.cons.hp * alchemist) / 100));
+	if (item->cons.hp > 0) {
+		player->setHP(player->getHP() + item->cons.hp + ((item->cons.hp * alchemist) / 100));
 	}
-	if (item.cons.mp > 0) {
-		player->setMP(player->getMP() + item.cons.mp + ((item.cons.mp * alchemist) / 100));
+	if (item->cons.mp > 0) {
+		player->setMP(player->getMP() + item->cons.mp + ((item->cons.mp * alchemist) / 100));
 	}
 	else
 		player->setMP(player->getMP(), true);
-	if (item.cons.hpr > 0) {
-		player->setHP(player->getHP() + (((item.cons.hpr + alchemist) * player->getMHP() / 100)));
+	if (item->cons.hpr > 0) {
+		player->setHP(player->getHP() + (((item->cons.hpr + alchemist) * player->getMHP() / 100)));
 	}
-	if (item.cons.mpr > 0) {
-		player->setMP(player->getMP() + (((item.cons.mpr + alchemist) * player->getMMP() / 100)));
+	if (item->cons.mpr > 0) {
+		player->setMP(player->getMP() + (((item->cons.mpr + alchemist) * player->getMMP() / 100)));
 	}
 	// Item buffs
-	if (item.cons.time > 0) {
-		InventoryPacket::useItem(player, itemid, item.cons.time * 1000, item.cons.types, item.cons.vals, (item.cons.morph > 0));
+	if (item->cons.time > 0) {
+		InventoryPacket::useItem(player, itemid, item->cons.time * 1000, item->cons.types, item->cons.vals, (item->cons.morph > 0));
 		ItemTimer::Instance()->stop(player, itemid);
-		ItemTimer::Instance()->setItemTimer(player, itemid, item.cons.time * 1000);
+		ItemTimer::Instance()->setItemTimer(player, itemid, item->cons.time * 1000);
 	}
 }
 // Cancel item buffs

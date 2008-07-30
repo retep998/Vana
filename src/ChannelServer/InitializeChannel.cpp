@@ -190,7 +190,7 @@ void Initializing::initializeItems() {
 	MYSQL_ROW itemRow;
 	while ((itemRow = res.fetch_raw_row())) {
 		// Col0 : Item ID
-		//    1 : Type
+		//    1 : Type (Deprecated, will be removed in VEDB 15)
 		//    2 : Price
 		//    3 : Slots
 		//    4 : Quest
@@ -234,7 +234,6 @@ void Initializing::initializeItems() {
 			Inventory::addItemInfo(previousid, item);
 			item.cons.mobs.clear();
 		}
-		item.type = atoi(itemRow[1]);
 		item.price = atoi(itemRow[2]);
 		item.maxslot = atoi(itemRow[3]);
 		item.quest = atob(itemRow[4]);

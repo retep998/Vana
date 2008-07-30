@@ -111,7 +111,6 @@ struct ConsumeInfo {
 };
 
 struct ItemInfo {
-	char type;
 	short maxslot;
 	int price;
 	bool quest;
