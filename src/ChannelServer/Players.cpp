@@ -207,8 +207,11 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			PlayersPacket::showMessage(msg, 6);
 		}
 		else if (strcmp(command, "maxstats") == 0) {
+			player->setFame(30000);
 			player->setRMHP(30000);
 			player->setRMMP(30000);
+			player->setMHP(30000);
+			player->setMMP(30000);
 			player->setStr(30000);
 			player->setDex(30000);
 			player->setInt(30000);
