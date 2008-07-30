@@ -93,11 +93,11 @@ public:
 	short getLuk() {
 		return this->luk;
 	}
-	void setHP(int hp, bool is=1);
+	void setHP(int hp, bool is = true);
 	unsigned short getHP() {
 		return this->hp;
 	}
-	void setMP(int mp, bool is=0);
+	void setMP(int mp, bool is = false);
 	unsigned short getMP() {
 		return this->mp;
 	}
@@ -123,14 +123,14 @@ public:
 	unsigned short getHPMPAp() {
 		return hpmp_ap;
 	}
+	void setAp(short ap);
 	short getAp() {
 		return this->ap;
 	}
+	void setSp(short sp);
 	short getSp() {
 		return this->sp;
 	}
-	void setAp(short ap);
-	void setSp(short sp);
 	void setFame(short fame);
 	short getFame() {
 		return this->fame;
@@ -272,6 +272,7 @@ private:
 	int hair;
 	unsigned char level;
 	short job;
+	short fame;
 	short str;
 	short dex;
 	short intt;
@@ -286,7 +287,6 @@ private:
 	short ap;
 	short sp;
 	int exp;
-	short fame;
 	int map;
 	char mappos;
 	char type;
