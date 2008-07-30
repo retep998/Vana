@@ -48,6 +48,7 @@ namespace LoginPacket {
 	void checkName(PlayerLogin *player, const string &name, bool taken);
 	void deleteCharacter(PlayerLogin *player, int ID);
 	void connectIP(PlayerLogin *player, int charid);
+	void relogResponse(PlayerLogin *player);
 };
 
 #endif

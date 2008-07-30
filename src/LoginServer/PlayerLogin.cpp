@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerLogin.h"
 #include "Characters.h"
 #include "Login.h"
+#include "LoginPacket.h"
 #include "Worlds.h"
 #include "MySQLM.h"
 #include "ReadPacket.h"
@@ -37,6 +38,7 @@ void PlayerLogin::realHandleRequest(ReadPacket *packet) {
 		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, packet); break;
 		case RECV_SET_GENDER: Login::setGender(this, packet); break;
 		case RECV_REGISTER_PIN: Login::registerPIN(this, packet); break;
+		case RECV_RELOG: LoginPacket::relogResponse(this);
 	}
 }
 
@@ -46,6 +48,6 @@ PlayerLogin::~PlayerLogin() {
 
 void PlayerLogin::setOnline(bool online) {
 	mysqlpp::Query query = Database::chardb.query();
-	query << "UPDATE users SET online = " << mysqlpp::quote << online << " WHERE id = " << mysqlpp::quote << getUserid();
+	query << "UPDATE users SET online = " << mysqlpp::quote << online << " WHERE id = " << mysqlpp::quote << this->userid;
 	query.exec();
 }
