@@ -247,12 +247,25 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			Skills::clearCombo(player);
 			break;
 		case 1111008: // Shout
-		case 1311006: // Dragon Roar
 		case 5001001: // Super Dragon Roar
 			break; 
+		case 1311006: { // Dragon Roar
+			short x_value = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].x;
+			short y_value = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].y; // Stun length in seconds
+			short m_hp = player->getMHP();
+			short hp = player->getHP();
+			short reduction = (m_hp / 100) * x_value;
+			if (hp - reduction > 0)
+				player->setHP(hp - reduction, false);
+			else {
+				// Hacking
+				return;
+			}
+			// TODO: Add stun here
+			break;
+		}
 		case 1311005: { // Sacrifice
-			int level = player->skills->getSkillLevel(skillid);
-			int hp_damage_x = Skills::skills[skillid][level].x;
+			int hp_damage_x = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].x;
 			int hp_damage = totaldmg * hp_damage_x / 100;
 			int hp = player->getHP();
 			if (hp - hp_damage < 1)
