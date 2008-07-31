@@ -371,13 +371,13 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			if (strlen(next_token) > 0)
 				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
 					if (iter->second->getName() == string(next_token))
-						Maps::changeMap(player , iter->second->getMap(), iter->second->getMappos());
+						Maps::changeMap(player , iter->second->getMap(), 0);
 		}
 		else if (strcmp(command, "mwarpto") == 0) {
 			if (strlen(next_token) > 0)
 				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
 					if (iter->second->getName() == string(next_token)) {
-						Maps::changeMap(iter->second, player->getMap(), player->getMappos());
+						Maps::changeMap(iter->second, player->getMap(), 0);
 						break;
 					}
 		}

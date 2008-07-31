@@ -69,8 +69,8 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
 		case RECV_CHANGE_CHANNEL: changeChannel(packet->getByte()); break;
-		case RECV_CHANGE_MAP: Maps::moveMap(this, packet); break;
-		case RECV_CHANGE_MAP_SPECIAL: Maps::moveMapS(this, packet); break; // Portals that cause scripted events
+		case RECV_CHANGE_MAP: Maps::usePortal(this, packet); break;
+		case RECV_CHANGE_MAP_SPECIAL: Maps::useScriptedPortal(this, packet); break; // Portals that cause scripted events
 		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
 		case RECV_CHAT: Players::chatHandler(this, packet); break;
 		case RECV_COMMAND: Players::commandHandler(this, packet); break;
@@ -269,7 +269,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
 	}
 
-	pos = Maps::maps[map]->getPortalByID(0)->pos;
+	pos = Maps::maps[map]->getSpawnPoint()->pos;
 
 	type = 0;
 	PlayerPacket::showKeys(this, &keyMaps);

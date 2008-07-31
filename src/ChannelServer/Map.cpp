@@ -28,8 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "ReactorPacket.h"
 #include "Reactors.h"
+#include "Randomizer.h"
 
-Map::Map (MapInfo info) : info(info), objectids(new LoopingId(1000)) { }
+Map::Map (MapInfo info) : info(info), spawnpoints(0), objectids(new LoopingId(1000)) { }
 
 // Players
 void Map::addPlayer(Player *player) {
@@ -79,6 +80,12 @@ Pos Map::findFloor(Pos pos) {
 		}
 	}
 	return Pos(x, maxy);
+}
+
+// Portals
+PortalInfo * Map::getSpawnPoint() {
+	int id = Randomizer::Instance()->randInt(spawnpoints - 1);
+	return &portals[id];
 }
 
 // Mobs

@@ -65,7 +65,7 @@ void Maps::addMap(MapInfo info) {
 	maps[info.id] = new Map(info);
 }
 
-void Maps::moveMap(Player *player, ReadPacket *packet) {
+void Maps::usePortal(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1);
 	if (packet->getInt() == 0) { // Dead
 		int tomap;
@@ -82,15 +82,12 @@ void Maps::moveMap(Player *player, ReadPacket *packet) {
 	if (portal == 0) // Exit the function if portal is not found
 		return;
 
-	int tonum = 0;
-	PortalInfo * nextportal = maps[portal->toid]->getPortal(portal->to);
-	if (nextportal != 0)
-		tonum = nextportal->id;
+	PortalInfo *nextportal = maps[portal->toid]->getPortal(portal->to);
 
-	changeMap(player, portal->toid, tonum);
+	changeMap(player, portal->toid, nextportal);
 }
 
-void Maps::moveMapS(Player *player, ReadPacket *packet) { // Move to map special
+void Maps::useScriptedPortal(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1);
 	string portalname = packet->getString();
 
@@ -102,18 +99,14 @@ void Maps::moveMapS(Player *player, ReadPacket *packet) { // Move to map special
 	filenameStream << "scripts/portals/" << portal->script << ".lua";
 	LuaPortal(filenameStream.str(), player->getPlayerid(), portal);
 
-	int tonum = 0;
-	if (portal->toid >= 0 && portal->toid != 999999999) { // Only check for new portal ID if a portal script returns a valid map
-		PortalInfo *nextportal = maps[portal->toid]->getPortal(portal->to);
-		if (nextportal != 0) {
-			tonum = nextportal->id;
-		}
-	}
+	PortalInfo *nextportal = 0;
+	if (portal->toid >= 0 && portal->toid != 999999999) // Only check for new portal ID if a portal script returns a valid map
+		nextportal = maps[portal->toid]->getPortal(portal->to);
 
-	changeMap(player, portal->toid, tonum);
+	changeMap(player, portal->toid, nextportal);
 }
 
-void Maps::changeMap(Player *player, int mapid, int portalid) {
+void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
 	if (mapid == 999999999) {
 		PlayerPacket::showMessage(player, "This portal is currently unavailable.", 5);
 		MapPacket::portalBlocked(player);
@@ -123,19 +116,14 @@ void Maps::changeMap(Player *player, int mapid, int portalid) {
 		MapPacket::portalBlocked(player);
 		return;
 	}
+	if (portal == 0)
+		portal = maps[mapid]->getSpawnPoint();
+
 	maps[player->getMap()]->removePlayer(player);
 	player->setMap(mapid);
-	player->setMappos(portalid);
+	player->setMappos(portal->id);
+	player->setPos(portal->pos);
 	player->setType(0);
-
-	Pos pos;
-	if ((unsigned int)portalid < maps[mapid]->getNumPortals()) {
-		pos = maps[mapid]->getPortalByID(portalid)->pos;
-	}
-	else if (maps[mapid]->getNumPortals() > 0) {
-		pos = maps[mapid]->getPortalByID(0)->pos;
-	}
-	player->setPos(pos);
 	WorldServerConnectPlayerPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), mapid);
 	MapPacket::changeMap(player);
 	newMap(player, mapid);
