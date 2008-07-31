@@ -644,8 +644,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 		if (attack.mpburn > 0)
 			player->setMP(player->getMP() - attack.mpburn);
 	}
-	if (type != 0xFE) // Fall damage and map damage don't play by these rules
- 		PlayersPacket::damagePlayer(player, damage, mobid, hit, type, fake, pgmr); // FIXME: Maybe type will get sent to the player as short, as the s->c packet haven't been identified yet
+ 	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, fake, pgmr);
 }
 
 void Players::healPlayer(Player *player, ReadPacket *packet) {
