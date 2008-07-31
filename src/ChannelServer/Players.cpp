@@ -50,7 +50,7 @@ void Players::handleMoving(Player *player, ReadPacket *packet) {
 
 	packet->reset(-4);
 	short x = packet->getShort();
-	short y = packet->getShort();
+	short y = packet->getShort() - 1;
 
 	player->setPos(Pos(x, y));
 	player->setType(type);
