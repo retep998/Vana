@@ -348,7 +348,7 @@ void Player::setLuk(short luk) {
 void Player::setMHP(int mhp) {
 	if (mhp > 30000) { mhp = 30000; }
 	this->mhp = mhp;
-	PlayerPacket::updateStat(this, 0x800, mhp);
+	PlayerPacket::updateStat(this, 0x800, rmhp);
 }
 
 void Player::setRMHP(int rmhp) {
@@ -360,7 +360,7 @@ void Player::setRMHP(int rmhp) {
 void Player::setMMP(int mmp) {
 	if (mmp > 30000) { mmp = 30000; }
 	this->mmp = mmp;
-	PlayerPacket::updateStat(this, 0x2000, mmp);
+	PlayerPacket::updateStat(this, 0x2000, rmmp);
 }
 
 void Player::setRMMP(int rmmp) {
