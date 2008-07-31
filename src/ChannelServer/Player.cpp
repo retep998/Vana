@@ -508,21 +508,18 @@ void Player::saveStats() {
 		<< "skin = " << mysqlpp::quote << (short) this->skin << ","
 		<< "eyes = " << mysqlpp::quote << this->eyes << ","
 		<< "hair = " << mysqlpp::quote << this->hair << ","
-		<< "mesos = " << mysqlpp::quote << inv->getMesos()
+		<< "mesos = " << mysqlpp::quote << inv->getMesos() << ","
+		<< "equip_slots = " << mysqlpp::quote << inv->getMaxSlots(1) << ","
+		<< "use_slots = "   << mysqlpp::quote << inv->getMaxSlots(2) << ","
+		<< "setup_slots = " << mysqlpp::quote << inv->getMaxSlots(3) << ","
+		<< "etc_slots = "   << mysqlpp::quote << inv->getMaxSlots(4) << ","
+		<< "cash_slots = "  << mysqlpp::quote << inv->getMaxSlots(5)
 		<< " WHERE id = " << this->id;
 	query.exec();
 }
 
 void Player::saveInventory() {
 	mysqlpp::Query query = Database::chardb.query();
-	query << "UPDATE characters SET "
-		  << "equip_slots = " << mysqlpp::quote << inv->getMaxSlots(1) << ","
-		  << "use_slots = "   << mysqlpp::quote << inv->getMaxSlots(2) << ","
-		  << "setup_slots = " << mysqlpp::quote << inv->getMaxSlots(3) << ","
-		  << "etc_slots = "   << mysqlpp::quote << inv->getMaxSlots(4) << ","
-		  << "cash_slots = "  << mysqlpp::quote << inv->getMaxSlots(5)
-		  << " WHERE id = " << mysqlpp::quote << this->id;
-	query.exec();
 
 	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << this->id;
 	query.exec();
