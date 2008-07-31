@@ -24,14 +24,11 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *it
 	if (slot != 0) {
 		if (shortSlot)
 			packet.addShort(slot);
-		else if (slot < 0) {
-			char charslot = (char) -slot;
-			if (charslot > 100)
-				charslot -= 100;
-			packet.addByte(charslot);
-		}
-		else
+		else {
+			slot = abs(slot);
+			if (slot > 100) slot -= 100;
 			packet.addByte((char) slot);
+		}
 	}
 	packet.addByte(!ISEQUIP(item->id) + 1);
 	packet.addInt(item->id);
@@ -80,26 +77,28 @@ void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player)
 	packet.addInt(player->getEyes());
 	packet.addByte(1);
 	packet.addInt(player->getHair());
-	int equips[35][2] = {0};
+	int equips[55][2] = {0};
 	iteminventory *playerequips = player->inv->getItems(1);
 	for (iteminventory::iterator iter = playerequips->begin(); iter != playerequips->end(); iter++) { // Sort equips
 		Item *equip = iter->second;
 		if (iter->first < 0) {
-			if (equips[equip->type][0] > 0) {
+			short slot = abs(iter->first);
+			if (slot > 100) slot -= 100;
+			if (equips[slot][0] > 0) {
 				if (Inventory::isCash(equip->id)) {
-					equips[equip->type][1] = equips[equip->type][0];
-					equips[equip->type][0] = equip->id;
+					equips[slot][1] = equips[slot][0];
+					equips[slot][0] = equip->id;
 				}
 				else {
-					equips[equip->type][1] = equip->id;
+					equips[slot][1] = equip->id;
 				}
 			}
 			else {
-				equips[equip->type][0] = equip->id;
+				equips[slot][0] = equip->id;
 			}
 		}
 	}
-	for (int i = 0; i < 35; i++) { // Shown items
+	for (int i = 0; i < 55; i++) { // Shown items
 		if (equips[i][0] > 0) {
 			packet.addByte(i);
 			if (i == 11 && equips[i][1] > 0) // Normal weapons always here
@@ -109,7 +108,7 @@ void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player)
 		}
 	}
 	packet.addByte(-1);
-	for (int i = 0; i < 35; i++) { // Covered items
+	for (int i = 0; i < 55; i++) { // Covered items
 		if (equips[i][1] > 0 && i != 11) {
 			packet.addByte(i);
 			packet.addInt(equips[i][1]);
