@@ -182,16 +182,13 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 	packet.addByte(types[5]);
 	packet.addByte(types[6]);
 	packet.addByte(types[7]);
-	for (unsigned int i = 0; i < vals.size(); i++) {
+	for (size_t i = 0; i < vals.size(); i++) {
 		packet.addShort(vals[i]);
-		packet.addInt(itemid*-1);
+		packet.addInt(itemid * -1);
 		packet.addInt(time);
 	}
 	packet.addShort(0);
-	if (morph)
-		packet.addByte(1);
-	else
-		packet.addByte(0);
+	packet.addByte(morph);
 	packet.addShort(0);
 	packet.addByte(0);
 	packet.send(player);
@@ -208,7 +205,7 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 		packet.addByte(types[5]);
 		packet.addByte(types[6]);
 		packet.addByte(types[7]);
-		for (unsigned int i = 0; i < vals.size(); i++) {
+		for (size_t i = 0; i < vals.size(); i++) {
 			packet.addShort(vals[i]);
 		}
 		packet.addByte(1);
