@@ -56,8 +56,8 @@ void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char
 	packet.addByte(type);
 	switch (type) {
 		case 0xFE:
-			packet.addInt(damage);
-			packet.addInt(damage);
+			packet.addInt(dmg);
+			packet.addInt(dmg);
 			break;
 		default:
 			if (pgmr.reduction)
