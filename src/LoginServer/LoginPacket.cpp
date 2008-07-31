@@ -159,7 +159,7 @@ void LoginPacket::showCharacters(PlayerLogin *player, vector <Character> chars) 
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
-	packet.addInt(6); // Max char you have have?
+	packet.addInt(3); // Max char you have have?
 	packet.send(player);
 }
 
