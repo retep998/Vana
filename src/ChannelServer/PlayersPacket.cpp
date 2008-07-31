@@ -54,26 +54,34 @@ void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char
 	packet.addShort(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getPlayerid());
 	packet.addByte(type);
-	if (pgmr.reduction)
-		packet.addInt(pgmr.damage);
-	else
-		packet.addInt(dmg);
-	packet.addInt(mob);
-	packet.addByte(hit);
-	if (pgmr.reduction) {
-		packet.addByte(pgmr.reduction);
-		packet.addByte(pgmr.isphysical); // Maybe? No Mana Reflection on global to test with
-		packet.addInt(pgmr.mapmobid);
-		packet.addByte(6);
-		packet.addShort(pgmr.pos_x);
-		packet.addShort(pgmr.pos_y);
-		packet.addByte(0);
+	switch (type) {
+		case 0xFE:
+			packet.addInt(damage);
+			packet.addInt(damage);
+			break;
+		default:
+			if (pgmr.reduction)
+				packet.addInt(pgmr.damage);
+			else
+				packet.addInt(dmg);
+			packet.addInt(mob);
+			packet.addByte(hit);
+			if (pgmr.reduction) {
+				packet.addByte(pgmr.reduction);
+				packet.addByte(pgmr.isphysical); // Maybe? No Mana Reflection on global to test with
+				packet.addInt(pgmr.mapmobid);
+				packet.addByte(6);
+				packet.addShort(pgmr.pos_x);
+				packet.addShort(pgmr.pos_y);
+				packet.addByte(0);
+			}
+			else
+				packet.addShort(0);
+			packet.addInt(dmg);
+			if (fake > 0)
+				packet.addInt(fake);
+			break;
 	}
-	else
-		packet.addShort(0);
-	packet.addInt(dmg);
-	if (fake > 0)
-		packet.addInt(fake);
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
