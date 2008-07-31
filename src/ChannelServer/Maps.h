@@ -29,12 +29,12 @@ class Player;
 class ReadPacket;
 
 namespace Maps {
-	extern hash_map<int, Map *> maps;
+	extern hash_map <int, Map *> maps;
 	void startTimer();
 	void addMap(MapInfo info);
-	void moveMap(Player *player, ReadPacket *packet);
-	void moveMapS(Player *player, ReadPacket *packet);
-	void changeMap(Player *player, int mapid, int portalid);
+	void usePortal(Player *player, ReadPacket *packet);
+	void useScriptedPortal(Player *player, ReadPacket *packet);
+	void changeMap(Player *player, int mapid, PortalInfo *portal);
 	void showClock(Player *player);
 	void mapTimer(int mapid);
 	void newMap(Player *player, int mapid);

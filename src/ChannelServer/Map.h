@@ -44,11 +44,11 @@ struct FootholdInfo {
 typedef vector <FootholdInfo> FootholdsInfo;
 
 struct PortalInfo {
-	int id;
+	char id;
 	char from[20];
 	int toid;
 	char to[20];
-	int type;
+	char type;
 	Pos pos;
 	char script[30];
 	bool onlyOnce;
@@ -74,7 +74,7 @@ struct NPCSpawnInfo {
 	short rx0;
 	short rx1; 
 };
-typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
+typedef vector <NPCSpawnInfo> NPCSpawnsInfo;
 
 struct ReactorSpawnInfo {
 	int id;
@@ -116,6 +116,8 @@ public:
 	// Portals
 	void addPortal(PortalInfo portal) {
 		portals.push_back(portal);
+		if (strcmp(portal.from, "sp") == 0)
+			spawnpoints += 1;
 	}
 	PortalInfo * getPortal(const char *from) {
 		for (size_t i = 0; i < portals.size(); i++) {
@@ -124,12 +126,7 @@ public:
 		}
 		return 0;
 	}
-	PortalInfo * getPortalByID(int id) {
-		return &portals[id];
-	}
-	size_t getNumPortals() {
-		return portals.size();
-	}
+	PortalInfo * getSpawnPoint();
 
 	// Players
 	void addPlayer(Player *player);
@@ -199,6 +196,7 @@ private:
 	MapInfo info;
 	FootholdsInfo footholds;
 	PortalsInfo portals;
+	char spawnpoints;
 	vector <Player *> players;
 	NPCSpawnsInfo npcs;
 	ReactorSpawnsInfo reactorspawns;
