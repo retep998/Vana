@@ -198,7 +198,7 @@ void LoginPacket::connectIP(PlayerLogin *player, int charid) {
 		packet.addIP(channel->ip);
 		packet.addShort(channel->port);
 	}
-	else { // Channel does not exist, let's be mean and send something non-existant
+	else { // Channel does not exist, let's be mean and send something non-existent
 		packet.addIP("255.255.255.255");
 		packet.addShort(-1);
 	}
