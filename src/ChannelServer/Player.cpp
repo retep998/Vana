@@ -562,7 +562,6 @@ void Player::saveInventory() {
 				<< mysqlpp::quote << item->ihand << ","
 				<< mysqlpp::quote << item->ijump << ","
 				<< mysqlpp::quote << item->ispeed << ")";
-			delete item;
 		}
 	}
 	query.exec();
@@ -613,7 +612,6 @@ void Player::saveStorage() {
 			<< mysqlpp::quote << item->ihand << ","
 			<< mysqlpp::quote << item->ijump << ","
 			<< mysqlpp::quote << item->ispeed << ")";
-		delete item;
 	}
 	query.exec();
 }
