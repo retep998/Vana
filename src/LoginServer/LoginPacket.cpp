@@ -194,7 +194,7 @@ void LoginPacket::connectIP(PlayerLogin *player, int charid) {
 
 	World *world = Worlds::worlds[player->getWorld()];
 	if (world->channels.find(player->getChannel()) != world->channels.end()) {
-		Channel *channel = world->channels[player->getChannel()];
+		shared_ptr<Channel> channel = world->channels[player->getChannel()];
 		packet.addIP(channel->ip);
 		packet.addShort(channel->port);
 	}
