@@ -137,6 +137,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			else if (strcmp("leafre", next_token) == 0) mapid = 240000000;
 			else if (strcmp("mulung", next_token) == 0) mapid = 250000000;
 			else if (strcmp("herbtown", next_token) == 0) mapid = 251000000;
+			else if (strcmp("ariant", next_token) == 0) mapid = 260000000;
 			else if (strcmp("nlc", next_token) == 0) mapid = 600000000;
 			else if (strcmp("amoria", next_token) == 0) mapid = 680000000;
 			// Boss maps
