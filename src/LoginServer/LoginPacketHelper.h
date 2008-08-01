@@ -23,8 +23,7 @@ struct Character;
 struct CharEquip;
 
 namespace LoginPacketHelper {
-	void addCharacter(PacketCreator &packet, Character charc);
-	void addEquip(PacketCreator &packet, CharEquip &equip);
+	void addCharacter(PacketCreator &packet, Character &charc);
 }
 
 #endif

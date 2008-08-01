@@ -29,7 +29,6 @@ class PlayerLogin;
 class ReadPacket;
 
 struct CharEquip {
-	char type;
 	int id;
 	short slot;
 };

@@ -190,93 +190,92 @@ void Initializing::initializeItems() {
 	MYSQL_ROW itemRow;
 	while ((itemRow = res.fetch_raw_row())) {
 		// Col0 : Item ID
-		//    1 : Type (Deprecated, will be removed in VEDB 15)
-		//    2 : Price
-		//    3 : Slots
-		//    4 : Quest
-		//    5 : Consume
-		//    6 : HP
-		//    7 : MP
-		//    8 : HP Rate
-		//    9 : MP Rate
-		//   10 : Move to
-		//   11 : Time
-		//   12 : Weapon Attack
-		//   13 : Magic Attack
-		//   14 : Avoidability
-		//   15 : Accuracy
-		//   16 : Weapon Defense
-		//   17 : Magic Defense
-		//   18 : Speed
-		//   19 : Jump
-		//   20 : Morph
-		//   21 : Success
-		//   22 : Cursed
-		//   23 : Item STR
-		//   24 : Item DEX
-		//   25 : Item INT
-		//   26 : Item LUK
-		//   27 : Item HP
-		//   28 : Item MP
-		//   29 : Item Weapon Attack
-		//   30 : Item Magic Attack
-		//   31 : Item Weapon Defense
-		//   32 : Item Magic Defense
-		//   33 : Item Accuracy
-		//   34 : Item Avoid
-		//   35 : Item Jump
-		//   36 : Item Speed
-		//   37 : Mob ID
-		//   38 : Chance
+		//    1 : Price
+		//    2 : Max per slot
+		//    3 : Quest
+		//    4 : Consume
+		//    5 : HP
+		//    6 : MP
+		//    7 : HP Rate
+		//    8 : MP Rate
+		//    9 : Move to
+		//   10 : Time
+		//   11 : Weapon Attack
+		//   12 : Magic Attack
+		//   13 : Avoidability
+		//   14 : Accuracy
+		//   15 : Weapon Defense
+		//   16 : Magic Defense
+		//   17 : Speed
+		//   18 : Jump
+		//   19 : Morph
+		//   20 : Success
+		//   21 : Cursed
+		//   22 : Item STR
+		//   23 : Item DEX
+		//   24 : Item INT
+		//   25 : Item LUK
+		//   26 : Item HP
+		//   27 : Item MP
+		//   28 : Item Weapon Attack
+		//   29 : Item Magic Attack
+		//   30 : Item Weapon Defense
+		//   31 : Item Magic Defense
+		//   32 : Item Accuracy
+		//   33 : Item Avoid
+		//   34 : Item Jump
+		//   35 : Item Speed
+		//   36 : Mob ID
+		//   37 : Chance
 		currentid = atoi(itemRow[0]);
 
 		if (currentid != previousid && previousid != -1) { // Add the items into the cache
 			Inventory::addItemInfo(previousid, item);
 			item.cons.mobs.clear();
 		}
-		item.price = atoi(itemRow[2]);
-		item.maxslot = atoi(itemRow[3]);
-		item.quest = atob(itemRow[4]);
-		item.consume = atob(itemRow[5]);
-		item.cons.hp = atoi(itemRow[6]);
-		item.cons.mp = atoi(itemRow[7]);
-		item.cons.hpr = atoi(itemRow[8]);
-		item.cons.mpr = atoi(itemRow[9]);
-		item.cons.moveTo = atoi(itemRow[10]);
+		item.price = atoi(itemRow[1]);
+		item.maxslot = atoi(itemRow[2]);
+		item.quest = atob(itemRow[3]);
+		item.consume = atob(itemRow[4]);
+		item.cons.hp = atoi(itemRow[5]);
+		item.cons.mp = atoi(itemRow[6]);
+		item.cons.hpr = atoi(itemRow[7]);
+		item.cons.mpr = atoi(itemRow[8]);
+		item.cons.moveTo = atoi(itemRow[9]);
 		// Buffs
-		item.cons.time = atoi(itemRow[11]);
-		item.cons.watk = atoi(itemRow[12]);
-		item.cons.matk = atoi(itemRow[13]);
-		item.cons.avo = atoi(itemRow[14]);
-		item.cons.acc = atoi(itemRow[15]);
-		item.cons.wdef = atoi(itemRow[16]);
-		item.cons.mdef = atoi(itemRow[17]);
-		item.cons.speed = atoi(itemRow[18]);
-		item.cons.jump = atoi(itemRow[19]);
-		item.cons.morph = atoi(itemRow[20]);
+		item.cons.time = atoi(itemRow[10]);
+		item.cons.watk = atoi(itemRow[11]);
+		item.cons.matk = atoi(itemRow[12]);
+		item.cons.avo = atoi(itemRow[13]);
+		item.cons.acc = atoi(itemRow[14]);
+		item.cons.wdef = atoi(itemRow[15]);
+		item.cons.mdef = atoi(itemRow[16]);
+		item.cons.speed = atoi(itemRow[17]);
+		item.cons.jump = atoi(itemRow[18]);
+		item.cons.morph = atoi(itemRow[19]);
 		// Scrolling
-		item.cons.success = atoi(itemRow[21]);
-		item.cons.cursed = atoi(itemRow[22]);
-		item.cons.istr = atoi(itemRow[23]);
-		item.cons.idex = atoi(itemRow[24]);
-		item.cons.iint = atoi(itemRow[25]);
-		item.cons.iluk = atoi(itemRow[26]);
-		item.cons.ihp = atoi(itemRow[27]);
-		item.cons.imp = atoi(itemRow[28]);
-		item.cons.iwatk = atoi(itemRow[29]);
-		item.cons.imatk = atoi(itemRow[30]);
-		item.cons.iwdef = atoi(itemRow[31]);
-		item.cons.imdef = atoi(itemRow[32]);
-		item.cons.iacc = atoi(itemRow[33]);
-		item.cons.iavo = atoi(itemRow[34]);
-		item.cons.ijump = atoi(itemRow[35]);
-		item.cons.ispeed = atoi(itemRow[36]);
+		item.cons.success = atoi(itemRow[20]);
+		item.cons.cursed = atoi(itemRow[21]);
+		item.cons.istr = atoi(itemRow[22]);
+		item.cons.idex = atoi(itemRow[23]);
+		item.cons.iint = atoi(itemRow[24]);
+		item.cons.iluk = atoi(itemRow[25]);
+		item.cons.ihp = atoi(itemRow[26]);
+		item.cons.imp = atoi(itemRow[27]);
+		item.cons.iwatk = atoi(itemRow[28]);
+		item.cons.imatk = atoi(itemRow[29]);
+		item.cons.iwdef = atoi(itemRow[30]);
+		item.cons.imdef = atoi(itemRow[31]);
+		item.cons.iacc = atoi(itemRow[32]);
+		item.cons.iavo = atoi(itemRow[33]);
+		item.cons.ijump = atoi(itemRow[34]);
+		item.cons.ispeed = atoi(itemRow[35]);
 		item.cons.ihand = 0;
 		// Summoning
-		if (itemRow[37] != 0) {
+		if (itemRow[36] != 0) {
 			SummonBag summon;
-			summon.mobid = atoi(itemRow[37]);
-			summon.chance = atoi(itemRow[38]);
+			summon.mobid = atoi(itemRow[36]);
+			summon.chance = atoi(itemRow[37]);
 			item.cons.mobs.push_back(summon);
 		}
 
@@ -355,7 +354,7 @@ void Initializing::initializeDrops() {
 // Equips
 void Initializing::initializeEquips() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Equips... ";
-	mysqlpp::Query query = Database::datadb.query("SELECT * FROM equipdata ORDER BY type ASC");
+	mysqlpp::Query query = Database::datadb.query("SELECT * FROM equipdata");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -365,48 +364,46 @@ void Initializing::initializeEquips() {
 
 	MYSQL_ROW equipRow;
 	while ((equipRow = res.fetch_raw_row())) {
-		EquipInfo equip = EquipInfo();
 		// Col0 : EquipID
-		//    1 : Type
-		//    2 : Price
-		//    3 : Slots
-		//    4 : HP
-		//    5 : MP
-		//    6 : STR
-		//    7 : DEX
-		//    8 : INT
-		//    9 : LUK
-		//   10 : WAtk
-		//   11 : WDef
-		//   12 : MAtk
-		//   13 : MDef
-		//   14 : Acc
-		//   15 : Avo
-		//   16 : Jump
-		//   17 : Speed
-		//   18 : Taming Mob
-		//   19 : Cash
-		//   20 : Quest
-		equip.type = atoi(equipRow[1]);
-		equip.price = atoi(equipRow[2]);
-		equip.slots = atoi(equipRow[3]);
-		equip.ihp = atoi(equipRow[4]);
-		equip.imp = atoi(equipRow[5]);
-		equip.istr = atoi(equipRow[6]);
-		equip.idex = atoi(equipRow[7]);
-		equip.iint = atoi(equipRow[8]);
-		equip.iluk = atoi(equipRow[9]);
-		equip.iwatk = atoi(equipRow[10]);
-		equip.iwdef = atoi(equipRow[11]);
-		equip.imatk = atoi(equipRow[12]);
-		equip.imdef = atoi(equipRow[13]);
-		equip.iacc = atoi(equipRow[14]);
-		equip.iavo = atoi(equipRow[15]);
-		equip.ijump = atoi(equipRow[16]);
-		equip.ispeed = atoi(equipRow[17]);
-		equip.tamingmob = atoi(equipRow[18]);
-		equip.cash = atob(equipRow[19]);
-		equip.quest = atob(equipRow[20]);
+		//    1 : Price
+		//    2 : Slots
+		//    3 : HP
+		//    4 : MP
+		//    5 : STR
+		//    6 : DEX
+		//    7 : INT
+		//    8 : LUK
+		//    9 : WAtk
+		//   10 : WDef
+		//   11 : MAtk
+		//   12 : MDef
+		//   13 : Acc
+		//   14 : Avo
+		//   15 : Jump
+		//   16 : Speed
+		//   17 : Taming Mob
+		//   18 : Cash
+		//   19 : Quest
+		EquipInfo equip = EquipInfo();
+		equip.price = atoi(equipRow[1]);
+		equip.slots = atoi(equipRow[2]);
+		equip.ihp = atoi(equipRow[3]);
+		equip.imp = atoi(equipRow[4]);
+		equip.istr = atoi(equipRow[5]);
+		equip.idex = atoi(equipRow[6]);
+		equip.iint = atoi(equipRow[7]);
+		equip.iluk = atoi(equipRow[8]);
+		equip.iwatk = atoi(equipRow[9]);
+		equip.iwdef = atoi(equipRow[10]);
+		equip.imatk = atoi(equipRow[11]);
+		equip.imdef = atoi(equipRow[12]);
+		equip.iacc = atoi(equipRow[13]);
+		equip.iavo = atoi(equipRow[14]);
+		equip.ijump = atoi(equipRow[15]);
+		equip.ispeed = atoi(equipRow[16]);
+		equip.tamingmob = atoi(equipRow[17]);
+		equip.cash = atob(equipRow[18]);
+		equip.quest = atob(equipRow[19]);
 		equip.ihand = 0;
 		// Add equip to the equip info table
 		Inventory::addEquipInfo(atoi(equipRow[0]), equip);

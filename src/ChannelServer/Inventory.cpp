@@ -225,7 +225,6 @@ void Inventory::setEquipStats(int equipid, Item &equip, bool random) {
 		equip.id = equipid;
 		equip.slots = ei.slots;
 		equip.scrolls = 0;
-		equip.type = ei.type;
 		equip.istr = ei.istr;
 		equip.idex = ei.idex;
 		equip.iint = ei.iint;
@@ -244,7 +243,6 @@ void Inventory::setEquipStats(int equipid, Item &equip, bool random) {
 	}
 	else {
 		equip.id = equipid;
-		equip.type =  ei.type;
 		equip.slots = ei.slots;
 		equip.scrolls = 0;
 		equip.istr = ei.istr > 0 ? ei.istr + Randomizer::Instance()->randInt(2)-1 : 0;
@@ -328,7 +326,12 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 			// hacking
 			return;
 		}
-		player->inv->setMesos(player->inv->getMesos() + items[itemid].price * amount);
+		int price = 0;
+		if (inv == 1)
+			price = equips[itemid].price;
+		else
+			price = items[itemid].price;
+		player->inv->setMesos(player->inv->getMesos() + price * amount);
 		takeItemSlot(player, inv, slot, amount, true);
 		InventoryPacket::bought(player);
 	}

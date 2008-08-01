@@ -18,9 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginPacketHelper.h"
 #include "Characters.h"
 #include "PacketCreator.h"
-#include <queue>
 
-void LoginPacketHelper::addCharacter(PacketCreator &packet, Character charc) {
+void LoginPacketHelper::addCharacter(PacketCreator &packet, Character &charc) {
 	packet.addInt(charc.id);
 	packet.addString(charc.name, 12);
 	packet.addByte(0);
@@ -55,40 +54,44 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, Character charc) {
 	packet.addInt(charc.eyes);
 	packet.addByte(1);
 	packet.addInt(charc.hair);
-	int cashweapon = 0;
-	std::queue <int> hiddenEquips;
-	for (int j = 0; j < (int) charc.equips.size(); j++) {
-		if (charc.equips[j].slot != -111) {
-			if (j == 0 || charc.equips[j].type == 11 || charc.equips[j].type != charc.equips[j-1].type) { // Normal weapons always appear here
-				addEquip(packet, charc.equips[j]);
+	int equips[50][2] = {0};
+	for (short i = 0; i < (short) charc.equips.size(); i++) {
+		short slot = -charc.equips[i].slot;
+		if (slot > 100)
+			slot -= 100;
+		if (equips[slot][0] > 0) {
+			if (charc.equips[i].slot < -100) {
+				equips[slot][1] = equips[slot][0];
+				equips[slot][0] = charc.equips[i].id;
 			}
 			else {
-				hiddenEquips.push(j);
+				equips[slot][1] = charc.equips[i].id;
 			}
 		}
 		else {
-			cashweapon = charc.equips[j].id;
+			equips[slot][0] = charc.equips[i].id;
+		}
+	}
+	for (char i = 0; i < 50; i++) { // Shown items
+		if (equips[i][0] > 0) {
+			packet.addByte(i);
+			if (i == 11 && equips[i][1] > 0) // Normal weapons always here
+				packet.addInt(equips[i][1]);
+			else
+				packet.addInt(equips[i][0]);
 		}
 	}
 	packet.addByte(-1);
-	while (!hiddenEquips.empty()) {
-		int j = hiddenEquips.front();
-		addEquip(packet, charc.equips[j]);
-		hiddenEquips.pop();
+	for (char i = 0; i < 50; i++) { // Covered items
+		if (equips[i][1] > 0 && i != 11) {
+			packet.addByte(i);
+			packet.addInt(equips[i][1]);
+		}
 	}
 	packet.addByte(-1);
-	packet.addInt(cashweapon);
+	packet.addInt(equips[11][0]); // Cash weapon
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addByte(0);
-}
-
-inline
-void LoginPacketHelper::addEquip(PacketCreator &packet, CharEquip &equip) {
-	short slot = -equip.slot;
-	if (slot > 100)
-		slot -= 100;
-	packet.addByte((unsigned char)slot);
-	packet.addInt(equip.id);
 }

@@ -38,7 +38,6 @@ struct Item;
 
 struct EquipInfo {
 	char slots;
-	char type;
 	int price;
 	short istr;
 	short idex;

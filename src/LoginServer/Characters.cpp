@@ -25,14 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void Characters::showEquips(int id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = Database::chardb.query();
-	query << "SELECT itemid, type, slot FROM items WHERE charid = " << mysqlpp::quote << id << " AND inv = 1 AND slot < 0 ORDER BY type ASC, slot ASC";
+	query << "SELECT itemid, slot FROM items WHERE charid = " << mysqlpp::quote << id << " AND inv = 1 AND slot < 0 ORDER BY slot ASC";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		CharEquip equip;
 		equip.id = res[i][0];
-		equip.type = (unsigned char) res[i][1];
-		equip.slot = res[i][2];
+		equip.slot = res[i][1];
 		vec.push_back(equip);
 	}	
 }
@@ -89,10 +88,10 @@ void Characters::checkCharacterName(PlayerLogin *player, ReadPacket *packet) {
 void Characters::createEquip(int equipid, int type, int charid) {
 	mysqlpp::Query query = Database::chardb.query();
 	switch (type) {
-		case 0x05: query << "INSERT INTO items (charid, inv, slot, itemid, type, iwdef) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << type << "," << 3 << ")"; break;
-		case 0x06: query << "INSERT INTO items (charid, inv, slot, itemid, type, iwdef) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << type << "," << 2 << ")"; break;
-		case 0x07: query << "INSERT INTO items (charid, inv, slot, itemid, type, iwdef, slots) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << type << "," << 3 << "," << 5 << ")"; break;
-		case 0x0b: query << "INSERT INTO items (charid, inv, slot, itemid, type, iwatk) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << type << "," << 17 << ")"; break;
+		case 0x05: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 3 << ")"; break;
+		case 0x06: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 2 << ")"; break;
+		case 0x07: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef, slots) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 3 << "," << 5 << ")"; break;
+		case 0x0b: query << "INSERT INTO items (charid, inv, slot, itemid, iwatk) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 17 << ")"; break;
 	}
 	query.exec();
 }
