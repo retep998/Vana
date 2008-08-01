@@ -27,6 +27,8 @@ class ReadPacket;
 
 class WorldServerAcceptPlayer : public AbstractServerAcceptPlayer {
 public:
+	~WorldServerAcceptPlayer();
+
 	void realHandleRequest(ReadPacket *packet);
 	void authenticated(char type);
 
