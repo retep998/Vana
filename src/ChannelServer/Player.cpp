@@ -172,31 +172,30 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	inv->setMesosStart(res[0]["mesos"]);
 
-	query << "SELECT inv, slot, itemid, amount, type, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM items WHERE charid = " << mysqlpp::quote << this->id;
+	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM items WHERE charid = " << mysqlpp::quote << this->id;
 	res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Item *item = new Item;
 		item->id = res[i][2];
 		item->amount = res[i][3];
-		item->type = (unsigned char) res[i][4];
-		item->slots = (unsigned char) res[i][5];
-		item->scrolls = (unsigned char) res[i][6];
-		item->istr = res[i][7];
-		item->idex = res[i][8];
-		item->iint = res[i][9];
-		item->iluk = res[i][10];
-		item->ihp = res[i][11];
-		item->imp = res[i][12];
-		item->iwatk = res[i][13];
-		item->imatk = res[i][14];
-		item->iwdef = res[i][15];
-		item->imdef = res[i][16];
-		item->iacc = res[i][17];
-		item->iavo = res[i][18];
-		item->ihand = res[i][19];
-		item->ijump = res[i][20];
-		item->ispeed = res[i][21];
+		item->slots = (unsigned char) res[i][4];
+		item->scrolls = (unsigned char) res[i][5];
+		item->istr = res[i][6];
+		item->idex = res[i][7];
+		item->iint = res[i][8];
+		item->iluk = res[i][9];
+		item->ihp = res[i][10];
+		item->imp = res[i][11];
+		item->iwatk = res[i][12];
+		item->imatk = res[i][13];
+		item->iwdef = res[i][14];
+		item->imdef = res[i][15];
+		item->iacc = res[i][16];
+		item->iavo = res[i][17];
+		item->ihand = res[i][18];
+		item->ijump = res[i][19];
+		item->ispeed = res[i][20];
 		inv->addItem((unsigned char) res[i][0], res[i][1], item);
 	}
 
@@ -218,30 +217,29 @@ void Player::playerConnect(ReadPacket *packet) {
 	else
 		storage.reset(new PlayerStorage(this, 4, 0));
 
-	query << "SELECT itemid, amount, type, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM storageitems WHERE userid = " << mysqlpp::quote << this->userid << " AND world_id = " << (short) this->world_id << " ORDER BY slot ASC";
+	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM storageitems WHERE userid = " << mysqlpp::quote << this->userid << " AND world_id = " << (short) this->world_id << " ORDER BY slot ASC";
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		Item *item = new Item;
 		item->id = res[i][0];
 		item->amount = res[i][1];
-		item->type = (unsigned char) res[i][2];
-		item->slots = (unsigned char) res[i][3];
-		item->scrolls = (unsigned char) res[i][4];
-		item->istr = res[i][5];
-		item->idex = res[i][6];
-		item->iint = res[i][7];
-		item->iluk = res[i][8];
-		item->ihp = res[i][9];
-		item->imp = res[i][10];
-		item->iwatk = res[i][11];
-		item->imatk = res[i][12];
-		item->iwdef = res[i][13];
-		item->imdef = res[i][14];
-		item->iacc = res[i][15];
-		item->iavo = res[i][16];
-		item->ihand = res[i][17];
-		item->ijump = res[i][18];
-		item->ispeed = res[i][19];
+		item->slots = (unsigned char) res[i][2];
+		item->scrolls = (unsigned char) res[i][3];
+		item->istr = res[i][4];
+		item->idex = res[i][5];
+		item->iint = res[i][6];
+		item->iluk = res[i][7];
+		item->ihp = res[i][8];
+		item->imp = res[i][9];
+		item->iwatk = res[i][10];
+		item->imatk = res[i][11];
+		item->iwdef = res[i][12];
+		item->imdef = res[i][13];
+		item->iacc = res[i][14];
+		item->iavo = res[i][15];
+		item->ihand = res[i][16];
+		item->ijump = res[i][17];
+		item->ispeed = res[i][18];
 		storage->addItem(item);
 	}
 
@@ -541,7 +539,6 @@ void Player::saveInventory() {
 				<< mysqlpp::quote << iter->first << ","
 				<< mysqlpp::quote << item->id << ","
 				<< mysqlpp::quote << item->amount << ","
-				<< mysqlpp::quote << (short) item->type << ","
 				<< mysqlpp::quote << (short) item->slots << ","
 				<< mysqlpp::quote << (short) item->scrolls << ","
 				<< mysqlpp::quote << item->istr << ","
@@ -591,7 +588,6 @@ void Player::saveStorage() {
 			<< mysqlpp::quote << (short) i << ","
 			<< mysqlpp::quote << item->id << ","
 			<< mysqlpp::quote << item->amount << ","
-			<< mysqlpp::quote << (short) item->type << ","
 			<< mysqlpp::quote << (short) item->slots << ","
 			<< mysqlpp::quote << (short) item->scrolls << ","
 			<< mysqlpp::quote << item->istr << ","

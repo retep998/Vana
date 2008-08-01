@@ -22,16 +22,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using stdext::hash_map;
 
 class Player;
+class PacketCreator;
 
 struct Item {
-	Item () : amount(1), slots(0), scrolls(0), type(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
+	Item () : amount(1), slots(0), scrolls(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
 		imp(0), iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0) { }
 	Item (Item *item) {
 		id = item->id;
 		amount = item->amount;
 		slots = item->slots;
 		scrolls = item->scrolls;
-		type = item->type;
 		istr = item->istr;
 		idex = item->idex;
 		iint = item->iint;
@@ -50,7 +50,6 @@ struct Item {
 	}
 	int id;
 	short amount;
-	char type;
 	char slots;
 	char scrolls;
 	short istr;
@@ -73,9 +72,7 @@ typedef hash_map<short, Item *> iteminventory;
 
 class PlayerInventory {
 public:
-	PlayerInventory(Player *player, unsigned char maxslots[5]) : player(player) {
-		memcpy_s(this->maxslots, sizeof(this->maxslots), maxslots, sizeof(this->maxslots));
-	}
+	PlayerInventory(Player *player, unsigned char maxslots[5]);
 	unsigned char getMaxSlots(char inv) {
 		return maxslots[inv - 1];
 	}
@@ -92,6 +89,7 @@ public:
 	void deleteItem(char inv, short slot);
 	void setItem(char inv, short slot, Item *item);
 	short getItemAmountBySlot(char inv, short slot);
+	void addEquippedPacket(PacketCreator &packet);
 	void changeItemAmount(int itemid, short amount) {
 		itemamounts[itemid] += amount;
 	}
@@ -104,7 +102,9 @@ private:
 	Player *player;
 	int mesos;
 	iteminventory items[5];
+	int equipped[50][2];
 	hash_map<int, int> itemamounts;
+	void addEquipped(short slot, int itemid);
 };
 
 #endif
