@@ -106,70 +106,6 @@ void Mobs::addMob(int id, MobInfo mob) {
 	mobinfo[id] = mob;
 }
 
-void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
-	int map = player->getMap();
-	MobsPacket::damageMobSpell(player, packet);
-	packet->reset(2);
-	packet->skipBytes(1);
-	unsigned char tbyte = packet->getByte();
-	char targets = tbyte / 0x10;
-	char hits = tbyte % 0x10;
-	int skillid = packet->getInt();
-	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
-		packet->skipBytes(4);
-	int mpeater = 0;
-	int mpeater_lv = 0;
-	short mpeater_success;
-	short mpeater_x;
-	bool mpeated = false;
-	if (player->getJob()/100 == 2) {
-		mpeater = (player->getJob() / 10) * 100000;
-		mpeater_lv = player->skills->getSkillLevel(mpeater);
-		mpeater_success = Skills::skills[mpeater][mpeater_lv].prop;
-		mpeater_x = Skills::skills[mpeater][mpeater_lv].x;
-	}
-	packet->skipBytes(2); // Display, direction/animation
-	packet->skipBytes(2); // Weapon subclass, casting speed
-	packet->skipBytes(4); // Ticks
-	if (skillid > 0)
-		Skills::useAttackSkill(player, skillid);
-	for (char i = 0; i < targets; i++) {
-		int mapmobid = packet->getInt();
-		Mob *mob = Maps::maps[map]->getMob(mapmobid);
-		if (mob == 0)
-			return;
-		int mobid = mob->getMobID();
-		packet->skipBytes(3); // Useless
-		packet->skipBytes(1); // State
-		packet->skipBytes(8); // Useless
-		packet->skipBytes(2); // Distance
-		for (char k = 0; k < hits; k++) {
-			int damage = packet->getInt();
-			mob->setHP(mob->getHP() - damage);
-			int cmp = -1;
-			cmp = mob->getMP();
-			int mmp = -1;
-			mmp = mobinfo[mob->getMobID()].mp;
-			if ((mpeater_lv > 0) && (!mpeated) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < mpeater_success)) {
-				// MP Eater
-				mpeated = true;
-				short mp = mmp * mpeater_x / 100;
-				if (mp > cmp) mp = cmp;
-				mob->setMP(cmp - mp);
-				player->setMP(player->getMP() + mp);
-				SkillsPacket::showSkillEffect(player, mpeater);
-			}
-			displayHPBars(player, mob);
-			if (mob->getHP() <= 0) {
-				packet->skipBytes(4 * (hits - 1 - k));
-				mob->die(player);
-				break;
-			}
-		}
-		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
-	}
-}
-
 void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	int map = player->getMap();
 	MobsPacket::damageMob(player, packet);
@@ -418,6 +354,70 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			player->setHP(player->getMHP());
 		else
 			player->setHP(player->getHP()+hpRecover);
+	}
+}
+
+void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
+	int map = player->getMap();
+	MobsPacket::damageMobSpell(player, packet);
+	packet->reset(2);
+	packet->skipBytes(1);
+	unsigned char tbyte = packet->getByte();
+	char targets = tbyte / 0x10;
+	char hits = tbyte % 0x10;
+	int skillid = packet->getInt();
+	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
+		packet->skipBytes(4);
+	int mpeater = 0;
+	int mpeater_lv = 0;
+	short mpeater_success;
+	short mpeater_x;
+	bool mpeated = false;
+	if (player->getJob()/100 == 2) {
+		mpeater = (player->getJob() / 10) * 100000;
+		mpeater_lv = player->skills->getSkillLevel(mpeater);
+		mpeater_success = Skills::skills[mpeater][mpeater_lv].prop;
+		mpeater_x = Skills::skills[mpeater][mpeater_lv].x;
+	}
+	packet->skipBytes(2); // Display, direction/animation
+	packet->skipBytes(2); // Weapon subclass, casting speed
+	packet->skipBytes(4); // Ticks
+	if (skillid > 0)
+		Skills::useAttackSkill(player, skillid);
+	for (char i = 0; i < targets; i++) {
+		int mapmobid = packet->getInt();
+		Mob *mob = Maps::maps[map]->getMob(mapmobid);
+		if (mob == 0)
+			return;
+		int mobid = mob->getMobID();
+		packet->skipBytes(3); // Useless
+		packet->skipBytes(1); // State
+		packet->skipBytes(8); // Useless
+		packet->skipBytes(2); // Distance
+		for (char k = 0; k < hits; k++) {
+			int damage = packet->getInt();
+			mob->setHP(mob->getHP() - damage);
+			int cmp = -1;
+			cmp = mob->getMP();
+			int mmp = -1;
+			mmp = mobinfo[mob->getMobID()].mp;
+			if ((mpeater_lv > 0) && (!mpeated) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < mpeater_success)) {
+				// MP Eater
+				mpeated = true;
+				short mp = mmp * mpeater_x / 100;
+				if (mp > cmp) mp = cmp;
+				mob->setMP(cmp - mp);
+				player->setMP(player->getMP() + mp);
+				SkillsPacket::showSkillEffect(player, mpeater);
+			}
+			displayHPBars(player, mob);
+			if (mob->getHP() <= 0) {
+				packet->skipBytes(4 * (hits - 1 - k));
+				mob->die(player);
+				break;
+			}
+		}
+		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 }
 
