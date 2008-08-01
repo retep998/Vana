@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "Inventory.h"
 #include "Skills.h"
 #include "TimeUtilities.h"
 #include "PlayerPacketHelper.h"
@@ -77,23 +76,20 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addByte(player->inv->getMaxSlots(5));
 	iteminventory *items = player->inv->getItems(1);
 	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
-		Item *equip = iter->second;
-		if (iter->first < 0 && !Inventory::isCash(equip->id)) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, equip);
+		if (iter->first < 0 && iter->first > -100) {
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
 	packet.addByte(0);
 	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
-		Item *equip = iter->second;
-		if (iter->first < 0 && Inventory::isCash(equip->id)) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, equip);
+		if (iter->first < -100) {
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
 	packet.addByte(0);
 	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
-		Item *equip = iter->second;
 		if (iter->first > 0) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, equip);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
 	packet.addByte(0);
