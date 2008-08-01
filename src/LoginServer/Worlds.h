@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <hash_map>
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 using std::string;
 using stdext::hash_map;
+using boost::shared_ptr;
 
 class PlayerLogin;
 class LoginServerAcceptPlayer;
@@ -37,7 +39,7 @@ struct Channel {
 
 struct World {
 	string name;
-	hash_map <int, Channel *> channels;
+	hash_map<int, shared_ptr<Channel>> channels;
 	size_t maxChannels;
 	char id;
 	char ribbon;
