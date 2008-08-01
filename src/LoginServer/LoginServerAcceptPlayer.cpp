@@ -27,6 +27,7 @@ void LoginServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
 	switch(packet->getShort()) {
 		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
 		case INTER_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
+		case INTER_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
 	}
 }
 

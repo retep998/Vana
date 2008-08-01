@@ -26,6 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Rates.h"
 #include <iostream>
 
+WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
+	Channels::Instance()->removeChannel(channel);
+	LoginServerConnectPlayerPacket::removeChannel(WorldServer::Instance()->getLoginPlayer(), channel);
+	std::cout << "Channel " << channel << " disconnected." << std::endl;
+}
+
 void WorldServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
 	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
 	switch(packet->getShort()) {
@@ -53,11 +59,11 @@ void WorldServerAcceptPlayer::authenticated(char type) {
 		WorldServerAcceptPlayerPacket::sendRates(this, Rates::SetBits::all);
 		WorldServerAcceptPlayerPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 		LoginServerConnectPlayerPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);
-		std::cout << "Assigned channel " << channel << " to channel server.";
+		std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 	}
 	else {
 		WorldServerAcceptPlayerPacket::connect(this, -1, 0);
-		std::cout << "Error: No more channel to assign.";
+		std::cout << "Error: No more channel to assign." << std::endl;
 		disconnect();
 	}
 }

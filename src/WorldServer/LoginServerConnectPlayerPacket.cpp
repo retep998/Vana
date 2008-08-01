@@ -36,3 +36,11 @@ void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *
 	
 	packet.send(player);
 }
+
+void LoginServerConnectPlayerPacket::removeChannel(LoginServerConnectPlayer *player, int channel) {
+	PacketCreator packet;
+	packet.addShort(INTER_REMOVE_CHANNEL);
+	packet.addInt(channel);
+
+	packet.send(player);
+}

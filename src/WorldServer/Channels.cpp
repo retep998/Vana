@@ -27,12 +27,16 @@ void Channels::registerChannel(WorldServerAcceptPlayer *player, int channel, con
 	chan->id = channel;
 	chan->ip = ip;
 	chan->port = port;
-	channels[channel] = chan;
+	channels[channel] = shared_ptr<Channel>(chan);
+}
+
+void Channels::removeChannel(int channel) {
+	channels.erase(channel);
 }
 
 Channel * Channels::getChannel(int num) {
 	if (channels.find(num) != channels.end()) {
-		return channels[num];
+		return channels[num].get();
 	}
 	else {
 		return 0;
@@ -40,8 +44,8 @@ Channel * Channels::getChannel(int num) {
 }
 
 void Channels::sendToAll(PacketCreator &packet) {
-	for (hash_map <int, Channel *>::iterator iter = channels.begin(); iter != channels.end(); iter++) {
-			packet.send(iter->second->player);
+	for (hash_map<int, shared_ptr<Channel>>::iterator iter = channels.begin(); iter != channels.end(); iter++) {
+		packet.send(iter->second->player);
 	}
 }
 

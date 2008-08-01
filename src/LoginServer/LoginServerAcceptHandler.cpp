@@ -36,3 +36,10 @@ void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptPlayer *player,
 
 	Worlds::worlds[player->getWorldId()]->channels[channel]->population = population;
 }
+
+void LoginServerAcceptHandler::removeChannel(LoginServerAcceptPlayer *player, ReadPacket *packet) {
+	int channel = packet->getInt();
+
+	Worlds::worlds[player->getWorldId()]->channels.erase(channel);
+	std::cout << "Removed channel " << channel << std::endl;
+}

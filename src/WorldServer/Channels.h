@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <hash_map>
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 using std::string;
 using stdext::hash_map;
+using boost::shared_ptr;
 
 class WorldServerAcceptPlayer;
 class PacketCreator;
@@ -45,6 +47,7 @@ public:
 		return singleton;
 	}
 	void registerChannel(WorldServerAcceptPlayer *player, int channel, const string &ip, short port);
+	void removeChannel(int channel);
 	Channel * getChannel(int num);
 	void sendToAll(PacketCreator &packet);
 	int size();
@@ -54,7 +57,7 @@ private:
 	Channels& operator=(const Channels&);
 	static Channels *singleton;
 
-	hash_map <int, Channel *> channels;
+	hash_map<int, shared_ptr<Channel>> channels;
 };
 
 #endif
