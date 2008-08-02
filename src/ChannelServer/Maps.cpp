@@ -100,19 +100,20 @@ void Maps::useScriptedPortal(Player *player, ReadPacket *packet) {
 	LuaPortal(filenameStream.str(), player->getPlayerid(), portal);
 
 	PortalInfo *nextportal = 0;
-	if (portal->toid >= 0 && portal->toid != 999999999) // Only check for new portal ID if a portal script returns a valid map
+	if (portal->toid >= 0 && portal->toid != 999999999) { // Only check for new portal ID if a portal script returns a valid map
 		nextportal = maps[portal->toid]->getPortal(portal->to);
+	}
+	else if (portal->toid == 999999999) {
+		std::ostringstream messageStream;
+		messageStream << "This portal '" << portal->script << "' is currently unavailable.";
+		PlayerPacket::showMessage(player, messageStream.str(), 5);
+	}
 
 	changeMap(player, portal->toid, nextportal);
 }
 
 void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
-	if (mapid == 999999999) {
-		PlayerPacket::showMessage(player, "This portal is currently unavailable.", 5);
-		MapPacket::portalBlocked(player);
-		return;
-	}
-	else if (mapid < 0) {
+	if (maps.find(mapid) == maps.end()) {
 		MapPacket::portalBlocked(player);
 		return;
 	}
