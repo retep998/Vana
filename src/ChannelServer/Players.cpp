@@ -229,10 +229,12 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			else if (strcmp(next_token, "mega") == 0) shopid = 9999993;
 			else shopid = atoi(next_token);
 
-			if (Shops::shops.find(shopid) != Shops::shops.end())
+			if (Shops::shops.find(shopid) != Shops::shops.end()) {
 				Shops::showShop(player, shopid);
-			else
-				PlayerPacket::showMessage(player, "Invalid shop.", 6);
+			}
+			else {
+				PlayerPacket::showMessage(player, "Invalid shop. Available shops: gear, scrolls, nx, face, ring, char, mega", 6);
+			}
 		}
 		else if (strcmp(command, "pos") == 0) {
 			char text[50];
