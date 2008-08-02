@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "LoopingId.h"
 #include "MapPacket.h"
-#include "Maps.h"
 #include "Mobs.h"
 #include "MobsPacket.h"
 #include "NPCPacket.h"
@@ -29,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "Reactors.h"
 #include "Randomizer.h"
+#include <ctime>
 
 Map::Map (MapInfo info) : info(info), spawnpoints(0), objectids(new LoopingId(1000)) { }
 
@@ -219,8 +219,13 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		if (iter->second != 0)
 			iter->second->showDrop(player);
 	}
-	if (info.clock)
-		Maps::showClock(player);
+	if (info.clock) {
+		time_t rawtime;
+		struct tm timeinfo;
+		time(&rawtime);
+		localtime_s(&timeinfo, &rawtime);
+		MapPacket::showClock(player, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+	}
 }
 
 void Map::sendPacket(PacketCreator &packet, Player *player) {
