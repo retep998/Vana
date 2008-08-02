@@ -318,11 +318,11 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "ap") == 0) {
 			if (strlen(next_token) == 0) return;
-			player->setAp(player->getAp()+atoi(next_token));
+			player->setAp(atoi(next_token));
 		}
 		else if (strcmp(command, "sp") == 0) {
 			if (strlen(next_token) == 0) return;
-			player->setSp(player->getSp()+atoi(next_token));
+			player->setSp(atoi(next_token));
 		}
 		else if (strcmp(command, "killnpc") == 0) {
 			player->setNPC(0);
