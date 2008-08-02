@@ -108,6 +108,9 @@ void PlayerInventory::addEquipped(short slot, int itemid) {
 			equipped[slot][0] = equipped[slot][1];
 			equipped[slot][1] = itemid;
 		}
+		else if (equipped[slot][1] <= 0) {
+			equipped[slot][0] = itemid;
+		}
 		else {
 			equipped[slot][1] = itemid;
 		}
