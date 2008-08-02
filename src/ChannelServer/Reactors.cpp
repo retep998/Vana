@@ -116,6 +116,12 @@ void Reactor::setState(char state, bool is) {
 		ReactorPacket::triggerReactor(this);
 }
 
+void Reactor::restore() {
+	revive();
+	setState(0, false);
+	ReactorPacket::spawnReactor(this);
+}
+
 // Reactors namespace
 hash_map <int, ReactorEventsInfo> Reactors::reactorinfo;
 hash_map <int, short> Reactors::maxstates;
@@ -147,9 +153,10 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 				std::ostringstream filenameStream;
 				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
 				LuaReactor(filenameStream.str(), player->getPlayerid(), id, reactor->getMapID());
-				ReactorPacket::destroyReactor(reactor);
 				reactor->setState(revent->nextstate, false);
 				reactor->kill();
+				Maps::maps[reactor->getMapID()]->addReactorRespawn(ReactorRespawnInfo(id, clock()));
+				ReactorPacket::destroyReactor(reactor);
 			}
 		}
 	}
