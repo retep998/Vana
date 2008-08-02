@@ -110,6 +110,7 @@ namespace LuaExports {
 	int showShop(lua_State *luaVm);
 	int showMessage(lua_State *luaVm);
 	int showMapMessage(lua_State *luaVm);
+	int showInstructionBubble(lua_State *luaVm);
 
 	int spawnMob(lua_State *luaVm);
 	int spawnMobPos(lua_State *luvaVm);

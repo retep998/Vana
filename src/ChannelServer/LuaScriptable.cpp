@@ -95,6 +95,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
 	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
+	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMob);
 	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
 	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
@@ -441,6 +442,22 @@ int LuaExports::showMapMessage(lua_State *luaVm) {
 	int type = lua_tointeger(luaVm, -1);
 	int map = getPlayer(luaVm)->getMap();
 	Maps::maps[map]->showMessage(msg, type);
+	return 1;
+}
+
+int LuaExports::showInstructionBubble(lua_State *luaVm) {
+	string msg = lua_tostring(luaVm, 1);
+	short width = lua_tointeger(luaVm, 2);
+	short height = lua_tointeger(luaVm, 3);
+
+	if (width == 0) {
+		width = -1;
+	}
+	if (height == 0) {
+		height = 5;
+	}
+
+	PlayerPacket::instructionBubble(getPlayer(luaVm), msg, width, height);
 	return 1;
 }
 
