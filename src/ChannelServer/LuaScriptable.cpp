@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "InventoryPacket.h"
 #include "Randomizer.h"
+#include <iostream>
 
 LuaScriptable::LuaScriptable(const string &filename, int playerid) : filename(filename), playerid(playerid), luaVm(lua_open()) {
 	initialize();
@@ -101,8 +102,25 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
 }
 
-void LuaScriptable::run() {
-	luaL_dofile(luaVm, filename.c_str());
+bool LuaScriptable::run() {
+	if (luaL_dofile(luaVm, filename.c_str())) {
+		// Error in lua script
+		string error = lua_tostring(luaVm, -1);
+		std::cout << error << std::endl;
+		
+		Player *player = Players::players[playerid];
+
+		if (player->isGM()) {
+			PlayerPacket::showMessage(player, error, 6);
+		}
+		else {
+			PlayerPacket::showMessage(player, "There is an error in the script '" + filename +"'", 6);
+		}
+
+		return false;
+	}
+
+	return true;
 }
 
 void LuaScriptable::setVariable(const string &name, int val) {
