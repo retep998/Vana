@@ -83,6 +83,13 @@ struct ReactorSpawnInfo {
 };
 typedef vector <ReactorSpawnInfo> ReactorSpawnsInfo;
 
+struct ReactorRespawnInfo {
+	ReactorRespawnInfo(int id, clock_t killed) : id(id), killed(killed) {}
+	int id;
+	clock_t killed;
+};
+typedef vector <ReactorRespawnInfo> ReactorRespawns;
+
 struct MobSpawnInfo {
 	int id;
 	Pos pos;
@@ -148,7 +155,7 @@ public:
 
 	// Mobs
 	void addMobSpawn(MobSpawnInfo spawn);
-	void checkSpawn(clock_t time);
+	void checkMobSpawn(clock_t time);
 	void addMob(Mob *mob);
 	Mob * getMob(int id) {
 		if (this->mobs.find(id) != mobs.end())
@@ -163,6 +170,8 @@ public:
 	// Reactors
 	void addReactorSpawn(ReactorSpawnInfo spawn);
 	void addReactor(Reactor *reactor);
+	void addReactorRespawn(ReactorRespawnInfo respawn);
+	void checkReactorSpawn(clock_t time);
 	Reactor * getReactor(int id) {
 		if ((unsigned int)id < this->reactors.size())
 			return this->reactors[id];
@@ -201,6 +210,7 @@ private:
 	NPCSpawnsInfo npcs;
 	ReactorSpawnsInfo reactorspawns;
 	vector <Reactor *> reactors;
+	ReactorRespawns reactorrespawns;
 	MobSpawnsInfo mobspawns;
 	MobRespawnsInfo mobrespawns;
 	hash_map<int, Mob *> mobs;

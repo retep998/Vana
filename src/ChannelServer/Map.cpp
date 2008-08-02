@@ -64,6 +64,20 @@ void Map::addReactor(Reactor *reactor) {
 	reactor->setID(this->reactors.size() - 1 + 200);
 }
 
+void Map::addReactorRespawn(ReactorRespawnInfo respawn) {
+	reactorrespawns.push_back(respawn);
+}
+
+void Map::checkReactorSpawn(clock_t time) {
+	for (size_t i = 0; i < reactorrespawns.size(); i++) {
+		int id = reactorrespawns[i].id;
+		if ((time - reactorrespawns[i].killed) > (reactorspawns[id].time * CLOCKS_PER_SEC)) {
+			getReactor(id)->restore();
+			reactorrespawns.erase(reactorrespawns.begin() + i);
+		}
+	}
+}
+
 // Footholds
 Pos Map::findFloor(Pos pos) {
 	// Determines where a drop falls using the footholds data
@@ -94,7 +108,7 @@ void Map::addMobSpawn(MobSpawnInfo spawn) {
 	new Mob(info.id, spawn.id, spawn.pos, mobspawns.size()-1, spawn.fh);
 }
 
-void Map::checkSpawn(clock_t time) {
+void Map::checkMobSpawn(clock_t time) {
 	// (Re-)spawn Mobs
 	for (size_t i = 0; i < mobrespawns.size(); i++) {
 		int id = mobrespawns[i].spawnid;
@@ -206,7 +220,8 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	}
 	// Reactors
 	for (size_t i = 0; i < reactors.size(); i++) {
-		ReactorPacket::showReactor(player, reactors[i]);
+		if (reactors[i]->isAlive())
+			ReactorPacket::showReactor(player, reactors[i]);
 	}
 	// Mobs
 	updateMobControl();

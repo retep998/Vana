@@ -87,6 +87,7 @@ public:
 	char getState() {
 		return this->state;
 	}
+	void restore();
 private:
 	Pos pos;
 	bool alive;

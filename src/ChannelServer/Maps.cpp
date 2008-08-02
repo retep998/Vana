@@ -130,8 +130,10 @@ void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
 }
 
 void Maps::mapTimer(int mapid) {
-	maps[mapid]->checkSpawn(clock());
-	maps[mapid]->clearDrops(clock());
+	clock_t time = clock();
+	maps[mapid]->checkReactorSpawn(time);
+	maps[mapid]->checkMobSpawn(time);
+	maps[mapid]->clearDrops(time);
 }
 
 void Maps::newMap(Player *player, int mapid) {
