@@ -35,7 +35,6 @@ namespace Maps {
 	void usePortal(Player *player, ReadPacket *packet);
 	void useScriptedPortal(Player *player, ReadPacket *packet);
 	void changeMap(Player *player, int mapid, PortalInfo *portal);
-	void showClock(Player *player);
 	void mapTimer(int mapid);
 	void newMap(Player *player, int mapid);
 	void changeMusic(int mapid, const string &musicname);

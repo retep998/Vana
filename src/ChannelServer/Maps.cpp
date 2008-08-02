@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaPortal.h"
 #include "Timer.h"
 #include "WorldServerConnectPlayerPacket.h"
-#include <ctime>
 #include <sstream>
 
 hash_map<int, Map *> Maps::maps;
@@ -128,14 +127,6 @@ void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
 	WorldServerConnectPlayerPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), mapid);
 	MapPacket::changeMap(player);
 	newMap(player, mapid);
-}
-
-void Maps::showClock(Player *player) {
-	time_t rawtime;
-	struct tm timeinfo;
-	time(&rawtime);
-	localtime_s(&timeinfo, &rawtime);
-	MapPacket::showClock(player, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
 }
 
 void Maps::mapTimer(int mapid) {
