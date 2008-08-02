@@ -38,7 +38,7 @@ public:
 	virtual ~LuaScriptable();
 
 	void initialize();
-	void run();
+	virtual bool run();
 
 	void setVariable(const string &name, int val);
 	void setVariable(const string &name, const string &val);

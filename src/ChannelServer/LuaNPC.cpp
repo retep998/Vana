@@ -48,6 +48,17 @@ LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, p
 	lua_register(luaVm, "restart", &LuaExports::restart);
 }
 
+bool LuaNPC::run() {
+	bool ret = LuaScriptable::run();
+
+	if (!ret) {
+		// Error in NPC script
+		Players::players[playerid]->getNPC()->end();
+	}
+
+	return ret;
+}
+
 NPC * LuaExports::getNPC(lua_State *luaVm) {
 	return getPlayer(luaVm)->getNPC();
 }
