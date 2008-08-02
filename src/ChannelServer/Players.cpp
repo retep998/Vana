@@ -233,7 +233,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				Shops::showShop(player, shopid);
 			}
 			else {
-				PlayerPacket::showMessage(player, "Invalid shop. Available shops: gear, scrolls, nx, face, ring, char, mega", 6);
+				PlayerPacket::showMessage(player, "Invalid shop. Available shops: gear, scrolls, nx, face, ring, chair, mega", 6);
 			}
 		}
 		else if (strcmp(command, "pos") == 0) {
