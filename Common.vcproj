@@ -412,6 +412,10 @@
 					RelativePath=".\src\Common\MapleEncryption.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\Common\MapleVersion.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Timer"

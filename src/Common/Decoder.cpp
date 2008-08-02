@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Decoder.h"
 #include "AESEncryption.h"
 #include "MapleEncryption.h"
-#include "Randomizer.h"
-#include "SendHeader.h"
+#include "MapleVersion.h"
 #include "PacketCreator.h"
+#include "Randomizer.h"
 
 void Decoder::encrypt(unsigned char *buffer, int size) {
 	MapleEncryption::mapleEncrypt(buffer, size);
@@ -67,7 +67,7 @@ PacketCreator & Decoder::getConnectPacket(string unknown) {
 	packet.addString(unknown); // Unknown, the official login server sends a "0", the channel server sends nothing
 	packet.addInt(*(int *) ivRecv);
 	packet.addInt(*(int *) ivSend);
-	packet.addByte(0x08);
+	packet.addByte(MAPLE_VERSION_UNK);
 
 	packet.setShort(packet.getSize() - 2, 0); // -2 as the size does not include the size of the size header
 
