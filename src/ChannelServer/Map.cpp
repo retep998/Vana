@@ -74,6 +74,7 @@ void Map::checkReactorSpawn(clock_t time) {
 		if ((time - reactorrespawns[i].killed) > (reactorspawns[id].time * CLOCKS_PER_SEC)) {
 			getReactor(id)->restore();
 			reactorrespawns.erase(reactorrespawns.begin() + i);
+			i--;
 		}
 	}
 }
