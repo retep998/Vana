@@ -44,7 +44,7 @@ else
 			sendBackNext();
 		end
 	elseif state == 4 then
-		if getJob == 0 then
+		if getJob() == 0 then
 			price = 300;
 		else
 			price = 3000;
