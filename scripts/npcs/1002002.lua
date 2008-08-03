@@ -1,4 +1,4 @@
--- Pison - Tour Guide
+-- Pason - Tour Guide
 -- Teleports to Florina Beach
 if state == 0 then
 	addText("Have you heard of the beach with a spectacular view of the ocean called #b#m110000000##k, located near #m104000000#? I can take you there right now for either #b1500 mesos#k, or if you have #b#t4031134##k with you, in which case you'll be in for free.\r\n");
