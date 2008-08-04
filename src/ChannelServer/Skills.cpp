@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 
 hash_map <int, SkillsLevelInfo> Skills::skills;
+hash_map <int, short> Skills::maxlevels;
 hash_map <int, SkillsInfo> Skills::skillsinfo;
 
 #define BEGINNER_SKILL(x) (x<1003)
@@ -630,8 +631,9 @@ void Skills::init() {
 	skillsinfo[2321002].player.push_back(player);
 }
 
-void Skills::addSkill(int id, SkillsLevelInfo skill) {
-	skills[id] = skill;
+void Skills::addSkillLevelInfo(int skillid, short level, SkillLevelInfo levelinfo) {
+	skills[skillid][level] = levelinfo;
+	maxlevels[skillid] = level;
 }
 
 void Skills::addSkill(Player *player, ReadPacket *packet) {

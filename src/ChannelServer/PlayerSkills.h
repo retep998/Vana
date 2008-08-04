@@ -32,13 +32,13 @@ struct SkillActiveInfo;
 class PlayerSkills {
 public:
 	PlayerSkills(Player *player) : player(player) { }
-	
-	void addSkillLevel(int skillid, int level, bool sendpacket = true);
-	
+
+	void addSkillLevel(int skillid, short amount, bool sendpacket = true);
+
 	void deleteSkillMapEnterInfo(int skillid);
 
-	int getSkillLevel(int skillid);
-	int getMaxSkillLevel(int skillid);
+	short getSkillLevel(int skillid);
+	short getMaxSkillLevel(int skillid);
 	int getSkillsNum() {
 		return playerskills.size();
 	}
@@ -46,7 +46,7 @@ public:
 	SkillMapEnterActiveInfo getSkillMapEnterInfo();
 	SkillActiveInfo getSkillPlayerInfo(int skillid);
 	SkillActiveInfo getSkillMapInfo(int skillid);
-	int getActiveSkillLevel(int skillid);
+	short getActiveSkillLevel(int skillid);
 
 	void setMaxSkillLevel(int skillid, int maxlevel) { // Set max level for 4th job skills
 		maxlevels[skillid] = maxlevel;
@@ -56,12 +56,12 @@ public:
 	void setSkillMapEnterInfo(int skillid, vector <SkillMapActiveInfo> skill);
 	void setActiveSkillLevel(int skillid, int level);
 private:
-	hash_map<int, int> playerskills;
-	hash_map<int, int> maxlevels;
+	hash_map<int, short> playerskills;
+	hash_map<int, short> maxlevels;
 	hash_map<int, SkillActiveInfo> activeplayerskill;
 	hash_map<int, SkillActiveInfo> activemapskill;
 	vector<SkillMapActiveInfo> activemapenterskill;
-	hash_map<int, int> activelevels;
+	hash_map<int, short> activelevels;
 	Player *player;
 };
 
