@@ -25,8 +25,8 @@ void PlayerSkills::addSkillLevel(int skillid, short amount, bool sendpacket) {
 		playerskills[skillid] = amount;
 
 	// Keep people from adding too much SP and prevent it from going negative
-	if (playerskills[skillid] > maxlevels[skillid])
-		playerskills[skillid] = maxlevels[skillid];
+	if (playerskills[skillid] > Skills::maxlevels[skillid])
+		playerskills[skillid] = Skills::maxlevels[skillid];
 	else if (playerskills[skillid] <= 0)
 		playerskills[skillid] = 0;
 
