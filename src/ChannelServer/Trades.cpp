@@ -224,6 +224,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				if (amount == item->amount || inventory == 1) {
 					two->inv->setItem(inventory, slot, 0);
 					InventoryPacket::moveItem(player, inventory, slot, 0);
+					two->inv->deleteItem(inventory, slot);
 				}
 				else {
 					item->amount -= amount;
@@ -243,6 +244,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				if (amount == item->amount || inventory == 1) {
 					one->inv->setItem(inventory, slot, 0);
 					InventoryPacket::moveItem(player, inventory, slot, 0);
+					one->inv->deleteItem(inventory, slot);
 				}
 				else {
 					item->amount -= amount;
