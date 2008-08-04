@@ -32,20 +32,19 @@ public:
 	char getSlots() {
 		return this->slots;
 	}
-	void setSlots(char slots) {
-		this->slots = slots;
-	}
-	void addItem(Item *item) {
-		items.push_back(item);
-	}
+	void setSlots(char slots);
+	void addItem(Item *item);
 	Item * getItem(char slot) {
-		return items[slot];
+		if (slot < (char) items.size())
+			return items[slot];
+		return 0;
 	}
 	char getNumItems() {
 		return items.size();
 	}
+	char getNumItems(char inv);
 	void takeItem(char slot) {
-		items.erase(items.begin() + (slot - 1));
+		items.erase(items.begin() + slot);
 	}
 	void setMesos(int mesos) {
 		this->mesos = mesos;
@@ -53,6 +52,9 @@ public:
 	void changeMesos(int mesos);
 	int getMesos() {
 		return mesos;
+	}
+	bool isFull() {
+		return ((char) items.size() == slots);
 	}
 private:
 	Player *player;

@@ -351,11 +351,47 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 void Inventory::useStorage(Player *player, ReadPacket *packet) {
 	char type = packet->getByte();
 
-	if (type == 0x07) {
-		int mesos = packet->getInt();
+	if (type == 0x04) { // Take item out
+		char itemtype = packet->getByte();
+		char slot = packet->getByte();
+		Item *item = player->storage->getItem(slot);
+		if (item == 0) // It's a trap
+			return; // Abort
+
+		char inv = GETINVENTORY(item->id);
+		addItem(player, new Item(item));
+		player->storage->takeItem(slot);
+		StoragePacket::takeItem(player, inv, slot, itemtype);
+	}
+
+	else if (type == 0x05) { // Store item
+		short slot = packet->getShort();
+		int itemid = packet->getInt();
+		short amount = packet->getShort();
+		if (player->storage->isFull()) { // Storage is full, so tell the player and abort the mission.
+			StoragePacket::storageFull(player);
+			return;
+		}
+		char inv = GETINVENTORY(itemid);
+		Item *item = player->inv->getItem(inv, slot);
+		if (item == 0 || amount > player->inv->getItemAmountBySlot(inv, slot)) // Be careful, it might be a trap.
+			return; // Do a barrel roll
+
+		if (inv == 1) // For equips we create a new object for storage with the inventory object, and allow the one in the inventory to go bye bye.
+			player->storage->addItem(new Item(item));
+		else // For items we just create a new item based on the ID and amount.
+			player->storage->addItem(new Item(itemid, amount));
+		takeItemSlot(player, inv, slot, amount, true);
+		player->inv->setMesos(player->inv->getMesos() - 100); // Take 100 mesos for storage cost
+		StoragePacket::addItem(player, inv);
+	}
+
+	else if (type == 0x07) { // Take out/store mesos
+		int mesos = packet->getInt(); // Amount of mesos to remove. Deposits are negative, and withdrawls are positive.
 		player->storage->changeMesos(mesos);
 		player->inv->setMesos(player->inv->getMesos() + mesos);
 	}
+	// 0x08 is Close storage. For now we have no reason to handle this.
 }
 
 void Inventory::addNewItem(Player *player, int itemid, int amount) {

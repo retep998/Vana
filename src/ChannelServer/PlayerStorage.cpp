@@ -18,9 +18,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerStorage.h"
 #include "Player.h"
 #include "StoragePacket.h"
+#include "Inventory.h"
 
 PlayerStorage::PlayerStorage(Player *player, char slots, int mesos) : slots(slots), mesos(mesos) {
 	this->player = player;
+}
+
+void PlayerStorage::setSlots(char slots) {
+	if (slots < 4) slots = 4;
+	else if (slots > 100) slots = 100;
+	this->slots = slots;
+}
+
+void PlayerStorage::addItem(Item *item) {
+	char inv = GETINVENTORY(item->id);
+	char i;
+	for (i = 0; i < (char) items.size(); i++)
+		if (GETINVENTORY(items[i]->id) > inv)
+			break;
+	items.insert(items.begin() + i, item);
+}
+
+char PlayerStorage::getNumItems(char inv) {
+	char itemNum = 0;
+	for (char i = 0; i < (char) items.size(); i++) {
+		if (GETINVENTORY(items[i]->id))
+			itemNum ++;
+	}
+	return itemNum;
 }
 
 void PlayerStorage::changeMesos(int mesos) {
