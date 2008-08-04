@@ -169,9 +169,13 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "addsp") == 0) {
 			if (strlen(next_token) > 0) {
 				int skillid = atoi(strtok_s(0, " ", &next_token));
-				int count = 1;
+				if (Skills::skills.find(skillid) == Skills::skills.end()) { // Don't allow skills that do not exist to be added
+					PlayerPacket::showMessage(player, "Invalid Skill ID.", 5);
+					return;
+				}
+				short count = 1;
 				if (strlen(next_token) > 0)
-				count = atoi(next_token);
+					count = atoi(next_token);
 				player->skills->addSkillLevel(skillid, count);
 			}
 		}
@@ -460,6 +464,9 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "header") == 0) {
 			WorldServerConnectPlayerPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), next_token);
+		}
+		else if (strcmp(command, "music") == 0) {
+			Maps::changeMusic(player->getMap(), next_token);
 		}
 		else if	(strcmp(command, "dc") == 0)	{
 			player->disconnect();
