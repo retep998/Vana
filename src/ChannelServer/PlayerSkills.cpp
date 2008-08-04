@@ -15,20 +15,23 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "PlayerSkills.h"
 #include "Skills.h"
 
-void PlayerSkills::addSkillLevel(int skillid, int level, bool sendpacket) {
-	if (playerskills.find(skillid) != playerskills.end()) {
-		playerskills[skillid] += level;
-	}
-	else {
-		playerskills[skillid] = level;
-	}
+void PlayerSkills::addSkillLevel(int skillid, short amount, bool sendpacket) {
+	if (playerskills.find(skillid) != playerskills.end())
+		playerskills[skillid] += amount;
+	else
+		playerskills[skillid] = amount;
+
+	// Keep people from adding too much SP and prevent it from going negative
+	if (playerskills[skillid] > maxlevels[skillid])
+		playerskills[skillid] = maxlevels[skillid];
+	else if (playerskills[skillid] <= 0)
+		playerskills[skillid] = 0;
 
 	if (sendpacket) {
-		int maxlevel = 0;
+		short maxlevel = 0;
 		if (FORTHJOB_SKILL(skillid)) {
 			maxlevel = getMaxSkillLevel(skillid);
 		}
@@ -37,35 +40,29 @@ void PlayerSkills::addSkillLevel(int skillid, int level, bool sendpacket) {
 }
 
 void PlayerSkills::deleteSkillMapEnterInfo(int skillid) {
-	for (size_t i= 0; i<activemapenterskill.size(); i++) {
+	for (size_t i = 0; i < activemapenterskill.size(); i++) {
 		if (activemapenterskill[i].skill == skillid) {
 			activemapenterskill.erase(activemapenterskill.begin()+i);
 		}
 	}
 }
 
-int PlayerSkills::getSkillLevel(int skillid) {
-	if (playerskills.find(skillid) != playerskills.end()) {
+short PlayerSkills::getSkillLevel(int skillid) {
+	if (playerskills.find(skillid) != playerskills.end())
 		return playerskills[skillid];
-	}
-	else {
-		return 0;
-	}
+	return 0;
 }
 
-int PlayerSkills::getMaxSkillLevel(int skillid) {
+short PlayerSkills::getMaxSkillLevel(int skillid) {
 	// Get max level for 4th job skills
-	if (maxlevels.find(skillid) != maxlevels.end()) {
+	if (maxlevels.find(skillid) != maxlevels.end())
 		return maxlevels[skillid];
-	}
-	else {
-		return 0;
-	}
+	return 0;
 }
 
 int PlayerSkills::getSkillID(size_t i) {
 	size_t j = 0;
-	for (hash_map<int, int>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
+	for (hash_map<int, short>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
 		if (j == i) {
 			return iter->first;
 		} 
@@ -80,7 +77,7 @@ SkillActiveInfo PlayerSkills::getSkillMapInfo(int skillid) {
 
 SkillMapEnterActiveInfo PlayerSkills::getSkillMapEnterInfo() {
 	SkillMapEnterActiveInfo skill;
-	for (size_t i= 0; i<activemapenterskill.size(); i++) {
+	for (size_t i = 0; i < activemapenterskill.size(); i++) {
 		skill.types[activemapenterskill[i].byte-1] += activemapenterskill[i].type;
 		if (activemapenterskill[i].isvalue) {
 			skill.val = activemapenterskill[i].value;
@@ -94,7 +91,7 @@ SkillActiveInfo PlayerSkills::getSkillPlayerInfo(int skillid) {
 	return activeplayerskill[skillid];
 }
 
-int PlayerSkills::getActiveSkillLevel(int skillid) {
+short PlayerSkills::getActiveSkillLevel(int skillid) {
 	if (activelevels.find(skillid) == activelevels.end()) {
 		return 0;
 	}
@@ -103,14 +100,14 @@ int PlayerSkills::getActiveSkillLevel(int skillid) {
 
 void PlayerSkills::setSkillMapEnterInfo(int skillid, vector <SkillMapActiveInfo> skill) {
 	// TEMP //
-	for (unsigned int i=0; i<activemapenterskill.size(); i++) { 
+	for (size_t i = 0; i < activemapenterskill.size(); i++) { 
 		if (activemapenterskill[i].isvalue) {
 			activemapenterskill.erase(activemapenterskill.begin()+i);
 			break;
 		}
 	}
 	//////////
-	for (unsigned int i=0; i<skill.size(); i++) {
+	for (size_t i = 0; i < skill.size(); i++) {
 		activemapenterskill.push_back(skill[i]);
 	}
 }

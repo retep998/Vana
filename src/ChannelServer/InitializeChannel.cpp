@@ -579,8 +579,6 @@ void Initializing::initializeSkills() {
 		exit(1);
 	}
 
-	int currentid = 0;
-	int previousid = -1;
 	MYSQL_ROW skillRow;
 	SkillsLevelInfo skill;
 	while ((skillRow = res.fetch_raw_row())) {
@@ -611,13 +609,6 @@ void Initializing::initializeSkills() {
 		//   24 : Right Bottom X
 		//   25 : Right Bottom Y
 		//   26 : Cooldown time
-		currentid = atoi(skillRow[0]);
-
-		if (currentid != previousid && previousid != -1) {
-			Skills::addSkill(previousid, skill);
-			skill.clear();
-		}
-
 		SkillLevelInfo level;
 		level.time = atoi(skillRow[2]);
 		level.mp = atoi(skillRow[3]);
@@ -642,13 +633,7 @@ void Initializing::initializeSkills() {
 		level.lt = Pos(atoi(skillRow[22]), atoi(skillRow[23]));
 		level.rb = Pos(atoi(skillRow[24]), atoi(skillRow[25]));
 		level.cooltime = atoi(skillRow[26]);
-		skill[atoi(skillRow[1])] = level;
-
-		previousid = currentid;
-	}
-	if (previousid != -1) {
-		Skills::addSkill(previousid, skill);
-		skill.clear();
+		Skills::addSkillLevelInfo(atoi(skillRow[0]), atoi(skillRow[1]), level);
 	}
 	Skills::init();
 	std::cout << "DONE" << std::endl;
