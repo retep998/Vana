@@ -114,11 +114,11 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	int skin = packet->getInt();
 	packet->skipBytes(16);
 
-	char gender = packet->getByte();
-	char str = packet->getByte();
-	char dex = packet->getByte();
-	char intt = packet->getByte();
-	char luk = packet->getByte();
+	unsigned char gender = packet->getByte();
+	unsigned char str = packet->getByte();
+	unsigned char dex = packet->getByte();
+	unsigned char intt = packet->getByte();
+	unsigned char luk = packet->getByte();
 
 	if (str + dex + intt + luk != 25) {
 		// hacking
@@ -132,11 +132,11 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 			<< mysqlpp::quote << eyes << ","
 			<< mysqlpp::quote << hair << ","
 			<< mysqlpp::quote << skin << ","
-			<< mysqlpp::quote << (int) gender << ","
-			<< mysqlpp::quote << (int) str << ","
-			<< mysqlpp::quote << (int) dex << ","
-			<< mysqlpp::quote << (int) intt << ","
-			<< mysqlpp::quote << (int) luk << ")";
+			<< mysqlpp::quote << gender << ","
+			<< mysqlpp::quote << str << ","
+			<< mysqlpp::quote << dex << ","
+			<< mysqlpp::quote << intt << ","
+			<< mysqlpp::quote << luk << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	int id = (int) res.insert_id();
 
