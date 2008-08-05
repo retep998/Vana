@@ -27,7 +27,8 @@ class PacketCreator;
 struct Item {
 	Item () : amount(1), slots(0), scrolls(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
 		imp(0), iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0) { }
-	Item (int id, short amount) : id(id), amount(amount) { }
+	Item (int itemid, short amount) : id(id), amount(amount) { }
+	Item (int equipid, bool random);
 	Item (Item *item) {
 		id = item->id;
 		amount = item->amount;

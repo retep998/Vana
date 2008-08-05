@@ -121,16 +121,11 @@ void Drops::dropMob(Player *player, Mob *mob) {
 			Drop *drop = 0;
 
 			if (GETINVENTORY(drops[k].id) == 1) {
-				Item equip;
-				Inventory::setEquipStats(drops[k].id, equip, true);
-				drop = new Drop(mob->getMapID(), equip, pos, player->getPlayerid());
+				drop = new Drop(mob->getMapID(), Item(drops[k].id, true), pos, player->getPlayerid());
 			}
 
 			else {
-				Item item;
-				item.id = drops[k].id;
-				item.amount = 1;
-				drop = new Drop(mob->getMapID(), item, pos, player->getPlayerid());
+				drop = new Drop(mob->getMapID(), Item(drops[k].id, (short) 1), pos, player->getPlayerid());
 			}
 
 			if (drops[k].quest > 0) {

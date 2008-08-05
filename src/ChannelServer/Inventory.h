@@ -126,7 +126,6 @@ namespace Inventory {
 	void stopTimersPlayer(Player *player);
 	extern bool isCash(int itemid);
 	extern ItemTimer * timer;
-	void setEquipStats(int equipid, Item &equip, bool random);
 	void useShop(Player *player, ReadPacket *packet);
 	void useStorage(Player *player, ReadPacket *packet);
 	void itemMove(Player *player, ReadPacket *packet);
