@@ -186,8 +186,9 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		case 5001001: // Super Dragon Roar
 			break; 
 		case 1311006: { // Dragon Roar
-			short x_value = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].x;
-			short y_value = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].y; // Stun length in seconds
+			char roarlv = player->skills->getSkillLevel(skillid);
+			short x_value = Skills::skills[skillid][roarlv].x;
+			short y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
 			short hp = player->getHP();
 			short reduction = (player->getMHP() / 100) * x_value;
 			if (hp - reduction > 0)
@@ -210,7 +211,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 1211002: { // Charged Blow
-			int acb_level = player->skills->getSkillLevel(1220010);
+			char acb_level = player->skills->getSkillLevel(1220010);
 			short acb_x = 0;
 			if (acb_level > 0)
 				acb_x = Skills::skills[1220010][acb_level].x;
@@ -300,7 +301,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			packet->skipBytes(4); // Star ID added by Shadow Claw
 	}
 	else { // This will be moved to useAttackSkill when the moneyCon property is added
-			int shadow_level = player->skills->getSkillLevel(skillid);
+			char shadow_level = player->skills->getSkillLevel(skillid);
 			short midpoint = 120 + (shadow_level * 15); // Midpoint is given in moneyCon property (doesn't exist yet)
 			short mesos_min = midpoint - (80 + shadow_level * 5);
 			short mesos_max = midpoint + (80 + shadow_level * 5);
@@ -369,9 +370,9 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
 		packet->skipBytes(4);
 	int mpeater = 0;
-	int mpeater_lv = 0;
 	short mpeater_success;
 	short mpeater_x;
+	char mpeater_lv = 0;
 	bool mpeated = false;
 	if (player->getJob()/100 == 2) {
 		mpeater = (player->getJob() / 10) * 100000;

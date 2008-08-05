@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 
 hash_map <int, SkillsLevelInfo> Skills::skills;
-hash_map <int, short> Skills::maxlevels;
+hash_map <int, char> Skills::maxlevels;
 hash_map <int, SkillsInfo> Skills::skillsinfo;
 
 #define BEGINNER_SKILL(x) (x<1003)
@@ -631,7 +631,7 @@ void Skills::init() {
 	skillsinfo[2321002].player.push_back(player);
 }
 
-void Skills::addSkillLevelInfo(int skillid, short level, SkillLevelInfo levelinfo) {
+void Skills::addSkillLevelInfo(int skillid, char level, SkillLevelInfo levelinfo) {
 	skills[skillid][level] = levelinfo;
 	maxlevels[skillid] = level;
 }
@@ -894,7 +894,7 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 		}
 		else {
 			int sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
-			int slv = player->skills->getSkillLevel(sid);
+			char slv = player->skills->getSkillLevel(sid);
 			if (slv > 0)
 				player->setMP(player->getMP() - (skills[skillid][player->skills->getSkillLevel(skillid)].mp * skills[sid][slv].x / 100), 1);
 			else
@@ -975,12 +975,13 @@ void Skills::hurt(Player *player, short value, int skillid) {
 void Skills::addCombo(Player *player) { // add combo orbs 
 	if (player->skills->getActiveSkillLevel(1111002) > 0) {
 		int maxcombo = 0;
-		int advcombo = player->skills->getSkillLevel(1120003);
-		if (advcombo > 0) maxcombo = Skills::skills[1120003][advcombo].x;
-		else maxcombo = Skills::skills[1111002][player->skills->getSkillLevel(1111002)].x;
-		if (player->getCombo() == maxcombo) {
+		char advcombo = player->skills->getSkillLevel(1120003);
+		if (advcombo > 0)
+			maxcombo = Skills::skills[1120003][advcombo].x;
+		else
+			maxcombo = Skills::skills[1111002][player->skills->getSkillLevel(1111002)].x;
+		if (player->getCombo() == maxcombo)
 			return;
-		}
 		else {
 			if (advcombo > 0 && Randomizer::Instance()->randInt(99) < skills[1120003][advcombo].prop)
 				player->setCombo(player->getCombo()+2); // 4th job skill gives chance to add second orb

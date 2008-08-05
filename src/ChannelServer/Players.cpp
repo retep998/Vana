@@ -173,7 +173,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 					PlayerPacket::showMessage(player, "Invalid Skill ID.", 5);
 					return;
 				}
-				short count = 1;
+				char count = 1;
 				if (strlen(next_token) > 0)
 					count = atoi(next_token);
 				player->skills->addSkillLevel(skillid, count);
@@ -629,7 +629,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			case 122: sid = 1220005; break;
 			case 132: sid = 1230005; break;
 		}
-		int slv = player->skills->getSkillLevel(sid);
+		char slv = player->skills->getSkillLevel(sid);
 		if (slv > 0) { achx = Skills::skills[sid][slv].x; }
 		double red = (2.0 - achx / 1000.0);
 		player->setHP(player->getHP() - (int)(damage / red));

@@ -171,7 +171,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	if (skillid == 3121004 || skillid == 3221001)
 		pack->skipBytes(4);
 	bool shadow_meso = false;
-	int shadow_level = 0;
+	char shadow_level = 0;
 	if (skillid == 4111004) {
 		shadow_meso = true;
 		shadow_level = player->skills->getSkillLevel(skillid);
