@@ -190,7 +190,7 @@ void PlayerQuests::finishQuest(short questid, int npcid) {
 }
 
 bool PlayerQuests::isQuestActive(short questid) {
-	for (size_t i = 0; i< quests.size(); i++) {
+	for (size_t i = 0; i < quests.size(); i++) {
 		if (quests[i].id == questid) {
 			return 1;
 		}
