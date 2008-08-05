@@ -16,11 +16,59 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerInventory.h"
+#include "Inventory.h"
+#include "Randomizer.h"
 #include "InventoryPacket.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PacketCreator.h"
 
+/* Item struct */
+Item::Item(int equipid, bool random) : id(equipid), amount(1) {
+	EquipInfo ei = Inventory::equips[equipid];
+	if (!random) {
+		id = equipid;
+		slots = ei.slots;
+		scrolls = 0;
+		istr = ei.istr;
+		idex = ei.idex;
+		iint = ei.iint;
+		iluk = ei.iluk;
+		ihp = ei.ihp;
+		imp = ei.imp;
+		iwatk = ei.iwatk;
+		imatk = ei.imatk;
+		iwdef = ei.iwdef;
+		imdef = ei.imdef;
+		iacc = ei.iacc;
+		iavo = ei.iavo;
+		ihand = ei.ihand;
+		ijump = ei.ijump;
+		ispeed = ei.ispeed;
+	}
+	else {
+		id = equipid;
+		slots = ei.slots;
+		scrolls = 0;
+		istr = ei.istr > 0 ? ei.istr + Randomizer::Instance()->randInt(2)-1 : 0;
+		idex = ei.idex > 0 ? ei.idex + Randomizer::Instance()->randInt(2)-1 : 0;
+		iint = ei.iint > 0 ? ei.iint + Randomizer::Instance()->randInt(2)-1 : 0;
+		iluk = ei.iluk > 0 ? ei.iluk + Randomizer::Instance()->randInt(2)-1 : 0;
+		ihp = ei.ihp > 0 ? ei.ihp + Randomizer::Instance()->randInt(10)-5 : 0;
+		imp = ei.imp > 0 ? ei.imp + Randomizer::Instance()->randInt(10)-5 : 0;
+		iwatk = ei.iwatk > 0 ? ei.iwatk + Randomizer::Instance()->randInt(10)-5 : 0;
+		imatk = ei.imatk > 0 ? ei.imatk + Randomizer::Instance()->randInt(10)-5 : 0;
+		iwdef = ei.iwdef > 0 ? ei.iwdef + Randomizer::Instance()->randInt(10)-5 : 0;
+		imdef = ei.imdef > 0 ? ei.imdef + Randomizer::Instance()->randInt(10)-5 : 0;
+		iacc = ei.iacc > 0 ? ei.iacc + Randomizer::Instance()->randInt(2)-1 : 0;
+		iavo = ei.iavo > 0 ? ei.iavo + Randomizer::Instance()->randInt(2)-1 : 0;
+		ihand = ei.ihand;
+		ijump = ei.ijump > 0 ? ei.ijump + Randomizer::Instance()->randInt(2)-1 : 0;
+		ispeed = ei.ispeed > 0 ? ei.ispeed + Randomizer::Instance()->randInt(2)-1 : 0;
+	}
+}
+
+/* PlayerInventory class */
 PlayerInventory::PlayerInventory(Player *player, unsigned char maxslots[5]) : player(player) {
 	memcpy_s(this->maxslots, sizeof(this->maxslots), maxslots, sizeof(this->maxslots));
 	memset(this->equipped, 0, sizeof(this->equipped));

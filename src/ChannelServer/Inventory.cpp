@@ -108,18 +108,10 @@ void Inventory::addEquipInfo(int id, EquipInfo equip) {
 }
 
 void Inventory::addItemInfo(int id, ItemInfo item) {
-	items[id] = item;
 	if (ISRECHARGEABLE(id))
 		Shops::rechargables.push_back(id);
 	// Set all types to 0 initially
-	item.cons.types[0] = 0;
-	item.cons.types[1] = 0;
-	item.cons.types[2] = 0;
-	item.cons.types[3] = 0;
-	item.cons.types[4] = 0;
-	item.cons.types[5] = 0;
-	item.cons.types[6] = 0;
-	item.cons.types[7] = 0;
+	memset(item.cons.types, 0, sizeof(item.cons.types));
 
 	if (item.cons.watk > 0) {
 		item.cons.types[TYPE_1] += 0x01;
@@ -157,6 +149,8 @@ void Inventory::addItemInfo(int id, ItemInfo item) {
 		item.cons.types[TYPE_5] = 0x02;
 		item.cons.vals.push_back(item.cons.morph);
 	}
+
+	items[id] = item;
 }
 
 void Inventory::stopTimersPlayer(Player *player) {
@@ -217,50 +211,6 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 	}
 	if (slot1 < 0 || slot2 < 0)
 		InventoryPacket::updatePlayer(player);
-}
-
-void Inventory::setEquipStats(int equipid, Item &equip, bool random) {
-	EquipInfo ei = equips[equipid];
-	if (!random) {
-		equip.id = equipid;
-		equip.slots = ei.slots;
-		equip.scrolls = 0;
-		equip.istr = ei.istr;
-		equip.idex = ei.idex;
-		equip.iint = ei.iint;
-		equip.iluk = ei.iluk;
-		equip.ihp = ei.ihp;
-		equip.imp = ei.imp;
-		equip.iwatk = ei.iwatk;
-		equip.imatk = ei.imatk;
-		equip.iwdef = ei.iwdef;
-		equip.imdef = ei.imdef;
-		equip.iacc = ei.iacc;
-		equip.iavo = ei.iavo;
-		equip.ihand = ei.ihand;
-		equip.ijump = ei.ijump;
-		equip.ispeed = ei.ispeed;
-	}
-	else {
-		equip.id = equipid;
-		equip.slots = ei.slots;
-		equip.scrolls = 0;
-		equip.istr = ei.istr > 0 ? ei.istr + Randomizer::Instance()->randInt(2)-1 : 0;
-		equip.idex = ei.idex > 0 ? ei.idex + Randomizer::Instance()->randInt(2)-1 : 0;
-		equip.iint = ei.iint > 0 ? ei.iint + Randomizer::Instance()->randInt(2)-1 : 0;
-		equip.iluk = ei.iluk > 0 ? ei.iluk + Randomizer::Instance()->randInt(2)-1 : 0;
-		equip.ihp = ei.ihp > 0 ? ei.ihp + Randomizer::Instance()->randInt(10)-5 : 0;
-		equip.imp = ei.imp > 0 ? ei.imp + Randomizer::Instance()->randInt(10)-5 : 0;
-		equip.iwatk = ei.iwatk > 0 ? ei.iwatk + Randomizer::Instance()->randInt(10)-5 : 0;
-		equip.imatk = ei.imatk > 0 ? ei.imatk + Randomizer::Instance()->randInt(10)-5 : 0;
-		equip.iwdef = ei.iwdef > 0 ? ei.iwdef + Randomizer::Instance()->randInt(10)-5 : 0;
-		equip.imdef = ei.imdef > 0 ? ei.imdef + Randomizer::Instance()->randInt(10)-5 : 0;
-		equip.iacc = ei.iacc > 0 ? ei.iacc + Randomizer::Instance()->randInt(2)-1 : 0;
-		equip.iavo = ei.iavo > 0 ? ei.iavo + Randomizer::Instance()->randInt(2)-1 : 0;
-		equip.ihand = ei.ihand;
-		equip.ijump = ei.ijump > 0 ? ei.ijump + Randomizer::Instance()->randInt(2)-1 : 0;
-		equip.ispeed = ei.ispeed > 0 ? ei.ispeed + Randomizer::Instance()->randInt(2)-1 : 0;
-	}
 }
 
 short Inventory::addItem(Player *player, Item *item, bool is) {
@@ -399,30 +349,34 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 		return;
 	char inv = GETINVENTORY(itemid);
 	short max = items[itemid].maxslot;
-	Item item;
-	item.id = itemid;
+	short thisamount = 0;
 	if (ISSTAR(itemid)) {
-		item.amount = max + player->skills->getSkillLevel(4100000)*10;
+		thisamount = max + player->skills->getSkillLevel(4100000)*10;
 		amount -= 1;
 	}
 	else if (ISBULLET(itemid)) {
-		item.amount = max + player->skills->getSkillLevel(5200000)*10;
+		thisamount = max + player->skills->getSkillLevel(5200000)*10;
 		amount -= 1;
 	}
 	else if (ISEQUIP(itemid)) {
-		setEquipStats(itemid, item, false);
 		amount -= 1;
 	}
 	else if (amount - max > 0) {
-		item.amount = max;
+		thisamount = max;
 		amount -= max;
 	}
 	else {
-		item.amount = amount;
+		thisamount = amount;
 		amount = 0;
 	}
 
-	if (addItem(player, new Item(item)) == 0 && amount > 0)
+	Item *item = 0;
+	if (ISEQUIP(itemid))
+		item = new Item(itemid, false);
+	else
+		item = new Item(itemid, thisamount);
+
+	if (addItem(player, item) == 0 && amount > 0)
 		addNewItem(player, itemid, amount);
 }
 
