@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 int main() {
 	ChannelServer *server = ChannelServer::Instance();
 	server->initialize();
-	
+
 	while (getchar()) {}
 
 	server->shutdown();
