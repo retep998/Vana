@@ -151,14 +151,14 @@ struct SkillsInfo {
 	SkillAct act;
 	vector <bool> bact;
 };
-typedef hash_map <int, SkillLevelInfo> SkillsLevelInfo;
+typedef hash_map <unsigned char, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
 	void init();
 	extern hash_map <int, SkillsLevelInfo> skills;
-	extern hash_map <int, char> maxlevels;
+	extern hash_map <int, unsigned char> maxlevels;
 	extern hash_map <int, SkillsInfo> skillsinfo;
-	void addSkillLevelInfo(int skillid, char level, SkillLevelInfo levelinfo);
+	void addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo levelinfo);
 	void addSkill(Player *player, ReadPacket *packet);
 	void cancelSkill(Player *player, ReadPacket *packet);
 	void useSkill(Player *player, ReadPacket *packet);

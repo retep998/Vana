@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerSkills.h"
 #include "Skills.h"
 
-void PlayerSkills::addSkillLevel(int skillid, char amount, bool sendpacket) {
+void PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpacket) {
 	if (playerskills.find(skillid) != playerskills.end())
 		playerskills[skillid] += amount;
 	else
@@ -47,27 +47,16 @@ void PlayerSkills::deleteSkillMapEnterInfo(int skillid) {
 	}
 }
 
-char PlayerSkills::getSkillLevel(int skillid) {
+unsigned char PlayerSkills::getSkillLevel(int skillid) {
 	if (playerskills.find(skillid) != playerskills.end())
 		return playerskills[skillid];
 	return 0;
 }
 
-char PlayerSkills::getMaxSkillLevel(int skillid) {
+unsigned char PlayerSkills::getMaxSkillLevel(int skillid) {
 	// Get max level for 4th job skills
 	if (maxlevels.find(skillid) != maxlevels.end())
 		return maxlevels[skillid];
-	return 0;
-}
-
-int PlayerSkills::getSkillID(size_t i) {
-	size_t j = 0;
-	for (hash_map<int, char>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
-		if (j == i) {
-			return iter->first;
-		} 
-		j++;
-	}
 	return 0;
 }
 
@@ -91,11 +80,11 @@ SkillActiveInfo PlayerSkills::getSkillPlayerInfo(int skillid) {
 	return activeplayerskill[skillid];
 }
 
-char PlayerSkills::getActiveSkillLevel(int skillid) {
-	if (activelevels.find(skillid) == activelevels.end()) {
-		return 0;
-	}
-	return activelevels[skillid];
+unsigned char PlayerSkills::getActiveSkillLevel(int skillid) {
+	if (activelevels.find(skillid) != activelevels.end())
+		return activelevels[skillid];
+	return 0;
+
 }
 
 void PlayerSkills::setSkillMapEnterInfo(int skillid, vector <SkillMapActiveInfo> skill) {
