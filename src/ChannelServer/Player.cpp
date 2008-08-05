@@ -203,7 +203,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << this->id;
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
-		skills->addSkillLevel(res[i][0], (unsigned char) res[i][1], false);
+		skills->addSkillLevel(res[i][0], res[i][1], false);
 		if (FORTHJOB_SKILL(res[i][0])) {
 			skills->setMaxSkillLevel(res[i][0], res[i][2]);
 		}
@@ -471,14 +471,16 @@ void Player::saveSkills() {
 	mysqlpp::Query query = Database::chardb.query();
 
 	bool firstrun = true;
-	for (int i = 0; i < skills->getSkillsNum(); i++) {
+	hash_map<int, unsigned char> *playerskills = skills->getSkills();
+	for (hash_map<int, unsigned char>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
 		if (firstrun) {
-			query << "REPLACE INTO skills VALUES (" << mysqlpp::quote << this->id << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
+			query << "REPLACE INTO skills VALUES (";
 			firstrun = false;
 		}
 		else {
-			query << ",(" << mysqlpp::quote << this->id << "," << mysqlpp::quote << skills->getSkillID(i) << "," << mysqlpp::quote << skills->getSkillLevel(skills->getSkillID(i)) << "," << mysqlpp::quote << skills->getMaxSkillLevel(skills->getSkillID(i)) << ")";
+			query << ",(";
 		}
+		query << mysqlpp::quote << this->id << "," << mysqlpp::quote << iter->first << "," << mysqlpp::quote << iter->second << "," << mysqlpp::quote << skills->getMaxSkillLevel(iter->first) << ")";
 	}
 	query.exec();
 }

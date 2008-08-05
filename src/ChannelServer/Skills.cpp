@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 
 hash_map <int, SkillsLevelInfo> Skills::skills;
-hash_map <int, char> Skills::maxlevels;
+hash_map <int, unsigned char> Skills::maxlevels;
 hash_map <int, SkillsInfo> Skills::skillsinfo;
 
 #define BEGINNER_SKILL(x) (x<1003)
@@ -631,7 +631,7 @@ void Skills::init() {
 	skillsinfo[2321002].player.push_back(player);
 }
 
-void Skills::addSkillLevelInfo(int skillid, char level, SkillLevelInfo levelinfo) {
+void Skills::addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo levelinfo) {
 	skills[skillid][level] = levelinfo;
 	maxlevels[skillid] = level;
 }
@@ -975,13 +975,12 @@ void Skills::hurt(Player *player, short value, int skillid) {
 void Skills::addCombo(Player *player) { // add combo orbs 
 	if (player->skills->getActiveSkillLevel(1111002) > 0) {
 		int maxcombo = 0;
-		char advcombo = player->skills->getSkillLevel(1120003);
-		if (advcombo > 0)
-			maxcombo = Skills::skills[1120003][advcombo].x;
-		else
-			maxcombo = Skills::skills[1111002][player->skills->getSkillLevel(1111002)].x;
-		if (player->getCombo() == maxcombo)
+		int advcombo = player->skills->getSkillLevel(1120003);
+		if (advcombo > 0) maxcombo = Skills::skills[1120003][advcombo].x;
+		else maxcombo = Skills::skills[1111002][player->skills->getSkillLevel(1111002)].x;
+		if (player->getCombo() == maxcombo) {
 			return;
+		}
 		else {
 			if (advcombo > 0 && Randomizer::Instance()->randInt(99) < skills[1120003][advcombo].prop)
 				player->setCombo(player->getCombo()+2); // 4th job skill gives chance to add second orb

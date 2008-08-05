@@ -103,12 +103,13 @@ void PlayerPacket::connectData(Player *player) {
 		packet.addByte(0);
 	}
 	//Skills
-	packet.addShort(player->skills->getSkillsNum());
-	for (int i = 0; i < player->skills->getSkillsNum(); i++) {
-		packet.addInt(player->skills->getSkillID(i));
-		packet.addInt(player->skills->getSkillLevel(player->skills->getSkillID(i)));
-		if (FORTHJOB_SKILL(player->skills->getSkillID(i)))
-			packet.addInt(player->skills->getMaxSkillLevel(player->skills->getSkillID(i))); // Max Level for 4th job skills
+	hash_map<int, unsigned char> *playerskills = player->skills->getSkills();
+	packet.addShort((short) playerskills->size());
+	for (hash_map<int, unsigned char>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
+		packet.addInt(iter->first);
+		packet.addInt(iter->second);
+		if (FORTHJOB_SKILL(iter->first))
+			packet.addInt(player->skills->getMaxSkillLevel(iter->first)); // Max Level for 4th job skills
 	}
 	//End
 	packet.addInt(0);
