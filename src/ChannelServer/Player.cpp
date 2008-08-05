@@ -203,7 +203,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << this->id;
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
-		skills->addSkillLevel(res[i][0], res[i][1], false);
+		skills->addSkillLevel(res[i][0], (unsigned char) res[i][1], false);
 		if (FORTHJOB_SKILL(res[i][0])) {
 			skills->setMaxSkillLevel(res[i][0], res[i][2]);
 		}
