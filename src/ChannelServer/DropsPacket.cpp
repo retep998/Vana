@@ -36,6 +36,9 @@ void DropsPacket::drop(Drop *drop, Pos origin) {
 	packet.addPos(origin);
 	packet.addShort(0);
 	packet.addByte(0);
+	if (!drop->isMesos()) {
+		packet.addBytes("8005BB46E6170200");
+	}
 	Maps::maps[drop->getMap()]->sendPacket(packet);
 	packet = PacketCreator();
 	packet.addShort(SEND_DROP_ITEM);
@@ -50,6 +53,9 @@ void DropsPacket::drop(Drop *drop, Pos origin) {
 	packet.addPos(origin);
 	packet.addShort(0);
 	packet.addByte(0);
+	if (!drop->isMesos()) {
+		packet.addBytes("8005BB46E6170200");
+	}
 	Maps::maps[drop->getMap()]->sendPacket(packet);
 }
 
@@ -67,6 +73,9 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
 	packet.addPos(origin);
 	packet.addShort(0);
 	packet.addByte(0);
+	if (!drop->isMesos()) {
+		packet.addBytes("8005BB46E6170200");
+	}
 	packet.send(player);
 }
 
@@ -82,6 +91,9 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 	packet.addPos(drop->getPos());
 	packet.addInt(drop->getTime());
 	packet.addByte(0);
+	if (!drop->isMesos()) {
+		packet.addBytes("8005BB46E6170200");
+	}
 	packet.send(player);
 }
 
