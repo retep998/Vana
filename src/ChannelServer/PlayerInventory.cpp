@@ -76,7 +76,7 @@ void PlayerInventory::addMaxSlots(char inventory, char rows) { // Useful with .l
 		maxslots[inventory] = 100;
 	if (maxslots[inventory] < 24) // Retard.
 		maxslots[inventory] = 24;
-	InventoryPacket::updateSlots(player, inventory, maxslots[inventory - 1]);
+	InventoryPacket::updateSlots(player, inventory + 1, maxslots[inventory]);
 }
 
 void PlayerInventory::setMesos(int mesos, bool is) {
