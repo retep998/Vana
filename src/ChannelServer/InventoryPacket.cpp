@@ -189,11 +189,12 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 	}
 	packet.addShort(0);
 	packet.addByte(morph);
-	packet.addShort(0);
 	packet.addByte(0);
+	if (morph)
+		packet.addByte(0);
 	packet.send(player);
 	if (morph) {
-		PacketCreator packet;
+		packet = PacketCreator();
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getPlayerid());
 		packet.addInt64(0);
