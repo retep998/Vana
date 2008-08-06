@@ -361,7 +361,7 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 	else if (ISEQUIP(itemid)) {
 		amount -= 1;
 	}
-	else if (amount - max > 0) {
+	else if (amount > max) {
 		thisamount = max;
 		amount -= max;
 	}
