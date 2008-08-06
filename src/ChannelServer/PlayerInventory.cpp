@@ -24,12 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 
 /* Item struct */
-Item::Item(int equipid, bool random) : id(equipid), amount(1) {
+Item::Item(int equipid, bool random) : id(equipid), amount(1), scrolls(0) {
 	EquipInfo ei = Inventory::equips[equipid];
+	slots = ei.slots;
 	if (!random) {
-		id = equipid;
-		slots = ei.slots;
-		scrolls = 0;
 		istr = ei.istr;
 		idex = ei.idex;
 		iint = ei.iint;
@@ -47,9 +45,6 @@ Item::Item(int equipid, bool random) : id(equipid), amount(1) {
 		ispeed = ei.ispeed;
 	}
 	else {
-		id = equipid;
-		slots = ei.slots;
-		scrolls = 0;
 		istr = ei.istr > 0 ? ei.istr + Randomizer::Instance()->randInt(2)-1 : 0;
 		idex = ei.idex > 0 ? ei.idex + Randomizer::Instance()->randInt(2)-1 : 0;
 		iint = ei.iint > 0 ? ei.iint + Randomizer::Instance()->randInt(2)-1 : 0;
