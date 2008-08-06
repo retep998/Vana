@@ -54,8 +54,8 @@ void Mob::die(Player *player) {
 	int hsrate = 0;
 	if (player->skills->getActiveSkillLevel(2311003) > 0)
 		hsrate = Skills::skills[2311003][player->skills->getActiveSkillLevel(2311003)].x;
-	else if (player->skills->getActiveSkillLevel(5101002) > 0)
-		hsrate = Skills::skills[5101002][player->skills->getActiveSkillLevel(5101002)].x;
+	else if (player->skills->getActiveSkillLevel(9101002) > 0)
+		hsrate = Skills::skills[5101002][player->skills->getActiveSkillLevel(9101002)].x;
 
 	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp*hsrate)/100)) * ChannelServer::Instance()->getExprate());
 	Drops::dropMob(player, this);
@@ -183,7 +183,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			Skills::clearCombo(player);
 			break;
 		case 1111008: // Shout
-		case 5001001: // Super Dragon Roar
+		case 9001001: // Super Dragon Roar
 			break; 
 		case 1311006: { // Dragon Roar
 			char roarlv = player->skills->getSkillLevel(skillid);
