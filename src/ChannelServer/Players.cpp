@@ -222,6 +222,30 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			player->setInt(30000);
 			player->setLuk(30000);
 		}
+		else if (strcmp(command,"str") == 0) {
+			if (strlen(next_token) > 0)
+				player->setStr(atoi(next_token));
+		}
+		else if (strcmp(command,"dex") == 0) {
+			if (strlen(next_token) > 0)
+				player->setDex(atoi(next_token));
+		}
+		else if (strcmp(command,"int") == 0) {
+			if (strlen(next_token) > 0)
+				player->setInt(atoi(next_token));
+		}
+		else if (strcmp(command,"luk") == 0) {
+			if (strlen(next_token) > 0)
+				player->setLuk(atoi(next_token));
+		}
+		else if (strcmp(command,"hp") == 0) {
+			if (strlen(next_token) > 0)
+				player->setRMHP(atoi(next_token));
+		}
+		else if (strcmp(command,"mp") == 0) {
+			if (strlen(next_token) > 0)
+				player->setRMMP(atoi(next_token));
+		}
 		else if (strcmp(command, "shop") == 0) {
 			int shopid = -1;
 			if (strcmp(next_token, "gear") == 0) shopid = 9999999;
