@@ -21,7 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Winsock2.h>
 #include <hash_map>
 
+#define BOOST_ALL_DYN_LINK
+#include <boost/scoped_ptr.hpp>
+#include <boost/thread.hpp>
+
 using stdext::hash_map;
+using boost::scoped_ptr;
 
 class Selector {
 public:
@@ -61,6 +66,7 @@ private:
 	fd_set errorfds;
 	struct timeval timeout;
 	hash_map<int, SelectHandler *> handlers;
+	scoped_ptr<boost::thread> selectorthread;
 };
 
 #endif
