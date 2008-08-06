@@ -17,15 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Selector.h"
 #include <WinSock2.h>
-#define BOOST_ALL_DYN_LINK
-#include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
 Selector * Selector::singleton = 0;
-
-void _selectorThread(Selector *selectorObject) {
-	selectorObject->selectThread();
-}
 
 Selector::Selector() : terminate(false) {
 	timeout.tv_sec = 1;
@@ -34,7 +28,7 @@ Selector::Selector() : terminate(false) {
 	FD_ZERO(&writefds);
 	FD_ZERO(&errorfds);
 
-	boost::thread selectorthread(boost::bind(&_selectorThread, this));
+	selectorthread.reset(new boost::thread(boost::bind(&Selector::selectThread, this)));
 }
 
 Selector::~Selector() {
@@ -60,7 +54,6 @@ void Selector::unregisterSocket(int socket) {
 	FD_CLR(socket, &errorfds);
 	handlers.erase(socket);
 }
-
 
 void Selector::selectThread() {
 	fd_set t_readfds;
