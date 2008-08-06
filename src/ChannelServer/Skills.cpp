@@ -471,10 +471,14 @@ void Skills::init() {
 	player.type = 0x1;
 	player.byte = TYPE_1;
 	player.value = SKILL_WATK;
+	skillsinfo[1311008].player.push_back(player);
+	player.type = 0x80;
+	player.byte = TYPE_3;
+	player.value = SKILL_LV;
+	skillsinfo[1311008].player.push_back(player);
 	strcpy_s(act.name, 50, "hurt");
 	act.time = 4000;
 	act.value = SKILL_X;
-	skillsinfo[1311008].player.push_back(player);
 	skillsinfo[1311008].act = act;
 	skillsinfo[1311008].bact.push_back(true);
 	// 3121002 & 3221002 - Sharp Eyes
