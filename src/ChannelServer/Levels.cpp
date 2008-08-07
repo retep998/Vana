@@ -80,13 +80,13 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			}
 			else if (job == 1) {
 				int x = 0;
-				if (player->skills->getSkillLevel(1000001) > 0) { x = Skills::skills[1000001][player->skills->getSkillLevel(1000001)].x; }
+				if (player->getSkills()->getSkillLevel(1000001) > 0) { x = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].x; }
 				hpgain = Randomizer::Instance()->randInt(4) + 24 + x;
 				mpgain = Randomizer::Instance()->randInt(2) + 4 + intt;
 			}
 			else if (job == 2) {
 				int x = 0;
-				if (player->skills->getSkillLevel(2000001) > 0) { x = Skills::skills[2000001][player->skills->getSkillLevel(2000001)].x; }
+				if (player->getSkills()->getSkillLevel(2000001) > 0) { x = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].x; }
 				hpgain = Randomizer::Instance()->randInt(4) + 10;
 				mpgain = Randomizer::Instance()->randInt(2) + 22 + 2 * x + intt;
 			} 
@@ -111,13 +111,13 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 		player->setSp(player->getSp() + spgain);
 
 		// Let hyperbody remain on if on during a level up, as it should
-		if (player->skills->getActiveSkillLevel(1301007) > 0) {
-			player->setMHP(player->getRMHP()*(100 + Skills::skills[1301007][player->skills->getActiveSkillLevel(1301007)].x)/100);
-			player->setMMP(player->getRMMP()*(100 + Skills::skills[1301007][player->skills->getActiveSkillLevel(1301007)].y)/100);
+		if (player->getSkills()->getActiveSkillLevel(1301007) > 0) {
+			player->setMHP(player->getRMHP()*(100 + Skills::skills[1301007][player->getSkills()->getActiveSkillLevel(1301007)].x)/100);
+			player->setMMP(player->getRMMP()*(100 + Skills::skills[1301007][player->getSkills()->getActiveSkillLevel(1301007)].y)/100);
 		}
-		else if (player->skills->getActiveSkillLevel(9101008) > 0) { // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
-			player->setMHP(player->getRMHP()*(100 + Skills::skills[9101008][player->skills->getActiveSkillLevel(9101008)].x)/100);
-			player->setMMP(player->getRMMP()*(100 + Skills::skills[9101008][player->skills->getActiveSkillLevel(9101008)].y)/100);
+		else if (player->getSkills()->getActiveSkillLevel(9101008) > 0) { // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
+			player->setMHP(player->getRMHP()*(100 + Skills::skills[9101008][player->getSkills()->getActiveSkillLevel(9101008)].x)/100);
+			player->setMMP(player->getRMMP()*(100 + Skills::skills[9101008][player->getSkills()->getActiveSkillLevel(9101008)].y)/100);
 		}
 		else {
 			player->setMHP(player->getRMHP());
@@ -173,14 +173,14 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 					break;
 				case 1: {
 					int y = 0;
-					if (player->skills->getSkillLevel(1000001) > 0) { y = Skills::skills[1000001][player->skills->getSkillLevel(1000001)].y; }
+					if (player->getSkills()->getSkillLevel(1000001) > 0) { y = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].y; }
 					hpgain = Randomizer::Instance()->randInt(4) + 20 + y;
 					mpgain = Randomizer::Instance()->randInt(2) + 2;
 					break;
 				}
 				case 2: {
 					int y = 0;
-					if (player->skills->getSkillLevel(2000001) > 0) { y = Skills::skills[2000001][player->skills->getSkillLevel(2000001)].y; }
+					if (player->getSkills()->getSkillLevel(2000001) > 0) { y = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].y; }
 					hpgain = Randomizer::Instance()->randInt(4) + 6;
 					mpgain = Randomizer::Instance()->randInt(2) + 18 + 2 * y;
 					break;
@@ -192,8 +192,8 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 			}
 			player->setAp(player->getAp()-1);
 			player->setHPMPAp(player->getHPMPAp()+1);
-			int hb = player->skills->getActiveSkillLevel(1301007);
-			int gmhb = player->skills->getActiveSkillLevel(9101008); // Separating because any player may get a map-wide effect of GM Hyperbody
+			int hb = player->getSkills()->getActiveSkillLevel(1301007);
+			int gmhb = player->getSkills()->getActiveSkillLevel(9101008); // Separating because any player may get a map-wide effect of GM Hyperbody
 			switch (type) {
 				case 0x800:
 					player->setRMHP(player->getRMHP() + hpgain);

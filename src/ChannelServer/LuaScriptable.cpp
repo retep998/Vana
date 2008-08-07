@@ -142,7 +142,7 @@ Player * LuaExports::getPlayer(lua_State *luaVm) {
 int LuaExports::addSkillLevel(lua_State *luaVm) {
 	int skillid = lua_tointeger(luaVm, -2);
 	int level = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->skills->addSkillLevel(skillid, level);
+	getPlayer(luaVm)->getSkills()->addSkillLevel(skillid, level);
 	return 1;
 }
 
@@ -220,18 +220,18 @@ int LuaExports::getGender(lua_State *luaVm) {
 
 int LuaExports::getItemAmount(lua_State *luaVm) {
 	int itemid = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->inv->getItemAmount(itemid));
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getItemAmount(itemid));
 	return 1;
 }
 
 int LuaExports::getSkillLevel(lua_State *luaVm) {
 	int skillid = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->skills->getSkillLevel(skillid));
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getSkillLevel(skillid));
 	return 1;
 }
 
 int LuaExports::getMesos(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->inv->getMesos());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getMesos());
 	return 1;
 }
 
@@ -514,6 +514,6 @@ int LuaExports::deletePlayerVariable(lua_State *luaVm) {
 int LuaExports::addSlots(lua_State *luaVm) {
 	char inventory = lua_tointeger(luaVm, -2);
 	char rows = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->inv->addMaxSlots(inventory, rows);
+	getPlayer(luaVm)->getInventory()->addMaxSlots(inventory, rows);
 	return 1;
 }

@@ -96,7 +96,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 	for (size_t k = 0; k < drops.size(); k++) {
 		if (Randomizer::Instance()->randInt(9999) < drops[k].chance * ChannelServer::Instance()->getDroprate()) {
 			if (drops[k].quest > 0) {
-				if (!player->quests->isQuestActive(drops[k].quest))
+				if (!player->getQuests()->isQuestActive(drops[k].quest))
 					continue;
 				int request = 0;
 				for (size_t i = 0; i < Quests::quests[drops[k].quest].rewards.size(); i++) {
@@ -104,7 +104,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 						request = Quests::quests[drops[k].quest].rewards[i].count;
 					}
 				}
-				if (player->inv->getItemAmount(drops[k].id) > request)
+				if (player->getInventory()->getItemAmount(drops[k].id) > request)
 					continue;
 			}
 
@@ -142,8 +142,8 @@ void Drops::dropMob(Player *player, Mob *mob) {
 	if (xm > 0 && nm > 0) {
 		int mesos = Randomizer::Instance()->randInt(xm-nm)+nm;
 		// For Meso up
-		if (player->skills->getActiveSkillLevel(4111001) > 0) {
-			mesos = (mesos*Skills::skills[4111001][player->skills->getActiveSkillLevel(4111001)].x)/100;
+		if (player->getSkills()->getActiveSkillLevel(4111001) > 0) {
+			mesos = (mesos*Skills::skills[4111001][player->getSkills()->getActiveSkillLevel(4111001)].x)/100;
 		}
 		Pos pos;
 		if (d%2) {
@@ -167,7 +167,7 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 		// hacking
 		return;
 	}
-	player->inv->setMesos(player->inv->getMesos() - amount, true);
+	player->getInventory()->setMesos(player->getInventory()->getMesos() - amount, true);
 	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), 0);
 	drop->setTime(0);
 	drop->doDrop(player->getPos());
@@ -191,14 +191,14 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 				request = Quests::quests[drop->getQuest()].rewards[i].count;
 			}
 		}
-		if (player->inv->getItemAmount(drop->getObjectID()) > request || !player->quests->isQuestActive(drop->getQuest())) {
+		if (player->getInventory()->getItemAmount(drop->getObjectID()) > request || !player->getQuests()->isQuestActive(drop->getQuest())) {
 			DropsPacket::takeNote(player, 0, false, 0);
 			DropsPacket::dontTake(player);
 			return;
 		}
 	}
 	if (drop->isMesos()) {
-		player->inv->setMesos(player->inv->getMesos() + drop->getObjectID(), true);
+		player->getInventory()->setMesos(player->getInventory()->getMesos() + drop->getObjectID(), true);
 		DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
 	}
 	else {

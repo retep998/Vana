@@ -185,7 +185,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				unsigned char count = 1;
 				if (strlen(next_token) > 0)
 					count = atoi(next_token);
-				player->skills->addSkillLevel(skillid, count);
+				player->getSkills()->addSkillLevel(skillid, count);
 			}
 		}
 		else if (strcmp(command, "summon") == 0 || strcmp(command, "spawn") == 0) {
@@ -384,7 +384,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "mesos") == 0) {
 			if (strlen(next_token) == 0) return;
 			long mesos = atoi(next_token);
-			player->inv->setMesos(mesos);
+			player->getInventory()->setMesos(mesos);
 		}
 		else if (strcmp(command, "cleardrops") == 0) {
 			Maps::maps[player->getMap()]->clearDrops();
@@ -597,16 +597,16 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 	if (damage == -1) { // 0 damage = regular miss, -1 = Fake
 		short job = player->getJob() / 10 - 40;
 		fake = 4020002 + (job * 100000);
-		if (player->skills->getSkillLevel(fake) < 0) {
+		if (player->getSkills()->getSkillLevel(fake) < 0) {
 			//hacking
 			return;
 		}
 	}
-	if (player->skills->getActiveSkillLevel(4211005) > 0 && player->inv->getMesos() > 0) { // Meso Guard 
-		int mesorate = Skills::skills[4211005][player->skills->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
+	if (player->getSkills()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
+		int mesorate = Skills::skills[4211005][player->getSkills()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
 		unsigned short hp = player->getHP();
 		int mesoloss = (int)(mesorate * (damage / 2) / 100);
-		int mesos = player->inv->getMesos();
+		int mesos = player->getInventory()->getMesos();
 		int newmesos = mesos - mesoloss;
 		if (newmesos > -1) {
 			damage = (int)(damage / 2); // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
@@ -617,7 +617,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			damage = (int)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
 			newmesos = 0;
 		}
-		player->inv->setMesos(newmesos);
+		player->getInventory()->setMesos(newmesos);
 		SkillsPacket::showSkillEffect(player, 4211005);
 		player->setHP(player->getHP() - damage);
 		if (attack.deadlyattack)
@@ -628,7 +628,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			player->setMP(player->getMP() - attack.mpburn);
 		applieddamage = true;
 	}
- 	if (player->skills->getActiveSkillLevel(2001002) > 0) { // Magic Guard
+ 	if (player->getSkills()->getActiveSkillLevel(2001002) > 0) { // Magic Guard
 		unsigned short mp = player->getMP();
 		unsigned short hp = player->getHP();
 		if (attack.deadlyattack) {
@@ -640,7 +640,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			player->setMP(mp - attack.mpburn);
 		}
 		else {
-			unsigned short reduc = Skills::skills[2001002][player->skills->getActiveSkillLevel(2001002)].x;
+			unsigned short reduc = Skills::skills[2001002][player->getSkills()->getActiveSkillLevel(2001002)].x;
 			int mpdamage = ((damage * reduc) / 100);
 			int hpdamage = damage - mpdamage;
 			if (mpdamage >= mp) {
@@ -662,7 +662,7 @@ void Players::damagePlayer(Player *player, ReadPacket *packet) {
 			case 122: sid = 1220005; break;
 			case 132: sid = 1230005; break;
 		}
-		int slv = player->skills->getSkillLevel(sid);
+		int slv = player->getSkills()->getSkillLevel(sid);
 		if (slv > 0) { achx = Skills::skills[sid][slv].x; }
 		double red = (2.0 - achx / 1000.0);
 		player->setHP(player->getHP() - (int)(damage / red));

@@ -37,7 +37,7 @@ void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
 	if (info.fieldType == 82)
 		MapPacket::makeApple(player);
-	if (player->skills->getActiveSkillLevel(9101004) == 0)
+	if (player->getSkills()->getActiveSkillLevel(9101004) == 0)
 		MapPacket::showPlayer(player);
 }
 
@@ -208,7 +208,7 @@ void Map::clearDrops(int time) { // Clear drops based on how long they have been
 void Map::showObjects(Player *player) { // Show all Map Objects
 	// Players
 	for (size_t i = 0; i < players.size(); i++) {
-		if (player != players[i] && players[i]->skills->getActiveSkillLevel(9101004) == 0) {
+		if (player != players[i] && players[i]->getSkills()->getActiveSkillLevel(9101004) == 0) {
 			PacketCreator packet = MapPacket::playerPacket(players[i]);
 			packet.send(player);
 			// Bug in global; would be fixed here:

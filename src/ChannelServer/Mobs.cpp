@@ -52,10 +52,10 @@ void Mob::die(Player *player) {
 
 	// Account for Holy Symbol
 	int hsrate = 0;
-	if (player->skills->getActiveSkillLevel(2311003) > 0)
-		hsrate = Skills::skills[2311003][player->skills->getActiveSkillLevel(2311003)].x;
-	else if (player->skills->getActiveSkillLevel(9101002) > 0)
-		hsrate = Skills::skills[9101002][player->skills->getActiveSkillLevel(9101002)].x;
+	if (player->getSkills()->getActiveSkillLevel(2311003) > 0)
+		hsrate = Skills::skills[2311003][player->getSkills()->getActiveSkillLevel(2311003)].x;
+	else if (player->getSkills()->getActiveSkillLevel(9101002) > 0)
+		hsrate = Skills::skills[9101002][player->getSkills()->getActiveSkillLevel(9101002)].x;
 
 	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp * hsrate)/100)) * ChannelServer::Instance()->getExprate());
 	Drops::dropMob(player, this);
@@ -64,7 +64,7 @@ void Mob::die(Player *player) {
 	for (size_t i = 0; i < Mobs::mobinfo[mobid].summon.size(); i++)
 		Mobs::spawnMobPos(mapid, Mobs::mobinfo[mobid].summon[i], pos);
 
-	player->quests->updateQuestMob(mobid);
+	player->getQuests()->updateQuestMob(mobid);
 	Maps::maps[mapid]->removeMob(id, spawnid);
 	delete this;
 }
@@ -180,13 +180,13 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		case 1111004:
 		case 1111005:
 		case 1111006:
-			player->skills->setCombo(0, true);
+			player->getSkills()->setCombo(0, true);
 			break;
 		case 1111008: // Shout
 		case 9001001: // Super Dragon Roar
 			break; 
 		case 1311006: { // Dragon Roar
-			char roarlv = player->skills->getSkillLevel(skillid);
+			char roarlv = player->getSkills()->getSkillLevel(skillid);
 			short x_value = Skills::skills[skillid][roarlv].x;
 			short y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
 			short hp = player->getHP();
@@ -201,7 +201,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 1311005: { // Sacrifice
-			short hp_damage_x = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].x;
+			short hp_damage_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
 			short hp_damage = totaldmg * hp_damage_x / 100;
 			short hp = player->getHP();
 			if (hp - hp_damage < 1)
@@ -211,26 +211,26 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 1211002: { // Charged Blow
-			char acb_level = player->skills->getSkillLevel(1220010);
+			char acb_level = player->getSkills()->getSkillLevel(1220010);
 			short acb_x = 0;
 			if (acb_level > 0)
 				acb_x = Skills::skills[1220010][acb_level].x;
 			int charge_id = 0;
-			if (player->skills->getActiveSkillLevel(1211003) > 0) // Fire - Sword
+			if (player->getSkills()->getActiveSkillLevel(1211003) > 0) // Fire - Sword
 				charge_id = 1211003;
-			else if (player->skills->getActiveSkillLevel(1211004) > 0) // Fire - BW
+			else if (player->getSkills()->getActiveSkillLevel(1211004) > 0) // Fire - BW
 				charge_id = 1211004;
-			else if (player->skills->getActiveSkillLevel(1211005) > 0) // Ice - Sword
+			else if (player->getSkills()->getActiveSkillLevel(1211005) > 0) // Ice - Sword
 				charge_id = 1211005;
-			else if (player->skills->getActiveSkillLevel(1211006) > 0) // Ice - BW
+			else if (player->getSkills()->getActiveSkillLevel(1211006) > 0) // Ice - BW
 				charge_id = 1211006;
-			else if (player->skills->getActiveSkillLevel(1211007) > 0) // Lightning - Sword
+			else if (player->getSkills()->getActiveSkillLevel(1211007) > 0) // Lightning - Sword
 				charge_id = 1211007;
-			else if (player->skills->getActiveSkillLevel(1211008) > 0) // Lightning - BW
+			else if (player->getSkills()->getActiveSkillLevel(1211008) > 0) // Lightning - BW
 				charge_id = 1211008;
-			else if (player->skills->getActiveSkillLevel(1221003) > 0) // Holy - Sword
+			else if (player->getSkills()->getActiveSkillLevel(1221003) > 0) // Holy - Sword
 				charge_id = 1221003;
-			else if (player->skills->getActiveSkillLevel(1221004) > 0) // Holy - BW
+			else if (player->getSkills()->getActiveSkillLevel(1221004) > 0) // Holy - BW
 				charge_id = 1221004;
 			if (charge_id == 0) {
 				// Hacking
@@ -242,7 +242,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		}
 		default:
 			if (totaldmg > 0)
-				player->skills->addCombo();
+				player->getSkills()->addCombo();
 			break;
 	}
 }
@@ -273,7 +273,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			info.direction = packet->getByte();
 			packet->skipBytes(1); // Weapon subclass
 			info.w_speed = packet->getByte();
-			info.level = player->skills->getSkillLevel(info.skillid);
+			info.level = player->getSkills()->getSkillLevel(info.skillid);
 			player->setSpecialSkill(info);
 			SkillsPacket::showSpecialSkill(player, info);
 		}
@@ -301,15 +301,15 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			packet->skipBytes(4); // Star ID added by Shadow Claw
 	}
 	else { // This will be moved to useAttackSkill when the moneyCon property is added
-			char shadow_level = player->skills->getSkillLevel(skillid);
+			char shadow_level = player->getSkills()->getSkillLevel(skillid);
 			short midpoint = 120 + (shadow_level * 15); // Midpoint is given in moneyCon property (doesn't exist yet)
 			short mesos_min = midpoint - (80 + shadow_level * 5);
 			short mesos_max = midpoint + (80 + shadow_level * 5);
 			short difference = mesos_max - mesos_min; // Randomize up to this, add minimum for range
 			short amount = Randomizer::Instance()->randInt(difference) + mesos_min;
-			int mesos = player->inv->getMesos();
+			int mesos = player->getInventory()->getMesos();
 			if (mesos - amount > -1) 
-				player->inv->setMesos(mesos - amount);
+				player->getInventory()->setMesos(mesos - amount);
 			else {
 				// Hacking
 				return;
@@ -346,7 +346,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	}
 	// packet->skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 	if (skillid == 4101005) { // Drain
-		int hpRecover = ((totaldmg * Skills::skills[4101005][player->skills->getSkillLevel(4101005)].x)/100);
+		int hpRecover = ((totaldmg * Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x)/100);
 		if (hpRecover > mhp)
 			hpRecover = mhp;
 		if (hpRecover > player->getMHP()/2)
@@ -376,7 +376,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	bool mpeated = false;
 	if (player->getJob()/100 == 2) {
 		mpeater = (player->getJob() / 10) * 100000;
-		mpeater_lv = player->skills->getSkillLevel(mpeater);
+		mpeater_lv = player->getSkills()->getSkillLevel(mpeater);
 		mpeater_success = Skills::skills[mpeater][mpeater_lv].prop;
 		mpeater_x = Skills::skills[mpeater][mpeater_lv].x;
 	}
