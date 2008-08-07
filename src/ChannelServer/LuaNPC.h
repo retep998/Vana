@@ -39,7 +39,6 @@ namespace LuaExports {
 
 	// The exports
 	int addText(lua_State *luaVm);
-	int addChar(lua_State *luaVm);
 
 	int sendSimple(lua_State *luaVm);
 	int sendYesNo(lua_State *luaVm);
