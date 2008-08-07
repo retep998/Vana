@@ -16,23 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Players.h"
-#include "PlayersPacket.h"
-#include "Player.h"
-#include "PlayerPacket.h"
+#include "ChannelServer.h"
+#include "Drops.h"
+#include "Inventory.h"
+#include "Levels.h"
+#include "MapPacket.h"
 #include "Maps.h"
 #include "Mobs.h"
-#include "Shops.h"
-#include "Inventory.h"
-#include "Drops.h"
-#include "Levels.h"
-#include "ChannelServer.h"
-#include "SkillsPacket.h"
-#include "MapPacket.h"
-#include "PacketCreator.h"
-#include "ReadPacket.h"
-#include "WorldServerConnectPlayerPacket.h"
-#include "StringUtilities.h"
 #include "MySQLM.h"
+#include "NPCs.h"
+#include "PacketCreator.h"
+#include "Player.h"
+#include "PlayerPacket.h"
+#include "PlayersPacket.h"
+#include "ReadPacket.h"
+#include "Shops.h"
+#include "SkillsPacket.h"
+#include "StringUtilities.h"
+#include "WorldServerConnectPlayerPacket.h"
 
 hash_map <int, Player*> Players::players;
 
@@ -165,6 +166,13 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				Maps::changeMap(player, mapid, 0);
 			else
 				PlayerPacket::showMessage(player, "Invalid map entered.", 5);
+		}
+		else if (strcmp(command, "npc") == 0) {
+			int npcid = atoi(next_token);
+			NPC *npc = new NPC(npcid, player);
+			if (!npc->run()) {
+				PlayerPacket::showMessage(player, "Invalid NPC entered.", 5);
+			}
 		}
 		else if (strcmp(command, "addsp") == 0) {
 			if (strlen(next_token) > 0) {

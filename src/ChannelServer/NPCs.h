@@ -57,7 +57,7 @@ public:
 	NPC(int npcid, Player *player, bool isquest = false, bool isstart = false);
 	~NPC();
 
-	void run();
+	bool run();
 
 	void addText(const string &text) {
 		this->text += text;
