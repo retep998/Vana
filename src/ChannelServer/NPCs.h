@@ -62,11 +62,6 @@ public:
 	void addText(const string &text) {
 		this->text += text;
 	}
-	void addChar(const char cha) {
-		std::ostringstream strStream;
-		strStream << cha;
-		addText(strStream.str());
-	}
 
 	PacketCreator & npcPacket(char type);
 	void sendSimple();

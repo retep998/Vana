@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, playerid) {
 	lua_register(luaVm, "addText", &LuaExports::addText);
-	lua_register(luaVm, "addChar", &LuaExports::addChar);
 	lua_register(luaVm, "sendSimple", &LuaExports::sendSimple);
 	lua_register(luaVm, "sendYesNo", &LuaExports::sendYesNo);
 	lua_register(luaVm, "sendNext", &LuaExports::sendNext);
@@ -65,11 +64,6 @@ NPC * LuaExports::getNPC(lua_State *luaVm) {
 
 int LuaExports::addText(lua_State *luaVm) {
 	getNPC(luaVm)->addText(lua_tostring(luaVm, -1));
-	return 1;
-}
-
-int LuaExports::addChar(lua_State *luaVm) {
-	getNPC(luaVm)->addChar((char) lua_tointeger(luaVm, -1));
 	return 1;
 }
 
