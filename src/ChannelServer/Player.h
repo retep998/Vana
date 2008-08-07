@@ -196,12 +196,6 @@ public:
 	void setSkill(SkillMapEnterActiveInfo skill) {
 		this->skill = skill;
 	}
-	void setCombo(int combo) { // Combo Attack
-		this->combo = combo;
-	}
-	int getCombo() { // Combo Attack
-		return combo;
-	}
 	void setSaveOnDC(bool save) {
 		save_on_dc = save;
 	}
@@ -300,7 +294,6 @@ private:
 	Pos pos;
 	NPC *npc;
 	vector <int> warnings;
-	int combo; // Combo Attack
 	bool save_on_dc;
 	hash_map<string, string> variables;
 	SkillMapEnterActiveInfo skill;

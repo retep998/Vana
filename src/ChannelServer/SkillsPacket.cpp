@@ -125,42 +125,6 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
 }
-// For Combo Attack
-void SkillsPacket::showCombo(Player *player, int time) { // Show combos to everyone on map 
-	PacketCreator packet;
-	packet.addShort(SEND_USE_SKILL);
-	packet.addInt64(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0x20);
-	packet.addByte(0);
-	packet.addShort(player->getCombo()+1);
-	packet.addInt(1111002); // Skill ID
-	packet.addInt(time);
-	packet.addShort(0);
-	packet.addShort(0);
-	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
-	packet.send(player);
-	packet = PacketCreator();
-	packet.addShort(SEND_SHOW_OTHERS_SKILL);
-	packet.addInt(player->getPlayerid());
-	packet.addInt64(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0);
-	packet.addByte(0x20);
-	packet.addByte(0);
-	packet.addShort(player->getCombo()+1);
-	packet.addShort(0);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
-}
 
 void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 	PacketCreator packet;

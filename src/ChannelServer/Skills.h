@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SKILLS_H
 
 #include <hash_map>
-#include "SkillsPacket.h"
 #include "Pos.h"
 
 #define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)
@@ -74,7 +73,7 @@ enum {
 };
 
 enum {
-	TYPE_5 = 1,
+	TYPE_5 = 0,
 	TYPE_6,
 	TYPE_7,
 	TYPE_8,
@@ -154,10 +153,10 @@ struct SkillsInfo {
 typedef hash_map <unsigned char, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
-	void init();
 	extern hash_map <int, SkillsLevelInfo> skills;
 	extern hash_map <int, unsigned char> maxlevels;
 	extern hash_map <int, SkillsInfo> skillsinfo;
+	void init();
 	void addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo levelinfo);
 	void addSkill(Player *player, ReadPacket *packet);
 	void cancelSkill(Player *player, ReadPacket *packet);
@@ -171,8 +170,6 @@ namespace Skills {
 	void endSkill(Player *player, int skillid);
 	void endBuff(Player *player, int skill);
 	void stopSkill(Player *player, int skillid);
-	void addCombo(Player *player); // Combo Attack 
-	void clearCombo(Player *player); // Combo Attack
 	void startCooldown(Player *player, int skillid, int cooltime);
 	void stopCooldown(Player *player, int skillid);
 	bool isCooling(Player *player, int skillid);

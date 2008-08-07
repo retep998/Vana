@@ -418,6 +418,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Timers"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\SkillTimer.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -657,6 +665,14 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerStorage.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Timers"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\SkillTimer.h"
 					>
 				</File>
 			</Filter>

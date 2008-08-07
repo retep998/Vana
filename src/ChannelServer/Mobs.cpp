@@ -180,7 +180,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		case 1111004:
 		case 1111005:
 		case 1111006:
-			Skills::clearCombo(player);
+			player->skills->setCombo(0, true);
 			break;
 		case 1111008: // Shout
 		case 9001001: // Super Dragon Roar
@@ -242,7 +242,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		}
 		default:
 			if (totaldmg > 0)
-				Skills::addCombo(player);
+				player->skills->addCombo();
 			break;
 	}
 }
