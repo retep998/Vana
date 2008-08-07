@@ -82,8 +82,8 @@ namespace Quests {
 	void addReward(int id, QuestRewardsInfo raws);
 	void setNextQuest(int id, int questid);
 	void getQuest(Player *player, ReadPacket *packet);
-	void giveItem(Player *player, int itemid, int amount);
-	void giveMesos(Player *player, int amount);
+	bool giveItem(Player *player, int itemid, int amount);
+	bool giveMesos(Player *player, int amount);
 };
 
 #endif

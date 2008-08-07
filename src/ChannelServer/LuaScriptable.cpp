@@ -149,13 +149,19 @@ int LuaExports::addSkillLevel(lua_State *luaVm) {
 int LuaExports::giveItem(lua_State *luaVm) {
 	int itemid = lua_tointeger(luaVm, -2);
 	int amount = lua_tointeger(luaVm, -1);
-	Quests::giveItem(getPlayer(luaVm), itemid, amount);
+	bool success = Quests::giveItem(getPlayer(luaVm), itemid, amount);
+
+	lua_pushnumber(luaVm, success);
+
 	return 1;
 }
 
 int LuaExports::giveMesos(lua_State *luaVm) {
 	int mesos = lua_tointeger(luaVm, -1);
-	Quests::giveMesos(getPlayer(luaVm), mesos);
+	bool success = Quests::giveMesos(getPlayer(luaVm), mesos);
+
+	lua_pushnumber(luaVm, success);
+
 	return 1;
 }
 
