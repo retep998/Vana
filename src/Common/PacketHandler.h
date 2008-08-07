@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class AbstractPlayerFactory;
 
-class PacketHandler : public Selector::SelectHandler {
+class PacketHandler : public Selector::Handler {
 public:
 	PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend = false, string ivUnknown = ""); // isSend = packet is initiated by the server or not
 	void handle (int socket);
