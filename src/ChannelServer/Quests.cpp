@@ -48,20 +48,31 @@ void Quests::setNextQuest(int id, int questid) {
 	quests[id] = quest;
 }
 
-void Quests::giveItem(Player *player, int itemid, int amount) {
+bool Quests::giveItem(Player *player, int itemid, int amount) {
 	//Temp
 	QuestsPacket::giveItem(player, itemid, amount);
-	if (amount>0)
+	if (amount > 0) {
 		Inventory::addNewItem(player, itemid, amount);
-	else	
+	}
+	else {
+		if (player->inv->getItemAmount(itemid) < amount) { // Player does not have (enough of) what is being taken
+			return false;
+		}
 		Inventory::takeItem(player, itemid, -amount);
+	}
+
+	return true;
 }
 
-void Quests::giveMesos(Player *player, int amount) {
+bool Quests::giveMesos(Player *player, int amount) {
+	if (amount < 0 && player->inv->getMesos() + amount < 0) { // Do a bit of checking if meso is being taken to see if it's enough
+		return false;
+	}
 	player->inv->setMesos(player->inv->getMesos()+amount);
 	QuestsPacket::giveMesos(player, amount);
-}
 
+	return true;
+}
 
 void Quests::getQuest(Player *player, ReadPacket *packet) {
 	char act = packet->getByte();
