@@ -28,8 +28,6 @@ hash_map <int, SkillsLevelInfo> Skills::skills;
 hash_map <int, unsigned char> Skills::maxlevels;
 hash_map <int, SkillsInfo> Skills::skillsinfo;
 
-#define BEGINNER_SKILL(x) (x<1003)
-
 void Skills::stopTimersPlayer(Player *player) {
 	SkillTimer::Instance()->stop(player, false);
 }
