@@ -17,6 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSkills.h"
 #include "Skills.h"
+#include "SkillTimer.h"
+#include "SkillsPacket.h"
+#include "Randomizer.h"
 
 void PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpacket) {
 	if (playerskills.find(skillid) != playerskills.end())
@@ -111,4 +114,31 @@ void PlayerSkills::setSkillMapInfo(int skillid, SkillActiveInfo skill) {
 
 void PlayerSkills::setActiveSkillLevel(int skillid, int level) {
 	activelevels[skillid] = level;
+}
+// Combo attack stuff
+void PlayerSkills::setCombo(char combo, bool sendPacket) {
+	this->combo = combo;
+	if (sendPacket) {
+		activeplayerskill[1111002].vals[0] = combo + 1;
+		SkillsPacket::useSkill(this->player, 1111002, SkillTimer::Instance()->skillTime(player, 1111002), activeplayerskill[1111002], activemapskill[1111002], 0);
+	}
+}
+
+void PlayerSkills::addCombo() { // Add combo orbs
+	if (getActiveSkillLevel(1111002) > 0) {
+		char advcombo = getSkillLevel(1120003);
+		char maxcombo = (char) (advcombo > 0 ? Skills::skills[1120003][advcombo].x : Skills::skills[1111002][getSkillLevel(1111002)].x);
+		if (this->combo == maxcombo)
+			return;
+
+		if (maxcombo > 5 && Randomizer::Instance()->randInt(99) < Skills::skills[1120003][advcombo].prop)
+			this->combo += 2; // 4th job skill gives chance to add second orb
+		else
+			this->combo += 1;
+
+		if (this->combo > maxcombo)
+			this->combo = maxcombo;
+
+		setCombo(combo, true);
+	}
 }

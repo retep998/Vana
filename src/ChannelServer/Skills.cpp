@@ -21,8 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Maps.h"
 #include "MapPacket.h"
-#include "Randomizer.h"
-#include "Timer.h"
+#include "SkillTimer.h"
 #include "ReadPacket.h"
 
 hash_map <int, SkillsLevelInfo> Skills::skills;
@@ -31,237 +30,12 @@ hash_map <int, SkillsInfo> Skills::skillsinfo;
 
 #define BEGINNER_SKILL(x) (x<1003)
 
-class SkillTimer : public Timer::TimerHandler {
-public:
-	static SkillTimer * Instance() {
-		if (singleton == 0)
-			singleton = new SkillTimer;
-		return singleton;
-	}
-	void setSkillTimer(Player *player, int skill, int time) {
-		STimer timer;
-		timer.id = Timer::Instance()->setTimer(time, this);
-		timer.player = player;
-		timer.skill = skill;
-		timer.time = time;
-		timers.push_back(timer);
-		act[timer.id] = false;
-	}
-	void setSkillTimer(Player *player, int skill, char *name, short value, int time) {
-		SActTimer timer;
-		timer.id = Timer::Instance()->setTimer(time, this);
-		timer.player = player;
-		timer.skill = skill;
-		strcpy_s(timer.act, 50, name);
-		timer.time = time;
-		timer.value = value;
-		acttimers.push_back(timer);
-		act[timer.id] = true;
-	}
-	void stop (Player *player, int skill) {
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (player == timers[i].player && timers[i].skill == skill) {
-				Timer::Instance()->cancelTimer(timers[i].id);
-				break;
-			}
-		}
-	}
-	void stop (Player *player, int skill, char *name) {
-		for (size_t i = 0; i < acttimers.size(); i++) {
-			if (player == acttimers[i].player && strcmp(acttimers[i].act, name) == 0 && skill == acttimers[i].skill) {
-				Timer::Instance()->cancelTimer(acttimers[i].id);
-				break;
-			}
-		}
-	}
-	void stop (Player *player) {
-		for (size_t i = timers.size(); i > 0; i--) {
-			if (player == timers[i-1].player) {
-				Timer::Instance()->cancelTimer(timers[i-1].id);
-			}
-		} 
-		for (size_t i = acttimers.size(); i > 0; i--) { 
-			if (player == acttimers[i-1].player) {
-				Timer::Instance()->cancelTimer(acttimers[i-1].id);
-			}
-		} 
-	}
-	void stopSkills (Player *player) {
-		for (size_t i = timers.size(); i > 0; i--) {
-			if (player == timers[i-1].player) {
-				Skills::endSkill(player, timers[i-1].skill);
-				Timer::Instance()->cancelTimer(timers[i-1].id);
-			}
-		} 
-		for (size_t i = acttimers.size(); i > 0; i--) { 
-			if (player == acttimers[i-1].player) {
-				Timer::Instance()->cancelTimer(acttimers[i-1].id);
-			}
-		}
-	}
-	int skillTime(Player *player, int skillid) { // Get skill time
-		int timeleft = 0;
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (player == timers[i].player && timers[i].skill == skillid) {
-				timeleft = Timer::Instance()->timeLeft(timers[i].id);
-			}
-		}
-		return timeleft;
-	}
-private:
-	static SkillTimer *singleton;
-	SkillTimer() {};
-	SkillTimer(const SkillTimer&);
-	SkillTimer& operator=(const SkillTimer&);
-	struct STimer {
-		int id;
-		Player *player;
-		int skill;
-		int time;
-	};
-	struct SActTimer {
-		int id;
-		Player *player;
-		int skill;
-		int time;
-		char act[50];
-		short value;
-	};
-	vector <STimer> timers;
-	vector <SActTimer> acttimers;
-	hash_map <int, bool> act;
-	void handle (Timer *timer, int id) {
-		int skill;
-		Player *player;
-		if (act[id]) {
-			char name[50];
-			short value;
-			for (size_t i = 0; i < acttimers.size(); i++) {
-				if (acttimers[i].id == id) {
-					player = acttimers[i].player;
-					skill = acttimers[i].skill;
-					strcpy_s(name, 50, acttimers[i].act);
-					value = acttimers[i].value;
-					break;
-				}
-			}
-			if (strcmp(name, "heal") == 0) Skills::heal(player, value, skill);
-			else if (strcmp(name, "hurt") == 0) Skills::hurt(player, value, skill);
-			// else if (...
-		}
-		else {
-			for (size_t i = 0; i < timers.size(); i++) {
-				if (timers[i].id == id) {
-					player = timers[i].player;
-					skill = timers[i].skill;
-					break;
-				}
-			}
-			Skills::endSkill(player, skill);
-		}
-	}
-	void remove (int id) {
-		if (act[id]) {
-			for (size_t i = 0; i < acttimers.size(); i++) {
-				if (acttimers[i].id == id) {	
-					acttimers.erase(acttimers.begin()+i);	
-					return;
-				}
-			}
-		}
-		else {
-			for (size_t i = 0; i < timers.size(); i++) {
-				if (timers[i].id == id) {	
-					timers.erase(timers.begin()+i);	
-					return;
-				}
-			}
-		}
-		act.erase(id);
-	}
-};
-SkillTimer * SkillTimer::singleton = 0;
-
-class CoolTimer : public Timer::TimerHandler {
-public:
-	static CoolTimer * Instance() {
-		if (singleton == 0)
-			singleton = new CoolTimer;
-		return singleton;
-	}
-	void setCoolTimer(Player *player, int skill, int time) {
-		CTimer timer;
-		timer.id = Timer::Instance()->setTimer(time, this);
-		timer.player = player;
-		timer.skill = (skill + 10000000);
-		timer.time = time;
-		timers.push_back(timer);
-	}
-	void stop (Player *player, int skill) {
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (player == timers[i].player && timers[i].skill == (skill + 10000000)) {
-				Timer::Instance()->cancelTimer(timers[i].id);
-				break;
-			}
-		}
-	}
-	void stop (Player *player) {
-		for (size_t i = timers.size(); i > 0; i--) {
-			if (player == timers[i-1].player) {
-				Timer::Instance()->cancelTimer(timers[i-1].id);
-			}
-		}
-	}
-	int coolTime(Player *player, int skillid) {
-		int timeleft = 0;
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (player == timers[i].player && timers[i].skill == (skillid + 10000000)) {
-				timeleft = Timer::Instance()->timeLeft(timers[i].id);
-			}
-		}
-		return timeleft;
-	}
-private:
-	static CoolTimer *singleton;
-	CoolTimer() {};
-	CoolTimer(const CoolTimer&);
-	CoolTimer& operator=(const CoolTimer&);
-	struct CTimer {
-		int id;
-		Player *player;
-		int skill;
-		int time;
-	};
-	vector <CTimer> timers;
-	void handle (Timer *timer, int id) {
-		int skill;
-		Player *player;
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (timers[i].id == id) {
-				player = timers[i].player;
-				skill = timers[i].skill;
-				break;
-			}
-		}
-		Skills::stopCooldown(player, (skill - 10000000));
-	}
-	void remove (int id) {
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (timers[i].id == id) {	
-				timers.erase(timers.begin()+i);	
-				return;
-			}
-		}
-	}
-};
-CoolTimer * CoolTimer::singleton = 0;
-
 void Skills::stopTimersPlayer(Player *player) {
-	SkillTimer::Instance()->stop(player);
+	SkillTimer::Instance()->stop(player, false);
 }
 
 void Skills::stopAllBuffs(Player *player) {
-	SkillTimer::Instance()->stopSkills(player);
+	SkillTimer::Instance()->stop(player, true);
 }
 
 void Skills::init() {
@@ -356,12 +130,6 @@ void Skills::init() {
 	player.value = SKILL_X;
 	skillsinfo[1101007].player.push_back(player);
 	skillsinfo[1201007].player.push_back(player);
-	map.type = 0x10;
-	map.byte = TYPE_2;
-	map.value = SKILL_X;
-	map.val = false;
-	skillsinfo[1101007].map.push_back(map);
-	skillsinfo[1201007].map.push_back(map);
 	// 1301006 - Iron Will
 	player.type = 0x2;
 	player.byte = TYPE_1;
@@ -734,8 +502,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		player->setMP(player->getMMP());
 	}
 	else if (skillid == 1121010) { // Enrage
-		if (player->getCombo() == 10)
-			Skills::clearCombo(player);
+		if (player->skills->getCombo() == 10)
+			player->skills->setCombo(0, true);
 		else
 			return;
 	}
@@ -757,7 +525,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	memset(playerskill.types, 0, 8*sizeof(unsigned char));
 	memset(mapskill.types, 0, 8*sizeof(unsigned char));
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
-		playerskill.types[skillsinfo[skillid].player[i].byte-1] += skillsinfo[skillid].player[i].type;
+		playerskill.types[skillsinfo[skillid].player[i].byte] += skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed change for maxed darksight
 			playerskill.types[0] = 0;
@@ -786,8 +554,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
 		}
 		else if (skillid == 1111002) { // For Combo Attack
-			player->setCombo(0);
-			value = player->getCombo()+1;
+			player->skills->setCombo(0, false);
+			value = 1;
 		}
 		else if (skillid == 1004) { // For Monster Rider
 			Item *equip = player->inv->getItem(1, -18);
@@ -812,7 +580,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		playerskill.vals.push_back(value);
 	}
 	for (size_t i = 0; i < skillsinfo[skillid].map.size(); i++) {
-		mapskill.types[skillsinfo[skillid].map[i].byte-1]+= skillsinfo[skillid].map[i].type;
+		mapskill.types[skillsinfo[skillid].map[i].byte]+= skillsinfo[skillid].map[i].type;
 		char val = skillsinfo[skillid].map[i].value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed update for maxed darksight
 			mapskill.types[0] = 0;
@@ -838,7 +606,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
 		}
 		else if (skillid == 1111002) { // For Combo Attack
-			value = player->getCombo()+1;
+			value = player->skills->getCombo() + 1;
 		}
 		mapskill.vals.push_back(value);
 		SkillMapActiveInfo map;
@@ -974,32 +742,6 @@ void Skills::hurt(Player *player, short value, int skillid) {
 	}
 	else
 		Skills::endBuff(player, skillid);
-}
-// Combo attack stuff
-void Skills::addCombo(Player *player) { // add combo orbs 
-	if (player->skills->getActiveSkillLevel(1111002) > 0) {
-		int maxcombo = 0;
-		int advcombo = player->skills->getSkillLevel(1120003);
-		if (advcombo > 0) maxcombo = Skills::skills[1120003][advcombo].x;
-		else maxcombo = Skills::skills[1111002][player->skills->getSkillLevel(1111002)].x;
-		if (player->getCombo() == maxcombo) {
-			return;
-		}
-		else {
-			if (advcombo > 0 && Randomizer::Instance()->randInt(99) < skills[1120003][advcombo].prop)
-				player->setCombo(player->getCombo()+2); // 4th job skill gives chance to add second orb
-			else
-				player->setCombo(player->getCombo()+1);
-		}
-		if (player->getCombo() > maxcombo)
-			player->setCombo(maxcombo);
-		SkillsPacket::showCombo(player, SkillTimer::Instance()->skillTime(player, 1111002));
-	}
-}
-
-void Skills::clearCombo(Player *player) { // finishing moves panic coma
-	player->setCombo(0);
-	SkillsPacket::showCombo(player, SkillTimer::Instance()->skillTime(player, 1111002));
 }
 
 void Skills::startCooldown(Player *player, int skillid, int cooltime) {
