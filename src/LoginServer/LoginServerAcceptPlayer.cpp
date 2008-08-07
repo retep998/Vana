@@ -37,5 +37,5 @@ void LoginServerAcceptPlayer::authenticated(char type) {
 	else if (type == INTER_CHANNEL_SERVER)
 		Worlds::connectChannelServer(this);
 	else
-		disconnect();
+		packetHandler->disconnect();
 }

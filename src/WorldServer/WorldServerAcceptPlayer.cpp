@@ -64,6 +64,6 @@ void WorldServerAcceptPlayer::authenticated(char type) {
 	else {
 		WorldServerAcceptPlayerPacket::connect(this, -1, 0);
 		std::cout << "Error: No more channel to assign." << std::endl;
-		disconnect();
+		packetHandler->disconnect();
 	}
 }

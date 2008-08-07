@@ -54,13 +54,13 @@ public:
 				authenticated(packet->getByte());
 			}
 			else {
-				disconnect();
+				packetHandler->disconnect();
 				return false;
 			}
 		}
 		else if (is_authenticated == false) {
 			// Trying to do something while unauthenticated? DC!
-			disconnect();
+			packetHandler->disconnect();
 			return false;
 		}
 		packet->reset();

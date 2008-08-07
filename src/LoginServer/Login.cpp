@@ -71,7 +71,7 @@ void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 	if (!valid) {
 		int threshold = LoginServer::Instance()->getInvalidLoginThreshold();
 		if (threshold != 0 && player->addInvalidLogin() >= threshold) {
-			player->disconnect(); // Too many invalid logins
+			player->getPacketHandler()->disconnect(); // Too many invalid logins
 		}
 	}
 	else {

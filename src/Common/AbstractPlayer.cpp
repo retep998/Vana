@@ -74,25 +74,17 @@ void AbstractPlayer::handleRequest(ReadPacket *packet) {
 	realHandleRequest(packet);
 }
 
-void AbstractPlayer::sendPacket(unsigned char *buf, int len) {
-	packetHandler->sendPacket(buf, len);
-}
-
 void AbstractPlayer::setTimer() {
 	timer = PingTimer::Instance()->set(this);
 }
 
 void AbstractPlayer::ping() {
 	if (is_pinged) { // We have a timeout now
-		disconnect();
+		packetHandler->disconnect();
 		return;
 	}
 	is_pinged = true;
 	PingPacket::ping(this);
-}
-
-void AbstractPlayer::disconnect() {
-	packetHandler->disconnect();
 }
 
 AbstractPlayer::~AbstractPlayer() {

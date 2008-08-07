@@ -502,7 +502,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			Maps::changeMusic(player->getMap(), next_token);
 		}
 		else if	(strcmp(command, "dc") == 0)	{
-			player->disconnect();
+			player->getPacketHandler()->disconnect();
 			return;
 		}
 		else if (strcmp(command, "shutdown") == 0) {

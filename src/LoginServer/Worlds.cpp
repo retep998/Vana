@@ -87,7 +87,7 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	}
 	else {
 		std::cout << "Error: No more worlds to assign." << std::endl;
-		player->disconnect();
+		player->getPacketHandler()->disconnect();
 	}
 	return worldid;
 }
@@ -111,6 +111,6 @@ char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	else {
 		std::cout << "Error: No more channels to assign." << std::endl;
 	}
-	player->disconnect();
+	player->getPacketHandler()->disconnect();
 	return worldid;
 }

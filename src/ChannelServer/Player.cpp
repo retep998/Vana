@@ -116,7 +116,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	int id = packet->getInt();
 	if (!Connectable::Instance()->checkPlayer(id)) {
 		//hacking
-		disconnect();
+		packetHandler->disconnect();
 		return;
 	}
 	this->id = id;
@@ -131,7 +131,7 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	if (res.empty()) {
 		//hacking
-		disconnect();
+		packetHandler->disconnect();
 		return;
 	}
 
@@ -461,7 +461,7 @@ bool Player::addWarning() {
 	warnings.push_back(t);
 	if (warnings.size() > 50) {
 		// Hacker - Temp DCing
-		disconnect();
+		packetHandler->disconnect();
 		return true;
 	}
 	return false;

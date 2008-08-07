@@ -30,15 +30,14 @@ class AbstractPlayer {
 public:
 	AbstractPlayer();
 
-	virtual void setPacketHandler(PacketHandler *ph) { packetHandler = ph; }
 	virtual void realHandleRequest(ReadPacket *packet) = 0;
 	void handleRequest(ReadPacket *packet);
-	void sendPacket(unsigned char *buf, int len);
 	void setTimer();
 	void ping();
-	void disconnect();
 
-	string getIP() { return ip; }
+	PacketHandler * getPacketHandler() const { return packetHandler; }
+	void setPacketHandler(PacketHandler * ph) { packetHandler = ph; }
+	string getIP() const { return ip; }
 	void setIP(const string &ip) { this->ip = ip; }
 
 	virtual ~AbstractPlayer();
