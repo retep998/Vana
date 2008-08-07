@@ -20,9 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define MAX_LEN 10000
 
-#include <vector>
-#include <string>
+#include "PacketHandler.h"
 #include <iostream>
+#include <string>
+#include <vector>
 
 using std::string;
 using std::vector;
@@ -117,7 +118,7 @@ template <class T>
 void PacketCreator::send(T *player) {
 	unsigned char tempbuf[MAX_LEN];
 	memcpy_s(tempbuf, MAX_LEN, packet, MAX_LEN); // Copying to tempbuf so the packet doesn't get emptied on send and can be sent to other players
-	player->sendPacket(tempbuf, pos);
+	player->getPacketHandler()->sendPacket(tempbuf, pos);
 }
 
 #endif
