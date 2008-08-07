@@ -26,7 +26,7 @@ using std::string;
 
 class AbstractPlayerFactory;
 
-class Acceptor : public Selector::SelectHandler {
+class Acceptor : public Selector::Handler {
 public:
 	Acceptor(short port, AbstractPlayerFactory *apf, string ivUnknown = "");
 	virtual void handle(int socket);

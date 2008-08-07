@@ -35,7 +35,7 @@ Selector::~Selector() {
 	terminate = true;
 }
 
-void Selector::registerSocket(int socket, bool selectRead, bool selectWrite, bool selectError, SelectHandler *handler) {
+void Selector::registerSocket(int socket, bool selectRead, bool selectWrite, bool selectError, Handler *handler) {
 	if (selectRead) {
 		FD_SET(socket, &readfds);
 	}
@@ -65,9 +65,9 @@ void Selector::selectThread() {
 		t_errorfds = errorfds;
 		int result = select(0, &t_readfds, &t_writefds, &t_errorfds, &timeout);
 		if (result == 0) continue;
-		for (hash_map<int, SelectHandler *>::iterator iter = handlers.begin(); iter != handlers.end(); iter++) {
+		for (hash_map<int, Handler *>::iterator iter = handlers.begin(); iter != handlers.end(); iter++) {
 			int socket = iter->first;
-			SelectHandler *handler = iter->second;
+			Handler *handler = iter->second;
 			if (FD_ISSET(socket, &t_errorfds)) {
 				handler->handle(socket);
 			}

@@ -36,10 +36,10 @@ public:
 		return singleton;
 	}
 
-	class SelectHandler {
+	class Handler {
 	public:
-		SelectHandler() : destroy (false) { }
-		virtual ~SelectHandler() { }
+		Handler() : destroy (false) { }
+		virtual ~Handler() { }
 		virtual void handle (int socket) = 0;
 		void setDestroy() { destroy = true; }
 		bool getDestroy() const { return destroy; }
@@ -49,7 +49,7 @@ public:
 
 	~Selector();
 
-	void registerSocket(int socket, bool selectRead, bool selectWrite, bool selectError, SelectHandler *handler);
+	void registerSocket(int socket, bool selectRead, bool selectWrite, bool selectError, Handler *handler);
 
 	void unregisterSocket(int socket);
 	void selectThread();
@@ -65,7 +65,7 @@ private:
 	fd_set writefds;
 	fd_set errorfds;
 	struct timeval timeout;
-	hash_map<int, SelectHandler *> handlers;
+	hash_map<int, Handler *> handlers;
 	scoped_ptr<boost::thread> selectorthread;
 };
 
