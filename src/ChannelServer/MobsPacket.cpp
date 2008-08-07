@@ -141,7 +141,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	char shadow_level = 0;
 	if (skillid == 4111004) {
 		shadow_meso = true;
-		shadow_level = player->skills->getSkillLevel(skillid);
+		shadow_level = player->getSkills()->getSkillLevel(skillid);
 	}
 	unsigned char display = pack->getByte(); // Projectile display
 	unsigned char animation = pack->getByte(); // Direction/animation
@@ -181,12 +181,12 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	int itemid = 0;
 	if (!shadow_meso) {
 		if (csstar > 0) {
-			itemid = player->inv->getItem(5, csstar)->id;
+			itemid = player->getInventory()->getItem(5, csstar)->id;
 			if (display == 0x40 || display == 0x48) // Skip itemid for Shadow Claw
 				pack->skipBytes(4);
 		}
-		else if (player->skills->getActiveSkillLevel(4121006)) { // Shadow Claw puts the item ID in the packet
-			itemid = player->inv->getItem(2, slot)->id;
+		else if (player->getSkills()->getActiveSkillLevel(4121006)) { // Shadow Claw puts the item ID in the packet
+			itemid = player->getInventory()->getItem(2, slot)->id;
 		}
 		else
 			itemid = pack->getInt();

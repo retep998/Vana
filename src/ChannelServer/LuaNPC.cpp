@@ -151,7 +151,7 @@ int LuaExports::getText(lua_State *luaVm) {
 
 int LuaExports::getMaxSkillLevel(lua_State *luaVm) {
 	int skillid = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->skills->getMaxSkillLevel(skillid));
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getMaxSkillLevel(skillid));
 	return 1;
 }
 
@@ -163,19 +163,19 @@ int LuaExports::setState(lua_State *luaVm) {
 int LuaExports::setMaxSkillLevel(lua_State *luaVm) {
 	int skillid = lua_tointeger(luaVm, -2);
 	int level = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->skills->setMaxSkillLevel(skillid, level);
+	getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillid, level);
 	return 1;
 }
 
 int LuaExports::addQuest(lua_State *luaVm) {
 	int questid = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->quests->addQuest(questid, getNPC(luaVm)->getNpcID());
+	getPlayer(luaVm)->getQuests()->addQuest(questid, getNPC(luaVm)->getNpcID());
 	return 1;
 }
 
 int LuaExports::endQuest(lua_State *luaVm) {
 	int questid = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->quests->finishQuest(questid, getNPC(luaVm)->getNpcID());
+	getPlayer(luaVm)->getQuests()->finishQuest(questid, getNPC(luaVm)->getNpcID());
 	return 1;
 }
 

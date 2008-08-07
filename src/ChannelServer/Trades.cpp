@@ -219,16 +219,16 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			if (player->getPlayerid() == two->getPlayerid())
 				user = 0x01;
 			if (isreceiver) {
-				item = two->inv->getItem(inventory, slot);
+				item = two->getInventory()->getItem(inventory, slot);
 				use = new Item(item);
 				if (amount == item->amount || inventory == 1) {
-					two->inv->setItem(inventory, slot, 0);
+					two->getInventory()->setItem(inventory, slot, 0);
 					InventoryPacket::moveItem(player, inventory, slot, 0);
-					two->inv->deleteItem(inventory, slot);
+					two->getInventory()->deleteItem(inventory, slot);
 				}
 				else {
 					item->amount -= amount;
-					two->inv->changeItemAmount(item->id, item->amount);
+					two->getInventory()->changeItemAmount(item->id, item->amount);
 					InventoryPacket::updateItemAmounts(player, inventory, slot, item->amount, 0, 0);
 					use->amount = amount;
 				}
@@ -239,16 +239,16 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				TradesPacket::sendAddItem(two, 0x00, addslot, inventory, use);
 			}
 			else {
-				item = one->inv->getItem(inventory, slot);
+				item = one->getInventory()->getItem(inventory, slot);
 				use = new Item(item);
 				if (amount == item->amount || inventory == 1) {
-					one->inv->setItem(inventory, slot, 0);
+					one->getInventory()->setItem(inventory, slot, 0);
 					InventoryPacket::moveItem(player, inventory, slot, 0);
-					one->inv->deleteItem(inventory, slot);
+					one->getInventory()->deleteItem(inventory, slot);
 				}
 				else {
 					item->amount -= amount;
-					one->inv->changeItemAmount(item->id, item->amount);
+					one->getInventory()->changeItemAmount(item->id, item->amount);
 					InventoryPacket::updateItemAmounts(player, inventory, slot, item->amount, 0, 0);
 					use->amount = amount;
 				}
@@ -276,7 +276,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				mesos = trade->getReceiver()->mesos;
 				mesos += amount;
 				trade->getReceiver()->mesos = mesos;
-				two->inv->setMesos(two->inv->getMesos() - amount);
+				two->getInventory()->setMesos(two->getInventory()->getMesos() - amount);
 				InventoryPacket::blankUpdate(two); // TODO: Remove when we have a better client
 				TradesPacket::sendAddMesos(one, 0x01, mesos);
 				TradesPacket::sendAddMesos(two, 0x00, mesos);
@@ -284,7 +284,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			else {
 				mesos += amount;
 				trade->getStarter()->mesos = mesos;
-				one->inv->setMesos(one->inv->getMesos() - amount);
+				one->getInventory()->setMesos(one->getInventory()->getMesos() - amount);
 				InventoryPacket::blankUpdate(one); // TODO: Remove when we have a better client
 				TradesPacket::sendAddMesos(one, 0x00, mesos);
 				TradesPacket::sendAddMesos(two, 0x01, mesos);
@@ -317,8 +317,8 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			if (finish) { // Do trade processing
 				TradeInfo *send = trade->getStarter();
 				TradeInfo *recv = trade->getReceiver();
-				int sendermesos = one->inv->getMesos();
-				int receivermesos = two->inv->getMesos();
+				int sendermesos = one->getInventory()->getMesos();
+				int receivermesos = two->getInventory()->getMesos();
 				bool fail = false;
 				unsigned int comparison = send->mesos + receivermesos;
 				if (comparison > 2147483647)
@@ -351,14 +351,14 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 						float taxrate = Trades::getTaxLevel(added);
 						if (added > 49999)
 							added = (int)(added / (1.0 + (taxrate / 100.0)));
-						two->inv->setMesos(receivermesos + added);
+						two->getInventory()->setMesos(receivermesos + added);
 					}
 					if (recv->mesos > 0) {
 						int added = recv->mesos;
 						float taxrate = Trades::getTaxLevel(added);
 						if (added > 49999)
 							added = (int)(added / (1.0 + (taxrate / 100.0)));
-						one->inv->setMesos(sendermesos + added);					
+						one->getInventory()->setMesos(sendermesos + added);					
 					}
 					if (send->count > 0) {
 						for (char i = 0; i < 9; i++) {
@@ -468,8 +468,8 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 	for (char i = 0; i < 4; i++) {
 		if (amounts[i] > 0) {
 			char incrementor = 0;
-			for (char g = 0; g < player->inv->getMaxSlots(i + 1); i++) { 
-				if (player->inv->getItem(i + 1, g) == 0)
+			for (char g = 0; g < player->getInventory()->getMaxSlots(i + 1); i++) { 
+				if (player->getInventory()->getItem(i + 1, g) == 0)
 					incrementor++;
 				if (incrementor >= amounts[i])
 					break;
@@ -497,7 +497,7 @@ void Trades::returnItems(Player *player, TradeInfo *info) {
 
 void Trades::returnMesos(Player *player, TradeInfo *info) {
 	if (info->mesos > 0)
-		player->inv->setMesos(player->inv->getMesos() + info->mesos);
+		player->getInventory()->setMesos(player->getInventory()->getMesos() + info->mesos);
 }
 
 void Trades::timeout(Player *starter, Player *receiver, int tradeid) {

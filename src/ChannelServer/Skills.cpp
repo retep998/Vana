@@ -415,7 +415,7 @@ void Skills::addSkill(Player *player, ReadPacket *packet) {
 	}
 	if (!BEGINNER_SKILL(skillid))
 		player->setSp(player->getSp()-1);
-	player->skills->addSkillLevel(skillid, 1);
+	player->getSkills()->addSkillLevel(skillid, 1);
 }
 void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 	stopSkill(player, packet->getInt());
@@ -465,8 +465,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	if (cooltime > 0)
 		Skills::startCooldown(player, skillid, cooltime);
 	if (skills[skillid][level].mp > 0) {
-		if (player->skills->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
-			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
+		if (player->getSkills()->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
+			int mprate = Skills::skills[3121008][player->getSkills()->getActiveSkillLevel(3121008)].x;
 			int mploss = (skills[skillid][level].mp * mprate) / 100;
 			player->setMP(player->getMP() - mploss, 1);
 		}
@@ -500,8 +500,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		player->setMP(player->getMMP());
 	}
 	else if (skillid == 1121010) { // Enrage
-		if (player->skills->getCombo() == 10)
-			player->skills->setCombo(0, true);
+		if (player->getSkills()->getCombo() == 10)
+			player->getSkills()->setCombo(0, true);
 		else
 			return;
 	}
@@ -552,11 +552,11 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
 		}
 		else if (skillid == 1111002) { // For Combo Attack
-			player->skills->setCombo(0, false);
+			player->getSkills()->setCombo(0, false);
 			value = 1;
 		}
 		else if (skillid == 1004) { // For Monster Rider
-			Item *equip = player->inv->getItem(1, -18);
+			Item *equip = player->getInventory()->getItem(1, -18);
 			if (equip == 0)
 				// hacking
 				return;
@@ -564,8 +564,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = Inventory::equips[mountid].tamingmob;
 		}
 		else if (skillid == 4121006) { // For Shadow Claw
-			for (short s = 1; s <= player->inv->getMaxSlots(2); s++) {
-				Item *item = player->inv->getItem(2, s);
+			for (short s = 1; s <= player->getInventory()->getMaxSlots(2); s++) {
+				Item *item = player->getInventory()->getItem(2, s);
 				if (item == 0)
 					continue;
 				if (ISRECHARGEABLE(item->id) && item->amount >= 200) {
@@ -604,7 +604,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
 		}
 		else if (skillid == 1111002) { // For Combo Attack
-			value = player->skills->getCombo() + 1;
+			value = player->getSkills()->getCombo() + 1;
 		}
 		mapskill.vals.push_back(value);
 		SkillMapActiveInfo map;
@@ -622,9 +622,9 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		mapenterskill.push_back(map);
 	}
 	SkillsPacket::useSkill(player, skillid, skills[skillid][level].time*1000, playerskill, mapskill, addedinfo);
-	player->skills->setSkillPlayerInfo(skillid, playerskill);
-	player->skills->setSkillMapInfo(skillid, mapskill);
-	player->skills->setSkillMapEnterInfo(skillid, mapenterskill);
+	player->getSkills()->setSkillPlayerInfo(skillid, playerskill);
+	player->getSkills()->setSkillMapInfo(skillid, mapskill);
+	player->getSkills()->setSkillMapEnterInfo(skillid, mapenterskill);
 	SkillTimer::Instance()->stop(player, skillid);
 	if (skillsinfo[skillid].bact.size() > 0) {
 		SkillTimer::Instance()->stop(player, skillid, skillsinfo[skillid].act.name);
@@ -647,39 +647,39 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		}
 		SkillTimer::Instance()->setSkillTimer(player, skillid, skillsinfo[skillid].act.name, value, skillsinfo[skillid].act.time);
 	}
-	player->setSkill(player->skills->getSkillMapEnterInfo());
+	player->setSkill(player->getSkills()->getSkillMapEnterInfo());
 	SkillTimer::Instance()->setSkillTimer(player, skillid, skills[skillid][level].time*1000);
-	player->skills->setActiveSkillLevel(skillid, level);
+	player->getSkills()->setActiveSkillLevel(skillid, level);
 	if (skillid == 9101004) // GM Hide
 		MapPacket::removePlayer(player);
 }
 void Skills::useAttackSkill(Player *player, int skillid) {
 	if (skills.find(skillid) == skills.end())
 		return;
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].mp > 0) {
-		if (player->skills->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
-			int mprate = Skills::skills[3121008][player->skills->getActiveSkillLevel(3121008)].x;
-			int mploss = (skills[skillid][player->skills->getSkillLevel(skillid)].mp * mprate) / 100;
+	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp > 0) {
+		if (player->getSkills()->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
+			int mprate = Skills::skills[3121008][player->getSkills()->getActiveSkillLevel(3121008)].x;
+			int mploss = (skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp * mprate) / 100;
 			player->setMP(player->getMP() - mploss, 1);
 		}
 		else {
 			int sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
-			char slv = player->skills->getSkillLevel(sid);
+			char slv = player->getSkills()->getSkillLevel(sid);
 			if (slv > 0)
-				player->setMP(player->getMP() - (skills[skillid][player->skills->getSkillLevel(skillid)].mp * skills[sid][slv].x / 100), 1);
+				player->setMP(player->getMP() - (skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp * skills[sid][slv].x / 100), 1);
 			else
-				player->setMP(player->getMP() - skills[skillid][player->skills->getSkillLevel(skillid)].mp, 1);
+				player->setMP(player->getMP() - skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp, 1);
 		}
 	}
 	else
 		player->setMP(player->getMP(), 1);
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].hp > 0) {
-		player->setHP(player->getHP()-skills[skillid][player->skills->getSkillLevel(skillid)].hp);
+	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].hp > 0) {
+		player->setHP(player->getHP()-skills[skillid][player->getSkills()->getSkillLevel(skillid)].hp);
 	}
-	if (skills[skillid][player->skills->getSkillLevel(skillid)].item > 0) {	
-		Inventory::takeItem(player, skills[skillid][player->skills->getSkillLevel(skillid)].item, skills[skillid][player->skills->getSkillLevel(skillid)].itemcount);
+	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].item > 0) {	
+		Inventory::takeItem(player, skills[skillid][player->getSkills()->getSkillLevel(skillid)].item, skills[skillid][player->getSkills()->getSkillLevel(skillid)].itemcount);
 	}
-	int cooltime = Skills::skills[skillid][player->skills->getSkillLevel(skillid)].cooltime;
+	int cooltime = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].cooltime;
 	if (cooltime > 0)
 		Skills::startCooldown(player, skillid, cooltime);
 }
@@ -698,9 +698,9 @@ void Skills::endSkill(Player *player, int skill) {
 	}
 	if (skill == 9101004) // GM Hide
 		MapPacket::showPlayer(player);
-	SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill), player->skills->getSkillMapInfo(skill));
-	player->skills->deleteSkillMapEnterInfo(skill);
-	player->skills->setActiveSkillLevel(skill, 0);
+	SkillsPacket::endSkill(player, player->getSkills()->getSkillPlayerInfo(skill), player->getSkills()->getSkillMapInfo(skill));
+	player->getSkills()->deleteSkillMapEnterInfo(skill);
+	player->getSkills()->setActiveSkillLevel(skill, 0);
 }
 
 void Skills::endBuff(Player *player, int skill) {
@@ -715,9 +715,9 @@ void Skills::endBuff(Player *player, int skill) {
 	///
 	if (skill == 9101004) // GM Hide
 		MapPacket::showPlayer(player);
-	SkillsPacket::endSkill(player, player->skills->getSkillPlayerInfo(skill), player->skills->getSkillMapInfo(skill));
-	player->skills->deleteSkillMapEnterInfo(skill);
-	player->skills->setActiveSkillLevel(skill, 0);
+	SkillsPacket::endSkill(player, player->getSkills()->getSkillPlayerInfo(skill), player->getSkills()->getSkillMapInfo(skill));
+	player->getSkills()->deleteSkillMapEnterInfo(skill);
+	player->getSkills()->setActiveSkillLevel(skill, 0);
 }
 
 void Skills::heal(Player *player, short value, int skillid) {

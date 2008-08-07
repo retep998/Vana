@@ -235,6 +235,11 @@ public:
 	int getTradeRecvID() {
 		return traderecvid;
 	}
+	BuddyList * getBuddyList() const { return buddyList.get(); }
+	PlayerInventory * getInventory() const { return inv.get(); }
+	PlayerQuests * getQuests() const { return quests.get(); }
+	PlayerSkills * getSkills() const { return skills.get(); }
+	PlayerStorage * getStorage() const { return storage.get(); }
 	bool addWarning();
 	void changeChannel(char channel);
 	void saveSkills();
@@ -245,11 +250,6 @@ public:
 	void save();
 	void setOnline(bool online);
 	void acceptDeath(int mapid);
-	boost::scoped_ptr<PlayerInventory> inv;
-	boost::scoped_ptr<PlayerStorage> storage;
-	boost::scoped_ptr<PlayerSkills> skills;
-	boost::scoped_ptr<PlayerQuests> quests;
-	boost::scoped_ptr<BuddyList> buddyList;
 private:
 	void playerConnect(ReadPacket *packet);
 	void changeKey(ReadPacket *packet);
@@ -298,6 +298,12 @@ private:
 	hash_map<string, string> variables;
 	SkillMapEnterActiveInfo skill;
 	SpecialSkillInfo info; // Hurricane/Pierce
+
+	boost::scoped_ptr<BuddyList> buddyList;
+	boost::scoped_ptr<PlayerInventory> inv;
+	boost::scoped_ptr<PlayerQuests> quests;
+	boost::scoped_ptr<PlayerSkills> skills;
+	boost::scoped_ptr<PlayerStorage> storage;
 };
 
 class PlayerFactory : public AbstractPlayerFactory {

@@ -68,13 +68,13 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addInt(player->getMap());
 	packet.addByte(player->getMappos());
 	packet.addByte(0x14);
-	packet.addInt(player->inv->getMesos());
-	packet.addByte(player->inv->getMaxSlots(1));
-	packet.addByte(player->inv->getMaxSlots(2));
-	packet.addByte(player->inv->getMaxSlots(3));
-	packet.addByte(player->inv->getMaxSlots(4));
-	packet.addByte(player->inv->getMaxSlots(5));
-	iteminventory *items = player->inv->getItems(1);
+	packet.addInt(player->getInventory()->getMesos());
+	packet.addByte(player->getInventory()->getMaxSlots(1));
+	packet.addByte(player->getInventory()->getMaxSlots(2));
+	packet.addByte(player->getInventory()->getMaxSlots(3));
+	packet.addByte(player->getInventory()->getMaxSlots(4));
+	packet.addByte(player->getInventory()->getMaxSlots(5));
+	iteminventory *items = player->getInventory()->getItems(1);
 	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
 		if (iter->first < 0 && iter->first > -100) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
@@ -94,8 +94,8 @@ void PlayerPacket::connectData(Player *player) {
 	}
 	packet.addByte(0);
 	for (char i = 2; i <= 5; i++) {
-		for (short s = 1; s <= player->inv->getMaxSlots(i); s++) {
-			Item *item = player->inv->getItem(i, s);
+		for (short s = 1; s <= player->getInventory()->getMaxSlots(i); s++) {
+			Item *item = player->getInventory()->getItem(i, s);
 			if (item == 0)
 				continue;
 			PlayerPacketHelper::addItemInfo(packet, s, item);
@@ -103,13 +103,13 @@ void PlayerPacket::connectData(Player *player) {
 		packet.addByte(0);
 	}
 	//Skills
-	hash_map<int, unsigned char> *playerskills = player->skills->getSkills();
+	hash_map<int, unsigned char> *playerskills = player->getSkills()->getSkills();
 	packet.addShort((short) playerskills->size());
 	for (hash_map<int, unsigned char>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
 		packet.addInt(iter->first);
 		packet.addInt(iter->second);
 		if (FORTHJOB_SKILL(iter->first))
-			packet.addInt(player->skills->getMaxSkillLevel(iter->first)); // Max Level for 4th job skills
+			packet.addInt(player->getSkills()->getMaxSkillLevel(iter->first)); // Max Level for 4th job skills
 	}
 	//End
 	packet.addInt(0);

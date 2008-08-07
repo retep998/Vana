@@ -77,7 +77,7 @@ void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player)
 	packet.addInt(player->getEyes());
 	packet.addByte(1);
 	packet.addInt(player->getHair());
-	player->inv->addEquippedPacket(packet);
+	player->getInventory()->addEquippedPacket(packet);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);

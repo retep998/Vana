@@ -27,15 +27,15 @@ void StoragePacket::showStorage(Player *player, int npcid) {
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x15); // Type of storage action
 	packet.addInt(npcid);
-	packet.addByte(player->storage->getSlots());
+	packet.addByte(player->getStorage()->getSlots());
 	packet.addShort(0x7e);
 	packet.addShort(0);
 	packet.addInt(0);
-	packet.addInt(player->storage->getMesos());
+	packet.addInt(player->getStorage()->getMesos());
 	packet.addShort(0);
-	packet.addByte(player->storage->getNumItems());
-	for (char i = 0; i < player->storage->getNumItems(); i++) {
-		PlayerPacketHelper::addItemInfo(packet, 0, player->storage->getItem(i));
+	packet.addByte(player->getStorage()->getNumItems());
+	for (char i = 0; i < player->getStorage()->getNumItems(); i++) {
+		PlayerPacketHelper::addItemInfo(packet, 0, player->getStorage()->getItem(i));
 	}
 	packet.addShort(0);
 	packet.addByte(0);
@@ -46,7 +46,7 @@ void StoragePacket::addItem(Player *player, char inv) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x0c);
-	packet.addByte(player->storage->getSlots());
+	packet.addByte(player->getStorage()->getSlots());
 	char type = 0;
 	if (inv == 1) // Gotta work some magic on type, which starts as inventory
 		type = 0x04;
@@ -58,9 +58,9 @@ void StoragePacket::addItem(Player *player, char inv) {
 		type = 0x20;
 	packet.addInt(type);
 	packet.addInt(0);
-	packet.addByte(player->storage->getNumItems(inv));
-	for (char i = 0; i < player->storage->getNumItems(); i++) {
-		Item *item = player->storage->getItem(i);
+	packet.addByte(player->getStorage()->getNumItems(inv));
+	for (char i = 0; i < player->getStorage()->getNumItems(); i++) {
+		Item *item = player->getStorage()->getItem(i);
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
@@ -70,12 +70,12 @@ void StoragePacket::takeItem(Player *player, char inv, char slot, char type) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x09);
-	packet.addByte(player->storage->getSlots());
+	packet.addByte(player->getStorage()->getSlots());
 	packet.addInt(type);
 	packet.addInt(0);
-	packet.addByte(player->storage->getNumItems(inv));
-	for (char i = 0; i < player->storage->getNumItems(); i++) {
-		Item *item = player->storage->getItem(i);
+	packet.addByte(player->getStorage()->getNumItems(inv));
+	for (char i = 0; i < player->getStorage()->getNumItems(); i++) {
+		Item *item = player->getStorage()->getItem(i);
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
@@ -85,7 +85,7 @@ void StoragePacket::changeMesos(Player *player, int mesos) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x12);
-	packet.addByte(player->storage->getSlots());
+	packet.addByte(player->getStorage()->getSlots());
 	packet.addShort(2);
 	packet.addShort(0);
 	packet.addInt(0);
