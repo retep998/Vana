@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 hash_map <int, MobInfo> Mobs::mobinfo;
 
 /* Mob class */
-Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, int fh) : mapid(mapid), id(id), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
+Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, short fh) : mapid(mapid), id(id), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {
 	this->hp = Mobs::mobinfo[mobid].hp;
 	this->mp = Mobs::mobinfo[mobid].mp;
 	Maps::maps[mapid]->addMob(this);
@@ -44,7 +44,7 @@ void Mob::setControl(Player *control) {
 		MobsPacket::endControlMob(this->control, this);
 	this->control = control;
 	if (control != 0)
-		MobsPacket::controlMob(control, this);
+		MobsPacket::spawnMob(control, this, true, false);
 }
 
 void Mob::die(Player *player) {
@@ -55,9 +55,9 @@ void Mob::die(Player *player) {
 	if (player->skills->getActiveSkillLevel(2311003) > 0)
 		hsrate = Skills::skills[2311003][player->skills->getActiveSkillLevel(2311003)].x;
 	else if (player->skills->getActiveSkillLevel(9101002) > 0)
-		hsrate = Skills::skills[5101002][player->skills->getActiveSkillLevel(9101002)].x;
+		hsrate = Skills::skills[9101002][player->skills->getActiveSkillLevel(9101002)].x;
 
-	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp*hsrate)/100)) * ChannelServer::Instance()->getExprate());
+	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp * hsrate)/100)) * ChannelServer::Instance()->getExprate());
 	Drops::dropMob(player, this);
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
@@ -75,7 +75,7 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 
 	Mob *mob = Maps::maps[player->getMap()]->getMob(mobid);
 
-	if (mob == 0 || mob->getControl() != player) {
+	if (mob == 0) {
 		return;
 	}
 

@@ -200,7 +200,7 @@ public:
 	void showObjects(Player *player);
 	// Packet Stuff
 	void sendPacket(PacketCreator &packet, Player *player = 0);
-	void showMessage(string message, char type);
+	void showMessage(string &message, char type);
 private:
 	MapInfo info;
 	FootholdsInfo footholds;
@@ -218,7 +218,7 @@ private:
 	scoped_ptr<LoopingId> objectids;
 
 	void updateMobControl();
-	void updateMobControl(Mob *mob);
+	void updateMobControl(Mob *mob, bool spawn = false);
 };
 
 #endif
