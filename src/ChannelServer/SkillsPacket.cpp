@@ -82,7 +82,7 @@ void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveIn
 		for (size_t i = 0; i < mskill.vals.size(); i++) {
 			packet.addShort(mskill.vals[i]);
 		}
-		packet.addByte(0);
+		packet.addShort(0);
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
 }
@@ -142,7 +142,8 @@ void SkillsPacket::showCombo(Player *player, int time) { // Show combos to every
 	packet.addInt(1111002); // Skill ID
 	packet.addInt(time);
 	packet.addShort(0);
-	packet.addByte(0);
+	packet.addShort(0);
+	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
 	packet.send(player);
 	packet = PacketCreator();
 	packet.addShort(SEND_SHOW_OTHERS_SKILL);
@@ -157,7 +158,7 @@ void SkillsPacket::showCombo(Player *player, int time) { // Show combos to every
 	packet.addByte(0x20);
 	packet.addByte(0);
 	packet.addShort(player->getCombo()+1);
-	packet.addByte(0);
+	packet.addShort(0);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
