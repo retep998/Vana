@@ -27,79 +27,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Mobs.h"
 #include "Randomizer.h"
-#include "Timer.h"
+#include "ItemTimer.h"
 #include "ReadPacket.h"
 #include <cmath>
 
-class ItemTimer: public Timer::TimerHandler {
-public:
-	static ItemTimer * Instance() {
-		if (singleton == 0)
-			singleton = new ItemTimer;
-		return singleton;
-	}
-	void setItemTimer(Player *player, int item, int time) {
-		ITimer timer;
-		timer.id = Timer::Instance()->setTimer(time, this);
-		timer.player = player;
-		timer.item = item;
-		timer.time = time;
-		timers.push_back(timer);
-	}
-	void stop(Player *player, int item) {
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (player == timers[i].player && timers[i].item == item) {
-				Timer::Instance()->cancelTimer(timers[i].id);
-				break;
-			}
-		}
-	}
-	void stop(Player *player) {
-		for (size_t i = timers.size(); i > 0; i--) { // fix missing timer cancels
-			if (player == timers[i-1].player) {
-				Timer::Instance()->cancelTimer(timers[i-1].id);
-			}
-		}
-	}
-private:
-	static ItemTimer *singleton;
-	ItemTimer() {};
-	ItemTimer(const ItemTimer&);
-	ItemTimer& operator=(const ItemTimer&);
-
-	struct ITimer {
-		int id;
-		Player *player;
-		int item;
-		int time;
-	};
-	static vector <ITimer> timers;
-	void handle(Timer *timer, int id) {
-		int item;
-		Player *player;
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (timers[i].id == id) {
-				player = timers[i].player;
-				item = timers[i].item;
-				break;
-			}
-		}
-		Inventory::endItem(player, item);
-	}
-	void remove (int id) {
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (timers[i].id == id) {	
-				timers.erase(timers.begin()+i);
-				return;
-			}
-		}
-	}
-};
-
-vector <ItemTimer::ITimer> ItemTimer::timers;
-ItemTimer * ItemTimer::singleton = 0;
-
-/* Inventory Namespace */
 hash_map <int, EquipInfo> Inventory::equips;
 hash_map <int, ItemInfo> Inventory::items;
 

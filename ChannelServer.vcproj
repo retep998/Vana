@@ -422,6 +422,10 @@
 				Name="Timers"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\ItemTimer.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\SkillTimer.cpp"
 					>
 				</File>
@@ -671,6 +675,10 @@
 			<Filter
 				Name="Timers"
 				>
+				<File
+					RelativePath=".\src\ChannelServer\ItemTimer.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\ChannelServer\SkillTimer.h"
 					>
