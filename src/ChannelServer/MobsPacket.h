@@ -24,10 +24,8 @@ class Mob;
 struct MobHPInfo;
 
 namespace MobsPacket {
-	void controlMob(Player *player, Mob *mob);
+	void spawnMob(Player *player, Mob *mob, bool requestControl, bool spawn = false, bool show = false);
 	void endControlMob(Player *player, Mob *mob);
-	void spawnMob(Mob *mob);
-	void showMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp);
 	void moveMob(Player *player, int mobid, bool useskill, int skill, unsigned char *buf, int len);
 	void showHP(Player *player, int mobid, char per);

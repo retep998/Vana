@@ -82,7 +82,7 @@ void Map::checkReactorSpawn(clock_t time) {
 // Footholds
 Pos Map::findFloor(Pos pos) {
 	// Determines where a drop falls using the footholds data
-	// to check the platforms and finds the correct one.
+	// to check the platforms and find the correct one.
 	short x = pos.x;
 	short y = pos.y - 100;
 	short maxy = pos.y;
@@ -125,8 +125,8 @@ void Map::addMob(Mob *mob) {
 	int id = this->objectids->next();
 	mob->setID(id);
 	this->mobs[id] = mob;
-	MobsPacket::spawnMob(mob);
-	updateMobControl(mob);
+	MobsPacket::spawnMob(0, mob, false, true);
+	updateMobControl(mob, true);
 }
 
 void Map::updateMobControl() {
@@ -136,7 +136,7 @@ void Map::updateMobControl() {
 	}
 }
 
-void Map::updateMobControl(Mob *mob) {
+void Map::updateMobControl(Mob *mob, bool spawn) {
 	if (players.size() > 0 && mob->getControl() == 0) {
 		int maxpos = mob->getPos() - players[0]->getPos();
 		int player = 0;
@@ -225,11 +225,11 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 			ReactorPacket::showReactor(player, reactors[i]);
 	}
 	// Mobs
-	updateMobControl();
 	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
-			MobsPacket::showMob(player, iter->second);
+			MobsPacket::spawnMob(player, iter->second, false, false, true);
 	}
+	updateMobControl();
 	// Drops
 	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0)
@@ -252,7 +252,7 @@ void Map::sendPacket(PacketCreator &packet, Player *player) {
 	}
 }
 
-void Map::showMessage(string message, char type) {
+void Map::showMessage(string &message, char type) {
 	for (size_t i = 0; i < players.size(); i++)
 		PlayerPacket::showMessage(players[i], message, type);
 }

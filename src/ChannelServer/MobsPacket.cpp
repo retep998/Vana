@@ -23,24 +23,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "Maps.h"
 
-void MobsPacket::controlMob(Player *player, Mob *mob) {
+void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool spawn, bool show) {
 	PacketCreator packet;
-	packet.addShort(SEND_CONTROL_MOB);
-	packet.addByte(1);
+	if (requestControl) {
+		packet.addShort(SEND_CONTROL_MOB);
+		packet.addByte(1); // TODO: Aggro variable
+	}
+	else
+		packet.addShort(SEND_SHOW_MOB);
+
 	packet.addInt(mob->getID());
-	packet.addByte(1);
+	packet.addByte(5);
 	packet.addInt(mob->getMobID());
-	packet.addShort(0);
-	packet.addByte(0);
-	packet.addByte(8);
 	packet.addInt(0);
 	packet.addPos(mob->getPos());
-	packet.addByte(mob->getType());
+	packet.addByte(2); // Stance
 	packet.addShort(0);
 	packet.addShort(mob->getFH());
-	packet.addShort(-1);
+	packet.addShort(spawn ? -2 : -1);
 	packet.addInt(0);
-	packet.send(player);
+	if (requestControl || show)
+		packet.send(player);
+	else
+		Maps::maps[mob->getMapID()]->sendPacket(packet, player);
 }
 
 void MobsPacket::endControlMob(Player *player, Mob *mob) {
@@ -48,44 +53,6 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	packet.addShort(SEND_CONTROL_MOB);
 	packet.addByte(0);
 	packet.addInt(mob->getID());
-	packet.send(player);
-}
-
-void MobsPacket::spawnMob(Mob *mob) {
-	PacketCreator packet;
-	packet.addShort(SEND_SHOW_MOB);
-	packet.addInt(mob->getID());
-	packet.addByte(1);
-	packet.addInt(mob->getMobID());
-	packet.addShort(0);
-	packet.addByte(0);
-	packet.addByte(8);
-	packet.addInt(0);
-	packet.addPos(mob->getPos());
-	packet.addByte(mob->getType());
-	packet.addShort(0);
-	packet.addShort(mob->getFH());
-	packet.addShort(-2);
-	packet.addInt(0);
-	Maps::maps[mob->getMapID()]->sendPacket(packet);
-}
-
-void MobsPacket::showMob(Player *player, Mob *mob) {
-	PacketCreator packet;
-	packet.addShort(SEND_SHOW_MOB);
-	packet.addInt(mob->getID());
-	packet.addByte(1);
-	packet.addInt(mob->getMobID());
-	packet.addShort(0);
-	packet.addByte(0);
-	packet.addByte(8);
-	packet.addInt(0);
-	packet.addPos(mob->getPos());
-	packet.addByte(mob->getType());
-	packet.addShort(0);
-	packet.addShort(mob->getFH());
-	packet.addShort(-1);
-	packet.addInt(0);
 	packet.send(player);
 }
 
@@ -310,12 +277,13 @@ void MobsPacket::showBossHP(Player *player, const MobHPInfo &mob) {
 }
 
 void MobsPacket::dieMob(Mob *mob) {
+	Player *control = mob->getControl();
+	if (control != 0 && control->getMap() == mob->getMapID())
+		endControlMob(control, mob);
+
 	PacketCreator packet;
 	packet.addShort(SEND_KILL_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
 	Maps::maps[mob->getMapID()]->sendPacket(packet);
-	Player *control = mob->getControl();
-	if (control != 0 && control->getMap() == mob->getMapID())
-		endControlMob(control, mob);
 }
