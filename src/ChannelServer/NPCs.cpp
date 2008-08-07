@@ -163,13 +163,18 @@ bool NPC::checkEnd() {
 	return false;
 }
 
-void NPC::run() {
+bool NPC::run() {
 	if (checkEnd()) { //  NPC Ended
-		return;
+		return false;
 	}
 
-	luaNPC->run();	
-	checkEnd();
+	bool ret = luaNPC->run();
+
+	if (checkEnd()) {
+		return false;
+	}
+
+	return ret;
 }
 
 PacketCreator & NPC::npcPacket(char type) {
