@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <hash_map>
 #include "Pos.h"
 
+#define BEGINNER_SKILL(x) (x < 1003)
 #define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)
 
 using namespace std;
