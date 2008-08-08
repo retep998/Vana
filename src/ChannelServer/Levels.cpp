@@ -62,7 +62,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 		short mpgain = 0;
 		unsigned char levelsgained = 0;
 		unsigned char levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
-		do {
+		while (cexp >= exps[level - 1] && levelsgained < levelsmax) {
 			if (level >= 200) { // Do not let people level past the level 200 cap
 				cexp = 0;
 				break;
@@ -102,27 +102,32 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			}
 			if (player->getJob() > 0)
 				spgain += 3;
-		} while (cexp >= exps[level - 1] && ((levelsgained < levelsmax && levelsmax > 0) || (levelsmax == 0)));
-		if (cexp >= exps[level - 1]) // If the desired number of level ups have passed and they're still above, set it to where it should be
+		}
+
+		if (cexp >= exps[level - 1]) { // If the desired number of level ups have passed and they're still above, set it to where it should be
 			cexp = exps[level - 1] - 1;
-		player->setRMHP(player->getRMHP() + hpgain);
-		player->setRMMP(player->getRMMP() + mpgain);
-		player->setLevel(level);
-		player->setAp(player->getAp() + apgain);
-		player->setSp(player->getSp() + spgain);
-		// Let hyperbody remain on if on during a level up, as it should
-		int skillid = 0;
-		int level = 0;
-		if (player->getSkills()->getActiveSkillLevel(1301007) > 0)
-			skillid = 1301007;
-		else if (player->getSkills()->getActiveSkillLevel(9101008) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
-			skillid = 9101008;
-		if (skillid > 0)
-			level = player->getSkills()->getActiveSkillLevel(skillid);
-		player->setMHP(player->getRMHP() * (level > 0 ? (Skills::skills[skillid][level].x / 100) : 1));
-		player->setMMP(player->getRMMP() * (level > 0 ? (Skills::skills[skillid][level].y / 100) : 1));
-		player->setHP(player->getMHP());
-		player->setMP(player->getMMP());
+		}
+
+		if (levelsgained) { // Check if the player has leveled up at all, it is possible that the user haven't level up if multi-level limit is 0
+			player->setRMHP(player->getRMHP() + hpgain);
+			player->setRMMP(player->getRMMP() + mpgain);
+			player->setLevel(level);
+			player->setAp(player->getAp() + apgain);
+			player->setSp(player->getSp() + spgain);
+			// Let hyperbody remain on if on during a level up, as it should
+			int skillid = 0;
+			int level = 0;
+			if (player->getSkills()->getActiveSkillLevel(1301007) > 0)
+				skillid = 1301007;
+			else if (player->getSkills()->getActiveSkillLevel(9101008) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
+				skillid = 9101008;
+			if (skillid > 0)
+				level = player->getSkills()->getActiveSkillLevel(skillid);
+			player->setMHP(player->getRMHP() * (level > 0 ? (Skills::skills[skillid][level].x / 100) : 1));
+			player->setMMP(player->getRMMP() * (level > 0 ? (Skills::skills[skillid][level].y / 100) : 1));
+			player->setHP(player->getMHP());
+			player->setMP(player->getMMP());
+		}
 	}
 	player->setExp(cexp);
 }
