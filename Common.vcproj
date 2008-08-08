@@ -125,6 +125,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalLibraryDirectories="$(ProgramFiles)/boost/boost_1_35_0/lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
