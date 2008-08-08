@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 #include "StringUtilities.h"
 #include "WorldServerConnectPlayerPacket.h"
+#include "Randomizer.h"
 
 hash_map <int, Player*> Players::players;
 
@@ -762,8 +763,16 @@ void Players::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			SkillsPacket::showSpecialSkill(player, info);
 			break;
 		}
-		case 4211001: // Chakra, unknown heal formula
+		case 4211001: { // Chakra, unknown heal formula
+			short dex = player->getDex();
+			short luk = player->getLuk();
+			short recovery = Skills::skills[4211001][player->getSkills()->getSkillLevel(4211001)].y;
+			short minimum = (luk / 2) * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
+			short maximum = luk * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
+			short range = maximum - minimum;
+			player->setHP(player->getHP() + (Randomizer::Instance()->randInt(range) + minimum));
 			break;
+		}
 	}
 }
 
