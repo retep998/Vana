@@ -42,7 +42,7 @@ void PlayerStorage::addItem(Item *item) {
 char PlayerStorage::getNumItems(char inv) {
 	char itemNum = 0;
 	for (char i = 0; i < (char) items.size(); i++) {
-		if (GETINVENTORY(items[i]->id))
+		if (GETINVENTORY(items[i]->id) == inv)
 			itemNum ++;
 	}
 	return itemNum;

@@ -64,13 +64,23 @@ void StoragePacket::addItem(Player *player, char inv) {
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
+	packet.send(player);
 }
 
-void StoragePacket::takeItem(Player *player, char inv, char slot, char type) {
+void StoragePacket::takeItem(Player *player, char inv) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x09);
 	packet.addByte(player->getStorage()->getSlots());
+	char type = 0;
+	if (inv == 1)
+		type = 0x04;
+	else if (inv == 2)
+		type = 0x08;
+	else if (inv == 3)
+		type = 0x10;
+	else
+		type = 0x20;
 	packet.addInt(type);
 	packet.addInt(0);
 	packet.addByte(player->getStorage()->getNumItems(inv));
@@ -79,6 +89,7 @@ void StoragePacket::takeItem(Player *player, char inv, char slot, char type) {
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
+	packet.send(player);
 }
 
 void StoragePacket::changeMesos(Player *player, int mesos) {
