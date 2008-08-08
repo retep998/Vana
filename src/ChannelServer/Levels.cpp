@@ -49,85 +49,80 @@ int Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3
 void Levels::giveEXP(Player *player, long exp, char type) {
 	if (player->getLevel() >= 200) // Do not give EXP to characters level 200 or over
 		return;
-
 	long cexp = player->getExp() + exp;
 	if (cexp < 0)
 		cexp = cexp * (-1);
 	if (exp != 0)
 		LevelsPacket::showEXP(player, exp, type);
-
 	int level = player->getLevel();
-	if (cexp >= exps[level-1]) {
+	if (cexp >= exps[level - 1]) {
 		short apgain = 0;
 		short spgain = 0;
 		short hpgain = 0;
 		short mpgain = 0;
-
-		while (cexp >= exps[level-1]) {
+		while (cexp >= exps[level - 1]) {
 			if (level >= 200) { // Do not let people level past the level 200 cap
 				cexp = 0;
 				break;
 			}
-			cexp -= exps[player->getLevel()-1];
+			cexp -= exps[player->getLevel() - 1];
 			level++;
 			apgain += 5;
-
 			int job = player->getJob() / 100;
+			int x = 0;
 			short intt = player->getInt() / 10;
-			if (job == 0) {
-				hpgain = Randomizer::Instance()->randInt(4) + 12;
-				mpgain = Randomizer::Instance()->randInt(2) + 10 + intt;
+			switch (job) {
+				case 0:
+					hpgain = Randomizer::Instance()->randInt(4) + 12;
+					mpgain = Randomizer::Instance()->randInt(2) + 10 + intt;
+					break;
+				case 1:
+					if (player->getSkills()->getSkillLevel(1000001) > 0)
+						x = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].x;
+					hpgain = Randomizer::Instance()->randInt(4) + 24 + x;
+					mpgain = Randomizer::Instance()->randInt(2) + 4 + intt;
+					break;
+				case 2:
+					if (player->getSkills()->getSkillLevel(2000001) > 0)
+						x = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].x;
+					hpgain = Randomizer::Instance()->randInt(4) + 10;
+					mpgain = Randomizer::Instance()->randInt(2) + 22 + 2 * x + intt;
+					break;
+				case 9: // GM
+					hpgain = 150;
+					mpgain = 150;
+					break;
+				default: // Will have to split 5 away when pirates are fully released
+					hpgain = Randomizer::Instance()->randInt(4) + 20;
+					mpgain = Randomizer::Instance()->randInt(2) + 14 + intt;
+					break;
 			}
-			else if (job == 1) {
-				int x = 0;
-				if (player->getSkills()->getSkillLevel(1000001) > 0) { x = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].x; }
-				hpgain = Randomizer::Instance()->randInt(4) + 24 + x;
-				mpgain = Randomizer::Instance()->randInt(2) + 4 + intt;
-			}
-			else if (job == 2) {
-				int x = 0;
-				if (player->getSkills()->getSkillLevel(2000001) > 0) { x = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].x; }
-				hpgain = Randomizer::Instance()->randInt(4) + 10;
-				mpgain = Randomizer::Instance()->randInt(2) + 22 + 2 * x + intt;
-			} 
-			else if (job == 9) {
-				hpgain = 150;
-				mpgain = 150;
-			}
-			else {
-				hpgain = Randomizer::Instance()->randInt(4) + 20;
-				mpgain = Randomizer::Instance()->randInt(2) + 14 + intt;
-			}
-
-			if (player->getJob() > 0) {
+			if (player->getJob() > 0)
 				spgain += 3;
-			}
 		}
-
 		player->setRMHP(player->getRMHP() + hpgain);
 		player->setRMMP(player->getRMMP() + mpgain);
 		player->setLevel(level);
 		player->setAp(player->getAp() + apgain);
 		player->setSp(player->getSp() + spgain);
-
 		// Let hyperbody remain on if on during a level up, as it should
-		if (player->getSkills()->getActiveSkillLevel(1301007) > 0) {
-			player->setMHP(player->getRMHP()*(100 + Skills::skills[1301007][player->getSkills()->getActiveSkillLevel(1301007)].x)/100);
-			player->setMMP(player->getRMMP()*(100 + Skills::skills[1301007][player->getSkills()->getActiveSkillLevel(1301007)].y)/100);
-		}
-		else if (player->getSkills()->getActiveSkillLevel(9101008) > 0) { // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
-			player->setMHP(player->getRMHP()*(100 + Skills::skills[9101008][player->getSkills()->getActiveSkillLevel(9101008)].x)/100);
-			player->setMMP(player->getRMMP()*(100 + Skills::skills[9101008][player->getSkills()->getActiveSkillLevel(9101008)].y)/100);
+		int skillid = 0;
+		if (player->getSkills()->getActiveSkillLevel(1301007) > 0)
+			skillid = 1301007;
+		else if (player->getSkills()->getActiveSkillLevel(9101008) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
+			skillid = 9101008;
+		if (skillid > 0) {
+			int level = player->getSkills()->getActiveSkillLevel(skillid);
+			player->setMHP(player->getRMHP() * (100 + Skills::skills[skillid][level].x) / 100);
+			player->setMMP(player->getRMMP() * (100 + Skills::skills[skillid][level].y) / 100);
 		}
 		else {
 			player->setMHP(player->getRMHP());
 			player->setMMP(player->getRMMP());
 		}
-
 		player->setHP(player->getMHP());
 		player->setMP(player->getMMP());
 	}
-
 	player->setExp(cexp);
 }
 
@@ -166,25 +161,24 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 			int job = player->getJob() / 100;
 			short hpgain = 0;
 			short mpgain = 0;
+			int y = 0;
 			switch (job) {
 				case 0:
 					hpgain = Randomizer::Instance()->randInt(4) + 8;
 					mpgain = Randomizer::Instance()->randInt(2) + 10;
 					break;
-				case 1: {
-					int y = 0;
-					if (player->getSkills()->getSkillLevel(1000001) > 0) { y = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].y; }
+				case 1:
+					if (player->getSkills()->getSkillLevel(1000001) > 0)
+						y = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].y;
 					hpgain = Randomizer::Instance()->randInt(4) + 20 + y;
 					mpgain = Randomizer::Instance()->randInt(2) + 2;
 					break;
-				}
-				case 2: {
-					int y = 0;
-					if (player->getSkills()->getSkillLevel(2000001) > 0) { y = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].y; }
+				case 2:
+					if (player->getSkills()->getSkillLevel(2000001) > 0)
+						y = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].y;
 					hpgain = Randomizer::Instance()->randInt(4) + 6;
 					mpgain = Randomizer::Instance()->randInt(2) + 18 + 2 * y;
 					break;
-				}
 				default:
 					hpgain = Randomizer::Instance()->randInt(4) + 16;
 					mpgain = Randomizer::Instance()->randInt(2) + 10;
