@@ -248,12 +248,22 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 				player->setLuk(atoi(next_token));
 		}
 		else if (strcmp(command,"hp") == 0) {
-			if (strlen(next_token) > 0)
-				player->setRMHP(atoi(next_token));
+			if (strlen(next_token) > 0) {
+				int amount = atoi(next_token);
+				player->setRMHP(amount);
+				player->setMHP(amount);
+				if (player->getHP() > amount)
+					player->setHP(player->getMHP());
+			}
 		}
 		else if (strcmp(command,"mp") == 0) {
-			if (strlen(next_token) > 0)
-				player->setRMMP(atoi(next_token));
+			if (strlen(next_token) > 0) {
+				int amount = atoi(next_token);
+				player->setRMMP(amount);
+				player->setMMP(amount);
+				if (player->getMP() > amount)
+					player->setMP(player->getMMP());
+			}
 		}
 		else if (strcmp(command, "shop") == 0) {
 			int shopid = -1;
