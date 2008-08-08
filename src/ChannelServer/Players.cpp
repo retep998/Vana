@@ -401,7 +401,7 @@ void Players::chatHandler(Player *player, ReadPacket *packet) {
 			Maps::maps[player->getMap()]->clearDrops();
 		}
 		else if (strcmp(command, "save") == 0) {
-			player->save();
+			player->saveAll();
 			PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
 		}
 		else if (strcmp(command, "warp") == 0) {

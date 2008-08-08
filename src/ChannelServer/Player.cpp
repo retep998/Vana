@@ -48,7 +48,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Player::~Player() {
 	if (isconnect) {
 		if (save_on_dc) {
-			save();
+			saveAll();
 			setOnline(false);
 		}
 		if (this->isTrading() == 1)
@@ -441,6 +441,11 @@ void Player::setFame(short fame) {
 	PlayerPacket::updateStat(this, 0x20000, fame);
 }
 
+void Player::deleteVariable(const string &name) {
+	if (variables.find(name) != variables.end())
+		variables.erase(name);
+}
+
 void Player::setVariable(const string &name, const string &val) {
 	variables[name] = val;
 }
@@ -632,7 +637,7 @@ void Player::saveVariables() {
 	}
 }
 
-void Player::save() {
+void Player::saveAll() {
 	saveSkills();
 	saveStats();
 	saveInventory();
