@@ -60,46 +60,50 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 		short spgain = 0;
 		short hpgain = 0;
 		short mpgain = 0;
-		while (cexp >= exps[level - 1]) {
+		short levelsgained = 0;
+		do {
 			if (level >= 200) { // Do not let people level past the level 200 cap
 				cexp = 0;
 				break;
 			}
 			cexp -= exps[player->getLevel() - 1];
 			level++;
+			levelsgained++;
 			apgain += 5;
 			int job = player->getJob() / 100;
 			int x = 0;
 			short intt = player->getInt() / 10;
 			switch (job) {
 				case 0:
-					hpgain = Randomizer::Instance()->randInt(4) + 12;
-					mpgain = Randomizer::Instance()->randInt(2) + 10 + intt;
+					hpgain += Randomizer::Instance()->randInt(4) + 12;
+					mpgain += Randomizer::Instance()->randInt(2) + 10 + intt;
 					break;
 				case 1:
 					if (player->getSkills()->getSkillLevel(1000001) > 0)
 						x = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].x;
-					hpgain = Randomizer::Instance()->randInt(4) + 24 + x;
-					mpgain = Randomizer::Instance()->randInt(2) + 4 + intt;
+					hpgain += Randomizer::Instance()->randInt(4) + 24 + x;
+					mpgain += Randomizer::Instance()->randInt(2) + 4 + intt;
 					break;
 				case 2:
 					if (player->getSkills()->getSkillLevel(2000001) > 0)
 						x = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].x;
-					hpgain = Randomizer::Instance()->randInt(4) + 10;
-					mpgain = Randomizer::Instance()->randInt(2) + 22 + 2 * x + intt;
+					hpgain += Randomizer::Instance()->randInt(4) + 10;
+					mpgain += Randomizer::Instance()->randInt(2) + 22 + 2 * x + intt;
 					break;
 				case 9: // GM
-					hpgain = 150;
-					mpgain = 150;
+					hpgain += 150;
+					mpgain += 150;
 					break;
 				default: // Will have to split 5 away when pirates are fully released
-					hpgain = Randomizer::Instance()->randInt(4) + 20;
-					mpgain = Randomizer::Instance()->randInt(2) + 14 + intt;
+					hpgain += Randomizer::Instance()->randInt(4) + 20;
+					mpgain += Randomizer::Instance()->randInt(2) + 14 + intt;
 					break;
 			}
 			if (player->getJob() > 0)
 				spgain += 3;
-		}
+		} while (cexp >= exps[level - 1]);
+		if (cexp >= exps[level - 1]) // If the desired number of level ups have passed and they're still above, set it to where it should be
+			cexp = exps[level - 1] - 1;
 		player->setRMHP(player->getRMHP() + hpgain);
 		player->setRMMP(player->getRMMP() + mpgain);
 		player->setLevel(level);
