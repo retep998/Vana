@@ -78,7 +78,7 @@ void ChannelServer::loadConfig() {
 
 void ChannelServer::shutdown() {
 	for (hash_map<int, Player *>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++) {
-		iter->second->save(); // TODO: Make sure the selector thread exit cleanly and we should not need this
+		iter->second->saveAll(); // TODO: Make sure the selector thread exit cleanly and we should not need this
 		iter->second->getPacketHandler()->disconnect(); // The player does not get DCed right away, but on next selector check
 	}
 	exit(0);

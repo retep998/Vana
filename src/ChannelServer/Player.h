@@ -48,198 +48,90 @@ public:
 	~Player();
 
 	void realHandleRequest(ReadPacket *packet);
-	int getPlayerid() {
-		return this->id;
-	}
-	string getName() {
-		return this->name;
-	}
-	char getGender() {
-		return this->gender;
-	}
+	int getPlayerid() const { return this->id; }
+	string getName() const { return this->name; }
+	char getGender() const { return this->gender; }
 	void setSkin(char id);
-	char getSkin() {
-		return this->skin;
-	}
+	char getSkin() const { return this->skin; }
 	void setEyes(int id);
-	int getEyes() {
-		return this->eyes;
-	}
+	int getEyes() const { return this->eyes; }
 	void setHair(int id);
-	int getHair() {
-		return this->hair;
-	}
+	int getHair() const { return this->hair; }
 	void setLevel(unsigned char level);
-	unsigned char getLevel() {
-		return this->level;
-	}
+	unsigned char getLevel() const { return this->level; }
 	void setJob(short job);
-	short getJob() {
-		return this->job;
-	}
+	short getJob() const { return this->job; }
 	void setStr(short str);
-	short getStr() {
-		return this->str;
-	}
+	short getStr() const { return this->str; }
 	void setDex(short dex);
-	short getDex() {
-		return this->dex;
-	}
+	short getDex() const { return this->dex; }
 	void setInt(short intt);
-	short getInt() {
-		return this->intt;
-	}
+	short getInt() const { return this->intt; }
 	void setLuk(short luk);
-	short getLuk() {
-		return this->luk;
-	}
+	short getLuk() const { return this->luk; }
 	void setHP(int hp, bool is = true);
-	unsigned short getHP() {
-		return this->hp;
-	}
+	unsigned short getHP() { return this->hp; }
 	void setMP(int mp, bool is = false);
-	unsigned short getMP() {
-		return this->mp;
-	}
+	unsigned short getMP() { return this->mp; }
 	void setMHP(int mhp);
-	unsigned short getMHP() {
-		return this->mhp;
-	}
+	unsigned short getMHP() { return this->mhp; }
 	void setRMHP(int rmhp);
-	unsigned short getRMHP() {
-		return this->rmhp;
-	}
+	unsigned short getRMHP() { return this->rmhp; }
 	void setMMP(int mmp);
-	unsigned short getMMP() {
-		return this->mmp;
-	}
+	unsigned short getMMP() { return this->mmp; }
 	void setRMMP(int rmmp);
-	unsigned short getRMMP() {
-		return this->rmmp;
-	}
-	void setHPMPAp(unsigned short ap) {
-		hpmp_ap = ap;
-	}
-	unsigned short getHPMPAp() {
-		return hpmp_ap;
-	}
+	unsigned short getRMMP() { return this->rmmp; }
+	void setHPMPAp(unsigned short ap) { hpmp_ap = ap; }
+	unsigned short getHPMPAp() { return hpmp_ap; }
 	void setAp(short ap);
-	short getAp() {
-		return this->ap;
-	}
+	short getAp() const { return this->ap; }
 	void setSp(short sp);
-	short getSp() {
-		return this->sp;
-	}
+	short getSp() const { return this->sp; }
 	void setFame(short fame);
-	short getFame() {
-		return this->fame;
-	}
+	short getFame() const { return this->fame; }
 	void setExp(int exp);
-	int getExp() {
-		return this->exp;
-	}
-	void setMap(int map) {
-		this->map = map;
-	}
-	int getMap() {
-		return this->map;
-	}
-	void setMappos(char pos) {
-		this->mappos = pos;
-	}
-	char getMappos() {
-		return this->mappos;
-	}
-	Pos getPos() {
-		return this->pos;
-	}
-	void setPos(Pos pos) {
-		this->pos = pos;
-	}
-	void setType(char type) {
-		this->type = type;
-	}
-	char getType() {
-		return this->type;
-	}
-	void setShop(int shopid) {
-		shop = shopid;
-	}
-	int getShop() {
-		return shop;
-	}
-	void setNPC(NPC *npc) {
-		this->npc = npc;
-	}
-	void setChair(int chair) {
-		this->chair = chair;
-	}
-	int getChair() {
-		return chair;
-	}
-	void setItemEffect(int effect) {
-		this->itemEffect = effect;
-	}
-	int getItemEffect() {
-		return this->itemEffect;
-	}
-	NPC * getNPC() {
-		return npc;
-	}
-	bool isGM() {
-		return gm > 0;
-	}
-	int getGMLevel() {
-		return gm;
-	}
-	void setSkill(SkillMapEnterActiveInfo skill) {
-		this->skill = skill;
-	}
-	void setSaveOnDC(bool save) {
-		save_on_dc = save;
-	}
-	SkillMapEnterActiveInfo getSkill() {
-		return skill;
-	}
-	void deleteVariable(const string &name) {
-		if (variables.find(name) != variables.end())
-			variables.erase(name);
-	}
-	void setVariable(const string &name, const string &val);
-	string getVariable(const string &name);
-	void setSpecialSkill(SpecialSkillInfo info) {
-		this->info = info;
-	}
-	int getSpecialSkill() {
-		return this->info.skillid;
-	}
-	SpecialSkillInfo getSpecialSkillInfo() {
-		return this->info;
-	}
-	void setTrading(char newstate) {
-		tradestate = newstate;
-	}
-	char isTrading() {
-		return tradestate;
-	}
-	void setTradeSendID(int id) {
-		this->tradesendid = id;
-	}
-	int getTradeSendID() {
-		return tradesendid;
-	}
-	void setTradeRecvID(int id) {
-		this->traderecvid = id;
-	}
-	int getTradeRecvID() {
-		return traderecvid;
-	}
+	int getExp() const { return this->exp; }
+	void setMap(int map) { this->map = map; }
+	int getMap() const { return this->map; }
+	void setMappos(char pos) { this->mappos = pos; }
+	char getMappos() const { return this->mappos; }
+	Pos getPos() const { return this->pos; }
+	void setPos(Pos pos) { this->pos = pos; }
+	void setType(char type) { this->type = type; }
+	char getType() const { return this->type; }
+	void setShop(int shopid) { shop = shopid; }
+	int getShop() const { return shop; }
+	void setNPC(NPC *npc) { this->npc = npc; }
+	void setChair(int chair) { this->chair = chair; }
+	int getChair() const { return chair; }
+	void setItemEffect(int effect) { this->itemEffect = effect; }
+	int getItemEffect() const { return this->itemEffect; }
+	NPC * getNPC() const { return npc; }
+	bool isGM() const { return gm > 0; }
+	int getGMLevel() const { return gm; }
+	void setSkill(SkillMapEnterActiveInfo skill) { this->skill = skill; }
+	void setSaveOnDC(bool save) { save_on_dc = save; }
+	SkillMapEnterActiveInfo getSkill() { return skill; }
+	void setSpecialSkill(SpecialSkillInfo info) { this->info = info; }
+	int getSpecialSkill() const { return this->info.skillid; }
+	SpecialSkillInfo getSpecialSkillInfo() { return this->info; }
+	void setTrading(char newstate) { tradestate = newstate; }
+	char isTrading() const { return tradestate; }
+	void setTradeSendID(int id) { this->tradesendid = id; }
+	int getTradeSendID() const { return tradesendid; }
+	void setTradeRecvID(int id) { this->traderecvid = id; }
+	int getTradeRecvID() const { return traderecvid; }
+
 	BuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerInventory * getInventory() const { return inv.get(); }
 	PlayerQuests * getQuests() const { return quests.get(); }
 	PlayerSkills * getSkills() const { return skills.get(); }
 	PlayerStorage * getStorage() const { return storage.get(); }
+
+	void deleteVariable(const string &name);
+	void setVariable(const string &name, const string &val);
+	string getVariable(const string &name);
+
 	bool addWarning();
 	void changeChannel(char channel);
 	void saveSkills();
@@ -247,7 +139,7 @@ public:
 	void saveInventory();
 	void saveStorage();
 	void saveVariables();
-	void save();
+	void saveAll();
 	void setOnline(bool online);
 	void acceptDeath(int mapid);
 private:
