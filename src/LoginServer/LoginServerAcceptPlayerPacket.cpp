@@ -19,19 +19,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayer.h"
 #include "PacketCreator.h"
 #include "Rates.h"
+#include "Worlds.h"
 
-void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan, int exprate, int questexprate, int mesorate, int droprate) {
+void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, World *world) {
 	PacketCreator packet;
 	packet.addShort(INTER_WORLD_CONNECT);
-	packet.addByte(worldid);
-	packet.addShort(port);
-	packet.addInt(maxchan);
+	packet.addByte(world->id);
+	packet.addShort(world->port);
+	packet.addInt(world->maxChannels);
+	packet.addByte(world->maxMultiLevel);
 	
 	packet.addInt(Rates::SetBits::all);
-	packet.addInt(exprate);
-	packet.addInt(questexprate);
-	packet.addInt(mesorate);
-	packet.addInt(droprate);
+	packet.addInt(world->exprate);
+	packet.addInt(world->questexprate);
+	packet.addInt(world->mesorate);
+	packet.addInt(world->droprate);
 	packet.send(player);
 }
 

@@ -60,7 +60,8 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 		short spgain = 0;
 		short hpgain = 0;
 		short mpgain = 0;
-		short levelsgained = 0;
+		unsigned char levelsgained = 0;
+		unsigned char levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
 		do {
 			if (level >= 200) { // Do not let people level past the level 200 cap
 				cexp = 0;
@@ -101,7 +102,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			}
 			if (player->getJob() > 0)
 				spgain += 3;
-		} while (cexp >= exps[level - 1]);
+		} while (cexp >= exps[level - 1] && ((levelsgained < levelsmax && levelsmax > 0) || (levelsmax == 0)));
 		if (cexp >= exps[level - 1]) // If the desired number of level ups have passed and they're still above, set it to where it should be
 			cexp = exps[level - 1] - 1;
 		player->setRMHP(player->getRMHP() + hpgain);

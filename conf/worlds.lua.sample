@@ -19,6 +19,10 @@ world0_droprate = 1;
 -- Channels will run on port world port + channel number
 -- i.e. channel one will run on 7101 and channel 2 will run on 7102
 world0_port = 7100;
+world0_max_multi_level = 1;
+-- How many times do you want your users to level up at once?
+-- 1 is global-like/default
+-- 0 is as many times as the EXP allows
 
 -- Uncomment for another world
 -- world1_name = "Bera";
@@ -30,3 +34,4 @@ world0_port = 7100;
 -- world1_mesorate = 1;
 -- world1_droprate = 1;
 -- world1_port = 7200;
+-- world1_max_multi_level = 1;

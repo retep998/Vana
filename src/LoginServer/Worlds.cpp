@@ -58,38 +58,26 @@ void Worlds::channelSelect(PlayerLogin *player, ReadPacket *packet) {
 }
 
 char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
-	char worldid = -1;
-	short port;
-	int maxchan;
-	int exprate;
-	int questexprate;
-	int mesorate;
-	int droprate;
+	World *world = 0;
 	for (hash_map <int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->connected == 0) {
 			player->setWorldId(iter->first);
-			worldid = iter->second->id;
-			port = iter->second->port;
-			maxchan = iter->second->maxChannels;
-			exprate = iter->second->exprate;
-			questexprate = iter->second->questexprate;
-			mesorate = iter->second->mesorate;
-			droprate = iter->second->droprate;
+			world = iter->second;
 			iter->second->connected = true;
 			iter->second->player = player;
 			iter->second->ip = player->getIP();
 			break;
 		}
 	}
-	LoginServerAcceptPlayerPacket::connect(player, worldid, port, maxchan, exprate, questexprate, mesorate, droprate);
-	if (worldid != -1) {
-		std::cout << "Assigned world " << (int) worldid << " to World Server." << std::endl;
+	LoginServerAcceptPlayerPacket::connect(player, world);
+	if (world != 0) {
+		std::cout << "Assigned world " << (int) world->id << " to World Server." << std::endl;
 	}
 	else {
 		std::cout << "Error: No more worlds to assign." << std::endl;
 		player->getPacketHandler()->disconnect();
 	}
-	return worldid;
+	return world->id;
 }
 
 char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {

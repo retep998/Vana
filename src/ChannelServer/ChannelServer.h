@@ -52,6 +52,8 @@ public:
 	int getOnlineId() { return 20000 + (int) world * 100 + channel; }
 	string getScrollingHeader() { return scrollingHeader; }
 	void setScrollingHeader(const string &message);
+	unsigned char getMaxMultiLevel() const { return maxMultiLevel; }
+	void setMaxMultiLevel(unsigned char level) { maxMultiLevel = level; }
 	// Server rates
 	void setExprate(int exprate) { this->exprate = exprate; }
 	void setQuestExprate(int questexprate) { this->questexprate = questexprate; }
@@ -78,6 +80,7 @@ private:
 	int channel;
 	string external_ip;
 	string scrollingHeader;
+	unsigned char maxMultiLevel;
 	// Server rates
 	int exprate;
 	int questexprate;

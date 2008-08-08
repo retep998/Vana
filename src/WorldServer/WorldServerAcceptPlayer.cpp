@@ -55,14 +55,14 @@ void WorldServerAcceptPlayer::authenticated(char type) {
 		channel = Channels::Instance()->size();
 		short port = WorldServer::Instance()->getInterPort()+channel+1;
 		Channels::Instance()->registerChannel(this, channel, ip, port);
-		WorldServerAcceptPlayerPacket::connect(this, channel, port);
+		WorldServerAcceptPlayerPacket::connect(this, channel, port, WorldServer::Instance()->getMaxMultiLevel());
 		WorldServerAcceptPlayerPacket::sendRates(this, Rates::SetBits::all);
 		WorldServerAcceptPlayerPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 		LoginServerConnectPlayerPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);
 		std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 	}
 	else {
-		WorldServerAcceptPlayerPacket::connect(this, -1, 0);
+		WorldServerAcceptPlayerPacket::connect(this, -1, 0, 0);
 		std::cout << "Error: No more channel to assign." << std::endl;
 		packetHandler->disconnect();
 	}

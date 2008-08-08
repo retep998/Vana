@@ -75,6 +75,9 @@ void LoginServer::loadConfig() {
 		sprintf_s(buf, "world%d_droprate", i);
 		world->droprate = config.getInt(buf);
 
+		sprintf_s(buf, "world%d_max_multi_level", i);
+		world->maxMultiLevel = config.getInt(buf);
+
 		world->connected = false;
 		Worlds::worlds[world->id] = world;
 		i++;

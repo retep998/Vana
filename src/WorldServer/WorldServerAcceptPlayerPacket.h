@@ -25,7 +25,7 @@ using std::string;
 class WorldServerAcceptPlayer;
 
 namespace WorldServerAcceptPlayerPacket {
-	void connect(WorldServerAcceptPlayer *player, int channel, short port);
+	void connect(WorldServerAcceptPlayer *player, int channel, short port, unsigned char maxMultiLevel);
 	void playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, const string &ip, short port);
 	void sendToChannels(unsigned char *data, int len);
 	void findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, const string &findee, unsigned char is = 0);

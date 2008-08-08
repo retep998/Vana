@@ -23,9 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class LoginServerAcceptPlayer;
+struct World;
 
 namespace LoginServerAcceptPlayerPacket {
-	void connect(LoginServerAcceptPlayer *player, char worldid, short port, int maxchan, int exprate, int questexprate, int mesorate, int droprate);
+	void connect(LoginServerAcceptPlayer *player, World *world);
 	void connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port);
 	void newPlayer(LoginServerAcceptPlayer *player, int channel, int charid);
 };
