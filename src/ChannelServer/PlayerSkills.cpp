@@ -70,7 +70,7 @@ SkillActiveInfo PlayerSkills::getSkillMapInfo(int skillid) {
 SkillMapEnterActiveInfo PlayerSkills::getSkillMapEnterInfo() {
 	SkillMapEnterActiveInfo skill;
 	for (size_t i = 0; i < activemapenterskill.size(); i++) {
-		skill.types[activemapenterskill[i].byte-1] += activemapenterskill[i].type;
+		skill.types[activemapenterskill[i].byte] += activemapenterskill[i].type;
 		if (activemapenterskill[i].isvalue) {
 			skill.val = activemapenterskill[i].value;
 			skill.isval = true;
