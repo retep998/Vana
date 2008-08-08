@@ -52,6 +52,8 @@ struct World {
 	int questexprate;
 	int mesorate;
 	int droprate;
+	// Multi-level limit;
+	unsigned char maxMultiLevel;
 };
 
 namespace Worlds {

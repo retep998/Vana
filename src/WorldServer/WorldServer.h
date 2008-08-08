@@ -46,6 +46,8 @@ public:
 	void setInterPort(short port) { inter_port = port; }
 	int getMaxChannels() const { return maxChannels; }
 	void setMaxChannels(int maxchan) { maxChannels = maxchan; }
+	unsigned char getMaxMultiLevel() const { return maxMultiLevel; }
+	void setMaxMultiLevel(unsigned char level) { maxMultiLevel = level; }
 	string getScrollingHeader() { return scrollingHeader.c_str(); }
 	void setScrollingHeader(const string &message);
 	// Server rates
@@ -69,6 +71,7 @@ private:
 	short inter_port;
 	char worldId;
 	int maxChannels;
+	unsigned char maxMultiLevel;
 	string external_ip;
 	string scrollingHeader;
 	// Server rates

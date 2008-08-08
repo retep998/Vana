@@ -33,11 +33,12 @@ void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, i
 	packet.send(player);
 }
 
-void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int channel, short port) {
+void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int channel, short port, unsigned char maxMultiLevel) {
 	PacketCreator packet;
 	packet.addShort(INTER_CHANNEL_CONNECT);
 	packet.addInt(channel);
 	packet.addShort(port);
+	packet.addByte(maxMultiLevel);
 	packet.send(player);
 }
 
