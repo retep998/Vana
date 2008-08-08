@@ -28,7 +28,7 @@ struct Item;
 namespace StoragePacket {
 	void showStorage(Player *player, int npcid);
 	void addItem(Player *player, char inv);
-	void takeItem(Player *player, char inv, char slot, char type);
+	void takeItem(Player *player, char inv);
 	void changeMesos(Player *player, int mesos);
 	void storageFull(Player *player);
 };

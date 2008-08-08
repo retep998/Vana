@@ -233,16 +233,15 @@ void Inventory::useStorage(Player *player, ReadPacket *packet) {
 	char type = packet->getByte();
 
 	if (type == 0x04) { // Take item out
-		char itemtype = packet->getByte();
-		char slot = packet->getByte();
+		char inv = packet->getByte(); // Inventory, as in equip, use, etc
+		char slot = packet->getByte(); // Slot within the inventory
 		Item *item = player->getStorage()->getItem(slot);
 		if (item == 0) // It's a trap
 			return; // Abort
 
-		char inv = GETINVENTORY(item->id);
 		addItem(player, new Item(item));
 		player->getStorage()->takeItem(slot);
-		StoragePacket::takeItem(player, inv, slot, itemtype);
+		StoragePacket::takeItem(player, inv);
 	}
 
 	else if (type == 0x05) { // Store item
