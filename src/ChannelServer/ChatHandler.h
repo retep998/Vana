@@ -15,22 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERS_H
-#define PLAYERS_H
-
-#include <hash_map>
-#include <string>
-
-using std::string;
-using stdext::hash_map;
+#ifndef CHATHANDLER_H
+#define CHATHANDLER_H
 
 class Player;
 class ReadPacket;
 
-namespace Players {
-	extern hash_map <int, Player*> players;
-	void addPlayer(Player *player);
-	void deletePlayer(Player *player);
+namespace ChatHandler {
+	void handleChat(Player *player, ReadPacket *packet);
+	void handleGroupChat(Player *player, ReadPacket *packet);
 };
 
 #endif

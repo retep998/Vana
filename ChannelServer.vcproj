@@ -194,6 +194,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\ChatHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\CommandHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Connectable.cpp"
 					>
 				</File>
@@ -235,6 +243,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Party.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerHandler.cpp"
 					>
 				</File>
 				<File
@@ -448,6 +460,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\ChatHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\CommandHandler.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Connectable.h"
 					>
 				</File>
@@ -489,6 +509,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Party.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerHandler.h"
 					>
 				</File>
 				<File
