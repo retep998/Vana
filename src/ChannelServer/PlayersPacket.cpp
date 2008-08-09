@@ -49,7 +49,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly)
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int fake, PGMRInfo pgmr) {
+void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int nodamageskill, PGMRInfo pgmr) {
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getPlayerid());
@@ -78,8 +78,8 @@ void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char
 			else
 				packet.addShort(0);
 			packet.addInt(dmg);
-			if (fake > 0)
-				packet.addInt(fake);
+			if (nodamageskill > 0)
+				packet.addInt(nodamageskill);
 			break;
 	}
 	Maps::maps[player->getMap()]->sendPacket(packet);

@@ -34,7 +34,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	int damage = packet->getInt();
 	int mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
 	int mapmobid = 0; // Map Mob ID
-	int fake = 0;
+	int nodamageid = 0;
 	short job = player->getJob();
 	bool applieddamage = false;
 	PGMRInfo pgmr;
@@ -89,28 +89,17 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			packet->skipBytes(1); // Stance, normal end of packet
 			break;
 	}
-	if (damage == -1) { // 0 damage = regular miss, -1 = Fake
+	if (damage == -1) { // 0 damage = regular miss, -1 = Fake/Guardian
 		short job = player->getJob();
 		switch (job) {
-			case 412: // Fake
-			case 422:
-				fake = 4020002 + ((job / 10 - 40) * 100000);
-				if (player->getSkills()->getSkillLevel(fake) < 0) {
-					//hacking
-					return;
-				}
-				break;
-			case 112: // Guardian
-			case 122:
-				fake = (job * 10000) + 5 + (job == 122 ? 1 : 0);
-				if (player->getSkills()->getSkillLevel(fake) < 0) {
-					//hacking
-					return;
-				}
-				break;
-			default:
-				//hacking, I think
-				break;
+			case 412: nodamageid = 4120002; break; // Fake
+			case 422: nodamageid = 4220002; break; // Fake
+			case 112: nodamageid = 1120005; break; // Guardian
+			case 122: nodamageid = 1220006; break; // Guardian
+		}
+		if (player->getSkills()->getSkillLevel(nodamageid) < 1 || nodamageid == 0) {
+			//hacking
+			return;
 		}
 	}
 	if (player->getSkills()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
@@ -204,7 +193,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 		if (attack.mpburn > 0)
 			player->setMP(player->getMP() - attack.mpburn);
 	}
-	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, fake, pgmr);
+	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, nodamageid, pgmr);
 }
 
 void PlayerHandler::handleFacialExpression(Player *player, ReadPacket *packet) {
