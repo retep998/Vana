@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "PacketHandler.h"
 #include "PlayerInventory.h"
+#include "PlayerPets.h"
 #include "PlayerStorage.h"
 #include "PlayerSkills.h"
 #include "PlayerQuests.h"
@@ -124,6 +125,7 @@ public:
 
 	BuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerInventory * getInventory() const { return inv.get(); }
+	PlayerPets * getPets() const { return pets.get(); }
 	PlayerQuests * getQuests() const { return quests.get(); }
 	PlayerSkills * getSkills() const { return skills.get(); }
 	PlayerStorage * getStorage() const { return storage.get(); }
@@ -139,6 +141,7 @@ public:
 	void saveInventory();
 	void saveStorage();
 	void saveVariables();
+	void savePets();
 	void saveAll();
 	void setOnline(bool online);
 	void acceptDeath();
@@ -193,6 +196,7 @@ private:
 
 	boost::scoped_ptr<BuddyList> buddyList;
 	boost::scoped_ptr<PlayerInventory> inv;
+	boost::scoped_ptr<PlayerPets> pets;
 	boost::scoped_ptr<PlayerQuests> quests;
 	boost::scoped_ptr<PlayerSkills> skills;
 	boost::scoped_ptr<PlayerStorage> storage;

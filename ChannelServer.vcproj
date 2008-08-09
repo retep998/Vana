@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1255"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="ChannelServer"
 	ProjectGUID="{F07865A8-3A41-48D8-809C-056CC906A50B}"
 	RootNamespace="ChannelServer"
@@ -246,6 +246,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Pets.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerHandler.cpp"
 					>
 				</File>
@@ -311,6 +315,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\NPCPacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PetsPacket.cpp"
 					>
 				</File>
 				<File
@@ -418,6 +426,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerPets.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerQuests.cpp"
 					>
 				</File>
@@ -512,6 +524,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Pets.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerHandler.h"
 					>
 				</File>
@@ -577,6 +593,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\NPCPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PetsPacket.h"
 					>
 				</File>
 				<File
@@ -681,6 +701,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerPets.h"
 					>
 				</File>
 				<File

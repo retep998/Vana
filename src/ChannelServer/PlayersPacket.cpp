@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "SendHeader.h"
 #include "Maps.h"
+#include "Pets.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
 	PacketCreator packet;
@@ -94,19 +95,33 @@ void PlayersPacket::showMessage(const string &msg, char type) {
 }
 
 void PlayersPacket::showInfo(Player *player, Player *getinfo) {
-	PacketCreator packet;
+		PacketCreator packet;
 	packet.addShort(SEND_PLAYER_INFO);
 	packet.addInt(getinfo->getPlayerid());
 	packet.addByte(getinfo->getLevel());
 	packet.addShort(getinfo->getJob());
 	packet.addShort(getinfo->getFame());
 	packet.addByte(0); // Married
-	packet.addString("-"); // Guild
-	packet.addString(""); // Guild Alliance
-	packet.addByte((player->getPlayerid() == getinfo->getPlayerid() ? 1 : 0));
-	packet.addByte(0); // Pets - pet #1 doesn't exist, looped format until doesn't: exists [1], pet ID [4], name [string], level [1], closeness [2], fullness [1], ? [2], pet equip ID [4]
-	packet.addByte(0); // Mount - mount doesn't exist, format if does: exists [1], level [4], EXP [4], tiredness [4]
-	packet.addByte(0); // Wish list count - item IDs [4]
+	packet.addShort(1); // Guild Name Len
+	packet.addByte(0x2D); // Guild Name
+	packet.addShort(0); // Guide Alliance Name Len ?
+	packet.addByte(0); // End of character info / start of pets
+	for (char i=0; i<3; i++) {
+		if (getinfo->getPets()->getSummoned(i) > 0) {
+			Pet *pet = getinfo->getPets()->getPet(getinfo->getPets()->getSummoned(i));
+			packet.addByte(1);
+			packet.addInt(pet->getType());
+			packet.addString(pet->getName());
+			packet.addByte(pet->getLevel());
+			packet.addShort(pet->getCloseness());
+			packet.addByte(pet->getFullness());
+			packet.addShort(0);
+			packet.addInt(getinfo->getInventory()->getItem(1,  -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0))) != 0 ? getinfo->getInventory()->getItem(1, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)))->id:0);
+		}
+	}
+	packet.addByte(0); // End of pets / start of taming mob
+	packet.addByte(0); // End of taming mob / start of wish list
+	packet.addByte(0); // Wish list count
 	packet.addInt(1);
 	packet.addInt(0);
 	packet.addInt(0);

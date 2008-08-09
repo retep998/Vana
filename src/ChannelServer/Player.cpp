@@ -47,6 +47,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TradesPacket.h"
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPlayerPacket.h"
+#include "Pets.h"
 
 Player::~Player() {
 	if (isconnect) {
@@ -61,6 +62,7 @@ Player::~Player() {
 		Skills::stopTimersPlayer(this);
 		Skills::stopCooldownTimersPlayer(this);
 		Inventory::stopTimersPlayer(this);
+		Pets::stopTimers(this);
 		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::maps[this->getMap()]->removePlayer(this);
 		Players::Instance()->removePlayer(this);
@@ -99,6 +101,12 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
 		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
+		case RECV_PET_CHAT: Pets::chat(this, packet); break;
+		case RECV_PET_COMMAND: Pets::showAnimation(this, packet); break;
+		case RECV_PET_FEED: Pets::feedPet(this, packet); break;
+		case RECV_PET_LOOT: Pets::lootItem(this, packet); break;
+		case RECV_PET_MOVE: Pets::movePet(this, packet); break;
+		case RECV_PET_SUMMON: Pets::summonPet(this, packet); break;
 		case RECV_SHOP_ACTION: Trades::tradeHandler(this, packet); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_USE_STORAGE: Inventory::useStorage(this, packet); break;
@@ -128,7 +136,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	skills.reset(new PlayerSkills(this));
 	quests.reset(new PlayerQuests(this));
 	buddyList.reset(new BuddyList(this));
-
+	pets.reset(new PlayerPets(this));
 	// Character info
 	mysqlpp::Query query = Database::chardb.query();
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << this->id;
@@ -177,7 +185,7 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	inv->setMesosStart(res[0]["mesos"]);
 
-	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM items WHERE charid = " << mysqlpp::quote << this->id;
+	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, petid, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << mysqlpp::quote << getPlayerid();
 	res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -201,7 +209,26 @@ void Player::playerConnect(ReadPacket *packet) {
 		item->ihand = res[i][18];
 		item->ijump = res[i][19];
 		item->ispeed = res[i][20];
+		item->petid = res[i][21];
 		inv->addItem((unsigned char) res[i][0], res[i][1], item);
+		if (item->petid != 0) {
+			Pet *pet = new Pet;
+
+			pet->setId(item->petid);
+			pet->setType(item->id);
+			pet->setIndex((signed char) res[i][22]);
+			pet->setName((string) res[i][23]);
+			pet->setLevel((unsigned char) res[i][24]);
+			pet->setCloseness((short) res[i][25]);
+			pet->setFullness((unsigned char) res[i][26]);
+			pet->setInventorySlot((unsigned char)res[i][1]);
+			pet->setSummoned(false);
+			pets->addPet(pet);
+
+			if (pet->getIndex() != -1) {
+				pets->setSummoned(pet->getId(), pet->getIndex());
+			}
+		}
 	}
 
 	// Skills
@@ -273,6 +300,11 @@ void Player::playerConnect(ReadPacket *packet) {
 	}
 
 	pos = Maps::maps[map]->getSpawnPoint()->pos;
+	for (char i = 0; i<3; i++) {
+		if (pets->getSummoned(i)) {
+			pets->getPet(pets->getSummoned(i))->setPos(Maps::maps[map]->getSpawnPoint()->pos);
+		}
+	}
 
 	type = 0;
 	PlayerPacket::showKeys(this, &keyMaps);
@@ -567,7 +599,8 @@ void Player::saveInventory() {
 				<< mysqlpp::quote << item->iavo << ","
 				<< mysqlpp::quote << item->ihand << ","
 				<< mysqlpp::quote << item->ijump << ","
-				<< mysqlpp::quote << item->ispeed << ")";
+				<< mysqlpp::quote << item->ispeed << ","
+				<< mysqlpp::quote << item->petid << ")";
 		}
 	}
 	query.exec();
@@ -642,12 +675,29 @@ void Player::saveVariables() {
 	}
 }
 
+void Player::savePets() {
+	Pet *pet;
+	mysqlpp::Query query = Database::chardb.query();
+	for (int i=0; i<pets->getPetAmount(); i++) {
+		pet = pets->getPetByIndex(i);
+		query << "UPDATE pets SET "
+			  << "`index` = "	 << mysqlpp::quote << (short) pet->getIndex() << ","
+			  << "name = "		 << mysqlpp::quote << pet->getName() << ","
+			  << "level = "		 << mysqlpp::quote << (short) pet->getLevel() << ","
+			  << "closeness = "  << mysqlpp::quote << pet->getCloseness() << ","
+			  << "fullness = "   << mysqlpp::quote << (short) pet->getFullness()
+			  << " WHERE id = "	 << mysqlpp::quote << pet->getId();
+		query.exec();
+	}
+}
+
 void Player::saveAll() {
 	saveSkills();
 	saveStats();
 	saveInventory();
 	saveStorage();
 	saveVariables();
+	savePets();
 }
 
 void Player::setOnline(bool online) {

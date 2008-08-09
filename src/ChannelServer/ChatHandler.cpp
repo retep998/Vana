@@ -241,13 +241,14 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			else if (strcmp(next_token, "ring") == 0) shopid = 9999995;
 			else if (strcmp(next_token, "chair") == 0) shopid = 9999994;
 			else if (strcmp(next_token, "mega") == 0) shopid = 9999993;
+			else if (strcmp(next_token, "pet") == 0) shopid = 9999992;
 			else shopid = atoi(next_token);
 
 			if (Shops::shops.find(shopid) != Shops::shops.end()) {
 				Shops::showShop(player, shopid);
 			}
 			else {
-				PlayerPacket::showMessage(player, "Invalid shop. Available shops: gear, scrolls, nx, face, ring, chair, mega", 6);
+				PlayerPacket::showMessage(player, "Invalid shop. Available shops: gear, scrolls, nx, face, ring, chair, mega, pet", 6);
 			}
 		}
 		else if (strcmp(command, "pos") == 0) {

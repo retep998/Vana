@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ISBULLET(x) (x/10000 == 233) // Pirate's bullets and capsules
 #define ISRECHARGEABLE(x) (ISSTAR(x) || ISBULLET(x))
 #define ISEQUIP(x) (GETINVENTORY(x) == 1)
+#define ISPET(x) (x >= 5000000 && x <= 5000045)
 
 #include <hash_map>
 #include <vector>

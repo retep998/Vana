@@ -15,29 +15,30 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef DROPPACK_H
-#define DROPPACK_H
+#ifndef PETSPACKET_H
+#define PETSPACKET_H
 
+#include <string>
 #include <vector>
 
+using std::string;
 using std::vector;
 
 class Player;
-class Drop;
 class Pet;
-struct Dropped;
-struct Pos;
+class ReadPacket;
 
-namespace DropsPacket {
-	void drop(Drop *drop, Pos origin);
-	void dropForPlayer(Player *player, Drop *drop, Pos origin);
-	void showDrop(Player *player, Drop *drop);
-	void takeNote(Player *player, int id, bool ismesos, short amount);
-	void takeDrop(Player *player, Drop *drop);
-	void dontTake(Player *player);
-	void removeDrop(Drop *drop);
-	void explodeDrop(Drop *drop);
-	void takeDropPet(Player *player, Drop *drop, Pet *pet);
+namespace PetsPacket {
+	void showChat(Player *player, Pet *pet, const string &message, char act);
+	void movePet(Player *player, Pet *pet, unsigned char *buf, int buflen);
+	void petSummoned(Player *player, Pet *pet, bool kick = false);
+	void showAnimation(Player *player, Pet *pet, char animation, bool success = false);
+	void updatePet(Player *player,  Pet *pet);
+	void levelUp(Player *player, Pet *pet);
+	void changeName(Player *player, Pet *pet);
+	void showPet(Player *player, Pet *pet);
+	void updateSummonedPets(Player *player);
+	void blankUpdate(Player *player);
 };
 
 #endif
