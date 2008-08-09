@@ -141,16 +141,16 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	if (player->getSkills()->getActiveSkillLevel(2001002) > 0) { // Magic Guard
 		unsigned short mp = player->getMP();
 		unsigned short hp = player->getHP();
-		if (attack.deadlyattack) {
+		if (attack.deadlyattack && damage > 0) {
 			if (mp > 0)
 				player->setMP(1);
 			player->setHP(1);
 		}
-		else if (attack.mpburn > 0) {
+		else if (attack.mpburn > 0 && damage > 0) {
 			player->setMP(mp - attack.mpburn);
 			player->setHP(hp - damage);
 		}
-		else {
+		else if (damage > 0) {
 			unsigned short reduc = Skills::skills[2001002][player->getSkills()->getActiveSkillLevel(2001002)].x;
 			int mpdamage = ((damage * reduc) / 100);
 			int hpdamage = damage - mpdamage;
