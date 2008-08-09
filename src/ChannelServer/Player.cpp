@@ -213,7 +213,6 @@ void Player::playerConnect(ReadPacket *packet) {
 		inv->addItem((unsigned char) res[i][0], res[i][1], item);
 		if (item->petid != 0) {
 			Pet *pet = new Pet;
-
 			pet->setId(item->petid);
 			pet->setType(item->id);
 			pet->setIndex((signed char) res[i][22]);
@@ -224,10 +223,8 @@ void Player::playerConnect(ReadPacket *packet) {
 			pet->setInventorySlot((unsigned char)res[i][1]);
 			pet->setSummoned(false);
 			pets->addPet(pet);
-
-			if (pet->getIndex() != -1) {
+			if (pet->getIndex() != -1)
 				pets->setSummoned(pet->getId(), pet->getIndex());
-			}
 		}
 	}
 
@@ -300,11 +297,9 @@ void Player::playerConnect(ReadPacket *packet) {
 	}
 
 	pos = Maps::maps[map]->getSpawnPoint()->pos;
-	for (char i = 0; i<3; i++) {
-		if (pets->getSummoned(i)) {
+	for (char i = 0; i < 3; i++)
+		if (pets->getSummoned(i))
 			pets->getPet(pets->getSummoned(i))->setPos(Maps::maps[map]->getSpawnPoint()->pos);
-		}
-	}
 
 	type = 0;
 	PlayerPacket::showKeys(this, &keyMaps);
@@ -678,7 +673,7 @@ void Player::saveVariables() {
 void Player::savePets() {
 	Pet *pet;
 	mysqlpp::Query query = Database::chardb.query();
-	for (int i=0; i<pets->getPetAmount(); i++) {
+	for (int i = 0; i < pets->getPetAmount(); i++) {
 		pet = pets->getPetByIndex(i);
 		query << "UPDATE pets SET "
 			  << "`index` = "	 << mysqlpp::quote << (short) pet->getIndex() << ","

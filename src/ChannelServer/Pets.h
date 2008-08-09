@@ -61,66 +61,26 @@ namespace Pets {
 
 class Pet {
 	public:
-		void setIndex(char index) {
-			this->index = index;
-		}
-		char getIndex() {
-			return this->index;
-		}
-		void setName(const string &name) {
-			this->name = name;
-		}
-		string getName() {
-			return this->name;
-		}
-		void setType(int type) {
-			this->type = type;
-		}
-		int getType() {
-			return this->type;
-		}
-		void setId(int id) {
-			this->id = id;
-		}
-		int getId() {
-			return this->id;
-		}
-		void setPos(Pos pos) {
-			this->pos = pos;
-		}
-		Pos getPos() {
-			return this->pos;
-		}
-		void setFullness(char fullness) {
-			this->fullness = fullness;
-		}
-		char getFullness() {
-			return this->fullness;
-		}
-		bool isSummoned() {
-			return this->summoned;
-		}
-		void setSummoned(bool summoned) {
-			this->summoned = summoned;
-		}
-		void setLevel(char level) {
-			this->level = level;
-		}
-		char getLevel() {
-			return this->level;
-		}
-		short getCloseness() {
-			return this->closeness;
-		}
-		void setCloseness(short closeness) {
-			this->closeness = closeness;
-		}
-		void setInventorySlot(char slot) {
-			this->inventorySlot = slot;
-		}
-		char getInventorySlot() {
-			return this->inventorySlot;
-		}
+		void setIndex(char index) { this->index = index; }
+		char getIndex() { return this->index; }
+		void setName(const string &name) { this->name = name; }
+		string getName() { return this->name; }
+		void setType(int type) { this->type = type; }
+		int getType() { return this->type; }
+		void setId(int id) { this->id = id; }
+		int getId() { return this->id; }
+		void setPos(Pos pos) { this->pos = pos; }
+		Pos getPos() { return this->pos; } 
+		void setFullness(char fullness) { this->fullness = fullness; }
+		char getFullness() { return this->fullness; }
+		bool isSummoned() {	return this->summoned; }
+		void setSummoned(bool summoned) { this->summoned = summoned; }
+		void setLevel(char level) {	this->level = level; }
+		char getLevel() { return this->level; }
+		short getCloseness() { return this->closeness; }
+		void setCloseness(short closeness) { this->closeness = closeness; }
+		void setInventorySlot(char slot) { this->inventorySlot = slot; }
+		char getInventorySlot() { return this->inventorySlot; }
 	private:
 		string name;
 		int id;

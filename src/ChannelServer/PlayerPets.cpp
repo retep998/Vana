@@ -19,18 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPets.h"
 
 void PlayerPets::addPet(Pet *pet) {
-	if (playerpets.find(pet->getId()) == playerpets.end()) {
+	if (playerpets.find(pet->getId()) == playerpets.end())
 		playerpets[pet->getId()] = pet;
-	}
 }
 
-Pet *PlayerPets::getPet(int petid) {
-	if (playerpets.find(petid) != playerpets.end()) {
+Pet * PlayerPets::getPet(int petid) {
+	if (playerpets.find(petid) != playerpets.end())
 		return playerpets[petid];
-	}
-	else {
+	else
 		return 0;
-	}
 }
 
 void PlayerPets::setSummoned(int petid, char index) {
@@ -38,26 +35,23 @@ void PlayerPets::setSummoned(int petid, char index) {
 }
 
 int PlayerPets::getSummoned(char index) {
-	if (summoned[index]) {
+	if (summoned[index])
 		return summoned[index];
-	}
-	else{
+	else
 		return 0;
-	}
 }
 
 int PlayerPets::getPetAmount() {
 	return playerpets.size();
 }
 
-Pet *PlayerPets::getPetByIndex(int index) {
-	unsigned int i=0;
+Pet * PlayerPets::getPetByIndex(int index) {
+	unsigned int i = 0;
 	for (hash_map<int, Pet *>::iterator iter = playerpets.begin(); iter != playerpets.end(); iter++) {
-		if (i == index) {
+		if (i == index)
 			return iter->second;
-		}
-		else{
+		else
 			i = i + 1;
-		}
 	}
+	return 0;
 }

@@ -101,6 +101,7 @@ private:
 		}
 	}
 };
+
 PetTimer * PetTimer::singleton = 0;
 
 void Pets::stopTimers(Player *player) {
@@ -116,15 +117,12 @@ void Pets::createPet(Player *player, int type) {
 	pet->setSummoned(false);
 	pet->setName(petsInfo[type].name);
 	pet->setIndex(-1);
-
 	mysqlpp::Query query = Database::chardb.query();
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << pet->getName() << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	int id = (int) res.insert_id();
-
 	pet->setId(id);
 	player->getPets()->addPet(pet);
-	
 	Item *item = new Item;
 	item->id = type;
 	item->amount = 1;
@@ -136,8 +134,7 @@ void Pets::createPet(Player *player, int type) {
 void Pets::movePet(Player *player, ReadPacket *packet) {
 	int petid = packet->getInt();
 	packet->skipBytes(4);
-
-	PetsPacket::movePet(player, player->getPets()->getPet(petid), packet->getBuffer(), packet->getBufferLength()-9);
+	PetsPacket::movePet(player, player->getPets()->getPet(petid), packet->getBuffer(), packet->getBufferLength() - 9);
 }
 
 void Pets::chat(Player *player, ReadPacket *packet) {
@@ -145,7 +142,6 @@ void Pets::chat(Player *player, ReadPacket *packet) {
 	packet->skipBytes(5);
 	char act = packet->getByte();
 	string message = packet->getString();
-
 	PetsPacket::showChat(player, player->getPets()->getPet(petid), message, act);
 }
 
@@ -153,8 +149,7 @@ void Pets::summonPet(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	short slot = packet->getShort();
 	bool master = packet->getByte() == 1;
-
-	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5,slot)->petid);
+	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5, slot)->petid);
 	pet->setPos(player->getPos());
 	summon(player, pet, master);
 }
@@ -163,18 +158,14 @@ void Pets::feedPet(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	short slot = packet->getShort();
 	int item = packet->getInt();
-
 	if (player->getPets()->getSummoned(0)) {
 		Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(0));
-
 		bool success = false;
 		if (pet->getFullness() < 100) {
-			if (pet->getFullness() + 30 < 100) {
+			if (pet->getFullness() + 30 < 100)
 				pet->setFullness(pet->getFullness() + 30);
-			}
-			else {
+			else
 				pet->setFullness(100);
-			}
 			success = true;
 		}
 		Inventory::takeItem(player, item, 1);
@@ -187,15 +178,12 @@ void Pets::showAnimation(Player *player, ReadPacket *packet) {
 	int petid = packet->getInt();
 	packet->skipBytes(5);
 	char act = packet->getByte();
-
 	Pet *pet = player->getPets()->getPet(petid);
-
 	bool success = false;
 	if (Randomizer::Instance()->randInt(100) < petsInteractInfo[pet->getType()][act].prob) {
 		success = true;
 		addCloseness(player, pet, petsInteractInfo[pet->getType()][act].increase);
 	}
-	
 	PetsPacket::showAnimation(player, pet, act, success);
 }
 
@@ -210,15 +198,12 @@ void Pets::changeName(Player *player, const string &name) {
 
 void Pets::addCloseness(Player *player, Pet *pet, short closeness) {
 	if (pet->getLevel() < 30) {
-		if (pet->getCloseness() + closeness < 30000) {
+		if (pet->getCloseness() + closeness < 30000)
 			pet->setCloseness(pet->getCloseness() + closeness);
-		}
-		else {
+		else
 			pet->setCloseness(30000);
-		}
-
-		if (pet->getCloseness() >= exps[pet->getLevel()-1]) {
-			pet->setLevel(pet->getLevel()+1);
+		if (pet->getCloseness() >= exps[pet->getLevel() - 1]) {
+			pet->setLevel(pet->getLevel() + 1);
 			PetsPacket::levelUp(player, pet);
 		}
 	}
@@ -229,7 +214,6 @@ void Pets::lootItem(Player *player, ReadPacket *packet) {
 	int petid = packet->getInt();
 	packet->skipBytes(13);
 	int itemid = packet->getInt();
-
 	Drop* drop = Maps::maps[player->getMap()]->getDrop(itemid);
 	if (drop == 0) {
 		DropsPacket::dontTake(player);
@@ -269,12 +253,11 @@ void Pets::lootItem(Player *player, ReadPacket *packet) {
 	}
 	Reactors::checkLoot(drop);
 	Maps::maps[player->getMap()]->removeDrop(drop->getID());
-
 	DropsPacket::takeDropPet(player, drop, player->getPets()->getPet(petid));
 }
 
 void Pets::showPets(Player *player) {
-	for (char i=0 ; i<3 ; i++) {
+	for (char i = 0; i < 3; i++) {
 		if (player->getPets()->getSummoned(i) != 0) {
 			Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i));
 			if (pet->isSummoned()) {
@@ -282,9 +265,8 @@ void Pets::showPets(Player *player) {
 				PetsPacket::showPet(player, pet);
 			}
 			else {
-				if (pet->getIndex() == 0) {
+				if (pet->getIndex() == 0)
 					PetTimer::Instance()->setPetTimer(player, pet->getId(), (6-petsInfo[pet->getType()].hunger)*1000*60);
-				}
 				pet->setSummoned(true);
 				PetsPacket::petSummoned(player, pet);
 			}
@@ -297,32 +279,30 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 	if (player->getSkills()->getSkillLevel(8) == 1) {
 		if (pet->isSummoned()) {
 			player->getPets()->setSummoned(0, pet->getIndex());
-			for (char i=(pet->getIndex()+1); i<3; i++) {
+			for (char i = (pet->getIndex() + 1); i < 3; i++) {
 				if (player->getPets()->getSummoned(i)) {
 					Pet *move = player->getPets()->getPet(player->getPets()->getSummoned(i));
-					move->setIndex(i-1);
-					player->getPets()->setSummoned(move->getId(), i-1);
+					move->setIndex(i - 1);
+					player->getPets()->setSummoned(move->getId(), i - 1);
 					player->getPets()->setSummoned(0, i);
-					if (i-1 == 0) {
+					if (i - 1 == 0)
 						PetTimer::Instance()->setPetTimer(player, move->getId(), (6-petsInfo[move->getType()].hunger)*1000*60);
-					}
 				}
 			}
-			if (pet->getIndex() == 0) {
+			if (pet->getIndex() == 0)
 				PetTimer::Instance()->stop(player, pet->getId());
-			}
 			pet->setSummoned(false);
 			PetsPacket::petSummoned(player, pet);
 			pet->setIndex(-1);
 		}
 		else {
 			if (master) {
-				for (char ii=2; ii>0; ii--) {
-					if (player->getPets()->getSummoned(ii-1) && !player->getPets()->getSummoned(ii)) {
-						Pet *move = player->getPets()->getPet(player->getPets()->getSummoned(ii-1));
-						player->getPets()->setSummoned(0,ii-1);
-						player->getPets()->setSummoned(move->getId(),ii);
-						move->setIndex(ii);
+				for (char k = 2; k > 0; k--) {
+					if (player->getPets()->getSummoned(k - 1) && !player->getPets()->getSummoned(k)) {
+						Pet *move = player->getPets()->getPet(player->getPets()->getSummoned(k - 1));
+						player->getPets()->setSummoned(0, k - 1);
+						player->getPets()->setSummoned(move->getId(), k);
+						move->setIndex(k);
 					}
 				}
 				pet->setIndex(0);
@@ -331,13 +311,13 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 				PetsPacket::petSummoned(player, pet);
 			}
 			else {
-				for (char i = 0; i<3; i++) {
+				for (char i = 0; i < 3; i++) {
 					if (!player->getPets()->getSummoned(i)) {
 						player->getPets()->setSummoned(pet->getId(), i);
 						pet->setIndex(i);
 						pet->setSummoned(true);
 						PetsPacket::petSummoned(player, pet);
-						PetTimer::Instance()->setPetTimer(player, pet->getId(), (6-petsInfo[pet->getType()].hunger)*1000*60);
+						PetTimer::Instance()->setPetTimer(player, pet->getId(), (6 - petsInfo[pet->getType()].hunger) * 1000 * 60); // TODO: Improve formula
 						break;
 					}
 				}
@@ -346,7 +326,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 	}
 	else {
 		if (pet->isSummoned()) {
-			player->getPets()->setSummoned(0,0);
+			player->getPets()->setSummoned(0, 0);
 			pet->setSummoned(false);
 			PetsPacket::petSummoned(player, pet);
 			pet->setIndex(-1);
@@ -362,11 +342,10 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 				PetTimer::Instance()->stop(player, kicked->getId());
 				PetsPacket::petSummoned(player, pet, true);
 			}
-			else {
+			else
 				PetsPacket::petSummoned(player, pet);
-			}
 			player->getPets()->setSummoned(pet->getId(), 0);
-			PetTimer::Instance()->setPetTimer(player, pet->getId(), (6-petsInfo[pet->getType()].hunger)*1000*60);
+			PetTimer::Instance()->setPetTimer(player, pet->getId(), (6 - petsInfo[pet->getType()].hunger) * 1000 * 60);
  		}
 	}
 	PetsPacket::blankUpdate(player);
