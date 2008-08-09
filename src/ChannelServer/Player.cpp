@@ -50,6 +50,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Player::~Player() {
 	if (isconnect) {
+		if (this->getHP() == 0)
+			this->acceptDeath();
 		if (save_on_dc) {
 			saveAll();
 			setOnline(false);
@@ -656,8 +658,13 @@ void Player::setOnline(bool online) {
 	query.exec();
 }
 
-void Player::acceptDeath(int mapid) {
+void Player::acceptDeath() {
+	int tomap;
+	if (Maps::maps.find(this->getMap()) == Maps::maps.end())
+		tomap = this->getMap();
+	else
+		tomap = Maps::maps[this->getMap()]->getInfo().rm;
 	setHP(50, false);
 	Skills::stopAllBuffs(this);
-	Maps::changeMap(this, mapid, 0);
+	Maps::changeMap(this, tomap, 0);
 }

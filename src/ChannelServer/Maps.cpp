@@ -67,12 +67,7 @@ void Maps::addMap(MapInfo info) {
 void Maps::usePortal(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1);
 	if (packet->getInt() == 0) { // Dead
-		int tomap;
-		if (maps.find(player->getMap()) == maps.end())
-			tomap = player->getMap();
-		else
-			tomap = maps[player->getMap()]->getInfo().rm;
-		player->acceptDeath(tomap);
+		player->acceptDeath();
 		return;
 	}
 	string portalname = packet->getString();
