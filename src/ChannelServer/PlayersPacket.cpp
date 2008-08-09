@@ -31,7 +31,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void PlayersPacket::faceExperiment(Player *player, int face) {
+void PlayersPacket::faceExpression(Player *player, int face) {
 	PacketCreator packet;
 	packet.addShort(SEND_FACE_EXPERIMENT);
 	packet.addInt(player->getPlayerid());
