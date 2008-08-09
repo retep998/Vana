@@ -90,11 +90,27 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			break;
 	}
 	if (damage == -1) { // 0 damage = regular miss, -1 = Fake
-		short job = player->getJob() / 10 - 40;
-		fake = 4020002 + (job * 100000);
-		if (player->getSkills()->getSkillLevel(fake) < 0) {
-			//hacking
-			return;
+		short job = player->getJob();
+		switch (job) {
+			case 412: // Fake
+			case 422:
+				fake = 4020002 + ((job / 10 - 40) * 100000);
+				if (player->getSkills()->getSkillLevel(fake) < 0) {
+					//hacking
+					return;
+				}
+				break;
+			case 112: // Guardian
+			case 122:
+				fake = (job * 10000) + 5 + (job == 122 ? 1 : 0);
+				if (player->getSkills()->getSkillLevel(fake) < 0) {
+					//hacking
+					return;
+				}
+				break;
+			default:
+				//hacking, I think
+				break;
 		}
 	}
 	if (player->getSkills()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
