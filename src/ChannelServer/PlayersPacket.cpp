@@ -104,10 +104,12 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo) {
 	packet.addShort(getinfo->getJob());
 	packet.addShort(getinfo->getFame());
 	packet.addByte(0); // Married
-	packet.addShort(1); // Guild Name Len
-	packet.addByte(0x2D); // Guild Name
-	packet.addShort(0); // Guide Alliance Name Len ?
-	packet.addInt(0);
+	packet.addString("-"); // Guild
+	packet.addString(""); // Guild Alliance
+	packet.addByte((player->getPlayerid() == getinfo->getPlayerid() ? 1 : 0));
+	packet.addByte(0); // Pets - pet #1 doesn't exist, looped format until doesn't: exists [1], pet ID [4], name [string], level [1], closeness [2], fullness [1], ? [2], pet equip ID [4]
+	packet.addByte(0); // Mount - mount doesn't exist, format if does: exists [1], level [4], EXP [4], tiredness [4]
+	packet.addByte(0); // Wish list count - item IDs [4]
 	packet.addInt(1);
 	packet.addInt(0);
 	packet.addInt(0);
