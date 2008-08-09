@@ -115,11 +115,10 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 		player->getInventory()->setMesos(newmesos);
 		SkillsPacket::showSkillEffect(player, 4211005);
 		player->setHP(player->getHP() - damage);
-		if (attack.deadlyattack)
+		if (attack.deadlyattack && damage > 0)
 			if (player->getMP() > 0)
 				player->setMP(1);
-
-		if (attack.mpburn)
+		if (attack.mpburn && damage > 0)
 			player->setMP(player->getMP() - attack.mpburn);
 		applieddamage = true;
 	}
