@@ -34,7 +34,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 
 void PlayersPacket::faceExpression(Player *player, int face) {
 	PacketCreator packet;
-	packet.addShort(SEND_FACE_EXPERIMENT);
+	packet.addShort(SEND_FACE_EXPRESSION);
 	packet.addInt(player->getPlayerid());
 	packet.addInt(face);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
@@ -102,10 +102,9 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo) {
 	packet.addShort(getinfo->getJob());
 	packet.addShort(getinfo->getFame());
 	packet.addByte(0); // Married
-	packet.addShort(1); // Guild Name Len
-	packet.addByte(0x2D); // Guild Name
-	packet.addShort(0); // Guide Alliance Name Len ?
-	packet.addByte(0); // End of character info / start of pets
+	packet.addString("-"); // Guild
+	packet.addString(""); // Guild Alliance
+	packet.addByte((player->getPlayerid() == getinfo->getPlayerid() ? 1 : 0)); // Is 1 when the character is clicking themselves
 	for (char i = 0; i < 3; i++) {
 		if (getinfo->getPets()->getSummoned(i) > 0) {
 			Pet *pet = getinfo->getPets()->getPet(getinfo->getPets()->getSummoned(i));
