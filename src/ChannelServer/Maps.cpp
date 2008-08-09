@@ -137,7 +137,7 @@ void Maps::mapTimer(int mapid) {
 }
 
 void Maps::newMap(Player *player, int mapid) {
-	Players::addPlayer(player);
+	Players::Instance()->addPlayer(player);
 	maps[mapid]->addPlayer(player);
 	maps[mapid]->showObjects(player);
 	MapTimer::Instance()->setMapTimer(player->getMap());

@@ -32,23 +32,22 @@ void CommandHandler::handleCommand(Player *player, ReadPacket *packet) {
 		chat = packet->getString();
 	}
 
-	hash_map<int, Player*>::iterator iter = Players::players.begin();
-	for (iter = Players::players.begin(); iter != Players::players.end(); iter++) {
-		if (StringUtilities::noCaseCompare(iter->second->getName(), name) == 0) {	
-			if (type == 0x06) {
-				PlayersPacket::whisperPlayer(iter->second, player->getName(), ChannelServer::Instance()->getChannel(), chat);
-				PlayersPacket::findPlayer(player,iter->second->getName(),-1,1);
-			}
-			else if (type == 0x05) {
-				PlayersPacket::findPlayer(player, iter->second->getName(), iter->second->getMap());
-			}
-			break;
+	Player *receiver = Players::Instance()->getPlayer(name);
+	if (receiver) {
+		if (type == 0x05) {
+			PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMap());
+		}
+		else if (type == 0x06) {
+			PlayersPacket::whisperPlayer(receiver, player->getName(), ChannelServer::Instance()->getChannel(), chat);
+			PlayersPacket::findPlayer(player, receiver->getName(), -1, 1);
 		}
 	}	
-	if (iter == Players::players.end()) {
-		if (type == 0x05)
-			WorldServerConnectPlayerPacket::findPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), name); // Let's connect to the world server to see if the player is on any other channel
-		else
+	else { // Let's connect to the world server to see if the player is on any other channel
+		if (type == 0x05) {
+			WorldServerConnectPlayerPacket::findPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), name);
+		}
+		else if (type == 0x06) {
 			WorldServerConnectPlayerPacket::whisperPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), name, chat);
+		}
 	}
 }

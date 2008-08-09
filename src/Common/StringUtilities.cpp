@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "StringUtilities.h"
+#include <algorithm>
 
 int StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 	string::const_iterator iter1 = s1.begin();
@@ -37,6 +38,12 @@ int StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 	else {
 		return (l1 < l2) ? -1 : 1;
 	}
+}
+
+string StringUtilities::toUpper(const string &s) {
+	string upper = s;
+	std::transform(upper.begin(), upper.end(), upper.begin(), toupper);
+	return upper;
 }
 
 void StringUtilities::trim(string &s) {

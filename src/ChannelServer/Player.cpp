@@ -61,7 +61,7 @@ Player::~Player() {
 		Inventory::stopTimersPlayer(this);
 		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::maps[this->getMap()]->removePlayer(this);
-		Players::deletePlayer(this);
+		Players::Instance()->removePlayer(this);
 	}
 }
 

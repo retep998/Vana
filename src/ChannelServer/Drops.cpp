@@ -56,10 +56,13 @@ void Drop::doDrop(Pos origin) {
 	if (!isQuest())
 		DropsPacket::drop(this, origin);
 	else {
-		if (Players::players.find(playerid) == Players::players.end())
+		Player *player = Players::Instance()->getPlayer(playerid);
+		if (!player) {
 			return;
-		if (Players::players[playerid]->getMap() == this->mapid)
-			DropsPacket::dropForPlayer(Players::players[playerid], this, origin);
+		}
+		if (player->getMap() == this->mapid) {
+			DropsPacket::dropForPlayer(player, this, origin);
+		}
 	}
 }
 

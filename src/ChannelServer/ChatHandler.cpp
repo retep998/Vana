@@ -373,48 +373,49 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "warp") == 0) {
 			char *name = strtok_s(0, " ", &next_token);
 			if (strlen(next_token) == 0) return;
-			if (strlen(name) > 0)
-				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
-					if (iter->second->getName() == string(name))
-						if (strlen(next_token) > 0) {
-							int mapid = atoi(strtok_s(0, " ", &next_token));
-							if (Maps::maps.find(mapid) != Maps::maps.end()) {
-								Maps::changeMap(iter->second, mapid, 0);
-								break;
-							}
-						}
+
+			Player *warpee;
+			if (warpee = Players::Instance()->getPlayer(name)) {
+				int mapid = atoi(strtok_s(0, " ", &next_token));
+				if (Maps::maps.find(mapid) != Maps::maps.end()) {
+					Maps::changeMap(warpee, mapid, 0);
+				}
+			}
 		}
 		else if (strcmp(command, "warpto") == 0) {
-			if (strlen(next_token) > 0)
-				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
-					if (iter->second->getName() == string(next_token))
-						Maps::changeMap(player , iter->second->getMap(), 0);
+			Player *warptoee;
+			if (warptoee = Players::Instance()->getPlayer(next_token)) {
+				Maps::changeMap(player , warptoee->getMap(), 0);
+			}
 		}
 		else if (strcmp(command, "mwarpto") == 0) {
-			if (strlen(next_token) > 0)
-				for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++)
-					if (iter->second->getName() == string(next_token)) {
-						Maps::changeMap(iter->second, player->getMap(), 0);
-						break;
-					}
+			Player *warpee;
+			if (warpee = Players::Instance()->getPlayer(next_token)) {
+				Maps::changeMap(warpee, player->getMap(), 0);
+			}
 		}
 		else if (strcmp(command, "warpall") == 0) { // Warp everyone to MapID or your current map
-			int mapid = 0;
+			int mapid;
 			if (strlen(next_token) == 0)
 				mapid = player->getMap();
 			else
 				mapid = atoi(next_token);
 
-			for (hash_map <int, Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++) {
-				if (Maps::maps.find(mapid) != Maps::maps.end()) {
-					if (mapid == player->getMap()) {
-						if (player->getName() == iter->second->getName())
-							Maps::changeMap(iter->second, mapid, 0);
-					}
-					else
-						Maps::changeMap(iter->second, mapid, 0);
-				}
+			if (Maps::maps.find(mapid) == Maps::maps.end()) {
+				return;
 			}
+
+			struct {
+				void operator()(Player *warpee) {
+					if (mapid != player->getMap() || player == warpee) {
+						Maps::changeMap(warpee, mapid, 0);
+					}
+				}
+				int mapid;
+				Player *player;
+			} changeMap = {mapid, player};
+
+			Players::Instance()->run(changeMap);
 		}
 		else if (strcmp(command, "kill") == 0) {
 			if (strcmp(next_token, "all") == 0) {

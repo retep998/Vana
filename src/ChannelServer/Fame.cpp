@@ -33,14 +33,15 @@ void Fame::handleFame(Player *player, ReadPacket *packet) {
 			if (checkResult >= 1 && checkResult <= 4)
 				FamePacket::sendError(player, checkResult);
 			else {
+				Player *famee = Players::Instance()->getPlayer(playerid);
 				int newFame = 0;
 				if (type == 1)
-					newFame = Players::players[playerid]->getFame() + 1;
+					newFame = famee->getFame() + 1;
 				else if (type == 0)
-					newFame = Players::players[playerid]->getFame() - 1;
-				Players::players[playerid]->setFame(newFame);
+					newFame = famee->getFame() - 1;
+				famee->setFame(newFame);
 				addFameLog(player->getPlayerid(), playerid);
-				FamePacket::sendFame(player, Players::players[playerid], type, newFame);
+				FamePacket::sendFame(player, famee, type, newFame);
 			}
 		}
 		else {

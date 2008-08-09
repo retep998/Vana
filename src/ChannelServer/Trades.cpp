@@ -117,7 +117,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 		case 0x02: {
 			if (player->isTrading() == 0) {  // Send trade request
 				int playerid = packet->getInt();
-				Player *receiver = Players::players[playerid];
+				Player *receiver = Players::Instance()->getPlayer(playerid);
 				switch (receiver->isTrading()) {
 					case -1: // Has a trade request already, this doesn't matter in global at the moment
 					case 0: {

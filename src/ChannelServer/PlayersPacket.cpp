@@ -90,10 +90,7 @@ void PlayersPacket::showMessage(const string &msg, char type) {
 	packet.addShort(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addString(msg);
-	for (hash_map<int,Player*>::iterator iter = Players::players.begin();
-		 iter != Players::players.end(); iter++) {
-			 packet.send(iter->second);
-	}
+	Players::Instance()->sendPacket(packet);
 }
 
 void PlayersPacket::showInfo(Player *player, Player *getinfo) {
@@ -154,7 +151,5 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int map, unsi
 void PlayersPacket::sendToPlayers(unsigned char *data, int len) {
 	PacketCreator packet;
 	packet.addBuffer(data, len);
-	for (hash_map<int,Player*>::iterator iter = Players::players.begin(); iter != Players::players.end(); iter++) {
-			packet.send(iter->second);
-	}
+	Players::Instance()->sendPacket(packet);
 }
