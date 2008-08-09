@@ -41,6 +41,7 @@ void ChannelServer::loadData() {
 	Initializing::initializeMobs();
 	Initializing::initializeReactors();
 	Initializing::initializeItems();
+	Initializing::initializePets();
 	Initializing::initializeDrops();
 	Initializing::initializeEquips();
 	Initializing::initializeShops();

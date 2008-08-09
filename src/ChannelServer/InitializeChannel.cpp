@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "MySQLM.h"
 #include "MiscUtilities.h"
+#include "Pets.h"
 #include <iostream>
 #include <string>
 
@@ -786,6 +787,50 @@ void Initializing::initializeMaps() {
 		foot.pos1 = Pos(atoi(footsRow[1]), atoi(footsRow[2]));
 		foot.pos2 = Pos(atoi(footsRow[3]), atoi(footsRow[4]));
 		Maps::maps[atoi(footsRow[0])]->addFoothold(foot);
+	}
+	std::cout << "DONE" << std::endl;
+}
+// Pets
+void Initializing::initializePets() {
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Pets... ";
+
+	mysqlpp::Query query = Database::datadb.query("SELECT id, name, hunger FROM petdata ORDER BY id ASC");
+
+	mysqlpp::UseQueryResult res;
+	if (!(res = query.use())) {
+		std::cout << "FAILED: " << Database::datadb.error() << std::endl;
+		exit(1);
+	}
+
+	MYSQL_ROW petRow;
+	while ((petRow = res.fetch_raw_row())) {
+		// 0 : Pet id
+		// 1 : Pet breed name
+		// 2 : Pet hunger level
+		PetInfo pet;
+		pet.name = petRow[1];
+		pet.hunger = atoi(petRow[2]);
+		Pets::petsInfo[atoi(petRow[0])] = pet;
+	}
+	
+	// Pet command info
+	query << "SELECT * FROM petinteractdata ORDER BY id ASC";
+
+	if (!(res = query.use())) {
+		std::cout << "FAILED: " << Database::datadb.error() << std::endl;
+		exit(1);
+	}
+
+	MYSQL_ROW petInteractRow;
+	while ((petInteractRow = res.fetch_raw_row())) {
+		// 0 : Id
+		// 1 : Command
+		// 2 : Increase
+		// 3 : Prob
+		PetInteractInfo pet;
+		pet.increase = atoi(petInteractRow[2]);
+		pet.prob = atoi(petInteractRow[3]);
+		Pets::petsInteractInfo[atoi(petInteractRow[0])][atoi(petInteractRow[1])] = pet;
 	}
 	std::cout << "DONE" << std::endl;
 }

@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaPortal.h"
 #include "Timer.h"
 #include "WorldServerConnectPlayerPacket.h"
+#include "Pets.h"
 #include <sstream>
 
 hash_map<int, Map *> Maps::maps;
@@ -119,6 +120,11 @@ void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
 	player->setMappos(portal->id);
 	player->setPos(portal->pos);
 	player->setType(0);
+	for (char i = 0; i<3; i++) {
+		if (player->getPets()->getSummoned(i)) {
+			player->getPets()->getPet(player->getPets()->getSummoned(i))->setPos(portal->pos);
+		}
+	}
 	WorldServerConnectPlayerPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), mapid);
 	MapPacket::changeMap(player);
 	newMap(player, mapid);
@@ -136,6 +142,7 @@ void Maps::newMap(Player *player, int mapid) {
 	maps[mapid]->addPlayer(player);
 	maps[mapid]->showObjects(player);
 	MapTimer::Instance()->setMapTimer(player->getMap());
+	Pets::showPets(player);
 }
 // Change Music
 void Maps::changeMusic(int mapid, const string &musicname) {

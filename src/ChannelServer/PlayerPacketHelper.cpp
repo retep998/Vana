@@ -19,9 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Inventory.h"
+#include "Pets.h"
+#include "math.h"
 
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *item, bool shortSlot) {
 	if (slot != 0) {
+		if (slot < 0) slot = abs(slot);
+		if (slot > 100) slot = slot -100;
 		if (shortSlot)
 			packet.addShort(slot);
 		else {
@@ -78,7 +82,12 @@ void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player)
 	packet.addByte(1);
 	packet.addInt(player->getHair());
 	player->getInventory()->addEquippedPacket(packet);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
+	for (char i=0; i<3; i++) {
+		if (player->getPets()->getSummoned(i) != 0) {
+			packet.addInt(player->getPets()->getPet(player->getPets()->getSummoned(i))->getType());
+		}
+		else {
+			packet.addInt(0);
+		}
+	}
 }

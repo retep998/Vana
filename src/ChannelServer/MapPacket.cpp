@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Inventory.h"
 #include "SendHeader.h"
+#include "Pets.h"
 
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
@@ -75,7 +76,22 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addInt(player->getChair());
 	packet.addPos(player->getPos());
 	packet.addByte(player->getType());
-	packet.addInt(0);
+	packet.addShort(0);
+	packet.addByte(0);
+	for (char i=0; i<3; i++) {
+		if (player->getPets()->getSummoned(i) != 0) {
+			packet.addByte(1);
+			Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i));
+			packet.addInt(pet->getType());
+			packet.addString(pet->getName());
+			packet.addInt(pet->getId());
+			packet.addInt(0);
+			packet.addPos(pet->getPos());
+			packet.addByte(0);
+			packet.addInt(0);
+		}
+	}
+	packet.addByte(0);
 	packet.addShort(1);
 	packet.addInt(0);
 	packet.addInt(0);

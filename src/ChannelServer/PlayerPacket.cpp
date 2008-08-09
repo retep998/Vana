@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "KeyMaps.h"
 #include "SkillMacros.h"
+#include "Pets.h"
 
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
@@ -98,7 +99,27 @@ void PlayerPacket::connectData(Player *player) {
 			Item *item = player->getInventory()->getItem(i, s);
 			if (item == 0)
 				continue;
-			PlayerPacketHelper::addItemInfo(packet, s, item);
+			if (item->petid == 0) {
+				PlayerPacketHelper::addItemInfo(packet, s, item);
+			}
+			else {
+				Pet *pet = player->getPets()->getPet(item->petid);
+				packet.addByte((char) s);
+				packet.addByte(3);
+				packet.addInt(item->id);
+				packet.addByte(1);
+				packet.addInt(pet->getId());
+				packet.addInt(0);
+				packet.addBytes("008005BB46E61702");
+				packet.addString(pet->getName(),13);
+				packet.addByte(pet->getLevel());
+				packet.addShort(pet->getCloseness());
+				packet.addByte(pet->getFullness());
+				packet.addByte(0);
+				packet.addBytes("B8D56000CEC8"); // Most likely has expire date in it in korean time stamp
+				packet.addByte(1); // Propapbly is it alive (1 Alive, 2 Dead)
+				packet.addInt(0);
+			}
 		}
 		packet.addByte(0);
 	}

@@ -15,24 +15,31 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INITIALIZECHANNEL_H
-#define INITIALIZECHANNEL_H
+#ifndef PLAYERPETS_H
+#define PLAYERPETS_H
 
-namespace Initializing {
-	void checkVEDBVersion();
-	void initializeMobs();
-	void initializeDrops();
-	void initializeReactors();
-	void initializeMaps();
-	void initializeEquips();
-	void initializeShops();
-	void initializeItems();
-	void initializeQuests();
-	void initializeSkills();
-	void initializePets();
+#include <hash_map>
 
-	const int vedb_version = 15;
-	const int vedb_subversion = 0;
+using stdext::hash_map;
+
+class Pet;
+class Player;
+
+
+class PlayerPets {
+public:
+	PlayerPets(Player *player) : player(player) { }
+	void addPet(Pet *pet);
+	Pet *getPet(int petid);
+	void setSummoned(int petid, char slot);
+	int getSummoned(char index);
+	int getPetAmount();
+	Pet *getPetByIndex(int index);
+private:
+	hash_map<int, Pet *> playerpets;
+	hash_map<char, int> summoned;
+
+	Player *player;
 };
 
 #endif

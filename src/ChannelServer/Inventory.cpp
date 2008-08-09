@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "ItemTimer.h"
 #include "ReadPacket.h"
+#include "Pets.h"
 #include <cmath>
 
 hash_map <int, EquipInfo> Inventory::equips;
@@ -150,7 +151,7 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 	for (short s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *olditem = player->getInventory()->getItem(inv, s);
 		if (olditem != 0) {
-			if (!ISRECHARGEABLE(item->id) && !ISEQUIP(item->id) && olditem->id == item->id && olditem->amount < items[item->id].maxslot) {
+			if (!ISRECHARGEABLE(item->id) && !ISEQUIP(item->id) && !ISPET(item->id) && olditem->id == item->id && olditem->amount < items[item->id].maxslot) {
 				if (item->amount + olditem->amount > items[item->id].maxslot) {
 					short amount = items[item->id].maxslot - olditem->amount;
 					item->amount -= amount;
@@ -173,6 +174,8 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 		}
 	}
 	if (freeslot != 0) {
+		if (item->petid != 0)
+			player->getPets()->getPet(item->petid)->setInventorySlot((char) freeslot);
 		player->getInventory()->addItem(inv, freeslot, item);
 		InventoryPacket::addNewItem(player, inv, freeslot, item, is);
 		return 0;
@@ -193,7 +196,12 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 			// hacking
 			return;
 		}
-		addNewItem(player, itemid, howmany);
+		if (!ISPET(itemid)) {
+			addNewItem(player, itemid, howmany);
+		}
+		else {
+			Pets::createPet(player, itemid);
+		}
 		player->getInventory()->setMesos(player->getInventory()->getMesos() - price * howmany);
 		InventoryPacket::bought(player);
 	}
@@ -306,8 +314,13 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 	else
 		item = new Item(itemid, thisamount);
 
-	if (addItem(player, item) == 0 && amount > 0)
-		addNewItem(player, itemid, amount);
+	if (!ISPET(itemid)) {
+		if (addItem(player, item) == 0 && amount > 0)
+			addNewItem(player, itemid, amount);
+	}
+	else {
+		Pets::createPet(player, itemid);
+	}
 }
 
 void Inventory::takeItem(Player *player, int itemid, int howmany) {
@@ -652,6 +665,9 @@ void Inventory::useCashItem(Player *player, ReadPacket *packet) {
 		string msg4 = packet->getString();
 
 		InventoryPacket::showMessenger(player, msg, msg2, msg3, msg4, packet->getBuffer(), packet->getBufferLength(), itemid);
+	}
+	else if (itemid/10000 == 517) {
+		Pets::changeName(player, msg);
 	}
 	Inventory::takeItem(player, itemid, 1);
 }

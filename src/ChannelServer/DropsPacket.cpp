@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Drops.h"
 #include "SendHeader.h"
+#include "Pets.h"
 
 void DropsPacket::drop(Drop *drop, Pos origin) {
 	PacketCreator packet;
@@ -35,9 +36,9 @@ void DropsPacket::drop(Drop *drop, Pos origin) {
 	packet.addInt(drop->getTime()); // Time till
 	packet.addPos(origin);
 	packet.addShort(0);
-	packet.addByte(0);
+	packet.addByte(1);
 	if (!drop->isMesos()) {
-		packet.addBytes("8005BB46E6170200");
+		packet.addBytes("8005BB46E6170201");
 	}
 	Maps::maps[drop->getMap()]->sendPacket(packet);
 	packet = PacketCreator();
@@ -52,9 +53,9 @@ void DropsPacket::drop(Drop *drop, Pos origin) {
 	packet.addInt(drop->getTime()); // Time till
 	packet.addPos(origin);
 	packet.addShort(0);
-	packet.addByte(0);
+	packet.addByte(1);
 	if (!drop->isMesos()) {
-		packet.addBytes("8005BB46E6170200");
+		packet.addBytes("8005BB46E6170201");
 	}
 	Maps::maps[drop->getMap()]->sendPacket(packet);
 }
@@ -72,9 +73,9 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
 	packet.addInt(drop->getTime()); // Time till
 	packet.addPos(origin);
 	packet.addShort(0);
-	packet.addByte(0);
+	packet.addByte(1);
 	if (!drop->isMesos()) {
-		packet.addBytes("8005BB46E6170200");
+		packet.addBytes("8005BB46E6170201");
 	}
 	player->getPacketHandler()->sendPacket(packet);
 }
@@ -90,9 +91,9 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
 	packet.addInt(drop->getTime());
-	packet.addByte(0);
+	packet.addByte(1);
 	if (!drop->isMesos()) {
-		packet.addBytes("8005BB46E6170200");
+		packet.addBytes("8005BB46E6170201");
 	}
 	player->getPacketHandler()->sendPacket(packet);
 }
@@ -155,4 +156,17 @@ void DropsPacket::explodeDrop(Drop *drop) {
 	packet.addInt(drop->getID());
 	packet.addShort(655);
 	Maps::maps[drop->getMap()]->sendPacket(packet);
+}
+
+void DropsPacket::takeDropPet(Player *player, Drop *drop, Pet *pet) {
+	PacketCreator packet;
+	packet.addShort(SEND_TAKE_DROP);
+	packet.addByte(5);
+	packet.addInt(drop->getID());
+	packet.addInt(player->getPlayerid());
+	packet.addByte(pet->getIndex());
+	if (!drop->isQuest()) {
+		Maps::maps[player->getMap()]->sendPacket(packet);
+	}
+	player->getPacketHandler()->sendPacket(packet);
 }
