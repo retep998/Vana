@@ -41,7 +41,6 @@ void Fame::handleFame(Player *player, ReadPacket *packet) {
 				Players::players[playerid]->setFame(newFame);
 				addFameLog(player->getPlayerid(), playerid);
 				FamePacket::sendFame(player, Players::players[playerid], type, newFame);
-				PlayersPacket::showInfo(player, Players::players[playerid]);
 			}
 		}
 		else {
