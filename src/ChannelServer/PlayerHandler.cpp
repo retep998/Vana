@@ -198,7 +198,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 
 void PlayerHandler::handleFacialExpression(Player *player, ReadPacket *packet) {
 	int face = packet->getInt();
-	PlayersPacket::faceExperiment(player, face);
+	PlayersPacket::faceExpression(player, face);
 }
 
 void PlayerHandler::handleGetInfo(Player *player, ReadPacket *packet) {
