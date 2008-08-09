@@ -63,12 +63,14 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 	int playerid = packet->getInt();
 	string ip = packet->getString();
 	short port = packet->getShort();
-	hash_map<int, Player *>::iterator iter = Players::players.find(playerid);
-	if (iter == Players::players.end())
+	
+	Player *ccPlayer = Players::Instance()->getPlayer(playerid);
+	if (!ccPlayer) {
 		return;
-	PlayerPacket::changeChannel(iter->second, ip, port);
-	iter->second->saveAll();
-	iter->second->setSaveOnDC(false);
+	}
+	PlayerPacket::changeChannel(ccPlayer, ip, port);
+	ccPlayer->saveAll();
+	ccPlayer->setSaveOnDC(false);
 }
 
 void WorldServerConnectHandler::findPlayer(ReadPacket *packet) {
@@ -77,10 +79,10 @@ void WorldServerConnectHandler::findPlayer(ReadPacket *packet) {
 	string name = packet->getString();
 	char is = packet->getByte();
 	if (channel == -1) {
-		PlayersPacket::findPlayer(Players::players[finder], name, -1, is);
+		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, -1, is);
 	}
 	else {
-		PlayersPacket::findPlayer(Players::players[finder], name, channel, is, 1);
+		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, channel, is, 1);
 	}
 }
 
@@ -90,7 +92,7 @@ void WorldServerConnectHandler::whisperPlayer(ReadPacket *packet) {
 	int channel = packet->getInt();
 	string message = packet->getString();
 
-	PlayersPacket::whisperPlayer(Players::players[whisperee], whisperer, channel, message);
+	PlayersPacket::whisperPlayer(Players::Instance()->getPlayer(whisperee), whisperer, channel, message);
 }
 
 void WorldServerConnectHandler::scrollingHeader(ReadPacket *packet) {
@@ -106,7 +108,7 @@ void WorldServerConnectHandler::forwardPacket(ReadPacket *packet) {
 	PacketCreator ppacket;
 	int playerid = packet->getInt();
 	ppacket.addBuffer(packet);
-	ppacket.send(Players::players[playerid]);
+	ppacket.send(Players::Instance()->getPlayer(playerid));
 }
 
 void WorldServerConnectHandler::setRates(ReadPacket *packet) {

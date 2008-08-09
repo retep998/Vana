@@ -25,6 +25,7 @@ using std::string;
 
 namespace StringUtilities {
 	int noCaseCompare(const string &s1, const string &s2);
+	string toUpper(const string &s);
 	void trim(string &s);
 	string trim(const string &s);
 

@@ -52,7 +52,7 @@ bool LuaNPC::run() {
 
 	if (!ret) {
 		// Error in NPC script
-		Players::players[playerid]->getNPC()->end();
+		Players::Instance()->getPlayer(playerid)->getNPC()->end();
 	}
 
 	return ret;

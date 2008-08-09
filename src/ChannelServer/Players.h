@@ -20,17 +20,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <hash_map>
 #include <string>
+#include <boost/function.hpp>
 
 using std::string;
 using stdext::hash_map;
 
+class PacketCreator;
 class Player;
 class ReadPacket;
 
-namespace Players {
-	extern hash_map <int, Player*> players;
+class Players {
+public:
+	static Players * Instance() {
+		if (singleton == 0)
+			singleton = new Players;
+		return singleton;
+	}
+
 	void addPlayer(Player *player);
-	void deletePlayer(Player *player);
+	void removePlayer(Player *player);
+	Player * getPlayer(int id);
+	Player * getPlayer(const string &name);
+
+	void run(boost::function<void (Player *)> func);
+	void sendPacket(PacketCreator &packet);
+private:
+	Players() {};
+	Players(const Players&);
+	Players& operator=(const Players&);
+	static Players *singleton;
+
+	hash_map<int, Player *> m_players;
+	hash_map<string, Player *> m_players_names; // Index of players by name
 };
 
 #endif

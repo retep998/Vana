@@ -109,7 +109,7 @@ bool LuaScriptable::run() {
 		string error = lua_tostring(luaVm, -1);
 		std::cout << error << std::endl;
 		
-		Player *player = Players::players[playerid];
+		Player *player = Players::Instance()->getPlayer(playerid);
 
 		if (player->isGM()) {
 			PlayerPacket::showMessage(player, error, 6);
@@ -136,7 +136,7 @@ void LuaScriptable::setVariable(const string &name, const string &val) {
 
 Player * LuaExports::getPlayer(lua_State *luaVm) {
 	lua_getglobal(luaVm, "playerid");
-	return Players::players[lua_tointeger(luaVm, -1)];
+	return Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 }
 
 int LuaExports::addSkillLevel(lua_State *luaVm) {
