@@ -102,96 +102,98 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			return;
 		}
 	}
-	if (player->getSkills()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
-		int mesorate = Skills::skills[4211005][player->getSkills()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
-		unsigned short hp = player->getHP();
-		int mesoloss = (int)(mesorate * (damage / 2) / 100);
-		int mesos = player->getInventory()->getMesos();
-		int newmesos = mesos - mesoloss;
-		if (newmesos > -1) {
-			damage = (int)(damage / 2); // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
-		}
-		else { // Special damage calculation for not having enough mesos
-			double mesos2 = mesos + 0.0; // You can't get a double from math involving 2 ints, even if a decimal results
-			double reduction = 2.0 - ((mesos2 / mesoloss) / 2);
-			damage = (int)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
-			newmesos = 0;
-		}
-		player->getInventory()->setMesos(newmesos);
-		SkillsPacket::showSkillEffect(player, 4211005);
-		player->setHP(player->getHP() - damage);
-		if (attack.deadlyattack && damage > 0)
-			if (player->getMP() > 0)
-				player->setMP(1);
-		if (attack.mpburn && damage > 0)
-			player->setMP(player->getMP() - attack.mpburn);
-		applieddamage = true;
-	}
-	if (player->getSkills()->getActiveSkillLevel(2001002) > 0) { // Magic Guard
-		unsigned short mp = player->getMP();
-		unsigned short hp = player->getHP();
-		if (attack.deadlyattack && damage > 0) {
-			if (mp > 0)
-				player->setMP(1);
-			player->setHP(1);
-		}
-		else if (attack.mpburn > 0 && damage > 0) {
-			player->setMP(mp - attack.mpburn);
-			player->setHP(hp - damage);
-		}
-		else if (damage > 0) {
-			unsigned short reduc = Skills::skills[2001002][player->getSkills()->getActiveSkillLevel(2001002)].x;
-			int mpdamage = ((damage * reduc) / 100);
-			int hpdamage = damage - mpdamage;
-			bool ison = false;
-			if (player->getJob() % 10 == 2) {
-					int infinity = player->getJob() * 10000 + 1004;
-					if (player->getSkills()->getActiveSkillLevel(infinity) > 0)
-						ison = true;
-			}
-			if (mpdamage < mp || ison) {
-				player->setMP(mp - mpdamage);
-				player->setHP(hp - hpdamage);
-			}
-			else if (mpdamage >= mp) {
-				player->setMP(0);
-				player->setHP(hp - (hpdamage + (mpdamage - mp)));
-			}
-		}
-		applieddamage = true;
-	}
-	if (((job / 100) == 1) && ((job % 10) == 2)) { // Achilles for 4th job warriors
-		int achx = 1000;
-		int sid = 1120004;
-		switch (job) {
-			case 112: sid = 1120004; break;
-			case 122: sid = 1220005; break;
-			case 132: sid = 1230005; break;
-		}
-		int slv = player->getSkills()->getSkillLevel(sid);
-		if (slv > 0) { achx = Skills::skills[sid][slv].x; }
-		double red = (2.0 - achx / 1000.0);
-		player->setHP(player->getHP() - (int)(damage / red));
-		if (attack.deadlyattack && damage > 0)
-			if (player->getMP() > 0)
-				player->setMP(1);
-		if (attack.mpburn > 0 && damage > 0)
-			player->setMP(player->getMP() - attack.mpburn);
-		applieddamage = true;
-	}
-	if (attack.disease > 0) {
+	if (attack.disease > 0 && damage != 0) { // Fake/Guardian don't prevent disease
 		// Status ailment processing here
 	}
-	if (damage > 0 && applieddamage == false) {
-		if (attack.deadlyattack) {
-			if (player->getMP() > 0)
-				player->setMP(1);
-			player->setHP(1);
-		}
-		else
+	if (damage > 0) {
+		if (player->getSkills()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
+			int mesorate = Skills::skills[4211005][player->getSkills()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
+			unsigned short hp = player->getHP();
+			int mesoloss = (int)(mesorate * (damage / 2) / 100);
+			int mesos = player->getInventory()->getMesos();
+			int newmesos = mesos - mesoloss;
+			if (newmesos > -1) {
+				damage = (int)(damage / 2); // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
+			}
+			else { // Special damage calculation for not having enough mesos
+				double mesos2 = mesos + 0.0; // You can't get a double from math involving 2 ints, even if a decimal results
+				double reduction = 2.0 - ((mesos2 / mesoloss) / 2);
+				damage = (int)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
+				newmesos = 0;
+			}
+			player->getInventory()->setMesos(newmesos);
+			SkillsPacket::showSkillEffect(player, 4211005);
 			player->setHP(player->getHP() - damage);
-		if (attack.mpburn > 0)
-			player->setMP(player->getMP() - attack.mpburn);
+			if (attack.deadlyattack)
+				if (player->getMP() > 0)
+					player->setMP(1);
+			if (attack.mpburn)
+				player->setMP(player->getMP() - attack.mpburn);
+			applieddamage = true;
+		}
+		if (player->getSkills()->getActiveSkillLevel(2001002) > 0) { // Magic Guard
+			unsigned short mp = player->getMP();
+			unsigned short hp = player->getHP();
+			if (attack.deadlyattack ) {
+				if (mp > 0)
+					player->setMP(1);
+				player->setHP(1);
+			}
+			else if (attack.mpburn > 0) {
+				player->setMP(mp - attack.mpburn);
+				player->setHP(hp - damage);
+			}
+			else {
+				unsigned short reduc = Skills::skills[2001002][player->getSkills()->getActiveSkillLevel(2001002)].x;
+				int mpdamage = ((damage * reduc) / 100);
+				int hpdamage = damage - mpdamage;
+				bool ison = false;
+				if (player->getJob() % 10 == 2) {
+						int infinity = player->getJob() * 10000 + 1004;
+						if (player->getSkills()->getActiveSkillLevel(infinity) > 0)
+							ison = true;
+				}
+				if (mpdamage < mp || ison) {
+					player->setMP(mp - mpdamage);
+					player->setHP(hp - hpdamage);
+				}
+				else if (mpdamage >= mp) {
+					player->setMP(0);
+					player->setHP(hp - (hpdamage + (mpdamage - mp)));
+				}
+			}
+			applieddamage = true;
+		}
+		if (((job / 100) == 1) && ((job % 10) == 2)) { // Achilles for 4th job warriors
+			int achx = 1000;
+			int sid = 1120004;
+			switch (job) {
+				case 112: sid = 1120004; break;
+				case 122: sid = 1220005; break;
+				case 132: sid = 1230005; break;
+			}
+			int slv = player->getSkills()->getSkillLevel(sid);
+			if (slv > 0) { achx = Skills::skills[sid][slv].x; }
+			double red = (2.0 - achx / 1000.0);
+			player->setHP(player->getHP() - (int)(damage / red));
+			if (attack.deadlyattack)
+				if (player->getMP() > 0)
+					player->setMP(1);
+			if (attack.mpburn > 0)
+				player->setMP(player->getMP() - attack.mpburn);
+			applieddamage = true;
+		}
+		if (applieddamage == false) {
+			if (attack.deadlyattack) {
+				if (player->getMP() > 0)
+					player->setMP(1);
+				player->setHP(1);
+			}
+			else
+				player->setHP(player->getHP() - damage);
+			if (attack.mpburn > 0)
+				player->setMP(player->getMP() - attack.mpburn);
+		}
 	}
 	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, nodamageid, pgmr);
 }
