@@ -30,15 +30,14 @@ class PlayerPets {
 public:
 	PlayerPets(Player *player) : player(player) { }
 	void addPet(Pet *pet);
-	Pet *getPet(int petid);
+	Pet * getPet(int petid);
 	void setSummoned(int petid, char slot);
 	int getSummoned(char index);
 	int getPetAmount();
-	Pet *getPetByIndex(int index);
+	Pet * getPetByIndex(int index);
 private:
 	hash_map<int, Pet *> playerpets;
 	hash_map<char, int> summoned;
-
 	Player *player;
 };
 

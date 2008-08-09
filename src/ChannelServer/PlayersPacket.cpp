@@ -106,7 +106,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo) {
 	packet.addByte(0x2D); // Guild Name
 	packet.addShort(0); // Guide Alliance Name Len ?
 	packet.addByte(0); // End of character info / start of pets
-	for (char i=0; i<3; i++) {
+	for (char i = 0; i < 3; i++) {
 		if (getinfo->getPets()->getSummoned(i) > 0) {
 			Pet *pet = getinfo->getPets()->getPet(getinfo->getPets()->getSummoned(i));
 			packet.addByte(1);
@@ -116,7 +116,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo) {
 			packet.addShort(pet->getCloseness());
 			packet.addByte(pet->getFullness());
 			packet.addShort(0);
-			packet.addInt(getinfo->getInventory()->getItem(1,  -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0))) != 0 ? getinfo->getInventory()->getItem(1, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)))->id:0);
+			packet.addInt(getinfo->getInventory()->getItem(1,  -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0))) != 0 ? getinfo->getInventory()->getItem(1, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)))->id : 0);
 		}
 	}
 	packet.addByte(0); // End of pets / start of taming mob
