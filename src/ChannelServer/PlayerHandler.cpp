@@ -138,13 +138,19 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			unsigned short reduc = Skills::skills[2001002][player->getSkills()->getActiveSkillLevel(2001002)].x;
 			int mpdamage = ((damage * reduc) / 100);
 			int hpdamage = damage - mpdamage;
-			if (mpdamage >= mp) {
-				player->setMP(0);
-				player->setHP(hp - (hpdamage + (mpdamage - mp)));
+			bool ison = false;
+			if (player->getJob() % 10 == 2) {
+					int infinity = player->getJob() * 10000 + 1004;
+					if (player->getSkills()->getActiveSkillLevel(infinity) > 0)
+						ison = true;
 			}
-			if (mpdamage < mp) {
+			if (mpdamage < mp || ison) {
 				player->setMP(mp - mpdamage);
 				player->setHP(hp - hpdamage);
+			}
+			else if (mpdamage >= mp) {
+				player->setMP(0);
+				player->setHP(hp - (hpdamage + (mpdamage - mp)));
 			}
 		}
 		applieddamage = true;
@@ -236,7 +242,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			player->setSpecialSkill(info);
 			SkillsPacket::showSpecialSkill(player, info);
 			break;
-					  }
+		}
 		case 4211001: { // Chakra, unknown heal formula
 			short dex = player->getDex();
 			short luk = player->getLuk();
@@ -246,6 +252,6 @@ void PlayerHandler::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			short range = maximum - minimum;
 			player->setHP(player->getHP() + (Randomizer::Instance()->randInt(range) + minimum));
 			break;
-					  }
+		}
 	}
 }
