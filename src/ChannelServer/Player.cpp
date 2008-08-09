@@ -16,34 +16,37 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Player.h"
+#include "BuddyList.h"
+#include "ChannelServer.h"
+#include "ChatHandler.h"
+#include "CommandHandler.h"
+#include "Connectable.h"
 #include "Drops.h"
+#include "Fame.h"
 #include "Inventory.h"
+#include "KeyMaps.h"
+#include "Levels.h"
+#include "LevelsPacket.h"
 #include "Maps.h"
 #include "Mobs.h"
-#include "NPCs.h"
-#include "Reactors.h"
-#include "Players.h"
 #include "MySQLM.h"
-#include "PlayerPacket.h"
-#include "Levels.h"
-#include "Skills.h"
-#include "Quests.h"
-#include "Fame.h"
-#include "ChannelServer.h"
-#include "RecvHeader.h"
-#include "WorldServerConnectPlayer.h"
-#include "WorldServerConnectPlayerPacket.h"
-#include "ServerPacket.h"
-#include "Connectable.h"
-#include "ReadPacket.h"
-#include "Pos.h"
-#include "KeyMaps.h"
-#include "SkillMacros.h"
+#include "NPCs.h"
 #include "Party.h"
-#include "BuddyList.h"
+#include "PlayerHandler.h"
+#include "PlayerPacket.h"
+#include "Players.h"
+#include "Pos.h"
+#include "Quests.h"
+#include "Reactors.h"
+#include "ReadPacket.h"
+#include "RecvHeader.h"
+#include "ServerPacket.h"
+#include "SkillMacros.h"
+#include "Skills.h"
 #include "Trades.h"
 #include "TradesPacket.h"
-#include "LevelsPacket.h"
+#include "WorldServerConnectPlayer.h"
+#include "WorldServerConnectPlayerPacket.h"
 
 Player::~Player() {
 	if (isconnect) {
@@ -72,25 +75,25 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_CHANGE_MAP: Maps::usePortal(this, packet); break;
 		case RECV_CHANGE_MAP_SPECIAL: Maps::useScriptedPortal(this, packet); break; // Portals that cause scripted events
 		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
-		case RECV_CHAT: Players::chatHandler(this, packet); break;
-		case RECV_COMMAND: Players::commandHandler(this, packet); break;
+		case RECV_CHAT: ChatHandler::handleChat(this, packet); break;
+		case RECV_COMMAND: CommandHandler::handleCommand(this, packet); break;
 		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet); break;
 		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet); break;
 		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet); break;
 		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet); break;
-		case RECV_DAMAGE_PLAYER: Players::damagePlayer(this, packet); break;
+		case RECV_DAMAGE_PLAYER: PlayerHandler::handleDamage(this, packet); break;
 		case RECV_DROP_MESO: Drops::dropMesos(this, packet); break;
-		case RECV_FACE_EXPERIMENT: Players::faceExperiment(this, packet); break;
+		case RECV_FACE_EXPERIMENT: PlayerHandler::handleFacialExpression(this, packet); break;
 		case RECV_FAME: Fame::handleFame(this, packet); break;
-		case RECV_GET_PLAYER_INFO: Players::getPlayerInfo(this, packet); break;
+		case RECV_GET_PLAYER_INFO: PlayerHandler::handleGetInfo(this, packet); break;
 		case RECV_GET_QUEST: Quests::getQuest(this, packet); break;
-		case RECV_GROUP_CHAT: Players::groupChatHandler(this, packet); break;
-		case RECV_HEAL_PLAYER: Players::healPlayer(this, packet); break;
+		case RECV_GROUP_CHAT: ChatHandler::handleGroupChat(this, packet); break;
+		case RECV_HEAL_PLAYER: PlayerHandler::handleHeal(this, packet); break;
 		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet); break;
 		case RECV_LOOT_ITEM: Drops::lootItem(this, packet); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
-		case RECV_MOVE_PLAYER: Players::handleMoving(this, packet); break;
+		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
 		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
@@ -98,7 +101,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_USE_STORAGE: Inventory::useStorage(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
-		case RECV_SPECIAL_SKILL: Players::handleSpecialSkills(this, packet); break;
+		case RECV_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
 		case RECV_STOP_CHAIR: Inventory::stopChair(this, packet); break;
 		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, packet); break;
 		case RECV_USE_CHAIR: Inventory::useChair(this, packet); break;
