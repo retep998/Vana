@@ -141,7 +141,7 @@ public:
 	void saveVariables();
 	void saveAll();
 	void setOnline(bool online);
-	void acceptDeath(int mapid);
+	void acceptDeath();
 private:
 	void playerConnect(ReadPacket *packet);
 	void changeKey(ReadPacket *packet);
