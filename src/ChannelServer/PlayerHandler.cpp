@@ -36,6 +36,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	int mapmobid = 0; // Map Mob ID
 	int nodamageid = 0;
 	short job = player->getJob();
+	short disease = 0;
 	bool applieddamage = false;
 	PGMRInfo pgmr;
 	MobAttackInfo attack;
@@ -49,8 +50,10 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 				return;
 			}
 			mapmobid = packet->getInt();
-			if (type != 0xFF)
+			if (type != 0xFF) {
 				attack = Mobs::mobinfo[mobid].skills[type];
+				disease = attack.disease;
+			}
 			hit = packet->getByte(); // Knock direction
 			break;
 	}
@@ -83,7 +86,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	}
 	switch (type) { // Yes, another one, end of packets
 		case 0xFE:
-			packet->skipBytes(2); // Disease, normal end of packet
+			disease = packet->getShort(); // Disease, normal end of packet
 			break;
 		default: 
 			packet->skipBytes(1); // Stance, normal end of packet
@@ -102,7 +105,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			return;
 		}
 	}
-	if (attack.disease > 0 && damage != 0) { // Fake/Guardian don't prevent disease
+	if (disease > 0 && damage != 0) { // Fake/Guardian don't prevent disease
 		// Status ailment processing here
 	}
 	if (damage > 0) {
@@ -119,7 +122,6 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 				double mesos2 = mesos + 0.0; // You can't get a double from math involving 2 ints, even if a decimal results
 				double reduction = 2.0 - ((mesos2 / mesoloss) / 2);
 				damage = (int)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
-				newmesos = 0;
 			}
 			player->getInventory()->setMesos(newmesos);
 			SkillsPacket::showSkillEffect(player, 4211005);
@@ -127,14 +129,14 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			if (attack.deadlyattack)
 				if (player->getMP() > 0)
 					player->setMP(1);
-			if (attack.mpburn)
+			if (attack.mpburn > 0)
 				player->setMP(player->getMP() - attack.mpburn);
 			applieddamage = true;
 		}
 		if (player->getSkills()->getActiveSkillLevel(2001002) > 0) { // Magic Guard
 			unsigned short mp = player->getMP();
 			unsigned short hp = player->getHP();
-			if (attack.deadlyattack ) {
+			if (attack.deadlyattack) {
 				if (mp > 0)
 					player->setMP(1);
 				player->setHP(1);
@@ -165,7 +167,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			applieddamage = true;
 		}
 		if (((job / 100) == 1) && ((job % 10) == 2)) { // Achilles for 4th job warriors
-			int achx = 1000;
+			float achx = 1000.0;
 			int sid = 1120004;
 			switch (job) {
 				case 112: sid = 1120004; break;
