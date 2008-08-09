@@ -120,7 +120,7 @@ void PlayerPacket::connectData(Player *player) {
 		packet.addBytes("FFC99A3B");
 	packet.addInt(0);
 	packet.addInt64(TimeUtilities::getServerTime());
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
@@ -138,7 +138,7 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 			packet.addInt(0);
 		}
 	}
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
@@ -163,7 +163,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 		}
 	}
 	
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
@@ -172,7 +172,7 @@ void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
 	packet.addByte(is);
 	packet.addInt(id);
 	packet.addInt(value);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
@@ -181,7 +181,7 @@ void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
 	packet.addByte(is);
 	packet.addInt(id);
 	packet.addShort(value);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
@@ -190,7 +190,7 @@ void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
 	packet.addByte(is);
 	packet.addInt(id);
 	packet.addByte(value);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
@@ -199,7 +199,7 @@ void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
 	packet.addByte(1);
 	packet.addIP(ip);
 	packet.addShort(port);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
@@ -207,7 +207,7 @@ void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
 	packet.addShort(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addString(msg);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PlayerPacket::instructionBubble(Player *player, const string &msg, short width, short height) {
@@ -225,5 +225,5 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, short wi
 	packet.addShort(height);
 	packet.addByte(1);
 
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }

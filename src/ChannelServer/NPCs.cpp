@@ -193,51 +193,51 @@ PacketCreator & NPC::npcPacket(char type) {
 
 void NPC::sendSimple() {
 	PacketCreator packet = npcPacket(NPCDialogs::simple);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::sendYesNo() {
 	PacketCreator packet = npcPacket(NPCDialogs::yesNo);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::sendNext() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(0);
 	packet.addByte(1);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::sendBackNext() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(1);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::sendBackOK() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(0);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::sendOK() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addShort(0);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::sendAcceptDecline() {
 	PacketCreator packet = npcPacket(NPCDialogs::acceptDecline);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::sendGetText() {
 	PacketCreator packet = npcPacket(NPCDialogs::getText);
 	packet.addInt(0);
 	packet.addInt(0);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::sendGetNumber(int def, int min, int max) {
@@ -246,7 +246,7 @@ void NPC::sendGetNumber(int def, int min, int max) {
 	packet.addInt(min);
 	packet.addInt(max);
 	packet.addInt(0);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::sendStyle(int styles[], char size) {
@@ -254,7 +254,7 @@ void NPC::sendStyle(int styles[], char size) {
 	packet.addByte(size);
 	for (int i = 0; i < size; i++)
 		packet.addInt(styles[i]);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void NPC::setState(int state) {

@@ -35,7 +35,7 @@ void TradesPacket::sendOpenTrade(Player *player, const vector<Player *> &players
 		packet.addString(players[c]->getName());
 		packet.addByte(pos[c]); // Location in the window
 	}
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int tradeid) {
@@ -45,7 +45,7 @@ void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int tradei
 	packet.addByte(0x03);
 	packet.addString(player->getName());
 	packet.addInt(tradeid);
-	packet.send(receiver);
+	receiver->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendTradeMessage(Player *player, Player *receiver, char type, char message) {
@@ -54,7 +54,7 @@ void TradesPacket::sendTradeMessage(Player *player, Player *receiver, char type,
 	packet.addByte(type);
 	packet.addByte(message);
 	packet.addString(player->getName());
-	packet.send(receiver);
+	receiver->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendTradeMessage(Player *receiver, char type, char message) {
@@ -63,7 +63,7 @@ void TradesPacket::sendTradeMessage(Player *receiver, char type, char message) {
 	packet.addByte(type);
 	packet.addByte(0x00);
 	packet.addByte(message);
-	packet.send(receiver);
+	receiver->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendTradeChat(Player *player, unsigned char blue, string chat) {
@@ -73,7 +73,7 @@ void TradesPacket::sendTradeChat(Player *player, unsigned char blue, string chat
 	packet.addByte(0x08);
 	packet.addByte(blue);
 	packet.addString(chat);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendAddUser(Player *original, Player *newb, char slot) {
@@ -83,7 +83,7 @@ void TradesPacket::sendAddUser(Player *original, Player *newb, char slot) {
 	packet.addByte(slot);
 	PlayerPacketHelper::addPlayerDisplay(packet, newb);
 	packet.addString(newb->getName());
-	packet.send(original);
+	original->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendLeaveTrade(Player *player) {
@@ -92,7 +92,7 @@ void TradesPacket::sendLeaveTrade(Player *player) {
 	packet.addByte(0x0A);
 	packet.addByte(0x01); // Slot, doesn't matter for trades
 	packet.addByte(0x02); // Message, doesn't matter for trades
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendAddMesos(Player *receiver, unsigned char slot, int amount) {
@@ -101,14 +101,14 @@ void TradesPacket::sendAddMesos(Player *receiver, unsigned char slot, int amount
 	packet.addByte(0x0F);
 	packet.addByte(slot);
 	packet.addInt(amount);
-	packet.send(receiver);
+	receiver->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendAccepted(Player *destination) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x10);
-	packet.send(destination);
+	destination->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendEndTrade(Player *destination, unsigned char message) {
@@ -122,7 +122,7 @@ void TradesPacket::sendEndTrade(Player *destination, unsigned char message) {
 	//			0x07 = unsuccessful
 	//			0x08 = "You cannot make the trade because there are some items which you cannot carry more than one."
 	//			0x09 = "You cannot make the trade because the other person's on a different map."
-	packet.send(destination);
+	destination->getPacketHandler()->sendPacket(packet);
 }
 
 void TradesPacket::sendAddItem(Player *destination, unsigned char player, char slot, char inventory, Item *item) {
@@ -131,5 +131,5 @@ void TradesPacket::sendAddItem(Player *destination, unsigned char player, char s
 	packet.addByte(0x0E);
 	packet.addByte(player);
 	PlayerPacketHelper::addItemInfo(packet, slot, item);
-	packet.send(destination);
+	destination->getPacketHandler()->sendPacket(packet);
 }

@@ -76,7 +76,7 @@ void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
 	if (!drop->isMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void DropsPacket::showDrop(Player *player, Drop *drop) {
@@ -94,7 +94,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 	if (!drop->isMesos()) {
 		packet.addBytes("8005BB46E6170200");
 	}
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
@@ -116,7 +116,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 		packet.addInt(0);
 		packet.addInt(0);
 	}
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void DropsPacket::takeDrop(Player *player, Drop *drop) {
@@ -129,7 +129,7 @@ void DropsPacket::takeDrop(Player *player, Drop *drop) {
 		Maps::maps[player->getMap()]->sendPacket(packet);
 	}
 	else {
-		packet.send(player);
+		player->getPacketHandler()->sendPacket(packet);
 	}
 }
 
@@ -137,7 +137,7 @@ void DropsPacket::dontTake(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addShort(1);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void DropsPacket::removeDrop(Drop *drop) {

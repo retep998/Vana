@@ -33,7 +33,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int i) {
 	packet.addShort(npc.rx0);
 	packet.addShort(npc.rx1);
 	packet.addByte(1);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 	packet = PacketCreator();
 	packet.addShort(SEND_SHOW_NPC2);
 	packet.addByte(1);
@@ -46,5 +46,5 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int i) {
 	packet.addShort(npc.rx0);
 	packet.addShort(npc.rx1);
 	packet.addByte(1);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }

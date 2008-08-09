@@ -31,8 +31,8 @@ void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel
 	packet.addInt(level); // Level
 	packet.addInt(maxlevel); // Master Level
 	packet.addByte(1);
-	packet.send(player);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level) {
@@ -65,7 +65,7 @@ void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveIn
 	packet.addShort(0);
 	packet.addShort(addedinfo);
 	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 	if (mskill.vals.size() > 0) {
 		packet = PacketCreator();
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
@@ -92,7 +92,7 @@ void SkillsPacket::healHP(Player *player, short hp) {
 	packet.addShort(SEND_GAIN_ITEM);
 	packet.addByte(0xA);
 	packet.addShort(hp);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill) {
@@ -108,7 +108,7 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 	packet.addByte(pskill.types[6]);
 	packet.addByte(pskill.types[7]);
 	packet.addByte(0);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 	if (mskill.vals.size() > 0) {
 		packet = PacketCreator();
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
@@ -146,7 +146,7 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 			break;
 	}
 	if (send)
-		packet.send(player);
+		player->getPacketHandler()->sendPacket(packet);
 	packet = PacketCreator();
 	send = false;
 	packet.addShort(SEND_SHOW_SKILL);  // For others
@@ -203,5 +203,5 @@ void SkillsPacket::sendCooldown(Player *player, int skillid, short time) {
 	packet.addShort(SEND_COOLDOWN);
 	packet.addInt(skillid);
 	packet.addShort(time);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }

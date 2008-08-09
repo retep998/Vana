@@ -41,7 +41,7 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	packet.addByte(reactor->getState());
 	packet.addPos(reactor->getPos());
 	packet.addByte(0);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void ReactorPacket::triggerReactor(Reactor *reactor) {
