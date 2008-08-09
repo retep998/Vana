@@ -133,6 +133,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 		}
 		else if (attack.mpburn > 0) {
 			player->setMP(mp - attack.mpburn);
+			player->setHP(hp - damage);
 		}
 		else {
 			unsigned short reduc = Skills::skills[2001002][player->getSkills()->getActiveSkillLevel(2001002)].x;
