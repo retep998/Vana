@@ -43,7 +43,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool sp
 	packet.addShort(spawn ? -2 : -1);
 	packet.addInt(0);
 	if (requestControl || show)
-		packet.send(player);
+		player->getPacketHandler()->sendPacket(packet);
 	else
 		Maps::maps[mob->getMapID()]->sendPacket(packet, player);
 }
@@ -53,7 +53,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	packet.addShort(SEND_CONTROL_MOB);
 	packet.addByte(0);
 	packet.addInt(mob->getID());
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp) {
@@ -63,7 +63,7 @@ void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool u
 	packet.addShort(moveid);
 	packet.addByte(useskill);
 	packet.addInt(mp);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void MobsPacket::moveMob(Player *player, int mobid, bool useskill, int skill, unsigned char *buf, int len) {
@@ -253,7 +253,7 @@ void MobsPacket::showHP(Player *player, int mobid, char per) {
 	packet.addShort(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 // Miniboss HP
 void MobsPacket::showMinibossHP(Player *player, int mobid, char per) {

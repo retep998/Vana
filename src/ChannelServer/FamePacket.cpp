@@ -25,7 +25,7 @@ void FamePacket::sendError(Player *player, int reason) {
 	PacketCreator packet;
 	packet.addShort(SEND_FAME);
 	packet.addInt(reason);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame) {
@@ -34,7 +34,7 @@ void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame
 	packet.addByte(0x05);
 	packet.addString(player->getName());
 	packet.addByte(type);
-	packet.send(player2);
+	player2->getPacketHandler()->sendPacket(packet);
 
 	packet = PacketCreator();
 	packet.addShort(SEND_FAME);
@@ -42,5 +42,5 @@ void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame
 	packet.addString(player2->getName());
 	packet.addByte(type);
 	packet.addInt(newFame);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }

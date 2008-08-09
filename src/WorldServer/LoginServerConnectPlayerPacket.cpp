@@ -25,7 +25,7 @@ void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *p
 	packet.addInt(channel);
 	packet.addString(ip);
 	packet.addShort(port);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *player, int channel, int population) {
@@ -34,7 +34,7 @@ void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *
 	packet.addInt(channel);
 	packet.addInt(population);
 	
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void LoginServerConnectPlayerPacket::removeChannel(LoginServerConnectPlayer *player, int channel) {
@@ -42,5 +42,5 @@ void LoginServerConnectPlayerPacket::removeChannel(LoginServerConnectPlayer *pla
 	packet.addShort(INTER_REMOVE_CHANNEL);
 	packet.addInt(channel);
 
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }

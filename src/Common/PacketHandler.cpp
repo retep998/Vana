@@ -94,7 +94,6 @@ void PacketHandler::handle(int socket) {
 	}
 }
 
-
 bool PacketHandler::sendPacket(unsigned char *buff, int size) {
 	if (getDestroy()) {
 		return false;
@@ -108,6 +107,13 @@ bool PacketHandler::sendPacket(unsigned char *buff, int size) {
 		send(socket, (const char *) bufs, size+4, 0);
 		return true;
 	}
+}
+
+bool PacketHandler::sendPacket(const PacketCreator &packet) {
+	unsigned char tempbuf[BUFFER_LEN];
+	memcpy_s(tempbuf, BUFFER_LEN, packet.getBuffer(), BUFFER_LEN); // Copying to tempbuf so the packet doesn't get emptied on send and can be sent to other players
+	
+	return sendPacket(tempbuf, packet.getSize());
 }
 
 void PacketHandler::disconnect() {

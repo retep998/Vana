@@ -34,7 +34,7 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, Wor
 	packet.addInt(world->questexprate);
 	packet.addInt(world->mesorate);
 	packet.addInt(world->droprate);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port) {
@@ -43,7 +43,7 @@ void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *play
 	packet.addByte(worldid);
 	packet.addString(ip);
 	packet.addShort(port);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, int channel, int charid) {
@@ -51,5 +51,5 @@ void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, i
 	packet.addShort(INTER_NEW_PLAYER);
 	packet.addInt(channel);
 	packet.addInt(charid);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }

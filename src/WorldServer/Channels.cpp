@@ -45,7 +45,7 @@ Channel * Channels::getChannel(int num) {
 
 void Channels::sendToAll(PacketCreator &packet) {
 	for (hash_map<int, shared_ptr<Channel>>::iterator iter = channels.begin(); iter != channels.end(); iter++) {
-		packet.send(iter->second->player);
+		iter->second->player->getPacketHandler()->sendPacket(packet);
 	}
 }
 

@@ -27,7 +27,7 @@ void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
 	packet.addByte(4);
 	packet.addByte(1);
 	packet.addString(msg);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void ServerPacket::changeScrollingHeader(const string &msg) {

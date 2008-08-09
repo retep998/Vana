@@ -489,7 +489,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "packet") == 0) {
 			PacketCreator packet;
 			packet.addBytes(next_token);
-			packet.send(player);
+			player->getPacketHandler()->sendPacket(packet);
 		}
 		else if (strcmp(command, "timer") == 0) {
 			MapPacket::showTimer(player, atoi(next_token));

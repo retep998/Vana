@@ -31,7 +31,7 @@ void PartyPacket::giveLeader(WorldServerAcceptPlayer *player, int playerid, int 
 	packet.addByte(0x1A);
 	packet.addInt(target);
 	packet.addByte(is);
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int playerid, const string &inviter) {
@@ -44,7 +44,7 @@ void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int playerid, co
 	packet.addString(inviter);
 	packet.addByte(0);
 
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PartyPacket::createParty(WorldServerAcceptPlayer *player, int playerid) {
@@ -56,7 +56,7 @@ void PartyPacket::createParty(WorldServerAcceptPlayer *player, int playerid) {
 	packet.addInt(Players::Instance()->getPlayer(playerid)->party);
 	packet.addBytes("FFC99A3BFFC99A3B00000000");
 
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int playerid) {
@@ -71,7 +71,7 @@ void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int playerid) {
 	packet.addByte(0);
 	packet.addInt(Players::Instance()->getPlayer(playerid)->party);
 
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int playerid, int target) {
@@ -110,7 +110,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int pl
 	}
 	addParty(packet, PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party], Players::Instance()->getPlayer(playerid)->channel);
 
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PartyPacket::partyError(WorldServerAcceptPlayer *player, int playerid, char error) {
@@ -120,7 +120,7 @@ void PartyPacket::partyError(WorldServerAcceptPlayer *player, int playerid, char
 	packet.addShort(SEND_PARTY_ACTION);
 	packet.addByte(error);
 
-	packet.send(player);
+	player->getPacketHandler()->sendPacket(packet);
 }
 
 void PartyPacket::addParty(PacketCreator &packet, Party *party, int tochan) {

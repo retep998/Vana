@@ -18,8 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PACKETCREATOR_H
 #define PACKETCREATOR_H
 
-#define MAX_LEN 10000
-
 #include "PacketHandler.h"
 #include <iostream>
 #include <string>
@@ -51,14 +49,11 @@ public:
 	void addBuffer(ReadPacket *packet);
 	void addIP(const string &ip);
 
-	unsigned char * getBuffer();
-	size_t getSize();
-
-	template <class T>
-	void send(T *player);
+	const unsigned char * getBuffer() const;
+	size_t getSize() const;
 private:
 	size_t pos;
-	unsigned char packet[MAX_LEN];
+	unsigned char packet[BUFFER_LEN];
 };
 
 inline
@@ -105,20 +100,13 @@ void PacketCreator::setByte(unsigned char byte, size_t pos) {
 }
 
 inline
-unsigned char * PacketCreator::getBuffer() {
+const unsigned char * PacketCreator::getBuffer() const {
 	return packet;
 }
 
 inline
-size_t PacketCreator::getSize() {
+size_t PacketCreator::getSize() const {
 	return pos;
-}
-
-template <class T>
-void PacketCreator::send(T *player) {
-	unsigned char tempbuf[MAX_LEN];
-	memcpy_s(tempbuf, MAX_LEN, packet, MAX_LEN); // Copying to tempbuf so the packet doesn't get emptied on send and can be sent to other players
-	player->getPacketHandler()->sendPacket(tempbuf, pos);
 }
 
 #endif
