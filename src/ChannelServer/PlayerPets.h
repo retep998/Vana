@@ -35,6 +35,7 @@ public:
 	int getSummoned(char index);
 	int getPetAmount();
 	Pet * getPetByIndex(int index);
+	void save();
 private:
 	hash_map<int, Pet *> playerpets;
 	hash_map<char, int> summoned;

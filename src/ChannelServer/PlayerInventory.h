@@ -100,6 +100,7 @@ public:
 	iteminventory * getItems(char inv) {
 		return &items[inv-1];
 	}
+	void save();
 private:
 	unsigned char maxslots[5];
 	Player *player;

@@ -17,11 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerInventory.h"
 #include "Inventory.h"
-#include "Randomizer.h"
 #include "InventoryPacket.h"
+#include "PacketCreator.h"
 #include "Player.h"
 #include "PlayerPacket.h"
-#include "PacketCreator.h"
+#include "Randomizer.h"
+#include "MySQLM.h"
 
 /* Item struct */
 Item::Item(int equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0) {
@@ -188,4 +189,50 @@ int PlayerInventory::getItemAmount(int itemid) {
 	if (itemamounts.find(itemid) != itemamounts.end())
 		return itemamounts[itemid];
 	return 0;
+}
+
+void PlayerInventory::save() {
+	mysqlpp::Query query = Database::chardb.query();
+
+	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << player->getPlayerid();
+	query.exec();
+
+	bool firstrun = true;
+	for (char i = 1; i <= 5; i++) {
+		iteminventory *itemsinv = getItems(i);
+		for (iteminventory::iterator iter = itemsinv->begin(); iter != itemsinv->end(); iter++) {
+			Item *item = iter->second;
+			if (firstrun) {
+				query << "INSERT INTO items VALUES (";
+				firstrun = false;
+			}
+			else {
+				query << ",(";
+			}
+			query << mysqlpp::quote << player->getPlayerid() << ","
+				<< mysqlpp::quote << (short) i << ","
+				<< mysqlpp::quote << iter->first << ","
+				<< mysqlpp::quote << item->id << ","
+				<< mysqlpp::quote << item->amount << ","
+				<< mysqlpp::quote << (short) item->slots << ","
+				<< mysqlpp::quote << (short) item->scrolls << ","
+				<< mysqlpp::quote << item->istr << ","
+				<< mysqlpp::quote << item->idex << ","
+				<< mysqlpp::quote << item->iint << ","
+				<< mysqlpp::quote << item->iluk << ","
+				<< mysqlpp::quote << item->ihp << ","
+				<< mysqlpp::quote << item->imp << ","
+				<< mysqlpp::quote << item->iwatk << ","
+				<< mysqlpp::quote << item->imatk << ","
+				<< mysqlpp::quote << item->iwdef << ","
+				<< mysqlpp::quote << item->imdef << ","
+				<< mysqlpp::quote << item->iacc << ","
+				<< mysqlpp::quote << item->iavo << ","
+				<< mysqlpp::quote << item->ihand << ","
+				<< mysqlpp::quote << item->ijump << ","
+				<< mysqlpp::quote << item->ispeed << ","
+				<< mysqlpp::quote << item->petid << ")";
+		}
+	}
+	query.exec();
 }

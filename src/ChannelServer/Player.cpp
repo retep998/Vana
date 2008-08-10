@@ -504,24 +504,6 @@ bool Player::addWarning() {
 	return false;
 }
 
-void Player::saveSkills() {
-	mysqlpp::Query query = Database::chardb.query();
-
-	bool firstrun = true;
-	hash_map<int, unsigned char> *playerskills = skills->getSkills();
-	for (hash_map<int, unsigned char>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
-		if (firstrun) {
-			query << "REPLACE INTO skills VALUES (";
-			firstrun = false;
-		}
-		else {
-			query << ",(";
-		}
-		query << mysqlpp::quote << this->id << "," << mysqlpp::quote << iter->first << "," << mysqlpp::quote << iter->second << "," << mysqlpp::quote << skills->getMaxSkillLevel(iter->first) << ")";
-	}
-	query.exec();
-}
-
 void Player::saveStats() {
 	mysqlpp::Query query = Database::chardb.query();
 	query << "UPDATE characters SET "
@@ -555,103 +537,6 @@ void Player::saveStats() {
 	query.exec();
 }
 
-void Player::saveInventory() {
-	mysqlpp::Query query = Database::chardb.query();
-
-	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << this->id;
-	query.exec();
-
-	bool firstrun = true;
-	for (char i = 1; i <= 5; i++) {
-		iteminventory *items = inv->getItems(i);
-		for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
-			Item *item = iter->second;
-			if (firstrun) {
-				query << "INSERT INTO items VALUES (";
-				firstrun = false;
-			}
-			else {
-				query << ",(";
-			}
-			query << mysqlpp::quote << this->id << ","
-				<< mysqlpp::quote << (short) i << ","
-				<< mysqlpp::quote << iter->first << ","
-				<< mysqlpp::quote << item->id << ","
-				<< mysqlpp::quote << item->amount << ","
-				<< mysqlpp::quote << (short) item->slots << ","
-				<< mysqlpp::quote << (short) item->scrolls << ","
-				<< mysqlpp::quote << item->istr << ","
-				<< mysqlpp::quote << item->idex << ","
-				<< mysqlpp::quote << item->iint << ","
-				<< mysqlpp::quote << item->iluk << ","
-				<< mysqlpp::quote << item->ihp << ","
-				<< mysqlpp::quote << item->imp << ","
-				<< mysqlpp::quote << item->iwatk << ","
-				<< mysqlpp::quote << item->imatk << ","
-				<< mysqlpp::quote << item->iwdef << ","
-				<< mysqlpp::quote << item->imdef << ","
-				<< mysqlpp::quote << item->iacc << ","
-				<< mysqlpp::quote << item->iavo << ","
-				<< mysqlpp::quote << item->ihand << ","
-				<< mysqlpp::quote << item->ijump << ","
-				<< mysqlpp::quote << item->ispeed << ","
-				<< mysqlpp::quote << item->petid << ")";
-		}
-	}
-	query.exec();
-}
-
-void Player::saveStorage() {
-	mysqlpp::Query query = Database::getCharQuery();
-	// Using MySQL's non-standard ON DUPLICATE KEY UPDATE extension
-	query << "INSERT INTO storage VALUES ("
-		<< this->userid << ", "
-		<< (short) this->world_id << ", "
-		<< (short) storage->getSlots() << ", "
-		<< storage->getMesos() << ") "
-		<< "ON DUPLICATE KEY UPDATE slots = " << (short) storage->getSlots() << ", "
-		<< "mesos = " << storage->getMesos();
-	query.exec();
-
-	query << "DELETE FROM storageitems WHERE userid = " << this->userid << " AND world_id = " << (short) this->world_id;
-	query.exec();
-
-	bool firstrun = true;
-	for (char i = 0; i < this->storage->getNumItems(); i++) {
-		if (firstrun) {
-			query << "INSERT INTO storageitems VALUES (";
-			firstrun = false;
-		}
-		else {
-			query << ",(";
-		}
-		Item *item = this->storage->getItem(i);
-		query << mysqlpp::quote << this->userid << ","
-			<< mysqlpp::quote << (short) this->world_id << ","
-			<< mysqlpp::quote << (short) i << ","
-			<< mysqlpp::quote << item->id << ","
-			<< mysqlpp::quote << item->amount << ","
-			<< mysqlpp::quote << (short) item->slots << ","
-			<< mysqlpp::quote << (short) item->scrolls << ","
-			<< mysqlpp::quote << item->istr << ","
-			<< mysqlpp::quote << item->idex << ","
-			<< mysqlpp::quote << item->iint << ","
-			<< mysqlpp::quote << item->iluk << ","
-			<< mysqlpp::quote << item->ihp << ","
-			<< mysqlpp::quote << item->imp << ","
-			<< mysqlpp::quote << item->iwatk << ","
-			<< mysqlpp::quote << item->imatk << ","
-			<< mysqlpp::quote << item->iwdef << ","
-			<< mysqlpp::quote << item->imdef << ","
-			<< mysqlpp::quote << item->iacc << ","
-			<< mysqlpp::quote << item->iavo << ","
-			<< mysqlpp::quote << item->ihand << ","
-			<< mysqlpp::quote << item->ijump << ","
-			<< mysqlpp::quote << item->ispeed << ")";
-	}
-	query.exec();
-}
-
 void Player::saveVariables() {
 	if (variables.size() > 0) {
 		mysqlpp::Query query = Database::chardb.query();
@@ -673,29 +558,13 @@ void Player::saveVariables() {
 	}
 }
 
-void Player::savePets() {
-	Pet *pet;
-	mysqlpp::Query query = Database::chardb.query();
-	for (int i = 0; i < pets->getPetAmount(); i++) {
-		pet = pets->getPetByIndex(i);
-		query << "UPDATE pets SET "
-			  << "`index` = "	 << mysqlpp::quote << (short) pet->getIndex() << ","
-			  << "name = "		 << mysqlpp::quote << pet->getName() << ","
-			  << "level = "		 << mysqlpp::quote << (short) pet->getLevel() << ","
-			  << "closeness = "  << mysqlpp::quote << pet->getCloseness() << ","
-			  << "fullness = "   << mysqlpp::quote << (short) pet->getFullness()
-			  << " WHERE id = "	 << mysqlpp::quote << pet->getId();
-		query.exec();
-	}
-}
-
 void Player::saveAll() {
-	saveSkills();
 	saveStats();
-	saveInventory();
-	saveStorage();
 	saveVariables();
-	savePets();
+	getInventory()->save();
+	getPets()->save();
+	getSkills()->save();
+	getStorage()->save();
 }
 
 void Player::setOnline(bool online) {

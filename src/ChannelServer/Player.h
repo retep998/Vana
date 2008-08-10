@@ -50,6 +50,8 @@ public:
 
 	void realHandleRequest(ReadPacket *packet);
 	int getPlayerid() const { return this->id; }
+	int getUserId() const { return this->userid; }
+	char getWorldId() const { return this->world_id; }
 	string getName() const { return this->name; }
 	char getGender() const { return this->gender; }
 	void setSkin(char id);
@@ -136,12 +138,8 @@ public:
 
 	bool addWarning();
 	void changeChannel(char channel);
-	void saveSkills();
 	void saveStats();
-	void saveInventory();
-	void saveStorage();
 	void saveVariables();
-	void savePets();
 	void saveAll();
 	void setOnline(bool online);
 	void acceptDeath();
