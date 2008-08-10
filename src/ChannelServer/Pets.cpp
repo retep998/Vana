@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Reactors.h"
 #include "Pets.h"
-#include "Player.h"
-#include "MYSQLm.h"
-#include "ReadPacket.h"
-#include "PetsPacket.h"
-#include "Pos.h"
-#include "Randomizer.h"
 #include "Drops.h"
 #include "DropsPacket.h"
-#include "Maps.h"
-#include "Map.h"
 #include "Inventory.h"
+#include "Map.h"
+#include "Maps.h"
+#include "MySQLM.h"
+#include "PetsPacket.h"
+#include "Player.h"
+#include "Pos.h"
+#include "Randomizer.h"
+#include "Reactors.h"
+#include "ReadPacket.h"
 #include "Timer.h"
 
 hash_map<int, PetInfo> Pets::petsInfo;
