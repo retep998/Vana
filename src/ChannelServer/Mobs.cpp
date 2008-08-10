@@ -40,8 +40,8 @@ Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, short fh) : mapid(mapid), i
 }
 
 void Mob::setControl(Player *control) {
-	if (this->control != 0)
-		MobsPacket::endControlMob(this->control, this);
+	/*if (this->control != 0)
+		MobsPacket::endControlMob(this->control, this);*/
 	this->control = control;
 	if (control != 0)
 		MobsPacket::spawnMob(control, this, true, false);
