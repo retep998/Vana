@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace fs = boost::filesystem;
 
-DatabaseMigration::DatabaseMigration(bool update) : m_update(update) {
+DatabaseMigration::DatabaseMigration(bool update) : m_sql_version(0), m_update(update) {
 	loadDatabaseInfo();
 	loadSQLFiles();
 }
