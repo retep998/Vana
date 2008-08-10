@@ -28,15 +28,15 @@ void Party::handleRequest(Player *player, ReadPacket *packet) {
 	switch(type){
 		case 0x01: //Create party
 		case 0x02: //Leaver party
-			WorldServerConnectPlayerPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getPlayerid());
+			WorldServerConnectPlayerPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId());
 			break;
 		case 0x03: //Join party
 		case 0x05: //Expel Player
 		case 0x06: //Give leader rights
-			WorldServerConnectPlayerPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getPlayerid(), packet->getInt());
+			WorldServerConnectPlayerPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), packet->getInt());
 			break;
 		case 0x04: //Invite
-			WorldServerConnectPlayerPacket::partyInvite(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), packet->getString());
+			WorldServerConnectPlayerPacket::partyInvite(ChannelServer::Instance()->getWorldPlayer(), player->getId(), packet->getString());
 			break;
 	}
 }

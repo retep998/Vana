@@ -67,7 +67,7 @@ void Drop::doDrop(Pos origin) {
 }
 
 void Drop::showDrop(Player *player) {
-	if (isQuest() && player->getPlayerid() != playerid)
+	if (isQuest() && player->getId() != playerid)
 		return;
 	DropsPacket::showDrop(player, this);
 }
@@ -124,15 +124,15 @@ void Drops::dropMob(Player *player, Mob *mob) {
 			Drop *drop = 0;
 
 			if (GETINVENTORY(drops[k].id) == 1) {
-				drop = new Drop(mob->getMapID(), Item(drops[k].id, true), pos, player->getPlayerid());
+				drop = new Drop(mob->getMapID(), Item(drops[k].id, true), pos, player->getId());
 			}
 
 			else {
-				drop = new Drop(mob->getMapID(), Item(drops[k].id, (short) 1), pos, player->getPlayerid());
+				drop = new Drop(mob->getMapID(), Item(drops[k].id, (short) 1), pos, player->getId());
 			}
 
 			if (drops[k].quest > 0) {
-				drop->setPlayer(player->getPlayerid());
+				drop->setPlayer(player->getId());
 				drop->setQuest(drops[k].quest);
 			}
 			drop->setTime(100);
@@ -157,7 +157,7 @@ void Drops::dropMob(Player *player, Mob *mob) {
 			pos.x = mob->getPos().x-25*(d/2);
 			pos.y = mob->getPos().y;
 		}
-		Drop *drop = new Drop(player->getMap(), mesos, pos, player->getPlayerid());
+		Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId());
 		drop->setTime(100);
 		drop->doDrop(mob->getPos());
 	}

@@ -124,11 +124,11 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 						ActiveTrade *trade = new ActiveTrade(player, receiver);
 						Trades::addTrade(trade);
 						player->setTrading(1); // Busy
-						player->setTradeSendID(receiver->getPlayerid());
+						player->setTradeSendID(receiver->getId());
 						receiver->setTrading(-1); // Handling request
-						receiver->setTradeRecvID(player->getPlayerid());
+						receiver->setTradeRecvID(player->getId());
 						TradesPacket::sendTradeRequest(player, receiver, trade->getID());
-						Trades::startTimeout(player, receiver, player->getPlayerid());
+						Trades::startTimeout(player, receiver, player->getId());
 						break;
 					}
 					case 1: // Busy
@@ -180,7 +180,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			string chat = player->getName();
 			chat.append(" : ");
 			chat.append(packet->getString());
-			int playerid = player->getPlayerid();
+			int playerid = player->getId();
 			bool isself = false;
 			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) // Receiver chatting
 				playerid = player->getTradeRecvID();
@@ -188,7 +188,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Player *one = trade->getStarter()->player;
 			Player *two = trade->getReceiver()->player;
 			unsigned char blue = 0x00;
-			if (player->getPlayerid() == two->getPlayerid())
+			if (player->getId() == two->getId())
 				blue = 0x01;
 			TradesPacket::sendTradeChat(one, blue, chat);
 			TradesPacket::sendTradeChat(two, blue, chat);
@@ -198,7 +198,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Trades::cancelTrade(player);
 			break;
 		case 0x0E: { // Add items
-			int playerid = player->getPlayerid();
+			int playerid = player->getId();
 			bool isreceiver = false;
 			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver
 				playerid = player->getTradeRecvID();
@@ -216,7 +216,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Item *use;
 			Item *item;
 			unsigned char user = 0x00;
-			if (player->getPlayerid() == two->getPlayerid())
+			if (player->getId() == two->getId())
 				user = 0x01;
 			if (isreceiver) {
 				item = two->getInventory()->getItem(inventory, slot);
@@ -261,7 +261,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 0x0F: { // Add mesos
-			int playerid = player->getPlayerid();
+			int playerid = player->getId();
 			bool isreceiver = false;
 			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver
 				playerid = player->getTradeRecvID();
@@ -272,7 +272,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Player *two = trade->getReceiver()->player;
 			int amount = packet->getInt();
 			int mesos = trade->getStarter()->mesos;
-			if (player->getPlayerid() == two->getPlayerid()) {
+			if (player->getId() == two->getId()) {
 				mesos = trade->getReceiver()->mesos;
 				mesos += amount;
 				trade->getReceiver()->mesos = mesos;
@@ -292,7 +292,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 0x10: { // Accept trade
-			int playerid = player->getPlayerid();
+			int playerid = player->getId();
 			bool isreceiver = false;
 			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver leaving
 				playerid = player->getTradeRecvID();
@@ -302,7 +302,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Player *one = trade->getStarter()->player;
 			Player *two = trade->getReceiver()->player;
 			bool finish = false;
-			if (player->getPlayerid() == two->getPlayerid()) {
+			if (player->getId() == two->getId()) {
 				trade->getReceiver()->accepted = true;
 				TradesPacket::sendAccepted(one);
 				if (trade->getStarter()->accepted)
@@ -395,7 +395,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 }
 
 void Trades::addTrade(ActiveTrade *trade) {
-	int id = trade->getStarter()->player->getPlayerid();
+	int id = trade->getStarter()->player->getId();
 	trade->setID(id);
 	trades[id] = trade;
 }
@@ -426,7 +426,7 @@ float Trades::getTaxLevel(int mesos) {
 }
 
 void Trades::cancelTrade(Player *player) {
-	int playerid = player->getPlayerid();
+	int playerid = player->getId();
 	bool isreceiver = false;
 	if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver leaving
 		playerid = player->getTradeRecvID();

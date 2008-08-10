@@ -43,7 +43,7 @@ void Map::addPlayer(Player *player) {
 
 void Map::removePlayer(Player *player) {
 	for (size_t i = 0; i < this->players.size(); i++) {
-		if (this->players[i]->getPlayerid() == player->getPlayerid()) {
+		if (this->players[i]->getId() == player->getId()) {
 			this->players.erase(this->players.begin() + i);
 			break;
 		}

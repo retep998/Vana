@@ -92,7 +92,7 @@ void Maps::useScriptedPortal(Player *player, ReadPacket *packet) {
 
 	std::ostringstream filenameStream;
 	filenameStream << "scripts/portals/" << portal->script << ".lua";
-	LuaPortal(filenameStream.str(), player->getPlayerid(), portal);
+	LuaPortal(filenameStream.str(), player->getId(), portal);
 
 	PortalInfo *nextportal = 0;
 	if (portal->toid >= 0 && portal->toid != 999999999) { // Only check for new portal ID if a portal script returns a valid map
@@ -125,7 +125,7 @@ void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
 			player->getPets()->getPet(player->getPets()->getSummoned(i))->setPos(portal->pos);
 		}
 	}
-	WorldServerConnectPlayerPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getPlayerid(), mapid);
+	WorldServerConnectPlayerPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getId(), mapid);
 	MapPacket::changeMap(player);
 	newMap(player, mapid);
 }

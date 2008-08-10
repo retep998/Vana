@@ -125,7 +125,7 @@ void DropsPacket::takeDrop(Player *player, Drop *drop) {
 	packet.addShort(SEND_TAKE_DROP);
 	packet.addByte(2);
 	packet.addInt(drop->getID());
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	if (!drop->isQuest()) {
 		Maps::maps[player->getMap()]->sendPacket(packet);
 	}
@@ -163,7 +163,7 @@ void DropsPacket::takeDropPet(Player *player, Drop *drop, Pet *pet) {
 	packet.addShort(SEND_TAKE_DROP);
 	packet.addByte(5);
 	packet.addInt(drop->getID());
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex());
 	if (!drop->isQuest()) {
 		Maps::maps[player->getMap()]->sendPacket(packet);

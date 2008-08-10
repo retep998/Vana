@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_PLAYER);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addInt(0);
 	packet.addBuffer(buf, size);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
@@ -35,7 +35,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 void PlayersPacket::faceExpression(Player *player, int face) {
 	PacketCreator packet;
 	packet.addShort(SEND_FACE_EXPRESSION);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addInt(face);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
@@ -43,7 +43,7 @@ void PlayersPacket::faceExpression(Player *player, int face) {
 void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly) {
 	PacketCreator packet;
 	packet.addShort(SEND_CHAT);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(player->isGM());
 	packet.addString(msg);
 	packet.addByte(bubbleOnly);
@@ -53,7 +53,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly)
 void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int nodamageskill, PGMRInfo pgmr) {
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_PLAYER);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(type);
 	switch (type) {
 		case 0xFE:
@@ -97,7 +97,7 @@ void PlayersPacket::showMessage(const string &msg, char type) {
 void PlayersPacket::showInfo(Player *player, Player *getinfo, unsigned char isself) {
 	PacketCreator packet;
 	packet.addShort(SEND_PLAYER_INFO);
-	packet.addInt(getinfo->getPlayerid());
+	packet.addInt(getinfo->getId());
 	packet.addByte(getinfo->getLevel());
 	packet.addShort(getinfo->getJob());
 	packet.addShort(getinfo->getFame());

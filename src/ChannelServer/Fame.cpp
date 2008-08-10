@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void Fame::handleFame(Player *player, ReadPacket *packet) {
 	int playerid = packet->getInt();
 	int type = packet->getInt();
-	if (player->getPlayerid() > 0) {
-		if (player->getPlayerid() != playerid) {
+	if (player->getId() > 0) {
+		if (player->getId() != playerid) {
 			int checkResult = canFame(player, playerid);
 			if (checkResult >= 1 && checkResult <= 4)
 				FamePacket::sendError(player, checkResult);
@@ -40,7 +40,7 @@ void Fame::handleFame(Player *player, ReadPacket *packet) {
 				else if (type == 0)
 					newFame = famee->getFame() - 1;
 				famee->setFame(newFame);
-				addFameLog(player->getPlayerid(), playerid);
+				addFameLog(player->getId(), playerid);
 				FamePacket::sendFame(player, famee, type, newFame);
 			}
 		}
@@ -54,7 +54,7 @@ void Fame::handleFame(Player *player, ReadPacket *packet) {
 }
 
 int Fame::canFame(Player *player, int to) {
-	int from = player->getPlayerid();
+	int from = player->getId();
 	if (player->getLevel() < 15)
 		return 2;
 	if (getLastFameLog(from))

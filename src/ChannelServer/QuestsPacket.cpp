@@ -93,7 +93,7 @@ void QuestsPacket::questFinish(Player *player, short questid, int npcid, short n
 	player->getPacketHandler()->send(packet);
 	packet = PacketCreator();
 	packet.addShort(SEND_SHOW_SKILL);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(9);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }

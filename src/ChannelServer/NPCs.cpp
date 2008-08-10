@@ -141,7 +141,7 @@ cend(false)
 	string filename = filenameStream.str();
 
 	if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC exists
-		luaNPC.reset(new LuaNPC(filename, player->getPlayerid()));
+		luaNPC.reset(new LuaNPC(filename, player->getId()));
 		player->setNPC(this);
 		setState(state);
 	}

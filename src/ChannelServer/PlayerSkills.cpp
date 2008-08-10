@@ -157,7 +157,7 @@ void PlayerSkills::save() {
 		else {
 			query << ",(";
 		}
-		query << mysqlpp::quote << player->getPlayerid() << "," << mysqlpp::quote << iter->first << "," << mysqlpp::quote << iter->second << "," << mysqlpp::quote << getMaxSkillLevel(iter->first) << ")";
+		query << mysqlpp::quote << player->getId() << "," << mysqlpp::quote << iter->first << "," << mysqlpp::quote << iter->second << "," << mysqlpp::quote << getMaxSkillLevel(iter->first) << ")";
 	}
 	query.exec();
 }
