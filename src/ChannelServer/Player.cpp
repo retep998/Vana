@@ -603,11 +603,14 @@ void Player::saveInventory() {
 
 void Player::saveStorage() {
 	mysqlpp::Query query = Database::getCharQuery();
-	query << "REPLACE INTO storage VALUES ("
+	// Using MySQL's non-standard ON DUPLICATE KEY UPDATE extension
+	query << "INSERT INTO storage VALUES ("
 		<< this->userid << ", "
 		<< (short) this->world_id << ", "
 		<< (short) storage->getSlots() << ", "
-		<< storage->getMesos() << ")";
+		<< storage->getMesos() << ") "
+		<< "ON DUPLICATE KEY UPDATE slots = " << (short) storage->getSlots() << ", "
+		<< "mesos = " << storage->getMesos();
 	query.exec();
 
 	query << "DELETE FROM storageitems WHERE userid = " << this->userid << " AND world_id = " << (short) this->world_id;
