@@ -16,10 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSkills.h"
-#include "Skills.h"
-#include "SkillTimer.h"
-#include "SkillsPacket.h"
+#include "Player.h"
 #include "Randomizer.h"
+#include "SkillTimer.h"
+#include "Skills.h"
+#include "SkillsPacket.h"
+#include "MySQLM.h"
 
 void PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpacket) {
 	if (playerskills.find(skillid) != playerskills.end())
@@ -141,4 +143,21 @@ void PlayerSkills::addCombo() { // Add combo orbs
 
 		setCombo(combo, true);
 	}
+}
+
+void PlayerSkills::save() {
+	mysqlpp::Query query = Database::chardb.query();
+
+	bool firstrun = true;
+	for (hash_map<int, unsigned char>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
+		if (firstrun) {
+			query << "REPLACE INTO skills VALUES (";
+			firstrun = false;
+		}
+		else {
+			query << ",(";
+		}
+		query << mysqlpp::quote << player->getPlayerid() << "," << mysqlpp::quote << iter->first << "," << mysqlpp::quote << iter->second << "," << mysqlpp::quote << getMaxSkillLevel(iter->first) << ")";
+	}
+	query.exec();
 }

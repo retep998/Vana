@@ -61,6 +61,7 @@ public:
 	int getCombo() {
 		return combo;
 	}
+	void save();
 private:
 	hash_map<int, unsigned char> playerskills;
 	hash_map<int, unsigned char> maxlevels;

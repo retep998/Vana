@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERSTORAGE_H
 
 #include <vector>
-#include "PlayerInventory.h"
 
 using std::vector;
 
 class Player;
 class PlayerStorage;
+struct Item;
 
 class PlayerStorage {
 public:
@@ -56,10 +56,11 @@ public:
 	bool isFull() {
 		return ((char) items.size() == slots);
 	}
+	void save();
 private:
 	Player *player;
 	char slots;
-	vector <Item *> items;
+	vector<Item *> items;
 	int mesos;
 };
 
