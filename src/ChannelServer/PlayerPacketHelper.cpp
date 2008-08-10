@@ -20,12 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Inventory.h"
 #include "Pets.h"
-#include "math.h"
 
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *item, bool shortSlot) {
 	if (slot != 0) {
-		if (slot < 0) slot = abs(slot);
-		if (slot > 100) slot = slot -100;
 		if (shortSlot)
 			packet.addShort(slot);
 		else {
