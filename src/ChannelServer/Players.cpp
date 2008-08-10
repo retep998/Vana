@@ -29,7 +29,7 @@ void Players::addPlayer(Player *player) {
 
 void Players::removePlayer(Player *player) {
 	m_players.erase(player->getId());
-	m_players_names.erase(player->getName());
+	m_players_names.erase(StringUtilities::toUpper(player->getName()));
 }
 
 Player * Players::getPlayer(int id) {
