@@ -94,8 +94,8 @@ void PlayersPacket::showMessage(const string &msg, char type) {
 	Players::Instance()->sendPacket(packet);
 }
 
-void PlayersPacket::showInfo(Player *player, Player *getinfo) {
-		PacketCreator packet;
+void PlayersPacket::showInfo(Player *player, Player *getinfo, unsigned char isself) {
+	PacketCreator packet;
 	packet.addShort(SEND_PLAYER_INFO);
 	packet.addInt(getinfo->getPlayerid());
 	packet.addByte(getinfo->getLevel());
@@ -104,7 +104,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo) {
 	packet.addByte(0); // Married
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
-	packet.addByte((player->getPlayerid() == getinfo->getPlayerid() ? 1 : 0)); // Is 1 when the character is clicking themselves
+	packet.addByte(isself); // Is 1 when the character is clicking themselves
 	for (char i = 0; i < 3; i++) {
 		if (getinfo->getPets()->getSummoned(i) > 0) {
 			Pet *pet = getinfo->getPets()->getPet(getinfo->getPets()->getSummoned(i));
