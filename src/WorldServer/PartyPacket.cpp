@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PartyPacket.h"
-#include "WorldServerAcceptPlayer.h"
-#include "PartyHandler.h"
-#include "PacketCreator.h"
-#include "InterHeader.h"
-#include "Players.h"
 #include "Channels.h"
+#include "InterHeader.h"
+#include "PacketCreator.h"
+#include "PartyHandler.h"
+#include "Players.h"
+#include "SendHeader.h"
+#include "WorldServerAcceptPlayer.h"
 
 void PartyPacket::giveLeader(WorldServerAcceptPlayer *player, int playerid, int target, bool is) {
 	PacketCreator packet;

@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPlayerPacket.h"
-#include "WorldServerAcceptPlayer.h"
-#include "WorldServer.h"
-#include "PacketCreator.h"
 #include "Channels.h"
+#include "PacketCreator.h"
 #include "Rates.h"
+#include "SendHeader.h"
+#include "WorldServer.h"
+#include "WorldServerAcceptPlayer.h"
 
 void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, int playerid, char type, const string &message, const string &sender) {
 	PacketCreator packet;

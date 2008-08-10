@@ -22,11 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define BUFFER_LEN 10000
 
 #include "Selector.h"
-#include "Decoder.h" // Included because scoped_ptr needs the destructor
-#include "AbstractPlayer.h" // Included because scoped_ptr needs the destructor
+#include <string>
 #include <boost/scoped_ptr.hpp>
 
+using std::string;
+
+class AbstractPlayer;
 class AbstractPlayerFactory;
+class Decoder;
+class PacketCreator;
 
 class PacketHandler : public Selector::Handler {
 public:
