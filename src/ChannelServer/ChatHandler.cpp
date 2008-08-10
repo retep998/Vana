@@ -519,5 +519,5 @@ void ChatHandler::handleGroupChat(Player *player, ReadPacket *packet) {
 	}
 	string chat = packet->getString();
 
-	WorldServerConnectPlayerPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getPlayerid(), receivers, chat);
+	WorldServerConnectPlayerPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), receivers, chat);
 }

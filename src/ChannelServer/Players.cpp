@@ -23,12 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Players * Players::singleton = 0;
 
 void Players::addPlayer(Player *player) {
-	m_players[player->getPlayerid()] = player;
+	m_players[player->getId()] = player;
 	m_players_names[StringUtilities::toUpper(player->getName())] = player; // Store in upper case for easy non-case-sensitive search
 }
 
 void Players::removePlayer(Player *player) {
-	m_players.erase(player->getPlayerid());
+	m_players.erase(player->getId());
 	m_players_names.erase(player->getName());
 }
 

@@ -86,7 +86,7 @@ private:
 				drop->removeDrop();
 				std::ostringstream filenameStream;
 				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
-				LuaReactor(filenameStream.str(), player->getPlayerid(), reactor->getID(), reactor->getMapID());
+				LuaReactor(filenameStream.str(), player->getId(), reactor->getID(), reactor->getMapID());
 				return;
 			}
 		}
@@ -152,7 +152,7 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 			else {
 				std::ostringstream filenameStream;
 				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
-				LuaReactor(filenameStream.str(), player->getPlayerid(), id, reactor->getMapID());
+				LuaReactor(filenameStream.str(), player->getId(), id, reactor->getMapID());
 				reactor->setState(revent->nextstate, false);
 				reactor->kill();
 				Maps::maps[reactor->getMapID()]->addReactorRespawn(ReactorRespawnInfo(id, clock()));

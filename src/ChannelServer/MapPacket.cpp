@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_PLAYER);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addString(player->getName());
 	packet.addInt(0);
 	packet.addInt(0);
@@ -108,7 +108,7 @@ void MapPacket::showPlayer(Player *player) {
 void MapPacket::removePlayer(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_REMOVE_PLAYER);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 

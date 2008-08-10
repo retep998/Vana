@@ -32,7 +32,7 @@ LuaPortal::LuaPortal(const string &filename, int playerid, PortalInfo *portal) :
 }
 
 PortalInfo * LuaExports::getPortal(lua_State *luaVm) {
-	return portals[getPlayer(luaVm)->getPlayerid()];
+	return portals[getPlayer(luaVm)->getId()];
 }
 
 int LuaExports::getPortalFrom(lua_State *luaVm) {

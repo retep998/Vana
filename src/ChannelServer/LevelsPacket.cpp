@@ -37,7 +37,7 @@ void LevelsPacket::showEXP(Player *player, int exp, char type) {
 void LevelsPacket::levelUP(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_SKILL);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(0);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
@@ -53,7 +53,7 @@ void LevelsPacket::statOK(Player *player) {
 void LevelsPacket::jobChange(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_SKILL);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(8);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }

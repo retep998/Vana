@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void PetsPacket::showChat(Player *player, Pet *pet, const string &message, char act) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_SHOW_CHAT);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex());
 	packet.addByte(0);
 	packet.addByte(act);
@@ -38,7 +38,7 @@ void PetsPacket::showChat(Player *player, Pet *pet, const string &message, char 
 void PetsPacket::movePet(Player *player, Pet *pet, unsigned char *buf, int buflen) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_SHOW_MOVING);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex());
 	packet.addBuffer(buf, buflen);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
@@ -47,7 +47,7 @@ void PetsPacket::movePet(Player *player, Pet *pet, unsigned char *buf, int bufle
 void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_SUMMONED);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex());
 	packet.addByte(pet->isSummoned());
 	packet.addByte(kick); // Kick existing pet (only when player doesn't have follow the lead)
@@ -67,7 +67,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick) {
 void PetsPacket::showAnimation(Player *player, Pet *pet, char animation, bool success) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_ANIMATION);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex()); // Index for multiple pets
 	if (animation == 1 && success) {
 		packet.addByte(1);
@@ -127,7 +127,7 @@ void PetsPacket::levelUp(Player *player, Pet *pet) {
 
 	packet = PacketCreator();
 	packet.addShort(SEND_SHOW_SKILL);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addShort(4);
 	packet.addByte(pet->getIndex());
 	Maps::maps[player->getMap()]->sendPacket(packet);
@@ -136,7 +136,7 @@ void PetsPacket::levelUp(Player *player, Pet *pet) {
 void PetsPacket::changeName(Player *player, Pet *pet) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_NAME_CHANGE);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex());
 	packet.addString(pet->getName());
 	packet.addByte(0);
@@ -146,7 +146,7 @@ void PetsPacket::changeName(Player *player, Pet *pet) {
 void PetsPacket::showPet(Player *player, Pet *pet) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_SHOW);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex());
 	packet.addInt(pet->getId());
 	packet.addInt(0);

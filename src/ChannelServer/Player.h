@@ -49,7 +49,7 @@ public:
 	~Player();
 
 	void realHandleRequest(ReadPacket *packet);
-	int getPlayerid() const { return this->id; }
+	int getId() const { return this->id; }
 	int getUserId() const { return this->userid; }
 	char getWorldId() const { return this->world_id; }
 	string getName() const { return this->name; }

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 BuddyList::BuddyList(Player *player) : player(player) {
 	mysqlpp::Query query = Database::chardb.query();
-	query << "SELECT buddylist.buddy_charid as buddy_charid, characters.name as name FROM buddylist INNER JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.charid = " << mysqlpp::quote << player->getPlayerid();
+	query << "SELECT buddylist.buddy_charid as buddy_charid, characters.name as name FROM buddylist INNER JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.charid = " << mysqlpp::quote << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -31,7 +31,7 @@ BuddyList::BuddyList(Player *player) : player(player) {
 
 void BuddyList::add(int charid) {
 	mysqlpp::Query query = Database::chardb.query();
-	query << "INSERT INTO buddylist (charid, buddy_charid) VALUES (" << mysqlpp::quote << player->getPlayerid() << ", " << mysqlpp::quote << charid << ")";
+	query << "INSERT INTO buddylist (charid, buddy_charid) VALUES (" << mysqlpp::quote << player->getId() << ", " << mysqlpp::quote << charid << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	
 	query << "SELECT buddylist.buddy_charid as buddy_charid, characters.name as name FROM buddylist INNER JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.id = " << mysqlpp::quote << res.insert_id();
@@ -55,7 +55,7 @@ bool BuddyList::add(const string &name) {
 
 void BuddyList::remove(int charid) {
 	mysqlpp::Query query = Database::chardb.query();
-	query << "DELETE FROM buddylist WHERE charid = " << mysqlpp::quote << player->getPlayerid() << " AND buddy_charid = " << mysqlpp::quote << charid;
+	query << "DELETE FROM buddylist WHERE charid = " << mysqlpp::quote << player->getId() << " AND buddy_charid = " << mysqlpp::quote << charid;
 	query.exec();
 
 	buddies.erase(charid);

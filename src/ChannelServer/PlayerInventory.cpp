@@ -194,7 +194,7 @@ int PlayerInventory::getItemAmount(int itemid) {
 void PlayerInventory::save() {
 	mysqlpp::Query query = Database::chardb.query();
 
-	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << player->getPlayerid();
+	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << player->getId();
 	query.exec();
 
 	bool firstrun = true;
@@ -209,7 +209,7 @@ void PlayerInventory::save() {
 			else {
 				query << ",(";
 			}
-			query << mysqlpp::quote << player->getPlayerid() << ","
+			query << mysqlpp::quote << player->getId() << ","
 				<< mysqlpp::quote << (short) i << ","
 				<< mysqlpp::quote << iter->first << ","
 				<< mysqlpp::quote << item->id << ","

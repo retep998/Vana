@@ -39,7 +39,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addInt(Randomizer::Instance()->randInt()); //
 	packet.addInt(-1);
 	packet.addInt(-1);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addString(player->getName(), 12);
 	packet.addByte(0);
 	packet.addByte(player->getGender());

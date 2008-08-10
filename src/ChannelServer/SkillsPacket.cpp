@@ -38,7 +38,7 @@ void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel
 void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level) {
  	PacketCreator packet;
  	packet.addShort(SEND_SHOW_SKILL);
- 	packet.addInt(player->getPlayerid());
+ 	packet.addInt(player->getId());
  	packet.addByte(1);
  	packet.addInt(skillid);
 	packet.addByte(level); //TODO
@@ -69,7 +69,7 @@ void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveIn
 	if (mskill.vals.size() > 0) {
 		packet = PacketCreator();
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
-		packet.addInt(player->getPlayerid());
+		packet.addInt(player->getId());
 		packet.addInt64(0);
 		packet.addByte(mskill.types[0]);
 		packet.addByte(mskill.types[1]);
@@ -112,7 +112,7 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 	if (mskill.vals.size() > 0) {
 		packet = PacketCreator();
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
-		packet.addInt(player->getPlayerid());
+		packet.addInt(player->getId());
 		packet.addInt64(0);
 		packet.addByte(mskill.types[0]);
 		packet.addByte(mskill.types[1]);
@@ -150,7 +150,7 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 	packet = PacketCreator();
 	send = false;
 	packet.addShort(SEND_SHOW_SKILL);  // For others
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	switch (skillid) {
 		case 2100000:
 		case 2200000:
@@ -174,7 +174,7 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang, Monster Magnet
 	PacketCreator packet;
 	packet.addShort(SEND_SPECIAL_SKILL);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addInt(info.skillid);
 	packet.addByte(info.level);
 	packet.addByte(info.direction);
@@ -185,7 +185,7 @@ void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // 
 void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
 	PacketCreator packet;
 	packet.addShort(SEND_SPECIAL_SKILL_END);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addInt(info.skillid);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }

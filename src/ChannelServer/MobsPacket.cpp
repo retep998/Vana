@@ -90,7 +90,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 	}
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_MOB);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(tbyte);
 	if (skillid > 0) {
 		packet.addByte(-1);
@@ -153,7 +153,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	short csstar = pack->getShort(); // Cash Shop star
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_MOB_RANGED);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(tbyte);
 	if (skillid > 0) {
 		switch (w_class) { // No clue why it does this, but it does
@@ -214,7 +214,7 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	char hits = tbyte % 0x10;
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_MOB_SPELL);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(tbyte);
 	packet.addByte(1); // Spells are always a skill
 	int skillid = pack->getInt();

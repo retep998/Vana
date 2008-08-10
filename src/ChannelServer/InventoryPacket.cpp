@@ -44,7 +44,7 @@ void InventoryPacket::updatePlayer(Player *player) {
 		return;
 	PacketCreator packet;
 	packet.addShort(SEND_UPDATE_CHAR_LOOK);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(1);
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
 	packet.addByte(0);
@@ -107,7 +107,7 @@ void InventoryPacket::sitChair(Player *player, int chairid) {
 	player->getPacketHandler()->send(packet);
 	packet = PacketCreator();
 	packet.addShort(SEND_SIT_CHAIR);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addInt(chairid);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
@@ -119,14 +119,14 @@ void InventoryPacket::stopChair(Player *player) {
 	player->getPacketHandler()->send(packet);
 	packet = PacketCreator();
 	packet.addShort(SEND_SIT_CHAIR);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addInt(0);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 void InventoryPacket::useScroll(Player *player, bool succeed, bool destroy, bool legendary_spirit) {
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SCROLL);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(succeed); // Succeed/Fail
 	packet.addByte(destroy); // Destroy/Not Destroy
 	packet.addByte(legendary_spirit);
@@ -196,7 +196,7 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 	if (morph) {
 		packet = PacketCreator();
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
-		packet.addInt(player->getPlayerid());
+		packet.addInt(player->getId());
 		packet.addInt64(0);
 		packet.addByte(types[0]);
 		packet.addByte(types[1]);
@@ -232,7 +232,7 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 	if (morph) {
 		PacketCreator packet;
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
-		packet.addInt(player->getPlayerid());
+		packet.addInt(player->getId());
 		packet.addInt64(0);
 		packet.addByte(types[0]);
 		packet.addByte(types[1]);
@@ -249,7 +249,7 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 void InventoryPacket::useSkillbook(Player *player, int skillid, int newMaxLevel, bool use, bool succeed) {
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILLBOOK);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addByte(1); // Number of skills? Maybe just padding or random boolean
 	packet.addInt(skillid); // Skill ID
 	packet.addInt(newMaxLevel); // New max level
@@ -261,7 +261,7 @@ void InventoryPacket::useSkillbook(Player *player, int skillid, int newMaxLevel,
 void InventoryPacket::useItemEffect(Player *player, int itemid) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_ITEM_EFFECT);
-	packet.addInt(player->getPlayerid());
+	packet.addInt(player->getId());
 	packet.addInt(itemid);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
