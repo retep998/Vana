@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SELECTOR_H
 #define SELECTOR_H
 
-#include <Winsock2.h>
+#include "WinSockInclude.h"
 #include <hash_map>
 
 #define BOOST_ALL_DYN_LINK

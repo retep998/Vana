@@ -15,25 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef ACCEPTOR_H
-#define ACCEPTOR_H
+#ifndef WINSOCKINCLUDE_H
+#define WINSOCKINCLUDE_H
 
-#include "Selector.h"
-#include "WinSockInclude.h"
-#include <string>
-
-using std::string;
-
-class AbstractPlayerFactory;
-
-class Acceptor : public Selector::Handler {
-public:
-	Acceptor(short port, AbstractPlayerFactory *apf, string ivUnknown = "");
-	virtual void handle(int socket);
-protected:
-	string ivUnknown;
-	AbstractPlayerFactory *abstractPlayerFactory;
-	WSADATA wsaData;
-};
+#include <Winsock2.h>
 
 #endif

@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketHandler.h"
 #include "AbstractPlayer.h"
 #include "Decoder.h"
-#include "ReadPacket.h"
 #include "PacketCreator.h"
-#include <Winsock2.h>
+#include "ReadPacket.h"
+#include "WinSockInclude.h"
 
 PacketHandler::PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend, string ivUnknown) :
 bytesInBuffer(0),
