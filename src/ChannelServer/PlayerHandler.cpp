@@ -207,7 +207,8 @@ void PlayerHandler::handleFacialExpression(Player *player, ReadPacket *packet) {
 
 void PlayerHandler::handleGetInfo(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
-	PlayersPacket::showInfo(player, Players::Instance()->getPlayer(packet->getInt()));
+	int playerid = packet->getInt();
+	PlayersPacket::showInfo(player, Players::Instance()->getPlayer(playerid), packet->getByte());
 }
 
 void PlayerHandler::handleHeal(Player *player, ReadPacket *packet) {
