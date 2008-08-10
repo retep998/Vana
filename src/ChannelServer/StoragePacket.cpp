@@ -28,8 +28,7 @@ void StoragePacket::showStorage(Player *player, int npcid) {
 	packet.addByte(0x15); // Type of storage action
 	packet.addInt(npcid);
 	packet.addByte(player->getStorage()->getSlots());
-	packet.addShort(0x7e);
-	packet.addShort(0);
+	packet.addInt(0x7e);
 	packet.addInt(0);
 	packet.addInt(player->getStorage()->getMesos());
 	packet.addShort(0);
@@ -47,15 +46,7 @@ void StoragePacket::addItem(Player *player, char inv) {
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x0c);
 	packet.addByte(player->getStorage()->getSlots());
-	char type = 0;
-	if (inv == 1) // Gotta work some magic on type, which starts as inventory
-		type = 0x04;
-	else if (inv == 2)
-		type = 0x08;
-	else if (inv == 3)
-		type = 0x10;
-	else
-		type = 0x20;
+	char type = (char) pow((float) 2, (int) inv) * 2; // Gotta work some magic on type, which starts as inventory
 	packet.addInt(type);
 	packet.addInt(0);
 	packet.addByte(player->getStorage()->getNumItems(inv));
@@ -72,15 +63,7 @@ void StoragePacket::takeItem(Player *player, char inv) {
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x09);
 	packet.addByte(player->getStorage()->getSlots());
-	char type = 0;
-	if (inv == 1)
-		type = 0x04;
-	else if (inv == 2)
-		type = 0x08;
-	else if (inv == 3)
-		type = 0x10;
-	else
-		type = 0x20;
+	char type = (char) pow((float) 2, (int) inv) * 2;
 	packet.addInt(type);
 	packet.addInt(0);
 	packet.addByte(player->getStorage()->getNumItems(inv));
