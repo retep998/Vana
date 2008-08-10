@@ -88,7 +88,7 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, char animation, bool su
 	player->getPacketHandler()->send(packet);
 }
 
-void PetsPacket::updatePet(Player *player,  Pet *pet) {
+void PetsPacket::updatePet(Player *player, Pet *pet) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(0);
