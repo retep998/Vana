@@ -33,8 +33,6 @@ public:
 	Pet * getPet(int petid);
 	void setSummoned(int petid, char slot);
 	int getSummoned(char index);
-	int getPetAmount();
-	Pet * getPetByIndex(int index);
 	void save();
 private:
 	hash_map<int, Pet *> playerpets;

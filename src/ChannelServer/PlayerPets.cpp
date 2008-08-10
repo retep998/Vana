@@ -20,15 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPets.h"
 
 void PlayerPets::addPet(Pet *pet) {
-	if (playerpets.find(pet->getId()) == playerpets.end())
-		playerpets[pet->getId()] = pet;
+	playerpets[pet->getId()] = pet;
 }
 
 Pet * PlayerPets::getPet(int petid) {
-	if (playerpets.find(petid) != playerpets.end())
-		return playerpets[petid];
-	else
-		return 0;
+	return playerpets.find(petid) != playerpets.end() ? playerpets[petid] : 0;
 }
 
 void PlayerPets::setSummoned(int petid, char index) {
@@ -36,39 +32,19 @@ void PlayerPets::setSummoned(int petid, char index) {
 }
 
 int PlayerPets::getSummoned(char index) {
-	if (summoned[index])
-		return summoned[index];
-	else
-		return 0;
-}
-
-int PlayerPets::getPetAmount() {
-	return playerpets.size();
-}
-
-Pet * PlayerPets::getPetByIndex(int index) {
-	unsigned int i = 0;
-	for (hash_map<int, Pet *>::iterator iter = playerpets.begin(); iter != playerpets.end(); iter++) {
-		if (i == index)
-			return iter->second;
-		else
-			i = i + 1;
-	}
-	return 0;
+	return summoned[index] > 0 ? summoned[index] : 0;
 }
 
 void PlayerPets::save() {
-	Pet *pet;
 	mysqlpp::Query query = Database::chardb.query();
-	for (int i = 0; i < getPetAmount(); i++) {
-		pet = getPetByIndex(i);
+	for (hash_map<int, Pet *>::iterator iter = playerpets.begin(); iter != playerpets.end(); iter++) {
 		query << "UPDATE pets SET "
-			<< "`index` = "	 << mysqlpp::quote << (short) pet->getIndex() << ","
-			<< "name = "		 << mysqlpp::quote << pet->getName() << ","
-			<< "level = "		 << mysqlpp::quote << (short) pet->getLevel() << ","
-			<< "closeness = "  << mysqlpp::quote << pet->getCloseness() << ","
-			<< "fullness = "   << mysqlpp::quote << (short) pet->getFullness()
-			<< " WHERE id = "	 << mysqlpp::quote << pet->getId();
+			<< "`index` = " << mysqlpp::quote << (short) iter->second->getIndex() << ","
+			<< "name = " << mysqlpp::quote << iter->second->getName() << ","
+			<< "level = " << mysqlpp::quote << (short) iter->second->getLevel() << ","
+			<< "closeness = " << mysqlpp::quote << iter->second->getCloseness() << ","
+			<< "fullness = " << mysqlpp::quote << (short) iter->second->getFullness()
+			<< " WHERE id = " << mysqlpp::quote << iter->second->getId();
 		query.exec();
 	}
 }
