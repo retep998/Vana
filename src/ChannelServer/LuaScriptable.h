@@ -117,6 +117,8 @@ namespace LuaExports {
 	int spawnMobPos(lua_State *luvaVm);
 
 	int deletePlayerVariable(lua_State *luaVm);
+
+	int isGM(lua_State *luaVm);
 };
 
 #endif
