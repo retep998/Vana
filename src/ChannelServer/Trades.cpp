@@ -188,7 +188,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Player *one = trade->getStarter()->player;
 			Player *two = trade->getReceiver()->player;
 			unsigned char blue = 0x00;
-			if (player->getId() == two->getId())
+			if (player == two)
 				blue = 0x01;
 			TradesPacket::sendTradeChat(one, blue, chat);
 			TradesPacket::sendTradeChat(two, blue, chat);
@@ -216,7 +216,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Item *use;
 			Item *item;
 			unsigned char user = 0x00;
-			if (player->getId() == two->getId())
+			if (player == two)
 				user = 0x01;
 			if (isreceiver) {
 				item = two->getInventory()->getItem(inventory, slot);
@@ -272,7 +272,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Player *two = trade->getReceiver()->player;
 			int amount = packet->getInt();
 			int mesos = trade->getStarter()->mesos;
-			if (player->getId() == two->getId()) {
+			if (player == two) {
 				mesos = trade->getReceiver()->mesos;
 				mesos += amount;
 				trade->getReceiver()->mesos = mesos;
@@ -302,7 +302,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Player *one = trade->getStarter()->player;
 			Player *two = trade->getReceiver()->player;
 			bool finish = false;
-			if (player->getId() == two->getId()) {
+			if (player == two) {
 				trade->getReceiver()->accepted = true;
 				TradesPacket::sendAccepted(one);
 				if (trade->getStarter()->accepted)
