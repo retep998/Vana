@@ -45,7 +45,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool sp
 	if (requestControl || show)
 		player->getPacketHandler()->send(packet);
 	else
-		Maps::maps[mob->getMapID()]->sendPacket(packet, player);
+		Maps::maps[mob->getMapID()]->sendPacket(packet);
 }
 
 void MobsPacket::endControlMob(Player *player, Mob *mob) {
@@ -135,7 +135,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
 	int skillid = pack->getInt();
-	if (skillid == 3121004 || skillid == 3221001)
+	if (skillid == 3121004 || skillid == 3221001 || skillid == 5221004)
 		pack->skipBytes(4);
 	bool shadow_meso = false;
 	char shadow_level = 0;
