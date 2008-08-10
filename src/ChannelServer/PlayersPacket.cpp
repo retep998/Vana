@@ -126,7 +126,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, unsigned char isse
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, int channel, const string &message) {
@@ -136,7 +136,7 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, 
 	packet.addString(whisperer_name);
 	packet.addShort(channel);
 	packet.addString(message);
-	target->getPacketHandler()->sendPacket(packet);
+	target->getPacketHandler()->send(packet);
 }
 
 void PlayersPacket::findPlayer(Player *player, const string &name, int map, unsigned char is, bool is_channel) {
@@ -159,7 +159,7 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int map, unsi
 		packet.addByte(is);
 	}
 
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void PlayersPacket::sendToPlayers(unsigned char *data, int len) {

@@ -53,7 +53,7 @@ socket(socket)
 	else {
 		size_t len;
 		PacketCreator packet = decoder->getConnectPacket(ivUnknown);
-		len = send(socket, (char *) packet.getBuffer(), packet.getSize(), 0);
+		len = ::send(socket, (char *) packet.getBuffer(), packet.getSize(), 0);
 
 		if (len < Decoder::CONNECT_LENGTH) {
 			//TODO
@@ -94,7 +94,7 @@ void PacketHandler::handle(int socket) {
 	}
 }
 
-bool PacketHandler::sendPacket(unsigned char *buff, int size) {
+bool PacketHandler::send(unsigned char *buff, int size) {
 	if (getDestroy()) {
 		return false;
 	}
@@ -104,16 +104,16 @@ bool PacketHandler::sendPacket(unsigned char *buff, int size) {
 		decoder->encrypt(buff, size);
 		memcpy_s(bufs+4, size, buff, size);
 		decoder->next();
-		send(socket, (const char *) bufs, size+4, 0);
+		::send(socket, (const char *) bufs, size+4, 0);
 		return true;
 	}
 }
 
-bool PacketHandler::sendPacket(const PacketCreator &packet) {
+bool PacketHandler::send(const PacketCreator &packet) {
 	unsigned char tempbuf[BUFFER_LEN];
 	memcpy_s(tempbuf, BUFFER_LEN, packet.getBuffer(), BUFFER_LEN); // Copying to tempbuf so the packet doesn't get emptied on send and can be sent to other players
 	
-	return sendPacket(tempbuf, packet.getSize());
+	return send(tempbuf, packet.getSize());
 }
 
 void PacketHandler::disconnect() {

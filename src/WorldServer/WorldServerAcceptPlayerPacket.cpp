@@ -30,7 +30,7 @@ void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, i
 	packet.addByte(type);
 	packet.addString(sender);
 	packet.addString(message);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int channel, short port, unsigned char maxMultiLevel) {
@@ -39,7 +39,7 @@ void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int
 	packet.addInt(channel);
 	packet.addShort(port);
 	packet.addByte(maxMultiLevel);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, const string &ip, short port) {
@@ -48,7 +48,7 @@ void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer 
 	packet.addInt(playerid);
 	packet.addString(ip);
 	packet.addShort(port);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int len) {
@@ -65,7 +65,7 @@ void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, 
 	packet.addString(findee);
 	packet.addByte(is);
 
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, const string &whisperer, int channel, const string &message) {
@@ -76,7 +76,7 @@ void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *playe
 	packet.addInt(channel);
 	packet.addString(message);
 
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::scrollingHeader(const string &message) {
@@ -92,7 +92,7 @@ void WorldServerAcceptPlayerPacket::newConnectable(int channel, int playerid) {
 	packet.addShort(INTER_NEW_CONNECTABLE);
 	packet.addInt(playerid);
 
-	Channels::Instance()->getChannel(channel)->player->getPacketHandler()->sendPacket(packet);
+	Channels::Instance()->getChannel(channel)->player->getPacketHandler()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::sendRates(WorldServerAcceptPlayer *player, int setBit) {
@@ -113,5 +113,5 @@ void WorldServerAcceptPlayerPacket::sendRates(WorldServerAcceptPlayer *player, i
 		packet.addInt(WorldServer::Instance()->getDroprate());
 	}
 
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }

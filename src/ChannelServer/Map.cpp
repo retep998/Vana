@@ -210,7 +210,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	for (size_t i = 0; i < players.size(); i++) {
 		if (player != players[i] && players[i]->getSkills()->getActiveSkillLevel(9101004) == 0) {
 			PacketCreator packet = MapPacket::playerPacket(players[i]);
-			player->getPacketHandler()->sendPacket(packet);
+			player->getPacketHandler()->send(packet);
 			// Bug in global; would be fixed here:
 			// Hurricane/Pierce do not display properly if using when someone enters the map
 		}
@@ -247,7 +247,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 void Map::sendPacket(PacketCreator &packet, Player *player) {
 	for (size_t i = 0; i < this->players.size(); i++) {
 		if (this->players[i] != player) {
-			this->players[i]->getPacketHandler()->sendPacket(packet);
+			this->players[i]->getPacketHandler()->send(packet);
 		}
 	}
 }

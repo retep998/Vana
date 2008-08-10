@@ -36,7 +36,7 @@ void InventoryPacket::moveItem(Player *player, char inv, short slot1, short slot
 	packet.addShort(slot1);
 	packet.addShort(slot2);
 	packet.addByte(1);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void InventoryPacket::updatePlayer(Player *player) {
@@ -56,7 +56,7 @@ void InventoryPacket::bought(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_BOUGHT);
 	packet.addByte(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void InventoryPacket::addNewItem(Player *player, char inv, short slot, Item *item, bool is) {
@@ -67,7 +67,7 @@ void InventoryPacket::addNewItem(Player *player, char inv, short slot, Item *ite
 	packet.addByte(0);
 	packet.addByte(inv);
 	PlayerPacketHelper::addItemInfo(packet, slot, item, true);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 void InventoryPacket::addItem(Player *player, char inv, short slot, Item *item, bool is) {
 	PacketCreator packet;
@@ -78,7 +78,7 @@ void InventoryPacket::addItem(Player *player, char inv, short slot, Item *item, 
 	packet.addByte(inv);
 	packet.addShort(slot);
 	packet.addShort(item->amount);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void InventoryPacket::updateItemAmounts(Player *player, char inv, short slot1, short amount1, short slot2, short amount2) {
@@ -96,7 +96,7 @@ void InventoryPacket::updateItemAmounts(Player *player, char inv, short slot1, s
 		packet.addShort(slot2);
 		packet.addShort(amount2);
 	}
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void InventoryPacket::sitChair(Player *player, int chairid) {
@@ -104,7 +104,7 @@ void InventoryPacket::sitChair(Player *player, int chairid) {
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 	packet = PacketCreator();
 	packet.addShort(SEND_SIT_CHAIR);
 	packet.addInt(player->getPlayerid());
@@ -116,7 +116,7 @@ void InventoryPacket::stopChair(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_STOP_CHAIR);
 	packet.addByte(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 	packet = PacketCreator();
 	packet.addShort(SEND_SIT_CHAIR);
 	packet.addInt(player->getPlayerid());
@@ -192,7 +192,7 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 	packet.addByte(0);
 	if (morph)
 		packet.addByte(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 	if (morph) {
 		packet = PacketCreator();
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
@@ -228,7 +228,7 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 	packet.addByte(types[6]);
 	packet.addByte(types[7]);
 	packet.addByte(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 	if (morph) {
 		PacketCreator packet;
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
@@ -271,7 +271,7 @@ void InventoryPacket::updateSlots(Player *player, char inventory, char slots) {
 	packet.addShort(SEND_UPDATE_INVENTORY_SLOTS);
 	packet.addByte(inventory);
 	packet.addByte(slots);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void InventoryPacket::blankUpdate(Player *player) {
@@ -279,5 +279,5 @@ void InventoryPacket::blankUpdate(Player *player) {
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(0x01);
 	packet.addByte(0x00);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }

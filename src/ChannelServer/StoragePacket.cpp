@@ -39,7 +39,7 @@ void StoragePacket::showStorage(Player *player, int npcid) {
 	}
 	packet.addShort(0);
 	packet.addByte(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void StoragePacket::addItem(Player *player, char inv) {
@@ -64,7 +64,7 @@ void StoragePacket::addItem(Player *player, char inv) {
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void StoragePacket::takeItem(Player *player, char inv) {
@@ -89,7 +89,7 @@ void StoragePacket::takeItem(Player *player, char inv) {
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void StoragePacket::changeMesos(Player *player, int mesos) {
@@ -101,12 +101,12 @@ void StoragePacket::changeMesos(Player *player, int mesos) {
 	packet.addShort(0);
 	packet.addInt(0);
 	packet.addInt(mesos);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void StoragePacket::storageFull(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x10);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }

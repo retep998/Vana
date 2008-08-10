@@ -85,7 +85,7 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, char animation, bool su
 	else {
 		packet.addByte(0);
 	}
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void PetsPacket::updatePet(Player *player,  Pet *pet) {
@@ -114,7 +114,7 @@ void PetsPacket::updatePet(Player *player,  Pet *pet) {
 	packet.addBytes("B8D56000CEC8"); // TODO: Expire date
 	packet.addByte(1); // Alive or dead
 	packet.addInt(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void PetsPacket::levelUp(Player *player, Pet *pet) {
@@ -123,7 +123,7 @@ void PetsPacket::levelUp(Player *player, Pet *pet) {
 	packet.addByte(4);
 	packet.addByte(0);
 	packet.addByte(pet->getIndex());
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 
 	packet = PacketCreator();
 	packet.addShort(SEND_SHOW_SKILL);
@@ -151,7 +151,7 @@ void PetsPacket::showPet(Player *player, Pet *pet) {
 	packet.addInt(pet->getId());
 	packet.addInt(0);
 	packet.addByte(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void PetsPacket::updateSummonedPets(Player *player) {
@@ -170,7 +170,7 @@ void PetsPacket::updateSummonedPets(Player *player) {
 		packet.addInt(0);
 	}
 	packet.addByte(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void PetsPacket::blankUpdate(Player *player) {
@@ -178,5 +178,5 @@ void PetsPacket::blankUpdate(Player *player) {
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addByte(1);
 	packet.addInt(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
