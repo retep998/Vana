@@ -264,10 +264,10 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	bool shadow_meso = false;
 	if (skillid == 4111004)
 		shadow_meso = true;
-	if (skillid == 3121004 || skillid == 3221001) {
+	if (skillid == 3121004 || skillid == 3221001 || skillid == 5221004) {
 		packet->skipBytes(4); // Charge time
 		display = packet->getByte();
-		if (skillid == 3121004 && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
+		if (skillid == 3121004 || skillid == 5221004 && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
 			SpecialSkillInfo info;
 			info.skillid = skillid;
 			info.direction = packet->getByte();
