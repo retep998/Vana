@@ -101,6 +101,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMob);
 	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
 	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
+	lua_register(luaVm, "isGM", &LuaExports::isGM);
 }
 
 bool LuaScriptable::run() {
@@ -515,5 +516,10 @@ int LuaExports::addSlots(lua_State *luaVm) {
 	char inventory = lua_tointeger(luaVm, -2);
 	char rows = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getInventory()->addMaxSlots(inventory, rows);
+	return 1;
+}
+
+int LuaExports::isGM(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->isGM());
 	return 1;
 }
