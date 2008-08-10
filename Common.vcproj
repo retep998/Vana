@@ -397,6 +397,10 @@
 					RelativePath=".\src\Common\Selector.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\Common\WinSockInclude.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Decoder"

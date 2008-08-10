@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CONNECTOR_H
 
 #include "Selector.h"
-#include <Winsock2.h>
+#include "WinSockInclude.h"
 #include <string>
 
 using std::string;
