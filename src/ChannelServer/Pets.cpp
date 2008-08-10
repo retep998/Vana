@@ -80,7 +80,7 @@ private:
 	void handle (Timer *timer, int id) {
 		int petid;
 		Player *player;
-		
+
 		for (size_t i = 0; i < timers.size(); i++) {
 			if (timers[i].id == id) {
 				player = timers[i].player;
@@ -94,8 +94,8 @@ private:
 	}
 	void remove (int id) {
 		for (size_t i = 0; i < timers.size(); i++) {
-			if (timers[i].id == id) {	
-				timers.erase(timers.begin()+i);	
+			if (timers[i].id == id) {
+				timers.erase(timers.begin()+i);
 				return;
 			}
 		}
