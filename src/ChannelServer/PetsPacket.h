@@ -33,7 +33,7 @@ namespace PetsPacket {
 	void movePet(Player *player, Pet *pet, unsigned char *buf, int buflen);
 	void petSummoned(Player *player, Pet *pet, bool kick = false);
 	void showAnimation(Player *player, Pet *pet, char animation, bool success = false);
-	void updatePet(Player *player,  Pet *pet);
+	void updatePet(Player *player, Pet *pet);
 	void levelUp(Player *player, Pet *pet);
 	void changeName(Player *player, Pet *pet);
 	void showPet(Player *player, Pet *pet);
