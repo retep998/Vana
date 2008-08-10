@@ -1,6 +1,3 @@
-SET FOREIGN_KEY_CHECKS=0;
-
-DROP TABLE IF EXISTS `pets`;
 CREATE TABLE `pets` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `index` tinyint(3) NOT NULL default '-1',
@@ -10,4 +7,4 @@ CREATE TABLE `pets` (
   `closeness` smallint(6) NOT NULL default '0',
   `fullness` tinyint(3) NOT NULL default '1',
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
