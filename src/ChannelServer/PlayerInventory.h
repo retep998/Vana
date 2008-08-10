@@ -25,8 +25,8 @@ class Player;
 class PacketCreator;
 
 struct Item {
-	Item () : petid(0), amount(1), slots(0), scrolls(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
-		imp(0), iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0) { }
+	Item () : amount(1), slots(0), scrolls(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
+		imp(0), iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0), petid(0) { }
 	Item (int itemid, short amount) : id(itemid), amount(amount), petid(0) { }
 	Item (int equipid, bool random);
 	Item (Item *item) {
@@ -49,9 +49,9 @@ struct Item {
 		ihand = item->ihand;
 		ijump = item->ijump;
 		ispeed = item->ispeed;
+		petid = item->petid;
 	}
 	int id;
-	int petid;
 	short amount;
 	char slots;
 	char scrolls;
@@ -70,6 +70,7 @@ struct Item {
 	short ihand;
 	short ijump;
 	short ispeed;
+	int petid;
 };
 typedef hash_map<short, Item *> iteminventory;
 

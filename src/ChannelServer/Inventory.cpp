@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemTimer.h"
 #include "ReadPacket.h"
 #include "Pets.h"
+#include "PetsPacket.h"
 #include <cmath>
 
 hash_map <int, EquipInfo> Inventory::equips;
@@ -122,7 +123,11 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		Item *item1 = player->getInventory()->getItem(inv, slot1);
 		Item *item2 = player->getInventory()->getItem(inv, slot2);
 
-		if (item2 != 0 && !ISRECHARGEABLE(item1->id) && !ISEQUIP(item1->id) && item1->id == item2->id) {
+		if (item1 == 0)
+			// hacking
+			return;
+
+		if (item2 != 0 && !ISRECHARGEABLE(item1->id) && !ISEQUIP(item1->id) && !ISPET(item1->id) && item1->id == item2->id) {
 			if (item1->amount + item2->amount <= items[item1->id].maxslot) {
 				item2->amount += item1->amount;
 				player->getInventory()->deleteItem(inv, slot1);
@@ -138,6 +143,10 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		else {
 			player->getInventory()->setItem(inv, slot1, item2);
 			player->getInventory()->setItem(inv, slot2, item1);
+			if (item1->petid > 0)
+				player->getPets()->getPet(item1->petid)->setInventorySlot((char) slot2);
+			if (item2 != 0 && item2->petid > 0)
+				player->getPets()->getPet(item2->petid)->setInventorySlot((char) slot1);
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 		}
 	}
@@ -169,15 +178,19 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 		}
 		else if (!freeslot) {
 			freeslot = s;
-			if (ISRECHARGEABLE(item->id) || ISEQUIP(item->id))
+			if (ISRECHARGEABLE(item->id) || ISEQUIP(item->id) || ISPET(item->id))
 				break;
 		}
 	}
 	if (freeslot != 0) {
-		if (item->petid != 0)
-			player->getPets()->getPet(item->petid)->setInventorySlot((char) freeslot);
 		player->getInventory()->addItem(inv, freeslot, item);
 		InventoryPacket::addNewItem(player, inv, freeslot, item, is);
+		if (ISPET(item->id)) {
+			Pet *pet = new Pet(item);
+			player->getPets()->addPet(pet);
+			pet->setInventorySlot((char) freeslot);
+			PetsPacket::updatePet(player, pet);
+		}
 		return 0;
 	}
 	else {
@@ -196,12 +209,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 			// hacking
 			return;
 		}
-		if (!ISPET(itemid)) {
-			addNewItem(player, itemid, howmany);
-		}
-		else {
-			Pets::createPet(player, itemid);
-		}
+		addNewItem(player, itemid, howmany);
 		player->getInventory()->setMesos(player->getInventory()->getMesos() - price * howmany);
 		InventoryPacket::bought(player);
 	}
@@ -296,7 +304,8 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 		thisamount = max + player->getSkills()->getSkillLevel(5200000)*10;
 		amount -= 1;
 	}
-	else if (ISEQUIP(itemid)) {
+	else if (ISEQUIP(itemid) || ISPET(itemid)) {
+		thisamount = 1;
 		amount -= 1;
 	}
 	else if (amount > max) {
@@ -314,13 +323,8 @@ void Inventory::addNewItem(Player *player, int itemid, int amount) {
 	else
 		item = new Item(itemid, thisamount);
 
-	if (!ISPET(itemid)) {
-		if (addItem(player, item) == 0 && amount > 0)
-			addNewItem(player, itemid, amount);
-	}
-	else {
-		Pets::createPet(player, itemid);
-	}
+	if (addItem(player, item, ISPET(itemid)) == 0 && amount > 0)
+		addNewItem(player, itemid, amount);
 }
 
 void Inventory::takeItem(Player *player, int itemid, int howmany) {

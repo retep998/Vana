@@ -29,6 +29,7 @@ class Pet;
 class PetTimer;
 class Player;
 class ReadPacket;
+struct Item;
 
 struct PetInfo {
 	string name;
@@ -47,7 +48,6 @@ namespace Pets {
 	extern PetTimer *timer;
 	void showPets(Player *player);
 	void stopTimers(Player *player);
-	void createPet(Player *player, int type);
 	void chat(Player *player, ReadPacket *packet);
 	void feedPet(Player *player, ReadPacket *packet);
 	void movePet(Player *player, ReadPacket *packet);
@@ -61,6 +61,8 @@ namespace Pets {
 
 class Pet {
 public:
+	Pet () {}
+	Pet (Item *item);
 	void setIndex(char index) { this->index = index; }
 	char getIndex() { return this->index; }
 	void setName(const string &name) { this->name = name; }

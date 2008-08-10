@@ -104,31 +104,25 @@ private:
 
 PetTimer * PetTimer::singleton = 0;
 
-void Pets::stopTimers(Player *player) {
-	PetTimer::Instance()->stop(player);
+/* Pet class */
+Pet::Pet(Item *item) {
+	this->fullness = 100;
+	this->closeness = 0;
+	this->level = 1;
+	this->type = item->id;
+	this->summoned = false;
+	this->name = Pets::petsInfo[type].name;
+	this->index = -1;
+	mysqlpp::Query query = Database::chardb.query();
+	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
+	mysqlpp::SimpleResult res = query.execute();
+	this->id = (int) res.insert_id();
+	item->petid = this->id;
 }
 
-void Pets::createPet(Player *player, int type) {
-	Pet *pet = new Pet;
-	pet->setFullness(100);
-	pet->setCloseness(0);
-	pet->setLevel(1);
-	pet->setType(type);
-	pet->setSummoned(false);
-	pet->setName(petsInfo[type].name);
-	pet->setIndex(-1);
-	mysqlpp::Query query = Database::chardb.query();
-	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << pet->getName() << ")";
-	mysqlpp::SimpleResult res = query.execute();
-	int id = (int) res.insert_id();
-	pet->setId(id);
-	player->getPets()->addPet(pet);
-	Item *item = new Item;
-	item->id = type;
-	item->amount = 1;
-	item->petid = id;
-	Inventory::addItem(player, item, true);
-	PetsPacket::updatePet(player, pet);
+/* Pets namespace */
+void Pets::stopTimers(Player *player) {
+	PetTimer::Instance()->stop(player);
 }
 
 void Pets::movePet(Player *player, ReadPacket *packet) {
