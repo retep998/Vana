@@ -126,7 +126,7 @@ void MapPacket::changeMap(Player *player) {
 	packet.addShort(-1);
 	packet.addByte(-1);
 	packet.addByte(1);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void MapPacket::portalBlocked(Player *player) {
@@ -134,7 +134,7 @@ void MapPacket::portalBlocked(Player *player) {
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addByte(1);
 	packet.addInt(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec) {
@@ -144,7 +144,7 @@ void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min,
 	packet.addByte(hour);
 	packet.addByte(min);
 	packet.addByte(sec);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void MapPacket::showTimer(Player *player, int sec) {
@@ -152,13 +152,13 @@ void MapPacket::showTimer(Player *player, int sec) {
 	packet.addShort(SEND_TIME);
 	packet.addByte(2);
 	packet.addInt(sec);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void MapPacket::makeApple(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_MAKE_APPLE);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void MapPacket::changeMusic(int mapid, const string &musicname) { // Change music

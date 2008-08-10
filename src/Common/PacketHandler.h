@@ -31,9 +31,9 @@ class AbstractPlayerFactory;
 class PacketHandler : public Selector::Handler {
 public:
 	PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend = false, string ivUnknown = ""); // isSend = packet is initiated by the server or not
-	void handle (int socket);
-	bool sendPacket(unsigned char *buf, int len);
-	bool sendPacket(const PacketCreator &packet);
+	void handle(int socket);
+	bool send(unsigned char *buf, int len);
+	bool send(const PacketCreator &packet);
 	void disconnect();
 
 	AbstractPlayer * getPlayer() const { return player.get(); }

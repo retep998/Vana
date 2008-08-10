@@ -49,6 +49,6 @@ void Players::run(boost::function<void (Player *)> func) {
 
 void Players::sendPacket(PacketCreator &packet) {
 	for (hash_map<int, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
-		iter->second->getPacketHandler()->sendPacket(packet);
+		iter->second->getPacketHandler()->send(packet);
 	}
 }

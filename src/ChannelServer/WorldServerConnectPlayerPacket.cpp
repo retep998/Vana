@@ -31,7 +31,7 @@ void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player,
 		packet.addInt(receivers[i]);
 	}
 
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::updateLevel(WorldServerConnectPlayer *player, int playerid, int level) {
@@ -39,7 +39,7 @@ void WorldServerConnectPlayerPacket::updateLevel(WorldServerConnectPlayer *playe
 	packet.addShort(INTER_UPDATE_LEVEL);
 	packet.addInt(playerid);
 	packet.addInt(level);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::updateJob(WorldServerConnectPlayer *player, int playerid, int job) {
@@ -47,7 +47,7 @@ void WorldServerConnectPlayerPacket::updateJob(WorldServerConnectPlayer *player,
 	packet.addShort(INTER_UPDATE_JOB);
 	packet.addInt(playerid);
 	packet.addInt(job);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::updateMap(WorldServerConnectPlayer *player, int playerid, int map) {
@@ -55,7 +55,7 @@ void WorldServerConnectPlayerPacket::updateMap(WorldServerConnectPlayer *player,
 	packet.addShort(INTER_UPDATE_MAP);
 	packet.addInt(playerid);
 	packet.addInt(map);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *player, char type, int playerid, int target) {
@@ -66,7 +66,7 @@ void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *pl
 	if (target != 0) {
 		packet.addInt(target);
 	}
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::partyInvite(WorldServerConnectPlayer *player, int playerid, const string &invitee) {
@@ -75,7 +75,7 @@ void WorldServerConnectPlayerPacket::partyInvite(WorldServerConnectPlayer *playe
 	packet.addByte(0x04);
 	packet.addInt(playerid);
 	packet.addString(invitee);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel) {
@@ -83,7 +83,7 @@ void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlaye
 	packet.addShort(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.addInt(playerid);
 	packet.addInt(channel);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *player, int playerid, const string &name, int map, int job, int level) {
@@ -94,14 +94,14 @@ void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *pl
 	packet.addInt(map);
 	packet.addInt(job);
 	packet.addInt(level);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::removePlayer(WorldServerConnectPlayer *player, int playerid) {
 	PacketCreator packet;
 	packet.addShort(INTER_REMOVE_PLAYER);
 	packet.addInt(playerid);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player, int playerid, const string &findee_name) {
@@ -109,7 +109,7 @@ void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player
 	packet.addShort(INTER_FIND);
 	packet.addInt(playerid);
 	packet.addString(findee_name);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *player, int playerid, const string &whisperee, const string &message) {
@@ -118,12 +118,12 @@ void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *pla
 	packet.addInt(playerid);
 	packet.addString(whisperee);
 	packet.addString(message);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void WorldServerConnectPlayerPacket::scrollingHeader(WorldServerConnectPlayer *player, const string &message) {
 	PacketCreator packet;
 	packet.addShort(INTER_SCROLLING_HEADER);
 	packet.addString(message);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }

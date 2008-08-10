@@ -31,7 +31,7 @@ void LevelsPacket::showEXP(Player *player, int exp, char type) {
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addByte(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void LevelsPacket::levelUP(Player *player) {
@@ -47,7 +47,7 @@ void LevelsPacket::statOK(Player *player) {
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 void LevelsPacket::jobChange(Player *player) {

@@ -67,7 +67,7 @@ void Shops::showShop(Player *player, int id) {
 		packet.addShort(Inventory::items[rechargables[i]].maxslot + player->getSkills()->getSkillLevel(4100000)*10);
 	}
 
-	player->getPacketHandler()->sendPacket(packet);
+	player->getPacketHandler()->send(packet);
 }
 
 int Shops::getPrice(int shopid, int itemid) {

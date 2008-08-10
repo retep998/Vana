@@ -90,7 +90,7 @@ void ChannelServer::shutdown() {
 }
 
 void ChannelServer::sendToWorld(PacketCreator &packet) {
-	worldPlayer->getPacketHandler()->sendPacket(packet);
+	worldPlayer->getPacketHandler()->send(packet);
 }
 
 void ChannelServer::setScrollingHeader(const string &message) {
