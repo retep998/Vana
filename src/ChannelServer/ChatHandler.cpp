@@ -38,8 +38,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 
 	char *chat = const_cast<char *>(message.c_str()); // Leaving chat as char[] for GM commands for now
 	size_t chatsize = message.size(); // See above line
-	if (chat[0] == '!') {
-		if (!player->isGM()) return;
+	if (chat[0] == '!' && player->isGM()) {
 		char *next_token;
 		char command[90] = "";
 		if (chatsize > 2)
