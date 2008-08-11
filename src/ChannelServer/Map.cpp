@@ -217,7 +217,8 @@ void Map::clearDrops(int time) { // Clear drops based on how long they have been
 void Map::setTimer() {
 	if (!timer_started) {
 		new NewTimer::OneTimer(boost::bind(&Map::runTimer, this),
-			NewTimer::OneTimer::Id(false), 0, 10000, true);
+			NewTimer::OneTimer::Id(NewTimer::Types::MapTimer, info.id, 0),
+			0, 10000, true);
 	}
 	timer_started = true;
 }

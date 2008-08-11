@@ -43,11 +43,14 @@ public:
 	class Container;
 	struct Types {
 		enum {
-			PingTimer
+			PingTimer,
+			MapTimer
 		};
 	};
 
 	~NewTimer();
+
+	Container * getContainer() const { return m_container.get(); }
 
 	void registerTimer(OneTimer *timer);
 	void removeTimer(OneTimer *timer);
@@ -67,13 +70,14 @@ private:
 	boost::scoped_ptr<boost::thread> m_thread;
 	boost::mutex m_main_loop_mutex;
 	boost::condition m_main_loop_condition;
+
+	boost::scoped_ptr<Container> m_container; // Central container for Timers that don't belong to other containers
 };
 
 class NewTimer::OneTimer {
 public:
 	struct Id {
 		Id(unsigned int type, unsigned int id, unsigned int id2);
-		Id(bool val) { assert(!val); } // For permanent timers with no container needing no Id
 		unsigned int type;
 		unsigned int id;
 		unsigned int id2;
