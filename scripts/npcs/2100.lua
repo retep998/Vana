@@ -1,9 +1,7 @@
 map = getMap();
 if map == 0 then
 	if state == 0 then
-		addText("Welcome to the world of MapleStory. The purpose of this training camp is to ");
-		addText("help beginners. Would you like to enter this training camp? Some people start thier journey ");
-		addText(" without taking the training program. But I strongly recommend you take the training program first.");
+		addText("Welcome to the world of MapleStory. The purpose of this training camp is to help beginners. Would you like to enter this training camp? Some people start their journey without taking the training program. But I strongly recommend you take the training program first.");
 		sendYesNo();
 	elseif state == 1 then
 		if getSelected() == 1 then
@@ -19,10 +17,8 @@ if map == 0 then
 		endNPC();
 	elseif state == 3 then
 		if getSelected() == 1 then
-			addText("It seems like you want to start your journey without taking the ");
-			addText("training program. Then, I will let you move on the training ground. Be careful~");
+			addText("It seems like you want to start your journey without taking the training program. Then, I will let you move on the training ground. Be careful~");
 			sendNext();
-
 		else
 			addText("Please talk to me again when you finally made your decision.");
 			sendNext();
@@ -34,12 +30,10 @@ if map == 0 then
 	end
 elseif map == 1 then
 	if state == 0 then
-		addText("The is the image room where your first training program begins. ");
-		addText("In this room, you will have an advance look into the job of your choice. ");
+		addText("This is the image room where your first training program begins. In this room, you will have an advance look into the job of your choice.");
 		sendNext();
 	elseif state == 1 then
-		addText("Once you train hard enough, you will be entitled to occupy a job. ");
-		addText("You can become a Bowman in Henesys, a Magician in Ellinia, a Warrior in Perion, and a Thief in Kerening City..");
+		addText("Once you train hard enough, you will be entitled to occupy a job. You can become a Bowman in Henesys, a Magician in Ellinia, a Warrior in Perion, and a Thief in Kerning City..");
 		sendBackOK();
 	else
 		endNPC();
