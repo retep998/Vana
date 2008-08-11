@@ -43,8 +43,14 @@ public:
 	class Container;
 	struct Types {
 		enum {
+			CoolTimer,
+			ItemTimer,
+			MapTimer,
+			PetTimer,
 			PingTimer,
-			MapTimer
+			ReactionTimer,
+			SkillTimer,
+			TradeTimer
 		};
 	};
 
