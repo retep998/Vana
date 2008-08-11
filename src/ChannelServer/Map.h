@@ -196,6 +196,9 @@ public:
 	}
 	void clearDrops();
 	void clearDrops(int time);
+	// Timer stuff
+	void setTimer();
+	void runTimer();
 	// Show all map objects
 	void showObjects(Player *player);
 	// Packet Stuff
@@ -216,6 +219,7 @@ private:
 	hash_map<int, Mob *> mobs;
 	hash_map<int, Drop *> drops;
 	scoped_ptr<LoopingId> objectids;
+	bool timer_started;
 
 	void updateMobControl();
 	void updateMobControl(Mob *mob, bool spawn = false);

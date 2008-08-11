@@ -29,11 +29,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "Randomizer.h"
 #include <ctime>
+#include <boost/bind.hpp>
 
-Map::Map (MapInfo info) : info(info), spawnpoints(0), objectids(new LoopingId(1000)) { }
+Map::Map (MapInfo info) :
+info(info),
+spawnpoints(0),
+objectids(new LoopingId(1000)),
+timer_started(false)
+{
+}
 
 // Players
 void Map::addPlayer(Player *player) {
+	setTimer(); // Setup the timer if this is the first player to enter the map
+
 	this->players.push_back(player);
 	if (info.fieldType == 82)
 		MapPacket::makeApple(player);
@@ -203,6 +212,21 @@ void Map::clearDrops(int time) { // Clear drops based on how long they have been
 			if (iter->second->getDropped() < time)
 				iter->second->removeDrop();
 	}
+}
+
+void Map::setTimer() {
+	if (!timer_started) {
+		new NewTimer::OneTimer(boost::bind(&Map::runTimer, this),
+			NewTimer::OneTimer::Id(false), 0, 10000, true);
+	}
+	timer_started = true;
+}
+
+void Map::runTimer() {
+	clock_t time = clock();
+	checkReactorSpawn(time);
+	checkMobSpawn(time);
+	clearDrops(time);
 }
 
 void Map::showObjects(Player *player) { // Show all Map Objects
