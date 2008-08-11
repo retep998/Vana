@@ -29,38 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 hash_map<int, Map *> Maps::maps;
 
-class MapTimer : public Timer::TimerHandler {
-public:
-	static MapTimer * Instance() {
-		if (singleton == 0)
-			singleton = new MapTimer;
-		return singleton;
-	}
-	void setMapTimer(int mapid) {
-		if (ctimer.find(mapid) != ctimer.end())
-			if (ctimer[mapid])
-			return;
-		Maps::mapTimer(mapid);
-		timers[Timer::Instance()->setTimer(10000, this, true)] = mapid;
-		ctimer[mapid] = 1;
-	}
-private:
-	static MapTimer *singleton;
-	MapTimer() {};
-	MapTimer(const MapTimer&);
-	MapTimer& operator = (const MapTimer&);
-
-	hash_map <int, int> timers;
-	hash_map <int, int> ctimer;
-	void handle (Timer *timer, int id) {
-		Maps::mapTimer(timers[id]);
-	}
-	void remove (int id) {
-		timers.erase(id);
-	}
-};
-MapTimer * MapTimer::singleton = 0;
-
 void Maps::addMap(MapInfo info) {
 	maps[info.id] = new Map(info);
 }
@@ -130,18 +98,10 @@ void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
 	newMap(player, mapid);
 }
 
-void Maps::mapTimer(int mapid) {
-	clock_t time = clock();
-	maps[mapid]->checkReactorSpawn(time);
-	maps[mapid]->checkMobSpawn(time);
-	maps[mapid]->clearDrops(time);
-}
-
 void Maps::newMap(Player *player, int mapid) {
 	Players::Instance()->addPlayer(player);
 	maps[mapid]->addPlayer(player);
 	maps[mapid]->showObjects(player);
-	MapTimer::Instance()->setMapTimer(player->getMap());
 	Pets::showPets(player);
 }
 // Change Music
