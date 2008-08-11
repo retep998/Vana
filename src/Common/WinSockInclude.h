@@ -18,6 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WINSOCKINCLUDE_H
 #define WINSOCKINCLUDE_H
 
-#include <Winsock2.h>
+#include <Winsock.h>
 
 #endif
