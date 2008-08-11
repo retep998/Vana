@@ -256,6 +256,10 @@
 				Name="Timer"
 				>
 				<File
+					RelativePath=".\src\Common\NewTimer.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Timer.cpp"
 					>
 				</File>
@@ -425,6 +429,10 @@
 			<Filter
 				Name="Timer"
 				>
+				<File
+					RelativePath=".\src\Common\NewTimer.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Common\Timer.h"
 					>

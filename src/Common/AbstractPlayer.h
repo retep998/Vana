@@ -18,8 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef ABSTRACTPLAYER_H
 #define ABSTRACTPLAYER_H
 
-#include <ctime>
+#include "NewTimer.h"
 #include <string>
+#include <boost/scoped_ptr.hpp>
 
 using std::string;
 
@@ -39,6 +40,7 @@ public:
 	void setPacketHandler(PacketHandler * ph) { packetHandler = ph; }
 	string getIP() const { return ip; }
 	void setIP(const string &ip) { this->ip = ip; }
+	NewTimer::Container * getTimers() const { return timers.get(); }
 
 	virtual ~AbstractPlayer();
 protected:
@@ -46,8 +48,8 @@ protected:
 	string ip;
 	bool is_server;
 private:
-	int timer;
 	bool is_pinged;
+	boost::scoped_ptr<NewTimer::Container> timers;
 };
 
 class AbstractPlayerFactory {
