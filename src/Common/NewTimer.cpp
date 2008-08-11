@@ -20,7 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 NewTimer * NewTimer::singleton = 0;
 
-NewTimer::NewTimer() : m_terminate(false) {
+NewTimer::NewTimer() :
+m_terminate(false),
+m_container(new Container)
+{
 	m_thread.reset(new boost::thread(boost::bind(&NewTimer::runThread, this)));
 }
 
@@ -86,12 +89,12 @@ m_length(length),
 m_persistent(persistent),
 m_function(func)
 {
-	assert(m_container || persistent); // The timer must have a container or be persistent
+	if (!m_container) { // No container specified, use the central container
+		m_container = NewTimer::Instance()->getContainer();
+	}
 
 	reset();
-	if (m_container) {
-		m_container->registerTimer(this);
-	}
+	m_container->registerTimer(this);
 	NewTimer::Instance()->registerTimer(this);
 }
 
@@ -105,7 +108,7 @@ void NewTimer::OneTimer::run() {
 	if (m_persistent) {
 		reset();
 	}
-	else if (m_container) {
+	else {
 		m_container->removeTimer(getId());
 	}
 }
