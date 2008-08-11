@@ -61,7 +61,6 @@ Player::~Player() {
 			Trades::cancelTrade(this);
 		Skills::stopTimersPlayer(this);
 		Skills::stopCooldownTimersPlayer(this);
-		Inventory::stopTimersPlayer(this);
 		Pets::stopTimers(this);
 		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::maps[this->getMap()]->removePlayer(this);
