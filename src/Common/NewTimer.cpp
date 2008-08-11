@@ -86,9 +86,12 @@ m_length(length),
 m_persistent(persistent),
 m_function(func)
 {
-	reset();
+	assert(m_container || persistent); // The timer must have a container or be persistent
 
-	m_container->registerTimer(this);
+	reset();
+	if (m_container) {
+		m_container->registerTimer(this);
+	}
 	NewTimer::Instance()->registerTimer(this);
 }
 
@@ -102,7 +105,7 @@ void NewTimer::OneTimer::run() {
 	if (m_persistent) {
 		reset();
 	}
-	else {
+	else if (m_container) {
 		m_container->removeTimer(getId());
 	}
 }

@@ -73,6 +73,7 @@ class NewTimer::OneTimer {
 public:
 	struct Id {
 		Id(unsigned int type, unsigned int id, unsigned int id2);
+		Id(bool val) { assert(!val); } // For permanent timers with no container needing no Id
 		unsigned int type;
 		unsigned int id;
 		unsigned int id2;
