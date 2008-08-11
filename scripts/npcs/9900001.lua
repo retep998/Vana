@@ -1,11 +1,12 @@
 -- Credits TerraEnvy of Ragezone/Terra of dev.chisoft & Bri for adding new skills
 if state == 0 then
-	if getJob() == 910 then
-		addText("Hi " ..  getName() .. "! Would you like your skills maxed?");
+	if isGM() == 1 then
+		addText("Hi " .. getName() .. "! Would you like your skills maxed?");
 		sendYesNo();
 	else
-		addText("You need to be a GM in order for me to max your skills, " ..  getName() .. "! Change your job to 910.");
+		addText("You need to be a GM in order for me to max your skills, " .. getName() .. "!");
 		sendOK();
+		endNPC();
 	end
 elseif state == 1 then
 	if getSelected() == 1 then
@@ -383,7 +384,7 @@ elseif state == 1 then
 		sendOK();
 		endNPC();
 	else
-		addText("No skills for you!")
+		addText("Okay, come back to me any time if you change your mind.")
 		sendOK();
 		endNPC();
 	end
