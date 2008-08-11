@@ -26,12 +26,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "Maps.h"
 #include "Mobs.h"
+#include "NewTimer.h"
 #include "Randomizer.h"
-#include "ItemTimer.h"
 #include "ReadPacket.h"
 #include "Pets.h"
 #include "PetsPacket.h"
 #include <cmath>
+#include <boost/bind.hpp>
 
 hash_map <int, EquipInfo> Inventory::equips;
 hash_map <int, ItemInfo> Inventory::items;
@@ -84,10 +85,6 @@ void Inventory::addItemInfo(int id, ItemInfo item) {
 	}
 
 	items[id] = item;
-}
-
-void Inventory::stopTimersPlayer(Player *player) {
-	ItemTimer::Instance()->stop(player);
 }
 
 void Inventory::itemMove(Player *player, ReadPacket *packet) {
@@ -405,14 +402,17 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 	// Item buffs
 	if (item->cons.time > 0) {
 		InventoryPacket::useItem(player, itemid, item->cons.time * 1000, item->cons.types, item->cons.vals, (item->cons.morph > 0));
-		ItemTimer::Instance()->stop(player, itemid);
-		ItemTimer::Instance()->setItemTimer(player, itemid, item->cons.time * 1000);
+
+		NewTimer::OneTimer::Id id(NewTimer::Types::ItemTimer, itemid, 0);
+		player->getTimers()->removeTimer(id);
+		new NewTimer::OneTimer(boost::bind(&Inventory::endItem, player,
+			itemid), id, player->getTimers(), item->cons.time * 1000, false);
 	}
 }
 // Cancel item buffs
 void Inventory::cancelItem(Player *player, ReadPacket *packet) {
 	int itemid = packet->getInt()*-1;
-	ItemTimer::Instance()->stop(player, itemid);
+	player->getTimers()->removeTimer(NewTimer::OneTimer::Id(NewTimer::Types::ItemTimer, itemid, 0));
 	Inventory::endItem(player, itemid);
 }
 // End item buffs

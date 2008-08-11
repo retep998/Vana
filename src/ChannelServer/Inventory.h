@@ -124,7 +124,6 @@ namespace Inventory {
 	void addEquipInfo(int id, EquipInfo equip);
 	void addItemInfo(int id, ItemInfo item);
 	void startTimer();
-	void stopTimersPlayer(Player *player);
 	extern bool isCash(int itemid);
 	extern ItemTimer * timer;
 	void useShop(Player *player, ReadPacket *packet);

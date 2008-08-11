@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1255"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="ChannelServer"
 	ProjectGUID="{F07865A8-3A41-48D8-809C-056CC906A50B}"
 	RootNamespace="ChannelServer"
@@ -446,10 +446,6 @@
 				Name="Timers"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\ItemTimer.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\SkillTimer.cpp"
 					>
 				</File>
@@ -723,10 +719,6 @@
 			<Filter
 				Name="Timers"
 				>
-				<File
-					RelativePath=".\src\ChannelServer\ItemTimer.h"
-					>
-				</File>
 				<File
 					RelativePath=".\src\ChannelServer\SkillTimer.h"
 					>
