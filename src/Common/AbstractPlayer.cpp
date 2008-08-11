@@ -21,61 +21,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PingPacket.h"
 #include "Timer.h"
 #include "SendHeader.h"
+#include <boost/bind.hpp>
 
-class PingTimer: public Timer::TimerHandler {
-public:
-	static PingTimer * Instance() {
-		if (singleton == 0)
-			singleton = new PingTimer;
-		return singleton;
-	}
-
-	int set(AbstractPlayer *player) {
-		int id = Timer::Instance()->setTimer(15000, this, true);
-		timers[id] = player;
-		return id;
-	}
-
-	void reset(int id) {
-		Timer::Instance()->resetTimer(id);
-	}
-private:
-	static PingTimer *singleton;
-	PingTimer() {};
-	PingTimer(const PingTimer&);
-	PingTimer& operator=(const PingTimer&);
-
-	hash_map <int, AbstractPlayer *> timers;
-
-	void handle(Timer *timer, int id) {
-		if (timers.find(id) == timers.end())
-			return;
-
-		timers[id]->ping();
-	}
-
-	void remove(int id) {
-		timers.erase(id);
-	}
-};
-
-PingTimer * PingTimer::singleton = 0;
-
-AbstractPlayer::AbstractPlayer() {
-	is_server = false;
-	is_pinged = false;
+AbstractPlayer::AbstractPlayer() :
+is_server(false),
+is_pinged(false),
+timers(new NewTimer::Container)
+{
 	setTimer();
 }
 
 void AbstractPlayer::handleRequest(ReadPacket *packet) {
 	is_pinged = false;
-	if (is_server && packet->getHeader() == SEND_PING)
+	if (is_server && packet->getHeader() == SEND_PING) {
 		PingPacket::pong(this);
+	}
 	realHandleRequest(packet);
 }
 
 void AbstractPlayer::setTimer() {
-	timer = PingTimer::Instance()->set(this);
+	new NewTimer::OneTimer(boost::bind(&AbstractPlayer::ping, this),
+		NewTimer::OneTimer::Id(NewTimer::Types::PingTimer, 0, 0),
+		getTimers(), 15000, true);
 }
 
 void AbstractPlayer::ping() {
@@ -87,6 +54,4 @@ void AbstractPlayer::ping() {
 	PingPacket::ping(this);
 }
 
-AbstractPlayer::~AbstractPlayer() {
-	Timer::Instance()->cancelTimer(timer);
-}
+AbstractPlayer::~AbstractPlayer() { }
