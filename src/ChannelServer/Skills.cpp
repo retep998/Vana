@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include <boost/bind.hpp>
 
-hash_map <int, SkillsLevelInfo> Skills::skills;
-hash_map <int, unsigned char> Skills::maxlevels;
-hash_map <int, SkillsInfo> Skills::skillsinfo;
+hash_map<int, SkillsLevelInfo> Skills::skills;
+hash_map<int, unsigned char> Skills::maxlevels;
+hash_map<int, SkillsInfo> Skills::skillsinfo;
 
 void Skills::stopTimersPlayer(Player *player) {
 	SkillTimer::Instance()->stop(player, false);
@@ -65,7 +65,7 @@ void Skills::init() {
 	player.type = 0x4;
 	player.byte = TYPE_5;
 	player.value = SKILL_X;
-	strcpy_s(act.name, 50, "heal");
+	act.type = ACT_HEAL;
 	act.time = 4900;
 	act.value = SKILL_X;
 	skillsinfo[1001].player.push_back(player);
@@ -243,7 +243,7 @@ void Skills::init() {
 	player.byte = TYPE_3;
 	player.value = SKILL_LV;
 	skillsinfo[1311008].player.push_back(player);
-	strcpy_s(act.name, 50, "hurt");
+	act.type = ACT_HURT;
 	act.time = 4000;
 	act.value = SKILL_X;
 	skillsinfo[1311008].act = act;
@@ -428,7 +428,8 @@ void Skills::stopSkill(Player *player, int skillid) {
 		case 2121001:
 		case 2221001:
 		case 2321001:
-		case 5221004: { // Special skills like hurricane, monster magnet, rapid fire, and etc
+		case 5221004:
+			{ // Special skills like hurricane, monster magnet, rapid fire, and etc
 				SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
 				SpecialSkillInfo info;
 				player->setSpecialSkill(info);
@@ -637,7 +638,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	player->getSkills()->setSkillMapEnterInfo(skillid, mapenterskill);
 	SkillTimer::Instance()->stop(player, skillid);
 	if (skillsinfo[skillid].bact.size() > 0) {
-		SkillTimer::Instance()->stop(player, skillid, skillsinfo[skillid].act.name);
+		SkillTimer::Instance()->stop(player, skillid, skillsinfo[skillid].act.type);
 	}
 	if (skillsinfo[skillid].bact.size() > 0) {
 		int value = 0;
@@ -655,7 +656,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_MORPH: value = skills[skillid][level].morph; break;
 			case SKILL_LV: value = level; break;
 		}
-		SkillTimer::Instance()->setSkillTimer(player, skillid, skillsinfo[skillid].act.name, value, skillsinfo[skillid].act.time);
+		SkillTimer::Instance()->setSkillTimer(player, skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 	}
 	player->setSkill(player->getSkills()->getSkillMapEnterInfo());
 	SkillTimer::Instance()->setSkillTimer(player, skillid, skills[skillid][level].time*1000);
@@ -704,7 +705,7 @@ void Skills::endSkill(Player *player, int skill) {
 	}
 	///
 	if (skillsinfo[skill].bact.size()>0) {
-		SkillTimer::Instance()->stop(player, skill, skillsinfo[skill].act.name);
+		SkillTimer::Instance()->stop(player, skill, skillsinfo[skill].act.type);
 	}
 	if (skill == 9101004) // GM Hide
 		MapPacket::showPlayer(player);
@@ -735,7 +736,7 @@ void Skills::heal(Player *player, short value, int skillid) {
 		player->setHP(player->getHP() + value);
 		SkillsPacket::healHP(player, value);
 	}
-	SkillTimer::Instance()->setSkillTimer(player, skillid, "heal", value, 5000);
+	SkillTimer::Instance()->setSkillTimer(player, skillid, ACT_HEAL, value, 5000);
 }
 
 void Skills::hurt(Player *player, short value, int skillid) {
@@ -743,7 +744,7 @@ void Skills::hurt(Player *player, short value, int skillid) {
 		if (player->getHP() - value > 1) {
 			player->setHP(player->getHP() - value);
 			SkillsPacket::showSkillEffect(player, skillid);
-			SkillTimer::Instance()->setSkillTimer(player, skillid, "hurt", value, 4000);
+			SkillTimer::Instance()->setSkillTimer(player, skillid, ACT_HURT, value, 4000);
 		}
 		else
 			Skills::endBuff(player, skillid);
