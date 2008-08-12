@@ -111,7 +111,7 @@ void PlayerPacket::connectData(Player *player) {
 				packet.addInt(pet->getId());
 				packet.addInt(0);
 				packet.addBytes("008005BB46E61702");
-				packet.addString(pet->getName(),13);
+				packet.addString(pet->getName(), 13);
 				packet.addByte(pet->getLevel());
 				packet.addShort(pet->getCloseness());
 				packet.addByte(pet->getFullness());
