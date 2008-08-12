@@ -111,6 +111,7 @@ private:
 
 class NewTimer::Container {
 public:
+	bool checkTimer(const OneTimer::Id &id);
 	void registerTimer(OneTimer *timer);
 	void removeTimer(const OneTimer::Id &id);
 private:
