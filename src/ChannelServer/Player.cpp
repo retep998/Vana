@@ -130,6 +130,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		return;
 	}
 	this->id = id;
+	activeBuffs.reset(new PlayerActiveBuffs(this));
 	skills.reset(new PlayerSkills(this));
 	quests.reset(new PlayerQuests(this));
 	buddyList.reset(new BuddyList(this));
