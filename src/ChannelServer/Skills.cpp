@@ -432,7 +432,6 @@ void Skills::stopSkill(Player *player, int skillid) {
 				SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
 				SpecialSkillInfo info;
 				player->setSpecialSkill(info);
-				return;
 			}
 			break;
 		default:
