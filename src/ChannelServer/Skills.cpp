@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "SkillTimer.h"
 #include "ReadPacket.h"
+#include <boost/bind.hpp>
 
 hash_map <int, SkillsLevelInfo> Skills::skills;
 hash_map <int, unsigned char> Skills::maxlevels;
@@ -748,7 +749,10 @@ void Skills::startCooldown(Player *player, int skillid, int cooltime) {
 		return;
 	}
 	SkillsPacket::sendCooldown(player, skillid, cooltime);
-	CoolTimer::Instance()->setCoolTimer(player, skillid, cooltime * 1000);
+
+	new NewTimer::OneTimer(boost::bind(&Skills::stopCooldown, player,
+		skillid), NewTimer::OneTimer::Id(NewTimer::Types::CoolTimer,
+		skillid, 0), player->getTimers(), cooltime * 1000, false);
 }
 
 void Skills::stopCooldown(Player *player, int skillid) {
@@ -756,11 +760,8 @@ void Skills::stopCooldown(Player *player, int skillid) {
 }
 
 bool Skills::isCooling(Player *player, int skillid) {
-	if (CoolTimer::Instance()->coolTime(player, skillid) > 0)
+	NewTimer::OneTimer::Id id(NewTimer::Types::CoolTimer, skillid, 0);
+	if (player->getTimers()->checkTimer(id))
 		return true;
 	return false;
-}
-
-void Skills::stopCooldownTimersPlayer(Player *player) {
-	CoolTimer::Instance()->stop(player);
 }

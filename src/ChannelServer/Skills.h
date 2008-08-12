@@ -165,7 +165,6 @@ namespace Skills {
 	void useAttackSkill(Player *player, int skillid);
 	void stopTimersPlayer(Player *player);
 	void stopAllBuffs(Player *player);
-	void stopCooldownTimersPlayer(Player *player);
 	void heal(Player *player, short value, int skillid);
 	void hurt(Player *player, short value, int skillid);
 	void endSkill(Player *player, int skillid);

@@ -63,31 +63,4 @@ private:
 	void remove (int id);
 };
 
-class CoolTimer : public Timer::TimerHandler {
-public:
-	static CoolTimer * Instance() {
-		if (singleton == 0)
-			singleton = new CoolTimer;
-		return singleton;
-	}
-	void setCoolTimer(Player *player, int skill, int time);
-	void stop (Player *player, int skill);
-	void stop (Player *player);
-	int coolTime(Player *player, int skillid);
-private:
-	static CoolTimer *singleton;
-	CoolTimer() {};
-	CoolTimer(const CoolTimer&);
-	CoolTimer& operator=(const CoolTimer&);
-	struct CTimer {
-		int id;
-		Player *player;
-		int skill;
-		int time;
-	};
-	vector <CTimer> timers;
-	void handle (Timer *timer, int id);
-	void remove (int id);
-};
-
 #endif

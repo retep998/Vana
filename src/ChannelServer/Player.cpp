@@ -60,7 +60,6 @@ Player::~Player() {
 		if (this->isTrading() == 1)
 			Trades::cancelTrade(this);
 		Skills::stopTimersPlayer(this);
-		Skills::stopCooldownTimersPlayer(this);
 		Pets::stopTimers(this);
 		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::maps[this->getMap()]->removePlayer(this);
