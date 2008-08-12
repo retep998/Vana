@@ -733,8 +733,8 @@ void Skills::endBuff(Player *player, int skill) {
 void Skills::heal(Player *player, short value, int skillid) {
 	if (player->getHP() < player->getMHP() && player->getHP() > 0) {
 		player->setHP(player->getHP() + value);
+		SkillsPacket::healHP(player, value); 
 	}
-	SkillTimer::Instance()->setSkillTimer(player, skillid, ACT_HEAL, value, 5000);
 }
 
 void Skills::hurt(Player *player, short value, int skillid) {
