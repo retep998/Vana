@@ -60,7 +60,6 @@ Player::~Player() {
 		if (this->isTrading() == 1)
 			Trades::cancelTrade(this);
 		Skills::stopTimersPlayer(this);
-		Pets::stopTimers(this);
 		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::maps[this->getMap()]->removePlayer(this);
 		Players::Instance()->removePlayer(this);
@@ -210,7 +209,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		item->petid = res[i][21];
 		inv->addItem((unsigned char) res[i][0], res[i][1], item);
 		if (item->petid != 0) {
-			Pet *pet = new Pet;
+			Pet *pet = new Pet(this);
 			pet->setId(item->petid);
 			pet->setType(item->id);
 			pet->setIndex((signed char) res[i][22]);

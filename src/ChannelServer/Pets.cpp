@@ -29,90 +29,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "ReadPacket.h"
 #include "Timer.h"
+#include <boost/bind.hpp>
 
 hash_map<int, PetInfo> Pets::petsInfo;
 hash_map<int, hash_map<int, PetInteractInfo>> Pets::petsInteractInfo;
 
 short Pets::exps[29] = {1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000};
 
-class PetTimer : public Timer::TimerHandler {
-public:
-	static PetTimer * Instance() {
-		if (singleton == 0)
-			singleton = new PetTimer;
-		return singleton;
-	}
-	void setPetTimer (Player *player, int petid, int time) {
-		PTimer timer;
-		timer.id = Timer::Instance()->setTimer(time, this);
-		timer.player = player;
-		timer.petid = petid;
-		timer.time = time;
-		timers.push_back(timer);
-	}
-	void stop (Player *player, int petid) {
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (player == timers[i].player && timers[i].petid == petid) {
-				Timer::Instance()->cancelTimer(timers[i].id);
-				break;
-			}
-		}
-	}
-	void stop (Player *player) {
-		for (size_t i = timers.size(); i > 0; i--) {
-			if (player == timers[i-1].player) {
-				Timer::Instance()->cancelTimer(timers[i-1].id);
-			}
-		}
-	}
-private:
-	static PetTimer *singleton;
-	PetTimer() {};
-	PetTimer(const PetTimer&);
-	PetTimer& operator=(const PetTimer&);
-	struct PTimer {
-		int id;
-		Player *player;
-		int petid;
-		int time;
-	};
-	vector <PTimer> timers;
-	void handle (Timer *timer, int id) {
-		int petid;
-		Player *player;
-
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (timers[i].id == id) {
-				player = timers[i].player;
-				petid = timers[i].petid;
-				break;
-			}
-		}
-		player->getPets()->getPet(petid)->setFullness(player->getPets()->getPet(petid)->getFullness()-1);
-		PetsPacket::updatePet(player, player->getPets()->getPet(petid));
-		this->setPetTimer(player, petid, (6-Pets::petsInfo[player->getPets()->getPet(petid)->getType()].hunger)*1000*60);
-	}
-	void remove (int id) {
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (timers[i].id == id) {
-				timers.erase(timers.begin()+i);
-				return;
-			}
-		}
-	}
-};
-
-PetTimer * PetTimer::singleton = 0;
-
 /* Pet class */
-Pet::Pet(Item *item) {
-	this->fullness = 100;
-	this->closeness = 0;
-	this->level = 1;
+Pet::Pet(Player *player, Item *item) :
+fullness(100),
+closeness(0),
+level(1),
+summoned(false),
+index(-1),
+player(player)
+{
 	this->type = item->id;
-	this->summoned = false;
 	this->name = Pets::petsInfo[type].name;
-	this->index = -1;
+
 	mysqlpp::Query query = Database::chardb.query();
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
@@ -120,10 +55,18 @@ Pet::Pet(Item *item) {
 	item->petid = this->id;
 }
 
-/* Pets namespace */
-void Pets::stopTimers(Player *player) {
-	PetTimer::Instance()->stop(player);
+void Pet::reduceFullness() {
+	setFullness(getFullness() - 1);
+	PetsPacket::updatePet(player, this);
 }
+
+void Pet::startTimer() {
+	NewTimer::OneTimer::Id id(NewTimer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
+	clock_t length = (6 - Pets::petsInfo[getType()].hunger)* 1000 * 60; // TODO: Better formula
+	new NewTimer::OneTimer(boost::bind(&Pet::reduceFullness, this), id, player->getTimers(), length, true);
+}
+
+/* Pets namespace */
 
 void Pets::movePet(Player *player, ReadPacket *packet) {
 	int petid = packet->getInt();
@@ -259,8 +202,9 @@ void Pets::showPets(Player *player) {
 				PetsPacket::showPet(player, pet);
 			}
 			else {
-				if (pet->getIndex() == 0)
-					PetTimer::Instance()->setPetTimer(player, pet->getId(), (6-petsInfo[pet->getType()].hunger)*1000*60);
+				if (pet->getIndex() == 0) {
+					pet->startTimer();
+				}
 				pet->setSummoned(true);
 				PetsPacket::petSummoned(player, pet);
 			}
@@ -279,12 +223,15 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 					move->setIndex(i - 1);
 					player->getPets()->setSummoned(move->getId(), i - 1);
 					player->getPets()->setSummoned(0, i);
-					if (i - 1 == 0)
-						PetTimer::Instance()->setPetTimer(player, move->getId(), (6-petsInfo[move->getType()].hunger)*1000*60);
+					if (i - 1 == 0) {
+						pet->startTimer();
+					}
 				}
 			}
-			if (pet->getIndex() == 0)
-				PetTimer::Instance()->stop(player, pet->getId());
+			if (pet->getIndex() == 0) {
+				NewTimer::OneTimer::Id id(NewTimer::Types::PetTimer, pet->getId(), 0);
+				player->getTimers()->removeTimer(id);
+			}
 			pet->setSummoned(false);
 			PetsPacket::petSummoned(player, pet);
 			pet->setIndex(-1);
@@ -311,7 +258,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 						pet->setIndex(i);
 						pet->setSummoned(true);
 						PetsPacket::petSummoned(player, pet);
-						PetTimer::Instance()->setPetTimer(player, pet->getId(), (6 - petsInfo[pet->getType()].hunger) * 1000 * 60); // TODO: Improve formula
+						pet->startTimer();
 						break;
 					}
 				}
@@ -324,7 +271,8 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 			pet->setSummoned(false);
 			PetsPacket::petSummoned(player, pet);
 			pet->setIndex(-1);
-			PetTimer::Instance()->stop(player, pet->getId());
+			NewTimer::OneTimer::Id id(NewTimer::Types::PetTimer, pet->getId(), 0);
+			player->getTimers()->removeTimer(id);
 		}
 		else {
 			pet->setIndex(0);
@@ -333,13 +281,14 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 				Pet *kicked = player->getPets()->getPet(player->getPets()->getSummoned(0));
 				kicked->setIndex(-1);
 				kicked->setSummoned(false);
-				PetTimer::Instance()->stop(player, kicked->getId());
+				NewTimer::OneTimer::Id id(NewTimer::Types::PetTimer, kicked->getId(), 0);
+				player->getTimers()->removeTimer(id);
 				PetsPacket::petSummoned(player, pet, true);
 			}
 			else
 				PetsPacket::petSummoned(player, pet);
 			player->getPets()->setSummoned(pet->getId(), 0);
-			PetTimer::Instance()->setPetTimer(player, pet->getId(), (6 - petsInfo[pet->getType()].hunger) * 1000 * 60);
+			pet->startTimer();
  		}
 	}
 	PetsPacket::blankUpdate(player);
