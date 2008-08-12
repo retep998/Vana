@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TradesPacket.h"
 #include <string>
 #include <vector>
+#include <boost/bind.hpp>
 
 using std::string;
 using std::vector;
@@ -453,8 +454,11 @@ void Trades::cancelTrade(Player *player) {
 		one->setTradeSendID(0);
 		two->setTrading(0);
 		two->setTradeRecvID(0);
-		if (TradeTimer::Instance()->isTiming(one, two))
+
+		NewTimer::OneTimer::Id id(NewTimer::Types::TradeTimer, one->getId(), two->getId());
+		if (NewTimer::Instance()->getContainer()->checkTimer(id)) {
 			Trades::stopTimeout(one, two);
+		}
 	}
 }
 
@@ -505,9 +509,11 @@ void Trades::timeout(Player *starter, Player *receiver, int tradeid) {
 }
 
 void Trades::stopTimeout(Player *starter, Player *receiver) {
-	TradeTimer::Instance()->stop(starter, receiver);
+	NewTimer::OneTimer::Id id(NewTimer::Types::TradeTimer, starter->getId(), receiver->getId());
+	NewTimer::Instance()->getContainer()->removeTimer(id);
 }
 
 void Trades::startTimeout(Player *starter, Player *receiver, int tradeid) {
-	TradeTimer::Instance()->setTradeTimer(starter, receiver, tradeid, 180000);
+	NewTimer::OneTimer::Id id(NewTimer::Types::TradeTimer, starter->getId(), receiver->getId());
+	new NewTimer::OneTimer(boost::bind(&Trades::timeout, starter, receiver, tradeid), id, 0, 180000, false);
 }
