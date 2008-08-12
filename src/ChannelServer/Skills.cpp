@@ -475,7 +475,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	if (cooltime > 0)
 		Skills::startCooldown(player, skillid, cooltime);
 	if (skills[skillid][level].mp > 0) {
-		if (player->getSkills()->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
+		if (player->getSkills()->getActiveSkillLevel(3121008) > 0) { // Reduced MP usage for Concentration
 			int mprate = Skills::skills[3121008][player->getSkills()->getActiveSkillLevel(3121008)].x;
 			int mploss = (skills[skillid][level].mp * mprate) / 100;
 			player->setMP(player->getMP() - mploss, 1);
@@ -590,7 +590,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	for (size_t i = 0; i < skillsinfo[skillid].map.size(); i++) {
 		mapskill.types[skillsinfo[skillid].map[i].byte]+= skillsinfo[skillid].map[i].type;
 		char val = skillsinfo[skillid].map[i].value;
-		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed update for maxed darksight
+		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed update for maxed dark sight
 			mapskill.types[0] = 0;
 			continue;
 		}
