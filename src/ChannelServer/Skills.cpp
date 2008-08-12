@@ -42,11 +42,10 @@ void Skills::init() {
 	SkillPlayerInfo player;
 	SkillMapInfo map;
 	SkillAct act;
-	//Booster
+	// Boosters
 	player.type = 0x08;
 	player.byte = TYPE_2;
 	player.value = SKILL_X;
-	//
 	skillsinfo[1101004].player.push_back(player); // Sword Booster
 	skillsinfo[1101005].player.push_back(player); // Axe Booster
 	skillsinfo[1201004].player.push_back(player); // Sword Booster
