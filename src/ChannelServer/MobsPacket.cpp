@@ -137,12 +137,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	int skillid = pack->getInt();
 	if (skillid == 3121004 || skillid == 3221001 || skillid == 5221004)
 		pack->skipBytes(4);
-	bool shadow_meso = false;
-	char shadow_level = 0;
-	if (skillid == 4111004) {
-		shadow_meso = true;
-		shadow_level = player->getSkills()->getSkillLevel(skillid);
-	}
+	bool shadow_meso = (skillid == 4111004);
 	unsigned char display = pack->getByte(); // Projectile display
 	unsigned char animation = pack->getByte(); // Direction/animation
 	unsigned char w_class = pack->getByte(); // Weapon subclass
@@ -159,19 +154,21 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 		switch (w_class) { // No clue why it does this, but it does
 			case 0x03: packet.addByte(0x07); break; // Bow
 			case 0x04: packet.addByte(0x0D); break; // Crossbow
-			case 0x07: 
+			case 0x07:
 				if (shadow_meso)
-					packet.addByte(shadow_level); // I think? It was 0x01 in my tests and that's incidentally its skill level on the characters I used
+					packet.addByte(player->getSkills()->getSkillLevel(skillid)); // I think? It was 0x01 in my tests and that's incidentally its skill level on the characters I used
 				else
 					packet.addByte(0x0A);
 				break; // Claw
+			case 0x09: // Gun
+				packet.addByte(0x10); break; // TODO: Find proper byte for guns
 		}
 		packet.addInt(skillid);
-	} 
+	}
 	else
 		packet.addByte(0);
 	packet.addByte(0);
-	packet.addByte(animation); 
+	packet.addByte(animation);
 	packet.addByte(w_speed);
 	switch (w_class) { // They seem to be static like above
 		case 0x03: packet.addByte(0x07); break;
