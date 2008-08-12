@@ -183,7 +183,7 @@ short Inventory::addItem(Player *player, Item *item, bool is) {
 		player->getInventory()->addItem(inv, freeslot, item);
 		InventoryPacket::addNewItem(player, inv, freeslot, item, is);
 		if (ISPET(item->id)) {
-			Pet *pet = new Pet(item);
+			Pet *pet = new Pet(player, item);
 			player->getPets()->addPet(pet);
 			pet->setInventorySlot((char) freeslot);
 			PetsPacket::updatePet(player, pet);

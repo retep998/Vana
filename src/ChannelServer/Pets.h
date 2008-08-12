@@ -26,7 +26,6 @@ using std::string;
 using stdext::hash_map;
 
 class Pet;
-class PetTimer;
 class Player;
 class ReadPacket;
 struct Item;
@@ -45,9 +44,7 @@ namespace Pets {
 	extern hash_map<int, PetInfo> petsInfo;
 	extern hash_map<int, hash_map<int, PetInteractInfo>> petsInteractInfo;
 	extern short exps[29];
-	extern PetTimer *timer;
 	void showPets(Player *player);
-	void stopTimers(Player *player);
 	void chat(Player *player, ReadPacket *packet);
 	void feedPet(Player *player, ReadPacket *packet);
 	void movePet(Player *player, ReadPacket *packet);
@@ -61,8 +58,8 @@ namespace Pets {
 
 class Pet {
 public:
-	Pet () {}
-	Pet (Item *item);
+	Pet(Player *player) : player(player) {}
+	Pet(Player *player, Item *item);
 	void setIndex(char index) { this->index = index; }
 	char getIndex() { return this->index; }
 	void setName(const string &name) { this->name = name; }
@@ -83,6 +80,9 @@ public:
 	void setCloseness(short closeness) { this->closeness = closeness; }
 	void setInventorySlot(char slot) { this->inventorySlot = slot; }
 	char getInventorySlot() { return this->inventorySlot; }
+
+	void reduceFullness();
+	void startTimer();
 private:
 	string name;
 	int id;
@@ -94,6 +94,7 @@ private:
 	short closeness;
 	bool summoned;
 	Pos pos;
+	Player *player;
 };
 
 #endif
