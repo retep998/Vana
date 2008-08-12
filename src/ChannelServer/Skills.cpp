@@ -536,7 +536,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		playerskill.types[skillsinfo[skillid].player[i].byte] += skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed change for maxed darksight
-			playerskill.types[0] = 0;
+			playerskill.types[TYPE_1] = 0;
 			continue;
 		}
 		short value = 0;
