@@ -422,14 +422,24 @@ void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 	stopSkill(player, packet->getInt());
 }
 void Skills::stopSkill(Player *player, int skillid) {
-	if (skillid == 3121004 || skillid == 3221001 || skillid == 2121001 || skillid == 2221001 || skillid == 2321001) { // Hurricane/Pierce/Big Bang x3
-		SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
-		SpecialSkillInfo info;
-		player->setSpecialSkill(info);
-		return;
+	switch(skillid) {
+		case 3121004:
+		case 3221001:
+		case 2121001:
+		case 2221001:
+		case 2321001:
+		case 5221004: { // Special skills like hurricane, monster magnet, rapid fire, and etc
+				SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
+				SpecialSkillInfo info;
+				player->setSpecialSkill(info);
+				return;
+			}
+			break;
+		default:
+			SkillTimer::Instance()->stop(player, skillid);
+			endSkill(player, skillid);
+			break;
 	}
-	SkillTimer::Instance()->stop(player, skillid);
-	endSkill(player, skillid);
 }
 void Skills::useSkill(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); //Ticks
@@ -661,19 +671,19 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 		if (player->getSkills()->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->getSkills()->getActiveSkillLevel(3121008)].x;
 			int mploss = (skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp * mprate) / 100;
-			player->setMP(player->getMP() - mploss, 1);
+			player->setMP(player->getMP() - mploss, true);
 		}
 		else {
 			int sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
 			char slv = player->getSkills()->getSkillLevel(sid);
 			if (slv > 0)
-				player->setMP(player->getMP() - (skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp * skills[sid][slv].x / 100), 1);
+				player->setMP(player->getMP() - (skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp * skills[sid][slv].x / 100), true);
 			else
-				player->setMP(player->getMP() - skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp, 1);
+				player->setMP(player->getMP() - skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp, true);
 		}
 	}
 	else
-		player->setMP(player->getMP(), 1);
+		player->setMP(player->getMP(), true);
 	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].hp > 0) {
 		player->setHP(player->getHP()-skills[skillid][player->getSkills()->getSkillLevel(skillid)].hp);
 	}
