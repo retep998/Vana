@@ -422,6 +422,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerActiveBuffs.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.cpp"
 					>
 				</File>
@@ -693,6 +697,10 @@
 				>
 				<File
 					RelativePath=".\src\ChannelServer\Player.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerActiveBuffs.h"
 					>
 				</File>
 				<File

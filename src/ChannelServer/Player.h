@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractPlayer.h"
 #include "PacketHandler.h"
+#include "PlayerActiveBuffs.h"
 #include "PlayerInventory.h"
 #include "PlayerPets.h"
 #include "PlayerStorage.h"
@@ -126,6 +127,7 @@ public:
 	int getTradeRecvID() const { return traderecvid; }
 
 	BuddyList * getBuddyList() const { return buddyList.get(); }
+	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }
 	PlayerInventory * getInventory() const { return inv.get(); }
 	PlayerPets * getPets() const { return pets.get(); }
 	PlayerQuests * getQuests() const { return quests.get(); }
@@ -193,6 +195,7 @@ private:
 	SpecialSkillInfo info; // Hurricane/Pierce
 
 	boost::scoped_ptr<BuddyList> buddyList;
+	boost::scoped_ptr<PlayerActiveBuffs> activeBuffs;
 	boost::scoped_ptr<PlayerInventory> inv;
 	boost::scoped_ptr<PlayerPets> pets;
 	boost::scoped_ptr<PlayerQuests> quests;
