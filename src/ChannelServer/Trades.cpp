@@ -150,6 +150,8 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			if (isreceiver) {
 				item = two->getInventory()->getItem(inventory, slot);
 				use = new Item(item);
+				if (ISRECHARGEABLE(item->id))
+					amount = item->amount;
 				if (amount == item->amount || inventory == 1) {
 					two->getInventory()->setItem(inventory, slot, 0);
 					InventoryPacket::moveItem(player, inventory, slot, 0);
@@ -170,6 +172,8 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			else {
 				item = one->getInventory()->getItem(inventory, slot);
 				use = new Item(item);
+				if (ISRECHARGEABLE(item->id))
+					amount = item->amount;
 				if (amount == item->amount || inventory == 1) {
 					one->getInventory()->setItem(inventory, slot, 0);
 					InventoryPacket::moveItem(player, inventory, slot, 0);
