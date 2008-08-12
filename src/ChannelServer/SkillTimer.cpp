@@ -33,7 +33,7 @@ void SkillTimer::setSkillTimer(Player *player, int skill, int time) {
 
 void SkillTimer::setSkillTimer(Player *player, int skill, Act type, short value, int time) {
 	SActTimer timer;
-	timer.id = Timer::Instance()->setTimer(time, this);
+	timer.id = Timer::Instance()->setTimer(time, this, true);
 	timer.player = player;
 	timer.skill = skill;
 	timer.act = type;
