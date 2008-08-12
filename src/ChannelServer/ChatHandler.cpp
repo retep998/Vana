@@ -142,7 +142,8 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				if (strlen(next_token) == 0) return;
 
 				if (Player *target = Players::Instance()->getPlayer(next_token))
-					target->getPacketHandler()->disconnect();
+					if (player->getGMLevel() > target->getGMLevel())
+						target->getPacketHandler()->disconnect();
 				else
 					PlayerPacket::showMessage(player, "Invalid player or player is offline.", 5);
 			}
