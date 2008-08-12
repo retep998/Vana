@@ -43,6 +43,204 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		char command[90] = "";
 		if (chatsize > 2)
 			strcpy_s(command, 90, strtok_s(chat+1, " ", &next_token));
+
+		if (player->getGMLevel() >= 3) { // Admin Level
+			if (strcmp(command, "header") == 0) {
+				WorldServerConnectPlayerPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), next_token);
+			}
+			else if (strcmp(command, "ban") == 0) {
+				if (strlen(next_token) == 0) {
+					PlayerPacket::showMessage(player, "You must specify a user to ban.", 5);
+					return;
+				}
+
+				string targetname = strtok_s(0, " ", &next_token);
+
+				if (Player *target = Players::Instance()->getPlayer(targetname))
+					target->getPacketHandler()->disconnect();
+
+				char reason = 1;
+				if (strlen(next_token) > 0)
+					reason = atoi(next_token);
+
+				// Ban account
+                mysqlpp::Query accbanquery = Database::chardb.query();
+                accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (short) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
+                accbanquery.exec();
+
+				string banmsg = targetname + " has been banned";
+
+				switch (reason) {
+					case 0x01: banmsg += " for hacking."; break;
+					case 0x02: banmsg += " for using macro/auto-keyboard."; break;
+					case 0x03: banmsg += " for illicit promotion or advertising."; break;
+					case 0x04: banmsg += " for harassment."; break;
+					case 0x05: banmsg += " for using profane language."; break;
+					case 0x06: banmsg += " for scamming."; break;
+					case 0x07: banmsg += " for misconduct."; break;
+					case 0x08: banmsg += " for illegal cash transaction."; break;
+					case 0x09: banmsg += " for illegal charging/funding. Please contact customer support for further details."; break;
+					case 0x0A: banmsg += " for temporary request."; break;
+					case 0x0B: banmsg += " for impersonating GM."; break;
+					case 0x0C: banmsg += " for using illegal programs or violating the game policy."; break;
+					case 0x0D: banmsg += " for one of cursing, scamming, or illegal trading via Megaphones."; break;
+					default: banmsg += "."; break;
+				}
+				PlayersPacket::showMessage(banmsg, 0);
+			}
+			else if (strcmp(command, "unban") == 0) {
+				if (strlen(next_token) == 0) {
+					PlayerPacket::showMessage(player, "You must specify a user to unban.", 5);
+					return;
+				}
+
+				// Unban account
+                mysqlpp::Query accbanquery = Database::chardb.query();
+                accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << next_token << "'";
+                accbanquery.exec();
+
+				PlayerPacket::showMessage(player, string(next_token) + " has been unbanned.", 6);
+			}
+			else if (strcmp(command, "shutdown") == 0) {
+				ChannelServer::Instance()->shutdown();
+			}
+			else if (strcmp(command, "packet") == 0) {
+				PacketCreator packet;
+				packet.addBytes(next_token);
+				player->getPacketHandler()->send(packet);
+			}
+			else if (strcmp(command, "timer") == 0) {
+				MapPacket::showTimer(player, atoi(next_token));
+			}
+			else if (strcmp(command, "instruction") == 0) {
+				if (strlen(next_token) == 0) {
+					PlayerPacket::showMessage(player, "No instruction entered.", 5);
+					return;
+				}
+				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+					PlayerPacket::instructionBubble(Maps::maps[player->getMap()]->getPlayer(i), next_token);
+				}
+			}
+			else if (strcmp(command, "addnpc") == 0) {
+				NPCSpawnInfo npc;
+				npc.id = atoi(next_token);
+				npc.fh = 0;
+				npc.x = player->getPos().x;
+				npc.cy = player->getPos().y;
+				npc.rx0 = npc.x - 50;
+				npc.rx1 = npc.x + 50;
+				Maps::maps[player->getMap()]->addNPC(npc);
+			}
+		}
+
+		if (player->getGMLevel() >= 2) { // Super GM level
+			if (strcmp(command, "notice") == 0) {
+				if (strlen(next_token) == 0) return;
+				PlayersPacket::showMessage(next_token, 0);
+			}
+			else if (strcmp(command, "kick") == 0) {
+				if (strlen(next_token) == 0) return;
+
+				if (Player *target = Players::Instance()->getPlayer(next_token))
+					target->getPacketHandler()->disconnect();
+				else
+					PlayerPacket::showMessage(player, "Invalid player or player is offline.", 5);
+			}
+			else if (strcmp(command, "warp") == 0) {
+				char *name = strtok_s(0, " ", &next_token);
+				if (strlen(next_token) == 0) return;
+
+				Player *warpee;
+				if (warpee = Players::Instance()->getPlayer(name)) {
+					int mapid = atoi(strtok_s(0, " ", &next_token));
+					if (Maps::maps.find(mapid) != Maps::maps.end()) {
+						Maps::changeMap(warpee, mapid, 0);
+					}
+				}
+			}
+			else if (strcmp(command, "mwarpto") == 0) {
+				Player *warpee;
+				if (warpee = Players::Instance()->getPlayer(next_token)) {
+					Maps::changeMap(warpee, player->getMap(), 0);
+				}
+			}
+			else if (strcmp(command, "warpall") == 0) { // Warp everyone to MapID or your current map
+				int mapid;
+				if (strlen(next_token) == 0)
+					mapid = player->getMap();
+				else
+					mapid = atoi(next_token);
+
+				if (Maps::maps.find(mapid) == Maps::maps.end()) {
+					return;
+				}
+
+				struct {
+					void operator()(Player *warpee) {
+						if (warpee->getMap() != mapid) {
+							Maps::changeMap(warpee, mapid, 0);
+						}
+					}
+					int mapid;
+					Player *player;
+				} changeMap = {mapid, player};
+
+				Players::Instance()->run(changeMap);
+			}
+			else if (strcmp(command, "killall") == 0) {
+				Maps::maps[player->getMap()]->killMobs(player);
+			}
+			else if (strcmp(command, "cleardrops") == 0) {
+				Maps::maps[player->getMap()]->clearDrops();
+			}
+			else if (strcmp(command, "kill") == 0) {
+				if (strcmp(next_token, "all") == 0) {
+					for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+						Player *killpsa;
+						killpsa = Maps::maps[player->getMap()]->getPlayer(i);
+						if (killpsa != player) {
+							killpsa->setHP(0);
+						}
+					}
+				}
+				else if (strcmp(next_token, "gm") == 0) {
+					for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+						Player *killpsa;
+						killpsa = Maps::maps[player->getMap()]->getPlayer(i);
+						if (killpsa != player) {
+							if (killpsa->isGM()) {	
+								killpsa->setHP(0);
+							}
+						}
+					}
+				}
+				else if (strcmp(next_token, "players") == 0) {
+					for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {	
+						Player *killpsa;
+						killpsa = Maps::maps[player->getMap()]->getPlayer(i);
+						if (killpsa != player) {
+							if (!killpsa->isGM()) {
+								killpsa->setHP(0);
+							}
+						}
+					}
+				}
+				else if (strcmp(next_token, "me") == 0) {
+					player->setHP(0);
+				}
+				else {
+					for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+						Player *killpsa;
+						killpsa = Maps::maps[player->getMap()]->getPlayer(i);
+						if (killpsa != player) {
+							killpsa->setHP(0);
+						}
+					}
+				}
+			}
+		}
+
+		// Regular GM commands
 		if (strcmp(command, "lookup") == 0) {
 			short type = 0;
 			if (strlen(next_token) == 0) {
@@ -168,21 +366,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				Mobs::spawnMob(player, mobid);
 			}
 		}
-		else if (strcmp(command, "addnpc") == 0) {
-			NPCSpawnInfo npc;
-			npc.id = atoi(next_token);
-			npc.fh = 0;
-			npc.x = player->getPos().x;
-			npc.cy = player->getPos().y;
-			npc.rx0 = npc.x - 50;
-			npc.rx1 = npc.x + 50;
-			Maps::maps[player->getMap()]->addNPC(npc);
-		}
-		else if (strcmp(command, "notice") == 0) {
-			if (strlen(next_token) == 0) return;
-			PlayersPacket::showMessage(next_token, 0);
-		}
-		else if (strcmp(command, "me") == 0) {
+		else if (strcmp(command, "me") == 0 || strcmp(command, "notice") == 0) {
 			string msg = player->getName() + " : " + string(next_token);
 			PlayersPacket::showMessage(msg, 6);
 		}
@@ -197,23 +381,23 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			player->setInt(30000);
 			player->setLuk(30000);
 		}
-		else if (strcmp(command,"str") == 0) {
+		else if (strcmp(command, "str") == 0) {
 			if (strlen(next_token) > 0)
 				player->setStr(atoi(next_token));
 		}
-		else if (strcmp(command,"dex") == 0) {
+		else if (strcmp(command, "dex") == 0) {
 			if (strlen(next_token) > 0)
 				player->setDex(atoi(next_token));
 		}
-		else if (strcmp(command,"int") == 0) {
+		else if (strcmp(command, "int") == 0) {
 			if (strlen(next_token) > 0)
 				player->setInt(atoi(next_token));
 		}
-		else if (strcmp(command,"luk") == 0) {
+		else if (strcmp(command, "luk") == 0) {
 			if (strlen(next_token) > 0)
 				player->setLuk(atoi(next_token));
 		}
-		else if (strcmp(command,"hp") == 0) {
+		else if (strcmp(command, "hp") == 0) {
 			if (strlen(next_token) > 0) {
 				int amount = atoi(next_token);
 				player->setRMHP(amount);
@@ -222,7 +406,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 					player->setHP(player->getMHP());
 			}
 		}
-		else if (strcmp(command,"mp") == 0) {
+		else if (strcmp(command, "mp") == 0) {
 			if (strlen(next_token) > 0) {
 				int amount = atoi(next_token);
 				player->setRMMP(amount);
@@ -341,9 +525,6 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		else if (strcmp(command, "killnpc") == 0) {
 			player->setNPC(0);
 		}
-		else if (strcmp(command, "killall") == 0) {
-			Maps::maps[player->getMap()]->killMobs(player);
-		}
 		else if (strcmp(command, "horntail") == 0) {
 			Mobs::spawnMob(player, 8810002);
 			Mobs::spawnMob(player, 8810003);
@@ -363,24 +544,9 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			long mesos = atoi(next_token);
 			player->getInventory()->setMesos(mesos);
 		}
-		else if (strcmp(command, "cleardrops") == 0) {
-			Maps::maps[player->getMap()]->clearDrops();
-		}
 		else if (strcmp(command, "save") == 0) {
 			player->saveAll();
 			PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
-		}
-		else if (strcmp(command, "warp") == 0) {
-			char *name = strtok_s(0, " ", &next_token);
-			if (strlen(next_token) == 0) return;
-
-			Player *warpee;
-			if (warpee = Players::Instance()->getPlayer(name)) {
-				int mapid = atoi(strtok_s(0, " ", &next_token));
-				if (Maps::maps.find(mapid) != Maps::maps.end()) {
-					Maps::changeMap(warpee, mapid, 0);
-				}
-			}
 		}
 		else if (strcmp(command, "warpto") == 0) {
 			Player *warptoee;
@@ -388,79 +554,8 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				Maps::changeMap(player , warptoee->getMap(), 0);
 			}
 		}
-		else if (strcmp(command, "mwarpto") == 0) {
-			Player *warpee;
-			if (warpee = Players::Instance()->getPlayer(next_token)) {
-				Maps::changeMap(warpee, player->getMap(), 0);
-			}
-		}
-		else if (strcmp(command, "warpall") == 0) { // Warp everyone to MapID or your current map
-			int mapid;
-			if (strlen(next_token) == 0)
-				mapid = player->getMap();
-			else
-				mapid = atoi(next_token);
-
-			if (Maps::maps.find(mapid) == Maps::maps.end()) {
-				return;
-			}
-
-			struct {
-				void operator()(Player *warpee) {
-					if (mapid != player->getMap() || player == warpee) {
-						Maps::changeMap(warpee, mapid, 0);
-					}
-				}
-				int mapid;
-				Player *player;
-			} changeMap = {mapid, player};
-
-			Players::Instance()->run(changeMap);
-		}
 		else if (strcmp(command, "kill") == 0) {
-			if (strcmp(next_token, "all") == 0) {
-				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
-					Player *killpsa;
-					killpsa = Maps::maps[player->getMap()]->getPlayer(i);
-					if (killpsa != player) {
-						killpsa->setHP(0);
-					}
-				}
-			}
-			else if (strcmp(next_token, "gm") == 0) {
-				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
-					Player *killpsa;
-					killpsa = Maps::maps[player->getMap()]->getPlayer(i);
-					if (killpsa != player) {
-						if (killpsa->isGM()) {	
-							killpsa->setHP(0);
-						}
-					}
-				}
-			}
-			else if (strcmp(next_token, "players") == 0) {
-				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {	
-					Player *killpsa;
-					killpsa = Maps::maps[player->getMap()]->getPlayer(i);
-					if (killpsa != player) {
-						if (!killpsa->isGM()) {
-							killpsa->setHP(0);
-						}
-					}
-				}
-			}
-			else if (strcmp(next_token, "me") == 0) {
-				player->setHP(0);
-			}
-			else {
-				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
-					Player *killpsa;
-					killpsa = Maps::maps[player->getMap()]->getPlayer(i);
-					if (killpsa != player) {
-						killpsa->setHP(0);
-					}
-				}
-			}
+			player->setHP(0);
 		}
 		else if (strcmp(command, "zakum") == 0) {
 			Mobs::spawnMob(player, 8800000);
@@ -473,36 +568,12 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			Mobs::spawnMob(player, 8800009);
 			Mobs::spawnMob(player, 8800010);
 		}
-		else if (strcmp(command, "header") == 0) {
-			WorldServerConnectPlayerPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), next_token);
-		}
 		else if (strcmp(command, "music") == 0) {
 			Maps::changeMusic(player->getMap(), next_token);
 		}
-		else if	(strcmp(command, "dc") == 0)	{
+		else if	(strcmp(command, "dc") == 0) {
 			player->getPacketHandler()->disconnect();
 			return;
-		}
-		else if (strcmp(command, "shutdown") == 0) {
-			ChannelServer::Instance()->shutdown();
-		}
-		else if (strcmp(command, "packet") == 0) {
-			PacketCreator packet;
-			packet.addBytes(next_token);
-			player->getPacketHandler()->send(packet);
-		}
-		else if (strcmp(command, "timer") == 0) {
-			MapPacket::showTimer(player, atoi(next_token));
-		}
-		else if (strcmp(command, "instruction") == 0) {
-			if (strlen(next_token) == 0) {
-				PlayerPacket::showMessage(player, "No instruction entered.", 5);
-				return;
-			}
-			for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
-				Player *p = Maps::maps[player->getMap()]->getPlayer(i);
-				PlayerPacket::instructionBubble(p, next_token);
-			}
 		}
 		return;
 	}
