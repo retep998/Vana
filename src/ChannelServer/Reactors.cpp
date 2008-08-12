@@ -34,77 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <string>
 
-class ReactionTimer: public Timer::TimerHandler {
-public:
-	static ReactionTimer * Instance() {
-		if (singleton == 0)
-			singleton = new ReactionTimer;
-		return singleton;
-	}
-	void setReactionTimer(Player *player, Reactor *reactor, Drop *drop, char state, int time) {
-		RTimer timer;
-		timer.id = Timer::Instance()->setTimer(time, this);
-		timer.state = state;
-		timer.player = player;
-		timer.reactor = reactor;
-		timer.drop = drop;
-		timer.time = time;
-		timers.push_back(timer);
-	}
-
-	void stop(Drop *drop) {
-		for (unsigned int i = 0; i < timers.size(); i++) {
-			if (drop == timers[i].drop) {
-				Timer::Instance()->cancelTimer(timers[i].id);
-				break;
-			}
-		}
-	}
-private:
-	static ReactionTimer *singleton;
-	ReactionTimer() {};
-	ReactionTimer(const ItemTimer&);
-	ReactionTimer& operator=(const ItemTimer&);
-
-	struct RTimer {
-		int id;
-		char state;
-		Player *player;
-		Reactor *reactor;
-		Drop *drop;
-		int time;
-	};
-
-	static vector <RTimer> timers;
-	void handle(Timer *timer, int id) {
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (timers[i].id == id) {
-				Reactor *reactor = timers[i].reactor;
-				Drop *drop = timers[i].drop;
-				Player *player = timers[i].player;
-				reactor->setState(timers[i].state, true);
-				drop->removeDrop();
-				std::ostringstream filenameStream;
-				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
-				LuaReactor(filenameStream.str(), player->getId(), reactor->getID(), reactor->getMapID());
-				return;
-			}
-		}
-	}
-	void remove(int id) {
-		for (size_t i = 0; i < timers.size(); i++) {
-			if (timers[i].id == id) {
-				timers.erase(timers.begin()+i);
-				return;
-			}
-		}
-	}
-};
-
-vector <ReactionTimer::RTimer> ReactionTimer::timers;
-ReactionTimer *ReactionTimer::singleton = 0;
-// End of ReactionTimer
-
 // Reactor class
 Reactor::Reactor (int mapid, int reactorid, Pos pos) : mapid(mapid), reactorid(reactorid), pos(pos), alive(true), state(0) {
 	Maps::maps[mapid]->addReactor(this);
@@ -169,7 +98,23 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectID() == revent->itemid) {
 				if ((drop->getPos().x >= reactor->getPos().x + revent->ltx && drop->getPos().x <= reactor->getPos().x + revent->rbx) && (drop->getPos().y >= reactor->getPos().y + revent->lty && drop->getPos().y <= reactor->getPos().y + revent->rby)) {
-					ReactionTimer::Instance()->setReactionTimer(player, reactor, drop, revent->nextstate, 3000);
+					struct {
+						void operator()() {
+							reactor->setState(state, true);
+							drop->removeDrop();
+							std::ostringstream filenameStream;
+							filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
+							LuaReactor(filenameStream.str(), player->getId(), reactor->getID(), reactor->getMapID());
+							return;
+						}
+						Reactor *reactor;
+						Drop *drop;
+						Player *player;
+						char state;
+					} reaction = {reactor, drop, player, revent->nextstate};
+
+					NewTimer::OneTimer::Id id(NewTimer::Types::ReactionTimer, (unsigned int) drop, 0);
+					new NewTimer::OneTimer(reaction, id, 0, 3000, false);
 				}
 				return;
 			}
@@ -178,5 +123,6 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 }
 
 void Reactors::checkLoot(Drop *drop) {
-	ReactionTimer::Instance()->stop(drop);
+	NewTimer::OneTimer::Id id(NewTimer::Types::ReactionTimer, (unsigned int) drop, 0);
+	NewTimer::Instance()->getContainer()->removeTimer(id);
 }
