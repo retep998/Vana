@@ -124,6 +124,12 @@ id2(id2)
 {
 }
 
+
+bool NewTimer::Container::checkTimer(const OneTimer::Id &id) {
+	__int64 idReal = *(__int64 *)(&id);
+	return (m_timers.find(idReal) != m_timers.end()) ? true : false;
+}
+
 void NewTimer::Container::registerTimer(OneTimer *timer) {
 	__int64 idReal = *(__int64 *)(&(timer->getId()));
 	m_timers[idReal] = boost::shared_ptr<NewTimer::OneTimer>(timer);
