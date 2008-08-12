@@ -50,6 +50,7 @@ public:
 			PingTimer,
 			ReactionTimer,
 			SkillTimer,
+			SkillActTimer,
 			TradeTimer
 		};
 	};
