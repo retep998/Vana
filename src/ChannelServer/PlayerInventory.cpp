@@ -143,24 +143,19 @@ void PlayerInventory::addEquipped(short slot, int itemid) {
 		cash = true;
 		slot -= 100;
 	}
-	if (equipped[slot][0] > 0) {
-		if (cash && itemid > 0) {
-			equipped[slot][1] = equipped[slot][0];
-			equipped[slot][0] = itemid;
-		}
-		else if (cash) {
-			equipped[slot][0] = equipped[slot][1];
-			equipped[slot][1] = itemid;
-		}
-		else if (equipped[slot][1] <= 0) {
-			equipped[slot][0] = itemid;
-		}
-		else {
-			equipped[slot][1] = itemid;
-		}
+	if (cash && itemid > 0) {
+		equipped[slot][1] = equipped[slot][0];
+		equipped[slot][0] = itemid;
+	}
+	else if (cash) {
+		equipped[slot][0] = equipped[slot][1];
+		equipped[slot][1] = itemid;
+	}
+	else if (equipped[slot][0] <= 0) {
+		equipped[slot][0] = itemid;
 	}
 	else {
-		equipped[slot][0] = itemid;
+		equipped[slot][1] = itemid;
 	}
 }
 
