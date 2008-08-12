@@ -84,6 +84,11 @@ enum {
 	TYPE_4
 };
 
+enum Act {
+	ACT_HEAL,
+	ACT_HURT
+};
+
 struct SkillPlayerInfo {
 	unsigned char type;
 	char byte;
@@ -98,7 +103,7 @@ struct SkillMapInfo {
 };
 
 struct SkillAct {
-	char name[50];
+	Act type;
 	char value;
 	int time;
 };

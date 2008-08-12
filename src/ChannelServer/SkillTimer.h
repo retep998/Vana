@@ -23,6 +23,7 @@ using std::vector;
 
 #include "Timer.h"
 class Player;
+enum Act;
 
 class SkillTimer : public Timer::TimerHandler {
 public:
@@ -32,9 +33,9 @@ public:
 		return singleton;
 	}
 	void setSkillTimer(Player *player, int skill, int time);
-	void setSkillTimer(Player *player, int skill, char *name, short value, int time);
+	void setSkillTimer(Player *player, int skill, Act type, short value, int time);
 	void stop (Player *player, int skill);
-	void stop (Player *player, int skill, char *name);
+	void stop (Player *player, int skill, Act act);
 	void stop (Player *player, bool endSkills);
 	int skillTime(Player *player, int skillid);
 private:
@@ -53,7 +54,7 @@ private:
 		Player *player;
 		int skill;
 		int time;
-		char act[50];
+		Act act;
 		short value;
 	};
 	vector <STimer> timers;

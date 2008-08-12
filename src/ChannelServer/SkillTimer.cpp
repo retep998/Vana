@@ -31,12 +31,12 @@ void SkillTimer::setSkillTimer(Player *player, int skill, int time) {
 	act[timer.id] = false;
 }
 
-void SkillTimer::setSkillTimer(Player *player, int skill, char *name, short value, int time) {
+void SkillTimer::setSkillTimer(Player *player, int skill, Act type, short value, int time) {
 	SActTimer timer;
 	timer.id = Timer::Instance()->setTimer(time, this);
 	timer.player = player;
 	timer.skill = skill;
-	strcpy_s(timer.act, 50, name);
+	timer.act = type;
 	timer.time = time;
 	timer.value = value;
 	acttimers.push_back(timer);
@@ -52,9 +52,9 @@ void SkillTimer::stop(Player *player, int skill) {
 	}
 }
 
-void SkillTimer::stop(Player *player, int skill, char *name) {
+void SkillTimer::stop(Player *player, int skill, Act act) {
 	for (size_t i = 0; i < acttimers.size(); i++) {
-		if (player == acttimers[i].player && strcmp(acttimers[i].act, name) == 0 && skill == acttimers[i].skill) {
+		if (player == acttimers[i].player && acttimers[i].act == act && skill == acttimers[i].skill) {
 			Timer::Instance()->cancelTimer(acttimers[i].id);
 			break;
 		}
@@ -92,19 +92,19 @@ void SkillTimer::handle(Timer *timer, int id) {
 	int skill;
 	Player *player;
 	if (act[id]) {
-		char name[50];
+		Act act;
 		short value;
 		for (size_t i = 0; i < acttimers.size(); i++) {
 			if (acttimers[i].id == id) {
 				player = acttimers[i].player;
 				skill = acttimers[i].skill;
-				strcpy_s(name, 50, acttimers[i].act);
+				act = acttimers[i].act;
 				value = acttimers[i].value;
 				break;
 			}
 		}
-		if (strcmp(name, "heal") == 0) Skills::heal(player, value, skill);
-		else if (strcmp(name, "hurt") == 0) Skills::hurt(player, value, skill);
+		if (act == ACT_HEAL) Skills::heal(player, value, skill);
+		else if (act == ACT_HURT) Skills::hurt(player, value, skill);
 		// else if (...
 	}
 	else {
