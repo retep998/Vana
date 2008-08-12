@@ -510,8 +510,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		player->setMP(player->getMMP());
 	}
 	else if (skillid == 1121010) { // Enrage
-		if (player->getSkills()->getCombo() == 10)
-			player->getSkills()->setCombo(0, true);
+		if (player->getActiveBuffs()->getCombo() == 10)
+			player->getActiveBuffs()->setCombo(0, true);
 		else
 			return;
 	}
@@ -562,7 +562,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
 		}
 		else if (skillid == 1111002) { // For Combo Attack
-			player->getSkills()->setCombo(0, false);
+			player->getActiveBuffs()->setCombo(0, false);
 			value = 1;
 		}
 		else if (skillid == 1004) { // For Monster Rider
@@ -614,7 +614,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			value = skills[skillid][level].x*256+skills[skillid][level].y;
 		}
 		else if (skillid == 1111002) { // For Combo Attack
-			value = player->getSkills()->getCombo() + 1;
+			value = player->getActiveBuffs()->getCombo() + 1;
 		}
 		mapskill.vals.push_back(value);
 		SkillMapActiveInfo map;

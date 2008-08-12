@@ -31,7 +31,7 @@ struct SkillActiveInfo;
 
 class PlayerSkills {
 public:
-	PlayerSkills(Player *player) : player(player), combo(0) { }
+	PlayerSkills(Player *player) : player(player) { }
 
 	void addSkillLevel(int skillid, unsigned char amount, bool sendpacket = true);
 
@@ -55,12 +55,6 @@ public:
 	void setSkillMapInfo(int skillid, SkillActiveInfo skill);
 	void setSkillMapEnterInfo(int skillid, vector <SkillMapActiveInfo> skill);
 	void setActiveSkillLevel(int skillid, int level);
-	// Combo attack
-	void setCombo(char combo, bool sendPacket);
-	void addCombo();
-	int getCombo() {
-		return combo;
-	}
 	void save();
 private:
 	hash_map<int, unsigned char> playerskills;
@@ -69,7 +63,6 @@ private:
 	hash_map<int, SkillActiveInfo> activemapskill;
 	vector<SkillMapActiveInfo> activemapenterskill;
 	hash_map<int, unsigned char> activelevels;
-	char combo;
 	Player *player;
 };
 
