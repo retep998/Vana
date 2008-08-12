@@ -137,12 +137,11 @@ short PlayerInventory::getItemAmountBySlot(char inv, short slot) {
 }
 
 void PlayerInventory::addEquipped(short slot, int itemid) {
-	bool cash = false;
 	slot = abs(slot);
-	if (slot > 100) {
-		cash = true;
+	bool cash = (slot > 100);
+	if (cash)
 		slot -= 100;
-	}
+
 	if (cash && itemid > 0) {
 		equipped[slot][1] = equipped[slot][0];
 		equipped[slot][0] = itemid;
