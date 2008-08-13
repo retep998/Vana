@@ -413,9 +413,9 @@ void Skills::addSkill(Player *player, ReadPacket *packet) {
 		// hacking
 		return;
 	}
-	if (!BEGINNER_SKILL(skillid))
-		player->setSp(player->getSp()-1);
-	player->getSkills()->addSkillLevel(skillid, 1);
+	if (!BEGINNER_SKILL(skillid) && player->getSkills()->addSkillLevel(skillid, 1)) {
+		player->setSp(player->getSp() - 1);
+	}
 }
 void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 	stopSkill(player, packet->getInt());

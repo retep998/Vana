@@ -23,17 +23,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 #include "MySQLM.h"
 
-void PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpacket) {
-	if (playerskills.find(skillid) != playerskills.end())
+bool PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpacket) {
+	if (playerskills.find(skillid) != playerskills.end()) {
 		playerskills[skillid] += amount;
-	else
+	}
+	else {
 		playerskills[skillid] = amount;
+	}
 
 	// Keep people from adding too much SP and prevent it from going negative
-	if (playerskills[skillid] > Skills::maxlevels[skillid])
-		playerskills[skillid] = Skills::maxlevels[skillid];
-	else if (playerskills[skillid] <= 0)
-		playerskills[skillid] = 0;
+	if (playerskills[skillid] > Skills::maxlevels[skillid] || playerskills[skillid] <= 0) {
+		return false; // Let the caller handle this
+	}
 
 	if (sendpacket) {
 		char maxlevel = 0;
@@ -42,6 +43,8 @@ void PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpac
 		}
 		SkillsPacket::addSkill(player, skillid, getSkillLevel(skillid), maxlevel);
 	}
+	
+	return true;
 }
 
 void PlayerSkills::deleteSkillMapEnterInfo(int skillid) {
