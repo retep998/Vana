@@ -538,6 +538,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 		case 2049000: // Clean Slate 1%
 		case 2049001: // Clean Slate 3%
 		case 2049002: // Clean Slate 5%
+//		case 2049003: // Clean Slate 20% - not in VEDB yet
 			if ((equips[equip->id].slots - equip->scrolls) > equip->slots) {
 				if (Randomizer::Instance()->randInt(99) < items[itemid].cons.success) { // Give back a slot
 					equip->slots++;
