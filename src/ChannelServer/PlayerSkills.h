@@ -33,7 +33,7 @@ class PlayerSkills {
 public:
 	PlayerSkills(Player *player) : player(player) { }
 
-	void addSkillLevel(int skillid, unsigned char amount, bool sendpacket = true);
+	bool addSkillLevel(int skillid, unsigned char amount, bool sendpacket = true);
 
 	void deleteSkillMapEnterInfo(int skillid);
 
