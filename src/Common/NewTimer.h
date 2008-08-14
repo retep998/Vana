@@ -61,6 +61,7 @@ public:
 
 	void registerTimer(OneTimer *timer);
 	void removeTimer(OneTimer *timer);
+	void forceReSort();
 private:
 	NewTimer();
 	NewTimer(const NewTimer&);
@@ -70,6 +71,7 @@ private:
 	OneTimer * findMin();
 	void runThread();
 
+	bool m_resort_timer; // True if a new timer gets inserted into m_timers or it gets modified so it's not arranged
 	volatile bool m_terminate;
 	list<OneTimer *> m_timers;
 	boost::mutex m_timers_mutex;
