@@ -147,7 +147,7 @@ void PlayerInventory::addEquipped(short slot, int itemid) {
 
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 	for (char i = 0; i < 50; i++) { // Shown items
-		if (equipped[i][0] <= 0 || (i == 11 && equipped[i][1] > 0)) { // Normal weapons always here
+		if ((equipped[i][0] <= 0 && equipped[i][1] > 0) || (i == 11 && equipped[i][1] > 0)) { // Normal weapons always here
 			packet.addByte(i);
 			packet.addInt(equipped[i][1]);
 		}
