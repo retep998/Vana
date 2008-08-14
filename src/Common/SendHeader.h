@@ -85,24 +85,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_GAIN_ITEM 0xa0 // Gain item notice in chat
 #define SEND_UPDATE_QUEST 0xa5
 #define SEND_INSTRUCTION_BUBBLE 0xa8
-#define SEND_COOLDOWN 0xab // Skill cooldown
-#define SEND_SHOW_MOB 0xad
-#define SEND_KILL_MOB 0xae
-#define SEND_CONTROL_MOB 0xaf
-#define SEND_MOVE_MOB 0xb0
-#define SEND_MOVE_MOB_RESPONSE 0xb1
-#define SEND_SHOW_MOB_HP 0xbb
-#define SEND_SHOW_DRAGGED 0xbc // New in .56, Monster Magnet'd mobs get their own packet
-#define SEND_SHOW_NPC 0xc0
-#define SEND_SHOW_NPC2 0xc2
-#define SEND_DROP_ITEM 0xcb
-#define SEND_TAKE_DROP 0xcc
-#define SEND_TRIGGER_REACTOR 0xd4
-#define SEND_SHOW_REACTOR 0xd6
-#define SEND_DESTROY_REACTOR 0xd7
-#define SEND_NPC_TALK 0xea
-#define SEND_SHOP_OPEN 0xeb
-#define SEND_SHOP_BOUGHT 0xec
-#define SEND_STORAGE_ACTION 0xed
-#define SEND_SHOP_ACTION 0xf2 // Trades, player shops
-#define SEND_KEYMAP 0x104
+#define SEND_COOLDOWN 0xac // Skill cooldown
+#define SEND_SHOW_MOB 0xae
+#define SEND_KILL_MOB 0xaf
+#define SEND_CONTROL_MOB 0xb0
+#define SEND_MOVE_MOB 0xb1
+#define SEND_MOVE_MOB_RESPONSE 0xb2
+#define SEND_SHOW_MOB_HP 0xbc
+#define SEND_SHOW_DRAGGED 0xbd // New in .56, Monster Magnet'd mobs get their own packet
+#define SEND_SHOW_NPC 0xc1
+#define SEND_SHOW_NPC2 0xc3
+#define SEND_DROP_ITEM 0xcc
+#define SEND_TAKE_DROP 0xcd
+#define SEND_TRIGGER_REACTOR 0xd5
+#define SEND_SHOW_REACTOR 0xd7
+#define SEND_DESTROY_REACTOR 0xd8
+#define SEND_NPC_TALK 0xeb
+#define SEND_SHOP_OPEN 0xec
+#define SEND_SHOP_BOUGHT 0xed
+#define SEND_STORAGE_ACTION 0xee
+#define SEND_SHOP_ACTION 0xf3 // Trades, player shops
+#define SEND_KEYMAP 0x105
