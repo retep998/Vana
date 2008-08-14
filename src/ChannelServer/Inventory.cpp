@@ -373,7 +373,7 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	short slot = packet->getShort();
 	int itemid = packet->getInt();
-	if (player->getInventory()->getItemAmountBySlot(2, slot) == 0) {
+	if (player->getHP() == 0 || player->getInventory()->getItemAmountBySlot(2, slot) == 0) {
 		// hacking
 		return;
 	}
