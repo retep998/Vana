@@ -24,17 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 
 bool PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpacket) {
-	if (playerskills.find(skillid) != playerskills.end()) {
-		playerskills[skillid] += amount;
-	}
-	else {
-		playerskills[skillid] = amount;
-	}
-
 	// Keep people from adding too much SP and prevent it from going negative
-	if (playerskills[skillid] > Skills::maxlevels[skillid] || playerskills[skillid] <= 0) {
+	int newlevel = ((playerskills.find(skillid) != playerskills.end()) ? playerskills[skillid] : 0) + amount;
+	if (newlevel > Skills::maxlevels[skillid] || newlevel <= 0) {
 		return false; // Let the caller handle this
 	}
+
+	playerskills[skillid] = newlevel;
 
 	if (sendpacket) {
 		char maxlevel = 0;
