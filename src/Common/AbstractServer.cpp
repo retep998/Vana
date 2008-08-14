@@ -38,8 +38,9 @@ void AbstractServer::initialize() {
 
 	loadConfig();
 	loadData();
-	if (to_listen)
+	if (to_listen) {
 		listen();
+	}
 
 	float loadingTime = (clock() - startTime) / (float) 1000;
 	std::cout << "Started in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
