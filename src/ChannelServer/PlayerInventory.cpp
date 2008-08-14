@@ -138,39 +138,27 @@ short PlayerInventory::getItemAmountBySlot(char inv, short slot) {
 
 void PlayerInventory::addEquipped(short slot, int itemid) {
 	slot = abs(slot);
-	bool cash = (slot > 100);
-	if (cash)
-		slot -= 100;
 
-	if (cash && itemid > 0) {
-		equipped[slot][1] = equipped[slot][0];
-		equipped[slot][0] = itemid;
-	}
-	else if (cash) {
-		equipped[slot][0] = equipped[slot][1];
+	if (slot > 100) // Cash items
+		equipped[slot - 100][0] = itemid;
+	else // Normal items
 		equipped[slot][1] = itemid;
-	}
-	else if (equipped[slot][0] <= 0) {
-		equipped[slot][0] = itemid;
-	}
-	else {
-		equipped[slot][1] = itemid;
-	}
 }
 
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 	for (char i = 0; i < 50; i++) { // Shown items
-		if (equipped[i][0] > 0) {
+		if (equipped[i][0] <= 0 || (i == 11 && equipped[i][1] > 0)) { // Normal weapons always here
 			packet.addByte(i);
-			if (i == 11 && equipped[i][1] > 0) // Normal weapons always here
-				packet.addInt(equipped[i][1]);
-			else
-				packet.addInt(equipped[i][0]);
+			packet.addInt(equipped[i][1]);
+		}
+		else if (equipped[i][0] > 0) {
+			packet.addByte(i);
+			packet.addInt(equipped[i][0]);
 		}
 	}
 	packet.addByte(-1);
 	for (char i = 0; i < 50; i++) { // Covered items
-		if (equipped[i][1] > 0 && i != 11) {
+		if (equipped[i][0] > 0 && equipped[i][1] > 0 && i != 11) {
 			packet.addByte(i);
 			packet.addInt(equipped[i][1]);
 		}
