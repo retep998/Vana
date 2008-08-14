@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 NewTimer * NewTimer::singleton = 0;
 
 NewTimer::NewTimer() :
+m_resort_timer(false),
 m_terminate(false),
 m_container(new Container)
 {
@@ -33,6 +34,7 @@ NewTimer::~NewTimer() {
 
 void NewTimer::registerTimer(OneTimer *timer) {
 	boost::mutex::scoped_lock l(m_timers_mutex);
+	m_resort_timer = true;
 	m_timers.push_back(timer);
 	m_main_loop_condition.notify_one();
 }
@@ -49,14 +51,22 @@ NewTimer::OneTimer * NewTimer::findMin() {
 		return 0;
 	}
 
-	OneTimer *min;
-	for (list<OneTimer *>::iterator iter = m_timers.begin(); iter != m_timers.end(); iter++) {
-		OneTimer *cur = *iter;
-		if (iter == m_timers.begin() || cur->getRunAt() < min->getRunAt()) {
-			min = cur;
-		}
+	if (m_resort_timer) {
+		struct {
+			bool operator()(const OneTimer *t1, const OneTimer *t2) {
+				return (t1->getRunAt() < t2->getRunAt());
+			}
+		} less_than;
+
+		m_timers.sort(less_than);
+		m_resort_timer = false;
 	}
-	return min;
+
+	return *m_timers.begin();
+}
+
+void NewTimer::forceReSort() {
+	m_resort_timer = true;
 }
 
 void NewTimer::runThread() {
@@ -115,6 +125,7 @@ void NewTimer::OneTimer::run() {
 
 void NewTimer::OneTimer::reset() {
 	m_run_at = m_length + clock();
+	NewTimer::Instance()->forceReSort();
 }
 
 NewTimer::OneTimer::Id::Id(unsigned int type, unsigned int id, unsigned int id2) :
