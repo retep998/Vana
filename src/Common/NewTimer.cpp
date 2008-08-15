@@ -137,18 +137,29 @@ id2(id2)
 {
 }
 
+bool NewTimer::OneTimer::Id::operator==(Id const &other) const {
+	return type == other.type && id == other.id && id2 == other.id2;
+}
+
+// For hashing NewTimer::OneTimer::Id
+size_t hash_value(NewTimer::OneTimer::Id const &id) {
+	size_t seed = 0;
+	
+	boost::hash_combine(seed, id.type);
+	boost::hash_combine(seed, id.id);
+	boost::hash_combine(seed, id.id2);
+	
+	return seed;
+}
 
 bool NewTimer::Container::checkTimer(const OneTimer::Id &id) {
-	__int64 idReal = *(__int64 *)(&id);
-	return (m_timers.find(idReal) != m_timers.end()) ? true : false;
+	return (m_timers.find(id) != m_timers.end()) ? true : false;
 }
 
 void NewTimer::Container::registerTimer(OneTimer *timer) {
-	__int64 idReal = *(__int64 *)(&(timer->getId()));
-	m_timers[idReal] = boost::shared_ptr<NewTimer::OneTimer>(timer);
+	m_timers[timer->getId()] = boost::shared_ptr<NewTimer::OneTimer>(timer);
 }
 
 void NewTimer::Container::removeTimer(const OneTimer::Id &id) {
-	__int64 idReal = *(__int64 *)(&id);
-	m_timers.erase(idReal);
+	m_timers.erase(id);
 }
