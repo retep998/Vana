@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERPETS_H
 #define PLAYERPETS_H
 
-#include <hash_map>
+#include <unordered_map>
 
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Pet;
 class Player;
@@ -35,8 +35,8 @@ public:
 	int getSummoned(char index);
 	void save();
 private:
-	hash_map<int, Pet *> playerpets;
-	hash_map<char, int> summoned;
+	unordered_map<int, Pet *> playerpets;
+	unordered_map<char, int> summoned;
 	Player *player;
 };
 

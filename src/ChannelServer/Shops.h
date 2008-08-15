@@ -18,22 +18,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SHOPS_H
 #define SHOPS_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <vector>
 
 using std::vector;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Player;
 
 struct ShopInfo {
 	int npc;
 	vector <int> items;
-	hash_map <int, int> prices;
+	unordered_map<int, int> prices;
 };
 
 namespace Shops {
-	extern hash_map <int, ShopInfo> shops;
+	extern unordered_map<int, ShopInfo> shops;
 	extern vector <int> rechargables; // IDs of items which are rechargable i.e. stars
 	void addShop(int id, ShopInfo shop);
 	void showShop(Player *player, int id);

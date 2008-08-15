@@ -37,7 +37,7 @@ int PlayerPets::getSummoned(char index) {
 
 void PlayerPets::save() {
 	mysqlpp::Query query = Database::chardb.query();
-	for (hash_map<int, Pet *>::iterator iter = playerpets.begin(); iter != playerpets.end(); iter++) {
+	for (unordered_map<int, Pet *>::iterator iter = playerpets.begin(); iter != playerpets.end(); iter++) {
 		query << "UPDATE pets SET "
 			<< "`index` = " << mysqlpp::quote << (short) iter->second->getIndex() << ","
 			<< "name = " << mysqlpp::quote << iter->second->getName() << ","

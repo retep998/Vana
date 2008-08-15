@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Pos.h"
 #include <ctime>
-#include <hash_map>
+#include <unordered_map>
 #include <vector>
 #include <string>
 #include <boost/scoped_ptr.hpp>
 
 using std::string;
 using std::vector;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using boost::scoped_ptr;
 
 class Drop;
@@ -216,8 +216,8 @@ private:
 	ReactorRespawns reactorrespawns;
 	MobSpawnsInfo mobspawns;
 	MobRespawnsInfo mobrespawns;
-	hash_map<int, Mob *> mobs;
-	hash_map<int, Drop *> drops;
+	unordered_map<int, Mob *> mobs;
+	unordered_map<int, Drop *> drops;
 	scoped_ptr<LoopingId> objectids;
 	bool timer_started;
 

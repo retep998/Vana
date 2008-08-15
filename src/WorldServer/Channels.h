@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CHANNELS_H
 #define CHANNELS_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 #include <boost/shared_ptr.hpp>
 
 using std::string;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using boost::shared_ptr;
 
 class WorldServerAcceptPlayer;
@@ -57,7 +57,7 @@ private:
 	Channels& operator=(const Channels&);
 	static Channels *singleton;
 
-	hash_map<int, shared_ptr<Channel>> channels;
+	unordered_map<int, shared_ptr<Channel>> channels;
 };
 
 #endif

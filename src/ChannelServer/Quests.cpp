@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "QuestsPacket.h"
 #include "ReadPacket.h"
 
-hash_map <int, QuestInfo> Quests::quests;
+unordered_map<int, QuestInfo> Quests::quests;
 
 void Quests::addRequest(int id, QuestRequestsInfo request) {		
 	QuestInfo quest;

@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CONNECTABLE_H
 #define CONNECTABLE_H
 
-#include <hash_map>
+#include <unordered_map>
 
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
-typedef hash_map <int, __int64> ConnectableMap;
+typedef unordered_map<int, __int64> ConnectableMap;
 
 class Connectable {
 public:

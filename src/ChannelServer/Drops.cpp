@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "ReadPacket.h"
 
-hash_map <int, MobDropsInfo> Drops::dropsinfo;
-hash_map <int, Mesos> Drops::mesos;
+unordered_map<int, MobDropsInfo> Drops::dropsinfo;
+unordered_map<int, Mesos> Drops::mesos;
 
 // Drop class
 Drop::Drop (int mapid, int mesos, Pos pos, int owner) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0) {

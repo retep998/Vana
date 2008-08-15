@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-hash_map<int, ActiveTrade *> Trades::trades;
+unordered_map<int, ActiveTrade *> Trades::trades;
 
 void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 	unsigned char subopcode = packet->getByte();

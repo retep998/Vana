@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define QUESTS_H
 
 #include <vector>
-#include <hash_map>
+#include <unordered_map>
 
 using std::vector;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Player;
 class ReadPacket;
@@ -77,7 +77,7 @@ struct Quest {
 };
 
 namespace Quests {
-	extern hash_map <int, QuestInfo> quests;
+	extern unordered_map<int, QuestInfo> quests;
 	void addRequest(int id, QuestRequestsInfo request);
 	void addReward(int id, QuestRewardsInfo raws);
 	void setNextQuest(int id, int questid);

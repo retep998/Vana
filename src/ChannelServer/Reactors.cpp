@@ -52,8 +52,8 @@ void Reactor::restore() {
 }
 
 // Reactors namespace
-hash_map <int, ReactorEventsInfo> Reactors::reactorinfo;
-hash_map <int, short> Reactors::maxstates;
+unordered_map<int, ReactorEventsInfo> Reactors::reactorinfo;
+unordered_map<int, short> Reactors::maxstates;
 
 void Reactors::addEventInfo(int id, ReactorEventInfo revent) {
 	reactorinfo[id].push_back(revent);

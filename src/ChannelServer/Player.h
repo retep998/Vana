@@ -190,7 +190,7 @@ private:
 	NPC *npc;
 	vector <int> warnings;
 	bool save_on_dc;
-	hash_map<string, string> variables;
+	unordered_map<string, string> variables;
 	SkillMapEnterActiveInfo skill;
 	SpecialSkillInfo info; // Hurricane/Pierce
 

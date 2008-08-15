@@ -19,17 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPS_H
 
 #include "Map.h"
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 
 using std::string;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Player;
 class ReadPacket;
 
 namespace Maps {
-	extern hash_map <int, Map *> maps;
+	extern unordered_map<int, Map *> maps;
 	void startTimer();
 	void addMap(MapInfo info);
 	void usePortal(Player *player, ReadPacket *packet);

@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SKILLS_H
 #define SKILLS_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <vector>
 #include "Pos.h"
 
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using std::vector;
 
 class Player;
@@ -157,12 +157,12 @@ struct SkillsInfo {
 	SkillAct act;
 	vector<bool> bact;
 };
-typedef hash_map<unsigned char, SkillLevelInfo> SkillsLevelInfo;
+typedef unordered_map<unsigned char, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
-	extern hash_map<int, SkillsLevelInfo> skills;
-	extern hash_map<int, unsigned char> maxlevels;
-	extern hash_map<int, SkillsInfo> skillsinfo;
+	extern unordered_map<int, SkillsLevelInfo> skills;
+	extern unordered_map<int, unsigned char> maxlevels;
+	extern unordered_map<int, SkillsInfo> skillsinfo;
 	void init();
 	void addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo levelinfo);
 	void addSkill(Player *player, ReadPacket *packet);

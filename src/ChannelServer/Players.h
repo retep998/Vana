@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERS_H
 #define PLAYERS_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 #include <boost/function.hpp>
 
 using std::string;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class PacketCreator;
 class Player;
@@ -50,8 +50,8 @@ private:
 	Players& operator=(const Players&);
 	static Players *singleton;
 
-	hash_map<int, Player *> m_players;
-	hash_map<string, Player *> m_players_names; // Index of players by name
+	unordered_map<int, Player *> m_players;
+	unordered_map<string, Player *> m_players_names; // Index of players by name
 };
 
 #endif

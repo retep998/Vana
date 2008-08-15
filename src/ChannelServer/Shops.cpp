@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "SendHeader.h"
 
-hash_map <int, ShopInfo> Shops::shops;
+unordered_map<int, ShopInfo> Shops::shops;
 vector <int> Shops::rechargables;
 
 void Shops::addShop(int id, ShopInfo shop) {

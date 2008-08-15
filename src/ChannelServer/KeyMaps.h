@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef KEYMAPS_H
 #define KEYMAPS_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <boost/shared_ptr.hpp>
 
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using boost::shared_ptr;
 
 class KeyMaps {
@@ -40,7 +40,7 @@ public:
 
 	static const size_t size = 90;
 private:
-	hash_map<int, shared_ptr<KeyMap>> keyMaps;
+	unordered_map<int, shared_ptr<KeyMap>> keyMaps;
 	int maxValue; // Cache max value
 };
 

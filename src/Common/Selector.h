@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SELECTOR_H
 
 #include "WinSockInclude.h"
-#include <hash_map>
+#include <unordered_map>
 
 #define BOOST_ALL_DYN_LINK
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
 
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using boost::scoped_ptr;
 
 class Selector {
@@ -65,7 +65,7 @@ private:
 	fd_set writefds;
 	fd_set errorfds;
 	struct timeval timeout;
-	hash_map<int, Handler *> handlers;
+	unordered_map<int, Handler *> handlers;
 	scoped_ptr<boost::thread> selectorthread;
 };
 

@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERSKILLS_H
 
 #include <vector>
-#include <hash_map>
+#include <unordered_map>
 
 using std::vector;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Player;
 struct SkillMapEnterActiveInfo;
@@ -40,7 +40,7 @@ public:
 	unsigned char getSkillLevel(int skillid);
 	unsigned char getMaxSkillLevel(int skillid);
 
-	hash_map<int, unsigned char> * getSkills() {
+	unordered_map<int, unsigned char> * getSkills() {
 		return &playerskills;
 	}
 	SkillMapEnterActiveInfo getSkillMapEnterInfo();
@@ -57,12 +57,12 @@ public:
 	void setActiveSkillLevel(int skillid, int level);
 	void save();
 private:
-	hash_map<int, unsigned char> playerskills;
-	hash_map<int, unsigned char> maxlevels;
-	hash_map<int, SkillActiveInfo> activeplayerskill;
-	hash_map<int, SkillActiveInfo> activemapskill;
+	unordered_map<int, unsigned char> playerskills;
+	unordered_map<int, unsigned char> maxlevels;
+	unordered_map<int, SkillActiveInfo> activeplayerskill;
+	unordered_map<int, SkillActiveInfo> activemapskill;
 	vector<SkillMapActiveInfo> activemapenterskill;
-	hash_map<int, unsigned char> activelevels;
+	unordered_map<int, unsigned char> activelevels;
 	Player *player;
 };
 

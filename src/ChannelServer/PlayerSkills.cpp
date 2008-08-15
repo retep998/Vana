@@ -121,7 +121,7 @@ void PlayerSkills::save() {
 	mysqlpp::Query query = Database::chardb.query();
 
 	bool firstrun = true;
-	for (hash_map<int, unsigned char>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
+	for (unordered_map<int, unsigned char>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
 		if (firstrun) {
 			query << "REPLACE INTO skills VALUES (";
 			firstrun = false;

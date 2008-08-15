@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Trade.h"
 #include "LoopingId.h"
-#include <hash_map>
+#include <unordered_map>
 #include <boost/scoped_ptr.hpp>
 
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using boost::scoped_ptr;
 
 class Player;
@@ -32,7 +32,7 @@ class ReadPacket;
 struct TradeInfo;
 
 namespace Trades {
-	extern hash_map<int, ActiveTrade *> trades;
+	extern unordered_map<int, ActiveTrade *> trades;
 	void tradeHandler(Player *player, ReadPacket *packet);
 	void addTrade(ActiveTrade *trade);
 	float getTaxLevel(int mesos);

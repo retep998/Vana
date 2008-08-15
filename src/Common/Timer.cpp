@@ -76,7 +76,7 @@ Timer::OneTimer * Timer::findMin() {
 	if (timers.size() == 0)
 		return NULL;
 	OneTimer *min;
-	for (hash_map <int, OneTimer *>::iterator iter = timers.begin(); iter != timers.end(); iter++) {
+	for (unordered_map<int, OneTimer *>::iterator iter = timers.begin(); iter != timers.end(); iter++) {
 		if (iter == timers.begin() || iter->second->t < min->t)
 			min = iter->second;
 	}

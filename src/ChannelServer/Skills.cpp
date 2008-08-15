@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include <boost/bind.hpp>
 
-hash_map<int, SkillsLevelInfo> Skills::skills;
-hash_map<int, unsigned char> Skills::maxlevels;
-hash_map<int, SkillsInfo> Skills::skillsinfo;
+unordered_map<int, SkillsLevelInfo> Skills::skills;
+unordered_map<int, unsigned char> Skills::maxlevels;
+unordered_map<int, SkillsInfo> Skills::skillsinfo;
 
 void Skills::stopTimersPlayer(Player *player) {
 	SkillTimer::Instance()->stop(player, false);
