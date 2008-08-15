@@ -19,17 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SKILLS_H
 
 #include <hash_map>
+#include <vector>
 #include "Pos.h"
+
+using stdext::hash_map;
+using std::vector;
+
+class Player;
+class ReadPacket;
+class SkillTimer;
 
 #define BEGINNER_SKILL(x) (x / 1000000 == 0)
 #define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)
-
-using namespace std;
-using namespace stdext;
-
-class Player;
-class SkillTimer;
-class ReadPacket;
 
 struct SkillLevelInfo {
 	int time;
@@ -110,7 +111,7 @@ struct SkillAct {
 
 struct SkillActiveInfo {
 	unsigned char types[8];
-	vector <short> vals;
+	vector<short> vals;
 };
 
 struct SkillMapActiveInfo {
@@ -151,17 +152,17 @@ struct PGMRInfo { // Power Guard/Mana Reflection
 };
 
 struct SkillsInfo {
-	vector <SkillPlayerInfo> player;
-	vector <SkillMapInfo> map;
+	vector<SkillPlayerInfo> player;
+	vector<SkillMapInfo> map;
 	SkillAct act;
-	vector <bool> bact;
+	vector<bool> bact;
 };
-typedef hash_map <unsigned char, SkillLevelInfo> SkillsLevelInfo;
+typedef hash_map<unsigned char, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
-	extern hash_map <int, SkillsLevelInfo> skills;
-	extern hash_map <int, unsigned char> maxlevels;
-	extern hash_map <int, SkillsInfo> skillsinfo;
+	extern hash_map<int, SkillsLevelInfo> skills;
+	extern hash_map<int, unsigned char> maxlevels;
+	extern hash_map<int, SkillsInfo> skillsinfo;
 	void init();
 	void addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo levelinfo);
 	void addSkill(Player *player, ReadPacket *packet);
