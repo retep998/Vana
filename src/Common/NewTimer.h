@@ -19,16 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define NEWTIMER_H
 
 #include <list>
-#include <hash_map>
+#include <unordered_map>
 
 #define BOOST_ALL_DYN_LINK
 #include <boost/function.hpp>
+#include <boost/functional/hash.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 
 using std::list;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 // Will be renamed to Timer after migration to this Timer finished
 class NewTimer {
@@ -89,6 +90,9 @@ public:
 		unsigned int type;
 		unsigned int id;
 		unsigned int id2;
+
+		bool operator==(Id const &other) const;
+		friend size_t hash_value(Id const &id);
 	};
 
 	OneTimer(boost::function<void ()> func, Id id, Container *container,
@@ -117,7 +121,7 @@ public:
 	void registerTimer(OneTimer *timer);
 	void removeTimer(const OneTimer::Id &id);
 private:
-	hash_map<__int64, boost::shared_ptr<OneTimer>> m_timers;
+	unordered_map<OneTimer::Id, boost::shared_ptr<OneTimer>, boost::hash<OneTimer::Id>> m_timers;
 };
 
 #endif
