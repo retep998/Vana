@@ -124,9 +124,9 @@ void PlayerPacket::connectData(Player *player) {
 		packet.addByte(0);
 	}
 	//Skills
-	hash_map<int, unsigned char> *playerskills = player->getSkills()->getSkills();
+	unordered_map<int, unsigned char> *playerskills = player->getSkills()->getSkills();
 	packet.addShort((short) playerskills->size());
-	for (hash_map<int, unsigned char>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
+	for (unordered_map<int, unsigned char>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
 		packet.addInt(iter->first);
 		packet.addInt(iter->second);
 		if (FORTHJOB_SKILL(iter->first))

@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define TIMER_H
 
 #include <queue>
-#include <hash_map>
+#include <unordered_map>
 #include "windows.h"
 
 using std::queue;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Timer {
 public:
@@ -62,7 +62,7 @@ private:
 		OneTimer(long msec, int id, TimerHandler *handler, bool persistent);
 		void reset();
 	};
-	hash_map <int, OneTimer *> timers;
+	unordered_map<int, OneTimer *> timers;
 	HANDLE timerEvent;
 	OneTimer * findMin();
 	OneTimer * getTimer(int id);

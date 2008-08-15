@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PETS_H
 
 #include "Pos.h"
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 
 using std::string;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Pet;
 class Player;
@@ -41,8 +41,8 @@ struct PetInteractInfo {
 };
 
 namespace Pets {
-	extern hash_map<int, PetInfo> petsInfo;
-	extern hash_map<int, hash_map<int, PetInteractInfo>> petsInteractInfo;
+	extern unordered_map<int, PetInfo> petsInfo;
+	extern unordered_map<int, unordered_map<int, PetInteractInfo>> petsInteractInfo;
 	extern short exps[29];
 	void showPets(Player *player);
 	void chat(Player *player, ReadPacket *packet);

@@ -64,7 +64,7 @@ void Selector::selectThread() {
 		t_errorfds = errorfds;
 		int result = select(0, &t_readfds, &t_writefds, &t_errorfds, &timeout);
 		if (result == 0) continue;
-		for (hash_map<int, Handler *>::iterator iter = handlers.begin(); iter != handlers.end(); iter++) {
+		for (unordered_map<int, Handler *>::iterator iter = handlers.begin(); iter != handlers.end(); iter++) {
 			int socket = iter->first;
 			Handler *handler = iter->second;
 			if (FD_ISSET(socket, &t_errorfds)) {

@@ -139,7 +139,7 @@ void Map::addMob(Mob *mob) {
 }
 
 void Map::updateMobControl() {
-	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
 			updateMobControl(iter->second);
 	}
@@ -172,16 +172,16 @@ void Map::removeMob(int id, int spawnid) {
 }
 
 void Map::killMobs(Player *player) {
-	hash_map <int, Mob *> mobs = this->mobs;
-	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
+	unordered_map<int, Mob *> mobs = this->mobs;
+	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
 		if (iter->second != 0)
 			iter->second->die(player);
 	}
 }
 
 void Map::killMobs(Player *player, int mobid) {
-	hash_map <int, Mob *> mobs = this->mobs;
-	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+	unordered_map<int, Mob *> mobs = this->mobs;
+	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
 			if (iter->second->getMobID() == mobid)
 				iter->second->die(player);
@@ -197,8 +197,8 @@ void Map::addDrop(Drop *drop) {
 }
 
 void Map::clearDrops() { // Clear all drops
-	hash_map <int, Drop *> drops = this->drops;
-	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+	unordered_map<int, Drop *> drops = this->drops;
+	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0) // Check just in case drop is removed by timer
 			iter->second->removeDrop();
 	}
@@ -206,8 +206,8 @@ void Map::clearDrops() { // Clear all drops
 
 void Map::clearDrops(int time) { // Clear drops based on how long they have been in the map
 	time -= 60000;
-	hash_map <int, Drop *> drops = this->drops;
-	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+	unordered_map<int, Drop *> drops = this->drops;
+	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0)
 			if (iter->second->getDropped() < time)
 				iter->second->removeDrop();
@@ -250,13 +250,13 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 			ReactorPacket::showReactor(player, reactors[i]);
 	}
 	// Mobs
-	for (hash_map <int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
 			MobsPacket::spawnMob(player, iter->second, false, false, true);
 	}
 	updateMobControl();
 	// Drops
-	for (hash_map <int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0)
 			iter->second->showDrop(player);
 	}

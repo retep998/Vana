@@ -26,11 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ISEQUIP(x) (GETINVENTORY(x) == 1)
 #define ISPET(x) (x >= 5000000 && x <= 5000045)
 
-#include <hash_map>
+#include <unordered_map>
 #include <vector>
 
 using std::vector;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Player;
 class ItemTimer;
@@ -119,8 +119,8 @@ struct ItemInfo {
 };
 
 namespace Inventory {
-	extern hash_map <int, EquipInfo> equips;
-	extern hash_map <int, ItemInfo> items;
+	extern unordered_map<int, EquipInfo> equips;
+	extern unordered_map<int, ItemInfo> items;
 	void addEquipInfo(int id, EquipInfo equip);
 	void addItemInfo(int id, ItemInfo item);
 	void startTimer();

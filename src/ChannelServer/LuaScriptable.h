@@ -24,10 +24,10 @@ extern "C" {
 	#include "lua/lauxlib.h"
 }
 
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using std::string;
 
 class Player;

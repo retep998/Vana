@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef DROPS_H
 #define DROPS_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <vector>
 
 using std::vector;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 #include "Players.h"
 #include "Player.h"
@@ -48,8 +48,8 @@ struct Mesos {
 class Drop;
 
 namespace Drops {
-	extern hash_map <int, MobDropsInfo> dropsinfo;
-	extern hash_map <int, Mesos> mesos;
+	extern unordered_map<int, MobDropsInfo> dropsinfo;
+	extern unordered_map<int, Mesos> mesos;
 	void addDrop(int id, MobDropInfo drop);
 	void addMesos(int id, Mesos meso);
 	void dropMob(Player *player, Mob *mob);

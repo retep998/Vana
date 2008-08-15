@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 #include <sstream>
 
-hash_map<int, Map *> Maps::maps;
+unordered_map<int, Map *> Maps::maps;
 
 void Maps::addMap(MapInfo info) {
 	maps[info.id] = new Map(info);

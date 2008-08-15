@@ -34,8 +34,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 #include <boost/bind.hpp>
 
-hash_map <int, EquipInfo> Inventory::equips;
-hash_map <int, ItemInfo> Inventory::items;
+unordered_map<int, EquipInfo> Inventory::equips;
+unordered_map<int, ItemInfo> Inventory::items;
 
 void Inventory::addEquipInfo(int id, EquipInfo equip) {
 	equips[id] = equip;

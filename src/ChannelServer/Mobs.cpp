@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "ReadPacket.h"
 
-hash_map <int, MobInfo> Mobs::mobinfo;
+unordered_map<int, MobInfo> Mobs::mobinfo;
 
 /* Mob class */
 Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, short fh) : mapid(mapid), id(id), mobid(mobid), spawnid(spawnid), pos(pos), type(2), fh(fh), control(0) {

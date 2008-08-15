@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WORLDS_H
 #define WORLDS_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 #include <boost/shared_ptr.hpp>
 
 using std::string;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using boost::shared_ptr;
 
 class PlayerLogin;
@@ -39,7 +39,7 @@ struct Channel {
 
 struct World {
 	string name;
-	hash_map<int, shared_ptr<Channel>> channels;
+	unordered_map<int, shared_ptr<Channel>> channels;
 	size_t maxChannels;
 	char id;
 	char ribbon;
@@ -62,7 +62,7 @@ namespace Worlds {
 	void showWorld(PlayerLogin *player);
 	char connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
 	char connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server
-	extern hash_map <int, World *> worlds;
+	extern unordered_map<int, World *> worlds;
 };
 
 #endif

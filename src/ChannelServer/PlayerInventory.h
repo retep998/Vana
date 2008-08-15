@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERINVENTORY_H
 #define PLAYERINVENTORY_H
 
-#include <hash_map>
-using stdext::hash_map;
+#include <unordered_map>
+using std::tr1::unordered_map;
 
 class Player;
 class PacketCreator;
@@ -72,7 +72,7 @@ struct Item {
 	short ispeed;
 	int petid;
 };
-typedef hash_map<short, Item *> iteminventory;
+typedef unordered_map<short, Item *> iteminventory;
 
 class PlayerInventory {
 public:
@@ -108,7 +108,7 @@ private:
 	int mesos;
 	iteminventory items[5];
 	int equipped[50][2];
-	hash_map<int, int> itemamounts;
+	unordered_map<int, int> itemamounts;
 	void addEquipped(short slot, int itemid);
 };
 

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define NPCS_H
 
 #include "LuaNPC.h"
-#include <hash_map>
+#include <unordered_map>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 using std::vector;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using boost::scoped_ptr;
 
 class Player;

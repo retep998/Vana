@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PARTYHANDLER_H
 #define PARTYHANDLER_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <vector>
 #include "Players.h"
 
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using std::vector;
 using std::string;
 
@@ -39,7 +39,7 @@ class WorldServerAcceptPlayer;
 
 namespace PartyHandler{
 	extern int partyCount;
-	extern hash_map <int, Party *> parties;
+	extern unordered_map<int, Party *> parties;
 	void createParty(WorldServerAcceptPlayer *player, int playerid);
 	void leaveParty(WorldServerAcceptPlayer *player, int playerid);
 	void invitePlayer(WorldServerAcceptPlayer *player, int playerid, const string &invitee);
@@ -73,7 +73,7 @@ public:
 	void deleteMember(Player *player) {
 		this->members.erase(player->id);
 	}
-	hash_map<int, Player *> members;
+	unordered_map<int, Player *> members;
 	vector<int> oldLeader;
 private:
 	int partyid;

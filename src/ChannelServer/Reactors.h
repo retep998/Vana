@@ -18,14 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef REACTOR_H
 #define REACTOR_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <vector>
 #include <string>
 #include "Pos.h"
 
 using std::string;
 using std::vector;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class LoopingId;
 class Player;
@@ -47,8 +47,8 @@ struct ReactorEventInfo {
 typedef vector <ReactorEventInfo> ReactorEventsInfo;
 
 namespace Reactors {
-	extern hash_map <int, ReactorEventsInfo> reactorinfo;
-	extern hash_map <int, short> maxstates;
+	extern unordered_map<int, ReactorEventsInfo> reactorinfo;
+	extern unordered_map<int, short> maxstates;
 	void addEventInfo(int id, ReactorEventInfo revent);
 	void setMaxstates(int id, short state);
 	void hitReactor(Player *player, ReadPacket *packet);

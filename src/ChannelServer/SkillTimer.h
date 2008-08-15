@@ -59,7 +59,7 @@ private:
 	};
 	vector <STimer> timers;
 	vector <SActTimer> acttimers;
-	hash_map <int, bool> act;
+	unordered_map<int, bool> act;
 	void handle (Timer *timer, int id);
 	void remove (int id);
 };

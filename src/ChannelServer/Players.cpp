@@ -42,13 +42,13 @@ Player * Players::getPlayer(const string &name) {
 }
 
 void Players::run(boost::function<void (Player *)> func) {
-	for (hash_map<int, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (unordered_map<int, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
 		func(iter->second);
 	}
 }
 
 void Players::sendPacket(PacketCreator &packet) {
-	for (hash_map<int, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (unordered_map<int, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
 		iter->second->getPacketHandler()->send(packet);
 	}
 }

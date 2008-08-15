@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SKILLMACROS_H
 #define SKILLMACROS_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 #include <boost/shared_ptr.hpp>
 
 using std::string;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 using boost::shared_ptr;
 
 class SkillMacros {
@@ -39,7 +39,7 @@ public:
 	void load(int charid);
 	void save(int charid);
 private:
-	hash_map<int, shared_ptr<SkillMacro>> skillMacros;
+	unordered_map<int, shared_ptr<SkillMacro>> skillMacros;
 	int maxPos;
 };
 

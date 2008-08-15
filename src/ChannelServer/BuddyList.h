@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef BUDDYLIST_H
 #define BUDDYLIST_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 
 using std::string;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Player;
 namespace mysqlpp {
@@ -38,7 +38,7 @@ public:
 private:
 	void add(const mysqlpp::Row &row);
 
-	hash_map<int, string> buddies;
+	unordered_map<int, string> buddies;
 	Player *player;
 };
 

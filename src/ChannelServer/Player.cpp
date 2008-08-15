@@ -540,7 +540,7 @@ void Player::saveVariables() {
 		mysqlpp::Query query = Database::chardb.query();
 
 		bool firstrun = true;
-		for (hash_map <string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++) {
+		for (unordered_map<string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++) {
 			if (firstrun) {
 				query << "REPLACE INTO character_variables VALUES (";
 				firstrun = false;

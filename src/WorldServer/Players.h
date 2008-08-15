@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERS_H
 #define PLAYERS_H
 
-#include <hash_map>
+#include <unordered_map>
 #include <string>
 
 using std::string;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 struct Player {
 	int id;
@@ -53,7 +53,7 @@ private:
 	Players& operator=(const Players&);
 	static Players *singleton;
 
-	hash_map <int, Player *> players;
+	unordered_map<int, Player *> players;
 };
 
 #endif

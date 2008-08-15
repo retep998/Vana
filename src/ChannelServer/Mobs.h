@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Player.h"
 #include "Pos.h"
-#include <hash_map>
+#include <unordered_map>
 #include <vector>
 
 using std::vector;
-using stdext::hash_map;
+using std::tr1::unordered_map;
 
 class Player;
 class Mob;
@@ -67,7 +67,7 @@ struct MobHPInfo {
 };
 
 namespace Mobs {
-	extern hash_map <int, MobInfo> mobinfo;
+	extern unordered_map<int, MobInfo> mobinfo;
 	void addMob(int id, MobInfo mob);
 	void damageMob(Player *player, ReadPacket *packet);
 	void damageMobRanged(Player *player, ReadPacket *packet);

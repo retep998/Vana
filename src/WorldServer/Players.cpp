@@ -64,7 +64,7 @@ void Players::remove(int id, int channel) {
 Player * Players::getPlayerFromName(const string &name, bool includeOffline) {
 	Player *player;
 	bool found = false;
-	for (hash_map <int, Player *>::iterator iter = players.begin(); iter != players.end(); iter++) {
+	for (unordered_map<int, Player *>::iterator iter = players.begin(); iter != players.end(); iter++) {
 		if ((iter->second->online || includeOffline) && StringUtilities::noCaseCompare(iter->second->name, name) == 0) {
 			player = iter->second;
 			found = true;
