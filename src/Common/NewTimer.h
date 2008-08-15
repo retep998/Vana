@@ -77,7 +77,6 @@ private:
 	boost::mutex m_timers_mutex;
 
 	boost::scoped_ptr<boost::thread> m_thread;
-	boost::mutex m_main_loop_mutex;
 	boost::condition m_main_loop_condition;
 
 	boost::scoped_ptr<Container> m_container; // Central container for Timers that don't belong to other containers
