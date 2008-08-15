@@ -46,7 +46,7 @@ void NewTimer::removeTimer(OneTimer *timer) {
 }
 
 NewTimer::OneTimer * NewTimer::findMin() {
-	boost::mutex::scoped_lock l(m_timers_mutex);
+	// Unsynchronized
 	if (m_timers.size() == 0) {
 		return 0;
 	}
@@ -66,10 +66,13 @@ NewTimer::OneTimer * NewTimer::findMin() {
 }
 
 void NewTimer::forceReSort() {
+	boost::mutex::scoped_lock l(m_timers_mutex);
 	m_resort_timer = true;
+	m_main_loop_condition.notify_one();
 }
 
 void NewTimer::runThread() {
+	boost::mutex::scoped_lock l(m_timers_mutex);
 	while (!m_terminate) {
 		// Find minimum wakeup time
 		OneTimer *minTimer = findMin();
@@ -79,8 +82,7 @@ void NewTimer::runThread() {
 			continue;
 		}
 		
-		boost::mutex::scoped_lock l(m_main_loop_mutex);
-		if (m_main_loop_condition.timed_wait(m_main_loop_mutex,
+		if (m_main_loop_condition.timed_wait(m_timers_mutex,
 			boost::get_system_time() + boost::posix_time::milliseconds(msec))) {
 				continue;
 		}
