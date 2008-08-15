@@ -403,7 +403,10 @@ void Skills::init() {
 
 void Skills::addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo levelinfo) {
 	skills[skillid][level] = levelinfo;
-	maxlevels[skillid] = level;
+
+	if (maxlevels.find(level) == maxlevels.end() || maxlevels[skillid] < level) {
+		maxlevels[skillid] = level;
+	}
 }
 
 void Skills::addSkill(Player *player, ReadPacket *packet) {
