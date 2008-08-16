@@ -439,8 +439,7 @@ void Skills::stopSkill(Player *player, int skillid) {
 			}
 			break;
 		default:
-			SkillTimer::Instance()->stop(player, skillid);
-			endBuff(player, skillid, false);
+			endBuff(player, skillid);
 			break;
 	}
 }
@@ -642,8 +641,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	SkillTimer::Instance()->stop(player, skillid);
 	if (skillsinfo[skillid].bact.size() > 0) {
 		player->getActiveBuffs()->removeAct(skillid, skillsinfo[skillid].act.type);
-	}
-	if (skillsinfo[skillid].bact.size() > 0) {
+
 		int value = 0;
 		switch(skillsinfo[skillid].act.value) {
 			case SKILL_X: value = skills[skillid][level].x; break;
@@ -701,8 +699,9 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 void Skills::endBuff(Player *player, int skill, bool stopTimer) {
 	if (stopTimer) {
 		SkillTimer::Instance()->stop(player, skill);
-		player->getActiveBuffs()->removeAct(skill);
 	}
+	
+	player->getActiveBuffs()->removeAct(skill);
 
 	/// 
 	if (skill == 1301007 || skill == 9101008) { // Hyper Body
