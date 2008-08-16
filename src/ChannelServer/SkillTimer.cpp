@@ -65,7 +65,7 @@ void SkillTimer::stop(Player *player, bool endSkills) {
 	for (size_t i = 0; i < timers.size(); i++) {
 		if (player == timers[i].player) {
 			if (endSkills)
-				Skills::endSkill(player, timers[i].skill);
+				Skills::endBuff(player, timers[i].skill, false);
 			Timer::Instance()->cancelTimer(timers[i].id);
 			i--;
 		}
@@ -115,7 +115,7 @@ void SkillTimer::handle(Timer *timer, int id) {
 				break;
 			}
 		}
-		Skills::endSkill(player, skill);
+		Skills::endBuff(player, skill, false);
 	}
 }
 

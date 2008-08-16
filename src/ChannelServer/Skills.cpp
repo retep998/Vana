@@ -439,7 +439,7 @@ void Skills::stopSkill(Player *player, int skillid) {
 			break;
 		default:
 			SkillTimer::Instance()->stop(player, skillid);
-			endSkill(player, skillid);
+			endBuff(player, skillid, false);
 			break;
 	}
 }
@@ -697,27 +697,11 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 		Skills::startCooldown(player, skillid, cooltime);
 }
 
-void Skills::endSkill(Player *player, int skill) {
-	/// 
-	if (skill == 1301007 || skill == 9101008) { // Hyper Body
-		player->setMHP(player->getRMHP());
-		player->setMMP(player->getRMMP());
-		player->setHP(player->getHP());
-		player->setMP(player->getMP());
+void Skills::endBuff(Player *player, int skill, bool stopTimer) {
+	if (stopTimer) {
+		SkillTimer::Instance()->stop(player, skill);
 	}
-	///
-	if (skillsinfo[skill].bact.size()>0) {
-		SkillTimer::Instance()->stop(player, skill, skillsinfo[skill].act.type);
-	}
-	if (skill == 9101004) // GM Hide
-		MapPacket::showPlayer(player);
-	SkillsPacket::endSkill(player, player->getSkills()->getSkillPlayerInfo(skill), player->getSkills()->getSkillMapInfo(skill));
-	player->getSkills()->deleteSkillMapEnterInfo(skill);
-	player->getSkills()->setActiveSkillLevel(skill, 0);
-}
 
-void Skills::endBuff(Player *player, int skill) {
-	SkillTimer::Instance()->stop(player, skill);
 	/// 
 	if (skill == 1301007 || skill == 9101008) { // Hyper Body
 		player->setMHP(player->getRMHP());
@@ -726,8 +710,10 @@ void Skills::endBuff(Player *player, int skill) {
 		player->setMP(player->getMP());
 	}
 	///
-	if (skill == 9101004) // GM Hide
+	if (skill == 9101004) { // GM Hide
 		MapPacket::showPlayer(player);
+	}
+
 	SkillsPacket::endSkill(player, player->getSkills()->getSkillPlayerInfo(skill), player->getSkills()->getSkillMapInfo(skill));
 	player->getSkills()->deleteSkillMapEnterInfo(skill);
 	player->getSkills()->setActiveSkillLevel(skill, 0);

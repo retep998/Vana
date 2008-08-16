@@ -237,7 +237,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 				return;
 			}
 			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randInt(99) > (acb_x - 1))) 
-				Skills::endSkill(player, charge_id);
+				Skills::endBuff(player, charge_id);
 			break;
 		}
 		default:
