@@ -531,7 +531,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		return;
 	SkillActiveInfo playerskill;
 	SkillActiveInfo mapskill;
-	vector <SkillMapActiveInfo> mapenterskill;
+	vector<SkillMapActiveInfo> mapenterskill;
 	// Reset player/map types to 0
 	memset(playerskill.types, 0, 8*sizeof(unsigned char));
 	memset(mapskill.types, 0, 8*sizeof(unsigned char));

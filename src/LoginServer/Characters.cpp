@@ -67,7 +67,7 @@ void Characters::showCharacters(PlayerLogin *player) {
 	query << "SELECT * FROM characters WHERE userid = " << mysqlpp::quote << player->getUserid() << " AND world_id = " << mysqlpp::quote << (int) player->getWorld();
 	mysqlpp::StoreQueryResult res = query.store();
 
-	vector <Character> chars;
+	vector<Character> chars;
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Character charc;
 		loadCharacter(charc, res[i]);

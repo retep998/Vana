@@ -56,7 +56,7 @@ struct Character {
 	short fame;
 	int map;
 	char pos;
-	vector <CharEquip> equips;
+	vector<CharEquip> equips;
 };
 
 namespace Characters {
@@ -66,7 +66,7 @@ namespace Characters {
 	void deleteCharacter(PlayerLogin *player, ReadPacket *packet);
 	void showCharacters(PlayerLogin *player);
 	void loadCharacter(Character &charc, mysqlpp::Row &row);
-	void showEquips(int id, vector <CharEquip> &vec);
+	void showEquips(int id, vector<CharEquip> &vec);
 	void createEquip(int equipid, int type, int charid);
 	bool ownerCheck(PlayerLogin *player, int id);
 	bool nameTaken(PlayerLogin *player, const string &name);

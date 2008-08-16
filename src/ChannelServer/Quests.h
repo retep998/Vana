@@ -35,7 +35,7 @@ struct QuestRequestInfo {
 	short count;
 };
 
-typedef vector <QuestRequestInfo> QuestRequestsInfo;
+typedef vector<QuestRequestInfo> QuestRequestsInfo;
 
 
 struct QuestRewardInfo {
@@ -52,7 +52,7 @@ struct QuestRewardInfo {
 	char prop;
 };
 
-typedef vector <QuestRewardInfo> QuestRewardsInfo;
+typedef vector<QuestRewardInfo> QuestRewardsInfo;
 
 struct QuestInfo {
 	QuestRequestsInfo requests;
@@ -73,7 +73,7 @@ struct QuestMob {
 struct Quest {
 	int id;
 	bool done;
-	vector <QuestMob> mobs;
+	vector<QuestMob> mobs;
 };
 
 namespace Quests {

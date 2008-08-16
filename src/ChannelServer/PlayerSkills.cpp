@@ -91,7 +91,7 @@ unsigned char PlayerSkills::getActiveSkillLevel(int skillid) {
 
 }
 
-void PlayerSkills::setSkillMapEnterInfo(int skillid, vector <SkillMapActiveInfo> skill) {
+void PlayerSkills::setSkillMapEnterInfo(int skillid, vector<SkillMapActiveInfo> skill) {
 	// TEMP //
 	for (size_t i = 0; i < activemapenterskill.size(); i++) { 
 		if (activemapenterskill[i].isvalue) {
