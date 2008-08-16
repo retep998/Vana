@@ -88,7 +88,9 @@ void NewTimer::runThread() {
 		}
 
 		if (minTimer != 0) {
+			l.unlock();
 			minTimer->run();
+			l.lock();
 		}
 	}
 }
