@@ -17,8 +17,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldServer", "WorldServer.
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common.vcproj", "{CFFE2EE8-4188-4E42-B76C-8005041C2877}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B7644ACF-7964-46A2-85EE-71B905F376A8} = {B7644ACF-7964-46A2-85EE-71B905F376A8}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "lua.vcproj", "{B7644ACF-7964-46A2-85EE-71B905F376A8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "Lua.vcproj", "{B7644ACF-7964-46A2-85EE-71B905F376A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
