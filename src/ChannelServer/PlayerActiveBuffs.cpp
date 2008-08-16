@@ -16,12 +16,54 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerActiveBuffs.h"
+#include "NewTimer.h"
 #include "Player.h"
 #include "PlayerSkills.h"
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
 #include "SkillTimer.h"
+#include <boost/bind.hpp>
+
+// Skill "acts"
+void PlayerActiveBuffs::addAct(int skill, Act act, short value, int time) {
+	struct {
+		void operator()() {
+			switch (act) {
+				case ACT_HEAL: Skills::heal(player, value, skill); break;
+				case ACT_HURT: Skills::hurt(player, value, skill); break;
+			}
+		}
+		Player *player;
+		int skill;
+		Act act;
+		short value;
+	} runAct = {m_player, skill, act, value};
+
+	NewTimer::OneTimer::Id id(NewTimer::Types::SkillActTimer, skill, act);
+	new NewTimer::OneTimer(runAct, id, m_player->getTimers(), time, true);
+
+	m_skill_acts[skill].push_back(act);
+}
+
+void PlayerActiveBuffs::removeAct(int skill, Act act) {
+	NewTimer::OneTimer::Id id(NewTimer::Types::SkillActTimer, skill, act);
+	m_player->getTimers()->removeTimer(id);
+
+	m_skill_acts[skill].remove(act);
+}
+
+void PlayerActiveBuffs::removeAct(int skill) {
+	for (list<Act>::iterator iter = m_skill_acts[skill].begin(); iter != m_skill_acts[skill].end(); iter++) {
+		removeAct(skill, *iter);
+	}
+}
+
+void PlayerActiveBuffs::removeAct() {
+	for (unordered_map<int, list<Act>>::iterator iter = m_skill_acts.begin(); iter != m_skill_acts.end(); iter++) {
+		removeAct(iter->first);
+	}
+}
 
 // Combo attack stuff
 void PlayerActiveBuffs::setCombo(char combo, bool sendPacket) {

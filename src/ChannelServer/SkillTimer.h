@@ -49,17 +49,7 @@ private:
 		int skill;
 		int time;
 	};
-	struct SActTimer {
-		int id;
-		Player *player;
-		int skill;
-		int time;
-		Act act;
-		short value;
-	};
 	vector<STimer> timers;
-	vector<SActTimer> acttimers;
-	unordered_map<int, bool> act;
 	void handle (Timer *timer, int id);
 	void remove (int id);
 };
