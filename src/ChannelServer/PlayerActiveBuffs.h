@@ -18,11 +18,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERACTIVEBUFF_H
 #define PLAYERACTIVEBUFF_H
 
+#include <list>
+#include <unordered_map>
+
+using std::list;
+using std::tr1::unordered_map;
+
 class Player;
+enum Act;
 
 class PlayerActiveBuffs {
 public:
 	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0) { }
+
+	// Skill "acts"
+	void addAct(int skill, Act act, short value, int time);
+	void removeAct(int skill, Act act);
+	void removeAct(int skill);
+	void removeAct();
 
 	// Combo attack
 	void setCombo(char combo, bool sendPacket);
@@ -30,6 +43,7 @@ public:
 	int getCombo() const { return m_combo; }
 private:
 	Player *m_player;
+	unordered_map<int, list<Act>> m_skill_acts;
 	char m_combo;
 };
 

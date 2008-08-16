@@ -35,6 +35,7 @@ void Skills::stopTimersPlayer(Player *player) {
 
 void Skills::stopAllBuffs(Player *player) {
 	SkillTimer::Instance()->stop(player, true);
+	player->getActiveBuffs()->removeAct();
 }
 
 void Skills::init() {
@@ -640,7 +641,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	player->getSkills()->setSkillMapEnterInfo(skillid, mapenterskill);
 	SkillTimer::Instance()->stop(player, skillid);
 	if (skillsinfo[skillid].bact.size() > 0) {
-		SkillTimer::Instance()->stop(player, skillid, skillsinfo[skillid].act.type);
+		player->getActiveBuffs()->removeAct(skillid, skillsinfo[skillid].act.type);
 	}
 	if (skillsinfo[skillid].bact.size() > 0) {
 		int value = 0;
@@ -658,7 +659,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_MORPH: value = skills[skillid][level].morph; break;
 			case SKILL_LV: value = level; break;
 		}
-		SkillTimer::Instance()->setSkillTimer(player, skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
+		player->getActiveBuffs()->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 	}
 	player->setSkill(player->getSkills()->getSkillMapEnterInfo());
 	SkillTimer::Instance()->setSkillTimer(player, skillid, skills[skillid][level].time*1000);
