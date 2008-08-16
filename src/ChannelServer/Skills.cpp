@@ -701,6 +701,7 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 void Skills::endBuff(Player *player, int skill, bool stopTimer) {
 	if (stopTimer) {
 		SkillTimer::Instance()->stop(player, skill);
+		player->getActiveBuffs()->removeAct(skill);
 	}
 
 	/// 
