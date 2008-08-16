@@ -405,7 +405,7 @@ void Skills::init() {
 void Skills::addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo levelinfo) {
 	skills[skillid][level] = levelinfo;
 
-	if (maxlevels.find(level) == maxlevels.end() || maxlevels[skillid] < level) {
+	if (maxlevels.find(skillid) == maxlevels.end() || maxlevels[skillid] < level) {
 		maxlevels[skillid] = level;
 	}
 }
