@@ -173,8 +173,7 @@ namespace Skills {
 	void stopAllBuffs(Player *player);
 	void heal(Player *player, short value, int skillid);
 	void hurt(Player *player, short value, int skillid);
-	void endSkill(Player *player, int skillid);
-	void endBuff(Player *player, int skill);
+	void endBuff(Player *player, int skill, bool stopTimer = true);
 	void stopSkill(Player *player, int skillid);
 	void startCooldown(Player *player, int skillid, int cooltime);
 	void stopCooldown(Player *player, int skillid);
