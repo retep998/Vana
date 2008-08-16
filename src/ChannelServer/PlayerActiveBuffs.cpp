@@ -54,8 +54,8 @@ void PlayerActiveBuffs::removeAct(int skill, Act act) {
 }
 
 void PlayerActiveBuffs::removeAct(int skill) {
-	for (list<Act>::iterator iter = m_skill_acts[skill].begin(); iter != m_skill_acts[skill].end(); iter++) {
-		removeAct(skill, *iter);
+	while (m_skill_acts[skill].size() > 0) {
+		removeAct(skill, *m_skill_acts[skill].begin());
 	}
 }
 
