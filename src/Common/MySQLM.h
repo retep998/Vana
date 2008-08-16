@@ -18,10 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MYSQL_H
 #define MYSQL_H
 
+#define MYSQLPP_MYSQL_HEADERS_BURIED
 #pragma warning(push)
 #pragma warning(disable : 4275)
 #include "mysql++/mysql++.h"
 #pragma warning(pop)
+#undef MYSQLPP_MYSQL_HEADERS_BURIED
 
 namespace Database {
 	extern mysqlpp::Connection chardb;
