@@ -28,13 +28,13 @@ class Player;
 
 struct ShopInfo {
 	int npc;
-	vector <int> items;
+	vector<int> items;
 	unordered_map<int, int> prices;
 };
 
 namespace Shops {
 	extern unordered_map<int, ShopInfo> shops;
-	extern vector <int> rechargables; // IDs of items which are rechargable i.e. stars
+	extern vector<int> rechargables; // IDs of items which are rechargable i.e. stars
 	void addShop(int id, ShopInfo shop);
 	void showShop(Player *player, int id);
 	int getPrice(int shopid, int itemid);

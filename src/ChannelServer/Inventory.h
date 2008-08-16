@@ -105,9 +105,9 @@ struct ConsumeInfo {
 	short ijump;
 	short ispeed;
 	unsigned char types[8];
-	vector <short> vals;
-	vector <SummonBag> mobs;
-	vector <Skillbook> skills;
+	vector<short> vals;
+	vector<SummonBag> mobs;
+	vector<Skillbook> skills;
 };
 
 struct ItemInfo {

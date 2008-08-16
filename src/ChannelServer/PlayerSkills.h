@@ -53,7 +53,7 @@ public:
 	}
 	void setSkillPlayerInfo(int skillid, SkillActiveInfo skill);
 	void setSkillMapInfo(int skillid, SkillActiveInfo skill);
-	void setSkillMapEnterInfo(int skillid, vector <SkillMapActiveInfo> skill);
+	void setSkillMapEnterInfo(int skillid, vector<SkillMapActiveInfo> skill);
 	void setActiveSkillLevel(int skillid, int level);
 	void save();
 private:

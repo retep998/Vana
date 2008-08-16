@@ -170,7 +170,7 @@ void InventoryPacket::showMessenger(Player *player, const string & msg, const st
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 // Use buff item
-void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned char types[8], vector <short> vals, bool morph) { // Test/Beta function, PoC only
+void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned char types[8], vector<short> vals, bool morph) { // Test/Beta function, PoC only
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);

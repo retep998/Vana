@@ -43,7 +43,7 @@ namespace LoginPacket {
 	void worldEnd(PlayerLogin *player);
 	void showChannels(PlayerLogin *player);
 	void channelSelect(PlayerLogin *player);
-	void showCharacters(PlayerLogin *player, vector <Character> chars);
+	void showCharacters(PlayerLogin *player, vector<Character> chars);
 	void showCharacter(PlayerLogin *player, Character charc);
 	void checkName(PlayerLogin *player, const string &name, bool taken);
 	void deleteCharacter(PlayerLogin *player, int ID);

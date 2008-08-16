@@ -151,7 +151,7 @@ void LoginPacket::channelSelect(PlayerLogin *player) {
 	player->getPacketHandler()->send(packet);
 }
 
-void LoginPacket::showCharacters(PlayerLogin *player, vector <Character> chars) {
+void LoginPacket::showCharacters(PlayerLogin *player, vector<Character> chars) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_CHARACTERS);
 	packet.addByte(0);

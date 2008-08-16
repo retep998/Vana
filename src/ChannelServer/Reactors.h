@@ -44,7 +44,7 @@ struct ReactorEventInfo {
 	short rby;
 	char nextstate;
 };
-typedef vector <ReactorEventInfo> ReactorEventsInfo;
+typedef vector<ReactorEventInfo> ReactorEventsInfo;
 
 namespace Reactors {
 	extern unordered_map<int, ReactorEventsInfo> reactorinfo;

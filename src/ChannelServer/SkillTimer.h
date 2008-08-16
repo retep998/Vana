@@ -57,8 +57,8 @@ private:
 		Act act;
 		short value;
 	};
-	vector <STimer> timers;
-	vector <SActTimer> acttimers;
+	vector<STimer> timers;
+	vector<SActTimer> acttimers;
 	unordered_map<int, bool> act;
 	void handle (Timer *timer, int id);
 	void remove (int id);

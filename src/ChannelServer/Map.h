@@ -41,7 +41,7 @@ struct FootholdInfo {
 	Pos pos1;
 	Pos pos2;
 };
-typedef vector <FootholdInfo> FootholdsInfo;
+typedef vector<FootholdInfo> FootholdsInfo;
 
 struct PortalInfo {
 	char id;
@@ -53,7 +53,7 @@ struct PortalInfo {
 	char script[30];
 	bool onlyOnce;
 };
-typedef vector <PortalInfo> PortalsInfo;
+typedef vector<PortalInfo> PortalsInfo;
 
 struct MapInfo {
 	int id;
@@ -74,21 +74,21 @@ struct NPCSpawnInfo {
 	short rx0;
 	short rx1; 
 };
-typedef vector <NPCSpawnInfo> NPCSpawnsInfo;
+typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 
 struct ReactorSpawnInfo {
 	int id;
 	Pos pos;
 	int time;
 };
-typedef vector <ReactorSpawnInfo> ReactorSpawnsInfo;
+typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
 
 struct ReactorRespawnInfo {
 	ReactorRespawnInfo(int id, clock_t killed) : id(id), killed(killed) {}
 	int id;
 	clock_t killed;
 };
-typedef vector <ReactorRespawnInfo> ReactorRespawns;
+typedef vector<ReactorRespawnInfo> ReactorRespawns;
 
 struct MobSpawnInfo {
 	int id;
@@ -97,14 +97,14 @@ struct MobSpawnInfo {
 	int last;
 	int time;
 };
-typedef vector <MobSpawnInfo> MobSpawnsInfo;
+typedef vector<MobSpawnInfo> MobSpawnsInfo;
 
 struct MobRespawnInfo {
 	MobRespawnInfo(int spawnid, clock_t killed) : spawnid(spawnid), killed(killed) {}
 	int spawnid;
 	clock_t killed;
 };
-typedef vector <MobRespawnInfo> MobRespawnsInfo;
+typedef vector<MobRespawnInfo> MobRespawnsInfo;
 
 class Map {
 public:
@@ -209,10 +209,10 @@ private:
 	FootholdsInfo footholds;
 	PortalsInfo portals;
 	char spawnpoints;
-	vector <Player *> players;
+	vector<Player *> players;
 	NPCSpawnsInfo npcs;
 	ReactorSpawnsInfo reactorspawns;
-	vector <Reactor *> reactors;
+	vector<Reactor *> reactors;
 	ReactorRespawns reactorrespawns;
 	MobSpawnsInfo mobspawns;
 	MobRespawnsInfo mobrespawns;

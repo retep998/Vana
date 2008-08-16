@@ -92,8 +92,8 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				Player *two = trade->getReceiver()->player;
 				TradesPacket::sendAddUser(one, two, 0x01);
 				two->setTrading(1);
-				vector <Player *> players;
-				vector <unsigned char> pos;
+				vector<Player *> players;
+				vector<unsigned char> pos;
 				players.push_back(one);
 				players.push_back(two);
 				pos.push_back(0x01);

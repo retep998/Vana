@@ -188,7 +188,7 @@ private:
 	int traderecvid;
 	Pos pos;
 	NPC *npc;
-	vector <int> warnings;
+	vector<int> warnings;
 	bool save_on_dc;
 	unordered_map<string, string> variables;
 	SkillMapEnterActiveInfo skill;
