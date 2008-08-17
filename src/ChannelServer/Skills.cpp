@@ -205,7 +205,7 @@ void Skills::init() {
 	player.value = SKILL_AVO;
 	skillsinfo[9101003].player.push_back(player);
 	// 9101004 - GM Hide
-	player.type = 0x40;
+	player.type = 0x04;
 	player.byte = TYPE_1;
 	player.value = 0;
 	skillsinfo[9101004].player.push_back(player);

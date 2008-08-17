@@ -32,7 +32,6 @@ void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel
 	packet.addInt(maxlevel); // Master Level
 	packet.addByte(1);
 	player->getPacketHandler()->send(packet);
-	player->getPacketHandler()->send(packet);
 }
 
 void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level) {
