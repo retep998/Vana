@@ -540,7 +540,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		playerskill.types[skillsinfo[skillid].player[i].byte] += skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
-		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed change for maxed darks ight
+		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed change for maxed dark sight
 			playerskill.types[TYPE_1] = 0;
 			continue;
 		}
