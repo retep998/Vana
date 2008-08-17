@@ -49,7 +49,7 @@
 /// mysqlpp_lib_version() returns in order to ensure that your program
 /// is using header files from the same version of MySQL++ as the
 /// actual library you're linking to.
-#define MYSQLPP_HEADER_VERSION MYSQLPP_VERSION(3, 0, 2)
+#define MYSQLPP_HEADER_VERSION MYSQLPP_VERSION(3, 0, 6)
 
 // This #include order gives the fewest redundancies in the #include
 // dependency chain.

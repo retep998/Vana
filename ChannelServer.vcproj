@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="src/Common;src/Libraries;$(ProgramFiles)/boost/boost_1_35_0/"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;MYSQLPP_NO_DLL"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -62,9 +62,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.lib common.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysql++.lib lua.lib common.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="src/Libraries/mysql;src/Libraries/mysql++;$(ConfigurationName)/Common;$(ConfigurationName)/lua;$(ProgramFiles)/boost/boost_1_35_0/lib"
+				AdditionalLibraryDirectories="src/Libraries/mysql;$(ConfigurationName)/Common;$(ConfigurationName)/lua;$(ConfigurationName)/mysql++;$(ProgramFiles)/boost/boost_1_35_0/lib"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				SubSystem="1"
@@ -120,7 +120,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="src/Common;src/Libraries;$(ProgramFiles)/boost/boost_1_35_0/"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;MYSQLPP_NO_DLL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -138,9 +138,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.lib common.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysql++.lib lua.lib common.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="src/Libraries/mysql;src/Libraries/mysql++;$(ConfigurationName)/Common;$(ConfigurationName)/lua;$(ProgramFiles)/boost/boost_1_35_0/lib"
+				AdditionalLibraryDirectories="src/Libraries/mysql;$(ConfigurationName)/Common;$(ConfigurationName)/lua;$(ConfigurationName)/mysql++;$(ProgramFiles)/boost/boost_1_35_0/lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
