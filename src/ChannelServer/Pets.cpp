@@ -29,7 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "ReadPacket.h"
 #include "Timer.h"
-#include <boost/bind.hpp>
+#include <functional>
+
+using std::tr1::bind;
 
 unordered_map<int, PetInfo> Pets::petsInfo;
 unordered_map<int, unordered_map<int, PetInteractInfo>> Pets::petsInteractInfo;
@@ -63,7 +65,7 @@ void Pet::reduceFullness() {
 void Pet::startTimer() {
 	NewTimer::OneTimer::Id id(NewTimer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
 	clock_t length = (6 - Pets::petsInfo[getType()].hunger)* 1000 * 60; // TODO: Better formula
-	new NewTimer::OneTimer(boost::bind(&Pet::reduceFullness, this), id, player->getTimers(), length, true);
+	new NewTimer::OneTimer(bind(&Pet::reduceFullness, this), id, player->getTimers(), length, true);
 }
 
 /* Pets namespace */

@@ -18,11 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERS_H
 #define PLAYERS_H
 
-#include <unordered_map>
+#include <functional>
 #include <string>
-#include <boost/function.hpp>
+#include <unordered_map>
 
 using std::string;
+using std::tr1::function;
 using std::tr1::unordered_map;
 
 class PacketCreator;
@@ -42,7 +43,7 @@ public:
 	Player * getPlayer(int id);
 	Player * getPlayer(const string &name);
 
-	void run(boost::function<void (Player *)> func);
+	void run(function<void (Player *)> func);
 	void sendPacket(PacketCreator &packet);
 private:
 	Players() {};

@@ -29,7 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "Randomizer.h"
 #include <ctime>
-#include <boost/bind.hpp>
+#include <functional>
+
+using std::tr1::bind;
 
 Map::Map (MapInfo info) :
 info(info),
@@ -216,7 +218,7 @@ void Map::clearDrops(int time) { // Clear drops based on how long they have been
 
 void Map::setTimer() {
 	if (!timer_started) {
-		new NewTimer::OneTimer(boost::bind(&Map::runTimer, this),
+		new NewTimer::OneTimer(bind(&Map::runTimer, this),
 			NewTimer::OneTimer::Id(NewTimer::Types::MapTimer, info.id, 0),
 			0, 10000, true);
 	}

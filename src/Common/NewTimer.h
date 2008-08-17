@@ -18,15 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef NEWTIMER_H
 #define NEWTIMER_H
 
+#include <functional>
 #include <list>
 #include <memory>
 #include <unordered_map>
-#include <boost/function.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
 
 using std::list;
+using std::tr1::function;
 using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
@@ -94,7 +95,7 @@ public:
 		friend size_t hash_value(Id const &id);
 	};
 
-	OneTimer(boost::function<void ()> func, Id id, Container *container,
+	OneTimer(function<void ()> func, Id id, Container *container,
 		clock_t length, bool persistent);
 	~OneTimer();
 
@@ -111,7 +112,7 @@ private:
 	clock_t m_run_at; // The time that this timer will run
 	clock_t m_length; // Difference between the time the timer is set and the time the timer is ran
 	bool m_persistent;
-	boost::function<void ()> m_function;
+	function<void ()> m_function;
 };
 
 class NewTimer::Container {

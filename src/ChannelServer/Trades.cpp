@@ -23,9 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "Timer.h"
 #include "TradesPacket.h"
+#include <functional>
 #include <string>
 #include <vector>
-#include <boost/bind.hpp>
+
+using std::tr1::bind;
 
 using std::string;
 using std::vector;
@@ -447,5 +449,5 @@ void Trades::stopTimeout(Player *starter, Player *receiver) {
 
 void Trades::startTimeout(Player *starter, Player *receiver, int tradeid) {
 	NewTimer::OneTimer::Id id(NewTimer::Types::TradeTimer, starter->getId(), receiver->getId());
-	new NewTimer::OneTimer(boost::bind(&Trades::timeout, starter, receiver, tradeid), id, 0, 180000, false);
+	new NewTimer::OneTimer(bind(&Trades::timeout, starter, receiver, tradeid), id, 0, 180000, false);
 }

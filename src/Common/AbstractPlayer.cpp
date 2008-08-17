@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PingPacket.h"
 #include "Timer.h"
 #include "SendHeader.h"
-#include <boost/bind.hpp>
+#include <functional>
+
+using std::tr1::bind;
 
 AbstractPlayer::AbstractPlayer() :
 is_server(false),
@@ -40,7 +42,7 @@ void AbstractPlayer::handleRequest(ReadPacket *packet) {
 }
 
 void AbstractPlayer::setTimer() {
-	new NewTimer::OneTimer(boost::bind(&AbstractPlayer::ping, this),
+	new NewTimer::OneTimer(bind(&AbstractPlayer::ping, this),
 		NewTimer::OneTimer::Id(NewTimer::Types::PingTimer, 0, 0),
 		getTimers(), 15000, true);
 }

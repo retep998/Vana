@@ -41,7 +41,7 @@ Player * Players::getPlayer(const string &name) {
 	return (m_players_names.find(upCaseName) == m_players_names.end()) ? 0 : m_players_names[upCaseName];
 }
 
-void Players::run(boost::function<void (Player *)> func) {
+void Players::run(function<void (Player *)> func) {
 	for (unordered_map<int, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
 		func(iter->second);
 	}

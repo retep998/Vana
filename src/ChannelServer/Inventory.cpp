@@ -32,7 +32,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 #include "PetsPacket.h"
 #include <cmath>
-#include <boost/bind.hpp>
+#include <functional>
+
+using std::tr1::bind;
 
 unordered_map<int, EquipInfo> Inventory::equips;
 unordered_map<int, ItemInfo> Inventory::items;
@@ -404,7 +406,7 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 
 		NewTimer::OneTimer::Id id(NewTimer::Types::ItemTimer, itemid, 0);
 		player->getTimers()->removeTimer(id);
-		new NewTimer::OneTimer(boost::bind(&Inventory::endItem, player,
+		new NewTimer::OneTimer(bind(&Inventory::endItem, player,
 			itemid), id, player->getTimers(), item->cons.time * 1000, false);
 	}
 }

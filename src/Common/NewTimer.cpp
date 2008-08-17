@@ -16,7 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NewTimer.h"
-#include <boost/bind.hpp>
+
+using std::tr1::bind;
 
 NewTimer * NewTimer::singleton = 0;
 
@@ -25,7 +26,7 @@ m_resort_timer(false),
 m_terminate(false),
 m_container(new Container)
 {
-	m_thread.reset(new boost::thread(boost::bind(&NewTimer::runThread, this)));
+	m_thread.reset(new boost::thread(bind(&NewTimer::runThread, this)));
 }
 
 NewTimer::~NewTimer() {
@@ -95,7 +96,7 @@ void NewTimer::runThread() {
 	}
 }
 
-NewTimer::OneTimer::OneTimer(boost::function<void ()> func, Id id,
+NewTimer::OneTimer::OneTimer(function<void ()> func, Id id,
 	Container *container, clock_t length, bool persistent) :
 m_id(id),
 m_container(container),

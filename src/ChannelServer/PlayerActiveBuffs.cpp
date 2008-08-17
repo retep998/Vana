@@ -23,7 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "SkillsPacket.h"
 #include "SkillTimer.h"
-#include <boost/bind.hpp>
+#include <functional>
+
+using std::tr1::bind;
 
 // Skill "acts"
 void PlayerActiveBuffs::addAct(int skill, Act act, short value, int time) {

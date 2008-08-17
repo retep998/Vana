@@ -23,7 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "SkillTimer.h"
 #include "ReadPacket.h"
-#include <boost/bind.hpp>
+#include <functional>
+
+using std::tr1::bind;
 
 unordered_map<int, SkillsLevelInfo> Skills::skills;
 unordered_map<int, unsigned char> Skills::maxlevels;
@@ -744,7 +746,7 @@ void Skills::startCooldown(Player *player, int skillid, int cooltime) {
 	}
 	SkillsPacket::sendCooldown(player, skillid, cooltime);
 
-	new NewTimer::OneTimer(boost::bind(&Skills::stopCooldown, player,
+	new NewTimer::OneTimer(bind(&Skills::stopCooldown, player,
 		skillid), NewTimer::OneTimer::Id(NewTimer::Types::CoolTimer,
 		skillid, 0), player->getTimers(), cooltime * 1000, false);
 }
