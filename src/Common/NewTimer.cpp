@@ -159,7 +159,7 @@ bool NewTimer::Container::checkTimer(const OneTimer::Id &id) {
 }
 
 void NewTimer::Container::registerTimer(OneTimer *timer) {
-	m_timers[timer->getId()] = boost::shared_ptr<NewTimer::OneTimer>(timer);
+	m_timers[timer->getId()] = shared_ptr<NewTimer::OneTimer>(timer);
 }
 
 void NewTimer::Container::removeTimer(const OneTimer::Id &id) {
