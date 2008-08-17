@@ -19,14 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define NEWTIMER_H
 
 #include <list>
+#include <memory>
 #include <unordered_map>
 #include <boost/function.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 
 using std::list;
+using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
 // Will be renamed to Timer after migration to this Timer finished
@@ -119,7 +120,7 @@ public:
 	void registerTimer(OneTimer *timer);
 	void removeTimer(const OneTimer::Id &id);
 private:
-	unordered_map<OneTimer::Id, boost::shared_ptr<OneTimer>, boost::hash<OneTimer::Id>> m_timers;
+	unordered_map<OneTimer::Id, shared_ptr<OneTimer>, boost::hash<OneTimer::Id>> m_timers;
 };
 
 #endif

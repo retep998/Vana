@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CHANNELS_H
 
 #include <unordered_map>
+#include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
 
 using std::string;
+using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
-using boost::shared_ptr;
 
 class WorldServerAcceptPlayer;
 class PacketCreator;
