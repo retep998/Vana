@@ -44,7 +44,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;MYSQLPP_NO_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				WarningLevel="0"
 				DebugInformationFormat="4"
 			/>
@@ -105,7 +105,7 @@
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="src/Libraries/mysql"
 				PreprocessorDefinitions="WIN32;NDEBUG;MYSQLPP_NO_DLL"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="0"
 				DebugInformationFormat="3"

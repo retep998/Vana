@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <list>
 #include <unordered_map>
-
-#define BOOST_ALL_DYN_LINK
 #include <boost/function.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/scoped_ptr.hpp>

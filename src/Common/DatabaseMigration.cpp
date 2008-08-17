@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 #include "StringUtilities.h"
 #include <iostream>
-
-#define BOOST_ALL_DYN_LINK
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
