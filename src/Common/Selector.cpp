@@ -16,7 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Selector.h"
-#include <boost/bind.hpp>
+#include <functional>
+
+using std::tr1::bind;
 
 Selector * Selector::singleton = 0;
 
@@ -27,7 +29,7 @@ Selector::Selector() : terminate(false) {
 	FD_ZERO(&writefds);
 	FD_ZERO(&errorfds);
 
-	selectorthread.reset(new boost::thread(boost::bind(&Selector::selectThread, this)));
+	selectorthread.reset(new boost::thread(bind(&Selector::selectThread, this)));
 }
 
 Selector::~Selector() {
