@@ -31,6 +31,13 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addString(player->getName());
 	packet.addInt(0);
 	packet.addInt(0);
+
+	packet.addInt(0);
+	packet.addInt(1);
+	packet.addShort(0);
+	packet.addByte(0);
+	packet.addByte(0xf8);
+
 	packet.addByte(player->getSkill().types[0]);
 	packet.addByte(player->getSkill().types[1]);
 	packet.addByte(player->getSkill().types[2]);
@@ -43,13 +50,8 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 		packet.addByte(player->getSkill().val);
 	}
 
-	packet.addShort(0);
-	packet.addByte(0);
-	packet.addInt(0x7E);
-	packet.addShort(0);
-	packet.addByte(0);
 	packet.addInt(0);
-	packet.addInt(0);
+	packet.addShort(0);
 	for (char i = 0; i < 3; i++) {
 		packet.addShort(21613); // Unknown
 		packet.addInt(10028); // Unknown
@@ -67,7 +69,8 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addInt(0);
 	packet.addShort(21613);
 	packet.addInt(10028);
-	packet.addInt(0);
+	packet.addShort(0);
+	packet.addShort(320);
 
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
 
