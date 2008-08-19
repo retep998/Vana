@@ -136,10 +136,10 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				isreceiver = true;
 			}
 			ActiveTrade *trade = Trades::getTrade(playerid);
-			Player *one = trade->getStarter()->player;
-			Player *two = trade->getReceiver()->player;
 			TradeInfo *send = trade->getStarter();
 			TradeInfo *recv = trade->getReceiver();
+			Player *one = send->player;
+			Player *two = recv->player;
 			char inventory = packet->getByte();
 			short slot = packet->getShort();
 			short amount = packet->getShort();
@@ -203,24 +203,24 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				isreceiver = true;
 			}
 			ActiveTrade *trade = Trades::getTrade(playerid);
-			Player *one = trade->getStarter()->player;
-			Player *two = trade->getReceiver()->player;
+			TradeInfo *send = trade->getStarter();
+			TradeInfo *recv = trade->getReceiver();
+			Player *one = send->player;
+			Player *two = recv->player;
 			int amount = packet->getInt();
-			int mesos = trade->getStarter()->mesos;
+			int mesos = send->mesos;
 			if (player == two) {
-				mesos = trade->getReceiver()->mesos;
+				mesos = recv->mesos;
 				mesos += amount;
-				trade->getReceiver()->mesos = mesos;
+				recv->mesos = mesos;
 				two->getInventory()->setMesos(two->getInventory()->getMesos() - amount);
-				InventoryPacket::blankUpdate(two); // TODO: Remove when we have a better client
 				TradesPacket::sendAddMesos(one, 0x01, mesos);
 				TradesPacket::sendAddMesos(two, 0x00, mesos);
 			}
 			else {
 				mesos += amount;
-				trade->getStarter()->mesos = mesos;
+				send->mesos = mesos;
 				one->getInventory()->setMesos(one->getInventory()->getMesos() - amount);
-				InventoryPacket::blankUpdate(one); // TODO: Remove when we have a better client
 				TradesPacket::sendAddMesos(one, 0x00, mesos);
 				TradesPacket::sendAddMesos(two, 0x01, mesos);
 			}
@@ -234,39 +234,41 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				isreceiver = true;
 			}
 			ActiveTrade *trade = Trades::getTrade(playerid);
-			Player *one = trade->getStarter()->player;
-			Player *two = trade->getReceiver()->player;
+			TradeInfo *send = trade->getStarter();
+			TradeInfo *recv = trade->getReceiver();
+			Player *one = send->player;
+			Player *two = recv->player;
 			bool finish = false;
 			if (player == two) {
-				trade->getReceiver()->accepted = true;
+				recv->accepted = true;
 				TradesPacket::sendAccepted(one);
-				if (trade->getStarter()->accepted)
+				if (send->accepted)
 					finish = true;
 			}
 			else {
-				trade->getStarter()->accepted = true;
+				send->accepted = true;
 				TradesPacket::sendAccepted(two);
-				if (trade->getReceiver()->accepted)
+				if (recv->accepted)
 					finish = true;
 			}
 			if (finish) { // Do trade processing
-				TradeInfo *send = trade->getStarter();
-				TradeInfo *recv = trade->getReceiver();
 				int sendermesos = one->getInventory()->getMesos();
 				int receivermesos = two->getInventory()->getMesos();
 				bool fail = false;
 				unsigned int comparison = send->mesos + receivermesos;
-				if (comparison > 2147483647)
+				if (comparison > 2147483647) {// Determine if receiver can receive all the mesos
 					fail = true;
-				comparison = recv->mesos + sendermesos;
-				if (comparison > 2147483647 && !fail)
+				}
+				comparison = recv->mesos + sendermesos; 
+				if (comparison > 2147483647 && !fail) { // Determine if sender can receive all the mesos
 					fail = true;
-				if (send->count > 0 && !fail) // Determine if the opposite can accept all the items
-					if (!(Trades::canTrade(one, send)))
-						fail = true;
-				if (recv->count > 0 && !fail) 
-					if (!(Trades::canTrade(two, recv)))
-						fail = true;
+				}
+				if (send->count > 0 && !fail) { // Determine if receiver can receive all the items
+					fail = (!(Trades::canTrade(two, send)));
+				}
+				if (recv->count > 0 && !fail) { // Determine if sender can receive all the items
+					fail = (!(Trades::canTrade(one, recv)));
+				}
 				if (fail) { // One or the other doesn't have enough space or mesos are ridiculous
 					TradesPacket::sendEndTrade(one, 0x07); 
 					TradesPacket::sendEndTrade(two, 0x07);
@@ -369,10 +371,10 @@ void Trades::cancelTrade(Player *player) {
 	}
 	ActiveTrade *trade = Trades::getTrade(playerid);
 	if (trade != 0) {
-		Player *one = trade->getStarter()->player;
-		Player *two = trade->getReceiver()->player;
 		TradeInfo *send = trade->getStarter();
 		TradeInfo *recv = trade->getReceiver();
+		Player *one = send->player;
+		Player *two = recv->player;
 		if (isreceiver || (!isreceiver && two->isTrading() == 1)) { // Left while in trade, give items back
 			if (isreceiver)
 				TradesPacket::sendLeaveTrade(one);
@@ -388,7 +390,6 @@ void Trades::cancelTrade(Player *player) {
 		one->setTradeSendID(0);
 		two->setTrading(0);
 		two->setTradeRecvID(0);
-
 		NewTimer::OneTimer::Id id(NewTimer::Types::TradeTimer, one->getId(), two->getId());
 		if (NewTimer::Instance()->getContainer()->checkTimer(id)) {
 			Trades::stopTimeout(one, two);
@@ -397,6 +398,7 @@ void Trades::cancelTrade(Player *player) {
 }
 
 bool Trades::canTrade(Player *player, TradeInfo *info) {
+	// TODO : Add checking for multiple slots of non-equip items and be sure to make exceptions for stars/bullets
 	bool yes = true;
 	char amounts[4] = {0};
 	for (char i = 0; i < 9; i++) {
@@ -406,7 +408,7 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 	for (char i = 0; i < 4; i++) {
 		if (amounts[i] > 0) {
 			char incrementor = 0;
-			for (char g = 0; g < player->getInventory()->getMaxSlots(i + 1); i++) { 
+			for (char g = 1; g <= player->getInventory()->getMaxSlots(i + 1); g++) { 
 				if (player->getInventory()->getItem(i + 1, g) == 0)
 					incrementor++;
 				if (incrementor >= amounts[i])

@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define TRADES_H
 
 #include "Trade.h"
-#include "LoopingId.h"
 #include <unordered_map>
 #include <boost/scoped_ptr.hpp>
 
