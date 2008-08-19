@@ -433,13 +433,12 @@ void Skills::stopSkill(Player *player, int skillid) {
 		case 2121001:
 		case 2221001:
 		case 2321001:
-		case 5221004:
-			{ // Special skills like hurricane, monster magnet, rapid fire, and etc
-				SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
-				SpecialSkillInfo info;
-				player->setSpecialSkill(info);
-			}
+		case 5221004: { // Special skills like hurricane, monster magnet, rapid fire, and etc
+			SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
+			SpecialSkillInfo info;
+			player->setSpecialSkill(info);
 			break;
+		}
 		default:
 			endBuff(player, skillid);
 			break;
@@ -491,42 +490,44 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	else
 		player->setMP(player->getMP(), 1);
 	if (skills[skillid][level].hp > 0) {
-		player->setHP(player->getHP()-skills[skillid][level].hp);
+		player->setHP(player->getHP() - skills[skillid][level].hp);
 	}
 	if (skills[skillid][level].item > 0) {	
 		Inventory::takeItem(player, skills[skillid][level].item, skills[skillid][level].itemcount);
 	}
 	if (skills[skillid][level].hpP > 0) {	
 		//TODO PARTY
-		int healrate = skills[skillid][level].hpP/1;
+		int healrate = skills[skillid][level].hpP / 1;
 		if (healrate > 100)
 			healrate = 100;
-		player->setHP(player->getHP() + healrate*player->getMHP()/100);
+		player->setHP(player->getHP() + healrate * player->getMHP() / 100);
 	}
 	SkillsPacket::showSkill(player, skillid, level); 
-	///
-	if (skillid == 1301007 || skillid == 9101008) { // Hyper Body
-		player->setMHP(player->getRMHP()*(100 + skills[skillid][level].x)/100);
-		player->setMMP(player->getRMMP()*(100 + skills[skillid][level].y)/100);
-	}
-	///
-	else if (skillid == 9101000) { // GM Heal+Dispell
-		player->setHP(player->getMHP());
-		player->setMP(player->getMMP());
-	}
-	else if (skillid == 1121010) { // Enrage
-		if (player->getActiveBuffs()->getCombo() == 10)
-			player->getActiveBuffs()->setCombo(0, true);
-		else
-			return;
-	}
-	else if (skillid == 9101005) { // GM Resurrection
-		for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
-			Player *resplayer;
-			resplayer = Maps::maps[player->getMap()]->getPlayer(i);
-			if (resplayer->getHP() <= 0) {
-				resplayer->setHP(resplayer->getMHP());
+	switch (skillid) {
+		case 1301007: // Hyper Body
+		case 9101008: // GM Hyper Body
+			player->setMHP(player->getRMHP() * (100 + skills[skillid][level].x) / 100);
+			player->setMMP(player->getRMMP() * (100 + skills[skillid][level].y) / 100);
+			break;
+		case 9101000: // GM Heal + Dispel - needs to be modified for map
+			player->setHP(player->getMHP());
+			player->setMP(player->getMMP());
+			break;
+		case 1121010: // Enrage
+			if (player->getActiveBuffs()->getCombo() == 10)
+				player->getActiveBuffs()->setCombo(0, true);
+			else
+				return;
+			break;
+		case 9101005: { // GM Resurrection
+			for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+				Player *resplayer;
+				resplayer = Maps::maps[player->getMap()]->getPlayer(i);
+				if (resplayer->getHP() <= 0) {
+					resplayer->setHP(resplayer->getMHP());
+				}
 			}
+			break;
 		}
 	}
 	if (skillsinfo.find(skillid) == skillsinfo.end())
@@ -534,9 +535,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	SkillActiveInfo playerskill;
 	SkillActiveInfo mapskill;
 	vector<SkillMapActiveInfo> mapenterskill;
-	// Reset player/map types to 0
-	memset(playerskill.types, 0, 8*sizeof(unsigned char));
-	memset(mapskill.types, 0, 8*sizeof(unsigned char));
+	memset(playerskill.types, 0, 8 * sizeof(unsigned char)); // Reset player/map types to 0
+	memset(mapskill.types, 0, 8 * sizeof(unsigned char));
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		playerskill.types[skillsinfo[skillid].player[i].byte] += skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
@@ -545,7 +545,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			continue;
 		}
 		short value = 0;
-		switch(val) {
+		switch (val) {
 			case SKILL_X: value = skills[skillid][level].x; break;
 			case SKILL_Y: value = skills[skillid][level].y; break;
 			case SKILL_SPEED: value = skills[skillid][level].speed; break;
@@ -560,34 +560,37 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_MORPH: value = skills[skillid][level].morph; break;
 			case SKILL_LV: value = level; break;
 		}
-		if (skillid == 3121002 || skillid == 3221002) { // For Sharp Eyes
-			value = skills[skillid][level].x*256+skills[skillid][level].y;
-		}
-		else if (skillid == 4111002) { // For Shadow Partner
-			value = skills[skillid][level].x*256+skills[skillid][level].y;
-		}
-		else if (skillid == 1111002) { // For Combo Attack
-			player->getActiveBuffs()->setCombo(0, false);
-			value = 1;
-		}
-		else if (skillid == 1004) { // For Monster Rider
-			Item *equip = player->getInventory()->getItem(1, -18);
-			if (equip == 0)
-				// hacking
-				return;
-			int mountid = equip->id;
-			value = Inventory::equips[mountid].tamingmob;
-		}
-		else if (skillid == 4121006) { // For Shadow Claw
-			for (short s = 1; s <= player->getInventory()->getMaxSlots(2); s++) {
-				Item *item = player->getInventory()->getItem(2, s);
-				if (item == 0)
-					continue;
-				if (ISRECHARGEABLE(item->id) && item->amount >= 200) {
-					Inventory::takeItemSlot(player, 2, s, 200);
-					value = (item->id % 10000) + 1;
-					break;
+		switch (skillid) {
+			case 3121002: // Sharp Eyes
+			case 3221002: // Sharp Eyes
+			case 4111002: // Shadow Partner
+				value = skills[skillid][level].x * 256 + skills[skillid][level].y;
+				break;
+			case 1111002: // Combo
+				player->getActiveBuffs()->setCombo(0, false);
+				value = 1;
+				break;
+			case 1004: { // Monster Rider
+				Item *equip = player->getInventory()->getItem(1, -18);
+				if (equip == 0)
+					// hacking
+					return;
+				int mountid = equip->id;
+				value = Inventory::equips[mountid].tamingmob;
+				break;
+			}
+			case 4121006: { // Shadow Claw
+				for (short s = 1; s <= player->getInventory()->getMaxSlots(2); s++) {
+					Item *item = player->getInventory()->getItem(2, s);
+					if (item == 0)
+						continue;
+					if (ISRECHARGEABLE(item->id) && item->amount >= 200) {
+						Inventory::takeItemSlot(player, 2, s, 200);
+						value = (item->id % 10000) + 1;
+						break;
+					}
 				}
+				break;
 			}
 		}
 		playerskill.vals.push_back(value);
@@ -600,7 +603,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			continue;
 		}
 		short value = 0;
-		switch(val) {
+		switch (val) {
 			case SKILL_X: value = skills[skillid][level].x; break;
 			case SKILL_Y: value = skills[skillid][level].y; break;
 			case SKILL_SPEED: value = skills[skillid][level].speed; break;   
@@ -615,37 +618,38 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			case SKILL_MORPH: value = skills[skillid][level].morph; break;
 			case SKILL_LV: value = level; break;
 		}
-		if (skillid == 4111002) { // For Shadow Partner
-			value = skills[skillid][level].x*256+skills[skillid][level].y;
-		}
-		else if (skillid == 1111002) { // For Combo Attack
-			value = player->getActiveBuffs()->getCombo() + 1;
+		switch (skillid) {
+			case 4111002: // Shadow Partner
+				value = skills[skillid][level].x * 256 + skills[skillid][level].y;
+				break;
+			case 1111002: // Combo Attack
+				value = player->getActiveBuffs()->getCombo() + 1;
+				break;
 		}
 		mapskill.vals.push_back(value);
 		SkillMapActiveInfo map;
 		map.byte = skillsinfo[skillid].map[i].byte;
 		map.type = skillsinfo[skillid].map[i].type;
 		if (skillsinfo[skillid].map[i].val) {
-			map.value = (char)value;
 			map.isvalue = true;
+			map.value = (char)value;
 		}
-		else{
+		else {
 			map.isvalue = false;
 			map.value = 0;
 		}
 		map.skill = skillid;
 		mapenterskill.push_back(map);
 	}
-	SkillsPacket::useSkill(player, skillid, skills[skillid][level].time*1000, playerskill, mapskill, addedinfo);
+	SkillsPacket::useSkill(player, skillid, skills[skillid][level].time * 1000, playerskill, mapskill, addedinfo);
 	player->getSkills()->setSkillPlayerInfo(skillid, playerskill);
 	player->getSkills()->setSkillMapInfo(skillid, mapskill);
 	player->getSkills()->setSkillMapEnterInfo(skillid, mapenterskill);
 	SkillTimer::Instance()->stop(player, skillid);
 	if (skillsinfo[skillid].bact.size() > 0) {
 		player->getActiveBuffs()->removeAct(skillid, skillsinfo[skillid].act.type);
-
 		int value = 0;
-		switch(skillsinfo[skillid].act.value) {
+		switch (skillsinfo[skillid].act.value) {
 			case SKILL_X: value = skills[skillid][level].x; break;
 			case SKILL_Y: value = skills[skillid][level].y; break;
 			case SKILL_SPEED: value = skills[skillid][level].speed; break;
@@ -662,11 +666,12 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		player->getActiveBuffs()->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 	}
 	player->setSkill(player->getSkills()->getSkillMapEnterInfo());
-	SkillTimer::Instance()->setSkillTimer(player, skillid, skills[skillid][level].time*1000);
+	SkillTimer::Instance()->setSkillTimer(player, skillid, skills[skillid][level].time * 1000);
 	player->getSkills()->setActiveSkillLevel(skillid, level);
 	if (skillid == 9101004) // GM Hide
 		MapPacket::removePlayer(player);
 }
+
 void Skills::useAttackSkill(Player *player, int skillid) {
 	if (skills.find(skillid) == skills.end())
 		return;
