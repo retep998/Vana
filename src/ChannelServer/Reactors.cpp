@@ -16,23 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Reactors.h"
-#include "LuaReactor.h"
-#include "Player.h"
-#include "ReactorPacket.h"
-#include "InventoryPacket.h"
-#include "PacketCreator.h"
-#include "Maps.h"
-#include "Mobs.h"
 #include "Drops.h"
 #include "Inventory.h"
-#include "Timer.h"
-#include "ReadPacket.h"
+#include "InventoryPacket.h"
 #include "LoopingId.h"
+#include "LuaReactor.h"
+#include "Maps.h"
+#include "Mobs.h"
+#include "NewTimer.h"
+#include "PacketCreator.h"
+#include "Player.h"
 #include "Pos.h"
-#include <sys/stat.h>
+#include "ReactorPacket.h"
+#include "ReadPacket.h"
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <sys/stat.h>
 
 // Reactor class
 Reactor::Reactor (int mapid, int reactorid, Pos pos) : mapid(mapid), reactorid(reactorid), pos(pos), alive(true), state(0) {

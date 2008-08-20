@@ -259,10 +259,6 @@
 					RelativePath=".\src\Common\NewTimer.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\src\Common\Timer.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Abstracts"
@@ -431,10 +427,6 @@
 				>
 				<File
 					RelativePath=".\src\Common\NewTimer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\Timer.h"
 					>
 				</File>
 			</Filter>
