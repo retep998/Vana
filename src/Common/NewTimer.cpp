@@ -155,8 +155,13 @@ size_t hash_value(NewTimer::OneTimer::Id const &id) {
 	return seed;
 }
 
-bool NewTimer::Container::checkTimer(const OneTimer::Id &id) {
-	return (m_timers.find(id) != m_timers.end()) ? true : false;
+int NewTimer::Container::checkTimer(const OneTimer::Id &id) {
+	if (m_timers.find(id) != m_timers.end()) {
+		return m_timers[id]->getTimeLeft();
+	}
+	else {
+		return 0;
+	}
 }
 
 void NewTimer::Container::registerTimer(OneTimer *timer) {

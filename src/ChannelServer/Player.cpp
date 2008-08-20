@@ -57,9 +57,9 @@ Player::~Player() {
 			saveAll();
 			setOnline(false);
 		}
-		if (this->isTrading() == 1)
+		if (isTrading()) {
 			Trades::cancelTrade(this);
-		Skills::stopTimersPlayer(this);
+		}
 		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::maps[this->getMap()]->removePlayer(this);
 		Players::Instance()->removePlayer(this);

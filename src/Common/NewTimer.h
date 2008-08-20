@@ -101,6 +101,7 @@ public:
 
 	Id getId() const { return m_id; }
 	clock_t getRunAt() const { return m_run_at; }
+	int getTimeLeft() const { return m_run_at - clock(); }
 	bool getPersistent() const { return m_persistent; }
 	void setPersistent(bool val) { m_persistent = val; }
 
@@ -117,7 +118,7 @@ private:
 
 class NewTimer::Container {
 public:
-	bool checkTimer(const OneTimer::Id &id);
+	int checkTimer(const OneTimer::Id &id);
 	void registerTimer(OneTimer *timer);
 	void removeTimer(const OneTimer::Id &id);
 private:

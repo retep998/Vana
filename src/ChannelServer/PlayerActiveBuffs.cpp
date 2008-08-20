@@ -22,10 +22,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
-#include "SkillTimer.h"
 #include <functional>
 
 using std::tr1::bind;
+
+// Buff Skills
+void PlayerActiveBuffs::addBuff(int skill, unsigned char level) {
+	clock_t skillExpire = Skills::skills[skill][level].time * 1000;
+	NewTimer::OneTimer::Id id(NewTimer::Types::SkillTimer, skill, 0);
+	new NewTimer::OneTimer(bind(&Skills::stopSkill, m_player, skill),
+		id, m_player->getTimers(), skillExpire, false);
+
+	m_buffs.push_back(skill);
+}
+
+void PlayerActiveBuffs::removeBuff(int skill) {
+	NewTimer::OneTimer::Id id(NewTimer::Types::SkillTimer, skill, 0);
+	m_player->getTimers()->removeTimer(id);
+
+	m_buffs.remove(skill);
+}
+
+void PlayerActiveBuffs::removeBuff() {
+	while (m_buffs.size() > 0) {
+		removeBuff(*m_buffs.begin());
+	}
+}
+
+int PlayerActiveBuffs::buffTimeLeft(int skill) {
+	NewTimer::OneTimer::Id id(NewTimer::Types::SkillTimer, skill, 0);
+	return m_player->getTimers()->checkTimer(id);
+}
 
 // Skill "acts"
 void PlayerActiveBuffs::addAct(int skill, Act act, short value, int time) {
@@ -74,7 +101,7 @@ void PlayerActiveBuffs::setCombo(char combo, bool sendPacket) {
 		SkillActiveInfo playerSkill = m_player->getSkills()->getSkillPlayerInfo(1111002);
 		SkillActiveInfo mapSkill = m_player->getSkills()->getSkillMapInfo(1111002);
 		playerSkill.vals[0] = combo + 1;
-		SkillsPacket::useSkill(m_player, 1111002, SkillTimer::Instance()->skillTime(m_player, 1111002), playerSkill, mapSkill, 0);
+		SkillsPacket::useSkill(m_player, 1111002, buffTimeLeft(1111002), playerSkill, mapSkill, 0);
 	}
 }
 
