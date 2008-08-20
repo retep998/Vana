@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Trades.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
+#include "NewTimer.h"
 #include "Player.h"
 #include "Players.h"
 #include "ReadPacket.h"
-#include "Timer.h"
 #include "TradesPacket.h"
 #include <functional>
 #include <string>

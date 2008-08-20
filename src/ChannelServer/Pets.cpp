@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.h"
 #include "Maps.h"
 #include "MySQLM.h"
+#include "NewTimer.h"
 #include "PetsPacket.h"
 #include "Player.h"
 #include "Pos.h"
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "ReadPacket.h"
-#include "Timer.h"
 #include <functional>
 
 using std::tr1::bind;
