@@ -18,10 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Trades.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
-#include "NewTimer.h"
 #include "Player.h"
 #include "Players.h"
 #include "ReadPacket.h"
+#include "Timer/Thread.h"
+#include "Timer/Timer.h"
 #include "TradesPacket.h"
 #include <functional>
 #include <string>
@@ -390,8 +391,8 @@ void Trades::cancelTrade(Player *player) {
 		one->setTradeSendID(0);
 		two->setTrading(0);
 		two->setTradeRecvID(0);
-		NewTimer::OneTimer::Id id(NewTimer::Types::TradeTimer, one->getId(), two->getId());
-		if (NewTimer::Instance()->getContainer()->checkTimer(id)) {
+		Timer::Id id(Timer::Types::TradeTimer, one->getId(), two->getId());
+		if (Timer::Thread::Instance()->getContainer()->checkTimer(id)) {
 			Trades::stopTimeout(one, two);
 		}
 	}
@@ -488,11 +489,11 @@ void Trades::timeout(Player *starter, Player *receiver, int tradeid) {
 }
 
 void Trades::stopTimeout(Player *starter, Player *receiver) {
-	NewTimer::OneTimer::Id id(NewTimer::Types::TradeTimer, starter->getId(), receiver->getId());
-	NewTimer::Instance()->getContainer()->removeTimer(id);
+	Timer::Id id(Timer::Types::TradeTimer, starter->getId(), receiver->getId());
+	Timer::Thread::Instance()->getContainer()->removeTimer(id);
 }
 
 void Trades::startTimeout(Player *starter, Player *receiver, int tradeid) {
-	NewTimer::OneTimer::Id id(NewTimer::Types::TradeTimer, starter->getId(), receiver->getId());
-	new NewTimer::OneTimer(bind(&Trades::timeout, starter, receiver, tradeid), id, 0, 180000, false);
+	Timer::Id id(Timer::Types::TradeTimer, starter->getId(), receiver->getId());
+	new Timer::Timer(bind(&Trades::timeout, starter, receiver, tradeid), id, 0, 180000, false);
 }

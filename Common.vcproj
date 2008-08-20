@@ -256,7 +256,19 @@
 				Name="Timer"
 				>
 				<File
-					RelativePath=".\src\Common\NewTimer.cpp"
+					RelativePath=".\src\Common\Timer\Container.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Timer\Id.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Timer\Thread.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Timer\Timer.cpp"
 					>
 				</File>
 			</Filter>
@@ -426,7 +438,23 @@
 				Name="Timer"
 				>
 				<File
-					RelativePath=".\src\Common\NewTimer.h"
+					RelativePath=".\src\Common\Timer\Container.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Timer\Id.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Timer\Thread.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Timer\Timer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Timer\Types.h"
 					>
 				</File>
 			</Filter>

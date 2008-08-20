@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractPlayer.h"
-#include "NewTimer.h"
 #include "PacketHandler.h"
 #include "PingPacket.h"
 #include "ReadPacket.h"
 #include "SendHeader.h"
+#include "Timer/Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -28,7 +28,7 @@ using std::tr1::bind;
 AbstractPlayer::AbstractPlayer() :
 is_server(false),
 is_pinged(false),
-timers(new NewTimer::Container)
+timers(new Timer::Container)
 {
 	setTimer();
 }
@@ -42,8 +42,8 @@ void AbstractPlayer::handleRequest(ReadPacket *packet) {
 }
 
 void AbstractPlayer::setTimer() {
-	new NewTimer::OneTimer(bind(&AbstractPlayer::ping, this),
-		NewTimer::OneTimer::Id(NewTimer::Types::PingTimer, 0, 0),
+	new Timer::Timer(bind(&AbstractPlayer::ping, this),
+		Timer::Id(Timer::Types::PingTimer, 0, 0),
 		getTimers(), 15000, true);
 }
 
@@ -55,5 +55,3 @@ void AbstractPlayer::ping() {
 	is_pinged = true;
 	PingPacket::ping(this);
 }
-
-AbstractPlayer::~AbstractPlayer() { }

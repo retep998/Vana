@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerActiveBuffs.h"
-#include "NewTimer.h"
 #include "Player.h"
 #include "PlayerSkills.h"
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
+#include "Timer/Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -29,15 +29,15 @@ using std::tr1::bind;
 // Buff Skills
 void PlayerActiveBuffs::addBuff(int skill, unsigned char level) {
 	clock_t skillExpire = Skills::skills[skill][level].time * 1000;
-	NewTimer::OneTimer::Id id(NewTimer::Types::SkillTimer, skill, 0);
-	new NewTimer::OneTimer(bind(&Skills::stopSkill, m_player, skill),
+	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
+	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill),
 		id, m_player->getTimers(), skillExpire, false);
 
 	m_buffs.push_back(skill);
 }
 
 void PlayerActiveBuffs::removeBuff(int skill) {
-	NewTimer::OneTimer::Id id(NewTimer::Types::SkillTimer, skill, 0);
+	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 	m_player->getTimers()->removeTimer(id);
 
 	m_buffs.remove(skill);
@@ -50,7 +50,7 @@ void PlayerActiveBuffs::removeBuff() {
 }
 
 int PlayerActiveBuffs::buffTimeLeft(int skill) {
-	NewTimer::OneTimer::Id id(NewTimer::Types::SkillTimer, skill, 0);
+	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 	return m_player->getTimers()->checkTimer(id);
 }
 
@@ -69,14 +69,14 @@ void PlayerActiveBuffs::addAct(int skill, Act act, short value, int time) {
 		short value;
 	} runAct = {m_player, skill, act, value};
 
-	NewTimer::OneTimer::Id id(NewTimer::Types::SkillActTimer, skill, act);
-	new NewTimer::OneTimer(runAct, id, m_player->getTimers(), time, true);
+	Timer::Id id(Timer::Types::SkillActTimer, skill, act);
+	new Timer::Timer(runAct, id, m_player->getTimers(), time, true);
 
 	m_skill_acts[skill].push_back(act);
 }
 
 void PlayerActiveBuffs::removeAct(int skill, Act act) {
-	NewTimer::OneTimer::Id id(NewTimer::Types::SkillActTimer, skill, act);
+	Timer::Id id(Timer::Types::SkillActTimer, skill, act);
 	m_player->getTimers()->removeTimer(id);
 
 	m_skill_acts[skill].remove(act);

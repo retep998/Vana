@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Skills.h"
-#include "Player.h"
-#include "SkillsPacket.h"
 #include "Inventory.h"
-#include "Maps.h"
 #include "MapPacket.h"
+#include "Maps.h"
+#include "Player.h"
 #include "ReadPacket.h"
+#include "SkillsPacket.h"
+#include "Timer/Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -744,8 +745,8 @@ void Skills::startCooldown(Player *player, int skillid, int cooltime) {
 	}
 	SkillsPacket::sendCooldown(player, skillid, cooltime);
 
-	new NewTimer::OneTimer(bind(&Skills::stopCooldown, player,
-		skillid), NewTimer::OneTimer::Id(NewTimer::Types::CoolTimer,
+	new Timer::Timer(bind(&Skills::stopCooldown, player,
+		skillid), Timer::Id(Timer::Types::CoolTimer,
 		skillid, 0), player->getTimers(), cooltime * 1000, false);
 }
 
@@ -754,7 +755,7 @@ void Skills::stopCooldown(Player *player, int skillid) {
 }
 
 bool Skills::isCooling(Player *player, int skillid) {
-	NewTimer::OneTimer::Id id(NewTimer::Types::CoolTimer, skillid, 0);
+	Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
 	if (player->getTimers()->checkTimer(id))
 		return true;
 	return false;

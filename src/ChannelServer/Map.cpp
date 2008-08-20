@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "Reactors.h"
 #include "Randomizer.h"
+#include "Timer/Timer.h"
 #include <ctime>
 #include <functional>
 
@@ -218,8 +219,8 @@ void Map::clearDrops(int time) { // Clear drops based on how long they have been
 
 void Map::setTimer() {
 	if (!timer_started) {
-		new NewTimer::OneTimer(bind(&Map::runTimer, this),
-			NewTimer::OneTimer::Id(NewTimer::Types::MapTimer, info.id, 0),
+		new Timer::Timer(bind(&Map::runTimer, this),
+			Timer::Id(Timer::Types::MapTimer, info.id, 0),
 			0, 10000, true);
 	}
 	timer_started = true;
