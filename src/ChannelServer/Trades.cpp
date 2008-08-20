@@ -398,23 +398,66 @@ void Trades::cancelTrade(Player *player) {
 }
 
 bool Trades::canTrade(Player *player, TradeInfo *info) {
-	// TODO : Add checking for multiple slots of non-equip items and be sure to make exceptions for stars/bullets
 	bool yes = true;
-	char amounts[4] = {0};
+	char totals[4] = {0};
+	unordered_map<int, short> added;
 	for (char i = 0; i < 9; i++) {
-		if (info->slot[i])
-			amounts[GETINVENTORY(info->items[i]->id) - 1]++;
+		// Create item structure to determine needed slots among stackable items
+		// Also, determine needed slots for nonstackables
+		if (info->slot[i]) {
+			Item *check = info->items[i];
+			int itemid = check->id;
+			char inv = GETINVENTORY(itemid);
+			if (inv == 1 || ISRECHARGEABLE(itemid)) // Equips and rechargeables always take 1 slot, no need to clutter unordered map
+				totals[inv - 1]++;
+			else {
+				if (added.find(itemid) != added.end()) // Already initialized this item
+					added[itemid] += check->amount;
+				else
+					added[itemid] = check->amount;
+			}
+		}
 	}
-	for (char i = 0; i < 4; i++) {
-		if (amounts[i] > 0) {
+	for (char i = 0; i < 9; i++) { // Determine precisely how many slots are needed for stackables
+		if (info->slot[i]) {
+			Item *check = info->items[i];
+			int itemid = check->id;
+			char inv = GETINVENTORY(itemid);
+			if (inv != 1 && !ISRECHARGEABLE(itemid)) { // Already did these
+				if (added.find(itemid) == added.end()) // Already did this item
+					continue;
+				short maxslot = Inventory::items[itemid].maxslot;
+				int current_amount = player->getInventory()->getItemAmount(itemid);
+				int last_slot = (current_amount % maxslot); // Get the number of items in the last slot
+				int item_sum = last_slot + added[itemid];
+				bool needslots = false;
+				if (last_slot > 0) { // Items in the last slot, potential for needing slots
+					if (item_sum > maxslot)
+						needslots = true;
+				}
+				else // Full in the last slot, for sure need all slots
+					needslots = true;
+				if (needslots) {
+					char numslots = (int)(item_sum / maxslot);
+					char remainder = item_sum % maxslot;
+					if (remainder > 0)
+						totals[inv - 1]++;
+					totals[inv - 1] += numslots;
+				}
+				added.erase(itemid);
+			}
+		}
+	}
+	for (char i = 0; i < 4; i++) { // Determine if needed slots are available
+		if (totals[i] > 0) {
 			char incrementor = 0;
 			for (char g = 1; g <= player->getInventory()->getMaxSlots(i + 1); g++) { 
 				if (player->getInventory()->getItem(i + 1, g) == 0)
 					incrementor++;
-				if (incrementor >= amounts[i])
+				if (incrementor >= totals[i])
 					break;
 			}
-			if (incrementor < amounts[i]) {
+			if (incrementor < totals[i]) {
 				yes = false;
 				break;
 			}
