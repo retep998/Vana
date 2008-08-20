@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Maps.h"
 #include "MapPacket.h"
-#include "SkillTimer.h"
 #include "ReadPacket.h"
 #include <functional>
 
@@ -31,12 +30,9 @@ unordered_map<int, SkillsLevelInfo> Skills::skills;
 unordered_map<int, unsigned char> Skills::maxlevels;
 unordered_map<int, SkillsInfo> Skills::skillsinfo;
 
-void Skills::stopTimersPlayer(Player *player) {
-	SkillTimer::Instance()->stop(player, false);
-}
 
 void Skills::stopAllBuffs(Player *player) {
-	SkillTimer::Instance()->stop(player, true);
+	player->getActiveBuffs()->removeBuff();
 	player->getActiveBuffs()->removeAct();
 }
 
@@ -427,6 +423,9 @@ void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 	stopSkill(player, packet->getInt());
 }
 void Skills::stopSkill(Player *player, int skillid) {
+	player->getActiveBuffs()->removeBuff(skillid);
+	player->getActiveBuffs()->removeAct(skillid);
+
 	switch(skillid) {
 		case 3121004:
 		case 3221001:
@@ -645,7 +644,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	player->getSkills()->setSkillPlayerInfo(skillid, playerskill);
 	player->getSkills()->setSkillMapInfo(skillid, mapskill);
 	player->getSkills()->setSkillMapEnterInfo(skillid, mapenterskill);
-	SkillTimer::Instance()->stop(player, skillid);
+	player->getActiveBuffs()->removeBuff(skillid);
 	if (skillsinfo[skillid].bact.size() > 0) {
 		player->getActiveBuffs()->removeAct(skillid, skillsinfo[skillid].act.type);
 		int value = 0;
@@ -666,7 +665,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		player->getActiveBuffs()->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 	}
 	player->setSkill(player->getSkills()->getSkillMapEnterInfo());
-	SkillTimer::Instance()->setSkillTimer(player, skillid, skills[skillid][level].time * 1000);
+	player->getActiveBuffs()->addBuff(skillid, level);
 	player->getSkills()->setActiveSkillLevel(skillid, level);
 	if (skillid == 9101004) // GM Hide
 		MapPacket::removePlayer(player);
@@ -703,13 +702,7 @@ void Skills::useAttackSkill(Player *player, int skillid) {
 		Skills::startCooldown(player, skillid, cooltime);
 }
 
-void Skills::endBuff(Player *player, int skill, bool stopTimer) {
-	if (stopTimer) {
-		SkillTimer::Instance()->stop(player, skill);
-	}
-	
-	player->getActiveBuffs()->removeAct(skill);
-
+void Skills::endBuff(Player *player, int skill) {
 	/// 
 	if (skill == 1301007 || skill == 9101008) { // Hyper Body
 		player->setMHP(player->getRMHP());

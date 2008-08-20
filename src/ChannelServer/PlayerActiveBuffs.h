@@ -31,6 +31,12 @@ class PlayerActiveBuffs {
 public:
 	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0) { }
 
+	// Buff Skills
+	void addBuff(int skill, unsigned char level);
+	void removeBuff(int skill);
+	void removeBuff();
+	int buffTimeLeft(int skill);
+
 	// Skill "acts"
 	void addAct(int skill, Act act, short value, int time);
 	void removeAct(int skill, Act act);
@@ -43,6 +49,7 @@ public:
 	int getCombo() const { return m_combo; }
 private:
 	Player *m_player;
+	list<int> m_buffs;
 	unordered_map<int, list<Act>> m_skill_acts;
 	char m_combo;
 };
