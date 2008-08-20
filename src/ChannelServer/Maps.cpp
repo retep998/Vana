@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "LuaPortal.h"
 #include "MapPacket.h"
-#include "NewTimer.h"
 #include "Pets.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Players.h"
 #include "ReadPacket.h"
+#include "Timer/Timer.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include <sstream>
 

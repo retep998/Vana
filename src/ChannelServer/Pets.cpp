@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.h"
 #include "Maps.h"
 #include "MySQLM.h"
-#include "NewTimer.h"
 #include "PetsPacket.h"
 #include "Player.h"
 #include "Pos.h"
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "ReadPacket.h"
+#include "Timer/Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -63,9 +63,9 @@ void Pet::reduceFullness() {
 }
 
 void Pet::startTimer() {
-	NewTimer::OneTimer::Id id(NewTimer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
+	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
 	clock_t length = (6 - Pets::petsInfo[getType()].hunger)* 1000 * 60; // TODO: Better formula
-	new NewTimer::OneTimer(bind(&Pet::reduceFullness, this), id, player->getTimers(), length, true);
+	new Timer::Timer(bind(&Pet::reduceFullness, this), id, player->getTimers(), length, true);
 }
 
 /* Pets namespace */
@@ -231,7 +231,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 				}
 			}
 			if (pet->getIndex() == 0) {
-				NewTimer::OneTimer::Id id(NewTimer::Types::PetTimer, pet->getId(), 0);
+				Timer::Id id(Timer::Types::PetTimer, pet->getId(), 0);
 				player->getTimers()->removeTimer(id);
 			}
 			pet->setSummoned(false);
@@ -273,7 +273,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 			pet->setSummoned(false);
 			PetsPacket::petSummoned(player, pet);
 			pet->setIndex(-1);
-			NewTimer::OneTimer::Id id(NewTimer::Types::PetTimer, pet->getId(), 0);
+			Timer::Id id(Timer::Types::PetTimer, pet->getId(), 0);
 			player->getTimers()->removeTimer(id);
 		}
 		else {
@@ -283,7 +283,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 				Pet *kicked = player->getPets()->getPet(player->getPets()->getSummoned(0));
 				kicked->setIndex(-1);
 				kicked->setSummoned(false);
-				NewTimer::OneTimer::Id id(NewTimer::Types::PetTimer, kicked->getId(), 0);
+				Timer::Id id(Timer::Types::PetTimer, kicked->getId(), 0);
 				player->getTimers()->removeTimer(id);
 				PetsPacket::petSummoned(player, pet, true);
 			}

@@ -16,21 +16,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Inventory.h"
-#include "Player.h"
-#include "InventoryPacket.h"
-#include "StoragePacket.h"
-#include "Skills.h"
 #include "Drops.h"
-#include "Shops.h"
-#include "Quests.h"
-#include "Reactors.h"
+#include "InventoryPacket.h"
 #include "Maps.h"
 #include "Mobs.h"
-#include "NewTimer.h"
-#include "Randomizer.h"
-#include "ReadPacket.h"
 #include "Pets.h"
 #include "PetsPacket.h"
+#include "Player.h"
+#include "Quests.h"
+#include "Randomizer.h"
+#include "Reactors.h"
+#include "ReadPacket.h"
+#include "Shops.h"
+#include "Skills.h"
+#include "StoragePacket.h"
+#include "Timer/Timer.h"
 #include <cmath>
 #include <functional>
 
@@ -404,16 +404,16 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 	if (item->cons.time > 0) {
 		InventoryPacket::useItem(player, itemid, item->cons.time * 1000, item->cons.types, item->cons.vals, (item->cons.morph > 0));
 
-		NewTimer::OneTimer::Id id(NewTimer::Types::ItemTimer, itemid, 0);
+		Timer::Id id(Timer::Types::ItemTimer, itemid, 0);
 		player->getTimers()->removeTimer(id);
-		new NewTimer::OneTimer(bind(&Inventory::endItem, player,
+		new Timer::Timer(bind(&Inventory::endItem, player,
 			itemid), id, player->getTimers(), item->cons.time * 1000, false);
 	}
 }
 // Cancel item buffs
 void Inventory::cancelItem(Player *player, ReadPacket *packet) {
 	int itemid = packet->getInt()*-1;
-	player->getTimers()->removeTimer(NewTimer::OneTimer::Id(NewTimer::Types::ItemTimer, itemid, 0));
+	player->getTimers()->removeTimer(Timer::Id(Timer::Types::ItemTimer, itemid, 0));
 	Inventory::endItem(player, itemid);
 }
 // End item buffs

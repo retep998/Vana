@@ -23,12 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaReactor.h"
 #include "Maps.h"
 #include "Mobs.h"
-#include "NewTimer.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Pos.h"
 #include "ReactorPacket.h"
 #include "ReadPacket.h"
+#include "Timer/Thread.h"
+#include "Timer/Timer.h"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -113,8 +114,8 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 						char state;
 					} reaction = {reactor, drop, player, revent->nextstate};
 
-					NewTimer::OneTimer::Id id(NewTimer::Types::ReactionTimer, (unsigned int) drop, 0);
-					new NewTimer::OneTimer(reaction, id, 0, 3000, false);
+					Timer::Id id(Timer::Types::ReactionTimer, (unsigned int) drop, 0);
+					new Timer::Timer(reaction, id, 0, 3000, false);
 				}
 				return;
 			}
@@ -123,6 +124,6 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 }
 
 void Reactors::checkLoot(Drop *drop) {
-	NewTimer::OneTimer::Id id(NewTimer::Types::ReactionTimer, (unsigned int) drop, 0);
-	NewTimer::Instance()->getContainer()->removeTimer(id);
+	Timer::Id id(Timer::Types::ReactionTimer, (unsigned int) drop, 0);
+	Timer::Thread::Instance()->getContainer()->removeTimer(id);
 }
