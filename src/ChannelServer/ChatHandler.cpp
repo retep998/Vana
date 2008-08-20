@@ -285,8 +285,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			else if (strcmp("showa", next_token) == 0) mapid = 801000000;
 			else if (strcmp("armory", next_token) == 0) mapid = 801040004;
 			else if (strcmp("shrine", next_token) == 0) mapid = 800000000;
-			else if (strcmp("mansion", next_token) == 0) mapid = 682000100;
-			else if (strcmp("phantom", next_token) == 0) mapid = 682000000;
+			else if (strcmp("mansion", next_token) == 0) mapid = 682000000;
 			else if (strcmp("henesys", next_token) == 0) mapid = 100000000;
 			else if (strcmp("perion", next_token) == 0) mapid = 102000000;
 			else if (strcmp("ellinia", next_token) == 0) mapid = 101000000;
@@ -307,6 +306,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			else if (strcmp("nlc", next_token) == 0) mapid = 600000000;
 			else if (strcmp("amoria", next_token) == 0) mapid = 680000000;
 			else if (strcmp("happyville", next_token) == 0) mapid = 209000000;
+			else if (strcmp("crimsonwood", next_token) == 0) mapid = 610020006;
 			// Boss maps
 			else if (strcmp("ergoth", next_token) == 0) mapid = 990000900;
 			else if (strcmp("pap", next_token) == 0) mapid = 220080001;
