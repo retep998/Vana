@@ -101,6 +101,8 @@ public:
 	char getMappos() const { return this->mappos; }
 	Pos getPos() const { return this->pos; }
 	void setPos(Pos pos) { this->pos = pos; }
+	void setFH(short fh) { this->foothold = fh; }
+	short getFH() { return foothold; }
 	void setType(char type) { this->type = type; }
 	char getType() const { return this->type; }
 	void setShop(int shopid) { shop = shopid; }
@@ -179,6 +181,7 @@ private:
 	int map;
 	char mappos;
 	char type;
+	short foothold;
 	int shop;
 	int itemEffect;
 	int chair;

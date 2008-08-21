@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "ReadPacket.h"
 #include "SkillsPacket.h"
+#include <iostream>
 
 void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); // Ticks
@@ -220,15 +221,72 @@ void PlayerHandler::handleHeal(Player *player, ReadPacket *packet) {
 }
 
 void PlayerHandler::handleMoving(Player *player, ReadPacket *packet) {
-	packet->reset(-12);
-	char type = packet->getByte();
-
-	packet->reset(-4);
-	short x = packet->getShort();
-	short y = packet->getShort() - 1;
+	packet->reset(7);
+	short foothold = 0;
+	char stance = 0;
+	char n = packet->getByte();
+	short x = 0;
+	short y = 0;
+	for (char i = 0; i < n; i++) {
+		char type = packet->getByte();
+		switch (type) {
+			case 10:
+				packet->skipBytes(1);
+				break;
+			case 14:
+				packet->skipBytes(9);
+				break;
+			case 0:
+			case 5:
+				x = packet->getShort();
+				y = packet->getShort() - 1;
+				packet->skipBytes(4);
+				foothold = packet->getShort();
+				stance = packet->getByte();
+				packet->skipBytes(2);
+				break;
+			case 1:
+			case 2:
+			case 6:
+				x = packet->getShort();
+				y = packet->getShort() - 1;
+				stance = packet->getByte();
+				packet->skipBytes(2);
+				break;
+			case 15:
+				x = packet->getShort();
+				y = packet->getShort() - 1;
+				packet->skipBytes(6);
+				foothold = packet->getShort();
+				stance = packet->getByte();
+				packet->skipBytes(2);
+				break;
+			case 11:
+				x = packet->getShort();
+				y = packet->getShort() - 1;
+				foothold = packet->getShort();
+				stance = packet->getByte();
+				packet->skipBytes(2);
+				break;
+			case 3:
+			case 4:
+			case 7:
+			case 8:
+			case 9:
+				x = packet->getShort();
+				y = packet->getShort() - 1;
+				packet->skipBytes(4);
+				stance = packet->getByte();
+				break;
+			default:
+				std::cout << "New type of movement: " << type << std::endl;
+				break;
+		}
+	}
 
 	player->setPos(Pos(x, y));
-	player->setType(type);
+	player->setFH(foothold);
+	player->setType(stance);
 
 	packet->reset(7);
 	PlayersPacket::showMoving(player, packet->getBuffer(), packet->getBufferLength());
