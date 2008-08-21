@@ -287,6 +287,9 @@ void Player::playerConnect(ReadPacket *packet) {
 	if (Maps::maps[map]->getInfo().forcedReturn != 999999999) {
 		map = Maps::maps[map]->getInfo().forcedReturn;
 	}
+	pos = Maps::maps[map]->getSpawnPoint(mappos)->pos;
+	type = 0;
+	foothold = 0;
 
 	PlayerPacket::connectData(this);
 	
@@ -294,12 +297,10 @@ void Player::playerConnect(ReadPacket *packet) {
 		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
 	}
 
-	pos = Maps::maps[map]->getSpawnPoint()->pos;
 	for (char i = 0; i < 3; i++)
 		if (pets->getSummoned(i))
-			pets->getPet(pets->getSummoned(i))->setPos(Maps::maps[map]->getSpawnPoint()->pos);
+			pets->getPet(pets->getSummoned(i))->setPos(Maps::maps[map]->getSpawnPoint(mappos)->pos);
 
-	type = 0;
 	PlayerPacket::showKeys(this, &keyMaps);
 
 	if (skillMacros.getMax() > -1) {

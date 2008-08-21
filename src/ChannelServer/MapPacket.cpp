@@ -29,8 +29,11 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addShort(SEND_SHOW_PLAYER);
 	packet.addInt(player->getId());
 	packet.addString(player->getName());
-	packet.addInt(0);
-	packet.addInt(0);
+	packet.addString(""); // Guild
+	packet.addShort(0); // Guild icon garbage
+	packet.addByte(0); // Guild icon garbage
+	packet.addShort(0); // Guild icon garbage
+	packet.addByte(0); // Guild icon garbage
 
 	packet.addInt(0);
 	packet.addInt(1);
@@ -79,7 +82,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addInt(player->getChair());
 	packet.addPos(player->getPos());
 	packet.addByte(player->getType());
-	packet.addShort(0);
+	packet.addShort(player->getFH());
 	packet.addByte(0);
 	for (char i = 0; i < 3; i++) {
 		if (player->getPets()->getSummoned(i) != 0) {
@@ -93,9 +96,13 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.addByte(0);
 			packet.addInt(0);
 		}
+		else {
+			packet.addByte(0);
+			break;
+		}
 	}
-	packet.addByte(0);
 	packet.addShort(1);
+	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);

@@ -133,7 +133,7 @@ public:
 		}
 		return 0;
 	}
-	PortalInfo * getSpawnPoint();
+	PortalInfo * getSpawnPoint(int pid = -1);
 
 	// Players
 	void addPlayer(Player *player);
