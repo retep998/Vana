@@ -135,31 +135,39 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
 	int skillid = pack->getInt();
-	if (skillid == 3121004 || skillid == 3221001 || skillid == 5221004)
-		pack->skipBytes(4);
+	switch (skillid) {
+		case 3121004:
+		case 3221001:
+		case 5221004:
+			pack->skipBytes(4);
+			break;
+	}
 	bool shadow_meso = (skillid == 4111004);
 	unsigned char display = pack->getByte(); // Projectile display
 	unsigned char animation = pack->getByte(); // Direction/animation
 	unsigned char w_class = pack->getByte(); // Weapon subclass
 	unsigned char w_speed = pack->getByte(); // Weapon speed
 	pack->skipBytes(4); // Ticks
-	unsigned char slot = pack->getByte(); // Slot
-	pack->skipBytes(1); // second slot byte
+	short slot = pack->getShort(); // Slot
 	short csstar = pack->getShort(); // Cash Shop star
+	if (!shadow_meso)
+		if ((display & 0x40) > 0) // Shadow Claw star ID
+			pack->skipBytes(4);
+
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_MOB_RANGED);
 	packet.addInt(player->getId());
 	packet.addByte(tbyte);
 	if (skillid > 0) {
-		switch (w_class) { // No clue why it does this, but it does
+		switch (w_class) { // No clue why it does this, but it does, maybe has something to do with the mastery byte?
 			case 0x03: packet.addByte(0x07); break; // Bow
 			case 0x04: packet.addByte(0x0D); break; // Crossbow
 			case 0x07:
-				if (shadow_meso)
-					packet.addByte(player->getSkills()->getSkillLevel(skillid)); // I think? It was 0x01 in my tests and that's incidentally its skill level on the characters I used
+				if (shadow_meso) 
+					packet.addByte(player->getSkills()->getSkillLevel(skillid));
 				else
-					packet.addByte(0x0A);
-				break; // Claw
+					packet.addByte(0x0A); // Claw
+				break;
 			case 0x09: // Gun
 				packet.addByte(0x10); break; // TODO: Find proper byte for guns
 		}
@@ -167,26 +175,16 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	}
 	else
 		packet.addByte(0);
-	packet.addByte(0);
+	packet.addByte(display);
 	packet.addByte(animation);
 	packet.addByte(w_speed);
-	switch (w_class) { // They seem to be static like above
-		case 0x03: packet.addByte(0x07); break;
-		case 0x04: packet.addByte(0x00); break;
-		case 0x07: packet.addByte(0x0A); break;
-	}
+	packet.addByte(0x0A); // Mastery display byte, I think - needs VEDB extension and weapon type (2H BW, 1H BW, etc.) segregation
 	int itemid = 0;
 	if (!shadow_meso) {
-		if (csstar > 0) {
+		if (csstar > 0)
 			itemid = player->getInventory()->getItem(5, csstar)->id;
-			if (display == 0x40 || display == 0x48) // Skip itemid for Shadow Claw
-				pack->skipBytes(4);
-		}
-		else if (player->getSkills()->getActiveSkillLevel(4121006)) { // Shadow Claw puts the item ID in the packet
+		else if (slot > 0)
 			itemid = player->getInventory()->getItem(2, slot)->id;
-		}
-		else
-			itemid = pack->getInt();
 	}
 	packet.addInt(itemid);
 	pack->skipBytes(1); // 0x00 = AoE, 0x41 = other
@@ -197,7 +195,14 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 		pack->skipBytes(14);
 		for (char j = 0; j < hits; j++) {
 			int damage = pack->getInt();
-			packet.addInt(damage); // Critical damage = 0x80000000 + damage
+			switch (skillid) {
+				case 3221007: // Snipe is always crit
+					damage += 0x80000000; // Critical damage = 0x80000000 + damage
+					break;
+				default:
+					break;
+			}
+			packet.addInt(damage); 
 		}
 		pack->skipBytes(4);
 	}
