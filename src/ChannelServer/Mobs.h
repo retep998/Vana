@@ -66,12 +66,15 @@ struct MobHPInfo {
 	bool boss;
 };
 
+struct MPEaterInfo;
+
 namespace Mobs {
 	extern unordered_map<int, MobInfo> mobinfo;
 	void addMob(int id, MobInfo mob);
 	void damageMob(Player *player, ReadPacket *packet);
 	void damageMobRanged(Player *player, ReadPacket *packet);
 	void damageMobSpell(Player *player, ReadPacket *packet);
+	unsigned int damageMobInternal(Player *player, ReadPacket *packet, char targets, char hits, int skillid, int &extra, MPEaterInfo *eater = 0);
 	void displayHPBars(Player *player, Mob *mob);
 	void monsterControl(Player *player, ReadPacket *packet);
 	void checkSpawn(int mapid);

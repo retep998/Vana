@@ -107,7 +107,6 @@ void Mobs::addMob(int id, MobInfo mob) {
 }
 
 void Mobs::damageMob(Player *player, ReadPacket *packet) {
-	int map = player->getMap();
 	MobsPacket::damageMob(player, packet);
 	packet->reset(2);
 	packet->skipBytes(1); // Useless
@@ -115,55 +114,20 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
 	int skillid = packet->getInt();
-	bool heavenHammer = false;
-	if (skillid == 1221011)
-		heavenHammer = true;	
 	packet->skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
-	if (skillid == 5201002)
-		packet->skipBytes(4); // Charge 
-	unsigned int totaldmg = 0;
+	switch (skillid) {
+		case 5201002:
+			packet->skipBytes(4); // Charge 
+			break;
+	}
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
-	for (char i = 0; i < targets; i++) {
-		int mapmobid = packet->getInt();
-		Mob *mob = Maps::maps[map]->getMob(mapmobid);
-		if (mob == 0)
-			return;
-		packet->skipBytes(12); // 0x06 [1], Mob animation [1], Mob animation frame [1], State [1], Mob pos [4], Damage pos [4]
-		if (skillid == 4211006)
-			packet->skipBytes(1); // Meso Explosion is weird
-		else
-			packet->skipBytes(2); // Distance
-		int mobid = mob->getMobID();		
-		for (char k = 0; k < hits; k++) {
-			int damage = packet->getInt();
-			if (heavenHammer && Mobs::mobinfo[mob->getMobID()].boss) {
-				// Damage calculation goes in here, it's skill % * range
-				// Can't calculate range without weapon class
-				// Thus, can't calculate damage because there's no indication of weapon class anywhere
-				// Yes, I know "weapon subclass" is in the packet, but that doesn't segregate them
-				// 1H anything except wand/staff = 1. This could be a dagger, it could be a sword, it could be a mace, etc.
-			}
-			else {
-				if (heavenHammer)
-					mob->setHP(1);
-				else
-					mob->setHP(mob->getHP() - damage);
-			}
-			totaldmg = totaldmg + damage;
-			displayHPBars(player, mob);
-			if (mob->getHP() <= 0) {
-				packet->skipBytes(4 * (hits - 1 - k));
-				mob->die(player);
-				break;
-			}
-		}
-		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
-	}
-	packet->skipBytes(4); // Character positioning, normal end of packet
+	int useless = 0;
+	unsigned int totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless);	
 	switch (skillid) {
 		case 4211006: { // Meso Explosion
 			unsigned char items = packet->getByte();
+			int map = player->getMap();
 			for (unsigned char i = 0; i < items; i++) {
 				int objID = packet->getInt();
 				packet->skipBytes(1); // Boolean for hit a monster
@@ -248,118 +212,66 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 }
 
 void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
-	int map = player->getMap();
 	MobsPacket::damageMobRanged(player, packet);
 	packet->reset(2); // Passing to the display function causes the buffer to be eaten, we need it
 	packet->skipBytes(1); // Number of portals taken (not kidding)
-	char targets = 0;
-	char hits = 0;
-	if (1) { // Don't need this variable for more than a couple operations
-		unsigned char tbyte = packet->getByte();
-		targets = tbyte / 0x10;
-		hits = tbyte % 0x10;
-	}
+	unsigned char tbyte = packet->getByte();
+	char targets = tbyte / 0x10;
+	char hits = tbyte % 0x10;	
 	int skillid = packet->getInt();
 	unsigned char display = 0;
-	bool shadow_meso = false;
-	if (skillid == 4111004)
-		shadow_meso = true;
-	if (skillid == 3121004 || skillid == 3221001 || skillid == 5221004) {
-		packet->skipBytes(4); // Charge time
-		display = packet->getByte();
-		if (skillid == 3121004 || skillid == 5221004 && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
-			SpecialSkillInfo info;
-			info.skillid = skillid;
-			info.direction = packet->getByte();
+	switch (skillid) {
+		case 3121004:
+		case 3221001:
+		case 5221004:
+			packet->skipBytes(4); // Charge time
+			display = packet->getByte();
+			if ((skillid == 3121004 || skillid == 5221004) && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
+				SpecialSkillInfo info;
+				info.skillid = skillid;
+				info.direction = packet->getByte();
+				packet->skipBytes(1); // Weapon subclass
+				info.w_speed = packet->getByte();
+				info.level = player->getSkills()->getSkillLevel(info.skillid);
+				player->setSpecialSkill(info);
+				SkillsPacket::showSpecialSkill(player, info);
+			}
+			else
+				packet->skipBytes(3);
+			break;
+		default:
+			display = packet->getByte(); // Projectile display
+			packet->skipBytes(1); // Direction/animation
 			packet->skipBytes(1); // Weapon subclass
-			info.w_speed = packet->getByte();
-			info.level = player->getSkills()->getSkillLevel(info.skillid);
-			player->setSpecialSkill(info);
-			SkillsPacket::showSpecialSkill(player, info);
-		}
-		else
-			packet->skipBytes(3);
-	}
-	else {
-		display = packet->getByte(); // Projectile display
-		packet->skipBytes(1); // Direction/animation
-		packet->skipBytes(1); // Weapon subclass
-		packet->skipBytes(1); // Weapon speed
+			packet->skipBytes(1); // Weapon speed
+			break;
 	}
 	packet->skipBytes(4); // Ticks
 	short pos = packet->getShort();
 	packet->skipBytes(2); // Cash Shop star cover
 	packet->skipBytes(1); // 0x00 = AoE, 0x41 = other
-	if (!shadow_meso) {
-		if (!(display == 0x40 || display == 0x48)) { // Shadow Claw doesn't take stars
-			if (skillid == 4111005) // Avenger
-				Inventory::takeItemSlot(player, 2, pos, 3*hits);
-			else
-				Inventory::takeItemSlot(player, 2, pos, hits);
-		}
-		else
-			packet->skipBytes(4); // Star ID added by Shadow Claw
-	}
-	else { // This will be moved to useAttackSkill when the moneyCon property is added
-			char shadow_level = player->getSkills()->getSkillLevel(skillid);
-			short midpoint = 120 + (shadow_level * 15); // Midpoint is given in moneyCon property (doesn't exist yet)
-			short mesos_min = midpoint - (80 + shadow_level * 5);
-			short mesos_max = midpoint + (80 + shadow_level * 5);
-			short difference = mesos_max - mesos_min; // Randomize up to this, add minimum for range
-			short amount = Randomizer::Instance()->randInt(difference) + mesos_min;
-			int mesos = player->getInventory()->getMesos();
-			if (mesos - amount > -1) 
-				player->getInventory()->setMesos(mesos - amount);
-			else {
-				// Hacking
-				return;
-			}
-	}
+	if (skillid != 4111004 && ((display & 0x40) > 0))
+		packet->skipBytes(4); // Star ID added by Shadow Claw
 	if (skillid > 0)
-		Skills::useAttackSkill(player, skillid);
-	int damage, mhp;
-	unsigned int totaldmg = 0;
-	for (char i = 0; i < targets; i++) {
-		int mapmobid = packet->getInt();
-		packet->skipBytes(1); // Always 0x06
-		packet->skipBytes(2); // Animation garbage, don't need for damage
-		packet->skipBytes(1); // State, this changes depending on enemy buffs (super wdef up, etc.), might need later
-		packet->skipBytes(8); // Positioning - first 4 = mob, second 4 = damage
-		packet->skipBytes(2); // Distance, might be helpful for catching hacking
-		Mob *mob = Maps::maps[map]->getMob(mapmobid);
-		if (mob == 0)
-			return;
-		int mobid = mob->getMobID();
-		for (char k = 0; k < hits; k++) {
-			damage = packet->getInt();
-			totaldmg = totaldmg + damage;
-			mob->setHP(mob->getHP() - damage);
-			mhp = mobinfo[mob->getMobID()].hp;
-			displayHPBars(player, mob);
-			if (mob->getHP() <= 0) {
-				packet->skipBytes(4 * (hits - 1 - k));
-				mob->die(player);
-				break;
-			}
-		}
-		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
-	}
-	// packet->skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
+		Skills::useAttackSkillRanged(player, skillid, pos, display);
+	else
+		Skills::useAttackRanged(player, pos, display);
+	int mhp;
+	unsigned int totaldmg = damageMobInternal(player, packet, targets, hits, skillid, mhp);
 	if (skillid == 4101005) { // Drain
-		int hpRecover = ((totaldmg * Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x)/100);
+		int hpRecover = ((totaldmg * Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x) / 100);
 		if (hpRecover > mhp)
 			hpRecover = mhp;
-		if (hpRecover > player->getMHP()/2)
-			hpRecover = player->getMHP()/2;
-		if (player->getHP()+hpRecover > player->getMHP())
+		if (hpRecover > (player->getMHP() / 2))
+			hpRecover = player->getMHP() / 2;
+		if ((player->getHP() + hpRecover) > player->getMHP())
 			player->setHP(player->getMHP());
 		else
-			player->setHP(player->getHP()+hpRecover);
+			player->setHP(player->getHP() + hpRecover);
 	}
 }
 
 void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
-	int map = player->getMap();
 	MobsPacket::damageMobSpell(player, packet);
 	packet->reset(2);
 	packet->skipBytes(1);
@@ -367,49 +279,74 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
 	int skillid = packet->getInt();
-	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
-		packet->skipBytes(4);
-	int mpeater = 0;
-	short mpeater_success;
-	short mpeater_x;
-	char mpeater_lv = 0;
-	bool mpeated = false;
-	if (player->getJob()/100 == 2) {
-		mpeater = (player->getJob() / 10) * 100000;
-		mpeater_lv = player->getSkills()->getSkillLevel(mpeater);
-		mpeater_success = Skills::skills[mpeater][mpeater_lv].prop;
-		mpeater_x = Skills::skills[mpeater][mpeater_lv].x;
+	switch (skillid) {
+		case 2121001: // Big Bang has a 4 byte charge time after skillid
+		case 2221001:
+		case 2321001:
+			packet->skipBytes(4);
+			break;
+	}
+	MPEaterInfo *eater = &MPEaterInfo();
+	eater->id = (player->getJob() / 10) * 100000;
+	eater->level = player->getSkills()->getSkillLevel(eater->id);
+	if (eater->level > 0) {
+		eater->prop = Skills::skills[eater->id][eater->level].prop;
+		eater->x = Skills::skills[eater->id][eater->level].x;
 	}
 	packet->skipBytes(2); // Display, direction/animation
 	packet->skipBytes(2); // Weapon subclass, casting speed
 	packet->skipBytes(4); // Ticks
-	if (skillid > 0)
-		Skills::useAttackSkill(player, skillid);
+	Skills::useAttackSkill(player, skillid); // Spells are always skills
+	int useless = 0;
+	unsigned int totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
+}
+
+unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char targets, char hits, int skillid, int &extra, MPEaterInfo *eater) {
+	int map = player->getMap();
+	unsigned int total = 0;
 	for (char i = 0; i < targets; i++) {
 		int mapmobid = packet->getInt();
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
 		if (mob == 0)
-			return;
+			return 0;
 		int mobid = mob->getMobID();
 		packet->skipBytes(3); // Useless
 		packet->skipBytes(1); // State
 		packet->skipBytes(8); // Useless
-		packet->skipBytes(2); // Distance
+		if (skillid != 4211006)
+			packet->skipBytes(1); // Distance, first half for non-Meso Explosion
+		packet->skipBytes(1); // Distance, second half for non-Meso Explosion
 		for (char k = 0; k < hits; k++) {
 			int damage = packet->getInt();
-			mob->setHP(mob->getHP() - damage);
+			total += damage;
+			if (skillid == 1221011 && Mobs::mobinfo[mob->getMobID()].boss) {
+				// Damage calculation goes in here, it's skill % * range
+				// Can't calculate range without weapon class
+				// Thus, can't calculate damage because there's no indication of weapon class anywhere
+				// Yes, I know "weapon subclass" is in the packet, but that doesn't segregate them
+				// 1H anything except wand/staff = 1. This could be a dagger, it could be a sword, it could be a mace, etc.
+			}
+			else {
+				if (skillid == 1221011)
+					mob->setHP(1);
+				else
+					mob->setHP(mob->getHP() - damage);
+			}
 			int cmp = -1;
 			cmp = mob->getMP();
 			int mmp = -1;
 			mmp = mobinfo[mob->getMobID()].mp;
-			if ((mpeater_lv > 0) && (!mpeated) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < mpeater_success)) {
-				// MP Eater
-				mpeated = true;
-				short mp = mmp * mpeater_x / 100;
-				if (mp > cmp) mp = cmp;
-				mob->setMP(cmp - mp);
-				player->setMP(player->getMP() + mp);
-				SkillsPacket::showSkillEffect(player, mpeater);
+			extra = mobinfo[mob->getMobID()].hp;
+			if (eater != 0) { // MP Eater
+				if ((!eater->onlyOnce) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < eater->prop)) {
+					eater->onlyOnce = true;
+					short mp = mmp * eater->x / 100;
+					if (mp > cmp)
+						mp = cmp;
+					mob->setMP(cmp - mp);
+					player->setMP(player->getMP() + mp);
+					SkillsPacket::showSkillEffect(player, eater->id);
+				}
 			}
 			displayHPBars(player, mob);
 			if (mob->getHP() <= 0) {
@@ -420,8 +357,9 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 		}
 		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
+	packet->skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
+	return total;
 }
-
 void Mobs::spawnMob(Player *player, int mobid, int amount) {
 	for (int i = 0; i < amount; i++)
 		spawnMobPos(player->getMap(), mobid, player->getPos());

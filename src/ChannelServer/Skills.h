@@ -151,6 +151,14 @@ struct PGMRInfo { // Power Guard/Mana Reflection
 	bool isphysical;
 };
 
+struct MPEaterInfo { // MP Eater
+	MPEaterInfo() : id(0), level(0), x(0), prop(0), onlyOnce(false) { }
+	int id;
+	char level;
+	short x;
+	short prop;
+	bool onlyOnce;
+};
 struct SkillsInfo {
 	vector<SkillPlayerInfo> player;
 	vector<SkillMapInfo> map;
@@ -169,6 +177,8 @@ namespace Skills {
 	void cancelSkill(Player *player, ReadPacket *packet);
 	void useSkill(Player *player, ReadPacket *packet);
 	void useAttackSkill(Player *player, int skillid);
+	void useAttackSkillRanged(Player *player, int skillid, short pos, unsigned char display);
+	void useAttackRanged(Player *player, short pos, unsigned char display);
 	void stopTimersPlayer(Player *player);
 	void stopAllBuffs(Player *player);
 	void heal(Player *player, short value, int skillid);

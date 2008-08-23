@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Maps.h"
 #include "Player.h"
+#include "Randomizer.h"
 #include "ReadPacket.h"
 #include "SkillsPacket.h"
 #include "Timer/Timer.h"
@@ -673,34 +674,84 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 }
 
 void Skills::useAttackSkill(Player *player, int skillid) {
+	unsigned char level = player->getSkills()->getSkillLevel(skillid);
 	if (skills.find(skillid) == skills.end())
 		return;
-	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp > 0) {
+	if (skills[skillid][level].mp > 0) {
+		int sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
+		char slv = player->getSkills()->getSkillLevel(sid);
+		if (slv > 0)
+			player->setMP(player->getMP() - (skills[skillid][level].mp * skills[sid][slv].x / 100), true);
+		else
+			player->setMP(player->getMP() - skills[skillid][level].mp, true);
+	}
+	else
+		player->setMP(player->getMP(), true);
+	if (skills[skillid][level].hp > 0) {
+		player->setHP(player->getHP() - skills[skillid][level].hp);
+	}
+	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].item > 0) {	
+		Inventory::takeItem(player, skills[skillid][level].item, skills[skillid][level].itemcount);
+	}
+	int cooltime = Skills::skills[skillid][level].cooltime;
+	if (cooltime > 0)
+		Skills::startCooldown(player, skillid, cooltime);
+}
+
+void Skills::useAttackSkillRanged(Player *player, int skillid, short pos, unsigned char display) {
+	unsigned char level = player->getSkills()->getSkillLevel(skillid);
+	if (skills.find(skillid) == skills.end())
+		return;
+	if (skills[skillid][level].mp > 0) {
 		if (player->getSkills()->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
 			int mprate = Skills::skills[3121008][player->getSkills()->getActiveSkillLevel(3121008)].x;
-			int mploss = (skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp * mprate) / 100;
+			int mploss = (skills[skillid][level].mp * mprate) / 100;
 			player->setMP(player->getMP() - mploss, true);
 		}
 		else {
-			int sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
-			char slv = player->getSkills()->getSkillLevel(sid);
-			if (slv > 0)
-				player->setMP(player->getMP() - (skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp * skills[sid][slv].x / 100), true);
-			else
-				player->setMP(player->getMP() - skills[skillid][player->getSkills()->getSkillLevel(skillid)].mp, true);
+			player->setMP(player->getMP() - skills[skillid][level].mp, true);
 		}
 	}
 	else
 		player->setMP(player->getMP(), true);
-	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].hp > 0) {
-		player->setHP(player->getHP()-skills[skillid][player->getSkills()->getSkillLevel(skillid)].hp);
+	if (skills[skillid][level].hp > 0) {
+		player->setHP(player->getHP() - skills[skillid][level].hp);
 	}
 	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].item > 0) {	
-		Inventory::takeItem(player, skills[skillid][player->getSkills()->getSkillLevel(skillid)].item, skills[skillid][player->getSkills()->getSkillLevel(skillid)].itemcount);
+		Inventory::takeItem(player, skills[skillid][level].item, skills[skillid][level].itemcount);
 	}
-	int cooltime = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].cooltime;
+	int cooltime = Skills::skills[skillid][level].cooltime;
 	if (cooltime > 0)
 		Skills::startCooldown(player, skillid, cooltime);
+	if (skills[skillid][level].moneycon > 0) {
+		short midpoint = skills[skillid][level].moneycon;
+		short mesos_min = midpoint - (80 + level * 5);
+		short mesos_max = midpoint + (80 + level * 5);
+		short difference = mesos_max - mesos_min; // Randomize up to this, add minimum for range
+		short amount = Randomizer::Instance()->randInt(difference) + mesos_min;
+		int mesos = player->getInventory()->getMesos();
+		if (mesos - amount > -1) 
+			player->getInventory()->setMesos(mesos - amount);
+		else {
+			// Hacking
+			return;
+		}
+	}
+	int hits = 1;
+	if (skills[skillid][level].bulletcon > 0)
+		hits = skills[skillid][level].bulletcon;
+	if (display == 0x08)
+		hits = hits * 2;
+	if (pos > 0 && (!(((display & 0x40) > 0) || display == 0x02)))
+		Inventory::takeItemSlot(player, 2, pos, hits);
+}
+
+void Skills::useAttackRanged(Player *player, short pos, unsigned char display) {
+	int hits = 1;
+	if (display == 0x08)
+		hits = hits * 2;
+	if (pos > 0 && (!(((display & 0x40) > 0) || display == 0x02)))
+		Inventory::takeItemSlot(player, 2, pos, hits);
 }
 
 void Skills::endBuff(Player *player, int skill) {
