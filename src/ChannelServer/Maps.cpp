@@ -86,7 +86,7 @@ void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
 	maps[player->getMap()]->removePlayer(player);
 	player->setMap(mapid);
 	player->setMappos(portal->id);
-	player->setPos(Pos(portal->pos.x, portal->pos.y - 25));
+	player->setPos(Pos(portal->pos.x, portal->pos.y - 40));
 	player->setType(0);
 	player->setFH(0);
 	for (char i = 0; i < 3; i++) {
