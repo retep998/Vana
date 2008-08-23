@@ -56,7 +56,7 @@ private:
 	bool m_resort_timer; // True if a new timer gets inserted into m_timers or it gets modified so it's not arranged
 	volatile bool m_terminate;
 	list<Timer *> m_timers;
-	boost::mutex m_timers_mutex;
+	boost::recursive_mutex m_timers_mutex;
 
 	boost::scoped_ptr<boost::thread> m_thread;
 	boost::condition m_main_loop_condition;
