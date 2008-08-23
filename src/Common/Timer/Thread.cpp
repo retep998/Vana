@@ -39,14 +39,14 @@ Thread::~Thread() {
 }
 
 void Thread::registerTimer(Timer *timer) {
-	boost::mutex::scoped_lock l(m_timers_mutex);
+	boost::recursive_mutex::scoped_lock l(m_timers_mutex);
 	m_resort_timer = true;
 	m_timers.push_back(timer);
 	m_main_loop_condition.notify_one();
 }
 
 void Thread::removeTimer(Timer *timer) {
-	boost::mutex::scoped_lock l(m_timers_mutex);
+	boost::recursive_mutex::scoped_lock l(m_timers_mutex);
 	m_timers.remove(timer);
 	m_main_loop_condition.notify_one();
 }
@@ -72,13 +72,13 @@ Timer * Thread::findMin() {
 }
 
 void Thread::forceReSort() {
-	boost::mutex::scoped_lock l(m_timers_mutex);
+	boost::recursive_mutex::scoped_lock l(m_timers_mutex);
 	m_resort_timer = true;
 	m_main_loop_condition.notify_one();
 }
 
 void Thread::runThread() {
-	boost::mutex::scoped_lock l(m_timers_mutex);
+	boost::recursive_mutex::scoped_lock l(m_timers_mutex);
 	while (!m_terminate) {
 		// Find minimum wakeup time
 		Timer *minThread = findMin();
@@ -94,9 +94,7 @@ void Thread::runThread() {
 		}
 
 		if (minThread != 0) {
-			l.unlock();
 			minThread->run();
-			l.lock();
 		}
 	}
 }
