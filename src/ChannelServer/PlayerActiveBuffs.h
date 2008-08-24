@@ -39,7 +39,7 @@ public:
 
 	// Buff Skills
 	void addBuff(int skill, unsigned char level);
-	void removeBuff(int skill);
+	void removeBuff(int skill, bool fromTimer = false);
 	void removeBuff();
 	int buffTimeLeft(int skill);
 
