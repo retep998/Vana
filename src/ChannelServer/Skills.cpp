@@ -35,7 +35,6 @@ unordered_map<int, SkillsInfo> Skills::skillsinfo;
 
 void Skills::stopAllBuffs(Player *player) {
 	player->getActiveBuffs()->removeBuff();
-	player->getActiveBuffs()->removeAct();
 }
 
 void Skills::init() {
@@ -426,7 +425,6 @@ void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 }
 void Skills::stopSkill(Player *player, int skillid) {
 	player->getActiveBuffs()->removeBuff(skillid);
-	player->getActiveBuffs()->removeAct(skillid);
 
 	switch(skillid) {
 		case 3121004:
@@ -648,7 +646,6 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	player->getSkills()->setSkillMapEnterInfo(skillid, mapenterskill);
 	player->getActiveBuffs()->removeBuff(skillid);
 	if (skillsinfo[skillid].bact.size() > 0) {
-		player->getActiveBuffs()->removeAct(skillid, skillsinfo[skillid].act.type);
 		int value = 0;
 		switch (skillsinfo[skillid].act.value) {
 			case SKILL_X: value = skills[skillid][level].x; break;
