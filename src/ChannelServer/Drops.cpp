@@ -78,9 +78,10 @@ void Drop::takeDrop(Player *player) {
 	delete this;
 }
 
-void Drop::removeDrop() {
+void Drop::removeDrop(bool showPacket) {
 	Maps::maps[this->mapid]->removeDrop(this->id);
-	DropsPacket::removeDrop(this);
+	if (showPacket)
+		DropsPacket::removeDrop(this);
 	delete this;
 }
 

@@ -195,6 +195,14 @@ void Map::killMobs(Player *player, int mobid) {
 	}
 }
 
+void Map::killMobs() {
+	unordered_map<int, Mob *> mobs = this->mobs;
+	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // Remove 'em, no EXP, no summoning
+		if (iter->second != 0)
+			iter->second->die();
+	}
+}
+
 // Drops
 void Map::addDrop(Drop *drop) {
 	int id = objectids->next();
@@ -203,11 +211,11 @@ void Map::addDrop(Drop *drop) {
 	this->drops[id] = drop;
 }
 
-void Map::clearDrops() { // Clear all drops
+void Map::clearDrops(bool showPacket) { // Clear all drops
 	unordered_map<int, Drop *> drops = this->drops;
 	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0) // Check just in case drop is removed by timer
-			iter->second->removeDrop();
+			iter->second->removeDrop(showPacket);
 	}
 }
 

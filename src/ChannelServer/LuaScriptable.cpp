@@ -75,6 +75,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
 	lua_register(luaVm, "killMob", &LuaExports::killMob);
+	lua_register(luaVm, "killMobs", &LuaExports::killMobs);
+	lua_register(luaVm, "clearDrops", &LuaExports::clearDrops);
 	lua_register(luaVm, "setStyle", &LuaExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaExports::setMap);
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
@@ -326,6 +328,18 @@ int LuaExports::killMob(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	int mapid = getPlayer(luaVm)->getMap();
 	Maps::maps[mapid]->killMobs(getPlayer(luaVm), mobid);
+	return 1;
+}
+
+int LuaExports::killMobs(lua_State *luaVm) {
+	int mapid = getPlayer(luaVm)->getMap();
+	Maps::maps[mapid]->killMobs();
+	return 1;
+}
+
+int LuaExports::clearDrops(lua_State *luaVm) {
+	int mapid = getPlayer(luaVm)->getMap();
+	Maps::maps[mapid]->clearDrops(false);
 	return 1;
 }
 

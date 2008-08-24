@@ -143,6 +143,7 @@ public:
 		return control;
 	}
 	void die(Player *player);
+	void die(); // Removes mob, no EXP, no summoning
 private:
 	Pos pos;
 	int id;

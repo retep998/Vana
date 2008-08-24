@@ -70,6 +70,11 @@ void Mob::die(Player *player) {
 	delete this;
 }
 
+void Mob::die() {
+	Maps::maps[mapid]->removeMob(id, spawnid);
+	delete this;
+}
+
 /* Mobs namespace */
 void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 	int mobid = packet->getInt();
