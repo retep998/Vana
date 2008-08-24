@@ -606,6 +606,10 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 				scrolled = true;
 			}
 			break;
+		case 2040727: // Shoe for Spikes 10%
+			break;
+		case 2041058: // Cape for Cold Protection 10%
+			break;
 		default: // Most scrolls
 			if (equip->slots > 0) {
 				if (wscroll == 2)
