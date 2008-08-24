@@ -122,3 +122,25 @@ void PlayerActiveBuffs::addCombo() { // Add combo orbs
 		setCombo(m_combo, true);
 	}
 }
+
+void PlayerActiveBuffs::checkBerserk(bool display) {
+	if (m_player->getJob() == 132) { // Berserk calculations
+		int skillid = 1320006;
+		char level = m_player->getSkills()->getSkillLevel(skillid);
+		if (level > 0) {
+			float x = (float)Skills::skills[skillid][level].x;
+			bool change = false;
+			float ratio = (float)((float)m_player->getHP() / (float)m_player->getMHP() * 100.0); // Floating point math makes Bui an angry man
+			if (m_berserk && ratio > x) { // If on and we're above Berserk HP, Berserk fails
+				m_berserk = false;
+				change = true;
+			}
+			else if (!m_berserk && ratio <= x) { // If off and we're below Berserk HP, let's rock
+				m_berserk = true;
+				change = true;
+			}
+			if (change || display)
+				SkillsPacket::showBerserk(m_player, level, m_berserk, true);
+		}
+	}
+}

@@ -104,7 +104,11 @@ void Maps::newMap(Player *player, int mapid) {
 	maps[mapid]->addPlayer(player);
 	maps[mapid]->showObjects(player);
 	Pets::showPets(player);
+	// Bug in global - would be fixed here:
+	// Berserk doesn't display properly when switching maps with it activated - client displays, but no message is sent to any client
+	// player->getActiveBuffs()->checkBerserk(true) would override the default of only displaying changes
 }
+
 // Change Music
 void Maps::changeMusic(int mapid, const string &musicname) {
 	if (Maps::maps.find(mapid) != Maps::maps.end()) {

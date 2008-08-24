@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "Reactors.h"
 #include "Randomizer.h"
+#include "SkillsPacket.h"
 #include "Timer/Timer.h"
 #include <ctime>
 #include <functional>
@@ -253,6 +254,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 			player->getPacketHandler()->send(packet);
 			// Bug in global; would be fixed here:
 			// Hurricane/Pierce do not display properly if using when someone enters the map
+			// Berserk does not display properly either - players[i]->getActiveBuffs()->getBerserk()
 		}
 	}
 	// NPCs

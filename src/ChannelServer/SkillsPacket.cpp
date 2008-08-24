@@ -204,3 +204,21 @@ void SkillsPacket::sendCooldown(Player *player, int skillid, short time) {
 	packet.addShort(time);
 	player->getPacketHandler()->send(packet);
 }
+
+void SkillsPacket::showBerserk(Player *player, unsigned char level, bool on) { // Sends to map/user
+	PacketCreator packet;
+	packet.addShort(SEND_GAIN_ITEM);
+	packet.addByte(1);
+	packet.addInt(1320006);
+	packet.addByte(level);
+	packet.addByte((on ? 1 : 0));
+	player->getPacketHandler()->send(packet);
+	packet = PacketCreator();
+	packet.addShort(SEND_SHOW_SKILL);  // For others
+	packet.addInt(player->getId());
+	packet.addByte(1);
+	packet.addInt(1320006);
+	packet.addByte(level);
+	packet.addByte((on ? 1 : 0));
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
+}
