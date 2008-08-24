@@ -140,7 +140,7 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 				change = true;
 			}
 			if (change || display)
-				SkillsPacket::showBerserk(m_player, level, m_berserk, true);
+				SkillsPacket::showBerserk(m_player, level, m_berserk);
 		}
 	}
 }
