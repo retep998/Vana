@@ -87,6 +87,8 @@ namespace LuaExports {
 	int getRandomNumber(lua_State *luaVm);
 
 	int killMob(lua_State *luaVm);
+	int killMobs(lua_State *luaVm);
+	int clearDrops(lua_State *luaVm);
 
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);

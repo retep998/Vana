@@ -166,6 +166,7 @@ public:
 	void removeMob(int id, int spawnid);
 	void killMobs(Player *player);
 	void killMobs(Player *player, int mobid);
+	void killMobs(); // No player gets EXP, no spawning additional mobs
 
 	// Reactors
 	void addReactorSpawn(ReactorSpawnInfo spawn);
@@ -194,7 +195,7 @@ public:
 		if (drops.find(id) != drops.end())
 			drops.erase(id);
 	}
-	void clearDrops();
+	void clearDrops(bool showPacket = true);
 	void clearDrops(int time);
 	// Timer stuff
 	void setTimer();

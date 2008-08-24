@@ -128,7 +128,7 @@ public:
 	void doDrop(Pos origin);
 	void showDrop(Player *player);
 	void takeDrop(Player *player);
-	void removeDrop();
+	void removeDrop(bool showPacket = true);
 };
 
 #endif
