@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Inventory.h"
 #include "LoopingId.h"
+#include "Movement.h"
 #include "Randomizer.h"
 #include "ReadPacket.h"
 
@@ -82,21 +83,12 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 	short moveid = packet->getShort();
 	bool useskill = (packet->getByte() != 0);
 	int skill = packet->getInt();
-
-	packet->reset(-12);
-	char type = packet->getByte();
-
-	packet->reset(-4);
-
-	Pos cpos;
-	cpos.x = packet->getShort();
-	cpos.y = packet->getShort();
+	packet->skipBytes(10);
+	Pos cpos = Movement::parseMovement(mob, packet);
 	if (cpos - mob->getPos() > 300) {
-		if (player->addWarning()) return;
+		if (player->addWarning())
+			return;
 	}
-	mob->setPos(cpos);
-	mob->setType(type);
-
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMP());
 	packet->reset(19);
 	MobsPacket::moveMob(player, mobid, useskill, skill, packet->getBuffer(), packet->getBufferLength());
