@@ -125,7 +125,7 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 	}
 }
 
-void SkillsPacket::showSkillEffect(Player *player, int skillid) {
+void SkillsPacket::showSkillEffect(Player *player, int skillid, unsigned char level) {
 	PacketCreator packet;
 	packet.addShort(SEND_GAIN_ITEM); // For the using player
 	bool send = false;
@@ -141,6 +141,14 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 		case 1311008: // Dragon Blood
 			packet.addByte(5);
 			packet.addInt(skillid);
+			send = true;
+			break;
+		case 1121002:
+		case 1221002:
+		case 1321002: // Power Stance
+			packet.addByte(1);
+			packet.addInt(skillid);
+			packet.addByte(level);
 			send = true;
 			break;
 	}
@@ -163,6 +171,14 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid) {
 		case 1311008: // Dragon Blood
 			packet.addByte(5);
 			packet.addInt(skillid);
+			send = true;
+			break;
+		case 1121002:
+		case 1221002:
+		case 1321002: // Power Stance
+			packet.addByte(1);
+			packet.addInt(skillid);
+			packet.addByte(level);
 			send = true;
 			break;
 	}

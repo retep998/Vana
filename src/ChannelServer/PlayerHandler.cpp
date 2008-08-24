@@ -90,9 +90,28 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 		case 0xFE:
 			disease = packet->getShort(); // Disease, normal end of packet
 			break;
-		default: 
-			packet->skipBytes(1); // Stance, normal end of packet
+		default:  {
+			if (packet->getByte() != 0) {
+				int skillid = 0;
+				if (player->getSkills()->getActiveSkillLevel(1121002) > 0)
+					skillid = 1121002;
+				else if (player->getSkills()->getActiveSkillLevel(1221002) > 0)
+					skillid = 1221002;
+				else if (player->getSkills()->getActiveSkillLevel(1321002) > 0)
+					skillid = 1321002;
+				if (skillid == 0) {
+					// Hacking
+					return;
+				}
+				unsigned char level = player->getSkills()->getSkillLevel(skillid);
+				if (level == 0) {
+					// Hacking
+					return;
+				}
+				SkillsPacket::showSkillEffect(player, skillid, level); // Stance, normal end of packet
+			}
 			break;
+		}
 	}
 	if (damage == -1) { // 0 damage = regular miss, -1 = Fake/Guardian
 		short job = player->getJob();

@@ -32,7 +32,7 @@ namespace SkillsPacket {
 	void useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill, short addedinfo);
 	void endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill);
 	void healHP(Player *player, short hp);
-	void showSkillEffect(Player *player, int skillid);
+	void showSkillEffect(Player *player, int skillid, unsigned char level = 0);
 	void showSpecialSkill(Player *player, SpecialSkillInfo info); // Hurricane/Pierce/Big Bang/Monster Magnet
 	void endSpecialSkill(Player *player, SpecialSkillInfo info);
 	void showMagnetSuccess(Player *player, int mapmobid, unsigned char success); // New packet in .56
