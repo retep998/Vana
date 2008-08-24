@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
+#include "Timer/Container.h"
 #include "Timer/Timer.h"
 #include <functional>
 
@@ -40,6 +41,7 @@ void PlayerActiveBuffs::removeBuff(int skill) {
 	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 	m_player->getTimers()->removeTimer(id);
 
+	removeAct(skill);
 	m_buffs.remove(skill);
 }
 
@@ -69,29 +71,19 @@ void PlayerActiveBuffs::addAct(int skill, Act act, short value, int time) {
 		short value;
 	} runAct = {m_player, skill, act, value};
 
-	Timer::Id id(Timer::Types::SkillActTimer, skill, act);
-	new Timer::Timer(runAct, id, m_player->getTimers(), time, true);
-
-	m_skill_acts[skill].push_back(act);
+	Timer::Id id(Timer::Types::SkillActTimer, act, 0);
+	new Timer::Timer(runAct, id, getActTimer(skill), time, true);
 }
 
-void PlayerActiveBuffs::removeAct(int skill, Act act) {
-	Timer::Id id(Timer::Types::SkillActTimer, skill, act);
-	m_player->getTimers()->removeTimer(id);
-
-	m_skill_acts[skill].remove(act);
+Timer::Container * PlayerActiveBuffs::getActTimer(int skill) {
+	if (m_skill_acts.find(skill) == m_skill_acts.end()) {
+		m_skill_acts[skill] = shared_ptr<Timer::Container>(new Timer::Container);
+	}
+	return m_skill_acts[skill].get();
 }
 
 void PlayerActiveBuffs::removeAct(int skill) {
-	while (m_skill_acts[skill].size() > 0) {
-		removeAct(skill, *m_skill_acts[skill].begin());
-	}
-}
-
-void PlayerActiveBuffs::removeAct() {
-	for (unordered_map<int, list<Act>>::iterator iter = m_skill_acts.begin(); iter != m_skill_acts.end(); iter++) {
-		removeAct(iter->first);
-	}
+	m_skill_acts.erase(skill);
 }
 
 // Combo attack stuff

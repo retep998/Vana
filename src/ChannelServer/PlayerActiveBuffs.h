@@ -19,13 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERACTIVEBUFF_H
 
 #include <list>
+#include <memory>
 #include <unordered_map>
 
 using std::list;
+using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
 class Player;
 enum Act;
+
+namespace Timer {
+	class Container;
+};
 
 class PlayerActiveBuffs {
 public:
@@ -39,9 +45,8 @@ public:
 
 	// Skill "acts"
 	void addAct(int skill, Act act, short value, int time);
-	void removeAct(int skill, Act act);
+	Timer::Container * getActTimer(int skill);
 	void removeAct(int skill);
-	void removeAct();
 
 	// Combo attack
 	void setCombo(char combo, bool sendPacket);
@@ -50,7 +55,7 @@ public:
 private:
 	Player *m_player;
 	list<int> m_buffs;
-	unordered_map<int, list<Act>> m_skill_acts;
+	unordered_map<int, shared_ptr<Timer::Container>> m_skill_acts;
 	char m_combo;
 };
 
