@@ -238,6 +238,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Movement.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\NPCs.cpp"
 					>
 				</File>
@@ -505,6 +509,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Mobs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Movement.h"
 					>
 				</File>
 				<File
