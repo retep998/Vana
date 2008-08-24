@@ -323,6 +323,7 @@ void Player::setHP(int hp, bool is) {
 		this->hp = hp;
 	if (is)
 		PlayerPacket::updateStat(this, 0x400, static_cast<short>(this->hp));
+	getActiveBuffs()->checkBerserk();
 }
 
 void Player::setMP(int mp, bool is) {
@@ -378,6 +379,7 @@ void Player::setMHP(int mhp) {
 	if (mhp > 30000) { mhp = 30000; }
 	this->mhp = mhp;
 	PlayerPacket::updateStat(this, 0x800, rmhp);
+	getActiveBuffs()->checkBerserk();
 }
 
 void Player::setRMHP(int rmhp) {

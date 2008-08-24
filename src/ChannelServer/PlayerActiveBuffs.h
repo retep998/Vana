@@ -35,7 +35,7 @@ namespace Timer {
 
 class PlayerActiveBuffs {
 public:
-	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0) { }
+	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0), m_berserk(false) { }
 
 	// Buff Skills
 	void addBuff(int skill, unsigned char level);
@@ -52,11 +52,16 @@ public:
 	void setCombo(char combo, bool sendPacket);
 	void addCombo();
 	int getCombo() const { return m_combo; }
+
+	// Berserk
+	bool getBerserk() const { return m_berserk; }
+	void checkBerserk(bool display = false);
 private:
 	Player *m_player;
 	list<int> m_buffs;
 	unordered_map<int, shared_ptr<Timer::Container>> m_skill_acts;
 	char m_combo;
+	bool m_berserk;
 };
 
 #endif
