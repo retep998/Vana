@@ -423,8 +423,8 @@ void Skills::addSkill(Player *player, ReadPacket *packet) {
 void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 	stopSkill(player, packet->getInt());
 }
-void Skills::stopSkill(Player *player, int skillid) {
-	player->getActiveBuffs()->removeBuff(skillid);
+void Skills::stopSkill(Player *player, int skillid, bool fromTimer) {
+	player->getActiveBuffs()->removeBuff(skillid, fromTimer);
 
 	switch(skillid) {
 		case 3121004:

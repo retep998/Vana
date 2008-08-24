@@ -31,15 +31,17 @@ using std::tr1::bind;
 void PlayerActiveBuffs::addBuff(int skill, unsigned char level) {
 	clock_t skillExpire = Skills::skills[skill][level].time * 1000;
 	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
-	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill),
+	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
 		id, m_player->getTimers(), skillExpire, false);
 
 	m_buffs.push_back(skill);
 }
 
-void PlayerActiveBuffs::removeBuff(int skill) {
-	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
-	m_player->getTimers()->removeTimer(id);
+void PlayerActiveBuffs::removeBuff(int skill, bool fromTimer) {
+	if (!fromTimer) {
+		Timer::Id id(Timer::Types::SkillTimer, skill, 0);
+		m_player->getTimers()->removeTimer(id);
+	}
 
 	removeAct(skill);
 	m_buffs.remove(skill);
