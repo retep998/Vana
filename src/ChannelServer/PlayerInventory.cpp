@@ -172,6 +172,49 @@ int PlayerInventory::getItemAmount(int itemid) {
 	return 0;
 }
 
+bool PlayerInventory::hasOpenSlotsFor(char inv, int itemid, short amount) {
+	bool has = false;
+	short incrementor = 0;
+	short required = 0;
+	if (inv == 1 || ISRECHARGEABLE(itemid))
+		required = amount; // These aren't stackable
+	else {
+		int existing = getItemAmount(itemid);
+		short maxslot = Inventory::items[itemid].maxslot;
+		if (existing > 0) { // Stackable item already exists
+			existing = existing % maxslot; // Is the last slot full?
+			if (existing > 0) { // If not, calculate how many slots necessary
+				existing += amount;
+			//	if (existing > maxslot) { // Only have to bother with required slots if it would put us over the limit of a slot
+			// Bug in global, would be fixed by uncommenting if block:
+			// It doesn't matter if you already have a slot with a partial stack or not, scripts require at least 1 empty slot
+				required = (int)(existing / maxslot);
+				if ((existing % maxslot) > 0)
+					required += 1;
+			//	}
+			}
+			else { // If it is, treat it as though no items exist at all
+				required = (int)(amount / maxslot);
+				if ((amount % maxslot) > 0)
+					required += 1;
+			}
+		}
+		else { // No items exist, straight computation
+			required = (int)(amount / maxslot);
+			if ((amount % maxslot) > 0)
+				required += 1;
+		}
+	}
+	for (unsigned char i = 0; i < getMaxSlots(inv); i++) {
+		if (incrementor >= required) {
+			has = true;
+			break;
+		}
+		if (getItem(inv, i) == 0)
+			incrementor++;
+	}
+	return has;
+}
 void PlayerInventory::save() {
 	mysqlpp::Query query = Database::chardb.query();
 
