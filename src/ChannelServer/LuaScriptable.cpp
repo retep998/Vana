@@ -57,6 +57,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getLevel", &LuaExports::getLevel);
 	lua_register(luaVm, "getGender", &LuaExports::getGender);
 	lua_register(luaVm, "getItemAmount", &LuaExports::getItemAmount);
+	lua_register(luaVm, "hasOpenSlotsFor", &LuaExports::hasOpenSlotsFor);
 	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
 	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
 	lua_register(luaVm, "getMap", &LuaExports::getMap);
@@ -218,6 +219,14 @@ int LuaExports::getLevel(lua_State *luaVm) {
 
 int LuaExports::getGender(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getGender());
+	return 1;
+}
+
+int LuaExports::hasOpenSlotsFor(lua_State *luaVm) {
+	char inventory = lua_tointeger(luaVm, -1);
+	int itemid = lua_tointeger(luaVm, -2);
+	short amount = lua_tointeger(luaVm, -3);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->hasOpenSlotsFor(inventory, itemid, amount));
 	return 1;
 }
 
