@@ -179,19 +179,20 @@ bool PlayerInventory::hasOpenSlotsFor(char inv, int itemid, short amount) {
 	if (inv == 1 || ISRECHARGEABLE(itemid))
 		required = amount; // These aren't stackable
 	else {
-		int existing = getItemAmount(itemid);
+	//	int existing = getItemAmount(itemid);
 		short maxslot = Inventory::items[itemid].maxslot;
+	/*
+	// Bug in global, would be fixed by uncommenting all of these commented lines:
+	// It doesn't matter if you already have a slot with a partial stack or not, scripts require at least 1 empty slot	
 		if (existing > 0) { // Stackable item already exists
 			existing = existing % maxslot; // Is the last slot full?
 			if (existing > 0) { // If not, calculate how many slots necessary
 				existing += amount;
-			//	if (existing > maxslot) { // Only have to bother with required slots if it would put us over the limit of a slot
-			// Bug in global, would be fixed by uncommenting if block:
-			// It doesn't matter if you already have a slot with a partial stack or not, scripts require at least 1 empty slot
+				if (existing > maxslot) { // Only have to bother with required slots if it would put us over the limit of a slot
 				required = (int)(existing / maxslot);
 				if ((existing % maxslot) > 0)
 					required += 1;
-			//	}
+				}
 			}
 			else { // If it is, treat it as though no items exist at all
 				required = (int)(amount / maxslot);
@@ -200,10 +201,11 @@ bool PlayerInventory::hasOpenSlotsFor(char inv, int itemid, short amount) {
 			}
 		}
 		else { // No items exist, straight computation
-			required = (int)(amount / maxslot);
-			if ((amount % maxslot) > 0)
-				required += 1;
-		}
+		*/
+		required = (int)(amount / maxslot);
+		if ((amount % maxslot) > 0)
+			required += 1;
+	//	}
 	}
 	for (unsigned char i = 0; i < getMaxSlots(inv); i++) {
 		if (incrementor >= required) {
