@@ -512,6 +512,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\MovableLife.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Movement.h"
 					>
 				</File>

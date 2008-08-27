@@ -34,7 +34,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 unordered_map<int, MobInfo> Mobs::mobinfo;
 
 /* Mob class */
-Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, short fh) : mapid(mapid), id(id), mobid(mobid), spawnid(spawnid), pos(pos), stance(2), fh(fh), control(0) {
+Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, short fh) :
+MovableLife(fh, pos, 2),
+mapid(mapid),
+id(id),
+mobid(mobid),
+spawnid(spawnid),
+control(0)
+{
 	this->hp = Mobs::mobinfo[mobid].hp;
 	this->mp = Mobs::mobinfo[mobid].mp;
 	Maps::maps[mapid]->addMob(this);
@@ -63,7 +70,7 @@ void Mob::die(Player *player) {
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
 	for (size_t i = 0; i < Mobs::mobinfo[mobid].summon.size(); i++)
-		Mobs::spawnMobPos(mapid, Mobs::mobinfo[mobid].summon[i], pos);
+		Mobs::spawnMobPos(mapid, Mobs::mobinfo[mobid].summon[i], m_pos);
 
 	player->getQuests()->updateQuestMob(mobid);
 	Maps::maps[mapid]->removeMob(id, spawnid);
