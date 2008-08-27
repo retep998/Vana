@@ -53,12 +53,17 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			}
 			mapmobid = packet->getInt();
 			if (type != 0xFF) {
-				attack = Mobs::mobinfo[mobid].skills.at(type);
-				// Was skills[type] - which caused crashes with linked monsters
-				// For example - those quest Dark Lords or the El Nath PQ Lycanthropes
-				// We have no way of transferring the data at the moment, so utilize the vector's built-in get function
-				// which notably does NOT crash if the index doesn't exist.
-				disease = attack.disease;
+				try {
+					attack = Mobs::mobinfo[mobid].skills.at(type);
+					disease = attack.disease;
+				}
+				catch (std::out_of_range) {
+					// Not having data about linked monsters causes crashes with linked monsters
+					// For example - those quest Dark Lords or the El Nath PQ Lycanthropes
+					// We have no way of transferring the data at the moment
+
+					// Now we leave attack and disease at their default values
+				}
 			}
 			hit = packet->getByte(); // Knock direction
 			break;
@@ -151,9 +156,8 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			player->getInventory()->setMesos(newmesos);
 			SkillsPacket::showSkillEffect(player, 4211005);
 			player->setHP(player->getHP() - damage);
-			if (attack.deadlyattack)
-				if (player->getMP() > 0)
-					player->setMP(1);
+			if (attack.deadlyattack && player->getMP() > 0)
+				player->setMP(1);
 			if (attack.mpburn > 0)
 				player->setMP(player->getMP() - attack.mpburn);
 			applieddamage = true;
