@@ -100,6 +100,8 @@ void InventoryPacket::updateItemAmounts(Player *player, char inv, short slot1, s
 }
 
 void InventoryPacket::sitChair(Player *player, int chairid) {
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	PacketCreator packet;
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addShort(1);
@@ -113,6 +115,8 @@ void InventoryPacket::sitChair(Player *player, int chairid) {
 }
 
 void InventoryPacket::stopChair(Player *player) {
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	PacketCreator packet;
 	packet.addShort(SEND_STOP_CHAIR);
 	packet.addByte(0);
@@ -124,6 +128,8 @@ void InventoryPacket::stopChair(Player *player) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 void InventoryPacket::useScroll(Player *player, bool succeed, bool destroy, bool legendary_spirit) {
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SCROLL);
 	packet.addInt(player->getId());
@@ -189,6 +195,8 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 		packet.addByte(0);
 	player->getPacketHandler()->send(packet);
 	if (morph) {
+		if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+			return;
 		packet = PacketCreator();
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getId());
@@ -212,6 +220,8 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 	packet.addByte(0);
 	player->getPacketHandler()->send(packet);
 	if (morph) {
+		if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+			return;
 		PacketCreator packet;
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getId());

@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_PLAYER);
 	packet.addInt(player->getId());
@@ -33,6 +35,8 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 }
 
 void PlayersPacket::faceExpression(Player *player, int face) {
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	PacketCreator packet;
 	packet.addShort(SEND_FACE_EXPRESSION);
 	packet.addInt(player->getId());
@@ -51,6 +55,8 @@ void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly)
 }
 
 void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int nodamageskill, PGMRInfo pgmr) {
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_PLAYER);
 	packet.addInt(player->getId());
