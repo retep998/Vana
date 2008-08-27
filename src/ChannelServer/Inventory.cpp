@@ -395,19 +395,22 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 	else
 		player->setMP(player->getMP(), true);
 	if (item->cons.hpr > 0) {
-		player->setHP(player->getHP() + (((item->cons.hpr + alchemist) * player->getMHP() / 100)));
+		player->setHP(player->getHP() + (item->cons.hpr * player->getMHP() / 100));
 	}
 	if (item->cons.mpr > 0) {
-		player->setMP(player->getMP() + (((item->cons.mpr + alchemist) * player->getMMP() / 100)));
+		player->setMP(player->getMP() + (item->cons.mpr * player->getMMP() / 100));
 	}
 	// Item buffs
 	if (item->cons.time > 0) {
-		InventoryPacket::useItem(player, itemid, item->cons.time * 1000, item->cons.types, item->cons.vals, (item->cons.morph > 0));
+		int time = item->cons.time;
+		if (alchemist > 0)
+			time = (time * alchemist) / 100;
+		InventoryPacket::useItem(player, itemid, time * 1000, item->cons.types, item->cons.vals, (item->cons.morph > 0));
 
 		Timer::Id id(Timer::Types::ItemTimer, itemid, 0);
 		player->getTimers()->removeTimer(id);
 		new Timer::Timer(bind(&Inventory::endItem, player,
-			itemid), id, player->getTimers(), item->cons.time * 1000, false);
+			itemid), id, player->getTimers(), time * 1000, false);
 	}
 }
 // Cancel item buffs
