@@ -127,6 +127,7 @@ public:
 	int getTradeSendID() const { return tradesendid; }
 	void setTradeRecvID(int id) { this->traderecvid = id; }
 	int getTradeRecvID() const { return traderecvid; }
+	bool hasGMEquip();
 
 	BuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }

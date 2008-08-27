@@ -145,6 +145,12 @@ void PlayerInventory::addEquipped(short slot, int itemid) {
 		equipped[slot][1] = itemid;
 }
 
+int PlayerInventory::getEquippedID(short slot) {
+	if (equipped[slot][1] != 0)
+		return equipped[slot][1];
+	return 0;
+}
+
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 	for (char i = 0; i < 50; i++) { // Shown items
 		if (equipped[i][0] > 0 || equipped[i][1] > 0) {

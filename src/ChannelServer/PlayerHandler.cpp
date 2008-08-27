@@ -133,7 +133,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	if (disease > 0 && damage != 0) { // Fake/Guardian don't prevent disease
 		// Status ailment processing here
 	}
-	if (damage > 0) {
+	if (damage > 0 && !player->hasGMEquip()) {
 		if (player->getSkills()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
 			int mesorate = Skills::skills[4211005][player->getSkills()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
 			unsigned short hp = player->getHP();
