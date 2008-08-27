@@ -103,8 +103,8 @@ public:
 	void setPos(Pos pos) { this->pos = pos; }
 	void setFH(short fh) { this->foothold = fh; }
 	short getFH() { return foothold; }
-	void setType(char type) { this->type = type; }
-	char getType() const { return this->type; }
+	void setStance(char stance) { this->stance = stance; }
+	char getStance() const { return stance; }
 	void setShop(int shopid) { shop = shopid; }
 	int getShop() const { return shop; }
 	void setNPC(NPC *npc) { this->npc = npc; }
@@ -181,7 +181,7 @@ private:
 	int exp;
 	int map;
 	char mappos;
-	char type;
+	char stance;
 	short foothold;
 	int shop;
 	int itemEffect;

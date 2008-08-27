@@ -81,7 +81,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addInt(player->getItemEffect());
 	packet.addInt(player->getChair());
 	packet.addPos(player->getPos());
-	packet.addByte(player->getType());
+	packet.addByte(player->getStance());
 	packet.addShort(player->getFH());
 	packet.addByte(0);
 	for (char i = 0; i < 3; i++) {

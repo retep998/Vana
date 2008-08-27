@@ -87,7 +87,7 @@ void Movement::parseMovement(Player *player, ReadPacket *packet) {
 	}
 	player->setPos(Pos(x, y));
 	player->setFH(foothold);
-	player->setType(stance);
+	player->setStance(stance);
 }
 
 Pos Movement::parseMovement(Mob *mob, ReadPacket *packet) {
@@ -154,6 +154,6 @@ Pos Movement::parseMovement(Mob *mob, ReadPacket *packet) {
 	}
 	mob->setPos(Pos(x, y));
 	mob->setFH(foothold);
-	mob->setType(stance);
+	mob->setStance(stance);
 	return Pos(x, y);
 }

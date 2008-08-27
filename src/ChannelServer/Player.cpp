@@ -293,7 +293,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	if (hp == 0) // If dead
 		hp = 50;
 	pos = Maps::maps[map]->getSpawnPoint(mappos)->pos;
-	type = 0;
+	stance = 0;
 	foothold = 0;
 
 	PlayerPacket::connectData(this);
