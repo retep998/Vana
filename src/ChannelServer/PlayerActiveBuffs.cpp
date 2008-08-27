@@ -29,7 +29,7 @@ using std::tr1::bind;
 
 // Buff Skills
 void PlayerActiveBuffs::addBuff(int skill, unsigned char level) {
-	clock_t skillExpire = Skills::skills[skill][level].time * 1000;
+	clock_t skillExpire = (skill == 9101004 ? 2100000 : Skills::skills[skill][level].time) * 1000;
 	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
 		id, m_player->getTimers(), skillExpire, false);

@@ -640,7 +640,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		map.skill = skillid;
 		mapenterskill.push_back(map);
 	}
-	SkillsPacket::useSkill(player, skillid, skills[skillid][level].time * 1000, playerskill, mapskill, addedinfo);
+	SkillsPacket::useSkill(player, skillid, (skillid == 9101004 ? 2100000 : skills[skillid][level].time) * 1000, playerskill, mapskill, addedinfo);
 	player->getSkills()->setSkillPlayerInfo(skillid, playerskill);
 	player->getSkills()->setSkillMapInfo(skillid, mapskill);
 	player->getSkills()->setSkillMapEnterInfo(skillid, mapenterskill);
