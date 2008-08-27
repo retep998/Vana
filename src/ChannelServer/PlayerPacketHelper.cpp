@@ -33,7 +33,8 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *it
 	}
 	packet.addByte(!ISEQUIP(item->id) + 1);
 	packet.addInt(item->id);
-	packet.addShort(0);
+	packet.addByte(0);
+	packet.addByte(0);
 	packet.addBytes("8005BB46E61702");
 	if (ISEQUIP(item->id)) {
 		packet.addByte(item->slots); // Slots
@@ -53,12 +54,10 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *it
 		packet.addShort(item->ihand); // Hands
 		packet.addShort(item->ispeed); // Speed
 		packet.addShort(item->ijump); // Jump
-		packet.addShort(0); // Owner string goes here
-		packet.addShort(0);
-		packet.addShort(0);
-		packet.addShort(0);
-		packet.addShort(0);
-		packet.addShort(0);
+		packet.addString(item->name); // Owner string
+		packet.addByte(0); // Lock
+		packet.addInt64(0); // Expiration time
+		packet.addByte(0); // No clue
 	}
 	else {
 		packet.addShort(item->amount); // Amount

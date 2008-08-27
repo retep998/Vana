@@ -19,14 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERINVENTORY_H
 
 #include <unordered_map>
+
 using std::tr1::unordered_map;
+using std::string;
 
 class Player;
 class PacketCreator;
 
 struct Item {
 	Item () : amount(1), slots(0), scrolls(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
-		imp(0), iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0), petid(0) { }
+		imp(0), iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0), petid(0), name("") { }
 	Item (int itemid, short amount) : id(itemid), amount(amount), petid(0) { }
 	Item (int equipid, bool random);
 	Item (Item *item) {
@@ -50,6 +52,7 @@ struct Item {
 		ijump = item->ijump;
 		ispeed = item->ispeed;
 		petid = item->petid;
+		name = item->name;
 	}
 	int id;
 	short amount;
@@ -71,6 +74,7 @@ struct Item {
 	short ijump;
 	short ispeed;
 	int petid;
+	string name;
 };
 typedef unordered_map<short, Item *> iteminventory;
 

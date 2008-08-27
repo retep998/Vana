@@ -186,7 +186,7 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	inv->setMesosStart(res[0]["mesos"]);
 
-	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, petid, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << mysqlpp::quote << getId();
+	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << mysqlpp::quote << getId();
 	res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -211,6 +211,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		item->ijump = res[i][19];
 		item->ispeed = res[i][20];
 		item->petid = res[i][21];
+		res[i][22].to_string(item->name);
 		inv->addItem((unsigned char) res[i][0], res[i][1], item);
 		if (item->petid != 0) {
 			Pet *pet = new Pet(this);

@@ -698,6 +698,20 @@ void Inventory::useCashItem(Player *player, ReadPacket *packet) {
 			used = true;
 			break;
 		}
+		case 5060000: { // Item Name Tag
+			short slot = packet->getShort();
+			if (slot != 0) {
+				Item *item = player->getInventory()->getItem(1, slot);
+				if (item == 0) {
+					// Hacking or failure, dunno
+					return;
+				}
+				item->name = player->getName();
+				InventoryPacket::addNewItem(player, 1, slot, item, true);
+				used = true;
+			}
+			break;
+		}
 		default:
 			break;
 	}

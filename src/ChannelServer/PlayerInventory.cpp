@@ -263,7 +263,8 @@ void PlayerInventory::save() {
 				<< mysqlpp::quote << item->ihand << ","
 				<< mysqlpp::quote << item->ijump << ","
 				<< mysqlpp::quote << item->ispeed << ","
-				<< mysqlpp::quote << item->petid << ")";
+				<< mysqlpp::quote << item->petid << ","
+				<< mysqlpp::quote << item->name << ")";
 		}
 	}
 	query.exec();
