@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MOBS_H
 #define MOBS_H
 
+#include "MovableLife.h"
 #include "Player.h"
 #include "Pos.h"
 #include <unordered_map>
@@ -82,20 +83,14 @@ namespace Mobs {
 	void spawnMobPos(int mapid, int mobid, Pos pos);
 };
 
-class Mob {
+class Mob : public MovableLife {
 public:
 	Mob(int mapid, int mobid, Pos pos, int spawnid = -1, short fh = 0);
-	void setPos(Pos pos) {
-		this->pos = pos;
-	}
-	Pos getPos() {
-		return Pos(pos.x, pos.y-1);
-	}
 	int getPosX() {
-		return pos.x;
+		return m_pos.x;
 	}
 	int getPosY() {
-		return pos.y - 1;
+		return m_pos.y - 1;
 	}
 	void setID(int id) {
 		this->id = id;
@@ -112,12 +107,6 @@ public:
 	int getSpawnID() {
 		return spawnid;
 	}
-	void setFH(short fh) {
-		this->fh = fh;
-	}
-	short getFH() {
-		return fh;
-	}
 	void setHP(int hp) {
 		this->hp = hp;
 		if (this->hp < 0)
@@ -132,12 +121,6 @@ public:
 	int getMP() {
 		return mp;
 	}
-	void setStance(char stance) {
-		this->stance = stance;
-	}
-	char getStance() {
-		return stance;
-	}
 	void setControl(Player *control);
 	Player * getControl() {
 		return control;
@@ -145,15 +128,12 @@ public:
 	void die(Player *player);
 	void die(); // Removes mob, no EXP, no summoning
 private:
-	Pos pos;
 	int id;
 	int mapid;
 	int spawnid;
 	int mobid;
-	short fh;
 	int hp;
 	int mp;
-	char stance;
 	Player *control;
 };
 

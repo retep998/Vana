@@ -19,21 +19,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYER_H
 
 #include "AbstractPlayer.h"
+#include "BuddyList.h"
+#include "ChannelServer.h"
+#include "MovableLife.h"
 #include "PacketHandler.h"
 #include "PlayerActiveBuffs.h"
 #include "PlayerInventory.h"
 #include "PlayerPets.h"
-#include "PlayerStorage.h"
-#include "PlayerSkills.h"
 #include "PlayerQuests.h"
-#include "Skills.h"
-#include "Quests.h"
-#include "ChannelServer.h"
-#include "BuddyList.h"
+#include "PlayerSkills.h"
+#include "PlayerStorage.h"
 #include "Pos.h"
-#include <boost/scoped_ptr.hpp>
-#include <vector>
+#include "Quests.h"
+#include "Skills.h"
 #include <string>
+#include <vector>
+#include <boost/scoped_ptr.hpp>
 
 using std::string;
 using std::vector;
@@ -43,7 +44,7 @@ class ReadPacket;
 
 struct SkillMapEnterActiveInfo;
 
-class Player : public AbstractPlayer {
+class Player : public AbstractPlayer, public MovableLife {
 public:
 	Player() : isconnect(false), save_on_dc(true), shop(0), npc(0), chair(0), itemEffect(0), tradestate(0) { }
 
@@ -99,12 +100,6 @@ public:
 	int getMap() const { return this->map; }
 	void setMappos(char pos) { this->mappos = pos; }
 	char getMappos() const { return this->mappos; }
-	Pos getPos() const { return this->pos; }
-	void setPos(Pos pos) { this->pos = pos; }
-	void setFH(short fh) { this->foothold = fh; }
-	short getFH() { return foothold; }
-	void setStance(char stance) { this->stance = stance; }
-	char getStance() const { return stance; }
 	void setShop(int shopid) { shop = shopid; }
 	int getShop() const { return shop; }
 	void setNPC(NPC *npc) { this->npc = npc; }
@@ -181,8 +176,6 @@ private:
 	int exp;
 	int map;
 	char mappos;
-	char stance;
-	short foothold;
 	int shop;
 	int itemEffect;
 	int chair;
@@ -190,7 +183,6 @@ private:
 	char tradestate;
 	int tradesendid;
 	int traderecvid;
-	Pos pos;
 	NPC *npc;
 	vector<int> warnings;
 	bool save_on_dc;

@@ -15,15 +15,32 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MOVEMENT_H
-#define MOVEMENT_H
+#ifndef MOVABLELIFE_H
+#define MOVABLELIFE_H
 
-class MovableLife;
-class ReadPacket;
-struct Pos;
+#include "Pos.h"
 
-namespace Movement {
-	Pos parseMovement(MovableLife *life, ReadPacket *packet);
+// A base class for player, mobs that can move
+class MovableLife {
+public:
+	MovableLife() { }
+	MovableLife(short foothold, Pos pos, char stance)  :
+	m_foothold(foothold),
+	m_pos(pos),
+	m_stance(stance)
+	{
+	}
+
+	short getFH() { return m_foothold; }
+	void setFH(short val) { m_foothold = val; }
+	Pos getPos() const { return m_pos; }
+	void setPos(Pos val) { m_pos = val; }
+	char getStance() const { return m_stance; }
+	void setStance(char val) { m_stance = val; }
+protected:
+	short m_foothold;
+	Pos m_pos;
+	char m_stance;
 };
 
 #endif
