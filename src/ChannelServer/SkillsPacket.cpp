@@ -35,6 +35,8 @@ void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel
 }
 
 void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level) {
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
  	PacketCreator packet;
  	packet.addShort(SEND_SHOW_SKILL);
  	packet.addInt(player->getId());
@@ -59,6 +61,8 @@ void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveIn
 	packet.addShort(addedinfo);
 	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
 	player->getPacketHandler()->send(packet);
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	if (mskill.vals.size() > 0) {
 		packet = PacketCreator();
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
@@ -89,13 +93,15 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 		packet.addByte(pskill.types[i]);
 	packet.addByte(0);
 	player->getPacketHandler()->send(packet);
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	if (mskill.vals.size() > 0) {
 		packet = PacketCreator();
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getId());
 		packet.addInt64(0);
-	for (char i = 0; i < 8; i++)
-		packet.addByte(mskill.types[i]);
+		for (char i = 0; i < 8; i++)
+			packet.addByte(mskill.types[i]);
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
 }
@@ -129,6 +135,8 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid, unsigned char le
 	}
 	if (send)
 		player->getPacketHandler()->send(packet);
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	packet = PacketCreator();
 	send = false;
 	packet.addShort(SEND_SHOW_SKILL);  // For others
@@ -162,6 +170,8 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid, unsigned char le
 }
 
 void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang, Monster Magnet
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	PacketCreator packet;
 	packet.addShort(SEND_SPECIAL_SKILL);
 	packet.addInt(player->getId());
@@ -173,6 +183,8 @@ void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // 
 }
 
 void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	PacketCreator packet;
 	packet.addShort(SEND_SPECIAL_SKILL_END);
 	packet.addInt(player->getId());
@@ -204,6 +216,8 @@ void SkillsPacket::showBerserk(Player *player, unsigned char level, bool on) { /
 	packet.addByte(level);
 	packet.addByte((on ? 1 : 0));
 	player->getPacketHandler()->send(packet);
+	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
+		return;
 	packet = PacketCreator();
 	packet.addShort(SEND_SHOW_SKILL);  // For others
 	packet.addInt(player->getId());
