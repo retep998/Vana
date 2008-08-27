@@ -51,8 +51,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Player::~Player() {
 	if (isconnect) {
-		if (this->getHP() == 0)
-			this->acceptDeath();
+		//if (this->getHP() == 0)
+		//	this->acceptDeath();
+		// "Bug" in global, would be fixed here:
+		// When disconnecting and dead, you actually go back to forced return map before the death return map
+		// (that means that it's parsed while logging in, not while logging out)
 		if (save_on_dc) {
 			saveAll();
 			setOnline(false);
@@ -287,6 +290,8 @@ void Player::playerConnect(ReadPacket *packet) {
 	if (Maps::maps[map]->getInfo().forcedReturn != 999999999) {
 		map = Maps::maps[map]->getInfo().forcedReturn;
 	}
+	if (hp == 0) // If dead
+		hp = 50;
 	pos = Maps::maps[map]->getSpawnPoint(mappos)->pos;
 	type = 0;
 	foothold = 0;
