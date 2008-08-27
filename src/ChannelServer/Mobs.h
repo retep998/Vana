@@ -132,11 +132,11 @@ public:
 	int getMP() {
 		return mp;
 	}
-	void setType(char type) {
-		this->type = type;
+	void setStance(char stance) {
+		this->stance = stance;
 	}
-	char getType() {
-		return type;
+	char getStance() {
+		return stance;
 	}
 	void setControl(Player *control);
 	Player * getControl() {
@@ -153,7 +153,7 @@ private:
 	short fh;
 	int hp;
 	int mp;
-	char type;
+	char stance;
 	Player *control;
 };
 
