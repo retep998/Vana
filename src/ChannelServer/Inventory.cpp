@@ -121,9 +121,10 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		Item *item1 = player->getInventory()->getItem(inv, slot1);
 		Item *item2 = player->getInventory()->getItem(inv, slot2);
 
-		if (item1 == 0)
+		if (item1 == 0) {
 			// hacking
 			return;
+		}
 
 		if (item2 != 0 && !ISRECHARGEABLE(item1->id) && !ISEQUIP(item1->id) && !ISPET(item1->id) && item1->id == item2->id) {
 			if (item1->amount + item2->amount <= items[item1->id].maxslot) {
