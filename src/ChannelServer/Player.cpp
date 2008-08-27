@@ -586,3 +586,15 @@ void Player::acceptDeath() {
 	Skills::stopAllBuffs(this);
 	Maps::changeMap(this, tomap, 0);
 }
+
+bool Player::hasGMEquip() {
+	if (getInventory()->getEquippedID(1) == 1002140) // Hat
+		return true;
+	if (getInventory()->getEquippedID(5) == 1042003) // Top
+		return true;
+	if (getInventory()->getEquippedID(6) == 1062007) // Pants
+		return true;
+	if (getInventory()->getEquippedID(11) == 1322013) // Weapon
+		return true;
+	return false;
+}
