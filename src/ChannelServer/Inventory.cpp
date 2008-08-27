@@ -665,25 +665,46 @@ void Inventory::useCashItem(Player *player, ReadPacket *packet) {
 	char type = packet->getByte();
 	packet->skipBytes(1);
 	int itemid = packet->getInt();
-	string msg = packet->getString();
-	if (itemid == 5071000) { // Megaphone
-		InventoryPacket::showMegaphone(player, msg);
-	}
-	else if (itemid == 5072000) { // Super Megaphone
-		int whisper = packet->getByte();
-		InventoryPacket::showSuperMegaphone(player, msg, whisper);
-	}
-	else if (itemid/10000 == 539) { // Messenger
-		string msg2 = packet->getString();
-		string msg3 = packet->getString();
-		string msg4 = packet->getString();
+	bool used = false;
+	switch (itemid) {
+		case 5071000: { // Megaphone
+			string msg = packet->getString();
+			InventoryPacket::showMegaphone(player, msg);
+			used = true;
+			break;
+		}
+		case 5072000: { // Super Megaphone
+			string msg = packet->getString();
+			int whisper = packet->getByte();
+			InventoryPacket::showSuperMegaphone(player, msg, whisper);
+			used = true;
+			break;
+		}
+		case 5390000: // Diablo Messenger
+		case 5390001: // Cloud 9 Messenger
+		case 5390002: { // Loveholic Messenger
+			string msg = packet->getString();
+			string msg2 = packet->getString();
+			string msg3 = packet->getString();
+			string msg4 = packet->getString();
 
-		InventoryPacket::showMessenger(player, msg, msg2, msg3, msg4, packet->getBuffer(), packet->getBufferLength(), itemid);
+			InventoryPacket::showMessenger(player, msg, msg2, msg3, msg4, packet->getBuffer(), packet->getBufferLength(), itemid);
+			used = true;
+			break;
+		}
+		case 5170000: { // Pet Name Tag
+			string name = packet->getString();
+			Pets::changeName(player, name);
+			used = true;
+			break;
+		}
+		default:
+			break;
 	}
-	else if (itemid/10000 == 517) {
-		Pets::changeName(player, msg);
-	}
-	Inventory::takeItem(player, itemid, 1);
+	if (used)
+		Inventory::takeItem(player, itemid, 1);
+	else
+		InventoryPacket::blankUpdate(player);
 }
 
 void Inventory::useItemEffect(Player *player, ReadPacket *packet) {
