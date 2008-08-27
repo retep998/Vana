@@ -61,6 +61,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
 	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
 	lua_register(luaVm, "getMap", &LuaExports::getMap);
+	lua_register(luaVm, "getPosX", &LuaExports::getPosX);
+	lua_register(luaVm, "getPosY", &LuaExports::getPosY);
 	lua_register(luaVm, "getEXP", &LuaExports::getEXP);
 	lua_register(luaVm, "getHP", &LuaExports::getHP);
 	lua_register(luaVm, "getMHP", &LuaExports::getMHP);
@@ -105,6 +107,10 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
 	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
 	lua_register(luaVm, "isGM", &LuaExports::isGM);
+	lua_register(luaVm, "getEXPRate", &LuaExports::getEXPRate);
+	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
+	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
+	lua_register(luaVm, "getDropRate", &LuaExports::getDropRate);
 }
 
 bool LuaScriptable::run() {
@@ -249,6 +255,16 @@ int LuaExports::getMesos(lua_State *luaVm) {
 
 int LuaExports::getMap(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getMap());
+	return 1;
+}
+
+int LuaExports::getPosX(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getPos().x);
+	return 1;
+}
+
+int LuaExports::getPosY(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getPos().y);
 	return 1;
 }
 
@@ -544,5 +560,25 @@ int LuaExports::addSlots(lua_State *luaVm) {
 
 int LuaExports::isGM(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->isGM());
+	return 1;
+}
+
+int LuaExports::getEXPRate(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getExprate());
+	return 1;
+}
+
+int LuaExports::getQuestEXPRate(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getQuestExprate());
+	return 1;
+}
+
+int LuaExports::getMesoRate(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getMesorate());
+	return 1;
+}
+
+int LuaExports::getDropRate(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getDroprate());
 	return 1;
 }

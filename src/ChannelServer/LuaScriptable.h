@@ -72,6 +72,8 @@ namespace LuaExports {
 	int getSkillLevel(lua_State *luaVm);
 	int getMesos(lua_State *luaVm);
 	int getMap(lua_State *luaVm);
+	int getPosX(lua_State *luaVm);
+	int getPosY(lua_State *luaVm);
 	int getEXP(lua_State *luaVm);
 	int getHP(lua_State *luaVm);
 	int getMHP(lua_State *luaVm);
@@ -122,6 +124,11 @@ namespace LuaExports {
 	int deletePlayerVariable(lua_State *luaVm);
 
 	int isGM(lua_State *luaVm);
+
+	int getEXPRate(lua_State *luaVm);
+	int getMesoRate(lua_State *luaVm);
+	int getQuestEXPRate(lua_State *luaVm);
+	int getDropRate(lua_State *luaVm);
 };
 
 #endif
