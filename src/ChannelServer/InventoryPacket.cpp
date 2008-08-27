@@ -174,14 +174,8 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
-	packet.addByte(types[0]);
-	packet.addByte(types[1]);
-	packet.addByte(types[2]);
-	packet.addByte(types[3]);
-	packet.addByte(types[4]);
-	packet.addByte(types[5]);
-	packet.addByte(types[6]);
-	packet.addByte(types[7]);
+	for (char i = 0; i < 8; i++)
+		packet.addByte(types[i]);
 	for (size_t i = 0; i < vals.size(); i++) {
 		packet.addShort(vals[i]);
 		packet.addInt(itemid * -1);
@@ -190,6 +184,7 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 	packet.addShort(0);
 	packet.addByte(morph);
 	packet.addByte(0);
+	packet.addByte(0); // Speed/jump related item buffs will EoF without this
 	if (morph)
 		packet.addByte(0);
 	player->getPacketHandler()->send(packet);
@@ -198,17 +193,10 @@ void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned cha
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getId());
 		packet.addInt64(0);
-		packet.addByte(types[0]);
-		packet.addByte(types[1]);
-		packet.addByte(types[2]);
-		packet.addByte(types[3]);
-		packet.addByte(types[4]);
-		packet.addByte(types[5]);
-		packet.addByte(types[6]);
-		packet.addByte(types[7]);
-		for (size_t i = 0; i < vals.size(); i++) {
+		for (char i = 0; i < 8; i++)
+			packet.addByte(types[i]);
+		for (size_t i = 0; i < vals.size(); i++)
 			packet.addShort(vals[i]);
-		}
 		packet.addByte(1);
 		packet.addShort(0);
 		packet.addByte(0);
@@ -219,14 +207,8 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 	PacketCreator packet;
 	packet.addShort(SEND_CANCEL_SKILL);
 	packet.addInt64(0);
-	packet.addByte(types[0]);
-	packet.addByte(types[1]);
-	packet.addByte(types[2]);
-	packet.addByte(types[3]);
-	packet.addByte(types[4]);
-	packet.addByte(types[5]);
-	packet.addByte(types[6]);
-	packet.addByte(types[7]);
+	for (char i = 0; i < 8; i++)
+		packet.addByte(types[i]);
 	packet.addByte(0);
 	player->getPacketHandler()->send(packet);
 	if (morph) {
@@ -234,14 +216,8 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getId());
 		packet.addInt64(0);
-		packet.addByte(types[0]);
-		packet.addByte(types[1]);
-		packet.addByte(types[2]);
-		packet.addByte(types[3]);
-		packet.addByte(types[4]);
-		packet.addByte(types[5]);
-		packet.addByte(types[6]);
-		packet.addByte(types[7]);
+		for (char i = 0; i < 8; i++)
+			packet.addByte(types[i]);
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
 }
