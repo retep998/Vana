@@ -207,9 +207,8 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			if (slv > 0) { achx = Skills::skills[sid][slv].x; }
 			double red = (2.0 - achx / 1000.0);
 			player->setHP(player->getHP() - (int)(damage / red));
-			if (attack.deadlyattack)
-				if (player->getMP() > 0)
-					player->setMP(1);
+			if (attack.deadlyattack && player->getMP() > 0)
+				player->setMP(1);
 			if (attack.mpburn > 0)
 				player->setMP(player->getMP() - attack.mpburn);
 			applieddamage = true;
