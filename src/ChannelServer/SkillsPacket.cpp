@@ -48,14 +48,8 @@ void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveIn
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
-	packet.addByte(pskill.types[0]);
-	packet.addByte(pskill.types[1]);
-	packet.addByte(pskill.types[2]);
-	packet.addByte(pskill.types[3]);
-	packet.addByte(pskill.types[4]);
-	packet.addByte(pskill.types[5]);
-	packet.addByte(pskill.types[6]);
-	packet.addByte(pskill.types[7]);
+	for (char i = 0; i < 8; i++)
+		packet.addByte(pskill.types[i]);
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.addShort(pskill.vals[i]);
 		packet.addInt(skillid);
@@ -70,17 +64,10 @@ void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveIn
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getId());
 		packet.addInt64(0);
-		packet.addByte(mskill.types[0]);
-		packet.addByte(mskill.types[1]);
-		packet.addByte(mskill.types[2]);
-		packet.addByte(mskill.types[3]);
-		packet.addByte(mskill.types[4]);
-		packet.addByte(mskill.types[5]);
-		packet.addByte(mskill.types[6]);
-		packet.addByte(mskill.types[7]);
-		for (size_t i = 0; i < mskill.vals.size(); i++) {
+		for (char i = 0; i < 8; i++)
+			packet.addByte(mskill.types[i]);
+		for (size_t i = 0; i < mskill.vals.size(); i++)
 			packet.addShort(mskill.vals[i]);
-		}
 		packet.addShort(0);
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
@@ -98,14 +85,8 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 	PacketCreator packet;
 	packet.addShort(SEND_CANCEL_SKILL);
 	packet.addInt64(0);
-	packet.addByte(pskill.types[0]);
-	packet.addByte(pskill.types[1]);
-	packet.addByte(pskill.types[2]);
-	packet.addByte(pskill.types[3]);
-	packet.addByte(pskill.types[4]);
-	packet.addByte(pskill.types[5]);
-	packet.addByte(pskill.types[6]);
-	packet.addByte(pskill.types[7]);
+	for (char i = 0; i < 8; i++)
+		packet.addByte(pskill.types[i]);
 	packet.addByte(0);
 	player->getPacketHandler()->send(packet);
 	if (mskill.vals.size() > 0) {
@@ -113,14 +94,8 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getId());
 		packet.addInt64(0);
-		packet.addByte(mskill.types[0]);
-		packet.addByte(mskill.types[1]);
-		packet.addByte(mskill.types[2]);
-		packet.addByte(mskill.types[3]);
-		packet.addByte(mskill.types[4]);
-		packet.addByte(mskill.types[5]);
-		packet.addByte(mskill.types[6]);
-		packet.addByte(mskill.types[7]);
+	for (char i = 0; i < 8; i++)
+		packet.addByte(mskill.types[i]);
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
 }
