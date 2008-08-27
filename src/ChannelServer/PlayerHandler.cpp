@@ -53,7 +53,11 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			}
 			mapmobid = packet->getInt();
 			if (type != 0xFF) {
-				attack = Mobs::mobinfo[mobid].skills[type];
+				attack = Mobs::mobinfo[mobid].skills.at(type);
+				// Was skills[type] - which caused crashes with linked monsters
+				// For example - those quest Dark Lords or the El Nath PQ Lycanthropes
+				// We have no way of transferring the data at the moment, so utilize the vector's built-in get function
+				// which notably does NOT crash if the index doesn't exist.
 				disease = attack.disease;
 			}
 			hit = packet->getByte(); // Knock direction
