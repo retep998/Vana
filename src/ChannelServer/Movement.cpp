@@ -41,7 +41,7 @@ Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
 			case 0:
 			case 5:
 				x = packet->getShort();
-				y = packet->getShort() - 1;
+				y = packet->getShort();
 				packet->skipBytes(4);
 				foothold = packet->getShort();
 				stance = packet->getByte();
@@ -51,13 +51,13 @@ Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
 			case 2:
 			case 6:
 				x = packet->getShort();
-				y = packet->getShort() - 1;
+				y = packet->getShort();
 				stance = packet->getByte();
 				packet->skipBytes(2);
 				break;
 			case 15:
 				x = packet->getShort();
-				y = packet->getShort() - 1;
+				y = packet->getShort();
 				packet->skipBytes(6);
 				foothold = packet->getShort();
 				stance = packet->getByte();
@@ -65,7 +65,7 @@ Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
 				break;
 			case 11:
 				x = packet->getShort();
-				y = packet->getShort() - 1;
+				y = packet->getShort();
 				foothold = packet->getShort();
 				stance = packet->getByte();
 				packet->skipBytes(2);
@@ -76,7 +76,7 @@ Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
 			case 8:
 			case 9:
 				x = packet->getShort();
-				y = packet->getShort() - 1;
+				y = packet->getShort();
 				packet->skipBytes(4);
 				stance = packet->getByte();
 				break;
