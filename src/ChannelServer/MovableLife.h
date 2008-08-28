@@ -31,12 +31,12 @@ public:
 	{
 	}
 
-	short getFH() { return m_foothold; }
-	void setFH(short val) { m_foothold = val; }
-	Pos getPos() const { return m_pos; }
-	void setPos(Pos val) { m_pos = val; }
-	char getStance() const { return m_stance; }
-	void setStance(char val) { m_stance = val; }
+	virtual short getFH() { return m_foothold; }
+	virtual void setFH(short val) { m_foothold = val; }
+	virtual Pos getPos() const { return m_pos; }
+	virtual void setPos(const Pos &val) { m_pos = val; }
+	virtual char getStance() const { return m_stance; }
+	virtual void setStance(char val) { m_stance = val; }
 protected:
 	short m_foothold;
 	Pos m_pos;
