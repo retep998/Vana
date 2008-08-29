@@ -77,12 +77,10 @@ void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char
 				packet.addByte(6);
 				packet.addShort(pgmr.pos_x);
 				packet.addShort(pgmr.pos_y);
-				packet.addByte(0);
 			}
-			else {
+			else
 				packet.addByte(0);
-				packet.addByte(stance);
-			}
+			packet.addByte(stance);
 			packet.addInt(dmg);
 			if (nodamageskill > 0)
 				packet.addInt(nodamageskill);
