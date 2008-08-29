@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 
 /* Item struct */
-Item::Item(int equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0) {
+Item::Item(int equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0), name("") {
 	EquipInfo ei = Inventory::equips[equipid];
 	slots = ei.slots;
 	if (!random) {
