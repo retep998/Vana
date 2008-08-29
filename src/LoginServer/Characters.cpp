@@ -88,10 +88,10 @@ void Characters::checkCharacterName(PlayerLogin *player, ReadPacket *packet) {
 void Characters::createEquip(int equipid, int type, int charid) {
 	mysqlpp::Query query = Database::chardb.query();
 	switch (type) {
-		case 0x05: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 3 << ")"; break;
-		case 0x06: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 2 << ")"; break;
-		case 0x07: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef, slots) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 3 << "," << 5 << ")"; break;
-		case 0x0b: query << "INSERT INTO items (charid, inv, slot, itemid, iwatk) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 17 << ")"; break;
+		case 0x05: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef, name) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 3 << ",\"\")"; break;
+		case 0x06: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef, name) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 2 << ",\"\")"; break;
+		case 0x07: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef, slots, name) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 3 << "," << 5 << ",\"\")"; break;
+		case 0x0b: query << "INSERT INTO items (charid, inv, slot, itemid, iwatk, name) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 17 << ",\"\")"; break;
 	}
 	query.exec();
 }
@@ -146,7 +146,7 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	createEquip(packet->getInt(), 0x07, id);
 	createEquip(packet->getInt(), 0x0b, id);
 
-	query << "INSERT INTO items (charid, inv, slot, itemid, amount) VALUES (" << mysqlpp::quote << id << ", 4, 1, 4161001, 1)"; // Beginner Guide
+	query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << mysqlpp::quote << id << ", 4, 1, 4161001, 1, \"\")"; // Beginner Guide
 	query.exec();
 
 	query << "SELECT * FROM characters WHERE id = " << mysqlpp::quote << id << " LIMIT 1";
