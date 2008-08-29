@@ -217,11 +217,11 @@ void Player::playerConnect(ReadPacket *packet) {
 			Pet *pet = new Pet(this);
 			pet->setId(item->petid);
 			pet->setType(item->id);
-			pet->setIndex((signed char) res[i][22]);
-			pet->setName((string) res[i][23]);
-			pet->setLevel((unsigned char) res[i][24]);
-			pet->setCloseness((short) res[i][25]);
-			pet->setFullness((unsigned char) res[i][26]);
+			pet->setIndex((signed char) res[i][23]);
+			pet->setName((string) res[i][24]);
+			pet->setLevel((unsigned char) res[i][25]);
+			pet->setCloseness((short) res[i][26]);
+			pet->setFullness((unsigned char) res[i][27]);
 			pet->setInventorySlot((unsigned char)res[i][1]);
 			pet->setSummoned(false);
 			pets->addPet(pet);
