@@ -248,7 +248,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	else
 		storage.reset(new PlayerStorage(this, 4, 0));
 
-	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump FROM storageitems WHERE userid = " << mysqlpp::quote << this->userid << " AND world_id = " << (short) this->world_id << " ORDER BY slot ASC";
+	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name FROM storageitems WHERE userid = " << mysqlpp::quote << this->userid << " AND world_id = " << (short) this->world_id << " ORDER BY slot ASC";
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		Item *item = new Item;
@@ -271,6 +271,7 @@ void Player::playerConnect(ReadPacket *packet) {
 		item->ihand = res[i][16];
 		item->ijump = res[i][17];
 		item->ispeed = res[i][18];
+		res[i][19].to_string(item->name);
 		storage->addItem(item);
 	}
 
