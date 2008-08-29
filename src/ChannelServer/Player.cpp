@@ -208,8 +208,8 @@ void Player::playerConnect(ReadPacket *packet) {
 		item->iacc = res[i][16];
 		item->iavo = res[i][17];
 		item->ihand = res[i][18];
-		item->ijump = res[i][19];
-		item->ispeed = res[i][20];
+		item->ispeed = res[i][19];
+		item->ijump = res[i][20];
 		item->petid = res[i][21];
 		res[i][22].to_string(item->name);
 		inv->addItem((unsigned char) res[i][0], res[i][1], item);
@@ -269,8 +269,8 @@ void Player::playerConnect(ReadPacket *packet) {
 		item->iacc = res[i][14];
 		item->iavo = res[i][15];
 		item->ihand = res[i][16];
-		item->ijump = res[i][17];
-		item->ispeed = res[i][18];
+		item->ispeed = res[i][17];
+		item->ijump = res[i][18];
 		res[i][19].to_string(item->name);
 		storage->addItem(item);
 	}
