@@ -54,7 +54,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly)
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int nodamageskill, PGMRInfo pgmr) {
+void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, unsigned char stance, int nodamageskill, PGMRInfo pgmr) {
 	if (player->getSkills()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
@@ -67,13 +67,10 @@ void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char
 			packet.addInt(dmg);
 			break;
 		default:
-			if (pgmr.reduction)
-				packet.addInt(pgmr.damage);
-			else
-				packet.addInt(dmg);
+			packet.addInt((pgmr.reduction > 0 ? pgmr.damage : dmg));
 			packet.addInt(mob);
 			packet.addByte(hit);
-			if (pgmr.reduction) {
+			if (pgmr.reduction > 0) {
 				packet.addByte(pgmr.reduction);
 				packet.addByte(pgmr.isphysical); // Maybe? No Mana Reflection on global to test with
 				packet.addInt(pgmr.mapmobid);
@@ -82,8 +79,10 @@ void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char
 				packet.addShort(pgmr.pos_y);
 				packet.addByte(0);
 			}
-			else
-				packet.addShort(0);
+			else {
+				packet.addByte(0);
+				packet.addByte(stance);
+			}
 			packet.addInt(dmg);
 			if (nodamageskill > 0)
 				packet.addInt(nodamageskill);
