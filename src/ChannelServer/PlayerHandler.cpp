@@ -32,6 +32,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); // Ticks
 	unsigned char type = packet->getByte();
 	unsigned char hit = 0;
+	unsigned char stance = 0;
 	packet->skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	int damage = packet->getInt();
 	int mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
@@ -100,7 +101,8 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			disease = packet->getShort(); // Disease, normal end of packet
 			break;
 		default:  {
-			if (packet->getByte() != 0) {
+			stance = packet->getByte(); // Power Stance, normal end of packet
+			if (stance > 0) {
 				int skillid = 0;
 				if (player->getSkills()->getActiveSkillLevel(1121002) > 0)
 					skillid = 1121002;
@@ -108,16 +110,10 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 					skillid = 1221002;
 				else if (player->getSkills()->getActiveSkillLevel(1321002) > 0)
 					skillid = 1321002;
-				if (skillid == 0) {
+				if (skillid == 0 || player->getSkills()->getSkillLevel(skillid) == 0) {
 					// Hacking
 					return;
 				}
-				unsigned char level = player->getSkills()->getSkillLevel(skillid);
-				if (level == 0) {
-					// Hacking
-					return;
-				}
-				SkillsPacket::showSkillEffect(player, skillid, level); // Stance, normal end of packet
 			}
 			break;
 		}
@@ -225,7 +221,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 				player->setMP(player->getMP() - attack.mpburn);
 		}
 	}
-	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, nodamageid, pgmr);
+	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, stance, nodamageid, pgmr);
 }
 
 void PlayerHandler::handleFacialExpression(Player *player, ReadPacket *packet) {

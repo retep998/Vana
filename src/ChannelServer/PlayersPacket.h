@@ -33,7 +33,7 @@ namespace PlayersPacket {
 	void showMoving(Player *player, unsigned char *buf, size_t size);
 	void faceExpression(Player *player, int face);
 	void showChat(Player *player, const string &msg, char bubbleOnly);
-	void damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, int nodamageskill, PGMRInfo pgmr);
+	void damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, unsigned char stance, int nodamageskill, PGMRInfo pgmr);
 	void showMessage(const string &msg, char type);
 	void showInfo(Player *player, Player *getinfo, unsigned char isself);
 	void findPlayer(Player *player, const string &name, int map, unsigned char is = 0, bool is_channel = 0);
