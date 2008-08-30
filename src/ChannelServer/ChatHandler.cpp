@@ -440,6 +440,11 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			sprintf_s(text, 50, "X: %d Y: %d", player->getPos().x, player->getPos().y);
 			PlayerPacket::showMessage(player, text, 6);
 		}
+		else if (strcmp(command, "fh") == 0) {
+			char text[50];
+			sprintf_s(text, 50, "Foothold: %d", player->getFH());
+			PlayerPacket::showMessage(player, text, 6);
+		}
 		else if (strcmp(command, "item") == 0) {
 			if (strlen(next_token) == 0) return;
 			int itemid = atoi(strtok_s(0, " ", &next_token));
