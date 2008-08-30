@@ -150,10 +150,11 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	pack->skipBytes(4); // Ticks
 	short slot = pack->getShort(); // Slot
 	short csstar = pack->getShort(); // Cash Shop star
-	if (!shadow_meso)
-		if ((display & 0x40) > 0) // Shadow Claw star ID
-			pack->skipBytes(4);
-
+	if (!shadow_meso) {
+		if ((display & 0x40) == 0x40)
+			// Shadow Claw/+Shadow Partner = 0x40/0x48 - bitwise and with 0x40 = 0x40 for both
+			pack->skipBytes(4); // Shadow Claw star ID
+	}
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_MOB_RANGED);
 	packet.addInt(player->getId());
@@ -162,14 +163,10 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 		switch (w_class) { // No clue why it does this, but it does, maybe has something to do with the mastery byte?
 			case 0x03: packet.addByte(0x07); break; // Bow
 			case 0x04: packet.addByte(0x0D); break; // Crossbow
+			case 0x09: packet.addByte(0x10); break; // Gun, TODO: Find proper byte for guns
 			case 0x07:
-				if (shadow_meso) 
-					packet.addByte(player->getSkills()->getSkillLevel(skillid));
-				else
-					packet.addByte(0x0A); // Claw
+				packet.addByte((shadow_meso ? player->getSkills()->getSkillLevel(skillid) : 0x0A));
 				break;
-			case 0x09: // Gun
-				packet.addByte(0x10); break; // TODO: Find proper byte for guns
 		}
 		packet.addInt(skillid);
 	}
