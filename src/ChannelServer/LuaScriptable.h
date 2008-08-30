@@ -130,6 +130,13 @@ namespace LuaExports {
 	int getMesoRate(lua_State *luaVm);
 	int getQuestEXPRate(lua_State *luaVm);
 	int getDropRate(lua_State *luaVm);
+
+    int partyQuestClear(lua_State *luaVm);
+    int partyQuestWrong(lua_State *luaVm);
+    int carnivalQuestWin(lua_State *luaVm);
+    int carnivalQuestLose(lua_State *luaVm);
+    int coconutEventVictory(lua_State *luaVm);
+    int coconutEventLose(lua_State *luaVm);
 };
 
 #endif
