@@ -134,9 +134,10 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		}
 
 		if (player->getGMLevel() >= 2) { // Super GM level
-			if (strcmp(command, "notice") == 0) {
+			if (strcmp(command, "me") == 0) {
 				if (strlen(next_token) == 0) return;
-				PlayersPacket::showMessage(next_token, 0);
+				string msg = player->getName() + " : " + string(next_token);
+				PlayersPacket::showMessage(msg, 6);
 			}
 			else if (strcmp(command, "kick") == 0) {
 				if (strlen(next_token) == 0) return;
@@ -367,9 +368,9 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				Mobs::spawnMob(player, mobid);
 			}
 		}
-		else if (strcmp(command, "me") == 0 || strcmp(command, "notice") == 0) {
-			string msg = player->getName() + " : " + string(next_token);
-			PlayersPacket::showMessage(msg, 6);
+		else if (strcmp(command, "notice") == 0) {
+			if (strlen(next_token) == 0) return;
+			PlayersPacket::showMessage(next_token, 0);
 		}
 		else if (strcmp(command, "maxstats") == 0) {
 			player->setFame(30000);
