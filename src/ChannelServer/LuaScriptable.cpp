@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Players.h"
 #include "Maps.h"
+#include "MapPacket.h"
 #include "Mobs.h"
 #include "Reactors.h"
 #include "Quests.h"
@@ -112,6 +113,12 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 	lua_register(luaVm, "getDropRate", &LuaExports::getDropRate);
+    lua_register(luaVm, "partyQuestClear", &LuaExports::partyQuestClear);
+    lua_register(luaVm, "partyQuestWrong", &LuaExports::partyQuestWrong);
+    lua_register(luaVm, "carnivalQuestWin", &LuaExports::carnivalQuestWin);
+    lua_register(luaVm, "carnivalQuestLose", &LuaExports::carnivalQuestLose);
+    lua_register(luaVm, "coconutEventVictory", &LuaExports::coconutEventVictory);
+    lua_register(luaVm, "coconutEventLose", &LuaExports::coconutEventLose);
 }
 
 bool LuaScriptable::run() {
@@ -587,4 +594,40 @@ int LuaExports::getMesoRate(lua_State *luaVm) {
 int LuaExports::getDropRate(lua_State *luaVm) {
 	lua_pushnumber(luaVm, ChannelServer::Instance()->getDroprate());
 	return 1;
+}
+
+int LuaExports::partyQuestClear(lua_State *luaVm) {
+    MapPacket::sendEvent(getPlayer(luaVm)->getMap(), "quest/party/clear");
+    MapPacket::sendSound(getPlayer(luaVm)->getMap(), "Party1/Clear");
+    return 1;
+}
+
+int LuaExports::partyQuestWrong(lua_State *luaVm) {
+    MapPacket::sendEvent(getPlayer(luaVm)->getMap(), "quest/party/wrong_kor");
+    MapPacket::sendSound(getPlayer(luaVm)->getMap(), "Party1/Failed");
+    return 1;
+}
+
+int LuaExports::carnivalQuestWin(lua_State *luaVm) {
+    MapPacket::sendEvent(getPlayer(luaVm)->getMap(), "quest/carnival/win");
+    MapPacket::sendSound(getPlayer(luaVm)->getMap(), "MobCarnival/Win");
+    return 1;
+}
+
+int LuaExports::carnivalQuestLose(lua_State *luaVm) {
+    MapPacket::sendEvent(getPlayer(luaVm)->getMap(), "quest/carnival/lose");
+    MapPacket::sendSound(getPlayer(luaVm)->getMap(), "MobCarnival/Lose");
+    return 1;
+}
+
+int LuaExports::coconutEventVictory(lua_State *luaVm) {
+    MapPacket::sendEvent(getPlayer(luaVm)->getMap(), "event/coconut/victory");
+    MapPacket::sendSound(getPlayer(luaVm)->getMap(), "Coconut/Victory");
+    return 1;
+}
+
+int LuaExports::coconutEventLose(lua_State *luaVm) {
+    MapPacket::sendEvent(getPlayer(luaVm)->getMap(), "event/coconut/lose");
+    MapPacket::sendSound(getPlayer(luaVm)->getMap(), "Coconut/Failed");
+    return 1;
 }
