@@ -544,21 +544,6 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			continue;
 		}
 		short value = 0;
-		switch (val) {
-			case SKILL_X: value = skills[skillid][level].x; break;
-			case SKILL_Y: value = skills[skillid][level].y; break;
-			case SKILL_SPEED: value = skills[skillid][level].speed; break;
-			case SKILL_JUMP: value = skills[skillid][level].jump; break;
-			case SKILL_WATK: value = skills[skillid][level].watk; break;
-			case SKILL_WDEF: value = skills[skillid][level].wdef; break;
-			case SKILL_MATK: value = skills[skillid][level].matk; break;
-			case SKILL_MDEF: value = skills[skillid][level].mdef; break;
-			case SKILL_ACC: value = skills[skillid][level].acc; break;
-			case SKILL_AVO: value = skills[skillid][level].avo; break;
-			case SKILL_PROP: value = skills[skillid][level].prop; break;
-			case SKILL_MORPH: value = skills[skillid][level].morph; break;
-			case SKILL_LV: value = level; break;
-		}
 		switch (skillid) {
 			case 3121002: // Sharp Eyes
 			case 3221002: // Sharp Eyes
@@ -591,38 +576,57 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				}
 				break;
 			}
+			default:
+				switch (val) {
+					case SKILL_X: value = skills[skillid][level].x; break;
+					case SKILL_Y: value = skills[skillid][level].y; break;
+					case SKILL_SPEED: value = skills[skillid][level].speed; break;
+					case SKILL_JUMP: value = skills[skillid][level].jump; break;
+					case SKILL_WATK: value = skills[skillid][level].watk; break;
+					case SKILL_WDEF: value = skills[skillid][level].wdef; break;
+					case SKILL_MATK: value = skills[skillid][level].matk; break;
+					case SKILL_MDEF: value = skills[skillid][level].mdef; break;
+					case SKILL_ACC: value = skills[skillid][level].acc; break;
+					case SKILL_AVO: value = skills[skillid][level].avo; break;
+					case SKILL_PROP: value = skills[skillid][level].prop; break;
+					case SKILL_MORPH: value = skills[skillid][level].morph; break;
+					case SKILL_LV: value = level; break;
+				}
+				break;
 		}
 		playerskill.vals.push_back(value);
 	}
 	for (size_t i = 0; i < skillsinfo[skillid].map.size(); i++) {
-		mapskill.types[skillsinfo[skillid].map[i].byte]+= skillsinfo[skillid].map[i].type;
+		mapskill.types[skillsinfo[skillid].map[i].byte] += skillsinfo[skillid].map[i].type;
 		char val = skillsinfo[skillid].map[i].value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed update for maxed dark sight
 			mapskill.types[TYPE_1] = 0;
 			continue;
 		}
 		short value = 0;
-		switch (val) {
-			case SKILL_X: value = skills[skillid][level].x; break;
-			case SKILL_Y: value = skills[skillid][level].y; break;
-			case SKILL_SPEED: value = skills[skillid][level].speed; break;   
-			case SKILL_JUMP: value = skills[skillid][level].jump; break; 
-			case SKILL_WATK: value = skills[skillid][level].watk; break;
-			case SKILL_WDEF: value = skills[skillid][level].wdef; break;
-			case SKILL_MATK: value = skills[skillid][level].matk; break; 
-			case SKILL_MDEF: value = skills[skillid][level].mdef; break;
-			case SKILL_ACC: value = skills[skillid][level].acc; break;
-			case SKILL_AVO: value = skills[skillid][level].avo; break;
-			case SKILL_PROP: value = skills[skillid][level].prop; break;
-			case SKILL_MORPH: value = skills[skillid][level].morph; break;
-			case SKILL_LV: value = level; break;
-		}
 		switch (skillid) {
 			case 4111002: // Shadow Partner
 				value = skills[skillid][level].x * 256 + skills[skillid][level].y;
 				break;
 			case 1111002: // Combo Attack
 				value = player->getActiveBuffs()->getCombo() + 1;
+				break;
+			default:
+				switch (val) {
+					case SKILL_X: value = skills[skillid][level].x; break;
+					case SKILL_Y: value = skills[skillid][level].y; break;
+					case SKILL_SPEED: value = skills[skillid][level].speed; break;   
+					case SKILL_JUMP: value = skills[skillid][level].jump; break; 
+					case SKILL_WATK: value = skills[skillid][level].watk; break;
+					case SKILL_WDEF: value = skills[skillid][level].wdef; break;
+					case SKILL_MATK: value = skills[skillid][level].matk; break; 
+					case SKILL_MDEF: value = skills[skillid][level].mdef; break;
+					case SKILL_ACC: value = skills[skillid][level].acc; break;
+					case SKILL_AVO: value = skills[skillid][level].avo; break;
+					case SKILL_PROP: value = skills[skillid][level].prop; break;
+					case SKILL_MORPH: value = skills[skillid][level].morph; break;
+					case SKILL_LV: value = level; break;
+				}
 				break;
 		}
 		mapskill.vals.push_back(value);
@@ -739,7 +743,9 @@ void Skills::useAttackSkillRanged(Player *player, int skillid, short pos, unsign
 		hits = skills[skillid][level].bulletcon;
 	if (display == 0x08)
 		hits = hits * 2;
-	if (pos > 0 && (!(((display & 0x40) > 0) || display == 0x02)))
+	if (pos > 0 && (!((display & 0x40) == 0x40 || display == 0x02)))
+		// Display is 0x40 for Shadow Claw and 0x48 for Shadow Claw + Shadow Partner
+		// Bitwise and with 0x40 will make it 0x40 for both
 		Inventory::takeItemSlot(player, 2, pos, hits);
 }
 
@@ -747,7 +753,7 @@ void Skills::useAttackRanged(Player *player, short pos, unsigned char display) {
 	int hits = 1;
 	if (display == 0x08)
 		hits = hits * 2;
-	if (pos > 0 && (!(((display & 0x40) > 0) || display == 0x02)))
+	if (pos > 0 && (!((display & 0x40) == 0x40 || display == 0x02))) // See previous comment
 		Inventory::takeItemSlot(player, 2, pos, hits);
 }
 
