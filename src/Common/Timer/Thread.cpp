@@ -81,10 +81,10 @@ void Thread::runThread() {
 	boost::recursive_mutex::scoped_lock l(m_timers_mutex);
 	while (!m_terminate) {
 		// Find minimum wakeup time
-		Timer *minThread = findMin();
-		clock_t msec = (minThread == 0) ? msec = 1000000000 : minThread->getRunAt() - clock();
+		Timer *minTimer = findMin();
+		clock_t msec = (minTimer == 0) ? msec = 1000000000 : minTimer->getRunAt() - clock();
 		if (msec <= 0) {
-			minThread->run();
+			minTimer->run();
 			continue;
 		}
 		
@@ -93,8 +93,8 @@ void Thread::runThread() {
 				continue;
 		}
 
-		if (minThread != 0) {
-			minThread->run();
+		if (minTimer != 0) {
+			minTimer->run();
 		}
 	}
 }
