@@ -61,6 +61,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
 	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
 	lua_register(luaVm, "getMap", &LuaExports::getMap);
+	lua_register(luaVm, "getFH", &LuaExports::getFH);
 	lua_register(luaVm, "getPosX", &LuaExports::getPosX);
 	lua_register(luaVm, "getPosY", &LuaExports::getPosY);
 	lua_register(luaVm, "getEXP", &LuaExports::getEXP);
@@ -255,6 +256,11 @@ int LuaExports::getMesos(lua_State *luaVm) {
 
 int LuaExports::getMap(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getMap());
+	return 1;
+}
+
+int LuaExports::getFH(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getFH());
 	return 1;
 }
 

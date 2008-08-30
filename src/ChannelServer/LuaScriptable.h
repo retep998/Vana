@@ -72,6 +72,7 @@ namespace LuaExports {
 	int getSkillLevel(lua_State *luaVm);
 	int getMesos(lua_State *luaVm);
 	int getMap(lua_State *luaVm);
+	int getFH(lua_State *luaVm);
 	int getPosX(lua_State *luaVm);
 	int getPosY(lua_State *luaVm);
 	int getEXP(lua_State *luaVm);
