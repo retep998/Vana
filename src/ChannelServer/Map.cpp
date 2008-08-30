@@ -123,7 +123,7 @@ PortalInfo * Map::getSpawnPoint(int pid) {
 // Mobs
 void Map::addMobSpawn(MobSpawnInfo spawn) {
 	mobspawns.push_back(spawn);
-	new Mob(info.id, spawn.id, spawn.pos, mobspawns.size()-1, spawn.fh);
+	spawnMob(spawn.id, spawn.pos, mobspawns.size()-1, spawn.fh);
 }
 
 void Map::checkMobSpawn(clock_t time) {
@@ -131,17 +131,19 @@ void Map::checkMobSpawn(clock_t time) {
 	for (size_t i = 0; i < mobrespawns.size(); i++) {
 		int id = mobrespawns[i].spawnid;
 		if ((time - mobrespawns[i].killed) > (mobspawns[id].time * CLOCKS_PER_SEC)) {
-			new Mob(info.id, mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
+			spawnMob(mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
 			mobrespawns.erase(mobrespawns.begin()+i);
 			i--;
 		}
 	}
 }
 
-void Map::addMob(Mob *mob) {
+void Map::spawnMob(int mobid, Pos pos, int spawnid, short fh) {
 	int id = this->objectids->next();
-	mob->setID(id);
-	this->mobs[id] = mob;
+	
+	Mob *mob = new Mob(id, info.id, mobid, pos, spawnid, fh);
+	mobs[id] = mob;
+
 	MobsPacket::spawnMob(0, mob, false, true);
 	updateMobControl(mob, true);
 }

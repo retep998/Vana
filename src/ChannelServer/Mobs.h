@@ -85,7 +85,7 @@ namespace Mobs {
 
 class Mob : public MovableLife {
 public:
-	Mob(int mapid, int mobid, Pos pos, int spawnid = -1, short fh = 0);
+	Mob(int id, int mapid, int mobid, Pos pos, int spawnid = -1, short fh = 0);
 	Pos getPos() {
 		return Pos(getPosX(), getPosY());
 	}

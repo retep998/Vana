@@ -34,17 +34,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 unordered_map<int, MobInfo> Mobs::mobinfo;
 
 /* Mob class */
-Mob::Mob(int mapid, int mobid, Pos pos, int spawnid, short fh) :
+Mob::Mob(int id, int mapid, int mobid, Pos pos, int spawnid, short fh) :
 MovableLife(fh, pos, 2),
-mapid(mapid),
 id(id),
-mobid(mobid),
+mapid(mapid),
 spawnid(spawnid),
+mobid(mobid),
 control(0)
 {
 	this->hp = Mobs::mobinfo[mobid].hp;
 	this->mp = Mobs::mobinfo[mobid].mp;
-	Maps::maps[mapid]->addMob(this);
 }
 
 void Mob::setControl(Player *control) {
@@ -370,7 +369,7 @@ void Mobs::spawnMob(Player *player, int mobid, int amount) {
 }
 
 void Mobs::spawnMobPos(int mapid, int mobid, Pos pos) {
-	new Mob(mapid, mobid, pos);
+	Maps::maps[mapid]->spawnMob(mobid, pos);
 }
 
 void Mobs::displayHPBars(Player *player, Mob *mob) {

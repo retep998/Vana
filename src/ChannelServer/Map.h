@@ -156,7 +156,7 @@ public:
 	// Mobs
 	void addMobSpawn(MobSpawnInfo spawn);
 	void checkMobSpawn(clock_t time);
-	void addMob(Mob *mob);
+	void spawnMob(int mobid, Pos pos, int spawnid = -1, short fh = 0);
 	Mob * getMob(int id) {
 		if (this->mobs.find(id) != mobs.end())
 			return this->mobs[id];
