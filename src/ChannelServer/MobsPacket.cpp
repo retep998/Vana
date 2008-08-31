@@ -93,13 +93,12 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 	packet.addInt(player->getId());
 	packet.addByte(tbyte);
 	if (skillid > 0) {
-		packet.addByte(-1);
+		packet.addByte(player->getSkills()->getSkillLevel(skillid));
 		packet.addInt(skillid);
 	} 
 	else
 		packet.addByte(0);
-	packet.addByte(0);
-	pack->skipBytes(1); // Projectile display
+	packet.addByte(pack->getByte()); // Projectile display
 	packet.addByte(pack->getByte()); // Direction/animation
 	pack->skipBytes(1); // Weapon subclass
 	packet.addByte(pack->getByte()); // Weapon speed
@@ -107,7 +106,41 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 	if (skillid == 5201002) {
 		pack->skipBytes(4); // Charge
 	}
-	packet.addByte(10);
+	int masteryid = 0;
+	switch (GETWEAPONTYPE(player->getInventory()->getEquippedID(11))) {
+		case WEAPON_1H_SWORD:
+		case WEAPON_2H_SWORD:
+			switch ((player->getJob() / 10)) {
+				case 11: masteryid = 1100000; break;
+				case 12: masteryid = 1200000; break;
+				case 90:
+				case 91:
+					masteryid = (player->getSkills()->getSkillLevel(1100000) >= player->getSkills()->getSkillLevel(1200000) ? 1100000 : 1100000);
+					break;
+			}
+			break;
+		case WEAPON_1H_AXE:
+		case WEAPON_2H_AXE:
+			masteryid = 1100001;
+			break;
+		case WEAPON_1H_MACE:
+		case WEAPON_2H_MACE:
+			masteryid = 1200001;
+			break;
+		case WEAPON_SPEAR:
+			masteryid = 1300000;
+			break;
+		case WEAPON_POLEARM:
+			masteryid = 1300001;
+			break;
+		case WEAPON_DAGGER:
+			masteryid = 4200000;
+			break;
+		case WEAPON_KNUCKLE:
+			masteryid = 5100001;
+			break;
+	}
+	packet.addByte((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
 	packet.addInt(0);
 	for (char i = 0; i < targets; i++) {
 		int mapmobid = pack->getInt();
@@ -160,14 +193,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	packet.addInt(player->getId());
 	packet.addByte(tbyte);
 	if (skillid > 0) {
-		switch (w_class) { // No clue why it does this, but it does, maybe has something to do with the mastery byte?
-			case 0x03: packet.addByte(0x07); break; // Bow
-			case 0x04: packet.addByte(0x0D); break; // Crossbow
-			case 0x09: packet.addByte(0x10); break; // Gun, TODO: Find proper byte for guns
-			case 0x07:
-				packet.addByte((shadow_meso ? player->getSkills()->getSkillLevel(skillid) : 0x0A));
-				break;
-		}
+		packet.addByte(player->getSkills()->getSkillLevel(skillid));
 		packet.addInt(skillid);
 	}
 	else
@@ -175,7 +201,24 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	packet.addByte(display);
 	packet.addByte(animation);
 	packet.addByte(w_speed);
-	packet.addByte(0x0A); // Mastery display byte, I think - needs VEDB extension and weapon type (2H BW, 1H BW, etc.) segregation
+	int masteryid = 0;
+	switch (GETWEAPONTYPE(player->getInventory()->getEquippedID(11))) {
+		case WEAPON_BOW:
+			masteryid = 3100000;
+			break;
+		case WEAPON_CROSSBOW:
+			masteryid = 3200000;
+			break;
+		case WEAPON_CLAW:
+			masteryid = 4100000;
+			break;
+		case WEAPON_GUN:
+			masteryid = 5200000;
+			break;
+	}
+	packet.addByte((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
+	// Bug in global:
+	// The colored swoosh does not display as it should
 	int itemid = 0;
 	if (!shadow_meso) {
 		if (csstar > 0)
@@ -221,13 +264,12 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	packet.addInt(skillid);
 	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
 		charge = pack->getInt();
-	packet.addByte(0);
-	pack->skipBytes(1); // Display
+	packet.addByte(pack->getByte()); // Projectile display
 	packet.addByte(pack->getByte()); // Direction/animation
 	pack->skipBytes(1); // Weapon subclass
 	packet.addByte(pack->getByte()); // Casting speed
 	pack->skipBytes(4); // Ticks
-	packet.addByte(0); // No clue
+	packet.addByte(0); // Mastery byte is always 0 because spells don't have a swoosh
 	packet.addInt(0); // No clue
 	for (char i = 0; i < targets; i++) {
 		int mobid = pack->getInt();
