@@ -225,8 +225,8 @@ elseif state == 1 then
 		addSkillLevel(1221012, 1);--    Awakening
 		addSkillLevel(1221009, 30);--    Blast
 		addSkillLevel(1220006, 30);--    Blocking
-		addSkillLevel(1221004, 30);--    Divine Charge: Mace
-		addSkillLevel(1221003, 30);--    Holy Charge: Sword
+		addSkillLevel(1221004, 20);--    Divine Charge: Mace
+		addSkillLevel(1221003, 20);--    Holy Charge: Sword
 		addSkillLevel(1221000, 20);--    Maple Warrior
 		addSkillLevel(1221001, 30);--    Monster Magnet
 		addSkillLevel(1221007, 30);--    Rush
