@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MAP_H
 #define MAP_H
 
+#include "Mobs.h"
 #include "Pos.h"
 #include <ctime>
 #include <unordered_map>
@@ -157,11 +158,22 @@ public:
 	void addMobSpawn(MobSpawnInfo spawn);
 	void checkMobSpawn(clock_t time);
 	void spawnMob(int mobid, Pos pos, int spawnid = -1, short fh = 0);
-	Mob * getMob(int id) {
-		if (this->mobs.find(id) != mobs.end())
-			return this->mobs[id];
-		else
-			return 0;
+	Mob * getMob(int id, bool isMapID = true) {
+		if (isMapID) {
+			if (this->mobs.find(id) != mobs.end())
+				return this->mobs[id];
+			else
+				return 0;
+		}
+		else {
+			for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+				if (iter->second != 0) {
+					if (iter->second->getMobID() == id)
+						return iter->second;
+				}
+			}
+		}
+		return 0;
 	}
 	void removeMob(int id, int spawnid);
 	void killMobs(Player *player);
