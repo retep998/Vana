@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ISRECHARGEABLE(x) (ISSTAR(x) || ISBULLET(x))
 #define ISEQUIP(x) (GETINVENTORY(x) == 1)
 #define ISPET(x) (x >= 5000000 && x <= 5000045)
+#define GETWEAPONTYPE(x) (x/10000)
 
 #include <unordered_map>
 #include <vector>
@@ -36,6 +37,25 @@ class Player;
 class ItemTimer;
 class ReadPacket;
 struct Item;
+
+enum {
+	WEAPON_1H_SWORD = 130,
+	WEAPON_1H_AXE = 131,
+	WEAPON_1H_MACE = 132,
+	WEAPON_DAGGER = 133,
+	WEAPON_WAND = 137,
+	WEAPON_STAFF = 138,
+	WEAPON_2H_SWORD = 140,
+	WEAPON_2H_AXE = 141,
+	WEAPON_2H_MACE = 142,
+	WEAPON_SPEAR = 143,
+	WEAPON_POLEARM = 144,
+	WEAPON_BOW = 145,
+	WEAPON_CROSSBOW = 146,
+	WEAPON_CLAW = 147,
+	WEAPON_KNUCKLE = 148,
+	WEAPON_GUN = 149
+};
 
 struct EquipInfo {
 	char slots;
