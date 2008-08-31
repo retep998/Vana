@@ -307,12 +307,27 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char targets, char hits, int skillid, int &extra, MPEaterInfo *eater) {
 	int map = player->getMap();
 	unsigned int total = 0;
+	bool isHorntail = false;
 	for (char i = 0; i < targets; i++) {
 		int mapmobid = packet->getInt();
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
 		int mobid = mob->getMobID();
+		Mob *htabusetaker;
+		switch (mobid) {
+			case 8810002:
+			case 8810003:
+			case 8810004:
+			case 8810005:
+			case 8810006:
+			case 8810007:
+			case 8810008:
+			case 8810009:
+				isHorntail = true;
+				htabusetaker = Maps::maps[map]->getMob(8810018, false);
+				break;
+		}
 		packet->skipBytes(3); // Useless
 		packet->skipBytes(1); // State
 		packet->skipBytes(8); // Useless
@@ -323,17 +338,16 @@ unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char ta
 			int damage = packet->getInt();
 			total += damage;
 			if (skillid == 1221011 && Mobs::mobinfo[mob->getMobID()].boss) {
-				// Damage calculation goes in here, it's skill % * range
-				// Can't calculate range without weapon class
-				// Thus, can't calculate damage because there's no indication of weapon class anywhere
-				// Yes, I know "weapon subclass" is in the packet, but that doesn't segregate them
-				// 1H anything except wand/staff = 1. This could be a dagger, it could be a sword, it could be a mace, etc.
+				// Damage calculation goes in here, I think? Hearing conflicted views.
 			}
 			else {
 				if (skillid == 1221011)
 					mob->setHP(1);
-				else
+				else {
 					mob->setHP(mob->getHP() - damage);
+					if (htabusetaker != 0)
+						htabusetaker->setHP(htabusetaker->getHP() - damage);
+				}
 			}
 			int cmp = -1;
 			cmp = mob->getMP();
@@ -351,10 +365,18 @@ unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char ta
 					SkillsPacket::showSkillEffect(player, eater->id);
 				}
 			}
-			displayHPBars(player, mob);
+			displayHPBars(player, (isHorntail ? htabusetaker : mob));
 			if (mob->getHP() <= 0) {
 				packet->skipBytes(4 * (hits - 1 - k));
 				mob->die(player);
+				if (htabusetaker != 0) {
+					if (htabusetaker->getHP() <= 0) {
+						for (char q = 0; q < 8; q++) {
+							Maps::maps[map]->killMobs(player, (8810010 + q)); // Dead Horntail's parts
+						}
+						htabusetaker->die(player);
+					}
+				}
 				break;
 			}
 		}
@@ -382,7 +404,7 @@ void Mobs::displayHPBars(Player *player, Mob *mob) {
 	hpinfo.hpbgcolor = mobinfo[hpinfo.mobid].hpbgcolor;
 	hpinfo.mapmobid = mob->getID();
 
-	if (hpinfo.boss && hpinfo.hpcolor > 0) // Boss HP bars
+	if ((hpinfo.boss || hpinfo.mobid == 8810018) && hpinfo.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
 		MobsPacket::showBossHP(player, hpinfo);
 	else if (hpinfo.boss) // Miniboss HP bars
 		MobsPacket::showMinibossHP(player, hpinfo.mobid, hpinfo.hp * 100 / hpinfo.mhp);
