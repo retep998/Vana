@@ -533,14 +533,8 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			player->setNPC(0);
 		}
 		else if (strcmp(command, "horntail") == 0) {
-			Mobs::spawnMob(player, 8810002);
-			Mobs::spawnMob(player, 8810003);
-			Mobs::spawnMob(player, 8810004);
-			Mobs::spawnMob(player, 8810005);
-			Mobs::spawnMob(player, 8810006);
-			Mobs::spawnMob(player, 8810007);
-			Mobs::spawnMob(player, 8810008);
-			Mobs::spawnMob(player, 8810009);
+			Mobs::spawnMob(player, 8810026);
+			Maps::maps[player->getMap()]->killMobs(player, 8810026);
 		}
 		else if (strcmp(command, "heal") == 0) {
 			player->setHP(player->getMHP());
