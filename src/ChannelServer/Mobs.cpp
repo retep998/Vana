@@ -344,9 +344,13 @@ unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char ta
 				if (skillid == 1221011)
 					mob->setHP(1);
 				else {
-					mob->setHP(mob->getHP() - damage);
-					if (htabusetaker != 0)
+					int temphp = mob->getHP();
+					mob->setHP(temphp - damage);
+					if (htabusetaker != 0) {
+						if (temphp - damage <= 0) // Horntail will die before all of his parts otherwise
+							damage = temphp; // Damage isn't used again from here on anyway
 						htabusetaker->setHP(htabusetaker->getHP() - damage);
+					}
 				}
 			}
 			int cmp = -1;
