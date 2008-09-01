@@ -78,7 +78,8 @@ void Map::addReactor(Reactor *reactor) {
 }
 
 void Map::addReactorRespawn(ReactorRespawnInfo respawn) {
-	reactorrespawns.push_back(respawn);
+	if (reactorspawns[respawn.id].time >= 0)
+		reactorrespawns.push_back(respawn);
 }
 
 void Map::checkReactorSpawn(clock_t time) {
