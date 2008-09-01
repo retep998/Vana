@@ -314,7 +314,7 @@ unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char ta
 		if (mob == 0)
 			return 0;
 		int mobid = mob->getMobID();
-		Mob *htabusetaker;
+		Mob *htabusetaker = 0;
 		switch (mobid) {
 			case 8810002:
 			case 8810003:
