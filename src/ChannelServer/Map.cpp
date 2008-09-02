@@ -226,7 +226,7 @@ void Map::clearDrops(bool showPacket) { // Clear all drops
 }
 
 void Map::clearDrops(int time) { // Clear drops based on how long they have been in the map
-	time -= 60000;
+	time -= 180000;
 	unordered_map<int, Drop *> drops = this->drops;
 	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0)
