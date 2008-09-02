@@ -117,6 +117,8 @@ namespace LuaExports {
 	int showShop(lua_State *luaVm);
 	int showMessage(lua_State *luaVm);
 	int showMapMessage(lua_State *luaVm);
+	int showMapEvent(lua_State *luaVm);
+	int showMapSound(lua_State *luaVm);
 	int showInstructionBubble(lua_State *luaVm);
 
 	int spawnMob(lua_State *luaVm);
@@ -130,13 +132,6 @@ namespace LuaExports {
 	int getMesoRate(lua_State *luaVm);
 	int getQuestEXPRate(lua_State *luaVm);
 	int getDropRate(lua_State *luaVm);
-
-    int partyQuestClear(lua_State *luaVm);
-    int partyQuestWrong(lua_State *luaVm);
-    int carnivalQuestWin(lua_State *luaVm);
-    int carnivalQuestLose(lua_State *luaVm);
-    int coconutEventVictory(lua_State *luaVm);
-    int coconutEventLose(lua_State *luaVm);
 };
 
 #endif
