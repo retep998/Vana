@@ -135,9 +135,18 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 
 		if (player->getGMLevel() >= 2) { // Super GM level
 			if (strcmp(command, "me") == 0) {
-				if (strlen(next_token) == 0) return;
+				if (strlen(next_token) == 0)
+					return;
 				string msg = player->getName() + " : " + string(next_token);
-				PlayersPacket::showMessage(msg, 6);
+				struct {
+					void operator()(Player *gmplayer) {
+						if (gmplayer->isGM() == true) {
+							PlayerPacket::showMessage(gmplayer, msg, 6);
+						}
+					}
+					string msg;
+				} sendMessage = {msg};
+				Players::Instance()->run(sendMessage);
 			}
 			else if (strcmp(command, "kick") == 0) {
 				if (strlen(next_token) == 0) return;
