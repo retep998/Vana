@@ -1,0 +1,2 @@
+-- Maple Island Crates
+dropItems();
