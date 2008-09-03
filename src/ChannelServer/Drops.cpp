@@ -28,8 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "ReadPacket.h"
 
-unordered_map<int, MobDropsInfo> Drops::dropsinfo;
-unordered_map<int, Mesos> Drops::mesos;
+unordered_map<int, DropsInfo> Drops::dropdata;
 
 // Drop class
 Drop::Drop (int mapid, int mesos, Pos pos, int owner) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0) {
@@ -86,19 +85,16 @@ void Drop::removeDrop(bool showPacket) {
 }
 
 // Drops namespace
-void Drops::addDrop(int id, MobDropInfo drop) {
-	dropsinfo[id].push_back(drop);
+void Drops::addDropData(int id, DropInfo drop) {
+	dropdata[id].push_back(drop);
 }
 
-void Drops::addMesos(int id, Mesos meso) {
-	mesos[id] = meso;
-}
+void Drops::doDrops(Player *player, int droppingID, Pos origin) {
+	DropsInfo drops = dropdata[droppingID];
 
-void Drops::dropMob(Player *player, Mob *mob) {
-	MobDropsInfo drops = dropsinfo[mob->getMobID()];
 	int d = 0;
 	for (size_t k = 0; k < drops.size(); k++) {
-		if (Randomizer::Instance()->randInt(9999) < drops[k].chance * ChannelServer::Instance()->getDroprate()) {
+		if (!drops[k].ismesos && Randomizer::Instance()->randInt(9999) < drops[k].chance * ChannelServer::Instance()->getDroprate()) {
 			if (drops[k].quest > 0) {
 				if (!player->getQuests()->isQuestActive(drops[k].quest))
 					continue;
@@ -114,22 +110,22 @@ void Drops::dropMob(Player *player, Mob *mob) {
 
 			Pos pos;
 			if (d%2) {
-				pos.x = mob->getPos().x+25*((d+1)/2);
-				pos.y = mob->getPos().y;
+				pos.x = origin.x+25*((d+1)/2);
+				pos.y = origin.y;
 			}
 			else {
-				pos.x = mob->getPos().x-25*(d/2);
-				pos.y = mob->getPos().y;
+				pos.x = origin.x-25*(d/2);
+				pos.y = origin.y;
 			}
 
 			Drop *drop = 0;
 
 			if (GETINVENTORY(drops[k].id) == 1) {
-				drop = new Drop(mob->getMapID(), Item(drops[k].id, true), pos, player->getId());
+				drop = new Drop(player->getMap(), Item(drops[k].id, true), pos, player->getId());
 			}
 
 			else {
-				drop = new Drop(mob->getMapID(), Item(drops[k].id, (short) 1), pos, player->getId());
+				drop = new Drop(player->getMap(), Item(drops[k].id, (short) 1), pos, player->getId());
 			}
 
 			if (drops[k].quest > 0) {
@@ -137,30 +133,33 @@ void Drops::dropMob(Player *player, Mob *mob) {
 				drop->setQuest(drops[k].quest);
 			}
 			drop->setTime(100);
-			drop->doDrop(mob->getPos());
+			drop->doDrop(origin);
 			d++;
 		}
-	}
-	int nm = mesos[mob->getMobID()].min * ChannelServer::Instance()->getMesorate();
-	int xm = mesos[mob->getMobID()].max * ChannelServer::Instance()->getMesorate();
-	if (xm > 0 && nm > 0) {
-		int mesos = Randomizer::Instance()->randInt(xm-nm)+nm;
-		// For Meso up
-		if (player->getSkills()->getActiveSkillLevel(4111001) > 0) {
-			mesos = (mesos*Skills::skills[4111001][player->getSkills()->getActiveSkillLevel(4111001)].x)/100;
+
+		else if (drops[k].ismesos) {
+			int nm = drops[k].minmesos * ChannelServer::Instance()->getMesorate();
+			int xm = drops[k].maxmesos * ChannelServer::Instance()->getMesorate();
+			if (xm > 0 && nm > 0) {
+				int mesos = Randomizer::Instance()->randInt(xm-nm)+nm;
+				// For Meso up
+				if (player->getSkills()->getActiveSkillLevel(4111001) > 0) {
+					mesos = (mesos*Skills::skills[4111001][player->getSkills()->getActiveSkillLevel(4111001)].x)/100;
+				}
+				Pos pos;
+				if (d%2) {
+					pos.x = origin.x+25*((d+1)/2);
+					pos.y = origin.y;
+				}
+				else {
+					pos.x = origin.x-25*(d/2);
+					pos.y = origin.y;
+				}
+				Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId());
+				drop->setTime(100);
+				drop->doDrop(origin);
+			}
 		}
-		Pos pos;
-		if (d%2) {
-			pos.x = mob->getPos().x+25*((d+1)/2);
-			pos.y = mob->getPos().y;
-		}
-		else {
-			pos.x = mob->getPos().x-25*(d/2);
-			pos.y = mob->getPos().y;
-		}
-		Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId());
-		drop->setTime(100);
-		drop->doDrop(mob->getPos());
 	}
 }
 

@@ -58,14 +58,14 @@ void Mob::die(Player *player) {
 	MobsPacket::dieMob(this);
 
 	// Account for Holy Symbol
-	int hsrate = 0;
+	short hsrate = 0;
 	if (player->getSkills()->getActiveSkillLevel(2311003) > 0)
 		hsrate = Skills::skills[2311003][player->getSkills()->getActiveSkillLevel(2311003)].x;
 	else if (player->getSkills()->getActiveSkillLevel(9101002) > 0)
 		hsrate = Skills::skills[9101002][player->getSkills()->getActiveSkillLevel(9101002)].x;
 
 	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp * hsrate)/100)) * ChannelServer::Instance()->getExprate());
-	Drops::dropMob(player, this);
+	Drops::doDrops(player, this->mobid, this->m_pos);
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
 	for (size_t i = 0; i < Mobs::mobinfo[mobid].summon.size(); i++)
@@ -220,7 +220,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1); // Number of portals taken (not kidding)
 	unsigned char tbyte = packet->getByte();
 	char targets = tbyte / 0x10;
-	char hits = tbyte % 0x10;	
+	char hits = tbyte % 0x10;
 	int skillid = packet->getInt();
 	unsigned char display = 0;
 	switch (skillid) {
