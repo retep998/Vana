@@ -42,7 +42,6 @@ namespace LuaExports {
 	// The exports
 	int setReactorState(lua_State *luaVm);
 	int spawnMobReactor(lua_State *luaVm);
-	int dropItems(lua_State *luaVm);
 	int reset(lua_State *luaVm);
 };
 

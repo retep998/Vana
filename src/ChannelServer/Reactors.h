@@ -88,6 +88,7 @@ public:
 		return this->state;
 	}
 	void restore();
+	void drop(Player *player);
 private:
 	Pos pos;
 	bool alive;

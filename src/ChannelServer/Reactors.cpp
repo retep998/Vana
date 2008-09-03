@@ -52,6 +52,12 @@ void Reactor::restore() {
 	ReactorPacket::spawnReactor(this);
 }
 
+void Reactor::drop(Player *player) {
+	if (Drops::dropdata.find(reactorid) != Drops::dropdata.end()) {
+		Drops::doDrops(player, reactorid, pos);
+	}
+}
+
 // Reactors namespace
 unordered_map<int, ReactorEventsInfo> Reactors::reactorinfo;
 unordered_map<int, short> Reactors::maxstates;
@@ -82,7 +88,16 @@ void Reactors::hitReactor(Player *player, ReadPacket *packet) {
 			else {
 				std::ostringstream filenameStream;
 				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
-				LuaReactor(filenameStream.str(), player->getId(), id, reactor->getMapID());
+				string filename = filenameStream.str();
+
+				struct stat fileInfo;
+				if (!stat(filename.c_str(), &fileInfo)) { // Script found
+					LuaReactor(filenameStream.str(), player->getId(), id, reactor->getMapID());
+				}
+				else { // Default action of dropping an item
+					reactor->drop(player);
+				}
+
 				reactor->setState(revent->nextstate, false);
 				reactor->kill();
 				Maps::maps[reactor->getMapID()]->addReactorRespawn(ReactorRespawnInfo(id, clock()));

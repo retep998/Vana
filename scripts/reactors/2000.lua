@@ -1,2 +1,0 @@
--- Maple Island Crates
-dropItems();
