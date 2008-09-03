@@ -314,7 +314,7 @@ void Initializing::initializeItems() {
 void Initializing::initializeDrops() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Drops... ";
 	// Mob drops
-	mysqlpp::Query query = Database::datadb.query("SELECT * FROM mobdropdata ORDER BY mobid ASC");
+	mysqlpp::Query query = Database::datadb.query("SELECT mobid, itemid, chance, quest, mesos, min, max FROM mobdropdata");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -322,32 +322,51 @@ void Initializing::initializeDrops() {
 		exit(1);
 	}
 
-	int currentid = 0;
-	int previousid = -1;
 	MYSQL_ROW dropRow;
 	while ((dropRow = res.fetch_raw_row())) {
-		// Col0 : Row ID
-		//    1 : Mob ID
-		//    2 : Item ID
-		//    3 : Chance
-		//    4 : Quest
-		//    5 : Mesos?
-		//    6 : Min mesos
-		//    7 : Max mesos
+		// Col0 : Mob ID
+		//    1 : Item ID
+		//    2 : Chance
+		//    3 : Quest
+		//    4 : Mesos?
+		//    5 : Min mesos
+		//    6 : Max mesos
 
-		if (atob(dropRow[5])) {
-			Mesos mesos;
-			mesos.min = atoi(dropRow[6]);
-			mesos.max = atoi(dropRow[7]);
-			Drops::addMesos(atoi(dropRow[1]), mesos);
-		}
-		else {
-			MobDropInfo drop;
-			drop.id = atoi(dropRow[2]);
-			drop.chance = atoi(dropRow[3]);
-			drop.quest = atoi(dropRow[4]);
-			Drops::addDrop(atoi(dropRow[1]), drop);
-		}
+		DropInfo drop;
+		drop.id = atoi(dropRow[1]);
+		drop.chance = atoi(dropRow[2]);
+		drop.quest = atoi(dropRow[3]);
+		drop.ismesos = atob(dropRow[4]);
+		drop.minmesos = atoi(dropRow[5]);
+		drop.maxmesos = atoi(dropRow[6]);
+		Drops::addDropData(atoi(dropRow[0]), drop);
+	}
+
+	// Reactor drops
+	query << "SELECT reactorid, itemid, chance, quest, mesos, min, max FROM reactordropdata";
+
+	if (!(res = query.use())) {
+		std::cout << "FAILED: " << Database::datadb.error() << std::endl;
+		exit(1);
+	}
+
+	while ((dropRow = res.fetch_raw_row())) {
+		// Col0 : Reactor ID
+		//    1 : Item ID
+		//    2 : Chance
+		//    3 : Quest
+		//    4 : Mesos?
+		//    5 : Min mesos
+		//    6 : Max mesos
+
+		DropInfo drop;
+		drop.id = atoi(dropRow[1]);
+		drop.chance = atoi(dropRow[2]);
+		drop.quest = atoi(dropRow[3]);
+		drop.ismesos = atob(dropRow[4]);
+		drop.minmesos = atoi(dropRow[5]);
+		drop.maxmesos = atoi(dropRow[6]);
+		Drops::addDropData(atoi(dropRow[0]), drop);
 	}
 
 	std::cout << "DONE" << std::endl;

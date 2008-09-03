@@ -27,32 +27,29 @@ using std::tr1::unordered_map;
 #include "Players.h"
 #include "Player.h"
 
+class Drop;
 class Player;
 class Mob;
+class Reactor;
 class ReadPacket;
 class Map;
 struct Item;
 
-struct MobDropInfo {
+struct DropInfo {
+	DropInfo() : id(0), chance(0), quest(0), ismesos(false), minmesos(0), maxmesos(0) { }
 	int id;
 	int chance;
 	int quest;
+	bool ismesos;
+	int minmesos;
+	int maxmesos;
 };
-typedef vector<MobDropInfo> MobDropsInfo;
-
-struct Mesos {
-	int min;
-	int max;
-};
-
-class Drop;
+typedef vector<DropInfo> DropsInfo;
 
 namespace Drops {
-	extern unordered_map<int, MobDropsInfo> dropsinfo;
-	extern unordered_map<int, Mesos> mesos;
-	void addDrop(int id, MobDropInfo drop);
-	void addMesos(int id, Mesos meso);
-	void dropMob(Player *player, Mob *mob);
+	extern unordered_map<int, DropsInfo> dropdata;
+	void addDropData(int id, DropInfo drop);
+	void doDrops(Player *player, int droppingID, Pos origin);
 	void dropMesos(Player *player, ReadPacket *packet);
 	void lootItem(Player *player, ReadPacket *packet);
 };
