@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Maps.h"
 #include "Mobs.h"
-#include "Drops.h"
 #include <string>
 
 LuaReactor::LuaReactor(const string &filename, int playerid, int reactorid, int mapid) : LuaScriptable(filename, playerid), reactorid(reactorid) {
@@ -36,7 +35,6 @@ LuaReactor::LuaReactor(const string &filename, int playerid, int reactorid, int 
 
 	lua_register(luaVm, "setState", &LuaExports::setReactorState);
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMobReactor);
-	lua_register(luaVm, "dropItems", &LuaExports::dropItems);
 	lua_register(luaVm, "reset", &LuaExports::reset);
 
 	run();
@@ -59,12 +57,6 @@ int LuaExports::spawnMobReactor(lua_State *luaVm) {
 	int mobid = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
 	Mobs::spawnMobPos(reactor->getMapID(), mobid, reactor->getPos());
-	return 1;
-}
-
-int LuaExports::dropItems(lua_State *luaVm) {
-	Reactor *reactor = getReactor(luaVm);
-	Drops::doDrops(getPlayer(luaVm), reactor->getReactorID(), reactor->getPos());
 	return 1;
 }
 
