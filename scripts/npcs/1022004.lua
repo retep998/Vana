@@ -200,7 +200,7 @@ elseif state == 4 then
 			addText("Lacking the materials? It's ok ... collect them all and then come find me, alright? I'll be waiting...");
 			sendNext();
 		else
-			if (not hasResources(reqs)) or (not hasOpenSlotsFor(1, glove, 1)) then
+			if (not hasResources(reqs)) or (not hasOpenSlotsFor(glove, 1)) then
 				addText("Check and see if you have everything you need and if your equipment inventory may be full or not.");
 				sendNext();
 			else
@@ -287,7 +287,7 @@ elseif state == 5 then
 			addText("Lacking the materials? It's ok ... collect them all and then come find me, alright? I'll be waiting...");
 			sendNext();
 		else
-			if (not hasResources(reqs)) or (not hasOpenSlotsFor(1, glove, 1)) then
+			if (not hasResources(reqs)) or (not hasOpenSlotsFor(glove, 1)) then
 				addText("Check and see if you have everything you need and if your equipment inventory may be full or not.");
 				sendNext();
 			else
@@ -303,7 +303,7 @@ elseif state == 5 then
 			addText("Lacking the materials? It's all good...collect them all and then come find me, alright? I'll be waiting...");
 			sendNext();
 		else
-			if extra == 0 or (not hasResources(reqs)) or (not hasOpenSlotsFor(4, material, amt)) then
+			if extra == 0 or (not hasResources(reqs)) or (not hasOpenSlotsFor(material, amt)) then
 				addText("Check and see if you have everything you need and if your equipment inventory may be full or not.");
 				sendNext();
 			else

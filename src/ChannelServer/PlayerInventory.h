@@ -95,7 +95,7 @@ public:
 	int getEquippedID(short slot);
 	void changeItemAmount(int itemid, short amount) { itemamounts[itemid] += amount; }
 	int getItemAmount(int itemid);
-	bool hasOpenSlotsFor(char inv, int itemid, short amount);
+	bool hasOpenSlotsFor(int itemid, short amount);
 	iteminventory * getItems(char inv) { return &items[inv - 1]; }
 	void save();
 private:

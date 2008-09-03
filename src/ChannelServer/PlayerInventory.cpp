@@ -178,10 +178,11 @@ int PlayerInventory::getItemAmount(int itemid) {
 	return 0;
 }
 
-bool PlayerInventory::hasOpenSlotsFor(char inv, int itemid, short amount) {
+bool PlayerInventory::hasOpenSlotsFor(int itemid, short amount) {
 	bool has = false;
 	short incrementor = 0;
 	short required = 0;
+	char inv = GETINVENTORY(itemid);
 	if (inv == 1 || ISRECHARGEABLE(itemid))
 		required = amount; // These aren't stackable
 	else {
