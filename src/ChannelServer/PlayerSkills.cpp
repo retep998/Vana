@@ -30,7 +30,6 @@ bool PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpac
 	}
 
 	playerskills[skillid] = newlevel;
-
 	if (sendpacket) {
 		char maxlevel = 0;
 		if (FORTHJOB_SKILL(skillid)) {
@@ -38,16 +37,7 @@ bool PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpac
 		}
 		SkillsPacket::addSkill(player, skillid, getSkillLevel(skillid), maxlevel);
 	}
-	
 	return true;
-}
-
-void PlayerSkills::deleteSkillMapEnterInfo(int skillid) {
-	for (size_t i = 0; i < activemapenterskill.size(); i++) {
-		if (activemapenterskill[i].skill == skillid) {
-			activemapenterskill.erase(activemapenterskill.begin()+i);
-		}
-	}
 }
 
 unsigned char PlayerSkills::getSkillLevel(int skillid) {
@@ -61,59 +51,6 @@ unsigned char PlayerSkills::getMaxSkillLevel(int skillid) {
 	if (maxlevels.find(skillid) != maxlevels.end())
 		return maxlevels[skillid];
 	return 0;
-}
-
-SkillActiveInfo PlayerSkills::getSkillMapInfo(int skillid) {
-	return activemapskill[skillid];
-}
-
-SkillMapEnterActiveInfo PlayerSkills::getSkillMapEnterInfo() {
-	SkillMapEnterActiveInfo skill;
-	for (size_t i = 0; i < activemapenterskill.size(); i++) {
-		skill.types[activemapenterskill[i].byte] += activemapenterskill[i].type;
-		if (activemapenterskill[i].isvalue) {
-			skill.val = activemapenterskill[i].value;
-			skill.isval = true;
-		}
-	}
-	return skill;
-}
-
-SkillActiveInfo PlayerSkills::getSkillPlayerInfo(int skillid) {
-	return activeplayerskill[skillid];
-}
-
-unsigned char PlayerSkills::getActiveSkillLevel(int skillid) {
-	if (activelevels.find(skillid) != activelevels.end())
-		return activelevels[skillid];
-	return 0;
-
-}
-
-void PlayerSkills::setSkillMapEnterInfo(int skillid, vector<SkillMapActiveInfo> skill) {
-	// TEMP //
-	for (size_t i = 0; i < activemapenterskill.size(); i++) { 
-		if (activemapenterskill[i].isvalue) {
-			activemapenterskill.erase(activemapenterskill.begin()+i);
-			break;
-		}
-	}
-	//////////
-	for (size_t i = 0; i < skill.size(); i++) {
-		activemapenterskill.push_back(skill[i]);
-	}
-}
-
-void PlayerSkills::setSkillPlayerInfo(int skillid, SkillActiveInfo skill) {
-	activeplayerskill[skillid] = skill;
-}
-
-void PlayerSkills::setSkillMapInfo(int skillid, SkillActiveInfo skill) {
-	activemapskill[skillid] = skill;
-}
-
-void PlayerSkills::setActiveSkillLevel(int skillid, int level) {
-	activelevels[skillid] = level;
 }
 
 void PlayerSkills::save() {

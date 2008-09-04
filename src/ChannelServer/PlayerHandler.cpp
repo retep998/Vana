@@ -104,11 +104,11 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			stance = packet->getByte(); // Power Stance, normal end of packet
 			if (stance > 0) {
 				int skillid = 0;
-				if (player->getSkills()->getActiveSkillLevel(1121002) > 0)
+				if (player->getActiveBuffs()->getActiveSkillLevel(1121002) > 0)
 					skillid = 1121002;
-				else if (player->getSkills()->getActiveSkillLevel(1221002) > 0)
+				else if (player->getActiveBuffs()->getActiveSkillLevel(1221002) > 0)
 					skillid = 1221002;
-				else if (player->getSkills()->getActiveSkillLevel(1321002) > 0)
+				else if (player->getActiveBuffs()->getActiveSkillLevel(1321002) > 0)
 					skillid = 1321002;
 				if (skillid == 0 || player->getSkills()->getSkillLevel(skillid) == 0) {
 					// Hacking
@@ -135,8 +135,8 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 		// Status ailment processing here
 	}
 	if (damage > 0 && !player->hasGMEquip()) {
-		if (player->getSkills()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
-			int mesorate = Skills::skills[4211005][player->getSkills()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
+		if (player->getActiveBuffs()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
+			int mesorate = Skills::skills[4211005][player->getActiveBuffs()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
 			unsigned short hp = player->getHP();
 			int mesoloss = (int)(mesorate * (damage / 2) / 100);
 			int mesos = player->getInventory()->getMesos();
@@ -158,7 +158,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 				player->setMP(player->getMP() - attack.mpburn);
 			applieddamage = true;
 		}
-		if (player->getSkills()->getActiveSkillLevel(2001002) > 0) { // Magic Guard
+		if (player->getActiveBuffs()->getActiveSkillLevel(2001002) > 0) { // Magic Guard
 			unsigned short mp = player->getMP();
 			unsigned short hp = player->getHP();
 			if (attack.deadlyattack) {
@@ -171,13 +171,13 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 				player->setHP(hp - damage);
 			}
 			else {
-				unsigned short reduc = Skills::skills[2001002][player->getSkills()->getActiveSkillLevel(2001002)].x;
+				unsigned short reduc = Skills::skills[2001002][player->getActiveBuffs()->getActiveSkillLevel(2001002)].x;
 				int mpdamage = ((damage * reduc) / 100);
 				int hpdamage = damage - mpdamage;
 				bool ison = false;
 				if (player->getJob() % 10 == 2) {
 						int infinity = player->getJob() * 10000 + 1004;
-						if (player->getSkills()->getActiveSkillLevel(infinity) > 0)
+						if (player->getActiveBuffs()->getActiveSkillLevel(infinity) > 0)
 							ison = true;
 				}
 				if (mpdamage < mp || ison) {

@@ -29,7 +29,7 @@ struct SpecialSkillInfo;
 namespace SkillsPacket {
 	void addSkill(Player *player, int skillid, int level, int maxlevel = 0);
 	void showSkill(Player *player, int skillid, unsigned char level);
-	void useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill, short addedinfo);
+	void useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill, short addedinfo, int mountid = 0);
 	void endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill);
 	void healHP(Player *player, short hp);
 	void showSkillEffect(Player *player, int skillid, unsigned char level = 0);

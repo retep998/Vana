@@ -143,8 +143,8 @@ void Drops::doDrops(Player *player, int droppingID, Pos origin) {
 			if (xm > 0 && nm > 0) {
 				int mesos = Randomizer::Instance()->randInt(xm-nm)+nm;
 				// For Meso up
-				if (player->getSkills()->getActiveSkillLevel(4111001) > 0) {
-					mesos = (mesos*Skills::skills[4111001][player->getSkills()->getActiveSkillLevel(4111001)].x)/100;
+				if (player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
+					mesos = (mesos*Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x)/100;
 				}
 				Pos pos;
 				if (d%2) {

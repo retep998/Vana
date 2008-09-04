@@ -159,12 +159,14 @@ struct MPEaterInfo { // MP Eater
 	short prop;
 	bool onlyOnce;
 };
+
 struct SkillsInfo {
 	vector<SkillPlayerInfo> player;
 	vector<SkillMapInfo> map;
 	SkillAct act;
 	vector<bool> bact;
 };
+
 typedef unordered_map<unsigned char, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
@@ -176,6 +178,10 @@ namespace Skills {
 	void addSkill(Player *player, ReadPacket *packet);
 	void cancelSkill(Player *player, ReadPacket *packet);
 	void useSkill(Player *player, ReadPacket *packet);
+	short getValue(char value, int skillid, unsigned char level);
+	SkillActiveInfo parsePlayerSkill(Player *player, int skillid, unsigned char level, int &mountid);
+	SkillActiveInfo parseMapSkill(Player *player, int skillid, unsigned char level, vector<SkillMapActiveInfo> &mapenterskill);
+	void applySkillCosts(Player *player, int skillid, unsigned char level, bool elementalamp = false);
 	void useAttackSkill(Player *player, int skillid);
 	void useAttackSkillRanged(Player *player, int skillid, short pos, unsigned char display);
 	void useAttackRanged(Player *player, short pos, unsigned char display);
@@ -188,6 +194,7 @@ namespace Skills {
 	void startCooldown(Player *player, int skillid, int cooltime);
 	void stopCooldown(Player *player, int skillid);
 	bool isCooling(Player *player, int skillid);
+	bool isBuff(int skillid);
 };
 
 #endif

@@ -137,7 +137,7 @@ void Skills::init() {
 	player.byte = TYPE_1;
 	player.value = SKILL_MDEF;
 	skillsinfo[1301006].player.push_back(player);
-	// 1301007 & 9101008 - Hyper Body
+	// 1301007 & 9101008 - Hyper Body, GM Hyper Body
 	player.type = 0x20;
 	player.byte = TYPE_2;
 	player.value = SKILL_X;
@@ -202,8 +202,8 @@ void Skills::init() {
 	player.value = SKILL_AVO;
 	skillsinfo[9101003].player.push_back(player);
 	// 9101004 - GM Hide
-	player.type = 0x04;
-	player.byte = TYPE_1;
+	player.type = 0x01;
+	player.byte = TYPE_8;
 	player.value = 0;
 	skillsinfo[9101004].player.push_back(player);
 	// 3101004 & 3201004 - Soul Arrow
@@ -335,11 +335,11 @@ void Skills::init() {
 	skillsinfo[4211003].player.push_back(player);
 	// 1004 - Monster Rider
 	player.type = 0x40;
-	player.byte = TYPE_6;
+	player.byte = TYPE_8;
 	player.value = SKILL_X;
 	skillsinfo[1004].player.push_back(player);
 	map.type = 0x40;
-	map.byte = TYPE_6;
+	map.byte = TYPE_8;
 	map.value = SKILL_X;
 	map.val = false;
 	skillsinfo[1004].map.push_back(map);
@@ -425,8 +425,7 @@ void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 }
 void Skills::stopSkill(Player *player, int skillid, bool fromTimer) {
 	player->getActiveBuffs()->removeBuff(skillid, fromTimer);
-
-	switch(skillid) {
+	switch (skillid) {
 		case 3121004:
 		case 3221001:
 		case 2121001:
@@ -449,7 +448,6 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	short addedinfo = 0;
 	unsigned char level = packet->getByte();
 	unsigned char type = 0;
-	int cooltime = Skills::skills[skillid][level].cooltime;
 	switch (skillid) {
 		case 1121001: // Monster Magnet processing
 		case 1221001:
@@ -475,67 +473,100 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		// hacking
 		return;
 	}
-	if (cooltime > 0)
-		Skills::startCooldown(player, skillid, cooltime);
-	if (skills[skillid][level].mp > 0) {
-		if (player->getSkills()->getActiveSkillLevel(3121008) > 0) { // Reduced MP usage for Concentration
-			int mprate = Skills::skills[3121008][player->getSkills()->getActiveSkillLevel(3121008)].x;
-			int mploss = (skills[skillid][level].mp * mprate) / 100;
-			player->setMP(player->getMP() - mploss, 1);
-		}
-		else
-			player->setMP(player->getMP() - skills[skillid][level].mp, 1);
-	}
-	else
-		player->setMP(player->getMP(), 1);
-	if (skills[skillid][level].hp > 0) {
-		player->setHP(player->getHP() - skills[skillid][level].hp);
-	}
-	if (skills[skillid][level].item > 0) {	
-		Inventory::takeItem(player, skills[skillid][level].item, skills[skillid][level].itemcount);
-	}
-	if (skills[skillid][level].hpP > 0) {	
-		//TODO PARTY
-		int healrate = skills[skillid][level].hpP / 1;
-		if (healrate > 100)
-			healrate = 100;
-		player->setHP(player->getHP() + healrate * player->getMHP() / 100);
-	}
-	SkillsPacket::showSkill(player, skillid, level); 
-	switch (skillid) {
-		case 1301007: // Hyper Body
-		case 9101008: // GM Hyper Body
-			player->setMHP(player->getRMHP() * (100 + skills[skillid][level].x) / 100);
-			player->setMMP(player->getRMMP() * (100 + skills[skillid][level].y) / 100);
-			break;
-		case 9101000: // GM Heal + Dispel - needs to be modified for map
-			player->setHP(player->getMHP());
-			player->setMP(player->getMMP());
-			break;
-		case 1121010: // Enrage
-			if (player->getActiveBuffs()->getCombo() == 10)
-				player->getActiveBuffs()->setCombo(0, true);
-			else
-				return;
-			break;
-		case 9101005: { // GM Resurrection
-			for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
-				Player *resplayer;
-				resplayer = Maps::maps[player->getMap()]->getPlayer(i);
-				if (resplayer->getHP() <= 0) {
-					resplayer->setHP(resplayer->getMHP());
+	Skills::applySkillCosts(player, skillid, level);
+	SkillsPacket::showSkill(player, skillid, level);
+	if (Skills::isBuff(skillid)) {
+		int mountid = 0;
+		PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
+		vector<SkillMapActiveInfo> mapenterskill;
+		SkillActiveInfo playerskill = Skills::parsePlayerSkill(player, skillid, level, mountid);
+		SkillActiveInfo mapskill = Skills::parseMapSkill(player, skillid, level, mapenterskill);
+		switch (skillid) {
+			case 1004: // Monster Rider
+				if (mountid == 0) {
+					// Hacking
+					return;
 				}
+				break;
+			case 9101004: // GM Hide
+				MapPacket::removePlayer(player);
+				break;
+			case 1301007: // Hyper Body
+			case 9101008: // GM Hyper Body
+				// TODO: Party
+				player->setMHP(player->getRMHP() * (100 + skills[skillid][level].x) / 100);
+				player->setMMP(player->getRMMP() * (100 + skills[skillid][level].y) / 100);
+				break;
+			case 1121010: // Enrage
+				if (playerbuffs->getCombo() != 10)
+					return;
+				playerbuffs->setCombo(0, true);
+				break;
+		}
+		SkillsPacket::useSkill(player, skillid, (skillid == 9101004 ? 2100000 : skills[skillid][level].time) * 1000, playerskill, mapskill, addedinfo, mountid);
+		playerbuffs->setSkillPlayerInfo(skillid, playerskill);
+		playerbuffs->setSkillMapInfo(skillid, mapskill);
+		playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
+		playerbuffs->setActiveSkillLevel(skillid, level);
+		playerbuffs->removeBuff(skillid);
+		player->setSkill(playerbuffs->getSkillMapEnterInfo());
+		if (skillsinfo[skillid].bact.size() > 0) {
+			short value = getValue(skillsinfo[skillid].act.value, skillid, level);
+			playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
+		}
+		playerbuffs->addBuff(skillid, level);
+	}
+	else { // Nonbuffs
+		switch (skillid) {
+			case 2301002: { // Heal
+				//TODO PARTY
+				int healrate = skills[skillid][level].hpP / 1;
+				if (healrate > 100)
+					healrate = 100;
+				player->setHP(player->getHP() + healrate * player->getMHP() / 100);
+				break;
 			}
-			break;
+			case 9101000: // GM Heal + Dispel - needs to be modified for map?
+				player->setHP(player->getMHP());
+				player->setMP(player->getMMP());
+				break;
+			case 9101005: { // GM Resurrection
+				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+					Player *resplayer;
+					resplayer = Maps::maps[player->getMap()]->getPlayer(i);
+					if (resplayer->getHP() <= 0) {
+						resplayer->setHP(resplayer->getMHP());
+					}
+				}
+				break;
+			}
 		}
 	}
-	if (skillsinfo.find(skillid) == skillsinfo.end())
-		return;
+}
+
+short Skills::getValue(char value, int skillid, unsigned char level) {
+	short rvalue = 0;
+	switch (value) {
+		case SKILL_X: rvalue = skills[skillid][level].x; break;
+		case SKILL_Y: rvalue = skills[skillid][level].y; break;
+		case SKILL_SPEED: rvalue = skills[skillid][level].speed; break;
+		case SKILL_JUMP: rvalue = skills[skillid][level].jump; break;
+		case SKILL_WATK: rvalue = skills[skillid][level].watk; break;
+		case SKILL_WDEF: rvalue = skills[skillid][level].wdef; break;
+		case SKILL_MATK: rvalue = skills[skillid][level].matk; break;
+		case SKILL_MDEF: rvalue = skills[skillid][level].mdef; break;
+		case SKILL_ACC: rvalue = skills[skillid][level].acc; break;
+		case SKILL_AVO: rvalue = skills[skillid][level].avo; break;
+		case SKILL_PROP: rvalue = skills[skillid][level].prop; break;
+		case SKILL_MORPH: rvalue = skills[skillid][level].morph; break;
+		case SKILL_LV: rvalue = level; break;
+	}
+	return rvalue;
+}
+
+SkillActiveInfo Skills::parsePlayerSkill(Player *player, int skillid, unsigned char level, int &mountid) {
 	SkillActiveInfo playerskill;
-	SkillActiveInfo mapskill;
-	vector<SkillMapActiveInfo> mapenterskill;
 	memset(playerskill.types, 0, 8 * sizeof(unsigned char)); // Reset player/map types to 0
-	memset(mapskill.types, 0, 8 * sizeof(unsigned char));
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		playerskill.types[skillsinfo[skillid].player[i].byte] += skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
@@ -545,6 +576,9 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		}
 		short value = 0;
 		switch (skillid) {
+			case 1004: // Monster Rider
+				mountid = player->getInventory()->getEquippedID(18);
+				break;
 			case 3121002: // Sharp Eyes
 			case 3221002: // Sharp Eyes
 			case 4111002: // Shadow Partner
@@ -554,21 +588,12 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				player->getActiveBuffs()->setCombo(0, false);
 				value = 1;
 				break;
-			case 1004: { // Monster Rider
-				Item *equip = player->getInventory()->getItem(1, -18);
-				if (equip == 0)
-					// hacking
-					return;
-				int mountid = equip->id;
-				value = Inventory::equips[mountid].tamingmob;
-				break;
-			}
 			case 4121006: { // Shadow Claw
 				for (short s = 1; s <= player->getInventory()->getMaxSlots(2); s++) {
 					Item *item = player->getInventory()->getItem(2, s);
 					if (item == 0)
 						continue;
-					if (ISRECHARGEABLE(item->id) && item->amount >= 200) {
+					if (ISSTAR(item->id) && item->amount >= 200) {
 						Inventory::takeItemSlot(player, 2, s, 200);
 						value = (item->id % 10000) + 1;
 						break;
@@ -577,25 +602,17 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				break;
 			}
 			default:
-				switch (val) {
-					case SKILL_X: value = skills[skillid][level].x; break;
-					case SKILL_Y: value = skills[skillid][level].y; break;
-					case SKILL_SPEED: value = skills[skillid][level].speed; break;
-					case SKILL_JUMP: value = skills[skillid][level].jump; break;
-					case SKILL_WATK: value = skills[skillid][level].watk; break;
-					case SKILL_WDEF: value = skills[skillid][level].wdef; break;
-					case SKILL_MATK: value = skills[skillid][level].matk; break;
-					case SKILL_MDEF: value = skills[skillid][level].mdef; break;
-					case SKILL_ACC: value = skills[skillid][level].acc; break;
-					case SKILL_AVO: value = skills[skillid][level].avo; break;
-					case SKILL_PROP: value = skills[skillid][level].prop; break;
-					case SKILL_MORPH: value = skills[skillid][level].morph; break;
-					case SKILL_LV: value = level; break;
-				}
+				value = getValue(val, skillid, level);
 				break;
 		}
 		playerskill.vals.push_back(value);
 	}
+	return playerskill;
+}
+
+SkillActiveInfo Skills::parseMapSkill(Player *player, int skillid, unsigned char level, vector<SkillMapActiveInfo> &mapenterskill) {
+	SkillActiveInfo mapskill;
+	memset(mapskill.types, 0, 8 * sizeof(unsigned char));
 	for (size_t i = 0; i < skillsinfo[skillid].map.size(); i++) {
 		mapskill.types[skillsinfo[skillid].map[i].byte] += skillsinfo[skillid].map[i].type;
 		char val = skillsinfo[skillid].map[i].value;
@@ -612,21 +629,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				value = player->getActiveBuffs()->getCombo() + 1;
 				break;
 			default:
-				switch (val) {
-					case SKILL_X: value = skills[skillid][level].x; break;
-					case SKILL_Y: value = skills[skillid][level].y; break;
-					case SKILL_SPEED: value = skills[skillid][level].speed; break;   
-					case SKILL_JUMP: value = skills[skillid][level].jump; break; 
-					case SKILL_WATK: value = skills[skillid][level].watk; break;
-					case SKILL_WDEF: value = skills[skillid][level].wdef; break;
-					case SKILL_MATK: value = skills[skillid][level].matk; break; 
-					case SKILL_MDEF: value = skills[skillid][level].mdef; break;
-					case SKILL_ACC: value = skills[skillid][level].acc; break;
-					case SKILL_AVO: value = skills[skillid][level].avo; break;
-					case SKILL_PROP: value = skills[skillid][level].prop; break;
-					case SKILL_MORPH: value = skills[skillid][level].morph; break;
-					case SKILL_LV: value = level; break;
-				}
+				value = getValue(val, skillid, level);
 				break;
 		}
 		mapskill.vals.push_back(value);
@@ -644,86 +647,55 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		map.skill = skillid;
 		mapenterskill.push_back(map);
 	}
-	SkillsPacket::useSkill(player, skillid, (skillid == 9101004 ? 2100000 : skills[skillid][level].time) * 1000, playerskill, mapskill, addedinfo);
-	player->getSkills()->setSkillPlayerInfo(skillid, playerskill);
-	player->getSkills()->setSkillMapInfo(skillid, mapskill);
-	player->getSkills()->setSkillMapEnterInfo(skillid, mapenterskill);
-	player->getActiveBuffs()->removeBuff(skillid);
-	if (skillsinfo[skillid].bact.size() > 0) {
-		int value = 0;
-		switch (skillsinfo[skillid].act.value) {
-			case SKILL_X: value = skills[skillid][level].x; break;
-			case SKILL_Y: value = skills[skillid][level].y; break;
-			case SKILL_SPEED: value = skills[skillid][level].speed; break;
-			case SKILL_WATK: value = skills[skillid][level].watk; break;
-			case SKILL_WDEF: value = skills[skillid][level].wdef; break;
-			case SKILL_MATK: value = skills[skillid][level].matk; break;
-			case SKILL_MDEF: value = skills[skillid][level].mdef; break;
-			case SKILL_ACC: value = skills[skillid][level].acc; break;
-			case SKILL_AVO: value = skills[skillid][level].avo; break;
-			case SKILL_PROP: value = skills[skillid][level].prop; break;
-			case SKILL_MORPH: value = skills[skillid][level].morph; break;
-			case SKILL_LV: value = level; break;
+	return mapskill;
+}
+
+void Skills::applySkillCosts(Player *player, int skillid, unsigned char level, bool elementalamp) {
+	int cooltime = Skills::skills[skillid][level].cooltime;
+	short mpuse = skills[skillid][level].mp;
+	short hpuse = skills[skillid][level].hp;
+	int item = skills[skillid][level].item;
+	if (mpuse > 0) {
+		if (player->getActiveBuffs()->getActiveSkillLevel(3121008) > 0) { // Reduced MP usage for Concentration
+			int mprate = Skills::skills[3121008][player->getActiveBuffs()->getActiveSkillLevel(3121008)].x;
+			int mploss = (mpuse * mprate) / 100;
+			player->setMP(player->getMP() - mploss, true);
 		}
-		player->getActiveBuffs()->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
+		else {
+			if (elementalamp) {
+				int sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
+				char slv = player->getSkills()->getSkillLevel(sid);
+				if (slv > 0)
+					player->setMP(player->getMP() - (mpuse * skills[sid][slv].x / 100), true);
+				else
+					player->setMP(player->getMP() - mpuse, true);
+			}
+			else
+				player->setMP(player->getMP() - mpuse, true);
+		}
 	}
-	player->setSkill(player->getSkills()->getSkillMapEnterInfo());
-	player->getActiveBuffs()->addBuff(skillid, level);
-	player->getSkills()->setActiveSkillLevel(skillid, level);
-	if (skillid == 9101004) // GM Hide
-		MapPacket::removePlayer(player);
+	else
+		player->setMP(player->getMP(), true);
+	if (hpuse > 0)
+		player->setHP(player->getHP() - hpuse);
+	if (item > 0)
+		Inventory::takeItem(player, item, skills[skillid][level].itemcount);
+	if (cooltime > 0)
+		Skills::startCooldown(player, skillid, cooltime);
 }
 
 void Skills::useAttackSkill(Player *player, int skillid) {
 	unsigned char level = player->getSkills()->getSkillLevel(skillid);
 	if (skills.find(skillid) == skills.end())
 		return;
-	if (skills[skillid][level].mp > 0) {
-		int sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
-		char slv = player->getSkills()->getSkillLevel(sid);
-		if (slv > 0)
-			player->setMP(player->getMP() - (skills[skillid][level].mp * skills[sid][slv].x / 100), true);
-		else
-			player->setMP(player->getMP() - skills[skillid][level].mp, true);
-	}
-	else
-		player->setMP(player->getMP(), true);
-	if (skills[skillid][level].hp > 0) {
-		player->setHP(player->getHP() - skills[skillid][level].hp);
-	}
-	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].item > 0) {	
-		Inventory::takeItem(player, skills[skillid][level].item, skills[skillid][level].itemcount);
-	}
-	int cooltime = Skills::skills[skillid][level].cooltime;
-	if (cooltime > 0)
-		Skills::startCooldown(player, skillid, cooltime);
+	Skills::applySkillCosts(player, skillid, level, true);
 }
 
 void Skills::useAttackSkillRanged(Player *player, int skillid, short pos, unsigned char display) {
 	unsigned char level = player->getSkills()->getSkillLevel(skillid);
 	if (skills.find(skillid) == skills.end())
 		return;
-	if (skills[skillid][level].mp > 0) {
-		if (player->getSkills()->getActiveSkillLevel(3121008) > 0) { // Reduced MP useage for Concentration
-			int mprate = Skills::skills[3121008][player->getSkills()->getActiveSkillLevel(3121008)].x;
-			int mploss = (skills[skillid][level].mp * mprate) / 100;
-			player->setMP(player->getMP() - mploss, true);
-		}
-		else {
-			player->setMP(player->getMP() - skills[skillid][level].mp, true);
-		}
-	}
-	else
-		player->setMP(player->getMP(), true);
-	if (skills[skillid][level].hp > 0) {
-		player->setHP(player->getHP() - skills[skillid][level].hp);
-	}
-	if (skills[skillid][player->getSkills()->getSkillLevel(skillid)].item > 0) {	
-		Inventory::takeItem(player, skills[skillid][level].item, skills[skillid][level].itemcount);
-	}
-	int cooltime = Skills::skills[skillid][level].cooltime;
-	if (cooltime > 0)
-		Skills::startCooldown(player, skillid, cooltime);
+	Skills::applySkillCosts(player, skillid, level);
 	if (skills[skillid][level].moneycon > 0) {
 		short midpoint = skills[skillid][level].moneycon;
 		short mesos_min = midpoint - (80 + level * 5);
@@ -758,21 +730,21 @@ void Skills::useAttackRanged(Player *player, short pos, unsigned char display) {
 }
 
 void Skills::endBuff(Player *player, int skill) {
-	/// 
-	if (skill == 1301007 || skill == 9101008) { // Hyper Body
-		player->setMHP(player->getRMHP());
-		player->setMMP(player->getRMMP());
-		player->setHP(player->getHP());
-		player->setMP(player->getMP());
+	switch (skill) {
+		case 1301007: // Hyper Body
+		case 9101008: // GM Hyper Body
+			player->setMHP(player->getRMHP());
+			player->setMMP(player->getRMMP());
+			player->setHP(player->getHP());
+			player->setMP(player->getMP());
+			break;
+		case 9101004: // GM Hide
+			MapPacket::showPlayer(player);
+			break;
 	}
-	///
-	if (skill == 9101004) { // GM Hide
-		MapPacket::showPlayer(player);
-	}
-
-	SkillsPacket::endSkill(player, player->getSkills()->getSkillPlayerInfo(skill), player->getSkills()->getSkillMapInfo(skill));
-	player->getSkills()->deleteSkillMapEnterInfo(skill);
-	player->getSkills()->setActiveSkillLevel(skill, 0);
+	SkillsPacket::endSkill(player, player->getActiveBuffs()->getSkillPlayerInfo(skill), player->getActiveBuffs()->getSkillMapInfo(skill));
+	player->getActiveBuffs()->deleteSkillMapEnterInfo(skill);
+	player->getActiveBuffs()->setActiveSkillLevel(skill, 0);
 }
 
 void Skills::heal(Player *player, short value, int skillid) {
@@ -813,4 +785,10 @@ bool Skills::isCooling(Player *player, int skillid) {
 	if (player->getTimers()->checkTimer(id))
 		return true;
 	return false;
+}
+
+bool Skills::isBuff(int skillid) {
+	if (skillsinfo.find(skillid) == skillsinfo.end())
+		return false;
+	return true;
 }

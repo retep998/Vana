@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerActiveBuffs.h"
+#include "Maps.h"
 #include "Player.h"
 #include "PlayerSkills.h"
 #include "Randomizer.h"
@@ -29,7 +30,13 @@ using std::tr1::bind;
 
 // Buff Skills
 void PlayerActiveBuffs::addBuff(int skill, unsigned char level) {
-	clock_t skillExpire = (skill == 9101004 ? 2100000 : Skills::skills[skill][level].time) * 1000;
+	int time = Skills::skills[skill][level].time;
+	switch (skill) {
+		case 9101004: // GM Hide
+			time = 2100000;
+			break;
+	}
+	clock_t skillExpire = time * 1000;
 	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
 		id, m_player->getTimers(), skillExpire, false);
@@ -42,7 +49,6 @@ void PlayerActiveBuffs::removeBuff(int skill, bool fromTimer) {
 		Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 		m_player->getTimers()->removeTimer(id);
 	}
-
 	removeAct(skill);
 	m_buffs.remove(skill);
 }
@@ -92,15 +98,15 @@ void PlayerActiveBuffs::removeAct(int skill) {
 void PlayerActiveBuffs::setCombo(char combo, bool sendPacket) {
 	m_combo = combo;
 	if (sendPacket) {
-		SkillActiveInfo playerSkill = m_player->getSkills()->getSkillPlayerInfo(1111002);
-		SkillActiveInfo mapSkill = m_player->getSkills()->getSkillMapInfo(1111002);
+		SkillActiveInfo playerSkill = getSkillPlayerInfo(1111002);
+		SkillActiveInfo mapSkill = getSkillMapInfo(1111002);
 		playerSkill.vals[0] = combo + 1;
 		SkillsPacket::useSkill(m_player, 1111002, buffTimeLeft(1111002), playerSkill, mapSkill, 0);
 	}
 }
 
 void PlayerActiveBuffs::addCombo() { // Add combo orbs
-	if (m_player->getSkills()->getActiveSkillLevel(1111002) > 0) {
+	if (getActiveSkillLevel(1111002) > 0) {
 		char advcombo = m_player->getSkills()->getSkillLevel(1120003);
 		char maxcombo = (char) (advcombo > 0 ? Skills::skills[1120003][advcombo].x : Skills::skills[1111002][m_player->getSkills()->getSkillLevel(1111002)].x);
 		
@@ -143,4 +149,65 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 				SkillsPacket::showBerserk(m_player, level, m_berserk);
 		}
 	}
+}
+
+void PlayerActiveBuffs::deleteSkillMapEnterInfo(int skillid) {
+	for (size_t i = 0; i < activemapenterskill.size(); i++) {
+		if (activemapenterskill[i].skill == skillid) {
+			activemapenterskill.erase(activemapenterskill.begin()+i);
+		}
+	}
+}
+
+SkillActiveInfo PlayerActiveBuffs::getSkillMapInfo(int skillid) {
+	return activemapskill[skillid];
+}
+
+SkillMapEnterActiveInfo PlayerActiveBuffs::getSkillMapEnterInfo() {
+	SkillMapEnterActiveInfo skill;
+	for (size_t i = 0; i < activemapenterskill.size(); i++) {
+		skill.types[activemapenterskill[i].byte] += activemapenterskill[i].type;
+		if (activemapenterskill[i].isvalue) {
+			skill.val = activemapenterskill[i].value;
+			skill.isval = true;
+		}
+	}
+	return skill;
+}
+
+SkillActiveInfo PlayerActiveBuffs::getSkillPlayerInfo(int skillid) {
+	return activeplayerskill[skillid];
+}
+
+unsigned char PlayerActiveBuffs::getActiveSkillLevel(int skillid) {
+	if (activelevels.find(skillid) != activelevels.end())
+		return activelevels[skillid];
+	return 0;
+
+}
+
+void PlayerActiveBuffs::setSkillMapEnterInfo(int skillid, vector<SkillMapActiveInfo> skill) {
+	// TEMP //
+	for (size_t i = 0; i < activemapenterskill.size(); i++) { 
+		if (activemapenterskill[i].isvalue) {
+			activemapenterskill.erase(activemapenterskill.begin()+i);
+			break;
+		}
+	}
+	//////////
+	for (size_t i = 0; i < skill.size(); i++) {
+		activemapenterskill.push_back(skill[i]);
+	}
+}
+
+void PlayerActiveBuffs::setSkillPlayerInfo(int skillid, SkillActiveInfo skill) {
+	activeplayerskill[skillid] = skill;
+}
+
+void PlayerActiveBuffs::setSkillMapInfo(int skillid, SkillActiveInfo skill) {
+	activemapskill[skillid] = skill;
+}
+
+void PlayerActiveBuffs::setActiveSkillLevel(int skillid, int level) {
+	activelevels[skillid] = level;
 }
