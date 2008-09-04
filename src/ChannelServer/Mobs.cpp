@@ -59,10 +59,10 @@ void Mob::die(Player *player) {
 
 	// Account for Holy Symbol
 	short hsrate = 0;
-	if (player->getSkills()->getActiveSkillLevel(2311003) > 0)
-		hsrate = Skills::skills[2311003][player->getSkills()->getActiveSkillLevel(2311003)].x;
-	else if (player->getSkills()->getActiveSkillLevel(9101002) > 0)
-		hsrate = Skills::skills[9101002][player->getSkills()->getActiveSkillLevel(9101002)].x;
+	if (player->getActiveBuffs()->getActiveSkillLevel(2311003) > 0)
+		hsrate = Skills::skills[2311003][player->getActiveBuffs()->getActiveSkillLevel(2311003)].x;
+	else if (player->getActiveBuffs()->getActiveSkillLevel(9101002) > 0)
+		hsrate = Skills::skills[9101002][player->getActiveBuffs()->getActiveSkillLevel(9101002)].x;
 
 	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp * hsrate)/100)) * ChannelServer::Instance()->getExprate());
 	Drops::doDrops(player, this->mobid, this->m_pos);
@@ -183,21 +183,21 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			if (acb_level > 0)
 				acb_x = Skills::skills[1220010][acb_level].x;
 			int charge_id = 0;
-			if (player->getSkills()->getActiveSkillLevel(1211003) > 0) // Fire - Sword
+			if (player->getActiveBuffs()->getActiveSkillLevel(1211003) > 0) // Fire - Sword
 				charge_id = 1211003;
-			else if (player->getSkills()->getActiveSkillLevel(1211004) > 0) // Fire - BW
+			else if (player->getActiveBuffs()->getActiveSkillLevel(1211004) > 0) // Fire - BW
 				charge_id = 1211004;
-			else if (player->getSkills()->getActiveSkillLevel(1211005) > 0) // Ice - Sword
+			else if (player->getActiveBuffs()->getActiveSkillLevel(1211005) > 0) // Ice - Sword
 				charge_id = 1211005;
-			else if (player->getSkills()->getActiveSkillLevel(1211006) > 0) // Ice - BW
+			else if (player->getActiveBuffs()->getActiveSkillLevel(1211006) > 0) // Ice - BW
 				charge_id = 1211006;
-			else if (player->getSkills()->getActiveSkillLevel(1211007) > 0) // Lightning - Sword
+			else if (player->getActiveBuffs()->getActiveSkillLevel(1211007) > 0) // Lightning - Sword
 				charge_id = 1211007;
-			else if (player->getSkills()->getActiveSkillLevel(1211008) > 0) // Lightning - BW
+			else if (player->getActiveBuffs()->getActiveSkillLevel(1211008) > 0) // Lightning - BW
 				charge_id = 1211008;
-			else if (player->getSkills()->getActiveSkillLevel(1221003) > 0) // Holy - Sword
+			else if (player->getActiveBuffs()->getActiveSkillLevel(1221003) > 0) // Holy - Sword
 				charge_id = 1221003;
-			else if (player->getSkills()->getActiveSkillLevel(1221004) > 0) // Holy - BW
+			else if (player->getActiveBuffs()->getActiveSkillLevel(1221004) > 0) // Holy - BW
 				charge_id = 1221004;
 			if (charge_id == 0) {
 				// Hacking
@@ -299,7 +299,9 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	packet->skipBytes(2); // Display, direction/animation
 	packet->skipBytes(2); // Weapon subclass, casting speed
 	packet->skipBytes(4); // Ticks
-	Skills::useAttackSkill(player, skillid); // Spells are always skills
+	if (skillid != 2301002) // Heal is sent as both an attack and as a use skill
+		// Prevent this from incurring cost since Heal is always a used skill but only an attack in certain circumstances
+		Skills::useAttackSkill(player, skillid);
 	int useless = 0;
 	unsigned int totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
 }

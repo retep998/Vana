@@ -334,7 +334,7 @@ void Player::setHP(int hp, bool is) {
 }
 
 void Player::setMP(int mp, bool is) {
-	if (!(skills->getActiveSkillLevel(2121004) > 0 || skills->getActiveSkillLevel(2221004) > 0 || skills->getActiveSkillLevel(2321004) > 0)) {
+	if (!(getActiveBuffs()->getActiveSkillLevel(2121004) > 0 || getActiveBuffs()->getActiveSkillLevel(2221004) > 0 || getActiveBuffs()->getActiveSkillLevel(2321004) > 0)) {
 		if (mp < 0)
 			this->mp = 0;
 		else if (mp > mmp)

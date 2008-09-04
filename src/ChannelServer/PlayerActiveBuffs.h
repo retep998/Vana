@@ -21,12 +21,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <list>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 using std::list;
 using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
+using std::vector;
 
 class Player;
+struct SkillMapEnterActiveInfo;
+struct SkillMapActiveInfo;
+struct SkillActiveInfo;
 enum Act;
 
 namespace Timer {
@@ -56,9 +61,24 @@ public:
 	// Berserk
 	bool getBerserk() const { return m_berserk; }
 	void checkBerserk(bool display = false);
+
+	// Map garbage
+	void deleteSkillMapEnterInfo(int skillid);
+	SkillMapEnterActiveInfo getSkillMapEnterInfo();
+	SkillActiveInfo getSkillPlayerInfo(int skillid);
+	SkillActiveInfo getSkillMapInfo(int skillid);
+	unsigned char getActiveSkillLevel(int skillid);
+	void setSkillPlayerInfo(int skillid, SkillActiveInfo skill);
+	void setSkillMapInfo(int skillid, SkillActiveInfo skill);
+	void setSkillMapEnterInfo(int skillid, vector<SkillMapActiveInfo> skill);
+	void setActiveSkillLevel(int skillid, int level);
 private:
 	Player *m_player;
 	list<int> m_buffs;
+	unordered_map<int, SkillActiveInfo> activeplayerskill;
+	unordered_map<int, SkillActiveInfo> activemapskill;
+	vector<SkillMapActiveInfo> activemapenterskill;
+	unordered_map<int, unsigned char> activelevels;
 	unordered_map<int, shared_ptr<Timer::Container>> m_skill_acts;
 	char m_combo;
 	bool m_berserk;
