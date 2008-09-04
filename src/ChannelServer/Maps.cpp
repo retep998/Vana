@@ -33,6 +33,33 @@ void Maps::addMap(MapInfo info) {
 	maps[info.id] = new Map(info);
 }
 
+void Maps::usePortal(Player *player, PortalInfo *portal) {
+	bool scripted = (strlen(portal->script) != 0);
+	if (scripted) {
+		// Scripted portal
+		std::ostringstream filenameStream;
+		filenameStream << "scripts/portals/" << portal->script << ".lua";
+		LuaPortal(filenameStream.str(), player->getId(), portal);
+	}
+
+	PortalInfo *nextportal = 0;
+	if (portal->toid >= 0 && portal->toid != 999999999) { // Only check for new portal ID if a portal script returns a valid map
+		nextportal = maps[portal->toid]->getPortal(portal->to);
+	}
+	else if (portal->toid == 999999999) {
+		std::ostringstream messageStream;
+		if (scripted) {
+			messageStream << "This portal '" << portal->script << "' is currently unavailable.";
+		}
+		else {
+			messageStream << "This portal is currently unavailable.";
+		}
+		PlayerPacket::showMessage(player, messageStream.str(), 5);
+	}
+
+	changeMap(player, portal->toid, nextportal);
+}
+
 void Maps::usePortal(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1);
 	if (packet->getInt() == 0) { // Dead
@@ -45,9 +72,7 @@ void Maps::usePortal(Player *player, ReadPacket *packet) {
 	if (portal == 0) // Exit the function if portal is not found
 		return;
 
-	PortalInfo *nextportal = maps[portal->toid]->getPortal(portal->to);
-
-	changeMap(player, portal->toid, nextportal);
+	usePortal(player, portal);
 }
 
 void Maps::useScriptedPortal(Player *player, ReadPacket *packet) {
@@ -58,21 +83,7 @@ void Maps::useScriptedPortal(Player *player, ReadPacket *packet) {
 	if (portal == 0) // Exit the function if portal is not found
 		return;
 
-	std::ostringstream filenameStream;
-	filenameStream << "scripts/portals/" << portal->script << ".lua";
-	LuaPortal(filenameStream.str(), player->getId(), portal);
-
-	PortalInfo *nextportal = 0;
-	if (portal->toid >= 0 && portal->toid != 999999999) { // Only check for new portal ID if a portal script returns a valid map
-		nextportal = maps[portal->toid]->getPortal(portal->to);
-	}
-	else if (portal->toid == 999999999) {
-		std::ostringstream messageStream;
-		messageStream << "This portal '" << portal->script << "' is currently unavailable.";
-		PlayerPacket::showMessage(player, messageStream.str(), 5);
-	}
-
-	changeMap(player, portal->toid, nextportal);
+	usePortal(player, portal);
 }
 
 void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
