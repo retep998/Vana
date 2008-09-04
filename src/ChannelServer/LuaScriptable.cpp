@@ -233,8 +233,8 @@ int LuaExports::getGender(lua_State *luaVm) {
 }
 
 int LuaExports::hasOpenSlotsFor(lua_State *luaVm) {
-	int itemid = lua_tointeger(luaVm, -1);
-	short amount = lua_tointeger(luaVm, -2);
+	int itemid = lua_tointeger(luaVm, -2);
+	short amount = lua_tointeger(luaVm, -1);
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->hasOpenSlotsFor(itemid, amount));
 	return 1;
 }
