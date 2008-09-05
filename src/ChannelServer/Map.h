@@ -46,12 +46,12 @@ typedef vector<FootholdInfo> FootholdsInfo;
 
 struct PortalInfo {
 	char id;
-	char from[20];
+	string from;
 	int toid;
-	char to[20];
+	string to;
 	char type;
 	Pos pos;
-	char script[30];
+	string script;
 	bool onlyOnce;
 };
 typedef vector<PortalInfo> PortalsInfo;
@@ -124,12 +124,12 @@ public:
 	// Portals
 	void addPortal(PortalInfo portal) {
 		portals.push_back(portal);
-		if (strcmp(portal.from, "sp") == 0)
+		if (portal.from == "sp")
 			spawnpoints += 1;
 	}
-	PortalInfo * getPortal(const char *from) {
+	PortalInfo * getPortal(const string &from) {
 		for (size_t i = 0; i < portals.size(); i++) {
-			if (strcmp(portals[i].from, from) == 0)
+			if (portals[i].from == from)
 				return &portals[i];
 		}
 		return 0;
