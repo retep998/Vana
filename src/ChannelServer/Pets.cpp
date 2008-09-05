@@ -152,8 +152,8 @@ void Pets::addCloseness(Player *player, Pet *pet, short closeness) {
 void Pets::lootItem(Player *player, ReadPacket *packet) {
 	int petid = packet->getInt();
 	packet->skipBytes(13);
-	int itemid = packet->getInt();
-	Drop* drop = Maps::maps[player->getMap()]->getDrop(itemid);
+	int dropid = packet->getInt();
+	Drop* drop = Maps::maps[player->getMap()]->getDrop(dropid);
 	if (drop == 0) {
 		DropsPacket::dontTake(player);
 		return;

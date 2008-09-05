@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PETS_H
 #define PETS_H
 
-#include "Pos.h"
+#include "MovableLife.h"
 #include <unordered_map>
 #include <string>
 
@@ -28,6 +28,7 @@ using std::tr1::unordered_map;
 class Pet;
 class Player;
 class ReadPacket;
+class MovableLife;
 struct Item;
 
 struct PetInfo {
@@ -56,7 +57,7 @@ namespace Pets {
 	void addCloseness(Player *player, Pet *pet, short closeness);
 };
 
-class Pet {
+class Pet : public MovableLife {
 public:
 	Pet(Player *player) : player(player) {}
 	Pet(Player *player, Item *item);
@@ -68,8 +69,6 @@ public:
 	int getType() { return this->type; }
 	void setId(int id) { this->id = id; }
 	int getId() { return this->id; }
-	void setPos(Pos pos) { this->pos = pos; }
-	Pos getPos() { return this->pos; } 
 	void setFullness(char fullness) { this->fullness = fullness; }
 	char getFullness() { return this->fullness; }
 	bool isSummoned() {	return this->summoned; }
@@ -93,7 +92,6 @@ private:
 	char inventorySlot;
 	short closeness;
 	bool summoned;
-	Pos pos;
 	Player *player;
 };
 
