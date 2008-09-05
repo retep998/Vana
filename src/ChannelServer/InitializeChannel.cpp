@@ -714,12 +714,12 @@ void Initializing::initializeMaps() {
 		//    9 : Only once
 		PortalInfo portal;
 		portal.id = atoi(portalRow[1]);
-		strcpy_s(portal.from, portalRow[2]);
-		strcpy_s(portal.to, portalRow[3]);
+		portal.from = portalRow[2];
+		portal.to = portalRow[3];
 		portal.toid = atoi(portalRow[4]);
 		portal.type = atoi(portalRow[5]);
 		portal.pos = Pos(atoi(portalRow[6]), atoi(portalRow[7]));
-		strcpy_s(portal.script, portalRow[8]);
+		portal.script = portalRow[8];
 		portal.onlyOnce = atob(portalRow[9]);
 		Maps::maps[atoi(portalRow[0])]->addPortal(portal);
 	}

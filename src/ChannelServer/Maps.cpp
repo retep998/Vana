@@ -34,7 +34,7 @@ void Maps::addMap(MapInfo info) {
 }
 
 void Maps::usePortal(Player *player, PortalInfo *portal) {
-	bool scripted = (strlen(portal->script) != 0);
+	bool scripted = (portal->script.size() != 0);
 	if (scripted) {
 		// Scripted portal
 		std::ostringstream filenameStream;

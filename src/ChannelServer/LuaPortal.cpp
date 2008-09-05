@@ -36,12 +36,12 @@ PortalInfo * LuaExports::getPortal(lua_State *luaVm) {
 }
 
 int LuaExports::getPortalFrom(lua_State *luaVm) {
-	lua_pushstring(luaVm, getPortal(luaVm)->from);
+	lua_pushstring(luaVm, getPortal(luaVm)->from.c_str());
 	return 1;
 }
 
 int LuaExports::setPortalTo(lua_State *luaVm) {
-	strcpy_s(getPortal(luaVm)->to, lua_tostring(luaVm, -1));
+	getPortal(luaVm)->to = lua_tostring(luaVm, -1);
 	return 1;
 }
 
