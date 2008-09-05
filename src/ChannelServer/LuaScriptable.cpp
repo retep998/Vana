@@ -392,9 +392,17 @@ int LuaExports::setStyle(lua_State *luaVm) {
 }
 
 int LuaExports::setMap(lua_State *luaVm) {
-	int mapid = lua_tointeger(luaVm, -1);
+	PortalInfo *portal = 0;
+
+	int mapid = lua_tointeger(luaVm, 1);
+
+	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+		string to = lua_tostring(luaVm, 2);
+		portal = Maps::maps[mapid]->getPortal(to);
+	}
+
 	if (Maps::maps.find(mapid) != Maps::maps.end())
-		Maps::changeMap(getPlayer(luaVm), mapid, 0);
+		Maps::changeMap(getPlayer(luaVm), mapid, portal);
 	return 1;
 }
 
