@@ -1,3 +1,2 @@
 -- Cave of Life - Entrance -> Peak of the Big Nest
-setPortalToId(240040600);
-setPortalTo("east00");
+setMap(240040600, "east00");

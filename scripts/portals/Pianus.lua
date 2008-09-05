@@ -1,3 +1,2 @@
 -- Pianus portal
-setPortalToId(230040420);
-setPortalTo("out00");
+setMap(230040420, "out00");
