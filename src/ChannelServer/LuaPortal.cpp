@@ -25,8 +25,6 @@ LuaPortal::LuaPortal(const string &filename, int playerid, PortalInfo *portal) :
 	LuaExports::portals[playerid] = portal;
 
 	lua_register(luaVm, "getPortalFrom", &LuaExports::getPortalFrom);
-	lua_register(luaVm, "setPortalTo", &LuaExports::setPortalTo);
-	lua_register(luaVm, "setPortalToId", &LuaExports::setPortalToId);
 
 	run();
 }
@@ -37,16 +35,5 @@ PortalInfo * LuaExports::getPortal(lua_State *luaVm) {
 
 int LuaExports::getPortalFrom(lua_State *luaVm) {
 	lua_pushstring(luaVm, getPortal(luaVm)->from.c_str());
-	return 1;
-}
-
-int LuaExports::setPortalTo(lua_State *luaVm) {
-	getPortal(luaVm)->to = lua_tostring(luaVm, -1);
-	return 1;
-}
-
-int LuaExports::setPortalToId(lua_State *luaVm) {
-	int toid = lua_tointeger(luaVm, -1);
-	getPortal(luaVm)->toid = toid;
 	return 1;
 }

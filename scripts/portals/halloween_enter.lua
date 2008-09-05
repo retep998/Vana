@@ -1,2 +1,1 @@
-setPortalToId(682000100);
-setPortalTo("st00");
+setMap(682000100, "st00");

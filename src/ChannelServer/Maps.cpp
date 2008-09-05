@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "Timer/Timer.h"
 #include "WorldServerConnectPlayerPacket.h"
-#include <sstream>
+#include <sys/stat.h>
 
 unordered_map<int, Map *> Maps::maps;
 
@@ -34,30 +34,25 @@ void Maps::addMap(MapInfo info) {
 }
 
 void Maps::usePortal(Player *player, PortalInfo *portal) {
-	bool scripted = (portal->script.size() != 0);
-	if (scripted) {
+	if (portal->script.size() != 0) {
 		// Scripted portal
-		std::ostringstream filenameStream;
-		filenameStream << "scripts/portals/" << portal->script << ".lua";
-		LuaPortal(filenameStream.str(), player->getId(), portal);
-	}
+		string filename = "scripts/portals/" + portal->script + ".lua";
 
-	PortalInfo *nextportal = 0;
-	if (portal->toid >= 0 && portal->toid != 999999999) { // Only check for new portal ID if a portal script returns a valid map
-		nextportal = maps[portal->toid]->getPortal(portal->to);
-	}
-	else if (portal->toid == 999999999) {
-		std::ostringstream messageStream;
-		if (scripted) {
-			messageStream << "This portal '" << portal->script << "' is currently unavailable.";
+		struct stat fileInfo;
+		if (!stat(filename.c_str(), &fileInfo)) { // Lua Portal script exists
+			LuaPortal(filename, player->getId(), portal);
 		}
 		else {
-			messageStream << "This portal is currently unavailable.";
+			string message = "This portal '" + portal->script + "' is currently unavailable.";
+			PlayerPacket::showMessage(player, message, 5);
 		}
-		PlayerPacket::showMessage(player, messageStream.str(), 5);
 	}
-
-	changeMap(player, portal->toid, nextportal);
+	else {
+		// Normal portal
+		PortalInfo *nextportal = 0;
+		nextportal = maps[portal->toid]->getPortal(portal->to);
+		changeMap(player, portal->toid, nextportal);
+	}
 }
 
 void Maps::usePortal(Player *player, ReadPacket *packet) {

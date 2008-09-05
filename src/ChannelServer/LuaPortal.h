@@ -40,9 +40,6 @@ namespace LuaExports {
 
 	// The exports
 	int getPortalFrom(lua_State *luaVm);
-
-	int setPortalTo(lua_State *luaVm);
-	int setPortalToId(lua_State *luaVm);
 };
 
 #endif
