@@ -1,3 +1,20 @@
+--[[
+Copyright (C) 2008 Vana Development Team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; version 2
+of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+--]]
 -- Gachapon - Victoria Road : Henesys Market
 items = {2040001,2041002,2040805,2040702,2043802,2040402,2044505,2044504,2044605,2044604,2060004,2061004,2044502,2044501,2044500,
         2044602,2044601,2044600,2030007,2020012,2000004,2000005,1452052,1462046,1442018,1432009,1302022,1322021,1302026,1442017,

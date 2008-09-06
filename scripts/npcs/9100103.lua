@@ -1,3 +1,20 @@
+--[[
+Copyright (C) 2008 Vana Development Team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; version 2
+of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+--]]
 -- Gachapon - Victoria Road : Kerning City
 items = {1102082,1102043,1102041,1102042,1102040,1002587,1002394,1002393,1082147,1082149,1082148,1082145,1022047,1050018,
 	1322021,1442017,1312012,1432018,2043104,2043105,2043204,2043205,2043004,2043005,2043006,2043007,2044104,2044105,2044204,
