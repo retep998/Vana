@@ -1,3 +1,20 @@
+--[[
+Copyright (C) 2008 Vana Development Team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; version 2
+of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+--]]
 -- Gachapon - Victoria Road : Ellinia
 items = {2043302,2040002,2043102,2043002,2044402,2044302,2043802,2044002,2041017,2000004,2000005,2022025,2022026,1402010,1442013,
 	1432009,1002060,1002063,1322023,1002042,1050018,1082147,1002026,1002392,1082149,1060005,1442016,1322025,1322027,1002391,1302027,
