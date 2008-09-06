@@ -65,7 +65,7 @@ int Fame::canFame(Player *player, int to) {
 }
 
 void Fame::addFameLog(int from, int to) {
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO fame_log (`from`, `to`, `time`) VALUES (" 
 			<< mysqlpp::quote << from << ","
 			<< mysqlpp::quote << to << ", NOW())";
@@ -73,7 +73,7 @@ void Fame::addFameLog(int from, int to) {
 }
 
 bool Fame::getLastFameLog(int from) { // Last fame from that char
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-86400 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	if (!res.empty())
@@ -82,7 +82,7 @@ bool Fame::getLastFameLog(int from) { // Last fame from that char
 }
 
 bool Fame::getLastFameSPLog(int from, int to) {
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << mysqlpp::quote << from << " AND `to`=" << mysqlpp::quote << to << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	if (!res.empty())

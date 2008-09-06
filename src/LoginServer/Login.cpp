@@ -34,7 +34,7 @@ void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 		return;
 	} 
 
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT id, password, salt, online, pin, gender, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -106,7 +106,7 @@ void Login::setGender(PlayerLogin *player, ReadPacket *packet) {
 	if (packet->getByte() == 1) {
 		player->setStatus(0);
 		char gender = packet->getByte();
-		mysqlpp::Query query = Database::chardb.query();
+		mysqlpp::Query query = Database::getCharDB().query();
 		query << "UPDATE users SET gender = " << mysqlpp::quote << (int) gender << " WHERE id = " << mysqlpp::quote << player->getUserid();
 		query.exec();
 		if (LoginServer::Instance()->getPinEnabled())
@@ -178,7 +178,7 @@ void Login::registerPIN(PlayerLogin *player, ReadPacket *packet) {
 	}
 	int pin = StringUtilities::toType<int>(packet->getString());
 	player->setStatus(0);
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users SET pin = " << mysqlpp::quote << pin << " WHERE id = " << mysqlpp::quote << player->getUserid();
 	query.exec();
 	LoginPacket::pinAssigned(player);

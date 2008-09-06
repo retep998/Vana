@@ -225,7 +225,7 @@ bool PlayerInventory::hasOpenSlotsFor(int itemid, short amount) {
 	return has;
 }
 void PlayerInventory::save() {
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 
 	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << player->getId();
 	query.exec();

@@ -64,7 +64,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 					reason = atoi(next_token);
 
 				// Ban account
-                mysqlpp::Query accbanquery = Database::chardb.query();
+                mysqlpp::Query accbanquery = Database::getCharDB().query();
                 accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (short) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
                 accbanquery.exec();
 
@@ -95,7 +95,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				}
 
 				// Unban account
-                mysqlpp::Query accbanquery = Database::chardb.query();
+                mysqlpp::Query accbanquery = Database::getCharDB().query();
                 accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << next_token << "'";
                 accbanquery.exec();
 
@@ -270,7 +270,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				PlayerPacket::showMessage(player, "You must specify a search string", 5);
 			}
 			else if (type != 0) {
-				mysqlpp::Query query = Database::getDataQuery();
+				mysqlpp::Query query = Database::getDataDB().query();
 				query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE '%" << next_token << "%'";
 				mysqlpp::StoreQueryResult res = query.store();
 
