@@ -25,12 +25,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma warning(pop)
 #undef MYSQLPP_MYSQL_HEADERS_BURIED
 
-namespace Database {
-	extern mysqlpp::Connection chardb;
-	extern mysqlpp::Connection datadb;
-	void connect();
-	mysqlpp::Query getCharQuery();
-	mysqlpp::Query getDataQuery();
+class Database {
+public:
+	static void connect();
+	static mysqlpp::Connection & getCharDB();
+	static mysqlpp::Connection & getDataDB();
+private:
+	static mysqlpp::Connection chardb;
+	static mysqlpp::Connection datadb;
 };
 
 #endif

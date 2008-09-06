@@ -54,7 +54,7 @@ unsigned char PlayerSkills::getMaxSkillLevel(int skillid) {
 }
 
 void PlayerSkills::save() {
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 
 	bool firstrun = true;
 	for (unordered_map<int, unsigned char>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {

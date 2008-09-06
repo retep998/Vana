@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MySQLM.h"
 #include "Config.h"
+#include <boost/ref.hpp>
 
 mysqlpp::Connection Database::chardb(false);
 mysqlpp::Connection Database::datadb(false);
@@ -36,10 +37,10 @@ void Database::connect() {
 	}
 }
 
-mysqlpp::Query Database::getCharQuery() {
-	return chardb.query();
+mysqlpp::Connection & Database::getCharDB() {
+	return boost::ref(chardb);
 }
 
-mysqlpp::Query Database::getDataQuery() {
-	return datadb.query();
+mysqlpp::Connection & Database::getDataDB() {
+	return boost::ref(datadb);
 }

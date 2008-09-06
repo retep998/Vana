@@ -139,7 +139,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	buddyList.reset(new BuddyList(this));
 	pets.reset(new PlayerPets(this));
 	// Character info
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << this->id;
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -513,7 +513,7 @@ bool Player::addWarning() {
 }
 
 void Player::saveStats() {
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE characters SET "
 		<< "level = " << mysqlpp::quote << this->level << ","
 		<< "job = " << mysqlpp::quote << this->job << ","
@@ -547,7 +547,7 @@ void Player::saveStats() {
 
 void Player::saveVariables() {
 	if (variables.size() > 0) {
-		mysqlpp::Query query = Database::chardb.query();
+		mysqlpp::Query query = Database::getCharDB().query();
 
 		bool firstrun = true;
 		for (unordered_map<string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++) {
@@ -577,7 +577,7 @@ void Player::saveAll() {
 
 void Player::setOnline(bool online) {
 	int onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << mysqlpp::quote << onlineid <<
 			", characters.online = " << mysqlpp::quote << online << " WHERE characters.id = " << mysqlpp::quote << this->id;
 	query.exec();

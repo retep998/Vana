@@ -26,13 +26,13 @@ DatabaseMigration::Runner::Runner(const string &filename) : m_filename(filename)
 }
 
 void DatabaseMigration::Runner::run() {
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 
 	for (size_t i = 0; i < m_queries.size(); i++) {
 		query << m_queries[i];
 
 		if (!query.exec()) {
-			std::cout << "\nERROR: " << Database::chardb.error() << std::endl;
+			std::cout << "\nERROR: " << Database::getCharDB().error() << std::endl;
 			std::cout << "File: " << m_filename << std::endl;
 			// TODO: Handle the error
 		}

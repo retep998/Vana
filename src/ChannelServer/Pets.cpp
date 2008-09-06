@@ -50,7 +50,7 @@ player(player)
 	this->type = item->id;
 	this->name = Pets::petsInfo[type].name;
 
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	this->id = (int) res.insert_id();

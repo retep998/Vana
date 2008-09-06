@@ -56,7 +56,7 @@ void DatabaseMigration::update(size_t version) {
 
 void DatabaseMigration::loadDatabaseInfo() {
 	// vana_info table for checking database version
-	mysqlpp::Query query = Database::chardb.query("SELECT * FROM vana_info LIMIT 1");
+	mysqlpp::Query query = Database::getCharDB().query("SELECT * FROM vana_info LIMIT 1");
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.size() == 0) {
@@ -100,7 +100,7 @@ void DatabaseMigration::loadSQLFiles() {
 
 // Create the info table
 void DatabaseMigration::createInfoTable() {
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 
 	query << "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED)";
 	query.exec();
@@ -112,7 +112,7 @@ void DatabaseMigration::createInfoTable() {
 
 // Set version number in the info table
 void DatabaseMigration::updateInfoTable(size_t version) {
-	mysqlpp::Query query = Database::chardb.query();
+	mysqlpp::Query query = Database::getCharDB().query();
 
 	query << "UPDATE vana_info SET version = " << mysqlpp::quote << version;
 	query.exec();

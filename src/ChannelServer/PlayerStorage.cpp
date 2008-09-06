@@ -56,7 +56,7 @@ void PlayerStorage::changeMesos(int mesos) {
 }
 
 void PlayerStorage::save() {
-	mysqlpp::Query query = Database::getCharQuery();
+	mysqlpp::Query query = Database::getCharDB().query();
 	// Using MySQL's non-standard ON DUPLICATE KEY UPDATE extension
 	query << "INSERT INTO storage VALUES ("
 		<< player->getUserId() << ", "
