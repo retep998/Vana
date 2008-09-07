@@ -116,17 +116,23 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			player->setSp(player->getSp() + spgain);
 			// Let hyperbody remain on if on during a level up, as it should
 			int skillid = 0;
-			int level = 0;
+			short x = 100;
+			short y = 100;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)
 				skillid = 1301007;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(9101008) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
 				skillid = 9101008;
-			if (skillid > 0)
-				level = player->getActiveBuffs()->getActiveSkillLevel(skillid);
-			player->setMHP(player->getRMHP() * (level > 0 ? (Skills::skills[skillid][level].x / 100) : 1));
-			player->setMMP(player->getRMMP() * (level > 0 ? (Skills::skills[skillid][level].y / 100) : 1));
-			player->setHP(player->getMHP());
-			player->setMP(player->getMMP());
+			if (skillid > 0) {
+				unsigned char hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
+				x += Skills::skills[skillid][hblevel].x;
+				y += Skills::skills[skillid][hblevel].y;
+			}
+			short mhp = player->getRMHP() * x / 100; 
+			short mmp = player->getRMMP() * y / 100;
+			player->setMHP(mhp);
+			player->setMMP(mmp);
+			player->setHP(mhp);
+			player->setMP(mmp);
 		}
 	}
 	player->setExp(cexp);
@@ -188,7 +194,7 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 			}
 			player->setHPMPAp(player->getHPMPAp() + 1);
 			int skillid = 0;
-			int hblevel = 0;
+			unsigned char hblevel = 0;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)
 				skillid = 1301007;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(9101008) > 0)
