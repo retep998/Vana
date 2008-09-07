@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.h"
 #include "MySQLM.h"
 
-PlayerStorage::PlayerStorage(Player *player, char slots, int mesos) : slots(slots), mesos(mesos) {
-	this->player = player;
+PlayerStorage::PlayerStorage(Player *player) : player(player) {
+	load();
 }
 
 void PlayerStorage::setSlots(char slots) {
@@ -53,6 +53,47 @@ char PlayerStorage::getNumItems(char inv) {
 void PlayerStorage::changeMesos(int mesos) {
 	this->mesos -= mesos;
 	StoragePacket::changeMesos(player, this->mesos);
+}
+
+void PlayerStorage::load() {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT slots, mesos FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (short) player->getWorldId();
+	mysqlpp::StoreQueryResult res = query.store();
+	if (res.num_rows() != 0) {
+		slots = (unsigned char) res[0][0];
+		mesos = res[0][1];
+	}
+	else {
+		slots = 4;
+		mesos = 0;
+	}
+
+	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name FROM storageitems WHERE userid = " << mysqlpp::quote << player->getUserId() << " AND world_id = " << (short) player->getWorldId() << " ORDER BY slot ASC";
+	res = query.store();
+	for (size_t i = 0; i < res.num_rows(); i++) {
+		Item *item = new Item;
+		item->id = res[i][0];
+		item->amount = res[i][1];
+		item->slots = (unsigned char) res[i][2];
+		item->scrolls = (unsigned char) res[i][3];
+		item->istr = res[i][4];
+		item->idex = res[i][5];
+		item->iint = res[i][6];
+		item->iluk = res[i][7];
+		item->ihp = res[i][8];
+		item->imp = res[i][9];
+		item->iwatk = res[i][10];
+		item->imatk = res[i][11];
+		item->iwdef = res[i][12];
+		item->imdef = res[i][13];
+		item->iacc = res[i][14];
+		item->iavo = res[i][15];
+		item->ihand = res[i][16];
+		item->ispeed = res[i][17];
+		item->ijump = res[i][18];
+		res[i][19].to_string(item->name);
+		addItem(item);
+	}
 }
 
 void PlayerStorage::save() {
