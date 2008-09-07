@@ -26,7 +26,7 @@ class Player;
 
 class PlayerSkills {
 public:
-	PlayerSkills(Player *player) : player(player) { }
+	PlayerSkills(Player *player) : player(player) { load(); }
 
 	bool addSkillLevel(int skillid, unsigned char amount, bool sendpacket = true);
 	void setMaxSkillLevel(int skillid, unsigned char maxlevel) { // Set max level for 4th job skills
@@ -37,6 +37,7 @@ public:
 	unordered_map<int, unsigned char> * getSkills() {
 		return &playerskills;
 	}
+	void load();
 	void save();
 private:
 	unordered_map<int, unsigned char> playerskills;

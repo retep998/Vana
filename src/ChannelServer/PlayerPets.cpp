@@ -21,6 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PlayerPets::addPet(Pet *pet) {
 	playerpets[pet->getId()] = pet;
+
+	if (pet->getIndex() != -1) {
+		setSummoned(pet->getId(), pet->getIndex());
+	}
 }
 
 Pet * PlayerPets::getPet(int petid) {

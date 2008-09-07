@@ -28,7 +28,7 @@ struct Item;
 
 class PlayerStorage {
 public:
-	PlayerStorage(Player *player, char slots, int mesos);
+	PlayerStorage(Player *player);
 	char getSlots() {
 		return this->slots;
 	}
@@ -56,6 +56,7 @@ public:
 	bool isFull() {
 		return ((char) items.size() == slots);
 	}
+	void load();
 	void save();
 private:
 	Player *player;

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "InventoryPacket.h"
 #include "PacketCreator.h"
+#include "Pets.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Randomizer.h"
@@ -65,9 +66,14 @@ Item::Item(int equipid, bool random) : id(equipid), amount(1), scrolls(0), petid
 }
 
 /* PlayerInventory class */
-PlayerInventory::PlayerInventory(Player *player, unsigned char maxslots[5]) : player(player) {
+PlayerInventory::PlayerInventory(Player *player, unsigned char maxslots[5],
+								 int mesos) :
+player(player),
+mesos(mesos)
+{
 	memcpy_s(this->maxslots, sizeof(this->maxslots), maxslots, sizeof(this->maxslots));
 	memset(this->equipped, 0, sizeof(this->equipped));
+	load();
 }
 
 void PlayerInventory::addMaxSlots(char inventory, char rows) { // Useful with .lua
@@ -224,6 +230,52 @@ bool PlayerInventory::hasOpenSlotsFor(int itemid, short amount) {
 	}
 	return has;
 }
+
+void PlayerInventory::load() {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << mysqlpp::quote << player->getId();
+	mysqlpp::StoreQueryResult res = query.store();
+
+	for (size_t i = 0; i < res.num_rows(); ++i) {
+		Item *item = new Item;
+		item->id = res[i][2];
+		item->amount = res[i][3];
+		item->slots = (unsigned char) res[i][4];
+		item->scrolls = (unsigned char) res[i][5];
+		item->istr = res[i][6];
+		item->idex = res[i][7];
+		item->iint = res[i][8];
+		item->iluk = res[i][9];
+		item->ihp = res[i][10];
+		item->imp = res[i][11];
+		item->iwatk = res[i][12];
+		item->imatk = res[i][13];
+		item->iwdef = res[i][14];
+		item->imdef = res[i][15];
+		item->iacc = res[i][16];
+		item->iavo = res[i][17];
+		item->ihand = res[i][18];
+		item->ispeed = res[i][19];
+		item->ijump = res[i][20];
+		item->petid = res[i][21];
+		res[i][22].to_string(item->name);
+		addItem((unsigned char) res[i][0], res[i][1], item);
+		if (item->petid != 0) {
+			Pet *pet = new Pet(player);
+			pet->setId(item->petid);
+			pet->setType(item->id);
+			pet->setIndex((signed char) res[i][23]);
+			pet->setName((string) res[i][24]);
+			pet->setLevel((unsigned char) res[i][25]);
+			pet->setCloseness((short) res[i][26]);
+			pet->setFullness((unsigned char) res[i][27]);
+			pet->setInventorySlot((unsigned char)res[i][1]);
+			pet->setSummoned(false);
+			player->getPets()->addPet(pet);
+		}
+	}
+}
+
 void PlayerInventory::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
 

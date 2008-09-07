@@ -80,9 +80,8 @@ typedef unordered_map<short, Item *> iteminventory;
 
 class PlayerInventory {
 public:
-	PlayerInventory(Player *player, unsigned char maxslots[5]);
+	PlayerInventory(Player *player, unsigned char maxslots[5], int mesos);
 	unsigned char getMaxSlots(char inv) const { return maxslots[inv - 1]; }
-	void setMesosStart(int mesos) { this->mesos = mesos; }
 	void setMesos(int mesos, bool is = false);
 	int getMesos() const { return this->mesos; }
 	void addMaxSlots(char inventory, char rows);
@@ -97,6 +96,7 @@ public:
 	int getItemAmount(int itemid);
 	bool hasOpenSlotsFor(int itemid, short amount);
 	iteminventory * getItems(char inv) { return &items[inv - 1]; }
+	void load();
 	void save();
 private:
 	unsigned char maxslots[5];

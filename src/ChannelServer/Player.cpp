@@ -134,7 +134,6 @@ void Player::playerConnect(ReadPacket *packet) {
 	}
 	this->id = id;
 	activeBuffs.reset(new PlayerActiveBuffs(this));
-	skills.reset(new PlayerSkills(this));
 	quests.reset(new PlayerQuests(this));
 	buddyList.reset(new BuddyList(this));
 	pets.reset(new PlayerPets(this));
@@ -182,98 +181,13 @@ void Player::playerConnect(ReadPacket *packet) {
 	maxslots[2] = (unsigned char) res[0]["setup_slots"];
 	maxslots[3] = (unsigned char) res[0]["etc_slots"];
 	maxslots[4] = (unsigned char) res[0]["cash_slots"];
-	inv.reset(new PlayerInventory(this, maxslots));
-
-	inv->setMesosStart(res[0]["mesos"]);
-
-	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << mysqlpp::quote << getId();
-	res = query.store();
-
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		Item *item = new Item;
-		item->id = res[i][2];
-		item->amount = res[i][3];
-		item->slots = (unsigned char) res[i][4];
-		item->scrolls = (unsigned char) res[i][5];
-		item->istr = res[i][6];
-		item->idex = res[i][7];
-		item->iint = res[i][8];
-		item->iluk = res[i][9];
-		item->ihp = res[i][10];
-		item->imp = res[i][11];
-		item->iwatk = res[i][12];
-		item->imatk = res[i][13];
-		item->iwdef = res[i][14];
-		item->imdef = res[i][15];
-		item->iacc = res[i][16];
-		item->iavo = res[i][17];
-		item->ihand = res[i][18];
-		item->ispeed = res[i][19];
-		item->ijump = res[i][20];
-		item->petid = res[i][21];
-		res[i][22].to_string(item->name);
-		inv->addItem((unsigned char) res[i][0], res[i][1], item);
-		if (item->petid != 0) {
-			Pet *pet = new Pet(this);
-			pet->setId(item->petid);
-			pet->setType(item->id);
-			pet->setIndex((signed char) res[i][23]);
-			pet->setName((string) res[i][24]);
-			pet->setLevel((unsigned char) res[i][25]);
-			pet->setCloseness((short) res[i][26]);
-			pet->setFullness((unsigned char) res[i][27]);
-			pet->setInventorySlot((unsigned char)res[i][1]);
-			pet->setSummoned(false);
-			pets->addPet(pet);
-			if (pet->getIndex() != -1)
-				pets->setSummoned(pet->getId(), pet->getIndex());
-		}
-	}
+	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
 
 	// Skills
-	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << this->id;
-	res = query.store();
-	for (size_t i = 0; i < res.num_rows(); i++) {
-		skills->addSkillLevel(res[i][0], res[i][1], false);
-		if (FORTHJOB_SKILL(res[i][0])) {
-			skills->setMaxSkillLevel(res[i][0], res[i][2]);
-		}
-	}
+	skills.reset(new PlayerSkills(this));
 
 	// Storage
-	query << "SELECT slots, mesos FROM storage WHERE userid = " << this->userid << " AND world_id = " << (short) this->world_id;
-	res = query.store();
-	if (res.num_rows() != 0)
-		storage.reset(new PlayerStorage(this, (unsigned char) res[0][0], res[0][1]));
-	else
-		storage.reset(new PlayerStorage(this, 4, 0));
-
-	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name FROM storageitems WHERE userid = " << mysqlpp::quote << this->userid << " AND world_id = " << (short) this->world_id << " ORDER BY slot ASC";
-	res = query.store();
-	for (size_t i = 0; i < res.num_rows(); i++) {
-		Item *item = new Item;
-		item->id = res[i][0];
-		item->amount = res[i][1];
-		item->slots = (unsigned char) res[i][2];
-		item->scrolls = (unsigned char) res[i][3];
-		item->istr = res[i][4];
-		item->idex = res[i][5];
-		item->iint = res[i][6];
-		item->iluk = res[i][7];
-		item->ihp = res[i][8];
-		item->imp = res[i][9];
-		item->iwatk = res[i][10];
-		item->imatk = res[i][11];
-		item->iwdef = res[i][12];
-		item->imdef = res[i][13];
-		item->iacc = res[i][14];
-		item->iavo = res[i][15];
-		item->ihand = res[i][16];
-		item->ispeed = res[i][17];
-		item->ijump = res[i][18];
-		res[i][19].to_string(item->name);
-		storage->addItem(item);
-	}
+	storage.reset(new PlayerStorage(this));
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
