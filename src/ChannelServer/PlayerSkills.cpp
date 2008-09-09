@@ -24,32 +24,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 bool PlayerSkills::addSkillLevel(int skillid, unsigned char amount, bool sendpacket) {
 	// Keep people from adding too much SP and prevent it from going negative
-	int newlevel = ((playerskills.find(skillid) != playerskills.end()) ? playerskills[skillid] : 0) + amount;
+	unsigned char newlevel = ((playerskills.find(skillid) != playerskills.end()) ? playerskills[skillid].level : 0) + amount;
 	if (newlevel > Skills::maxlevels[skillid] || newlevel < 0) {
 		return false; // Let the caller handle this
 	}
 
-	playerskills[skillid] = newlevel;
+	playerskills[skillid].level = newlevel;
 	if (sendpacket) {
-		char maxlevel = 0;
-		if (FORTHJOB_SKILL(skillid)) {
-			maxlevel = getMaxSkillLevel(skillid);
-		}
-		SkillsPacket::addSkill(player, skillid, getSkillLevel(skillid), maxlevel);
+		SkillsPacket::addSkill(player, skillid, playerskills[skillid]);
 	}
 	return true;
 }
 
 unsigned char PlayerSkills::getSkillLevel(int skillid) {
 	if (playerskills.find(skillid) != playerskills.end())
-		return playerskills[skillid];
+		return playerskills[skillid].level;
 	return 0;
+}
+
+void PlayerSkills::setMaxSkillLevel(int skillid, unsigned char maxlevel) { // Set max level for 4th job skills
+	playerskills[skillid].maxlevel = maxlevel;
 }
 
 unsigned char PlayerSkills::getMaxSkillLevel(int skillid) {
 	// Get max level for 4th job skills
-	if (maxlevels.find(skillid) != maxlevels.end())
-		return maxlevels[skillid];
+	if (playerskills.find(skillid) != playerskills.end())
+		return playerskills[skillid].maxlevel;
 	return 0;
 }
 
@@ -58,10 +58,10 @@ void PlayerSkills::load() {
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
-		addSkillLevel(res[i][0], res[i][1], false);
-		if (FORTHJOB_SKILL(res[i][0])) {
-			setMaxSkillLevel(res[i][0], res[i][2]);
-		}
+		PlayerSkillInfo skill;
+		skill.level = res[i][1];
+		skill.maxlevel = res[i][2];
+		playerskills[res[i][0]] = skill;
 	}
 }
 
@@ -69,7 +69,7 @@ void PlayerSkills::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
 
 	bool firstrun = true;
-	for (unordered_map<int, unsigned char>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
+	for (unordered_map<int, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
 		if (firstrun) {
 			query << "REPLACE INTO skills VALUES (";
 			firstrun = false;
@@ -77,7 +77,7 @@ void PlayerSkills::save() {
 		else {
 			query << ",(";
 		}
-		query << mysqlpp::quote << player->getId() << "," << mysqlpp::quote << iter->first << "," << mysqlpp::quote << iter->second << "," << mysqlpp::quote << getMaxSkillLevel(iter->first) << ")";
+		query << mysqlpp::quote << player->getId() << "," << mysqlpp::quote << iter->first << "," << mysqlpp::quote << iter->second.level << "," << mysqlpp::quote << iter->second.maxlevel << ")";
 	}
 	query.exec();
 }

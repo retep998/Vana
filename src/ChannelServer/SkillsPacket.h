@@ -23,11 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::vector;
 
 class Player;
+struct PlayerSkillInfo;
 struct SkillActiveInfo;
 struct SpecialSkillInfo;
 
 namespace SkillsPacket {
-	void addSkill(Player *player, int skillid, int level, int maxlevel = 0);
+	void addSkill(Player *player, int skillid, PlayerSkillInfo skillinfo);
 	void showSkill(Player *player, int skillid, unsigned char level);
 	void useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill, short addedinfo, int mountid = 0);
 	void endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill);
