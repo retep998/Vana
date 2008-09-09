@@ -164,6 +164,7 @@ int LuaExports::setMaxSkillLevel(lua_State *luaVm) {
 	int skillid = lua_tointeger(luaVm, -2);
 	int level = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillid, level);
+	getPlayer(luaVm)->getSkills()->addSkillLevel(skillid, 0);
 	return 1;
 }
 
