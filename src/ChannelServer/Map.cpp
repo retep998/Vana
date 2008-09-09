@@ -218,20 +218,30 @@ void Map::addDrop(Drop *drop) {
 }
 
 void Map::clearDrops(bool showPacket) { // Clear all drops
-	unordered_map<int, Drop *> drops = this->drops;
-	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-		if (iter->second != 0) // Check just in case drop is removed by timer
-			iter->second->removeDrop(showPacket);
+	try {
+		unordered_map<int, Drop *> drops = this->drops;
+		for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+			if (iter->second != 0) // Check just in case drop is removed by timer
+				iter->second->removeDrop(showPacket);
+		}
+	}
+	catch (...) { // List iterators are incompatible error. Not entirely sure of the reason for this failure.
+		return;
 	}
 }
 
 void Map::clearDrops(int time) { // Clear drops based on how long they have been in the map
-	time -= 180000;
-	unordered_map<int, Drop *> drops = this->drops;
-	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-		if (iter->second != 0)
-			if (iter->second->getDropped() < time)
-				iter->second->removeDrop();
+	try {
+		time -= 180000;
+		unordered_map<int, Drop *> drops = this->drops;
+		for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+			if (iter->second != 0)
+				if (iter->second->getDropped() < time)
+					iter->second->removeDrop();
+		}
+	}
+	catch (...) {
+		return;
 	}
 }
 
