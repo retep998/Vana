@@ -159,23 +159,7 @@ public:
 	void addMobSpawn(MobSpawnInfo spawn);
 	void checkMobSpawn(clock_t time);
 	void spawnMob(int mobid, Pos pos, int spawnid = -1, short fh = 0);
-	Mob * getMob(int id, bool isMapID = true) {
-		if (isMapID) {
-			if (this->mobs.find(id) != mobs.end())
-				return this->mobs[id];
-			else
-				return 0;
-		}
-		else {
-			for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-				if (iter->second != 0) {
-					if (iter->second->getMobID() == id)
-						return iter->second;
-				}
-			}
-		}
-		return 0;
-	}
+	Mob * getMob(int id, bool isMapID = true);
 	void removeMob(int id, int spawnid);
 	void killMobs(Player *player);
 	void killMobs(Player *player, int mobid);
@@ -238,7 +222,7 @@ private:
 	scoped_ptr<LoopingId> objectids;
 	bool timer_started;
 
-	void updateMobControl();
+	void updateMobControl(Player *player);
 	void updateMobControl(Mob *mob, bool spawn = false);
 };
 
