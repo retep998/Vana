@@ -42,8 +42,12 @@ unsigned char PlayerSkills::getSkillLevel(int skillid) {
 	return 0;
 }
 
-void PlayerSkills::setMaxSkillLevel(int skillid, unsigned char maxlevel) { // Set max level for 4th job skills
+void PlayerSkills::setMaxSkillLevel(int skillid, unsigned char maxlevel, bool sendpacket) { // Set max level for 4th job skills
 	playerskills[skillid].maxlevel = maxlevel;
+
+	if (sendpacket) {
+		player->getSkills()->addSkillLevel(skillid, 0);
+	}
 }
 
 unsigned char PlayerSkills::getMaxSkillLevel(int skillid) {

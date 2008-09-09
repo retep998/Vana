@@ -37,7 +37,7 @@ public:
 	bool addSkillLevel(int skillid, unsigned char amount, bool sendpacket = true);
 	unsigned char getSkillLevel(int skillid);
 	unsigned char getMaxSkillLevel(int skillid);
-	void setMaxSkillLevel(int skillid, unsigned char maxlevel);
+	void setMaxSkillLevel(int skillid, unsigned char maxlevel, bool sendpacket = true);
 	unordered_map<int, PlayerSkillInfo> * getSkills() {
 		return &playerskills;
 	}
