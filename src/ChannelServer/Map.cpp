@@ -211,6 +211,7 @@ void Map::killMobs() {
 
 // Drops
 void Map::addDrop(Drop *drop) {
+	boost::recursive_mutex::scoped_lock l(drops_mutex);
 	int id = objectids->next();
 	drop->setID(id);
 	drop->setPos(findFloor(drop->getPos()));
@@ -218,30 +219,22 @@ void Map::addDrop(Drop *drop) {
 }
 
 void Map::clearDrops(bool showPacket) { // Clear all drops
-	try {
-		unordered_map<int, Drop *> drops = this->drops;
-		for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-			if (iter->second != 0) // Check just in case drop is removed by timer
-				iter->second->removeDrop(showPacket);
-		}
-	}
-	catch (...) { // List iterators are incompatible error. Not entirely sure of the reason for this failure.
-		return;
+	boost::recursive_mutex::scoped_lock l(drops_mutex);
+	unordered_map<int, Drop *> drops = this->drops;
+	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+		if (iter->second != 0) // Check just in case drop is removed by timer
+			iter->second->removeDrop(showPacket);
 	}
 }
 
 void Map::clearDrops(int time) { // Clear drops based on how long they have been in the map
-	try {
-		time -= 180000;
-		unordered_map<int, Drop *> drops = this->drops;
-		for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-			if (iter->second != 0)
-				if (iter->second->getDropped() < time)
-					iter->second->removeDrop();
-		}
-	}
-	catch (...) {
-		return;
+	boost::recursive_mutex::scoped_lock l(drops_mutex);
+	time -= 180000;
+	unordered_map<int, Drop *> drops = this->drops;
+	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+		if (iter->second != 0)
+			if (iter->second->getDropped() < time)
+				iter->second->removeDrop();
 	}
 }
 
@@ -288,10 +281,15 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	}
 	updateMobControl();
 	// Drops
-	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-		if (iter->second != 0)
-			iter->second->showDrop(player);
+	{
+		boost::recursive_mutex::scoped_lock l(drops_mutex);
+		for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+			if (iter->second != 0) {
+				iter->second->showDrop(player);
+			}
+		}
 	}
+
 	if (info.clock) {
 		time_t rawtime;
 		struct tm timeinfo;
