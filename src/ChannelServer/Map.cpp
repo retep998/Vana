@@ -62,7 +62,7 @@ void Map::removePlayer(Player *player) {
 		}
 	}
 	MapPacket::removePlayer(player);
-	updateMobControl();
+	updateMobControl(player);
 }
 
 // Reactors
@@ -151,9 +151,27 @@ void Map::spawnMob(int mobid, Pos pos, int spawnid, short fh) {
 	updateMobControl(mob, true);
 }
 
-void Map::updateMobControl() {
+Mob * Map::getMob(int id, bool isMapID) {
+	if (isMapID) {
+		if (this->mobs.find(id) != mobs.end())
+			return this->mobs[id];
+		else
+			return 0;
+	}
+	else {
+		for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+			if (iter->second != 0) {
+				if (iter->second->getMobID() == id)
+					return iter->second;
+			}
+		}
+	}
+	return 0;
+}
+
+void Map::updateMobControl(Player *player) {
 	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-		if (iter->second != 0)
+		if (iter->second != 0 && iter->second->getControl() == player)
 			updateMobControl(iter->second);
 	}
 }
@@ -276,10 +294,11 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	}
 	// Mobs
 	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-		if (iter->second != 0)
+		if (iter->second != 0) {
 			MobsPacket::spawnMob(player, iter->second, false, false, true);
+			updateMobControl(iter->second);
+		}
 	}
-	updateMobControl();
 	// Drops
 	{
 		boost::recursive_mutex::scoped_lock l(drops_mutex);
