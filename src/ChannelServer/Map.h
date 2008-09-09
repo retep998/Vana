@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <boost/thread/recursive_mutex.hpp>
 #include <boost/scoped_ptr.hpp>
 
 using std::string;
@@ -198,12 +199,14 @@ public:
 	// Drops
 	void addDrop(Drop *drop);
 	Drop * getDrop(int id) {
+		boost::recursive_mutex::scoped_lock l(drops_mutex);
 		if (this->drops.find(id) != this->drops.end())
 			return this->drops[id];
 		else
 			return 0;
 	}
 	void removeDrop(int id) {
+		boost::recursive_mutex::scoped_lock l(drops_mutex);
 		if (drops.find(id) != drops.end())
 			drops.erase(id);
 	}
@@ -231,6 +234,7 @@ private:
 	MobRespawnsInfo mobrespawns;
 	unordered_map<int, Mob *> mobs;
 	unordered_map<int, Drop *> drops;
+	boost::recursive_mutex drops_mutex;
 	scoped_ptr<LoopingId> objectids;
 	bool timer_started;
 
