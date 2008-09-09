@@ -439,7 +439,6 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 	int newMaxLevel = 0;
 	bool use = false;
 	bool succeed = false;
-	bool update = false;
 
 	ItemInfo item = items[itemid];
 	for (size_t i = 0; i < item.cons.skills.size(); i++) {
@@ -451,10 +450,7 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 		}
 		if (use) {
 			if (Randomizer::Instance()->randInt(100) <= item.cons.success) {
-				if (player->getSkills()->getSkillLevel(skillid) >= player->getSkills()->getMaxSkillLevel(skillid)) {
-					update = true;
-				}
-				player->getSkills()->setMaxSkillLevel(skillid, newMaxLevel, update);
+				player->getSkills()->setMaxSkillLevel(skillid, newMaxLevel);
 				succeed = true;
 			}
 			takeItemSlot(player, 2, slot, 1);
