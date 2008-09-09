@@ -439,7 +439,6 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 	int newMaxLevel = 0;
 	bool use = false;
 	bool succeed = false;
-	bool update = false;
 
 	ItemInfo item = items[itemid];
 	for (size_t i = 0; i < item.cons.skills.size(); i++) {
@@ -451,9 +450,6 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 		}
 		if (use) {
 			if (Randomizer::Instance()->randInt(100) <= item.cons.success) {
-				if (player->getSkills()->getSkillLevel(skillid) == player->getSkills()->getMaxSkillLevel(skillid)) {
-					update = true;
-				}
 				player->getSkills()->setMaxSkillLevel(skillid, newMaxLevel);
 				succeed = true;
 			}
@@ -465,9 +461,7 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 	if (skillid == 0) return;
 
 	InventoryPacket::useSkillbook(player, skillid, newMaxLevel, use, succeed);
-	if (update) {
-		player->getSkills()->addSkillLevel(skillid, 0);
-	}
+	player->getSkills()->addSkillLevel(skillid, 0);
 }
 void Inventory::useChair(Player *player, ReadPacket *packet) {
 	int chairid = packet->getInt();
@@ -618,7 +612,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			if (equip->slots > 0) {
 				if (wscroll == 2)
 					takeItem(player, 2340000, 1);
-				if (Randomizer::Instance()->randInt(99) < items[itemid].cons.success) {
+				if (Randomizer::Instance()->randInt(99) < items[itemid].cons.success || player->isGM()) {
 					succeed = true;
 					equip->istr += items[itemid].cons.istr;
 					equip->idex += items[itemid].cons.idex;
