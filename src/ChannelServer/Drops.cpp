@@ -53,14 +53,14 @@ int Drop::getAmount() {
 void Drop::doDrop(Pos origin) {
 	setDropped(clock());
 	if (!isQuest())
-		DropsPacket::drop(this, origin);
+		DropsPacket::showDrop(0, this, 1, true, origin);
 	else {
 		Player *player = Players::Instance()->getPlayer(playerid);
 		if (!player) {
 			return;
 		}
 		if (player->getMap() == this->mapid) {
-			DropsPacket::dropForPlayer(player, this, origin);
+			DropsPacket::showDrop(player, this, 1, true, origin);
 		}
 	}
 }
@@ -68,7 +68,7 @@ void Drop::doDrop(Pos origin) {
 void Drop::showDrop(Player *player) {
 	if (isQuest() && player->getId() != playerid)
 		return;
-	DropsPacket::showDrop(player, this);
+	DropsPacket::showDrop(player, this, 2, false, Pos());
 }
 
 void Drop::takeDrop(Player *player) {
@@ -171,7 +171,7 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 		return;
 	}
 	player->getInventory()->setMesos(player->getInventory()->getMesos() - amount, true);
-	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), 0);
+	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), player->getId());
 	drop->setTime(0);
 	drop->doDrop(player->getPos());
 }

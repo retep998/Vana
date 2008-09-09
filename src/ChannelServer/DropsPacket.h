@@ -29,9 +29,7 @@ struct Dropped;
 struct Pos;
 
 namespace DropsPacket {
-	void drop(Drop *drop, Pos origin);
-	void dropForPlayer(Player *player, Drop *drop, Pos origin);
-	void showDrop(Player *player, Drop *drop);
+	void showDrop(Player *player, Drop *drop, char type, bool newdrop, Pos origin);
 	void takeNote(Player *player, int id, bool ismesos, short amount);
 	void takeDrop(Player *player, Drop *drop);
 	void dontTake(Player *player);

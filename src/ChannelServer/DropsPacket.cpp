@@ -23,67 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "Pets.h"
 
-void DropsPacket::drop(Drop *drop, Pos origin) {
+void DropsPacket::showDrop(Player *player, Drop *drop, char type, bool newdrop, Pos origin) {
 	PacketCreator packet;
 	packet.addShort(SEND_DROP_ITEM);
-	packet.addByte(1);
-	packet.addInt(drop->getID());
-	packet.addByte(drop->isMesos());
-	packet.addInt(drop->getObjectID());
-	packet.addInt(drop->getOwner());
-	packet.addByte(0);
-	packet.addPos(drop->getPos());
-	packet.addInt(drop->getTime()); // Time till
-	packet.addPos(origin);
-	packet.addShort(0);
-	packet.addByte(1);
-	if (!drop->isMesos()) {
-		packet.addBytes("8005BB46E6170201");
-	}
-	Maps::maps[drop->getMap()]->sendPacket(packet);
-	packet = PacketCreator();
-	packet.addShort(SEND_DROP_ITEM);
-	packet.addByte(0);
-	packet.addInt(drop->getID());
-	packet.addByte(drop->isMesos());
-	packet.addInt(drop->getObjectID());
-	packet.addInt(drop->getOwner());
-	packet.addByte(0);
-	packet.addPos(drop->getPos());
-	packet.addInt(drop->getTime()); // Time till
-	packet.addPos(origin);
-	packet.addShort(0);
-	packet.addByte(1);
-	if (!drop->isMesos()) {
-		packet.addBytes("8005BB46E6170201");
-	}
-	Maps::maps[drop->getMap()]->sendPacket(packet);
-}
-
-void DropsPacket::dropForPlayer(Player *player, Drop *drop, Pos origin) {
-	PacketCreator packet;
-	packet.addShort(SEND_DROP_ITEM);
-	packet.addByte(1);
-	packet.addInt(drop->getID());
-	packet.addByte(drop->isMesos());
-	packet.addInt(drop->getObjectID());
-	packet.addInt(drop->getOwner());
-	packet.addByte(0);
-	packet.addPos(drop->getPos());
-	packet.addInt(drop->getTime()); // Time till
-	packet.addPos(origin);
-	packet.addShort(0);
-	packet.addByte(1);
-	if (!drop->isMesos()) {
-		packet.addBytes("8005BB46E6170201");
-	}
-	player->getPacketHandler()->send(packet);
-}
-
-void DropsPacket::showDrop(Player *player, Drop *drop) {
-	PacketCreator packet;
-	packet.addShort(SEND_DROP_ITEM);
-	packet.addByte(2);
+	packet.addByte(type); // 2 = show existing, 1 then 0 = show new
 	packet.addInt(drop->getID());
 	packet.addByte(drop->isMesos());
 	packet.addInt(drop->getObjectID());
@@ -91,11 +34,21 @@ void DropsPacket::showDrop(Player *player, Drop *drop) {
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
 	packet.addInt(drop->getTime());
+	if (type == 1 || type == 0) { // Give the point of origin for things that are just being dropped in
+		packet.addPos(origin);
+		packet.addShort(0);
+	}
 	packet.addByte(1);
 	if (!drop->isMesos()) {
 		packet.addBytes("8005BB46E6170201");
 	}
-	player->getPacketHandler()->send(packet);
+	if (player != 0)
+		player->getPacketHandler()->send(packet);
+	else
+		Maps::maps[drop->getMap()]->sendPacket(packet);
+
+	if (newdrop)
+		showDrop(player, drop, 0, false, origin);
 }
 
 void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
