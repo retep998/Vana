@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "Maps.h"
 
-void SkillsPacket::addSkill(Player *player, int skillid, int level, int maxlevel) {
+void SkillsPacket::addSkill(Player *player, int skillid, PlayerSkillInfo skillinfo) {
 	PacketCreator packet;
 	packet.addShort(SEND_ADD_SKILL);
 	packet.addByte(1);
 	packet.addShort(1);
 	packet.addInt(skillid);
-	packet.addInt(level); // Level
-	packet.addInt(maxlevel); // Master Level
+	packet.addInt(skillinfo.level); // Level
+	packet.addInt(skillinfo.maxlevel); // Master Level
 	packet.addByte(1);
 	player->getPacketHandler()->send(packet);
 }

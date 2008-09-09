@@ -24,24 +24,27 @@ using std::tr1::unordered_map;
 
 class Player;
 
+struct PlayerSkillInfo {
+	PlayerSkillInfo() : level(0), maxlevel(0) {}
+	unsigned char level;
+	unsigned char maxlevel;
+};
+
 class PlayerSkills {
 public:
 	PlayerSkills(Player *player) : player(player) { load(); }
 
 	bool addSkillLevel(int skillid, unsigned char amount, bool sendpacket = true);
-	void setMaxSkillLevel(int skillid, unsigned char maxlevel) { // Set max level for 4th job skills
-		maxlevels[skillid] = maxlevel;
-	}
 	unsigned char getSkillLevel(int skillid);
 	unsigned char getMaxSkillLevel(int skillid);
-	unordered_map<int, unsigned char> * getSkills() {
+	void setMaxSkillLevel(int skillid, unsigned char maxlevel);
+	unordered_map<int, PlayerSkillInfo> * getSkills() {
 		return &playerskills;
 	}
 	void load();
 	void save();
 private:
-	unordered_map<int, unsigned char> playerskills;
-	unordered_map<int, unsigned char> maxlevels;
+	unordered_map<int, PlayerSkillInfo> playerskills;
 	Player *player;
 };
 
