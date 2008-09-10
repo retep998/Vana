@@ -31,11 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 unordered_map<int, DropsInfo> Drops::dropdata;
 
 // Drop class
-Drop::Drop (int mapid, int mesos, Pos pos, int owner) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, int mesos, Pos pos, int owner, bool playerdrop) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
-Drop::Drop (int mapid, Item item, Pos pos, int owner) : mapid(mapid), pos(pos), item(item), mesos(0), owner(owner), questid(0), dropped(0), playerid(0) {
+Drop::Drop (int mapid, Item item, Pos pos, int owner, bool playerdrop) : mapid(mapid), pos(pos), item(item), mesos(0), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
@@ -120,13 +120,10 @@ void Drops::doDrops(Player *player, int droppingID, Pos origin) {
 
 			Drop *drop = 0;
 
-			if (GETINVENTORY(drops[k].id) == 1) {
+			if (ISEQUIP(drops[k].id))
 				drop = new Drop(player->getMap(), Item(drops[k].id, true), pos, player->getId());
-			}
-
-			else {
+			else
 				drop = new Drop(player->getMap(), Item(drops[k].id, (short) 1), pos, player->getId());
-			}
 
 			if (drops[k].quest > 0) {
 				drop->setPlayer(player->getId());
@@ -171,7 +168,7 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 		return;
 	}
 	player->getInventory()->setMesos(player->getInventory()->getMesos() - amount, true);
-	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), player->getId());
+	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), player->getId(), true);
 	drop->setTime(0);
 	drop->doDrop(player->getPos());
 }
