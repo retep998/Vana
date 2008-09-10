@@ -66,9 +66,10 @@ private:
 	int dropped;
 	int playerid;
 	Pos pos;
+	bool playerdrop;
 public:
-	Drop (int mapid, int mesos, Pos pos, int owner);
-	Drop (int mapid, Item item, Pos pos, int owner);
+	Drop (int mapid, int mesos, Pos pos, int owner, bool playerdrop = false);
+	Drop (int mapid, Item item, Pos pos, int owner, bool playerdrop = false);
 	void setID(int id) {
 		this->id = id;
 	}
@@ -121,6 +122,9 @@ public:
 	}
 	void setPlayer(int playerid) {
 		playerid = playerid;
+	}
+	bool isplayerDrop() {
+		return playerdrop;
 	}
 	void doDrop(Pos origin);
 	void showDrop(Player *player);

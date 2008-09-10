@@ -38,10 +38,10 @@ void DropsPacket::showDrop(Player *player, Drop *drop, char type, bool newdrop, 
 		packet.addPos(origin);
 		packet.addShort(0);
 	}
-	packet.addByte(1);
 	if (!drop->isMesos()) {
-		packet.addBytes("8005BB46E6170201");
+		packet.addBytes("008005BB46E61702");
 	}
+	packet.addByte(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
 	if (player != 0)
 		player->getPacketHandler()->send(packet);
 	else
