@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NPCs.h"
-#include "LuaNPC.h"
-#include "Player.h"
-#include "NPCPacket.h"
-#include "InventoryPacket.h"
-#include "PacketCreator.h"
-#include "Maps.h"
-#include "Shops.h"
 #include "Inventory.h"
-#include "Quests.h"
+#include "InventoryPacket.h"
 #include "Levels.h"
-#include "SendHeader.h"
+#include "LuaNPC.h"
+#include "MapleSession.h"
+#include "Maps.h"
+#include "NPCPacket.h"
+#include "PacketCreator.h"
+#include "Player.h"
+#include "Quests.h"
 #include "ReadPacket.h"
+#include "SendHeader.h"
+#include "Shops.h"
 #include <sys/stat.h>
 
 void NPCs::handleNPC(Player *player, ReadPacket *packet) {
@@ -193,51 +194,52 @@ PacketCreator & NPC::npcPacket(char type) {
 
 void NPC::sendSimple() {
 	PacketCreator packet = npcPacket(NPCDialogs::simple);
-	player->getPacketHandler()->send(packet);
+
+	player->getSession()->send(packet);
 }
 
 void NPC::sendYesNo() {
 	PacketCreator packet = npcPacket(NPCDialogs::yesNo);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void NPC::sendNext() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(0);
 	packet.addByte(1);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void NPC::sendBackNext() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(1);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void NPC::sendBackOK() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addByte(1);
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void NPC::sendOK() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
 	packet.addShort(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void NPC::sendAcceptDecline() {
 	PacketCreator packet = npcPacket(NPCDialogs::acceptDecline);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void NPC::sendGetText() {
 	PacketCreator packet = npcPacket(NPCDialogs::getText);
 	packet.addInt(0);
 	packet.addInt(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void NPC::sendGetNumber(int def, int min, int max) {
@@ -246,7 +248,7 @@ void NPC::sendGetNumber(int def, int min, int max) {
 	packet.addInt(min);
 	packet.addInt(max);
 	packet.addInt(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void NPC::sendStyle(int styles[], char size) {
@@ -254,7 +256,7 @@ void NPC::sendStyle(int styles[], char size) {
 	packet.addByte(size);
 	for (int i = 0; i < size; i++)
 		packet.addInt(styles[i]);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void NPC::setState(int state) {

@@ -16,8 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Channels.h"
-#include "WorldServerAcceptPlayer.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
+#include "WorldServerAcceptPlayer.h"
 
 Channels * Channels::singleton = 0;
 
@@ -45,7 +46,7 @@ Channel * Channels::getChannel(int num) {
 
 void Channels::sendToAll(PacketCreator &packet) {
 	for (unordered_map<int, shared_ptr<Channel>>::iterator iter = channels.begin(); iter != channels.end(); iter++) {
-		iter->second->player->getPacketHandler()->send(packet);
+		iter->second->player->getSession()->send(packet);
 	}
 }
 

@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptPlayer.h"
-#include "LoginServerAcceptHandler.h"
-#include "LoginServer.h"
 #include "InterHeader.h"
-#include "Worlds.h"
+#include "LoginServer.h"
+#include "LoginServerAcceptHandler.h"
+#include "MapleSession.h"
 #include "ReadPacket.h"
+#include "Worlds.h"
 
 void LoginServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
 	if (!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
@@ -37,5 +38,5 @@ void LoginServerAcceptPlayer::authenticated(char type) {
 	else if (type == INTER_CHANNEL_SERVER)
 		Worlds::connectChannelServer(this);
 	else
-		packetHandler->disconnect();
+		getSession()->disconnect();
 }

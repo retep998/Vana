@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ReactorPacket.h"
+#include "MapleSession.h"
+#include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Reactors.h"
 #include "SendHeader.h"
-#include "Maps.h"
 
 void ReactorPacket::spawnReactor(Reactor *reactor) {
 	PacketCreator packet;
@@ -41,7 +42,7 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	packet.addByte(reactor->getState());
 	packet.addPos(reactor->getPos());
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void ReactorPacket::triggerReactor(Reactor *reactor) {

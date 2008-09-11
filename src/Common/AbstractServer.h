@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef ABSTRACTSERVER_H
 #define ABSTRACTSERVER_H
 
-#include "Acceptor.h"
 #include <string>
 
 using std::string;

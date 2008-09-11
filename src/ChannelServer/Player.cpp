@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "KeyMaps.h"
 #include "Levels.h"
 #include "LevelsPacket.h"
+#include "MapleSession.h"
 #include "Maps.h"
 #include "Mobs.h"
 #include "MySQLM.h"
@@ -129,7 +130,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	int id = packet->getInt();
 	if (!Connectable::Instance()->checkPlayer(id)) {
 		//hacking
-		packetHandler->disconnect();
+		getSession()->disconnect();
 		return;
 	}
 	this->id = id;
@@ -144,7 +145,7 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	if (res.empty()) {
 		//hacking
-		packetHandler->disconnect();
+		getSession()->disconnect();
 		return;
 	}
 
@@ -420,7 +421,7 @@ bool Player::addWarning() {
 	warnings.push_back(t);
 	if (warnings.size() > 50) {
 		// Hacker - Temp DCing
-		packetHandler->disconnect();
+		getSession()->disconnect();
 		return true;
 	}
 	return false;

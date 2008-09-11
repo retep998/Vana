@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Shops.h"
-#include "Player.h"
-#include "PacketCreator.h"
 #include "Drops.h"
 #include "Inventory.h"
+#include "MapleSession.h"
+#include "PacketCreator.h"
+#include "Player.h"
 #include "SendHeader.h"
 
 unordered_map<int, ShopInfo> Shops::shops;
@@ -67,7 +68,7 @@ void Shops::showShop(Player *player, int id) {
 		packet.addShort(Inventory::items[rechargables[i]].maxslot + player->getSkills()->getSkillLevel(4100000)*10);
 	}
 
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 int Shops::getPrice(int shopid, int itemid) {

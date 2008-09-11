@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPlayer.h"
-#include "WorldServerAcceptPlayerPacket.h"
-#include "WorldServerAcceptHandler.h"
-#include "LoginServerConnectPlayerPacket.h"
-#include "WorldServer.h"
-#include "InterHeader.h"
 #include "Channels.h"
-#include "ReadPacket.h"
+#include "InterHeader.h"
+#include "LoginServerConnectPlayerPacket.h"
+#include "MapleSession.h"
 #include "Rates.h"
+#include "ReadPacket.h"
+#include "WorldServer.h"
+#include "WorldServerAcceptHandler.h"
+#include "WorldServerAcceptPlayerPacket.h"
 #include <iostream>
 
 WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
@@ -64,6 +65,6 @@ void WorldServerAcceptPlayer::authenticated(char type) {
 	else {
 		WorldServerAcceptPlayerPacket::connect(this, -1, 0, 0);
 		std::cout << "Error: No more channel to assign." << std::endl;
-		packetHandler->disconnect();
+		getSession()->disconnect();
 	}
 }

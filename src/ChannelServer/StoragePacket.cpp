@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "StoragePacket.h"
+#include "Inventory.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
-#include "SendHeader.h"
 #include "Player.h"
 #include "PlayerPacketHelper.h"
-#include "Inventory.h"
+#include "SendHeader.h"
 
 void StoragePacket::showStorage(Player *player, int npcid) {
 	PacketCreator packet;
@@ -38,7 +39,7 @@ void StoragePacket::showStorage(Player *player, int npcid) {
 	}
 	packet.addShort(0);
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void StoragePacket::addItem(Player *player, char inv) {
@@ -55,7 +56,7 @@ void StoragePacket::addItem(Player *player, char inv) {
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void StoragePacket::takeItem(Player *player, char inv) {
@@ -72,7 +73,7 @@ void StoragePacket::takeItem(Player *player, char inv) {
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void StoragePacket::changeMesos(Player *player, int mesos) {
@@ -84,12 +85,12 @@ void StoragePacket::changeMesos(Player *player, int mesos) {
 	packet.addShort(0);
 	packet.addInt(0);
 	packet.addInt(mesos);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void StoragePacket::storageFull(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x10);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LevelsPacket.h"
+#include "MapleSession.h"
+#include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "SendHeader.h"
-#include "Maps.h"
 
 void LevelsPacket::showEXP(Player *player, int exp, char type) {
 	PacketCreator packet;
@@ -31,7 +32,7 @@ void LevelsPacket::showEXP(Player *player, int exp, char type) {
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LevelsPacket::levelUP(Player *player) {
@@ -47,7 +48,7 @@ void LevelsPacket::statOK(Player *player) {
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addShort(1);
 	packet.addInt(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LevelsPacket::jobChange(Player *player) {

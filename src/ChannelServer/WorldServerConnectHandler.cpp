@@ -16,16 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectHandler.h"
-#include "WorldServerConnectPlayer.h"
-#include "PlayerPacket.h"
 #include "ChannelServer.h"
-#include "PlayersPacket.h"
 #include "Connectable.h"
-#include "Players.h"
-#include "Player.h"
-#include "ReadPacket.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
+#include "Player.h"
+#include "PlayerPacket.h"
+#include "Players.h"
+#include "PlayersPacket.h"
 #include "Rates.h"
+#include "ReadPacket.h"
+#include "WorldServerConnectPlayer.h"
 #include <iostream>
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, ReadPacket *packet) {
@@ -108,7 +109,7 @@ void WorldServerConnectHandler::forwardPacket(ReadPacket *packet) {
 	PacketCreator ppacket;
 	int playerid = packet->getInt();
 	ppacket.addBuffer(packet);
-	Players::Instance()->getPlayer(playerid)->getPacketHandler()->send(ppacket);
+	Players::Instance()->getPlayer(playerid)->getSession()->send(ppacket);
 }
 
 void WorldServerConnectHandler::setRates(ReadPacket *packet) {

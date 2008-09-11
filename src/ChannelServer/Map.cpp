@@ -19,15 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "LoopingId.h"
 #include "MapPacket.h"
+#include "MapleSession.h"
 #include "Mobs.h"
 #include "MobsPacket.h"
 #include "NPCPacket.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "PlayerPacket.h"
+#include "Randomizer.h"
 #include "ReactorPacket.h"
 #include "Reactors.h"
-#include "Randomizer.h"
 #include "SkillsPacket.h"
 #include "Timer/Timer.h"
 #include <ctime>
@@ -277,7 +278,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	for (size_t i = 0; i < players.size(); i++) {
 		if (player != players[i] && players[i]->getActiveBuffs()->getActiveSkillLevel(9101004) == 0) {
 			PacketCreator packet = MapPacket::playerPacket(players[i]);
-			player->getPacketHandler()->send(packet);
+			player->getSession()->send(packet);
 			// Bug in global; would be fixed here:
 			// Hurricane/Pierce do not display properly if using when someone enters the map
 			// Berserk does not display properly either - players[i]->getActiveBuffs()->getBerserk()
@@ -321,7 +322,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 void Map::sendPacket(PacketCreator &packet, Player *player) {
 	for (size_t i = 0; i < this->players.size(); i++) {
 		if (this->players[i] != player) {
-			this->players[i]->getPacketHandler()->send(packet);
+			this->players[i]->getSession()->send(packet);
 		}
 	}
 }

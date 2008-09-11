@@ -16,16 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacket.h"
+#include "KeyMaps.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
+#include "Pets.h"
 #include "Player.h"
-#include "Skills.h"
-#include "TimeUtilities.h"
 #include "PlayerPacketHelper.h"
 #include "Randomizer.h"
 #include "SendHeader.h"
-#include "KeyMaps.h"
 #include "SkillMacros.h"
-#include "Pets.h"
+#include "Skills.h"
+#include "TimeUtilities.h"
 
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
@@ -141,7 +142,7 @@ void PlayerPacket::connectData(Player *player) {
 		packet.addBytes("FFC99A3B");
 	packet.addInt(0);
 	packet.addInt64(TimeUtilities::getServerTime());
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
@@ -159,7 +160,7 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 			packet.addInt(0);
 		}
 	}
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
@@ -184,7 +185,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 		}
 	}
 	
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
@@ -193,7 +194,7 @@ void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
 	packet.addByte(is);
 	packet.addInt(id);
 	packet.addInt(value);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
@@ -202,7 +203,7 @@ void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
 	packet.addByte(is);
 	packet.addInt(id);
 	packet.addShort(value);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
@@ -211,7 +212,7 @@ void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
 	packet.addByte(is);
 	packet.addInt(id);
 	packet.addByte(value);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
@@ -220,7 +221,7 @@ void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
 	packet.addByte(1);
 	packet.addIP(ip);
 	packet.addShort(port);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
@@ -228,7 +229,7 @@ void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
 	packet.addShort(SEND_NOTICE); 
 	packet.addByte(type);
 	packet.addString(msg);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayerPacket::instructionBubble(Player *player, const string &msg, short width, short height) {
@@ -246,5 +247,5 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, short wi
 	packet.addShort(height);
 	packet.addByte(1);
 
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DropsPacket.h"
-#include "PacketCreator.h"
-#include "Maps.h"
-#include "Player.h"
 #include "Drops.h"
-#include "SendHeader.h"
+#include "MapleSession.h"
+#include "Maps.h"
+#include "PacketCreator.h"
 #include "Pets.h"
+#include "Player.h"
+#include "SendHeader.h"
 
 void DropsPacket::showDrop(Player *player, Drop *drop, char type, bool newdrop, Pos origin) {
 	PacketCreator packet;
@@ -43,7 +44,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, char type, bool newdrop, 
 	}
 	packet.addByte(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
 	if (player != 0)
-		player->getPacketHandler()->send(packet);
+		player->getSession()->send(packet);
 	else
 		Maps::maps[drop->getMap()]->sendPacket(packet);
 
@@ -70,7 +71,7 @@ void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
 		packet.addInt(0);
 		packet.addInt(0);
 	}
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void DropsPacket::takeDrop(Player *player, Drop *drop) {
@@ -83,7 +84,7 @@ void DropsPacket::takeDrop(Player *player, Drop *drop) {
 		Maps::maps[player->getMap()]->sendPacket(packet);
 	}
 	else {
-		player->getPacketHandler()->send(packet);
+		player->getSession()->send(packet);
 	}
 }
 
@@ -91,7 +92,7 @@ void DropsPacket::dontTake(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addShort(1);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void DropsPacket::removeDrop(Drop *drop) {
@@ -121,5 +122,5 @@ void DropsPacket::takeDropPet(Player *player, Drop *drop, Pet *pet) {
 	if (!drop->isQuest()) {
 		Maps::maps[player->getMap()]->sendPacket(packet);
 	}
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

@@ -16,13 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
+#include "ConnectionManager.h"
 #include "Worlds.h"
 
 LoginServer * LoginServer::singleton = 0;
 
 void LoginServer::listen() {
-	new Acceptor(port, new PlayerLoginFactory(), "0");
-	new Acceptor(inter_port, new LoginServerAcceptPlayerFactory());
+	ConnectionManager::Instance()->accept(port, new PlayerLoginFactory(), "0");
+	ConnectionManager::Instance()->accept(inter_port, new LoginServerAcceptPlayerFactory());
 }
 
 void LoginServer::loadData() {

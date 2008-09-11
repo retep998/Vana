@@ -4,7 +4,7 @@ Copyright (C) 2008 Vana Development Team
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; version 2
-of the License.d
+of the License.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,22 +15,34 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#ifndef MAPLECLIENT_H
+#define MAPLECLIENT_H
 
-#include "PingPacket.h"
-#include "AbstractPlayer.h"
 #include "MapleSession.h"
-#include "PacketCreator.h"
-#include "RecvHeader.h"
-#include "SendHeader.h"
+#include "SessionManager.h"
+#include <string>
+#include <boost/asio.hpp>
 
-void PingPacket::ping(AbstractPlayer *player) {
-	PacketCreator packet;
-	packet.addShort(SEND_PING);
-	player->getSession()->send(packet);
-}
+using std::string;
+using boost::asio::ip::tcp;
 
-void PingPacket::pong(AbstractPlayer *player) {
-	PacketCreator packet;
-	packet.addShort(RECV_PONG);
-	player->getSession()->send(packet);
-}
+class AbstractPlayer;
+
+class MapleClient : public MapleSession {
+public:
+	MapleClient(boost::asio::io_service &io_service,
+		const string &server, unsigned short port,
+		SessionManagerPtr sessionManager,
+		AbstractPlayer *player);
+	void start_connect();
+private:
+	void readConnectPacket();
+
+	string m_server;
+	unsigned short m_port;
+	tcp::resolver m_resolver;
+};
+
+typedef boost::shared_ptr<MapleClient> MapleClientPtr;
+
+#endif

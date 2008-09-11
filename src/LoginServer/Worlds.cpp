@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Worlds.h"
-#include "LoginPacket.h"
-#include "LoginServerAcceptPlayerPacket.h"
-#include "PlayerLogin.h"
-#include "LoginServerAcceptPlayer.h"
 #include "Characters.h"
+#include "LoginPacket.h"
+#include "LoginServerAcceptPlayer.h"
+#include "LoginServerAcceptPlayerPacket.h"
+#include "MapleSession.h"
+#include "PlayerLogin.h"
 #include "ReadPacket.h"
 
 unordered_map<int, World *> Worlds::worlds;
@@ -75,7 +76,7 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	}
 	else {
 		std::cout << "Error: No more worlds to assign." << std::endl;
-		player->getPacketHandler()->disconnect();
+		player->getSession()->disconnect();
 	}
 	return world->id;
 }
@@ -99,6 +100,6 @@ char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	else {
 		std::cout << "Error: No more channels to assign." << std::endl;
 	}
-	player->getPacketHandler()->disconnect();
+	player->getSession()->disconnect();
 	return worldid;
 }

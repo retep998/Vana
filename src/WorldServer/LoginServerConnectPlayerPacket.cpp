@@ -16,7 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectPlayerPacket.h"
+#include "InterHeader.h"
 #include "LoginServerConnectPlayer.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
 
 void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *player, int channel, const string &ip, short port) {
@@ -25,7 +27,7 @@ void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *p
 	packet.addInt(channel);
 	packet.addString(ip);
 	packet.addShort(port);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *player, int channel, int population) {
@@ -34,7 +36,7 @@ void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *
 	packet.addInt(channel);
 	packet.addInt(population);
 	
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginServerConnectPlayerPacket::removeChannel(LoginServerConnectPlayer *player, int channel) {
@@ -42,5 +44,5 @@ void LoginServerConnectPlayerPacket::removeChannel(LoginServerConnectPlayer *pla
 	packet.addShort(INTER_REMOVE_CHANNEL);
 	packet.addInt(channel);
 
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

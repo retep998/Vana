@@ -15,26 +15,29 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef CONNECTOR_H
-#define CONNECTOR_H
+#ifndef ABSTRACTSESSION_H
+#define ABSTRACTSESSION_H
 
-#include "Selector.h"
-#include "WinSockInclude.h"
-#include <string>
+#include <memory>
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
 
-using std::string;
+class SessionManager;
+typedef std::tr1::shared_ptr<SessionManager> SessionManagerPtr;
 
-class AbstractPlayerFactory;
-class AbstractPlayer;
-class PacketHandler;
-
-class Connector {
+class AbstractSession {
 public:
-	Connector (const string &ip, short port, AbstractPlayerFactory *apf);
-	AbstractPlayer * getPlayer();
+	AbstractSession(SessionManagerPtr sessionManager) :
+		m_session_manager(sessionManager) { }
+	virtual void start() = 0;
+	virtual void handle_start() = 0;
+	virtual void stop() = 0;
+	virtual void disconnect() = 0;
+	virtual void handle_stop() = 0;
 protected:
-	WSADATA wsaData;
-	PacketHandler *packetHandler;
+	SessionManagerPtr m_session_manager;
 };
+
+typedef boost::shared_ptr<AbstractSession> AbstractSessionPtr;
 
 #endif

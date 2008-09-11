@@ -16,19 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.h"
+#include "ConnectionManager.h"
 #include "WorldServerAcceptPlayerPacket.h"
-#include "Acceptor.h"
-#include "Connector.h"
 
 WorldServer * WorldServer::singleton = 0;
 
 void WorldServer::listen() {
-	new Acceptor(inter_port, new WorldServerAcceptPlayerFactory());
+	ConnectionManager::Instance()->accept(inter_port, new WorldServerAcceptPlayerFactory());
 }
 
 void WorldServer::loadData() {
-	Connector *c = new Connector(login_ip, login_inter_port, new LoginServerConnectPlayerFactory());
-	loginPlayer = (LoginServerConnectPlayer *) c->getPlayer();
+	loginPlayer = dynamic_cast<LoginServerConnectPlayer *>(
+		ConnectionManager::Instance()->connect(login_ip, 
+			login_inter_port, new LoginServerConnectPlayerFactory()));
 	loginPlayer->setIP(external_ip);
 	loginPlayer->sendAuth(inter_password);
 }
