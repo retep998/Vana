@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPlayerPacket.h"
 #include "Channels.h"
+#include "InterHeader.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Rates.h"
 #include "SendHeader.h"
@@ -31,7 +33,7 @@ void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, i
 	packet.addByte(type);
 	packet.addString(sender);
 	packet.addString(message);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int channel, short port, unsigned char maxMultiLevel) {
@@ -40,7 +42,7 @@ void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, int
 	packet.addInt(channel);
 	packet.addShort(port);
 	packet.addByte(maxMultiLevel);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, const string &ip, short port) {
@@ -49,7 +51,7 @@ void WorldServerAcceptPlayerPacket::playerChangeChannel(WorldServerAcceptPlayer 
 	packet.addInt(playerid);
 	packet.addString(ip);
 	packet.addShort(port);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int len) {
@@ -66,7 +68,7 @@ void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, 
 	packet.addString(findee);
 	packet.addByte(is);
 
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, const string &whisperer, int channel, const string &message) {
@@ -77,7 +79,7 @@ void WorldServerAcceptPlayerPacket::whisperPlayer(WorldServerAcceptPlayer *playe
 	packet.addInt(channel);
 	packet.addString(message);
 
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::scrollingHeader(const string &message) {
@@ -93,7 +95,7 @@ void WorldServerAcceptPlayerPacket::newConnectable(int channel, int playerid) {
 	packet.addShort(INTER_NEW_CONNECTABLE);
 	packet.addInt(playerid);
 
-	Channels::Instance()->getChannel(channel)->player->getPacketHandler()->send(packet);
+	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPlayerPacket::sendRates(WorldServerAcceptPlayer *player, int setBit) {
@@ -114,5 +116,5 @@ void WorldServerAcceptPlayerPacket::sendRates(WorldServerAcceptPlayer *player, i
 		packet.addInt(WorldServer::Instance()->getDroprate());
 	}
 
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

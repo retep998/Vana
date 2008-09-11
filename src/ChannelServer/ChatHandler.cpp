@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChatHandler.h"
 #include "Inventory.h"
 #include "MapPacket.h"
+#include "MapleSession.h"
 #include "Maps.h"
 #include "Mobs.h"
 #include "MySQLM.h"
@@ -57,7 +58,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				string targetname = strtok_s(0, " ", &next_token);
 
 				if (Player *target = Players::Instance()->getPlayer(targetname))
-					target->getPacketHandler()->disconnect();
+					target->getSession()->disconnect();
 
 				char reason = 1;
 				if (strlen(next_token) > 0)
@@ -107,7 +108,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			else if (strcmp(command, "packet") == 0) {
 				PacketCreator packet;
 				packet.addBytes(next_token);
-				player->getPacketHandler()->send(packet);
+				player->getSession()->send(packet);
 			}
 			else if (strcmp(command, "timer") == 0) {
 				MapPacket::showTimer(player, atoi(next_token));
@@ -153,7 +154,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 
 				if (Player *target = Players::Instance()->getPlayer(next_token))
 					if (player->getGMLevel() > target->getGMLevel())
-						target->getPacketHandler()->disconnect();
+						target->getSession()->disconnect();
 				else
 					PlayerPacket::showMessage(player, "Invalid player or player is offline.", 5);
 			}
@@ -582,7 +583,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			Maps::changeMusic(player->getMap(), next_token);
 		}
 		else if	(strcmp(command, "dc") == 0) {
-			player->getPacketHandler()->disconnect();
+			player->getSession()->disconnect();
 			return;
 		}
 		return;

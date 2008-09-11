@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "FamePacket.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Players.h"
@@ -25,7 +26,7 @@ void FamePacket::sendError(Player *player, int reason) {
 	PacketCreator packet;
 	packet.addShort(SEND_FAME);
 	packet.addInt(reason);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame) {
@@ -34,7 +35,7 @@ void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame
 	packet.addByte(0x05);
 	packet.addString(player->getName());
 	packet.addByte(type);
-	player2->getPacketHandler()->send(packet);
+	player2->getSession()->send(packet);
 
 	packet = PacketCreator();
 	packet.addShort(SEND_FAME);
@@ -42,5 +43,5 @@ void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame
 	packet.addString(player2->getName());
 	packet.addByte(type);
 	packet.addInt(newFame);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

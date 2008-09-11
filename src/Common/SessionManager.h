@@ -15,25 +15,25 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef ACCEPTOR_H
-#define ACCEPTOR_H
+#ifndef SESSIONMANAGER_H
+#define SESSIONMANAGER_H
 
-#include "Selector.h"
-#include "WinSockInclude.h"
-#include <string>
+#include <memory>
+#include <set>
+#include <boost/noncopyable.hpp>
+#include <boost/shared_ptr.hpp>
 
-using std::string;
+class AbstractSession;
+typedef boost::shared_ptr<AbstractSession> AbstractSessionPtr;
 
-class AbstractPlayerFactory;
-
-class Acceptor : public Selector::Handler {
+class SessionManager : private boost::noncopyable {
 public:
-	Acceptor(short port, AbstractPlayerFactory *apf, string ivUnknown = "");
-	virtual void handle(int socket);
-protected:
-	string ivUnknown;
-	AbstractPlayerFactory *abstractPlayerFactory;
-	WSADATA wsaData;
+	void start(AbstractSessionPtr session);
+	void stop(AbstractSessionPtr session);
+private:
+	std::set<AbstractSessionPtr> m_sessions;
 };
+
+typedef std::tr1::shared_ptr<SessionManager> SessionManagerPtr;
 
 #endif

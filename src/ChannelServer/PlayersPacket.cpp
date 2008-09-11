@@ -15,13 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#include "PlayersPacket.h"
+#include "MapleSession.h"
+#include "Maps.h"
 #include "PacketCreator.h"
+#include "Pets.h"
 #include "Player.h"
 #include "Players.h"
-#include "PlayersPacket.h"
 #include "SendHeader.h"
-#include "Maps.h"
-#include "Pets.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
@@ -129,7 +130,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, unsigned char isse
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, int channel, const string &message) {
@@ -139,7 +140,7 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, 
 	packet.addString(whisperer_name);
 	packet.addShort(channel);
 	packet.addString(message);
-	target->getPacketHandler()->send(packet);
+	target->getSession()->send(packet);
 }
 
 void PlayersPacket::findPlayer(Player *player, const string &name, int map, unsigned char is, bool is_channel) {
@@ -162,7 +163,7 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int map, unsi
 		packet.addByte(is);
 	}
 
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PlayersPacket::sendToPlayers(unsigned char *data, int len) {

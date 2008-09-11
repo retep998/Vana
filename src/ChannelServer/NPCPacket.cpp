@@ -16,9 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NPCPacket.h"
+#include "MapleSession.h"
+#include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "Maps.h"
 #include "SendHeader.h"
 
 void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int i) {
@@ -33,7 +34,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int i) {
 	packet.addShort(npc.rx0);
 	packet.addShort(npc.rx1);
 	packet.addByte(1);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 	packet = PacketCreator();
 	packet.addShort(SEND_SHOW_NPC2);
 	packet.addByte(1);
@@ -46,5 +47,5 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int i) {
 	packet.addShort(npc.rx0);
 	packet.addShort(npc.rx1);
 	packet.addByte(1);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

@@ -15,9 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WINSOCKINCLUDE_H
-#define WINSOCKINCLUDE_H
+#include "SessionManager.h"
+#include "AbstractSession.h"
+#include <memory>
 
-#include <Winsock.h>
+void SessionManager::start(AbstractSessionPtr session) {
+	m_sessions.insert(session);
+	session->handle_start();
+}
 
-#endif
+void SessionManager::stop(AbstractSessionPtr session) {
+	m_sessions.erase(session);
+	session->handle_stop();
+}

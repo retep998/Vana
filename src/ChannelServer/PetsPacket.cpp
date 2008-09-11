@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Pets.h"
+#include "MapleSession.h"
+#include "Maps.h"
+#include "PacketCreator.h"
 #include "PetsPacket.h"
 #include "Player.h"
-#include "PacketCreator.h"
-#include "Maps.h"
-#include "SendHeader.h"
 #include "ReadPacket.h"
+#include "SendHeader.h"
 
 void PetsPacket::showChat(Player *player, Pet *pet, const string &message, char act) {
 	PacketCreator packet;
@@ -85,7 +86,7 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, char animation, bool su
 	else {
 		packet.addByte(0);
 	}
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PetsPacket::updatePet(Player *player, Pet *pet) {
@@ -114,7 +115,7 @@ void PetsPacket::updatePet(Player *player, Pet *pet) {
 	packet.addBytes("B8D56000CEC8"); // TODO: Expire date
 	packet.addByte(1); // Alive or dead
 	packet.addInt(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PetsPacket::levelUp(Player *player, Pet *pet) {
@@ -123,7 +124,7 @@ void PetsPacket::levelUp(Player *player, Pet *pet) {
 	packet.addByte(4);
 	packet.addByte(0);
 	packet.addByte(pet->getIndex());
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 
 	packet = PacketCreator();
 	packet.addShort(SEND_SHOW_SKILL);
@@ -151,7 +152,7 @@ void PetsPacket::showPet(Player *player, Pet *pet) {
 	packet.addInt(pet->getId());
 	packet.addInt(0);
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PetsPacket::updateSummonedPets(Player *player) {
@@ -170,7 +171,7 @@ void PetsPacket::updateSummonedPets(Player *player) {
 		packet.addInt(0);
 	}
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void PetsPacket::blankUpdate(Player *player) {
@@ -178,5 +179,5 @@ void PetsPacket::blankUpdate(Player *player) {
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addByte(1);
 	packet.addInt(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

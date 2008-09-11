@@ -216,15 +216,19 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Common\Acceptor.cpp"
+					RelativePath=".\src\Common\ConnectionManager.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connector.cpp"
+					RelativePath=".\src\Common\MapleClient.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\PacketHandler.cpp"
+					RelativePath=".\src\Common\MapleServer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\MapleSession.cpp"
 					>
 				</File>
 				<File
@@ -232,7 +236,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Selector.cpp"
+					RelativePath=".\src\Common\SessionManager.cpp"
 					>
 				</File>
 			</Filter>
@@ -293,6 +297,14 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\DatabaseMigrationRunner.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="ServerToServer"
+				>
+				<File
+					RelativePath=".\src\Common\ServerPlayer.cpp"
 					>
 				</File>
 			</Filter>
@@ -390,15 +402,23 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Common\Acceptor.h"
+					RelativePath=".\src\Common\AbstractSession.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Connector.h"
+					RelativePath=".\src\Common\ConnectionManager.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\PacketHandler.h"
+					RelativePath=".\src\Common\MapleClient.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\MapleServer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\MapleSession.h"
 					>
 				</File>
 				<File
@@ -406,11 +426,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\Selector.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\WinSockInclude.h"
+					RelativePath=".\src\Common\SessionManager.h"
 					>
 				</File>
 			</Filter>

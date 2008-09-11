@@ -16,14 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.h"
-#include "LoginServer.h"
 #include "LoginPacket.h"
-#include "PlayerLogin.h"
-#include "TimeUtilities.h"
-#include "Randomizer.h"
+#include "LoginServer.h"
+#include "MapleSession.h"
 #include "MySQLM.h"
-#include "sha1.h"
+#include "PlayerLogin.h"
+#include "Randomizer.h"
+#include "ReadPacket.h"
 #include "StringUtilities.h"
+#include "TimeUtilities.h"
+#include "sha1.h"
 #include <iostream>
 
 void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
@@ -71,7 +73,7 @@ void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 	if (!valid) {
 		int threshold = LoginServer::Instance()->getInvalidLoginThreshold();
 		if (threshold != 0 && player->addInvalidLogin() >= threshold) {
-			player->getPacketHandler()->disconnect(); // Too many invalid logins
+			player->getSession()->disconnect(); // Too many invalid logins
 		}
 	}
 	else {

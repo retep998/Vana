@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Players.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "StringUtilities.h"
@@ -49,6 +50,6 @@ void Players::run(function<void (Player *)> func) {
 
 void Players::sendPacket(PacketCreator &packet) {
 	for (unordered_map<int, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
-		iter->second->getPacketHandler()->send(packet);
+		iter->second->getSession()->send(packet);
 	}
 }

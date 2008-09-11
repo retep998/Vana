@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Characters.h"
-#include "PlayerLogin.h"
 #include "LoginPacket.h"
-#include "MySQLM.h"
-#include "Worlds.h"
 #include "LoginServer.h"
 #include "LoginServerAcceptPlayerPacket.h"
+#include "MySQLM.h"
+#include "PlayerLogin.h"
+#include "ReadPacket.h"
+#include "Worlds.h"
 
 void Characters::showEquips(int id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = Database::getCharDB().query();

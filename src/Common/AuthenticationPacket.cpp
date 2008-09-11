@@ -16,9 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AuthenticationPacket.h"
-#include "ServerPlayer.h"
 #include "InterHeader.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
+#include "ServerPlayer.h"
 
 void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, string pass, string ip) {
 	PacketCreator packet;
@@ -26,5 +27,5 @@ void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, str
 	packet.addString(pass);
 	packet.addString(ip);
 	packet.addByte(player->getType());
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

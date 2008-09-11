@@ -16,13 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapPacket.h"
+#include "Inventory.h"
+#include "MapleSession.h"
+#include "Maps.h"
 #include "PacketCreator.h"
+#include "Pets.h"
 #include "Player.h"
 #include "PlayerPacketHelper.h"
-#include "Maps.h"
-#include "Inventory.h"
 #include "SendHeader.h"
-#include "Pets.h"
 
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
@@ -136,7 +137,7 @@ void MapPacket::changeMap(Player *player) {
 	packet.addShort(-1);
 	packet.addByte(-1);
 	packet.addByte(1);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void MapPacket::portalBlocked(Player *player) {
@@ -144,7 +145,7 @@ void MapPacket::portalBlocked(Player *player) {
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addByte(1);
 	packet.addInt(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec) {
@@ -154,7 +155,7 @@ void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min,
 	packet.addByte(hour);
 	packet.addByte(min);
 	packet.addByte(sec);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void MapPacket::showTimer(Player *player, int sec) {
@@ -162,13 +163,13 @@ void MapPacket::showTimer(Player *player, int sec) {
 	packet.addShort(SEND_TIME);
 	packet.addByte(2);
 	packet.addInt(sec);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void MapPacket::makeApple(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_MAKE_APPLE);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void MapPacket::changeMusic(int mapid, const string &musicname) { // Change music

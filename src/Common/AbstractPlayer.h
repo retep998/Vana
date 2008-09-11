@@ -18,13 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef ABSTRACTPLAYER_H
 #define ABSTRACTPLAYER_H
 
+#include "MapleSession.h"
 #include "Timer/Container.h"
 #include <string>
 #include <boost/scoped_ptr.hpp>
 
 using std::string;
 
-class PacketHandler;
 class ReadPacket;
 
 class AbstractPlayer {
@@ -36,15 +36,15 @@ public:
 	void setTimer();
 	void ping();
 
-	PacketHandler * getPacketHandler() const { return packetHandler; }
-	void setPacketHandler(PacketHandler * ph) { packetHandler = ph; }
+	MapleSession * getSession() const { return session; }
+	void setSession(MapleSession *val);
 	string getIP() const { return ip; }
 	void setIP(const string &ip) { this->ip = ip; }
 	Timer::Container * getTimers() const { return timers.get(); }
 
 	virtual ~AbstractPlayer() { }
 protected:
-	PacketHandler *packetHandler;
+	MapleSession *session;
 	string ip;
 	bool is_server;
 private:

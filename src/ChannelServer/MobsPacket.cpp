@@ -16,13 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Inventory.h"
-#include "PacketCreator.h"
-#include "Player.h"
+#include "MapleSession.h"
+#include "Maps.h"
 #include "Mobs.h"
 #include "MobsPacket.h"
-#include "SendHeader.h"
+#include "PacketCreator.h"
+#include "Player.h"
 #include "ReadPacket.h"
-#include "Maps.h"
+#include "SendHeader.h"
 
 void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool spawn, bool show) {
 	PacketCreator packet;
@@ -44,7 +45,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool sp
 	packet.addShort(spawn ? -2 : -1);
 	packet.addInt(0);
 	if (requestControl || show)
-		player->getPacketHandler()->send(packet);
+		player->getSession()->send(packet);
 	else
 		Maps::maps[mob->getMapID()]->sendPacket(packet);
 }
@@ -54,7 +55,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	packet.addShort(SEND_CONTROL_MOB);
 	packet.addByte(0);
 	packet.addInt(mob->getID());
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp) {
@@ -64,7 +65,7 @@ void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool u
 	packet.addShort(moveid);
 	packet.addByte(useskill);
 	packet.addInt(mp);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void MobsPacket::moveMob(Player *player, int mobid, bool useskill, int skill, unsigned char *buf, int len) {
@@ -295,7 +296,7 @@ void MobsPacket::showHP(Player *player, int mobid, char per) {
 	packet.addShort(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 // Miniboss HP
 void MobsPacket::showMinibossHP(Player *player, int mobid, char per) {

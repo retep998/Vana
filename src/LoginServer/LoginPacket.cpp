@@ -16,19 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginPacket.h"
-#include "LoginPacketHelper.h"
-#include "PlayerLogin.h"
-#include "PacketCreator.h"
-#include "Worlds.h"
 #include "Characters.h"
+#include "LoginPacketHelper.h"
+#include "MapleSession.h"
+#include "PacketCreator.h"
+#include "PlayerLogin.h"
 #include "SendHeader.h"
+#include "Worlds.h"
 
 void LoginPacket::loginError(PlayerLogin *player, short errorid) {
 	PacketCreator packet;
 	packet.addShort(SEND_LOGIN_INFO_REPLY);
 	packet.addShort(errorid);
 	packet.addInt(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::loginBan(PlayerLogin *player, char reason, int expire) {
@@ -54,7 +55,7 @@ void LoginPacket::loginBan(PlayerLogin *player, char reason, int expire) {
 	packet.addByte(reason);
 	packet.addBytes("00000000");
 	packet.addInt(expire); //Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
@@ -74,21 +75,21 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 	packet.addInt(0);
 	packet.addBytes("000000A6B89C2B4CC701");
 	packet.addInt(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::loginProcess(PlayerLogin *player, char id) {
 	PacketCreator packet;
 	packet.addShort(SEND_LOGIN_PROCESS);
 	packet.addByte(id);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::pinAssigned(PlayerLogin *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_PIN_ASSIGNED);
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::genderDone(PlayerLogin *player, char gender) {
@@ -96,7 +97,7 @@ void LoginPacket::genderDone(PlayerLogin *player, char gender) {
 	packet.addShort(SEND_GENDER_DONE);
 	packet.addByte(gender);
 	packet.addByte(1);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::showWorld(PlayerLogin *player, World *world) {
@@ -126,21 +127,21 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 		packet.addShort(i);
 	}
 	packet.addShort(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::worldEnd(PlayerLogin *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_WORLD);
 	packet.addByte(0xFF);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::showChannels(PlayerLogin *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_CHANNEL);
 	packet.addShort(0x00);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::channelSelect(PlayerLogin *player) {
@@ -148,7 +149,7 @@ void LoginPacket::channelSelect(PlayerLogin *player) {
 	packet.addShort(SEND_CHANNEL_SELECT);
 	packet.addShort(0);
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::showCharacters(PlayerLogin *player, vector<Character> chars) {
@@ -160,7 +161,7 @@ void LoginPacket::showCharacters(PlayerLogin *player, vector<Character> chars) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
 	packet.addInt(3); // Max char you have have?
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::checkName(PlayerLogin *player, const string &name, bool taken) {
@@ -168,7 +169,7 @@ void LoginPacket::checkName(PlayerLogin *player, const string &name, bool taken)
 	packet.addShort(SEND_CHECK_NAME);
 	packet.addString(name);
 	packet.addByte(taken);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::showCharacter(PlayerLogin *player, Character charc) {
@@ -176,7 +177,7 @@ void LoginPacket::showCharacter(PlayerLogin *player, Character charc) {
 	packet.addShort(SEND_SHOW_CHARACTER);
 	packet.addByte(0);
 	LoginPacketHelper::addCharacter(packet, charc);
-	player->getPacketHandler()->send(packet);	
+	player->getSession()->send(packet);	
 }
 
 void LoginPacket::deleteCharacter(PlayerLogin *player, int ID) {
@@ -184,7 +185,7 @@ void LoginPacket::deleteCharacter(PlayerLogin *player, int ID) {
 	packet.addShort(SEND_DELETE_CHAR);
 	packet.addInt(ID);
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::connectIP(PlayerLogin *player, int charid) {
@@ -205,12 +206,12 @@ void LoginPacket::connectIP(PlayerLogin *player, int charid) {
 	packet.addInt(charid);
 	packet.addInt(0);
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::relogResponse(PlayerLogin *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_RELOG_RESPONSE);
 	packet.addByte(1);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }

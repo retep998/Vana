@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PACKETCREATOR_H
 #define PACKETCREATOR_H
 
-#include "PacketHandler.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -52,8 +51,10 @@ public:
 	const unsigned char * getBuffer() const;
 	size_t getSize() const;
 private:
+	static const size_t bufferLen = 10000;
+
 	size_t pos;
-	unsigned char packet[BUFFER_LEN];
+	unsigned char packet[bufferLen];
 };
 
 inline

@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractPlayer.h"
-#include "PacketHandler.h"
+#include "MapleSession.h"
 #include "PingPacket.h"
 #include "ReadPacket.h"
 #include "SendHeader.h"
@@ -30,7 +30,6 @@ is_server(false),
 is_pinged(false),
 timers(new Timer::Container)
 {
-	setTimer();
 }
 
 void AbstractPlayer::handleRequest(ReadPacket *packet) {
@@ -49,9 +48,14 @@ void AbstractPlayer::setTimer() {
 
 void AbstractPlayer::ping() {
 	if (is_pinged) { // We have a timeout now
-		packetHandler->disconnect();
+		session->disconnect();
 		return;
 	}
 	is_pinged = true;
 	PingPacket::ping(this);
+}
+
+void AbstractPlayer::setSession(MapleSession *val) {
+	session = val;
+	setTimer();
 }

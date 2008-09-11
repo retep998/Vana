@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SkillsPacket.h"
-#include "Player.h"
-#include "PacketCreator.h"
-#include "Skills.h"
-#include "SendHeader.h"
+#include "MapleSession.h"
 #include "Maps.h"
+#include "PacketCreator.h"
+#include "Player.h"
+#include "SendHeader.h"
+#include "Skills.h"
 
 void SkillsPacket::addSkill(Player *player, int skillid, PlayerSkillInfo skillinfo) {
 	PacketCreator packet;
@@ -31,7 +32,7 @@ void SkillsPacket::addSkill(Player *player, int skillid, PlayerSkillInfo skillin
 	packet.addInt(skillinfo.level); // Level
 	packet.addInt(skillinfo.maxlevel); // Master Level
 	packet.addByte(1);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level) {
@@ -70,7 +71,7 @@ void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveIn
 		packet.addShort(addedinfo);
 		packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
 	}
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	if (mskill.vals.size() > 0) {
@@ -101,7 +102,7 @@ void SkillsPacket::healHP(Player *player, short hp) {
 	packet.addShort(SEND_GAIN_ITEM);
 	packet.addByte(0xA);
 	packet.addShort(hp);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill) {
@@ -111,7 +112,7 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 	for (char i = 0; i < 8; i++)
 		packet.addByte(pskill.types[i]);
 	packet.addByte(0);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	if (mskill.vals.size() > 0) {
@@ -145,7 +146,7 @@ void SkillsPacket::showSkillEffect(Player *player, int skillid, unsigned char le
 			break;
 	}
 	if (send)
-		player->getPacketHandler()->send(packet);
+		player->getSession()->send(packet);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	packet = PacketCreator();
@@ -208,7 +209,7 @@ void SkillsPacket::sendCooldown(Player *player, int skillid, short time) {
 	packet.addShort(SEND_COOLDOWN);
 	packet.addInt(skillid);
 	packet.addShort(time);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void SkillsPacket::showBerserk(Player *player, unsigned char level, bool on) { // Sends to map/user
@@ -218,7 +219,7 @@ void SkillsPacket::showBerserk(Player *player, unsigned char level, bool on) { /
 	packet.addInt(1320006);
 	packet.addByte(level);
 	packet.addByte((on ? 1 : 0));
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	packet = PacketCreator();

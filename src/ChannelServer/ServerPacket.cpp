@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ServerPacket.h"
+#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Players.h"
@@ -27,7 +28,7 @@ void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
 	packet.addByte(4);
 	packet.addByte(1);
 	packet.addString(msg);
-	player->getPacketHandler()->send(packet);
+	player->getSession()->send(packet);
 }
 
 void ServerPacket::changeScrollingHeader(const string &msg) {

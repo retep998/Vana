@@ -15,38 +15,38 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PACKETHANDLER_H
-#define PACKETHANDLER_H
+#ifndef MAPLESERVER_H
+#define MAPLESERVER_H
 
-#define HEADER_LEN 4
-#define BUFFER_LEN 10000
-
-#include "Selector.h"
+#include "MapleSession.h"
+#include "SessionManager.h"
+#include <memory>
 #include <string>
+#include <boost/asio.hpp>
 #include <boost/scoped_ptr.hpp>
 
 using std::string;
+using boost::asio::ip::tcp;
 
-class AbstractPlayer;
 class AbstractPlayerFactory;
-class Decoder;
-class PacketCreator;
 
-class PacketHandler : public Selector::Handler {
+class MapleServer {
 public:
-	PacketHandler(int socket, AbstractPlayerFactory *abstractPlayerFactory, bool isSend = false, string ivUnknown = ""); // isSend = packet is initiated by the server or not
-	void handle(int socket);
-	bool send(unsigned char *buf, int len);
-	bool send(const PacketCreator &packet);
-	void disconnect();
-
-	AbstractPlayer * getPlayer() const { return player.get(); }
+	MapleServer(boost::asio::io_service &io_service,
+		const tcp::endpoint &endpoint,
+		AbstractPlayerFactory *apf,
+		string connectPacketUnknown);
 private:
-	unsigned char buffer[BUFFER_LEN];
-	int bytesInBuffer;
-	boost::scoped_ptr<AbstractPlayer> player;
-	boost::scoped_ptr<Decoder> decoder;
-	int socket;
+	void start_accept();
+	void handle_accept(MapleSessionPtr new_session,
+		const boost::system::error_code &error);
+
+	tcp::acceptor m_acceptor;
+	boost::scoped_ptr<AbstractPlayerFactory> m_apf;
+	SessionManagerPtr m_session_manager;
+	string m_connect_packet_unknown;
 };
+
+typedef std::tr1::shared_ptr<MapleServer> MapleServerPtr;
 
 #endif
