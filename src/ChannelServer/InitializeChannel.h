@@ -31,7 +31,7 @@ namespace Initializing {
 	void initializeSkills();
 	void initializePets();
 
-	const int vedb_version = 17;
+	const int vedb_version = 18;
 	const int vedb_subversion = 0;
 };
 
