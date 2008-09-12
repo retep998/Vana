@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleClient.h"
 #include "AbstractPlayer.h"
 #include "ReadPacket.h"
-#include <sstream>
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 
 MapleClient::MapleClient(boost::asio::io_service &io_service,
 		const string &server, unsigned short port,
@@ -35,11 +35,7 @@ m_resolver(io_service)
 void MapleClient::start_connect() {
 	// Synchronously connect and process the connect packet
 
-	// query accepts port as string
-	std::ostringstream port;
-	port << m_port;
-
-    tcp::resolver::query query(m_server, port.str());
+	tcp::resolver::query query(m_server, boost::lexical_cast<string>(m_port));
 	tcp::resolver::iterator endpoint_iterator = m_resolver.resolve(query);
 	tcp::resolver::iterator end;
     boost::system::error_code error = boost::asio::error::host_not_found;

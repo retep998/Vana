@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef STRINGUTILITIES_H
 #define STRINGUTILITIES_H
 
-#include <sstream>
 #include <string>
 
 using std::string;
@@ -28,17 +27,6 @@ namespace StringUtilities {
 	string toUpper(const string &s);
 	void trim(string &s);
 	string trim(const string &s);
-
-	template <typename T>
-	T toType(const string &s);
 }
-
-template <typename T>
-inline T StringUtilities::toType(const string &s) {
-	std::istringstream i(s);
-	T x;
-	i >> x;
-	return x;
-} 
 
 #endif
