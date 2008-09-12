@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.h"
 #include "LoginServerConnectPlayer.h"
 #include "WorldServerAcceptPlayer.h"
-#include "Config.h"
+#include "ConfigFile.h"
 #include <string>
 
 using std::string;

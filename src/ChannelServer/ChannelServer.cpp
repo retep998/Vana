@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChannelServer.h"
-#include "Config.h"
+#include "ConfigFile.h"
 #include "ConnectionManager.h"
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
@@ -64,7 +64,7 @@ void ChannelServer::connectWorld() {
 }
 
 void ChannelServer::loadConfig() {
-	Config config("conf/channelserver.lua");
+	ConfigFile config("conf/channelserver.lua");
 	login_ip = config.getString("login_ip");
 	login_inter_port = config.getInt("login_inter_port");
 	external_ip = config.getString("external_ip"); // External IP

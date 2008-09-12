@@ -16,14 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MySQLM.h"
-#include "Config.h"
+#include "ConfigFile.h"
 #include <boost/ref.hpp>
 
 mysqlpp::Connection Database::chardb(false);
 mysqlpp::Connection Database::datadb(false);
 
 void Database::connect() {
-	Config config("conf/mysql.lua");
+	ConfigFile config("conf/mysql.lua");
 	bool failed = false;
 	// Character Database
 	if (!(chardb.set_option(new mysqlpp::ReconnectOption(true)) && chardb.connect(config.getString("chardb_database").c_str(), config.getString("chardb_host").c_str(), config.getString("chardb_username").c_str(), config.getString("chardb_password").c_str(), config.getInt("chardb_port")))) {
