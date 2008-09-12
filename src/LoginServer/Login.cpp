@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerLogin.h"
 #include "Randomizer.h"
 #include "ReadPacket.h"
-#include "StringUtilities.h"
 #include "TimeUtilities.h"
 #include "sha1.h"
 #include <iostream>
+#include <boost/lexical_cast.hpp>
 
 void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 	string username = packet->getString();
@@ -146,7 +146,7 @@ void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
 		player->setStatus(2);
 	}
 	else if (act == 0x01) {
-		int pin = StringUtilities::toType<int>(packet->getString());
+		int pin = boost::lexical_cast<int>(packet->getString());
 		int curpin = player->getPin();
 		if (pin == curpin) {
 			player->setStatus(4);
@@ -156,7 +156,7 @@ void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
 			LoginPacket::loginProcess(player, 0x02);
 	}
 	else if (act == 0x02) {
-		int pin = StringUtilities::toType<int>(packet->getString());
+		int pin = boost::lexical_cast<int>(packet->getString());
 		int curpin = player->getPin();
 		if (pin == curpin) {
 			player->setStatus(1);
@@ -178,7 +178,7 @@ void Login::registerPIN(PlayerLogin *player, ReadPacket *packet) {
 		}
 		return;
 	}
-	int pin = StringUtilities::toType<int>(packet->getString());
+	int pin = boost::lexical_cast<int>(packet->getString());
 	player->setStatus(0);
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users SET pin = " << mysqlpp::quote << pin << " WHERE id = " << mysqlpp::quote << player->getUserid();

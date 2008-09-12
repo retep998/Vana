@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Pos.h"
 #include "ReadPacket.h"
-#include "StringUtilities.h"
+#include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
 void PacketCreator::addPos(Pos pos) {
@@ -43,7 +43,7 @@ void PacketCreator::addIP(const string &ip) {
 	tokenizer tokens(ip, sep);
 
 	for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); iter++) {
-		addByte((unsigned char) StringUtilities::toType<short>(*iter)); // Using toType<unsigned char> would cause it to spit ASCII
+		addByte((unsigned char) boost::lexical_cast<short>(*iter)); // Using lexical_cast<unsigned char> would cause it to spit ASCII
 	}
 }
 
