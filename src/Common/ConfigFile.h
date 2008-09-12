@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef CONFIGFILE_H
+#define CONFIGFILE_H
 
 extern "C" {
 	#include "lua/lua.h"
@@ -28,10 +28,10 @@ extern "C" {
 
 using std::string;
 
-class Config {
+class ConfigFile {
 public:
-	Config(string filename);
-	Config();
+	ConfigFile(string filename);
+	ConfigFile();
 	void loadFile(string filename);
 	bool keyExist(string value);
 	int getInt(string value);

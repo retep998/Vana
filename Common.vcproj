@@ -164,7 +164,7 @@
 				Name="DataBaseManager"
 				>
 				<File
-					RelativePath=".\src\Common\Config.cpp"
+					RelativePath=".\src\Common\ConfigFile.cpp"
 					>
 				</File>
 				<File
@@ -326,7 +326,7 @@
 				Name="DataBaseManager"
 				>
 				<File
-					RelativePath=".\src\Common\Config.h"
+					RelativePath=".\src\Common\ConfigFile.h"
 					>
 				</File>
 				<File
