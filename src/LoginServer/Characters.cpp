@@ -40,11 +40,11 @@ void Characters::showEquips(int32_t id, vector<CharEquip> &vec) {
 void Characters::loadCharacter(Character &charc, mysqlpp::Row &row) {
 	charc.id = row["id"];
 	charc.name = row["name"];
-	charc.gender = (unsigned char) row["gender"];
-	charc.skin = (unsigned char) row["skin"];
+	charc.gender = (uint8_t) row["gender"];
+	charc.skin = (uint8_t) row["skin"];
 	charc.eyes = row["eyes"];
 	charc.hair = row["hair"];
-	charc.level = (unsigned char) row["level"];
+	charc.level = (uint8_t) row["level"];
 	charc.job = row["job"];
 	charc.str = row["str"];
 	charc.dex = row["dex"];
@@ -59,7 +59,7 @@ void Characters::loadCharacter(Character &charc, mysqlpp::Row &row) {
 	charc.exp= row["exp"];
 	charc.fame = row["fame"];
 	charc.map = row["map"];
-	charc.pos = (unsigned char) row["pos"];
+	charc.pos = (uint8_t) row["pos"];
 	showEquips(charc.id, charc.equips);
 }
 
