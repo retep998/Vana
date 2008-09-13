@@ -61,36 +61,38 @@ class Pet : public MovableLife {
 public:
 	Pet(Player *player) : player(player) {}
 	Pet(Player *player, Item *item);
-	void setIndex(char index) { this->index = index; }
-	char getIndex() { return this->index; }
-	void setName(const string &name) { this->name = name; }
-	string getName() { return this->name; }
-	void setType(int32_t type) { this->type = type; }
-	int32_t getType() { return this->type; }
-	void setId(int32_t id) { this->id = id; }
-	int32_t getId() { return this->id; }
-	void setFullness(char fullness) { this->fullness = fullness; }
-	char getFullness() { return this->fullness; }
-	bool isSummoned() {	return this->summoned; }
-	void setSummoned(bool summoned) { this->summoned = summoned; }
-	void setLevel(char level) {	this->level = level; }
-	char getLevel() { return this->level; }
-	int16_t getCloseness() { return this->closeness; }
+
+	void setIndex(int8_t index) { this->index = index; }
+	void setLevel(int8_t level) { this->level = level; }
+	void setInventorySlot(int8_t slot) { this->inventorySlot = slot; }
+	void setFullness(int8_t fullness) { this->fullness = fullness; }
 	void setCloseness(int16_t closeness) { this->closeness = closeness; }
-	void setInventorySlot(char slot) { this->inventorySlot = slot; }
-	char getInventorySlot() { return this->inventorySlot; }
+	void setId(int32_t id) { this->id = id; }
+	void setType(int32_t type) { this->type = type; }
+	void setSummoned(bool summoned) { this->summoned = summoned; }
+	void setName(const string &name) { this->name = name; }
+
+	int8_t getIndex() const { return this->index; }
+	int8_t getLevel() const { return this->level; }
+	int8_t getInventorySlot() const { return this->inventorySlot; }
+	int8_t getFullness() const { return this->fullness; }
+	int16_t getCloseness() const { return this->closeness; }
+	int32_t getId() const { return this->id; }
+	int32_t getType() const { return this->type; }
+	bool isSummoned() const { return this->summoned; }
+	string getName() { return this->name; }
 
 	void reduceFullness();
 	void startTimer();
 private:
-	string name;
+	int8_t index;
+	int8_t level;
+	int8_t fullness;
+	int8_t inventorySlot;
+	int16_t closeness;
 	int32_t id;
 	int32_t type;
-	char index;
-	char level;
-	char fullness;
-	char inventorySlot;
-	int16_t closeness;
+	string name;
 	bool summoned;
 	Player *player;
 };
