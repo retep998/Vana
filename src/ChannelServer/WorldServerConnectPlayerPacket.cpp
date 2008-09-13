@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "WorldServerConnectPlayer.h"
 
-void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player, char type, int playerid, const vector<int> &receivers, const string &chat) {
+void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player, char type, int32_t playerid, const vector<int32_t> &receivers, const string &chat) {
 	PacketCreator packet;
 	packet.addShort(INTER_GROUP_CHAT);
 	packet.addInt(playerid);
@@ -35,7 +35,7 @@ void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player,
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::updateLevel(WorldServerConnectPlayer *player, int playerid, int level) {
+void WorldServerConnectPlayerPacket::updateLevel(WorldServerConnectPlayer *player, int32_t playerid, int32_t level) {
 	PacketCreator packet;
 	packet.addShort(INTER_UPDATE_LEVEL);
 	packet.addInt(playerid);
@@ -43,7 +43,7 @@ void WorldServerConnectPlayerPacket::updateLevel(WorldServerConnectPlayer *playe
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::updateJob(WorldServerConnectPlayer *player, int playerid, int job) {
+void WorldServerConnectPlayerPacket::updateJob(WorldServerConnectPlayer *player, int32_t playerid, int32_t job) {
 	PacketCreator packet;
 	packet.addShort(INTER_UPDATE_JOB);
 	packet.addInt(playerid);
@@ -51,7 +51,7 @@ void WorldServerConnectPlayerPacket::updateJob(WorldServerConnectPlayer *player,
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::updateMap(WorldServerConnectPlayer *player, int playerid, int map) {
+void WorldServerConnectPlayerPacket::updateMap(WorldServerConnectPlayer *player, int32_t playerid, int32_t map) {
 	PacketCreator packet;
 	packet.addShort(INTER_UPDATE_MAP);
 	packet.addInt(playerid);
@@ -59,7 +59,7 @@ void WorldServerConnectPlayerPacket::updateMap(WorldServerConnectPlayer *player,
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *player, char type, int playerid, int target) {
+void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *player, char type, int32_t playerid, int32_t target) {
 	PacketCreator packet;
 	packet.addShort(INTER_PARTY_OPERATION);
 	packet.addByte(type);
@@ -70,7 +70,7 @@ void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *pl
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::partyInvite(WorldServerConnectPlayer *player, int playerid, const string &invitee) {
+void WorldServerConnectPlayerPacket::partyInvite(WorldServerConnectPlayer *player, int32_t playerid, const string &invitee) {
 	PacketCreator packet;
 	packet.addShort(INTER_PARTY_OPERATION);
 	packet.addByte(0x04);
@@ -79,15 +79,15 @@ void WorldServerConnectPlayerPacket::partyInvite(WorldServerConnectPlayer *playe
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel) {
+void WorldServerConnectPlayerPacket::playerChangeChannel(WorldServerConnectPlayer *player, int32_t playerid, uint16_t channel) {
 	PacketCreator packet;
 	packet.addShort(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.addInt(playerid);
-	packet.addInt(channel);
+	packet.addShort(channel);
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *player, int playerid, const string &name, int map, int job, int level) {
+void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level) {
 	PacketCreator packet;
 	packet.addShort(INTER_REGISTER_PLAYER);
 	packet.addInt(playerid);
@@ -98,14 +98,14 @@ void WorldServerConnectPlayerPacket::registerPlayer(WorldServerConnectPlayer *pl
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::removePlayer(WorldServerConnectPlayer *player, int playerid) {
+void WorldServerConnectPlayerPacket::removePlayer(WorldServerConnectPlayer *player, int32_t playerid) {
 	PacketCreator packet;
 	packet.addShort(INTER_REMOVE_PLAYER);
 	packet.addInt(playerid);
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player, int playerid, const string &findee_name) {
+void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &findee_name) {
 	PacketCreator packet;
 	packet.addShort(INTER_FIND);
 	packet.addInt(playerid);
@@ -113,7 +113,7 @@ void WorldServerConnectPlayerPacket::findPlayer(WorldServerConnectPlayer *player
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *player, int playerid, const string &whisperee, const string &message) {
+void WorldServerConnectPlayerPacket::whisperPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &whisperee, const string &message) {
 	PacketCreator packet;
 	packet.addShort(INTER_WHISPER);
 	packet.addInt(playerid);

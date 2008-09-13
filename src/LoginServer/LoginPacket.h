@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define MAX_FIELD_SIZE 15
 
+#include "Types.h"
 #include <vector>
 #include <iostream>
 #include <sstream>
@@ -33,8 +34,8 @@ struct World;
 struct Character;
 
 namespace LoginPacket {
-	void loginError(PlayerLogin *player, short errorid);
-	void loginBan(PlayerLogin *player, char reason, int expire);
+	void loginError(PlayerLogin *player, int16_t errorid);
+	void loginBan(PlayerLogin *player, char reason, int32_t expire);
 	void loginProcess(PlayerLogin *player, char id);
 	void loginConnect(PlayerLogin *player, const string &username);
 	void pinAssigned(PlayerLogin *player);
@@ -46,8 +47,8 @@ namespace LoginPacket {
 	void showCharacters(PlayerLogin *player, vector<Character> chars);
 	void showCharacter(PlayerLogin *player, Character charc);
 	void checkName(PlayerLogin *player, const string &name, bool taken);
-	void deleteCharacter(PlayerLogin *player, int ID);
-	void connectIP(PlayerLogin *player, int charid);
+	void deleteCharacter(PlayerLogin *player, int32_t ID);
+	void connectIP(PlayerLogin *player, int32_t charid);
 	void relogResponse(PlayerLogin *player);
 };
 

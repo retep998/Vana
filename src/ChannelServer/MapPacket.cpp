@@ -158,7 +158,7 @@ void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min,
 	player->getSession()->send(packet);
 }
 
-void MapPacket::showTimer(Player *player, int sec) {
+void MapPacket::showTimer(Player *player, int32_t sec) {
 	PacketCreator packet;
 	packet.addShort(SEND_TIME);
 	packet.addByte(2);
@@ -172,7 +172,7 @@ void MapPacket::makeApple(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::changeMusic(int mapid, const string &musicname) { // Change music
+void MapPacket::changeMusic(int32_t mapid, const string &musicname) { // Change music
 	PacketCreator packet;
 	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
@@ -180,7 +180,7 @@ void MapPacket::changeMusic(int mapid, const string &musicname) { // Change musi
 	Maps::maps[mapid]->sendPacket(packet);
 }
 
-void MapPacket::sendSound(int mapid, const string &soundname) { // Send Sound
+void MapPacket::sendSound(int32_t mapid, const string &soundname) { // Send Sound
 	// Party1/Clear = Clear
 	// Party1/Failed = Wrong
 	// Cokeplay/Victory = Victory
@@ -194,7 +194,7 @@ void MapPacket::sendSound(int mapid, const string &soundname) { // Send Sound
 	Maps::maps[mapid]->sendPacket(packet);
 }
 // Send Event
-void MapPacket::sendEvent(int mapid, const string &eventname) {
+void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
 	// quest/party/clear = Clear
 	// quest/party/wrong_kor = Wrong
 	// quest/carnival/win = Win

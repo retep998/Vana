@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "TimeUtilities.h"
 
-void PlayerQuests::addQuest(int questid, int npcid) {
+void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 	QuestsPacket::acceptQuest(player, questid, npcid);
 	Quest quest;
 	quest.id = questid;
@@ -66,11 +66,11 @@ void PlayerQuests::addQuest(int questid, int npcid) {
 	quests.push_back(quest);
 }
 
-void PlayerQuests::updateQuestMob(int mobid) {
+void PlayerQuests::updateQuestMob(int32_t mobid) {
 	for (size_t i = 0; i < quests.size(); i++) {
 		for (size_t j = 0; j < quests[i].mobs.size(); j++) {
 			if (quests[i].mobs[j].id == mobid && !quests[i].done) {
-				int maxcount = 0;
+				int32_t maxcount = 0;
 				for (size_t k = 0; k < Quests::quests[quests[i].id].requests.size(); k++) {
 					if (Quests::quests[quests[i].id].requests[k].id == mobid) {
 						maxcount = Quests::quests[quests[i].id].requests[k].count;
@@ -93,8 +93,8 @@ void PlayerQuests::checkDone(Quest &quest) {
 		quest.done = 1;
 		return;
 	}
-	int is = 1;
-	for (unsigned int i=0; i<Quests::quests[quest.id].requests.size(); i++) {
+	int32_t is = 1;
+	for (uint32_t i=0; i<Quests::quests[quest.id].requests.size(); i++) {
 		if (Quests::quests[quest.id].requests[i].isitem) {
 			if ((player->getInventory()->getItemAmount(Quests::quests[quest.id].requests[i].id) < Quests::quests[quest.id].requests[i].count && Quests::quests[quest.id].requests[i].count > 0 ) || (Quests::quests[quest.id].requests[i].count == 0 && player->getInventory()->getItemAmount(Quests::quests[quest.id].requests[i].id) != 0)) {
 				is=0;
@@ -102,8 +102,8 @@ void PlayerQuests::checkDone(Quest &quest) {
 			}
 		}
 		else if (Quests::quests[quest.id].requests[i].ismob) {
-			int killed=0;
-			for (unsigned int j=0; j<quest.mobs.size(); j++) {
+			int32_t killed=0;
+			for (uint32_t j=0; j<quest.mobs.size(); j++) {
 				if (quest.mobs[j].id == Quests::quests[quest.id].requests[i].id) {
 					killed = quest.mobs[j].count;
 					break;
@@ -121,8 +121,8 @@ void PlayerQuests::checkDone(Quest &quest) {
 	}
 }
 
-void PlayerQuests::finishQuest(short questid, int npcid) {
-	int chance = 0;
+void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
+	int32_t chance = 0;
 	for (size_t i = 0; i < Quests::quests[questid].rewards.size(); i++) {
 		if (Quests::quests[questid].rewards[i].start) {
 			if (Quests::quests[questid].rewards[i].isexp) {
@@ -155,7 +155,7 @@ void PlayerQuests::finishQuest(short questid, int npcid) {
 		}
 	}
 	if (chance > 0) {
-		int random = Randomizer::Instance()->randInt(chance-1);
+		int32_t random = Randomizer::Instance()->randInt(chance-1);
 		chance = 0;
 		for (size_t i = 0; i < Quests::quests[questid].rewards.size(); i++) {
 			if (Quests::quests[questid].rewards[i].start) {
@@ -189,7 +189,7 @@ void PlayerQuests::finishQuest(short questid, int npcid) {
 	QuestsPacket::questFinish(player, questid, npcid, Quests::quests[questid].nextquest, quest.time);
 }
 
-bool PlayerQuests::isQuestActive(short questid) {
+bool PlayerQuests::isQuestActive(int16_t questid) {
 	for (size_t i = 0; i < quests.size(); i++) {
 		if (quests[i].id == questid) {
 			return 1;

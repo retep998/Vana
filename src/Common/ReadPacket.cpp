@@ -23,22 +23,22 @@ unsigned char ReadPacket::getByte() {
 	return buffer[pos++];
 }
 
-void ReadPacket::skipBytes(int len) {
+void ReadPacket::skipBytes(int32_t len) {
 	pos += len;
 }
 
-int ReadPacket::getInt() {
-	int val = buffer[pos] + buffer[pos+1]*0x100 + buffer[pos+2]*0x10000 + buffer[pos+3]*0x1000000;
+int32_t ReadPacket::getInt() {
+	int32_t val = buffer[pos] + buffer[pos+1]*0x100 + buffer[pos+2]*0x10000 + buffer[pos+3]*0x1000000;
 	pos += 4;
 	return val;
 }
 
-short ReadPacket::getHeader() {
+int16_t ReadPacket::getHeader() {
 	return buffer[0] + buffer[1]*0x100;
 }
 
-short ReadPacket::getShort() {
-	short val = buffer[pos] + buffer[pos+1]*0x100;;
+int16_t ReadPacket::getShort() {
+	int16_t val = buffer[pos] + buffer[pos+1]*0x100;;
 	pos += 2;
 	return val;
 }
@@ -61,7 +61,7 @@ size_t ReadPacket::getBufferLength() {
 	return length - pos;
 }
 
-ReadPacket & ReadPacket::reset(int len) {
+ReadPacket & ReadPacket::reset(int32_t len) {
 	if (len >= 0) {
 		pos = len;
 	}

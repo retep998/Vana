@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "SendHeader.h"
 
-void FamePacket::sendError(Player *player, int reason) {
+void FamePacket::sendError(Player *player, int32_t reason) {
 	PacketCreator packet;
 	packet.addShort(SEND_FAME);
 	packet.addInt(reason);
 	player->getSession()->send(packet);
 }
 
-void FamePacket::sendFame(Player *player, Player *player2, int type, int newFame) {
+void FamePacket::sendFame(Player *player, Player *player2, uint8_t type, int32_t newFame) {
 	PacketCreator packet;
 	packet.addShort(SEND_FAME);
 	packet.addByte(0x05);

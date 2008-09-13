@@ -85,7 +85,7 @@ void Map::addReactorRespawn(ReactorRespawnInfo respawn) {
 
 void Map::checkReactorSpawn(clock_t time) {
 	for (size_t i = 0; i < reactorrespawns.size(); i++) {
-		int id = reactorrespawns[i].id;
+		int32_t id = reactorrespawns[i].id;
 		if ((time - reactorrespawns[i].killed) > (reactorspawns[id].time * CLOCKS_PER_SEC)) {
 			getReactor(id)->restore();
 			reactorrespawns.erase(reactorrespawns.begin() + i);
@@ -98,13 +98,13 @@ void Map::checkReactorSpawn(clock_t time) {
 Pos Map::findFloor(Pos pos) {
 	// Determines where a drop falls using the footholds data
 	// to check the platforms and find the correct one.
-	short x = pos.x;
-	short y = pos.y - 100;
-	short maxy = pos.y;
+	int16_t x = pos.x;
+	int16_t y = pos.y - 100;
+	int16_t maxy = pos.y;
 	bool firstcheck = true;
 	for (size_t i = 0; i < footholds.size(); i++) {
 		if ((x >= footholds[i].pos1.x && x <= footholds[i].pos2.x) || (x >= footholds[i].pos2.x && x <= footholds[i].pos1.x)) {
-			short cmax = (short)((float)(footholds[i].pos1.y - footholds[i].pos2.y) / (footholds[i].pos1.x - footholds[i].pos2.x) * (x - footholds[i].pos1.x) + footholds[i].pos1.y);
+			int16_t cmax = (int16_t)((float)(footholds[i].pos1.y - footholds[i].pos2.y) / (footholds[i].pos1.x - footholds[i].pos2.x) * (x - footholds[i].pos1.x) + footholds[i].pos1.y);
 			if ((cmax <= maxy || (maxy == pos.y && firstcheck)) && cmax >= y) {
 				maxy = cmax;
 				firstcheck = false;
@@ -115,8 +115,8 @@ Pos Map::findFloor(Pos pos) {
 }
 
 // Portals
-PortalInfo * Map::getSpawnPoint(int pid) {
-	int id = 0;
+PortalInfo * Map::getSpawnPoint(int32_t pid) {
+	int32_t id = 0;
 	if (pid != -1)
 		id = pid;
 	else
@@ -133,7 +133,7 @@ void Map::addMobSpawn(MobSpawnInfo spawn) {
 void Map::checkMobSpawn(clock_t time) {
 	// (Re-)spawn Mobs
 	for (size_t i = 0; i < mobrespawns.size(); i++) {
-		int id = mobrespawns[i].spawnid;
+		int32_t id = mobrespawns[i].spawnid;
 		if ((time - mobrespawns[i].killed) > (mobspawns[id].time * CLOCKS_PER_SEC)) {
 			spawnMob(mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
 			mobrespawns.erase(mobrespawns.begin()+i);
@@ -142,8 +142,8 @@ void Map::checkMobSpawn(clock_t time) {
 	}
 }
 
-void Map::spawnMob(int mobid, Pos pos, int spawnid, short fh) {
-	int id = this->objectids->next();
+void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh) {
+	int32_t id = this->objectids->next();
 	
 	Mob *mob = new Mob(id, info.id, mobid, pos, spawnid, fh);
 	mobs[id] = mob;
@@ -152,7 +152,7 @@ void Map::spawnMob(int mobid, Pos pos, int spawnid, short fh) {
 	updateMobControl(mob, true);
 }
 
-Mob * Map::getMob(int id, bool isMapID) {
+Mob * Map::getMob(int32_t id, bool isMapID) {
 	if (isMapID) {
 		if (this->mobs.find(id) != mobs.end())
 			return this->mobs[id];
@@ -160,7 +160,7 @@ Mob * Map::getMob(int id, bool isMapID) {
 			return 0;
 	}
 	else {
-		for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+		for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 			if (iter->second != 0) {
 				if (iter->second->getMobID() == id)
 					return iter->second;
@@ -171,7 +171,7 @@ Mob * Map::getMob(int id, bool isMapID) {
 }
 
 void Map::updateMobControl(Player *player) {
-	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0 && iter->second->getControl() == player)
 			updateMobControl(iter->second);
 	}
@@ -179,10 +179,10 @@ void Map::updateMobControl(Player *player) {
 
 void Map::updateMobControl(Mob *mob, bool spawn) {
 	if (players.size() > 0 && mob->getControl() == 0) {
-		int maxpos = mob->getPos() - players[0]->getPos();
-		int player = 0;
+		int32_t maxpos = mob->getPos() - players[0]->getPos();
+		int32_t player = 0;
 		for (size_t j = 0; j < players.size(); j++) {
-			int curpos = mob->getPos() - players[j]->getPos();
+			int32_t curpos = mob->getPos() - players[j]->getPos();
 			if (curpos < maxpos) {
 				maxpos = curpos;
 				player = j;
@@ -195,7 +195,7 @@ void Map::updateMobControl(Mob *mob, bool spawn) {
 	}
 }
 
-void Map::removeMob(int id, int spawnid) {
+void Map::removeMob(int32_t id, int32_t spawnid) {
 	if (mobs.find(id) != mobs.end()) {
 		if (spawnid > -1 && mobspawns[spawnid].time > -1) // Add spawn point to respawns if mob was spawned by a spawn point.
 			mobrespawns.push_back(MobRespawnInfo(spawnid, clock()));
@@ -204,16 +204,16 @@ void Map::removeMob(int id, int spawnid) {
 }
 
 void Map::killMobs(Player *player) {
-	unordered_map<int, Mob *> mobs = this->mobs;
-	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
+	unordered_map<int32_t, Mob *> mobs = this->mobs;
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
 		if (iter->second != 0)
 			iter->second->die(player);
 	}
 }
 
-void Map::killMobs(Player *player, int mobid) {
-	unordered_map<int, Mob *> mobs = this->mobs;
-	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+void Map::killMobs(Player *player, int32_t mobid) {
+	unordered_map<int32_t, Mob *> mobs = this->mobs;
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0)
 			if (iter->second->getMobID() == mobid)
 				iter->second->die(player);
@@ -221,8 +221,8 @@ void Map::killMobs(Player *player, int mobid) {
 }
 
 void Map::killMobs() {
-	unordered_map<int, Mob *> mobs = this->mobs;
-	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // Remove 'em, no EXP, no summoning
+	unordered_map<int32_t, Mob *> mobs = this->mobs;
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // Remove 'em, no EXP, no summoning
 		if (iter->second != 0)
 			iter->second->die();
 	}
@@ -231,7 +231,7 @@ void Map::killMobs() {
 // Drops
 void Map::addDrop(Drop *drop) {
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
-	int id = objectids->next();
+	int32_t id = objectids->next();
 	drop->setID(id);
 	drop->setPos(findFloor(drop->getPos()));
 	this->drops[id] = drop;
@@ -239,18 +239,18 @@ void Map::addDrop(Drop *drop) {
 
 void Map::clearDrops(bool showPacket) { // Clear all drops
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
-	unordered_map<int, Drop *> drops = this->drops;
-	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+	unordered_map<int32_t, Drop *> drops = this->drops;
+	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0) // Check just in case drop is removed by timer
 			iter->second->removeDrop(showPacket);
 	}
 }
 
-void Map::clearDrops(int time) { // Clear drops based on how long they have been in the map
+void Map::clearDrops(int32_t time) { // Clear drops based on how long they have been in the map
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
 	time -= 180000;
-	unordered_map<int, Drop *> drops = this->drops;
-	for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+	unordered_map<int32_t, Drop *> drops = this->drops;
+	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0)
 			if (iter->second->getDropped() < time)
 				iter->second->removeDrop();
@@ -294,7 +294,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 			ReactorPacket::showReactor(player, reactors[i]);
 	}
 	// Mobs
-	for (unordered_map<int, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0) {
 			MobsPacket::spawnMob(player, iter->second, false, false, true);
 			updateMobControl(iter->second);
@@ -303,7 +303,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	// Drops
 	{
 		boost::recursive_mutex::scoped_lock l(drops_mutex);
-		for (unordered_map<int, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
+		for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 			if (iter->second != 0) {
 				iter->second->showDrop(player);
 			}

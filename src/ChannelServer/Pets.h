@@ -33,18 +33,18 @@ struct Item;
 
 struct PetInfo {
 	string name;
-	int hunger;
+	int32_t hunger;
 };
 
 struct PetInteractInfo {
-	int prob;
-	int increase;
+	uint32_t prob;
+	int16_t increase;
 };
 
 namespace Pets {
-	extern unordered_map<int, PetInfo> petsInfo;
-	extern unordered_map<int, unordered_map<int, PetInteractInfo>> petsInteractInfo;
-	extern short exps[29];
+	extern unordered_map<int32_t, PetInfo> petsInfo;
+	extern unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> petsInteractInfo;
+	extern int16_t exps[29];
 	void showPets(Player *player);
 	void chat(Player *player, ReadPacket *packet);
 	void feedPet(Player *player, ReadPacket *packet);
@@ -54,7 +54,7 @@ namespace Pets {
 	void showAnimation(Player *player, ReadPacket *packet);
 	void summon(Player *player, Pet *pet, bool master);
 	void changeName(Player *player, const string &name);
-	void addCloseness(Player *player, Pet *pet, short closeness);
+	void addCloseness(Player *player, Pet *pet, int16_t closeness);
 };
 
 class Pet : public MovableLife {
@@ -65,18 +65,18 @@ public:
 	char getIndex() { return this->index; }
 	void setName(const string &name) { this->name = name; }
 	string getName() { return this->name; }
-	void setType(int type) { this->type = type; }
-	int getType() { return this->type; }
-	void setId(int id) { this->id = id; }
-	int getId() { return this->id; }
+	void setType(int32_t type) { this->type = type; }
+	int32_t getType() { return this->type; }
+	void setId(int32_t id) { this->id = id; }
+	int32_t getId() { return this->id; }
 	void setFullness(char fullness) { this->fullness = fullness; }
 	char getFullness() { return this->fullness; }
 	bool isSummoned() {	return this->summoned; }
 	void setSummoned(bool summoned) { this->summoned = summoned; }
 	void setLevel(char level) {	this->level = level; }
 	char getLevel() { return this->level; }
-	short getCloseness() { return this->closeness; }
-	void setCloseness(short closeness) { this->closeness = closeness; }
+	int16_t getCloseness() { return this->closeness; }
+	void setCloseness(int16_t closeness) { this->closeness = closeness; }
 	void setInventorySlot(char slot) { this->inventorySlot = slot; }
 	char getInventorySlot() { return this->inventorySlot; }
 
@@ -84,13 +84,13 @@ public:
 	void startTimer();
 private:
 	string name;
-	int id;
-	int type;
+	int32_t id;
+	int32_t type;
 	char index;
 	char level;
 	char fullness;
 	char inventorySlot;
-	short closeness;
+	int16_t closeness;
 	bool summoned;
 	Player *player;
 };

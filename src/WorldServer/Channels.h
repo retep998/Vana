@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CHANNELS_H
 #define CHANNELS_H
 
+#include "Types.h"
 #include <unordered_map>
 #include <memory>
 #include <string>
@@ -33,10 +34,10 @@ struct Channel {
 	Channel() : players(0) { }
 
 	WorldServerAcceptPlayer *player;
-	int id;
+	uint16_t id;
 	string ip;
-	short port;
-	int players;
+	uint16_t port;
+	int32_t players;
 };
 
 class Channels {
@@ -46,18 +47,18 @@ public:
 			singleton = new Channels;
 		return singleton;
 	}
-	void registerChannel(WorldServerAcceptPlayer *player, int channel, const string &ip, short port);
-	void removeChannel(int channel);
-	Channel * getChannel(int num);
+	void registerChannel(WorldServerAcceptPlayer *player, uint16_t channel, const string &ip, uint16_t port);
+	void removeChannel(uint16_t channel);
+	Channel * getChannel(uint16_t num);
 	void sendToAll(PacketCreator &packet);
-	int size();
+	uint16_t size();
 private:
 	Channels() {};
 	Channels(const Channels&);
 	Channels& operator=(const Channels&);
 	static Channels *singleton;
 
-	unordered_map<int, shared_ptr<Channel>> channels;
+	unordered_map<uint16_t, shared_ptr<Channel>> channels;
 };
 
 #endif

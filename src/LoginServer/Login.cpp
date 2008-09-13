@@ -66,12 +66,12 @@ void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 		valid = false;
 	}
 	else if (atoi(res[0]["banned"]) == 1) {
-		int time = TimeUtilities::tickToTick32(TimeUtilities::timeToTick((time_t) mysqlpp::DateTime(res[0]["ban_expire"])));
+		int32_t time = TimeUtilities::tickToTick32(TimeUtilities::timeToTick((time_t) mysqlpp::DateTime(res[0]["ban_expire"])));
 		LoginPacket::loginBan(player, (unsigned char) res[0]["ban_reason"], time);
 		valid = false;
 	}
 	if (!valid) {
-		int threshold = LoginServer::Instance()->getInvalidLoginThreshold();
+		int32_t threshold = LoginServer::Instance()->getInvalidLoginThreshold();
 		if (threshold != 0 && player->addInvalidLogin() >= threshold) {
 			player->getSession()->disconnect(); // Too many invalid logins
 		}
@@ -84,7 +84,7 @@ void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 				player->setPin(-1);
 			else
 				player->setPin(res[0]["pin"]);
-			int pin = player->getPin();
+			int32_t pin = player->getPin();
 			if (pin == -1)
 				player->setStatus(1); // New PIN
 			else
@@ -109,7 +109,7 @@ void Login::setGender(PlayerLogin *player, ReadPacket *packet) {
 		player->setStatus(0);
 		char gender = packet->getByte();
 		mysqlpp::Query query = Database::getCharDB().query();
-		query << "UPDATE users SET gender = " << mysqlpp::quote << (int) gender << " WHERE id = " << mysqlpp::quote << player->getUserid();
+		query << "UPDATE users SET gender = " << mysqlpp::quote << (int32_t) gender << " WHERE id = " << mysqlpp::quote << player->getUserid();
 		query.exec();
 		if (LoginServer::Instance()->getPinEnabled())
 			player->setStatus(1); // Set pin
@@ -120,7 +120,7 @@ void Login::setGender(PlayerLogin *player, ReadPacket *packet) {
 }
 
 void Login::handleLogin(PlayerLogin *player, ReadPacket *packet) {
-	int status = player->getStatus();
+	int32_t status = player->getStatus();
 	if (status == 1)
 		LoginPacket::loginProcess(player, 0x01);
 	else if (status == 2) {
@@ -146,8 +146,8 @@ void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
 		player->setStatus(2);
 	}
 	else if (act == 0x01) {
-		int pin = boost::lexical_cast<int>(packet->getString());
-		int curpin = player->getPin();
+		int32_t pin = boost::lexical_cast<int32_t>(packet->getString());
+		int32_t curpin = player->getPin();
 		if (pin == curpin) {
 			player->setStatus(4);
 			handleLogin(player, packet);
@@ -156,8 +156,8 @@ void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
 			LoginPacket::loginProcess(player, 0x02);
 	}
 	else if (act == 0x02) {
-		int pin = boost::lexical_cast<int>(packet->getString());
-		int curpin = player->getPin();
+		int32_t pin = boost::lexical_cast<int32_t>(packet->getString());
+		int32_t curpin = player->getPin();
 		if (pin == curpin) {
 			player->setStatus(1);
 			handleLogin(player, packet);
@@ -178,7 +178,7 @@ void Login::registerPIN(PlayerLogin *player, ReadPacket *packet) {
 		}
 		return;
 	}
-	int pin = boost::lexical_cast<int>(packet->getString());
+	int32_t pin = boost::lexical_cast<int32_t>(packet->getString());
 	player->setStatus(0);
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users SET pin = " << mysqlpp::quote << pin << " WHERE id = " << mysqlpp::quote << player->getUserid();

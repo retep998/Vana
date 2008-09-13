@@ -18,15 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef POS_H
 #define POS_H
 
+#include "Types.h"
 #include <cmath>
 
 struct Pos {
-	Pos(short x, short y) : x(x), y(y) { }
+	Pos(int16_t x, int16_t y) : x(x), y(y) { }
 	Pos() : x(0), y(0) { }
-	short x;
-	short y;
-	int operator-(const Pos &p) {
-		return static_cast<int>(sqrt(pow(static_cast<float>(x-p.x), 2) + pow(static_cast<float>(y-p.y), 2)));
+	int16_t x;
+	int16_t y;
+	int32_t operator-(const Pos &p) {
+		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x-p.x), 2) + pow(static_cast<float>(y-p.y), 2)));
 	}
 };
 

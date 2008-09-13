@@ -45,8 +45,8 @@ void Initializing::checkVEDBVersion() {
 		exit(1);
 	}
 
-	int version = (int) res[0]["version"];
-	int subversion = (int) res[0]["subversion"];
+	int32_t version = (int32_t) res[0]["version"];
+	int32_t subversion = (int32_t) res[0]["subversion"];
 
 	if (version != vedb_version || subversion < vedb_subversion) {
 		// VEDB too old
@@ -71,8 +71,8 @@ void Initializing::initializeMobs() {
 		exit(1);
 	}
 
-	int currentid = 0;
-	int previousid = -1;
+	int32_t currentid = 0;
+	int32_t previousid = -1;
 	MobInfo mob;
 	MYSQL_ROW mobRow;
 	while ((mobRow = res.fetch_raw_row())) {
@@ -154,8 +154,8 @@ void Initializing::initializeReactors() {
 		exit(1);
 	}
 
-	int currentid = 0;
-	int previousid = -1;
+	int32_t currentid = 0;
+	int32_t previousid = -1;
 	MYSQL_ROW reactorRow;
 	while ((reactorRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
@@ -197,8 +197,8 @@ void Initializing::initializeItems() {
 		exit(1);
 	}
 
-	int currentid = 0;
-	int previousid = -1;
+	int32_t currentid = 0;
+	int32_t previousid = -1;
 	ItemInfo item;
 	MYSQL_ROW itemRow;
 	while ((itemRow = res.fetch_raw_row())) {
@@ -463,8 +463,8 @@ void Initializing::initializeShops() {
 		exit(1);
 	}
 
-	int currentid = 0;
-	int previousid = -1;
+	int32_t currentid = 0;
+	int32_t previousid = -1;
 	ShopInfo shop;
 	MYSQL_ROW shopRow;
 	while ((shopRow = res.fetch_raw_row())) {
@@ -525,8 +525,8 @@ void Initializing::initializeQuests() {
 		exit(1);
 	}
 
-	int currentid = 0;
-	int previousid = -1;
+	int32_t currentid = 0;
+	int32_t previousid = -1;
 	QuestRequestsInfo reqs;
 	MYSQL_ROW requestRow;
 	while ((requestRow = res.fetch_raw_row())) {

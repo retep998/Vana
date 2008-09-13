@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Channels * Channels::singleton = 0;
 
-void Channels::registerChannel(WorldServerAcceptPlayer *player, int channel, const string &ip, short port) {
+void Channels::registerChannel(WorldServerAcceptPlayer *player, uint16_t channel, const string &ip, uint16_t port) {
 	Channel *chan = new Channel();
 	chan->player = player;
 	chan->id = channel;
@@ -31,11 +31,11 @@ void Channels::registerChannel(WorldServerAcceptPlayer *player, int channel, con
 	channels[channel] = shared_ptr<Channel>(chan);
 }
 
-void Channels::removeChannel(int channel) {
+void Channels::removeChannel(uint16_t channel) {
 	channels.erase(channel);
 }
 
-Channel * Channels::getChannel(int num) {
+Channel * Channels::getChannel(uint16_t num) {
 	if (channels.find(num) != channels.end()) {
 		return channels[num].get();
 	}
@@ -45,11 +45,11 @@ Channel * Channels::getChannel(int num) {
 }
 
 void Channels::sendToAll(PacketCreator &packet) {
-	for (unordered_map<int, shared_ptr<Channel>>::iterator iter = channels.begin(); iter != channels.end(); iter++) {
+	for (unordered_map<uint16_t, shared_ptr<Channel>>::iterator iter = channels.begin(); iter != channels.end(); iter++) {
 		iter->second->player->getSession()->send(packet);
 	}
 }
 
-int Channels::size() {
+uint16_t Channels::size() {
 	return channels.size();
 }

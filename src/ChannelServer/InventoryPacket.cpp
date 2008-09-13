@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "SendHeader.h"
 
-void InventoryPacket::moveItem(Player *player, char inv, short slot1, short slot2) {
+void InventoryPacket::moveItem(Player *player, char inv, int16_t slot1, int16_t slot2) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(1);
@@ -60,7 +60,7 @@ void InventoryPacket::bought(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::addNewItem(Player *player, char inv, short slot, Item *item, bool is) {
+void InventoryPacket::addNewItem(Player *player, char inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(is);
@@ -70,7 +70,7 @@ void InventoryPacket::addNewItem(Player *player, char inv, short slot, Item *ite
 	PlayerPacketHelper::addItemInfo(packet, slot, item, true);
 	player->getSession()->send(packet);
 }
-void InventoryPacket::addItem(Player *player, char inv, short slot, Item *item, bool is) {
+void InventoryPacket::addItem(Player *player, char inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(is);
@@ -82,7 +82,7 @@ void InventoryPacket::addItem(Player *player, char inv, short slot, Item *item, 
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::updateItemAmounts(Player *player, char inv, short slot1, short amount1, short slot2, short amount2) {
+void InventoryPacket::updateItemAmounts(Player *player, char inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(1);
@@ -100,7 +100,7 @@ void InventoryPacket::updateItemAmounts(Player *player, char inv, short slot1, s
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::sitChair(Player *player, int chairid) {
+void InventoryPacket::sitChair(Player *player, int32_t chairid) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
@@ -150,19 +150,19 @@ void InventoryPacket::showMegaphone(Player *player, const string & msg) {
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, int whisper) {
+void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, uint8_t whisper) {
 	string fullMessage = string(player->getName()) + " : " + msg;
 	PacketCreator packet;
 	packet.addShort(INTER_TO_PLAYERS);
 	packet.addShort(SEND_NOTICE);
 	packet.addByte(3);
 	packet.addString(fullMessage);
-	packet.addByte(ChannelServer::Instance()->getChannel());
+	packet.addByte((uint8_t) ChannelServer::Instance()->getChannel());
 	packet.addByte(whisper);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void InventoryPacket::showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int displayInfo_size, int itemid) {
+void InventoryPacket::showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid) {
 	PacketCreator packet;
 	packet.addShort(INTER_TO_PLAYERS);
 	packet.addShort(SEND_SHOW_MESSENGER);
@@ -177,7 +177,7 @@ void InventoryPacket::showMessenger(Player *player, const string & msg, const st
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 // Use buff item
-void InventoryPacket::useItem(Player *player, int itemid, int time, unsigned char types[8], vector<short> vals, bool morph) { // Test/Beta function, PoC only
+void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, unsigned char types[8], vector<int16_t> vals, bool morph) { // Test/Beta function, PoC only
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
@@ -233,7 +233,7 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 	}
 }
 // Skill Books
-void InventoryPacket::useSkillbook(Player *player, int skillid, int newMaxLevel, bool use, bool succeed) {
+void InventoryPacket::useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed) {
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILLBOOK);
 	packet.addInt(player->getId());
@@ -245,7 +245,7 @@ void InventoryPacket::useSkillbook(Player *player, int skillid, int newMaxLevel,
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void InventoryPacket::useItemEffect(Player *player, int itemid) {
+void InventoryPacket::useItemEffect(Player *player, int32_t itemid) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_ITEM_EFFECT);
 	packet.addInt(player->getId());

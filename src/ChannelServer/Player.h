@@ -50,77 +50,77 @@ public:
 	~Player();
 
 	void realHandleRequest(ReadPacket *packet);
-	int getId() const { return this->id; }
-	int getUserId() const { return this->userid; }
+	int32_t getId() const { return this->id; }
+	int32_t getUserId() const { return this->userid; }
 	char getWorldId() const { return this->world_id; }
 	string getName() const { return this->name; }
 	char getGender() const { return this->gender; }
 	void setSkin(char id);
 	char getSkin() const { return this->skin; }
-	void setEyes(int id);
-	int getEyes() const { return this->eyes; }
-	void setHair(int id);
-	int getHair() const { return this->hair; }
+	void setEyes(int32_t id);
+	int32_t getEyes() const { return this->eyes; }
+	void setHair(int32_t id);
+	int32_t getHair() const { return this->hair; }
 	void setLevel(unsigned char level);
 	unsigned char getLevel() const { return this->level; }
-	void setJob(short job);
-	short getJob() const { return this->job; }
-	void setStr(short str);
-	short getStr() const { return this->str; }
-	void setDex(short dex);
-	short getDex() const { return this->dex; }
-	void setInt(short intt);
-	short getInt() const { return this->intt; }
-	void setLuk(short luk);
-	short getLuk() const { return this->luk; }
-	void setHP(int hp, bool is = true);
-	unsigned short getHP() { return this->hp; }
-	void setMP(int mp, bool is = false);
-	unsigned short getMP() { return this->mp; }
-	void setMHP(int mhp);
-	unsigned short getMHP() { return this->mhp; }
-	void setRMHP(int rmhp);
-	unsigned short getRMHP() { return this->rmhp; }
-	void setMMP(int mmp);
-	unsigned short getMMP() { return this->mmp; }
-	void setRMMP(int rmmp);
-	unsigned short getRMMP() { return this->rmmp; }
-	void setHPMPAp(unsigned short ap) { hpmp_ap = ap; }
-	unsigned short getHPMPAp() { return hpmp_ap; }
-	void setAp(short ap);
-	short getAp() const { return this->ap; }
-	void setSp(short sp);
-	short getSp() const { return this->sp; }
-	void setFame(short fame);
-	short getFame() const { return this->fame; }
-	void setExp(int exp);
-	int getExp() const { return this->exp; }
-	void setMap(int map) { this->map = map; }
-	int getMap() const { return this->map; }
+	void setJob(int16_t job);
+	int16_t getJob() const { return this->job; }
+	void setStr(int16_t str);
+	int16_t getStr() const { return this->str; }
+	void setDex(int16_t dex);
+	int16_t getDex() const { return this->dex; }
+	void setInt(int16_t intt);
+	int16_t getInt() const { return this->intt; }
+	void setLuk(int16_t luk);
+	int16_t getLuk() const { return this->luk; }
+	void setHP(uint16_t hp, bool is = true);
+	uint16_t getHP() { return this->hp; }
+	void setMP(uint16_t mp, bool is = false);
+	uint16_t getMP() { return this->mp; }
+	void setMHP(uint16_t mhp);
+	uint16_t getMHP() { return this->mhp; }
+	void setRMHP(uint16_t rmhp);
+	uint16_t getRMHP() { return this->rmhp; }
+	void setMMP(uint16_t mmp);
+	uint16_t getMMP() { return this->mmp; }
+	void setRMMP(uint16_t rmmp);
+	uint16_t getRMMP() { return this->rmmp; }
+	void setHPMPAp(uint16_t ap) { hpmp_ap = ap; }
+	uint16_t getHPMPAp() { return hpmp_ap; }
+	void setAp(int16_t ap);
+	int16_t getAp() const { return this->ap; }
+	void setSp(int16_t sp);
+	int16_t getSp() const { return this->sp; }
+	void setFame(int16_t fame);
+	int16_t getFame() const { return this->fame; }
+	void setExp(int32_t exp);
+	int32_t getExp() const { return this->exp; }
+	void setMap(int32_t map) { this->map = map; }
+	int32_t getMap() const { return this->map; }
 	void setMappos(char pos) { this->mappos = pos; }
 	char getMappos() const { return this->mappos; }
-	void setShop(int shopid) { shop = shopid; }
-	int getShop() const { return shop; }
+	void setShop(int32_t shopid) { shop = shopid; }
+	int32_t getShop() const { return shop; }
 	void setNPC(NPC *npc) { this->npc = npc; }
-	void setChair(int chair) { this->chair = chair; }
-	int getChair() const { return chair; }
-	void setItemEffect(int effect) { this->itemEffect = effect; }
-	int getItemEffect() const { return this->itemEffect; }
+	void setChair(int32_t chair) { this->chair = chair; }
+	int32_t getChair() const { return chair; }
+	void setItemEffect(int32_t effect) { this->itemEffect = effect; }
+	int32_t getItemEffect() const { return this->itemEffect; }
 	NPC * getNPC() const { return npc; }
 	bool isGM() const { return gm > 0; }
-	int getGMLevel() const { return gm; }
+	int32_t getGMLevel() const { return gm; }
 	void setSkill(SkillMapEnterActiveInfo skill) { this->skill = skill; }
 	void setSaveOnDC(bool save) { save_on_dc = save; }
 	SkillMapEnterActiveInfo getSkill() { return skill; }
 	void setSpecialSkill(SpecialSkillInfo info) { this->info = info; }
-	int getSpecialSkill() const { return this->info.skillid; }
+	int32_t getSpecialSkill() const { return this->info.skillid; }
 	SpecialSkillInfo getSpecialSkillInfo() { return this->info; }
 	void setTrading(char newstate) { tradestate = newstate; }
 	char isTrading() const { return tradestate; }
-	void setTradeSendID(int id) { this->tradesendid = id; }
-	int getTradeSendID() const { return tradesendid; }
-	void setTradeRecvID(int id) { this->traderecvid = id; }
-	int getTradeRecvID() const { return traderecvid; }
+	void setTradeSendID(int32_t id) { this->tradesendid = id; }
+	int32_t getTradeSendID() const { return tradesendid; }
+	void setTradeRecvID(int32_t id) { this->traderecvid = id; }
+	int32_t getTradeRecvID() const { return traderecvid; }
 	bool hasGMEquip();
 
 	BuddyList * getBuddyList() const { return buddyList.get(); }
@@ -147,43 +147,43 @@ private:
 	void changeKey(ReadPacket *packet);
 	void changeSkillMacros(ReadPacket *packet);
 
-	int id;
-	int userid;
+	int32_t id;
+	int32_t userid;
 	char world_id;
 	bool isconnect;
 	string name;
 	char gender;
 	char skin;
-	int eyes;
-	int hair;
+	int32_t eyes;
+	int32_t hair;
 	unsigned char level;
-	short job;
-	short fame;
-	short str;
-	short dex;
-	short intt;
-	short luk;
-	unsigned short hp;
-	unsigned short mhp;
-	unsigned short rmhp;
-	unsigned short mp;
-	unsigned short mmp;
-	unsigned short rmmp;
-	unsigned short hpmp_ap;
-	short ap;
-	short sp;
-	int exp;
-	int map;
+	int16_t job;
+	int16_t fame;
+	int16_t str;
+	int16_t dex;
+	int16_t intt;
+	int16_t luk;
+	uint16_t hp;
+	uint16_t mhp;
+	uint16_t rmhp;
+	uint16_t mp;
+	uint16_t mmp;
+	uint16_t rmmp;
+	uint16_t hpmp_ap;
+	int16_t ap;
+	int16_t sp;
+	int32_t exp;
+	int32_t map;
 	char mappos;
-	int shop;
-	int itemEffect;
-	int chair;
-	int gm;
+	int32_t shop;
+	int32_t itemEffect;
+	int32_t chair;
+	int32_t gm;
 	char tradestate;
-	int tradesendid;
-	int traderecvid;
+	int32_t tradesendid;
+	int32_t traderecvid;
 	NPC *npc;
-	vector<int> warnings;
+	vector<int32_t> warnings;
 	bool save_on_dc;
 	unordered_map<string, string> variables;
 	SkillMapEnterActiveInfo skill;

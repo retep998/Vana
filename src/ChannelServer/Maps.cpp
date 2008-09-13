@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPlayerPacket.h"
 #include <sys/stat.h>
 
-unordered_map<int, Map *> Maps::maps;
+unordered_map<int32_t, Map *> Maps::maps;
 
 void Maps::addMap(MapInfo info) {
 	maps[info.id] = new Map(info);
@@ -81,7 +81,7 @@ void Maps::useScriptedPortal(Player *player, ReadPacket *packet) {
 	usePortal(player, portal);
 }
 
-void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
+void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
 	if (maps.find(mapid) == maps.end()) {
 		MapPacket::portalBlocked(player);
 		return;
@@ -105,7 +105,7 @@ void Maps::changeMap(Player *player, int mapid, PortalInfo *portal) {
 	newMap(player, mapid);
 }
 
-void Maps::newMap(Player *player, int mapid) {
+void Maps::newMap(Player *player, int32_t mapid) {
 	Players::Instance()->addPlayer(player);
 	maps[mapid]->addPlayer(player);
 	maps[mapid]->showObjects(player);
@@ -116,7 +116,7 @@ void Maps::newMap(Player *player, int mapid) {
 }
 
 // Change Music
-void Maps::changeMusic(int mapid, const string &musicname) {
+void Maps::changeMusic(int32_t mapid, const string &musicname) {
 	if (Maps::maps.find(mapid) != Maps::maps.end()) {
 		MapPacket::changeMusic(mapid, musicname);
 	}

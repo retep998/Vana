@@ -50,14 +50,14 @@ char PlayerStorage::getNumItems(char inv) {
 	return itemNum;
 }
 
-void PlayerStorage::changeMesos(int mesos) {
+void PlayerStorage::changeMesos(int32_t mesos) {
 	this->mesos -= mesos;
 	StoragePacket::changeMesos(player, this->mesos);
 }
 
 void PlayerStorage::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT slots, mesos FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (short) player->getWorldId();
+	query << "SELECT slots, mesos FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
 	mysqlpp::StoreQueryResult res = query.store();
 	if (res.num_rows() != 0) {
 		slots = (unsigned char) res[0][0];
@@ -68,7 +68,7 @@ void PlayerStorage::load() {
 		mesos = 0;
 	}
 
-	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name FROM storageitems WHERE userid = " << mysqlpp::quote << player->getUserId() << " AND world_id = " << (short) player->getWorldId() << " ORDER BY slot ASC";
+	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name FROM storageitems WHERE userid = " << mysqlpp::quote << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		Item *item = new Item;
@@ -101,14 +101,14 @@ void PlayerStorage::save() {
 	// Using MySQL's non-standard ON DUPLICATE KEY UPDATE extension
 	query << "INSERT INTO storage VALUES ("
 		<< player->getUserId() << ", "
-		<< (short) player->getWorldId() << ", "
-		<< (short) getSlots() << ", "
+		<< (int16_t) player->getWorldId() << ", "
+		<< (int16_t) getSlots() << ", "
 		<< getMesos() << ") "
-		<< "ON DUPLICATE KEY UPDATE slots = " << (short) getSlots() << ", "
+		<< "ON DUPLICATE KEY UPDATE slots = " << (int16_t) getSlots() << ", "
 		<< "mesos = " << getMesos();
 	query.exec();
 
-	query << "DELETE FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (short) player->getWorldId();
+	query << "DELETE FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
 	query.exec();
 
 	bool firstrun = true;
@@ -122,12 +122,12 @@ void PlayerStorage::save() {
 		}
 		Item *item = getItem(i);
 		query << mysqlpp::quote << player->getUserId() << ","
-			<< mysqlpp::quote << (short) player->getWorldId() << ","
-			<< mysqlpp::quote << (short) i << ","
+			<< mysqlpp::quote << (int16_t) player->getWorldId() << ","
+			<< mysqlpp::quote << (int16_t) i << ","
 			<< mysqlpp::quote << item->id << ","
 			<< mysqlpp::quote << item->amount << ","
-			<< mysqlpp::quote << (short) item->slots << ","
-			<< mysqlpp::quote << (short) item->scrolls << ","
+			<< mysqlpp::quote << (int16_t) item->slots << ","
+			<< mysqlpp::quote << (int16_t) item->scrolls << ","
 			<< mysqlpp::quote << item->istr << ","
 			<< mysqlpp::quote << item->idex << ","
 			<< mysqlpp::quote << item->iint << ","

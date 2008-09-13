@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef KEYMAPS_H
 #define KEYMAPS_H
 
+#include "Types.h"
 #include <memory>
 #include <unordered_map>
 
@@ -30,36 +31,36 @@ public:
 
 	KeyMaps();
 
-	void add(int pos, KeyMap *map);
+	void add(int32_t pos, KeyMap *map);
 	void defaultMap();
-	KeyMap * getKeyMap(int pos);
-	int getMax();
+	KeyMap * getKeyMap(int32_t pos);
+	int32_t getMax();
 
-	void load(int charid);
-	void save(int charid);
+	void load(int32_t charid);
+	void save(int32_t charid);
 
 	static const size_t size = 90;
 private:
-	unordered_map<int, shared_ptr<KeyMap>> keyMaps;
-	int maxValue; // Cache max value
+	unordered_map<int32_t, shared_ptr<KeyMap>> keyMaps;
+	int32_t maxValue; // Cache max value
 };
 
 struct KeyMaps::KeyMap {
-	KeyMap(char type, int action);
+	KeyMap(char type, int32_t action);
 	char type;
-	int action;
+	int32_t action;
 };
 
 inline KeyMaps::KeyMaps() : maxValue(-1) { }
 
-inline void KeyMaps::add(int pos, KeyMap *map) {
+inline void KeyMaps::add(int32_t pos, KeyMap *map) {
 	keyMaps[pos].reset(map);
 	if (maxValue < pos) {
 		maxValue = pos;
 	}
 }
 
-inline KeyMaps::KeyMap * KeyMaps::getKeyMap(int pos) {
+inline KeyMaps::KeyMap * KeyMaps::getKeyMap(int32_t pos) {
 	if (keyMaps.find(pos) != keyMaps.end()) {
 		return keyMaps[pos].get();
 	}
@@ -68,10 +69,10 @@ inline KeyMaps::KeyMap * KeyMaps::getKeyMap(int pos) {
 	}
 }
 
-inline int KeyMaps::getMax() {
+inline int32_t KeyMaps::getMax() {
 	return maxValue;
 }
 
-inline KeyMaps::KeyMap::KeyMap(char type, int action) : type(type), action(action) { }
+inline KeyMaps::KeyMap::KeyMap(char type, int32_t action) : type(type), action(action) { }
 
 #endif

@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef INVPACK_H
 #define INVPACK_H
 
+#include "Types.h"
 #include <vector>
 #include <string>
 
@@ -29,22 +30,22 @@ struct Equip;
 struct Item;
 
 namespace InventoryPacket {
-	void moveItem(Player *player, char inv, short slot1, short slot2);
+	void moveItem(Player *player, char inv, int16_t slot1, int16_t slot2);
 	void updatePlayer(Player *player);
 	void bought(Player *player);
-	void addItem(Player *player, char inv, short slot, Item *item, bool is);
-	void addNewItem(Player *player, char inv, short slot, Item *item, bool is);
-	void updateItemAmounts(Player *player, char inv, short slot1, short amount1, short slot2, short amount2);
-	void sitChair(Player *player, int chairid);
+	void addItem(Player *player, char inv, int16_t slot, Item *item, bool is);
+	void addNewItem(Player *player, char inv, int16_t slot, Item *item, bool is);
+	void updateItemAmounts(Player *player, char inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2);
+	void sitChair(Player *player, int32_t chairid);
 	void stopChair(Player *player);
-	void useItem(Player *player, int itemid, int time, unsigned char types[8], vector<short> vals, bool morph); // Use buff item
+	void useItem(Player *player, int32_t itemid, int32_t time, unsigned char types[8], vector<int16_t> vals, bool morph); // Use buff item
 	void endItem(Player *player, unsigned char types[8], bool morph);
-	void useSkillbook(Player *player, int skillid, int newMaxLevel, bool use, bool succeed);
+	void useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed);
 	void useScroll(Player *player, bool succeed, bool destroy, bool legendary_spirit);
 	void showMegaphone(Player *player, const string & msg);
-	void showSuperMegaphone(Player *player, const string & msg, int whisper = 0);
-	void showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int displayInfo_size, int itemid);
-	void useItemEffect(Player *player, int itemid);
+	void showSuperMegaphone(Player *player, const string & msg, uint8_t whisper = 0);
+	void showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid);
+	void useItemEffect(Player *player, int32_t itemid);
 	void updateSlots(Player *player, char inventory, char slots);
 	void blankUpdate(Player *player);
 };

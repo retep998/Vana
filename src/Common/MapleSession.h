@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractSession.h"
 #include "Decoder.h"
+#include "Types.h"
 #include <memory>
 #include <string>
 #include <boost/asio.hpp>
@@ -50,7 +51,7 @@ public:
 	void stop();
 	void disconnect();
 	void handle_stop();
-	void send(unsigned char *buf, int len, bool encrypt = true);
+	void send(unsigned char *buf, int32_t len, bool encrypt = true);
 	void send(const PacketCreator &packet, bool encrypt = true);
 protected:
 	void start_read_header();

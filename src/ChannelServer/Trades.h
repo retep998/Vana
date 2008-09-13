@@ -31,19 +31,19 @@ class ReadPacket;
 struct TradeInfo;
 
 namespace Trades {
-	extern unordered_map<int, ActiveTrade *> trades;
+	extern unordered_map<int32_t, ActiveTrade *> trades;
 	void tradeHandler(Player *player, ReadPacket *packet);
 	void addTrade(ActiveTrade *trade);
-	float getTaxLevel(int mesos);
-	void removeTrade(int id);
+	float getTaxLevel(int32_t mesos);
+	void removeTrade(int32_t id);
 	void cancelTrade(Player *player);
 	void returnItems(Player *player, TradeInfo *info);
 	void returnMesos(Player *player, TradeInfo *info);
-	void timeout(Player *starter, Player *receiver, int tradeid);
+	void timeout(Player *starter, Player *receiver, int32_t tradeid);
 	void stopTimeout(Player *starter, Player *receiver);
-	void startTimeout(Player *starter, Player *receiver, int tradeid);
+	void startTimeout(Player *starter, Player *receiver, int32_t tradeid);
 	bool canTrade(Player *player, TradeInfo *info);
-	ActiveTrade * getTrade(int id);
+	ActiveTrade * getTrade(int32_t id);
 };
 
 #endif

@@ -36,7 +36,7 @@ class ReadPacket;
 
 namespace NPCs {
 	void handleNPC(Player *player, ReadPacket *packet);
-	void handleQuestNPC(Player *player, int npcid, bool start);
+	void handleQuestNPC(Player *player, int32_t npcid, bool start);
 	void handleNPCIn(Player *player, ReadPacket *packet);
 };
 
@@ -44,17 +44,17 @@ class NPC {
 private:
 	bool checkEnd();
 
-	int npcid;
+	int32_t npcid;
 	Player *player;
 	string text;
-	int state;
-	int selected;
+	int32_t state;
+	int32_t selected;
 	bool cend;
-	int getnum;
+	int32_t getnum;
 	string gettext;
 	scoped_ptr<LuaNPC> luaNPC;
 public:
-	NPC(int npcid, Player *player, bool isquest = false, bool isstart = false);
+	NPC(int32_t npcid, Player *player, bool isquest = false, bool isstart = false);
 	~NPC();
 
 	bool run();
@@ -72,22 +72,22 @@ public:
 	void sendOK();
 	void sendAcceptDecline();
 	void sendGetText();
-	void sendGetNumber(int def, int min, int max);
-	void sendStyle(int styles[], char size);
-	void setState(int state);
-	int getState() {
+	void sendGetNumber(int32_t def, int32_t min, int32_t max);
+	void sendStyle(int32_t styles[], char size);
+	void setState(int32_t state);
+	int32_t getState() {
 		return state;
 	}
-	int getSelected() {
+	int32_t getSelected() {
 		return selected;
 	}
-	void setSelected(int selected) {
+	void setSelected(int32_t selected) {
 		this->selected = selected;
 	}
-	void setGetNumber(int num) {
+	void setGetNumber(int32_t num) {
 		this->getnum = num;
 	}
-	int getNumber() {
+	int32_t getNumber() {
 		return getnum;
 	}
 	void setGetText(const string &text) {
@@ -102,7 +102,7 @@ public:
 	bool isEnd() {
 		return cend;
 	}
-	int getNpcID() {
+	int32_t getNpcID() {
 		return npcid;
 	}
 	Player * getPlayer() {

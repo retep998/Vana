@@ -33,7 +33,7 @@ void Players::removePlayer(Player *player) {
 	m_players_names.erase(StringUtilities::toUpper(player->getName()));
 }
 
-Player * Players::getPlayer(int id) {
+Player * Players::getPlayer(int32_t id) {
 	return (m_players.find(id) == m_players.end()) ? 0 : m_players[id];
 }
 
@@ -43,13 +43,13 @@ Player * Players::getPlayer(const string &name) {
 }
 
 void Players::run(function<void (Player *)> func) {
-	for (unordered_map<int, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
 		func(iter->second);
 	}
 }
 
 void Players::sendPacket(PacketCreator &packet) {
-	for (unordered_map<int, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
 		iter->second->getSession()->send(packet);
 	}
 }

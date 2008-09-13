@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "ReadPacket.h"
 
-int Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
+int32_t Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
 	5460, 7050, 8840, 11040, 13716, 16680, 20216, 24402, 28980, 34320, 40512, 47216, 54900,
 	63666, 73080, 83720, 95700, 108480, 122760, 138666, 155540, 174216, 194832, 216600, 240500,
 	266682, 294216, 324240, 356916, 391160, 428280, 468450, 510420, 555680, 604416, 655200,
@@ -54,12 +54,12 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 		cexp = cexp * (-1);
 	if (exp != 0)
 		LevelsPacket::showEXP(player, exp, type);
-	int level = player->getLevel();
+	uint8_t level = player->getLevel();
 	if (cexp >= exps[level - 1]) {
-		short apgain = 0;
-		short spgain = 0;
-		short hpgain = 0;
-		short mpgain = 0;
+		int16_t apgain = 0;
+		int16_t spgain = 0;
+		int16_t hpgain = 0;
+		int16_t mpgain = 0;
 		unsigned char levelsgained = 0;
 		unsigned char levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
 		while (cexp >= exps[level - 1] && levelsgained < levelsmax) {
@@ -71,33 +71,33 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			level++;
 			levelsgained++;
 			apgain += 5;
-			int job = player->getJob() / 100;
-			int x = 0;
-			short intt = player->getInt() / 10;
+			int32_t job = player->getJob() / 100;
+			int8_t x = 0;
+			int16_t intt = player->getInt() / 10;
 			switch (job) {
 				case 0:
-					hpgain += Randomizer::Instance()->randInt(4) + 12;
-					mpgain += Randomizer::Instance()->randInt(2) + 10 + intt;
+					hpgain += Randomizer::Instance()->randShort(4) + 12;
+					mpgain += Randomizer::Instance()->randShort(2) + 10 + intt;
 					break;
 				case 1:
 					if (player->getSkills()->getSkillLevel(1000001) > 0)
 						x = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].x;
-					hpgain += Randomizer::Instance()->randInt(4) + 24 + x;
-					mpgain += Randomizer::Instance()->randInt(2) + 4 + intt;
+					hpgain += Randomizer::Instance()->randShort(4) + 24 + x;
+					mpgain += Randomizer::Instance()->randShort(2) + 4 + intt;
 					break;
 				case 2:
 					if (player->getSkills()->getSkillLevel(2000001) > 0)
 						x = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].x;
-					hpgain += Randomizer::Instance()->randInt(4) + 10;
-					mpgain += Randomizer::Instance()->randInt(2) + 22 + 2 * x + intt;
+					hpgain += Randomizer::Instance()->randShort(4) + 10;
+					mpgain += Randomizer::Instance()->randShort(2) + 22 + 2 * x + intt;
 					break;
 				case 9: // GM
 					hpgain += 150;
 					mpgain += 150;
 					break;
 				default: // Will have to split 5 away when pirates are fully released
-					hpgain += Randomizer::Instance()->randInt(4) + 20;
-					mpgain += Randomizer::Instance()->randInt(2) + 14 + intt;
+					hpgain += Randomizer::Instance()->randShort(4) + 20;
+					mpgain += Randomizer::Instance()->randShort(2) + 14 + intt;
 					break;
 			}
 			if (player->getJob() > 0)
@@ -115,9 +115,9 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			player->setAp(player->getAp() + apgain);
 			player->setSp(player->getSp() + spgain);
 			// Let hyperbody remain on if on during a level up, as it should
-			int skillid = 0;
-			short x = 100;
-			short y = 100;
+			int32_t skillid = 0;
+			int16_t x = 100;
+			int16_t y = 100;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)
 				skillid = 1301007;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(9101008) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
@@ -127,8 +127,8 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 				x += Skills::skills[skillid][hblevel].x;
 				y += Skills::skills[skillid][hblevel].y;
 			}
-			short mhp = player->getRMHP() * x / 100; 
-			short mmp = player->getRMMP() * y / 100;
+			int16_t mhp = player->getRMHP() * x / 100; 
+			int16_t mmp = player->getRMMP() * y / 100;
 			player->setMHP(mhp);
 			player->setMMP(mmp);
 			player->setHP(mhp);
@@ -140,7 +140,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 
 void Levels::addStat(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
-	int type = packet->getInt();
+	int32_t type = packet->getInt();
 	if (player->getAp() == 0) {
 		// hacking
 		return;
@@ -166,34 +166,34 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 		case 0x800:
 		case 0x2000: {
 			if ((player->getRMHP() > 29999 && type == 0x800) || (player->getRMMP() > 29999 && type == 0x2000)) return;
-			int job = player->getJob() / 100;
-			short hpgain = 0;
-			short mpgain = 0;
-			int y = 0;
+			int8_t job = player->getJob() / 100;
+			int16_t hpgain = 0;
+			int16_t mpgain = 0;
+			int8_t y = 0;
 			switch (job) {
 				case 0:
-					hpgain = Randomizer::Instance()->randInt(4) + 8;
-					mpgain = Randomizer::Instance()->randInt(2) + 10;
+					hpgain = Randomizer::Instance()->randShort(4) + 8;
+					mpgain = Randomizer::Instance()->randShort(2) + 10;
 					break;
 				case 1:
 					if (player->getSkills()->getSkillLevel(1000001) > 0)
 						y = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].y;
-					hpgain = Randomizer::Instance()->randInt(4) + 20 + y;
-					mpgain = Randomizer::Instance()->randInt(2) + 2;
+					hpgain = Randomizer::Instance()->randShort(4) + 20 + y;
+					mpgain = Randomizer::Instance()->randShort(2) + 2;
 					break;
 				case 2:
 					if (player->getSkills()->getSkillLevel(2000001) > 0)
 						y = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].y;
-					hpgain = Randomizer::Instance()->randInt(4) + 6;
-					mpgain = Randomizer::Instance()->randInt(2) + 18 + 2 * y;
+					hpgain = Randomizer::Instance()->randShort(4) + 6;
+					mpgain = Randomizer::Instance()->randShort(2) + 18 + 2 * y;
 					break;
 				default:
-					hpgain = Randomizer::Instance()->randInt(4) + 16;
-					mpgain = Randomizer::Instance()->randInt(2) + 10;
+					hpgain = Randomizer::Instance()->randShort(4) + 16;
+					mpgain = Randomizer::Instance()->randShort(2) + 10;
 					break;
 			}
 			player->setHPMPAp(player->getHPMPAp() + 1);
-			int skillid = 0;
+			int32_t skillid = 0;
 			unsigned char hblevel = 0;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)
 				skillid = 1301007;

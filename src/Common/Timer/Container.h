@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define TIMER_CONTAINER_H
 
 #include "Id.h"
+#include "../Types.h"
 #include <memory>
 #include <unordered_map>
 #include <boost/functional/hash.hpp>
@@ -32,7 +33,7 @@ using std::tr1::unordered_map;
 
 class Container {
 public:
-	int checkTimer(const Id &id);
+	int32_t checkTimer(const Id &id);
 	void registerTimer(Timer *timer);
 	void removeTimer(const Id &id);
 private:

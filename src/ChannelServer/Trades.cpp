@@ -33,7 +33,7 @@ using std::tr1::bind;
 using std::string;
 using std::vector;
 
-unordered_map<int, ActiveTrade *> Trades::trades;
+unordered_map<int32_t, ActiveTrade *> Trades::trades;
 
 void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 	unsigned char subopcode = packet->getByte();
@@ -48,7 +48,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 		}
 		case 0x02: {
 			if (player->isTrading() == 0) {  // Send trade request
-				int playerid = packet->getInt();
+				int32_t playerid = packet->getInt();
 				Player *receiver = Players::Instance()->getPlayer(playerid);
 				switch (receiver->isTrading()) {
 					case -1: // Has a trade request already, this doesn't matter in global at the moment
@@ -71,7 +71,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 0x03: { // Deny request - trade ID + message ID
-			int tradeid = packet->getInt();
+			int32_t tradeid = packet->getInt();
 			ActiveTrade *trade = Trades::getTrade(tradeid);
 			if (trade != 0) {
 				TradeInfo *tradesend = trade->getStarter();
@@ -88,7 +88,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 0x04: {
-			int tradeid = packet->getInt();
+			int32_t tradeid = packet->getInt();
 			ActiveTrade *trade = Trades::getTrade(tradeid);
 			if (trade != 0) {
 				Player *one = trade->getStarter()->player;
@@ -112,7 +112,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			string chat = player->getName();
 			chat.append(" : ");
 			chat.append(packet->getString());
-			int playerid = player->getId();
+			int32_t playerid = player->getId();
 			bool isself = false;
 			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) // Receiver chatting
 				playerid = player->getTradeRecvID();
@@ -130,7 +130,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Trades::cancelTrade(player);
 			break;
 		case 0x0E: { // Add items
-			int playerid = player->getId();
+			int32_t playerid = player->getId();
 			bool isreceiver = false;
 			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver
 				playerid = player->getTradeRecvID();
@@ -142,8 +142,8 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			Player *one = send->player;
 			Player *two = recv->player;
 			char inventory = packet->getByte();
-			short slot = packet->getShort();
-			short amount = packet->getShort();
+			int16_t slot = packet->getShort();
+			int16_t amount = packet->getShort();
 			char addslot = packet->getByte();
 			Item *use;
 			Item *item;
@@ -197,7 +197,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 0x0F: { // Add mesos
-			int playerid = player->getId();
+			int32_t playerid = player->getId();
 			bool isreceiver = false;
 			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver
 				playerid = player->getTradeRecvID();
@@ -208,8 +208,8 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			TradeInfo *recv = trade->getReceiver();
 			Player *one = send->player;
 			Player *two = recv->player;
-			int amount = packet->getInt();
-			int mesos = send->mesos;
+			int32_t amount = packet->getInt();
+			int32_t mesos = send->mesos;
 			if (player == two) {
 				mesos = recv->mesos;
 				mesos += amount;
@@ -228,7 +228,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 0x10: { // Accept trade
-			int playerid = player->getId();
+			int32_t playerid = player->getId();
 			bool isreceiver = false;
 			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver leaving
 				playerid = player->getTradeRecvID();
@@ -253,10 +253,10 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 					finish = true;
 			}
 			if (finish) { // Do trade processing
-				int sendermesos = one->getInventory()->getMesos();
-				int receivermesos = two->getInventory()->getMesos();
+				int32_t sendermesos = one->getInventory()->getMesos();
+				int32_t receivermesos = two->getInventory()->getMesos();
 				bool fail = false;
-				unsigned int comparison = send->mesos + receivermesos;
+				uint32_t comparison = send->mesos + receivermesos;
 				if (comparison > 2147483647) {// Determine if receiver can receive all the mesos
 					fail = true;
 				}
@@ -285,17 +285,17 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				}
 				else {
 					if (send->mesos > 0) {
-						int added = send->mesos;
+						int32_t added = send->mesos;
 						float taxrate = Trades::getTaxLevel(added);
 						if (added > 49999)
-							added = (int)(added / (1.0 + (taxrate / 100.0)));
+							added = (int32_t)(added / (1.0 + (taxrate / 100.0)));
 						two->getInventory()->setMesos(receivermesos + added);
 					}
 					if (recv->mesos > 0) {
-						int added = recv->mesos;
+						int32_t added = recv->mesos;
 						float taxrate = Trades::getTaxLevel(added);
 						if (added > 49999)
-							added = (int)(added / (1.0 + (taxrate / 100.0)));
+							added = (int32_t)(added / (1.0 + (taxrate / 100.0)));
 						one->getInventory()->setMesos(sendermesos + added);					
 					}
 					if (send->count > 0) {
@@ -333,23 +333,23 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 }
 
 void Trades::addTrade(ActiveTrade *trade) {
-	int id = trade->getStarter()->player->getId();
+	int32_t id = trade->getStarter()->player->getId();
 	trade->setID(id);
 	trades[id] = trade;
 }
 
-void Trades::removeTrade(int id) {
+void Trades::removeTrade(int32_t id) {
 	if (trades.find(id) != trades.end())
 			trades.erase(id);
 }
 
-ActiveTrade * Trades::getTrade(int id) {
+ActiveTrade * Trades::getTrade(int32_t id) {
 	if (trades.find(id) != trades.end())
 		return trades[id];
 	return 0;
 }
 
-float Trades::getTaxLevel(int mesos) {
+float Trades::getTaxLevel(int32_t mesos) {
 	if (mesos < 50000)
 		return 0.0;
 	if (mesos > 9999999)
@@ -364,7 +364,7 @@ float Trades::getTaxLevel(int mesos) {
 }
 
 void Trades::cancelTrade(Player *player) {
-	int playerid = player->getId();
+	int32_t playerid = player->getId();
 	bool isreceiver = false;
 	if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver leaving
 		playerid = player->getTradeRecvID();
@@ -401,13 +401,13 @@ void Trades::cancelTrade(Player *player) {
 bool Trades::canTrade(Player *player, TradeInfo *info) {
 	bool yes = true;
 	char totals[4] = {0};
-	unordered_map<int, short> added;
+	unordered_map<int32_t, int16_t> added;
 	for (char i = 0; i < 9; i++) {
 		// Create item structure to determine needed slots among stackable items
 		// Also, determine needed slots for nonstackables
 		if (info->slot[i]) {
 			Item *check = info->items[i];
-			int itemid = check->id;
+			int32_t itemid = check->id;
 			char inv = GETINVENTORY(itemid);
 			if (inv == 1 || ISRECHARGEABLE(itemid)) // Equips and rechargeables always take 1 slot, no need to clutter unordered map
 				totals[inv - 1]++;
@@ -422,15 +422,15 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 	for (char i = 0; i < 9; i++) { // Determine precisely how many slots are needed for stackables
 		if (info->slot[i]) {
 			Item *check = info->items[i];
-			int itemid = check->id;
+			int32_t itemid = check->id;
 			char inv = GETINVENTORY(itemid);
 			if (inv != 1 && !ISRECHARGEABLE(itemid)) { // Already did these
 				if (added.find(itemid) == added.end()) // Already did this item
 					continue;
-				short maxslot = Inventory::items[itemid].maxslot;
-				int current_amount = player->getInventory()->getItemAmount(itemid);
-				int last_slot = (current_amount % maxslot); // Get the number of items in the last slot
-				int item_sum = last_slot + added[itemid];
+				int16_t maxslot = Inventory::items[itemid].maxslot;
+				int32_t current_amount = player->getInventory()->getItemAmount(itemid);
+				int32_t last_slot = (current_amount % maxslot); // Get the number of items in the last slot
+				int32_t item_sum = last_slot + added[itemid];
 				bool needslots = false;
 				if (last_slot > 0) { // Items in the last slot, potential for needing slots
 					if (item_sum > maxslot)
@@ -439,8 +439,8 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 				else // Full in the last slot, for sure need all slots
 					needslots = true;
 				if (needslots) {
-					char numslots = (int)(item_sum / maxslot);
-					char remainder = item_sum % maxslot;
+					uint8_t numslots = (uint8_t)(item_sum / maxslot);
+					uint8_t remainder = (uint8_t)(item_sum % maxslot);
 					if (remainder > 0)
 						totals[inv - 1]++;
 					totals[inv - 1] += numslots;
@@ -484,7 +484,7 @@ void Trades::returnMesos(Player *player, TradeInfo *info) {
 		player->getInventory()->setMesos(player->getInventory()->getMesos() + info->mesos);
 }
 
-void Trades::timeout(Player *starter, Player *receiver, int tradeid) {
+void Trades::timeout(Player *starter, Player *receiver, int32_t tradeid) {
 	Trades::cancelTrade(starter);
 }
 
@@ -493,7 +493,7 @@ void Trades::stopTimeout(Player *starter, Player *receiver) {
 	Timer::Thread::Instance()->getContainer()->removeTimer(id);
 }
 
-void Trades::startTimeout(Player *starter, Player *receiver, int tradeid) {
+void Trades::startTimeout(Player *starter, Player *receiver, int32_t tradeid) {
 	Timer::Id id(Timer::Types::TradeTimer, starter->getId(), receiver->getId());
 	new Timer::Timer(bind(&Trades::timeout, starter, receiver, tradeid), id, 0, 180000, false);
 }

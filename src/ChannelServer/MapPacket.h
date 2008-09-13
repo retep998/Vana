@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MAPPACKET_H
 #define MAPPACKET_H
 
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -32,11 +33,11 @@ namespace MapPacket {
 	void changeMap(Player *player);
 	void portalBlocked(Player *player); // Blocked portals
 	void showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec);
-	void showTimer(Player *player, int sec); // Show Timer like in PQ
+	void showTimer(Player *player, int32_t sec); // Show Timer like in PQ
 	void makeApple(Player *player);
-	void changeMusic(int mapid, const string &musicname); // Change map music
-	void sendSound(int mapid, const string &soundname); // Send sound - clear/wrong/etc
-	void sendEvent(int mapid, const string &eventname); // Send event - clear/wrong/etc
+	void changeMusic(int32_t mapid, const string &musicname); // Change map music
+	void sendSound(int32_t mapid, const string &soundname); // Send sound - clear/wrong/etc
+	void sendEvent(int32_t mapid, const string &eventname); // Send event - clear/wrong/etc
 };
 
 #endif

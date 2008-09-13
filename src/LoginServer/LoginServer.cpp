@@ -35,8 +35,8 @@ void LoginServer::loadData() {
 void LoginServer::loadConfig() {
 	ConfigFile config("conf/loginserver.lua");
 	pinEnabled = config.getBool("pin");
-	port = config.getInt("port");
-	inter_port = config.getInt("inter_port");
+	port = config.getShort("port");
+	inter_port = config.getShort("inter_port");
 	invalid_login_threshold = config.getInt("invalid_login_threshold");
 	to_listen = true;
 
@@ -56,13 +56,13 @@ void LoginServer::loadConfig() {
 		world->maxChannels = config.getInt(buf);
 
 		sprintf_s(buf, "world%d_id", i);
-		world->id = config.getInt(buf);
+		world->id = (uint8_t) config.getInt(buf);
 
 		sprintf_s(buf, "world%d_ribbon", i);
-		world->ribbon = config.getInt(buf);
+		world->ribbon = (uint8_t) config.getInt(buf);
 
 		sprintf_s(buf, "world%d_port", i);
-		world->port = config.getInt(buf);
+		world->port = config.getShort(buf);
 
 		sprintf_s(buf, "world%d_exprate", i);
 		world->exprate = config.getInt(buf);
@@ -77,7 +77,7 @@ void LoginServer::loadConfig() {
 		world->droprate = config.getInt(buf);
 
 		sprintf_s(buf, "world%d_max_multi_level", i);
-		world->maxMultiLevel = config.getInt(buf);
+		world->maxMultiLevel = (uint8_t) config.getInt(buf);
 
 		world->connected = false;
 		Worlds::worlds[world->id] = world;

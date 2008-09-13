@@ -18,13 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef RATES_H
 #define RATES_H
 
+#include "Types.h"
+
 namespace Rates {
 	namespace SetBits {
-		static int exp = 1;
-		static int questExp = 2;
-		static int meso = 4;
-		static int drop = 8;
-		static int all = exp + questExp + meso + drop;
+		static int32_t exp = 1;
+		static int32_t questExp = 2;
+		static int32_t meso = 4;
+		static int32_t drop = 8;
+		static int32_t all = exp + questExp + meso + drop;
 	}
 }
 

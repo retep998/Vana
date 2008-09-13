@@ -48,7 +48,7 @@ typedef vector<FootholdInfo> FootholdsInfo;
 struct PortalInfo {
 	char id;
 	string from;
-	int toid;
+	int32_t toid;
 	string to;
 	char type;
 	Pos pos;
@@ -58,52 +58,52 @@ struct PortalInfo {
 typedef vector<PortalInfo> PortalsInfo;
 
 struct MapInfo {
-	int id;
-	int rm;
-	int forcedReturn;
+	int32_t id;
+	int32_t rm;
+	int32_t forcedReturn;
 	char fieldType;
-	int fieldLimit;
+	int32_t fieldLimit;
 	double spawnrate;
 	bool clock;
-	int shipInterval;
+	int32_t shipInterval;
 };
 
 struct NPCSpawnInfo {
-	int id;
-	short x;
-	short cy;
-	short fh;
-	short rx0;
-	short rx1; 
+	int32_t id;
+	int16_t x;
+	int16_t cy;
+	int16_t fh;
+	int16_t rx0;
+	int16_t rx1; 
 };
 typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 
 struct ReactorSpawnInfo {
-	int id;
+	int32_t id;
 	Pos pos;
-	int time;
+	int32_t time;
 };
 typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
 
 struct ReactorRespawnInfo {
-	ReactorRespawnInfo(int id, clock_t killed) : id(id), killed(killed) {}
-	int id;
+	ReactorRespawnInfo(int32_t id, clock_t killed) : id(id), killed(killed) {}
+	int32_t id;
 	clock_t killed;
 };
 typedef vector<ReactorRespawnInfo> ReactorRespawns;
 
 struct MobSpawnInfo {
-	int id;
+	int32_t id;
 	Pos pos;
-	short fh;
-	int last;
-	int time;
+	int16_t fh;
+	int32_t last;
+	int32_t time;
 };
 typedef vector<MobSpawnInfo> MobSpawnsInfo;
 
 struct MobRespawnInfo {
-	MobRespawnInfo(int spawnid, clock_t killed) : spawnid(spawnid), killed(killed) {}
-	int spawnid;
+	MobRespawnInfo(int32_t spawnid, clock_t killed) : spawnid(spawnid), killed(killed) {}
+	int32_t spawnid;
 	clock_t killed;
 };
 typedef vector<MobRespawnInfo> MobRespawnsInfo;
@@ -135,14 +135,14 @@ public:
 		}
 		return 0;
 	}
-	PortalInfo * getSpawnPoint(int pid = -1);
+	PortalInfo * getSpawnPoint(int32_t pid = -1);
 
 	// Players
 	void addPlayer(Player *player);
 	size_t getNumPlayers() {
 		return this->players.size();
 	}
-	Player * getPlayer(unsigned int i) {
+	Player * getPlayer(uint32_t i) {
 		return this->players[i];
 	}
 	void removePlayer(Player *player);
@@ -151,18 +151,18 @@ public:
 	void addNPC(NPCSpawnInfo npc) {
 		this->npcs.push_back(npc);
 	}
-	NPCSpawnInfo getNpc(int id) {
+	NPCSpawnInfo getNpc(int32_t id) {
 		return this->npcs[id];
 	}
 
 	// Mobs
 	void addMobSpawn(MobSpawnInfo spawn);
 	void checkMobSpawn(clock_t time);
-	void spawnMob(int mobid, Pos pos, int spawnid = -1, short fh = 0);
-	Mob * getMob(int id, bool isMapID = true);
-	void removeMob(int id, int spawnid);
+	void spawnMob(int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
+	Mob * getMob(int32_t id, bool isMapID = true);
+	void removeMob(int32_t id, int32_t spawnid);
 	void killMobs(Player *player);
-	void killMobs(Player *player, int mobid);
+	void killMobs(Player *player, int32_t mobid);
 	void killMobs(); // No player gets EXP, no spawning additional mobs
 
 	// Reactors
@@ -170,8 +170,8 @@ public:
 	void addReactor(Reactor *reactor);
 	void addReactorRespawn(ReactorRespawnInfo respawn);
 	void checkReactorSpawn(clock_t time);
-	Reactor * getReactor(int id) {
-		if ((unsigned int)id < this->reactors.size())
+	Reactor * getReactor(int32_t id) {
+		if ((uint32_t)id < this->reactors.size())
 			return this->reactors[id];
 		else
 			return 0;
@@ -182,20 +182,20 @@ public:
 
 	// Drops
 	void addDrop(Drop *drop);
-	Drop * getDrop(int id) {
+	Drop * getDrop(int32_t id) {
 		boost::recursive_mutex::scoped_lock l(drops_mutex);
 		if (this->drops.find(id) != this->drops.end())
 			return this->drops[id];
 		else
 			return 0;
 	}
-	void removeDrop(int id) {
+	void removeDrop(int32_t id) {
 		boost::recursive_mutex::scoped_lock l(drops_mutex);
 		if (drops.find(id) != drops.end())
 			drops.erase(id);
 	}
 	void clearDrops(bool showPacket = true);
-	void clearDrops(int time);
+	void clearDrops(int32_t time);
 	// Timer stuff
 	void setTimer();
 	void runTimer();
@@ -216,8 +216,8 @@ private:
 	ReactorRespawns reactorrespawns;
 	MobSpawnsInfo mobspawns;
 	MobRespawnsInfo mobrespawns;
-	unordered_map<int, Mob *> mobs;
-	unordered_map<int, Drop *> drops;
+	unordered_map<int32_t, Mob *> mobs;
+	unordered_map<int32_t, Drop *> drops;
 	boost::recursive_mutex drops_mutex;
 	scoped_ptr<LoopingId> objectids;
 	bool timer_started;

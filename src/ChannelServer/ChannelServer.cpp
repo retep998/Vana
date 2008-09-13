@@ -66,7 +66,7 @@ void ChannelServer::connectWorld() {
 void ChannelServer::loadConfig() {
 	ConfigFile config("conf/channelserver.lua");
 	login_ip = config.getString("login_ip");
-	login_inter_port = config.getInt("login_inter_port");
+	login_inter_port = config.getShort("login_inter_port");
 	external_ip = config.getString("external_ip"); // External IP
 
 	world = -1; // Will get from login server

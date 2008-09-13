@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "Worlds.h"
 
-void LoginPacket::loginError(PlayerLogin *player, short errorid) {
+void LoginPacket::loginError(PlayerLogin *player, int16_t errorid) {
 	PacketCreator packet;
 	packet.addShort(SEND_LOGIN_INFO_REPLY);
 	packet.addShort(errorid);
@@ -32,7 +32,7 @@ void LoginPacket::loginError(PlayerLogin *player, short errorid) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::loginBan(PlayerLogin *player, char reason, int expire) {
+void LoginPacket::loginBan(PlayerLogin *player, char reason, int32_t expire) {
 	/* Reasons:
 		00 -> This is an ID that has been deleted or blocked from connection
 		01 -> Your account has been blocked for hacking or illegal use of third-party programs
@@ -180,7 +180,7 @@ void LoginPacket::showCharacter(PlayerLogin *player, Character charc) {
 	player->getSession()->send(packet);	
 }
 
-void LoginPacket::deleteCharacter(PlayerLogin *player, int ID) {
+void LoginPacket::deleteCharacter(PlayerLogin *player, int32_t ID) {
 	PacketCreator packet;
 	packet.addShort(SEND_DELETE_CHAR);
 	packet.addInt(ID);
@@ -188,7 +188,7 @@ void LoginPacket::deleteCharacter(PlayerLogin *player, int ID) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::connectIP(PlayerLogin *player, int charid) {
+void LoginPacket::connectIP(PlayerLogin *player, int32_t charid) {
 	PacketCreator packet;
 	packet.addShort(SEND_CHANNEL_SERVER_INFO);
 	packet.addShort(0);

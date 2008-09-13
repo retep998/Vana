@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/stat.h>
 
 // Reactor class
-Reactor::Reactor (int mapid, int reactorid, Pos pos) : mapid(mapid), reactorid(reactorid), pos(pos), alive(true), state(0) {
+Reactor::Reactor (int32_t mapid, int32_t reactorid, Pos pos) : mapid(mapid), reactorid(reactorid), pos(pos), alive(true), state(0) {
 	Maps::maps[mapid]->addReactor(this);
 }
 
@@ -59,19 +59,19 @@ void Reactor::drop(Player *player) {
 }
 
 // Reactors namespace
-unordered_map<int, ReactorEventsInfo> Reactors::reactorinfo;
-unordered_map<int, short> Reactors::maxstates;
+unordered_map<int32_t, ReactorEventsInfo> Reactors::reactorinfo;
+unordered_map<int32_t, int16_t> Reactors::maxstates;
 
-void Reactors::addEventInfo(int id, ReactorEventInfo revent) {
+void Reactors::addEventInfo(int32_t id, ReactorEventInfo revent) {
 	reactorinfo[id].push_back(revent);
 }
 
-void Reactors::setMaxstates(int id, short state) {
+void Reactors::setMaxstates(int32_t id, int16_t state) {
 	maxstates[id] = state;
 }
 
 void Reactors::hitReactor(Player *player, ReadPacket *packet) {
-	int id = packet->getInt() - 200;
+	int32_t id = packet->getInt() - 200;
 
 	Reactor *reactor = Maps::maps[player->getMap()]->getReactor(id);
 
@@ -129,7 +129,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 						char state;
 					} reaction = {reactor, drop, player, revent->nextstate};
 
-					Timer::Id id(Timer::Types::ReactionTimer, (unsigned int) drop, 0);
+					Timer::Id id(Timer::Types::ReactionTimer, (uint32_t) drop, 0);
 					new Timer::Timer(reaction, id, 0, 3000, false);
 				}
 				return;
@@ -139,6 +139,6 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 }
 
 void Reactors::checkLoot(Drop *drop) {
-	Timer::Id id(Timer::Types::ReactionTimer, (unsigned int) drop, 0);
+	Timer::Id id(Timer::Types::ReactionTimer, (uint32_t) drop, 0);
 	Timer::Thread::Instance()->getContainer()->removeTimer(id);
 }

@@ -66,7 +66,7 @@ void DatabaseMigration::loadDatabaseInfo() {
 		m_version = 0;
 	}
 	else {
-		m_version = res[0][0].is_null() ? 0 : (int) res[0][0];
+		m_version = res[0][0].is_null() ? 0 : (int32_t) res[0][0];
 	}
 }
 

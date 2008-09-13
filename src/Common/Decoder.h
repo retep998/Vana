@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define DECODER_H
 
 #include "SendHeader.h"
+#include "Types.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -35,19 +36,19 @@ private:
 	unsigned char ivSend[4];
 
 public:
-	static const int CONNECT_LENGTH = 15;
-	static int getLength (unsigned char *header) {
+	static const int32_t CONNECT_LENGTH = 15;
+	static int32_t getLength (unsigned char *header) {
 		return ((header[0] + header[1]*0x100) ^ (header[2] + header[3]*0x100)); 
 	}
-	void createHeader (unsigned char *header, short size); 
+	void createHeader (unsigned char *header, int16_t size); 
 
 	PacketCreator & getConnectPacket(string unknown = "");
 
 	void setIvRecv(unsigned char *iv) { memcpy_s(ivRecv, 4, iv, 4); }
 	void setIvSend(unsigned char *iv) { memcpy_s(ivSend, 4, iv, 4); }
 
-	void encrypt (unsigned char *buffer, int size);
-	void decrypt (unsigned char *buffer, int size);
+	void encrypt (unsigned char *buffer, int32_t size);
+	void decrypt (unsigned char *buffer, int32_t size);
 	void next ();
 	static void Init();
 

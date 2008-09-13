@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WORLDSERVERACCEPTPLAYERPACKET_H
 #define WORLDSERVERACCEPTPLAYERPACKET_H
 
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -25,15 +26,15 @@ using std::string;
 class WorldServerAcceptPlayer;
 
 namespace WorldServerAcceptPlayerPacket {
-	void connect(WorldServerAcceptPlayer *player, int channel, short port, unsigned char maxMultiLevel);
-	void playerChangeChannel(WorldServerAcceptPlayer *player, int playerid, const string &ip, short port);
-	void sendToChannels(unsigned char *data, int len);
-	void findPlayer(WorldServerAcceptPlayer *player, int finder, int channel, const string &findee, unsigned char is = 0);
-	void whisperPlayer(WorldServerAcceptPlayer *player, int whisperee, const string &whisperer, int channel, const string &message);
+	void connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, unsigned char maxMultiLevel);
+	void playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, const string &ip, int16_t port);
+	void sendToChannels(unsigned char *data, int32_t len);
+	void findPlayer(WorldServerAcceptPlayer *player, int32_t finder, uint16_t channel, const string &findee, unsigned char is = 0);
+	void whisperPlayer(WorldServerAcceptPlayer *player, int32_t whisperee, const string &whisperer, uint16_t channel, const string &message);
 	void scrollingHeader(const string &message);
-	void newConnectable(int channel, int playerid);
-	void groupChat(WorldServerAcceptPlayer *player, int playerid, char type, const string &message, const string &sender);
-	void sendRates(WorldServerAcceptPlayer *player, int setBit);
+	void newConnectable(uint16_t channel, int32_t playerid);
+	void groupChat(WorldServerAcceptPlayer *player, int32_t playerid, char type, const string &message, const string &sender);
+	void sendRates(WorldServerAcceptPlayer *player, int32_t setBit);
 };
 
 #endif

@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef STORAGEPACKET_H
 #define STORAGEPACKET_H
 
+#include "Types.h"
 #include <vector>
 
 using std::vector;
@@ -26,10 +27,10 @@ class Player;
 struct Item;
 
 namespace StoragePacket {
-	void showStorage(Player *player, int npcid);
+	void showStorage(Player *player, int32_t npcid);
 	void addItem(Player *player, char inv);
 	void takeItem(Player *player, char inv);
-	void changeMesos(Player *player, int mesos);
+	void changeMesos(Player *player, int32_t mesos);
 	void storageFull(Player *player);
 };
 

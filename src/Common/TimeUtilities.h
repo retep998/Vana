@@ -18,12 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef TIMEUTILITIES_H
 #define TIMEUTILITIES_H
 
+#include "Types.h"
 #include <ctime>
 
 namespace TimeUtilities {
-	__int64 getServerTime();
-	__int64 timeToTick(time_t time);
-	int tickToTick32(__int64 tick);
+	int64_t getServerTime();
+	int64_t timeToTick(time_t time);
+	int32_t tickToTick32(int64_t tick);
 }
 
 #endif

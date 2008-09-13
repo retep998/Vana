@@ -36,21 +36,21 @@ class ReadPacket;
 
 struct ReactorEventInfo {
 	char state;
-	short type;
-	int itemid;
-	short ltx;
-	short lty;
-	short rbx;
-	short rby;
+	int16_t type;
+	int32_t itemid;
+	int16_t ltx;
+	int16_t lty;
+	int16_t rbx;
+	int16_t rby;
 	char nextstate;
 };
 typedef vector<ReactorEventInfo> ReactorEventsInfo;
 
 namespace Reactors {
-	extern unordered_map<int, ReactorEventsInfo> reactorinfo;
-	extern unordered_map<int, short> maxstates;
-	void addEventInfo(int id, ReactorEventInfo revent);
-	void setMaxstates(int id, short state);
+	extern unordered_map<int32_t, ReactorEventsInfo> reactorinfo;
+	extern unordered_map<int32_t, int16_t> maxstates;
+	void addEventInfo(int32_t id, ReactorEventInfo revent);
+	void setMaxstates(int32_t id, int16_t state);
 	void hitReactor(Player *player, ReadPacket *packet);
 	void checkDrop(Player *player, Drop *drop);
 	void checkLoot(Drop *drop);
@@ -58,7 +58,7 @@ namespace Reactors {
 
 class Reactor {
 public:
-	Reactor (int mapid, int reactorid, Pos pos);
+	Reactor (int32_t mapid, int32_t reactorid, Pos pos);
 	void kill() {
 		this->alive = false;
 	}
@@ -68,16 +68,16 @@ public:
 	bool isAlive() {
 		return this->alive;
 	}
-	void setID(int id) {
+	void setID(int32_t id) {
 		this->id = id;
 	}
-	int getID() {
+	int32_t getID() {
 		return this->id;
 	}
-	int getReactorID() {
+	int32_t getReactorID() {
 		return this->reactorid;
 	}
-	int getMapID() {
+	int32_t getMapID() {
 		return this->mapid;
 	}
 	Pos getPos() {
@@ -92,9 +92,9 @@ public:
 private:
 	Pos pos;
 	bool alive;
-	int id;
-	int reactorid;
-	int mapid;
+	int32_t id;
+	int32_t reactorid;
+	int32_t mapid;
 	char state;
 };
 

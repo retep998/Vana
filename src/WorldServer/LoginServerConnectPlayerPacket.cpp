@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "PacketCreator.h"
 
-void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *player, int channel, const string &ip, short port) {
+void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *player, int32_t channel, const string &ip, int16_t port) {
 	PacketCreator packet;
 	packet.addShort(INTER_REGISTER_CHANNEL);
 	packet.addInt(channel);
@@ -30,7 +30,7 @@ void LoginServerConnectPlayerPacket::registerChannel(LoginServerConnectPlayer *p
 	player->getSession()->send(packet);
 }
 
-void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *player, int channel, int population) {
+void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *player, int32_t channel, int32_t population) {
 	PacketCreator packet;
 	packet.addShort(INTER_UPDATE_CHANNEL_POP);
 	packet.addInt(channel);
@@ -39,7 +39,7 @@ void LoginServerConnectPlayerPacket::updateChannelPop(LoginServerConnectPlayer *
 	player->getSession()->send(packet);
 }
 
-void LoginServerConnectPlayerPacket::removeChannel(LoginServerConnectPlayer *player, int channel) {
+void LoginServerConnectPlayerPacket::removeChannel(LoginServerConnectPlayer *player, int32_t channel) {
 	PacketCreator packet;
 	packet.addShort(INTER_REMOVE_CHANNEL);
 	packet.addInt(channel);

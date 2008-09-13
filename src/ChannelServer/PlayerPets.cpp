@@ -27,27 +27,27 @@ void PlayerPets::addPet(Pet *pet) {
 	}
 }
 
-Pet * PlayerPets::getPet(int petid) {
+Pet * PlayerPets::getPet(int32_t petid) {
 	return playerpets.find(petid) != playerpets.end() ? playerpets[petid] : 0;
 }
 
-void PlayerPets::setSummoned(int petid, char index) {
+void PlayerPets::setSummoned(int32_t petid, char index) {
 	summoned[index] = petid;
 }
 
-int PlayerPets::getSummoned(char index) {
+int32_t PlayerPets::getSummoned(char index) {
 	return summoned[index] > 0 ? summoned[index] : 0;
 }
 
 void PlayerPets::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	for (unordered_map<int, Pet *>::iterator iter = playerpets.begin(); iter != playerpets.end(); iter++) {
+	for (unordered_map<int32_t, Pet *>::iterator iter = playerpets.begin(); iter != playerpets.end(); iter++) {
 		query << "UPDATE pets SET "
-			<< "`index` = " << mysqlpp::quote << (short) iter->second->getIndex() << ","
+			<< "`index` = " << mysqlpp::quote << (int16_t) iter->second->getIndex() << ","
 			<< "name = " << mysqlpp::quote << iter->second->getName() << ","
-			<< "level = " << mysqlpp::quote << (short) iter->second->getLevel() << ","
+			<< "level = " << mysqlpp::quote << (int16_t) iter->second->getLevel() << ","
 			<< "closeness = " << mysqlpp::quote << iter->second->getCloseness() << ","
-			<< "fullness = " << mysqlpp::quote << (short) iter->second->getFullness()
+			<< "fullness = " << mysqlpp::quote << (int16_t) iter->second->getFullness()
 			<< " WHERE id = " << mysqlpp::quote << iter->second->getId();
 		query.exec();
 	}

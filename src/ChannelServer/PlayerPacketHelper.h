@@ -18,12 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERPACKETHELPER_H
 #define PLAYERPACKETHELPER_H
 
+#include "Types.h"
+
 struct Item;
 class Player;
 class PacketCreator;
 
 namespace PlayerPacketHelper {
-	void addItemInfo(PacketCreator &packet, short slot, Item *item, bool shortSlot = false);
+	void addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot = false);
 	void addPlayerDisplay(PacketCreator &packet, Player *player);
 }
 

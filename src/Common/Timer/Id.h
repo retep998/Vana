@@ -19,21 +19,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define TIMER_ID
 
 #include "Types.h"
+#include "../Types.h"
 
 namespace Timer {
 
 struct Id {
-	Id(unsigned int type, unsigned int id, unsigned int id2);
-	unsigned int type;
-	unsigned int id;
-	unsigned int id2;
+	Id(uint32_t type, uint32_t id, uint32_t id2);
+	uint32_t type;
+	uint32_t id;
+	uint32_t id2;
 
 	bool operator==(Id const &other) const;
 	friend size_t hash_value(Id const &id);
 };
 
 inline
-Id::Id(unsigned int type, unsigned int id, unsigned int id2) :
+Id::Id(uint32_t type, uint32_t id, uint32_t id2) :
 type(type),
 id(id),
 id2(id2)

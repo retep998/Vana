@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERSTORAGE_H
 #define PLAYERSTORAGE_H
 
+#include "Types.h"
 #include <vector>
 
 using std::vector;
@@ -46,11 +47,11 @@ public:
 	void takeItem(char slot) {
 		items.erase(items.begin() + slot);
 	}
-	void setMesos(int mesos) {
+	void setMesos(int32_t mesos) {
 		this->mesos = mesos;
 	}
-	void changeMesos(int mesos);
-	int getMesos() {
+	void changeMesos(int32_t mesos);
+	int32_t getMesos() {
 		return mesos;
 	}
 	bool isFull() {
@@ -62,7 +63,7 @@ private:
 	Player *player;
 	char slots;
 	vector<Item *> items;
-	int mesos;
+	int32_t mesos;
 };
 
 #endif

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Timer {
 
-int Container::checkTimer(const Id &id) {
+int32_t Container::checkTimer(const Id &id) {
 	if (m_timers.find(id) != m_timers.end()) {
 		return m_timers[id]->getTimeLeft();
 	}

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define TIMER_TIMER_H
 
 #include "Id.h"
+#include "../Types.h"
 #include <ctime>
 #include <functional>
 
@@ -36,7 +37,7 @@ public:
 
 	Id getId() const { return m_id; }
 	clock_t getRunAt() const { return m_run_at; }
-	int getTimeLeft() const { return m_run_at - clock(); }
+	int32_t getTimeLeft() const { return m_run_at - clock(); }
 	bool getPersistent() const { return m_persistent; }
 	void setPersistent(bool val) { m_persistent = val; }
 

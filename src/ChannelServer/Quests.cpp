@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "QuestsPacket.h"
 #include "ReadPacket.h"
 
-unordered_map<int, QuestInfo> Quests::quests;
+unordered_map<int32_t, QuestInfo> Quests::quests;
 
-void Quests::addRequest(int id, QuestRequestsInfo request) {		
+void Quests::addRequest(int32_t id, QuestRequestsInfo request) {		
 	QuestInfo quest;
 	if (quests.find(id) != quests.end())
 		quest = quests[id];
@@ -32,7 +32,7 @@ void Quests::addRequest(int id, QuestRequestsInfo request) {
 	quests[id] = quest;
 }
 
-void Quests::addReward(int id, QuestRewardsInfo raws) {		
+void Quests::addReward(int32_t id, QuestRewardsInfo raws) {		
 	QuestInfo quest;
 	if (quests.find(id) != quests.end())
 		quest = quests[id];
@@ -40,7 +40,7 @@ void Quests::addReward(int id, QuestRewardsInfo raws) {
 	quests[id] = quest;
 }
 
-void Quests::setNextQuest(int id, int questid) {		
+void Quests::setNextQuest(int16_t id, int16_t questid) {		
 	QuestInfo quest;
 	if (quests.find(id) != quests.end())
 		quest = quests[id];
@@ -48,7 +48,7 @@ void Quests::setNextQuest(int id, int questid) {
 	quests[id] = quest;
 }
 
-bool Quests::giveItem(Player *player, int itemid, int amount) {
+bool Quests::giveItem(Player *player, int32_t itemid, int16_t amount) {
 	//Temp
 	QuestsPacket::giveItem(player, itemid, amount);
 	if (amount > 0) {
@@ -64,7 +64,7 @@ bool Quests::giveItem(Player *player, int itemid, int amount) {
 	return true;
 }
 
-bool Quests::giveMesos(Player *player, int amount) {
+bool Quests::giveMesos(Player *player, int32_t amount) {
 	if (amount < 0 && player->getInventory()->getMesos() + amount < 0) { // Do a bit of checking if meso is being taken to see if it's enough
 		return false;
 	}
@@ -76,12 +76,13 @@ bool Quests::giveMesos(Player *player, int amount) {
 
 void Quests::getQuest(Player *player, ReadPacket *packet) {
 	char act = packet->getByte();
-	short questid = packet->getShort();
-	int npcid = packet->getInt();
+	int16_t questid = packet->getShort();
+	int32_t npcid = packet->getInt();
 	if (act == 0) {	
-		int item = packet->getInt();
-		QuestsPacket::giveItem(player, item, npcid);
-		Inventory::addNewItem(player, item, npcid);
+		// Absolutely no idea what this does
+		int32_t item = packet->getInt();
+		QuestsPacket::giveItem(player, item, (int16_t) npcid);
+		Inventory::addNewItem(player, item, (int16_t) npcid);
 	}
 	else if (act == 1) {
 		player->getQuests()->addQuest(questid, npcid);

@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CHARACTERS_H
 #define CHARACTERS_H
 
+#include "Types.h"
 #include <string>
 #include <vector>
 
@@ -29,32 +30,32 @@ class PlayerLogin;
 class ReadPacket;
 
 struct CharEquip {
-	int id;
-	short slot;
+	int32_t id;
+	int16_t slot;
 };
 
 struct Character {
-	int id;
+	int32_t id;
 	string name;
 	char gender;
 	char skin;
-	int eyes;
-	int hair;
+	int32_t eyes;
+	int32_t hair;
 	char level;
-	short job;
-	short str;
-	short dex;
-	short intt;
-	short luk;
-	short hp;
-	short mhp;
-	short mp;
-	short mmp;
-	short ap;
-	short sp;
-	short exp;
-	short fame;
-	int map;
+	int16_t job;
+	int16_t str;
+	int16_t dex;
+	int16_t intt;
+	int16_t luk;
+	int16_t hp;
+	int16_t mhp;
+	int16_t mp;
+	int16_t mmp;
+	int16_t ap;
+	int16_t sp;
+	int16_t exp;
+	int16_t fame;
+	int32_t map;
 	char pos;
 	vector<CharEquip> equips;
 };
@@ -66,9 +67,9 @@ namespace Characters {
 	void deleteCharacter(PlayerLogin *player, ReadPacket *packet);
 	void showCharacters(PlayerLogin *player);
 	void loadCharacter(Character &charc, mysqlpp::Row &row);
-	void showEquips(int id, vector<CharEquip> &vec);
-	void createEquip(int equipid, int type, int charid);
-	bool ownerCheck(PlayerLogin *player, int id);
+	void showEquips(int32_t id, vector<CharEquip> &vec);
+	void createEquip(int32_t equipid, int32_t type, int32_t charid);
+	bool ownerCheck(PlayerLogin *player, int32_t id);
 	bool nameTaken(PlayerLogin *player, const string &name);
 };
 

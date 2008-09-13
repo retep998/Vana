@@ -96,7 +96,7 @@ void PlayerPacket::connectData(Player *player) {
 	}
 	packet.addByte(0);
 	for (char i = 2; i <= 5; i++) {
-		for (short s = 1; s <= player->getInventory()->getMaxSlots(i); s++) {
+		for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(i); s++) {
 			Item *item = player->getInventory()->getItem(i, s);
 			if (item == 0)
 				continue;
@@ -125,9 +125,9 @@ void PlayerPacket::connectData(Player *player) {
 		packet.addByte(0);
 	}
 	//Skills
-	unordered_map<int, PlayerSkillInfo> *playerskills = player->getSkills()->getSkills();
-	packet.addShort((short) playerskills->size());
-	for (unordered_map<int, PlayerSkillInfo>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
+	unordered_map<int32_t, PlayerSkillInfo> *playerskills = player->getSkills()->getSkills();
+	packet.addShort((int16_t) playerskills->size());
+	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
 		packet.addInt(iter->first);
 		packet.addInt(iter->second.level);
 		if (FORTHJOB_SKILL(iter->first))
@@ -138,7 +138,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addShort(0);
-	for (int i = 0; i < 15; i++)
+	for (int32_t i = 0; i < 15; i++)
 		packet.addBytes("FFC99A3B");
 	packet.addInt(0);
 	packet.addInt64(TimeUtilities::getServerTime());
@@ -167,7 +167,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	PacketCreator packet;
 	packet.addShort(SEND_SKILL_MACRO);
 	packet.addByte(macros->getMax() + 1);
-	for (int i = 0; i <= macros->getMax();  i++) {
+	for (int32_t i = 0; i <= macros->getMax();  i++) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
 		if (macro != 0) {
 			packet.addString(macro->name);
@@ -188,7 +188,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
+void PlayerPacket::updateStatInt(Player *player, int32_t id, int32_t value, bool is) {
 	PacketCreator packet;
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addByte(is);
@@ -197,7 +197,7 @@ void PlayerPacket::updateStat(Player *player, int id, int value, bool is) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
+void PlayerPacket::updateStatShort(Player *player, int32_t id, int16_t value, bool is) {
 	PacketCreator packet;
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addByte(is);
@@ -206,7 +206,7 @@ void PlayerPacket::updateStat(Player *player, int id, short value, bool is) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
+void PlayerPacket::updateStatChar(Player *player, int32_t id, int8_t value, bool is) {
 	PacketCreator packet;
 	packet.addShort(SEND_UPDATE_STAT);
 	packet.addByte(is);
@@ -215,7 +215,7 @@ void PlayerPacket::updateStat(Player *player, int id, char value, bool is) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::changeChannel(Player *player, const string &ip, short port) {
+void PlayerPacket::changeChannel(Player *player, const string &ip, int16_t port) {
 	PacketCreator packet;
 	packet.addShort(SEND_CHANGE_CHANNEL);
 	packet.addByte(1);
@@ -232,7 +232,7 @@ void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::instructionBubble(Player *player, const string &msg, short width, short height) {
+void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t width, int16_t height) {
 	if (width == -1) {
 		width = msg.size() * 10;
 		if (width < 40) {

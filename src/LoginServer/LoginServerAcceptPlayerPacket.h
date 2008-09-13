@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGINSERVERACCEPTPLAYERPACKET_H
 #define LOGINSERVERACCEPTPLAYERPACKET_H
 
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -27,8 +28,8 @@ struct World;
 
 namespace LoginServerAcceptPlayerPacket {
 	void connect(LoginServerAcceptPlayer *player, World *world);
-	void connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port);
-	void newPlayer(LoginServerAcceptPlayer *player, int channel, int charid);
+	void connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, int16_t port);
+	void newPlayer(LoginServerAcceptPlayer *player, uint16_t channel, int32_t charid);
 };
 
 #endif

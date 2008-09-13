@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef DATABASEMIGRATION_H
 #define DATABASEMIGRATION_H
 
+#include "Types.h"
 #include <map>
 #include <string>
 
@@ -38,7 +39,7 @@ private:
 	static void createInfoTable();
 	static void updateInfoTable(size_t version);
 
-	typedef map<int, string> SQLFiles;
+	typedef map<int32_t, string> SQLFiles;
 
 	size_t m_version;
 	size_t m_sql_version; // Version of the .sql files

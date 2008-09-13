@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MOBSPACK_H
 #define MOBSPACK_H
 
+#include "Types.h"
+
 class Player;
 class Mob;
 
@@ -26,10 +28,10 @@ struct MobHPInfo;
 namespace MobsPacket {
 	void spawnMob(Player *player, Mob *mob, bool requestControl, bool spawn = false, bool show = false);
 	void endControlMob(Player *player, Mob *mob);
-	void moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp);
-	void moveMob(Player *player, int mobid, bool useskill, int skill, unsigned char *buf, int len);
-	void showHP(Player *player, int mobid, char per);
-	void showMinibossHP(Player *player, int mobid, char per); // For minor bosses
+	void moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp);
+	void moveMob(Player *player, int32_t mobid, bool useskill, int32_t skill, unsigned char *buf, int32_t len);
+	void showHP(Player *player, int32_t mobid, char per);
+	void showMinibossHP(Player *player, int32_t mobid, char per); // For minor bosses
 	void showBossHP(Player *player, const MobHPInfo &mob); // For major bosses
 	void dieMob(Mob *mob);
 	void damageMob(Player *player, ReadPacket *pack);

@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef TRADE_H
 #define TRADE_H
 
+#include "Types.h"
 #include <boost/scoped_ptr.hpp>
+
 using boost::scoped_ptr;
 
 class Player;
@@ -33,7 +35,7 @@ struct TradeInfo {
 	}
 	Player *player;
 	Item *items[9];
-	int mesos;
+	int32_t mesos;
 	bool slot[9];
 	char count;
 	bool accepted;
@@ -42,10 +44,10 @@ struct TradeInfo {
 class ActiveTrade {
 public:
 	ActiveTrade(Player *starter, Player *receiver);
-	void setID(int id) {
+	void setID(int32_t id) {
 		this->id = id;
 	}
-	int getID() {
+	int32_t getID() {
 		return id;
 	}
 	TradeInfo * getStarter() {
@@ -57,7 +59,7 @@ public:
 private:
 	scoped_ptr<TradeInfo> starter;
 	scoped_ptr<TradeInfo> receiver;
-	int id;
+	int32_t id;
 };
 
 #endif

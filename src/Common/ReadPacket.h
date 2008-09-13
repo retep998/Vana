@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef READPACKET_H
 #define READPACKET_H
 
+#include "Types.h"
 #include <memory>
 #include <string>
 
@@ -28,16 +29,16 @@ public:
 	ReadPacket(unsigned char *buffer, size_t length);
 	
 	unsigned char getByte();
-	void skipBytes(int len);
-	int getInt();
-	short getHeader(); // Basically getShort that always read at start
-	short getShort();
+	void skipBytes(int32_t len);
+	int32_t getInt();
+	int16_t getHeader(); // Basically getShort that always read at start
+	int16_t getShort();
 	string getString();
 	string getString(size_t len);
 	unsigned char * getBuffer();
 	size_t getBufferLength();
 
-	ReadPacket & reset(int len = 0);
+	ReadPacket & reset(int32_t len = 0);
 private:
 	unsigned char *buffer;
 	size_t length;

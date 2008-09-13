@@ -37,66 +37,66 @@ struct Item;
 
 struct DropInfo {
 	DropInfo() : id(0), chance(0), quest(0), ismesos(false), minmesos(0), maxmesos(0) { }
-	int id;
-	int chance;
-	int quest;
+	int32_t id;
+	uint32_t chance;
+	int16_t quest;
 	bool ismesos;
-	int minmesos;
-	int maxmesos;
+	int32_t minmesos;
+	int32_t maxmesos;
 };
 typedef vector<DropInfo> DropsInfo;
 
 namespace Drops {
-	extern unordered_map<int, DropsInfo> dropdata;
-	void addDropData(int id, DropInfo drop);
-	void doDrops(Player *player, int droppingID, Pos origin);
+	extern unordered_map<int32_t, DropsInfo> dropdata;
+	void addDropData(int32_t id, DropInfo drop);
+	void doDrops(Player *player, int32_t droppingID, Pos origin);
 	void dropMesos(Player *player, ReadPacket *packet);
 	void lootItem(Player *player, ReadPacket *packet);
 };
 
 class Drop {
 private:
-	int mapid;
-	int id;
-	int mesos;
+	int32_t mapid;
+	int32_t id;
+	int32_t mesos;
 	Item item;
-	int owner;
-	int time;
-	int questid;
-	int dropped;
-	int playerid;
+	int32_t owner;
+	int32_t time;
+	int16_t questid;
+	int32_t dropped;
+	int32_t playerid;
 	Pos pos;
 	bool playerdrop;
 public:
-	Drop (int mapid, int mesos, Pos pos, int owner, bool playerdrop = false);
-	Drop (int mapid, Item item, Pos pos, int owner, bool playerdrop = false);
-	void setID(int id) {
+	Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop = false);
+	Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop = false);
+	void setID(int32_t id) {
 		this->id = id;
 	}
-	int getID() {
+	int32_t getID() {
 		return id;
 	}
-	int getObjectID();
-	int getAmount();
+	int32_t getObjectID();
+	int16_t getAmount();
 	bool isQuest() {
 		return questid > 0;
 	}
-	void setQuest(int questid) {
+	void setQuest(int16_t questid) {
 		this->questid = questid;
 	}
-	int getQuest() {
+	int16_t getQuest() {
 		return questid;
 	}
-	void setTime(int time) {
+	void setTime(int32_t time) {
 		this->time = time;
 	}
-	int getTime() {
+	int32_t getTime() {
 		return time;
 	}
-	int getOwner() {
+	int32_t getOwner() {
 		return owner;
 	}
-	int getMap() {
+	int32_t getMap() {
 		return mapid;
 	}
 	bool isMesos() {
@@ -105,7 +105,7 @@ public:
 	Item getItem() {
 		return item;
 	}
-	void setItemAmount(short amount) {
+	void setItemAmount(int16_t amount) {
 		this->item.amount = amount;
 	}
 	void setPos(Pos pos) {
@@ -114,13 +114,13 @@ public:
 	Pos getPos() {
 		return pos;
 	}
-	void setDropped(int time) {
+	void setDropped(int32_t time) {
 		dropped = time;
 	}
-	int getDropped() {
+	int32_t getDropped() {
 		return dropped;
 	}
-	void setPlayer(int playerid) {
+	void setPlayer(int32_t playerid) {
 		playerid = playerid;
 	}
 	bool isplayerDrop() {

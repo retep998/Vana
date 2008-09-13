@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef DROPPACK_H
 #define DROPPACK_H
 
+#include "Types.h"
 #include <vector>
 
 using std::vector;
@@ -30,7 +31,7 @@ struct Pos;
 
 namespace DropsPacket {
 	void showDrop(Player *player, Drop *drop, char type, bool newdrop, Pos origin);
-	void takeNote(Player *player, int id, bool ismesos, short amount);
+	void takeNote(Player *player, int32_t id, bool ismesos, int16_t amount);
 	void takeDrop(Player *player, Drop *drop);
 	void dontTake(Player *player);
 	void removeDrop(Drop *drop);

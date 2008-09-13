@@ -33,10 +33,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-unordered_map<int, PetInfo> Pets::petsInfo;
-unordered_map<int, unordered_map<int, PetInteractInfo>> Pets::petsInteractInfo;
+unordered_map<int32_t, PetInfo> Pets::petsInfo;
+unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> Pets::petsInteractInfo;
 
-short Pets::exps[29] = {1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000};
+int16_t Pets::exps[29] = {1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000};
 
 /* Pet class */
 Pet::Pet(Player *player, Item *item) :
@@ -53,7 +53,7 @@ player(player)
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
-	this->id = (int) res.insert_id();
+	this->id = (int32_t) res.insert_id();
 	item->petid = this->id;
 }
 
@@ -71,13 +71,13 @@ void Pet::startTimer() {
 /* Pets namespace */
 
 void Pets::movePet(Player *player, ReadPacket *packet) {
-	int petid = packet->getInt();
+	int32_t petid = packet->getInt();
 	packet->skipBytes(4);
 	PetsPacket::movePet(player, player->getPets()->getPet(petid), packet->getBuffer(), packet->getBufferLength() - 9);
 }
 
 void Pets::chat(Player *player, ReadPacket *packet) {
-	int petid = packet->getInt();
+	int32_t petid = packet->getInt();
 	packet->skipBytes(5);
 	char act = packet->getByte();
 	string message = packet->getString();
@@ -86,7 +86,7 @@ void Pets::chat(Player *player, ReadPacket *packet) {
 
 void Pets::summonPet(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
-	short slot = packet->getShort();
+	int16_t slot = packet->getShort();
 	bool master = packet->getByte() == 1;
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5, slot)->petid);
 	pet->setPos(player->getPos());
@@ -95,8 +95,8 @@ void Pets::summonPet(Player *player, ReadPacket *packet) {
 
 void Pets::feedPet(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
-	short slot = packet->getShort();
-	int item = packet->getInt();
+	int16_t slot = packet->getShort();
+	int32_t item = packet->getInt();
 	if (player->getPets()->getSummoned(0)) {
 		Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(0));
 		bool success = false;
@@ -114,7 +114,7 @@ void Pets::feedPet(Player *player, ReadPacket *packet) {
 }
 
 void Pets::showAnimation(Player *player, ReadPacket *packet) {
-	int petid = packet->getInt();
+	int32_t petid = packet->getInt();
 	packet->skipBytes(5);
 	char act = packet->getByte();
 	Pet *pet = player->getPets()->getPet(petid);
@@ -135,7 +135,7 @@ void Pets::changeName(Player *player, const string &name) {
 	}
 }
 
-void Pets::addCloseness(Player *player, Pet *pet, short closeness) {
+void Pets::addCloseness(Player *player, Pet *pet, int16_t closeness) {
 	if (pet->getLevel() < 30) {
 		if (pet->getCloseness() + closeness < 30000)
 			pet->setCloseness(pet->getCloseness() + closeness);
@@ -150,16 +150,16 @@ void Pets::addCloseness(Player *player, Pet *pet, short closeness) {
 }
 
 void Pets::lootItem(Player *player, ReadPacket *packet) {
-	int petid = packet->getInt();
+	int32_t petid = packet->getInt();
 	packet->skipBytes(13);
-	int dropid = packet->getInt();
+	int32_t dropid = packet->getInt();
 	Drop* drop = Maps::maps[player->getMap()]->getDrop(dropid);
 	if (drop == 0) {
 		DropsPacket::dontTake(player);
 		return;
 	}
 	if (drop->isQuest()) {
-		int request = 0;
+		int32_t request = 0;
 		for (size_t i = 0; i < Quests::quests[drop->getQuest()].rewards.size(); i++) {
 			if (Quests::quests[drop->getQuest()].rewards[i].id == drop->getObjectID()) {
 				request = Quests::quests[drop->getQuest()].rewards[i].count;
@@ -177,8 +177,8 @@ void Pets::lootItem(Player *player, ReadPacket *packet) {
 	}
 	else {
 		Item *item = new Item(drop->getItem());
-		short dropAmount = drop->getAmount();
-		short amount = Inventory::addItem(player, item, true);
+		int16_t dropAmount = drop->getAmount();
+		int16_t amount = Inventory::addItem(player, item, true);
 		if (amount > 0) {
 			if (dropAmount - amount > 0) {
 				DropsPacket::takeNote(player, drop->getObjectID(), false, dropAmount - amount);

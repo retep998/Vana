@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "WorldServerAcceptPlayer.h"
 
-void PartyPacket::giveLeader(WorldServerAcceptPlayer *player, int playerid, int target, bool is) {
+void PartyPacket::giveLeader(WorldServerAcceptPlayer *player, int32_t playerid, int32_t target, bool is) {
 	PacketCreator packet;
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -36,7 +36,7 @@ void PartyPacket::giveLeader(WorldServerAcceptPlayer *player, int playerid, int 
 	player->getSession()->send(packet);
 }
 
-void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int playerid, const string &inviter) {
+void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int32_t playerid, const string &inviter) {
 	PacketCreator packet;
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -49,7 +49,7 @@ void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int playerid, co
 	player->getSession()->send(packet);
 }
 
-void PartyPacket::createParty(WorldServerAcceptPlayer *player, int playerid) {
+void PartyPacket::createParty(WorldServerAcceptPlayer *player, int32_t playerid) {
 	PacketCreator packet;
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -62,7 +62,7 @@ void PartyPacket::createParty(WorldServerAcceptPlayer *player, int playerid) {
 	player->getSession()->send(packet);
 }
 
-void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int playerid) {
+void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int32_t playerid) {
 	PacketCreator packet;
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -77,7 +77,7 @@ void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int playerid) {
 	player->getSession()->send(packet);
 }
 
-void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int playerid, int target) {
+void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int32_t playerid, int32_t target) {
 	PacketCreator packet;
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -116,7 +116,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int pl
 	player->getSession()->send(packet);
 }
 
-void PartyPacket::partyError(WorldServerAcceptPlayer *player, int playerid, char error) {
+void PartyPacket::partyError(WorldServerAcceptPlayer *player, int32_t playerid, char error) {
 	PacketCreator packet;
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -126,11 +126,11 @@ void PartyPacket::partyError(WorldServerAcceptPlayer *player, int playerid, char
 	player->getSession()->send(packet);
 }
 
-void PartyPacket::addParty(PacketCreator &packet, Party *party, int tochan) {
+void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) {
 	size_t offset = 6-party->members.size();
 	
 	//Add party member's ids to packet
-	for (unordered_map<int, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addInt(iter->second->id);
 	}
 	for (size_t i = 0; i < offset; i++) {
@@ -138,7 +138,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int tochan) {
 	}
 	
 	//Add party member's names to packet
-	for (unordered_map<int, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addString(iter->second->name, 13);
 	}
 	for (size_t i = 0; i < offset; i++) {
@@ -146,7 +146,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int tochan) {
 	}
 
 	//Add party member's jobs to packet
-	for (unordered_map<int, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addInt(iter->second->job);
 	}
 	for (size_t i = 0; i < offset; i++) {
@@ -154,7 +154,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int tochan) {
 	}
 
 	//Add party member's levels to packet
-	for (unordered_map<int, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addInt(iter->second->level);
 	}
 	for (size_t i = 0; i < offset; i++) {
@@ -162,7 +162,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int tochan) {
 	}
 
 	//Add party member's channels to packet
-	for (unordered_map<int, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
 			packet.addInt(iter->second->channel); 
 		}
@@ -177,7 +177,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int tochan) {
 	packet.addInt(party->getLeader());
 
 	//Add party member's maps to packet
-	for (unordered_map<int, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->channel == tochan) {
 			packet.addInt(iter->second->map); 
 		}
@@ -190,7 +190,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int tochan) {
 	}
 
 	//Add some portal shit
-	for (unordered_map<int, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addInt(999999999);
 		packet.addInt(999999999);
 		packet.addInt(-1);

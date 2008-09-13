@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERS_H
 #define PLAYERS_H
 
+#include "Types.h"
 #include <unordered_map>
 #include <string>
 
@@ -25,13 +26,13 @@ using std::string;
 using std::tr1::unordered_map;
 
 struct Player {
-	int id;
+	int32_t id;
 	string name;
-	int channel;
-	int party;
-	int map;
-	int job;
-	int level;
+	uint16_t channel;
+	int32_t party;
+	int32_t map;
+	int32_t job;
+	int32_t level;
 	bool online;
 };
 
@@ -42,18 +43,18 @@ public:
 			singleton = new Players;
 		return singleton;
 	}
-	void registerPlayer(int id, const string &name, int channel, int map, int job, int level);
-	void remove(int id, int channel = -1);
+	void registerPlayer(int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level);
+	void remove(int32_t id, uint16_t channel = -1);
 	Player * getPlayerFromName(const string &name, bool includeOffline = false);
-	Player * getPlayer(int id) { return players[id]; }
-	int size();
+	Player * getPlayer(int32_t id) { return players[id]; }
+	int32_t size();
 private:
 	Players() {};
 	Players(const Players&);
 	Players& operator=(const Players&);
 	static Players *singleton;
 
-	unordered_map<int, Player *> players;
+	unordered_map<int32_t, Player *> players;
 };
 
 #endif

@@ -28,25 +28,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "ReadPacket.h"
 
-unordered_map<int, DropsInfo> Drops::dropdata;
+unordered_map<int32_t, DropsInfo> Drops::dropdata;
 
 // Drop class
-Drop::Drop (int mapid, int mesos, Pos pos, int owner, bool playerdrop) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
+Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
-Drop::Drop (int mapid, Item item, Pos pos, int owner, bool playerdrop) : mapid(mapid), pos(pos), item(item), mesos(0), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
+Drop::Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), item(item), mesos(0), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
 	Maps::maps[mapid]->addDrop(this);
 }
 
-int Drop::getObjectID() {
+int32_t Drop::getObjectID() {
 	if (mesos > 0)
 		return mesos;
 	else
 		return item.id;
 }
 
-int Drop::getAmount() {
+int16_t Drop::getAmount() {
 	return item.amount;
 }
 
@@ -85,20 +85,20 @@ void Drop::removeDrop(bool showPacket) {
 }
 
 // Drops namespace
-void Drops::addDropData(int id, DropInfo drop) {
+void Drops::addDropData(int32_t id, DropInfo drop) {
 	dropdata[id].push_back(drop);
 }
 
-void Drops::doDrops(Player *player, int droppingID, Pos origin) {
+void Drops::doDrops(Player *player, int32_t droppingID, Pos origin) {
 	DropsInfo drops = dropdata[droppingID];
 
-	int d = 0;
+	int16_t d = 0;
 	for (size_t k = 0; k < drops.size(); k++) {
-		if (!drops[k].ismesos && Randomizer::Instance()->randInt(9999) < drops[k].chance * ChannelServer::Instance()->getDroprate()) {
+ 		if (!drops[k].ismesos && Randomizer::Instance()->randInt(9999) < drops[k].chance * ChannelServer::Instance()->getDroprate()) {
 			if (drops[k].quest > 0) {
 				if (!player->getQuests()->isQuestActive(drops[k].quest))
 					continue;
-				int request = 0;
+				int32_t request = 0;
 				for (size_t i = 0; i < Quests::quests[drops[k].quest].rewards.size(); i++) {
 					if (Quests::quests[drops[k].quest].rewards[i].id == drops[k].id) {
 						request = Quests::quests[drops[k].quest].rewards[i].count;
@@ -123,7 +123,7 @@ void Drops::doDrops(Player *player, int droppingID, Pos origin) {
 			if (ISEQUIP(drops[k].id))
 				drop = new Drop(player->getMap(), Item(drops[k].id, true), pos, player->getId());
 			else
-				drop = new Drop(player->getMap(), Item(drops[k].id, (short) 1), pos, player->getId());
+				drop = new Drop(player->getMap(), Item(drops[k].id, (int16_t) 1), pos, player->getId());
 
 			if (drops[k].quest > 0) {
 				drop->setPlayer(player->getId());
@@ -135,10 +135,10 @@ void Drops::doDrops(Player *player, int droppingID, Pos origin) {
 		}
 
 		else if (drops[k].ismesos) {
-			int nm = drops[k].minmesos * ChannelServer::Instance()->getMesorate();
-			int xm = drops[k].maxmesos * ChannelServer::Instance()->getMesorate();
+			int32_t nm = drops[k].minmesos * ChannelServer::Instance()->getMesorate();
+			int32_t xm = drops[k].maxmesos * ChannelServer::Instance()->getMesorate();
 			if (xm > 0 && nm > 0) {
-				int mesos = Randomizer::Instance()->randInt(xm-nm)+nm;
+				int32_t mesos = Randomizer::Instance()->randInt(xm-nm)+nm;
 				// For Meso up
 				if (player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
 					mesos = (mesos*Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x)/100;
@@ -162,7 +162,7 @@ void Drops::doDrops(Player *player, int droppingID, Pos origin) {
 
 void Drops::dropMesos(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
-	int amount = packet->getInt();
+	int32_t amount = packet->getInt();
 	if (amount < 10 || amount > 50000) {
 		// hacking
 		return;
@@ -175,7 +175,7 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 
 void Drops::lootItem(Player *player, ReadPacket *packet) {
 	packet->skipBytes(9);
-	int itemid = packet->getInt();
+	int32_t itemid = packet->getInt();
 	Drop* drop = Maps::maps[player->getMap()]->getDrop(itemid);
 	if (drop == 0) {
 		DropsPacket::dontTake(player);
@@ -185,7 +185,7 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		if (player->addWarning()) return;
 	}
 	if (drop->isQuest()) {
-		int request = 0;
+		int32_t request = 0;
 		for (size_t i = 0; i < Quests::quests[drop->getQuest()].rewards.size(); i++) {
 			if (Quests::quests[drop->getQuest()].rewards[i].id == drop->getObjectID()) {
 				request = Quests::quests[drop->getQuest()].rewards[i].count;
@@ -203,11 +203,11 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 	}
 	else {
 		Item *item = new Item(drop->getItem());
-		short dropAmount = drop->getAmount();
-		short amount = Inventory::addItem(player, item, true);
+		int32_t dropAmount = drop->getAmount();
+		int16_t amount = Inventory::addItem(player, item, true);
 		if (amount > 0) {
 			if (dropAmount - amount > 0) {
-				DropsPacket::takeNote(player, drop->getObjectID(), false, dropAmount - amount);
+				DropsPacket::takeNote(player, drop->getObjectID(), false, (int16_t) dropAmount - amount);
 				drop->setItemAmount(amount);
 			}
 			DropsPacket::takeNote(player, 0, 0, 0);

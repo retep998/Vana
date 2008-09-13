@@ -41,6 +41,6 @@ void WorldServerConnectPlayer::realHandleRequest(ReadPacket *packet) {
 	}
 }
 
-void WorldServerConnectPlayer::playerChangeChannel(int playerid, int channel) {
+void WorldServerConnectPlayer::playerChangeChannel(int32_t playerid, uint16_t channel) {
 	WorldServerConnectPlayerPacket::playerChangeChannel(this, playerid, channel);
 }

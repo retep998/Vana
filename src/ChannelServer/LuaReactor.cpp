@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include <string>
 
-LuaReactor::LuaReactor(const string &filename, int playerid, int reactorid, int mapid) : LuaScriptable(filename, playerid), reactorid(reactorid) {
+LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactorid, int32_t mapid) : LuaScriptable(filename, playerid), reactorid(reactorid) {
 	lua_pushinteger(luaVm, reactorid);
 	lua_setglobal(luaVm, "reactorid");
 	lua_pushinteger(luaVm, mapid);
@@ -43,8 +43,8 @@ LuaReactor::LuaReactor(const string &filename, int playerid, int reactorid, int 
 Reactor * LuaExports::getReactor(lua_State *luaVm) {
 	lua_getglobal(luaVm, "reactorid");
 	lua_getglobal(luaVm, "mapid");
-	int reactorid = lua_tointeger(luaVm, -2);
-	int mapid = lua_tointeger(luaVm, -1);
+	int32_t reactorid = lua_tointeger(luaVm, -2);
+	int32_t mapid = lua_tointeger(luaVm, -1);
 	return Maps::maps[mapid]->getReactor(reactorid);
 }
 
@@ -54,7 +54,7 @@ int LuaExports::setReactorState(lua_State *luaVm) {
 }
 
 int LuaExports::spawnMobReactor(lua_State *luaVm) {
-	int mobid = lua_tointeger(luaVm, -1);
+	int32_t mobid = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
 	Mobs::spawnMobPos(reactor->getMapID(), mobid, reactor->getPos());
 	return 1;

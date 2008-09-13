@@ -39,7 +39,7 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, Wor
 	player->getSession()->send(packet);
 }
 
-void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, short port) {
+void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, int16_t port) {
 	PacketCreator packet;
 	packet.addShort(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.addByte(worldid);
@@ -48,10 +48,10 @@ void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *play
 	player->getSession()->send(packet);
 }
 
-void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, int channel, int charid) {
+void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, uint16_t channel, int32_t charid) {
 	PacketCreator packet;
 	packet.addShort(INTER_NEW_PLAYER);
-	packet.addInt(channel);
+	packet.addShort(channel);
 	packet.addInt(charid);
 	player->getSession()->send(packet);
 }

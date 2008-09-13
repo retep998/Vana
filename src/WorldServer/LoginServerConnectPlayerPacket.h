@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGINSERVERCONNECTPLAYERPACKET_H
 #define LOGINSERVERCONNECTPLAYERPACKET_H
 
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -25,9 +26,9 @@ using std::string;
 class LoginServerConnectPlayer;
 
 namespace LoginServerConnectPlayerPacket {
-	void registerChannel(LoginServerConnectPlayer *player, int channel, const string &ip, short port);
-	void updateChannelPop(LoginServerConnectPlayer *player, int channel, int population);
-	void removeChannel(LoginServerConnectPlayer *player, int channel);
+	void registerChannel(LoginServerConnectPlayer *player, int32_t channel, const string &ip, int16_t port);
+	void updateChannelPop(LoginServerConnectPlayer *player, int32_t channel, int32_t population);
+	void removeChannel(LoginServerConnectPlayer *player, int32_t channel);
 };
 
 #endif

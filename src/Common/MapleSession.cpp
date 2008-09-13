@@ -66,12 +66,12 @@ void MapleSession::handle_stop() {
 	m_socket.close();
 }
 
-void MapleSession::send(unsigned char *buf, int len, bool encrypt) {
+void MapleSession::send(unsigned char *buf, int32_t len, bool encrypt) {
 	unsigned char bufs[bufferLen];
 	size_t realLength;
 	if (encrypt) {
 		// Encrypt packet
-		m_decoder->createHeader((unsigned char *) bufs, (short) len);
+		m_decoder->createHeader((unsigned char *) bufs, (int16_t) len);
 		m_decoder->encrypt(buf, len);
 		m_decoder->next();
 

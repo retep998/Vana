@@ -18,11 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CONNECTABLE_H
 #define CONNECTABLE_H
 
+#include "Types.h"
 #include <unordered_map>
 
 using std::tr1::unordered_map;
 
-typedef unordered_map<int, __int64> ConnectableMap;
+typedef unordered_map<int32_t, int64_t> ConnectableMap;
 
 class Connectable {
 public:
@@ -32,8 +33,8 @@ public:
 		return singleton;
 	}
 	
-	void newPlayer(int id);
-	bool checkPlayer(int id);
+	void newPlayer(int32_t id);
+	bool checkPlayer(int32_t id);
 private:
 	Connectable() {};
 	Connectable(const Connectable&);

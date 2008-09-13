@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "Skills.h"
 
-void SkillsPacket::addSkill(Player *player, int skillid, PlayerSkillInfo skillinfo) {
+void SkillsPacket::addSkill(Player *player, int32_t skillid, PlayerSkillInfo skillinfo) {
 	PacketCreator packet;
 	packet.addShort(SEND_ADD_SKILL);
 	packet.addByte(1);
@@ -35,7 +35,7 @@ void SkillsPacket::addSkill(Player *player, int skillid, PlayerSkillInfo skillin
 	player->getSession()->send(packet);
 }
 
-void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level) {
+void SkillsPacket::showSkill(Player *player, int32_t skillid, unsigned char level) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
  	PacketCreator packet;
@@ -47,7 +47,7 @@ void SkillsPacket::showSkill(Player *player, int skillid, unsigned char level) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveInfo pskill, SkillActiveInfo mskill, short addedinfo, int mountid) {
+void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo, int32_t mountid) {
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
@@ -97,7 +97,7 @@ void SkillsPacket::useSkill(Player *player, int skillid, int time, SkillActiveIn
 	}
 }
 
-void SkillsPacket::healHP(Player *player, short hp) {
+void SkillsPacket::healHP(Player *player, int16_t hp) {
 	PacketCreator packet;
 	packet.addShort(SEND_GAIN_ITEM);
 	packet.addByte(0xA);
@@ -126,7 +126,7 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 	}
 }
 
-void SkillsPacket::showSkillEffect(Player *player, int skillid, unsigned char level) {
+void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, unsigned char level) {
 	PacketCreator packet;
 	packet.addShort(SEND_GAIN_ITEM); // For the using player
 	bool send = false;
@@ -196,7 +196,7 @@ void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::showMagnetSuccess(Player *player, int mapmobid, unsigned char success) {
+void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapmobid, unsigned char success) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_DRAGGED);
 	packet.addInt(mapmobid);
@@ -204,7 +204,7 @@ void SkillsPacket::showMagnetSuccess(Player *player, int mapmobid, unsigned char
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::sendCooldown(Player *player, int skillid, short time) {
+void SkillsPacket::sendCooldown(Player *player, int32_t skillid, int16_t time) {
 	PacketCreator packet;
 	packet.addShort(SEND_COOLDOWN);
 	packet.addInt(skillid);

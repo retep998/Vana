@@ -31,7 +31,7 @@ bool AbstractServerAcceptPlayer::processAuth(ReadPacket *packet, const string &p
 		if (packet->getString() == pass) {
 			std::cout << "Server successfully authenticated." << std::endl;
 			is_authenticated = true;
-			short iplen = packet->getShort();
+			int16_t iplen = packet->getShort();
 			if (iplen) {
 				setIP(packet->getString(iplen)); // setIP in abstractPlayer
 			}

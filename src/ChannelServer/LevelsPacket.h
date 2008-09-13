@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LEVELPACK_H
 #define LEVELPACK_H
 
+#include "Types.h"
 #include <vector>
 
 using std::vector;
@@ -25,7 +26,7 @@ using std::vector;
 class Player;
 
 namespace LevelsPacket {
-	void showEXP(Player *player, int exp, char type);
+	void showEXP(Player *player, int32_t exp, char type);
 	void levelUP(Player *player);
 	void jobChange(Player *player);
 	void statOK(Player *player);
