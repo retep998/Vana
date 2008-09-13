@@ -91,7 +91,7 @@ void Inventory::addItemInfo(int32_t id, ItemInfo item) {
 
 void Inventory::itemMove(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
-	char inv = packet->getByte();
+	int8_t inv = packet->getByte();
 	int16_t slot1 = packet->getShort();
 	int16_t slot2 = packet->getShort();
 
@@ -154,7 +154,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 }
 
 int16_t Inventory::addItem(Player *player, Item *item, bool is) {
-	char inv = GETINVENTORY(item->id);
+	int8_t inv = GETINVENTORY(item->id);
 	int16_t freeslot = 0;
 	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *olditem = player->getInventory()->getItem(inv, s);
@@ -187,7 +187,7 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 		if (ISPET(item->id)) {
 			Pet *pet = new Pet(player, item);
 			player->getPets()->addPet(pet);
-			pet->setInventorySlot((char) freeslot);
+			pet->setInventorySlot((int8_t) freeslot);
 			PetsPacket::updatePet(player, pet);
 		}
 		return 0;
@@ -198,7 +198,7 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 }
 
 void Inventory::useShop(Player *player, ReadPacket *packet) {
-	char type = packet->getByte();
+	int8_t type = packet->getByte();
 	if (type == 0) { // Buy
 		packet->skipBytes(2);
 		int32_t itemid = packet->getInt();
@@ -216,7 +216,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 		int16_t slot = packet->getShort();
 		int32_t itemid = packet->getInt();
 		int16_t amount = packet->getShort();
-		char inv = GETINVENTORY(itemid);
+		int8_t inv = GETINVENTORY(itemid);
 		Item *item = player->getInventory()->getItem(inv, slot);
 		if (item == 0 || item->amount < amount) {
 			// hacking
@@ -245,11 +245,11 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 }
 
 void Inventory::useStorage(Player *player, ReadPacket *packet) {
-	char type = packet->getByte();
+	int8_t type = packet->getByte();
 
 	if (type == 0x04) { // Take item out
-		char inv = packet->getByte(); // Inventory, as in equip, use, etc
-		char slot = packet->getByte(); // Slot within the inventory
+		int8_t inv = packet->getByte(); // Inventory, as in equip, use, etc
+		int8_t slot = packet->getByte(); // Slot within the inventory
 		Item *item = player->getStorage()->getItem(slot);
 		if (item == 0) // It's a trap
 			return; // Abort
@@ -267,7 +267,7 @@ void Inventory::useStorage(Player *player, ReadPacket *packet) {
 			StoragePacket::storageFull(player);
 			return;
 		}
-		char inv = GETINVENTORY(itemid);
+		int8_t inv = GETINVENTORY(itemid);
 		Item *item = player->getInventory()->getItem(inv, slot);
 		if (item == 0 || amount > player->getInventory()->getItemAmountBySlot(inv, slot)) // Be careful, it might be a trap.
 			return; // Do a barrel roll
@@ -292,7 +292,7 @@ void Inventory::useStorage(Player *player, ReadPacket *packet) {
 void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	if (items.find(itemid) == items.end() && equips.find(itemid) == equips.end())
 		return;
-	char inv = GETINVENTORY(itemid);
+	int8_t inv = GETINVENTORY(itemid);
 	int16_t max = items[itemid].maxslot;
 	int16_t thisamount = 0;
 	if (ISSTAR(itemid)) {
@@ -328,8 +328,8 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 
 void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
 	player->getInventory()->changeItemAmount(itemid, -howmany);
-	char inv = GETINVENTORY(itemid);
-	for (int16_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
+	int8_t inv = GETINVENTORY(itemid);
+	for (int8_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
 		Item *item = player->getInventory()->getItem(inv, i);
 		if (item == 0)
 			continue;
@@ -356,7 +356,7 @@ void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
 	}
 }
 
-void Inventory::takeItemSlot(Player *player, char inv, int16_t slot, int16_t amount, bool takeStar) {
+void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar) {
 	Item *item = player->getInventory()->getItem(inv, slot);
 	if (item == 0)
 		return;
@@ -556,7 +556,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 		case 2049100: // Chaos Scroll
 			if (equip->slots > 0) {
 				if (Randomizer::Instance()->randShort(99) < items[itemid].cons.success) { // Add stats
-					char n = -1; // Default - Decrease stats
+					int8_t n = -1; // Default - Decrease stats
 					// TODO: Make sure that Chaos Scrolls are working like they do in global
 					if (Randomizer::Instance()->randShort(99) < 50) // Increase
 						n = 1;
@@ -655,7 +655,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 }
 
 void Inventory::useCashItem(Player *player, ReadPacket *packet) {
-	char type = packet->getByte();
+	int8_t type = packet->getByte();
 	packet->skipBytes(1);
 	int32_t itemid = packet->getInt();
 	bool used = false;

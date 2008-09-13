@@ -59,7 +59,7 @@ enum {
 };
 
 struct EquipInfo {
-	char slots;
+	int8_t slots;
 	int32_t price;
 	int16_t istr;
 	int16_t idex;
@@ -86,7 +86,7 @@ struct SummonBag {
 	uint32_t chance;
 };
 
-struct Skillbook{
+struct Skillbook {
 	int32_t skillid;
 	uint8_t reqlevel;
 	uint8_t maxlevel;
@@ -108,8 +108,8 @@ struct ConsumeInfo {
 	int16_t speed;
 	int16_t jump;
 	int16_t morph;
-	uint32_t success;
-	uint32_t cursed;
+	int16_t success;
+	int16_t cursed;
 	int16_t istr;
 	int16_t idex;
 	int16_t iint;
@@ -125,7 +125,7 @@ struct ConsumeInfo {
 	int16_t ihand;
 	int16_t ijump;
 	int16_t ispeed;
-	unsigned char types[8];
+	uint8_t types[8];
 	vector<int16_t> vals;
 	vector<SummonBag> mobs;
 	vector<Skillbook> skills;
@@ -157,7 +157,7 @@ namespace Inventory {
 	void cancelItem(Player *player, ReadPacket *packet);
 	void endItem(Player *player, int32_t itemid);
 	void useSkillbook(Player *player, ReadPacket *packet);
-	void takeItemSlot(Player *player, char inv, int16_t slot, int16_t amount, bool takeStar = false);
+	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
 	void useChair(Player *player, ReadPacket *packet);
 	void useItemEffect(Player *player, ReadPacket *packet);
 	void stopChair(Player *player, ReadPacket *packet);
