@@ -44,7 +44,7 @@ public:
 	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0), m_berserk(false) { }
 
 	// Buff Skills
-	void addBuff(int32_t skill, unsigned char level);
+	void addBuff(int32_t skill, uint8_t level);
 	void removeBuff(int32_t skill, bool fromTimer = false);
 	void removeBuff();
 	int32_t buffTimeLeft(int32_t skill);
@@ -79,7 +79,7 @@ private:
 	unordered_map<int32_t, SkillActiveInfo> activeplayerskill;
 	unordered_map<int32_t, SkillActiveInfo> activemapskill;
 	vector<SkillMapActiveInfo> activemapenterskill;
-	unordered_map<int32_t, unsigned char> activelevels;
+	unordered_map<int32_t, uint8_t> activelevels;
 	unordered_map<int32_t, shared_ptr<Timer::Container>> m_skill_acts;
 	uint8_t m_combo;
 	bool m_berserk;
