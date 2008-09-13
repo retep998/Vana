@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 BuddyList::BuddyList(Player *player) : player(player) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT buddylist.buddy_charid as buddy_charid, characters.name as name FROM buddylist INNER JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.charid = " << mysqlpp::quote << player->getId();
+	query << "SELECT buddylist.buddy_charid as buddy_charid, characters.name as name FROM buddylist INNER JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.charid = " << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -31,10 +31,10 @@ BuddyList::BuddyList(Player *player) : player(player) {
 
 void BuddyList::add(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "INSERT INTO buddylist (charid, buddy_charid) VALUES (" << mysqlpp::quote << player->getId() << ", " << mysqlpp::quote << charid << ")";
+	query << "INSERT INTO buddylist (charid, buddy_charid) VALUES (" << player->getId() << ", " << charid << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	
-	query << "SELECT buddylist.buddy_charid as buddy_charid, characters.name as name FROM buddylist INNER JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.id = " << mysqlpp::quote << res.insert_id();
+	query << "SELECT buddylist.buddy_charid as buddy_charid, characters.name as name FROM buddylist INNER JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.id = " << res.insert_id();
 	mysqlpp::StoreQueryResult res2 = query.store();
 
 	add(res2[0]);
@@ -55,7 +55,7 @@ bool BuddyList::add(const string &name) {
 
 void BuddyList::remove(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "DELETE FROM buddylist WHERE charid = " << mysqlpp::quote << player->getId() << " AND buddy_charid = " << mysqlpp::quote << charid;
+	query << "DELETE FROM buddylist WHERE charid = " << player->getId() << " AND buddy_charid = " << charid;
 	query.exec();
 
 	buddies.erase(charid);
