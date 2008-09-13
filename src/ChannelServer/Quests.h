@@ -48,9 +48,9 @@ struct QuestRewardInfo {
 	bool isskill;
 	int32_t id;
 	int16_t count;
-	char gender;
-	char job;
-	char prop;
+	int8_t gender;
+	int8_t job;
+	int8_t prop;
 };
 
 typedef vector<QuestRewardInfo> QuestRewardsInfo;
