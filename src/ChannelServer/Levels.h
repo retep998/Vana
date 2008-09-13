@@ -24,8 +24,8 @@ class Player;
 class ReadPacket;
 
 namespace Levels {
-	extern int32_t exps[200];
-	void giveEXP(Player *player, long exp, char type=0);
+	extern uint32_t exps[200];
+	void giveEXP(Player *player, uint32_t exp, int8_t type = 0);
 	void addStat(Player *player, ReadPacket *packet);
 };
 
