@@ -115,11 +115,11 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	int32_t skin = packet->getInt();
 	packet->skipBytes(16);
 
-	unsigned char gender = packet->getByte();
-	unsigned char str = packet->getByte();
-	unsigned char dex = packet->getByte();
-	unsigned char intt = packet->getByte();
-	unsigned char luk = packet->getByte();
+	uint8_t gender = packet->getByte();
+	uint8_t str = packet->getByte();
+	uint8_t dex = packet->getByte();
+	uint8_t intt = packet->getByte();
+	uint8_t luk = packet->getByte();
 
 	if (str + dex + intt + luk != 25) {
 		// hacking

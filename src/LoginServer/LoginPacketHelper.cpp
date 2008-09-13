@@ -72,7 +72,7 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, Character &charc) {
 			equips[slot][0] = charc.equips[i].id;
 		}
 	}
-	for (char i = 0; i < 50; i++) { // Shown items
+	for (int8_t i = 0; i < 50; i++) { // Shown items
 		if (equips[i][0] > 0) {
 			packet.addByte(i);
 			if (i == 11 && equips[i][1] > 0) // Normal weapons always here
@@ -82,7 +82,7 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, Character &charc) {
 		}
 	}
 	packet.addByte(-1);
-	for (char i = 0; i < 50; i++) { // Covered items
+	for (int8_t i = 0; i < 50; i++) { // Covered items
 		if (equips[i][1] > 0 && i != 11) {
 			packet.addByte(i);
 			packet.addInt(equips[i][1]);

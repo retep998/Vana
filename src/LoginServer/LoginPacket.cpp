@@ -32,7 +32,7 @@ void LoginPacket::loginError(PlayerLogin *player, int16_t errorid) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::loginBan(PlayerLogin *player, char reason, int32_t expire) {
+void LoginPacket::loginBan(PlayerLogin *player, int8_t reason, int32_t expire) {
 	/* Reasons:
 		00 -> This is an ID that has been deleted or blocked from connection
 		01 -> Your account has been blocked for hacking or illegal use of third-party programs
@@ -78,7 +78,7 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::loginProcess(PlayerLogin *player, char id) {
+void LoginPacket::loginProcess(PlayerLogin *player, int8_t id) {
 	PacketCreator packet;
 	packet.addShort(SEND_LOGIN_PROCESS);
 	packet.addByte(id);
@@ -92,7 +92,7 @@ void LoginPacket::pinAssigned(PlayerLogin *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::genderDone(PlayerLogin *player, char gender) {
+void LoginPacket::genderDone(PlayerLogin *player, int8_t gender) {
 	PacketCreator packet;
 	packet.addShort(SEND_GENDER_DONE);
 	packet.addByte(gender);

@@ -37,11 +37,11 @@ struct CharEquip {
 struct Character {
 	int32_t id;
 	string name;
-	char gender;
-	char skin;
+	int8_t gender;
+	int8_t skin;
 	int32_t eyes;
 	int32_t hair;
-	char level;
+	int8_t level;
 	int16_t job;
 	int16_t str;
 	int16_t dex;
@@ -56,7 +56,7 @@ struct Character {
 	int16_t exp;
 	int16_t fame;
 	int32_t map;
-	char pos;
+	int8_t pos;
 	vector<CharEquip> equips;
 };
 

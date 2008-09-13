@@ -28,7 +28,7 @@ struct World;
 
 namespace LoginServerAcceptPlayerPacket {
 	void connect(LoginServerAcceptPlayer *player, World *world);
-	void connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, int16_t port);
+	void connectChannel(LoginServerAcceptPlayer *player, int8_t worldid, const string &ip, int16_t port);
 	void newPlayer(LoginServerAcceptPlayer *player, uint16_t channel, int32_t charid);
 };
 

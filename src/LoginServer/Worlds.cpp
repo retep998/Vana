@@ -58,7 +58,7 @@ void Worlds::channelSelect(PlayerLogin *player, ReadPacket *packet) {
 	Characters::showCharacters(player);
 }
 
-char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
+int8_t Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	World *world = 0;
 	for (unordered_map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->connected == 0) {
@@ -81,8 +81,8 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	return world->id;
 }
 
-char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
-	char worldid = -1;
+int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
+	int8_t worldid = -1;
 	int16_t port;
 	string ip;
 	for (unordered_map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {

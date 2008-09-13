@@ -48,16 +48,16 @@ public:
 	int32_t getPin() const {
 		return this->pin;
 	}
-	void setGender(char gender) {
+	void setGender(int8_t gender) {
 		this->gender=gender;
 	}
-	char getGender() const {
+	int8_t getGender() const {
 		return this->gender;
 	}
-	void setWorld(char world) {
+	void setWorld(int8_t world) {
 		this->world = world;
 	}
-	char getWorld() const {
+	int8_t getWorld() const {
 		return this->world;
 	}
 	void setChannel(uint16_t channel) {
@@ -75,8 +75,8 @@ private:
 	int32_t userid;
 	int32_t pin;
 	bool checked_pin;
-	char gender;
-	char world;
+	int8_t gender;
+	int8_t world;
 	uint16_t channel;
 	int32_t invalid_logins;
 };

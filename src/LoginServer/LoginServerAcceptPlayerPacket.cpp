@@ -39,7 +39,7 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, Wor
 	player->getSession()->send(packet);
 }
 
-void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, char worldid, const string &ip, int16_t port) {
+void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, int8_t worldid, const string &ip, int16_t port) {
 	PacketCreator packet;
 	packet.addShort(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.addByte(worldid);
