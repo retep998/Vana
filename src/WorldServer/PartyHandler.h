@@ -38,7 +38,7 @@ class WorldServerAcceptPlayer;
 #define PARTY_LOG_IN_OUT 0x05
 #define PARTY_EXPEL 0x06
 
-namespace PartyHandler{
+namespace PartyHandler {
 	extern int32_t partyCount;
 	extern unordered_map<int32_t, Party *> parties;
 	void createParty(WorldServerAcceptPlayer *player, int32_t playerid);
@@ -51,29 +51,17 @@ namespace PartyHandler{
 	void logInLogOut(int32_t playerid);
 };
 
-class Party{
+class Party {
 public:
-	void setId(int32_t partyid) {
-		this->partyid = partyid;
-	}
-	int32_t getId() {
-		return this->partyid;
-	}
-	void setLeader(int32_t playerid) {
-		this->leaderid = playerid;
-	}
-	int32_t getLeader() {
-		return this->leaderid;
-	}
-	bool isLeader(int32_t playerid) {
-		return playerid == leaderid;
-	}
-	void addMember(Player *player) {
-		this->members[player->id] = player;
-	}
-	void deleteMember(Player *player) {
-		this->members.erase(player->id);
-	}
+	void setId(int32_t partyid) { this->partyid = partyid; }
+	void setLeader(int32_t playerid) { this->leaderid = playerid; }
+	void addMember(Player *player) { this->members[player->id] = player; }
+	void deleteMember(Player *player) { this->members.erase(player->id); }
+
+	int32_t getId() const { return this->partyid; }
+	int32_t getLeader() const { return this->leaderid; }
+	bool isLeader(int32_t playerid) const { return playerid == leaderid; }
+
 	unordered_map<int32_t, Player *> members;
 	vector<int32_t> oldLeader;
 private:
