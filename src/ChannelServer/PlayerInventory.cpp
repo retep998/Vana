@@ -66,7 +66,7 @@ Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), p
 }
 
 /* PlayerInventory class */
-PlayerInventory::PlayerInventory(Player *player, unsigned char maxslots[5],
+PlayerInventory::PlayerInventory(Player *player, uint8_t maxslots[5],
 								 int32_t mesos) :
 player(player),
 mesos(mesos)
@@ -76,7 +76,7 @@ mesos(mesos)
 	load();
 }
 
-void PlayerInventory::addMaxSlots(char inventory, char rows) { // Useful with .lua
+void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) { // Useful with .lua
 	inventory -= 1;
 	maxslots[inventory] += (rows * 4);
 	if (maxslots[inventory] > 100)
@@ -93,7 +93,7 @@ void PlayerInventory::setMesos(int32_t mesos, bool is) {
 	PlayerPacket::updateStatInt(player, 0x40000, mesos, is);
 }
 
-void PlayerInventory::addItem(char inv, int16_t slot, Item *item) {
+void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item) {
 	items[inv-1][slot] = item;
 	if (itemamounts.find(item->id) != itemamounts.end())
 		itemamounts[item->id] += item->amount;
@@ -103,14 +103,14 @@ void PlayerInventory::addItem(char inv, int16_t slot, Item *item) {
 		addEquipped(slot, item->id);
 }
 
-Item * PlayerInventory::getItem(char inv, int16_t slot) {
+Item * PlayerInventory::getItem(int8_t inv, int16_t slot) {
 	inv -= 1;
 	if (items[inv].find(slot) != items[inv].end())
 		return items[inv][slot];
 	return 0;
 }
 
-void PlayerInventory::deleteItem(char inv, int16_t slot) {
+void PlayerInventory::deleteItem(int8_t inv, int16_t slot) {
 	inv -= 1;
 	if (items[inv].find(slot) != items[inv].end()) {
 		itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
@@ -121,7 +121,7 @@ void PlayerInventory::deleteItem(char inv, int16_t slot) {
 	}
 }
 
-void PlayerInventory::setItem(char inv, int16_t slot, Item *item) {
+void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 	inv -= 1;
 	if (item == 0) {
 		items[inv].erase(slot);
@@ -135,7 +135,7 @@ void PlayerInventory::setItem(char inv, int16_t slot, Item *item) {
 	}
 }
 
-int16_t PlayerInventory::getItemAmountBySlot(char inv, int16_t slot) {
+int16_t PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) {
 	inv -= 1;
 	if (items[inv].find(slot) != items[inv].end())
 		return items[inv][slot]->amount;
@@ -158,7 +158,7 @@ int32_t PlayerInventory::getEquippedID(int16_t slot) {
 }
 
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
-	for (char i = 0; i < 50; i++) { // Shown items
+	for (int8_t i = 0; i < 50; i++) { // Shown items
 		if (equipped[i][0] > 0 || equipped[i][1] > 0) {
 			packet.addByte(i);
 			if (equipped[i][0] <= 0 || (i == 11 && equipped[i][1] > 0)) // Normal weapons always here
@@ -168,7 +168,7 @@ void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 		}
 	}
 	packet.addByte(-1);
-	for (char i = 0; i < 50; i++) { // Covered items
+	for (int8_t i = 0; i < 50; i++) { // Covered items
 		if (equipped[i][0] > 0 && equipped[i][1] > 0 && i != 11) {
 			packet.addByte(i);
 			packet.addInt(equipped[i][1]);
@@ -188,7 +188,7 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount) {
 	bool has = false;
 	int16_t incrementor = 0;
 	int16_t required = 0;
-	char inv = GETINVENTORY(itemid);
+	int8_t inv = GETINVENTORY(itemid);
 	if (inv == 1 || ISRECHARGEABLE(itemid))
 		required = amount; // These aren't stackable
 	else {
@@ -220,7 +220,7 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount) {
 			required += 1;
 	//	}
 	}
-	for (unsigned char i = 0; i < getMaxSlots(inv); i++) {
+	for (uint8_t i = 0; i < getMaxSlots(inv); i++) {
 		if (incrementor >= required) {
 			has = true;
 			break;
@@ -283,7 +283,7 @@ void PlayerInventory::save() {
 	query.exec();
 
 	bool firstrun = true;
-	for (char i = 1; i <= 5; i++) {
+	for (int8_t i = 1; i <= 5; i++) {
 		iteminventory *itemsinv = getItems(i);
 		for (iteminventory::iterator iter = itemsinv->begin(); iter != itemsinv->end(); iter++) {
 			Item *item = iter->second;

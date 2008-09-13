@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPlayerPacket.h"
 
 void CommandHandler::handleCommand(Player *player, ReadPacket *packet) {
-	unsigned char type = packet->getByte();
+	uint8_t type = packet->getByte();
 	string name = packet->getString();
 
 	string chat;

@@ -68,7 +68,7 @@ public:
 	SkillMapEnterActiveInfo getSkillMapEnterInfo();
 	SkillActiveInfo getSkillPlayerInfo(int32_t skillid);
 	SkillActiveInfo getSkillMapInfo(int32_t skillid);
-	unsigned char getActiveSkillLevel(int32_t skillid);
+	uint8_t getActiveSkillLevel(int32_t skillid);
 	void setSkillPlayerInfo(int32_t skillid, SkillActiveInfo skill);
 	void setSkillMapInfo(int32_t skillid, SkillActiveInfo skill);
 	void setSkillMapEnterInfo(int32_t skillid, vector<SkillMapActiveInfo> skill);

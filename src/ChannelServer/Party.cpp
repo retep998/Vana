@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 
 void Party::handleRequest(Player *player, ReadPacket *packet) {
-	char type = packet->getByte();
+	int8_t type = packet->getByte();
 	switch(type){
 		case 0x01: //Create party
 		case 0x02: //Leaver party

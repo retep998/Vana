@@ -170,7 +170,7 @@ SkillActiveInfo PlayerActiveBuffs::getSkillPlayerInfo(int32_t skillid) {
 	return activeplayerskill[skillid];
 }
 
-unsigned char PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
+uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
 	if (activelevels.find(skillid) != activelevels.end())
 		return activelevels[skillid];
 	return 0;

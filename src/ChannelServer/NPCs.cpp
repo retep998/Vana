@@ -61,8 +61,8 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 		return;
 	}
 
-	char type = packet->getByte();
-	char what = packet->getByte();
+	int8_t type = packet->getByte();
+	int8_t what = packet->getByte();
 
 	if (type == NPCDialogs::normal) {
 		switch (what) {

@@ -27,18 +27,18 @@ class Player;
 
 struct PlayerSkillInfo {
 	PlayerSkillInfo() : level(0), maxlevel(0) {}
-	unsigned char level;
-	unsigned char maxlevel;
+	uint8_t level;
+	uint8_t maxlevel;
 };
 
 class PlayerSkills {
 public:
 	PlayerSkills(Player *player) : player(player) { load(); }
 
-	bool addSkillLevel(int32_t skillid, unsigned char amount, bool sendpacket = true);
-	unsigned char getSkillLevel(int32_t skillid);
-	unsigned char getMaxSkillLevel(int32_t skillid);
-	void setMaxSkillLevel(int32_t skillid, unsigned char maxlevel, bool sendpacket = true);
+	bool addSkillLevel(int32_t skillid, uint8_t amount, bool sendpacket = true);
+	uint8_t getSkillLevel(int32_t skillid);
+	uint8_t getMaxSkillLevel(int32_t skillid);
+	void setMaxSkillLevel(int32_t skillid, uint8_t maxlevel, bool sendpacket = true);
 	unordered_map<int32_t, PlayerSkillInfo> * getSkills() {
 		return &playerskills;
 	}

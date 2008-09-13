@@ -75,7 +75,7 @@ bool Quests::giveMesos(Player *player, int32_t amount) {
 }
 
 void Quests::getQuest(Player *player, ReadPacket *packet) {
-	char act = packet->getByte();
+	int8_t act = packet->getByte();
 	int16_t questid = packet->getShort();
 	int32_t npcid = packet->getInt();
 	if (act == 0) {	

@@ -24,13 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
 	int16_t foothold = 0;
-	char stance = 0;
+	int8_t stance = 0;
 	int16_t x = 0;
 	int16_t y = 0;
 
-	unsigned char n = packet->getByte();
-	for (unsigned char i = 0; i < n; i++) {
-		char type = packet->getByte();
+	uint8_t n = packet->getByte();
+	for (uint8_t i = 0; i < n; i++) {
+		int8_t type = packet->getByte();
 		switch (type) {
 			case 10: // Falling of some kind
 				packet->skipBytes(1);

@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 	string message = packet->getString();
-	char bubbleOnly = packet->getByte(); // Skill Macros only display chat bubbles
+	int8_t bubbleOnly = packet->getByte(); // Skill Macros only display chat bubbles
 
 	char *chat = const_cast<char *>(message.c_str()); // Leaving chat as char[] for GM commands for now
 	size_t chatsize = message.size(); // See above line
@@ -60,7 +60,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				if (Player *target = Players::Instance()->getPlayer(targetname))
 					target->getSession()->disconnect();
 
-				char reason = 1;
+				int8_t reason = 1;
 				if (strlen(next_token) > 0)
 					reason = atoi(next_token);
 
@@ -358,7 +358,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 					PlayerPacket::showMessage(player, "Invalid Skill ID.", 5);
 					return;
 				}
-				unsigned char count = 1;
+				uint8_t count = 1;
 				if (strlen(next_token) > 0)
 					count = atoi(next_token);
 				player->getSkills()->addSkillLevel(skillid, count);
@@ -593,8 +593,8 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 
 void ChatHandler::handleGroupChat(Player *player, ReadPacket *packet) {
 	vector<int32_t> receivers;
-	char type = packet->getByte();
-	unsigned char amount = packet->getByte();
+	int8_t type = packet->getByte();
+	uint8_t amount = packet->getByte();
 	for (size_t i = 0; i < amount; i++) {
 		receivers.push_back(packet->getInt());
 	}
