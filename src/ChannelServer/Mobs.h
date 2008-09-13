@@ -86,48 +86,26 @@ namespace Mobs {
 class Mob : public MovableLife {
 public:
 	Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
-	Pos getPos() {
-		return Pos(getPosX(), getPosY());
-	}
-	int16_t getPosX() {
-		return m_pos.x;
-	}
-	int16_t getPosY() {
-		return m_pos.y - 1;
-	}
-	void setID(int32_t id) {
-		this->id = id;
-	}
-	int32_t getID() {
-		return id;
-	}
-	int32_t getMapID() {
-		return mapid;
-	}
-	int32_t getMobID() {
-		return mobid;
-	}
-	int32_t getSpawnID() {
-		return spawnid;
-	}
-	void setHP(int16_t hp) {
+	void setID(int32_t id) { this->id = id; }
+	void setHP(int32_t hp) {
 		this->hp = hp;
 		if (this->hp < 0)
 			this->hp = 0;
 	}
-	int16_t getHP() {
-		return hp;
-	}
-	void setMP(int16_t mp) {
-		this->mp = mp;
-	}
-	int16_t getMP() {
-		return mp;
-	}
+	void setMP(int32_t mp) { this->mp = mp; }
 	void setControl(Player *control);
-	Player * getControl() {
-		return control;
-	}
+
+	Pos getPos() const { return Pos(getPosX(), getPosY()); }
+	int16_t getPosX() const { return m_pos.x; }
+	int16_t getPosY() const { return m_pos.y - 1; }
+	int32_t getID() const { return id; }
+	int32_t getMapID() const { return mapid; }
+	int32_t getMobID() const { return mobid; }
+	int32_t getSpawnID() const { return spawnid; }
+	int32_t getHP() const { return hp; }
+	int32_t getMP() const { return mp; }
+	Player * getControl() const { return control; }
+
 	void die(Player *player);
 	void die(); // Removes mob, no EXP, no summoning
 private:
@@ -135,8 +113,8 @@ private:
 	int32_t mapid;
 	int32_t spawnid;
 	int32_t mobid;
-	int16_t hp;
-	int16_t mp;
+	int32_t hp;
+	int32_t mp;
 	Player *control;
 };
 
