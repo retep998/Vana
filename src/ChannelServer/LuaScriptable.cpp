@@ -379,7 +379,7 @@ int LuaExports::clearDrops(lua_State *luaVm) {
 int LuaExports::setStyle(lua_State *luaVm) {
 	int32_t id = lua_tointeger(luaVm, -1);
 	if (id/10000 == 0) {
-		getPlayer(luaVm)->setSkin((char)id);
+		getPlayer(luaVm)->setSkin((int8_t)id);
 	}
 	else if (id/10000 == 2) {
 		getPlayer(luaVm)->setEyes(id);

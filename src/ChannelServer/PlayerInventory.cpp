@@ -240,8 +240,8 @@ void PlayerInventory::load() {
 		Item *item = new Item;
 		item->id = res[i][2];
 		item->amount = res[i][3];
-		item->slots = (unsigned char) res[i][4];
-		item->scrolls = (unsigned char) res[i][5];
+		item->slots = (uint8_t) res[i][4];
+		item->scrolls = (uint8_t) res[i][5];
 		item->istr = res[i][6];
 		item->idex = res[i][7];
 		item->iint = res[i][8];
@@ -259,17 +259,17 @@ void PlayerInventory::load() {
 		item->ijump = res[i][20];
 		item->petid = res[i][21];
 		res[i][22].to_string(item->name);
-		addItem((unsigned char) res[i][0], res[i][1], item);
+		addItem((uint8_t) res[i][0], res[i][1], item);
 		if (item->petid != 0) {
 			Pet *pet = new Pet(player);
 			pet->setId(item->petid);
 			pet->setType(item->id);
-			pet->setIndex((signed char) res[i][23]);
+			pet->setIndex((int8_t) res[i][23]);
 			pet->setName((string) res[i][24]);
-			pet->setLevel((unsigned char) res[i][25]);
+			pet->setLevel((uint8_t) res[i][25]);
 			pet->setCloseness((int16_t) res[i][26]);
-			pet->setFullness((unsigned char) res[i][27]);
-			pet->setInventorySlot((unsigned char)res[i][1]);
+			pet->setFullness((uint8_t) res[i][27]);
+			pet->setInventorySlot((uint8_t)res[i][1]);
 			pet->setSummoned(false);
 			player->getPets()->addPet(pet);
 		}

@@ -633,7 +633,7 @@ SkillActiveInfo Skills::parseMapSkill(Player *player, int32_t skillid, uint8_t l
 		map.type = skillsinfo[skillid].map[i].type;
 		if (skillsinfo[skillid].map[i].val) {
 			map.isvalue = true;
-			map.value = (char)value;
+			map.value = (int8_t)value;
 		}
 		else {
 			map.isvalue = false;
