@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 // Buff Skills
-void PlayerActiveBuffs::addBuff(int32_t skill, unsigned char level) {
+void PlayerActiveBuffs::addBuff(int32_t skill, uint8_t level) {
 	int32_t time = Skills::skills[skill][level].time;
 	switch (skill) {
 		case 9101004: // GM Hide
@@ -107,24 +107,15 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 
 void PlayerActiveBuffs::addCombo() { // Add combo orbs
 	if (getActiveSkillLevel(1111002) > 0) {
-		char advcombo = m_player->getSkills()->getSkillLevel(1120003);
-		char maxcombo = (char) (advcombo > 0 ? Skills::skills[1120003][advcombo].x : Skills::skills[1111002][m_player->getSkills()->getSkillLevel(1111002)].x);
-		
-		if (m_combo == maxcombo) {
+		int8_t advcombo = m_player->getSkills()->getSkillLevel(1120003);
+		int8_t maxcombo = (int8_t) (advcombo > 0 ? Skills::skills[1120003][advcombo].x : Skills::skills[1111002][m_player->getSkills()->getSkillLevel(1111002)].x);
+		if (m_combo == maxcombo)
 			return;
-		}
-
-		if (maxcombo > 5 && Randomizer::Instance()->randInt(99) < Skills::skills[1120003][advcombo].prop) {
-			m_combo += 2; // 4th job skill gives chance to add second orb
-		}
-		else {
-			m_combo += 1;
-		}
-
-		if (m_combo > maxcombo) {
+		if (advcombo > 0 && Randomizer::Instance()->randInt(99) < Skills::skills[1120003][advcombo].prop)
+			m_combo += 1; // 4th job skill gives chance to add second orb
+		m_combo += 1;
+		if (m_combo > maxcombo)
 			m_combo = maxcombo;
-		}
-
 		setCombo(m_combo, true);
 	}
 }
@@ -132,7 +123,7 @@ void PlayerActiveBuffs::addCombo() { // Add combo orbs
 void PlayerActiveBuffs::checkBerserk(bool display) {
 	if (m_player->getJob() == 132) { // Berserk calculations
 		int32_t skillid = 1320006;
-		char level = m_player->getSkills()->getSkillLevel(skillid);
+		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
 			float x = (float)Skills::skills[skillid][level].x;
 			bool change = false;
