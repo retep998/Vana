@@ -44,18 +44,12 @@ struct TradeInfo {
 class ActiveTrade {
 public:
 	ActiveTrade(Player *starter, Player *receiver);
-	void setID(int32_t id) {
-		this->id = id;
-	}
-	int32_t getID() {
-		return id;
-	}
-	TradeInfo * getStarter() {
-		return starter.get();
-	}
-	TradeInfo * getReceiver() {
-		return receiver.get();
-	}
+
+	void setID(int32_t id) { this->id = id; }
+
+	int32_t getID() const { return id; }
+	TradeInfo * getStarter() const { return starter.get(); }
+	TradeInfo * getReceiver() const { return receiver.get(); }
 private:
 	scoped_ptr<TradeInfo> starter;
 	scoped_ptr<TradeInfo> receiver;
