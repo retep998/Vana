@@ -82,29 +82,34 @@ typedef unordered_map<int16_t, Item *> iteminventory;
 class PlayerInventory {
 public:
 	PlayerInventory(Player *player, uint8_t maxslots[5], int32_t mesos);
-	uint8_t getMaxSlots(int8_t inv) const { return maxslots[inv - 1]; }
+
 	void setMesos(int32_t mesos, bool is = false);
-	int32_t getMesos() const { return this->mesos; }
 	void addMaxSlots(int8_t inventory, int8_t rows);
 	void addItem(int8_t inv, int16_t slot, Item *item);
-	Item * getItem(int8_t inv, int16_t slot);
 	void deleteItem(int8_t inv, int16_t slot);
 	void setItem(int8_t inv, int16_t slot, Item *item);
-	int16_t getItemAmountBySlot(int8_t inv, int16_t slot);
 	void addEquippedPacket(PacketCreator &packet);
-	int32_t getEquippedID(int16_t slot);
 	void changeItemAmount(int32_t itemid, int16_t amount) { itemamounts[itemid] += amount; }
+
+	uint8_t getMaxSlots(int8_t inv) const { return maxslots[inv - 1]; }
+	int32_t getMesos() const { return this->mesos; }
+
+	int16_t getItemAmountBySlot(int8_t inv, int16_t slot);
 	uint16_t getItemAmount(int32_t itemid);
+	int32_t getEquippedID(int16_t slot);
+	Item * getItem(int8_t inv, int16_t slot);
+
 	bool hasOpenSlotsFor(int32_t itemid, int16_t amount);
 	iteminventory * getItems(int8_t inv) { return &items[inv - 1]; }
+
 	void load();
 	void save();
 private:
 	uint8_t maxslots[5];
-	Player *player;
 	int32_t mesos;
-	iteminventory items[5];
 	int32_t equipped[50][2];
+	Player *player;
+	iteminventory items[5];
 	unordered_map<int32_t, uint16_t> itemamounts;
 	void addEquipped(int16_t slot, int32_t itemid);
 };
