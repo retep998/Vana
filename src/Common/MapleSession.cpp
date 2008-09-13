@@ -34,7 +34,6 @@ m_player(player),
 m_is_server(isServer),
 m_connect_packet_unknown(connectPacketUnknown)
 {
-	m_player->setSession(this);
 }
 
 void MapleSession::start() {
@@ -42,6 +41,7 @@ void MapleSession::start() {
 }
 
 void MapleSession::handle_start() {
+	m_player->setSession(this);
 	m_player->setIP(m_socket.remote_endpoint().address().to_string());
 
 	if (m_is_server) {
@@ -104,6 +104,13 @@ void MapleSession::start_read_header() {
 			&MapleSession::handle_read_header, shared_from_this(),
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
+}
+
+void MapleSession::handle_write(const boost::system::error_code &error, 
+								size_t bytes_transferred) {
+	if (error) {
+		disconnect();
+	}
 }
 
 void MapleSession::handle_read_header(const boost::system::error_code &error,
