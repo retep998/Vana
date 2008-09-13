@@ -30,39 +30,30 @@ struct Item;
 class PlayerStorage {
 public:
 	PlayerStorage(Player *player);
-	char getSlots() {
-		return this->slots;
-	}
-	void setSlots(char slots);
+
+	void setSlots(int8_t slots);
 	void addItem(Item *item);
-	Item * getItem(char slot) {
-		if (slot < (char) items.size())
+	void takeItem(int8_t slot) { items.erase(items.begin() + slot); }
+	void setMesos(int32_t mesos) { this->mesos = mesos; }
+	void changeMesos(int32_t mesos);
+
+	int8_t getSlots() const { return this->slots; }
+	int8_t getNumItems() const { return items.size(); }
+	int8_t getNumItems(int8_t inv);
+	int32_t getMesos() const { return mesos; }
+	bool isFull() const { return ((int8_t) items.size() == slots); }
+	Item * getItem(int8_t slot) const {
+		if (slot < (int8_t) items.size())
 			return items[slot];
 		return 0;
 	}
-	char getNumItems() {
-		return items.size();
-	}
-	char getNumItems(char inv);
-	void takeItem(char slot) {
-		items.erase(items.begin() + slot);
-	}
-	void setMesos(int32_t mesos) {
-		this->mesos = mesos;
-	}
-	void changeMesos(int32_t mesos);
-	int32_t getMesos() {
-		return mesos;
-	}
-	bool isFull() {
-		return ((char) items.size() == slots);
-	}
+
 	void load();
 	void save();
 private:
 	Player *player;
-	char slots;
 	vector<Item *> items;
+	int8_t slots;
 	int32_t mesos;
 };
 

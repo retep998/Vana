@@ -26,24 +26,24 @@ PlayerStorage::PlayerStorage(Player *player) : player(player) {
 	load();
 }
 
-void PlayerStorage::setSlots(char slots) {
+void PlayerStorage::setSlots(int8_t slots) {
 	if (slots < 4) slots = 4;
 	else if (slots > 100) slots = 100;
 	this->slots = slots;
 }
 
 void PlayerStorage::addItem(Item *item) {
-	char inv = GETINVENTORY(item->id);
-	char i;
-	for (i = 0; i < (char) items.size(); i++)
+	int8_t inv = GETINVENTORY(item->id);
+	int8_t i;
+	for (i = 0; i < (int8_t) items.size(); i++)
 		if (GETINVENTORY(items[i]->id) > inv)
 			break;
 	items.insert(items.begin() + i, item);
 }
 
-char PlayerStorage::getNumItems(char inv) {
-	char itemNum = 0;
-	for (char i = 0; i < (char) items.size(); i++) {
+int8_t PlayerStorage::getNumItems(int8_t inv) {
+	int8_t itemNum = 0;
+	for (int8_t i = 0; i < (int8_t) items.size(); i++) {
 		if (GETINVENTORY(items[i]->id) == inv)
 			itemNum ++;
 	}
@@ -60,7 +60,7 @@ void PlayerStorage::load() {
 	query << "SELECT slots, mesos FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
 	mysqlpp::StoreQueryResult res = query.store();
 	if (res.num_rows() != 0) {
-		slots = (unsigned char) res[0][0];
+		slots = (uint8_t) res[0][0];
 		mesos = res[0][1];
 	}
 	else {
@@ -74,8 +74,8 @@ void PlayerStorage::load() {
 		Item *item = new Item;
 		item->id = res[i][0];
 		item->amount = res[i][1];
-		item->slots = (unsigned char) res[i][2];
-		item->scrolls = (unsigned char) res[i][3];
+		item->slots = (uint8_t) res[i][2];
+		item->scrolls = (uint8_t) res[i][3];
 		item->istr = res[i][4];
 		item->idex = res[i][5];
 		item->iint = res[i][6];
@@ -112,7 +112,7 @@ void PlayerStorage::save() {
 	query.exec();
 
 	bool firstrun = true;
-	for (char i = 0; i < getNumItems(); i++) {
+	for (int8_t i = 0; i < getNumItems(); i++) {
 		if (firstrun) {
 			query << "INSERT INTO storageitems VALUES (";
 			firstrun = false;
