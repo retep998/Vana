@@ -126,7 +126,7 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 		return;
 	}
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "INSERT INTO characters (userid, world_id, name, eyes, hair, skin, gender, str, dex, `int32_t`, luk) VALUES (" 
+	query << "INSERT INTO characters (userid, world_id, name, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES (" 
 			<< player->getUserid() << ","
 			<< (int32_t) player->getWorld() << ","
 			<< name << ","
