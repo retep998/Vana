@@ -112,14 +112,10 @@ class Map {
 public:
 	Map(MapInfo info);
 	// Map Info
-	MapInfo getInfo() {
-		return info;
-	}
+	MapInfo getInfo() const { return info; }
 
 	// Footholds
-	void addFoothold(FootholdInfo foothold) {
-		footholds.push_back(foothold);
-	}
+	void addFoothold(FootholdInfo foothold) { footholds.push_back(foothold); }
 	Pos findFloor(Pos pos);
 
 	// Portals
@@ -139,31 +135,23 @@ public:
 
 	// Players
 	void addPlayer(Player *player);
-	size_t getNumPlayers() {
-		return this->players.size();
-	}
-	Player * getPlayer(uint32_t i) {
-		return this->players[i];
-	}
+	size_t getNumPlayers() const { return this->players.size(); }
+	Player * getPlayer(uint32_t i) const { return this->players[i]; }
 	void removePlayer(Player *player);
 
 	// NPCs
-	void addNPC(NPCSpawnInfo npc) {
-		this->npcs.push_back(npc);
-	}
-	NPCSpawnInfo getNpc(int32_t id) {
-		return this->npcs[id];
-	}
+	void addNPC(NPCSpawnInfo npc) { this->npcs.push_back(npc); }
+	NPCSpawnInfo getNpc(int32_t id) const { return this->npcs[id]; }
 
 	// Mobs
 	void addMobSpawn(MobSpawnInfo spawn);
 	void checkMobSpawn(clock_t time);
 	void spawnMob(int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
-	Mob * getMob(int32_t id, bool isMapID = true);
 	void removeMob(int32_t id, int32_t spawnid);
 	void killMobs(Player *player);
 	void killMobs(Player *player, int32_t mobid);
 	void killMobs(); // No player gets EXP, no spawning additional mobs
+	Mob * getMob(int32_t id, bool isMapID = true);
 
 	// Reactors
 	void addReactorSpawn(ReactorSpawnInfo spawn);
@@ -176,9 +164,7 @@ public:
 		else
 			return 0;
 	}
-	size_t getNumReactors() {
-		return this->reactors.size();
-	}
+	size_t getNumReactors() const { return this->reactors.size(); }
 
 	// Drops
 	void addDrop(Drop *drop);
@@ -196,11 +182,14 @@ public:
 	}
 	void clearDrops(bool showPacket = true);
 	void clearDrops(int32_t time);
+
 	// Timer stuff
 	void setTimer();
 	void runTimer();
+
 	// Show all map objects
 	void showObjects(Player *player);
+
 	// Packet Stuff
 	void sendPacket(PacketCreator &packet, Player *player = 0);
 	void showMessage(string &message, int8_t type);
