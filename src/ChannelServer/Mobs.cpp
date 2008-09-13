@@ -113,9 +113,9 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	MobsPacket::damageMob(player, packet);
 	packet->reset(2);
 	packet->skipBytes(1); // Useless
-	unsigned char tbyte = packet->getByte();
-	char targets = tbyte / 0x10;
-	char hits = tbyte % 0x10;
+	uint8_t tbyte = packet->getByte();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet->getInt();
 	packet->skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
 	switch (skillid) {
@@ -129,9 +129,9 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless);	
 	switch (skillid) {
 		case 4211006: { // Meso Explosion
-			unsigned char items = packet->getByte();
+			uint8_t items = packet->getByte();
 			int32_t map = player->getMap();
-			for (unsigned char i = 0; i < items; i++) {
+			for (uint8_t i = 0; i < items; i++) {
 				int32_t objID = packet->getInt();
 				packet->skipBytes(1); // Boolean for hit a monster
 				Drop *drop = Maps::maps[map]->getDrop(objID);
@@ -153,7 +153,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		case 9001001: // Super Dragon Roar
 			break; 
 		case 1311006: { // Dragon Roar
-			char roarlv = player->getSkills()->getSkillLevel(skillid);
+			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
 			int16_t x_value = Skills::skills[skillid][roarlv].x;
 			int16_t y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
 			int16_t hp = player->getHP();
@@ -178,8 +178,8 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 1211002: { // Charged Blow
-			char acb_level = player->getSkills()->getSkillLevel(1220010);
-			uint16_t acb_x = 0;
+			int8_t acb_level = player->getSkills()->getSkillLevel(1220010);
+			int16_t acb_x = 0;
 			if (acb_level > 0)
 				acb_x = Skills::skills[1220010][acb_level].x;
 			int32_t charge_id = 0;
@@ -218,11 +218,11 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	MobsPacket::damageMobRanged(player, packet);
 	packet->reset(2); // Passing to the display function causes the buffer to be eaten, we need it
 	packet->skipBytes(1); // Number of portals taken (not kidding)
-	unsigned char tbyte = packet->getByte();
-	char targets = tbyte / 0x10;
-	char hits = tbyte % 0x10;
+	uint8_t tbyte = packet->getByte();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet->getInt();
-	unsigned char display = 0;
+	uint8_t display = 0;
 	switch (skillid) {
 		case 3121004:
 		case 3221001:
@@ -278,9 +278,9 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	MobsPacket::damageMobSpell(player, packet);
 	packet->reset(2);
 	packet->skipBytes(1);
-	unsigned char tbyte = packet->getByte();
-	char targets = tbyte / 0x10;
-	char hits = tbyte % 0x10;
+	uint8_t tbyte = packet->getByte();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet->getInt();
 	switch (skillid) {
 		case 2121001: // Big Bang has a 4 byte charge time after skillid
@@ -310,7 +310,7 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, char target
 	int32_t map = player->getMap();
 	uint32_t total = 0;
 	bool isHorntail = false;
-	for (char i = 0; i < targets; i++) {
+	for (int8_t i = 0; i < targets; i++) {
 		int32_t mapmobid = packet->getInt();
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
 		if (mob == 0)
@@ -336,7 +336,7 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, char target
 		if (skillid != 4211006)
 			packet->skipBytes(1); // Distance, first half for non-Meso Explosion
 		packet->skipBytes(1); // Distance, second half for non-Meso Explosion
-		for (char k = 0; k < hits; k++) {
+		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet->getInt();
 			total += damage;
 			if (skillid == 1221011 && Mobs::mobinfo[mob->getMobID()].boss) {
@@ -346,26 +346,25 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, char target
 				if (skillid == 1221011)
 					mob->setHP(1);
 				else {
-					int16_t temphp = mob->getHP();
-					mob->setHP(temphp - (int16_t) damage);
+					int32_t temphp = mob->getHP();
+					mob->setHP(temphp - damage);
 					if (htabusetaker != 0) {
 						if (temphp - damage <= 0) // Horntail will die before all of his parts otherwise
 							damage = temphp; // Damage isn't used again from here on anyway
-						htabusetaker->setHP(htabusetaker->getHP() - (int16_t) damage);
+						htabusetaker->setHP(htabusetaker->getHP() - damage);
 					}
 				}
 			}
-			int16_t cmp = mob->getMP();
-			int16_t mmp = mobinfo[mob->getMobID()].mp;
 			extra = mobinfo[mob->getMobID()].hp;
 			if (eater != 0) { // MP Eater
+				int32_t cmp = mob->getMP();
 				if ((!eater->onlyOnce) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < eater->prop)) {
 					eater->onlyOnce = true;
-					int16_t mp = mmp * eater->x / 100;
+					int32_t mp = mobinfo[mob->getMobID()].mp * eater->x / 100;
 					if (mp > cmp)
 						mp = cmp;
 					mob->setMP(cmp - mp);
-					player->setMP(player->getMP() + mp);
+					player->setMP(player->getMP() + (int16_t) mp);
 					SkillsPacket::showSkillEffect(player, eater->id);
 				}
 			}
