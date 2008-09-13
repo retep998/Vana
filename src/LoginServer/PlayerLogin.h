@@ -30,55 +30,32 @@ public:
 	~PlayerLogin();
 
 	void realHandleRequest(ReadPacket *packet);
-	void setUserid(int32_t id) {
-		this->userid=id;
-	}
-	int32_t getUserid() const {
-		return this->userid;
-	}
-	void setStatus(int32_t status) {
-		this->status=status;
-	}
-	int32_t getStatus() const {
-		return this->status;
-	}
-	void setPin(int32_t pin) {
-		this->pin=pin;
-	}
-	int32_t getPin() const {
-		return this->pin;
-	}
-	void setGender(int8_t gender) {
-		this->gender=gender;
-	}
-	int8_t getGender() const {
-		return this->gender;
-	}
-	void setWorld(int8_t world) {
-		this->world = world;
-	}
-	int8_t getWorld() const {
-		return this->world;
-	}
-	void setChannel(uint16_t channel) {
-		this->channel=channel;
-	}
-	uint16_t getChannel() const {
-		return this->channel;
-	}
-	int32_t addInvalidLogin() {
-		return ++invalid_logins;
-	}
+
+	void setGender(int8_t gender) { this->gender=gender; }
+	void setWorld(int8_t world) { this->world = world; }
+	void setChannel(uint16_t channel) {	this->channel = channel; }
+	void setUserid(int32_t id) { this->userid = id; }
+	void setStatus(int32_t status) { this->status = status; }
+	void setPin(int32_t pin) { this->pin = pin; }
+
+	int8_t getGender() const { return this->gender; }
+	int8_t getWorld() const { return this->world; }
+	uint16_t getChannel() const { return this->channel; }
+	int32_t getUserid() const { return this->userid; }
+	int32_t getStatus() const { return this->status; }
+	int32_t getPin() const { return this->pin; }
+	int32_t addInvalidLogin() {	return ++invalid_logins; }
+
 	void setOnline(bool online);
 private:
-	int32_t status;
-	int32_t userid;
-	int32_t pin;
-	bool checked_pin;
 	int8_t gender;
 	int8_t world;
 	uint16_t channel;
+	int32_t status;
+	int32_t userid;
+	int32_t pin;
 	int32_t invalid_logins;
+	bool checked_pin;
 };
 
 class PlayerLoginFactory : public AbstractPlayerFactory {
