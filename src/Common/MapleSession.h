@@ -55,7 +55,7 @@ public:
 protected:
 	void start_read_header();
 	void handle_write(const boost::system::error_code &error,
-		size_t bytes_transferred) { }
+		size_t bytes_transferred);
 	void handle_read_header(const boost::system::error_code &error,
 		size_t bytes_transferred);
 	void handle_read_body(const boost::system::error_code &error,
