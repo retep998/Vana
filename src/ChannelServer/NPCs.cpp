@@ -178,7 +178,7 @@ bool NPC::run() {
 	return ret;
 }
 
-PacketCreator & NPC::npcPacket(char type) {
+PacketCreator & NPC::npcPacket(int8_t type) {
 	PacketCreator packet;
 	packet.addShort(SEND_NPC_TALK);
 	packet.addByte(4);
@@ -251,7 +251,7 @@ void NPC::sendGetNumber(int32_t def, int32_t min, int32_t max) {
 	player->getSession()->send(packet);
 }
 
-void NPC::sendStyle(int32_t styles[], char size) {
+void NPC::sendStyle(int32_t styles[], int8_t size) {
 	PacketCreator packet = npcPacket(NPCDialogs::style);
 	packet.addByte(size);
 	for (int32_t i = 0; i < size; i++)
