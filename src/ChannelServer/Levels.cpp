@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "ReadPacket.h"
 
-int32_t Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
+uint32_t Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
 	5460, 7050, 8840, 11040, 13716, 16680, 20216, 24402, 28980, 34320, 40512, 47216, 54900,
 	63666, 73080, 83720, 95700, 108480, 122760, 138666, 155540, 174216, 194832, 216600, 240500,
 	266682, 294216, 324240, 356916, 391160, 428280, 468450, 510420, 555680, 604416, 655200,
@@ -46,12 +46,10 @@ int32_t Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 236
 	1005114529, 1060194805, 1118293480, 1179575962, 1244216724, 1312399800, 1384319309,
 	1460180007, 1540197871, 1624600714, 1713628833, 1807535693, 1906558648, 2011069705, 2121276324};
 
-void Levels::giveEXP(Player *player, long exp, char type) {
+void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 	if (player->getLevel() >= 200) // Do not give EXP to characters level 200 or over
 		return;
-	long cexp = player->getExp() + exp;
-	if (cexp < 0)
-		cexp = cexp * (-1);
+	uint32_t cexp = player->getExp() + exp;
 	if (exp != 0)
 		LevelsPacket::showEXP(player, exp, type);
 	uint8_t level = player->getLevel();
@@ -60,8 +58,8 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 		int16_t spgain = 0;
 		int16_t hpgain = 0;
 		int16_t mpgain = 0;
-		unsigned char levelsgained = 0;
-		unsigned char levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
+		uint8_t levelsgained = 0;
+		uint8_t levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
 		while (cexp >= exps[level - 1] && levelsgained < levelsmax) {
 			if (level >= 200) { // Do not let people level past the level 200 cap
 				cexp = 0;
@@ -71,7 +69,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			level++;
 			levelsgained++;
 			apgain += 5;
-			int32_t job = player->getJob() / 100;
+			int16_t job = player->getJob() / 100;
 			int16_t x = 0;
 			int16_t intt = player->getInt() / 10;
 			switch (job) {
@@ -194,21 +192,25 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 			}
 			player->setHPMPAp(player->getHPMPAp() + 1);
 			int32_t skillid = 0;
-			uint8_t hblevel = 0;
+			int16_t skillx = 100;
+			int16_t skilly = 100;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)
 				skillid = 1301007;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(9101008) > 0)
 				skillid = 9101008;
-			if (skillid > 0)
-				hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
+			if (skillid > 0) {
+				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
+				skillx += Skills::skills[skillid][hblevel].x;
+				skilly += Skills::skills[skillid][hblevel].y;
+			}
 			switch (type) {
 				case 0x800:
 					player->setRMHP(player->getRMHP() + hpgain);
-					player->setMHP(player->getRMHP() * (hblevel > 0 ? (Skills::skills[skillid][hblevel].x / 100) : 1));
+					player->setMHP(player->getRMHP() * skillx / 100);
 					break;
 				case 0x2000:
 					player->setRMMP(player->getRMMP() + mpgain);
-					player->setMMP(player->getRMMP() * (hblevel > 0 ? (Skills::skills[skillid][hblevel].y / 100) : 1));
+					player->setMMP(player->getRMMP() * skilly / 100);
 					break;
 			}
 			break;
