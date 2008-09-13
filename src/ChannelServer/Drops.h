@@ -56,76 +56,44 @@ namespace Drops {
 
 class Drop {
 private:
+	int16_t questid;
+	int32_t owner;
+	int32_t time;
 	int32_t mapid;
 	int32_t id;
 	int32_t mesos;
-	Item item;
-	int32_t owner;
-	int32_t time;
-	int16_t questid;
 	int32_t dropped;
 	int32_t playerid;
-	Pos pos;
 	bool playerdrop;
+	Pos pos;
+	Item item;
 public:
 	Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop = false);
 	Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop = false);
-	void setID(int32_t id) {
-		this->id = id;
-	}
-	int32_t getID() {
-		return id;
-	}
-	int32_t getObjectID();
+
+	void setQuest(int16_t questid) { this->questid = questid; }
+	void setItemAmount(int16_t amount) { this->item.amount = amount; }
+	void setID(int32_t id) { this->id = id; }
+	void setTime(int32_t time) { this->time = time; }
+	void setDropped(int32_t time) { dropped = time; }
+	void setPlayer(int32_t playerid) { playerid = playerid; }
+	void setPos(Pos pos) { this->pos = pos; }
+
+	int16_t getQuest() const { return questid; }
+	int32_t getID() const { return id; }
+	int32_t getDropped() const { return dropped; }
+	int32_t getTime() const { return time; }
+	int32_t getOwner() const { return owner; }
+	int32_t getMap() const { return mapid; }
+	bool isplayerDrop() const { return playerdrop; }
+	bool isMesos() const { return mesos > 0; }
+	bool isQuest() const { return questid > 0; }
+	Pos getPos() const { return pos; }
+	Item getItem() const { return item; }
+
 	int16_t getAmount();
-	bool isQuest() {
-		return questid > 0;
-	}
-	void setQuest(int16_t questid) {
-		this->questid = questid;
-	}
-	int16_t getQuest() {
-		return questid;
-	}
-	void setTime(int32_t time) {
-		this->time = time;
-	}
-	int32_t getTime() {
-		return time;
-	}
-	int32_t getOwner() {
-		return owner;
-	}
-	int32_t getMap() {
-		return mapid;
-	}
-	bool isMesos() {
-		return mesos > 0;
-	}
-	Item getItem() {
-		return item;
-	}
-	void setItemAmount(int16_t amount) {
-		this->item.amount = amount;
-	}
-	void setPos(Pos pos) {
-		this->pos = pos;
-	}
-	Pos getPos() {
-		return pos;
-	}
-	void setDropped(int32_t time) {
-		dropped = time;
-	}
-	int32_t getDropped() {
-		return dropped;
-	}
-	void setPlayer(int32_t playerid) {
-		playerid = playerid;
-	}
-	bool isplayerDrop() {
-		return playerdrop;
-	}
+	int32_t getObjectID();
+
 	void doDrop(Pos origin);
 	void showDrop(Player *player);
 	void takeDrop(Player *player);
