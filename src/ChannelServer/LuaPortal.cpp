@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Maps.h"
 
-unordered_map<int, PortalInfo *> LuaExports::portals;
+unordered_map<int32_t, PortalInfo *> LuaExports::portals;
 
-LuaPortal::LuaPortal(const string &filename, int playerid, PortalInfo *portal) : LuaScriptable(filename, playerid), portal(portal) {
+LuaPortal::LuaPortal(const string &filename, int32_t playerid, PortalInfo *portal) : LuaScriptable(filename, playerid), portal(portal) {
 	LuaExports::portals[playerid] = portal;
 
 	lua_register(luaVm, "getPortalFrom", &LuaExports::getPortalFrom);

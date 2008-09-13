@@ -24,6 +24,7 @@ extern "C" {
 	#include "lua/lauxlib.h"
 }
 
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -34,7 +35,8 @@ public:
 	ConfigFile();
 	void loadFile(string filename);
 	bool keyExist(string value);
-	int getInt(string value);
+	int32_t getInt(string value);
+	int16_t getShort(string value);
 	string getString(string value);
 	bool getBool(string value);
 private:

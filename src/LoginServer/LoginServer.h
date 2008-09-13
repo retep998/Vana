@@ -19,10 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LOGINSERVER_H
 
 #include "AbstractServer.h"
-#include "InitializeLogin.h"
 #include "ConfigFile.h"
-#include "PlayerLogin.h"
+#include "InitializeLogin.h"
 #include "LoginServerAcceptPlayer.h"
+#include "PlayerLogin.h"
+#include "Types.h"
 
 // LoginServer main application class, implemented as singleton
 class LoginServer : public AbstractServer {
@@ -39,7 +40,7 @@ public:
 
 	bool getPinEnabled() const { return pinEnabled; }
 	void setPinEnabled(bool enabled) { pinEnabled = enabled; }
-	int getInvalidLoginThreshold() const { return invalid_login_threshold; }
+	int32_t getInvalidLoginThreshold() const { return invalid_login_threshold; }
 private:
 	LoginServer() {};
 	LoginServer(const LoginServer&);
@@ -47,9 +48,9 @@ private:
 	static LoginServer *singleton;
 
 	bool pinEnabled;
-	short port;
-	short inter_port;
-	int invalid_login_threshold;
+	int16_t port;
+	int16_t inter_port;
+	int32_t invalid_login_threshold;
 };
 
 #endif

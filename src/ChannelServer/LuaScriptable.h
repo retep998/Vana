@@ -24,6 +24,7 @@ extern "C" {
 	#include "lua/lauxlib.h"
 }
 
+#include "Types.h"
 #include <unordered_map>
 #include <string>
 
@@ -34,17 +35,17 @@ class Player;
 
 class LuaScriptable {
 public:
-	LuaScriptable(const string &filename, int playerid);
+	LuaScriptable(const string &filename, int32_t playerid);
 	virtual ~LuaScriptable();
 
 	void initialize();
 	virtual bool run();
 
-	void setVariable(const string &name, int val);
+	void setVariable(const string &name, int32_t val);
 	void setVariable(const string &name, const string &val);
 protected:
 	string filename;
-	int playerid;
+	int32_t playerid;
 	lua_State *luaVm;
 };
 

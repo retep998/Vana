@@ -43,7 +43,7 @@ void PacketCreator::addIP(const string &ip) {
 	tokenizer tokens(ip, sep);
 
 	for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); iter++) {
-		addByte((unsigned char) boost::lexical_cast<short>(*iter)); // Using lexical_cast<unsigned char> would cause it to spit ASCII
+		addByte((unsigned char) boost::lexical_cast<int16_t>(*iter)); // Using lexical_cast<unsigned char> would cause it to spit ASCII
 	}
 }
 

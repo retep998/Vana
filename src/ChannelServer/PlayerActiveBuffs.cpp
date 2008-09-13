@@ -29,8 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 // Buff Skills
-void PlayerActiveBuffs::addBuff(int skill, unsigned char level) {
-	int time = Skills::skills[skill][level].time;
+void PlayerActiveBuffs::addBuff(int32_t skill, unsigned char level) {
+	int32_t time = Skills::skills[skill][level].time;
 	switch (skill) {
 		case 9101004: // GM Hide
 			time = 2100000;
@@ -44,7 +44,7 @@ void PlayerActiveBuffs::addBuff(int skill, unsigned char level) {
 	m_buffs.push_back(skill);
 }
 
-void PlayerActiveBuffs::removeBuff(int skill, bool fromTimer) {
+void PlayerActiveBuffs::removeBuff(int32_t skill, bool fromTimer) {
 	if (!fromTimer) {
 		Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 		m_player->getTimers()->removeTimer(id);
@@ -59,13 +59,13 @@ void PlayerActiveBuffs::removeBuff() {
 	}
 }
 
-int PlayerActiveBuffs::buffTimeLeft(int skill) {
+int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) {
 	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 	return m_player->getTimers()->checkTimer(id);
 }
 
 // Skill "acts"
-void PlayerActiveBuffs::addAct(int skill, Act act, short value, int time) {
+void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t time) {
 	struct {
 		void operator()() {
 			switch (act) {
@@ -74,28 +74,28 @@ void PlayerActiveBuffs::addAct(int skill, Act act, short value, int time) {
 			}
 		}
 		Player *player;
-		int skill;
+		int32_t skill;
 		Act act;
-		short value;
+		int16_t value;
 	} runAct = {m_player, skill, act, value};
 
 	Timer::Id id(Timer::Types::SkillActTimer, act, 0);
 	new Timer::Timer(runAct, id, getActTimer(skill), time, true);
 }
 
-Timer::Container * PlayerActiveBuffs::getActTimer(int skill) {
+Timer::Container * PlayerActiveBuffs::getActTimer(int32_t skill) {
 	if (m_skill_acts.find(skill) == m_skill_acts.end()) {
 		m_skill_acts[skill] = shared_ptr<Timer::Container>(new Timer::Container);
 	}
 	return m_skill_acts[skill].get();
 }
 
-void PlayerActiveBuffs::removeAct(int skill) {
+void PlayerActiveBuffs::removeAct(int32_t skill) {
 	m_skill_acts.erase(skill);
 }
 
 // Combo attack stuff
-void PlayerActiveBuffs::setCombo(char combo, bool sendPacket) {
+void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	m_combo = combo;
 	if (sendPacket) {
 		SkillActiveInfo playerSkill = getSkillPlayerInfo(1111002);
@@ -131,7 +131,7 @@ void PlayerActiveBuffs::addCombo() { // Add combo orbs
 
 void PlayerActiveBuffs::checkBerserk(bool display) {
 	if (m_player->getJob() == 132) { // Berserk calculations
-		int skillid = 1320006;
+		int32_t skillid = 1320006;
 		char level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
 			float x = (float)Skills::skills[skillid][level].x;
@@ -151,7 +151,7 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 	}
 }
 
-void PlayerActiveBuffs::deleteSkillMapEnterInfo(int skillid) {
+void PlayerActiveBuffs::deleteSkillMapEnterInfo(int32_t skillid) {
 	for (size_t i = 0; i < activemapenterskill.size(); i++) {
 		if (activemapenterskill[i].skill == skillid) {
 			activemapenterskill.erase(activemapenterskill.begin()+i);
@@ -159,7 +159,7 @@ void PlayerActiveBuffs::deleteSkillMapEnterInfo(int skillid) {
 	}
 }
 
-SkillActiveInfo PlayerActiveBuffs::getSkillMapInfo(int skillid) {
+SkillActiveInfo PlayerActiveBuffs::getSkillMapInfo(int32_t skillid) {
 	return activemapskill[skillid];
 }
 
@@ -175,18 +175,18 @@ SkillMapEnterActiveInfo PlayerActiveBuffs::getSkillMapEnterInfo() {
 	return skill;
 }
 
-SkillActiveInfo PlayerActiveBuffs::getSkillPlayerInfo(int skillid) {
+SkillActiveInfo PlayerActiveBuffs::getSkillPlayerInfo(int32_t skillid) {
 	return activeplayerskill[skillid];
 }
 
-unsigned char PlayerActiveBuffs::getActiveSkillLevel(int skillid) {
+unsigned char PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
 	if (activelevels.find(skillid) != activelevels.end())
 		return activelevels[skillid];
 	return 0;
 
 }
 
-void PlayerActiveBuffs::setSkillMapEnterInfo(int skillid, vector<SkillMapActiveInfo> skill) {
+void PlayerActiveBuffs::setSkillMapEnterInfo(int32_t skillid, vector<SkillMapActiveInfo> skill) {
 	// TEMP //
 	for (size_t i = 0; i < activemapenterskill.size(); i++) { 
 		if (activemapenterskill[i].isvalue) {
@@ -200,14 +200,14 @@ void PlayerActiveBuffs::setSkillMapEnterInfo(int skillid, vector<SkillMapActiveI
 	}
 }
 
-void PlayerActiveBuffs::setSkillPlayerInfo(int skillid, SkillActiveInfo skill) {
+void PlayerActiveBuffs::setSkillPlayerInfo(int32_t skillid, SkillActiveInfo skill) {
 	activeplayerskill[skillid] = skill;
 }
 
-void PlayerActiveBuffs::setSkillMapInfo(int skillid, SkillActiveInfo skill) {
+void PlayerActiveBuffs::setSkillMapInfo(int32_t skillid, SkillActiveInfo skill) {
 	activemapskill[skillid] = skill;
 }
 
-void PlayerActiveBuffs::setActiveSkillLevel(int skillid, int level) {
+void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
 	activelevels[skillid] = level;
 }

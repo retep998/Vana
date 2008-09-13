@@ -39,7 +39,7 @@ void TradesPacket::sendOpenTrade(Player *player, const vector<Player *> &players
 	player->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int tradeid) {
+void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tradeid) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x02);
@@ -96,7 +96,7 @@ void TradesPacket::sendLeaveTrade(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void TradesPacket::sendAddMesos(Player *receiver, unsigned char slot, int amount) {
+void TradesPacket::sendAddMesos(Player *receiver, unsigned char slot, int32_t amount) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x0F);

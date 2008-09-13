@@ -18,22 +18,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOOPINGID_H
 #define LOOPINGID_H
 
+#include "Types.h"
+
 // LoopingId, keep track and returns a number between min and max, restarts when number reaches max
 class LoopingId {
 public:
-	LoopingId(int minimum = 1, int maximum = INT_MAX);
-	int next();
+	LoopingId(int32_t minimum = 1, int32_t maximum = INT_MAX);
+	int32_t next();
 	void reset();
 private:
-	int current;
-	int minimum;
-	int maximum;
+	int32_t current;
+	int32_t minimum;
+	int32_t maximum;
 };
 
-inline LoopingId::LoopingId(int minimum, int maximum) : current(minimum), minimum(minimum), maximum(maximum) { }
+inline LoopingId::LoopingId(int32_t minimum, int32_t maximum) : current(minimum), minimum(minimum), maximum(maximum) { }
 
-inline int LoopingId::next() {
-	int ret = current;
+inline int32_t LoopingId::next() {
+	int32_t ret = current;
 	if (current == maximum) {
 		current = minimum;
 	}

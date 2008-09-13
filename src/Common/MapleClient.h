@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "MapleSession.h"
 #include "SessionManager.h"
+#include "Types.h"
 #include <string>
 #include <boost/asio.hpp>
 
@@ -31,7 +32,7 @@ class AbstractPlayer;
 class MapleClient : public MapleSession {
 public:
 	MapleClient(boost::asio::io_service &io_service,
-		const string &server, unsigned short port,
+		const string &server, uint16_t port,
 		SessionManagerPtr sessionManager,
 		AbstractPlayer *player);
 	void start_connect();
@@ -39,7 +40,7 @@ private:
 	void readConnectPacket();
 
 	string m_server;
-	unsigned short m_port;
+	uint16_t m_port;
 	tcp::resolver m_resolver;
 };
 

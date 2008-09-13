@@ -31,10 +31,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "ReadPacket.h"
 
-unordered_map<int, MobInfo> Mobs::mobinfo;
+unordered_map<int32_t, MobInfo> Mobs::mobinfo;
 
 /* Mob class */
-Mob::Mob(int id, int mapid, int mobid, Pos pos, int spawnid, short fh) :
+Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid, int16_t fh) :
 MovableLife(fh, pos, 2),
 id(id),
 mapid(mapid),
@@ -58,7 +58,7 @@ void Mob::die(Player *player) {
 	MobsPacket::dieMob(this);
 
 	// Account for Holy Symbol
-	short hsrate = 0;
+	int16_t hsrate = 0;
 	if (player->getActiveBuffs()->getActiveSkillLevel(2311003) > 0)
 		hsrate = Skills::skills[2311003][player->getActiveBuffs()->getActiveSkillLevel(2311003)].x;
 	else if (player->getActiveBuffs()->getActiveSkillLevel(9101002) > 0)
@@ -83,7 +83,7 @@ void Mob::die() {
 
 /* Mobs namespace */
 void Mobs::monsterControl(Player *player, ReadPacket *packet) {
-	int mobid = packet->getInt();
+	int32_t mobid = packet->getInt();
 
 	Mob *mob = Maps::maps[player->getMap()]->getMob(mobid);
 
@@ -91,9 +91,9 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 		return;
 	}
 
-	short moveid = packet->getShort();
+	int16_t moveid = packet->getShort();
 	bool useskill = (packet->getByte() != 0);
-	int skill = packet->getInt();
+	int32_t skill = packet->getInt();
 	packet->skipBytes(10);
 	Pos cpos = Movement::parseMovement(mob, packet);
 	if (cpos - mob->getPos() > 300) {
@@ -105,7 +105,7 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 	MobsPacket::moveMob(player, mobid, useskill, skill, packet->getBuffer(), packet->getBufferLength());
 }
 
-void Mobs::addMob(int id, MobInfo mob) {
+void Mobs::addMob(int32_t id, MobInfo mob) {
 	mobinfo[id] = mob;
 }
 
@@ -116,7 +116,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	unsigned char tbyte = packet->getByte();
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
-	int skillid = packet->getInt();
+	int32_t skillid = packet->getInt();
 	packet->skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
 	switch (skillid) {
 		case 5201002:
@@ -125,14 +125,14 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	}
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
-	int useless = 0;
-	unsigned int totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless);	
+	int32_t useless = 0;
+	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless);	
 	switch (skillid) {
 		case 4211006: { // Meso Explosion
 			unsigned char items = packet->getByte();
-			int map = player->getMap();
+			int32_t map = player->getMap();
 			for (unsigned char i = 0; i < items; i++) {
-				int objID = packet->getInt();
+				int32_t objID = packet->getInt();
 				packet->skipBytes(1); // Boolean for hit a monster
 				Drop *drop = Maps::maps[map]->getDrop(objID);
 				if (drop != 0) {
@@ -154,10 +154,10 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			break; 
 		case 1311006: { // Dragon Roar
 			char roarlv = player->getSkills()->getSkillLevel(skillid);
-			short x_value = Skills::skills[skillid][roarlv].x;
-			short y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
-			short hp = player->getHP();
-			short reduction = (player->getMHP() / 100) * x_value;
+			int16_t x_value = Skills::skills[skillid][roarlv].x;
+			int16_t y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
+			int16_t hp = player->getHP();
+			int16_t reduction = (player->getMHP() / 100) * x_value;
 			if (hp - reduction > 0)
 				player->setHP(hp - reduction, false);
 			else {
@@ -168,9 +168,9 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 1311005: { // Sacrifice
-			short hp_damage_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
-			short hp_damage = totaldmg * hp_damage_x / 100;
-			short hp = player->getHP();
+			int16_t hp_damage_x = static_cast<int16_t>(Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x);
+			uint16_t hp_damage = static_cast<uint16_t>(totaldmg * hp_damage_x / 100);
+			uint16_t hp = player->getHP();
 			if (hp - hp_damage < 1)
 				player->setHP(1);
 			else
@@ -179,10 +179,10 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 		}
 		case 1211002: { // Charged Blow
 			char acb_level = player->getSkills()->getSkillLevel(1220010);
-			short acb_x = 0;
+			uint16_t acb_x = 0;
 			if (acb_level > 0)
 				acb_x = Skills::skills[1220010][acb_level].x;
-			int charge_id = 0;
+			int32_t charge_id = 0;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1211003) > 0) // Fire - Sword
 				charge_id = 1211003;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(1211004) > 0) // Fire - BW
@@ -203,7 +203,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 				// Hacking
 				return;
 			}
-			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randInt(99) > (acb_x - 1))) 
+			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1))) 
 				Skills::stopSkill(player, charge_id);
 			break;
 		}
@@ -221,7 +221,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	unsigned char tbyte = packet->getByte();
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
-	int skillid = packet->getInt();
+	int32_t skillid = packet->getInt();
 	unsigned char display = 0;
 	switch (skillid) {
 		case 3121004:
@@ -250,7 +250,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 			break;
 	}
 	packet->skipBytes(4); // Ticks
-	short pos = packet->getShort();
+	int16_t pos = packet->getShort();
 	packet->skipBytes(2); // Cash Shop star cover
 	packet->skipBytes(1); // 0x00 = AoE, 0x41 = other
 	if (skillid != 4111004 && ((display & 0x40) > 0))
@@ -259,10 +259,10 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 		Skills::useAttackSkillRanged(player, skillid, pos, display);
 	else
 		Skills::useAttackRanged(player, pos, display);
-	int mhp;
-	unsigned int totaldmg = damageMobInternal(player, packet, targets, hits, skillid, mhp);
+	int32_t mhp;
+	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, mhp);
 	if (skillid == 4101005) { // Drain
-		int hpRecover = ((totaldmg * Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x) / 100);
+		int32_t hpRecover = ((totaldmg * Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x) / 100);
 		if (hpRecover > mhp)
 			hpRecover = mhp;
 		if (hpRecover > (player->getMHP() / 2))
@@ -270,7 +270,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 		if ((player->getHP() + hpRecover) > player->getMHP())
 			player->setHP(player->getMHP());
 		else
-			player->setHP(player->getHP() + hpRecover);
+			player->setHP(player->getHP() + (int16_t) hpRecover);
 	}
 }
 
@@ -281,7 +281,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	unsigned char tbyte = packet->getByte();
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
-	int skillid = packet->getInt();
+	int32_t skillid = packet->getInt();
 	switch (skillid) {
 		case 2121001: // Big Bang has a 4 byte charge time after skillid
 		case 2221001:
@@ -302,20 +302,20 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	if (skillid != 2301002) // Heal is sent as both an attack and as a use skill
 		// Prevent this from incurring cost since Heal is always a used skill but only an attack in certain circumstances
 		Skills::useAttackSkill(player, skillid);
-	int useless = 0;
-	unsigned int totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
+	int32_t useless = 0;
+	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
 }
 
-unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char targets, char hits, int skillid, int &extra, MPEaterInfo *eater) {
-	int map = player->getMap();
-	unsigned int total = 0;
+uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, char targets, char hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater) {
+	int32_t map = player->getMap();
+	uint32_t total = 0;
 	bool isHorntail = false;
 	for (char i = 0; i < targets; i++) {
-		int mapmobid = packet->getInt();
+		int32_t mapmobid = packet->getInt();
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
-		int mobid = mob->getMobID();
+		int32_t mobid = mob->getMobID();
 		Mob *htabusetaker = 0;
 		switch (mobid) {
 			case 8810002:
@@ -337,7 +337,7 @@ unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char ta
 			packet->skipBytes(1); // Distance, first half for non-Meso Explosion
 		packet->skipBytes(1); // Distance, second half for non-Meso Explosion
 		for (char k = 0; k < hits; k++) {
-			int damage = packet->getInt();
+			int32_t damage = packet->getInt();
 			total += damage;
 			if (skillid == 1221011 && Mobs::mobinfo[mob->getMobID()].boss) {
 				// Damage calculation goes in here, I think? Hearing conflicted views.
@@ -346,24 +346,22 @@ unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char ta
 				if (skillid == 1221011)
 					mob->setHP(1);
 				else {
-					int temphp = mob->getHP();
-					mob->setHP(temphp - damage);
+					int16_t temphp = mob->getHP();
+					mob->setHP(temphp - (int16_t) damage);
 					if (htabusetaker != 0) {
 						if (temphp - damage <= 0) // Horntail will die before all of his parts otherwise
 							damage = temphp; // Damage isn't used again from here on anyway
-						htabusetaker->setHP(htabusetaker->getHP() - damage);
+						htabusetaker->setHP(htabusetaker->getHP() - (int16_t) damage);
 					}
 				}
 			}
-			int cmp = -1;
-			cmp = mob->getMP();
-			int mmp = -1;
-			mmp = mobinfo[mob->getMobID()].mp;
+			int16_t cmp = mob->getMP();
+			int16_t mmp = mobinfo[mob->getMobID()].mp;
 			extra = mobinfo[mob->getMobID()].hp;
 			if (eater != 0) { // MP Eater
 				if ((!eater->onlyOnce) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < eater->prop)) {
 					eater->onlyOnce = true;
-					short mp = mmp * eater->x / 100;
+					int16_t mp = mmp * eater->x / 100;
 					if (mp > cmp)
 						mp = cmp;
 					mob->setMP(cmp - mp);
@@ -391,12 +389,12 @@ unsigned int Mobs::damageMobInternal(Player *player, ReadPacket *packet, char ta
 	packet->skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 	return total;
 }
-void Mobs::spawnMob(Player *player, int mobid, int amount) {
-	for (int i = 0; i < amount; i++)
+void Mobs::spawnMob(Player *player, int32_t mobid, int32_t amount) {
+	for (int32_t i = 0; i < amount; i++)
 		spawnMobPos(player->getMap(), mobid, player->getPos());
 }
 
-void Mobs::spawnMobPos(int mapid, int mobid, Pos pos) {
+void Mobs::spawnMobPos(int32_t mapid, int32_t mobid, Pos pos) {
 	Maps::maps[mapid]->spawnMob(mobid, pos);
 }
 
@@ -410,10 +408,12 @@ void Mobs::displayHPBars(Player *player, Mob *mob) {
 	hpinfo.hpbgcolor = mobinfo[hpinfo.mobid].hpbgcolor;
 	hpinfo.mapmobid = mob->getID();
 
+	uint8_t percent = static_cast<uint8_t>(hpinfo.hp * 100 / hpinfo.mhp);
+
 	if ((hpinfo.boss || hpinfo.mobid == 8810018) && hpinfo.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
 		MobsPacket::showBossHP(player, hpinfo);
 	else if (hpinfo.boss) // Miniboss HP bars
-		MobsPacket::showMinibossHP(player, hpinfo.mobid, hpinfo.hp * 100 / hpinfo.mhp);
+		MobsPacket::showMinibossHP(player, hpinfo.mobid, percent);
 	else // Normal HP bars
-		MobsPacket::showHP(player, hpinfo.mapmobid, hpinfo.hp * 100 / hpinfo.mhp);
+		MobsPacket::showHP(player, hpinfo.mapmobid, percent);
 }

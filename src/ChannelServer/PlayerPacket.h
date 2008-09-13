@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERPACK_H
 #define PLAYERPACK_H
 
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -30,12 +31,12 @@ namespace PlayerPacket {
 	void connectData(Player *player);
 	void showKeys(Player *player, KeyMaps *keymaps);
 	void showSkillMacros(Player *player, SkillMacros *macros);
-	void updateStat(Player *player, int id, int value, bool is = false);
-	void updateStat(Player *player, int id, short value, bool is = false);
-	void updateStat(Player *player, int id, char value, bool is = false);
-	void changeChannel(Player *player, const string &ip, short port);
+	void updateStatInt(Player *player, int32_t id, int32_t value, bool is = false);
+	void updateStatShort(Player *player, int32_t id, int16_t value, bool is = false);
+	void updateStatChar(Player *player, int32_t id, int8_t value, bool is = false);
+	void changeChannel(Player *player, const string &ip, int16_t port);
 	void showMessage(Player *player, const string &msg, char type);
-	void instructionBubble(Player *player, const string &msg, short width = -1, short height = 5);
+	void instructionBubble(Player *player, const string &msg, int16_t width = -1, int16_t height = 5);
 };
 
 #endif

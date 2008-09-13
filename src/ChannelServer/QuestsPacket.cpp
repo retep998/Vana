@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-void QuestsPacket::acceptQuest(Player *player, short questid, int npcid) {
+void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTE);
 	packet.addByte(1);
@@ -66,14 +66,14 @@ void QuestsPacket::updateQuest(Player *player, Quest quest) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::doneQuest(Player *player, int questid) {
+void QuestsPacket::doneQuest(Player *player, int16_t questid) {
 	PacketCreator packet;
 	packet.addShort(SEND_FINISH_QUEST);
 	packet.addShort(questid);
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::questFinish(Player *player, short questid, int npcid, short nextquest, __int64 time) {
+void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, int16_t nextquest, int64_t time) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTE);
 	packet.addByte(1);
@@ -99,7 +99,7 @@ void QuestsPacket::questFinish(Player *player, short questid, int npcid, short n
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void QuestsPacket::giveItem(Player *player, int itemid, int amount) {
+void QuestsPacket::giveItem(Player *player, int32_t itemid, int32_t amount) {
 	PacketCreator packet;
 	packet.addShort(SEND_GAIN_ITEM); 
 	packet.addByte(3);
@@ -109,7 +109,7 @@ void QuestsPacket::giveItem(Player *player, int itemid, int amount) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::giveMesos(Player *player, int amount) {
+void QuestsPacket::giveMesos(Player *player, int32_t amount) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTE);
 	packet.addByte(5);

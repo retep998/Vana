@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERQUESTS_H
 #define PLAYERQUESTS_H
 
+#include "Types.h"
 #include <vector>
 
 using std::vector;
@@ -29,11 +30,11 @@ struct QuestComp;
 class PlayerQuests {
 public:
 	PlayerQuests(Player *player) : player(player) { }
-	void addQuest(int questid, int npcid);
-	void updateQuestMob(int mobid);
+	void addQuest(int16_t questid, int32_t npcid);
+	void updateQuestMob(int32_t mobid);
 	void checkDone(Quest &quest);
-	void finishQuest(short questid, int npcid);
-	bool isQuestActive(short questid);
+	void finishQuest(int16_t questid, int32_t npcid);
+	bool isQuestActive(int16_t questid);
 private:
 	Player *player;
 	vector<Quest> quests;

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Pets.h"
 
-void PlayerPacketHelper::addItemInfo(PacketCreator &packet, short slot, Item *item, bool shortSlot) {
+void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) {
 	if (slot != 0) {
 		if (shortSlot)
 			packet.addShort(slot);

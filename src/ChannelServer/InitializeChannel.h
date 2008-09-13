@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef INITIALIZECHANNEL_H
 #define INITIALIZECHANNEL_H
 
+#include "Types.h"
+
 namespace Initializing {
 	void checkVEDBVersion();
 	void initializeMobs();
@@ -31,8 +33,8 @@ namespace Initializing {
 	void initializeSkills();
 	void initializePets();
 
-	const int vedb_version = 18;
-	const int vedb_subversion = 0;
+	const int32_t vedb_version = 18;
+	const int32_t vedb_subversion = 0;
 };
 
 #endif

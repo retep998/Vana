@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WORLDSERVERCONNECTPLAYERPACKET_H
 #define WORLDSERVERCONNECTPLAYERPACKET_H
 
+#include "Types.h"
 #include <string>
 #include <vector>
 
@@ -27,18 +28,18 @@ using std::vector;
 class WorldServerConnectPlayer;
 
 namespace WorldServerConnectPlayerPacket {
-	void playerChangeChannel(WorldServerConnectPlayer *player, int playerid, int channel);
-	void registerPlayer(WorldServerConnectPlayer *player, int playerid, const string &name, int map, int job, int level);
-	void removePlayer(WorldServerConnectPlayer *player, int playerid);
-	void findPlayer(WorldServerConnectPlayer *player, int playerid, const string &findee_name);
-	void whisperPlayer(WorldServerConnectPlayer *player, int playerid, const string &whisperee, const string &message);
+	void playerChangeChannel(WorldServerConnectPlayer *player, int32_t playerid, uint16_t channel);
+	void registerPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level);
+	void removePlayer(WorldServerConnectPlayer *player, int32_t playerid);
+	void findPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &findee_name);
+	void whisperPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &whisperee, const string &message);
 	void scrollingHeader(WorldServerConnectPlayer *player, const string &message);
-	void partyOperation(WorldServerConnectPlayer *player, char type, int playerid, int target = 0);
-	void partyInvite(WorldServerConnectPlayer *player, int playerid, const string &invitee);
-	void updateLevel(WorldServerConnectPlayer *player, int playerid, int level);
-	void updateJob(WorldServerConnectPlayer *player, int playerid, int job);
-	void updateMap(WorldServerConnectPlayer *player, int playerid, int map);
-	void groupChat(WorldServerConnectPlayer *player, char type, int playerid, const vector<int> &receivers, const string &chat);
+	void partyOperation(WorldServerConnectPlayer *player, char type, int32_t playerid, int32_t target = 0);
+	void partyInvite(WorldServerConnectPlayer *player, int32_t playerid, const string &invitee);
+	void updateLevel(WorldServerConnectPlayer *player, int32_t playerid, int32_t level);
+	void updateJob(WorldServerConnectPlayer *player, int32_t playerid, int32_t job);
+	void updateMap(WorldServerConnectPlayer *player, int32_t playerid, int32_t map);
+	void groupChat(WorldServerConnectPlayer *player, char type, int32_t playerid, const vector<int32_t> &receivers, const string &chat);
 };
 
 #endif

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define WORLDSERVERACCEPTPLAYER_H
 
 #include "ServerPlayer.h"
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -32,9 +33,9 @@ public:
 	void realHandleRequest(ReadPacket *packet);
 	void authenticated(char type);
 
-	int getChannel() { return channel; }
+	uint16_t getChannel() { return channel; }
 private:
-	int channel;
+	uint16_t channel;
 };
 
 class WorldServerAcceptPlayerFactory : public AbstractPlayerFactory {

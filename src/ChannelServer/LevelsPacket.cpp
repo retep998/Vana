@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void LevelsPacket::showEXP(Player *player, int exp, char type) {
+void LevelsPacket::showEXP(Player *player, int32_t exp, char type) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTE);
 	packet.addByte(3);

@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Players * Players::singleton = 0;
 
-void Players::registerPlayer(int id, const string &name, int channel, int map, int job, int level) {
+void Players::registerPlayer(int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level) {
 	if (players.find(id) == players.end()) {
 		Player *player = new Player();
 		player->id = id;
@@ -51,7 +51,7 @@ void Players::registerPlayer(int id, const string &name, int channel, int map, i
 	}
 }
 
-void Players::remove(int id, int channel) {
+void Players::remove(int32_t id, uint16_t channel) {
 	if (channel == -1 || players[id]->channel == channel) {
 		players[id]->online = false;
 		if (players[id]->party != 0) {
@@ -64,7 +64,7 @@ void Players::remove(int id, int channel) {
 Player * Players::getPlayerFromName(const string &name, bool includeOffline) {
 	Player *player;
 	bool found = false;
-	for (unordered_map<int, Player *>::iterator iter = players.begin(); iter != players.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = players.begin(); iter != players.end(); iter++) {
 		if ((iter->second->online || includeOffline) && StringUtilities::noCaseCompare(iter->second->name, name) == 0) {
 			player = iter->second;
 			found = true;
@@ -78,6 +78,6 @@ Player * Players::getPlayerFromName(const string &name, bool includeOffline) {
 	return player;
 }
 
-int Players::size() {
+int32_t Players::size() {
 	return players.size();
 }

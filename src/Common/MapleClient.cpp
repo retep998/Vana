@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/lexical_cast.hpp>
 
 MapleClient::MapleClient(boost::asio::io_service &io_service,
-		const string &server, unsigned short port,
+		const string &server, uint16_t port,
 		SessionManagerPtr sessionManager,
 		AbstractPlayer *player) :
 MapleSession(io_service, sessionManager, player, false),
@@ -70,7 +70,7 @@ void MapleClient::readConnectPacket() {
 		return;
 	}
 
-	unsigned short packetLen = m_buffer[0] + m_buffer[1] * 0x100;
+	uint16_t packetLen = m_buffer[0] + m_buffer[1] * 0x100;
 
 	// Get the rest of the packet
 	boost::asio::read(m_socket,
@@ -86,7 +86,7 @@ void MapleClient::readConnectPacket() {
 	// Now finally process it
 	ReadPacket packet(m_buffer, packetLen);
 
-	unsigned short version = packet.getShort(); // Maple Version, TODO: Verify it
+	uint16_t version = packet.getShort(); // Maple Version, TODO: Verify it
 	packet.getString(); // Unknown
 
 	unsigned char *rawpacket = packet.getBuffer();

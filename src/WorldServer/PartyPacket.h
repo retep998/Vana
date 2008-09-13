@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PARTYPACKET_H
 #define PARTYPACKET_H
 
+#include "Types.h"
 #include <string>
+
 using std::string;
 
 class WorldServerAcceptPlayer;
@@ -26,13 +28,13 @@ class Party;
 class PacketCreator;
 
 namespace PartyPacket{
-	void createParty(WorldServerAcceptPlayer *player, int playerid);
-	void disbandParty(WorldServerAcceptPlayer *player, int playerid);
-	void partyError(WorldServerAcceptPlayer *player, int playerid, char error);
-	void giveLeader(WorldServerAcceptPlayer *player, int playerid, int target, bool is);
-	void invitePlayer(WorldServerAcceptPlayer *player, int playerid, const string &inviter);
-	void updateParty(WorldServerAcceptPlayer *player, char type, int playerid, int target = 0);
-	void addParty(PacketCreator &packet, Party *party, int tochan);
+	void createParty(WorldServerAcceptPlayer *player, int32_t playerid);
+	void disbandParty(WorldServerAcceptPlayer *player, int32_t playerid);
+	void partyError(WorldServerAcceptPlayer *player, int32_t playerid, char error);
+	void giveLeader(WorldServerAcceptPlayer *player, int32_t playerid, int32_t target, bool is);
+	void invitePlayer(WorldServerAcceptPlayer *player, int32_t playerid, const string &inviter);
+	void updateParty(WorldServerAcceptPlayer *player, char type, int32_t playerid, int32_t target = 0);
+	void addParty(PacketCreator &packet, Party *party, int32_t tochan);
 };
 
 #endif

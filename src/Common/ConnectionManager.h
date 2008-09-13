@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleClient.h"
 #include "MapleServer.h"
 #include "SessionManager.h"
+#include "Types.h"
 #include <list>
 #include <memory>
 #include <string>
@@ -40,8 +41,8 @@ public:
 		return singleton;
 	}
 
-	void accept(unsigned short port, AbstractPlayerFactory *apf, string ivUnknown = "");
-	AbstractPlayer * connect(const string &server, unsigned short port,
+	void accept(uint16_t port, AbstractPlayerFactory *apf, string ivUnknown = "");
+	AbstractPlayer * connect(const string &server, uint16_t port,
 		AbstractPlayerFactory *apf);
 private:
 	void run();

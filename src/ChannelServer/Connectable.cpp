@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Connectable * Connectable::singleton = 0;
 
-void Connectable::newPlayer(int id) {
+void Connectable::newPlayer(int32_t id) {
 	map[id] = clock();
 }
 
-bool Connectable::checkPlayer(int id) {
+bool Connectable::checkPlayer(int32_t id) {
 	if (map[id]) {
 		if (clock() - map[id] < 5000)
 			return true;

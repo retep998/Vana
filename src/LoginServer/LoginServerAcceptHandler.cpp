@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, ReadPacket *packet) {
-	int channel = packet->getInt();
+	int32_t channel = packet->getInt();
 	Channel *chan = new Channel();
 	chan->ip = packet->getString();
 	chan->port = packet->getShort();
@@ -31,14 +31,14 @@ void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, 
 }
 
 void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptPlayer *player, ReadPacket *packet) {
-	int channel = packet->getInt();
-	int population = packet->getInt();
+	int32_t channel = packet->getInt();
+	int32_t population = packet->getInt();
 
 	Worlds::worlds[player->getWorldId()]->channels[channel]->population = population;
 }
 
 void LoginServerAcceptHandler::removeChannel(LoginServerAcceptPlayer *player, ReadPacket *packet) {
-	int channel = packet->getInt();
+	int32_t channel = packet->getInt();
 
 	Worlds::worlds[player->getWorldId()]->channels.erase(channel);
 	std::cout << "Removed channel " << channel << std::endl;

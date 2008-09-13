@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MersenneTwister.h"
 #pragma warning(pop) 
 
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -39,8 +40,10 @@ public:
 		return singleton;
 	}
 
-	int randInt(int max);
-	int randInt();
+	uint32_t randInt(uint32_t max);
+	uint32_t randInt();
+	uint16_t randShort(uint16_t max);
+	uint8_t randChar(uint8_t max);
 	double rand();
 	string generateSalt(size_t length);
 private:

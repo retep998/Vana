@@ -29,7 +29,7 @@ BuddyList::BuddyList(Player *player) : player(player) {
 	}
 }
 
-void BuddyList::add(int charid) {
+void BuddyList::add(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO buddylist (charid, buddy_charid) VALUES (" << mysqlpp::quote << player->getId() << ", " << mysqlpp::quote << charid << ")";
 	mysqlpp::SimpleResult res = query.execute();
@@ -53,7 +53,7 @@ bool BuddyList::add(const string &name) {
 	return true;
 }
 
-void BuddyList::remove(int charid) {
+void BuddyList::remove(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "DELETE FROM buddylist WHERE charid = " << mysqlpp::quote << player->getId() << " AND buddy_charid = " << mysqlpp::quote << charid;
 	query.exec();
@@ -63,6 +63,6 @@ void BuddyList::remove(int charid) {
 
 inline
 void BuddyList::add(const mysqlpp::Row &row) {
-	int charid = (int) row["buddy_charid"];
+	int32_t charid = (int32_t) row["buddy_charid"];
 	row["name"].to_string(buddies[charid]); // Assigns string to buddies[charid] i.e. buddies[charid] = name
 }

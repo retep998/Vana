@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERS_H
 #define PLAYERS_H
 
+#include "Types.h"
 #include <functional>
 #include <string>
 #include <unordered_map>
@@ -40,7 +41,7 @@ public:
 
 	void addPlayer(Player *player);
 	void removePlayer(Player *player);
-	Player * getPlayer(int id);
+	Player * getPlayer(int32_t id);
 	Player * getPlayer(const string &name);
 
 	void run(function<void (Player *)> func);
@@ -51,7 +52,7 @@ private:
 	Players& operator=(const Players&);
 	static Players *singleton;
 
-	unordered_map<int, Player *> m_players;
+	unordered_map<int32_t, Player *> m_players;
 	unordered_map<string, Player *> m_players_names; // Index of players by name
 };
 

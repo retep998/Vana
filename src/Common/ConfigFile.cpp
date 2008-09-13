@@ -46,9 +46,13 @@ bool ConfigFile::keyExist(string value) {
 	return !lua_isnil(luaVm, -1);
 }
 
-int ConfigFile::getInt(string value) {
+int32_t ConfigFile::getInt(string value) {
 	lua_getglobal(luaVm, value.c_str());
 	return lua_tointeger(luaVm, -1);
+}
+
+int16_t ConfigFile::getShort(string value) {
+	return static_cast<int16_t>(getInt(value));
 }
 
 string ConfigFile::getString(string value) {

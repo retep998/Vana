@@ -21,14 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ConnectionManager * ConnectionManager::singleton = 0;
 
-void ConnectionManager::accept(unsigned short port, AbstractPlayerFactory *apf, string ivUnknown) {
+void ConnectionManager::accept(uint16_t port, AbstractPlayerFactory *apf, string ivUnknown) {
 	tcp::endpoint endpoint(tcp::v4(), port);
 	m_servers.push_back(MapleServerPtr(new MapleServer(m_io_service, endpoint, apf, ivUnknown)));
 
 	run();
 }
 
-AbstractPlayer * ConnectionManager::connect(const string &server, unsigned short port,
+AbstractPlayer * ConnectionManager::connect(const string &server, uint16_t port,
 											AbstractPlayerFactory *apf) {
 	AbstractPlayer *player =  apf->createPlayer();
 	MapleClientPtr c = MapleClientPtr(new MapleClient(m_io_service, server, port, m_clients, player));

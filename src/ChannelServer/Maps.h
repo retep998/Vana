@@ -29,15 +29,15 @@ class Player;
 class ReadPacket;
 
 namespace Maps {
-	extern unordered_map<int, Map *> maps;
+	extern unordered_map<int32_t, Map *> maps;
 	void startTimer();
 	void addMap(MapInfo info);
 	void usePortal(Player *player, PortalInfo *portal);
 	void usePortal(Player *player, ReadPacket *packet);
 	void useScriptedPortal(Player *player, ReadPacket *packet);
-	void changeMap(Player *player, int mapid, PortalInfo *portal);
-	void newMap(Player *player, int mapid);
-	void changeMusic(int mapid, const string &musicname);
+	void changeMap(Player *player, int32_t mapid, PortalInfo *portal);
+	void newMap(Player *player, int32_t mapid);
+	void changeMusic(int32_t mapid, const string &musicname);
 };
 
 #endif

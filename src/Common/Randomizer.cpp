@@ -20,12 +20,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Randomizer * Randomizer::singleton = 0;
 
-int Randomizer::randInt(int max) {
+uint32_t Randomizer::randInt(uint32_t max) {
 	return mtrand.randInt(max);
 }
 
-int Randomizer::randInt() {
+uint32_t Randomizer::randInt() {
 	return mtrand.randInt();
+}
+
+uint16_t Randomizer::randShort(uint16_t max) {
+	return static_cast<uint16_t>(mtrand.randInt(max));
+}
+
+uint8_t Randomizer::randChar(uint8_t max) {
+	return static_cast<uint8_t>(mtrand.randInt(max));
 }
 
 double Randomizer::rand() {
@@ -35,7 +43,7 @@ double Randomizer::rand() {
 string Randomizer::generateSalt(size_t length) {
 	boost::scoped_array<char> salt(new char[length+1]);
 	for (size_t i = 0; i < length; i++) {
-		salt[i] = 33 + randInt(93);
+		salt[i] = 33 + randChar(93);
 	}
 	salt[length] = 0;
 	return string(salt.get());

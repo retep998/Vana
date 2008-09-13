@@ -23,14 +23,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-unordered_map<int, ShopInfo> Shops::shops;
-vector<int> Shops::rechargables;
+unordered_map<int32_t, ShopInfo> Shops::shops;
+vector<int32_t> Shops::rechargables;
 
-void Shops::addShop(int id, ShopInfo shop) {
+void Shops::addShop(int32_t id, ShopInfo shop) {
 	shops[id] = shop;
 }
 
-void Shops::showShop(Player *player, int id) {
+void Shops::showShop(Player *player, int32_t id) {
 	player->setShop(id);
 	if (shops.find(id) == shops.end())
 		return;
@@ -44,7 +44,7 @@ void Shops::showShop(Player *player, int id) {
 		if (ISRECHARGEABLE(shops[id].items[i])) {
 			packet.addShort(0);
 			packet.addInt(0);
-			packet.addShort(shops[id].prices[shops[id].items[i]]);
+			packet.addShort((uint16_t) shops[id].prices[shops[id].items[i]]);
 		}
 		else {
 			packet.addShort(1);
@@ -71,7 +71,7 @@ void Shops::showShop(Player *player, int id) {
 	player->getSession()->send(packet);
 }
 
-int Shops::getPrice(int shopid, int itemid) {
+int32_t Shops::getPrice(int32_t shopid, int32_t itemid) {
 	if (shops[shopid].prices.find(itemid) != shops[shopid].prices.end())
 		return shops[shopid].prices[itemid];
 	return 0;

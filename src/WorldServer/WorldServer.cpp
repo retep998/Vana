@@ -36,7 +36,7 @@ void WorldServer::loadData() {
 void WorldServer::loadConfig() {
 	ConfigFile config("conf/worldserver.lua");
 	login_ip = config.getString("login_ip");
-	login_inter_port = config.getInt("login_inter_port");
+	login_inter_port = config.getShort("login_inter_port");
 	external_ip = config.getString("external_ip"); // External IP
 	inter_port = -1; // Will get from login server later
 }

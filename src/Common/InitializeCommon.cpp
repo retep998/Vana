@@ -51,7 +51,7 @@ void Initializing::checkSchemaVersion(bool update) {
 	}
 }
 
-void Initializing::setUsersOffline(int onlineid) {
+void Initializing::setUsersOffline(int32_t onlineid) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = 0, characters.online = 0 WHERE users.online = " << mysqlpp::quote << onlineid;
 	query.exec();

@@ -35,7 +35,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void PlayersPacket::faceExpression(Player *player, int face) {
+void PlayersPacket::faceExpression(Player *player, int32_t face) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
@@ -55,7 +55,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly)
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, int dmg, int mob, unsigned char hit, unsigned char type, unsigned char stance, int nodamageskill, PGMRInfo pgmr) {
+void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, unsigned char hit, unsigned char type, unsigned char stance, int32_t nodamageskill, PGMRInfo pgmr) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
@@ -133,7 +133,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, unsigned char isse
 	player->getSession()->send(packet);
 }
 
-void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, int channel, const string &message) {
+void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, uint16_t channel, const string &message) {
 	PacketCreator packet;
 	packet.addShort(SEND_COMMAND_RESPOND);
 	packet.addByte(0x12);
@@ -143,7 +143,7 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, 
 	target->getSession()->send(packet);
 }
 
-void PlayersPacket::findPlayer(Player *player, const string &name, int map, unsigned char is, bool is_channel) {
+void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, unsigned char is, bool is_channel) {
 	PacketCreator packet;
 	packet.addShort(SEND_COMMAND_RESPOND);
 	if (map != -1) {
@@ -166,7 +166,7 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int map, unsi
 	player->getSession()->send(packet);
 }
 
-void PlayersPacket::sendToPlayers(unsigned char *data, int len) {
+void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
 	PacketCreator packet;
 	packet.addBuffer(data, len);
 	Players::Instance()->sendPacket(packet);

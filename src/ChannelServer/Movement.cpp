@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
-	short foothold = 0;
+	int16_t foothold = 0;
 	char stance = 0;
-	short x = 0;
-	short y = 0;
+	int16_t x = 0;
+	int16_t y = 0;
 
 	unsigned char n = packet->getByte();
 	for (unsigned char i = 0; i < n; i++) {
@@ -84,7 +84,7 @@ Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
 				stance = packet->getByte();
 				break;
 			default:
-				std::cout << "New type of movement: 0x" << std::hex << (short) type << std::endl;
+				std::cout << "New type of movement: 0x" << std::hex << (int16_t) type << std::endl;
 				break;
 		}
 	}

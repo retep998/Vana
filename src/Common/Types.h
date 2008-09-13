@@ -15,32 +15,22 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef BUDDYLIST_H
-#define BUDDYLIST_H
+#ifndef TYPES_H
+#define TYPES_H
 
-#include "Types.h"
-#include <unordered_map>
-#include <string>
+/* Standard integers */
+#include <boost/cstdint.hpp>
 
-using std::string;
-using std::tr1::unordered_map;
-
-class Player;
-namespace mysqlpp {
-	class Row;
-}
-
-class BuddyList {
-public:
-	BuddyList(Player *player);
-	void add(int32_t charid);
-	bool add(const string &name);
-	void remove(int32_t charid);
-private:
-	void add(const mysqlpp::Row &row);
-
-	unordered_map<int32_t, string> buddies;
-	Player *player;
-};
+// Import the type from the boost namespace
+typedef boost::int8_t int8_t;
+typedef boost::uint8_t uint8_t;
+typedef boost::int16_t int16_t;
+typedef boost::uint16_t uint16_t;
+typedef boost::int32_t int32_t;
+typedef boost::uint32_t uint32_t;
+typedef boost::int64_t int64_t;
+typedef boost::uint64_t uint64_t;
+typedef boost::intmax_t intmax_t;
+typedef boost::uintmax_t uintmax_t;
 
 #endif

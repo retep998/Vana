@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "StoragePacket.h"
 
-LuaNPC::LuaNPC(const string &filename, int playerid) : LuaScriptable(filename, playerid) {
+LuaNPC::LuaNPC(const string &filename, int32_t playerid) : LuaScriptable(filename, playerid) {
 	lua_register(luaVm, "addText", &LuaExports::addText);
 	lua_register(luaVm, "sendSimple", &LuaExports::sendSimple);
 	lua_register(luaVm, "sendYesNo", &LuaExports::sendYesNo);
@@ -114,13 +114,13 @@ int LuaExports::sendGetNumber(lua_State *luaVm) {
 
 int LuaExports::sendStyle(lua_State *luaVm) {
 	char size = (char) lua_tointeger(luaVm, -1);
-	int *styles = new int[size];
+	int32_t *styles = new int32_t[size];
 
 	lua_pop(luaVm, 1);
 	lua_pushnil(luaVm);
 	while (lua_next(luaVm, -2) != 0) {
-		int a = lua_tointeger(luaVm, -2)-1;
-		int b = lua_tointeger(luaVm, -1);
+		int32_t a = lua_tointeger(luaVm, -2)-1;
+		int32_t b = lua_tointeger(luaVm, -1);
 		styles[lua_tointeger(luaVm, -2)-1] = lua_tointeger(luaVm, -1);
 		lua_pop(luaVm, 1);
 	}
@@ -150,7 +150,7 @@ int LuaExports::getText(lua_State *luaVm) {
 }
 
 int LuaExports::getMaxSkillLevel(lua_State *luaVm) {
-	int skillid = lua_tointeger(luaVm, -1);
+	int32_t skillid = lua_tointeger(luaVm, -1);
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getMaxSkillLevel(skillid));
 	return 1;
 }
@@ -161,20 +161,20 @@ int LuaExports::setState(lua_State *luaVm) {
 }
 
 int LuaExports::setMaxSkillLevel(lua_State *luaVm) {
-	int skillid = lua_tointeger(luaVm, -2);
-	int level = lua_tointeger(luaVm, -1);
+	int32_t skillid = lua_tointeger(luaVm, -2);
+	uint8_t level = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillid, level);
 	return 1;
 }
 
 int LuaExports::addQuest(lua_State *luaVm) {
-	int questid = lua_tointeger(luaVm, -1);
+	int16_t questid = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getQuests()->addQuest(questid, getNPC(luaVm)->getNpcID());
 	return 1;
 }
 
 int LuaExports::endQuest(lua_State *luaVm) {
-	int questid = lua_tointeger(luaVm, -1);
+	int16_t questid = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getQuests()->finishQuest(questid, getNPC(luaVm)->getNpcID());
 	return 1;
 }

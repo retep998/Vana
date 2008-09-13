@@ -28,9 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-unordered_map<int, SkillsLevelInfo> Skills::skills;
-unordered_map<int, unsigned char> Skills::maxlevels;
-unordered_map<int, SkillsInfo> Skills::skillsinfo;
+unordered_map<int32_t, SkillsLevelInfo> Skills::skills;
+unordered_map<int32_t, unsigned char> Skills::maxlevels;
+unordered_map<int32_t, SkillsInfo> Skills::skillsinfo;
 
 
 void Skills::stopAllBuffs(Player *player) {
@@ -401,7 +401,7 @@ void Skills::init() {
 	skillsinfo[2321002].player.push_back(player);
 }
 
-void Skills::addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo levelinfo) {
+void Skills::addSkillLevelInfo(int32_t skillid, unsigned char level, SkillLevelInfo levelinfo) {
 	skills[skillid][level] = levelinfo;
 
 	if (maxlevels.find(skillid) == maxlevels.end() || maxlevels[skillid] < level) {
@@ -411,7 +411,7 @@ void Skills::addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo 
 
 void Skills::addSkill(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
-	int skillid = packet->getInt();
+	int32_t skillid = packet->getInt();
 	if (!BEGINNER_SKILL(skillid) && player->getSp() == 0) {
 		// hacking
 		return;
@@ -423,7 +423,7 @@ void Skills::addSkill(Player *player, ReadPacket *packet) {
 void Skills::cancelSkill(Player *player, ReadPacket *packet) {
 	stopSkill(player, packet->getInt());
 }
-void Skills::stopSkill(Player *player, int skillid, bool fromTimer) {
+void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	player->getActiveBuffs()->removeBuff(skillid, fromTimer);
 	switch (skillid) {
 		case 3121004:
@@ -444,17 +444,17 @@ void Skills::stopSkill(Player *player, int skillid, bool fromTimer) {
 }
 void Skills::useSkill(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); //Ticks
-	int skillid = packet->getInt();
-	short addedinfo = 0;
+	int32_t skillid = packet->getInt();
+	int16_t addedinfo = 0;
 	unsigned char level = packet->getByte();
 	unsigned char type = 0;
 	switch (skillid) {
 		case 1121001: // Monster Magnet processing
 		case 1221001:
 		case 1321001: {
-			int mobs = packet->getInt();
+			int32_t mobs = packet->getInt();
 			for (char k = 0; k < mobs; k++) {
-				int mapmobid = packet->getInt();
+				int32_t mapmobid = packet->getInt();
 				unsigned char success = packet->getByte();
 				SkillsPacket::showMagnetSuccess(player, mapmobid, success);
 			}
@@ -476,7 +476,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	Skills::applySkillCosts(player, skillid, level);
 	SkillsPacket::showSkill(player, skillid, level);
 	if (Skills::isBuff(skillid)) {
-		int mountid = 0;
+		int32_t mountid = 0;
 		PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
 		vector<SkillMapActiveInfo> mapenterskill;
 		SkillActiveInfo playerskill = Skills::parsePlayerSkill(player, skillid, level, mountid);
@@ -511,7 +511,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		playerbuffs->removeBuff(skillid);
 		player->setSkill(playerbuffs->getSkillMapEnterInfo());
 		if (skillsinfo[skillid].bact.size() > 0) {
-			short value = getValue(skillsinfo[skillid].act.value, skillid, level);
+			int16_t value = getValue(skillsinfo[skillid].act.value, skillid, level);
 			playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 		}
 		playerbuffs->addBuff(skillid, level);
@@ -520,7 +520,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		switch (skillid) {
 			case 2301002: { // Heal
 				//TODO PARTY
-				int healrate = skills[skillid][level].hpP / 1;
+				uint16_t healrate = skills[skillid][level].hpP / 1;
 				if (healrate > 100)
 					healrate = 100;
 				player->setHP(player->getHP() + healrate * player->getMHP() / 100);
@@ -544,8 +544,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	}
 }
 
-short Skills::getValue(char value, int skillid, unsigned char level) {
-	short rvalue = 0;
+int16_t Skills::getValue(char value, int32_t skillid, unsigned char level) {
+	int16_t rvalue = 0;
 	switch (value) {
 		case SKILL_X: rvalue = skills[skillid][level].x; break;
 		case SKILL_Y: rvalue = skills[skillid][level].y; break;
@@ -564,7 +564,7 @@ short Skills::getValue(char value, int skillid, unsigned char level) {
 	return rvalue;
 }
 
-SkillActiveInfo Skills::parsePlayerSkill(Player *player, int skillid, unsigned char level, int &mountid) {
+SkillActiveInfo Skills::parsePlayerSkill(Player *player, int32_t skillid, unsigned char level, int32_t &mountid) {
 	SkillActiveInfo playerskill;
 	memset(playerskill.types, 0, 8 * sizeof(unsigned char)); // Reset player/map types to 0
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
@@ -574,7 +574,7 @@ SkillActiveInfo Skills::parsePlayerSkill(Player *player, int skillid, unsigned c
 			playerskill.types[TYPE_1] = 0;
 			continue;
 		}
-		short value = 0;
+		int16_t value = 0;
 		switch (skillid) {
 			case 1004: // Monster Rider
 				mountid = player->getInventory()->getEquippedID(18);
@@ -589,7 +589,7 @@ SkillActiveInfo Skills::parsePlayerSkill(Player *player, int skillid, unsigned c
 				value = 1;
 				break;
 			case 4121006: { // Shadow Claw
-				for (short s = 1; s <= player->getInventory()->getMaxSlots(2); s++) {
+				for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(2); s++) {
 					Item *item = player->getInventory()->getItem(2, s);
 					if (item == 0)
 						continue;
@@ -610,7 +610,7 @@ SkillActiveInfo Skills::parsePlayerSkill(Player *player, int skillid, unsigned c
 	return playerskill;
 }
 
-SkillActiveInfo Skills::parseMapSkill(Player *player, int skillid, unsigned char level, vector<SkillMapActiveInfo> &mapenterskill) {
+SkillActiveInfo Skills::parseMapSkill(Player *player, int32_t skillid, unsigned char level, vector<SkillMapActiveInfo> &mapenterskill) {
 	SkillActiveInfo mapskill;
 	memset(mapskill.types, 0, 8 * sizeof(unsigned char));
 	for (size_t i = 0; i < skillsinfo[skillid].map.size(); i++) {
@@ -620,7 +620,7 @@ SkillActiveInfo Skills::parseMapSkill(Player *player, int skillid, unsigned char
 			mapskill.types[TYPE_1] = 0;
 			continue;
 		}
-		short value = 0;
+		int16_t value = 0;
 		switch (skillid) {
 			case 4111002: // Shadow Partner
 				value = skills[skillid][level].x * 256 + skills[skillid][level].y;
@@ -650,20 +650,20 @@ SkillActiveInfo Skills::parseMapSkill(Player *player, int skillid, unsigned char
 	return mapskill;
 }
 
-void Skills::applySkillCosts(Player *player, int skillid, unsigned char level, bool elementalamp) {
-	int cooltime = Skills::skills[skillid][level].cooltime;
-	short mpuse = skills[skillid][level].mp;
-	short hpuse = skills[skillid][level].hp;
-	int item = skills[skillid][level].item;
+void Skills::applySkillCosts(Player *player, int32_t skillid, unsigned char level, bool elementalamp) {
+	int16_t cooltime = Skills::skills[skillid][level].cooltime;
+	int16_t mpuse = skills[skillid][level].mp;
+	int16_t hpuse = skills[skillid][level].hp;
+	int32_t item = skills[skillid][level].item;
 	if (mpuse > 0) {
 		if (player->getActiveBuffs()->getActiveSkillLevel(3121008) > 0) { // Reduced MP usage for Concentration
-			int mprate = Skills::skills[3121008][player->getActiveBuffs()->getActiveSkillLevel(3121008)].x;
-			int mploss = (mpuse * mprate) / 100;
+			uint16_t mprate = Skills::skills[3121008][player->getActiveBuffs()->getActiveSkillLevel(3121008)].x;
+			int16_t mploss = (mpuse * mprate) / 100;
 			player->setMP(player->getMP() - mploss, true);
 		}
 		else {
 			if (elementalamp) {
-				int sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
+				int32_t sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
 				char slv = player->getSkills()->getSkillLevel(sid);
 				if (slv > 0)
 					player->setMP(player->getMP() - (mpuse * skills[sid][slv].x / 100), true);
@@ -684,25 +684,25 @@ void Skills::applySkillCosts(Player *player, int skillid, unsigned char level, b
 		Skills::startCooldown(player, skillid, cooltime);
 }
 
-void Skills::useAttackSkill(Player *player, int skillid) {
+void Skills::useAttackSkill(Player *player, int32_t skillid) {
 	unsigned char level = player->getSkills()->getSkillLevel(skillid);
 	if (skills.find(skillid) == skills.end())
 		return;
 	Skills::applySkillCosts(player, skillid, level, true);
 }
 
-void Skills::useAttackSkillRanged(Player *player, int skillid, short pos, unsigned char display) {
+void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, unsigned char display) {
 	unsigned char level = player->getSkills()->getSkillLevel(skillid);
 	if (skills.find(skillid) == skills.end())
 		return;
 	Skills::applySkillCosts(player, skillid, level);
 	if (skills[skillid][level].moneycon > 0) {
-		short midpoint = skills[skillid][level].moneycon;
-		short mesos_min = midpoint - (80 + level * 5);
-		short mesos_max = midpoint + (80 + level * 5);
-		short difference = mesos_max - mesos_min; // Randomize up to this, add minimum for range
-		short amount = Randomizer::Instance()->randInt(difference) + mesos_min;
-		int mesos = player->getInventory()->getMesos();
+		int16_t midpoint = skills[skillid][level].moneycon;
+		int16_t mesos_min = midpoint - (80 + level * 5);
+		int16_t mesos_max = midpoint + (80 + level * 5);
+		int16_t difference = mesos_max - mesos_min; // Randomize up to this, add minimum for range
+		int16_t amount = Randomizer::Instance()->randShort(difference) + mesos_min;
+		int32_t mesos = player->getInventory()->getMesos();
 		if (mesos - amount > -1) 
 			player->getInventory()->setMesos(mesos - amount);
 		else {
@@ -710,7 +710,7 @@ void Skills::useAttackSkillRanged(Player *player, int skillid, short pos, unsign
 			return;
 		}
 	}
-	int hits = 1;
+	uint16_t hits = 1;
 	if (skills[skillid][level].bulletcon > 0)
 		hits = skills[skillid][level].bulletcon;
 	if (display == 0x08)
@@ -721,15 +721,15 @@ void Skills::useAttackSkillRanged(Player *player, int skillid, short pos, unsign
 		Inventory::takeItemSlot(player, 2, pos, hits);
 }
 
-void Skills::useAttackRanged(Player *player, short pos, unsigned char display) {
-	int hits = 1;
+void Skills::useAttackRanged(Player *player, int16_t pos, unsigned char display) {
+	uint16_t hits = 1;
 	if (display == 0x08)
 		hits = hits * 2;
 	if (pos > 0 && (!((display & 0x40) == 0x40 || display == 0x02))) // See previous comment
 		Inventory::takeItemSlot(player, 2, pos, hits);
 }
 
-void Skills::endBuff(Player *player, int skill) {
+void Skills::endBuff(Player *player, int32_t skill) {
 	switch (skill) {
 		case 1301007: // Hyper Body
 		case 9101008: // GM Hyper Body
@@ -747,14 +747,14 @@ void Skills::endBuff(Player *player, int skill) {
 	player->getActiveBuffs()->setActiveSkillLevel(skill, 0);
 }
 
-void Skills::heal(Player *player, short value, int skillid) {
+void Skills::heal(Player *player, int16_t value, int32_t skillid) {
 	if (player->getHP() < player->getMHP() && player->getHP() > 0) {
 		player->setHP(player->getHP() + value);
 		SkillsPacket::healHP(player, value); 
 	}
 }
 
-void Skills::hurt(Player *player, short value, int skillid) {
+void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
 	if (player->getHP() - value > 1) {
 		player->setHP(player->getHP() - value);
 		SkillsPacket::showSkillEffect(player, skillid);
@@ -764,7 +764,7 @@ void Skills::hurt(Player *player, short value, int skillid) {
 	}
 }
 
-void Skills::startCooldown(Player *player, int skillid, int cooltime) {
+void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime) {
 	if (Skills::isCooling(player, skillid)) {
 		// Hacking
 		return;
@@ -776,18 +776,18 @@ void Skills::startCooldown(Player *player, int skillid, int cooltime) {
 		skillid, 0), player->getTimers(), cooltime * 1000, false);
 }
 
-void Skills::stopCooldown(Player *player, int skillid) {
+void Skills::stopCooldown(Player *player, int32_t skillid) {
 	SkillsPacket::sendCooldown(player, skillid, 0);	
 }
 
-bool Skills::isCooling(Player *player, int skillid) {
+bool Skills::isCooling(Player *player, int32_t skillid) {
 	Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
 	if (player->getTimers()->checkTimer(id))
 		return true;
 	return false;
 }
 
-bool Skills::isBuff(int skillid) {
+bool Skills::isBuff(int32_t skillid) {
 	if (skillsinfo.find(skillid) == skillsinfo.end())
 		return false;
 	return true;

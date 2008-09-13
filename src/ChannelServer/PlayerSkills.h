@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERSKILLS_H
 #define PLAYERSKILLS_H
 
+#include "Types.h"
 #include <unordered_map>
 
 using std::tr1::unordered_map;
@@ -34,17 +35,17 @@ class PlayerSkills {
 public:
 	PlayerSkills(Player *player) : player(player) { load(); }
 
-	bool addSkillLevel(int skillid, unsigned char amount, bool sendpacket = true);
-	unsigned char getSkillLevel(int skillid);
-	unsigned char getMaxSkillLevel(int skillid);
-	void setMaxSkillLevel(int skillid, unsigned char maxlevel, bool sendpacket = true);
-	unordered_map<int, PlayerSkillInfo> * getSkills() {
+	bool addSkillLevel(int32_t skillid, unsigned char amount, bool sendpacket = true);
+	unsigned char getSkillLevel(int32_t skillid);
+	unsigned char getMaxSkillLevel(int32_t skillid);
+	void setMaxSkillLevel(int32_t skillid, unsigned char maxlevel, bool sendpacket = true);
+	unordered_map<int32_t, PlayerSkillInfo> * getSkills() {
 		return &playerskills;
 	}
 	void load();
 	void save();
 private:
-	unordered_map<int, PlayerSkillInfo> playerskills;
+	unordered_map<int32_t, PlayerSkillInfo> playerskills;
 	Player *player;
 };
 

@@ -32,7 +32,7 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPa
 		WorldServer::Instance()->setMaxChannels(packet->getInt());
 		WorldServer::Instance()->setMaxMultiLevel(packet->getByte());
 
-		int ratesSetBit = packet->getInt();
+		int32_t ratesSetBit = packet->getInt();
 		if (ratesSetBit & Rates::SetBits::exp) {
 			WorldServer::Instance()->setExprate(packet->getInt());
 		}
@@ -47,7 +47,7 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPa
 		}
 
 		WorldServer::Instance()->listen();
-		std::cout << "Handling world " << (int) worldid << std::endl;
+		std::cout << "Handling world " << (int32_t) worldid << std::endl;
 	}
 	else {
 		std::cout << "Error: No world to handle" << std::endl;
@@ -56,8 +56,8 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPa
 }
 
 void LoginServerConnectHandler::newPlayer(ReadPacket *packet) {
-	int channel = packet->getInt();
-	int playerid = packet->getInt();
+	uint16_t channel = packet->getShort();
+	int32_t playerid = packet->getInt();
 
 	if (Channels::Instance()->getChannel(channel)) {
 		WorldServerAcceptPlayerPacket::newConnectable(channel, playerid);

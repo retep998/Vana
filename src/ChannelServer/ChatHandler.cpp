@@ -66,7 +66,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 
 				// Ban account
                 mysqlpp::Query accbanquery = Database::getCharDB().query();
-                accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (short) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
+                accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
                 accbanquery.exec();
 
 				string banmsg = targetname + " has been banned";
@@ -164,7 +164,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 
 				Player *warpee;
 				if (warpee = Players::Instance()->getPlayer(name)) {
-					int mapid = atoi(strtok_s(0, " ", &next_token));
+					int32_t mapid = atoi(strtok_s(0, " ", &next_token));
 					if (Maps::maps.find(mapid) != Maps::maps.end()) {
 						Maps::changeMap(warpee, mapid, 0);
 					}
@@ -177,7 +177,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				}
 			}
 			else if (strcmp(command, "warpall") == 0) { // Warp everyone to MapID or your current map
-				int mapid;
+				int32_t mapid;
 				if (strlen(next_token) == 0)
 					mapid = player->getMap();
 				else
@@ -193,7 +193,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 							Maps::changeMap(warpee, mapid, 0);
 						}
 					}
-					int mapid;
+					int32_t mapid;
 					Player *player;
 				} changeMap = {mapid, player};
 
@@ -254,7 +254,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 
 		// Regular GM commands
 		if (strcmp(command, "lookup") == 0) {
-			short type = 0;
+			int16_t type = 0;
 			if (strlen(next_token) == 0) {
 				PlayerPacket::showMessage(player, "Sub Commands: item, skill, map, mob, npc", 6);
 				return;
@@ -288,7 +288,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				PlayerPacket::showMessage(player, msg, 6);
 				return;
 			}
-			int mapid = -1;
+			int32_t mapid = -1;
 			if (strcmp("town", next_token) == 0) mapid = Maps::maps[player->getMap()]->getInfo().rm;
 			else if (strcmp("gm", next_token) == 0) mapid = 180000000;
 			else if (strcmp("fm", next_token) == 0) mapid = 910000000;
@@ -345,7 +345,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				PlayerPacket::showMessage(player, "Invalid map entered.", 5);
 		}
 		else if (strcmp(command, "npc") == 0) {
-			int npcid = atoi(next_token);
+			int32_t npcid = atoi(next_token);
 			NPC *npc = new NPC(npcid, player);
 			if (!npc->run()) {
 				PlayerPacket::showMessage(player, "Invalid NPC entered.", 5);
@@ -353,7 +353,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "addsp") == 0) {
 			if (strlen(next_token) > 0) {
-				int skillid = atoi(strtok_s(0, " ", &next_token));
+				int32_t skillid = atoi(strtok_s(0, " ", &next_token));
 				if (Skills::skills.find(skillid) == Skills::skills.end()) { // Don't allow skills that do not exist to be added
 					PlayerPacket::showMessage(player, "Invalid Skill ID.", 5);
 					return;
@@ -366,15 +366,15 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "summon") == 0 || strcmp(command, "spawn") == 0) {
 			if (strlen(next_token) == 0) return;
-			int mobid = atoi(strtok_s(0, " ", &next_token));
+			int32_t mobid = atoi(strtok_s(0, " ", &next_token));
 			if (Mobs::mobinfo.find(mobid) == Mobs::mobinfo.end()) {
 				PlayerPacket::showMessage(player, "Invalid Mob ID.", 5);
 				return;
 			}
-			int count = 1;
+			int32_t count = 1;
 			if (strlen(next_token) > 0)
 				count = atoi(next_token);
-			for (int i = 0; i < count && i < 100; i++) {
+			for (int32_t i = 0; i < count && i < 100; i++) {
 				Mobs::spawnMob(player, mobid);
 			}
 		}
@@ -401,7 +401,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			if (strlen(next_token) > 0)
 				player->setDex(atoi(next_token));
 		}
-		else if (strcmp(command, "int") == 0) {
+		else if (strcmp(command, "int32_t") == 0) {
 			if (strlen(next_token) > 0)
 				player->setInt(atoi(next_token));
 		}
@@ -411,7 +411,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "hp") == 0) {
 			if (strlen(next_token) > 0) {
-				int amount = atoi(next_token);
+				uint16_t amount = atoi(next_token);
 				player->setRMHP(amount);
 				player->setMHP(amount);
 				if (player->getHP() > amount)
@@ -420,7 +420,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "mp") == 0) {
 			if (strlen(next_token) > 0) {
-				int amount = atoi(next_token);
+				uint16_t amount = atoi(next_token);
 				player->setRMMP(amount);
 				player->setMMP(amount);
 				if (player->getMP() > amount)
@@ -428,7 +428,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			}
 		}
 		else if (strcmp(command, "shop") == 0) {
-			int shopid = -1;
+			int32_t shopid = -1;
 			if (strcmp(next_token, "gear") == 0) shopid = 9999999;
 			else if (strcmp(next_token, "scrolls") == 0) shopid = 9999998;
 			else if (strcmp(next_token, "nx") == 0) shopid = 9999997;
@@ -458,12 +458,12 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		}
 		else if (strcmp(command, "item") == 0) {
 			if (strlen(next_token) == 0) return;
-			int itemid = atoi(strtok_s(0, " ", &next_token));
+			int32_t itemid = atoi(strtok_s(0, " ", &next_token));
 			if (Inventory::items.find(itemid) == Inventory::items.end() && Inventory::equips.find(itemid) == Inventory::equips.end()) {
 				PlayerPacket::showMessage(player, "Invalid item ID", 6);
 				return;
 			}
-			int count = 1;
+			uint16_t count = 1;
 			if (strlen(next_token) > 0)
 				count = atoi(next_token);
 			Inventory::addNewItem(player, itemid, count);
@@ -481,7 +481,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				return;
 			}
 
-			int job = -1;
+			int16_t job = -1;
 			if (strcmp(next_token, "beginner") == 0) job = 0;
 			else if (strcmp(next_token, "warrior") == 0) job = 100;
 			else if (strcmp(next_token, "fighter") == 0) job = 110;
@@ -592,7 +592,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 }
 
 void ChatHandler::handleGroupChat(Player *player, ReadPacket *packet) {
-	vector<int> receivers;
+	vector<int32_t> receivers;
 	char type = packet->getByte();
 	unsigned char amount = packet->getByte();
 	for (size_t i = 0; i < amount; i++) {

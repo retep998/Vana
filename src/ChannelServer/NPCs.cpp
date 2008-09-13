@@ -36,7 +36,7 @@ void NPCs::handleNPC(Player *player, ReadPacket *packet) {
 		return;
 	}
 
-	int npcid = Maps::maps[player->getMap()]->getNpc(packet->getInt()-100).id;
+	int32_t npcid = Maps::maps[player->getMap()]->getNpc(packet->getInt()-100).id;
 	if (Shops::shops.find(npcid) != Shops::shops.end()) { // Shop
 		Shops::showShop(player, npcid);
 		return;
@@ -46,7 +46,7 @@ void NPCs::handleNPC(Player *player, ReadPacket *packet) {
 	npc->run();
 }
 
-void NPCs::handleQuestNPC(Player *player, int npcid, bool start) {
+void NPCs::handleQuestNPC(Player *player, int32_t npcid, bool start) {
 	if (player->getNPC() != 0) {
 		return;
 	}
@@ -122,7 +122,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 	npc->run();
 }
 
-NPC::NPC(int npcid, Player *player, bool isquest, bool isstart) :
+NPC::NPC(int32_t npcid, Player *player, bool isquest, bool isstart) :
 npcid(npcid),
 player(player),
 text(""),
@@ -242,7 +242,7 @@ void NPC::sendGetText() {
 	player->getSession()->send(packet);
 }
 
-void NPC::sendGetNumber(int def, int min, int max) {
+void NPC::sendGetNumber(int32_t def, int32_t min, int32_t max) {
 	PacketCreator packet = npcPacket(NPCDialogs::getNumber);
 	packet.addInt(def);
 	packet.addInt(min);
@@ -251,15 +251,15 @@ void NPC::sendGetNumber(int def, int min, int max) {
 	player->getSession()->send(packet);
 }
 
-void NPC::sendStyle(int styles[], char size) {
+void NPC::sendStyle(int32_t styles[], char size) {
 	PacketCreator packet = npcPacket(NPCDialogs::style);
 	packet.addByte(size);
-	for (int i = 0; i < size; i++)
+	for (int32_t i = 0; i < size; i++)
 		packet.addInt(styles[i]);
 	player->getSession()->send(packet);
 }
 
-void NPC::setState(int state) {
+void NPC::setState(int32_t state) {
 	this->state = state;
 	luaNPC->setVariable("state", state);
 }

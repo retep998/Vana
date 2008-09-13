@@ -34,12 +34,12 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	unsigned char hit = 0;
 	unsigned char stance = 0;
 	packet->skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
-	int damage = packet->getInt();
-	int mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
-	int mapmobid = 0; // Map Mob ID
-	int nodamageid = 0;
-	short job = player->getJob();
-	short disease = 0;
+	int32_t damage = packet->getInt();
+	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
+	int32_t mapmobid = 0; // Map Mob ID
+	int32_t nodamageid = 0;
+	int16_t job = player->getJob();
+	int16_t disease = 0;
 	bool applieddamage = false;
 	PGMRInfo pgmr;
 	MobAttackInfo attack;
@@ -74,7 +74,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			break;		
 		default: // Else: Power Guard/Mana Reflection
 			pgmr.reduction = packet->getByte();
-			packet->skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
+			packet->skipBytes(1); // I think reduction is a int16_t, but it's a byte in the S -> C packet, so..
 			if (pgmr.reduction != 0) {
 				if (packet->getByte() == 0)
 					pgmr.isphysical = false; // Initialized as true, so the opposite case doesn't matter
@@ -88,7 +88,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 					damage = (damage - (damage * pgmr.reduction / 100)); 
 				Mob *mob = Maps::maps[player->getMap()]->getMob(mapmobid);
 				if (mob != 0) {
-					mob->setHP(mob->getHP() - (pgmr.damage * pgmr.reduction / 100));
+					mob->setHP(mob->getHP() - (int16_t) (pgmr.damage * pgmr.reduction / 100));
 					Mobs::displayHPBars(player, mob);
 					if (mob->getHP() <= 0)
 						mob->die(player);
@@ -103,7 +103,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 		default:  {
 			stance = packet->getByte(); // Power Stance, normal end of packet
 			if (stance > 0) {
-				int skillid = 0;
+				int32_t skillid = 0;
 				if (player->getActiveBuffs()->getActiveSkillLevel(1121002) > 0)
 					skillid = 1121002;
 				else if (player->getActiveBuffs()->getActiveSkillLevel(1221002) > 0)
@@ -119,7 +119,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 		}
 	}
 	if (damage == -1) { // 0 damage = regular miss, -1 = Fake/Guardian
-		short job = player->getJob();
+		int16_t job = player->getJob();
 		switch (job) {
 			case 412: nodamageid = 4120002; break; // Fake
 			case 422: nodamageid = 4220002; break; // Fake
@@ -136,22 +136,22 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	}
 	if (damage > 0 && !player->hasGMEquip()) {
 		if (player->getActiveBuffs()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
-			int mesorate = Skills::skills[4211005][player->getActiveBuffs()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
-			unsigned short hp = player->getHP();
-			int mesoloss = (int)(mesorate * (damage / 2) / 100);
-			int mesos = player->getInventory()->getMesos();
-			int newmesos = mesos - mesoloss;
+			int32_t mesorate = Skills::skills[4211005][player->getActiveBuffs()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
+			uint16_t hp = player->getHP();
+			int32_t mesoloss = (int32_t)(mesorate * (damage / 2) / 100);
+			int32_t mesos = player->getInventory()->getMesos();
+			int32_t newmesos = mesos - mesoloss;
 			if (newmesos > -1) {
-				damage = (int)(damage / 2); // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
+				damage = (int32_t)(damage / 2); // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
 			}
 			else { // Special damage calculation for not having enough mesos
 				double mesos2 = mesos + 0.0; // You can't get a double from math involving 2 ints, even if a decimal results
 				double reduction = 2.0 - ((mesos2 / mesoloss) / 2);
-				damage = (int)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
+				damage = (int32_t)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
 			}
 			player->getInventory()->setMesos(newmesos);
 			SkillsPacket::showSkillEffect(player, 4211005);
-			player->setHP(player->getHP() - damage);
+			player->setHP(player->getHP() - (int16_t) damage);
 			if (attack.deadlyattack && player->getMP() > 0)
 				player->setMP(1);
 			if (attack.mpburn > 0)
@@ -159,8 +159,8 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			applieddamage = true;
 		}
 		if (player->getActiveBuffs()->getActiveSkillLevel(2001002) > 0) { // Magic Guard
-			unsigned short mp = player->getMP();
-			unsigned short hp = player->getHP();
+			uint16_t mp = player->getMP();
+			uint16_t hp = player->getHP();
 			if (attack.deadlyattack) {
 				if (mp > 0)
 					player->setMP(1);
@@ -168,41 +168,41 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			}
 			else if (attack.mpburn > 0) {
 				player->setMP(mp - attack.mpburn);
-				player->setHP(hp - damage);
+				player->setHP(hp - (int16_t) damage);
 			}
 			else {
-				unsigned short reduc = Skills::skills[2001002][player->getActiveBuffs()->getActiveSkillLevel(2001002)].x;
-				int mpdamage = ((damage * reduc) / 100);
-				int hpdamage = damage - mpdamage;
+				uint16_t reduc = Skills::skills[2001002][player->getActiveBuffs()->getActiveSkillLevel(2001002)].x;
+				int32_t mpdamage = ((damage * reduc) / 100);
+				int32_t hpdamage = damage - mpdamage;
 				bool ison = false;
 				if (player->getJob() % 10 == 2) {
-						int infinity = player->getJob() * 10000 + 1004;
+						int32_t infinity = player->getJob() * 10000 + 1004;
 						if (player->getActiveBuffs()->getActiveSkillLevel(infinity) > 0)
 							ison = true;
 				}
 				if (mpdamage < mp || ison) {
-					player->setMP(mp - mpdamage);
-					player->setHP(hp - hpdamage);
+					player->setMP(mp - (int16_t) mpdamage);
+					player->setHP(hp - (int16_t) hpdamage);
 				}
 				else if (mpdamage >= mp) {
 					player->setMP(0);
-					player->setHP(hp - (hpdamage + (mpdamage - mp)));
+					player->setHP(hp - ((int16_t) hpdamage + ((int16_t) mpdamage - mp)));
 				}
 			}
 			applieddamage = true;
 		}
 		if (((job / 100) == 1) && ((job % 10) == 2)) { // Achilles for 4th job warriors
 			float achx = 1000.0;
-			int sid = 1120004;
+			int32_t sid = 1120004;
 			switch (job) {
 				case 112: sid = 1120004; break;
 				case 122: sid = 1220005; break;
 				case 132: sid = 1230005; break;
 			}
-			int slv = player->getSkills()->getSkillLevel(sid);
+			uint8_t slv = player->getSkills()->getSkillLevel(sid);
 			if (slv > 0) { achx = Skills::skills[sid][slv].x; }
 			double red = (2.0 - achx / 1000.0);
-			player->setHP(player->getHP() - (int)(damage / red));
+			player->setHP(player->getHP() - (int16_t)(damage / red));
 			if (attack.deadlyattack && player->getMP() > 0)
 				player->setMP(1);
 			if (attack.mpburn > 0)
@@ -216,7 +216,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 				player->setHP(1);
 			}
 			else
-				player->setHP(player->getHP() - damage);
+				player->setHP(player->getHP() - (int16_t) damage);
 			if (attack.mpburn > 0)
 				player->setMP(player->getMP() - attack.mpburn);
 		}
@@ -225,20 +225,20 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 }
 
 void PlayerHandler::handleFacialExpression(Player *player, ReadPacket *packet) {
-	int face = packet->getInt();
+	int32_t face = packet->getInt();
 	PlayersPacket::faceExpression(player, face);
 }
 
 void PlayerHandler::handleGetInfo(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
-	int playerid = packet->getInt();
+	int32_t playerid = packet->getInt();
 	PlayersPacket::showInfo(player, Players::Instance()->getPlayer(playerid), packet->getByte());
 }
 
 void PlayerHandler::handleHeal(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
-	short hp = packet->getShort();
-	short mp = packet->getShort();
+	int16_t hp = packet->getShort();
+	int16_t mp = packet->getShort();
 	player->setHP(player->getHP() + hp);
 	player->setMP(player->getMP() + mp);
 }
@@ -251,7 +251,7 @@ void PlayerHandler::handleMoving(Player *player, ReadPacket *packet) {
 }
 
 void PlayerHandler::handleSpecialSkills(Player *player, ReadPacket *packet) {
-	int skillid = packet->getInt();
+	int32_t skillid = packet->getInt();
 	switch (skillid) {
 		case 1121001: // Monster Magnet
 		case 1221001:
@@ -270,13 +270,13 @@ void PlayerHandler::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 4211001: { // Chakra, unknown heal formula
-			short dex = player->getDex();
-			short luk = player->getLuk();
-			short recovery = Skills::skills[4211001][player->getSkills()->getSkillLevel(4211001)].y;
-			short minimum = (luk / 2) * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
-			short maximum = luk * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
-			short range = maximum - minimum;
-			player->setHP(player->getHP() + (Randomizer::Instance()->randInt(range) + minimum));
+			int16_t dex = player->getDex();
+			int16_t luk = player->getLuk();
+			int16_t recovery = Skills::skills[4211001][player->getSkills()->getSkillLevel(4211001)].y;
+			int16_t minimum = (luk / 2) * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
+			int16_t maximum = luk * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
+			int16_t range = maximum - minimum;
+			player->setHP(player->getHP() + (Randomizer::Instance()->randShort(range) + minimum));
 			break;
 		}
 	}

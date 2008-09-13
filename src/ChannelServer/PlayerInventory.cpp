@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 
 /* Item struct */
-Item::Item(int equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0), name("") {
+Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0), name("") {
 	EquipInfo ei = Inventory::equips[equipid];
 	slots = ei.slots;
 	if (!random) {
@@ -47,27 +47,27 @@ Item::Item(int equipid, bool random) : id(equipid), amount(1), scrolls(0), petid
 		ispeed = ei.ispeed;
 	}
 	else {
-		istr = ei.istr > 0 ? ei.istr + Randomizer::Instance()->randInt(2)-1 : 0;
-		idex = ei.idex > 0 ? ei.idex + Randomizer::Instance()->randInt(2)-1 : 0;
-		iint = ei.iint > 0 ? ei.iint + Randomizer::Instance()->randInt(2)-1 : 0;
-		iluk = ei.iluk > 0 ? ei.iluk + Randomizer::Instance()->randInt(2)-1 : 0;
-		ihp = ei.ihp > 0 ? ei.ihp + Randomizer::Instance()->randInt(10)-5 : 0;
-		imp = ei.imp > 0 ? ei.imp + Randomizer::Instance()->randInt(10)-5 : 0;
-		iwatk = ei.iwatk > 0 ? ei.iwatk + Randomizer::Instance()->randInt(10)-5 : 0;
-		imatk = ei.imatk > 0 ? ei.imatk + Randomizer::Instance()->randInt(10)-5 : 0;
-		iwdef = ei.iwdef > 0 ? ei.iwdef + Randomizer::Instance()->randInt(10)-5 : 0;
-		imdef = ei.imdef > 0 ? ei.imdef + Randomizer::Instance()->randInt(10)-5 : 0;
-		iacc = ei.iacc > 0 ? ei.iacc + Randomizer::Instance()->randInt(2)-1 : 0;
-		iavo = ei.iavo > 0 ? ei.iavo + Randomizer::Instance()->randInt(2)-1 : 0;
+		istr = ei.istr > 0 ? ei.istr + Randomizer::Instance()->randShort(2)-1 : 0;
+		idex = ei.idex > 0 ? ei.idex + Randomizer::Instance()->randShort(2)-1 : 0;
+		iint = ei.iint > 0 ? ei.iint + Randomizer::Instance()->randShort(2)-1 : 0;
+		iluk = ei.iluk > 0 ? ei.iluk + Randomizer::Instance()->randShort(2)-1 : 0;
+		ihp = ei.ihp > 0 ? ei.ihp + Randomizer::Instance()->randShort(10)-5 : 0;
+		imp = ei.imp > 0 ? ei.imp + Randomizer::Instance()->randShort(10)-5 : 0;
+		iwatk = ei.iwatk > 0 ? ei.iwatk + Randomizer::Instance()->randShort(10)-5 : 0;
+		imatk = ei.imatk > 0 ? ei.imatk + Randomizer::Instance()->randShort(10)-5 : 0;
+		iwdef = ei.iwdef > 0 ? ei.iwdef + Randomizer::Instance()->randShort(10)-5 : 0;
+		imdef = ei.imdef > 0 ? ei.imdef + Randomizer::Instance()->randShort(10)-5 : 0;
+		iacc = ei.iacc > 0 ? ei.iacc + Randomizer::Instance()->randShort(2)-1 : 0;
+		iavo = ei.iavo > 0 ? ei.iavo + Randomizer::Instance()->randShort(2)-1 : 0;
 		ihand = ei.ihand;
-		ijump = ei.ijump > 0 ? ei.ijump + Randomizer::Instance()->randInt(2)-1 : 0;
-		ispeed = ei.ispeed > 0 ? ei.ispeed + Randomizer::Instance()->randInt(2)-1 : 0;
+		ijump = ei.ijump > 0 ? ei.ijump + Randomizer::Instance()->randShort(2)-1 : 0;
+		ispeed = ei.ispeed > 0 ? ei.ispeed + Randomizer::Instance()->randShort(2)-1 : 0;
 	}
 }
 
 /* PlayerInventory class */
 PlayerInventory::PlayerInventory(Player *player, unsigned char maxslots[5],
-								 int mesos) :
+								 int32_t mesos) :
 player(player),
 mesos(mesos)
 {
@@ -86,14 +86,14 @@ void PlayerInventory::addMaxSlots(char inventory, char rows) { // Useful with .l
 	InventoryPacket::updateSlots(player, inventory + 1, maxslots[inventory]);
 }
 
-void PlayerInventory::setMesos(int mesos, bool is) {
+void PlayerInventory::setMesos(int32_t mesos, bool is) {
 	if (mesos < 0)
 		mesos = 0;
 	this->mesos = mesos;
-	PlayerPacket::updateStat(player, 0x40000, mesos, is);
+	PlayerPacket::updateStatInt(player, 0x40000, mesos, is);
 }
 
-void PlayerInventory::addItem(char inv, short slot, Item *item) {
+void PlayerInventory::addItem(char inv, int16_t slot, Item *item) {
 	items[inv-1][slot] = item;
 	if (itemamounts.find(item->id) != itemamounts.end())
 		itemamounts[item->id] += item->amount;
@@ -103,14 +103,14 @@ void PlayerInventory::addItem(char inv, short slot, Item *item) {
 		addEquipped(slot, item->id);
 }
 
-Item * PlayerInventory::getItem(char inv, short slot) {
+Item * PlayerInventory::getItem(char inv, int16_t slot) {
 	inv -= 1;
 	if (items[inv].find(slot) != items[inv].end())
 		return items[inv][slot];
 	return 0;
 }
 
-void PlayerInventory::deleteItem(char inv, short slot) {
+void PlayerInventory::deleteItem(char inv, int16_t slot) {
 	inv -= 1;
 	if (items[inv].find(slot) != items[inv].end()) {
 		itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
@@ -121,7 +121,7 @@ void PlayerInventory::deleteItem(char inv, short slot) {
 	}
 }
 
-void PlayerInventory::setItem(char inv, short slot, Item *item) {
+void PlayerInventory::setItem(char inv, int16_t slot, Item *item) {
 	inv -= 1;
 	if (item == 0) {
 		items[inv].erase(slot);
@@ -135,14 +135,14 @@ void PlayerInventory::setItem(char inv, short slot, Item *item) {
 	}
 }
 
-short PlayerInventory::getItemAmountBySlot(char inv, short slot) {
+int16_t PlayerInventory::getItemAmountBySlot(char inv, int16_t slot) {
 	inv -= 1;
 	if (items[inv].find(slot) != items[inv].end())
 		return items[inv][slot]->amount;
 	return 0;
 }
 
-void PlayerInventory::addEquipped(short slot, int itemid) {
+void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
 	slot = abs(slot);
 
 	if (slot > 100) // Cash items
@@ -151,7 +151,7 @@ void PlayerInventory::addEquipped(short slot, int itemid) {
 		equipped[slot][1] = itemid;
 }
 
-int PlayerInventory::getEquippedID(short slot) {
+int32_t PlayerInventory::getEquippedID(int16_t slot) {
 	if (equipped[slot][1] != 0)
 		return equipped[slot][1];
 	return 0;
@@ -178,22 +178,22 @@ void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 	packet.addInt(equipped[11][0]); // Cash weapon
 }
 
-int PlayerInventory::getItemAmount(int itemid) {
+uint16_t PlayerInventory::getItemAmount(int32_t itemid) {
 	if (itemamounts.find(itemid) != itemamounts.end())
 		return itemamounts[itemid];
 	return 0;
 }
 
-bool PlayerInventory::hasOpenSlotsFor(int itemid, short amount) {
+bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount) {
 	bool has = false;
-	short incrementor = 0;
-	short required = 0;
+	int16_t incrementor = 0;
+	int16_t required = 0;
 	char inv = GETINVENTORY(itemid);
 	if (inv == 1 || ISRECHARGEABLE(itemid))
 		required = amount; // These aren't stackable
 	else {
-	//	int existing = getItemAmount(itemid);
-		short maxslot = Inventory::items[itemid].maxslot;
+	//	int32_t existing = getItemAmount(itemid);
+		int16_t maxslot = Inventory::items[itemid].maxslot;
 	/*
 	// Bug in global, would be fixed by uncommenting all of these commented lines:
 	// It doesn't matter if you already have a slot with a partial stack or not, scripts require at least 1 empty slot	
@@ -202,20 +202,20 @@ bool PlayerInventory::hasOpenSlotsFor(int itemid, short amount) {
 			if (existing > 0) { // If not, calculate how many slots necessary
 				existing += amount;
 				if (existing > maxslot) { // Only have to bother with required slots if it would put us over the limit of a slot
-				required = (int)(existing / maxslot);
+				required = (int32_t)(existing / maxslot);
 				if ((existing % maxslot) > 0)
 					required += 1;
 				}
 			}
 			else { // If it is, treat it as though no items exist at all
-				required = (int)(amount / maxslot);
+				required = (int32_t)(amount / maxslot);
 				if ((amount % maxslot) > 0)
 					required += 1;
 			}
 		}
 		else { // No items exist, straight computation
 		*/
-		required = (int)(amount / maxslot);
+		required = (int32_t)(amount / maxslot);
 		if ((amount % maxslot) > 0)
 			required += 1;
 	//	}
@@ -267,7 +267,7 @@ void PlayerInventory::load() {
 			pet->setIndex((signed char) res[i][23]);
 			pet->setName((string) res[i][24]);
 			pet->setLevel((unsigned char) res[i][25]);
-			pet->setCloseness((short) res[i][26]);
+			pet->setCloseness((int16_t) res[i][26]);
 			pet->setFullness((unsigned char) res[i][27]);
 			pet->setInventorySlot((unsigned char)res[i][1]);
 			pet->setSummoned(false);
@@ -295,12 +295,12 @@ void PlayerInventory::save() {
 				query << ",(";
 			}
 			query << mysqlpp::quote << player->getId() << ","
-				<< mysqlpp::quote << (short) i << ","
+				<< mysqlpp::quote << (int16_t) i << ","
 				<< mysqlpp::quote << iter->first << ","
 				<< mysqlpp::quote << item->id << ","
 				<< mysqlpp::quote << item->amount << ","
-				<< mysqlpp::quote << (short) item->slots << ","
-				<< mysqlpp::quote << (short) item->scrolls << ","
+				<< mysqlpp::quote << (int16_t) item->slots << ","
+				<< mysqlpp::quote << (int16_t) item->scrolls << ","
 				<< mysqlpp::quote << item->istr << ","
 				<< mysqlpp::quote << item->idex << ","
 				<< mysqlpp::quote << item->iint << ","

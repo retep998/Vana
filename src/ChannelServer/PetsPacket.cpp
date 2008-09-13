@@ -36,7 +36,7 @@ void PetsPacket::showChat(Player *player, Pet *pet, const string &message, char 
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void PetsPacket::movePet(Player *player, Pet *pet, unsigned char *buf, int buflen) {
+void PetsPacket::movePet(Player *player, Pet *pet, unsigned char *buf, int32_t buflen) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_SHOW_MOVING);
 	packet.addInt(player->getId());

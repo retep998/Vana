@@ -18,12 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef STRINGUTILITIES_H
 #define STRINGUTILITIES_H
 
+#include "Types.h"
 #include <string>
 
 using std::string;
 
 namespace StringUtilities {
-	int noCaseCompare(const string &s1, const string &s2);
+	int32_t noCaseCompare(const string &s1, const string &s2);
 	string toUpper(const string &s);
 	void trim(string &s);
 	string trim(const string &s);

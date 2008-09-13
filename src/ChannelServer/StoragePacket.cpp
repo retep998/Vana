@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
 
-void StoragePacket::showStorage(Player *player, int npcid) {
+void StoragePacket::showStorage(Player *player, int32_t npcid) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x15); // Type of storage action
@@ -47,7 +47,7 @@ void StoragePacket::addItem(Player *player, char inv) {
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x0c);
 	packet.addByte(player->getStorage()->getSlots());
-	char type = (char) pow((float) 2, (int) inv) * 2; // Gotta work some magic on type, which starts as inventory
+	char type = (char) pow((float) 2, (int32_t) inv) * 2; // Gotta work some magic on type, which starts as inventory
 	packet.addInt(type);
 	packet.addInt(0);
 	packet.addByte(player->getStorage()->getNumItems(inv));
@@ -64,7 +64,7 @@ void StoragePacket::takeItem(Player *player, char inv) {
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x09);
 	packet.addByte(player->getStorage()->getSlots());
-	char type = (char) pow((float) 2, (int) inv) * 2;
+	char type = (char) pow((float) 2, (int32_t) inv) * 2;
 	packet.addInt(type);
 	packet.addInt(0);
 	packet.addByte(player->getStorage()->getNumItems(inv));
@@ -76,7 +76,7 @@ void StoragePacket::takeItem(Player *player, char inv) {
 	player->getSession()->send(packet);
 }
 
-void StoragePacket::changeMesos(Player *player, int mesos) {
+void StoragePacket::changeMesos(Player *player, int32_t mesos) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x12);

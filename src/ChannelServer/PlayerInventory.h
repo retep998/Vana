@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERINVENTORY_H
 #define PLAYERINVENTORY_H
 
+#include "Types.h"
 #include <unordered_map>
 
 using std::tr1::unordered_map;
@@ -29,8 +30,8 @@ class PacketCreator;
 struct Item {
 	Item () : amount(1), slots(0), scrolls(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
 		imp(0), iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0), petid(0), name("") { }
-	Item (int itemid, short amount) : id(itemid), amount(amount), petid(0), name("") { }
-	Item (int equipid, bool random);
+	Item (int32_t itemid, int16_t amount) : id(itemid), amount(amount), petid(0), name("") { }
+	Item (int32_t equipid, bool random);
 	Item (Item *item) {
 		id = item->id;
 		amount = item->amount;
@@ -54,58 +55,58 @@ struct Item {
 		petid = item->petid;
 		name = item->name;
 	}
-	int id;
-	short amount;
+	int32_t id;
+	int16_t amount;
 	char slots;
 	char scrolls;
-	short istr;
-	short idex;
-	short iint;
-	short iluk;
-	short ihp;
-	short imp;
-	short iwatk;
-	short imatk;
-	short iwdef;
-	short imdef;
-	short iacc;
-	short iavo;
-	short ihand;
-	short ijump;
-	short ispeed;
-	int petid;
+	int16_t istr;
+	int16_t idex;
+	int16_t iint;
+	int16_t iluk;
+	int16_t ihp;
+	int16_t imp;
+	int16_t iwatk;
+	int16_t imatk;
+	int16_t iwdef;
+	int16_t imdef;
+	int16_t iacc;
+	int16_t iavo;
+	int16_t ihand;
+	int16_t ijump;
+	int16_t ispeed;
+	int32_t petid;
 	string name;
 };
-typedef unordered_map<short, Item *> iteminventory;
+typedef unordered_map<int16_t, Item *> iteminventory;
 
 class PlayerInventory {
 public:
-	PlayerInventory(Player *player, unsigned char maxslots[5], int mesos);
+	PlayerInventory(Player *player, unsigned char maxslots[5], int32_t mesos);
 	unsigned char getMaxSlots(char inv) const { return maxslots[inv - 1]; }
-	void setMesos(int mesos, bool is = false);
-	int getMesos() const { return this->mesos; }
+	void setMesos(int32_t mesos, bool is = false);
+	int32_t getMesos() const { return this->mesos; }
 	void addMaxSlots(char inventory, char rows);
-	void addItem(char inv, short slot, Item *item);
-	Item * getItem(char inv, short slot);
-	void deleteItem(char inv, short slot);
-	void setItem(char inv, short slot, Item *item);
-	short getItemAmountBySlot(char inv, short slot);
+	void addItem(char inv, int16_t slot, Item *item);
+	Item * getItem(char inv, int16_t slot);
+	void deleteItem(char inv, int16_t slot);
+	void setItem(char inv, int16_t slot, Item *item);
+	int16_t getItemAmountBySlot(char inv, int16_t slot);
 	void addEquippedPacket(PacketCreator &packet);
-	int getEquippedID(short slot);
-	void changeItemAmount(int itemid, short amount) { itemamounts[itemid] += amount; }
-	int getItemAmount(int itemid);
-	bool hasOpenSlotsFor(int itemid, short amount);
+	int32_t getEquippedID(int16_t slot);
+	void changeItemAmount(int32_t itemid, int16_t amount) { itemamounts[itemid] += amount; }
+	uint16_t getItemAmount(int32_t itemid);
+	bool hasOpenSlotsFor(int32_t itemid, int16_t amount);
 	iteminventory * getItems(char inv) { return &items[inv - 1]; }
 	void load();
 	void save();
 private:
 	unsigned char maxslots[5];
 	Player *player;
-	int mesos;
+	int32_t mesos;
 	iteminventory items[5];
-	int equipped[50][2];
-	unordered_map<int, int> itemamounts;
-	void addEquipped(short slot, int itemid);
+	int32_t equipped[50][2];
+	unordered_map<int32_t, uint16_t> itemamounts;
+	void addEquipped(int16_t slot, int32_t itemid);
 };
 
 #endif

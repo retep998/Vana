@@ -29,14 +29,14 @@ struct PortalInfo;
 
 class LuaPortal : public LuaScriptable {
 public:
-	LuaPortal(const string &filename, int playerid, PortalInfo *portal);
+	LuaPortal(const string &filename, int32_t playerid, PortalInfo *portal);
 private:
 	PortalInfo *portal;
 };
 
 namespace LuaExports {
 	PortalInfo * getPortal(lua_State *luaVm);
-	extern unordered_map<int, PortalInfo *> portals;
+	extern unordered_map<int32_t, PortalInfo *> portals;
 
 	// The exports
 	int getPortalFrom(lua_State *luaVm);

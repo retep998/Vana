@@ -58,7 +58,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool useskill, int mp) {
+void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_MOB_RESPONSE);
 	packet.addInt(mobid);
@@ -68,7 +68,7 @@ void MobsPacket::moveMobResponse(Player *player, int mobid, short moveid, bool u
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::moveMob(Player *player, int mobid, bool useskill, int skill, unsigned char *buf, int len) {
+void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int32_t skill, unsigned char *buf, int32_t len) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_MOB);
 	packet.addInt(mobid);
@@ -84,7 +84,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 	unsigned char tbyte = pack->getByte();
 	unsigned char targets = tbyte / 0x10;
 	unsigned char hits = tbyte % 0x10;
-	int skillid = pack->getInt();
+	int32_t skillid = pack->getInt();
 	bool s4211006 = false;
 	if (skillid == 4211006) {
 		tbyte = (targets * 0x10) + 0x0A;
@@ -108,7 +108,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 	if (skillid == 5201002) {
 		pack->skipBytes(4); // Charge
 	}
-	int masteryid = 0;
+	int32_t masteryid = 0;
 	switch (GETWEAPONTYPE(player->getInventory()->getEquippedID(11))) {
 		case WEAPON_1H_SWORD:
 		case WEAPON_2H_SWORD:
@@ -145,7 +145,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 	packet.addByte((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
 	packet.addInt(0);
 	for (char i = 0; i < targets; i++) {
-		int mapmobid = pack->getInt();
+		int32_t mapmobid = pack->getInt();
 		packet.addInt(mapmobid);
 		packet.addByte(0x06);
 		pack->skipBytes(12);
@@ -156,7 +156,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 		else
 			pack->skipBytes(2);
 		for (char j = 0; j < hits; j++) {
-			int damage = pack->getInt();
+			int32_t damage = pack->getInt();
 			packet.addInt(damage);
 		}
 		pack->skipBytes(4);
@@ -169,7 +169,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	unsigned char tbyte = pack->getByte();
 	char targets = tbyte / 0x10;
 	char hits = tbyte % 0x10;
-	int skillid = pack->getInt();
+	int32_t skillid = pack->getInt();
 	switch (skillid) {
 		case 3121004:
 		case 3221001:
@@ -183,8 +183,8 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	unsigned char w_class = pack->getByte(); // Weapon subclass
 	unsigned char w_speed = pack->getByte(); // Weapon speed
 	pack->skipBytes(4); // Ticks
-	short slot = pack->getShort(); // Slot
-	short csstar = pack->getShort(); // Cash Shop star
+	int16_t slot = pack->getShort(); // Slot
+	int16_t csstar = pack->getShort(); // Cash Shop star
 	if (!shadow_meso) {
 		if ((display & 0x40) == 0x40)
 			// Shadow Claw/+Shadow Partner = 0x40/0x48 - bitwise and with 0x40 = 0x40 for both
@@ -203,7 +203,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	packet.addByte(display);
 	packet.addByte(animation);
 	packet.addByte(w_speed);
-	int masteryid = 0;
+	int32_t masteryid = 0;
 	switch (GETWEAPONTYPE(player->getInventory()->getEquippedID(11))) {
 		case WEAPON_BOW:
 			masteryid = 3100000;
@@ -221,7 +221,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	packet.addByte((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
 	// Bug in global:
 	// The colored swoosh does not display as it should
-	int itemid = 0;
+	int32_t itemid = 0;
 	if (!shadow_meso) {
 		if (csstar > 0)
 			itemid = player->getInventory()->getItem(5, csstar)->id;
@@ -231,12 +231,12 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	packet.addInt(itemid);
 	pack->skipBytes(1); // 0x00 = AoE, 0x41 = other
 	for (char i = 0; i < targets; i++) {
-		int mobid = pack->getInt();
+		int32_t mobid = pack->getInt();
 		packet.addInt(mobid);
 		packet.addByte(0x06);
 		pack->skipBytes(14);
 		for (char j = 0; j < hits; j++) {
-			int damage = pack->getInt();
+			int32_t damage = pack->getInt();
 			switch (skillid) {
 				case 3221007: // Snipe is always crit
 					damage += 0x80000000; // Critical damage = 0x80000000 + damage
@@ -261,8 +261,8 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	packet.addInt(player->getId());
 	packet.addByte(tbyte);
 	packet.addByte(1); // Spells are always a skill
-	int skillid = pack->getInt();
-	int charge = 0;
+	int32_t skillid = pack->getInt();
+	int32_t charge = 0;
 	packet.addInt(skillid);
 	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
 		charge = pack->getInt();
@@ -274,14 +274,14 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	packet.addByte(0); // Mastery byte is always 0 because spells don't have a swoosh
 	packet.addInt(0); // No clue
 	for (char i = 0; i < targets; i++) {
-		int mobid = pack->getInt();
+		int32_t mobid = pack->getInt();
 		packet.addInt(mobid);
 		packet.addByte(-1);
 		pack->skipBytes(3); // Useless crap for display
 		pack->skipBytes(1); // State
 		pack->skipBytes(10); // Useless crap for display continued
 		for (char j = 0; j < hits; j++) {
-			int damage = pack->getInt();
+			int32_t damage = pack->getInt();
 			packet.addInt(damage);
 		}
 		pack->skipBytes(4);
@@ -291,7 +291,7 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::showHP(Player *player, int mobid, char per) {
+void MobsPacket::showHP(Player *player, int32_t mobid, char per) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
@@ -299,7 +299,7 @@ void MobsPacket::showHP(Player *player, int mobid, char per) {
 	player->getSession()->send(packet);
 }
 // Miniboss HP
-void MobsPacket::showMinibossHP(Player *player, int mobid, char per) {
+void MobsPacket::showMinibossHP(Player *player, int32_t mobid, char per) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);

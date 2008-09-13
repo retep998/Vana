@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERACTIVEBUFF_H
 #define PLAYERACTIVEBUFF_H
 
+#include "Types.h"
 #include <list>
 #include <memory>
 #include <unordered_map>
@@ -43,44 +44,44 @@ public:
 	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0), m_berserk(false) { }
 
 	// Buff Skills
-	void addBuff(int skill, unsigned char level);
-	void removeBuff(int skill, bool fromTimer = false);
+	void addBuff(int32_t skill, unsigned char level);
+	void removeBuff(int32_t skill, bool fromTimer = false);
 	void removeBuff();
-	int buffTimeLeft(int skill);
+	int32_t buffTimeLeft(int32_t skill);
 
 	// Skill "acts"
-	void addAct(int skill, Act act, short value, int time);
-	Timer::Container * getActTimer(int skill);
-	void removeAct(int skill);
+	void addAct(int32_t skill, Act act, int16_t value, int32_t time);
+	Timer::Container * getActTimer(int32_t skill);
+	void removeAct(int32_t skill);
 
 	// Combo attack
-	void setCombo(char combo, bool sendPacket);
+	void setCombo(uint8_t combo, bool sendPacket);
 	void addCombo();
-	int getCombo() const { return m_combo; }
+	uint8_t getCombo() const { return m_combo; }
 
 	// Berserk
 	bool getBerserk() const { return m_berserk; }
 	void checkBerserk(bool display = false);
 
 	// Map garbage
-	void deleteSkillMapEnterInfo(int skillid);
+	void deleteSkillMapEnterInfo(int32_t skillid);
 	SkillMapEnterActiveInfo getSkillMapEnterInfo();
-	SkillActiveInfo getSkillPlayerInfo(int skillid);
-	SkillActiveInfo getSkillMapInfo(int skillid);
-	unsigned char getActiveSkillLevel(int skillid);
-	void setSkillPlayerInfo(int skillid, SkillActiveInfo skill);
-	void setSkillMapInfo(int skillid, SkillActiveInfo skill);
-	void setSkillMapEnterInfo(int skillid, vector<SkillMapActiveInfo> skill);
-	void setActiveSkillLevel(int skillid, int level);
+	SkillActiveInfo getSkillPlayerInfo(int32_t skillid);
+	SkillActiveInfo getSkillMapInfo(int32_t skillid);
+	unsigned char getActiveSkillLevel(int32_t skillid);
+	void setSkillPlayerInfo(int32_t skillid, SkillActiveInfo skill);
+	void setSkillMapInfo(int32_t skillid, SkillActiveInfo skill);
+	void setSkillMapEnterInfo(int32_t skillid, vector<SkillMapActiveInfo> skill);
+	void setActiveSkillLevel(int32_t skillid, uint8_t level);
 private:
 	Player *m_player;
-	list<int> m_buffs;
-	unordered_map<int, SkillActiveInfo> activeplayerskill;
-	unordered_map<int, SkillActiveInfo> activemapskill;
+	list<int32_t> m_buffs;
+	unordered_map<int32_t, SkillActiveInfo> activeplayerskill;
+	unordered_map<int32_t, SkillActiveInfo> activemapskill;
 	vector<SkillMapActiveInfo> activemapenterskill;
-	unordered_map<int, unsigned char> activelevels;
-	unordered_map<int, shared_ptr<Timer::Container>> m_skill_acts;
-	char m_combo;
+	unordered_map<int32_t, unsigned char> activelevels;
+	unordered_map<int32_t, shared_ptr<Timer::Container>> m_skill_acts;
+	uint8_t m_combo;
 	bool m_berserk;
 };
 

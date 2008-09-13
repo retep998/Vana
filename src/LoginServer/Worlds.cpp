@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerLogin.h"
 #include "ReadPacket.h"
 
-unordered_map<int, World *> Worlds::worlds;
+unordered_map<uint8_t, World *> Worlds::worlds;
 
 void Worlds::showWorld(PlayerLogin *player) {
 	if (player->getStatus() != 4) {
@@ -32,7 +32,7 @@ void Worlds::showWorld(PlayerLogin *player) {
 		return;
 	}
 
-	for (unordered_map<int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
+	for (unordered_map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
 		if (iter->second->connected == true)
 			LoginPacket::showWorld(player, iter->second);
 	LoginPacket::worldEnd(player);
@@ -60,7 +60,7 @@ void Worlds::channelSelect(PlayerLogin *player, ReadPacket *packet) {
 
 char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	World *world = 0;
-	for (unordered_map<int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+	for (unordered_map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->connected == 0) {
 			player->setWorldId(iter->first);
 			world = iter->second;
@@ -72,7 +72,7 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	}
 	LoginServerAcceptPlayerPacket::connect(player, world);
 	if (world != 0) {
-		std::cout << "Assigned world " << (int) world->id << " to World Server." << std::endl;
+		std::cout << "Assigned world " << (int32_t) world->id << " to World Server." << std::endl;
 	}
 	else {
 		std::cout << "Error: No more worlds to assign." << std::endl;
@@ -83,9 +83,9 @@ char Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 
 char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	char worldid = -1;
-	short port;
+	int16_t port;
 	string ip;
-	for (unordered_map<int, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+	for (unordered_map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->channels.size() < (size_t) iter->second->maxChannels && iter->second->connected) {
 			worldid = iter->second->id;
 			port = iter->second->port;
@@ -95,7 +95,7 @@ char Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	}
 	LoginServerAcceptPlayerPacket::connectChannel(player, worldid, ip, port);
 	if (worldid != -1) {
-		std::cout << "Assigning channel server to world server " << (int) worldid << "." << std::endl;
+		std::cout << "Assigning channel server to world server " << (int32_t) worldid << "." << std::endl;
 	}
 	else {
 		std::cout << "Error: No more channels to assign." << std::endl;

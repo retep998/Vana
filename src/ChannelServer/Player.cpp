@@ -127,7 +127,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 }
 
 void Player::playerConnect(ReadPacket *packet) {
-	int id = packet->getInt();
+	int32_t id = packet->getInt();
 	if (!Connectable::Instance()->checkPlayer(id)) {
 		//hacking
 		getSession()->disconnect();
@@ -157,20 +157,20 @@ void Player::playerConnect(ReadPacket *packet) {
 	eyes = res[0]["eyes"];
 	hair = res[0]["hair"];
 	level = (unsigned char) res[0]["level"];
-	job = (short) res[0]["job"];
-	str = (short) res[0]["str"];
-	dex = (short) res[0]["dex"];
-	intt = (short) res[0]["int"];
-	luk = (short) res[0]["luk"];
-	hp = (short) res[0]["chp"];
-	rmhp = mhp = (short) res[0]["mhp"];
-	mp = (short) res[0]["cmp"];
-	rmmp = mmp = (short) res[0]["mmp"];
-	hpmp_ap = (short) res[0]["hpmp_ap"];
-	ap = (short) res[0]["ap"];
-	sp = (short) res[0]["sp"];
+	job = (int16_t) res[0]["job"];
+	str = (int16_t) res[0]["str"];
+	dex = (int16_t) res[0]["dex"];
+	intt = (int16_t) res[0]["int32_t"];
+	luk = (int16_t) res[0]["luk"];
+	hp = (int16_t) res[0]["chp"];
+	rmhp = mhp = (int16_t) res[0]["mhp"];
+	mp = (int16_t) res[0]["cmp"];
+	rmmp = mmp = (int16_t) res[0]["mmp"];
+	hpmp_ap = (int16_t) res[0]["hpmp_ap"];
+	ap = (int16_t) res[0]["ap"];
+	sp = (int16_t) res[0]["sp"];
 	exp = res[0]["exp"];
-	fame = (short) res[0]["fame"];
+	fame = (int16_t) res[0]["fame"];
 	map = res[0]["map"];
 	mappos = (unsigned char) res[0]["pos"];
 	gm = res[0]["gm"];
@@ -236,7 +236,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	WorldServerConnectPlayerPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name, map, job, level);
 }
 
-void Player::setHP(int hp, bool is) {
+void Player::setHP(uint16_t hp, bool is) {
 	if (hp < 0)
 		this->hp = 0;
 	else if (hp > mhp)
@@ -244,11 +244,11 @@ void Player::setHP(int hp, bool is) {
 	else
 		this->hp = hp;
 	if (is)
-		PlayerPacket::updateStat(this, 0x400, static_cast<short>(this->hp));
+		PlayerPacket::updateStatShort(this, 0x400, this->hp);
 	getActiveBuffs()->checkBerserk();
 }
 
-void Player::setMP(int mp, bool is) {
+void Player::setMP(uint16_t mp, bool is) {
 	if (!(getActiveBuffs()->getActiveSkillLevel(2121004) > 0 || getActiveBuffs()->getActiveSkillLevel(2221004) > 0 || getActiveBuffs()->getActiveSkillLevel(2321004) > 0)) {
 		if (mp < 0)
 			this->mp = 0;
@@ -257,79 +257,79 @@ void Player::setMP(int mp, bool is) {
 		else
 			this->mp = mp;
 	}
-	PlayerPacket::updateStat(this, 0x1000, static_cast<short>(this->mp), is);
+	PlayerPacket::updateStatShort(this, 0x1000, this->mp, is);
 }
 
-void Player::setSp(short sp) {
+void Player::setSp(int16_t sp) {
 	this->sp = sp;
-	PlayerPacket::updateStat(this, 0x8000, sp);
+	PlayerPacket::updateStatShort(this, 0x8000, sp);
 }
 
-void Player::setAp(short ap) {
+void Player::setAp(int16_t ap) {
 	this->ap = ap;
-	PlayerPacket::updateStat(this, 0x4000, ap);
+	PlayerPacket::updateStatShort(this, 0x4000, ap);
 }
 
-void Player::setJob(short job) {
+void Player::setJob(int16_t job) {
 	this->job = job;
-	PlayerPacket::updateStat(this, 0x20, job);
+	PlayerPacket::updateStatShort(this, 0x20, job);
 	LevelsPacket::jobChange(this);
 	WorldServerConnectPlayerPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->id, job);
 }
 
-void Player::setStr(short str) {
+void Player::setStr(int16_t str) {
 	this->str = str;
-	PlayerPacket::updateStat(this, 0x40, str);
+	PlayerPacket::updateStatShort(this, 0x40, str);
 }
 
-void Player::setDex(short dex) {
+void Player::setDex(int16_t dex) {
 	this->dex = dex;
-	PlayerPacket::updateStat(this, 0x80, dex);
+	PlayerPacket::updateStatShort(this, 0x80, dex);
 }
 
-void Player::setInt(short intt) {
+void Player::setInt(int16_t intt) {
 	this->intt = intt;
-	PlayerPacket::updateStat(this, 0x100, intt);
+	PlayerPacket::updateStatShort(this, 0x100, intt);
 }
 
-void Player::setLuk(short luk) {
+void Player::setLuk(int16_t luk) {
 	this->luk = luk;
-	PlayerPacket::updateStat(this, 0x200, luk);
+	PlayerPacket::updateStatShort(this, 0x200, luk);
 }
 
-void Player::setMHP(int mhp) {
+void Player::setMHP(uint16_t mhp) {
 	if (mhp > 30000) { mhp = 30000; }
 	this->mhp = mhp;
-	PlayerPacket::updateStat(this, 0x800, rmhp);
+	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 	getActiveBuffs()->checkBerserk();
 }
 
-void Player::setRMHP(int rmhp) {
+void Player::setRMHP(uint16_t rmhp) {
 	if (rmhp > 30000) { rmhp = 30000; }
 	this->rmhp = rmhp;
-	PlayerPacket::updateStat(this, 0x800, rmhp);
+	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 }
 
-void Player::setMMP(int mmp) {
+void Player::setMMP(uint16_t mmp) {
 	if (mmp > 30000) { mmp = 30000; }
 	this->mmp = mmp;
-	PlayerPacket::updateStat(this, 0x2000, rmmp);
+	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
 
-void Player::setRMMP(int rmmp) {
+void Player::setRMMP(uint16_t rmmp) {
 	if (rmmp > 30000) { rmmp = 30000; }
 	this->rmmp = rmmp;
-	PlayerPacket::updateStat(this, 0x2000, rmmp);
+	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
 
-void Player::setExp(int exp) {
+void Player::setExp(int32_t exp) {
 	this->exp = exp;
-	PlayerPacket::updateStat(this, 0x10000, exp);
+	PlayerPacket::updateStatInt(this, 0x10000, exp);
 }
 
-void Player::setLevel(unsigned char level) {
+void Player::setLevel(uint8_t level) {
 	this->level = level;
-	PlayerPacket::updateStat(this, 0x10, level);
+	PlayerPacket::updateStatShort(this, 0x10, level);
 	LevelsPacket::levelUP(this);
 	WorldServerConnectPlayerPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), this->id, level);
 }
@@ -340,14 +340,14 @@ void Player::changeChannel(char channel) {
 
 void Player::changeKey(ReadPacket *packet) {
 	packet->skipBytes(4);
-	int howmany = packet->getInt();
+	int32_t howmany = packet->getInt();
 	if (howmany == 0) return;
 
 	KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
-	for (int i = 0; i < howmany; i++) {
-		int pos = packet->getInt();
+	for (int32_t i = 0; i < howmany; i++) {
+		int32_t pos = packet->getInt();
 		char type = packet->getByte();
-		int action = packet->getInt();
+		int32_t action = packet->getInt();
 		keyMaps.add(pos, new KeyMaps::KeyMap(type, action));
 	}
 
@@ -363,37 +363,37 @@ void Player::changeSkillMacros(ReadPacket *packet) {
 	for (unsigned char i = 0; i < num; i++) {
 		string name = packet->getString();
 		bool shout = packet->getByte() != 0;
-		int skill1 = packet->getInt();
-		int skill2 = packet->getInt();
-		int skill3 = packet->getInt();
+		int32_t skill1 = packet->getInt();
+		int32_t skill2 = packet->getInt();
+		int32_t skill3 = packet->getInt();
 
 		skillMacros.add(i, new SkillMacros::SkillMacro(name, shout, skill1, skill2, skill3));
 	}
 	skillMacros.save(this->id);
 }
 
-void Player::setHair(int id) {
+void Player::setHair(int32_t id) {
 	this->hair = id;
-	PlayerPacket::updateStat(this, 0x04, id);
+	PlayerPacket::updateStatInt(this, 0x04, id);
 }
 
-void Player::setEyes(int id) {
+void Player::setEyes(int32_t id) {
 	this->eyes = id;
-	PlayerPacket::updateStat(this, 0x02, id);
+	PlayerPacket::updateStatInt(this, 0x02, id);
 }
 
 void Player::setSkin(char id) {
 	this->skin = id;
-	PlayerPacket::updateStat(this, 0x01, id);
+	PlayerPacket::updateStatInt(this, 0x01, id);
 }
 
-void Player::setFame(short fame) {
+void Player::setFame(int16_t fame) {
 	if (fame < -30000)
 		fame = -30000;
 	else if (fame > 30000)
 		fame = 30000;
 	this->fame = fame;
-	PlayerPacket::updateStat(this, 0x20000, fame);
+	PlayerPacket::updateStatInt(this, 0x20000, fame);
 }
 
 void Player::deleteVariable(const string &name) {
@@ -410,7 +410,7 @@ string Player::getVariable(const string &name) {
 }
 
 bool Player::addWarning() {
-	int t = clock();
+	int32_t t = clock();
 	// Deleting old warnings
 	for (size_t i = 0; i < warnings.size(); i++) {
 		if (warnings[i] + 300000 < t) {
@@ -434,7 +434,7 @@ void Player::saveStats() {
 		<< "job = " << mysqlpp::quote << this->job << ","
 		<< "str = " << mysqlpp::quote << this->str << ","
 		<< "dex = " << mysqlpp::quote << this->dex << ","
-		<< "`int` = " << mysqlpp::quote << this->intt << ","
+		<< "`int32_t` = " << mysqlpp::quote << this->intt << ","
 		<< "luk = " << mysqlpp::quote << this->luk << ","
 		<< "chp = " << mysqlpp::quote << this->hp << ","
 		<< "mhp = " << mysqlpp::quote << this->rmhp << ","
@@ -446,8 +446,8 @@ void Player::saveStats() {
 		<< "exp = " << mysqlpp::quote << this->exp << ","
 		<< "fame = " << mysqlpp::quote << this->fame << ","
 		<< "map = " << mysqlpp::quote << this->map << ","
-		<< "gender = " << mysqlpp::quote << (short) this->gender << ","
-		<< "skin = " << mysqlpp::quote << (short) this->skin << ","
+		<< "gender = " << mysqlpp::quote << (int16_t) this->gender << ","
+		<< "skin = " << mysqlpp::quote << (int16_t) this->skin << ","
 		<< "eyes = " << mysqlpp::quote << this->eyes << ","
 		<< "hair = " << mysqlpp::quote << this->hair << ","
 		<< "mesos = " << mysqlpp::quote << inv->getMesos() << ","
@@ -491,7 +491,7 @@ void Player::saveAll() {
 }
 
 void Player::setOnline(bool online) {
-	int onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
+	int32_t onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << mysqlpp::quote << onlineid <<
 			", characters.online = " << mysqlpp::quote << online << " WHERE characters.id = " << mysqlpp::quote << this->id;
@@ -499,7 +499,7 @@ void Player::setOnline(bool online) {
 }
 
 void Player::acceptDeath() {
-	int tomap;
+	int32_t tomap;
 	if (Maps::maps.find(this->getMap()) == Maps::maps.end())
 		tomap = this->getMap();
 	else

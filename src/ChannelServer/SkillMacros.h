@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SKILLMACROS_H
 #define SKILLMACROS_H
 
+#include "Types.h"
 #include <unordered_map>
 #include <memory>
 #include <string>
@@ -32,36 +33,36 @@ public:
 
 	SkillMacros();
 
-	void add(int pos, SkillMacro *macro);
-	SkillMacro * getSkillMacro(int pos);
-	int getMax();
+	void add(uint8_t pos, SkillMacro *macro);
+	SkillMacro * getSkillMacro(int32_t pos);
+	uint8_t getMax();
 
-	void load(int charid);
-	void save(int charid);
+	void load(int32_t charid);
+	void save(int32_t charid);
 private:
-	unordered_map<int, shared_ptr<SkillMacro>> skillMacros;
-	int maxPos;
+	unordered_map<int32_t, shared_ptr<SkillMacro>> skillMacros;
+	uint8_t maxPos;
 };
 
 struct SkillMacros::SkillMacro {
-	SkillMacro(const string &name, bool shout, int skill1, int skill2, int skill3);
+	SkillMacro(const string &name, bool shout, int32_t skill1, int32_t skill2, int32_t skill3);
 	string name;
 	bool shout;
-	int skill1;
-	int skill2;
-	int skill3;
+	int32_t skill1;
+	int32_t skill2;
+	int32_t skill3;
 };
 
 inline SkillMacros::SkillMacros() : maxPos(-1) { }
 
-inline void SkillMacros::add(int pos, SkillMacro *macro) {
+inline void SkillMacros::add(uint8_t pos, SkillMacro *macro) {
 	skillMacros[pos].reset(macro);
 	if (maxPos < pos) {
 		maxPos = pos;
 	}
 }
 
-inline SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int pos) {
+inline SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int32_t pos) {
 	if (skillMacros.find(pos) != skillMacros.end()) {
 		return skillMacros[pos].get();
 	}
@@ -70,10 +71,10 @@ inline SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int pos) {
 	}
 }
 
-inline int SkillMacros::getMax() {
+inline uint8_t SkillMacros::getMax() {
 	return maxPos;
 }
 
-inline SkillMacros::SkillMacro::SkillMacro(const string &name, bool shout, int skill1, int skill2, int skill3) : name(name), shout(shout), skill1(skill1), skill2(skill2), skill3(skill3) { }
+inline SkillMacros::SkillMacro::SkillMacro(const string &name, bool shout, int32_t skill1, int32_t skill2, int32_t skill3) : name(name), shout(shout), skill1(skill1), skill2(skill2), skill3(skill3) { }
 
 #endif

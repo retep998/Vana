@@ -35,7 +35,7 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, R
 		ChannelServer::Instance()->setWorld(worldid);
 		ChannelServer::Instance()->setWorldIp(packet->getString());
 		ChannelServer::Instance()->setWorldPort(packet->getShort());
-		std::cout << "Connecting to world " << (int) worldid << std::endl;
+		std::cout << "Connecting to world " << (int32_t) worldid << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}
 	else {
@@ -45,10 +45,10 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, R
 }
 
 void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, ReadPacket *packet) {
-	int channel = packet->getInt();
+	uint16_t channel = packet->getShort();
 	if (channel != -1) {
 		ChannelServer::Instance()->setChannel(channel);
-		short port = packet->getShort();
+		int16_t port = packet->getShort();
 		ChannelServer::Instance()->setPort(port);
 		ChannelServer::Instance()->setMaxMultiLevel(packet->getByte());
 		ChannelServer::Instance()->listen();
@@ -61,9 +61,9 @@ void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, ReadPa
 }
 
 void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *player, ReadPacket *packet) {
-	int playerid = packet->getInt();
+	int32_t playerid = packet->getInt();
 	string ip = packet->getString();
-	short port = packet->getShort();
+	int16_t port = packet->getShort();
 	
 	Player *ccPlayer = Players::Instance()->getPlayer(playerid);
 	if (!ccPlayer) {
@@ -75,8 +75,8 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 }
 
 void WorldServerConnectHandler::findPlayer(ReadPacket *packet) {
-	int finder = packet->getInt();
-	int channel = packet->getInt();
+	int32_t finder = packet->getInt();
+	int32_t channel = packet->getInt();
 	string name = packet->getString();
 	char is = packet->getByte();
 	if (channel == -1) {
@@ -88,9 +88,9 @@ void WorldServerConnectHandler::findPlayer(ReadPacket *packet) {
 }
 
 void WorldServerConnectHandler::whisperPlayer(ReadPacket *packet) {
-	int whisperee = packet->getInt();
+	int32_t whisperee = packet->getInt();
 	string whisperer = packet->getString();
-	int channel = packet->getInt();
+	uint16_t channel = packet->getShort();
 	string message = packet->getString();
 
 	PlayersPacket::whisperPlayer(Players::Instance()->getPlayer(whisperee), whisperer, channel, message);
@@ -107,13 +107,13 @@ void WorldServerConnectHandler::newConnectable(ReadPacket *packet) {
 
 void WorldServerConnectHandler::forwardPacket(ReadPacket *packet) {
 	PacketCreator ppacket;
-	int playerid = packet->getInt();
+	int32_t playerid = packet->getInt();
 	ppacket.addBuffer(packet);
 	Players::Instance()->getPlayer(playerid)->getSession()->send(ppacket);
 }
 
 void WorldServerConnectHandler::setRates(ReadPacket *packet) {
-	int ratesSetBit = packet->getInt();
+	int32_t ratesSetBit = packet->getInt();
 	if (ratesSetBit & Rates::SetBits::exp) {
 		ChannelServer::Instance()->setExprate(packet->getInt());
 	}

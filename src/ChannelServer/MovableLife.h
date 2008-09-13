@@ -24,21 +24,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class MovableLife {
 public:
 	MovableLife() { }
-	MovableLife(short foothold, Pos pos, char stance)  :
+	MovableLife(int16_t foothold, Pos pos, char stance)  :
 	m_foothold(foothold),
 	m_pos(pos),
 	m_stance(stance)
 	{
 	}
 
-	virtual short getFH() { return m_foothold; }
-	virtual void setFH(short val) { m_foothold = val; }
+	virtual int16_t getFH() { return m_foothold; }
+	virtual void setFH(int16_t val) { m_foothold = val; }
 	virtual Pos getPos() const { return m_pos; }
 	virtual void setPos(const Pos &val) { m_pos = val; }
 	virtual char getStance() const { return m_stance; }
 	virtual void setStance(char val) { m_stance = val; }
 protected:
-	short m_foothold;
+	int16_t m_foothold;
 	Pos m_pos;
 	char m_stance;
 };

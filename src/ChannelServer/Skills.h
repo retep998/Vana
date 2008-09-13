@@ -33,29 +33,29 @@ class SkillTimer;
 #define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)
 
 struct SkillLevelInfo {
-	int time;
-	short mp;
-	short hp;
-	int item;
-	short itemcount;
-	short bulletcon;
-	short moneycon;
-	short x;
-	short y;
-	short speed;
-	short jump;
-	short watk;
-	short wdef;
-	short matk;
-	short mdef;
-	short acc;
-	short avo;
-	short hpP;
-	short prop;
-	short morph;
+	int32_t time;
+	int16_t mp;
+	int16_t hp;
+	int32_t item;
+	int16_t itemcount;
+	int16_t bulletcon;
+	int16_t moneycon;
+	int8_t x;
+	int8_t y;
+	int16_t speed;
+	int16_t jump;
+	int16_t watk;
+	int16_t wdef;
+	int16_t matk;
+	int16_t mdef;
+	int16_t acc;
+	int16_t avo;
+	uint16_t hpP;
+	uint16_t prop;
+	int16_t morph;
 	Pos lt;
 	Pos rb;
-	int cooltime;
+	int16_t cooltime;
 };
 
 enum {
@@ -106,12 +106,12 @@ struct SkillMapInfo {
 struct SkillAct {
 	Act type;
 	char value;
-	int time;
+	int32_t time;
 };
 
 struct SkillActiveInfo {
 	unsigned char types[8];
-	vector<short> vals;
+	vector<int16_t> vals;
 };
 
 struct SkillMapActiveInfo {
@@ -119,7 +119,7 @@ struct SkillMapActiveInfo {
 	char type;
 	char value;
 	bool isvalue;
-	int skill;
+	int32_t skill;
 };
 
 struct SkillMapEnterActiveInfo {
@@ -138,25 +138,25 @@ struct SpecialSkillInfo {
 	unsigned char level;
 	unsigned char w_speed;
 	unsigned char direction;
-	int skillid;
+	int32_t skillid;
 };
 
 struct PGMRInfo { // Power Guard/Mana Reflection
 	PGMRInfo() : reduction(0), pos_x(0), pos_y(0), damage(0), mapmobid(0), isphysical(true) { }
 	unsigned char reduction;
-	short pos_x;
-	short pos_y;
-	int damage;
-	int mapmobid;
+	int16_t pos_x;
+	int16_t pos_y;
+	int32_t damage;
+	int32_t mapmobid;
 	bool isphysical;
 };
 
 struct MPEaterInfo { // MP Eater
 	MPEaterInfo() : id(0), level(0), x(0), prop(0), onlyOnce(false) { }
-	int id;
+	int32_t id;
 	char level;
-	short x;
-	short prop;
+	int16_t x;
+	uint16_t prop;
 	bool onlyOnce;
 };
 
@@ -170,31 +170,31 @@ struct SkillsInfo {
 typedef unordered_map<unsigned char, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
-	extern unordered_map<int, SkillsLevelInfo> skills;
-	extern unordered_map<int, unsigned char> maxlevels;
-	extern unordered_map<int, SkillsInfo> skillsinfo;
+	extern unordered_map<int32_t, SkillsLevelInfo> skills;
+	extern unordered_map<int32_t, unsigned char> maxlevels;
+	extern unordered_map<int32_t, SkillsInfo> skillsinfo;
 	void init();
-	void addSkillLevelInfo(int skillid, unsigned char level, SkillLevelInfo levelinfo);
+	void addSkillLevelInfo(int32_t skillid, unsigned char level, SkillLevelInfo levelinfo);
 	void addSkill(Player *player, ReadPacket *packet);
 	void cancelSkill(Player *player, ReadPacket *packet);
 	void useSkill(Player *player, ReadPacket *packet);
-	short getValue(char value, int skillid, unsigned char level);
-	SkillActiveInfo parsePlayerSkill(Player *player, int skillid, unsigned char level, int &mountid);
-	SkillActiveInfo parseMapSkill(Player *player, int skillid, unsigned char level, vector<SkillMapActiveInfo> &mapenterskill);
-	void applySkillCosts(Player *player, int skillid, unsigned char level, bool elementalamp = false);
-	void useAttackSkill(Player *player, int skillid);
-	void useAttackSkillRanged(Player *player, int skillid, short pos, unsigned char display);
-	void useAttackRanged(Player *player, short pos, unsigned char display);
+	int16_t getValue(char value, int32_t skillid, unsigned char level);
+	SkillActiveInfo parsePlayerSkill(Player *player, int32_t skillid, unsigned char level, int32_t &mountid);
+	SkillActiveInfo parseMapSkill(Player *player, int32_t skillid, unsigned char level, vector<SkillMapActiveInfo> &mapenterskill);
+	void applySkillCosts(Player *player, int32_t skillid, unsigned char level, bool elementalamp = false);
+	void useAttackSkill(Player *player, int32_t skillid);
+	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, unsigned char display);
+	void useAttackRanged(Player *player, int16_t pos, unsigned char display);
 	void stopTimersPlayer(Player *player);
 	void stopAllBuffs(Player *player);
-	void heal(Player *player, short value, int skillid);
-	void hurt(Player *player, short value, int skillid);
-	void endBuff(Player *player, int skill);
-	void stopSkill(Player *player, int skillid, bool fromTimer = false);
-	void startCooldown(Player *player, int skillid, int cooltime);
-	void stopCooldown(Player *player, int skillid);
-	bool isCooling(Player *player, int skillid);
-	bool isBuff(int skillid);
+	void heal(Player *player, int16_t value, int32_t skillid);
+	void hurt(Player *player, int16_t value, int32_t skillid);
+	void endBuff(Player *player, int32_t skill);
+	void stopSkill(Player *player, int32_t skillid, bool fromTimer = false);
+	void startCooldown(Player *player, int32_t skillid, int16_t cooltime);
+	void stopCooldown(Player *player, int32_t skillid);
+	bool isCooling(Player *player, int32_t skillid);
+	bool isBuff(int32_t skillid);
 };
 
 #endif

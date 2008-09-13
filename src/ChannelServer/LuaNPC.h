@@ -29,7 +29,7 @@ class NPC;
 
 class LuaNPC : public LuaScriptable {
 public:
-	LuaNPC(const string &filename, int playerid);
+	LuaNPC(const string &filename, int32_t playerid);
 	
 	bool run();
 };

@@ -52,7 +52,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, char type, bool newdrop, 
 		showDrop(player, drop, 0, false, origin);
 }
 
-void DropsPacket::takeNote(Player *player, int id, bool ismesos, short amount) {
+void DropsPacket::takeNote(Player *player, int32_t id, bool ismesos, int16_t amount) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTE);
 	packet.addByte(0);

@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PETSPACKET_H
 #define PETSPACKET_H
 
+#include "Types.h"
 #include <string>
 #include <vector>
 
@@ -30,7 +31,7 @@ class ReadPacket;
 
 namespace PetsPacket {
 	void showChat(Player *player, Pet *pet, const string &message, char act);
-	void movePet(Player *player, Pet *pet, unsigned char *buf, int buflen);
+	void movePet(Player *player, Pet *pet, unsigned char *buf, int32_t buflen);
 	void petSummoned(Player *player, Pet *pet, bool kick = false);
 	void showAnimation(Player *player, Pet *pet, char animation, bool success = false);
 	void updatePet(Player *player, Pet *pet);
