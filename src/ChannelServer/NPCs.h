@@ -41,29 +41,14 @@ namespace NPCs {
 };
 
 class NPC {
-private:
-	bool checkEnd();
-
-	int32_t npcid;
-	Player *player;
-	string text;
-	int32_t state;
-	int32_t selected;
-	bool cend;
-	int32_t getnum;
-	string gettext;
-	scoped_ptr<LuaNPC> luaNPC;
 public:
 	NPC(int32_t npcid, Player *player, bool isquest = false, bool isstart = false);
 	~NPC();
 
 	bool run();
 
-	void addText(const string &text) {
-		this->text += text;
-	}
+	PacketCreator & npcPacket(int8_t type);
 
-	PacketCreator & npcPacket(char type);
 	void sendSimple();
 	void sendYesNo();
 	void sendNext();
@@ -73,52 +58,46 @@ public:
 	void sendAcceptDecline();
 	void sendGetText();
 	void sendGetNumber(int32_t def, int32_t min, int32_t max);
-	void sendStyle(int32_t styles[], char size);
+	void sendStyle(int32_t styles[], int8_t size);
 	void setState(int32_t state);
-	int32_t getState() {
-		return state;
-	}
-	int32_t getSelected() {
-		return selected;
-	}
-	void setSelected(int32_t selected) {
-		this->selected = selected;
-	}
-	void setGetNumber(int32_t num) {
-		this->getnum = num;
-	}
-	int32_t getNumber() {
-		return getnum;
-	}
-	void setGetText(const string &text) {
-		gettext = text;
-	}
-	string & getText() {
-		return gettext;
-	}
-	void end() {
-		cend = true;
-	}
-	bool isEnd() {
-		return cend;
-	}
-	int32_t getNpcID() {
-		return npcid;
-	}
-	Player * getPlayer() {
-		return player;
-	}
+	void addText(const string &text) { this->text += text; }
+	void setSelected(int32_t selected) { this->selected = selected; }
+	void setGetNumber(int32_t num) { this->getnum = num; }
+	void setGetText(const string &text) { gettext = text; }
+	void end() { cend = true; }
+
+	Player * getPlayer() const { return player; }
+	int32_t getNpcID() const { return npcid; }
+	int32_t getNumber() const { return getnum; }
+	int32_t getState() const { return state; }
+	int32_t getSelected() const { return selected; }
+
+	string & getText() { return gettext; }
+	bool isEnd() const { return cend; }
+
 	void showShop();
+private:
+	bool checkEnd();
+
+	Player *player;
+	int32_t npcid;
+	int32_t state;
+	int32_t selected;
+	int32_t getnum;
+	string text;
+	string gettext;
+	bool cend;
+	scoped_ptr<LuaNPC> luaNPC;
 };
 
 namespace NPCDialogs {
-	const unsigned char normal = 0x00;
-	const unsigned char yesNo = 0x01;
-	const unsigned char getText = 0x02;
-	const unsigned char getNumber = 0x03;
-	const unsigned char simple = 0x04;
-	const unsigned char style = 0x07;
-	const unsigned char acceptDecline = 0x0c;
+	const uint8_t normal = 0x00;
+	const uint8_t yesNo = 0x01;
+	const uint8_t getText = 0x02;
+	const uint8_t getNumber = 0x03;
+	const uint8_t simple = 0x04;
+	const uint8_t style = 0x07;
+	const uint8_t acceptDecline = 0x0c;
 };
 
 #endif
