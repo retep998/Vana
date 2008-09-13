@@ -33,7 +33,7 @@ namespace PartyPacket{
 	void partyError(WorldServerAcceptPlayer *player, int32_t playerid, int8_t error);
 	void giveLeader(WorldServerAcceptPlayer *player, int32_t playerid, int32_t target, bool is);
 	void invitePlayer(WorldServerAcceptPlayer *player, int32_t playerid, const string &inviter);
-	void updateParty(WorldServerAcceptPlayer *player, char type, int32_t playerid, int32_t target = 0);
+	void updateParty(WorldServerAcceptPlayer *player, int8_t type, int32_t playerid, int32_t target = 0);
 	void addParty(PacketCreator &packet, Party *party, int32_t tochan);
 };
 
