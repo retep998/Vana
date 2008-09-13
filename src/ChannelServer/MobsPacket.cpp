@@ -81,9 +81,9 @@ void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int32_t s
 
 void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 	pack->skipBytes(1);
-	unsigned char tbyte = pack->getByte();
-	unsigned char targets = tbyte / 0x10;
-	unsigned char hits = tbyte % 0x10;
+	uint8_t tbyte = pack->getByte();
+	uint8_t targets = tbyte / 0x10;
+	uint8_t hits = tbyte % 0x10;
 	int32_t skillid = pack->getInt();
 	bool s4211006 = false;
 	if (skillid == 4211006) {
@@ -144,7 +144,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 	}
 	packet.addByte((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
 	packet.addInt(0);
-	for (char i = 0; i < targets; i++) {
+	for (int8_t i = 0; i < targets; i++) {
 		int32_t mapmobid = pack->getInt();
 		packet.addInt(mapmobid);
 		packet.addByte(0x06);
@@ -155,7 +155,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 		}
 		else
 			pack->skipBytes(2);
-		for (char j = 0; j < hits; j++) {
+		for (int8_t j = 0; j < hits; j++) {
 			int32_t damage = pack->getInt();
 			packet.addInt(damage);
 		}
@@ -166,9 +166,9 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 
 void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	pack->skipBytes(1);
-	unsigned char tbyte = pack->getByte();
-	char targets = tbyte / 0x10;
-	char hits = tbyte % 0x10;
+	uint8_t tbyte = pack->getByte();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
 	int32_t skillid = pack->getInt();
 	switch (skillid) {
 		case 3121004:
@@ -178,10 +178,10 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 			break;
 	}
 	bool shadow_meso = (skillid == 4111004);
-	unsigned char display = pack->getByte(); // Projectile display
-	unsigned char animation = pack->getByte(); // Direction/animation
-	unsigned char w_class = pack->getByte(); // Weapon subclass
-	unsigned char w_speed = pack->getByte(); // Weapon speed
+	uint8_t display = pack->getByte(); // Projectile display
+	uint8_t animation = pack->getByte(); // Direction/animation
+	uint8_t w_class = pack->getByte(); // Weapon subclass
+	uint8_t w_speed = pack->getByte(); // Weapon speed
 	pack->skipBytes(4); // Ticks
 	int16_t slot = pack->getShort(); // Slot
 	int16_t csstar = pack->getShort(); // Cash Shop star
@@ -230,12 +230,12 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 	}
 	packet.addInt(itemid);
 	pack->skipBytes(1); // 0x00 = AoE, 0x41 = other
-	for (char i = 0; i < targets; i++) {
+	for (int8_t i = 0; i < targets; i++) {
 		int32_t mobid = pack->getInt();
 		packet.addInt(mobid);
 		packet.addByte(0x06);
 		pack->skipBytes(14);
-		for (char j = 0; j < hits; j++) {
+		for (int8_t j = 0; j < hits; j++) {
 			int32_t damage = pack->getInt();
 			switch (skillid) {
 				case 3221007: // Snipe is always crit
@@ -253,9 +253,9 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket *pack) {
 
 void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	pack->skipBytes(1);
-	unsigned char tbyte = pack->getByte();
-	char targets = tbyte / 0x10;
-	char hits = tbyte % 0x10;
+	uint8_t tbyte = pack->getByte();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
 	PacketCreator packet;
 	packet.addShort(SEND_DAMAGE_MOB_SPELL);
 	packet.addInt(player->getId());
@@ -273,14 +273,14 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	pack->skipBytes(4); // Ticks
 	packet.addByte(0); // Mastery byte is always 0 because spells don't have a swoosh
 	packet.addInt(0); // No clue
-	for (char i = 0; i < targets; i++) {
+	for (int8_t i = 0; i < targets; i++) {
 		int32_t mobid = pack->getInt();
 		packet.addInt(mobid);
 		packet.addByte(-1);
 		pack->skipBytes(3); // Useless crap for display
 		pack->skipBytes(1); // State
 		pack->skipBytes(10); // Useless crap for display continued
-		for (char j = 0; j < hits; j++) {
+		for (int8_t j = 0; j < hits; j++) {
 			int32_t damage = pack->getInt();
 			packet.addInt(damage);
 		}
@@ -291,7 +291,7 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::showHP(Player *player, int32_t mobid, char per) {
+void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
@@ -299,7 +299,7 @@ void MobsPacket::showHP(Player *player, int32_t mobid, char per) {
 	player->getSession()->send(packet);
 }
 // Miniboss HP
-void MobsPacket::showMinibossHP(Player *player, int32_t mobid, char per) {
+void MobsPacket::showMinibossHP(Player *player, int32_t mobid, int8_t per) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);

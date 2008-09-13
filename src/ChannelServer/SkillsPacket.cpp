@@ -35,7 +35,7 @@ void SkillsPacket::addSkill(Player *player, int32_t skillid, PlayerSkillInfo ski
 	player->getSession()->send(packet);
 }
 
-void SkillsPacket::showSkill(Player *player, int32_t skillid, unsigned char level) {
+void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
  	PacketCreator packet;
@@ -51,7 +51,7 @@ void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Skill
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
-	for (char i = 0; i < 8; i++)
+	for (int8_t i = 0; i < 8; i++)
 		packet.addByte(pskill.types[i]);
 	if (skillid == 1004) { // Monster Rider has a slightly different packet
 		packet.addShort(0);
@@ -79,7 +79,7 @@ void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Skill
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getId());
 		packet.addInt64(0);
-		for (char i = 0; i < 8; i++)
+		for (int8_t i = 0; i < 8; i++)
 			packet.addByte(mskill.types[i]);
 		if (skillid == 1004) {  // Monster Rider has a slightly different packet
 			packet.addShort(0);
@@ -109,7 +109,7 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 	PacketCreator packet;
 	packet.addShort(SEND_CANCEL_SKILL);
 	packet.addInt64(0);
-	for (char i = 0; i < 8; i++)
+	for (int8_t i = 0; i < 8; i++)
 		packet.addByte(pskill.types[i]);
 	packet.addByte(0);
 	player->getSession()->send(packet);
@@ -120,13 +120,13 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getId());
 		packet.addInt64(0);
-		for (char i = 0; i < 8; i++)
+		for (int8_t i = 0; i < 8; i++)
 			packet.addByte(mskill.types[i]);
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
 }
 
-void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, unsigned char level) {
+void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t level) {
 	PacketCreator packet;
 	packet.addShort(SEND_GAIN_ITEM); // For the using player
 	bool send = false;
@@ -196,7 +196,7 @@ void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapmobid, unsigned char success) {
+void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapmobid, uint8_t success) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_DRAGGED);
 	packet.addInt(mapmobid);
@@ -212,7 +212,7 @@ void SkillsPacket::sendCooldown(Player *player, int32_t skillid, int16_t time) {
 	player->getSession()->send(packet);
 }
 
-void SkillsPacket::showBerserk(Player *player, unsigned char level, bool on) { // Sends to map/user
+void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Sends to map/user
 	PacketCreator packet;
 	packet.addShort(SEND_GAIN_ITEM);
 	packet.addByte(1);

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "SendHeader.h"
 
-void InventoryPacket::moveItem(Player *player, char inv, int16_t slot1, int16_t slot2) {
+void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_t slot2) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(1);
@@ -60,7 +60,7 @@ void InventoryPacket::bought(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::addNewItem(Player *player, char inv, int16_t slot, Item *item, bool is) {
+void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(is);
@@ -70,7 +70,7 @@ void InventoryPacket::addNewItem(Player *player, char inv, int16_t slot, Item *i
 	PlayerPacketHelper::addItemInfo(packet, slot, item, true);
 	player->getSession()->send(packet);
 }
-void InventoryPacket::addItem(Player *player, char inv, int16_t slot, Item *item, bool is) {
+void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(is);
@@ -82,7 +82,7 @@ void InventoryPacket::addItem(Player *player, char inv, int16_t slot, Item *item
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::updateItemAmounts(Player *player, char inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2) {
+void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2) {
 	PacketCreator packet;
 	packet.addShort(SEND_MOVE_ITEM);
 	packet.addByte(1);
@@ -177,11 +177,11 @@ void InventoryPacket::showMessenger(Player *player, const string & msg, const st
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 // Use buff item
-void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, unsigned char types[8], vector<int16_t> vals, bool morph) { // Test/Beta function, PoC only
+void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, uint8_t types[8], vector<int16_t> vals, bool morph) { // Test/Beta function, PoC only
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
-	for (char i = 0; i < 8; i++)
+	for (int8_t i = 0; i < 8; i++)
 		packet.addByte(types[i]);
 	for (size_t i = 0; i < vals.size(); i++) {
 		packet.addShort(vals[i]);
@@ -202,7 +202,7 @@ void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, unsi
 		packet.addShort(SEND_SHOW_OTHERS_SKILL);
 		packet.addInt(player->getId());
 		packet.addInt64(0);
-		for (char i = 0; i < 8; i++)
+		for (int8_t i = 0; i < 8; i++)
 			packet.addByte(types[i]);
 		for (size_t i = 0; i < vals.size(); i++)
 			packet.addShort(vals[i]);
@@ -212,11 +212,11 @@ void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, unsi
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
 }
-void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph) {
+void InventoryPacket::endItem(Player *player, uint8_t types[8], bool morph) {
 	PacketCreator packet;
 	packet.addShort(SEND_CANCEL_SKILL);
 	packet.addInt64(0);
-	for (char i = 0; i < 8; i++)
+	for (int8_t i = 0; i < 8; i++)
 		packet.addByte(types[i]);
 	packet.addByte(0);
 	player->getSession()->send(packet);
@@ -227,7 +227,7 @@ void InventoryPacket::endItem(Player *player, unsigned char types[8], bool morph
 		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
 		packet.addInt(player->getId());
 		packet.addInt64(0);
-		for (char i = 0; i < 8; i++)
+		for (int8_t i = 0; i < 8; i++)
 			packet.addByte(types[i]);
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}
@@ -253,7 +253,7 @@ void InventoryPacket::useItemEffect(Player *player, int32_t itemid) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void InventoryPacket::updateSlots(Player *player, char inventory, char slots) {
+void InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots) {
 	PacketCreator packet;
 	packet.addShort(SEND_UPDATE_INVENTORY_SLOTS);
 	packet.addByte(inventory);

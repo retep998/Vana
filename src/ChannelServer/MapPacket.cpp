@@ -56,7 +56,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 
 	packet.addInt(0);
 	packet.addShort(0);
-	for (char i = 0; i < 3; i++) {
+	for (int8_t i = 0; i < 3; i++) {
 		packet.addShort(21613); // Unknown
 		packet.addInt(10028); // Unknown
 		packet.addInt(0);
@@ -85,7 +85,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addByte(player->getStance());
 	packet.addShort(player->getFH());
 	packet.addByte(0);
-	for (char i = 0; i < 3; i++) {
+	for (int8_t i = 0; i < 3; i++) {
 		if (player->getPets()->getSummoned(i) != 0) {
 			packet.addByte(1);
 			Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i));
@@ -148,7 +148,7 @@ void MapPacket::portalBlocked(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::showClock(Player *player, unsigned char hour, unsigned char min, unsigned char sec) {
+void MapPacket::showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec) {
 	PacketCreator packet;
 	packet.addShort(SEND_TIME);
 	packet.addByte(1);

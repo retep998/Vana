@@ -45,7 +45,7 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly) {
+void PlayersPacket::showChat(Player *player, const string &msg, int8_t bubbleOnly) {
 	PacketCreator packet;
 	packet.addShort(SEND_CHAT);
 	packet.addInt(player->getId());
@@ -55,7 +55,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, char bubbleOnly)
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, unsigned char hit, unsigned char type, unsigned char stance, int32_t nodamageskill, PGMRInfo pgmr) {
+void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, uint8_t type, uint8_t stance, int32_t nodamageskill, PGMRInfo pgmr) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
@@ -90,7 +90,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, unsig
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void PlayersPacket::showMessage(const string &msg, char type) {
+void PlayersPacket::showMessage(const string &msg, int8_t type) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTICE); 
 	packet.addByte(type);
@@ -98,7 +98,7 @@ void PlayersPacket::showMessage(const string &msg, char type) {
 	Players::Instance()->sendPacket(packet);
 }
 
-void PlayersPacket::showInfo(Player *player, Player *getinfo, unsigned char isself) {
+void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	PacketCreator packet;
 	packet.addShort(SEND_PLAYER_INFO);
 	packet.addInt(getinfo->getId());
@@ -109,7 +109,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, unsigned char isse
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
 	packet.addByte(isself); // Is 1 when the character is clicking themselves
-	for (char i = 0; i < 3; i++) {
+	for (int8_t i = 0; i < 3; i++) {
 		if (getinfo->getPets()->getSummoned(i) > 0) {
 			Pet *pet = getinfo->getPets()->getPet(getinfo->getPets()->getSummoned(i));
 			packet.addByte(1);
@@ -143,7 +143,7 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, 
 	target->getSession()->send(packet);
 }
 
-void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, unsigned char is, bool is_channel) {
+void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, uint8_t is, bool is_channel) {
 	PacketCreator packet;
 	packet.addShort(SEND_COMMAND_RESPOND);
 	if (map != -1) {

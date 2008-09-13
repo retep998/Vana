@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void DropsPacket::showDrop(Player *player, Drop *drop, char type, bool newdrop, Pos origin) {
+void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, Pos origin) {
 	PacketCreator packet;
 	packet.addShort(SEND_DROP_ITEM);
 	packet.addByte(type); // 2 = show existing, 1 then 0 = show new

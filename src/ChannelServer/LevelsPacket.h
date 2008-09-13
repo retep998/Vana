@@ -26,7 +26,7 @@ using std::vector;
 class Player;
 
 namespace LevelsPacket {
-	void showEXP(Player *player, int32_t exp, char type);
+	void showEXP(Player *player, int32_t exp, int8_t type);
 	void levelUP(Player *player);
 	void jobChange(Player *player);
 	void statOK(Player *player);

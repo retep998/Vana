@@ -28,8 +28,8 @@ struct Item;
 
 namespace StoragePacket {
 	void showStorage(Player *player, int32_t npcid);
-	void addItem(Player *player, char inv);
-	void takeItem(Player *player, char inv);
+	void addItem(Player *player, int8_t inv);
+	void takeItem(Player *player, int8_t inv);
 	void changeMesos(Player *player, int32_t mesos);
 	void storageFull(Player *player);
 };

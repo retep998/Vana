@@ -29,17 +29,17 @@ class Player;
 struct Item;
 
 namespace TradesPacket {
-	void sendOpenTrade(Player *player, const vector<Player *> &players, const vector<unsigned char> &pos);
+	void sendOpenTrade(Player *player, const vector<Player *> &players, const vector<uint8_t> &pos);
 	void sendTradeRequest(Player *player, Player *receiver, int32_t tradeid);
-	void sendTradeMessage(Player *player, Player *receiver, char type, char message);
-	void sendTradeMessage(Player *receiver, char type, char message);
-	void sendTradeChat(Player *player, unsigned char blue, string chat);
+	void sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message);
+	void sendTradeMessage(Player *receiver, int8_t type, int8_t message);
+	void sendTradeChat(Player *player, uint8_t blue, string chat);
 	void sendLeaveTrade(Player *player);
-	void sendAddUser(Player *original, Player *newb, char slot);
-	void sendAddMesos(Player *receiver, unsigned char slot, int32_t amount);
+	void sendAddUser(Player *original, Player *newb, int8_t slot);
+	void sendAddMesos(Player *receiver, uint8_t slot, int32_t amount);
 	void sendAccepted(Player *desintation);
-	void sendEndTrade(Player *destination, unsigned char message);
-	void sendAddItem(Player *destination, unsigned char player, char slot, char inventory, Item *item);
+	void sendEndTrade(Player *destination, uint8_t message);
+	void sendAddItem(Player *destination, uint8_t player, int8_t slot, int8_t inventory, Item *item);
 }
 
 #endif

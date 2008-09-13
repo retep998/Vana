@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "WorldServerConnectPlayer.h"
 
-void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player, char type, int32_t playerid, const vector<int32_t> &receivers, const string &chat) {
+void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat) {
 	PacketCreator packet;
 	packet.addShort(INTER_GROUP_CHAT);
 	packet.addInt(playerid);
@@ -59,7 +59,7 @@ void WorldServerConnectPlayerPacket::updateMap(WorldServerConnectPlayer *player,
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *player, char type, int32_t playerid, int32_t target) {
+void WorldServerConnectPlayerPacket::partyOperation(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, int32_t target) {
 	PacketCreator packet;
 	packet.addShort(INTER_PARTY_OPERATION);
 	packet.addByte(type);

@@ -34,12 +34,12 @@ namespace WorldServerConnectPlayerPacket {
 	void findPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &findee_name);
 	void whisperPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &whisperee, const string &message);
 	void scrollingHeader(WorldServerConnectPlayer *player, const string &message);
-	void partyOperation(WorldServerConnectPlayer *player, char type, int32_t playerid, int32_t target = 0);
+	void partyOperation(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, int32_t target = 0);
 	void partyInvite(WorldServerConnectPlayer *player, int32_t playerid, const string &invitee);
 	void updateLevel(WorldServerConnectPlayer *player, int32_t playerid, int32_t level);
 	void updateJob(WorldServerConnectPlayer *player, int32_t playerid, int32_t job);
 	void updateMap(WorldServerConnectPlayer *player, int32_t playerid, int32_t map);
-	void groupChat(WorldServerConnectPlayer *player, char type, int32_t playerid, const vector<int32_t> &receivers, const string &chat);
+	void groupChat(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat);
 };
 
 #endif

@@ -24,14 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
 
-void TradesPacket::sendOpenTrade(Player *player, const vector<Player *> &players, const vector<unsigned char> &pos) {
+void TradesPacket::sendOpenTrade(Player *player, const vector<Player *> &players, const vector<uint8_t> &pos) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x05);
 	packet.addByte(0x03);
 	packet.addByte(0x02);
 	packet.addShort(players.size() - 1);
-	for (unsigned char c = 0; c < players.size(); c++) { // lol	
+	for (uint8_t c = 0; c < players.size(); c++) { // lol	
 		PlayerPacketHelper::addPlayerDisplay(packet, players[c]);
 		packet.addString(players[c]->getName());
 		packet.addByte(pos[c]); // Location in the window
@@ -49,7 +49,7 @@ void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tr
 	receiver->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeMessage(Player *player, Player *receiver, char type, char message) {
+void TradesPacket::sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(type);
@@ -58,7 +58,7 @@ void TradesPacket::sendTradeMessage(Player *player, Player *receiver, char type,
 	receiver->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeMessage(Player *receiver, char type, char message) {
+void TradesPacket::sendTradeMessage(Player *receiver, int8_t type, int8_t message) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(type);
@@ -67,7 +67,7 @@ void TradesPacket::sendTradeMessage(Player *receiver, char type, char message) {
 	receiver->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeChat(Player *player, unsigned char blue, string chat) {
+void TradesPacket::sendTradeChat(Player *player, uint8_t blue, string chat) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x06);
@@ -77,7 +77,7 @@ void TradesPacket::sendTradeChat(Player *player, unsigned char blue, string chat
 	player->getSession()->send(packet);
 }
 
-void TradesPacket::sendAddUser(Player *original, Player *newb, char slot) {
+void TradesPacket::sendAddUser(Player *original, Player *newb, int8_t slot) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x04);
@@ -96,7 +96,7 @@ void TradesPacket::sendLeaveTrade(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void TradesPacket::sendAddMesos(Player *receiver, unsigned char slot, int32_t amount) {
+void TradesPacket::sendAddMesos(Player *receiver, uint8_t slot, int32_t amount) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x0F);
@@ -112,7 +112,7 @@ void TradesPacket::sendAccepted(Player *destination) {
 	destination->getSession()->send(packet);
 }
 
-void TradesPacket::sendEndTrade(Player *destination, unsigned char message) {
+void TradesPacket::sendEndTrade(Player *destination, uint8_t message) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x0A);
@@ -126,7 +126,7 @@ void TradesPacket::sendEndTrade(Player *destination, unsigned char message) {
 	destination->getSession()->send(packet);
 }
 
-void TradesPacket::sendAddItem(Player *destination, unsigned char player, char slot, char inventory, Item *item) {
+void TradesPacket::sendAddItem(Player *destination, uint8_t player, int8_t slot, int8_t inventory, Item *item) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x0E);
