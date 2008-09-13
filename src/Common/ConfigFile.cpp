@@ -30,6 +30,8 @@ void ConfigFile::loadFile(string filename) {
 	struct stat fileInfo;
 	if (stat(filename.c_str(), &fileInfo)) {
 		std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 

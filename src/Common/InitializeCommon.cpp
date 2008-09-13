@@ -37,6 +37,8 @@ void Initializing::checkSchemaVersion(bool update) {
 	if (!succeed && !update) {
 		// Wrong version and we're not allowed to update, so lets quit.
 		std::cout << "ERROR: Wrong version of database, please run Login Server to update." << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(4);
 	}
 	else if (!succeed) {

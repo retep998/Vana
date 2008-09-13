@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DatabaseMigration.h"
 #include "DatabaseMigrationRunner.h"
 #include "MySQLM.h"
+#include "StringUtilities.h"
 #include <iostream>
 #include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
 
 namespace fs = boost::filesystem;
 
@@ -74,6 +74,8 @@ void DatabaseMigration::loadSQLFiles() {
 	fs::path full_path = fs::system_complete(fs::path("sql", fs::native));
 	if (!fs::exists(full_path)) {
 		std::cout << "SQL files not found: " << full_path.native_file_string() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -86,10 +88,7 @@ void DatabaseMigration::loadSQLFiles() {
 			continue;
 		}
 
-		string version_str = filename;
-		version_str.erase(version_str.find_first_of("_"));
-
-		size_t version = boost::lexical_cast<size_t>(version_str);
+		size_t version = StringUtilities::toType<size_t>(filename);
 
 		if (m_sql_version < version) {
 			m_sql_version = version;
