@@ -150,13 +150,13 @@ void Player::playerConnect(ReadPacket *packet) {
 	}
 
 	userid = res[0]["userid"];
-	world_id = (unsigned char) res[0]["world_id"];
+	world_id = (uint8_t) res[0]["world_id"];
 	res[0]["name"].to_string(name);
-	gender = (unsigned char) res[0]["gender"];
-	skin = (unsigned char) res[0]["skin"];
+	gender = (uint8_t) res[0]["gender"];
+	skin = (uint8_t) res[0]["skin"];
 	eyes = res[0]["eyes"];
 	hair = res[0]["hair"];
-	level = (unsigned char) res[0]["level"];
+	level = (uint8_t) res[0]["level"];
 	job = (int16_t) res[0]["job"];
 	str = (int16_t) res[0]["str"];
 	dex = (int16_t) res[0]["dex"];
@@ -172,16 +172,16 @@ void Player::playerConnect(ReadPacket *packet) {
 	exp = res[0]["exp"];
 	fame = (int16_t) res[0]["fame"];
 	map = res[0]["map"];
-	mappos = (unsigned char) res[0]["pos"];
+	mappos = (uint8_t) res[0]["pos"];
 	gm = res[0]["gm"];
 
 	// Inventory
-	unsigned char maxslots[5];
-	maxslots[0] = (unsigned char) res[0]["equip_slots"];
-	maxslots[1] = (unsigned char) res[0]["use_slots"];
-	maxslots[2] = (unsigned char) res[0]["setup_slots"];
-	maxslots[3] = (unsigned char) res[0]["etc_slots"];
-	maxslots[4] = (unsigned char) res[0]["cash_slots"];
+	uint8_t maxslots[5];
+	maxslots[0] = (uint8_t) res[0]["equip_slots"];
+	maxslots[1] = (uint8_t) res[0]["use_slots"];
+	maxslots[2] = (uint8_t) res[0]["setup_slots"];
+	maxslots[3] = (uint8_t) res[0]["etc_slots"];
+	maxslots[4] = (uint8_t) res[0]["cash_slots"];
 	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
 
 	// Skills
@@ -206,7 +206,9 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	if (Maps::maps[map]->getInfo().forcedReturn != 999999999) {
 		map = Maps::maps[map]->getInfo().forcedReturn;
+		mappos = 0;
 	}
+
 	if (hp == 0) // If dead
 		hp = 50;
 	m_pos = Maps::maps[map]->getSpawnPoint(mappos)->pos;
@@ -215,19 +217,18 @@ void Player::playerConnect(ReadPacket *packet) {
 
 	PlayerPacket::connectData(this);
 	
-	if (ChannelServer::Instance()->getScrollingHeader().size() > 0) {
+	if (ChannelServer::Instance()->getScrollingHeader().size() > 0)
 		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
-	}
 
-	for (char i = 0; i < 3; i++)
+	for (char i = 0; i < 3; i++) {
 		if (pets->getSummoned(i))
 			pets->getPet(pets->getSummoned(i))->setPos(Maps::maps[map]->getSpawnPoint(mappos)->pos);
+	}
 
 	PlayerPacket::showKeys(this, &keyMaps);
 
-	if (skillMacros.getMax() > -1) {
+	if (skillMacros.getMax() > -1)
 		PlayerPacket::showSkillMacros(this, &skillMacros);
-	}
 
 	Maps::newMap(this, map);
 
@@ -334,14 +335,15 @@ void Player::setLevel(uint8_t level) {
 	WorldServerConnectPlayerPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), this->id, level);
 }
 
-void Player::changeChannel(char channel) {
+void Player::changeChannel(int8_t channel) {
 	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel);
 }
 
 void Player::changeKey(ReadPacket *packet) {
 	packet->skipBytes(4);
 	int32_t howmany = packet->getInt();
-	if (howmany == 0) return;
+	if (howmany == 0)
+		return;
 
 	KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
 	for (int32_t i = 0; i < howmany; i++) {
@@ -356,11 +358,12 @@ void Player::changeKey(ReadPacket *packet) {
 }
 
 void Player::changeSkillMacros(ReadPacket *packet) {
-	unsigned char num = packet->getByte();
-	if (num == 0) return;
+	uint8_t num = packet->getByte();
+	if (num == 0)
+		return;
 
 	SkillMacros skillMacros;
-	for (unsigned char i = 0; i < num; i++) {
+	for (uint8_t i = 0; i < num; i++) {
 		string name = packet->getString();
 		bool shout = packet->getByte() != 0;
 		int32_t skill1 = packet->getInt();
@@ -382,7 +385,7 @@ void Player::setEyes(int32_t id) {
 	PlayerPacket::updateStatInt(this, 0x02, id);
 }
 
-void Player::setSkin(char id) {
+void Player::setSkin(int8_t id) {
 	this->skin = id;
 	PlayerPacket::updateStatInt(this, 0x01, id);
 }
