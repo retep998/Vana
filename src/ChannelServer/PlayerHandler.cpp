@@ -30,9 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); // Ticks
-	unsigned char type = packet->getByte();
-	unsigned char hit = 0;
-	unsigned char stance = 0;
+	uint8_t type = packet->getByte();
+	uint8_t hit = 0;
+	uint8_t stance = 0;
 	packet->skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	int32_t damage = packet->getInt();
 	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
@@ -88,7 +88,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 					damage = (damage - (damage * pgmr.reduction / 100)); 
 				Mob *mob = Maps::maps[player->getMap()]->getMob(mapmobid);
 				if (mob != 0) {
-					mob->setHP(mob->getHP() - (int16_t) (pgmr.damage * pgmr.reduction / 100));
+					mob->setHP(mob->getHP() - (pgmr.damage * pgmr.reduction / 100));
 					Mobs::displayHPBars(player, mob);
 					if (mob->getHP() <= 0)
 						mob->die(player);
@@ -126,7 +126,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			case 112: nodamageid = 1120005; break; // Guardian
 			case 122: nodamageid = 1220006; break; // Guardian
 		}
-		if (player->getSkills()->getSkillLevel(nodamageid) < 1 || nodamageid == 0) {
+		if (nodamageid == 0 || player->getSkills()->getSkillLevel(nodamageid) == 0) {
 			//hacking
 			return;
 		}
@@ -136,14 +136,13 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	}
 	if (damage > 0 && !player->hasGMEquip()) {
 		if (player->getActiveBuffs()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
-			int32_t mesorate = Skills::skills[4211005][player->getActiveBuffs()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
+			int16_t mesorate = Skills::skills[4211005][player->getActiveBuffs()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
 			uint16_t hp = player->getHP();
 			int32_t mesoloss = (int32_t)(mesorate * (damage / 2) / 100);
 			int32_t mesos = player->getInventory()->getMesos();
 			int32_t newmesos = mesos - mesoloss;
-			if (newmesos > -1) {
+			if (newmesos > -1)
 				damage = (int32_t)(damage / 2); // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
-			}
 			else { // Special damage calculation for not having enough mesos
 				double mesos2 = mesos + 0.0; // You can't get a double from math involving 2 ints, even if a decimal results
 				double reduction = 2.0 - ((mesos2 / mesoloss) / 2);
@@ -171,7 +170,7 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 				player->setHP(hp - (int16_t) damage);
 			}
 			else {
-				uint16_t reduc = Skills::skills[2001002][player->getActiveBuffs()->getActiveSkillLevel(2001002)].x;
+				int16_t reduc = Skills::skills[2001002][player->getActiveBuffs()->getActiveSkillLevel(2001002)].x;
 				int32_t mpdamage = ((damage * reduc) / 100);
 				int32_t hpdamage = damage - mpdamage;
 				bool ison = false;
@@ -200,7 +199,8 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 				case 132: sid = 1230005; break;
 			}
 			uint8_t slv = player->getSkills()->getSkillLevel(sid);
-			if (slv > 0) { achx = Skills::skills[sid][slv].x; }
+			if (slv > 0)
+				achx = Skills::skills[sid][slv].x;
 			double red = (2.0 - achx / 1000.0);
 			player->setHP(player->getHP() - (int16_t)(damage / red));
 			if (attack.deadlyattack && player->getMP() > 0)
