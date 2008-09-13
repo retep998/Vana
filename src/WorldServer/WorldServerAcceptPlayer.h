@@ -31,7 +31,7 @@ public:
 	~WorldServerAcceptPlayer();
 
 	void realHandleRequest(ReadPacket *packet);
-	void authenticated(char type);
+	void authenticated(int8_t type);
 
 	uint16_t getChannel() { return channel; }
 private:

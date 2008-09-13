@@ -51,7 +51,7 @@ void WorldServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
 	}
 }
 
-void WorldServerAcceptPlayer::authenticated(char type) {
+void WorldServerAcceptPlayer::authenticated(int8_t type) {
 	if (Channels::Instance()->size() < WorldServer::Instance()->getMaxChannels()) {
 		channel = Channels::Instance()->size();
 		uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;

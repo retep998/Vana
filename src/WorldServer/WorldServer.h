@@ -41,14 +41,14 @@ public:
 	void shutdown();
 
 	LoginServerConnectPlayer * getLoginPlayer() const { return loginPlayer; }
-	char getWorldId() const { return worldId; }
-	void setWorldId(char id) { worldId = id; }
+	int8_t getWorldId() const { return worldId; }
+	void setWorldId(int8_t id) { worldId = id; }
 	uint16_t getInterPort() const { return inter_port; }
 	void setInterPort(uint16_t port) { inter_port = port; }
 	int32_t getMaxChannels() const { return maxChannels; }
 	void setMaxChannels(int32_t maxchan) { maxChannels = maxchan; }
-	unsigned char getMaxMultiLevel() const { return maxMultiLevel; }
-	void setMaxMultiLevel(unsigned char level) { maxMultiLevel = level; }
+	uint8_t getMaxMultiLevel() const { return maxMultiLevel; }
+	void setMaxMultiLevel(uint8_t level) { maxMultiLevel = level; }
 	string getScrollingHeader() { return scrollingHeader.c_str(); }
 	void setScrollingHeader(const string &message);
 	// Server rates
@@ -70,9 +70,9 @@ private:
 	string login_ip;
 	uint16_t login_inter_port;
 	uint16_t inter_port;
-	char worldId;
+	int8_t worldId;
 	int32_t maxChannels;
-	unsigned char maxMultiLevel;
+	uint8_t maxMultiLevel;
 	string external_ip;
 	string scrollingHeader;
 	// Server rates
