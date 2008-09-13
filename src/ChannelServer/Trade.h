@@ -35,9 +35,9 @@ struct TradeInfo {
 	}
 	Player *player;
 	Item *items[9];
+	int8_t count;
 	int32_t mesos;
 	bool slot[9];
-	char count;
 	bool accepted;
 };
 

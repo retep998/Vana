@@ -327,7 +327,7 @@ void Map::sendPacket(PacketCreator &packet, Player *player) {
 	}
 }
 
-void Map::showMessage(string &message, char type) {
+void Map::showMessage(string &message, int8_t type) {
 	for (size_t i = 0; i < players.size(); i++)
 		PlayerPacket::showMessage(players[i], message, type);
 }

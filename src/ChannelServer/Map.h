@@ -46,11 +46,11 @@ struct FootholdInfo {
 typedef vector<FootholdInfo> FootholdsInfo;
 
 struct PortalInfo {
-	char id;
+	int8_t id;
 	string from;
 	int32_t toid;
 	string to;
-	char type;
+	int8_t type;
 	Pos pos;
 	string script;
 	bool onlyOnce;
@@ -61,7 +61,7 @@ struct MapInfo {
 	int32_t id;
 	int32_t rm;
 	int32_t forcedReturn;
-	char fieldType;
+	int8_t fieldType;
 	int32_t fieldLimit;
 	double spawnrate;
 	bool clock;
@@ -203,12 +203,12 @@ public:
 	void showObjects(Player *player);
 	// Packet Stuff
 	void sendPacket(PacketCreator &packet, Player *player = 0);
-	void showMessage(string &message, char type);
+	void showMessage(string &message, int8_t type);
 private:
 	MapInfo info;
 	FootholdsInfo footholds;
 	PortalsInfo portals;
-	char spawnpoints;
+	int8_t spawnpoints;
 	vector<Player *> players;
 	NPCSpawnsInfo npcs;
 	ReactorSpawnsInfo reactorspawns;

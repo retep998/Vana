@@ -35,11 +35,11 @@ class ReadPacket;
 struct MobAttackInfo {
 	MobAttackInfo() : mobid(-1), id(0), mpconsume(0), mpburn(0), level(0), deadlyattack(false) { }
 	int32_t mobid;
-	char id;
-	unsigned char mpconsume;
+	int8_t id;
+	uint8_t mpconsume;
 	uint16_t mpburn;
-	unsigned char disease;
-	char level;
+	uint8_t disease;
+	int8_t level;
 	bool deadlyattack;
 };
 
@@ -49,8 +49,8 @@ struct MobInfo {
 	uint16_t hprecovery;
 	uint16_t mprecovery;
 	int32_t exp;
-	char hpcolor;
-	char hpbgcolor;
+	int8_t hpcolor;
+	int8_t hpbgcolor;
 	bool boss;
 	vector<int32_t> summon;
 	vector<MobAttackInfo> skills;
@@ -62,8 +62,8 @@ struct MobHPInfo {
 	int32_t mhp;
 	int32_t mapmobid;
 	int32_t mobid;
-	char hpcolor;
-	char hpbgcolor;
+	int8_t hpcolor;
+	int8_t hpbgcolor;
 	bool boss;
 };
 
@@ -75,7 +75,7 @@ namespace Mobs {
 	void damageMob(Player *player, ReadPacket *packet);
 	void damageMobRanged(Player *player, ReadPacket *packet);
 	void damageMobSpell(Player *player, ReadPacket *packet);
-	uint32_t damageMobInternal(Player *player, ReadPacket *packet, char targets, char hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0);
+	uint32_t damageMobInternal(Player *player, ReadPacket *packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0);
 	void displayHPBars(Player *player, Mob *mob);
 	void monsterControl(Player *player, ReadPacket *packet);
 	void checkSpawn(int32_t mapid);

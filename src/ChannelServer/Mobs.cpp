@@ -306,7 +306,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
 }
 
-uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, char targets, char hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater) {
+uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
 	bool isHorntail = false;
@@ -374,7 +374,7 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, char target
 				mob->die(player);
 				if (htabusetaker != 0) {
 					if (htabusetaker->getHP() <= 0) {
-						for (char q = 0; q < 8; q++) {
+						for (int8_t q = 0; q < 8; q++) {
 							Maps::maps[map]->killMobs(player, (8810010 + q)); // Dead Horntail's parts
 						}
 						htabusetaker->die(player);
