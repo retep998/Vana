@@ -91,33 +91,33 @@ enum Act {
 };
 
 struct SkillPlayerInfo {
-	unsigned char type;
-	char byte;
-	char value;
+	uint8_t type;
+	int8_t byte;
+	int8_t value;
 };
 
 struct SkillMapInfo {
-	unsigned char type;
-	char byte;
-	char value;
+	uint8_t type;
+	int8_t byte;
+	int8_t value;
 	bool val;
 };
 
 struct SkillAct {
 	Act type;
-	char value;
+	int8_t value;
 	int32_t time;
 };
 
 struct SkillActiveInfo {
-	unsigned char types[8];
+	uint8_t types[8];
 	vector<int16_t> vals;
 };
 
 struct SkillMapActiveInfo {
-	char byte;
-	char type;
-	char value;
+	int8_t byte;
+	int8_t type;
+	int8_t value;
 	bool isvalue;
 	int32_t skill;
 };
@@ -128,22 +128,22 @@ struct SkillMapEnterActiveInfo {
 			types[i] = 0;
 		}
 	}
-	unsigned char types[8];
-	char val;
+	uint8_t types[8];
+	int8_t val;
 	bool isval;
 };
 
 struct SpecialSkillInfo {
 	SpecialSkillInfo() : skillid(0), level(0), w_speed(0), direction(0) { }
-	unsigned char level;
-	unsigned char w_speed;
-	unsigned char direction;
+	uint8_t level;
+	uint8_t w_speed;
+	uint8_t direction;
 	int32_t skillid;
 };
 
 struct PGMRInfo { // Power Guard/Mana Reflection
 	PGMRInfo() : reduction(0), pos_x(0), pos_y(0), damage(0), mapmobid(0), isphysical(true) { }
-	unsigned char reduction;
+	uint8_t reduction;
 	int16_t pos_x;
 	int16_t pos_y;
 	int32_t damage;
@@ -154,7 +154,7 @@ struct PGMRInfo { // Power Guard/Mana Reflection
 struct MPEaterInfo { // MP Eater
 	MPEaterInfo() : id(0), level(0), x(0), prop(0), onlyOnce(false) { }
 	int32_t id;
-	char level;
+	uint8_t level;
 	int16_t x;
 	uint16_t prop;
 	bool onlyOnce;
@@ -167,24 +167,24 @@ struct SkillsInfo {
 	vector<bool> bact;
 };
 
-typedef unordered_map<unsigned char, SkillLevelInfo> SkillsLevelInfo;
+typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
 	extern unordered_map<int32_t, SkillsLevelInfo> skills;
-	extern unordered_map<int32_t, unsigned char> maxlevels;
+	extern unordered_map<int32_t, uint8_t> maxlevels;
 	extern unordered_map<int32_t, SkillsInfo> skillsinfo;
 	void init();
-	void addSkillLevelInfo(int32_t skillid, unsigned char level, SkillLevelInfo levelinfo);
+	void addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo levelinfo);
 	void addSkill(Player *player, ReadPacket *packet);
 	void cancelSkill(Player *player, ReadPacket *packet);
 	void useSkill(Player *player, ReadPacket *packet);
-	int16_t getValue(char value, int32_t skillid, unsigned char level);
-	SkillActiveInfo parsePlayerSkill(Player *player, int32_t skillid, unsigned char level, int32_t &mountid);
-	SkillActiveInfo parseMapSkill(Player *player, int32_t skillid, unsigned char level, vector<SkillMapActiveInfo> &mapenterskill);
-	void applySkillCosts(Player *player, int32_t skillid, unsigned char level, bool elementalamp = false);
+	int16_t getValue(int8_t value, int32_t skillid, uint8_t level);
+	SkillActiveInfo parsePlayerSkill(Player *player, int32_t skillid, uint8_t level, int32_t &mountid);
+	SkillActiveInfo parseMapSkill(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill);
+	void applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp = false);
 	void useAttackSkill(Player *player, int32_t skillid);
-	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, unsigned char display);
-	void useAttackRanged(Player *player, int16_t pos, unsigned char display);
+	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display);
+	void useAttackRanged(Player *player, int16_t pos, uint8_t display);
 	void stopTimersPlayer(Player *player);
 	void stopAllBuffs(Player *player);
 	void heal(Player *player, int16_t value, int32_t skillid);

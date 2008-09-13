@@ -32,11 +32,6 @@ unordered_map<int32_t, SkillsLevelInfo> Skills::skills;
 unordered_map<int32_t, unsigned char> Skills::maxlevels;
 unordered_map<int32_t, SkillsInfo> Skills::skillsinfo;
 
-
-void Skills::stopAllBuffs(Player *player) {
-	player->getActiveBuffs()->removeBuff();
-}
-
 void Skills::init() {
 	// NOTE: type can be only 0x1/0x2/0x4/0x8/0x10/0x20/0x40/0x80.
 	SkillPlayerInfo player;
@@ -401,7 +396,7 @@ void Skills::init() {
 	skillsinfo[2321002].player.push_back(player);
 }
 
-void Skills::addSkillLevelInfo(int32_t skillid, unsigned char level, SkillLevelInfo levelinfo) {
+void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo levelinfo) {
 	skills[skillid][level] = levelinfo;
 
 	if (maxlevels.find(skillid) == maxlevels.end() || maxlevels[skillid] < level) {
@@ -446,8 +441,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); //Ticks
 	int32_t skillid = packet->getInt();
 	int16_t addedinfo = 0;
-	unsigned char level = packet->getByte();
-	unsigned char type = 0;
+	uint8_t level = packet->getByte();
+	uint8_t type = 0;
 	switch (skillid) {
 		case 1121001: // Monster Magnet processing
 		case 1221001:
@@ -455,7 +450,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			int32_t mobs = packet->getInt();
 			for (char k = 0; k < mobs; k++) {
 				int32_t mapmobid = packet->getInt();
-				unsigned char success = packet->getByte();
+				uint8_t success = packet->getByte();
 				SkillsPacket::showMagnetSuccess(player, mapmobid, success);
 			}
 			break;
@@ -544,7 +539,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	}
 }
 
-int16_t Skills::getValue(char value, int32_t skillid, unsigned char level) {
+int16_t Skills::getValue(int8_t value, int32_t skillid, uint8_t level) {
 	int16_t rvalue = 0;
 	switch (value) {
 		case SKILL_X: rvalue = skills[skillid][level].x; break;
@@ -564,9 +559,9 @@ int16_t Skills::getValue(char value, int32_t skillid, unsigned char level) {
 	return rvalue;
 }
 
-SkillActiveInfo Skills::parsePlayerSkill(Player *player, int32_t skillid, unsigned char level, int32_t &mountid) {
+SkillActiveInfo Skills::parsePlayerSkill(Player *player, int32_t skillid, uint8_t level, int32_t &mountid) {
 	SkillActiveInfo playerskill;
-	memset(playerskill.types, 0, 8 * sizeof(unsigned char)); // Reset player/map types to 0
+	memset(playerskill.types, 0, 8 * sizeof(uint8_t)); // Reset player/map types to 0
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		playerskill.types[skillsinfo[skillid].player[i].byte] += skillsinfo[skillid].player[i].type;
 		char val = skillsinfo[skillid].player[i].value;
@@ -610,9 +605,9 @@ SkillActiveInfo Skills::parsePlayerSkill(Player *player, int32_t skillid, unsign
 	return playerskill;
 }
 
-SkillActiveInfo Skills::parseMapSkill(Player *player, int32_t skillid, unsigned char level, vector<SkillMapActiveInfo> &mapenterskill) {
+SkillActiveInfo Skills::parseMapSkill(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill) {
 	SkillActiveInfo mapskill;
-	memset(mapskill.types, 0, 8 * sizeof(unsigned char));
+	memset(mapskill.types, 0, 8 * sizeof(uint8_t));
 	for (size_t i = 0; i < skillsinfo[skillid].map.size(); i++) {
 		mapskill.types[skillsinfo[skillid].map[i].byte] += skillsinfo[skillid].map[i].type;
 		char val = skillsinfo[skillid].map[i].value;
@@ -650,7 +645,7 @@ SkillActiveInfo Skills::parseMapSkill(Player *player, int32_t skillid, unsigned 
 	return mapskill;
 }
 
-void Skills::applySkillCosts(Player *player, int32_t skillid, unsigned char level, bool elementalamp) {
+void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp) {
 	int16_t cooltime = Skills::skills[skillid][level].cooltime;
 	int16_t mpuse = skills[skillid][level].mp;
 	int16_t hpuse = skills[skillid][level].hp;
@@ -691,8 +686,8 @@ void Skills::useAttackSkill(Player *player, int32_t skillid) {
 	Skills::applySkillCosts(player, skillid, level, true);
 }
 
-void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, unsigned char display) {
-	unsigned char level = player->getSkills()->getSkillLevel(skillid);
+void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display) {
+	uint8_t level = player->getSkills()->getSkillLevel(skillid);
 	if (skills.find(skillid) == skills.end())
 		return;
 	Skills::applySkillCosts(player, skillid, level);
@@ -721,7 +716,7 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, 
 		Inventory::takeItemSlot(player, 2, pos, hits);
 }
 
-void Skills::useAttackRanged(Player *player, int16_t pos, unsigned char display) {
+void Skills::useAttackRanged(Player *player, int16_t pos, uint8_t display) {
 	uint16_t hits = 1;
 	if (display == 0x08)
 		hits = hits * 2;
@@ -745,6 +740,10 @@ void Skills::endBuff(Player *player, int32_t skill) {
 	SkillsPacket::endSkill(player, player->getActiveBuffs()->getSkillPlayerInfo(skill), player->getActiveBuffs()->getSkillMapInfo(skill));
 	player->getActiveBuffs()->deleteSkillMapEnterInfo(skill);
 	player->getActiveBuffs()->setActiveSkillLevel(skill, 0);
+}
+
+void Skills::stopAllBuffs(Player *player) {
+	player->getActiveBuffs()->removeBuff();
 }
 
 void Skills::heal(Player *player, int16_t value, int32_t skillid) {
