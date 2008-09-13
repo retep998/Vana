@@ -72,7 +72,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			levelsgained++;
 			apgain += 5;
 			int32_t job = player->getJob() / 100;
-			int8_t x = 0;
+			int16_t x = 0;
 			int16_t intt = player->getInt() / 10;
 			switch (job) {
 				case 0:
@@ -123,7 +123,7 @@ void Levels::giveEXP(Player *player, long exp, char type) {
 			else if (player->getActiveBuffs()->getActiveSkillLevel(9101008) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
 				skillid = 9101008;
 			if (skillid > 0) {
-				unsigned char hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
+				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
 				x += Skills::skills[skillid][hblevel].x;
 				y += Skills::skills[skillid][hblevel].y;
 			}
