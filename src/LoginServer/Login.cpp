@@ -67,7 +67,7 @@ void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 	}
 	else if (atoi(res[0]["banned"]) == 1) {
 		int32_t time = TimeUtilities::tickToTick32(TimeUtilities::timeToTick((time_t) mysqlpp::DateTime(res[0]["ban_expire"])));
-		LoginPacket::loginBan(player, (unsigned char) res[0]["ban_reason"], time);
+		LoginPacket::loginBan(player, (uint8_t) res[0]["ban_reason"], time);
 		valid = false;
 	}
 	if (!valid) {
@@ -95,7 +95,7 @@ void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 		if (res[0]["gender"].is_null())
 			player->setStatus(5);
 		else
-			player->setGender((unsigned char) res[0]["gender"]);
+			player->setGender((uint8_t) res[0]["gender"]);
 		LoginPacket::loginConnect(player, username);
 	}
 }
