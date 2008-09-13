@@ -166,10 +166,10 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 		case 0x800:
 		case 0x2000: {
 			if ((player->getRMHP() > 29999 && type == 0x800) || (player->getRMMP() > 29999 && type == 0x2000)) return;
-			int8_t job = player->getJob() / 100;
+			int16_t job = player->getJob() / 100;
 			int16_t hpgain = 0;
 			int16_t mpgain = 0;
-			int8_t y = 0;
+			int16_t y = 0;
 			switch (job) {
 				case 0:
 					hpgain = Randomizer::Instance()->randShort(4) + 8;
@@ -194,7 +194,7 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 			}
 			player->setHPMPAp(player->getHPMPAp() + 1);
 			int32_t skillid = 0;
-			unsigned char hblevel = 0;
+			uint8_t hblevel = 0;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)
 				skillid = 1301007;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(9101008) > 0)
