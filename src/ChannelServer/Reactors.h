@@ -35,14 +35,14 @@ class ReactionTimer;
 class ReadPacket;
 
 struct ReactorEventInfo {
-	char state;
+	int8_t state;
 	int16_t type;
 	int32_t itemid;
 	int16_t ltx;
 	int16_t lty;
 	int16_t rbx;
 	int16_t rby;
-	char nextstate;
+	int8_t nextstate;
 };
 typedef vector<ReactorEventInfo> ReactorEventsInfo;
 
@@ -59,43 +59,27 @@ namespace Reactors {
 class Reactor {
 public:
 	Reactor (int32_t mapid, int32_t reactorid, Pos pos);
-	void kill() {
-		this->alive = false;
-	}
-	void revive() {
-		this->alive = true;
-	}
-	bool isAlive() {
-		return this->alive;
-	}
-	void setID(int32_t id) {
-		this->id = id;
-	}
-	int32_t getID() {
-		return this->id;
-	}
-	int32_t getReactorID() {
-		return this->reactorid;
-	}
-	int32_t getMapID() {
-		return this->mapid;
-	}
-	Pos getPos() {
-		return this->pos;
-	}
-	void setState(char state, bool is);
-	char getState() {
-		return this->state;
-	}
+	void kill() { this->alive = false; }
+	void revive() { this->alive = true; }
+	void setState(int8_t state, bool is);
+	void setID(int32_t id) { this->id = id; }
+
+	int8_t getState() const { return this->state; }
+	int32_t getID() const { return this->id; }
+	int32_t getReactorID() const { return this->reactorid; }
+	int32_t getMapID() const { return this->mapid; }
+	bool isAlive() const { return this->alive; }
+	Pos getPos() const { return this->pos; }
+
 	void restore();
 	void drop(Player *player);
 private:
-	Pos pos;
-	bool alive;
+	int8_t state;
 	int32_t id;
 	int32_t reactorid;
 	int32_t mapid;
-	char state;
+	bool alive;
+	Pos pos;
 };
 
 #endif
