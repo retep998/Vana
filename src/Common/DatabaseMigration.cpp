@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DatabaseMigration.h"
 #include "DatabaseMigrationRunner.h"
 #include "MySQLM.h"
-#include "StringUtilities.h"
 #include <iostream>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp> 
 
 namespace fs = boost::filesystem;
 
@@ -88,7 +88,9 @@ void DatabaseMigration::loadSQLFiles() {
 			continue;
 		}
 
-		size_t version = StringUtilities::toType<size_t>(filename);
+		string version_str = filename; 
+		version_str.erase(version_str.find_first_of("_")); 
+		size_t version = boost::lexical_cast<size_t>(version_str); 
 
 		if (m_sql_version < version) {
 			m_sql_version = version;
