@@ -30,23 +30,23 @@ struct Equip;
 struct Item;
 
 namespace InventoryPacket {
-	void moveItem(Player *player, char inv, int16_t slot1, int16_t slot2);
+	void moveItem(Player *player, int8_t inv, int16_t slot1, int16_t slot2);
 	void updatePlayer(Player *player);
 	void bought(Player *player);
-	void addItem(Player *player, char inv, int16_t slot, Item *item, bool is);
-	void addNewItem(Player *player, char inv, int16_t slot, Item *item, bool is);
-	void updateItemAmounts(Player *player, char inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2);
+	void addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is);
+	void addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is);
+	void updateItemAmounts(Player *player, int8_t inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2);
 	void sitChair(Player *player, int32_t chairid);
 	void stopChair(Player *player);
-	void useItem(Player *player, int32_t itemid, int32_t time, unsigned char types[8], vector<int16_t> vals, bool morph); // Use buff item
-	void endItem(Player *player, unsigned char types[8], bool morph);
+	void useItem(Player *player, int32_t itemid, int32_t time, uint8_t types[8], vector<int16_t> vals, bool morph); // Use buff item
+	void endItem(Player *player, uint8_t types[8], bool morph);
 	void useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed);
 	void useScroll(Player *player, bool succeed, bool destroy, bool legendary_spirit);
 	void showMegaphone(Player *player, const string & msg);
 	void showSuperMegaphone(Player *player, const string & msg, uint8_t whisper = 0);
 	void showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid);
 	void useItemEffect(Player *player, int32_t itemid);
-	void updateSlots(Player *player, char inventory, char slots);
+	void updateSlots(Player *player, int8_t inventory, int8_t slots);
 	void blankUpdate(Player *player);
 };
 

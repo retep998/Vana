@@ -30,10 +30,10 @@ class Pet;
 class ReadPacket;
 
 namespace PetsPacket {
-	void showChat(Player *player, Pet *pet, const string &message, char act);
+	void showChat(Player *player, Pet *pet, const string &message, int8_t act);
 	void movePet(Player *player, Pet *pet, unsigned char *buf, int32_t buflen);
 	void petSummoned(Player *player, Pet *pet, bool kick = false);
-	void showAnimation(Player *player, Pet *pet, char animation, bool success = false);
+	void showAnimation(Player *player, Pet *pet, int8_t animation, bool success = false);
 	void updatePet(Player *player, Pet *pet);
 	void levelUp(Player *player, Pet *pet);
 	void changeName(Player *player, Pet *pet);

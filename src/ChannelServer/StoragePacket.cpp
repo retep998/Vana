@@ -34,7 +34,7 @@ void StoragePacket::showStorage(Player *player, int32_t npcid) {
 	packet.addInt(player->getStorage()->getMesos());
 	packet.addShort(0);
 	packet.addByte(player->getStorage()->getNumItems());
-	for (char i = 0; i < player->getStorage()->getNumItems(); i++) {
+	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		PlayerPacketHelper::addItemInfo(packet, 0, player->getStorage()->getItem(i));
 	}
 	packet.addShort(0);
@@ -42,16 +42,16 @@ void StoragePacket::showStorage(Player *player, int32_t npcid) {
 	player->getSession()->send(packet);
 }
 
-void StoragePacket::addItem(Player *player, char inv) {
+void StoragePacket::addItem(Player *player, int8_t inv) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x0c);
 	packet.addByte(player->getStorage()->getSlots());
-	char type = (char) pow((float) 2, (int32_t) inv) * 2; // Gotta work some magic on type, which starts as inventory
+	int8_t type = (int8_t) pow((float) 2, (int32_t) inv) * 2; // Gotta work some magic on type, which starts as inventory
 	packet.addInt(type);
 	packet.addInt(0);
 	packet.addByte(player->getStorage()->getNumItems(inv));
-	for (char i = 0; i < player->getStorage()->getNumItems(); i++) {
+	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
@@ -59,16 +59,16 @@ void StoragePacket::addItem(Player *player, char inv) {
 	player->getSession()->send(packet);
 }
 
-void StoragePacket::takeItem(Player *player, char inv) {
+void StoragePacket::takeItem(Player *player, int8_t inv) {
 	PacketCreator packet;
 	packet.addShort(SEND_STORAGE_ACTION);
 	packet.addByte(0x09);
 	packet.addByte(player->getStorage()->getSlots());
-	char type = (char) pow((float) 2, (int32_t) inv) * 2;
+	int8_t type = (int8_t) pow((float) 2, (int32_t) inv) * 2;
 	packet.addInt(type);
 	packet.addInt(0);
 	packet.addByte(player->getStorage()->getNumItems(inv));
-	for (char i = 0; i < player->getStorage()->getNumItems(); i++) {
+	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GETINVENTORY(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);

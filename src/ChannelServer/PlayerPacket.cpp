@@ -95,7 +95,7 @@ void PlayerPacket::connectData(Player *player) {
 		}
 	}
 	packet.addByte(0);
-	for (char i = 2; i <= 5; i++) {
+	for (int8_t i = 2; i <= 5; i++) {
 		for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(i); s++) {
 			Item *item = player->getInventory()->getItem(i, s);
 			if (item == 0)
@@ -224,7 +224,7 @@ void PlayerPacket::changeChannel(Player *player, const string &ip, int16_t port)
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::showMessage(Player *player, const string &msg, char type) {
+void PlayerPacket::showMessage(Player *player, const string &msg, int8_t type) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTICE); 
 	packet.addByte(type);

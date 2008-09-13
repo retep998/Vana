@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "SendHeader.h"
 
-void PetsPacket::showChat(Player *player, Pet *pet, const string &message, char act) {
+void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_t act) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_SHOW_CHAT);
 	packet.addInt(player->getId());
@@ -65,7 +65,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick) {
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
-void PetsPacket::showAnimation(Player *player, Pet *pet, char animation, bool success) {
+void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool success) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_ANIMATION);
 	packet.addInt(player->getId());
@@ -161,7 +161,7 @@ void PetsPacket::updateSummonedPets(Player *player) {
 	packet.addByte(0);
 	packet.addShort(0x8);
 	packet.addShort(0x18);
-	for (char i = 0; i<3; i++) {
+	for (int8_t i = 0; i<3; i++) {
 		if (player->getPets()->getSummoned(i)) {
 			packet.addInt(player->getPets()->getPet(player->getPets()->getSummoned(i))->getId());
 		}

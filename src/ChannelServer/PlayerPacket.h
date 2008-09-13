@@ -35,7 +35,7 @@ namespace PlayerPacket {
 	void updateStatShort(Player *player, int32_t id, int16_t value, bool is = false);
 	void updateStatChar(Player *player, int32_t id, int8_t value, bool is = false);
 	void changeChannel(Player *player, const string &ip, int16_t port);
-	void showMessage(Player *player, const string &msg, char type);
+	void showMessage(Player *player, const string &msg, int8_t type);
 	void instructionBubble(Player *player, const string &msg, int16_t width = -1, int16_t height = 5);
 };
 

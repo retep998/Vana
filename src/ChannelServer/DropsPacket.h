@@ -30,7 +30,7 @@ struct Dropped;
 struct Pos;
 
 namespace DropsPacket {
-	void showDrop(Player *player, Drop *drop, char type, bool newdrop, Pos origin);
+	void showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, Pos origin);
 	void takeNote(Player *player, int32_t id, bool ismesos, int16_t amount);
 	void takeDrop(Player *player, Drop *drop);
 	void dontTake(Player *player);
