@@ -140,7 +140,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	pets.reset(new PlayerPets(this));
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << mysqlpp::quote << this->id;
+	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << this->id;
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.empty()) {
@@ -160,7 +160,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	job = (int16_t) res[0]["job"];
 	str = (int16_t) res[0]["str"];
 	dex = (int16_t) res[0]["dex"];
-	intt = (int16_t) res[0]["int32_t"];
+	intt = (int16_t) res[0]["int"];
 	luk = (int16_t) res[0]["luk"];
 	hp = (int16_t) res[0]["chp"];
 	rmhp = mhp = (int16_t) res[0]["mhp"];
@@ -430,32 +430,32 @@ bool Player::addWarning() {
 void Player::saveStats() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE characters SET "
-		<< "level = " << mysqlpp::quote << this->level << ","
-		<< "job = " << mysqlpp::quote << this->job << ","
-		<< "str = " << mysqlpp::quote << this->str << ","
-		<< "dex = " << mysqlpp::quote << this->dex << ","
-		<< "`int32_t` = " << mysqlpp::quote << this->intt << ","
-		<< "luk = " << mysqlpp::quote << this->luk << ","
-		<< "chp = " << mysqlpp::quote << this->hp << ","
-		<< "mhp = " << mysqlpp::quote << this->rmhp << ","
-		<< "cmp = " << mysqlpp::quote << this->mp << ","
-		<< "mmp = " << mysqlpp::quote << this->rmmp << ","
-		<< "hpmp_ap = " << mysqlpp::quote << this->hpmp_ap << ","
-		<< "ap = " << mysqlpp::quote << this->ap << ","
-		<< "sp = " << mysqlpp::quote << this->sp << ","
-		<< "exp = " << mysqlpp::quote << this->exp << ","
-		<< "fame = " << mysqlpp::quote << this->fame << ","
-		<< "map = " << mysqlpp::quote << this->map << ","
-		<< "gender = " << mysqlpp::quote << (int16_t) this->gender << ","
-		<< "skin = " << mysqlpp::quote << (int16_t) this->skin << ","
-		<< "eyes = " << mysqlpp::quote << this->eyes << ","
-		<< "hair = " << mysqlpp::quote << this->hair << ","
-		<< "mesos = " << mysqlpp::quote << inv->getMesos() << ","
-		<< "equip_slots = " << mysqlpp::quote << inv->getMaxSlots(1) << ","
-		<< "use_slots = "   << mysqlpp::quote << inv->getMaxSlots(2) << ","
-		<< "setup_slots = " << mysqlpp::quote << inv->getMaxSlots(3) << ","
-		<< "etc_slots = "   << mysqlpp::quote << inv->getMaxSlots(4) << ","
-		<< "cash_slots = "  << mysqlpp::quote << inv->getMaxSlots(5)
+		<< "level = " << this->level << ","
+		<< "job = " << this->job << ","
+		<< "str = " <<this->str << ","
+		<< "dex = " << this->dex << ","
+		<< "`int` = " << this->intt << ","
+		<< "luk = " << this->luk << ","
+		<< "chp = " << this->hp << ","
+		<< "mhp = " << this->rmhp << ","
+		<< "cmp = " << this->mp << ","
+		<< "mmp = " << this->rmmp << ","
+		<< "hpmp_ap = " << this->hpmp_ap << ","
+		<< "ap = " << this->ap << ","
+		<< "sp = " << this->sp << ","
+		<< "exp = " << this->exp << ","
+		<< "fame = " << this->fame << ","
+		<< "map = " << this->map << ","
+		<< "gender = " << (int16_t) this->gender << ","
+		<< "skin = " << (int16_t) this->skin << ","
+		<< "eyes = " << this->eyes << ","
+		<< "hair = " << this->hair << ","
+		<< "mesos = " << inv->getMesos() << ","
+		<< "equip_slots = " << inv->getMaxSlots(1) << ","
+		<< "use_slots = " << inv->getMaxSlots(2) << ","
+		<< "setup_slots = " << inv->getMaxSlots(3) << ","
+		<< "etc_slots = " << inv->getMaxSlots(4) << ","
+		<< "cash_slots = " << inv->getMaxSlots(5)
 		<< " WHERE id = " << this->id;
 	query.exec();
 }
@@ -473,7 +473,7 @@ void Player::saveVariables() {
 			else {
 				query << ",(";
 			}
-			query << mysqlpp::quote << this->id << ","
+			query << this->id << ","
 					<< mysqlpp::quote << iter->first << ","
 					<< mysqlpp::quote << iter->second << ")";
 		}
@@ -493,8 +493,8 @@ void Player::saveAll() {
 void Player::setOnline(bool online) {
 	int32_t onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << mysqlpp::quote << onlineid <<
-			", characters.online = " << mysqlpp::quote << online << " WHERE characters.id = " << mysqlpp::quote << this->id;
+	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << onlineid <<
+			", characters.online = " << online << " WHERE characters.id = " << this->id;
 	query.exec();
 }
 

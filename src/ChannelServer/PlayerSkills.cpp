@@ -59,7 +59,7 @@ unsigned char PlayerSkills::getMaxSkillLevel(int32_t skillid) {
 
 void PlayerSkills::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << mysqlpp::quote << player->getId();
+	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		PlayerSkillInfo skill;
@@ -81,7 +81,7 @@ void PlayerSkills::save() {
 		else {
 			query << ",(";
 		}
-		query << mysqlpp::quote << player->getId() << "," << mysqlpp::quote << iter->first << "," << mysqlpp::quote << iter->second.level << "," << mysqlpp::quote << iter->second.maxlevel << ")";
+		query << player->getId() << "," << iter->first << "," << iter->second.level << "," << iter->second.maxlevel << ")";
 	}
 	query.exec();
 }

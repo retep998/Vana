@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void Characters::showEquips(int32_t id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT itemid, slot FROM items WHERE charid = " << mysqlpp::quote << id << " AND inv = 1 AND slot < 0 ORDER BY slot ASC";
+	query << "SELECT itemid, slot FROM items WHERE charid = " << id << " AND inv = 1 AND slot < 0 ORDER BY slot ASC";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -48,7 +48,7 @@ void Characters::loadCharacter(Character &charc, mysqlpp::Row &row) {
 	charc.job = row["job"];
 	charc.str = row["str"];
 	charc.dex = row["dex"];
-	charc.intt = row["int32_t"];
+	charc.intt = row["int"];
 	charc.luk = row["luk"];
 	charc.hp = row["chp"];
 	charc.mhp = row["mhp"];
@@ -65,7 +65,7 @@ void Characters::loadCharacter(Character &charc, mysqlpp::Row &row) {
 
 void Characters::showCharacters(PlayerLogin *player) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT * FROM characters WHERE userid = " << mysqlpp::quote << player->getUserid() << " AND world_id = " << mysqlpp::quote << (int32_t) player->getWorld();
+	query << "SELECT * FROM characters WHERE userid = " << player->getUserid() << " AND world_id = " << (int32_t) player->getWorld();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	vector<Character> chars;
@@ -127,17 +127,17 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	}
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO characters (userid, world_id, name, eyes, hair, skin, gender, str, dex, `int32_t`, luk) VALUES (" 
-			<< mysqlpp::quote << player->getUserid() << ","
-			<< mysqlpp::quote << (int32_t) player->getWorld() << ","
-			<< mysqlpp::quote << name << ","
-			<< mysqlpp::quote << eyes << ","
-			<< mysqlpp::quote << hair << ","
-			<< mysqlpp::quote << skin << ","
-			<< mysqlpp::quote << gender << ","
-			<< mysqlpp::quote << str << ","
-			<< mysqlpp::quote << dex << ","
-			<< mysqlpp::quote << intt << ","
-			<< mysqlpp::quote << luk << ")";
+			<< player->getUserid() << ","
+			<< (int32_t) player->getWorld() << ","
+			<< name << ","
+			<< eyes << ","
+			<< hair << ","
+			<< skin << ","
+			<< gender << ","
+			<< str << ","
+			<< dex << ","
+			<< intt << ","
+			<< luk << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	int32_t id = (int32_t) res.insert_id();
 
@@ -147,10 +147,10 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	createEquip(packet->getInt(), 0x07, id);
 	createEquip(packet->getInt(), 0x0b, id);
 
-	query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << mysqlpp::quote << id << ", 4, 1, 4161001, 1, \"\")"; // Beginner Guide
+	query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << id << ", 4, 1, 4161001, 1, \"\")"; // Beginner Guide
 	query.exec();
 
-	query << "SELECT * FROM characters WHERE id = " << mysqlpp::quote << id << " LIMIT 1";
+	query << "SELECT * FROM characters WHERE id = " << id << " LIMIT 1";
 	mysqlpp::StoreQueryResult res2 = query.store();
 
 	loadCharacter(charc, res2[0]);
@@ -168,19 +168,19 @@ void Characters::deleteCharacter(PlayerLogin *player, ReadPacket *packet) {
 
 	mysqlpp::Query query = Database::getCharDB().query();
 
-	query << "DELETE FROM characters WHERE id = " << mysqlpp::quote << id;
+	query << "DELETE FROM characters WHERE id = " << id;
 	query.exec();
 
-	query << "DELETE FROM keymap WHERE charid = " << mysqlpp::quote << id;
+	query << "DELETE FROM keymap WHERE charid = " << id;
 	query.exec();
 
-	query << "DELETE FROM items WHERE charid = " << mysqlpp::quote << id;
+	query << "DELETE FROM items WHERE charid = " << id;
 	query.exec();
 
-	query << "DELETE FROM skills WHERE charid = " << mysqlpp::quote << id;
+	query << "DELETE FROM skills WHERE charid = " << id;
 	query.exec();
 
-	query << "DELETE FROM character_variables WHERE charid = " << mysqlpp::quote << id;
+	query << "DELETE FROM character_variables WHERE charid = " << id;
 	query.exec();
 
 	LoginPacket::deleteCharacter(player, id);
@@ -201,7 +201,7 @@ void Characters::connectGame(PlayerLogin *player, ReadPacket *packet) {
 
 bool Characters::ownerCheck(PlayerLogin *player, int32_t id) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT true FROM characters WHERE id = " << mysqlpp::quote << id << " AND userid = " << mysqlpp::quote << player->getUserid();
+	query << "SELECT true FROM characters WHERE id = " << id << " AND userid = " << player->getUserid();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	return (res.num_rows() == 1) ? 1 : 0 ;
@@ -209,7 +209,7 @@ bool Characters::ownerCheck(PlayerLogin *player, int32_t id) {
 
 bool Characters::nameTaken(PlayerLogin *player, const string &name) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name  << " AND world_id = " << mysqlpp::quote << (int32_t) player->getWorld() << " LIMIT 1";
+	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name  << " AND world_id = " << (int32_t) player->getWorld() << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	return (res.num_rows() == 1) ? true : false ;

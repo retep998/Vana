@@ -43,12 +43,12 @@ void PlayerPets::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	for (unordered_map<int32_t, Pet *>::iterator iter = playerpets.begin(); iter != playerpets.end(); iter++) {
 		query << "UPDATE pets SET "
-			<< "`index` = " << mysqlpp::quote << (int16_t) iter->second->getIndex() << ","
+			<< "`index` = " << (int16_t) iter->second->getIndex() << ","
 			<< "name = " << mysqlpp::quote << iter->second->getName() << ","
-			<< "level = " << mysqlpp::quote << (int16_t) iter->second->getLevel() << ","
-			<< "closeness = " << mysqlpp::quote << iter->second->getCloseness() << ","
-			<< "fullness = " << mysqlpp::quote << (int16_t) iter->second->getFullness()
-			<< " WHERE id = " << mysqlpp::quote << iter->second->getId();
+			<< "level = " << (int16_t) iter->second->getLevel() << ","
+			<< "closeness = " << iter->second->getCloseness() << ","
+			<< "fullness = " << (int16_t) iter->second->getFullness()
+			<< " WHERE id = " << iter->second->getId();
 		query.exec();
 	}
 }

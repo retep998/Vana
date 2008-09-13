@@ -118,6 +118,6 @@ void DatabaseMigration::createInfoTable() {
 void DatabaseMigration::updateInfoTable(size_t version) {
 	mysqlpp::Query query = Database::getCharDB().query();
 
-	query << "UPDATE vana_info SET version = " << mysqlpp::quote << version;
+	query << "UPDATE vana_info SET version = " << version;
 	query.exec();
 }

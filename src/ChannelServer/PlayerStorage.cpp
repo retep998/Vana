@@ -68,7 +68,7 @@ void PlayerStorage::load() {
 		mesos = 0;
 	}
 
-	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name FROM storageitems WHERE userid = " << mysqlpp::quote << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
+	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		Item *item = new Item;
@@ -121,28 +121,28 @@ void PlayerStorage::save() {
 			query << ",(";
 		}
 		Item *item = getItem(i);
-		query << mysqlpp::quote << player->getUserId() << ","
-			<< mysqlpp::quote << (int16_t) player->getWorldId() << ","
-			<< mysqlpp::quote << (int16_t) i << ","
-			<< mysqlpp::quote << item->id << ","
-			<< mysqlpp::quote << item->amount << ","
-			<< mysqlpp::quote << (int16_t) item->slots << ","
-			<< mysqlpp::quote << (int16_t) item->scrolls << ","
-			<< mysqlpp::quote << item->istr << ","
-			<< mysqlpp::quote << item->idex << ","
-			<< mysqlpp::quote << item->iint << ","
-			<< mysqlpp::quote << item->iluk << ","
-			<< mysqlpp::quote << item->ihp << ","
-			<< mysqlpp::quote << item->imp << ","
-			<< mysqlpp::quote << item->iwatk << ","
-			<< mysqlpp::quote << item->imatk << ","
-			<< mysqlpp::quote << item->iwdef << ","
-			<< mysqlpp::quote << item->imdef << ","
-			<< mysqlpp::quote << item->iacc << ","
-			<< mysqlpp::quote << item->iavo << ","
-			<< mysqlpp::quote << item->ihand << ","
-			<< mysqlpp::quote << item->ispeed << ","
-			<< mysqlpp::quote << item->ijump << ","
+		query << player->getUserId() << ","
+			<< (int16_t) player->getWorldId() << ","
+			<< (int16_t) i << ","
+			<< item->id << ","
+			<< item->amount << ","
+			<< (int16_t) item->slots << ","
+			<< (int16_t) item->scrolls << ","
+			<< item->istr << ","
+			<< item->idex << ","
+			<< item->iint << ","
+			<< item->iluk << ","
+			<< item->ihp << ","
+			<< item->imp << ","
+			<< item->iwatk << ","
+			<< item->imatk << ","
+			<< item->iwdef << ","
+			<< item->imdef << ","
+			<< item->iacc << ","
+			<< item->iavo << ","
+			<< item->ihand << ","
+			<< item->ispeed << ","
+			<< item->ijump << ","
 			<< mysqlpp::quote << item->name << ")";
 	}
 	query.exec();

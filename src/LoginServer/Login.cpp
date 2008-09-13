@@ -54,7 +54,7 @@ void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 		// We have a valid password here, so lets hash the password
 		string salt = Randomizer::Instance()->generateSalt(5);
 		string hashed_pass = hashPassword(password, salt);
-		query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << mysqlpp::quote << res[0]["id"];
+		query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << res[0]["id"];
 		query.exec();
 	}
 	else if (res[0]["password"] != hashPassword(password, string(res[0]["salt"].data()))) {
@@ -109,7 +109,7 @@ void Login::setGender(PlayerLogin *player, ReadPacket *packet) {
 		player->setStatus(0);
 		char gender = packet->getByte();
 		mysqlpp::Query query = Database::getCharDB().query();
-		query << "UPDATE users SET gender = " << mysqlpp::quote << (int32_t) gender << " WHERE id = " << mysqlpp::quote << player->getUserid();
+		query << "UPDATE users SET gender = " << (int32_t) gender << " WHERE id = " << player->getUserid();
 		query.exec();
 		if (LoginServer::Instance()->getPinEnabled())
 			player->setStatus(1); // Set pin
@@ -181,7 +181,7 @@ void Login::registerPIN(PlayerLogin *player, ReadPacket *packet) {
 	int32_t pin = boost::lexical_cast<int32_t>(packet->getString());
 	player->setStatus(0);
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE users SET pin = " << mysqlpp::quote << pin << " WHERE id = " << mysqlpp::quote << player->getUserid();
+	query << "UPDATE users SET pin = " << pin << " WHERE id = " << player->getUserid();
 	query.exec();
 	LoginPacket::pinAssigned(player);
 }
