@@ -42,28 +42,28 @@ public:
 	void shutdown();
 	void sendToWorld(PacketCreator &packet);
 
-	char getWorld() { return world; }
-	void setWorld(char id) { world = id; }
-	void setWorldIp(const string &ip) { world_ip = ip; }
+	void setWorld(int8_t id) { world = id; }
+	void setMaxMultiLevel(uint8_t level) { maxMultiLevel = level; }
 	void setWorldPort(int16_t port) { world_port = port; }
-	WorldServerConnectPlayer * getWorldPlayer() { return worldPlayer; }
-	uint16_t getChannel() { return channel; }
-	void setChannel(uint16_t channel) { this->channel = channel; }
 	void setPort(int16_t port) { this->port = port; }
-	int32_t getOnlineId() { return 20000 + (int32_t) world * 100 + channel; }
-	string getScrollingHeader() { return scrollingHeader; }
-	void setScrollingHeader(const string &message);
-	unsigned char getMaxMultiLevel() const { return maxMultiLevel; }
-	void setMaxMultiLevel(unsigned char level) { maxMultiLevel = level; }
-	// Server rates
+	void setChannel(uint16_t channel) { this->channel = channel; }
 	void setExprate(int32_t exprate) { this->exprate = exprate; }
 	void setQuestExprate(int32_t questexprate) { this->questexprate = questexprate; }
 	void setMesorate (int32_t mesorate) { this->mesorate = mesorate; }
 	void setDroprate (int32_t droprate) { this->droprate = droprate; }
-	int32_t getExprate() { return exprate; }
-	int32_t getQuestExprate() { return questexprate; }
-	int32_t getMesorate() { return mesorate; }
-	int32_t getDroprate() { return droprate; }
+	void setScrollingHeader(const string &message);
+	void setWorldIp(const string &ip) { world_ip = ip; }
+
+	int8_t getWorld() const { return world; }
+	uint8_t getMaxMultiLevel() const { return maxMultiLevel; }
+	uint16_t getChannel() const { return channel; }
+	int32_t getOnlineId() const { return 20000 + (int32_t) world * 100 + channel; }
+	int32_t getExprate() const { return exprate; }
+	int32_t getQuestExprate() const { return questexprate; }
+	int32_t getMesorate() const { return mesorate; }
+	int32_t getDroprate() const { return droprate; }
+	string getScrollingHeader() const { return scrollingHeader; }
+	WorldServerConnectPlayer * getWorldPlayer() const { return worldPlayer; }
 private:
 	ChannelServer() {};
 	ChannelServer(const ChannelServer&);
@@ -72,21 +72,20 @@ private:
 
 	WorldServerConnectPlayer *worldPlayer;
 
-	string login_ip;
-	uint16_t login_inter_port;
-	uint16_t port;
-	char world;
-	string world_ip;
+	int8_t world;
+	uint8_t maxMultiLevel;
 	uint16_t world_port;
 	uint16_t channel;
-	string external_ip;
-	string scrollingHeader;
-	unsigned char maxMultiLevel;
-	// Server rates
+	uint16_t login_inter_port;
+	uint16_t port;
 	int32_t exprate;
 	int32_t questexprate;
 	int32_t mesorate;
 	int32_t droprate;
+	string login_ip;
+	string world_ip;
+	string external_ip;
+	string scrollingHeader;
 };
 
 #endif
