@@ -46,8 +46,8 @@ private:
 };
 
 struct KeyMaps::KeyMap {
-	KeyMap(char type, int32_t action);
-	char type;
+	KeyMap(int8_t type, int32_t action);
+	int8_t type;
 	int32_t action;
 };
 
@@ -73,6 +73,6 @@ inline int32_t KeyMaps::getMax() {
 	return maxValue;
 }
 
-inline KeyMaps::KeyMap::KeyMap(char type, int32_t action) : type(type), action(action) { }
+inline KeyMaps::KeyMap::KeyMap(int8_t type, int32_t action) : type(type), action(action) { }
 
 #endif

@@ -220,7 +220,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	if (ChannelServer::Instance()->getScrollingHeader().size() > 0)
 		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
 
-	for (char i = 0; i < 3; i++) {
+	for (int8_t i = 0; i < 3; i++) {
 		if (pets->getSummoned(i))
 			pets->getPet(pets->getSummoned(i))->setPos(Maps::maps[map]->getSpawnPoint(mappos)->pos);
 	}
@@ -348,7 +348,7 @@ void Player::changeKey(ReadPacket *packet) {
 	KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
 	for (int32_t i = 0; i < howmany; i++) {
 		int32_t pos = packet->getInt();
-		char type = packet->getByte();
+		int8_t type = packet->getByte();
 		int32_t action = packet->getInt();
 		keyMaps.add(pos, new KeyMaps::KeyMap(type, action));
 	}
