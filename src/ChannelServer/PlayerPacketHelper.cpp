@@ -28,7 +28,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		else {
 			slot = abs(slot);
 			if (slot > 100) slot -= 100;
-			packet.addByte((char) slot);
+			packet.addByte((int8_t) slot);
 		}
 	}
 	packet.addByte(!ISEQUIP(item->id) + 1);

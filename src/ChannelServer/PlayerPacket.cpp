@@ -105,7 +105,7 @@ void PlayerPacket::connectData(Player *player) {
 			}
 			else {
 				Pet *pet = player->getPets()->getPet(item->petid);
-				packet.addByte((char) s);
+				packet.addByte((int8_t) s);
 				packet.addByte(3);
 				packet.addInt(item->id);
 				packet.addByte(1);

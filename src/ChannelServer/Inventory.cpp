@@ -143,9 +143,9 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			player->getInventory()->setItem(inv, slot1, item2);
 			player->getInventory()->setItem(inv, slot2, item1);
 			if (item1->petid > 0)
-				player->getPets()->getPet(item1->petid)->setInventorySlot((char) slot2);
+				player->getPets()->getPet(item1->petid)->setInventorySlot((int8_t) slot2);
 			if (item2 != 0 && item2->petid > 0)
-				player->getPets()->getPet(item2->petid)->setInventorySlot((char) slot1);
+				player->getPets()->getPet(item2->petid)->setInventorySlot((int8_t) slot1);
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 		}
 	}
