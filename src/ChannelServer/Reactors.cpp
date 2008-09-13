@@ -126,7 +126,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 						Reactor *reactor;
 						Drop *drop;
 						Player *player;
-						char state;
+						int8_t state;
 					} reaction = {reactor, drop, player, revent->nextstate};
 
 					Timer::Id id(Timer::Types::ReactionTimer, (uint32_t) drop, 0);

@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 #include "MySQLM.h"
 
-bool PlayerSkills::addSkillLevel(int32_t skillid, unsigned char amount, bool sendpacket) {
+bool PlayerSkills::addSkillLevel(int32_t skillid, uint8_t amount, bool sendpacket) {
 	// Keep people from adding too much SP and prevent it from going negative
-	unsigned char newlevel = ((playerskills.find(skillid) != playerskills.end()) ? playerskills[skillid].level : 0) + amount;
+	uint8_t newlevel = ((playerskills.find(skillid) != playerskills.end()) ? playerskills[skillid].level : 0) + amount;
 	if (newlevel > Skills::maxlevels[skillid] || newlevel < 0) {
 		return false; // Let the caller handle this
 	}
@@ -36,13 +36,13 @@ bool PlayerSkills::addSkillLevel(int32_t skillid, unsigned char amount, bool sen
 	return true;
 }
 
-unsigned char PlayerSkills::getSkillLevel(int32_t skillid) {
+uint8_t PlayerSkills::getSkillLevel(int32_t skillid) {
 	if (playerskills.find(skillid) != playerskills.end())
 		return playerskills[skillid].level;
 	return 0;
 }
 
-void PlayerSkills::setMaxSkillLevel(int32_t skillid, unsigned char maxlevel, bool sendpacket) { // Set max level for 4th job skills
+void PlayerSkills::setMaxSkillLevel(int32_t skillid, uint8_t maxlevel, bool sendpacket) { // Set max level for 4th job skills
 	playerskills[skillid].maxlevel = maxlevel;
 
 	if (sendpacket) {
@@ -50,7 +50,7 @@ void PlayerSkills::setMaxSkillLevel(int32_t skillid, unsigned char maxlevel, boo
 	}
 }
 
-unsigned char PlayerSkills::getMaxSkillLevel(int32_t skillid) {
+uint8_t PlayerSkills::getMaxSkillLevel(int32_t skillid) {
 	// Get max level for 4th job skills
 	if (playerskills.find(skillid) != playerskills.end())
 		return playerskills[skillid].maxlevel;

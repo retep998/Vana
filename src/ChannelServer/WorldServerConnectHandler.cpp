@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, ReadPacket *packet) {
-	char worldid = packet->getByte();
+	int8_t worldid = packet->getByte();
 	if (worldid != 0xFF) {
 		ChannelServer::Instance()->setWorld(worldid);
 		ChannelServer::Instance()->setWorldIp(packet->getString());
@@ -78,7 +78,7 @@ void WorldServerConnectHandler::findPlayer(ReadPacket *packet) {
 	int32_t finder = packet->getInt();
 	int32_t channel = packet->getInt();
 	string name = packet->getString();
-	char is = packet->getByte();
+	int8_t is = packet->getByte();
 	if (channel == -1) {
 		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, -1, is);
 	}

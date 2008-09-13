@@ -36,7 +36,7 @@ using std::vector;
 unordered_map<int32_t, ActiveTrade *> Trades::trades;
 
 void Trades::tradeHandler(Player *player, ReadPacket *packet) {
-	unsigned char subopcode = packet->getByte();
+	uint8_t subopcode = packet->getByte();
 	switch (subopcode) {
 		case 0x00: { // Open trade - this usually comes with 03 00 - no clue why
 			vector<Player *> players;
@@ -119,7 +119,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			ActiveTrade *trade = Trades::getTrade(playerid);
 			Player *one = trade->getStarter()->player;
 			Player *two = trade->getReceiver()->player;
-			unsigned char blue = 0x00;
+			uint8_t blue = 0x00;
 			if (player == two)
 				blue = 0x01;
 			TradesPacket::sendTradeChat(one, blue, chat);
@@ -141,13 +141,13 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			TradeInfo *recv = trade->getReceiver();
 			Player *one = send->player;
 			Player *two = recv->player;
-			char inventory = packet->getByte();
+			int8_t inventory = packet->getByte();
 			int16_t slot = packet->getShort();
 			int16_t amount = packet->getShort();
-			char addslot = packet->getByte();
+			int8_t addslot = packet->getByte();
 			Item *use;
 			Item *item;
-			unsigned char user = 0x00;
+			uint8_t user = 0x00;
 			if (player == two)
 				user = 0x01;
 			if (isreceiver) {
@@ -299,7 +299,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 						one->getInventory()->setMesos(sendermesos + added);					
 					}
 					if (send->count > 0) {
-						for (char i = 0; i < 9; i++) {
+						for (int8_t i = 0; i < 9; i++) {
 							if (send->slot[i]) {
 								Item *item = send->items[i];
 								Inventory::addItem(two, new Item(item));
@@ -308,7 +308,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 						}
 					}
 					if (recv->count > 0) {
-						for (char i = 0; i < 9; i++) {
+						for (int8_t i = 0; i < 9; i++) {
 							if (recv->slot[i]) {
 								Item *item = recv->items[i];
 								Inventory::addItem(one, new Item(item));
@@ -400,15 +400,15 @@ void Trades::cancelTrade(Player *player) {
 
 bool Trades::canTrade(Player *player, TradeInfo *info) {
 	bool yes = true;
-	char totals[4] = {0};
+	int8_t totals[4] = {0};
 	unordered_map<int32_t, int16_t> added;
-	for (char i = 0; i < 9; i++) {
+	for (int8_t i = 0; i < 9; i++) {
 		// Create item structure to determine needed slots among stackable items
 		// Also, determine needed slots for nonstackables
 		if (info->slot[i]) {
 			Item *check = info->items[i];
 			int32_t itemid = check->id;
-			char inv = GETINVENTORY(itemid);
+			int8_t inv = GETINVENTORY(itemid);
 			if (inv == 1 || ISRECHARGEABLE(itemid)) // Equips and rechargeables always take 1 slot, no need to clutter unordered map
 				totals[inv - 1]++;
 			else {
@@ -419,11 +419,11 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 			}
 		}
 	}
-	for (char i = 0; i < 9; i++) { // Determine precisely how many slots are needed for stackables
+	for (int8_t i = 0; i < 9; i++) { // Determine precisely how many slots are needed for stackables
 		if (info->slot[i]) {
 			Item *check = info->items[i];
 			int32_t itemid = check->id;
-			char inv = GETINVENTORY(itemid);
+			int8_t inv = GETINVENTORY(itemid);
 			if (inv != 1 && !ISRECHARGEABLE(itemid)) { // Already did these
 				if (added.find(itemid) == added.end()) // Already did this item
 					continue;
@@ -449,10 +449,10 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 			}
 		}
 	}
-	for (char i = 0; i < 4; i++) { // Determine if needed slots are available
+	for (int8_t i = 0; i < 4; i++) { // Determine if needed slots are available
 		if (totals[i] > 0) {
-			char incrementor = 0;
-			for (char g = 1; g <= player->getInventory()->getMaxSlots(i + 1); g++) { 
+			int8_t incrementor = 0;
+			for (int8_t g = 1; g <= player->getInventory()->getMaxSlots(i + 1); g++) { 
 				if (player->getInventory()->getItem(i + 1, g) == 0)
 					incrementor++;
 				if (incrementor >= totals[i])
@@ -469,7 +469,7 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 
 void Trades::returnItems(Player *player, TradeInfo *info) {
 	if (info->count > 0) {
-		for (char i = 0; i < 9; i++) {
+		for (int8_t i = 0; i < 9; i++) {
 			if (info->slot[i]) {
 				Item *item = info->items[i];
 				Inventory::addItem(player, new Item(item));

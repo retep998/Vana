@@ -448,7 +448,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		case 1221001:
 		case 1321001: {
 			int32_t mobs = packet->getInt();
-			for (char k = 0; k < mobs; k++) {
+			for (int8_t k = 0; k < mobs; k++) {
 				int32_t mapmobid = packet->getInt();
 				uint8_t success = packet->getByte();
 				SkillsPacket::showMagnetSuccess(player, mapmobid, success);
@@ -564,7 +564,7 @@ SkillActiveInfo Skills::parsePlayerSkill(Player *player, int32_t skillid, uint8_
 	memset(playerskill.types, 0, 8 * sizeof(uint8_t)); // Reset player/map types to 0
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		playerskill.types[skillsinfo[skillid].player[i].byte] += skillsinfo[skillid].player[i].type;
-		char val = skillsinfo[skillid].player[i].value;
+		int8_t val = skillsinfo[skillid].player[i].value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed change for maxed dark sight
 			playerskill.types[TYPE_1] = 0;
 			continue;
@@ -610,7 +610,7 @@ SkillActiveInfo Skills::parseMapSkill(Player *player, int32_t skillid, uint8_t l
 	memset(mapskill.types, 0, 8 * sizeof(uint8_t));
 	for (size_t i = 0; i < skillsinfo[skillid].map.size(); i++) {
 		mapskill.types[skillsinfo[skillid].map[i].byte] += skillsinfo[skillid].map[i].type;
-		char val = skillsinfo[skillid].map[i].value;
+		int8_t val = skillsinfo[skillid].map[i].value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed update for maxed dark sight
 			mapskill.types[TYPE_1] = 0;
 			continue;
@@ -659,7 +659,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 		else {
 			if (elementalamp) {
 				int32_t sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
-				char slv = player->getSkills()->getSkillLevel(sid);
+				int8_t slv = player->getSkills()->getSkillLevel(sid);
 				if (slv > 0)
 					player->setMP(player->getMP() - (mpuse * skills[sid][slv].x / 100), true);
 				else
@@ -680,7 +680,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 }
 
 void Skills::useAttackSkill(Player *player, int32_t skillid) {
-	unsigned char level = player->getSkills()->getSkillLevel(skillid);
+	uint8_t level = player->getSkills()->getSkillLevel(skillid);
 	if (skills.find(skillid) == skills.end())
 		return;
 	Skills::applySkillCosts(player, skillid, level, true);

@@ -113,7 +113,7 @@ int LuaExports::sendGetNumber(lua_State *luaVm) {
 }
 
 int LuaExports::sendStyle(lua_State *luaVm) {
-	char size = (char) lua_tointeger(luaVm, -1);
+	int8_t size = (int8_t) lua_tointeger(luaVm, -1);
 	int32_t *styles = new int32_t[size];
 
 	lua_pop(luaVm, 1);

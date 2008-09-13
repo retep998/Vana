@@ -580,8 +580,8 @@ int LuaExports::deletePlayerVariable(lua_State *luaVm) {
 }
 
 int LuaExports::addSlots(lua_State *luaVm) {
-	char inventory = lua_tointeger(luaVm, -2);
-	char rows = lua_tointeger(luaVm, -1);
+	int8_t inventory = lua_tointeger(luaVm, -2);
+	int8_t rows = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getInventory()->addMaxSlots(inventory, rows);
 	return 1;
 }

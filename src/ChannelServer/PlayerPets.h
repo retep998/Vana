@@ -31,12 +31,12 @@ public:
 	PlayerPets(Player *player) : player(player) { }
 	void addPet(Pet *pet);
 	Pet * getPet(int32_t petid);
-	void setSummoned(int32_t petid, char slot);
-	int32_t getSummoned(char index);
+	void setSummoned(int32_t petid, int8_t slot);
+	int32_t getSummoned(int8_t index);
 	void save();
 private:
 	unordered_map<int32_t, Pet *> playerpets;
-	unordered_map<char, int32_t> summoned;
+	unordered_map<int8_t, int32_t> summoned;
 	Player *player;
 };
 

@@ -79,7 +79,7 @@ void Pets::movePet(Player *player, ReadPacket *packet) {
 void Pets::chat(Player *player, ReadPacket *packet) {
 	int32_t petid = packet->getInt();
 	packet->skipBytes(5);
-	char act = packet->getByte();
+	int8_t act = packet->getByte();
 	string message = packet->getString();
 	PetsPacket::showChat(player, player->getPets()->getPet(petid), message, act);
 }
@@ -116,7 +116,7 @@ void Pets::feedPet(Player *player, ReadPacket *packet) {
 void Pets::showAnimation(Player *player, ReadPacket *packet) {
 	int32_t petid = packet->getInt();
 	packet->skipBytes(5);
-	char act = packet->getByte();
+	int8_t act = packet->getByte();
 	Pet *pet = player->getPets()->getPet(petid);
 	bool success = false;
 	if (Randomizer::Instance()->randInt(100) < petsInteractInfo[pet->getType()][act].prob) {
@@ -196,7 +196,7 @@ void Pets::lootItem(Player *player, ReadPacket *packet) {
 }
 
 void Pets::showPets(Player *player) {
-	for (char i = 0; i < 3; i++) {
+	for (int8_t i = 0; i < 3; i++) {
 		if (player->getPets()->getSummoned(i) != 0) {
 			Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i));
 			if (pet->isSummoned()) {
@@ -219,7 +219,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 	if (player->getSkills()->getSkillLevel(8) == 1) {
 		if (pet->isSummoned()) {
 			player->getPets()->setSummoned(0, pet->getIndex());
-			for (char i = (pet->getIndex() + 1); i < 3; i++) {
+			for (int8_t i = (pet->getIndex() + 1); i < 3; i++) {
 				if (player->getPets()->getSummoned(i)) {
 					Pet *move = player->getPets()->getPet(player->getPets()->getSummoned(i));
 					move->setIndex(i - 1);
@@ -240,7 +240,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 		}
 		else {
 			if (master) {
-				for (char k = 2; k > 0; k--) {
+				for (int8_t k = 2; k > 0; k--) {
 					if (player->getPets()->getSummoned(k - 1) && !player->getPets()->getSummoned(k)) {
 						Pet *move = player->getPets()->getPet(player->getPets()->getSummoned(k - 1));
 						player->getPets()->setSummoned(0, k - 1);
@@ -254,7 +254,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 				PetsPacket::petSummoned(player, pet);
 			}
 			else {
-				for (char i = 0; i < 3; i++) {
+				for (int8_t i = 0; i < 3; i++) {
 					if (!player->getPets()->getSummoned(i)) {
 						player->getPets()->setSummoned(pet->getId(), i);
 						pet->setIndex(i);

@@ -31,11 +31,11 @@ Pet * PlayerPets::getPet(int32_t petid) {
 	return playerpets.find(petid) != playerpets.end() ? playerpets[petid] : 0;
 }
 
-void PlayerPets::setSummoned(int32_t petid, char index) {
+void PlayerPets::setSummoned(int32_t petid, int8_t index) {
 	summoned[index] = petid;
 }
 
-int32_t PlayerPets::getSummoned(char index) {
+int32_t PlayerPets::getSummoned(int8_t index) {
 	return summoned[index] > 0 ? summoned[index] : 0;
 }
 
