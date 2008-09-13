@@ -40,7 +40,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 	switch (subopcode) {
 		case 0x00: { // Open trade - this usually comes with 03 00 - no clue why
 			vector<Player *> players;
-			vector<unsigned char> pos;
+			vector<uint8_t> pos;
 			players.push_back(player);
 			pos.push_back(0xFF);			
 			TradesPacket::sendOpenTrade(player, players, pos);
@@ -96,7 +96,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				TradesPacket::sendAddUser(one, two, 0x01);
 				two->setTrading(1);
 				vector<Player *> players;
-				vector<unsigned char> pos;
+				vector<uint8_t> pos;
 				players.push_back(one);
 				players.push_back(two);
 				pos.push_back(0x01);

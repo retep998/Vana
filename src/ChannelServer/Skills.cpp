@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 unordered_map<int32_t, SkillsLevelInfo> Skills::skills;
-unordered_map<int32_t, unsigned char> Skills::maxlevels;
+unordered_map<int32_t, uint8_t> Skills::maxlevels;
 unordered_map<int32_t, SkillsInfo> Skills::skillsinfo;
 
 void Skills::init() {
