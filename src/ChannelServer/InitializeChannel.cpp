@@ -40,6 +40,8 @@ void Initializing::checkVEDBVersion() {
 
 	if (!(res = query.store())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -50,6 +52,8 @@ void Initializing::checkVEDBVersion() {
 		// VEDB too old
 		std::cout << "ERROR: VEDB too old. Expected: " << vedb_version << "." << vedb_subversion << " ";
 		std::cout << "Have: " << version << "." << subversion << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(4);
 	}
 }
@@ -62,6 +66,8 @@ void Initializing::initializeMobs() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -110,6 +116,8 @@ void Initializing::initializeMobs() {
 	query << "SELECT mobid, attackid, mpconsume, mpburn, disease, level, deadly FROM mobattackdata";
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -141,6 +149,8 @@ void Initializing::initializeReactors() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -182,6 +192,8 @@ void Initializing::initializeItems() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -293,6 +305,8 @@ void Initializing::initializeItems() {
 	
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -319,6 +333,8 @@ void Initializing::initializeDrops() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -347,6 +363,8 @@ void Initializing::initializeDrops() {
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -379,6 +397,8 @@ void Initializing::initializeEquips() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";		
+		getchar();
 		exit(1);
 	}
 
@@ -438,6 +458,8 @@ void Initializing::initializeShops() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -481,6 +503,8 @@ void Initializing::initializeQuests() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -496,6 +520,8 @@ void Initializing::initializeQuests() {
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -538,6 +564,8 @@ void Initializing::initializeQuests() {
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -596,6 +624,8 @@ void Initializing::initializeSkills() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -667,6 +697,8 @@ void Initializing::initializeMaps() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -697,6 +729,8 @@ void Initializing::initializeMaps() {
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -729,6 +763,8 @@ void Initializing::initializeMaps() {
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -768,6 +804,8 @@ void Initializing::initializeMaps() {
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -790,6 +828,8 @@ void Initializing::initializeMaps() {
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -818,6 +858,8 @@ void Initializing::initializePets() {
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
@@ -837,6 +879,8 @@ void Initializing::initializePets() {
 
 	if (!(res = query.use())) {
 		std::cout << "FAILED: " << Database::getDataDB().error() << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 

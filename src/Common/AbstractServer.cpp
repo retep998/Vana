@@ -33,6 +33,8 @@ void AbstractServer::initialize() {
 
 	if (inter_password == "changeme") {
 		std::cerr << "ERROR: inter_password is not changed." << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
 		exit(1);
 	}
 
