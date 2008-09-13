@@ -30,12 +30,12 @@ public:
 	virtual int16_t getFH() const { return m_foothold; }
 	virtual Pos getPos() const { return m_pos; }
 
+	virtual void setStance(int8_t val) { m_stance = val; }
 	virtual void setFH(int16_t val) { m_foothold = val; }
 	virtual void setPos(const Pos &val) { m_pos = val; }
-	virtual void setStance(char val) { m_stance = val; }
 protected:
-	int16_t m_foothold;
 	int8_t m_stance;
+	int16_t m_foothold;
 	Pos m_pos;
 };
 
