@@ -40,7 +40,7 @@ Reactor::Reactor (int32_t mapid, int32_t reactorid, Pos pos) : mapid(mapid), rea
 	Maps::maps[mapid]->addReactor(this);
 }
 
-void Reactor::setState(char state, bool is) {
+void Reactor::setState(int8_t state, bool is) {
 	this->state = state;
 	if (is)
 		ReactorPacket::triggerReactor(this);
