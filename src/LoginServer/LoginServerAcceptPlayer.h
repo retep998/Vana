@@ -25,12 +25,12 @@ class ReadPacket;
 class LoginServerAcceptPlayer : public AbstractServerAcceptPlayer {
 public:
 	void realHandleRequest(ReadPacket *packet);
-	void authenticated(char type);
+	void authenticated(int8_t type);
 
-	char getWorldId() const { return worldId; }
-	void setWorldId(char id) { worldId = id; }
+	int8_t getWorldId() const { return worldId; }
+	void setWorldId(int8_t id) { worldId = id; }
 private:
-	char worldId;
+	int8_t worldId;
 };
 
 class LoginServerAcceptPlayerFactory : public AbstractPlayerFactory {

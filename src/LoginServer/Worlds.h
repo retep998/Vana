@@ -42,8 +42,8 @@ struct World {
 	string name;
 	unordered_map<int32_t, shared_ptr<Channel>> channels;
 	size_t maxChannels;
-	char id;
-	char ribbon;
+	int8_t id;
+	int8_t ribbon;
 	bool connected;
 	string ip;
 	int16_t port;
@@ -54,15 +54,15 @@ struct World {
 	int32_t mesorate;
 	int32_t droprate;
 	// Multi-level limit;
-	unsigned char maxMultiLevel;
+	uint8_t maxMultiLevel;
 };
 
 namespace Worlds {
 	void channelSelect(PlayerLogin *player, ReadPacket *packet);
 	void selectWorld(PlayerLogin *player, ReadPacket *packet);
 	void showWorld(PlayerLogin *player);
-	char connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
-	char connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server
+	int8_t connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
+	int8_t connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server
 	extern unordered_map<uint8_t, World *> worlds;
 };
 

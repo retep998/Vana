@@ -35,11 +35,11 @@ struct Character;
 
 namespace LoginPacket {
 	void loginError(PlayerLogin *player, int16_t errorid);
-	void loginBan(PlayerLogin *player, char reason, int32_t expire);
-	void loginProcess(PlayerLogin *player, char id);
+	void loginBan(PlayerLogin *player, int8_t reason, int32_t expire);
+	void loginProcess(PlayerLogin *player, int8_t id);
 	void loginConnect(PlayerLogin *player, const string &username);
 	void pinAssigned(PlayerLogin *player);
-	void genderDone(PlayerLogin *player, char gender);
+	void genderDone(PlayerLogin *player, int8_t gender);
 	void showWorld(PlayerLogin *player, World *world);
 	void worldEnd(PlayerLogin *player);
 	void showChannels(PlayerLogin *player);
