@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SERVERPLAYER_H
 
 #include "AbstractPlayer.h"
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -29,16 +30,16 @@ class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
 	AbstractServerConnectPlayer() { is_server = true; }
 	void sendAuth(const string &pass);
-	char getType() { return type; }
+	int8_t getType() { return type; }
 protected:
-	char type;
+	int8_t type;
 };
 
 class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
 	AbstractServerAcceptPlayer() { is_server = true; }
 	bool processAuth(ReadPacket *packet, const string &pass);
-	virtual void authenticated(char type) = 0;
+	virtual void authenticated(int8_t type) = 0;
 private:
 	bool is_authenticated;
 };
