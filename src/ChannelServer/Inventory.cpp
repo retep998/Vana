@@ -449,7 +449,7 @@ void Inventory::useSkillbook(Player *player, ReadPacket *packet) {
 				use = true;
 		}
 		if (use) {
-			if (Randomizer::Instance()->randInt(100) <= item.cons.success) {
+			if ((int16_t) Randomizer::Instance()->randShort(100) <= item.cons.success) {
 				player->getSkills()->setMaxSkillLevel(skillid, newMaxLevel);
 				succeed = true;
 			}
@@ -539,12 +539,12 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 		case 2049002: // Clean Slate 5%
 		case 2049003: // Clean Slate 20%
 			if ((equips[equip->id].slots - equip->scrolls) > equip->slots) {
-				if (Randomizer::Instance()->randShort(99) < items[itemid].cons.success) { // Give back a slot
+				if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.success) { // Give back a slot
 					equip->slots++;
 					succeed = true;
 				}
 				else {
-					if (Randomizer::Instance()->randShort(99) < items[itemid].cons.cursed) {
+					if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.cursed) {
 						cursed = true;
 						InventoryPacket::moveItem(player, 1, eslot, 0);
 						player->getInventory()->deleteItem(1, eslot);
@@ -555,10 +555,10 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			break;
 		case 2049100: // Chaos Scroll
 			if (equip->slots > 0) {
-				if (Randomizer::Instance()->randShort(99) < items[itemid].cons.success) { // Add stats
+				if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.success) { // Add stats
 					int8_t n = -1; // Default - Decrease stats
 					// TODO: Make sure that Chaos Scrolls are working like they do in global
-					if (Randomizer::Instance()->randShort(99) < 50) // Increase
+					if ((int16_t) Randomizer::Instance()->randShort(99) < 50) // Increase
 						n = 1;
 					// Gives 0-5 stats on every stat on the item
 					if (equip->istr > 0)
@@ -611,7 +611,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			if (equip->slots > 0) {
 				if (wscroll == 2)
 					takeItem(player, 2340000, 1);
-				if (Randomizer::Instance()->randInt(99) < items[itemid].cons.success) {
+				if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.success) {
 					succeed = true;
 					equip->istr += items[itemid].cons.istr;
 					equip->idex += items[itemid].cons.idex;
@@ -632,7 +632,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 					equip->slots--;
 				}
 				else {
-					if (Randomizer::Instance()->randInt(99) < items[itemid].cons.cursed) {
+					if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.cursed) {
 						cursed = true;
 						InventoryPacket::moveItem(player, 1, eslot, 0);
 						player->getInventory()->deleteItem(1, eslot);
