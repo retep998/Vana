@@ -115,21 +115,21 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	int32_t skin = packet->getInt();
 	packet->skipBytes(16);
 
-	uint8_t gender = packet->getByte();
-	uint8_t str = packet->getByte();
-	uint8_t dex = packet->getByte();
-	uint8_t intt = packet->getByte();
-	uint8_t luk = packet->getByte();
+	uint16_t gender = packet->getByte();
+	uint16_t str = packet->getByte();
+	uint16_t dex = packet->getByte();
+	uint16_t intt = packet->getByte();
+	uint16_t luk = packet->getByte();
 
 	if (str + dex + intt + luk != 25) {
 		// hacking
 		return;
 	}
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "INSERT INTO characters (userid, world_id, name, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES (" 
+	query << "INSERT INTO characters (name, userid, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES (" 
+			<< "\"" << name << "\","
 			<< player->getUserid() << ","
 			<< (int32_t) player->getWorld() << ","
-			<< name << ","
 			<< eyes << ","
 			<< hair << ","
 			<< skin << ","
@@ -152,7 +152,7 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 
 	query << "SELECT * FROM characters WHERE id = " << id << " LIMIT 1";
 	mysqlpp::StoreQueryResult res2 = query.store();
-
+		
 	loadCharacter(charc, res2[0]);
 	LoginPacket::showCharacter(player, charc);
 }
