@@ -77,7 +77,7 @@ void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int32_t playerid
 	player->getSession()->send(packet);
 }
 
-void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int32_t playerid, int32_t target) {
+void PartyPacket::updateParty(WorldServerAcceptPlayer *player, int8_t type, int32_t playerid, int32_t target) {
 	PacketCreator packet;
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -116,7 +116,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, char type, int32_
 	player->getSession()->send(packet);
 }
 
-void PartyPacket::partyError(WorldServerAcceptPlayer *player, int32_t playerid, char error) {
+void PartyPacket::partyError(WorldServerAcceptPlayer *player, int32_t playerid, int8_t error) {
 	PacketCreator packet;
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include "WorldServerAcceptPlayer.h"
 
-void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, int32_t playerid, char type, const string &message, const string &sender) {
+void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, int32_t playerid, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
@@ -36,7 +36,7 @@ void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, i
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, unsigned char maxMultiLevel) {
+void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel) {
 	PacketCreator packet;
 	packet.addShort(INTER_CHANNEL_CONNECT);
 	packet.addShort(channel);
@@ -60,7 +60,7 @@ void WorldServerAcceptPlayerPacket::sendToChannels(unsigned char *data, int32_t 
 	Channels::Instance()->sendToAll(packet);
 }
 
-void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, int32_t finder, uint16_t channel, const string &findee, unsigned char is) {
+void WorldServerAcceptPlayerPacket::findPlayer(WorldServerAcceptPlayer *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
 	PacketCreator packet;
 	packet.addShort(INTER_FIND);
 	packet.addInt(finder);

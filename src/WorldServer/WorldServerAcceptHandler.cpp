@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, ReadPacket *packet) {
 	int32_t playerid = packet->getInt();
-	char type = packet->getByte(); // Buddy = 0 party = 1 guild = 2
+	int8_t type = packet->getByte(); // Buddy = 0 party = 1 guild = 2
 	string message = packet->getString();
-	unsigned char receivers = packet->getByte();
+	uint8_t receivers = packet->getByte();
 	string sender = Players::Instance()->getPlayer(playerid)->name;
 	for (size_t i = 0; i < receivers; i++) {
 		int32_t receiver = packet->getInt();
@@ -38,7 +38,7 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, ReadPa
 }
 
 void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	char type = packet->getByte();
+	int8_t type = packet->getByte();
 	int32_t playerid = packet->getInt();
 	switch(type) {
 		case 0x01: PartyHandler::createParty(player, playerid); break;

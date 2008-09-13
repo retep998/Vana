@@ -26,14 +26,14 @@ using std::string;
 class WorldServerAcceptPlayer;
 
 namespace WorldServerAcceptPlayerPacket {
-	void connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, unsigned char maxMultiLevel);
+	void connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel);
 	void playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, const string &ip, int16_t port);
 	void sendToChannels(unsigned char *data, int32_t len);
-	void findPlayer(WorldServerAcceptPlayer *player, int32_t finder, uint16_t channel, const string &findee, unsigned char is = 0);
+	void findPlayer(WorldServerAcceptPlayer *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
 	void whisperPlayer(WorldServerAcceptPlayer *player, int32_t whisperee, const string &whisperer, uint16_t channel, const string &message);
 	void scrollingHeader(const string &message);
 	void newConnectable(uint16_t channel, int32_t playerid);
-	void groupChat(WorldServerAcceptPlayer *player, int32_t playerid, char type, const string &message, const string &sender);
+	void groupChat(WorldServerAcceptPlayer *player, int32_t playerid, int8_t type, const string &message, const string &sender);
 	void sendRates(WorldServerAcceptPlayer *player, int32_t setBit);
 };
 
