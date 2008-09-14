@@ -75,6 +75,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getHair", &LuaExports::getHair);
 	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
 	lua_register(luaVm, "getName", &LuaExports::getName);
+	lua_register(luaVm, "getGMLevel", &LuaExports::getGMLevel);
 	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
 	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
@@ -323,6 +324,11 @@ int LuaExports::getEyes(lua_State *luaVm) {
 
 int LuaExports::getName(lua_State *luaVm) {
 	lua_pushstring(luaVm, getPlayer(luaVm)->getName().c_str());
+	return 1;
+}
+
+int LuaExports::getGMLevel(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getGMLevel());
 	return 1;
 }
 

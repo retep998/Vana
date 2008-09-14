@@ -86,6 +86,7 @@ namespace LuaExports {
 	int getHair(lua_State *luaVm);
 	int getEyes(lua_State *luaVm);
 	int getName(lua_State *luaVm);
+	int getGMLevel(lua_State *luaVm);
 	int getPlayerVariable(lua_State *luaVm);
 	int getNumPlayers(lua_State *luaVm);
 	int getReactorState(lua_State *luaVm);
