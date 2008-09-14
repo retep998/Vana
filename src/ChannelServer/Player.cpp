@@ -433,7 +433,7 @@ bool Player::addWarning() {
 void Player::saveStats() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE characters SET "
-		<< "level = " << this->level << ","
+		<< "level = " << (int16_t) this->level << ","
 		<< "job = " << this->job << ","
 		<< "str = " <<this->str << ","
 		<< "dex = " << this->dex << ","
@@ -454,11 +454,11 @@ void Player::saveStats() {
 		<< "eyes = " << this->eyes << ","
 		<< "hair = " << this->hair << ","
 		<< "mesos = " << inv->getMesos() << ","
-		<< "equip_slots = " << inv->getMaxSlots(1) << ","
-		<< "use_slots = " << inv->getMaxSlots(2) << ","
-		<< "setup_slots = " << inv->getMaxSlots(3) << ","
-		<< "etc_slots = " << inv->getMaxSlots(4) << ","
-		<< "cash_slots = " << inv->getMaxSlots(5)
+		<< "equip_slots = " << (int16_t) inv->getMaxSlots(1) << ","
+		<< "use_slots = " << (int16_t) inv->getMaxSlots(2) << ","
+		<< "setup_slots = " << (int16_t) inv->getMaxSlots(3) << ","
+		<< "etc_slots = " << (int16_t) inv->getMaxSlots(4) << ","
+		<< "cash_slots = " << (int16_t) inv->getMaxSlots(5)
 		<< " WHERE id = " << this->id;
 	query.exec();
 }
