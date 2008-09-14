@@ -85,9 +85,3 @@ void LoginServer::loadConfig() {
 		i++;
 	}
 }
-
-void LoginServer::shutdown() {
-	//TODO
-}
-
-

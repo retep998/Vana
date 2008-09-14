@@ -16,13 +16,42 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
+#include "ConnectionManager.h"
+#include <functional>
+
+#ifdef _WIN32
+
+std::tr1::function<void()> console_ctrl_function;
+
+BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
+	switch (ctrl_type) {
+		case CTRL_C_EVENT:
+		case CTRL_BREAK_EVENT:
+		case CTRL_CLOSE_EVENT:
+		case CTRL_SHUTDOWN_EVENT:
+			console_ctrl_function();
+			return TRUE;
+		default:
+			return FALSE;
+	}
+}
+
+#endif
 
 int main() {
 	LoginServer *server = LoginServer::Instance();
+	ConnectionManager *connMan = ConnectionManager::Instance();
+
 	server->initialize();
 	
-	while (getchar()) {}
+#ifdef _WIN32
+    // Allow the server to stop on windows console events
+	console_ctrl_function = std::tr1::bind(&ConnectionManager::stop, connMan);
+    SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
+#endif
 
-	server->shutdown();
+	connMan->run();
+	connMan->join();
+
 	return 0;
 }

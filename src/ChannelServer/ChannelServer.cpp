@@ -78,18 +78,6 @@ void ChannelServer::loadConfig() {
 	droprate = 1; // Will get from world server
 }
 
-void ChannelServer::shutdown() {
-	struct {
-		void operator()(Player *player) {
-			player->saveAll();
-			player->getSession()->disconnect();
-		}
-	} saveAndDC;
-	
-	Players::Instance()->run(saveAndDC);
-	exit(0);
-}
-
 void ChannelServer::sendToWorld(PacketCreator &packet) {
 	worldPlayer->getSession()->send(packet);
 }

@@ -30,6 +30,7 @@ class SessionManager : private boost::noncopyable {
 public:
 	void start(AbstractSessionPtr session);
 	void stop(AbstractSessionPtr session);
+	void stopAll();
 private:
 	std::set<AbstractSessionPtr> m_sessions;
 };

@@ -39,7 +39,6 @@ public:
 	void loadConfig();
 	void listen();
 	void connectWorld();
-	void shutdown();
 	void sendToWorld(PacketCreator &packet);
 
 	void setWorld(int8_t id) { world = id; }

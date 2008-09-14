@@ -32,6 +32,11 @@ m_connect_packet_unknown(connectPacketUnknown)
 	start_accept();
 }
 
+void MapleServer::stop() {
+	m_acceptor.close();
+	m_session_manager->stopAll();
+}
+
 void MapleServer::start_accept() {
 	MapleSessionPtr new_session(new MapleSession(m_acceptor.io_service(),
 		m_session_manager, m_apf->createPlayer(), true, m_connect_packet_unknown));
