@@ -81,7 +81,7 @@ void PlayerSkills::save() {
 		else {
 			query << ",(";
 		}
-		query << player->getId() << "," << iter->first << "," << iter->second.level << "," << iter->second.maxlevel << ")";
+		query << player->getId() << "," << iter->first << "," << (int16_t) iter->second.level << "," << (int16_t) iter->second.maxlevel << ")";
 	}
 	query.exec();
 }
