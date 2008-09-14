@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.h"
 #include "ConnectionManager.h"
 #include "Worlds.h"
+#include <boost/format.hpp>
 
 LoginServer * LoginServer::singleton = 0;
 
@@ -42,42 +43,42 @@ void LoginServer::loadConfig() {
 
 	// Let's load our worlds
 	config.loadFile("conf/worlds.lua");
+	boost::format formatter("world%i_%s"); // The formater we'll be using
 	size_t i = 0;
 	while (1) {
-		char buf[25];
-		sprintf_s(buf, "world%d_name", i);
-		if (!config.keyExist(buf))
+		formatter % i % "name";
+		if (!config.keyExist(formatter.str()))
 			break; //No more worlds
 
 		World *world = new World();
-		world->name = config.getString(buf);
+		world->name = config.getString(formatter.str());
 
-		sprintf_s(buf, "world%d_channels", i);
-		world->maxChannels = config.getInt(buf);
+		formatter % i % "channels";
+		world->maxChannels = config.getInt(formatter.str());
 
-		sprintf_s(buf, "world%d_id", i);
-		world->id = (uint8_t) config.getInt(buf);
+		formatter % i % "id";
+		world->id = (uint8_t) config.getInt(formatter.str());
 
-		sprintf_s(buf, "world%d_ribbon", i);
-		world->ribbon = (uint8_t) config.getInt(buf);
+		formatter % i % "ribbon";
+		world->ribbon = (uint8_t) config.getInt(formatter.str());
 
-		sprintf_s(buf, "world%d_port", i);
-		world->port = config.getShort(buf);
+		formatter % i % "port";
+		world->port = config.getShort(formatter.str());
 
-		sprintf_s(buf, "world%d_exprate", i);
-		world->exprate = config.getInt(buf);
+		formatter % i % "exprate";
+		world->exprate = config.getInt(formatter.str());
 
-		sprintf_s(buf, "world%d_questexprate", i);
-		world->questexprate = config.getInt(buf);
+		formatter % i % "questexprate";
+		world->questexprate = config.getInt(formatter.str());
 
-		sprintf_s(buf, "world%d_mesorate", i);
-		world->mesorate = config.getInt(buf);
+		formatter % i % "mesorate";
+		world->mesorate = config.getInt(formatter.str());
 
-		sprintf_s(buf, "world%d_droprate", i);
-		world->droprate = config.getInt(buf);
+		formatter % i % "droprate";
+		world->droprate = config.getInt(formatter.str());
 
-		sprintf_s(buf, "world%d_max_multi_level", i);
-		world->maxMultiLevel = (uint8_t) config.getInt(buf);
+		formatter % i % "max_multi_level";
+		world->maxMultiLevel = (uint8_t) config.getInt(formatter.str());
 
 		world->connected = false;
 		Worlds::worlds[world->id] = world;
