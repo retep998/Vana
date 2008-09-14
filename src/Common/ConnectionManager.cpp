@@ -17,15 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractPlayer.h"
 #include "ConnectionManager.h"
-#include <memory>
+#include <algorithm>
+#include <boost/bind.hpp>
 
 ConnectionManager * ConnectionManager::singleton = 0;
+
+ConnectionManager::ConnectionManager() : 
+m_clients(new SessionManager),
+m_work(new boost::asio::io_service::work(m_io_service))
+{
+}
 
 void ConnectionManager::accept(uint16_t port, AbstractPlayerFactory *apf, string ivUnknown) {
 	tcp::endpoint endpoint(tcp::v4(), port);
 	m_servers.push_back(MapleServerPtr(new MapleServer(m_io_service, endpoint, apf, ivUnknown)));
-
-	run();
 }
 
 AbstractPlayer * ConnectionManager::connect(const string &server, uint16_t port,
@@ -34,19 +39,32 @@ AbstractPlayer * ConnectionManager::connect(const string &server, uint16_t port,
 	MapleClientPtr c = MapleClientPtr(new MapleClient(m_io_service, server, port, m_clients, player));
 	c->start_connect();
 
-	run();
-
 	return player;
 }
 
-void ConnectionManager::run() {
-	if (!m_running) {
-		m_thread.reset(new boost::thread(std::tr1::bind(&ConnectionManager::runThread, this)));
-		m_running = true;
-	}
+void ConnectionManager::stop() {
+	// Post a call to io_service so it is safe to call from all threads
+	m_io_service.post(boost::bind(&ConnectionManager::handle_stop, this));
 }
 
-// Don't call this directly, call run()
-void ConnectionManager::runThread() {
+void ConnectionManager::run() {
+	m_thread.reset(new boost::thread(std::tr1::bind(&ConnectionManager::handle_run, this)));
+}
+
+void ConnectionManager::join() {
+	m_thread->join();
+}
+
+void ConnectionManager::handle_run() {
 	m_io_service.run();
+}
+
+void ConnectionManager::handle_stop() {
+	std::for_each(m_servers.begin(), m_servers.end(),
+		boost::bind(&MapleServer::stop, _1));
+
+	m_clients->stopAll();
+
+	// Destroy the "work" so io_service would return
+	m_work.reset();
 }

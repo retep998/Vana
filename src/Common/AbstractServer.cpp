@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServer.h"
 #include "ConfigFile.h"
+#include "ConnectionManager.h"
 #include <ctime>
 #include <iostream>
 #include <iomanip>
@@ -46,4 +47,8 @@ void AbstractServer::initialize() {
 
 	float loadingTime = (clock() - startTime) / (float) 1000;
 	std::cout << "Started in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
+}
+
+void AbstractServer::shutdown() {
+	ConnectionManager::Instance()->stop();
 }

@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "MapleSession.h"
 #include "SessionManager.h"
-#include <memory>
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 using std::string;
 using boost::asio::ip::tcp;
@@ -36,6 +36,7 @@ public:
 		const tcp::endpoint &endpoint,
 		AbstractPlayerFactory *apf,
 		string connectPacketUnknown);
+	void stop(); 
 private:
 	void start_accept();
 	void handle_accept(MapleSessionPtr new_session,
@@ -47,6 +48,6 @@ private:
 	string m_connect_packet_unknown;
 };
 
-typedef std::tr1::shared_ptr<MapleServer> MapleServerPtr;
+typedef boost::shared_ptr<MapleServer> MapleServerPtr;
 
 #endif

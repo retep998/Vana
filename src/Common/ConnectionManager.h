@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <string>
 #include <boost/noncopyable.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
 
 using std::string;
@@ -44,18 +45,22 @@ public:
 	void accept(uint16_t port, AbstractPlayerFactory *apf, string ivUnknown = "");
 	AbstractPlayer * connect(const string &server, uint16_t port,
 		AbstractPlayerFactory *apf);
-private:
-	void run();
-	void runThread();
+	void stop();
 
-	ConnectionManager() : m_running(false), m_clients(new SessionManager) { }
+	void run();
+	void join();
+private:
+	void handle_run();
+	void handle_stop();
+
+	ConnectionManager();
 	static ConnectionManager *singleton;
 
-	volatile bool m_running;
-	std::tr1::shared_ptr<boost::thread> m_thread;
+	boost::scoped_ptr<boost::thread> m_thread;
 	boost::asio::io_service m_io_service;
 	SessionManagerPtr m_clients;
 	std::list<MapleServerPtr> m_servers;
+	boost::scoped_ptr<boost::asio::io_service::work> m_work; // "Work" for io_service
 };
 
 #endif

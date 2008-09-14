@@ -36,7 +36,6 @@ public:
 	void loadData();
 	void loadConfig();
 	void listen();
-	void shutdown();
 
 	bool getPinEnabled() const { return pinEnabled; }
 	void setPinEnabled(bool enabled) { pinEnabled = enabled; }

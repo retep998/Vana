@@ -41,11 +41,6 @@ void WorldServer::loadConfig() {
 	inter_port = -1; // Will get from login server later
 }
 
-void WorldServer::shutdown() {
-	exit(0);
-	//TODO
-}
-
 void WorldServer::setScrollingHeader(const string &message) {
 	scrollingHeader = message;
 	WorldServerAcceptPlayerPacket::scrollingHeader(message);
