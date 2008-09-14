@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include "sha1.h"
 #include <iostream>
+#include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
 void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
@@ -193,8 +194,9 @@ string Login::hashPassword(const string &password, const string &salt) {
 	sha.Reset();
 	sha.Input(salted.c_str(), salted.size());
 	sha.Result(digest);
-	char passhash[45];
-	sprintf_s(passhash, 45, "%08X%08X%08X%08X%08X", digest[0], digest[1], digest[2], digest[3], digest[4]);
+	
+	boost::format formatter("%08X%08X%08X%08X%08X");
+	formatter % digest[0] % digest[1] % digest[2] % digest[3] % digest[4];
 
-	return string(passhash);
+	return formatter.str();
 }
