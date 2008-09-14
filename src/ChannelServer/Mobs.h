@@ -44,10 +44,10 @@ struct MobAttackInfo {
 };
 
 struct MobInfo {
-	uint16_t hp;
-	uint16_t mp;
-	uint16_t hprecovery;
-	uint16_t mprecovery;
+	uint32_t hp;
+	uint32_t mp;
+	uint32_t hprecovery;
+	uint32_t mprecovery;
 	int32_t exp;
 	int8_t hpcolor;
 	int8_t hpbgcolor;
