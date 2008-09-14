@@ -40,16 +40,20 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 	char *chat = const_cast<char *>(message.c_str()); // Leaving chat as char[] for GM commands for now
 	size_t chatsize = message.size(); // See above line
 	if (chat[0] == '!' && player->isGM()) {
+		if (chatsize < 2) {
+			return;
+		}
+
 		char *next_token;
-		char command[90] = "";
-		if (chatsize > 2)
-			strcpy_s(command, 90, strtok_s(chat+1, " ", &next_token));
+		char command_char[90];
+		strcpy_s(command_char, 90, strtok_s(chat+1, " ", &next_token));
+		string command = string(command_char);
 
 		if (player->getGMLevel() >= 3) { // Admin Level
-			if (strcmp(command, "header") == 0) {
+			if (command == "header") {
 				WorldServerConnectPlayerPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), next_token);
 			}
-			else if (strcmp(command, "ban") == 0) {
+			else if (command == "ban") {
 				if (strlen(next_token) == 0) {
 					PlayerPacket::showMessage(player, "You must specify a user to ban.", 5);
 					return;
@@ -89,7 +93,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				}
 				PlayersPacket::showMessage(banmsg, 0);
 			}
-			else if (strcmp(command, "unban") == 0) {
+			else if (command == "unban") {
 				if (strlen(next_token) == 0) {
 					PlayerPacket::showMessage(player, "You must specify a user to unban.", 5);
 					return;
@@ -102,18 +106,18 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 
 				PlayerPacket::showMessage(player, string(next_token) + " has been unbanned.", 6);
 			}
-			else if (strcmp(command, "shutdown") == 0) {
+			else if (command == "shutdown") {
 				ChannelServer::Instance()->shutdown();
 			}
-			else if (strcmp(command, "packet") == 0) {
+			else if (command == "packet") {
 				PacketCreator packet;
 				packet.addBytes(next_token);
 				player->getSession()->send(packet);
 			}
-			else if (strcmp(command, "timer") == 0) {
+			else if (command == "timer") {
 				MapPacket::showTimer(player, atoi(next_token));
 			}
-			else if (strcmp(command, "instruction") == 0) {
+			else if (command == "instruction") {
 				if (strlen(next_token) == 0) {
 					PlayerPacket::showMessage(player, "No instruction entered.", 5);
 					return;
@@ -122,7 +126,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 					PlayerPacket::instructionBubble(Maps::maps[player->getMap()]->getPlayer(i), next_token);
 				}
 			}
-			else if (strcmp(command, "addnpc") == 0) {
+			else if (command == "addnpc") {
 				NPCSpawnInfo npc;
 				npc.id = atoi(next_token);
 				npc.fh = 0;
@@ -135,7 +139,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		}
 
 		if (player->getGMLevel() >= 2) { // Super GM level
-			if (strcmp(command, "me") == 0) {
+			if (command == "me") {
 				if (strlen(next_token) == 0)
 					return;
 				string msg = player->getName() + " : " + string(next_token);
@@ -149,7 +153,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				} sendMessage = {msg};
 				Players::Instance()->run(sendMessage);
 			}
-			else if (strcmp(command, "kick") == 0) {
+			else if (command == "kick") {
 				if (strlen(next_token) == 0) return;
 
 				if (Player *target = Players::Instance()->getPlayer(next_token))
@@ -158,7 +162,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				else
 					PlayerPacket::showMessage(player, "Invalid player or player is offline.", 5);
 			}
-			else if (strcmp(command, "warp") == 0) {
+			else if (command == "warp") {
 				char *name = strtok_s(0, " ", &next_token);
 				if (strlen(next_token) == 0) return;
 
@@ -170,13 +174,13 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 					}
 				}
 			}
-			else if (strcmp(command, "mwarpto") == 0) {
+			else if (command == "mwarpto") {
 				Player *warpee;
 				if (warpee = Players::Instance()->getPlayer(next_token)) {
 					Maps::changeMap(warpee, player->getMap(), 0);
 				}
 			}
-			else if (strcmp(command, "warpall") == 0) { // Warp everyone to MapID or your current map
+			else if (command == "warpall") { // Warp everyone to MapID or your current map
 				int32_t mapid;
 				if (strlen(next_token) == 0)
 					mapid = player->getMap();
@@ -199,13 +203,13 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 
 				Players::Instance()->run(changeMap);
 			}
-			else if (strcmp(command, "killall") == 0) {
+			else if (command == "killall") {
 				Maps::maps[player->getMap()]->killMobs(player);
 			}
-			else if (strcmp(command, "cleardrops") == 0) {
+			else if (command == "cleardrops") {
 				Maps::maps[player->getMap()]->clearDrops();
 			}
-			else if (strcmp(command, "kill") == 0) {
+			else if (command == "kill") {
 				if (strcmp(next_token, "all") == 0) {
 					for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
 						Player *killpsa;
@@ -253,7 +257,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		}
 
 		// Regular GM commands
-		if (strcmp(command, "lookup") == 0) {
+		if (command == "lookup") {
 			int16_t type = 0;
 			if (strlen(next_token) == 0) {
 				PlayerPacket::showMessage(player, "Sub Commands: item, skill, map, mob, npc", 6);
@@ -281,7 +285,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				}
 			}
 		}
-		else if (strcmp(command, "map") == 0) {
+		else if (command == "map") {
 			if (strlen(next_token) == 0) {
 				char msg[60];
 				sprintf_s(msg, 60, "Current Map: %i", player->getMap());
@@ -344,14 +348,14 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			else
 				PlayerPacket::showMessage(player, "Invalid map entered.", 5);
 		}
-		else if (strcmp(command, "npc") == 0) {
+		else if (command == "npc") {
 			int32_t npcid = atoi(next_token);
 			NPC *npc = new NPC(npcid, player);
 			if (!npc->run()) {
 				PlayerPacket::showMessage(player, "Invalid NPC entered.", 5);
 			}
 		}
-		else if (strcmp(command, "addsp") == 0) {
+		else if (command == "addsp") {
 			if (strlen(next_token) > 0) {
 				int32_t skillid = atoi(strtok_s(0, " ", &next_token));
 				if (Skills::skills.find(skillid) == Skills::skills.end()) { // Don't allow skills that do not exist to be added
@@ -364,7 +368,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				player->getSkills()->addSkillLevel(skillid, count);
 			}
 		}
-		else if (strcmp(command, "summon") == 0 || strcmp(command, "spawn") == 0) {
+		else if (command == "summon"|| command == "spawn") {
 			if (strlen(next_token) == 0) return;
 			int32_t mobid = atoi(strtok_s(0, " ", &next_token));
 			if (Mobs::mobinfo.find(mobid) == Mobs::mobinfo.end()) {
@@ -378,11 +382,11 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				Mobs::spawnMob(player, mobid);
 			}
 		}
-		else if (strcmp(command, "notice") == 0) {
+		else if (command == "notice") {
 			if (strlen(next_token) == 0) return;
 			PlayersPacket::showMessage(next_token, 0);
 		}
-		else if (strcmp(command, "maxstats") == 0) {
+		else if (command == "maxstats") {
 			player->setFame(30000);
 			player->setRMHP(30000);
 			player->setRMMP(30000);
@@ -393,23 +397,23 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			player->setInt(30000);
 			player->setLuk(30000);
 		}
-		else if (strcmp(command, "str") == 0) {
+		else if (command == "str") {
 			if (strlen(next_token) > 0)
 				player->setStr(atoi(next_token));
 		}
-		else if (strcmp(command, "dex") == 0) {
+		else if (command == "dex") {
 			if (strlen(next_token) > 0)
 				player->setDex(atoi(next_token));
 		}
-		else if (strcmp(command, "int") == 0) {
+		else if (command == "int") {
 			if (strlen(next_token) > 0)
 				player->setInt(atoi(next_token));
 		}
-		else if (strcmp(command, "luk") == 0) {
+		else if (command == "luk") {
 			if (strlen(next_token) > 0)
 				player->setLuk(atoi(next_token));
 		}
-		else if (strcmp(command, "hp") == 0) {
+		else if (command == "hp") {
 			if (strlen(next_token) > 0) {
 				uint16_t amount = atoi(next_token);
 				player->setRMHP(amount);
@@ -418,7 +422,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 					player->setHP(player->getMHP());
 			}
 		}
-		else if (strcmp(command, "mp") == 0) {
+		else if (command == "mp") {
 			if (strlen(next_token) > 0) {
 				uint16_t amount = atoi(next_token);
 				player->setRMMP(amount);
@@ -427,7 +431,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 					player->setMP(player->getMMP());
 			}
 		}
-		else if (strcmp(command, "shop") == 0) {
+		else if (command == "shop") {
 			int32_t shopid = -1;
 			if (strcmp(next_token, "gear") == 0) shopid = 9999999;
 			else if (strcmp(next_token, "scrolls") == 0) shopid = 9999998;
@@ -446,17 +450,17 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				PlayerPacket::showMessage(player, "Invalid shop. Available shops: gear, scrolls, nx, face, ring, chair, mega, pet", 6);
 			}
 		}
-		else if (strcmp(command, "pos") == 0) {
+		else if (command == "pos") {
 			char text[50];
 			sprintf_s(text, 50, "X: %d Y: %d", player->getPos().x, player->getPos().y);
 			PlayerPacket::showMessage(player, text, 6);
 		}
-		else if (strcmp(command, "fh") == 0) {
+		else if (command == "fh") {
 			char text[50];
 			sprintf_s(text, 50, "Foothold: %d", player->getFH());
 			PlayerPacket::showMessage(player, text, 6);
 		}
-		else if (strcmp(command, "item") == 0) {
+		else if (command == "item") {
 			if (strlen(next_token) == 0) return;
 			int32_t itemid = atoi(strtok_s(0, " ", &next_token));
 			if (Inventory::items.find(itemid) == Inventory::items.end() && Inventory::equips.find(itemid) == Inventory::equips.end()) {
@@ -468,12 +472,12 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 				count = atoi(next_token);
 			Inventory::addNewItem(player, itemid, count);
 		}
-		else if (strcmp(command, "level") == 0) {
+		else if (command == "level") {
 			if (strlen(next_token) == 0) return;
 			player->setLevel(atoi(next_token));
 		}
 		// Jobs
-		else if (strcmp(command, "job") == 0) {
+		else if (command == "job") {
 			if (strlen(next_token) == 0) {
 				char msg[60];
 				sprintf_s(msg, 60, "Current Job: %i", player->getJob());
@@ -531,44 +535,44 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			if (job >= 0)
 				player->setJob(job);
 		}
-		else if (strcmp(command, "ap") == 0) {
+		else if (command == "ap") {
 			if (strlen(next_token) == 0) return;
 			player->setAp(atoi(next_token));
 		}
-		else if (strcmp(command, "sp") == 0) {
+		else if (command == "sp") {
 			if (strlen(next_token) == 0) return;
 			player->setSp(atoi(next_token));
 		}
-		else if (strcmp(command, "killnpc") == 0) {
+		else if (command == "killnpc") {
 			player->setNPC(0);
 		}
-		else if (strcmp(command, "horntail") == 0) {
+		else if (command == "horntail") {
 			Mobs::spawnMob(player, 8810026);
 			Maps::maps[player->getMap()]->killMobs(player, 8810026);
 		}
-		else if (strcmp(command, "heal") == 0) {
+		else if (command == "heal") {
 			player->setHP(player->getMHP());
 			player->setMP(player->getMMP());
 		}
-		else if (strcmp(command, "mesos") == 0) {
+		else if (command == "mesos") {
 			if (strlen(next_token) == 0) return;
 			long mesos = atoi(next_token);
 			player->getInventory()->setMesos(mesos);
 		}
-		else if (strcmp(command, "save") == 0) {
+		else if (command == "save") {
 			player->saveAll();
 			PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
 		}
-		else if (strcmp(command, "warpto") == 0) {
+		else if (command == "warpto") {
 			Player *warptoee;
 			if (warptoee = Players::Instance()->getPlayer(next_token)) {
 				Maps::changeMap(player , warptoee->getMap(), 0);
 			}
 		}
-		else if (strcmp(command, "kill") == 0) {
+		else if (command == "kill") {
 			player->setHP(0);
 		}
-		else if (strcmp(command, "zakum") == 0) {
+		else if (command == "zakum") {
 			Mobs::spawnMob(player, 8800000);
 			Mobs::spawnMob(player, 8800003);
 			Mobs::spawnMob(player, 8800004);
@@ -579,10 +583,10 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			Mobs::spawnMob(player, 8800009);
 			Mobs::spawnMob(player, 8800010);
 		}
-		else if (strcmp(command, "music") == 0) {
+		else if (command == "music") {
 			Maps::changeMusic(player->getMap(), next_token);
 		}
-		else if	(strcmp(command, "dc") == 0) {
+		else if	(command == "dc") {
 			player->getSession()->disconnect();
 			return;
 		}
