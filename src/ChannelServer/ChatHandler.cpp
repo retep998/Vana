@@ -401,7 +401,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			if (strlen(next_token) > 0)
 				player->setDex(atoi(next_token));
 		}
-		else if (strcmp(command, "int32_t") == 0) {
+		else if (strcmp(command, "int") == 0) {
 			if (strlen(next_token) > 0)
 				player->setInt(atoi(next_token));
 		}
