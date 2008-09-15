@@ -163,7 +163,7 @@ int LuaExports::addSkillLevel(lua_State *luaVm) {
 
 int LuaExports::giveItem(lua_State *luaVm) {
 	int32_t itemid = lua_tointeger(luaVm, -2);
-	uint8_t amount = lua_tointeger(luaVm, -1);
+	int8_t amount = lua_tointeger(luaVm, -1);
 	bool success = Quests::giveItem(getPlayer(luaVm), itemid, amount);
 
 	lua_pushnumber(luaVm, success);
