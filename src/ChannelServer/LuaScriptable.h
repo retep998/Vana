@@ -61,6 +61,8 @@ namespace LuaExports {
 	int giveSP(lua_State *luaVm);
 	int giveAP(lua_State *luaVm);
 
+	int getSP(lua_State *luaVm);
+	int getAP(lua_State *luaVm);
 	int getSTR(lua_State *luaVm);
 	int getDEX(lua_State *luaVm);
 	int getINT(lua_State *luaVm);
@@ -107,6 +109,8 @@ namespace LuaExports {
 	int setMP(lua_State *luaVm);
 	int setMMP(lua_State *luaVm);
 	int setRMMP(lua_State *luaVm);
+	int setSP(lua_State *luaVm);
+	int setAP(lua_State *luaVm);
 	int setSTR(lua_State *luaVm);
 	int setDEX(lua_State *luaVm);
 	int setINT(lua_State *luaVm);
