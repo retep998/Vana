@@ -50,6 +50,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "giveEXP", &LuaExports::giveEXP);
 	lua_register(luaVm, "giveSP", &LuaExports::giveSP);
 	lua_register(luaVm, "giveAP", &LuaExports::giveAP);
+	lua_register(luaVm, "getSP", &LuaExports::getSP);
+	lua_register(luaVm, "getAP", &LuaExports::getAP);
 	lua_register(luaVm, "getSTR", &LuaExports::getSTR);
 	lua_register(luaVm, "getDEX", &LuaExports::getDEX);
 	lua_register(luaVm, "getINT", &LuaExports::getINT);
@@ -94,6 +96,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setMP", &LuaExports::setMP);
 	lua_register(luaVm, "setMMP", &LuaExports::setMMP);
 	lua_register(luaVm, "setRMMP", &LuaExports::setRMMP);
+	lua_register(luaVm, "setSP", &LuaExports::setSP);
+	lua_register(luaVm, "setAP", &LuaExports::setAP);
 	lua_register(luaVm, "setSTR", &LuaExports::setSTR);
 	lua_register(luaVm, "setDEX", &LuaExports::setDEX);
 	lua_register(luaVm, "setINT", &LuaExports::setINT);
@@ -195,6 +199,16 @@ int LuaExports::giveSP(lua_State *luaVm) {
 int LuaExports::giveAP(lua_State *luaVm) {
 	int16_t ap = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setAp(getPlayer(luaVm)->getAp()+ap);
+	return 1;
+}
+
+int LuaExports::getSP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getSp());
+	return 1;
+}
+
+int LuaExports::getAP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getAp());
 	return 1;
 }
 
@@ -470,6 +484,18 @@ int LuaExports::setMMP(lua_State *luaVm) {
 int LuaExports::setRMMP(lua_State *luaVm) {
 	uint16_t mp = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setRMMP(mp);
+	return 1;
+}
+
+int LuaExports::setSP(lua_State *luaVm) {
+	int16_t sp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setSp(sp);
+	return 1;
+}
+
+int LuaExports::setAP(lua_State *luaVm) {
+	int16_t ap = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->setAp(ap);
 	return 1;
 }
 
