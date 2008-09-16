@@ -76,10 +76,10 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 
 void WorldServerConnectHandler::findPlayer(ReadPacket *packet) {
 	int32_t finder = packet->getInt();
-	int32_t channel = packet->getInt();
+	uint16_t channel = packet->getShort();
 	string name = packet->getString();
 	int8_t is = packet->getByte();
-	if (channel == -1) {
+	if (channel == 65535) {
 		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, -1, is);
 	}
 	else {
