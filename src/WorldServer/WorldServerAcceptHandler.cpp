@@ -68,7 +68,7 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadP
 	string findee_name = packet->getString();
 
 	Player *findee = Players::Instance()->getPlayerFromName(findee_name);
-	if (findee->channel == 65535) // Thanks for changing the datatype, pawitp ;_;
+	if (findee->channel != 65535) // Thanks for changing the datatype, pawitp ;_;
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee->name);
 	else
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee_name);
