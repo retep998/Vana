@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Map.h"
 #include "Maps.h"
+#include "Movement.h"
 #include "MySQLM.h"
 #include "PetsPacket.h"
 #include "Player.h"
@@ -72,7 +73,10 @@ void Pet::startTimer() {
 
 void Pets::movePet(Player *player, ReadPacket *packet) {
 	int32_t petid = packet->getInt();
-	packet->skipBytes(4);
+	Pet *pet = player->getPets()->getPet(petid);
+	packet->skipBytes(8);
+	Movement::parseMovement(pet, packet);
+	packet->reset(10);
 	PetsPacket::movePet(player, player->getPets()->getPet(petid), packet->getBuffer(), packet->getBufferLength() - 9);
 }
 
