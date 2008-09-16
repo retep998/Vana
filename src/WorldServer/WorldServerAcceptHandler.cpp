@@ -68,7 +68,7 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadP
 	string findee_name = packet->getString();
 
 	Player *findee = Players::Instance()->getPlayerFromName(findee_name);
-	if (findee->channel == 65535)
+	if (findee->channel == 65535) // Thanks for changing the datatype, pawitp ;_;
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee->name);
 	else
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee_name);
@@ -80,7 +80,7 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, Re
 	string message = packet->getString();
 
 	Player *whisperee = Players::Instance()->getPlayerFromName(whisperee_name);
-	if (whisperee->channel != -1) {
+	if (whisperee->channel != 65535) { // Thanks for changing the datatype, pawitp ;_;
 		WorldServerAcceptPlayerPacket::findPlayer(player, whisperer, -1, whisperee->name, 1);
 		WorldServerAcceptPlayerPacket::whisperPlayer(Channels::Instance()->getChannel(whisperee->channel)->player, whisperee->id, Players::Instance()->getPlayer(whisperer)->name, player->getChannel(),  message);
 	}
