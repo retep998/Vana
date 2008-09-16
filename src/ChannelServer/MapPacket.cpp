@@ -94,8 +94,8 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.addInt(pet->getId());
 			packet.addInt(0);
 			packet.addPos(pet->getPos());
-			packet.addByte(0);
-			packet.addInt(0);
+			packet.addByte(pet->getStance());
+			packet.addInt(pet->getFH());
 		}
 		else {
 			packet.addByte(0);

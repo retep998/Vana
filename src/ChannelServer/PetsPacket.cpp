@@ -59,8 +59,8 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick) {
 		packet.addInt(0);
 		packet.addShort(pet->getPos().x);
 		packet.addShort(pet->getPos().y);
-		packet.addByte(0);
-		packet.addInt(0);
+		packet.addByte(pet->getStance());
+		packet.addInt(pet->getFH());
 	}
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
