@@ -68,7 +68,7 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadP
 	string findee_name = packet->getString();
 
 	Player *findee = Players::Instance()->getPlayerFromName(findee_name);
-	if (findee->channel != -1)
+	if (findee->channel == 65535)
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee->name);
 	else
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee_name);
