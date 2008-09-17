@@ -54,7 +54,7 @@ void LoginPacket::loginBan(PlayerLogin *player, int8_t reason, int32_t expire) {
 	packet.addBytes("020000000000");
 	packet.addByte(reason);
 	packet.addBytes("00000000");
-	packet.addInt(expire); //Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
+	packet.addInt(expire); // Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
 	player->getSession()->send(packet);
 }
 

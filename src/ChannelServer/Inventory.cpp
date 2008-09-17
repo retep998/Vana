@@ -112,7 +112,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 			player->getInventory()->changeItemAmount(item->id, -amount);
 			InventoryPacket::updateItemAmounts(player, inv, slot1, item->amount, 0, 0);
 		}
-		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId());
+		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId(), true);
 		drop->setTime(0);
 		drop->doDrop(player->getPos());
 		Reactors::checkDrop(player, drop);

@@ -161,7 +161,7 @@ void PetsPacket::updateSummonedPets(Player *player) {
 	packet.addByte(0);
 	packet.addShort(0x8);
 	packet.addShort(0x18);
-	for (int8_t i = 0; i<3; i++) {
+	for (int8_t i = 0; i < 3; i++) {
 		if (player->getPets()->getSummoned(i)) {
 			packet.addInt(player->getPets()->getPet(player->getPets()->getSummoned(i))->getId());
 		}
