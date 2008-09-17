@@ -124,7 +124,7 @@ void PlayerPacket::connectData(Player *player) {
 		}
 		packet.addByte(0);
 	}
-	//Skills
+	// Skills
 	unordered_map<int32_t, PlayerSkillInfo> *playerskills = player->getSkills()->getSkills();
 	packet.addShort((int16_t) playerskills->size());
 	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
@@ -133,7 +133,7 @@ void PlayerPacket::connectData(Player *player) {
 		if (FORTHJOB_SKILL(iter->first))
 			packet.addInt(iter->second.maxlevel); // Max Level for 4th job skills
 	}
-	//End
+	// End
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
