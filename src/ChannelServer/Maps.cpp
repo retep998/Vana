@@ -40,11 +40,19 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 
 		struct stat fileInfo;
 		if (!stat(filename.c_str(), &fileInfo)) { // Lua Portal script exists
+			int32_t map = player->getMap();
+
 			LuaPortal(filename, player->getId(), portal);
+
+			if (map == player->getMap()) {
+				// The portal didn't change the map
+				MapPacket::portalBlocked(player);
+			}
 		}
 		else {
 			string message = "This portal '" + portal->script + "' is currently unavailable.";
 			PlayerPacket::showMessage(player, message, 5);
+			MapPacket::portalBlocked(player);
 		}
 	}
 	else {
