@@ -34,14 +34,14 @@ public:
 	SkillMacros();
 
 	void add(uint8_t pos, SkillMacro *macro);
-	SkillMacro * getSkillMacro(int32_t pos);
-	uint8_t getMax();
+	SkillMacro * getSkillMacro(int8_t pos);
+	int8_t getMax();
 
 	void load(int32_t charid);
 	void save(int32_t charid);
 private:
-	unordered_map<int32_t, shared_ptr<SkillMacro>> skillMacros;
-	uint8_t maxPos;
+	unordered_map<int8_t, shared_ptr<SkillMacro>> skillMacros;
+	int8_t maxPos;
 };
 
 struct SkillMacros::SkillMacro {
@@ -62,7 +62,7 @@ inline void SkillMacros::add(uint8_t pos, SkillMacro *macro) {
 	}
 }
 
-inline SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int32_t pos) {
+inline SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int8_t pos) {
 	if (skillMacros.find(pos) != skillMacros.end()) {
 		return skillMacros[pos].get();
 	}
@@ -71,7 +71,7 @@ inline SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int32_t pos) {
 	}
 }
 
-inline uint8_t SkillMacros::getMax() {
+inline int8_t SkillMacros::getMax() {
 	return maxPos;
 }
 
