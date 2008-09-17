@@ -431,6 +431,9 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 					player->setMP(player->getMMP());
 			}
 		}
+		else if (command == "fame") {
+			player->setFame(atoi(next_token));
+		}
 		else if (command == "shop") {
 			int32_t shopid = -1;
 			if (strcmp(next_token, "gear") == 0) shopid = 9999999;
