@@ -167,7 +167,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	PacketCreator packet;
 	packet.addShort(SEND_SKILL_MACRO);
 	packet.addByte(macros->getMax() + 1);
-	for (int32_t i = 0; i <= macros->getMax();  i++) {
+	for (int8_t i = 0; i <= macros->getMax();  i++) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
 		if (macro != 0) {
 			packet.addString(macro->name);

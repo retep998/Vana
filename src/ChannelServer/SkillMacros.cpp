@@ -23,7 +23,7 @@ void SkillMacros::load(int32_t charid) {
 	query << "SELECT * FROM skillmacros WHERE charid = " << charid;
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		uint8_t pos = static_cast<uint8_t>(res[i]["pos"]);
+		int8_t pos = static_cast<int8_t>(res[i]["pos"]);
 
 		string name;
 		res[i]["name"].to_string(name);
@@ -39,19 +39,19 @@ void SkillMacros::load(int32_t charid) {
 void SkillMacros::save(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "REPLACE INTO skillmacros VALUES ";
-	for (int32_t i = 0; i <= getMax(); i++) {
+	int8_t max = getMax(); 
+	for (int8_t i = 0; i <= max; i++) {
 		SkillMacro *macro = getSkillMacro(i);
 		if (macro != 0) {
 			query << "(" << charid << ", "
-				<< i << ", "
+				<< (int16_t) i << ", "
 				<< mysqlpp::quote << macro->name << ", "
-				<< mysqlpp::quote << macro->shout << ", "
+				<< macro->shout << ", "
 				<< macro->skill1 << ", "
 				<< macro->skill2<< ", "
 				<< macro->skill3 << ")";
-			if (i != getMax()) {
+			if (i != max)
 				query << ",";
-			}
 		}
 	}
 	query.exec();
