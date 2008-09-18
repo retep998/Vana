@@ -90,16 +90,11 @@ enum Act {
 	ACT_HURT
 };
 
-struct SkillPlayerInfo {
+struct BuffInfo {
 	uint8_t type;
 	int8_t byte;
 	int8_t value;
-};
-
-struct SkillMapInfo {
-	uint8_t type;
-	int8_t byte;
-	int8_t value;
+	bool hasmapval;
 	bool val;
 };
 
@@ -133,7 +128,7 @@ struct SkillMapEnterActiveInfo {
 	bool isval;
 };
 
-struct SpecialSkillInfo {
+struct SpecialSkillInfo { // Hurricane, Big Bang, Monster Magnet, Pierce, etc.
 	SpecialSkillInfo() : skillid(0), level(0), w_speed(0), direction(0) { }
 	uint8_t level;
 	uint8_t w_speed;
@@ -161,8 +156,7 @@ struct MPEaterInfo { // MP Eater
 };
 
 struct SkillsInfo {
-	vector<SkillPlayerInfo> player;
-	vector<SkillMapInfo> map;
+	vector<BuffInfo> player;
 	SkillAct act;
 	vector<bool> bact;
 };

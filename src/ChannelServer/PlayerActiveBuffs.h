@@ -66,11 +66,11 @@ public:
 	// Map garbage
 	void deleteSkillMapEnterInfo(int32_t skillid);
 	SkillMapEnterActiveInfo getSkillMapEnterInfo();
-	SkillActiveInfo getSkillPlayerInfo(int32_t skillid);
-	SkillActiveInfo getSkillMapInfo(int32_t skillid);
+	SkillActiveInfo getBuffInfo(int32_t skillid);
+	SkillActiveInfo getBuffMapInfo(int32_t skillid);
 	uint8_t getActiveSkillLevel(int32_t skillid);
-	void setSkillPlayerInfo(int32_t skillid, SkillActiveInfo skill);
-	void setSkillMapInfo(int32_t skillid, SkillActiveInfo skill);
+	void setBuffInfo(int32_t skillid, SkillActiveInfo skill);
+	void setBuffMapInfo(int32_t skillid, SkillActiveInfo skill);
 	void setSkillMapEnterInfo(int32_t skillid, vector<SkillMapActiveInfo> skill);
 	void setActiveSkillLevel(int32_t skillid, uint8_t level);
 private:
