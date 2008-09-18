@@ -44,7 +44,7 @@ public:
 	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0), m_berserk(false) { }
 
 	// Buff Skills
-	void addBuff(int32_t skill, uint8_t level);
+	void addBuff(int32_t skill, int32_t time);
 	void removeBuff(int32_t skill, bool fromTimer = false);
 	void removeBuff();
 	int32_t buffTimeLeft(int32_t skill);
