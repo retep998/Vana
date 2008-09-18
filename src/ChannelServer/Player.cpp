@@ -497,7 +497,7 @@ void Player::setOnline(bool online) {
 	int32_t onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << onlineid <<
-			", characters.online = " << online << ", users.last_login = NOW() WHERE characters.id = " << this->id;
+			", characters.online = " << online << " WHERE characters.id = " << this->id;
 	query.exec();
 }
 
