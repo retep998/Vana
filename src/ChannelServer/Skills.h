@@ -173,12 +173,11 @@ namespace Skills {
 	void cancelSkill(Player *player, ReadPacket *packet);
 	void useSkill(Player *player, ReadPacket *packet);
 	int16_t getValue(int8_t value, int32_t skillid, uint8_t level);
-	SkillActiveInfo parsePlayerSkill(Player *player, int32_t skillid, uint8_t level, int32_t &mountid);
-	SkillActiveInfo parseMapSkill(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill);
+	SkillActiveInfo parseBuffInfo(Player *player, int32_t skillid, uint8_t level, int32_t &mountid);
+	SkillActiveInfo parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill);
 	void applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp = false);
 	void useAttackSkill(Player *player, int32_t skillid);
 	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display);
-	void useAttackRanged(Player *player, int16_t pos, uint8_t display);
 	void stopTimersPlayer(Player *player);
 	void stopAllBuffs(Player *player);
 	void heal(Player *player, int16_t value, int32_t skillid);

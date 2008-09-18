@@ -455,8 +455,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		int32_t mountid = 0;
 		PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
 		vector<SkillMapActiveInfo> mapenterskill;
-		SkillActiveInfo playerskill = Skills::parsePlayerSkill(player, skillid, level, mountid);
-		SkillActiveInfo mapskill = Skills::parseMapSkill(player, skillid, level, mapenterskill);
+		SkillActiveInfo playerskill = Skills::parseBuffInfo(player, skillid, level, mountid);
+		SkillActiveInfo mapskill = Skills::parseBuffMapInfo(player, skillid, level, mapenterskill);
 		switch (skillid) {
 			case 1004: // Monster Rider
 				if (mountid == 0) {
@@ -540,7 +540,7 @@ int16_t Skills::getValue(int8_t value, int32_t skillid, uint8_t level) {
 	return rvalue;
 }
 
-SkillActiveInfo Skills::parsePlayerSkill(Player *player, int32_t skillid, uint8_t level, int32_t &mountid) {
+SkillActiveInfo Skills::parseBuffInfo(Player *player, int32_t skillid, uint8_t level, int32_t &mountid) {
 	SkillActiveInfo playerskill;
 	memset(playerskill.types, 0, 8 * sizeof(uint8_t)); // Reset player/map types to 0
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
@@ -586,7 +586,7 @@ SkillActiveInfo Skills::parsePlayerSkill(Player *player, int32_t skillid, uint8_
 	return playerskill;
 }
 
-SkillActiveInfo Skills::parseMapSkill(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill) {
+SkillActiveInfo Skills::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill) {
 	SkillActiveInfo mapskill;
 	memset(mapskill.types, 0, 8 * sizeof(uint8_t));
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
@@ -632,6 +632,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 	int16_t cooltime = Skills::skills[skillid][level].cooltime;
 	int16_t mpuse = skills[skillid][level].mp;
 	int16_t hpuse = skills[skillid][level].hp;
+	int16_t moneycon = skills[skillid][level].moneycon;
 	int32_t item = skills[skillid][level].item;
 	if (mpuse > 0) {
 		if (player->getActiveBuffs()->getActiveSkillLevel(3121008) > 0) { // Reduced MP usage for Concentration
@@ -660,24 +661,9 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 		Inventory::takeItem(player, item, skills[skillid][level].itemcount);
 	if (cooltime > 0)
 		Skills::startCooldown(player, skillid, cooltime);
-}
-
-void Skills::useAttackSkill(Player *player, int32_t skillid) {
-	uint8_t level = player->getSkills()->getSkillLevel(skillid);
-	if (skills.find(skillid) == skills.end())
-		return;
-	Skills::applySkillCosts(player, skillid, level, true);
-}
-
-void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display) {
-	uint8_t level = player->getSkills()->getSkillLevel(skillid);
-	if (skills.find(skillid) == skills.end())
-		return;
-	Skills::applySkillCosts(player, skillid, level);
-	if (skills[skillid][level].moneycon > 0) {
-		int16_t midpoint = skills[skillid][level].moneycon;
-		int16_t mesos_min = midpoint - (80 + level * 5);
-		int16_t mesos_max = midpoint + (80 + level * 5);
+	if (moneycon > 0) {
+		int16_t mesos_min = moneycon - (80 + level * 5);
+		int16_t mesos_max = moneycon + (80 + level * 5);
 		int16_t difference = mesos_max - mesos_min; // Randomize up to this, add minimum for range
 		int16_t amount = Randomizer::Instance()->randShort(difference) + mesos_min;
 		int32_t mesos = player->getInventory()->getMesos();
@@ -688,6 +674,23 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, 
 			return;
 		}
 	}
+}
+
+void Skills::useAttackSkill(Player *player, int32_t skillid) {
+	uint8_t level = player->getSkills()->getSkillLevel(skillid);
+	if (skills.find(skillid) == skills.end() || level == 0)
+		return;
+	Skills::applySkillCosts(player, skillid, level, true);
+}
+
+void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display) {
+	uint8_t level = 0;
+	if (skillid != 0) {
+		level = player->getSkills()->getSkillLevel(skillid);
+		if (skills.find(skillid) == skills.end() || level == 0)
+			return;
+		Skills::applySkillCosts(player, skillid, level);
+	}
 	uint16_t hits = 1;
 	if (skills[skillid][level].bulletcon > 0)
 		hits = skills[skillid][level].bulletcon;
@@ -696,14 +699,6 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, 
 	if (pos > 0 && (!((display & 0x40) == 0x40 || display == 0x02)))
 		// Display is 0x40 for Shadow Claw and 0x48 for Shadow Claw + Shadow Partner
 		// Bitwise and with 0x40 will make it 0x40 for both
-		Inventory::takeItemSlot(player, 2, pos, hits);
-}
-
-void Skills::useAttackRanged(Player *player, int16_t pos, uint8_t display) {
-	uint16_t hits = 1;
-	if (display == 0x08)
-		hits = hits * 2;
-	if (pos > 0 && (!((display & 0x40) == 0x40 || display == 0x02))) // See previous comment
 		Inventory::takeItemSlot(player, 2, pos, hits);
 }
 

@@ -255,10 +255,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	packet->skipBytes(1); // 0x00 = AoE, 0x41 = other
 	if (skillid != 4111004 && ((display & 0x40) > 0))
 		packet->skipBytes(4); // Star ID added by Shadow Claw
-	if (skillid > 0)
-		Skills::useAttackSkillRanged(player, skillid, pos, display);
-	else
-		Skills::useAttackRanged(player, pos, display);
+	Skills::useAttackSkillRanged(player, skillid, pos, display);
 	int32_t mhp;
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, mhp);
 	if (skillid == 4101005) { // Drain
