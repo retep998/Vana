@@ -174,10 +174,16 @@ void Characters::deleteCharacter(PlayerLogin *player, ReadPacket *packet) {
 	query << "DELETE FROM keymap WHERE charid = " << id;
 	query.exec();
 
+	query << "DELETE pets, items FROM pets LEFT JOIN items ON pets.id = items.petid WHERE items.charid = " << id;
+	query.exec();
+
 	query << "DELETE FROM items WHERE charid = " << id;
 	query.exec();
 
 	query << "DELETE FROM skills WHERE charid = " << id;
+	query.exec();
+
+	query << "DELETE FROM skillmacros WHERE charid = " << id;
 	query.exec();
 
 	query << "DELETE FROM character_variables WHERE charid = " << id;
