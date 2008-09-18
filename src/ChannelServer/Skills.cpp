@@ -424,7 +424,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	int16_t addedinfo = 0;
 	uint8_t level = packet->getByte();
 	uint8_t type = 0;
-	switch (skillid) {
+	switch (skillid) { // Packet processing/non-buff skill processing
 		case 1121001: // Monster Magnet processing
 		case 1221001:
 		case 1321001: {
@@ -433,6 +433,28 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				int32_t mapmobid = packet->getInt();
 				uint8_t success = packet->getByte();
 				SkillsPacket::showMagnetSuccess(player, mapmobid, success);
+			}
+			break;
+		}
+		case 2301002: { // Heal
+			//TODO PARTY
+			uint16_t healrate = skills[skillid][level].hpP / 1;
+			if (healrate > 100)
+				healrate = 100;
+			player->setHP(player->getHP() + healrate * player->getMHP() / 100);
+			break;
+		}
+		case 9101000: // GM Heal + Dispel - needs to be modified for map?
+			player->setHP(player->getMHP());
+			player->setMP(player->getMMP());
+			break;
+		case 9101005: { // GM Resurrection
+			for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+				Player *resplayer;
+				resplayer = Maps::maps[player->getMap()]->getPlayer(i);
+				if (resplayer->getHP() <= 0) {
+					resplayer->setHP(resplayer->getMHP());
+				}
 			}
 			break;
 		}
@@ -457,6 +479,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		vector<SkillMapActiveInfo> mapenterskill;
 		SkillActiveInfo playerskill = Skills::parseBuffInfo(player, skillid, level, mountid);
 		SkillActiveInfo mapskill = Skills::parseBuffMapInfo(player, skillid, level, mapenterskill);
+		int32_t time = skills[skillid][level].time;
 		switch (skillid) {
 			case 1004: // Monster Rider
 				if (mountid == 0) {
@@ -466,6 +489,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				break;
 			case 9101004: // GM Hide
 				MapPacket::removePlayer(player);
+				time = 2100000;
 				break;
 			case 1301007: // Hyper Body
 			case 9101008: // GM Hyper Body
@@ -479,12 +503,6 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				playerbuffs->setCombo(0, true);
 				break;
 		}
-		int32_t time = skills[skillid][level].time;
-		switch (skillid) {
-			case 9101004: // GM Hide
-				time = 2100000;
-				break;
-		}
 		SkillsPacket::useSkill(player, skillid, time * 1000, playerskill, mapskill, addedinfo, mountid);
 		playerbuffs->setBuffInfo(skillid, playerskill);
 		playerbuffs->setBuffMapInfo(skillid, mapskill);
@@ -496,32 +514,6 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 		}
 		playerbuffs->addBuff(skillid, time);
-	}
-	else { // Nonbuffs
-		switch (skillid) {
-			case 2301002: { // Heal
-				//TODO PARTY
-				uint16_t healrate = skills[skillid][level].hpP / 1;
-				if (healrate > 100)
-					healrate = 100;
-				player->setHP(player->getHP() + healrate * player->getMHP() / 100);
-				break;
-			}
-			case 9101000: // GM Heal + Dispel - needs to be modified for map?
-				player->setHP(player->getMHP());
-				player->setMP(player->getMMP());
-				break;
-			case 9101005: { // GM Resurrection
-				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
-					Player *resplayer;
-					resplayer = Maps::maps[player->getMap()]->getPlayer(i);
-					if (resplayer->getHP() <= 0) {
-						resplayer->setHP(resplayer->getMHP());
-					}
-				}
-				break;
-			}
-		}
 	}
 }
 
