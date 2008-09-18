@@ -77,10 +77,13 @@ public:
 	int8_t getInventorySlot() const { return this->inventorySlot; }
 	int8_t getFullness() const { return this->fullness; }
 	int16_t getCloseness() const { return this->closeness; }
+	int16_t getPosX() const { return m_pos.x; }
+	int16_t getPosY() const { return m_pos.y - 1; }
 	int32_t getId() const { return this->id; }
 	int32_t getType() const { return this->type; }
 	bool isSummoned() const { return this->summoned; }
 	string getName() { return this->name; }
+	Pos getPos() const { return Pos(getPosX(), getPosY()); }
 
 	void reduceFullness();
 	void startTimer();
