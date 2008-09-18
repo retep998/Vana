@@ -479,7 +479,13 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				playerbuffs->setCombo(0, true);
 				break;
 		}
-		SkillsPacket::useSkill(player, skillid, (skillid == 9101004 ? 2100000 : skills[skillid][level].time) * 1000, playerskill, mapskill, addedinfo, mountid);
+		int32_t time = skills[skillid][level].time;
+		switch (skillid) {
+			case 9101004: // GM Hide
+				time = 2100000;
+				break;
+		}
+		SkillsPacket::useSkill(player, skillid, time * 1000, playerskill, mapskill, addedinfo, mountid);
 		playerbuffs->setBuffInfo(skillid, playerskill);
 		playerbuffs->setBuffMapInfo(skillid, mapskill);
 		playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
@@ -489,7 +495,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			int16_t value = getValue(skillsinfo[skillid].act.value, skillid, level);
 			playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 		}
-		playerbuffs->addBuff(skillid, level);
+		playerbuffs->addBuff(skillid, time);
 	}
 	else { // Nonbuffs
 		switch (skillid) {

@@ -29,13 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 // Buff Skills
-void PlayerActiveBuffs::addBuff(int32_t skill, uint8_t level) {
-	int32_t time = Skills::skills[skill][level].time;
-	switch (skill) {
-		case 9101004: // GM Hide
-			time = 2100000;
-			break;
-	}
+void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
 	clock_t skillExpire = time * 1000;
 	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
