@@ -1,0 +1,1 @@
+ALTER TABLE characters ADD time_level_200 DATETIME NOT NULL AFTER online;

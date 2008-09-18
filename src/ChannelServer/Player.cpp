@@ -501,6 +501,12 @@ void Player::setOnline(bool online) {
 	query.exec();
 }
 
+void Player::set200Date() {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "UPDATE characters SET time_level_200 = NOW() WHERE characters.id = " << this->id;
+	query.exec();
+}
+
 void Player::acceptDeath() {
 	int32_t tomap;
 	if (Maps::maps.find(this->getMap()) == Maps::maps.end())
