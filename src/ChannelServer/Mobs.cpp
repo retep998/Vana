@@ -365,7 +365,7 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 					SkillsPacket::showSkillEffect(player, eater->id);
 				}
 			}
-			displayHPBars(player, (isHorntail ? htabusetaker : mob));
+			displayHPBars(player, (isHorntail && htabusetaker != 0 ? htabusetaker : mob));
 			if (mob->getHP() <= 0) {
 				packet->skipBytes(4 * (hits - 1 - k));
 				mob->die(player);
