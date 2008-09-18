@@ -42,16 +42,16 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addByte(0);
 	packet.addByte(0xf8);
 
-	packet.addByte(player->getSkill().types[0]);
-	packet.addByte(player->getSkill().types[1]);
-	packet.addByte(player->getSkill().types[2]);
-	packet.addByte(player->getSkill().types[3]);
-	packet.addByte(player->getSkill().types[4]);
-	packet.addByte(player->getSkill().types[5]);
-	packet.addByte(player->getSkill().types[6]);
-	packet.addByte(player->getSkill().types[7]);
-	if (player->getSkill().isval) {
-		packet.addByte(player->getSkill().val);
+	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[0]);
+	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[1]);
+	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[2]);
+	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[3]);
+	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[4]);
+	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[5]);
+	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[6]);
+	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[7]);
+	if (player->getActiveBuffs()->getSkillMapEnterInfo().isval) {
+		packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().val);
 	}
 
 	packet.addInt(0);

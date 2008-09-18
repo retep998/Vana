@@ -485,7 +485,6 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
 		playerbuffs->setActiveSkillLevel(skillid, level);
 		playerbuffs->removeBuff(skillid);
-		player->setSkill(playerbuffs->getSkillMapEnterInfo());
 		if (skillsinfo[skillid].bact.size() > 0) {
 			int16_t value = getValue(skillsinfo[skillid].act.value, skillid, level);
 			playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
