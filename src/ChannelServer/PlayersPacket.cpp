@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 #include "Player.h"
 #include "Players.h"
+#include "InterHeader.h"
 #include "SendHeader.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
@@ -96,6 +97,15 @@ void PlayersPacket::showMessage(const string &msg, int8_t type) {
 	packet.addByte(type);
 	packet.addString(msg);
 	Players::Instance()->sendPacket(packet);
+}
+
+void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
+	PacketCreator packet;
+	packet.addShort(INTER_TO_PLAYERS);
+	packet.addShort(SEND_NOTICE);
+	packet.addByte(type);
+	packet.addString(msg);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {

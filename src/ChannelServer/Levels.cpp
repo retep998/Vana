@@ -19,10 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Maps.h"
 #include "LevelsPacket.h"
+#include "PlayersPacket.h"
 #include "SkillsPacket.h"
 #include "Skills.h"
 #include "Randomizer.h"
 #include "ReadPacket.h"
+#include <string>
 
 uint32_t Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
 	5460, 7050, 8840, 11040, 13716, 16680, 20216, 24402, 28980, 34320, 40512, 47216, 54900,
@@ -61,10 +63,6 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 		uint8_t levelsgained = 0;
 		uint8_t levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
 		while (cexp >= exps[level - 1] && levelsgained < levelsmax) {
-			if (level >= 200) { // Do not let people level past the level 200 cap
-				cexp = 0;
-				break;
-			}
 			cexp -= exps[player->getLevel() - 1];
 			level++;
 			levelsgained++;
@@ -100,6 +98,10 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 			}
 			if (player->getJob() > 0)
 				spgain += 3;
+			if (level >= 200) { // Do not let people level past the level 200 cap
+				cexp = 0;
+				break;
+			}
 		}
 
 		if (cexp >= exps[level - 1]) { // If the desired number of level ups have passed and they're still above, set it to where it should be
@@ -131,6 +133,16 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 			player->setMMP(mmp);
 			player->setHP(mhp);
 			player->setMP(mmp);
+			if (player->getLevel() == 200 && !player->isGM()) {
+				std::string message;
+				message += "[Congrats] ";
+				message += player->getName();
+				message += " has reached Level 200! Congratulate ";
+				message += player->getName();
+				message += " on such an amazing achievement!";
+				PlayersPacket::showMessageWorld(message, 6);
+				player->set200Date();
+			}
 		}
 	}
 	player->setExp(cexp);
