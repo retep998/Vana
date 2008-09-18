@@ -57,6 +57,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_COMMAND_RESPOND 0x64 // Respond to / commands i.e. "/find"
 #define SEND_MAP_EFFECT 0x67 // Change Music/Boss HP Bars
 #define SEND_USE_WEATHER 0x68 // Weather effects
+#define SEND_GM_EVENT_INSTRUCTIONS 0x6c // GM event instructions - Ola Ola, etc.
 #define SEND_TIME 0x6d // For places with clock i.e. ship station
 #define SEND_SHOW_PLAYER 0x77
 #define SEND_REMOVE_PLAYER 0x78

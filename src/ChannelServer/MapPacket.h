@@ -38,6 +38,7 @@ namespace MapPacket {
 	void changeMusic(int32_t mapid, const string &musicname); // Change map music
 	void sendSound(int32_t mapid, const string &soundname); // Send sound - clear/wrong/etc
 	void sendEvent(int32_t mapid, const string &eventname); // Send event - clear/wrong/etc
+	void showEventInstructions(int32_t mapid);
 };
 
 #endif

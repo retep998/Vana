@@ -593,6 +593,9 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 			player->getSession()->disconnect();
 			return;
 		}
+		else if (command == "eventinstruct") {
+			MapPacket::showEventInstructions(player->getMap());
+		}
 		return;
 	}
 	PlayersPacket::showChat(player, message, bubbleOnly);

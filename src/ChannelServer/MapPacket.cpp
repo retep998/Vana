@@ -207,3 +207,10 @@ void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
 	packet.addString(eventname);
 	Maps::maps[mapid]->sendPacket(packet);
 }
+
+void MapPacket::showEventInstructions(int32_t mapid) {
+	PacketCreator packet = PacketCreator();
+	packet.addShort(SEND_GM_EVENT_INSTRUCTIONS);
+	packet.addByte(0x00);
+	Maps::maps[mapid]->sendPacket(packet);
+}
