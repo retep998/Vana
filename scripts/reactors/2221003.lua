@@ -17,3 +17,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- KFT Reactor - Hongbu Gourd
 spawnMob(9500400);
+reset();
