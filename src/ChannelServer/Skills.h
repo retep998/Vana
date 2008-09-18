@@ -147,12 +147,12 @@ struct PGMRInfo { // Power Guard/Mana Reflection
 };
 
 struct MPEaterInfo { // MP Eater
-	MPEaterInfo() : id(0), level(0), x(0), prop(0), onlyOnce(false) { }
+	MPEaterInfo() : id(0), level(0), x(0), prop(0), onlyonce(false) { }
 	int32_t id;
 	uint8_t level;
 	int16_t x;
 	uint16_t prop;
-	bool onlyOnce;
+	bool onlyonce;
 };
 
 struct SkillsInfo {

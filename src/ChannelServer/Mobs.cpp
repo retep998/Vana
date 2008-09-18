@@ -358,8 +358,8 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 			extra = mobinfo[mob->getMobID()].hp;
 			if (eater != 0) { // MP Eater
 				int32_t cmp = mob->getMP();
-				if ((!eater->onlyOnce) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < eater->prop)) {
-					eater->onlyOnce = true;
+				if ((!eater->onlyonce) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < eater->prop)) {
+					eater->onlyonce = true;
 					int32_t mp = mobinfo[mob->getMobID()].mp * eater->x / 100;
 					if (mp > cmp)
 						mp = cmp;
