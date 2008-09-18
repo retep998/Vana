@@ -81,7 +81,6 @@ public:
 	void setNPC(NPC *npc) { this->npc = npc; }
 	void setChair(int32_t chair) { this->chair = chair; }
 	void setItemEffect(int32_t effect) { this->itemEffect = effect; }
-	void setSkill(SkillMapEnterActiveInfo skill) { this->skill = skill; }
 	void setSpecialSkill(SpecialSkillInfo info) { this->info = info; }
 
 	int8_t getWorldId() const { return this->world_id; }
@@ -121,7 +120,6 @@ public:
 	string getName() const { return this->name; }
 	NPC * getNPC() const { return npc; }
 	bool isGM() const { return gm > 0; }
-	SkillMapEnterActiveInfo getSkill() const { return skill; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return this->info; }
 
 	bool hasGMEquip();
@@ -189,8 +187,7 @@ private:
 	unordered_map<string, string> variables;
 	NPC *npc;
 	vector<int32_t> warnings;
-	SkillMapEnterActiveInfo skill;
-	SpecialSkillInfo info; // Hurricane/Pierce
+	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
 	boost::scoped_ptr<BuddyList> buddyList;
 	boost::scoped_ptr<PlayerActiveBuffs> activeBuffs;
