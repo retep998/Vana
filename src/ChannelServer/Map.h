@@ -161,8 +161,7 @@ public:
 	Reactor * getReactor(int32_t id) {
 		if ((uint32_t)id < this->reactors.size())
 			return this->reactors[id];
-		else
-			return 0;
+		return 0;
 	}
 	size_t getNumReactors() const { return this->reactors.size(); }
 
