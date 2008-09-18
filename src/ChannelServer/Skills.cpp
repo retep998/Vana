@@ -33,9 +33,7 @@ unordered_map<int32_t, uint8_t> Skills::maxlevels;
 unordered_map<int32_t, SkillsInfo> Skills::skillsinfo;
 
 void Skills::init() {
-	// NOTE: type can be only 0x1/0x2/0x4/0x8/0x10/0x20/0x40/0x80.
-	SkillPlayerInfo player;
-	SkillMapInfo map;
+	BuffInfo player;
 	SkillAct act;
 	// Boosters
 	player.type = 0x08;
@@ -102,12 +100,9 @@ void Skills::init() {
 	player.type = 0x04;
 	player.byte = TYPE_2;
 	player.value = SKILL_X;
+	player.hasmapval = true;
+	player.val = false;
 	skillsinfo[4001003].player.push_back(player);
-	map.type = 0x04;
-	map.byte = TYPE_2;
-	map.value = SKILL_X;
-	map.val = false;
-	skillsinfo[4001003].map.push_back(map);
 	// 1101006 - Rage
 	player.type = 0x1;
 	player.byte = TYPE_1;
@@ -252,12 +247,9 @@ void Skills::init() {
 	player.type = 0x4;
 	player.byte = TYPE_4;
 	player.value = SKILL_X;
+	player.hasmapval = true;
+	player.val = false;
 	skillsinfo[4111002].player.push_back(player);
-	map.type = 0x4;
-	map.byte = TYPE_4;
-	map.value = SKILL_X;
-	map.val = false;
-	skillsinfo[4111002].map.push_back(map);
 	// WK/Paladin Charges - 1211003, 1211004, 1211005, 1211006, 1211007, 1211008, 1221003, 1221004
 	player.type = 0x4;
 	player.byte = TYPE_1;
@@ -307,12 +299,10 @@ void Skills::init() {
 	player.type = 0x20;
 	player.byte = TYPE_3;
 	player.value = SKILL_X;
+	//player.hasmapval = true;
+	//player.val = false;
+	// Currently causes dc issues when other people enter a map with someone using combo attack, so disable map for now
 	skillsinfo[1111002].player.push_back(player);
-	/*map.type = 0x20; // Currently causes dc issues when other people enter a map with someone using combo attack, so disable map for now
-	map.byte = TYPE_3;
-	map.value = SKILL_X;
-	map.val = false;
-	skillsinfo[1111002].map.push_back(map);*/
 	// 1121010 - Enrage
 	player.type = 0x1;
 	player.byte = TYPE_1;
@@ -332,18 +322,15 @@ void Skills::init() {
 	player.type = 0x40;
 	player.byte = TYPE_8;
 	player.value = SKILL_X;
+	player.hasmapval = true;
+	player.val = false;
 	skillsinfo[1004].player.push_back(player);
-	map.type = 0x40;
-	map.byte = TYPE_8;
-	map.value = SKILL_X;
-	map.val = false;
-	skillsinfo[1004].map.push_back(map);
 	// 4111001 - Meso Up
 	player.type = 0x8;
 	player.byte = TYPE_4;
 	player.value = SKILL_X;
 	skillsinfo[4111001].player.push_back(player);
-	// 4121006 - Shadow claw
+	// 4121006 - Shadow Claw
 	player.type = 0x1;
 	player.byte = TYPE_6;
 	player.value = SKILL_X;
@@ -367,26 +354,20 @@ void Skills::init() {
 	skillsinfo[1121002].player.push_back(player);
 	skillsinfo[1221002].player.push_back(player);
 	skillsinfo[1321002].player.push_back(player);
-	// Super Sayan thing[blue] - 5111005
+	// Super Saiyan thing[blue] - 5111005
 	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
+	player.hasmapval = true;
+	player.val = false;
 	skillsinfo[5111005].player.push_back(player);
-	map.type = 0x02;
-	map.byte = TYPE_5;
-	map.value = SKILL_MORPH;
-	map.val = false;
-	skillsinfo[5111005].map.push_back(map);
-	// Super Sayan thing[orange] - 5121003
+	// Super Saiyan thing[orange] - 5121003
 	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
+	player.hasmapval = true;
+	player.val = false;
 	skillsinfo[5121003].player.push_back(player);
-	map.type = 0x02;
-	map.byte = TYPE_5;
-	map.value = SKILL_MORPH;
-	map.val = false;
-	skillsinfo[5121003].map.push_back(map);
 	// Mana Reflection - 2121002, 2221002, and 2321002
 	player.type = 0x40;
 	player.byte = TYPE_5;
@@ -499,8 +480,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 				break;
 		}
 		SkillsPacket::useSkill(player, skillid, (skillid == 9101004 ? 2100000 : skills[skillid][level].time) * 1000, playerskill, mapskill, addedinfo, mountid);
-		playerbuffs->setSkillPlayerInfo(skillid, playerskill);
-		playerbuffs->setSkillMapInfo(skillid, mapskill);
+		playerbuffs->setBuffInfo(skillid, playerskill);
+		playerbuffs->setBuffMapInfo(skillid, mapskill);
 		playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
 		playerbuffs->setActiveSkillLevel(skillid, level);
 		playerbuffs->removeBuff(skillid);
@@ -608,9 +589,11 @@ SkillActiveInfo Skills::parsePlayerSkill(Player *player, int32_t skillid, uint8_
 SkillActiveInfo Skills::parseMapSkill(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill) {
 	SkillActiveInfo mapskill;
 	memset(mapskill.types, 0, 8 * sizeof(uint8_t));
-	for (size_t i = 0; i < skillsinfo[skillid].map.size(); i++) {
-		mapskill.types[skillsinfo[skillid].map[i].byte] += skillsinfo[skillid].map[i].type;
-		int8_t val = skillsinfo[skillid].map[i].value;
+	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
+		if (!skillsinfo[skillid].player[i].hasmapval)
+			continue;
+		mapskill.types[skillsinfo[skillid].player[i].byte] += skillsinfo[skillid].player[i].type;
+		int8_t val = skillsinfo[skillid].player[i].value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed update for maxed dark sight
 			mapskill.types[TYPE_1] = 0;
 			continue;
@@ -629,9 +612,9 @@ SkillActiveInfo Skills::parseMapSkill(Player *player, int32_t skillid, uint8_t l
 		}
 		mapskill.vals.push_back(value);
 		SkillMapActiveInfo map;
-		map.byte = skillsinfo[skillid].map[i].byte;
-		map.type = skillsinfo[skillid].map[i].type;
-		if (skillsinfo[skillid].map[i].val) {
+		map.byte = skillsinfo[skillid].player[i].byte;
+		map.type = skillsinfo[skillid].player[i].type;
+		if (skillsinfo[skillid].player[i].val) {
 			map.isvalue = true;
 			map.value = (int8_t)value;
 		}
@@ -737,7 +720,7 @@ void Skills::endBuff(Player *player, int32_t skill) {
 			MapPacket::showPlayer(player);
 			break;
 	}
-	SkillsPacket::endSkill(player, player->getActiveBuffs()->getSkillPlayerInfo(skill), player->getActiveBuffs()->getSkillMapInfo(skill));
+	SkillsPacket::endSkill(player, player->getActiveBuffs()->getBuffInfo(skill), player->getActiveBuffs()->getBuffMapInfo(skill));
 	player->getActiveBuffs()->deleteSkillMapEnterInfo(skill);
 	player->getActiveBuffs()->setActiveSkillLevel(skill, 0);
 }
