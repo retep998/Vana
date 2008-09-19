@@ -296,11 +296,11 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	int16_t max = items[itemid].maxslot;
 	int16_t thisamount = 0;
 	if (ISSTAR(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(4100000)*10;
+		thisamount = max + player->getSkills()->getSkillLevel(4100000) * 10;
 		amount -= 1;
 	}
 	else if (ISBULLET(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(5200000)*10;
+		thisamount = max + player->getSkills()->getSkillLevel(5200000) * 10;
 		amount -= 1;
 	}
 	else if (ISEQUIP(itemid) || ISPET(itemid)) {
@@ -329,7 +329,7 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
 	player->getInventory()->changeItemAmount(itemid, -howmany);
 	int8_t inv = GETINVENTORY(itemid);
-	for (int8_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
+	for (int16_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
 		Item *item = player->getInventory()->getItem(inv, i);
 		if (item == 0)
 			continue;
@@ -342,7 +342,6 @@ void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
 				}
 				else {
 					InventoryPacket::updateItemAmounts(player, inv, i, item->amount, 0, 0);
-					player->getInventory()->changeItemAmount(item->id, -howmany);
 				}
 				break;
 			}
