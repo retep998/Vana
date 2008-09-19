@@ -66,11 +66,7 @@ Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), p
 }
 
 /* PlayerInventory class */
-PlayerInventory::PlayerInventory(Player *player, uint8_t maxslots[5],
-								 int32_t mesos) :
-player(player),
-mesos(mesos)
-{
+PlayerInventory::PlayerInventory(Player *player, uint8_t maxslots[5], int32_t mesos) : player(player), mesos(mesos) {
 	memcpy_s(this->maxslots, sizeof(this->maxslots), maxslots, sizeof(this->maxslots));
 	memset(this->equipped, 0, sizeof(this->equipped));
 	load();
@@ -215,12 +211,12 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount) {
 		}
 		else { // No items exist, straight computation
 		*/
-		required = (int32_t)(amount / maxslot);
+		required = amount / maxslot;
 		if ((amount % maxslot) > 0)
 			required += 1;
 	//	}
 	}
-	for (uint8_t i = 0; i < getMaxSlots(inv); i++) {
+	for (int16_t i = 1; i <= getMaxSlots(inv); i++) {
 		if (incrementor >= required) {
 			has = true;
 			break;
@@ -229,6 +225,15 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount) {
 			incrementor++;
 	}
 	return has;
+}
+
+int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
+	int16_t incrementor = 0;
+	for (int16_t i = 1; i <= getMaxSlots(inv); i++) {
+		if (getItem(inv, i) == 0)
+			incrementor++;
+	}
+	return incrementor;
 }
 
 void PlayerInventory::load() {

@@ -72,6 +72,7 @@ namespace LuaExports {
 	int getGender(lua_State *luaVm);
 	int getItemAmount(lua_State *luaVm);
 	int hasOpenSlotsFor(lua_State *luaVm);
+	int getOpenSlots(lua_State *luaVm);
 	int getSkillLevel(lua_State *luaVm);
 	int getMesos(lua_State *luaVm);
 	int getMap(lua_State *luaVm);
