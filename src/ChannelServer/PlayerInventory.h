@@ -100,6 +100,7 @@ public:
 	Item * getItem(int8_t inv, int16_t slot);
 
 	bool hasOpenSlotsFor(int32_t itemid, int16_t amount);
+	int16_t getOpenSlotsNum(int8_t inv);
 	iteminventory * getItems(int8_t inv) { return &items[inv - 1]; }
 
 	void load();
