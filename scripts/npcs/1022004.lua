@@ -17,6 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mr. Smith - Item Creator
 
+dofile("scripts/lua_functions/hasResources.lua");
+dofile("scripts/lua_functions/takeResources.lua");
+
 makeids = {1082003, 1082000, 1082004, 1082007, 1082008, 1082023, 1082009, 1082059};
 makereqs = {
 		{4000021, 15, 4011001, 1, 4031138, 1000},
@@ -51,40 +54,6 @@ materialreqs = {
 		{4000018, 5},
 		{4011000, 1, 4011001, 1}
 	       };
-
-local function hasResources (requisites, multiplier)
-	local has = true;
-	if multiplier == nil then
-		multiplier = 1;
-	end
-	for index = 1, #requisites - 1, 2 do
-		if requisites[index] == 4031138 then -- Mesos are shown as item 4031138 (Sack of Money)
-			if getMesos() < (requisites[index + 1] * multiplier) then
-				has = false;
-				break;
-			end
-		else
-			if getItemAmount(requisites[index]) < (requisites[index + 1] * multiplier) then
-				has = false;
-				break;
-			end
-		end
-	end
-	return has;
-end
-
-local function takeResources (requisites, multiplier)
-	if multiplier == nil then
-		multiplier = 1;
-	end
-	for index = 1 ,#requisites - 1, 2 do
-		if requisites[index] == 4031138 then
-			giveMesos((-1 * multiplier * requisites[index + 1]));
-		else
-			giveItem(requisites[index], (-1 * multiplier * requisites[index + 1]));
-		end
-	end
-end
 
 if state == 0 then
 	addText("I am Mr. Thunder's apprentice. He's gettin up there with age, and he isn't what he used to be...haha, oh crap, please don't tell him that I said that...Anyway...I can make various items specifically designed for the warriors, so what do you think? Wanna leave it up to me?");
