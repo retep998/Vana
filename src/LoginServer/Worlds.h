@@ -19,10 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define WORLDS_H
 
 #include "Types.h"
-#include <unordered_map>
+#include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
+using std::map;
 using std::string;
 using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
@@ -63,7 +65,7 @@ namespace Worlds {
 	void showWorld(PlayerLogin *player);
 	int8_t connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
 	int8_t connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server
-	extern unordered_map<uint8_t, World *> worlds;
+	extern map<uint8_t, World *> worlds;
 };
 
 #endif

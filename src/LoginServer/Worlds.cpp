@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerLogin.h"
 #include "ReadPacket.h"
 
-unordered_map<uint8_t, World *> Worlds::worlds;
+map<uint8_t, World *> Worlds::worlds;
 
 void Worlds::showWorld(PlayerLogin *player) {
 	if (player->getStatus() != 4) {
@@ -32,7 +32,7 @@ void Worlds::showWorld(PlayerLogin *player) {
 		return;
 	}
 
-	for (unordered_map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
 		if (iter->second->connected == true)
 			LoginPacket::showWorld(player, iter->second);
 	LoginPacket::worldEnd(player);
@@ -60,7 +60,7 @@ void Worlds::channelSelect(PlayerLogin *player, ReadPacket *packet) {
 
 int8_t Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	World *world = 0;
-	for (unordered_map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->connected == 0) {
 			player->setWorldId(iter->first);
 			world = iter->second;
@@ -85,7 +85,7 @@ int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	int8_t worldid = -1;
 	int16_t port;
 	string ip;
-	for (unordered_map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->channels.size() < (size_t) iter->second->maxChannels && iter->second->connected) {
 			worldid = iter->second->id;
 			port = iter->second->port;
