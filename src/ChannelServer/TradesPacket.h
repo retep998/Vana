@@ -20,20 +20,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
-#include <vector>
 
 using std::string;
-using std::vector;
 
 class Player;
 struct Item;
 
 namespace TradesPacket {
-	void sendOpenTrade(Player *player, const vector<Player *> &players, const vector<uint8_t> &pos);
+	void sendOpenTrade(Player *player, Player *player1, Player *player2);
 	void sendTradeRequest(Player *player, Player *receiver, int32_t tradeid);
 	void sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message);
 	void sendTradeMessage(Player *receiver, int8_t type, int8_t message);
-	void sendTradeChat(Player *player, uint8_t blue, string chat);
+	void sendTradeChat(Player *player, uint8_t blue, const string &chat);
 	void sendLeaveTrade(Player *player);
 	void sendAddUser(Player *original, Player *newb, int8_t slot);
 	void sendAddMesos(Player *receiver, uint8_t slot, int32_t amount);

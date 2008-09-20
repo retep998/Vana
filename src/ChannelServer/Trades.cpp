@@ -38,14 +38,9 @@ unordered_map<int32_t, ActiveTrade *> Trades::trades;
 void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 	uint8_t subopcode = packet->getByte();
 	switch (subopcode) {
-		case 0x00: { // Open trade - this usually comes with 03 00 - no clue why
-			vector<Player *> players;
-			vector<uint8_t> pos;
-			players.push_back(player);
-			pos.push_back(0xFF);			
-			TradesPacket::sendOpenTrade(player, players, pos);
+		case 0x00: // Open trade - this usually comes with 03 00 - no clue why
+			TradesPacket::sendOpenTrade(player, player, 0);
 			break;
-		}
 		case 0x02: {
 			if (player->isTrading() == 0) {  // Send trade request
 				int32_t playerid = packet->getInt();
@@ -95,13 +90,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				Player *two = trade->getReceiver()->player;
 				TradesPacket::sendAddUser(one, two, 0x01);
 				two->setTrading(1);
-				vector<Player *> players;
-				vector<uint8_t> pos;
-				players.push_back(one);
-				players.push_back(two);
-				pos.push_back(0x01);
-				pos.push_back(0xFF);
-				TradesPacket::sendOpenTrade(player, players, pos);
+				TradesPacket::sendOpenTrade(player, two, one);
 				Trades::stopTimeout(one, two);
 			}
 			else // Pool's closed, AIDS
