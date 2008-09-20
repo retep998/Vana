@@ -387,18 +387,30 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 		alchemist = Skills::skills[4110000][player->getSkills()->getSkillLevel(4110000)].x;
 	}
 	if (item->cons.hp > 0) {
-		player->setHP(player->getHP() + item->cons.hp + ((item->cons.hp * alchemist) / 100));
+		int16_t newhp = player->getHP() + item->cons.hp + ((item->cons.hp * alchemist) / 100);
+		if (newhp < 0)
+			newhp = player->getMHP();
+		player->setHP(newhp);
 	}
 	if (item->cons.mp > 0) {
-		player->setMP(player->getMP() + item->cons.mp + ((item->cons.mp * alchemist) / 100));
+		int16_t newmp = player->getMP() + item->cons.mp + ((item->cons.mp * alchemist) / 100);
+		if (newmp < 0)
+			newmp = player->getMMP();
+		player->setMP(newmp);
 	}
 	else
 		player->setMP(player->getMP(), true);
 	if (item->cons.hpr > 0) {
-		player->setHP(player->getHP() + (item->cons.hpr * player->getMHP() / 100));
+		int16_t newhp = player->getHP() + item->cons.hpr * player->getMHP() / 100;
+		if (newhp < 0)
+			newhp = player->getMHP();
+		player->setHP(newhp);
 	}
 	if (item->cons.mpr > 0) {
-		player->setMP(player->getMP() + (item->cons.mpr * player->getMMP() / 100));
+		int16_t newmp = player->getMP() + item->cons.mpr * player->getMMP() / 100;
+		if (newmp < 0)
+			newmp = player->getMMP();
+		player->setMP(newmp);
 	}
 	// Item buffs
 	if (item->cons.time > 0) {
