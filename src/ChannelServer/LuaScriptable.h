@@ -25,10 +25,8 @@ extern "C" {
 }
 
 #include "Types.h"
-#include <unordered_map>
 #include <string>
 
-using std::tr1::unordered_map;
 using std::string;
 
 class Player;

@@ -19,13 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define FAME_H
 
 #include "Types.h"
-#include <vector>
-using std::vector;
 
 class Player;
 class ReadPacket;
 	
-namespace Fame{
+namespace Fame {
 	void handleFame(Player *player, ReadPacket *packet);
 	int32_t canFame(Player *player, int32_t to);
 	void addFameLog(int32_t from, int32_t to);

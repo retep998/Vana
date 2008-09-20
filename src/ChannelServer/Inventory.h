@@ -35,7 +35,6 @@ using std::vector;
 using std::tr1::unordered_map;
 
 class Player;
-class ItemTimer;
 class ReadPacket;
 struct Item;
 

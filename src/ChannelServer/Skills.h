@@ -27,7 +27,6 @@ using std::vector;
 
 class Player;
 class ReadPacket;
-class SkillTimer;
 
 #define BEGINNER_SKILL(x) (x / 1000000 == 0)
 #define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)

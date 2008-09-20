@@ -20,18 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <unordered_map>
 #include <vector>
-#include <string>
 #include "Pos.h"
 
-using std::string;
 using std::vector;
 using std::tr1::unordered_map;
 
 class LoopingId;
 class Player;
 class Drop;
-class Reactor;
-class ReactionTimer;
 class ReadPacket;
 
 struct ReactorEventInfo {

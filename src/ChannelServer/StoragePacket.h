@@ -19,12 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define STORAGEPACKET_H
 
 #include "Types.h"
-#include <vector>
-
-using std::vector;
 
 class Player;
-struct Item;
 
 namespace StoragePacket {
 	void showStorage(Player *player, int32_t npcid);

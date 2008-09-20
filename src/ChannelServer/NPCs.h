@@ -19,15 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define NPCS_H
 
 #include "LuaNPC.h"
-#include <unordered_map>
-#include <vector>
 #include <string>
-#include <sstream>
 #include <boost/scoped_ptr.hpp>
 
 using std::string;
-using std::vector;
-using std::tr1::unordered_map;
 using boost::scoped_ptr;
 
 class Player;

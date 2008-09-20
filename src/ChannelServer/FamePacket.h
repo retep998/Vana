@@ -19,14 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define FAMEPACK_H
 
 #include "Types.h"
-#include <vector>
-
-using std::vector;
 
 class Player;
-class PacketCreator;
 
-namespace FamePacket{
+namespace FamePacket {
 	void sendFame(Player *player, Player *player2, uint8_t type, int32_t newFame);
 	void sendError(Player *player, int32_t reason);
 };
