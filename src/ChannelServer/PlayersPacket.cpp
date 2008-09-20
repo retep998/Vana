@@ -77,8 +77,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 				packet.addByte(pgmr.isphysical); // Maybe? No Mana Reflection on global to test with
 				packet.addInt(pgmr.mapmobid);
 				packet.addByte(6);
-				packet.addShort(pgmr.pos_x);
-				packet.addShort(pgmr.pos_y);
+				packet.addPos(pgmr.pos);
 			}
 			else
 				packet.addByte(0);
