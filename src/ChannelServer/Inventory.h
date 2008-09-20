@@ -144,9 +144,7 @@ namespace Inventory {
 	extern unordered_map<int32_t, ItemInfo> items;
 	void addEquipInfo(int32_t id, EquipInfo equip);
 	void addItemInfo(int32_t id, ItemInfo item);
-	void startTimer();
-	extern bool isCash(int32_t itemid);
-	extern ItemTimer * timer;
+	bool isCash(int32_t itemid);
 	void useShop(Player *player, ReadPacket *packet);
 	void useStorage(Player *player, ReadPacket *packet);
 	void itemMove(Player *player, ReadPacket *packet);
