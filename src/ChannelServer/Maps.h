@@ -30,7 +30,6 @@ class ReadPacket;
 
 namespace Maps {
 	extern unordered_map<int32_t, Map *> maps;
-	void startTimer();
 	void addMap(MapInfo info);
 	void usePortal(Player *player, PortalInfo *portal);
 	void usePortal(Player *player, ReadPacket *packet);
