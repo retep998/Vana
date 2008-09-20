@@ -20,8 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PlayersPacket.h"
 #include "ReadPacket.h"
-#include "StringUtilities.h"
 #include "WorldServerConnectPlayerPacket.h"
+#include <string>
+
+using std::string;
 
 void CommandHandler::handleCommand(Player *player, ReadPacket *packet) {
 	uint8_t type = packet->getByte();

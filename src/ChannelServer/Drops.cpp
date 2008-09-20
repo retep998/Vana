@@ -16,17 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Drops.h"
-#include "Mobs.h"
 #include "Maps.h"
 #include "Reactors.h"
 #include "DropsPacket.h"
 #include "Inventory.h"
-#include "PlayerInventory.h"
 #include "Quests.h"
 #include "Shops.h"
 #include "Randomizer.h"
 #include "Pos.h"
+#include "Skills.h"
 #include "ReadPacket.h"
+#include <unordered_map>
+
+using std::tr1::unordered_map;
 
 unordered_map<int32_t, DropsInfo> Drops::dropdata;
 
@@ -138,18 +140,18 @@ void Drops::doDrops(Player *player, int32_t droppingID, Pos origin) {
 			int32_t nm = drops[k].minmesos * ChannelServer::Instance()->getMesorate();
 			int32_t xm = drops[k].maxmesos * ChannelServer::Instance()->getMesorate();
 			if (xm > 0 && nm > 0) {
-				int32_t mesos = Randomizer::Instance()->randInt(xm-nm)+nm;
+				int32_t mesos = Randomizer::Instance()->randInt(xm - nm) + nm;
 				// For Meso up
 				if (player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
-					mesos = (mesos*Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x)/100;
+					mesos = (mesos * Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x) / 100;
 				}
 				Pos pos;
-				if (d%2) {
-					pos.x = origin.x+25*((d+1)/2);
+				if ((d % 2) != 0) {
+					pos.x = origin.x + 25 * ((d + 1) / 2);
 					pos.y = origin.y;
 				}
 				else {
-					pos.x = origin.x-25*(d/2);
+					pos.x = origin.x - 25 * (d / 2);
 					pos.y = origin.y;
 				}
 				Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId());
@@ -182,7 +184,8 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		return;
 	}
 	if (drop->getPos() - player->getPos() > 300) {
-		if (player->addWarning()) return;
+		if (player->addWarning())
+			return;
 	}
 	if (drop->isQuest()) {
 		int32_t request = 0;

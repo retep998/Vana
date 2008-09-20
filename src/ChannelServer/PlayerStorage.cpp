@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerStorage.h"
 #include "Inventory.h"
 #include "Player.h"
-#include "PlayerInventory.h"
 #include "StoragePacket.h"
 #include "MySQLM.h"
 

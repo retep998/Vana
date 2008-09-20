@@ -16,9 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NPCs.h"
-#include "Inventory.h"
-#include "InventoryPacket.h"
-#include "Levels.h"
 #include "LuaNPC.h"
 #include "MapleSession.h"
 #include "Maps.h"
@@ -30,13 +27,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "Shops.h"
 #include <sys/stat.h>
+#include <string>
+
+using std::string;
 
 void NPCs::handleNPC(Player *player, ReadPacket *packet) {
 	if (player->getNPC() != 0) {
 		return;
 	}
 
-	int32_t npcid = Maps::maps[player->getMap()]->getNpc(packet->getInt()-100).id;
+	int32_t npcid = Maps::maps[player->getMap()]->getNpc(packet->getInt() - 100).id;
 	if (Shops::shops.find(npcid) != Shops::shops.end()) { // Shop
 		Shops::showShop(player, npcid);
 		return;
@@ -80,7 +80,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 		}
 	}
 	else if (type == NPCDialogs::getText) {
-		npc->setState(npc->getState()+1);
+		npc->setState(npc->getState() + 1);
 		if (what != 0) {
 			npc->setGetText(packet->getString());
 		}
@@ -89,7 +89,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 		}
 	}
 	else if (type == NPCDialogs::getNumber) {
-		npc->setState(npc->getState()+1);
+		npc->setState(npc->getState() + 1);
 		if (what == 1) {
 			npc->setGetNumber(packet->getInt());
 		}
@@ -98,7 +98,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 		}
 	}
 	else if (type == NPCDialogs::simple) {
-		npc->setState(npc->getState()+1);
+		npc->setState(npc->getState() + 1);
 		if (what == 0) {
 			npc->end();
 		}
@@ -107,7 +107,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 		}
 	}
 	else if (type == NPCDialogs::style) {
-		npc->setState(npc->getState()+1);
+		npc->setState(npc->getState() + 1);
 		if (what == 1) {
 			npc->setSelected(packet->getShort());
 		}

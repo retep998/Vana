@@ -17,13 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Reactors.h"
 #include "Drops.h"
-#include "Inventory.h"
-#include "InventoryPacket.h"
-#include "LoopingId.h"
 #include "LuaReactor.h"
 #include "Maps.h"
-#include "Mobs.h"
-#include "PacketCreator.h"
 #include "Player.h"
 #include "Pos.h"
 #include "ReactorPacket.h"
@@ -32,8 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include <iostream>
 #include <sstream>
-#include <string>
 #include <sys/stat.h>
+
+using std::string;
 
 // Reactor class
 Reactor::Reactor (int32_t mapid, int32_t reactorid, Pos pos) : mapid(mapid), reactorid(reactorid), pos(pos), alive(true), state(0) {

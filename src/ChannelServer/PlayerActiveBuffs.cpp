@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerActiveBuffs.h"
 #include "Maps.h"
 #include "Player.h"
-#include "PlayerSkills.h"
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
@@ -105,7 +104,7 @@ void PlayerActiveBuffs::addCombo() { // Add combo orbs
 		int8_t maxcombo = (int8_t) (advcombo > 0 ? Skills::skills[1120003][advcombo].x : Skills::skills[1111002][m_player->getSkills()->getSkillLevel(1111002)].x);
 		if (m_combo == maxcombo)
 			return;
-		if (advcombo > 0 && Randomizer::Instance()->randInt(99) < Skills::skills[1120003][advcombo].prop)
+		if (advcombo > 0 && Randomizer::Instance()->randShort(99) < Skills::skills[1120003][advcombo].prop)
 			m_combo += 1; // 4th job skill gives chance to add second orb
 		m_combo += 1;
 		if (m_combo > maxcombo)

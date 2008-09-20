@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.h"
 #include "Pets.h"
 #include <iostream>
-#include <string>
 
 using std::string;
 using MiscUtilities::atob;

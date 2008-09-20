@@ -32,6 +32,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "Shops.h"
 #include "WorldServerConnectPlayerPacket.h"
+#include <string>
+#include <vector>
+
+using std::string;
+using std::vector;
 
 void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 	string message = packet->getString();

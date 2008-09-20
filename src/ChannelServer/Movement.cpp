@@ -27,7 +27,6 @@ Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
 	int8_t stance = 0;
 	int16_t x = 0;
 	int16_t y = 0;
-
 	uint8_t n = packet->getByte();
 	for (uint8_t i = 0; i < n; i++) {
 		int8_t type = packet->getByte();
@@ -88,12 +87,9 @@ Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
 				break;
 		}
 	}
-
 	Pos pos(x, y);
-
 	life->setPos(pos);
 	life->setFH(foothold);
 	life->setStance(stance);
-
 	return pos;
 }
