@@ -27,7 +27,7 @@ class WorldServerAcceptPlayer;
 class Party;
 class PacketCreator;
 
-namespace PartyPacket{
+namespace PartyPacket {
 	void createParty(WorldServerAcceptPlayer *player, int32_t playerid);
 	void disbandParty(WorldServerAcceptPlayer *player, int32_t playerid);
 	void partyError(WorldServerAcceptPlayer *player, int32_t playerid, int8_t error);

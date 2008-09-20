@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketCreator;
 struct Character;
-struct CharEquip;
 
 namespace LoginPacketHelper {
 	void addCharacter(PacketCreator &packet, Character &charc);

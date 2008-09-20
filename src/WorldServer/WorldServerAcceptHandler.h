@@ -18,10 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WORLDSERVERACCEPTHANDLER_H
 #define WORLDSERVERACCEPTHANDLER_H
 
-#include <string>
-
-using std::string;
-
 class WorldServerAcceptPlayer;
 class ReadPacket;
 
