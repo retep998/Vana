@@ -136,13 +136,12 @@ struct SpecialSkillInfo { // Hurricane, Big Bang, Monster Magnet, Pierce, etc.
 };
 
 struct PGMRInfo { // Power Guard/Mana Reflection
-	PGMRInfo() : reduction(0), pos_x(0), pos_y(0), damage(0), mapmobid(0), isphysical(true) { }
+	PGMRInfo() : reduction(0), pos(Pos(0,0)), damage(0), mapmobid(0), isphysical(true) { }
 	uint8_t reduction;
-	int16_t pos_x;
-	int16_t pos_y;
 	int32_t damage;
 	int32_t mapmobid;
 	bool isphysical;
+	Pos pos;
 };
 
 struct MPEaterInfo { // MP Eater
