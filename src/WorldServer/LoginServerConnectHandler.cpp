@@ -31,6 +31,7 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPa
 		WorldServer::Instance()->setInterPort(packet->getShort());
 		WorldServer::Instance()->setMaxChannels(packet->getInt());
 		WorldServer::Instance()->setMaxMultiLevel(packet->getByte());
+		WorldServer::Instance()->setMaxStats(packet->getShort());
 
 		int32_t ratesSetBit = packet->getInt();
 		if (ratesSetBit & Rates::SetBits::exp) {

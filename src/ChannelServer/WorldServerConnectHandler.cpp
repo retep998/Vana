@@ -51,6 +51,7 @@ void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, ReadPa
 		int16_t port = packet->getShort();
 		ChannelServer::Instance()->setPort(port);
 		ChannelServer::Instance()->setMaxMultiLevel(packet->getByte());
+		ChannelServer::Instance()->setMaxStats(packet->getShort());
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
 	}

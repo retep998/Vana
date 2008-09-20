@@ -36,12 +36,13 @@ void WorldServerAcceptPlayerPacket::groupChat(WorldServerAcceptPlayer *player, i
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel) {
+void WorldServerAcceptPlayerPacket::connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats) {
 	PacketCreator packet;
 	packet.addShort(INTER_CHANNEL_CONNECT);
 	packet.addShort(channel);
 	packet.addShort(port);
 	packet.addByte(maxMultiLevel);
+	packet.addShort(maxStats);
 	player->getSession()->send(packet);
 }
 

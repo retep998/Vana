@@ -50,11 +50,13 @@ public:
 	void setQuestExprate(int32_t questexprate) { this->questexprate = questexprate; }
 	void setMesorate (int32_t mesorate) { this->mesorate = mesorate; }
 	void setDroprate (int32_t droprate) { this->droprate = droprate; }
+	void setMaxStats (int16_t max) { this->maxStats = max; }
 	void setScrollingHeader(const string &message);
 	void setWorldIp(const string &ip) { world_ip = ip; }
 
 	int8_t getWorld() const { return world; }
 	uint8_t getMaxMultiLevel() const { return maxMultiLevel; }
+	int16_t getMaxStats() const { return maxStats; }
 	uint16_t getChannel() const { return channel; }
 	int32_t getOnlineId() const { return 20000 + (int32_t) world * 100 + channel; }
 	int32_t getExprate() const { return exprate; }
@@ -73,6 +75,7 @@ private:
 
 	int8_t world;
 	uint8_t maxMultiLevel;
+	int16_t maxStats;
 	uint16_t world_port;
 	uint16_t channel;
 	uint16_t login_inter_port;

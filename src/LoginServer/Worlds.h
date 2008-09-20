@@ -54,8 +54,10 @@ struct World {
 	int32_t questexprate;
 	int32_t mesorate;
 	int32_t droprate;
-	// Multi-level limit;
+	// Multi-level limit
 	uint8_t maxMultiLevel;
+	// Max stats
+	int16_t maxStats;
 };
 
 namespace Worlds {

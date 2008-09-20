@@ -156,30 +156,34 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 		return;
 	}
 	LevelsPacket::statOK(player);
+	int16_t maxstat = ChannelServer::Instance()->getMaxStats();
 	switch (type) {
 		case 0x40:
-			if (player->getStr() > 998)
+			if (player->getStr() >= maxstat)
 				return;
 			player->setStr(player->getStr() + 1);
 			break;
 		case 0x80:
-			if (player->getDex() > 998)
+			if (player->getDex() >= maxstat)
 				return;
 			player->setDex(player->getDex() + 1);
 			break;
 		case 0x100:
-			if (player->getInt() > 998)
+			if (player->getInt() >= maxstat)
 				return;
 			player->setInt(player->getInt() + 1);
 			break;
 		case 0x200:
-			if (player->getLuk() > 998)
+			if (player->getLuk() >= maxstat)
 				return;
 			player->setLuk(player->getLuk() + 1);
 			break;
 		case 0x800:
 		case 0x2000: {
-			if ((player->getRMHP() > 29999 && type == 0x800) || (player->getRMMP() > 29999 && type == 0x2000)) return;
+			if (player->getRMHP() >= 30000 && type == 0x800)
+				return;
+			if (player->getRMMP() >= 30000 && type == 0x2000)
+				return;
 			int16_t job = player->getJob() / 100;
 			int16_t hpgain = 0;
 			int16_t mpgain = 0;
