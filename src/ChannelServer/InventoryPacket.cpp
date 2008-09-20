@@ -136,8 +136,7 @@ void InventoryPacket::useScroll(Player *player, bool succeed, bool destroy, bool
 	packet.addInt(player->getId());
 	packet.addByte(succeed); // Succeed/Fail
 	packet.addByte(destroy); // Destroy/Not Destroy
-	packet.addByte(legendary_spirit);
-	packet.addByte(0);
+	packet.addShort(legendary_spirit);
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
