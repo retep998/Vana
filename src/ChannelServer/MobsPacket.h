@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Player;
 class Mob;
-
+class ReadPacket;
 struct MobHPInfo;
 
 namespace MobsPacket {

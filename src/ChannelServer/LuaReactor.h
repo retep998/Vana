@@ -19,10 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LUAREACTOR_H
 
 #include "LuaScriptable.h"
-#include <unordered_map>
 #include <string>
 
-using std::tr1::unordered_map;
 using std::string;
 
 class Reactor;

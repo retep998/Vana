@@ -19,12 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SERVERPACK_H
 
 #include <string>
-#include <vector>
-#include <unordered_map>
 
 using std::string;
-using std::vector;
-using std::tr1::unordered_map;
 
 class Player;
 

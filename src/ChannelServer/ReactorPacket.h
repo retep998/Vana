@@ -18,10 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef REACTORPACK_H
 #define REACTORPACK_H
 
-#include <vector>
-
-using std::vector;
-
 class Player;
 class Reactor;
 

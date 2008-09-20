@@ -29,10 +29,7 @@ using std::tr1::unordered_map;
 
 class Drop;
 class Player;
-class Mob;
-class Reactor;
 class ReadPacket;
-class Map;
 struct Item;
 
 struct DropInfo {

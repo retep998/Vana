@@ -20,14 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
-#include <vector>
 
 using std::string;
-using std::vector;
 
 class Player;
 class Pet;
-class ReadPacket;
 
 namespace PetsPacket {
 	void showChat(Player *player, Pet *pet, const string &message, int8_t act);

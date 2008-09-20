@@ -28,7 +28,6 @@ using std::tr1::unordered_map;
 class Pet;
 class Player;
 class ReadPacket;
-class MovableLife;
 struct Item;
 
 struct PetInfo {

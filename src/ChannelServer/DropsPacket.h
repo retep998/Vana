@@ -19,14 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define DROPPACK_H
 
 #include "Types.h"
-#include <vector>
-
-using std::vector;
 
 class Player;
 class Drop;
 class Pet;
-struct Dropped;
 struct Pos;
 
 namespace DropsPacket {

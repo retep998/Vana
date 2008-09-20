@@ -29,17 +29,17 @@ using std::tr1::unordered_map;
 
 class Player;
 class Mob;
-class LoopingId;
 class ReadPacket;
+struct MPEaterInfo;
 
 struct MobAttackInfo {
 	MobAttackInfo() : mobid(-1), id(0), mpconsume(0), mpburn(0), level(0), deadlyattack(false) { }
-	int32_t mobid;
 	int8_t id;
+	int8_t level;
+	uint8_t disease;
 	uint8_t mpconsume;
 	uint16_t mpburn;
-	uint8_t disease;
-	int8_t level;
+	int32_t mobid;
 	bool deadlyattack;
 };
 
@@ -66,8 +66,6 @@ struct MobHPInfo {
 	int8_t hpbgcolor;
 	bool boss;
 };
-
-struct MPEaterInfo;
 
 namespace Mobs {
 	extern unordered_map<int32_t, MobInfo> mobinfo;
