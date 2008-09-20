@@ -331,7 +331,7 @@ void Player::setExp(int32_t exp) {
 void Player::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(this, 0x10, level);
-	LevelsPacket::levelUP(this);
+	LevelsPacket::levelUp(this);
 	WorldServerConnectPlayerPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), this->id, level);
 }
 
