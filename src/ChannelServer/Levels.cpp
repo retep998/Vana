@@ -158,19 +158,23 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 	LevelsPacket::statOK(player);
 	switch (type) {
 		case 0x40:
-			if (player->getStr() > 998) return;
+			if (player->getStr() > 998)
+				return;
 			player->setStr(player->getStr() + 1);
 			break;
 		case 0x80:
-			if (player->getDex() > 998)	return;
+			if (player->getDex() > 998)
+				return;
 			player->setDex(player->getDex() + 1);
 			break;
 		case 0x100:
-			if (player->getInt() > 998) return;
+			if (player->getInt() > 998)
+				return;
 			player->setInt(player->getInt() + 1);
 			break;
 		case 0x200:
-			if (player->getLuk() > 998)	return;
+			if (player->getLuk() > 998)
+				return;
 			player->setLuk(player->getLuk() + 1);
 			break;
 		case 0x800:

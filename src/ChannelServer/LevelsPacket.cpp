@@ -35,7 +35,7 @@ void LevelsPacket::showEXP(Player *player, int32_t exp, int8_t type) {
 	player->getSession()->send(packet);
 }
 
-void LevelsPacket::levelUP(Player *player) {
+void LevelsPacket::levelUp(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_SKILL);
 	packet.addInt(player->getId());
