@@ -36,7 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerHandler.h"
 #include "PlayerPacket.h"
 #include "Players.h"
-#include "Pos.h"
 #include "Quests.h"
 #include "Reactors.h"
 #include "ReadPacket.h"
@@ -45,7 +44,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillMacros.h"
 #include "Skills.h"
 #include "Trades.h"
-#include "TradesPacket.h"
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include "Pets.h"
@@ -237,7 +235,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	WorldServerConnectPlayerPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name, map, job, level);
 }
 
-void Player::setHP(uint16_t hp, bool is) {
+void Player::setHP(int16_t hp, bool is) {
 	if (hp < 0)
 		this->hp = 0;
 	else if (hp > mhp)
@@ -249,7 +247,7 @@ void Player::setHP(uint16_t hp, bool is) {
 	getActiveBuffs()->checkBerserk();
 }
 
-void Player::setMP(uint16_t mp, bool is) {
+void Player::setMP(int16_t mp, bool is) {
 	if (!(getActiveBuffs()->getActiveSkillLevel(2121004) > 0 || getActiveBuffs()->getActiveSkillLevel(2221004) > 0 || getActiveBuffs()->getActiveSkillLevel(2321004) > 0)) {
 		if (mp < 0)
 			this->mp = 0;
@@ -298,26 +296,26 @@ void Player::setLuk(int16_t luk) {
 	PlayerPacket::updateStatShort(this, 0x200, luk);
 }
 
-void Player::setMHP(uint16_t mhp) {
+void Player::setMHP(int16_t mhp) {
 	if (mhp > 30000) { mhp = 30000; }
 	this->mhp = mhp;
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 	getActiveBuffs()->checkBerserk();
 }
 
-void Player::setRMHP(uint16_t rmhp) {
+void Player::setRMHP(int16_t rmhp) {
 	if (rmhp > 30000) { rmhp = 30000; }
 	this->rmhp = rmhp;
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 }
 
-void Player::setMMP(uint16_t mmp) {
+void Player::setMMP(int16_t mmp) {
 	if (mmp > 30000) { mmp = 30000; }
 	this->mmp = mmp;
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
 
-void Player::setRMMP(uint16_t rmmp) {
+void Player::setRMMP(int16_t rmmp) {
 	if (rmmp > 30000) { rmmp = 30000; }
 	this->rmmp = rmmp;
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);

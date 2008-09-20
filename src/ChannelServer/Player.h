@@ -62,12 +62,12 @@ public:
 	void setDex(int16_t dex);
 	void setInt(int16_t intt);
 	void setLuk(int16_t luk);
-	void setHP(uint16_t hp, bool is = true);
-	void setMP(uint16_t mp, bool is = false);
-	void setMHP(uint16_t mhp);
-	void setRMHP(uint16_t rmhp);
-	void setMMP(uint16_t mmp);
-	void setRMMP(uint16_t rmmp);
+	void setHP(int16_t hp, bool is = true);
+	void setMP(int16_t mp, bool is = false);
+	void setMHP(int16_t mhp);
+	void setRMHP(int16_t rmhp);
+	void setMMP(int16_t mmp);
+	void setRMMP(int16_t rmmp);
 	void setHPMPAp(uint16_t ap) { hpmp_ap = ap; }
 	void setEyes(int32_t id);
 	void setHair(int32_t id);
@@ -95,12 +95,12 @@ public:
 	int16_t getAp() const { return this->ap; }
 	int16_t getSp() const { return this->sp; }
 	int16_t getFame() const { return this->fame; }
-	uint16_t getHP() const { return this->hp; }
-	uint16_t getMP() const { return this->mp; }
-	uint16_t getMHP() const { return this->mhp; }
-	uint16_t getRMHP() const { return this->rmhp; }
-	uint16_t getMMP() const { return this->mmp; }
-	uint16_t getRMMP() const { return this->rmmp; }
+	int16_t getHP() const { return this->hp; }
+	int16_t getMP() const { return this->mp; }
+	int16_t getMHP() const { return this->mhp; }
+	int16_t getRMHP() const { return this->rmhp; }
+	int16_t getMMP() const { return this->mmp; }
+	int16_t getRMMP() const { return this->rmmp; }
 	uint16_t getHPMPAp() const { return hpmp_ap; }
 	int32_t getId() const { return this->id; }
 	int32_t getUserId() const { return this->userid; }
@@ -161,12 +161,12 @@ private:
 	int16_t luk;
 	int16_t ap;
 	int16_t sp;
-	uint16_t hp;
-	uint16_t mhp;
-	uint16_t rmhp;
-	uint16_t mp;
-	uint16_t mmp;
-	uint16_t rmmp;
+	int16_t hp;
+	int16_t mhp;
+	int16_t rmhp;
+	int16_t mp;
+	int16_t mmp;
+	int16_t rmmp;
 	uint16_t hpmp_ap;
 	int32_t id;
 	int32_t userid;
