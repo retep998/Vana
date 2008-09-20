@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "SkillsPacket.h"
 #include "MySQLM.h"
+#include <unordered_map>
+
+using std::tr1::unordered_map;
 
 bool PlayerSkills::addSkillLevel(int32_t skillid, uint8_t amount, bool sendpacket) {
 	// Keep people from adding too much SP and prevent it from going negative

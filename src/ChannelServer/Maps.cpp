@@ -23,9 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "Players.h"
 #include "ReadPacket.h"
-#include "Timer/Timer.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include <sys/stat.h>
+#include <string>
+#include <unordered_map>
+
+using std::string;
+using std::tr1::unordered_map;
 
 unordered_map<int32_t, Map *> Maps::maps;
 

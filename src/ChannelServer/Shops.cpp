@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Shops.h"
-#include "Drops.h"
 #include "Inventory.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
@@ -50,9 +49,9 @@ void Shops::showShop(Player *player, int32_t id) {
 			packet.addShort(1);
 		}
 		if (ISSTAR(shops[id].items[i]))
-			packet.addShort(Inventory::items[shops[id].items[i]].maxslot + player->getSkills()->getSkillLevel(4100000)*10);
+			packet.addShort(Inventory::items[shops[id].items[i]].maxslot + player->getSkills()->getSkillLevel(4100000) * 10);
 		else if (ISBULLET(shops[id].items[i]))
-			packet.addShort(Inventory::items[shops[id].items[i]].maxslot + player->getSkills()->getSkillLevel(5200000)*10);
+			packet.addShort(Inventory::items[shops[id].items[i]].maxslot + player->getSkills()->getSkillLevel(5200000) * 10);
 		else if (Inventory::items.find(shops[id].items[i]) != Inventory::items.end())
 			packet.addShort(Inventory::items[shops[id].items[i]].maxslot); 
 		else
@@ -65,7 +64,7 @@ void Shops::showShop(Player *player, int32_t id) {
 		packet.addShort(0);
 		packet.addInt(0);
 		packet.addShort(1);
-		packet.addShort(Inventory::items[rechargables[i]].maxslot + player->getSkills()->getSkillLevel(4100000)*10);
+		packet.addShort(Inventory::items[rechargables[i]].maxslot + player->getSkills()->getSkillLevel(4100000) * 10);
 	}
 
 	player->getSession()->send(packet);

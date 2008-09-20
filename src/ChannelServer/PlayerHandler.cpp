@@ -20,13 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include "Movement.h"
 #include "Player.h"
-#include "PlayerPacket.h"
 #include "Players.h"
+#include "PlayerPacket.h"
 #include "PlayersPacket.h"
 #include "Randomizer.h"
 #include "ReadPacket.h"
 #include "SkillsPacket.h"
-#include <iostream>
 
 void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); // Ticks

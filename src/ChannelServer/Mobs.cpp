@@ -23,13 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 #include "Drops.h"
 #include "Levels.h"
-#include "Quests.h"
 #include "Skills.h"
-#include "Inventory.h"
-#include "LoopingId.h"
 #include "Movement.h"
 #include "Randomizer.h"
 #include "ReadPacket.h"
+#include <unordered_map>
+
+using std::tr1::unordered_map;
 
 unordered_map<int32_t, MobInfo> Mobs::mobinfo;
 

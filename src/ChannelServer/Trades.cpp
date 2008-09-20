@@ -26,12 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TradesPacket.h"
 #include <functional>
 #include <string>
-#include <vector>
 
 using std::tr1::bind;
-
 using std::string;
-using std::vector;
 
 unordered_map<int32_t, ActiveTrade *> Trades::trades;
 

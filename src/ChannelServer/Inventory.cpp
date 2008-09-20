@@ -19,11 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "InventoryPacket.h"
 #include "Maps.h"
-#include "Mobs.h"
 #include "Pets.h"
 #include "PetsPacket.h"
 #include "Player.h"
-#include "Quests.h"
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "ReadPacket.h"
@@ -33,8 +31,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include <cmath>
 #include <functional>
+#include <unordered_map>
 
 using std::tr1::bind;
+using std::tr1::unordered_map;
 
 unordered_map<int32_t, EquipInfo> Inventory::equips;
 unordered_map<int32_t, ItemInfo> Inventory::items;

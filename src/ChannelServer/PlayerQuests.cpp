@@ -93,24 +93,24 @@ void PlayerQuests::checkDone(Quest &quest) {
 		quest.done = 1;
 		return;
 	}
-	int32_t is = 1;
-	for (uint32_t i=0; i<Quests::quests[quest.id].requests.size(); i++) {
+	bool is = true;
+	for (uint32_t i = 0; i < Quests::quests[quest.id].requests.size(); i++) {
 		if (Quests::quests[quest.id].requests[i].isitem) {
-			if ((player->getInventory()->getItemAmount(Quests::quests[quest.id].requests[i].id) < Quests::quests[quest.id].requests[i].count && Quests::quests[quest.id].requests[i].count > 0 ) || (Quests::quests[quest.id].requests[i].count == 0 && player->getInventory()->getItemAmount(Quests::quests[quest.id].requests[i].id) != 0)) {
-				is=0;
+			if ((player->getInventory()->getItemAmount(Quests::quests[quest.id].requests[i].id) < Quests::quests[quest.id].requests[i].count && Quests::quests[quest.id].requests[i].count > 0) || (Quests::quests[quest.id].requests[i].count == 0 && player->getInventory()->getItemAmount(Quests::quests[quest.id].requests[i].id) != 0)) {
+				is = false;
 				break;
 			}
 		}
 		else if (Quests::quests[quest.id].requests[i].ismob) {
-			int32_t killed=0;
-			for (uint32_t j=0; j<quest.mobs.size(); j++) {
+			int32_t killed = 0;
+			for (uint32_t j = 0; j < quest.mobs.size(); j++) {
 				if (quest.mobs[j].id == Quests::quests[quest.id].requests[i].id) {
 					killed = quest.mobs[j].count;
 					break;
 				}
 			}
 			if (killed < Quests::quests[quest.id].requests[i].count) {
-				is=0;
+				is = false;
 				break;
 			}
 		}
@@ -155,7 +155,7 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 		}
 	}
 	if (chance > 0) {
-		int32_t random = Randomizer::Instance()->randInt(chance-1);
+		int32_t random = Randomizer::Instance()->randInt(chance - 1);
 		chance = 0;
 		for (size_t i = 0; i < Quests::quests[questid].rewards.size(); i++) {
 			if (Quests::quests[questid].rewards[i].start) {

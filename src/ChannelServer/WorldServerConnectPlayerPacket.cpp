@@ -20,6 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "WorldServerConnectPlayer.h"
+#include <string>
+#include <vector>
+
+using std::vector;
+using std::string;
 
 void WorldServerConnectPlayerPacket::groupChat(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat) {
 	PacketCreator packet;

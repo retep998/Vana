@@ -29,12 +29,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "ReactorPacket.h"
 #include "Reactors.h"
-#include "SkillsPacket.h"
 #include "Timer/Timer.h"
 #include <ctime>
 #include <functional>
+#include <unordered_map>
 
 using std::tr1::bind;
+using std::tr1::unordered_map;
 
 Map::Map (MapInfo info) :
 info(info),

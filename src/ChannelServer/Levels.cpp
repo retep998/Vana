@@ -17,14 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Levels.h"
 #include "Player.h"
-#include "Maps.h"
 #include "LevelsPacket.h"
 #include "PlayersPacket.h"
-#include "SkillsPacket.h"
 #include "Skills.h"
 #include "Randomizer.h"
 #include "ReadPacket.h"
 #include <string>
+
+using std::string;
 
 uint32_t Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
 	5460, 7050, 8840, 11040, 13716, 16680, 20216, 24402, 28980, 34320, 40512, 47216, 54900,
@@ -134,7 +134,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 			player->setHP(mhp);
 			player->setMP(mmp);
 			if (player->getLevel() == 200 && !player->isGM()) {
-				std::string message;
+				string message;
 				message += "[Congrats] ";
 				message += player->getName();
 				message += " has reached Level 200! Congratulate ";
