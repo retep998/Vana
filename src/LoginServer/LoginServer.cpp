@@ -77,6 +77,9 @@ void LoginServer::loadConfig() {
 		formatter % i % "droprate";
 		world->droprate = config.getInt(formatter.str());
 
+		formatter % i % "maxstats";
+		world->maxStats = config.getShort(formatter.str());
+
 		formatter % i % "max_multi_level";
 		world->maxMultiLevel = (uint8_t) config.getInt(formatter.str());
 

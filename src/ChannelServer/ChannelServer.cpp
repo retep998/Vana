@@ -76,6 +76,7 @@ void ChannelServer::loadConfig() {
 	questexprate = 1; // Will get from world server
 	mesorate = 1; // Will get from world server
 	droprate = 1; // Will get from world server
+	maxStats = 999; // Will get from world server
 }
 
 void ChannelServer::sendToWorld(PacketCreator &packet) {
