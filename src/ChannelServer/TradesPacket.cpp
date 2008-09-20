@@ -24,17 +24,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
 
-void TradesPacket::sendOpenTrade(Player *player, const vector<Player *> &players, const vector<uint8_t> &pos) {
+void TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player2) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x05);
 	packet.addByte(0x03);
 	packet.addByte(0x02);
-	packet.addShort(players.size() - 1);
-	for (uint8_t c = 0; c < players.size(); c++) { // lol	
-		PlayerPacketHelper::addPlayerDisplay(packet, players[c]);
-		packet.addString(players[c]->getName());
-		packet.addByte(pos[c]); // Location in the window
+	packet.addShort(((player1 != 0 && player2 != 0) ? 1 : 0));
+	if (player2 != 0) {
+		PlayerPacketHelper::addPlayerDisplay(packet, player2);
+		packet.addString(player2->getName());
+		packet.addByte(1); // Location in the window
+	}
+	if (player1 != 0) {
+		PlayerPacketHelper::addPlayerDisplay(packet, player1);
+		packet.addString(player1->getName());
+		packet.addByte(-1); // Location in the window
 	}
 	player->getSession()->send(packet);
 }
@@ -67,7 +72,7 @@ void TradesPacket::sendTradeMessage(Player *receiver, int8_t type, int8_t messag
 	receiver->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeChat(Player *player, uint8_t blue, string chat) {
+void TradesPacket::sendTradeChat(Player *player, uint8_t blue, const string &chat) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_ACTION);
 	packet.addByte(0x06);
