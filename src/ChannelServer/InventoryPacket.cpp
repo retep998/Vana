@@ -161,7 +161,7 @@ void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, uin
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void InventoryPacket::showMessenger(Player *player, const string & msg, const string & msg2, const string & msg3, const string & msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid) {
+void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid) {
 	PacketCreator packet;
 	packet.addShort(INTER_TO_PLAYERS);
 	packet.addShort(SEND_SHOW_MESSENGER);
@@ -176,7 +176,7 @@ void InventoryPacket::showMessenger(Player *player, const string & msg, const st
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 // Use buff item
-void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, uint8_t types[8], vector<int16_t> vals, bool morph) { // Test/Beta function, PoC only
+void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, uint8_t types[8], const vector<int16_t> &vals, bool morph) { // Test/Beta function, PoC only
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
