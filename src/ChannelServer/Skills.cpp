@@ -343,8 +343,8 @@ void Skills::init() {
 	skillsinfo[2221004].player.push_back(player);
 	skillsinfo[2321004].player.push_back(player);
 	// 1005 - Echo of Hero
-	player.type = 0x1;
-	player.byte = TYPE_7;
+	player.type = 0x80;
+	player.byte = TYPE_6;
 	player.value = SKILL_X;
 	skillsinfo[1005].player.push_back(player);
 	// Stance - 1121002, 1221002, and 1321002
