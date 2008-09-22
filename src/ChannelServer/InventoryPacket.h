@@ -40,7 +40,7 @@ namespace InventoryPacket {
 	void useItem(Player *player, int32_t itemid, int32_t time, uint8_t types[8], const vector<int16_t> &vals, bool morph); // Use buff item
 	void endItem(Player *player, uint8_t types[8], bool morph);
 	void useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed);
-	void useScroll(Player *player, bool succeed, bool destroy, bool legendary_spirit);
+	void useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit);
 	void showMegaphone(Player *player, const string &msg);
 	void showSuperMegaphone(Player *player, const string & msg, uint8_t whisper = 0);
 	void showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid);
