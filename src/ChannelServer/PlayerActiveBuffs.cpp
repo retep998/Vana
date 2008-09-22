@@ -119,9 +119,9 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 		int32_t skillid = 1320006;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
-			float x = (float)Skills::skills[skillid][level].x;
+			int16_t x = Skills::skills[skillid][level].x;
+			int16_t ratio = (m_player->getHP() * 100) / m_player->getMHP();
 			bool change = false;
-			float ratio = (float)((float)m_player->getHP() / (float)m_player->getMHP() * 100.0); // Floating point math makes Bui an angry man
 			if (m_berserk && ratio > x) { // If on and we're above Berserk HP, Berserk fails
 				m_berserk = false;
 				change = true;
@@ -139,7 +139,7 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 void PlayerActiveBuffs::deleteSkillMapEnterInfo(int32_t skillid) {
 	for (size_t i = 0; i < activemapenterskill.size(); i++) {
 		if (activemapenterskill[i].skill == skillid) {
-			activemapenterskill.erase(activemapenterskill.begin()+i);
+			activemapenterskill.erase(activemapenterskill.begin() + i);
 		}
 	}
 }
@@ -151,9 +151,10 @@ SkillActiveInfo PlayerActiveBuffs::getBuffMapInfo(int32_t skillid) {
 SkillMapEnterActiveInfo PlayerActiveBuffs::getSkillMapEnterInfo() {
 	SkillMapEnterActiveInfo skill;
 	for (size_t i = 0; i < activemapenterskill.size(); i++) {
-		skill.types[activemapenterskill[i].byte] += activemapenterskill[i].type;
-		if (activemapenterskill[i].isvalue) {
-			skill.val = activemapenterskill[i].value;
+		SkillMapActiveInfo cur = activemapenterskill[i];
+		skill.types[cur.byte] += cur.type;
+		if (cur.isvalue) {
+			skill.val = cur.value;
 			skill.isval = true;
 		}
 	}
@@ -171,11 +172,11 @@ uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
 
 }
 
-void PlayerActiveBuffs::setSkillMapEnterInfo(int32_t skillid, vector<SkillMapActiveInfo> skill) {
+void PlayerActiveBuffs::setSkillMapEnterInfo(int32_t skillid, const vector<SkillMapActiveInfo> &skill) {
 	// TEMP //
 	for (size_t i = 0; i < activemapenterskill.size(); i++) { 
 		if (activemapenterskill[i].isvalue) {
-			activemapenterskill.erase(activemapenterskill.begin()+i);
+			activemapenterskill.erase(activemapenterskill.begin() + i);
 			break;
 		}
 	}

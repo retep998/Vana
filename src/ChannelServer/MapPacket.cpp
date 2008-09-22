@@ -42,39 +42,59 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addByte(0);
 	packet.addByte(0xf8);
 
-	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[0]);
-	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[1]);
-	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[2]);
-	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[3]);
-	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[4]);
-	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[5]);
-	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[6]);
-	packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().types[7]);
-	if (player->getActiveBuffs()->getSkillMapEnterInfo().isval) {
-		packet.addByte(player->getActiveBuffs()->getSkillMapEnterInfo().val);
+	SkillMapEnterActiveInfo enter = player->getActiveBuffs()->getSkillMapEnterInfo();
+	packet.addByte(enter.types[0]);
+	packet.addByte(enter.types[1]);
+	packet.addByte(enter.types[2]);
+	packet.addByte(enter.types[3]);
+	packet.addByte(enter.types[4]);
+	packet.addByte(enter.types[5]);
+	packet.addByte(enter.types[6]);
+	packet.addByte(enter.types[7]);
+	if (enter.isval) {
+		packet.addByte(enter.val);
 	}
 
 	packet.addInt(0);
 	packet.addShort(0);
-	for (int8_t i = 0; i < 3; i++) {
-		packet.addShort(21613); // Unknown
-		packet.addInt(10028); // Unknown
-		packet.addInt(0);
-		packet.addInt(0);
+	packet.addInt(1065638850); // Unknown
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addShort(0);
+	packet.addInt(1065638850);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addShort(0);
+	packet.addInt(1065638850);
+	packet.addShort(0);
+
+	int32_t mount = player->getInventory()->getEquippedID(18);
+	if (mount != 0 && player->getActiveBuffs()->getActiveSkillLevel(1004) > 0) {
+		packet.addInt(mount);
+		packet.addInt(1004);
+		packet.addInt(1066113350);
 	}
-	packet.addShort(21613);
-	packet.addInt(10028);
+	else if (player->getActiveBuffs()->getActiveSkillLevel(5221006) > 0) {
+		packet.addInt(1932000);
+		packet.addInt(5221006);
+		packet.addInt(1066113350);
+	}
+	else {
+		packet.addInt(0);
+		packet.addInt(0);
+		packet.addInt(1065638850);
+	}
+
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addInt(1065638850);
+	packet.addInt(0);
+	packet.addInt(0);
 	packet.addInt(0);
 	packet.addShort(0);
-	packet.addShort(21613);
-	packet.addInt(10028);
+	packet.addInt(1065638850);
 	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addShort(21613);
-	packet.addInt(10028);
-	packet.addShort(0);
-	packet.addShort(320);
+	packet.addShort(player->getJob());
 
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
 

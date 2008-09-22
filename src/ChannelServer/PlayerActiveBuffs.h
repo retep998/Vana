@@ -67,7 +67,7 @@ public:
 	uint8_t getActiveSkillLevel(int32_t skillid);
 	void setBuffInfo(int32_t skillid, SkillActiveInfo skill);
 	void setBuffMapInfo(int32_t skillid, SkillActiveInfo skill);
-	void setSkillMapEnterInfo(int32_t skillid, vector<SkillMapActiveInfo> skill);
+	void setSkillMapEnterInfo(int32_t skillid, const vector<SkillMapActiveInfo> &skill);
 	void setActiveSkillLevel(int32_t skillid, uint8_t level);
 private:
 	Player *m_player;

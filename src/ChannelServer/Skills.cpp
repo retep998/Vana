@@ -76,6 +76,7 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			break;
 	}
 }
+
 void Skills::useSkill(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4); //Ticks
 	int32_t skillid = packet->getInt();
