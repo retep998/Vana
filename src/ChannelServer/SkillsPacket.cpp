@@ -53,7 +53,7 @@ void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Skill
 	packet.addInt64(0);
 	for (int8_t i = 0; i < 8; i++)
 		packet.addByte(pskill.types[i]);
-	if (skillid == 1004) { // Monster Rider has a slightly different packet
+	if (mountid > 0) { // Mounts have a slightly different packet
 		packet.addShort(0);
 		packet.addInt(mountid);
 		packet.addInt(skillid);
@@ -81,7 +81,7 @@ void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Skill
 		packet.addInt64(0);
 		for (int8_t i = 0; i < 8; i++)
 			packet.addByte(mskill.types[i]);
-		if (skillid == 1004) {  // Monster Rider has a slightly different packet
+		if (mountid > 0) {  // Mounts have a slightly different packet
 			packet.addShort(0);
 			packet.addInt(mountid);
 			packet.addInt(skillid);

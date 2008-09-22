@@ -83,17 +83,6 @@ void Buffs::init() {
 	player.byte = TYPE_1;
 	player.value = SKILL_AVO;
 	skillsinfo[3001003].player.push_back(player);
-	// 4001003 - Dark Sight
-	player.type = 0x80;
-	player.byte = TYPE_1;
-	player.value = SKILL_SPEED;
-	skillsinfo[4001003].player.push_back(player);
-	player.type = 0x04;
-	player.byte = TYPE_2;
-	player.value = SKILL_X;
-	player.hasmapval = true;
-	player.val = false;
-	skillsinfo[4001003].player.push_back(player);
 	// 1101006 - Rage
 	player.type = 0x1;
 	player.byte = TYPE_1;
@@ -187,13 +176,6 @@ void Buffs::init() {
 	player.byte = TYPE_8;
 	player.value = 0;
 	skillsinfo[9101004].player.push_back(player);
-	// 3101004 & 3201004 - Soul Arrow
-	player.type = 0x1;
-	player.byte = TYPE_3;
-	player.value = SKILL_X;
-	skillsinfo[3101004].player.push_back(player);
-	skillsinfo[3201004].player.push_back(player);
-	// Map value for soul arrow causes DCs. Looking into the proper way to update it
 	// 4101004, 4201003, 9001000, 9101001 - Haste
 	player.type = 0x80;
 	player.byte = TYPE_1;
@@ -234,13 +216,6 @@ void Buffs::init() {
 	player.value = SKILL_X;
 	skillsinfo[3121002].player.push_back(player);
 	skillsinfo[3221002].player.push_back(player);
-	// 4111002 - Shadow Partner
-	player.type = 0x4;
-	player.byte = TYPE_4;
-	player.value = SKILL_X;
-	player.hasmapval = true;
-	player.val = false;
-	skillsinfo[4111002].player.push_back(player);
 	// WK/Paladin Charges - 1211003, 1211004, 1211005, 1211006, 1211007, 1211008, 1221003, 1221004
 	player.type = 0x4;
 	player.byte = TYPE_1;
@@ -286,14 +261,6 @@ void Buffs::init() {
 	player.value = SKILL_X;
 	skillsinfo[2311003].player.push_back(player); // Priest
 	skillsinfo[9101002].player.push_back(player); // Super GM
-	// 1111002 - Combo Attack
-	player.type = 0x20;
-	player.byte = TYPE_3;
-	player.value = SKILL_X;
-	//player.hasmapval = true;
-	//player.val = false;
-	// Currently causes dc issues when other people enter a map with someone using combo attack, so disable map for now
-	skillsinfo[1111002].player.push_back(player);
 	// 1121010 - Enrage
 	player.type = 0x1;
 	player.byte = TYPE_1;
@@ -304,18 +271,11 @@ void Buffs::init() {
 	player.byte = TYPE_1;
 	player.value = SKILL_WATK;
 	skillsinfo[3121008].player.push_back(player);
-	// 4211003 - Pickpocket TODO: Add server-side to make it drop mesos
+	// 4211003 - Pickpocket - TODO: Add server-side to make it drop mesos
 	player.type = 0x8;
 	player.byte = TYPE_4;
 	player.value = SKILL_X;
 	skillsinfo[4211003].player.push_back(player);
-	// 1004 - Monster Rider
-	player.type = 0x40;
-	player.byte = TYPE_8;
-	player.value = SKILL_X;
-	player.hasmapval = true;
-	player.val = false;
-	skillsinfo[1004].player.push_back(player);
 	// 4111001 - Meso Up
 	player.type = 0x8;
 	player.byte = TYPE_4;
@@ -345,6 +305,44 @@ void Buffs::init() {
 	skillsinfo[1121002].player.push_back(player);
 	skillsinfo[1221002].player.push_back(player);
 	skillsinfo[1321002].player.push_back(player);
+	// Mana Reflection - 2121002, 2221002, and 2321002
+	player.type = 0x40;
+	player.byte = TYPE_5;
+	player.value = SKILL_LV;
+	skillsinfo[2121002].player.push_back(player);
+	skillsinfo[2221002].player.push_back(player);
+	skillsinfo[2321002].player.push_back(player);
+	// 1111002 - Combo Attack - TODO: dc issues when other people enter a map with someone using combo attack, so disable map for now
+	player.type = 0x20;
+	player.byte = TYPE_3;
+	player.value = SKILL_X;
+	//player.hasmapval = true;
+	//player.val = false;
+	skillsinfo[1111002].player.push_back(player);
+	// 3101004 & 3201004 - Soul Arrow - TODO: Map value causes DCs. Looking into the proper way to update it
+	player.type = 0x1;
+	player.byte = TYPE_3;
+	player.value = SKILL_X;
+	skillsinfo[3101004].player.push_back(player);
+	skillsinfo[3201004].player.push_back(player);
+	// 4001003 - Dark Sight
+	player.type = 0x80;
+	player.byte = TYPE_1;
+	player.value = SKILL_SPEED;
+	skillsinfo[4001003].player.push_back(player);
+	player.type = 0x04;
+	player.byte = TYPE_2;
+	player.value = SKILL_X;
+	player.hasmapval = true;
+	player.val = false;
+	skillsinfo[4001003].player.push_back(player);
+	// Battleship - 5221006
+	player.type = 0x40;
+	player.byte = TYPE_8;
+	player.value = SKILL_X;
+	player.hasmapval = true;
+	player.val = false;
+	skillsinfo[5221006].player.push_back(player);
 	// Super Saiyan thing[blue] - 5111005
 	player.type = 0x02;
 	player.byte = TYPE_5;
@@ -359,13 +357,20 @@ void Buffs::init() {
 	player.hasmapval = true;
 	player.val = false;
 	skillsinfo[5121003].player.push_back(player);
-	// Mana Reflection - 2121002, 2221002, and 2321002
+	// 1004 - Monster Rider
 	player.type = 0x40;
-	player.byte = TYPE_5;
-	player.value = SKILL_LV;
-	skillsinfo[2121002].player.push_back(player);
-	skillsinfo[2221002].player.push_back(player);
-	skillsinfo[2321002].player.push_back(player);
+	player.byte = TYPE_8;
+	player.value = SKILL_X;
+	player.hasmapval = true;
+	player.val = false;
+	skillsinfo[1004].player.push_back(player);
+	// 4111002 - Shadow Partner
+	player.type = 0x4;
+	player.byte = TYPE_4;
+	player.value = SKILL_X;
+	player.hasmapval = true;
+	player.val = false;
+	skillsinfo[4111002].player.push_back(player);
 }
 
 bool Buffs::isBuff(int32_t skillid) {
@@ -373,7 +378,6 @@ bool Buffs::isBuff(int32_t skillid) {
 		return false;
 	return true;
 }
-
 
 int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 	int16_t rvalue = 0;
@@ -399,8 +403,9 @@ SkillActiveInfo Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t le
 	SkillActiveInfo playerskill;
 	memset(playerskill.types, 0, 8 * sizeof(uint8_t)); // Reset player/map types to 0
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
-		playerskill.types[skillsinfo[skillid].player[i].byte] += skillsinfo[skillid].player[i].type;
-		int8_t val = skillsinfo[skillid].player[i].value;
+		BuffInfo cur = skillsinfo[skillid].player[i];
+		playerskill.types[cur.byte] += cur.type;
+		int8_t val = cur.value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed change for maxed dark sight
 			playerskill.types[TYPE_1] = 0;
 			continue;
@@ -409,6 +414,9 @@ SkillActiveInfo Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t le
 		switch (skillid) {
 			case 1004: // Monster Rider
 				mountid = player->getInventory()->getEquippedID(18);
+				break;
+			case 5221006:
+				mountid = 1932000; // Battleship item ID
 				break;
 			case 3121002: // Sharp Eyes
 			case 3221002: // Sharp Eyes
@@ -445,10 +453,11 @@ SkillActiveInfo Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t
 	SkillActiveInfo mapskill;
 	memset(mapskill.types, 0, 8 * sizeof(uint8_t));
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
-		if (!skillsinfo[skillid].player[i].hasmapval)
+		BuffInfo cur = skillsinfo[skillid].player[i];
+		if (!cur.hasmapval)
 			continue;
-		mapskill.types[skillsinfo[skillid].player[i].byte] += Buffs::skillsinfo[skillid].player[i].type;
-		int8_t val = skillsinfo[skillid].player[i].value;
+		mapskill.types[cur.byte] += cur.type;
+		int8_t val = cur.value;
 		if (skillid == 4001003 && level == 20 && val == SKILL_SPEED) { // Cancel speed update for maxed dark sight
 			mapskill.types[TYPE_1] = 0;
 			continue;
@@ -467,9 +476,9 @@ SkillActiveInfo Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t
 		}
 		mapskill.vals.push_back(value);
 		SkillMapActiveInfo map;
-		map.byte = skillsinfo[skillid].player[i].byte;
-		map.type = skillsinfo[skillid].player[i].type;
-		if (skillsinfo[skillid].player[i].val) {
+		map.byte = cur.byte;
+		map.type = cur.type;
+		if (cur.val) {
 			map.isvalue = true;
 			map.value = (int8_t)value;
 		}
@@ -515,7 +524,8 @@ void Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	SkillsPacket::useSkill(player, skillid, time * 1000, playerskill, mapskill, addedinfo, mountid);
 	playerbuffs->setBuffInfo(skillid, playerskill);
 	playerbuffs->setBuffMapInfo(skillid, mapskill);
-	playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
+	if (mountid == 0)
+		playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
 	playerbuffs->setActiveSkillLevel(skillid, level);
 	playerbuffs->removeBuff(skillid);
 	if (Buffs::skillsinfo[skillid].bact.size() > 0) {
