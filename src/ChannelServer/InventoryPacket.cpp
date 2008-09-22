@@ -128,7 +128,7 @@ void InventoryPacket::stopChair(Player *player) {
 	packet.addInt(0);
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
-void InventoryPacket::useScroll(Player *player, bool succeed, bool destroy, bool legendary_spirit) {
+void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;

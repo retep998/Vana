@@ -539,7 +539,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 		return;
 
 	int32_t itemid = item->id;
-	bool succeed = false;
+	int8_t succeed = -1;
 	bool cursed = false;
 	bool scrolled = false;
 	if (items.find(itemid) == items.end())
@@ -552,14 +552,12 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			if ((equips[equip->id].slots - equip->scrolls) > equip->slots) {
 				if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.success) { // Give back a slot
 					equip->slots++;
-					succeed = true;
+					succeed = 1;
 				}
 				else {
-					if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.cursed) {
+					if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.cursed)
 						cursed = true;
-						InventoryPacket::moveItem(player, 1, eslot, 0);
-						player->getInventory()->deleteItem(1, eslot);
-					}
+					succeed = 0;
 				}
 				scrolled = true;
 			}
@@ -604,12 +602,11 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 						equip->imp += Randomizer::Instance()->randShort(5) * n;
 					equip->slots--;
 					equip->scrolls++;
-					succeed = true;
+					succeed = 1;
 				}
 				else { // Break
 					cursed = true;
-					InventoryPacket::moveItem(player, 1, eslot, 0);
-					player->getInventory()->deleteItem(1, eslot);
+					succeed = 0;
 				}
 				scrolled = true;
 			}
@@ -623,7 +620,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 				if (wscroll == 2)
 					takeItem(player, 2340000, 1);
 				if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.success) {
-					succeed = true;
+					succeed = 1;
 					equip->istr += items[itemid].cons.istr;
 					equip->idex += items[itemid].cons.idex;
 					equip->iint += items[itemid].cons.iint;
@@ -643,12 +640,11 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 					equip->slots--;
 				}
 				else {
-					if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.cursed) {
+					succeed = 0;
+					if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.cursed)
 						cursed = true;
-						InventoryPacket::moveItem(player, 1, eslot, 0);
-						player->getInventory()->deleteItem(1, eslot);
-					}
-					else if (wscroll != 2) equip->slots--;
+					else if (wscroll != 2)
+						equip->slots--;
 				}
 				scrolled = true;
 			}
@@ -659,10 +655,17 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 		InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
 		if (!cursed)
 			InventoryPacket::addNewItem(player, 1, eslot, equip, true);
+		else {
+			InventoryPacket::moveItem(player, 1, eslot, 0);
+			player->getInventory()->deleteItem(1, eslot);
+		}
 		InventoryPacket::updatePlayer(player);
 	}
-	else 
+	else {
+		if (legendary_spirit)
+			InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
 		InventoryPacket::blankUpdate(player);
+	}
 }
 
 void Inventory::useCashItem(Player *player, ReadPacket *packet) {
