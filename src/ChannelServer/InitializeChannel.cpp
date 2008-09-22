@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
+#include "Buffs.h"
 #include "Mobs.h"
 #include "Drops.h"
 #include "Reactors.h"
@@ -684,7 +685,7 @@ void Initializing::initializeSkills() {
 		level.cooltime = atoi(skillRow[26]);
 		Skills::addSkillLevelInfo(atoi(skillRow[0]), atoi(skillRow[1]), level);
 	}
-	Skills::init();
+	Buffs::init();
 	std::cout << "DONE" << std::endl;
 }
 // Maps

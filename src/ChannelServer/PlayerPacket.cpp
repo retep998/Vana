@@ -130,7 +130,7 @@ void PlayerPacket::connectData(Player *player) {
 	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
 		packet.addInt(iter->first);
 		packet.addInt(iter->second.level);
-		if (FORTHJOB_SKILL(iter->first))
+		if (FOURTHJOB_SKILL(iter->first))
 			packet.addInt(iter->second.maxlevel); // Max Level for 4th job skills
 	}
 	// End

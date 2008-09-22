@@ -19,17 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SKILLS_H
 
 #include <unordered_map>
-#include <vector>
 #include "Pos.h"
 
 using std::tr1::unordered_map;
-using std::vector;
 
 class Player;
 class ReadPacket;
 
 #define BEGINNER_SKILL(x) (x / 1000000 == 0)
-#define FORTHJOB_SKILL(x) ((x/10000)%10 == 2)
+#define FOURTHJOB_SKILL(x) ((x / 10000) % 10 == 2)
 
 struct SkillLevelInfo {
 	int32_t time;
@@ -55,76 +53,6 @@ struct SkillLevelInfo {
 	Pos lt;
 	Pos rb;
 	int16_t cooltime;
-};
-
-enum {
-	SKILL_X,
-	SKILL_Y,
-	SKILL_SPEED,
-	SKILL_JUMP,
-	SKILL_WATK,
-	SKILL_WDEF,
-	SKILL_MATK,
-	SKILL_MDEF,
-	SKILL_ACC,
-	SKILL_AVO,
-	SKILL_PROP,
-	SKILL_MORPH,
-	SKILL_LV
-};
-
-enum {
-	TYPE_5 = 0,
-	TYPE_6,
-	TYPE_7,
-	TYPE_8,
-	TYPE_1,
-	TYPE_2,
-	TYPE_3,
-	TYPE_4
-};
-
-enum Act {
-	ACT_HEAL,
-	ACT_HURT
-};
-
-struct BuffInfo {
-	uint8_t type;
-	int8_t byte;
-	int8_t value;
-	bool hasmapval;
-	bool val;
-};
-
-struct SkillAct {
-	Act type;
-	int8_t value;
-	int32_t time;
-};
-
-struct SkillActiveInfo {
-	uint8_t types[8];
-	vector<int16_t> vals;
-};
-
-struct SkillMapActiveInfo {
-	int8_t byte;
-	int8_t type;
-	int8_t value;
-	bool isvalue;
-	int32_t skill;
-};
-
-struct SkillMapEnterActiveInfo {
-	SkillMapEnterActiveInfo() : val(0), isval(false) {
-		for (size_t i = 0; i < 8; i++) {
-			types[i] = 0;
-		}
-	}
-	uint8_t types[8];
-	int8_t val;
-	bool isval;
 };
 
 struct SpecialSkillInfo { // Hurricane, Big Bang, Monster Magnet, Pierce, etc.
@@ -153,39 +81,24 @@ struct MPEaterInfo { // MP Eater
 	bool onlyonce;
 };
 
-struct SkillsInfo {
-	vector<BuffInfo> player;
-	SkillAct act;
-	vector<bool> bact;
-};
-
 typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
 	extern unordered_map<int32_t, SkillsLevelInfo> skills;
 	extern unordered_map<int32_t, uint8_t> maxlevels;
-	extern unordered_map<int32_t, SkillsInfo> skillsinfo;
-	void init();
 	void addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo levelinfo);
 	void addSkill(Player *player, ReadPacket *packet);
 	void cancelSkill(Player *player, ReadPacket *packet);
 	void useSkill(Player *player, ReadPacket *packet);
-	int16_t getValue(int8_t value, int32_t skillid, uint8_t level);
-	SkillActiveInfo parseBuffInfo(Player *player, int32_t skillid, uint8_t level, int32_t &mountid);
-	SkillActiveInfo parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill);
 	void applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp = false);
 	void useAttackSkill(Player *player, int32_t skillid);
 	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display);
-	void stopTimersPlayer(Player *player);
-	void stopAllBuffs(Player *player);
 	void heal(Player *player, int16_t value, int32_t skillid);
 	void hurt(Player *player, int16_t value, int32_t skillid);
-	void endBuff(Player *player, int32_t skill);
 	void stopSkill(Player *player, int32_t skillid, bool fromTimer = false);
 	void startCooldown(Player *player, int32_t skillid, int16_t cooltime);
 	void stopCooldown(Player *player, int32_t skillid);
 	bool isCooling(Player *player, int32_t skillid);
-	bool isBuff(int32_t skillid);
 };
 
 #endif

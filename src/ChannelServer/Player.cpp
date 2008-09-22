@@ -512,7 +512,7 @@ void Player::acceptDeath() {
 	else
 		tomap = Maps::maps[this->getMap()]->getInfo().rm;
 	setHP(50, false);
-	Skills::stopAllBuffs(this);
+	Buffs::stopAllBuffs(this);
 	Maps::changeMap(this, tomap, 0);
 }
 

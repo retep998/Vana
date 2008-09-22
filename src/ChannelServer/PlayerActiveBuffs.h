@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERACTIVEBUFF_H
 #define PLAYERACTIVEBUFF_H
 
+#include "Buffs.h"
 #include "Types.h"
 #include <list>
 #include <unordered_map>
@@ -29,10 +30,6 @@ using std::tr1::unordered_map;
 using std::vector;
 
 class Player;
-struct SkillMapEnterActiveInfo;
-struct SkillMapActiveInfo;
-struct SkillActiveInfo;
-enum Act;
 
 namespace Timer {
 	class Container;
