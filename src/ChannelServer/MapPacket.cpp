@@ -187,9 +187,9 @@ void MapPacket::showTimer(Player *player, int32_t sec) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::makeApple(Player *player) {
+void MapPacket::forceMapEquip(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_MAKE_APPLE);
+	packet.addShort(SEND_FORCE_MAP_EQUIP);
 	player->getSession()->send(packet);
 }
 

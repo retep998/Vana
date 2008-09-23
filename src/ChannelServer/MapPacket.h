@@ -34,7 +34,7 @@ namespace MapPacket {
 	void portalBlocked(Player *player); // Blocked portals
 	void showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec);
 	void showTimer(Player *player, int32_t sec); // Show Timer like in PQ
-	void makeApple(Player *player);
+	void forceMapEquip(Player *player);
 	void changeMusic(int32_t mapid, const string &musicname); // Change map music
 	void sendSound(int32_t mapid, const string &soundname); // Send sound - clear/wrong/etc
 	void sendEvent(int32_t mapid, const string &eventname); // Send event - clear/wrong/etc

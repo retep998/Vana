@@ -50,8 +50,8 @@ void Map::addPlayer(Player *player) {
 	setTimer(); // Setup the timer if this is the first player to enter the map
 
 	this->players.push_back(player);
-	if (info.fieldType == 82)
-		MapPacket::makeApple(player);
+	if (info.fieldType == 82 || info.fieldType == 81) // Apple training maps/Showa spa
+		MapPacket::forceMapEquip(player);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) == 0)
 		MapPacket::showPlayer(player);
 }
