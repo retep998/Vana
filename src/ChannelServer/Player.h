@@ -136,11 +136,11 @@ public:
 
 	bool addWarning();
 	void changeChannel(int8_t channel);
-	void set200Date();
 	void saveStats();
 	void saveVariables();
 	void saveAll();
 	void setOnline(bool online);
+	void setLevelDate();
 	void acceptDeath();
 private:
 	void playerConnect(ReadPacket *packet);

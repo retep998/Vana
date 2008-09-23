@@ -133,6 +133,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 			player->setMMP(mmp);
 			player->setHP(mhp);
 			player->setMP(mmp);
+			player->setLevelDate();
 			if (player->getLevel() == 200 && !player->isGM()) {
 				string message;
 				message += "[Congrats] ";
@@ -141,7 +142,6 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 				message += player->getName();
 				message += " on such an amazing achievement!";
 				PlayersPacket::showMessageWorld(message, 6);
-				player->set200Date();
 			}
 		}
 	}

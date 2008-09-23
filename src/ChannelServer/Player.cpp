@@ -499,9 +499,9 @@ void Player::setOnline(bool online) {
 	query.exec();
 }
 
-void Player::set200Date() {
+void Player::setLevelDate() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE characters SET time_level_200 = NOW() WHERE characters.id = " << this->id;
+	query << "UPDATE characters SET time_level = NOW() WHERE characters.id = " << this->id;
 	query.exec();
 }
 
