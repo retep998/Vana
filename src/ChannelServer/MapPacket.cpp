@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapPacket.h"
+#include "Buffs.h"
 #include "Inventory.h"
 #include "MapleSession.h"
 #include "Maps.h"
@@ -43,14 +44,14 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addByte(0xf8);
 
 	SkillMapEnterActiveInfo enter = player->getActiveBuffs()->getSkillMapEnterInfo();
-	packet.addByte(enter.types[0]);
-	packet.addByte(enter.types[1]);
-	packet.addByte(enter.types[2]);
-	packet.addByte(enter.types[3]);
-	packet.addByte(enter.types[4]);
-	packet.addByte(enter.types[5]);
-	packet.addByte(enter.types[6]);
-	packet.addByte(enter.types[7]);
+	packet.addByte(enter.types[TYPE_1]);
+	packet.addByte(enter.types[TYPE_2]);
+	packet.addByte(enter.types[TYPE_3]);
+	packet.addByte(enter.types[TYPE_4]);
+	packet.addByte(enter.types[TYPE_5]);
+	packet.addByte(enter.types[TYPE_6]);
+	packet.addByte(enter.types[TYPE_7]);
+	packet.addByte(enter.types[TYPE_8]);
 	if (enter.isval) {
 		packet.addByte(enter.val);
 	}
