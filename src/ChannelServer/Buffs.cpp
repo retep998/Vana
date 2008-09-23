@@ -312,19 +312,13 @@ void Buffs::init() {
 	skillsinfo[2121002].player.push_back(player);
 	skillsinfo[2221002].player.push_back(player);
 	skillsinfo[2321002].player.push_back(player);
-	// 1111002 - Combo Attack - TODO: dc issues when other people enter a map with someone using combo attack, so disable map for now
+	// 1111002 - Combo Attack
 	player.type = 0x20;
 	player.byte = TYPE_3;
 	player.value = SKILL_X;
 	//player.hasmapval = true;
-	//player.val = false;
+	//player.mapval = false;
 	skillsinfo[1111002].player.push_back(player);
-	// 3101004 & 3201004 - Soul Arrow - TODO: Map value causes DCs. Looking into the proper way to update it
-	player.type = 0x1;
-	player.byte = TYPE_3;
-	player.value = SKILL_X;
-	skillsinfo[3101004].player.push_back(player);
-	skillsinfo[3201004].player.push_back(player);
 	// 4001003 - Dark Sight
 	player.type = 0x80;
 	player.byte = TYPE_1;
@@ -334,43 +328,54 @@ void Buffs::init() {
 	player.byte = TYPE_2;
 	player.value = SKILL_X;
 	player.hasmapval = true;
-	player.val = false;
+	player.mapval = false;
 	skillsinfo[4001003].player.push_back(player);
-	// Battleship - 5221006
-	player.type = 0x40;
-	player.byte = TYPE_8;
+	// 3101004 & 3201004 - Soul Arrow
+	player.type = 0x1;
+	player.byte = TYPE_3;
 	player.value = SKILL_X;
 	player.hasmapval = true;
-	player.val = false;
-	skillsinfo[5221006].player.push_back(player);
+	player.mapval = false;
+	skillsinfo[3101004].player.push_back(player);
+	skillsinfo[3201004].player.push_back(player);
 	// Super Saiyan thing[blue] - 5111005
 	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
 	player.hasmapval = true;
-	player.val = false;
+	player.mapval = false;
 	skillsinfo[5111005].player.push_back(player);
 	// Super Saiyan thing[orange] - 5121003
 	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
 	player.hasmapval = true;
-	player.val = false;
+	player.mapval = false;
 	skillsinfo[5121003].player.push_back(player);
-	// 1004 - Monster Rider
-	player.type = 0x40;
-	player.byte = TYPE_8;
-	player.value = SKILL_X;
-	player.hasmapval = true;
-	player.val = false;
-	skillsinfo[1004].player.push_back(player);
 	// 4111002 - Shadow Partner
 	player.type = 0x4;
 	player.byte = TYPE_4;
 	player.value = SKILL_X;
 	player.hasmapval = true;
-	player.val = false;
+	player.mapval = false;
 	skillsinfo[4111002].player.push_back(player);
+	// 1004 - Monster Rider
+	player.type = 0x40;
+	player.byte = TYPE_8;
+	player.value = SKILL_X;
+	player.hasmapval = true;
+	player.showmaponly = true;
+	player.mapval = false;
+	skillsinfo[1004].player.push_back(player);
+	// Battleship - 5221006
+	player.type = 0x40;
+	player.byte = TYPE_8;
+	player.value = SKILL_X;
+	player.hasmapval = true;
+	player.showmaponly = true;
+	player.mapval = false;
+	skillsinfo[5221006].player.push_back(player);
+
 }
 
 bool Buffs::isBuff(int32_t skillid) {
@@ -475,19 +480,21 @@ SkillActiveInfo Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t
 				break;
 		}
 		mapskill.vals.push_back(value);
-		SkillMapActiveInfo map;
-		map.byte = cur.byte;
-		map.type = cur.type;
-		if (cur.val) {
-			map.isvalue = true;
-			map.value = (int8_t)value;
+		if (!cur.showmaponly) {
+			SkillMapActiveInfo map;
+			map.byte = cur.byte;
+			map.type = cur.type;
+			if (cur.mapval) {
+				map.isvalue = true;
+				map.value = (int8_t)value;
+			}
+			else {
+				map.isvalue = false;
+				map.value = 0;
+			}
+			map.skill = skillid;
+			mapenterskill.push_back(map);
 		}
-		else {
-			map.isvalue = false;
-			map.value = 0;
-		}
-		map.skill = skillid;
-		mapenterskill.push_back(map);
 	}
 	return mapskill;
 }
@@ -524,8 +531,7 @@ void Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	SkillsPacket::useSkill(player, skillid, time * 1000, playerskill, mapskill, addedinfo, mountid);
 	playerbuffs->setBuffInfo(skillid, playerskill);
 	playerbuffs->setBuffMapInfo(skillid, mapskill);
-	if (mountid == 0)
-		playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
+	playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
 	playerbuffs->setActiveSkillLevel(skillid, level);
 	playerbuffs->removeBuff(skillid);
 	if (Buffs::skillsinfo[skillid].bact.size() > 0) {
