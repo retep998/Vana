@@ -128,7 +128,7 @@ PortalInfo * Map::getSpawnPoint(int32_t pid) {
 // Mobs
 void Map::addMobSpawn(MobSpawnInfo spawn) {
 	mobspawns.push_back(spawn);
-	spawnMob(spawn.id, spawn.pos, mobspawns.size()-1, spawn.fh);
+	spawnMob(spawn.id, spawn.pos, mobspawns.size() - 1, spawn.fh);
 }
 
 void Map::checkMobSpawn(clock_t time) {
@@ -204,29 +204,28 @@ void Map::removeMob(int32_t id, int32_t spawnid) {
 	}
 }
 
-void Map::killMobs(Player *player) {
+int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showpacket) {
 	unordered_map<int32_t, Mob *> mobs = this->mobs;
+	int32_t mobskilled = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
-		if (iter->second != 0)
-			iter->second->die(player);
+		if (iter->second != 0) {
+			if (mobid > 0 && iter->second->getMobID() == mobid) {
+				if (playerkill && player != 0)
+					iter->second->die(player);
+				else
+					iter->second->die(showpacket);
+				mobskilled++;
+			}
+			else if (mobid == 0) {
+				if (playerkill && player != 0)
+					iter->second->die(player);
+				else
+					iter->second->die(showpacket);
+				mobskilled++;
+			}
+		}
 	}
-}
-
-void Map::killMobs(Player *player, int32_t mobid) {
-	unordered_map<int32_t, Mob *> mobs = this->mobs;
-	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-		if (iter->second != 0)
-			if (iter->second->getMobID() == mobid)
-				iter->second->die(player);
-	}
-}
-
-void Map::killMobs() {
-	unordered_map<int32_t, Mob *> mobs = this->mobs;
-	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // Remove 'em, no EXP, no summoning
-		if (iter->second != 0)
-			iter->second->die();
-	}
+	return mobskilled;
 }
 
 // Drops

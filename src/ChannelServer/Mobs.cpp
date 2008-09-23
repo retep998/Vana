@@ -64,7 +64,7 @@ void Mob::die(Player *player) {
 	else if (player->getActiveBuffs()->getActiveSkillLevel(9101002) > 0)
 		hsrate = Skills::skills[9101002][player->getActiveBuffs()->getActiveSkillLevel(9101002)].x;
 
-	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp * hsrate)/100)) * ChannelServer::Instance()->getExprate());
+	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate());
 	Drops::doDrops(player, this->mobid, this->m_pos);
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
@@ -76,7 +76,9 @@ void Mob::die(Player *player) {
 	delete this;
 }
 
-void Mob::die() {
+void Mob::die(bool showpacket) {
+	if (showpacket)
+		MobsPacket::dieMob(this);
 	Maps::maps[mapid]->removeMob(id, spawnid);
 	delete this;
 }

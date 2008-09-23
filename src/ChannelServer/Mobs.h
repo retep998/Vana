@@ -105,7 +105,7 @@ public:
 	Player * getControl() const { return control; }
 
 	void die(Player *player);
-	void die(); // Removes mob, no EXP, no summoning
+	void die(bool showpacket = false); // Removes mob, no EXP, no summoning
 private:
 	int32_t id;
 	int32_t mapid;

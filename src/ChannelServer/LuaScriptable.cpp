@@ -380,20 +380,24 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 
 int LuaExports::getRandomNumber(lua_State *luaVm) {
 	int32_t number = lua_tointeger(luaVm, -1);
-	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number-1)+1);
+	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number - 1) + 1);
 	return 1;
 }
 
 int LuaExports::killMob(lua_State *luaVm) {
-	int32_t mobid = lua_tointeger(luaVm, -1);
+	int32_t mobid = lua_tointeger(luaVm, 1);
 	int32_t mapid = getPlayer(luaVm)->getMap();
-	Maps::maps[mapid]->killMobs(getPlayer(luaVm), mobid);
+	bool playerkill = true;
+	if (lua_isboolean(luaVm, 2))
+		playerkill = (lua_toboolean(luaVm, 2) == 1 ? true : false);
+	int32_t killed = Maps::maps[mapid]->killMobs(getPlayer(luaVm), mobid, playerkill, true);
+	lua_pushinteger(luaVm, killed);
 	return 1;
 }
 
 int LuaExports::killMobs(lua_State *luaVm) {
 	int32_t mapid = getPlayer(luaVm)->getMap();
-	Maps::maps[mapid]->killMobs();
+	Maps::maps[mapid]->killMobs(0, 0, false, false);
 	return 1;
 }
 
