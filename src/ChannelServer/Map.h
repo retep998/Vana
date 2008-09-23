@@ -148,9 +148,7 @@ public:
 	void checkMobSpawn(clock_t time);
 	void spawnMob(int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
 	void removeMob(int32_t id, int32_t spawnid);
-	void killMobs(Player *player);
-	void killMobs(Player *player, int32_t mobid);
-	void killMobs(); // No player gets EXP, no spawning additional mobs
+	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
 	Mob * getMob(int32_t id, bool isMapID = true);
 
 	// Reactors
