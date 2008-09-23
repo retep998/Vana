@@ -27,7 +27,7 @@ elseif state == 1 then
 			setReactorsState(220080000, 2208003, 0);
 			setReactorsState(220080001, 2201004, 0);
 			clearDrops();
-			killMobs();
+			clearMobs();
 		end
 		setMap(220080000);
 	end
