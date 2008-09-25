@@ -58,6 +58,7 @@ struct World {
 	uint8_t maxMultiLevel;
 	// Max stats
 	int16_t maxStats;
+	string eventMsg;
 };
 
 namespace Worlds {

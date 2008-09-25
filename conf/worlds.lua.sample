@@ -26,7 +26,8 @@ world0_max_multi_level = 1;
 -- Channels will run on port world port + channel number
 -- i.e. channel one will run on 7101 and channel 2 will run on 7102
 world0_port = 7100;
-
+-- Event message
+world0_event_msg = "";
 
 -- Uncomment for another world
 -- world1_name = "Bera";
@@ -40,3 +41,4 @@ world0_port = 7100;
 -- world1_maxstats = 999;
 -- world1_max_multi_level = 1;
 -- world1_port = 7200;
+-- world1_event_msg = "";
