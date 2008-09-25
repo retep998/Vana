@@ -106,7 +106,7 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 	packet.addByte(world->id);
 	packet.addString(world->name);
 	packet.addByte(world->ribbon);
-	packet.addShort(0);
+	packet.addString(world->eventMsg);
 	packet.addShort(100);
 	packet.addByte(100);
 	packet.addShort(0);

@@ -83,6 +83,9 @@ void LoginServer::loadConfig() {
 		formatter % i % "max_multi_level";
 		world->maxMultiLevel = (uint8_t) config.getInt(formatter.str());
 
+		formatter % i % "event_msg";
+		world->eventMsg = config.getString(formatter.str());
+
 		world->connected = false;
 		Worlds::worlds[world->id] = world;
 		i++;
