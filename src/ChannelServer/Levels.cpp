@@ -125,7 +125,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
 			else {
-				player->setMHP(player->getRHMP());
+				player->setMHP(player->getRMHP());
 				player->setMMP(player->getRMMP());
 			}
 			player->setHP(player->getMHP());
