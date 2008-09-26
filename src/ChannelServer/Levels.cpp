@@ -116,23 +116,20 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 			player->setSp(player->getSp() + spgain);
 			// Let hyperbody remain on if on during a level up, as it should
 			int32_t skillid = 0;
-			int16_t x = 100;
-			int16_t y = 100;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)
 				skillid = 1301007;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(9101008) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
 				skillid = 9101008;
 			if (skillid > 0) {
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
-				x += Skills::skills[skillid][hblevel].x;
-				y += Skills::skills[skillid][hblevel].y;
+				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
-			int16_t mhp = player->getRMHP() * x / 100; 
-			int16_t mmp = player->getRMMP() * y / 100;
-			player->setMHP(mhp);
-			player->setMMP(mmp);
-			player->setHP(mhp);
-			player->setMP(mmp);
+			else {
+				player->setMHP(player->getRHMP());
+				player->setMMP(player->getRMMP());
+			}
+			player->setHP(player->getMHP());
+			player->setMP(player->getMMP());
 			player->setLevelDate();
 			if (player->getLevel() == 200 && !player->isGM()) {
 				string message;
