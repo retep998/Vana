@@ -67,6 +67,7 @@ void MapleSession::handle_stop() {
 }
 
 void MapleSession::send(unsigned char *buf, int32_t len, bool encrypt) {
+	boost::mutex::scoped_lock l(m_send_mutex);
 	unsigned char bufs[bufferLen];
 	size_t realLength;
 	if (encrypt) {

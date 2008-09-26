@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/thread/mutex.hpp>
 
 using std::string;
 using boost::asio::ip::tcp;
@@ -72,6 +73,7 @@ protected:
 	unsigned char m_buffer[bufferLen];
 	bool m_is_server;
 	string m_connect_packet_unknown;
+	boost::mutex m_send_mutex;
 };
 
 typedef boost::shared_ptr<MapleSession> MapleSessionPtr;
