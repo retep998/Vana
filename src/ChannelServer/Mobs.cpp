@@ -158,10 +158,9 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
 			int16_t x_value = Skills::skills[skillid][roarlv].x;
 			int16_t y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
-			int16_t hp = player->getHP();
-			int16_t reduction = (player->getMHP() / 100) * x_value;
-			if (hp - reduction > 0)
-				player->setHP(hp - reduction, false);
+			uint16_t reduction = (player->getMHP() / 100) * x_value;
+			if ((player->getHP() - reduction) > 0)
+				player->damageHP(reduction);
 			else {
 				// Hacking
 				return;
@@ -170,13 +169,12 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 1311005: { // Sacrifice
-			int16_t hp_damage_x = static_cast<int16_t>(Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x);
-			uint16_t hp_damage = static_cast<uint16_t>(totaldmg * hp_damage_x / 100);
-			uint16_t hp = player->getHP();
-			if (hp - hp_damage < 1)
+			int16_t hp_damage_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+			uint16_t hp_damage = (uint16_t) totaldmg * hp_damage_x / 100;
+			if ((player->getHP() - hp_damage) < 1)
 				player->setHP(1);
 			else
-				player->setHP(hp - hp_damage);
+				player->damageHP(hp_damage);
 			break;
 		}
 		case 1211002: { // Charged Blow
@@ -261,15 +259,16 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	int32_t mhp;
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, mhp);
 	if (skillid == 4101005) { // Drain
-		int32_t hpRecover = ((totaldmg * Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x) / 100);
+		int16_t drain_x = Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x;
+		int32_t hpRecover = totaldmg * drain_x / 100;
 		if (hpRecover > mhp)
 			hpRecover = mhp;
 		if (hpRecover > (player->getMHP() / 2))
 			hpRecover = player->getMHP() / 2;
-		if ((player->getHP() + hpRecover) > player->getMHP())
+		if (hpRecover > player->getMHP())
 			player->setHP(player->getMHP());
 		else
-			player->setHP(player->getHP() + (int16_t) hpRecover);
+			player->modifyHP((int16_t) hpRecover);
 	}
 }
 
@@ -363,7 +362,7 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 					if (mp > cmp)
 						mp = cmp;
 					mob->setMP(cmp - mp);
-					player->setMP(player->getMP() + (int16_t) mp);
+					player->modifyMP((int16_t) mp);
 					SkillsPacket::showSkillEffect(player, eater->id);
 				}
 			}

@@ -62,12 +62,17 @@ public:
 	void setDex(int16_t dex);
 	void setInt(int16_t intt);
 	void setLuk(int16_t luk);
-	void setHP(int16_t hp, bool is = true);
-	void setMP(int16_t mp, bool is = false);
+	void modifyHP(int16_t hp, bool is = true); // Bases its calculations on current HP/MP
+	void modifyMP(int16_t mp, bool is = false);
+	void damageHP(uint16_t dhp); // Calculations done based on the fact that damage can range from 0 to ~55k
+	void damageMP(uint16_t dmp);
+	void setHP(int16_t hp, bool is = true); // Only use setHP/MP if you're going to do checking, they fall easily to datatype issues
+	void setMP(int16_t mp, bool is = false); // For example, Power Elixir at 30k HP = 30k + 30k = 60k, but wait! That's > 32767, so it's negative
 	void setMHP(int16_t mhp);
 	void setRMHP(int16_t rmhp);
 	void setMMP(int16_t mmp);
 	void setRMMP(int16_t rmmp);
+	void setHyperBody(int16_t modx, int16_t mody);
 	void setHPMPAp(uint16_t ap) { hpmp_ap = ap; }
 	void setEyes(int32_t id);
 	void setHair(int32_t id);

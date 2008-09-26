@@ -139,55 +139,55 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 	if (damage > 0 && !player->hasGMEquip()) {
 		if (player->getActiveBuffs()->getActiveSkillLevel(4211005) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
 			int16_t mesorate = Skills::skills[4211005][player->getActiveBuffs()->getActiveSkillLevel(4211005)].x; // Meso Guard meso %
-			uint16_t hp = player->getHP();
-			int32_t mesoloss = (int32_t)(mesorate * (damage / 2) / 100);
+			int16_t hp = player->getHP();
+			int16_t mesoloss = (int16_t)(mesorate * damage / 2 / 100);
 			int32_t mesos = player->getInventory()->getMesos();
 			int32_t newmesos = mesos - mesoloss;
 			if (newmesos < 0) { // Special damage calculation for not having enough mesos
 				double mesos2 = mesos + 0.0; // You can't get a double from math involving 2 ints, even if a decimal results
 				double reduction = 2.0 - ((mesos2 / mesoloss) / 2);
-				damage = (int16_t)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
+				damage = (uint16_t)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
 			}
 			else
 				damage /= 2; // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
 			player->getInventory()->setMesos(newmesos);
 			SkillsPacket::showSkillEffect(player, 4211005);
-			player->setHP(player->getHP() - (int16_t) damage);
+			player->damageHP((uint16_t) damage);
 			if (attack.deadlyattack && player->getMP() > 0)
 				player->setMP(1);
 			if (attack.mpburn > 0)
-				player->setMP(player->getMP() - attack.mpburn);
+				player->damageMP(attack.mpburn);
 			applieddamage = true;
 		}
 		if (player->getActiveBuffs()->getActiveSkillLevel(2001002) > 0) { // Magic Guard
-			uint16_t mp = player->getMP();
-			uint16_t hp = player->getHP();
+			int16_t mp = player->getMP();
+			int16_t hp = player->getHP();
 			if (attack.deadlyattack) {
 				if (mp > 0)
 					player->setMP(1);
 				player->setHP(1);
 			}
 			else if (attack.mpburn > 0) {
-				player->setMP(mp - attack.mpburn);
-				player->setHP(hp - (int16_t) damage);
+				player->damageMP(attack.mpburn);
+				player->damageHP((uint16_t) damage);
 			}
 			else {
 				int16_t reduc = Skills::skills[2001002][player->getActiveBuffs()->getActiveSkillLevel(2001002)].x;
-				int16_t mpdamage = (int16_t)((damage * reduc) / 100);
-				int16_t hpdamage = (int16_t)(damage - mpdamage);
+				uint16_t mpdamage = (uint16_t)((damage * reduc) / 100);
+				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
 				bool ison = false;
 				if (job % 10 == 2) {
-						int32_t infinity = player->getJob() * 10000 + 1004;
-						if (player->getActiveBuffs()->getActiveSkillLevel(infinity) > 0)
-							ison = true;
+					int32_t infinity = player->getJob() * 10000 + 1004;
+					if (player->getActiveBuffs()->getActiveSkillLevel(infinity) > 0)
+						ison = true;
 				}
 				if (mpdamage < mp || ison) {
-					player->setMP(mp - mpdamage);
-					player->setHP(hp - hpdamage);
+					player->damageMP(mpdamage);
+					player->damageHP(hpdamage);
 				}
 				else if (mpdamage >= mp) {
 					player->setMP(0);
-					player->setHP(hp - (hpdamage + (mpdamage - mp)));
+					player->damageHP(hpdamage + (mpdamage - mp));
 				}
 			}
 			applieddamage = true;
@@ -204,11 +204,11 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 			if (slv > 0)
 				achx = Skills::skills[sid][slv].x;
 			double red = (2.0 - achx / 1000.0);
-			player->setHP(player->getHP() - (int16_t) (damage / red));
+			player->damageHP((uint16_t) (damage / red));
 			if (attack.deadlyattack && player->getMP() > 0)
 				player->setMP(1);
 			if (attack.mpburn > 0)
-				player->setMP(player->getMP() - attack.mpburn);
+				player->damageMP(attack.mpburn);
 			applieddamage = true;
 		}
 		if (applieddamage == false) {
@@ -218,9 +218,9 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket *packet) {
 				player->setHP(1);
 			}
 			else
-				player->setHP(player->getHP() - (int16_t) damage);
+				player->damageHP((uint16_t) damage);
 			if (attack.mpburn > 0)
-				player->setMP(player->getMP() - attack.mpburn);
+				player->damageMP(attack.mpburn);
 		}
 	}
 	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, stance, nodamageid, pgmr);
@@ -241,8 +241,8 @@ void PlayerHandler::handleHeal(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	int16_t hp = packet->getShort();
 	int16_t mp = packet->getShort();
-	player->setHP(player->getHP() + hp);
-	player->setMP(player->getMP() + mp);
+	player->modifyHP(hp);
+	player->modifyMP(mp);
 }
 
 void PlayerHandler::handleMoving(Player *player, ReadPacket *packet) {
@@ -278,7 +278,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			int16_t minimum = (luk / 2) * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
 			int16_t maximum = luk * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
 			int16_t range = maximum - minimum;
-			player->setHP(player->getHP() + (Randomizer::Instance()->randShort(range) + minimum));
+			player->modifyHP(Randomizer::Instance()->randShort(range) + minimum);
 			break;
 		}
 	}

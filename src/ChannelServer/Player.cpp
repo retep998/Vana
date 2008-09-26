@@ -235,28 +235,65 @@ void Player::playerConnect(ReadPacket *packet) {
 	WorldServerConnectPlayerPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name, map, job, level);
 }
 
-void Player::setHP(int16_t hp, bool is) {
-	if (hp < 0)
-		this->hp = 0;
-	else if (hp > mhp)
-		this->hp = mhp;
+void Player::setHP(int16_t shp, bool is) {
+	if (shp < 0)
+		hp = 0;
+	else if (shp > mhp)
+		hp = mhp;
 	else
-		this->hp = hp;
+		hp = shp;
 	if (is)
-		PlayerPacket::updateStatShort(this, 0x400, this->hp);
+		PlayerPacket::updateStatShort(this, 0x400, hp);
 	getActiveBuffs()->checkBerserk();
 }
 
-void Player::setMP(int16_t mp, bool is) {
+void Player::modifyHP(int16_t nhp, bool is) {
+	if ((hp + nhp) < 0)
+		hp = 0;
+	else if ((hp + nhp) > mhp)
+		hp = mhp;
+	else
+		hp = (hp + nhp);
+	if (is)
+		PlayerPacket::updateStatShort(this, 0x400, hp);
+	getActiveBuffs()->checkBerserk();
+}
+
+void Player::damageHP(uint16_t dhp) {
+	hp = (dhp > hp ? 0 : hp - dhp);
+	PlayerPacket::updateStatShort(this, 0x400, hp);
+	getActiveBuffs()->checkBerserk();
+}
+
+void Player::setMP(int16_t smp, bool is) {
 	if (!(getActiveBuffs()->getActiveSkillLevel(2121004) > 0 || getActiveBuffs()->getActiveSkillLevel(2221004) > 0 || getActiveBuffs()->getActiveSkillLevel(2321004) > 0)) {
-		if (mp < 0)
-			this->mp = 0;
-		else if (mp > mmp)
-			this->mp = mmp;
+		if (smp < 0)
+			mp = 0;
+		else if (smp > mmp)
+			mp = mmp;
 		else
-			this->mp = mp;
+			mp = smp;
 	}
-	PlayerPacket::updateStatShort(this, 0x1000, this->mp, is);
+	PlayerPacket::updateStatShort(this, 0x1000, mp, is);
+}
+
+void Player::modifyMP(int16_t nmp, bool is) {
+	if (!(getActiveBuffs()->getActiveSkillLevel(2121004) > 0 || getActiveBuffs()->getActiveSkillLevel(2221004) > 0 || getActiveBuffs()->getActiveSkillLevel(2321004) > 0)) {
+		if ((mp + nmp) < 0)
+			mp = 0;
+		else if ((mp + nmp) > mmp)
+			mp = mmp;
+		else
+			mp = (mp + nmp);
+	}
+	PlayerPacket::updateStatShort(this, 0x1000, mp, is);
+}
+
+void Player::damageMP(uint16_t dmp) {
+	if (!(getActiveBuffs()->getActiveSkillLevel(2121004) > 0 ||	getActiveBuffs()->getActiveSkillLevel(2221004) > 0 || getActiveBuffs()->getActiveSkillLevel(2321004) > 0)) {
+		mp = (dmp > mp ? 0 : mp - dmp);
+	}
+	PlayerPacket::updateStatShort(this, 0x1000, mp, false);
 }
 
 void Player::setSp(int16_t sp) {
@@ -297,26 +334,40 @@ void Player::setLuk(int16_t luk) {
 }
 
 void Player::setMHP(int16_t mhp) {
-	if (mhp > 30000) { mhp = 30000; }
+	if (mhp > 30000)
+		mhp = 30000;
 	this->mhp = mhp;
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 	getActiveBuffs()->checkBerserk();
 }
 
-void Player::setRMHP(int16_t rmhp) {
-	if (rmhp > 30000) { rmhp = 30000; }
-	this->rmhp = rmhp;
-	PlayerPacket::updateStatShort(this, 0x800, rmhp);
-}
-
 void Player::setMMP(int16_t mmp) {
-	if (mmp > 30000) { mmp = 30000; }
+	if (mmp > 30000)
+		mmp = 30000;
 	this->mmp = mmp;
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
 
+void Player::setHyperBody(int16_t modx, int16_t mody) {
+	modx += 100;
+	mody += 100;
+	mhp = ((rmhp * modx / 100) > 30000 ? 30000 : rmhp * modx / 100);
+	mmp = ((rmmp * mody / 100) > 30000 ? 30000 : rmmp * mody / 100);
+	PlayerPacket::updateStatShort(this, 0x800, rmhp);
+	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
+	getActiveBuffs()->checkBerserk();
+}
+
+void Player::setRMHP(int16_t rmhp) {
+	if (rmhp > 30000)
+		rmhp = 30000;
+	this->rmhp = rmhp;
+	PlayerPacket::updateStatShort(this, 0x800, rmhp);
+}
+
 void Player::setRMMP(int16_t rmmp) {
-	if (rmmp > 30000) { rmmp = 30000; }
+	if (rmmp > 30000)
+		rmmp = 30000;
 	this->rmmp = rmmp;
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
@@ -415,7 +466,7 @@ bool Player::addWarning() {
 	// Deleting old warnings
 	for (size_t i = 0; i < warnings.size(); i++) {
 		if (warnings[i] + 300000 < t) {
-			warnings.erase(warnings.begin()+i);
+			warnings.erase(warnings.begin() + i);
 			i--;
 		}
 	}

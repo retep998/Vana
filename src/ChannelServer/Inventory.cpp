@@ -384,35 +384,18 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 	ItemInfo *item = &items[itemid];
 	// Alchemist
 	int16_t alchemist = 0;
-	if (player->getSkills()->getSkillLevel(4110000) > 0) {
+	if (player->getSkills()->getSkillLevel(4110000) > 0)
 		alchemist = Skills::skills[4110000][player->getSkills()->getSkillLevel(4110000)].x;
-	}
-	if (item->cons.hp > 0) {
-		int16_t newhp = player->getHP() + item->cons.hp + ((item->cons.hp * alchemist) / 100);
-		if (newhp < 0)
-			newhp = player->getMHP();
-		player->setHP(newhp);
-	}
-	if (item->cons.mp > 0) {
-		int16_t newmp = player->getMP() + item->cons.mp + ((item->cons.mp * alchemist) / 100);
-		if (newmp < 0)
-			newmp = player->getMMP();
-		player->setMP(newmp);
-	}
+	if (item->cons.hp > 0)
+		player->modifyHP(item->cons.hp + ((item->cons.hp * alchemist) / 100));
+	if (item->cons.mp > 0)
+		player->modifyMP(item->cons.mp + ((item->cons.mp * alchemist) / 100));
 	else
 		player->setMP(player->getMP(), true);
-	if (item->cons.hpr > 0) {
-		int16_t newhp = player->getHP() + item->cons.hpr * player->getMHP() / 100;
-		if (newhp < 0)
-			newhp = player->getMHP();
-		player->setHP(newhp);
-	}
-	if (item->cons.mpr > 0) {
-		int16_t newmp = player->getMP() + item->cons.mpr * player->getMMP() / 100;
-		if (newmp < 0)
-			newmp = player->getMMP();
-		player->setMP(newmp);
-	}
+	if (item->cons.hpr > 0)
+		player->modifyHP(item->cons.hpr * player->getMHP() / 100);
+	if (item->cons.mpr > 0)
+		player->modifyHP(item->cons.mpr * player->getMMP() / 100);
 	// Item buffs
 	if (item->cons.time > 0) {
 		int32_t time = item->cons.time;
@@ -428,7 +411,7 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 }
 // Cancel item buffs
 void Inventory::cancelItem(Player *player, ReadPacket *packet) {
-	int32_t itemid = packet->getInt()*-1;
+	int32_t itemid = packet->getInt() * -1;
 	player->getTimers()->removeTimer(Timer::Id(Timer::Types::ItemTimer, itemid, 0));
 	Inventory::endItem(player, itemid);
 }
