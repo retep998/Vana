@@ -57,7 +57,7 @@ void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 				}
 			}
 			else if (Quests::quests[questid].rewards[i].ismesos) {
-				player->getInventory()->setMesos(player->getInventory()->getMesos() + Quests::quests[questid].rewards[i].id);
+				player->getInventory()->modifyMesos(Quests::quests[questid].rewards[i].id);
 				QuestsPacket::giveMesos(player, Quests::quests[questid].rewards[i].id);
 			}
 		}
@@ -149,7 +149,7 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 				}
 			}
 			else if (Quests::quests[questid].rewards[i].ismesos) {
-				player->getInventory()->setMesos(player->getInventory()->getMesos()+Quests::quests[questid].rewards[i].id);
+				player->getInventory()->modifyMesos(Quests::quests[questid].rewards[i].id);
 				QuestsPacket::giveMesos(player, Quests::quests[questid].rewards[i].id);
 			}
 		}

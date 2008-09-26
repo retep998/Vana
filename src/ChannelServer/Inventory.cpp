@@ -210,7 +210,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 			return;
 		}
 		addNewItem(player, itemid, howmany);
-		player->getInventory()->setMesos(player->getInventory()->getMesos() - price * howmany);
+		player->getInventory()->modifyMesos(-1 * (price * howmany));
 		InventoryPacket::bought(player);
 	}
 	else if (type == 1) { // Sell
@@ -228,7 +228,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 			price = equips[itemid].price;
 		else
 			price = items[itemid].price;
-		player->getInventory()->setMesos(player->getInventory()->getMesos() + price * amount);
+		player->getInventory()->modifyMesos(price * amount);
 		takeItemSlot(player, inv, slot, amount, true);
 		InventoryPacket::bought(player);
 	}
@@ -239,7 +239,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 			item->amount = items[item->id].maxslot + player->getSkills()->getSkillLevel(4100000)*10;
 		else
 			item->amount = items[item->id].maxslot + player->getSkills()->getSkillLevel(5200000)*10;
-		player->getInventory()->setMesos(player->getInventory()->getMesos() - 1); // TODO: Calculate price, letting players recharge for 1 meso for now
+		player->getInventory()->modifyMesos(-1); // TODO: Calculate price, letting players recharge for 1 meso for now
 		InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
 		InventoryPacket::bought(player);
 	}
@@ -278,14 +278,14 @@ void Inventory::useStorage(Player *player, ReadPacket *packet) {
 		else // For items we just create a new item based on the ID and amount.
 			player->getStorage()->addItem(new Item(itemid, amount));
 		takeItemSlot(player, inv, slot, amount, true);
-		player->getInventory()->setMesos(player->getInventory()->getMesos() - 100); // Take 100 mesos for storage cost
+		player->getInventory()->modifyMesos(-100); // Take 100 mesos for storage cost
 		StoragePacket::addItem(player, inv);
 	}
 
 	else if (type == 0x07) { // Take out/store mesos
 		int32_t mesos = packet->getInt(); // Amount of mesos to remove. Deposits are negative, and withdrawls are positive.
 		player->getStorage()->changeMesos(mesos);
-		player->getInventory()->setMesos(player->getInventory()->getMesos() + mesos);
+		player->getInventory()->modifyMesos(mesos);
 	}
 	// 0x08 is Close storage. For now we have no reason to handle this.
 }

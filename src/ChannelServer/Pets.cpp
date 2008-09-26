@@ -172,7 +172,7 @@ void Pets::lootItem(Player *player, ReadPacket *packet) {
 		}
 	}
 	if (drop->isMesos()) {
-		player->getInventory()->setMesos(player->getInventory()->getMesos() + drop->getObjectID(), true);
+		player->getInventory()->modifyMesos(drop->getObjectID(), true);
 		DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
 	}
 	else {

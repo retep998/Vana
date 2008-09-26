@@ -200,14 +200,14 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				mesos = recv->mesos;
 				mesos += amount;
 				recv->mesos = mesos;
-				two->getInventory()->setMesos(two->getInventory()->getMesos() - amount);
+				two->getInventory()->modifyMesos(-amount);
 				TradesPacket::sendAddMesos(one, 0x01, mesos);
 				TradesPacket::sendAddMesos(two, 0x00, mesos);
 			}
 			else {
 				mesos += amount;
 				send->mesos = mesos;
-				one->getInventory()->setMesos(one->getInventory()->getMesos() - amount);
+				one->getInventory()->modifyMesos(-amount);
 				TradesPacket::sendAddMesos(one, 0x00, mesos);
 				TradesPacket::sendAddMesos(two, 0x01, mesos);
 			}
@@ -242,12 +242,12 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				int32_t sendermesos = one->getInventory()->getMesos();
 				int32_t receivermesos = two->getInventory()->getMesos();
 				bool fail = false;
-				uint32_t comparison = send->mesos + receivermesos;
-				if (comparison > 2147483647) {// Determine if receiver can receive all the mesos
+				int32_t comparison = send->mesos + receivermesos;
+				if (comparison < 0) {// Determine if receiver can receive all the mesos
 					fail = true;
 				}
 				comparison = recv->mesos + sendermesos; 
-				if (comparison > 2147483647 && !fail) { // Determine if sender can receive all the mesos
+				if (comparison < 0 && !fail) { // Determine if sender can receive all the mesos
 					fail = true;
 				}
 				if (send->count > 0 && !fail) { // Determine if receiver can receive all the items
@@ -467,7 +467,7 @@ void Trades::returnItems(Player *player, TradeInfo *info) {
 
 void Trades::returnMesos(Player *player, TradeInfo *info) {
 	if (info->mesos > 0)
-		player->getInventory()->setMesos(player->getInventory()->getMesos() + info->mesos);
+		player->getInventory()->modifyMesos(info->mesos);
 }
 
 void Trades::timeout(Player *starter, Player *receiver, int32_t tradeid) {

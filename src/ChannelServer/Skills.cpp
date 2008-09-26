@@ -179,7 +179,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 		int16_t amount = Randomizer::Instance()->randShort(difference) + mesos_min;
 		int32_t mesos = player->getInventory()->getMesos();
 		if (mesos - amount > -1) 
-			player->getInventory()->setMesos(mesos - amount);
+			player->getInventory()->modifyMesos(-amount);
 		else {
 			// Hacking
 			return;
