@@ -169,7 +169,7 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 		// hacking
 		return;
 	}
-	player->getInventory()->setMesos(player->getInventory()->getMesos() - amount, true);
+	player->getInventory()->modifyMesos(-amount, true);
 	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), player->getId(), true);
 	drop->setTime(0);
 	drop->doDrop(player->getPos());
@@ -201,7 +201,7 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		}
 	}
 	if (drop->isMesos()) {
-		player->getInventory()->setMesos(player->getInventory()->getMesos() + drop->getObjectID(), true);
+		player->getInventory()->modifyMesos(drop->getObjectID(), true);
 		DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
 	}
 	else {
