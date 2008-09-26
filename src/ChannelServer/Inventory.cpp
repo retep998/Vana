@@ -284,8 +284,9 @@ void Inventory::useStorage(Player *player, ReadPacket *packet) {
 
 	else if (type == 0x07) { // Take out/store mesos
 		int32_t mesos = packet->getInt(); // Amount of mesos to remove. Deposits are negative, and withdrawls are positive.
-		player->getStorage()->changeMesos(mesos);
-		player->getInventory()->modifyMesos(mesos);
+		bool success = player->getInventory()->modifyMesos(mesos);
+		if (success)
+			player->getStorage()->changeMesos(mesos);
 	}
 	// 0x08 is Close storage. For now we have no reason to handle this.
 }

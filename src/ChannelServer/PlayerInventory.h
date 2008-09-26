@@ -85,7 +85,7 @@ public:
 	PlayerInventory(Player *player, uint8_t maxslots[5], int32_t mesos);
 
 	void setMesos(int32_t mesos, bool is = false);
-	void modifyMesos(int32_t mod, bool is = false);
+	bool modifyMesos(int32_t mod, bool is = false);
 	void addMaxSlots(int8_t inventory, int8_t rows);
 	void addItem(int8_t inv, int16_t slot, Item *item);
 	void deleteItem(int8_t inv, int16_t slot);
