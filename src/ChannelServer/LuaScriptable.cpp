@@ -171,7 +171,7 @@ int LuaExports::giveItem(lua_State *luaVm) {
 	int8_t amount = lua_tointeger(luaVm, -1);
 	bool success = Quests::giveItem(getPlayer(luaVm), itemid, amount);
 
-	lua_pushnumber(luaVm, success);
+	lua_pushboolean(luaVm, success);
 
 	return 1;
 }
@@ -180,7 +180,7 @@ int LuaExports::giveMesos(lua_State *luaVm) {
 	int32_t mesos = lua_tointeger(luaVm, -1);
 	bool success = Quests::giveMesos(getPlayer(luaVm), mesos);
 
-	lua_pushnumber(luaVm, success);
+	lua_pushboolean(luaVm, success);
 
 	return 1;
 }
