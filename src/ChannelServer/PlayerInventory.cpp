@@ -89,7 +89,7 @@ void PlayerInventory::setMesos(int32_t mesos, bool is) {
 	PlayerPacket::updateStatInt(player, 0x40000, mesos, is);
 }
 
-void PlayerInventory::modifyMesos(int32_t mod, bool is) {
+bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
 	bool negative = false;
 	if (mod < 0)
 		negative = true;
@@ -98,10 +98,11 @@ void PlayerInventory::modifyMesos(int32_t mod, bool is) {
 	else {
 		int32_t mesotest = mesos + mod;
 		if (!negative && mesotest < 0) // Refuse to modify mesos when it would put you over the cap
-			return;
+			return false;
 		mesos = mesotest;
 	}
 	PlayerPacket::updateStatInt(player, 0x40000, mesos, is);
+	return true;
 }
 
 void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item) {

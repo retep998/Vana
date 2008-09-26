@@ -179,6 +179,7 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 	packet->skipBytes(9);
 	int32_t itemid = packet->getInt();
 	Drop* drop = Maps::maps[player->getMap()]->getDrop(itemid);
+	bool success = true;
 	if (drop == 0) {
 		DropsPacket::dontTake(player);
 		return;
@@ -201,8 +202,9 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		}
 	}
 	if (drop->isMesos()) {
-		player->getInventory()->modifyMesos(drop->getObjectID(), true);
-		DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
+		success = player->getInventory()->modifyMesos(drop->getObjectID(), true);
+		if (success)
+			DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
 	}
 	else {
 		Item *item = new Item(drop->getItem());
@@ -220,5 +222,6 @@ void Drops::lootItem(Player *player, ReadPacket *packet) {
 		DropsPacket::takeNote(player, drop->getObjectID(), false, drop->getAmount());
 	}
 	Reactors::checkLoot(drop);
-	drop->takeDrop(player);
+	if (success)
+		drop->takeDrop(player);
 }

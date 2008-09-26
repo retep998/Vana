@@ -172,8 +172,9 @@ void Pets::lootItem(Player *player, ReadPacket *packet) {
 		}
 	}
 	if (drop->isMesos()) {
-		player->getInventory()->modifyMesos(drop->getObjectID(), true);
-		DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
+		bool success = player->getInventory()->modifyMesos(drop->getObjectID(), true);
+		if (success)
+			DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
 	}
 	else {
 		Item *item = new Item(drop->getItem());
