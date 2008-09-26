@@ -519,8 +519,7 @@ void Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case 1301007: // Hyper Body
 		case 9101008: // GM Hyper Body
 			// TODO: Party
-			player->setMHP(player->getRMHP() * (100 + Skills::skills[skillid][level].x) / 100);
-			player->setMMP(player->getRMMP() * (100 + Skills::skills[skillid][level].y) / 100);
+			player->setHyperBody(Skills::skills[skillid][level].x, Skills::skills[skillid][level].y);
 			break;
 		case 1121010: // Enrage
 			if (playerbuffs->getCombo() != 10)
@@ -549,8 +548,7 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 	switch (skill) {
 		case 1301007: // Hyper Body
 		case 9101008: // GM Hyper Body
-			player->setMHP(player->getRMHP());
-			player->setMMP(player->getRMMP());
+			player->setHyperBody(0, 0);
 			player->setHP(player->getHP());
 			player->setMP(player->getMP());
 			break;

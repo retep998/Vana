@@ -100,7 +100,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			uint16_t healrate = skills[skillid][level].hpP / 1;
 			if (healrate > 100)
 				healrate = 100;
-			player->setHP(player->getHP() + healrate * player->getMHP() / 100);
+			player->modifyHP(healrate * player->getMHP() / 100);
 			break;
 		}
 		case 9101000: // GM Heal + Dispel - needs to be modified for map?
@@ -149,25 +149,25 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 		if (player->getActiveBuffs()->getActiveSkillLevel(3121008) > 0) { // Reduced MP usage for Concentration
 			uint16_t mprate = Skills::skills[3121008][player->getActiveBuffs()->getActiveSkillLevel(3121008)].x;
 			int16_t mploss = (mpuse * mprate) / 100;
-			player->setMP(player->getMP() - mploss, true);
+			player->modifyMP(-mploss, true);
 		}
 		else {
 			if (elementalamp) {
 				int32_t sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
 				int8_t slv = player->getSkills()->getSkillLevel(sid);
 				if (slv > 0)
-					player->setMP(player->getMP() - (mpuse * skills[sid][slv].x / 100), true);
+					player->modifyMP(-1 * (mpuse * skills[sid][slv].x / 100), true);
 				else
-					player->setMP(player->getMP() - mpuse, true);
+					player->modifyMP(-mpuse, true);
 			}
 			else
-				player->setMP(player->getMP() - mpuse, true);
+				player->modifyMP(-mpuse, true);
 		}
 	}
 	else
 		player->setMP(player->getMP(), true);
 	if (hpuse > 0)
-		player->setHP(player->getHP() - hpuse);
+		player->modifyHP(-hpuse);
 	if (item > 0)
 		Inventory::takeItem(player, item, skills[skillid][level].itemcount);
 	if (cooltime > 0)
@@ -215,14 +215,14 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, 
 
 void Skills::heal(Player *player, int16_t value, int32_t skillid) {
 	if (player->getHP() < player->getMHP() && player->getHP() > 0) {
-		player->setHP(player->getHP() + value);
+		player->modifyHP(value);
 		SkillsPacket::healHP(player, value); 
 	}
 }
 
 void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
 	if (player->getHP() - value > 1) {
-		player->setHP(player->getHP() - value);
+		player->modifyHP(-value);
 		SkillsPacket::showSkillEffect(player, skillid);
 	}
 	else {

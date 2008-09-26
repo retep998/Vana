@@ -119,8 +119,8 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 		int32_t skillid = 1320006;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
-			int16_t x = Skills::skills[skillid][level].x;
-			int16_t ratio = (m_player->getHP() * 100) / m_player->getMHP();
+			int32_t x = Skills::skills[skillid][level].x * 1000; // Increase accuracy of comparison - 45% becomes 45000
+			int32_t ratio = (int32_t) m_player->getHP() * 100000 / m_player->getMHP(); // Multiply the percentage by 100000 for comparison
 			bool change = false;
 			if (m_berserk && ratio > x) { // If on and we're above Berserk HP, Berserk fails
 				m_berserk = false;

@@ -224,15 +224,10 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 				skilly += Skills::skills[skillid][hblevel].y;
 			}
 			switch (type) {
-				case 0x800:
-					player->setRMHP(player->getRMHP() + hpgain);
-					player->setMHP(player->getRMHP() * skillx / 100);
-					break;
-				case 0x2000:
-					player->setRMMP(player->getRMMP() + mpgain);
-					player->setMMP(player->getRMMP() * skilly / 100);
-					break;
+				case 0x800: player->setRMHP(player->getRMHP() + hpgain); break;
+				case 0x2000: player->setRMMP(player->getRMMP() + mpgain); break;
 			}
+			player->setHyperBody(skillx, skilly);
 			break;
 		}
 		default:
