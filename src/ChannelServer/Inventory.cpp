@@ -396,7 +396,7 @@ void Inventory::useItem(Player *player, ReadPacket *packet) {
 	if (item->cons.hpr > 0)
 		player->modifyHP(item->cons.hpr * player->getMHP() / 100);
 	if (item->cons.mpr > 0)
-		player->modifyHP(item->cons.mpr * player->getMMP() / 100);
+		player->modifyMP(item->cons.mpr * player->getMMP() / 100);
 	// Item buffs
 	if (item->cons.time > 0) {
 		int32_t time = item->cons.time;
