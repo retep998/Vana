@@ -370,7 +370,7 @@ void Trades::cancelTrade(Player *player) {
 			Trades::returnItems(one, send);
 			Trades::returnItems(two, recv);
 			Trades::returnMesos(one, send);
-			Trades::returnMesos(one, recv);
+			Trades::returnMesos(two, recv);
 		}
 		Trades::removeTrade(playerid);
 		one->setTrading(0);
