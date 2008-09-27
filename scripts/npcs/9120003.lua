@@ -30,6 +30,7 @@ elseif state == 1 then
 		else
 			setMap(801000200);
 		end
+		giveMesos(-300);
 	end
 	endNPC();
 end
