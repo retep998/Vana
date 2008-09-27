@@ -21,17 +21,26 @@ if state == 0 then
 	sendYesNo();
 elseif state == 1 then
 	if getSelected() == 1 then
-		addText("Bored of this place? Here... Give me 150 mesos first...");
-		sendNext();
+		if getItemAmount(4031801) > 0 then
+			addText("Okay, now give me 150 mesos... Hey, what's that? Is that the recommendation letter from Lucas, the chief of Amherst? Hey, you should have told me you had this. I, Shanks, recognize greatness when I see one, and since you have been recommended by Lucas, I see that you have a great, great potential as an adventurer. No way would I charge you for this trip!");
+			sendNext();
+			lucas = true;
+		else
+			addText("Bored of this place? Here... Give me 150 mesos first...");
+			sendNext();
+		end
 	else
 		addText("Hmm... I guess you still have things to do here?");
 		sendOK();
+		endNPC();
 	end
 elseif state == 2 then
 	if getSelected() == 1 then
 		if getLevel() >= 7 then
-			if getMesos() >= 150 then
-				giveMesos(-150);
+			if lucas then
+				addText("Since you have the recommendation letter, I won't charge you for this. Alright, buckle up, because we're going to head to Victoria Island right now, and it might get a bit turbulent!!");
+				sendBackNext();
+			elseif giveMesos(-150) then
 				addText("Awesome! #e150 mesos#n accepted! Alright, off to Victoria Island!");
 				sendNext();
 			else
@@ -45,11 +54,13 @@ elseif state == 2 then
 			sendOK();
 			endNPC();
 		end
-	else
-		endNPC();
 	end
 elseif state == 3 then
 	if getSelected() == 1 then
+		if lucas then
+			giveItem(4031801, -1)
+		end
+		
 		setMap(104000000);
 	end
 	endNPC();
