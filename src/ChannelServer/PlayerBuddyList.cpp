@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "BuddyList.h"
+#include "PlayerBuddyList.h"
 #include "Player.h"
 #include "MySQLM.h"
 
-BuddyList::BuddyList(Player *player) : player(player) {
+PlayerBuddyList::PlayerBuddyList(Player *player) : player(player) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT buddylist.buddy_charid as buddy_charid, characters.name as name FROM buddylist INNER JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.charid = " << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
@@ -29,7 +29,7 @@ BuddyList::BuddyList(Player *player) : player(player) {
 	}
 }
 
-void BuddyList::add(int32_t charid) {
+void PlayerBuddyList::add(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO buddylist (charid, buddy_charid) VALUES (" << player->getId() << ", " << charid << ")";
 	mysqlpp::SimpleResult res = query.execute();
@@ -40,7 +40,7 @@ void BuddyList::add(int32_t charid) {
 	add(res2[0]);
 }
 
-bool BuddyList::add(const string &name) {
+bool PlayerBuddyList::add(const string &name) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT id FROM characters WHERE name = " << mysqlpp::quote << name;
 	mysqlpp::StoreQueryResult res = query.store();
@@ -53,7 +53,7 @@ bool BuddyList::add(const string &name) {
 	return true;
 }
 
-void BuddyList::remove(int32_t charid) {
+void PlayerBuddyList::remove(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "DELETE FROM buddylist WHERE charid = " << player->getId() << " AND buddy_charid = " << charid;
 	query.exec();
@@ -62,7 +62,7 @@ void BuddyList::remove(int32_t charid) {
 }
 
 inline
-void BuddyList::add(const mysqlpp::Row &row) {
+void PlayerBuddyList::add(const mysqlpp::Row &row) {
 	int32_t charid = (int32_t) row["buddy_charid"];
 	row["name"].to_string(buddies[charid]); // Assigns string to buddies[charid] i.e. buddies[charid] = name
 }

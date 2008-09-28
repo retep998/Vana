@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYER_H
 
 #include "AbstractPlayer.h"
-#include "BuddyList.h"
 #include "ChannelServer.h"
 #include "MovableLife.h"
 #include "PlayerActiveBuffs.h"
+#include "PlayerBuddyList.h"
 #include "PlayerInventory.h"
 #include "PlayerPets.h"
 #include "PlayerQuests.h"
@@ -127,8 +127,8 @@ public:
 
 	bool hasGMEquip();
 
-	BuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }
+	PlayerBuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerInventory * getInventory() const { return inv.get(); }
 	PlayerPets * getPets() const { return pets.get(); }
 	PlayerQuests * getQuests() const { return quests.get(); }
@@ -193,8 +193,8 @@ private:
 	vector<int32_t> warnings;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
-	boost::scoped_ptr<BuddyList> buddyList;
 	boost::scoped_ptr<PlayerActiveBuffs> activeBuffs;
+	boost::scoped_ptr<PlayerBuddyList> buddyList;
 	boost::scoped_ptr<PlayerInventory> inv;
 	boost::scoped_ptr<PlayerPets> pets;
 	boost::scoped_ptr<PlayerQuests> quests;

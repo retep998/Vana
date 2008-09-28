@@ -186,10 +186,6 @@
 				Name="ChannelServer"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\BuddyList.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Buffs.cpp"
 					>
 				</File>
@@ -434,6 +430,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerBuddyList.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.cpp"
 					>
 				</File>
@@ -463,10 +463,6 @@
 			<Filter
 				Name="ChannelServer"
 				>
-				<File
-					RelativePath=".\src\ChannelServer\BuddyList.h"
-					>
-				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Buffs.h"
 					>
@@ -713,6 +709,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerActiveBuffs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerBuddyList.h"
 					>
 				</File>
 				<File
