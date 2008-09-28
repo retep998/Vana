@@ -38,7 +38,7 @@ int16_t ReadPacket::getHeader() {
 }
 
 int16_t ReadPacket::getShort() {
-	int16_t val = buffer[pos] + buffer[pos+1]*0x100;;
+	int16_t val = buffer[pos] + buffer[pos+1]*0x100;
 	pos += 2;
 	return val;
 }
