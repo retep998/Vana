@@ -69,8 +69,10 @@ public:
 	void setHP(int16_t hp, bool is = true); // Only use setHP/MP if you're going to do checking, they fall easily to datatype issues
 	void setMP(int16_t mp, bool is = false); // For example, Power Elixir at 30k HP = 30k + 30k = 60k, but wait! That's > 32767, so it's negative
 	void setMHP(int16_t mhp);
-	void setRMHP(int16_t rmhp);
 	void setMMP(int16_t mmp);
+	void modifyRMHP(int16_t mod);
+	void modifyRMMP(int16_t mod);
+	void setRMHP(int16_t rmhp);
 	void setRMMP(int16_t rmmp);
 	void setHyperBody(int16_t modx, int16_t mody);
 	void setHPMPAp(uint16_t ap) { hpmp_ap = ap; }
