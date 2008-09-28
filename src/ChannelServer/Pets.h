@@ -45,6 +45,7 @@ namespace Pets {
 	extern unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> petsInteractInfo;
 	extern int16_t exps[29];
 	void showPets(Player *player);
+	void showPetsPlayer(Player *player, Player *target);
 	void chat(Player *player, ReadPacket *packet);
 	void feedPet(Player *player, ReadPacket *packet);
 	void movePet(Player *player, ReadPacket *packet);

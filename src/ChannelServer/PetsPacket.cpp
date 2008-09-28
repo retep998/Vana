@@ -45,7 +45,7 @@ void PetsPacket::movePet(Player *player, Pet *pet, unsigned char *buf, int32_t b
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick) {
+void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, Player *showTo) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_SUMMONED);
 	packet.addInt(player->getId());
@@ -57,12 +57,14 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick) {
 		packet.addString(pet->getName());
 		packet.addInt(pet->getId());
 		packet.addInt(0);
-		packet.addShort(pet->getPos().x);
-		packet.addShort(pet->getPos().y);
+		packet.addPos(pet->getPos());
 		packet.addByte(pet->getStance());
 		packet.addInt(pet->getFH());
 	}
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	if (showTo != 0)
+		showTo->getSession()->send(packet);
+	else
+		Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
 void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool success) {
