@@ -198,18 +198,14 @@ void Pets::lootItem(Player *player, ReadPacket *packet) {
 
 void Pets::showPets(Player *player) {
 	for (int8_t i = 0; i < 3; i++) {
-		if (player->getPets()->getSummoned(i) != 0) {
-			Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i));
-			if (pet->isSummoned()) {
-				PetsPacket::petSummoned(player, pet, false, true);
-			}
-			else {
+		if (Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i))) {
+			if (!pet->isSummoned()) {
 				if (pet->getIndex() == 0) {
 					pet->startTimer();
 				}
 				pet->setSummoned(true);
-				PetsPacket::petSummoned(player, pet, false, true);
 			}
+			PetsPacket::petSummoned(player, pet, false, true);
 		}
 	}
 	PetsPacket::updateSummonedPets(player);
