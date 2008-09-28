@@ -104,7 +104,7 @@ Pos Map::findFloor(Pos pos) {
 	int16_t maxy = pos.y;
 	bool firstcheck = true;
 	for (size_t i = 0; i < footholds.size(); i++) {
-		if ((x >= footholds[i].pos1.x && x <= footholds[i].pos2.x) || (x >= footholds[i].pos2.x && x <= footholds[i].pos1.x)) {
+		if ((x > footholds[i].pos1.x && x < footholds[i].pos2.x) || (x > footholds[i].pos2.x && x < footholds[i].pos1.x)) {
 			int16_t cmax = (int16_t)((float)(footholds[i].pos1.y - footholds[i].pos2.y) / (footholds[i].pos1.x - footholds[i].pos2.x) * (x - footholds[i].pos1.x) + footholds[i].pos1.y);
 			if ((cmax <= maxy || (maxy == pos.y && firstcheck)) && cmax >= y) {
 				maxy = cmax;
