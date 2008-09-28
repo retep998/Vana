@@ -208,23 +208,19 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 					break;
 			}
 			player->setHPMPAp(player->getHPMPAp() + 1);
+			switch (type) {
+				case 0x800: player->setRMHP(player->getRMHP() + hpgain); break;
+				case 0x2000: player->setRMMP(player->getRMMP() + mpgain); break;
+			}
 			int32_t skillid = 0;
-			int16_t skillx = 100;
-			int16_t skilly = 100;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)
 				skillid = 1301007;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(9101008) > 0)
 				skillid = 9101008;
 			if (skillid > 0) {
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
-				skillx += Skills::skills[skillid][hblevel].x;
-				skilly += Skills::skills[skillid][hblevel].y;
+				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
-			switch (type) {
-				case 0x800: player->setRMHP(player->getRMHP() + hpgain); break;
-				case 0x2000: player->setRMMP(player->getRMMP() + mpgain); break;
-			}
-			player->setHyperBody(skillx, skilly);
 			break;
 		}
 		default:
