@@ -109,8 +109,8 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 		}
 
 		if (levelsgained) { // Check if the player has leveled up at all, it is possible that the user haven't level up if multi-level limit is 0
-			player->setRMHP(player->getRMHP() + hpgain);
-			player->setRMMP(player->getRMMP() + mpgain);
+			player->modifyRMHP(hpgain);
+			player->modifyRMMP(mpgain);
 			player->setLevel(level);
 			player->setAp(player->getAp() + apgain);
 			player->setSp(player->getSp() + spgain);
@@ -209,8 +209,8 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 			}
 			player->setHPMPAp(player->getHPMPAp() + 1);
 			switch (type) {
-				case 0x800: player->setRMHP(player->getRMHP() + hpgain); break;
-				case 0x2000: player->setRMMP(player->getRMMP() + mpgain); break;
+				case 0x800: player->modifyRMHP(hpgain); break;
+				case 0x2000: player->modifyRMMP(mpgain); break;
 			}
 			int32_t skillid = 0;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)

@@ -371,6 +371,16 @@ void Player::setRMMP(int16_t rmmp) {
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
 
+void Player::modifyRMHP(int16_t mod) {
+	rmhp = (((rmhp + mod) > 30000) ? 30000 : (rmhp + mod));
+	PlayerPacket::updateStatShort(this, 0x800, rmhp);
+}
+
+void Player::modifyRMMP(int16_t mod) {
+	rmmp = (((rmmp + mod) > 30000) ? 30000 : (rmmp + mod));
+	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
+}
+
 void Player::setExp(int32_t exp) {
 	this->exp = exp;
 	PlayerPacket::updateStatInt(this, 0x10000, exp);
