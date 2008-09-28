@@ -255,7 +255,7 @@ void PlayerHandler::handleMoving(Player *player, ReadPacket *packet) {
 void PlayerHandler::handleSpecialSkills(Player *player, ReadPacket *packet) {
 	int32_t skillid = packet->getInt();
 	switch (skillid) {
-		case 1121001: // Monster Magnet
+		case 1121001: // Monster Magnet x3
 		case 1221001:
 		case 1321001:
 		case 3221001: // Pierce
@@ -271,12 +271,15 @@ void PlayerHandler::handleSpecialSkills(Player *player, ReadPacket *packet) {
 			SkillsPacket::showSpecialSkill(player, info);
 			break;
 		}
-		case 4211001: { // Chakra, unknown heal formula
+		case 4211001: { // Chakra
 			int16_t dex = player->getDex();
 			int16_t luk = player->getLuk();
 			int16_t recovery = Skills::skills[4211001][player->getSkills()->getSkillLevel(4211001)].y;
-			int16_t minimum = (luk / 2) * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
-			int16_t maximum = luk * ((1 + 3 / 10) + recovery / 100) + (dex * recovery / 100);
+			int16_t maximum = (luk * 66 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
+			int16_t minimum = (luk * 33 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
+			// Maximum = (luk * 6.6 + dex) * 0.2 * (recovery% / 100 + 1)
+			// Minimum = (luk * 3.3 + dex) * 0.2 * (recovery% / 100 + 1)
+			// I used 66 / 10 and 2 / 10 respectively to get 6.6 and 0.2 without using floating points
 			int16_t range = maximum - minimum;
 			player->modifyHP(Randomizer::Instance()->randShort(range) + minimum);
 			break;
