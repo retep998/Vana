@@ -121,6 +121,7 @@ void Maps::newMap(Player *player, int32_t mapid) {
 	Players::Instance()->addPlayer(player);
 	maps[mapid]->addPlayer(player);
 	maps[mapid]->showObjects(player);
+	Pets::showPets(player);
 	// Bug in global - would be fixed here:
 	// Berserk doesn't display properly when switching maps with it activated - client displays, but no message is sent to any client
 	// player->getActiveBuffs()->checkBerserk(true) would override the default of only displaying changes

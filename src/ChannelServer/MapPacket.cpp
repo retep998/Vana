@@ -106,7 +106,19 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addByte(player->getStance());
 	packet.addShort(player->getFH());
 	packet.addByte(0);
-	packet.addByte(0); // Doing pets here caused crash
+	for (int8_t i = 0; i < 3; i++) {
+		if (Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i))) {
+			packet.addByte(1);
+			packet.addInt(pet->getType());
+			packet.addString(pet->getName());
+			packet.addInt(pet->getId());
+			packet.addInt(0);
+			packet.addPos(pet->getPos());
+			packet.addByte(pet->getStance());
+			packet.addInt(pet->getFH());
+		}
+	}
+	packet.addByte(0);
 	packet.addShort(1);
 	packet.addInt(0);
 	packet.addInt(0);
