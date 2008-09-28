@@ -202,7 +202,6 @@ void Pets::showPets(Player *player) {
 			Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i));
 			if (pet->isSummoned()) {
 				PetsPacket::petSummoned(player, pet);
-				PetsPacket::showPet(player, pet);
 			}
 			else {
 				if (pet->getIndex() == 0) {
@@ -210,6 +209,25 @@ void Pets::showPets(Player *player) {
 				}
 				pet->setSummoned(true);
 				PetsPacket::petSummoned(player, pet);
+			}
+		}
+	}
+	PetsPacket::updateSummonedPets(player);
+}
+
+void Pets::showPetsPlayer(Player *player, Player *target) {
+	for (int8_t i = 0; i < 3; i++) {
+		if (player->getPets()->getSummoned(i) != 0) {
+			Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i));
+			if (pet->isSummoned()) {
+				PetsPacket::petSummoned(player, pet, false, target);
+			}
+			else {
+				if (pet->getIndex() == 0) {
+					pet->startTimer();
+				}
+				pet->setSummoned(true);
+				PetsPacket::petSummoned(player, pet, false, target);
 			}
 		}
 	}

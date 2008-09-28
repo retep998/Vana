@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "ReactorPacket.h"
 #include "Reactors.h"
+#include "Pets.h"
 #include "Timer/Timer.h"
 #include <ctime>
 #include <functional>
@@ -52,8 +53,10 @@ void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
 	if (info.fieldType == 82 || info.fieldType == 81) // Apple training maps/Showa spa
 		MapPacket::forceMapEquip(player);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) == 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) == 0) {
 		MapPacket::showPlayer(player);
+		Pets::showPets(player);
+	}
 }
 
 void Map::removePlayer(Player *player) {
@@ -279,6 +282,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		if (player != players[i] && players[i]->getActiveBuffs()->getActiveSkillLevel(9101004) == 0) {
 			PacketCreator packet = MapPacket::playerPacket(players[i]);
 			player->getSession()->send(packet);
+			Pets::showPetsPlayer(players[i], player);
 			// Bug in global; would be fixed here:
 			// Hurricane/Pierce do not display properly if using when someone enters the map
 			// Berserk does not display properly either - players[i]->getActiveBuffs()->getBerserk()
