@@ -547,6 +547,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 				scrolled = true;
 			}
 			break;
+		case 2049102: // Maple Syrup 100%
 		case 2049100: // Chaos Scroll
 			if (equip->slots > 0) {
 				if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.success) { // Add stats
