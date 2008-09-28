@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Player.h"
-#include "BuddyList.h"
 #include "ChannelServer.h"
 #include "ChatHandler.h"
 #include "CommandHandler.h"
@@ -133,8 +132,8 @@ void Player::playerConnect(ReadPacket *packet) {
 	}
 	this->id = id;
 	activeBuffs.reset(new PlayerActiveBuffs(this));
+	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
-	buddyList.reset(new BuddyList(this));
 	pets.reset(new PlayerPets(this));
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
