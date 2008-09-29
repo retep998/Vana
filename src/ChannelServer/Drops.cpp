@@ -162,6 +162,10 @@ void Drops::doDrops(Player *player, int32_t droppingID, Pos origin) {
 	}
 }
 
+void Drops::addDrop(Drop *drop, Pos origin) {
+	drop->doDrop(origin);
+}
+
 void Drops::dropMesos(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	int32_t amount = packet->getInt();
