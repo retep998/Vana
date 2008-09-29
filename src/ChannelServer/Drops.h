@@ -47,6 +47,7 @@ namespace Drops {
 	extern unordered_map<int32_t, DropsInfo> dropdata;
 	void addDropData(int32_t id, DropInfo drop);
 	void doDrops(Player *player, int32_t droppingID, Pos origin);
+	void addDrop(Drop *drop, Pos origin);
 	void dropMesos(Player *player, ReadPacket *packet);
 	void lootItem(Player *player, ReadPacket *packet);
 };

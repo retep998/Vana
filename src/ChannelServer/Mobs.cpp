@@ -27,9 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Movement.h"
 #include "Randomizer.h"
 #include "ReadPacket.h"
+#include "Timer/Timer.h"
 #include <unordered_map>
+#include <functional>
 
 using std::tr1::unordered_map;
+using std::tr1::bind;
 
 unordered_map<int32_t, MobInfo> Mobs::mobinfo;
 
@@ -128,7 +131,7 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	int32_t useless = 0;
-	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless);	
+	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, 0, true);
 	switch (skillid) {
 		case 4211006: { // Meso Explosion
 			uint8_t items = packet->getByte();
@@ -304,10 +307,11 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
 }
 
-uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater) {
+uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
 	bool isHorntail = false;
+	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(4211003); // Check for active pickpocket level
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mapmobid = packet->getInt();
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
@@ -334,9 +338,18 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 		if (skillid != 4211006)
 			packet->skipBytes(1); // Distance, first half for non-Meso Explosion
 		packet->skipBytes(1); // Distance, second half for non-Meso Explosion
+		Pos origin = mob->getPos(); // Info for
+		vector<int32_t> ppdamages; // Pickpocket
 		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet->getInt();
 			total += damage;
+			if (ismelee && skillid != 4211006 && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
+				if (Randomizer::Instance()->randInt(99) < Skills::skills[4211003][pplevel].prop) {
+					ppdamages.push_back(damage);
+				}
+			}
+			if (mob == 0) // Roll along after the mob is dead to finish getting damage values for pickpocket
+				continue;
 			if (skillid == 1221011 && Mobs::mobinfo[mob->getMobID()].boss) {
 				// Damage calculation goes in here, I think? Hearing conflicted views.
 			}
@@ -368,8 +381,8 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 			}
 			displayHPBars(player, (isHorntail && htabusetaker != 0 ? htabusetaker : mob));
 			if (mob->getHP() <= 0) {
-				packet->skipBytes(4 * (hits - 1 - k));
 				mob->die(player);
+				mob = 0;
 				if (htabusetaker != 0) {
 					if (htabusetaker->getHP() <= 0) {
 						for (int8_t q = 0; q < 8; q++) {
@@ -378,14 +391,30 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 						htabusetaker->die(player);
 					}
 				}
-				break;
+				if (!ismelee || skillid == 4211006) {
+					packet->skipBytes(4 * (hits - 1 - k));
+					break;
+				}
 			}
+		}
+		for (uint8_t pp = 0; pp < (uint8_t) ppdamages.size(); pp++) { // Drop stuff for Pickpocket
+			Pos pos;
+			pos.x = origin.x - 25 * ((ppdamages.size() - pp) / 2);
+			pos.y = origin.y;
+			clock_t time = 150 * pp;
+			int32_t mesos = ((ppdamages[pp] * Skills::skills[4211003][pplevel].x) / 10000); // TODO: Check on this formula in different situations
+			Drop * drop = new Drop(player->getMap(), mesos, pos, player->getId(), true);
+			drop->setTime(100);
+			new Timer::Timer(bind(&Drops::addDrop, drop, origin),
+				Timer::Id(Timer::Types::SkillTimer, 4211003, pp),
+				0, time, false);
 		}
 		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 	packet->skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 	return total;
 }
+
 void Mobs::spawnMob(Player *player, int32_t mobid, int32_t amount) {
 	for (int32_t i = 0; i < amount; i++)
 		spawnMobPos(player->getMap(), mobid, player->getPos());
