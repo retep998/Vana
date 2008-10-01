@@ -438,8 +438,6 @@ void Mobs::displayHPBars(Player *player, Mob *mob) {
 
 	if ((hpinfo.boss || hpinfo.mobid == 8810018) && hpinfo.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
 		MobsPacket::showBossHP(player, hpinfo);
-	else if (hpinfo.boss) // Miniboss HP bars
-		MobsPacket::showMinibossHP(player, hpinfo.mobid, percent);
-	else // Normal HP bars
-		MobsPacket::showHP(player, hpinfo.mapmobid, percent);
+	else // Normal/Miniboss HP bars
+		MobsPacket::showHP(player, hpinfo.mapmobid, percent, hpinfo.boss);
 }
