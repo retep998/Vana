@@ -19,10 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERBUDDYLIST_H
 
 #include "Types.h"
-#include <unordered_map>
+#include <memory>
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 using std::string;
+using std::vector;
 using std::tr1::unordered_map;
 
 class Player;
@@ -32,15 +35,33 @@ namespace mysqlpp {
 
 class PlayerBuddyList {
 public:
+	struct Buddy;
+	typedef std::tr1::shared_ptr<Buddy> BuddyPtr;
+
 	PlayerBuddyList(Player *player);
-	void add(int32_t charid);
-	bool add(const string &name);
+	uint8_t add(const string &name);
 	void remove(int32_t charid);
+
+	BuddyPtr getBuddy(uint8_t pos) { return buddies[buddies_order[pos]]; }
+	uint8_t size() const { return (uint8_t) buddies.size(); }
 private:
 	void add(const mysqlpp::Row &row);
 
-	unordered_map<int32_t, string> buddies;
+	struct OppositeStatus {
+		static const uint8_t registered = 0;
+		static const uint8_t unregistered = 2;
+	};
+
+	vector<int32_t> buddies_order;
+	unordered_map<int32_t, BuddyPtr> buddies;
 	Player *player;
+};
+
+struct PlayerBuddyList::Buddy {
+	int32_t charid;
+	string name;
+	uint8_t oppositeStatus;
+	int32_t channel;
 };
 
 #endif

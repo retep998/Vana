@@ -80,6 +80,7 @@ public:
 	void setHair(int32_t id);
 	void setExp(int32_t exp);
 	void setMap(int32_t map) { this->map = map; }
+	void setBuddyListSize(uint32_t size) { buddylist_size = size; }
 	void setTradeSendID(int32_t id) { this->tradesendid = id; }
 	void setTradeRecvID(int32_t id) { this->traderecvid = id; }
 	void setShop(int32_t shopid) { shop = shopid; }
@@ -115,6 +116,7 @@ public:
 	int32_t getHair() const { return this->hair; }
 	int32_t getExp() const { return this->exp; }
 	int32_t getMap() const { return this->map; }
+	uint32_t getBuddyListSize() const { return buddylist_size; }
 	int32_t getShop() const { return shop; }
 	int32_t getChair() const { return chair; }
 	int32_t getItemEffect() const { return this->itemEffect; }
@@ -184,6 +186,7 @@ private:
 	int32_t shop;
 	int32_t itemEffect;
 	int32_t chair;
+	uint32_t buddylist_size;
 	int32_t gm;
 	int32_t tradesendid;
 	int32_t traderecvid;

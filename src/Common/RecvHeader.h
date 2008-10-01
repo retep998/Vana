@@ -77,6 +77,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_COMMAND 0x6b // / commands like "/find"
 #define RECV_SHOP_ACTION 0x6e // Trades, player shops, etc.
 #define RECV_PARTY_ACTION 0x6f
+#define RECV_BUDDYLIST 0x75
 #define RECV_KEYMAP 0x7a
 #define RECV_PET_MOVE 0x89
 #define RECV_PET_CHAT 0x8a

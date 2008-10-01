@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Player.h"
+#include "BuddyListHandler.h"
+#include "BuddyListPacket.h"
 #include "ChannelServer.h"
 #include "ChatHandler.h"
 #include "CommandHandler.h"
@@ -71,6 +73,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 	switch (packet->getShort()) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
+		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
 		case RECV_CHANGE_CHANNEL: changeChannel(packet->getByte()); break;
@@ -170,6 +173,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	fame = (int16_t) res[0]["fame"];
 	map = res[0]["map"];
 	mappos = (uint8_t) res[0]["pos"];
+	buddylist_size = res[0]["buddylist_size"];
 	gm = res[0]["gm"];
 
 	// Inventory
@@ -223,6 +227,8 @@ void Player::playerConnect(ReadPacket *packet) {
 	}
 
 	PlayerPacket::showKeys(this, &keyMaps);
+
+	BuddyListPacket::update(this, BuddyListPacket::add);
 
 	if (skillMacros.getMax() > -1)
 		PlayerPacket::showSkillMacros(this, &skillMacros);
@@ -516,7 +522,8 @@ void Player::saveStats() {
 		<< "use_slots = " << (int16_t) inv->getMaxSlots(2) << ","
 		<< "setup_slots = " << (int16_t) inv->getMaxSlots(3) << ","
 		<< "etc_slots = " << (int16_t) inv->getMaxSlots(4) << ","
-		<< "cash_slots = " << (int16_t) inv->getMaxSlots(5)
+		<< "cash_slots = " << (int16_t) inv->getMaxSlots(5) << ","
+		<< "buddylist_size = " << this->buddylist_size
 		<< " WHERE id = " << this->id;
 	query.exec();
 }
