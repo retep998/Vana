@@ -291,20 +291,15 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per) {
+void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per, bool miniboss) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_MOB_HP);
 	packet.addInt(mobid);
 	packet.addByte(per);
-	player->getSession()->send(packet);
-}
-// Miniboss HP
-void MobsPacket::showMinibossHP(Player *player, int32_t mobid, int8_t per) {
-	PacketCreator packet;
-	packet.addShort(SEND_SHOW_MOB_HP);
-	packet.addInt(mobid);
-	packet.addByte(per);
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	if (miniboss)
+		Maps::maps[player->getMap()]->sendPacket(packet);
+	else
+		player->getSession()->send(packet);
 }
 // Boss hp
 void MobsPacket::showBossHP(Player *player, const MobHPInfo &mob) {
