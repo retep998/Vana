@@ -1,1 +1,1 @@
-ALTER TABLE `maplestory`.`characters` ADD INDEX `name`(`name`);
+ALTER TABLE `characters` ADD INDEX `name`(`name`);
