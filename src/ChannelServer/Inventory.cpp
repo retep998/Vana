@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.h"
 #include "Drops.h"
 #include "InventoryPacket.h"
+#include "Levels.h"
 #include "Maps.h"
 #include "Pets.h"
 #include "PetsPacket.h"
@@ -659,6 +660,14 @@ void Inventory::useCashItem(Player *player, ReadPacket *packet) {
 	int32_t itemid = packet->getInt();
 	bool used = false;
 	switch (itemid) {
+		case 5050000: { // AP Reset
+			int32_t tostat = packet->getInt();
+			int32_t fromstat = packet->getInt();
+			Levels::addStat(player, tostat, true, false);
+			Levels::addStat(player, fromstat, true, true);
+			used = true;
+			break;
+		}
 		case 5071000: { // Megaphone
 			string msg = packet->getString();
 			InventoryPacket::showMegaphone(player, msg);
