@@ -660,6 +660,23 @@ void Inventory::useCashItem(Player *player, ReadPacket *packet) {
 	int32_t itemid = packet->getInt();
 	bool used = false;
 	switch (itemid) {
+		case 5050001: // 1st job SP Reset
+		case 5050002: // 2nd job SP Reset
+		case 5050003: // 3rd job SP Reset
+		case 5050004: { // 4th job SP Reset
+			int32_t toskill = packet->getInt();
+			int32_t fromskill = packet->getInt();
+			if (!player->getSkills()->addSkillLevel(fromskill, -1, true)) {
+				// Hacking
+				return;
+			}
+			if (!player->getSkills()->addSkillLevel(toskill, 1, true)) {
+				// Hacking
+				return;
+			}
+			used = true;
+			break;
+		}
 		case 5050000: { // AP Reset
 			int32_t tostat = packet->getInt();
 			int32_t fromstat = packet->getInt();
