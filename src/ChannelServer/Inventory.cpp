@@ -515,7 +515,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	int16_t slot = packet->getShort();
 	int16_t eslot = packet->getShort();
-	int16_t wscroll = packet->getShort();
+	bool wscroll = (packet->getShort() == 2);
 	bool legendary_spirit = (packet->getByte() != 0);
 
 	Item *item = player->getInventory()->getItem(2, slot);
@@ -598,12 +598,11 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 			}
 			break;
 		case 2040727: // Shoe for Spikes 10%
-			break;
 		case 2041058: // Cape for Cold Protection 10%
 			break;
 		default: // Most scrolls
 			if (equip->slots > 0) {
-				if (wscroll == 2)
+				if (wscroll)
 					takeItem(player, 2340000, 1);
 				if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.success) {
 					succeed = 1;
@@ -629,7 +628,7 @@ void Inventory::useScroll(Player *player, ReadPacket *packet) {
 					succeed = 0;
 					if ((int16_t) Randomizer::Instance()->randShort(99) < items[itemid].cons.cursed)
 						cursed = true;
-					else if (wscroll != 2)
+					else if (!wscroll)
 						equip->slots--;
 				}
 				scrolled = true;
