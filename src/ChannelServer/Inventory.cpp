@@ -359,11 +359,11 @@ void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
 
 void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar) {
 	Item *item = player->getInventory()->getItem(inv, slot);
-	if (item == 0)
+	if (item == 0 || item->amount - amount < 0)
 		return;
 
 	item->amount -= amount;
-	if (item->amount == 0 && !ISRECHARGEABLE(item->id) || (takeStar && ISRECHARGEABLE(item->id))) {
+	if ((item->amount == 0 && !ISRECHARGEABLE(item->id)) || (takeStar && ISRECHARGEABLE(item->id))) {
 		InventoryPacket::moveItem(player, inv, slot, 0);
 		player->getInventory()->deleteItem(inv, slot);
 	}
