@@ -153,27 +153,34 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 		return;
 	}
 	LevelsPacket::statOK(player);
+	addStat(player, type);
+}
+
+void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract) {
 	int16_t maxstat = ChannelServer::Instance()->getMaxStats();
+	int16_t mod = 1;
+	if (issubtract)
+		mod = -1;
 	switch (type) {
 		case 0x40:
 			if (player->getStr() >= maxstat)
 				return;
-			player->setStr(player->getStr() + 1);
+			player->setStr(player->getStr() + mod);
 			break;
 		case 0x80:
 			if (player->getDex() >= maxstat)
 				return;
-			player->setDex(player->getDex() + 1);
+			player->setDex(player->getDex() + mod);
 			break;
 		case 0x100:
 			if (player->getInt() >= maxstat)
 				return;
-			player->setInt(player->getInt() + 1);
+			player->setInt(player->getInt() + mod);
 			break;
 		case 0x200:
 			if (player->getLuk() >= maxstat)
 				return;
-			player->setLuk(player->getLuk() + 1);
+			player->setLuk(player->getLuk() + mod);
 			break;
 		case 0x800:
 		case 0x2000: {
@@ -181,33 +188,37 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 				return;
 			if (player->getRMMP() >= 30000 && type == 0x2000)
 				return;
+			if (issubtract && player->getHPMPAp() == 0) {
+				// Hacking
+				return;
+			}
 			int16_t job = player->getJob() / 100;
 			int16_t hpgain = 0;
 			int16_t mpgain = 0;
 			int16_t y = 0;
 			switch (job) {
-				case 0:
-					hpgain = Randomizer::Instance()->randShort(4) + 8;
-					mpgain = Randomizer::Instance()->randShort(2) + 10;
+				case 0: // Beginner
+					hpgain = (isreset ? (issubtract ? -12 : 8) : Randomizer::Instance()->randShort(4) + 8);
+					mpgain = (isreset ? (issubtract ? -8 : 6) : Randomizer::Instance()->randShort(2) + 6);
 					break;
-				case 1:
+				case 1: // Warrior
 					if (player->getSkills()->getSkillLevel(1000001) > 0)
 						y = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].y;
-					hpgain = Randomizer::Instance()->randShort(4) + 20 + y;
-					mpgain = Randomizer::Instance()->randShort(2) + 2;
+					hpgain = (isreset ? (issubtract ? (-1 * (24 + y)) : 20) : (Randomizer::Instance()->randShort(4) + 20 + y));
+					mpgain = (isreset ? (issubtract ? -4 : 2) : Randomizer::Instance()->randShort(2) + 2);
 					break;
-				case 2:
+				case 2: // Magician
 					if (player->getSkills()->getSkillLevel(2000001) > 0)
 						y = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].y;
-					hpgain = Randomizer::Instance()->randShort(4) + 6;
-					mpgain = Randomizer::Instance()->randShort(2) + 18 + 2 * y;
+					hpgain = (isreset ? (issubtract ? -10 : 6) : Randomizer::Instance()->randShort(4) + 6);
+					mpgain = (isreset ? (issubtract ? (-1 * (20 + 2 * y)) : 18) : (Randomizer::Instance()->randShort(2) + 18 + 2 * y));
 					break;
-				default:
-					hpgain = Randomizer::Instance()->randShort(4) + 16;
-					mpgain = Randomizer::Instance()->randShort(2) + 10;
+				default: // Bowman, Thief, Pirate, GM
+					hpgain = (isreset ? (issubtract ? -20 : 16) : Randomizer::Instance()->randShort(4) + 16);
+					mpgain = (isreset ? (issubtract ? -12 : 10) : Randomizer::Instance()->randShort(2) + 10);
 					break;
 			}
-			player->setHPMPAp(player->getHPMPAp() + 1);
+			player->setHPMPAp(player->getHPMPAp() + mod);
 			switch (type) {
 				case 0x800: player->modifyRMHP(hpgain); break;
 				case 0x2000: player->modifyRMMP(mpgain); break;
@@ -221,11 +232,18 @@ void Levels::addStat(Player *player, ReadPacket *packet) {
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
 				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
+			else {
+				player->setMHP(player->getRMHP());
+				player->setMMP(player->getRMMP());
+			}
+			player->setHP(player->getHP());
+			player->setMP(player->getMP());
 			break;
 		}
 		default:
 			// Hacking, one assumes
 			break;
 	}
-	player->setAp(player->getAp() - 1);
+	if (!isreset)
+		player->setAp(player->getAp() - 1);
 }
