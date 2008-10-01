@@ -186,6 +186,10 @@
 				Name="ChannelServer"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\BuddyListHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Buffs.cpp"
 					>
 				</File>
@@ -464,6 +468,10 @@
 				Name="ChannelServer"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\BuddyListHandler.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Buffs.h"
 					>
 				</File>
@@ -575,6 +583,14 @@
 			<Filter
 				Name="Packets"
 				>
+				<File
+					RelativePath=".\src\ChannelServer\BuddyListPacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\BuddyListPacket.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\ChannelServer\DropsPacket.h"
 					>
