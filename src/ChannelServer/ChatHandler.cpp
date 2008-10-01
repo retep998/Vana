@@ -601,9 +601,6 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		else if (command == "eventinstruct") {
 			MapPacket::showEventInstructions(player->getMap());
 		}
-		else {
-			PlayerPacket::showMessage(player, "Invalid command.", 6);
-		}
 		return;
 	}
 	PlayersPacket::showChat(player, message, bubbleOnly);
