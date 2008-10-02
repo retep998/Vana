@@ -78,7 +78,7 @@ void Thread::forceReSort() {
 }
 
 void Thread::runThread() {
-	boost::recursive_mutex::scoped_lock l(m_timers_mutex);
+	boost::unique_lock<boost::recursive_mutex> l(m_timers_mutex);
 	while (!m_terminate) {
 		// Find minimum wakeup time
 		Timer *minTimer = findMin();
@@ -88,7 +88,7 @@ void Thread::runThread() {
 			continue;
 		}
 		
-		if (m_main_loop_condition.timed_wait(m_timers_mutex,
+		if (m_main_loop_condition.timed_wait(l,
 			boost::get_system_time() + boost::posix_time::milliseconds(msec))) {
 				continue;
 		}
