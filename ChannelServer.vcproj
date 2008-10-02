@@ -286,6 +286,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Summons.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Trade.cpp"
 					>
 				</File>
@@ -355,6 +359,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\StoragePacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\SummonsPacket.cpp"
 					>
 				</File>
 				<File
@@ -455,6 +463,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerStorage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerSummons.cpp"
 					>
 				</File>
 			</Filter>
@@ -572,6 +584,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Summons.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Trade.h"
 					>
 				</File>
@@ -649,6 +665,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\StoragePacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\SummonsPacket.h"
 					>
 				</File>
 				<File
@@ -749,6 +769,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerStorage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerSummons.h"
 					>
 				</File>
 			</Filter>
