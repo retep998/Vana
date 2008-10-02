@@ -73,7 +73,7 @@ void Pets::movePet(Player *player, ReadPacket *packet) {
 	packet->skipBytes(8);
 	Movement::parseMovement(pet, packet);
 	packet->reset(10);
-	PetsPacket::movePet(player, player->getPets()->getPet(petid), packet->getBuffer(), packet->getBufferLength() - 9);
+	PetsPacket::movePet(player, pet, packet->getBuffer(), packet->getBufferLength() - 9);
 }
 
 void Pets::chat(Player *player, ReadPacket *packet) {
@@ -205,6 +205,7 @@ void Pets::showPets(Player *player) {
 				}
 				pet->setSummoned(true);
 			}
+			pet->setPos(player->getPos());
 			PetsPacket::petSummoned(player, pet, false, true);
 		}
 	}
