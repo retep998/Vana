@@ -184,9 +184,9 @@ void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract
 			break;
 		case 0x800:
 		case 0x2000: {
-			if (player->getRMHP() >= 30000 && type == 0x800)
+			if (type == 0x800 && player->getRMHP() >= 30000)
 				return;
-			if (player->getRMMP() >= 30000 && type == 0x2000)
+			else if (type == 0x2000 && player->getRMMP() >= 30000)
 				return;
 			if (issubtract && player->getHPMPAp() == 0) {
 				// Hacking
