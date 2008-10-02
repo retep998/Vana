@@ -33,7 +33,7 @@ void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 		if (Quests::quests[questid].requests[i].ismob) {
 			QuestMob mob;
 			mob.id = Quests::quests[questid].requests[i].id;
-			mob.count = 0;	
+			mob.count = 0;
 			quest.mobs.push_back(mob);
 		}
 	}
@@ -192,8 +192,8 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 bool PlayerQuests::isQuestActive(int16_t questid) {
 	for (size_t i = 0; i < quests.size(); i++) {
 		if (quests[i].id == questid) {
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }

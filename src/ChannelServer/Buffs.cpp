@@ -379,9 +379,7 @@ void Buffs::init() {
 }
 
 bool Buffs::isBuff(int32_t skillid) {
-	if (skillsinfo.find(skillid) == skillsinfo.end())
-		return false;
-	return true;
+	return skillsinfo.find(skillid) != skillsinfo.end();
 }
 
 int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {

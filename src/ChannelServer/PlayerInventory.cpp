@@ -149,9 +149,7 @@ void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 
 int16_t PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) {
 	inv -= 1;
-	if (items[inv].find(slot) != items[inv].end())
-		return items[inv][slot]->amount;
-	return 0;
+	return items[inv].find(slot) != items[inv].end() ? items[inv][slot]->amount : 0;
 }
 
 void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
