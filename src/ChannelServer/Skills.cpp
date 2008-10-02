@@ -134,7 +134,7 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	}
 	Skills::applySkillCosts(player, skillid, level);
 	SkillsPacket::showSkill(player, skillid, level);
-	if (Buffs::isBuff(skillid)) 
+	if (Buffs::isBuff(skillid))
 		Buffs::addBuff(player, skillid, level, addedinfo);
 	else if (ISSUMMON(skillid))
 		Summons::useSummon(player, skillid, level);
