@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Movement.h"
 #include "Randomizer.h"
 #include "ReadPacket.h"
+#include "Summons.h"
 #include "Timer/Timer.h"
 #include <unordered_map>
 #include <functional>
@@ -307,6 +308,20 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
 }
 
+void Mobs::damageMobSummon(Player *player, ReadPacket *packet) {
+	MobsPacket::damageMobSummon(player, packet);
+	packet->reset(2);
+	packet->skipBytes(4); // Summon ID
+	Summon *summon = player->getSummons()->getSummon();
+	if (summon == 0)
+		// Hacking or some other form of tomfoolery
+		return;
+	packet->skipBytes(5);
+	int8_t targets = packet->getByte();
+	int32_t useless = 0;
+	damageMobInternal(player, packet, targets, 1, summon->getSummonID(), useless);
+}
+
 uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
@@ -409,7 +424,8 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 				Timer::Id(Timer::Types::SkillTimer, 4211003, pp),
 				0, time, false);
 		}
-		packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
+		if (!ISSUMMON(skillid))
+			packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 	packet->skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 	return total;

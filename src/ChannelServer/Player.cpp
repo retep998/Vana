@@ -44,6 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerPacket.h"
 #include "SkillMacros.h"
 #include "Skills.h"
+#include "Summons.h"
 #include "Trades.h"
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPlayerPacket.h"
@@ -108,6 +109,9 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_PET_LOOT: Pets::lootItem(this, packet); break;
 		case RECV_PET_MOVE: Pets::movePet(this, packet); break;
 		case RECV_PET_SUMMON: Pets::summonPet(this, packet); break;
+		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
+		case RECV_DAMAGE_MOB_SUMMON: Mobs::damageMobSummon(this, packet); break;
+		case RECV_DAMAGE_SUMMON: Summons::damageSummon(this, packet); break;
 		case RECV_SHOP_ACTION: Trades::tradeHandler(this, packet); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_USE_STORAGE: Inventory::useStorage(this, packet); break;
@@ -135,6 +139,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	}
 	this->id = id;
 	activeBuffs.reset(new PlayerActiveBuffs(this));
+	summons.reset(new PlayerSummons(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
 	pets.reset(new PlayerPets(this));

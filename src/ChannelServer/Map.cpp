@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "ReactorPacket.h"
 #include "Reactors.h"
+#include "Summons.h"
 #include "Timer/Timer.h"
 #include <ctime>
 #include <functional>
@@ -63,6 +64,8 @@ void Map::removePlayer(Player *player) {
 			break;
 		}
 	}
+	Summons::removeSummon(player, true, false, false, false);
+	Summons::removeSummon(player, false, false, true, false);
 	MapPacket::removePlayer(player);
 	updateMobControl(player);
 }
@@ -279,6 +282,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		if (player != players[i] && players[i]->getActiveBuffs()->getActiveSkillLevel(9101004) == 0) {
 			PacketCreator packet = MapPacket::playerPacket(players[i]);
 			player->getSession()->send(packet);
+			Summons::showSummons(players[i], player);
 			// Bug in global; would be fixed here:
 			// Hurricane/Pierce do not display properly if using when someone enters the map
 			// Berserk does not display properly either - players[i]->getActiveBuffs()->getBerserk()

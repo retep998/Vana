@@ -291,6 +291,29 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket *pack) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
+void MobsPacket::damageMobSummon(Player *player, ReadPacket *pack) {
+	int32_t summonid = pack->getInt();
+	pack->skipBytes(5);
+	int8_t targets = pack->getByte();
+	PacketCreator packet;
+	packet.addShort(SEND_DAMAGE_MOB_SUMMON);
+	packet.addInt(player->getId());
+	packet.addInt(summonid);
+	packet.addByte(4);
+	packet.addByte(targets);
+	for (int8_t i = 0; i < targets; i++) {
+		int32_t mobid = pack->getInt();
+		packet.addInt(mobid);
+		packet.addByte(6);
+
+		pack->skipBytes(14); // Crap
+
+		int32_t damage = pack->getInt();
+		packet.addInt(damage);
+	}
+	Maps::maps[player->getMap()]->sendPacket(packet, player);
+}
+
 void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per, bool miniboss) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_MOB_HP);

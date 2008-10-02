@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "MovableLife.h"
 #include "PlayerActiveBuffs.h"
+#include "PlayerSummons.h"
 #include "PlayerBuddyList.h"
 #include "PlayerInventory.h"
 #include "PlayerPets.h"
@@ -132,6 +133,7 @@ public:
 	bool hasGMEquip();
 
 	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }
+	PlayerSummons * getSummons() const { return summons.get(); }
 	PlayerBuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerInventory * getInventory() const { return inv.get(); }
 	PlayerPets * getPets() const { return pets.get(); }
@@ -199,6 +201,7 @@ private:
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
 	boost::scoped_ptr<PlayerActiveBuffs> activeBuffs;
+	boost::scoped_ptr<PlayerSummons> summons;
 	boost::scoped_ptr<PlayerBuddyList> buddyList;
 	boost::scoped_ptr<PlayerInventory> inv;
 	boost::scoped_ptr<PlayerPets> pets;
