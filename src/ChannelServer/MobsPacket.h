@@ -34,8 +34,9 @@ namespace MobsPacket {
 	void showBossHP(Player *player, const MobHPInfo &mob); // For major bosses
 	void dieMob(Mob *mob);
 	void damageMob(Player *player, ReadPacket *pack);
-	void damageMobSpell(Player *player, ReadPacket *pack);
 	void damageMobRanged(Player *player, ReadPacket *pack);
+	void damageMobSpell(Player *player, ReadPacket *pack);
+	void damageMobSummon(Player *player, ReadPacket *pack);
 };
 
 #endif

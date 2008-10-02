@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Skills.h"
 #include "Buffs.h"
+#include "Summons.h"
 #include "Inventory.h"
 #include "MapPacket.h"
 #include "Maps.h"
@@ -62,12 +63,10 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 		case 2121001:
 		case 2221001:
 		case 2321001:
-		case 5221004: { // Special skills like hurricane, monster magnet, rapid fire, and etc
+		case 5221004: // Special skills like hurricane, monster magnet, rapid fire, and etc
 			SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
-			SpecialSkillInfo info;
-			player->setSpecialSkill(info);
+			player->setSpecialSkill(SpecialSkillInfo());
 			break;
-		}
 		default:
 			if (skillid == 9101004) // GM Hide
 				MapPacket::showPlayer(player);
@@ -137,6 +136,8 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 	SkillsPacket::showSkill(player, skillid, level);
 	if (Buffs::isBuff(skillid)) 
 		Buffs::addBuff(player, skillid, level, addedinfo);
+	else if (ISSUMMON(skillid))
+		Summons::useSummon(player, skillid, level);
 }
 
 void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp) {
@@ -216,7 +217,7 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, 
 void Skills::heal(Player *player, int16_t value, int32_t skillid) {
 	if (player->getHP() < player->getMHP() && player->getHP() > 0) {
 		player->modifyHP(value);
-		SkillsPacket::healHP(player, value); 
+		SkillsPacket::healHP(player, value);
 	}
 }
 
@@ -248,8 +249,6 @@ void Skills::stopCooldown(Player *player, int32_t skillid) {
 
 bool Skills::isCooling(Player *player, int32_t skillid) {
 	Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
-	if (player->getTimers()->checkTimer(id))
-		return true;
-	return false;
+	return player->getTimers()->checkTimer(id) > 0;
 }
 

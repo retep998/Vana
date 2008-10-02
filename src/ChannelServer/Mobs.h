@@ -73,6 +73,7 @@ namespace Mobs {
 	void damageMob(Player *player, ReadPacket *packet);
 	void damageMobRanged(Player *player, ReadPacket *packet);
 	void damageMobSpell(Player *player, ReadPacket *packet);
+	void damageMobSummon(Player *player, ReadPacket *packet);
 	uint32_t damageMobInternal(Player *player, ReadPacket *packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0, bool ismelee = false);
 	void displayHPBars(Player *player, Mob *mob);
 	void monsterControl(Player *player, ReadPacket *packet);
