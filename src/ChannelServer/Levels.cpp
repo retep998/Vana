@@ -71,30 +71,36 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 			int16_t x = 0;
 			int16_t intt = player->getInt() / 10;
 			switch (job) {
-				case 0:
+				case 0: // Beginner
 					hpgain += Randomizer::Instance()->randShort(4) + 12;
 					mpgain += Randomizer::Instance()->randShort(2) + 10 + intt;
 					break;
-				case 1:
+				case 1: // Warrior
 					if (player->getSkills()->getSkillLevel(1000001) > 0)
 						x = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].x;
 					hpgain += Randomizer::Instance()->randShort(4) + 24 + x;
 					mpgain += Randomizer::Instance()->randShort(2) + 4 + intt;
 					break;
-				case 2:
+				case 2: // Magician
 					if (player->getSkills()->getSkillLevel(2000001) > 0)
 						x = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].x;
 					hpgain += Randomizer::Instance()->randShort(4) + 10;
 					mpgain += Randomizer::Instance()->randShort(2) + 22 + 2 * x + intt;
 					break;
-				case 9: // GM
-					hpgain += 150;
-					mpgain += 150;
-					break;
-				default: // Will have to split 5 away when pirates are fully released
+				case 3: // Bowman
+				case 4: // Thief
 					hpgain += Randomizer::Instance()->randShort(4) + 20;
 					mpgain += Randomizer::Instance()->randShort(2) + 14 + intt;
 					break;
+				case 5: // Pirate
+					if (player->getSkills()->getSkillLevel(5100000) > 0)
+						x = Skills::skills[5100000][player->getSkills()->getSkillLevel(5100000)].x;
+					hpgain += Randomizer::Instance()->randShort(4) + 22 + x;
+					mpgain += Randomizer::Instance()->randShort(2) + 18;
+					break;
+				default: // GM
+					hpgain += 150;
+					mpgain += 150;
 			}
 			if (player->getJob() > 0)
 				spgain += 3;
@@ -213,7 +219,13 @@ void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract
 					hpgain = (isreset ? (issubtract ? -10 : 6) : Randomizer::Instance()->randShort(4) + 6);
 					mpgain = (isreset ? (issubtract ? (-1 * (20 + 2 * y)) : 18) : (Randomizer::Instance()->randShort(2) + 18 + 2 * y));
 					break;
-				default: // Bowman, Thief, Pirate, GM
+				case 5: // Pirate
+					if (player->getSkills()->getSkillLevel(5100000) > 0)
+						y = Skills::skills[5100000][player->getSkills()->getSkillLevel(5100000)].y;
+					hpgain = (isreset ? (issubtract ? (-1 * (22 + y)) : 18) : (Randomizer::Instance()->randShort(4) + 18 + y));
+					mpgain = (isreset ? (issubtract ? -16 : 14) : Randomizer::Instance()->randShort(2) + 2);
+					break;
+				default: // Bowman, Thief, GM
 					hpgain = (isreset ? (issubtract ? -20 : 16) : Randomizer::Instance()->randShort(4) + 16);
 					mpgain = (isreset ? (issubtract ? -12 : 10) : Randomizer::Instance()->randShort(2) + 10);
 					break;
