@@ -366,7 +366,7 @@ elseif state == 1 then
 		addSkillLevel(5121000, 20)
 		addSkillLevel(5121001, 30)
 		addSkillLevel(5121002, 30)
-		addSkillLevel(5121003, 30)
+		addSkillLevel(5121003, 20)
 		addSkillLevel(5121004, 30)
 		addSkillLevel(5121005, 30)
 		addSkillLevel(5121007, 30)
