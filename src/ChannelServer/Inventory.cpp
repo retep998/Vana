@@ -105,12 +105,12 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		if (ISRECHARGEABLE(item->id)) amount = item->amount;
 		Item droppeditem = Item(item);
 		droppeditem.amount = amount;
-		item->amount -= amount;
-		if (item->amount == 0) {
+		if (item->amount == amount) {
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 			player->getInventory()->deleteItem(inv, slot1);
 		}
 		else {
+			item->amount -= amount;
 			player->getInventory()->changeItemAmount(item->id, -amount);
 			InventoryPacket::updateItemAmounts(player, inv, slot1, item->amount, 0, 0);
 		}
