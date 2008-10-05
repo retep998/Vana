@@ -356,9 +356,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		else if (command == "npc") {
 			int32_t npcid = atoi(next_token);
 			NPC *npc = new NPC(npcid, player);
-			if (!npc->run()) {
-				PlayerPacket::showMessage(player, "Invalid NPC entered.", 5);
-			}
+			npc->run();
 		}
 		else if (command == "addsp") {
 			if (strlen(next_token) > 0) {
