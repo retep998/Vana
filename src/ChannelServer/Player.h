@@ -152,7 +152,7 @@ public:
 	void saveAll();
 	void setOnline(bool online);
 	void setLevelDate();
-	void acceptDeath(bool justConnected = false);
+	void acceptDeath();
 private:
 	void playerConnect(ReadPacket *packet);
 	void changeKey(ReadPacket *packet);
