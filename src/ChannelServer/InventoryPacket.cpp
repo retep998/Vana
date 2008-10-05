@@ -203,10 +203,15 @@ void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, uint
 		packet.addInt64(0);
 		for (int8_t i = 0; i < 8; i++)
 			packet.addByte(types[i]);
-		for (size_t i = 0; i < vals.size(); i++)
-			packet.addShort(vals[i]);
-		packet.addByte(1);
+		for (size_t i = 0; i < vals.size(); i++) {
+			if (morph)
+				packet.addByte((int8_t)vals[i]);
+			else
+				packet.addShort(vals[i]);
+		}
 		packet.addShort(0);
+		if (morph)
+			packet.addShort(0);
 		packet.addByte(0);
 		Maps::maps[player->getMap()]->sendPacket(packet, player);
 	}

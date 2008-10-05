@@ -730,6 +730,24 @@ void Inventory::useCashItem(Player *player, ReadPacket *packet) {
 			}
 			break;
 		}
+		case 5300000: // Fungus Scroll
+		case 5300001: // Oinker Delight
+		case 5300002: { // Zeta Nightmare
+			ItemInfo item = items[itemid];
+			int16_t alchemist = 0;
+			int32_t time = item.cons.time;
+			if (player->getSkills()->getSkillLevel(4110000) > 0)
+				alchemist = Skills::skills[4110000][player->getSkills()->getSkillLevel(4110000)].x;
+			if (alchemist > 0)
+				time = (time * alchemist) / 100;
+			InventoryPacket::useItem(player, itemid, time * 1000, item.cons.types, item.cons.vals, true);
+			Timer::Id id(Timer::Types::ItemTimer, itemid, 0);
+			player->getTimers()->removeTimer(id);
+			new Timer::Timer(bind(&Inventory::endItem, player,
+				itemid), id, player->getTimers(), time * 1000, false);
+			used = true;
+			break;
+		}
 		default:
 			break;
 	}
