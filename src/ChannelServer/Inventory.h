@@ -151,6 +151,7 @@ namespace Inventory {
 	void addNewItem(Player *player, int32_t itemid, int16_t amount);
 	void takeItem(Player *player, int32_t itemid, uint16_t howmany);
 	void useItem(Player *player, ReadPacket *packet);
+	void useItem(Player *player, int32_t itemid);
 	void cancelItem(Player *player, ReadPacket *packet);
 	void endItem(Player *player, int32_t itemid);
 	void useSkillbook(Player *player, ReadPacket *packet);
