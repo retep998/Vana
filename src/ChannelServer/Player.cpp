@@ -216,7 +216,7 @@ void Player::playerConnect(ReadPacket *packet) {
 	}
 
 	if (hp == 0) // If dead
-		hp = 50;
+		acceptDeath(false);
 	m_pos = Maps::maps[map]->getSpawnPoint(mappos)->pos;
 	m_stance = 0;
 	m_foothold = 0;
@@ -577,15 +577,18 @@ void Player::setLevelDate() {
 	query.exec();
 }
 
-void Player::acceptDeath() {
+void Player::acceptDeath(bool justConnected) {
 	int32_t tomap;
 	if (Maps::maps.find(this->getMap()) == Maps::maps.end())
 		tomap = this->getMap();
 	else
 		tomap = Maps::maps[this->getMap()]->getInfo().rm;
 	setHP(50, false);
-	Buffs::stopAllBuffs(this);
-	Maps::changeMap(this, tomap, 0);
+	
+	if (!justConnected) {
+		Buffs::stopAllBuffs(this);
+		Maps::changeMap(this, tomap, 0);
+	}
 }
 
 bool Player::hasGMEquip() {
