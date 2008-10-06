@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "ReadPacket.h"
 #include "Movement.h"
-#include <boost/format.hpp>
 
 // Summon Class
 Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(summonid), level(level), hp(0) {
@@ -54,7 +53,7 @@ LoopingId Summons::summonids;
 void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 	Summon *summon = new Summon(summonids.next(), skillid, level);
 	bool puppet = ISPUPPET(skillid);
-	removeSummon(player, puppet, true, false, false);
+	removeSummon(player, puppet, true, false);
 	if (puppet)
 		summon->setPos( Maps::maps[player->getMap()]->findFloor(Pos((player->getPos().x + 200), player->getPos().y)) );
 	else
@@ -91,7 +90,7 @@ void Summons::showSummons(Player *ofplayer, Player *toplayer) {
 
 void Summons::moveSummon(Player *player, ReadPacket *packet) {
 	int32_t summonid = packet->getInt();
-	packet->skipBytes(4); // I am not certain what this is, but in the Odin(teh) source they seemed to think it was original position. However, it caused AIDS.
+	packet->skipBytes(4); // I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
 	Summon *summon = player->getSummons()->getSummon(summonid);
 	if (summon == 0)
 		// Up to no good, lag, or something else

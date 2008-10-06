@@ -29,7 +29,7 @@ class LoopingId;
 namespace Summons {
 	extern LoopingId summonids;
 	void useSummon(Player *player, int32_t skillid, uint8_t level);
-	void removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, bool fromTimer, bool showMessage = false);
+	void removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, bool fromTimer = false, bool showMessage = false);
 	void showSummon(Player *player);
 	void showSummons(Player *ofplayer, Player *toplayer);
 	void moveSummon(Player *Player, ReadPacket *packet);
