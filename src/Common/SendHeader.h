@@ -76,7 +76,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_DAMAGE_MOB_SUMMON 0x88
 #define SEND_DAMAGE_SUMMON 0x89
 #define SEND_MOVE_PLAYER 0x8c
-#define SEND_DAMAGE_MOB 0x8d
+#define SEND_DAMAGE_MOB_MELEE 0x8d
 #define SEND_DAMAGE_MOB_RANGED 0x8e
 #define SEND_DAMAGE_MOB_SPELL 0x8f
 #define SEND_SPECIAL_SKILL 0x91
@@ -98,10 +98,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_CONTROL_MOB 0xb0
 #define SEND_MOVE_MOB 0xb1
 #define SEND_MOVE_MOB_RESPONSE 0xb2
+#define SEND_APPLY_MOB_STATUS 0xb4
+#define SEND_CANCEL_MOB_STATUS 0xb5
+#define SEND_DAMAGE_MOB 0xb8
 #define SEND_SHOW_MOB_HP 0xbc
 #define SEND_SHOW_DRAGGED 0xbd // New in .56, Monster Magnet'd mobs get their own packet
 #define SEND_SHOW_NPC 0xc1
-#define SEND_SHOW_NPC2 0xc3
+#define SEND_CONTROL_NPC 0xc3
+#define SEND_ANIMATE_NPC 0xc4
 #define SEND_DROP_ITEM 0xcc
 #define SEND_TAKE_DROP 0xcd
 #define SEND_TRIGGER_REACTOR 0xd5

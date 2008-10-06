@@ -21,10 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 class Player;
+class ReadPacket;
 struct NPCSpawnInfo;
 
 namespace NPCPacket {
 	void showNPC(Player *player, NPCSpawnInfo npc, int32_t i);
+	void animateNPC(Player *player, ReadPacket *pack);
 };
 
 #endif

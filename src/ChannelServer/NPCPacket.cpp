@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NPCPacket.h"
 #include "MapleSession.h"
 #include "Maps.h"
+#include "ReadPacket.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "SendHeader.h"
@@ -36,7 +37,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i) {
 	packet.addByte(1);
 	player->getSession()->send(packet);
 	packet = PacketCreator();
-	packet.addShort(SEND_SHOW_NPC2);
+	packet.addShort(SEND_CONTROL_NPC);
 	packet.addByte(1);
 	packet.addInt(i+0x64);
 	packet.addInt(npc.id);
@@ -47,5 +48,21 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i) {
 	packet.addShort(npc.rx0);
 	packet.addShort(npc.rx1);
 	packet.addByte(1);
+	player->getSession()->send(packet);
+}
+
+void NPCPacket::animateNPC(Player *player, ReadPacket *pack) {
+	size_t len = pack->getBufferLength();
+
+	PacketCreator packet;
+	packet.addShort(SEND_ANIMATE_NPC);
+	if (len == 6) { // NPC talking
+		packet.addInt(pack->getInt());
+		packet.addShort(pack->getShort());
+	}
+
+	else if (len > 6) { // NPC moving
+		packet.addBuffer(pack->getBuffer(), len - 9);
+	}
 	player->getSession()->send(packet);
 }

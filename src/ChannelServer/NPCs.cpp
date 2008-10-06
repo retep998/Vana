@@ -122,6 +122,10 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 	npc->run();
 }
 
+void NPCs::handleNPCAnimation(Player *player, ReadPacket *packet) {
+	NPCPacket::animateNPC(player, packet);
+}
+
 NPC::NPC(int32_t npcid, Player *player, bool isquest, bool isstart) :
 npcid(npcid),
 player(player),

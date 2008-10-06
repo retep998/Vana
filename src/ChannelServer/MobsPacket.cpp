@@ -91,7 +91,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket *pack) {
 		s4211006 = true;
 	}
 	PacketCreator packet;
-	packet.addShort(SEND_DAMAGE_MOB);
+	packet.addShort(SEND_DAMAGE_MOB_MELEE);
 	packet.addInt(player->getId());
 	packet.addByte(tbyte);
 	if (skillid > 0) {

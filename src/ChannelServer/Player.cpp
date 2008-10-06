@@ -102,6 +102,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
+		case RECV_ANIMATE_NPC: NPCs::handleNPCAnimation(this, packet); break;
 		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
 		case RECV_PET_CHAT: Pets::chat(this, packet); break;
 		case RECV_PET_COMMAND: Pets::showAnimation(this, packet); break;
