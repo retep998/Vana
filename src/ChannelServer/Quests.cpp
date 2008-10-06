@@ -60,7 +60,6 @@ bool Quests::giveItem(Player *player, int32_t itemid, int16_t amount) {
 		}
 		Inventory::takeItem(player, itemid, -amount);
 	}
-
 	return true;
 }
 
@@ -68,9 +67,8 @@ bool Quests::giveMesos(Player *player, int32_t amount) {
 	if (amount < 0 && player->getInventory()->getMesos() + amount < 0) { // Do a bit of checking if meso is being taken to see if it's enough
 		return false;
 	}
-	player->getInventory()->setMesos(player->getInventory()->getMesos()+amount);
+	player->getInventory()->modifyMesos(amount);
 	QuestsPacket::giveMesos(player, amount);
-
 	return true;
 }
 
@@ -91,9 +89,9 @@ void Quests::getQuest(Player *player, ReadPacket *packet) {
 		player->getQuests()->finishQuest(questid, npcid);
 	}
 	else if (act == 4) {
-		NPCs::handleQuestNPC(player, npcid, 1);
+		NPCs::handleQuestNPC(player, npcid, true);
 	}
 	else if (act == 5) {
-		NPCs::handleQuestNPC(player, npcid, 0);
+		NPCs::handleQuestNPC(player, npcid, false);
 	}
 }

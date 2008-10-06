@@ -49,13 +49,13 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::updateQuest(Player *player, Quest quest) {
+void QuestsPacket::updateQuest(Player *player, Quest &quest) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTE);
 	packet.addByte(1);
 	packet.addShort(quest.id);
 	packet.addByte(1);
-	
+
 	std::ostringstream info;
 	for (size_t i = 0; i < quest.mobs.size(); i++) {
 		info << std::setw(3) << std::setfill('0') << quest.mobs[i].count << '\0';
@@ -84,9 +84,9 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 	packet = PacketCreator();
 	packet.addShort(SEND_UPDATE_QUEST);
 	packet.addByte(8);
-	packet.addShort(questid); 
-	packet.addInt(npcid); 
-	packet.addShort(nextquest); 
+	packet.addShort(questid);
+	packet.addInt(npcid);
+	packet.addShort(nextquest);
 	player->getSession()->send(packet);
 	packet = PacketCreator();
 	packet.addShort(SEND_GAIN_ITEM);
@@ -101,7 +101,7 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 
 void QuestsPacket::giveItem(Player *player, int32_t itemid, int32_t amount) {
 	PacketCreator packet;
-	packet.addShort(SEND_GAIN_ITEM); 
+	packet.addShort(SEND_GAIN_ITEM);
 	packet.addByte(3);
 	packet.addByte(1); // Number of different items (itemid and amount gets repeated)
 	packet.addInt(itemid);
