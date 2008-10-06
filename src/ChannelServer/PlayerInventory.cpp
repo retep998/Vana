@@ -90,9 +90,7 @@ void PlayerInventory::setMesos(int32_t mesos, bool is) {
 }
 
 bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
-	bool negative = false;
-	if (mod < 0)
-		negative = true;
+	bool negative = mod < 0;
 	if (negative && (mesos + mod) < 0)
 		mesos = 0;
 	else {
