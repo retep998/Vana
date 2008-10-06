@@ -35,9 +35,7 @@ struct QuestRequestInfo {
 	int32_t id;
 	int16_t count;
 };
-
 typedef vector<QuestRequestInfo> QuestRequestsInfo;
-
 
 struct QuestRewardInfo {
 	bool start;
@@ -52,7 +50,6 @@ struct QuestRewardInfo {
 	int8_t job;
 	int8_t prop;
 };
-
 typedef vector<QuestRewardInfo> QuestRewardsInfo;
 
 struct QuestInfo {
@@ -61,20 +58,19 @@ struct QuestInfo {
 	int16_t nextquest;
 };
 
-struct QuestComp {
-	int32_t id;
-	int64_t time;
-};
-
 struct QuestMob {
+	QuestMob() : count(0) { }
 	int32_t id;
-	int32_t count;
+	int16_t count;
+	int16_t maxcount;
 };
 
 struct Quest {
+	Quest() : done(false), completed(0) { }
 	int16_t id;
-	bool done;
 	vector<QuestMob> mobs;
+	bool done;
+	int64_t completed; // Time completed
 };
 
 namespace Quests {

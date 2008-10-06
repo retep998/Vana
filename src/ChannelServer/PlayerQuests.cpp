@@ -28,60 +28,54 @@ void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 	QuestsPacket::acceptQuest(player, questid, npcid);
 	Quest quest;
 	quest.id = questid;
-	quest.done = 0;
-	for (size_t i = 0; i < Quests::quests[questid].requests.size(); i++) {
-		if (Quests::quests[questid].requests[i].ismob) {
+	quest.done = false;
+	QuestInfo &questinfo = Quests::quests[questid];
+	for (size_t i = 0; i < questinfo.requests.size(); i++) {
+		if (questinfo.requests[i].ismob) {
 			QuestMob mob;
-			mob.id = Quests::quests[questid].requests[i].id;
-			mob.count = 0;
+			mob.id = questinfo.requests[i].id;
+			mob.maxcount = questinfo.requests[i].count;
 			quest.mobs.push_back(mob);
 		}
 	}
-	for (size_t i = 0; i < Quests::quests[questid].rewards.size(); i++) {
-		if (!Quests::quests[questid].rewards[i].start) {
-			if (Quests::quests[questid].rewards[i].isexp) {
-				Levels::giveEXP(player, Quests::quests[questid].rewards[i].id, 1);
+	for (size_t i = 0; i < questinfo.rewards.size(); i++) {
+		if (!questinfo.rewards[i].start) {
+			if (questinfo.rewards[i].isexp) {
+				Levels::giveEXP(player, questinfo.rewards[i].id, 1);
 			}
-			else if (Quests::quests[questid].rewards[i].isitem) {
-				if (Quests::quests[questid].rewards[i].count > 0) {
-					QuestsPacket::giveItem(player, Quests::quests[questid].rewards[i].id, Quests::quests[questid].rewards[i].count);
-					Inventory::addNewItem(player, Quests::quests[questid].rewards[i].id, Quests::quests[questid].rewards[i].count);
+			else if (questinfo.rewards[i].isitem) {
+				if (questinfo.rewards[i].count > 0) {
+					QuestsPacket::giveItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
+					Inventory::addNewItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
 				}
-				else if (Quests::quests[questid].rewards[i].count < 0) {
-					QuestsPacket::giveItem(player, Quests::quests[questid].rewards[i].id, Quests::quests[questid].rewards[i].count);
-					Inventory::takeItem(player, Quests::quests[questid].rewards[i].id, Quests::quests[questid].rewards[i].count);
+				else if (questinfo.rewards[i].count < 0) {
+					QuestsPacket::giveItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
+					Inventory::takeItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
 				}
 				else {
-					QuestsPacket::giveItem(player, Quests::quests[questid].rewards[i].id, -player->getInventory()->getItemAmount(Quests::quests[questid].rewards[i].id));
-					Inventory::takeItem(player, Quests::quests[questid].rewards[i].id, player->getInventory()->getItemAmount(Quests::quests[questid].rewards[i].id));
+					QuestsPacket::giveItem(player, questinfo.rewards[i].id, -player->getInventory()->getItemAmount(questinfo.rewards[i].id));
+					Inventory::takeItem(player, questinfo.rewards[i].id, player->getInventory()->getItemAmount(questinfo.rewards[i].id));
 				}
 			}
-			else if (Quests::quests[questid].rewards[i].ismesos) {
-				player->getInventory()->modifyMesos(Quests::quests[questid].rewards[i].id);
-				QuestsPacket::giveMesos(player, Quests::quests[questid].rewards[i].id);
+			else if (questinfo.rewards[i].ismesos) {
+				player->getInventory()->modifyMesos(questinfo.rewards[i].id);
+				QuestsPacket::giveMesos(player, questinfo.rewards[i].id);
 			}
 		}
 	}
 	checkDone(quest);
-	quests.push_back(quest);
+	quests[questid] = quest;
 }
 
 void PlayerQuests::updateQuestMob(int32_t mobid) {
-	for (size_t i = 0; i < quests.size(); i++) {
-		for (size_t j = 0; j < quests[i].mobs.size(); j++) {
-			if (quests[i].mobs[j].id == mobid && !quests[i].done) {
-				int32_t maxcount = 0;
-				for (size_t k = 0; k < Quests::quests[quests[i].id].requests.size(); k++) {
-					if (Quests::quests[quests[i].id].requests[k].id == mobid) {
-						maxcount = Quests::quests[quests[i].id].requests[k].count;
-					}
-				}
-				if (quests[i].mobs[j].count < maxcount) {
-					quests[i].mobs[j].count++;
-					QuestsPacket::updateQuest(player, quests[i]);
-					if (quests[i].mobs[j].count == maxcount) {
-						checkDone(quests[i]);
-					}
+	for (unordered_map<int32_t, Quest>::iterator iter = quests.begin(); iter != quests.end(); iter++) {
+		for (size_t i = 0; i < iter->second.mobs.size(); i ++) {
+			int16_t maxcount = iter->second.mobs[i].maxcount;
+			if (iter->second.mobs[i].id == mobid && !iter->second.done && iter->second.mobs[i].count < maxcount) {
+				iter->second.mobs[i].count ++;
+				QuestsPacket::updateQuest(player, iter->second);
+				if (iter->second.mobs[i].count == maxcount) {
+					checkDone(iter->second);
 				}
 			}
 		}
@@ -89,111 +83,97 @@ void PlayerQuests::updateQuestMob(int32_t mobid) {
 }
 
 void PlayerQuests::checkDone(Quest &quest) {
-	if (Quests::quests[quest.id].requests.size() == 0) {
-		quest.done = 1;
+	QuestInfo &questinfo = Quests::quests[quest.id];
+	quest.done = true;
+	if (questinfo.requests.size() == 0) {
 		return;
 	}
-	bool is = true;
-	for (uint32_t i = 0; i < Quests::quests[quest.id].requests.size(); i++) {
-		if (Quests::quests[quest.id].requests[i].isitem) {
-			if ((player->getInventory()->getItemAmount(Quests::quests[quest.id].requests[i].id) < Quests::quests[quest.id].requests[i].count && Quests::quests[quest.id].requests[i].count > 0) || (Quests::quests[quest.id].requests[i].count == 0 && player->getInventory()->getItemAmount(Quests::quests[quest.id].requests[i].id) != 0)) {
-				is = false;
+	for (uint32_t i = 0; i < questinfo.requests.size(); i++) {
+		if (questinfo.requests[i].isitem) {
+			if ((player->getInventory()->getItemAmount(questinfo.requests[i].id) < questinfo.requests[i].count && questinfo.requests[i].count > 0) || (questinfo.requests[i].count == 0 && player->getInventory()->getItemAmount(questinfo.requests[i].id) != 0)) {
+				quest.done = false;
 				break;
 			}
 		}
-		else if (Quests::quests[quest.id].requests[i].ismob) {
+		else if (questinfo.requests[i].ismob) {
 			int32_t killed = 0;
 			for (uint32_t j = 0; j < quest.mobs.size(); j++) {
-				if (quest.mobs[j].id == Quests::quests[quest.id].requests[i].id) {
+				if (quest.mobs[j].id == questinfo.requests[i].id) {
 					killed = quest.mobs[j].count;
 					break;
 				}
 			}
-			if (killed < Quests::quests[quest.id].requests[i].count) {
-				is = false;
+			if (killed < questinfo.requests[i].count) {
+				quest.done = false;
 				break;
 			}
 		}
 	}
-	if (is) {
-		quest.done = 1;
+	if (quest.done) {
 		QuestsPacket::doneQuest(player, quest.id);
 	}
 }
 
 void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
+	QuestInfo &questinfo = Quests::quests[questid];
 	int32_t chance = 0;
-	for (size_t i = 0; i < Quests::quests[questid].rewards.size(); i++) {
-		if (Quests::quests[questid].rewards[i].start) {
-			if (Quests::quests[questid].rewards[i].isexp) {
-				Levels::giveEXP(player, Quests::quests[questid].rewards[i].id * ChannelServer::Instance()->getQuestExprate(), 1);
+	for (size_t i = 0; i < questinfo.rewards.size(); i++) {
+		if (questinfo.rewards[i].start) {
+			if (questinfo.rewards[i].isexp) {
+				Levels::giveEXP(player, questinfo.rewards[i].id * ChannelServer::Instance()->getQuestExprate(), 1);
 			}
-			else if (Quests::quests[questid].rewards[i].isitem) {
-				if (Quests::quests[questid].rewards[i].prop == 0) {
-					if (Quests::quests[questid].rewards[i].count>0) {
-						QuestsPacket::giveItem(player, Quests::quests[questid].rewards[i].id, Quests::quests[questid].rewards[i].count);
-						Inventory::addNewItem(player, Quests::quests[questid].rewards[i].id, Quests::quests[questid].rewards[i].count);
+			else if (questinfo.rewards[i].isitem) {
+				if (questinfo.rewards[i].prop == 0) {
+					if (questinfo.rewards[i].count > 0) {
+						QuestsPacket::giveItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
+						Inventory::addNewItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
 					}
-					else if (Quests::quests[questid].rewards[i].count<0) {
-						QuestsPacket::giveItem(player, Quests::quests[questid].rewards[i].id, Quests::quests[questid].rewards[i].count);
-						Inventory::takeItem(player, Quests::quests[questid].rewards[i].id, -Quests::quests[questid].rewards[i].count);
+					else if (questinfo.rewards[i].count < 0) {
+						QuestsPacket::giveItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
+						Inventory::takeItem(player, questinfo.rewards[i].id, -questinfo.rewards[i].count);
 					}
-					else{
-						QuestsPacket::giveItem(player, Quests::quests[questid].rewards[i].id, -player->getInventory()->getItemAmount(Quests::quests[questid].rewards[i].id));
-						Inventory::takeItem(player, Quests::quests[questid].rewards[i].id, player->getInventory()->getItemAmount(Quests::quests[questid].rewards[i].id));
+					else {
+						QuestsPacket::giveItem(player, questinfo.rewards[i].id, -player->getInventory()->getItemAmount(questinfo.rewards[i].id));
+						Inventory::takeItem(player, questinfo.rewards[i].id, player->getInventory()->getItemAmount(questinfo.rewards[i].id));
 					}
-
 				}
-				else if (Quests::quests[questid].rewards[i].prop > 0) {
-					chance+=Quests::quests[questid].rewards[i].prop;
+				else if (questinfo.rewards[i].prop > 0) {
+					chance += questinfo.rewards[i].prop;
 				}
 			}
-			else if (Quests::quests[questid].rewards[i].ismesos) {
-				player->getInventory()->modifyMesos(Quests::quests[questid].rewards[i].id);
-				QuestsPacket::giveMesos(player, Quests::quests[questid].rewards[i].id);
+			else if (questinfo.rewards[i].ismesos) {
+				player->getInventory()->modifyMesos(questinfo.rewards[i].id);
+				QuestsPacket::giveMesos(player, questinfo.rewards[i].id);
 			}
 		}
 	}
 	if (chance > 0) {
 		int32_t random = Randomizer::Instance()->randInt(chance - 1);
 		chance = 0;
-		for (size_t i = 0; i < Quests::quests[questid].rewards.size(); i++) {
-			if (Quests::quests[questid].rewards[i].start) {
-				if (Quests::quests[questid].rewards[i].isitem) {
-					if (Quests::quests[questid].rewards[i].prop > 0) {
-						if (chance>=random) {
-							QuestsPacket::giveItem(player, Quests::quests[questid].rewards[i].id, Quests::quests[questid].rewards[i].count);
-							if (Quests::quests[questid].rewards[i].count>0)
-								Inventory::addNewItem(player, Quests::quests[questid].rewards[i].id, Quests::quests[questid].rewards[i].count);
-							else	
-								Inventory::takeItem(player, Quests::quests[questid].rewards[i].id, -Quests::quests[questid].rewards[i].count);
+		for (size_t i = 0; i < questinfo.rewards.size(); i++) {
+			if (questinfo.rewards[i].start) {
+				if (questinfo.rewards[i].isitem) {
+					if (questinfo.rewards[i].prop > 0) {
+						if (chance >= random) {
+							QuestsPacket::giveItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
+							if (questinfo.rewards[i].count > 0)
+								Inventory::addNewItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
+							else
+								Inventory::takeItem(player, questinfo.rewards[i].id, -questinfo.rewards[i].count);
 							break;
 						}
 						else
-							chance+=Quests::quests[questid].rewards[i].prop;
+							chance += questinfo.rewards[i].prop;
 					}
 				}
 			}
 		}
 	}
-	for (size_t i = 0; i < quests.size(); i++) {
-		if (quests[i].id == questid) {
-			quests.erase(quests.begin() + i);
-			break;
-		}
-	}
-	QuestComp quest;
-	quest.id = questid;
-	quest.time = TimeUtilities::getServerTime();
-	questscomp.push_back(quest);
-	QuestsPacket::questFinish(player, questid, npcid, Quests::quests[questid].nextquest, quest.time);
+	quests[questid].mobs.clear();
+	quests[questid].completed = TimeUtilities::getServerTime();
+	QuestsPacket::questFinish(player, questid, npcid, questinfo.nextquest, quests[questid].completed);
 }
 
 bool PlayerQuests::isQuestActive(int16_t questid) {
-	for (size_t i = 0; i < quests.size(); i++) {
-		if (quests[i].id == questid) {
-			return true;
-		}
-	}
-	return false;
+	return quests.find(questid) != quests.end();
 }

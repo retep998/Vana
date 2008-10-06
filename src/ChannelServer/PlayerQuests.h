@@ -19,13 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERQUESTS_H
 
 #include "Types.h"
-#include <vector>
+#include <unordered_map>
 
-using std::vector;
+using std::tr1::unordered_map;
 
 class Player;
 struct Quest;
-struct QuestComp;
 
 class PlayerQuests {
 public:
@@ -37,8 +36,7 @@ public:
 	bool isQuestActive(int16_t questid);
 private:
 	Player *player;
-	vector<Quest> quests;
-	vector<QuestComp> questscomp;
+	unordered_map<int32_t, Quest> quests;
 };
 
 #endif
