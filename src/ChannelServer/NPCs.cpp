@@ -189,7 +189,7 @@ PacketCreator & NPC::npcPacket(int8_t type) {
 	packet.addInt(npcid);
 	packet.addByte(type);
 	packet.addString(text);
-	
+
 	text = "";
 
 	PacketCreator &ret = packet;
