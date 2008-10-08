@@ -66,11 +66,16 @@ struct QuestMob {
 };
 
 struct Quest {
-	Quest() : done(false), completed(0) { }
+	Quest() : done(false) { }
 	int16_t id;
 	vector<QuestMob> mobs;
 	bool done;
-	int64_t completed; // Time completed
+};
+
+struct QuestComp {
+	QuestComp(int16_t id, int64_t time) : id(id), time(time) { }
+	int16_t id;
+	int64_t time;
 };
 
 namespace Quests {

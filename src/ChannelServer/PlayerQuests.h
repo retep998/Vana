@@ -20,11 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <unordered_map>
+#include <vector>
 
 using std::tr1::unordered_map;
+using std::vector;
 
 class Player;
 struct Quest;
+struct QuestComp;
 
 class PlayerQuests {
 public:
@@ -37,6 +40,7 @@ public:
 private:
 	Player *player;
 	unordered_map<int32_t, Quest> quests;
+	vector<QuestComp> completed;
 };
 
 #endif
