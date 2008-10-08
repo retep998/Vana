@@ -49,7 +49,7 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::updateQuest(Player *player, Quest &quest) {
+void QuestsPacket::updateQuest(Player *player, const Quest &quest) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTE);
 	packet.addByte(1);
