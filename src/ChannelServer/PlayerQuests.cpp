@@ -169,9 +169,10 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 			}
 		}
 	}
-	quests[questid].mobs.clear();
-	quests[questid].completed = TimeUtilities::getServerTime();
-	QuestsPacket::questFinish(player, questid, npcid, questinfo.nextquest, quests[questid].completed);
+	quests.erase(questid);
+	QuestComp complete(questid, TimeUtilities::getServerTime());
+	completed.push_back(complete);
+	QuestsPacket::questFinish(player, questid, npcid, questinfo.nextquest, complete.time);
 }
 
 bool PlayerQuests::isQuestActive(int16_t questid) {
