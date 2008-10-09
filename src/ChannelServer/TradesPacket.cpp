@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player2) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(0x05);
 	packet.addByte(0x03);
 	packet.addByte(0x02);
@@ -45,7 +45,7 @@ void TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player
 
 void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tradeid) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(0x02);
 	packet.addByte(0x03);
 	packet.addString(player->getName());
@@ -55,7 +55,7 @@ void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tr
 
 void TradesPacket::sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(type);
 	packet.addByte(message);
 	packet.addString(player->getName());
@@ -64,7 +64,7 @@ void TradesPacket::sendTradeMessage(Player *player, Player *receiver, int8_t typ
 
 void TradesPacket::sendTradeMessage(Player *receiver, int8_t type, int8_t message) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(type);
 	packet.addByte(0x00);
 	packet.addByte(message);
@@ -73,7 +73,7 @@ void TradesPacket::sendTradeMessage(Player *receiver, int8_t type, int8_t messag
 
 void TradesPacket::sendTradeChat(Player *player, uint8_t blue, const string &chat) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(0x06);
 	packet.addByte(0x08);
 	packet.addByte(blue);
@@ -83,7 +83,7 @@ void TradesPacket::sendTradeChat(Player *player, uint8_t blue, const string &cha
 
 void TradesPacket::sendAddUser(Player *original, Player *newb, int8_t slot) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(0x04);
 	packet.addByte(slot);
 	PlayerPacketHelper::addPlayerDisplay(packet, newb);
@@ -93,7 +93,7 @@ void TradesPacket::sendAddUser(Player *original, Player *newb, int8_t slot) {
 
 void TradesPacket::sendLeaveTrade(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(0x0A);
 	packet.addByte(0x01); // Slot, doesn't matter for trades
 	packet.addByte(0x02); // Message, doesn't matter for trades
@@ -102,7 +102,7 @@ void TradesPacket::sendLeaveTrade(Player *player) {
 
 void TradesPacket::sendAddMesos(Player *receiver, uint8_t slot, int32_t amount) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(0x0F);
 	packet.addByte(slot);
 	packet.addInt(amount);
@@ -111,14 +111,14 @@ void TradesPacket::sendAddMesos(Player *receiver, uint8_t slot, int32_t amount) 
 
 void TradesPacket::sendAccepted(Player *destination) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(0x10);
 	destination->getSession()->send(packet);
 }
 
 void TradesPacket::sendEndTrade(Player *destination, uint8_t message) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(0x0A);
 	packet.addByte(0x00);
 	packet.addByte(message);
@@ -132,7 +132,7 @@ void TradesPacket::sendEndTrade(Player *destination, uint8_t message) {
 
 void TradesPacket::sendAddItem(Player *destination, uint8_t player, int8_t slot, int8_t inventory, Item *item) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_ACTION);
+	packet.addShort(SEND_PLAYER_ROOM_ACTION);
 	packet.addByte(0x0E);
 	packet.addByte(player);
 	PlayerPacketHelper::addItemInfo(packet, slot, item);

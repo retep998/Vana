@@ -113,7 +113,7 @@ void Player::realHandleRequest(ReadPacket *packet) {
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
 		case RECV_DAMAGE_MOB_SUMMON: Mobs::damageMobSummon(this, packet); break;
 		case RECV_DAMAGE_SUMMON: Summons::damageSummon(this, packet); break;
-		case RECV_SHOP_ACTION: Trades::tradeHandler(this, packet); break;
+		case RECV_PLAYER_ROOM_ACTION: Trades::tradeHandler(this, packet); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_USE_STORAGE: Inventory::useStorage(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
