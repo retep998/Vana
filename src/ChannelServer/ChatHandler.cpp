@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "ReadPacket.h"
 #include "Shops.h"
+#include "StoragePacket.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include <string>
 #include <vector>
@@ -598,6 +599,9 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 		}
 		else if (command == "eventinstruct") {
 			MapPacket::showEventInstructions(player->getMap());
+		}
+		else if (command == "storage") {
+			StoragePacket::showStorage(player, 9900000);
 		}
 		return;
 	}
