@@ -274,8 +274,12 @@ void Inventory::useStorage(Player *player, ReadPacket *packet) {
 		if (item == 0 || amount > player->getInventory()->getItemAmountBySlot(inv, slot)) // Be careful, it might be a trap.
 			return; // Do a barrel roll
 
-		if (inv == 1) // For equips we create a new object for storage with the inventory object, and allow the one in the inventory to go bye bye.
+		if (inv == 1 || ISRECHARGEABLE(itemid)) {
+			// For equips or rechargeable items (stars/bullets) we create a 
+			// new object for storage with the inventory object, and allow
+			// the one in the inventory to go bye bye.
 			player->getStorage()->addItem(new Item(item));
+		}
 		else // For items we just create a new item based on the ID and amount.
 			player->getStorage()->addItem(new Item(itemid, amount));
 		takeItemSlot(player, inv, slot, amount, true);
