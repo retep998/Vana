@@ -220,7 +220,7 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 		int16_t amount = packet->getShort();
 		int8_t inv = GETINVENTORY(itemid);
 		Item *item = player->getInventory()->getItem(inv, slot);
-		if (item == 0 || item->amount < amount) {
+		if (item == 0 || (!ISRECHARGEABLE(itemid) && amount > item->amount)) {
 			// hacking
 			return;
 		}
@@ -230,7 +230,10 @@ void Inventory::useShop(Player *player, ReadPacket *packet) {
 		else
 			price = items[itemid].price;
 		player->getInventory()->modifyMesos(price * amount);
-		takeItemSlot(player, inv, slot, amount, true);
+		if (ISRECHARGEABLE(itemid))
+			takeItemSlot(player, inv, slot, item->amount, true);
+		else
+			takeItemSlot(player, inv, slot, amount, true);
 		InventoryPacket::bought(player);
 	}
 	else if (type == 2) { // Recharge
@@ -271,7 +274,7 @@ void Inventory::useStorage(Player *player, ReadPacket *packet) {
 		}
 		int8_t inv = GETINVENTORY(itemid);
 		Item *item = player->getInventory()->getItem(inv, slot);
-		if (item == 0 || amount > player->getInventory()->getItemAmountBySlot(inv, slot)) // Be careful, it might be a trap.
+		if (item == 0 || (!ISRECHARGEABLE(itemid) && amount > item->amount)) // Be careful, it might be a trap.
 			return; // Do a barrel roll
 
 		if (inv == 1 || ISRECHARGEABLE(itemid)) {
@@ -282,7 +285,11 @@ void Inventory::useStorage(Player *player, ReadPacket *packet) {
 		}
 		else // For items we just create a new item based on the ID and amount.
 			player->getStorage()->addItem(new Item(itemid, amount));
-		takeItemSlot(player, inv, slot, amount, true);
+
+		if (ISRECHARGEABLE(itemid))
+			takeItemSlot(player, inv, slot, item->amount, true);
+		else
+			takeItemSlot(player, inv, slot, amount, true);
 		player->getInventory()->modifyMesos(-100); // Take 100 mesos for storage cost
 		StoragePacket::addItem(player, inv);
 	}
