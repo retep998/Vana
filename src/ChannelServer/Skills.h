@@ -54,6 +54,7 @@ struct SkillLevelInfo {
 	Pos rb;
 	int16_t cooltime;
 };
+typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 
 struct SpecialSkillInfo { // Hurricane, Big Bang, Monster Magnet, Pierce, etc.
 	SpecialSkillInfo() : skillid(0), level(0), w_speed(0), direction(0) { }
@@ -80,8 +81,6 @@ struct MPEaterInfo { // MP Eater
 	uint16_t prop;
 	bool onlyonce;
 };
-
-typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 
 namespace Skills {
 	extern unordered_map<int32_t, SkillsLevelInfo> skills;
