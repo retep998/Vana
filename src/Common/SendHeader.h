@@ -99,7 +99,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_MOVE_MOB 0xb1
 #define SEND_MOVE_MOB_RESPONSE 0xb2
 #define SEND_APPLY_MOB_STATUS 0xb4
-#define SEND_CANCEL_MOB_STATUS 0xb5
+#define SEND_REMOVE_MOB_STATUS 0xb5
 #define SEND_DAMAGE_MOB 0xb8
 #define SEND_SHOW_MOB_HP 0xbc
 #define SEND_SHOW_DRAGGED 0xbd // New in .56, Monster Magnet'd mobs get their own packet

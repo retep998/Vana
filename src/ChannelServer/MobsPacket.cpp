@@ -37,7 +37,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool sp
 	packet.addInt(mob->getID());
 	packet.addByte(5);
 	packet.addInt(mob->getMobID());
-	packet.addInt(0);
+	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 	packet.addPos(mob->getPos());
 	packet.addByte(2); // Stance
 	packet.addShort(0);
@@ -312,6 +312,36 @@ void MobsPacket::damageMobSummon(Player *player, ReadPacket *pack) {
 		packet.addInt(damage);
 	}
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
+}
+
+void MobsPacket::applyStatus(Mob *mob, int32_t status, const StatusInfo &info, int16_t delay) {
+	PacketCreator packet;
+	packet.addShort(SEND_APPLY_MOB_STATUS);
+	packet.addInt(mob->getID());
+	packet.addInt(status);
+
+	packet.addShort(info.val);
+	if (info.skillid >= 0) {
+		packet.addInt(info.skillid);
+	}
+	else {
+		packet.addShort(info.mobskill);
+		packet.addShort(info.level);
+	}
+	packet.addShort(0);
+
+	packet.addShort(delay);
+	packet.addByte(1);
+	Maps::maps[mob->getMapID()]->sendPacket(packet);
+}
+
+void MobsPacket::removeStatus(Mob *mob, int32_t status) {
+	PacketCreator packet;
+	packet.addShort(SEND_REMOVE_MOB_STATUS);
+	packet.addInt(mob->getID());
+	packet.addInt(status);
+	packet.addByte(1);
+	Maps::maps[mob->getMapID()]->sendPacket(packet);
 }
 
 void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per, bool miniboss) {

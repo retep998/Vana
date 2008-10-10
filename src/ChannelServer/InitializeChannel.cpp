@@ -61,7 +61,7 @@ void Initializing::checkVEDBVersion() {
 // Mobs
 void Initializing::initializeMobs() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.elemAttr, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 
 	mysqlpp::UseQueryResult res;
 	if (!(res = query.use())) {
@@ -79,13 +79,14 @@ void Initializing::initializeMobs() {
 		// Col0 : Mob ID
 		//    1 : HP
 		//    2 : MP
-		//    3 : HP Recovery
-		//    4 : MP Recovery
+		//    3 : Elemental Attributes
+		//    4 : HP Recovery
+		//    5 : MP Recovery
 		//    6 : EXP
-		//    6 : Boss
-		//    7 : HP Color
-		//    8 : HP BG Color
-		//    9 : Mob Summon
+		//    7 : Boss
+		//    8 : HP Color
+		//    9 : HP BG Color
+		//   10 : Mob Summon
 		currentid = atoi(mobRow[0]);
 
 		if (currentid != previousid && previousid != -1) {
@@ -93,17 +94,21 @@ void Initializing::initializeMobs() {
 			mob.summon.clear();
 			mob.skills.clear();
 		}
-		mob.hp  = atoi(mobRow[1]);
-		mob.mp  = atoi(mobRow[2]);
-		mob.hprecovery = atoi(mobRow[3]);
-		mob.mprecovery = atoi(mobRow[4]);
-		mob.exp = atoi(mobRow[5]);
-		mob.boss = atob(mobRow[6]);
-		mob.hpcolor = atoi(mobRow[7]);
-		mob.hpbgcolor = atoi(mobRow[8]);
+		mob.hp = atoi(mobRow[1]);
+		mob.mp = atoi(mobRow[2]);
+		string elemattr(mobRow[3]);
+		mob.hprecovery = atoi(mobRow[4]);
+		mob.mprecovery = atoi(mobRow[5]);
+		mob.exp = atoi(mobRow[6]);
+		mob.boss = atob(mobRow[7]);
+		mob.hpcolor = atoi(mobRow[8]);
+		mob.hpbgcolor = atoi(mobRow[9]);
 
-		if (mobRow[9] != 0) {
-			mob.summon.push_back(atoi(mobRow[9]));
+		mob.canfreeze = (!mob.boss && elemattr.find("I2") == string::npos && elemattr.find("I1") == string::npos);
+		mob.canpoision = (!mob.boss && elemattr.find("S2") == string::npos && elemattr.find("S1") == string::npos);
+
+		if (mobRow[10] != 0) {
+			mob.summon.push_back(atoi(mobRow[10]));
 		}
 
 		previousid = currentid;
