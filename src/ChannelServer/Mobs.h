@@ -114,7 +114,6 @@ namespace Mobs {
 	void damageMobSummon(Player *player, ReadPacket *packet);
 	uint32_t damageMobInternal(Player *player, ReadPacket *packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0, bool ismelee = false);
 	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismelee);
-	void removeMobStatus(Mob *mob, int32_t status);
 	void displayHPBars(Player *player, Mob *mob);
 	void monsterControl(Player *player, ReadPacket *packet);
 	void checkSpawn(int32_t mapid);
