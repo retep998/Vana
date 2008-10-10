@@ -25,6 +25,7 @@ struct Types {
 		CoolTimer,
 		ItemTimer,
 		MapTimer,
+		MobStatusTimer,
 		PetTimer,
 		PingTimer,
 		ReactionTimer,

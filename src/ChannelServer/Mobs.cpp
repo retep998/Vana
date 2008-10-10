@@ -51,6 +51,7 @@ mapid(mapid),
 spawnid(spawnid),
 mobid(mobid),
 status(0),
+timers(new Timer::Container),
 control(0)
 {
 	this->hp = Mobs::mobinfo[mobid].hp;
@@ -62,9 +63,9 @@ void Mob::addStatus(int32_t status, StatusInfo info, clock_t time) {
 		this->status += status;
 	statuses[status] = info;
 	MobsPacket::applyStatus(this, status, info, 300);
-	/*new Timer::Timer(bind(&Mobs::removeMobStatus, this, status),
-		Timer::Id(Timer::Types::SkillTimer, status, 0),
-		getTimers(), time, false);*/
+	new Timer::Timer(bind(&Mob::removeStatus, this, status),
+		Timer::Id(Timer::Types::MobStatusTimer, status, 0),
+		getTimers(), time, false);
 }
 
 void Mob::statusPacket(PacketCreator &packet) {
@@ -579,10 +580,6 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 
 	if (status > 0)
 		mob->addStatus(status, StatusInfo(val, skillid), time);
-}
-
-void Mobs::removeMobStatus(Mob *mob, int32_t status) {
-	mob->removeStatus(status);
 }
 
 void Mobs::spawnMob(Player *player, int32_t mobid, int32_t amount) {
