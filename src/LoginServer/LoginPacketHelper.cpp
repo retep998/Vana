@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.h"
 #include "PacketCreator.h"
 
-void LoginPacketHelper::addCharacter(PacketCreator &packet, Character &charc) {
+void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &charc) {
 	packet.addInt(charc.id);
 	packet.addString(charc.name, 12);
 	packet.addByte(0);
