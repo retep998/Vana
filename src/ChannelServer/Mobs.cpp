@@ -551,6 +551,12 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 				break;
 		}
 	}
+	if (skillid == 4001002) { // Disorder
+		time = Skills::skills[skillid][level].time * 1000;
+		mob->addStatus(WATK, StatusInfo(Skills::skills[skillid][level].x, skillid), time);
+		status = WDEF;
+		val = Skills::skills[skillid][level].y;
+	}
 	if (skillid == 2101003 || skillid == 2201003) { // Slow
 		status = SPEED;
 		val = Skills::skills[skillid][level].x;
