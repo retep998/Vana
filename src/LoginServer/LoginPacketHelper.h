@@ -22,7 +22,7 @@ class PacketCreator;
 struct Character;
 
 namespace LoginPacketHelper {
-	void addCharacter(PacketCreator &packet, Character &charc);
+	void addCharacter(PacketCreator &packet, const Character &charc);
 }
 
 #endif

@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "Worlds.h"
 
-void Characters::showEquips(int32_t id, vector<CharEquip> &vec) {
+void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT itemid, slot FROM items WHERE charid = " << id << " AND inv = 1 AND slot < 0 ORDER BY slot ASC";
 	mysqlpp::StoreQueryResult res = query.store();
@@ -37,7 +37,7 @@ void Characters::showEquips(int32_t id, vector<CharEquip> &vec) {
 	}	
 }
 
-void Characters::loadCharacter(Character &charc, mysqlpp::Row &row) {
+void Characters::loadCharacter(Character &charc, const mysqlpp::Row &row) {
 	charc.id = row["id"];
 	charc.name = row["name"];
 	charc.gender = (uint8_t) row["gender"];
@@ -60,7 +60,7 @@ void Characters::loadCharacter(Character &charc, mysqlpp::Row &row) {
 	charc.fame = row["fame"];
 	charc.map = row["map"];
 	charc.pos = (uint8_t) row["pos"];
-	showEquips(charc.id, charc.equips);
+	loadEquips(charc.id, charc.equips);
 }
 
 void Characters::showCharacters(PlayerLogin *player) {

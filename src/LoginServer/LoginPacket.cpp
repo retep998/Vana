@@ -152,7 +152,7 @@ void LoginPacket::channelSelect(PlayerLogin *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showCharacters(PlayerLogin *player, vector<Character> chars) {
+void LoginPacket::showCharacters(PlayerLogin *player, const vector<Character> &chars) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_CHARACTERS);
 	packet.addByte(0);
@@ -172,7 +172,7 @@ void LoginPacket::checkName(PlayerLogin *player, const string &name, bool taken)
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showCharacter(PlayerLogin *player, Character charc) {
+void LoginPacket::showCharacter(PlayerLogin *player, const Character &charc) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_CHARACTER);
 	packet.addByte(0);

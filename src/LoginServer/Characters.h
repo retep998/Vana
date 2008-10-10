@@ -66,8 +66,8 @@ namespace Characters {
 	void createCharacter(PlayerLogin *player, ReadPacket *packet);
 	void deleteCharacter(PlayerLogin *player, ReadPacket *packet);
 	void showCharacters(PlayerLogin *player);
-	void loadCharacter(Character &charc, mysqlpp::Row &row);
-	void showEquips(int32_t id, vector<CharEquip> &vec);
+	void loadCharacter(Character &charc, const mysqlpp::Row &row);
+	void loadEquips(int32_t id, vector<CharEquip> &vec);
 	void createEquip(int32_t equipid, int32_t type, int32_t charid);
 	bool ownerCheck(PlayerLogin *player, int32_t id);
 	bool nameTaken(PlayerLogin *player, const string &name);
