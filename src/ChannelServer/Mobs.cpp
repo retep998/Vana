@@ -486,17 +486,25 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 	int16_t val = 0;
 	clock_t time = 0;
 	if (info.canfreeze) { // Freezing stuff
-		if (skillid == 2211002 || skillid == 2201004 || skillid == 2211006 || skillid == 2221007 || skillid == 3211003 || skillid == 5211005) {
-			status = FREEZE;
-			val = FREEZE;
-			time = Skills::skills[skillid][level].time * 2000;
+		switch (skillid) {
+			case 2201004: // Cold Beam
+			case 2211002: // Ice Strike
+			case 2211006: // Element Composition
+			case 3211003: // Blizzard (Sniper)
+			case 2221007: // Blizzard (Arch Mage)
+			case 5211005: // Cooling Effect
+				status = FREEZE;
+				val = FREEZE;
+				time = Skills::skills[skillid][level].time * 2000;
+				break;
+			case 2121005: // Elquines
+			case 3221005: // Frostprey
+				status = FREEZE;
+				val = FREEZE;
+				time = Skills::skills[skillid][level].x * 2000;
+				break;
 		}
-		else if (skillid == 3221005) { // Frostprey
-			status = FREEZE;
-			val = FREEZE;
-			time = Skills::skills[skillid][level].x * 2000;
-		}
-		else if (ismelee && player->getActiveBuffs()->getActiveSkillLevel(1211005) > 0) { // Ice Charge Sword
+		if (ismelee && player->getActiveBuffs()->getActiveSkillLevel(1211005) > 0) { // Ice Charge Sword
 			status = FREEZE;
 			val = FREEZE;
 			time = Skills::skills[1211005][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000;
@@ -517,16 +525,16 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 	if (!info.boss) { // Seal, Stun, etc
 		switch (skillid) {
 			case 3101005: // Arrow Bomb
-			case 1211002: // Charged Blow
-			case 1111008: // Shout
-			case 4211002: // Assaulter
 			case 1111005: // Coma: Sword
 			case 1111006: // Coma: Axe
+			case 1111008: // Shout
+			case 1211002: // Charged Blow
+			case 4211002: // Assaulter
 			case 4221007: // Boomerang Step
-			case 5121004: // Wut
+			case 5201004: // Fake Shot
+			case 5121004: // Demolition
 			case 5121005: // Snatch
 			case 5121007: // Fist
-			case 5201004: // Some Pirate Skill
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					status = STUN;
 					val = STUN;
@@ -541,7 +549,6 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 					time = Skills::skills[skillid][level].x * 1000;
 				}
 				break;
-			default: break;
 		}
 	}
 	if (skillid == 2101003 || skillid == 2201003) { // Slow
