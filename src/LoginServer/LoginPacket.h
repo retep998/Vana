@@ -42,6 +42,8 @@ namespace LoginPacket {
 	void worldEnd(PlayerLogin *player);
 	void showChannels(PlayerLogin *player);
 	void channelSelect(PlayerLogin *player);
+	void showAllCharactersInfo(PlayerLogin *player, uint32_t worlds, uint32_t unk);
+	void showCharactersWorld(PlayerLogin *player, uint8_t worldid, const vector<Character> &chars); // Used for "view all characters"
 	void showCharacters(PlayerLogin *player, const vector<Character> &chars);
 	void showCharacter(PlayerLogin *player, const Character &charc);
 	void checkName(PlayerLogin *player, const string &name, bool taken);

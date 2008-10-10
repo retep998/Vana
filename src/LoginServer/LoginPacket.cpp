@@ -172,6 +172,27 @@ void LoginPacket::checkName(PlayerLogin *player, const string &name, bool taken)
 	player->getSession()->send(packet);
 }
 
+void LoginPacket::showAllCharactersInfo(PlayerLogin *player, uint32_t worlds, uint32_t unk) {
+	PacketCreator packet;
+	packet.addShort(SEND_VIEW_ALL_CHAR);
+	packet.addByte(1);
+	packet.addInt(worlds);
+	packet.addInt(unk);
+	player->getSession()->send(packet);
+}
+
+void LoginPacket::showCharactersWorld(PlayerLogin *player, uint8_t worldid, const vector<Character> &chars) {
+	PacketCreator packet;
+	packet.addShort(SEND_VIEW_ALL_CHAR);
+	packet.addByte(0);
+	packet.addByte(worldid);
+	packet.addByte(chars.size());
+	for (size_t i = 0; i < chars.size(); i++) {
+		LoginPacketHelper::addCharacter(packet, chars[i]);
+	}
+	player->getSession()->send(packet);
+}
+
 void LoginPacket::showCharacter(PlayerLogin *player, const Character &charc) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOW_CHARACTER);
