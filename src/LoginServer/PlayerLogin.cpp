@@ -33,6 +33,8 @@ void PlayerLogin::realHandleRequest(ReadPacket *packet) {
 		case RECV_SHOW_WORLD:
 		case RECV_SHOW_WORLD2: Worlds::showWorld(this); break;
 		case RECV_GET_CHANNEL_SERVER_INFO: Characters::connectGame(this, packet); break;
+		case RECV_VIEW_ALL_CHAR: Characters::showAllCharacters(this); break;
+		case RECV_VIEW_ALL_CHAR_GET_CHANNEL_SERVER_INFO: Characters::connectGameWorld(this, packet); break;
 		case RECV_CHECK_CHAR_NAME: Characters::checkCharacterName(this, packet); break;
 		case RECV_CREATE_CHAR: Characters::createCharacter(this, packet); break;
 		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, packet); break;

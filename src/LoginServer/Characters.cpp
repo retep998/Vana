@@ -21,8 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayerPacket.h"
 #include "MySQLM.h"
 #include "PlayerLogin.h"
+#include "Randomizer.h"
 #include "ReadPacket.h"
 #include "Worlds.h"
+#include <unordered_map>
+
+using std::tr1::unordered_map;
 
 void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = Database::getCharDB().query();
@@ -61,6 +65,35 @@ void Characters::loadCharacter(Character &charc, const mysqlpp::Row &row) {
 	charc.map = row["map"];
 	charc.pos = (uint8_t) row["pos"];
 	loadEquips(charc.id, charc.equips);
+}
+
+void Characters::showAllCharacters(PlayerLogin *player) {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT * FROM characters WHERE userid = " << player->getUserid();
+	mysqlpp::StoreQueryResult res = query.store();
+
+	typedef unordered_map<uint8_t, vector<Character>> CharsMap;
+
+	CharsMap chars;
+	uint32_t charsNum = 0; // I want to reference this later
+	for (size_t i = 0; i < res.num_rows(); ++i) {
+		uint8_t worldid = res[i]["world_id"];
+		if (!Worlds::worlds[worldid]->connected) {
+			// World is not connected
+			continue;
+		}
+
+		Character charc;
+		loadCharacter(charc, res[i]);
+		chars[res[i]["world_id"]].push_back(charc);
+		charsNum++;
+	}
+
+	uint32_t unk = charsNum + (3 - charsNum%3); // What I've observed O_o
+	LoginPacket::showAllCharactersInfo(player, chars.size(), unk);
+	for (CharsMap::const_iterator iter = chars.begin(); iter != chars.end(); iter++) {
+		LoginPacket::showCharactersWorld(player, iter->first, iter->second);
+	}
 }
 
 void Characters::showCharacters(PlayerLogin *player) {
@@ -192,17 +225,32 @@ void Characters::deleteCharacter(PlayerLogin *player, ReadPacket *packet) {
 	LoginPacket::deleteCharacter(player, id);
 }
 
-
-void Characters::connectGame(PlayerLogin *player, ReadPacket *packet) {
-	int32_t id = packet->getInt();
-
-	if (!ownerCheck(player, id)) {
+void Characters::connectGame(PlayerLogin *player, int32_t charid) {
+	if (!ownerCheck(player, charid)) {
 		// hacking
 		return;
 	}
 
-	LoginServerAcceptPlayerPacket::newPlayer(Worlds::worlds[player->getWorld()]->player, player->getChannel(), id);
-	LoginPacket::connectIP(player, id);
+	LoginServerAcceptPlayerPacket::newPlayer(Worlds::worlds[player->getWorld()]->player, player->getChannel(), charid);
+	LoginPacket::connectIP(player, charid);
+}
+
+void Characters::connectGame(PlayerLogin *player, ReadPacket *packet) {
+	int32_t id = packet->getInt();
+
+	connectGame(player, id);
+}
+
+void Characters::connectGameWorld(PlayerLogin *player, ReadPacket *packet) {
+	int32_t id = packet->getInt();
+	int32_t worldid = packet->getInt();
+	player->setWorld(worldid);
+
+	// Take the player to a random channel
+	uint16_t channel = Randomizer::Instance()->randInt(Worlds::worlds[worldid]->maxChannels - 1);
+	player->setChannel(channel);
+
+	connectGame(player, id);
 }
 
 bool Characters::ownerCheck(PlayerLogin *player, int32_t id) {
