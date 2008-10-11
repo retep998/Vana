@@ -35,7 +35,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
 	packet.addInt(drop->getTime());
-	if (type == 1 || type == 0) { // Give the point of origin for things that are just being dropped in
+	if (type == 1 || type == 0) { // Give the point of origin for things that are just being dropped
 		packet.addPos(origin);
 		packet.addShort(0);
 	}
@@ -80,12 +80,10 @@ void DropsPacket::takeDrop(Player *player, Drop *drop) {
 	packet.addByte(2);
 	packet.addInt(drop->getID());
 	packet.addInt(player->getId());
-	if (!drop->isQuest()) {
-		Maps::maps[player->getMap()]->sendPacket(packet);
-	}
-	else {
+	if (!drop->isQuest())
+		Maps::maps[drop->getMap()]->sendPacket(packet);
+	else
 		player->getSession()->send(packet);
-	}
 }
 
 void DropsPacket::dontTake(Player *player) {
@@ -119,8 +117,8 @@ void DropsPacket::takeDropPet(Player *player, Drop *drop, Pet *pet) {
 	packet.addInt(drop->getID());
 	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex());
-	if (!drop->isQuest()) {
-		Maps::maps[player->getMap()]->sendPacket(packet);
-	}
-	player->getSession()->send(packet);
+	if (!drop->isQuest())
+		Maps::maps[drop->getMap()]->sendPacket(packet);
+	else
+		player->getSession()->send(packet);
 }
