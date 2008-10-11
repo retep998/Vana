@@ -59,8 +59,12 @@ control(0)
 }
 
 void Mob::addStatus(int32_t status, StatusInfo info, clock_t time) {
-	if (this->status < status)
-		this->status += status;
+	if (statuses.find(status) == statuses.end()) { // Calculate new status mask if status is new
+		this->status = 0;
+		for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
+			this->status += iter->first;
+		}
+	}
 	statuses[status] = info;
 	MobsPacket::applyStatus(this, status, info, 300);
 	new Timer::Timer(bind(&Mob::removeStatus, this, status),
@@ -550,9 +554,37 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 					time = Skills::skills[skillid][level].x * 1000;
 				}
 				break;
+			case 2111004: // Seal - F/P
+			case 2211004: // Seal - I/L
+				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
+					status = SEAL;
+					val = SEAL;
+					time = Skills::skills[skillid][level].time * 1000;
+				}
+				break;
+			case 2311005: // Doom
+				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
+					status = DOOM;
+					val = 0x100;
+					time = Skills::skills[skillid][level].time * 1000;
+				}
+				break;
+			case 4111003: // Shadow Web
+				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
+					status = SHADOW_WEB;
+					val = 0x100;
+					time = Skills::skills[skillid][level].time * 1000;
+				}
+				break;
 		}
 	}
 	if (skillid == 4001002) { // Disorder
+		time = Skills::skills[skillid][level].time * 1000;
+		mob->addStatus(WATK, StatusInfo(Skills::skills[skillid][level].x, skillid), time);
+		status = WDEF;
+		val = Skills::skills[skillid][level].y;
+	}
+	if (skillid == 1201006) { // Threaten
 		time = Skills::skills[skillid][level].time * 1000;
 		mob->addStatus(WATK, StatusInfo(Skills::skills[skillid][level].x, skillid), time);
 		status = WDEF;

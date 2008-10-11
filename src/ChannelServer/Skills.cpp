@@ -94,6 +94,21 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			}
 			break;
 		}
+		case 1201006: // Threaten
+		case 2101003: // Slow - F/P
+		case 2201003: // Slow - I/L
+		case 2111004: // Seal - F/P
+		case 2211004: // Seal - I/L
+		case 2311005: // Doom
+		case 4111003: { // Shadow Web
+			uint8_t mobs = packet->getByte();
+			for (uint8_t k = 0; k < mobs; k++) {
+				if (Mob *mob = Maps::maps[player->getMap()]->getMob(packet->getInt())) {
+					Mobs::handleMobStatus(player, mob, skillid, false);
+				}
+			}
+			break;
+		}
 		case 2301002: { // Heal
 			//TODO PARTY
 			uint16_t healrate = skills[skillid][level].hpP / 1;
