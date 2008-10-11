@@ -79,7 +79,7 @@ void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player)
 	packet.addInt(player->getHair());
 	player->getInventory()->addEquippedPacket(packet);
 	for (int8_t i = 0; i < 3; i++) {
-		if (Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i))) {
+		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			packet.addInt(pet->getType());
 		}
 		else {

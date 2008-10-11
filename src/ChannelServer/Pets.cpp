@@ -97,14 +97,10 @@ void Pets::feedPet(Player *player, ReadPacket *packet) {
 	packet->skipBytes(4);
 	int16_t slot = packet->getShort();
 	int32_t item = packet->getInt();
-	if (player->getPets()->getSummoned(0)) {
-		Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(0));
+	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		bool success = false;
 		if (pet->getFullness() < 100) {
-			if (pet->getFullness() + 30 < 100)
-				pet->setFullness(pet->getFullness() + 30);
-			else
-				pet->setFullness(100);
+			pet->setFullness(pet->getFullness() + 30);
 			success = true;
 		}
 		Inventory::takeItem(player, item, 1);
@@ -127,8 +123,7 @@ void Pets::showAnimation(Player *player, ReadPacket *packet) {
 }
 
 void Pets::changeName(Player *player, const string &name) {
-	if (player->getPets()->getSummoned(0)) {
-		Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(0));
+	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		pet->setName(name);
 		PetsPacket::changeName(player, pet);
 		PetsPacket::updatePet(player, pet);
@@ -198,7 +193,7 @@ void Pets::lootItem(Player *player, ReadPacket *packet) {
 
 void Pets::showPets(Player *player) {
 	for (int8_t i = 0; i < 3; i++) {
-		if (Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i))) {
+		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			if (!pet->isSummoned()) {
 				if (pet->getIndex() == 0) {
 					pet->startTimer();
@@ -217,8 +212,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 		if (pet->isSummoned()) {
 			player->getPets()->setSummoned(0, pet->getIndex());
 			for (int8_t i = (pet->getIndex() + 1); i < 3; i++) {
-				if (player->getPets()->getSummoned(i)) {
-					Pet *move = player->getPets()->getPet(player->getPets()->getSummoned(i));
+				if (Pet *move = player->getPets()->getSummoned(i)) {
 					move->setIndex(i - 1);
 					player->getPets()->setSummoned(move->getId(), i - 1);
 					player->getPets()->setSummoned(0, i);
@@ -239,7 +233,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 			if (master) {
 				for (int8_t k = 2; k > 0; k--) {
 					if (player->getPets()->getSummoned(k - 1) && !player->getPets()->getSummoned(k)) {
-						Pet *move = player->getPets()->getPet(player->getPets()->getSummoned(k - 1));
+						Pet *move = player->getPets()->getSummoned(k - 1);
 						player->getPets()->setSummoned(0, k - 1);
 						player->getPets()->setSummoned(move->getId(), k);
 						move->setIndex(k);
@@ -276,8 +270,7 @@ void Pets::summon(Player *player, Pet *pet, bool master) {
 		else {
 			pet->setIndex(0);
 			pet->setSummoned(true);
-			if (player->getPets()->getSummoned(0)) {
-				Pet *kicked = player->getPets()->getPet(player->getPets()->getSummoned(0));
+			if (Pet *kicked = player->getPets()->getSummoned(0)) {
 				kicked->setIndex(-1);
 				kicked->setSummoned(false);
 				Timer::Id id(Timer::Types::PetTimer, kicked->getId(), 0);

@@ -109,8 +109,8 @@ void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
 	player->setStance(0);
 	player->setFH(0);
 	for (int8_t i = 0; i < 3; i++) {
-		if (player->getPets()->getSummoned(i)) {
-			player->getPets()->getPet(player->getPets()->getSummoned(i))->setPos(portal->pos);
+		if (Pet *pet = player->getPets()->getSummoned(i)) {
+			pet->setPos(portal->pos);
 		}
 	}
 	WorldServerConnectPlayerPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getId(), mapid);

@@ -80,10 +80,7 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool 
 	}
 	packet.addByte(animation);
 	if (animation != 1) {
-		if (success)
-			packet.addShort(1);
-		else
-			packet.addShort(0);
+		packet.addShort(success);
 	}
 	else {
 		packet.addByte(0);
@@ -109,7 +106,7 @@ void PetsPacket::updatePet(Player *player, Pet *pet) {
 	packet.addInt(pet->getId());
 	packet.addInt(0);
 	packet.addBytes("008005BB46E61702");
-	packet.addString(pet->getName(),13);
+	packet.addString(pet->getName(), 13);
 	packet.addByte(pet->getLevel());
 	packet.addShort(pet->getCloseness());
 	packet.addByte(pet->getFullness());
@@ -164,8 +161,8 @@ void PetsPacket::updateSummonedPets(Player *player) {
 	packet.addShort(0x8);
 	packet.addShort(0x18);
 	for (int8_t i = 0; i < 3; i++) {
-		if (player->getPets()->getSummoned(i)) {
-			packet.addInt(player->getPets()->getPet(player->getPets()->getSummoned(i))->getId());
+		if (Pet *pet = player->getPets()->getSummoned(i)) {
+			packet.addInt(pet->getId());
 		}
 		else {
 			packet.addInt(0);
