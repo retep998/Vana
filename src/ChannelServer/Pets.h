@@ -65,7 +65,13 @@ public:
 	void setIndex(int8_t index) { this->index = index; }
 	void setLevel(int8_t level) { this->level = level; }
 	void setInventorySlot(int8_t slot) { this->inventorySlot = slot; }
-	void setFullness(int8_t fullness) { this->fullness = fullness; }
+	void setFullness(int8_t fullness) {
+		this->fullness = fullness;
+		if (this->fullness > 100)
+			this->fullness = 100;
+		else if (this->fullness < 0)
+			this->fullness = 0;
+	}
 	void setCloseness(int16_t closeness) { this->closeness = closeness; }
 	void setId(int32_t id) { this->id = id; }
 	void setType(int32_t type) { this->type = type; }

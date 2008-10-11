@@ -119,8 +119,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	packet.addString(""); // Guild Alliance
 	packet.addByte(isself); // Is 1 when the character is clicking themselves
 	for (int8_t i = 0; i < 3; i++) {
-		if (getinfo->getPets()->getSummoned(i) > 0) {
-			Pet *pet = getinfo->getPets()->getPet(getinfo->getPets()->getSummoned(i));
+		if (Pet *pet = getinfo->getPets()->getSummoned(i)) {
 			packet.addByte(1);
 			packet.addInt(pet->getType());
 			packet.addString(pet->getName());

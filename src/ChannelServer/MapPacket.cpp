@@ -107,7 +107,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addShort(player->getFH());
 	packet.addByte(0);
 	for (int8_t i = 0; i < 3; i++) {
-		if (Pet *pet = player->getPets()->getPet(player->getPets()->getSummoned(i))) {
+		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			packet.addByte(1);
 			packet.addInt(pet->getType());
 			packet.addString(pet->getName());

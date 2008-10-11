@@ -234,8 +234,8 @@ void Player::playerConnect(ReadPacket *packet) {
 		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
 
 	for (int8_t i = 0; i < 3; i++) {
-		if (pets->getSummoned(i))
-			pets->getPet(pets->getSummoned(i))->setPos(Maps::maps[map]->getSpawnPoint(mappos)->pos);
+		if (Pet *pet = pets->getSummoned(i))
+			pet->setPos(Maps::maps[map]->getSpawnPoint(mappos)->pos);
 	}
 
 	PlayerPacket::showKeys(this, &keyMaps);

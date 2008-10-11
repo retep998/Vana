@@ -35,8 +35,8 @@ void PlayerPets::setSummoned(int32_t petid, int8_t index) {
 	summoned[index] = petid;
 }
 
-int32_t PlayerPets::getSummoned(int8_t index) {
-	return summoned[index] > 0 ? summoned[index] : 0;
+Pet * PlayerPets::getSummoned(int8_t index) {
+	return summoned[index] > 0 ? playerpets[summoned[index]] : 0;
 }
 
 void PlayerPets::save() {
