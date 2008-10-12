@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.h"
 #include "ConnectionManager.h"
+#include <exception>
 #include <functional>
 
 #ifdef _WIN32
@@ -39,19 +40,25 @@ BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
 #endif
 
 int main() {
-	WorldServer *server = WorldServer::Instance();
-	ConnectionManager *connMan = ConnectionManager::Instance();
+	try {
+		WorldServer *server = WorldServer::Instance();
+		ConnectionManager *connMan = ConnectionManager::Instance();
 
-	server->initialize();
-	
+		server->initialize();
+		
 #ifdef _WIN32
-    // Allow the server to stop on windows console events
-	console_ctrl_function = std::tr1::bind(&ConnectionManager::stop, connMan);
-    SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
+		// Allow the server to stop on windows console events
+		console_ctrl_function = std::tr1::bind(&ConnectionManager::stop, connMan);
+		SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
 #endif
 
-	connMan->run();
-	connMan->join();
+		connMan->run();
+		connMan->join();
+	}
+	catch (std::exception &e) {
+		std::cout << "ERROR: " << e.what() << std::endl;
+		getchar();
+	}
 
 	return 0;
 }
