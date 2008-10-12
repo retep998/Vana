@@ -32,10 +32,10 @@ timers(new Timer::Container)
 {
 }
 
-void AbstractPlayer::handleRequest(ReadPacket *packet) {
+void AbstractPlayer::handleRequest(ReadPacket &packet) {
 	try {
 		is_pinged = false;
-		if (is_server && packet->getHeader() == SEND_PING) {
+		if (is_server && packet.getHeader() == SEND_PING) {
 			PingPacket::pong(this);
 		}
 		realHandleRequest(packet);

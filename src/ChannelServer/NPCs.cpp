@@ -31,12 +31,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-void NPCs::handleNPC(Player *player, ReadPacket *packet) {
+void NPCs::handleNPC(Player *player, ReadPacket &packet) {
 	if (player->getNPC() != 0) {
 		return;
 	}
 
-	int32_t npcid = Maps::maps[player->getMap()]->getNpc(packet->getInt() - 100).id;
+	int32_t npcid = Maps::maps[player->getMap()]->getNpc(packet.getInt() - 100).id;
 	if (Shops::shops.find(npcid) != Shops::shops.end()) { // Shop
 		Shops::showShop(player, npcid);
 		return;
@@ -55,14 +55,14 @@ void NPCs::handleQuestNPC(Player *player, int32_t npcid, bool start) {
 	npc->run();
 }
 
-void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
+void NPCs::handleNPCIn(Player *player, ReadPacket &packet) {
 	NPC *npc = player->getNPC();
 	if (npc == 0) {
 		return;
 	}
 
-	int8_t type = packet->getByte();
-	int8_t what = packet->getByte();
+	int8_t type = packet.getByte();
+	int8_t what = packet.getByte();
 
 	if (type == NPCDialogs::normal) {
 		switch (what) {
@@ -82,7 +82,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 	else if (type == NPCDialogs::getText) {
 		npc->setState(npc->getState() + 1);
 		if (what != 0) {
-			npc->setGetText(packet->getString());
+			npc->setGetText(packet.getString());
 		}
 		else {
 			npc->end();
@@ -91,7 +91,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 	else if (type == NPCDialogs::getNumber) {
 		npc->setState(npc->getState() + 1);
 		if (what == 1) {
-			npc->setGetNumber(packet->getInt());
+			npc->setGetNumber(packet.getInt());
 		}
 		else {
 			npc->end();
@@ -103,13 +103,13 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 			npc->end();
 		}
 		else {
-			npc->setSelected(packet->getByte());
+			npc->setSelected(packet.getByte());
 		}
 	}
 	else if (type == NPCDialogs::style) {
 		npc->setState(npc->getState() + 1);
 		if (what == 1) {
-			npc->setSelected(packet->getShort());
+			npc->setSelected(packet.getShort());
 		}
 		else  {
 			npc->end();
@@ -122,7 +122,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket *packet) {
 	npc->run();
 }
 
-void NPCs::handleNPCAnimation(Player *player, ReadPacket *packet) {
+void NPCs::handleNPCAnimation(Player *player, ReadPacket &packet) {
 	NPCPacket::animateNPC(player, packet);
 }
 

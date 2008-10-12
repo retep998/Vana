@@ -22,15 +22,15 @@ class WorldServerConnectPlayer;
 class ReadPacket;
 
 namespace WorldServerConnectHandler {
-	void connectLogin(WorldServerConnectPlayer *player, ReadPacket *packet);
-	void connect(WorldServerConnectPlayer *player, ReadPacket *packet);
-	void playerChangeChannel(WorldServerConnectPlayer *player, ReadPacket *packet);
-	void findPlayer(ReadPacket *packet);
-	void whisperPlayer(ReadPacket *packet);
-	void scrollingHeader(ReadPacket *packet);
-	void newConnectable(ReadPacket *packet);
-	void forwardPacket(ReadPacket *packet);
-	void setRates(ReadPacket *packet);
+	void connectLogin(WorldServerConnectPlayer *player, ReadPacket &packet);
+	void connect(WorldServerConnectPlayer *player, ReadPacket &packet);
+	void playerChangeChannel(WorldServerConnectPlayer *player, ReadPacket &packet);
+	void findPlayer(ReadPacket &packet);
+	void whisperPlayer(ReadPacket &packet);
+	void scrollingHeader(ReadPacket &packet);
+	void newConnectable(ReadPacket &packet);
+	void forwardPacket(ReadPacket &packet);
+	void setRates(ReadPacket &packet);
 }
 
 #endif

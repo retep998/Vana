@@ -24,27 +24,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Rates.h"
 #include <iostream>
 
-void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPacket *packet) {
-	int8_t worldid = packet->getByte();
+void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPacket &packet) {
+	int8_t worldid = packet.getByte();
 	if (worldid != 0xFF) {
 		WorldServer::Instance()->setWorldId(worldid);
-		WorldServer::Instance()->setInterPort(packet->getShort());
-		WorldServer::Instance()->setMaxChannels(packet->getInt());
-		WorldServer::Instance()->setMaxMultiLevel(packet->getByte());
-		WorldServer::Instance()->setMaxStats(packet->getShort());
+		WorldServer::Instance()->setInterPort(packet.getShort());
+		WorldServer::Instance()->setMaxChannels(packet.getInt());
+		WorldServer::Instance()->setMaxMultiLevel(packet.getByte());
+		WorldServer::Instance()->setMaxStats(packet.getShort());
 
-		int32_t ratesSetBit = packet->getInt();
+		int32_t ratesSetBit = packet.getInt();
 		if (ratesSetBit & Rates::SetBits::exp) {
-			WorldServer::Instance()->setExprate(packet->getInt());
+			WorldServer::Instance()->setExprate(packet.getInt());
 		}
 		if (ratesSetBit & Rates::SetBits::questExp) {
-			WorldServer::Instance()->setQuestExprate(packet->getInt());
+			WorldServer::Instance()->setQuestExprate(packet.getInt());
 		}
 		if (ratesSetBit & Rates::SetBits::meso) {
-			WorldServer::Instance()->setMesorate(packet->getInt());
+			WorldServer::Instance()->setMesorate(packet.getInt());
 		}
 		if (ratesSetBit & Rates::SetBits::drop) {
-			WorldServer::Instance()->setDroprate(packet->getInt());
+			WorldServer::Instance()->setDroprate(packet.getInt());
 		}
 
 		WorldServer::Instance()->listen();
@@ -56,9 +56,9 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPa
 	}
 }
 
-void LoginServerConnectHandler::newPlayer(ReadPacket *packet) {
-	uint16_t channel = packet->getShort();
-	int32_t playerid = packet->getInt();
+void LoginServerConnectHandler::newPlayer(ReadPacket &packet) {
+	uint16_t channel = packet.getShort();
+	int32_t playerid = packet.getInt();
 
 	if (Channels::Instance()->getChannel(channel)) {
 		WorldServerAcceptPlayerPacket::newConnectable(channel, playerid);

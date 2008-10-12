@@ -25,7 +25,7 @@ class ReadPacket;
 
 class LoginServerAcceptPlayer : public AbstractServerAcceptPlayer {
 public:
-	void realHandleRequest(ReadPacket *packet);
+	void realHandleRequest(ReadPacket &packet);
 	void authenticated(int8_t type);
 
 	int8_t getWorldId() const { return worldId; }

@@ -29,9 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
-void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
-	string username = packet->getString();
-	string password = packet->getString();
+void Login::loginUser(PlayerLogin *player, ReadPacket &packet) {
+	string username = packet.getString();
+	string password = packet.getString();
 
 	if (username.size() > 15 || password.size() > 15) {
 		return;
@@ -101,14 +101,14 @@ void Login::loginUser(PlayerLogin *player, ReadPacket *packet) {
 	}
 }
 
-void Login::setGender(PlayerLogin *player, ReadPacket *packet) {
+void Login::setGender(PlayerLogin *player, ReadPacket &packet) {
 	if (player->getStatus() != 5) {
 		//hacking
 		return;
 	}
-	if (packet->getByte() == 1) {
+	if (packet.getByte() == 1) {
 		player->setStatus(0);
-		int8_t gender = packet->getByte();
+		int8_t gender = packet.getByte();
 		mysqlpp::Query query = Database::getCharDB().query();
 		query << "UPDATE users SET gender = " << (int32_t) gender << " WHERE id = " << player->getUserid();
 		query.exec();
@@ -120,7 +120,7 @@ void Login::setGender(PlayerLogin *player, ReadPacket *packet) {
 	}
 }
 
-void Login::handleLogin(PlayerLogin *player, ReadPacket *packet) {
+void Login::handleLogin(PlayerLogin *player, ReadPacket &packet) {
 	int32_t status = player->getStatus();
 	if (status == 1)
 		LoginPacket::loginProcess(player, 0x01);
@@ -136,18 +136,18 @@ void Login::handleLogin(PlayerLogin *player, ReadPacket *packet) {
 		player->setOnline(true);
 	}
 }
-void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
+void Login::checkPin(PlayerLogin *player, ReadPacket &packet) {
 	if (!LoginServer::Instance()->getPinEnabled()) {
 		//hacking
 		return;
 	}
-	int8_t act = packet->getByte();
-	packet->skipBytes(5);
+	int8_t act = packet.getByte();
+	packet.skipBytes(5);
 	if (act == 0x00) {
 		player->setStatus(2);
 	}
 	else if (act == 0x01) {
-		int32_t pin = boost::lexical_cast<int32_t>(packet->getString());
+		int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
 		int32_t curpin = player->getPin();
 		if (pin == curpin) {
 			player->setStatus(4);
@@ -157,7 +157,7 @@ void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
 			LoginPacket::loginProcess(player, 0x02);
 	}
 	else if (act == 0x02) {
-		int32_t pin = boost::lexical_cast<int32_t>(packet->getString());
+		int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
 		int32_t curpin = player->getPin();
 		if (pin == curpin) {
 			player->setStatus(1);
@@ -168,18 +168,18 @@ void Login::checkPin(PlayerLogin *player, ReadPacket *packet) {
 	}
 }
 
-void Login::registerPIN(PlayerLogin *player, ReadPacket *packet) {
+void Login::registerPIN(PlayerLogin *player, ReadPacket &packet) {
 	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != 1) {
 		//hacking
 		return;
 	}
-	if (packet->getByte() == 0x00) {
+	if (packet.getByte() == 0x00) {
 		if (player->getPin() != -1) {
 			player->setStatus(2);
 		}
 		return;
 	}
-	int32_t pin = boost::lexical_cast<int32_t>(packet->getString());
+	int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
 	player->setStatus(0);
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users SET pin = " << pin << " WHERE id = " << player->getUserid();

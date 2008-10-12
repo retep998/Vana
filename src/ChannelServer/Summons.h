@@ -32,8 +32,8 @@ namespace Summons {
 	void removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, bool fromTimer = false, bool showMessage = false);
 	void showSummon(Player *player);
 	void showSummons(Player *ofplayer, Player *toplayer);
-	void moveSummon(Player *Player, ReadPacket *packet);
-	void damageSummon(Player *player, ReadPacket *packet);
+	void moveSummon(Player *Player, ReadPacket &packet);
+	void damageSummon(Player *player, ReadPacket &packet);
 };
 
 class Summon : public MovableLife {

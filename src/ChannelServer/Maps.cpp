@@ -68,13 +68,13 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	}
 }
 
-void Maps::usePortal(Player *player, ReadPacket *packet) {
-	packet->skipBytes(1);
-	if (packet->getInt() == 0) { // Dead
+void Maps::usePortal(Player *player, ReadPacket &packet) {
+	packet.skipBytes(1);
+	if (packet.getInt() == 0) { // Dead
 		player->acceptDeath();
 		return;
 	}
-	string portalname = packet->getString();
+	string portalname = packet.getString();
 
 	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname.c_str());
 	if (portal == 0) // Exit the function if portal is not found
@@ -83,9 +83,9 @@ void Maps::usePortal(Player *player, ReadPacket *packet) {
 	usePortal(player, portal);
 }
 
-void Maps::useScriptedPortal(Player *player, ReadPacket *packet) {
-	packet->skipBytes(1);
-	string portalname = packet->getString();
+void Maps::useScriptedPortal(Player *player, ReadPacket &packet) {
+	packet.skipBytes(1);
+	string portalname = packet.getString();
 
 	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname.c_str());
 	if (portal == 0) // Exit the function if portal is not found

@@ -88,24 +88,24 @@ void Summons::showSummons(Player *ofplayer, Player *toplayer) {
 		SummonsPacket::showSummon(ofplayer, puppet, false, toplayer);
 }
 
-void Summons::moveSummon(Player *player, ReadPacket *packet) {
-	int32_t summonid = packet->getInt();
-	packet->skipBytes(4); // I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
+void Summons::moveSummon(Player *player, ReadPacket &packet) {
+	int32_t summonid = packet.getInt();
+	packet.skipBytes(4); // I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
 	Summon *summon = player->getSummons()->getSummon(summonid);
 	if (summon == 0)
 		// Up to no good, lag, or something else
 		return;
 	Pos startPos = summon->getPos(); // Original gangsta
 	Movement::parseMovement(summon, packet);
-	packet->reset(10);
-	SummonsPacket::moveSummon(player, summon, startPos, packet->getBuffer(), (packet->getBufferLength() - 9));
+	packet.reset(10);
+	SummonsPacket::moveSummon(player, summon, startPos, packet.getBuffer(), (packet.getBufferLength() - 9));
 }
 
-void Summons::damageSummon(Player *player, ReadPacket *packet) {
-	int32_t summonid = packet->getInt();
-	int8_t notsure = packet->getByte();
-	int32_t damage = packet->getInt();
-	int32_t mobid = packet->getInt();
+void Summons::damageSummon(Player *player, ReadPacket &packet) {
+	int32_t summonid = packet.getInt();
+	int8_t notsure = packet.getByte();
+	int32_t damage = packet.getInt();
+	int32_t mobid = packet.getInt();
 
 	if (Summon *summon = player->getSummons()->getPuppet()) {
 		summon->doDamage(damage);

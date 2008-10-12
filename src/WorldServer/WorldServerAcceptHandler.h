@@ -22,17 +22,17 @@ class WorldServerAcceptPlayer;
 class ReadPacket;
 
 namespace WorldServerAcceptHandler {
-	void playerChangeChannel(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void findPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void whisperPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void registerPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void removePlayer(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void scrollingHeader(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void partyOperation(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void updateLevel(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void updateJob(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void updateMap(WorldServerAcceptPlayer *player, ReadPacket *packet);
-	void groupChat(WorldServerAcceptPlayer *player, ReadPacket *packet);
+	void playerChangeChannel(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void findPlayer(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void whisperPlayer(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void registerPlayer(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void removePlayer(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void scrollingHeader(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void partyOperation(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void updateLevel(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void updateJob(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void updateMap(WorldServerAcceptPlayer *player, ReadPacket &packet);
+	void groupChat(WorldServerAcceptPlayer *player, ReadPacket &packet);
 }
 
 #endif

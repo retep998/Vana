@@ -22,65 +22,65 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-Pos Movement::parseMovement(MovableLife *life, ReadPacket *packet) {
+Pos Movement::parseMovement(MovableLife *life, ReadPacket &packet) {
 	int16_t foothold = 0;
 	int8_t stance = 0;
 	int16_t x = 0;
 	int16_t y = 0;
-	uint8_t n = packet->getByte();
+	uint8_t n = packet.getByte();
 	for (uint8_t i = 0; i < n; i++) {
-		int8_t type = packet->getByte();
+		int8_t type = packet.getByte();
 		switch (type) {
 			case 10: // Falling of some kind
-				packet->skipBytes(1);
+				packet.skipBytes(1);
 				break;
 			case 12: // Horntail knockback
-				packet->skipBytes(7);
+				packet.skipBytes(7);
 				break;
 			case 14:
-				packet->skipBytes(9);
+				packet.skipBytes(9);
 				break;
 			case 0: // Normal up/down/left/right movement
 			case 5:
-				x = packet->getShort();
-				y = packet->getShort();
-				packet->skipBytes(4);
-				foothold = packet->getShort();
-				stance = packet->getByte();
-				packet->skipBytes(2);
+				x = packet.getShort();
+				y = packet.getShort();
+				packet.skipBytes(4);
+				foothold = packet.getShort();
+				stance = packet.getByte();
+				packet.skipBytes(2);
 				break;
 			case 1: // Jumping
 			case 2: // Jumping/knockback?
 			case 6: // Flash Jump
-				x = packet->getShort();
-				y = packet->getShort();
-				stance = packet->getByte();
-				packet->skipBytes(2);
+				x = packet.getShort();
+				y = packet.getShort();
+				stance = packet.getByte();
+				packet.skipBytes(2);
 				break;
 			case 15: // Jump down
-				x = packet->getShort();
-				y = packet->getShort();
-				packet->skipBytes(6);
-				foothold = packet->getShort();
-				stance = packet->getByte();
-				packet->skipBytes(2);
+				x = packet.getShort();
+				y = packet.getShort();
+				packet.skipBytes(6);
+				foothold = packet.getShort();
+				stance = packet.getByte();
+				packet.skipBytes(2);
 				break;
 			case 11: // Chair
-				x = packet->getShort();
-				y = packet->getShort();
-				foothold = packet->getShort();
-				stance = packet->getByte();
-				packet->skipBytes(2);
+				x = packet.getShort();
+				y = packet.getShort();
+				foothold = packet.getShort();
+				stance = packet.getByte();
+				packet.skipBytes(2);
 				break;
 			case 3:
 			case 4: // Teleport
 			case 7: // Assaulter
 			case 8: // Assassinate
 			case 9: // Rush
-				x = packet->getShort();
-				y = packet->getShort();
-				packet->skipBytes(4);
-				stance = packet->getByte();
+				x = packet.getShort();
+				y = packet.getShort();
+				packet.skipBytes(4);
+				stance = packet.getByte();
 				break;
 			default:
 				std::cout << "New type of movement: 0x" << std::hex << (int16_t) type << std::endl;

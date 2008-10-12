@@ -38,7 +38,7 @@ protected:
 class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
 	AbstractServerAcceptPlayer() { is_server = true; }
-	bool processAuth(ReadPacket *packet, const string &pass);
+	bool processAuth(ReadPacket &packet, const string &pass);
 	virtual void authenticated(int8_t type) = 0;
 private:
 	bool is_authenticated;

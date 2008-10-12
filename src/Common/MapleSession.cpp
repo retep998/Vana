@@ -140,8 +140,9 @@ void MapleSession::handle_read_body(const boost::system::error_code &error,
 									size_t bytes_transferred) {
 	if (!error) {
 		m_decoder->decrypt(m_buffer, bytes_transferred);
-		boost::scoped_ptr<ReadPacket> packet(new ReadPacket(m_buffer, bytes_transferred));
-		m_player->handleRequest(packet.get());
+
+		ReadPacket packet(m_buffer, bytes_transferred);
+		m_player->handleRequest(packet);
 
 		start_read_header();
 	}

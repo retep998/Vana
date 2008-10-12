@@ -26,7 +26,7 @@ struct NPCSpawnInfo;
 
 namespace NPCPacket {
 	void showNPC(Player *player, NPCSpawnInfo npc, int32_t i);
-	void animateNPC(Player *player, ReadPacket *pack);
+	void animateNPC(Player *player, ReadPacket &pack);
 };
 
 #endif

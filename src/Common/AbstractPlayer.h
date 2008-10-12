@@ -31,8 +31,8 @@ class AbstractPlayer {
 public:
 	AbstractPlayer();
 
-	virtual void realHandleRequest(ReadPacket *packet) = 0;
-	void handleRequest(ReadPacket *packet);
+	virtual void realHandleRequest(ReadPacket &packet) = 0;
+	void handleRequest(ReadPacket &packet);
 	void setTimer();
 	void ping();
 

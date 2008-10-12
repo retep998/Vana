@@ -20,5 +20,5 @@ class Player;
 class ReadPacket;
 
 namespace Party {
-	void handleRequest(Player* player, ReadPacket *packet);
+	void handleRequest(Player* player, ReadPacket &packet);
 };

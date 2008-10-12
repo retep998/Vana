@@ -22,7 +22,7 @@ class Player;
 class ReadPacket;
 
 namespace CommandHandler {
-	void handleCommand(Player *player, ReadPacket *packet);
+	void handleCommand(Player *player, ReadPacket &packet);
 };
 
 #endif

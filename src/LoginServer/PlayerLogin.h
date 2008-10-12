@@ -29,7 +29,7 @@ public:
 
 	~PlayerLogin();
 
-	void realHandleRequest(ReadPacket *packet);
+	void realHandleRequest(ReadPacket &packet);
 
 	void setGender(int8_t gender) { this->gender=gender; }
 	void setWorld(int8_t world) { this->world = world; }

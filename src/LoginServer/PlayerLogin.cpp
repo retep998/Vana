@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "RecvHeader.h"
 
-void PlayerLogin::realHandleRequest(ReadPacket *packet) {
-	switch(packet->getShort()) {
+void PlayerLogin::realHandleRequest(ReadPacket &packet) {
+	switch(packet.getShort()) {
 		case RECV_LOGIN_INFO: Login::loginUser(this, packet); break;
 		case RECV_CHANNEL_SELECT: Worlds::channelSelect(this, packet); break;
 		case RECV_WORLD_SELECT: Worlds::selectWorld(this, packet); break;

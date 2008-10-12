@@ -110,8 +110,8 @@ void Characters::showCharacters(PlayerLogin *player) {
 	LoginPacket::showCharacters(player, chars);
 }
 
-void Characters::checkCharacterName(PlayerLogin *player, ReadPacket *packet) {
-	string name = packet->getString();
+void Characters::checkCharacterName(PlayerLogin *player, ReadPacket &packet) {
+	string name = packet.getString();
 	if (name.size() > 15) {
 		return;
 	}
@@ -130,9 +130,9 @@ void Characters::createEquip(int32_t equipid, int32_t type, int32_t charid) {
 	query.exec();
 }
 
-void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
+void Characters::createCharacter(PlayerLogin *player, ReadPacket &packet) {
 	Character charc;
-	string name = packet->getString();
+	string name = packet.getString();
 	if (name.size() > 15) {
 		return;
 	}
@@ -143,16 +143,16 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 		return;
 	}
 
-	int32_t eyes = packet->getInt();
-	int32_t hair = packet->getInt() + packet->getInt(); // Hair+hair colour
-	int32_t skin = packet->getInt();
-	packet->skipBytes(16);
+	int32_t eyes = packet.getInt();
+	int32_t hair = packet.getInt() + packet.getInt(); // Hair+hair colour
+	int32_t skin = packet.getInt();
+	packet.skipBytes(16);
 
-	uint16_t gender = packet->getByte();
-	uint16_t str = packet->getByte();
-	uint16_t dex = packet->getByte();
-	uint16_t intt = packet->getByte();
-	uint16_t luk = packet->getByte();
+	uint16_t gender = packet.getByte();
+	uint16_t str = packet.getByte();
+	uint16_t dex = packet.getByte();
+	uint16_t intt = packet.getByte();
+	uint16_t luk = packet.getByte();
 
 	if (str + dex + intt + luk != 25) {
 		// hacking
@@ -174,11 +174,11 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	mysqlpp::SimpleResult res = query.execute();
 	int32_t id = (int32_t) res.insert_id();
 
-	packet->skipBytes(-21);
-	createEquip(packet->getInt(), 0x05, id);
-	createEquip(packet->getInt(), 0x06, id);
-	createEquip(packet->getInt(), 0x07, id);
-	createEquip(packet->getInt(), 0x0b, id);
+	packet.skipBytes(-21);
+	createEquip(packet.getInt(), 0x05, id);
+	createEquip(packet.getInt(), 0x06, id);
+	createEquip(packet.getInt(), 0x07, id);
+	createEquip(packet.getInt(), 0x0b, id);
 
 	query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << id << ", 4, 1, 4161001, 1, \"\")"; // Beginner Guide
 	query.exec();
@@ -190,9 +190,9 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket *packet) {
 	LoginPacket::showCharacter(player, charc);
 }
 
-void Characters::deleteCharacter(PlayerLogin *player, ReadPacket *packet) {
-	int32_t data = packet->getInt();
-	int32_t id = packet->getInt();
+void Characters::deleteCharacter(PlayerLogin *player, ReadPacket &packet) {
+	int32_t data = packet.getInt();
+	int32_t id = packet.getInt();
 	
 	if (!ownerCheck(player, id)) {
 		// hacking
@@ -235,15 +235,15 @@ void Characters::connectGame(PlayerLogin *player, int32_t charid) {
 	LoginPacket::connectIP(player, charid);
 }
 
-void Characters::connectGame(PlayerLogin *player, ReadPacket *packet) {
-	int32_t id = packet->getInt();
+void Characters::connectGame(PlayerLogin *player, ReadPacket &packet) {
+	int32_t id = packet.getInt();
 
 	connectGame(player, id);
 }
 
-void Characters::connectGameWorld(PlayerLogin *player, ReadPacket *packet) {
-	int32_t id = packet->getInt();
-	int32_t worldid = packet->getInt();
+void Characters::connectGameWorld(PlayerLogin *player, ReadPacket &packet) {
+	int32_t id = packet.getInt();
+	int32_t worldid = packet.getInt();
 	player->setWorld(worldid);
 
 	// Take the player to a random channel

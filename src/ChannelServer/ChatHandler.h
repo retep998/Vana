@@ -22,8 +22,8 @@ class Player;
 class ReadPacket;
 
 namespace ChatHandler {
-	void handleChat(Player *player, ReadPacket *packet);
-	void handleGroupChat(Player *player, ReadPacket *packet);
+	void handleChat(Player *player, ReadPacket &packet);
+	void handleGroupChat(Player *player, ReadPacket &packet);
 };
 
 #endif

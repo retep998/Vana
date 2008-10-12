@@ -86,9 +86,9 @@ namespace Skills {
 	extern unordered_map<int32_t, SkillsLevelInfo> skills;
 	extern unordered_map<int32_t, uint8_t> maxlevels;
 	void addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo levelinfo);
-	void addSkill(Player *player, ReadPacket *packet);
-	void cancelSkill(Player *player, ReadPacket *packet);
-	void useSkill(Player *player, ReadPacket *packet);
+	void addSkill(Player *player, ReadPacket &packet);
+	void cancelSkill(Player *player, ReadPacket &packet);
+	void useSkill(Player *player, ReadPacket &packet);
 	void applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp = false);
 	void useAttackSkill(Player *player, int32_t skillid);
 	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display);

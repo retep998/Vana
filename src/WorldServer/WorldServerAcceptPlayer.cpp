@@ -33,11 +33,11 @@ WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
 	std::cout << "Channel " << channel << " disconnected." << std::endl;
 }
 
-void WorldServerAcceptPlayer::realHandleRequest(ReadPacket *packet) {
+void WorldServerAcceptPlayer::realHandleRequest(ReadPacket &packet) {
 	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
-	switch(packet->getShort()) {
+	switch(packet.getShort()) {
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet); break;
-		case INTER_TO_PLAYERS: packet->reset(); WorldServerAcceptPlayerPacket::sendToChannels(packet->getBuffer(), packet->getBufferLength()); break;
+		case INTER_TO_PLAYERS: packet.reset(); WorldServerAcceptPlayerPacket::sendToChannels(packet.getBuffer(), packet.getBufferLength()); break;
 		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::registerPlayer(this, packet); break;
 		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::removePlayer(this, packet); break;
 		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;

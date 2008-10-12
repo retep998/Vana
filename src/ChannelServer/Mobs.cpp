@@ -140,8 +140,8 @@ void Mob::die(bool showpacket) {
 }
 
 /* Mobs namespace */
-void Mobs::monsterControl(Player *player, ReadPacket *packet) {
-	int32_t mobid = packet->getInt();
+void Mobs::monsterControl(Player *player, ReadPacket &packet) {
+	int32_t mobid = packet.getInt();
 
 	Mob *mob = Maps::maps[player->getMap()]->getMob(mobid);
 
@@ -149,36 +149,36 @@ void Mobs::monsterControl(Player *player, ReadPacket *packet) {
 		return;
 	}
 
-	int16_t moveid = packet->getShort();
-	bool useskill = (packet->getByte() != 0);
-	int32_t skill = packet->getInt();
-	packet->skipBytes(10);
+	int16_t moveid = packet.getShort();
+	bool useskill = (packet.getByte() != 0);
+	int32_t skill = packet.getInt();
+	packet.skipBytes(10);
 	Pos cpos = Movement::parseMovement(mob, packet);
 	if (cpos - mob->getPos() > 300) {
 		if (player->addWarning())
 			return;
 	}
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMP());
-	packet->reset(19);
-	MobsPacket::moveMob(player, mobid, useskill, skill, packet->getBuffer(), packet->getBufferLength());
+	packet.reset(19);
+	MobsPacket::moveMob(player, mobid, useskill, skill, packet.getBuffer(), packet.getBufferLength());
 }
 
 void Mobs::addMob(int32_t id, MobInfo mob) {
 	mobinfo[id] = mob;
 }
 
-void Mobs::damageMob(Player *player, ReadPacket *packet) {
+void Mobs::damageMob(Player *player, ReadPacket &packet) {
 	MobsPacket::damageMob(player, packet);
-	packet->reset(2);
-	packet->skipBytes(1); // Useless
-	uint8_t tbyte = packet->getByte();
+	packet.reset(2);
+	packet.skipBytes(1); // Useless
+	uint8_t tbyte = packet.getByte();
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
-	int32_t skillid = packet->getInt();
-	packet->skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
+	int32_t skillid = packet.getInt();
+	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
 	switch (skillid) {
 		case 5201002:
-			packet->skipBytes(4); // Charge 
+			packet.skipBytes(4); // Charge 
 			break;
 	}
 	if (skillid > 0)
@@ -187,11 +187,11 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, 0, true);
 	switch (skillid) {
 		case 4211006: { // Meso Explosion
-			uint8_t items = packet->getByte();
+			uint8_t items = packet.getByte();
 			int32_t map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
-				int32_t objID = packet->getInt();
-				packet->skipBytes(1); // Boolean for hit a monster
+				int32_t objID = packet.getInt();
+				packet.skipBytes(1); // Boolean for hit a monster
 				Drop *drop = Maps::maps[map]->getDrop(objID);
 				if (drop != 0) {
 					DropsPacket::explodeDrop(drop);
@@ -270,47 +270,47 @@ void Mobs::damageMob(Player *player, ReadPacket *packet) {
 	}
 }
 
-void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
+void Mobs::damageMobRanged(Player *player, ReadPacket &packet) {
 	MobsPacket::damageMobRanged(player, packet);
-	packet->reset(2); // Passing to the display function causes the buffer to be eaten, we need it
-	packet->skipBytes(1); // Number of portals taken (not kidding)
-	uint8_t tbyte = packet->getByte();
+	packet.reset(2); // Passing to the display function causes the buffer to be eaten, we need it
+	packet.skipBytes(1); // Number of portals taken (not kidding)
+	uint8_t tbyte = packet.getByte();
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
-	int32_t skillid = packet->getInt();
+	int32_t skillid = packet.getInt();
 	uint8_t display = 0;
 	switch (skillid) {
 		case 3121004:
 		case 3221001:
 		case 5221004:
-			packet->skipBytes(4); // Charge time
-			display = packet->getByte();
+			packet.skipBytes(4); // Charge time
+			display = packet.getByte();
 			if ((skillid == 3121004 || skillid == 5221004) && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
 				SpecialSkillInfo info;
 				info.skillid = skillid;
-				info.direction = packet->getByte();
-				packet->skipBytes(1); // Weapon subclass
-				info.w_speed = packet->getByte();
+				info.direction = packet.getByte();
+				packet.skipBytes(1); // Weapon subclass
+				info.w_speed = packet.getByte();
 				info.level = player->getSkills()->getSkillLevel(info.skillid);
 				player->setSpecialSkill(info);
 				SkillsPacket::showSpecialSkill(player, info);
 			}
 			else
-				packet->skipBytes(3);
+				packet.skipBytes(3);
 			break;
 		default:
-			display = packet->getByte(); // Projectile display
-			packet->skipBytes(1); // Direction/animation
-			packet->skipBytes(1); // Weapon subclass
-			packet->skipBytes(1); // Weapon speed
+			display = packet.getByte(); // Projectile display
+			packet.skipBytes(1); // Direction/animation
+			packet.skipBytes(1); // Weapon subclass
+			packet.skipBytes(1); // Weapon speed
 			break;
 	}
-	packet->skipBytes(4); // Ticks
-	int16_t pos = packet->getShort();
-	packet->skipBytes(2); // Cash Shop star cover
-	packet->skipBytes(1); // 0x00 = AoE, 0x41 = other
+	packet.skipBytes(4); // Ticks
+	int16_t pos = packet.getShort();
+	packet.skipBytes(2); // Cash Shop star cover
+	packet.skipBytes(1); // 0x00 = AoE, 0x41 = other
 	if (skillid != 4111004 && ((display & 0x40) > 0))
-		packet->skipBytes(4); // Star ID added by Shadow Claw
+		packet.skipBytes(4); // Star ID added by Shadow Claw
 	Skills::useAttackSkillRanged(player, skillid, pos, display);
 	int32_t mhp;
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, mhp);
@@ -328,19 +328,19 @@ void Mobs::damageMobRanged(Player *player, ReadPacket *packet) {
 	}
 }
 
-void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
+void Mobs::damageMobSpell(Player *player, ReadPacket &packet) {
 	MobsPacket::damageMobSpell(player, packet);
-	packet->reset(2);
-	packet->skipBytes(1);
-	uint8_t tbyte = packet->getByte();
+	packet.reset(2);
+	packet.skipBytes(1);
+	uint8_t tbyte = packet.getByte();
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
-	int32_t skillid = packet->getInt();
+	int32_t skillid = packet.getInt();
 	switch (skillid) {
 		case 2121001: // Big Bang has a 4 byte charge time after skillid
 		case 2221001:
 		case 2321001:
-			packet->skipBytes(4);
+			packet.skipBytes(4);
 			break;
 	}
 	MPEaterInfo *eater = &MPEaterInfo();
@@ -350,9 +350,9 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 		eater->prop = Skills::skills[eater->id][eater->level].prop;
 		eater->x = Skills::skills[eater->id][eater->level].x;
 	}
-	packet->skipBytes(2); // Display, direction/animation
-	packet->skipBytes(2); // Weapon subclass, casting speed
-	packet->skipBytes(4); // Ticks
+	packet.skipBytes(2); // Display, direction/animation
+	packet.skipBytes(2); // Weapon subclass, casting speed
+	packet.skipBytes(4); // Ticks
 	if (skillid != 2301002) // Heal is sent as both an attack and as a use skill
 		// Prevent this from incurring cost since Heal is always a used skill but only an attack in certain circumstances
 		Skills::useAttackSkill(player, skillid);
@@ -360,27 +360,27 @@ void Mobs::damageMobSpell(Player *player, ReadPacket *packet) {
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
 }
 
-void Mobs::damageMobSummon(Player *player, ReadPacket *packet) {
+void Mobs::damageMobSummon(Player *player, ReadPacket &packet) {
 	MobsPacket::damageMobSummon(player, packet);
-	packet->reset(2);
-	packet->skipBytes(4); // Summon ID
+	packet.reset(2);
+	packet.skipBytes(4); // Summon ID
 	Summon *summon = player->getSummons()->getSummon();
 	if (summon == 0)
 		// Hacking or some other form of tomfoolery
 		return;
-	packet->skipBytes(5);
-	int8_t targets = packet->getByte();
+	packet.skipBytes(5);
+	int8_t targets = packet.getByte();
 	int32_t useless = 0;
 	damageMobInternal(player, packet, targets, 1, summon->getSummonID(), useless);
 }
 
-uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
+uint32_t Mobs::damageMobInternal(Player *player, ReadPacket &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
 	bool isHorntail = false;
 	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(4211003); // Check for active pickpocket level
 	for (int8_t i = 0; i < targets; i++) {
-		int32_t mapmobid = packet->getInt();
+		int32_t mapmobid = packet.getInt();
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
@@ -400,16 +400,16 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 				htabusetaker = Maps::maps[map]->getMob(8810018, false);
 				break;
 		}
-		packet->skipBytes(3); // Useless
-		packet->skipBytes(1); // State
-		packet->skipBytes(8); // Useless
+		packet.skipBytes(3); // Useless
+		packet.skipBytes(1); // State
+		packet.skipBytes(8); // Useless
 		if (skillid != 4211006)
-			packet->skipBytes(1); // Distance, first half for non-Meso Explosion
-		packet->skipBytes(1); // Distance, second half for non-Meso Explosion
+			packet.skipBytes(1); // Distance, first half for non-Meso Explosion
+		packet.skipBytes(1); // Distance, second half for non-Meso Explosion
 		Pos origin = mob->getPos(); // Info for
 		vector<int32_t> ppdamages; // Pickpocket
 		for (int8_t k = 0; k < hits; k++) {
-			int32_t damage = packet->getInt();
+			int32_t damage = packet.getInt();
 			total += damage;
 			if (ismelee && skillid != 4211006 && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[4211003][pplevel].prop) {
@@ -460,7 +460,7 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 					}
 				}
 				if (!ismelee || skillid == 4211006) {
-					packet->skipBytes(4 * (hits - 1 - k));
+					packet.skipBytes(4 * (hits - 1 - k));
 					break;
 				}
 			}
@@ -478,9 +478,9 @@ uint32_t Mobs::damageMobInternal(Player *player, ReadPacket *packet, int8_t targ
 				0, time, false);
 		}
 		if (!ISSUMMON(skillid))
-			packet->skipBytes(4); // 4 bytes of unknown purpose, new in .56
+			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
-	packet->skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
+	packet.skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 	return total;
 }
 

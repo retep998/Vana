@@ -26,16 +26,16 @@ void AbstractServerConnectPlayer::sendAuth(const string &pass) {
 	AuthenticationPacket::sendPassword(this, pass, getIP());
 }
 
-bool AbstractServerAcceptPlayer::processAuth(ReadPacket *packet, const string &pass) {
-	if (packet->getShort() == INTER_PASSWORD) {
-		if (packet->getString() == pass) {
+bool AbstractServerAcceptPlayer::processAuth(ReadPacket &packet, const string &pass) {
+	if (packet.getShort() == INTER_PASSWORD) {
+		if (packet.getString() == pass) {
 			std::cout << "Server successfully authenticated." << std::endl;
 			is_authenticated = true;
-			int16_t iplen = packet->getShort();
+			int16_t iplen = packet.getShort();
 			if (iplen) {
-				setIP(packet->getString(iplen)); // setIP in abstractPlayer
+				setIP(packet.getString(iplen)); // setIP in abstractPlayer
 			}
-			authenticated(packet->getByte());
+			authenticated(packet.getByte());
 		}
 		else {
 			getSession()->disconnect();
@@ -47,6 +47,6 @@ bool AbstractServerAcceptPlayer::processAuth(ReadPacket *packet, const string &p
 		getSession()->disconnect();
 		return false;
 	}
-	packet->reset();
+	packet.reset();
 	return true;
 }
