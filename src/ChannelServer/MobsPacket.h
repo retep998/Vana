@@ -30,10 +30,10 @@ namespace MobsPacket {
 	void endControlMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp);
 	void moveMob(Player *player, int32_t mobid, bool useskill, int32_t skill, unsigned char *buf, int32_t len);
-	void damageMob(Player *player, ReadPacket *pack);
-	void damageMobRanged(Player *player, ReadPacket *pack);
-	void damageMobSpell(Player *player, ReadPacket *pack);
-	void damageMobSummon(Player *player, ReadPacket *pack);
+	void damageMob(Player *player, ReadPacket &pack);
+	void damageMobRanged(Player *player, ReadPacket &pack);
+	void damageMobSpell(Player *player, ReadPacket &pack);
+	void damageMobSummon(Player *player, ReadPacket &pack);
 	void applyStatus(Mob *mob, int32_t status, const StatusInfo &info, int16_t delay);
 	void removeStatus(Mob *mob, int32_t status);
 	void showHP(Player *player, int32_t mobid, int8_t per, bool miniboss);

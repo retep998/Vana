@@ -30,10 +30,10 @@ class PacketCreator;
 class ReadPacket;
 
 namespace NPCs {
-	void handleNPC(Player *player, ReadPacket *packet);
+	void handleNPC(Player *player, ReadPacket &packet);
 	void handleQuestNPC(Player *player, int32_t npcid, bool start);
-	void handleNPCIn(Player *player, ReadPacket *packet);
-	void handleNPCAnimation(Player *player, ReadPacket *packet);
+	void handleNPCIn(Player *player, ReadPacket &packet);
+	void handleNPCAnimation(Player *player, ReadPacket &packet);
 };
 
 class NPC {

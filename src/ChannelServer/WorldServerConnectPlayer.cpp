@@ -26,12 +26,12 @@ WorldServerConnectPlayer::WorldServerConnectPlayer() {
 	type = INTER_CHANNEL_SERVER;
 }
 
-void WorldServerConnectPlayer::realHandleRequest(ReadPacket *packet) {
-	switch(packet->getShort()) {
+void WorldServerConnectPlayer::realHandleRequest(ReadPacket &packet) {
+	switch(packet.getShort()) {
 		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
 		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerConnectHandler::playerChangeChannel(this, packet); break;
-		case INTER_TO_PLAYERS: PlayersPacket::sendToPlayers(packet->getBuffer(), packet->getBufferLength()); break;
+		case INTER_TO_PLAYERS: PlayersPacket::sendToPlayers(packet.getBuffer(), packet.getBufferLength()); break;
 		case INTER_FIND: WorldServerConnectHandler::findPlayer(packet); break;
 		case INTER_WHISPER: WorldServerConnectHandler::whisperPlayer(packet); break;
 		case INTER_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet); break;

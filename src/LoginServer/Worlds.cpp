@@ -38,22 +38,22 @@ void Worlds::showWorld(PlayerLogin *player) {
 	LoginPacket::worldEnd(player);
 }
 
-void Worlds::selectWorld(PlayerLogin *player, ReadPacket *packet) {
+void Worlds::selectWorld(PlayerLogin *player, ReadPacket &packet) {
 	if (player->getStatus() != 4) {
 		// hacking
 		return;
 	}
-	player->setWorld(packet->getByte());
+	player->setWorld(packet.getByte());
 	LoginPacket::showChannels(player);
 }
 
-void Worlds::channelSelect(PlayerLogin *player, ReadPacket *packet) {
+void Worlds::channelSelect(PlayerLogin *player, ReadPacket &packet) {
 	if (player->getStatus() != 4) {
 		// hacking
 		return;
 	}
-	packet->skipBytes(1);
-	player->setChannel(packet->getByte());
+	packet.skipBytes(1);
+	player->setChannel(packet.getByte());
 	LoginPacket::channelSelect(player);
 	Characters::showCharacters(player);
 }

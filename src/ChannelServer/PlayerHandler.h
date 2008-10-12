@@ -22,12 +22,12 @@ class Player;
 class ReadPacket;
 
 namespace PlayerHandler {
-	void handleDamage(Player *player, ReadPacket *packet);
-	void handleFacialExpression(Player *player, ReadPacket *packet);
-	void handleGetInfo(Player *player, ReadPacket *packet);
-	void handleHeal(Player *player, ReadPacket *packet);
-	void handleMoving(Player *player, ReadPacket *packet);
-	void handleSpecialSkills(Player *player, ReadPacket *packet);
+	void handleDamage(Player *player, ReadPacket &packet);
+	void handleFacialExpression(Player *player, ReadPacket &packet);
+	void handleGetInfo(Player *player, ReadPacket &packet);
+	void handleHeal(Player *player, ReadPacket &packet);
+	void handleMoving(Player *player, ReadPacket &packet);
+	void handleSpecialSkills(Player *player, ReadPacket &packet);
 };
 
 #endif

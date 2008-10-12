@@ -151,9 +151,9 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 	player->setExp(cexp);
 }
 
-void Levels::addStat(Player *player, ReadPacket *packet) {
-	packet->skipBytes(4);
-	int32_t type = packet->getInt();
+void Levels::addStat(Player *player, ReadPacket &packet) {
+	packet.skipBytes(4);
+	int32_t type = packet.getInt();
 	if (player->getAp() == 0) {
 		// hacking
 		return;

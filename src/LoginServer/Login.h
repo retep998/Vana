@@ -26,12 +26,12 @@ class PlayerLogin;
 class ReadPacket;
 
 namespace Login {
-	void loginUser(PlayerLogin *player, ReadPacket *packet);
-	void setGender(PlayerLogin *player, ReadPacket *packet);
-	void handleLogin(PlayerLogin *player, ReadPacket *packet);
-	void registerPIN(PlayerLogin *player, ReadPacket *packet);
+	void loginUser(PlayerLogin *player, ReadPacket &packet);
+	void setGender(PlayerLogin *player, ReadPacket &packet);
+	void handleLogin(PlayerLogin *player, ReadPacket &packet);
+	void registerPIN(PlayerLogin *player, ReadPacket &packet);
 	void loginBack(PlayerLogin *player);
-	void checkPin(PlayerLogin *player, ReadPacket *packet);
+	void checkPin(PlayerLogin *player, ReadPacket &packet);
 	string hashPassword(const string &password, const string &salt);
 };
 

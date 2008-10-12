@@ -26,8 +26,8 @@ void PacketCreator::addPos(Pos pos) {
 	addShort(pos.y);
 }
 
-void PacketCreator::addBuffer(ReadPacket *packet) {
-	addBuffer(packet->getBuffer(), packet->getBufferLength());
+void PacketCreator::addBuffer(ReadPacket &packet) {
+	addBuffer(packet.getBuffer(), packet.getBufferLength());
 }
 
 void PacketCreator::addBuffer(unsigned char *bytes, size_t len) {

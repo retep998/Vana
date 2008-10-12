@@ -30,7 +30,7 @@ class ReadPacket;
 
 namespace Trades {
 	extern unordered_map<int32_t, ActiveTrade *> trades;
-	void tradeHandler(Player *player, ReadPacket *packet);
+	void tradeHandler(Player *player, ReadPacket &packet);
 	void addTrade(ActiveTrade *trade);
 	float getTaxLevel(int32_t mesos);
 	void removeTrade(int32_t id);

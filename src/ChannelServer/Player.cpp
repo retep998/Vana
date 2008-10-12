@@ -70,14 +70,14 @@ Player::~Player() {
 	}
 }
 
-void Player::realHandleRequest(ReadPacket *packet) {
-	switch (packet->getShort()) {
+void Player::realHandleRequest(ReadPacket &packet) {
+	switch (packet.getShort()) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
 		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
-		case RECV_CHANGE_CHANNEL: changeChannel(packet->getByte()); break;
+		case RECV_CHANGE_CHANNEL: changeChannel(packet.getByte()); break;
 		case RECV_CHANGE_MAP: Maps::usePortal(this, packet); break;
 		case RECV_CHANGE_MAP_SPECIAL: Maps::useScriptedPortal(this, packet); break; // Portals that cause scripted events
 		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
@@ -131,8 +131,8 @@ void Player::realHandleRequest(ReadPacket *packet) {
 	}
 }
 
-void Player::playerConnect(ReadPacket *packet) {
-	int32_t id = packet->getInt();
+void Player::playerConnect(ReadPacket &packet) {
+	int32_t id = packet.getInt();
 	if (!Connectable::Instance()->checkPlayer(id)) {
 		//hacking
 		getSession()->disconnect();
@@ -415,17 +415,17 @@ void Player::changeChannel(int8_t channel) {
 	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel);
 }
 
-void Player::changeKey(ReadPacket *packet) {
-	packet->skipBytes(4);
-	int32_t howmany = packet->getInt();
+void Player::changeKey(ReadPacket &packet) {
+	packet.skipBytes(4);
+	int32_t howmany = packet.getInt();
 	if (howmany == 0)
 		return;
 
 	KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
 	for (int32_t i = 0; i < howmany; i++) {
-		int32_t pos = packet->getInt();
-		int8_t type = packet->getByte();
-		int32_t action = packet->getInt();
+		int32_t pos = packet.getInt();
+		int8_t type = packet.getByte();
+		int32_t action = packet.getInt();
 		keyMaps.add(pos, new KeyMaps::KeyMap(type, action));
 	}
 
@@ -433,18 +433,18 @@ void Player::changeKey(ReadPacket *packet) {
 	keyMaps.save(this->id);
 }
 
-void Player::changeSkillMacros(ReadPacket *packet) {
-	uint8_t num = packet->getByte();
+void Player::changeSkillMacros(ReadPacket &packet) {
+	uint8_t num = packet.getByte();
 	if (num == 0)
 		return;
 
 	SkillMacros skillMacros;
 	for (uint8_t i = 0; i < num; i++) {
-		string name = packet->getString();
-		bool shout = packet->getByte() != 0;
-		int32_t skill1 = packet->getInt();
-		int32_t skill2 = packet->getInt();
-		int32_t skill3 = packet->getInt();
+		string name = packet.getString();
+		bool shout = packet.getByte() != 0;
+		int32_t skill1 = packet.getInt();
+		int32_t skill2 = packet.getInt();
+		int32_t skill3 = packet.getInt();
 
 		skillMacros.add(i, new SkillMacros::SkillMacro(name, shout, skill1, skill2, skill3));
 	}

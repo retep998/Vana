@@ -25,7 +25,7 @@ class ReadPacket;
 class LoginServerConnectPlayer : public AbstractServerConnectPlayer {
 public:
 	LoginServerConnectPlayer();
-	void realHandleRequest(ReadPacket *packet);
+	void realHandleRequest(ReadPacket &packet);
 };
 
 class LoginServerConnectPlayerFactory : public AbstractPlayerFactory {

@@ -62,8 +62,8 @@ struct World {
 };
 
 namespace Worlds {
-	void channelSelect(PlayerLogin *player, ReadPacket *packet);
-	void selectWorld(PlayerLogin *player, ReadPacket *packet);
+	void channelSelect(PlayerLogin *player, ReadPacket &packet);
+	void selectWorld(PlayerLogin *player, ReadPacket &packet);
 	void showWorld(PlayerLogin *player);
 	int8_t connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
 	int8_t connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server

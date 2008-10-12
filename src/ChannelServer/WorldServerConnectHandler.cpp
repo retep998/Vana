@@ -29,12 +29,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPlayer.h"
 #include <iostream>
 
-void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, ReadPacket *packet) {
-	int8_t worldid = packet->getByte();
+void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, ReadPacket &packet) {
+	int8_t worldid = packet.getByte();
 	if (worldid != 0xFF) {
 		ChannelServer::Instance()->setWorld(worldid);
-		ChannelServer::Instance()->setWorldIp(packet->getString());
-		ChannelServer::Instance()->setWorldPort(packet->getShort());
+		ChannelServer::Instance()->setWorldIp(packet.getString());
+		ChannelServer::Instance()->setWorldPort(packet.getShort());
 		std::cout << "Connecting to world " << (int32_t) worldid << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}
@@ -44,14 +44,14 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, R
 	}
 }
 
-void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, ReadPacket *packet) {
-	uint16_t channel = packet->getShort();
+void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, ReadPacket &packet) {
+	uint16_t channel = packet.getShort();
 	if (channel != -1) {
 		ChannelServer::Instance()->setChannel(channel);
-		int16_t port = packet->getShort();
+		int16_t port = packet.getShort();
 		ChannelServer::Instance()->setPort(port);
-		ChannelServer::Instance()->setMaxMultiLevel(packet->getByte());
-		ChannelServer::Instance()->setMaxStats(packet->getShort());
+		ChannelServer::Instance()->setMaxMultiLevel(packet.getByte());
+		ChannelServer::Instance()->setMaxStats(packet.getShort());
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
 	}
@@ -61,10 +61,10 @@ void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, ReadPa
 	}
 }
 
-void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *player, ReadPacket *packet) {
-	int32_t playerid = packet->getInt();
-	string ip = packet->getString();
-	int16_t port = packet->getShort();
+void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *player, ReadPacket &packet) {
+	int32_t playerid = packet.getInt();
+	string ip = packet.getString();
+	int16_t port = packet.getShort();
 	
 	Player *ccPlayer = Players::Instance()->getPlayer(playerid);
 	if (!ccPlayer) {
@@ -75,11 +75,11 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 	ccPlayer->setSaveOnDC(false);
 }
 
-void WorldServerConnectHandler::findPlayer(ReadPacket *packet) {
-	int32_t finder = packet->getInt();
-	uint16_t channel = packet->getShort();
-	string name = packet->getString();
-	int8_t is = packet->getByte();
+void WorldServerConnectHandler::findPlayer(ReadPacket &packet) {
+	int32_t finder = packet.getInt();
+	uint16_t channel = packet.getShort();
+	string name = packet.getString();
+	int8_t is = packet.getByte();
 	if (channel == 65535) {
 		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, -1, is);
 	}
@@ -88,43 +88,43 @@ void WorldServerConnectHandler::findPlayer(ReadPacket *packet) {
 	}
 }
 
-void WorldServerConnectHandler::whisperPlayer(ReadPacket *packet) {
-	int32_t whisperee = packet->getInt();
-	string whisperer = packet->getString();
-	uint16_t channel = packet->getShort();
-	string message = packet->getString();
+void WorldServerConnectHandler::whisperPlayer(ReadPacket &packet) {
+	int32_t whisperee = packet.getInt();
+	string whisperer = packet.getString();
+	uint16_t channel = packet.getShort();
+	string message = packet.getString();
 
 	PlayersPacket::whisperPlayer(Players::Instance()->getPlayer(whisperee), whisperer, channel, message);
 }
 
-void WorldServerConnectHandler::scrollingHeader(ReadPacket *packet) {
-	string message = packet->getString();
+void WorldServerConnectHandler::scrollingHeader(ReadPacket &packet) {
+	string message = packet.getString();
 	ChannelServer::Instance()->setScrollingHeader(message);
 }
 
-void WorldServerConnectHandler::newConnectable(ReadPacket *packet) {
-	Connectable::Instance()->newPlayer(packet->getInt());
+void WorldServerConnectHandler::newConnectable(ReadPacket &packet) {
+	Connectable::Instance()->newPlayer(packet.getInt());
 }
 
-void WorldServerConnectHandler::forwardPacket(ReadPacket *packet) {
+void WorldServerConnectHandler::forwardPacket(ReadPacket &packet) {
 	PacketCreator ppacket;
-	int32_t playerid = packet->getInt();
+	int32_t playerid = packet.getInt();
 	ppacket.addBuffer(packet);
 	Players::Instance()->getPlayer(playerid)->getSession()->send(ppacket);
 }
 
-void WorldServerConnectHandler::setRates(ReadPacket *packet) {
-	int32_t ratesSetBit = packet->getInt();
+void WorldServerConnectHandler::setRates(ReadPacket &packet) {
+	int32_t ratesSetBit = packet.getInt();
 	if (ratesSetBit & Rates::SetBits::exp) {
-		ChannelServer::Instance()->setExprate(packet->getInt());
+		ChannelServer::Instance()->setExprate(packet.getInt());
 	}
 	if (ratesSetBit & Rates::SetBits::questExp) {
-		ChannelServer::Instance()->setQuestExprate(packet->getInt());
+		ChannelServer::Instance()->setQuestExprate(packet.getInt());
 	}
 	if (ratesSetBit & Rates::SetBits::meso) {
-		ChannelServer::Instance()->setMesorate(packet->getInt());
+		ChannelServer::Instance()->setMesorate(packet.getInt());
 	}
 	if (ratesSetBit & Rates::SetBits::drop) {
-		ChannelServer::Instance()->setDroprate(packet->getInt());
+		ChannelServer::Instance()->setDroprate(packet.getInt());
 	}
 }

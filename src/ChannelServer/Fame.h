@@ -24,7 +24,7 @@ class Player;
 class ReadPacket;
 	
 namespace Fame {
-	void handleFame(Player *player, ReadPacket *packet);
+	void handleFame(Player *player, ReadPacket &packet);
 	int32_t canFame(Player *player, int32_t to);
 	void addFameLog(int32_t from, int32_t to);
 	bool getLastFameLog(int32_t from);

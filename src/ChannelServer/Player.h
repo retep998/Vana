@@ -48,7 +48,7 @@ public:
 
 	~Player();
 
-	void realHandleRequest(ReadPacket *packet);
+	void realHandleRequest(ReadPacket &packet);
 
 	void setSaveOnDC(bool save) { save_on_dc = save; }
 	void setTrading(int8_t newstate) { tradestate = newstate; }
@@ -154,9 +154,9 @@ public:
 	void setLevelDate();
 	void acceptDeath();
 private:
-	void playerConnect(ReadPacket *packet);
-	void changeKey(ReadPacket *packet);
-	void changeSkillMacros(ReadPacket *packet);
+	void playerConnect(ReadPacket &packet);
+	void changeKey(ReadPacket &packet);
+	void changeSkillMacros(ReadPacket &packet);
 
 	int8_t world_id;
 	int8_t mappos;

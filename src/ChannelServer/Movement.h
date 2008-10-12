@@ -23,7 +23,7 @@ class ReadPacket;
 struct Pos;
 
 namespace Movement {
-	Pos parseMovement(MovableLife *life, ReadPacket *packet);
+	Pos parseMovement(MovableLife *life, ReadPacket &packet);
 };
 
 #endif

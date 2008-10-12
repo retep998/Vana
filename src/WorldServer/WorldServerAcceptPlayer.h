@@ -27,7 +27,7 @@ class WorldServerAcceptPlayer : public AbstractServerAcceptPlayer {
 public:
 	~WorldServerAcceptPlayer();
 
-	void realHandleRequest(ReadPacket *packet);
+	void realHandleRequest(ReadPacket &packet);
 	void authenticated(int8_t type);
 
 	uint16_t getChannel() { return channel; }

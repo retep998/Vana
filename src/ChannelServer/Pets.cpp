@@ -67,36 +67,36 @@ void Pet::startTimer() {
 
 /* Pets namespace */
 
-void Pets::movePet(Player *player, ReadPacket *packet) {
-	int32_t petid = packet->getInt();
+void Pets::movePet(Player *player, ReadPacket &packet) {
+	int32_t petid = packet.getInt();
 	Pet *pet = player->getPets()->getPet(petid);
-	packet->skipBytes(8);
+	packet.skipBytes(8);
 	Movement::parseMovement(pet, packet);
-	packet->reset(10);
-	PetsPacket::movePet(player, pet, packet->getBuffer(), packet->getBufferLength() - 9);
+	packet.reset(10);
+	PetsPacket::movePet(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
 }
 
-void Pets::chat(Player *player, ReadPacket *packet) {
-	int32_t petid = packet->getInt();
-	packet->skipBytes(5);
-	int8_t act = packet->getByte();
-	string message = packet->getString();
+void Pets::chat(Player *player, ReadPacket &packet) {
+	int32_t petid = packet.getInt();
+	packet.skipBytes(5);
+	int8_t act = packet.getByte();
+	string message = packet.getString();
 	PetsPacket::showChat(player, player->getPets()->getPet(petid), message, act);
 }
 
-void Pets::summonPet(Player *player, ReadPacket *packet) {
-	packet->skipBytes(4);
-	int16_t slot = packet->getShort();
-	bool master = packet->getByte() == 1;
+void Pets::summonPet(Player *player, ReadPacket &packet) {
+	packet.skipBytes(4);
+	int16_t slot = packet.getShort();
+	bool master = packet.getByte() == 1;
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5, slot)->petid);
 	pet->setPos(player->getPos());
 	summon(player, pet, master);
 }
 
-void Pets::feedPet(Player *player, ReadPacket *packet) {
-	packet->skipBytes(4);
-	int16_t slot = packet->getShort();
-	int32_t item = packet->getInt();
+void Pets::feedPet(Player *player, ReadPacket &packet) {
+	packet.skipBytes(4);
+	int16_t slot = packet.getShort();
+	int32_t item = packet.getInt();
 	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		bool success = false;
 		if (pet->getFullness() < 100) {
@@ -109,10 +109,10 @@ void Pets::feedPet(Player *player, ReadPacket *packet) {
 	}
 }
 
-void Pets::showAnimation(Player *player, ReadPacket *packet) {
-	int32_t petid = packet->getInt();
-	packet->skipBytes(5);
-	int8_t act = packet->getByte();
+void Pets::showAnimation(Player *player, ReadPacket &packet) {
+	int32_t petid = packet.getInt();
+	packet.skipBytes(5);
+	int8_t act = packet.getByte();
 	Pet *pet = player->getPets()->getPet(petid);
 	bool success = false;
 	if (Randomizer::Instance()->randInt(100) < petsInteractInfo[pet->getType()][act].prob) {
@@ -144,10 +144,10 @@ void Pets::addCloseness(Player *player, Pet *pet, int16_t closeness) {
 	PetsPacket::updatePet(player, pet);
 }
 
-void Pets::lootItem(Player *player, ReadPacket *packet) {
-	int32_t petid = packet->getInt();
-	packet->skipBytes(13);
-	int32_t dropid = packet->getInt();
+void Pets::lootItem(Player *player, ReadPacket &packet) {
+	int32_t petid = packet.getInt();
+	packet.skipBytes(13);
+	int32_t dropid = packet.getInt();
 	Drop *drop = Maps::maps[player->getMap()]->getDrop(dropid);
 	if (drop == 0) {
 		DropsPacket::dontTake(player);

@@ -39,9 +39,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
-	string message = packet->getString();
-	int8_t bubbleOnly = packet->getByte(); // Skill Macros only display chat bubbles
+void ChatHandler::handleChat(Player *player, ReadPacket &packet) {
+	string message = packet.getString();
+	int8_t bubbleOnly = packet.getByte(); // Skill Macros only display chat bubbles
 
 	char *chat = const_cast<char *>(message.c_str()); // Leaving chat as char[] for GM commands for now
 	size_t chatsize = message.size(); // See above line
@@ -608,14 +608,14 @@ void ChatHandler::handleChat(Player *player, ReadPacket *packet) {
 	PlayersPacket::showChat(player, message, bubbleOnly);
 }
 
-void ChatHandler::handleGroupChat(Player *player, ReadPacket *packet) {
+void ChatHandler::handleGroupChat(Player *player, ReadPacket &packet) {
 	vector<int32_t> receivers;
-	int8_t type = packet->getByte();
-	uint8_t amount = packet->getByte();
+	int8_t type = packet.getByte();
+	uint8_t amount = packet.getByte();
 	for (size_t i = 0; i < amount; i++) {
-		receivers.push_back(packet->getInt());
+		receivers.push_back(packet.getInt());
 	}
-	string chat = packet->getString();
+	string chat = packet.getString();
 
 	WorldServerConnectPlayerPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), receivers, chat);
 }

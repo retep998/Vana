@@ -32,15 +32,15 @@ using std::string;
 
 unordered_map<int32_t, ActiveTrade *> Trades::trades;
 
-void Trades::tradeHandler(Player *player, ReadPacket *packet) {
-	uint8_t subopcode = packet->getByte();
+void Trades::tradeHandler(Player *player, ReadPacket &packet) {
+	uint8_t subopcode = packet.getByte();
 	switch (subopcode) {
 		case 0x00: // Open trade - this usually comes with 03 00 - no clue why
 			TradesPacket::sendOpenTrade(player, player, 0);
 			break;
 		case 0x02: {
 			if (player->isTrading() == 0) {  // Send trade request
-				int32_t playerid = packet->getInt();
+				int32_t playerid = packet.getInt();
 				Player *receiver = Players::Instance()->getPlayer(playerid);
 				switch (receiver->isTrading()) {
 					case -1: // Has a trade request already, this doesn't matter in global at the moment
@@ -63,7 +63,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			break;
 		}
 		case 0x03: { // Deny request - trade ID + message ID
-			int32_t tradeid = packet->getInt();
+			int32_t tradeid = packet.getInt();
 			ActiveTrade *trade = Trades::getTrade(tradeid);
 			if (trade != 0) {
 				TradeInfo *tradesend = trade->getStarter();
@@ -75,12 +75,12 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 				sender->setTradeSendID(0);
 				receiver->setTrading(0);
 				receiver->setTradeRecvID(0);
-				TradesPacket::sendTradeMessage(receiver, sender, 0x03, packet->getByte());
+				TradesPacket::sendTradeMessage(receiver, sender, 0x03, packet.getByte());
 			}
 			break;
 		}
 		case 0x04: {
-			int32_t tradeid = packet->getInt();
+			int32_t tradeid = packet.getInt();
 			ActiveTrade *trade = Trades::getTrade(tradeid);
 			if (trade != 0) {
 				Player *one = trade->getStarter()->player;
@@ -97,7 +97,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 		case 0x06: { // Chat in a trade
 			string chat = player->getName();
 			chat.append(" : ");
-			chat.append(packet->getString());
+			chat.append(packet.getString());
 			int32_t playerid = player->getId();
 			bool isself = false;
 			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) // Receiver chatting
@@ -127,10 +127,10 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			TradeInfo *recv = trade->getReceiver();
 			Player *one = send->player;
 			Player *two = recv->player;
-			int8_t inventory = packet->getByte();
-			int16_t slot = packet->getShort();
-			int16_t amount = packet->getShort();
-			int8_t addslot = packet->getByte();
+			int8_t inventory = packet.getByte();
+			int16_t slot = packet.getShort();
+			int16_t amount = packet.getShort();
+			int8_t addslot = packet.getByte();
 			Item *use;
 			Item *item;
 			uint8_t user = 0x00;
@@ -194,7 +194,7 @@ void Trades::tradeHandler(Player *player, ReadPacket *packet) {
 			TradeInfo *recv = trade->getReceiver();
 			Player *one = send->player;
 			Player *two = recv->player;
-			int32_t amount = packet->getInt();
+			int32_t amount = packet.getInt();
 			int32_t mesos = send->mesos;
 			if (player == two) {
 				mesos = recv->mesos;

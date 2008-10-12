@@ -51,18 +51,18 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i) {
 	player->getSession()->send(packet);
 }
 
-void NPCPacket::animateNPC(Player *player, ReadPacket *pack) {
-	size_t len = pack->getBufferLength();
+void NPCPacket::animateNPC(Player *player, ReadPacket &pack) {
+	size_t len = pack.getBufferLength();
 
 	PacketCreator packet;
 	packet.addShort(SEND_ANIMATE_NPC);
 	if (len == 6) { // NPC talking
-		packet.addInt(pack->getInt());
-		packet.addShort(pack->getShort());
+		packet.addInt(pack.getInt());
+		packet.addShort(pack.getShort());
 	}
 
 	else if (len > 6) { // NPC moving
-		packet.addBuffer(pack->getBuffer(), len - 9);
+		packet.addBuffer(pack.getBuffer(), len - 9);
 	}
 	player->getSession()->send(packet);
 }

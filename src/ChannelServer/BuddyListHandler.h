@@ -22,7 +22,7 @@ class Player;
 class ReadPacket;
 
 namespace BuddyListHandler {
-	void handleBuddyList(Player *player, ReadPacket *packet);
+	void handleBuddyList(Player *player, ReadPacket &packet);
 }
 
 #endif

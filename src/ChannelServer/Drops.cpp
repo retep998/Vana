@@ -166,9 +166,9 @@ void Drops::addDrop(Drop *drop, Pos origin) {
 	drop->doDrop(origin);
 }
 
-void Drops::dropMesos(Player *player, ReadPacket *packet) {
-	packet->skipBytes(4);
-	int32_t amount = packet->getInt();
+void Drops::dropMesos(Player *player, ReadPacket &packet) {
+	packet.skipBytes(4);
+	int32_t amount = packet.getInt();
 	if (amount < 10 || amount > 50000) {
 		// hacking
 		return;
@@ -179,9 +179,9 @@ void Drops::dropMesos(Player *player, ReadPacket *packet) {
 	drop->doDrop(player->getPos());
 }
 
-void Drops::lootItem(Player *player, ReadPacket *packet) {
-	packet->skipBytes(9);
-	int32_t itemid = packet->getInt();
+void Drops::lootItem(Player *player, ReadPacket &packet) {
+	packet.skipBytes(9);
+	int32_t itemid = packet.getInt();
 	Drop* drop = Maps::maps[player->getMap()]->getDrop(itemid);
 	bool success = true;
 	if (drop == 0) {

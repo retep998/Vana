@@ -46,7 +46,7 @@ public:
 	void setByte(unsigned char byte, size_t pos);
 	void addBytes(char *hex);
 	void addBuffer(unsigned char *bytes, size_t len);
-	void addBuffer(ReadPacket *packet);
+	void addBuffer(ReadPacket &packet);
 	void addIP(const string &ip);
 
 	const unsigned char * getBuffer() const;

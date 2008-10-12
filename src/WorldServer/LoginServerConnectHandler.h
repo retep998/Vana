@@ -22,8 +22,8 @@ class LoginServerConnectPlayer;
 class ReadPacket;
 
 namespace LoginServerConnectHandler {
-	void connect(LoginServerConnectPlayer *player, ReadPacket *packet);
-	void newPlayer(ReadPacket *packet);
+	void connect(LoginServerConnectPlayer *player, ReadPacket &packet);
+	void newPlayer(ReadPacket &packet);
 }
 
 #endif

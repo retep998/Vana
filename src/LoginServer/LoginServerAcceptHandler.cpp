@@ -21,24 +21,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include <iostream>
 
-void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t channel = packet->getInt();
+void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t channel = packet.getInt();
 	Channel *chan = new Channel();
-	chan->ip = packet->getString();
-	chan->port = packet->getShort();
+	chan->ip = packet.getString();
+	chan->port = packet.getShort();
 	Worlds::worlds[player->getWorldId()]->channels[channel] = shared_ptr<Channel>(chan);
 	std::cout << "Registering channel " << channel << " with IP " << chan->ip << " and port " << chan->port << std::endl;
 }
 
-void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t channel = packet->getInt();
-	int32_t population = packet->getInt();
+void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t channel = packet.getInt();
+	int32_t population = packet.getInt();
 
 	Worlds::worlds[player->getWorldId()]->channels[channel]->population = population;
 }
 
-void LoginServerAcceptHandler::removeChannel(LoginServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t channel = packet->getInt();
+void LoginServerAcceptHandler::removeChannel(LoginServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t channel = packet.getInt();
 
 	Worlds::worlds[player->getWorldId()]->channels.erase(channel);
 	std::cout << "Removed channel " << channel << std::endl;

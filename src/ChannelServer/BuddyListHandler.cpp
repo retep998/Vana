@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-void BuddyListHandler::handleBuddyList(Player *player, ReadPacket *packet) {
-	uint8_t type = packet->getByte();
+void BuddyListHandler::handleBuddyList(Player *player, ReadPacket &packet) {
+	uint8_t type = packet.getByte();
 	if (type == 1) { // Add
-		string name = packet->getString();
+		string name = packet.getString();
 
 		uint8_t error = player->getBuddyList()->add(name);
 
@@ -35,7 +35,7 @@ void BuddyListHandler::handleBuddyList(Player *player, ReadPacket *packet) {
 		}
 	}
 	else if (type == 3) { // Remove
-		int32_t charid = packet->getInt();
+		int32_t charid = packet.getInt();
 		player->getBuddyList()->remove(charid);
 	}
 }

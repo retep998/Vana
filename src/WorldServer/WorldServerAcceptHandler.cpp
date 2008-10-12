@@ -24,35 +24,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReadPacket.h"
 #include "PartyHandler.h"
 
-void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t playerid = packet->getInt();
-	int8_t type = packet->getByte(); // Buddy = 0 party = 1 guild = 2
-	string message = packet->getString();
-	uint8_t receivers = packet->getByte();
+void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t playerid = packet.getInt();
+	int8_t type = packet.getByte(); // Buddy = 0 party = 1 guild = 2
+	string message = packet.getString();
+	uint8_t receivers = packet.getByte();
 	string sender = Players::Instance()->getPlayer(playerid)->name;
 	for (size_t i = 0; i < receivers; i++) {
-		int32_t receiver = packet->getInt();
+		int32_t receiver = packet.getInt();
 		WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(Players::Instance()->getPlayer(receiver)->channel)->player;
 		WorldServerAcceptPlayerPacket::groupChat(channel, receiver, type, message, sender);
 	}	
 }
 
-void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int8_t type = packet->getByte();
-	int32_t playerid = packet->getInt();
+void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int8_t type = packet.getByte();
+	int32_t playerid = packet.getInt();
 	switch(type) {
 		case 0x01: PartyHandler::createParty(player, playerid); break;
 		case 0x02: PartyHandler::leaveParty(player, playerid); break;
-		case 0x03: PartyHandler::joinParty(player, playerid, packet->getInt()); break;
-		case 0x04: PartyHandler::invitePlayer(player, playerid, packet->getString()); break;
-		case 0x05: PartyHandler::expelPlayer(player, playerid, packet->getInt()); break;
-		case 0x06: PartyHandler::giveLeader(player, playerid, packet->getInt(), 0); break;
+		case 0x03: PartyHandler::joinParty(player, playerid, packet.getInt()); break;
+		case 0x04: PartyHandler::invitePlayer(player, playerid, packet.getString()); break;
+		case 0x05: PartyHandler::expelPlayer(player, playerid, packet.getInt()); break;
+		case 0x06: PartyHandler::giveLeader(player, playerid, packet.getInt(), 0); break;
 	}
 }
 
-void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t playerid = packet->getInt();
-	Channel *chan = Channels::Instance()->getChannel(packet->getShort());
+void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t playerid = packet.getInt();
+	Channel *chan = Channels::Instance()->getChannel(packet.getShort());
 
 	if (chan) {
 		WorldServerAcceptPlayerPacket::newConnectable(chan->id, playerid);
@@ -63,9 +63,9 @@ void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *play
 	}
 }
 
-void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t finder = packet->getInt();
-	string findee_name = packet->getString();
+void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t finder = packet.getInt();
+	string findee_name = packet.getString();
 
 	Player *findee = Players::Instance()->getPlayerFromName(findee_name);
 	if (findee->channel != 65535) // Thanks for changing the datatype, pawitp ;_;
@@ -74,10 +74,10 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadP
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee_name);
 }
 
-void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t whisperer = packet->getInt();
-	string whisperee_name = packet->getString();
-	string message = packet->getString();
+void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t whisperer = packet.getInt();
+	string whisperee_name = packet.getString();
+	string message = packet.getString();
 
 	Player *whisperee = Players::Instance()->getPlayerFromName(whisperee_name);
 	if (whisperee->channel != 65535) { // Thanks for changing the datatype, pawitp ;_;
@@ -88,46 +88,46 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, Re
 		WorldServerAcceptPlayerPacket::findPlayer(player, whisperer, whisperee->channel, whisperee_name);
 }
 
-void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t id = packet->getInt();
-	string name = packet->getString();
-	int32_t map = packet->getInt();
-	int32_t job = packet->getInt();
-	int32_t level = packet->getInt();
+void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t id = packet.getInt();
+	string name = packet.getString();
+	int32_t map = packet.getInt();
+	int32_t job = packet.getInt();
+	int32_t level = packet.getInt();
 	Players::Instance()->registerPlayer(id, name, player->getChannel(), map, job, level);
 }
 
-void WorldServerAcceptHandler::removePlayer(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t id = packet->getInt();
+void WorldServerAcceptHandler::removePlayer(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t id = packet.getInt();
 	Players::Instance()->remove(id, player->getChannel());
 }
 
-void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	string message = packet->getString();
+void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	string message = packet.getString();
 	WorldServer::Instance()->setScrollingHeader(message);
 }
 
-void WorldServerAcceptHandler::updateJob(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t id = packet->getInt();
-	int32_t job = packet->getInt();
+void WorldServerAcceptHandler::updateJob(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t id = packet.getInt();
+	int32_t job = packet.getInt();
 	Players::Instance()->getPlayer(id)->job = job;
 	if (Players::Instance()->getPlayer(id)->party != 0) {
 		PartyHandler::silentUpdate(id);
 	}
 }
 
-void WorldServerAcceptHandler::updateLevel(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t id = packet->getInt();
-	int32_t level = packet->getInt();
+void WorldServerAcceptHandler::updateLevel(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t id = packet.getInt();
+	int32_t level = packet.getInt();
 	Players::Instance()->getPlayer(id)->level = level;
 	if (Players::Instance()->getPlayer(id)->party != 0) {
 		PartyHandler::silentUpdate(id);
 	}
 }
 
-void WorldServerAcceptHandler::updateMap(WorldServerAcceptPlayer *player, ReadPacket *packet) {
-	int32_t id = packet->getInt();
-	int32_t map = packet->getInt();
+void WorldServerAcceptHandler::updateMap(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+	int32_t id = packet.getInt();
+	int32_t map = packet.getInt();
 	Players::Instance()->getPlayer(id)->map = map;
 	if (Players::Instance()->getPlayer(id)->party != 0) {
 		PartyHandler::silentUpdate(id);

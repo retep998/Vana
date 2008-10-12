@@ -25,7 +25,7 @@ class ReadPacket;
 class WorldServerConnectPlayer : public AbstractServerConnectPlayer {
 public:
 	WorldServerConnectPlayer();
-	void realHandleRequest(ReadPacket *packet);
+	void realHandleRequest(ReadPacket &packet);
 	void playerChangeChannel(int32_t playerid, uint16_t channel);
 };
 

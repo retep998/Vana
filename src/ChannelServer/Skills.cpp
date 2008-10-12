@@ -41,9 +41,9 @@ void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo le
 	}
 }
 
-void Skills::addSkill(Player *player, ReadPacket *packet) {
-	packet->skipBytes(4);
-	int32_t skillid = packet->getInt();
+void Skills::addSkill(Player *player, ReadPacket &packet) {
+	packet.skipBytes(4);
+	int32_t skillid = packet.getInt();
 	if (!BEGINNER_SKILL(skillid) && player->getSp() == 0) {
 		// hacking
 		return;
@@ -53,8 +53,8 @@ void Skills::addSkill(Player *player, ReadPacket *packet) {
 	}
 }
 
-void Skills::cancelSkill(Player *player, ReadPacket *packet) {
-	stopSkill(player, packet->getInt());
+void Skills::cancelSkill(Player *player, ReadPacket &packet) {
+	stopSkill(player, packet.getInt());
 }
 void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	switch (skillid) {
@@ -76,20 +76,20 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	}
 }
 
-void Skills::useSkill(Player *player, ReadPacket *packet) {
-	packet->skipBytes(4); //Ticks
-	int32_t skillid = packet->getInt();
+void Skills::useSkill(Player *player, ReadPacket &packet) {
+	packet.skipBytes(4); //Ticks
+	int32_t skillid = packet.getInt();
 	int16_t addedinfo = 0;
-	uint8_t level = packet->getByte();
+	uint8_t level = packet.getByte();
 	uint8_t type = 0;
 	switch (skillid) { // Packet processing
 		case 1121001: // Monster Magnet processing
 		case 1221001:
 		case 1321001: {
-			int32_t mobs = packet->getInt();
+			int32_t mobs = packet.getInt();
 			for (int8_t k = 0; k < mobs; k++) {
-				int32_t mapmobid = packet->getInt();
-				uint8_t success = packet->getByte();
+				int32_t mapmobid = packet.getInt();
+				uint8_t success = packet.getByte();
 				SkillsPacket::showMagnetSuccess(player, mapmobid, success);
 			}
 			break;
@@ -101,9 +101,9 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 		case 2211004: // Seal - I/L
 		case 2311005: // Doom
 		case 4111003: { // Shadow Web
-			uint8_t mobs = packet->getByte();
+			uint8_t mobs = packet.getByte();
 			for (uint8_t k = 0; k < mobs; k++) {
-				if (Mob *mob = Maps::maps[player->getMap()]->getMob(packet->getInt())) {
+				if (Mob *mob = Maps::maps[player->getMap()]->getMob(packet.getInt())) {
 					Mobs::handleMobStatus(player, mob, skillid, false);
 				}
 			}
@@ -135,10 +135,10 @@ void Skills::useSkill(Player *player, ReadPacket *packet) {
 			MapPacket::removePlayer(player);
 			break;
 		default:
-			type = packet->getByte();
+			type = packet.getByte();
 			switch (type) {
 				case 0x80:
-					addedinfo = packet->getShort();
+					addedinfo = packet.getShort();
 					break;
 			}
 			break;
