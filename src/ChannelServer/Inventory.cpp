@@ -131,7 +131,7 @@ void Inventory::itemMove(Player *player, ReadPacket *packet) {
 		if (item2 != 0 && !ISRECHARGEABLE(item1->id) && !ISEQUIP(item1->id) && !ISPET(item1->id) && item1->id == item2->id) {
 			if (item1->amount + item2->amount <= items[item1->id].maxslot) {
 				item2->amount += item1->amount;
-				player->getInventory()->deleteItem(inv, slot1);
+				player->getInventory()->deleteItem(inv, slot1, false);
 				InventoryPacket::updateItemAmounts(player, inv, slot2, item2->amount, 0, 0);
 				InventoryPacket::moveItem(player, inv, slot1, 0);
 			}
