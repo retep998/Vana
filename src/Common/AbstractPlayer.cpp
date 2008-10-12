@@ -33,11 +33,16 @@ timers(new Timer::Container)
 }
 
 void AbstractPlayer::handleRequest(ReadPacket *packet) {
-	is_pinged = false;
-	if (is_server && packet->getHeader() == SEND_PING) {
-		PingPacket::pong(this);
+	try {
+		is_pinged = false;
+		if (is_server && packet->getHeader() == SEND_PING) {
+			PingPacket::pong(this);
+		}
+		realHandleRequest(packet);
 	}
-	realHandleRequest(packet);
+	catch (std::exception &e) {
+		std::cout << "ERROR: " << e.what() << std::endl;
+	}
 }
 
 void AbstractPlayer::setTimer() {
