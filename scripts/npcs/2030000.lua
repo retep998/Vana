@@ -32,7 +32,7 @@ elseif state == 2 then
 	if getLevel() < 50 then
 		endNPC();
 	elseif getSelected() == 1 then
-		setMap(211040300);
+		setMap(211040300, "sp");
 	else
 		addText("Even if your level's high it's hard to actually go in there, but if you ever change your mind please find me. After all, my job is to protect this place.");
 		sendNext();
