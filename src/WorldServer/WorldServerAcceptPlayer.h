@@ -21,13 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerPlayer.h"
 #include "Types.h"
 
-class ReadPacket;
+class PacketReader;
 
 class WorldServerAcceptPlayer : public AbstractServerAcceptPlayer {
 public:
 	~WorldServerAcceptPlayer();
 
-	void realHandleRequest(ReadPacket &packet);
+	void realHandleRequest(PacketReader &packet);
 	void authenticated(int8_t type);
 
 	uint16_t getChannel() { return channel; }

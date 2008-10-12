@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BuddyListHandler.h"
 #include "BuddyListPacket.h"
 #include "Player.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include <string>
 
 using std::string;
 
-void BuddyListHandler::handleBuddyList(Player *player, ReadPacket &packet) {
+void BuddyListHandler::handleBuddyList(Player *player, PacketReader &packet) {
 	uint8_t type = packet.getByte();
 	if (type == 1) { // Add
 		string name = packet.getString();

@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptHandler.h"
 #include "LoginServerAcceptPlayer.h"
 #include "Worlds.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include <iostream>
 
-void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, ReadPacket &packet) {
+void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t channel = packet.getInt();
 	Channel *chan = new Channel();
 	chan->ip = packet.getString();
@@ -30,14 +30,14 @@ void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, 
 	std::cout << "Registering channel " << channel << " with IP " << chan->ip << " and port " << chan->port << std::endl;
 }
 
-void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptPlayer *player, ReadPacket &packet) {
+void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t channel = packet.getInt();
 	int32_t population = packet.getInt();
 
 	Worlds::worlds[player->getWorldId()]->channels[channel]->population = population;
 }
 
-void LoginServerAcceptHandler::removeChannel(LoginServerAcceptPlayer *player, ReadPacket &packet) {
+void LoginServerAcceptHandler::removeChannel(LoginServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t channel = packet.getInt();
 
 	Worlds::worlds[player->getWorldId()]->channels.erase(channel);

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "Randomizer.h"
 #include "Reactors.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Timer/Timer.h"
 #include <functional>
 #include <string>
@@ -67,7 +67,7 @@ void Pet::startTimer() {
 
 /* Pets namespace */
 
-void Pets::movePet(Player *player, ReadPacket &packet) {
+void Pets::movePet(Player *player, PacketReader &packet) {
 	int32_t petid = packet.getInt();
 	Pet *pet = player->getPets()->getPet(petid);
 	packet.skipBytes(8);
@@ -76,7 +76,7 @@ void Pets::movePet(Player *player, ReadPacket &packet) {
 	PetsPacket::movePet(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
 }
 
-void Pets::chat(Player *player, ReadPacket &packet) {
+void Pets::chat(Player *player, PacketReader &packet) {
 	int32_t petid = packet.getInt();
 	packet.skipBytes(5);
 	int8_t act = packet.getByte();
@@ -84,7 +84,7 @@ void Pets::chat(Player *player, ReadPacket &packet) {
 	PetsPacket::showChat(player, player->getPets()->getPet(petid), message, act);
 }
 
-void Pets::summonPet(Player *player, ReadPacket &packet) {
+void Pets::summonPet(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.getShort();
 	bool master = packet.getByte() == 1;
@@ -93,7 +93,7 @@ void Pets::summonPet(Player *player, ReadPacket &packet) {
 	summon(player, pet, master);
 }
 
-void Pets::feedPet(Player *player, ReadPacket &packet) {
+void Pets::feedPet(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.getShort();
 	int32_t item = packet.getInt();
@@ -109,7 +109,7 @@ void Pets::feedPet(Player *player, ReadPacket &packet) {
 	}
 }
 
-void Pets::showAnimation(Player *player, ReadPacket &packet) {
+void Pets::showAnimation(Player *player, PacketReader &packet) {
 	int32_t petid = packet.getInt();
 	packet.skipBytes(5);
 	int8_t act = packet.getByte();
@@ -144,7 +144,7 @@ void Pets::addCloseness(Player *player, Pet *pet, int16_t closeness) {
 	PetsPacket::updatePet(player, pet);
 }
 
-void Pets::lootItem(Player *player, ReadPacket &packet) {
+void Pets::lootItem(Player *player, PacketReader &packet) {
 	int32_t petid = packet.getInt();
 	packet.skipBytes(13);
 	int32_t dropid = packet.getInt();

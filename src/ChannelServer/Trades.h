@@ -26,11 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::unordered_map;
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 namespace Trades {
 	extern unordered_map<int32_t, ActiveTrade *> trades;
-	void tradeHandler(Player *player, ReadPacket &packet);
+	void tradeHandler(Player *player, PacketReader &packet);
 	void addTrade(ActiveTrade *trade);
 	float getTaxLevel(int32_t mesos);
 	void removeTrade(int32_t id);

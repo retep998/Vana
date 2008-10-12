@@ -20,13 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectHandler.h"
 #include "PlayersPacket.h"
 #include "InterHeader.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 
 WorldServerConnectPlayer::WorldServerConnectPlayer() {
 	type = INTER_CHANNEL_SERVER;
 }
 
-void WorldServerConnectPlayer::realHandleRequest(ReadPacket &packet) {
+void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
 	switch(packet.getShort()) {
 		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
 		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;

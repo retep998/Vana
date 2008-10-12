@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 #include "PlayerLogin.h"
 #include "Randomizer.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "TimeUtilities.h"
 #include "sha1.h"
 #include <iostream>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
-void Login::loginUser(PlayerLogin *player, ReadPacket &packet) {
+void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	string username = packet.getString();
 	string password = packet.getString();
 
@@ -101,7 +101,7 @@ void Login::loginUser(PlayerLogin *player, ReadPacket &packet) {
 	}
 }
 
-void Login::setGender(PlayerLogin *player, ReadPacket &packet) {
+void Login::setGender(PlayerLogin *player, PacketReader &packet) {
 	if (player->getStatus() != 5) {
 		//hacking
 		return;
@@ -120,7 +120,7 @@ void Login::setGender(PlayerLogin *player, ReadPacket &packet) {
 	}
 }
 
-void Login::handleLogin(PlayerLogin *player, ReadPacket &packet) {
+void Login::handleLogin(PlayerLogin *player, PacketReader &packet) {
 	int32_t status = player->getStatus();
 	if (status == 1)
 		LoginPacket::loginProcess(player, 0x01);
@@ -136,7 +136,7 @@ void Login::handleLogin(PlayerLogin *player, ReadPacket &packet) {
 		player->setOnline(true);
 	}
 }
-void Login::checkPin(PlayerLogin *player, ReadPacket &packet) {
+void Login::checkPin(PlayerLogin *player, PacketReader &packet) {
 	if (!LoginServer::Instance()->getPinEnabled()) {
 		//hacking
 		return;
@@ -168,7 +168,7 @@ void Login::checkPin(PlayerLogin *player, ReadPacket &packet) {
 	}
 }
 
-void Login::registerPIN(PlayerLogin *player, ReadPacket &packet) {
+void Login::registerPIN(PlayerLogin *player, PacketReader &packet) {
 	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != 1) {
 		//hacking
 		return;

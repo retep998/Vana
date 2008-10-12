@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include "ChannelServer.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 
-void Party::handleRequest(Player *player, ReadPacket &packet) {
+void Party::handleRequest(Player *player, PacketReader &packet) {
 	int8_t type = packet.getByte();
 	switch(type){
 		case 0x01: //Create party

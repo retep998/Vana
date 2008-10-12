@@ -29,7 +29,7 @@ using std::tr1::unordered_map;
 
 class PacketCreator;
 class Player;
-class ReadPacket;
+class PacketReader;
 
 class Players {
 public:

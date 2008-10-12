@@ -27,7 +27,7 @@ using std::vector;
 
 namespace mysqlpp { class Row; };
 class PlayerLogin;
-class ReadPacket;
+class PacketReader;
 
 struct CharEquip {
 	int32_t id;
@@ -62,11 +62,11 @@ struct Character {
 
 namespace Characters {
 	void connectGame(PlayerLogin *player, int32_t charid);
-	void connectGame(PlayerLogin *player, ReadPacket &packet);
-	void connectGameWorld(PlayerLogin *player, ReadPacket &packet); // From "view all character"
-	void checkCharacterName(PlayerLogin *player, ReadPacket &packet);
-	void createCharacter(PlayerLogin *player, ReadPacket &packet);
-	void deleteCharacter(PlayerLogin *player, ReadPacket &packet);
+	void connectGame(PlayerLogin *player, PacketReader &packet);
+	void connectGameWorld(PlayerLogin *player, PacketReader &packet); // From "view all character"
+	void checkCharacterName(PlayerLogin *player, PacketReader &packet);
+	void createCharacter(PlayerLogin *player, PacketReader &packet);
+	void deleteCharacter(PlayerLogin *player, PacketReader &packet);
 	void showAllCharacters(PlayerLogin *player);
 	void showCharacters(PlayerLogin *player);
 	void loadCharacter(Character &charc, const mysqlpp::Row &row);

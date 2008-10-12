@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Randomizer.h"
 #include "Reactors.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Shops.h"
 #include "Skills.h"
 #include "StoragePacket.h"
@@ -91,7 +91,7 @@ void Inventory::addItemInfo(int32_t id, ItemInfo item) {
 	items[id] = item;
 }
 
-void Inventory::itemMove(Player *player, ReadPacket &packet) {
+void Inventory::itemMove(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int8_t inv = packet.getByte();
 	int16_t slot1 = packet.getShort();
@@ -199,7 +199,7 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 	}
 }
 
-void Inventory::useShop(Player *player, ReadPacket &packet) {
+void Inventory::useShop(Player *player, PacketReader &packet) {
 	int8_t type = packet.getByte();
 	if (type == 0) { // Buy
 		packet.skipBytes(2);
@@ -249,7 +249,7 @@ void Inventory::useShop(Player *player, ReadPacket &packet) {
 	}
 }
 
-void Inventory::useStorage(Player *player, ReadPacket &packet) {
+void Inventory::useStorage(Player *player, PacketReader &packet) {
 	int8_t type = packet.getByte();
 
 	if (type == 0x04) { // Take item out
@@ -385,7 +385,7 @@ void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t a
 	}
 }
 
-void Inventory::useItem(Player *player, ReadPacket &packet) {
+void Inventory::useItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.getShort();
 	int32_t itemid = packet.getInt();
@@ -427,7 +427,7 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	}
 }
 // Cancel item buffs
-void Inventory::cancelItem(Player *player, ReadPacket &packet) {
+void Inventory::cancelItem(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.getInt() * -1;
 	player->getTimers()->removeTimer(Timer::Id(Timer::Types::ItemTimer, itemid, 0));
 	Inventory::endItem(player, itemid);
@@ -437,7 +437,7 @@ void Inventory::endItem(Player *player, int32_t itemid) {
 	InventoryPacket::endItem(player, items[itemid].cons.types, (items[itemid].cons.morph > 0));
 }
 // Skill books
-void Inventory::useSkillbook(Player *player, ReadPacket &packet) {
+void Inventory::useSkillbook(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.getShort();
 	int32_t itemid = packet.getInt();
@@ -474,13 +474,13 @@ void Inventory::useSkillbook(Player *player, ReadPacket &packet) {
 
 	InventoryPacket::useSkillbook(player, skillid, newMaxLevel, use, succeed);
 }
-void Inventory::useChair(Player *player, ReadPacket &packet) {
+void Inventory::useChair(Player *player, PacketReader &packet) {
 	int32_t chairid = packet.getInt();
 	player->setChair(chairid);
 	InventoryPacket::sitChair(player, chairid);
 }
 
-void Inventory::stopChair(Player *player, ReadPacket &packet) {
+void Inventory::stopChair(Player *player, PacketReader &packet) {
 	player->setChair(0);
 	InventoryPacket::stopChair(player);
 }
@@ -491,7 +491,7 @@ bool Inventory::isCash(int32_t itemid) {
 	return false;
 }
 
-void Inventory::useSummonBag(Player *player, ReadPacket &packet) {
+void Inventory::useSummonBag(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.getShort();
 	int32_t itemid = packet.getInt();
@@ -509,7 +509,7 @@ void Inventory::useSummonBag(Player *player, ReadPacket &packet) {
 	}
 }
 
-void Inventory::useReturnScroll(Player *player, ReadPacket &packet) {
+void Inventory::useReturnScroll(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.getShort();
 	int32_t itemid = packet.getInt();
@@ -527,7 +527,7 @@ void Inventory::useReturnScroll(Player *player, ReadPacket &packet) {
 		Maps::changeMap(player, map, 0);
 }
 
-void Inventory::useScroll(Player *player, ReadPacket &packet) {
+void Inventory::useScroll(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.getShort();
 	int16_t eslot = packet.getShort();
@@ -670,7 +670,7 @@ void Inventory::useScroll(Player *player, ReadPacket &packet) {
 	}
 }
 
-void Inventory::useCashItem(Player *player, ReadPacket &packet) {
+void Inventory::useCashItem(Player *player, PacketReader &packet) {
 	int8_t type = packet.getByte();
 	packet.skipBytes(1);
 	int32_t itemid = packet.getInt();
@@ -761,7 +761,7 @@ void Inventory::useCashItem(Player *player, ReadPacket &packet) {
 		InventoryPacket::blankUpdate(player);
 }
 
-void Inventory::useItemEffect(Player *player, ReadPacket &packet) {
+void Inventory::useItemEffect(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.getInt();
 	if (player->getInventory()->getItemAmount(itemid) == 0) {
 		// hacking

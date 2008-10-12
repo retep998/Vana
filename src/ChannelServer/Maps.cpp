@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Players.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Summons.h"
 #include "WorldServerConnectPlayerPacket.h"
 #include <sys/stat.h>
@@ -68,7 +68,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	}
 }
 
-void Maps::usePortal(Player *player, ReadPacket &packet) {
+void Maps::usePortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
 	if (packet.getInt() == 0) { // Dead
 		player->acceptDeath();
@@ -83,7 +83,7 @@ void Maps::usePortal(Player *player, ReadPacket &packet) {
 	usePortal(player, portal);
 }
 
-void Maps::useScriptedPortal(Player *player, ReadPacket &packet) {
+void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
 	string portalname = packet.getString();
 

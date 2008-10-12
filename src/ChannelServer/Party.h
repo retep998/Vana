@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 namespace Party {
-	void handleRequest(Player* player, ReadPacket &packet);
+	void handleRequest(Player* player, PacketReader &packet);
 };

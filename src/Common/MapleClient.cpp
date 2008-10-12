@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleClient.h"
 #include "AbstractPlayer.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -84,7 +84,7 @@ void MapleClient::readConnectPacket() {
 	}
 
 	// Now finally process it
-	ReadPacket packet(m_buffer, packetLen);
+	PacketReader packet(m_buffer, packetLen);
 
 	uint16_t version = packet.getShort(); // Maple Version, TODO: Verify it
 	packet.getString(); // Unknown

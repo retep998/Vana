@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define COMMANDHANDLER_H
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 namespace CommandHandler {
-	void handleCommand(Player *player, ReadPacket &packet);
+	void handleCommand(Player *player, PacketReader &packet);
 };
 
 #endif

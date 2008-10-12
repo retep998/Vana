@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "Quests.h"
 #include "Reactors.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "RecvHeader.h"
 #include "ServerPacket.h"
 #include "SkillMacros.h"
@@ -70,7 +70,7 @@ Player::~Player() {
 	}
 }
 
-void Player::realHandleRequest(ReadPacket &packet) {
+void Player::realHandleRequest(PacketReader &packet) {
 	switch (packet.getShort()) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
@@ -131,7 +131,7 @@ void Player::realHandleRequest(ReadPacket &packet) {
 	}
 }
 
-void Player::playerConnect(ReadPacket &packet) {
+void Player::playerConnect(PacketReader &packet) {
 	int32_t id = packet.getInt();
 	if (!Connectable::Instance()->checkPlayer(id)) {
 		//hacking
@@ -415,7 +415,7 @@ void Player::changeChannel(int8_t channel) {
 	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel);
 }
 
-void Player::changeKey(ReadPacket &packet) {
+void Player::changeKey(PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t howmany = packet.getInt();
 	if (howmany == 0)
@@ -433,7 +433,7 @@ void Player::changeKey(ReadPacket &packet) {
 	keyMaps.save(this->id);
 }
 
-void Player::changeSkillMacros(ReadPacket &packet) {
+void Player::changeSkillMacros(PacketReader &packet) {
 	uint8_t num = packet.getByte();
 	if (num == 0)
 		return;

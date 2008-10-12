@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketCreator.h"
 #include "Pos.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -26,7 +26,7 @@ void PacketCreator::addPos(Pos pos) {
 	addShort(pos.y);
 }
 
-void PacketCreator::addBuffer(ReadPacket &packet) {
+void PacketCreator::addBuffer(PacketReader &packet) {
 	addBuffer(packet.getBuffer(), packet.getBufferLength());
 }
 

@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Movement.h"
 #include "MovableLife.h"
 #include "Pos.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include <iomanip>
 #include <iostream>
 
-Pos Movement::parseMovement(MovableLife *life, ReadPacket &packet) {
+Pos Movement::parseMovement(MovableLife *life, PacketReader &packet) {
 	int16_t foothold = 0;
 	int8_t stance = 0;
 	int16_t x = 0;

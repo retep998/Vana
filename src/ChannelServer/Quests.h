@@ -26,7 +26,7 @@ using std::vector;
 using std::tr1::unordered_map;
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 struct QuestRequestInfo {
 	bool ismob;
@@ -83,7 +83,7 @@ namespace Quests {
 	void addRequest(int32_t id, QuestRequestsInfo request);
 	void addReward(int32_t id, QuestRewardsInfo raws);
 	void setNextQuest(int16_t id, int16_t questid);
-	void getQuest(Player *player, ReadPacket &packet);
+	void getQuest(Player *player, PacketReader &packet);
 	bool giveItem(Player *player, int32_t itemid, int16_t amount);
 	bool giveMesos(Player *player, int32_t amount);
 };

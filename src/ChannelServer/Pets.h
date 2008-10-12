@@ -27,7 +27,7 @@ using std::tr1::unordered_map;
 
 class Pet;
 class Player;
-class ReadPacket;
+class PacketReader;
 struct Item;
 
 struct PetInfo {
@@ -46,12 +46,12 @@ namespace Pets {
 	extern int16_t exps[29];
 	void showPets(Player *player);
 	void showPetsPlayer(Player *player, Player *target);
-	void chat(Player *player, ReadPacket &packet);
-	void feedPet(Player *player, ReadPacket &packet);
-	void movePet(Player *player, ReadPacket &packet);
-	void lootItem(Player *player, ReadPacket &packet);
-	void summonPet(Player *player, ReadPacket &packet);
-	void showAnimation(Player *player, ReadPacket &packet);
+	void chat(Player *player, PacketReader &packet);
+	void feedPet(Player *player, PacketReader &packet);
+	void movePet(Player *player, PacketReader &packet);
+	void lootItem(Player *player, PacketReader &packet);
+	void summonPet(Player *player, PacketReader &packet);
+	void showAnimation(Player *player, PacketReader &packet);
 	void summon(Player *player, Pet *pet, bool master);
 	void changeName(Player *player, const string &name);
 	void addCloseness(Player *player, Pet *pet, int16_t closeness);

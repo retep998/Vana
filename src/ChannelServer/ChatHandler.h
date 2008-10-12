@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CHATHANDLER_H
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 namespace ChatHandler {
-	void handleChat(Player *player, ReadPacket &packet);
-	void handleGroupChat(Player *player, ReadPacket &packet);
+	void handleChat(Player *player, PacketReader &packet);
+	void handleGroupChat(Player *player, PacketReader &packet);
 };
 
 #endif

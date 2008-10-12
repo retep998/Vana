@@ -23,15 +23,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class PlayerLogin;
-class ReadPacket;
+class PacketReader;
 
 namespace Login {
-	void loginUser(PlayerLogin *player, ReadPacket &packet);
-	void setGender(PlayerLogin *player, ReadPacket &packet);
-	void handleLogin(PlayerLogin *player, ReadPacket &packet);
-	void registerPIN(PlayerLogin *player, ReadPacket &packet);
+	void loginUser(PlayerLogin *player, PacketReader &packet);
+	void setGender(PlayerLogin *player, PacketReader &packet);
+	void handleLogin(PlayerLogin *player, PacketReader &packet);
+	void registerPIN(PlayerLogin *player, PacketReader &packet);
 	void loginBack(PlayerLogin *player);
-	void checkPin(PlayerLogin *player, ReadPacket &packet);
+	void checkPin(PlayerLogin *player, PacketReader &packet);
 	string hashPassword(const string &password, const string &salt);
 };
 

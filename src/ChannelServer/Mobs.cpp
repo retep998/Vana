@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Movement.h"
 #include "Randomizer.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Summons.h"
 #include "PacketCreator.h"
 #include "Timer/Timer.h"
@@ -140,7 +140,7 @@ void Mob::die(bool showpacket) {
 }
 
 /* Mobs namespace */
-void Mobs::monsterControl(Player *player, ReadPacket &packet) {
+void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	int32_t mobid = packet.getInt();
 
 	Mob *mob = Maps::maps[player->getMap()]->getMob(mobid);
@@ -167,7 +167,7 @@ void Mobs::addMob(int32_t id, MobInfo mob) {
 	mobinfo[id] = mob;
 }
 
-void Mobs::damageMob(Player *player, ReadPacket &packet) {
+void Mobs::damageMob(Player *player, PacketReader &packet) {
 	MobsPacket::damageMob(player, packet);
 	packet.reset(2);
 	packet.skipBytes(1); // Useless
@@ -270,7 +270,7 @@ void Mobs::damageMob(Player *player, ReadPacket &packet) {
 	}
 }
 
-void Mobs::damageMobRanged(Player *player, ReadPacket &packet) {
+void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 	MobsPacket::damageMobRanged(player, packet);
 	packet.reset(2); // Passing to the display function causes the buffer to be eaten, we need it
 	packet.skipBytes(1); // Number of portals taken (not kidding)
@@ -328,7 +328,7 @@ void Mobs::damageMobRanged(Player *player, ReadPacket &packet) {
 	}
 }
 
-void Mobs::damageMobSpell(Player *player, ReadPacket &packet) {
+void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 	MobsPacket::damageMobSpell(player, packet);
 	packet.reset(2);
 	packet.skipBytes(1);
@@ -360,7 +360,7 @@ void Mobs::damageMobSpell(Player *player, ReadPacket &packet) {
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
 }
 
-void Mobs::damageMobSummon(Player *player, ReadPacket &packet) {
+void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 	MobsPacket::damageMobSummon(player, packet);
 	packet.reset(2);
 	packet.skipBytes(4); // Summon ID
@@ -374,7 +374,7 @@ void Mobs::damageMobSummon(Player *player, ReadPacket &packet) {
 	damageMobInternal(player, packet, targets, 1, summon->getSummonID(), useless);
 }
 
-uint32_t Mobs::damageMobInternal(Player *player, ReadPacket &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
+uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
 	bool isHorntail = false;

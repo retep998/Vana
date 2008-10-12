@@ -19,18 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define WORLDSERVERCONNECTHANDLER_H
 
 class WorldServerConnectPlayer;
-class ReadPacket;
+class PacketReader;
 
 namespace WorldServerConnectHandler {
-	void connectLogin(WorldServerConnectPlayer *player, ReadPacket &packet);
-	void connect(WorldServerConnectPlayer *player, ReadPacket &packet);
-	void playerChangeChannel(WorldServerConnectPlayer *player, ReadPacket &packet);
-	void findPlayer(ReadPacket &packet);
-	void whisperPlayer(ReadPacket &packet);
-	void scrollingHeader(ReadPacket &packet);
-	void newConnectable(ReadPacket &packet);
-	void forwardPacket(ReadPacket &packet);
-	void setRates(ReadPacket &packet);
+	void connectLogin(WorldServerConnectPlayer *player, PacketReader &packet);
+	void connect(WorldServerConnectPlayer *player, PacketReader &packet);
+	void playerChangeChannel(WorldServerConnectPlayer *player, PacketReader &packet);
+	void findPlayer(PacketReader &packet);
+	void whisperPlayer(PacketReader &packet);
+	void scrollingHeader(PacketReader &packet);
+	void newConnectable(PacketReader &packet);
+	void forwardPacket(PacketReader &packet);
+	void setRates(PacketReader &packet);
 }
 
 #endif

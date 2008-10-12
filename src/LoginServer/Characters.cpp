@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySQLM.h"
 #include "PlayerLogin.h"
 #include "Randomizer.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Worlds.h"
 #include <unordered_map>
 
@@ -110,7 +110,7 @@ void Characters::showCharacters(PlayerLogin *player) {
 	LoginPacket::showCharacters(player, chars);
 }
 
-void Characters::checkCharacterName(PlayerLogin *player, ReadPacket &packet) {
+void Characters::checkCharacterName(PlayerLogin *player, PacketReader &packet) {
 	string name = packet.getString();
 	if (name.size() > 15) {
 		return;
@@ -130,7 +130,7 @@ void Characters::createEquip(int32_t equipid, int32_t type, int32_t charid) {
 	query.exec();
 }
 
-void Characters::createCharacter(PlayerLogin *player, ReadPacket &packet) {
+void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 	Character charc;
 	string name = packet.getString();
 	if (name.size() > 15) {
@@ -190,7 +190,7 @@ void Characters::createCharacter(PlayerLogin *player, ReadPacket &packet) {
 	LoginPacket::showCharacter(player, charc);
 }
 
-void Characters::deleteCharacter(PlayerLogin *player, ReadPacket &packet) {
+void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
 	int32_t data = packet.getInt();
 	int32_t id = packet.getInt();
 	
@@ -235,13 +235,13 @@ void Characters::connectGame(PlayerLogin *player, int32_t charid) {
 	LoginPacket::connectIP(player, charid);
 }
 
-void Characters::connectGame(PlayerLogin *player, ReadPacket &packet) {
+void Characters::connectGame(PlayerLogin *player, PacketReader &packet) {
 	int32_t id = packet.getInt();
 
 	connectGame(player, id);
 }
 
-void Characters::connectGameWorld(PlayerLogin *player, ReadPacket &packet) {
+void Characters::connectGameWorld(PlayerLogin *player, PacketReader &packet) {
 	int32_t id = packet.getInt();
 	int32_t worldid = packet.getInt();
 	player->setWorld(worldid);

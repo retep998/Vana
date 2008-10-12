@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Players.h"
 #include "MySQLM.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 
-void Fame::handleFame(Player *player, ReadPacket &packet) {
+void Fame::handleFame(Player *player, PacketReader &packet) {
 	int32_t playerid = packet.getInt();
 	uint8_t type = (uint8_t) packet.getInt();
 	if (player->getId() > 0) {

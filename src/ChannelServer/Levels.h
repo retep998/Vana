@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 namespace Levels {
 	extern uint32_t exps[200];
 	void giveEXP(Player *player, uint32_t exp, int8_t type = 0);
-	void addStat(Player *player, ReadPacket &packet);
+	void addStat(Player *player, PacketReader &packet);
 	void addStat(Player *player, int32_t type, bool isreset = false, bool issubtract = false);
 };
 

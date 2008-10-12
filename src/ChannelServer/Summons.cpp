@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "LoopingId.h"
 #include "PlayerPacket.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Movement.h"
 
 // Summon Class
@@ -88,7 +88,7 @@ void Summons::showSummons(Player *ofplayer, Player *toplayer) {
 		SummonsPacket::showSummon(ofplayer, puppet, false, toplayer);
 }
 
-void Summons::moveSummon(Player *player, ReadPacket &packet) {
+void Summons::moveSummon(Player *player, PacketReader &packet) {
 	int32_t summonid = packet.getInt();
 	packet.skipBytes(4); // I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
 	Summon *summon = player->getSummons()->getSummon(summonid);
@@ -101,7 +101,7 @@ void Summons::moveSummon(Player *player, ReadPacket &packet) {
 	SummonsPacket::moveSummon(player, summon, startPos, packet.getBuffer(), (packet.getBufferLength() - 9));
 }
 
-void Summons::damageSummon(Player *player, ReadPacket &packet) {
+void Summons::damageSummon(Player *player, PacketReader &packet) {
 	int32_t summonid = packet.getInt();
 	int8_t notsure = packet.getByte();
 	int32_t damage = packet.getInt();

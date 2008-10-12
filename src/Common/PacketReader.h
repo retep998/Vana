@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef READPACKET_H
-#define READPACKET_H
+#ifndef PACKETREADER_H
+#define PACKETREADER_H
 
 #include "Types.h"
 #include <memory>
@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class ReadPacket {
+class PacketReader {
 public:
-	ReadPacket(unsigned char *buffer, size_t length);
+	PacketReader(unsigned char *buffer, size_t length);
 	
 	unsigned char getByte();
 	void skipBytes(int32_t len);
@@ -38,7 +38,7 @@ public:
 	unsigned char * getBuffer();
 	size_t getBufferLength();
 
-	ReadPacket & reset(int32_t len = 0);
+	PacketReader & reset(int32_t len = 0);
 private:
 	unsigned char *buffer;
 	size_t length;

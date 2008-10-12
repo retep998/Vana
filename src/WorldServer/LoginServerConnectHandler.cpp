@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPlayerPacket.h"
 #include "WorldServer.h"
 #include "Channels.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Rates.h"
 #include <iostream>
 
-void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPacket &packet) {
+void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, PacketReader &packet) {
 	int8_t worldid = packet.getByte();
 	if (worldid != 0xFF) {
 		WorldServer::Instance()->setWorldId(worldid);
@@ -56,7 +56,7 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, ReadPa
 	}
 }
 
-void LoginServerConnectHandler::newPlayer(ReadPacket &packet) {
+void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 	uint16_t channel = packet.getShort();
 	int32_t playerid = packet.getInt();
 

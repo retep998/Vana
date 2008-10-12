@@ -19,15 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERHANDLER_H
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 namespace PlayerHandler {
-	void handleDamage(Player *player, ReadPacket &packet);
-	void handleFacialExpression(Player *player, ReadPacket &packet);
-	void handleGetInfo(Player *player, ReadPacket &packet);
-	void handleHeal(Player *player, ReadPacket &packet);
-	void handleMoving(Player *player, ReadPacket &packet);
-	void handleSpecialSkills(Player *player, ReadPacket &packet);
+	void handleDamage(Player *player, PacketReader &packet);
+	void handleFacialExpression(Player *player, PacketReader &packet);
+	void handleGetInfo(Player *player, PacketReader &packet);
+	void handleHeal(Player *player, PacketReader &packet);
+	void handleMoving(Player *player, PacketReader &packet);
+	void handleSpecialSkills(Player *player, PacketReader &packet);
 };
 
 #endif

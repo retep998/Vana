@@ -25,14 +25,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class ReadPacket;
+class PacketReader;
 
 class AbstractPlayer {
 public:
 	AbstractPlayer();
 
-	virtual void realHandleRequest(ReadPacket &packet) = 0;
-	void handleRequest(ReadPacket &packet);
+	virtual void realHandleRequest(PacketReader &packet) = 0;
+	void handleRequest(PacketReader &packet);
 	void setTimer();
 	void ping();
 

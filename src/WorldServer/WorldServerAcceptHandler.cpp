@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include "Channels.h"
 #include "Players.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "PartyHandler.h"
 
-void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t playerid = packet.getInt();
 	int8_t type = packet.getByte(); // Buddy = 0 party = 1 guild = 2
 	string message = packet.getString();
@@ -37,7 +37,7 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, ReadPa
 	}	
 }
 
-void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int8_t type = packet.getByte();
 	int32_t playerid = packet.getInt();
 	switch(type) {
@@ -50,7 +50,7 @@ void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, R
 	}
 }
 
-void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t playerid = packet.getInt();
 	Channel *chan = Channels::Instance()->getChannel(packet.getShort());
 
@@ -63,7 +63,7 @@ void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *play
 	}
 }
 
-void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t finder = packet.getInt();
 	string findee_name = packet.getString();
 
@@ -74,7 +74,7 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, ReadP
 		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee_name);
 }
 
-void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t whisperer = packet.getInt();
 	string whisperee_name = packet.getString();
 	string message = packet.getString();
@@ -88,7 +88,7 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, Re
 		WorldServerAcceptPlayerPacket::findPlayer(player, whisperer, whisperee->channel, whisperee_name);
 }
 
-void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t id = packet.getInt();
 	string name = packet.getString();
 	int32_t map = packet.getInt();
@@ -97,17 +97,17 @@ void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, R
 	Players::Instance()->registerPlayer(id, name, player->getChannel(), map, job, level);
 }
 
-void WorldServerAcceptHandler::removePlayer(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::removePlayer(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t id = packet.getInt();
 	Players::Instance()->remove(id, player->getChannel());
 }
 
-void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	string message = packet.getString();
 	WorldServer::Instance()->setScrollingHeader(message);
 }
 
-void WorldServerAcceptHandler::updateJob(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::updateJob(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t id = packet.getInt();
 	int32_t job = packet.getInt();
 	Players::Instance()->getPlayer(id)->job = job;
@@ -116,7 +116,7 @@ void WorldServerAcceptHandler::updateJob(WorldServerAcceptPlayer *player, ReadPa
 	}
 }
 
-void WorldServerAcceptHandler::updateLevel(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::updateLevel(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t id = packet.getInt();
 	int32_t level = packet.getInt();
 	Players::Instance()->getPlayer(id)->level = level;
@@ -125,7 +125,7 @@ void WorldServerAcceptHandler::updateLevel(WorldServerAcceptPlayer *player, Read
 	}
 }
 
-void WorldServerAcceptHandler::updateMap(WorldServerAcceptPlayer *player, ReadPacket &packet) {
+void WorldServerAcceptHandler::updateMap(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t id = packet.getInt();
 	int32_t map = packet.getInt();
 	Players::Instance()->getPlayer(id)->map = map;

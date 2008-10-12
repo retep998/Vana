@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "Pos.h"
 #include "Skills.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include <unordered_map>
 
 using std::tr1::unordered_map;
@@ -166,7 +166,7 @@ void Drops::addDrop(Drop *drop, Pos origin) {
 	drop->doDrop(origin);
 }
 
-void Drops::dropMesos(Player *player, ReadPacket &packet) {
+void Drops::dropMesos(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t amount = packet.getInt();
 	if (amount < 10 || amount > 50000) {
@@ -179,7 +179,7 @@ void Drops::dropMesos(Player *player, ReadPacket &packet) {
 	drop->doDrop(player->getPos());
 }
 
-void Drops::lootItem(Player *player, ReadPacket &packet) {
+void Drops::lootItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(9);
 	int32_t itemid = packet.getInt();
 	Drop* drop = Maps::maps[player->getMap()]->getDrop(itemid);
