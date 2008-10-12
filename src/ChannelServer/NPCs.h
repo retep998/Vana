@@ -27,13 +27,13 @@ using boost::scoped_ptr;
 
 class Player;
 class PacketCreator;
-class ReadPacket;
+class PacketReader;
 
 namespace NPCs {
-	void handleNPC(Player *player, ReadPacket &packet);
+	void handleNPC(Player *player, PacketReader &packet);
 	void handleQuestNPC(Player *player, int32_t npcid, bool start);
-	void handleNPCIn(Player *player, ReadPacket &packet);
-	void handleNPCAnimation(Player *player, ReadPacket &packet);
+	void handleNPCIn(Player *player, PacketReader &packet);
+	void handleNPCAnimation(Player *player, PacketReader &packet);
 };
 
 class NPC {

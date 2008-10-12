@@ -40,7 +40,7 @@ using std::string;
 using std::vector;
 
 class NPC;
-class ReadPacket;
+class PacketReader;
 
 class Player : public AbstractPlayer, public MovableLife {
 public:
@@ -48,7 +48,7 @@ public:
 
 	~Player();
 
-	void realHandleRequest(ReadPacket &packet);
+	void realHandleRequest(PacketReader &packet);
 
 	void setSaveOnDC(bool save) { save_on_dc = save; }
 	void setTrading(int8_t newstate) { tradestate = newstate; }
@@ -154,9 +154,9 @@ public:
 	void setLevelDate();
 	void acceptDeath();
 private:
-	void playerConnect(ReadPacket &packet);
-	void changeKey(ReadPacket &packet);
-	void changeSkillMacros(ReadPacket &packet);
+	void playerConnect(PacketReader &packet);
+	void changeKey(PacketReader &packet);
+	void changeSkillMacros(PacketReader &packet);
 
 	int8_t world_id;
 	int8_t mappos;

@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Player.h"
 #include "Randomizer.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "SkillsPacket.h"
 #include "Timer/Timer.h"
 #include <functional>
@@ -41,7 +41,7 @@ void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo le
 	}
 }
 
-void Skills::addSkill(Player *player, ReadPacket &packet) {
+void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t skillid = packet.getInt();
 	if (!BEGINNER_SKILL(skillid) && player->getSp() == 0) {
@@ -53,7 +53,7 @@ void Skills::addSkill(Player *player, ReadPacket &packet) {
 	}
 }
 
-void Skills::cancelSkill(Player *player, ReadPacket &packet) {
+void Skills::cancelSkill(Player *player, PacketReader &packet) {
 	stopSkill(player, packet.getInt());
 }
 void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
@@ -76,7 +76,7 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	}
 }
 
-void Skills::useSkill(Player *player, ReadPacket &packet) {
+void Skills::useSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); //Ticks
 	int32_t skillid = packet.getInt();
 	int16_t addedinfo = 0;

@@ -28,7 +28,7 @@ using std::tr1::unordered_map;
 class LoopingId;
 class Player;
 class Drop;
-class ReadPacket;
+class PacketReader;
 
 struct ReactorEventInfo {
 	int8_t state;
@@ -47,7 +47,7 @@ namespace Reactors {
 	extern unordered_map<int32_t, int16_t> maxstates;
 	void addEventInfo(int32_t id, ReactorEventInfo revent);
 	void setMaxstates(int32_t id, int16_t state);
-	void hitReactor(Player *player, ReadPacket &packet);
+	void hitReactor(Player *player, PacketReader &packet);
 	void checkDrop(Player *player, Drop *drop);
 	void checkLoot(Drop *drop);
 };

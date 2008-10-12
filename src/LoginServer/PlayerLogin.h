@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "Types.h"
 
-class ReadPacket;
+class PacketReader;
 
 class PlayerLogin : public AbstractPlayer {
 public:
@@ -29,7 +29,7 @@ public:
 
 	~PlayerLogin();
 
-	void realHandleRequest(ReadPacket &packet);
+	void realHandleRequest(PacketReader &packet);
 
 	void setGender(int8_t gender) { this->gender=gender; }
 	void setWorld(int8_t world) { this->world = world; }

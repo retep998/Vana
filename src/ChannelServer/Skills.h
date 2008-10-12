@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::unordered_map;
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 #define BEGINNER_SKILL(x) (x / 1000000 == 0)
 #define FOURTHJOB_SKILL(x) ((x / 10000) % 10 == 2)
@@ -86,9 +86,9 @@ namespace Skills {
 	extern unordered_map<int32_t, SkillsLevelInfo> skills;
 	extern unordered_map<int32_t, uint8_t> maxlevels;
 	void addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo levelinfo);
-	void addSkill(Player *player, ReadPacket &packet);
-	void cancelSkill(Player *player, ReadPacket &packet);
-	void useSkill(Player *player, ReadPacket &packet);
+	void addSkill(Player *player, PacketReader &packet);
+	void cancelSkill(Player *player, PacketReader &packet);
+	void useSkill(Player *player, PacketReader &packet);
 	void applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp = false);
 	void useAttackSkill(Player *player, int32_t skillid);
 	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display);

@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-class ReadPacket;
+class PacketReader;
 struct Pos;
 
 class PacketCreator {
@@ -46,7 +46,7 @@ public:
 	void setByte(unsigned char byte, size_t pos);
 	void addBytes(char *hex);
 	void addBuffer(unsigned char *bytes, size_t len);
-	void addBuffer(ReadPacket &packet);
+	void addBuffer(PacketReader &packet);
 	void addIP(const string &ip);
 
 	const unsigned char * getBuffer() const;

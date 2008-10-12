@@ -26,14 +26,14 @@ using std::string;
 using std::tr1::unordered_map;
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 namespace Maps {
 	extern unordered_map<int32_t, Map *> maps;
 	void addMap(MapInfo info);
 	void usePortal(Player *player, PortalInfo *portal);
-	void usePortal(Player *player, ReadPacket &packet);
-	void useScriptedPortal(Player *player, ReadPacket &packet);
+	void usePortal(Player *player, PacketReader &packet);
+	void useScriptedPortal(Player *player, PacketReader &packet);
 	void changeMap(Player *player, int32_t mapid, PortalInfo *portal);
 	void newMap(Player *player, int32_t mapid);
 	void changeMusic(int32_t mapid, const string &musicname);

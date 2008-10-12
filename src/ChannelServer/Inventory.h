@@ -35,7 +35,7 @@ using std::vector;
 using std::tr1::unordered_map;
 
 class Player;
-class ReadPacket;
+class PacketReader;
 struct Item;
 
 enum {
@@ -144,25 +144,25 @@ namespace Inventory {
 	void addEquipInfo(int32_t id, EquipInfo equip);
 	void addItemInfo(int32_t id, ItemInfo item);
 	bool isCash(int32_t itemid);
-	void useShop(Player *player, ReadPacket &packet);
-	void useStorage(Player *player, ReadPacket &packet);
-	void itemMove(Player *player, ReadPacket &packet);
+	void useShop(Player *player, PacketReader &packet);
+	void useStorage(Player *player, PacketReader &packet);
+	void itemMove(Player *player, PacketReader &packet);
 	int16_t addItem(Player *player, Item *item, bool is = false);
 	void addNewItem(Player *player, int32_t itemid, int16_t amount);
 	void takeItem(Player *player, int32_t itemid, uint16_t howmany);
-	void useItem(Player *player, ReadPacket &packet);
+	void useItem(Player *player, PacketReader &packet);
 	void useItem(Player *player, int32_t itemid);
-	void cancelItem(Player *player, ReadPacket &packet);
+	void cancelItem(Player *player, PacketReader &packet);
 	void endItem(Player *player, int32_t itemid);
-	void useSkillbook(Player *player, ReadPacket &packet);
+	void useSkillbook(Player *player, PacketReader &packet);
 	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
-	void useChair(Player *player, ReadPacket &packet);
-	void useItemEffect(Player *player, ReadPacket &packet);
-	void stopChair(Player *player, ReadPacket &packet);
-	void useSummonBag(Player *player, ReadPacket &packet);
-	void useReturnScroll(Player *player, ReadPacket &packet);
-	void useScroll(Player *player, ReadPacket &packet);
-	void useCashItem(Player *player, ReadPacket &packet);
+	void useChair(Player *player, PacketReader &packet);
+	void useItemEffect(Player *player, PacketReader &packet);
+	void stopChair(Player *player, PacketReader &packet);
+	void useSummonBag(Player *player, PacketReader &packet);
+	void useReturnScroll(Player *player, PacketReader &packet);
+	void useScroll(Player *player, PacketReader &packet);
+	void useCashItem(Player *player, PacketReader &packet);
 };
 
 #endif

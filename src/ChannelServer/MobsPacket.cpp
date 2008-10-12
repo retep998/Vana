@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobsPacket.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "SendHeader.h"
 
 void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool spawn, bool show) {
@@ -79,7 +79,7 @@ void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int32_t s
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::damageMob(Player *player, ReadPacket &pack) {
+void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	pack.skipBytes(1);
 	uint8_t tbyte = pack.getByte();
 	uint8_t targets = tbyte / 0x10;
@@ -164,7 +164,7 @@ void MobsPacket::damageMob(Player *player, ReadPacket &pack) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::damageMobRanged(Player *player, ReadPacket &pack) {
+void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	pack.skipBytes(1);
 	uint8_t tbyte = pack.getByte();
 	int8_t targets = tbyte / 0x10;
@@ -251,7 +251,7 @@ void MobsPacket::damageMobRanged(Player *player, ReadPacket &pack) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::damageMobSpell(Player *player, ReadPacket &pack) {
+void MobsPacket::damageMobSpell(Player *player, PacketReader &pack) {
 	pack.skipBytes(1);
 	uint8_t tbyte = pack.getByte();
 	int8_t targets = tbyte / 0x10;
@@ -291,7 +291,7 @@ void MobsPacket::damageMobSpell(Player *player, ReadPacket &pack) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::damageMobSummon(Player *player, ReadPacket &pack) {
+void MobsPacket::damageMobSummon(Player *player, PacketReader &pack) {
 	int32_t summonid = pack.getInt();
 	pack.skipBytes(5);
 	int8_t targets = pack.getByte();

@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.h"
 #include "LoginServerAcceptHandler.h"
 #include "MapleSession.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Worlds.h"
 
-void LoginServerAcceptPlayer::realHandleRequest(ReadPacket &packet) {
+void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
 	switch(packet.getShort()) {
 		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;

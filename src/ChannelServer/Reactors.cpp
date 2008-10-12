@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Pos.h"
 #include "ReactorPacket.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Timer/Thread.h"
 #include "Timer/Timer.h"
 #include <iostream>
@@ -66,7 +66,7 @@ void Reactors::setMaxstates(int32_t id, int16_t state) {
 	maxstates[id] = state;
 }
 
-void Reactors::hitReactor(Player *player, ReadPacket &packet) {
+void Reactors::hitReactor(Player *player, PacketReader &packet) {
 	int32_t id = packet.getInt() - 200;
 
 	Reactor *reactor = Maps::maps[player->getMap()]->getReactor(id);

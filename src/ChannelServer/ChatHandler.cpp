@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PlayersPacket.h"
 #include "Pos.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Shops.h"
 #include "StoragePacket.h"
 #include "WorldServerConnectPlayerPacket.h"
@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-void ChatHandler::handleChat(Player *player, ReadPacket &packet) {
+void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	string message = packet.getString();
 	int8_t bubbleOnly = packet.getByte(); // Skill Macros only display chat bubbles
 
@@ -608,7 +608,7 @@ void ChatHandler::handleChat(Player *player, ReadPacket &packet) {
 	PlayersPacket::showChat(player, message, bubbleOnly);
 }
 
-void ChatHandler::handleGroupChat(Player *player, ReadPacket &packet) {
+void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
 	vector<int32_t> receivers;
 	int8_t type = packet.getByte();
 	uint8_t amount = packet.getByte();

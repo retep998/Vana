@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Quests.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "SendHeader.h"
 #include "Shops.h"
 #include <sys/stat.h>
@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-void NPCs::handleNPC(Player *player, ReadPacket &packet) {
+void NPCs::handleNPC(Player *player, PacketReader &packet) {
 	if (player->getNPC() != 0) {
 		return;
 	}
@@ -55,7 +55,7 @@ void NPCs::handleQuestNPC(Player *player, int32_t npcid, bool start) {
 	npc->run();
 }
 
-void NPCs::handleNPCIn(Player *player, ReadPacket &packet) {
+void NPCs::handleNPCIn(Player *player, PacketReader &packet) {
 	NPC *npc = player->getNPC();
 	if (npc == 0) {
 		return;
@@ -122,7 +122,7 @@ void NPCs::handleNPCIn(Player *player, ReadPacket &packet) {
 	npc->run();
 }
 
-void NPCs::handleNPCAnimation(Player *player, ReadPacket &packet) {
+void NPCs::handleNPCAnimation(Player *player, PacketReader &packet) {
 	NPCPacket::animateNPC(player, packet);
 }
 

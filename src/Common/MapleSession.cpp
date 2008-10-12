@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "Decoder.h"
 #include "PacketCreator.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "SessionManager.h"
 #include <boost/bind.hpp>
 
@@ -141,7 +141,7 @@ void MapleSession::handle_read_body(const boost::system::error_code &error,
 	if (!error) {
 		m_decoder->decrypt(m_buffer, bytes_transferred);
 
-		ReadPacket packet(m_buffer, bytes_transferred);
+		PacketReader packet(m_buffer, bytes_transferred);
 		m_player->handleRequest(packet);
 
 		start_read_header();

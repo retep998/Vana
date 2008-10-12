@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MOVEMENT_H
 
 class MovableLife;
-class ReadPacket;
+class PacketReader;
 struct Pos;
 
 namespace Movement {
-	Pos parseMovement(MovableLife *life, ReadPacket &packet);
+	Pos parseMovement(MovableLife *life, PacketReader &packet);
 };
 
 #endif

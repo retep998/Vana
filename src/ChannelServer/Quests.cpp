@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NPCs.h"
 #include "Player.h"
 #include "QuestsPacket.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 
 unordered_map<int32_t, QuestInfo> Quests::quests;
 
@@ -72,7 +72,7 @@ bool Quests::giveMesos(Player *player, int32_t amount) {
 	return true;
 }
 
-void Quests::getQuest(Player *player, ReadPacket &packet) {
+void Quests::getQuest(Player *player, PacketReader &packet) {
 	int8_t act = packet.getByte();
 	int16_t questid = packet.getShort();
 	int32_t npcid = packet.getInt();

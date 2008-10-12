@@ -31,7 +31,7 @@ using std::tr1::unordered_map;
 
 class Player;
 class Mob;
-class ReadPacket;
+class PacketReader;
 class PacketCreator;
 struct MPEaterInfo;
 
@@ -108,14 +108,14 @@ namespace Mobs {
 	extern unordered_map<int32_t, MobInfo> mobinfo;
 	extern const int32_t mobstatuses[19];
 	void addMob(int32_t id, MobInfo mob);
-	void damageMob(Player *player, ReadPacket &packet);
-	void damageMobRanged(Player *player, ReadPacket &packet);
-	void damageMobSpell(Player *player, ReadPacket &packet);
-	void damageMobSummon(Player *player, ReadPacket &packet);
-	uint32_t damageMobInternal(Player *player, ReadPacket &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0, bool ismelee = false);
+	void damageMob(Player *player, PacketReader &packet);
+	void damageMobRanged(Player *player, PacketReader &packet);
+	void damageMobSpell(Player *player, PacketReader &packet);
+	void damageMobSummon(Player *player, PacketReader &packet);
+	uint32_t damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0, bool ismelee = false);
 	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismelee);
 	void displayHPBars(Player *player, Mob *mob);
-	void monsterControl(Player *player, ReadPacket &packet);
+	void monsterControl(Player *player, PacketReader &packet);
 	void checkSpawn(int32_t mapid);
 	void spawnMob(Player *player, int32_t mobid, int32_t amount = 1);
 	void spawnMobPos(int32_t mapid, int32_t mobid, Pos pos);

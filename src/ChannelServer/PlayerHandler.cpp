@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "PlayersPacket.h"
 #include "Randomizer.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "SkillsPacket.h"
 
-void PlayerHandler::handleDamage(Player *player, ReadPacket &packet) {
+void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Ticks
 	uint8_t type = packet.getByte();
 	uint8_t hit = 0;
@@ -226,18 +226,18 @@ void PlayerHandler::handleDamage(Player *player, ReadPacket &packet) {
 	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, stance, nodamageid, pgmr);
 }
 
-void PlayerHandler::handleFacialExpression(Player *player, ReadPacket &packet) {
+void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet) {
 	int32_t face = packet.getInt();
 	PlayersPacket::faceExpression(player, face);
 }
 
-void PlayerHandler::handleGetInfo(Player *player, ReadPacket &packet) {
+void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t playerid = packet.getInt();
 	PlayersPacket::showInfo(player, Players::Instance()->getPlayer(playerid), packet.getByte());
 }
 
-void PlayerHandler::handleHeal(Player *player, ReadPacket &packet) {
+void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t hp = packet.getShort();
 	int16_t mp = packet.getShort();
@@ -245,14 +245,14 @@ void PlayerHandler::handleHeal(Player *player, ReadPacket &packet) {
 	player->modifyMP(mp);
 }
 
-void PlayerHandler::handleMoving(Player *player, ReadPacket &packet) {
+void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 	packet.reset(7);
 	Movement::parseMovement(player, packet);
 	packet.reset(7);
 	PlayersPacket::showMoving(player, packet.getBuffer(), packet.getBufferLength());
 }
 
-void PlayerHandler::handleSpecialSkills(Player *player, ReadPacket &packet) {
+void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 	int32_t skillid = packet.getInt();
 	switch (skillid) {
 		case 1121001: // Monster Magnet x3

@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 class Player;
-class ReadPacket;
+class PacketReader;
 	
 namespace Fame {
-	void handleFame(Player *player, ReadPacket &packet);
+	void handleFame(Player *player, PacketReader &packet);
 	int32_t canFame(Player *player, int32_t to);
 	void addFameLog(int32_t from, int32_t to);
 	bool getLastFameLog(int32_t from);

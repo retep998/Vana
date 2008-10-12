@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define BUDDYLISTHANDLER_H
 
 class Player;
-class ReadPacket;
+class PacketReader;
 
 namespace BuddyListHandler {
-	void handleBuddyList(Player *player, ReadPacket &packet);
+	void handleBuddyList(Player *player, PacketReader &packet);
 }
 
 #endif

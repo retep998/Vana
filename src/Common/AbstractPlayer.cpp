@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "MapleSession.h"
 #include "PingPacket.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "SendHeader.h"
 #include "Timer/Timer.h"
 #include <functional>
@@ -32,7 +32,7 @@ timers(new Timer::Container)
 {
 }
 
-void AbstractPlayer::handleRequest(ReadPacket &packet) {
+void AbstractPlayer::handleRequest(PacketReader &packet) {
 	try {
 		is_pinged = false;
 		if (is_server && packet.getHeader() == SEND_PING) {

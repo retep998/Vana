@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectPlayerPacket.h"
 #include "MapleSession.h"
 #include "Rates.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include "WorldServerAcceptPlayerPacket.h"
@@ -33,7 +33,7 @@ WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
 	std::cout << "Channel " << channel << " disconnected." << std::endl;
 }
 
-void WorldServerAcceptPlayer::realHandleRequest(ReadPacket &packet) {
+void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
 	switch(packet.getShort()) {
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet); break;

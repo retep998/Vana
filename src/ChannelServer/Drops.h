@@ -29,7 +29,7 @@ using std::tr1::unordered_map;
 
 class Drop;
 class Player;
-class ReadPacket;
+class PacketReader;
 struct Item;
 
 struct DropInfo {
@@ -48,8 +48,8 @@ namespace Drops {
 	void addDropData(int32_t id, DropInfo drop);
 	void doDrops(Player *player, int32_t droppingID, Pos origin);
 	void addDrop(Drop *drop, Pos origin);
-	void dropMesos(Player *player, ReadPacket &packet);
-	void lootItem(Player *player, ReadPacket &packet);
+	void dropMesos(Player *player, PacketReader &packet);
+	void lootItem(Player *player, PacketReader &packet);
 };
 
 class Drop {

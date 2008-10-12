@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NPCPacket.h"
 #include "MapleSession.h"
 #include "Maps.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "SendHeader.h"
@@ -51,7 +51,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i) {
 	player->getSession()->send(packet);
 }
 
-void NPCPacket::animateNPC(Player *player, ReadPacket &pack) {
+void NPCPacket::animateNPC(Player *player, PacketReader &pack) {
 	size_t len = pack.getBufferLength();
 
 	PacketCreator packet;

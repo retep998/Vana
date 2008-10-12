@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacket.h"
 #include "Player.h"
 #include "Players.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "Timer/Thread.h"
 #include "Timer/Timer.h"
 #include "TradesPacket.h"
@@ -32,7 +32,7 @@ using std::string;
 
 unordered_map<int32_t, ActiveTrade *> Trades::trades;
 
-void Trades::tradeHandler(Player *player, ReadPacket &packet) {
+void Trades::tradeHandler(Player *player, PacketReader &packet) {
 	uint8_t subopcode = packet.getByte();
 	switch (subopcode) {
 		case 0x00: // Open trade - this usually comes with 03 00 - no clue why

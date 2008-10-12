@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginPacket.h"
 #include "Worlds.h"
 #include "MySQLM.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "RecvHeader.h"
 
-void PlayerLogin::realHandleRequest(ReadPacket &packet) {
+void PlayerLogin::realHandleRequest(PacketReader &packet) {
 	switch(packet.getShort()) {
 		case RECV_LOGIN_INFO: Login::loginUser(this, packet); break;
 		case RECV_CHANNEL_SELECT: Worlds::channelSelect(this, packet); break;

@@ -30,7 +30,7 @@ using std::tr1::unordered_map;
 
 class PlayerLogin;
 class LoginServerAcceptPlayer;
-class ReadPacket;
+class PacketReader;
 
 struct Channel {
 	Channel() : population(0) { }
@@ -62,8 +62,8 @@ struct World {
 };
 
 namespace Worlds {
-	void channelSelect(PlayerLogin *player, ReadPacket &packet);
-	void selectWorld(PlayerLogin *player, ReadPacket &packet);
+	void channelSelect(PlayerLogin *player, PacketReader &packet);
+	void selectWorld(PlayerLogin *player, PacketReader &packet);
 	void showWorld(PlayerLogin *player);
 	int8_t connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
 	int8_t connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server

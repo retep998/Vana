@@ -15,53 +15,53 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ReadPacket.h"
+#include "PacketReader.h"
 
-ReadPacket::ReadPacket(unsigned char *buffer, size_t length) : buffer(buffer), length(length), pos(0) { }
+PacketReader::PacketReader(unsigned char *buffer, size_t length) : buffer(buffer), length(length), pos(0) { }
 
-unsigned char ReadPacket::getByte() {
+unsigned char PacketReader::getByte() {
 	return buffer[pos++];
 }
 
-void ReadPacket::skipBytes(int32_t len) {
+void PacketReader::skipBytes(int32_t len) {
 	pos += len;
 }
 
-int32_t ReadPacket::getInt() {
+int32_t PacketReader::getInt() {
 	int32_t val = buffer[pos] + buffer[pos+1]*0x100 + buffer[pos+2]*0x10000 + buffer[pos+3]*0x1000000;
 	pos += 4;
 	return val;
 }
 
-int16_t ReadPacket::getHeader() {
+int16_t PacketReader::getHeader() {
 	return buffer[0] + buffer[1]*0x100;
 }
 
-int16_t ReadPacket::getShort() {
+int16_t PacketReader::getShort() {
 	int16_t val = buffer[pos] + buffer[pos+1]*0x100;
 	pos += 2;
 	return val;
 }
 
-string ReadPacket::getString() {
+string PacketReader::getString() {
 	return getString(getShort());
 }
 
-string ReadPacket::getString(size_t len) {
+string PacketReader::getString(size_t len) {
 	string s((char *) buffer + pos, len);
 	pos += len;
 	return s;
 }
 
-unsigned char * ReadPacket::getBuffer() {
+unsigned char * PacketReader::getBuffer() {
 	return buffer + pos;
 }
 
-size_t ReadPacket::getBufferLength() {
+size_t PacketReader::getBufferLength() {
 	return length - pos;
 }
 
-ReadPacket & ReadPacket::reset(int32_t len) {
+PacketReader & PacketReader::reset(int32_t len) {
 	if (len >= 0) {
 		pos = len;
 	}

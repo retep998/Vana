@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Skills.h"
 #include "Randomizer.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include <string>
 
 using std::string;
@@ -151,7 +151,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 	player->setExp(cexp);
 }
 
-void Levels::addStat(Player *player, ReadPacket &packet) {
+void Levels::addStat(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t type = packet.getInt();
 	if (player->getAp() == 0) {

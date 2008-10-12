@@ -19,14 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
 #include "MapleSession.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include <iostream>
 
 void AbstractServerConnectPlayer::sendAuth(const string &pass) {
 	AuthenticationPacket::sendPassword(this, pass, getIP());
 }
 
-bool AbstractServerAcceptPlayer::processAuth(ReadPacket &packet, const string &pass) {
+bool AbstractServerAcceptPlayer::processAuth(PacketReader &packet, const string &pass) {
 	if (packet.getShort() == INTER_PASSWORD) {
 		if (packet.getString() == pass) {
 			std::cout << "Server successfully authenticated." << std::endl;

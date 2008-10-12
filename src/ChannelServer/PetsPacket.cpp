@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "PetsPacket.h"
 #include "Player.h"
-#include "ReadPacket.h"
+#include "PacketReader.h"
 #include "SendHeader.h"
 
 void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_t act) {

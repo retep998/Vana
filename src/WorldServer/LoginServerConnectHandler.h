@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LOGINSERVERCONNECTHANDLER_H
 
 class LoginServerConnectPlayer;
-class ReadPacket;
+class PacketReader;
 
 namespace LoginServerConnectHandler {
-	void connect(LoginServerConnectPlayer *player, ReadPacket &packet);
-	void newPlayer(ReadPacket &packet);
+	void connect(LoginServerConnectPlayer *player, PacketReader &packet);
+	void newPlayer(PacketReader &packet);
 }
 
 #endif

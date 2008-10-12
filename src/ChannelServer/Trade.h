@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using boost::scoped_ptr;
 
 class Player;
-class ReadPacket;
+class PacketReader;
 struct Item;
 
 struct TradeInfo {
