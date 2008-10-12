@@ -88,7 +88,7 @@ public:
 	bool modifyMesos(int32_t mod, bool is = false);
 	void addMaxSlots(int8_t inventory, int8_t rows);
 	void addItem(int8_t inv, int16_t slot, Item *item);
-	void deleteItem(int8_t inv, int16_t slot);
+	void deleteItem(int8_t inv, int16_t slot, bool updateAmount = true);
 	void setItem(int8_t inv, int16_t slot, Item *item);
 	void addEquippedPacket(PacketCreator &packet);
 	void changeItemAmount(int32_t itemid, int16_t amount) { itemamounts[itemid] += amount; }

@@ -120,10 +120,11 @@ Item * PlayerInventory::getItem(int8_t inv, int16_t slot) {
 	return 0;
 }
 
-void PlayerInventory::deleteItem(int8_t inv, int16_t slot) {
+void PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) {
 	inv -= 1;
 	if (items[inv].find(slot) != items[inv].end()) {
-		itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
+		if (updateAmount)
+			itemamounts[items[inv][slot]->id] -= items[inv][slot]->amount;
 		if (slot < 0)
 			addEquipped(slot, 0);
 		delete items[inv][slot];
