@@ -46,7 +46,7 @@ typedef vector<DropInfo> DropsInfo;
 namespace Drops {
 	extern unordered_map<int32_t, DropsInfo> dropdata;
 	void addDropData(int32_t id, DropInfo drop);
-	void doDrops(Player *player, int32_t droppingID, Pos origin);
+	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos origin);
 	void addDrop(Drop *drop, Pos origin);
 	void dropMesos(Player *player, PacketReader &packet);
 	void lootItem(Player *player, PacketReader &packet);

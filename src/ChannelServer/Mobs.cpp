@@ -58,6 +58,16 @@ control(0)
 	this->mp = Mobs::mobinfo[mobid].mp;
 }
 
+void Mob::applyDamage(int32_t playerid, int32_t damage) {
+	if (damages.find(playerid) == damages.end())
+		damages[playerid] = 0;
+	if (damage > hp)
+		damage = hp;
+
+	damages[playerid] += damage;
+	setHP(hp - damage);
+}
+
 void Mob::addStatus(vector<StatusInfo> info, clock_t time) {
 	int32_t status = 0;
 	for (size_t i = 0; i < info.size(); i++) {
@@ -115,19 +125,35 @@ void Mob::setControl(Player *control) {
 void Mob::die(Player *player) {
 	MobsPacket::dieMob(this);
 
-	// Account for Holy Symbol
-	int16_t hsrate = 0;
-	if (player->getActiveBuffs()->getActiveSkillLevel(2311003) > 0)
-		hsrate = Skills::skills[2311003][player->getActiveBuffs()->getActiveSkillLevel(2311003)].x;
-	else if (player->getActiveBuffs()->getActiveSkillLevel(9101002) > 0)
-		hsrate = Skills::skills[9101002][player->getActiveBuffs()->getActiveSkillLevel(9101002)].x;
+	MobInfo &mobinfo = Mobs::mobinfo[mobid];
+	int32_t highestdamager = 0;
+	uint32_t highestdamage = 0;
+	for (unordered_map<int32_t, uint32_t>::iterator iter = damages.begin(); iter != damages.end(); iter++) {
+		if (iter->second > highestdamage) { // Find the highest damager to give drop ownership
+			highestdamager = iter->first;
+			highestdamage = iter->second;
+		}
+		Player *damager = Players::Instance()->getPlayer(iter->first);
+		if (damager == 0 || damager->getMap() != this->mapid) // Only give EXP if the damager is in the same channel and on the same map
+			continue;
 
-	Levels::giveEXP(player, (Mobs::mobinfo[mobid].exp + ((Mobs::mobinfo[mobid].exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate());
-	Drops::doDrops(player, this->mobid, getPos());
+		uint8_t multiplier = damager == player ? 10 : 8; // Multiplier for player to give the finishing blow is 1 and .8 for others. We therefore set this to 10 or 8 and divide the result in the formula found later on by 10.
+		// Account for Holy Symbol
+		int16_t hsrate = 0;
+		if (damager->getActiveBuffs()->getActiveSkillLevel(2311003) > 0)
+			hsrate = Skills::skills[2311003][damager->getActiveBuffs()->getActiveSkillLevel(2311003)].x;
+		else if (damager->getActiveBuffs()->getActiveSkillLevel(9101002) > 0)
+			hsrate = Skills::skills[9101002][damager->getActiveBuffs()->getActiveSkillLevel(9101002)].x;
+
+		uint32_t exp = (mobinfo.exp * (multiplier * iter->second / mobinfo.hp)) / 10;
+		Levels::giveEXP(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
+	}
+
+	Drops::doDrops(highestdamager, mapid, mobid, getPos());
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
-	for (size_t i = 0; i < Mobs::mobinfo[mobid].summon.size(); i++)
-		Mobs::spawnMobPos(mapid, Mobs::mobinfo[mobid].summon[i], m_pos);
+	for (size_t i = 0; i < mobinfo.summon.size(); i++)
+		Mobs::spawnMobPos(mapid, mobinfo.summon[i], m_pos);
 
 	player->getQuests()->updateQuestMob(mobid);
 	Maps::maps[mapid]->removeMob(id, spawnid);
@@ -425,15 +451,14 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			}
 			else {
 				if (skillid == 1221011)
-					mob->setHP(1);
-				else {
-					int32_t temphp = mob->getHP();
-					mob->setHP(temphp - damage);
-					if (htabusetaker != 0) {
-						if (temphp - damage <= 0) // Horntail will die before all of his parts otherwise
-							damage = temphp; // Damage isn't used again from here on anyway
-						htabusetaker->setHP(htabusetaker->getHP() - damage);
-					}
+					damage = mob->getHP() - 1;
+
+				mob->applyDamage(player->getId(), damage);
+				int32_t temphp = mob->getHP();
+				if (htabusetaker != 0) {
+					if (temphp - damage <= 0) // Horntail will die before all of his parts otherwise
+						damage = temphp; // Damage isn't used again from here on anyway
+					htabusetaker->applyDamage(player->getId(), damage);
 				}
 			}
 			extra = mobinfo[mob->getMobID()].hp;

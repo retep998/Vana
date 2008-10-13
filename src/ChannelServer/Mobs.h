@@ -131,6 +131,7 @@ public:
 		if (this->hp < 0)
 			this->hp = 0;
 	}
+	void applyDamage(int32_t playerid, int32_t damage);
 	void setMP(int32_t mp) { this->mp = mp; }
 	void addStatus(vector<StatusInfo> info, clock_t time);
 	void removeStatus(int32_t status);
@@ -159,6 +160,7 @@ private:
 	int32_t status;
 	unordered_map<int32_t, StatusInfo> statuses;
 	boost::scoped_ptr<Timer::Container> timers;
+	unordered_map<int32_t, uint32_t> damages;
 	Player *control;
 };
 

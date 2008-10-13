@@ -91,14 +91,17 @@ void Drops::addDropData(int32_t id, DropInfo drop) {
 	dropdata[id].push_back(drop);
 }
 
-void Drops::doDrops(Player *player, int32_t droppingID, Pos origin) {
+void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos origin) {
 	DropsInfo drops = dropdata[droppingID];
+	Player *player = Players::Instance()->getPlayer(playerid);
 
 	int16_t d = 0;
 	for (size_t k = 0; k < drops.size(); k++) {
  		if (!drops[k].ismesos && Randomizer::Instance()->randInt(9999) < drops[k].chance * ChannelServer::Instance()->getDroprate()) {
 			if (drops[k].quest > 0) {
-				if (!player->getQuests()->isQuestActive(drops[k].quest))
+				if (player == 0)
+					continue;
+				else if (!player->getQuests()->isQuestActive(drops[k].quest))
 					continue;
 				int32_t request = 0;
 				for (size_t i = 0; i < Quests::quests[drops[k].quest].rewards.size(); i++) {
@@ -111,24 +114,24 @@ void Drops::doDrops(Player *player, int32_t droppingID, Pos origin) {
 			}
 
 			Pos pos;
-			if (d%2) {
-				pos.x = origin.x+25*((d+1)/2);
+			if (d % 2) {
+				pos.x = origin.x + 25 * ((d + 1) / 2);
 				pos.y = origin.y;
 			}
 			else {
-				pos.x = origin.x-25*(d/2);
+				pos.x = origin.x - 25 * (d / 2);
 				pos.y = origin.y;
 			}
 
 			Drop *drop = 0;
 
 			if (ISEQUIP(drops[k].id))
-				drop = new Drop(player->getMap(), Item(drops[k].id, true), pos, player->getId());
+				drop = new Drop(mapid, Item(drops[k].id, true), pos, playerid);
 			else
-				drop = new Drop(player->getMap(), Item(drops[k].id, (int16_t) 1), pos, player->getId());
+				drop = new Drop(mapid, Item(drops[k].id, (int16_t) 1), pos, playerid);
 
 			if (drops[k].quest > 0) {
-				drop->setPlayer(player->getId());
+				drop->setPlayer(playerid);
 				drop->setQuest(drops[k].quest);
 			}
 			drop->setTime(100);
@@ -142,11 +145,11 @@ void Drops::doDrops(Player *player, int32_t droppingID, Pos origin) {
 			if (xm > 0 && nm > 0) {
 				int32_t mesos = Randomizer::Instance()->randInt(xm - nm) + nm;
 				// For Meso up
-				if (player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
+				if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
 					mesos = (mesos * Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x) / 100;
 				}
 				Pos pos;
-				if ((d % 2) != 0) {
+				if (d % 2) {
 					pos.x = origin.x + 25 * ((d + 1) / 2);
 					pos.y = origin.y;
 				}
@@ -154,7 +157,7 @@ void Drops::doDrops(Player *player, int32_t droppingID, Pos origin) {
 					pos.x = origin.x - 25 * (d / 2);
 					pos.y = origin.y;
 				}
-				Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId());
+				Drop *drop = new Drop(player->getMap(), mesos, pos, playerid);
 				drop->setTime(100);
 				drop->doDrop(origin);
 			}

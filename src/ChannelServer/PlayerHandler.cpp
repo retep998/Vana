@@ -87,7 +87,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 					damage = (damage - (damage * pgmr.reduction / 100)); 
 				Mob *mob = Maps::maps[player->getMap()]->getMob(mapmobid);
 				if (mob != 0) {
-					mob->setHP(mob->getHP() - (pgmr.damage * pgmr.reduction / 100));
+					mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
 					Mobs::displayHPBars(player, mob);
 					if (mob->getHP() <= 0)
 						mob->die(player);

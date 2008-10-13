@@ -48,12 +48,12 @@ uint32_t Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 23
 	1005114529, 1060194805, 1118293480, 1179575962, 1244216724, 1312399800, 1384319309,
 	1460180007, 1540197871, 1624600714, 1713628833, 1807535693, 1906558648, 2011069705, 2121276324};
 
-void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
+void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 	if (player->getLevel() >= 200) // Do not give EXP to characters level 200 or over
 		return;
 	uint32_t cexp = player->getExp() + exp;
 	if (exp != 0)
-		LevelsPacket::showEXP(player, exp, type);
+		LevelsPacket::showEXP(player, exp, white, inChat);
 	uint8_t level = player->getLevel();
 	if (cexp >= exps[level - 1]) {
 		int16_t apgain = 0;
@@ -114,7 +114,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, int8_t type) {
 			cexp = exps[level - 1] - 1;
 		}
 
-		if (levelsgained) { // Check if the player has leveled up at all, it is possible that the user haven't level up if multi-level limit is 0
+		if (levelsgained) { // Check if the player has leveled up at all, it is possible that the user hasn't leveled up if multi-level limit is 0
 			player->modifyRMHP(hpgain);
 			player->modifyRMMP(mpgain);
 			player->setLevel(level);

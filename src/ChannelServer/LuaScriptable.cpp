@@ -187,7 +187,7 @@ int LuaExports::giveMesos(lua_State *luaVm) {
 
 int LuaExports::giveEXP(lua_State *luaVm) {
 	int32_t exp = lua_tointeger(luaVm, -1);
-	Levels::giveEXP(getPlayer(luaVm), exp, 1);
+	Levels::giveEXP(getPlayer(luaVm), exp, true);
 	return 1;
 }
 
