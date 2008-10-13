@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void LevelsPacket::showEXP(Player *player, int32_t exp, int8_t type) {
+void LevelsPacket::showEXP(Player *player, int32_t exp, bool white, bool inChat) {
 	PacketCreator packet;
 	packet.addShort(SEND_NOTE);
 	packet.addByte(3);
-	packet.addByte(1);
+	packet.addByte(white);
 	packet.addInt(exp);
-	packet.addInt(type);
+	packet.addInt(inChat);
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addByte(0);

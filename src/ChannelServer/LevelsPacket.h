@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace LevelsPacket {
-	void showEXP(Player *player, int32_t exp, int8_t type);
+	void showEXP(Player *player, int32_t exp, bool white, bool inChat);
 	void levelUp(Player *player);
 	void jobChange(Player *player);
 	void statOK(Player *player);
