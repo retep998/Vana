@@ -15,7 +15,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "Party.h"
 #include "Player.h"
 #include "WorldServerConnectPlayerPacket.h"
@@ -24,17 +23,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void Party::handleRequest(Player *player, PacketReader &packet) {
 	int8_t type = packet.getByte();
-	switch(type){
-		case 0x01: //Create party
-		case 0x02: //Leaver party
+	switch (type) {
+		case 0x01: // Create party
+		case 0x02: // Leave party
 			WorldServerConnectPlayerPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId());
 			break;
-		case 0x03: //Join party
-		case 0x05: //Expel Player
-		case 0x06: //Give leader rights
+		case 0x03: // Join party
+		case 0x05: // Expel Player
+		case 0x06: // Give leader rights
 			WorldServerConnectPlayerPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), packet.getInt());
 			break;
-		case 0x04: //Invite
+		case 0x04: // Invite
 			WorldServerConnectPlayerPacket::partyInvite(ChannelServer::Instance()->getWorldPlayer(), player->getId(), packet.getString());
 			break;
 	}
