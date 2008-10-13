@@ -58,15 +58,17 @@ control(0)
 	this->mp = Mobs::mobinfo[mobid].mp;
 }
 
-void Mob::addStatus(int32_t status, StatusInfo info, clock_t time) {
-	if (statuses.find(status) == statuses.end()) { // Calculate new status mask if status is new
-		this->status = 0;
-		for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
-			this->status += iter->first;
-		}
+void Mob::addStatus(vector<StatusInfo> info, clock_t time) {
+	int32_t status = 0;
+	for (size_t i = 0; i < info.size(); i++) {
+		statuses[status] = info[i];
+		status += info[i].status;
 	}
-	statuses[status] = info;
 	MobsPacket::applyStatus(this, status, info, 300);
+	this->status = 0;
+	for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) { // Calculate new status mask
+		this->status += iter->first;
+	}
 	new Timer::Timer(bind(&Mob::removeStatus, this, status),
 		Timer::Id(Timer::Types::MobStatusTimer, status, 0),
 		getTimers(), time, false);
@@ -487,8 +489,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismelee) {
 	const MobInfo &info = mobinfo[mob->getMobID()];
 	uint8_t level = skillid > 0 ? player->getSkills()->getSkillLevel(skillid) : 0;
-	int32_t status = 0;
-	int16_t val = 0;
+	vector<StatusInfo> statuses;
 	clock_t time = 0;
 	if (info.canfreeze) { // Freezing stuff
 		switch (skillid) {
@@ -498,32 +499,27 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 			case 3211003: // Blizzard (Sniper)
 			case 2221007: // Blizzard (Arch Mage)
 			case 5211005: // Cooling Effect
-				status = FREEZE;
-				val = FREEZE;
+				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid));
 				time = Skills::skills[skillid][level].time * 2000;
 				break;
 			case 2121005: // Elquines
 			case 3221005: // Frostprey
-				status = FREEZE;
-				val = FREEZE;
+				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid));
 				time = Skills::skills[skillid][level].x * 2000;
 				break;
 		}
 		if (ismelee && player->getActiveBuffs()->getActiveSkillLevel(1211005) > 0) { // Ice Charge Sword
-			status = FREEZE;
-			val = FREEZE;
+			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211005));
 			time = Skills::skills[1211005][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000;
 		}
 		else if (ismelee && player->getActiveBuffs()->getActiveSkillLevel(1211006) > 0) { // Blizzard Charge BW
-			status = FREEZE;
-			val = FREEZE;
+			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211006));
 			time = Skills::skills[1211006][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000;
 		}
 	}
 	if (info.canpoision) { // Poisoning stuff
 		if ((skillid == 2101005 || skillid == 2111006 || skillid == 2111003) && Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) { // Poison brace, Element composition, and Poison mist
-			status = POISON;
-			val = 50;
+			statuses.push_back(StatusInfo(POISON, (info.hp / (70 - level)), skillid));
 			time = Skills::skills[skillid][level].time * 1000;
 		}
 	}
@@ -541,77 +537,65 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 			case 5121005: // Snatch
 			case 5121007: // Fist
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					status = STUN;
-					val = STUN;
+					statuses.push_back(StatusInfo(STUN, STUN, skillid));
 					time = Skills::skills[skillid][level].time * 1000;
 				}
 				break;
 			case 3111005: // Silver Hawk
 			case 3211005: // Golden Eagle
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					status = STUN;
-					val = STUN;
+					statuses.push_back(StatusInfo(STUN, STUN, skillid));
 					time = Skills::skills[skillid][level].x * 1000;
 				}
 				break;
 			case 2111004: // Seal - F/P
 			case 2211004: // Seal - I/L
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					status = SEAL;
-					val = SEAL;
+					statuses.push_back(StatusInfo(STUN, STUN, skillid));
 					time = Skills::skills[skillid][level].time * 1000;
 				}
 				break;
 			case 2311005: // Doom
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					status = DOOM;
-					val = 0x100;
+					statuses.push_back(StatusInfo(DOOM, 0x100, skillid));
 					time = Skills::skills[skillid][level].time * 1000;
 				}
 				break;
 			case 4111003: // Shadow Web
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					status = SHADOW_WEB;
-					val = 0x100;
+					statuses.push_back(StatusInfo(SHADOW_WEB, 0x100, skillid));
 					time = Skills::skills[skillid][level].time * 1000;
 				}
 				break;
 		}
 	}
 	if (skillid == 4001002) { // Disorder
+		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid));
+		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid));
 		time = Skills::skills[skillid][level].time * 1000;
-		mob->addStatus(WATK, StatusInfo(Skills::skills[skillid][level].x, skillid), time);
-		status = WDEF;
-		val = Skills::skills[skillid][level].y;
 	}
-	if (skillid == 1201006) { // Threaten
+	else if (skillid == 1201006) { // Threaten
+		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid));
+		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid));
 		time = Skills::skills[skillid][level].time * 1000;
-		mob->addStatus(WATK, StatusInfo(Skills::skills[skillid][level].x, skillid), time);
-		status = WDEF;
-		val = Skills::skills[skillid][level].y;
 	}
-	if (skillid == 2101003 || skillid == 2201003) { // Slow
-		status = SPEED;
-		val = Skills::skills[skillid][level].x;
+	else if (skillid == 2101003 || skillid == 2201003) { // Slow
+		statuses.push_back(StatusInfo(SPEED, Skills::skills[skillid][level].x, skillid));
 		time = Skills::skills[skillid][level].time * 1000;
 	}
 	if (player->getActiveBuffs()->getActiveSkillLevel(3121007) > 0) { // Hamstring
 		uint8_t hamlevel = player->getActiveBuffs()->getActiveSkillLevel(3121007);
-		skillid = 3121007;
-		status = SPEED;
-		val = Skills::skills[3121007][hamlevel].x;
+		statuses.push_back(StatusInfo(SPEED, Skills::skills[3121007][hamlevel].x, 3121007));
 		time = Skills::skills[3121007][hamlevel].y * 1000;
 	}
 	if (player->getActiveBuffs()->getActiveSkillLevel(3221006) > 0) { // Blind
 		uint8_t blindlevel = player->getActiveBuffs()->getActiveSkillLevel(3221006);
-		skillid = 3221006;
-		status = ACC;
-		val = -Skills::skills[3221006][blindlevel].x;
+		statuses.push_back(StatusInfo(ACC, -Skills::skills[3221006][blindlevel].x, 3221006));
 		time = Skills::skills[3221006][blindlevel].y * 1000;
 	}
 
-	if (status > 0)
-		mob->addStatus(status, StatusInfo(val, skillid), time);
+	if (statuses.size() > 0)
+		mob->addStatus(statuses, time);
 }
 
 void Mobs::spawnMob(Player *player, int32_t mobid, int32_t amount) {

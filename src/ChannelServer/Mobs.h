@@ -95,9 +95,10 @@ enum MobStatus {
 };
 
 struct StatusInfo {
-	StatusInfo() : val(0), skillid(0), mobskill(0), level(0) { }
-	StatusInfo(int16_t val, int32_t skillid) : val(val), skillid(skillid), mobskill(0), level(0) { }
-	StatusInfo(int16_t val, int16_t mobskill, int16_t level) : val(val), mobskill(mobskill), level(level), skillid(-1) { }
+	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0) { }
+	StatusInfo(int32_t status, int16_t val, int32_t skillid) : status(status), val(val), skillid(skillid), mobskill(0), level(0) { }
+	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level) : status(status), val(val), mobskill(mobskill), level(level), skillid(-1) { }
+	int32_t status;
 	int16_t val;
 	int32_t skillid;
 	int16_t mobskill;
@@ -131,7 +132,7 @@ public:
 			this->hp = 0;
 	}
 	void setMP(int32_t mp) { this->mp = mp; }
-	void addStatus(int32_t status, StatusInfo info, clock_t time);
+	void addStatus(vector<StatusInfo> info, clock_t time);
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
 
