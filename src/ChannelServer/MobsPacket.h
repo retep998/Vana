@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MOBSPACK_H
 
 #include "Types.h"
+#include <vector>
+
+using std::vector;
 
 class Player;
 class Mob;
@@ -34,7 +37,7 @@ namespace MobsPacket {
 	void damageMobRanged(Player *player, PacketReader &pack);
 	void damageMobSpell(Player *player, PacketReader &pack);
 	void damageMobSummon(Player *player, PacketReader &pack);
-	void applyStatus(Mob *mob, int32_t status, const StatusInfo &info, int16_t delay);
+	void applyStatus(Mob *mob, int32_t status, const vector<StatusInfo> &info, int16_t delay);
 	void removeStatus(Mob *mob, int32_t status);
 	void showHP(Player *player, int32_t mobid, int8_t per, bool miniboss);
 	void showBossHP(Player *player, const MobHPInfo &mob); // For major bosses
