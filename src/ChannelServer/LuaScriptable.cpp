@@ -74,7 +74,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getRMHP", &LuaExports::getRMHP);
 	lua_register(luaVm, "getMP", &LuaExports::getMP);
 	lua_register(luaVm, "getMMP", &LuaExports::getMMP);
-	lua_register(luaVm, "getRMMP", &LuaExports::getMMP);
+	lua_register(luaVm, "getRMMP", &LuaExports::getRMMP);
 	lua_register(luaVm, "getHair", &LuaExports::getHair);
 	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
 	lua_register(luaVm, "getName", &LuaExports::getName);
