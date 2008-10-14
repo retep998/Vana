@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include "Channels.h"
 #include "PacketReader.h"
+#include "Players.h"
 #include "Rates.h"
 #include <iostream>
 
@@ -61,6 +62,10 @@ void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 	int32_t playerid = packet.getInt();
 
 	if (Channels::Instance()->getChannel(channel)) {
-		WorldServerAcceptPlayerPacket::newConnectable(channel, playerid);
+		if (Players::Instance()->getPlayer(playerid) == 0) {
+			// Do not create the connectable if the player is already online
+			// (extra security if the client ignores CC packet)
+			WorldServerAcceptPlayerPacket::newConnectable(channel, playerid);
+		}
 	}
 }

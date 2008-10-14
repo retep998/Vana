@@ -81,3 +81,12 @@ Player * Players::getPlayerFromName(const string &name, bool includeOffline) {
 int32_t Players::size() {
 	return players.size();
 }
+
+Player * Players::getPlayer(int32_t id, bool includeOffline) {
+	if (players.find(id) != players.end()) {
+		Player *player = players[id];
+		if (player->online || includeOffline)
+			return player;
+	}
+	return 0;
+}
