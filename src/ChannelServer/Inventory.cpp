@@ -380,7 +380,7 @@ void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t a
 		player->getInventory()->deleteItem(inv, slot);
 	}
 	else {
-		player->getInventory()->changeItemAmount(item->id, -item->amount);
+		player->getInventory()->changeItemAmount(item->id, -amount);
 		InventoryPacket::updateItemAmounts(player, inv, slot, item->amount, 0, 0);
 	}
 }
