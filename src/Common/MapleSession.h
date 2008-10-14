@@ -22,15 +22,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Decoder.h"
 #include "Types.h"
 #include <memory>
+#include <queue>
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <boost/shared_array.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 
+using std::queue;
 using std::string;
 using boost::asio::ip::tcp;
+using boost::shared_array;
 
 class AbstractPlayer;
 class PacketCreator;
@@ -52,7 +55,7 @@ public:
 	void stop();
 	void disconnect();
 	void handle_stop();
-	void send(unsigned char *buf, int32_t len, bool encrypt = true);
+	void send(const unsigned char *buf, int32_t len, bool encrypt = true);
 	void send(const PacketCreator &packet, bool encrypt = true);
 protected:
 	void start_read_header();
@@ -62,17 +65,23 @@ protected:
 		size_t bytes_transferred);
 	void handle_read_body(const boost::system::error_code &error,
 		size_t bytes_transferred);
+	void send_next_packet(); // Send the next packet in the queue
 
 	static const size_t connectHeaderLen = 2;
 	static const size_t headerLen = 4;
 	static const size_t bufferLen = 10000;
 
 	tcp::socket m_socket;
-	boost::scoped_ptr<Decoder> m_decoder;
+	Decoder m_decoder;
 	std::tr1::shared_ptr<AbstractPlayer> m_player;
 	unsigned char m_buffer[bufferLen];
 	bool m_is_server;
 	string m_connect_packet_unknown;
+
+	// Packet sending
+	queue<shared_array<unsigned char>> m_send_packet_queue;	// This may not be the best way,
+	queue<uint32_t> m_send_size_queue;						// but it is the simplest way.
+	shared_array<unsigned char> m_send_packet;
 	boost::mutex m_send_mutex;
 };
 
