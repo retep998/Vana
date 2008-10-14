@@ -168,7 +168,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\MySQLM.cpp"
+					RelativePath=".\src\Common\Database.cpp"
 					>
 				</File>
 			</Filter>
@@ -334,7 +334,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\MySQLM.h"
+					RelativePath=".\src\Common\Database.h"
 					>
 				</File>
 			</Filter>

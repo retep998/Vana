@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerStorage.h"
+#include "Database.h"
 #include "Inventory.h"
 #include "Player.h"
 #include "StoragePacket.h"
-#include "MySQLM.h"
 
 PlayerStorage::PlayerStorage(Player *player) : player(player) {
 	load();
