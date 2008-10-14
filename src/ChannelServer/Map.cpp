@@ -212,16 +212,11 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 	int32_t mobskilled = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
 		if (iter->second != 0) {
-			if (mobid > 0 && iter->second->getMobID() == mobid) {
-				if (playerkill && player != 0)
+			if ((mobid > 0 && iter->second->getMobID() == mobid) || mobid == 0) {
+				if (playerkill && player != 0) {
+					iter->second->applyDamage(player->getId(), iter->second->getHP());
 					iter->second->die(player);
-				else
-					iter->second->die(showpacket);
-				mobskilled++;
-			}
-			else if (mobid == 0) {
-				if (playerkill && player != 0)
-					iter->second->die(player);
+				}
 				else
 					iter->second->die(showpacket);
 				mobskilled++;
