@@ -90,6 +90,6 @@ void MapleClient::readConnectPacket() {
 	packet.getString(); // Unknown
 
 	unsigned char *rawpacket = packet.getBuffer();
-	m_decoder->setIvSend(rawpacket);
-	m_decoder->setIvRecv(rawpacket + 4);
+	m_decoder.setIvSend(rawpacket);
+	m_decoder.setIvRecv(rawpacket + 4);
 }
