@@ -46,7 +46,7 @@ public:
 	void registerPlayer(int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level);
 	void remove(int32_t id, uint16_t channel = -1);
 	Player * getPlayerFromName(const string &name, bool includeOffline = false);
-	Player * getPlayer(int32_t id) { return players[id]; }
+	Player * getPlayer(int32_t id, bool includeOffline = false);
 	int32_t size();
 private:
 	Players() {};
