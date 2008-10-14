@@ -157,7 +157,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 					pos.x = origin.x - 25 * (d / 2);
 					pos.y = origin.y;
 				}
-				Drop *drop = new Drop(player->getMap(), mesos, pos, playerid);
+				Drop *drop = new Drop(mapid, mesos, pos, playerid);
 				drop->setTime(100);
 				drop->doDrop(origin);
 			}
