@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Credits TerraEnvy of Ragezone/Terra of dev.chisoft & Bri for adding new skills
 if state == 0 then
 	if isGM() == 1 then
-		addText("Hi " .. getName() .. "! Would you like your skills maxed?");
+		addText("Hi #h #! Would you like your skills maxed?");
 		sendYesNo();
 	else
-		addText("You need to be a GM in order for me to max your skills, " .. getName() .. "!");
+		addText("You need to be a GM in order for me to max your skills, #h #!");
 		sendOK();
 		endNPC();
 	end
