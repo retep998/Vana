@@ -16,13 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.h"
+#include "Database.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
 #include "MapleSession.h"
-#include "MySQLM.h"
+#include "PacketReader.h"
 #include "PlayerLogin.h"
 #include "Randomizer.h"
-#include "PacketReader.h"
 #include "TimeUtilities.h"
 #include "sha1.h"
 #include <iostream>

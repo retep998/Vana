@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DatabaseMigration.h"
 #include "DatabaseMigrationRunner.h"
-#include "MySQLM.h"
+#include "Database.h"
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp> 

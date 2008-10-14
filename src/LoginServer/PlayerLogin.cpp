@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerLogin.h"
 #include "Characters.h"
+#include "Database.h"
 #include "Login.h"
 #include "LoginPacket.h"
-#include "Worlds.h"
-#include "MySQLM.h"
 #include "PacketReader.h"
 #include "RecvHeader.h"
+#include "Worlds.h"
 
 void PlayerLogin::realHandleRequest(PacketReader &packet) {
 	switch(packet.getShort()) {

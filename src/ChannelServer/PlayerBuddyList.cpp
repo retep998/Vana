@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerBuddyList.h"
 #include "BuddyListPacket.h"
+#include "Database.h"
 #include "Player.h"
-#include "MySQLM.h"
 #include <algorithm>
 
 PlayerBuddyList::PlayerBuddyList(Player *player) : player(player) {

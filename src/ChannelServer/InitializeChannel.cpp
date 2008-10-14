@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Skills.h"
 #include "Inventory.h"
-#include "MySQLM.h"
+#include "Database.h"
 #include "MiscUtilities.h"
 #include "Pets.h"
 #include <iostream>

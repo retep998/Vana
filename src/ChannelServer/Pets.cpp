@@ -16,18 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Pets.h"
+#include "Database.h"
 #include "Drops.h"
 #include "DropsPacket.h"
 #include "Inventory.h"
 #include "Maps.h"
 #include "Movement.h"
-#include "MySQLM.h"
+#include "PacketReader.h"
 #include "PetsPacket.h"
 #include "Player.h"
 #include "Pos.h"
 #include "Randomizer.h"
 #include "Reactors.h"
-#include "PacketReader.h"
 #include "Timer/Timer.h"
 #include <functional>
 #include <string>

@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChatHandler.h"
 #include "CommandHandler.h"
 #include "Connectable.h"
+#include "Database.h"
 #include "Drops.h"
 #include "Fame.h"
 #include "Inventory.h"
@@ -31,15 +32,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "Maps.h"
 #include "Mobs.h"
-#include "MySQLM.h"
 #include "NPCs.h"
+#include "PacketReader.h"
 #include "Party.h"
+#include "Pets.h"
 #include "PlayerHandler.h"
 #include "PlayerPacket.h"
 #include "Players.h"
 #include "Quests.h"
 #include "Reactors.h"
-#include "PacketReader.h"
 #include "RecvHeader.h"
 #include "ServerPacket.h"
 #include "SkillMacros.h"
@@ -48,7 +49,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Trades.h"
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPlayerPacket.h"
-#include "Pets.h"
 
 Player::~Player() {
 	if (isconnect) {

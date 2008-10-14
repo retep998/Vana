@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerInventory.h"
+#include "Database.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
 #include "PacketCreator.h"
@@ -23,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Randomizer.h"
-#include "MySQLM.h"
 
 /* Item struct */
 Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0), name("") {

@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSkills.h"
+#include "Database.h"
 #include "Player.h"
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
-#include "MySQLM.h"
 #include <unordered_map>
 
 using std::tr1::unordered_map;
