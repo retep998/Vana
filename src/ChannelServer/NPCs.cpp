@@ -182,7 +182,7 @@ bool NPC::run() {
 	return ret;
 }
 
-PacketCreator & NPC::npcPacket(int8_t type) {
+PacketCreator NPC::npcPacket(int8_t type) {
 	PacketCreator packet;
 	packet.addShort(SEND_NPC_TALK);
 	packet.addByte(4);
@@ -192,8 +192,7 @@ PacketCreator & NPC::npcPacket(int8_t type) {
 
 	text = "";
 
-	PacketCreator &ret = packet;
-	return ret;
+	return packet;
 }
 
 void NPC::sendSimple() {

@@ -43,7 +43,7 @@ public:
 
 	bool run();
 
-	PacketCreator & npcPacket(int8_t type);
+	PacketCreator npcPacket(int8_t type);
 
 	void sendSimple();
 	void sendYesNo();
