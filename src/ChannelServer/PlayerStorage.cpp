@@ -144,5 +144,6 @@ void PlayerStorage::save() {
 			<< item->ijump << ","
 			<< mysqlpp::quote << item->name << ")";
 	}
-	query.exec();
+	if (!firstrun)
+		query.exec();
 }
