@@ -56,8 +56,13 @@ void DatabaseMigration::update(size_t version) {
 
 void DatabaseMigration::loadDatabaseInfo() {
 	// vana_info table for checking database version
-	mysqlpp::Query query = Database::getCharDB().query("SELECT * FROM vana_info LIMIT 1");
-	mysqlpp::StoreQueryResult res = query.store();
+	mysqlpp::Connection &conn = Database::getCharDB();
+	mysqlpp::StoreQueryResult res;
+	{
+		mysqlpp::NoExceptions ne(conn);
+		mysqlpp::Query query = Database::getCharDB().query("SELECT * FROM vana_info LIMIT 1");
+		res = query.store();
+	}
 
 	if (res.size() == 0) {
 		if (m_update) {
