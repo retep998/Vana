@@ -338,5 +338,6 @@ void PlayerInventory::save() {
 				<< mysqlpp::quote << item->name << ")";
 		}
 	}
-	query.exec();
+	if (!firstrun)
+		query.exec();
 }
