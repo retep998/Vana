@@ -456,7 +456,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 				int32_t temphp = mob->getHP();
 				mob->applyDamage(player->getId(), damage);
 				if (htabusetaker != 0) {
-					if (temphp - damage <= 0) // Horntail will die before all of his parts otherwise
+					if (temphp - damage < 0) // Horntail will die before all of his parts otherwise
 						damage = temphp; // Damage isn't used again from here on anyway
 					htabusetaker->applyDamage(player->getId(), damage);
 				}
