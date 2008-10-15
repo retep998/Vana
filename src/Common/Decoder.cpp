@@ -57,7 +57,7 @@ void Decoder::createHeader (unsigned char *header, int16_t size) {
 	header[3] = (b-header[2])/0x100;
 }
 
-PacketCreator & Decoder::getConnectPacket(string unknown) {
+PacketCreator Decoder::getConnectPacket(string unknown) {
 	(*(int32_t *)ivRecv) = Randomizer::Instance()->randInt();
 	(*(int32_t *)ivSend) = Randomizer::Instance()->randInt();
 
@@ -71,7 +71,5 @@ PacketCreator & Decoder::getConnectPacket(string unknown) {
 
 	packet.setShort(packet.getSize() - 2, 0); // -2 as the size does not include the size of the size header
 
-
-	PacketCreator &ret = packet;
-	return ret;
+	return packet;
 }

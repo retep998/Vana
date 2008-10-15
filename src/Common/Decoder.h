@@ -42,7 +42,7 @@ public:
 	}
 	void createHeader (unsigned char *header, int16_t size); 
 
-	PacketCreator & getConnectPacket(string unknown = "");
+	PacketCreator getConnectPacket(string unknown = "");
 
 	void setIvRecv(unsigned char *iv) { memcpy_s(ivRecv, 4, iv, 4); }
 	void setIvSend(unsigned char *iv) { memcpy_s(ivSend, 4, iv, 4); }
