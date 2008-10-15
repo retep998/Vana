@@ -39,4 +39,14 @@ private:
 	static mysqlpp::Connection datadb;
 };
 
+inline
+mysqlpp::Connection & Database::getCharDB() {
+	return chardb;
+}
+
+inline
+mysqlpp::Connection & Database::getDataDB() {
+	return datadb;
+}
+
 #endif
