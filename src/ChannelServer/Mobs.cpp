@@ -478,13 +478,11 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			if (mob->getHP() <= 0) {
 				mob->die(player);
 				mob = 0;
-				if (htabusetaker != 0) {
-					if (htabusetaker->getHP() <= 0) {
-						for (int8_t q = 0; q < 8; q++) {
-							Maps::maps[map]->killMobs(player, (8810010 + q)); // Dead Horntail's parts
-						}
-						htabusetaker->die(player);
+				if (htabusetaker != 0 && htabusetaker->getHP() <= 0) {
+					for (int8_t q = 0; q < 8; q++) {
+						Maps::maps[map]->killMobs(player, (8810010 + q)); // Dead Horntail's parts
 					}
+					htabusetaker->die(player);
 				}
 				if (!ismelee || skillid == 4211006) {
 					packet.skipBytes(4 * (hits - 1 - k));
