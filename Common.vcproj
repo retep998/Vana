@@ -46,9 +46,11 @@
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="PrecompiledHeader.h"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				ForcedIncludeFiles="PrecompiledHeader.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -110,9 +112,11 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;MYSQLPP_NO_DLL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="PrecompiledHeader.h"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				ForcedIncludeFiles="PrecompiledHeader.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -152,6 +156,26 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\src\Common\PrecompiledHeader.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+			</File>
 			<Filter
 				Name="DataBaseLoading"
 				>
@@ -314,6 +338,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\src\Common\PrecompiledHeader.h"
+				>
+			</File>
 			<File
 				RelativePath=".\src\Common\Types.h"
 				>
