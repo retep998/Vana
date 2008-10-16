@@ -50,22 +50,34 @@ id(id),
 mapid(mapid),
 spawnid(spawnid),
 mobid(mobid),
+info(Mobs::mobinfo[mobid]),
 status(0),
 timers(new Timer::Container),
 control(0)
 {
-	this->hp = Mobs::mobinfo[mobid].hp;
-	this->mp = Mobs::mobinfo[mobid].mp;
+	this->hp = info.hp;
+	this->mp = info.mp;
 }
 
-void Mob::applyDamage(int32_t playerid, int32_t damage) {
+void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	if (damages.find(playerid) == damages.end())
 		damages[playerid] = 0;
 	if (damage > hp)
-		damage = hp;
+		damage = hp - poison; // Keep HP from hitting 0 for poison and from going below 0
 
 	damages[playerid] += damage;
-	setHP(hp - damage);
+	hp -= damage;
+
+	if (!poison) {
+		Player *player = Players::Instance()->getPlayer(playerid);
+
+		if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
+			MobsPacket::showBossHP(player, mobid, hp, info);
+		else { // Normal/Miniboss HP bars
+			uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
+			MobsPacket::showHP(player, id, percent, info.boss);
+		}
+	}
 }
 
 void Mob::addStatus(vector<StatusInfo> info, clock_t time) {
@@ -125,7 +137,6 @@ void Mob::setControl(Player *control) {
 void Mob::die(Player *player) {
 	MobsPacket::dieMob(this);
 
-	MobInfo &mobinfo = Mobs::mobinfo[mobid];
 	int32_t highestdamager = 0;
 	uint32_t highestdamage = 0;
 	for (unordered_map<int32_t, uint32_t>::iterator iter = damages.begin(); iter != damages.end(); iter++) {
@@ -145,15 +156,15 @@ void Mob::die(Player *player) {
 		else if (damager->getActiveBuffs()->getActiveSkillLevel(9101002) > 0)
 			hsrate = Skills::skills[9101002][damager->getActiveBuffs()->getActiveSkillLevel(9101002)].x;
 
-		uint32_t exp = (mobinfo.exp * (multiplier * iter->second / mobinfo.hp)) / 10;
+		uint32_t exp = (info.exp * (multiplier * iter->second / info.hp)) / 10;
 		Levels::giveEXP(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
 	}
 
 	Drops::doDrops(highestdamager, mapid, mobid, getPos());
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
-	for (size_t i = 0; i < mobinfo.summon.size(); i++)
-		Mobs::spawnMobPos(mapid, mobinfo.summon[i], m_pos);
+	for (size_t i = 0; i < info.summon.size(); i++)
+		Mobs::spawnMobPos(mapid, info.summon[i], m_pos);
 
 	player->getQuests()->updateQuestMob(mobid);
 	Maps::maps[mapid]->removeMob(id, spawnid);
@@ -474,7 +485,6 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					SkillsPacket::showSkillEffect(player, eater->id);
 				}
 			}
-			displayHPBars(player, (isHorntail && htabusetaker != 0 ? htabusetaker : mob));
 			if (mob->getHP() <= 0) {
 				mob->die(player);
 				mob = 0;
@@ -628,22 +638,4 @@ void Mobs::spawnMob(Player *player, int32_t mobid, int32_t amount) {
 
 void Mobs::spawnMobPos(int32_t mapid, int32_t mobid, Pos pos) {
 	Maps::maps[mapid]->spawnMob(mobid, pos);
-}
-
-void Mobs::displayHPBars(Player *player, Mob *mob) {
-	MobHPInfo hpinfo;
-	hpinfo.mobid = mob->getMobID();
-	hpinfo.hp = mob->getHP();
-	hpinfo.mhp = mobinfo[hpinfo.mobid].hp;
-	hpinfo.boss = mobinfo[hpinfo.mobid].boss;
-	hpinfo.hpcolor = mobinfo[hpinfo.mobid].hpcolor;
-	hpinfo.hpbgcolor = mobinfo[hpinfo.mobid].hpbgcolor;
-	hpinfo.mapmobid = mob->getID();
-
-	uint8_t percent = static_cast<uint8_t>(hpinfo.hp * 100 / hpinfo.mhp);
-
-	if ((hpinfo.boss || hpinfo.mobid == 8810018) && hpinfo.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
-		MobsPacket::showBossHP(player, hpinfo);
-	else // Normal/Miniboss HP bars
-		MobsPacket::showHP(player, hpinfo.mapmobid, percent, hpinfo.boss);
 }
