@@ -485,12 +485,6 @@ void Inventory::stopChair(Player *player, PacketReader &packet) {
 	InventoryPacket::stopChair(player);
 }
 
-bool Inventory::isCash(int32_t itemid) {
-	if (equips.find(itemid) != equips.end() && equips[itemid].cash)
-		return true;
-	return false;
-}
-
 void Inventory::useSummonBag(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.getShort();

@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ISEQUIP(x) (GETINVENTORY(x) == 1)
 #define ISPET(x) (x >= 5000000 && x <= 5000053)
 #define GETWEAPONTYPE(x) (x/10000)
+#define ISOVERALL(itemid) (itemid/10000 == 105)
+#define IS2HWEAPON(itemid) (itemid/100000 == 13)
 
 #include "Types.h"
 #include <unordered_map>
@@ -76,7 +78,8 @@ struct EquipInfo {
 	int16_t ijump;
 	int16_t ispeed;
 	int16_t tamingmob;
-	bool cash; 
+	bool onlyone;
+	bool notrade;
 	bool quest;
 };
 
@@ -133,8 +136,8 @@ struct ConsumeInfo {
 struct ItemInfo {
 	int16_t maxslot;
 	int32_t price;
+	bool notrade;
 	bool quest;
-	bool consume;
 	ConsumeInfo cons;
 };
 
@@ -143,7 +146,6 @@ namespace Inventory {
 	extern unordered_map<int32_t, ItemInfo> items;
 	void addEquipInfo(int32_t id, EquipInfo equip);
 	void addItemInfo(int32_t id, ItemInfo item);
-	bool isCash(int32_t itemid);
 	void useShop(Player *player, PacketReader &packet);
 	void useStorage(Player *player, PacketReader &packet);
 	void itemMove(Player *player, PacketReader &packet);
