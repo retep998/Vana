@@ -47,6 +47,7 @@ struct MobAttackInfo {
 };
 
 struct MobInfo {
+	uint8_t level;
 	uint32_t hp;
 	uint32_t mp;
 	uint32_t hprecovery;
@@ -113,7 +114,6 @@ namespace Mobs {
 class Mob : public MovableLife {
 public:
 	Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
-	void setID(int32_t id) { this->id = id; }
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
 	void setMP(int32_t mp) { this->mp = mp; }
 	void addStatus(vector<StatusInfo> info, clock_t time);

@@ -54,7 +54,7 @@ void Initializing::checkVEDBVersion() {
 // Mobs
 void Initializing::initializeMobs() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.hp, mobdata.mp, mobdata.elemAttr, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.level, mobdata.hp, mobdata.mp, mobdata.elemAttr, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 
 	int32_t currentid = 0;
@@ -63,16 +63,17 @@ void Initializing::initializeMobs() {
 	MYSQL_ROW mobRow;
 	while ((mobRow = res.fetch_raw_row())) {
 		// Col0 : Mob ID
-		//    1 : HP
-		//    2 : MP
-		//    3 : Elemental Attributes
-		//    4 : HP Recovery
-		//    5 : MP Recovery
-		//    6 : EXP
-		//    7 : Boss
-		//    8 : HP Color
-		//    9 : HP BG Color
-		//   10 : Mob Summon
+		//    1 : Level
+		//    2 : HP
+		//    3 : MP
+		//    4 : Elemental Attributes
+		//    5 : HP Recovery
+		//    6 : MP Recovery
+		//    7 : EXP
+		//    8 : Boss
+		//    9 : HP Color
+		//   10 : HP BG Color
+		//   11 : Mob Summon
 		currentid = atoi(mobRow[0]);
 
 		if (currentid != previousid && previousid != -1) {
@@ -80,21 +81,22 @@ void Initializing::initializeMobs() {
 			mob.summon.clear();
 			mob.skills.clear();
 		}
-		mob.hp = atoi(mobRow[1]);
-		mob.mp = atoi(mobRow[2]);
-		string elemattr(mobRow[3]);
-		mob.hprecovery = atoi(mobRow[4]);
-		mob.mprecovery = atoi(mobRow[5]);
-		mob.exp = atoi(mobRow[6]);
-		mob.boss = atob(mobRow[7]);
-		mob.hpcolor = atoi(mobRow[8]);
-		mob.hpbgcolor = atoi(mobRow[9]);
+		mob.level = atoi(mobRow[1]);
+		mob.hp = atoi(mobRow[2]);
+		mob.mp = atoi(mobRow[3]);
+		string elemattr(mobRow[4]);
+		mob.hprecovery = atoi(mobRow[5]);
+		mob.mprecovery = atoi(mobRow[6]);
+		mob.exp = atoi(mobRow[7]);
+		mob.boss = atob(mobRow[8]);
+		mob.hpcolor = atoi(mobRow[9]);
+		mob.hpbgcolor = atoi(mobRow[10]);
 
 		mob.canfreeze = (!mob.boss && elemattr.find("I2") == string::npos && elemattr.find("I1") == string::npos);
 		mob.canpoision = (!mob.boss && elemattr.find("S2") == string::npos && elemattr.find("S1") == string::npos);
 
-		if (mobRow[10] != 0) {
-			mob.summon.push_back(atoi(mobRow[10]));
+		if (mobRow[11] != 0) {
+			mob.summon.push_back(atoi(mobRow[11]));
 		}
 
 		previousid = currentid;
@@ -177,8 +179,8 @@ void Initializing::initializeItems() {
 		// Col0 : Item ID
 		//    1 : Price
 		//    2 : Max per slot
-		//    3 : Quest
-		//    4 : Consume
+		//    3 : Not tradable?
+		//    4 : Quest item?
 		//    5 : HP
 		//    6 : MP
 		//    7 : HP Rate
@@ -220,8 +222,8 @@ void Initializing::initializeItems() {
 		}
 		item.price = atoi(itemRow[1]);
 		item.maxslot = atoi(itemRow[2]);
-		item.quest = atob(itemRow[3]);
-		item.consume = atob(itemRow[4]);
+		item.notrade = atob(itemRow[3]);
+		item.quest = atob(itemRow[4]);
 		item.cons.hp = atoi(itemRow[5]);
 		item.cons.mp = atoi(itemRow[6]);
 		item.cons.hpr = atoi(itemRow[7]);
@@ -368,8 +370,9 @@ void Initializing::initializeEquips() {
 		//   15 : Jump
 		//   16 : Speed
 		//   17 : Taming Mob
-		//   18 : Cash
-		//   19 : Quest
+		//   18 : Only one?
+		//   19 : No trading?
+		//   20 : Quest item?
 		EquipInfo equip = EquipInfo();
 		equip.price = atoi(equipRow[1]);
 		equip.slots = atoi(equipRow[2]);
@@ -388,8 +391,9 @@ void Initializing::initializeEquips() {
 		equip.ijump = atoi(equipRow[15]);
 		equip.ispeed = atoi(equipRow[16]);
 		equip.tamingmob = atoi(equipRow[17]);
-		equip.cash = atob(equipRow[18]);
-		equip.quest = atob(equipRow[19]);
+		equip.onlyone = atob(equipRow[18]);
+		equip.notrade = atob(equipRow[19]);
+		equip.quest = atob(equipRow[20]);
 		equip.ihand = 0;
 		// Add equip to the equip info table
 		Inventory::addEquipInfo(atoi(equipRow[0]), equip);
