@@ -61,17 +61,6 @@ struct MobInfo {
 	vector<MobAttackInfo> skills;
 };
 
-struct MobHPInfo {
-	MobHPInfo() : hp(0), mhp(0), mapmobid(0), mobid(0), hpcolor(0), hpbgcolor(0), boss(0) { }
-	int32_t hp;
-	int32_t mhp;
-	int32_t mapmobid;
-	int32_t mobid;
-	int8_t hpcolor;
-	int8_t hpbgcolor;
-	bool boss;
-};
-
 enum MobStatus {
 	WATK = 0x1,
 	WDEF = 0x2,
@@ -115,7 +104,6 @@ namespace Mobs {
 	void damageMobSummon(Player *player, PacketReader &packet);
 	uint32_t damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0, bool ismelee = false);
 	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismelee);
-	void displayHPBars(Player *player, Mob *mob);
 	void monsterControl(Player *player, PacketReader &packet);
 	void checkSpawn(int32_t mapid);
 	void spawnMob(Player *player, int32_t mobid, int32_t amount = 1);
@@ -126,12 +114,7 @@ class Mob : public MovableLife {
 public:
 	Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
 	void setID(int32_t id) { this->id = id; }
-	void setHP(int32_t hp) {
-		this->hp = hp;
-		if (this->hp < 0)
-			this->hp = 0;
-	}
-	void applyDamage(int32_t playerid, int32_t damage);
+	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
 	void setMP(int32_t mp) { this->mp = mp; }
 	void addStatus(vector<StatusInfo> info, clock_t time);
 	void removeStatus(int32_t status);
@@ -155,6 +138,7 @@ private:
 	int32_t mapid;
 	int32_t spawnid;
 	int32_t mobid;
+	const MobInfo &info;
 	int32_t hp;
 	int32_t mp;
 	int32_t status;

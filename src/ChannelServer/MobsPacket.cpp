@@ -357,15 +357,15 @@ void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per, bool miniboss
 		player->getSession()->send(packet);
 }
 // Boss hp
-void MobsPacket::showBossHP(Player *player, const MobHPInfo &mob) {
+void MobsPacket::showBossHP(Player *player, int32_t mobid, int32_t hp, const MobInfo &info) {
 	PacketCreator packet;
 	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x05);
-	packet.addInt(mob.mobid);
-	packet.addInt(mob.hp);
-	packet.addInt(mob.mhp);
-	packet.addByte(mob.hpcolor);
-	packet.addByte(mob.hpbgcolor);
+	packet.addInt(mobid);
+	packet.addInt(hp);
+	packet.addInt(info.hp);
+	packet.addByte(info.hpcolor);
+	packet.addByte(info.hpbgcolor);
 	Maps::maps[player->getMap()]->sendPacket(packet);
 }
 
