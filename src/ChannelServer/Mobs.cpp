@@ -60,8 +60,6 @@ control(0)
 }
 
 void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
-	if (damages.find(playerid) == damages.end())
-		damages[playerid] = 0;
 	if (damage > hp)
 		damage = hp - poison; // Keep HP from hitting 0 for poison and from going below 0
 
