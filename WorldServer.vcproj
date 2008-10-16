@@ -46,9 +46,11 @@
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="PrecompiledHeader.h"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				ForcedIncludeFiles="PrecompiledHeader.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -124,9 +126,11 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;MYSQLPP_NO_DLL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="PrecompiledHeader.h"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				ForcedIncludeFiles="PrecompiledHeader.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -183,6 +187,26 @@
 			<File
 				RelativePath=".\src\WorldServer\main_world.cpp"
 				>
+			</File>
+			<File
+				RelativePath=".\src\WorldServer\PrecompiledHeader.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 			<Filter
 				Name="WorldServer"

@@ -47,9 +47,11 @@
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="PrecompiledHeader.h"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				ForcedIncludeFiles="PrecompiledHeader.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -123,9 +125,11 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;MYSQLPP_NO_DLL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="PrecompiledHeader.h"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				ForcedIncludeFiles="PrecompiledHeader.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -181,6 +185,26 @@
 			<File
 				RelativePath=".\src\ChannelServer\main_channel.cpp"
 				>
+			</File>
+			<File
+				RelativePath=".\src\ChannelServer\PrecompiledHeader.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 			<Filter
 				Name="ChannelServer"
@@ -476,6 +500,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\src\ChannelServer\PrecompiledHeader.h"
+				>
+			</File>
 			<Filter
 				Name="ChannelServer"
 				>
