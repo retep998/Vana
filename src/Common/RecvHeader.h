@@ -75,20 +75,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_CHANGE_MAP_SPECIAL 0x5c
 #define RECV_GET_QUEST 0x62
 #define RECV_SKILL_MACRO 0x65
-#define RECV_GROUP_CHAT 0x6a // Party, buddy and guild chat
-#define RECV_COMMAND 0x6b // / commands like "/find"
-#define RECV_PLAYER_ROOM_ACTION 0x6e // Trades, player shops, minigames, etc.
-#define RECV_PARTY_ACTION 0x6f
-#define RECV_BUDDYLIST 0x75
-#define RECV_KEYMAP 0x7a
-#define RECV_PET_MOVE 0x89
-#define RECV_PET_CHAT 0x8a
-#define RECV_PET_COMMAND 0x8b
-#define RECV_PET_LOOT 0x8c
-#define RECV_MOVE_SUMMON 0x91
-#define RECV_DAMAGE_MOB_SUMMON 0x92
-#define RECV_DAMAGE_SUMMON 0x93
-#define RECV_CONTROL_MOB 0x9a
-#define RECV_ANIMATE_NPC 0xa3
-#define RECV_LOOT_ITEM 0xa8
-#define RECV_HIT_REACTOR 0xab
+#define RECV_GROUP_CHAT 0x6b // Party, buddy and guild chat
+#define RECV_COMMAND 0x6c // / commands like "/find"
+#define RECV_PLAYER_ROOM_ACTION 0x6f // Trades, player shops, minigames, etc.
+#define RECV_PARTY_ACTION 0x70
+#define RECV_BUDDYLIST 0x76
+#define RECV_KEYMAP 0x7b
+#define RECV_PET_MOVE 0x8a
+#define RECV_PET_CHAT 0x8b
+#define RECV_PET_COMMAND 0x8c
+#define RECV_PET_LOOT 0x8d
+#define RECV_MOVE_SUMMON 0x92
+#define RECV_DAMAGE_MOB_SUMMON 0x93
+#define RECV_DAMAGE_SUMMON 0x94
+#define RECV_CONTROL_MOB 0x9b
+#define RECV_ANIMATE_NPC 0xa4
+#define RECV_LOOT_ITEM 0xa9
+#define RECV_HIT_REACTOR 0xac

@@ -51,70 +51,70 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_PARTY_ACTION 0x3b
 #define SEND_BUDDYLIST 0x3c
 #define SEND_NOTICE 0x41
-#define SEND_SHOW_MESSENGER 0x54 // Also known as avatar megaphone
-#define SEND_SKILL_MACRO 0x5a
-#define SEND_CHANGE_MAP 0x5b
-#define SEND_FORCE_MAP_EQUIP 0x62 // Wear apple suit on training maps, all equips except bathrobe off for Showa spa, etc.
-#define SEND_GROUP_CHAT 0x63 // Groups like party, buddies and guild
-#define SEND_COMMAND_RESPOND 0x64 // Respond to / commands i.e. "/find"
-#define SEND_MAP_EFFECT 0x67 // Change Music/Boss HP Bars
-#define SEND_USE_WEATHER 0x68 // Weather effects
-#define SEND_GM_EVENT_INSTRUCTIONS 0x6c // GM event instructions - Ola Ola, etc.
-#define SEND_TIME 0x6d // For places with clock i.e. ship station
-#define SEND_SHOW_PLAYER 0x77
-#define SEND_REMOVE_PLAYER 0x78
-#define SEND_CHAT 0x79
-#define SEND_USE_SCROLL 0x7d
-#define SEND_PET_SUMMONED 0x7e
-#define SEND_PET_SHOW_MOVING 0x80
-#define SEND_PET_SHOW_CHAT 0x81
-#define SEND_PET_NAME_CHANGE 0x82
-#define SEND_PET_SHOW 0x83
-#define SEND_PET_ANIMATION 0x84
-#define SEND_SPAWN_SUMMON 0x85
-#define SEND_REMOVE_SUMMON 0x86
-#define SEND_MOVE_SUMMON 0x87
-#define SEND_DAMAGE_MOB_SUMMON 0x88
-#define SEND_DAMAGE_SUMMON 0x89
-#define SEND_MOVE_PLAYER 0x8c
-#define SEND_DAMAGE_MOB_MELEE 0x8d
-#define SEND_DAMAGE_MOB_RANGED 0x8e
-#define SEND_DAMAGE_MOB_SPELL 0x8f
-#define SEND_SPECIAL_SKILL 0x91
-#define SEND_SPECIAL_SKILL_END 0x92
-#define SEND_DAMAGE_PLAYER 0x93
-#define SEND_FACE_EXPRESSION 0x94
-#define SEND_SIT_CHAIR 0x96
-#define SEND_UPDATE_CHAR_LOOK 0x97
-#define SEND_SHOW_SKILL 0x98
-#define SEND_SHOW_OTHERS_SKILL 0x99 // From other player
-#define SEND_CANCEL_OTHERS_BUFF 0x9a // From other player
-#define SEND_STOP_CHAIR 0x9f
-#define SEND_GAIN_ITEM 0xa0 // Gain item notice in chat
-#define SEND_UPDATE_QUEST 0xa5
-#define SEND_INSTRUCTION_BUBBLE 0xa8
-#define SEND_COOLDOWN 0xac // Skill cooldown
-#define SEND_SHOW_MOB 0xae
-#define SEND_KILL_MOB 0xaf
-#define SEND_CONTROL_MOB 0xb0
-#define SEND_MOVE_MOB 0xb1
-#define SEND_MOVE_MOB_RESPONSE 0xb2
-#define SEND_APPLY_MOB_STATUS 0xb4
-#define SEND_REMOVE_MOB_STATUS 0xb5
-#define SEND_DAMAGE_MOB 0xb8
-#define SEND_SHOW_MOB_HP 0xbc
-#define SEND_SHOW_DRAGGED 0xbd // New in .56, Monster Magnet'd mobs get their own packet
-#define SEND_SHOW_NPC 0xc1
-#define SEND_CONTROL_NPC 0xc3
-#define SEND_ANIMATE_NPC 0xc4
-#define SEND_DROP_ITEM 0xcc
-#define SEND_TAKE_DROP 0xcd
-#define SEND_TRIGGER_REACTOR 0xd5
-#define SEND_SHOW_REACTOR 0xd7
-#define SEND_DESTROY_REACTOR 0xd8
-#define SEND_NPC_TALK 0xeb
-#define SEND_SHOP_OPEN 0xec
-#define SEND_SHOP_BOUGHT 0xed
-#define SEND_STORAGE_ACTION 0xee
-#define SEND_PLAYER_ROOM_ACTION 0xf3 // Trades, player shops, minigames
-#define SEND_KEYMAP 0x105
+#define SEND_SHOW_MESSENGER 0x55 // Also known as avatar megaphone
+#define SEND_SKILL_MACRO 0x5b
+#define SEND_CHANGE_MAP 0x5c
+#define SEND_FORCE_MAP_EQUIP 0x63 // Wear apple suit on training maps, all equips except bathrobe off for Showa spa, etc.
+#define SEND_GROUP_CHAT 0x64 // Groups like party, buddies and guild
+#define SEND_COMMAND_RESPOND 0x65 // Respond to / commands i.e. "/find"
+#define SEND_MAP_EFFECT 0x68 // Change Music/Boss HP Bars
+#define SEND_USE_WEATHER 0x69 // Weather effects
+#define SEND_GM_EVENT_INSTRUCTIONS 0x6d // GM event instructions - Ola Ola, etc.
+#define SEND_TIME 0x6e // For places with clock i.e. ship station
+#define SEND_SHOW_PLAYER 0x78
+#define SEND_REMOVE_PLAYER 0x79
+#define SEND_CHAT 0x7a
+#define SEND_USE_SCROLL 0x7e
+#define SEND_PET_SUMMONED 0x7f
+#define SEND_PET_SHOW_MOVING 0x81
+#define SEND_PET_SHOW_CHAT 0x82
+#define SEND_PET_NAME_CHANGE 0x83
+#define SEND_PET_SHOW 0x84
+#define SEND_PET_ANIMATION 0x85
+#define SEND_SPAWN_SUMMON 0x86
+#define SEND_REMOVE_SUMMON 0x87
+#define SEND_MOVE_SUMMON 0x88
+#define SEND_DAMAGE_MOB_SUMMON 0x89
+#define SEND_DAMAGE_SUMMON 0x8a
+#define SEND_MOVE_PLAYER 0x8d
+#define SEND_DAMAGE_MOB_MELEE 0x8e
+#define SEND_DAMAGE_MOB_RANGED 0x8f
+#define SEND_DAMAGE_MOB_SPELL 0x90
+#define SEND_SPECIAL_SKILL 0x92
+#define SEND_SPECIAL_SKILL_END 0x93
+#define SEND_DAMAGE_PLAYER 0x94
+#define SEND_FACE_EXPRESSION 0x95
+#define SEND_SIT_CHAIR 0x97
+#define SEND_UPDATE_CHAR_LOOK 0x98
+#define SEND_SHOW_SKILL 0x99
+#define SEND_SHOW_OTHERS_SKILL 0x9a // From other player
+#define SEND_CANCEL_OTHERS_BUFF 0x9b // From other player
+#define SEND_STOP_CHAIR 0xa0
+#define SEND_GAIN_ITEM 0xa1 // Gain item notice in chat
+#define SEND_UPDATE_QUEST 0xa6
+#define SEND_INSTRUCTION_BUBBLE 0xa9
+#define SEND_COOLDOWN 0xad // Skill cooldown
+#define SEND_SHOW_MOB 0xaf
+#define SEND_KILL_MOB 0xb0
+#define SEND_CONTROL_MOB 0xb1
+#define SEND_MOVE_MOB 0xb2
+#define SEND_MOVE_MOB_RESPONSE 0xb3
+#define SEND_APPLY_MOB_STATUS 0xb5
+#define SEND_REMOVE_MOB_STATUS 0xb6
+#define SEND_DAMAGE_MOB 0xb9
+#define SEND_SHOW_MOB_HP 0xbd
+#define SEND_SHOW_DRAGGED 0xbe // New in .56, Monster Magnet'd mobs get their own packet
+#define SEND_SHOW_NPC 0xc2
+#define SEND_CONTROL_NPC 0xc4
+#define SEND_ANIMATE_NPC 0xc5
+#define SEND_DROP_ITEM 0xcd
+#define SEND_TAKE_DROP 0xce
+#define SEND_TRIGGER_REACTOR 0xd6
+#define SEND_SHOW_REACTOR 0xd8
+#define SEND_DESTROY_REACTOR 0xd9
+#define SEND_NPC_TALK 0xec
+#define SEND_SHOP_OPEN 0xed
+#define SEND_SHOP_BOUGHT 0xee
+#define SEND_STORAGE_ACTION 0xef
+#define SEND_PLAYER_ROOM_ACTION 0xf4 // Trades, player shops, minigames
+#define SEND_KEYMAP 0x106
