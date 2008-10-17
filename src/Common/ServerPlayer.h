@@ -28,7 +28,7 @@ class PacketReader;
 
 class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
-	AbstractServerConnectPlayer() { is_server = true; }
+	AbstractServerConnectPlayer() : is_server(true) { }
 	void sendAuth(const string &pass);
 	int8_t getType() { return type; }
 protected:
@@ -37,9 +37,11 @@ protected:
 
 class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
-	AbstractServerAcceptPlayer() { is_server = true; }
+	AbstractServerAcceptPlayer() : is_server(true), is_authenticated(false) { }
 	bool processAuth(PacketReader &packet, const string &pass);
 	virtual void authenticated(int8_t type) = 0;
+
+	bool isAuthenticated() const { return is_authenticated; }
 private:
 	bool is_authenticated;
 };
