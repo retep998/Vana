@@ -28,9 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
-	Channels::Instance()->removeChannel(channel);
-	LoginServerConnectPlayerPacket::removeChannel(WorldServer::Instance()->getLoginPlayer(), channel);
-	std::cout << "Channel " << channel << " disconnected." << std::endl;
+	if (isAuthenticated()) {
+		Channels::Instance()->removeChannel(channel);
+		LoginServerConnectPlayerPacket::removeChannel(WorldServer::Instance()->getLoginPlayer(), channel);
+		std::cout << "Channel " << channel << " disconnected." << std::endl;
+	}
 }
 
 void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
