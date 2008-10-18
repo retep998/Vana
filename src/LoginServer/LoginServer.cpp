@@ -86,6 +86,9 @@ void LoginServer::loadConfig() {
 		formatter % i % "event_msg";
 		world->eventMsg = config.getString(formatter.str());
 
+		formatter % i % "scrolling_header";
+		world->scrollingHeader = config.getString(formatter.str());
+
 		world->connected = false;
 		Worlds::worlds[world->id] = world;
 		i++;

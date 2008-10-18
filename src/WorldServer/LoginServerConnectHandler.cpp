@@ -33,6 +33,7 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, Packet
 		WorldServer::Instance()->setMaxChannels(packet.getInt());
 		WorldServer::Instance()->setMaxMultiLevel(packet.getByte());
 		WorldServer::Instance()->setMaxStats(packet.getShort());
+		WorldServer::Instance()->setScrollingHeader(packet.getString());
 
 		int32_t ratesSetBit = packet.getInt();
 		if (ratesSetBit & Rates::SetBits::exp) {

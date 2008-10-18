@@ -31,6 +31,7 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, Wor
 	packet.addInt(world->maxChannels);
 	packet.addByte(world->maxMultiLevel);
 	packet.addShort(world->maxStats);
+	packet.addString(world->scrollingHeader);
 	
 	packet.addInt(Rates::SetBits::all);
 	packet.addInt(world->exprate);

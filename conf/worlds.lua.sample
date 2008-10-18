@@ -28,6 +28,8 @@ world0_max_multi_level = 1;
 world0_port = 7100;
 -- Event message
 world0_event_msg = "";
+-- Scrolling header
+world0_scrolling_header = "Welcome to Vana";
 
 -- Uncomment for another world
 -- world1_name = "Bera";
@@ -42,3 +44,4 @@ world0_event_msg = "";
 -- world1_max_multi_level = 1;
 -- world1_port = 7200;
 -- world1_event_msg = "";
+-- world1_scrolling_header = "";
