@@ -39,6 +39,7 @@ void WorldServer::loadConfig() {
 	login_inter_port = config.getShort("login_inter_port");
 	external_ip = config.getString("external_ip"); // External IP
 	inter_port = -1; // Will get from login server later
+	scrollingHeader = ""; // Will get from login server later
 }
 
 void WorldServer::setScrollingHeader(const string &message) {

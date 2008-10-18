@@ -63,7 +63,7 @@ public:
 	string getScrollingHeader() { return scrollingHeader.c_str(); }
 
 private:
-	WorldServer() { scrollingHeader = ""; };
+	WorldServer() { }
 	WorldServer(const WorldServer&);
 	WorldServer& operator=(const WorldServer&);
 	static WorldServer *singleton;

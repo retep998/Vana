@@ -59,6 +59,7 @@ struct World {
 	// Max stats
 	int16_t maxStats;
 	string eventMsg;
+	string scrollingHeader;
 };
 
 namespace Worlds {
