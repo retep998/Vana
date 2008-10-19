@@ -224,6 +224,10 @@
 				Name="Utilities"
 				>
 				<File
+					RelativePath=".\src\Common\MiscUtilities.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Randomizer.cpp"
 					>
 				</File>
