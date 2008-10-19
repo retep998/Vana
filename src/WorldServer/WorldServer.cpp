@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.h"
 #include "ConnectionManager.h"
+#include "MiscUtilities.h"
 #include "WorldServerAcceptPlayerPacket.h"
 
 WorldServer * WorldServer::singleton = 0;
@@ -37,7 +38,7 @@ void WorldServer::loadConfig() {
 	ConfigFile config("conf/worldserver.lua");
 	login_ip = config.getString("login_ip");
 	login_inter_port = config.getShort("login_inter_port");
-	external_ip = config.getString("external_ip"); // External IP
+	external_ip = MiscUtilities::nameToIP(config.getString("external_ip")); // External IP
 	inter_port = -1; // Will get from login server later
 	scrollingHeader = ""; // Will get from login server later
 }

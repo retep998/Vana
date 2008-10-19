@@ -15,21 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MISCUTILITIES
-#define MISCUTILITIES
+#include "MiscUtilities.h"
+#include <boost/asio.hpp>
 
-#include <string>
+using boost::asio::ip::tcp;
 
-using std::string;
+string MiscUtilities::nameToIP(string &name) {
+	boost::asio::io_service io_service;
+	tcp::resolver resolver(io_service); 
+	tcp::resolver::query query(tcp::v4(), name, "http"); // Resolver wants a service...
+	tcp::resolver::iterator iter = resolver.resolve(query); 
+	tcp::resolver::iterator end; 
 
-namespace MiscUtilities {
-	bool atob(const char *str);
-	string nameToIP(string &name);
-};
+	// boost::asio throws an exception if the name cannot be resolved
 
-inline
-bool MiscUtilities::atob(const char *str) {
-	return atoi(str) != 0;
+	tcp::endpoint ep = *iter;
+	return ep.address().to_string();
 }
-
-#endif

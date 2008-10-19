@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionManager.h"
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
+#include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Players.h"
@@ -67,7 +68,7 @@ void ChannelServer::loadConfig() {
 	ConfigFile config("conf/channelserver.lua");
 	login_ip = config.getString("login_ip");
 	login_inter_port = config.getShort("login_inter_port");
-	external_ip = config.getString("external_ip"); // External IP
+	external_ip = MiscUtilities::nameToIP(config.getString("external_ip")); // External IP
 
 	world = -1; // Will get from login server
 	port = -1; // Will get from world server
