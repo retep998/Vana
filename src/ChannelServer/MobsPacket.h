@@ -37,7 +37,7 @@ namespace MobsPacket {
 	void damageMobRanged(Player *player, PacketReader &pack);
 	void damageMobSpell(Player *player, PacketReader &pack);
 	void damageMobSummon(Player *player, PacketReader &pack);
-	void applyStatus(Mob *mob, int32_t status, const vector<StatusInfo> &info, int16_t delay);
+	void applyStatus(Mob *mob, const StatusInfo &info, int16_t delay);
 	void removeStatus(Mob *mob, int32_t status);
 	void showHP(Player *player, int32_t mobid, int8_t per, bool miniboss);
 	void showBossHP(Player *player, int32_t mobid, int32_t hp, const MobInfo &info); // For major bosses

@@ -85,14 +85,15 @@ enum MobStatus {
 };
 
 struct StatusInfo {
-	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0) { }
-	StatusInfo(int32_t status, int16_t val, int32_t skillid) : status(status), val(val), skillid(skillid), mobskill(0), level(0) { }
-	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level) : status(status), val(val), mobskill(mobskill), level(level), skillid(-1) { }
+	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0), time(0) { }
+	StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time) : status(status), val(val), skillid(skillid), mobskill(0), level(0), time(time) { }
+	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, clock_t time) : status(status), val(val), mobskill(mobskill), level(level), skillid(-1), time(time) { }
 	int32_t status;
 	int16_t val;
 	int32_t skillid;
 	int16_t mobskill;
 	int16_t level;
+	clock_t time;
 };
 
 namespace Mobs {
@@ -104,7 +105,7 @@ namespace Mobs {
 	void damageMobSpell(Player *player, PacketReader &packet);
 	void damageMobSummon(Player *player, PacketReader &packet);
 	uint32_t damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0, bool ismelee = false);
-	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismelee);
+	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type);
 	void monsterControl(Player *player, PacketReader &packet);
 	void checkSpawn(int32_t mapid);
 	void spawnMob(Player *player, int32_t mobid, int32_t amount = 1);
@@ -116,7 +117,7 @@ public:
 	Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
 	void setMP(int32_t mp) { this->mp = mp; }
-	void addStatus(vector<StatusInfo> info, clock_t time);
+	void addStatus(int32_t playerid, vector<StatusInfo> statusinfo);
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
 

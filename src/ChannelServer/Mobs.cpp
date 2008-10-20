@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropsPacket.h"
 #include "SkillsPacket.h"
 #include "Drops.h"
+#include "Inventory.h"
 #include "Levels.h"
 #include "Skills.h"
 #include "Movement.h"
@@ -66,8 +67,9 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	damages[playerid] += damage;
 	hp -= damage;
 
-	if (!poison) {
-		Player *player = Players::Instance()->getPlayer(playerid);
+	if (Player *player = Players::Instance()->getPlayer(playerid)) { // Make sure player is on the same channel and map map,
+		if (player->getMap() != mapid) // because they might not be in the case of poison
+			return;
 
 		if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
 			MobsPacket::showBossHP(player, mobid, hp, info);
@@ -78,20 +80,22 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	}
 }
 
-void Mob::addStatus(vector<StatusInfo> info, clock_t time) {
-	int32_t status = 0;
-	for (size_t i = 0; i < info.size(); i++) {
-		statuses[status] = info[i];
-		status += info[i].status;
+void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
+	for (size_t i = 0; i < statusinfo.size(); i++) {
+		if (statusinfo[i].status == POISON && statuses.find(POISON) != statuses.end()) {
+			continue; // Already poisoned, so do not poison again
+		}
+		statuses[statusinfo[i].status] = statusinfo[i];
+		MobsPacket::applyStatus(this, statusinfo[i], 300);
+
+		new Timer::Timer(bind(&Mob::removeStatus, this, statusinfo[i].status),
+			Timer::Id(Timer::Types::MobStatusTimer, statusinfo[i].status, 0),
+			getTimers(), statusinfo[i].time, false);
 	}
-	MobsPacket::applyStatus(this, status, info, 300);
 	this->status = 0;
 	for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) { // Calculate new status mask
 		this->status += iter->first;
 	}
-	new Timer::Timer(bind(&Mob::removeStatus, this, status),
-		Timer::Id(Timer::Types::MobStatusTimer, status, 0),
-		getTimers(), time, false);
 }
 
 void Mob::statusPacket(PacketCreator &packet) {
@@ -414,14 +418,13 @@ void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
-	bool isHorntail = false;
 	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(4211003); // Check for active pickpocket level
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mapmobid = packet.getInt();
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
-		handleMobStatus(player, mob, skillid, ismelee); // Mob status handler (freeze, stun, etc)
+		handleMobStatus(player, mob, skillid, GETWEAPONTYPE(player->getInventory()->getEquippedID(11))); // Mob status handler (freeze, stun, etc)
 		int32_t mobid = mob->getMobID();
 		Mob *htabusetaker = 0;
 		switch (mobid) {
@@ -433,7 +436,6 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			case 8810007:
 			case 8810008:
 			case 8810009:
-				isHorntail = true;
 				htabusetaker = Maps::maps[map]->getMob(8810018, false);
 				break;
 		}
@@ -506,7 +508,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			int32_t mesos = ((ppdamages[pp] * Skills::skills[4211003][pplevel].x) / 10000); // TODO: Check on this formula in different situations
 			Drop * drop = new Drop(player->getMap(), mesos, pos, player->getId(), true);
 			drop->setTime(100);
-			new Timer::Timer(bind(&Drops::addDrop, drop, origin),
+			new Timer::Timer(bind(&Drop::doDrop, drop, origin),
 				Timer::Id(Timer::Types::SkillTimer, 4211003, pp),
 				0, time, false);
 		}
@@ -517,11 +519,10 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 	return total;
 }
 
-void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismelee) {
+void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type) {
 	const MobInfo &info = mobinfo[mob->getMobID()];
 	uint8_t level = skillid > 0 ? player->getSkills()->getSkillLevel(skillid) : 0;
 	vector<StatusInfo> statuses;
-	clock_t time = 0;
 	if (info.canfreeze) { // Freezing stuff
 		switch (skillid) {
 			case 2201004: // Cold Beam
@@ -530,28 +531,23 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 			case 3211003: // Blizzard (Sniper)
 			case 2221007: // Blizzard (Arch Mage)
 			case 5211005: // Cooling Effect
-				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid));
-				time = Skills::skills[skillid][level].time * 2000;
+				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid, Skills::skills[skillid][level].time * 2000));
 				break;
 			case 2121005: // Elquines
 			case 3221005: // Frostprey
-				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid));
-				time = Skills::skills[skillid][level].x * 2000;
+				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid, Skills::skills[skillid][level].x * 2000));
 				break;
 		}
-		if (ismelee && player->getActiveBuffs()->getActiveSkillLevel(1211005) > 0) { // Ice Charge Sword
-			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211005));
-			time = Skills::skills[1211005][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000;
+		if ((weapon_type == WEAPON_1H_SWORD || weapon_type == WEAPON_2H_SWORD) && player->getActiveBuffs()->getActiveSkillLevel(1211005) > 0) { // Ice Charge Sword
+			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211005, Skills::skills[1211005][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000));
 		}
-		else if (ismelee && player->getActiveBuffs()->getActiveSkillLevel(1211006) > 0) { // Blizzard Charge BW
-			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211006));
-			time = Skills::skills[1211006][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000;
+		else if ((weapon_type == WEAPON_1H_MACE || weapon_type == WEAPON_2H_MACE) && player->getActiveBuffs()->getActiveSkillLevel(1211006) > 0) { // Blizzard Charge BW
+			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211006, Skills::skills[1211006][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000));
 		}
 	}
 	if (info.canpoision) { // Poisoning stuff
 		if ((skillid == 2101005 || skillid == 2111006 || skillid == 2111003) && Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) { // Poison brace, Element composition, and Poison mist
-			statuses.push_back(StatusInfo(POISON, (info.hp / (70 - level)), skillid));
-			time = Skills::skills[skillid][level].time * 1000;
+			statuses.push_back(StatusInfo(POISON, (info.hp / (70 - level)), skillid, Skills::skills[skillid][level].time * 1000));
 		}
 	}
 	if (!info.boss) { // Seal, Stun, etc
@@ -568,65 +564,57 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, bool ismel
 			case 5121005: // Snatch
 			case 5121007: // Fist
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(STUN, STUN, skillid));
-					time = Skills::skills[skillid][level].time * 1000;
+					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time * 1000));
 				}
 				break;
 			case 3111005: // Silver Hawk
 			case 3211005: // Golden Eagle
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(STUN, STUN, skillid));
-					time = Skills::skills[skillid][level].x * 1000;
+					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].x * 1000));
 				}
 				break;
 			case 2111004: // Seal - F/P
 			case 2211004: // Seal - I/L
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(STUN, STUN, skillid));
-					time = Skills::skills[skillid][level].time * 1000;
+					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time * 1000));
 				}
 				break;
 			case 2311005: // Doom
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(DOOM, 0x100, skillid));
-					time = Skills::skills[skillid][level].time * 1000;
+					statuses.push_back(StatusInfo(DOOM, 0x100, skillid, Skills::skills[skillid][level].time * 1000));
 				}
 				break;
 			case 4111003: // Shadow Web
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(SHADOW_WEB, 0x100, skillid));
-					time = Skills::skills[skillid][level].time * 1000;
+					statuses.push_back(StatusInfo(SHADOW_WEB, 0x100, skillid, Skills::skills[skillid][level].time * 1000));
 				}
 				break;
 		}
 	}
 	if (skillid == 4001002) { // Disorder
-		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid));
-		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid));
-		time = Skills::skills[skillid][level].time * 1000;
+		clock_t time = Skills::skills[skillid][level].time * 1000;
+		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid, time));
+		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid, time));
 	}
 	else if (skillid == 1201006) { // Threaten
-		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid));
-		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid));
-		time = Skills::skills[skillid][level].time * 1000;
+		clock_t time = Skills::skills[skillid][level].time * 1000;
+		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid, time));
+		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid, time));
 	}
 	else if (skillid == 2101003 || skillid == 2201003) { // Slow
-		statuses.push_back(StatusInfo(SPEED, Skills::skills[skillid][level].x, skillid));
-		time = Skills::skills[skillid][level].time * 1000;
+		statuses.push_back(StatusInfo(SPEED, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time * 1000));
 	}
-	if (player->getActiveBuffs()->getActiveSkillLevel(3121007) > 0) { // Hamstring
+	if (weapon_type == WEAPON_BOW && player->getActiveBuffs()->getActiveSkillLevel(3121007) > 0) { // Hamstring
 		uint8_t hamlevel = player->getActiveBuffs()->getActiveSkillLevel(3121007);
-		statuses.push_back(StatusInfo(SPEED, Skills::skills[3121007][hamlevel].x, 3121007));
-		time = Skills::skills[3121007][hamlevel].y * 1000;
+		statuses.push_back(StatusInfo(SPEED, Skills::skills[3121007][hamlevel].x, 3121007, Skills::skills[3121007][hamlevel].y * 1000));
 	}
-	if (player->getActiveBuffs()->getActiveSkillLevel(3221006) > 0) { // Blind
+	if (weapon_type == WEAPON_CROSSBOW && player->getActiveBuffs()->getActiveSkillLevel(3221006) > 0) { // Blind
 		uint8_t blindlevel = player->getActiveBuffs()->getActiveSkillLevel(3221006);
-		statuses.push_back(StatusInfo(ACC, -Skills::skills[3221006][blindlevel].x, 3221006));
-		time = Skills::skills[3221006][blindlevel].y * 1000;
+		statuses.push_back(StatusInfo(ACC, -Skills::skills[3221006][blindlevel].x, 3221006, Skills::skills[3221006][blindlevel].y * 1000));
 	}
 
 	if (statuses.size() > 0)
-		mob->addStatus(statuses, time);
+		mob->addStatus(player->getId(), statuses);
 }
 
 void Mobs::spawnMob(Player *player, int32_t mobid, int32_t amount) {
