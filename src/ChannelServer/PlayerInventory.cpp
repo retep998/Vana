@@ -161,9 +161,7 @@ void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
 }
 
 int32_t PlayerInventory::getEquippedID(int16_t slot) {
-	if (equipped[slot][1] != 0)
-		return equipped[slot][1];
-	return 0;
+	return equipped[slot][1];
 }
 
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
