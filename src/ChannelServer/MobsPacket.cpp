@@ -117,7 +117,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 				case 12: masteryid = 1200000; break;
 				case 90:
 				case 91:
-					masteryid = (player->getSkills()->getSkillLevel(1100000) >= player->getSkills()->getSkillLevel(1200000) ? 1100000 : 1100000);
+					masteryid = (player->getSkills()->getSkillLevel(1100000) >= player->getSkills()->getSkillLevel(1200000) ? 1100000 : 1200000);
 					break;
 			}
 			break;
@@ -314,23 +314,21 @@ void MobsPacket::damageMobSummon(Player *player, PacketReader &pack) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void MobsPacket::applyStatus(Mob *mob, int32_t status, const vector<StatusInfo> &info, int16_t delay) {
+void MobsPacket::applyStatus(Mob *mob, const StatusInfo &info, int16_t delay) {
 	PacketCreator packet;
 	packet.addShort(SEND_APPLY_MOB_STATUS);
 	packet.addInt(mob->getID());
-	packet.addInt(status);
+	packet.addInt(info.status);
 
-	for (size_t i = 0; i < info.size(); i++) {
-		packet.addShort(info[i].val);
-		if (info[i].skillid >= 0) {
-			packet.addInt(info[i].skillid);
-		}
-		else {
-			packet.addShort(info[i].mobskill);
-			packet.addShort(info[i].level);
-		}
-		packet.addShort(0);
+	packet.addShort(info.val);
+	if (info.skillid >= 0) {
+		packet.addInt(info.skillid);
 	}
+	else {
+		packet.addShort(info.mobskill);
+		packet.addShort(info.level);
+	}
+	packet.addShort(0);
 
 	packet.addShort(delay);
 	packet.addByte(1);

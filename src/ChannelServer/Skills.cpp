@@ -104,7 +104,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint8_t mobs = packet.getByte();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (Mob *mob = Maps::maps[player->getMap()]->getMob(packet.getInt())) {
-					Mobs::handleMobStatus(player, mob, skillid, false);
+					Mobs::handleMobStatus(player, mob, skillid, 0);
 				}
 			}
 			break;
