@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ISPET(x) (x >= 5000000 && x <= 5000053)
 #define GETWEAPONTYPE(x) (x/10000)
 #define ISOVERALL(itemid) (itemid/10000 == 105)
-#define IS2HWEAPON(itemid) (itemid/100000 == 13)
+#define IS2HWEAPON(itemid) (itemid/100000 == 14)
 
 #include "Types.h"
 #include <unordered_map>
