@@ -155,40 +155,38 @@ void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
 	slot = abs(slot);
 
 	if (slot > 100) // Cash items
-		equipped[slot - 100][0] = itemid;
+		equipped[slot - 100][1] = itemid;
 	else // Normal items
-		equipped[slot][1] = itemid;
+		equipped[slot][0] = itemid;
 }
 
 int32_t PlayerInventory::getEquippedID(int16_t slot) {
-	return equipped[slot][1];
+	return equipped[slot][0];
 }
 
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 	for (int8_t i = 0; i < 50; i++) { // Shown items
 		if (equipped[i][0] > 0 || equipped[i][1] > 0) {
 			packet.addByte(i);
-			if (equipped[i][0] <= 0 || (i == 11 && equipped[i][1] > 0)) // Normal weapons always here
-				packet.addInt(equipped[i][1]);
-			else
+			if (equipped[i][1] <= 0 || (i == 11 && equipped[i][0] > 0)) // Normal weapons always here
 				packet.addInt(equipped[i][0]);
+			else
+				packet.addInt(equipped[i][1]);
 		}
 	}
 	packet.addByte(-1);
 	for (int8_t i = 0; i < 50; i++) { // Covered items
-		if (equipped[i][0] > 0 && equipped[i][1] > 0 && i != 11) {
+		if (equipped[i][1] > 0 && equipped[i][0] > 0 && i != 11) {
 			packet.addByte(i);
-			packet.addInt(equipped[i][1]);
+			packet.addInt(equipped[i][0]);
 		}
 	}
 	packet.addByte(-1);
-	packet.addInt(equipped[11][0]); // Cash weapon
+	packet.addInt(equipped[11][1]); // Cash weapon
 }
 
 uint16_t PlayerInventory::getItemAmount(int32_t itemid) {
-	if (itemamounts.find(itemid) != itemamounts.end())
-		return itemamounts[itemid];
-	return 0;
+	return itemamounts.find(itemid) != itemamounts.end() ? itemamounts[itemid] : 0;
 }
 
 bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount) {
@@ -242,7 +240,7 @@ int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
 	int16_t incrementor = 0;
 	for (int16_t i = 1; i <= getMaxSlots(inv); i++) {
 		if (getItem(inv, i) == 0)
-			incrementor++;
+			incrementor ++;
 	}
 	return incrementor;
 }
