@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LOGINSERVERACCEPTPLAYERPACKET_H
-#define LOGINSERVERACCEPTPLAYERPACKET_H
+#ifndef LOGINSERVERACCEPTPACKET_H
+#define LOGINSERVERACCEPTPACKET_H
 
 #include "Types.h"
 #include <string>
@@ -26,7 +26,7 @@ using std::string;
 class LoginServerAcceptPlayer;
 struct World;
 
-namespace LoginServerAcceptPlayerPacket {
+namespace LoginServerAcceptPacket {
 	void connect(LoginServerAcceptPlayer *player, World *world);
 	void connectChannel(LoginServerAcceptPlayer *player, int8_t worldid, const string &ip, int16_t port);
 	void newPlayer(LoginServerAcceptPlayer *player, uint16_t channel, int32_t charid);

@@ -231,7 +231,7 @@
 					Name="ServerToServer"
 					>
 					<File
-						RelativePath=".\src\WorldServer\LoginServerConnectPlayerPacket.cpp"
+						RelativePath=".\src\WorldServer\LoginServerConnectPacket.cpp"
 						>
 					</File>
 					<File
@@ -239,7 +239,7 @@
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerAcceptPlayerPacket.cpp"
+						RelativePath=".\src\WorldServer\WorldServerAcceptPacket.cpp"
 						>
 					</File>
 				</Filter>
@@ -285,7 +285,7 @@
 					Name="ServerToServer"
 					>
 					<File
-						RelativePath=".\src\WorldServer\LoginServerConnectPlayerPacket.h"
+						RelativePath=".\src\WorldServer\LoginServerConnectPacket.h"
 						>
 					</File>
 					<File
@@ -293,7 +293,7 @@
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\WorldServerAcceptPlayerPacket.h"
+						RelativePath=".\src\WorldServer\WorldServerAcceptPacket.h"
 						>
 					</File>
 				</Filter>

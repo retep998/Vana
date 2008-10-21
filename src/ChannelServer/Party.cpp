@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Party.h"
 #include "Player.h"
-#include "WorldServerConnectPlayerPacket.h"
+#include "WorldServerConnectPacket.h"
 #include "ChannelServer.h"
 #include "PacketReader.h"
 
@@ -26,15 +26,15 @@ void Party::handleRequest(Player *player, PacketReader &packet) {
 	switch (type) {
 		case 0x01: // Create party
 		case 0x02: // Leave party
-			WorldServerConnectPlayerPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId());
+			WorldServerConnectPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId());
 			break;
 		case 0x03: // Join party
 		case 0x05: // Expel Player
 		case 0x06: // Give leader rights
-			WorldServerConnectPlayerPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), packet.getInt());
+			WorldServerConnectPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), packet.getInt());
 			break;
 		case 0x04: // Invite
-			WorldServerConnectPlayerPacket::partyInvite(ChannelServer::Instance()->getWorldPlayer(), player->getId(), packet.getString());
+			WorldServerConnectPacket::partyInvite(ChannelServer::Instance()->getWorldPlayer(), player->getId(), packet.getString());
 			break;
 	}
 }

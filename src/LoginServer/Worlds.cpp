@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.h"
 #include "LoginPacket.h"
 #include "LoginServerAcceptPlayer.h"
-#include "LoginServerAcceptPlayerPacket.h"
+#include "LoginServerAcceptPacket.h"
 #include "MapleSession.h"
 #include "PlayerLogin.h"
 #include "PacketReader.h"
@@ -70,7 +70,7 @@ int8_t Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 			break;
 		}
 	}
-	LoginServerAcceptPlayerPacket::connect(player, world);
+	LoginServerAcceptPacket::connect(player, world);
 	if (world != 0) {
 		std::cout << "Assigned world " << (int32_t) world->id << " to World Server." << std::endl;
 	}
@@ -93,7 +93,7 @@ int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 			break;
 		}
 	}
-	LoginServerAcceptPlayerPacket::connectChannel(player, worldid, ip, port);
+	LoginServerAcceptPacket::connectChannel(player, worldid, ip, port);
 	if (worldid != -1) {
 		std::cout << "Assigning channel server to world server " << (int32_t) worldid << "." << std::endl;
 	}

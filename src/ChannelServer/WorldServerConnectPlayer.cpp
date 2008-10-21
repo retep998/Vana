@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectPlayer.h"
-#include "WorldServerConnectPlayerPacket.h"
+#include "WorldServerConnectPacket.h"
 #include "WorldServerConnectHandler.h"
 #include "PlayersPacket.h"
 #include "InterHeader.h"
@@ -42,5 +42,5 @@ void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
 }
 
 void WorldServerConnectPlayer::playerChangeChannel(int32_t playerid, uint16_t channel) {
-	WorldServerConnectPlayerPacket::playerChangeChannel(this, playerid, channel);
+	WorldServerConnectPacket::playerChangeChannel(this, playerid, channel);
 }

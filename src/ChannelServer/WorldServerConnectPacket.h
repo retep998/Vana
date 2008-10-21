@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDSERVERCONNECTPLAYERPACKET_H
-#define WORLDSERVERCONNECTPLAYERPACKET_H
+#ifndef WORLDSERVERCONNECTPACKET_H
+#define WORLDSERVERCONNECTPACKET_H
 
 #include "Types.h"
 #include <string>
@@ -27,7 +27,7 @@ using std::vector;
 
 class WorldServerConnectPlayer;
 
-namespace WorldServerConnectPlayerPacket {
+namespace WorldServerConnectPacket {
 	void playerChangeChannel(WorldServerConnectPlayer *player, int32_t playerid, uint16_t channel);
 	void registerPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level);
 	void removePlayer(WorldServerConnectPlayer *player, int32_t playerid);

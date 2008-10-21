@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.h"
 #include "LoginServerConnectPlayer.h"
-#include "WorldServerAcceptPlayerPacket.h"
+#include "WorldServerAcceptPacket.h"
 #include "WorldServer.h"
 #include "Channels.h"
 #include "PacketReader.h"
@@ -66,7 +66,7 @@ void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 		if (Players::Instance()->getPlayer(playerid) == 0) {
 			// Do not create the connectable if the player is already online
 			// (extra security if the client ignores CC packet)
-			WorldServerAcceptPlayerPacket::newConnectable(channel, playerid);
+			WorldServerAcceptPacket::newConnectable(channel, playerid);
 		}
 	}
 }

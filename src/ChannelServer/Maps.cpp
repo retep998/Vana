@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PacketReader.h"
 #include "Summons.h"
-#include "WorldServerConnectPlayerPacket.h"
+#include "WorldServerConnectPacket.h"
 #include <sys/stat.h>
 #include <string>
 #include <unordered_map>
@@ -113,7 +113,7 @@ void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
 			pet->setPos(portal->pos);
 		}
 	}
-	WorldServerConnectPlayerPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getId(), mapid);
+	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getId(), mapid);
 	MapPacket::changeMap(player);
 	newMap(player, mapid);
 }

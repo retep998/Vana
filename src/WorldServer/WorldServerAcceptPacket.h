@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDSERVERACCEPTPLAYERPACKET_H
-#define WORLDSERVERACCEPTPLAYERPACKET_H
+#ifndef WORLDSERVERACCEPTPACKET_H
+#define WORLDSERVERACCEPTPACKET_H
 
 #include "Types.h"
 #include <string>
@@ -25,7 +25,7 @@ using std::string;
 
 class WorldServerAcceptPlayer;
 
-namespace WorldServerAcceptPlayerPacket {
+namespace WorldServerAcceptPacket {
 	void connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats);
 	void playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, const string &ip, int16_t port);
 	void sendToChannels(unsigned char *data, int32_t len);

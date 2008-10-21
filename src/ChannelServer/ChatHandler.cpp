@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Shops.h"
 #include "StoragePacket.h"
-#include "WorldServerConnectPlayerPacket.h"
+#include "WorldServerConnectPacket.h"
 #include <string>
 #include <vector>
 
@@ -57,7 +57,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 
 		if (player->getGMLevel() >= 3) { // Admin Level
 			if (command == "header") {
-				WorldServerConnectPlayerPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), next_token);
+				WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), next_token);
 			}
 			else if (command == "ban") {
 				if (strlen(next_token) == 0) {
@@ -620,5 +620,5 @@ void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
 	}
 	string chat = packet.getString();
 
-	WorldServerConnectPlayerPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), receivers, chat);
+	WorldServerConnectPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), receivers, chat);
 }

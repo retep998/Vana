@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
-#include "LoginServerAcceptPlayerPacket.h"
+#include "LoginServerAcceptPacket.h"
 #include "PacketReader.h"
 #include "PlayerLogin.h"
 #include "Randomizer.h"
@@ -231,7 +231,7 @@ void Characters::connectGame(PlayerLogin *player, int32_t charid) {
 		return;
 	}
 
-	LoginServerAcceptPlayerPacket::newPlayer(Worlds::worlds[player->getWorld()]->player, player->getChannel(), charid);
+	LoginServerAcceptPacket::newPlayer(Worlds::worlds[player->getWorld()]->player, player->getChannel(), charid);
 	LoginPacket::connectIP(player, charid);
 }
 

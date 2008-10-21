@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channels.h"
 #include "WorldServer.h"
 #include "StringUtilities.h"
-#include "LoginServerConnectPlayerPacket.h"
+#include "LoginServerConnectPacket.h"
 #include "PartyHandler.h"
 
 Players * Players::singleton = 0;
@@ -37,7 +37,7 @@ void Players::registerPlayer(int32_t id, const string &name, uint16_t channel, i
 		player->online = true;
 		players[id] = player;
 		
-		LoginServerConnectPlayerPacket::updateChannelPop(WorldServer::Instance()->getLoginPlayer(), channel, ++Channels::Instance()->getChannel(channel)->players);
+		LoginServerConnectPacket::updateChannelPop(WorldServer::Instance()->getLoginPlayer(), channel, ++Channels::Instance()->getChannel(channel)->players);
 	}
 	else {
 		players[id]->channel = channel;
@@ -57,7 +57,7 @@ void Players::remove(int32_t id, uint16_t channel) {
 		if (players[id]->party != 0) {
 			PartyHandler::logInLogOut(id);
 		}
-		LoginServerConnectPlayerPacket::updateChannelPop(WorldServer::Instance()->getLoginPlayer(), channel, --Channels::Instance()->getChannel(channel)->players);
+		LoginServerConnectPacket::updateChannelPop(WorldServer::Instance()->getLoginPlayer(), channel, --Channels::Instance()->getChannel(channel)->players);
 	}
 }
 
