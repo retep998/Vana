@@ -71,7 +71,5 @@ void Shops::showShop(Player *player, int32_t id) {
 }
 
 int32_t Shops::getPrice(int32_t shopid, int32_t itemid) {
-	if (shops[shopid].prices.find(itemid) != shops[shopid].prices.end())
-		return shops[shopid].prices[itemid];
-	return 0;
+	return shops[shopid].prices.find(itemid) != shops[shopid].prices.end() ? shops[shopid].prices[itemid] : 0;
 }
