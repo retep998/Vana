@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSkills.h"
 #include "Database.h"
+#include "PacketCreator.h"
 #include "Player.h"
 #include "Randomizer.h"
 #include "Skills.h"
@@ -88,4 +89,14 @@ void PlayerSkills::save() {
 	}
 	if (!firstrun)
 		query.exec();
+}
+
+void PlayerSkills::connectData(PacketCreator &packet) {
+	packet.addShort((int16_t) playerskills.size());
+	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
+		packet.addInt(iter->first);
+		packet.addInt(iter->second.level);
+		if (FOURTHJOB_SKILL(iter->first))
+			packet.addInt(iter->second.maxlevel); // Max Level for 4th job skills
+	}
 }
