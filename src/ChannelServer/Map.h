@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include "Pos.h"
 #include <ctime>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -29,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 using std::vector;
+using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 using boost::scoped_ptr;
 
@@ -67,6 +69,7 @@ struct MapInfo {
 	bool clock;
 	int32_t shipInterval;
 };
+typedef shared_ptr<MapInfo> MapInfoPtr;
 
 struct NPCSpawnInfo {
 	int32_t id;
@@ -110,9 +113,9 @@ typedef vector<MobRespawnInfo> MobRespawnsInfo;
 
 class Map {
 public:
-	Map(MapInfo info);
+	Map(MapInfoPtr info);
 	// Map Info
-	MapInfo getInfo() const { return info; }
+	MapInfoPtr getInfo() const { return info; }
 
 	// Footholds
 	void addFoothold(FootholdInfo foothold) { footholds.push_back(foothold); }
@@ -191,7 +194,7 @@ public:
 	void sendPacket(PacketCreator &packet, Player *player = 0);
 	void showMessage(string &message, int8_t type);
 private:
-	MapInfo info;
+	MapInfoPtr info;
 	FootholdsInfo footholds;
 	PortalsInfo portals;
 	int8_t spawnpoints;
