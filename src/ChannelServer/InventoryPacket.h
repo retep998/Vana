@@ -31,7 +31,7 @@ struct Item;
 namespace InventoryPacket {
 	void moveItem(Player *player, int8_t inv, int16_t slot1, int16_t slot2);
 	void updatePlayer(Player *player);
-	void bought(Player *player);
+	void bought(Player *player, uint8_t msg);
 	void addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is);
 	void addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is);
 	void updateItemAmounts(Player *player, int8_t inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2);

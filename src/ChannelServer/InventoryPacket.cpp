@@ -53,10 +53,10 @@ void InventoryPacket::updatePlayer(Player *player) {
 	Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
-void InventoryPacket::bought(Player *player) {
+void InventoryPacket::bought(Player *player, uint8_t msg) {
 	PacketCreator packet;
 	packet.addShort(SEND_SHOP_BOUGHT);
-	packet.addByte(0);
+	packet.addByte(msg);
 	player->getSession()->send(packet);
 }
 

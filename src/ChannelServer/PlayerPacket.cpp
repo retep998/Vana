@@ -70,69 +70,8 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addInt(player->getMap());
 	packet.addByte(player->getMappos());
 	packet.addByte(0x14);
-	packet.addInt(player->getInventory()->getMesos());
-	packet.addByte(player->getInventory()->getMaxSlots(1));
-	packet.addByte(player->getInventory()->getMaxSlots(2));
-	packet.addByte(player->getInventory()->getMaxSlots(3));
-	packet.addByte(player->getInventory()->getMaxSlots(4));
-	packet.addByte(player->getInventory()->getMaxSlots(5));
-	iteminventory *items = player->getInventory()->getItems(1);
-	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
-		if (iter->first < 0 && iter->first > -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
-		}
-	}
-	packet.addByte(0);
-	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
-		if (iter->first < -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
-		}
-	}
-	packet.addByte(0);
-	for (iteminventory::iterator iter = items->begin(); iter != items->end(); iter++) {
-		if (iter->first > 0) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
-		}
-	}
-	packet.addByte(0);
-	for (int8_t i = 2; i <= 5; i++) {
-		for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(i); s++) {
-			Item *item = player->getInventory()->getItem(i, s);
-			if (item == 0)
-				continue;
-			if (item->petid == 0) {
-				PlayerPacketHelper::addItemInfo(packet, s, item);
-			}
-			else {
-				Pet *pet = player->getPets()->getPet(item->petid);
-				packet.addByte((int8_t) s);
-				packet.addByte(3);
-				packet.addInt(item->id);
-				packet.addByte(1);
-				packet.addInt(pet->getId());
-				packet.addInt(0);
-				packet.addBytes("008005BB46E61702");
-				packet.addString(pet->getName(), 13);
-				packet.addByte(pet->getLevel());
-				packet.addShort(pet->getCloseness());
-				packet.addByte(pet->getFullness());
-				packet.addByte(0);
-				packet.addBytes("B8D56000CEC8"); // Most likely has expire date in it in korean time stamp
-				packet.addByte(1); // Propapbly is it alive (1 Alive, 2 Dead)
-				packet.addInt(0);
-			}
-		}
-		packet.addByte(0);
-	}
-	// Skills
-	unordered_map<int32_t, PlayerSkillInfo> *playerskills = player->getSkills()->getSkills();
-	packet.addShort((int16_t) playerskills->size());
-	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills->begin(); iter != playerskills->end(); iter++) {
-		packet.addInt(iter->first);
-		packet.addInt(iter->second.level);
-		if (FOURTHJOB_SKILL(iter->first))
-			packet.addInt(iter->second.maxlevel); // Max Level for 4th job skills
-	}
+	player->getInventory()->connectData(packet); // Inventory data
+	player->getSkills()->connectData(packet); // Skills
 	// End
 	packet.addInt(0);
 	packet.addInt(0);

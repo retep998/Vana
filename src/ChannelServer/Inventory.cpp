@@ -204,15 +204,18 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 	if (type == 0) { // Buy
 		packet.skipBytes(2);
 		int32_t itemid = packet.getInt();
-		int16_t howmany = packet.getShort();
+		int16_t amount = packet.getShort();
 		int32_t price = Shops::getPrice(player->getShop(), itemid);
 		if (price == 0) {
 			// hacking
 			return;
 		}
-		addNewItem(player, itemid, howmany);
-		player->getInventory()->modifyMesos(-1 * (price * howmany));
-		InventoryPacket::bought(player);
+		bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, amount, true);
+		if (haveslot) {
+			addNewItem(player, itemid, amount);
+			player->getInventory()->modifyMesos(-(price * amount));
+		}
+		InventoryPacket::bought(player, haveslot ? 0 : 3);
 	}
 	else if (type == 1) { // Sell
 		int16_t slot = packet.getShort();
@@ -221,7 +224,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 		int8_t inv = GETINVENTORY(itemid);
 		Item *item = player->getInventory()->getItem(inv, slot);
 		if (item == 0 || (!ISRECHARGEABLE(itemid) && amount > item->amount)) {
-			// hacking
+			InventoryPacket::bought(player, 1); // hacking
 			return;
 		}
 		int32_t price = 0;
@@ -234,18 +237,18 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 			takeItemSlot(player, inv, slot, item->amount, true);
 		else
 			takeItemSlot(player, inv, slot, amount, true);
-		InventoryPacket::bought(player);
+		InventoryPacket::bought(player, 0);
 	}
 	else if (type == 2) { // Recharge
 		int16_t slot = packet.getShort();
 		Item *item = player->getInventory()->getItem(2, slot);
 		if (ISSTAR(item->id))
-			item->amount = items[item->id].maxslot + player->getSkills()->getSkillLevel(4100000)*10;
+			item->amount = items[item->id].maxslot + player->getSkills()->getSkillLevel(4100000) * 10;
 		else
-			item->amount = items[item->id].maxslot + player->getSkills()->getSkillLevel(5200000)*10;
+			item->amount = items[item->id].maxslot + player->getSkills()->getSkillLevel(5200000) * 10;
 		player->getInventory()->modifyMesos(-1); // TODO: Calculate price, letting players recharge for 1 meso for now
 		InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
-		InventoryPacket::bought(player);
+		InventoryPacket::bought(player, 0);
 	}
 }
 

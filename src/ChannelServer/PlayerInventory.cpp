@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 #include "Player.h"
 #include "PlayerPacket.h"
+#include "PlayerPacketHelper.h"
 #include "Randomizer.h"
 
 /* Item struct */
@@ -189,60 +190,41 @@ uint16_t PlayerInventory::getItemAmount(int32_t itemid) {
 	return itemamounts.find(itemid) != itemamounts.end() ? itemamounts[itemid] : 0;
 }
 
-bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount) {
-	bool has = false;
+bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack) {
 	int16_t incrementor = 0;
 	int16_t required = 0;
 	int8_t inv = GETINVENTORY(itemid);
 	if (inv == 1 || ISRECHARGEABLE(itemid))
 		required = amount; // These aren't stackable
 	else {
-	//	int32_t existing = getItemAmount(itemid);
 		int16_t maxslot = Inventory::items[itemid].maxslot;
-	/*
-	// Bug in global, would be fixed by uncommenting all of these commented lines:
-	// It doesn't matter if you already have a slot with a partial stack or not, scripts require at least 1 empty slot	
-		if (existing > 0) { // Stackable item already exists
-			existing = existing % maxslot; // Is the last slot full?
-			if (existing > 0) { // If not, calculate how many slots necessary
-				existing += amount;
-				if (existing > maxslot) { // Only have to bother with required slots if it would put us over the limit of a slot
-				required = (int32_t)(existing / maxslot);
-				if ((existing % maxslot) > 0)
-					required += 1;
-				}
-			}
-			else { // If it is, treat it as though no items exist at all
-				required = (int32_t)(amount / maxslot);
-				if ((amount % maxslot) > 0)
-					required += 1;
+		int32_t existing = getItemAmount(itemid) % maxslot;
+		// Bug in global:
+		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot
+		if (canStack && existing > 0) { // If not, calculate how many slots necessary
+			existing += amount;
+			if (existing > maxslot) { // Only have to bother with required slots if it would put us over the limit of a slot
+			required = (int32_t) (existing / maxslot);
+			if ((existing % maxslot) > 0)
+				required += 1;
 			}
 		}
-		else { // No items exist, straight computation
-		*/
-		required = amount / maxslot;
-		if ((amount % maxslot) > 0)
-			required += 1;
-	//	}
-	}
-	for (int16_t i = 1; i <= getMaxSlots(inv); i++) {
-		if (incrementor >= required) {
-			has = true;
-			break;
+		else { // If it is, treat it as though no items exist at all
+			required = (int32_t) (amount / maxslot);
+			if ((amount % maxslot) > 0)
+				required += 1;
 		}
-		if (getItem(inv, i) == 0)
-			incrementor++;
 	}
-	return has;
+	return getOpenSlotsNum(inv) >= required;
 }
 
 int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
-	int16_t incrementor = 0;
+	int16_t openslots = 0;
 	for (int16_t i = 1; i <= getMaxSlots(inv); i++) {
 		if (getItem(inv, i) == 0)
-			incrementor ++;
+			openslots ++;
 	}
-	return incrementor;
+	return openslots;
 }
 
 void PlayerInventory::load() {
@@ -298,8 +280,8 @@ void PlayerInventory::save() {
 
 	bool firstrun = true;
 	for (int8_t i = 1; i <= 5; i++) {
-		iteminventory *itemsinv = getItems(i);
-		for (iteminventory::iterator iter = itemsinv->begin(); iter != itemsinv->end(); iter++) {
+		iteminventory &itemsinv = items[i - 1];
+		for (iteminventory::iterator iter = itemsinv.begin(); iter != itemsinv.end(); iter++) {
 			Item *item = iter->second;
 			if (firstrun) {
 				query << "INSERT INTO items VALUES (";
@@ -336,4 +318,61 @@ void PlayerInventory::save() {
 	}
 	if (!firstrun)
 		query.exec();
+}
+
+void PlayerInventory::connectData(PacketCreator &packet) {
+	packet.addInt(mesos);
+	packet.addByte(getMaxSlots(1));
+	packet.addByte(getMaxSlots(2));
+	packet.addByte(getMaxSlots(3));
+	packet.addByte(getMaxSlots(4));
+	packet.addByte(getMaxSlots(5));
+	iteminventory &equips = items[0];
+	for (iteminventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+		if (iter->first < 0 && iter->first > -100) {
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+		}
+	}
+	packet.addByte(0);
+	for (iteminventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+		if (iter->first < -100) {
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+		}
+	}
+	packet.addByte(0);
+	for (iteminventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+		if (iter->first > 0) {
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+		}
+	}
+	packet.addByte(0);
+	for (int8_t i = 2; i <= 5; i++) {
+		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
+			Item *item = getItem(i, s);
+			if (item == 0)
+				continue;
+			if (item->petid == 0) {
+				PlayerPacketHelper::addItemInfo(packet, s, item);
+			}
+			else {
+				Pet *pet = player->getPets()->getPet(item->petid);
+				packet.addByte((int8_t) s);
+				packet.addByte(3);
+				packet.addInt(item->id);
+				packet.addByte(1);
+				packet.addInt(pet->getId());
+				packet.addInt(0);
+				packet.addBytes("008005BB46E61702");
+				packet.addString(pet->getName(), 13);
+				packet.addByte(pet->getLevel());
+				packet.addShort(pet->getCloseness());
+				packet.addByte(pet->getFullness());
+				packet.addByte(0);
+				packet.addBytes("B8D56000CEC8"); // Most likely has expire date in it in korean time stamp
+				packet.addByte(1); // Propapbly is it alive (1 Alive, 2 Dead)
+				packet.addInt(0);
+			}
+		}
+		packet.addByte(0);
+	}
 }

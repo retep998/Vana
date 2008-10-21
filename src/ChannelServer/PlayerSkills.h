@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::unordered_map;
 
 class Player;
+class PacketCreator;
 
 struct PlayerSkillInfo {
 	PlayerSkillInfo() : level(0), maxlevel(0) {}
@@ -39,11 +40,10 @@ public:
 	uint8_t getSkillLevel(int32_t skillid);
 	uint8_t getMaxSkillLevel(int32_t skillid);
 	void setMaxSkillLevel(int32_t skillid, uint8_t maxlevel, bool sendpacket = true);
-	unordered_map<int32_t, PlayerSkillInfo> * getSkills() {
-		return &playerskills;
-	}
+
 	void load();
 	void save();
+	void connectData(PacketCreator &packet);
 private:
 	unordered_map<int32_t, PlayerSkillInfo> playerskills;
 	Player *player;
