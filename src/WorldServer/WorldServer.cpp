@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include "ConnectionManager.h"
 #include "MiscUtilities.h"
-#include "WorldServerAcceptPlayerPacket.h"
+#include "WorldServerAcceptPacket.h"
 
 WorldServer * WorldServer::singleton = 0;
 
@@ -45,5 +45,5 @@ void WorldServer::loadConfig() {
 
 void WorldServer::setScrollingHeader(const string &message) {
 	scrollingHeader = message;
-	WorldServerAcceptPlayerPacket::scrollingHeader(message);
+	WorldServerAcceptPacket::scrollingHeader(message);
 }

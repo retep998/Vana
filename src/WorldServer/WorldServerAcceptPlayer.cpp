@@ -18,19 +18,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPlayer.h"
 #include "Channels.h"
 #include "InterHeader.h"
-#include "LoginServerConnectPlayerPacket.h"
+#include "LoginServerConnectPacket.h"
 #include "MapleSession.h"
 #include "Rates.h"
 #include "PacketReader.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
-#include "WorldServerAcceptPlayerPacket.h"
+#include "WorldServerAcceptPacket.h"
 #include <iostream>
 
 WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
 	if (isAuthenticated()) {
 		Channels::Instance()->removeChannel(channel);
-		LoginServerConnectPlayerPacket::removeChannel(WorldServer::Instance()->getLoginPlayer(), channel);
+		LoginServerConnectPacket::removeChannel(WorldServer::Instance()->getLoginPlayer(), channel);
 		std::cout << "Channel " << channel << " disconnected." << std::endl;
 	}
 }
@@ -39,7 +39,7 @@ void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
 	switch(packet.getShort()) {
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet); break;
-		case INTER_TO_PLAYERS: packet.reset(); WorldServerAcceptPlayerPacket::sendToChannels(packet.getBuffer(), packet.getBufferLength()); break;
+		case INTER_TO_PLAYERS: packet.reset(); WorldServerAcceptPacket::sendToChannels(packet.getBuffer(), packet.getBufferLength()); break;
 		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::registerPlayer(this, packet); break;
 		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::removePlayer(this, packet); break;
 		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
@@ -58,14 +58,14 @@ void WorldServerAcceptPlayer::authenticated(int8_t type) {
 		channel = Channels::Instance()->size();
 		uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
 		Channels::Instance()->registerChannel(this, channel, ip, port);
-		WorldServerAcceptPlayerPacket::connect(this, channel, port, WorldServer::Instance()->getMaxMultiLevel(), WorldServer::Instance()->getMaxStats());
-		WorldServerAcceptPlayerPacket::sendRates(this, Rates::SetBits::all);
-		WorldServerAcceptPlayerPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
-		LoginServerConnectPlayerPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);
+		WorldServerAcceptPacket::connect(this, channel, port, WorldServer::Instance()->getMaxMultiLevel(), WorldServer::Instance()->getMaxStats());
+		WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
+		WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
+		LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);
 		std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 	}
 	else {
-		WorldServerAcceptPlayerPacket::connect(this, -1, 0, 0, 0);
+		WorldServerAcceptPacket::connect(this, -1, 0, 0, 0);
 		std::cout << "Error: No more channel to assign." << std::endl;
 		getSession()->disconnect();
 	}

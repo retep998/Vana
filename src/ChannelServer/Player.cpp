@@ -48,7 +48,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summons.h"
 #include "Trades.h"
 #include "WorldServerConnectPlayer.h"
-#include "WorldServerConnectPlayerPacket.h"
+#include "WorldServerConnectPacket.h"
 
 Player::~Player() {
 	if (isconnect) {
@@ -64,7 +64,7 @@ Player::~Player() {
 		if (isTrading()) {
 			Trades::cancelTrade(this);
 		}
-		WorldServerConnectPlayerPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
+		WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::maps[this->getMap()]->removePlayer(this);
 		Players::Instance()->removePlayer(this);
 	}
@@ -249,7 +249,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	setOnline(true);
 	isconnect = true;
-	WorldServerConnectPlayerPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name, map, job, level);
+	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name, map, job, level);
 }
 
 void Player::setHP(int16_t shp, bool is) {
@@ -327,7 +327,7 @@ void Player::setJob(int16_t job) {
 	this->job = job;
 	PlayerPacket::updateStatShort(this, 0x20, job);
 	LevelsPacket::jobChange(this);
-	WorldServerConnectPlayerPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->id, job);
+	WorldServerConnectPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->id, job);
 }
 
 void Player::setStr(int16_t str) {
@@ -408,7 +408,7 @@ void Player::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(this, 0x10, level);
 	LevelsPacket::levelUp(this);
-	WorldServerConnectPlayerPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), this->id, level);
+	WorldServerConnectPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), this->id, level);
 }
 
 void Player::changeChannel(int8_t channel) {

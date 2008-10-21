@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptPlayerPacket.h"
+#include "LoginServerAcceptPacket.h"
 #include "InterHeader.h"
 #include "LoginServerAcceptPlayer.h"
 #include "MapleSession.h"
@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Rates.h"
 #include "Worlds.h"
 
-void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, World *world) {
+void LoginServerAcceptPacket::connect(LoginServerAcceptPlayer *player, World *world) {
 	PacketCreator packet;
 	packet.addShort(INTER_WORLD_CONNECT);
 	packet.addByte(world->id);
@@ -41,7 +41,7 @@ void LoginServerAcceptPlayerPacket::connect(LoginServerAcceptPlayer *player, Wor
 	player->getSession()->send(packet);
 }
 
-void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *player, int8_t worldid, const string &ip, int16_t port) {
+void LoginServerAcceptPacket::connectChannel(LoginServerAcceptPlayer *player, int8_t worldid, const string &ip, int16_t port) {
 	PacketCreator packet;
 	packet.addShort(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.addByte(worldid);
@@ -50,7 +50,7 @@ void LoginServerAcceptPlayerPacket::connectChannel(LoginServerAcceptPlayer *play
 	player->getSession()->send(packet);
 }
 
-void LoginServerAcceptPlayerPacket::newPlayer(LoginServerAcceptPlayer *player, uint16_t channel, int32_t charid) {
+void LoginServerAcceptPacket::newPlayer(LoginServerAcceptPlayer *player, uint16_t channel, int32_t charid) {
 	PacketCreator packet;
 	packet.addShort(INTER_NEW_PLAYER);
 	packet.addShort(channel);

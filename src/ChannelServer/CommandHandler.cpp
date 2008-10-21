@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PlayersPacket.h"
 #include "PacketReader.h"
-#include "WorldServerConnectPlayerPacket.h"
+#include "WorldServerConnectPacket.h"
 #include <string>
 
 using std::string;
@@ -46,10 +46,10 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 	}	
 	else { // Let's connect to the world server to see if the player is on any other channel
 		if (type == 0x05) {
-			WorldServerConnectPlayerPacket::findPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getId(), name);
+			WorldServerConnectPacket::findPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getId(), name);
 		}
 		else if (type == 0x06) {
-			WorldServerConnectPlayerPacket::whisperPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getId(), name, chat);
+			WorldServerConnectPacket::whisperPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getId(), name, chat);
 		}
 	}
 }

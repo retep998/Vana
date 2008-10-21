@@ -405,7 +405,7 @@
 					Name="ServerToServer"
 					>
 					<File
-						RelativePath=".\src\ChannelServer\WorldServerConnectPlayerPacket.cpp"
+						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.cpp"
 						>
 					</File>
 				</Filter>
@@ -715,7 +715,7 @@
 					Name="ServerToServer"
 					>
 					<File
-						RelativePath=".\src\ChannelServer\WorldServerConnectPlayerPacket.h"
+						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.h"
 						>
 					</File>
 				</Filter>

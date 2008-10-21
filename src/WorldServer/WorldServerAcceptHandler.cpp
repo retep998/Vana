@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptHandler.h"
-#include "WorldServerAcceptPlayerPacket.h"
+#include "WorldServerAcceptPacket.h"
 #include "WorldServerAcceptPlayer.h"
 #include "WorldServer.h"
 #include "Channels.h"
@@ -33,7 +33,7 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, Packet
 	for (size_t i = 0; i < receivers; i++) {
 		int32_t receiver = packet.getInt();
 		WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(Players::Instance()->getPlayer(receiver)->channel)->player;
-		WorldServerAcceptPlayerPacket::groupChat(channel, receiver, type, message, sender);
+		WorldServerAcceptPacket::groupChat(channel, receiver, type, message, sender);
 	}	
 }
 
@@ -55,11 +55,11 @@ void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *play
 	Channel *chan = Channels::Instance()->getChannel(packet.getShort());
 
 	if (chan) {
-		WorldServerAcceptPlayerPacket::newConnectable(chan->id, playerid);
-		WorldServerAcceptPlayerPacket::playerChangeChannel(player, playerid, chan->ip, chan->port);
+		WorldServerAcceptPacket::newConnectable(chan->id, playerid);
+		WorldServerAcceptPacket::playerChangeChannel(player, playerid, chan->ip, chan->port);
 	}
 	else { // Channel doesn't exist (offline)
-		WorldServerAcceptPlayerPacket::playerChangeChannel(player, playerid, "255.255.255.255", -1);
+		WorldServerAcceptPacket::playerChangeChannel(player, playerid, "255.255.255.255", -1);
 	}
 }
 
@@ -69,9 +69,9 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, Packe
 
 	Player *findee = Players::Instance()->getPlayerFromName(findee_name);
 	if (findee->channel != 65535) // Thanks for changing the datatype, pawitp ;_;
-		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee->name);
+		WorldServerAcceptPacket::findPlayer(player, finder, findee->channel, findee->name);
 	else
-		WorldServerAcceptPlayerPacket::findPlayer(player, finder, findee->channel, findee_name);
+		WorldServerAcceptPacket::findPlayer(player, finder, findee->channel, findee_name);
 }
 
 void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, PacketReader &packet) {
@@ -81,11 +81,11 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, Pa
 
 	Player *whisperee = Players::Instance()->getPlayerFromName(whisperee_name);
 	if (whisperee->channel != 65535) { // Thanks for changing the datatype, pawitp ;_;
-		WorldServerAcceptPlayerPacket::findPlayer(player, whisperer, -1, whisperee->name, 1);
-		WorldServerAcceptPlayerPacket::whisperPlayer(Channels::Instance()->getChannel(whisperee->channel)->player, whisperee->id, Players::Instance()->getPlayer(whisperer)->name, player->getChannel(),  message);
+		WorldServerAcceptPacket::findPlayer(player, whisperer, -1, whisperee->name, 1);
+		WorldServerAcceptPacket::whisperPlayer(Channels::Instance()->getChannel(whisperee->channel)->player, whisperee->id, Players::Instance()->getPlayer(whisperer)->name, player->getChannel(),  message);
 	}
 	else
-		WorldServerAcceptPlayerPacket::findPlayer(player, whisperer, whisperee->channel, whisperee_name);
+		WorldServerAcceptPacket::findPlayer(player, whisperer, whisperee->channel, whisperee_name);
 }
 
 void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, PacketReader &packet) {
