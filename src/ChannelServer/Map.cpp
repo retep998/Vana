@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 using std::tr1::unordered_map;
 
-Map::Map (MapInfo info) :
+Map::Map (MapInfoPtr info) :
 info(info),
 spawnpoints(0),
 objectids(new LoopingId(1000)),
@@ -51,7 +51,7 @@ void Map::addPlayer(Player *player) {
 	setTimer(); // Setup the timer if this is the first player to enter the map
 
 	this->players.push_back(player);
-	if (info.fieldType == 82 || info.fieldType == 81) // Apple training maps/Showa spa
+	if (info->fieldType == 82 || info->fieldType == 81) // Apple training maps/Showa spa
 		MapPacket::forceMapEquip(player);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) == 0)
 		MapPacket::showPlayer(player);
@@ -73,7 +73,7 @@ void Map::removePlayer(Player *player) {
 // Reactors
 void Map::addReactorSpawn(ReactorSpawnInfo spawn) {
 	reactorspawns.push_back(spawn);
-	Reactor *reactor = new Reactor(info.id, spawn.id, spawn.pos);
+	Reactor *reactor = new Reactor(info->id, spawn.id, spawn.pos);
 	ReactorPacket::spawnReactor(reactor);
 }
 
@@ -149,7 +149,7 @@ void Map::checkMobSpawn(clock_t time) {
 void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh) {
 	int32_t id = this->objectids->next();
 	
-	Mob *mob = new Mob(id, info.id, mobid, pos, spawnid, fh);
+	Mob *mob = new Mob(id, info->id, mobid, pos, spawnid, fh);
 	mobs[id] = mob;
 
 	MobsPacket::spawnMob(0, mob, false, true);
@@ -258,7 +258,7 @@ void Map::clearDrops(int32_t time) { // Clear drops based on how long they have 
 void Map::setTimer() {
 	if (!timer_started) {
 		new Timer::Timer(bind(&Map::runTimer, this),
-			Timer::Id(Timer::Types::MapTimer, info.id, 0),
+			Timer::Id(Timer::Types::MapTimer, info->id, 0),
 			0, 10000, true);
 	}
 	timer_started = true;
@@ -309,7 +309,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		}
 	}
 
-	if (info.clock) {
+	if (info->clock) {
 		time_t rawtime;
 		struct tm timeinfo;
 		time(&rawtime);

@@ -211,8 +211,8 @@ void Player::playerConnect(PacketReader &packet) {
 		variables[(string) res[i]["key"]] = res[i]["value"];
 	}
 
-	if (Maps::maps[map]->getInfo().forcedReturn != 999999999) {
-		map = Maps::maps[map]->getInfo().forcedReturn;
+	if (Maps::maps[map]->getInfo()->forcedReturn != 999999999) {
+		map = Maps::maps[map]->getInfo()->forcedReturn;
 		mappos = 0;
 		if (hp == 0)
 			hp = 50;
@@ -220,7 +220,7 @@ void Player::playerConnect(PacketReader &packet) {
 	else {
 		if (hp == 0) {
 			hp = 50;
-			map = Maps::maps[map]->getInfo().rm;
+			map = Maps::maps[map]->getInfo()->rm;
 		}
 	}
 
@@ -589,7 +589,7 @@ void Player::acceptDeath() {
 	if (Maps::maps.find(this->getMap()) == Maps::maps.end())
 		tomap = this->getMap();
 	else
-		tomap = Maps::maps[this->getMap()]->getInfo().rm;
+		tomap = Maps::maps[this->getMap()]->getInfo()->rm;
 	setHP(50, false);
 	Buffs::stopAllBuffs(this);
 	Maps::changeMap(this, tomap, 0);

@@ -34,8 +34,8 @@ using std::tr1::unordered_map;
 
 unordered_map<int32_t, Map *> Maps::maps;
 
-void Maps::addMap(MapInfo info) {
-	maps[info.id] = new Map(info);
+void Maps::addMap(MapInfoPtr info) {
+	maps[info->id] = new Map(info);
 }
 
 void Maps::usePortal(Player *player, PortalInfo *portal) {

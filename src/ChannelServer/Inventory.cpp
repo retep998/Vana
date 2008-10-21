@@ -519,7 +519,7 @@ void Inventory::useReturnScroll(Player *player, PacketReader &packet) {
 	takeItemSlot(player, 2, slot, 1);
 	int32_t map = items[itemid].cons.moveTo;
 	if (map == 999999999)
-		Maps::changeMap(player, Maps::maps[player->getMap()]->getInfo().rm, 0);
+		Maps::changeMap(player, Maps::maps[player->getMap()]->getInfo()->rm, 0);
 	else
 		Maps::changeMap(player, map, 0);
 }

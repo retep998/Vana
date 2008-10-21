@@ -622,15 +622,15 @@ void Initializing::initializeMaps() {
 		//    5 : Mob Spawn Rate
 		//    6 : Clock
 		//    7 : Ship Interval
-		MapInfo mapinfo;
-		mapinfo.id = atoi(mapRow[0]);
-		mapinfo.rm = atoi(mapRow[1]);
-		mapinfo.forcedReturn = atoi(mapRow[2]);
-		mapinfo.fieldType = atoi(mapRow[3]);
-		mapinfo.fieldLimit = atoi(mapRow[4]);
-		mapinfo.spawnrate = atof(mapRow[5]);
-		mapinfo.clock = atob(mapRow[6]);
-		mapinfo.shipInterval = atoi(mapRow[7]);
+		MapInfoPtr mapinfo(new MapInfo);
+		mapinfo->id = atoi(mapRow[0]);
+		mapinfo->rm = atoi(mapRow[1]);
+		mapinfo->forcedReturn = atoi(mapRow[2]);
+		mapinfo->fieldType = atoi(mapRow[3]);
+		mapinfo->fieldLimit = atoi(mapRow[4]);
+		mapinfo->spawnrate = atof(mapRow[5]);
+		mapinfo->clock = atob(mapRow[6]);
+		mapinfo->shipInterval = atoi(mapRow[7]);
 		Maps::addMap(mapinfo);
 	}
 
