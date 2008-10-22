@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "Randomizer.h"
 #include "Reactors.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
 #include <string>
@@ -62,7 +63,7 @@ void Pet::reduceFullness() {
 void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
 	clock_t length = (6 - Pets::petsInfo[getType()].hunger)* 1000 * 60; // TODO: Better formula
-	new Timer::Timer(bind(&Pet::reduceFullness, this), id, player->getTimers(), length, true);
+	new Timer::Timer(bind(&Pet::reduceFullness, this), id, player->getTimers(), 0, length);
 }
 
 /* Pets namespace */

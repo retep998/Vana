@@ -15,39 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef TIMER_TIMER_H
-#define TIMER_TIMER_H
+#ifndef TIMER_TIME_H
+#define TIMER_TIME_H
 
-#include "Id.h"
-#include "../Types.h"
 #include <ctime>
-#include <functional>
 
 namespace Timer {
 
-using std::tr1::function;
+namespace Time {
+	clock_t fromNow(clock_t msec);
+}
 
-class Container;
-
-class Timer {
-public:
-	Timer(function<void ()> func, Id id, Container *container,
-		clock_t runAt, clock_t repeat = 0);
-	~Timer();
-
-	Id getId() const { return m_id; }
-	clock_t getRunAt() const { return m_run_at; }
-	int32_t getTimeLeft() const { return m_run_at - clock(); }
-
-	void run();
-	void reset(); // Only available for repeated timers
-private:
-	Id m_id;
-	Container *m_container;
-	clock_t m_run_at; // The time that this timer will run
-	clock_t m_repeat; // Repeat this timer x msec after the timer ran
-	function<void ()> m_function;
-};
+inline
+clock_t Time::fromNow(clock_t msec) {
+	return msec + clock();
+}
 
 }
 

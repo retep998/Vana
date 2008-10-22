@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "PacketReader.h"
 #include "Timer/Thread.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <iostream>
 #include <sstream>
@@ -126,7 +127,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 					} reaction = {reactor, drop, player, revent->nextstate};
 
 					Timer::Id id(Timer::Types::ReactionTimer, (uint32_t) drop, 0);
-					new Timer::Timer(reaction, id, 0, 3000, false);
+					new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3000));
 				}
 				return;
 			}

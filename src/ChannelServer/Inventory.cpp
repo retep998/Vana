@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Shops.h"
 #include "Skills.h"
 #include "StoragePacket.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <cmath>
 #include <functional>
@@ -426,7 +427,7 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 		Timer::Id id(Timer::Types::ItemTimer, itemid, 0);
 		player->getTimers()->removeTimer(id);
 		new Timer::Timer(bind(&Inventory::endItem, player,
-			itemid), id, player->getTimers(), time * 1000, false);
+			itemid), id, player->getTimers(), Timer::Time::fromNow(time * 1000));
 	}
 }
 // Cancel item buffs

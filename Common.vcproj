@@ -502,6 +502,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\Timer\Time.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Timer\Timer.h"
 					>
 				</File>

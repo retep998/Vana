@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PacketReader.h"
 #include "Timer/Thread.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include "TradesPacket.h"
 #include <functional>
@@ -481,5 +482,6 @@ void Trades::stopTimeout(Player *starter, Player *receiver) {
 
 void Trades::startTimeout(Player *starter, Player *receiver, int32_t tradeid) {
 	Timer::Id id(Timer::Types::TradeTimer, starter->getId(), receiver->getId());
-	new Timer::Timer(bind(&Trades::timeout, starter, receiver, tradeid), id, 0, 180000, false);
+	new Timer::Timer(bind(&Trades::timeout, starter, receiver, tradeid), 
+		id, 0, Timer::Time::fromNow(180000));
 }

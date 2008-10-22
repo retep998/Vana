@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "Reactors.h"
 #include "Summons.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <ctime>
 #include <functional>
@@ -259,7 +260,7 @@ void Map::setTimer() {
 	if (!timer_started) {
 		new Timer::Timer(bind(&Map::runTimer, this),
 			Timer::Id(Timer::Types::MapTimer, info->id, 0),
-			0, 10000, true);
+			0, 0, 10000);
 	}
 	timer_started = true;
 }
