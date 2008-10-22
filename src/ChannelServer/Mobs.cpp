@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Summons.h"
 #include "PacketCreator.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
 
@@ -87,12 +88,12 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 		if (statusinfo[i].status == POISON) { // Damage timer for poison
 			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
 				Timer::Id(Timer::Types::MobStatusTimer, POISON, 1),
-				getTimers(), 1000, true);
+				getTimers(), 0, 1000);
 		}
 
 		new Timer::Timer(bind(&Mob::removeStatus, this, statusinfo[i].status),
 			Timer::Id(Timer::Types::MobStatusTimer, statusinfo[i].status, 0),
-			getTimers(), statusinfo[i].time, false);
+			getTimers(), Timer::Time::fromNow(statusinfo[i].time));
 	}
 	this->status = 0;
 	for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) { // Calculate new status mask
@@ -514,7 +515,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			drop->setTime(100);
 			new Timer::Timer(bind(&Drop::doDrop, drop, origin),
 				Timer::Id(Timer::Types::SkillTimer, 4211003, pp),
-				0, time, false);
+				0, Timer::Time::fromNow(time));
 		}
 		if (!ISSUMMON(skillid))
 			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56

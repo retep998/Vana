@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "SkillsPacket.h"
 #include "Timer/Container.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
 
@@ -33,7 +34,7 @@ void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
 	clock_t skillExpire = time * 1000;
 	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
 	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
-		id, m_player->getTimers(), skillExpire, false);
+		id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
 
 	m_buffs.push_back(skill);
 }
@@ -74,7 +75,7 @@ void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t ti
 	} runAct = {m_player, skill, act, value};
 
 	Timer::Id id(Timer::Types::SkillActTimer, act, 0);
-	new Timer::Timer(runAct, id, getActTimer(skill), time, true);
+	new Timer::Timer(runAct, id, getActTimer(skill), 0, time);
 }
 
 Timer::Container * PlayerActiveBuffs::getActTimer(int32_t skill) {

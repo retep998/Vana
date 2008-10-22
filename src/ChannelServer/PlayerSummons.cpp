@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSummons.h"
 #include "Summons.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
 
@@ -30,7 +31,9 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 		this->puppet = summon;
 	Timer::Id id(Timer::Types::SkillTimer, summon->getSummonID(), 0);
 	clock_t summonExpire = time * 1000;
-	new Timer::Timer(bind(&Summons::removeSummon, player, puppet, true, false, true, true), id, player->getTimers(), summonExpire, false);
+	new Timer::Timer(
+		bind(&Summons::removeSummon, player, puppet, true, false, true, true), 
+		id, player->getTimers(), Timer::Time::fromNow(summonExpire));
 }
 
 void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {

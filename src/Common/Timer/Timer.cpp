@@ -22,18 +22,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Timer {
 
 Timer::Timer(function<void ()> func, Id id,
-	Container *container, clock_t length, bool persistent) :
+	Container *container, clock_t runAt, clock_t repeat) :
 m_id(id),
 m_container(container),
-m_length(length),
-m_persistent(persistent),
+m_run_at(runAt),
+m_repeat(repeat),
 m_function(func)
 {
-	if (!m_container) { // No container specified, use the central container
+	if (!m_container) // No container specified, use the central container
 		m_container = Thread::Instance()->getContainer();
-	}
 
-	reset();
+	if (!m_run_at)
+		reset();
+	else
+		Thread::Instance()->forceReSort();
+
 	m_container->registerTimer(this);
 	Thread::Instance()->registerTimer(this);
 }
@@ -45,7 +48,7 @@ Timer::~Timer() {
 void Timer::run() {
 	m_function();
 
-	if (m_persistent) {
+	if (m_repeat) {
 		reset();
 	}
 	else {
@@ -54,7 +57,7 @@ void Timer::run() {
 }
 
 void Timer::reset() {
-	m_run_at = m_length + clock();
+	m_run_at = m_repeat + clock();
 	Thread::Instance()->forceReSort();
 }
 

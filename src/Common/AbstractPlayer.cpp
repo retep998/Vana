@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PingPacket.h"
 #include "PacketReader.h"
 #include "SendHeader.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
 
@@ -48,7 +49,7 @@ void AbstractPlayer::handleRequest(PacketReader &packet) {
 void AbstractPlayer::setTimer() {
 	new Timer::Timer(bind(&AbstractPlayer::ping, this),
 		Timer::Id(Timer::Types::PingTimer, 0, 0),
-		getTimers(), 15000, true);
+		getTimers(), 0, 15000);
 }
 
 void AbstractPlayer::ping() {

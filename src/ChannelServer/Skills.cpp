@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "PacketReader.h"
 #include "SkillsPacket.h"
+#include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
 
@@ -255,7 +256,7 @@ void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime) {
 
 	new Timer::Timer(bind(&Skills::stopCooldown, player,
 		skillid), Timer::Id(Timer::Types::CoolTimer,
-		skillid, 0), player->getTimers(), cooltime * 1000, false);
+		skillid, 0), player->getTimers(), Timer::Time::fromNow(cooltime * 1000));
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillid) {
