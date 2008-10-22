@@ -31,10 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summons.h"
 #include "PacketCreator.h"
 #include "Timer/Timer.h"
-#include <unordered_map>
 #include <functional>
 
-using std::tr1::unordered_map;
 using std::tr1::bind;
 
 unordered_map<int32_t, MobInfo> Mobs::mobinfo;
@@ -67,10 +65,8 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	damages[playerid] += damage;
 	hp -= damage;
 
-	if (Player *player = Players::Instance()->getPlayer(playerid)) { // Make sure player is on the same channel and map map,
-		if (player->getMap() != mapid) // because they might not be in the case of poison
-			return;
-
+	if (!poison) { // HP bar packet does nothing for showing damage when poison is damaging for whatever reason
+		Player *player = Players::Instance()->getPlayer(playerid);
 		if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
 			MobsPacket::showBossHP(player, mobid, hp, info);
 		else { // Normal/Miniboss HP bars
@@ -87,6 +83,12 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 		}
 		statuses[statusinfo[i].status] = statusinfo[i];
 		MobsPacket::applyStatus(this, statusinfo[i], 300);
+
+		if (statusinfo[i].status == POISON) { // Damage timer for poison
+			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
+				Timer::Id(Timer::Types::MobStatusTimer, POISON, 1),
+				getTimers(), 1000, true);
+		}
 
 		new Timer::Timer(bind(&Mob::removeStatus, this, statusinfo[i].status),
 			Timer::Id(Timer::Types::MobStatusTimer, statusinfo[i].status, 0),
@@ -125,6 +127,8 @@ void Mob::statusPacket(PacketCreator &packet) {
 void Mob::removeStatus(int32_t status) {
 	this->status -= status;
 	statuses.erase(status);
+	if (status == POISON) // Stop poison damage timer
+		getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 1));
 	MobsPacket::removeStatus(this, status);
 }
 
