@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Map.h"
 #include "Drops.h"
-#include "LoopingId.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
 #include "Mobs.h"
@@ -42,7 +41,7 @@ using std::tr1::unordered_map;
 Map::Map (MapInfoPtr info) :
 info(info),
 spawnpoints(0),
-objectids(new LoopingId(1000)),
+objectids(1000),
 timer_started(false)
 {
 }
@@ -148,7 +147,7 @@ void Map::checkMobSpawn(clock_t time) {
 }
 
 void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh) {
-	int32_t id = this->objectids->next();
+	int32_t id = objectids.next();
 	
 	Mob *mob = new Mob(id, info->id, mobid, pos, spawnid, fh);
 	mobs[id] = mob;
@@ -230,7 +229,7 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 // Drops
 void Map::addDrop(Drop *drop) {
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
-	int32_t id = objectids->next();
+	int32_t id = objectids.next();
 	drop->setID(id);
 	drop->setPos(findFloor(drop->getPos()));
 	this->drops[id] = drop;
