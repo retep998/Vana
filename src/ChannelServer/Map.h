@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MAP_H
 #define MAP_H
 
+#include "LoopingId.h"
 #include "Mobs.h"
 #include "Pos.h"
 #include <ctime>
@@ -26,16 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 #include <string>
 #include <boost/thread/recursive_mutex.hpp>
-#include <boost/scoped_ptr.hpp>
 
 using std::string;
 using std::vector;
 using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
-using boost::scoped_ptr;
 
 class Drop;
-class LoopingId;
 class Mob;
 class PacketCreator;
 class Player;
@@ -208,7 +206,7 @@ private:
 	unordered_map<int32_t, Mob *> mobs;
 	unordered_map<int32_t, Drop *> drops;
 	boost::recursive_mutex drops_mutex;
-	scoped_ptr<LoopingId> objectids;
+	LoopingId objectids;
 	bool timer_started;
 
 	void updateMobControl(Player *player);
