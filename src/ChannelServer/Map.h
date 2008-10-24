@@ -150,8 +150,8 @@ public:
 	void spawnMob(int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
 	void removeMob(int32_t id, int32_t spawnid);
 	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
+	int32_t countMobs(int32_t mobid = 0);
 	Mob * getMob(int32_t id, bool isMapID = true);
-
 	// Reactors
 	void addReactorSpawn(ReactorSpawnInfo spawn);
 	void addReactor(Reactor *reactor);
