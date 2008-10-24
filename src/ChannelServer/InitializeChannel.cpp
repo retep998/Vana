@@ -275,7 +275,7 @@ void Initializing::initializeItems() {
 	}
 
 	// Item Skills
-	query << "SELECT * FROM itemskilldata ORDER BY itemid ASC";
+	query << "SELECT * FROM itemskilldata";
 	res = query.use();
 
 	MYSQL_ROW itemSkillRow;
@@ -543,7 +543,7 @@ void Initializing::initializeQuests() {
 // Skills
 void Initializing::initializeSkills() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Skills... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skilldata ORDER BY skillid ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skilldata");
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW skillRow;
@@ -609,7 +609,7 @@ void Initializing::initializeSkills() {
 void Initializing::initializeMaps() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Maps... ";
 	// Maps
-	mysqlpp::Query query = Database::getDataDB().query("SELECT mapid, returnmap, forcedreturn, fieldtype, fieldlimit, mobrate, clock, ship FROM mapdata ORDER BY mapid ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT mapid, returnmap, forcedreturn, fieldtype, fieldlimit, mobrate, clock, ship FROM mapdata");
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW mapRow;
@@ -739,7 +739,7 @@ void Initializing::initializeMaps() {
 void Initializing::initializePets() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Pets... ";
 
-	mysqlpp::Query query = Database::getDataDB().query("SELECT id, name, hunger FROM petdata ORDER BY id ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT id, name, hunger FROM petdata");
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW petRow;
@@ -754,7 +754,7 @@ void Initializing::initializePets() {
 	}
 	
 	// Pet command info
-	query << "SELECT * FROM petinteractdata ORDER BY id ASC";
+	query << "SELECT * FROM petinteractdata";
 	res = query.use();
 
 	MYSQL_ROW petInteractRow;
