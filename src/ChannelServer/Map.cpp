@@ -120,11 +120,7 @@ Pos Map::findFloor(Pos pos) {
 
 // Portals
 PortalInfo * Map::getSpawnPoint(int32_t pid) {
-	int32_t id = 0;
-	if (pid != -1)
-		id = pid;
-	else
-		id = Randomizer::Instance()->randInt(spawnpoints - 1);
+	int32_t id = (pid != -1 ? pid : Randomizer::Instance()->randInt(spawnpoints - 1));
 	return &portals[id];
 }
 
@@ -140,7 +136,7 @@ void Map::checkMobSpawn(clock_t time) {
 		int32_t id = mobrespawns[i].spawnid;
 		if ((time - mobrespawns[i].killed) > (mobspawns[id].time * CLOCKS_PER_SEC)) {
 			spawnMob(mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
-			mobrespawns.erase(mobrespawns.begin()+i);
+			mobrespawns.erase(mobrespawns.begin() + i);
 			i--;
 		}
 	}
@@ -157,12 +153,8 @@ void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh) {
 }
 
 Mob * Map::getMob(int32_t id, bool isMapID) {
-	if (isMapID) {
-		if (this->mobs.find(id) != mobs.end())
-			return this->mobs[id];
-		else
-			return 0;
-	}
+	if (isMapID)
+		return (this->mobs.find(id) != mobs.end() ? this->mobs[id] : 0);
 	else {
 		for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 			if (iter->second != 0) {
@@ -246,12 +238,13 @@ void Map::clearDrops(bool showPacket) { // Clear all drops
 
 void Map::clearDrops(int32_t time) { // Clear drops based on how long they have been in the map
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
-	time -= 180000;
+	time -= 180000; // Drops disappear after 3 minutes
 	unordered_map<int32_t, Drop *> drops = this->drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-		if (iter->second != 0)
+		if (iter->second != 0) {
 			if (iter->second->getDropped() < time)
 				iter->second->removeDrop();
+		}
 	}
 }
 
