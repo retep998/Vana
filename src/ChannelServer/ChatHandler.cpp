@@ -300,6 +300,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			}
 			int32_t mapid = -1;
 			if (strcmp("town", next_token) == 0) mapid = Maps::maps[player->getMap()]->getInfo()->rm;
+			else if (strcmp("southperry", next_token) == 0) mapid = 60000;
+			else if (strcmp("amherst", next_token) == 0) mapid = 1010000;
 			else if (strcmp("gm", next_token) == 0) mapid = 180000000;
 			else if (strcmp("fm", next_token) == 0) mapid = 910000000;
 			else if (strcmp("4th", next_token) == 0) mapid = 240010501;
