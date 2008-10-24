@@ -84,6 +84,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
 	lua_register(luaVm, "killMob", &LuaExports::killMob);
+	lua_register(luaVm, "countMobs", &LuaExports::countMobs);
 	lua_register(luaVm, "clearMobs", &LuaExports::clearMobs);
 	lua_register(luaVm, "clearDrops", &LuaExports::clearDrops);
 	lua_register(luaVm, "setStyle", &LuaExports::setStyle);
@@ -193,13 +194,13 @@ int LuaExports::giveEXP(lua_State *luaVm) {
 
 int LuaExports::giveSP(lua_State *luaVm) {
 	int16_t sp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setSp(getPlayer(luaVm)->getSp()+sp);
+	getPlayer(luaVm)->setSp(getPlayer(luaVm)->getSp() + sp);
 	return 1;
 }
 
 int LuaExports::giveAP(lua_State *luaVm) {
 	int16_t ap = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setAp(getPlayer(luaVm)->getAp()+ap);
+	getPlayer(luaVm)->setAp(getPlayer(luaVm)->getAp() + ap);
 	return 1;
 }
 
@@ -406,6 +407,15 @@ int LuaExports::clearMobs(lua_State *luaVm) {
 int LuaExports::clearDrops(lua_State *luaVm) {
 	int32_t mapid = getPlayer(luaVm)->getMap();
 	Maps::maps[mapid]->clearDrops(false);
+	return 1;
+}
+
+int LuaExports::countMobs(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mobid = 0;
+	if (lua_isnumber(luaVm, 2))
+		mobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::maps[mapid]->countMobs(mobid));
 	return 1;
 }
 

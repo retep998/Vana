@@ -96,7 +96,7 @@ namespace LuaExports {
 	int killMob(lua_State *luaVm);
 	int clearMobs(lua_State *luaVm);
 	int clearDrops(lua_State *luaVm);
-
+	int countMobs(lua_State *luaVm);
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);
 	int setMusic(lua_State *luaVm);

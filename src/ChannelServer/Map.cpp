@@ -218,6 +218,18 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 	return mobskilled;
 }
 
+int32_t Map::countMobs(int32_t mobid) {
+	unordered_map<int32_t, Mob *> mobs = this->mobs;
+	int32_t mobcount = 0;
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+		if (iter->second != 0) {
+			if ((mobid > 0 && iter->second->getMobID() == mobid) || mobid == 0)
+				mobcount++;
+		}
+	}
+	return mobcount;
+}
+
 // Drops
 void Map::addDrop(Drop *drop) {
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
