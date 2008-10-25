@@ -201,11 +201,11 @@ void LoginPacket::showCharacter(PlayerLogin *player, const Character &charc) {
 	player->getSession()->send(packet);	
 }
 
-void LoginPacket::deleteCharacter(PlayerLogin *player, int32_t ID) {
+void LoginPacket::deleteCharacter(PlayerLogin *player, int32_t id, bool success) {
 	PacketCreator packet;
 	packet.addShort(SEND_DELETE_CHAR);
-	packet.addInt(ID);
-	packet.addByte(0);
+	packet.addInt(id);
+	packet.addByte((success ? 0x00 : 0x12));
 	player->getSession()->send(packet);
 }
 

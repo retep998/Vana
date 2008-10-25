@@ -37,15 +37,17 @@ public:
 	void setUserid(int32_t id) { this->userid = id; }
 	void setStatus(int32_t status) { this->status = status; }
 	void setPin(int32_t pin) { this->pin = pin; }
+	void setCharDeletePassword(int32_t char_delete_password) { this->char_delete_password = char_delete_password; }
 
-	int8_t getGender() const { return this->gender; }
-	int8_t getWorld() const { return this->world; }
-	uint16_t getChannel() const { return this->channel; }
-	int32_t getUserid() const { return this->userid; }
-	int32_t getStatus() const { return this->status; }
-	int32_t getPin() const { return this->pin; }
+	int8_t getGender() const { return gender; }
+	int8_t getWorld() const { return world; }
+	uint16_t getChannel() const { return channel; }
+	int32_t getUserid() const { return userid; }
+	int32_t getStatus() const { return status; }
+	int32_t getPin() const { return pin; }
+	int32_t getCharDeletePassword() const { return char_delete_password; }
+
 	int32_t addInvalidLogin() {	return ++invalid_logins; }
-
 	void setOnline(bool online);
 private:
 	int8_t gender;
@@ -55,6 +57,7 @@ private:
 	int32_t userid;
 	int32_t pin;
 	int32_t invalid_logins;
+	int32_t char_delete_password;
 	bool checked_pin;
 };
 
