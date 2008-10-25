@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `char_delete_password` INT(8) UNSIGNED NOT NULL DEFAULT '00000000' AFTER `gm`;
