@@ -137,6 +137,7 @@ namespace LuaExports {
 	int getMesoRate(lua_State *luaVm);
 	int getQuestEXPRate(lua_State *luaVm);
 	int getDropRate(lua_State *luaVm);
+	int getChannel(lua_State *luaVm);
 };
 
 #endif

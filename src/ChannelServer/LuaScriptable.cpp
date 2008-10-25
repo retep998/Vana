@@ -122,6 +122,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 	lua_register(luaVm, "getDropRate", &LuaExports::getDropRate);
+	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
 }
 
 bool LuaScriptable::run() {
@@ -663,5 +664,10 @@ int LuaExports::getMesoRate(lua_State *luaVm) {
 
 int LuaExports::getDropRate(lua_State *luaVm) {
 	lua_pushnumber(luaVm, ChannelServer::Instance()->getDroprate());
+	return 1;
+}
+
+int LuaExports::getChannel(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getChannel() + 1);
 	return 1;
 }
