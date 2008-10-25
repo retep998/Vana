@@ -541,13 +541,15 @@ void Player::saveStats() {
 }
 
 void Player::saveVariables() {
-	if (variables.size() > 0) {
-		mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "DELETE FROM character_variables WHERE charid = " << this->id;
+	query.exec();
 
+	if (variables.size() > 0) {
 		bool firstrun = true;
 		for (unordered_map<string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++) {
 			if (firstrun) {
-				query << "REPLACE INTO character_variables VALUES (";
+				query << "INSERT INTO character_variables VALUES (";
 				firstrun = false;
 			}
 			else {
