@@ -193,36 +193,40 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
 	int32_t data = packet.getInt();
 	int32_t id = packet.getInt();
-	
+
 	if (!ownerCheck(player, id)) {
 		// hacking
 		return;
 	}
 
-	mysqlpp::Query query = Database::getCharDB().query();
+	bool success = false;
+	if (data == player->getCharDeletePassword()) {
+		mysqlpp::Query query = Database::getCharDB().query();
 
-	query << "DELETE FROM characters WHERE id = " << id;
-	query.exec();
+		query << "DELETE FROM characters WHERE id = " << id;
+		query.exec();
 
-	query << "DELETE FROM keymap WHERE charid = " << id;
-	query.exec();
+		query << "DELETE FROM keymap WHERE charid = " << id;
+		query.exec();
 
-	query << "DELETE pets, items FROM pets LEFT JOIN items ON pets.id = items.petid WHERE items.charid = " << id;
-	query.exec();
+		query << "DELETE pets, items FROM pets LEFT JOIN items ON pets.id = items.petid WHERE items.charid = " << id;
+		query.exec();
 
-	query << "DELETE FROM items WHERE charid = " << id;
-	query.exec();
+		query << "DELETE FROM items WHERE charid = " << id;
+		query.exec();
 
-	query << "DELETE FROM skills WHERE charid = " << id;
-	query.exec();
+		query << "DELETE FROM skills WHERE charid = " << id;
+		query.exec();
 
-	query << "DELETE FROM skillmacros WHERE charid = " << id;
-	query.exec();
+		query << "DELETE FROM skillmacros WHERE charid = " << id;
+		query.exec();
 
-	query << "DELETE FROM character_variables WHERE charid = " << id;
-	query.exec();
+		query << "DELETE FROM character_variables WHERE charid = " << id;
+		query.exec();
 
-	LoginPacket::deleteCharacter(player, id);
+		success = true;
+	}
+	LoginPacket::deleteCharacter(player, id, success);
 }
 
 void Characters::connectGame(PlayerLogin *player, int32_t charid) {
@@ -243,11 +247,11 @@ void Characters::connectGame(PlayerLogin *player, PacketReader &packet) {
 
 void Characters::connectGameWorld(PlayerLogin *player, PacketReader &packet) {
 	int32_t id = packet.getInt();
-	int32_t worldid = packet.getInt();
+	int8_t worldid = (int8_t) packet.getInt();
 	player->setWorld(worldid);
 
 	// Take the player to a random channel
-	uint16_t channel = Randomizer::Instance()->randInt(Worlds::worlds[worldid]->maxChannels - 1);
+	uint16_t channel = Randomizer::Instance()->randShort((uint16_t)(Worlds::worlds[worldid]->maxChannels - 1));
 	player->setChannel(channel);
 
 	connectGame(player, id);

@@ -38,7 +38,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	} 
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT id, password, salt, online, pin, gender, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
+	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	bool valid = true;
@@ -97,6 +97,8 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 			player->setStatus(5);
 		else
 			player->setGender((uint8_t) res[0]["gender"]);
+
+		player->setCharDeletePassword(res[0]["char_delete_password"]);
 		LoginPacket::loginConnect(player, username);
 	}
 }
