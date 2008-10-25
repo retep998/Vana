@@ -198,19 +198,19 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canSt
 		required = amount; // These aren't stackable
 	else {
 		int16_t maxslot = Inventory::items[itemid].maxslot;
-		int32_t existing = getItemAmount(itemid) % maxslot;
+		uint16_t existing = getItemAmount(itemid) % maxslot;
 		// Bug in global:
 		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot
 		if (canStack && existing > 0) { // If not, calculate how many slots necessary
 			existing += amount;
 			if (existing > maxslot) { // Only have to bother with required slots if it would put us over the limit of a slot
-			required = (int32_t) (existing / maxslot);
-			if ((existing % maxslot) > 0)
-				required += 1;
+				required = (int16_t) (existing / maxslot);
+				if ((existing % maxslot) > 0)
+					required += 1;
 			}
 		}
 		else { // If it is, treat it as though no items exist at all
-			required = (int32_t) (amount / maxslot);
+			required = (int16_t) (amount / maxslot);
 			if ((amount % maxslot) > 0)
 				required += 1;
 		}
