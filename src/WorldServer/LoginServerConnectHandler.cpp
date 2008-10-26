@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, PacketReader &packet) {
 	int8_t worldid = packet.getByte();
-	if (worldid != 0xFF) {
+	if (worldid != -1) {
 		WorldServer::Instance()->setWorldId(worldid);
 		WorldServer::Instance()->setInterPort(packet.getShort());
 		WorldServer::Instance()->setMaxChannels(packet.getInt());

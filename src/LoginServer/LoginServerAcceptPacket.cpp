@@ -41,6 +41,13 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptPlayer *player, World *wo
 	player->getSession()->send(packet);
 }
 
+void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptPlayer *player) {
+	PacketCreator packet;
+	packet.addShort(INTER_WORLD_CONNECT);
+	packet.addByte(-1);
+	player->getSession()->send(packet);
+}
+
 void LoginServerAcceptPacket::connectChannel(LoginServerAcceptPlayer *player, int8_t worldid, const string &ip, int16_t port) {
 	PacketCreator packet;
 	packet.addShort(INTER_LOGIN_CHANNEL_CONNECT);
