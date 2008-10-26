@@ -70,15 +70,18 @@ int8_t Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 			break;
 		}
 	}
-	LoginServerAcceptPacket::connect(player, world);
+	
 	if (world != 0) {
+		LoginServerAcceptPacket::connect(player, world);
 		std::cout << "Assigned world " << (int32_t) world->id << " to World Server." << std::endl;
+		return world->id;
 	}
 	else {
+		LoginServerAcceptPacket::noMoreWorld(player);
 		std::cout << "Error: No more worlds to assign." << std::endl;
 		player->getSession()->disconnect();
+		return -1;
 	}
-	return world->id;
 }
 
 int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
