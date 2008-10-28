@@ -429,7 +429,8 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		Mob *mob = Maps::maps[map]->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
-		handleMobStatus(player, mob, skillid, GETWEAPONTYPE(player->getInventory()->getEquippedID(11))); // Mob status handler (freeze, stun, etc)
+		uint8_t weapontype = (uint8_t) GETWEAPONTYPE(player->getInventory()->getEquippedID(11));
+		handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
 		int32_t mobid = mob->getMobID();
 		Mob *htabusetaker = 0;
 		switch (mobid) {
@@ -511,7 +512,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			pos.y = origin.y;
 			clock_t time = 150 * pp;
 			int32_t mesos = ((ppdamages[pp] * Skills::skills[4211003][pplevel].x) / 10000); // TODO: Check on this formula in different situations
-			Drop * drop = new Drop(player->getMap(), mesos, pos, player->getId(), true);
+			Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId(), true);
 			drop->setTime(100);
 			new Timer::Timer(bind(&Drop::doDrop, drop, origin),
 				Timer::Id(Timer::Types::SkillTimer, 4211003, pp),
@@ -552,7 +553,8 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 	}
 	if (info.canpoision) { // Poisoning stuff
 		if ((skillid == 2101005 || skillid == 2111006 || skillid == 2111003) && Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) { // Poison brace, Element composition, and Poison mist
-			statuses.push_back(StatusInfo(POISON, (info.hp / (70 - level)), skillid, Skills::skills[skillid][level].time * 1000));
+			int16_t pdamage = (int16_t)(info.hp / (70 - level));
+			statuses.push_back(StatusInfo(POISON, pdamage, skillid, Skills::skills[skillid][level].time * 1000));
 		}
 	}
 	if (!info.boss) { // Seal, Stun, etc
