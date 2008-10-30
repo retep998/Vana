@@ -35,8 +35,8 @@ clock_t Time::fromNow(clock_t msec) {
 
 inline
 clock_t Time::nthSecondOfHour(uint16_t second) {
-	time_t secThisHour = time(0) % 3600;
-	time_t secDest;
+	clock_t secThisHour = time(0) % 3600;
+	clock_t secDest;
 	
 	if (secThisHour > second) // Already passed the time in this hour, try next hour
 		secDest = (3600 - secThisHour) + second;
