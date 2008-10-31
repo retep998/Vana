@@ -58,7 +58,6 @@ void PartyPacket::createParty(WorldServerAcceptPlayer *player, int32_t playerid)
 	packet.addInt(Players::Instance()->getPlayer(playerid)->party);
 	packet.addBytes("FFC99A3BFFC99A3B00000000");
 
-
 	player->getSession()->send(packet);
 }
 
@@ -127,9 +126,9 @@ void PartyPacket::partyError(WorldServerAcceptPlayer *player, int32_t playerid, 
 }
 
 void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) {
-	size_t offset = 6-party->members.size();
+	size_t offset = 6 - party->members.size();
 	
-	//Add party member's ids to packet
+	// Add party member's ids to packet
 	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addInt(iter->second->id);
 	}
@@ -137,7 +136,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 		packet.addInt(0);
 	}
 	
-	//Add party member's names to packet
+	// Add party member's names to packet
 	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addString(iter->second->name, 13);
 	}
@@ -145,7 +144,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 		packet.addString("", 13);
 	}
 
-	//Add party member's jobs to packet
+	// Add party member's jobs to packet
 	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addInt(iter->second->job);
 	}
@@ -153,7 +152,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 		packet.addInt(0);
 	}
 
-	//Add party member's levels to packet
+	// Add party member's levels to packet
 	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addInt(iter->second->level);
 	}
@@ -161,7 +160,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 		packet.addInt(0);
 	}
 
-	//Add party member's channels to packet
+	// Add party member's channels to packet
 	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
 			packet.addInt(iter->second->channel); 
@@ -176,7 +175,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 	
 	packet.addInt(party->getLeader());
 
-	//Add party member's maps to packet
+	// Add party member's maps to packet
 	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->channel == tochan) {
 			packet.addInt(iter->second->map); 
@@ -189,7 +188,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 		packet.addInt(-2);
 	}
 
-	//Add some portal shit
+	// Add some portal shit
 	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addInt(999999999);
 		packet.addInt(999999999);
