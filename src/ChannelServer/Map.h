@@ -122,15 +122,12 @@ public:
 	// Portals
 	void addPortal(PortalInfo portal) {
 		portals.push_back(portal);
+		portals_by_name[portal.from] = portal;
 		if (portal.from == "sp")
 			spawnpoints += 1;
 	}
-	PortalInfo * getPortal(const string &from) {
-		for (size_t i = 0; i < portals.size(); i++) {
-			if (portals[i].from == from)
-				return &portals[i];
-		}
-		return 0;
+	PortalInfo * getPortal(const string &from) const {
+		return portals_by_name.find(from) != portals_by_name.end() ? &portals_by_name[from] : 0;
 	}
 	PortalInfo * getSpawnPoint(int32_t pid = -1);
 
@@ -195,6 +192,7 @@ private:
 	MapInfoPtr info;
 	FootholdsInfo footholds;
 	PortalsInfo portals;
+	unordered_map<string, PortalInfo> portals_by_name;
 	int8_t spawnpoints;
 	vector<Player *> players;
 	NPCSpawnsInfo npcs;
