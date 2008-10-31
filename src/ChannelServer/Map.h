@@ -126,7 +126,7 @@ public:
 		if (portal.from == "sp")
 			spawnpoints += 1;
 	}
-	PortalInfo * getPortal(const string &from) const {
+	PortalInfo * getPortal(const string &from) {
 		return portals_by_name.find(from) != portals_by_name.end() ? &portals_by_name[from] : 0;
 	}
 	PortalInfo * getSpawnPoint(int32_t pid = -1);
