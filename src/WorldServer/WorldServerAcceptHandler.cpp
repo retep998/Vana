@@ -40,7 +40,7 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, Packet
 void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int8_t type = packet.getByte();
 	int32_t playerid = packet.getInt();
-	switch(type) {
+	switch (type) {
 		case 0x01: PartyHandler::createParty(player, playerid); break;
 		case 0x02: PartyHandler::leaveParty(player, playerid); break;
 		case 0x03: PartyHandler::joinParty(player, playerid, packet.getInt()); break;
