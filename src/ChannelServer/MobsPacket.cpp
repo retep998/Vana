@@ -225,8 +225,11 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	if (!shadow_meso) {
 		if (csstar > 0)
 			itemid = player->getInventory()->getItem(5, csstar)->id;
-		else if (slot > 0)
-			itemid = player->getInventory()->getItem(2, slot)->id;
+		else if (slot > 0) {
+			Item *item = player->getInventory()->getItem(2, slot);
+			if (item != 0)
+				itemid = item->id;
+		}
 	}
 	packet.addInt(itemid);
 	pack.skipBytes(1); // 0x00 = AoE, 0x41 = other
