@@ -76,7 +76,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	}
 	string portalname = packet.getString();
 
-	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname.c_str());
+	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname);
 	if (portal == 0) // Exit the function if portal is not found
 		return;
 
@@ -87,7 +87,7 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
 	string portalname = packet.getString();
 
-	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname.c_str());
+	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname);
 	if (portal == 0) // Exit the function if portal is not found
 		return;
 
