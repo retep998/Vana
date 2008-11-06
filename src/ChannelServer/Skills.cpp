@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Maps.h"
 #include "Player.h"
+#include "Players.h"
 #include "Randomizer.h"
 #include "PacketReader.h"
 #include "SkillsPacket.h"
@@ -78,7 +79,7 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 }
 
 void Skills::useSkill(Player *player, PacketReader &packet) {
-	packet.skipBytes(4); //Ticks
+	packet.skipBytes(4); // Ticks
 	int32_t skillid = packet.getInt();
 	int16_t addedinfo = 0;
 	uint8_t level = packet.getByte();
@@ -110,9 +111,44 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
+		case 2101001: // Meditation
+		case 2201001: // Meditation
+		case 3121002: // Sharp Eyes
+		case 3221002: // Sharp Eyes
+		case 4101004: // Haste
+		case 4201003: // Haste
+		case 2301004: // Bless
+		case 2311003: // HS
+		case 1121000: // Maple Warrior
+		case 1221000: //
+		case 1321000: //
+		case 2121000: //
+		case 2221000: //
+		case 2321000: //
+		case 3121000: //
+		case 3221000: //
+		case 4121000: //
+		case 4221000: //
+		case 5121000: //
+		case 5221000: // End of Maple Warrior
+		case 9101001: // GM Haste
+		case 9101002: // GM HS
+		case 9101003: // GM Bless
+		{
+			uint8_t players = packet.getByte();
+			for (uint8_t i = 0; i < players; i++) {
+				int16_t playerid = packet.getInt();
+				if (Player *target = Players::Instance()->getPlayer(playerid)) {
+					SkillsPacket::showSkill(player, skillid, level, true, true);
+					SkillsPacket::showSkill(player, skillid, level, true);
+					Buffs::addBuff(target, skillid, level, addedinfo);
+				}
+			}
+			break;
+		}
 		case 2301002: { // Heal
-			//TODO PARTY
-			uint16_t healrate = skills[skillid][level].hpP / 1;
+			// TODO PARTY
+			uint16_t healrate = skills[skillid][level].hpP;
 			if (healrate > 100)
 				healrate = 100;
 			player->modifyHP(healrate * player->getMHP() / 100);
@@ -267,4 +303,3 @@ bool Skills::isCooling(Player *player, int32_t skillid) {
 	Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
 	return player->getTimers()->checkTimer(id) > 0;
 }
-

@@ -35,16 +35,24 @@ void SkillsPacket::addSkill(Player *player, int32_t skillid, PlayerSkillInfo ski
 	player->getSession()->send(packet);
 }
 
-void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level) {
+void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, bool party, bool self) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
  	PacketCreator packet;
- 	packet.addShort(SEND_SHOW_SKILL);
- 	packet.addInt(player->getId());
- 	packet.addByte(1);
+	if (party && self) {
+		packet.addShort(SEND_GAIN_ITEM);
+	}
+	else {
+ 		packet.addShort(SEND_SHOW_SKILL);
+ 		packet.addInt(player->getId());
+	}
+	packet.addByte(party ? 2 : 1);
  	packet.addInt(skillid);
-	packet.addByte(level); //TODO
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	packet.addByte(level); // TODO
+	if (self)
+		player->getSession()->send(packet);
+	else
+		Maps::maps[player->getMap()]->sendPacket(packet, player);
 }
 
 void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo, int32_t mountid) {
