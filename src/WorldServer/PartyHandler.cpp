@@ -36,7 +36,7 @@ void PartyHandler::silentUpdate(int32_t playerid) {
 }
 
 void PartyHandler::logInLogOut(int32_t playerid) {
-	Player *pplayer = Players::Instance()->getPlayer(playerid);
+	Player *pplayer = Players::Instance()->getPlayer(playerid, true);
 	Party *party = parties[pplayer->party];
 	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
