@@ -75,9 +75,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					reason = atoi(next_token);
 
 				// Ban account
-                mysqlpp::Query accbanquery = Database::getCharDB().query();
-                accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
-                accbanquery.exec();
+				mysqlpp::Query accbanquery = Database::getCharDB().query();
+				accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
+				accbanquery.exec();
 
 				string banmsg = targetname + " has been banned";
 
@@ -106,9 +106,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				}
 
 				// Unban account
-                mysqlpp::Query accbanquery = Database::getCharDB().query();
-                accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << next_token << "'";
-                accbanquery.exec();
+				mysqlpp::Query accbanquery = Database::getCharDB().query();
+				accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << next_token << "'";
+				accbanquery.exec();
 
 				PlayerPacket::showMessage(player, string(next_token) + " has been unbanned.", 6);
 			}
@@ -161,10 +161,10 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			}
 			else if (command == "kick") {
 				if (strlen(next_token) == 0) return;
-
-				if (Player *target = Players::Instance()->getPlayer(next_token))
+				if (Player *target = Players::Instance()->getPlayer(next_token)) {
 					if (player->getGMLevel() > target->getGMLevel())
 						target->getSession()->disconnect();
+				}
 				else
 					PlayerPacket::showMessage(player, "Invalid player or player is offline.", 5);
 			}
@@ -270,12 +270,12 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				return;
 			}
 			char *subcommand = strtok_s(0, " ", &next_token);
-
-			if (string(subcommand) == "item") type = 1;
-			else if (string(subcommand) == "skill") type = 2;
-			else if (string(subcommand) == "map") type = 3;
-			else if (string(subcommand) == "mob") type = 4;
-			else if (string(subcommand) == "npc") type = 5;
+			string comparison = subcommand;
+			if (comparison == "item") type = 1;
+			else if (comparison == "skill") type = 2;
+			else if (comparison == "map") type = 3;
+			else if (comparison == "mob") type = 4;
+			else if (comparison == "npc") type = 5;
 
 			if (type != 0 && strlen(next_token) == 0) {
 				PlayerPacket::showMessage(player, "You must specify a search string", 5);
