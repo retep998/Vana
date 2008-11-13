@@ -47,15 +47,15 @@ typedef vector<FootholdInfo> FootholdsInfo;
 
 struct PortalInfo {
 	int8_t id;
-	string from;
-	int32_t toid;
-	string to;
-	int8_t type;
+	string name;
 	Pos pos;
+	int32_t toid;
+	string toname;
 	string script;
 	bool onlyOnce;
 };
-typedef vector<PortalInfo> PortalsInfo;
+typedef unordered_map<string, PortalInfo> PortalsInfo;
+typedef vector<PortalInfo> SpawnPoints;
 
 struct MapInfo {
 	int32_t id;
@@ -121,13 +121,13 @@ public:
 
 	// Portals
 	void addPortal(PortalInfo portal) {
-		portals.push_back(portal);
-		portals_by_name[portal.from] = portal;
-		if (portal.from == "sp")
-			spawnpoints += 1;
+		if (portal.name == "sp")
+			spawnpoints.push_back(portal);
+		else
+			portals[portal.name] = portal;
 	}
-	PortalInfo * getPortal(const string &from) {
-		return portals_by_name.find(from) != portals_by_name.end() ? &portals_by_name[from] : 0;
+	PortalInfo * getPortal(const string &name) {
+		return portals.find(name) != portals.end() ? &portals[name] : 0;
 	}
 	PortalInfo * getSpawnPoint(int32_t pid = -1);
 
@@ -192,8 +192,7 @@ private:
 	MapInfoPtr info;
 	FootholdsInfo footholds;
 	PortalsInfo portals;
-	unordered_map<string, PortalInfo> portals_by_name;
-	int8_t spawnpoints;
+	SpawnPoints spawnpoints;
 	vector<Player *> players;
 	NPCSpawnsInfo npcs;
 	ReactorSpawnsInfo reactorspawns;

@@ -112,9 +112,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_TRIGGER_REACTOR 0xd6
 #define SEND_SHOW_REACTOR 0xd8
 #define SEND_DESTROY_REACTOR 0xd9
-#define SEND_NPC_TALK 0xec
-#define SEND_SHOP_OPEN 0xed
-#define SEND_SHOP_BOUGHT 0xee
-#define SEND_STORAGE_ACTION 0xef
-#define SEND_PLAYER_ROOM_ACTION 0xf4 // Trades, player shops, minigames
-#define SEND_KEYMAP 0x106
+#define SEND_NPC_TALK 0xed
+#define SEND_SHOP_OPEN 0xee
+#define SEND_SHOP_BOUGHT 0xef
+#define SEND_STORAGE_ACTION 0xf0
+#define SEND_PLAYER_ROOM_ACTION 0xf5 // Trades, player shops, minigames
+#define SEND_KEYMAP 0x107

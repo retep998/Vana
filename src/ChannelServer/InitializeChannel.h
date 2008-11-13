@@ -33,8 +33,8 @@ namespace Initializing {
 	void initializeSkills();
 	void initializePets();
 
-	const int32_t vedb_version = 20;
-	const int32_t vedb_subversion = 0;
+	const int32_t mcdb_version = 1;
+	const int32_t mcdb_subversion = 0;
 };
 
 #endif

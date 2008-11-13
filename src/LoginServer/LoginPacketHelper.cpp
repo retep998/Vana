@@ -47,8 +47,10 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	packet.addShort(charc.sp);
 	packet.addInt(charc.exp);
 	packet.addShort(charc.fame);
+	packet.addInt(0); // Unknown int32 added in .62
 	packet.addInt(charc.map);
 	packet.addByte(charc.pos);
+	packet.addInt(0); // Unknown int32 added in .62
 	packet.addByte(charc.gender);
 	packet.addByte(charc.skin);
 	packet.addInt(charc.eyes);

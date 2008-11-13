@@ -120,8 +120,8 @@ Pos Map::findFloor(Pos pos) {
 
 // Portals
 PortalInfo * Map::getSpawnPoint(int32_t pid) {
-	int32_t id = (pid != -1 ? pid : Randomizer::Instance()->randInt(spawnpoints - 1));
-	return &portals[id];
+	int32_t id = (pid != -1 ? pid : Randomizer::Instance()->randInt(spawnpoints.size() - 1));
+	return &spawnpoints[id];
 }
 
 // Mobs

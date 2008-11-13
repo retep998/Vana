@@ -35,15 +35,15 @@ using std::string;
 using MiscUtilities::atob;
 
 void Initializing::checkVEDBVersion() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM vedb_info LIMIT 1");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mcdb_info LIMIT 1");
 	mysqlpp::StoreQueryResult res = query.store();
 
 	int32_t version = (int32_t) res[0]["version"];
 	int32_t subversion = (int32_t) res[0]["subversion"];
 
-	if (version != vedb_version || subversion < vedb_subversion) {
+	if (version != mcdb_version || subversion < mcdb_subversion) {
 		// VEDB too old
-		std::cout << "ERROR: VEDB too old. Expected: " << vedb_version << "." << vedb_subversion << " ";
+		std::cout << "ERROR: MCDB too old. Expected: " << mcdb_version << "." << mcdb_subversion << " ";
 		std::cout << "Have: " << version << "." << subversion << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
@@ -635,7 +635,7 @@ void Initializing::initializeMaps() {
 	}
 
 	// Portals
-	query << "SELECT mapid, id, pfrom, pto, toid, type, x, y, script, onlyonce FROM mapportaldata";
+	query << "SELECT mapid, id, name, x, y, toid, toname, script, onlyonce FROM mapportaldata ORDER BY mapid, id ASC";
 	res = query.use();
 
 	MYSQL_ROW portalRow;
@@ -652,13 +652,12 @@ void Initializing::initializeMaps() {
 		//    9 : Only once
 		PortalInfo portal;
 		portal.id = atoi(portalRow[1]);
-		portal.from = portalRow[2];
-		portal.to = portalRow[3];
-		portal.toid = atoi(portalRow[4]);
-		portal.type = atoi(portalRow[5]);
-		portal.pos = Pos(atoi(portalRow[6]), atoi(portalRow[7]));
-		portal.script = portalRow[8];
-		portal.onlyOnce = atob(portalRow[9]);
+		portal.name = portalRow[2];
+		portal.pos = Pos(atoi(portalRow[3]), atoi(portalRow[4]));
+		portal.toid = atoi(portalRow[5]);
+		portal.toname = portalRow[6];
+		portal.script = portalRow[7];
+		portal.onlyOnce = atob(portalRow[8]);
 		Maps::maps[atoi(portalRow[0])]->addPortal(portal);
 	}
 
