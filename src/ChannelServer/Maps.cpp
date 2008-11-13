@@ -63,7 +63,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	else {
 		// Normal portal
 		PortalInfo *nextportal = 0;
-		nextportal = maps[portal->toid]->getPortal(portal->to);
+		nextportal = maps[portal->toid]->getPortal(portal->toname);
 		changeMap(player, portal->toid, nextportal);
 	}
 }
