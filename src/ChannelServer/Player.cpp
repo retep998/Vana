@@ -65,7 +65,7 @@ Player::~Player() {
 			Trades::cancelTrade(this);
 		}
 		WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
-		Maps::maps[this->getMap()]->removePlayer(this);
+		Maps::getMap(this->getMap())->removePlayer(this);
 		Players::Instance()->removePlayer(this);
 	}
 }
@@ -211,8 +211,8 @@ void Player::playerConnect(PacketReader &packet) {
 		variables[(string) res[i]["key"]] = res[i]["value"];
 	}
 
-	if (Maps::maps[map]->getInfo()->forcedReturn != 999999999) {
-		map = Maps::maps[map]->getInfo()->forcedReturn;
+	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
+		map = Maps::getMap(map)->getInfo()->forcedReturn;
 		mappos = 0;
 		if (hp == 0)
 			hp = 50;
@@ -220,11 +220,11 @@ void Player::playerConnect(PacketReader &packet) {
 	else {
 		if (hp == 0) {
 			hp = 50;
-			map = Maps::maps[map]->getInfo()->rm;
+			map = Maps::getMap(map)->getInfo()->rm;
 		}
 	}
 
-	m_pos = Maps::maps[map]->getSpawnPoint(mappos)->pos;
+	m_pos = Maps::getMap(map)->getSpawnPoint(mappos)->pos;
 	m_stance = 0;
 	m_foothold = 0;
 
@@ -235,7 +235,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	for (int8_t i = 0; i < 3; i++) {
 		if (Pet *pet = pets->getSummoned(i))
-			pet->setPos(Maps::maps[map]->getSpawnPoint(mappos)->pos);
+			pet->setPos(Maps::getMap(map)->getSpawnPoint(mappos)->pos);
 	}
 
 	PlayerPacket::showKeys(this, &keyMaps);
@@ -588,10 +588,10 @@ void Player::setLevelDate() {
 
 void Player::acceptDeath() {
 	int32_t tomap;
-	if (Maps::maps.find(this->getMap()) == Maps::maps.end())
+	if (!Maps::getMap(this->map))
 		tomap = this->getMap();
 	else
-		tomap = Maps::maps[this->getMap()]->getInfo()->rm;
+		tomap = Maps::getMap(this->getMap())->getInfo()->rm;
 	setHP(50, false);
 	Buffs::stopAllBuffs(this);
 	Maps::changeMap(this, tomap, 0);

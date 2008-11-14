@@ -41,13 +41,12 @@ void ChannelServer::loadData() {
 	Initializing::initializeMobs();
 	Initializing::initializeReactors();
 	Initializing::initializeItems();
-	Initializing::initializePets();
 	Initializing::initializeDrops();
 	Initializing::initializeEquips();
 	Initializing::initializeShops();
 	Initializing::initializeQuests();
 	Initializing::initializeSkills();
-	Initializing::initializeMaps();
+	Initializing::initializePets();
 
 	WorldServerConnectPlayer *loginPlayer = dynamic_cast<WorldServerConnectPlayer *>(
 		ConnectionManager::Instance()->connect(login_ip, login_inter_port, 

@@ -52,7 +52,7 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, boo
 	if (self)
 		player->getSession()->send(packet);
 	else
-		Maps::maps[player->getMap()]->sendPacket(packet, player);
+		Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo, int32_t mountid) {
@@ -101,7 +101,7 @@ void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Skill
 				packet.addShort(mskill.vals[i]);
 			packet.addShort(0);
 		}
-		Maps::maps[player->getMap()]->sendPacket(packet, player);
+		Maps::getMap(player->getMap())->sendPacket(packet, player);
 	}
 }
 
@@ -130,7 +130,7 @@ void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill, SkillActiveI
 		packet.addInt64(0);
 		for (int8_t i = 0; i < 8; i++)
 			packet.addByte(mskill.types[i]);
-		Maps::maps[player->getMap()]->sendPacket(packet, player);
+		Maps::getMap(player->getMap())->sendPacket(packet, player);
 	}
 }
 
@@ -178,7 +178,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t leve
 			break;
 	}
 	if (send)
-		Maps::maps[player->getMap()]->sendPacket(packet, player);
+		Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang, Monster Magnet
@@ -191,7 +191,7 @@ void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // 
 	packet.addByte(info.level);
 	packet.addByte(info.direction);
 	packet.addByte(info.w_speed);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
@@ -201,7 +201,7 @@ void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
 	packet.addShort(SEND_SPECIAL_SKILL_END);
 	packet.addInt(player->getId());
 	packet.addInt(info.skillid);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapmobid, uint8_t success) {
@@ -209,7 +209,7 @@ void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapmobid, uint8_t s
 	packet.addShort(SEND_SHOW_DRAGGED);
 	packet.addInt(mapmobid);
 	packet.addByte(success);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void SkillsPacket::sendCooldown(Player *player, int32_t skillid, int16_t time) {
@@ -237,5 +237,5 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.addInt(1320006);
 	packet.addByte(level);
 	packet.addByte((on ? 1 : 0));
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

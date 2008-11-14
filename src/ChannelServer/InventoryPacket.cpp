@@ -50,7 +50,7 @@ void InventoryPacket::updatePlayer(Player *player) {
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
 	packet.addByte(0);
 	packet.addShort(0);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void InventoryPacket::bought(Player *player, uint8_t msg) {
@@ -112,7 +112,7 @@ void InventoryPacket::sitChair(Player *player, int32_t chairid) {
 	packet.addShort(SEND_SIT_CHAIR);
 	packet.addInt(player->getId());
 	packet.addInt(chairid);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void InventoryPacket::stopChair(Player *player) {
@@ -126,7 +126,7 @@ void InventoryPacket::stopChair(Player *player) {
 	packet.addShort(SEND_SIT_CHAIR);
 	packet.addInt(player->getId());
 	packet.addInt(0);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
@@ -137,7 +137,7 @@ void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bo
 	packet.addByte(succeed); // Succeed/Fail
 	packet.addByte(destroy); // Destroy/Not Destroy
 	packet.addShort(legendary_spirit);
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void InventoryPacket::showMegaphone(Player *player, const string & msg) {
@@ -146,7 +146,7 @@ void InventoryPacket::showMegaphone(Player *player, const string & msg) {
 	packet.addShort(SEND_NOTICE);
 	packet.addByte(2);
 	packet.addString(fullMessage);
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, uint8_t whisper) {
@@ -213,7 +213,7 @@ void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, uint
 		if (morph)
 			packet.addShort(0);
 		packet.addByte(0);
-		Maps::maps[player->getMap()]->sendPacket(packet, player);
+		Maps::getMap(player->getMap())->sendPacket(packet, player);
 	}
 }
 void InventoryPacket::endItem(Player *player, uint8_t types[8], bool morph) {
@@ -233,7 +233,7 @@ void InventoryPacket::endItem(Player *player, uint8_t types[8], bool morph) {
 		packet.addInt64(0);
 		for (int8_t i = 0; i < 8; i++)
 			packet.addByte(types[i]);
-		Maps::maps[player->getMap()]->sendPacket(packet, player);
+		Maps::getMap(player->getMap())->sendPacket(packet, player);
 	}
 }
 // Skill Books
@@ -246,7 +246,7 @@ void InventoryPacket::useSkillbook(Player *player, int32_t skillid, int32_t newM
 	packet.addInt(newMaxLevel); // New max level
 	packet.addByte(use); // Use/Cannot use
 	packet.addByte(succeed); // Pass/Fail
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void InventoryPacket::useItemEffect(Player *player, int32_t itemid) {
@@ -254,7 +254,7 @@ void InventoryPacket::useItemEffect(Player *player, int32_t itemid) {
 	packet.addShort(SEND_SHOW_ITEM_EFFECT);
 	packet.addInt(player->getId());
 	packet.addInt(itemid);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots) {

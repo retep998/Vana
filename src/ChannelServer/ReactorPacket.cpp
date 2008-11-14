@@ -31,7 +31,7 @@ void ReactorPacket::spawnReactor(Reactor *reactor) {
 	packet.addByte(reactor->getState());
 	packet.addPos(reactor->getPos());
 	packet.addByte(0);
-	Maps::maps[reactor->getMapID()]->sendPacket(packet);
+	Maps::getMap(reactor->getMapID())->sendPacket(packet);
 }
 
 void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
@@ -52,7 +52,7 @@ void ReactorPacket::triggerReactor(Reactor *reactor) {
 	packet.addByte(reactor->getState()); // State
 	packet.addPos(reactor->getPos());
 	packet.addInt(0);
-	Maps::maps[reactor->getMapID()]->sendPacket(packet);
+	Maps::getMap(reactor->getMapID())->sendPacket(packet);
 }
 
 void ReactorPacket::destroyReactor(Reactor *reactor) {
@@ -61,5 +61,5 @@ void ReactorPacket::destroyReactor(Reactor *reactor) {
 	packet.addInt(reactor->getID());
 	packet.addByte(reactor->getState());
 	packet.addPos(reactor->getPos());
-	Maps::maps[reactor->getMapID()]->sendPacket(packet);
+	Maps::getMap(reactor->getMapID())->sendPacket(packet);
 }

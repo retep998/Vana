@@ -34,11 +34,11 @@ unordered_map<int32_t, DropsInfo> Drops::dropdata;
 
 // Drop class
 Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
-	Maps::maps[mapid]->addDrop(this);
+	Maps::getMap(mapid)->addDrop(this);
 }
 
 Drop::Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), item(item), mesos(0), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
-	Maps::maps[mapid]->addDrop(this);
+	Maps::getMap(mapid)->addDrop(this);
 }
 
 int32_t Drop::getObjectID() {
@@ -74,13 +74,13 @@ void Drop::showDrop(Player *player) {
 }
 
 void Drop::takeDrop(Player *player) {
-	Maps::maps[mapid]->removeDrop(this->id);
+	Maps::getMap(mapid)->removeDrop(this->id);
 	DropsPacket::takeDrop(player, this);
 	delete this;
 }
 
 void Drop::removeDrop(bool showPacket) {
-	Maps::maps[this->mapid]->removeDrop(this->id);
+	Maps::getMap(this->mapid)->removeDrop(this->id);
 	if (showPacket)
 		DropsPacket::removeDrop(this);
 	delete this;
@@ -181,7 +181,7 @@ void Drops::dropMesos(Player *player, PacketReader &packet) {
 void Drops::lootItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(9);
 	int32_t itemid = packet.getInt();
-	Drop* drop = Maps::maps[player->getMap()]->getDrop(itemid);
+	Drop* drop = Maps::getMap(player->getMap())->getDrop(itemid);
 	bool success = true;
 	if (drop == 0) {
 		DropsPacket::dontTake(player);

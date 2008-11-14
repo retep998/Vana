@@ -417,6 +417,10 @@
 					RelativePath=".\src\ChannelServer\InitializeChannel.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\src\ChannelServer\MapDataProvider.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="ServerToServer"
@@ -725,6 +729,10 @@
 				>
 				<File
 					RelativePath=".\src\ChannelServer\InitializeChannel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\MapDataProvider.h"
 					>
 				</File>
 			</Filter>

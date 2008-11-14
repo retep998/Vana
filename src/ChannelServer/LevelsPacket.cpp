@@ -40,7 +40,7 @@ void LevelsPacket::levelUp(Player *player) {
 	packet.addShort(SEND_SHOW_SKILL);
 	packet.addInt(player->getId());
 	packet.addByte(0);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void LevelsPacket::statOK(Player *player) {
@@ -56,5 +56,5 @@ void LevelsPacket::jobChange(Player *player) {
 	packet.addShort(SEND_SHOW_SKILL);
 	packet.addInt(player->getId());
 	packet.addByte(8);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

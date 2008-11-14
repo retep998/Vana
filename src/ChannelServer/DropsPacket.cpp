@@ -46,7 +46,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	if (player != 0)
 		player->getSession()->send(packet);
 	else
-		Maps::maps[drop->getMap()]->sendPacket(packet);
+		Maps::getMap(drop->getMap())->sendPacket(packet);
 
 	if (newdrop)
 		showDrop(player, drop, 0, false, origin);
@@ -81,7 +81,7 @@ void DropsPacket::takeDrop(Player *player, Drop *drop) {
 	packet.addInt(drop->getID());
 	packet.addInt(player->getId());
 	if (!drop->isQuest())
-		Maps::maps[drop->getMap()]->sendPacket(packet);
+		Maps::getMap(drop->getMap())->sendPacket(packet);
 	else
 		player->getSession()->send(packet);
 }
@@ -98,7 +98,7 @@ void DropsPacket::removeDrop(Drop *drop) {
 	packet.addShort(SEND_TAKE_DROP);
 	packet.addByte(0);
 	packet.addInt(drop->getID());
-	Maps::maps[drop->getMap()]->sendPacket(packet);
+	Maps::getMap(drop->getMap())->sendPacket(packet);
 }
 
 void DropsPacket::explodeDrop(Drop *drop) {
@@ -107,7 +107,7 @@ void DropsPacket::explodeDrop(Drop *drop) {
 	packet.addByte(4);
 	packet.addInt(drop->getID());
 	packet.addShort(655);
-	Maps::maps[drop->getMap()]->sendPacket(packet);
+	Maps::getMap(drop->getMap())->sendPacket(packet);
 }
 
 void DropsPacket::takeDropPet(Player *player, Drop *drop, Pet *pet) {
@@ -118,7 +118,7 @@ void DropsPacket::takeDropPet(Player *player, Drop *drop, Pet *pet) {
 	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex());
 	if (!drop->isQuest())
-		Maps::maps[drop->getMap()]->sendPacket(packet);
+		Maps::getMap(drop->getMap())->sendPacket(packet);
 	else
 		player->getSession()->send(packet);
 }

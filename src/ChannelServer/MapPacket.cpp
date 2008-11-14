@@ -130,14 +130,14 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 
 void MapPacket::showPlayer(Player *player) {
 	PacketCreator packet = playerPacket(player);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void MapPacket::removePlayer(Player *player) {
 	PacketCreator packet;
 	packet.addShort(SEND_REMOVE_PLAYER);
 	packet.addInt(player->getId());
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void MapPacket::changeMap(Player *player) {
@@ -194,7 +194,7 @@ void MapPacket::changeMusic(int32_t mapid, const string &musicname) { // Change 
 	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
 	packet.addString(musicname);
-	Maps::maps[mapid]->sendPacket(packet);
+	Maps::getMap(mapid)->sendPacket(packet);
 }
 
 void MapPacket::sendSound(int32_t mapid, const string &soundname) { // Send Sound
@@ -208,7 +208,7 @@ void MapPacket::sendSound(int32_t mapid, const string &soundname) { // Send Soun
 	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x04);
 	packet.addString(soundname);
-	Maps::maps[mapid]->sendPacket(packet);
+	Maps::getMap(mapid)->sendPacket(packet);
 }
 // Send Event
 void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
@@ -222,12 +222,12 @@ void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
 	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x03);
 	packet.addString(eventname);
-	Maps::maps[mapid]->sendPacket(packet);
+	Maps::getMap(mapid)->sendPacket(packet);
 }
 
 void MapPacket::showEventInstructions(int32_t mapid) { // Thanks to Snow/Raz who found this by playing around
 	PacketCreator packet = PacketCreator();
 	packet.addShort(SEND_GM_EVENT_INSTRUCTIONS);
 	packet.addByte(0x00);
-	Maps::maps[mapid]->sendPacket(packet);
+	Maps::getMap(mapid)->sendPacket(packet);
 }

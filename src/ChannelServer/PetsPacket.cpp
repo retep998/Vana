@@ -33,7 +33,7 @@ void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_
 	packet.addByte(act);
 	packet.addString(message);
 	packet.addByte(0);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PetsPacket::movePet(Player *player, Pet *pet, unsigned char *buf, int32_t buflen) {
@@ -42,7 +42,7 @@ void PetsPacket::movePet(Player *player, Pet *pet, unsigned char *buf, int32_t b
 	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex());
 	packet.addBuffer(buf, buflen);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer) {
@@ -64,7 +64,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 	if (onlyPlayer)
 		player->getSession()->send(packet);
 	else
-		Maps::maps[player->getMap()]->sendPacket(packet);
+		Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool success) {
@@ -130,7 +130,7 @@ void PetsPacket::levelUp(Player *player, Pet *pet) {
 	packet.addInt(player->getId());
 	packet.addShort(4);
 	packet.addByte(pet->getIndex());
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void PetsPacket::changeName(Player *player, Pet *pet) {
@@ -140,7 +140,7 @@ void PetsPacket::changeName(Player *player, Pet *pet) {
 	packet.addByte(pet->getIndex());
 	packet.addString(pet->getName());
 	packet.addByte(0);
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void PetsPacket::showPet(Player *player, Pet *pet) {

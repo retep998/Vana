@@ -33,7 +33,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 	packet.addInt(player->getId());
 	packet.addInt(0);
 	packet.addBuffer(buf, size);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PlayersPacket::faceExpression(Player *player, int32_t face) {
@@ -43,7 +43,7 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 	packet.addShort(SEND_FACE_EXPRESSION);
 	packet.addInt(player->getId());
 	packet.addInt(face);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PlayersPacket::showChat(Player *player, const string &msg, int8_t bubbleOnly) {
@@ -53,7 +53,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, int8_t bubbleOnl
 	packet.addByte(player->isGM());
 	packet.addString(msg);
 	packet.addByte(bubbleOnly);
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, uint8_t type, uint8_t stance, int32_t nodamageskill, PGMRInfo pgmr) {
@@ -87,7 +87,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 				packet.addInt(nodamageskill);
 			break;
 	}
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void PlayersPacket::showMessage(const string &msg, int8_t type) {

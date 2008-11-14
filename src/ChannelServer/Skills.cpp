@@ -105,7 +105,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case 4111003: { // Shadow Web
 			uint8_t mobs = packet.getByte();
 			for (uint8_t k = 0; k < mobs; k++) {
-				if (Mob *mob = Maps::maps[player->getMap()]->getMob(packet.getInt())) {
+				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.getInt())) {
 					Mobs::handleMobStatus(player, mob, skillid, 0);
 				}
 			}
@@ -159,9 +159,9 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			player->setMP(player->getMMP());
 			break;
 		case 9101005: { // GM Resurrection
-			for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+			for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 				Player *resplayer;
-				resplayer = Maps::maps[player->getMap()]->getPlayer(i);
+				resplayer = Maps::getMap(player->getMap())->getPlayer(i);
 				if (resplayer->getHP() <= 0) {
 					resplayer->setHP(resplayer->getMHP());
 				}

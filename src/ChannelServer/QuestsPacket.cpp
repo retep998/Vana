@@ -96,7 +96,7 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 	packet.addShort(SEND_SHOW_SKILL);
 	packet.addInt(player->getId());
 	packet.addByte(9);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void QuestsPacket::giveItem(Player *player, int32_t itemid, int32_t amount) {

@@ -55,7 +55,7 @@ void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 	bool puppet = ISPUPPET(skillid);
 	removeSummon(player, puppet, true, false);
 	if (puppet)
-		summon->setPos( Maps::maps[player->getMap()]->findFloor(Pos((player->getPos().x + 200 * (player->getStance() % 2 == 1 ? -1 : 1)), player->getPos().y)) );
+		summon->setPos( Maps::getMap(player->getMap())->findFloor(Pos((player->getPos().x + 200 * (player->getStance() % 2 == 1 ? -1 : 1)), player->getPos().y)) );
 	else
 		summon->setPos(player->getPos());
 	player->getSummons()->addSummon(summon, Skills::skills[skillid][level].time);
