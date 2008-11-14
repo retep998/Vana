@@ -45,7 +45,7 @@ Reactor * LuaExports::getReactor(lua_State *luaVm) {
 	lua_getglobal(luaVm, "mapid");
 	int32_t reactorid = (lua_tointeger(luaVm, -2) - 200);
 	int32_t mapid = lua_tointeger(luaVm, -1);
-	return Maps::maps[mapid]->getReactor(reactorid);
+	return Maps::getMap(mapid)->getReactor(reactorid);
 }
 
 int LuaExports::setReactorState(lua_State *luaVm) {

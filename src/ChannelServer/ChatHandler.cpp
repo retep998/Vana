@@ -128,8 +128,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					PlayerPacket::showMessage(player, "No instruction entered.", 5);
 					return;
 				}
-				for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
-					PlayerPacket::instructionBubble(Maps::maps[player->getMap()]->getPlayer(i), next_token);
+				for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
+					PlayerPacket::instructionBubble(Maps::getMap(player->getMap())->getPlayer(i), next_token);
 				}
 			}
 			else if (command == "addnpc") {
@@ -140,7 +140,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				npc.cy = player->getPos().y;
 				npc.rx0 = npc.x - 50;
 				npc.rx1 = npc.x + 50;
-				Maps::maps[player->getMap()]->addNPC(npc);
+				Maps::getMap(player->getMap())->addNPC(npc);
 			}
 		}
 
@@ -175,7 +175,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				Player *warpee;
 				if (warpee = Players::Instance()->getPlayer(name)) {
 					int32_t mapid = atoi(strtok_s(0, " ", &next_token));
-					if (Maps::maps.find(mapid) != Maps::maps.end()) {
+					if (Maps::getMap(mapid)) {
 						Maps::changeMap(warpee, mapid, 0);
 					}
 				}
@@ -193,7 +193,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				else
 					mapid = atoi(next_token);
 
-				if (Maps::maps.find(mapid) == Maps::maps.end()) {
+				if (!Maps::getMap(mapid)) {
 					return;
 				}
 
@@ -210,25 +210,25 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				Players::Instance()->run(changeMap);
 			}
 			else if (command == "killall") {
-				Maps::maps[player->getMap()]->killMobs(player);
+				Maps::getMap(player->getMap())->killMobs(player);
 			}
 			else if (command == "cleardrops") {
-				Maps::maps[player->getMap()]->clearDrops();
+				Maps::getMap(player->getMap())->clearDrops();
 			}
 			else if (command == "kill") {
 				if (strcmp(next_token, "all") == 0) {
-					for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+					for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 						Player *killpsa;
-						killpsa = Maps::maps[player->getMap()]->getPlayer(i);
+						killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 						if (killpsa != player) {
 							killpsa->setHP(0);
 						}
 					}
 				}
 				else if (strcmp(next_token, "gm") == 0) {
-					for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+					for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 						Player *killpsa;
-						killpsa = Maps::maps[player->getMap()]->getPlayer(i);
+						killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 						if (killpsa != player) {
 							if (killpsa->isGM()) {	
 								killpsa->setHP(0);
@@ -237,9 +237,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 				}
 				else if (strcmp(next_token, "players") == 0) {
-					for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {	
+					for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {	
 						Player *killpsa;
-						killpsa = Maps::maps[player->getMap()]->getPlayer(i);
+						killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 						if (killpsa != player) {
 							if (!killpsa->isGM()) {
 								killpsa->setHP(0);
@@ -251,9 +251,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					player->setHP(0);
 				}
 				else {
-					for (size_t i = 0; i < Maps::maps[player->getMap()]->getNumPlayers(); i++) {
+					for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 						Player *killpsa;
-						killpsa = Maps::maps[player->getMap()]->getPlayer(i);
+						killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 						if (killpsa != player) {
 							killpsa->setHP(0);
 						}
@@ -299,7 +299,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				return;
 			}
 			int32_t mapid = -1;
-			if (strcmp("town", next_token) == 0) mapid = Maps::maps[player->getMap()]->getInfo()->rm;
+			if (strcmp("town", next_token) == 0) mapid = Maps::getMap(player->getMap())->getInfo()->rm;
 			else if (strcmp("southperry", next_token) == 0) mapid = 60000;
 			else if (strcmp("amherst", next_token) == 0) mapid = 1010000;
 			else if (strcmp("gm", next_token) == 0) mapid = 180000000;
@@ -354,7 +354,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				mapid = strtol(next_token, &endptr, 0);
 				if (strlen(endptr) != 0) mapid = -1;
 			}
-			if (Maps::maps.find(mapid) != Maps::maps.end())
+			if (Maps::getMap(mapid))
 				Maps::changeMap(player, mapid, 0);
 			else
 				PlayerPacket::showMessage(player, "Invalid map entered.", 5);
@@ -560,7 +560,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else if (command == "horntail") {
 			Mobs::spawnMob(player, 8810026);
-			Maps::maps[player->getMap()]->killMobs(player, 8810026);
+			Maps::getMap(player->getMap())->killMobs(player, 8810026);
 		}
 		else if (command == "heal") {
 			player->setHP(player->getMHP());

@@ -38,7 +38,7 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 	if (toplayer != 0)
 		toplayer->getSession()->send(packet);
 	else
-		Maps::maps[player->getMap()]->sendPacket(packet);
+		Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void SummonsPacket::moveSummon(Player *player, Summon *summon, Pos &startPos, unsigned char *buf, int32_t buflen) {
@@ -48,7 +48,7 @@ void SummonsPacket::moveSummon(Player *player, Summon *summon, Pos &startPos, un
 	packet.addInt(summon->getID());
 	packet.addPos(startPos);
 	packet.addBuffer(buf, buflen);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void SummonsPacket::removeSummon(Player *player, Summon *summon, bool animated) {
@@ -57,7 +57,7 @@ void SummonsPacket::removeSummon(Player *player, Summon *summon, bool animated) 
 	packet.addInt(player->getId());
 	packet.addInt(summon->getID());
 	packet.addByte(animated ? 4 : 1); // ?
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void SummonsPacket::damageSummon(Player *player, int32_t summonid, int8_t notsure, int32_t damage, int32_t mobid) {
@@ -69,5 +69,5 @@ void SummonsPacket::damageSummon(Player *player, int32_t summonid, int8_t notsur
 	packet.addInt(damage);
 	packet.addInt(mobid);
 	packet.addByte(0);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

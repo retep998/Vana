@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Maps.h"
 #include "LuaPortal.h"
+#include "MapDataProvider.h"
 #include "MapPacket.h"
 #include "Pets.h"
 #include "Player.h"
@@ -27,15 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.h"
 #include <sys/stat.h>
 #include <string>
-#include <unordered_map>
 
 using std::string;
-using std::tr1::unordered_map;
 
-unordered_map<int32_t, Map *> Maps::maps;
-
-void Maps::addMap(MapInfoPtr info) {
-	maps[info->id] = new Map(info);
+Map * Maps::getMap(int32_t mapid) {
+	return MapDataProvider::Instance()->getMap(mapid);
 }
 
 void Maps::usePortal(Player *player, PortalInfo *portal) {
@@ -63,7 +60,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	else {
 		// Normal portal
 		PortalInfo *nextportal = 0;
-		nextportal = maps[portal->toid]->getPortal(portal->toname);
+		nextportal = getMap(portal->toid)->getPortal(portal->toname);
 		changeMap(player, portal->toid, nextportal);
 	}
 }
@@ -76,7 +73,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	}
 	string portalname = packet.getString();
 
-	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname);
+	PortalInfo *portal = getMap(player->getMap())->getPortal(portalname);
 	if (portal == 0) // Exit the function if portal is not found
 		return;
 
@@ -87,7 +84,7 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
 	string portalname = packet.getString();
 
-	PortalInfo *portal = maps[player->getMap()]->getPortal(portalname);
+	PortalInfo *portal = getMap(player->getMap())->getPortal(portalname);
 	if (portal == 0) // Exit the function if portal is not found
 		return;
 
@@ -95,14 +92,14 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 }
 
 void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
-	if (maps.find(mapid) == maps.end()) {
+	if (!getMap(mapid)) {
 		MapPacket::portalBlocked(player);
 		return;
 	}
 	if (portal == 0)
-		portal = maps[mapid]->getSpawnPoint();
+		portal = getMap(mapid)->getSpawnPoint();
 
-	maps[player->getMap()]->removePlayer(player);
+	getMap(player->getMap())->removePlayer(player);
 	player->setMap(mapid);
 	player->setMappos(portal->id);
 	player->setPos(Pos(portal->pos.x, portal->pos.y - 40));
@@ -120,8 +117,8 @@ void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
 
 void Maps::newMap(Player *player, int32_t mapid) {
 	Players::Instance()->addPlayer(player);
-	maps[mapid]->addPlayer(player);
-	maps[mapid]->showObjects(player);
+	getMap(mapid)->addPlayer(player);
+	getMap(mapid)->showObjects(player);
 	Pets::showPets(player);
 	Summons::showSummon(player);
 	// Bug in global - would be fixed here:
@@ -131,7 +128,7 @@ void Maps::newMap(Player *player, int32_t mapid) {
 
 // Change Music
 void Maps::changeMusic(int32_t mapid, const string &musicname) {
-	if (Maps::maps.find(mapid) != Maps::maps.end()) {
+	if (Maps::getMap(mapid)) {
 		MapPacket::changeMusic(mapid, musicname);
 	}
 }

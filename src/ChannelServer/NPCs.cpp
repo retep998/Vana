@@ -36,7 +36,7 @@ void NPCs::handleNPC(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int32_t npcid = Maps::maps[player->getMap()]->getNpc(packet.getInt() - 100).id;
+	int32_t npcid = Maps::getMap(player->getMap())->getNpc(packet.getInt() - 100).id;
 	if (Shops::shops.find(npcid) != Shops::shops.end()) { // Shop
 		Shops::showShop(player, npcid);
 		return;

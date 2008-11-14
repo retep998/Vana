@@ -34,7 +34,7 @@ using std::string;
 
 // Reactor class
 Reactor::Reactor (int32_t mapid, int32_t reactorid, Pos pos) : mapid(mapid), reactorid(reactorid), pos(pos), alive(true), state(0) {
-	Maps::maps[mapid]->addReactor(this);
+	Maps::getMap(mapid)->addReactor(this);
 }
 
 void Reactor::setState(int8_t state, bool is) {
@@ -70,7 +70,7 @@ void Reactors::setMaxstates(int32_t id, int16_t state) {
 void Reactors::hitReactor(Player *player, PacketReader &packet) {
 	int32_t id = packet.getInt() - 200;
 
-	Reactor *reactor = Maps::maps[player->getMap()]->getReactor(id);
+	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 
 	if (reactor != 0 && reactor->isAlive()) {
 		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
@@ -97,7 +97,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 
 				reactor->setState(revent->nextstate, false);
 				reactor->kill();
-				Maps::maps[reactor->getMapID()]->addReactorRespawn(ReactorRespawnInfo(id, clock()));
+				Maps::getMap(reactor->getMapID())->addReactorRespawn(ReactorRespawnInfo(id, clock()));
 				ReactorPacket::destroyReactor(reactor);
 			}
 		}
@@ -105,8 +105,8 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 }
 
 void Reactors::checkDrop(Player *player, Drop *drop) {
-	for (size_t i = 0; i < Maps::maps[drop->getMap()]->getNumReactors(); i++) {
-		Reactor *reactor = Maps::maps[drop->getMap()]->getReactor(i);
+	for (size_t i = 0; i < Maps::getMap(drop->getMap())->getNumReactors(); i++) {
+		Reactor *reactor = Maps::getMap(drop->getMap())->getReactor(i);
 		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
 			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectID() == revent->itemid) {

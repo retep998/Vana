@@ -149,7 +149,7 @@ void Pets::lootItem(Player *player, PacketReader &packet) {
 	int32_t petid = packet.getInt();
 	packet.skipBytes(13);
 	int32_t dropid = packet.getInt();
-	Drop *drop = Maps::maps[player->getMap()]->getDrop(dropid);
+	Drop *drop = Maps::getMap(player->getMap())->getDrop(dropid);
 	if (drop == 0) {
 		DropsPacket::dontTake(player);
 		return;
@@ -188,7 +188,7 @@ void Pets::lootItem(Player *player, PacketReader &packet) {
 		DropsPacket::takeNote(player, drop->getObjectID(), false, drop->getAmount());
 	}
 	Reactors::checkLoot(drop);
-	Maps::maps[player->getMap()]->removeDrop(drop->getID());
+	Maps::getMap(player->getMap())->removeDrop(drop->getID());
 	DropsPacket::takeDropPet(player, drop, player->getPets()->getPet(petid));
 }
 

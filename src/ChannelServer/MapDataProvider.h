@@ -15,27 +15,35 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MAPS_H
-#define MAPS_H
+#ifndef MAPDATAPROVIDER_H
+#define MAPDATAPROVIDER_H
 
-#include "Map.h"
+#include "Types.h"
 #include <unordered_map>
-#include <string>
+#include <boost/thread/recursive_mutex.hpp>
 
-using std::string;
 using std::tr1::unordered_map;
 
-class Player;
-class PacketReader;
+class Map;
 
-namespace Maps {
+class MapDataProvider {
+public:
+	static MapDataProvider * Instance() {
+		if (singleton == 0)
+			singleton = new MapDataProvider();
+		return singleton;
+	}
 	Map * getMap(int32_t mapid);
-	void usePortal(Player *player, PortalInfo *portal);
-	void usePortal(Player *player, PacketReader &packet);
-	void useScriptedPortal(Player *player, PacketReader &packet);
-	void changeMap(Player *player, int32_t mapid, PortalInfo *portal);
-	void newMap(Player *player, int32_t mapid);
-	void changeMusic(int32_t mapid, const string &musicname);
+
+private:
+	MapDataProvider() {}
+	MapDataProvider(const MapDataProvider&);
+	MapDataProvider& operator=(const MapDataProvider&);
+	static MapDataProvider *singleton;
+	unordered_map<int32_t, Map *> maps;
+	boost::recursive_mutex loadmap_mutex;
+
+	void loadMap(int32_t mapid, Map *&map);
 };
 
 #endif

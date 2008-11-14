@@ -85,7 +85,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				pgmr.damage = damage;
 				if (pgmr.isphysical) // Only Power Guard decreases damage
 					damage = (damage - (damage * pgmr.reduction / 100)); 
-				Mob *mob = Maps::maps[player->getMap()]->getMob(mapmobid);
+				Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
 				if (mob != 0) {
 					mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
 					if (mob->getHP() <= 0)

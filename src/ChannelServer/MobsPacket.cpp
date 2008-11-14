@@ -47,7 +47,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool sp
 	if (requestControl || show)
 		player->getSession()->send(packet);
 	else
-		Maps::maps[mob->getMapID()]->sendPacket(packet);
+		Maps::getMap(mob->getMapID())->sendPacket(packet);
 }
 
 void MobsPacket::endControlMob(Player *player, Mob *mob) {
@@ -76,7 +76,7 @@ void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int32_t s
 	packet.addInt(skill);
 	packet.addByte(0);
 	packet.addBuffer(buf, len);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void MobsPacket::damageMob(Player *player, PacketReader &pack) {
@@ -105,7 +105,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	pack.skipBytes(1); // Weapon subclass
 	packet.addByte(pack.getByte()); // Weapon speed
 	pack.skipBytes(4); // Ticks
-	if (skillid == 5201002) {
+	if (skillid == 5201002 || skillid == 5101004) {
 		pack.skipBytes(4); // Charge
 	}
 	int32_t masteryid = 0;
@@ -161,7 +161,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 		}
 		pack.skipBytes(4);
 	}
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
@@ -251,7 +251,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 		}
 		pack.skipBytes(4);
 	}
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void MobsPacket::damageMobSpell(Player *player, PacketReader &pack) {
@@ -291,7 +291,7 @@ void MobsPacket::damageMobSpell(Player *player, PacketReader &pack) {
 	}
 	if (charge > 0)
 		packet.addInt(charge);
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void MobsPacket::damageMobSummon(Player *player, PacketReader &pack) {
@@ -314,7 +314,7 @@ void MobsPacket::damageMobSummon(Player *player, PacketReader &pack) {
 		int32_t damage = pack.getInt();
 		packet.addInt(damage);
 	}
-	Maps::maps[player->getMap()]->sendPacket(packet, player);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void MobsPacket::applyStatus(Mob *mob, const StatusInfo &info, int16_t delay) {
@@ -335,7 +335,7 @@ void MobsPacket::applyStatus(Mob *mob, const StatusInfo &info, int16_t delay) {
 
 	packet.addShort(delay);
 	packet.addByte(1);
-	Maps::maps[mob->getMapID()]->sendPacket(packet);
+	Maps::getMap(mob->getMapID())->sendPacket(packet);
 }
 
 void MobsPacket::removeStatus(Mob *mob, int32_t status) {
@@ -344,7 +344,7 @@ void MobsPacket::removeStatus(Mob *mob, int32_t status) {
 	packet.addInt(mob->getID());
 	packet.addInt(status);
 	packet.addByte(1);
-	Maps::maps[mob->getMapID()]->sendPacket(packet);
+	Maps::getMap(mob->getMapID())->sendPacket(packet);
 }
 
 void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per, bool miniboss) {
@@ -353,7 +353,7 @@ void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per, bool miniboss
 	packet.addInt(mobid);
 	packet.addByte(per);
 	if (miniboss)
-		Maps::maps[player->getMap()]->sendPacket(packet);
+		Maps::getMap(player->getMap())->sendPacket(packet);
 	else
 		player->getSession()->send(packet);
 }
@@ -367,7 +367,7 @@ void MobsPacket::showBossHP(Player *player, int32_t mobid, int32_t hp, const Mob
 	packet.addInt(info.hp);
 	packet.addByte(info.hpcolor);
 	packet.addByte(info.hpbgcolor);
-	Maps::maps[player->getMap()]->sendPacket(packet);
+	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void MobsPacket::dieMob(Mob *mob) {
@@ -379,5 +379,5 @@ void MobsPacket::dieMob(Mob *mob) {
 	packet.addShort(SEND_KILL_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
-	Maps::maps[mob->getMapID()]->sendPacket(packet);
+	Maps::getMap(mob->getMapID())->sendPacket(packet);
 }

@@ -68,6 +68,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 
 	if (!poison) { // HP bar packet does nothing for showing damage when poison is damaging for whatever reason
 		Player *player = Players::Instance()->getPlayer(playerid);
+
 		if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
 			MobsPacket::showBossHP(player, mobid, hp, info);
 		else { // Normal/Miniboss HP bars
@@ -95,8 +96,9 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 			Timer::Id(Timer::Types::MobStatusTimer, statusinfo[i].status, 0),
 			getTimers(), Timer::Time::fromNow(statusinfo[i].time));
 	}
+	// Calculate new status mask
 	this->status = 0;
-	for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) { // Calculate new status mask
+	for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
 		this->status += iter->first;
 	}
 }
@@ -174,14 +176,14 @@ void Mob::die(Player *player) {
 		Mobs::spawnMobPos(mapid, info.summon[i], m_pos);
 
 	player->getQuests()->updateQuestMob(mobid);
-	Maps::maps[mapid]->removeMob(id, spawnid);
+	Maps::getMap(mapid)->removeMob(id, spawnid);
 	delete this;
 }
 
 void Mob::die(bool showpacket) {
 	if (showpacket)
 		MobsPacket::dieMob(this);
-	Maps::maps[mapid]->removeMob(id, spawnid);
+	Maps::getMap(mapid)->removeMob(id, spawnid);
 	delete this;
 }
 
@@ -189,7 +191,7 @@ void Mob::die(bool showpacket) {
 void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	int32_t mobid = packet.getInt();
 
-	Mob *mob = Maps::maps[player->getMap()]->getMob(mobid);
+	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
 
 	if (mob == 0) {
 		return;
@@ -224,6 +226,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
 	switch (skillid) {
 		case 5201002:
+		case 5101004:
 			packet.skipBytes(4); // Charge 
 			break;
 	}
@@ -238,13 +241,13 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < items; i++) {
 				int32_t objID = packet.getInt();
 				packet.skipBytes(1); // Boolean for hit a monster
-				Drop *drop = Maps::maps[map]->getDrop(objID);
+				Drop *drop = Maps::getMap(map)->getDrop(objID);
 				if (drop != 0) {
 					DropsPacket::explodeDrop(drop);
-					Maps::maps[map]->removeDrop(drop->getID());
+					Maps::getMap(map)->removeDrop(drop->getID());
 					delete drop;
 				}
-			}			
+			}
 			break;
 		}
 		case 1111003: // Crusader finishers
@@ -426,7 +429,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(4211003); // Check for active pickpocket level
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mapmobid = packet.getInt();
-		Mob *mob = Maps::maps[map]->getMob(mapmobid);
+		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
 		uint8_t weapontype = (uint8_t) GETWEAPONTYPE(player->getInventory()->getEquippedID(11));
@@ -442,7 +445,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			case 8810007:
 			case 8810008:
 			case 8810009:
-				htabusetaker = Maps::maps[map]->getMob(8810018, false);
+				htabusetaker = Maps::getMap(map)->getMob(8810018, false);
 				break;
 		}
 		packet.skipBytes(3); // Useless
@@ -496,7 +499,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 				mob = 0;
 				if (htabusetaker != 0 && htabusetaker->getHP() <= 0) {
 					for (int8_t q = 0; q < 8; q++) {
-						Maps::maps[map]->killMobs(player, (8810010 + q)); // Dead Horntail's parts
+						Maps::getMap(map)->killMobs(player, (8810010 + q)); // Dead Horntail's parts
 					}
 					htabusetaker->die(player);
 				}
@@ -567,12 +570,15 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			case 4211002: // Assaulter
 			case 4221007: // Boomerang Step
 			case 5201004: // Fake Shot
-			case 5121004: // Demolition
-			case 5121005: // Snatch
-			case 5121007: // Fist
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time * 1000));
 				}
+				break;
+			case 5101002: // Backspin Blow
+			case 5101003: // Double Uppercut
+			case 5121004: // Demolition
+			case 5121005: // Snatch
+				statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time * 1000));
 				break;
 			case 3111005: // Silver Hawk
 			case 3211005: // Golden Eagle
@@ -630,5 +636,5 @@ void Mobs::spawnMob(Player *player, int32_t mobid, int32_t amount) {
 }
 
 void Mobs::spawnMobPos(int32_t mapid, int32_t mobid, Pos pos) {
-	Maps::maps[mapid]->spawnMob(mobid, pos);
+	Maps::getMap(mapid)->spawnMob(mobid, pos);
 }
