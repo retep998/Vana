@@ -338,6 +338,13 @@ void Buffs::init() {
 	player.mapval = false;
 	skillsinfo[3101004].player.push_back(player);
 	skillsinfo[3201004].player.push_back(player);
+	// Dash - 5001005
+	player.type = 0x80;
+	player.byte = TYPE_1;
+	player.value = SKILL_X;
+	player.hasmapval = false;
+	player.mapval = false;
+	skillsinfo[5001005].player.push_back(player);
 	// Super Saiyan thing[blue] - 5111005
 	player.type = 0x02;
 	player.byte = TYPE_5;
