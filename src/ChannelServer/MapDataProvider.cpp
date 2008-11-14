@@ -65,7 +65,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		map = new Map(mapinfo);
 	}
 	maps[mapid] = map;
-	if (map == 0)
+	if (map == 0) // Map does not exist, so no need to run the rest of the code
 		return;
 
 	// Portals
