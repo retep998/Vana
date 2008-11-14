@@ -23,7 +23,6 @@ mysqlpp::Connection Database::datadb;
 
 void Database::connect() {
 	ConfigFile config("conf/mysql.lua");
-	bool failed = false;
 	// Character Database
 	chardb.set_option(new mysqlpp::ReconnectOption(true));
 	chardb.connect(	config.getString("chardb_database").c_str(), 
