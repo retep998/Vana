@@ -9,5 +9,5 @@ chardb_port = 3306;
 datadb_host = "localhost";
 datadb_username = "root";
 datadb_password = "";
-datadb_database = "vedb";
+datadb_database = "mcdb";
 datadb_port = 3306;
