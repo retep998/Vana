@@ -345,6 +345,13 @@ void Buffs::init() {
 	player.hasmapval = false;
 	player.mapval = false;
 	skillsinfo[5001005].player.push_back(player);
+	// Oak Barrel - 5101007
+	player.type = 0x02;
+	player.byte = TYPE_5;
+	player.value = SKILL_MORPH;
+	player.hasmapval = true;
+	player.mapval = false;
+	skillsinfo[5101007].player.push_back(player);
 	// Super Saiyan thing[blue] - 5111005
 	player.type = 0x02;
 	player.byte = TYPE_5;
