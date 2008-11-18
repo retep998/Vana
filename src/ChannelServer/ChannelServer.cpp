@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionManager.h"
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
+#include "ItemDataProvider.h"
 #include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
@@ -40,9 +41,8 @@ void ChannelServer::loadData() {
 	Initializing::checkVEDBVersion();
 	Initializing::initializeMobs();
 	Initializing::initializeReactors();
-	Initializing::initializeItems();
+	ItemDataProvider::Instance()->loadData();
 	Initializing::initializeDrops();
-	Initializing::initializeEquips();
 	Initializing::initializeShops();
 	Initializing::initializeQuests();
 	Initializing::initializeSkills();

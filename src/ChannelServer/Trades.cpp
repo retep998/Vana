@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Trades.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
+#include "ItemDataProvider.h"
 #include "Player.h"
 #include "Players.h"
 #include "PacketReader.h"
@@ -414,7 +415,7 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 			if (inv != 1 && !ISRECHARGEABLE(itemid)) { // Already did these
 				if (added.find(itemid) == added.end()) // Already did this item
 					continue;
-				int16_t maxslot = Inventory::items[itemid].maxslot;
+				int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(itemid);
 				int32_t current_amount = player->getInventory()->getItemAmount(itemid);
 				int32_t last_slot = (current_amount % maxslot); // Get the number of items in the last slot
 				int32_t item_sum = last_slot + added[itemid];

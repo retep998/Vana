@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandler.h"
 #include "Inventory.h"
+#include "ItemDataProvider.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
 #include "Maps.h"
@@ -475,7 +476,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		else if (command == "item") {
 			if (strlen(next_token) == 0) return;
 			int32_t itemid = atoi(strtok_s(0, " ", &next_token));
-			if (Inventory::items.find(itemid) == Inventory::items.end() && Inventory::equips.find(itemid) == Inventory::equips.end()) {
+			if (!ItemDataProvider::Instance()->itemExists(itemid)) {
 				PlayerPacket::showMessage(player, "Invalid item ID", 6);
 				return;
 			}

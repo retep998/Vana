@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
+#include "ItemDataProvider.h"
 #include "PacketCreator.h"
 #include "Pets.h"
 #include "Player.h"
@@ -28,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 /* Item struct */
 Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0), name("") {
-	EquipInfo ei = Inventory::equips[equipid];
+	EquipInfo ei = ItemDataProvider::Instance()->getEquipInfo(equipid);
 	slots = ei.slots;
 	if (!random) {
 		istr = ei.istr;
@@ -197,7 +198,7 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canSt
 	if (inv == 1 || ISRECHARGEABLE(itemid))
 		required = amount; // These aren't stackable
 	else {
-		int16_t maxslot = Inventory::items[itemid].maxslot;
+		int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(itemid);
 		uint16_t existing = getItemAmount(itemid) % maxslot;
 		// Bug in global:
 		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot
