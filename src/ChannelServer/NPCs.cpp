@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "PacketReader.h"
 #include "SendHeader.h"
-#include "Shops.h"
+#include "ShopDataProvider.h"
 #include <sys/stat.h>
 #include <string>
 
@@ -37,10 +37,8 @@ void NPCs::handleNPC(Player *player, PacketReader &packet) {
 	}
 
 	int32_t npcid = Maps::getMap(player->getMap())->getNpc(packet.getInt() - 100).id;
-	if (Shops::shops.find(npcid) != Shops::shops.end()) { // Shop
-		Shops::showShop(player, npcid);
+	if (ShopDataProvider::Instance()->showShop(player, npcid)) // Shop
 		return;
-	}
 
 	NPC *npc = new NPC(npcid, player);
 	npc->run();

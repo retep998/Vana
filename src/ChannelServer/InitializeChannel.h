@@ -21,12 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 namespace Initializing {
-	void checkVEDBVersion();
+	void checkMCDBVersion();
+	void loadData();
 	void initializeMobs();
 	void initializeDrops();
 	void initializeReactors();
-	void initializeEquips();
-	void initializeShops();
 	void initializeQuests();
 	void initializeSkills();
 	void initializePets();

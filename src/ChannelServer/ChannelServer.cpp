@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionManager.h"
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
-#include "ItemDataProvider.h"
 #include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
@@ -38,15 +37,8 @@ void ChannelServer::listen() {
 void ChannelServer::loadData() {
 	Initializing::initializeMySQL();
 	Initializing::checkSchemaVersion();
-	Initializing::checkVEDBVersion();
-	Initializing::initializeMobs();
-	Initializing::initializeReactors();
-	ItemDataProvider::Instance()->loadData();
-	Initializing::initializeDrops();
-	Initializing::initializeShops();
-	Initializing::initializeQuests();
-	Initializing::initializeSkills();
-	Initializing::initializePets();
+	Initializing::checkMCDBVersion();
+	Initializing::loadData();
 
 	WorldServerConnectPlayer *loginPlayer = dynamic_cast<WorldServerConnectPlayer *>(
 		ConnectionManager::Instance()->connect(login_ip, login_inter_port, 

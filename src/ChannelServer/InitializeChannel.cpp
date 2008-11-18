@@ -17,14 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
+#include "ItemDataProvider.h"
+#include "ShopDataProvider.h"
 #include "Buffs.h"
 #include "Mobs.h"
 #include "Drops.h"
 #include "Reactors.h"
-#include "Shops.h"
 #include "Quests.h"
 #include "Skills.h"
-#include "Inventory.h"
 #include "Database.h"
 #include "MiscUtilities.h"
 #include "Pets.h"
@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using MiscUtilities::atob;
 
-void Initializing::checkVEDBVersion() {
+void Initializing::checkMCDBVersion() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mcdb_info LIMIT 1");
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -49,6 +49,17 @@ void Initializing::checkVEDBVersion() {
 		exit(4);
 	}
 }
+
+void Initializing::loadData() {
+	ItemDataProvider::Instance()->loadData();
+	ShopDataProvider::Instance()->loadData();
+	initializeMobs();
+	initializeReactors();
+	initializeDrops();
+	initializeQuests();
+	initializeSkills();
+	initializePets();
+};
 
 // Mobs
 void Initializing::initializeMobs() {
@@ -218,43 +229,6 @@ void Initializing::initializeDrops() {
 	std::cout << "DONE" << std::endl;
 }
 
-// Shops
-void Initializing::initializeShops() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT shopdata.shopid, shopdata.npcid, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
-	mysqlpp::UseQueryResult res = query.use();
-
-	int32_t currentid = 0;
-	int32_t previousid = -1;
-	ShopInfo shop;
-	MYSQL_ROW shopRow;
-	while ((shopRow = res.fetch_raw_row())) {
-		// Col0 : Shop ID
-		//    1 : NPC ID
-		//    2 : Item ID
-		//    3 : Price
-		currentid = atoi(shopRow[0]);
-
-		if (currentid != previousid && previousid != -1) {
-			Shops::addShop(previousid, shop);
-			shop = ShopInfo();
-		}
-		shop.npc = atoi(shopRow[1]);
-		if (shopRow[2] != 0) {
-			shop.items.push_back(atoi(shopRow[2]));
-			shop.prices[atoi(shopRow[2])] = atoi(shopRow[3]);
-		}
-		else std::cout << "Warning: Shop " << currentid << " does not have any shop items on record.";
-
-		previousid = atoi(shopRow[0]);
-	}
-	// Add final entry
-	if (previousid != -1) {
-		Shops::addShop(previousid, shop);
-		shop.items.clear();
-	}
-	std::cout << "DONE" << std::endl;
-}
 // Quests
 void Initializing::initializeQuests() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Quests... ";

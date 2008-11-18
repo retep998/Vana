@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "Inventory.h"
 #include "MiscUtilities.h"
-#include "Shops.h"
+#include "ShopDataProvider.h"
 #include <string>
 #include <iostream>
 
@@ -211,7 +211,7 @@ void ItemDataProvider::loadData() {
 
 void ItemDataProvider::addItemInfo(int32_t id, ItemInfo item) {
 	if (ISRECHARGEABLE(id))
-		Shops::rechargables.push_back(id);
+		ShopDataProvider::Instance()->addRechargable(id);
 	// Set all types to 0 initially
 	memset(item.cons.types, 0, sizeof(item.cons.types));
 

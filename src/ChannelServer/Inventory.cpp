@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "PacketReader.h"
-#include "Shops.h"
+#include "ShopDataProvider.h"
 #include "Skills.h"
 #include "StoragePacket.h"
 #include "Timer/Time.h"
@@ -152,7 +152,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 		packet.skipBytes(2);
 		int32_t itemid = packet.getInt();
 		int16_t amount = packet.getShort();
-		int32_t price = Shops::getPrice(player->getShop(), itemid);
+		int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemid);
 		if (price == 0) {
 			// hacking
 			return;
