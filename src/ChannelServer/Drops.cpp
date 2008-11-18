@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropsPacket.h"
 #include "Inventory.h"
 #include "Quests.h"
-#include "Shops.h"
 #include "Randomizer.h"
 #include "Pos.h"
 #include "Skills.h"
