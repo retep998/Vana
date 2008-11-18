@@ -86,7 +86,7 @@ void ItemDataProvider::loadData() {
 	}
 
 	// Items
-	query = Database::getDataDB().query("SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
+	query << "SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC");
 	res = query.use();
 
 	int32_t currentid = 0;
