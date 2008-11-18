@@ -418,6 +418,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\ItemDataProvider.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\MapDataProvider.cpp"
 					>
 				</File>
@@ -729,6 +733,10 @@
 				>
 				<File
 					RelativePath=".\src\ChannelServer\InitializeChannel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ItemDataProvider.h"
 					>
 				</File>
 				<File
