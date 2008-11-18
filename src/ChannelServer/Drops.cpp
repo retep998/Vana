@@ -26,9 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "Skills.h"
 #include "PacketReader.h"
-#include <unordered_map>
-
-using std::tr1::unordered_map;
 
 // Drop class
 Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
@@ -93,10 +90,9 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 	for (size_t k = 0; k < drops.size(); k++) {
  		if (!drops[k].ismesos && Randomizer::Instance()->randInt(9999) < drops[k].chance * ChannelServer::Instance()->getDroprate()) {
 			if (drops[k].quest > 0) {
-				if (player == 0)
+				if (player == 0 || !player->getQuests()->isQuestActive(drops[k].quest))
 					continue;
-				else if (!player->getQuests()->isQuestActive(drops[k].quest))
-					continue;
+
 				int32_t request = 0;
 				for (size_t i = 0; i < Quests::quests[drops[k].quest].rewards.size(); i++) {
 					if (Quests::quests[drops[k].quest].rewards[i].id == drops[k].id) {
