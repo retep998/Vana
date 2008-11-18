@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <unordered_map>
-#include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread/mutex.hpp>
 
 using std::tr1::unordered_map;
 
@@ -41,7 +41,7 @@ private:
 	MapDataProvider& operator=(const MapDataProvider&);
 	static MapDataProvider *singleton;
 	unordered_map<int32_t, Map *> maps;
-	boost::recursive_mutex loadmap_mutex;
+	boost::mutex loadmap_mutex;
 
 	void loadMap(int32_t mapid, Map *&map);
 };
