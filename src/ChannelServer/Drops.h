@@ -18,12 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef DROPS_H
 #define DROPS_H
 
-#include <unordered_map>
-#include <vector>
-
-using std::vector;
-using std::tr1::unordered_map;
-
 #include "Players.h"
 #include "Player.h"
 
@@ -32,20 +26,7 @@ class Player;
 class PacketReader;
 struct Item;
 
-struct DropInfo {
-	DropInfo() : id(0), chance(0), quest(0), ismesos(false), minmesos(0), maxmesos(0) { }
-	int32_t id;
-	uint32_t chance;
-	int16_t quest;
-	bool ismesos;
-	int32_t minmesos;
-	int32_t maxmesos;
-};
-typedef vector<DropInfo> DropsInfo;
-
 namespace Drops {
-	extern unordered_map<int32_t, DropsInfo> dropdata;
-	void addDropData(int32_t id, DropInfo drop);
 	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos origin);
 	void dropMesos(Player *player, PacketReader &packet);
 	void lootItem(Player *player, PacketReader &packet);
