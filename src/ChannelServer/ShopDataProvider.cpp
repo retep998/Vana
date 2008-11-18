@@ -34,7 +34,6 @@ void ShopDataProvider::loadData() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT shopdata.shopid, shopdata.npcid, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
 	mysqlpp::UseQueryResult res = query.use();
 
-	ShopInfo shop;
 	MYSQL_ROW shopRow;
 	while ((shopRow = res.fetch_raw_row())) {
 		// Col0 : Shop ID
@@ -43,10 +42,10 @@ void ShopDataProvider::loadData() {
 		//    3 : Price
 		int32_t shopid = atoi(shopRow[0]);
 
-		shop.npc = atoi(shopRow[1]);
 		if (shops.find(shopid) == shops.end()) {
+			ShopInfo shop = ShopInfo();
+			shop.npc = atoi(shopRow[1]);
 			shops[shopid] = shop;
-			shop = ShopInfo();
 		}
 
 		if (shopRow[2] != 0) {
