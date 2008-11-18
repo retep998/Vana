@@ -298,10 +298,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Shops.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\SkillMacros.cpp"
 					>
 				</File>
@@ -423,6 +419,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MapDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ShopDataProvider.cpp"
 					>
 				</File>
 			</Filter>
@@ -608,10 +608,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Shops.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\SkillMacros.h"
 					>
 				</File>
@@ -741,6 +737,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MapDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ShopDataProvider.h"
 					>
 				</File>
 			</Filter>

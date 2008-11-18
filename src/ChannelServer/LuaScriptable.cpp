@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "Quests.h"
 #include "Levels.h"
-#include "Shops.h"
+#include "ShopDataProvider.h"
 #include "PlayerPacket.h"
 #include "InventoryPacket.h"
 #include "Randomizer.h"
@@ -568,7 +568,7 @@ int LuaExports::setPlayerVariable(lua_State *luaVm) {
 
 int LuaExports::showShop(lua_State *luaVm) {
 	int32_t shopid = lua_tointeger(luaVm, -1);
-	Shops::showShop(getPlayer(luaVm), shopid);
+	ShopDataProvider::Instance()->showShop(getPlayer(luaVm), shopid);
 	return 1;
 }
 

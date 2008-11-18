@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SHOPS_H
-#define SHOPS_H
+#ifndef SHOPDATA_H
+#define SHOPDATA_H
 
 #include "Types.h"
 #include <unordered_map>
@@ -33,12 +33,26 @@ struct ShopInfo {
 	unordered_map<int32_t, int32_t> prices;
 };
 
-namespace Shops {
-	extern unordered_map<int32_t, ShopInfo> shops;
-	extern vector<int32_t> rechargables; // IDs of items which are rechargable i.e. stars
-	void addShop(int32_t id, ShopInfo shop);
-	void showShop(Player *player, int32_t id);
+class ShopDataProvider {
+public:
+	static ShopDataProvider * Instance() {
+		if (singleton == 0)
+			singleton = new ShopDataProvider();
+		return singleton;
+	}
+	void loadData();
+	void addRechargable(int32_t itemid) {
+		rechargables.push_back(itemid);
+	}
+	bool showShop(Player *player, int32_t id);
 	int32_t getPrice(int32_t shopid, int32_t itemid);
+
+private:
+	ShopDataProvider() {}
+	static ShopDataProvider *singleton;
+
+	unordered_map<int32_t, ShopInfo> shops;
+	vector<int32_t> rechargables;
 };
 
 #endif

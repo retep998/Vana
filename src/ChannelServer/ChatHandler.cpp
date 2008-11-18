@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Pos.h"
 #include "PacketReader.h"
-#include "Shops.h"
+#include "ShopDataProvider.h"
 #include "StoragePacket.h"
 #include "WorldServerConnectPacket.h"
 #include <string>
@@ -456,10 +456,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			else if (strcmp(next_token, "pet") == 0) shopid = 9999992;
 			else shopid = atoi(next_token);
 
-			if (Shops::shops.find(shopid) != Shops::shops.end()) {
-				Shops::showShop(player, shopid);
-			}
-			else {
+			if (!ShopDataProvider::Instance()->showShop(player, shopid)) {
 				PlayerPacket::showMessage(player, "Invalid shop. Available shops: gear, scrolls, nx, face, ring, chair, mega, pet", 6);
 			}
 		}
