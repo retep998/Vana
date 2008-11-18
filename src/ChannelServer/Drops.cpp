@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Drops.h"
+#include "DropDataProvider.h"
 #include "Maps.h"
 #include "Reactors.h"
 #include "DropsPacket.h"
@@ -28,8 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 
 using std::tr1::unordered_map;
-
-unordered_map<int32_t, DropsInfo> Drops::dropdata;
 
 // Drop class
 Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
@@ -86,12 +85,8 @@ void Drop::removeDrop(bool showPacket) {
 }
 
 // Drops namespace
-void Drops::addDropData(int32_t id, DropInfo drop) {
-	dropdata[id].push_back(drop);
-}
-
 void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos origin) {
-	DropsInfo drops = dropdata[droppingID];
+	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingID);
 	Player *player = Players::Instance()->getPlayer(playerid);
 
 	int16_t d = 0;

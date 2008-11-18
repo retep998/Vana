@@ -24,7 +24,6 @@ namespace Initializing {
 	void checkMCDBVersion();
 	void loadData();
 	void initializeMobs();
-	void initializeDrops();
 	void initializeReactors();
 	void initializeQuests();
 	void initializeSkills();

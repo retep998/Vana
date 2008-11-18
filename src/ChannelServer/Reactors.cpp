@@ -50,9 +50,7 @@ void Reactor::restore() {
 }
 
 void Reactor::drop(Player *player) {
-	if (Drops::dropdata.find(reactorid) != Drops::dropdata.end()) {
-		Drops::doDrops(player->getId(), mapid, reactorid, pos);
-	}
+	Drops::doDrops(player->getId(), mapid, reactorid, pos);
 }
 
 // Reactors namespace
