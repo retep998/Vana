@@ -38,7 +38,7 @@ Map * MapDataProvider::getMap(int32_t mapid) {
 }
 
 void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
-	boost::recursive_mutex::scoped_lock l(loadmap_mutex);
+	boost::mutex::scoped_lock l(loadmap_mutex);
 
 	mysqlpp::Query query = Database::getDataDB().query();
 	query << "SELECT returnmap, forcedreturn, fieldtype, fieldlimit, mobrate, clock, ship FROM mapdata WHERE mapid = " << mapid;
