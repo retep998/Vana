@@ -16,5 +16,5 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 setPlayerVariable("fm_origin", getMap());
-setPlayerVariable("fm_origin_portal", getPortalFrom());
+setPlayerVariable("fm_origin_portal", getPortalName());
 setMap(910000000, "out00");
