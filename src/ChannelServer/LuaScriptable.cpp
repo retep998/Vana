@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "MapPacket.h"
 #include "Mobs.h"
+#include "NPCs.h"
 #include "Reactors.h"
 #include "Quests.h"
 #include "Levels.h"
@@ -123,6 +124,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 	lua_register(luaVm, "getDropRate", &LuaExports::getDropRate);
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
+	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 }
 
 bool LuaScriptable::run() {
@@ -669,5 +671,12 @@ int LuaExports::getDropRate(lua_State *luaVm) {
 
 int LuaExports::getChannel(lua_State *luaVm) {
 	lua_pushnumber(luaVm, ChannelServer::Instance()->getChannel() + 1);
+	return 1;
+}
+
+int LuaExports::runNPC(lua_State *luaVm) {
+	int npcid = lua_tointeger(luaVm, -1);
+	NPC *npc = new NPC(npcid, getPlayer(luaVm));
+	npc->run();
 	return 1;
 }
