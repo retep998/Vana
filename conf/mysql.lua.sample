@@ -5,7 +5,7 @@ chardb_password = "";
 chardb_database = "maplestory";
 chardb_port = 3306;
 
--- VEDB
+-- MCDB
 datadb_host = "localhost";
 datadb_username = "root";
 datadb_password = "";
