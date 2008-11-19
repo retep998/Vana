@@ -316,8 +316,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			else if (strcmp("sleepywood", next_token) == 0) mapid = 105040300;
 			else if (strcmp("lith", next_token) == 0) mapid = 104000000;
 			else if (strcmp("florina", next_token) == 0) mapid = 110000000;
-			else if (strcmp("moose", next_token) == 0) mapid = 924000001;
 			else if (strcmp("kerning", next_token) == 0) mapid = 103000000;
+			else if (strcmp("port", next_token) == 0) mapid = 120000000;
 			else if (strcmp("orbis", next_token) == 0) mapid = 200000000;
 			else if (strcmp("nath", next_token) == 0) mapid = 211000000;
 			else if (strcmp("ludi", next_token) == 0) mapid = 220000000;
