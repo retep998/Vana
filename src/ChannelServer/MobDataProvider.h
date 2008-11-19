@@ -63,7 +63,7 @@ public:
 	bool mobExists(int32_t mobid) {
 		return mobinfo.find(mobid) != mobinfo.end();
 	}
-	MobInfo getMobInfo(int32_t mobid) {
+	MobInfo const getMobInfo(int32_t mobid) {
 		return mobinfo[mobid];
 	}
 

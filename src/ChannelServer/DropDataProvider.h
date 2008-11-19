@@ -44,7 +44,7 @@ public:
 		return singleton;
 	}
 	void loadData();
-	DropsInfo getDrops(int32_t objectid) {
+	DropsInfo const getDrops(int32_t objectid) {
 		return dropdata[objectid];
 	}
 
