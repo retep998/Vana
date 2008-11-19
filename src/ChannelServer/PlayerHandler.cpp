@@ -35,8 +35,9 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	int16_t job = player->getJob();
 	int16_t disease = 0;
-	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
 	int32_t mapmobid = 0; // Map Mob ID
+	Mob *mob = 0;
+	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
 	int32_t nodamageid = 0;
 	int32_t damage = packet.getInt();
 	bool applieddamage = false;
@@ -46,15 +47,18 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		case 0xFE: // Map/fall damage is an oddball packet
 			break;
 		default: // Code in common, minimizes repeated code
-			mobid = packet.getInt();
-			if (Mobs::mobinfo.find(mobid) == Mobs::mobinfo.end()) {
+			packet.skipBytes(4); // Mob ID
+			mapmobid = packet.getInt();
+			mob = Maps::getMap(player->getMap())->getMob(mapmobid);
+			if (mob == 0) {
 				// Hacking
 				return;
 			}
-			mapmobid = packet.getInt();
+
+			mobid = mob->getMobID();
 			if (type != 0xFF) {
 				try {
-					attack = Mobs::mobinfo[mobid].skills.at(type);
+					attack = mob->getAttackInfo(type);
 					disease = attack.disease;
 				}
 				catch (std::out_of_range) {
@@ -85,16 +89,10 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				pgmr.damage = damage;
 				if (pgmr.isphysical) // Only Power Guard decreases damage
 					damage = (damage - (damage * pgmr.reduction / 100)); 
-				Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
-				if (mob != 0) {
-					mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
-					if (mob->getHP() <= 0)
-						mob->die(player);
-				}
-				else {
-					// Hacking
-					return;
-				}
+
+				mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
+				if (mob->getHP() <= 0)
+					mob->die(player);
 			}
 			break;
 	}

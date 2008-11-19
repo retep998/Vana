@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropDataProvider.h"
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
+#include "MobDataProvider.h"
 #include "ShopDataProvider.h"
 #include "Buffs.h"
-#include "Mobs.h"
 #include "Reactors.h"
 #include "Quests.h"
 #include "Skills.h"
@@ -53,7 +53,7 @@ void Initializing::checkMCDBVersion() {
 void Initializing::loadData() {
 	ItemDataProvider::Instance()->loadData();
 	ShopDataProvider::Instance()->loadData();
-	initializeMobs();
+	MobDataProvider::Instance()->loadData();
 	initializeReactors();
 	DropDataProvider::Instance()->loadData();
 	initializeQuests();
@@ -61,84 +61,6 @@ void Initializing::loadData() {
 	initializePets();
 };
 
-// Mobs
-void Initializing::initializeMobs() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.level, mobdata.hp, mobdata.mp, mobdata.elemAttr, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
-	mysqlpp::UseQueryResult res = query.use();
-
-	int32_t currentid = 0;
-	int32_t previousid = -1;
-	MobInfo mob;
-	MYSQL_ROW mobRow;
-	while ((mobRow = res.fetch_raw_row())) {
-		// Col0 : Mob ID
-		//    1 : Level
-		//    2 : HP
-		//    3 : MP
-		//    4 : Elemental Attributes
-		//    5 : HP Recovery
-		//    6 : MP Recovery
-		//    7 : EXP
-		//    8 : Boss
-		//    9 : HP Color
-		//   10 : HP BG Color
-		//   11 : Mob Summon
-		currentid = atoi(mobRow[0]);
-
-		if (currentid != previousid && previousid != -1) {
-			Mobs::addMob(previousid, mob);
-			mob.summon.clear();
-			mob.skills.clear();
-		}
-		mob.level = atoi(mobRow[1]);
-		mob.hp = atoi(mobRow[2]);
-		mob.mp = atoi(mobRow[3]);
-		string elemattr(mobRow[4]);
-		mob.hprecovery = atoi(mobRow[5]);
-		mob.mprecovery = atoi(mobRow[6]);
-		mob.exp = atoi(mobRow[7]);
-		mob.boss = atob(mobRow[8]);
-		mob.hpcolor = atoi(mobRow[9]);
-		mob.hpbgcolor = atoi(mobRow[10]);
-
-		mob.canfreeze = (!mob.boss && elemattr.find("I2") == string::npos && elemattr.find("I1") == string::npos);
-		mob.canpoision = (!mob.boss && elemattr.find("S2") == string::npos && elemattr.find("S1") == string::npos);
-
-		if (mobRow[11] != 0) {
-			mob.summon.push_back(atoi(mobRow[11]));
-		}
-
-		previousid = currentid;
-	}
-	// Add final entry
-	if (previousid != -1) {
-		Mobs::addMob(previousid, mob);
-	}
-
-	query << "SELECT mobid, attackid, mpconsume, mpburn, disease, level, deadly FROM mobattackdata";
-	res = query.use();
-
-	while ((mobRow = res.fetch_raw_row())) {
-		// Col0 : Mob ID
-		//    1 : Attack ID
-		//    2 : MP Consumption
-		//    3 : MP Burn
-		//    4 : Disease
-		//    5 : Level
-		//    6 : Deadly
-		MobAttackInfo mobattack;
-		mobattack.id = atoi(mobRow[1]);
-		mobattack.mpconsume = atoi(mobRow[2]);
-		mobattack.mpburn = atoi(mobRow[3]);
-		mobattack.disease = atoi(mobRow[4]);
-		mobattack.level = atoi(mobRow[5]);
-		mobattack.deadlyattack = atob(mobRow[6]);
-		Mobs::mobinfo[atoi(mobRow[0])].skills.push_back(mobattack);
-	}
-
-	std::cout << "DONE" << std::endl;
-}
 // Reactors
 void Initializing::initializeReactors() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Reactors... ";

@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MOBS_H
 #define MOBS_H
 
+#include "MobDataProvider.h"
 #include "MovableLife.h"
 #include "Player.h"
 #include "Pos.h"
@@ -34,33 +35,6 @@ class Mob;
 class PacketReader;
 class PacketCreator;
 struct MPEaterInfo;
-
-struct MobAttackInfo {
-	MobAttackInfo() : mobid(-1), id(0), mpconsume(0), mpburn(0), level(0), deadlyattack(false) { }
-	int8_t id;
-	int8_t level;
-	uint8_t disease;
-	uint8_t mpconsume;
-	uint16_t mpburn;
-	int32_t mobid;
-	bool deadlyattack;
-};
-
-struct MobInfo {
-	uint8_t level;
-	uint32_t hp;
-	uint32_t mp;
-	uint32_t hprecovery;
-	uint32_t mprecovery;
-	int32_t exp;
-	bool boss;
-	bool canfreeze;
-	bool canpoision;
-	int8_t hpcolor;
-	int8_t hpbgcolor;
-	vector<int32_t> summon;
-	vector<MobAttackInfo> skills;
-};
 
 enum MobStatus {
 	WATK = 0x1,
@@ -97,9 +71,7 @@ struct StatusInfo {
 };
 
 namespace Mobs {
-	extern unordered_map<int32_t, MobInfo> mobinfo;
 	extern const int32_t mobstatuses[19];
-	void addMob(int32_t id, MobInfo mob);
 	void damageMob(Player *player, PacketReader &packet);
 	void damageMobRanged(Player *player, PacketReader &packet);
 	void damageMobSpell(Player *player, PacketReader &packet);
@@ -128,6 +100,12 @@ public:
 	int32_t getSpawnID() const { return spawnid; }
 	int32_t getHP() const { return hp; }
 	int32_t getMP() const { return mp; }
+	int32_t getMHP() const { return info.hp; }
+	int32_t getMMP() const { return info.mp; }
+	MobAttackInfo getAttackInfo(uint8_t id) const { return info.skills.at(id); }
+	bool isBoss() const { return info.boss; }
+	bool canFreeze() const { return info.canfreeze; }
+	bool canPoison() const { return info.canpoison; }
 	void statusPacket(PacketCreator &packet);
 	Timer::Container * getTimers() const { return timers.get(); }
 	Player * getControl() const { return control; }
@@ -139,7 +117,7 @@ private:
 	int32_t mapid;
 	int32_t spawnid;
 	int32_t mobid;
-	const MobInfo &info;
+	const MobInfo info;
 	int32_t hp;
 	int32_t mp;
 	int32_t status;
