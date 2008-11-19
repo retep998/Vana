@@ -381,7 +381,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		else if (command == "summon"|| command == "spawn") {
 			if (strlen(next_token) == 0) return;
 			int32_t mobid = atoi(strtok_s(0, " ", &next_token));
-			if (Mobs::mobinfo.find(mobid) == Mobs::mobinfo.end()) {
+			if (!MobDataProvider::Instance()->mobExists(mobid)) {
 				PlayerPacket::showMessage(player, "Invalid Mob ID.", 5);
 				return;
 			}

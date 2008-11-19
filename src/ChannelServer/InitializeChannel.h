@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Initializing {
 	void checkMCDBVersion();
 	void loadData();
-	void initializeMobs();
 	void initializeReactors();
 	void initializeQuests();
 	void initializeSkills();

@@ -36,8 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-unordered_map<int32_t, MobInfo> Mobs::mobinfo;
-
 // Mob status stuff
 const int32_t Mobs::mobstatuses[19] = {WATK, WDEF, MATK, MDEF, ACC, AVOID, SPEED, STUN, FREEZE, POISON,
 	SEAL, WEAPON_ATTACK_UP, WEAPON_DEFENSE_UP, MAGIC_ATTACK_UP, MAGIC_DEFENSE_UP, DOOM, SHADOW_WEB,
@@ -50,7 +48,7 @@ id(id),
 mapid(mapid),
 spawnid(spawnid),
 mobid(mobid),
-info(Mobs::mobinfo[mobid]),
+info(MobDataProvider::Instance()->getMobInfo(id)),
 status(0),
 timers(new Timer::Container),
 control(0)
@@ -209,10 +207,6 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMP());
 	packet.reset(19);
 	MobsPacket::moveMob(player, mobid, useskill, skill, packet.getBuffer(), packet.getBufferLength());
-}
-
-void Mobs::addMob(int32_t id, MobInfo mob) {
-	mobinfo[id] = mob;
 }
 
 void Mobs::damageMob(Player *player, PacketReader &packet) {
@@ -466,7 +460,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			}
 			if (mob == 0) // Roll along after the mob is dead to finish getting damage values for pickpocket
 				continue;
-			if (skillid == 1221011 && Mobs::mobinfo[mob->getMobID()].boss) {
+			if (skillid == 1221011 && mob->isBoss()) {
 				// Damage calculation goes in here, I think? Hearing conflicted views.
 			}
 			else {
@@ -481,12 +475,12 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					htabusetaker->applyDamage(player->getId(), damage);
 				}
 			}
-			extra = mobinfo[mob->getMobID()].hp;
+			extra = mob->getMHP();
 			if (eater != 0) { // MP Eater
 				int32_t cmp = mob->getMP();
 				if ((!eater->onlyonce) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < eater->prop)) {
 					eater->onlyonce = true;
-					int32_t mp = mobinfo[mob->getMobID()].mp * eater->x / 100;
+					int32_t mp = mob->getMMP() * eater->x / 100;
 					if (mp > cmp)
 						mp = cmp;
 					mob->setMP(cmp - mp);
@@ -529,10 +523,9 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 }
 
 void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type) {
-	const MobInfo &info = mobinfo[mob->getMobID()];
 	uint8_t level = skillid > 0 ? player->getSkills()->getSkillLevel(skillid) : 0;
 	vector<StatusInfo> statuses;
-	if (info.canfreeze) { // Freezing stuff
+	if (mob->canFreeze()) { // Freezing stuff
 		switch (skillid) {
 			case 2201004: // Cold Beam
 			case 2211002: // Ice Strike
@@ -554,13 +547,13 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211006, Skills::skills[1211006][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000));
 		}
 	}
-	if (info.canpoision) { // Poisoning stuff
+	if (mob->canPoison()) { // Poisoning stuff
 		if ((skillid == 2101005 || skillid == 2111006 || skillid == 2111003) && Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) { // Poison brace, Element composition, and Poison mist
-			int16_t pdamage = (int16_t)(info.hp / (70 - level));
+			int16_t pdamage = (int16_t)(mob->getMHP() / (70 - level));
 			statuses.push_back(StatusInfo(POISON, pdamage, skillid, Skills::skills[skillid][level].time * 1000));
 		}
 	}
-	if (!info.boss) { // Seal, Stun, etc
+	if (!mob->isBoss()) { // Seal, Stun, etc
 		switch (skillid) {
 			case 3101005: // Arrow Bomb
 			case 1111005: // Coma: Sword
