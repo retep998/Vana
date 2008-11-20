@@ -217,13 +217,13 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet.getInt();
-	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
 	switch (skillid) {
 		case 5201002:
 		case 5101004:
 			packet.skipBytes(4); // Charge 
 			break;
 	}
+	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
 	int32_t useless = 0;
