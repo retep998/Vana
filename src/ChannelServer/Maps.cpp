@@ -59,9 +59,8 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	}
 	else {
 		// Normal portal
-		PortalInfo *nextportal = 0;
-		nextportal = getMap(portal->toid)->getPortal(portal->toname);
-		changeMap(player, portal->toid, nextportal);
+		PortalInfo *nextportal = getMap(portal->tomap)->getPortal(portal->toname);
+		changeMap(player, portal->tomap, nextportal);
 	}
 }
 

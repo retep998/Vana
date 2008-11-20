@@ -49,7 +49,7 @@ struct PortalInfo {
 	int8_t id;
 	string name;
 	Pos pos;
-	int32_t toid;
+	int32_t tomap;
 	string toname;
 	string script;
 	bool onlyOnce;

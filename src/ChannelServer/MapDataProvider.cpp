@@ -69,7 +69,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		return;
 
 	// Portals
-	query << "SELECT id, name, x, y, toid, toname, script, onlyonce FROM mapportaldata WHERE mapid = " << mapid;
+	query << "SELECT id, name, x, y, tomap, toname, script, onlyonce FROM mapportaldata WHERE mapid = " << mapid;
 	res = query.use();
 
 	while ((dataRow = res.fetch_raw_row())) {
@@ -85,7 +85,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		portal.id = atoi(dataRow[0]);
 		portal.name = dataRow[1];
 		portal.pos = Pos(atoi(dataRow[2]), atoi(dataRow[3]));
-		portal.toid = atoi(dataRow[4]);
+		portal.tomap = atoi(dataRow[4]);
 		portal.toname = dataRow[5];
 		portal.script = dataRow[6];
 		portal.onlyOnce = atob(dataRow[7]);

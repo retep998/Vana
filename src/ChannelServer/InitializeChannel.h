@@ -28,7 +28,7 @@ namespace Initializing {
 	void initializeSkills();
 	void initializePets();
 
-	const int32_t mcdb_version = 1;
+	const int32_t mcdb_version = 2;
 	const int32_t mcdb_subversion = 0;
 };
 

@@ -26,13 +26,13 @@ using std::tr1::unordered_map;
 using std::vector;
 
 struct DropInfo {
-	DropInfo() : id(0), chance(0), quest(0), ismesos(false), minmesos(0), maxmesos(0) { }
-	int32_t id;
-	uint32_t chance;
-	int16_t quest;
+	DropInfo() : ismesos(false), itemid(0), minamount(0), maxamount(0), questid(0), chance(0) { }
 	bool ismesos;
-	int32_t minmesos;
-	int32_t maxmesos;
+	int32_t itemid;
+	int32_t minamount;
+	int32_t maxamount;
+	int16_t questid;
+	uint32_t chance;
 };
 typedef vector<DropInfo> DropsInfo;
 
