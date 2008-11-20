@@ -516,10 +516,9 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 				succeed = 0;
 				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
 					int8_t n = -1; // Default - Decrease stats
-					// TODO: Make sure that Chaos Scrolls are working like they do in global
 					if ((int16_t) Randomizer::Instance()->randShort(99) < 50) // Increase
 						n = 1;
-					// Gives 0-5 stats on every stat on the item
+					// Gives/takes 0-5 stats on every stat on the item
 					if (equip->istr > 0)
 						equip->istr += Randomizer::Instance()->randShort(5) * n;
 					if (equip->idex > 0)
