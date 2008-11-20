@@ -85,72 +85,64 @@ void Drop::removeDrop(bool showPacket) {
 void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos origin) {
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingID);
 	Player *player = Players::Instance()->getPlayer(playerid);
-
 	int16_t d = 0;
-	for (size_t k = 0; k < drops.size(); k++) {
- 		if (!drops[k].ismesos && Randomizer::Instance()->randInt(9999) < drops[k].chance * ChannelServer::Instance()->getDroprate()) {
-			if (drops[k].quest > 0) {
-				if (player == 0 || !player->getQuests()->isQuestActive(drops[k].quest))
-					continue;
 
-				int32_t request = 0;
-				for (size_t i = 0; i < Quests::quests[drops[k].quest].rewards.size(); i++) {
-					if (Quests::quests[drops[k].quest].rewards[i].id == drops[k].id) {
-						request = Quests::quests[drops[k].quest].rewards[i].count;
+	for (size_t i = 0; i < drops.size(); i++) {
+		int32_t nm = drops[i].minamount;
+		int32_t xm = drops[i].maxamount;
+		int32_t amount = Randomizer::Instance()->randInt(xm - nm) + nm;
+		Pos pos;
+		Drop *drop = 0;
+
+ 		if (Randomizer::Instance()->randInt(99999) < drops[i].chance * ChannelServer::Instance()->getDroprate()) {
+			pos.x = origin.x + ((d % 2) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
+			pos.y = origin.y;
+
+			if (!drops[i].ismesos) {
+				int32_t itemid = drops[i].itemid;
+				int16_t questid = drops[i].questid;
+
+				if (questid > 0) {
+					if (player == 0 || !player->getQuests()->isQuestActive(questid))
+						continue;
+
+					int32_t request = 0;
+					for (size_t r = 0; r < Quests::quests[questid].rewards.size(); r++) {
+						if (Quests::quests[questid].rewards[r].id == itemid) {
+							request = Quests::quests[questid].rewards[r].count;
+						}
 					}
+					if (player->getInventory()->getItemAmount(itemid) > request)
+						continue;
 				}
-				if (player->getInventory()->getItemAmount(drops[k].id) > request)
-					continue;
-			}
 
-			Pos pos;
-			if (d % 2) {
-				pos.x = origin.x + 25 * ((d + 1) / 2);
-				pos.y = origin.y;
+				if (ISEQUIP(itemid))
+					drop = new Drop(mapid, Item(itemid, true), pos, playerid);
+				else
+					drop = new Drop(mapid, Item(itemid, (int16_t) amount), pos, playerid);
+
+				if (questid > 0) {
+					drop->setPlayer(playerid);
+					drop->setQuest(questid);
+				}
 			}
 			else {
-				pos.x = origin.x - 25 * (d / 2);
-				pos.y = origin.y;
+				if (xm > 0 && Randomizer::Instance()->randInt(99) < 50) {
+					int32_t mesos = (amount * ChannelServer::Instance()->getMesorate());
+					// For Meso up
+					if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
+						mesos = (mesos * Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x) / 100;
+					}
+					drop = new Drop(mapid, mesos, pos, playerid);
+				}
 			}
-
-			Drop *drop = 0;
-
-			if (ISEQUIP(drops[k].id))
-				drop = new Drop(mapid, Item(drops[k].id, true), pos, playerid);
-			else
-				drop = new Drop(mapid, Item(drops[k].id, (int16_t) 1), pos, playerid);
-
-			if (drops[k].quest > 0) {
-				drop->setPlayer(playerid);
-				drop->setQuest(drops[k].quest);
-			}
-			drop->setTime(100);
-			drop->doDrop(origin);
-			d++;
 		}
 
-		else if (drops[k].ismesos) {
-			int32_t nm = drops[k].minmesos * ChannelServer::Instance()->getMesorate();
-			int32_t xm = drops[k].maxmesos * ChannelServer::Instance()->getMesorate();
-			if (xm > 0 && nm > 0) {
-				int32_t mesos = Randomizer::Instance()->randInt(xm - nm) + nm;
-				// For Meso up
-				if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
-					mesos = (mesos * Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x) / 100;
-				}
-				Pos pos;
-				if (d % 2) {
-					pos.x = origin.x + 25 * ((d + 1) / 2);
-					pos.y = origin.y;
-				}
-				else {
-					pos.x = origin.x - 25 * (d / 2);
-					pos.y = origin.y;
-				}
-				Drop *drop = new Drop(mapid, mesos, pos, playerid);
-				drop->setTime(100);
-				drop->doDrop(origin);
-			}
+		if (drop != 0) {
+			drop->setTime(100);
+			drop->doDrop(origin);
+			drop = 0;
+			d++;
 		}
 	}
 }
