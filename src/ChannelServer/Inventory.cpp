@@ -513,6 +513,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 		case 2049101: // Liar Tree Sap 100%
 		case 2049100: // Chaos Scroll
 			if (equip->slots > 0) {
+				succeed = 0;
 				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
 					int8_t n = -1; // Default - Decrease stats
 					// TODO: Make sure that Chaos Scrolls are working like they do in global
@@ -552,10 +553,6 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 					equip->slots--;
 					equip->scrolls++;
 					succeed = 1;
-				}
-				else { // Break
-					cursed = true;
-					succeed = 0;
 				}
 				scrolled = true;
 			}
