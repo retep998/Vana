@@ -77,7 +77,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    1 : Name
 		//    2 : x
 		//    3 : y
-		//    4 : To ID
+		//    4 : To Map
 		//    5 : To Name
 		//    6 : Script
 		//    7 : Only once
@@ -108,8 +108,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		if (atob(dataRow[0])) {
 			NPCSpawnInfo npc;
 			npc.id = atoi(dataRow[1]);
-			npc.x = atoi(dataRow[2]);
-			npc.cy = atoi(dataRow[3]);
+			npc.pos = Pos(atoi(dataRow[2]), atoi(dataRow[3]));
 			npc.fh = atoi(dataRow[4]);
 			npc.rx0 = atoi(dataRow[5]);
 			npc.rx1 = atoi(dataRow[6]);

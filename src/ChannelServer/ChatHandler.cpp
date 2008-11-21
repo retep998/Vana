@@ -137,10 +137,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				NPCSpawnInfo npc;
 				npc.id = atoi(next_token);
 				npc.fh = 0;
-				npc.x = player->getPos().x;
-				npc.cy = player->getPos().y;
-				npc.rx0 = npc.x - 50;
-				npc.rx1 = npc.x + 50;
+				npc.pos = player->getPos();
+				npc.rx0 = npc.pos.x - 50;
+				npc.rx1 = npc.pos.x + 50;
 				Maps::getMap(player->getMap())->addNPC(npc);
 			}
 		}
@@ -462,12 +461,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else if (command == "pos") {
 			char text[50];
-			sprintf_s(text, 50, "X: %d Y: %d", player->getPos().x, player->getPos().y);
-			PlayerPacket::showMessage(player, text, 6);
-		}
-		else if (command == "fh") {
-			char text[50];
-			sprintf_s(text, 50, "Foothold: %d", player->getFH());
+			sprintf_s(text, 50, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFH());
 			PlayerPacket::showMessage(player, text, 6);
 		}
 		else if (command == "item") {
@@ -594,7 +588,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			Mobs::spawnMob(player, 8800010);
 		}
 		else if (command == "music") {
-			Maps::changeMusic(player->getMap(), next_token);
+			Maps::getMap(player->getMap())->setMusic(next_token);
 		}
 		else if	(command == "dc") {
 			player->getSession()->disconnect();

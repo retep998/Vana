@@ -35,7 +35,7 @@ namespace MapPacket {
 	void showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec);
 	void showTimer(Player *player, int32_t sec); // Show Timer like in PQ
 	void forceMapEquip(Player *player);
-	void changeMusic(int32_t mapid, const string &musicname); // Change map music
+	void setMusic(int32_t mapid, const string &musicname); // Set map music
 	void sendSound(int32_t mapid, const string &soundname); // Send sound - clear/wrong/etc
 	void sendEvent(int32_t mapid, const string &eventname); // Send event - clear/wrong/etc
 	void showEventInstructions(int32_t mapid);

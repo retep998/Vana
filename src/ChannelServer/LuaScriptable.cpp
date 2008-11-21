@@ -453,7 +453,7 @@ int LuaExports::setMap(lua_State *luaVm) {
 }
 
 int LuaExports::setMusic(lua_State *luaVm) {
-	Maps::changeMusic(getPlayer(luaVm)->getMap(), lua_tostring(luaVm, -1));
+	Maps::getMap(getPlayer(luaVm)->getMap())->setMusic(lua_tostring(luaVm, -1));
 	return 1;
 }
 

@@ -39,6 +39,20 @@ class PacketCreator;
 class Player;
 class Reactor;
 
+struct MapInfo {
+	MapInfo() : musicname("") {}
+	int32_t id;
+	int32_t rm;
+	int32_t forcedReturn;
+	int8_t fieldType;
+	int32_t fieldLimit;
+	double spawnrate;
+	bool clock;
+	int32_t shipInterval;
+	string musicname;
+};
+typedef shared_ptr<MapInfo> MapInfoPtr;
+
 struct FootholdInfo {
 	Pos pos1;
 	Pos pos2;
@@ -57,25 +71,12 @@ struct PortalInfo {
 typedef unordered_map<string, PortalInfo> PortalsInfo;
 typedef vector<PortalInfo> SpawnPoints;
 
-struct MapInfo {
-	int32_t id;
-	int32_t rm;
-	int32_t forcedReturn;
-	int8_t fieldType;
-	int32_t fieldLimit;
-	double spawnrate;
-	bool clock;
-	int32_t shipInterval;
-};
-typedef shared_ptr<MapInfo> MapInfoPtr;
-
 struct NPCSpawnInfo {
 	int32_t id;
-	int16_t x;
-	int16_t cy;
+	Pos pos;
 	int16_t fh;
 	int16_t rx0;
-	int16_t rx1; 
+	int16_t rx1;
 };
 typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 
@@ -114,6 +115,7 @@ public:
 	Map(MapInfoPtr info);
 	// Map Info
 	MapInfoPtr getInfo() const { return info; }
+	void setMusic(const string &musicname);
 
 	// Footholds
 	void addFoothold(FootholdInfo foothold) { footholds.push_back(foothold); }
