@@ -28,8 +28,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i) {
 	packet.addShort(SEND_SHOW_NPC);
 	packet.addInt(i+0x64);
 	packet.addInt(npc.id);
-	packet.addShort(npc.x);
-	packet.addShort(npc.cy);
+	packet.addPos(npc.pos);
 	packet.addByte(1);
 	packet.addShort(npc.fh);
 	packet.addShort(npc.rx0);
@@ -41,8 +40,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i) {
 	packet.addByte(1);
 	packet.addInt(i+0x64);
 	packet.addInt(npc.id);
-	packet.addShort(npc.x);
-	packet.addShort(npc.cy);
+	packet.addPos(npc.pos);
 	packet.addByte(1);
 	packet.addShort(npc.fh);
 	packet.addShort(npc.rx0);

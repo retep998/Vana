@@ -124,10 +124,3 @@ void Maps::newMap(Player *player, int32_t mapid) {
 	// Berserk doesn't display properly when switching maps with it activated - client displays, but no message is sent to any client
 	// player->getActiveBuffs()->checkBerserk(true) would override the default of only displaying changes
 }
-
-// Change Music
-void Maps::changeMusic(int32_t mapid, const string &musicname) {
-	if (Maps::getMap(mapid)) {
-		MapPacket::changeMusic(mapid, musicname);
-	}
-}

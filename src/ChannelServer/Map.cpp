@@ -46,6 +46,12 @@ timer_started(false)
 {
 }
 
+// Map Info
+void Map::setMusic(const string &musicname) {
+	getInfo()->musicname = musicname;
+	MapPacket::setMusic(getInfo()->id, musicname);
+}
+
 // Players
 void Map::addPlayer(Player *player) {
 	setTimer(); // Setup the timer if this is the first player to enter the map
@@ -277,6 +283,10 @@ void Map::runTimer() {
 }
 
 void Map::showObjects(Player *player) { // Show all Map Objects
+	// Music
+	if (info->musicname.size() > 0)
+		MapPacket::setMusic(info->id, info->musicname);
+
 	// Players
 	for (size_t i = 0; i < players.size(); i++) {
 		if (player != players[i] && players[i]->getActiveBuffs()->getActiveSkillLevel(9101004) == 0) {

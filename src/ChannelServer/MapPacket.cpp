@@ -189,7 +189,7 @@ void MapPacket::forceMapEquip(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::changeMusic(int32_t mapid, const string &musicname) { // Change music
+void MapPacket::setMusic(int32_t mapid, const string &musicname) { // Set music
 	PacketCreator packet;
 	packet.addShort(SEND_MAP_EFFECT);
 	packet.addByte(0x06);
