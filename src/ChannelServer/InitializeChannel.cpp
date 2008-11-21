@@ -40,13 +40,18 @@ void Initializing::checkMCDBVersion() {
 	int32_t version = (int32_t) res[0]["version"];
 	int32_t subversion = (int32_t) res[0]["subversion"];
 
-	if (version != mcdb_version || subversion < mcdb_subversion) {
-		// VEDB too old
-		std::cout << "ERROR: MCDB too old. Expected: " << mcdb_version << "." << mcdb_subversion << " ";
+	if (version != mcdb_version) {
+		// MCDB too old
+		std::cout << "ERROR: MCDB version imcompatible. Expected: " << mcdb_version << "." << mcdb_subversion << " ";
 		std::cout << "Have: " << version << "." << subversion << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
 		exit(4);
+	}
+	else if (subversion < mcdb_subversion) {
+		std::cout << "NOTICE: It is recommended that you update to the latest minor revision for major revision " << mcdb_version << ". Minor revisions tend to have bugfixes and other useful updates to the database." << std::endl;
+		std::cout << "Calling for Revision: " << mcdb_version << "." << mcdb_subversion << std::endl;
+		std::cout << "You have Revision: " << version << "." << subversion << std::endl << std::endl;
 	}
 }
 
