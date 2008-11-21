@@ -137,7 +137,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		{
 			uint8_t players = packet.getByte();
 			for (uint8_t i = 0; i < players; i++) {
-				int16_t playerid = packet.getInt();
+				int32_t playerid = packet.getInt();
 				if (Player *target = Players::Instance()->getPlayer(playerid)) {
 					SkillsPacket::showSkill(player, skillid, level, true, true);
 					SkillsPacket::showSkill(player, skillid, level, true);
