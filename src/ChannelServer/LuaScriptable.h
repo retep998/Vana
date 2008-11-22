@@ -136,6 +136,14 @@ namespace LuaExports {
 	int getChannelClock(lua_State *luaVm);
 	int getWorldClock(lua_State *luaVm);
 	int getTime(lua_State *luaVm);
+	int getDay(lua_State *luaVm);
+	int getDate(lua_State *luaVm);
+	int getMonth(lua_State *luaVm);
+	int getYear(lua_State *luaVm);
+	int getHour(lua_State *luaVm);
+	int getMinute(lua_State *luaVm);
+	int getSecond(lua_State *luaVm);
+	int getDST(lua_State *luaVm);
 
 	int getEXPRate(lua_State *luaVm);
 	int getMesoRate(lua_State *luaVm);
