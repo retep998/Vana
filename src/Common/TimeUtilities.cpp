@@ -53,3 +53,81 @@ int32_t TimeUtilities::tickToTick32(int64_t tick) {
 		tick32 = (int32_t) (tick/4294967296 + 1); // Plus one to compensate for the loss of conversion
 	return tick32;
 }
+
+int32_t TimeUtilities::getDate(time_t ctime) {
+	int32_t result = 0;
+	tm timeinfo;
+	localtime_s(&timeinfo, &ctime);
+	result = timeinfo.tm_mday;
+	return result;
+}
+
+int32_t TimeUtilities::getMonth(time_t ctime) {
+	int32_t result = 0;
+	tm timeinfo;
+	localtime_s(&timeinfo, &ctime);
+	result = timeinfo.tm_mon + 1;
+	return result;
+}
+
+int32_t TimeUtilities::getYear(time_t ctime) {
+	int32_t result = 0;
+	tm timeinfo;
+	localtime_s(&timeinfo, &ctime);
+	result = timeinfo.tm_year + 1900;
+	return result;
+}
+
+int32_t TimeUtilities::getDay(time_t ctime) {
+	int32_t result = 0;
+	tm timeinfo;
+	localtime_s(&timeinfo, &ctime);
+	result = timeinfo.tm_wday + 1;
+	return result;
+}
+
+string TimeUtilities::getDayString(time_t ctime) {
+	string result = "fail";
+	switch (getDay(ctime)) {
+		case 1: result = "Sunday"; break;
+		case 2: result = "Monday"; break;
+		case 3: result = "Tuesday"; break;
+		case 4: result = "Wednesday"; break;
+		case 5: result = "Thursday"; break;
+		case 6: result = "Friday"; break;
+		case 7: result = "Saturday"; break;
+	}
+	return result;
+}
+
+int32_t TimeUtilities::getHour(time_t ctime) {
+	int32_t result = 0;
+	tm timeinfo;
+	localtime_s(&timeinfo, &ctime);
+	result = timeinfo.tm_hour;
+	return result;
+}
+
+int32_t TimeUtilities::getMinute(time_t ctime) {
+	int32_t result = 0;
+	tm timeinfo;
+	localtime_s(&timeinfo, &ctime);
+	result = timeinfo.tm_min;
+	return result;
+}
+
+int32_t TimeUtilities::getSecond(time_t ctime) {
+	int32_t result = 0;
+	tm timeinfo;
+	localtime_s(&timeinfo, &ctime);
+	result = timeinfo.tm_sec;
+	return result;
+}
+
+bool TimeUtilities::getDST(time_t ctime) {
+	tm timeinfo;
+	localtime_s(&timeinfo, &ctime);
+	if (timeinfo.tm_isdst > 0)
+		return true;
+	return false;
+}

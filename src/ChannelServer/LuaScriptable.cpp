@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Levels.h"
 #include "ShopDataProvider.h"
+#include "TimeUtilities.h"
 #include "PlayerPacket.h"
 #include "InventoryPacket.h"
 #include "Randomizer.h"
@@ -122,6 +123,14 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getChannelClock", &LuaExports::getChannelClock);
 	lua_register(luaVm, "getWorldClock", &LuaExports::getWorldClock);
 	lua_register(luaVm, "getTime", &LuaExports::getTime);
+	lua_register(luaVm, "getDay", &LuaExports::getDay);
+	lua_register(luaVm, "getDate", &LuaExports::getDate);
+	lua_register(luaVm, "getMonth", &LuaExports::getMonth);
+	lua_register(luaVm, "getYear", &LuaExports::getYear);
+	lua_register(luaVm, "getHour", &LuaExports::getHour);
+	lua_register(luaVm, "getMinute", &LuaExports::getMinute);
+	lua_register(luaVm, "getSecond", &LuaExports::getSecond);
+	lua_register(luaVm, "getDST", &LuaExports::getDST);
 	lua_register(luaVm, "getEXPRate", &LuaExports::getEXPRate);
 	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
@@ -685,16 +694,62 @@ int LuaExports::runNPC(lua_State *luaVm) {
 }
 
 int LuaExports::getChannelClock(lua_State *luaVm) {
-	lua_pushnumber(luaVm, clock());
+	lua_pushinteger(luaVm, clock());
 	return 1;
 }
 
 int LuaExports::getWorldClock(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getWorldClock() + clock());
+	lua_pushinteger(luaVm, ChannelServer::Instance()->getWorldClock() + clock());
 	return 1;
 }
 
 int LuaExports::getTime(lua_State *luaVm) {
-	lua_pushnumber(luaVm, time(0));
+	lua_pushinteger(luaVm, (lua_Integer) time(0)); // Here's to hoping that lua_Integer is an 8-byte type on most platforms!
+	return 1;
+}
+
+int LuaExports::getDate(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getDate(time(0)));
+	return 1;
+}
+
+int LuaExports::getDay(lua_State *luaVm) {
+	bool stringreturn = false;
+	if (lua_isboolean(luaVm, -1))
+		stringreturn = (lua_toboolean(luaVm, -1) != 0 ? true : false);
+	if (stringreturn)
+		lua_pushstring(luaVm, TimeUtilities::getDayString(time(0)).c_str());
+	else
+		lua_pushinteger(luaVm, TimeUtilities::getDay(time(0)));
+	return 1;
+}
+
+int LuaExports::getMonth(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getMonth(time(0)));
+	return 1;
+}
+
+int LuaExports::getYear(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getYear(time(0)));
+	return 1;
+}
+
+int LuaExports::getHour(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getHour(time(0)));
+	return 1;
+}
+
+int LuaExports::getMinute(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getMinute(time(0)));
+	return 1;
+}
+
+int LuaExports::getSecond(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getSecond(time(0)));
+	return 1;
+}
+
+int LuaExports::getDST(lua_State *luaVm) {
+	lua_pushboolean(luaVm, TimeUtilities::getDST(time(0)));
 	return 1;
 }

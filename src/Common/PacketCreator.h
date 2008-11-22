@@ -61,35 +61,35 @@ private:
 
 inline
 void PacketCreator::addInt(int32_t intg) {
-	(*(int32_t*)(packet+pos)) = intg;
+	(*(int32_t*)(packet + pos)) = intg;
 	pos += 4;
 }
 
 inline
 void PacketCreator::setInt(int32_t intg, size_t pos) {
-	(*(int32_t*)(packet+pos)) = intg;
+	(*(int32_t*)(packet + pos)) = intg;
 }
 
 inline
 void PacketCreator::addInt64(int64_t int64) {
-	(*(int64_t*)(packet+pos)) = int64;
+	(*(int64_t*)(packet + pos)) = int64;
 	pos += 8;
 }
 
 inline
 void PacketCreator::setInt64(int64_t int64, size_t pos) {
-	(*(int64_t*)(packet+pos)) = int64;
+	(*(int64_t*)(packet + pos)) = int64;
 }
 
 inline
 void PacketCreator::addShort(int16_t shrt) {
-	(*(int16_t*)(packet+pos)) = shrt;
+	(*(int16_t*)(packet + pos)) = shrt;
 	pos += 2;
 }
 
 inline
 void PacketCreator::setShort(int16_t shrt, size_t pos) {
-	(*(int16_t*)(packet+pos)) = shrt;
+	(*(int16_t*)(packet + pos)) = shrt;
 }
 
 inline
@@ -104,7 +104,7 @@ void PacketCreator::setByte(unsigned char byte, size_t pos) {
 
 inline
 void PacketCreator::addClock(clock_t clock) {
-	(*(clock_t*)(packet+pos)) = clock;
+	(*(clock_t*)(packet + pos)) = clock;
 	pos += sizeof(clock_t);
 }
 
