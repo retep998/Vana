@@ -119,6 +119,9 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
 	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
 	lua_register(luaVm, "isGM", &LuaExports::isGM);
+	lua_register(luaVm, "getChannelClock", &LuaExports::getChannelClock);
+	lua_register(luaVm, "getWorldClock", &LuaExports::getWorldClock);
+	lua_register(luaVm, "getTime", &LuaExports::getTime);
 	lua_register(luaVm, "getEXPRate", &LuaExports::getEXPRate);
 	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
@@ -675,8 +678,23 @@ int LuaExports::getChannel(lua_State *luaVm) {
 }
 
 int LuaExports::runNPC(lua_State *luaVm) {
-	int npcid = lua_tointeger(luaVm, -1);
+	int32_t npcid = lua_tointeger(luaVm, -1);
 	NPC *npc = new NPC(npcid, getPlayer(luaVm));
 	npc->run();
+	return 1;
+}
+
+int LuaExports::getChannelClock(lua_State *luaVm) {
+	lua_pushnumber(luaVm, clock());
+	return 1;
+}
+
+int LuaExports::getWorldClock(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getWorldClock() + clock());
+	return 1;
+}
+
+int LuaExports::getTime(lua_State *luaVm) {
+	lua_pushnumber(luaVm, time(0));
 	return 1;
 }

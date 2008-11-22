@@ -133,6 +133,10 @@ namespace LuaExports {
 
 	int isGM(lua_State *luaVm);
 
+	int getChannelClock(lua_State *luaVm);
+	int getWorldClock(lua_State *luaVm);
+	int getTime(lua_State *luaVm);
+
 	int getEXPRate(lua_State *luaVm);
 	int getMesoRate(lua_State *luaVm);
 	int getQuestEXPRate(lua_State *luaVm);

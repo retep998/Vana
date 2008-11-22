@@ -35,6 +35,7 @@ public:
 	int16_t getShort();
 	string getString();
 	string getString(size_t len);
+	clock_t getClock();
 	unsigned char * getBuffer();
 	size_t getBufferLength();
 
