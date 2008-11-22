@@ -127,7 +127,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 				}
 			}
 			else {
-				if (xm > 0 && Randomizer::Instance()->randInt(99) < 50) {
+				if (xm > 0 && Randomizer::Instance()->randInt(99999) < drops[i].chance * ChannelServer::Instance()->getDroprate()) {
 					int32_t mesos = (amount * ChannelServer::Instance()->getMesorate());
 					// For Meso up
 					if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
