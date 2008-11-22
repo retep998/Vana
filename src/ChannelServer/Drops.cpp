@@ -88,9 +88,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 	int16_t d = 0;
 
 	for (size_t i = 0; i < drops.size(); i++) {
-		int32_t nm = drops[i].minamount;
-		int32_t xm = drops[i].maxamount;
-		int32_t amount = Randomizer::Instance()->randInt(xm - nm) + nm;
+		int32_t amount = Randomizer::Instance()->randInt(drops[i].maxamount - drops[i].minamount) + drops[i].minamount;
 		Pos pos;
 		Drop *drop = 0;
 
@@ -127,14 +125,12 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 				}
 			}
 			else {
-				if (xm > 0 && Randomizer::Instance()->randInt(99999) < drops[i].chance * ChannelServer::Instance()->getDroprate()) {
-					int32_t mesos = (amount * ChannelServer::Instance()->getMesorate());
-					// For Meso up
-					if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
-						mesos = (mesos * Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x) / 100;
-					}
-					drop = new Drop(mapid, mesos, pos, playerid);
+				int32_t mesos = (amount * ChannelServer::Instance()->getMesorate());
+				// For Meso up
+				if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
+					mesos = (mesos * Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x) / 100;
 				}
+				drop = new Drop(mapid, mesos, pos, playerid);
 			}
 		}
 
