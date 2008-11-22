@@ -48,9 +48,10 @@ public:
 	void setChannel(uint16_t channel) { this->channel = channel; }
 	void setExprate(int32_t exprate) { this->exprate = exprate; }
 	void setQuestExprate(int32_t questexprate) { this->questexprate = questexprate; }
-	void setMesorate (int32_t mesorate) { this->mesorate = mesorate; }
-	void setDroprate (int32_t droprate) { this->droprate = droprate; }
-	void setMaxStats (int16_t max) { this->maxStats = max; }
+	void setMesorate(int32_t mesorate) { this->mesorate = mesorate; }
+	void setDroprate(int32_t droprate) { this->droprate = droprate; }
+	void setMaxStats(int16_t max) { this->maxStats = max; }
+	void setWorldClock(clock_t clock) { worldClock = clock; }
 	void setScrollingHeader(const string &message);
 	void setWorldIp(const string &ip) { world_ip = ip; }
 
@@ -63,6 +64,7 @@ public:
 	int32_t getQuestExprate() const { return questexprate; }
 	int32_t getMesorate() const { return mesorate; }
 	int32_t getDroprate() const { return droprate; }
+	clock_t getWorldClock() const { return worldClock; }
 	string getScrollingHeader() const { return scrollingHeader; }
 	WorldServerConnectPlayer * getWorldPlayer() const { return worldPlayer; }
 private:
@@ -84,6 +86,7 @@ private:
 	int32_t questexprate;
 	int32_t mesorate;
 	int32_t droprate;
+	clock_t worldClock;
 	string login_ip;
 	string world_ip;
 	string external_ip;

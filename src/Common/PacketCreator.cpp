@@ -31,7 +31,7 @@ void PacketCreator::addBuffer(PacketReader &packet) {
 }
 
 void PacketCreator::addBuffer(unsigned char *bytes, size_t len) {
-	memcpy_s(packet+pos, len, bytes, len);
+	memcpy_s(packet + pos, len, bytes, len);
 	pos += len;
 }
 
@@ -48,9 +48,9 @@ void PacketCreator::addIP(const string &ip) {
 }
 
 void PacketCreator::addBytes(char *hex) {
-	for (size_t i = 0; i< strlen(hex)/2; i++) {
-		unsigned char byte1 = hex[i*2];
-		unsigned char byte2 = hex[i*2+1];
+	for (size_t i = 0; i < strlen(hex) / 2; i++) {
+		unsigned char byte1 = hex[i * 2];
+		unsigned char byte2 = hex[i * 2 + 1];
 		if (byte1 >= 'A' && byte1 <= 'F')
 			byte1 -= 'A' - 0xa;
 		else if (byte1 >= 'a' && byte1 <= 'f')
@@ -63,7 +63,7 @@ void PacketCreator::addBytes(char *hex) {
 			byte2 -= 'a' - 0xa;
 		else if (byte2 >= '0' && byte2 <= '9')
 			byte2 -= '0';
-		unsigned char byte = byte1*0x10 + byte2;
+		unsigned char byte = byte1 * 0x10 + byte2;
 		packet[pos++] = byte;	
 	}
 }
@@ -75,7 +75,7 @@ void PacketCreator::addString(const string &str, size_t len) {
 	}
 	strncpy_s((char *) packet + pos, bufferLen - pos, str.c_str(), slen);
 	for (size_t i = slen; i < len; i++) {
-		packet[pos+i] = 0;
+		packet[pos + i] = 0;
 	}
 	pos += len;
 }

@@ -45,6 +45,7 @@ public:
 	void addByte(unsigned char byte);
 	void setByte(unsigned char byte, size_t pos);
 	void addBytes(char *hex);
+	void addClock(clock_t clock);
 	void addBuffer(unsigned char *bytes, size_t len);
 	void addBuffer(PacketReader &packet);
 	void addIP(const string &ip);
@@ -99,6 +100,12 @@ void PacketCreator::addByte(unsigned char byte) {
 inline
 void PacketCreator::setByte(unsigned char byte, size_t pos) {
 	packet[pos] = byte;
+}
+
+inline
+void PacketCreator::addClock(clock_t clock) {
+	(*(clock_t*)(packet+pos)) = clock;
+	pos += sizeof(clock_t);
 }
 
 inline

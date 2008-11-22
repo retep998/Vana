@@ -43,6 +43,7 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t 
 	packet.addShort(port);
 	packet.addByte(maxMultiLevel);
 	packet.addShort(maxStats);
+	packet.addClock(clock());
 	player->getSession()->send(packet);
 }
 

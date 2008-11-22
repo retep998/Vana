@@ -28,17 +28,30 @@ void PacketReader::skipBytes(int32_t len) {
 }
 
 int32_t PacketReader::getInt() {
-	int32_t val = buffer[pos] + buffer[pos+1]*0x100 + buffer[pos+2]*0x10000 + buffer[pos+3]*0x1000000;
+	int32_t val = buffer[pos] + buffer[pos + 1] * 0x100 + buffer[pos + 2] * 0x10000 + buffer[pos + 3] * 0x1000000;
 	pos += 4;
 	return val;
 }
 
+clock_t PacketReader::getClock() {
+	clock_t val = 0;
+	for (int8_t i = 0; i < sizeof(clock_t); i++) {
+		int32_t mul = 1;
+		for (int8_t f = 0; f < i; f++) {
+			mul *= 100;
+		}
+		val += buffer[pos + i] * mul;
+	}
+	pos += sizeof(clock_t);
+	return val;
+}
+
 int16_t PacketReader::getHeader() {
-	return buffer[0] + buffer[1]*0x100;
+	return buffer[0] + buffer[1] * 0x100;
 }
 
 int16_t PacketReader::getShort() {
-	int16_t val = buffer[pos] + buffer[pos+1]*0x100;
+	int16_t val = buffer[pos] + buffer[pos + 1] * 0x100;
 	pos += 2;
 	return val;
 }
