@@ -91,8 +91,6 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 					damage = (damage - (damage * pgmr.reduction / 100)); 
 
 				mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
-				if (mob->getHP() <= 0)
-					mob->die(player);
 			}
 			break;
 	}
