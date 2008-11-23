@@ -113,6 +113,7 @@ public:
 		return singleton;
 	}
 	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo);
+	void addBuff(Player *player, int32_t itemid, int32_t time, SkillActiveInfo &iteminfo, bool morph);
 	void endBuff(Player *player, int32_t skill);
 
 private:

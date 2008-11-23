@@ -362,27 +362,19 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 		player->modifyMP(item.cons.mpr * player->getMMP() / 100);
 	// Item buffs
 	if (item.cons.time > 0) {
-		int32_t time = item.cons.time;
+		int32_t time = item.cons.time * 1000;
 		if (alchemist > 0)
 			time = (time * alchemist) / 100;
-		InventoryPacket::useItem(player, itemid, time * 1000, item.cons.types, item.cons.vals, (item.cons.morph > 0));
-
-		Timer::Id id(Timer::Types::ItemTimer, itemid, 0);
-		player->getTimers()->removeTimer(id);
-		new Timer::Timer(bind(&Inventory::endItem, player,
-			itemid), id, player->getTimers(), Timer::Time::fromNow(time * 1000));
+		SkillActiveInfo iteminfo;
+		memcpy(iteminfo.types, item.cons.types, sizeof(uint8_t[8]));
+		iteminfo.vals = item.cons.vals;
+		Buffs::Instance()->addBuff(player, itemid, time, iteminfo, (item.cons.morph > 0));
 	}
 }
 // Cancel item buffs
 void Inventory::cancelItem(Player *player, PacketReader &packet) {
-	int32_t itemid = packet.getInt() * -1;
-	player->getTimers()->removeTimer(Timer::Id(Timer::Types::ItemTimer, itemid, 0));
-	Inventory::endItem(player, itemid);
-}
-// End item buffs
-void Inventory::endItem(Player *player, int32_t itemid) {
-	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
-	InventoryPacket::endItem(player, item.cons.types, (item.cons.morph > 0));
+	int32_t itemid = packet.getInt();
+	Buffs::Instance()->endBuff(player, itemid);
 }
 // Skill books
 void Inventory::useSkillbook(Player *player, PacketReader &packet) {

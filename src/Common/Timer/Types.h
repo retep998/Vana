@@ -22,14 +22,13 @@ namespace Timer {
 
 struct Types {
 	enum {
+		BuffTimer,
 		CoolTimer,
-		ItemTimer,
 		MapTimer,
 		MobStatusTimer,
 		PetTimer,
 		PingTimer,
 		ReactionTimer,
-		SkillTimer,
 		SkillActTimer,
 		TradeTimer
 	};

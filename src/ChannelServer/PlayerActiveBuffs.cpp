@@ -31,8 +31,8 @@ using std::tr1::bind;
 
 // Buff Skills
 void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
-	clock_t skillExpire = time * 1000;
-	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
+	clock_t skillExpire = time;
+	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
 		id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
 
@@ -41,7 +41,7 @@ void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
 
 void PlayerActiveBuffs::removeBuff(int32_t skill, bool fromTimer) {
 	if (!fromTimer) {
-		Timer::Id id(Timer::Types::SkillTimer, skill, 0);
+		Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 		m_player->getTimers()->removeTimer(id);
 	}
 	removeAct(skill);
@@ -55,7 +55,7 @@ void PlayerActiveBuffs::removeBuff() {
 }
 
 int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) {
-	Timer::Id id(Timer::Types::SkillTimer, skill, 0);
+	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 	return m_player->getTimers()->checkTimer(id);
 }
 

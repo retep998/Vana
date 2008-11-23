@@ -518,7 +518,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId(), true);
 			drop->setTime(100);
 			new Timer::Timer(bind(&Drop::doDrop, drop, origin),
-				Timer::Id(Timer::Types::SkillTimer, 4211003, pp),
+				Timer::Id(Timer::Types::BuffTimer, 4211003, pp),
 				0, Timer::Time::fromNow(time));
 		}
 		if (!ISSUMMON(skillid))

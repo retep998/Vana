@@ -69,7 +69,6 @@ namespace Inventory {
 	void useItem(Player *player, PacketReader &packet);
 	void useItem(Player *player, int32_t itemid);
 	void cancelItem(Player *player, PacketReader &packet);
-	void endItem(Player *player, int32_t itemid);
 	void useSkillbook(Player *player, PacketReader &packet);
 	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
 	void useChair(Player *player, PacketReader &packet);

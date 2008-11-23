@@ -37,8 +37,6 @@ namespace InventoryPacket {
 	void updateItemAmounts(Player *player, int8_t inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2);
 	void sitChair(Player *player, int32_t chairid);
 	void stopChair(Player *player);
-	void useItem(Player *player, int32_t itemid, int32_t time, uint8_t types[8], const vector<int16_t> &vals, bool morph); // Use buff item
-	void endItem(Player *player, uint8_t types[8], bool morph);
 	void useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed);
 	void useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit);
 	void showMegaphone(Player *player, const string &msg);
