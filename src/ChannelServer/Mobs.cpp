@@ -73,6 +73,15 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 			uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
 			MobsPacket::showHP(player, id, percent, info.boss);
 		}
+
+		if (hp == 0) { // Time to die
+			if (mobid == 8810018) { // Horntail damage sponge
+				for (int8_t q = 0; q < 8; q++) {
+					Maps::getMap(mapid)->killMobs(player, (8810010 + q)); // Dead Horntail's parts
+				}
+			}
+			die(Players::Instance()->getPlayer(playerid));
+		}
 	}
 }
 
@@ -458,23 +467,15 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					ppdamages.push_back(damage);
 				}
 			}
-			if (mob == 0) // Roll along after the mob is dead to finish getting damage values for pickpocket
-				continue;
-			if (skillid == 1221011 && mob->isBoss()) {
-				// Damage calculation goes in here, I think? Hearing conflicted views.
-			}
-			else {
-				if (skillid == 1221011)
-					damage = mob->getHP() - 1;
-
-				int32_t temphp = mob->getHP();
-				mob->applyDamage(player->getId(), damage);
-				if (htabusetaker != 0) {
-					if (temphp - damage < 0) // Horntail will die before all of his parts otherwise
-						damage = temphp; // Damage isn't used again from here on anyway
-					htabusetaker->applyDamage(player->getId(), damage);
+			if (mob == 0) {
+				if (ismelee && skillid != 4211006 && pplevel > 0) // Roll along after the mob is dead to finish getting damage values for pickpocket
+					continue;
+				else {
+					packet.skipBytes(4 * (hits - 1 - k));
+					break;
 				}
 			}
+
 			extra = mob->getMHP();
 			if (eater != 0) { // MP Eater
 				int32_t cmp = mob->getMP();
@@ -488,19 +489,24 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					SkillsPacket::showSkillEffect(player, eater->id);
 				}
 			}
-			if (mob->getHP() <= 0) {
-				mob->die(player);
-				mob = 0;
-				if (htabusetaker != 0 && htabusetaker->getHP() <= 0) {
-					for (int8_t q = 0; q < 8; q++) {
-						Maps::getMap(map)->killMobs(player, (8810010 + q)); // Dead Horntail's parts
-					}
-					htabusetaker->die(player);
+
+			if (skillid == 1221011 && mob->isBoss()) {
+				// Damage calculation goes in here, I think? Hearing conflicted views.
+			}
+			else {
+				if (skillid == 1221011)
+					damage = mob->getHP() - 1;
+
+				int32_t temphp = mob->getHP();
+				mob->applyDamage(player->getId(), damage);
+
+				if (htabusetaker != 0) {
+					if (temphp - damage < 0) // Horntail will die before all of his parts otherwise
+						damage = temphp; // Damage isn't used again from here on anyway
+					htabusetaker->applyDamage(player->getId(), damage);
 				}
-				if (!ismelee || skillid == 4211006) {
-					packet.skipBytes(4 * (hits - 1 - k));
-					break;
-				}
+				if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
+					mob = 0;
 			}
 		}
 		for (uint8_t pp = 0; pp < (uint8_t) ppdamages.size(); pp++) { // Drop stuff for Pickpocket

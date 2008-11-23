@@ -213,7 +213,6 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 			if ((mobid > 0 && iter->second->getMobID() == mobid) || mobid == 0) {
 				if (playerkill && player != 0) {
 					iter->second->applyDamage(player->getId(), iter->second->getHP());
-					iter->second->die(player);
 				}
 				else
 					iter->second->die(showpacket);

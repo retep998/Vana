@@ -110,7 +110,6 @@ public:
 	Timer::Container * getTimers() const { return timers.get(); }
 	Player * getControl() const { return control; }
 
-	void die(Player *player);
 	void die(bool showpacket = false); // Removes mob, no EXP, no summoning
 private:
 	int32_t id;
@@ -125,6 +124,8 @@ private:
 	boost::scoped_ptr<Timer::Container> timers;
 	unordered_map<int32_t, uint32_t> damages;
 	Player *control;
+
+	void die(Player *player);
 };
 
 #endif
