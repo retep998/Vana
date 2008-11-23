@@ -38,7 +38,7 @@ void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 		equip.id = res[i][0];
 		equip.slot = res[i][1];
 		vec.push_back(equip);
-	}	
+	}
 }
 
 void Characters::loadCharacter(Character &charc, const mysqlpp::Row &row) {
@@ -159,7 +159,7 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 		return;
 	}
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "INSERT INTO characters (name, userid, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES (" 
+	query << "INSERT INTO characters (name, userid, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES ("
 			<< mysqlpp::quote << name << ","
 			<< player->getUserid() << ","
 			<< (int32_t) player->getWorld() << ","
@@ -185,7 +185,7 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 
 	query << "SELECT * FROM characters WHERE id = " << id << " LIMIT 1";
 	mysqlpp::StoreQueryResult res2 = query.store();
-		
+
 	loadCharacter(charc, res2[0]);
 	LoginPacket::showCharacter(player, charc);
 }
