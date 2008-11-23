@@ -29,7 +29,7 @@ namespace Initializing {
 	void initializePets();
 
 	const int32_t mcdb_version = 2;
-	const int32_t mcdb_subversion = 1;
+	const int32_t mcdb_subversion = 2;
 };
 
 #endif
