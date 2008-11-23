@@ -28,15 +28,15 @@ namespace TimeUtilities {
 	int64_t getServerTime();
 	int64_t timeToTick(time_t time);
 	int32_t tickToTick32(int64_t tick);
-	int32_t getDate(time_t ctime);
-	int32_t getMonth(time_t ctime);
-	int32_t getYear(time_t ctime);
-	int32_t getHour(time_t ctime);
-	int32_t getMinute(time_t ctime);
-	int32_t getSecond(time_t ctime);
-	int32_t getDay(time_t ctime);
-	string getDayString(time_t ctime);
-	bool getDST(time_t ctime);
+	int32_t getDate(time_t ctime = time(0));
+	int32_t getMonth(time_t ctime = time(0));
+	int32_t getYear(time_t ctime = time(0));
+	int32_t getHour(time_t ctime = time(0));
+	int32_t getMinute(time_t ctime = time(0));
+	int32_t getSecond(time_t ctime = time(0));
+	int32_t getDay(time_t ctime = time(0));
+	string getDayString(time_t ctime = time(0));
+	bool getDST(time_t ctime = time(0));
 }
 
 #endif

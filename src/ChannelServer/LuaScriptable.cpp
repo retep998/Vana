@@ -709,7 +709,7 @@ int LuaExports::getTime(lua_State *luaVm) {
 }
 
 int LuaExports::getDate(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getDate(time(0)));
+	lua_pushinteger(luaVm, TimeUtilities::getDate());
 	return 1;
 }
 
@@ -718,38 +718,38 @@ int LuaExports::getDay(lua_State *luaVm) {
 	if (lua_isboolean(luaVm, -1))
 		stringreturn = (lua_toboolean(luaVm, -1) != 0 ? true : false);
 	if (stringreturn)
-		lua_pushstring(luaVm, TimeUtilities::getDayString(time(0)).c_str());
+		lua_pushstring(luaVm, TimeUtilities::getDayString().c_str());
 	else
-		lua_pushinteger(luaVm, TimeUtilities::getDay(time(0)));
+		lua_pushinteger(luaVm, TimeUtilities::getDay());
 	return 1;
 }
 
 int LuaExports::getMonth(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getMonth(time(0)));
+	lua_pushinteger(luaVm, TimeUtilities::getMonth());
 	return 1;
 }
 
 int LuaExports::getYear(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getYear(time(0)));
+	lua_pushinteger(luaVm, TimeUtilities::getYear());
 	return 1;
 }
 
 int LuaExports::getHour(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getHour(time(0)));
+	lua_pushinteger(luaVm, TimeUtilities::getHour());
 	return 1;
 }
 
 int LuaExports::getMinute(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getMinute(time(0)));
+	lua_pushinteger(luaVm, TimeUtilities::getMinute());
 	return 1;
 }
 
 int LuaExports::getSecond(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getSecond(time(0)));
+	lua_pushinteger(luaVm, TimeUtilities::getSecond());
 	return 1;
 }
 
 int LuaExports::getDST(lua_State *luaVm) {
-	lua_pushboolean(luaVm, TimeUtilities::getDST(time(0)));
+	lua_pushboolean(luaVm, TimeUtilities::getDST());
 	return 1;
 }
