@@ -593,7 +593,7 @@ void Player::acceptDeath() {
 	else
 		tomap = Maps::getMap(this->getMap())->getInfo()->rm;
 	setHP(50, false);
-	Buffs::stopAllBuffs(this);
+	getActiveBuffs()->removeBuff();
 	Maps::changeMap(this, tomap, 0);
 }
 

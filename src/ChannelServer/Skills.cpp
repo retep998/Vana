@@ -73,7 +73,7 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			if (skillid == 9101004) // GM Hide
 				MapPacket::showPlayer(player);
 			player->getActiveBuffs()->removeBuff(skillid, fromTimer);
-			Buffs::endBuff(player, skillid);
+			Buffs::Instance()->endBuff(player, skillid);
 			break;
 	}
 }
@@ -141,7 +141,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 				if (Player *target = Players::Instance()->getPlayer(playerid)) {
 					SkillsPacket::showSkill(player, skillid, level, true, true);
 					SkillsPacket::showSkill(player, skillid, level, true);
-					Buffs::addBuff(target, skillid, level, addedinfo);
+					Buffs::Instance()->addBuff(target, skillid, level, addedinfo);
 				}
 			}
 			break;
@@ -186,8 +186,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	}
 	Skills::applySkillCosts(player, skillid, level);
 	SkillsPacket::showSkill(player, skillid, level);
-	if (Buffs::isBuff(skillid))
-		Buffs::addBuff(player, skillid, level, addedinfo);
+	if (Buffs::Instance()->addBuff(player, skillid, level, addedinfo))
+		return;
 	else if (ISSUMMON(skillid))
 		Summons::useSummon(player, skillid, level);
 }
@@ -279,7 +279,7 @@ void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
 		SkillsPacket::showSkillEffect(player, skillid);
 	}
 	else {
-		Buffs::endBuff(player, skillid);
+		Buffs::Instance()->endBuff(player, skillid);
 	}
 }
 

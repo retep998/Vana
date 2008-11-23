@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "SkillsPacket.h"
 
-unordered_map<int32_t, SkillsInfo> Buffs::skillsinfo;
+Buffs *Buffs::singleton = 0;
 
-void Buffs::init() {
+Buffs::Buffs() {
 	BuffInfo player;
 	SkillAct act;
 	// Boosters
@@ -392,10 +392,6 @@ void Buffs::init() {
 
 }
 
-bool Buffs::isBuff(int32_t skillid) {
-	return skillsinfo.find(skillid) != skillsinfo.end();
-}
-
 int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 	int16_t rvalue = 0;
 	switch (value) {
@@ -511,7 +507,10 @@ SkillActiveInfo Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t
 	return mapskill;
 }
 
-void Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo) {
+bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo) {
+	if (skillsinfo.find(skillid) == skillsinfo.end())
+		return false; // Not a buff, so return false
+
 	int32_t mountid = 0;
 	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
 	vector<SkillMapActiveInfo> mapenterskill;
@@ -522,7 +521,7 @@ void Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case 1004: // Monster Rider
 			if (mountid == 0) {
 				// Hacking
-				return;
+				return true;
 			}
 			break;
 		case 9101004: // GM Hide
@@ -535,7 +534,7 @@ void Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			break;
 		case 1121010: // Enrage
 			if (playerbuffs->getCombo() != 10)
-				return;
+				return true;
 			playerbuffs->setCombo(0, true);
 			break;
 	}
@@ -550,10 +549,7 @@ void Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 	}
 	playerbuffs->addBuff(skillid, time);
-}
-
-void Buffs::stopAllBuffs(Player *player) {
-	player->getActiveBuffs()->removeBuff();
+	return true;
 }
 
 void Buffs::endBuff(Player *player, int32_t skill) {

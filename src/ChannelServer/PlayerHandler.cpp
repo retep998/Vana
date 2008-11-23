@@ -74,7 +74,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	}
 	switch (type) { // Account for special sections of the damage packet
 		case 0xFE:
-			break;		
+			break;
 		default: // Else: Power Guard/Mana Reflection
 			pgmr.reduction = packet.getByte();
 			packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..

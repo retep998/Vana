@@ -105,16 +105,27 @@ struct SkillMapEnterActiveInfo {
 	bool isval;
 };
 
-namespace Buffs {
-	extern unordered_map<int32_t, SkillsInfo> skillsinfo;
-	void init();
-	bool isBuff(int32_t skillid);
+class Buffs {
+public:
+	static Buffs * Instance() {
+		if (singleton == 0)
+			singleton = new Buffs();
+		return singleton;
+	}
 	int16_t getValue(int8_t value, int32_t skillid, uint8_t level);
+	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo);
+	void endBuff(Player *player, int32_t skill);
+
+private:
+	Buffs();
+	Buffs(const Buffs&);
+	Buffs& operator=(const Buffs&);
+	static Buffs *singleton;
+
+	unordered_map<int32_t, SkillsInfo> skillsinfo;
+
 	SkillActiveInfo parseBuffInfo(Player *player, int32_t skillid, uint8_t level, int32_t &mountid);
 	SkillActiveInfo parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill);
-	void addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo);
-	void stopAllBuffs(Player *player);
-	void endBuff(Player *player, int32_t skill);
 };
 
 #endif
