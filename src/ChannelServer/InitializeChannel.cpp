@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "MobDataProvider.h"
 #include "ShopDataProvider.h"
-#include "Buffs.h"
 #include "Reactors.h"
 #include "Quests.h"
 #include "Skills.h"
@@ -262,7 +261,6 @@ void Initializing::initializeSkills() {
 		level.cooltime = atoi(skillRow[26]);
 		Skills::addSkillLevelInfo(atoi(skillRow[0]), atoi(skillRow[1]), level);
 	}
-	Buffs::init();
 	std::cout << "DONE" << std::endl;
 }
 // Pets
