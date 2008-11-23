@@ -328,13 +328,11 @@ void Trades::addTrade(ActiveTrade *trade) {
 
 void Trades::removeTrade(int32_t id) {
 	if (trades.find(id) != trades.end())
-			trades.erase(id);
+		trades.erase(id);
 }
 
 ActiveTrade * Trades::getTrade(int32_t id) {
-	if (trades.find(id) != trades.end())
-		return trades[id];
-	return 0;
+	return (trades.find(id) != trades.end() ? trades[id] : 0);
 }
 
 float Trades::getTaxLevel(int32_t mesos) {
