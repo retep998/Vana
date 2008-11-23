@@ -86,10 +86,10 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingID);
 	Player *player = Players::Instance()->getPlayer(playerid);
 	int16_t d = 0;
+	Pos pos;
 
 	for (size_t i = 0; i < drops.size(); i++) {
 		int32_t amount = Randomizer::Instance()->randInt(drops[i].maxamount - drops[i].minamount) + drops[i].minamount;
-		Pos pos;
 		Drop *drop = 0;
 
  		if (Randomizer::Instance()->randInt(99999) < drops[i].chance * ChannelServer::Instance()->getDroprate()) {
@@ -126,8 +126,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 			}
 			else {
 				int32_t mesos = (amount * ChannelServer::Instance()->getMesorate());
-				// For Meso up
-				if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) {
+				if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) { // Account for Meso Up
 					mesos = (mesos * Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x) / 100;
 				}
 				drop = new Drop(mapid, mesos, pos, playerid);
@@ -137,7 +136,6 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 		if (drop != 0) {
 			drop->setTime(100);
 			drop->doDrop(origin);
-			drop = 0;
 			d++;
 		}
 	}
