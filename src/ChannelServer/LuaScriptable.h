@@ -92,6 +92,7 @@ namespace LuaExports {
 	int getNumPlayers(lua_State *luaVm);
 	int getReactorState(lua_State *luaVm);
 	int getRandomNumber(lua_State *luaVm);
+	int useItem(lua_State *luaVm);
 
 	int killMob(lua_State *luaVm);
 	int clearMobs(lua_State *luaVm);

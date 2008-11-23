@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.h"
+#include "Inventory.h"
 #include "Player.h"
 #include "Players.h"
 #include "Maps.h"
@@ -85,6 +86,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
+	lua_register(luaVm, "useItem", &LuaExports::useItem);
 	lua_register(luaVm, "killMob", &LuaExports::killMob);
 	lua_register(luaVm, "countMobs", &LuaExports::countMobs);
 	lua_register(luaVm, "clearMobs", &LuaExports::clearMobs);
@@ -399,6 +401,12 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 int LuaExports::getRandomNumber(lua_State *luaVm) {
 	int32_t number = lua_tointeger(luaVm, -1);
 	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number - 1) + 1);
+	return 1;
+}
+
+int LuaExports::useItem(lua_State *luaVm) {
+	int32_t itemid = lua_tointeger(luaVm, -1);
+	Inventory::useItem(getPlayer(luaVm), itemid);
 	return 1;
 }
 
