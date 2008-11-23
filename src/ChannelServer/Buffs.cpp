@@ -516,7 +516,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	vector<SkillMapActiveInfo> mapenterskill;
 	SkillActiveInfo playerskill = parseBuffInfo(player, skillid, level, mountid);
 	SkillActiveInfo mapskill = parseBuffMapInfo(player, skillid, level, mapenterskill);
-	int32_t time = Skills::skills[skillid][level].time;
+	int32_t time = Skills::skills[skillid][level].time * 1000;
 	switch (skillid) {
 		case 1004: // Monster Rider
 			if (mountid == 0) {
@@ -538,7 +538,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			playerbuffs->setCombo(0, true);
 			break;
 	}
-	SkillsPacket::useSkill(player, skillid, time * 1000, playerskill, mapskill, addedinfo, mountid);
+	SkillsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo, mountid);
 	playerbuffs->setBuffInfo(skillid, playerskill);
 	playerbuffs->setBuffMapInfo(skillid, mapskill);
 	playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
@@ -550,6 +550,17 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	}
 	playerbuffs->addBuff(skillid, time);
 	return true;
+}
+
+void Buffs::addBuff(Player *player, int32_t itemid, int32_t time, SkillActiveInfo &iteminfo, bool morph) {
+	itemid = itemid * -1; // Make the Item ID negative for the packet and to discern from skill buffs
+	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
+	SkillActiveInfo mapskill = morph ? iteminfo : SkillActiveInfo();
+	SkillsPacket::useSkill(player, itemid, time, iteminfo, mapskill, 0);
+	playerbuffs->setBuffInfo(itemid, iteminfo);
+	playerbuffs->setBuffMapInfo(itemid, mapskill);
+	playerbuffs->removeBuff(itemid);
+	playerbuffs->addBuff(itemid, time);
 }
 
 void Buffs::endBuff(Player *player, int32_t skill) {

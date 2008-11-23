@@ -29,7 +29,7 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 		this->summon = summon;
 	else
 		this->puppet = summon;
-	Timer::Id id(Timer::Types::SkillTimer, summon->getSummonID(), 0);
+	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonID(), 0);
 	clock_t summonExpire = time * 1000;
 	new Timer::Timer(
 		bind(&Summons::removeSummon, player, puppet, true, false, true, true), 
@@ -39,7 +39,7 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
 	if (!puppet && this->summon != 0) {
 		if (!fromTimer) {
-			Timer::Id id(Timer::Types::SkillTimer, summon->getSummonID(), 0);
+			Timer::Id id(Timer::Types::BuffTimer, summon->getSummonID(), 0);
 			player->getTimers()->removeTimer(id);
 		}
 		delete this->summon;
@@ -47,7 +47,7 @@ void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
 	}
 	else if (this->puppet != 0) {
 		if (!fromTimer) {
-			Timer::Id id(Timer::Types::SkillTimer, this->puppet->getSummonID(), 0);
+			Timer::Id id(Timer::Types::BuffTimer, this->puppet->getSummonID(), 0);
 			player->getTimers()->removeTimer(id);
 		}
 		delete this->puppet;

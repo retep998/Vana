@@ -175,67 +175,6 @@ void InventoryPacket::showMessenger(Player *player, const string &msg, const str
 	packet.addBuffer(displayInfo, displayInfo_size);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
-// Use buff item
-void InventoryPacket::useItem(Player *player, int32_t itemid, int32_t time, uint8_t types[8], const vector<int16_t> &vals, bool morph) { // Test/Beta function, PoC only
-	PacketCreator packet;
-	packet.addShort(SEND_USE_SKILL);
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(types[i]);
-	for (size_t i = 0; i < vals.size(); i++) {
-		packet.addShort(vals[i]);
-		packet.addInt(itemid * -1);
-		packet.addInt(time);
-	}
-	packet.addShort(0);
-	packet.addByte(morph);
-	packet.addByte(0);
-	packet.addByte(0); // Speed/jump related item buffs will EoF without this
-	if (morph)
-		packet.addByte(0);
-	player->getSession()->send(packet);
-	if (morph) {
-		if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
-			return;
-		packet = PacketCreator();
-		packet.addShort(SEND_SHOW_OTHERS_SKILL);
-		packet.addInt(player->getId());
-		packet.addInt64(0);
-		for (int8_t i = 0; i < 8; i++)
-			packet.addByte(types[i]);
-		for (size_t i = 0; i < vals.size(); i++) {
-			if (morph)
-				packet.addByte((int8_t)vals[i]);
-			else
-				packet.addShort(vals[i]);
-		}
-		packet.addShort(0);
-		if (morph)
-			packet.addShort(0);
-		packet.addByte(0);
-		Maps::getMap(player->getMap())->sendPacket(packet, player);
-	}
-}
-void InventoryPacket::endItem(Player *player, uint8_t types[8], bool morph) {
-	PacketCreator packet;
-	packet.addShort(SEND_CANCEL_SKILL);
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(types[i]);
-	packet.addByte(0);
-	player->getSession()->send(packet);
-	if (morph) {
-		if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
-			return;
-		PacketCreator packet;
-		packet.addShort(SEND_CANCEL_OTHERS_BUFF);
-		packet.addInt(player->getId());
-		packet.addInt64(0);
-		for (int8_t i = 0; i < 8; i++)
-			packet.addByte(types[i]);
-		Maps::getMap(player->getMap())->sendPacket(packet, player);
-	}
-}
 // Skill Books
 void InventoryPacket::useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed) {
 	PacketCreator packet;
