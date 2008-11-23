@@ -32,7 +32,7 @@ enum Act {
 	ACT_HURT
 };
 
-enum {
+enum SkillValues {
 	SKILL_X,
 	SKILL_Y,
 	SKILL_SPEED,
@@ -48,8 +48,8 @@ enum {
 	SKILL_LV
 };
 
-enum {
-	TYPE_5 = 0,
+enum ByteTypes {
+	TYPE_5,
 	TYPE_6,
 	TYPE_7,
 	TYPE_8,
@@ -112,7 +112,6 @@ public:
 			singleton = new Buffs();
 		return singleton;
 	}
-	int16_t getValue(int8_t value, int32_t skillid, uint8_t level);
 	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo);
 	void endBuff(Player *player, int32_t skill);
 
@@ -124,6 +123,7 @@ private:
 
 	unordered_map<int32_t, SkillsInfo> skillsinfo;
 
+	int16_t getValue(int8_t value, int32_t skillid, uint8_t level);
 	SkillActiveInfo parseBuffInfo(Player *player, int32_t skillid, uint8_t level, int32_t &mountid);
 	SkillActiveInfo parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill);
 };
