@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // be included twice.
 
 #include <functional>
-#include <hash_map>
+#include <unordered_map>
 #include <iostream>
 #include <memory>
 #include <string>
