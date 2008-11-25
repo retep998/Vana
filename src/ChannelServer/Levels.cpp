@@ -96,7 +96,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 					if (player->getSkills()->getSkillLevel(5100000) > 0)
 						x = Skills::skills[5100000][player->getSkills()->getSkillLevel(5100000)].x;
 					hpgain += Randomizer::Instance()->randShort(4) + 22 + x;
-					mpgain += Randomizer::Instance()->randShort(2) + 18;
+					mpgain += Randomizer::Instance()->randShort(2) + 18 + intt;
 					break;
 				default: // GM
 					hpgain += 150;
@@ -139,7 +139,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 			player->setLevelDate();
 			if (player->getLevel() == 200 && !player->isGM()) {
 				string message;
-				message += "[Congrats] ";
+				message = "[Congrats] ";
 				message += player->getName();
 				message += " has reached Level 200! Congratulate ";
 				message += player->getName();
