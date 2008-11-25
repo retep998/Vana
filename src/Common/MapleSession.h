@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractSession.h"
 #include "Decoder.h"
 #include "Types.h"
-#include <memory>
 #include <queue>
 #include <string>
 #include <boost/asio.hpp>
@@ -29,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/shared_array.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/tr1/memory.hpp>
 
 using std::queue;
 using std::string;
@@ -79,7 +79,7 @@ protected:
 	string m_connect_packet_unknown;
 
 	// Packet sending
-	queue<shared_array<unsigned char>> m_send_packet_queue;	// This may not be the best way,
+	queue<shared_array<unsigned char> > m_send_packet_queue; // This may not be the best way,
 	queue<uint32_t> m_send_size_queue;						// but it is the simplest way.
 	shared_array<unsigned char> m_send_packet;
 	boost::mutex m_send_mutex;

@@ -41,7 +41,7 @@ void DatabaseMigration::Runner::run() {
 
 void DatabaseMigration::Runner::loadFile() {
 	m_filestream.open(m_filename.c_str());
-	
+
 	string content;
 	// Read whole file
 	{
@@ -57,7 +57,7 @@ void DatabaseMigration::Runner::loadFile() {
 
 	// Parse each SQL statement
 	{
-		typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
+		typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 		typedef boost::char_separator<char> separator;
 
 		separator sep(";");

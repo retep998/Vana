@@ -36,7 +36,7 @@ public:
 		const tcp::endpoint &endpoint,
 		AbstractPlayerFactory *apf,
 		string connectPacketUnknown);
-	void stop(); 
+	void stop();
 private:
 	void start_accept();
 	void handle_accept(MapleSessionPtr new_session,
