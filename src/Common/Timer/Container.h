@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Id.h"
 #include "../Types.h"
-#include <memory>
+#include <boost/tr1/memory.hpp>
 #include <unordered_map>
 #include <boost/functional/hash.hpp>
 
@@ -37,7 +37,7 @@ public:
 	void registerTimer(Timer *timer);
 	void removeTimer(const Id &id);
 private:
-	unordered_map<Id, shared_ptr<Timer>, boost::hash<Id>> m_timers;
+	unordered_map<Id, shared_ptr<Timer>, boost::hash<Id> > m_timers;
 };
 
 }

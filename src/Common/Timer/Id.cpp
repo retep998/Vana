@@ -23,11 +23,11 @@ namespace Timer {
 // For hashing Id
 size_t hash_value(Id const &id) {
 	size_t seed = 0;
-	
+
 	boost::hash_combine(seed, id.type);
 	boost::hash_combine(seed, id.id);
 	boost::hash_combine(seed, id.id2);
-	
+
 	return seed;
 }
 
