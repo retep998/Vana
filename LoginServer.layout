@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="src/LoginServer/Characters.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="940" topLine="16" />
+	</File>
+	<File name="src/LoginServer/Characters.h" open="0" top="0" tabpos="1">
+		<Cursor position="727" topLine="0" />
+	</File>
+	<File name="src/LoginServer/LoginPacket.cpp" open="0" top="0" tabpos="8">
+		<Cursor position="3373" topLine="51" />
+	</File>
+	<File name="src/LoginServer/Worlds.h" open="0" top="0" tabpos="7">
+		<Cursor position="1169" topLine="27" />
+	</File>
+</CodeBlocks_layout_file>

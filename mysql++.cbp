@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="mysql++" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="Debug/Libraries/libmysql++" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="Debug/Libraries/mysql++" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-w" />
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add option="-D_DEBUG" />
+					<Add directory="/usr/include/mysql" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="/usr/include/mysql" />
+				</ResourceCompiler>
+			</Target>
+			<Target title="Release">
+				<Option output="Release/Libraries/libmysql++" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="Release/Libraries/mysql++" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-w" />
+					<Add option="-DNDEBUG" />
+					<Add directory="/usr/include/mysql" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="/usr/include/mysql" />
+				</ResourceCompiler>
+			</Target>
+		</Build>
+		<Unit filename="src/Libraries/mysql++/autoflag.h" />
+		<Unit filename="src/Libraries/mysql++/beemutex.cpp" />
+		<Unit filename="src/Libraries/mysql++/beemutex.h" />
+		<Unit filename="src/Libraries/mysql++/common.h" />
+		<Unit filename="src/Libraries/mysql++/comparable.h" />
+		<Unit filename="src/Libraries/mysql++/connection.cpp" />
+		<Unit filename="src/Libraries/mysql++/connection.h" />
+		<Unit filename="src/Libraries/mysql++/cpool.cpp" />
+		<Unit filename="src/Libraries/mysql++/cpool.h" />
+		<Unit filename="src/Libraries/mysql++/custom.h" />
+		<Unit filename="src/Libraries/mysql++/datetime.cpp" />
+		<Unit filename="src/Libraries/mysql++/datetime.h" />
+		<Unit filename="src/Libraries/mysql++/dbdriver.cpp" />
+		<Unit filename="src/Libraries/mysql++/dbdriver.h" />
+		<Unit filename="src/Libraries/mysql++/exceptions.h" />
+		<Unit filename="src/Libraries/mysql++/field.h" />
+		<Unit filename="src/Libraries/mysql++/field_names.cpp" />
+		<Unit filename="src/Libraries/mysql++/field_names.h" />
+		<Unit filename="src/Libraries/mysql++/field_types.cpp" />
+		<Unit filename="src/Libraries/mysql++/field_types.h" />
+		<Unit filename="src/Libraries/mysql++/manip.cpp" />
+		<Unit filename="src/Libraries/mysql++/manip.h" />
+		<Unit filename="src/Libraries/mysql++/myset.cpp" />
+		<Unit filename="src/Libraries/mysql++/myset.h" />
+		<Unit filename="src/Libraries/mysql++/mysql++.cpp" />
+		<Unit filename="src/Libraries/mysql++/mysql++.h" />
+		<Unit filename="src/Libraries/mysql++/mystring.cpp" />
+		<Unit filename="src/Libraries/mysql++/mystring.h" />
+		<Unit filename="src/Libraries/mysql++/noexceptions.h" />
+		<Unit filename="src/Libraries/mysql++/null.cpp" />
+		<Unit filename="src/Libraries/mysql++/null.h" />
+		<Unit filename="src/Libraries/mysql++/options.cpp" />
+		<Unit filename="src/Libraries/mysql++/options.h" />
+		<Unit filename="src/Libraries/mysql++/qparms.cpp" />
+		<Unit filename="src/Libraries/mysql++/qparms.h" />
+		<Unit filename="src/Libraries/mysql++/query.cpp" />
+		<Unit filename="src/Libraries/mysql++/query.h" />
+		<Unit filename="src/Libraries/mysql++/querydef.h" />
+		<Unit filename="src/Libraries/mysql++/refcounted.h" />
+		<Unit filename="src/Libraries/mysql++/result.cpp" />
+		<Unit filename="src/Libraries/mysql++/result.h" />
+		<Unit filename="src/Libraries/mysql++/row.cpp" />
+		<Unit filename="src/Libraries/mysql++/row.h" />
+		<Unit filename="src/Libraries/mysql++/sql_buffer.cpp" />
+		<Unit filename="src/Libraries/mysql++/sql_buffer.h" />
+		<Unit filename="src/Libraries/mysql++/sql_types.h" />
+		<Unit filename="src/Libraries/mysql++/ssqls.h" />
+		<Unit filename="src/Libraries/mysql++/stadapter.cpp" />
+		<Unit filename="src/Libraries/mysql++/stadapter.h" />
+		<Unit filename="src/Libraries/mysql++/stream2string.h" />
+		<Unit filename="src/Libraries/mysql++/tcp_connection.cpp" />
+		<Unit filename="src/Libraries/mysql++/tcp_connection.h" />
+		<Unit filename="src/Libraries/mysql++/tiny_int.h" />
+		<Unit filename="src/Libraries/mysql++/transaction.cpp" />
+		<Unit filename="src/Libraries/mysql++/transaction.h" />
+		<Unit filename="src/Libraries/mysql++/type_info.cpp" />
+		<Unit filename="src/Libraries/mysql++/type_info.h" />
+		<Unit filename="src/Libraries/mysql++/uds_connection.cpp" />
+		<Unit filename="src/Libraries/mysql++/uds_connection.h" />
+		<Unit filename="src/Libraries/mysql++/vallist.cpp" />
+		<Unit filename="src/Libraries/mysql++/vallist.h" />
+		<Unit filename="src/Libraries/mysql++/wnp_connection.cpp" />
+		<Unit filename="src/Libraries/mysql++/wnp_connection.h" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

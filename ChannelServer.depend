@@ -1,0 +1,1491 @@
+# depslib dependency file v1.0
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/BuddyListHandler.cpp
+	"BuddyListHandler.h"
+	"BuddyListPacket.h"
+	"Player.h"
+	"PacketReader.h"
+	<string>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/BuddyListHandler.h
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/BuddyListPacket.h
+	"Types.h"
+	<string>
+
+1227458090 /home/emmy/downloads/vana/src/Common/Types.h
+	<boost/cstdint.hpp>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/Player.h
+	"AbstractPlayer.h"
+	"ChannelServer.h"
+	"MovableLife.h"
+	"PlayerActiveBuffs.h"
+	"PlayerSummons.h"
+	"PlayerBuddyList.h"
+	"PlayerInventory.h"
+	"PlayerPets.h"
+	"PlayerQuests.h"
+	"PlayerSkills.h"
+	"PlayerStorage.h"
+	"Pos.h"
+	"Quests.h"
+	"Skills.h"
+	<string>
+	<vector>
+	<boost/scoped_ptr.hpp>
+
+1227458090 /home/emmy/downloads/vana/src/Common/AbstractPlayer.h
+	"MapleSession.h"
+	"Timer/Container.h"
+	<string>
+	<boost/scoped_ptr.hpp>
+
+1227494671 /home/emmy/downloads/vana/src/Common/MapleSession.h
+	"AbstractSession.h"
+	"Decoder.h"
+	"Types.h"
+	<memory>
+	<queue>
+	<string>
+	<boost/asio.hpp>
+	<boost/enable_shared_from_this.hpp>
+	<boost/shared_array.hpp>
+	<boost/shared_ptr.hpp>
+	<boost/thread/mutex.hpp>
+
+1227458471 /home/emmy/downloads/vana/src/Common/AbstractSession.h
+	<memory>
+	<boost/enable_shared_from_this.hpp>
+	<boost/shared_ptr.hpp>
+
+1227458274 /home/emmy/downloads/vana/src/Common/Decoder.h
+	"SendHeader.h"
+	"Types.h"
+	<stdio.h>
+	<stdlib.h>
+	<memory.h>
+	<time.h>
+	<string>
+
+1227458090 /home/emmy/downloads/vana/src/Common/SendHeader.h
+
+1227494676 /home/emmy/downloads/vana/src/Common/Timer/Container.h
+	"Id.h"
+	"../Types.h"
+	<memory>
+	<tr1/unordered_map>
+	<boost/shared_ptr.hpp>
+	<boost/functional/hash.hpp>
+
+1227458083 /home/emmy/downloads/vana/src/Common/Timer/Id.h
+	"Types.h"
+	"../Types.h"
+
+1227458083 /home/emmy/downloads/vana/src/Common/Timer/Types.h
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/ChannelServer.h
+	"AbstractServer.h"
+	"Types.h"
+	<string>
+
+1227458090 /home/emmy/downloads/vana/src/Common/AbstractServer.h
+	<string>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/MovableLife.h
+	"Pos.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/Pos.h
+	"Types.h"
+	<cmath>
+
+1227510498 /home/emmy/downloads/vana/src/ChannelServer/PlayerActiveBuffs.h
+	"Buffs.h"
+	"Types.h"
+	<list>
+	<boost/shared_ptr.hpp>
+	<tr1/unordered_map>
+	<vector>
+
+1227510263 /home/emmy/downloads/vana/src/ChannelServer/Buffs.h
+	"Types.h"
+	<tr1/unordered_map>
+	<vector>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/PlayerSummons.h
+	"Types.h"
+
+1227510524 /home/emmy/downloads/vana/src/ChannelServer/PlayerBuddyList.h
+	"Types.h"
+	<memory>
+	<string>
+	<vector>
+	<boost/shared_ptr.hpp>
+	<tr1/unordered_map>
+
+1227510374 /home/emmy/downloads/vana/src/ChannelServer/PlayerInventory.h
+	"Types.h"
+	<string>
+	<tr1/unordered_map>
+
+1227510377 /home/emmy/downloads/vana/src/ChannelServer/PlayerPets.h
+	<tr1/unordered_map>
+
+1227511282 /home/emmy/downloads/vana/src/ChannelServer/PlayerQuests.h
+	"Types.h"
+	"Quests.h"
+	<tr1/unordered_map>
+	<vector>
+
+1227510398 /home/emmy/downloads/vana/src/ChannelServer/Quests.h
+	"Types.h"
+	<vector>
+	<tr1/unordered_map>
+
+1227510391 /home/emmy/downloads/vana/src/ChannelServer/PlayerSkills.h
+	"Types.h"
+	<tr1/unordered_map>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/PlayerStorage.h
+	"Types.h"
+	<vector>
+
+1227510415 /home/emmy/downloads/vana/src/ChannelServer/Skills.h
+	<tr1/unordered_map>
+	"Pos.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/PacketReader.h
+	"Types.h"
+	<memory>
+	<string>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/BuddyListPacket.cpp
+	"BuddyListPacket.h"
+	"PacketCreator.h"
+	"Player.h"
+	"SendHeader.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/PacketCreator.h
+	"Types.h"
+	<iostream>
+	<string>
+	<vector>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Buffs.cpp
+	"Buffs.h"
+	"Inventory.h"
+	"Player.h"
+	"Skills.h"
+	"SkillsPacket.h"
+
+1227510276 /home/emmy/downloads/vana/src/ChannelServer/Inventory.h
+	"Types.h"
+	<tr1/unordered_map>
+	<vector>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/SkillsPacket.h
+	"Types.h"
+
+1227511368 source:/home/emmy/downloads/vana/src/ChannelServer/ChannelServer.cpp
+	"ChannelServer.h"
+	"ConfigFile.h"
+	"ConnectionManager.h"
+	"InitializeChannel.h"
+	"InitializeCommon.h"
+	"MiscUtilities.h"
+	"PacketCreator.h"
+	"Player.h"
+	"Players.h"
+	"ServerPacket.h"
+	"WorldServerConnectPlayer.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/ConfigFile.h
+	"lua/lua.h"
+	"lua/lualib.h"
+	"lua/lauxlib.h"
+	"Types.h"
+	<string>
+
+1227458090 /home/emmy/downloads/vana/src/Libraries/lua/lua.h
+	<stdarg.h>
+	<stddef.h>
+	"luaconf.h"
+
+1227458090 /home/emmy/downloads/vana/src/Libraries/lua/luaconf.h
+	<limits.h>
+	<stddef.h>
+	<unistd.h>
+	<io.h>
+	<stdio.h>
+	<stdio.h>
+	<readline/readline.h>
+	<readline/history.h>
+	<assert.h>
+	<math.h>
+	<unistd.h>
+
+1227458090 /home/emmy/downloads/vana/src/Libraries/lua/lualib.h
+	"lua.h"
+
+1227458090 /home/emmy/downloads/vana/src/Libraries/lua/lauxlib.h
+	<stddef.h>
+	<stdio.h>
+	"lua.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/ConnectionManager.h
+	"MapleClient.h"
+	"MapleServer.h"
+	"SessionManager.h"
+	"Types.h"
+	<list>
+	<memory>
+	<string>
+	<boost/noncopyable.hpp>
+	<boost/scoped_ptr.hpp>
+	<boost/thread.hpp>
+
+1227458090 /home/emmy/downloads/vana/src/Common/MapleClient.h
+	"MapleSession.h"
+	"SessionManager.h"
+	"Types.h"
+	<string>
+	<boost/asio.hpp>
+
+1227459263 /home/emmy/downloads/vana/src/Common/SessionManager.h
+	<memory>
+	<set>
+	<boost/noncopyable.hpp>
+	<boost/shared_ptr.hpp>
+
+1227458090 /home/emmy/downloads/vana/src/Common/MapleServer.h
+	"MapleSession.h"
+	"SessionManager.h"
+	<string>
+	<boost/asio.hpp>
+	<boost/scoped_ptr.hpp>
+	<boost/shared_ptr.hpp>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/InitializeChannel.h
+	"Types.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/InitializeCommon.h
+	"Types.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/MiscUtilities.h
+	<string>
+
+1227531059 /home/emmy/downloads/vana/src/ChannelServer/Players.h
+	"Types.h"
+	<tr1/functional>
+	<string>
+	<tr1/unordered_map>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/ServerPacket.h
+	<string>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/WorldServerConnectPlayer.h
+	"ServerPlayer.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/ServerPlayer.h
+	"AbstractPlayer.h"
+	"Types.h"
+	<string>
+
+1227545901 source:/home/emmy/downloads/vana/src/ChannelServer/ChatHandler.cpp
+	"ChatHandler.h"
+	"Inventory.h"
+	"ItemDataProvider.h"
+	"MapPacket.h"
+	"MapleSession.h"
+	"Maps.h"
+	"Mobs.h"
+	"Database.h"
+	"NPCs.h"
+	"PacketCreator.h"
+	"Player.h"
+	"PlayerPacket.h"
+	"Players.h"
+	"PlayersPacket.h"
+	"Pos.h"
+	"PacketReader.h"
+	"ShopDataProvider.h"
+	"StoragePacket.h"
+	"WorldServerConnectPacket.h"
+	<string>
+	<vector>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/ChatHandler.h
+
+1227510279 /home/emmy/downloads/vana/src/ChannelServer/ItemDataProvider.h
+	"Types.h"
+	<tr1/unordered_map>
+	<vector>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/MapPacket.h
+	"Types.h"
+	<string>
+
+1227510315 /home/emmy/downloads/vana/src/ChannelServer/Maps.h
+	"Map.h"
+	<tr1/unordered_map>
+	<string>
+
+1227546365 /home/emmy/downloads/vana/src/ChannelServer/Map.h
+	"LoopingId.h"
+	"Mobs.h"
+	"Pos.h"
+	<ctime>
+	<tr1/unordered_map>
+	<vector>
+	<string>
+	<boost/scoped_ptr.hpp>
+	<boost/thread/recursive_mutex.hpp>
+
+1227458090 /home/emmy/downloads/vana/src/Common/LoopingId.h
+	"Types.h"
+
+1227511691 /home/emmy/downloads/vana/src/ChannelServer/Mobs.h
+	"MobDataProvider.h"
+	"MovableLife.h"
+	"Player.h"
+	"Pos.h"
+	"Timer/Container.h"
+	<tr1/memory>
+	<tr1/unordered_map>
+	<vector>
+
+1227510350 /home/emmy/downloads/vana/src/ChannelServer/MobDataProvider.h
+	"Types.h"
+	<tr1/unordered_map>
+	<vector>
+
+1227458090 /home/emmy/downloads/vana/src/Common/Database.h
+	<winsock2.h>
+	"mysql++/mysql++.h"
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/mysql++.h
+	"connection.h"
+	"cpool.h"
+	"query.h"
+	"sql_types.h"
+	"transaction.h"
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/connection.h
+	"common.h"
+	"noexceptions.h"
+	"options.h"
+	<string>
+	"tcp_connection.h"
+	"uds_connection.h"
+	"wnp_connection.h"
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/common.h
+	<winsock.h>
+	"config.h"
+	<mysql/mysql_version.h>
+	<mysql_version.h>
+	<mysql/mysql.h>
+	<mysql.h>
+
+1227325654 /home/emmy/downloads/vana/src/Libraries/mysql++/config.h
+
+1227493881 /home/emmy/downloads/vana/src/Libraries/mysql/mysql_version.h
+	<custom_conf.h>
+
+1227493881 /home/emmy/downloads/vana/src/Libraries/mysql/mysql.h
+	<sys/types.h>
+	<winsock.h>
+	"mysql_version.h"
+	"mysql_com.h"
+	"mysql_time.h"
+	"typelib.h"
+	"my_list.h"
+	"my_alloc.h"
+
+1227493881 /home/emmy/downloads/vana/src/Libraries/mysql/mysql_com.h
+
+1227493881 /home/emmy/downloads/vana/src/Libraries/mysql/mysql_time.h
+
+1227493881 /home/emmy/downloads/vana/src/Libraries/mysql/typelib.h
+	"my_alloc.h"
+
+1227493881 /home/emmy/downloads/vana/src/Libraries/mysql/my_alloc.h
+
+1227493881 /home/emmy/downloads/vana/src/Libraries/mysql/my_list.h
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/noexceptions.h
+	"common.h"
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/options.h
+	"common.h"
+	<deque>
+	<string>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/tcp_connection.h
+	"connection.h"
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/uds_connection.h
+	"connection.h"
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/wnp_connection.h
+	"connection.h"
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/cpool.h
+	"beemutex.h"
+	<list>
+	<assert.h>
+	<time.h>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/beemutex.h
+	"exceptions.h"
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/exceptions.h
+	"options.h"
+	<exception>
+	<string>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/query.h
+	"common.h"
+	"noexceptions.h"
+	"qparms.h"
+	"querydef.h"
+	"result.h"
+	"row.h"
+	"stadapter.h"
+	<deque>
+	<iomanip>
+	<list>
+	<map>
+	<set>
+	<vector>
+	<ext/slist>
+	<slist>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/qparms.h
+	"stadapter.h"
+	<vector>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/stadapter.h
+	"common.h"
+	"datetime.h"
+	"null.h"
+	"sql_buffer.h"
+	"sql_types.h"
+	<stdexcept>
+	<string>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/datetime.h
+	"common.h"
+	"comparable.h"
+	<string>
+	<iostream>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/comparable.h
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/null.h
+	"exceptions.h"
+	<iostream>
+	<string>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/sql_buffer.h
+	"refcounted.h"
+	"type_info.h"
+	<string>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/refcounted.h
+	<memory>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/type_info.h
+	"common.h"
+	"exceptions.h"
+	<map>
+	<sstream>
+	<typeinfo>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/sql_types.h
+	"common.h"
+	"tiny_int.h"
+	<string>
+	<stdint.h>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/tiny_int.h
+	"common.h"
+	<ostream>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/querydef.h
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/result.h
+	"common.h"
+	"exceptions.h"
+	"field.h"
+	"field_names.h"
+	"field_types.h"
+	"noexceptions.h"
+	"refcounted.h"
+	"row.h"
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/field.h
+	"common.h"
+	"type_info.h"
+	<vector>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/field_names.h
+	<string>
+	<vector>
+	<ctype.h>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/field_types.h
+	"type_info.h"
+	<vector>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/row.h
+	"common.h"
+	"mystring.h"
+	"noexceptions.h"
+	"refcounted.h"
+	"vallist.h"
+	<vector>
+	<string>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/mystring.h
+	"common.h"
+	"datetime.h"
+	"exceptions.h"
+	"null.h"
+	"sql_buffer.h"
+	<string>
+	<sstream>
+	<limits>
+	<stdlib.h>
+	<string.h>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/vallist.h
+	"manip.h"
+	<string>
+	<vector>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/manip.h
+	"common.h"
+	"myset.h"
+	"stadapter.h"
+	<iostream>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/myset.h
+	"common.h"
+	"mystring.h"
+	"stream2string.h"
+	<iostream>
+	<set>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/stream2string.h
+	<sstream>
+	<string>
+
+1227458093 /home/emmy/downloads/vana/src/Libraries/mysql++/transaction.h
+	"common.h"
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/NPCs.h
+	"LuaNPC.h"
+	<string>
+	<boost/scoped_ptr.hpp>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/LuaNPC.h
+	"LuaScriptable.h"
+	<string>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/LuaScriptable.h
+	"lua/lua.h"
+	"lua/lualib.h"
+	"lua/lauxlib.h"
+	"Types.h"
+	<string>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/PlayerPacket.h
+	"Types.h"
+	<string>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/PlayersPacket.h
+	"Types.h"
+	<string>
+
+1227510407 /home/emmy/downloads/vana/src/ChannelServer/ShopDataProvider.h
+	"Types.h"
+	<tr1/unordered_map>
+	<vector>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/StoragePacket.h
+	"Types.h"
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/WorldServerConnectPacket.h
+	"Types.h"
+	<string>
+	<vector>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/CommandHandler.cpp
+	"CommandHandler.h"
+	"Player.h"
+	"Players.h"
+	"PlayersPacket.h"
+	"PacketReader.h"
+	"WorldServerConnectPacket.h"
+	<string>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/CommandHandler.h
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Connectable.cpp
+	"Connectable.h"
+	<ctime>
+
+1227510268 /home/emmy/downloads/vana/src/ChannelServer/Connectable.h
+	"Types.h"
+	<tr1/unordered_map>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/DropDataProvider.cpp
+	"DropDataProvider.h"
+	"Database.h"
+	"InitializeCommon.h"
+	"MiscUtilities.h"
+
+1227510272 /home/emmy/downloads/vana/src/ChannelServer/DropDataProvider.h
+	"Types.h"
+	<tr1/unordered_map>
+	<vector>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Drops.cpp
+	"Drops.h"
+	"DropDataProvider.h"
+	"Maps.h"
+	"Reactors.h"
+	"DropsPacket.h"
+	"Inventory.h"
+	"Quests.h"
+	"Randomizer.h"
+	"Pos.h"
+	"Skills.h"
+	"PacketReader.h"
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/Drops.h
+	"Players.h"
+	"Player.h"
+
+1227510403 /home/emmy/downloads/vana/src/ChannelServer/Reactors.h
+	<tr1/unordered_map>
+	<vector>
+	"Pos.h"
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/DropsPacket.h
+	"Types.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/Randomizer.h
+	"MersenneTwister.h"
+	"Types.h"
+	<string>
+
+1227494173 /home/emmy/downloads/vana/src/Common/MersenneTwister.h
+	<iostream>
+	<limits.h>
+	<stdio.h>
+	<time.h>
+	<math.h>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/DropsPacket.cpp
+	"DropsPacket.h"
+	"Drops.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"Pets.h"
+	"Player.h"
+	"SendHeader.h"
+
+1227545958 /home/emmy/downloads/vana/src/ChannelServer/Pets.h
+	"MovableLife.h"
+	<tr1/unordered_map>
+	<string>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Fame.cpp
+	"Fame.h"
+	"FamePacket.h"
+	"Player.h"
+	"Players.h"
+	"Database.h"
+	"PacketReader.h"
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/Fame.h
+	"Types.h"
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/FamePacket.h
+	"Types.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/FamePacket.cpp
+	"FamePacket.h"
+	"MapleSession.h"
+	"PacketCreator.h"
+	"Player.h"
+	"Players.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/InitializeChannel.cpp
+	"InitializeChannel.h"
+	"DropDataProvider.h"
+	"InitializeCommon.h"
+	"ItemDataProvider.h"
+	"MobDataProvider.h"
+	"ShopDataProvider.h"
+	"Reactors.h"
+	"Quests.h"
+	"Skills.h"
+	"Database.h"
+	"MiscUtilities.h"
+	"Pets.h"
+	<iostream>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Inventory.cpp
+	"Inventory.h"
+	"Buffs.h"
+	"Drops.h"
+	"InventoryPacket.h"
+	"ItemDataProvider.h"
+	"Levels.h"
+	"Maps.h"
+	"Pets.h"
+	"PetsPacket.h"
+	"Player.h"
+	"Randomizer.h"
+	"Reactors.h"
+	"PacketReader.h"
+	"ShopDataProvider.h"
+	"Skills.h"
+	"StoragePacket.h"
+	"Timer/Time.h"
+	"Timer/Timer.h"
+	<cmath>
+	<functional>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/InventoryPacket.h
+	"Types.h"
+	<vector>
+	<string>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/Levels.h
+	"Types.h"
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/PetsPacket.h
+	"Types.h"
+	<string>
+
+1227458083 /home/emmy/downloads/vana/src/Common/Timer/Time.h
+	<ctime>
+	"Types.h"
+
+1227497216 /home/emmy/downloads/vana/src/Common/Timer/Timer.h
+	"Id.h"
+	"../Types.h"
+	<ctime>
+	<tr1/functional>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/InventoryPacket.cpp
+	"InventoryPacket.h"
+	"InterHeader.h"
+	"Inventory.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"Player.h"
+	"PlayerInventory.h"
+	"PlayerPacketHelper.h"
+	"Players.h"
+	"SendHeader.h"
+
+1227458090 /home/emmy/downloads/vana/src/Common/InterHeader.h
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/PlayerPacketHelper.h
+	"Types.h"
+
+1227552119 source:/home/emmy/downloads/vana/src/ChannelServer/ItemDataProvider.cpp
+	"ItemDataProvider.h"
+	"Buffs.h"
+	"Database.h"
+	"InitializeCommon.h"
+	"Inventory.h"
+	"MiscUtilities.h"
+	"ShopDataProvider.h"
+	<string>
+	<iostream>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/KeyMaps.cpp
+	"KeyMaps.h"
+	"Database.h"
+
+1227547275 /home/emmy/downloads/vana/src/ChannelServer/KeyMaps.h
+	"Types.h"
+	<boost/shared_ptr.hpp>
+	<tr1/unordered_map>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/Levels.cpp
+	"Levels.h"
+	"Player.h"
+	"LevelsPacket.h"
+	"PlayersPacket.h"
+	"Skills.h"
+	"Randomizer.h"
+	"PacketReader.h"
+	<string>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/LevelsPacket.h
+	"Types.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/LevelsPacket.cpp
+	"LevelsPacket.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"Player.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/LuaNPC.cpp
+	"LuaNPC.h"
+	"NPCs.h"
+	"Player.h"
+	"Players.h"
+	"Quests.h"
+	"StoragePacket.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/LuaPortal.cpp
+	"LuaPortal.h"
+	"Player.h"
+	"Maps.h"
+
+1227510287 /home/emmy/downloads/vana/src/ChannelServer/LuaPortal.h
+	"LuaScriptable.h"
+	<tr1/unordered_map>
+	<string>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/LuaReactor.cpp
+	"LuaReactor.h"
+	"Reactors.h"
+	"ReactorPacket.h"
+	"Player.h"
+	"PlayerPacket.h"
+	"Players.h"
+	"Quests.h"
+	"Maps.h"
+	"Mobs.h"
+	<string>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/LuaReactor.h
+	"LuaScriptable.h"
+	<string>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/ReactorPacket.h
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/LuaScriptable.cpp
+	"LuaScriptable.h"
+	"Inventory.h"
+	"Player.h"
+	"Players.h"
+	"Maps.h"
+	"MapPacket.h"
+	"Mobs.h"
+	"NPCs.h"
+	"Reactors.h"
+	"Quests.h"
+	"Levels.h"
+	"ShopDataProvider.h"
+	"TimeUtilities.h"
+	"PlayerPacket.h"
+	"InventoryPacket.h"
+	"Randomizer.h"
+	<iostream>
+
+1227458090 /home/emmy/downloads/vana/src/Common/TimeUtilities.h
+	"Types.h"
+	<ctime>
+	<string>
+
+1227546497 source:/home/emmy/downloads/vana/src/ChannelServer/Map.cpp
+	"Map.h"
+	"Drops.h"
+	"MapPacket.h"
+	"MapleSession.h"
+	"Mobs.h"
+	"MobsPacket.h"
+	"NPCPacket.h"
+	"PacketCreator.h"
+	"Player.h"
+	"PlayerPacket.h"
+	"Randomizer.h"
+	"ReactorPacket.h"
+	"Reactors.h"
+	"Summons.h"
+	"Timer/Time.h"
+	"Timer/Timer.h"
+	<ctime>
+	<tr1/functional>
+	<tr1/unordered_map>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/MobsPacket.h
+	"Types.h"
+	<vector>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/NPCPacket.h
+	"Types.h"
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/Summons.h
+	"Player.h"
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/MapDataProvider.cpp
+	"MapDataProvider.h"
+	"Map.h"
+	"Database.h"
+	"MiscUtilities.h"
+	<string>
+
+1227510312 /home/emmy/downloads/vana/src/ChannelServer/MapDataProvider.h
+	"Types.h"
+	<tr1/unordered_map>
+	<boost/thread/mutex.hpp>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/MapPacket.cpp
+	"MapPacket.h"
+	"Buffs.h"
+	"Inventory.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"Pets.h"
+	"Player.h"
+	"PlayerPacketHelper.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Maps.cpp
+	"Maps.h"
+	"LuaPortal.h"
+	"MapDataProvider.h"
+	"MapPacket.h"
+	"Pets.h"
+	"Player.h"
+	"PlayerPacket.h"
+	"Players.h"
+	"PacketReader.h"
+	"Summons.h"
+	"WorldServerConnectPacket.h"
+	<sys/stat.h>
+	<string>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/MobDataProvider.cpp
+	"MobDataProvider.h"
+	"Database.h"
+	"InitializeCommon.h"
+	"Inventory.h"
+	"MiscUtilities.h"
+	<iostream>
+	<string>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Mobs.cpp
+	"Mobs.h"
+	"Maps.h"
+	"Player.h"
+	"MobsPacket.h"
+	"DropsPacket.h"
+	"SkillsPacket.h"
+	"Drops.h"
+	"Inventory.h"
+	"Levels.h"
+	"Skills.h"
+	"Movement.h"
+	"Randomizer.h"
+	"PacketReader.h"
+	"Summons.h"
+	"PacketCreator.h"
+	"Timer/Time.h"
+	"Timer/Timer.h"
+	<functional>
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/Movement.h
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/MobsPacket.cpp
+	"Inventory.h"
+	"MapleSession.h"
+	"Maps.h"
+	"Mobs.h"
+	"MobsPacket.h"
+	"PacketCreator.h"
+	"Player.h"
+	"PacketReader.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Movement.cpp
+	"Movement.h"
+	"MovableLife.h"
+	"Pos.h"
+	"PacketReader.h"
+	<iomanip>
+	<iostream>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/NPCPacket.cpp
+	"NPCPacket.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketReader.h"
+	"PacketCreator.h"
+	"Player.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/NPCs.cpp
+	"NPCs.h"
+	"LuaNPC.h"
+	"MapleSession.h"
+	"Maps.h"
+	"NPCPacket.h"
+	"PacketCreator.h"
+	"Player.h"
+	"Quests.h"
+	"PacketReader.h"
+	"SendHeader.h"
+	"ShopDataProvider.h"
+	<sys/stat.h>
+	<string>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Party.cpp
+	"Party.h"
+	"Player.h"
+	"WorldServerConnectPacket.h"
+	"ChannelServer.h"
+	"PacketReader.h"
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/Party.h
+
+1227546612 source:/home/emmy/downloads/vana/src/ChannelServer/Pets.cpp
+	"Pets.h"
+	"Database.h"
+	"Drops.h"
+	"DropsPacket.h"
+	"Inventory.h"
+	"Maps.h"
+	"Movement.h"
+	"PacketReader.h"
+	"PetsPacket.h"
+	"Player.h"
+	"Pos.h"
+	"Randomizer.h"
+	"Reactors.h"
+	"Timer/Time.h"
+	"Timer/Timer.h"
+	<functional>
+	<string>
+	<tr1/unordered_map>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/PetsPacket.cpp
+	"Pets.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"PetsPacket.h"
+	"Player.h"
+	"PacketReader.h"
+	"SendHeader.h"
+
+1227546768 source:/home/emmy/downloads/vana/src/ChannelServer/Player.cpp
+	"Player.h"
+	"BuddyListHandler.h"
+	"BuddyListPacket.h"
+	"ChannelServer.h"
+	"ChatHandler.h"
+	"CommandHandler.h"
+	"Connectable.h"
+	"Database.h"
+	"Drops.h"
+	"Fame.h"
+	"Inventory.h"
+	"KeyMaps.h"
+	"Levels.h"
+	"LevelsPacket.h"
+	"MapleSession.h"
+	"Maps.h"
+	"Mobs.h"
+	"NPCs.h"
+	"PacketReader.h"
+	"Party.h"
+	"Pets.h"
+	"PlayerHandler.h"
+	"PlayerPacket.h"
+	"Players.h"
+	"Quests.h"
+	"Reactors.h"
+	"RecvHeader.h"
+	"ServerPacket.h"
+	"SkillMacros.h"
+	"Skills.h"
+	"Summons.h"
+	"Trades.h"
+	"WorldServerConnectPlayer.h"
+	"WorldServerConnectPacket.h"
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/PlayerHandler.h
+
+1227458090 /home/emmy/downloads/vana/src/Common/RecvHeader.h
+
+1227547375 /home/emmy/downloads/vana/src/ChannelServer/SkillMacros.h
+	"Types.h"
+	<tr1/unordered_map>
+	<boost/shared_ptr.hpp>
+	<string>
+
+1227510418 /home/emmy/downloads/vana/src/ChannelServer/Trades.h
+	"Trade.h"
+	"Types.h"
+	<tr1/unordered_map>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/Trade.h
+	"Types.h"
+	<boost/scoped_ptr.hpp>
+
+1227547661 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerActiveBuffs.cpp
+	"PlayerActiveBuffs.h"
+	"Buffs.h"
+	"Maps.h"
+	"Player.h"
+	"Randomizer.h"
+	"Skills.h"
+	"SkillsPacket.h"
+	"Timer/Container.h"
+	"Timer/Time.h"
+	"Timer/Timer.h"
+	<tr1/functional>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerBuddyList.cpp
+	"PlayerBuddyList.h"
+	"BuddyListPacket.h"
+	"Database.h"
+	"Player.h"
+	<algorithm>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerHandler.cpp
+	"PlayerHandler.h"
+	"Maps.h"
+	"Mobs.h"
+	"Movement.h"
+	"Player.h"
+	"Players.h"
+	"PlayerPacket.h"
+	"PlayersPacket.h"
+	"Randomizer.h"
+	"PacketReader.h"
+	"SkillsPacket.h"
+
+1227547706 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerInventory.cpp
+	"PlayerInventory.h"
+	"Database.h"
+	"Inventory.h"
+	"InventoryPacket.h"
+	"ItemDataProvider.h"
+	"PacketCreator.h"
+	"Pets.h"
+	"Player.h"
+	"PlayerPacket.h"
+	"PlayerPacketHelper.h"
+	"Randomizer.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerPacket.cpp
+	"PlayerPacket.h"
+	"KeyMaps.h"
+	"MapleSession.h"
+	"PacketCreator.h"
+	"Pets.h"
+	"Player.h"
+	"PlayerPacketHelper.h"
+	"Randomizer.h"
+	"SendHeader.h"
+	"SkillMacros.h"
+	"Skills.h"
+	"TimeUtilities.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerPacketHelper.cpp
+	"PlayerPacketHelper.h"
+	"PacketCreator.h"
+	"Player.h"
+	"Inventory.h"
+	"Pets.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerPets.cpp
+	"Pets.h"
+	"Database.h"
+	"PlayerPets.h"
+
+1227511274 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerQuests.cpp
+	"PlayerQuests.h"
+	"Inventory.h"
+	"Levels.h"
+	"Player.h"
+	"QuestsPacket.h"
+	"Randomizer.h"
+	"TimeUtilities.h"
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/QuestsPacket.h
+	"Types.h"
+
+1227510386 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerSkills.cpp
+	"PlayerSkills.h"
+	"Database.h"
+	"PacketCreator.h"
+	"Player.h"
+	"Randomizer.h"
+	"Skills.h"
+	"SkillsPacket.h"
+	<tr1/unordered_map>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerStorage.cpp
+	"PlayerStorage.h"
+	"Database.h"
+	"Inventory.h"
+	"Player.h"
+	"StoragePacket.h"
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/PlayerSummons.cpp
+	"PlayerSummons.h"
+	"Summons.h"
+	"Timer/Time.h"
+	"Timer/Timer.h"
+	<functional>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/Players.cpp
+	"Players.h"
+	"MapleSession.h"
+	"PacketCreator.h"
+	"Player.h"
+	<boost/algorithm/string.hpp>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/PlayersPacket.cpp
+	"PlayersPacket.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"Pets.h"
+	"Player.h"
+	"Players.h"
+	"InterHeader.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/PrecompiledHeader.cpp
+	"PrecompiledHeader.h"
+
+1227458076 /home/emmy/downloads/vana/src/ChannelServer/PrecompiledHeader.h
+	"../Common/PrecompiledHeader.h"
+	"Player.h"
+
+1227548066 /home/emmy/downloads/vana/src/Common/PrecompiledHeader.h
+	<tr1/functional>
+	<tr1/unordered_map>
+	<iostream>
+	<memory>
+	<string>
+	<vector>
+	<boost/asio.hpp>
+	<boost/enable_shared_from_this.hpp>
+	<boost/lexical_cast.hpp>
+	<boost/smart_ptr.hpp>
+	<boost/thread.hpp>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Quests.cpp
+	"Quests.h"
+	"Inventory.h"
+	"NPCs.h"
+	"Player.h"
+	"QuestsPacket.h"
+	"PacketReader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/QuestsPacket.cpp
+	"QuestsPacket.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"Player.h"
+	"Quests.h"
+	"SendHeader.h"
+	<iomanip>
+	<sstream>
+	<string>
+	<vector>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/ReactorPacket.cpp
+	"ReactorPacket.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"Player.h"
+	"Reactors.h"
+	"SendHeader.h"
+
+1227547982 source:/home/emmy/downloads/vana/src/ChannelServer/Reactors.cpp
+	"Reactors.h"
+	"Drops.h"
+	"LuaReactor.h"
+	"Maps.h"
+	"Player.h"
+	"Pos.h"
+	"ReactorPacket.h"
+	"PacketReader.h"
+	"Timer/Thread.h"
+	"Timer/Time.h"
+	"Timer/Timer.h"
+	<iostream>
+	<sstream>
+	<sys/stat.h>
+	<tr1/functional>
+
+1227458083 /home/emmy/downloads/vana/src/Common/Timer/Thread.h
+	<list>
+	<boost/scoped_ptr.hpp>
+	<boost/thread.hpp>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/ServerPacket.cpp
+	"ServerPacket.h"
+	"MapleSession.h"
+	"PacketCreator.h"
+	"Player.h"
+	"Players.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/ShopDataProvider.cpp
+	"ShopDataProvider.h"
+	"Database.h"
+	"InitializeCommon.h"
+	"Inventory.h"
+	"ItemDataProvider.h"
+	"MapleSession.h"
+	"PacketCreator.h"
+	"Player.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/SkillMacros.cpp
+	"SkillMacros.h"
+	"Database.h"
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/Skills.cpp
+	"Skills.h"
+	"Buffs.h"
+	"Summons.h"
+	"Inventory.h"
+	"MapPacket.h"
+	"Maps.h"
+	"Player.h"
+	"Players.h"
+	"Randomizer.h"
+	"PacketReader.h"
+	"SkillsPacket.h"
+	"Timer/Time.h"
+	"Timer/Timer.h"
+	<functional>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/SkillsPacket.cpp
+	"SkillsPacket.h"
+	"MapleSession.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"Player.h"
+	"SendHeader.h"
+	"Skills.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/StoragePacket.cpp
+	"StoragePacket.h"
+	"Inventory.h"
+	"MapleSession.h"
+	"PacketCreator.h"
+	"Player.h"
+	"PlayerPacketHelper.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Summons.cpp
+	"Summons.h"
+	"SummonsPacket.h"
+	"Skills.h"
+	"Maps.h"
+	"LoopingId.h"
+	"PlayerPacket.h"
+	"PacketReader.h"
+	"Movement.h"
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/SummonsPacket.h
+	"Types.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/SummonsPacket.cpp
+	"SummonsPacket.h"
+	"Summons.h"
+	"Maps.h"
+	"PacketCreator.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Trade.cpp
+	"Trade.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/Trades.cpp
+	"Trades.h"
+	"Inventory.h"
+	"InventoryPacket.h"
+	"ItemDataProvider.h"
+	"Player.h"
+	"Players.h"
+	"PacketReader.h"
+	"Timer/Thread.h"
+	"Timer/Time.h"
+	"Timer/Timer.h"
+	"TradesPacket.h"
+	<functional>
+	<string>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/TradesPacket.h
+	"Types.h"
+	<string>
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/TradesPacket.cpp
+	"TradesPacket.h"
+	"Inventory.h"
+	"MapleSession.h"
+	"PacketCreator.h"
+	"Player.h"
+	"PlayerPacketHelper.h"
+	"SendHeader.h"
+
+1227458077 source:/home/emmy/downloads/vana/src/ChannelServer/WorldServerConnectHandler.cpp
+	"WorldServerConnectHandler.h"
+	"ChannelServer.h"
+	"Connectable.h"
+	"MapleSession.h"
+	"PacketCreator.h"
+	"Player.h"
+	"PlayerPacket.h"
+	"Players.h"
+	"PlayersPacket.h"
+	"Rates.h"
+	"PacketReader.h"
+	"WorldServerConnectPlayer.h"
+	<iostream>
+
+1227458077 /home/emmy/downloads/vana/src/ChannelServer/WorldServerConnectHandler.h
+
+1227458090 /home/emmy/downloads/vana/src/Common/Rates.h
+	"Types.h"
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/WorldServerConnectPacket.cpp
+	"WorldServerConnectPacket.h"
+	"InterHeader.h"
+	"MapleSession.h"
+	"PacketCreator.h"
+	"WorldServerConnectPlayer.h"
+	<string>
+	<vector>
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/WorldServerConnectPlayer.cpp
+	"WorldServerConnectPlayer.h"
+	"WorldServerConnectPacket.h"
+	"WorldServerConnectHandler.h"
+	"PlayersPacket.h"
+	"InterHeader.h"
+	"PacketReader.h"
+
+1227458076 source:/home/emmy/downloads/vana/src/ChannelServer/main_channel.cpp
+	"ChannelServer.h"
+	"ConnectionManager.h"
+	<exception>
+	<functional>
+

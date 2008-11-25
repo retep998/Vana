@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ChannelServer" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="Debug/ChannelServer" prefix_auto="1" extension_auto="1" />
+				<Option object_output="Debug/obj/ChannelServer" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add option="-include PrecompiledHeader.h" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add directory="src/Common" />
+					<Add directory="src/Libraries" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="src/Common" />
+					<Add directory="src/Libraries" />
+				</ResourceCompiler>
+				<Linker>
+					<Add library="mysqlclient" />
+					<Add library="mysql++" />
+					<Add library="boost_system" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_thread-mt" />
+					<Add library="lua" />
+					<Add library="common" />
+					<Add directory="Debug/Libraries" />
+					<Add directory="Debug" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="Release/ChannelServer" prefix_auto="1" extension_auto="1" />
+				<Option object_output="Release/obj/ChannelServer" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-W" />
+					<Add option="-include PrecompiledHeader.h" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add directory="src/Common" />
+					<Add directory="src/Libraries" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="src/Common" />
+					<Add directory="src/Libraries" />
+				</ResourceCompiler>
+				<Linker>
+					<Add library="mysqlclient" />
+					<Add library="mysql++" />
+					<Add library="boost_system" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_thread-mt" />
+					<Add library="lua" />
+					<Add library="common" />
+					<Add directory="Release/Libraries" />
+					<Add directory="Release" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="src/ChannelServer/BuddyListHandler.cpp" />
+		<Unit filename="src/ChannelServer/BuddyListHandler.h" />
+		<Unit filename="src/ChannelServer/BuddyListPacket.cpp" />
+		<Unit filename="src/ChannelServer/BuddyListPacket.h" />
+		<Unit filename="src/ChannelServer/Buffs.cpp" />
+		<Unit filename="src/ChannelServer/Buffs.h" />
+		<Unit filename="src/ChannelServer/ChannelServer.cpp" />
+		<Unit filename="src/ChannelServer/ChannelServer.h" />
+		<Unit filename="src/ChannelServer/ChatHandler.cpp" />
+		<Unit filename="src/ChannelServer/ChatHandler.h" />
+		<Unit filename="src/ChannelServer/CommandHandler.cpp" />
+		<Unit filename="src/ChannelServer/CommandHandler.h" />
+		<Unit filename="src/ChannelServer/Connectable.cpp" />
+		<Unit filename="src/ChannelServer/Connectable.h" />
+		<Unit filename="src/ChannelServer/DropDataProvider.cpp" />
+		<Unit filename="src/ChannelServer/DropDataProvider.h" />
+		<Unit filename="src/ChannelServer/Drops.cpp" />
+		<Unit filename="src/ChannelServer/Drops.h" />
+		<Unit filename="src/ChannelServer/DropsPacket.cpp" />
+		<Unit filename="src/ChannelServer/DropsPacket.h" />
+		<Unit filename="src/ChannelServer/Fame.cpp" />
+		<Unit filename="src/ChannelServer/Fame.h" />
+		<Unit filename="src/ChannelServer/FamePacket.cpp" />
+		<Unit filename="src/ChannelServer/FamePacket.h" />
+		<Unit filename="src/ChannelServer/InitializeChannel.cpp" />
+		<Unit filename="src/ChannelServer/InitializeChannel.h" />
+		<Unit filename="src/ChannelServer/Inventory.cpp" />
+		<Unit filename="src/ChannelServer/Inventory.h" />
+		<Unit filename="src/ChannelServer/InventoryPacket.cpp" />
+		<Unit filename="src/ChannelServer/InventoryPacket.h" />
+		<Unit filename="src/ChannelServer/ItemDataProvider.cpp" />
+		<Unit filename="src/ChannelServer/ItemDataProvider.h" />
+		<Unit filename="src/ChannelServer/KeyMaps.cpp" />
+		<Unit filename="src/ChannelServer/KeyMaps.h" />
+		<Unit filename="src/ChannelServer/Levels.cpp" />
+		<Unit filename="src/ChannelServer/Levels.h" />
+		<Unit filename="src/ChannelServer/LevelsPacket.cpp" />
+		<Unit filename="src/ChannelServer/LevelsPacket.h" />
+		<Unit filename="src/ChannelServer/LuaNPC.cpp" />
+		<Unit filename="src/ChannelServer/LuaNPC.h" />
+		<Unit filename="src/ChannelServer/LuaPortal.cpp" />
+		<Unit filename="src/ChannelServer/LuaPortal.h" />
+		<Unit filename="src/ChannelServer/LuaReactor.cpp" />
+		<Unit filename="src/ChannelServer/LuaReactor.h" />
+		<Unit filename="src/ChannelServer/LuaScriptable.cpp" />
+		<Unit filename="src/ChannelServer/LuaScriptable.h" />
+		<Unit filename="src/ChannelServer/Map.cpp" />
+		<Unit filename="src/ChannelServer/Map.h" />
+		<Unit filename="src/ChannelServer/MapDataProvider.cpp" />
+		<Unit filename="src/ChannelServer/MapDataProvider.h" />
+		<Unit filename="src/ChannelServer/MapPacket.cpp" />
+		<Unit filename="src/ChannelServer/MapPacket.h" />
+		<Unit filename="src/ChannelServer/Maps.cpp" />
+		<Unit filename="src/ChannelServer/Maps.h" />
+		<Unit filename="src/ChannelServer/MobDataProvider.cpp" />
+		<Unit filename="src/ChannelServer/MobDataProvider.h" />
+		<Unit filename="src/ChannelServer/Mobs.cpp" />
+		<Unit filename="src/ChannelServer/Mobs.h" />
+		<Unit filename="src/ChannelServer/MobsPacket.cpp" />
+		<Unit filename="src/ChannelServer/MobsPacket.h" />
+		<Unit filename="src/ChannelServer/MovableLife.h" />
+		<Unit filename="src/ChannelServer/Movement.cpp" />
+		<Unit filename="src/ChannelServer/Movement.h" />
+		<Unit filename="src/ChannelServer/NPCPacket.cpp" />
+		<Unit filename="src/ChannelServer/NPCPacket.h" />
+		<Unit filename="src/ChannelServer/NPCs.cpp" />
+		<Unit filename="src/ChannelServer/NPCs.h" />
+		<Unit filename="src/ChannelServer/Party.cpp" />
+		<Unit filename="src/ChannelServer/Party.h" />
+		<Unit filename="src/ChannelServer/Pets.cpp" />
+		<Unit filename="src/ChannelServer/Pets.h" />
+		<Unit filename="src/ChannelServer/PetsPacket.cpp" />
+		<Unit filename="src/ChannelServer/PetsPacket.h" />
+		<Unit filename="src/ChannelServer/Player.cpp" />
+		<Unit filename="src/ChannelServer/Player.h" />
+		<Unit filename="src/ChannelServer/PlayerActiveBuffs.cpp" />
+		<Unit filename="src/ChannelServer/PlayerActiveBuffs.h" />
+		<Unit filename="src/ChannelServer/PlayerBuddyList.cpp" />
+		<Unit filename="src/ChannelServer/PlayerBuddyList.h" />
+		<Unit filename="src/ChannelServer/PlayerHandler.cpp" />
+		<Unit filename="src/ChannelServer/PlayerHandler.h" />
+		<Unit filename="src/ChannelServer/PlayerInventory.cpp" />
+		<Unit filename="src/ChannelServer/PlayerInventory.h" />
+		<Unit filename="src/ChannelServer/PlayerPacket.cpp" />
+		<Unit filename="src/ChannelServer/PlayerPacket.h" />
+		<Unit filename="src/ChannelServer/PlayerPacketHelper.cpp" />
+		<Unit filename="src/ChannelServer/PlayerPacketHelper.h" />
+		<Unit filename="src/ChannelServer/PlayerPets.cpp" />
+		<Unit filename="src/ChannelServer/PlayerPets.h" />
+		<Unit filename="src/ChannelServer/PlayerQuests.cpp" />
+		<Unit filename="src/ChannelServer/PlayerQuests.h" />
+		<Unit filename="src/ChannelServer/PlayerSkills.cpp" />
+		<Unit filename="src/ChannelServer/PlayerSkills.h" />
+		<Unit filename="src/ChannelServer/PlayerStorage.cpp" />
+		<Unit filename="src/ChannelServer/PlayerStorage.h" />
+		<Unit filename="src/ChannelServer/PlayerSummons.cpp" />
+		<Unit filename="src/ChannelServer/PlayerSummons.h" />
+		<Unit filename="src/ChannelServer/Players.cpp" />
+		<Unit filename="src/ChannelServer/Players.h" />
+		<Unit filename="src/ChannelServer/PlayersPacket.cpp" />
+		<Unit filename="src/ChannelServer/PlayersPacket.h" />
+		<Unit filename="src/ChannelServer/PrecompiledHeader.cpp" />
+		<Unit filename="src/ChannelServer/PrecompiledHeader.h" />
+		<Unit filename="src/ChannelServer/Quests.cpp" />
+		<Unit filename="src/ChannelServer/Quests.h" />
+		<Unit filename="src/ChannelServer/QuestsPacket.cpp" />
+		<Unit filename="src/ChannelServer/QuestsPacket.h" />
+		<Unit filename="src/ChannelServer/ReactorPacket.cpp" />
+		<Unit filename="src/ChannelServer/ReactorPacket.h" />
+		<Unit filename="src/ChannelServer/Reactors.cpp" />
+		<Unit filename="src/ChannelServer/Reactors.h" />
+		<Unit filename="src/ChannelServer/ServerPacket.cpp" />
+		<Unit filename="src/ChannelServer/ServerPacket.h" />
+		<Unit filename="src/ChannelServer/ShopDataProvider.cpp" />
+		<Unit filename="src/ChannelServer/ShopDataProvider.h" />
+		<Unit filename="src/ChannelServer/SkillMacros.cpp" />
+		<Unit filename="src/ChannelServer/SkillMacros.h" />
+		<Unit filename="src/ChannelServer/Skills.cpp" />
+		<Unit filename="src/ChannelServer/Skills.h" />
+		<Unit filename="src/ChannelServer/SkillsPacket.cpp" />
+		<Unit filename="src/ChannelServer/SkillsPacket.h" />
+		<Unit filename="src/ChannelServer/StoragePacket.cpp" />
+		<Unit filename="src/ChannelServer/StoragePacket.h" />
+		<Unit filename="src/ChannelServer/Summons.cpp" />
+		<Unit filename="src/ChannelServer/Summons.h" />
+		<Unit filename="src/ChannelServer/SummonsPacket.cpp" />
+		<Unit filename="src/ChannelServer/SummonsPacket.h" />
+		<Unit filename="src/ChannelServer/Trade.cpp" />
+		<Unit filename="src/ChannelServer/Trade.h" />
+		<Unit filename="src/ChannelServer/Trades.cpp" />
+		<Unit filename="src/ChannelServer/Trades.h" />
+		<Unit filename="src/ChannelServer/TradesPacket.cpp" />
+		<Unit filename="src/ChannelServer/TradesPacket.h" />
+		<Unit filename="src/ChannelServer/WorldServerConnectHandler.cpp" />
+		<Unit filename="src/ChannelServer/WorldServerConnectHandler.h" />
+		<Unit filename="src/ChannelServer/WorldServerConnectPacket.cpp" />
+		<Unit filename="src/ChannelServer/WorldServerConnectPacket.h" />
+		<Unit filename="src/ChannelServer/WorldServerConnectPlayer.cpp" />
+		<Unit filename="src/ChannelServer/WorldServerConnectPlayer.h" />
+		<Unit filename="src/ChannelServer/main_channel.cpp" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

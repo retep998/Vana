@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Vana workspace">
+		<Project filename="mysql++.cbp" />
+		<Project filename="Common.cbp" />
+		<Project filename="LoginServer.cbp" />
+		<Project filename="WorldServer.cbp" />
+		<Project filename="ChannelServer.cbp" active="1" />
+	</Workspace>
+</CodeBlocks_workspace_file>
