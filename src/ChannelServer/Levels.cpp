@@ -62,27 +62,27 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 		int16_t mpgain = 0;
 		uint8_t levelsgained = 0;
 		uint8_t levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
+		int16_t job = player->getJob() / 100;
+		int16_t intt = player->getInt() / 10;
+		int16_t x = 0; // X value for Improving *P Increase skills
 		while (cexp >= exps[level - 1] && levelsgained < levelsmax) {
 			cexp -= exps[player->getLevel() - 1];
 			level++;
 			levelsgained++;
 			apgain += 5;
-			int16_t job = player->getJob() / 100;
-			int16_t x = 0;
-			int16_t intt = player->getInt() / 10;
 			switch (job) {
 				case 0: // Beginner
 					hpgain += Randomizer::Instance()->randShort(4) + 12;
 					mpgain += Randomizer::Instance()->randShort(2) + 10 + intt;
 					break;
 				case 1: // Warrior
-					if (player->getSkills()->getSkillLevel(1000001) > 0)
+					if (levelsgained == 1 && player->getSkills()->getSkillLevel(1000001) > 0) // Only check the first time for these skills
 						x = Skills::skills[1000001][player->getSkills()->getSkillLevel(1000001)].x;
 					hpgain += Randomizer::Instance()->randShort(4) + 24 + x;
 					mpgain += Randomizer::Instance()->randShort(2) + 4 + intt;
 					break;
 				case 2: // Magician
-					if (player->getSkills()->getSkillLevel(2000001) > 0)
+					if (levelsgained == 1 && player->getSkills()->getSkillLevel(2000001) > 0)
 						x = Skills::skills[2000001][player->getSkills()->getSkillLevel(2000001)].x;
 					hpgain += Randomizer::Instance()->randShort(4) + 10;
 					mpgain += Randomizer::Instance()->randShort(2) + 22 + 2 * x + intt;
@@ -93,7 +93,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 					mpgain += Randomizer::Instance()->randShort(2) + 14 + intt;
 					break;
 				case 5: // Pirate
-					if (player->getSkills()->getSkillLevel(5100000) > 0)
+					if (levelsgained == 1 && player->getSkills()->getSkillLevel(5100000) > 0)
 						x = Skills::skills[5100000][player->getSkills()->getSkillLevel(5100000)].x;
 					hpgain += Randomizer::Instance()->randShort(4) + 22 + x;
 					mpgain += Randomizer::Instance()->randShort(2) + 18 + intt;
