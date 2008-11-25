@@ -51,6 +51,10 @@ void Thread::removeTimer(Timer *timer) {
 	m_main_loop_condition.notify_one();
 }
 
+bool less_than (const Timer *t1, const Timer *t2) {
+	return (t1->getRunAt() < t2->getRunAt());
+}
+
 Timer * Thread::findMin() {
 	// Unsynchronized
 	if (m_timers.size() == 0) {
@@ -58,12 +62,6 @@ Timer * Thread::findMin() {
 	}
 
 	if (m_resort_timer) {
-		struct {
-			bool operator()(const Timer *t1, const Timer *t2) {
-				return (t1->getRunAt() < t2->getRunAt());
-			}
-		} less_than;
-
 		m_timers.sort(less_than);
 		m_resort_timer = false;
 	}
@@ -87,7 +85,7 @@ void Thread::runThread() {
 			minTimer->run();
 			continue;
 		}
-		
+
 		if (m_main_loop_condition.timed_wait(l,
 			boost::get_system_time() + boost::posix_time::milliseconds(msec))) {
 				continue;
