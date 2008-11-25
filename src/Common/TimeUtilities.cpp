@@ -24,21 +24,21 @@ int64_t TimeUtilities::getServerTime() {
 int64_t TimeUtilities::timeToTick(time_t time) {
 	if (time == -1)
 		return -1;
-	struct tm timeinfo;
-	localtime_s(&timeinfo, &time);
+	struct tm *timeinfo;
+	timeinfo = localtime(&time);
 	uint64_t ticks = 0;
 
 	// Calculate leap days
 	int32_t leapdays = 0;
-	int32_t years = timeinfo.tm_year + 299;
+	int32_t years = timeinfo->tm_year + 299;
 	leapdays += (years/100)*24; // 24 more days for each 100 years
 	leapdays += (years/400); // and one more day for each 400 years
 	leapdays += ((years%100)/4); // and of course, 1 day for each 4 years in the current century
 
-	ticks += (timeinfo.tm_sec * 1);
-	ticks += (timeinfo.tm_min * 60);
-	ticks += (timeinfo.tm_hour * 3600);
-	ticks += (((int64_t) timeinfo.tm_yday + leapdays) * 86400);
+	ticks += (timeinfo->tm_sec * 1);
+	ticks += (timeinfo->tm_min * 60);
+	ticks += (timeinfo->tm_hour * 3600);
+	ticks += (((int64_t) timeinfo->tm_yday + leapdays) * 86400);
 	ticks += (int64_t) years * 86400 * 365; // Exluding leap years
 
 	ticks *= 10000000; // Convert to 100-nanoseconds
@@ -50,39 +50,35 @@ int32_t TimeUtilities::tickToTick32(int64_t tick) {
 	if (tick == -1)
 		tick32 = -1;
 	else
-		tick32 = (int32_t) (tick/4294967296 + 1); // Plus one to compensate for the loss of conversion
+		tick32 = (int32_t) (tick/4294967296LL + 1); // Plus one to compensate for the loss of conversion*/
 	return tick32;
 }
 
 int32_t TimeUtilities::getDate(time_t ctime) {
 	int32_t result = 0;
-	tm timeinfo;
-	localtime_s(&timeinfo, &ctime);
-	result = timeinfo.tm_mday;
+	tm *timeinfo = localtime(&ctime);
+	result = timeinfo->tm_mday;
 	return result;
 }
 
 int32_t TimeUtilities::getMonth(time_t ctime) {
 	int32_t result = 0;
-	tm timeinfo;
-	localtime_s(&timeinfo, &ctime);
-	result = timeinfo.tm_mon + 1;
+	tm *timeinfo = localtime(&ctime);
+	result = timeinfo->tm_mon + 1;
 	return result;
 }
 
 int32_t TimeUtilities::getYear(time_t ctime) {
 	int32_t result = 0;
-	tm timeinfo;
-	localtime_s(&timeinfo, &ctime);
-	result = timeinfo.tm_year + 1900;
+	tm *timeinfo = localtime(&ctime);
+	result = timeinfo->tm_year + 1900;
 	return result;
 }
 
 int32_t TimeUtilities::getDay(time_t ctime) {
 	int32_t result = 0;
-	tm timeinfo;
-	localtime_s(&timeinfo, &ctime);
-	result = timeinfo.tm_wday + 1;
+	tm *timeinfo = localtime(&ctime);
+	result = timeinfo->tm_wday + 1;
 	return result;
 }
 
@@ -102,32 +98,26 @@ string TimeUtilities::getDayString(time_t ctime) {
 
 int32_t TimeUtilities::getHour(time_t ctime) {
 	int32_t result = 0;
-	tm timeinfo;
-	localtime_s(&timeinfo, &ctime);
-	result = timeinfo.tm_hour;
+	tm *timeinfo = localtime(&ctime);
+	result = timeinfo->tm_hour;
 	return result;
 }
 
 int32_t TimeUtilities::getMinute(time_t ctime) {
 	int32_t result = 0;
-	tm timeinfo;
-	localtime_s(&timeinfo, &ctime);
-	result = timeinfo.tm_min;
+	tm *timeinfo = localtime(&ctime);
+	result = timeinfo->tm_min;
 	return result;
 }
 
 int32_t TimeUtilities::getSecond(time_t ctime) {
 	int32_t result = 0;
-	tm timeinfo;
-	localtime_s(&timeinfo, &ctime);
-	result = timeinfo.tm_sec;
+	tm *timeinfo = localtime(&ctime);
+	result = timeinfo->tm_sec;
 	return result;
 }
 
 bool TimeUtilities::getDST(time_t ctime) {
-	tm timeinfo;
-	localtime_s(&timeinfo, &ctime);
-	if (timeinfo.tm_isdst > 0)
-		return true;
-	return false;
+	tm *timeinfo = localtime(&ctime);
+	return (timeinfo->tm_isdst > 0);
 }
