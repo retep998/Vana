@@ -30,9 +30,9 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 	else
 		this->puppet = summon;
 	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonID(), 0);
-	clock_t summonExpire = time * 1000;
+	clock_t summonExpire = time * 1000; // Check for CLOCKS_PER_SEC
 	new Timer::Timer(
-		bind(&Summons::removeSummon, player, puppet, true, false, true, true), 
+		bind(&Summons::removeSummon, player, puppet, true, false, true, true),
 		id, player->getTimers(), Timer::Time::fromNow(summonExpire));
 }
 

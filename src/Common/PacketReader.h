@@ -27,7 +27,7 @@ using std::string;
 class PacketReader {
 public:
 	PacketReader(unsigned char *buffer, size_t length);
-	
+
 	unsigned char getByte();
 	void skipBytes(int32_t len);
 	int32_t getInt();

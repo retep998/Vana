@@ -96,7 +96,7 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 		if (statusinfo[i].status == POISON) { // Damage timer for poison
 			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
 				Timer::Id(Timer::Types::MobStatusTimer, POISON, 1),
-				getTimers(), 0, 1000);
+				getTimers(), 0, 1000); // Check for CLOCKS_PER_SEC
 		}
 
 		new Timer::Timer(bind(&Mob::removeStatus, this, statusinfo[i].status),
@@ -229,7 +229,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	switch (skillid) {
 		case 5201002:
 		case 5101004:
-			packet.skipBytes(4); // Charge 
+			packet.skipBytes(4); // Charge
 			break;
 	}
 	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
@@ -261,7 +261,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			break;
 		case 1111008: // Shout
 		case 9001001: // Super Dragon Roar
-			break; 
+			break;
 		case 1311006: { // Dragon Roar
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
 			int16_t x_value = Skills::skills[skillid][roarlv].x;
@@ -311,7 +311,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1))) 
+			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1)))
 				Skills::stopSkill(player, charge_id);
 			break;
 		}
@@ -528,7 +528,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 	return total;
 }
 
-void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type) {
+void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type) { // Check for CLOCKS_PER_SEC
 	uint8_t level = skillid > 0 ? player->getSkills()->getSkillLevel(skillid) : 0;
 	vector<StatusInfo> statuses;
 	if (mob->canFreeze()) { // Freezing stuff

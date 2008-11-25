@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ConnectionManager * ConnectionManager::singleton = 0;
 
-ConnectionManager::ConnectionManager() : 
+ConnectionManager::ConnectionManager() :
 m_clients(new SessionManager),
 m_work(new boost::asio::io_service::work(m_io_service))
 {

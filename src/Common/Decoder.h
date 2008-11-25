@@ -38,14 +38,14 @@ private:
 public:
 	static const int32_t CONNECT_LENGTH = 15;
 	static int32_t getLength (unsigned char *header) {
-		return ((header[0] + header[1]*0x100) ^ (header[2] + header[3]*0x100)); 
+		return ((header[0] + header[1]*0x100) ^ (header[2] + header[3]*0x100));
 	}
-	void createHeader (unsigned char *header, int16_t size); 
+	void createHeader (unsigned char *header, int16_t size);
 
 	PacketCreator getConnectPacket(string unknown = "");
 
-	void setIvRecv(unsigned char *iv) { memcpy_s(ivRecv, 4, iv, 4); }
-	void setIvSend(unsigned char *iv) { memcpy_s(ivSend, 4, iv, 4); }
+	void setIvRecv(unsigned char *iv) { memcpy(ivRecv, iv, 4); }
+	void setIvSend(unsigned char *iv) { memcpy(ivSend, iv, 4); }
 
 	void encrypt (unsigned char *buffer, int32_t size);
 	void decrypt (unsigned char *buffer, int32_t size);

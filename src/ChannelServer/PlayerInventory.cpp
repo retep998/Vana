@@ -69,7 +69,7 @@ Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), p
 
 /* PlayerInventory class */
 PlayerInventory::PlayerInventory(Player *player, uint8_t maxslots[5], int32_t mesos) : player(player), mesos(mesos) {
-	memcpy_s(this->maxslots, sizeof(this->maxslots), maxslots, sizeof(this->maxslots));
+	memcpy(this->maxslots, maxslots, sizeof(this->maxslots));
 	memset(this->equipped, 0, sizeof(this->equipped));
 	load();
 }

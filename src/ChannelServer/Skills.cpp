@@ -231,7 +231,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 		int16_t difference = mesos_max - mesos_min; // Randomize up to this, add minimum for range
 		int16_t amount = Randomizer::Instance()->randShort(difference) + mesos_min;
 		int32_t mesos = player->getInventory()->getMesos();
-		if (mesos - amount > -1) 
+		if (mesos - amount > -1)
 			player->getInventory()->modifyMesos(-amount);
 		else {
 			// Hacking
@@ -292,11 +292,11 @@ void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime) {
 
 	new Timer::Timer(bind(&Skills::stopCooldown, player,
 		skillid), Timer::Id(Timer::Types::CoolTimer,
-		skillid, 0), player->getTimers(), Timer::Time::fromNow(cooltime * 1000));
+		skillid, 0), player->getTimers(), Timer::Time::fromNow(cooltime * 1000)); // Check for CLOCKS_PER_SEC
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillid) {
-	SkillsPacket::sendCooldown(player, skillid, 0);	
+	SkillsPacket::sendCooldown(player, skillid, 0);
 }
 
 bool Skills::isCooling(Player *player, int32_t skillid) {

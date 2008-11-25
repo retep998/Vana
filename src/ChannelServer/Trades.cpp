@@ -248,7 +248,7 @@ void Trades::tradeHandler(Player *player, PacketReader &packet) {
 				if (comparison < 0) {// Determine if receiver can receive all the mesos
 					fail = true;
 				}
-				comparison = recv->mesos + sendermesos; 
+				comparison = recv->mesos + sendermesos;
 				if (comparison < 0 && !fail) { // Determine if sender can receive all the mesos
 					fail = true;
 				}
@@ -259,7 +259,7 @@ void Trades::tradeHandler(Player *player, PacketReader &packet) {
 					fail = (!(Trades::canTrade(one, recv)));
 				}
 				if (fail) { // One or the other doesn't have enough space or mesos are ridiculous
-					TradesPacket::sendEndTrade(one, 0x07); 
+					TradesPacket::sendEndTrade(one, 0x07);
 					TradesPacket::sendEndTrade(two, 0x07);
 					Trades::returnItems(one, send);
 					Trades::returnItems(two, recv);
@@ -284,7 +284,7 @@ void Trades::tradeHandler(Player *player, PacketReader &packet) {
 						float taxrate = Trades::getTaxLevel(added);
 						if (added > 49999)
 							added = (int32_t)(added / (1.0 + (taxrate / 100.0)));
-						one->getInventory()->setMesos(sendermesos + added);					
+						one->getInventory()->setMesos(sendermesos + added);
 					}
 					if (send->count > 0) {
 						for (int8_t i = 0; i < 9; i++) {
@@ -438,7 +438,7 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 	for (int8_t i = 0; i < 4; i++) { // Determine if needed slots are available
 		if (totals[i] > 0) {
 			int8_t incrementor = 0;
-			for (int8_t g = 1; g <= player->getInventory()->getMaxSlots(i + 1); g++) { 
+			for (int8_t g = 1; g <= player->getInventory()->getMaxSlots(i + 1); g++) {
 				if (player->getInventory()->getItem(i + 1, g) == 0)
 					incrementor++;
 				if (incrementor >= totals[i])
@@ -481,6 +481,6 @@ void Trades::stopTimeout(Player *starter, Player *receiver) {
 
 void Trades::startTimeout(Player *starter, Player *receiver, int32_t tradeid) {
 	Timer::Id id(Timer::Types::TradeTimer, starter->getId(), receiver->getId());
-	new Timer::Timer(bind(&Trades::timeout, starter, receiver, tradeid), 
+	new Timer::Timer(bind(&Trades::timeout, starter, receiver, tradeid),
 		id, 0, Timer::Time::fromNow(180000));
 }
