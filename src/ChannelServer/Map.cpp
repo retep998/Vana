@@ -33,10 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include <ctime>
 #include <functional>
-#include <unordered_map>
 
 using std::tr1::bind;
-using std::tr1::unordered_map;
 
 Map::Map (MapInfoPtr info) :
 info(info),
@@ -150,7 +148,7 @@ void Map::checkMobSpawn(clock_t time) {
 
 void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh) {
 	int32_t id = objectids.next();
-	
+
 	Mob *mob = new Mob(id, info->id, mobid, pos, spawnid, fh);
 	mobs[id] = mob;
 
@@ -253,7 +251,7 @@ void Map::clearDrops(bool showPacket) { // Clear all drops
 	}
 }
 
-void Map::clearDrops(int32_t time) { // Clear drops based on how long they have been in the map
+void Map::clearDrops(clock_t time) { // Clear drops based on how long they have been in the map
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
 	time -= 180000; // Drops disappear after 3 minutes
 	unordered_map<int32_t, Drop *> drops = this->drops;
@@ -269,7 +267,7 @@ void Map::setTimer() {
 	if (!timer_started) {
 		new Timer::Timer(bind(&Map::runTimer, this),
 			Timer::Id(Timer::Types::MapTimer, info->id, 0),
-			0, 0, 10000);
+			0, 0, 10000); // Check for CLOCKS_PER_SEC
 	}
 	timer_started = true;
 }
@@ -325,10 +323,9 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 
 	if (info->clock) {
 		time_t rawtime;
-		struct tm timeinfo;
 		time(&rawtime);
-		localtime_s(&timeinfo, &rawtime);
-		MapPacket::showClock(player, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+		struct tm *timeinfo = localtime(&rawtime);
+		MapPacket::showClock(player, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 	}
 }
 

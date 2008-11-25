@@ -225,7 +225,7 @@ void Inventory::useStorage(Player *player, PacketReader &packet) {
 			return; // Do a barrel roll
 
 		if (inv == 1 || ISRECHARGEABLE(itemid)) {
-			// For equips or rechargeable items (stars/bullets) we create a 
+			// For equips or rechargeable items (stars/bullets) we create a
 			// new object for storage with the inventory object, and allow
 			// the one in the inventory to go bye bye.
 			player->getStorage()->addItem(new Item(item));

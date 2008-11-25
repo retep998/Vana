@@ -19,6 +19,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <memory.h>
 
+/* Rijndael's key expansion
+ * expands an 128,192,256 key into an 176,208,240 bytes key
+ *
+ * expandedKey is a pointer to an char array of large enough size
+ * key is a pointer to a non-expanded key
+ */
+enum keySize{
+	SIZE_16 = 16,
+	SIZE_24 = 24,
+	SIZE_32 = 32
+};
+
 void expandKey(unsigned char *expandedKey, unsigned char *key, enum keySize, size_t expandedKeySize);
 
 unsigned char sbox[256] =   {
@@ -130,18 +142,6 @@ void core(unsigned char *word, int iteration)
 	/* XOR the output of the rcon operation with i to the first part (leftmost) only */
 	word[0] = word[0]^getRconValue(iteration);
 }
-
-/* Rijndael's key expansion
- * expands an 128,192,256 key into an 176,208,240 bytes key
- *
- * expandedKey is a pointer to an char array of large enough size
- * key is a pointer to a non-expanded key
- */
-enum keySize{
-	SIZE_16 = 16,
-	SIZE_24 = 24,
-	SIZE_32 = 32
-	};
 
 void expandKey(unsigned char *expandedKey,
 			   unsigned char *key,
@@ -454,9 +454,9 @@ void decryptofb(unsigned char *buffer, unsigned char *vec, int bsize)
 			plaintext[i] = output[i] ^ buffer[j*16+i];
 		}
 		if (j == bsize/16)
-			memcpy_s(buffer+(j*16), bsize%16 ,plaintext, bsize%16);
+			memcpy(buffer+(j*16), plaintext, bsize%16);
 		else
-			memcpy_s(buffer+(j*16), 16 ,plaintext, 16);
+			memcpy(buffer+(j*16), plaintext, 16);
 		memcpy(input, output, 16*sizeof(unsigned char));
 	}
 }

@@ -208,7 +208,7 @@ void Player::playerConnect(PacketReader &packet) {
 	query << "SELECT * FROM character_variables WHERE charid = " << this->id;
 	res = query.store();
 	for (size_t i = 0; i < res.size(); i++) {
-		variables[(string) res[i]["key"]] = res[i]["value"];
+		variables[(string) res[i]["key"]] = string(res[i]["value"]);
 	}
 
 	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
@@ -229,7 +229,7 @@ void Player::playerConnect(PacketReader &packet) {
 	m_foothold = 0;
 
 	PlayerPacket::connectData(this);
-	
+
 	if (ChannelServer::Instance()->getScrollingHeader().size() > 0)
 		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
 

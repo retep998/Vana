@@ -61,7 +61,7 @@ int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) {
 
 // Skill "acts"
 void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t time) {
-	struct {
+	struct : std::tr1::function<void ()> {
 		void operator()() {
 			switch (act) {
 				case ACT_HEAL: Skills::heal(player, value, skill); break;
@@ -72,7 +72,11 @@ void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t ti
 		int32_t skill;
 		Act act;
 		int16_t value;
-	} runAct = {m_player, skill, act, value};
+	} runAct;
+	runAct.player = m_player;
+	runAct.skill = skill;
+	runAct.act = act;
+	runAct.value = value;
 
 	Timer::Id id(Timer::Types::SkillActTimer, act, 0);
 	new Timer::Timer(runAct, id, getActTimer(skill), 0, time);
@@ -175,7 +179,7 @@ uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
 
 void PlayerActiveBuffs::setSkillMapEnterInfo(int32_t skillid, const vector<SkillMapActiveInfo> &skill) {
 	// TEMP //
-	for (size_t i = 0; i < activemapenterskill.size(); i++) { 
+	for (size_t i = 0; i < activemapenterskill.size(); i++) {
 		if (activemapenterskill[i].isvalue) {
 			activemapenterskill.erase(activemapenterskill.begin() + i);
 			break;
