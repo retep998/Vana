@@ -69,9 +69,9 @@ void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
 	boost::mutex::scoped_lock l(m_send_mutex);
 	size_t realLength = encrypt ? len + headerLen : len;
 	unsigned char *buffer = new unsigned char[realLength];
-	
+
 	if (encrypt) {
-		memcpy_s(buffer + headerLen, len, buf, len);
+		memcpy(buffer + headerLen, buf, len);
 
 		// Encrypt packet
 		m_decoder.createHeader(buffer, (int16_t) len);
@@ -79,9 +79,9 @@ void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
 		m_decoder.next();
 	}
 	else {
-		memcpy_s(buffer, len, buf, len);
+		memcpy(buffer, buf, len);
 	}
-	
+
 	bool isWriting = !m_send_packet_queue.empty();
 
 	m_send_packet_queue.push(shared_array<unsigned char>(buffer));
@@ -105,7 +105,7 @@ void MapleSession::start_read_header() {
 			boost::asio::placeholders::bytes_transferred));
 }
 
-void MapleSession::handle_write(const boost::system::error_code &error, 
+void MapleSession::handle_write(const boost::system::error_code &error,
 								size_t bytes_transferred) {
 	boost::mutex::scoped_lock l(m_send_mutex);
 	if (!error) {

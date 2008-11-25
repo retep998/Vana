@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
-#include <unordered_map>
+#include <tr1/unordered_map>
 
 using std::string;
 using std::tr1::unordered_map;

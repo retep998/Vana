@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <sstream>
 #include <sys/stat.h>
+#include <tr1/functional>
 
 using std::string;
 
@@ -109,7 +110,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectID() == revent->itemid) {
 				if ((drop->getPos().x >= reactor->getPos().x + revent->ltx && drop->getPos().x <= reactor->getPos().x + revent->rbx) && (drop->getPos().y >= reactor->getPos().y + revent->lty && drop->getPos().y <= reactor->getPos().y + revent->rby)) {
-					struct {
+					struct : std::tr1::function<void ()> {
 						void operator()() {
 							reactor->setState(state, true);
 							drop->removeDrop();
@@ -122,7 +123,11 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 						Drop *drop;
 						Player *player;
 						int8_t state;
-					} reaction = {reactor, drop, player, revent->nextstate};
+					} reaction;
+					reaction.reactor = reactor;
+					reaction.drop = drop;
+					reaction.player = player;
+					reaction.state = revent->nextstate;
 
 					Timer::Id id(Timer::Types::ReactionTimer, (uint32_t) drop, 0);
 					new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3000));

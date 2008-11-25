@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Id.h"
 #include "../Types.h"
 #include <ctime>
-#include <functional>
+#include <tr1/functional>
 
 namespace Timer {
 

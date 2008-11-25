@@ -28,7 +28,7 @@ void WorldServer::listen() {
 
 void WorldServer::loadData() {
 	loginPlayer = dynamic_cast<LoginServerConnectPlayer *>(
-		ConnectionManager::Instance()->connect(login_ip, 
+		ConnectionManager::Instance()->connect(login_ip,
 			login_inter_port, new LoginServerConnectPlayerFactory()));
 	loginPlayer->setIP(external_ip);
 	loginPlayer->sendAuth(inter_password);
@@ -38,7 +38,8 @@ void WorldServer::loadConfig() {
 	ConfigFile config("conf/worldserver.lua");
 	login_ip = config.getString("login_ip");
 	login_inter_port = config.getShort("login_inter_port");
-	external_ip = MiscUtilities::nameToIP(config.getString("external_ip")); // External IP
+	external_ip = config.getString("external_ip"); // External IP
+	external_ip = MiscUtilities::nameToIP(external_ip); // Resolve hostname if not using IP
 	inter_port = -1; // Will get from login server later
 	scrollingHeader = ""; // Will get from login server later
 }

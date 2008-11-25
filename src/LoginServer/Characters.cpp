@@ -24,9 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerLogin.h"
 #include "Randomizer.h"
 #include "Worlds.h"
-#include <unordered_map>
+#include <tr1/unordered_map>
 
 using std::tr1::unordered_map;
+
+typedef unordered_map<uint8_t, vector<Character> > CharsMap;
 
 void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = Database::getCharDB().query();
@@ -43,7 +45,7 @@ void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 
 void Characters::loadCharacter(Character &charc, const mysqlpp::Row &row) {
 	charc.id = row["id"];
-	charc.name = row["name"];
+	charc.name = string(row["name"]);
 	charc.gender = (uint8_t) row["gender"];
 	charc.skin = (uint8_t) row["skin"];
 	charc.eyes = row["eyes"];
@@ -71,8 +73,6 @@ void Characters::showAllCharacters(PlayerLogin *player) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT * FROM characters WHERE userid = " << player->getUserid();
 	mysqlpp::StoreQueryResult res = query.store();
-
-	typedef unordered_map<uint8_t, vector<Character>> CharsMap;
 
 	CharsMap chars;
 	uint32_t charsNum = 0; // I want to reference this later

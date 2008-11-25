@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // No need for header guard, this precompiled header file will never
 // be included twice.
 
-#include <functional>
-#include <unordered_map>
+#include <tr1/functional>
+#include <tr1/unordered_map>
+#include <tr1/memory>
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>

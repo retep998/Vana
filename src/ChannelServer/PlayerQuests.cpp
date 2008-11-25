@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Levels.h"
 #include "Player.h"
-#include "Quests.h"
 #include "QuestsPacket.h"
 #include "Randomizer.h"
 #include "TimeUtilities.h"

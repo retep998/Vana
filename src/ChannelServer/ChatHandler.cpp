@@ -51,9 +51,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			return;
 		}
 
-		char *next_token;
+		char *next_token = strtok(chat+1, " ");
 		char command_char[90];
-		strcpy_s(command_char, 90, strtok_s(chat+1, " ", &next_token));
+		strcpy(command_char, next_token);
 		string command = string(command_char);
 
 		if (player->getGMLevel() >= 3) { // Admin Level
@@ -66,7 +66,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					return;
 				}
 
-				string targetname = strtok_s(0, " ", &next_token);
+				string targetname = strtok(next_token, " ");
 
 				if (Player *target = Players::Instance()->getPlayer(targetname))
 					target->getSession()->disconnect();
@@ -149,14 +149,15 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				if (strlen(next_token) == 0)
 					return;
 				string msg = player->getName() + " : " + string(next_token);
-				struct {
+				struct : function<void (Player *)> {
 					void operator()(Player *gmplayer) {
 						if (gmplayer->isGM() == true) {
 							PlayerPacket::showMessage(gmplayer, msg, 6);
 						}
 					}
 					string msg;
-				} sendMessage = {msg};
+				} sendMessage;
+				sendMessage.msg = msg;
 				Players::Instance()->run(sendMessage);
 			}
 			else if (command == "kick") {
@@ -169,12 +170,12 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					PlayerPacket::showMessage(player, "Invalid player or player is offline.", 5);
 			}
 			else if (command == "warp") {
-				char *name = strtok_s(0, " ", &next_token);
+				char *name = strtok(next_token, " ");
 				if (strlen(next_token) == 0) return;
 
 				Player *warpee;
 				if (warpee = Players::Instance()->getPlayer(name)) {
-					int32_t mapid = atoi(strtok_s(0, " ", &next_token));
+					int32_t mapid = atoi(strtok(next_token, " "));
 					if (Maps::getMap(mapid)) {
 						Maps::changeMap(warpee, mapid, 0);
 					}
@@ -197,7 +198,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					return;
 				}
 
-				struct {
+				struct : function<void (Player *)> {
 					void operator()(Player *warpee) {
 						if (warpee->getMap() != mapid) {
 							Maps::changeMap(warpee, mapid, 0);
@@ -205,7 +206,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					int32_t mapid;
 					Player *player;
-				} changeMap = {mapid, player};
+				} changeMap;
+				changeMap.mapid = mapid;
+				changeMap.player = player;
 
 				Players::Instance()->run(changeMap);
 			}
@@ -230,14 +233,14 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						Player *killpsa;
 						killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 						if (killpsa != player) {
-							if (killpsa->isGM()) {	
+							if (killpsa->isGM()) {
 								killpsa->setHP(0);
 							}
 						}
 					}
 				}
 				else if (strcmp(next_token, "players") == 0) {
-					for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {	
+					for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 						Player *killpsa;
 						killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 						if (killpsa != player) {
@@ -269,7 +272,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				PlayerPacket::showMessage(player, "Sub Commands: item, skill, map, mob, npc", 6);
 				return;
 			}
-			char *subcommand = strtok_s(0, " ", &next_token);
+			char *subcommand = strtok(next_token, " ");
 			string comparison = subcommand;
 			if (comparison == "item") type = 1;
 			else if (comparison == "skill") type = 2;
@@ -294,7 +297,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		else if (command == "map") {
 			if (strlen(next_token) == 0) {
 				char msg[60];
-				sprintf_s(msg, 60, "Current Map: %i", player->getMap());
+				sprintf(msg, "Current Map: %i", player->getMap());
 				PlayerPacket::showMessage(player, msg, 6);
 				return;
 			}
@@ -349,7 +352,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			else if (strcmp("grandpa", next_token) == 0) mapid = 801040100;
 			else if (strcmp("anego", next_token) == 0) mapid = 801040003;
 			else if (strcmp("tengu", next_token) == 0) mapid = 800020130;
-			else { 
+			else {
 				char *endptr;
 				mapid = strtol(next_token, &endptr, 0);
 				if (strlen(endptr) != 0) mapid = -1;
@@ -366,7 +369,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else if (command == "addsp") {
 			if (strlen(next_token) > 0) {
-				int32_t skillid = atoi(strtok_s(0, " ", &next_token));
+				int32_t skillid = atoi(strtok(next_token, " "));
 				if (Skills::skills.find(skillid) == Skills::skills.end()) { // Don't allow skills that do not exist to be added
 					PlayerPacket::showMessage(player, "Invalid Skill ID.", 5);
 					return;
@@ -379,7 +382,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else if (command == "summon"|| command == "spawn") {
 			if (strlen(next_token) == 0) return;
-			int32_t mobid = atoi(strtok_s(0, " ", &next_token));
+			int32_t mobid = atoi(strtok(next_token, " "));
 			if (!MobDataProvider::Instance()->mobExists(mobid)) {
 				PlayerPacket::showMessage(player, "Invalid Mob ID.", 5);
 				return;
@@ -461,12 +464,12 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else if (command == "pos") {
 			char text[50];
-			sprintf_s(text, 50, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFH());
+			sprintf(text, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFH());
 			PlayerPacket::showMessage(player, text, 6);
 		}
 		else if (command == "item") {
 			if (strlen(next_token) == 0) return;
-			int32_t itemid = atoi(strtok_s(0, " ", &next_token));
+			int32_t itemid = atoi(strtok(next_token, " "));
 			if (!ItemDataProvider::Instance()->itemExists(itemid)) {
 				PlayerPacket::showMessage(player, "Invalid item ID", 6);
 				return;
@@ -484,7 +487,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		else if (command == "job") {
 			if (strlen(next_token) == 0) {
 				char msg[60];
-				sprintf_s(msg, 60, "Current Job: %i", player->getJob());
+				sprintf(msg, "Current Job: %i", player->getJob());
 				PlayerPacket::showMessage(player, msg, 6);
 				return;
 			}

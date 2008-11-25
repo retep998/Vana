@@ -41,7 +41,7 @@ void ChannelServer::loadData() {
 	Initializing::loadData();
 
 	WorldServerConnectPlayer *loginPlayer = dynamic_cast<WorldServerConnectPlayer *>(
-		ConnectionManager::Instance()->connect(login_ip, login_inter_port, 
+		ConnectionManager::Instance()->connect(login_ip, login_inter_port,
 			new WorldServerConnectPlayerFactory()));
 	loginPlayer->setIP(external_ip);
 	loginPlayer->sendAuth(inter_password);
@@ -49,7 +49,7 @@ void ChannelServer::loadData() {
 
 void ChannelServer::connectWorld() {
 	worldPlayer = dynamic_cast<WorldServerConnectPlayer *>(
-		ConnectionManager::Instance()->connect(world_ip, 
+		ConnectionManager::Instance()->connect(world_ip,
 			world_port, new WorldServerConnectPlayerFactory()));
 	worldPlayer->setIP(external_ip);
 	worldPlayer->sendAuth(inter_password);
@@ -59,7 +59,8 @@ void ChannelServer::loadConfig() {
 	ConfigFile config("conf/channelserver.lua");
 	login_ip = config.getString("login_ip");
 	login_inter_port = config.getShort("login_inter_port");
-	external_ip = MiscUtilities::nameToIP(config.getString("external_ip")); // External IP
+	external_ip = config.getString("external_ip"); // External IP
+	external_ip = MiscUtilities::nameToIP(external_ip); // Resolve IP if using a hostname
 
 	world = -1; // Will get from login server
 	port = -1; // Will get from world server

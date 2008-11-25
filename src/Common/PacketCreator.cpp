@@ -31,12 +31,12 @@ void PacketCreator::addBuffer(PacketReader &packet) {
 }
 
 void PacketCreator::addBuffer(unsigned char *bytes, size_t len) {
-	memcpy_s(packet + pos, len, bytes, len);
+	memcpy(packet + pos, bytes, len);
 	pos += len;
 }
 
-void PacketCreator::addIP(const string &ip) { 
-	typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
+void PacketCreator::addIP(const string &ip) {
+	typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 	typedef boost::char_separator<char> separator;
 
 	separator sep(".");
@@ -64,7 +64,7 @@ void PacketCreator::addBytes(char *hex) {
 		else if (byte2 >= '0' && byte2 <= '9')
 			byte2 -= '0';
 		unsigned char byte = byte1 * 0x10 + byte2;
-		packet[pos++] = byte;	
+		packet[pos++] = byte;
 	}
 }
 
@@ -73,7 +73,7 @@ void PacketCreator::addString(const string &str, size_t len) {
 	if (len < slen) {
 		std::cout << "ERROR: addString used with length shorter than string size." << std::endl; // TODO: Throw exception
 	}
-	strncpy_s((char *) packet + pos, bufferLen - pos, str.c_str(), slen);
+	strncpy((char *) packet + pos, str.c_str(), slen);
 	for (size_t i = slen; i < len; i++) {
 		packet[pos + i] = 0;
 	}
@@ -83,6 +83,6 @@ void PacketCreator::addString(const string &str, size_t len) {
 void PacketCreator::addString(const string &str) {
 	size_t len = str.size();
 	addShort(len);
-	strcpy_s((char *) packet + pos, bufferLen - pos, str.c_str());
+	strcpy((char *) packet + pos, str.c_str());
 	pos += len;
 }

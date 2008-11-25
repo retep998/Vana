@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef REACTOR_H
 #define REACTOR_H
 
-#include <unordered_map>
+#include <tr1/unordered_map>
 #include <vector>
 #include "Pos.h"
 

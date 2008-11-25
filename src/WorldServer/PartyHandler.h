@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Players.h"
 #include "Types.h"
-#include <unordered_map>
+#include <tr1/unordered_map>
 #include <vector>
 
 using std::tr1::unordered_map;

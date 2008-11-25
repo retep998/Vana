@@ -32,14 +32,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include <functional>
 #include <string>
-#include <unordered_map>
+#include <tr1/unordered_map>
 
 using std::string;
 using std::tr1::bind;
 using std::tr1::unordered_map;
 
 unordered_map<int32_t, PetInfo> Pets::petsInfo;
-unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> Pets::petsInteractInfo;
+unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > Pets::petsInteractInfo;
 
 int16_t Pets::exps[29] = {1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000};
 

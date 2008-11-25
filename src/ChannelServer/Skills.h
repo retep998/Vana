@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SKILLS_H
 #define SKILLS_H
 
-#include <unordered_map>
+#include <tr1/unordered_map>
 #include "Pos.h"
 
 using std::tr1::unordered_map;

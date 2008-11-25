@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERS_H
 
 #include "Types.h"
-#include <functional>
+#include <tr1/functional>
 #include <string>
-#include <unordered_map>
+#include <tr1/unordered_map>
 
 using std::string;
 using std::tr1::function;

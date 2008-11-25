@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SHOPDATA_H
 
 #include "Types.h"
-#include <unordered_map>
+#include <tr1/unordered_map>
 #include <vector>
 
 using std::vector;
