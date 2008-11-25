@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERQUESTS_H
 
 #include "Types.h"
+#include "Quests.h"
 #include <unordered_map>
 #include <vector>
 
@@ -26,8 +27,6 @@ using std::tr1::unordered_map;
 using std::vector;
 
 class Player;
-struct Quest;
-struct QuestComp;
 
 class PlayerQuests {
 public:
