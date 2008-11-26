@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include "Pos.h"
 #include <ctime>
-#include <memory>
-#include <unordered_map>
+#include <boost/tr1/memory.hpp>
+#include <boost/unordered_map.hpp>
 #include <vector>
 #include <string>
 #include <boost/thread/recursive_mutex.hpp>
@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class Drop;
 class Mob;
@@ -178,10 +178,9 @@ public:
 			drops.erase(id);
 	}
 	void clearDrops(bool showPacket = true);
-	void clearDrops(int32_t time);
+	void clearDrops(clock_t time);
 
 	// Timer stuff
-	void setTimer();
 	void runTimer();
 
 	// Show all map objects
@@ -206,7 +205,6 @@ private:
 	unordered_map<int32_t, Drop *> drops;
 	boost::recursive_mutex drops_mutex;
 	LoopingId objectids;
-	bool timer_started;
 
 	void updateMobControl(Player *player);
 	void updateMobControl(Mob *mob, bool spawn = false);

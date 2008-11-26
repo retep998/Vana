@@ -47,7 +47,7 @@ void PacketCreator::addIP(const string &ip) {
 	}
 }
 
-void PacketCreator::addBytes(char *hex) {
+void PacketCreator::addBytes(const char *hex) {
 	for (size_t i = 0; i < strlen(hex) / 2; i++) {
 		unsigned char byte1 = hex[i * 2];
 		unsigned char byte2 = hex[i * 2 + 1];

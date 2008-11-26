@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SESSIONMANAGER_H
 #define SESSIONMANAGER_H
 
-#include <memory>
+#include <boost/tr1/memory.hpp>
 #include <set>
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>

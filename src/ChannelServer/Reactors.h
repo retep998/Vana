@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef REACTOR_H
 #define REACTOR_H
 
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 #include <vector>
 #include "Pos.h"
 
 using std::vector;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class LoopingId;
 class Player;

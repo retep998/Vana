@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define KEYMAPS_H
 
 #include "Types.h"
-#include <memory>
-#include <unordered_map>
+#include <boost/tr1/memory.hpp>
+#include <boost/unordered_map.hpp>
 
 using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class KeyMaps {
 public:
@@ -41,7 +41,7 @@ public:
 
 	static const size_t size = 90;
 private:
-	unordered_map<int32_t, shared_ptr<KeyMap>> keyMaps;
+	unordered_map<int32_t, shared_ptr<KeyMap> > keyMaps;
 	int32_t maxValue; // Cache max value
 };
 

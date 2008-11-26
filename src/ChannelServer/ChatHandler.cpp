@@ -149,7 +149,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				if (strlen(next_token) == 0)
 					return;
 				string msg = player->getName() + " : " + string(next_token);
-				struct : function<void (Player *)> {
+				struct SendMessage : function<void (Player *)> {
 					void operator()(Player *gmplayer) {
 						if (gmplayer->isGM() == true) {
 							PlayerPacket::showMessage(gmplayer, msg, 6);
@@ -198,7 +198,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					return;
 				}
 
-				struct : function<void (Player *)> {
+				struct changeMap : function<void (Player *)> {
 					void operator()(Player *warpee) {
 						if (warpee->getMap() != mapid) {
 							Maps::changeMap(warpee, mapid, 0);

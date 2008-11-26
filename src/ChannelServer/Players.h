@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERS_H
 
 #include "Types.h"
-#include <functional>
 #include <string>
-#include <unordered_map>
+#include <boost/tr1/functional.hpp>
+#include <boost/unordered_map.hpp>
 
 using std::string;
 using std::tr1::function;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class PacketCreator;
 class Player;

@@ -49,7 +49,7 @@ void AbstractPlayer::handleRequest(PacketReader &packet) {
 void AbstractPlayer::setTimer() {
 	new Timer::Timer(bind(&AbstractPlayer::ping, this),
 		Timer::Id(Timer::Types::PingTimer, 0, 0),
-		getTimers(), 0, 15000);
+		getTimers(), 0, 15 * CLOCKS_PER_SEC);
 }
 
 void AbstractPlayer::ping() {

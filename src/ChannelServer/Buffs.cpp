@@ -516,7 +516,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	vector<SkillMapActiveInfo> mapenterskill;
 	SkillActiveInfo playerskill = parseBuffInfo(player, skillid, level, mountid);
 	SkillActiveInfo mapskill = parseBuffMapInfo(player, skillid, level, mapenterskill);
-	int32_t time = Skills::skills[skillid][level].time * 1000;
+	int32_t time = Skills::skills[skillid][level].time;
 	switch (skillid) {
 		case 1004: // Monster Rider
 			if (mountid == 0) {

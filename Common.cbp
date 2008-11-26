@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Common" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="Debug/libcommon" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="Debug/obj/Common/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add option="-include PrecompiledHeader.h" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add directory="src/Common" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="src/Common" />
+				</ResourceCompiler>
+			</Target>
+			<Target title="Release">
+				<Option output="Release/libcommon" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="Release/obj/Common" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-W" />
+					<Add option="-include PrecompiledHeader.h" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add directory="src/Common" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="src/Common" />
+				</ResourceCompiler>
+			</Target>
+		</Build>
+		<Unit filename="src/Common/AESEncryption.cpp" />
+		<Unit filename="src/Common/AESEncryption.h" />
+		<Unit filename="src/Common/AbstractPlayer.cpp" />
+		<Unit filename="src/Common/AbstractPlayer.h" />
+		<Unit filename="src/Common/AbstractServer.cpp" />
+		<Unit filename="src/Common/AbstractServer.h" />
+		<Unit filename="src/Common/AbstractSession.h" />
+		<Unit filename="src/Common/AuthenticationPacket.cpp" />
+		<Unit filename="src/Common/AuthenticationPacket.h" />
+		<Unit filename="src/Common/ConfigFile.cpp" />
+		<Unit filename="src/Common/ConfigFile.h" />
+		<Unit filename="src/Common/ConnectionManager.cpp" />
+		<Unit filename="src/Common/ConnectionManager.h" />
+		<Unit filename="src/Common/Database.cpp" />
+		<Unit filename="src/Common/Database.h" />
+		<Unit filename="src/Common/DatabaseMigration.cpp" />
+		<Unit filename="src/Common/DatabaseMigration.h" />
+		<Unit filename="src/Common/DatabaseMigrationRunner.cpp" />
+		<Unit filename="src/Common/DatabaseMigrationRunner.h" />
+		<Unit filename="src/Common/Decoder.cpp" />
+		<Unit filename="src/Common/Decoder.h" />
+		<Unit filename="src/Common/InitializeCommon.cpp" />
+		<Unit filename="src/Common/InitializeCommon.h" />
+		<Unit filename="src/Common/InterHeader.h" />
+		<Unit filename="src/Common/LoopingId.h" />
+		<Unit filename="src/Common/MapleClient.cpp" />
+		<Unit filename="src/Common/MapleClient.h" />
+		<Unit filename="src/Common/MapleEncryption.cpp" />
+		<Unit filename="src/Common/MapleEncryption.h" />
+		<Unit filename="src/Common/MapleServer.cpp" />
+		<Unit filename="src/Common/MapleServer.h" />
+		<Unit filename="src/Common/MapleSession.cpp" />
+		<Unit filename="src/Common/MapleSession.h" />
+		<Unit filename="src/Common/MapleVersion.h" />
+		<Unit filename="src/Common/MiscUtilities.cpp" />
+		<Unit filename="src/Common/MiscUtilities.h" />
+		<Unit filename="src/Common/PacketCreator.cpp" />
+		<Unit filename="src/Common/PacketCreator.h" />
+		<Unit filename="src/Common/PacketReader.cpp" />
+		<Unit filename="src/Common/PacketReader.h" />
+		<Unit filename="src/Common/PingPacket.cpp" />
+		<Unit filename="src/Common/PingPacket.h" />
+		<Unit filename="src/Common/Pos.h" />
+		<Unit filename="src/Common/PrecompiledHeader.cpp" />
+		<Unit filename="src/Common/PrecompiledHeader.h" />
+		<Unit filename="src/Common/Randomizer.cpp" />
+		<Unit filename="src/Common/Randomizer.h" />
+		<Unit filename="src/Common/Rates.h" />
+		<Unit filename="src/Common/RecvHeader.h" />
+		<Unit filename="src/Common/SendHeader.h" />
+		<Unit filename="src/Common/ServerPlayer.cpp" />
+		<Unit filename="src/Common/ServerPlayer.h" />
+		<Unit filename="src/Common/SessionManager.cpp" />
+		<Unit filename="src/Common/SessionManager.h" />
+		<Unit filename="src/Common/StringUtilities.cpp" />
+		<Unit filename="src/Common/StringUtilities.h" />
+		<Unit filename="src/Common/TimeUtilities.cpp" />
+		<Unit filename="src/Common/TimeUtilities.h" />
+		<Unit filename="src/Common/Timer/Container.cpp" />
+		<Unit filename="src/Common/Timer/Container.h" />
+		<Unit filename="src/Common/Timer/Id.cpp" />
+		<Unit filename="src/Common/Timer/Id.h" />
+		<Unit filename="src/Common/Timer/Thread.cpp" />
+		<Unit filename="src/Common/Timer/Thread.h" />
+		<Unit filename="src/Common/Timer/Time.h" />
+		<Unit filename="src/Common/Timer/Timer.cpp" />
+		<Unit filename="src/Common/Timer/Timer.h" />
+		<Unit filename="src/Common/Timer/Types.h" />
+		<Unit filename="src/Common/Types.h" />
+		<Unit filename="src/Common/sha1.cpp" />
+		<Unit filename="src/Common/sha1.h" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

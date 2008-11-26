@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <vector>
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 
 using std::vector;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class Player;
 class PacketReader;

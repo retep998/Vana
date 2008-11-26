@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 bool PlayerSkills::addSkillLevel(int32_t skillid, uint8_t amount, bool sendpacket) {
 	// Keep people from adding too much SP and prevent it from going negative
 	uint8_t newlevel = ((playerskills.find(skillid) != playerskills.end()) ? playerskills[skillid].level : 0) + amount;
-	if (newlevel > Skills::maxlevels[skillid] || newlevel < 0) {
+	if (newlevel > Skills::maxlevels[skillid]) {
 		return false; // Let the caller handle this
 	}
 

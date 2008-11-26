@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, PacketReader &packet) {
 	int8_t worldid = packet.getByte();
-	if (worldid != 0xFF) {
+	if (worldid != -1) {
 		ChannelServer::Instance()->setWorld(worldid);
 		ChannelServer::Instance()->setWorldIp(packet.getString());
 		ChannelServer::Instance()->setWorldPort(packet.getShort());
@@ -46,7 +46,7 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, P
 
 void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, PacketReader &packet) {
 	uint16_t channel = packet.getShort();
-	if (channel != -1) {
+	if (channel != USHRT_MAX) {
 		ChannelServer::Instance()->setChannel(channel);
 		int16_t port = packet.getShort();
 		ChannelServer::Instance()->setPort(port);
@@ -66,7 +66,7 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 	int32_t playerid = packet.getInt();
 	string ip = packet.getString();
 	int16_t port = packet.getShort();
-	
+
 	Player *ccPlayer = Players::Instance()->getPlayer(playerid);
 	if (!ccPlayer) {
 		return;
@@ -82,7 +82,7 @@ void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
 	uint16_t channel = packet.getShort();
 	string name = packet.getString();
 	int8_t is = packet.getByte();
-	if (channel == 65535) {
+	if (channel == USHRT_MAX) {
 		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, -1, is);
 	}
 	else {

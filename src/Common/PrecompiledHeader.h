@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // be included twice.
 
 #include <functional>
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
+#include <boost/tr1/memory.hpp>
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>

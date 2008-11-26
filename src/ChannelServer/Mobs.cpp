@@ -96,12 +96,12 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 		if (statusinfo[i].status == POISON) { // Damage timer for poison
 			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
 				Timer::Id(Timer::Types::MobStatusTimer, POISON, 1),
-				getTimers(), 0, 1000); // Check for CLOCKS_PER_SEC
+				getTimers(), 0, CLOCKS_PER_SEC);
 		}
 
 		new Timer::Timer(bind(&Mob::removeStatus, this, statusinfo[i].status),
 			Timer::Id(Timer::Types::MobStatusTimer, statusinfo[i].status, 0),
-			getTimers(), Timer::Time::fromNow(statusinfo[i].time));
+			getTimers(), Timer::Time::fromNow(statusinfo[i].time * CLOCKS_PER_SEC));
 	}
 	// Calculate new status mask
 	this->status = 0;
@@ -539,24 +539,24 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			case 3211003: // Blizzard (Sniper)
 			case 2221007: // Blizzard (Arch Mage)
 			case 5211005: // Cooling Effect
-				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid, Skills::skills[skillid][level].time * 2000));
+				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid, Skills::skills[skillid][level].time));
 				break;
 			case 2121005: // Elquines
 			case 3221005: // Frostprey
-				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid, Skills::skills[skillid][level].x * 2000));
+				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid, Skills::skills[skillid][level].x));
 				break;
 		}
 		if ((weapon_type == WEAPON_1H_SWORD || weapon_type == WEAPON_2H_SWORD) && player->getActiveBuffs()->getActiveSkillLevel(1211005) > 0) { // Ice Charge Sword
-			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211005, Skills::skills[1211005][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000));
+			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211005, Skills::skills[1211005][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y));
 		}
 		else if ((weapon_type == WEAPON_1H_MACE || weapon_type == WEAPON_2H_MACE) && player->getActiveBuffs()->getActiveSkillLevel(1211006) > 0) { // Blizzard Charge BW
-			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211006, Skills::skills[1211006][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y * 2000));
+			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211006, Skills::skills[1211006][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y));
 		}
 	}
 	if (mob->canPoison()) { // Poisoning stuff
 		if ((skillid == 2101005 || skillid == 2111006 || skillid == 2111003) && Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) { // Poison brace, Element composition, and Poison mist
 			int16_t pdamage = (int16_t)(mob->getMHP() / (70 - level));
-			statuses.push_back(StatusInfo(POISON, pdamage, skillid, Skills::skills[skillid][level].time * 1000));
+			statuses.push_back(StatusInfo(POISON, pdamage, skillid, Skills::skills[skillid][level].time));
 		}
 	}
 	if (!mob->isBoss()) { // Seal, Stun, etc
@@ -570,59 +570,59 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			case 4221007: // Boomerang Step
 			case 5201004: // Fake Shot
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time * 1000));
+					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
 			case 5101002: // Backspin Blow
 			case 5101003: // Double Uppercut
 			case 5121004: // Demolition
 			case 5121005: // Snatch
-				statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time * 1000));
+				statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time));
 				break;
 			case 3111005: // Silver Hawk
 			case 3211005: // Golden Eagle
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].x * 1000));
+					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].x));
 				}
 				break;
 			case 2111004: // Seal - F/P
 			case 2211004: // Seal - I/L
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time * 1000));
+					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
 			case 2311005: // Doom
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(DOOM, 0x100, skillid, Skills::skills[skillid][level].time * 1000));
+					statuses.push_back(StatusInfo(DOOM, 0x100, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
 			case 4111003: // Shadow Web
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(SHADOW_WEB, 0x100, skillid, Skills::skills[skillid][level].time * 1000));
+					statuses.push_back(StatusInfo(SHADOW_WEB, 0x100, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
 		}
 	}
 	if (skillid == 4001002) { // Disorder
-		clock_t time = Skills::skills[skillid][level].time * 1000;
+		clock_t time = Skills::skills[skillid][level].time;
 		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid, time));
 		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid, time));
 	}
 	else if (skillid == 1201006) { // Threaten
-		clock_t time = Skills::skills[skillid][level].time * 1000;
+		clock_t time = Skills::skills[skillid][level].time;
 		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid, time));
 		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid, time));
 	}
 	else if (skillid == 2101003 || skillid == 2201003) { // Slow
-		statuses.push_back(StatusInfo(SPEED, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time * 1000));
+		statuses.push_back(StatusInfo(SPEED, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
 	}
 	if (weapon_type == WEAPON_BOW && player->getActiveBuffs()->getActiveSkillLevel(3121007) > 0) { // Hamstring
 		uint8_t hamlevel = player->getActiveBuffs()->getActiveSkillLevel(3121007);
-		statuses.push_back(StatusInfo(SPEED, Skills::skills[3121007][hamlevel].x, 3121007, Skills::skills[3121007][hamlevel].y * 1000));
+		statuses.push_back(StatusInfo(SPEED, Skills::skills[3121007][hamlevel].x, 3121007, Skills::skills[3121007][hamlevel].y));
 	}
 	if (weapon_type == WEAPON_CROSSBOW && player->getActiveBuffs()->getActiveSkillLevel(3221006) > 0) { // Blind
 		uint8_t blindlevel = player->getActiveBuffs()->getActiveSkillLevel(3221006);
-		statuses.push_back(StatusInfo(ACC, -Skills::skills[3221006][blindlevel].x, 3221006, Skills::skills[3221006][blindlevel].y * 1000));
+		statuses.push_back(StatusInfo(ACC, -Skills::skills[3221006][blindlevel].x, 3221006, Skills::skills[3221006][blindlevel].y));
 	}
 
 	if (statuses.size() > 0)

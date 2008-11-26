@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MOBDATA_H
 
 #include "Types.h"
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 #include <vector>
 
 using std::vector;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 struct MobAttackInfo {
 	MobAttackInfo() : mobid(-1), id(0), mpconsume(0), mpburn(0), level(0), deadlyattack(false) { }
