@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPDATAPROVIDER_H
 
 #include "Types.h"
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 #include <boost/thread/mutex.hpp>
 
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class Map;
 

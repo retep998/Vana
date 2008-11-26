@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.h"
 #include "Types.h"
 #include <list>
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 #include <vector>
 
 using std::list;
 using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 using std::vector;
 
 class Player;
@@ -76,7 +76,7 @@ private:
 	unordered_map<int32_t, SkillActiveInfo> activemapskill;
 	vector<SkillMapActiveInfo> activemapenterskill;
 	unordered_map<int32_t, uint8_t> activelevels;
-	unordered_map<int32_t, shared_ptr<Timer::Container>> m_skill_acts;
+	unordered_map<int32_t, shared_ptr<Timer::Container> > m_skill_acts;
 	uint8_t m_combo;
 	bool m_berserk;
 };

@@ -56,6 +56,7 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, boo
 }
 
 void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo, int32_t mountid) {
+	time *= 1000;
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
@@ -138,7 +139,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t leve
 	PacketCreator packet;
 	packet.addShort(SEND_GAIN_ITEM); // For the using player
 	bool send = false;
-	switch (skillid) { 
+	switch (skillid) {
 		case 2100000:
 		case 2200000:
 		case 2300000: // MP Eater

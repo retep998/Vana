@@ -31,7 +31,7 @@ using std::tr1::bind;
 
 // Buff Skills
 void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
-	clock_t skillExpire = time;
+	clock_t skillExpire = time * CLOCKS_PER_SEC;
 	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
 		id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
@@ -61,7 +61,7 @@ int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) {
 
 // Skill "acts"
 void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t time) {
-	struct : std::tr1::function<void ()> {
+	struct RunAct : std::tr1::function<void ()> {
 		void operator()() {
 			switch (act) {
 				case ACT_HEAL: Skills::heal(player, value, skill); break;

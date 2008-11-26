@@ -23,12 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Pos.h"
 #include "Timer/Container.h"
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 #include <vector>
 #include <boost/scoped_ptr.hpp>
 
 using std::vector;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class Player;
 class Mob;

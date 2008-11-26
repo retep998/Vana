@@ -35,7 +35,7 @@ int32_t PacketReader::getInt() {
 
 clock_t PacketReader::getClock() {
 	clock_t val = 0;
-	for (int8_t i = 0; i < sizeof(clock_t); i++) {
+	for (uint8_t i = 0; i < sizeof(clock_t); i++) {
 		int32_t mul = 1;
 		for (int8_t f = 0; f < i; f++) {
 			mul *= 100;

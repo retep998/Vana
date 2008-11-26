@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Id.h"
 #include "../Types.h"
 #include <ctime>
-#include <functional>
-
-namespace Timer {
+#include <boost/tr1/functional.hpp>
 
 using std::tr1::function;
+
+namespace Timer {
 
 class Container;
 

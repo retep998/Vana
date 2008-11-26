@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PETS_H
 
 #include "MovableLife.h"
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 #include <string>
 
 using std::string;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class Pet;
 class Player;
@@ -42,7 +42,7 @@ struct PetInteractInfo {
 
 namespace Pets {
 	extern unordered_map<int32_t, PetInfo> petsInfo;
-	extern unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> petsInteractInfo;
+	extern unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > petsInteractInfo;
 	extern int16_t exps[29];
 	void showPets(Player *player);
 	void showPetsPlayer(Player *player, Player *target);

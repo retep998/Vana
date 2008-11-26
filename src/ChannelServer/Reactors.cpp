@@ -110,7 +110,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectID() == revent->itemid) {
 				if ((drop->getPos().x >= reactor->getPos().x + revent->ltx && drop->getPos().x <= reactor->getPos().x + revent->rbx) && (drop->getPos().y >= reactor->getPos().y + revent->lty && drop->getPos().y <= reactor->getPos().y + revent->rby)) {
-					struct : std::tr1::function<void ()> {
+					struct Reaction : std::tr1::function<void ()> {
 						void operator()() {
 							reactor->setState(state, true);
 							drop->removeDrop();
@@ -130,7 +130,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 					reaction.state = revent->nextstate;
 
 					Timer::Id id(Timer::Types::ReactionTimer, (uint32_t) drop, 0);
-					new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3000));
+					new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3 * CLOCKS_PER_SEC));
 				}
 				return;
 			}

@@ -44,7 +44,7 @@ public:
 	void addPos(Pos pos); // Positions
 	void addByte(unsigned char byte);
 	void setByte(unsigned char byte, size_t pos);
-	void addBytes(char *hex);
+	void addBytes(const char *hex);
 	void addClock(clock_t clock);
 	void addBuffer(unsigned char *bytes, size_t len);
 	void addBuffer(PacketReader &packet);

@@ -39,9 +39,11 @@ using std::tr1::bind;
 Map::Map (MapInfoPtr info) :
 info(info),
 spawnpoints(0),
-objectids(1000),
-timer_started(false)
+objectids(1000)
 {
+	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
+		Timer::Id(Timer::Types::MapTimer, info->id, 0),
+		0, 0, 10 * CLOCKS_PER_SEC);
 }
 
 // Map Info
@@ -52,8 +54,6 @@ void Map::setMusic(const string &musicname) {
 
 // Players
 void Map::addPlayer(Player *player) {
-	setTimer(); // Setup the timer if this is the first player to enter the map
-
 	this->players.push_back(player);
 	if (info->fieldType == 82 || info->fieldType == 81) // Apple training maps/Showa spa
 		MapPacket::forceMapEquip(player);
@@ -261,15 +261,6 @@ void Map::clearDrops(clock_t time) { // Clear drops based on how long they have 
 				iter->second->removeDrop();
 		}
 	}
-}
-
-void Map::setTimer() {
-	if (!timer_started) {
-		new Timer::Timer(bind(&Map::runTimer, this),
-			Timer::Id(Timer::Types::MapTimer, info->id, 0),
-			0, 0, 10000); // Check for CLOCKS_PER_SEC
-	}
-	timer_started = true;
 }
 
 void Map::runTimer() {

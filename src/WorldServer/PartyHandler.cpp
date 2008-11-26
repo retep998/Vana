@@ -83,7 +83,7 @@ void PartyHandler::expelPlayer(WorldServerAcceptPlayer *player, int32_t playerid
 		return; //Hacking
 	}
 	Party *party = parties[pplayer->party];
-	party->deleteMember(tplayer); 
+	party->deleteMember(tplayer);
 	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
 			WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
@@ -115,7 +115,7 @@ void PartyHandler::leaveParty(WorldServerAcceptPlayer *player, int32_t playerid)
 	else {
 		party->deleteMember(pplayer);
 		for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
-			if (iter->second->online) {			
+			if (iter->second->online) {
 				WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
 				PartyPacket::updateParty(channel, PARTY_LEAVE, iter->second->id, playerid);
 			}
@@ -152,7 +152,7 @@ void PartyHandler::invitePlayer(WorldServerAcceptPlayer *player, int32_t playeri
 		return; //hacking
 	}
 	Player *invited = Players::Instance()->getPlayerFromName(invitee);
-	if (invited->channel != -1 && invited->channel == pplayer->channel) {
+	if (invited->channel != USHRT_MAX && invited->channel == pplayer->channel) {
 		if (invited->party != 0) {
 			PartyPacket::partyError(player, playerid, 0x10);
 		}

@@ -362,7 +362,7 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 		player->modifyMP(item.cons.mpr * player->getMMP() / 100);
 	// Item buffs
 	if (item.cons.time > 0) {
-		int32_t time = item.cons.time * 1000;
+		int32_t time = item.cons.time;
 		if (alchemist > 0)
 			time = (time * alchemist) / 100;
 		SkillActiveInfo iteminfo;

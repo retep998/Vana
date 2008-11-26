@@ -36,7 +36,7 @@ void Players::registerPlayer(int32_t id, const string &name, uint16_t channel, i
 		player->level = level;
 		player->online = true;
 		players[id] = player;
-		
+
 		LoginServerConnectPacket::updateChannelPop(WorldServer::Instance()->getLoginPlayer(), channel, ++Channels::Instance()->getChannel(channel)->players);
 	}
 	else {
@@ -52,7 +52,7 @@ void Players::registerPlayer(int32_t id, const string &name, uint16_t channel, i
 }
 
 void Players::remove(int32_t id, uint16_t channel) {
-	if (channel == -1 || players[id]->channel == channel) {
+	if (channel == USHRT_MAX || players[id]->channel == channel) {
 		players[id]->online = false;
 		if (players[id]->party != 0) {
 			PartyHandler::logInLogOut(id);

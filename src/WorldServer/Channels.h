@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CHANNELS_H
 
 #include "Types.h"
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 #include <string>
 
 using std::string;
 using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class WorldServerAcceptPlayer;
 class PacketCreator;
@@ -57,7 +57,7 @@ private:
 	Channels& operator=(const Channels&);
 	static Channels *singleton;
 
-	unordered_map<uint16_t, shared_ptr<Channel>> channels;
+	unordered_map<uint16_t, shared_ptr<Channel> > channels;
 };
 
 #endif
