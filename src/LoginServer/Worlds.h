@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <map>
 #include <string>
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 
 using std::map;
 using std::string;
 using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using boost::unordered_map;
 
 class PlayerLogin;
 class LoginServerAcceptPlayer;
@@ -41,7 +41,7 @@ struct Channel {
 
 struct World {
 	string name;
-	unordered_map<int32_t, shared_ptr<Channel>> channels;
+	unordered_map<int32_t, shared_ptr<Channel> > channels;
 	size_t maxChannels;
 	int8_t id;
 	int8_t ribbon;
