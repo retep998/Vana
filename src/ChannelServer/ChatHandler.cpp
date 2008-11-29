@@ -40,6 +40,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 using std::vector;
+using boost::regex;
+using boost::cmatch;
+using boost::regex_match;
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	string message = packet.getString();
@@ -49,8 +52,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		char *chat = const_cast<char *>(message.c_str());
 		string command = strtok(chat+1, " ");
 		string args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
-		boost::regex re; // Regular expression for use by commands with more complicated structures
-		boost::cmatch matches; // Regular expressions match for such commands
+		regex re; // Regular expression for use by commands with more complicated structures
+		cmatch matches; // Regular expressions match for such commands
 
 		if (player->getGMLevel() >= 3) { // Admin Level
 			if (command == "header") {
@@ -58,7 +61,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			}
 			else if (command == "ban") {
 				re = "(\\w+) ?(\\d+)?";
-				if (!boost::regex_match(args.c_str(), matches, re)) {
+				if (!regex_match(args.c_str(), matches, re)) {
 					PlayerPacket::showMessage(player, "Usage: !ban <$playername> [#reason]", 6);
 					return;
 				}
@@ -166,7 +169,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			}
 			else if (command == "warp") {
 				re = "(\\w+) ?(\\d*)?";
-				if (!boost::regex_match(args.c_str(), matches, re)) {
+				if (!regex_match(args.c_str(), matches, re)) {
 					PlayerPacket::showMessage(player, "Usage: !warp <$playername> [#mapid]", 6);
 					return;
 				}
@@ -252,7 +255,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		// Regular GM commands
 		if (command == "lookup") {
 			re = "(\\w+) (.+)";
-			if (!boost::regex_match(args.c_str(), matches, re)) {
+			if (!regex_match(args.c_str(), matches, re)) {
 				PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc}> <$search string>", 6);
 				return;
 			}
@@ -358,7 +361,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else if (command == "addsp") {
 			re = "(\\d+) ?(\\d+)?";
-			if (!boost::regex_match(args.c_str(), matches, re)) {
+			if (!regex_match(args.c_str(), matches, re)) {
 				PlayerPacket::showMessage(player, "Usage: !addsp <#skillid> [#amount]", 6);
 				return;
 			}
@@ -375,7 +378,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else if (command == "summon"|| command == "spawn") {
 			re = "(\\d+) ?(\\d+)?";
-			if (!boost::regex_match(args.c_str(), matches, re)) {
+			if (!regex_match(args.c_str(), matches, re)) {
 				PlayerPacket::showMessage(player, "Usage: !" + command + " <#mobid> [#amount]", 6);
 				return;
 			}
@@ -468,7 +471,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else if (command == "item") {
 			re = "(\\d+) ?(\\d*)?";
-			if (!boost::regex_match(args.c_str(), matches, re)) {
+			if (!regex_match(args.c_str(), matches, re)) {
 				PlayerPacket::showMessage(player, "Usage: !item <#itemid> [#amount]", 6);
 				return;
 			}
