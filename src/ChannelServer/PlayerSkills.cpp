@@ -64,8 +64,8 @@ void PlayerSkills::load() {
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		PlayerSkillInfo skill;
-		skill.level = res[i][1];
-		skill.maxlevel = res[i][2];
+		skill.level = (uint8_t) res[i][1];
+		skill.maxlevel = (uint8_t) res[i][2];
 		playerskills[res[i][0]] = skill;
 	}
 }

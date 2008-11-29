@@ -26,7 +26,7 @@ void Connectable::newPlayer(int32_t id) {
 
 bool Connectable::checkPlayer(int32_t id) {
 	if (map[id]) {
-		if (clock() - map[id] < 5000)
+		if (clock() - map[id] < 5 * CLOCKS_PER_SEC)
 			return true;
 		map.erase(id);
 	}
