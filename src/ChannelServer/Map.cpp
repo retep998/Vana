@@ -43,7 +43,7 @@ objectids(1000)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
-		0, 0, 10 * CLOCKS_PER_SEC);
+		0, 0, 10000);
 }
 
 // Map Info
