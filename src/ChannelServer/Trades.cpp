@@ -482,5 +482,5 @@ void Trades::stopTimeout(Player *starter, Player *receiver) {
 void Trades::startTimeout(Player *starter, Player *receiver, int32_t tradeid) {
 	Timer::Id id(Timer::Types::TradeTimer, starter->getId(), receiver->getId());
 	new Timer::Timer(bind(&Trades::timeout, starter, receiver, tradeid),
-		id, 0, Timer::Time::fromNow(180 * CLOCKS_PER_SEC));
+		id, 0, Timer::Time::fromNow(180 * 1000));
 }

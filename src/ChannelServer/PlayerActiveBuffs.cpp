@@ -31,7 +31,7 @@ using std::tr1::bind;
 
 // Buff Skills
 void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
-	clock_t skillExpire = time * CLOCKS_PER_SEC;
+	clock_t skillExpire = time * 1000;
 	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
 		id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
