@@ -30,8 +30,8 @@
 					<Add library="boost_filesystem" />
 					<Add library="boost_thread-mt" />
 					<Add library="boost_regex" />
-					<Add library="lua" />
 					<Add library="common" />
+					<Add library="lua" />
 					<Add directory="Debug" />
 				</Linker>
 			</Target>
@@ -58,8 +58,8 @@
 					<Add library="boost_filesystem" />
 					<Add library="boost_thread-mt" />
 					<Add library="boost_regex" />
-					<Add library="lua" />
 					<Add library="common" />
+					<Add library="lua" />
 					<Add directory="Release" />
 				</Linker>
 			</Target>
