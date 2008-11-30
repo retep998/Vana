@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PETS_H
 
 #include "MovableLife.h"
-#include <boost/unordered_map.hpp>
+#include <boost/tr1/unordered_map.hpp>
 #include <string>
 
 using std::string;
-using boost::unordered_map;
+using std::tr1::unordered_map;
 
 class Pet;
 class Player;

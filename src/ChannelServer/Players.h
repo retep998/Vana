@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 #include <boost/tr1/functional.hpp>
-#include <boost/unordered_map.hpp>
+#include <boost/tr1/unordered_map.hpp>
 
 using std::string;
 using std::tr1::function;
-using boost::unordered_map;
+using std::tr1::unordered_map;
 
 class PacketCreator;
 class Player;

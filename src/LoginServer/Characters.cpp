@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerLogin.h"
 #include "Randomizer.h"
 #include "Worlds.h"
-#include <boost/unordered_map.hpp>
+#include <boost/tr1/unordered_map.hpp>
 
-using boost::unordered_map;
+using std::tr1::unordered_map;
 
 void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = Database::getCharDB().query();

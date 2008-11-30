@@ -36,13 +36,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.h"
 #include <string>
 #include <vector>
-#include <boost/regex.hpp>
+
+#ifdef _WIN32
+	#include <regex>
+#endif
+#ifndef _WIN32
+	#include <tr1/regex>
+#endif
 
 using std::string;
 using std::vector;
-using boost::regex;
-using boost::cmatch;
-using boost::regex_match;
+using std::tr1::regex;
+using std::tr1::cmatch;
+using std::tr1::regex_match;
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	string message = packet.getString();

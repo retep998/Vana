@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CONNECTABLE_H
 
 #include "Types.h"
-#include <boost/unordered_map.hpp>
+#include <boost/tr1/unordered_map.hpp>
 
-using boost::unordered_map;
+using std::tr1::unordered_map;
 
 typedef unordered_map<int32_t, int64_t> ConnectableMap;
 

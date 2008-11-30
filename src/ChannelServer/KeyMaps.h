@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
-#include <boost/unordered_map.hpp>
+#include <boost/tr1/unordered_map.hpp>
 
 using std::tr1::shared_ptr;
-using boost::unordered_map;
+using std::tr1::unordered_map;
 
 class KeyMaps {
 public:
