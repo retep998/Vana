@@ -24,8 +24,8 @@
 					<Add directory="src/Common" />
 				</ResourceCompiler>
 				<Linker>
-					<Add library="lua" />
 					<Add library="common" />
+					<Add library="lua" />
 					<Add library="boost_system" />
 					<Add library="boost_thread-mt" />
 					<Add directory="Debug" />
@@ -48,8 +48,8 @@
 					<Add directory="src/Common" />
 				</ResourceCompiler>
 				<Linker>
-					<Add library="lua" />
 					<Add library="common" />
+					<Add library="lua" />
 					<Add library="boost_system" />
 					<Add library="boost_thread-mt" />
 					<Add directory="Release" />
