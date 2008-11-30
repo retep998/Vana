@@ -2,13 +2,13 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Vana workspace">
 		<Project filename="Common.cbp" />
-		<Project filename="LoginServer.cbp">
+		<Project filename="LoginServer.cbp" active="1">
 			<Depends filename="Common.cbp" />
 		</Project>
 		<Project filename="WorldServer.cbp">
 			<Depends filename="Common.cbp" />
 		</Project>
-		<Project filename="ChannelServer.cbp" active="1">
+		<Project filename="ChannelServer.cbp">
 			<Depends filename="Common.cbp" />
 		</Project>
 	</Workspace>

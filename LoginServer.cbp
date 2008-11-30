@@ -26,8 +26,8 @@
 				<Linker>
 					<Add library="mysqlclient" />
 					<Add library="mysqlpp" />
-					<Add library="boost_system" />
-					<Add library="boost_filesystem" />
+					<Add library="boost_system-mt" />
+					<Add library="boost_filesystem-mt" />
 					<Add library="boost_thread-mt" />
 					<Add library="common" />
 					<Add library="lua" />
@@ -53,8 +53,8 @@
 				<Linker>
 					<Add library="mysqlclient" />
 					<Add library="mysqlpp" />
-					<Add library="boost_system" />
-					<Add library="boost_filesystem" />
+					<Add library="boost_system-mt" />
+					<Add library="boost_filesystem-mt" />
 					<Add library="boost_thread-mt" />
 					<Add library="common" />
 					<Add library="lua" />

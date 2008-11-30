@@ -26,7 +26,7 @@
 				<Linker>
 					<Add library="common" />
 					<Add library="lua" />
-					<Add library="boost_system" />
+					<Add library="boost_system-mt" />
 					<Add library="boost_thread-mt" />
 					<Add directory="Debug" />
 				</Linker>
@@ -50,7 +50,7 @@
 				<Linker>
 					<Add library="common" />
 					<Add library="lua" />
-					<Add library="boost_system" />
+					<Add library="boost_system-mt" />
 					<Add library="boost_thread-mt" />
 					<Add directory="Release" />
 				</Linker>
