@@ -1483,23 +1483,23 @@
 	<exception>
 	<functional>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/BuddyListHandler.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/BuddyListHandler.cpp
 	"BuddyListHandler.h"
 	"BuddyListPacket.h"
 	"Player.h"
 	"PacketReader.h"
 	<string>
 
-1227458077 /home/emmy/vana/src/ChannelServer/BuddyListHandler.h
+1227755960 /home/emmy/vana/src/ChannelServer/BuddyListHandler.h
 
-1227458077 /home/emmy/vana/src/ChannelServer/BuddyListPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/BuddyListPacket.h
 	"Types.h"
 	<string>
 
-1227458090 /home/emmy/vana/src/Common/Types.h
+1227755961 /home/emmy/vana/src/Common/Types.h
 	<boost/cstdint.hpp>
 
-1227458076 /home/emmy/vana/src/ChannelServer/Player.h
+1227755959 /home/emmy/vana/src/ChannelServer/Player.h
 	"AbstractPlayer.h"
 	"ChannelServer.h"
 	"MovableLife.h"
@@ -1518,13 +1518,13 @@
 	<vector>
 	<boost/scoped_ptr.hpp>
 
-1227458090 /home/emmy/vana/src/Common/AbstractPlayer.h
+1227755961 /home/emmy/vana/src/Common/AbstractPlayer.h
 	"MapleSession.h"
 	"Timer/Container.h"
 	<string>
 	<boost/scoped_ptr.hpp>
 
-1227631485 /home/emmy/vana/src/Common/MapleSession.h
+1227755961 /home/emmy/vana/src/Common/MapleSession.h
 	"AbstractSession.h"
 	"Decoder.h"
 	"Types.h"
@@ -1537,12 +1537,12 @@
 	<boost/thread/mutex.hpp>
 	<boost/tr1/memory.hpp>
 
-1227638723 /home/emmy/vana/src/Common/AbstractSession.h
+1227755961 /home/emmy/vana/src/Common/AbstractSession.h
 	<boost/tr1/memory.hpp>
 	<boost/enable_shared_from_this.hpp>
 	<boost/shared_ptr.hpp>
 
-1227625982 /home/emmy/vana/src/Common/Decoder.h
+1227755961 /home/emmy/vana/src/Common/Decoder.h
 	"SendHeader.h"
 	"Types.h"
 	<stdio.h>
@@ -1551,122 +1551,122 @@
 	<time.h>
 	<string>
 
-1227458090 /home/emmy/vana/src/Common/SendHeader.h
+1227755961 /home/emmy/vana/src/Common/SendHeader.h
 
-1227677566 /home/emmy/vana/src/Common/Timer/Container.h
+1227762060 /home/emmy/vana/src/Common/Timer/Container.h
 	"Id.h"
 	"../Types.h"
 	<boost/tr1/memory.hpp>
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<boost/functional/hash.hpp>
 
-1227458083 /home/emmy/vana/src/Common/Timer/Id.h
+1227755960 /home/emmy/vana/src/Common/Timer/Id.h
 	"Types.h"
 	"../Types.h"
 
-1227458083 /home/emmy/vana/src/Common/Timer/Types.h
+1227755960 /home/emmy/vana/src/Common/Timer/Types.h
 
-1227458077 /home/emmy/vana/src/ChannelServer/ChannelServer.h
+1227755960 /home/emmy/vana/src/ChannelServer/ChannelServer.h
 	"AbstractServer.h"
 	"Types.h"
 	<string>
 
-1227458090 /home/emmy/vana/src/Common/AbstractServer.h
+1227755961 /home/emmy/vana/src/Common/AbstractServer.h
 	<string>
 
-1227458076 /home/emmy/vana/src/ChannelServer/MovableLife.h
+1227755959 /home/emmy/vana/src/ChannelServer/MovableLife.h
 	"Pos.h"
 
-1227458090 /home/emmy/vana/src/Common/Pos.h
+1227755961 /home/emmy/vana/src/Common/Pos.h
 	"Types.h"
 	<cmath>
 
-1227677799 /home/emmy/vana/src/ChannelServer/PlayerActiveBuffs.h
+1227762060 /home/emmy/vana/src/ChannelServer/PlayerActiveBuffs.h
 	"Buffs.h"
 	"Types.h"
 	<list>
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 
-1227677750 /home/emmy/vana/src/ChannelServer/Buffs.h
+1227762060 /home/emmy/vana/src/ChannelServer/Buffs.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 
-1227458076 /home/emmy/vana/src/ChannelServer/PlayerSummons.h
+1227755960 /home/emmy/vana/src/ChannelServer/PlayerSummons.h
 	"Types.h"
 
-1227677804 /home/emmy/vana/src/ChannelServer/PlayerBuddyList.h
+1227762060 /home/emmy/vana/src/ChannelServer/PlayerBuddyList.h
 	"Types.h"
 	<boost/tr1/memory.hpp>
 	<string>
 	<vector>
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 
-1227677809 /home/emmy/vana/src/ChannelServer/PlayerInventory.h
+1228036187 /home/emmy/vana/src/ChannelServer/PlayerInventory.h
 	"Types.h"
 	<string>
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 
-1227677812 /home/emmy/vana/src/ChannelServer/PlayerPets.h
-	<boost/unordered_map.hpp>
+1227762061 /home/emmy/vana/src/ChannelServer/PlayerPets.h
+	<boost/tr1/unordered_map.hpp>
 
-1227677817 /home/emmy/vana/src/ChannelServer/PlayerQuests.h
+1227762061 /home/emmy/vana/src/ChannelServer/PlayerQuests.h
 	"Types.h"
 	"Quests.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 
-1227677825 /home/emmy/vana/src/ChannelServer/Quests.h
+1227762061 /home/emmy/vana/src/ChannelServer/Quests.h
 	"Types.h"
 	<vector>
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 
-1227677821 /home/emmy/vana/src/ChannelServer/PlayerSkills.h
+1227762061 /home/emmy/vana/src/ChannelServer/PlayerSkills.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 
-1227458077 /home/emmy/vana/src/ChannelServer/PlayerStorage.h
+1227755960 /home/emmy/vana/src/ChannelServer/PlayerStorage.h
 	"Types.h"
 	<vector>
 
-1227677841 /home/emmy/vana/src/ChannelServer/Skills.h
-	<boost/unordered_map.hpp>
+1227762061 /home/emmy/vana/src/ChannelServer/Skills.h
+	<boost/tr1/unordered_map.hpp>
 	"Pos.h"
 
-1227638731 /home/emmy/vana/src/Common/PacketReader.h
+1227755961 /home/emmy/vana/src/Common/PacketReader.h
 	"Types.h"
 	<boost/tr1/memory.hpp>
 	<string>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/BuddyListPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/BuddyListPacket.cpp
 	"BuddyListPacket.h"
 	"PacketCreator.h"
 	"Player.h"
 	"SendHeader.h"
 
-1227679325 /home/emmy/vana/src/Common/PacketCreator.h
+1227755961 /home/emmy/vana/src/Common/PacketCreator.h
 	"Types.h"
 	<iostream>
 	<string>
 	<vector>
 
-1227642276 source:/home/emmy/vana/src/ChannelServer/Buffs.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Buffs.cpp
 	"Buffs.h"
 	"Inventory.h"
 	"Player.h"
 	"Skills.h"
 	"SkillsPacket.h"
 
-1227677761 /home/emmy/vana/src/ChannelServer/Inventory.h
+1227762060 /home/emmy/vana/src/ChannelServer/Inventory.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 
-1227458077 /home/emmy/vana/src/ChannelServer/SkillsPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/SkillsPacket.h
 	"Types.h"
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/CommandHandler.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/CommandHandler.cpp
 	"CommandHandler.h"
 	"Player.h"
 	"Players.h"
@@ -1675,53 +1675,53 @@
 	"WorldServerConnectPacket.h"
 	<string>
 
-1227458077 /home/emmy/vana/src/ChannelServer/CommandHandler.h
+1227755960 /home/emmy/vana/src/ChannelServer/CommandHandler.h
 
-1227678575 /home/emmy/vana/src/ChannelServer/Players.h
+1227762061 /home/emmy/vana/src/ChannelServer/Players.h
 	"Types.h"
 	<string>
 	<boost/tr1/functional.hpp>
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 
-1227458077 /home/emmy/vana/src/ChannelServer/PlayersPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/PlayersPacket.h
 	"Types.h"
 	<string>
 
-1227458077 /home/emmy/vana/src/ChannelServer/WorldServerConnectPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/WorldServerConnectPacket.h
 	"Types.h"
 	<string>
 	<vector>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/Connectable.cpp
+1228036187 source:/home/emmy/vana/src/ChannelServer/Connectable.cpp
 	"Connectable.h"
 	<ctime>
 
-1227677754 /home/emmy/vana/src/ChannelServer/Connectable.h
+1227762060 /home/emmy/vana/src/ChannelServer/Connectable.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/DropDataProvider.cpp
+1227755959 source:/home/emmy/vana/src/ChannelServer/DropDataProvider.cpp
 	"DropDataProvider.h"
 	"Database.h"
 	"InitializeCommon.h"
 	"MiscUtilities.h"
 
-1227677757 /home/emmy/vana/src/ChannelServer/DropDataProvider.h
+1227762060 /home/emmy/vana/src/ChannelServer/DropDataProvider.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 
-1227458090 /home/emmy/vana/src/Common/Database.h
+1227755961 /home/emmy/vana/src/Common/Database.h
 	<winsock2.h>
 	"mysql++/mysql++.h"
 
-1227458090 /home/emmy/vana/src/Common/InitializeCommon.h
+1227755961 /home/emmy/vana/src/Common/InitializeCommon.h
 	"Types.h"
 
-1227458090 /home/emmy/vana/src/Common/MiscUtilities.h
+1227755961 /home/emmy/vana/src/Common/MiscUtilities.h
 	<string>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/Drops.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Drops.cpp
 	"Drops.h"
 	"DropDataProvider.h"
 	"Maps.h"
@@ -1734,65 +1734,65 @@
 	"Skills.h"
 	"PacketReader.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/Drops.h
+1227755960 /home/emmy/vana/src/ChannelServer/Drops.h
 	"Players.h"
 	"Player.h"
 
-1227677784 /home/emmy/vana/src/ChannelServer/Maps.h
+1227762060 /home/emmy/vana/src/ChannelServer/Maps.h
 	"Map.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<string>
 
-1227677777 /home/emmy/vana/src/ChannelServer/Map.h
+1227762060 /home/emmy/vana/src/ChannelServer/Map.h
 	"LoopingId.h"
 	"Mobs.h"
 	"Pos.h"
 	<ctime>
 	<boost/tr1/memory.hpp>
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 	<string>
 	<boost/thread/recursive_mutex.hpp>
 
-1227458090 /home/emmy/vana/src/Common/LoopingId.h
+1227755961 /home/emmy/vana/src/Common/LoopingId.h
 	"Types.h"
 
-1227677792 /home/emmy/vana/src/ChannelServer/Mobs.h
+1227762060 /home/emmy/vana/src/ChannelServer/Mobs.h
 	"MobDataProvider.h"
 	"MovableLife.h"
 	"Player.h"
 	"Pos.h"
 	"Timer/Container.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 	<boost/scoped_ptr.hpp>
 
-1227677788 /home/emmy/vana/src/ChannelServer/MobDataProvider.h
+1227762060 /home/emmy/vana/src/ChannelServer/MobDataProvider.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 
-1227677828 /home/emmy/vana/src/ChannelServer/Reactors.h
-	<boost/unordered_map.hpp>
+1227762061 /home/emmy/vana/src/ChannelServer/Reactors.h
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 	"Pos.h"
 
-1227458076 /home/emmy/vana/src/ChannelServer/DropsPacket.h
+1227755959 /home/emmy/vana/src/ChannelServer/DropsPacket.h
 	"Types.h"
 
-1227458090 /home/emmy/vana/src/Common/Randomizer.h
+1227755961 /home/emmy/vana/src/Common/Randomizer.h
 	"MersenneTwister.h"
 	"Types.h"
 	<string>
 
-1227625982 /home/emmy/vana/src/Common/MersenneTwister.h
+1227755961 /home/emmy/vana/src/Common/MersenneTwister.h
 	<iostream>
 	<limits.h>
 	<stdio.h>
 	<time.h>
 	<math.h>
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/DropsPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/DropsPacket.cpp
 	"DropsPacket.h"
 	"Drops.h"
 	"MapleSession.h"
@@ -1802,12 +1802,12 @@
 	"Player.h"
 	"SendHeader.h"
 
-1227677795 /home/emmy/vana/src/ChannelServer/Pets.h
+1227762060 /home/emmy/vana/src/ChannelServer/Pets.h
 	"MovableLife.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<string>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/Fame.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Fame.cpp
 	"Fame.h"
 	"FamePacket.h"
 	"Player.h"
@@ -1815,13 +1815,13 @@
 	"Database.h"
 	"PacketReader.h"
 
-1227458076 /home/emmy/vana/src/ChannelServer/Fame.h
+1227755959 /home/emmy/vana/src/ChannelServer/Fame.h
 	"Types.h"
 
-1227458076 /home/emmy/vana/src/ChannelServer/FamePacket.h
+1227755959 /home/emmy/vana/src/ChannelServer/FamePacket.h
 	"Types.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/FamePacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/FamePacket.cpp
 	"FamePacket.h"
 	"MapleSession.h"
 	"PacketCreator.h"
@@ -1829,7 +1829,7 @@
 	"Players.h"
 	"SendHeader.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/InitializeChannel.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/InitializeChannel.cpp
 	"InitializeChannel.h"
 	"DropDataProvider.h"
 	"InitializeCommon.h"
@@ -1844,20 +1844,20 @@
 	"Pets.h"
 	<iostream>
 
-1227458077 /home/emmy/vana/src/ChannelServer/InitializeChannel.h
+1227755960 /home/emmy/vana/src/ChannelServer/InitializeChannel.h
 	"Types.h"
 
-1227677764 /home/emmy/vana/src/ChannelServer/ItemDataProvider.h
+1227762060 /home/emmy/vana/src/ChannelServer/ItemDataProvider.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 
-1227677833 /home/emmy/vana/src/ChannelServer/ShopDataProvider.h
+1227762061 /home/emmy/vana/src/ChannelServer/ShopDataProvider.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<vector>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/InventoryPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/InventoryPacket.cpp
 	"InventoryPacket.h"
 	"InterHeader.h"
 	"Inventory.h"
@@ -1870,26 +1870,26 @@
 	"Players.h"
 	"SendHeader.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/InventoryPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/InventoryPacket.h
 	"Types.h"
 	<vector>
 	<string>
 
-1227458090 /home/emmy/vana/src/Common/InterHeader.h
+1227755961 /home/emmy/vana/src/Common/InterHeader.h
 
-1227458076 /home/emmy/vana/src/ChannelServer/PlayerPacketHelper.h
+1227755959 /home/emmy/vana/src/ChannelServer/PlayerPacketHelper.h
 	"Types.h"
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/KeyMaps.cpp
+1227755959 source:/home/emmy/vana/src/ChannelServer/KeyMaps.cpp
 	"KeyMaps.h"
 	"Database.h"
 
-1227677770 /home/emmy/vana/src/ChannelServer/KeyMaps.h
+1227762060 /home/emmy/vana/src/ChannelServer/KeyMaps.h
 	"Types.h"
 	<boost/tr1/memory.hpp>
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/Levels.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Levels.cpp
 	"Levels.h"
 	"Player.h"
 	"LevelsPacket.h"
@@ -1899,13 +1899,13 @@
 	"PacketReader.h"
 	<string>
 
-1227458077 /home/emmy/vana/src/ChannelServer/Levels.h
+1227755960 /home/emmy/vana/src/ChannelServer/Levels.h
 	"Types.h"
 
-1227458076 /home/emmy/vana/src/ChannelServer/LevelsPacket.h
+1227755959 /home/emmy/vana/src/ChannelServer/LevelsPacket.h
 	"Types.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/LevelsPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/LevelsPacket.cpp
 	"LevelsPacket.h"
 	"MapleSession.h"
 	"Maps.h"
@@ -1913,7 +1913,7 @@
 	"Player.h"
 	"SendHeader.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/LuaNPC.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/LuaNPC.cpp
 	"LuaNPC.h"
 	"NPCs.h"
 	"Player.h"
@@ -1921,36 +1921,36 @@
 	"Quests.h"
 	"StoragePacket.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/LuaNPC.h
+1227755960 /home/emmy/vana/src/ChannelServer/LuaNPC.h
 	"LuaScriptable.h"
 	<string>
 
-1227610191 /home/emmy/vana/src/ChannelServer/LuaScriptable.h
+1227755960 /home/emmy/vana/src/ChannelServer/LuaScriptable.h
 	"lua.h"
 	"lualib.h"
 	"lauxlib.h"
 	"Types.h"
 	<string>
 
-1227609628 /home/emmy/vana/src/ChannelServer/NPCs.h
+1227755959 /home/emmy/vana/src/ChannelServer/NPCs.h
 	"LuaNPC.h"
 	<string>
 	<boost/scoped_ptr.hpp>
 
-1227458077 /home/emmy/vana/src/ChannelServer/StoragePacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/StoragePacket.h
 	"Types.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/LuaPortal.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/LuaPortal.cpp
 	"LuaPortal.h"
 	"Player.h"
 	"Maps.h"
 
-1227677773 /home/emmy/vana/src/ChannelServer/LuaPortal.h
+1227762060 /home/emmy/vana/src/ChannelServer/LuaPortal.h
 	"LuaScriptable.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<string>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/LuaReactor.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/LuaReactor.cpp
 	"LuaReactor.h"
 	"Reactors.h"
 	"ReactorPacket.h"
@@ -1962,17 +1962,17 @@
 	"Mobs.h"
 	<string>
 
-1227458076 /home/emmy/vana/src/ChannelServer/LuaReactor.h
+1227755959 /home/emmy/vana/src/ChannelServer/LuaReactor.h
 	"LuaScriptable.h"
 	<string>
 
-1227458077 /home/emmy/vana/src/ChannelServer/ReactorPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/ReactorPacket.h
 
-1227458076 /home/emmy/vana/src/ChannelServer/PlayerPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/PlayerPacket.h
 	"Types.h"
 	<string>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/LuaScriptable.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/LuaScriptable.cpp
 	"LuaScriptable.h"
 	"Inventory.h"
 	"Player.h"
@@ -1991,28 +1991,28 @@
 	"Randomizer.h"
 	<iostream>
 
-1227458076 /home/emmy/vana/src/ChannelServer/MapPacket.h
+1227755959 /home/emmy/vana/src/ChannelServer/MapPacket.h
 	"Types.h"
 	<string>
 
-1227458090 /home/emmy/vana/src/Common/TimeUtilities.h
+1227755961 /home/emmy/vana/src/Common/TimeUtilities.h
 	"Types.h"
 	<ctime>
 	<string>
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/MapDataProvider.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/MapDataProvider.cpp
 	"MapDataProvider.h"
 	"Map.h"
 	"Database.h"
 	"MiscUtilities.h"
 	<string>
 
-1227677780 /home/emmy/vana/src/ChannelServer/MapDataProvider.h
+1227762060 /home/emmy/vana/src/ChannelServer/MapDataProvider.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<boost/thread/mutex.hpp>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/MapPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/MapPacket.cpp
 	"MapPacket.h"
 	"Buffs.h"
 	"Inventory.h"
@@ -2024,7 +2024,7 @@
 	"PlayerPacketHelper.h"
 	"SendHeader.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/Maps.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Maps.cpp
 	"Maps.h"
 	"LuaPortal.h"
 	"MapDataProvider.h"
@@ -2039,10 +2039,10 @@
 	<sys/stat.h>
 	<string>
 
-1227458076 /home/emmy/vana/src/ChannelServer/Summons.h
+1227755959 /home/emmy/vana/src/ChannelServer/Summons.h
 	"Player.h"
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/MobDataProvider.cpp
+1227755959 source:/home/emmy/vana/src/ChannelServer/MobDataProvider.cpp
 	"MobDataProvider.h"
 	"Database.h"
 	"InitializeCommon.h"
@@ -2051,7 +2051,7 @@
 	<iostream>
 	<string>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/MobsPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/MobsPacket.cpp
 	"Inventory.h"
 	"MapleSession.h"
 	"Maps.h"
@@ -2062,11 +2062,11 @@
 	"PacketReader.h"
 	"SendHeader.h"
 
-1227458076 /home/emmy/vana/src/ChannelServer/MobsPacket.h
+1227755959 /home/emmy/vana/src/ChannelServer/MobsPacket.h
 	"Types.h"
 	<vector>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/Movement.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Movement.cpp
 	"Movement.h"
 	"MovableLife.h"
 	"Pos.h"
@@ -2074,9 +2074,9 @@
 	<iomanip>
 	<iostream>
 
-1227458076 /home/emmy/vana/src/ChannelServer/Movement.h
+1227755959 /home/emmy/vana/src/ChannelServer/Movement.h
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/NPCPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/NPCPacket.cpp
 	"NPCPacket.h"
 	"MapleSession.h"
 	"Maps.h"
@@ -2085,10 +2085,10 @@
 	"Player.h"
 	"SendHeader.h"
 
-1227458076 /home/emmy/vana/src/ChannelServer/NPCPacket.h
+1227755959 /home/emmy/vana/src/ChannelServer/NPCPacket.h
 	"Types.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/NPCs.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/NPCs.cpp
 	"NPCs.h"
 	"LuaNPC.h"
 	"MapleSession.h"
@@ -2103,16 +2103,16 @@
 	<sys/stat.h>
 	<string>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/Party.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Party.cpp
 	"Party.h"
 	"Player.h"
 	"WorldServerConnectPacket.h"
 	"ChannelServer.h"
 	"PacketReader.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/Party.h
+1227755960 /home/emmy/vana/src/ChannelServer/Party.h
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/PetsPacket.cpp
+1227755959 source:/home/emmy/vana/src/ChannelServer/PetsPacket.cpp
 	"Pets.h"
 	"MapleSession.h"
 	"Maps.h"
@@ -2122,18 +2122,18 @@
 	"PacketReader.h"
 	"SendHeader.h"
 
-1227458076 /home/emmy/vana/src/ChannelServer/PetsPacket.h
+1227755959 /home/emmy/vana/src/ChannelServer/PetsPacket.h
 	"Types.h"
 	<string>
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/PlayerBuddyList.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PlayerBuddyList.cpp
 	"PlayerBuddyList.h"
 	"BuddyListPacket.h"
 	"Database.h"
 	"Player.h"
 	<algorithm>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/PlayerHandler.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PlayerHandler.cpp
 	"PlayerHandler.h"
 	"Maps.h"
 	"Mobs.h"
@@ -2146,9 +2146,9 @@
 	"PacketReader.h"
 	"SkillsPacket.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/PlayerHandler.h
+1227755960 /home/emmy/vana/src/ChannelServer/PlayerHandler.h
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/PlayerPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PlayerPacket.cpp
 	"PlayerPacket.h"
 	"KeyMaps.h"
 	"MapleSession.h"
@@ -2162,39 +2162,39 @@
 	"Skills.h"
 	"TimeUtilities.h"
 
-1227677837 /home/emmy/vana/src/ChannelServer/SkillMacros.h
+1227762061 /home/emmy/vana/src/ChannelServer/SkillMacros.h
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<boost/tr1/memory.hpp>
 	<string>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/PlayerPacketHelper.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PlayerPacketHelper.cpp
 	"PlayerPacketHelper.h"
 	"PacketCreator.h"
 	"Player.h"
 	"Inventory.h"
 	"Pets.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/PlayerPets.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PlayerPets.cpp
 	"Pets.h"
 	"Database.h"
 	"PlayerPets.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/PlayerStorage.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PlayerStorage.cpp
 	"PlayerStorage.h"
 	"Database.h"
 	"Inventory.h"
 	"Player.h"
 	"StoragePacket.h"
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/Players.cpp
+1227755959 source:/home/emmy/vana/src/ChannelServer/Players.cpp
 	"Players.h"
 	"MapleSession.h"
 	"PacketCreator.h"
 	"Player.h"
 	<boost/algorithm/string.hpp>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/PlayersPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PlayersPacket.cpp
 	"PlayersPacket.h"
 	"MapleSession.h"
 	"Maps.h"
@@ -2205,16 +2205,16 @@
 	"InterHeader.h"
 	"SendHeader.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/PrecompiledHeader.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PrecompiledHeader.cpp
 	"PrecompiledHeader.h"
 
-1227458076 /home/emmy/vana/src/ChannelServer/PrecompiledHeader.h
+1227755959 /home/emmy/vana/src/ChannelServer/PrecompiledHeader.h
 	"../Common/PrecompiledHeader.h"
 	"Player.h"
 
-1227677546 /home/emmy/vana/src/Common/PrecompiledHeader.h
+1227761926 /home/emmy/vana/src/Common/PrecompiledHeader.h
 	<functional>
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 	<boost/tr1/memory.hpp>
 	<iostream>
 	<string>
@@ -2225,7 +2225,7 @@
 	<boost/smart_ptr.hpp>
 	<boost/thread.hpp>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/Quests.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Quests.cpp
 	"Quests.h"
 	"Inventory.h"
 	"NPCs.h"
@@ -2233,10 +2233,10 @@
 	"QuestsPacket.h"
 	"PacketReader.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/QuestsPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/QuestsPacket.h
 	"Types.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/QuestsPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/QuestsPacket.cpp
 	"QuestsPacket.h"
 	"MapleSession.h"
 	"Maps.h"
@@ -2249,7 +2249,7 @@
 	<string>
 	<vector>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/ReactorPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/ReactorPacket.cpp
 	"ReactorPacket.h"
 	"MapleSession.h"
 	"Maps.h"
@@ -2258,7 +2258,7 @@
 	"Reactors.h"
 	"SendHeader.h"
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/ServerPacket.cpp
+1227755959 source:/home/emmy/vana/src/ChannelServer/ServerPacket.cpp
 	"ServerPacket.h"
 	"MapleSession.h"
 	"PacketCreator.h"
@@ -2266,10 +2266,10 @@
 	"Players.h"
 	"SendHeader.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/ServerPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/ServerPacket.h
 	<string>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/ShopDataProvider.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/ShopDataProvider.cpp
 	"ShopDataProvider.h"
 	"Database.h"
 	"InitializeCommon.h"
@@ -2280,11 +2280,11 @@
 	"Player.h"
 	"SendHeader.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/SkillMacros.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/SkillMacros.cpp
 	"SkillMacros.h"
 	"Database.h"
 
-1227642265 source:/home/emmy/vana/src/ChannelServer/SkillsPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/SkillsPacket.cpp
 	"SkillsPacket.h"
 	"MapleSession.h"
 	"Maps.h"
@@ -2293,7 +2293,7 @@
 	"SendHeader.h"
 	"Skills.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/StoragePacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/StoragePacket.cpp
 	"StoragePacket.h"
 	"Inventory.h"
 	"MapleSession.h"
@@ -2302,7 +2302,7 @@
 	"PlayerPacketHelper.h"
 	"SendHeader.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/Summons.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Summons.cpp
 	"Summons.h"
 	"SummonsPacket.h"
 	"Skills.h"
@@ -2312,24 +2312,24 @@
 	"PacketReader.h"
 	"Movement.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/SummonsPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/SummonsPacket.h
 	"Types.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/SummonsPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/SummonsPacket.cpp
 	"SummonsPacket.h"
 	"Summons.h"
 	"Maps.h"
 	"PacketCreator.h"
 	"SendHeader.h"
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/Trade.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Trade.cpp
 	"Trade.h"
 
-1227609612 /home/emmy/vana/src/ChannelServer/Trade.h
+1227755960 /home/emmy/vana/src/ChannelServer/Trade.h
 	"Types.h"
 	<boost/scoped_ptr.hpp>
 
-1227458077 source:/home/emmy/vana/src/ChannelServer/TradesPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/TradesPacket.cpp
 	"TradesPacket.h"
 	"Inventory.h"
 	"MapleSession.h"
@@ -2338,11 +2338,11 @@
 	"PlayerPacketHelper.h"
 	"SendHeader.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/TradesPacket.h
+1227755960 /home/emmy/vana/src/ChannelServer/TradesPacket.h
 	"Types.h"
 	<string>
 
-1227651027 source:/home/emmy/vana/src/ChannelServer/WorldServerConnectHandler.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/WorldServerConnectHandler.cpp
 	"WorldServerConnectHandler.h"
 	"ChannelServer.h"
 	"Connectable.h"
@@ -2357,20 +2357,20 @@
 	"WorldServerConnectPlayer.h"
 	<iostream>
 
-1227458077 /home/emmy/vana/src/ChannelServer/WorldServerConnectHandler.h
+1227755960 /home/emmy/vana/src/ChannelServer/WorldServerConnectHandler.h
 
-1227458090 /home/emmy/vana/src/Common/Rates.h
+1227755961 /home/emmy/vana/src/Common/Rates.h
 	"Types.h"
 
-1227458077 /home/emmy/vana/src/ChannelServer/WorldServerConnectPlayer.h
+1227755960 /home/emmy/vana/src/ChannelServer/WorldServerConnectPlayer.h
 	"ServerPlayer.h"
 
-1227458090 /home/emmy/vana/src/Common/ServerPlayer.h
+1227755961 /home/emmy/vana/src/Common/ServerPlayer.h
 	"AbstractPlayer.h"
 	"Types.h"
 	<string>
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/WorldServerConnectPacket.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/WorldServerConnectPacket.cpp
 	"WorldServerConnectPacket.h"
 	"InterHeader.h"
 	"MapleSession.h"
@@ -2379,7 +2379,7 @@
 	<string>
 	<vector>
 
-1227458076 source:/home/emmy/vana/src/ChannelServer/WorldServerConnectPlayer.cpp
+1227755959 source:/home/emmy/vana/src/ChannelServer/WorldServerConnectPlayer.cpp
 	"WorldServerConnectPlayer.h"
 	"WorldServerConnectPacket.h"
 	"WorldServerConnectHandler.h"
@@ -2387,7 +2387,7 @@
 	"InterHeader.h"
 	"PacketReader.h"
 
-1227625982 source:/home/emmy/vana/src/ChannelServer/ChannelServer.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/ChannelServer.cpp
 	"ChannelServer.h"
 	"ConfigFile.h"
 	"ConnectionManager.h"
@@ -2400,14 +2400,14 @@
 	"ServerPacket.h"
 	"WorldServerConnectPlayer.h"
 
-1227608950 /home/emmy/vana/src/Common/ConfigFile.h
+1227755961 /home/emmy/vana/src/Common/ConfigFile.h
 	"lua.h"
 	"lualib.h"
 	"lauxlib.h"
 	"Types.h"
 	<string>
 
-1227631485 /home/emmy/vana/src/Common/ConnectionManager.h
+1227755961 /home/emmy/vana/src/Common/ConnectionManager.h
 	"MapleClient.h"
 	"MapleServer.h"
 	"SessionManager.h"
@@ -2419,20 +2419,20 @@
 	<boost/scoped_ptr.hpp>
 	<boost/thread.hpp>
 
-1227458090 /home/emmy/vana/src/Common/MapleClient.h
+1227755961 /home/emmy/vana/src/Common/MapleClient.h
 	"MapleSession.h"
 	"SessionManager.h"
 	"Types.h"
 	<string>
 	<boost/asio.hpp>
 
-1227638741 /home/emmy/vana/src/Common/SessionManager.h
+1227755961 /home/emmy/vana/src/Common/SessionManager.h
 	<boost/tr1/memory.hpp>
 	<set>
 	<boost/noncopyable.hpp>
 	<boost/shared_ptr.hpp>
 
-1227631485 /home/emmy/vana/src/Common/MapleServer.h
+1227755961 /home/emmy/vana/src/Common/MapleServer.h
 	"MapleSession.h"
 	"SessionManager.h"
 	<string>
@@ -2440,7 +2440,7 @@
 	<boost/scoped_ptr.hpp>
 	<boost/shared_ptr.hpp>
 
-1227680096 source:/home/emmy/vana/src/ChannelServer/ChatHandler.cpp
+1228054155 source:/home/emmy/vana/src/ChannelServer/ChatHandler.cpp
 	"ChatHandler.h"
 	"Inventory.h"
 	"ItemDataProvider.h"
@@ -2462,10 +2462,12 @@
 	"WorldServerConnectPacket.h"
 	<string>
 	<vector>
+	<regex>
+	<tr1/regex>
 
-1227458076 /home/emmy/vana/src/ChannelServer/ChatHandler.h
+1227755959 /home/emmy/vana/src/ChannelServer/ChatHandler.h
 
-1227641948 source:/home/emmy/vana/src/ChannelServer/Inventory.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Inventory.cpp
 	"Inventory.h"
 	"Buffs.h"
 	"Drops.h"
@@ -2487,17 +2489,17 @@
 	<cmath>
 	<functional>
 
-1227458083 /home/emmy/vana/src/Common/Timer/Time.h
+1227755960 /home/emmy/vana/src/Common/Timer/Time.h
 	<ctime>
 	"Types.h"
 
-1227678560 /home/emmy/vana/src/Common/Timer/Timer.h
+1227755960 /home/emmy/vana/src/Common/Timer/Timer.h
 	"Id.h"
 	"../Types.h"
 	<ctime>
 	<boost/tr1/functional.hpp>
 
-1227625982 source:/home/emmy/vana/src/ChannelServer/ItemDataProvider.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/ItemDataProvider.cpp
 	"ItemDataProvider.h"
 	"Buffs.h"
 	"Database.h"
@@ -2508,7 +2510,7 @@
 	<string>
 	<iostream>
 
-1227640605 source:/home/emmy/vana/src/ChannelServer/Map.cpp
+1228042614 source:/home/emmy/vana/src/ChannelServer/Map.cpp
 	"Map.h"
 	"Drops.h"
 	"MapPacket.h"
@@ -2528,7 +2530,7 @@
 	<ctime>
 	<functional>
 
-1227641449 source:/home/emmy/vana/src/ChannelServer/Mobs.cpp
+1228042132 source:/home/emmy/vana/src/ChannelServer/Mobs.cpp
 	"Mobs.h"
 	"Maps.h"
 	"Player.h"
@@ -2548,7 +2550,7 @@
 	"Timer/Timer.h"
 	<functional>
 
-1227641708 source:/home/emmy/vana/src/ChannelServer/Pets.cpp
+1228042453 source:/home/emmy/vana/src/ChannelServer/Pets.cpp
 	"Pets.h"
 	"Database.h"
 	"Drops.h"
@@ -2567,7 +2569,7 @@
 	<functional>
 	<string>
 
-1227625982 source:/home/emmy/vana/src/ChannelServer/Player.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/Player.cpp
 	"Player.h"
 	"BuddyListHandler.h"
 	"BuddyListPacket.h"
@@ -2603,14 +2605,14 @@
 	"WorldServerConnectPlayer.h"
 	"WorldServerConnectPacket.h"
 
-1227458090 /home/emmy/vana/src/Common/RecvHeader.h
+1227755961 /home/emmy/vana/src/Common/RecvHeader.h
 
-1227677845 /home/emmy/vana/src/ChannelServer/Trades.h
+1227762061 /home/emmy/vana/src/ChannelServer/Trades.h
 	"Trade.h"
 	"Types.h"
-	<boost/unordered_map.hpp>
+	<boost/tr1/unordered_map.hpp>
 
-1227680126 source:/home/emmy/vana/src/ChannelServer/PlayerActiveBuffs.cpp
+1228042462 source:/home/emmy/vana/src/ChannelServer/PlayerActiveBuffs.cpp
 	"PlayerActiveBuffs.h"
 	"Buffs.h"
 	"Maps.h"
@@ -2623,7 +2625,7 @@
 	"Timer/Timer.h"
 	<functional>
 
-1227625982 source:/home/emmy/vana/src/ChannelServer/PlayerInventory.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PlayerInventory.cpp
 	"PlayerInventory.h"
 	"Database.h"
 	"Inventory.h"
@@ -2636,7 +2638,7 @@
 	"PlayerPacketHelper.h"
 	"Randomizer.h"
 
-1227631485 source:/home/emmy/vana/src/ChannelServer/PlayerQuests.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/PlayerQuests.cpp
 	"PlayerQuests.h"
 	"Inventory.h"
 	"Levels.h"
@@ -2645,7 +2647,7 @@
 	"Randomizer.h"
 	"TimeUtilities.h"
 
-1227679755 source:/home/emmy/vana/src/ChannelServer/PlayerSkills.cpp
+1228036187 source:/home/emmy/vana/src/ChannelServer/PlayerSkills.cpp
 	"PlayerSkills.h"
 	"Database.h"
 	"PacketCreator.h"
@@ -2654,14 +2656,14 @@
 	"Skills.h"
 	"SkillsPacket.h"
 
-1227641761 source:/home/emmy/vana/src/ChannelServer/PlayerSummons.cpp
+1228042527 source:/home/emmy/vana/src/ChannelServer/PlayerSummons.cpp
 	"PlayerSummons.h"
 	"Summons.h"
 	"Timer/Time.h"
 	"Timer/Timer.h"
 	<functional>
 
-1227680141 source:/home/emmy/vana/src/ChannelServer/Reactors.cpp
+1228042545 source:/home/emmy/vana/src/ChannelServer/Reactors.cpp
 	"Reactors.h"
 	"Drops.h"
 	"LuaReactor.h"
@@ -2678,12 +2680,12 @@
 	<sstream>
 	<sys/stat.h>
 
-1227458083 /home/emmy/vana/src/Common/Timer/Thread.h
+1227755960 /home/emmy/vana/src/Common/Timer/Thread.h
 	<list>
 	<boost/scoped_ptr.hpp>
 	<boost/thread.hpp>
 
-1227641795 source:/home/emmy/vana/src/ChannelServer/Skills.cpp
+1228042553 source:/home/emmy/vana/src/ChannelServer/Skills.cpp
 	"Skills.h"
 	"Buffs.h"
 	"Summons.h"
@@ -2699,7 +2701,7 @@
 	"Timer/Timer.h"
 	<functional>
 
-1227641805 source:/home/emmy/vana/src/ChannelServer/Trades.cpp
+1228042563 source:/home/emmy/vana/src/ChannelServer/Trades.cpp
 	"Trades.h"
 	"Inventory.h"
 	"InventoryPacket.h"
@@ -2714,7 +2716,7 @@
 	<functional>
 	<string>
 
-1227625982 source:/home/emmy/vana/src/ChannelServer/main_channel.cpp
+1227755960 source:/home/emmy/vana/src/ChannelServer/main_channel.cpp
 	"ChannelServer.h"
 	"ConnectionManager.h"
 	<exception>
