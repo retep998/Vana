@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERS_H
 
 #include "Types.h"
-#include <boost/unordered_map.hpp>
+#include <boost/tr1/unordered_map.hpp>
 #include <string>
 
 using std::string;
-using boost::unordered_map;
+using std::tr1::unordered_map;
 
 struct Player {
 	int32_t id;

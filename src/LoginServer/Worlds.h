@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <map>
 #include <string>
-#include <boost/unordered_map.hpp>
+#include <boost/tr1/unordered_map.hpp>
 
 using std::map;
 using std::string;
 using std::tr1::shared_ptr;
-using boost::unordered_map;
+using std::tr1::unordered_map;
 
 class PlayerLogin;
 class LoginServerAcceptPlayer;

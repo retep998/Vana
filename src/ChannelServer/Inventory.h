@@ -30,11 +30,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define IS2HWEAPON(itemid) (itemid/100000 == 14)
 
 #include "Types.h"
-#include <boost/unordered_map.hpp>
+#include <boost/tr1/unordered_map.hpp>
 #include <vector>
 
 using std::vector;
-using boost::unordered_map;
+using std::tr1::unordered_map;
 
 class Player;
 class PacketReader;

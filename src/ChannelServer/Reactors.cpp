@@ -130,7 +130,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 					reaction.state = revent->nextstate;
 
 					Timer::Id id(Timer::Types::ReactionTimer, (uint32_t) drop, 0);
-					new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3 * 1000));
+					new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3 * CLOCKS_PER_SEC));
 				}
 				return;
 			}

@@ -43,7 +43,7 @@ objectids(1000)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
-		0, 0, 10000);
+		0, 0, 10 * CLOCKS_PER_SEC);
 }
 
 // Map Info
@@ -253,7 +253,7 @@ void Map::clearDrops(bool showPacket) { // Clear all drops
 
 void Map::clearDrops(clock_t time) { // Clear drops based on how long they have been in the map
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
-	time -= 180000; // Drops disappear after 3 minutes
+	time -= 180 * CLOCKS_PER_SEC; // Drops disappear after 3 minutes
 	unordered_map<int32_t, Drop *> drops = this->drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0) {

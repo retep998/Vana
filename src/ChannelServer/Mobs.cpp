@@ -96,12 +96,12 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 		if (statusinfo[i].status == POISON) { // Damage timer for poison
 			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
 				Timer::Id(Timer::Types::MobStatusTimer, POISON, 1),
-				getTimers(), 0, 1000);
+				getTimers(), 0, CLOCKS_PER_SEC);
 		}
 
 		new Timer::Timer(bind(&Mob::removeStatus, this, statusinfo[i].status),
 			Timer::Id(Timer::Types::MobStatusTimer, statusinfo[i].status, 0),
-			getTimers(), Timer::Time::fromNow(statusinfo[i].time * 1000));
+			getTimers(), Timer::Time::fromNow(statusinfo[i].time * CLOCKS_PER_SEC));
 	}
 	// Calculate new status mask
 	this->status = 0;

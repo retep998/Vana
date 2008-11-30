@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SKILLS_H
 #define SKILLS_H
 
-#include <boost/unordered_map.hpp>
+#include <boost/tr1/unordered_map.hpp>
 #include "Pos.h"
 
-using boost::unordered_map;
+using std::tr1::unordered_map;
 
 class Player;
 class PacketReader;
