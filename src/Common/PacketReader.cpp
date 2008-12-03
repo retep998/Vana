@@ -35,10 +35,11 @@ int32_t PacketReader::getInt() {
 
 clock_t PacketReader::getClock() {
 	clock_t val = 0;
-	for (uint8_t i = 0; i < sizeof(clock_t); i++) {
+	uint8_t size = buffer[pos++];
+	for (uint8_t i = 0; i < size; i++) {
 		int32_t mul = 1;
-		for (int8_t f = 0; f < i; f++) {
-			mul *= 100;
+		for (uint8_t f = 0; f < i; f++) { // See getInt for an idea of what I'm doing here
+			mul *= 0x100;
 		}
 		val += buffer[pos + i] * mul;
 	}
