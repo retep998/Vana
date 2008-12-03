@@ -18,13 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MAPLEENC_H
 #define MAPLEENC_H
 
-class MapleEncryption {
-public:
-	static void nextIV(unsigned char *vector);
-	static void mapleDecrypt(unsigned char *buf, int size);
-	static void mapleEncrypt(unsigned char *buf, int size);
-	static unsigned char ror(unsigned char val, int num);
-	static unsigned char rol(unsigned char val, int num);
+#include "Types.h"
+
+namespace MapleEncryption {
+	void nextIV(unsigned char *vector);
+	void mapleDecrypt(unsigned char *buf, int32_t size);
+	void mapleEncrypt(unsigned char *buf, int32_t size);
+	uint8_t ror(uint8_t val, int32_t num);
+	uint8_t rol(uint8_t val, int32_t num);
 };
 
 #endif
