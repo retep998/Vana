@@ -104,6 +104,7 @@ void PacketCreator::setByte(unsigned char byte, size_t pos) {
 
 inline
 void PacketCreator::addClock(clock_t clock) {
+	packet[pos++] = sizeof(clock_t);
 	(*(clock_t*)(packet + pos)) = clock;
 	pos += sizeof(clock_t);
 }
