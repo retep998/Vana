@@ -78,6 +78,7 @@ struct ConsumeInfo {
 	int16_t speed;
 	int16_t jump;
 	int16_t morph;
+	bool autoconsume;
 	int16_t success;
 	int16_t cursed;
 	int16_t istr;
