@@ -60,13 +60,13 @@ enum ByteTypes {
 };
 
 struct BuffInfo {
-	BuffInfo() : type(0), byte(0), value(0), hasmapval(false), showmaponly(false), mapval(false) { }
+	BuffInfo() : type(0), byte(0), value(0), hasmapval(false), ismount(false), useval(false) { }
 	uint8_t type;
 	int8_t byte;
 	int8_t value;
 	bool hasmapval;
-	bool showmaponly;
-	bool mapval;
+	bool useval;
+	bool ismount;
 };
 
 struct SkillAct {

@@ -44,16 +44,22 @@ Buffs::Buffs() {
 	skillsinfo[4201002].player.push_back(player); // Dagger Booster
 	skillsinfo[5101006].player.push_back(player); // Knuckle Booster
 	skillsinfo[5201003].player.push_back(player); // Gun Booster
-	// 1001 - Recovery
-	player.type = 0x4;
+	// Maple Warriors
+	player.type = 0x8;
 	player.byte = TYPE_5;
 	player.value = SKILL_X;
-	act.type = ACT_HEAL;
-	act.time = 4900;
-	act.value = SKILL_X;
-	skillsinfo[1001].player.push_back(player);
-	skillsinfo[1001].act = act;
-	skillsinfo[1001].bact.push_back(true);
+	skillsinfo[1121000].player.push_back(player); // Hero
+	skillsinfo[1221000].player.push_back(player); // Paladin
+	skillsinfo[1321000].player.push_back(player); // Dark Knight
+	skillsinfo[2121000].player.push_back(player); // FP Arch Mage
+	skillsinfo[2221000].player.push_back(player); // IL Arch Mage
+	skillsinfo[2321000].player.push_back(player); // Bishop
+	skillsinfo[3121000].player.push_back(player); // Bowmaster
+	skillsinfo[3221000].player.push_back(player); // Marksman
+	skillsinfo[4121000].player.push_back(player); // Night Lord
+	skillsinfo[4221000].player.push_back(player); // Shadower
+	skillsinfo[5121000].player.push_back(player); // Buccaneer
+	skillsinfo[5221000].player.push_back(player); // Corsair
 	// 1002 - Nimble Feet
 	player.type = 0x80;
 	player.byte = TYPE_1;
@@ -176,7 +182,7 @@ Buffs::Buffs() {
 	player.byte = TYPE_8;
 	player.value = 0;
 	skillsinfo[9101004].player.push_back(player);
-	// 4101004, 4201003, 9001000, 9101001 - Haste
+	// 4101004, 4201003, 9001000, & 9101001 - Haste
 	player.type = 0x80;
 	player.byte = TYPE_1;
 	player.value = SKILL_SPEED;
@@ -196,27 +202,13 @@ Buffs::Buffs() {
 	player.byte = TYPE_4;
 	player.value = SKILL_X;
 	skillsinfo[4211005].player.push_back(player);
-	// 1311008 - Dragon Blood
-	player.type = 0x1;
-	player.byte = TYPE_1;
-	player.value = SKILL_WATK;
-	skillsinfo[1311008].player.push_back(player);
-	player.type = 0x80;
-	player.byte = TYPE_3;
-	player.value = SKILL_LV;
-	skillsinfo[1311008].player.push_back(player);
-	act.type = ACT_HURT;
-	act.time = 4000;
-	act.value = SKILL_X;
-	skillsinfo[1311008].act = act;
-	skillsinfo[1311008].bact.push_back(true);
 	// 3121002 & 3221002 - Sharp Eyes
 	player.type = 0x20;
 	player.byte = TYPE_5;
 	player.value = SKILL_X;
 	skillsinfo[3121002].player.push_back(player);
 	skillsinfo[3221002].player.push_back(player);
-	// WK/Paladin Charges - 1211003, 1211004, 1211005, 1211006, 1211007, 1211008, 1221003, 1221004
+	// 1211003, 1211004, 1211005, 1211006, 1211007, 1211008, 1221003, & 1221004 - WK/Paladin Charges
 	player.type = 0x4;
 	player.byte = TYPE_1;
 	player.value = SKILL_MATK;
@@ -239,22 +231,6 @@ Buffs::Buffs() {
 	skillsinfo[1211008].player.push_back(player);
 	skillsinfo[1221003].player.push_back(player);
 	skillsinfo[1221004].player.push_back(player);
-	// Maple Warrior - All Classes
-	player.type = 0x8;
-	player.byte = TYPE_5;
-	player.value = SKILL_X;
-	skillsinfo[1121000].player.push_back(player);
-	skillsinfo[1221000].player.push_back(player);
-	skillsinfo[1321000].player.push_back(player);
-	skillsinfo[2121000].player.push_back(player);
-	skillsinfo[2221000].player.push_back(player);
-	skillsinfo[2321000].player.push_back(player);
-	skillsinfo[3121000].player.push_back(player);
-	skillsinfo[3221000].player.push_back(player);
-	skillsinfo[4121000].player.push_back(player);
-	skillsinfo[4221000].player.push_back(player);
-	skillsinfo[5121000].player.push_back(player);
-	skillsinfo[5221000].player.push_back(player);
 	// 2311003 & 9101002 - Holy Symbol
 	player.type = 0x1;
 	player.byte = TYPE_4;
@@ -271,7 +247,7 @@ Buffs::Buffs() {
 	player.byte = TYPE_1;
 	player.value = SKILL_WATK;
 	skillsinfo[3121008].player.push_back(player);
-	// 4211003 - Pickpocket - TODO: Add server-side to make it drop mesos
+	// 4211003 - Pickpocket
 	player.type = 0x8;
 	player.byte = TYPE_4;
 	player.value = SKILL_X;
@@ -286,7 +262,7 @@ Buffs::Buffs() {
 	player.byte = TYPE_6;
 	player.value = SKILL_X;
 	skillsinfo[4121006].player.push_back(player);
-	// 2121004, 2221004, 2321004 - Infinity
+	// 2121004, 2221004, & 2321004 - Infinity
 	player.type = 0x2;
 	player.byte = TYPE_6;
 	player.value = SKILL_X;
@@ -298,27 +274,55 @@ Buffs::Buffs() {
 	player.byte = TYPE_6;
 	player.value = SKILL_X;
 	skillsinfo[1005].player.push_back(player);
-	// Stance - 1121002, 1221002, and 1321002
+	// 1121002, 1221002, & 1321002 - Power Stance
 	player.type = 0x10;
 	player.byte = TYPE_5;
 	player.value = SKILL_PROP;
 	skillsinfo[1121002].player.push_back(player);
 	skillsinfo[1221002].player.push_back(player);
 	skillsinfo[1321002].player.push_back(player);
-	// Mana Reflection - 2121002, 2221002, and 2321002
+	// 2121002, 2221002, & 2321002 - Mana Reflection
 	player.type = 0x40;
 	player.byte = TYPE_5;
 	player.value = SKILL_LV;
 	skillsinfo[2121002].player.push_back(player);
 	skillsinfo[2221002].player.push_back(player);
 	skillsinfo[2321002].player.push_back(player);
-	// 1111002 - Combo Attack
-	player.type = 0x20;
-	player.byte = TYPE_3;
+	// 5001005 - Dash
+	player.type = 0x80;
+	player.byte = TYPE_1;
 	player.value = SKILL_X;
-	//player.hasmapval = true;
-	//player.mapval = false;
-	skillsinfo[1111002].player.push_back(player);
+	skillsinfo[5001005].player.push_back(player);
+	// End regular buffs
+
+	// Begin act buffs
+	// 1001 - Recovery
+	player.type = 0x4;
+	player.byte = TYPE_5;
+	player.value = SKILL_X;
+	act.type = ACT_HEAL;
+	act.time = 4900;
+	act.value = SKILL_X;
+	skillsinfo[1001].player.push_back(player);
+	skillsinfo[1001].act = act;
+	skillsinfo[1001].bact.push_back(true);
+	// 1311008 - Dragon Blood
+	player.type = 0x1;
+	player.byte = TYPE_1;
+	player.value = SKILL_WATK;
+	skillsinfo[1311008].player.push_back(player);
+	player.type = 0x80;
+	player.byte = TYPE_3;
+	player.value = SKILL_LV;
+	skillsinfo[1311008].player.push_back(player);
+	act.type = ACT_HURT;
+	act.time = 4000;
+	act.value = SKILL_X;
+	skillsinfo[1311008].act = act;
+	skillsinfo[1311008].bact.push_back(true);
+	// End act buffs
+
+	// Begin map buffs
 	// 4001003 - Dark Sight
 	player.type = 0x80;
 	player.byte = TYPE_1;
@@ -328,68 +332,62 @@ Buffs::Buffs() {
 	player.byte = TYPE_2;
 	player.value = SKILL_X;
 	player.hasmapval = true;
-	player.mapval = false;
 	skillsinfo[4001003].player.push_back(player);
 	// 3101004 & 3201004 - Soul Arrow
 	player.type = 0x1;
 	player.byte = TYPE_3;
 	player.value = SKILL_X;
 	player.hasmapval = true;
-	player.mapval = false;
 	skillsinfo[3101004].player.push_back(player);
 	skillsinfo[3201004].player.push_back(player);
-	// Dash - 5001005
-	player.type = 0x80;
-	player.byte = TYPE_1;
-	player.value = SKILL_X;
-	player.hasmapval = false;
-	player.mapval = false;
-	skillsinfo[5001005].player.push_back(player);
 	// Oak Barrel - 5101007
 	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
 	player.hasmapval = true;
-	player.mapval = false;
 	skillsinfo[5101007].player.push_back(player);
-	// Super Saiyan thing[blue] - 5111005
+	// 5111005 - Transformation
 	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
 	player.hasmapval = true;
-	player.mapval = false;
 	skillsinfo[5111005].player.push_back(player);
-	// Super Saiyan thing[orange] - 5121003
+	// 5121003 - Super Transformation
 	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
 	player.hasmapval = true;
-	player.mapval = false;
 	skillsinfo[5121003].player.push_back(player);
 	// 4111002 - Shadow Partner
 	player.type = 0x4;
 	player.byte = TYPE_4;
 	player.value = SKILL_X;
 	player.hasmapval = true;
-	player.mapval = false;
 	skillsinfo[4111002].player.push_back(player);
+	// 1111002 - Combo Attack
+	player.type = 0x20;
+	player.byte = TYPE_3;
+	player.value = SKILL_X;
+	//player.hasmapval = true;
+	//player.useval = true;
+	skillsinfo[1111002].player.push_back(player);
+	// End map buffs
+
+	// Begin mount buffs
+	player = BuffInfo(); // Placed to clear any previous value pushes
 	// 1004 - Monster Rider
 	player.type = 0x40;
 	player.byte = TYPE_8;
 	player.value = SKILL_X;
-	player.hasmapval = true;
-	player.showmaponly = true;
-	player.mapval = false;
+	player.ismount = true;
 	skillsinfo[1004].player.push_back(player);
-	// Battleship - 5221006
+	// 5221006 - Battleship
 	player.type = 0x40;
 	player.byte = TYPE_8;
 	player.value = SKILL_X;
-	player.hasmapval = true;
-	player.showmaponly = true;
-	player.mapval = false;
+	player.ismount = true;
 	skillsinfo[5221006].player.push_back(player);
-
+	// End mount buffs
 }
 
 int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
@@ -467,7 +465,7 @@ SkillActiveInfo Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t
 	memset(mapskill.types, 0, 8 * sizeof(uint8_t));
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		BuffInfo cur = skillsinfo[skillid].player[i];
-		if (!cur.hasmapval)
+		if (!cur.hasmapval && !cur.ismount)
 			continue;
 		mapskill.types[cur.byte] += cur.type;
 		int8_t val = cur.value;
@@ -488,11 +486,11 @@ SkillActiveInfo Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t
 				break;
 		}
 		mapskill.vals.push_back(value);
-		if (!cur.showmaponly) {
+		if (!cur.ismount) {
 			SkillMapActiveInfo map;
 			map.byte = cur.byte;
 			map.type = cur.type;
-			if (cur.mapval) {
+			if (cur.useval) {
 				map.isvalue = true;
 				map.value = (int8_t)value;
 			}
