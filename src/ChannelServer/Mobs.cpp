@@ -364,7 +364,7 @@ void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 	if (skillid != 4111004 && ((display & 0x40) > 0))
 		packet.skipBytes(4); // Star ID added by Shadow Claw
 	Skills::useAttackSkillRanged(player, skillid, pos, display);
-	int32_t mhp;
+	int32_t mhp = 0;
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, mhp);
 	if (skillid == 4101005) { // Drain
 		int16_t drain_x = Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x;
