@@ -177,20 +177,31 @@ void Mob::die(Player *player) {
 	}
 
 	Drops::doDrops(highestdamager, mapid, mobid, getPos());
-
-	// Spawn mob(s) the mob is supposed to spawn when it dies
-	for (size_t i = 0; i < info.summon.size(); i++)
-		Mobs::spawnMobPos(mapid, info.summon[i], m_pos);
-
 	player->getQuests()->updateQuestMob(mobid);
 	Maps::getMap(mapid)->removeMob(id, spawnid);
-	delete this;
+
+	// Spawn mob(s) the mob is supposed to spawn when it dies - but only if there are summons to worry about
+	if (info.summon.size() > 0) {
+		new Timer::Timer(bind(&Mob::deathSpawn, this),
+			Timer::Id(Timer::Types::MobDeathTimer, id, 0),
+			getTimers(), Timer::Time::fromNow((info.deathdelay * CLOCKS_PER_SEC) / 1000));
+	}
+	else { // Delay the delete for summons so the mob's data can still be used
+		delete this;
+	}
 }
 
 void Mob::die(bool showpacket) {
 	if (showpacket)
 		MobsPacket::dieMob(this);
 	Maps::getMap(mapid)->removeMob(id, spawnid);
+	delete this;
+}
+
+void Mob::deathSpawn() {
+	for (size_t i = 0; i < info.summon.size(); i++) {
+		Mobs::spawnMobPos(mapid, info.summon[i], m_pos);
+	}
 	delete this;
 }
 

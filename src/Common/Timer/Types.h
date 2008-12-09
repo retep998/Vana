@@ -30,7 +30,8 @@ struct Types {
 		PingTimer,
 		ReactionTimer,
 		SkillActTimer,
-		TradeTimer
+		TradeTimer,
+		MobDeathTimer
 	};
 };
 
