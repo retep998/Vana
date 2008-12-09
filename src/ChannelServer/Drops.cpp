@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "DropsPacket.h"
 #include "Inventory.h"
+#include "ItemDataProvider.h"
 #include "Quests.h"
 #include "Randomizer.h"
 #include "Pos.h"
@@ -161,7 +162,7 @@ void Drops::dropMesos(Player *player, PacketReader &packet) {
 void Drops::lootItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(9);
 	int32_t itemid = packet.getInt();
-	Drop* drop = Maps::getMap(player->getMap())->getDrop(itemid);
+	Drop *drop = Maps::getMap(player->getMap())->getDrop(itemid);
 	bool success = true;
 	if (drop == 0) {
 		DropsPacket::dontTake(player);
@@ -190,17 +191,27 @@ void Drops::lootItem(Player *player, PacketReader &packet) {
 			DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
 	}
 	else {
-		Item *item = new Item(drop->getItem());
-		int32_t dropAmount = drop->getAmount();
-		int16_t amount = Inventory::addItem(player, item, true);
-		if (amount > 0) {
-			if (dropAmount - amount > 0) {
-				DropsPacket::takeNote(player, drop->getObjectID(), false, (int16_t) dropAmount - amount);
-				drop->setItemAmount(amount);
+		bool autoconsume = false;
+		Item dropitem = drop->getItem();
+		if (!ISEQUIP(dropitem.id)) {
+			autoconsume = ItemDataProvider::Instance()->getItemInfo(dropitem.id).cons.autoconsume;
+		}
+		if (!autoconsume) {
+			Item *item = new Item(dropitem);
+			int16_t dropAmount = drop->getAmount();
+			int16_t amount = Inventory::addItem(player, item, true);
+			if (amount > 0) {
+				if (dropAmount - amount > 0) {
+					DropsPacket::takeNote(player, drop->getObjectID(), false, dropAmount - amount);
+					drop->setItemAmount(amount);
+				}
+				DropsPacket::takeNote(player, 0, 0, 0);
+				DropsPacket::dontTake(player);
+				return;
 			}
-			DropsPacket::takeNote(player, 0, 0, 0);
-			DropsPacket::dontTake(player);
-			return;
+		}
+		else {
+			Inventory::useItem(player, dropitem.id);
 		}
 		DropsPacket::takeNote(player, drop->getObjectID(), false, drop->getAmount());
 	}
