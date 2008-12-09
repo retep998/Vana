@@ -92,6 +92,7 @@ public:
 	void addStatus(int32_t playerid, vector<StatusInfo> statusinfo);
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
+	void deathSpawn();
 
 	int32_t getID() const { return id; }
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
