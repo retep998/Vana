@@ -65,10 +65,14 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId(), true);
 		drop->setTime(0);
 		bool istradeable = true;
-		if (ISEQUIP(droppeditem.id))
-			istradeable = !(ItemDataProvider::Instance()->getEquipInfo(droppeditem.id).notrade);
-		else
-			istradeable = !(ItemDataProvider::Instance()->getItemInfo(droppeditem.id).notrade);
+		if (ISEQUIP(droppeditem.id)) {
+			EquipInfo info = ItemDataProvider::Instance()->getEquipInfo(droppeditem.id);
+			istradeable = !(info.notrade || info.quest);
+		}
+		else {
+			ItemInfo info = ItemDataProvider::Instance()->getItemInfo(droppeditem.id);
+			istradeable = !(info.notrade || info.quest);
+		}
 		drop->setTradeable(istradeable);
 		drop->doDrop(player->getPos());
 		Reactors::checkDrop(player, drop);
