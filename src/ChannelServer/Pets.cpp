@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "DropsPacket.h"
 #include "Inventory.h"
+#include "InventoryPacket.h"
 #include "Maps.h"
 #include "Movement.h"
 #include "PacketReader.h"
@@ -105,6 +106,9 @@ void Pets::feedPet(Player *player, PacketReader &packet) {
 		Inventory::takeItem(player, item, 1);
 		PetsPacket::showAnimation(player, pet, 1, success);
 		PetsPacket::updatePet(player, pet);
+	}
+	else {
+		InventoryPacket::blankUpdate(player);
 	}
 }
 
