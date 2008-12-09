@@ -49,7 +49,8 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 		Item *item = player->getInventory()->getItem(inv, slot1);
 		if (item == 0)
 			return;
-		if (ISRECHARGEABLE(item->id)) amount = item->amount;
+		if (ISRECHARGEABLE(item->id))
+			amount = item->amount;
 		Item droppeditem = Item(item);
 		droppeditem.amount = amount;
 		if (item->amount == amount) {
@@ -63,6 +64,12 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 		}
 		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId(), true);
 		drop->setTime(0);
+		bool istradeable = true;
+		if (ISEQUIP(droppeditem.id))
+			istradeable = !(ItemDataProvider::Instance()->getEquipInfo(droppeditem.id).notrade);
+		else
+			istradeable = !(ItemDataProvider::Instance()->getItemInfo(droppeditem.id).notrade);
+		drop->setTradeable(istradeable);
 		drop->doDrop(player->getPos());
 		Reactors::checkDrop(player, drop);
 	}
@@ -71,7 +78,7 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 		Item *item2 = player->getInventory()->getItem(inv, slot2);
 
 		if (item1 == 0) {
-			// hacking
+			// Hacking
 			return;
 		}
 
@@ -154,7 +161,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 		int16_t amount = packet.getShort();
 		int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemid);
 		if (price == 0) {
-			// hacking
+			// Hacking
 			return;
 		}
 		bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, amount, true);
@@ -171,7 +178,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 		int8_t inv = GETINVENTORY(itemid);
 		Item *item = player->getInventory()->getItem(inv, slot);
 		if (item == 0 || (!ISRECHARGEABLE(itemid) && amount > item->amount)) {
-			InventoryPacket::bought(player, 1); // hacking
+			InventoryPacket::bought(player, 1); // Hacking
 			return;
 		}
 		int32_t price = ItemDataProvider::Instance()->getPrice(itemid);
