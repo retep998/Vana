@@ -79,7 +79,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
 		case RECV_CHANGE_CHANNEL: changeChannel(packet.getByte()); break;
 		case RECV_CHANGE_MAP: Maps::usePortal(this, packet); break;
-		case RECV_CHANGE_MAP_SPECIAL: Maps::useScriptedPortal(this, packet); break; // Portals that cause scripted events
+		case RECV_CHANGE_MAP_SPECIAL: Maps::useScriptedPortal(this, packet); break;
 		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
 		case RECV_CHAT: ChatHandler::handleChat(this, packet); break;
 		case RECV_COMMAND: CommandHandler::handleCommand(this, packet); break;
@@ -126,7 +126,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_USE_RETURN_SCROLL: Inventory::useReturnScroll(this, packet); break;
 		case RECV_USE_SCROLL: Inventory::useScroll(this, packet); break;
 		case RECV_USE_SKILL: Skills::useSkill(this, packet); break;
-		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, packet); break; // Skillbooks
+		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, packet); break;
 		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet); break;
 	}
 }
@@ -134,7 +134,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 void Player::playerConnect(PacketReader &packet) {
 	int32_t id = packet.getInt();
 	if (!Connectable::Instance()->checkPlayer(id)) {
-		//hacking
+		// Hacking
 		getSession()->disconnect();
 		return;
 	}
@@ -150,7 +150,7 @@ void Player::playerConnect(PacketReader &packet) {
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.empty()) {
-		//hacking
+		// Hacking
 		getSession()->disconnect();
 		return;
 	}
