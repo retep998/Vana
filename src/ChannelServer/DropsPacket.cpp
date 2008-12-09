@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, Pos origin) {
 	PacketCreator packet;
 	packet.addShort(SEND_DROP_ITEM);
-	packet.addByte(type); // 2 = show existing, 1 then 0 = show new
+	packet.addByte(type); // 3 = disappear during drop animation, 2 = show existing, 1 then 0 = show new
 	packet.addInt(drop->getID());
 	packet.addByte(drop->isMesos());
 	packet.addInt(drop->getObjectID());
@@ -35,7 +35,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	packet.addByte(0);
 	packet.addPos(drop->getPos());
 	packet.addInt(drop->getTime());
-	if (type == 1 || type == 0) { // Give the point of origin for things that are just being dropped
+	if (type == 0 || type == 1 || type == 3) { // Give the point of origin for things that are just being dropped
 		packet.addPos(origin);
 		packet.addShort(0);
 	}

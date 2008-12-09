@@ -43,6 +43,7 @@ private:
 	int32_t dropped;
 	int32_t playerid;
 	bool playerdrop;
+	bool tradeable;
 	Pos pos;
 	Item item;
 public:
@@ -50,6 +51,7 @@ public:
 	Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop = false);
 
 	void setQuest(int16_t questid) { this->questid = questid; }
+	void setTradeable(bool istrade) { tradeable = istrade; }
 	void setItemAmount(int16_t amount) { this->item.amount = amount; }
 	void setID(int32_t id) { this->id = id; }
 	void setTime(int32_t time) { this->time = time; }
@@ -66,6 +68,7 @@ public:
 	bool isplayerDrop() const { return playerdrop; }
 	bool isMesos() const { return mesos > 0; }
 	bool isQuest() const { return questid > 0; }
+	bool isTradeable() const { return tradeable; }
 	Pos getPos() const { return pos; }
 	Item getItem() const { return item; }
 

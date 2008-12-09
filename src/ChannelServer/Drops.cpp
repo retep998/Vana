@@ -28,11 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 
 // Drop class
-Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
+Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop), tradeable(true) {
 	Maps::getMap(mapid)->addDrop(this);
 }
 
-Drop::Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), item(item), mesos(0), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop) {
+Drop::Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), item(item), mesos(0), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop), tradeable(true) {
 	Maps::getMap(mapid)->addDrop(this);
 }
 
@@ -49,8 +49,12 @@ int16_t Drop::getAmount() {
 
 void Drop::doDrop(Pos origin) {
 	setDropped(clock());
-	if (!isQuest())
-		DropsPacket::showDrop(0, this, 1, true, origin);
+	if (!isQuest()) {
+		if (!isTradeable())
+			DropsPacket::showDrop(0, this, 3, false, origin);
+		else
+			DropsPacket::showDrop(0, this, 1, true, origin);
+	}
 	else {
 		Player *player = Players::Instance()->getPlayer(playerid);
 		if (!player) {
