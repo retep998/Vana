@@ -31,7 +31,7 @@ MobDataProvider *MobDataProvider::singleton = 0;
 
 void MobDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.level, mobdata.hp, mobdata.mp, mobdata.elemAttr, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.level, mobdata.hp, mobdata.mp, mobdata.elemAttr, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobdata.deathdelay mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW mobRow;
@@ -47,7 +47,8 @@ void MobDataProvider::loadData() {
 		//    8 : Boss
 		//    9 : HP Color
 		//   10 : HP BG Color
-		//   11 : Mob Summon
+		//   11 : Death Delay (In milliseconds)
+		//   12 : Mob Summon
 		int32_t mobid = atoi(mobRow[0]);
 
 		if (mobinfo.find(mobid) == mobinfo.end()) {
@@ -62,6 +63,7 @@ void MobDataProvider::loadData() {
 			mob.boss = atob(mobRow[8]);
 			mob.hpcolor = atoi(mobRow[9]);
 			mob.hpbgcolor = atoi(mobRow[10]);
+			mob.deathdelay = atoi(mobRow[11]);
 
 			mob.canfreeze = (!mob.boss && elemattr.find("I2") == string::npos && elemattr.find("I1") == string::npos);
 			mob.canpoison = (!mob.boss && elemattr.find("S2") == string::npos && elemattr.find("S1") == string::npos);
@@ -69,8 +71,8 @@ void MobDataProvider::loadData() {
 			mobinfo[mobid] = mob;
 		}
 
-		if (mobRow[11] != 0) {
-			mobinfo[mobid].summon.push_back(atoi(mobRow[11]));
+		if (mobRow[12] != 0) {
+			mobinfo[mobid].summon.push_back(atoi(mobRow[12]));
 		}
 
 	}

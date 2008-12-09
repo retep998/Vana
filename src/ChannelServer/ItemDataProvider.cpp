@@ -114,24 +114,25 @@ void ItemDataProvider::loadData() {
 		//   17 : Speed
 		//   18 : Jump
 		//   19 : Morph
-		//   20 : Success
-		//   21 : Cursed
-		//   22 : Item STR
-		//   23 : Item DEX
-		//   24 : Item INT
-		//   25 : Item LUK
-		//   26 : Item HP
-		//   27 : Item MP
-		//   28 : Item Weapon Attack
-		//   29 : Item Magic Attack
-		//   30 : Item Weapon Defense
-		//   31 : Item Magic Defense
-		//   32 : Item Accuracy
-		//   33 : Item Avoid
-		//   34 : Item Jump
-		//   35 : Item Speed
-		//   36 : Mob ID
-		//   37 : Chance
+		//   20 : Auto Consume?
+		//   21 : Success
+		//   22 : Cursed
+		//   23 : Item STR
+		//   24 : Item DEX
+		//   25 : Item INT
+		//   26 : Item LUK
+		//   27 : Item HP
+		//   28 : Item MP
+		//   29 : Item Weapon Attack
+		//   30 : Item Magic Attack
+		//   31 : Item Weapon Defense
+		//   32 : Item Magic Defense
+		//   33 : Item Accuracy
+		//   34 : Item Avoid
+		//   35 : Item Jump
+		//   36 : Item Speed
+		//   37 : Mob ID
+		//   38 : Chance
 		currentid = atoi(dataRow[0]);
 
 		if (currentid != previousid && previousid != -1) { // Add the items into the cache
@@ -158,29 +159,30 @@ void ItemDataProvider::loadData() {
 		item.cons.speed = atoi(dataRow[17]);
 		item.cons.jump = atoi(dataRow[18]);
 		item.cons.morph = atoi(dataRow[19]);
+		item.cons.autoconsume = atob(dataRow[20]);
 		// Scrolling
-		item.cons.success = atoi(dataRow[20]);
-		item.cons.cursed = atoi(dataRow[21]);
-		item.cons.istr = atoi(dataRow[22]);
-		item.cons.idex = atoi(dataRow[23]);
-		item.cons.iint = atoi(dataRow[24]);
-		item.cons.iluk = atoi(dataRow[25]);
-		item.cons.ihp = atoi(dataRow[26]);
-		item.cons.imp = atoi(dataRow[27]);
-		item.cons.iwatk = atoi(dataRow[28]);
-		item.cons.imatk = atoi(dataRow[29]);
-		item.cons.iwdef = atoi(dataRow[30]);
-		item.cons.imdef = atoi(dataRow[31]);
-		item.cons.iacc = atoi(dataRow[32]);
-		item.cons.iavo = atoi(dataRow[33]);
-		item.cons.ijump = atoi(dataRow[34]);
-		item.cons.ispeed = atoi(dataRow[35]);
+		item.cons.success = atoi(dataRow[21]);
+		item.cons.cursed = atoi(dataRow[22]);
+		item.cons.istr = atoi(dataRow[23]);
+		item.cons.idex = atoi(dataRow[24]);
+		item.cons.iint = atoi(dataRow[25]);
+		item.cons.iluk = atoi(dataRow[26]);
+		item.cons.ihp = atoi(dataRow[27]);
+		item.cons.imp = atoi(dataRow[28]);
+		item.cons.iwatk = atoi(dataRow[29]);
+		item.cons.imatk = atoi(dataRow[30]);
+		item.cons.iwdef = atoi(dataRow[31]);
+		item.cons.imdef = atoi(dataRow[32]);
+		item.cons.iacc = atoi(dataRow[33]);
+		item.cons.iavo = atoi(dataRow[34]);
+		item.cons.ijump = atoi(dataRow[35]);
+		item.cons.ispeed = atoi(dataRow[36]);
 		item.cons.ihand = 0;
 		// Summoning
-		if (dataRow[36] != 0) {
+		if (dataRow[37] != 0) {
 			SummonBag summon;
-			summon.mobid = atoi(dataRow[36]);
-			summon.chance = atoi(dataRow[37]);
+			summon.mobid = atoi(dataRow[37]);
+			summon.chance = atoi(dataRow[38]);
 			item.cons.mobs.push_back(summon);
 		}
 
@@ -192,7 +194,7 @@ void ItemDataProvider::loadData() {
 		item.cons.mobs.clear();
 	}
 
-	// Item Skills
+	// Item Skills (Skill/Mastery Books)
 	query << "SELECT * FROM itemskilldata";
 	res = query.use();
 
