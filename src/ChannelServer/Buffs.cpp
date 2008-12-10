@@ -293,6 +293,10 @@ Buffs::Buffs() {
 	player.byte = TYPE_1;
 	player.value = SKILL_X;
 	skillsinfo[5001005].player.push_back(player);
+	player.type = 0x1;
+	player.byte = TYPE_2;
+	player.value = SKILL_Y;
+	skillsinfo[5001005].player.push_back(player);
 	// End regular buffs
 
 	// Begin act buffs
