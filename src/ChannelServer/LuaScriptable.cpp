@@ -639,7 +639,8 @@ int LuaExports::showInstructionBubble(lua_State *luaVm) {
 
 int LuaExports::spawnMob(lua_State *luaVm) {
 	int32_t mobid = lua_tointeger(luaVm, -1);
-	Mobs::spawnMob(getPlayer(luaVm), mobid);
+	Player *player = getPlayer(luaVm);
+	Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
 	return 1;
 }
 
@@ -647,7 +648,7 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 	int32_t mobid = lua_tointeger(luaVm, -3);
 	int16_t x = lua_tointeger(luaVm, -2);
 	int16_t y = lua_tointeger(luaVm, -1);
-	Mobs::spawnMobPos(getPlayer(luaVm)->getMap(), mobid, Pos(x, y));
+	Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobid, Pos(x, y));
 	return 1;
 }
 
