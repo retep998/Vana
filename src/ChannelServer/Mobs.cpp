@@ -184,7 +184,7 @@ void Mob::die(Player *player) {
 	if (info.summon.size() > 0) {
 		new Timer::Timer(bind(&Mob::deathSpawn, this),
 			Timer::Id(Timer::Types::MobDeathTimer, id, 0),
-			getTimers(), Timer::Time::fromNow((info.deathdelay * CLOCKS_PER_SEC) / 1000));
+			0, Timer::Time::fromNow((info.deathdelay * CLOCKS_PER_SEC) / 1000));
 	}
 	else { // Delay the delete for summons so the mob's data can still be used
 		delete this;
@@ -202,7 +202,7 @@ void Mob::deathSpawn() {
 	for (size_t i = 0; i < info.summon.size(); i++) {
 		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos);
 	}
-	delete this; // Causes heap corruption, looking into fixing it
+	delete this;
 }
 
 /* Mobs namespace */
