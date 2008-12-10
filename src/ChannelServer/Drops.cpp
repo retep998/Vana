@@ -58,11 +58,7 @@ void Drop::doDrop(Pos origin) {
 		else
 			DropsPacket::showDrop(0, this, 1, true, origin);
 	}
-	else {
-		Player *player = Players::Instance()->getPlayer(playerid);
-		if (!player) {
-			return;
-		}
+	else if (Player *player = Players::Instance()->getPlayer(playerid)) {
 		if (player->getMap() == this->mapid) {
 			DropsPacket::showDrop(player, this, 1, true, origin);
 		}
@@ -165,7 +161,6 @@ void Drops::lootItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(9);
 	int32_t itemid = packet.getInt();
 	Drop *drop = Maps::getMap(player->getMap())->getDrop(itemid);
-	bool success = true;
 	if (drop == 0) {
 		DropsPacket::dontTake(player);
 		return;
@@ -188,17 +183,14 @@ void Drops::lootItem(Player *player, PacketReader &packet) {
 		}
 	}
 	if (drop->isMesos()) {
-		success = player->getInventory()->modifyMesos(drop->getObjectID(), true);
-		if (success)
+		if (player->getInventory()->modifyMesos(drop->getObjectID(), true))
 			DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
+		else
+			return;
 	}
 	else {
-		bool autoconsume = false;
 		Item dropitem = drop->getItem();
-		if (!ISEQUIP(dropitem.id)) {
-			autoconsume = ItemDataProvider::Instance()->getItemInfo(dropitem.id).cons.autoconsume;
-		}
-		if (!autoconsume) {
+		if (ISEQUIP(dropitem.id) || !ItemDataProvider::Instance()->getItemInfo(dropitem.id).cons.autoconsume) {
 			Item *item = new Item(dropitem);
 			int16_t dropAmount = drop->getAmount();
 			int16_t amount = Inventory::addItem(player, item, true);
@@ -218,6 +210,5 @@ void Drops::lootItem(Player *player, PacketReader &packet) {
 		DropsPacket::takeNote(player, drop->getObjectID(), false, drop->getAmount());
 	}
 	Reactors::checkLoot(drop);
-	if (success)
-		drop->takeDrop(player);
+	drop->takeDrop(player);
 }
