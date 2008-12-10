@@ -200,7 +200,7 @@ void Mob::die(bool showpacket) {
 
 void Mob::deathSpawn() {
 	for (size_t i = 0; i < info.summon.size(); i++) {
-		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos);
+		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, 0, false);
 	}
 	delete this;
 }
