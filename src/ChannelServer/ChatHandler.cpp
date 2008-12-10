@@ -396,7 +396,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			string countstring = matches[2];
 			int32_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
 			for (int32_t i = 0; i < count && i < 100; i++) {
-				Mobs::spawnMob(player, mobid);
+				Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
 			}
 		}
 		else if (command == "notice") {
@@ -565,7 +565,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			player->setNPC(0);
 		}
 		else if (command == "horntail") {
-			Mobs::spawnMob(player, 8810026);
+			Maps::getMap(player->getMap())->spawnMob(8810026, player->getPos());
 			Maps::getMap(player->getMap())->killMobs(player, 8810026);
 		}
 		else if (command == "heal") {
@@ -591,15 +591,15 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 			player->setHP(0);
 		}
 		else if (command == "zakum") {
-			Mobs::spawnMob(player, 8800000);
-			Mobs::spawnMob(player, 8800003);
-			Mobs::spawnMob(player, 8800004);
-			Mobs::spawnMob(player, 8800005);
-			Mobs::spawnMob(player, 8800006);
-			Mobs::spawnMob(player, 8800007);
-			Mobs::spawnMob(player, 8800008);
-			Mobs::spawnMob(player, 8800009);
-			Mobs::spawnMob(player, 8800010);
+			Maps::getMap(player->getMap())->spawnMob(8800000, player->getPos());
+			Maps::getMap(player->getMap())->spawnMob(8800003, player->getPos());
+			Maps::getMap(player->getMap())->spawnMob(8800004, player->getPos());
+			Maps::getMap(player->getMap())->spawnMob(8800005, player->getPos());
+			Maps::getMap(player->getMap())->spawnMob(8800006, player->getPos());
+			Maps::getMap(player->getMap())->spawnMob(8800007, player->getPos());
+			Maps::getMap(player->getMap())->spawnMob(8800008, player->getPos());
+			Maps::getMap(player->getMap())->spawnMob(8800009, player->getPos());
+			Maps::getMap(player->getMap())->spawnMob(8800010, player->getPos());
 		}
 		else if (command == "music") {
 			Maps::getMap(player->getMap())->setMusic(args);

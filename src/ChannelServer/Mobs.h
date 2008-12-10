@@ -80,8 +80,6 @@ namespace Mobs {
 	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type);
 	void monsterControl(Player *player, PacketReader &packet);
 	void checkSpawn(int32_t mapid);
-	void spawnMob(Player *player, int32_t mobid, int32_t amount = 1);
-	void spawnMobPos(int32_t mapid, int32_t mobid, Pos pos);
 };
 
 class Mob : public MovableLife {

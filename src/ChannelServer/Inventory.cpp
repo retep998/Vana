@@ -452,7 +452,7 @@ void Inventory::useSummonBag(Player *player, PacketReader &packet) {
 	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
 	for (size_t i = 0; i < item.cons.mobs.size(); i++) {
 		if (Randomizer::Instance()->randInt(100) <= item.cons.mobs[i].chance) {
-			Mobs::spawnMob(player, item.cons.mobs[i].mobid);
+			Maps::getMap(player->getMap())->spawnMob(item.cons.mobs[i].mobid, player->getPos());
 		}
 	}
 }

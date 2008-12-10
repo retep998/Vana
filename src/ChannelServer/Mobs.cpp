@@ -200,9 +200,9 @@ void Mob::die(bool showpacket) {
 
 void Mob::deathSpawn() {
 	for (size_t i = 0; i < info.summon.size(); i++) {
-		Mobs::spawnMobPos(mapid, info.summon[i], m_pos);
+		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos);
 	}
-	delete this;
+	delete this; // Causes heap corruption, looking into fixing it
 }
 
 /* Mobs namespace */
@@ -638,13 +638,4 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 
 	if (statuses.size() > 0)
 		mob->addStatus(player->getId(), statuses);
-}
-
-void Mobs::spawnMob(Player *player, int32_t mobid, int32_t amount) {
-	for (int32_t i = 0; i < amount; i++)
-		spawnMobPos(player->getMap(), mobid, player->getPos());
-}
-
-void Mobs::spawnMobPos(int32_t mapid, int32_t mobid, Pos pos) {
-	Maps::getMap(mapid)->spawnMob(mobid, pos);
 }
