@@ -75,10 +75,10 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 		}
 
 		if (hp == 0) { // Time to die
-			if (mobid == 8810018) { // Horntail damage sponge
-				for (int8_t q = 0; q < 8; q++) {
-					Maps::getMap(mapid)->killMobs(player, (8810010 + q)); // Dead Horntail's parts
-				}
+			if (mobid == 8810018) { // Horntail damage sponge, we want to be sure that his parts have spawned after death animations before we clean up
+				new Timer::Timer(bind(&Mob::cleanHorntail, this, mapid, player),
+					Timer::Id(Timer::Types::MobDeathTimer, id, 1),
+					0, Timer::Time::fromNow((2100 * CLOCKS_PER_SEC) / 1000)); // 2000 is longest Horntail part death
 			}
 			die(Players::Instance()->getPlayer(playerid));
 		}
@@ -203,6 +203,12 @@ void Mob::deathSpawn() {
 		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos);
 	}
 	delete this;
+}
+
+void Mob::cleanHorntail(int32_t mapid, Player *player) {
+	for (int8_t q = 0; q < 8; q++) {
+		Maps::getMap(mapid)->killMobs(player, (8810010 + q)); // Dead Horntail's parts
+	}
 }
 
 /* Mobs namespace */

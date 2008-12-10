@@ -91,6 +91,7 @@ public:
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
 	void deathSpawn();
+	void cleanHorntail(int32_t mapid, Player *player);
 
 	int32_t getID() const { return id; }
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
