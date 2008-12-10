@@ -146,13 +146,13 @@ void Map::checkMobSpawn(clock_t time) {
 	}
 }
 
-void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh, bool regularspawn) {
+void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh, Mob *owner) {
 	int32_t id = objectids.next();
 
 	Mob *mob = new Mob(id, info->id, mobid, pos, spawnid, fh);
 	mobs[id] = mob;
 
-	MobsPacket::spawnMob(0, mob, false, regularspawn);
+	MobsPacket::spawnMob(0, mob, owner, false, true);
 	updateMobControl(mob, true);
 }
 

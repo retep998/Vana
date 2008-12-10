@@ -130,7 +130,8 @@ void Mob::statusPacket(PacketCreator &packet) {
 		}
 	}
 	else {
-		packet.addInt(0);
+		packet.addShort(0);
+		packet.addShort(0x800);
 	}
 }
 
@@ -147,7 +148,7 @@ void Mob::setControl(Player *control) {
 		MobsPacket::endControlMob(this->control, this);*/
 	this->control = control;
 	if (control != 0)
-		MobsPacket::spawnMob(control, this, true, false);
+		MobsPacket::spawnMob(control, this, 0, true, false);
 }
 
 void Mob::die(Player *player) {
@@ -200,7 +201,7 @@ void Mob::die(bool showpacket) {
 
 void Mob::deathSpawn() {
 	for (size_t i = 0; i < info.summon.size(); i++) {
-		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, 0, false);
+		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, 0, this);
 	}
 	delete this;
 }
