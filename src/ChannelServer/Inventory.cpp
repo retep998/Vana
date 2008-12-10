@@ -75,7 +75,8 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 		}
 		drop->setTradeable(istradeable);
 		drop->doDrop(player->getPos());
-		Reactors::checkDrop(player, drop);
+		if (istradeable) // Drop is deleted otherwise, avoid like plague
+			Reactors::checkDrop(player, drop);
 	}
 	else {
 		Item *item1 = player->getInventory()->getItem(inv, slot1);
