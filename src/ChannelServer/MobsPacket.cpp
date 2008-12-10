@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "SendHeader.h"
 
-void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool spawn, bool show) {
+void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool requestControl, bool spawn, bool show) {
 	PacketCreator packet;
 	if (requestControl) {
 		packet.addShort(SEND_CONTROL_MOB);
@@ -35,14 +35,18 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, bool requestControl, bool sp
 		packet.addShort(SEND_SHOW_MOB);
 
 	packet.addInt(mob->getID());
-	packet.addByte(5);
+	packet.addByte(1);
 	packet.addInt(mob->getMobID());
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
+	packet.addInt(0);
 	packet.addPos(mob->getPos());
-	packet.addByte(2); // Stance
-	packet.addShort(0);
-	packet.addShort(mob->getFH());
-	packet.addShort(spawn ? -2 : -1);
+	packet.addByte(2); // Not stance, exploring further
+	packet.addShort(mob->getFH()); // ??
+	packet.addShort(mob->getFH()); // ??
+	packet.addByte(spawn ? -2 : -1);
+	if (owner != 0)
+		packet.addInt(owner->getID());
+	packet.addByte(-1);
 	packet.addInt(0);
 	if (requestControl || show)
 		player->getSession()->send(packet);
