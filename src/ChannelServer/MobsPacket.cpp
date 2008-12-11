@@ -25,15 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "SendHeader.h"
 
-void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool requestControl, bool spawn, bool show) {
+void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool spawn, bool show) {
 	PacketCreator packet;
-	if (requestControl) {
-		packet.addShort(SEND_CONTROL_MOB);
-		packet.addByte(1); // TODO: Aggro variable
-	}
-	else
-		packet.addShort(SEND_SHOW_MOB);
-
+	packet.addShort(SEND_SHOW_MOB);
 	packet.addInt(mob->getID());
 	packet.addByte(1);
 	packet.addInt(mob->getMobID());
@@ -48,10 +42,29 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool requestCont
 		packet.addInt(owner->getID());
 	packet.addByte(-1);
 	packet.addInt(0);
-	if (requestControl || show)
+	if (show)
 		player->getSession()->send(packet);
 	else
 		Maps::getMap(mob->getMapID())->sendPacket(packet);
+}
+
+void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn) {
+	PacketCreator packet;
+	packet.addShort(SEND_CONTROL_MOB);
+	packet.addByte(1);
+	packet.addInt(mob->getID());
+	packet.addByte(1);
+	packet.addInt(mob->getMobID());
+	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
+	packet.addInt(0);
+	packet.addPos(mob->getPos());
+	packet.addByte(2); // Not stance, exploring further
+	packet.addShort(mob->getFH()); // ??
+	packet.addShort(mob->getFH()); // ??
+	packet.addByte(spawn ? -2 : -1);
+	packet.addByte(-1);
+	packet.addInt(0);
+	player->getSession()->send(packet);
 }
 
 void MobsPacket::endControlMob(Player *player, Mob *mob) {

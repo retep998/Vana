@@ -29,7 +29,8 @@ class PacketReader;
 struct MobHPInfo;
 
 namespace MobsPacket {
-	void spawnMob(Player *player, Mob *mob, Mob *owner, bool requestControl, bool spawn = false, bool show = false);
+	void spawnMob(Player *player, Mob *mob, Mob *owner = 0, bool spawn = false, bool show = false);
+	void requestControl(Player *player, Mob *mob, bool spawn = false);
 	void endControlMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp);
 	void moveMob(Player *player, int32_t mobid, bool useskill, int32_t skill, unsigned char *buf, int32_t len);

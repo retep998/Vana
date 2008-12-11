@@ -152,7 +152,7 @@ void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh, Mob *own
 	Mob *mob = new Mob(id, info->id, mobid, pos, spawnid, fh);
 	mobs[id] = mob;
 
-	MobsPacket::spawnMob(0, mob, owner, false, true);
+	MobsPacket::spawnMob(0, mob, owner, (owner == 0));
 	updateMobControl(mob, true);
 }
 
@@ -298,7 +298,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	// Mobs
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0) {
-			MobsPacket::spawnMob(player, iter->second, false, false, true);
+			MobsPacket::spawnMob(player, iter->second, 0, false, true);
 			updateMobControl(iter->second);
 		}
 	}

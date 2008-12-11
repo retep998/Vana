@@ -148,7 +148,7 @@ void Mob::setControl(Player *control) {
 		MobsPacket::endControlMob(this->control, this);*/
 	this->control = control;
 	if (control != 0)
-		MobsPacket::spawnMob(control, this, 0, true, false);
+		MobsPacket::requestControl(control, this, false);
 }
 
 void Mob::die(Player *player) {
