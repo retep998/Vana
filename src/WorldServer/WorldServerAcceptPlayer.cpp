@@ -37,7 +37,7 @@ WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
 
 void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
-	switch(packet.getShort()) {
+	switch (packet.getShort()) {
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet); break;
 		case INTER_TO_PLAYERS: packet.reset(); WorldServerAcceptPacket::sendToChannels(packet.getBuffer(), packet.getBufferLength()); break;
 		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::registerPlayer(this, packet); break;

@@ -45,7 +45,6 @@ void PartyPacket::invitePlayer(WorldServerAcceptPlayer *player, int32_t playerid
 	packet.addInt(Players::Instance()->getPlayerFromName(inviter)->party);
 	packet.addString(inviter);
 	packet.addByte(0);
-
 	player->getSession()->send(packet);
 }
 
@@ -57,7 +56,6 @@ void PartyPacket::createParty(WorldServerAcceptPlayer *player, int32_t playerid)
 	packet.addByte(0x08);
 	packet.addInt(Players::Instance()->getPlayer(playerid)->party);
 	packet.addBytes("FFC99A3BFFC99A3B00000000");
-
 	player->getSession()->send(packet);
 }
 
@@ -72,7 +70,6 @@ void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int32_t playerid
 	packet.addInt(PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party]->getLeader());
 	packet.addByte(0);
 	packet.addInt(Players::Instance()->getPlayer(playerid)->party);
-
 	player->getSession()->send(packet);
 }
 
@@ -81,7 +78,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, int8_t type, int3
 	packet.addShort(INTER_FORWARD_TO);
 	packet.addInt(playerid);
 	packet.addShort(SEND_PARTY_ACTION);
-	switch(type){
+	switch (type) {
 		case PARTY_JOIN: 
 			packet.addByte(0x0F);
 			packet.addShort(0x8B);
@@ -95,12 +92,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, int8_t type, int3
 			packet.addShort(0x2);
 			packet.addInt(target);
 			packet.addByte(0x01);
-			if (type == PARTY_LEAVE) {
-				packet.addByte(0x00);
-			}
-			else {
-				packet.addByte(0x01);
-			}
+			packet.addByte(type == PARTY_LEAVE ? 0x00 : 0x01);
 			packet.addString(Players::Instance()->getPlayer(target)->name);
 			break;	
 		case PARTY_SILENT_UPDATE:
@@ -111,7 +103,6 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, int8_t type, int3
 			packet.addShort(0);
 	}
 	addParty(packet, PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party], Players::Instance()->getPlayer(playerid)->channel);
-
 	player->getSession()->send(packet);
 }
 
@@ -121,7 +112,6 @@ void PartyPacket::partyError(WorldServerAcceptPlayer *player, int32_t playerid, 
 	packet.addInt(playerid);
 	packet.addShort(SEND_PARTY_ACTION);
 	packet.addByte(error);
-
 	player->getSession()->send(packet);
 }
 
