@@ -35,8 +35,8 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool spawn, bool
 	packet.addInt(0);
 	packet.addPos(mob->getPos());
 	packet.addByte(2); // Not stance, exploring further
-	packet.addShort(mob->getFH()); // ??
-	packet.addShort(mob->getFH()); // ??
+	packet.addShort(mob->getFH());
+	packet.addShort(mob->getOriginFH());
 	packet.addByte(spawn ? -2 : -1);
 	if (owner != 0)
 		packet.addInt(owner->getID());
@@ -59,10 +59,9 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn) {
 	packet.addInt(0);
 	packet.addPos(mob->getPos());
 	packet.addByte(2); // Not stance, exploring further
-	packet.addShort(mob->getFH()); // ??
-	packet.addShort(mob->getFH()); // ??
-	packet.addByte(spawn ? -2 : -1);
-	packet.addByte(-1);
+	packet.addShort(mob->getFH());
+	packet.addShort(mob->getOriginFH());
+	packet.addShort(-1); // ??
 	packet.addInt(0);
 	player->getSession()->send(packet);
 }
@@ -388,10 +387,6 @@ void MobsPacket::showBossHP(Player *player, int32_t mobid, int32_t hp, const Mob
 }
 
 void MobsPacket::dieMob(Mob *mob) {
-	Player *control = mob->getControl();
-	if (control != 0 && control->getMap() == mob->getMapID())
-		endControlMob(control, mob);
-
 	PacketCreator packet;
 	packet.addShort(SEND_KILL_MOB);
 	packet.addInt(mob->getID());

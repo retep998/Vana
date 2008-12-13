@@ -90,11 +90,12 @@ public:
 	void addStatus(int32_t playerid, vector<StatusInfo> statusinfo);
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
+	void endControl();
 	void deathSpawn();
 	void cleanHorntail(int32_t mapid, Player *player);
 
+	int16_t getOriginFH() const { return originfh; }
 	int32_t getID() const { return id; }
-	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	int32_t getMapID() const { return mapid; }
 	int32_t getMobID() const { return mobid; }
 	int32_t getSpawnID() const { return spawnid; }
@@ -102,6 +103,7 @@ public:
 	int32_t getMP() const { return mp; }
 	int32_t getMHP() const { return info.hp; }
 	int32_t getMMP() const { return info.mp; }
+	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	MobAttackInfo getAttackInfo(uint8_t id) const { return info.skills.at(id); }
 	bool isBoss() const { return info.boss; }
 	bool canFreeze() const { return info.canfreeze; }
@@ -112,14 +114,15 @@ public:
 
 	void die(bool showpacket = false); // Removes mob, no EXP, no summoning
 private:
+	int16_t originfh;
 	int32_t id;
 	int32_t mapid;
 	int32_t spawnid;
 	int32_t mobid;
-	const MobInfo info;
 	int32_t hp;
 	int32_t mp;
 	int32_t status;
+	const MobInfo info;
 	unordered_map<int32_t, StatusInfo> statuses;
 	boost::scoped_ptr<Timer::Container> timers;
 	unordered_map<int32_t, uint32_t> damages;

@@ -44,6 +44,7 @@ const int32_t Mobs::mobstatuses[19] = {WATK, WDEF, MATK, MDEF, ACC, AVOID, SPEED
 /* Mob class */
 Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid, int16_t fh) :
 MovableLife(fh, pos, 2),
+originfh(fh),
 id(id),
 mapid(mapid),
 spawnid(spawnid),
@@ -151,9 +152,12 @@ void Mob::setControl(Player *control) {
 		MobsPacket::requestControl(control, this, false);
 }
 
+void Mob::endControl() {
+	if (control != 0 && control->getMap() == getMapID())
+		MobsPacket::endControlMob(control, this);
+}
 void Mob::die(Player *player) {
-	MobsPacket::dieMob(this);
-
+	endControl();
 	int32_t highestdamager = 0;
 	uint32_t highestdamage = 0;
 	for (unordered_map<int32_t, uint32_t>::iterator iter = damages.begin(); iter != damages.end(); iter++) {
@@ -177,24 +181,29 @@ void Mob::die(Player *player) {
 		Levels::giveEXP(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
 	}
 
-	Drops::doDrops(highestdamager, mapid, mobid, getPos());
-	player->getQuests()->updateQuestMob(mobid);
-	Maps::getMap(mapid)->removeMob(id, spawnid);
-
 	// Spawn mob(s) the mob is supposed to spawn when it dies - but only if there are summons to worry about
-	if (info.summon.size() > 0) {
+	bool hassummons = (info.summon.size() > 0);
+	if (hassummons) {
 		new Timer::Timer(bind(&Mob::deathSpawn, this),
 			Timer::Id(Timer::Types::MobDeathTimer, id, 0),
 			0, Timer::Time::fromNow((info.deathdelay * CLOCKS_PER_SEC) / 1000));
 	}
-	else { // Delay the delete for summons so the mob's data can still be used
+
+	MobsPacket::dieMob(this);
+	Drops::doDrops(highestdamager, mapid, mobid, getPos());
+	player->getQuests()->updateQuestMob(mobid);
+	Maps::getMap(mapid)->removeMob(id, spawnid);
+
+	if (!hassummons) { // Delay the delete for summons so the mob's data can still be used
 		delete this;
 	}
 }
 
 void Mob::die(bool showpacket) {
-	if (showpacket)
+	if (showpacket) {
+		endControl();
 		MobsPacket::dieMob(this);
+	}
 	Maps::getMap(mapid)->removeMob(id, spawnid);
 	delete this;
 }
