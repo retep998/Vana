@@ -39,8 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifdef _WIN32
 	#include <regex>
-#endif
-#ifndef _WIN32
+#else
 	#include <tr1/regex>
 #endif
 
@@ -153,7 +152,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				if (args.length() == 0)
 					return;
 				string msg = player->getName() + " : " + args;
+#ifdef _WIN32  // Temporary provision so it doesn't overflow the stack when compiled in VC++
+				struct SendMessage {
+#else // Causes stack overflow when compiled with VC++, but is standards-compliant?
 				struct SendMessage : function<void (Player *)> {
+#endif
 					void operator()(Player *gmplayer) {
 						if (gmplayer->isGM() == true) {
 							PlayerPacket::showMessage(gmplayer, msg, 6);
@@ -196,8 +199,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					PlayerPacket::showMessage(player, "Invalid Map ID", 6);
 					return;
 				}
-
+#ifdef _WIN32 // Temporary provision so it doesn't overflow the stack when compiled in VC++
+				struct changeMap {
+#else // Causes stack overflow when compiled with VC++, but is standards-compliant?
 				struct changeMap : function<void (Player *)> {
+#endif
 					void operator()(Player *warpee) {
 						if (warpee->getMap() != mapid) {
 							Maps::changeMap(warpee, mapid, 0);
