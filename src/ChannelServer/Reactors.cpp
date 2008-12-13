@@ -110,7 +110,11 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectID() == revent->itemid) {
 				if ((drop->getPos().x >= reactor->getPos().x + revent->ltx && drop->getPos().x <= reactor->getPos().x + revent->rbx) && (drop->getPos().y >= reactor->getPos().y + revent->lty && drop->getPos().y <= reactor->getPos().y + revent->rby)) {
+#ifdef _WIN32 // Temporary provision so it doesn't overflow the stack when compiled in VC++
+					struct Reaction {
+#else // Causes stack overflow when compiled with VC++, but is standards-compliant?
 					struct Reaction : std::tr1::function<void ()> {
+#endif
 						void operator()() {
 							reactor->setState(state, true);
 							drop->removeDrop();
