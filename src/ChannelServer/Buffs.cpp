@@ -289,12 +289,12 @@ Buffs::Buffs() {
 	skillsinfo[2221002].player.push_back(player);
 	skillsinfo[2321002].player.push_back(player);
 	// 5001005 - Dash
-	player.type = 0x80;
-	player.byte = TYPE_1;
+	player.type = 0x30;
+	player.byte = TYPE_8;
 	player.value = SKILL_X;
 	skillsinfo[5001005].player.push_back(player);
-	player.type = 0x1;
-	player.byte = TYPE_2;
+	player.type = 0x0;
+	player.byte = TYPE_8;
 	player.value = SKILL_Y;
 	skillsinfo[5001005].player.push_back(player);
 	// End regular buffs
@@ -540,7 +540,14 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			playerbuffs->setCombo(0, true);
 			break;
 	}
-	SkillsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo, mountid);
+	if (mountid > 0)
+		SkillsPacket::useMount(player, skillid, time, playerskill, mapskill, addedinfo, mountid);
+	else {
+		if (skillid == 5001005) // I honestly wish I didn't have to do this
+			SkillsPacket::useDash(player, time, playerskill, mapskill);
+		else
+			SkillsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
+	}
 	playerbuffs->setBuffInfo(skillid, playerskill);
 	playerbuffs->setBuffMapInfo(skillid, mapskill);
 	playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);

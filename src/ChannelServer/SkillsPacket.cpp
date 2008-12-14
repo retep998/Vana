@@ -55,31 +55,56 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, boo
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo, int32_t mountid) {
+void SkillsPacket::useDash(Player *player, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill) {
+	PacketCreator packet;
+	packet.addShort(SEND_USE_SKILL);
+	packet.addInt64(0);
+	for (int8_t i = 0; i < 8; i++)
+		packet.addByte(pskill.types[i]);
+	packet.addShort(0);
+	for (size_t i = 0; i < pskill.vals.size(); i++) {
+		packet.addShort(pskill.vals[i]);
+		packet.addShort(0);
+		packet.addInt(5001005);
+		packet.addInt(880689251); // No idea, hate pirates
+		packet.addShort(time);
+	}
+	packet.addShort(0);
+	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
+	player->getSession()->send(packet);
+	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+		return;
+	packet = PacketCreator();
+	packet.addShort(SEND_SHOW_OTHERS_SKILL);
+	packet.addInt(player->getId());
+	packet.addInt64(0);
+	for (int8_t i = 0; i < 8; i++)
+		packet.addByte(mskill.types[i]);
+	packet.addShort(0);
+	for (size_t i = 0; i < mskill.vals.size(); i++) {
+		packet.addShort(mskill.vals[i]);
+		packet.addShort(0);
+		packet.addInt(5001005);
+		packet.addInt(880689251); // No idea, hate pirates
+		packet.addShort(time);
+	}
+	packet.addShort(0);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void SkillsPacket::useMount(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo, int32_t mountid) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
 	for (int8_t i = 0; i < 8; i++)
 		packet.addByte(pskill.types[i]);
-	if (mountid > 0) { // Mounts have a slightly different packet
-		packet.addShort(0);
-		packet.addInt(mountid);
-		packet.addInt(skillid);
-		packet.addInt(0); // Server tick value
-		packet.addShort(0);
-		packet.addByte(0); // Number of times you've been buffed total
-	}
-	else {
-		for (size_t i = 0; i < pskill.vals.size(); i++) {
-			packet.addShort(pskill.vals[i]);
-			packet.addInt(skillid);
-			packet.addInt(time);
-		}
-		packet.addShort(0);
-		packet.addShort(addedinfo);
-		packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
-	}
+	packet.addShort(0);
+	packet.addInt(mountid);
+	packet.addInt(skillid);
+	packet.addInt(0); // Server tick value
+	packet.addShort(0);
+	packet.addByte(0); // Number of times you've been buffed total
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
@@ -90,18 +115,43 @@ void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Skill
 		packet.addInt64(0);
 		for (int8_t i = 0; i < 8; i++)
 			packet.addByte(mskill.types[i]);
-		if (mountid > 0) {  // Mounts have a slightly different packet
-			packet.addShort(0);
-			packet.addInt(mountid);
-			packet.addInt(skillid);
-			packet.addInt(0);
-			packet.addShort(0);
-		}
-		else {
-			for (size_t i = 0; i < mskill.vals.size(); i++)
-				packet.addShort(mskill.vals[i]);
-			packet.addShort(0);
-		}
+		packet.addShort(0);
+		packet.addInt(mountid);
+		packet.addInt(skillid);
+		packet.addInt(0);
+		packet.addShort(0);
+		Maps::getMap(player->getMap())->sendPacket(packet, player);
+	}
+}
+
+void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo) {
+	time *= 1000;
+	PacketCreator packet;
+	packet.addShort(SEND_USE_SKILL);
+	packet.addInt64(0);
+	for (int8_t i = 0; i < 8; i++)
+		packet.addByte(pskill.types[i]);
+	for (size_t i = 0; i < pskill.vals.size(); i++) {
+		packet.addShort(pskill.vals[i]);
+		packet.addInt(skillid);
+		packet.addInt(time);
+	}
+	packet.addShort(0);
+	packet.addShort(addedinfo);
+	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
+	player->getSession()->send(packet);
+	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+		return;
+	if (mskill.vals.size() > 0) {
+		packet = PacketCreator();
+		packet.addShort(SEND_SHOW_OTHERS_SKILL);
+		packet.addInt(player->getId());
+		packet.addInt64(0);
+		for (int8_t i = 0; i < 8; i++)
+			packet.addByte(mskill.types[i]);
+		for (size_t i = 0; i < mskill.vals.size(); i++)
+			packet.addShort(mskill.vals[i]);
+		packet.addShort(0);
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
 	}
 }
