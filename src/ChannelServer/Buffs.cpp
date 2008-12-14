@@ -289,11 +289,11 @@ Buffs::Buffs() {
 	skillsinfo[2221002].player.push_back(player);
 	skillsinfo[2321002].player.push_back(player);
 	// 5001005 - Dash
-	player.type = 0x30;
+	player.type = 0x10;
 	player.byte = TYPE_8;
 	player.value = SKILL_X;
 	skillsinfo[5001005].player.push_back(player);
-	player.type = 0x0;
+	player.type = 0x20;
 	player.byte = TYPE_8;
 	player.value = SKILL_Y;
 	skillsinfo[5001005].player.push_back(player);
