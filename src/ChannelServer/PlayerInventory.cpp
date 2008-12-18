@@ -377,3 +377,16 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 		packet.addByte(0);
 	}
 }
+
+int32_t PlayerInventory::doShadowClaw() {
+	for (int16_t s = 1; s <= getMaxSlots(2); s++) {
+		Item *item = getItem(2, s);
+		if (item == 0)
+			continue;
+		if (ISSTAR(item->id) && item->amount >= 200) {
+			Inventory::takeItemSlot(player, 2, s, 200);
+			return item->id;
+		}
+	}
+	return 0;
+}
