@@ -344,7 +344,7 @@ Buffs::Buffs() {
 	player.hasmapval = true;
 	skillsinfo[3101004].player.push_back(player);
 	skillsinfo[3201004].player.push_back(player);
-	// Oak Barrel - 5101007
+	// 5101007 - Oak Barrel 
 	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
@@ -442,19 +442,13 @@ SkillActiveInfo Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t le
 				player->getActiveBuffs()->setCombo(0, false);
 				value = 1;
 				break;
-			case 4121006: { // Shadow Claw
-				for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(2); s++) {
-					Item *item = player->getInventory()->getItem(2, s);
-					if (item == 0)
-						continue;
-					if (ISSTAR(item->id) && item->amount >= 200) {
-						Inventory::takeItemSlot(player, 2, s, 200);
-						value = (item->id % 10000) + 1;
-						break;
-					}
-				}
+			case 4121006: // Shadow Claw
+				value = (player->getInventory()->doShadowClaw() % 10000) + 1;
 				break;
-			}
+			case 5111005: // Transformation
+			case 5121003: // Super Transformation
+				value = getValue(val, skillid, level) + (player->getGender() * 100); // Females are +100
+				break;
 			default:
 				value = getValue(val, skillid, level);
 				break;
