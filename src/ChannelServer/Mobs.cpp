@@ -422,12 +422,12 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 			packet.skipBytes(4);
 			break;
 	}
-	MPEaterInfo *eater = &MPEaterInfo();
-	eater->id = (player->getJob() / 10) * 100000;
-	eater->level = player->getSkills()->getSkillLevel(eater->id);
-	if (eater->level > 0) {
-		eater->prop = Skills::skills[eater->id][eater->level].prop;
-		eater->x = Skills::skills[eater->id][eater->level].x;
+	MPEaterInfo eater;
+	eater.id = (player->getJob() / 10) * 100000;
+	eater.level = player->getSkills()->getSkillLevel(eater.id);
+	if (eater.level > 0) {
+		eater.prop = Skills::skills[eater.id][eater.level].prop;
+		eater.x = Skills::skills[eater.id][eater.level].x;
 	}
 	packet.skipBytes(2); // Display, direction/animation
 	packet.skipBytes(2); // Weapon subclass, casting speed
@@ -436,7 +436,7 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 		// Prevent this from incurring cost since Heal is always a used skill but only an attack in certain circumstances
 		Skills::useAttackSkill(player, skillid);
 	int32_t useless = 0;
-	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, eater);
+	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, &eater);
 }
 
 void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
