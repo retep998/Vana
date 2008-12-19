@@ -62,7 +62,11 @@ void MapleSession::disconnect() {
 }
 
 void MapleSession::handle_stop() {
-	m_socket.close();
+	boost::system::error_code ec;
+	m_socket.close(ec);
+	if (ec) {
+		std::cout << "FAILURE TO CLOSE SESSION: " << ec.message() << std::endl;
+	}
 }
 
 void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
