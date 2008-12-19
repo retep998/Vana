@@ -111,14 +111,15 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
+		case 1301007: // Hyper Body
 		case 2101001: // Meditation
 		case 2201001: // Meditation
+		case 2301004: // Bless
+		case 2311003: // Holy Symbol
 		case 3121002: // Sharp Eyes
 		case 3221002: // Sharp Eyes
 		case 4101004: // Haste
 		case 4201003: // Haste
-		case 2301004: // Bless
-		case 2311003: // HS
 		case 1121000: // Maple Warrior
 		case 1221000: //
 		case 1321000: //
@@ -132,15 +133,16 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case 5121000: //
 		case 5221000: // End of Maple Warrior
 		case 9101001: // GM Haste
-		case 9101002: // GM HS
+		case 9101002: // GM Holy Symbol
 		case 9101003: // GM Bless
-		{
+		case 9101008: { // GM Hyper Body
 			uint8_t players = packet.getByte();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.getInt();
-				if (Player *target = Players::Instance()->getPlayer(playerid)) {
-					SkillsPacket::showSkill(player, skillid, level, true, true);
-					SkillsPacket::showSkill(player, skillid, level, true);
+				Player *target = Players::Instance()->getPlayer(playerid);
+				if (target != 0 && target != player) { // ???
+					SkillsPacket::showSkill(target, skillid, level, true, true);
+					SkillsPacket::showSkill(target, skillid, level, true);
 					Buffs::Instance()->addBuff(target, skillid, level, addedinfo);
 				}
 			}
