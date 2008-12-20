@@ -645,10 +645,13 @@ int LuaExports::spawnMob(lua_State *luaVm) {
 }
 
 int LuaExports::spawnMobPos(lua_State *luaVm) {
-	int32_t mobid = lua_tointeger(luaVm, -3);
-	int16_t x = lua_tointeger(luaVm, -2);
-	int16_t y = lua_tointeger(luaVm, -1);
-	Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobid, Pos(x, y));
+	int32_t mobid = lua_tointeger(luaVm, 1);
+	int16_t x = lua_tointeger(luaVm, 2);
+	int16_t y = lua_tointeger(luaVm, 3);
+	int16_t fh = 0;
+	if (lua_isnumber(luaVm, 4))
+		fh = lua_tointeger(luaVm, 4);
+	Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobid, Pos(x, y), -1, fh);
 	return 1;
 }
 
