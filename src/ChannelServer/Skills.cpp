@@ -186,7 +186,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		// hacking
 		return;
 	}
-	Skills::applySkillCosts(player, skillid, level);
+	applySkillCosts(player, skillid, level);
 	SkillsPacket::showSkill(player, skillid, level);
 	if (Buffs::Instance()->addBuff(player, skillid, level, addedinfo))
 		return;
@@ -195,14 +195,14 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 }
 
 void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp) {
-	int16_t cooltime = Skills::skills[skillid][level].cooltime;
+	int16_t cooltime = skills[skillid][level].cooltime;
 	int16_t mpuse = skills[skillid][level].mp;
 	int16_t hpuse = skills[skillid][level].hp;
 	int16_t moneycon = skills[skillid][level].moneycon;
 	int32_t item = skills[skillid][level].item;
 	if (mpuse > 0) {
 		if (player->getActiveBuffs()->getActiveSkillLevel(3121008) > 0) { // Reduced MP usage for Concentration
-			uint16_t mprate = Skills::skills[3121008][player->getActiveBuffs()->getActiveSkillLevel(3121008)].x;
+			int16_t mprate = skills[3121008][player->getActiveBuffs()->getActiveSkillLevel(3121008)].x;
 			int16_t mploss = (mpuse * mprate) / 100;
 			player->modifyMP(-mploss, true);
 		}
@@ -226,7 +226,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 	if (item > 0)
 		Inventory::takeItem(player, item, skills[skillid][level].itemcount);
 	if (cooltime > 0)
-		Skills::startCooldown(player, skillid, cooltime);
+		startCooldown(player, skillid, cooltime);
 	if (moneycon > 0) {
 		int16_t mesos_min = moneycon - (80 + level * 5);
 		int16_t mesos_max = moneycon + (80 + level * 5);
@@ -246,7 +246,7 @@ void Skills::useAttackSkill(Player *player, int32_t skillid) {
 	uint8_t level = player->getSkills()->getSkillLevel(skillid);
 	if (skills.find(skillid) == skills.end() || level == 0)
 		return;
-	Skills::applySkillCosts(player, skillid, level, true);
+	applySkillCosts(player, skillid, level, true);
 }
 
 void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display) {
@@ -255,7 +255,7 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, 
 		level = player->getSkills()->getSkillLevel(skillid);
 		if (skills.find(skillid) == skills.end() || level == 0)
 			return;
-		Skills::applySkillCosts(player, skillid, level);
+		applySkillCosts(player, skillid, level);
 	}
 	uint16_t hits = 1;
 	if (skills[skillid][level].bulletcon > 0)
@@ -286,7 +286,7 @@ void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
 }
 
 void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime) {
-	if (Skills::isCooling(player, skillid)) {
+	if (isCooling(player, skillid)) {
 		// Hacking
 		return;
 	}
