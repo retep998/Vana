@@ -518,6 +518,8 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 		case 2049100: // Chaos Scroll
 			if (equip->slots > 0) {
 				succeed = 0;
+				scrolled = true;
+				wscroll ? takeItem(player, 2340000, 1) : equip->slots--;
 				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
 					int8_t n = -1; // Default - Decrease stats
 					if ((int16_t) Randomizer::Instance()->randShort(99) < 50) // Increase
@@ -553,11 +555,9 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 						equip->ihp += Randomizer::Instance()->randShort(5) * n;
 					if (equip->imp > 0)
 						equip->imp += Randomizer::Instance()->randShort(5) * n;
-					equip->slots--;
 					equip->scrolls++;
 					succeed = 1;
 				}
-				scrolled = true;
 			}
 			break;
 		case 2040727: // Shoe for Spikes 10%
@@ -565,8 +565,8 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			break;
 		default: // Most scrolls
 			if (equip->slots > 0) {
-				if (wscroll)
-					takeItem(player, 2340000, 1);
+				scrolled = true;
+				wscroll ? takeItem(player, 2340000, 1) : equip->slots--;
 				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
 					succeed = 1;
 					equip->istr += iteminfo.cons.istr;
@@ -585,16 +585,12 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 					equip->ijump += iteminfo.cons.ijump;
 					equip->ispeed += iteminfo.cons.ispeed;
 					equip->scrolls++;
-					equip->slots--;
 				}
 				else {
 					succeed = 0;
 					if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
 						cursed = true;
-					else if (!wscroll)
-						equip->slots--;
 				}
-				scrolled = true;
 			}
 			break;
 	}
