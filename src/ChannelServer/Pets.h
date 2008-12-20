@@ -58,22 +58,17 @@ namespace Pets {
 
 class Pet : public MovableLife {
 public:
-	Pet(Player *player) : player(player), level(0), closeness(0), fullness(0) {}
 	Pet(Player *player, Item *item);
+	Pet(Player *player, Item *item, int8_t index, string name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot);
 
 	void setIndex(int8_t index) { this->index = index; }
-	void setLevel(int8_t level) { this->level = level; }
+	void setName(const string &name) { this->name = name; }
+	void setSummoned(bool summoned) { this->summoned = summoned; }
 	void setInventorySlot(int8_t slot) { this->inventorySlot = slot; }
-	void setCloseness(int16_t closeness) { this->closeness = closeness; }
-	void setFullness(int8_t fullness) { this->fullness = fullness; }
 
+	void levelUp();
 	void modifyFullness(int8_t offset);
 	void addCloseness(int16_t closeness);
-
-	void setId(int32_t id) { this->id = id; }
-	void setType(int32_t type) { this->type = type; }
-	void setSummoned(bool summoned) { this->summoned = summoned; }
-	void setName(const string &name) { this->name = name; }
 
 	int8_t getIndex() const { return this->index; }
 	int8_t getLevel() const { return this->level; }
@@ -90,16 +85,16 @@ public:
 
 	void startTimer();
 private:
-	int8_t index;
-	int8_t level;
-	int8_t fullness;
-	int8_t inventorySlot;
-	int16_t closeness;
+	Player *player;
 	int32_t id;
 	int32_t type;
+	int8_t index;
 	string name;
+	int8_t level;
+	int8_t fullness;
+	int16_t closeness;
+	int8_t inventorySlot;
 	bool summoned;
-	Player *player;
 };
 
 #endif

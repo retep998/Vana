@@ -258,16 +258,16 @@ void PlayerInventory::load() {
 		res[i][22].to_string(item->name);
 		addItem((uint8_t) res[i][0], res[i][1], item);
 		if (item->petid != 0) {
-			Pet *pet = new Pet(player);
-			pet->setId(item->petid);
-			pet->setType(item->id);
-			pet->setIndex((int8_t) res[i][23]);
-			pet->setName((string) res[i][24]);
-			pet->setLevel((uint8_t) res[i][25]);
-			pet->setCloseness((int16_t) res[i][26]);
-			pet->setFullness((uint8_t) res[i][27]);
-			pet->setInventorySlot((uint8_t)res[i][1]);
-			pet->setSummoned(false);
+			Pet *pet = new Pet(
+				player,
+				item, // Item - Gives id and type to pet
+				(int8_t) res[i][23], // Index
+				(string) res[i][24], // Name
+				(uint8_t) res[i][25], // Level
+				(int16_t) res[i][26], // Closeness
+				(uint8_t) res[i][27], // Fullness
+				(uint8_t) res[i][1] // Inventory Slot
+			);
 			player->getPets()->addPet(pet);
 		}
 	}
