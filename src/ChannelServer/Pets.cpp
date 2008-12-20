@@ -43,8 +43,7 @@ unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > Pets::petsInter
 int16_t Pets::exps[29] = {1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000};
 
 /* Pet class */
-Pet::Pet(Player *player, Item *item) : fullness(100), closeness(0), level(1), summoned(false), index(-1), player(player) {
-	this->type = item->id;
+Pet::Pet(Player *player, Item *item) : player(player), type(item->id), level(1), closeness(0), fullness(100), summoned(false), index(-1) {
 	this->name = Pets::petsInfo[type].name;
 
 	mysqlpp::Query query = Database::getCharDB().query();
@@ -54,14 +53,30 @@ Pet::Pet(Player *player, Item *item) : fullness(100), closeness(0), level(1), su
 	item->petid = this->id;
 }
 
+Pet::Pet(Player *player, Item *item, int8_t index, string name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot) :
+	player(player),
+	id(item->petid),
+	type(item->id),
+	index(index),
+	name(name),
+	level(level),
+	closeness(closeness),
+	fullness(fullness),
+	inventorySlot(inventorySlot),
+	summoned(false) {}
+
+void Pet::levelUp() {
+	level += 1;
+	PetsPacket::levelUp(player, this);
+}
+
 void Pet::addCloseness(int16_t closeness) {
 	this->closeness += closeness;
 	if (this->closeness > 30000)
 		this->closeness = 30000;
 
-	if (this->closeness >= Pets::exps[level - 1]) {
-		setLevel(level + 1);
-		PetsPacket::levelUp(player, this);
+	while (this->closeness >= Pets::exps[level - 1] && level < 30) {
+		levelUp();
 	}
 	PetsPacket::updatePet(player, this);
 }
