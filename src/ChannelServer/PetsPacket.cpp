@@ -61,10 +61,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 		packet.addByte(pet->getStance());
 		packet.addInt(pet->getFH());
 	}
-	if (onlyPlayer)
-		player->getSession()->send(packet);
-	else
-		Maps::getMap(player->getMap())->sendPacket(packet);
+	onlyPlayer ? player->getSession()->send(packet) : Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool success) {
@@ -72,19 +69,10 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool 
 	packet.addShort(SEND_PET_ANIMATION);
 	packet.addInt(player->getId());
 	packet.addByte(pet->getIndex()); // Index for multiple pets
-	if (animation == 1 && success) {
-		packet.addByte(1);
-	}
-	else {
-		packet.addByte(0);
-	}
+	packet.addByte(animation == 1 && success);
 	packet.addByte(animation);
-	if (animation != 1) {
-		packet.addShort(success);
-	}
-	else {
-		packet.addByte(0);
-	}
+	animation == 1 ? packet.addByte(0) : packet.addShort(success);
+
 	player->getSession()->send(packet);
 }
 

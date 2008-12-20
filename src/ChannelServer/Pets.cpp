@@ -54,19 +54,36 @@ Pet::Pet(Player *player, Item *item) : fullness(100), closeness(0), level(1), su
 	item->petid = this->id;
 }
 
-void Pet::reduceFullness() {
-	setFullness(getFullness() - 1);
+void Pet::addCloseness(int16_t closeness) {
+	this->closeness += closeness;
+	if (this->closeness > 30000)
+		this->closeness = 30000;
+
+	if (this->closeness >= Pets::exps[level - 1]) {
+		setLevel(level + 1);
+		PetsPacket::levelUp(player, this);
+	}
+	PetsPacket::updatePet(player, this);
+}
+
+void Pet::modifyFullness(int8_t offset) {
+	this->fullness += offset;
+
+	if (this->fullness > 100)
+		this->fullness = 100;
+	else if (this->fullness < 0)
+		this->fullness = 0;
+
 	PetsPacket::updatePet(player, this);
 }
 
 void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
 	clock_t length = (6 - Pets::petsInfo[getType()].hunger)* 60 * CLOCKS_PER_SEC; // TODO: Better formula
-	new Timer::Timer(bind(&Pet::reduceFullness, this), id, player->getTimers(), 0, length);
+	new Timer::Timer(bind(&Pet::modifyFullness, this, -1), id, player->getTimers(), 0, length);
 }
 
 /* Pets namespace */
-
 void Pets::movePet(Player *player, PacketReader &packet) {
 	int32_t petid = packet.getInt();
 	Pet *pet = player->getPets()->getPet(petid);
@@ -100,7 +117,7 @@ void Pets::feedPet(Player *player, PacketReader &packet) {
 	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		bool success = false;
 		if (pet->getFullness() < 100) {
-			pet->setFullness(pet->getFullness() + 30);
+			pet->modifyFullness(30);
 			success = true;
 		}
 		Inventory::takeItem(player, item, 1);
@@ -117,10 +134,9 @@ void Pets::showAnimation(Player *player, PacketReader &packet) {
 	packet.skipBytes(5);
 	int8_t act = packet.getByte();
 	Pet *pet = player->getPets()->getPet(petid);
-	bool success = false;
-	if (Randomizer::Instance()->randInt(100) < petsInteractInfo[pet->getType()][act].prob) {
-		success = true;
-		addCloseness(player, pet, petsInteractInfo[pet->getType()][act].increase);
+	bool success = (Randomizer::Instance()->randInt(100) < petsInteractInfo[pet->getType()][act].prob);
+	if (success) {
+		pet->addCloseness(petsInteractInfo[pet->getType()][act].increase);
 	}
 	PetsPacket::showAnimation(player, pet, act, success);
 }
@@ -131,20 +147,6 @@ void Pets::changeName(Player *player, const string &name) {
 		PetsPacket::changeName(player, pet);
 		PetsPacket::updatePet(player, pet);
 	}
-}
-
-void Pets::addCloseness(Player *player, Pet *pet, int16_t closeness) {
-	if (pet->getLevel() < 30) {
-		if (pet->getCloseness() + closeness < 30000)
-			pet->setCloseness(pet->getCloseness() + closeness);
-		else
-			pet->setCloseness(30000);
-		if (pet->getCloseness() >= exps[pet->getLevel() - 1]) {
-			pet->setLevel(pet->getLevel() + 1);
-			PetsPacket::levelUp(player, pet);
-		}
-	}
-	PetsPacket::updatePet(player, pet);
 }
 
 void Pets::lootItem(Player *player, PacketReader &packet) {
