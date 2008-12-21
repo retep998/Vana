@@ -24,27 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "SendHeader.h"
 
-void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_t act) {
-	PacketCreator packet;
-	packet.addShort(SEND_PET_SHOW_CHAT);
-	packet.addInt(player->getId());
-	packet.addByte(pet->getIndex());
-	packet.addByte(0);
-	packet.addByte(act);
-	packet.addString(message);
-	packet.addByte(0);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
-}
-
-void PetsPacket::movePet(Player *player, Pet *pet, unsigned char *buf, int32_t buflen) {
-	PacketCreator packet;
-	packet.addShort(SEND_PET_SHOW_MOVING);
-	packet.addInt(player->getId());
-	packet.addByte(pet->getIndex());
-	packet.addBuffer(buf, buflen);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
-}
-
 void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_SUMMONED);
@@ -62,6 +41,27 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 		packet.addInt(pet->getFH());
 	}
 	onlyPlayer ? player->getSession()->send(packet) : Maps::getMap(player->getMap())->sendPacket(packet);
+}
+
+void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_t act) {
+	PacketCreator packet;
+	packet.addShort(SEND_PET_SHOW_CHAT);
+	packet.addInt(player->getId());
+	packet.addByte(pet->getIndex());
+	packet.addByte(0);
+	packet.addByte(act);
+	packet.addString(message);
+	packet.addByte(0);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t buflen) {
+	PacketCreator packet;
+	packet.addShort(SEND_PET_SHOW_MOVING);
+	packet.addInt(player->getId());
+	packet.addByte(pet->getIndex());
+	packet.addBuffer(buf, buflen);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool success) {
