@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
-#include "Pets.h"
 #include "Player.h"
 #include "SendHeader.h"
 
@@ -74,12 +73,14 @@ void DropsPacket::takeNote(Player *player, int32_t id, bool ismesos, int16_t amo
 	player->getSession()->send(packet);
 }
 
-void DropsPacket::takeDrop(Player *player, Drop *drop) {
+void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
 	PacketCreator packet;
 	packet.addShort(SEND_TAKE_DROP);
-	packet.addByte(2);
+	packet.addByte(pet_index != -1 ? 5 : 2);
 	packet.addInt(drop->getID());
 	packet.addInt(player->getId());
+	if (pet_index != -1)
+		packet.addByte(pet_index);
 	if (!drop->isQuest())
 		Maps::getMap(drop->getMap())->sendPacket(packet);
 	else
@@ -108,17 +109,4 @@ void DropsPacket::explodeDrop(Drop *drop) {
 	packet.addInt(drop->getID());
 	packet.addShort(655);
 	Maps::getMap(drop->getMap())->sendPacket(packet);
-}
-
-void DropsPacket::takeDropPet(Player *player, Drop *drop, Pet *pet) {
-	PacketCreator packet;
-	packet.addShort(SEND_TAKE_DROP);
-	packet.addByte(5);
-	packet.addInt(drop->getID());
-	packet.addInt(player->getId());
-	packet.addByte(pet->getIndex());
-	if (!drop->isQuest())
-		Maps::getMap(drop->getMap())->sendPacket(packet);
-	else
-		player->getSession()->send(packet);
 }

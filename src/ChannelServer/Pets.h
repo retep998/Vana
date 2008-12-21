@@ -49,7 +49,6 @@ namespace Pets {
 	void chat(Player *player, PacketReader &packet);
 	void feedPet(Player *player, PacketReader &packet);
 	void movePet(Player *player, PacketReader &packet);
-	void lootItem(Player *player, PacketReader &packet);
 	void summonPet(Player *player, PacketReader &packet);
 	void showAnimation(Player *player, PacketReader &packet);
 	void summon(Player *player, Pet *pet, bool master);
@@ -62,13 +61,12 @@ public:
 	Pet(Player *player, Item *item, int8_t index, string name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot);
 
 	void setIndex(int8_t index) { this->index = index; }
-	void setName(const string &name) { this->name = name; }
 	void setSummoned(bool summoned) { this->summoned = summoned; }
 	void setInventorySlot(int8_t slot) { this->inventorySlot = slot; }
 
-	void levelUp();
-	void modifyFullness(int8_t offset);
-	void addCloseness(int16_t closeness);
+	void setName(const string &name);
+	void modifyFullness(int8_t offset, bool sendPacket = true);
+	void addCloseness(int16_t amount);
 
 	int8_t getIndex() const { return this->index; }
 	int8_t getLevel() const { return this->level; }
@@ -95,6 +93,8 @@ private:
 	int16_t closeness;
 	int8_t inventorySlot;
 	bool summoned;
+
+	void levelUp();
 };
 
 #endif

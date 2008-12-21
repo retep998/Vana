@@ -97,7 +97,8 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_HEAL_PLAYER: PlayerHandler::handleHeal(this, packet); break;
 		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet); break;
-		case RECV_LOOT_ITEM: Drops::lootItem(this, packet); break;
+		case RECV_LOOT_ITEM: Drops::player_loot(this, packet); break;
+		case RECV_PET_LOOT: Drops::pet_loot(this, packet); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
@@ -107,7 +108,6 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_PET_CHAT: Pets::chat(this, packet); break;
 		case RECV_PET_COMMAND: Pets::showAnimation(this, packet); break;
 		case RECV_PET_FEED: Pets::feedPet(this, packet); break;
-		case RECV_PET_LOOT: Pets::lootItem(this, packet); break;
 		case RECV_PET_MOVE: Pets::movePet(this, packet); break;
 		case RECV_PET_SUMMON: Pets::summonPet(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;

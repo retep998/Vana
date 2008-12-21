@@ -28,11 +28,10 @@ struct Pos;
 namespace DropsPacket {
 	void showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, Pos origin);
 	void takeNote(Player *player, int32_t id, bool ismesos, int16_t amount);
-	void takeDrop(Player *player, Drop *drop);
+	void takeDrop(Player *player, Drop *drop, int8_t pet_index = -1);
 	void dontTake(Player *player);
 	void removeDrop(Drop *drop);
 	void explodeDrop(Drop *drop);
-	void takeDropPet(Player *player, Drop *drop, Pet *pet);
 };
 
 #endif

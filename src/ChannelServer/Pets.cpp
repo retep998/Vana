@@ -43,9 +43,7 @@ unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > Pets::petsInter
 int16_t Pets::exps[29] = {1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000};
 
 /* Pet class */
-Pet::Pet(Player *player, Item *item) : player(player), type(item->id), level(1), closeness(0), fullness(100), summoned(false), index(-1) {
-	this->name = Pets::petsInfo[type].name;
-
+Pet::Pet(Player *player, Item *item) : player(player), type(item->id), index(-1), name(Pets::petsInfo[type].name), level(1), closeness(0), fullness(100), summoned(false) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
@@ -70,8 +68,14 @@ void Pet::levelUp() {
 	PetsPacket::levelUp(player, this);
 }
 
-void Pet::addCloseness(int16_t closeness) {
-	this->closeness += closeness;
+void Pet::setName(const string &name) {
+	this->name = name;
+	PetsPacket::changeName(player, this);
+	PetsPacket::updatePet(player, this);
+}
+
+void Pet::addCloseness(int16_t amount) {
+	this->closeness += amount;
 	if (this->closeness > 30000)
 		this->closeness = 30000;
 
@@ -81,7 +85,7 @@ void Pet::addCloseness(int16_t closeness) {
 	PetsPacket::updatePet(player, this);
 }
 
-void Pet::modifyFullness(int8_t offset) {
+void Pet::modifyFullness(int8_t offset, bool sendPacket) {
 	this->fullness += offset;
 
 	if (this->fullness > 100)
@@ -89,13 +93,14 @@ void Pet::modifyFullness(int8_t offset) {
 	else if (this->fullness < 0)
 		this->fullness = 0;
 
-	PetsPacket::updatePet(player, this);
+	if (sendPacket)
+		PetsPacket::updatePet(player, this);
 }
 
 void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
-	clock_t length = (6 - Pets::petsInfo[getType()].hunger)* 60 * CLOCKS_PER_SEC; // TODO: Better formula
-	new Timer::Timer(bind(&Pet::modifyFullness, this, -1), id, player->getTimers(), 0, length);
+	clock_t length = (6 - Pets::petsInfo[getType()].hunger) * 60 * CLOCKS_PER_SEC; // TODO: Better formula
+	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, player->getTimers(), 0, length);
 }
 
 /* Pets namespace */
@@ -130,14 +135,15 @@ void Pets::feedPet(Player *player, PacketReader &packet) {
 	int16_t slot = packet.getShort();
 	int32_t item = packet.getInt();
 	if (Pet *pet = player->getPets()->getSummoned(0)) {
-		bool success = false;
-		if (pet->getFullness() < 100) {
-			pet->modifyFullness(30);
-			success = true;
-		}
 		Inventory::takeItem(player, item, 1);
+
+		bool success = (pet->getFullness() < 100);
 		PetsPacket::showAnimation(player, pet, 1, success);
-		PetsPacket::updatePet(player, pet);
+		if (success) {
+			pet->modifyFullness(30, false);
+			if (Randomizer::Instance()->randInt(99) < 60)
+				pet->addCloseness(1);
+		}
 	}
 	else {
 		InventoryPacket::blankUpdate(player);
@@ -159,56 +165,7 @@ void Pets::showAnimation(Player *player, PacketReader &packet) {
 void Pets::changeName(Player *player, const string &name) {
 	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		pet->setName(name);
-		PetsPacket::changeName(player, pet);
-		PetsPacket::updatePet(player, pet);
 	}
-}
-
-void Pets::lootItem(Player *player, PacketReader &packet) {
-	int32_t petid = packet.getInt();
-	packet.skipBytes(13);
-	int32_t dropid = packet.getInt();
-	Drop *drop = Maps::getMap(player->getMap())->getDrop(dropid);
-	if (drop == 0) {
-		DropsPacket::dontTake(player);
-		return;
-	}
-	if (drop->isQuest()) {
-		int32_t request = 0;
-		for (size_t i = 0; i < Quests::quests[drop->getQuest()].rewards.size(); i++) {
-			if (Quests::quests[drop->getQuest()].rewards[i].id == drop->getObjectID()) {
-				request = Quests::quests[drop->getQuest()].rewards[i].count;
-			}
-		}
-		if (player->getInventory()->getItemAmount(drop->getObjectID()) > request || !player->getQuests()->isQuestActive(drop->getQuest())) {
-			DropsPacket::takeNote(player, 0, false, 0);
-			DropsPacket::dontTake(player);
-			return;
-		}
-	}
-	if (drop->isMesos()) {
-		bool success = player->getInventory()->modifyMesos(drop->getObjectID(), true);
-		if (success)
-			DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
-	}
-	else {
-		Item *item = new Item(drop->getItem());
-		int16_t dropAmount = drop->getAmount();
-		int16_t amount = Inventory::addItem(player, item, true);
-		if (amount > 0) {
-			if (dropAmount - amount > 0) {
-				DropsPacket::takeNote(player, drop->getObjectID(), false, dropAmount - amount);
-				drop->setItemAmount(amount);
-			}
-			DropsPacket::takeNote(player, 0, 0, 0);
-			DropsPacket::dontTake(player);
-			return;
-		}
-		DropsPacket::takeNote(player, drop->getObjectID(), false, drop->getAmount());
-	}
-	Reactors::checkLoot(drop);
-	Maps::getMap(player->getMap())->removeDrop(drop->getID());
-	DropsPacket::takeDropPet(player, drop, player->getPets()->getPet(petid));
 }
 
 void Pets::showPets(Player *player) {
