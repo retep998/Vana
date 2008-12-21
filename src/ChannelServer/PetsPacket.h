@@ -27,9 +27,9 @@ class Player;
 class Pet;
 
 namespace PetsPacket {
-	void showChat(Player *player, Pet *pet, const string &message, int8_t act);
-	void movePet(Player *player, Pet *pet, unsigned char *buf, int32_t buflen);
 	void petSummoned(Player *player, Pet *pet, bool kick = false, bool onlyPlayer = false);
+	void showChat(Player *player, Pet *pet, const string &message, int8_t act);
+	void showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t buflen);
 	void showAnimation(Player *player, Pet *pet, int8_t animation, bool success = false);
 	void updatePet(Player *player, Pet *pet);
 	void levelUp(Player *player, Pet *pet);

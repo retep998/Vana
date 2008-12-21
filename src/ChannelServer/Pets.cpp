@@ -110,7 +110,7 @@ void Pets::movePet(Player *player, PacketReader &packet) {
 	packet.skipBytes(8);
 	Movement::parseMovement(pet, packet);
 	packet.reset(10);
-	PetsPacket::movePet(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
+	PetsPacket::showMovement(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
 }
 
 void Pets::chat(Player *player, PacketReader &packet) {
@@ -185,80 +185,66 @@ void Pets::showPets(Player *player) {
 }
 
 void Pets::summon(Player *player, Pet *pet, bool master) {
-	if (player->getSkills()->getSkillLevel(8) == 1) {
-		if (pet->isSummoned()) {
-			player->getPets()->setSummoned(0, pet->getIndex());
-			for (int8_t i = (pet->getIndex() + 1); i < 3; i++) {
-				if (Pet *move = player->getPets()->getSummoned(i)) {
-					move->setIndex(i - 1);
-					player->getPets()->setSummoned(move->getId(), i - 1);
-					player->getPets()->setSummoned(0, i);
-					if (i - 1 == 0) {
-						pet->startTimer();
-					}
-				}
-			}
-			if (pet->getIndex() == 0) {
-				Timer::Id id(Timer::Types::PetTimer, pet->getId(), 0);
-				player->getTimers()->removeTimer(id);
-			}
-			pet->setSummoned(false);
-			PetsPacket::petSummoned(player, pet);
-			pet->setIndex(-1);
-		}
-		else {
-			if (master) {
-				for (int8_t k = 2; k > 0; k--) {
-					if (player->getPets()->getSummoned(k - 1) && !player->getPets()->getSummoned(k)) {
-						Pet *move = player->getPets()->getSummoned(k - 1);
-						player->getPets()->setSummoned(0, k - 1);
-						player->getPets()->setSummoned(move->getId(), k);
-						move->setIndex(k);
-					}
-				}
-				pet->setIndex(0);
-				pet->setSummoned(true);
-				player->getPets()->setSummoned(pet->getId(), 0);
-				PetsPacket::petSummoned(player, pet);
-			}
-			else {
-				for (int8_t i = 0; i < 3; i++) {
-					if (!player->getPets()->getSummoned(i)) {
-						player->getPets()->setSummoned(pet->getId(), i);
-						pet->setIndex(i);
-						pet->setSummoned(true);
-						PetsPacket::petSummoned(player, pet);
-						pet->startTimer();
-						break;
-					}
-				}
-			}
-		}
-	}
-	else {
-		if (pet->isSummoned()) {
-			player->getPets()->setSummoned(0, 0);
-			pet->setSummoned(false);
-			PetsPacket::petSummoned(player, pet);
-			pet->setIndex(-1);
-			Timer::Id id(Timer::Types::PetTimer, pet->getId(), 0);
+	if (pet->isSummoned()) { // Removing a pet
+		player->getPets()->setSummoned(0, pet->getIndex());
+		if (pet->getIndex() == 0) {
+			Timer::Id id(Timer::Types::PetTimer, pet->getIndex(), 0);
 			player->getTimers()->removeTimer(id);
 		}
-		else {
+		for (int8_t i = (pet->getIndex() + 1); i < 3; i++) {
+			if (Pet *move = player->getPets()->getSummoned(i)) {
+				move->setIndex(i - 1);
+				player->getPets()->setSummoned(move->getId(), i - 1);
+				player->getPets()->setSummoned(0, i);
+				if (i - 1 == 0) {
+					pet->startTimer();
+				}
+			}
+		}
+		pet->setIndex(-1);
+		pet->setSummoned(false);
+		PetsPacket::petSummoned(player, pet);
+	}
+	else { // Summoning a Pet
+		bool multipet = player->getSkills()->getSkillLevel(8) > 0;
+		if (master || !multipet) {
+			for (int8_t i = 2; i > 0; i--) {
+				if (player->getPets()->getSummoned(i - 1) && !player->getPets()->getSummoned(i)) {
+					Pet *move = player->getPets()->getSummoned(i - 1);
+					player->getPets()->setSummoned(0, i - 1);
+					player->getPets()->setSummoned(move->getId(), i);
+					move->setIndex(i);
+				}
+			}
 			pet->setIndex(0);
 			pet->setSummoned(true);
-			if (Pet *kicked = player->getPets()->getSummoned(0)) {
+
+			Pet *kicked = player->getPets()->getSummoned(0);
+			if (!multipet && kicked != 0) {
 				kicked->setIndex(-1);
 				kicked->setSummoned(false);
-				Timer::Id id(Timer::Types::PetTimer, kicked->getId(), 0);
+				Timer::Id id(Timer::Types::PetTimer, kicked->getIndex(), 0);
 				player->getTimers()->removeTimer(id);
 				PetsPacket::petSummoned(player, pet, true);
 			}
 			else
 				PetsPacket::petSummoned(player, pet);
+
 			player->getPets()->setSummoned(pet->getId(), 0);
 			pet->startTimer();
- 		}
+		}
+		else {
+			for (int8_t i = 0; i < 3; i++) {
+				if (!player->getPets()->getSummoned(i)) {
+					player->getPets()->setSummoned(pet->getId(), i);
+					pet->setIndex(i);
+					pet->setSummoned(true);
+					PetsPacket::petSummoned(player, pet);
+					pet->startTimer();
+					break;
+				}
+			}
+		}
 	}
 	PetsPacket::blankUpdate(player);
 }
