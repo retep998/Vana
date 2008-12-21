@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "Quests.h"
 #include "Randomizer.h"
+#include "Pets.h"
 #include "Pos.h"
 #include "Skills.h"
 #include "PacketReader.h"
@@ -71,9 +72,12 @@ void Drop::showDrop(Player *player) {
 	DropsPacket::showDrop(player, this, 2, false, Pos());
 }
 
-void Drop::takeDrop(Player *player) {
+void Drop::takeDrop(Player *player, int32_t petid) {
 	Maps::getMap(mapid)->removeDrop(this->id);
-	DropsPacket::takeDrop(player, this);
+	if (petid == 0)
+		DropsPacket::takeDrop(player, this);
+	else
+		DropsPacket::takeDrop(player, this, player->getPets()->getPet(petid)->getIndex());
 	delete this;
 }
 
@@ -157,18 +161,33 @@ void Drops::dropMesos(Player *player, PacketReader &packet) {
 	drop->doDrop(player->getPos());
 }
 
-void Drops::lootItem(Player *player, PacketReader &packet) {
+void Drops::player_loot(Player *player, PacketReader &packet) {
 	packet.skipBytes(9);
-	int32_t itemid = packet.getInt();
-	Drop *drop = Maps::getMap(player->getMap())->getDrop(itemid);
+	int32_t dropid = packet.getInt();
+
+	lootItem(player, dropid);
+}
+
+void Drops::pet_loot(Player *player, PacketReader &packet) {
+	int32_t petid = packet.getInt();
+	packet.skipBytes(13);
+	int32_t dropid = packet.getInt();
+
+	lootItem(player, dropid, petid);
+}
+
+void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
+	Drop *drop = Maps::getMap(player->getMap())->getDrop(dropid);
+
 	if (drop == 0) {
 		DropsPacket::dontTake(player);
 		return;
 	}
-	if (drop->getPos() - player->getPos() > 300) {
+	else if (drop->getPos() - player->getPos() > 300) {
 		if (player->addWarning())
 			return;
 	}
+
 	if (drop->isQuest()) {
 		int32_t request = 0;
 		for (size_t i = 0; i < Quests::quests[drop->getQuest()].rewards.size(); i++) {
@@ -210,5 +229,5 @@ void Drops::lootItem(Player *player, PacketReader &packet) {
 		DropsPacket::takeNote(player, drop->getObjectID(), false, drop->getAmount());
 	}
 	Reactors::checkLoot(drop);
-	drop->takeDrop(player);
+	drop->takeDrop(player, petid);
 }
