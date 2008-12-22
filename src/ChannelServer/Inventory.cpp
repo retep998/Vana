@@ -488,9 +488,9 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 		return;
 
 	int32_t itemid = item->id;
-	bool scrolled = false;
-	bool succeed = false;
+	int8_t succeed = -1;
 	bool cursed = false;
+	bool scrolled = false;
 	if (!ItemDataProvider::Instance()->itemExists(itemid))
 		return;
 
@@ -501,25 +501,27 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 		case 2049002: // Clean Slate 5%
 		case 2049003: // Clean Slate 20%
 			if ((ItemDataProvider::Instance()->getEquipInfo(equip->id).slots - equip->scrolls) > equip->slots) {
-				scrolled = true;
 				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Give back a slot
 					equip->slots++;
-					succeed = true;
+					succeed = 1;
 				}
-				else if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed) {
-					cursed = true;
+				else {
+					if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
+						cursed = true;
+					succeed = 0;
 				}
+				scrolled = true;
 			}
 			break;
 		case 2049102: // Maple Syrup 100%
 		case 2049101: // Liar Tree Sap 100%
 		case 2049100: // Chaos Scroll
 			if (equip->slots > 0) {
+				succeed = 0;
 				scrolled = true;
 				if (wscroll)
 					takeItem(player, 2340000, 1);
 				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
-					succeed = true;
 					int8_t n = -1; // Default - Decrease stats
 					if ((int16_t) Randomizer::Instance()->randShort(99) < 50) // Increase
 						n = 1;
@@ -556,6 +558,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 						equip->imp += Randomizer::Instance()->randShort(5) * n;
 					equip->scrolls++;
 					equip->slots--;
+					succeed = 1;
 				}
 				else if (!wscroll)
 					equip->slots--;
@@ -570,7 +573,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 				if (wscroll)
 					takeItem(player, 2340000, 1);
 				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
-					succeed = true;
+					succeed = 1;
 					equip->istr += iteminfo.cons.istr;
 					equip->idex += iteminfo.cons.idex;
 					equip->iint += iteminfo.cons.iint;
@@ -589,10 +592,13 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 					equip->scrolls++;
 					equip->slots--;
 				}
-				else if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
-					cursed = true;
-				else if (!wscroll)
-					equip->slots--;
+				else {
+					succeed = 0;
+					if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
+						cursed = true;
+					else if (!wscroll)
+						equip->slots--;
+				}
 			}
 			break;
 	}
