@@ -105,11 +105,11 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
 		case RECV_ANIMATE_NPC: NPCs::handleNPCAnimation(this, packet); break;
 		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
-		case RECV_PET_CHAT: Pets::chat(this, packet); break;
-		case RECV_PET_COMMAND: Pets::showAnimation(this, packet); break;
-		case RECV_PET_FEED: Pets::feedPet(this, packet); break;
-		case RECV_PET_MOVE: Pets::movePet(this, packet); break;
-		case RECV_PET_SUMMON: Pets::summonPet(this, packet); break;
+		case RECV_PET_CHAT: Pets::handle_chat(this, packet); break;
+		case RECV_PET_COMMAND: Pets::handle_command(this, packet); break;
+		case RECV_PET_FEED: Pets::handle_feed(this, packet); break;
+		case RECV_PET_MOVE: Pets::handle_movement(this, packet); break;
+		case RECV_PET_SUMMON: Pets::handle_summon(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
 		case RECV_DAMAGE_MOB_SUMMON: Mobs::damageMobSummon(this, packet); break;
 		case RECV_DAMAGE_SUMMON: Summons::damageSummon(this, packet); break;
