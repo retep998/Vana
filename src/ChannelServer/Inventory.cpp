@@ -490,7 +490,6 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 	int32_t itemid = item->id;
 	int8_t succeed = -1;
 	bool cursed = false;
-	bool scrolled = false;
 	if (!ItemDataProvider::Instance()->itemExists(itemid))
 		return;
 
@@ -510,7 +509,6 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 						cursed = true;
 					succeed = 0;
 				}
-				scrolled = true;
 			}
 			break;
 		case 2049102: // Maple Syrup 100%
@@ -518,7 +516,6 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 		case 2049100: // Chaos Scroll
 			if (equip->slots > 0) {
 				succeed = 0;
-				scrolled = true;
 				if (wscroll)
 					takeItem(player, 2340000, 1);
 				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
@@ -569,7 +566,6 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			break;
 		default: // Most scrolls
 			if (equip->slots > 0) {
-				scrolled = true;
 				if (wscroll)
 					takeItem(player, 2340000, 1);
 				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
@@ -602,7 +598,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			}
 			break;
 	}
-	if (scrolled) {
+	if (succeed != -1) {
 		takeItemSlot(player, 2, slot, 1);
 		InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
 		if (!cursed)
