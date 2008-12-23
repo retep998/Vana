@@ -63,8 +63,8 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addShort(player->getMHP());
 	packet.addShort(player->getMP());
 	packet.addShort(player->getMMP());
-	packet.addShort(player->getAp());
-	packet.addShort(player->getSp());
+	packet.addShort(player->getAP());
+	packet.addShort(player->getSP());
 	packet.addInt(player->getExp());
 	packet.addShort(player->getFame());
 	packet.addInt(0); // Unknown int32 added in .62

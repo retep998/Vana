@@ -118,8 +118,8 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 			player->modifyRMHP(hpgain);
 			player->modifyRMMP(mpgain);
 			player->setLevel(level);
-			player->setAp(player->getAp() + apgain);
-			player->setSp(player->getSp() + spgain);
+			player->setAP(player->getAP() + apgain);
+			player->setSP(player->getSP() + spgain);
 			// Let hyperbody remain on if on during a level up, as it should
 			int32_t skillid = 0;
 			if (player->getActiveBuffs()->getActiveSkillLevel(1301007) > 0)
@@ -154,7 +154,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 void Levels::addStat(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t type = packet.getInt();
-	if (player->getAp() == 0) {
+	if (player->getAP() == 0) {
 		// hacking
 		return;
 	}
@@ -194,7 +194,7 @@ void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract
 				return;
 			else if (type == 0x2000 && player->getRMMP() >= 30000)
 				return;
-			if (issubtract && player->getHPMPAp() == 0) {
+			if (issubtract && player->getHPMPAP() == 0) {
 				// Hacking
 				return;
 			}
@@ -230,7 +230,7 @@ void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract
 					mpgain = (isreset ? (issubtract ? -12 : 10) : Randomizer::Instance()->randShort(2) + 10);
 					break;
 			}
-			player->setHPMPAp(player->getHPMPAp() + mod);
+			player->setHPMPAP(player->getHPMPAP() + mod);
 			switch (type) {
 				case 0x800: player->modifyRMHP(hpgain); break;
 				case 0x2000: player->modifyRMMP(mpgain); break;
@@ -257,5 +257,5 @@ void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract
 			break;
 	}
 	if (!isreset)
-		player->setAp(player->getAp() - 1);
+		player->setAP(player->getAP() - 1);
 }

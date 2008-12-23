@@ -46,12 +46,12 @@ void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo le
 void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t skillid = packet.getInt();
-	if (!BEGINNER_SKILL(skillid) && player->getSp() == 0) {
+	if (!BEGINNER_SKILL(skillid) && player->getSP() == 0) {
 		// hacking
 		return;
 	}
 	if (player->getSkills()->addSkillLevel(skillid, 1) && !BEGINNER_SKILL(skillid)) {
-		player->setSp(player->getSp() - 1);
+		player->setSP(player->getSP() - 1);
 	}
 }
 

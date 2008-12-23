@@ -65,7 +65,7 @@ Player::~Player() {
 			Trades::cancelTrade(this);
 		}
 		WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
-		Maps::getMap(this->getMap())->removePlayer(this);
+		Maps::getMap(map)->removePlayer(this);
 		Players::Instance()->removePlayer(this);
 	}
 }
@@ -74,6 +74,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 	switch (packet.getShort()) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
+		case RECV_ANIMATE_NPC: NPCs::handleNPCAnimation(this, packet); break;
 		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
@@ -87,7 +88,9 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet); break;
 		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet); break;
 		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet); break;
+		case RECV_DAMAGE_MOB_SUMMON: Mobs::damageMobSummon(this, packet); break;
 		case RECV_DAMAGE_PLAYER: PlayerHandler::handleDamage(this, packet); break;
+		case RECV_DAMAGE_SUMMON: Summons::damageSummon(this, packet); break;
 		case RECV_DROP_MESO: Drops::dropMesos(this, packet); break;
 		case RECV_FACE_EXPRESSION: PlayerHandler::handleFacialExpression(this, packet); break;
 		case RECV_FAME: Fame::handleFame(this, packet); break;
@@ -98,24 +101,20 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet); break;
 		case RECV_LOOT_ITEM: Drops::player_loot(this, packet); break;
-		case RECV_PET_LOOT: Drops::pet_loot(this, packet); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
+		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
-		case RECV_ANIMATE_NPC: NPCs::handleNPCAnimation(this, packet); break;
 		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
 		case RECV_PET_CHAT: Pets::handle_chat(this, packet); break;
 		case RECV_PET_COMMAND: Pets::handle_command(this, packet); break;
 		case RECV_PET_FEED: Pets::handle_feed(this, packet); break;
+		case RECV_PET_LOOT: Drops::pet_loot(this, packet); break;
 		case RECV_PET_MOVE: Pets::handle_movement(this, packet); break;
 		case RECV_PET_SUMMON: Pets::handle_summon(this, packet); break;
-		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
-		case RECV_DAMAGE_MOB_SUMMON: Mobs::damageMobSummon(this, packet); break;
-		case RECV_DAMAGE_SUMMON: Summons::damageSummon(this, packet); break;
 		case RECV_PLAYER_ROOM_ACTION: Trades::tradeHandler(this, packet); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
-		case RECV_USE_STORAGE: Inventory::useStorage(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
 		case RECV_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
 		case RECV_STOP_CHAIR: Inventory::stopChair(this, packet); break;
@@ -127,10 +126,10 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_USE_SCROLL: Inventory::useScroll(this, packet); break;
 		case RECV_USE_SKILL: Skills::useSkill(this, packet); break;
 		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, packet); break;
+		case RECV_USE_STORAGE: Inventory::useStorage(this, packet); break;
 		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet); break;
 	}
 }
-
 void Player::playerConnect(PacketReader &packet) {
 	int32_t id = packet.getInt();
 	if (!Connectable::Instance()->checkPlayer(id)) {
@@ -146,7 +145,7 @@ void Player::playerConnect(PacketReader &packet) {
 	pets.reset(new PlayerPets(this));
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << this->id;
+	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << id;
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.empty()) {
@@ -155,40 +154,40 @@ void Player::playerConnect(PacketReader &packet) {
 		return;
 	}
 
-	userid = res[0]["userid"];
-	world_id = (uint8_t) res[0]["world_id"];
 	res[0]["name"].to_string(name);
-	gender = (uint8_t) res[0]["gender"];
-	skin = (uint8_t) res[0]["skin"];
-	eyes = res[0]["eyes"];
-	hair = res[0]["hair"];
-	level = (uint8_t) res[0]["level"];
-	job = (int16_t) res[0]["job"];
-	str = (int16_t) res[0]["str"];
-	dex = (int16_t) res[0]["dex"];
-	intt = (int16_t) res[0]["int"];
-	luk = (int16_t) res[0]["luk"];
-	hp = (int16_t) res[0]["chp"];
-	rmhp = mhp = (int16_t) res[0]["mhp"];
-	mp = (int16_t) res[0]["cmp"];
-	rmmp = mmp = (int16_t) res[0]["mmp"];
-	hpmp_ap = (int16_t) res[0]["hpmp_ap"];
-	ap = (int16_t) res[0]["ap"];
-	sp = (int16_t) res[0]["sp"];
-	exp = res[0]["exp"];
-	fame = (int16_t) res[0]["fame"];
-	map = res[0]["map"];
-	mappos = (uint8_t) res[0]["pos"];
+	userid		= res[0]["userid"];
+	exp			= res[0]["exp"];
+	map			= res[0]["map"];
+	gm			= res[0]["gm"];
+	eyes		= res[0]["eyes"];
+	hair		= res[0]["hair"];
+	world_id	= static_cast<uint8_t>(res[0]["world_id"]);
+	gender		= static_cast<uint8_t>(res[0]["gender"]);
+	skin		= static_cast<uint8_t>(res[0]["skin"]);
+	level		= static_cast<uint8_t>(res[0]["level"]);
+	mappos		= static_cast<uint8_t>(res[0]["pos"]);
+	job			= static_cast<int16_t>(res[0]["job"]);
+	str			= static_cast<int16_t>(res[0]["str"]);
+	dex			= static_cast<int16_t>(res[0]["dex"]);
+	intt		= static_cast<int16_t>(res[0]["int"]);
+	luk			= static_cast<int16_t>(res[0]["luk"]);
+	hp			= static_cast<int16_t>(res[0]["chp"]);
+	rmhp = mhp	= static_cast<int16_t>(res[0]["mhp"]);
+	mp			= static_cast<int16_t>(res[0]["cmp"]);
+	rmmp = mmp	= static_cast<int16_t>(res[0]["mmp"]);
+	hpmp_ap		= static_cast<int16_t>(res[0]["hpmp_ap"]);
+	ap			= static_cast<int16_t>(res[0]["ap"]);
+	sp			= static_cast<int16_t>(res[0]["sp"]);
+	fame		= static_cast<int16_t>(res[0]["fame"]);
 	buddylist_size = res[0]["buddylist_size"];
-	gm = res[0]["gm"];
 
 	// Inventory
 	uint8_t maxslots[5];
-	maxslots[0] = (uint8_t) res[0]["equip_slots"];
-	maxslots[1] = (uint8_t) res[0]["use_slots"];
-	maxslots[2] = (uint8_t) res[0]["setup_slots"];
-	maxslots[3] = (uint8_t) res[0]["etc_slots"];
-	maxslots[4] = (uint8_t) res[0]["cash_slots"];
+	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
+	maxslots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
+	maxslots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);
+	maxslots[3] = static_cast<uint8_t>(res[0]["etc_slots"]);
+	maxslots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
 	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
 
 	// Skills
@@ -199,13 +198,13 @@ void Player::playerConnect(PacketReader &packet) {
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
-	keyMaps.load(this->id);
+	keyMaps.load(id);
 
 	SkillMacros skillMacros;
-	skillMacros.load(this->id);
+	skillMacros.load(id);
 
 	// Character variables
-	query << "SELECT * FROM character_variables WHERE charid = " << this->id;
+	query << "SELECT * FROM character_variables WHERE charid = " << id;
 	res = query.store();
 	for (size_t i = 0; i < res.size(); i++) {
 		variables[(string) res[i]["key"]] = string(res[i]["value"]);
@@ -313,12 +312,12 @@ void Player::damageMP(uint16_t dmp) {
 	PlayerPacket::updateStatShort(this, 0x1000, mp, false);
 }
 
-void Player::setSp(int16_t sp) {
+void Player::setSP(int16_t sp) {
 	this->sp = sp;
 	PlayerPacket::updateStatShort(this, 0x8000, sp);
 }
 
-void Player::setAp(int16_t ap) {
+void Player::setAP(int16_t ap) {
 	this->ap = ap;
 	PlayerPacket::updateStatShort(this, 0x4000, ap);
 }
@@ -327,7 +326,7 @@ void Player::setJob(int16_t job) {
 	this->job = job;
 	PlayerPacket::updateStatShort(this, 0x20, job);
 	LevelsPacket::jobChange(this);
-	WorldServerConnectPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), this->id, job);
+	WorldServerConnectPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), id, job);
 }
 
 void Player::setStr(int16_t str) {
@@ -408,7 +407,7 @@ void Player::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(this, 0x10, level);
 	LevelsPacket::levelUp(this);
-	WorldServerConnectPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), this->id, level);
+	WorldServerConnectPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), id, level);
 }
 
 void Player::changeChannel(int8_t channel) {
@@ -448,7 +447,7 @@ void Player::changeSkillMacros(PacketReader &packet) {
 
 		skillMacros.add(i, new SkillMacros::SkillMacro(name, shout, skill1, skill2, skill3));
 	}
-	skillMacros.save(this->id);
+	skillMacros.save(id);
 }
 
 void Player::setHair(int32_t id) {
@@ -509,34 +508,34 @@ bool Player::addWarning() {
 void Player::saveStats() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE characters SET "
-		<< "level = " << (int16_t) this->level << ","
-		<< "job = " << this->job << ","
-		<< "str = " <<this->str << ","
-		<< "dex = " << this->dex << ","
-		<< "`int` = " << this->intt << ","
-		<< "luk = " << this->luk << ","
-		<< "chp = " << this->hp << ","
-		<< "mhp = " << this->rmhp << ","
-		<< "cmp = " << this->mp << ","
-		<< "mmp = " << this->rmmp << ","
-		<< "hpmp_ap = " << this->hpmp_ap << ","
-		<< "ap = " << this->ap << ","
-		<< "sp = " << this->sp << ","
-		<< "exp = " << this->exp << ","
-		<< "fame = " << this->fame << ","
-		<< "map = " << this->map << ","
-		<< "gender = " << (int16_t) this->gender << ","
-		<< "skin = " << (int16_t) this->skin << ","
-		<< "eyes = " << this->eyes << ","
-		<< "hair = " << this->hair << ","
+		<< "level = " << static_cast<int16_t>(level) << "," // Queries have problems with int8_t due to being derived from ostream
+		<< "job = " << job << ","
+		<< "str = " << str << ","
+		<< "dex = " << dex << ","
+		<< "`int` = " << intt << ","
+		<< "luk = " << luk << ","
+		<< "chp = " << (hp > rmhp ? rmhp : hp) << "," // TODO: Change for HP gear calculation
+		<< "mhp = " << rmhp << ","
+		<< "cmp = " << (mp > rmmp ? rmmp : mp) << "," // TODO: Change for MP gear calculation
+		<< "mmp = " << rmmp << ","
+		<< "hpmp_ap = " << hpmp_ap << ","
+		<< "ap = " << ap << ","
+		<< "sp = " << sp << ","
+		<< "exp = " << exp << ","
+		<< "fame = " << fame << ","
+		<< "map = " << map << ","
+		<< "gender = " << static_cast<int16_t>(gender) << ","
+		<< "skin = " << static_cast<int16_t>(skin) << ","
+		<< "eyes = " << eyes << ","
+		<< "hair = " << hair << ","
 		<< "mesos = " << inv->getMesos() << ","
-		<< "equip_slots = " << (int16_t) inv->getMaxSlots(1) << ","
-		<< "use_slots = " << (int16_t) inv->getMaxSlots(2) << ","
-		<< "setup_slots = " << (int16_t) inv->getMaxSlots(3) << ","
-		<< "etc_slots = " << (int16_t) inv->getMaxSlots(4) << ","
-		<< "cash_slots = " << (int16_t) inv->getMaxSlots(5) << ","
-		<< "buddylist_size = " << this->buddylist_size
-		<< " WHERE id = " << this->id;
+		<< "equip_slots = " << static_cast<int16_t>(inv->getMaxSlots(1)) << ","
+		<< "use_slots = " << static_cast<int16_t>(inv->getMaxSlots(2)) << ","
+		<< "setup_slots = " << static_cast<int16_t>(inv->getMaxSlots(3)) << ","
+		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(4)) << ","
+		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(5)) << ","
+		<< "buddylist_size = " << buddylist_size
+		<< " WHERE id = " << id;
 	query.exec();
 }
 
@@ -555,7 +554,7 @@ void Player::saveVariables() {
 			else {
 				query << ",(";
 			}
-			query << this->id << ","
+			query << id << ","
 					<< mysqlpp::quote << iter->first << ","
 					<< mysqlpp::quote << iter->second << ")";
 		}
@@ -576,22 +575,18 @@ void Player::setOnline(bool online) {
 	int32_t onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << onlineid <<
-			", characters.online = " << online << " WHERE characters.id = " << this->id;
+			", characters.online = " << online << " WHERE characters.id = " << id;
 	query.exec();
 }
 
 void Player::setLevelDate() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE characters SET time_level = NOW() WHERE characters.id = " << this->id;
+	query << "UPDATE characters SET time_level = NOW() WHERE characters.id = " << id;
 	query.exec();
 }
 
 void Player::acceptDeath() {
-	int32_t tomap;
-	if (!Maps::getMap(this->map))
-		tomap = this->getMap();
-	else
-		tomap = Maps::getMap(this->getMap())->getInfo()->rm;
+	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
 	setHP(50, false);
 	getActiveBuffs()->removeBuff();
 	Maps::changeMap(this, tomap, 0);
