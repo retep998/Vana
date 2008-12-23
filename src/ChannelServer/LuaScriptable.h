@@ -65,6 +65,7 @@ namespace LuaExports {
 	int getDEX(lua_State *luaVm);
 	int getINT(lua_State *luaVm);
 	int getLUK(lua_State *luaVm);
+	int getHPMPAP(lua_State *luaVm);
 	int getJob(lua_State *luaVm);
 	int getLevel(lua_State *luaVm);
 	int getGender(lua_State *luaVm);

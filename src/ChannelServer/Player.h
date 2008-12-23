@@ -55,8 +55,8 @@ public:
 	void setSkin(int8_t id);
 	void setMappos(int8_t pos) { this->mappos = pos; }
 	void setLevel(uint8_t level);
-	void setAp(int16_t ap);
-	void setSp(int16_t sp);
+	void setAP(int16_t ap);
+	void setSP(int16_t sp);
 	void setFame(int16_t fame);
 	void setJob(int16_t job);
 	void setStr(int16_t str);
@@ -76,7 +76,7 @@ public:
 	void setRMHP(int16_t rmhp);
 	void setRMMP(int16_t rmmp);
 	void setHyperBody(int16_t modx, int16_t mody);
-	void setHPMPAp(uint16_t ap) { hpmp_ap = ap; }
+	void setHPMPAP(uint16_t ap) { hpmp_ap = ap; }
 	void setEyes(int32_t id);
 	void setHair(int32_t id);
 	void setExp(int32_t exp);
@@ -90,45 +90,45 @@ public:
 	void setItemEffect(int32_t effect) { this->itemEffect = effect; }
 	void setSpecialSkill(SpecialSkillInfo info) { this->info = info; }
 
-	int8_t getWorldId() const { return this->world_id; }
-	int8_t getGender() const { return this->gender; }
-	int8_t getSkin() const { return this->skin; }
+	int8_t getWorldId() const { return world_id; }
+	int8_t getGender() const { return gender; }
+	int8_t getSkin() const { return skin; }
 	int8_t isTrading() const { return tradestate; }
-	int8_t getMappos() const { return this->mappos; }
-	uint8_t getLevel() const { return this->level; }
-	int16_t getJob() const { return this->job; }
-	int16_t getStr() const { return this->str; }
-	int16_t getDex() const { return this->dex; }
-	int16_t getInt() const { return this->intt; }
-	int16_t getLuk() const { return this->luk; }
-	int16_t getAp() const { return this->ap; }
-	int16_t getSp() const { return this->sp; }
-	int16_t getFame() const { return this->fame; }
-	int16_t getHP() const { return this->hp; }
-	int16_t getMP() const { return this->mp; }
-	int16_t getMHP() const { return this->mhp; }
-	int16_t getRMHP() const { return this->rmhp; }
-	int16_t getMMP() const { return this->mmp; }
-	int16_t getRMMP() const { return this->rmmp; }
-	uint16_t getHPMPAp() const { return hpmp_ap; }
-	int32_t getId() const { return this->id; }
-	int32_t getUserId() const { return this->userid; }
-	int32_t getEyes() const { return this->eyes; }
-	int32_t getHair() const { return this->hair; }
-	int32_t getExp() const { return this->exp; }
-	int32_t getMap() const { return this->map; }
+	int8_t getMappos() const { return mappos; }
+	uint8_t getLevel() const { return level; }
+	int16_t getJob() const { return job; }
+	int16_t getStr() const { return str; }
+	int16_t getDex() const { return dex; }
+	int16_t getInt() const { return intt; }
+	int16_t getLuk() const { return luk; }
+	int16_t getAP() const { return ap; }
+	int16_t getSP() const { return sp; }
+	int16_t getFame() const { return fame; }
+	int16_t getHP() const { return hp; }
+	int16_t getMP() const { return mp; }
+	int16_t getMHP() const { return mhp; }
+	int16_t getRMHP() const { return rmhp; }
+	int16_t getMMP() const { return mmp; }
+	int16_t getRMMP() const { return rmmp; }
+	uint16_t getHPMPAP() const { return hpmp_ap; }
+	int32_t getId() const { return id; }
+	int32_t getUserId() const { return userid; }
+	int32_t getEyes() const { return eyes; }
+	int32_t getHair() const { return hair; }
+	int32_t getExp() const { return exp; }
+	int32_t getMap() const { return map; }
 	uint32_t getBuddyListSize() const { return buddylist_size; }
 	int32_t getShop() const { return shop; }
 	int32_t getChair() const { return chair; }
-	int32_t getItemEffect() const { return this->itemEffect; }
+	int32_t getItemEffect() const { return itemEffect; }
 	int32_t getGMLevel() const { return gm; }
-	int32_t getSpecialSkill() const { return this->info.skillid; }
+	int32_t getSpecialSkill() const { return info.skillid; }
 	int32_t getTradeSendID() const { return tradesendid; }
 	int32_t getTradeRecvID() const { return traderecvid; }
-	string getName() const { return this->name; }
+	string getName() const { return name; }
 	NPC * getNPC() const { return npc; }
 	bool isGM() const { return gm > 0; }
-	SpecialSkillInfo getSpecialSkillInfo() const { return this->info; }
+	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
 	bool hasGMEquip();
 

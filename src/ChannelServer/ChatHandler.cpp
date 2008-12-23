@@ -561,11 +561,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else if (command == "ap") {
 			if (args.length() == 0) return;
-			player->setAp(atoi(args.c_str()));
+			player->setAP(atoi(args.c_str()));
 		}
 		else if (command == "sp") {
 			if (args.length() == 0) return;
-			player->setSp(atoi(args.c_str()));
+			player->setSP(atoi(args.c_str()));
 		}
 		else if (command == "killnpc") {
 			player->setNPC(0);

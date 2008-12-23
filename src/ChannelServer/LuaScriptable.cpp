@@ -59,6 +59,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getDEX", &LuaExports::getDEX);
 	lua_register(luaVm, "getINT", &LuaExports::getINT);
 	lua_register(luaVm, "getLUK", &LuaExports::getLUK);
+	lua_register(luaVm, "getHPMPAP", &LuaExports::getHPMPAP);
 	lua_register(luaVm, "getJob", &LuaExports::getJob);
 	lua_register(luaVm, "getLevel", &LuaExports::getLevel);
 	lua_register(luaVm, "getGender", &LuaExports::getGender);
@@ -211,23 +212,23 @@ int LuaExports::giveEXP(lua_State *luaVm) {
 
 int LuaExports::giveSP(lua_State *luaVm) {
 	int16_t sp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setSp(getPlayer(luaVm)->getSp() + sp);
+	getPlayer(luaVm)->setSP(getPlayer(luaVm)->getSP() + sp);
 	return 1;
 }
 
 int LuaExports::giveAP(lua_State *luaVm) {
 	int16_t ap = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setAp(getPlayer(luaVm)->getAp() + ap);
+	getPlayer(luaVm)->setAP(getPlayer(luaVm)->getAP() + ap);
 	return 1;
 }
 
 int LuaExports::getSP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getSp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getSP());
 	return 1;
 }
 
 int LuaExports::getAP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getAp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getAP());
 	return 1;
 }
 
@@ -248,6 +249,11 @@ int LuaExports::getINT(lua_State *luaVm) {
 
 int LuaExports::getLUK(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getLuk());
+	return 1;
+}
+
+int LuaExports::getHPMPAP(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getHPMPAP());
 	return 1;
 }
 
@@ -535,13 +541,13 @@ int LuaExports::setRMMP(lua_State *luaVm) {
 
 int LuaExports::setSP(lua_State *luaVm) {
 	int16_t sp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setSp(sp);
+	getPlayer(luaVm)->setSP(sp);
 	return 1;
 }
 
 int LuaExports::setAP(lua_State *luaVm) {
 	int16_t ap = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setAp(ap);
+	getPlayer(luaVm)->setAP(ap);
 	return 1;
 }
 
