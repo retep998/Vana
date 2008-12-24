@@ -79,7 +79,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 			if (mobid == 8810018) { // Horntail damage sponge, we want to be sure that his parts have spawned after death animations before we clean up
 				new Timer::Timer(bind(&Mob::cleanHorntail, this, mapid, player),
 					Timer::Id(Timer::Types::MobDeathTimer, id, 1),
-					0, Timer::Time::fromNow((2100 * CLOCKS_PER_SEC) / 1000)); // 2000 is longest Horntail part death
+					0, Timer::Time::fromNow(2100)); // 2000 is longest Horntail part death
 			}
 			die(Players::Instance()->getPlayer(playerid));
 		}
@@ -97,12 +97,12 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 		if (statusinfo[i].status == POISON) { // Damage timer for poison
 			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
 				Timer::Id(Timer::Types::MobStatusTimer, POISON, 1),
-				getTimers(), 0, CLOCKS_PER_SEC);
+				getTimers(), 0, 1000);
 		}
 
 		new Timer::Timer(bind(&Mob::removeStatus, this, statusinfo[i].status),
 			Timer::Id(Timer::Types::MobStatusTimer, statusinfo[i].status, 0),
-			getTimers(), Timer::Time::fromNow(statusinfo[i].time * CLOCKS_PER_SEC));
+			getTimers(), Timer::Time::fromNow(statusinfo[i].time * 1000));
 	}
 	// Calculate new status mask
 	this->status = 0;
@@ -186,7 +186,7 @@ void Mob::die(Player *player) {
 	if (hassummons) {
 		new Timer::Timer(bind(&Mob::deathSpawn, this),
 			Timer::Id(Timer::Types::MobDeathTimer, id, 0),
-			0, Timer::Time::fromNow((info.deathdelay * CLOCKS_PER_SEC) / 1000));
+			0, Timer::Time::fromNow(info.deathdelay * 1000));
 	}
 
 	MobsPacket::dieMob(this);
@@ -555,7 +555,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 	return total;
 }
 
-void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type) { // Check for CLOCKS_PER_SEC
+void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type) {
 	uint8_t level = skillid > 0 ? player->getSkills()->getSkillLevel(skillid) : 0;
 	vector<StatusInfo> statuses;
 	if (mob->canFreeze()) { // Freezing stuff

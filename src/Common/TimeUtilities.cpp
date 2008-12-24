@@ -121,3 +121,7 @@ bool TimeUtilities::getDST(time_t ctime) {
 	tm *timeinfo = localtime(&ctime);
 	return (timeinfo->tm_isdst > 0);
 }
+
+clock_t TimeUtilities::clock_in_ms() {
+	return (clock() / (CLOCKS_PER_SEC / 1000));
+}

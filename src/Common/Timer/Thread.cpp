@@ -80,7 +80,7 @@ void Thread::runThread() {
 	while (!m_terminate) {
 		// Find minimum wakeup time
 		Timer *minTimer = findMin();
-		clock_t msec = (minTimer == 0) ? msec = 1000000000 : minTimer->getRunAt() - clock();
+		clock_t msec = (minTimer == 0) ? msec = 1000000000 : minTimer->getRunAt() - TimeUtilities::clock_in_ms(); // Be certain the time stays in milliseconds
 		if (msec <= 0) {
 			minTimer->run();
 			continue;

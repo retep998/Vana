@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define TIMER_TIME_H
 
 #include <ctime>
+#include "../TimeUtilities.h"
 #include "Types.h"
 
 namespace Timer {
@@ -30,20 +31,20 @@ namespace Time {
 
 inline
 clock_t Time::fromNow(clock_t msec) {
-	return msec + clock();
+	return msec + TimeUtilities::clock_in_ms();
 }
 
 inline
 clock_t Time::nthSecondOfHour(uint16_t second) {
 	clock_t secThisHour = time(0) % 3600;
 	clock_t secDest;
-	
+
 	if (secThisHour > second) // Already passed the time in this hour, try next hour
 		secDest = (3600 - secThisHour) + second;
 	else // The requested time is within this hour
 		secDest = second - secThisHour;
 
-	return clock() + secDest * CLOCKS_PER_SEC;
+	return TimeUtilities::clock_in_ms() + secDest;
 }
 
 }

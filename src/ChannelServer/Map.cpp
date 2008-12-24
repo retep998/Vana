@@ -43,7 +43,7 @@ objectids(1000)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
-		0, 0, 10 * CLOCKS_PER_SEC);
+		0, 0, 10000);
 }
 
 // Map Info
@@ -94,7 +94,7 @@ void Map::addReactorRespawn(ReactorRespawnInfo respawn) {
 void Map::checkReactorSpawn(clock_t time) {
 	for (size_t i = 0; i < reactorrespawns.size(); i++) {
 		int32_t id = reactorrespawns[i].id;
-		if ((time - reactorrespawns[i].killed) > (reactorspawns[id].time * CLOCKS_PER_SEC)) {
+		if ((time - reactorrespawns[i].killed) > (reactorspawns[id].time * 1000)) {
 			getReactor(id)->restore();
 			reactorrespawns.erase(reactorrespawns.begin() + i);
 			i--;
@@ -138,7 +138,7 @@ void Map::checkMobSpawn(clock_t time) {
 	// (Re-)spawn Mobs
 	for (size_t i = 0; i < mobrespawns.size(); i++) {
 		int32_t id = mobrespawns[i].spawnid;
-		if ((time - mobrespawns[i].killed) > (mobspawns[id].time * CLOCKS_PER_SEC)) {
+		if ((time - mobrespawns[i].killed) > (mobspawns[id].time * 1000)) {
 			spawnMob(mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
 			mobrespawns.erase(mobrespawns.begin() + i);
 			i--;

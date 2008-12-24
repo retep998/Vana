@@ -99,7 +99,7 @@ void Pet::modifyFullness(int8_t offset, bool sendPacket) {
 
 void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
-	clock_t length = (6 - Pets::petsInfo[getType()].hunger) * 60 * CLOCKS_PER_SEC; // TODO: Better formula
+	clock_t length = (6 - Pets::petsInfo[getType()].hunger) * 60000; // TODO: Better formula
 	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, player->getTimers(), 0, length);
 }
 
