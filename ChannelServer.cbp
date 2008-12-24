@@ -29,6 +29,7 @@
 					<Add library="boost_system-mt" />
 					<Add library="boost_filesystem-mt" />
 					<Add library="boost_thread-mt" />
+					<Add library="boost_regex-mt" />
 					<Add library="common" />
 					<Add library="lua" />
 					<Add directory="Debug" />
@@ -56,6 +57,7 @@
 					<Add library="boost_system-mt" />
 					<Add library="boost_filesystem-mt" />
 					<Add library="boost_thread-mt" />
+					<Add library="boost_regex-mt" />
 					<Add library="common" />
 					<Add library="lua" />
 					<Add directory="Release" />
