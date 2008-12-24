@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef _WIN32
 	#include <regex>
 #else
-	#include <tr1/regex>
+	#include <boost/tr1/regex.hpp>
 #endif
 
 using std::string;
