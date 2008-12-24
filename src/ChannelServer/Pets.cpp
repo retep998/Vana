@@ -125,6 +125,7 @@ void Pets::handle_summon(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.getShort();
 	bool master = packet.getByte() == 1;
+	bool multipet = player->getSkills()->getSkillLevel(8) > 0;
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5, slot)->petid);
 	pet->setPos(player->getPos());
 
@@ -133,6 +134,8 @@ void Pets::handle_summon(Player *player, PacketReader &packet) {
 		if (pet->getIndex() == 0) {
 			Timer::Id id(Timer::Types::PetTimer, pet->getIndex(), 0);
 			player->getTimers()->removeTimer(id);
+			if (!multipet)
+				player->getPets()->setSummoned(0, 0);
 		}
 		for (int8_t i = (pet->getIndex() + 1); i < 3; i++) {
 			if (Pet *move = player->getPets()->getSummoned(i)) {
@@ -149,8 +152,7 @@ void Pets::handle_summon(Player *player, PacketReader &packet) {
 		PetsPacket::petSummoned(player, pet);
 	}
 	else { // Summoning a Pet
-		bool multipet = player->getSkills()->getSkillLevel(8) > 0;
-		if (master || !multipet) {
+		if (!multipet || master) {
 			for (int8_t i = 2; i > 0; i--) {
 				if (player->getPets()->getSummoned(i - 1) && !player->getPets()->getSummoned(i)) {
 					Pet *move = player->getPets()->getSummoned(i - 1);
