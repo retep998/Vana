@@ -36,18 +36,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.h"
 #include <string>
 #include <vector>
-
-#ifdef _WIN32
-	#include <regex>
-#else
-	#include <boost/tr1/regex.hpp>
-#endif
+#include <boost/tr1/regex.hpp>
 
 using std::string;
 using std::vector;
 using std::tr1::regex;
 using std::tr1::cmatch;
 using std::tr1::regex_match;
+
+struct SendMessage {
+	void operator() (Player *gmplayer) {
+		if (gmplayer->isGM()) {
+			PlayerPacket::showMessage(gmplayer, msg, 6);
+		}
+	}
+	string msg;
+};
+
+struct ChangeMap {
+	void operator() (Player *warpee) {
+		if (warpee->getMap() != mapid) {
+			Maps::changeMap(warpee, mapid, 0);
+		}
+	}
+	int32_t mapid;
+	Player *player;
+};
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	string message = packet.getString();
@@ -152,19 +166,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				if (args.length() == 0)
 					return;
 				string msg = player->getName() + " : " + args;
-#ifdef _WIN32  // Temporary provision so it doesn't overflow the stack when compiled in VC++
-				struct SendMessage {
-#else // Causes stack overflow when compiled with VC++, but is standards-compliant?
-				struct SendMessage : function<void (Player *)> {
-#endif
-					void operator()(Player *gmplayer) {
-						if (gmplayer->isGM() == true) {
-							PlayerPacket::showMessage(gmplayer, msg, 6);
-						}
-					}
-					string msg;
-				} sendMessage;
-				sendMessage.msg = msg;
+				SendMessage sendMessage = {msg};
 				Players::Instance()->run(sendMessage);
 			}
 			else if (command == "kick") {
@@ -199,22 +201,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					PlayerPacket::showMessage(player, "Invalid Map ID", 6);
 					return;
 				}
-#ifdef _WIN32 // Temporary provision so it doesn't overflow the stack when compiled in VC++
-				struct changeMap {
-#else // Causes stack overflow when compiled with VC++, but is standards-compliant?
-				struct changeMap : function<void (Player *)> {
-#endif
-					void operator()(Player *warpee) {
-						if (warpee->getMap() != mapid) {
-							Maps::changeMap(warpee, mapid, 0);
-						}
-					}
-					int32_t mapid;
-					Player *player;
-				} changeMap;
-				changeMap.mapid = mapid;
-				changeMap.player = player;
-
+				ChangeMap changeMap = {mapid, player};
 				Players::Instance()->run(changeMap);
 			}
 			else if (command == "killall") {
