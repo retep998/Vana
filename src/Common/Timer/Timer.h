@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define TIMER_TIMER_H
 
 #include "Id.h"
+#include "../TimeUtilities.h"
 #include "../Types.h"
 #include <ctime>
 #include <boost/tr1/functional.hpp>
@@ -37,7 +38,7 @@ public:
 
 	Id getId() const { return m_id; }
 	clock_t getRunAt() const { return m_run_at; }
-	int32_t getTimeLeft() const { return m_run_at - clock(); }
+	int32_t getTimeLeft() const { return m_run_at - TimeUtilities::clock_in_ms(); }
 
 	void run();
 	void reset(); // Only available for repeated timers

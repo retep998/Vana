@@ -294,7 +294,7 @@ void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime) {
 
 	new Timer::Timer(bind(&Skills::stopCooldown, player,
 		skillid), Timer::Id(Timer::Types::CoolTimer,
-		skillid, 0), player->getTimers(), Timer::Time::fromNow(cooltime * CLOCKS_PER_SEC));
+		skillid, 0), player->getTimers(), Timer::Time::fromNow(cooltime * 1000));
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillid) {

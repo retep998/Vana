@@ -37,6 +37,7 @@ namespace TimeUtilities {
 	int32_t getDay(time_t ctime = time(0));
 	string getDayString(time_t ctime = time(0));
 	bool getDST(time_t ctime = time(0));
+	clock_t clock_in_ms();
 }
 
 #endif
