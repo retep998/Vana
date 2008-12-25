@@ -31,7 +31,7 @@ Pet * PlayerPets::getPet(int32_t petid) {
 	return playerpets.find(petid) != playerpets.end() ? playerpets[petid] : 0;
 }
 
-void PlayerPets::setSummoned(int32_t petid, int8_t index) {
+void PlayerPets::setSummoned(int8_t index, int32_t petid) {
 	summoned[index] = petid;
 }
 

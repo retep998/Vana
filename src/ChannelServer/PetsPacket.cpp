@@ -24,11 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "SendHeader.h"
 
-void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer) {
+void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer, int8_t index) {
 	PacketCreator packet;
 	packet.addShort(SEND_PET_SUMMONED);
 	packet.addInt(player->getId());
-	packet.addByte(pet->getIndex());
+	packet.addByte(index != -1 ? index : pet->getIndex());
 	packet.addByte(pet->isSummoned());
 	packet.addByte(kick); // Kick existing pet (only when player doesn't have follow the lead)
 	if (pet->isSummoned()) {

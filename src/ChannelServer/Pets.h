@@ -59,7 +59,6 @@ public:
 	Pet(Player *player, Item *item, int8_t index, string name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot);
 
 	void setIndex(int8_t index) { this->index = index; }
-	void setSummoned(bool summoned) { this->summoned = summoned; }
 	void setInventorySlot(int8_t slot) { this->inventorySlot = slot; }
 
 	void setName(const string &name);
@@ -75,7 +74,7 @@ public:
 	int16_t getPosY() const { return m_pos.y - 1; }
 	int32_t getId() const { return this->id; }
 	int32_t getType() const { return this->type; }
-	bool isSummoned() const { return this->summoned; }
+	bool isSummoned() const { return this->index != -1; }
 	string getName() { return this->name; }
 	Pos getPos() const { return Pos(getPosX(), getPosY()); }
 
@@ -90,7 +89,6 @@ private:
 	int8_t fullness;
 	int16_t closeness;
 	int8_t inventorySlot;
-	bool summoned;
 
 	void levelUp();
 };
