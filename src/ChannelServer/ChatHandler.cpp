@@ -44,7 +44,7 @@ using std::tr1::regex;
 using std::tr1::cmatch;
 using std::tr1::regex_match;
 
-struct SendMessage {
+struct MeFunctor {
 	void operator() (Player *gmplayer) {
 		if (gmplayer->isGM()) {
 			PlayerPacket::showMessage(gmplayer, msg, 6);
@@ -53,7 +53,7 @@ struct SendMessage {
 	string msg;
 };
 
-struct ChangeMap {
+struct WarpFunctor {
 	void operator() (Player *warpee) {
 		if (warpee->getMap() != mapid) {
 			Maps::changeMap(warpee, mapid, 0);
@@ -166,8 +166,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				if (args.length() == 0)
 					return;
 				string msg = player->getName() + " : " + args;
-				SendMessage sendMessage = {msg};
-				Players::Instance()->run(sendMessage);
+				MeFunctor func = {msg};
+				Players::Instance()->run(func);
 			}
 			else if (command == "kick") {
 				if (args.length() == 0) return;
@@ -201,8 +201,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					PlayerPacket::showMessage(player, "Invalid Map ID", 6);
 					return;
 				}
-				ChangeMap changeMap = {mapid, player};
-				Players::Instance()->run(changeMap);
+				WarpFunctor func = {mapid, player};
+				Players::Instance()->run(func);
 			}
 			else if (command == "killall") {
 				Maps::getMap(player->getMap())->killMobs(player);
