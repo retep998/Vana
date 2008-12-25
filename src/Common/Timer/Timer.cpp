@@ -57,7 +57,7 @@ void Timer::run() {
 }
 
 void Timer::reset() {
-	m_run_at = m_repeat + clock();
+	m_run_at = m_repeat + TimeUtilities::clock_in_ms();
 	Thread::Instance()->forceReSort();
 }
 

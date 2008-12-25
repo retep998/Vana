@@ -16,17 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Connectable.h"
+#include "TimeUtilities.h"
 #include <ctime>
 
 Connectable * Connectable::singleton = 0;
 
 void Connectable::newPlayer(int32_t id) {
-	map[id] = clock();
+	map[id] = TimeUtilities::clock_in_ms();
 }
 
 bool Connectable::checkPlayer(int32_t id) {
 	if (map[id]) {
-		if (clock() - map[id] < 5 * CLOCKS_PER_SEC)
+		if (TimeUtilities::clock_in_ms() - map[id] < 5000)
 			return true;
 		map.erase(id);
 	}

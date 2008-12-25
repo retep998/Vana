@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 #include "Pos.h"
 #include "Skills.h"
+#include "TimeUtilities.h"
 #include "PacketReader.h"
 
 // Drop class
@@ -50,7 +51,7 @@ int16_t Drop::getAmount() {
 }
 
 void Drop::doDrop(Pos origin) {
-	setDropped(clock());
+	setDropped(TimeUtilities::clock_in_ms());
 	if (!isQuest()) {
 		if (!isTradeable()) {
 			DropsPacket::showDrop(0, this, 3, false, origin);
@@ -96,7 +97,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 	Pos pos;
 
 	for (size_t i = 0; i < drops.size(); i++) {
-		int32_t amount = Randomizer::Instance()->randInt(drops[i].maxamount - drops[i].minamount) + drops[i].minamount;
+		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(drops[i].maxamount - drops[i].minamount) + drops[i].minamount);
 		Drop *drop = 0;
 
  		if (Randomizer::Instance()->randInt(99999) < drops[i].chance * ChannelServer::Instance()->getDroprate()) {
@@ -124,7 +125,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 				if (ISEQUIP(itemid))
 					drop = new Drop(mapid, Item(itemid, true), pos, playerid);
 				else
-					drop = new Drop(mapid, Item(itemid, (int16_t) amount), pos, playerid);
+					drop = new Drop(mapid, Item(itemid, amount), pos, playerid);
 
 				if (questid > 0) {
 					drop->setPlayer(playerid);

@@ -46,6 +46,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillMacros.h"
 #include "Skills.h"
 #include "Summons.h"
+#include "TimeUtilities.h"
 #include "Trades.h"
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPacket.h"
@@ -488,7 +489,7 @@ string Player::getVariable(const string &name) {
 }
 
 bool Player::addWarning() {
-	int32_t t = clock();
+	int32_t t = TimeUtilities::clock_in_ms();
 	// Deleting old warnings
 	for (size_t i = 0; i < warnings.size(); i++) {
 		if (warnings[i] + 300000 < t) {

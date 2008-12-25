@@ -198,7 +198,7 @@ void Map::updateMobControl(Mob *mob, bool spawn) {
 void Map::removeMob(int32_t id, int32_t spawnid) {
 	if (mobs.find(id) != mobs.end()) {
 		if (spawnid > -1 && mobspawns[spawnid].time > -1) // Add spawn point to respawns if mob was spawned by a spawn point.
-			mobrespawns.push_back(MobRespawnInfo(spawnid, clock()));
+			mobrespawns.push_back(MobRespawnInfo(spawnid, TimeUtilities::clock_in_ms()));
 		this->mobs.erase(id);
 	}
 }
@@ -253,7 +253,7 @@ void Map::clearDrops(bool showPacket) { // Clear all drops
 
 void Map::clearDrops(clock_t time) { // Clear drops based on how long they have been in the map
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
-	time -= 180 * CLOCKS_PER_SEC; // Drops disappear after 3 minutes
+	time -= 180000; // Drops disappear after 3 minutes
 	unordered_map<int32_t, Drop *> drops = this->drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		if (iter->second != 0) {
@@ -264,7 +264,7 @@ void Map::clearDrops(clock_t time) { // Clear drops based on how long they have 
 }
 
 void Map::runTimer() {
-	clock_t time = clock();
+	clock_t time = TimeUtilities::clock_in_ms();
 	checkReactorSpawn(time);
 	checkMobSpawn(time);
 	clearDrops(time);
