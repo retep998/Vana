@@ -31,7 +31,7 @@ public:
 	PlayerPets(Player *player) : player(player) { }
 	void addPet(Pet *pet);
 	Pet * getPet(int32_t petid);
-	void setSummoned(int32_t petid, int8_t slot);
+	void setSummoned(int8_t index, int32_t petid);
 	Pet * getSummoned(int8_t index);
 	void save();
 private:
