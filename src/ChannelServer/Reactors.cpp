@@ -96,7 +96,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 
 				reactor->setState(revent->nextstate, false);
 				reactor->kill();
-				Maps::getMap(reactor->getMapID())->addReactorRespawn(ReactorRespawnInfo(id, clock()));
+				Maps::getMap(reactor->getMapID())->addReactorRespawn(ReactorRespawnInfo(id, TimeUtilities::clock_in_ms()));
 				ReactorPacket::destroyReactor(reactor);
 			}
 		}

@@ -147,7 +147,7 @@ bool LuaScriptable::run() {
 		// Error in lua script
 		string error = lua_tostring(luaVm, -1);
 		std::cout << error << std::endl;
-		
+
 		Player *player = Players::Instance()->getPlayer(playerid);
 
 		if (player->isGM()) {
@@ -712,12 +712,12 @@ int LuaExports::runNPC(lua_State *luaVm) {
 }
 
 int LuaExports::getChannelClock(lua_State *luaVm) {
-	lua_pushinteger(luaVm, clock());
+	lua_pushinteger(luaVm, TimeUtilities::clock_in_ms());
 	return 1;
 }
 
 int LuaExports::getWorldClock(lua_State *luaVm) {
-	lua_pushinteger(luaVm, ChannelServer::Instance()->getWorldClock() + clock());
+	lua_pushinteger(luaVm, ChannelServer::Instance()->getWorldClock() + TimeUtilities::clock_in_ms());
 	return 1;
 }
 

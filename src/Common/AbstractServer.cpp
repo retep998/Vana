@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.h"
 #include "ConfigFile.h"
 #include "ConnectionManager.h"
+#include "TimeUtilities.h"
 #include <ctime>
 #include <iostream>
 #include <iomanip>
@@ -27,7 +28,7 @@ AbstractServer::AbstractServer() {
 }
 
 void AbstractServer::initialize() {
-	clock_t startTime = clock(); // Measures time it takes to start
+	clock_t startTime = TimeUtilities::clock_in_ms(); // Measures time it takes to start
 
 	ConfigFile config("conf/inter_password.lua");
 	inter_password = config.getString("inter_password");
@@ -45,7 +46,7 @@ void AbstractServer::initialize() {
 		listen();
 	}
 
-	float loadingTime = (clock() - startTime) / (float) CLOCKS_PER_SEC;
+	float loadingTime = (TimeUtilities::clock_in_ms() - startTime) / (float) 1000;
 	std::cout << "Started in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
 }
 

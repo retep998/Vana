@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Rates.h"
 #include "SendHeader.h"
+#include "TimeUtilities.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptPlayer.h"
 
@@ -43,7 +44,7 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t 
 	packet.addShort(port);
 	packet.addByte(maxMultiLevel);
 	packet.addShort(maxStats);
-	packet.addClock(clock());
+	packet.addClock(TimeUtilities::clock_in_ms());
 	player->getSession()->send(packet);
 }
 
@@ -88,7 +89,7 @@ void WorldServerAcceptPacket::scrollingHeader(const string &message) {
 	PacketCreator packet;
 	packet.addShort(INTER_SCROLLING_HEADER);
 	packet.addString(message);
-	
+
 	Channels::Instance()->sendToAll(packet);
 }
 
