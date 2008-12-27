@@ -29,24 +29,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma warning(pop)
 #undef MYSQLPP_MYSQL_HEADERS_BURIED
 
+#include <boost/thread/tss.hpp> // thread_specific_ptr
+
 class Database {
 public:
-	static void connect();
+	typedef boost::thread_specific_ptr<mysqlpp::Connection> tsConn;
+
+	static void connectCharDB();
+	static void connectDataDB();
 	static mysqlpp::Connection & getCharDB();
 	static mysqlpp::Connection & getDataDB();
 private:
-	static mysqlpp::Connection chardb;
-	static mysqlpp::Connection datadb;
+	static tsConn chardb;
+	static tsConn datadb;
 };
 
 inline
 mysqlpp::Connection & Database::getCharDB() {
-	return chardb;
+	if (chardb.get() == 0)
+		connectCharDB();
+	return *chardb.get();
 }
 
 inline
 mysqlpp::Connection & Database::getDataDB() {
-	return datadb;
+	if (datadb.get() == 0)
+		connectDataDB();
+	return *datadb.get();
 }
 
 #endif
