@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 namespace Initializing {
-	void initializeMySQL();
 	void checkSchemaVersion(bool update = false);
 	void setUsersOffline(int32_t onlineid);
 	const int32_t outputWidth = 25;

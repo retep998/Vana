@@ -35,7 +35,6 @@ void ChannelServer::listen() {
 }
 
 void ChannelServer::loadData() {
-	Initializing::initializeMySQL();
 	Initializing::checkSchemaVersion();
 	Initializing::checkMCDBVersion();
 	Initializing::loadData();

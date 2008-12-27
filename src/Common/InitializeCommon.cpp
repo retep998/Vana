@@ -23,12 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-void Initializing::initializeMySQL() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing MySQL... ";
-	Database::connect();
-	std::cout << "DONE" << std::endl;
-}
-
 void Initializing::checkSchemaVersion(bool update) {
 	DatabaseMigration dbMigration(update);
 	
