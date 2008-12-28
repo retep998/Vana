@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="src/Libraries/mysql"
+				AdditionalIncludeDirectories="C:/Program Files/MySQL/MySQL Server 5.1/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;MYSQLPP_NO_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

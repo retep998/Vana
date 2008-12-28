@@ -22,12 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 # include <winsock2.h> // Prevent conflict with boost::asio
 #endif
 
-#define MYSQLPP_MYSQL_HEADERS_BURIED
 #pragma warning(push)
 #pragma warning(disable : 4275)
 #include "mysql++/mysql++.h"
 #pragma warning(pop)
-#undef MYSQLPP_MYSQL_HEADERS_BURIED
 
 #include <boost/thread/tss.hpp> // thread_specific_ptr
 
