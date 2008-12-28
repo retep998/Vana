@@ -103,7 +103,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="src/Libraries/mysql"
+				AdditionalIncludeDirectories="C:/Program Files/MySQL/MySQL Server 5.1/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;MYSQLPP_NO_DLL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
