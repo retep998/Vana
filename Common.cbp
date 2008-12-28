@@ -21,6 +21,7 @@
 					<Add option="-D_DEBUG" />
 					<Add option="-D_CONSOLE" />
 					<Add directory="src/Common" />
+					<Add directory="/usr/include/mysql" />
 				</Compiler>
 				<ResourceCompiler>
 					<Add directory="src/Common" />
@@ -40,6 +41,7 @@
 					<Add option="-DNDEBUG" />
 					<Add option="-D_CONSOLE" />
 					<Add directory="src/Common" />
+					<Add directory="/usr/include/mysql" />
 				</Compiler>
 				<ResourceCompiler>
 					<Add directory="src/Common" />
