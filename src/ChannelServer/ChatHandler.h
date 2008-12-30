@@ -18,10 +18,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CHATHANDLER_H
 #define CHATHANDLER_H
 
+#include <utility>
+#include <unordered_map>
+#include <string>
+
+using std::pair;
+using std::string;
+using std::tr1::unordered_map;
+
 class Player;
 class PacketReader;
 
 namespace ChatHandler {
+	extern enum CMD;
+	extern unordered_map<string, pair<ChatHandler::CMD, int32_t> > commandlist;
+	void initializeCommands();
 	void handleChat(Player *player, PacketReader &packet);
 	void handleGroupChat(Player *player, PacketReader &packet);
 };
