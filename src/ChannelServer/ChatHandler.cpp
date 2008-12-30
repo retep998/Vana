@@ -163,8 +163,8 @@ void ChatHandler::initializeCommands() {
 	commandlist["storage"] = command(CMD_STORAGE, 1);
 	commandlist["eventinstruct"] = command(CMD_EVENTINSTRUCTION, 1);
 	commandlist["save"] = command(CMD_SAVE, 1);
-	commandlist["warp"] = command(CMD_WARP, 1);
 	commandlist["warpto"] = command(CMD_WARPTO, 1);
+	commandlist["killnpc"] = command(CMD_KILLNPC, 1);
 }
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
