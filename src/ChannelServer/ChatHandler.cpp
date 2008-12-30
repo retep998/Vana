@@ -162,7 +162,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["music"] = command(CMD_MUSIC, 1);
 	commandlist["storage"] = command(CMD_STORAGE, 1);
 	commandlist["eventinstruct"] = command(CMD_EVENTINSTRUCTION, 1);
-	commandlist["save"]	= command(CMD_SAVE, 1);
+	commandlist["save"] = command(CMD_SAVE, 1);
 	commandlist["warp"] = command(CMD_WARP, 1);
 	commandlist["warpto"] = command(CMD_WARPTO, 1);
 }
@@ -686,10 +686,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					player->setMP(player->getMMP());
 					break;
 				case CMD_MESOS:
-					if (args.length() != 0) {
-						int32_t mesos = atoi(args.c_str());
-						player->getInventory()->setMesos(mesos);
-					}
+					if (args.length() != 0)
+						player->getInventory()->setMesos(atoi(args.c_str()));
 					break;
 				case CMD_SAVE:
 					player->saveAll();
