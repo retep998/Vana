@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeChannel.h"
+#include "ChatHandler.h"
 #include "DropDataProvider.h"
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
@@ -296,5 +297,11 @@ void Initializing::initializePets() {
 		pet.prob = atoi(petInteractRow[3]);
 		Pets::petsInteractInfo[atoi(petInteractRow[0])][atoi(petInteractRow[1])] = pet;
 	}
+	std::cout << "DONE" << std::endl;
+}
+
+void Initializing::initializeChat() {
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Commands... ";
+	ChatHandler::initializeCommands();
 	std::cout << "DONE" << std::endl;
 }

@@ -27,6 +27,7 @@ namespace Initializing {
 	void initializeQuests();
 	void initializeSkills();
 	void initializePets();
+	void initializeChat();
 
 	const int32_t mcdb_version = 2;
 	const int32_t mcdb_subversion = 3;
