@@ -57,6 +57,7 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, boo
 
 void SkillsPacket::useDash(Player *player, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill) {
 	PacketCreator packet;
+	int16_t castedtime = static_cast<int16_t>(time);
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
 	for (int8_t i = 0; i < 8; i++)
@@ -67,7 +68,7 @@ void SkillsPacket::useDash(Player *player, int32_t time, SkillActiveInfo pskill,
 		packet.addShort(0);
 		packet.addInt(5001005);
 		packet.addInt(880689251); // No idea, hate pirates
-		packet.addShort(time);
+		packet.addShort(castedtime);
 	}
 	packet.addShort(0);
 	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
@@ -86,7 +87,7 @@ void SkillsPacket::useDash(Player *player, int32_t time, SkillActiveInfo pskill,
 		packet.addShort(0);
 		packet.addInt(5001005);
 		packet.addInt(880689251); // No idea, hate pirates
-		packet.addShort(time);
+		packet.addShort(castedtime);
 	}
 	packet.addShort(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
