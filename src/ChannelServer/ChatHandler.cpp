@@ -138,86 +138,102 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					break;
 				case CMD_BAN: {
 					re = "(\\w+) ?(\\d+)?";
-					if (!regex_match(args.c_str(), matches, re)) {
+					if (regex_match(args.c_str(), matches, re)) {
+						string targetname = matches[1];
+						if (Player *target = Players::Instance()->getPlayer(targetname))
+							target->getSession()->disconnect();
+
+						string reasonstring = matches[2];
+						int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
+
+						// Ban account
+						mysqlpp::Query accbanquery = Database::getCharDB().query();
+						accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
+						accbanquery.exec();
+
+						string banmsg = targetname + " has been banned";
+
+						switch (reason) {
+							case 0x01: banmsg += " for hacking."; break;
+							case 0x02: banmsg += " for using macro/auto-keyboard."; break;
+							case 0x03: banmsg += " for illicit promotion or advertising."; break;
+							case 0x04: banmsg += " for harassment."; break;
+							case 0x05: banmsg += " for using profane language."; break;
+							case 0x06: banmsg += " for scamming."; break;
+							case 0x07: banmsg += " for misconduct."; break;
+							case 0x08: banmsg += " for illegal cash transaction."; break;
+							case 0x09: banmsg += " for illegal charging/funding. Please contact customer support for further details."; break;
+							case 0x0A: banmsg += " for temporary request."; break;
+							case 0x0B: banmsg += " for impersonating GM."; break;
+							case 0x0C: banmsg += " for using illegal programs or violating the game policy."; break;
+							case 0x0D: banmsg += " for one of cursing, scamming, or illegal trading via Megaphones."; break;
+							default: banmsg += "."; break;
+						}
+						PlayersPacket::showMessage(banmsg, 0);
+					}
+					else {
 						PlayerPacket::showMessage(player, "Usage: !ban <$playername> [#reason]", 6);
-						return;
 					}
-					string targetname = matches[1];
-					if (Player *target = Players::Instance()->getPlayer(targetname))
-						target->getSession()->disconnect();
-
-					string reasonstring = matches[2];
-					int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
-
-					// Ban account
-					mysqlpp::Query accbanquery = Database::getCharDB().query();
-					accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
-					accbanquery.exec();
-
-					string banmsg = targetname + " has been banned";
-
-					switch (reason) {
-						case 0x01: banmsg += " for hacking."; break;
-						case 0x02: banmsg += " for using macro/auto-keyboard."; break;
-						case 0x03: banmsg += " for illicit promotion or advertising."; break;
-						case 0x04: banmsg += " for harassment."; break;
-						case 0x05: banmsg += " for using profane language."; break;
-						case 0x06: banmsg += " for scamming."; break;
-						case 0x07: banmsg += " for misconduct."; break;
-						case 0x08: banmsg += " for illegal cash transaction."; break;
-						case 0x09: banmsg += " for illegal charging/funding. Please contact customer support for further details."; break;
-						case 0x0A: banmsg += " for temporary request."; break;
-						case 0x0B: banmsg += " for impersonating GM."; break;
-						case 0x0C: banmsg += " for using illegal programs or violating the game policy."; break;
-						case 0x0D: banmsg += " for one of cursing, scamming, or illegal trading via Megaphones."; break;
-						default: banmsg += "."; break;
-					}
-					PlayersPacket::showMessage(banmsg, 0);
 					break;
 				}
 				case CMD_UNBAN: {
-					if (args.length() == 0) {
-						PlayerPacket::showMessage(player, "You must specify a user to unban.", 5);
-						return;
+					if (args.length() != 0) {
+						// Unban account
+						mysqlpp::Query accbanquery = Database::getCharDB().query();
+						accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << args << "'";
+						accbanquery.exec();
+
+						PlayerPacket::showMessage(player, string(args) + " has been unbanned.", 6);
 					}
-
-					// Unban account
-					mysqlpp::Query accbanquery = Database::getCharDB().query();
-					accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << args << "'";
-					accbanquery.exec();
-
-					PlayerPacket::showMessage(player, string(args) + " has been unbanned.", 6);
+					else {
+						PlayerPacket::showMessage(player, "Usage: !unban <$playername>", 6);
+					}
 					break;
 				}
 				case CMD_SHUTDOWN:
 					ChannelServer::Instance()->shutdown();
 					break;
 				case CMD_PACKET: {
-					PacketCreator packet;
-					packet.addBytes(args.c_str());
-					player->getSession()->send(packet);
+					if (args.length() != 0) {
+						PacketCreator packet;
+						packet.addBytes(args.c_str());
+						player->getSession()->send(packet);
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !packet <$hexbytes>", 6);
+					}
 					break;
 				}
 				case CMD_TIMER:
-					MapPacket::showTimer(player, atoi(args.c_str()));
+					if (args.length() != 0)
+						MapPacket::showTimer(player, atoi(args.c_str()));
+					else {
+						PlayerPacket::showMessage(player, "Usage: !timer <#time>", 6);
+					}
 					break;
 				case CMD_INSTRUCTION:
-					if (args.length() == 0) {
-						PlayerPacket::showMessage(player, "No instruction entered.", 5);
-						return;
+					if (args.length() != 0) {
+						for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
+							PlayerPacket::instructionBubble(Maps::getMap(player->getMap())->getPlayer(i), args);
+						}
 					}
-					for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-						PlayerPacket::instructionBubble(Maps::getMap(player->getMap())->getPlayer(i), args);
+					else {
+						PlayerPacket::showMessage(player, "Usage: !instruction <$bubbletext>", 6);
 					}
 					break;
 				case CMD_ADDNPC: {
-					NPCSpawnInfo npc;
-					npc.id = atoi(args.c_str());
-					npc.fh = 0;
-					npc.pos = player->getPos();
-					npc.rx0 = npc.pos.x - 50;
-					npc.rx1 = npc.pos.x + 50;
-					Maps::getMap(player->getMap())->addNPC(npc);
+					if (args.length() != 0) {
+						NPCSpawnInfo npc;
+						npc.id = atoi(args.c_str());
+						npc.fh = 0;
+						npc.pos = player->getPos();
+						npc.rx0 = npc.pos.x - 50;
+						npc.rx1 = npc.pos.x + 50;
+						Maps::getMap(player->getMap())->addNPC(npc);
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !addnpc <#npcid>", 6);
+					}
 					break;
 				}
 				case CMD_ME: {
@@ -226,42 +242,50 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						MeFunctor func = {msg};
 						Players::Instance()->run(func);
 					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !me <$message>", 6);
+					}
 					break;
 				}
 				case CMD_KICK:
-					if (args.length() == 0) return;
-					if (Player *target = Players::Instance()->getPlayer(args)) {
-						if (player->getGMLevel() > target->getGMLevel())
-							target->getSession()->disconnect();
+					if (args.length() != 0) {
+						if (Player *target = Players::Instance()->getPlayer(args)) {
+							if (player->getGMLevel() > target->getGMLevel())
+								target->getSession()->disconnect();
+						}
+						else
+							PlayerPacket::showMessage(player, "Invalid player, player is offline, or player outranks you.", 6);
 					}
-					else
-						PlayerPacket::showMessage(player, "Invalid player or player is offline.", 6);
+					else {
+						PlayerPacket::showMessage(player, "Usage: !kick <$playername>", 6);
+					}
 					break;
 				case CMD_WARP:
 					re = "(\\w+) ?(\\d*)?";
-					if (!regex_match(args.c_str(), matches, re)) {
-						PlayerPacket::showMessage(player, "Usage: !warp <$playername> [#mapid]", 6);
-						return;
-					}
+					if (regex_match(args.c_str(), matches, re)) {
+						if (Player *warpee = Players::Instance()->getPlayer(matches[1])) {
+							string mapstring = matches[2];
+							int32_t mapid = mapstring.length() > 0 ? atoi(mapstring.c_str()) : player->getMap();
 
-					if (Player *warpee = Players::Instance()->getPlayer(matches[1])) {
-						string mapstring = matches[2];
-						int32_t mapid = mapstring.length() > 0 ? atoi(mapstring.c_str()) : player->getMap();
-
-						if (Maps::getMap(mapid)) {
-							Maps::changeMap(warpee, mapid, 0);
+							if (Maps::getMap(mapid)) {
+								Maps::changeMap(warpee, mapid, 0);
+							}
 						}
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !warp <$playername> [#mapid]", 6);
 					}
 					break;
 				case CMD_WARPALL: {
 					int32_t mapid = args.length() != 0 ? atoi(args.c_str()) : player->getMap();
 
-					if (!Maps::getMap(mapid)) {
-						PlayerPacket::showMessage(player, "Invalid Map ID", 6);
-						return;
+					if (Maps::getMap(mapid)) {
+						WarpFunctor func = {mapid, player};
+						Players::Instance()->run(func);
 					}
-					WarpFunctor func = {mapid, player};
-					Players::Instance()->run(func);
+					else {
+						PlayerPacket::showMessage(player, "Invalid Map ID", 6);
+					}
 					break;
 				}
 				case CMD_KILLALL:
@@ -313,158 +337,163 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					break;
-				// Regular GM commands
 				case CMD_LOOKUP: {
 					re = "(\\w+) (.+)";
-					if (!regex_match(args.c_str(), matches, re)) {
-						PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc}> <$search string>", 6);
-						return;
-					}
+					if (regex_match(args.c_str(), matches, re)) {
+						uint16_t type = 0;
+						if (matches[1] == "item") type = 1;
+						else if (matches[1] == "skill") type = 2;
+						else if (matches[1] == "map") type = 3;
+						else if (matches[1] == "mob") type = 4;
+						else if (matches[1] == "npc") type = 5;
 
-					uint16_t type = 0;
-					if (matches[1] == "item") type = 1;
-					else if (matches[1] == "skill") type = 2;
-					else if (matches[1] == "map") type = 3;
-					else if (matches[1] == "mob") type = 4;
-					else if (matches[1] == "npc") type = 5;
+						if (type != 0) {
+							mysqlpp::Query query = Database::getDataDB().query();
+							query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE '%" << matches[2] << "%'";
+							mysqlpp::StoreQueryResult res = query.store();
 
-					if (type != 0) {
-						mysqlpp::Query query = Database::getDataDB().query();
-						query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE '%" << matches[2] << "%'";
-						mysqlpp::StoreQueryResult res = query.store();
-
-						if (res.num_rows() == 0) {
-							PlayerPacket::showMessage(player, "No results", 6);
+							if (res.num_rows() == 0) {
+								PlayerPacket::showMessage(player, "No results", 6);
+							}
+							else {
+								for (size_t i = 0; i < res.num_rows(); i++) {
+									string msg = (string) res[i][0] + " : " + (string) res[i][1];
+									PlayerPacket::showMessage(player, msg, 6);
+								}
+							}
 						}
 						else {
-							for (size_t i = 0; i < res.num_rows(); i++) {
-								string msg = (string) res[i][0] + " : " + (string) res[i][1];
-								PlayerPacket::showMessage(player, msg, 6);
-							}
+							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc}", 6);
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Invalid search type. Please specify one of item, skill, map, mob or npc.", 6);
+						PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc}> <$search string>", 6);
 					}
 					break;
 				}
 				case CMD_MAP: {
-					if (args.length() == 0) {
+					if (args.length() != 0) {
+						int32_t mapid = -1;
+						if (args == "town") mapid = Maps::getMap(player->getMap())->getInfo()->rm;
+						else if (args == "southperry") mapid = 60000;
+						else if (args == "amherst") mapid = 1010000;
+						else if (args == "gm") mapid = 180000000;
+						else if (args == "fm") mapid = 910000000;
+						else if (args == "4th") mapid = 240010501;
+						else if (args == "showa") mapid = 801000000;
+						else if (args == "armory") mapid = 801040004;
+						else if (args == "shrine") mapid = 800000000;
+						else if (args == "mansion") mapid = 682000000;
+						else if (args == "henesys") mapid = 100000000;
+						else if (args == "perion") mapid = 102000000;
+						else if (args == "ellinia") mapid = 101000000;
+						else if (args == "sleepywood") mapid = 105040300;
+						else if (args == "lith") mapid = 104000000;
+						else if (args == "florina") mapid = 110000000;
+						else if (args == "kerning") mapid = 103000000;
+						else if (args == "port") mapid = 120000000;
+						else if (args == "orbis") mapid = 200000000;
+						else if (args == "nath") mapid = 211000000;
+						else if (args == "ludi") mapid = 220000000;
+						else if (args == "kft") mapid = 222000000;
+						else if (args == "aqua") mapid = 230000000;
+						else if (args == "omega") mapid = 221000000;
+						else if (args == "leafre") mapid = 240000000;
+						else if (args == "mulung") mapid = 250000000;
+						else if (args == "herbtown") mapid = 251000000;
+						else if (args == "ariant") mapid = 260000000;
+						else if (args == "nlc") mapid = 600000000;
+						else if (args == "amoria") mapid = 680000000;
+						else if (args == "happyville") mapid = 209000000;
+						else if (args == "crimsonwood") mapid = 610020006;
+						else if (args == "singapore") mapid = 540000000;
+						else if (args == "quay") mapid = 541000000;
+						// Boss maps
+						else if (args == "ergoth") mapid = 990000900;
+						else if (args == "pap") mapid = 220080001;
+						else if (args == "zakum") mapid = 280030000;
+						else if (args == "horntail") mapid = 240060200;
+						else if (args == "lordpirate") mapid = 925100500;
+						else if (args == "alishar") mapid = 922010900;
+						else if (args == "papapixie") mapid = 920010800;
+						else if (args == "kingslime") mapid = 103000804;
+						else if (args == "pianus") mapid = 230040420;
+						else if (args == "manon") mapid = 240020401;
+						else if (args == "griffey") mapid = 240020101;
+						else if (args == "jrbalrog") mapid = 105090900;
+						else if (args == "grandpa") mapid = 801040100;
+						else if (args == "anego") mapid = 801040003;
+						else if (args == "tengu") mapid = 800020130;
+						else {
+							char *endptr;
+							mapid = strtol(args.c_str(), &endptr, 0);
+							if (strlen(endptr) != 0) mapid = -1;
+						}
+						if (Maps::getMap(mapid))
+							Maps::changeMap(player, mapid, 0);
+						else
+							PlayerPacket::showMessage(player, "Invalid Map ID", 6);
+					}
+					else {
 						char msg[60];
 						sprintf(msg, "Current Map: %i", player->getMap());
 						PlayerPacket::showMessage(player, msg, 6);
-						return;
 					}
-					int32_t mapid = -1;
-					if (args == "town") mapid = Maps::getMap(player->getMap())->getInfo()->rm;
-					else if (args == "southperry") mapid = 60000;
-					else if (args == "amherst") mapid = 1010000;
-					else if (args == "gm") mapid = 180000000;
-					else if (args == "fm") mapid = 910000000;
-					else if (args == "4th") mapid = 240010501;
-					else if (args == "showa") mapid = 801000000;
-					else if (args == "armory") mapid = 801040004;
-					else if (args == "shrine") mapid = 800000000;
-					else if (args == "mansion") mapid = 682000000;
-					else if (args == "henesys") mapid = 100000000;
-					else if (args == "perion") mapid = 102000000;
-					else if (args == "ellinia") mapid = 101000000;
-					else if (args == "sleepywood") mapid = 105040300;
-					else if (args == "lith") mapid = 104000000;
-					else if (args == "florina") mapid = 110000000;
-					else if (args == "kerning") mapid = 103000000;
-					else if (args == "port") mapid = 120000000;
-					else if (args == "orbis") mapid = 200000000;
-					else if (args == "nath") mapid = 211000000;
-					else if (args == "ludi") mapid = 220000000;
-					else if (args == "kft") mapid = 222000000;
-					else if (args == "aqua") mapid = 230000000;
-					else if (args == "omega") mapid = 221000000;
-					else if (args == "leafre") mapid = 240000000;
-					else if (args == "mulung") mapid = 250000000;
-					else if (args == "herbtown") mapid = 251000000;
-					else if (args == "ariant") mapid = 260000000;
-					else if (args == "nlc") mapid = 600000000;
-					else if (args == "amoria") mapid = 680000000;
-					else if (args == "happyville") mapid = 209000000;
-					else if (args == "crimsonwood") mapid = 610020006;
-					else if (args == "singapore") mapid = 540000000;
-					else if (args == "quay") mapid = 541000000;
-					// Boss maps
-					else if (args == "ergoth") mapid = 990000900;
-					else if (args == "pap") mapid = 220080001;
-					else if (args == "zakum") mapid = 280030000;
-					else if (args == "horntail") mapid = 240060200;
-					else if (args == "lordpirate") mapid = 925100500;
-					else if (args == "alishar") mapid = 922010900;
-					else if (args == "papapixie") mapid = 920010800;
-					else if (args == "kingslime") mapid = 103000804;
-					else if (args == "pianus") mapid = 230040420;
-					else if (args == "manon") mapid = 240020401;
-					else if (args == "griffey") mapid = 240020101;
-					else if (args == "jrbalrog") mapid = 105090900;
-					else if (args == "grandpa") mapid = 801040100;
-					else if (args == "anego") mapid = 801040003;
-					else if (args == "tengu") mapid = 800020130;
-					else {
-						char *endptr;
-						mapid = strtol(args.c_str(), &endptr, 0);
-						if (strlen(endptr) != 0) mapid = -1;
-					}
-					if (Maps::getMap(mapid))
-						Maps::changeMap(player, mapid, 0);
-					else
-						PlayerPacket::showMessage(player, "Invalid map entered.", 5);
 					break;
 				}
 				case CMD_NPC: {
-					int32_t npcid = atoi(args.c_str());
-					NPC *npc = new NPC(npcid, player);
-					npc->run();
+					if (args.length() != 0) {
+						int32_t npcid = atoi(args.c_str());
+						NPC *npc = new NPC(npcid, player);
+						npc->run();
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !npc <#npcid>", 6);
+					}
 					break;
 				}
 				case CMD_ADDSP: {
 					re = "(\\d+) ?(\\d+)?";
-					if (!regex_match(args.c_str(), matches, re)) {
+					if (regex_match(args.c_str(), matches, re)) {
+						int32_t skillid = atoi(string(matches[1]).c_str());
+						if (Skills::skills.find(skillid) != Skills::skills.end()) { // Don't allow skills that do not exist to be added
+							string countstring = matches[2];
+							uint8_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
+
+							player->getSkills()->addSkillLevel(skillid, count);
+						}
+						else {
+							PlayerPacket::showMessage(player, "Invalid Skill ID", 6);
+						}
+					}
+					else {
 						PlayerPacket::showMessage(player, "Usage: !addsp <#skillid> [#amount]", 6);
-						return;
 					}
-
-					int32_t skillid = atoi(string(matches[1]).c_str());
-					if (Skills::skills.find(skillid) == Skills::skills.end()) { // Don't allow skills that do not exist to be added
-						PlayerPacket::showMessage(player, "Invalid Skill ID.", 6);
-						return;
-					}
-					string countstring = matches[2];
-					uint8_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
-
-					player->getSkills()->addSkillLevel(skillid, count);
 					break;
 				}
 				case CMD_SUMMON: {
 					re = "(\\d+) ?(\\d+)?";
-					if (!regex_match(args.c_str(), matches, re)) {
+					if (regex_match(args.c_str(), matches, re)) {
+						int32_t mobid = atoi(string(matches[1]).c_str());
+						if (MobDataProvider::Instance()->mobExists(mobid)) {
+							string countstring = matches[2];
+							int32_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
+							for (int32_t i = 0; i < count && i < 100; i++) {
+								Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
+							}
+						}
+						else {
+							PlayerPacket::showMessage(player, "Invalid Mob ID", 6);
+						}
+					}
+					else {
 						PlayerPacket::showMessage(player, "Usage: !" + command + " <#mobid> [#amount]", 6);
-						return;
-					}
-					int32_t mobid = atoi(string(matches[1]).c_str());
-					if (!MobDataProvider::Instance()->mobExists(mobid)) {
-						PlayerPacket::showMessage(player, "Invalid Mob ID.", 6);
-						return;
-					}
-					string countstring = matches[2];
-					int32_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
-					for (int32_t i = 0; i < count && i < 100; i++) {
-						Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
 					}
 					break;
 				}
 				case CMD_NOTICE:
-					if (args.length() == 0) {
-						PlayerPacket::showMessage(player, "No text to send.", 6);
-						return;
-					}
-					PlayersPacket::showMessage(args, 0);
+					if (args.length() != 0)
+						PlayersPacket::showMessage(args, 0);
 					break;
 				case CMD_MAXSTATS:
 					player->setFame(30000);
@@ -512,22 +541,28 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				case CMD_FAME:
-					player->setFame(atoi(args.c_str()));
+					if (args.length() != 0)
+						player->setFame(atoi(args.c_str()));
 					break;
 				case CMD_SHOP: {
-					int32_t shopid = -1;
-					if (args == "gear") shopid = 9999999;
-					else if (args == "scrolls") shopid = 9999998;
-					else if (args == "nx") shopid = 9999997;
-					else if (args == "face") shopid = 9999996;
-					else if (args == "ring") shopid = 9999995;
-					else if (args == "chair") shopid = 9999994;
-					else if (args == "mega") shopid = 9999993;
-					else if (args == "pet") shopid = 9999992;
-					else shopid = atoi(args.c_str());
+					if (args.length() != 0) {
+						int32_t shopid = -1;
+						if (args == "gear") shopid = 9999999;
+						else if (args == "scrolls") shopid = 9999998;
+						else if (args == "nx") shopid = 9999997;
+						else if (args == "face") shopid = 9999996;
+						else if (args == "ring") shopid = 9999995;
+						else if (args == "chair") shopid = 9999994;
+						else if (args == "mega") shopid = 9999993;
+						else if (args == "pet") shopid = 9999992;
+						else shopid = atoi(args.c_str());
 
-					if (!ShopDataProvider::Instance()->showShop(player, shopid)) {
-						PlayerPacket::showMessage(player, "Invalid shop. Available shops: gear, scrolls, nx, face, ring, chair, mega, pet", 6);
+						if (!ShopDataProvider::Instance()->showShop(player, shopid)) {
+							PlayerPacket::showMessage(player, "Invalid shop - valid shops: {gear, scrolls, nx, face, ring, chair, mega, pet} or shop ID", 6);
+						}
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !shop <${item | skill | map | mob | npc} | #shopid>", 6);
 					}
 					break;
 				}
@@ -539,18 +574,20 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				}
 				case CMD_ITEM: {
 					re = "(\\d+) ?(\\d*)?";
-					if (!regex_match(args.c_str(), matches, re)) {
+					if (regex_match(args.c_str(), matches, re)) {
+						int32_t itemid = atoi(string(matches[1]).c_str());
+						if (ItemDataProvider::Instance()->itemExists(itemid)) {
+							string countstring = matches[2];
+							uint16_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
+							Inventory::addNewItem(player, itemid, count);
+						}
+						else {
+							PlayerPacket::showMessage(player, "Invalid Item ID", 6);
+						}
+					}
+					else {
 						PlayerPacket::showMessage(player, "Usage: !item <#itemid> [#amount]", 6);
-						return;
 					}
-					int32_t itemid = atoi(string(matches[1]).c_str());
-					if (!ItemDataProvider::Instance()->itemExists(itemid)) {
-						PlayerPacket::showMessage(player, "Invalid item ID", 6);
-						return;
-					}
-					string countstring = matches[2];
-					uint16_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
-					Inventory::addNewItem(player, itemid, count);
 					break;
 				}
 				case CMD_LEVEL:
@@ -558,62 +595,62 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						player->setLevel(atoi(args.c_str()));
 					break;
 				case CMD_JOB: {
-					if (args.length() == 0) {
+					if (args.length() != 0) {
+						int16_t job = -1;
+						if (args == "beginner") job = 0;
+						else if (args == "warrior") job = 100;
+						else if (args == "fighter") job = 110;
+						else if (args == "sader") job = 111;
+						else if (args == "hero") job = 112;
+						else if (args == "page") job = 120;
+						else if (args == "wk") job = 121;
+						else if (args == "paladin") job = 122;
+						else if (args == "spearman") job = 130;
+						else if (args == "dk") job  = 131;
+						else if (args == "drk") job = 132;
+						else if (args == "mage") job = 200;
+						else if (args == "fpwiz") job = 210;
+						else if (args == "fpmage") job = 211;
+						else if (args == "fparch") job = 212;
+						else if (args == "ilwiz") job = 220;
+						else if (args == "ilmage") job = 221;
+						else if (args == "ilarch") job = 222;
+						else if (args == "cleric") job = 230;
+						else if (args == "priest") job = 231;
+						else if (args == "bishop") job = 232;
+						else if (args == "bowman") job = 300;
+						else if (args == "hunter") job = 310;
+						else if (args == "ranger") job = 311;
+						else if (args == "bm") job = 312;
+						else if (args == "xbowman") job = 320;
+						else if (args == "sniper") job = 321;
+						else if (args == "marksman") job = 322;
+						else if (args == "thief") job = 400;
+						else if (args == "sin") job = 410;
+						else if (args == "hermit") job = 411;
+						else if (args == "nl") job = 412;
+						else if (args == "dit") job = 420;
+						else if (args == "cb") job = 421;
+						else if (args == "shadower") job = 422;
+						else if (args == "pirate") job = 500;
+						else if (args == "infighter") job = 510;
+						else if (args == "buccaneer") job = 511;
+						else if (args == "viper") job = 512;
+						else if (args == "gunslinger") job = 520;
+						else if (args == "valkyrie") job = 521;
+						else if (args == "captain") job = 522;
+						else if (args == "gm") job = 900;
+						else if (args == "sgm") job = 910;
+						else job = atoi(args.c_str());
+
+						if (job >= 0)
+							player->setJob(job);
+					}
+					else {
 						char msg[60];
 						sprintf(msg, "Current Job: %i", player->getJob());
 						PlayerPacket::showMessage(player, msg, 6);
-						return;
 					}
-
-					int16_t job = -1;
-					if (args == "beginner") job = 0;
-					else if (args == "warrior") job = 100;
-					else if (args == "fighter") job = 110;
-					else if (args == "sader") job = 111;
-					else if (args == "hero") job = 112;
-					else if (args == "page") job = 120;
-					else if (args == "wk") job = 121;
-					else if (args == "paladin") job = 122;
-					else if (args == "spearman") job = 130;
-					else if (args == "dk") job  = 131;
-					else if (args == "drk") job = 132;
-					else if (args == "mage") job = 200;
-					else if (args == "fpwiz") job = 210;
-					else if (args == "fpmage") job = 211;
-					else if (args == "fparch") job = 212;
-					else if (args == "ilwiz") job = 220;
-					else if (args == "ilmage") job = 221;
-					else if (args == "ilarch") job = 222;
-					else if (args == "cleric") job = 230;
-					else if (args == "priest") job = 231;
-					else if (args == "bishop") job = 232;
-					else if (args == "bowman") job = 300;
-					else if (args == "hunter") job = 310;
-					else if (args == "ranger") job = 311;
-					else if (args == "bm") job = 312;
-					else if (args == "xbowman") job = 320;
-					else if (args == "sniper") job = 321;
-					else if (args == "marksman") job = 322;
-					else if (args == "thief") job = 400;
-					else if (args == "sin") job = 410;
-					else if (args == "hermit") job = 411;
-					else if (args == "nl") job = 412;
-					else if (args == "dit") job = 420;
-					else if (args == "cb") job = 421;
-					else if (args == "shadower") job = 422;
-					else if (args == "pirate") job = 500;
-					else if (args == "infighter") job = 510;
-					else if (args == "buccaneer") job = 511;
-					else if (args == "viper") job = 512;
-					else if (args == "gunslinger") job = 520;
-					else if (args == "valkyrie") job = 521;
-					else if (args == "captain") job = 522;
-					else if (args == "gm") job = 900;
-					else if (args == "sgm") job = 910;
-					else job = atoi(args.c_str());
-
-					if (job >= 0)
-						player->setJob(job);
 					break;
 				}
 				case CMD_AP:
@@ -646,7 +683,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				case CMD_WARPTO:
 					Player *warptoee;
 					if (warptoee = Players::Instance()->getPlayer(args)) {
-						Maps::changeMap(player , warptoee->getMap(), 0);
+						Maps::changeMap(player, warptoee->getMap(), 0);
 					}
 					break;
 				case CMD_ZAKUM:
@@ -665,7 +702,6 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					break;
 				case CMD_DC:
 					player->getSession()->disconnect();
-					return;
 					break;
 				case CMD_EVENTINSTRUCTION:
 					MapPacket::showEventInstructions(player->getMap());
