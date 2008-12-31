@@ -162,11 +162,11 @@ void Player::playerConnect(PacketReader &packet) {
 	gm			= res[0]["gm"];
 	eyes		= res[0]["eyes"];
 	hair		= res[0]["hair"];
-	world_id	= static_cast<uint8_t>(res[0]["world_id"]);
-	gender		= static_cast<uint8_t>(res[0]["gender"]);
-	skin		= static_cast<uint8_t>(res[0]["skin"]);
+	world_id	= static_cast<int8_t>(res[0]["world_id"]);
+	gender		= static_cast<int8_t>(res[0]["gender"]);
+	skin		= static_cast<int8_t>(res[0]["skin"]);
+	mappos		= static_cast<int8_t>(res[0]["pos"]);
 	level		= static_cast<uint8_t>(res[0]["level"]);
-	mappos		= static_cast<uint8_t>(res[0]["pos"]);
 	job			= static_cast<int16_t>(res[0]["job"]);
 	str			= static_cast<int16_t>(res[0]["str"]);
 	dex			= static_cast<int16_t>(res[0]["dex"]);
@@ -176,11 +176,11 @@ void Player::playerConnect(PacketReader &packet) {
 	rmhp = mhp	= static_cast<int16_t>(res[0]["mhp"]);
 	mp			= static_cast<int16_t>(res[0]["cmp"]);
 	rmmp = mmp	= static_cast<int16_t>(res[0]["mmp"]);
-	hpmp_ap		= static_cast<int16_t>(res[0]["hpmp_ap"]);
 	ap			= static_cast<int16_t>(res[0]["ap"]);
 	sp			= static_cast<int16_t>(res[0]["sp"]);
 	fame		= static_cast<int16_t>(res[0]["fame"]);
-	buddylist_size = res[0]["buddylist_size"];
+	hpmp_ap		= static_cast<uint16_t>(res[0]["hpmp_ap"]);
+	buddylist_size = static_cast<uint32_t>(res[0]["buddylist_size"]);
 
 	// Inventory
 	uint8_t maxslots[5];
