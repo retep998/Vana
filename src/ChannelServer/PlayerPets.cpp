@@ -23,7 +23,7 @@ void PlayerPets::addPet(Pet *pet) {
 	playerpets[pet->getId()] = pet;
 
 	if (pet->getIndex() != -1) {
-		setSummoned(pet->getId(), pet->getIndex());
+		setSummoned(pet->getIndex(), pet->getId());
 	}
 }
 
