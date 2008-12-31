@@ -453,7 +453,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					break;
 				}
 				case CMD_ADDSP: {
-					re = "(\\d+) ?(\\d+)?";
+					re = "(\\d+) ?(-{0,1}\\d+)?";
 					if (regex_match(args.c_str(), matches, re)) {
 						int32_t skillid = atoi(string(matches[1]).c_str());
 						if (Skills::skills.find(skillid) != Skills::skills.end()) { // Don't allow skills that do not exist to be added
