@@ -300,7 +300,7 @@ elseif state == 4 then
 					addText("Check and see if you are either lacking #b#t4001129##k or if your Equipment inventory is full.");
 					sendNext();
 				else
-					takeItem(4001129, rewardpair[2] * -1);
+					giveItem(4001129, rewardpair[2] * -1);
 					giveItem(rewardpair[1], 1);
 				end
 				endNPC();
