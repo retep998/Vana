@@ -20,6 +20,7 @@
 					<Add option="-D_CONSOLE" />
 					<Add directory="src/Common" />
 					<Add directory="/usr/include/mysql" />
+					<Add directory="/usr/include/mysql++" />
 				</Compiler>
 				<ResourceCompiler>
 					<Add directory="src/Common" />
@@ -48,6 +49,7 @@
 					<Add option="-D_CONSOLE" />
 					<Add directory="src/Common" />
 					<Add directory="/usr/include/mysql" />
+					<Add directory="/usr/include/mysql++" />
 				</Compiler>
 				<ResourceCompiler>
 					<Add directory="src/Common" />

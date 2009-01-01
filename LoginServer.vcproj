@@ -42,8 +42,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;src/Libraries;src/Libraries/lua;$(ProgramFiles)/boost/boost_1_37_0/"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;MYSQLPP_NO_DLL;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;C:/MySQL++/include;src/Libraries/lua;$(ProgramFiles)/boost/boost_1_37_0/"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -64,10 +64,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysql++.lib lua.lib common.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua.lib common.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(ConfigurationName)/Common;$(ConfigurationName)/lua;$(ConfigurationName)/mysql++;$(ProgramFiles)/boost/boost_1_37_0/lib"
+				AdditionalLibraryDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(ConfigurationName)/Common;$(ConfigurationName)/lua;C:/MySQL++/lib;$(ProgramFiles)/boost/boost_1_37_0/lib"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				SubSystem="1"
@@ -122,8 +122,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;src/Libraries;src/Libraries/lua;$(ProgramFiles)/boost/boost_1_37_0/"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;MYSQLPP_NO_DLL;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;C:/MySQL++/include;src/Libraries/lua;$(ProgramFiles)/boost/boost_1_37_0/"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -143,10 +143,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libmysql.lib mysql++.lib lua.lib common.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.lib common.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(ConfigurationName)/Common;$(ConfigurationName)/lua;$(ConfigurationName)/mysql++;$(ProgramFiles)/boost/boost_1_37_0/lib"
+				AdditionalLibraryDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(ConfigurationName)/Common;$(ConfigurationName)/lua;C:/MySQL++/lib;$(ProgramFiles)/boost/boost_1_37_0/lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
