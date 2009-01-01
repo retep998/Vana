@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma warning(push)
 #pragma warning(disable : 4275)
-#include "mysql++/mysql++.h"
+#include "mysql++.h"
 #pragma warning(pop)
 
 #include <boost/thread/tss.hpp> // thread_specific_ptr

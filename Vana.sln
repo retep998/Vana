@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C++ Express 2008
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChannelServer", "ChannelServer.vcproj", "{F07865A8-3A41-48D8-809C-056CC906A50B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CFFE2EE8-4188-4E42-B76C-8005041C2877} = {CFFE2EE8-4188-4E42-B76C-8005041C2877}
@@ -18,13 +18,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldServer", "WorldServer.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common.vcproj", "{CFFE2EE8-4188-4E42-B76C-8005041C2877}"
 	ProjectSection(ProjectDependencies) = postProject
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A} = {662FC189-E1C1-4269-AA15-3AECB9BA188A}
 		{B7644ACF-7964-46A2-85EE-71B905F376A8} = {B7644ACF-7964-46A2-85EE-71B905F376A8}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "Lua.vcproj", "{B7644ACF-7964-46A2-85EE-71B905F376A8}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mysql++", "mysql++.vcproj", "{662FC189-E1C1-4269-AA15-3AECB9BA188A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,16 +83,6 @@ Global
 		{B7644ACF-7964-46A2-85EE-71B905F376A8}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{B7644ACF-7964-46A2-85EE-71B905F376A8}.Release|Win32.ActiveCfg = Release|Win32
 		{B7644ACF-7964-46A2-85EE-71B905F376A8}.Release|Win32.Build.0 = Release|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Debug|Win32.Build.0 = Debug|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Release|Any CPU.ActiveCfg = Release|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Release|Win32.ActiveCfg = Release|Win32
-		{662FC189-E1C1-4269-AA15-3AECB9BA188A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
