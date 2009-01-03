@@ -186,7 +186,7 @@ void Mob::die(Player *player) {
 	if (hassummons) {
 		new Timer::Timer(bind(&Mob::deathSpawn, this),
 			Timer::Id(Timer::Types::MobDeathTimer, id, 0),
-			0, Timer::Time::fromNow(info.deathdelay * 1000));
+			0, Timer::Time::fromNow(info.deathdelay));
 	}
 
 	MobsPacket::dieMob(this);
