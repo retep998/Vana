@@ -71,7 +71,10 @@
 		<Unit filename="src/WorldServer/Players.cpp" />
 		<Unit filename="src/WorldServer/Players.h" />
 		<Unit filename="src/WorldServer/PrecompiledHeader.cpp" />
-		<Unit filename="src/WorldServer/PrecompiledHeader.h" />
+		<Unit filename="src/WorldServer/PrecompiledHeader.h">
+			<Option compile="1" />
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="src/WorldServer/WorldServer.cpp" />
 		<Unit filename="src/WorldServer/WorldServer.h" />
 		<Unit filename="src/WorldServer/WorldServerAcceptHandler.cpp" />

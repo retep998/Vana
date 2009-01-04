@@ -94,7 +94,10 @@
 		<Unit filename="src/Common/PingPacket.h" />
 		<Unit filename="src/Common/Pos.h" />
 		<Unit filename="src/Common/PrecompiledHeader.cpp" />
-		<Unit filename="src/Common/PrecompiledHeader.h" />
+		<Unit filename="src/Common/PrecompiledHeader.h">
+			<Option compile="1" />
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="src/Common/Randomizer.cpp" />
 		<Unit filename="src/Common/Randomizer.h" />
 		<Unit filename="src/Common/Rates.h" />
