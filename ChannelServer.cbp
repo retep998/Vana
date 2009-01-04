@@ -170,7 +170,10 @@
 		<Unit filename="src/ChannelServer/PlayersPacket.cpp" />
 		<Unit filename="src/ChannelServer/PlayersPacket.h" />
 		<Unit filename="src/ChannelServer/PrecompiledHeader.cpp" />
-		<Unit filename="src/ChannelServer/PrecompiledHeader.h" />
+		<Unit filename="src/ChannelServer/PrecompiledHeader.h">
+			<Option compile="1" />
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="src/ChannelServer/Quests.cpp" />
 		<Unit filename="src/ChannelServer/Quests.h" />
 		<Unit filename="src/ChannelServer/QuestsPacket.cpp" />
