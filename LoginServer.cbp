@@ -86,6 +86,7 @@
 		<Unit filename="src/LoginServer/PlayerLogin.cpp" />
 		<Unit filename="src/LoginServer/PlayerLogin.h" />
 		<Unit filename="src/LoginServer/PrecompiledHeader.cpp" />
+		<Unit filename="src/LoginServer/PrecompiledHeader.h" />
 		<Unit filename="src/LoginServer/Worlds.cpp" />
 		<Unit filename="src/LoginServer/Worlds.h" />
 		<Unit filename="src/LoginServer/main_login.cpp" />
