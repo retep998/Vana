@@ -48,7 +48,6 @@ struct MobInfo {
 	bool canpoison;
 	int8_t hpcolor;
 	int8_t hpbgcolor;
-	int32_t deathdelay;
 	vector<int32_t> summon;
 	vector<MobAttackInfo> skills;
 };
