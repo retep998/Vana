@@ -91,7 +91,6 @@ public:
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
 	void endControl();
-	void deathSpawn();
 	void cleanHorntail(int32_t mapid, Player *player);
 
 	int16_t getOriginFH() const { return originfh; }

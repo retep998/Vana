@@ -76,10 +76,10 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 		}
 
 		if (hp == 0) { // Time to die
-			if (mobid == 8810018) { // Horntail damage sponge, we want to be sure that his parts have spawned after death animations before we clean up
+			if (mobid == 8810018) { // Horntail damage sponge, we want to be sure that his parts have spawned after death before we clean up
 				new Timer::Timer(bind(&Mob::cleanHorntail, this, mapid, player),
-					Timer::Id(Timer::Types::MobDeathTimer, id, 1),
-					0, Timer::Time::fromNow(2100)); // 2000 is longest Horntail part death
+					Timer::Id(Timer::Types::HorntailTimer, id, 0),
+					0, Timer::Time::fromNow(100));
 			}
 			die(Players::Instance()->getPlayer(playerid));
 		}
@@ -181,12 +181,9 @@ void Mob::die(Player *player) {
 		Levels::giveEXP(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
 	}
 
-	// Spawn mob(s) the mob is supposed to spawn when it dies - but only if there are summons to worry about
-	bool hassummons = (info.summon.size() > 0);
-	if (hassummons) {
-		new Timer::Timer(bind(&Mob::deathSpawn, this),
-			Timer::Id(Timer::Types::MobDeathTimer, id, 0),
-			0, Timer::Time::fromNow(info.deathdelay));
+	// Spawn mob(s) the mob is supposed to spawn when it dies
+	for (size_t i = 0; i < info.summon.size(); i++) {
+		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, 0, this);
 	}
 
 	MobsPacket::dieMob(this);
@@ -194,9 +191,7 @@ void Mob::die(Player *player) {
 	player->getQuests()->updateQuestMob(mobid);
 	Maps::getMap(mapid)->removeMob(id, spawnid);
 
-	if (!hassummons) { // Delay the delete for summons so the mob's data can still be used
-		delete this;
-	}
+	delete this;
 }
 
 void Mob::die(bool showpacket) {
@@ -205,13 +200,6 @@ void Mob::die(bool showpacket) {
 		MobsPacket::dieMob(this);
 	}
 	Maps::getMap(mapid)->removeMob(id, spawnid);
-	delete this;
-}
-
-void Mob::deathSpawn() {
-	for (size_t i = 0; i < info.summon.size(); i++) {
-		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, 0, this);
-	}
 	delete this;
 }
 

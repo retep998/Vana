@@ -31,7 +31,7 @@ struct Types {
 		ReactionTimer,
 		SkillActTimer,
 		TradeTimer,
-		MobDeathTimer
+		HorntailTimer
 	};
 };
 
