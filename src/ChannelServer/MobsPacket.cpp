@@ -34,10 +34,10 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool spawn, bool
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 	packet.addInt(0);
 	packet.addPos(mob->getPos());
-	packet.addByte(2); // Not stance, exploring further
+	packet.addByte(owner != 0 ? 0x08 : 0x02); // Not stance, exploring further
 	packet.addShort(mob->getFH());
 	packet.addShort(mob->getOriginFH());
-	packet.addByte(spawn ? -2 : -1);
+	packet.addByte(owner != 0 ? -3 : spawn ? -2 : -1);
 	if (owner != 0)
 		packet.addInt(owner->getID());
 	packet.addByte(-1);
