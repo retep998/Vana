@@ -47,8 +47,7 @@ void MobDataProvider::loadData() {
 		//    8 : Boss
 		//    9 : HP Color
 		//   10 : HP BG Color
-		//   11 : Death Delay (In milliseconds)
-		//   12 : Mob Summon
+		//   11 : Mob Summon
 		int32_t mobid = atoi(mobRow[0]);
 
 		if (mobinfo.find(mobid) == mobinfo.end()) {
@@ -70,8 +69,8 @@ void MobDataProvider::loadData() {
 			mobinfo[mobid] = mob;
 		}
 
-		if (mobRow[12] != 0) {
-			mobinfo[mobid].summon.push_back(atoi(mobRow[12]));
+		if (mobRow[11] != 0) {
+			mobinfo[mobid].summon.push_back(atoi(mobRow[11]));
 		}
 
 	}
