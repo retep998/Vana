@@ -15,45 +15,52 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Mr. Smith - Item Creator
+-- Mr. Smith - Item Creator (Perion)
 
 dofile("scripts/lua_functions/hasResources.lua");
 dofile("scripts/lua_functions/takeResources.lua");
 
-makeids = {1082003, 1082000, 1082004, 1082007, 1082008, 1082023, 1082009, 1082059};
-makereqs = {
-		{4000021, 15, 4011001, 1, 4031138, 1000},
-		{4011001, 2, 4031138, 2000},
-		{4000021, 40, 4011000, 2, 4031138, 5000},
-		{4011001, 2, 4031138, 10000},
-		{4011000, 3, 4003000, 15, 4031138, 20000},
-		{4000021, 30, 4011001, 4, 4003000, 30, 4031138, 30000},
-		{4000021, 50, 4011001, 5, 4003000, 40, 4031138, 40000},
-		{4011001, 3, 4021007, 2, 4000030, 30, 4003000, 45, 4031138, 50000},
-		{4011007, 1, 4011000, 8, 4011006, 2, 4000030, 50, 4003000, 50, 4031138, 70000}
-	   };
 
-upgradeids = {1082005, 1082006, 1082035, 1082036, 1082024, 1082025, 1082010, 1082011, 1082060, 1082061};
-upgradereqs = {
-		{1082007, 1, 4011001, 1, 4031138, 20000},
-		{1082007, 1, 4011005, 2, 4031138, 25000},
-		{1082008, 1, 4021006, 3, 4031138, 30000},
-		{1082008, 1, 4021008, 1, 4031138, 40000},
-		{1082023, 1, 4011003, 4, 4031138, 45000},
-		{1082023, 1, 4021008, 2, 4031138, 50000},
-		{1082009, 1, 4011002, 5, 4031138, 55000},
-		{1082009, 1, 4011006, 4, 4031138, 60000},
-		{1082059, 1, 4011002, 3, 4021005, 5, 4031138, 70000},
-		{1082059, 1, 4021007, 2, 4021008, 2, 4031138, 80000}
-	      };
+if defined == nil or defined == false then
+	makeids = {1082003, 1082000, 1082004, 1082001, 1082007, 1082008, 1082023, 1082009, 1082059};
+	makelimits = {10, 15, 20, 25, 30, 35, 40, 50, 60};
+	makereqs = {
+			{4000021, 15, 4011001, 1, 4031138, 1000},
+			{4011001, 2, 4031138, 2000},
+			{4000021, 40, 4011000, 2, 4031138, 5000},
+			{4011001, 2, 4031138, 10000},
+			{4011000, 3, 4003000, 15, 4031138, 20000},
+			{4000021, 30, 4011001, 4, 4003000, 30, 4031138, 30000},
+			{4000021, 50, 4011001, 5, 4003000, 40, 4031138, 40000},
+			{4011001, 3, 4021007, 2, 4000030, 30, 4003000, 45, 4031138, 50000},
+			{4011007, 1, 4011000, 8, 4011006, 2, 4000030, 50, 4003000, 50, 4031138, 70000}
+		   };
 
-materialids = {4003001, 4003001, 4003000};
-materialamts = {1, 1, 15};
-materialreqs = {
-		{4000003, 10},
-		{4000018, 5},
-		{4011000, 1, 4011001, 1}
-	       };
+	upgradeids = {1082005, 1082006, 1082035, 1082036, 1082024, 1082025, 1082010, 1082011, 1082060, 1082061};
+	upgradelimits = {30, 30, 35, 35, 40, 40, 50, 50, 60, 60};
+	upgradereqs = {
+			{1082007, 1, 4011001, 1, 4031138, 20000},
+			{1082007, 1, 4011005, 2, 4031138, 25000},
+			{1082008, 1, 4021006, 3, 4031138, 30000},
+			{1082008, 1, 4021008, 1, 4031138, 40000},
+			{1082023, 1, 4011003, 4, 4031138, 45000},
+			{1082023, 1, 4021008, 2, 4031138, 50000},
+			{1082009, 1, 4011002, 5, 4031138, 55000},
+			{1082009, 1, 4011006, 4, 4031138, 60000},
+			{1082059, 1, 4011002, 3, 4021005, 5, 4031138, 70000},
+			{1082059, 1, 4021007, 2, 4021008, 2, 4031138, 80000}
+		      };
+
+	materialids = {4003001, 4003001, 4003000};
+	materialamts = {1, 1, 15};
+	materialreqs = {
+			{4000003, 10},
+			{4000018, 5},
+			{4011000, 1, 4011001, 1}
+		       };
+
+	defined = true;
+end
 
 if state == 0 then
 	addText("I am Mr. Thunder's apprentice. He's gettin up there with age, and he isn't what he used to be...haha, oh crap, please don't tell him that I said that...Anyway...I can make various items specifically designed for the warriors, so what do you think? Wanna leave it up to me?");
@@ -100,57 +107,19 @@ elseif state == 3 then
 	if where == 0 then
 		glove = makeids[what + 1];
 		reqs = makereqs[what + 1];
-		if what == 0 then
-			addText("To make one #t1082003#, I need the following items. The level limit is 10 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v4000021# 15 #t4000021#s\r\n");
-			addText("#v4011001# #t4011001# \r\n");
-			addText("#v4031138# 1000 mesos");
-		elseif what == 1 then
-			addText("To make one #t1082000#, I need the following items. The level limit is 15 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v4011001# 2 #t4011001#s \r\n");
-			addText("#v4031138# 2000 mesos");
-		elseif what == 2 then
-			addText("To make one #t1082004#, I need the following items. The level limit is 20 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v4000021# 40 #t4000021#s \r\n");
-			addText("#v4011000# 2 #t4011000#s \r\n");
-			addText("#v4031138# 5000 mesos");
-		elseif what == 3 then
-			addText("To make one #t1082001#, I need the following items. The level limit is 25 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v4011001# 2 #t4011001#s \r\n");
-			addText("#v4031138# 10000 mesos");
-		elseif what == 4 then
-			addText("To make one #t1082007#, I need the following items. The level limit is 30 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v4011000# 3 #t4011000#s \r\n");
-			addText("#v4011001# 2 #t4011001#s \r\n");
-			addText("#v4003000# 15 #t4003000#s \r\n");
-			addText("#v4031138# 20000 mesos");
-		elseif what == 5 then
-			addText("To make one #t1082008#, I need the following items. The level limit is 35 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v4000021# 30 #t4000021#s \r\n");
-			addText("#v4011001#  4 #t4011001#s \r\n");
-			addText("#v4003000# 30 #t4003000#s \r\n");
-			addText("#v4031138# 30000 mesos");
-		elseif what == 6 then
-			addText("To make one #t1082023#, I need the following items. The level limit is 40 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v4000021# 50 #t4000021#s \r\n");
-			addText("#v4011001# 5 #t4011001#s \r\n");
-			addText("#v4003000# 40 #t4003000#s \r\n");
-			addText("#v4031138# 40000 mesos");
-		elseif what == 7 then
-			addText("To make one #t1082009#, I need the following items. The level limit is 50 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v4011001# 3 #t4011001#s \r\n");
-			addText("#v4021007# 2 #t4021007#s \r\n");
-			addText("#v4000030# 30 #t4000030#s \r\n");
-			addText("#v4003000# 45 #t4003000#s \r\n");
-			addText("#v4031138# 50000 mesos");
-		elseif what == 8 then
-			addText("To make one #t1082059#, I need the following items. The level limit is 60 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v4011007# #t4011007# \r\n");
-			addText("#v4011000# 8 #t4011000#s \r\n");
-			addText("#v4011006# 2 #t4011006#s \r\n");
-			addText("#v4000030# 50 #t4000030#s \r\n");
-			addText("#v4003000# 50 #t4003000#s \r\n");
-			addText("#v4031138# 70000 mesos");
+		level = makelimits[what + 1];
+		addText("To make one #t" .. glove .. "#, I need the following items. The level limit is " .. level .. " and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
+		for index = 1, #reqs - 1, 2 do
+			if reqs[index] == 4031138 then -- Mesos are shown as item 4031138 (Sack of Money)
+				addText("#v4031138# " .. reqs[index + 1] .. " mesos");
+			else
+				local amt = reqs[index + 1];
+				if amt == 1 then
+					addText("#v" .. reqs[index] .. "# #t" .. reqs[index] .. "#s\r\n");
+				else
+					addText("#v" .. reqs[index] .. "# " .. amt .. " #t" .. reqs[index] .. "#s\r\n");
+				end
+			end
 		end
 		sendYesNo();
 	elseif where == 1 then
@@ -198,60 +167,22 @@ elseif state == 4 then
 		end
 		endNPC();
 	elseif where == 1 then
+		what = getSelected();
 		glove = upgradeids[what + 1];
 		reqs = upgradereqs[what + 1];
-		if what == 0 then
-			addText("To make one #t1082005#, I need the following items. The level limit is 30 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082007# #t1082007# \r\n");
-			addText("#v4011001# #t4011001# \r\n");
-			addText("#v4031138# 20000 mesos");
-		elseif what == 1 then
-			addText("To make one #t1082006#, I need the following items. The level limit is 30 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082007# #t1082007# \r\n");
-			addText("#v4011005# 2 #t4011005#s \r\n");
-			addText("#v4031138# 25000 mesos");
-		elseif what == 2 then
-			addText("To make one #t1082035#, I need the following items. The level limit is 35 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082008# #t1082008# \r\n");
-			addText("#v4021006# 3 #t4021006#s \r\n");
-			addText("#v4031138# 30000 mesos");
-		elseif what == 3 then
-			addText("To make one #t1082036#, I need the following items. The level limit is 35 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082008# #t1082008# \r\n");
-			addText("#v4021008# #t4021008# \r\n");
-			addText("#v4031138# 40000 mesos");
-		elseif what == 4 then
-			addText("To make one #t1082024#, I need the following items. The level limit is 40 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082023# #t1082023# \r\n");
-			addText("#v4011003# 4 #t4011003#s \r\n");
-			addText("#v4031138# 45000 mesos");
-		elseif what == 5 then
-			addText("To make one #t1082025#, I need the following items. The level limit is 40 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082023# #t1082023# \r\n");
-			addText("#v4021008# 2 #t4021008#s \r\n");
-			addText("#v4031138# 50000 mesos");
-		elseif what == 6 then
-			addText("To make one #t1082010#, I need the following items. The level limit is 50 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082009# #t1082009# \r\n");
-			addText("#v4011002# 5 #t4011002#s \r\n");
-			addText("#v4031138# 55000 mesos");
-		elseif what == 7 then
-			addText("To make one #t1082011#, I need the following items. The level limit is 50 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082009# #t1082009# \r\n");
-			addText("#v4011006# 4 #t4011006#s \r\n");
-			addText("#v4031138# 60000 mesos");
-		elseif what == 8 then
-			addText("To make one #t1082060#, I need the following items. The level limit is 60 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082059# #t1082059# \r\n");
-			addText("#v4011002# 3 #t4011002#s \r\n");
-			addText("#v4021005# 5 #t4021005#s \r\n");
-			addText("#v4031138# 70000 mesos");
-		elseif what == 9 then
-			addText("To make one #t1082061#, I need the following items. The level limit is 60 and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-			addText("#b#v1082059# #t1082059# \r\n");
-			addText("#v4021007# 2 #t4021007#s \r\n");
-			addText("#v4021008# 2 #t4021008#s \r\n");
-			addText("#v4031138# 80000 mesos");
+		level = upgradelimits[what + 1];
+		addText("To make one #t" .. glove .. "#, I need the following items. The level limit is " .. level .. " and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
+		for index = 1, #reqs - 1, 2 do
+			if reqs[index] == 4031138 then -- Mesos are shown as item 4031138 (Sack of Money)
+				addText("#v4031138# " .. reqs[index + 1] .. " mesos");
+			else
+				local amt = reqs[index + 1];
+				if amt == 1 then
+					addText("#v" .. reqs[index] .. "# #t" .. reqs[index] .. "#s\r\n");
+				else
+					addText("#v" .. reqs[index] .. "# " .. amt .. " #t" .. reqs[index] .. "#s\r\n");
+				end
+			end
 		end
 		sendYesNo();
 	elseif where == 2 then
