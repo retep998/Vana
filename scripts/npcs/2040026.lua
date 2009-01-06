@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Third Eos Rock
+
 if state == 0 then
 	if getItemAmount(4001020) >= 1 then
 		addText("You can use #b#t4001020##k to activate #b#p2040026##k. Which of these rocks would you like to teleport to?\r\n");

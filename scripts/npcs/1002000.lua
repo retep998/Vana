@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+-- Phil (Lith Harbor cab)
+
 if getJob() == 0 then
 	prices = {120, 120, 80, 100};
 else
@@ -32,16 +34,29 @@ elseif state == 1 then
 elseif state == 2 then
 	what = getSelected();
 	if what == 0 then -- What kind of towns are here in Victoria Island?
-		addText("There are 6 big towns here in Victoria Island. Which of those do you want to know more of?\r\n#b#L0##m104000000##l\r\n#L1##m102000000##l\r\n#L2##m101000000##l\r\n#L3##m100000000##l\r\n#L4##m103000000##l\r\n#L5##m105040300##l");
+		addText("There are 6 big towns here in Victoria Island. Which of those do you want to know more of?\r\n");
+		addText("#b#L0##m104000000##l\r\n");
+		addText("#L1##m102000000##l\r\n");
+		addText("#L2##m101000000##l\r\n");
+		addText("#L3##m100000000##l\r\n");
+		addText("#L4##m103000000##l\r\n");
+		addText("#L5##m105040300##l");
 		sendSimple();
 	else -- Please take me somewhere else.
 		if getJob() == 0 then
-			addText("There's a special 90% discount for all beginners. Alright, where would you want to go? \r\n#b#L0##m102000000#(120 mesos)#l\r\n#L1##m101000000#(120 mesos)#l\r\n#L2##m100000000#(80 mesos)#l\r\n#L3##m103000000#(100 mesos)#l");
-			sendSimple();
+			addText("There's a special 90% discount for all beginners. Alright, where would you want to go? \r\n");
+			addText("#b#L0##m102000000#(120 mesos)#l\r\n");
+			addText("#L1##m101000000#(120 mesos)#l\r\n");
+			addText("#L2##m100000000#(80 mesos)#l\r\n");
+			addText("#L3##m103000000#(100 mesos)#l");
 		else
-			addText("Oh you aren't a beginner, huh? Then I'm afraid I may have to charge you full price. Where would you like to go?\r\n#b#L0##m102000000#(1200 mesos)#l\r\n#L1##m101000000#(1200 mesos)#l\r\n#L2##m100000000#(800 mesos)#l\r\n#L3##m103000000#(1000 mesos)#l");
-			sendSimple();
+			addText("Oh you aren't a beginner, huh? Then I'm afraid I may have to charge you full price. Where would you like to go?\r\n");
+			addText("#b#L0##m102000000#(1200 mesos)#l\r\n");
+			addText("#L1##m101000000#(1200 mesos)#l\r\n");
+			addText("#L2##m100000000#(800 mesos)#l\r\n");
+			addText("#L3##m103000000#(1000 mesos)#l");
 		end
+		sendSimple();
 	end
 	
 elseif state == 3 then

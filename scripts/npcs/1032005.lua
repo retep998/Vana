@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- VIP Cab (Ellinia)
+
 if state == 0 then
 	addText("Hi there! This cab is for VIP customers only. Instead of just taking you to different towns like the regular cabs, we offer a much better service worthy of VIP class. It's a bit pricey, but... for only 10,000 mesos, we'll take you safely to the #bant tunnel#k.");
 	sendNext();
@@ -41,7 +42,6 @@ elseif state == 2 then
 		addText("This town also has a lot to offer. Find us if and when you feel the need to go to the ant tunnel park.");
 		sendNext();
 	end
-	
 	endNPC();
 end
 

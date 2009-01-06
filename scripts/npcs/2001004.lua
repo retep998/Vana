@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Scarf Snowman (Hill of Christmas exit)
+
 if state == 0 then
 	addText("Have you decorated your tree nicely? It's an interesting experience, to say the least, decorating a Christmas tree with other people. Don¡¯t cha think?  Oh yeah ... are you suuuuure you want to leave this place?");
 	sendYesNo();

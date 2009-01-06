@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Konpei (warps to Showa)
+
 if state == 0 then
 	addText("Here you are, right in front of the hideout! What? You want to return to Showa Town? ");
 	sendYesNo();

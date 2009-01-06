@@ -15,7 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Konpei (warps to Hideout)
+-- Konpei (warps to Showa Hideout)
+
 if state == 0 then
 	addText("What do you want from me? \r\n");
 	addText("#b#L0#Gather up some information on the hideout.  #l\r\n");

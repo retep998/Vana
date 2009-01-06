@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+-- Platform Usher (Orbis)
+
 if state == 0 then
 	addText("Orbis Station has lots of platforms available to choose from. You need to choose the one that'll take you to the destination of your choice. Which platform will you take?\r\n");
 	addText("#b#L0#The platform to the ship that heads to Ellinia#l\r\n");
@@ -25,17 +27,18 @@ if state == 0 then
 	sendSimple();
 elseif state == 1 then
 	selected = getSelected();
+	addText("Even if you took the wrong passage you can get back here using the portal, so no worries.");
 	if selected == 0 then
-		addText("Even if you took the wrong passage you can get back here using the portal, so no worries. Will you move to the #bplatform to the ship that heads to Ellinia#k?");
+		addText(" Will you move to the #bplatform to the ship that heads to Ellinia#k?");
 	elseif selected == 1 then
-		addText("Even if you took the wrong passage you can get back here using the portal, so no worries. Will you move to the #bplatform to the ship that heads to Ludibrium#k?");
+		addText(" Will you move to the #bplatform to the ship that heads to Ludibrium#k?");
 	elseif selected == 2 then
-		addText("Even if you took the wrong passage you can get back here using the portal, so no worries.\r\n");
+		addText("\r\n");
 		addText("Will you move to the #bplatform to the ship that heads to Leafre#k?");
 	elseif selected == 3 then
-		addText("Even if you took the wrong passage you can get back here using the portal, so no worries. Will you move to the #bplatform to Hak that heads to Mu Lung#k?");
+		addText(" Will you move to the #bplatform to Hak that heads to Mu Lung#k?");
 	elseif selected == 4 then
-		addText("Even if you took the wrong passage you can get back here using the portal, so no worries. Will you move to the #bplatform to Geenie that heads to Ariant#k");
+		addText(" Will you move to the #bplatform to Geenie that heads to Ariant#k");
 	end
 	sendYesNo();
 elseif state == 2 then
@@ -52,16 +55,13 @@ elseif state == 2 then
 			setMap(200000150, "west00");
 		end
 	else
+		addText("Please make sure you know where you are going and then go to the platform through me.");
 		if selected == 0 then
-			addText("Please make sure you know where you are going and then go to the platform through me. The ride is on schedule so you better not miss it!");
+			addText(" The ride is on schedule so you better not miss it!");
 		elseif selected == 1 then
-			addText("Please make sure you know where you are going and then go to the platform through me. The ride is on schedule so you better not miss it!");
+			addText(" The ride is on schedule so you better not miss it!");
 		elseif selected == 2 then
-			addText("Please make sure you know where you are going and then go to the platform through me. The ride is on schedule so you better not miss it!");
-		elseif selected == 3 then
-			addText("Please make sure you know where you are going and then go to the platform through me.");
-		elseif selected == 4 then
-			addText("Please make sure you know where you are going and then go to the platform through me.");
+			addText(" The ride is on schedule so you better not miss it!");
 		end		
 		sendNext();
 	end
