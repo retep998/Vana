@@ -180,7 +180,7 @@ void Player::playerConnect(PacketReader &packet) {
 	sp			= static_cast<int16_t>(res[0]["sp"]);
 	fame		= static_cast<int16_t>(res[0]["fame"]);
 	hpmp_ap		= static_cast<uint16_t>(res[0]["hpmp_ap"]);
-	buddylist_size = static_cast<uint32_t>(res[0]["buddylist_size"]);
+	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
 	// Inventory
 	uint8_t maxslots[5];
@@ -535,7 +535,7 @@ void Player::saveStats() {
 		<< "setup_slots = " << static_cast<int16_t>(inv->getMaxSlots(3)) << ","
 		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(4)) << ","
 		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(5)) << ","
-		<< "buddylist_size = " << buddylist_size
+		<< "buddylist_size = " << static_cast<int16_t>(buddylist_size)
 		<< " WHERE id = " << id;
 	query.exec();
 }
@@ -603,4 +603,9 @@ bool Player::hasGMEquip() {
 	if (getInventory()->getEquippedID(11) == 1322013) // Weapon
 		return true;
 	return false;
+}
+
+void Player::setBuddyListSize(uint8_t size) {
+	buddylist_size = size;
+	BuddyListPacket::showSize(this);
 }

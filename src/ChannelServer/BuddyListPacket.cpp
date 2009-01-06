@@ -51,3 +51,12 @@ void BuddyListPacket::update(Player *player, uint8_t type) {
 
 	player->getSession()->send(packet);
 }
+
+void BuddyListPacket::showSize(Player *player) {
+	uint8_t size = static_cast<uint8_t>(player->getBuddyListSize());
+	PacketCreator packet;
+	packet.addShort(SEND_BUDDYLIST);
+	packet.addByte(0x15);
+	packet.addByte(size);
+	player->getSession()->send(packet);
+}

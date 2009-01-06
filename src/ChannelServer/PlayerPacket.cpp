@@ -71,7 +71,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.addInt(player->getMap());
 	packet.addByte(player->getMappos());
 	packet.addInt(0); // Unknown int32 added in .62
-	packet.addByte(0x14);
+	packet.addByte(player->getBuddyListSize());
 	player->getInventory()->connectData(packet); // Inventory data
 	player->getSkills()->connectData(packet); // Skills
 	// End
