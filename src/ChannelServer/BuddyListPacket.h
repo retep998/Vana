@@ -28,7 +28,8 @@ class Player;
 namespace BuddyListPacket {
 	void error(Player *player, uint8_t error);
 	void update(Player *player, uint8_t type);
-	
+	void showSize(Player *player);
+
 	static const uint8_t first = 0x07;
 	static const uint8_t add = 0x0a;
 	static const uint8_t remove = 0x12;

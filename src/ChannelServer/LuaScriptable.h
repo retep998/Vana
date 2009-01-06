@@ -52,6 +52,9 @@ namespace LuaExports {
 
 	// The exports
 	int addSkillLevel(lua_State *luaVm);
+	int addSlots(lua_State *luaVm);
+	int addBuddySlots(lua_State *luaVm);
+	int getBuddySlots(lua_State *luaVm);
 
 	int giveItem(lua_State *luaVm);
 	int giveMesos(lua_State *luaVm);
@@ -119,7 +122,6 @@ namespace LuaExports {
 	int setJob(lua_State *luaVm);
 	int setLevel(lua_State *luaVm);
 	int setPlayerVariable(lua_State *luaVm);
-	int addSlots(lua_State *luaVm);
 
 	int showShop(lua_State *luaVm);
 	int showMessage(lua_State *luaVm);

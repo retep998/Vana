@@ -48,6 +48,10 @@ void LuaScriptable::initialize() {
 	lua_setglobal(luaVm, "playerid");
 
 	lua_register(luaVm, "addSkillLevel", &LuaExports::addSkillLevel);
+	lua_register(luaVm, "addSlots", &LuaExports::addSlots);
+	lua_register(luaVm, "addBuddySlots", &LuaExports::addBuddySlots);
+	lua_register(luaVm, "getBuddySlots", &LuaExports::getBuddySlots);
+
 	lua_register(luaVm, "giveItem", &LuaExports::giveItem);
 	lua_register(luaVm, "giveMesos", &LuaExports::giveMesos);
 	lua_register(luaVm, "giveEXP", &LuaExports::giveEXP);
@@ -110,7 +114,6 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setINT", &LuaExports::setINT);
 	lua_register(luaVm, "setLUK", &LuaExports::setLUK);
 	lua_register(luaVm, "setJob", &LuaExports::setJob);
-	lua_register(luaVm, "addSlots", &LuaExports::addSlots);
 	lua_register(luaVm, "setLevel", &LuaExports::setLevel);
 	lua_register(luaVm, "setPlayerVariable", &LuaExports::setPlayerVariable);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
@@ -769,5 +772,18 @@ int LuaExports::getSecond(lua_State *luaVm) {
 
 int LuaExports::getDST(lua_State *luaVm) {
 	lua_pushboolean(luaVm, TimeUtilities::getDST());
+	return 1;
+}
+
+int LuaExports::addBuddySlots(lua_State *luaVm) {
+	Player *p = getPlayer(luaVm);
+	uint8_t csize = p->getBuddyListSize();
+	int8_t mod = lua_tointeger(luaVm, 1);
+	p->setBuddyListSize(csize + mod);
+	return 1;
+}
+
+int LuaExports::getBuddySlots(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getBuddyListSize());
 	return 1;
 }

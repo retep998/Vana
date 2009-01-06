@@ -322,6 +322,10 @@
 				Name="Packets"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\BuddyListPacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\DropsPacket.cpp"
 					>
 				</File>
@@ -639,10 +643,6 @@
 			<Filter
 				Name="Packets"
 				>
-				<File
-					RelativePath=".\src\ChannelServer\BuddyListPacket.cpp"
-					>
-				</File>
 				<File
 					RelativePath=".\src\ChannelServer\BuddyListPacket.h"
 					>
