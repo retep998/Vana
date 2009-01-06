@@ -217,10 +217,7 @@ void LoginPacket::connectIP(PlayerLogin *player, int32_t charid) {
 	World *world = Worlds::worlds[player->getWorld()];
 	if (world->channels.find(player->getChannel()) != world->channels.end()) {
 		shared_ptr<Channel> channel = world->channels[player->getChannel()];
-		if (player->getIP() == "127.0.0.1")
-			packet.addIP("127.0.0.1");
-		else
-			packet.addIP(channel->ip);
+		packet.addIP(channel->ip);
 		packet.addShort(channel->port);
 	}
 	else { // Channel does not exist, let's be mean and send something non-existent
