@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Syras - Ariant to Orbis ticket seller
+
 if getLevel() < 10 then
 	addText("Your level seems to be too low for this. We do not allow anyone below Level 10 to get on this ride, for the sake of safety.");
 	sendNext();

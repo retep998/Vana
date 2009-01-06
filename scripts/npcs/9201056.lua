@@ -15,7 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- New Leaf City/Phantom Forest - NLC Taxi 
+-- New Leaf City/Phantom Forest - NLC Taxi
+
 if getMap() == 600000000 then
 	if state == 0 then
 		addText("Hey, there. Want to take a trip deeper into the Masterian wilderness? A lot of this continent is still quite unknown and untamed... so there's still not much in the way of roads. Good thing we've got this baby... We can go offroading, and in style too!");
@@ -28,7 +29,8 @@ if getMap() == 600000000 then
 		sendYesNo();
 	elseif state == 3 then
 		if getSelected() == 1 then
-			addText("Alright! Buckle your seat belt, and let's head to the Mansion!\r\nIt's going to get bumpy!");
+			addText("Alright! Buckle your seat belt, and let's head to the Mansion!\r\n");
+			addText("It's going to get bumpy!");
 			sendNext();
 		else
 			addText("Really? I don't blame you... Sounds like a pretty scary place to me too! If you change your mind, I'll be right here.");

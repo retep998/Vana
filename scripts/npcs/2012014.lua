@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Orbis Magic Spot (Orbis Tower: 20th Floor)
+
 if getItemAmount(4001019) >= 1 then
 	if state == 0 then
 		addText("You can use #b#t4001019##k to activate #b#p2012014##k. Will you teleport to where #b#p2012015##k is?");

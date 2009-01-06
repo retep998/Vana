@@ -15,7 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Thomas Swift
+-- Thomas Swift (warps to/from Amoria)
+
 if getMap() == 100000000 then
 	if state == 0 then
 		addText("I can take you to Amoria Village. Are you ready to go?");

@@ -15,7 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Roger: Apple Quest End 
+-- Roger: Apple Quest End
+
 if state == 0 then
 	addText("How easy is it to consume the item? Simple, right? You can set a #bhotkey#k on the right bottom slot. Haha you didn't know that! right? ");
 	addText("Oh, and if you are a beginner, HP will automatically recover itself as time goes by. Well it takes time but this is one of the strategies for the beginners.");
@@ -25,7 +26,10 @@ elseif state == 1 then
 	sendBackNext();
 elseif state == 2 then
 	addText("Okay, this is all I can teach you. I know it's sad but it is time to say good bye. Well tack care of yourself and Good luck my friend!\r\n\r\n");
-	addText("#fUI/UIWindow.img/QuestIcon/4/0#\r\n#v2010000# 3 #t2010000#\r\n#v2010009# 3 #t2010009#\r\n\r\n#fUI/UIWindow.img/QuestIcon/8/0# 10 exp");	
+	addText("#fUI/UIWindow.img/QuestIcon/4/0#\r\n");
+	addText("#v2010000# 3 #t2010000#\r\n");
+	addText("#v2010009# 3 #t2010009#\r\n\r\n");
+	addText("#fUI/UIWindow.img/QuestIcon/8/0# 10 exp");
 	sendBackNext();
 elseif state == 3 then
 	endQuest(1021);

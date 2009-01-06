@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- First Eos Rock
+
 if getItemAmount(4001020) >= 1 then
 	if state == 0 then
 		addText("You can use #b#t4001020##k to activate #b#p2040024##k. Will you teleport to #b#p2040025##k at the 71st floor?");

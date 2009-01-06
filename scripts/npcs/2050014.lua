@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Meteorite 1
+
 if state == 0 then
 	addText("It appears to be a meteorite that have been dropped from the space, but it's so heavily damaged that nothing useful can be found from it.");
 	sendNext();

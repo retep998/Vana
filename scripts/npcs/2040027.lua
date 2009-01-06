@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Fourth Eos Rock
+
 if getItemAmount(4001020) >= 1 then
 	if state == 0 then
 		addText("You can use #b#t4001020##k to activate #b#p2040027##k. Will you head over to #b#p2040026##k at the 41st floor??");

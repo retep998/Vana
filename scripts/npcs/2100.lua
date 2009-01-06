@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+-- 
+
 map = getMap();
 if map == 0 then
 	if state == 0 then
@@ -26,7 +28,7 @@ if map == 0 then
 			sendNext();
 		else
 			addText("Do you really wanted to start your journey right away?");
-			setState(state+1);
+			setState(state + 1);
 			sendYesNo();
 		end
 	elseif state == 2 then

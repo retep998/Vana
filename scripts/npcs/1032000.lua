@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+-- Regular Cab (Ellinia cab)
+
 if getJob() == 0 then
 	prices = {120, 100, 120, 100};
 else
@@ -28,10 +30,18 @@ if state == 0 then
 	sendNext();
 elseif state == 1 then
 	if getJob() == 0 then
-		addText("We have a special 90% discount for beginners. Choose your destination, for fees will change from place to place.\r\n#b#L0##m104000000#(120 mesos)#l\r\n#L1##m102000000#(100 mesos)#l\r\n#L2##m103000000#(120 mesos)#l\r\n#L3##m100000000#(100 mesos)#l");
+		addText("We have a special 90% discount for beginners. Choose your destination, for fees will change from place to place.\r\n");
+		addText("#b#L0##m104000000#(120 mesos)#l\r\n");
+		addText("#L1##m102000000#(100 mesos)#l\r\n");
+		addText("#L2##m103000000#(120 mesos)#l\r\n");
+		addText("#L3##m100000000#(100 mesos)#l");
 		sendSimple();
 	else
-		addText("Choose your destination, for fees will change from place to place.\r\n#b#L0##m104000000#(1,200 mesos)#l\r\n#L1##m102000000#(1,000 mesos)#l\r\n#L2##m103000000#(1,200 mesos)#l\r\n#L3##m100000000#(1,000 mesos)#l");
+		addText("Choose your destination, for fees will change from place to place.\r\n");
+		addText("#b#L0##m104000000#(1,200 mesos)#l\r\n");
+		addText("#L1##m102000000#(1,000 mesos)#l\r\n");
+		addText("#L2##m103000000#(1,200 mesos)#l\r\n");
+		addText("#L3##m100000000#(1,000 mesos)#l");
 		sendSimple();
 	end
 elseif state == 2 then

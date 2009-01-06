@@ -15,7 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Credits TerraEnvy of Ragezone/Terra of dev.chisoft & Bri/Zak for adding new skills
+-- NimaKIN, credits TerraEnvy of Ragezone/Terra of dev.chisoft & Bri/Zak for adding new skills
+
 if state == 0 then
 	if isGM() == 1 then
 		addText("Hi #h #! Would you like your skills maxed?");

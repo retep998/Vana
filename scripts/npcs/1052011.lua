@@ -15,7 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Exit sign in Shumi's jump quests
+-- Exit Signs in Shumi's jump quests
+
 if state == 0 then
 	addText("This device is connected to outside. Are you going to give up and leave this place? You'll have to start from scratch the next time you come in...");
 	sendYesNo();

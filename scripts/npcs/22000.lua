@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+-- Shanks
+
 if state == 0 then
 	addText("Take this ship and you'll head off to a bigger continent.#e For 150 mesos#n, I'll take you to #bVictoria Island#k");
 	addText(". The thing is, once you leave this place, you can't ever come back. What do you think? Do you want to go to Victoria Island?");
@@ -60,7 +62,6 @@ elseif state == 3 then
 		if lucas then
 			giveItem(4031801, -1)
 		end
-		
 		setMap(104000000);
 	end
 	endNPC();

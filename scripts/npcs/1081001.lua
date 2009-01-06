@@ -15,11 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Pison - Tour Guide
--- Teleports from Florina Beach
+-- Pison (Tour Guide, teleports from Florina Beach)
+
 if state == 0 then
 	origin = getPlayerVariable("florina_origin");
-	
 	addText("So you want to leave #b#m110000000##k? If you want, I can take you back to #b#m" .. origin .. "##k.\r\n");
 	addText("#b#L0# #b I would like to go back now.");
 	sendSimple();

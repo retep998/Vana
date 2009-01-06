@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+-- KIN
+
 if getGender() == 0 then
 	-- Male stuff
 	hairs = {30000, 30010, 30020, 30030, 30040, 30050, 30060, 30070, 30080, 30090, 30100, 30110, 30120, 30130, 30140, 30150, 30160, 30170, 30180, 30190, 30200, 30210, 30220, 30230, 30240, 30250, 30260, 30270, 30280, 30290, 30300, 30310, 30320, 30330, 30340, 30350, 30360, 30370, 30400, 30410, 30420, 30430, 30440, 30450, 30460, 30470, 30480, 30490, 30510, 30520, 30530, 30540, 30550, 30560, 30570, 30580, 30590, 30600, 30610, 30620, 30630, 30640, 30650, 30660, 30700, 30710, 30720, 30730, 30740, 30750, 30760, 30770, 30780, 30790, 30800, 30810, 30820};
@@ -28,7 +30,11 @@ hair = getHair(); -- Player's current hair
 eye = getEyes(); -- Player's current eyes
 
 if state == 0 then
-	addText("Hello, what can I do for you today?\r\n#L0##bSkin#k#l\r\n#L1##bHair#k#l\r\n#L2##bHair Color#k#l\r\n#L3##bEyes#k#l\r\n#L4##bEyes Color#k#l");
+	addText("Hello, what can I do for you today?\r\n");
+	addText("#L0##bSkin#k#l\r\n");
+	addText("#L1##bHair#k#l\r\n");
+	addText("#L2##bHair Color#k#l\r\n");
+	addText("#L3##bEyes#k#l\r\n#L4##bEyes Color#k#l");
 	sendSimple();
 elseif state == 1 then
 	styles = {};

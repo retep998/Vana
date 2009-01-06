@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Roger: Apple Quest start
+
 if state == 0 then
 	addText("Hey there, Pretty~ I am Roger who teaches you adorable new Maplers lots of information.");
 	sendNext();
@@ -30,7 +31,7 @@ elseif state == 3 then
 		setHP(25);
 		giveItem(2010007, 1);
 		addQuest(1021);
-		setState(state+1);
+		setState(state + 1);
 		addText("Surprised? If HP becomes 0, then you are in trouble. Now, I will give you #r#t2010007##k. Please take it. ");
 		addText("You will feel stronger. Open the Item window and double click to consume. Hey, It's very simple to open the Item window. Just press #bI#k on your keyboard.");
 		sendNext();
