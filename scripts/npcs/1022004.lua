@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/hasResources.lua");
 dofile("scripts/lua_functions/takeResources.lua");
-
+dofile("scripts/lua_functions/displayResources.lua");
 
 if defined == nil or defined == false then
 	makeids = {1082003, 1082000, 1082004, 1082001, 1082007, 1082008, 1082023, 1082009, 1082059};
@@ -109,18 +109,7 @@ elseif state == 3 then
 		reqs = makereqs[what + 1];
 		level = makelimits[what + 1];
 		addText("To make one #t" .. glove .. "#, I need the following items. The level limit is " .. level .. " and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-		for index = 1, #reqs - 1, 2 do
-			if reqs[index] == 4031138 then -- Mesos are shown as item 4031138 (Sack of Money)
-				addText("#v4031138# " .. reqs[index + 1] .. " mesos");
-			else
-				local amt = reqs[index + 1];
-				if amt == 1 then
-					addText("#v" .. reqs[index] .. "# #t" .. reqs[index] .. "#s\r\n");
-				else
-					addText("#v" .. reqs[index] .. "# " .. amt .. " #t" .. reqs[index] .. "#s\r\n");
-				end
-			end
-		end
+		displayResources(reqs);
 		sendYesNo();
 	elseif where == 1 then
 		addText("So~~ what kind of a glove do you want to upgrade and create?\r\n");
@@ -150,21 +139,18 @@ elseif state == 3 then
 	end
 elseif state == 4 then
 	if where == 0 then
-		extra = getSelected();
-		if extra == 0 then
+		if getSelected() == 0 then
 			addText("Lacking the materials? It's ok ... collect them all and then come find me, alright? I'll be waiting...");
-			sendNext();
 		else
 			if (not hasResources(reqs)) or (not hasOpenSlotsFor(glove, 1)) then
 				addText("Check and see if you have everything you need and if your equipment inventory may be full or not.");
-				sendNext();
 			else
 				addText("Here! take the #t" .. glove .. "#. Don't you think I'm as good as Mr. Thunder? You'll be more than satisfied with what I made here.");
-				sendNext();
 				takeResources(reqs);
 				giveItem(glove, 1);
 			end
 		end
+		sendNext();
 		endNPC();
 	elseif where == 1 then
 		what = getSelected();
@@ -172,18 +158,7 @@ elseif state == 4 then
 		reqs = upgradereqs[what + 1];
 		level = upgradelimits[what + 1];
 		addText("To make one #t" .. glove .. "#, I need the following items. The level limit is " .. level .. " and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
-		for index = 1, #reqs - 1, 2 do
-			if reqs[index] == 4031138 then -- Mesos are shown as item 4031138 (Sack of Money)
-				addText("#v4031138# " .. reqs[index + 1] .. " mesos");
-			else
-				local amt = reqs[index + 1];
-				if amt == 1 then
-					addText("#v" .. reqs[index] .. "# #t" .. reqs[index] .. "#s\r\n");
-				else
-					addText("#v" .. reqs[index] .. "# " .. amt .. " #t" .. reqs[index] .. "#s\r\n");
-				end
-			end
-		end
+		displayResources(reqs);
 		sendYesNo();
 	elseif where == 2 then
 		extra = getNumber();
@@ -199,37 +174,30 @@ elseif state == 4 then
 	end
 elseif state == 5 then
 	if where == 1 then
-		extra = getSelected();
-		if extra == 0 then
+		if getSelected() == 0 then
 			addText("Lacking the materials? It's ok ... collect them all and then come find me, alright? I'll be waiting...");
-			sendNext();
 		else
 			if (not hasResources(reqs)) or (not hasOpenSlotsFor(glove, 1)) then
 				addText("Check and see if you have everything you need and if your equipment inventory may be full or not.");
-				sendNext();
 			else
 				addText("Here! take the #t" .. glove .. "#. Don't you think I'm as good as Mr. Thunder? You'll be more than satisfied with what I made here.");
-				sendNext();
 				takeResources(reqs);
 				giveItem(glove, 1);
 			end
 		end
-		endNPC();
 	elseif where == 2 then
 		if getSelected() == 0 then
 			addText("Lacking the materials? It's all good...collect them all and then come find me, alright? I'll be waiting...");
-			sendNext();
 		else
 			if extra == 0 or (not hasResources(reqs)) or (not hasOpenSlotsFor(material, amt)) then
 				addText("Check and see if you have everything you need and if your equipment inventory may be full or not.");
-				sendNext();
 			else
 				addText("Here! take " .. amt * extra  .. " #t" .. material .. "#(s). Don't you think I'm as good as Mr. Thunder? You'll be more than satisfied with what I made here.");
-				sendNext();
 				takeResources(reqs, extra);
 				giveItem(material, amt * extra);
 			end
 		end
-		endNPC();
 	end
+	sendNext();
+	endNPC();
 end
