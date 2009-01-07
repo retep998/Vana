@@ -64,52 +64,52 @@ NPC * LuaExports::getNPC(lua_State *luaVm) {
 
 int LuaExports::addText(lua_State *luaVm) {
 	getNPC(luaVm)->addText(lua_tostring(luaVm, -1));
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendSimple(lua_State *luaVm) {
 	getNPC(luaVm)->sendSimple();
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendYesNo(lua_State *luaVm) {
 	getNPC(luaVm)->sendYesNo();
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendNext(lua_State *luaVm) {
 	getNPC(luaVm)->sendNext();
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendBackNext(lua_State *luaVm) {
 	getNPC(luaVm)->sendBackNext();
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendBackOK(lua_State *luaVm) {
 	getNPC(luaVm)->sendBackOK();
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendOK(lua_State *luaVm) {
 	getNPC(luaVm)->sendOK();
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendAcceptDecline(lua_State *luaVm) {
 	getNPC(luaVm)->sendAcceptDecline();
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendGetText(lua_State *luaVm) {
 	getNPC(luaVm)->sendGetText();
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendGetNumber(lua_State *luaVm) {
 	getNPC(luaVm)->sendGetNumber(lua_tointeger(luaVm, -3), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
-	return 1;
+	return 0;
 }
 
 int LuaExports::sendStyle(lua_State *luaVm) {
@@ -126,12 +126,12 @@ int LuaExports::sendStyle(lua_State *luaVm) {
 	}
 
 	getNPC(luaVm)->sendStyle(styles, size);
-	return 1;
+	return 0;
 }
 
 int LuaExports::showStorage(lua_State *luaVm) {
 	StoragePacket::showStorage(getPlayer(luaVm), getNPC(luaVm)->getNpcID());
-	return 1;
+	return 0;
 }
 
 int LuaExports::getSelected(lua_State *luaVm) {
@@ -157,34 +157,34 @@ int LuaExports::getMaxSkillLevel(lua_State *luaVm) {
 
 int LuaExports::setState(lua_State *luaVm) {
 	getNPC(luaVm)->setState(lua_tointeger(luaVm, -1));
-	return 1;
+	return 0;
 }
 
 int LuaExports::setMaxSkillLevel(lua_State *luaVm) {
 	int32_t skillid = lua_tointeger(luaVm, -2);
 	uint8_t level = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillid, level);
-	return 1;
+	return 0;
 }
 
 int LuaExports::addQuest(lua_State *luaVm) {
 	int16_t questid = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getQuests()->addQuest(questid, getNPC(luaVm)->getNpcID());
-	return 1;
+	return 0;
 }
 
 int LuaExports::endQuest(lua_State *luaVm) {
 	int16_t questid = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getQuests()->finishQuest(questid, getNPC(luaVm)->getNpcID());
-	return 1;
+	return 0;
 }
 
 int LuaExports::endNPC(lua_State *luaVm) {
 	getNPC(luaVm)->end();
-	return 1;
+	return 0;
 }
 
 int LuaExports::restart(lua_State *luaVm) {
 	getNPC(luaVm)->run();
-	return 1;
+	return 0;
 }
