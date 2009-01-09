@@ -211,61 +211,63 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 			InventoryPacket::bought(player, 0);
 			break;
 		}
+		case 3:
+			// 3 is close shop. For now we have no reason to handle this.
+			break;
 	}
 }
 
 void Inventory::useStorage(Player *player, PacketReader &packet) {
 	int8_t type = packet.getByte();
-
-	if (type == 0x04) { // Take item out
-		int8_t inv = packet.getByte(); // Inventory, as in equip, use, etc
-		int8_t slot = packet.getByte(); // Slot within the inventory
-		Item *item = player->getStorage()->getItem(slot);
-		if (item == 0) // It's a trap
-			return; // Abort
-
-		addItem(player, new Item(item));
-		player->getStorage()->takeItem(slot);
-		StoragePacket::takeItem(player, inv);
-	}
-
-	else if (type == 0x05) { // Store item
-		int16_t slot = packet.getShort();
-		int32_t itemid = packet.getInt();
-		int16_t amount = packet.getShort();
-		if (player->getStorage()->isFull()) { // Storage is full, so tell the player and abort the mission.
-			StoragePacket::storageFull(player);
-			return;
+	switch (type) {
+		case 4: { // Take item out
+			int8_t inv = packet.getByte(); // Inventory, as in equip, use, etc
+			int8_t slot = packet.getByte(); // Slot within the inventory
+			Item *item = player->getStorage()->getItem(slot);
+			if (item == 0) { // It's a trap
+				// hacking
+				return; // Abort
+			}
+			addItem(player, new Item(item));
+			player->getStorage()->takeItem(slot);
+			StoragePacket::takeItem(player, inv);
+			break;
 		}
-		int8_t inv = GETINVENTORY(itemid);
-		Item *item = player->getInventory()->getItem(inv, slot);
-		if (item == 0 || (!ISRECHARGEABLE(itemid) && amount > item->amount)) // Be careful, it might be a trap.
-			return; // Do a barrel roll
-
-		if (inv == 1 || ISRECHARGEABLE(itemid)) {
+		case 5: { // Store item
+			int16_t slot = packet.getShort();
+			int32_t itemid = packet.getInt();
+			int16_t amount = packet.getShort();
+			if (player->getStorage()->isFull()) { // Storage is full, so tell the player and abort the mission.
+				StoragePacket::storageFull(player);
+				return;
+			}
+			int8_t inv = GETINVENTORY(itemid);
+			Item *item = player->getInventory()->getItem(inv, slot);
+			if (item == 0 || (!ISRECHARGEABLE(itemid) && amount > item->amount)) { // Be careful, it might be a trap.
+				// hacking
+				return; // Do a barrel roll
+			}
+			player->getStorage()->addItem((inv == 1 || ISRECHARGEABLE(itemid)) ? new Item(item) : new Item(itemid, amount));
 			// For equips or rechargeable items (stars/bullets) we create a
 			// new object for storage with the inventory object, and allow
 			// the one in the inventory to go bye bye.
-			player->getStorage()->addItem(new Item(item));
+			// Else: For items we just create a new item based on the ID and amount.
+			takeItemSlot(player, inv, slot, ISRECHARGEABLE(itemid) ? item->amount : amount, true);
+			player->getInventory()->modifyMesos(-100); // Take 100 mesos for storage cost
+			StoragePacket::addItem(player, inv);
+			break;
 		}
-		else // For items we just create a new item based on the ID and amount.
-			player->getStorage()->addItem(new Item(itemid, amount));
-
-		if (ISRECHARGEABLE(itemid))
-			takeItemSlot(player, inv, slot, item->amount, true);
-		else
-			takeItemSlot(player, inv, slot, amount, true);
-		player->getInventory()->modifyMesos(-100); // Take 100 mesos for storage cost
-		StoragePacket::addItem(player, inv);
+		case 7: { // Take out/store mesos
+			int32_t mesos = packet.getInt(); // Amount of mesos to remove. Deposits are negative, and withdrawls are positive.
+			bool success = player->getInventory()->modifyMesos(mesos);
+			if (success)
+				player->getStorage()->changeMesos(mesos);
+			break;
+		}
+		case 8:
+			// 8 is close storage. For now we have no reason to handle this.
+			break;
 	}
-
-	else if (type == 0x07) { // Take out/store mesos
-		int32_t mesos = packet.getInt(); // Amount of mesos to remove. Deposits are negative, and withdrawls are positive.
-		bool success = player->getInventory()->modifyMesos(mesos);
-		if (success)
-			player->getStorage()->changeMesos(mesos);
-	}
-	// 0x08 is Close storage. For now we have no reason to handle this.
 }
 
 void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
