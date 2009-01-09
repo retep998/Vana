@@ -160,51 +160,57 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 
 void Inventory::useShop(Player *player, PacketReader &packet) {
 	int8_t type = packet.getByte();
-	if (type == 0) { // Buy
-		packet.skipBytes(2);
-		int32_t itemid = packet.getInt();
-		int16_t amount = packet.getShort();
-		int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemid);
-		if (price == 0) {
-			// Hacking
-			return;
+	switch (type) {
+		case 0: { // Buy
+			packet.skipBytes(2);
+			int32_t itemid = packet.getInt();
+			int16_t amount = packet.getShort();
+			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemid);
+			if (price == 0 || player->getInventory()->getMesos() < (price*amount) ||  amount > ItemDataProvider::Instance()->getMaxslot(itemid)) {
+				// Hacking
+				return;
+			}
+			bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, amount, true);
+			if (haveslot) {
+				addNewItem(player, itemid, amount);
+				player->getInventory()->modifyMesos(-(price * amount));
+			}
+			InventoryPacket::bought(player, haveslot ? 0 : 3);
+			break;
 		}
-		bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, amount, true);
-		if (haveslot) {
-			addNewItem(player, itemid, amount);
-			player->getInventory()->modifyMesos(-(price * amount));
-		}
-		InventoryPacket::bought(player, haveslot ? 0 : 3);
-	}
-	else if (type == 1) { // Sell
-		int16_t slot = packet.getShort();
-		int32_t itemid = packet.getInt();
-		int16_t amount = packet.getShort();
-		int8_t inv = GETINVENTORY(itemid);
-		Item *item = player->getInventory()->getItem(inv, slot);
-		if (item == 0 || (!ISRECHARGEABLE(itemid) && amount > item->amount)) {
-			InventoryPacket::bought(player, 1); // Hacking
-			return;
-		}
-		int32_t price = ItemDataProvider::Instance()->getPrice(itemid);
+		case 1: { // Sell
+			int16_t slot = packet.getShort();
+			int32_t itemid = packet.getInt();
+			int16_t amount = packet.getShort();
+			int8_t inv = GETINVENTORY(itemid);
+			Item *item = player->getInventory()->getItem(inv, slot);
+			if (item == 0 || (!ISRECHARGEABLE(itemid) && amount > item->amount)) {
+				InventoryPacket::bought(player, 1); // Hacking
+				return;
+			}
+			int32_t price = ItemDataProvider::Instance()->getPrice(itemid);
 
-		player->getInventory()->modifyMesos(price * amount);
-		if (ISRECHARGEABLE(itemid))
-			takeItemSlot(player, inv, slot, item->amount, true);
-		else
-			takeItemSlot(player, inv, slot, amount, true);
-		InventoryPacket::bought(player, 0);
-	}
-	else if (type == 2) { // Recharge
-		int16_t slot = packet.getShort();
-		Item *item = player->getInventory()->getItem(2, slot);
-		if (ISSTAR(item->id))
-			item->amount = ItemDataProvider::Instance()->getMaxslot(item->id) + player->getSkills()->getSkillLevel(4100000) * 10;
-		else
-			item->amount = ItemDataProvider::Instance()->getMaxslot(item->id) + player->getSkills()->getSkillLevel(5200000) * 10;
-		player->getInventory()->modifyMesos(-1); // TODO: Calculate price, letting players recharge for 1 meso for now
-		InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
-		InventoryPacket::bought(player, 0);
+			player->getInventory()->modifyMesos(price * amount);
+			if (ISRECHARGEABLE(itemid))
+				takeItemSlot(player, inv, slot, item->amount, true);
+			else
+				takeItemSlot(player, inv, slot, amount, true);
+			InventoryPacket::bought(player, 0);
+			break;
+		}
+		case 2: { // Recharge
+			int16_t slot = packet.getShort();
+			Item *item = player->getInventory()->getItem(2, slot);
+			if (item == 0 || ISRECHARGEABLE(item->id) == false) {
+				// Hacking
+				return;
+			}
+			item->amount = ItemDataProvider::Instance()->getMaxslot(item->id) + (ISSTAR(item->id) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10);
+			player->getInventory()->modifyMesos(-1); // TODO: Calculate price, letting players recharge for 1 meso for now
+			InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
+			InventoryPacket::bought(player, 0);
+			break;
+		}
 	}
 }
 
