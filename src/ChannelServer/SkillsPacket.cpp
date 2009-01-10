@@ -158,7 +158,6 @@ void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Skill
 }
 
 void SkillsPacket::useSpeedInfusion(Player *player, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo) {
-	time *= 1000;
 	PacketCreator packet;
 	packet.addShort(SEND_USE_SKILL);
 	packet.addInt64(0);
