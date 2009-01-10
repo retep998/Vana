@@ -355,34 +355,33 @@ Buffs::Buffs() {
 	player.value = SKILL_MORPH;
 	player.hasmapval = true;
 	skillsinfo[5101007].player.push_back(player);
-	// 5111005 - Transformation
+	// 5111005, 5121003 - Transformation & Super Transformation
 	player.type = 0x02;
 	player.byte = TYPE_1;
 	player.value = SKILL_WDEF;
 	player.hasmapval = false;
 	skillsinfo[5111005].player.push_back(player);
+	skillsinfo[5121003].player.push_back(player);
 	player.type = 0x08;
 	player.byte = TYPE_1;
 	player.value = SKILL_MDEF;
 	skillsinfo[5111005].player.push_back(player);
+	skillsinfo[5121003].player.push_back(player);
 	player.type = 0x80;
 	player.byte = TYPE_1;
 	player.value = SKILL_SPEED;
 	skillsinfo[5111005].player.push_back(player);
+	skillsinfo[5121003].player.push_back(player);
 	player.type = 0x1;
 	player.byte = TYPE_2;
 	player.value = SKILL_JUMP;
 	skillsinfo[5111005].player.push_back(player);
+	skillsinfo[5121003].player.push_back(player);
 	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
 	player.hasmapval = true;
 	skillsinfo[5111005].player.push_back(player);
-	// 5121003 - Super Transformation
-	player.type = 0x02;
-	player.byte = TYPE_5;
-	player.value = SKILL_MORPH;
-	player.hasmapval = true;
 	skillsinfo[5121003].player.push_back(player);
 	// 4111002 - Shadow Partner
 	player.type = 0x4;
