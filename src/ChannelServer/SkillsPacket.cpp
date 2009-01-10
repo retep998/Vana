@@ -157,6 +157,41 @@ void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Skill
 	}
 }
 
+void SkillsPacket::useSpeedInfusion(Player *player, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo) {
+	time *= 1000;
+	PacketCreator packet;
+	packet.addShort(SEND_USE_SKILL);
+	packet.addInt64(0);
+	for (int8_t i = 0; i < 8; i++)
+		packet.addByte(pskill.types[i]);
+	packet.addShort(0);
+	packet.addInt(static_cast<int32_t>(pskill.vals[0]));
+	packet.addInt(5121009);
+	packet.addInt(0);
+	packet.addInt(0);
+	packet.addShort(static_cast<int16_t>(time));
+	packet.addShort(addedinfo);
+	player->getSession()->send(packet);
+	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+		return;
+	if (mskill.vals.size() > 0) {
+		packet = PacketCreator();
+		packet.addShort(SEND_SHOW_OTHERS_SKILL);
+		packet.addInt(player->getId());
+		packet.addInt64(0);
+		for (int8_t i = 0; i < 8; i++)
+			packet.addByte(mskill.types[i]);
+		packet.addShort(0);
+		packet.addInt(static_cast<int32_t>(mskill.vals[0]));
+		packet.addInt(5121009);
+		packet.addInt(0);
+		packet.addInt(0);
+		packet.addShort(static_cast<int16_t>(time));
+		packet.addShort(addedinfo);
+		Maps::getMap(player->getMap())->sendPacket(packet, player);
+	}
+}
+
 void SkillsPacket::healHP(Player *player, int16_t hp) {
 	PacketCreator packet;
 	packet.addShort(SEND_GAIN_ITEM);

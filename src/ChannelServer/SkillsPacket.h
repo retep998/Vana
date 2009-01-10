@@ -30,6 +30,7 @@ namespace SkillsPacket {
 	void showSkill(Player *player, int32_t skillid, uint8_t level, bool party = false, bool self = false);
 	void useDash(Player *player, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill);
 	void useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo);
+	void useSpeedInfusion(Player *player, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo);
 	void useMount(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo, int32_t mountid);
 	void endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill);
 	void healHP(Player *player, int16_t hp);
