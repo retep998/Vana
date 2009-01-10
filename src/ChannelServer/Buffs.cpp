@@ -44,6 +44,11 @@ Buffs::Buffs() {
 	skillsinfo[4201002].player.push_back(player); // Dagger Booster
 	skillsinfo[5101006].player.push_back(player); // Knuckle Booster
 	skillsinfo[5201003].player.push_back(player); // Gun Booster
+	// Speed Infusion
+	player.type = 0x80;
+	player.byte = TYPE_8;
+	player.value = SKILL_X;
+	skillsinfo[5121009].player.push_back(player);
 	// Maple Warriors
 	player.type = 0x8;
 	player.byte = TYPE_5;
@@ -352,6 +357,23 @@ Buffs::Buffs() {
 	skillsinfo[5101007].player.push_back(player);
 	// 5111005 - Transformation
 	player.type = 0x02;
+	player.byte = TYPE_1;
+	player.value = SKILL_WDEF;
+	player.hasmapval = false;
+	skillsinfo[5111005].player.push_back(player);
+	player.type = 0x08;
+	player.byte = TYPE_1;
+	player.value = SKILL_MDEF;
+	skillsinfo[5111005].player.push_back(player);
+	player.type = 0x80;
+	player.byte = TYPE_1;
+	player.value = SKILL_SPEED;
+	skillsinfo[5111005].player.push_back(player);
+	player.type = 0x1;
+	player.byte = TYPE_2;
+	player.value = SKILL_JUMP;
+	skillsinfo[5111005].player.push_back(player);
+	player.type = 0x02;
 	player.byte = TYPE_5;
 	player.value = SKILL_MORPH;
 	player.hasmapval = true;
@@ -539,6 +561,8 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	else {
 		if (skillid == 5001005) // I honestly wish I didn't have to do this
 			SkillsPacket::useDash(player, time, playerskill, mapskill);
+		else if (skillid == 5121009) // SIGH
+			SkillsPacket::useSpeedInfusion(player, time, playerskill, mapskill, addedinfo);
 		else
 			SkillsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
 	}
