@@ -556,17 +556,16 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			break;
 	}
 	if (mountid > 0)
-		SkillsPacket::useMount(player, skillid, time, playerskill, mapskill, addedinfo, mountid);
+		SkillsPacket::useMount(player, skillid, time, playerskill, addedinfo, mountid);
 	else {
 		if (skillid == 5001005) // I honestly wish I didn't have to do this
-			SkillsPacket::useDash(player, time, playerskill, mapskill);
+			SkillsPacket::useDash(player, time, playerskill);
 		else if (skillid == 5121009) // SIGH
-			SkillsPacket::useSpeedInfusion(player, time, playerskill, mapskill, addedinfo);
+			SkillsPacket::useSpeedInfusion(player, time, playerskill, addedinfo);
 		else
-			SkillsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
+			SkillsPacket::useSkill(player, skillid, time, playerskill, addedinfo);
 	}
 	playerbuffs->setBuffInfo(skillid, playerskill);
-	playerbuffs->setBuffMapInfo(skillid, mapskill);
 	playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
 	playerbuffs->setActiveSkillLevel(skillid, level);
 	playerbuffs->removeBuff(skillid);
@@ -581,10 +580,8 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 void Buffs::addBuff(Player *player, int32_t itemid, int32_t time, SkillActiveInfo &iteminfo, bool morph) {
 	itemid = itemid * -1; // Make the Item ID negative for the packet and to discern from skill buffs
 	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
-	SkillActiveInfo mapskill = morph ? iteminfo : SkillActiveInfo();
-	SkillsPacket::useSkill(player, itemid, time, iteminfo, mapskill, 0);
+	SkillsPacket::useSkill(player, itemid, time, iteminfo, 0, morph, true);
 	playerbuffs->setBuffInfo(itemid, iteminfo);
-	playerbuffs->setBuffMapInfo(itemid, mapskill);
 	playerbuffs->removeBuff(itemid);
 	playerbuffs->addBuff(itemid, time);
 }
@@ -598,7 +595,7 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 			player->setMP(player->getMP());
 			break;
 	}
-	SkillsPacket::endSkill(player, player->getActiveBuffs()->getBuffInfo(skill), player->getActiveBuffs()->getBuffMapInfo(skill));
+	SkillsPacket::endSkill(player, player->getActiveBuffs()->getBuffInfo(skill));
 	player->getActiveBuffs()->deleteSkillMapEnterInfo(skill);
 	player->getActiveBuffs()->setActiveSkillLevel(skill, 0);
 }

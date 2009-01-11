@@ -63,17 +63,14 @@ public:
 	void deleteSkillMapEnterInfo(int32_t skillid);
 	SkillMapEnterActiveInfo getSkillMapEnterInfo();
 	SkillActiveInfo getBuffInfo(int32_t skillid);
-	SkillActiveInfo getBuffMapInfo(int32_t skillid);
 	uint8_t getActiveSkillLevel(int32_t skillid);
 	void setBuffInfo(int32_t skillid, SkillActiveInfo skill);
-	void setBuffMapInfo(int32_t skillid, SkillActiveInfo skill);
 	void setSkillMapEnterInfo(int32_t skillid, const vector<SkillMapActiveInfo> &skill);
 	void setActiveSkillLevel(int32_t skillid, uint8_t level);
 private:
 	Player *m_player;
 	list<int32_t> m_buffs;
 	unordered_map<int32_t, SkillActiveInfo> activeplayerskill;
-	unordered_map<int32_t, SkillActiveInfo> activemapskill;
 	vector<SkillMapActiveInfo> activemapenterskill;
 	unordered_map<int32_t, uint8_t> activelevels;
 	unordered_map<int32_t, shared_ptr<Timer::Container> > m_skill_acts;

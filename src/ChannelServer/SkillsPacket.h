@@ -28,11 +28,11 @@ struct SpecialSkillInfo;
 namespace SkillsPacket {
 	void addSkill(Player *player, int32_t skillid, PlayerSkillInfo skillinfo);
 	void showSkill(Player *player, int32_t skillid, uint8_t level, bool party = false, bool self = false);
-	void useDash(Player *player, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill);
-	void useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo);
-	void useSpeedInfusion(Player *player, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo);
-	void useMount(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, SkillActiveInfo mskill, int16_t addedinfo, int32_t mountid);
-	void endSkill(Player *player, SkillActiveInfo pskill, SkillActiveInfo mskill);
+	void useDash(Player *player, int32_t time, SkillActiveInfo pskill);
+	void useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, int16_t addedinfo, bool ismorph = false, bool isitem = false);
+	void useSpeedInfusion(Player *player, int32_t time, SkillActiveInfo pskill, int16_t addedinfo);
+	void useMount(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, int16_t addedinfo, int32_t mountid);
+	void endSkill(Player *player, SkillActiveInfo pskill);
 	void healHP(Player *player, int16_t hp);
 	void showSkillEffect(Player *player, int32_t skillid, uint8_t level = 0);
 	void showSpecialSkill(Player *player, SpecialSkillInfo info); // Hurricane/Pierce/Big Bang/Monster Magnet
