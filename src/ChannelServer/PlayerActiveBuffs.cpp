@@ -102,9 +102,8 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	m_combo = combo;
 	if (sendPacket) {
 		SkillActiveInfo playerSkill = getBuffInfo(1111002);
-		SkillActiveInfo mapSkill = getBuffMapInfo(1111002);
 		playerSkill.vals[0] = combo + 1;
-		SkillsPacket::useSkill(m_player, 1111002, buffTimeLeft(1111002), playerSkill, mapSkill, 0);
+		SkillsPacket::useSkill(m_player, 1111002, buffTimeLeft(1111002), playerSkill, 0);
 	}
 }
 
@@ -153,10 +152,6 @@ void PlayerActiveBuffs::deleteSkillMapEnterInfo(int32_t skillid) {
 	}
 }
 
-SkillActiveInfo PlayerActiveBuffs::getBuffMapInfo(int32_t skillid) {
-	return activemapskill[skillid];
-}
-
 SkillMapEnterActiveInfo PlayerActiveBuffs::getSkillMapEnterInfo() {
 	SkillMapEnterActiveInfo skill;
 	for (size_t i = 0; i < activemapenterskill.size(); i++) {
@@ -197,10 +192,6 @@ void PlayerActiveBuffs::setSkillMapEnterInfo(int32_t skillid, const vector<Skill
 
 void PlayerActiveBuffs::setBuffInfo(int32_t skillid, SkillActiveInfo skill) {
 	activeplayerskill[skillid] = skill;
-}
-
-void PlayerActiveBuffs::setBuffMapInfo(int32_t skillid, SkillActiveInfo skill) {
-	activemapskill[skillid] = skill;
 }
 
 void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
