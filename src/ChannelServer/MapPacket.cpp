@@ -43,6 +43,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.addByte(0);
 	packet.addByte(0xf8);
 
+	/* Code that needs to be modified
 	SkillMapEnterActiveInfo enter = player->getActiveBuffs()->getSkillMapEnterInfo();
 	packet.addByte(enter.types[TYPE_1]);
 	packet.addByte(enter.types[TYPE_2]);
@@ -55,7 +56,8 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	if (enter.isval) {
 		packet.addByte(enter.val);
 	}
-
+	*/
+	packet.addInt64(0); // Temporary addition until all the buffs are working properly with no disconnections
 	packet.addInt(0);
 	packet.addShort(0);
 	packet.addInt(1065638850); // Unknown
