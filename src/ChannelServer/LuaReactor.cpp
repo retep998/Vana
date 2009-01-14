@@ -50,19 +50,19 @@ Reactor * LuaExports::getReactor(lua_State *luaVm) {
 
 int LuaExports::setReactorState(lua_State *luaVm) {
 	getReactor(luaVm)->setState(lua_tointeger(luaVm, -1), true);
-	return 1;
+	return 0;
 }
 
 int LuaExports::spawnMobReactor(lua_State *luaVm) {
 	int32_t mobid = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
 	Maps::getMap(reactor->getMapID())->spawnMob(mobid, reactor->getPos());
-	return 1;
+	return 0;
 }
 
 int LuaExports::reset(lua_State *luaVm) {
 	getReactor(luaVm)->revive();
 	getReactor(luaVm)->setState(0, true);
 	ReactorPacket::triggerReactor(getReactor(luaVm));
-	return 1;
+	return 0;
 }
