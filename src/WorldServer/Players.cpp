@@ -90,3 +90,10 @@ Player * Players::getPlayer(int32_t id, bool includeOffline) {
 	}
 	return 0;
 }
+
+void Players::removeChannelPlayers(uint16_t channel) {
+	for (unordered_map<int32_t, Player *>::iterator iter = players.begin(); iter != players.end(); iter++) {
+		if (iter->second->channel == channel)
+			iter->second->online = false;
+	}
+}

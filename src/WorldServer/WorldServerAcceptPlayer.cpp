@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "Rates.h"
 #include "PacketReader.h"
+#include "Players.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include "WorldServerAcceptPacket.h"
@@ -30,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
 	if (isAuthenticated()) {
 		Channels::Instance()->removeChannel(channel);
+		Players::Instance()->removeChannelPlayers(channel);
 		LoginServerConnectPacket::removeChannel(WorldServer::Instance()->getLoginPlayer(), channel);
 		std::cout << "Channel " << channel << " disconnected." << std::endl;
 	}
