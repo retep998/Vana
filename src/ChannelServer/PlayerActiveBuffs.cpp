@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Randomizer.h"
 #include "Skills.h"
+#include "BuffsPacket.h"
 #include "SkillsPacket.h"
 #include "Timer/Container.h"
 #include "Timer/Time.h"
@@ -103,7 +104,7 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	if (sendPacket) {
 		SkillActiveInfo playerSkill = getBuffInfo(1111002);
 		playerSkill.vals[0] = combo + 1;
-		SkillsPacket::useSkill(m_player, 1111002, buffTimeLeft(1111002), playerSkill, 0);
+		BuffsPacket::useSkill(m_player, 1111002, buffTimeLeft(1111002), playerSkill, 0);
 	}
 }
 

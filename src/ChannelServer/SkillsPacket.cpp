@@ -55,167 +55,12 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, boo
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void SkillsPacket::useDash(Player *player, int32_t time, SkillActiveInfo pskill) {
-	PacketCreator packet;
-	int16_t castedtime = static_cast<int16_t>(time);
-	packet.addShort(SEND_USE_SKILL);
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(pskill.types[i]);
-	packet.addShort(0);
-	for (size_t i = 0; i < pskill.vals.size(); i++) {
-		packet.addShort(pskill.vals[i]);
-		packet.addShort(0);
-		packet.addInt(5001005);
-		packet.addInt(880689251); // No idea, hate pirates
-		packet.addShort(castedtime);
-	}
-	packet.addShort(0);
-	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
-	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
-		return;
-	packet = PacketCreator();
-	packet.addShort(SEND_SHOW_OTHERS_SKILL);
-	packet.addInt(player->getId());
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(pskill.types[i]);
-	packet.addShort(0);
-	for (size_t i = 0; i < pskill.vals.size(); i++) {
-		packet.addShort(pskill.vals[i]);
-		packet.addShort(0);
-		packet.addInt(5001005);
-		packet.addInt(880689251); // No idea, hate pirates
-		packet.addShort(castedtime);
-	}
-	packet.addShort(0);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
-}
-
-void SkillsPacket::useMount(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, int16_t addedinfo, int32_t mountid) {
-	time *= 1000;
-	PacketCreator packet;
-	packet.addShort(SEND_USE_SKILL);
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(pskill.types[i]);
-	packet.addShort(0);
-	packet.addInt(mountid);
-	packet.addInt(skillid);
-	packet.addInt(0); // Server tick value
-	packet.addShort(0);
-	packet.addByte(0); // Number of times you've been buffed total
-	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
-		return;
-	packet = PacketCreator();
-	packet.addShort(SEND_SHOW_OTHERS_SKILL);
-	packet.addInt(player->getId());
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(pskill.types[i]);
-	packet.addShort(0);
-	packet.addInt(mountid);
-	packet.addInt(skillid);
-	packet.addInt(0);
-	packet.addShort(0);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
-}
-
-void SkillsPacket::useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, int16_t addedinfo, bool ismorph, bool isitem) {
-	time *= 1000;
-	PacketCreator packet;
-	packet.addShort(SEND_USE_SKILL);
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(pskill.types[i]);
-	for (size_t i = 0; i < pskill.vals.size(); i++) {
-		packet.addShort(pskill.vals[i]);
-		packet.addInt(skillid);
-		packet.addInt(time);
-	}
-	packet.addShort(0);
-	packet.addShort(addedinfo);
-	packet.addByte(0); // Number of times you've been buffed total - only certain skills have this part
-	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
-		return;
-	if (!isitem || (isitem && ismorph)) {
-		packet = PacketCreator();
-		packet.addShort(SEND_SHOW_OTHERS_SKILL);
-		packet.addInt(player->getId());
-		packet.addInt64(0);
-		for (int8_t i = 0; i < 8; i++)
-			packet.addByte(pskill.types[i]);
-		for (size_t i = 0; i < pskill.vals.size(); i++)
-			packet.addShort(pskill.vals[i]);
-		packet.addShort(0);
-		if (ismorph)
-			packet.addShort(0);
-		Maps::getMap(player->getMap())->sendPacket(packet, player);
-	}
-}
-
-void SkillsPacket::useSpeedInfusion(Player *player, int32_t time, SkillActiveInfo pskill, int16_t addedinfo) {
-	int32_t castedvalue = static_cast<int32_t>(pskill.vals[0]);
-	int16_t castedtime = static_cast<int16_t>(time);
-	PacketCreator packet;
-	packet.addShort(SEND_USE_SKILL);
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(pskill.types[i]);
-	packet.addShort(0);
-	packet.addInt(castedvalue);
-	packet.addInt(5121009);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addShort(castedtime);
-	packet.addShort(addedinfo);
-	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
-		return;
-	packet = PacketCreator();
-	packet.addShort(SEND_SHOW_OTHERS_SKILL);
-	packet.addInt(player->getId());
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(pskill.types[i]);
-	packet.addShort(0);
-	packet.addInt(castedvalue);
-	packet.addInt(5121009);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addShort(castedtime);
-	packet.addShort(addedinfo);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
-}
-
 void SkillsPacket::healHP(Player *player, int16_t hp) {
 	PacketCreator packet;
 	packet.addShort(SEND_GAIN_ITEM);
 	packet.addByte(0xA);
 	packet.addShort(hp);
 	player->getSession()->send(packet);
-}
-
-void SkillsPacket::endSkill(Player *player, SkillActiveInfo pskill) {
-	PacketCreator packet;
-	packet.addShort(SEND_CANCEL_SKILL);
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(pskill.types[i]);
-	packet.addByte(0);
-	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
-		return;
-	packet = PacketCreator();
-	packet.addShort(SEND_CANCEL_OTHERS_BUFF);
-	packet.addInt(player->getId());
-	packet.addInt64(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.addByte(pskill.types[i]);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t level) {
@@ -310,7 +155,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.addByte(1);
 	packet.addInt(1320006);
 	packet.addByte(level);
-	packet.addByte((on ? 1 : 0));
+	packet.addByte(on ? 1 : 0);
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
@@ -320,6 +165,6 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.addByte(1);
 	packet.addInt(1320006);
 	packet.addByte(level);
-	packet.addByte((on ? 1 : 0));
+	packet.addByte(on ? 1 : 0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
