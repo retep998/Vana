@@ -326,6 +326,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\BuffsPacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\DropsPacket.cpp"
 					>
 				</File>
@@ -645,6 +649,10 @@
 				>
 				<File
 					RelativePath=".\src\ChannelServer\BuddyListPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\BuffsPacket.h"
 					>
 				</File>
 				<File
