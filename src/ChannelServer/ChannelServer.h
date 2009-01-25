@@ -43,8 +43,8 @@ public:
 
 	void setWorld(int8_t id) { world = id; }
 	void setMaxMultiLevel(uint8_t level) { maxMultiLevel = level; }
-	void setWorldPort(int16_t port) { world_port = port; }
-	void setPort(int16_t port) { this->port = port; }
+	void setWorldPort(uint16_t port) { world_port = port; }
+	void setPort(uint16_t port) { this->port = port; }
 	void setChannel(uint16_t channel) { this->channel = channel; }
 	void setExprate(int32_t exprate) { this->exprate = exprate; }
 	void setQuestExprate(int32_t questexprate) { this->questexprate = questexprate; }
