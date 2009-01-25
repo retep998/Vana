@@ -36,12 +36,7 @@ void Channels::removeChannel(uint16_t channel) {
 }
 
 Channel * Channels::getChannel(uint16_t num) {
-	if (channels.find(num) != channels.end()) {
-		return channels[num].get();
-	}
-	else {
-		return 0;
-	}
+	return (channels.find(num) != channels.end() ? channels[num].get() : 0);
 }
 
 void Channels::sendToAll(PacketCreator &packet) {
