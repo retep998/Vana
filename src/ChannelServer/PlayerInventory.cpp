@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 
 /* Item struct */
-Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0), name("") {
+Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0), name(""), flags(0) {
 	EquipInfo ei = ItemDataProvider::Instance()->getEquipInfo(equipid);
 	slots = ei.slots;
 	if (!random) {
@@ -230,15 +230,15 @@ int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
 
 void PlayerInventory::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << player->getId();
+	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		Item *item = new Item;
 		item->id = res[i][2];
 		item->amount = res[i][3];
-		item->slots = (uint8_t) res[i][4];
-		item->scrolls = (uint8_t) res[i][5];
+		item->slots = (int8_t) res[i][4];
+		item->scrolls = (int8_t) res[i][5];
 		item->istr = res[i][6];
 		item->idex = res[i][7];
 		item->iint = res[i][8];
@@ -254,18 +254,19 @@ void PlayerInventory::load() {
 		item->ihand = res[i][18];
 		item->ispeed = res[i][19];
 		item->ijump = res[i][20];
-		item->petid = res[i][21];
-		res[i][22].to_string(item->name);
-		addItem((uint8_t) res[i][0], res[i][1], item);
+		item->flags = (int8_t) res[i][21];
+		item->petid = res[i][22];
+		res[i][23].to_string(item->name);
+		addItem((int8_t) res[i][0], res[i][1], item);
 		if (item->petid != 0) {
 			Pet *pet = new Pet(
 				player,
 				item, // Item - Gives id and type to pet
-				(int8_t) res[i][23], // Index
-				(string) res[i][24], // Name
-				(uint8_t) res[i][25], // Level
-				(int16_t) res[i][26], // Closeness
-				(uint8_t) res[i][27], // Fullness
+				(int8_t) res[i][24], // Index
+				(string) res[i][25], // Name
+				(uint8_t) res[i][26], // Level
+				(int16_t) res[i][27], // Closeness
+				(uint8_t) res[i][28], // Fullness
 				(uint8_t) res[i][1] // Inventory Slot
 			);
 			player->getPets()->addPet(pet);
@@ -313,6 +314,7 @@ void PlayerInventory::save() {
 				<< item->ihand << ","
 				<< item->ispeed << ","
 				<< item->ijump << ","
+				<< (int16_t) item->flags << ","
 				<< item->petid << ","
 				<< mysqlpp::quote << item->name << ")";
 		}
@@ -363,14 +365,15 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 				packet.addByte(1);
 				packet.addInt(pet->getId());
 				packet.addInt(0);
-				packet.addBytes("008005BB46E61702");
+				packet.addByte(0);
+				packet.addBytes("8005BB46E61702");
 				packet.addString(pet->getName(), 13);
 				packet.addByte(pet->getLevel());
 				packet.addShort(pet->getCloseness());
 				packet.addByte(pet->getFullness());
 				packet.addByte(0);
-				packet.addBytes("B8D56000CEC8"); // Most likely has expire date in it in korean time stamp
-				packet.addByte(1); // Propapbly is it alive (1 Alive, 2 Dead)
+				packet.addBytes("B8D56000CEC8"); // Most likely Korean timestamp expiration
+				packet.addByte(1); // Probably living status (1 = alive, 2 = dead)
 				packet.addInt(0);
 			}
 		}

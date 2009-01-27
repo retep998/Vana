@@ -416,7 +416,7 @@ void Inventory::useSkillbook(Player *player, PacketReader &packet) {
 	for (size_t i = 0; i < item.cons.skills.size(); i++) {
 		skillid = item.cons.skills[i].skillid;
 		newMaxLevel = item.cons.skills[i].maxlevel;
-		if (player->getJob() == item.cons.skills[i].skillid/10000) { // Make sure the skill is for the person's job
+		if (player->getJob() == item.cons.skills[i].skillid / 10000) { // Make sure the skill is for the person's job
 			if (player->getSkills()->getSkillLevel(skillid) >= item.cons.skills[i].reqlevel && player->getSkills()->getMaxSkillLevel(skillid) < newMaxLevel)
 				use = true;
 		}
@@ -571,6 +571,18 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			break;
 		case 2040727: // Shoe for Spikes 10%
 		case 2041058: // Cape for Cold Protection 10%
+			succeed = 0;
+			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // These do not take slots and can be used even after success
+				switch (itemid) {
+					case 2040727:
+						equip->flags |= FLAG_SPIKES;
+						break;
+					case 2041058:
+						equip->flags |= FLAG_COLD;
+						break;
+				}
+				succeed = 1;
+			}
 			break;
 		default: // Most scrolls
 			if (equip->slots > 0) {
