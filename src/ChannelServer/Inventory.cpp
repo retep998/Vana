@@ -712,6 +712,21 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
+		case 5060001: { // Item Lock
+			int8_t inventory = (int8_t) packet.getInt();
+			int16_t slot = (int16_t) packet.getInt();
+			if (slot != 0) {
+				Item *item = player->getInventory()->getItem(inventory, slot);
+				if (item == 0) {
+					// Hacking or failure, dunno
+					return;
+				}
+				item->flags |= FLAG_LOCK;
+				InventoryPacket::addNewItem(player, inventory, slot, item, true);
+				used = true;
+			}
+			break;
+		}
 		case 5300000: // Fungus Scroll
 		case 5300001: // Oinker Delight
 		case 5300002: // Zeta Nightmare

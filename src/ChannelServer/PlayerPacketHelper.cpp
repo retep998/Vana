@@ -61,7 +61,10 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 	}
 	else {
 		packet.addShort(item->amount); // Amount
-		packet.addInt(0);
+		packet.addByte(0);
+		packet.addByte(0);
+		packet.addByte(item->flags);
+		packet.addByte(0);
 		if (ISRECHARGEABLE(item->id)) {
 			packet.addInt(2);
 			packet.addShort(0x54);
