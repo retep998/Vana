@@ -55,7 +55,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		packet.addShort(item->ispeed); // Speed
 		packet.addShort(item->ijump); // Jump
 		packet.addString(item->name); // Owner string
-		packet.addByte(0); // Lock
+		packet.addByte(item->flags); // Lock, shoe spikes, cape cold protection, etc.
 		packet.addInt64(0); // Expiration time
 		packet.addByte(0); // No clue
 	}
