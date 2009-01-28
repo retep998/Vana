@@ -28,30 +28,30 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 	uint8_t first = 1;
 	while (size > pos) {
 		if (size > (pos + 1460 - first * 4)) {
-			AESEncryption::Instance()->decryptofb(buffer + pos, Decoder::ivSend, 1460 - first * 4);
+			decryptofb(buffer + pos, Decoder::ivSend, 1460 - first * 4);
 		}
 		else
-			AESEncryption::Instance()->decryptofb(buffer + pos, Decoder::ivSend, size - pos);
+			decryptofb(buffer + pos, Decoder::ivSend, size - pos);
 		pos += 1460 - first * 4;
 		if (first == 1)
 			first = 0;
 	}
-}
-
+} 
+ 
 void Decoder::next() {
 	MapleEncryption::nextIV(Decoder::ivSend);
 }
 
 void Decoder::decrypt(unsigned char *buffer, int32_t size) {
-	AESEncryption::Instance()->decryptofb(buffer, Decoder::ivRecv, size);
-	MapleEncryption::nextIV(Decoder::ivRecv);
+	decryptofb(buffer, Decoder::ivRecv, size);
+	MapleEncryption::nextIV(Decoder::ivRecv); 
 	MapleEncryption::mapleDecrypt(buffer, size);
 }
 
 void Decoder::createHeader (unsigned char *header, int16_t size) {
 	int16_t a = ivSend[3] * 0x100 + ivSend[2];
 	a = a ^ -(MAPLE_VERSION + 1);
-	int16_t b = a ^ size;
+	int16_t b = a ^ size; 
 	header[0] = a % 0x100;
 	header[1] = (a - header[0]) / 0x100;
 	header[2] = b % 0x100;
