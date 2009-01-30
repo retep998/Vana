@@ -258,6 +258,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\MapleTVs.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Maps.cpp"
 					>
 				</File>
@@ -577,6 +581,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Map.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\MapleTVs.h"
 					>
 				</File>
 				<File

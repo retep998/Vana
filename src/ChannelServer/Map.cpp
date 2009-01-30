@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
+#include "MapleTVs.h"
 #include "Mobs.h"
 #include "MobsPacket.h"
 #include "NPCPacket.h"
@@ -274,6 +275,13 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	// Music
 	if (info->musicname.size() > 0)
 		MapPacket::setMusic(info->id, info->musicname);
+
+	// MapleTV messengers
+	if (MapleTVs::Instance()->isMapleTVMap(info->id) && MapleTVs::Instance()->hasMessage()) {
+		PacketCreator packet;
+		MapleTVs::Instance()->getMapleTVEntryPacket(packet);
+		player->getSession()->send(packet);
+	}
 
 	// Players
 	for (size_t i = 0; i < players.size(); i++) {

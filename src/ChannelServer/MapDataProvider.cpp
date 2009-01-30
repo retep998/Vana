@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapDataProvider.h"
 #include "Map.h"
+#include "MapleTVs.h"
 #include "Database.h"
 #include "MiscUtilities.h"
 #include <string>
@@ -113,6 +114,8 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 			npc.rx0 = atoi(dataRow[5]);
 			npc.rx1 = atoi(dataRow[6]);
 			map->addNPC(npc);
+			if (MapleTVs::Instance()->isMapleTVNPC(npc.id))
+				MapleTVs::Instance()->addMap(map);
 		}
 		else {
 			MobSpawnInfo spawn;

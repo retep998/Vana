@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "Levels.h"
 #include "Maps.h"
+#include "MapleTVs.h"
 #include "Pets.h"
 #include "PetsPacket.h"
 #include "Player.h"
@@ -723,6 +724,50 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 				}
 				item->flags |= FLAG_LOCK;
 				InventoryPacket::addNewItem(player, inventory, slot, item, true);
+				used = true;
+			}
+			break;
+		}
+		case 5075000: { // MapleTV Messenger
+			bool hasreceiver = (packet.getByte() == 3);
+			Player *receiver = Players::Instance()->getPlayer(packet.getString());
+			int32_t time = 15;
+			if ((hasreceiver && receiver != 0) || (!hasreceiver && receiver == 0)) {
+				string msg = packet.getString();
+				string msg2 = packet.getString();
+				string msg3 = packet.getString();
+				string msg4 = packet.getString();
+				string msg5 = packet.getString();
+				int32_t ticks = packet.getInt();
+				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time, ticks);
+				used = true;
+			}
+			break;
+		}
+		case 5075001: { // MapleTV Star Messenger
+			int32_t time = 30;
+			string msg = packet.getString();
+			string msg2 = packet.getString();
+			string msg3 = packet.getString();
+			string msg4 = packet.getString();
+			string msg5 = packet.getString();
+			int32_t ticks = packet.getInt();
+			MapleTVs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid, time, ticks);
+			used = true;
+			break;
+		}
+		case 5075002: { // MapleTV Heart Messenger
+			string name = packet.getString();
+			Player *receiver = Players::Instance()->getPlayer(name);
+			int32_t time = 60;
+			if (receiver != 0) {
+				string msg = packet.getString();
+				string msg2 = packet.getString();
+				string msg3 = packet.getString();
+				string msg4 = packet.getString();
+				string msg5 = packet.getString();
+				int32_t ticks = packet.getInt();
+				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time, ticks);
 				used = true;
 			}
 			break;

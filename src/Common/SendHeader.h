@@ -118,3 +118,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_STORAGE_ACTION 0xf0
 #define SEND_PLAYER_ROOM_ACTION 0xf5 // Trades, player shops, minigames
 #define SEND_KEYMAP 0x107
+#define SEND_SHOW_MAPLETV 0x10D
+#define SEND_END_MAPLETV 0x10E
