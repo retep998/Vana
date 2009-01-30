@@ -31,7 +31,8 @@ struct Types {
 		ReactionTimer,
 		SkillActTimer,
 		TradeTimer,
-		HorntailTimer
+		HorntailTimer,
+		MapleTVTimer
 	};
 };
 
