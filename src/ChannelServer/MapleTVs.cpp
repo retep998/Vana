@@ -142,7 +142,7 @@ void MapleTVs::getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, 
 
 	packet.addShort(SEND_SHOW_MAPLETV);
 	packet.addByte(message.hasreceiver ? 3 : 1);
-	packet.addByte(message.megaphoneid - 5075000);
+	packet.addByte((int8_t)(message.megaphoneid - 5075000)); // Positively will be within -128 to 127
 	packet.addBuffer(sendbuf, sendbufsize);
 	packet.addString(message.sendname);
 	packet.addString(message.hasreceiver ? message.recvname : "");
