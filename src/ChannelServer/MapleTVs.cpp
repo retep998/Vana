@@ -16,10 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleTVs.h"
-#include "MapleSession.h"
 #include "PlayerPacketHelper.h"
 #include "Map.h"
-#include <boost/algorithm/string.hpp>
 #include <functional>
 
 using std::tr1::bind;
