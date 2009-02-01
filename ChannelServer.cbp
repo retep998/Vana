@@ -118,6 +118,8 @@
 		<Unit filename="src/ChannelServer/Map.h" />
 		<Unit filename="src/ChannelServer/MapDataProvider.cpp" />
 		<Unit filename="src/ChannelServer/MapDataProvider.h" />
+		<Unit filename="src/ChannelServer/MapleTVs.cpp" />
+		<Unit filename="src/ChannelServer/MapleTVs.h" />
 		<Unit filename="src/ChannelServer/MapPacket.cpp" />
 		<Unit filename="src/ChannelServer/MapPacket.h" />
 		<Unit filename="src/ChannelServer/Maps.cpp" />
