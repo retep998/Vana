@@ -57,6 +57,10 @@ struct Character {
 	int16_t fame;
 	int32_t map;
 	int8_t pos;
+	uint32_t w_rank;
+	int32_t w_rankmove;
+	uint32_t j_rank;
+	int32_t j_rankmove;
 	vector<CharEquip> equips;
 };
 

@@ -95,5 +95,10 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	packet.addInt(0);
 	packet.addInt(0);
 	packet.addInt(0);
-	packet.addByte(0);
+	// Rankings
+	packet.addByte(1);
+	packet.addInt(charc.w_rank);
+	packet.addInt(charc.w_rankmove);
+	packet.addInt(charc.j_rank);
+	packet.addInt(charc.j_rankmove);
 }
