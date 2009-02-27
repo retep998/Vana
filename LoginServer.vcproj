@@ -228,6 +228,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\LoginServer\RankingCalculator.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\LoginServer\Worlds.cpp"
 					>
 				</File>
@@ -323,6 +327,10 @@
 				</File>
 				<File
 					RelativePath=".\src\LoginServer\PlayerLogin.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\LoginServer\RankingCalculator.h"
 					>
 				</File>
 				<File

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2009 Vana Development Team
+Copyright (C) 2008 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -15,28 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef TIMER_TYPES_H
-#define TIMER_TYPES_H
+#ifndef RANKING_H
+#define RANKING_H
 
-namespace Timer {
+#include "Types.h"
 
-struct Types {
-	enum {
-		BuffTimer,
-		CoolTimer,
-		MapTimer,
-		MobStatusTimer,
-		PetTimer,
-		PingTimer,
-		RankTimer,
-		ReactionTimer,
-		SkillActTimer,
-		TradeTimer,
-		HorntailTimer,
-		MapleTVTimer
-	};
+namespace RankingCalculator {
+	void setTimer();
+	void runThread();
+	void all();
+	void overall();
+	void world();
+	void job();
+	void fame();
+	const int32_t outputWidth = 25;
 };
-
-}
 
 #endif

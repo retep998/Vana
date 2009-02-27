@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
 #include "ConnectionManager.h"
+#include "RankingCalculator.h"
 #include "Worlds.h"
 #include <boost/format.hpp>
 
@@ -30,6 +31,7 @@ void LoginServer::listen() {
 void LoginServer::loadData() {
 	Initializing::checkSchemaVersion(true);
 	Initializing::setUsersOffline(1);
+	RankingCalculator::setTimer();
 }
 
 void LoginServer::loadConfig() {
