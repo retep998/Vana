@@ -46,7 +46,8 @@ public:
 	void setByte(unsigned char byte, size_t pos);
 	void addBytes(const char *hex);
 	void addClock(clock_t clock);
-	void addBuffer(unsigned char *bytes, size_t len);
+	void addBuffer(const unsigned char *bytes, size_t len);
+	void addBuffer(PacketCreator &packet);
 	void addBuffer(PacketReader &packet);
 	void addIP(const string &ip);
 
