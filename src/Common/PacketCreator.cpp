@@ -26,11 +26,15 @@ void PacketCreator::addPos(Pos pos) {
 	addShort(pos.y);
 }
 
+void PacketCreator::addBuffer(PacketCreator &packet) {
+	addBuffer(packet.getBuffer(), packet.getSize());
+}
+
 void PacketCreator::addBuffer(PacketReader &packet) {
 	addBuffer(packet.getBuffer(), packet.getBufferLength());
 }
 
-void PacketCreator::addBuffer(unsigned char *bytes, size_t len) {
+void PacketCreator::addBuffer(const unsigned char *bytes, size_t len) {
 	memcpy(packet + pos, bytes, len);
 	pos += len;
 }

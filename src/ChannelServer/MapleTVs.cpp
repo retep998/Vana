@@ -136,14 +136,10 @@ void MapleTVs::getMapleTVEntryPacket(PacketCreator &packet) {
 }
 
 void MapleTVs::getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, int32_t timeleft) {
-	size_t sendbufsize = message.senddisplay.getSize();
-	unsigned char *sendbuf = new unsigned char[sendbufsize];
-	memcpy(sendbuf, message.senddisplay.getBuffer(), sendbufsize); // Need to remove the const reference from the PacketCreator
-
 	packet.addShort(SEND_SHOW_MAPLETV);
 	packet.addByte(message.hasreceiver ? 3 : 1);
 	packet.addByte((int8_t)(message.megaphoneid - 5075000)); // Positively will be within -128 to 127
-	packet.addBuffer(sendbuf, sendbufsize);
+	packet.addBuffer(message.senddisplay);
 	packet.addString(message.sendname);
 	packet.addString(message.hasreceiver ? message.recvname : "");
 	packet.addString(message.msg1);
@@ -153,15 +149,8 @@ void MapleTVs::getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, 
 	packet.addString(message.msg5);
 	packet.addInt(timeleft == 0 ? message.time : timeleft);
 	if (message.hasreceiver) {
-		size_t recvbufsize = message.recvdisplay.getSize();
-		unsigned char *recvbuf = new unsigned char[recvbufsize];
-		memcpy(recvbuf, message.recvdisplay.getBuffer(), recvbufsize); // Need to remove the const reference from the PacketCreator
-
-		packet.addBuffer(recvbuf, recvbufsize);
-
-		delete recvbuf; // Die, evil new'd memory
+		packet.addBuffer(message.recvdisplay);
 	}
-	delete sendbuf; // Die, evil new'd memory
 }
 
 void MapleTVs::endMapleTVPacket(PacketCreator &packet) {
