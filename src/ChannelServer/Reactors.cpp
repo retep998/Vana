@@ -103,6 +103,21 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 	}
 }
 
+struct Reaction {
+    void operator()() {
+        reactor->setState(state, true);
+        drop->removeDrop();
+        std::ostringstream filenameStream;
+        filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
+        LuaReactor(filenameStream.str(), player->getId(), reactor->getID(), reactor->getMapID());
+        return;
+    }
+    Reactor *reactor;
+    Drop *drop;
+    Player *player;
+    int8_t state;
+};
+
 void Reactors::checkDrop(Player *player, Drop *drop) {
 	for (size_t i = 0; i < Maps::getMap(drop->getMap())->getNumReactors(); i++) {
 		Reactor *reactor = Maps::getMap(drop->getMap())->getReactor(i);
@@ -110,24 +125,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectID() == revent->itemid) {
 				if ((drop->getPos().x >= reactor->getPos().x + revent->ltx && drop->getPos().x <= reactor->getPos().x + revent->rbx) && (drop->getPos().y >= reactor->getPos().y + revent->lty && drop->getPos().y <= reactor->getPos().y + revent->rby)) {
-#ifdef _WIN32 // Temporary provision so it doesn't overflow the stack when compiled in VC++
-					struct Reaction {
-#else // Causes stack overflow when compiled with VC++, but is standards-compliant?
-					struct Reaction : std::tr1::function<void ()> {
-#endif
-						void operator()() {
-							reactor->setState(state, true);
-							drop->removeDrop();
-							std::ostringstream filenameStream;
-							filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
-							LuaReactor(filenameStream.str(), player->getId(), reactor->getID(), reactor->getMapID());
-							return;
-						}
-						Reactor *reactor;
-						Drop *drop;
-						Player *player;
-						int8_t state;
-					} reaction;
+					Reaction reaction;
 					reaction.reactor = reactor;
 					reaction.drop = drop;
 					reaction.player = player;

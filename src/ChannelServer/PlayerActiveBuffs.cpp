@@ -61,23 +61,21 @@ int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) {
 }
 
 // Skill "acts"
+struct RunAct {
+    void operator()() {
+        switch (act) {
+            case ACT_HEAL: Skills::heal(player, value, skill); break;
+            case ACT_HURT: Skills::hurt(player, value, skill); break;
+        }
+    }
+    Player *player;
+    int32_t skill;
+    Act act;
+    int16_t value;
+};
+
 void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t time) {
-#ifdef _WIN32 // Temporary provision so it doesn't overflow the stack when compiled in VC++
-	struct RunAct {
-#else // Causes stack overflow when compiled with VC++, but is standards-compliant?
-	struct RunAct : std::tr1::function<void ()> {
-#endif
-		void operator()() {
-			switch (act) {
-				case ACT_HEAL: Skills::heal(player, value, skill); break;
-				case ACT_HURT: Skills::hurt(player, value, skill); break;
-			}
-		}
-		Player *player;
-		int32_t skill;
-		Act act;
-		int16_t value;
-	} runAct;
+	RunAct runAct;
 	runAct.player = m_player;
 	runAct.skill = skill;
 	runAct.act = act;
