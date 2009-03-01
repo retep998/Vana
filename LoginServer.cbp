@@ -90,6 +90,8 @@
 			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="src/LoginServer/RankingCalculator.cpp" />
+		<Unit filename="src/LoginServer/RankingCalculator.h" />
 		<Unit filename="src/LoginServer/Worlds.cpp" />
 		<Unit filename="src/LoginServer/Worlds.h" />
 		<Unit filename="src/LoginServer/main_login.cpp" />
