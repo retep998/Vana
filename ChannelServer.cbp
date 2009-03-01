@@ -74,6 +74,7 @@
 		<Unit filename="src/ChannelServer/BuddyListPacket.h" />
 		<Unit filename="src/ChannelServer/Buffs.cpp" />
 		<Unit filename="src/ChannelServer/Buffs.h" />
+		<Unit filename="src/ChannelServer/BuffsPacket.cpp" />
 		<Unit filename="src/ChannelServer/ChannelServer.cpp" />
 		<Unit filename="src/ChannelServer/ChannelServer.h" />
 		<Unit filename="src/ChannelServer/ChatHandler.cpp" />
@@ -118,10 +119,10 @@
 		<Unit filename="src/ChannelServer/Map.h" />
 		<Unit filename="src/ChannelServer/MapDataProvider.cpp" />
 		<Unit filename="src/ChannelServer/MapDataProvider.h" />
-		<Unit filename="src/ChannelServer/MapleTVs.cpp" />
-		<Unit filename="src/ChannelServer/MapleTVs.h" />
 		<Unit filename="src/ChannelServer/MapPacket.cpp" />
 		<Unit filename="src/ChannelServer/MapPacket.h" />
+		<Unit filename="src/ChannelServer/MapleTVs.cpp" />
+		<Unit filename="src/ChannelServer/MapleTVs.h" />
 		<Unit filename="src/ChannelServer/Maps.cpp" />
 		<Unit filename="src/ChannelServer/Maps.h" />
 		<Unit filename="src/ChannelServer/MobDataProvider.cpp" />
