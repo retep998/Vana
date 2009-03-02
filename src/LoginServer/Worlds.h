@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <map>
 #include <string>
+#include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
 
 using std::map;

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LOOPINGID_H
 
 #include "Types.h"
+#include <climits>
 
 // LoopingId, keep track and returns a number between min and max, restarts when number reaches max
 class LoopingId {
