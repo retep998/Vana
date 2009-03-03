@@ -28,7 +28,7 @@ class PacketReader;
 struct Item;
 
 struct TradeInfo {
-	TradeInfo(Player *player) : player(player), mesos(0), count(0), accepted(false) {
+	TradeInfo(Player *player) : player(player), count(0), mesos(0), accepted(false) {
 		for (size_t i = 0; i < 9; i++) {
 			slot[i] = false;
 		}

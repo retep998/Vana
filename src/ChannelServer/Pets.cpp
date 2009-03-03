@@ -43,7 +43,7 @@ unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > Pets::petsInter
 int16_t Pets::exps[29] = {1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000};
 
 /* Pet class */
-Pet::Pet(Player *player, Item *item) : player(player), type(item->id), index(-1), name(Pets::petsInfo[type].name), level(1), closeness(0), fullness(100) {
+Pet::Pet(Player *player, Item *item) : player(player), type(item->id), index(-1), name(Pets::petsInfo[type].name), level(1), fullness(100), closeness(0) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
@@ -58,8 +58,8 @@ type(item->id),
 index(index),
 name(name),
 level(level),
-closeness(closeness),
 fullness(fullness),
+closeness(closeness),
 inventorySlot(inventorySlot) {
 	if (isSummoned()) {
 		if (index == 0)

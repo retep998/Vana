@@ -49,8 +49,8 @@ id(id),
 mapid(mapid),
 spawnid(spawnid),
 mobid(mobid),
-info(MobDataProvider::Instance()->getMobInfo(mobid)),
 status(0),
+info(MobDataProvider::Instance()->getMobInfo(mobid)),
 timers(new Timer::Container),
 control(0)
 {

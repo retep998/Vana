@@ -31,11 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 
 // Drop class
-Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), mesos(mesos), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop), tradeable(true) {
+Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : questid(0), owner(owner), mapid(mapid), mesos(mesos), dropped(0), playerid(0), playerdrop(playerdrop), tradeable(true), pos(pos) {
 	Maps::getMap(mapid)->addDrop(this);
 }
 
-Drop::Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) : mapid(mapid), pos(pos), item(item), mesos(0), owner(owner), questid(0), dropped(0), playerid(0), playerdrop(playerdrop), tradeable(true) {
+Drop::Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) : questid(0), owner(owner), mapid(mapid), mesos(0), dropped(0), playerid(0), playerdrop(playerdrop), tradeable(true), pos(pos), item(item) {
 	Maps::getMap(mapid)->addDrop(this);
 }
 

@@ -60,7 +60,7 @@ enum ByteTypes {
 };
 
 struct BuffInfo {
-	BuffInfo() : type(0), byte(0), value(0), hasmapval(false), ismount(false), useval(false) { }
+	BuffInfo() : type(0), byte(0), value(0), hasmapval(false), useval(false), ismount(false) { }
 	uint8_t type;
 	int8_t byte;
 	int8_t value;
