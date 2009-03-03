@@ -420,7 +420,6 @@ void decryptofb(unsigned char *buffer, unsigned char *vec, int bsize)
 	enum keySize size = SIZE_32;
 
 	/* the AES input/output */
-	unsigned char ciphertext[16] = {0};
 	unsigned char input[16] = {0};
 	unsigned char output[16] = {0};
 	unsigned char plaintext[16] = {0};

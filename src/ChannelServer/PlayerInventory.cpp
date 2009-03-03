@@ -192,7 +192,6 @@ uint16_t PlayerInventory::getItemAmount(int32_t itemid) {
 }
 
 bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack) {
-	int16_t incrementor = 0;
 	int16_t required = 0;
 	int8_t inv = GETINVENTORY(itemid);
 	if (inv == 1 || ISRECHARGEABLE(itemid))

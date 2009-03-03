@@ -67,8 +67,6 @@ void Initializing::initializeReactors() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactoreventdata ORDER BY reactorid, state ASC");
 	mysqlpp::UseQueryResult res = query.use();
 
-	int32_t currentid = 0;
-	int32_t previousid = -1;
 	MYSQL_ROW reactorRow;
 	while ((reactorRow = res.fetch_raw_row())) {
 		// Col0 : Row ID
