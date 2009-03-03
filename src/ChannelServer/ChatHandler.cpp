@@ -252,9 +252,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						if (Player *target = Players::Instance()->getPlayer(args)) {
 							if (player->getGMLevel() > target->getGMLevel())
 								target->getSession()->disconnect();
+							else
+								PlayerPacket::showMessage(player, "Player outranks you.", 6);
 						}
 						else
-							PlayerPacket::showMessage(player, "Invalid player, player is offline, or player outranks you.", 6);
+							PlayerPacket::showMessage(player, "Invalid player or player is offline.", 6);
 					}
 					else {
 						PlayerPacket::showMessage(player, "Usage: !kick <$playername>", 6);
