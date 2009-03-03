@@ -25,6 +25,7 @@ class MovableLife {
 public:
 	MovableLife() { }
 	MovableLife(int16_t foothold, Pos pos, int8_t stance) : m_foothold(foothold), m_pos(pos), m_stance(stance) { }
+	virtual ~MovableLife() { }
 
 	virtual int8_t getStance() const { return m_stance; }
 	virtual int16_t getFH() const { return m_foothold; }
