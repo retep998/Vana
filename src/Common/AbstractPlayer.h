@@ -30,7 +30,8 @@ class PacketReader;
 class AbstractPlayer {
 public:
 	AbstractPlayer();
-
+	virtual ~AbstractPlayer() { }
+	
 	virtual void realHandleRequest(PacketReader &packet) = 0;
 	void handleRequest(PacketReader &packet);
 	void setTimer();
@@ -41,8 +42,6 @@ public:
 	string getIP() const { return ip; }
 	void setIP(const string &ip) { this->ip = ip; }
 	Timer::Container * getTimers() const { return timers.get(); }
-
-	virtual ~AbstractPlayer() { }
 protected:
 	MapleSession *session;
 	string ip;
@@ -55,5 +54,6 @@ private:
 class AbstractPlayerFactory {
 public:
 	virtual AbstractPlayer * createPlayer () = 0;
+	virtual ~AbstractPlayerFactory() { }
 };
 #endif

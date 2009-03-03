@@ -27,6 +27,8 @@ typedef std::tr1::shared_ptr<SessionManager> SessionManagerPtr;
 
 class AbstractSession {
 public:
+	virtual ~AbstractSession() { }
+	
 	AbstractSession(SessionManagerPtr sessionManager) :
 		m_session_manager(sessionManager) { }
 	virtual void start() = 0;
