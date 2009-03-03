@@ -274,7 +274,7 @@ void Inventory::useStorage(Player *player, PacketReader &packet) {
 void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	if (!ItemDataProvider::Instance()->itemExists(itemid))
 		return;
-	int8_t inv = GETINVENTORY(itemid);
+
 	int16_t max = ItemDataProvider::Instance()->getMaxslot(itemid);
 	int16_t thisamount = 0;
 	if (ISSTAR(itemid)) {
