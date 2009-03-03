@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 // Reactor class
-Reactor::Reactor (int32_t mapid, int32_t reactorid, Pos pos) : mapid(mapid), reactorid(reactorid), pos(pos), alive(true), state(0) {
+Reactor::Reactor (int32_t mapid, int32_t reactorid, Pos pos) : state(0), reactorid(reactorid), mapid(mapid), alive(true), pos(pos) {
 	Maps::getMap(mapid)->addReactor(this);
 }
 

@@ -40,7 +40,7 @@ class PacketReader;
 class Player;
 
 struct MapleTVMessage {
-	MapleTVMessage() : msg1(""), msg2(""), msg3(""), msg4(""), msg5(""), hasreceiver(false), time(0), megaphoneid(0) { }
+	MapleTVMessage() : msg1(""), msg2(""), msg3(""), msg4(""), msg5(""), time(0), megaphoneid(0), hasreceiver(false) { }
 	string msg1;
 	string msg2;
 	string msg3;

@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 
 /* Item struct */
-Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), petid(0), name(""), flags(0) {
+Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), flags(0), petid(0), name("") {
 	EquipInfo ei = ItemDataProvider::Instance()->getEquipInfo(equipid);
 	slots = ei.slots;
 	if (!random) {
@@ -68,7 +68,7 @@ Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), p
 }
 
 /* PlayerInventory class */
-PlayerInventory::PlayerInventory(Player *player, uint8_t maxslots[5], int32_t mesos) : player(player), mesos(mesos) {
+PlayerInventory::PlayerInventory(Player *player, uint8_t maxslots[5], int32_t mesos) : mesos(mesos), player(player) {
 	memcpy(this->maxslots, maxslots, sizeof(this->maxslots));
 	memset(this->equipped, 0, sizeof(this->equipped));
 	load();

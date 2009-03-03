@@ -57,7 +57,7 @@ struct SkillLevelInfo {
 typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 
 struct SpecialSkillInfo { // Hurricane, Big Bang, Monster Magnet, Pierce, etc.
-	SpecialSkillInfo() : skillid(0), level(0), w_speed(0), direction(0) { }
+	SpecialSkillInfo() : level(0), w_speed(0), direction(0),  skillid(0) { }
 	uint8_t level;
 	uint8_t w_speed;
 	uint8_t direction;
@@ -65,7 +65,7 @@ struct SpecialSkillInfo { // Hurricane, Big Bang, Monster Magnet, Pierce, etc.
 };
 
 struct PGMRInfo { // Power Guard/Mana Reflection
-	PGMRInfo() : reduction(0), pos(0,0), damage(0), mapmobid(0), isphysical(true) { }
+	PGMRInfo() : reduction(0), damage(0), mapmobid(0), isphysical(true), pos(0,0) { }
 	uint8_t reduction;
 	int32_t damage;
 	int32_t mapmobid;

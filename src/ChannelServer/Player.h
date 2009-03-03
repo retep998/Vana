@@ -44,7 +44,7 @@ class PacketReader;
 
 class Player : public AbstractPlayer, public MovableLife {
 public:
-	Player() : isconnect(false), save_on_dc(true), shop(0), npc(0), chair(0), itemEffect(0), tradestate(0) { }
+	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), save_on_dc(true), isconnect(false), npc(0) { }
 
 	~Player();
 

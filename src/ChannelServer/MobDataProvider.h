@@ -26,7 +26,7 @@ using std::vector;
 using std::tr1::unordered_map;
 
 struct MobAttackInfo {
-	MobAttackInfo() : mobid(-1), id(0), mpconsume(0), mpburn(0), level(0), deadlyattack(false) { }
+	MobAttackInfo() : id(0), level(0), mpconsume(0), mpburn(0), mobid(-1), deadlyattack(false) { }
 	int8_t id;
 	int8_t level;
 	uint8_t disease;

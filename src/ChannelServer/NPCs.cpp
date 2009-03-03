@@ -125,10 +125,10 @@ void NPCs::handleNPCAnimation(Player *player, PacketReader &packet) {
 }
 
 NPC::NPC(int32_t npcid, Player *player, bool isquest, bool isstart) :
-npcid(npcid),
 player(player),
-text(""),
+npcid(npcid),
 state(0),
+text(""),
 cend(false)
 {
 	struct stat fileinfo;
