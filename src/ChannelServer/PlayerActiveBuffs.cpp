@@ -62,16 +62,16 @@ int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) {
 
 // Skill "acts"
 struct RunAct {
-    void operator()() {
-        switch (act) {
-            case ACT_HEAL: Skills::heal(player, value, skill); break;
-            case ACT_HURT: Skills::hurt(player, value, skill); break;
-        }
-    }
-    Player *player;
-    int32_t skill;
-    Act act;
-    int16_t value;
+	void operator()() {
+		switch (act) {
+			case ACT_HEAL: Skills::heal(player, value, skill); break;
+			case ACT_HURT: Skills::hurt(player, value, skill); break;
+		}
+	}
+	Player *player;
+	int32_t skill;
+	Act act;
+	int16_t value;
 };
 
 void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t time) {
