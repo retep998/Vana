@@ -46,6 +46,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INTER_FORWARD_TO 0x2014
 #define INTER_GROUP_CHAT 0x2015
 #define INTER_SET_RATES 0x2016
+#define INTER_TO_LOGIN 0x2017 // Channel servers send this to ask the world server to send something to login server
+#define INTER_CALCULATE_RANKING 0x2018
 
 enum {
 	INTER_LOGIN_SERVER,

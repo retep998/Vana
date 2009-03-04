@@ -63,6 +63,12 @@ void WorldServerAcceptPacket::sendToChannels(unsigned char *data, int32_t len) {
 	Channels::Instance()->sendToAll(packet);
 }
 
+void WorldServerAcceptPacket::sendToLogin(unsigned char *data, int32_t len) {
+	PacketCreator packet;
+	packet.addBuffer(data, len);
+	WorldServer::Instance()->getLoginPlayer()->getSession()->send(packet);
+}
+
 void WorldServerAcceptPacket::findPlayer(WorldServerAcceptPlayer *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
 	PacketCreator packet;
 	packet.addShort(INTER_FIND);
