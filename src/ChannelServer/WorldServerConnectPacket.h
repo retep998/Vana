@@ -40,6 +40,7 @@ namespace WorldServerConnectPacket {
 	void updateJob(WorldServerConnectPlayer *player, int32_t playerid, int32_t job);
 	void updateMap(WorldServerConnectPlayer *player, int32_t playerid, int32_t map);
 	void groupChat(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat);
+	void rankingCalculation(WorldServerConnectPlayer *player);
 };
 
 #endif

@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptHandler.h"
 #include "MapleSession.h"
 #include "PacketReader.h"
+#include "RankingCalculator.h"
 #include "Worlds.h"
 
 void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
@@ -29,6 +30,7 @@ void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
 		case INTER_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
 		case INTER_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
+		case INTER_CALCULATE_RANKING: RankingCalculator::runThread(); break;
 	}
 }
 

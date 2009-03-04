@@ -73,6 +73,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["timer"] = command(CMD_TIMER, 3);
 	commandlist["instruction"] = command(CMD_INSTRUCTION, 3);
 	commandlist["addnpc"] = command(CMD_ADDNPC, 3);
+	commandlist["dorankings"] = command(CMD_RANKINGCALC, 3);
 
 	commandlist["me"] = command(CMD_ME, 2);
 	commandlist["kick"] = command(CMD_KICK, 2);
@@ -710,6 +711,10 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					break;
 				case CMD_STORAGE:
 					StoragePacket::showStorage(player, 9900000);
+					break;
+				case CMD_RANKINGCALC:
+					WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldPlayer());
+					PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", 5);
 					break;
 			}
 		}

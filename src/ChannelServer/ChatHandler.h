@@ -76,7 +76,8 @@ enum CMD {
 	CMD_CLEARDROPS,
 	CMD_WARPALL,
 	CMD_WARP,
-	CMD_WARPTO
+	CMD_WARPTO,
+	CMD_RANKINGCALC
 };
 
 namespace ChatHandler {

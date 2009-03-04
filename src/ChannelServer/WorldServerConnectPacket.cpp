@@ -133,3 +133,10 @@ void WorldServerConnectPacket::scrollingHeader(WorldServerConnectPlayer *player,
 	packet.addString(message);
 	player->getSession()->send(packet);
 }
+
+void WorldServerConnectPacket::rankingCalculation(WorldServerConnectPlayer *player) {
+	PacketCreator packet;
+	packet.addShort(INTER_TO_LOGIN);
+	packet.addShort(INTER_CALCULATE_RANKING);
+	player->getSession()->send(packet);
+}
