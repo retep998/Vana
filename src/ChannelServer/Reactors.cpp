@@ -131,7 +131,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 					reaction.player = player;
 					reaction.state = revent->nextstate;
 
-					Timer::Id id(Timer::Types::ReactionTimer, (uint32_t) drop, 0);
+					Timer::Id id(Timer::Types::ReactionTimer, drop->getID(), 0);
 					new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3000));
 				}
 				return;
@@ -141,6 +141,6 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 }
 
 void Reactors::checkLoot(Drop *drop) {
-	Timer::Id id(Timer::Types::ReactionTimer, (uint32_t) drop, 0);
+	Timer::Id id(Timer::Types::ReactionTimer, drop->getID(), 0);
 	Timer::Thread::Instance()->getContainer()->removeTimer(id);
 }
