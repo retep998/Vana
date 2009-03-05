@@ -471,7 +471,8 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		packet.skipBytes(8); // Useless
 		if (skillid != 4211006)
 			packet.skipBytes(1); // Distance, first half for non-Meso Explosion
-		packet.skipBytes(1); // Distance, second half for non-Meso Explosion
+		int8_t num = packet.getByte(); // Distance, second half for non-Meso Explosion OR hits for Meso Explosion
+		hits = skillid == 4211006 ? num : hits;
 		Pos origin = mob->getPos(); // Info for
 		vector<int32_t> ppdamages; // Pickpocket
 		for (int8_t k = 0; k < hits; k++) {

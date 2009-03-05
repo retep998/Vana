@@ -166,8 +166,8 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 		packet.addByte(0x06);
 		pack.skipBytes(12);
 		if (s4211006) {
+			hits = pack.getByte();
 			packet.addByte(hits);
-			pack.skipBytes(1);
 		}
 		else
 			pack.skipBytes(2);
