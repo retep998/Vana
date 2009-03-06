@@ -40,17 +40,15 @@ void ChannelServer::loadData() {
 	Initializing::loadData();
 	Initializing::initializeChat();
 
-	WorldServerConnectPlayer *loginPlayer = dynamic_cast<WorldServerConnectPlayer *>(
-		ConnectionManager::Instance()->connect(login_ip, login_inter_port,
-			new WorldServerConnectPlayerFactory()));
+	WorldServerConnectPlayer *loginPlayer = new WorldServerConnectPlayer;
+	ConnectionManager::Instance()->connect(login_ip, login_inter_port, loginPlayer);
 	loginPlayer->setIP(external_ip);
 	loginPlayer->sendAuth(inter_password);
 }
 
 void ChannelServer::connectWorld() {
-	worldPlayer = dynamic_cast<WorldServerConnectPlayer *>(
-		ConnectionManager::Instance()->connect(world_ip,
-			world_port, new WorldServerConnectPlayerFactory()));
+	worldPlayer = new WorldServerConnectPlayer;
+	ConnectionManager::Instance()->connect(world_ip, world_port, worldPlayer);
 	worldPlayer->setIP(external_ip);
 	worldPlayer->sendAuth(inter_password);
 }

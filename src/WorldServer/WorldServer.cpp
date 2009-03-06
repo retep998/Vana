@@ -27,9 +27,8 @@ void WorldServer::listen() {
 }
 
 void WorldServer::loadData() {
-	loginPlayer = dynamic_cast<LoginServerConnectPlayer *>(
-		ConnectionManager::Instance()->connect(login_ip,
-			login_inter_port, new LoginServerConnectPlayerFactory()));
+	loginPlayer = new LoginServerConnectPlayer;
+	ConnectionManager::Instance()->connect(login_ip, login_inter_port, loginPlayer);
 	loginPlayer->setIP(external_ip);
 	loginPlayer->sendAuth(inter_password);
 }

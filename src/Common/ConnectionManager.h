@@ -43,8 +43,7 @@ public:
 	}
 
 	void accept(uint16_t port, AbstractPlayerFactory *apf, string ivUnknown = "");
-	AbstractPlayer * connect(const string &server, uint16_t port,
-		AbstractPlayerFactory *apf);
+	void connect(const string &server, uint16_t port, AbstractPlayer *player);
 	void stop();
 
 	void run();
