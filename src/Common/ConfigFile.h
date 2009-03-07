@@ -31,14 +31,14 @@ using std::string;
 
 class ConfigFile {
 public:
-	ConfigFile(string filename);
+	ConfigFile(const string &filename);
 	ConfigFile();
-	void loadFile(string filename);
-	bool keyExist(string value);
-	int32_t getInt(string value);
-	int16_t getShort(string value);
-	string getString(string value);
-	bool getBool(string value);
+	void loadFile(const string &filename);
+	bool keyExist(const string &value);
+	int32_t getInt(const string &value);
+	int16_t getShort(const string &value);
+	string getString(const string &value);
+	bool getBool(const string &value);
 private:
 	lua_State *luaVm;
 	void initialize();

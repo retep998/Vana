@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <sys/stat.h>
 
-ConfigFile::ConfigFile(string filename) {
+ConfigFile::ConfigFile(const string &filename) {
 	loadFile(filename);
 }
 
 ConfigFile::ConfigFile() { }
 
-void ConfigFile::loadFile(string filename) {
+void ConfigFile::loadFile(const string &filename) {
 	// Check for file existance first
 	struct stat fileInfo;
 	if (stat(filename.c_str(), &fileInfo)) {
@@ -41,26 +41,26 @@ void ConfigFile::loadFile(string filename) {
 	luaL_dofile(luaVm, filename.c_str());
 }
 
-bool ConfigFile::keyExist(string value) {
+bool ConfigFile::keyExist(const string &value) {
 	lua_getglobal(luaVm, value.c_str());
 	return !lua_isnil(luaVm, -1);
 }
 
-int32_t ConfigFile::getInt(string value) {
+int32_t ConfigFile::getInt(const string &value) {
 	lua_getglobal(luaVm, value.c_str());
 	return lua_tointeger(luaVm, -1);
 }
 
-int16_t ConfigFile::getShort(string value) {
+int16_t ConfigFile::getShort(const string &value) {
 	return static_cast<int16_t>(getInt(value));
 }
 
-string ConfigFile::getString(string value) {
+string ConfigFile::getString(const string &value) {
 	lua_getglobal(luaVm, value.c_str());
 	return string(lua_tostring(luaVm, -1));
 }
 
-bool ConfigFile::getBool(string value) {
+bool ConfigFile::getBool(const string &value) {
 	lua_getglobal(luaVm, value.c_str());
 	return (lua_toboolean(luaVm, -1) != 0);
 }
