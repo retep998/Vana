@@ -19,46 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 PacketReader::PacketReader(unsigned char *buffer, size_t length) : buffer(buffer), length(length), pos(0) { }
 
-unsigned char PacketReader::getByte() {
-	return buffer[pos++];
-}
-
 void PacketReader::skipBytes(int32_t len) {
 	pos += len;
 }
 
-int32_t PacketReader::getInt() {
-	int32_t val = buffer[pos] + buffer[pos + 1] * 0x100 + buffer[pos + 2] * 0x10000 + buffer[pos + 3] * 0x1000000;
-	pos += 4;
-	return val;
-}
-
-clock_t PacketReader::getClock() {
-	clock_t val = 0;
-	uint8_t size = buffer[pos++];
-	for (uint8_t i = 0; i < size; i++) {
-		int32_t mul = 1;
-		for (uint8_t f = 0; f < i; f++) { // See getInt for an idea of what I'm doing here
-			mul *= 0x100;
-		}
-		val += buffer[pos + i] * mul;
-	}
-	pos += sizeof(clock_t);
-	return val;
-}
-
 int16_t PacketReader::getHeader() {
-	return buffer[0] + buffer[1] * 0x100;
-}
-
-int16_t PacketReader::getShort() {
-	int16_t val = buffer[pos] + buffer[pos + 1] * 0x100;
-	pos += 2;
-	return val;
+	return (*(int16_t *)(buffer));
 }
 
 string PacketReader::getString() {
-	return getString(getShort());
+	return getString(get<int16_t>());
 }
 
 string PacketReader::getString(size_t len) {

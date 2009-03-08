@@ -151,7 +151,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 
 void Drops::dropMesos(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	int32_t amount = packet.getInt();
+	int32_t amount = packet.get<int32_t>();
 	if (amount < 10 || amount > 50000) {
 		// hacking
 		return;
@@ -164,15 +164,15 @@ void Drops::dropMesos(Player *player, PacketReader &packet) {
 
 void Drops::player_loot(Player *player, PacketReader &packet) {
 	packet.skipBytes(9);
-	int32_t dropid = packet.getInt();
+	int32_t dropid = packet.get<int32_t>();
 
 	lootItem(player, dropid);
 }
 
 void Drops::pet_loot(Player *player, PacketReader &packet) {
-	int32_t petid = packet.getInt();
+	int32_t petid = packet.get<int32_t>();
 	packet.skipBytes(13);
-	int32_t dropid = packet.getInt();
+	int32_t dropid = packet.get<int32_t>();
 
 	lootItem(player, dropid, petid);
 }

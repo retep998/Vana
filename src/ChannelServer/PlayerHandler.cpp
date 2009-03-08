@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Ticks
-	uint8_t type = packet.getByte();
+	uint8_t type = packet.get<int8_t>();
 	uint8_t hit = 0;
 	uint8_t stance = 0;
 	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
@@ -39,7 +39,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	Mob *mob = 0;
 	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
 	int32_t nodamageid = 0;
-	int32_t damage = packet.getInt();
+	int32_t damage = packet.get<int32_t>();
 	bool applieddamage = false;
 	PGMRInfo pgmr;
 	MobAttackInfo attack;
@@ -48,7 +48,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			break;
 		default: // Code in common, minimizes repeated code
 			packet.skipBytes(4); // Mob ID
-			mapmobid = packet.getInt();
+			mapmobid = packet.get<int32_t>();
 			mob = Maps::getMap(player->getMap())->getMob(mapmobid);
 			if (mob == 0) {
 				// Hacking
@@ -69,23 +69,23 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 					// Now we leave attack and disease at their default values
 				}
 			}
-			hit = packet.getByte(); // Knock direction
+			hit = packet.get<int8_t>(); // Knock direction
 			break;
 	}
 	switch (type) { // Account for special sections of the damage packet
 		case 0xFE:
 			break;
 		default: // Else: Power Guard/Mana Reflection
-			pgmr.reduction = packet.getByte();
+			pgmr.reduction = packet.get<int8_t>();
 			packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 			if (pgmr.reduction != 0) {
-				if (packet.getByte() == 0)
+				if (packet.get<int8_t>() == 0)
 					pgmr.isphysical = false;
-				pgmr.mapmobid = packet.getInt();
+				pgmr.mapmobid = packet.get<int32_t>();
 				packet.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
 				packet.skipBytes(4); // Mob position garbage
-				pgmr.pos.x = packet.getShort();
-				pgmr.pos.y = packet.getShort();
+				pgmr.pos.x = packet.get<int16_t>();
+				pgmr.pos.y = packet.get<int16_t>();
 				pgmr.damage = damage;
 				if (pgmr.isphysical) // Only Power Guard decreases damage
 					damage = (damage - (damage * pgmr.reduction / 100)); 
@@ -96,10 +96,10 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	}
 	switch (type) { // Packet endings
 		case 0xFE:
-			disease = packet.getShort(); // Disease
+			disease = packet.get<int16_t>(); // Disease
 			break;
 		default:  {
-			stance = packet.getByte(); // Power Stance
+			stance = packet.get<int8_t>(); // Power Stance
 			if (stance > 0) {
 				int32_t skillid = 0;
 				if (player->getActiveBuffs()->getActiveSkillLevel(1121002) > 0)
@@ -222,20 +222,20 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet) {
-	int32_t face = packet.getInt();
+	int32_t face = packet.get<int32_t>();
 	PlayersPacket::faceExpression(player, face);
 }
 
 void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	int32_t playerid = packet.getInt();
-	PlayersPacket::showInfo(player, Players::Instance()->getPlayer(playerid), packet.getByte());
+	int32_t playerid = packet.get<int32_t>();
+	PlayersPacket::showInfo(player, Players::Instance()->getPlayer(playerid), packet.get<int8_t>());
 }
 
 void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	int16_t hp = packet.getShort();
-	int16_t mp = packet.getShort();
+	int16_t hp = packet.get<int16_t>();
+	int16_t mp = packet.get<int16_t>();
 	player->modifyHP(hp);
 	player->modifyMP(mp);
 }
@@ -248,7 +248,7 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
-	int32_t skillid = packet.getInt();
+	int32_t skillid = packet.get<int32_t>();
 	switch (skillid) {
 		case 1121001: // Monster Magnet x3
 		case 1221001:
@@ -259,9 +259,9 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 		case 2321001: {
 			SpecialSkillInfo info;
 			info.skillid = skillid;
-			info.level = packet.getByte();
-			info.direction = packet.getByte();
-			info.w_speed = packet.getByte();
+			info.level = packet.get<int8_t>();
+			info.direction = packet.get<int8_t>();
+			info.w_speed = packet.get<int8_t>();
 			player->setSpecialSkill(info);
 			SkillsPacket::showSpecialSkill(player, info);
 			break;

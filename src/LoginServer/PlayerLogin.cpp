@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 
 void PlayerLogin::realHandleRequest(PacketReader &packet) {
-	switch (packet.getShort()) {
+	switch (packet.get<int16_t>()) {
 		case RECV_LOGIN_INFO: Login::loginUser(this, packet); break;
 		case RECV_CHANNEL_SELECT: Worlds::channelSelect(this, packet); break;
 		case RECV_WORLD_SELECT: Worlds::selectWorld(this, packet); break;

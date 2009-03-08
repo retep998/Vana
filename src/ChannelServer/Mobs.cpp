@@ -113,26 +113,26 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 
 void Mob::statusPacket(PacketCreator &packet) {
 	if (status > 0) {
-		packet.addInt(status);
+		packet.add<int32_t>(status);
 
 		for (uint8_t i = 0; i < 19; i++) { // Val/skillid pairs must be ordered in the packet by status value ascending
 			int32_t status = Mobs::mobstatuses[i];
 			if (statuses.find(status) != statuses.end()) {
-				packet.addShort(statuses[status].val);
+				packet.add<int16_t>(statuses[status].val);
 				if (statuses[status].skillid >= 0) {
-					packet.addInt(statuses[status].skillid);
+					packet.add<int32_t>(statuses[status].skillid);
 				}
 				else {
-					packet.addShort(statuses[status].mobskill);
-					packet.addShort(statuses[status].level);
+					packet.add<int16_t>(statuses[status].mobskill);
+					packet.add<int16_t>(statuses[status].level);
 				}
-				packet.addShort(0);
+				packet.add<int16_t>(0);
 			}
 		}
 	}
 	else {
-		packet.addShort(0);
-		packet.addShort(0x800);
+		packet.add<int16_t>(0);
+		packet.add<int16_t>(0x800);
 	}
 }
 
@@ -211,7 +211,7 @@ void Mob::cleanHorntail(int32_t mapid, Player *player) {
 
 /* Mobs namespace */
 void Mobs::monsterControl(Player *player, PacketReader &packet) {
-	int32_t mobid = packet.getInt();
+	int32_t mobid = packet.get<int32_t>();
 
 	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
 
@@ -219,9 +219,9 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int16_t moveid = packet.getShort();
-	bool useskill = (packet.getByte() != 0);
-	int32_t skill = packet.getInt();
+	int16_t moveid = packet.get<int16_t>();
+	bool useskill = (packet.get<int8_t>() != 0);
+	int32_t skill = packet.get<int32_t>();
 	packet.skipBytes(10);
 	Pos cpos = Movement::parseMovement(mob, packet);
 	if (cpos - mob->getPos() > 300) {
@@ -237,10 +237,10 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	MobsPacket::damageMob(player, packet);
 	packet.reset(2);
 	packet.skipBytes(1); // Useless
-	uint8_t tbyte = packet.getByte();
+	uint8_t tbyte = packet.get<int8_t>();
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
-	int32_t skillid = packet.getInt();
+	int32_t skillid = packet.get<int32_t>();
 	switch (skillid) {
 		case 5201002:
 		case 5101004:
@@ -254,10 +254,10 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, 0, true);
 	switch (skillid) {
 		case 4211006: { // Meso Explosion
-			uint8_t items = packet.getByte();
+			uint8_t items = packet.get<int8_t>();
 			int32_t map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
-				int32_t objID = packet.getInt();
+				int32_t objID = packet.get<int32_t>();
 				packet.skipBytes(1); // Boolean for hit a monster
 				Drop *drop = Maps::getMap(map)->getDrop(objID);
 				if (drop != 0) {
@@ -341,23 +341,23 @@ void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 	MobsPacket::damageMobRanged(player, packet);
 	packet.reset(2); // Passing to the display function causes the buffer to be eaten, we need it
 	packet.skipBytes(1); // Number of portals taken (not kidding)
-	uint8_t tbyte = packet.getByte();
+	uint8_t tbyte = packet.get<int8_t>();
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
-	int32_t skillid = packet.getInt();
+	int32_t skillid = packet.get<int32_t>();
 	uint8_t display = 0;
 	switch (skillid) {
 		case 3121004:
 		case 3221001:
 		case 5221004:
 			packet.skipBytes(4); // Charge time
-			display = packet.getByte();
+			display = packet.get<int8_t>();
 			if ((skillid == 3121004 || skillid == 5221004) && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
 				SpecialSkillInfo info;
 				info.skillid = skillid;
-				info.direction = packet.getByte();
+				info.direction = packet.get<int8_t>();
 				packet.skipBytes(1); // Weapon subclass
-				info.w_speed = packet.getByte();
+				info.w_speed = packet.get<int8_t>();
 				info.level = player->getSkills()->getSkillLevel(info.skillid);
 				player->setSpecialSkill(info);
 				SkillsPacket::showSpecialSkill(player, info);
@@ -366,14 +366,14 @@ void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 				packet.skipBytes(3);
 			break;
 		default:
-			display = packet.getByte(); // Projectile display
+			display = packet.get<int8_t>(); // Projectile display
 			packet.skipBytes(1); // Direction/animation
 			packet.skipBytes(1); // Weapon subclass
 			packet.skipBytes(1); // Weapon speed
 			break;
 	}
 	packet.skipBytes(4); // Ticks
-	int16_t pos = packet.getShort();
+	int16_t pos = packet.get<int16_t>();
 	packet.skipBytes(2); // Cash Shop star cover
 	packet.skipBytes(1); // 0x00 = AoE, 0x41 = other
 	if (skillid != 4111004 && ((display & 0x40) > 0))
@@ -399,10 +399,10 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 	MobsPacket::damageMobSpell(player, packet);
 	packet.reset(2);
 	packet.skipBytes(1);
-	uint8_t tbyte = packet.getByte();
+	uint8_t tbyte = packet.get<int8_t>();
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
-	int32_t skillid = packet.getInt();
+	int32_t skillid = packet.get<int32_t>();
 	switch (skillid) {
 		case 2121001: // Big Bang has a 4 byte charge time after skillid
 		case 2221001:
@@ -436,7 +436,7 @@ void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 		// Hacking or some other form of tomfoolery
 		return;
 	packet.skipBytes(5);
-	int8_t targets = packet.getByte();
+	int8_t targets = packet.get<int8_t>();
 	int32_t useless = 0;
 	damageMobInternal(player, packet, targets, 1, summon->getSummonID(), useless);
 }
@@ -446,7 +446,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 	uint32_t total = 0;
 	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(4211003); // Check for active pickpocket level
 	for (int8_t i = 0; i < targets; i++) {
-		int32_t mapmobid = packet.getInt();
+		int32_t mapmobid = packet.get<int32_t>();
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
@@ -471,12 +471,12 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		packet.skipBytes(8); // Useless
 		if (skillid != 4211006)
 			packet.skipBytes(1); // Distance, first half for non-Meso Explosion
-		int8_t num = packet.getByte(); // Distance, second half for non-Meso Explosion OR hits for Meso Explosion
+		int8_t num = packet.get<int8_t>(); // Distance, second half for non-Meso Explosion OR hits for Meso Explosion
 		hits = skillid == 4211006 ? num : hits;
 		Pos origin = mob->getPos(); // Info for
 		vector<int32_t> ppdamages; // Pickpocket
 		for (int8_t k = 0; k < hits; k++) {
-			int32_t damage = packet.getInt();
+			int32_t damage = packet.get<int32_t>();
 			total += damage;
 			if (ismelee && skillid != 4211006 && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[4211003][pplevel].prop) {

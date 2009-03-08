@@ -30,11 +30,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, PacketReader &packet) {
-	int8_t worldid = packet.getByte();
+	int8_t worldid = packet.get<int8_t>();
 	if (worldid != -1) {
 		ChannelServer::Instance()->setWorld(worldid);
 		ChannelServer::Instance()->setWorldIp(packet.getString());
-		ChannelServer::Instance()->setWorldPort(packet.getShort());
+		ChannelServer::Instance()->setWorldPort(packet.get<int16_t>());
 		std::cout << "Connecting to world " << (int32_t) worldid << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}
@@ -45,14 +45,14 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, P
 }
 
 void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, PacketReader &packet) {
-	uint16_t channel = packet.getShort();
+	uint16_t channel = packet.get<int16_t>();
 	if (channel != USHRT_MAX) {
 		ChannelServer::Instance()->setChannel(channel);
-		int16_t port = packet.getShort();
+		int16_t port = packet.get<int16_t>();
 		ChannelServer::Instance()->setPort(port);
-		ChannelServer::Instance()->setMaxMultiLevel(packet.getByte());
-		ChannelServer::Instance()->setMaxStats(packet.getShort());
-		ChannelServer::Instance()->setWorldClock(packet.getClock());
+		ChannelServer::Instance()->setMaxMultiLevel(packet.get<int8_t>());
+		ChannelServer::Instance()->setMaxStats(packet.get<int16_t>());
+		ChannelServer::Instance()->setWorldClock(packet.get<clock_t>());
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
 	}
@@ -63,9 +63,9 @@ void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, Packet
 }
 
 void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *player, PacketReader &packet) {
-	int32_t playerid = packet.getInt();
+	int32_t playerid = packet.get<int32_t>();
 	string ip = packet.getString();
-	int16_t port = packet.getShort();
+	int16_t port = packet.get<int16_t>();
 
 	Player *ccPlayer = Players::Instance()->getPlayer(playerid);
 	if (!ccPlayer) {
@@ -78,10 +78,10 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 }
 
 void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
-	int32_t finder = packet.getInt();
-	uint16_t channel = packet.getShort();
+	int32_t finder = packet.get<int32_t>();
+	uint16_t channel = packet.get<int16_t>();
 	string name = packet.getString();
-	int8_t is = packet.getByte();
+	int8_t is = packet.get<int8_t>();
 	if (channel == USHRT_MAX) {
 		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, -1, is);
 	}
@@ -91,9 +91,9 @@ void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
 }
 
 void WorldServerConnectHandler::whisperPlayer(PacketReader &packet) {
-	int32_t whisperee = packet.getInt();
+	int32_t whisperee = packet.get<int32_t>();
 	string whisperer = packet.getString();
-	uint16_t channel = packet.getShort();
+	uint16_t channel = packet.get<int16_t>();
 	string message = packet.getString();
 
 	PlayersPacket::whisperPlayer(Players::Instance()->getPlayer(whisperee), whisperer, channel, message);
@@ -105,28 +105,28 @@ void WorldServerConnectHandler::scrollingHeader(PacketReader &packet) {
 }
 
 void WorldServerConnectHandler::newConnectable(PacketReader &packet) {
-	Connectable::Instance()->newPlayer(packet.getInt());
+	Connectable::Instance()->newPlayer(packet.get<int32_t>());
 }
 
 void WorldServerConnectHandler::forwardPacket(PacketReader &packet) {
 	PacketCreator ppacket;
-	int32_t playerid = packet.getInt();
+	int32_t playerid = packet.get<int32_t>();
 	ppacket.addBuffer(packet);
 	Players::Instance()->getPlayer(playerid)->getSession()->send(ppacket);
 }
 
 void WorldServerConnectHandler::setRates(PacketReader &packet) {
-	int32_t ratesSetBit = packet.getInt();
+	int32_t ratesSetBit = packet.get<int32_t>();
 	if (ratesSetBit & Rates::SetBits::exp) {
-		ChannelServer::Instance()->setExprate(packet.getInt());
+		ChannelServer::Instance()->setExprate(packet.get<int32_t>());
 	}
 	if (ratesSetBit & Rates::SetBits::questExp) {
-		ChannelServer::Instance()->setQuestExprate(packet.getInt());
+		ChannelServer::Instance()->setQuestExprate(packet.get<int32_t>());
 	}
 	if (ratesSetBit & Rates::SetBits::meso) {
-		ChannelServer::Instance()->setMesorate(packet.getInt());
+		ChannelServer::Instance()->setMesorate(packet.get<int32_t>());
 	}
 	if (ratesSetBit & Rates::SetBits::drop) {
-		ChannelServer::Instance()->setDroprate(packet.getInt());
+		ChannelServer::Instance()->setDroprate(packet.get<int32_t>());
 	}
 }

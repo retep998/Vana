@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginPacket::loginError(PlayerLogin *player, int16_t errorid) {
 	PacketCreator packet;
-	packet.addShort(SEND_LOGIN_INFO_REPLY);
-	packet.addShort(errorid);
-	packet.addInt(0);
+	packet.add<int16_t>(SEND_LOGIN_INFO_REPLY);
+	packet.add<int16_t>(errorid);
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 
@@ -50,67 +50,67 @@ void LoginPacket::loginBan(PlayerLogin *player, int8_t reason, int32_t expire) {
 		13 -> Your account has been blocked for one of cursing, scamming, or illegal trading via Megaphones.
 	*/
 	PacketCreator packet;
-	packet.addShort(SEND_LOGIN_INFO_REPLY);
+	packet.add<int16_t>(SEND_LOGIN_INFO_REPLY);
 	packet.addBytes("020000000000");
-	packet.addByte(reason);
+	packet.add<int8_t>(reason);
 	packet.addBytes("00000000");
-	packet.addInt(expire); // Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
+	packet.add<int32_t>(expire); // Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 	PacketCreator packet;
-	packet.addShort(SEND_LOGIN_INFO_REPLY);
-	packet.addInt(0);
-	packet.addShort(0);
-	packet.addInt(player->getUserid());
+	packet.add<int16_t>(SEND_LOGIN_INFO_REPLY);
+	packet.add<int32_t>(0);
+	packet.add<int16_t>(0);
+	packet.add<int32_t>(player->getUserid());
 	switch (player->getStatus()) {
-		case 5: packet.addByte(0x0a); break; // Gender Select
-		case 1: packet.addByte(0x0b); break; // Pin Select
-		default: packet.addByte(player->getGender()); break;
+		case 5: packet.add<int8_t>(0x0a); break; // Gender Select
+		case 1: packet.add<int8_t>(0x0b); break; // Pin Select
+		default: packet.add<int8_t>(player->getGender()); break;
 	}
 	packet.addBytes("0465");
 	packet.addString(username);
-	packet.addInt(0);
-	packet.addInt(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
 	packet.addBytes("000000A6B89C2B4CC701");
-	packet.addInt(0);
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::loginProcess(PlayerLogin *player, int8_t id) {
 	PacketCreator packet;
-	packet.addShort(SEND_LOGIN_PROCESS);
-	packet.addByte(id);
+	packet.add<int16_t>(SEND_LOGIN_PROCESS);
+	packet.add<int8_t>(id);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::pinAssigned(PlayerLogin *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_PIN_ASSIGNED);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_PIN_ASSIGNED);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::genderDone(PlayerLogin *player, int8_t gender) {
 	PacketCreator packet;
-	packet.addShort(SEND_GENDER_DONE);
-	packet.addByte(gender);
-	packet.addByte(1);
+	packet.add<int16_t>(SEND_GENDER_DONE);
+	packet.add<int8_t>(gender);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_WORLD);
-	packet.addByte(world->id);
+	packet.add<int16_t>(SEND_SHOW_WORLD);
+	packet.add<int8_t>(world->id);
 	packet.addString(world->name);
-	packet.addByte(world->ribbon);
+	packet.add<int8_t>(world->ribbon);
 	packet.addString(world->eventMsg);
-	packet.addShort(100);
-	packet.addByte(100);
-	packet.addShort(0);
-	packet.addByte(world->maxChannels);
+	packet.add<int16_t>(100);
+	packet.add<int8_t>(100);
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(world->maxChannels);
 	for (size_t i = 0; i < world->maxChannels; i++) {
 		std::ostringstream cnStream;
 		cnStream << world->name << "-" << i+1;
@@ -118,75 +118,75 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 		packet.addString(channelname);
 
 		if (world->channels.find(i) != world->channels.end()) {
-			packet.addInt(world->channels[i]->population);
+			packet.add<int32_t>(world->channels[i]->population);
 		}
 		else { // Channel doesn't exist
-			packet.addInt(0);
+			packet.add<int32_t>(0);
 		}
-		packet.addByte(1); // Char creation (the part that is server-decided)
-		packet.addShort(i);
+		packet.add<int8_t>(1); // Char creation (the part that is server-decided)
+		packet.add<int16_t>(i);
 	}
-	packet.addShort(0);
+	packet.add<int16_t>(0);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::worldEnd(PlayerLogin *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_WORLD);
-	packet.addByte(0xFF);
+	packet.add<int16_t>(SEND_SHOW_WORLD);
+	packet.add<int8_t>(0xFF);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::showChannels(PlayerLogin *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_CHANNEL);
-	packet.addShort(0x00);
+	packet.add<int16_t>(SEND_SHOW_CHANNEL);
+	packet.add<int16_t>(0x00);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::channelSelect(PlayerLogin *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_CHANNEL_SELECT);
-	packet.addShort(0);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_CHANNEL_SELECT);
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::showCharacters(PlayerLogin *player, const vector<Character> &chars) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_CHARACTERS);
-	packet.addByte(0);
-	packet.addByte(chars.size());
+	packet.add<int16_t>(SEND_SHOW_CHARACTERS);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
-	packet.addInt(3); // Max char you have have?
+	packet.add<int32_t>(3); // Max char you have have?
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::checkName(PlayerLogin *player, const string &name, bool taken) {
 	PacketCreator packet;
-	packet.addShort(SEND_CHECK_NAME);
+	packet.add<int16_t>(SEND_CHECK_NAME);
 	packet.addString(name);
-	packet.addByte(taken);
+	packet.add<int8_t>(taken);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::showAllCharactersInfo(PlayerLogin *player, uint32_t worlds, uint32_t unk) {
 	PacketCreator packet;
-	packet.addShort(SEND_VIEW_ALL_CHAR);
-	packet.addByte(1);
-	packet.addInt(worlds);
-	packet.addInt(unk);
+	packet.add<int16_t>(SEND_VIEW_ALL_CHAR);
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(worlds);
+	packet.add<int32_t>(unk);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::showCharactersWorld(PlayerLogin *player, uint8_t worldid, const vector<Character> &chars) {
 	PacketCreator packet;
-	packet.addShort(SEND_VIEW_ALL_CHAR);
-	packet.addByte(0);
-	packet.addByte(worldid);
-	packet.addByte(chars.size());
+	packet.add<int16_t>(SEND_VIEW_ALL_CHAR);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(worldid);
+	packet.add<int8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
@@ -195,44 +195,44 @@ void LoginPacket::showCharactersWorld(PlayerLogin *player, uint8_t worldid, cons
 
 void LoginPacket::showCharacter(PlayerLogin *player, const Character &charc) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_CHARACTER);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_SHOW_CHARACTER);
+	packet.add<int8_t>(0);
 	LoginPacketHelper::addCharacter(packet, charc);
 	player->getSession()->send(packet);	
 }
 
 void LoginPacket::deleteCharacter(PlayerLogin *player, int32_t id, bool success) {
 	PacketCreator packet;
-	packet.addShort(SEND_DELETE_CHAR);
-	packet.addInt(id);
-	packet.addByte((success ? 0x00 : 0x12));
+	packet.add<int16_t>(SEND_DELETE_CHAR);
+	packet.add<int32_t>(id);
+	packet.add<int8_t>((success ? 0x00 : 0x12));
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::connectIP(PlayerLogin *player, int32_t charid) {
 	PacketCreator packet;
-	packet.addShort(SEND_CHANNEL_SERVER_INFO);
-	packet.addShort(0);
+	packet.add<int16_t>(SEND_CHANNEL_SERVER_INFO);
+	packet.add<int16_t>(0);
 
 	World *world = Worlds::worlds[player->getWorld()];
 	if (world->channels.find(player->getChannel()) != world->channels.end()) {
 		shared_ptr<Channel> channel = world->channels[player->getChannel()];
 		packet.addIP(channel->ip);
-		packet.addShort(channel->port);
+		packet.add<int16_t>(channel->port);
 	}
 	else { // Channel does not exist, let's be mean and send something non-existent
 		packet.addIP("255.255.255.255");
-		packet.addShort(-1);
+		packet.add<int16_t>(-1);
 	}
-	packet.addInt(charid);
-	packet.addInt(0);
-	packet.addByte(0);
+	packet.add<int32_t>(charid);
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::relogResponse(PlayerLogin *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_RELOG_RESPONSE);
-	packet.addByte(1);
+	packet.add<int16_t>(SEND_RELOG_RESPONSE);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }

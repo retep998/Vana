@@ -23,26 +23,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginServerConnectPacket::registerChannel(LoginServerConnectPlayer *player, int32_t channel, const string &ip, int16_t port) {
 	PacketCreator packet;
-	packet.addShort(INTER_REGISTER_CHANNEL);
-	packet.addInt(channel);
+	packet.add<int16_t>(INTER_REGISTER_CHANNEL);
+	packet.add<int32_t>(channel);
 	packet.addString(ip);
-	packet.addShort(port);
+	packet.add<int16_t>(port);
 	player->getSession()->send(packet);
 }
 
 void LoginServerConnectPacket::updateChannelPop(LoginServerConnectPlayer *player, int32_t channel, int32_t population) {
 	PacketCreator packet;
-	packet.addShort(INTER_UPDATE_CHANNEL_POP);
-	packet.addInt(channel);
-	packet.addInt(population);
+	packet.add<int16_t>(INTER_UPDATE_CHANNEL_POP);
+	packet.add<int32_t>(channel);
+	packet.add<int32_t>(population);
 	
 	player->getSession()->send(packet);
 }
 
 void LoginServerConnectPacket::removeChannel(LoginServerConnectPlayer *player, int32_t channel) {
 	PacketCreator packet;
-	packet.addShort(INTER_REMOVE_CHANNEL);
-	packet.addInt(channel);
+	packet.add<int16_t>(INTER_REMOVE_CHANNEL);
+	packet.add<int32_t>(channel);
 
 	player->getSession()->send(packet);
 }

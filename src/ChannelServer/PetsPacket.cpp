@@ -26,145 +26,145 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer, int8_t index) {
 	PacketCreator packet;
-	packet.addShort(SEND_PET_SUMMONED);
-	packet.addInt(player->getId());
-	packet.addByte(index != -1 ? index : pet->getIndex());
-	packet.addByte(pet->isSummoned());
-	packet.addByte(kick); // Kick existing pet (only when player doesn't have follow the lead)
+	packet.add<int16_t>(SEND_PET_SUMMONED);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(index != -1 ? index : pet->getIndex());
+	packet.add<int8_t>(pet->isSummoned());
+	packet.add<int8_t>(kick); // Kick existing pet (only when player doesn't have follow the lead)
 	if (pet->isSummoned()) {
-		packet.addInt(pet->getType());
+		packet.add<int32_t>(pet->getType());
 		packet.addString(pet->getName());
-		packet.addInt(pet->getId());
-		packet.addInt(0);
+		packet.add<int32_t>(pet->getId());
+		packet.add<int32_t>(0);
 		packet.addPos(pet->getPos());
-		packet.addByte(pet->getStance());
-		packet.addInt(pet->getFH());
+		packet.add<int8_t>(pet->getStance());
+		packet.add<int32_t>(pet->getFH());
 	}
 	onlyPlayer ? player->getSession()->send(packet) : Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_t act) {
 	PacketCreator packet;
-	packet.addShort(SEND_PET_SHOW_CHAT);
-	packet.addInt(player->getId());
-	packet.addByte(pet->getIndex());
-	packet.addByte(0);
-	packet.addByte(act);
+	packet.add<int16_t>(SEND_PET_SHOW_CHAT);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(pet->getIndex());
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(act);
 	packet.addString(message);
-	packet.addByte(0);
+	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t buflen) {
 	PacketCreator packet;
-	packet.addShort(SEND_PET_SHOW_MOVING);
-	packet.addInt(player->getId());
-	packet.addByte(pet->getIndex());
+	packet.add<int16_t>(SEND_PET_SHOW_MOVING);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(pet->getIndex());
 	packet.addBuffer(buf, buflen);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool success) {
 	PacketCreator packet;
-	packet.addShort(SEND_PET_ANIMATION);
-	packet.addInt(player->getId());
-	packet.addByte(pet->getIndex()); // Index for multiple pets
-	packet.addByte(animation == 1 && success);
-	packet.addByte(animation);
-	animation == 1 ? packet.addByte(0) : packet.addShort(success);
+	packet.add<int16_t>(SEND_PET_ANIMATION);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(pet->getIndex()); // Index for multiple pets
+	packet.add<int8_t>(animation == 1 && success);
+	packet.add<int8_t>(animation);
+	animation == 1 ? packet.add<int8_t>(0) : packet.add<int16_t>(success);
 
 	player->getSession()->send(packet);
 }
 
 void PetsPacket::updatePet(Player *player, Pet *pet) {
 	PacketCreator packet;
-	packet.addShort(SEND_MOVE_ITEM);
-	packet.addByte(0);
-	packet.addByte(2);
-	packet.addByte(3);
-	packet.addByte(5);
-	packet.addByte(pet->getInventorySlot());
-	packet.addShort(0);
-	packet.addByte(5);
-	packet.addByte(pet->getInventorySlot());
-	packet.addByte(0);
-	packet.addByte(3);
-	packet.addInt(pet->getType());
-	packet.addByte(1);
-	packet.addInt(pet->getId());
-	packet.addInt(0);
+	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(2);
+	packet.add<int8_t>(3);
+	packet.add<int8_t>(5);
+	packet.add<int8_t>(pet->getInventorySlot());
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(5);
+	packet.add<int8_t>(pet->getInventorySlot());
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(3);
+	packet.add<int32_t>(pet->getType());
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(pet->getId());
+	packet.add<int32_t>(0);
 	packet.addBytes("008005BB46E61702");
 	packet.addString(pet->getName(), 13);
-	packet.addByte(pet->getLevel());
-	packet.addShort(pet->getCloseness());
-	packet.addByte(pet->getFullness());
-	packet.addByte(0);
+	packet.add<int8_t>(pet->getLevel());
+	packet.add<int16_t>(pet->getCloseness());
+	packet.add<int8_t>(pet->getFullness());
+	packet.add<int8_t>(0);
 	packet.addBytes("B8D56000CEC8"); // TODO: Expire date
-	packet.addByte(1); // Alive or dead
-	packet.addInt(0);
+	packet.add<int8_t>(1); // Alive or dead
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 
 void PetsPacket::levelUp(Player *player, Pet *pet) {
 	PacketCreator packet;
-	packet.addShort(SEND_GAIN_ITEM);
-	packet.addByte(4);
-	packet.addByte(0);
-	packet.addByte(pet->getIndex());
+	packet.add<int16_t>(SEND_GAIN_ITEM);
+	packet.add<int8_t>(4);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(pet->getIndex());
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
-	packet.addShort(SEND_SHOW_SKILL);
-	packet.addInt(player->getId());
-	packet.addShort(4);
-	packet.addByte(pet->getIndex());
+	packet.add<int16_t>(SEND_SHOW_SKILL);
+	packet.add<int32_t>(player->getId());
+	packet.add<int16_t>(4);
+	packet.add<int8_t>(pet->getIndex());
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void PetsPacket::changeName(Player *player, Pet *pet) {
 	PacketCreator packet;
-	packet.addShort(SEND_PET_NAME_CHANGE);
-	packet.addInt(player->getId());
-	packet.addByte(pet->getIndex());
+	packet.add<int16_t>(SEND_PET_NAME_CHANGE);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(pet->getIndex());
 	packet.addString(pet->getName());
-	packet.addByte(0);
+	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void PetsPacket::showPet(Player *player, Pet *pet) {
 	PacketCreator packet;
-	packet.addShort(SEND_PET_SHOW);
-	packet.addInt(player->getId());
-	packet.addByte(pet->getIndex());
-	packet.addInt(pet->getId());
-	packet.addInt(0);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_PET_SHOW);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(pet->getIndex());
+	packet.add<int32_t>(pet->getId());
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void PetsPacket::updateSummonedPets(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_UPDATE_STAT);
-	packet.addByte(0);
-	packet.addShort(0x8);
-	packet.addShort(0x18);
+	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int8_t>(0);
+	packet.add<int16_t>(0x8);
+	packet.add<int16_t>(0x18);
 	for (int8_t i = 0; i < 3; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			packet.addInt(pet->getId());
+			packet.add<int32_t>(pet->getId());
 		}
 		else {
-			packet.addInt(0);
+			packet.add<int32_t>(0);
 		}
-		packet.addInt(0);
+		packet.add<int32_t>(0);
 	}
-	packet.addByte(0);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void PetsPacket::blankUpdate(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_UPDATE_STAT);
-	packet.addByte(1);
-	packet.addInt(0);
+	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }

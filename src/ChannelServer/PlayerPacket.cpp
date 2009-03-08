@@ -30,75 +30,75 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_CHANGE_MAP);
-	packet.addInt(ChannelServer::Instance()->getChannel()); // Channel
-	packet.addByte(1);
-	packet.addByte(1);
-	packet.addShort(0);
-	packet.addInt(Randomizer::Instance()->randInt()); //
-	packet.addInt(Randomizer::Instance()->randInt()); // Possibly seeding maple's rng
-	packet.addInt(Randomizer::Instance()->randInt()); //
-	packet.addInt(-1);
-	packet.addInt(-1);
-	packet.addInt(player->getId());
+	packet.add<int16_t>(SEND_CHANGE_MAP);
+	packet.add<int32_t>(ChannelServer::Instance()->getChannel()); // Channel
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(1);
+	packet.add<int16_t>(0);
+	packet.add<int32_t>(Randomizer::Instance()->randInt()); //
+	packet.add<int32_t>(Randomizer::Instance()->randInt()); // Possibly seeding maple's rng
+	packet.add<int32_t>(Randomizer::Instance()->randInt()); //
+	packet.add<int32_t>(-1);
+	packet.add<int32_t>(-1);
+	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName(), 12);
-	packet.addByte(0);
-	packet.addByte(player->getGender());
-	packet.addByte(player->getSkin());
-	packet.addInt(player->getEyes());
-	packet.addInt(player->getHair());
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addByte(player->getLevel());
-	packet.addShort(player->getJob());
-	packet.addShort(player->getStr());
-	packet.addShort(player->getDex());
-	packet.addShort(player->getInt());
-	packet.addShort(player->getLuk());
-	packet.addShort(player->getHP());
-	packet.addShort(player->getMHP());
-	packet.addShort(player->getMP());
-	packet.addShort(player->getMMP());
-	packet.addShort(player->getAP());
-	packet.addShort(player->getSP());
-	packet.addInt(player->getExp());
-	packet.addShort(player->getFame());
-	packet.addInt(0); // Unknown int32 added in .62
-	packet.addInt(player->getMap());
-	packet.addByte(player->getMappos());
-	packet.addInt(0); // Unknown int32 added in .62
-	packet.addByte(player->getBuddyListSize());
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(player->getGender());
+	packet.add<int8_t>(player->getSkin());
+	packet.add<int32_t>(player->getEyes());
+	packet.add<int32_t>(player->getHair());
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(player->getLevel());
+	packet.add<int16_t>(player->getJob());
+	packet.add<int16_t>(player->getStr());
+	packet.add<int16_t>(player->getDex());
+	packet.add<int16_t>(player->getInt());
+	packet.add<int16_t>(player->getLuk());
+	packet.add<int16_t>(player->getHP());
+	packet.add<int16_t>(player->getMHP());
+	packet.add<int16_t>(player->getMP());
+	packet.add<int16_t>(player->getMMP());
+	packet.add<int16_t>(player->getAP());
+	packet.add<int16_t>(player->getSP());
+	packet.add<int32_t>(player->getExp());
+	packet.add<int16_t>(player->getFame());
+	packet.add<int32_t>(0); // Unknown int32 added in .62
+	packet.add<int32_t>(player->getMap());
+	packet.add<int8_t>(player->getMappos());
+	packet.add<int32_t>(0); // Unknown int32 added in .62
+	packet.add<int8_t>(player->getBuddyListSize());
 	player->getInventory()->connectData(packet); // Inventory data
 	player->getSkills()->connectData(packet); // Skills
 	// End
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addShort(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int16_t>(0);
 	for (int32_t i = 0; i < 15; i++)
 		packet.addBytes("FFC99A3B");
-	packet.addInt(0);
-	packet.addInt64(TimeUtilities::getServerTime());
+	packet.add<int32_t>(0);
+	packet.add<int64_t>(TimeUtilities::getServerTime());
 	player->getSession()->send(packet);
 }
 
 void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 	PacketCreator packet;
-	packet.addShort(SEND_KEYMAP);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_KEYMAP);
+	packet.add<int8_t>(0);
 	for (size_t i = 0; i < KeyMaps::size; i++) {
 		KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i);
 		if (keyMap != 0) {
-			packet.addByte(keyMap->type);
-			packet.addInt(keyMap->action);
+			packet.add<int8_t>(keyMap->type);
+			packet.add<int32_t>(keyMap->action);
 		}
 		else {
-			packet.addByte(0);
-			packet.addInt(0);
+			packet.add<int8_t>(0);
+			packet.add<int32_t>(0);
 		}
 	}
 	player->getSession()->send(packet);
@@ -106,23 +106,23 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 
 void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	PacketCreator packet;
-	packet.addShort(SEND_SKILL_MACRO);
-	packet.addByte(macros->getMax() + 1);
+	packet.add<int16_t>(SEND_SKILL_MACRO);
+	packet.add<int8_t>(macros->getMax() + 1);
 	for (int8_t i = 0; i <= macros->getMax();  i++) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
 		if (macro != 0) {
 			packet.addString(macro->name);
-			packet.addByte(macro->shout);
-			packet.addInt(macro->skill1);
-			packet.addInt(macro->skill2);
-			packet.addInt(macro->skill3);
+			packet.add<int8_t>(macro->shout);
+			packet.add<int32_t>(macro->skill1);
+			packet.add<int32_t>(macro->skill2);
+			packet.add<int32_t>(macro->skill3);
 		}
 		else {
 			packet.addString("");
-			packet.addByte(0);
-			packet.addInt(0);
-			packet.addInt(0);
-			packet.addInt(0);
+			packet.add<int8_t>(0);
+			packet.add<int32_t>(0);
+			packet.add<int32_t>(0);
+			packet.add<int32_t>(0);
 		}
 	}
 	
@@ -131,44 +131,44 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 
 void PlayerPacket::updateStatInt(Player *player, int32_t id, int32_t value, bool is) {
 	PacketCreator packet;
-	packet.addShort(SEND_UPDATE_STAT);
-	packet.addByte(is);
-	packet.addInt(id);
-	packet.addInt(value);
+	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int8_t>(is);
+	packet.add<int32_t>(id);
+	packet.add<int32_t>(value);
 	player->getSession()->send(packet);
 }
 
 void PlayerPacket::updateStatShort(Player *player, int32_t id, int16_t value, bool is) {
 	PacketCreator packet;
-	packet.addShort(SEND_UPDATE_STAT);
-	packet.addByte(is);
-	packet.addInt(id);
-	packet.addShort(value);
+	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int8_t>(is);
+	packet.add<int32_t>(id);
+	packet.add<int16_t>(value);
 	player->getSession()->send(packet);
 }
 
 void PlayerPacket::updateStatChar(Player *player, int32_t id, int8_t value, bool is) {
 	PacketCreator packet;
-	packet.addShort(SEND_UPDATE_STAT);
-	packet.addByte(is);
-	packet.addInt(id);
-	packet.addByte(value);
+	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int8_t>(is);
+	packet.add<int32_t>(id);
+	packet.add<int8_t>(value);
 	player->getSession()->send(packet);
 }
 
 void PlayerPacket::changeChannel(Player *player, const string &ip, int16_t port) {
 	PacketCreator packet;
-	packet.addShort(SEND_CHANGE_CHANNEL);
-	packet.addByte(1);
+	packet.add<int16_t>(SEND_CHANGE_CHANNEL);
+	packet.add<int8_t>(1);
 	packet.addIP(ip);
-	packet.addShort(port);
+	packet.add<int16_t>(port);
 	player->getSession()->send(packet);
 }
 
 void PlayerPacket::showMessage(Player *player, const string &msg, int8_t type) {
 	PacketCreator packet;
-	packet.addShort(SEND_NOTICE); 
-	packet.addByte(type);
+	packet.add<int16_t>(SEND_NOTICE); 
+	packet.add<int8_t>(type);
 	packet.addString(msg);
 	player->getSession()->send(packet);
 }
@@ -182,11 +182,11 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 	}
 
 	PacketCreator packet;
-	packet.addShort(SEND_INSTRUCTION_BUBBLE);
+	packet.add<int16_t>(SEND_INSTRUCTION_BUBBLE);
 	packet.addString(msg);
-	packet.addShort(width);
-	packet.addShort(height);
-	packet.addByte(1);
+	packet.add<int16_t>(width);
+	packet.add<int16_t>(height);
+	packet.add<int8_t>(1);
 
 	player->getSession()->send(packet);
 }

@@ -43,7 +43,7 @@ void Worlds::selectWorld(PlayerLogin *player, PacketReader &packet) {
 		// hacking
 		return;
 	}
-	player->setWorld(packet.getByte());
+	player->setWorld(packet.get<int8_t>());
 	LoginPacket::showChannels(player);
 }
 
@@ -53,7 +53,7 @@ void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
 		return;
 	}
 	packet.skipBytes(1);
-	player->setChannel(packet.getByte());
+	player->setChannel(packet.get<int8_t>());
 	LoginPacket::channelSelect(player);
 	Characters::showCharacters(player);
 }

@@ -110,7 +110,7 @@ void Pet::startTimer() {
 
 /* Pets namespace */
 void Pets::handle_movement(Player *player, PacketReader &packet) {
-	int32_t petid = packet.getInt();
+	int32_t petid = packet.get<int32_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	packet.skipBytes(8);
 	Movement::parseMovement(pet, packet);
@@ -119,17 +119,17 @@ void Pets::handle_movement(Player *player, PacketReader &packet) {
 }
 
 void Pets::handle_chat(Player *player, PacketReader &packet) {
-	int32_t petid = packet.getInt();
+	int32_t petid = packet.get<int32_t>();
 	packet.skipBytes(5);
-	int8_t act = packet.getByte();
+	int8_t act = packet.get<int8_t>();
 	string message = packet.getString();
 	PetsPacket::showChat(player, player->getPets()->getPet(petid), message, act);
 }
 
 void Pets::handle_summon(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	int16_t slot = packet.getShort();
-	bool master = packet.getByte() == 1;
+	int16_t slot = packet.get<int16_t>();
+	bool master = packet.get<int8_t>() == 1;
 	bool multipet = player->getSkills()->getSkillLevel(8) > 0;
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5, slot)->petid);
 
@@ -198,8 +198,8 @@ void Pets::handle_summon(Player *player, PacketReader &packet) {
 
 void Pets::handle_feed(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	int16_t slot = packet.getShort();
-	int32_t item = packet.getInt();
+	int16_t slot = packet.get<int16_t>();
+	int32_t item = packet.get<int32_t>();
 	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		Inventory::takeItem(player, item, 1);
 
@@ -217,9 +217,9 @@ void Pets::handle_feed(Player *player, PacketReader &packet) {
 }
 
 void Pets::handle_command(Player *player, PacketReader &packet) {
-	int32_t petid = packet.getInt();
+	int32_t petid = packet.get<int32_t>();
 	packet.skipBytes(5);
-	int8_t act = packet.getByte();
+	int8_t act = packet.get<int8_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	bool success = (Randomizer::Instance()->randInt(100) < petsInteractInfo[pet->getType()][act].prob);
 	if (success) {

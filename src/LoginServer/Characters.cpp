@@ -147,16 +147,16 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 		return;
 	}
 
-	int32_t eyes = packet.getInt();
-	int32_t hair = packet.getInt() + packet.getInt(); // Hair+hair colour
-	int32_t skin = packet.getInt();
+	int32_t eyes = packet.get<int32_t>();
+	int32_t hair = packet.get<int32_t>() + packet.get<int32_t>(); // Hair+hair colour
+	int32_t skin = packet.get<int32_t>();
 	packet.skipBytes(16);
 
-	uint16_t gender = packet.getByte();
-	uint16_t str = packet.getByte();
-	uint16_t dex = packet.getByte();
-	uint16_t intt = packet.getByte();
-	uint16_t luk = packet.getByte();
+	uint16_t gender = packet.get<int8_t>();
+	uint16_t str = packet.get<int8_t>();
+	uint16_t dex = packet.get<int8_t>();
+	uint16_t intt = packet.get<int8_t>();
+	uint16_t luk = packet.get<int8_t>();
 
 	if (str + dex + intt + luk != 25) {
 		// hacking
@@ -179,10 +179,10 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 	int32_t id = (int32_t) res.insert_id();
 
 	packet.skipBytes(-21);
-	createEquip(packet.getInt(), 0x05, id);
-	createEquip(packet.getInt(), 0x06, id);
-	createEquip(packet.getInt(), 0x07, id);
-	createEquip(packet.getInt(), 0x0b, id);
+	createEquip(packet.get<int32_t>(), 0x05, id);
+	createEquip(packet.get<int32_t>(), 0x06, id);
+	createEquip(packet.get<int32_t>(), 0x07, id);
+	createEquip(packet.get<int32_t>(), 0x0b, id);
 
 	query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << id << ", 4, 1, 4161001, 1, \"\")"; // Beginner Guide
 	query.exec();
@@ -195,8 +195,8 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 }
 
 void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
-	int32_t data = packet.getInt();
-	int32_t id = packet.getInt();
+	int32_t data = packet.get<int32_t>();
+	int32_t id = packet.get<int32_t>();
 
 	if (!ownerCheck(player, id)) {
 		// hacking
@@ -244,14 +244,14 @@ void Characters::connectGame(PlayerLogin *player, int32_t charid) {
 }
 
 void Characters::connectGame(PlayerLogin *player, PacketReader &packet) {
-	int32_t id = packet.getInt();
+	int32_t id = packet.get<int32_t>();
 
 	connectGame(player, id);
 }
 
 void Characters::connectGameWorld(PlayerLogin *player, PacketReader &packet) {
-	int32_t id = packet.getInt();
-	int8_t worldid = (int8_t) packet.getInt();
+	int32_t id = packet.get<int32_t>();
+	int8_t worldid = (int8_t) packet.get<int32_t>();
 	player->setWorld(worldid);
 
 	// Take the player to a random channel

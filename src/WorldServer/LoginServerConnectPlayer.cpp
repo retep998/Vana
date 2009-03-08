@@ -25,7 +25,7 @@ LoginServerConnectPlayer::LoginServerConnectPlayer() {
 }
 
 void LoginServerConnectPlayer::realHandleRequest(PacketReader &packet) {
-	switch (packet.getShort()) {
+	switch (packet.get<int16_t>()) {
 		case INTER_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
 		case INTER_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
 	}

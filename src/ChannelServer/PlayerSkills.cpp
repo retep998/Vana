@@ -89,11 +89,11 @@ void PlayerSkills::save() {
 }
 
 void PlayerSkills::connectData(PacketCreator &packet) {
-	packet.addShort((int16_t) playerskills.size());
+	packet.add<int16_t>((int16_t) playerskills.size());
 	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
-		packet.addInt(iter->first);
-		packet.addInt(iter->second.level);
+		packet.add<int32_t>(iter->first);
+		packet.add<int32_t>(iter->second.level);
 		if (FOURTHJOB_SKILL(iter->first))
-			packet.addInt(iter->second.maxlevel); // Max Level for 4th job skills
+			packet.add<int32_t>(iter->second.maxlevel); // Max Level for 4th job skills
 	}
 }

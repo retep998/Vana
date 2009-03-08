@@ -36,7 +36,7 @@ void NPCs::handleNPC(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int32_t npcid = Maps::getMap(player->getMap())->getNpc(packet.getInt() - 100).id;
+	int32_t npcid = Maps::getMap(player->getMap())->getNpc(packet.get<int32_t>() - 100).id;
 	if (ShopDataProvider::Instance()->showShop(player, npcid)) // Shop
 		return;
 
@@ -59,8 +59,8 @@ void NPCs::handleNPCIn(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int8_t type = packet.getByte();
-	int8_t what = packet.getByte();
+	int8_t type = packet.get<int8_t>();
+	int8_t what = packet.get<int8_t>();
 
 	if (type == NPCDialogs::normal) {
 		switch (what) {
@@ -89,7 +89,7 @@ void NPCs::handleNPCIn(Player *player, PacketReader &packet) {
 	else if (type == NPCDialogs::getNumber) {
 		npc->setState(npc->getState() + 1);
 		if (what == 1) {
-			npc->setGetNumber(packet.getInt());
+			npc->setGetNumber(packet.get<int32_t>());
 		}
 		else {
 			npc->end();
@@ -101,13 +101,13 @@ void NPCs::handleNPCIn(Player *player, PacketReader &packet) {
 			npc->end();
 		}
 		else {
-			npc->setSelected(packet.getByte());
+			npc->setSelected(packet.get<int8_t>());
 		}
 	}
 	else if (type == NPCDialogs::style) {
 		npc->setState(npc->getState() + 1);
 		if (what == 1) {
-			npc->setSelected(packet.getShort());
+			npc->setSelected(packet.get<int16_t>());
 		}
 		else  {
 			npc->end();
@@ -182,10 +182,10 @@ bool NPC::run() {
 
 PacketCreator NPC::npcPacket(int8_t type) {
 	PacketCreator packet;
-	packet.addShort(SEND_NPC_TALK);
-	packet.addByte(4);
-	packet.addInt(npcid);
-	packet.addByte(type);
+	packet.add<int16_t>(SEND_NPC_TALK);
+	packet.add<int8_t>(4);
+	packet.add<int32_t>(npcid);
+	packet.add<int8_t>(type);
 	packet.addString(text);
 
 	text = "";
@@ -206,28 +206,28 @@ void NPC::sendYesNo() {
 
 void NPC::sendNext() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
-	packet.addByte(0);
-	packet.addByte(1);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 
 void NPC::sendBackNext() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
-	packet.addByte(1);
-	packet.addByte(1);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 
 void NPC::sendBackOK() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
-	packet.addByte(1);
-	packet.addByte(0);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void NPC::sendOK() {
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
-	packet.addShort(0);
+	packet.add<int16_t>(0);
 	player->getSession()->send(packet);
 }
 
@@ -238,25 +238,25 @@ void NPC::sendAcceptDecline() {
 
 void NPC::sendGetText() {
 	PacketCreator packet = npcPacket(NPCDialogs::getText);
-	packet.addInt(0);
-	packet.addInt(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 
 void NPC::sendGetNumber(int32_t def, int32_t min, int32_t max) {
 	PacketCreator packet = npcPacket(NPCDialogs::getNumber);
-	packet.addInt(def);
-	packet.addInt(min);
-	packet.addInt(max);
-	packet.addInt(0);
+	packet.add<int32_t>(def);
+	packet.add<int32_t>(min);
+	packet.add<int32_t>(max);
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 
 void NPC::sendStyle(int32_t styles[], int8_t size) {
 	PacketCreator packet = npcPacket(NPCDialogs::style);
-	packet.addByte(size);
+	packet.add<int8_t>(size);
 	for (int8_t i = 0; i < size; i++)
-		packet.addInt(styles[i]);
+		packet.add<int32_t>(styles[i]);
 	player->getSession()->send(packet);
 }
 

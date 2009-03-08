@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 
 void Party::handleRequest(Player *player, PacketReader &packet) {
-	int8_t type = packet.getByte();
+	int8_t type = packet.get<int8_t>();
 	switch (type) {
 		case 0x01: // Create party
 		case 0x02: // Leave party
@@ -31,7 +31,7 @@ void Party::handleRequest(Player *player, PacketReader &packet) {
 		case 0x03: // Join party
 		case 0x05: // Expel Player
 		case 0x06: // Give leader rights
-			WorldServerConnectPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), packet.getInt());
+			WorldServerConnectPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), packet.get<int32_t>());
 			break;
 		case 0x04: // Invite
 			WorldServerConnectPacket::partyInvite(ChannelServer::Instance()->getWorldPlayer(), player->getId(), packet.getString());

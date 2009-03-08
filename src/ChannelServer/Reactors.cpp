@@ -67,7 +67,7 @@ void Reactors::setMaxstates(int32_t id, int16_t state) {
 }
 
 void Reactors::hitReactor(Player *player, PacketReader &packet) {
-	int32_t id = packet.getInt() - 200;
+	int32_t id = packet.get<int32_t>() - 200;
 
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 

@@ -108,9 +108,9 @@ void Login::setGender(PlayerLogin *player, PacketReader &packet) {
 		//hacking
 		return;
 	}
-	if (packet.getByte() == 1) {
+	if (packet.get<int8_t>() == 1) {
 		player->setStatus(0);
-		int8_t gender = packet.getByte();
+		int8_t gender = packet.get<int8_t>();
 		mysqlpp::Query query = Database::getCharDB().query();
 		query << "UPDATE users SET gender = " << (int32_t) gender << " WHERE id = " << player->getUserid();
 		query.exec();
@@ -143,7 +143,7 @@ void Login::checkPin(PlayerLogin *player, PacketReader &packet) {
 		//hacking
 		return;
 	}
-	int8_t act = packet.getByte();
+	int8_t act = packet.get<int8_t>();
 	packet.skipBytes(5);
 	if (act == 0x00) {
 		player->setStatus(2);
@@ -175,7 +175,7 @@ void Login::registerPIN(PlayerLogin *player, PacketReader &packet) {
 		//hacking
 		return;
 	}
-	if (packet.getByte() == 0x00) {
+	if (packet.get<int8_t>() == 0x00) {
 		if (player->getPin() != -1) {
 			player->setStatus(2);
 		}

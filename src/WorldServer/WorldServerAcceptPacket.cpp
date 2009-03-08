@@ -28,10 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void WorldServerAcceptPacket::groupChat(WorldServerAcceptPlayer *player, int32_t playerid, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;
-	packet.addShort(INTER_FORWARD_TO);
-	packet.addInt(playerid);
-	packet.addShort(SEND_GROUP_CHAT);
-	packet.addByte(type);
+	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int32_t>(playerid);
+	packet.add<int16_t>(SEND_GROUP_CHAT);
+	packet.add<int8_t>(type);
 	packet.addString(sender);
 	packet.addString(message);
 	player->getSession()->send(packet);
@@ -39,21 +39,21 @@ void WorldServerAcceptPacket::groupChat(WorldServerAcceptPlayer *player, int32_t
 
 void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats) {
 	PacketCreator packet;
-	packet.addShort(INTER_CHANNEL_CONNECT);
-	packet.addShort(channel);
-	packet.addShort(port);
-	packet.addByte(maxMultiLevel);
-	packet.addShort(maxStats);
-	packet.addClock(TimeUtilities::clock_in_ms());
+	packet.add<int16_t>(INTER_CHANNEL_CONNECT);
+	packet.add<int16_t>(channel);
+	packet.add<int16_t>(port);
+	packet.add<int8_t>(maxMultiLevel);
+	packet.add<int16_t>(maxStats);
+	packet.add<clock_t>(TimeUtilities::clock_in_ms());
 	player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, const string &ip, int16_t port) {
 	PacketCreator packet;
-	packet.addShort(INTER_PLAYER_CHANGE_CHANNEL);
-	packet.addInt(playerid);
+	packet.add<int16_t>(INTER_PLAYER_CHANGE_CHANNEL);
+	packet.add<int32_t>(playerid);
 	packet.addString(ip);
-	packet.addShort(port);
+	packet.add<int16_t>(port);
 	player->getSession()->send(packet);
 }
 
@@ -71,21 +71,21 @@ void WorldServerAcceptPacket::sendToLogin(unsigned char *data, int32_t len) {
 
 void WorldServerAcceptPacket::findPlayer(WorldServerAcceptPlayer *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
 	PacketCreator packet;
-	packet.addShort(INTER_FIND);
-	packet.addInt(finder);
-	packet.addShort(channel);
+	packet.add<int16_t>(INTER_FIND);
+	packet.add<int32_t>(finder);
+	packet.add<int16_t>(channel);
 	packet.addString(findee);
-	packet.addByte(is);
+	packet.add<int8_t>(is);
 
 	player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPacket::whisperPlayer(WorldServerAcceptPlayer *player, int32_t whisperee, const string &whisperer, uint16_t channel, const string &message) {
 	PacketCreator packet;
-	packet.addShort(INTER_WHISPER);
-	packet.addInt(whisperee);
+	packet.add<int16_t>(INTER_WHISPER);
+	packet.add<int32_t>(whisperee);
 	packet.addString(whisperer);
-	packet.addShort(channel);
+	packet.add<int16_t>(channel);
 	packet.addString(message);
 
 	player->getSession()->send(packet);
@@ -93,7 +93,7 @@ void WorldServerAcceptPacket::whisperPlayer(WorldServerAcceptPlayer *player, int
 
 void WorldServerAcceptPacket::scrollingHeader(const string &message) {
 	PacketCreator packet;
-	packet.addShort(INTER_SCROLLING_HEADER);
+	packet.add<int16_t>(INTER_SCROLLING_HEADER);
 	packet.addString(message);
 
 	Channels::Instance()->sendToAll(packet);
@@ -101,28 +101,28 @@ void WorldServerAcceptPacket::scrollingHeader(const string &message) {
 
 void WorldServerAcceptPacket::newConnectable(uint16_t channel, int32_t playerid) {
 	PacketCreator packet;
-	packet.addShort(INTER_NEW_CONNECTABLE);
-	packet.addInt(playerid);
+	packet.add<int16_t>(INTER_NEW_CONNECTABLE);
+	packet.add<int32_t>(playerid);
 
 	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPacket::sendRates(WorldServerAcceptPlayer *player, int32_t setBit) {
 	PacketCreator packet;
-	packet.addShort(INTER_SET_RATES);
-	packet.addInt(setBit);
+	packet.add<int16_t>(INTER_SET_RATES);
+	packet.add<int32_t>(setBit);
 
 	if (setBit & Rates::SetBits::exp) {
-		packet.addInt(WorldServer::Instance()->getExprate());
+		packet.add<int32_t>(WorldServer::Instance()->getExprate());
 	}
 	if (setBit & Rates::SetBits::questExp) {
-		packet.addInt(WorldServer::Instance()->getQuestExprate());
+		packet.add<int32_t>(WorldServer::Instance()->getQuestExprate());
 	}
 	if (setBit & Rates::SetBits::meso) {
-		packet.addInt(WorldServer::Instance()->getMesorate());
+		packet.add<int32_t>(WorldServer::Instance()->getMesorate());
 	}
 	if (setBit & Rates::SetBits::drop) {
-		packet.addInt(WorldServer::Instance()->getDroprate());
+		packet.add<int32_t>(WorldServer::Instance()->getDroprate());
 	}
 
 	player->getSession()->send(packet);

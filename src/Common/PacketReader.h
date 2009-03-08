@@ -28,14 +28,12 @@ class PacketReader {
 public:
 	PacketReader(unsigned char *buffer, size_t length);
 
-	unsigned char getByte();
+	template<typename T>
+	T get();
 	void skipBytes(int32_t len);
-	int32_t getInt();
 	int16_t getHeader(); // Basically getShort that always read at start
-	int16_t getShort();
 	string getString();
 	string getString(size_t len);
-	clock_t getClock();
 	unsigned char * getBuffer();
 	size_t getBufferLength();
 
@@ -45,5 +43,12 @@ private:
 	size_t length;
 	size_t pos;
 };
+
+template<typename T>
+T PacketReader::get() {
+	T val = (*(T *)(buffer + pos));
+	pos += sizeof(T);
+	return val;
+}
 
 #endif

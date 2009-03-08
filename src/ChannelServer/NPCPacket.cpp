@@ -25,27 +25,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_NPC);
-	packet.addInt(i+0x64);
-	packet.addInt(npc.id);
+	packet.add<int16_t>(SEND_SHOW_NPC);
+	packet.add<int32_t>(i+0x64);
+	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
-	packet.addByte(1);
-	packet.addShort(npc.fh);
-	packet.addShort(npc.rx0);
-	packet.addShort(npc.rx1);
-	packet.addByte(1);
+	packet.add<int8_t>(1);
+	packet.add<int16_t>(npc.fh);
+	packet.add<int16_t>(npc.rx0);
+	packet.add<int16_t>(npc.rx1);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 	packet = PacketCreator();
-	packet.addShort(SEND_CONTROL_NPC);
-	packet.addByte(1);
-	packet.addInt(i+0x64);
-	packet.addInt(npc.id);
+	packet.add<int16_t>(SEND_CONTROL_NPC);
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(i+0x64);
+	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
-	packet.addByte(1);
-	packet.addShort(npc.fh);
-	packet.addShort(npc.rx0);
-	packet.addShort(npc.rx1);
-	packet.addByte(1);
+	packet.add<int8_t>(1);
+	packet.add<int16_t>(npc.fh);
+	packet.add<int16_t>(npc.rx0);
+	packet.add<int16_t>(npc.rx1);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 
@@ -53,10 +53,10 @@ void NPCPacket::animateNPC(Player *player, PacketReader &pack) {
 	size_t len = pack.getBufferLength();
 
 	PacketCreator packet;
-	packet.addShort(SEND_ANIMATE_NPC);
+	packet.add<int16_t>(SEND_ANIMATE_NPC);
 	if (len == 6) { // NPC talking
-		packet.addInt(pack.getInt());
-		packet.addShort(pack.getShort());
+		packet.add<int32_t>(pack.get<int32_t>());
+		packet.add<int16_t>(pack.get<int16_t>());
 	}
 
 	else if (len > 6) { // NPC moving

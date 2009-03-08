@@ -25,41 +25,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void ReactorPacket::spawnReactor(Reactor *reactor) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_REACTOR);
-	packet.addInt(reactor->getID());
-	packet.addInt(reactor->getReactorID());
-	packet.addByte(reactor->getState());
+	packet.add<int16_t>(SEND_SHOW_REACTOR);
+	packet.add<int32_t>(reactor->getID());
+	packet.add<int32_t>(reactor->getReactorID());
+	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
-	packet.addByte(0);
+	packet.add<int8_t>(0);
 	Maps::getMap(reactor->getMapID())->sendPacket(packet);
 }
 
 void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_REACTOR);
-	packet.addInt(reactor->getID());
-	packet.addInt(reactor->getReactorID());
-	packet.addByte(reactor->getState());
+	packet.add<int16_t>(SEND_SHOW_REACTOR);
+	packet.add<int32_t>(reactor->getID());
+	packet.add<int32_t>(reactor->getReactorID());
+	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
-	packet.addByte(0);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void ReactorPacket::triggerReactor(Reactor *reactor) {
 	PacketCreator packet = PacketCreator();
-	packet.addShort(SEND_TRIGGER_REACTOR);
-	packet.addInt(reactor->getID());
-	packet.addByte(reactor->getState()); // State
+	packet.add<int16_t>(SEND_TRIGGER_REACTOR);
+	packet.add<int32_t>(reactor->getID());
+	packet.add<int8_t>(reactor->getState()); // State
 	packet.addPos(reactor->getPos());
-	packet.addInt(0);
+	packet.add<int32_t>(0);
 	Maps::getMap(reactor->getMapID())->sendPacket(packet);
 }
 
 void ReactorPacket::destroyReactor(Reactor *reactor) {
 	PacketCreator packet = PacketCreator();
-	packet.addShort(SEND_DESTROY_REACTOR);
-	packet.addInt(reactor->getID());
-	packet.addByte(reactor->getState());
+	packet.add<int16_t>(SEND_DESTROY_REACTOR);
+	packet.add<int32_t>(reactor->getID());
+	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
 	Maps::getMap(reactor->getMapID())->sendPacket(packet);
 }

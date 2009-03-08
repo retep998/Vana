@@ -34,19 +34,14 @@ class PacketCreator {
 public:
 	PacketCreator() : pos(0) { }
 
-	void addInt(int32_t intg);
-	void setInt(int32_t intg, size_t pos);
-	void addInt64(int64_t int64);
-	void setInt64(int64_t int64, size_t pos);
-	void addShort(int16_t shrt);
-	void setShort(int16_t shrt, size_t pos);
+	template <typename T>
+	void add(T value);
+	template <typename T>
+	void set(T value, size_t pos);
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
 	void addPos(Pos pos); // Positions
-	void addByte(unsigned char byte);
-	void setByte(unsigned char byte, size_t pos);
 	void addBytes(const char *hex);
-	void addClock(clock_t clock);
 	void addBuffer(const unsigned char *bytes, size_t len);
 	void addBuffer(PacketCreator &packet);
 	void addBuffer(PacketReader &packet);
@@ -61,54 +56,15 @@ private:
 	unsigned char packet[bufferLen];
 };
 
-inline
-void PacketCreator::addInt(int32_t intg) {
-	(*(int32_t*)(packet + pos)) = intg;
-	pos += 4;
+template <typename T>
+void PacketCreator::add(T value) {
+	(*(T *)(packet + pos)) = value;
+	pos += sizeof(T);
 }
 
-inline
-void PacketCreator::setInt(int32_t intg, size_t pos) {
-	(*(int32_t*)(packet + pos)) = intg;
-}
-
-inline
-void PacketCreator::addInt64(int64_t int64) {
-	(*(int64_t*)(packet + pos)) = int64;
-	pos += 8;
-}
-
-inline
-void PacketCreator::setInt64(int64_t int64, size_t pos) {
-	(*(int64_t*)(packet + pos)) = int64;
-}
-
-inline
-void PacketCreator::addShort(int16_t shrt) {
-	(*(int16_t*)(packet + pos)) = shrt;
-	pos += 2;
-}
-
-inline
-void PacketCreator::setShort(int16_t shrt, size_t pos) {
-	(*(int16_t*)(packet + pos)) = shrt;
-}
-
-inline
-void PacketCreator::addByte(unsigned char byte) {
-	packet[pos++] = byte;
-}
-
-inline
-void PacketCreator::setByte(unsigned char byte, size_t pos) {
-	packet[pos] = byte;
-}
-
-inline
-void PacketCreator::addClock(clock_t clock) {
-	packet[pos++] = sizeof(clock_t);
-	(*(clock_t*)(packet + pos)) = clock;
-	pos += sizeof(clock_t);
+template <typename T>
+void PacketCreator::set(T value, size_t pos) {
+	(*(T *)(packet + pos)) = value;
 }
 
 inline

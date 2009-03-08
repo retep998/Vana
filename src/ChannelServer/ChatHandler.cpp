@@ -120,7 +120,7 @@ void ChatHandler::initializeCommands() {
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	string message = packet.getString();
-	int8_t bubbleOnly = packet.getByte(); // Skill Macros only display chat bubbles
+	int8_t bubbleOnly = packet.get<int8_t>(); // Skill Macros only display chat bubbles
 
 	if (player->isGM() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
@@ -725,10 +725,10 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 
 void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
 	vector<int32_t> receivers;
-	int8_t type = packet.getByte();
-	uint8_t amount = packet.getByte();
+	int8_t type = packet.get<int8_t>();
+	uint8_t amount = packet.get<int8_t>();
 	for (size_t i = 0; i < amount; i++) {
-		receivers.push_back(packet.getInt());
+		receivers.push_back(packet.get<int32_t>());
 	}
 	string chat = packet.getString();
 

@@ -29,14 +29,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_t slot2) {
 	PacketCreator packet;
-	packet.addShort(SEND_MOVE_ITEM);
-	packet.addByte(1);
-	packet.addByte(1);
-	packet.addByte(2);
-	packet.addByte(inv);
-	packet.addShort(slot1);
-	packet.addShort(slot2);
-	packet.addByte(1);
+	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(2);
+	packet.add<int8_t>(inv);
+	packet.add<int16_t>(slot1);
+	packet.add<int16_t>(slot2);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 
@@ -44,58 +44,58 @@ void InventoryPacket::updatePlayer(Player *player) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
-	packet.addShort(SEND_UPDATE_CHAR_LOOK);
-	packet.addInt(player->getId());
-	packet.addByte(1);
+	packet.add<int16_t>(SEND_UPDATE_CHAR_LOOK);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(1);
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
-	packet.addByte(0);
-	packet.addShort(0);
+	packet.add<int8_t>(0);
+	packet.add<int16_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void InventoryPacket::bought(Player *player, uint8_t msg) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_BOUGHT);
-	packet.addByte(msg);
+	packet.add<int16_t>(SEND_SHOP_BOUGHT);
+	packet.add<int8_t>(msg);
 	player->getSession()->send(packet);
 }
 
 void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
-	packet.addShort(SEND_MOVE_ITEM);
-	packet.addByte(is);
-	packet.addByte(1);
-	packet.addByte(0);
-	packet.addByte(inv);
+	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int8_t>(is);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(inv);
 	PlayerPacketHelper::addItemInfo(packet, slot, item, true);
 	player->getSession()->send(packet);
 }
 void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
-	packet.addShort(SEND_MOVE_ITEM);
-	packet.addByte(is);
-	packet.addByte(1);
-	packet.addByte(1);
-	packet.addByte(inv);
-	packet.addShort(slot);
-	packet.addShort(item->amount);
+	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int8_t>(is);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(inv);
+	packet.add<int16_t>(slot);
+	packet.add<int16_t>(item->amount);
 	player->getSession()->send(packet);
 }
 
 void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2) {
 	PacketCreator packet;
-	packet.addShort(SEND_MOVE_ITEM);
-	packet.addByte(1);
-	packet.addByte((slot2 > 0) + 1);
-	packet.addByte(1);
-	packet.addByte(inv);
-	packet.addShort(slot1);
-	packet.addShort(amount1);
+	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>((slot2 > 0) + 1);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(inv);
+	packet.add<int16_t>(slot1);
+	packet.add<int16_t>(amount1);
 	if (slot2 > 0) {
-		packet.addByte(1);
-		packet.addByte(inv);
-		packet.addShort(slot2);
-		packet.addShort(amount2);
+		packet.add<int8_t>(1);
+		packet.add<int8_t>(inv);
+		packet.add<int16_t>(slot2);
+		packet.add<int16_t>(amount2);
 	}
 	player->getSession()->send(packet);
 }
@@ -104,14 +104,14 @@ void InventoryPacket::sitChair(Player *player, int32_t chairid) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
-	packet.addShort(SEND_UPDATE_STAT);
-	packet.addShort(1);
-	packet.addInt(0);
+	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int16_t>(1);
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 	packet = PacketCreator();
-	packet.addShort(SEND_SIT_CHAIR);
-	packet.addInt(player->getId());
-	packet.addInt(chairid);
+	packet.add<int16_t>(SEND_SIT_CHAIR);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(chairid);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -119,32 +119,32 @@ void InventoryPacket::stopChair(Player *player) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
-	packet.addShort(SEND_STOP_CHAIR);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_STOP_CHAIR);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 	packet = PacketCreator();
-	packet.addShort(SEND_SIT_CHAIR);
-	packet.addInt(player->getId());
-	packet.addInt(0);
+	packet.add<int16_t>(SEND_SIT_CHAIR);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
-	packet.addShort(SEND_USE_SCROLL);
-	packet.addInt(player->getId());
-	packet.addByte(succeed); // Succeed/Fail
-	packet.addByte(destroy); // Destroy/Not Destroy
-	packet.addShort(legendary_spirit);
+	packet.add<int16_t>(SEND_USE_SCROLL);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(succeed); // Succeed/Fail
+	packet.add<int8_t>(destroy); // Destroy/Not Destroy
+	packet.add<int16_t>(legendary_spirit);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void InventoryPacket::showMegaphone(Player *player, const string & msg) {
 	string fullMessage = string(player->getName()) + " : " + msg;
 	PacketCreator packet;
-	packet.addShort(SEND_NOTICE);
-	packet.addByte(2);
+	packet.add<int16_t>(SEND_NOTICE);
+	packet.add<int8_t>(2);
 	packet.addString(fullMessage);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
@@ -152,62 +152,62 @@ void InventoryPacket::showMegaphone(Player *player, const string & msg) {
 void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, uint8_t whisper) {
 	string fullMessage = string(player->getName()) + " : " + msg;
 	PacketCreator packet;
-	packet.addShort(INTER_TO_PLAYERS);
-	packet.addShort(SEND_NOTICE);
-	packet.addByte(3);
+	packet.add<int16_t>(INTER_TO_PLAYERS);
+	packet.add<int16_t>(SEND_NOTICE);
+	packet.add<int8_t>(3);
 	packet.addString(fullMessage);
-	packet.addByte((uint8_t) ChannelServer::Instance()->getChannel());
-	packet.addByte(whisper);
+	packet.add<int8_t>((uint8_t) ChannelServer::Instance()->getChannel());
+	packet.add<int8_t>(whisper);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid) {
 	PacketCreator packet;
-	packet.addShort(INTER_TO_PLAYERS);
-	packet.addShort(SEND_SHOW_MESSENGER);
-	packet.addInt(itemid);
+	packet.add<int16_t>(INTER_TO_PLAYERS);
+	packet.add<int16_t>(SEND_SHOW_MESSENGER);
+	packet.add<int32_t>(itemid);
 	packet.addString(player->getName());
 	packet.addString(msg);
 	packet.addString(msg2);
 	packet.addString(msg3);
 	packet.addString(msg4);
-	packet.addInt(ChannelServer::Instance()->getChannel());
+	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
 	packet.addBuffer(displayInfo, displayInfo_size);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 // Skill Books
 void InventoryPacket::useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed) {
 	PacketCreator packet;
-	packet.addShort(SEND_USE_SKILLBOOK);
-	packet.addInt(player->getId());
-	packet.addByte(1); // Number of skills? Maybe just padding or random boolean
-	packet.addInt(skillid); // Skill ID
-	packet.addInt(newMaxLevel); // New max level
-	packet.addByte(use); // Use/Cannot use
-	packet.addByte(succeed); // Pass/Fail
+	packet.add<int16_t>(SEND_USE_SKILLBOOK);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(1); // Number of skills? Maybe just padding or random boolean
+	packet.add<int32_t>(skillid); // Skill ID
+	packet.add<int32_t>(newMaxLevel); // New max level
+	packet.add<int8_t>(use); // Use/Cannot use
+	packet.add<int8_t>(succeed); // Pass/Fail
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void InventoryPacket::useItemEffect(Player *player, int32_t itemid) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_ITEM_EFFECT);
-	packet.addInt(player->getId());
-	packet.addInt(itemid);
+	packet.add<int16_t>(SEND_SHOW_ITEM_EFFECT);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(itemid);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots) {
 	PacketCreator packet;
-	packet.addShort(SEND_UPDATE_INVENTORY_SLOTS);
-	packet.addByte(inventory);
-	packet.addByte(slots);
+	packet.add<int16_t>(SEND_UPDATE_INVENTORY_SLOTS);
+	packet.add<int8_t>(inventory);
+	packet.add<int8_t>(slots);
 	player->getSession()->send(packet);
 }
 
 void InventoryPacket::blankUpdate(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_MOVE_ITEM);
-	packet.addByte(0x01);
-	packet.addByte(0x00);
+	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int8_t>(0x01);
+	packet.add<int8_t>(0x00);
 	player->getSession()->send(packet);
 }

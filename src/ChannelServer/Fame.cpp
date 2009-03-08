@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 
 void Fame::handleFame(Player *player, PacketReader &packet) {
-	int32_t playerid = packet.getInt();
-	uint8_t type = (uint8_t) packet.getInt();
+	int32_t playerid = packet.get<int32_t>();
+	uint8_t type = (uint8_t) packet.get<int32_t>();
 	if (player->getId() > 0) {
 		if (player->getId() != playerid) {
 			int32_t checkResult = canFame(player, playerid);

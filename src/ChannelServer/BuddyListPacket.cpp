@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void BuddyListPacket::error(Player *player, uint8_t error) {
 	PacketCreator packet;
-	packet.addShort(SEND_BUDDYLIST);
-	packet.addByte(error);
+	packet.add<int16_t>(SEND_BUDDYLIST);
+	packet.add<int8_t>(error);
 	
 	player->getSession()->send(packet);
 }
@@ -33,20 +33,20 @@ void BuddyListPacket::update(Player *player, uint8_t type) {
 	uint8_t size = buddyList->size();
 
 	PacketCreator packet;
-	packet.addShort(SEND_BUDDYLIST);
-	packet.addByte(type);
-	packet.addByte(size);
+	packet.add<int16_t>(SEND_BUDDYLIST);
+	packet.add<int8_t>(type);
+	packet.add<int8_t>(size);
 
 	for (uint8_t i = 0; i < size; i++) {
 		PlayerBuddyList::BuddyPtr buddy = buddyList->getBuddy(i);
-		packet.addInt(buddy->charid);
+		packet.add<int32_t>(buddy->charid);
 		packet.addString(buddy->name, 13);
-		packet.addByte(buddy->oppositeStatus);
-		packet.addInt(buddy->channel);
+		packet.add<int8_t>(buddy->oppositeStatus);
+		packet.add<int32_t>(buddy->channel);
 	}
 
 	for (uint8_t i = 0; i < size; i++) {
-		packet.addInt(0);
+		packet.add<int32_t>(0);
 	}
 
 	player->getSession()->send(packet);
@@ -55,8 +55,8 @@ void BuddyListPacket::update(Player *player, uint8_t type) {
 void BuddyListPacket::showSize(Player *player) {
 	uint8_t size = static_cast<uint8_t>(player->getBuddyListSize());
 	PacketCreator packet;
-	packet.addShort(SEND_BUDDYLIST);
-	packet.addByte(0x15);
-	packet.addByte(size);
+	packet.add<int16_t>(SEND_BUDDYLIST);
+	packet.add<int8_t>(0x15);
+	packet.add<int8_t>(size);
 	player->getSession()->send(packet);
 }

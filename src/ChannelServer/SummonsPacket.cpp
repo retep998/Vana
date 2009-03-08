@@ -23,18 +23,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Player *toplayer) {
 	PacketCreator packet;
-	packet.addShort(SEND_SPAWN_SUMMON);
-	packet.addInt(player->getId());
-	packet.addInt(summon->getID());
-	packet.addInt(summon->getSummonID());
-	packet.addByte(summon->getLevel());
+	packet.add<int16_t>(SEND_SPAWN_SUMMON);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(summon->getID());
+	packet.add<int32_t>(summon->getSummonID());
+	packet.add<int8_t>(summon->getLevel());
 	packet.addPos(summon->getPos());
-	packet.addByte(4); // ?
-	packet.addByte(0x53); // ?
-	packet.addByte(1); // ?
-	packet.addByte(summon->getType()); // Movement type
-	packet.addByte(!ISPUPPET(summon->getSummonID())); // Attack or not
-	packet.addByte(!animated);
+	packet.add<int8_t>(4); // ?
+	packet.add<int8_t>(0x53); // ?
+	packet.add<int8_t>(1); // ?
+	packet.add<int8_t>(summon->getType()); // Movement type
+	packet.add<int8_t>(!ISPUPPET(summon->getSummonID())); // Attack or not
+	packet.add<int8_t>(!animated);
 	if (toplayer != 0)
 		toplayer->getSession()->send(packet);
 	else
@@ -43,9 +43,9 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 
 void SummonsPacket::moveSummon(Player *player, Summon *summon, Pos &startPos, unsigned char *buf, int32_t buflen) {
 	PacketCreator packet;
-	packet.addShort(SEND_MOVE_SUMMON);
-	packet.addInt(player->getId());
-	packet.addInt(summon->getID());
+	packet.add<int16_t>(SEND_MOVE_SUMMON);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(summon->getID());
 	packet.addPos(startPos);
 	packet.addBuffer(buf, buflen);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -53,21 +53,21 @@ void SummonsPacket::moveSummon(Player *player, Summon *summon, Pos &startPos, un
 
 void SummonsPacket::removeSummon(Player *player, Summon *summon, bool animated) {
 	PacketCreator packet;
-	packet.addShort(SEND_REMOVE_SUMMON);
-	packet.addInt(player->getId());
-	packet.addInt(summon->getID());
-	packet.addByte(animated ? 4 : 1); // ?
+	packet.add<int16_t>(SEND_REMOVE_SUMMON);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(summon->getID());
+	packet.add<int8_t>(animated ? 4 : 1); // ?
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
 void SummonsPacket::damageSummon(Player *player, int32_t summonid, int8_t notsure, int32_t damage, int32_t mobid) {
 	PacketCreator packet;
-	packet.addShort(SEND_DAMAGE_SUMMON);
-	packet.addInt(player->getId());
-	packet.addInt(summonid);
-	packet.addByte(notsure);
-	packet.addInt(damage);
-	packet.addInt(mobid);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_DAMAGE_SUMMON);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(summonid);
+	packet.add<int8_t>(notsure);
+	packet.add<int32_t>(damage);
+	packet.add<int32_t>(mobid);
+	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

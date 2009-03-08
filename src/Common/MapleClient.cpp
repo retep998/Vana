@@ -86,7 +86,7 @@ void MapleClient::readConnectPacket() {
 	// Now finally process it
 	PacketReader packet(m_buffer, packetLen);
 
-	uint16_t version = packet.getShort(); // Maple Version, TODO: Verify it
+	uint16_t version = packet.get<int16_t>(); // Maple Version, TODO: Verify it
 	packet.getString(); // Unknown
 
 	unsigned char *rawpacket = packet.getBuffer();

@@ -24,37 +24,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LevelsPacket::showEXP(Player *player, int32_t exp, bool white, bool inChat) {
 	PacketCreator packet;
-	packet.addShort(SEND_NOTE);
-	packet.addByte(3);
-	packet.addByte(white);
-	packet.addInt(exp);
-	packet.addInt(inChat);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int8_t>(3);
+	packet.add<int8_t>(white);
+	packet.add<int32_t>(exp);
+	packet.add<int32_t>(inChat);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void LevelsPacket::levelUp(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_SKILL);
-	packet.addInt(player->getId());
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_SHOW_SKILL);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void LevelsPacket::statOK(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_UPDATE_STAT);
-	packet.addShort(1);
-	packet.addInt(0);
+	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int16_t>(1);
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 
 void LevelsPacket::jobChange(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_SKILL);
-	packet.addInt(player->getId());
-	packet.addByte(8);
+	packet.add<int16_t>(SEND_SHOW_SKILL);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(8);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
