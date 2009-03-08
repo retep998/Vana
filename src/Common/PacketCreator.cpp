@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Pos.h"
 #include "PacketReader.h"
+#include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -40,15 +41,8 @@ void PacketCreator::addBuffer(const unsigned char *bytes, size_t len) {
 }
 
 void PacketCreator::addIP(const string &ip) {
-	typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-	typedef boost::char_separator<char> separator;
-
-	separator sep(".");
-	tokenizer tokens(ip, sep);
-
-	for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); iter++) {
-		add<int8_t>((unsigned char) boost::lexical_cast<int16_t>(*iter)); // Using lexical_cast<unsigned char> would cause it to spit ASCII
-	}
+	uint32_t ulong_ip = boost::asio::ip::address::from_string(ip).to_v4().to_ulong();
+	add<uint32_t>(htonl(ulong_ip));
 }
 
 void PacketCreator::addBytes(const char *hex) {
