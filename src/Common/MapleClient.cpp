@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/lexical_cast.hpp>
 
 MapleClient::MapleClient(boost::asio::io_service &io_service,
-		const string &server, uint16_t port,
+		uint32_t server, uint16_t port,
 		SessionManagerPtr sessionManager,
 		AbstractPlayer *player) :
 MapleSession(io_service, sessionManager, player, false),
@@ -35,14 +35,9 @@ m_resolver(io_service)
 void MapleClient::start_connect() {
 	// Synchronously connect and process the connect packet
 
-	tcp::resolver::query query(m_server, boost::lexical_cast<string>(m_port));
-	tcp::resolver::iterator endpoint_iterator = m_resolver.resolve(query);
-	tcp::resolver::iterator end;
-    boost::system::error_code error = boost::asio::error::host_not_found;
-	while (error && endpoint_iterator != end) {
-		m_socket.close();
-		m_socket.connect(*endpoint_iterator++, error);
-	}
+	tcp::endpoint endpoint(boost::asio::ip::address_v4(m_server), m_port);
+    boost::system::error_code error;
+	m_socket.connect(endpoint, error);
 
 	if (!error) {
 		// Now let's process the connect packet

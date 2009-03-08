@@ -48,11 +48,11 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t 
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, const string &ip, int16_t port) {
+void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, uint32_t ip, int16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.add<int32_t>(playerid);
-	packet.addString(ip);
+	packet.add<uint32_t>(ip);
 	packet.add<int16_t>(port);
 	player->getSession()->send(packet);
 }

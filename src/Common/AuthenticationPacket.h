@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef AUTHENTICATIONPACKET_H
 #define AUTHENTICATIONPACKET_H
 
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -25,7 +26,7 @@ using std::string;
 class AbstractServerConnectPlayer;
 
 namespace AuthenticationPacket {
-	void sendPassword(AbstractServerConnectPlayer *player, string pass, string ip);
+	void sendPassword(AbstractServerConnectPlayer *player, string pass, uint32_t ip);
 }
 
 #endif

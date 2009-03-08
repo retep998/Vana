@@ -33,7 +33,7 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, P
 	int8_t worldid = packet.get<int8_t>();
 	if (worldid != -1) {
 		ChannelServer::Instance()->setWorld(worldid);
-		ChannelServer::Instance()->setWorldIp(packet.getString());
+		ChannelServer::Instance()->setWorldIp(packet.get<uint32_t>());
 		ChannelServer::Instance()->setWorldPort(packet.get<int16_t>());
 		std::cout << "Connecting to world " << (int32_t) worldid << std::endl;
 		ChannelServer::Instance()->connectWorld();
@@ -64,7 +64,7 @@ void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, Packet
 
 void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
-	string ip = packet.getString();
+	uint32_t ip = packet.get<uint32_t>();
 	int16_t port = packet.get<int16_t>();
 
 	Player *ccPlayer = Players::Instance()->getPlayer(playerid);

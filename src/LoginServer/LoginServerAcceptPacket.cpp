@@ -48,11 +48,11 @@ void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptPlayer *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::connectChannel(LoginServerAcceptPlayer *player, int8_t worldid, const string &ip, int16_t port) {
+void LoginServerAcceptPacket::connectChannel(LoginServerAcceptPlayer *player, int8_t worldid, uint32_t ip, int16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.add<int8_t>(worldid);
-	packet.addString(ip);
+	packet.add<uint32_t>(ip);
 	packet.add<int16_t>(port);
 	player->getSession()->send(packet);
 }

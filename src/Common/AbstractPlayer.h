@@ -39,12 +39,12 @@ public:
 
 	MapleSession * getSession() const { return session; }
 	void setSession(MapleSession *val);
-	string getIP() const { return ip; }
-	void setIP(const string &ip) { this->ip = ip; }
+	uint32_t getIP() const { return ip; }
+	void setIP(uint32_t ip) { this->ip = ip; }
 	Timer::Container * getTimers() const { return timers.get(); }
 protected:
 	MapleSession *session;
-	string ip;
+	uint32_t ip;
 	bool is_server;
 private:
 	bool is_pinged;

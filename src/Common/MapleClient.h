@@ -32,14 +32,14 @@ class AbstractPlayer;
 class MapleClient : public MapleSession {
 public:
 	MapleClient(boost::asio::io_service &io_service,
-		const string &server, uint16_t port,
+		uint32_t server, uint16_t port,
 		SessionManagerPtr sessionManager,
 		AbstractPlayer *player);
 	void start_connect();
 private:
 	void readConnectPacket();
 
-	string m_server;
+	uint32_t m_server;
 	uint16_t m_port;
 	tcp::resolver m_resolver;
 };

@@ -33,7 +33,7 @@ void ConnectionManager::accept(uint16_t port, AbstractPlayerFactory *apf, string
 	m_servers.push_back(MapleServerPtr(new MapleServer(m_io_service, endpoint, apf, ivUnknown)));
 }
 
-void ConnectionManager::connect(const string &server, uint16_t port, AbstractPlayer *player) {
+void ConnectionManager::connect(uint32_t server, uint16_t port, AbstractPlayer *player) {
 	MapleClientPtr c = MapleClientPtr(new MapleClient(m_io_service, server, port, m_clients, player));
 	c->start_connect();
 }

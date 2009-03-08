@@ -59,7 +59,7 @@ void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *play
 		WorldServerAcceptPacket::playerChangeChannel(player, playerid, chan->ip, chan->port);
 	}
 	else { // Channel doesn't exist (offline)
-		WorldServerAcceptPacket::playerChangeChannel(player, playerid, "255.255.255.255", -1);
+		WorldServerAcceptPacket::playerChangeChannel(player, playerid, 0, -1);
 	}
 }
 

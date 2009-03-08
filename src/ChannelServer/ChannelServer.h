@@ -53,7 +53,7 @@ public:
 	void setMaxStats(int16_t max) { this->maxStats = max; }
 	void setWorldClock(clock_t clock) { worldClock = clock; }
 	void setScrollingHeader(const string &message);
-	void setWorldIp(const string &ip) { world_ip = ip; }
+	void setWorldIp(uint32_t ip) { world_ip = ip; }
 
 	int8_t getWorld() const { return world; }
 	uint8_t getMaxMultiLevel() const { return maxMultiLevel; }
@@ -87,9 +87,9 @@ private:
 	int32_t mesorate;
 	int32_t droprate;
 	clock_t worldClock;
-	string login_ip;
-	string world_ip;
-	string external_ip;
+	uint32_t external_ip;
+	uint32_t login_ip;
+	uint32_t world_ip;
 	string scrollingHeader;
 };
 

@@ -78,8 +78,8 @@ private:
 	int32_t mesorate;
 	int32_t droprate;
 	int32_t maxChannels;
-	string login_ip;
-	string external_ip;
+	uint32_t login_ip;
+	uint32_t external_ip;
 	string scrollingHeader;
 	LoginServerConnectPlayer *loginPlayer;
 };

@@ -35,10 +35,9 @@ void WorldServer::loadData() {
 
 void WorldServer::loadConfig() {
 	ConfigFile config("conf/worldserver.lua");
-	login_ip = config.getString("login_ip");
+	login_ip = MiscUtilities::nameToIP(config.getString("login_ip"));
 	login_inter_port = config.getShort("login_inter_port");
-	external_ip = config.getString("external_ip"); // External IP
-	external_ip = MiscUtilities::nameToIP(external_ip); // Resolve host if not using IP
+	external_ip = MiscUtilities::nameToIP(config.getString("external_ip"));
 	inter_port = -1; // Will get from login server later
 	scrollingHeader = ""; // Will get from login server later
 }

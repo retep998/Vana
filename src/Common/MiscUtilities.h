@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MISCUTILITIES
 #define MISCUTILITIES
 
+#include "Types.h"
 #include <cstdlib>
 #include <string>
 
@@ -25,7 +26,8 @@ using std::string;
 
 namespace MiscUtilities {
 	bool atob(const char *str);
-	string nameToIP(string &name);
+	uint32_t nameToIP(const string &name);
+	string IPToString(uint32_t ip);
 };
 
 inline
