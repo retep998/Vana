@@ -29,18 +29,18 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool spawn, bool
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_MOB);
 	packet.add<int32_t>(mob->getID());
-	packet.add<int16_t>(1);
+	packet.add<int8_t>(1);
 	packet.add<int32_t>(mob->getMobID());
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 	packet.add<int32_t>(0);
 	packet.addPos(mob->getPos());
-	packet.add<int16_t>(owner != 0 ? 0x08 : 0x02); // Not stance, exploring further
+	packet.add<int8_t>(owner != 0 ? 0x08 : 0x02); // Not stance, exploring further
 	packet.add<int16_t>(mob->getFH());
 	packet.add<int16_t>(mob->getOriginFH());
-	packet.add<int16_t>(owner != 0 ? -3 : spawn ? -2 : -1);
+	packet.add<int8_t>(owner != 0 ? -3 : spawn ? -2 : -1);
 	if (owner != 0)
 		packet.add<int32_t>(owner->getID());
-	packet.add<int16_t>(-1);
+	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
 	if (show)
 		player->getSession()->send(packet);
@@ -51,14 +51,14 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool spawn, bool
 void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CONTROL_MOB);
-	packet.add<int16_t>(1);
+	packet.add<int8_t>(1);
 	packet.add<int32_t>(mob->getID());
-	packet.add<int16_t>(1);
+	packet.add<int8_t>(1);
 	packet.add<int32_t>(mob->getMobID());
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 	packet.add<int32_t>(0);
 	packet.addPos(mob->getPos());
-	packet.add<int16_t>(2); // Not stance, exploring further
+	packet.add<int8_t>(2); // Not stance, exploring further
 	packet.add<int16_t>(mob->getFH());
 	packet.add<int16_t>(mob->getOriginFH());
 	packet.add<int16_t>(-1); // ??
@@ -69,7 +69,7 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn) {
 void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CONTROL_MOB);
-	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
 	packet.add<int32_t>(mob->getID());
 	player->getSession()->send(packet);
 }
@@ -79,7 +79,7 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, 
 	packet.add<int16_t>(SEND_MOVE_MOB_RESPONSE);
 	packet.add<int32_t>(mobid);
 	packet.add<int16_t>(moveid);
-	packet.add<int16_t>(useskill);
+	packet.add<int8_t>(useskill);
 	packet.add<int32_t>(mp);
 	player->getSession()->send(packet);
 }
@@ -88,9 +88,9 @@ void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int32_t s
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_MOB);
 	packet.add<int32_t>(mobid);
-	packet.add<int16_t>(useskill);
+	packet.add<int8_t>(useskill);
 	packet.add<int32_t>(skill);
-	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
 	packet.addBuffer(buf, len);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
@@ -109,17 +109,17 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_DAMAGE_MOB_MELEE);
 	packet.add<int32_t>(player->getId());
-	packet.add<int16_t>(tbyte);
+	packet.add<int8_t>(tbyte);
 	if (skillid > 0) {
-		packet.add<int16_t>(player->getSkills()->getSkillLevel(skillid));
+		packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
 		packet.add<int32_t>(skillid);
 	} 
 	else
-		packet.add<int16_t>(0);
-	packet.add<int16_t>(pack.get<int8_t>()); // Projectile display
-	packet.add<int16_t>(pack.get<int8_t>()); // Direction/animation
+		packet.add<int8_t>(0);
+	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
+	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
 	pack.skipBytes(1); // Weapon subclass
-	packet.add<int16_t>(pack.get<int8_t>()); // Weapon speed
+	packet.add<int8_t>(pack.get<int8_t>()); // Weapon speed
 	pack.skipBytes(4); // Ticks
 	if (skillid == 5201002 || skillid == 5101004) {
 		pack.skipBytes(4); // Charge
@@ -158,16 +158,16 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 			masteryid = 5100001;
 			break;
 	}
-	packet.add<int16_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
+	packet.add<int8_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
 	packet.add<int32_t>(0);
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mapmobid = pack.get<int32_t>();
 		packet.add<int32_t>(mapmobid);
-		packet.add<int16_t>(0x06);
+		packet.add<int8_t>(0x06);
 		pack.skipBytes(12);
 		if (s4211006) {
 			hits = pack.get<int8_t>();
-			packet.add<int16_t>(hits);
+			packet.add<int8_t>(hits);
 		}
 		else
 			pack.skipBytes(2);
@@ -209,16 +209,16 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_DAMAGE_MOB_RANGED);
 	packet.add<int32_t>(player->getId());
-	packet.add<int16_t>(tbyte);
+	packet.add<int8_t>(tbyte);
 	if (skillid > 0) {
-		packet.add<int16_t>(player->getSkills()->getSkillLevel(skillid));
+		packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
 		packet.add<int32_t>(skillid);
 	}
 	else
-		packet.add<int16_t>(0);
-	packet.add<int16_t>(display);
-	packet.add<int16_t>(animation);
-	packet.add<int16_t>(w_speed);
+		packet.add<int8_t>(0);
+	packet.add<int8_t>(display);
+	packet.add<int8_t>(animation);
+	packet.add<int8_t>(w_speed);
 	int32_t masteryid = 0;
 	switch (GETWEAPONTYPE(player->getInventory()->getEquippedID(11))) {
 		case WEAPON_BOW:
@@ -234,7 +234,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 			masteryid = 5200000;
 			break;
 	}
-	packet.add<int16_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
+	packet.add<int8_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
 	// Bug in global:
 	// The colored swoosh does not display as it should
 	int32_t itemid = 0;
@@ -252,7 +252,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mobid = pack.get<int32_t>();
 		packet.add<int32_t>(mobid);
-		packet.add<int16_t>(0x06);
+		packet.add<int8_t>(0x06);
 		pack.skipBytes(14);
 		for (int8_t j = 0; j < hits; j++) {
 			int32_t damage = pack.get<int32_t>();
@@ -278,24 +278,24 @@ void MobsPacket::damageMobSpell(Player *player, PacketReader &pack) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_DAMAGE_MOB_SPELL);
 	packet.add<int32_t>(player->getId());
-	packet.add<int16_t>(tbyte);
-	packet.add<int16_t>(1); // Spells are always a skill
+	packet.add<int8_t>(tbyte);
+	packet.add<int8_t>(1); // Spells are always a skill
 	int32_t skillid = pack.get<int32_t>();
 	int32_t charge = 0;
 	packet.add<int32_t>(skillid);
 	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
 		charge = pack.get<int32_t>();
-	packet.add<int16_t>(pack.get<int8_t>()); // Projectile display
-	packet.add<int16_t>(pack.get<int8_t>()); // Direction/animation
+	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
+	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
 	pack.skipBytes(1); // Weapon subclass
-	packet.add<int16_t>(pack.get<int8_t>()); // Casting speed
+	packet.add<int8_t>(pack.get<int8_t>()); // Casting speed
 	pack.skipBytes(4); // Ticks
-	packet.add<int16_t>(0); // Mastery byte is always 0 because spells don't have a swoosh
+	packet.add<int8_t>(0); // Mastery byte is always 0 because spells don't have a swoosh
 	packet.add<int32_t>(0); // No clue
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mobid = pack.get<int32_t>();
 		packet.add<int32_t>(mobid);
-		packet.add<int16_t>(-1);
+		packet.add<int8_t>(-1);
 		pack.skipBytes(3); // Useless crap for display
 		pack.skipBytes(1); // State
 		pack.skipBytes(10); // Useless crap for display continued
@@ -318,12 +318,12 @@ void MobsPacket::damageMobSummon(Player *player, PacketReader &pack) {
 	packet.add<int16_t>(SEND_DAMAGE_MOB_SUMMON);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summonid);
-	packet.add<int16_t>(4);
-	packet.add<int16_t>(targets);
+	packet.add<int8_t>(4);
+	packet.add<int8_t>(targets);
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mobid = pack.get<int32_t>();
 		packet.add<int32_t>(mobid);
-		packet.add<int16_t>(6);
+		packet.add<int8_t>(6);
 
 		pack.skipBytes(14); // Crap
 
@@ -350,7 +350,7 @@ void MobsPacket::applyStatus(Mob *mob, const StatusInfo &info, int16_t delay) {
 	packet.add<int16_t>(0);
 
 	packet.add<int16_t>(delay);
-	packet.add<int16_t>(1);
+	packet.add<int8_t>(1);
 	Maps::getMap(mob->getMapID())->sendPacket(packet);
 }
 
@@ -359,7 +359,7 @@ void MobsPacket::removeStatus(Mob *mob, int32_t status) {
 	packet.add<int16_t>(SEND_REMOVE_MOB_STATUS);
 	packet.add<int32_t>(mob->getID());
 	packet.add<int32_t>(status);
-	packet.add<int16_t>(1);
+	packet.add<int8_t>(1);
 	Maps::getMap(mob->getMapID())->sendPacket(packet);
 }
 
@@ -367,7 +367,7 @@ void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per, bool miniboss
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_MOB_HP);
 	packet.add<int32_t>(mobid);
-	packet.add<int16_t>(per);
+	packet.add<int8_t>(per);
 	if (miniboss)
 		Maps::getMap(player->getMap())->sendPacket(packet);
 	else
@@ -377,12 +377,12 @@ void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per, bool miniboss
 void MobsPacket::showBossHP(Player *player, int32_t mobid, int32_t hp, const MobInfo &info) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MAP_EFFECT);
-	packet.add<int16_t>(0x05);
+	packet.add<int8_t>(0x05);
 	packet.add<int32_t>(mobid);
 	packet.add<int32_t>(hp);
 	packet.add<int32_t>(info.hp);
-	packet.add<int16_t>(info.hpcolor);
-	packet.add<int16_t>(info.hpbgcolor);
+	packet.add<int8_t>(info.hpcolor);
+	packet.add<int8_t>(info.hpbgcolor);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
@@ -390,6 +390,6 @@ void MobsPacket::dieMob(Mob *mob) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_KILL_MOB);
 	packet.add<int32_t>(mob->getID());
-	packet.add<int16_t>(1);
+	packet.add<int8_t>(1);
 	Maps::getMap(mob->getMapID())->sendPacket(packet);
 }
