@@ -35,7 +35,7 @@ struct Channel {
 
 	WorldServerAcceptPlayer *player;
 	uint16_t id;
-	string ip;
+	uint32_t ip;
 	uint16_t port;
 	int32_t players;
 };
@@ -47,7 +47,7 @@ public:
 			singleton = new Channels;
 		return singleton;
 	}
-	void registerChannel(WorldServerAcceptPlayer *player, uint16_t channel, const string &ip, uint16_t port);
+	void registerChannel(WorldServerAcceptPlayer *player, uint16_t channel, uint32_t ip, uint16_t port);
 	void removeChannel(uint16_t channel);
 	Channel * getChannel(uint16_t num);
 	void sendToAll(PacketCreator &packet);

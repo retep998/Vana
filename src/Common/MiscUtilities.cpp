@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using boost::asio::ip::tcp;
 
-string MiscUtilities::nameToIP(string &name) {
+uint32_t MiscUtilities::nameToIP(const string &name) {
 	boost::asio::io_service io_service;
 	tcp::resolver resolver(io_service); 
 	tcp::resolver::query query(tcp::v4(), name, "http"); // Resolver wants a service...
@@ -30,5 +30,9 @@ string MiscUtilities::nameToIP(string &name) {
 	// boost::asio throws an exception if the name cannot be resolved
 
 	tcp::endpoint ep = *iter;
-	return ep.address().to_string();
+	return ep.address().to_v4().to_ulong();
+}
+
+string MiscUtilities::IPToString(uint32_t ip) {
+	return boost::asio::ip::address_v4(ip).to_string();
 }

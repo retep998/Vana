@@ -87,7 +87,7 @@ int8_t Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	int8_t worldid = -1;
 	int16_t port;
-	string ip;
+	uint32_t ip;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->channels.size() < (size_t) iter->second->maxChannels && iter->second->connected) {
 			worldid = iter->second->id;

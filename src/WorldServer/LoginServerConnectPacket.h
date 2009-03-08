@@ -26,7 +26,7 @@ using std::string;
 class LoginServerConnectPlayer;
 
 namespace LoginServerConnectPacket {
-	void registerChannel(LoginServerConnectPlayer *player, int32_t channel, const string &ip, int16_t port);
+	void registerChannel(LoginServerConnectPlayer *player, int32_t channel, uint32_t ip, int16_t port);
 	void updateChannelPop(LoginServerConnectPlayer *player, int32_t channel, int32_t population);
 	void removeChannel(LoginServerConnectPlayer *player, int32_t channel);
 };

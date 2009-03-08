@@ -217,12 +217,12 @@ void LoginPacket::connectIP(PlayerLogin *player, int32_t charid) {
 	World *world = Worlds::worlds[player->getWorld()];
 	if (world->channels.find(player->getChannel()) != world->channels.end()) {
 		shared_ptr<Channel> channel = world->channels[player->getChannel()];
-		packet.addIP(channel->ip);
+		packet.add<uint32_t>(htonl(channel->ip)); // MapleStory accepts IP addresses in big-endian
 		packet.add<int16_t>(channel->port);
 	}
 	else { // Channel does not exist, let's be mean and send something non-existent
-		packet.addIP("255.255.255.255");
-		packet.add<int16_t>(-1);
+		packet.add<uint32_t>(0); // ip
+		packet.add<int16_t>(-1); // port
 	}
 	packet.add<int32_t>(charid);
 	packet.add<int32_t>(0);

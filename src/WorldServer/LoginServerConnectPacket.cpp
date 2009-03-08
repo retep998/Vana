@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "PacketCreator.h"
 
-void LoginServerConnectPacket::registerChannel(LoginServerConnectPlayer *player, int32_t channel, const string &ip, int16_t port) {
+void LoginServerConnectPacket::registerChannel(LoginServerConnectPlayer *player, int32_t channel, uint32_t ip, int16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_REGISTER_CHANNEL);
 	packet.add<int32_t>(channel);
-	packet.addString(ip);
+	packet.add<uint32_t>(ip);
 	packet.add<int16_t>(port);
 	player->getSession()->send(packet);
 }

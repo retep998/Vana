@@ -40,11 +40,6 @@ void PacketCreator::addBuffer(const unsigned char *bytes, size_t len) {
 	pos += len;
 }
 
-void PacketCreator::addIP(const string &ip) {
-	uint32_t ulong_ip = boost::asio::ip::address::from_string(ip).to_v4().to_ulong();
-	add<uint32_t>(htonl(ulong_ip));
-}
-
 void PacketCreator::addBytes(const char *hex) {
 	for (size_t i = 0; i < strlen(hex) / 2; i++) {
 		unsigned char byte1 = hex[i * 2];

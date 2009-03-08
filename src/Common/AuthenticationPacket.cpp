@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "ServerPlayer.h"
 
-void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, string pass, string ip) {
+void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, string pass, uint32_t ip) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PASSWORD);
 	packet.addString(pass);
-	packet.addString(ip);
+	packet.add<uint32_t>(ip);
 	packet.add<int8_t>(player->getType());
 	player->getSession()->send(packet);
 }

@@ -35,7 +35,7 @@ class PacketReader;
 
 struct Channel {
 	Channel() : population(0) { }
-	string ip;
+	uint32_t ip;
 	int16_t port;
 	int32_t population;
 };
@@ -47,7 +47,7 @@ struct World {
 	int8_t id;
 	int8_t ribbon;
 	bool connected;
-	string ip;
+	uint32_t ip;
 	int16_t port;
 	LoginServerAcceptPlayer *player;
 	// Rates
