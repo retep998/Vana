@@ -169,22 +169,22 @@ int32_t PlayerInventory::getEquippedID(int16_t slot) {
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 	for (int8_t i = 0; i < 50; i++) { // Shown items
 		if (equipped[i][0] > 0 || equipped[i][1] > 0) {
-			packet.addByte(i);
+			packet.add<int8_t>(i);
 			if (equipped[i][1] <= 0 || (i == 11 && equipped[i][0] > 0)) // Normal weapons always here
-				packet.addInt(equipped[i][0]);
+				packet.add<int32_t>(equipped[i][0]);
 			else
-				packet.addInt(equipped[i][1]);
+				packet.add<int32_t>(equipped[i][1]);
 		}
 	}
-	packet.addByte(-1);
+	packet.add<int8_t>(-1);
 	for (int8_t i = 0; i < 50; i++) { // Covered items
 		if (equipped[i][1] > 0 && equipped[i][0] > 0 && i != 11) {
-			packet.addByte(i);
-			packet.addInt(equipped[i][0]);
+			packet.add<int8_t>(i);
+			packet.add<int32_t>(equipped[i][0]);
 		}
 	}
-	packet.addByte(-1);
-	packet.addInt(equipped[11][1]); // Cash weapon
+	packet.add<int8_t>(-1);
+	packet.add<int32_t>(equipped[11][1]); // Cash weapon
 }
 
 uint16_t PlayerInventory::getItemAmount(int32_t itemid) {
@@ -323,31 +323,31 @@ void PlayerInventory::save() {
 }
 
 void PlayerInventory::connectData(PacketCreator &packet) {
-	packet.addInt(mesos);
-	packet.addByte(getMaxSlots(1));
-	packet.addByte(getMaxSlots(2));
-	packet.addByte(getMaxSlots(3));
-	packet.addByte(getMaxSlots(4));
-	packet.addByte(getMaxSlots(5));
+	packet.add<int32_t>(mesos);
+	packet.add<int8_t>(getMaxSlots(1));
+	packet.add<int8_t>(getMaxSlots(2));
+	packet.add<int8_t>(getMaxSlots(3));
+	packet.add<int8_t>(getMaxSlots(4));
+	packet.add<int8_t>(getMaxSlots(5));
 	iteminventory &equips = items[0];
 	for (iteminventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
 		if (iter->first < 0 && iter->first > -100) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
-	packet.addByte(0);
+	packet.add<int8_t>(0);
 	for (iteminventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
 		if (iter->first < -100) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
-	packet.addByte(0);
+	packet.add<int8_t>(0);
 	for (iteminventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
 		if (iter->first > 0) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
-	packet.addByte(0);
+	packet.add<int8_t>(0);
 	for (int8_t i = 2; i <= 5; i++) {
 		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
 			Item *item = getItem(i, s);
@@ -358,25 +358,25 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 			}
 			else {
 				Pet *pet = player->getPets()->getPet(item->petid);
-				packet.addByte((int8_t) s);
-				packet.addByte(3);
-				packet.addInt(item->id);
-				packet.addByte(1);
-				packet.addInt(pet->getId());
-				packet.addInt(0);
-				packet.addByte(0);
+				packet.add<int8_t>((int8_t) s);
+				packet.add<int8_t>(3);
+				packet.add<int32_t>(item->id);
+				packet.add<int8_t>(1);
+				packet.add<int32_t>(pet->getId());
+				packet.add<int32_t>(0);
+				packet.add<int8_t>(0);
 				packet.addBytes("8005BB46E61702");
 				packet.addString(pet->getName(), 13);
-				packet.addByte(pet->getLevel());
-				packet.addShort(pet->getCloseness());
-				packet.addByte(pet->getFullness());
-				packet.addByte(0);
+				packet.add<int8_t>(pet->getLevel());
+				packet.add<int16_t>(pet->getCloseness());
+				packet.add<int8_t>(pet->getFullness());
+				packet.add<int8_t>(0);
 				packet.addBytes("B8D56000CEC8"); // Most likely Korean timestamp expiration
-				packet.addByte(1); // Probably living status (1 = alive, 2 = dead)
-				packet.addInt(0);
+				packet.add<int8_t>(1); // Probably living status (1 = alive, 2 = dead)
+				packet.add<int32_t>(0);
 			}
 		}
-		packet.addByte(0);
+		packet.add<int8_t>(0);
 	}
 }
 

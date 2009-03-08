@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
-	uint8_t type = packet.getByte();
+	uint8_t type = packet.get<int8_t>();
 	string name = packet.getString();
 
 	string chat;

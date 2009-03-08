@@ -72,14 +72,14 @@ Player::~Player() {
 }
 
 void Player::realHandleRequest(PacketReader &packet) {
-	switch (packet.getShort()) {
+	switch (packet.get<int16_t>()) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
 		case RECV_ANIMATE_NPC: NPCs::handleNPCAnimation(this, packet); break;
 		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
-		case RECV_CHANGE_CHANNEL: changeChannel(packet.getByte()); break;
+		case RECV_CHANGE_CHANNEL: changeChannel(packet.get<int8_t>()); break;
 		case RECV_CHANGE_MAP: Maps::usePortal(this, packet); break;
 		case RECV_CHANGE_MAP_SPECIAL: Maps::useScriptedPortal(this, packet); break;
 		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
@@ -132,7 +132,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 	}
 }
 void Player::playerConnect(PacketReader &packet) {
-	int32_t id = packet.getInt();
+	int32_t id = packet.get<int32_t>();
 	if (!Connectable::Instance()->checkPlayer(id)) {
 		// Hacking
 		getSession()->disconnect();
@@ -417,15 +417,15 @@ void Player::changeChannel(int8_t channel) {
 
 void Player::changeKey(PacketReader &packet) {
 	packet.skipBytes(4);
-	int32_t howmany = packet.getInt();
+	int32_t howmany = packet.get<int32_t>();
 	if (howmany == 0)
 		return;
 
 	KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
 	for (int32_t i = 0; i < howmany; i++) {
-		int32_t pos = packet.getInt();
-		int8_t type = packet.getByte();
-		int32_t action = packet.getInt();
+		int32_t pos = packet.get<int32_t>();
+		int8_t type = packet.get<int8_t>();
+		int32_t action = packet.get<int32_t>();
 		keyMaps.add(pos, new KeyMaps::KeyMap(type, action));
 	}
 
@@ -434,17 +434,17 @@ void Player::changeKey(PacketReader &packet) {
 }
 
 void Player::changeSkillMacros(PacketReader &packet) {
-	uint8_t num = packet.getByte();
+	uint8_t num = packet.get<int8_t>();
 	if (num == 0)
 		return;
 
 	SkillMacros skillMacros;
 	for (uint8_t i = 0; i < num; i++) {
 		string name = packet.getString();
-		bool shout = packet.getByte() != 0;
-		int32_t skill1 = packet.getInt();
-		int32_t skill2 = packet.getInt();
-		int32_t skill3 = packet.getInt();
+		bool shout = packet.get<int8_t>() != 0;
+		int32_t skill1 = packet.get<int32_t>();
+		int32_t skill2 = packet.get<int32_t>();
+		int32_t skill3 = packet.get<int32_t>();
 
 		skillMacros.add(i, new SkillMacros::SkillMacro(name, shout, skill1, skill2, skill3));
 	}

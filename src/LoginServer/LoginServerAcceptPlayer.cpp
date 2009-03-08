@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
-	switch (packet.getShort()) {
+	switch (packet.get<int16_t>()) {
 		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
 		case INTER_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
 		case INTER_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;

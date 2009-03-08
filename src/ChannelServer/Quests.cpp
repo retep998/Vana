@@ -73,12 +73,12 @@ bool Quests::giveMesos(Player *player, int32_t amount) {
 }
 
 void Quests::getQuest(Player *player, PacketReader &packet) {
-	int8_t act = packet.getByte();
-	int16_t questid = packet.getShort();
-	int32_t npcid = packet.getInt();
+	int8_t act = packet.get<int8_t>();
+	int16_t questid = packet.get<int16_t>();
+	int32_t npcid = packet.get<int32_t>();
 	if (act == 0) {	
 		// Absolutely no idea what this does
-		int32_t item = packet.getInt();
+		int32_t item = packet.get<int32_t>();
 		QuestsPacket::giveItem(player, item, (int16_t) npcid);
 		Inventory::addNewItem(player, item, (int16_t) npcid);
 	}

@@ -26,27 +26,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, PacketReader &packet) {
-	int8_t worldid = packet.getByte();
+	int8_t worldid = packet.get<int8_t>();
 	if (worldid != -1) {
 		WorldServer::Instance()->setWorldId(worldid);
-		WorldServer::Instance()->setInterPort(packet.getShort());
-		WorldServer::Instance()->setMaxChannels(packet.getInt());
-		WorldServer::Instance()->setMaxMultiLevel(packet.getByte());
-		WorldServer::Instance()->setMaxStats(packet.getShort());
+		WorldServer::Instance()->setInterPort(packet.get<int16_t>());
+		WorldServer::Instance()->setMaxChannels(packet.get<int32_t>());
+		WorldServer::Instance()->setMaxMultiLevel(packet.get<int8_t>());
+		WorldServer::Instance()->setMaxStats(packet.get<int16_t>());
 		WorldServer::Instance()->setScrollingHeader(packet.getString());
 
-		int32_t ratesSetBit = packet.getInt();
+		int32_t ratesSetBit = packet.get<int32_t>();
 		if (ratesSetBit & Rates::SetBits::exp) {
-			WorldServer::Instance()->setExprate(packet.getInt());
+			WorldServer::Instance()->setExprate(packet.get<int32_t>());
 		}
 		if (ratesSetBit & Rates::SetBits::questExp) {
-			WorldServer::Instance()->setQuestExprate(packet.getInt());
+			WorldServer::Instance()->setQuestExprate(packet.get<int32_t>());
 		}
 		if (ratesSetBit & Rates::SetBits::meso) {
-			WorldServer::Instance()->setMesorate(packet.getInt());
+			WorldServer::Instance()->setMesorate(packet.get<int32_t>());
 		}
 		if (ratesSetBit & Rates::SetBits::drop) {
-			WorldServer::Instance()->setDroprate(packet.getInt());
+			WorldServer::Instance()->setDroprate(packet.get<int32_t>());
 		}
 
 		WorldServer::Instance()->listen();
@@ -59,8 +59,8 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, Packet
 }
 
 void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
-	uint16_t channel = packet.getShort();
-	int32_t playerid = packet.getInt();
+	uint16_t channel = packet.get<int16_t>();
+	int32_t playerid = packet.get<int32_t>();
 
 	if (Channels::Instance()->getChannel(channel)) {
 		if (Players::Instance()->getPlayer(playerid) == 0) {

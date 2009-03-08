@@ -24,69 +24,69 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) {
 	if (slot != 0) {
 		if (shortSlot)
-			packet.addShort(slot);
+			packet.add<int16_t>(slot);
 		else {
 			slot = abs(slot);
 			if (slot > 100) slot -= 100;
-			packet.addByte((int8_t) slot);
+			packet.add<int8_t>((int8_t) slot);
 		}
 	}
-	packet.addByte(!ISEQUIP(item->id) + 1);
-	packet.addInt(item->id);
-	packet.addByte(0);
-	packet.addByte(0);
+	packet.add<int8_t>(!ISEQUIP(item->id) + 1);
+	packet.add<int32_t>(item->id);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(0);
 	packet.addBytes("8005BB46E61702");
 	if (ISEQUIP(item->id)) {
-		packet.addByte(item->slots); // Slots
-		packet.addByte(item->scrolls); // Scrolls
-		packet.addShort(item->istr); // STR
-		packet.addShort(item->idex); // DEX
-		packet.addShort(item->iint); // INT
-		packet.addShort(item->iluk); // LUK
-		packet.addShort(item->ihp); // HP
-		packet.addShort(item->imp); // MP
-		packet.addShort(item->iwatk); // W.Atk
-		packet.addShort(item->imatk); // M.Atk
-		packet.addShort(item->iwdef); // W.Def
-		packet.addShort(item->imdef); // M.Def
-		packet.addShort(item->iacc); // Acc
-		packet.addShort(item->iavo); // Avo
-		packet.addShort(item->ihand); // Hands
-		packet.addShort(item->ispeed); // Speed
-		packet.addShort(item->ijump); // Jump
+		packet.add<int8_t>(item->slots); // Slots
+		packet.add<int8_t>(item->scrolls); // Scrolls
+		packet.add<int16_t>(item->istr); // STR
+		packet.add<int16_t>(item->idex); // DEX
+		packet.add<int16_t>(item->iint); // INT
+		packet.add<int16_t>(item->iluk); // LUK
+		packet.add<int16_t>(item->ihp); // HP
+		packet.add<int16_t>(item->imp); // MP
+		packet.add<int16_t>(item->iwatk); // W.Atk
+		packet.add<int16_t>(item->imatk); // M.Atk
+		packet.add<int16_t>(item->iwdef); // W.Def
+		packet.add<int16_t>(item->imdef); // M.Def
+		packet.add<int16_t>(item->iacc); // Acc
+		packet.add<int16_t>(item->iavo); // Avo
+		packet.add<int16_t>(item->ihand); // Hands
+		packet.add<int16_t>(item->ispeed); // Speed
+		packet.add<int16_t>(item->ijump); // Jump
 		packet.addString(item->name); // Owner string
-		packet.addByte(item->flags); // Lock, shoe spikes, cape cold protection, etc.
-		packet.addInt64(0); // Expiration time
-		packet.addByte(0); // No clue
+		packet.add<int8_t>(item->flags); // Lock, shoe spikes, cape cold protection, etc.
+		packet.add<int64_t>(0); // Expiration time
+		packet.add<int8_t>(0); // No clue
 	}
 	else {
-		packet.addShort(item->amount); // Amount
-		packet.addByte(0);
-		packet.addByte(0);
-		packet.addByte(item->flags);
-		packet.addByte(0);
+		packet.add<int16_t>(item->amount); // Amount
+		packet.add<int8_t>(0);
+		packet.add<int8_t>(0);
+		packet.add<int8_t>(item->flags);
+		packet.add<int8_t>(0);
 		if (ISRECHARGEABLE(item->id)) {
-			packet.addInt(2);
-			packet.addShort(0x54);
-			packet.addByte(0);
-			packet.addByte(0x34);
+			packet.add<int32_t>(2);
+			packet.add<int16_t>(0x54);
+			packet.add<int8_t>(0);
+			packet.add<int8_t>(0x34);
 		}
 	}
 }
 
 void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player) {
-	packet.addByte(player->getGender());
-	packet.addByte(player->getSkin());
-	packet.addInt(player->getEyes());
-	packet.addByte(1);
-	packet.addInt(player->getHair());
+	packet.add<int8_t>(player->getGender());
+	packet.add<int8_t>(player->getSkin());
+	packet.add<int32_t>(player->getEyes());
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(player->getHair());
 	player->getInventory()->addEquippedPacket(packet);
 	for (int8_t i = 0; i < 3; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			packet.addInt(pet->getType());
+			packet.add<int32_t>(pet->getType());
 		}
 		else {
-			packet.addInt(0);
+			packet.add<int32_t>(0);
 		}
 	}
 }

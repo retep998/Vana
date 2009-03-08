@@ -25,42 +25,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginServerAcceptPacket::connect(LoginServerAcceptPlayer *player, World *world) {
 	PacketCreator packet;
-	packet.addShort(INTER_WORLD_CONNECT);
-	packet.addByte(world->id);
-	packet.addShort(world->port);
-	packet.addInt(world->maxChannels);
-	packet.addByte(world->maxMultiLevel);
-	packet.addShort(world->maxStats);
+	packet.add<int16_t>(INTER_WORLD_CONNECT);
+	packet.add<int8_t>(world->id);
+	packet.add<int16_t>(world->port);
+	packet.add<int32_t>(world->maxChannels);
+	packet.add<int8_t>(world->maxMultiLevel);
+	packet.add<int16_t>(world->maxStats);
 	packet.addString(world->scrollingHeader);
 	
-	packet.addInt(Rates::SetBits::all);
-	packet.addInt(world->exprate);
-	packet.addInt(world->questexprate);
-	packet.addInt(world->mesorate);
-	packet.addInt(world->droprate);
+	packet.add<int32_t>(Rates::SetBits::all);
+	packet.add<int32_t>(world->exprate);
+	packet.add<int32_t>(world->questexprate);
+	packet.add<int32_t>(world->mesorate);
+	packet.add<int32_t>(world->droprate);
 	player->getSession()->send(packet);
 }
 
 void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptPlayer *player) {
 	PacketCreator packet;
-	packet.addShort(INTER_WORLD_CONNECT);
-	packet.addByte(-1);
+	packet.add<int16_t>(INTER_WORLD_CONNECT);
+	packet.add<int8_t>(-1);
 	player->getSession()->send(packet);
 }
 
 void LoginServerAcceptPacket::connectChannel(LoginServerAcceptPlayer *player, int8_t worldid, const string &ip, int16_t port) {
 	PacketCreator packet;
-	packet.addShort(INTER_LOGIN_CHANNEL_CONNECT);
-	packet.addByte(worldid);
+	packet.add<int16_t>(INTER_LOGIN_CHANNEL_CONNECT);
+	packet.add<int8_t>(worldid);
 	packet.addString(ip);
-	packet.addShort(port);
+	packet.add<int16_t>(port);
 	player->getSession()->send(packet);
 }
 
 void LoginServerAcceptPacket::newPlayer(LoginServerAcceptPlayer *player, uint16_t channel, int32_t charid) {
 	PacketCreator packet;
-	packet.addShort(INTER_NEW_PLAYER);
-	packet.addShort(channel);
-	packet.addInt(charid);
+	packet.add<int16_t>(INTER_NEW_PLAYER);
+	packet.add<int16_t>(channel);
+	packet.add<int32_t>(charid);
 	player->getSession()->send(packet);
 }

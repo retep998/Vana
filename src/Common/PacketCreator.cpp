@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tokenizer.hpp>
 
 void PacketCreator::addPos(Pos pos) {
-	addShort(pos.x);
-	addShort(pos.y);
+	add<int16_t>(pos.x);
+	add<int16_t>(pos.y);
 }
 
 void PacketCreator::addBuffer(PacketCreator &packet) {
@@ -47,7 +47,7 @@ void PacketCreator::addIP(const string &ip) {
 	tokenizer tokens(ip, sep);
 
 	for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); iter++) {
-		addByte((unsigned char) boost::lexical_cast<int16_t>(*iter)); // Using lexical_cast<unsigned char> would cause it to spit ASCII
+		add<int8_t>((unsigned char) boost::lexical_cast<int16_t>(*iter)); // Using lexical_cast<unsigned char> would cause it to spit ASCII
 	}
 }
 
@@ -86,7 +86,7 @@ void PacketCreator::addString(const string &str, size_t len) {
 
 void PacketCreator::addString(const string &str) {
 	size_t len = str.size();
-	addShort(len);
+	add<int16_t>(len);
 	strcpy((char *) packet + pos, str.c_str());
 	pos += len;
 }

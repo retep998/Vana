@@ -27,7 +27,7 @@ WorldServerConnectPlayer::WorldServerConnectPlayer() {
 }
 
 void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
-	switch (packet.getShort()) {
+	switch (packet.get<int16_t>()) {
 		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
 		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerConnectHandler::playerChangeChannel(this, packet); break;

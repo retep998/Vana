@@ -25,32 +25,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void StoragePacket::showStorage(Player *player, int32_t npcid) {
 	PacketCreator packet;
-	packet.addShort(SEND_STORAGE_ACTION);
-	packet.addByte(0x15); // Type of storage action
-	packet.addInt(npcid);
-	packet.addByte(player->getStorage()->getSlots());
-	packet.addInt(0x7e);
-	packet.addInt(0);
-	packet.addInt(player->getStorage()->getMesos());
-	packet.addShort(0);
-	packet.addByte(player->getStorage()->getNumItems());
+	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int8_t>(0x15); // Type of storage action
+	packet.add<int32_t>(npcid);
+	packet.add<int8_t>(player->getStorage()->getSlots());
+	packet.add<int32_t>(0x7e);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(player->getStorage()->getMesos());
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(player->getStorage()->getNumItems());
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		PlayerPacketHelper::addItemInfo(packet, 0, player->getStorage()->getItem(i));
 	}
-	packet.addShort(0);
-	packet.addByte(0);
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void StoragePacket::addItem(Player *player, int8_t inv) {
 	PacketCreator packet;
-	packet.addShort(SEND_STORAGE_ACTION);
-	packet.addByte(0x0c);
-	packet.addByte(player->getStorage()->getSlots());
+	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int8_t>(0x0c);
+	packet.add<int8_t>(player->getStorage()->getSlots());
 	int8_t type = (int8_t) pow((float) 2, (int32_t) inv) * 2; // Gotta work some magic on type, which starts as inventory
-	packet.addInt(type);
-	packet.addInt(0);
-	packet.addByte(player->getStorage()->getNumItems(inv));
+	packet.add<int32_t>(type);
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(player->getStorage()->getNumItems(inv));
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GETINVENTORY(item->id) == inv)
@@ -61,13 +61,13 @@ void StoragePacket::addItem(Player *player, int8_t inv) {
 
 void StoragePacket::takeItem(Player *player, int8_t inv) {
 	PacketCreator packet;
-	packet.addShort(SEND_STORAGE_ACTION);
-	packet.addByte(0x09);
-	packet.addByte(player->getStorage()->getSlots());
+	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int8_t>(0x09);
+	packet.add<int8_t>(player->getStorage()->getSlots());
 	int8_t type = (int8_t) pow((float) 2, (int32_t) inv) * 2;
-	packet.addInt(type);
-	packet.addInt(0);
-	packet.addByte(player->getStorage()->getNumItems(inv));
+	packet.add<int32_t>(type);
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(player->getStorage()->getNumItems(inv));
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GETINVENTORY(item->id) == inv)
@@ -78,19 +78,19 @@ void StoragePacket::takeItem(Player *player, int8_t inv) {
 
 void StoragePacket::changeMesos(Player *player, int32_t mesos) {
 	PacketCreator packet;
-	packet.addShort(SEND_STORAGE_ACTION);
-	packet.addByte(0x12);
-	packet.addByte(player->getStorage()->getSlots());
-	packet.addShort(2);
-	packet.addShort(0);
-	packet.addInt(0);
-	packet.addInt(mesos);
+	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int8_t>(0x12);
+	packet.add<int8_t>(player->getStorage()->getSlots());
+	packet.add<int16_t>(2);
+	packet.add<int16_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(mesos);
 	player->getSession()->send(packet);
 }
 
 void StoragePacket::storageFull(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_STORAGE_ACTION);
-	packet.addByte(0x10);
+	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int8_t>(0x10);
 	player->getSession()->send(packet);
 }

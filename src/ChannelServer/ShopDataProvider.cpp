@@ -63,36 +63,36 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 
 	player->setShop(id);
 	PacketCreator packet;
-	packet.addShort(SEND_SHOP_OPEN);
-	packet.addInt(shops[id].npc);
-	packet.addShort(shops[id].items.size() + rechargables.size());
+	packet.add<int16_t>(SEND_SHOP_OPEN);
+	packet.add<int32_t>(shops[id].npc);
+	packet.add<int16_t>(shops[id].items.size() + rechargables.size());
 	for (size_t i = 0; i < shops[id].items.size(); i++) {
-		packet.addInt(shops[id].items[i]);
-		packet.addInt(shops[id].prices[shops[id].items[i]]);
+		packet.add<int32_t>(shops[id].items[i]);
+		packet.add<int32_t>(shops[id].prices[shops[id].items[i]]);
 		if (ISRECHARGEABLE(shops[id].items[i])) {
-			packet.addShort(0);
-			packet.addInt(0);
-			packet.addShort((uint16_t) shops[id].prices[shops[id].items[i]]);
+			packet.add<int16_t>(0);
+			packet.add<int32_t>(0);
+			packet.add<int16_t>((uint16_t) shops[id].prices[shops[id].items[i]]);
 		}
 		else {
-			packet.addShort(1);
+			packet.add<int16_t>(1);
 		}
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(shops[id].items[i]);
 		if (ISSTAR(shops[id].items[i]))
-			packet.addShort(maxslot + player->getSkills()->getSkillLevel(4100000) * 10);
+			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(4100000) * 10);
 		else if (ISBULLET(shops[id].items[i]))
-			packet.addShort(maxslot + player->getSkills()->getSkillLevel(5200000) * 10);
+			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(5200000) * 10);
 		else
-			packet.addShort(maxslot);
+			packet.add<int16_t>(maxslot);
 	}
 
 	for (size_t i = 0; i < rechargables.size(); i++) {
-		packet.addInt(rechargables[i]);
-		packet.addInt(0);
-		packet.addShort(0);
-		packet.addInt(0);
-		packet.addShort(1);
-		packet.addShort(ItemDataProvider::Instance()->getMaxslot(rechargables[i]) + (ISSTAR(rechargables[i]) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10));
+		packet.add<int32_t>(rechargables[i]);
+		packet.add<int32_t>(0);
+		packet.add<int16_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int16_t>(1);
+		packet.add<int16_t>(ItemDataProvider::Instance()->getMaxslot(rechargables[i]) + (ISSTAR(rechargables[i]) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10));
 	}
 
 	player->getSession()->send(packet);

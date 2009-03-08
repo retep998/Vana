@@ -153,7 +153,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 
 void Levels::addStat(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	int32_t type = packet.getInt();
+	int32_t type = packet.get<int32_t>();
 	if (player->getAP() == 0) {
 		// hacking
 		return;

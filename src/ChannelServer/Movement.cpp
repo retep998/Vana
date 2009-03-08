@@ -27,9 +27,9 @@ Pos Movement::parseMovement(MovableLife *life, PacketReader &packet) {
 	int8_t stance = 0;
 	int16_t x = 0;
 	int16_t y = 0;
-	uint8_t n = packet.getByte();
+	uint8_t n = packet.get<int8_t>();
 	for (uint8_t i = 0; i < n; i++) {
-		int8_t type = packet.getByte();
+		int8_t type = packet.get<int8_t>();
 		switch (type) {
 			case 10: // Falling of some kind
 				packet.skipBytes(1);
@@ -42,34 +42,34 @@ Pos Movement::parseMovement(MovableLife *life, PacketReader &packet) {
 				break;
 			case 0: // Normal up/down/left/right movement
 			case 5:
-				x = packet.getShort();
-				y = packet.getShort();
+				x = packet.get<int16_t>();
+				y = packet.get<int16_t>();
 				packet.skipBytes(4);
-				foothold = packet.getShort();
-				stance = packet.getByte();
+				foothold = packet.get<int16_t>();
+				stance = packet.get<int8_t>();
 				packet.skipBytes(2);
 				break;
 			case 1: // Jumping
 			case 2: // Jumping/knockback?
 			case 6: // Flash Jump
-				x = packet.getShort();
-				y = packet.getShort();
-				stance = packet.getByte();
+				x = packet.get<int16_t>();
+				y = packet.get<int16_t>();
+				stance = packet.get<int8_t>();
 				packet.skipBytes(2);
 				break;
 			case 15: // Jump down
-				x = packet.getShort();
-				y = packet.getShort();
+				x = packet.get<int16_t>();
+				y = packet.get<int16_t>();
 				packet.skipBytes(6);
-				foothold = packet.getShort();
-				stance = packet.getByte();
+				foothold = packet.get<int16_t>();
+				stance = packet.get<int8_t>();
 				packet.skipBytes(2);
 				break;
 			case 11: // Chair
-				x = packet.getShort();
-				y = packet.getShort();
-				foothold = packet.getShort();
-				stance = packet.getByte();
+				x = packet.get<int16_t>();
+				y = packet.get<int16_t>();
+				foothold = packet.get<int16_t>();
+				stance = packet.get<int8_t>();
 				packet.skipBytes(2);
 				break;
 			case 3:
@@ -77,10 +77,10 @@ Pos Movement::parseMovement(MovableLife *life, PacketReader &packet) {
 			case 7: // Assaulter
 			case 8: // Assassinate
 			case 9: // Rush
-				x = packet.getShort();
-				y = packet.getShort();
+				x = packet.get<int16_t>();
+				y = packet.get<int16_t>();
 				packet.skipBytes(4);
-				stance = packet.getByte();
+				stance = packet.get<int8_t>();
 				break;
 			default:
 				std::cout << "New type of movement: 0x" << std::hex << (int16_t) type << std::endl;

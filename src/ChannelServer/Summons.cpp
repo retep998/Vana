@@ -89,7 +89,7 @@ void Summons::showSummons(Player *ofplayer, Player *toplayer) {
 }
 
 void Summons::moveSummon(Player *player, PacketReader &packet) {
-	int32_t summonid = packet.getInt();
+	int32_t summonid = packet.get<int32_t>();
 	packet.skipBytes(4); // I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
 	Summon *summon = player->getSummons()->getSummon(summonid);
 	if (summon == 0)
@@ -102,10 +102,10 @@ void Summons::moveSummon(Player *player, PacketReader &packet) {
 }
 
 void Summons::damageSummon(Player *player, PacketReader &packet) {
-	int32_t summonid = packet.getInt();
-	int8_t notsure = packet.getByte();
-	int32_t damage = packet.getInt();
-	int32_t mobid = packet.getInt();
+	int32_t summonid = packet.get<int32_t>();
+	int8_t notsure = packet.get<int8_t>();
+	int32_t damage = packet.get<int32_t>();
+	int32_t mobid = packet.get<int32_t>();
 
 	if (Summon *summon = player->getSummons()->getPuppet()) {
 		summon->doDamage(damage);

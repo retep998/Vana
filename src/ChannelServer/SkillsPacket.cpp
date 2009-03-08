@@ -25,13 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void SkillsPacket::addSkill(Player *player, int32_t skillid, PlayerSkillInfo skillinfo) {
 	PacketCreator packet;
-	packet.addShort(SEND_ADD_SKILL);
-	packet.addByte(1);
-	packet.addShort(1);
-	packet.addInt(skillid);
-	packet.addInt(skillinfo.level); // Level
-	packet.addInt(skillinfo.maxlevel); // Master Level
-	packet.addByte(1);
+	packet.add<int16_t>(SEND_ADD_SKILL);
+	packet.add<int8_t>(1);
+	packet.add<int16_t>(1);
+	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(skillinfo.level); // Level
+	packet.add<int32_t>(skillinfo.maxlevel); // Master Level
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 
@@ -40,15 +40,15 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, boo
 		return;
  	PacketCreator packet;
 	if (party && self) {
-		packet.addShort(SEND_GAIN_ITEM);
+		packet.add<int16_t>(SEND_GAIN_ITEM);
 	}
 	else {
- 		packet.addShort(SEND_SHOW_SKILL);
- 		packet.addInt(player->getId());
+ 		packet.add<int16_t>(SEND_SHOW_SKILL);
+ 		packet.add<int32_t>(player->getId());
 	}
-	packet.addByte(party ? 2 : 1);
- 	packet.addInt(skillid);
-	packet.addByte(level); // TODO
+	packet.add<int8_t>(party ? 2 : 1);
+ 	packet.add<int32_t>(skillid);
+	packet.add<int8_t>(level); // TODO
 	if (self)
 		player->getSession()->send(packet);
 	else
@@ -57,28 +57,28 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, boo
 
 void SkillsPacket::healHP(Player *player, int16_t hp) {
 	PacketCreator packet;
-	packet.addShort(SEND_GAIN_ITEM);
-	packet.addByte(0xA);
-	packet.addShort(hp);
+	packet.add<int16_t>(SEND_GAIN_ITEM);
+	packet.add<int8_t>(0xA);
+	packet.add<int16_t>(hp);
 	player->getSession()->send(packet);
 }
 
 void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t level) {
 	PacketCreator packet;
-	packet.addShort(SEND_GAIN_ITEM); // For the using player
+	packet.add<int16_t>(SEND_GAIN_ITEM); // For the using player
 	bool send = false;
 	switch (skillid) {
 		case 2100000:
 		case 2200000:
 		case 2300000: // MP Eater
-			packet.addByte(1);
-			packet.addInt(skillid);
-			packet.addByte(1);
+			packet.add<int8_t>(1);
+			packet.add<int32_t>(skillid);
+			packet.add<int8_t>(1);
 			send = true;
 			break;
 		case 1311008: // Dragon Blood
-			packet.addByte(5);
-			packet.addInt(skillid);
+			packet.add<int8_t>(5);
+			packet.add<int32_t>(skillid);
 			send = true;
 			break;
 	}
@@ -88,21 +88,21 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t leve
 		return;
 	packet = PacketCreator();
 	send = false;
-	packet.addShort(SEND_SHOW_SKILL);  // For others
-	packet.addInt(player->getId());
+	packet.add<int16_t>(SEND_SHOW_SKILL);  // For others
+	packet.add<int32_t>(player->getId());
 	switch (skillid) {
 		case 2100000:
 		case 2200000:
 		case 2300000: // MP Eater
-			packet.addByte(1);
-			packet.addInt(skillid);
-			packet.addByte(1);
+			packet.add<int8_t>(1);
+			packet.add<int32_t>(skillid);
+			packet.add<int8_t>(1);
 			send = true;
 			break;
 		case 4211005: // Meso Guard
 		case 1311008: // Dragon Blood
-			packet.addByte(5);
-			packet.addInt(skillid);
+			packet.add<int8_t>(5);
+			packet.add<int32_t>(skillid);
 			send = true;
 			break;
 	}
@@ -114,12 +114,12 @@ void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // 
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
-	packet.addShort(SEND_SPECIAL_SKILL);
-	packet.addInt(player->getId());
-	packet.addInt(info.skillid);
-	packet.addByte(info.level);
-	packet.addByte(info.direction);
-	packet.addByte(info.w_speed);
+	packet.add<int16_t>(SEND_SPECIAL_SKILL);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(info.skillid);
+	packet.add<int8_t>(info.level);
+	packet.add<int8_t>(info.direction);
+	packet.add<int8_t>(info.w_speed);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -127,44 +127,44 @@ void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
-	packet.addShort(SEND_SPECIAL_SKILL_END);
-	packet.addInt(player->getId());
-	packet.addInt(info.skillid);
+	packet.add<int16_t>(SEND_SPECIAL_SKILL_END);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(info.skillid);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapmobid, uint8_t success) {
 	PacketCreator packet;
-	packet.addShort(SEND_SHOW_DRAGGED);
-	packet.addInt(mapmobid);
-	packet.addByte(success);
+	packet.add<int16_t>(SEND_SHOW_DRAGGED);
+	packet.add<int32_t>(mapmobid);
+	packet.add<int8_t>(success);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void SkillsPacket::sendCooldown(Player *player, int32_t skillid, int16_t time) {
 	PacketCreator packet;
-	packet.addShort(SEND_COOLDOWN);
-	packet.addInt(skillid);
-	packet.addShort(time);
+	packet.add<int16_t>(SEND_COOLDOWN);
+	packet.add<int32_t>(skillid);
+	packet.add<int16_t>(time);
 	player->getSession()->send(packet);
 }
 
 void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Sends to map/user
 	PacketCreator packet;
-	packet.addShort(SEND_GAIN_ITEM);
-	packet.addByte(1);
-	packet.addInt(1320006);
-	packet.addByte(level);
-	packet.addByte(on ? 1 : 0);
+	packet.add<int16_t>(SEND_GAIN_ITEM);
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(1320006);
+	packet.add<int8_t>(level);
+	packet.add<int8_t>(on ? 1 : 0);
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	packet = PacketCreator();
-	packet.addShort(SEND_SHOW_SKILL);  // For others
-	packet.addInt(player->getId());
-	packet.addByte(1);
-	packet.addInt(1320006);
-	packet.addByte(level);
-	packet.addByte(on ? 1 : 0);
+	packet.add<int16_t>(SEND_SHOW_SKILL);  // For others
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(1320006);
+	packet.add<int8_t>(level);
+	packet.add<int8_t>(on ? 1 : 0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

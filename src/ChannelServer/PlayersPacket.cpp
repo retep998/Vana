@@ -29,9 +29,9 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
-	packet.addShort(SEND_MOVE_PLAYER);
-	packet.addInt(player->getId());
-	packet.addInt(0);
+	packet.add<int16_t>(SEND_MOVE_PLAYER);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(0);
 	packet.addBuffer(buf, size);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
@@ -40,19 +40,19 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
-	packet.addShort(SEND_FACE_EXPRESSION);
-	packet.addInt(player->getId());
-	packet.addInt(face);
+	packet.add<int16_t>(SEND_FACE_EXPRESSION);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(face);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PlayersPacket::showChat(Player *player, const string &msg, int8_t bubbleOnly) {
 	PacketCreator packet;
-	packet.addShort(SEND_CHAT);
-	packet.addInt(player->getId());
-	packet.addByte(player->isGM());
+	packet.add<int16_t>(SEND_CHAT);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(player->isGM());
 	packet.addString(msg);
-	packet.addByte(bubbleOnly);
+	packet.add<int8_t>(bubbleOnly);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
@@ -60,31 +60,31 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
 		return;
 	PacketCreator packet;
-	packet.addShort(SEND_DAMAGE_PLAYER);
-	packet.addInt(player->getId());
-	packet.addByte(type);
+	packet.add<int16_t>(SEND_DAMAGE_PLAYER);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(type);
 	switch (type) {
 		case 0xFE:
-			packet.addInt(dmg);
-			packet.addInt(dmg);
+			packet.add<int32_t>(dmg);
+			packet.add<int32_t>(dmg);
 			break;
 		default:
-			packet.addInt((pgmr.reduction > 0 ? pgmr.damage : dmg));
-			packet.addInt(mob);
-			packet.addByte(hit);
+			packet.add<int32_t>((pgmr.reduction > 0 ? pgmr.damage : dmg));
+			packet.add<int32_t>(mob);
+			packet.add<int8_t>(hit);
 			if (pgmr.reduction > 0) {
-				packet.addByte(pgmr.reduction);
-				packet.addByte(pgmr.isphysical); // Maybe? No Mana Reflection on global to test with
-				packet.addInt(pgmr.mapmobid);
-				packet.addByte(6);
+				packet.add<int8_t>(pgmr.reduction);
+				packet.add<int8_t>(pgmr.isphysical); // Maybe? No Mana Reflection on global to test with
+				packet.add<int32_t>(pgmr.mapmobid);
+				packet.add<int8_t>(6);
 				packet.addPos(pgmr.pos);
 			}
 			else
-				packet.addByte(0);
-			packet.addByte(stance);
-			packet.addInt(dmg);
+				packet.add<int8_t>(0);
+			packet.add<int8_t>(stance);
+			packet.add<int32_t>(dmg);
 			if (nodamageskill > 0)
-				packet.addInt(nodamageskill);
+				packet.add<int32_t>(nodamageskill);
 			break;
 	}
 	Maps::getMap(player->getMap())->sendPacket(packet);
@@ -92,83 +92,83 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 
 void PlayersPacket::showMessage(const string &msg, int8_t type) {
 	PacketCreator packet;
-	packet.addShort(SEND_NOTICE); 
-	packet.addByte(type);
+	packet.add<int16_t>(SEND_NOTICE); 
+	packet.add<int8_t>(type);
 	packet.addString(msg);
 	Players::Instance()->sendPacket(packet);
 }
 
 void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
 	PacketCreator packet;
-	packet.addShort(INTER_TO_PLAYERS);
-	packet.addShort(SEND_NOTICE);
-	packet.addByte(type);
+	packet.add<int16_t>(INTER_TO_PLAYERS);
+	packet.add<int16_t>(SEND_NOTICE);
+	packet.add<int8_t>(type);
 	packet.addString(msg);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	PacketCreator packet;
-	packet.addShort(SEND_PLAYER_INFO);
-	packet.addInt(getinfo->getId());
-	packet.addByte(getinfo->getLevel());
-	packet.addShort(getinfo->getJob());
-	packet.addShort(getinfo->getFame());
-	packet.addByte(0); // Married
+	packet.add<int16_t>(SEND_PLAYER_INFO);
+	packet.add<int32_t>(getinfo->getId());
+	packet.add<int8_t>(getinfo->getLevel());
+	packet.add<int16_t>(getinfo->getJob());
+	packet.add<int16_t>(getinfo->getFame());
+	packet.add<int8_t>(0); // Married
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
-	packet.addByte(isself); // Is 1 when the character is clicking themselves
+	packet.add<int8_t>(isself); // Is 1 when the character is clicking themselves
 	for (int8_t i = 0; i < 3; i++) {
 		if (Pet *pet = getinfo->getPets()->getSummoned(i)) {
-			packet.addByte(1);
-			packet.addInt(pet->getType());
+			packet.add<int8_t>(1);
+			packet.add<int32_t>(pet->getType());
 			packet.addString(pet->getName());
-			packet.addByte(pet->getLevel());
-			packet.addShort(pet->getCloseness());
-			packet.addByte(pet->getFullness());
-			packet.addShort(0);
-			packet.addInt(getinfo->getInventory()->getItem(1,  -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0))) != 0 ? getinfo->getInventory()->getItem(1, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)))->id : 0);
+			packet.add<int8_t>(pet->getLevel());
+			packet.add<int16_t>(pet->getCloseness());
+			packet.add<int8_t>(pet->getFullness());
+			packet.add<int16_t>(0);
+			packet.add<int32_t>(getinfo->getInventory()->getItem(1,  -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0))) != 0 ? getinfo->getInventory()->getItem(1, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)))->id : 0);
 		}
 	}
-	packet.addByte(0); // End of pets / start of taming mob
-	packet.addByte(0); // End of taming mob / start of wish list
-	packet.addByte(0); // Wish list count
-	packet.addInt(1);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
-	packet.addInt(0);
+	packet.add<int8_t>(0); // End of pets / start of taming mob
+	packet.add<int8_t>(0); // End of taming mob / start of wish list
+	packet.add<int8_t>(0); // Wish list count
+	packet.add<int32_t>(1);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 
 void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, uint16_t channel, const string &message) {
 	PacketCreator packet;
-	packet.addShort(SEND_COMMAND_RESPOND);
-	packet.addByte(0x12);
+	packet.add<int16_t>(SEND_COMMAND_RESPOND);
+	packet.add<int8_t>(0x12);
 	packet.addString(whisperer_name);
-	packet.addShort(channel);
+	packet.add<int16_t>(channel);
 	packet.addString(message);
 	target->getSession()->send(packet);
 }
 
 void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, uint8_t is, bool is_channel) {
 	PacketCreator packet;
-	packet.addShort(SEND_COMMAND_RESPOND);
+	packet.add<int16_t>(SEND_COMMAND_RESPOND);
 	if (map != -1) {
-		packet.addByte(0x09);
+		packet.add<int8_t>(0x09);
 		packet.addString(name);
 		if (is_channel)
-			packet.addByte(0x03);
+			packet.add<int8_t>(0x03);
 		else
-			packet.addByte(0x01);
-		packet.addInt(map);
-		packet.addInt(0);
-		packet.addInt(0);
+			packet.add<int8_t>(0x01);
+		packet.add<int32_t>(map);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
 	}
 	else {	
-		packet.addByte(0x0A);
+		packet.add<int8_t>(0x0A);
 		packet.addString(name);
-		packet.addByte(is);
+		packet.add<int8_t>(is);
 	}
 
 	player->getSession()->send(packet);

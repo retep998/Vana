@@ -24,26 +24,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
 	PacketCreator packet;
-	packet.addShort(SEND_NOTICE);
-	packet.addByte(4);
-	packet.addByte(1);
+	packet.add<int16_t>(SEND_NOTICE);
+	packet.add<int8_t>(4);
+	packet.add<int8_t>(1);
 	packet.addString(msg);
 	player->getSession()->send(packet);
 }
 
 void ServerPacket::changeScrollingHeader(const string &msg) {
 	PacketCreator packet;
-	packet.addShort(SEND_NOTICE);
-	packet.addByte(4);
-	packet.addByte(1);
+	packet.add<int16_t>(SEND_NOTICE);
+	packet.add<int8_t>(4);
+	packet.add<int8_t>(1);
 	packet.addString(msg);
 	Players::Instance()->sendPacket(packet);
 }
 
 void ServerPacket::scrollingHeaderOff() {
 	PacketCreator packet;
-	packet.addShort(SEND_NOTICE);
-	packet.addByte(4);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_NOTICE);
+	packet.add<int8_t>(4);
+	packet.add<int8_t>(0);
 	Players::Instance()->sendPacket(packet);
 }

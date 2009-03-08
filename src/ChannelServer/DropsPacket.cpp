@@ -25,23 +25,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, Pos origin) {
 	PacketCreator packet;
-	packet.addShort(SEND_DROP_ITEM);
-	packet.addByte(type); // 3 = disappear during drop animation, 2 = show existing, 1 then 0 = show new
-	packet.addInt(drop->getID());
-	packet.addByte(drop->isMesos());
-	packet.addInt(drop->getObjectID());
-	packet.addInt(drop->getOwner()); // Owner of drop
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_DROP_ITEM);
+	packet.add<int8_t>(type); // 3 = disappear during drop animation, 2 = show existing, 1 then 0 = show new
+	packet.add<int32_t>(drop->getID());
+	packet.add<int8_t>(drop->isMesos());
+	packet.add<int32_t>(drop->getObjectID());
+	packet.add<int32_t>(drop->getOwner()); // Owner of drop
+	packet.add<int8_t>(0);
 	packet.addPos(drop->getPos());
-	packet.addInt(drop->getTime());
+	packet.add<int32_t>(drop->getTime());
 	if (type == 0 || type == 1 || type == 3) { // Give the point of origin for things that are just being dropped
 		packet.addPos(origin);
-		packet.addShort(0);
+		packet.add<int16_t>(0);
 	}
 	if (!drop->isMesos()) {
 		packet.addBytes("008005BB46E61702");
 	}
-	packet.addByte(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
+	packet.add<int8_t>(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
 	if (player != 0)
 		player->getSession()->send(packet);
 	else
@@ -53,34 +53,34 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 
 void DropsPacket::takeNote(Player *player, int32_t id, bool ismesos, int16_t amount) {
 	PacketCreator packet;
-	packet.addShort(SEND_NOTE);
-	packet.addByte(0);
+	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int8_t>(0);
 	if (id == 0)
-		packet.addByte(-1);
+		packet.add<int8_t>(-1);
 	else {
-		packet.addByte(ismesos);
-		packet.addInt(id);
+		packet.add<int8_t>(ismesos);
+		packet.add<int32_t>(id);
 		if (ismesos) {
-			packet.addShort(0); // Internet Cafe Bonus
+			packet.add<int16_t>(0); // Internet Cafe Bonus
 		}
 		else if (id/1000000 != 1)
-			packet.addShort(amount);
+			packet.add<int16_t>(amount);
 	}
 	if (!ismesos) {
-		packet.addInt(0);
-		packet.addInt(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
 	}
 	player->getSession()->send(packet);
 }
 
 void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
 	PacketCreator packet;
-	packet.addShort(SEND_TAKE_DROP);
-	packet.addByte(pet_index != -1 ? 5 : 2);
-	packet.addInt(drop->getID());
-	packet.addInt(player->getId());
+	packet.add<int16_t>(SEND_TAKE_DROP);
+	packet.add<int8_t>(pet_index != -1 ? 5 : 2);
+	packet.add<int32_t>(drop->getID());
+	packet.add<int32_t>(player->getId());
 	if (pet_index != -1)
-		packet.addByte(pet_index);
+		packet.add<int8_t>(pet_index);
 	if (!drop->isQuest())
 		Maps::getMap(drop->getMap())->sendPacket(packet);
 	else
@@ -89,24 +89,24 @@ void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
 
 void DropsPacket::dontTake(Player *player) {
 	PacketCreator packet;
-	packet.addShort(SEND_MOVE_ITEM);
-	packet.addShort(1);
+	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int16_t>(1);
 	player->getSession()->send(packet);
 }
 
 void DropsPacket::removeDrop(Drop *drop) {
 	PacketCreator packet;
-	packet.addShort(SEND_TAKE_DROP);
-	packet.addByte(0);
-	packet.addInt(drop->getID());
+	packet.add<int16_t>(SEND_TAKE_DROP);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(drop->getID());
 	Maps::getMap(drop->getMap())->sendPacket(packet);
 }
 
 void DropsPacket::explodeDrop(Drop *drop) {
 	PacketCreator packet;
-	packet.addShort(SEND_TAKE_DROP);
-	packet.addByte(4);
-	packet.addInt(drop->getID());
-	packet.addShort(655);
+	packet.add<int16_t>(SEND_TAKE_DROP);
+	packet.add<int8_t>(4);
+	packet.add<int32_t>(drop->getID());
+	packet.add<int16_t>(655);
 	Maps::getMap(drop->getMap())->sendPacket(packet);
 }
