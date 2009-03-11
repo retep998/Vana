@@ -41,7 +41,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(1);
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(0xf8);
+	packet.add<uint8_t>(0xF8);
 
 	/* Code that needs to be modified
 	SkillMapEnterActiveInfo enter = player->getActiveBuffs()->getSkillMapEnterInfo();

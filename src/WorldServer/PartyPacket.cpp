@@ -98,7 +98,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, int8_t type, int3
 		case PARTY_SILENT_UPDATE:
 		case PARTY_LOG_IN_OUT:
 			packet.add<int8_t>(0x07);
-			packet.add<int8_t>(0xDD);
+			packet.add<uint8_t>(0xDD);
 			packet.add<int8_t>(0x14);
 			packet.add<int16_t>(0);
 	}
