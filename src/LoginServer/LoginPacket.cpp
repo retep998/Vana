@@ -133,7 +133,7 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 void LoginPacket::worldEnd(PlayerLogin *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_WORLD);
-	packet.add<int8_t>(0xFF);
+	packet.add<uint8_t>(0xFF);
 	player->getSession()->send(packet);
 }
 
