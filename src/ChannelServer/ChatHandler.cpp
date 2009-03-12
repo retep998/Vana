@@ -561,11 +561,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else shopid = atoi(args.c_str());
 
 						if (!ShopDataProvider::Instance()->showShop(player, shopid)) {
-							PlayerPacket::showMessage(player, "Invalid shop - valid shops: {gear, scrolls, nx, face, ring, chair, mega, pet} or shop ID", 6);
+							PlayerPacket::showMessage(player, "Useage: !shop <${gear, scrolls, nx, face, ring, chair, mega, pet} | #shopid>", 6);
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !shop <${item | skill | map | mob | npc} | #shopid>", 6);
+						PlayerPacket::showMessage(player, "Useage: !shop <${gear, scrolls, nx, face, ring, chair, mega, pet} | #shopid>", 6);
 					}
 					break;
 				}
