@@ -23,7 +23,7 @@ if state == 0 then
 elseif state == 1 then
 	addText("With our specialized machine, you can see yourself after the treatment in advance. What kind of skin-treatment would you like to do? Choose the style of your liking...");
 	styles = {0, 1, 2, 3, 4};
-	sendStyles(styles, #styles);
+	sendStyle(styles, #styles);
 elseif state == 2 then
 	if getItemAmount(5153000) > 0 then
 		giveItem(5153000, -1);
