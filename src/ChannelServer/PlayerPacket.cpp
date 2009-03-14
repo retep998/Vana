@@ -190,3 +190,11 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 
 	player->getSession()->send(packet);
 }
+
+void PlayerPacket::sendSound(Player *player, const string &soundname) { // Send Sound
+	PacketCreator packet = PacketCreator();
+	packet.add<int16_t>(SEND_MAP_EFFECT);
+	packet.add<int8_t>(0x04);
+	packet.addString(soundname);
+	player->getSession()->send(packet);
+}
