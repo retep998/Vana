@@ -128,6 +128,7 @@ namespace LuaExports {
 	int showMapMessage(lua_State *luaVm);
 	int showMapEvent(lua_State *luaVm);
 	int showMapSound(lua_State *luaVm);
+	int showPlayerSound(lua_State *luaVm);
 	int showInstructionBubble(lua_State *luaVm);
 
 	int spawnMob(lua_State *luaVm);
