@@ -89,6 +89,7 @@ namespace LuaExports {
 	int getMMP(lua_State *luaVm);
 	int getRMMP(lua_State *luaVm);
 	int getHair(lua_State *luaVm);
+	int getSkin(lua_State *luaVm);
 	int getEyes(lua_State *luaVm);
 	int getName(lua_State *luaVm);
 	int getGMLevel(lua_State *luaVm);
