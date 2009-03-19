@@ -84,6 +84,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMMP", &LuaExports::getMMP);
 	lua_register(luaVm, "getRMMP", &LuaExports::getRMMP);
 	lua_register(luaVm, "getHair", &LuaExports::getHair);
+	lua_register(luaVm, "getSkin", &LuaExports::getSkin);
 	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
 	lua_register(luaVm, "getName", &LuaExports::getName);
 	lua_register(luaVm, "getGMLevel", &LuaExports::getGMLevel);
@@ -365,6 +366,11 @@ int LuaExports::getRMMP(lua_State *luaVm) {
 
 int LuaExports::getHair(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getHair());
+	return 1;
+}
+
+int LuaExports::getSkin(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkin());
 	return 1;
 }
 
