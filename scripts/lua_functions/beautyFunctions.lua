@@ -30,7 +30,7 @@ function getHairColours(styles)
 	end
 end
 
-function getEyes(eyes, styles)
+function getEyesStyles(eyes, styles)
 	eyecolour = (eye % 1000) - (eye % 100);
 	for i = 1, #eyes do
 		if not (eyes[i] + eyecolour == eye) then

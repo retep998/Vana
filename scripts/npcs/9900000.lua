@@ -47,7 +47,7 @@ elseif state == 1 then
 	elseif what == 2 then
 		getHairColours(styles);
 	elseif what == 3 then
-		getEyes(eyes, styles);
+		getEyeStyles(eyes, styles);
 	elseif what == 4 then
 		getEyeColour(styles);
 	else
