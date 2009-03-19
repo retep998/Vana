@@ -35,7 +35,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 
 	if (username.size() > 15 || password.size() > 15) {
 		return;
-	} 
+	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
