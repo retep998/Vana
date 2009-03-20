@@ -17,13 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Brittany (EXP hair and color - Henesys)
 
+dofile("scripts/lua_functions/beautyFunctions.lua");
+
 if getGender() == 0 then
 	hairs = {30310, 30330, 30060, 30150, 30410, 30210, 30140, 30120, 30200, 30560, 30510, 30610, 30470};
 elseif getGender() == 1 then
 	hairs = {31150, 31310, 31300, 31160, 31100, 31410, 31030, 31080, 31070, 31610, 31350, 31510, 31740};
 end
-
-hair = getHair();
 
 if state == 0 then
 	addText("I'm Brittany the assistant. If you have #b#t5150010##k or #b#t5151000##k by any chance, then how about letting me change your hairdo?\r\n");
@@ -32,25 +32,14 @@ if state == 0 then
 	sendSimple();
 elseif state == 1 then
 	what = getSelected();
+	newHair = {};
 	if what == 0 then
 		addText("If you use the EXP coupon your hair will change RANDOMLY with a chance to obtain a new experimental style that even you didn't think was possible. Are you going to use #b#t5150010##k and really change your hairstyle?");
-		haircolour = hair % 10;
-		newhairs = {};
-		for i = 1, #hairs do
-			if not (hairs[i] + haircolour == hair) then
-				newhairs[#newhairs + 1] = hairs[i] + haircolour;
-			end
-		end
+		getHairs(hairs, newHair);
 		sendYesNo();
 	elseif what == 2 then
 		addText("If you use a regular coupon your hair will change RANDOMLY. Do you still want to use #b#t5151000##k and change it up?");
-		cur = hair - hair % 10;
-		newhairs = {};
-		for i = 0, 7 do
-			if not (cur + i == hair) then
-				newhairs[#newhairs + 1] = cur + i;
-			end
-		end
+		getHairColours(newHair);
 		sendYesNo();
 	end
 elseif state == 2 then
@@ -58,7 +47,7 @@ elseif state == 2 then
 		if what == 0 then
 			if getItemAmount(5150010) > 0 then
 				giveItem(5150010, -1);
-				setStyle(newhairs[getRandomNumber(#newhairs)]);
+				setStyle(newHair[getRandomNumber(#newHair)]);
 				addText("Enjoy!");
 				sendOK();
 			else
@@ -68,7 +57,7 @@ elseif state == 2 then
 		elseif what == 2 then
 			if getItemAmount(5151000) > 0 then
 				giveItem(5151000, -1);
-				setStyle(newhairs[getRandomNumber(#newhairs)]);
+				setStyle(newHair[getRandomNumber(#newHair)]);
 				addText("Enjoy!");
 				sendOK();
 			else
