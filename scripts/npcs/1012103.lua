@@ -33,18 +33,18 @@ if state == 0 then
 	sendSimple();
 elseif state == 1 then
 	what = getSelected();
-	newHairs = {};
+	newHair = {};
 	if what == 0 then
 		addText("I can totally change up your hairstyle and make it look so good. Why don't you change it up a bit? If you have #b#t5150001##k I'll change it for you. Choose the one to your liking~");
-		getHairs(hairs, newHairs);
+		getHairs(hairs, newHair);
 	elseif what == 1 then
 		addText("I can totally change your haircolor and make it look so good. Why don't you change it up a bit? With #b#t51051001##k I'll change it for you. Choose the one to your liking.");
-		getHairColours(newHairs);
+		getHairColours(newHair);
 	elseif what == 2 then
 		addText("I can totally change up your hairstyle and make it look so good. Why don't you change it up a bit? If you have #b#t5420002##k I'll change it for you. With this coupon, you have the power to change your hairstyle to something totally new, as often as you want, for ONE MONTH! Now, please choose the hairstyle of your liking.");
-		getHairs(hairs, newHairs)
+		getHairs(hairs, newHair)
 	end
-	sendStyle(newhairs, #newhairs);
+	sendStyle(newHair, #newHair);
 elseif state == 2 then
 	if what == 0 then
 		item = 5150001;
@@ -55,8 +55,8 @@ elseif state == 2 then
 	end
 	if getItemAmount(item) > 0 then
 		giveItem(item, -1);
-		if newhairs[getSelected() + 1] > 0  then
-			setStyle(newhairs[getSelected() + 1]);
+		if newHair[getSelected() + 1] > 0  then
+			setStyle(newHair[getSelected() + 1]);
 		end
 		addText("Enjoy your new and improved hairstyle!");
 		sendOK();
