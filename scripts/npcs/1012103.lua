@@ -17,14 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Natalie (VIP hair and color - Henesys)
 
+dofile("scripts/lua_functions/beautyFunctions.lua");
+
 if getGender() == 0 then
 	hairs = {30030, 30020, 30000, 30310, 30330, 30060, 30150, 30410, 30210, 30140, 30120, 30200};
 elseif getGender() == 1 then
 	hairs = {31050, 31040, 31000, 31150, 31310, 31300, 31160, 31100, 31410, 31030, 31080, 31070};
 end
-
-skins = {0, 1, 2, 3, 4};
-hair = getHair();
 
 if state == 0 then
 	addText("I'm the head of this hair salon Natalie. If you have #b#t5150001##k, #b#t5151001##k or #b#t5420002##k, allow me to take care of your hairdo. Please choose the one you want.\r\n");
@@ -34,37 +33,18 @@ if state == 0 then
 	sendSimple();
 elseif state == 1 then
 	what = getSelected();
+	newHairs = {};
 	if what == 0 then
 		addText("I can totally change up your hairstyle and make it look so good. Why don't you change it up a bit? If you have #b#t5150001##k I'll change it for you. Choose the one to your liking~");
-		haircolour = hair % 10;
-		newhairs = {};
-		for i = 1, #hairs do
-			if not (hairs[i] + haircolour == hair) then
-				newhairs[#newhairs + 1] = hairs[i] + haircolour;
-			end
-		end
-		sendStyle(newhairs, #newhairs);
+		getHairs(hairs, newHairs);
 	elseif what == 1 then
 		addText("I can totally change your haircolor and make it look so good. Why don't you change it up a bit? With #b#t51051001##k I'll change it for you. Choose the one to your liking.");
-		cur = hair - hair % 10;
-		newhairs = {};
-		for i = 0, 7 do
-			if not (cur + i == hair) then
-				newhairs[#newhairs + 1] = cur + i;
-			end
-		end
-		sendStyle(newhairs, #newhairs);
+		getHairColours(newHairs);
 	elseif what == 2 then
 		addText("I can totally change up your hairstyle and make it look so good. Why don't you change it up a bit? If you have #b#t5420002##k I'll change it for you. With this coupon, you have the power to change your hairstyle to something totally new, as often as you want, for ONE MONTH! Now, please choose the hairstyle of your liking.");
-		haircolour = hair % 10;
-		newhairs = {};
-		for i = 1, #hairs do
-			if not (hairs[i] + haircolour == hair) then
-				newhairs[#newhairs + 1] = hairs[i] + haircolour;
-			end
-		end
-		sendStyle(newhairs, #newhairs);
+		getHairs(hairs, newHairs)
 	end
+	sendStyle(newhairs, #newhairs);
 elseif state == 2 then
 	if what == 0 then
 		item = 5150001;
