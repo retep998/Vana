@@ -195,9 +195,11 @@ void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
 }
 
 void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
-	if (m_energycharge != 10000) {
-		if (m_energycharge == 0)
-			startEnergyChargeTimer();
+	if (m_energycharge != 10000 && targets > 0) {
+		Timer::Id id(Timer::Types::BuffTimer, 5110001, timeseed);
+		if (m_player->getTimers()->checkTimer(id) > 0)
+			stopEnergyChargeTimer();
+		startEnergyChargeTimer();
 		m_energycharge += Skills::skills[5110001][m_player->getSkills()->getSkillLevel(5110001)].x * targets;
 		if (m_energycharge > 10000) {
 			m_energycharge = 10000;
@@ -211,7 +213,9 @@ void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
 	m_energycharge -= 200; // Always the same
 	if (m_energycharge < 0) {
 		m_energycharge = 0;
-		stopEnergyChargeTimer();
+	}
+	else {
+		startEnergyChargeTimer();
 	}
 	Buffs::Instance()->addBuff(m_player, 5110001, m_player->getSkills()->getSkillLevel(5110001), 0);
 }
@@ -224,7 +228,7 @@ void PlayerActiveBuffs::startEnergyChargeTimer() {
 	timeseed = static_cast<uint32_t>(clock());
 	Timer::Id id(Timer::Types::BuffTimer, 5110001, timeseed); // Causes heap errors when it's a static number, but we need it for ID
 	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
-		id, m_player->getTimers(), Timer::Time::fromNow(12 * 1000), 12 * 1000); // 12 Seconds
+		id, m_player->getTimers(), Timer::Time::fromNow(12 * 1000)); // 12 Seconds
 }
 
 void PlayerActiveBuffs::stopEnergyChargeTimer() {
