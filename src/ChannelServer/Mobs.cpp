@@ -430,6 +430,27 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, &eater);
 }
 
+void Mobs::damageMobEnergyCharge(Player *player, PacketReader &packet) {
+	MobsPacket::damageMobEnergyCharge(player, packet);
+	packet.reset(2);
+	packet.skipBytes(1);
+	uint8_t tbyte = packet.get<int8_t>();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
+	int32_t skillid = packet.get<int32_t>();
+	packet.skipBytes(2); // Display, direction/animation
+	packet.skipBytes(2); // Weapon subclass, casting speed
+	packet.skipBytes(4); // Ticks
+	int32_t mapmobid = packet.get<int32_t>();
+	Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
+	if (mob == 0)
+		return;
+	packet.skipBytes(14); // ???
+	int32_t damage = packet.get<int32_t>();
+	mob->applyDamage(player->getId(), damage);
+	packet.skipBytes(8); // End of packet	
+}
+
 void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 	MobsPacket::damageMobSummon(player, packet);
 	packet.reset(2);

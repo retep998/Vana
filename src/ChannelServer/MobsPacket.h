@@ -37,6 +37,7 @@ namespace MobsPacket {
 	void damageMob(Player *player, PacketReader &pack);
 	void damageMobRanged(Player *player, PacketReader &pack);
 	void damageMobSpell(Player *player, PacketReader &pack);
+	void damageMobEnergyCharge(Player *player, PacketReader &pack);
 	void damageMobSummon(Player *player, PacketReader &pack);
 	void applyStatus(Mob *mob, const StatusInfo &info, int16_t delay);
 	void removeStatus(Mob *mob, int32_t status);
