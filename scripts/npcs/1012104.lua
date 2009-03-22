@@ -32,14 +32,11 @@ if state == 0 then
 	sendSimple();
 elseif state == 1 then
 	what = getSelected();
-	newHair = {};
 	if what == 0 then
 		addText("If you use the EXP coupon your hair will change RANDOMLY with a chance to obtain a new experimental style that even you didn't think was possible. Are you going to use #b#t5150010##k and really change your hairstyle?");
-		getHairs(hairs, newHair);
 		sendYesNo();
 	elseif what == 2 then
 		addText("If you use a regular coupon your hair will change RANDOMLY. Do you still want to use #b#t5151000##k and change it up?");
-		getHairColours(newHair);
 		sendYesNo();
 	end
 elseif state == 2 then
@@ -47,7 +44,7 @@ elseif state == 2 then
 		if what == 0 then
 			if getItemAmount(5150010) > 0 then
 				giveItem(5150010, -1);
-				setStyle(newHair[getRandomNumber(#newHair)]);
+				giveRandomHair(hairs);
 				addText("Enjoy!");
 				sendOK();
 			else
@@ -57,7 +54,7 @@ elseif state == 2 then
 		elseif what == 2 then
 			if getItemAmount(5151000) > 0 then
 				giveItem(5151000, -1);
-				setStyle(newHair[getRandomNumber(#newHair)]);
+				giveRandomHair(hairs);
 				addText("Enjoy!");
 				sendOK();
 			else
