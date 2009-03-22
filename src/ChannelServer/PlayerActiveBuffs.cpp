@@ -169,10 +169,7 @@ SkillActiveInfo PlayerActiveBuffs::getBuffInfo(int32_t skillid) {
 }
 
 uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
-	if (activelevels.find(skillid) != activelevels.end())
-		return activelevels[skillid];
-	return 0;
-
+	return activelevels.find(skillid) != activelevels.end() ? activelevels[skillid] : 0;
 }
 
 void PlayerActiveBuffs::setSkillMapEnterInfo(int32_t skillid, const vector<SkillMapActiveInfo> &skill) {
@@ -195,4 +192,40 @@ void PlayerActiveBuffs::setBuffInfo(int32_t skillid, SkillActiveInfo skill) {
 
 void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
 	activelevels[skillid] = level;
+}
+
+void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
+	if (m_energycharge == 0)
+		startEnergyChargeTimer();
+	m_energycharge += Skills::skills[5110001][m_player->getSkills()->getSkillLevel(5110001)].x * targets;
+	if (m_energycharge > 10000) {
+		m_energycharge = 10000;
+		stopEnergyChargeTimer();
+	}
+	Buffs::Instance()->addBuff(m_player, 5110001, m_player->getSkills()->getSkillLevel(5110001), 0);
+}
+
+void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
+	m_energycharge -= 200; // Always the same
+	if (m_energycharge < 0) {
+		m_energycharge = 0;
+		stopEnergyChargeTimer();
+	}
+	Buffs::Instance()->addBuff(m_player, 5110001, m_player->getSkills()->getSkillLevel(5110001), 0);
+}
+
+void PlayerActiveBuffs::resetEnergyChargeLevel() {
+	m_energycharge = 0;
+}
+
+void PlayerActiveBuffs::startEnergyChargeTimer() {
+	timeseed = static_cast<uint32_t>(clock());
+	Timer::Id id(Timer::Types::BuffTimer, 5110001, timeseed); // Causes heap errors when it's a static number, but we need it for ID
+	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
+		id, m_player->getTimers(), Timer::Time::fromNow(12 * 1000), 12 * 1000); // 12 Seconds
+}
+
+void PlayerActiveBuffs::stopEnergyChargeTimer() {
+	Timer::Id id(Timer::Types::BuffTimer, 5110001, timeseed);
+	m_player->getTimers()->removeTimer(id);
 }

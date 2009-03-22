@@ -156,6 +156,7 @@ void Mob::endControl() {
 	if (control != 0 && control->getMap() == getMapID())
 		MobsPacket::endControlMob(control, this);
 }
+
 void Mob::die(Player *player) {
 	endControl();
 	int32_t highestdamager = 0;
@@ -239,6 +240,8 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	packet.skipBytes(1); // Useless
 	uint8_t tbyte = packet.get<int8_t>();
 	int8_t targets = tbyte / 0x10;
+	if (player->getSkills()->getSkillLevel(5110001) > 0)
+		player->getActiveBuffs()->increaseEnergyChargeLevel(targets);
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet.get<int32_t>();
 	switch (skillid) {

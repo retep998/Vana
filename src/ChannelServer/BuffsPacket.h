@@ -24,7 +24,7 @@ class Player;
 struct SkillActiveInfo;
 
 namespace BuffsPacket {
-	void useDash(Player *player, int32_t time, SkillActiveInfo pskill);
+	void usePirateBuff(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill);
 	void useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, int16_t addedinfo, bool ismorph = false, bool isitem = false);
 	void useSpeedInfusion(Player *player, int32_t time, SkillActiveInfo pskill, int16_t addedinfo);
 	void useMount(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, int16_t addedinfo, int32_t mountid);

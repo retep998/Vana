@@ -302,6 +302,11 @@ Buffs::Buffs() {
 	player.byte = TYPE_8;
 	player.value = SKILL_Y;
 	skillsinfo[5001005].player.push_back(player);
+	// 5110001 - Energy Charge
+	player.type = 0x8;
+	player.byte = TYPE_8;
+	player.value = SKILL_X;
+	skillsinfo[5110001].player.push_back(player);
 	// End regular buffs
 
 	// Begin act buffs
@@ -470,6 +475,9 @@ SkillActiveInfo Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t le
 			case 5121003: // Super Transformation
 				value = getValue(val, skillid, level) + (player->getGender() * 100); // Females are +100
 				break;
+			case 5110001: // Energy Charge
+				value = player->getActiveBuffs()->getEnergyChargeLevel();
+				break;
 			default:
 				value = getValue(val, skillid, level);
 				break;
@@ -559,21 +567,25 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		BuffsPacket::useMount(player, skillid, time, playerskill, addedinfo, mountid);
 	else {
 		if (skillid == 5001005) // I honestly wish I didn't have to do this
-			BuffsPacket::useDash(player, time, playerskill);
+			BuffsPacket::usePirateBuff(player, skillid, time, playerskill);
+		else if (skillid == 5110001)
+			BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == 10000 ? time : 0), playerskill);
 		else if (skillid == 5121009) // SIGH
 			BuffsPacket::useSpeedInfusion(player, time, playerskill, addedinfo);
 		else
 			BuffsPacket::useSkill(player, skillid, time, playerskill, addedinfo);
 	}
-	playerbuffs->setBuffInfo(skillid, playerskill);
-	playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
-	playerbuffs->setActiveSkillLevel(skillid, level);
-	playerbuffs->removeBuff(skillid);
-	if (Buffs::skillsinfo[skillid].bact.size() > 0) {
-		int16_t value = getValue(skillsinfo[skillid].act.value, skillid, level);
-		playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
+	if (skillid != 5110001 || playerbuffs->getEnergyChargeLevel() == 10000) {
+		playerbuffs->setBuffInfo(skillid, playerskill);
+		playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
+		playerbuffs->setActiveSkillLevel(skillid, level);
+		playerbuffs->removeBuff(skillid);
+		if (Buffs::skillsinfo[skillid].bact.size() > 0) {
+			int16_t value = getValue(skillsinfo[skillid].act.value, skillid, level);
+			playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
+		}
+		playerbuffs->addBuff(skillid, time);
 	}
-	playerbuffs->addBuff(skillid, time);
 	return true;
 }
 
@@ -593,6 +605,9 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 			player->setHyperBody(0, 0);
 			player->setHP(player->getHP());
 			player->setMP(player->getMP());
+			break;
+		case 5110001: // Energy Charge
+			player->getActiveBuffs()->resetEnergyChargeLevel();
 			break;
 	}
 	BuffsPacket::endSkill(player, player->getActiveBuffs()->getBuffInfo(skill));

@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "Buffs.h"
 
-void BuffsPacket::useDash(Player *player, int32_t time, SkillActiveInfo pskill) {
+void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill) {
 	PacketCreator packet;
 	int16_t castedtime = static_cast<int16_t>(time);
 	packet.add<int16_t>(SEND_USE_SKILL);
@@ -34,8 +34,8 @@ void BuffsPacket::useDash(Player *player, int32_t time, SkillActiveInfo pskill) 
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
 		packet.add<int16_t>(0);
-		packet.add<int32_t>(5001005);
-		packet.add<int32_t>(880689251); // No idea, hate pirates
+		packet.add<int32_t>(skillid);
+		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
 		packet.add<int16_t>(castedtime);
 	}
 	packet.add<int16_t>(0);
@@ -53,8 +53,8 @@ void BuffsPacket::useDash(Player *player, int32_t time, SkillActiveInfo pskill) 
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
 		packet.add<int16_t>(0);
-		packet.add<int32_t>(5001005);
-		packet.add<int32_t>(880689251); // No idea, hate pirates
+		packet.add<int32_t>(skillid);
+		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
 		packet.add<int16_t>(castedtime);
 	}
 	packet.add<int16_t>(0);
