@@ -195,14 +195,16 @@ void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
 }
 
 void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
-	if (m_energycharge == 0)
-		startEnergyChargeTimer();
-	m_energycharge += Skills::skills[5110001][m_player->getSkills()->getSkillLevel(5110001)].x * targets;
-	if (m_energycharge > 10000) {
-		m_energycharge = 10000;
-		stopEnergyChargeTimer();
+	if (m_energycharge != 10000) {
+		if (m_energycharge == 0)
+			startEnergyChargeTimer();
+		m_energycharge += Skills::skills[5110001][m_player->getSkills()->getSkillLevel(5110001)].x * targets;
+		if (m_energycharge > 10000) {
+			m_energycharge = 10000;
+			stopEnergyChargeTimer();
+		}
+		Buffs::Instance()->addBuff(m_player, 5110001, m_player->getSkills()->getSkillLevel(5110001), 0);
 	}
-	Buffs::Instance()->addBuff(m_player, 5110001, m_player->getSkills()->getSkillLevel(5110001), 0);
 }
 
 void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
