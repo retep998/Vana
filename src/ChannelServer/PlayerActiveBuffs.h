@@ -38,7 +38,7 @@ namespace Timer {
 
 class PlayerActiveBuffs {
 public:
-	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0), m_berserk(false) { }
+	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0), m_berserk(false), m_energycharge(0) { }
 
 	// Buff Skills
 	void addBuff(int32_t skill, int32_t time);
@@ -60,6 +60,14 @@ public:
 	bool getBerserk() const { return m_berserk; }
 	void checkBerserk(bool display = false);
 
+	// Energy Charge
+	int16_t getEnergyChargeLevel() const { return m_energycharge; }
+	void increaseEnergyChargeLevel(int8_t targets = 1);
+	void decreaseEnergyChargeLevel();
+	void resetEnergyChargeLevel();
+	void startEnergyChargeTimer();
+	void stopEnergyChargeTimer();
+
 	// Map garbage
 	void deleteSkillMapEnterInfo(int32_t skillid);
 	SkillMapEnterActiveInfo getSkillMapEnterInfo();
@@ -75,6 +83,8 @@ private:
 	vector<SkillMapActiveInfo> activemapenterskill;
 	unordered_map<int32_t, uint8_t> activelevels;
 	unordered_map<int32_t, shared_ptr<Timer::Container> > m_skill_acts;
+	uint32_t timeseed;
+	int16_t m_energycharge;
 	uint8_t m_combo;
 	bool m_berserk;
 };
