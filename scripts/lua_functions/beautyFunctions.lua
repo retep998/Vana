@@ -35,7 +35,7 @@ end
 function giveRandomHair(hairs)
 	colour = hair % 10;
 	newHair = hairs[getRandomNumber(#hairs)] + colour;
-	while (newHair == hair)
+	while (newHair == hair) do
 		newHair = hairs[getRandomNumber(#hairs)] + colour;
 	end
 	setStyle(newHair)
@@ -45,7 +45,7 @@ function giveRandomHairColour()
 	cur = hair - hair % 10;
 	colour = hair % 10;
 	newColour = getRandomNumber(8) - 1;
-	while (newColour == colour)
+	while (newColour == colour) do
 		newColour = getRandomNumber(8) - 1;
 	end
 	setStyle(cur + newColour);
@@ -73,7 +73,7 @@ end
 function giveRandomEyes(eyes)
 	colour = (eye % 1000) - (eye % 100);
 	newEyes = hairs[getRandomNumber(#eyes)] + colour;
-	while (newEyes == eye)
+	while (newEyes == eye) do
 		newHair = hairs[getRandomNumber(#eyes)] + colour;
 	end
 	setStyle(newEyes)
@@ -83,7 +83,7 @@ function giveRandomEyeColour()
 	cur = eye - (eye % 1000 - eye % 100);
 	colour = (eye % 1000) - (eye % 100);
 	newColour = (getRandomNumber(8) - 1) * 100;
-	while (newColour == colour)
+	while (newColour == colour) do
 		newColour = (getRandomNumber(8) - 1) * 100;
 	end
 	setStyle(cur + newColour);
