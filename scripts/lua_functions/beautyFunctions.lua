@@ -4,6 +4,7 @@ skin = getSkin(); -- Player's current skin
 hair = getHair(); -- Player's current hair
 eye = getEyes(); -- Player's current eyes
 
+-- Skin functions
 function getSkins(styles)
 	for i = 0, 4 do
 		if not (currentSkin == i) then
@@ -12,11 +13,12 @@ function getSkins(styles)
 	end
 end
 
+-- Hair functions
 function getHairs(hairs, styles)
-	haircolour = hair % 10;
+	colour = hair % 10;
 	for i = 1, #hairs do
-		if not (hairs[i] + haircolour == hair) then
-			styles[#styles+1] = hairs[i] + haircolour;
+		if not (hairs[i] + colour == hair) then
+			styles[#styles+1] = hairs[i] + colour;
 		end
 	end
 end
@@ -30,7 +32,27 @@ function getHairColours(styles)
 	end
 end
 
-function getEyesStyles(eyes, styles)
+function giveRandomHair(hairs)
+	colour = hair % 10;
+	newHair = hairs[getRandomNumber(#hairs)] + colour;
+	while (newHair == hair)
+		newHair = hairs[getRandomNumber(#hairs)] + colour;
+	end
+	setStyle(newHair)
+end
+
+function giveRandomHairColour()
+	cur = hair - hair % 10;
+	colour = hair % 10;
+	newColour = getRandomNumber(8) - 1;
+	while (newColour == colour)
+		newColour = getRandomNumber(8) - 1;
+	end
+	setStyle(cur + newColour);
+end
+
+-- Eye functions
+function getEyeStyles(eyes, styles)
 	eyecolour = (eye % 1000) - (eye % 100);
 	for i = 1, #eyes do
 		if not (eyes[i] + eyecolour == eye) then
