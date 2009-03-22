@@ -17,9 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mr. Smith - Item Creator (Perion)
 
-dofile("scripts/lua_functions/hasResources.lua");
-dofile("scripts/lua_functions/takeResources.lua");
-dofile("scripts/lua_functions/displayResources.lua");
+dofile("scripts/lua_functions/itemProduction.lua");
 
 if defined == nil or defined == false then
 	makeids = {1082003, 1082000, 1082004, 1082001, 1082007, 1082008, 1082023, 1082009, 1082059};
