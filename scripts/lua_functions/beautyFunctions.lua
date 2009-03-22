@@ -53,10 +53,10 @@ end
 
 -- Eye functions
 function getEyeStyles(eyes, styles)
-	eyecolour = (eye % 1000) - (eye % 100);
+	colour = (eye % 1000) - (eye % 100);
 	for i = 1, #eyes do
-		if not (eyes[i] + eyecolour == eye) then
-			styles[#styles+1] = eyes[i] + eyecolour;
+		if not (eyes[i] + colour == eye) then
+			styles[#styles+1] = eyes[i] + colour;
 		end
 	end
 end
@@ -68,4 +68,23 @@ function getEyeColour(styles)
 			styles[#styles+1] = cur + i;
 		end
 	end
+end
+
+function giveRandomEyes(eyes)
+	colour = (eye % 1000) - (eye % 100);
+	newEyes = hairs[getRandomNumber(#eyes)] + colour;
+	while (newEyes == eye)
+		newHair = hairs[getRandomNumber(#eyes)] + colour;
+	end
+	setStyle(newEyes)
+end
+
+function giveRandomEyeColour()
+	cur = eye - (eye % 1000 - eye % 100);
+	colour = (eye % 1000) - (eye % 100);
+	newColour = (getRandomNumber(8) - 1) * 100;
+	while (newColour == colour)
+		newColour = (getRandomNumber(8) - 1) * 100;
+	end
+	setStyle(cur + newColour);
 end
