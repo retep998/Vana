@@ -75,6 +75,7 @@ namespace Mobs {
 	void damageMob(Player *player, PacketReader &packet);
 	void damageMobRanged(Player *player, PacketReader &packet);
 	void damageMobSpell(Player *player, PacketReader &packet);
+	void damageMobEnergyCharge(Player *player, PacketReader &packet);
 	void damageMobSummon(Player *player, PacketReader &packet);
 	uint32_t damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0, bool ismelee = false);
 	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type);

@@ -310,6 +310,23 @@ void MobsPacket::damageMobSpell(Player *player, PacketReader &pack) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
+void MobsPacket::damageMobEnergyCharge(Player *player, PacketReader &pack) {
+	pack.skipBytes(1);
+	uint8_t tbyte = pack.get<int8_t>();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
+	// Not sure about this packet at the moment, will finish later
+
+	//PacketCreator packet;
+	//packet.add<int16_t>(SEND_DAMAGE_MOB_ENERGYCHARGE);
+	//packet.add<int32_t>(player->getId());
+	//packet.add<int8_t>(tbyte);
+	//packet.add<int8_t>(1);
+	//int32_t skillid = pack.get<int32_t>();
+	//packet.add<int32_t>(skillid);
+
+	//Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
 void MobsPacket::damageMobSummon(Player *player, PacketReader &pack) {
 	int32_t summonid = pack.get<int32_t>();
 	pack.skipBytes(5);

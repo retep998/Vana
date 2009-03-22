@@ -89,6 +89,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet); break;
 		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet); break;
 		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet); break;
+		case RECV_DAMAGE_MOB_ENERGYCHARGE: Mobs::damageMobEnergyCharge(this, packet); break;
 		case RECV_DAMAGE_MOB_SUMMON: Mobs::damageMobSummon(this, packet); break;
 		case RECV_DAMAGE_PLAYER: PlayerHandler::handleDamage(this, packet); break;
 		case RECV_DAMAGE_SUMMON: Summons::damageSummon(this, packet); break;
