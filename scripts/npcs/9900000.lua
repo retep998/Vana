@@ -34,7 +34,9 @@ if state == 0 then
 	addText("#L0##bSkin#k#l\r\n");
 	addText("#L1##bHair#k#l\r\n");
 	addText("#L2##bHair Color#k#l\r\n");
-	addText("#L3##bEyes#k#l\r\n#L4##bEyes Color#k#l");
+	addText("#L3##bEyes#k#l\r\n");
+	addText("#L4##bEyes Color#k#l\r\n");
+	addText("#L5##bRandom New Look#k#l\r\n");
 	sendSimple();
 
 elseif state == 1 then
@@ -50,6 +52,12 @@ elseif state == 1 then
 		getEyeStyles(eyes, styles);
 	elseif what == 4 then
 		getEyeColour(styles);
+	elseif what == 5 then
+		giveRandomHair(hairs);
+		giveRandomHairColour();
+		giveRandomEyes(eyes);
+		giveRandomEyeColour();
+		endNPC();
 	else
 		endNPC();
 	end
