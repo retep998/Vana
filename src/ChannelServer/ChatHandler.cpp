@@ -352,7 +352,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 
 						if (type != 0) {
 							mysqlpp::Query query = Database::getDataDB().query();
-							query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE '%" << matches[2] << "%'";
+							query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
 							mysqlpp::StoreQueryResult res = query.store();
 
 							if (res.num_rows() == 0) {
