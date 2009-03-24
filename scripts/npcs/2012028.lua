@@ -17,5 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Harp String [D]
 
-showMapSound("orbis/re");
+playSoundMap("orbis/re");
 endNPC();
