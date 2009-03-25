@@ -31,6 +31,7 @@ elseif state == 1 then
 		-- Beginner
 		addSkillLevel(1003, 1);--	Legendary Spirit
 		addSkillLevel(1004, 1);--	Monster Rider
+		addSkillLevel(1005, 1);--	Echo of Hero
 		addSkillLevel(1002, 1);--	Nimble Feet
 		addSkillLevel(1001, 1);--	Recovery
 		addSkillLevel(1000, 1);--	Three Snails
