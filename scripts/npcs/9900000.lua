@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- KIN
 
-dofile("scripts/lua_functions/beautyFunctions.lua")
+dofile("scripts/lua_functions/beautyFunctions.lua");
 
 if getGender() == 0 then
 	-- Male stuff
