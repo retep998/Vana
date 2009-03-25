@@ -108,7 +108,7 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 	packet.add<int8_t>(world->ribbon);
 	packet.addString(world->eventMsg);
 	packet.add<int16_t>(100); // EXP rate. x/100. Changing this will show event message.
-	packet.add<int8_t>(0);
+	packet.add<int8_t>(100);
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(world->maxChannels);
 	for (size_t i = 0; i < world->maxChannels; i++) {
