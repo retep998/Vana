@@ -18,6 +18,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef AES_ENCRYPT_H
 #define AES_ENCRYPT_H
 
-void decryptofb(unsigned char *buffer, unsigned char *vec, int bsize);
+#include "Types.h"
+
+#define AESKEYSIZE 32 // Possible sizes for AES: 16, 24, 32. Make sure to update AESkey.
+
+namespace AESEncryption {
+	extern const uint8_t m_aeskey[AESKEYSIZE];
+	extern const uint8_t m_sbox[256];
+	extern const uint8_t m_rcon[255];
+	void decryptofb(uint8_t *buffer, uint8_t *vec, int32_t bsize);
+	void rotate(uint8_t *word);
+	void core(uint8_t *word, int32_t iteration);
+	void expandKey(uint8_t *expandedKey, size_t expandedKeySize);
+	void subBytes(uint8_t *state);
+	void shiftRow(uint8_t *state, uint8_t nbr);
+	void shiftRows(uint8_t *state);
+	void addRoundKey(uint8_t *state, uint8_t *roundKey);
+	uint8_t galois_multiplication(uint8_t a, uint8_t b);
+	void mixColumn(uint8_t *column);
+	void mixColumns(uint8_t *state);
+	void aes_round(uint8_t *state, uint8_t *roundKey);
+	void createRoundKey(uint8_t *expandedKey, uint8_t *roundKey);
+	void aes_main(uint8_t *state, uint8_t *expandedKey, int32_t nbrRounds);
+	int8_t aes_encrypt(uint8_t *input, uint8_t *output);
+};
 
 #endif
