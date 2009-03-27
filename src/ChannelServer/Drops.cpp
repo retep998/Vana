@@ -162,14 +162,14 @@ void Drops::dropMesos(Player *player, PacketReader &packet) {
 	drop->doDrop(player->getPos());
 }
 
-void Drops::player_loot(Player *player, PacketReader &packet) {
+void Drops::playerLoot(Player *player, PacketReader &packet) {
 	packet.skipBytes(9);
 	int32_t dropid = packet.get<int32_t>();
 
 	lootItem(player, dropid);
 }
 
-void Drops::pet_loot(Player *player, PacketReader &packet) {
+void Drops::petLoot(Player *player, PacketReader &packet) {
 	int32_t petid = packet.get<int32_t>();
 	packet.skipBytes(13);
 	int32_t dropid = packet.get<int32_t>();

@@ -29,8 +29,8 @@ struct Item;
 namespace Drops {
 	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos origin);
 	void dropMesos(Player *player, PacketReader &packet);
-	void player_loot(Player *player, PacketReader &packet);
-	void pet_loot(Player *player, PacketReader &packet);
+	void playerLoot(Player *player, PacketReader &packet);
+	void petLoot(Player *player, PacketReader &packet);
 	void lootItem(Player *player, int32_t dropid, int32_t petid = 0);
 };
 
