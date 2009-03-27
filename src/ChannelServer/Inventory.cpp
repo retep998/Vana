@@ -641,6 +641,12 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 	packet.skipBytes(1);
 	int32_t itemid = packet.get<int32_t>();
+
+	if (!player->getInventory()->getItemAmount(itemid)) {
+		// Hacking
+		return;
+	}
+
 	bool used = false;
 	switch (itemid) {
 		case 5050001: // 1st job SP Reset
