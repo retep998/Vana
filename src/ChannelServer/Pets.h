@@ -45,11 +45,11 @@ namespace Pets {
 	extern unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > petsInteractInfo;
 	extern int16_t exps[29];
 	void showPets(Player *player);
-	void handle_chat(Player *player, PacketReader &packet);
-	void handle_feed(Player *player, PacketReader &packet);
-	void handle_movement(Player *player, PacketReader &packet);
-	void handle_summon(Player *player, PacketReader &packet);
-	void handle_command(Player *player, PacketReader &packet);
+	void handleChat(Player *player, PacketReader &packet);
+	void handleFeed(Player *player, PacketReader &packet);
+	void handleMovement(Player *player, PacketReader &packet);
+	void handleSummon(Player *player, PacketReader &packet);
+	void handleCommand(Player *player, PacketReader &packet);
 	void changeName(Player *player, const string &name);
 };
 

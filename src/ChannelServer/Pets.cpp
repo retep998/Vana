@@ -109,7 +109,7 @@ void Pet::startTimer() {
 }
 
 /* Pets namespace */
-void Pets::handle_movement(Player *player, PacketReader &packet) {
+void Pets::handleMovement(Player *player, PacketReader &packet) {
 	int32_t petid = packet.get<int32_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	packet.skipBytes(8);
@@ -118,7 +118,7 @@ void Pets::handle_movement(Player *player, PacketReader &packet) {
 	PetsPacket::showMovement(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
 }
 
-void Pets::handle_chat(Player *player, PacketReader &packet) {
+void Pets::handleChat(Player *player, PacketReader &packet) {
 	int32_t petid = packet.get<int32_t>();
 	packet.skipBytes(5);
 	int8_t act = packet.get<int8_t>();
@@ -126,7 +126,7 @@ void Pets::handle_chat(Player *player, PacketReader &packet) {
 	PetsPacket::showChat(player, player->getPets()->getPet(petid), message, act);
 }
 
-void Pets::handle_summon(Player *player, PacketReader &packet) {
+void Pets::handleSummon(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	bool master = packet.get<int8_t>() == 1;
@@ -196,7 +196,7 @@ void Pets::handle_summon(Player *player, PacketReader &packet) {
 	PetsPacket::blankUpdate(player);
 }
 
-void Pets::handle_feed(Player *player, PacketReader &packet) {
+void Pets::handleFeed(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t item = packet.get<int32_t>();
@@ -216,7 +216,7 @@ void Pets::handle_feed(Player *player, PacketReader &packet) {
 	}
 }
 
-void Pets::handle_command(Player *player, PacketReader &packet) {
+void Pets::handleCommand(Player *player, PacketReader &packet) {
 	int32_t petid = packet.get<int32_t>();
 	packet.skipBytes(5);
 	int8_t act = packet.get<int8_t>();
