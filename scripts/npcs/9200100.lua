@@ -17,11 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Dr Lenu (Eyes - Henesys)
 
-eye = getEyes();
-current = eye - (eye % 1000 - eye % 100);
-colorcombos = {current , current + 100, current + 200, current + 300, current +400, current + 500, current + 600, current + 700};
-
-if state == 0 then
+dofile("scripts/lua_functions/beautyFunctions.lua");if state == 0 then
 	addText("Hi, there~! I'm Dr. Lenu, in charge of the cosmetic lenses here at the Henesys Plastic Surgery Shop! With #b#t5152010##k or #b#t5152013##k, you can let us take care of the rest and have the kind of beautiful look you've always craved~! Remember, the first thing everyone notices about you is the eyes, and we can help you find the cosmetic lens that most fits you! Now, what would you like to use?\r\n");
 	addText("#b#L0# Cosmetic Lenses at Henesys (Reg. coupon)#l\r\n");
 	addText("#L1# Cosmetic Lenses at Henesys (VIP coupon)#l");
@@ -33,13 +29,9 @@ elseif state == 1 then
 		sendYesNo();
 	elseif what == 1 then
 		addText("With our specialized machine, you can see yourself after the treatment in advance. What kind of lens would you like to wear? Choose the style of your liking...");
-		neweyes = {};
-		for i = 0, 700, 100 do
-			if not (current + i == eye) then
-				neweyes[#neweyes + 1] = current + i;
-			end
-		end
-		sendStyle(neweyes, #neweyes);
+		newEyes = {};
+		getEyeColour(newEyes);
+		sendStyle(newEyes, #newEyes);
 	end
 elseif state == 2 then
 	if what == 0 then
