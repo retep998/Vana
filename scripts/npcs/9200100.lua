@@ -17,7 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Dr Lenu (Eyes - Henesys)
 
-dofile("scripts/lua_functions/beautyFunctions.lua");if state == 0 then
+dofile("scripts/lua_functions/beautyFunctions.lua");
+
+if state == 0 then
 	addText("Hi, there~! I'm Dr. Lenu, in charge of the cosmetic lenses here at the Henesys Plastic Surgery Shop! With #b#t5152010##k or #b#t5152013##k, you can let us take care of the rest and have the kind of beautiful look you've always craved~! Remember, the first thing everyone notices about you is the eyes, and we can help you find the cosmetic lens that most fits you! Now, what would you like to use?\r\n");
 	addText("#b#L0# Cosmetic Lenses at Henesys (Reg. coupon)#l\r\n");
 	addText("#L1# Cosmetic Lenses at Henesys (VIP coupon)#l");
@@ -38,7 +40,7 @@ elseif state == 2 then
 		if getSelected() == 1 then
 			if getItemAmount(5152010) > 0 then
 				giveItem(5152010, -1);
-				setStyle(neweyes[getRandomNumber(#neweyes)]);
+				setStyle(newEyes[getRandomNumber(#newEyes)]);
 				addText("Enjoy your new and improved cosmetic lenses!");
 			else
 				addText("I'm sorry, but I don't think you have our cosmetic lens coupon with you right now. Without the coupon, I'm afraid I can't do it for you");
@@ -49,8 +51,8 @@ elseif state == 2 then
 	elseif what == 1 then
 		if getItemAmount(5152013) > 0 then
 			giveItem(5152013, -1);
-			if neweyes[getSelected() + 1] > 0 then
-				setStyle(neweyes[getSelected() + 1]);
+			if newEyes[getSelected() + 1] > 0 then
+				setStyle(newEyes[getSelected() + 1]);
 			end
 			addText("Enjoy your new and improved cosmetic lenses!");
 		else
