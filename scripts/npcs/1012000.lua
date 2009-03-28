@@ -31,11 +31,10 @@ if state == 0 then
 elseif state == 1 then
 	if getJob() == 0 then
 		addText("We have a special 90% discount for beginners. Choose your destination, for fees will change from place to place.\r\n#b#L0##m104000000#(80 mesos)#l\r\n#L1##m102000000#(100 mesos)#l\r\n#L2##m101000000#(100 mesos)#l\r\n#L3##m103000000#(120 mesos)#l");
-		sendSimple();
 	else
 		addText("Choose your destination, for fees will change from place to place.\r\n#b#L0##m104000000#(800 mesos)#l\r\n#L1##m102000000#(1,000 mesos)#l\r\n#L2##m101000000#(1,000 mesos)#l\r\n#L3##m103000000#(1,200 mesos)#l");
-		sendSimple();
 	end
+	sendSimple();
 elseif state == 2 then
 	where = getSelected() + 1;
 	if where > 0 then
@@ -49,17 +48,15 @@ elseif state == 3 then
 		if getMesos() >= prices[where] then
 			giveMesos(-prices[where]);
 			setMap(maps[where]);
-			endNPC();
 		else
 			addText("You don't have enough mesos. Sorry to say this, but without them, you won't be able to ride this cab.");
 			sendOK();
-			endNPC();
 		end
 	else
 		addText("There’s a lot to see in this town, too. Come back and find me when you need to go to a different town.");
 		sendOK();
-		endNPC();
 	end
+	endNPC();
 else
 	endNPC();
 end
