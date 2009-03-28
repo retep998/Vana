@@ -329,7 +329,7 @@ elseif state == 1 then
 		addSkillLevel(2321004, 30);--	Infinity
 		addSkillLevel(2321002, 30);--	Mana Reflection
 		addSkillLevel(2321000, 20);--	Maple Warrior
-		addSkillLevel(2321006, 30);--	Resurrection
+		addSkillLevel(2321006, 10);--	Resurrection
 		-- Bow Master (4th Job)
 		addSkillLevel(3121009, 1);--	Awakening
 		addSkillLevel(3120005, 30);--	Bow Expert
