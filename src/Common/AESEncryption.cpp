@@ -127,7 +127,7 @@ void AESEncryption::shiftRow(uint8_t *state, uint8_t nbr) {
 }
 
 void AESEncryption::shiftRows(uint8_t *state) {
-	int32_t i;
+	int8_t i;
 	for (i = 0; i < 4; i++) {
 		shiftRow(state + i * 4, i);
 	}
@@ -135,7 +135,7 @@ void AESEncryption::shiftRows(uint8_t *state) {
 
 
 void AESEncryption::addRoundKey(uint8_t *state, uint8_t *roundKey) {
-	int32_t i;
+	int8_t i;
 	for (i = 0; i < 16; i++) {
 		state[i] = state[i] ^ roundKey[i];
 	}
