@@ -49,7 +49,7 @@ elseif state == 2 then
 	if what == 0 then
 		item = 5150001;
 	elseif what == 1 then
-		item = 5150001;
+		item = 5151001;
 	elseif what == 2 then
 		item = 5420002;
 	end
