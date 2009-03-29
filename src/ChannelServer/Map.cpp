@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobsPacket.h"
 #include "NPCPacket.h"
 #include "PacketCreator.h"
+#include "Party.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Randomizer.h"
@@ -318,6 +319,11 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 				iter->second->showDrop(player);
 			}
 		}
+	}
+
+	if (player->getPartyId()) {
+		Party::showHPBar(player);
+		Party::receiveHPBar(player);
 	}
 
 	if (info->clock) {

@@ -262,6 +262,8 @@ void Player::setHP(int16_t shp, bool is) {
 		hp = shp;
 	if (is)
 		PlayerPacket::updateStatShort(this, 0x400, hp);
+	if (getPartyId())
+		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
@@ -274,12 +276,16 @@ void Player::modifyHP(int16_t nhp, bool is) {
 		hp = (hp + nhp);
 	if (is)
 		PlayerPacket::updateStatShort(this, 0x400, hp);
+	if (getPartyId())
+		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
 void Player::damageHP(uint16_t dhp) {
 	hp = (dhp > hp ? 0 : hp - dhp);
 	PlayerPacket::updateStatShort(this, 0x400, hp);
+	if (getPartyId())
+		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
@@ -356,6 +362,8 @@ void Player::setMHP(int16_t mhp) {
 		mhp = 30000;
 	this->mhp = mhp;
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
+	if (getPartyId())
+		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
@@ -373,6 +381,8 @@ void Player::setHyperBody(int16_t modx, int16_t mody) {
 	mmp = ((rmmp * mody / 100) > 30000 ? 30000 : rmmp * mody / 100);
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
+	if (getPartyId())
+		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 

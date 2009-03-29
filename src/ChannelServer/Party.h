@@ -22,7 +22,10 @@ class Player;
 class PacketReader;
 
 namespace Party {
+	void showHPBar(Player *player);
+	void receiveHPBar(Player *player);
 	void handleRequest(Player* player, PacketReader &packet);
+	void handleResponse(PacketReader &packet);
 };
 
 #endif
