@@ -198,3 +198,12 @@ void PlayerPacket::sendSound(Player *player, const string &soundname) { // Send 
 	packet.addString(soundname);
 	player->getSession()->send(packet);
 }
+
+void PlayerPacket::showHPBar(Player *player, Player *target) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_PARTY_HP_BAR);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(player->getHP());
+	packet.add<int32_t>(player->getMHP());
+	target->getSession()->send(packet);
+}

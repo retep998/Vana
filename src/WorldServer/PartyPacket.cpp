@@ -57,6 +57,13 @@ void PartyPacket::createParty(WorldServerAcceptPlayer *player, int32_t playerid)
 	packet.add<int32_t>(Players::Instance()->getPlayer(playerid)->party);
 	packet.addBytes("FFC99A3BFFC99A3B00000000");
 	player->getSession()->send(packet);
+
+	packet = PacketCreator();
+	packet.add<int16_t>(INTER_PARTY_OPERATION);
+	packet.add<int8_t>(PARTY_JOIN);
+	packet.add<int32_t>(playerid);
+	packet.add<int32_t>(Players::Instance()->getPlayer(playerid)->party);
+	player->getSession()->send(packet);
 }
 
 void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int32_t playerid) {
@@ -69,6 +76,13 @@ void PartyPacket::disbandParty(WorldServerAcceptPlayer *player, int32_t playerid
 	packet.add<int16_t>(0x2);
 	packet.add<int32_t>(PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party]->getLeader());
 	packet.add<int8_t>(0);
+	packet.add<int32_t>(Players::Instance()->getPlayer(playerid)->party);
+	player->getSession()->send(packet);
+
+	packet = PacketCreator();
+	packet.add<int16_t>(INTER_PARTY_OPERATION);
+	packet.add<int8_t>(PARTY_LEAVE);
+	packet.add<int32_t>(playerid);
 	packet.add<int32_t>(Players::Instance()->getPlayer(playerid)->party);
 	player->getSession()->send(packet);
 }
@@ -103,6 +117,18 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, int8_t type, int3
 			packet.add<int16_t>(0);
 	}
 	addParty(packet, PartyHandler::parties[Players::Instance()->getPlayer(playerid)->party], Players::Instance()->getPlayer(playerid)->channel);
+	player->getSession()->send(packet);
+
+	if (type == PARTY_SILENT_UPDATE)
+		return;
+
+	target = target == 0 ? playerid : target;
+
+	packet = PacketCreator();
+	packet.add<int16_t>(INTER_PARTY_OPERATION);
+	packet.add<int8_t>(type);
+	packet.add<int32_t>(target);
+	packet.add<int32_t>(Players::Instance()->getPlayer(target)->party);
 	player->getSession()->send(packet);
 }
 

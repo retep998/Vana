@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPacket.h"
 #include "WorldServerConnectHandler.h"
+#include "Party.h"
 #include "PlayersPacket.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
@@ -38,6 +39,7 @@ void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
 		case INTER_NEW_CONNECTABLE: WorldServerConnectHandler::newConnectable(packet); break;
 		case INTER_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
 		case INTER_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
+		case INTER_PARTY_OPERATION: Party::handleResponse(packet); break;
 	}
 }
 
