@@ -51,17 +51,30 @@ namespace LuaExports {
 	Player * getPlayer(lua_State *luaVm);
 
 	// The exports
-	int addSkillLevel(lua_State *luaVm);
-	int addSlots(lua_State *luaVm);
+	// Miscellaneous
+	int getRandomNumber(lua_State *luaVm);
+	int runNPC(lua_State *luaVm);
+
+	// Buddy
 	int addBuddySlots(lua_State *luaVm);
 	int getBuddySlots(lua_State *luaVm);
 
+	// Skills
+	int addSkillLevel(lua_State *luaVm);
+	int getSkillLevel(lua_State *luaVm);
+
+	// Inventory
+	int useItem(lua_State *luaVm);
+	int addSlots(lua_State *luaVm);
 	int giveItem(lua_State *luaVm);
 	int giveMesos(lua_State *luaVm);
-	int giveEXP(lua_State *luaVm);
-	int giveSP(lua_State *luaVm);
-	int giveAP(lua_State *luaVm);
+	int getItemAmount(lua_State *luaVm);
+	int hasOpenSlotsFor(lua_State *luaVm);
+	int getOpenSlots(lua_State *luaVm);
+	int getMesos(lua_State *luaVm);
 
+	// Player
+	int getID(lua_State *luaVm);
 	int getSP(lua_State *luaVm);
 	int getAP(lua_State *luaVm);
 	int getSTR(lua_State *luaVm);
@@ -72,11 +85,9 @@ namespace LuaExports {
 	int getJob(lua_State *luaVm);
 	int getLevel(lua_State *luaVm);
 	int getGender(lua_State *luaVm);
-	int getItemAmount(lua_State *luaVm);
-	int hasOpenSlotsFor(lua_State *luaVm);
-	int getOpenSlots(lua_State *luaVm);
-	int getSkillLevel(lua_State *luaVm);
-	int getMesos(lua_State *luaVm);
+	int giveEXP(lua_State *luaVm);
+	int giveSP(lua_State *luaVm);
+	int giveAP(lua_State *luaVm);
 	int getMap(lua_State *luaVm);
 	int getFH(lua_State *luaVm);
 	int getPosX(lua_State *luaVm);
@@ -93,21 +104,10 @@ namespace LuaExports {
 	int getEyes(lua_State *luaVm);
 	int getName(lua_State *luaVm);
 	int getGMLevel(lua_State *luaVm);
-	int getPlayerVariable(lua_State *luaVm);
-	int getNumPlayers(lua_State *luaVm);
-	int getReactorState(lua_State *luaVm);
-	int getRandomNumber(lua_State *luaVm);
-	int useItem(lua_State *luaVm);
-
-	int killMob(lua_State *luaVm);
-	int clearMobs(lua_State *luaVm);
-	int clearDrops(lua_State *luaVm);
-	int countMobs(lua_State *luaVm);
+	int isGM(lua_State *luaVm);
 	int setStyle(lua_State *luaVm);
 	int setMap(lua_State *luaVm);
-	int setMusic(lua_State *luaVm);
 	int setEXP(lua_State *luaVm);
-	int setReactorsState(lua_State *luaVm);
 	int setHP(lua_State *luaVm);
 	int setMHP(lua_State *luaVm);
 	int setRMHP(lua_State *luaVm);
@@ -123,7 +123,10 @@ namespace LuaExports {
 	int setJob(lua_State *luaVm);
 	int setLevel(lua_State *luaVm);
 	int setPlayerVariable(lua_State *luaVm);
+	int deletePlayerVariable(lua_State *luaVm);
+	int getPlayerVariable(lua_State *luaVm);
 
+	// Map
 	int showShop(lua_State *luaVm);
 	int showMessage(lua_State *luaVm);
 	int showMapMessage(lua_State *luaVm);
@@ -132,14 +135,18 @@ namespace LuaExports {
 	int playSoundMap(lua_State *luaVm);
 	int playSoundPlayer(lua_State *luaVm);
 	int showMapTimer(lua_State *luaVm);
-
 	int spawnMob(lua_State *luaVm);
 	int spawnMobPos(lua_State *luaVm);
+	int killMob(lua_State *luaVm);
+	int clearMobs(lua_State *luaVm);
+	int clearDrops(lua_State *luaVm);
+	int countMobs(lua_State *luaVm);
+	int getNumPlayers(lua_State *luaVm);
+	int getReactorState(lua_State *luaVm);
+	int setReactorsState(lua_State *luaVm);
+	int setMusic(lua_State *luaVm);
 
-	int deletePlayerVariable(lua_State *luaVm);
-
-	int isGM(lua_State *luaVm);
-
+	// Time
 	int getChannelClock(lua_State *luaVm);
 	int getWorldClock(lua_State *luaVm);
 	int getTime(lua_State *luaVm);
@@ -152,13 +159,12 @@ namespace LuaExports {
 	int getSecond(lua_State *luaVm);
 	int getDST(lua_State *luaVm);
 
+	// Rates
 	int getEXPRate(lua_State *luaVm);
 	int getMesoRate(lua_State *luaVm);
 	int getQuestEXPRate(lua_State *luaVm);
 	int getDropRate(lua_State *luaVm);
 	int getChannel(lua_State *luaVm);
-
-	int runNPC(lua_State *luaVm);
 };
 
 #endif

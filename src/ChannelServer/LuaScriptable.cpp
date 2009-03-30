@@ -43,20 +43,32 @@ LuaScriptable::~LuaScriptable() {
 
 void LuaScriptable::initialize() {
 	luaopen_base(luaVm);
+	setVariable("playerid", playerid); // Pushing id for reference from static functions
 
-	lua_pushinteger(luaVm, playerid); // Pushing id for reference from static functions
-	lua_setglobal(luaVm, "playerid");
+	// Miscellanous
+	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
+	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 
-	lua_register(luaVm, "addSkillLevel", &LuaExports::addSkillLevel);
-	lua_register(luaVm, "addSlots", &LuaExports::addSlots);
+	// Buddy
 	lua_register(luaVm, "addBuddySlots", &LuaExports::addBuddySlots);
 	lua_register(luaVm, "getBuddySlots", &LuaExports::getBuddySlots);
 
+	// Skill
+	lua_register(luaVm, "addSkillLevel", &LuaExports::addSkillLevel);
+	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
+
+	// Inventory
+	lua_register(luaVm, "addSlots", &LuaExports::addSlots);
+	lua_register(luaVm, "getItemAmount", &LuaExports::getItemAmount);
+	lua_register(luaVm, "hasOpenSlotsFor", &LuaExports::hasOpenSlotsFor);
+	lua_register(luaVm, "getOpenSlots", &LuaExports::getOpenSlots);
+	lua_register(luaVm, "useItem", &LuaExports::useItem);
 	lua_register(luaVm, "giveItem", &LuaExports::giveItem);
+	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
 	lua_register(luaVm, "giveMesos", &LuaExports::giveMesos);
-	lua_register(luaVm, "giveEXP", &LuaExports::giveEXP);
-	lua_register(luaVm, "giveSP", &LuaExports::giveSP);
-	lua_register(luaVm, "giveAP", &LuaExports::giveAP);
+
+	// Player
+	lua_register(luaVm, "getID", &LuaExports::getID);
 	lua_register(luaVm, "getSP", &LuaExports::getSP);
 	lua_register(luaVm, "getAP", &LuaExports::getAP);
 	lua_register(luaVm, "getSTR", &LuaExports::getSTR);
@@ -67,11 +79,6 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getJob", &LuaExports::getJob);
 	lua_register(luaVm, "getLevel", &LuaExports::getLevel);
 	lua_register(luaVm, "getGender", &LuaExports::getGender);
-	lua_register(luaVm, "getItemAmount", &LuaExports::getItemAmount);
-	lua_register(luaVm, "hasOpenSlotsFor", &LuaExports::hasOpenSlotsFor);
-	lua_register(luaVm, "getOpenSlots", &LuaExports::getOpenSlots);
-	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
-	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
 	lua_register(luaVm, "getMap", &LuaExports::getMap);
 	lua_register(luaVm, "getFH", &LuaExports::getFH);
 	lua_register(luaVm, "getPosX", &LuaExports::getPosX);
@@ -88,20 +95,16 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
 	lua_register(luaVm, "getName", &LuaExports::getName);
 	lua_register(luaVm, "getGMLevel", &LuaExports::getGMLevel);
+	lua_register(luaVm, "isGM", &LuaExports::isGM);
+	lua_register(luaVm, "giveEXP", &LuaExports::giveEXP);
+	lua_register(luaVm, "giveSP", &LuaExports::giveSP);
+	lua_register(luaVm, "giveAP", &LuaExports::giveAP);
 	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
-	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
-	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
-	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
-	lua_register(luaVm, "useItem", &LuaExports::useItem);
-	lua_register(luaVm, "killMob", &LuaExports::killMob);
-	lua_register(luaVm, "countMobs", &LuaExports::countMobs);
-	lua_register(luaVm, "clearMobs", &LuaExports::clearMobs);
-	lua_register(luaVm, "clearDrops", &LuaExports::clearDrops);
+	lua_register(luaVm, "setPlayerVariable", &LuaExports::setPlayerVariable);
+	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
 	lua_register(luaVm, "setStyle", &LuaExports::setStyle);
 	lua_register(luaVm, "setMap", &LuaExports::setMap);
-	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
 	lua_register(luaVm, "setEXP", &LuaExports::setEXP);
-	lua_register(luaVm, "setReactorsState", &LuaExports::setReactorsState);
 	lua_register(luaVm, "setHP", &LuaExports::setHP);
 	lua_register(luaVm, "setMHP", &LuaExports::setMHP);
 	lua_register(luaVm, "setRMHP", &LuaExports::setRMHP);
@@ -116,7 +119,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setLUK", &LuaExports::setLUK);
 	lua_register(luaVm, "setJob", &LuaExports::setJob);
 	lua_register(luaVm, "setLevel", &LuaExports::setLevel);
-	lua_register(luaVm, "setPlayerVariable", &LuaExports::setPlayerVariable);
+
+	// Map
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
 	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
@@ -127,8 +131,16 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMob);
 	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
-	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
-	lua_register(luaVm, "isGM", &LuaExports::isGM);
+	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
+	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
+	lua_register(luaVm, "setReactorsState", &LuaExports::setReactorsState);
+	lua_register(luaVm, "killMob", &LuaExports::killMob);
+	lua_register(luaVm, "countMobs", &LuaExports::countMobs);
+	lua_register(luaVm, "clearMobs", &LuaExports::clearMobs);
+	lua_register(luaVm, "clearDrops", &LuaExports::clearDrops);
+	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
+
+	// Time
 	lua_register(luaVm, "getChannelClock", &LuaExports::getChannelClock);
 	lua_register(luaVm, "getWorldClock", &LuaExports::getWorldClock);
 	lua_register(luaVm, "getTime", &LuaExports::getTime);
@@ -140,12 +152,13 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMinute", &LuaExports::getMinute);
 	lua_register(luaVm, "getSecond", &LuaExports::getSecond);
 	lua_register(luaVm, "getDST", &LuaExports::getDST);
+
+	// Rates
 	lua_register(luaVm, "getEXPRate", &LuaExports::getEXPRate);
 	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 	lua_register(luaVm, "getDropRate", &LuaExports::getDropRate);
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
-	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 }
 
 bool LuaScriptable::run() {
@@ -162,10 +175,8 @@ bool LuaScriptable::run() {
 		else {
 			PlayerPacket::showMessage(player, "There is an error in the script '" + filename +"'", 6);
 		}
-
 		return false;
 	}
-
 	return true;
 }
 
@@ -806,5 +817,10 @@ int LuaExports::addBuddySlots(lua_State *luaVm) {
 
 int LuaExports::getBuddySlots(lua_State *luaVm) {
 	lua_pushinteger(luaVm, getPlayer(luaVm)->getBuddyListSize());
+	return 1;
+}
+
+int LuaExports::getID(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getId());
 	return 1;
 }
