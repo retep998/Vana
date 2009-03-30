@@ -61,6 +61,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_USE_WEATHER 0x69 // Weather effects
 #define SEND_GM_EVENT_INSTRUCTIONS 0x6d // GM event instructions - Ola Ola, etc.
 #define SEND_TIME 0x6e // For places with clock i.e. ship station
+#define SEND_STOP_TIME 0x75 // Makes timer disappear from map
 #define SEND_SHOW_PLAYER 0x78
 #define SEND_REMOVE_PLAYER 0x79
 #define SEND_CHAT 0x7a

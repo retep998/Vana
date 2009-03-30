@@ -33,6 +33,7 @@ namespace MapPacket {
 	void changeMap(Player *player);
 	void portalBlocked(Player *player); // Blocked portals
 	void showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec);
+	void showTimer(int32_t mapid, int32_t sec); // Show Timer like in PQ
 	void showTimer(Player *player, int32_t sec); // Show Timer like in PQ
 	void forceMapEquip(Player *player);
 	void setMusic(int32_t mapid, const string &musicname); // Set map music
