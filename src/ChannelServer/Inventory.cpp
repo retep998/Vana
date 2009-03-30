@@ -50,8 +50,11 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 		Item *item = player->getInventory()->getItem(inv, slot1);
 		if (item == 0)
 			return;
-		if (ISRECHARGEABLE(item->id))
+		if (ISEQUIP(item->id) || ISRECHARGEABLE(item->id))
 			amount = item->amount;
+		else if (amount == 0)
+			return;
+
 		Item droppeditem = Item(item);
 		droppeditem.amount = amount;
 		if (item->amount == amount) {
