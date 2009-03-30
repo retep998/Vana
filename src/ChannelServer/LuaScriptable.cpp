@@ -121,6 +121,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
 	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
+	lua_register(luaVm, "showMapTimer", &LuaExports::showMapTimer);
 	lua_register(luaVm, "playSoundMap", &LuaExports::playSoundMap);
 	lua_register(luaVm, "playSoundPlayer", &LuaExports::playSoundPlayer);
 	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
@@ -656,6 +657,13 @@ int LuaExports::showInstructionBubble(lua_State *luaVm) {
 	}
 
 	PlayerPacket::instructionBubble(getPlayer(luaVm), msg, width, height);
+	return 0;
+}
+
+int LuaExports::showMapTimer(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t time = lua_tointeger(luaVm, 2);
+	MapPacket::showTimer(mapid, time);
 	return 0;
 }
 
