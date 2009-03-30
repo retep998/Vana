@@ -50,10 +50,13 @@ protected:
 namespace LuaExports {
 	Player * getPlayer(lua_State *luaVm);
 
-	// The exports
+	// Exports
+
 	// Miscellaneous
 	int getRandomNumber(lua_State *luaVm);
 	int runNPC(lua_State *luaVm);
+	int getChannel(lua_State *luaVm);
+	int showShop(lua_State *luaVm);
 
 	// Buddy
 	int addBuddySlots(lua_State *luaVm);
@@ -127,7 +130,6 @@ namespace LuaExports {
 	int getPlayerVariable(lua_State *luaVm);
 
 	// Map
-	int showShop(lua_State *luaVm);
 	int showMessage(lua_State *luaVm);
 	int showMapMessage(lua_State *luaVm);
 	int showMapEvent(lua_State *luaVm);
@@ -164,7 +166,6 @@ namespace LuaExports {
 	int getMesoRate(lua_State *luaVm);
 	int getQuestEXPRate(lua_State *luaVm);
 	int getDropRate(lua_State *luaVm);
-	int getChannel(lua_State *luaVm);
 };
 
 #endif

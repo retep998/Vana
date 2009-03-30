@@ -48,6 +48,8 @@ void LuaScriptable::initialize() {
 	// Miscellanous
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
 	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
+	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
+	lua_register(luaVm, "showShop", &LuaExports::showShop);
 
 	// Buddy
 	lua_register(luaVm, "addBuddySlots", &LuaExports::addBuddySlots);
@@ -121,7 +123,6 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setLevel", &LuaExports::setLevel);
 
 	// Map
-	lua_register(luaVm, "showShop", &LuaExports::showShop);
 	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
 	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
@@ -158,7 +159,6 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 	lua_register(luaVm, "getDropRate", &LuaExports::getDropRate);
-	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
 }
 
 bool LuaScriptable::run() {
@@ -195,6 +195,46 @@ Player * LuaExports::getPlayer(lua_State *luaVm) {
 	return Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 }
 
+// Miscellaneous
+int LuaExports::getRandomNumber(lua_State *luaVm) {
+	int32_t number = lua_tointeger(luaVm, -1);
+	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number - 1) + 1);
+	return 1;
+}
+
+int LuaExports::runNPC(lua_State *luaVm) {
+	int32_t npcid = lua_tointeger(luaVm, -1);
+	NPC *npc = new NPC(npcid, getPlayer(luaVm));
+	npc->run();
+	return 0;
+}
+
+int LuaExports::getChannel(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getChannel() + 1);
+	return 1;
+}
+
+int LuaExports::showShop(lua_State *luaVm) {
+	int32_t shopid = lua_tointeger(luaVm, -1);
+	ShopDataProvider::Instance()->showShop(getPlayer(luaVm), shopid);
+	return 0;
+}
+
+// Buddy
+int LuaExports::addBuddySlots(lua_State *luaVm) {
+	Player *p = getPlayer(luaVm);
+	uint8_t csize = p->getBuddyListSize();
+	int8_t mod = lua_tointeger(luaVm, 1);
+	p->setBuddyListSize(csize + mod);
+	return 0;
+}
+
+int LuaExports::getBuddySlots(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getBuddyListSize());
+	return 1;
+}
+
+// Skills
 int LuaExports::addSkillLevel(lua_State *luaVm) {
 	int32_t skillid = lua_tointeger(luaVm, -2);
 	uint8_t level = lua_tointeger(luaVm, -1);
@@ -202,22 +242,70 @@ int LuaExports::addSkillLevel(lua_State *luaVm) {
 	return 0;
 }
 
+int LuaExports::getSkillLevel(lua_State *luaVm) {
+	int32_t skillid = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getSkillLevel(skillid));
+	return 1;
+}
+
+// Inventory
 int LuaExports::giveItem(lua_State *luaVm) {
 	int32_t itemid = lua_tointeger(luaVm, -2);
 	int16_t amount = lua_tointeger(luaVm, -1);
 	bool success = Quests::giveItem(getPlayer(luaVm), itemid, amount);
-
 	lua_pushboolean(luaVm, success);
-
 	return 1;
 }
 
 int LuaExports::giveMesos(lua_State *luaVm) {
 	int32_t mesos = lua_tointeger(luaVm, -1);
 	bool success = Quests::giveMesos(getPlayer(luaVm), mesos);
-
 	lua_pushboolean(luaVm, success);
+	return 1;
+}
 
+int LuaExports::hasOpenSlotsFor(lua_State *luaVm) {
+	int32_t itemid = lua_tointeger(luaVm, 1);
+	int16_t amount = 1;
+	if (lua_isnumber(luaVm, 2))
+		amount = lua_tointeger(luaVm, 2);
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->hasOpenSlotsFor(itemid, amount));
+	return 1;
+}
+
+int LuaExports::getOpenSlots(lua_State *luaVm) {
+	int8_t inv = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getOpenSlotsNum(inv));
+	return 1;
+}
+
+int LuaExports::addSlots(lua_State *luaVm) {
+	int8_t inventory = lua_tointeger(luaVm, -2);
+	int8_t rows = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->getInventory()->addMaxSlots(inventory, rows);
+	return 0;
+}
+
+int LuaExports::getItemAmount(lua_State *luaVm) {
+	int32_t itemid = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getItemAmount(itemid));
+	return 1;
+}
+
+int LuaExports::getMesos(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getMesos());
+	return 1;
+}
+
+int LuaExports::useItem(lua_State *luaVm) {
+	int32_t itemid = lua_tointeger(luaVm, -1);
+	Inventory::useItem(getPlayer(luaVm), itemid);
+	return 0;
+}
+
+// Player
+int LuaExports::getID(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getId());
 	return 1;
 }
 
@@ -286,38 +374,6 @@ int LuaExports::getLevel(lua_State *luaVm) {
 
 int LuaExports::getGender(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getGender());
-	return 1;
-}
-
-int LuaExports::hasOpenSlotsFor(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, 1);
-	int16_t amount = 1;
-	if (lua_isnumber(luaVm, 2))
-		amount = lua_tointeger(luaVm, 2);
-	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->hasOpenSlotsFor(itemid, amount));
-	return 1;
-}
-
-int LuaExports::getOpenSlots(lua_State *luaVm) {
-	int8_t inv = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getOpenSlotsNum(inv));
-	return 1;
-}
-
-int LuaExports::getItemAmount(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getItemAmount(itemid));
-	return 1;
-}
-
-int LuaExports::getSkillLevel(lua_State *luaVm) {
-	int32_t skillid = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getSkillLevel(skillid));
-	return 1;
-}
-
-int LuaExports::getMesos(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getMesos());
 	return 1;
 }
 
@@ -396,77 +452,13 @@ int LuaExports::getName(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::isGM(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->isGM());
+	return 1;
+}
+
 int LuaExports::getGMLevel(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getGMLevel());
-	return 1;
-}
-
-int LuaExports::getPlayerVariable(lua_State *luaVm) {
-	string key = string(lua_tostring(luaVm, -1));
-	lua_pushstring(luaVm, getPlayer(luaVm)->getVariable(key).c_str());
-	return 1;
-}
-
-int LuaExports::getNumPlayers(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, -1);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getNumPlayers());
-	return 1;
-}
-
-int LuaExports::getReactorState(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, -2);
-	int32_t reactorid = lua_tointeger(luaVm, -1);
-	for (uint32_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
-		if (Maps::getMap(mapid)->getReactor(i)->getReactorID() == reactorid) {
-			lua_pushinteger(luaVm, Maps::getMap(mapid)->getReactor(i)->getState());
-			return 1;
-		}
-	}
-	lua_pushinteger(luaVm, 0);
-	return 1;
-}
-
-int LuaExports::getRandomNumber(lua_State *luaVm) {
-	int32_t number = lua_tointeger(luaVm, -1);
-	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number - 1) + 1);
-	return 1;
-}
-
-int LuaExports::useItem(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, -1);
-	Inventory::useItem(getPlayer(luaVm), itemid);
-	return 0;
-}
-
-int LuaExports::killMob(lua_State *luaVm) {
-	int32_t mobid = lua_tointeger(luaVm, 1);
-	int32_t mapid = getPlayer(luaVm)->getMap();
-	bool playerkill = true;
-	if (lua_isboolean(luaVm, 2))
-		playerkill = (lua_toboolean(luaVm, 2) == 1 ? true : false);
-	int32_t killed = Maps::getMap(mapid)->killMobs(getPlayer(luaVm), mobid, playerkill, true);
-	lua_pushinteger(luaVm, killed);
-	return 1;
-}
-
-int LuaExports::clearMobs(lua_State *luaVm) {
-	int32_t mapid = getPlayer(luaVm)->getMap();
-	Maps::getMap(mapid)->killMobs(0, 0, false, false);
-	return 0;
-}
-
-int LuaExports::clearDrops(lua_State *luaVm) {
-	int32_t mapid = getPlayer(luaVm)->getMap();
-	Maps::getMap(mapid)->clearDrops(false);
-	return 0;
-}
-
-int LuaExports::countMobs(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mobid = 0;
-	if (lua_isnumber(luaVm, 2))
-		mobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->countMobs(mobid));
 	return 1;
 }
 
@@ -500,28 +492,9 @@ int LuaExports::setMap(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::setMusic(lua_State *luaVm) {
-	Maps::getMap(getPlayer(luaVm)->getMap())->setMusic(lua_tostring(luaVm, -1));
-	return 0;
-}
-
 int LuaExports::setEXP(lua_State *luaVm) {
 	int32_t exp = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setExp(exp);
-	return 0;
-}
-
-int LuaExports::setReactorsState(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, -3);
-	int32_t reactorid = lua_tointeger(luaVm, -2);
-	uint8_t state = lua_tointeger(luaVm, -1);
-	for (size_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
-		Reactor *reactor = Maps::getMap(mapid)->getReactor(i);
-		if (reactor->getReactorID() == reactorid) {
-			reactor->setState(state, true);
-			break;
-		}
-	}
 	return 0;
 }
 
@@ -609,6 +582,18 @@ int LuaExports::setLevel(lua_State *luaVm) {
 	return 0;
 }
 
+int LuaExports::getPlayerVariable(lua_State *luaVm) {
+	string key = string(lua_tostring(luaVm, -1));
+	lua_pushstring(luaVm, getPlayer(luaVm)->getVariable(key).c_str());
+	return 1;
+}
+
+int LuaExports::deletePlayerVariable(lua_State *luaVm) {
+	string key = string(lua_tostring(luaVm, -1));
+	getPlayer(luaVm)->deleteVariable(key);
+	return 0;
+}
+
 int LuaExports::setPlayerVariable(lua_State *luaVm) {
 	string value = string(lua_tostring(luaVm, -1));
 	string key = string(lua_tostring(luaVm, -2));
@@ -616,9 +601,74 @@ int LuaExports::setPlayerVariable(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::showShop(lua_State *luaVm) {
-	int32_t shopid = lua_tointeger(luaVm, -1);
-	ShopDataProvider::Instance()->showShop(getPlayer(luaVm), shopid);
+// Map
+int LuaExports::getNumPlayers(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, -1);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getNumPlayers());
+	return 1;
+}
+
+int LuaExports::getReactorState(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, -2);
+	int32_t reactorid = lua_tointeger(luaVm, -1);
+	for (uint32_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
+		if (Maps::getMap(mapid)->getReactor(i)->getReactorID() == reactorid) {
+			lua_pushinteger(luaVm, Maps::getMap(mapid)->getReactor(i)->getState());
+			return 1;
+		}
+	}
+	lua_pushinteger(luaVm, 0);
+	return 1;
+}
+
+int LuaExports::killMob(lua_State *luaVm) {
+	int32_t mobid = lua_tointeger(luaVm, 1);
+	int32_t mapid = getPlayer(luaVm)->getMap();
+	bool playerkill = true;
+	if (lua_isboolean(luaVm, 2))
+		playerkill = (lua_toboolean(luaVm, 2) == 1 ? true : false);
+	int32_t killed = Maps::getMap(mapid)->killMobs(getPlayer(luaVm), mobid, playerkill, true);
+	lua_pushinteger(luaVm, killed);
+	return 1;
+}
+
+int LuaExports::clearMobs(lua_State *luaVm) {
+	int32_t mapid = getPlayer(luaVm)->getMap();
+	Maps::getMap(mapid)->killMobs(0, 0, false, false);
+	return 0;
+}
+
+int LuaExports::clearDrops(lua_State *luaVm) {
+	int32_t mapid = getPlayer(luaVm)->getMap();
+	Maps::getMap(mapid)->clearDrops(false);
+	return 0;
+}
+
+int LuaExports::countMobs(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mobid = 0;
+	if (lua_isnumber(luaVm, 2))
+		mobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->countMobs(mobid));
+	return 1;
+}
+
+int LuaExports::setMusic(lua_State *luaVm) {
+	Maps::getMap(getPlayer(luaVm)->getMap())->setMusic(lua_tostring(luaVm, -1));
+	return 0;
+}
+
+int LuaExports::setReactorsState(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, -3);
+	int32_t reactorid = lua_tointeger(luaVm, -2);
+	uint8_t state = lua_tointeger(luaVm, -1);
+	for (size_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
+		Reactor *reactor = Maps::getMap(mapid)->getReactor(i);
+		if (reactor->getReactorID() == reactorid) {
+			reactor->setState(state, true);
+			break;
+		}
+	}
 	return 0;
 }
 
@@ -696,56 +746,7 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::deletePlayerVariable(lua_State *luaVm) {
-	string key = string(lua_tostring(luaVm, -1));
-	getPlayer(luaVm)->deleteVariable(key);
-	return 0;
-}
-
-int LuaExports::addSlots(lua_State *luaVm) {
-	int8_t inventory = lua_tointeger(luaVm, -2);
-	int8_t rows = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getInventory()->addMaxSlots(inventory, rows);
-	return 0;
-}
-
-int LuaExports::isGM(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->isGM());
-	return 1;
-}
-
-int LuaExports::getEXPRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getExprate());
-	return 1;
-}
-
-int LuaExports::getQuestEXPRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getQuestExprate());
-	return 1;
-}
-
-int LuaExports::getMesoRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getMesorate());
-	return 1;
-}
-
-int LuaExports::getDropRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getDroprate());
-	return 1;
-}
-
-int LuaExports::getChannel(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getChannel() + 1);
-	return 1;
-}
-
-int LuaExports::runNPC(lua_State *luaVm) {
-	int32_t npcid = lua_tointeger(luaVm, -1);
-	NPC *npc = new NPC(npcid, getPlayer(luaVm));
-	npc->run();
-	return 0;
-}
-
+// Time
 int LuaExports::getChannelClock(lua_State *luaVm) {
 	lua_pushinteger(luaVm, TimeUtilities::clock_in_ms());
 	return 1;
@@ -807,20 +808,23 @@ int LuaExports::getDST(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaExports::addBuddySlots(lua_State *luaVm) {
-	Player *p = getPlayer(luaVm);
-	uint8_t csize = p->getBuddyListSize();
-	int8_t mod = lua_tointeger(luaVm, 1);
-	p->setBuddyListSize(csize + mod);
-	return 0;
-}
-
-int LuaExports::getBuddySlots(lua_State *luaVm) {
-	lua_pushinteger(luaVm, getPlayer(luaVm)->getBuddyListSize());
+// Rates
+int LuaExports::getEXPRate(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getExprate());
 	return 1;
 }
 
-int LuaExports::getID(lua_State *luaVm) {
-	lua_pushinteger(luaVm, getPlayer(luaVm)->getId());
+int LuaExports::getQuestEXPRate(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getQuestExprate());
+	return 1;
+}
+
+int LuaExports::getMesoRate(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getMesorate());
+	return 1;
+}
+
+int LuaExports::getDropRate(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getDroprate());
 	return 1;
 }
