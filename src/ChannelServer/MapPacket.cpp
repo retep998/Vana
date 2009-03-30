@@ -170,18 +170,36 @@ void MapPacket::portalBlocked(Player *player) {
 void MapPacket::showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_TIME);
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(0x01);
 	packet.add<int8_t>(hour);
 	packet.add<int8_t>(min);
 	packet.add<int8_t>(sec);
 	player->getSession()->send(packet);
 }
 
+void MapPacket::showTimer(int32_t mapid, int32_t sec) {
+	PacketCreator packet;
+	if (sec > 0) {
+		packet.add<int16_t>(SEND_TIME);
+		packet.add<int8_t>(0x02);
+		packet.add<int32_t>(sec);
+	}
+	else {
+		packet.add<int16_t>(SEND_STOP_TIME);
+	}
+	Maps::getMap(mapid)->sendPacket(packet);
+}
+
 void MapPacket::showTimer(Player *player, int32_t sec) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_TIME);
-	packet.add<int8_t>(2);
-	packet.add<int32_t>(sec);
+	if (sec > 0) {
+		packet.add<int16_t>(SEND_TIME);
+		packet.add<int8_t>(0x02);
+		packet.add<int32_t>(sec);
+	}
+	else {
+		packet.add<int16_t>(SEND_STOP_TIME);
+	}
 	player->getSession()->send(packet);
 }
 
