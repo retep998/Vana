@@ -152,7 +152,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 void Drops::dropMesos(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t amount = packet.get<int32_t>();
-	if (amount < 10 || amount > 50000) {
+	if (amount < 10 || amount > 50000 || amount > player->getInventory()->getMesos()) {
 		// hacking
 		return;
 	}
