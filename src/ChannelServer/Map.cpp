@@ -64,7 +64,7 @@ void Map::addPlayer(Player *player) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) == 0)
 		MapPacket::showPlayer(player);
 	if (timer > 0)
-		MapPacket::showTimer(player, timer - (time(0) - timerstart));
+		MapPacket::showTimer(player, timer - static_cast<int32_t>(time(0) - timerstart));
 }
 
 void Map::removePlayer(Player *player) {
