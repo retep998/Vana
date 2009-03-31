@@ -206,8 +206,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					break;
 				}
 				case CMD_TIMER:
-					if (args.length() != 0)
-						MapPacket::showTimer(player->getMap(), atoi(args.c_str()));
+					if (args.length() != 0) {
+						Maps::getMap(player->getMap())->setMapTimer(atoi(args.c_str()));
+					}
 					else {
 						PlayerPacket::showMessage(player, "Usage: !timer <#time>", 6);
 					}

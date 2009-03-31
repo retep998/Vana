@@ -724,7 +724,7 @@ int LuaExports::showInstructionBubble(lua_State *luaVm) {
 int LuaExports::showMapTimer(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
-	MapPacket::showTimer(mapid, time);
+	Maps::getMap(mapid)->setMapTimer(time);
 	return 0;
 }
 

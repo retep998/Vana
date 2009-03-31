@@ -41,7 +41,9 @@ using std::tr1::bind;
 Map::Map (MapInfoPtr info) :
 info(info),
 spawnpoints(0),
-objectids(1000)
+objectids(1000),
+timer(0),
+timerstart(0)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
@@ -61,6 +63,8 @@ void Map::addPlayer(Player *player) {
 		MapPacket::forceMapEquip(player);
 	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) == 0)
 		MapPacket::showPlayer(player);
+	if (timer > 0)
+		MapPacket::showTimer(player, timer - (time(0) - timerstart));
 }
 
 void Map::removePlayer(Player *player) {
@@ -270,6 +274,19 @@ void Map::runTimer() {
 	checkReactorSpawn(time);
 	checkMobSpawn(time);
 	clearDrops(time);
+}
+
+void Map::setMapTimer(int32_t t) {
+	if (t > 0 && timer != 0)
+		return;
+	timer = t;
+	timerstart = time(0);
+	MapPacket::showTimer(info->id, t);
+	if (t > 0) {
+		new Timer::Timer(bind(&Map::setMapTimer, this, 0),
+			Timer::Id(Timer::Types::MapTimer, info->id, 25),
+			0, Timer::Time::fromNow(t * 1000));
+	}
 }
 
 void Map::showObjects(Player *player) { // Show all Map Objects
