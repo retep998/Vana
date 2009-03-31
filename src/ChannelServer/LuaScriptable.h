@@ -69,6 +69,7 @@ namespace LuaExports {
 	// Inventory
 	int useItem(lua_State *luaVm);
 	int addSlots(lua_State *luaVm);
+	int addStorageSlots(lua_State *luaVm);
 	int giveItem(lua_State *luaVm);
 	int giveMesos(lua_State *luaVm);
 	int getItemAmount(lua_State *luaVm);
