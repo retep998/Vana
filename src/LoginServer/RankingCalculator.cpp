@@ -21,11 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include "Timer/Thread.h"
 #include "Worlds.h"
+#include <boost/scoped_ptr.hpp>
 #include <ctime>
 #include <functional>
 #include <iostream>
 #include <map>
 
+using boost::scoped_ptr;
 using std::tr1::bind;
 
 // Note: calculations are done on the MySQL server because it is faster that way
@@ -38,7 +40,8 @@ void RankingCalculator::setTimer() {
 
 void RankingCalculator::runThread() {
 	// Ranking on larger servers may take a long time and we don't want that to be blocking
-	new boost::thread(bind(&RankingCalculator::all));
+	// The boost::thread object will be deleted immediately, but the thread will continue to run
+	scoped_ptr<boost::thread>(new boost::thread(bind(&RankingCalculator::all)));
 }
 
 void RankingCalculator::all() {
