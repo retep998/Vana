@@ -168,10 +168,7 @@ public:
 	void addDrop(Drop *drop);
 	Drop * getDrop(int32_t id) {
 		boost::recursive_mutex::scoped_lock l(drops_mutex);
-		if (this->drops.find(id) != this->drops.end())
-			return this->drops[id];
-		else
-			return 0;
+		return (this->drops.find(id) != this->drops.end() ? this->drops[id] : 0);
 	}
 	void removeDrop(int32_t id) {
 		boost::recursive_mutex::scoped_lock l(drops_mutex);
@@ -183,6 +180,7 @@ public:
 
 	// Timer stuff
 	void runTimer();
+	void setMapTimer(int32_t t);
 
 	// Show all map objects
 	void showObjects(Player *player);
@@ -206,6 +204,8 @@ private:
 	unordered_map<int32_t, Drop *> drops;
 	boost::recursive_mutex drops_mutex;
 	LoopingId objectids;
+	int32_t timer;
+	time_t timerstart;
 
 	void updateMobControl(Player *player);
 	void updateMobControl(Mob *mob, bool spawn = false);
