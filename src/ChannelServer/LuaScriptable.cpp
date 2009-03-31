@@ -61,6 +61,7 @@ void LuaScriptable::initialize() {
 
 	// Inventory
 	lua_register(luaVm, "addSlots", &LuaExports::addSlots);
+	lua_register(luaVm, "addStorageSlots", &LuaExports::addStorageSlots);
 	lua_register(luaVm, "getItemAmount", &LuaExports::getItemAmount);
 	lua_register(luaVm, "hasOpenSlotsFor", &LuaExports::hasOpenSlotsFor);
 	lua_register(luaVm, "getOpenSlots", &LuaExports::getOpenSlots);
@@ -249,6 +250,19 @@ int LuaExports::getSkillLevel(lua_State *luaVm) {
 }
 
 // Inventory
+int LuaExports::addSlots(lua_State *luaVm) {
+	int8_t inventory = lua_tointeger(luaVm, -2);
+	int8_t rows = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->getInventory()->addMaxSlots(inventory, rows);
+	return 0;
+}
+
+int LuaExports::addStorageSlots(lua_State *luaVm) {
+	int8_t slots = lua_tointeger(luaVm, 1);
+	getPlayer(luaVm)->getStorage()->setSlots(getPlayer(luaVm)->getStorage()->getSlots() + slots);
+	return 0;
+}
+
 int LuaExports::giveItem(lua_State *luaVm) {
 	int32_t itemid = lua_tointeger(luaVm, -2);
 	int16_t amount = lua_tointeger(luaVm, -1);
@@ -277,13 +291,6 @@ int LuaExports::getOpenSlots(lua_State *luaVm) {
 	int8_t inv = lua_tointeger(luaVm, -1);
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getOpenSlotsNum(inv));
 	return 1;
-}
-
-int LuaExports::addSlots(lua_State *luaVm) {
-	int8_t inventory = lua_tointeger(luaVm, -2);
-	int8_t rows = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getInventory()->addMaxSlots(inventory, rows);
-	return 0;
 }
 
 int LuaExports::getItemAmount(lua_State *luaVm) {
