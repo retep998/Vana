@@ -373,6 +373,8 @@ void Player::setLuk(int16_t luk) {
 void Player::setMHP(int16_t mhp) {
 	if (mhp > 30000)
 		mhp = 30000;
+	else if (mhp < 1)
+		mhp = 1;
 	this->mhp = mhp;
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 	if (getPartyId())
@@ -383,6 +385,8 @@ void Player::setMHP(int16_t mhp) {
 void Player::setMMP(int16_t mmp) {
 	if (mmp > 30000)
 		mmp = 30000;
+	else if (mmp < 1)
+		mmp = 1;
 	this->mmp = mmp;
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
@@ -402,6 +406,8 @@ void Player::setHyperBody(int16_t modx, int16_t mody) {
 void Player::setRMHP(int16_t rmhp) {
 	if (rmhp > 30000)
 		rmhp = 30000;
+	else if (rmhp < 1)
+		rmhp = 1;
 	this->rmhp = rmhp;
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 }
@@ -409,6 +415,8 @@ void Player::setRMHP(int16_t rmhp) {
 void Player::setRMMP(int16_t rmmp) {
 	if (rmmp > 30000)
 		rmmp = 30000;
+	else if (rmmp < 1)
+		rmmp = 1;
 	this->rmmp = rmmp;
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
