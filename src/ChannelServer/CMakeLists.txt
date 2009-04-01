@@ -13,12 +13,15 @@ set(SOURCES
 	Fame.h
 	FamePacket.h
 	InitializeChannel.h
+	Instance.h
+	Instances.h
 	Inventory.h
 	InventoryPacket.h
 	ItemDataProvider.h
 	KeyMaps.h
 	Levels.h
 	LevelsPacket.h
+	LuaInstance.h
 	LuaNPC.h
 	LuaPortal.h
 	LuaReactor.h
@@ -85,12 +88,15 @@ set(SOURCES
 	Fame.cpp
 	FamePacket.cpp
 	InitializeChannel.cpp
+	Instance.cpp
+	Instances.cpp
 	Inventory.cpp
 	InventoryPacket.cpp
 	ItemDataProvider.cpp
 	KeyMaps.cpp
 	Levels.cpp
 	LevelsPacket.cpp
+	LuaInstance.cpp
 	LuaNPC.cpp
 	LuaPortal.cpp
 	LuaReactor.cpp

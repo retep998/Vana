@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "Drops.h"
 #include "Fame.h"
+#include "Instance.h"
 #include "Inventory.h"
 #include "KeyMaps.h"
 #include "Levels.h"
@@ -53,6 +54,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Player::~Player() {
 	if (isconnect) {
+		if (getInstance() != 0) {
+			getInstance()->sendMessage(PLAYER_DC, getId());
+		}
 		//if (this->getHP() == 0)
 		//	this->acceptDeath();
 		// "Bug" in global, would be fixed here:
@@ -265,6 +269,9 @@ void Player::setHP(int16_t shp, bool is) {
 	if (getPartyId())
 		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
+	if (hp == 0 && getInstance() != 0) {
+		getInstance()->sendMessage(PLAYER_DEATH, getId());
+	}
 }
 
 void Player::modifyHP(int16_t nhp, bool is) {
@@ -279,6 +286,9 @@ void Player::modifyHP(int16_t nhp, bool is) {
 	if (getPartyId())
 		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
+	if (hp == 0 && getInstance() != 0) {
+		getInstance()->sendMessage(PLAYER_DEATH, getId());
+	}
 }
 
 void Player::damageHP(uint16_t dhp) {
@@ -287,6 +297,9 @@ void Player::damageHP(uint16_t dhp) {
 	if (getPartyId())
 		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
+	if (hp == 0 && getInstance() != 0) {
+		getInstance()->sendMessage(PLAYER_DEATH, getId());
+	}
 }
 
 void Player::setMP(int16_t smp, bool is) {

@@ -34,6 +34,7 @@ using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
 class Drop;
+class Instance;
 class Mob;
 class PacketCreator;
 class Player;
@@ -185,9 +186,13 @@ public:
 	// Show all map objects
 	void showObjects(Player *player);
 
-	// Packet Stuff
+	// Packet stuff
 	void sendPacket(PacketCreator &packet, Player *player = 0);
 	void showMessage(string &message, int8_t type);
+
+	// Instance
+	void setInstance(Instance *instance) { this->instance = instance; }
+	Instance * getInstance() const { return instance; }
 private:
 	MapInfoPtr info;
 	FootholdsInfo footholds;
@@ -204,6 +209,7 @@ private:
 	unordered_map<int32_t, Drop *> drops;
 	boost::recursive_mutex drops_mutex;
 	LoopingId objectids;
+	Instance *instance;
 	int32_t timer;
 	time_t timerstart;
 

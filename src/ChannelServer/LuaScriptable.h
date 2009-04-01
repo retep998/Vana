@@ -29,6 +29,7 @@ extern "C" {
 
 using std::string;
 
+class Instance;
 class Player;
 
 class LuaScriptable {
@@ -49,6 +50,7 @@ protected:
 
 namespace LuaExports {
 	Player * getPlayer(lua_State *luaVm);
+	Instance * getInstance(lua_State *luaVm);
 
 	// Exports
 
@@ -167,6 +169,38 @@ namespace LuaExports {
 	int getMesoRate(lua_State *luaVm);
 	int getQuestEXPRate(lua_State *luaVm);
 	int getDropRate(lua_State *luaVm);
+
+	// Instance
+	int isInstance(lua_State *luaVm);
+	int createInstance(lua_State *luaVm);
+	int destroyInstance(lua_State *luaVm);
+	int setInstancePlayer(lua_State *luaVm);
+	int revertInstancePlayer(lua_State *luaVm);
+	int isInstancePersistent(lua_State *luaVm);
+	int setInstancePersistence(lua_State *luaVm);
+	int setInstanceMax(lua_State *luaVm);
+	int getInstanceMax(lua_State *luaVm);
+	int addInstanceMap(lua_State *luaVm);
+	int addInstanceReactor(lua_State *luaVm);
+	int addInstancePlayer(lua_State *luaVm);
+	int removeInstancePlayer(lua_State *luaVm);
+	int startInstanceTimer(lua_State *luaVm);
+	int getInstanceTime(lua_State *luaVm);
+	int setInstanceTime(lua_State *luaVm);
+	int isInstancePersistent(lua_State *luaVm);
+	int setInstancePersistence(lua_State *luaVm);
+	int checkInstanceTimer(lua_State *luaVm);
+	int stopInstanceTimer(lua_State *luaVm);
+	int setInstanceVariable(lua_State *luaVm);
+	int getInstanceVariable(lua_State *luaVm);
+	int deleteInstanceVariable(lua_State *luaVm);
+	int getInstancePlayerCount(lua_State *luaVm);
+	int getInstancePlayerId(lua_State *luaVm);
+	int getInstancePlayerByIndex(lua_State *luaVm);
+	int banInstancePlayer(lua_State *luaVm);
+	int unbanInstancePlayer(lua_State *luaVm);
+	int isBannedInstancePlayer(lua_State *luaVm);
+	int setInstanceReactorReset(lua_State *luaVm);
 };
 
 #endif

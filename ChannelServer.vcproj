@@ -466,6 +466,10 @@
 				Name="Scripting"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\LuaInstance.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\LuaNPC.cpp"
 					>
 				</File>
@@ -519,6 +523,18 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerSummons.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Instance"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\Instance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Instances.cpp"
 					>
 				</File>
 			</Filter>
@@ -796,6 +812,10 @@
 				Name="Scripting"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\LuaInstance.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\LuaNPC.h"
 					>
 				</File>
@@ -849,6 +869,18 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerSummons.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Instance"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\Instance.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Instances.h"
 					>
 				</File>
 			</Filter>

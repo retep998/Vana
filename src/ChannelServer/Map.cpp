@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Map.h"
 #include "Drops.h"
+#include "Instance.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
 #include "MapleTVs.h"
@@ -42,6 +43,7 @@ Map::Map (MapInfoPtr info) :
 info(info),
 spawnpoints(0),
 objectids(1000),
+instance(0),
 timer(0),
 timerstart(0)
 {
@@ -65,6 +67,8 @@ void Map::addPlayer(Player *player) {
 		MapPacket::showPlayer(player);
 	if (timer > 0)
 		MapPacket::showTimer(player, timer - static_cast<int32_t>(time(0) - timerstart));
+	else if (instance != 0 && instance->checkInstanceTimer() > 0)
+		MapPacket::showTimer(player, instance->checkInstanceTimer());
 }
 
 void Map::removePlayer(Player *player) {

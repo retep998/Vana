@@ -1,0 +1,144 @@
+/*
+Copyright (C) 2008 Vana Development Team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; version 2
+of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+#ifndef INSTANCE_H
+#define INSTANCE_H
+
+#include "Types.h"
+#include <boost/scoped_ptr.hpp>
+#include <boost/tr1/unordered_map.hpp>
+#include <string>
+#include <vector>
+
+class LuaInstance;
+class Map;
+class Player;
+class Reactor;
+
+using std::tr1::unordered_map;
+using std::string;
+using std::vector;
+
+namespace Timer {
+	class Container;
+};
+
+struct TimerAction {
+	int32_t counterid;
+	int32_t time; // How long the timer lasts, negative integers indicate second of hour (-1 to -3601)
+	bool persistent; // Does it repeat?
+};
+
+enum InstanceMessages {
+	// 3 parameters
+	PLAYER_CHANGEMAP, // Player ID, new map ID, old map ID
+	// 2 parameters
+	MOB_DEATH, // Mob ID, map mob ID
+	MOB_SPAWN, // Mob ID, map mob ID
+	TIMER_END, // Timer name, boolean false
+	TIMER_NATURAL_END, // Timer name, boolean true
+	// 1 parameter
+	PLAYER_DEATH, // Player ID
+	PLAYER_DC, // Player ID
+	INSTANCETIMER_END, // Boolean false
+	INSTANCETIMER_NATURAL_END, // Boolean true
+	// 0 parameters
+	BEGIN_INSTANCE
+};
+
+class Instance {
+public:
+	Instance(const string &name, int32_t map, int32_t playerid, int32_t time, bool persistent, bool showtimer);
+	~Instance();
+
+	clock_t getStart() const { return m_start; }
+	string getName() const { return m_name; }
+	bool getMarkedForDelete() const { return m_markedfordelete; }
+	void setMarkedForDelete(bool mark) { m_markedfordelete = mark; }
+	void instanceEnd(bool fromTimer = false);
+	int32_t getCounterId();
+
+	// Variables
+	void deleteVariable(const string &name);
+	void setVariable(const string &name, const string &val);
+	string getVariable(const string &name);
+
+	// Players
+	void setMaxPlayers(int32_t maxplayers) { m_maxplayers = maxplayers; }
+	void addPlayer(Player *player);
+	void removePlayer(Player *player);
+	void removePlayer(int32_t id);
+	void setBanned(const string &name, bool isbanned);
+	bool isBanned(const string &name);
+	int32_t getMaxPlayers() const { return m_maxplayers; }
+	size_t getPlayerNum() const { return m_players.size(); } // Number of players for the instance (squads, etc.)
+	const string getPlayerByIndex(uint32_t index) const;
+	bool instanceHasPlayers() const;
+
+	// Maps
+	void addMap(Map *map);
+	void addMap(int32_t mapid);
+	Map * getMap(int32_t mapid);
+	size_t getMapNum();
+
+	// Reactors
+	void addReactor(Reactor *reactor);
+	void resetAll();
+	void setResetAtEnd(bool reset) { m_resetondestroy = reset; }
+	Reactor * getReactor(int32_t reactorid);
+	size_t getReactorNum();
+
+	// Timers
+	void removeTimer(const string &name);
+	void setInstanceTimer(int32_t time);
+	void setPersistence(bool p) { m_persistent = p; }
+	void timerEnd(const string &name, bool fromTimer = false);
+	bool addTimer(const string &name, const TimerAction &timer);
+	bool hasInstanceTimer() const { return m_time > 0; }
+	bool getPersistence() const { return m_persistent; }
+	int32_t checkTimer(const string &name);
+	int32_t checkInstanceTimer();
+	Timer::Container * getTimers() const { return m_timers.get(); }
+
+	// Lua interaction
+	void setPlayerId(int32_t id);
+	void sendMessage(InstanceMessages message);
+	void sendMessage(InstanceMessages message, int32_t);
+	void sendMessage(InstanceMessages message, int32_t, int32_t);
+	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t);
+	void sendMessage(InstanceMessages message, const string &, int32_t);
+private:
+	boost::scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
+	unordered_map<string, TimerAction> m_timeractions; // Timers indexed by name
+	unordered_map<string, string> m_variables; // Instance variables
+	unordered_map<int32_t, Player *> m_players;
+	vector<string> m_banned; // For squads
+	vector<string> m_players_order; // For squads
+	vector<Reactor *> m_reactors;
+	vector<Map *> m_maps;
+	LuaInstance *m_luainstance; // Lua instance for interacting with scripts
+	clock_t m_start; // Clock time when instance started
+	string m_name; // Identification for the instance
+	int32_t m_maxplayers; // Maximum players allowed for instance
+	int32_t m_time; // Instance time
+	int32_t m_internaltimercounter; // Used for uniqueness of timer IDs
+	bool m_persistent; // Does instance repeat?
+	bool m_showtimer; // Show timer
+	bool m_resetondestroy; // Reset reactors when done
+	bool m_markedfordelete; // End of instance time
+};
+#endif
