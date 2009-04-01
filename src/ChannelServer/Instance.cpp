@@ -31,15 +31,15 @@ using std::tr1::bind;
 
 Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t time, bool persistent, bool showtimer) :
 	m_name(name),
-	m_maxplayers(0),
-	m_internaltimercounter(0),
+	m_max_players(0),
+	m_timer_counter(0),
 	m_persistent(persistent),
-	m_showtimer(showtimer),
+	m_show_timer(showtimer),
 	m_timers(new Timer::Container),
 	m_luainstance(new LuaInstance(name, playerid)),
 	m_start(clock()),
-	m_resetondestroy(false),
-	m_markedfordelete(false)
+	m_reset_on_destroy(false),
+	m_marked_for_delete(false)
 	{
 		if (time < 0) {
 			m_time = -(time + 1);
@@ -56,7 +56,7 @@ Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t ti
 	}
 Instance::~Instance() {
 	// Reactors
-	if (m_resetondestroy) // Reset all reactors if bool is true
+	if (m_reset_on_destroy) // Reset all reactors if bool is true
 		resetAll();
 	m_reactors.clear();
 
@@ -204,9 +204,9 @@ void Instance::setPlayerId(int32_t id) {
 }
 
 bool Instance::addTimer(const string &timername, const TimerAction &timer) {
-	if (m_timeractions.find(timername) == m_timeractions.end()) {
-		m_timeractions[timername] = timer;
-		Timer::Id id(Timer::Types::InstanceTimer, timer.time, m_internaltimercounter);
+	if (m_timer_actions.find(timername) == m_timer_actions.end()) {
+		m_timer_actions[timername] = timer;
+		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
 		if (timer.time > 0) { // Positive, occurs in the future
 			new Timer::Timer(bind(&Instance::timerEnd, this, timername, true),
 				id, getTimers(), Timer::Time::fromNow(timer.time * 1000));
@@ -222,8 +222,8 @@ bool Instance::addTimer(const string &timername, const TimerAction &timer) {
 
 int32_t Instance::checkTimer(const string &timername) {
 	int32_t timeleft = 0;
-	if (m_timeractions.find(timername) != m_timeractions.end()) {
-		TimerAction timer = m_timeractions[timername];
+	if (m_timer_actions.find(timername) != m_timer_actions.end()) {
+		TimerAction timer = m_timer_actions[timername];
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
 		timeleft = getTimers()->checkTimer(id);
 	}
@@ -231,14 +231,14 @@ int32_t Instance::checkTimer(const string &timername) {
 }
 
 void Instance::removeTimer(const string &timername) {
-	if (m_timeractions.find(timername) != m_timeractions.end()) {
-		TimerAction timer = m_timeractions[timername];
+	if (m_timer_actions.find(timername) != m_timer_actions.end()) {
+		TimerAction timer = m_timer_actions[timername];
 		if (checkTimer(timername) > 0) {
 			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
 			getTimers()->removeTimer(id);
 			sendMessage(TIMER_END, timername, false);
 		}
-		m_timeractions.erase(timername);
+		m_timer_actions.erase(timername);
 	}
 }
 
@@ -303,5 +303,5 @@ void Instance::instanceEnd(bool fromTimer) {
 }
 
 int32_t Instance::getCounterId() {
-	return ++m_internaltimercounter;
+	return ++m_timer_counter;
 }

@@ -67,8 +67,8 @@ public:
 
 	clock_t getStart() const { return m_start; }
 	string getName() const { return m_name; }
-	bool getMarkedForDelete() const { return m_markedfordelete; }
-	void setMarkedForDelete(bool mark) { m_markedfordelete = mark; }
+	bool getMarkedForDelete() const { return m_marked_for_delete; }
+	void setMarkedForDelete(bool mark) { m_marked_for_delete = mark; }
 	void instanceEnd(bool fromTimer = false);
 	int32_t getCounterId();
 
@@ -78,13 +78,13 @@ public:
 	string getVariable(const string &name);
 
 	// Players
-	void setMaxPlayers(int32_t maxplayers) { m_maxplayers = maxplayers; }
+	void setMaxPlayers(int32_t maxplayers) { m_max_players = maxplayers; }
 	void addPlayer(Player *player);
 	void removePlayer(Player *player);
 	void removePlayer(int32_t id);
 	void setBanned(const string &name, bool isbanned);
 	bool isBanned(const string &name);
-	int32_t getMaxPlayers() const { return m_maxplayers; }
+	int32_t getMaxPlayers() const { return m_max_players; }
 	size_t getPlayerNum() const { return m_players.size(); } // Number of players for the instance (squads, etc.)
 	const string getPlayerByIndex(uint32_t index) const;
 	bool instanceHasPlayers() const;
@@ -98,7 +98,7 @@ public:
 	// Reactors
 	void addReactor(Reactor *reactor);
 	void resetAll();
-	void setResetAtEnd(bool reset) { m_resetondestroy = reset; }
+	void setResetAtEnd(bool reset) { m_reset_on_destroy = reset; }
 	Reactor * getReactor(int32_t reactorid);
 	size_t getReactorNum();
 
@@ -123,7 +123,7 @@ public:
 	void sendMessage(InstanceMessages message, const string &, int32_t);
 private:
 	boost::scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
-	unordered_map<string, TimerAction> m_timeractions; // Timers indexed by name
+	unordered_map<string, TimerAction> m_timer_actions; // Timers indexed by name
 	unordered_map<string, string> m_variables; // Instance variables
 	unordered_map<int32_t, Player *> m_players;
 	vector<string> m_banned; // For squads
@@ -133,12 +133,12 @@ private:
 	LuaInstance *m_luainstance; // Lua instance for interacting with scripts
 	clock_t m_start; // Clock time when instance started
 	string m_name; // Identification for the instance
-	int32_t m_maxplayers; // Maximum players allowed for instance
+	int32_t m_max_players; // Maximum players allowed for instance
 	int32_t m_time; // Instance time
-	int32_t m_internaltimercounter; // Used for uniqueness of timer IDs
+	int32_t m_timer_counter; // Used for uniqueness of timer IDs
 	bool m_persistent; // Does instance repeat?
-	bool m_showtimer; // Show timer
-	bool m_resetondestroy; // Reset reactors when done
-	bool m_markedfordelete; // End of instance time
+	bool m_show_timer; // Show timer
+	bool m_reset_on_destroy; // Reset reactors when done
+	bool m_marked_for_delete; // End of instance time
 };
 #endif
