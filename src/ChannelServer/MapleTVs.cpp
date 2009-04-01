@@ -18,13 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleTVs.h"
 #include "PlayerPacketHelper.h"
 #include "Map.h"
+#include "Timer/Time.h"
+#include "Timer/Timer.h"
 #include <functional>
 
 using std::tr1::bind;
 
 MapleTVs * MapleTVs::singleton = 0;
 
-MapleTVs::MapleTVs() : timers(new Timer::Container) {
+MapleTVs::MapleTVs() : m_timers(new Timer::Container), m_counter(0), m_hasmessage(false) {
 	m_tvs.push_back(9201066); // NLC
 	m_tvs.push_back(9250023); // Aquarium
 	m_tvs.push_back(9250024); // El Nath
@@ -53,20 +55,19 @@ MapleTVs::MapleTVs() : timers(new Timer::Container) {
 	m_tvs.push_back(9270015); // Taiwan
 	m_tvs.push_back(9270016); // Golden
 	m_tvs.push_back(9270040); // Singapore
-	hasmessage = false;
 }
 
 void MapleTVs::addMap(Map *map) {
 	m_maps[map->getInfo()->id] = map;
 }
 
-void MapleTVs::addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time, int32_t tickcount) {
+void MapleTVs::addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time) {
 	MapleTVMessage message;
 	message.hasreceiver = (receiver != 0);
 	message.megaphoneid = megaphoneid;
 	message.senderid = sender->getId();
 	message.time = time;
-	message.tickcount = tickcount;
+	message.counter = getCounter();
 	message.msg1 = msg;
 	message.msg2 = msg2;
 	message.msg3 = msg3;
@@ -81,9 +82,9 @@ void MapleTVs::addMessage(Player *sender, Player *receiver, const string &msg, c
 
 	m_buffer.push_back(message);
 
-	if (!hasmessage) { // First element pushed
+	if (!m_hasmessage) { // First element pushed
 		parseBuffer();
-		hasmessage = true;
+		m_hasmessage = true;
 	}
 }
 
@@ -96,14 +97,14 @@ void MapleTVs::parseBuffer() {
 		getMapleTVPacket(message, packet);
 		sendPacket(packet);
 
-		currentmessage = message;
+		m_currentmessage = message;
 
-		Timer::Id id(Timer::Types::MapleTVTimer, message.senderid, message.tickcount);
+		Timer::Id id(Timer::Types::MapleTVTimer, message.senderid, message.counter);
 		new Timer::Timer(bind(&MapleTVs::parseBuffer, this),
 			id, getTimers(), Timer::Time::fromNow(message.time * 1000));
 	}
 	else {
-		hasmessage = false;
+		m_hasmessage = false;
 		endMapleTVPacket(packet);
 		sendPacket(packet);
 	}
@@ -127,12 +128,12 @@ bool MapleTVs::isMapleTVNPC(int32_t id) const {
 }
 
 int32_t MapleTVs::checkMessageTimer() const {
-	Timer::Id id(Timer::Types::MapleTVTimer, currentmessage.senderid, currentmessage.tickcount);
+	Timer::Id id(Timer::Types::MapleTVTimer, m_currentmessage.senderid, m_currentmessage.counter);
 	return getTimers()->checkTimer(id);
 }
 
 void MapleTVs::getMapleTVEntryPacket(PacketCreator &packet) {
-	 getMapleTVPacket(currentmessage, packet, checkMessageTimer() / 1000);
+	 getMapleTVPacket(m_currentmessage, packet, checkMessageTimer() / 1000);
 }
 
 void MapleTVs::getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, int32_t timeleft) {

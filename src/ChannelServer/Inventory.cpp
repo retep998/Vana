@@ -748,7 +748,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
 				int32_t ticks = packet.get<int32_t>();
-				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time, ticks);
+				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time);
 				used = true;
 			}
 			break;
@@ -761,7 +761,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			string msg4 = packet.getString();
 			string msg5 = packet.getString();
 			int32_t ticks = packet.get<int32_t>();
-			MapleTVs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid, time, ticks);
+			MapleTVs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid, time);
 			used = true;
 			break;
 		}
@@ -776,7 +776,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
 				int32_t ticks = packet.get<int32_t>();
-				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time, ticks);
+				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time);
 				used = true;
 			}
 			break;

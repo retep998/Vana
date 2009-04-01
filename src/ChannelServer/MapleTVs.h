@@ -19,8 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPLETV_H
 
 #include "PacketCreator.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
 #include "Types.h"
 #include <list>
 #include <string>
@@ -28,16 +26,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
 
-using boost::scoped_ptr;
 using std::list;
 using std::string;
 using std::vector;
 using std::tr1::unordered_map;
 
 class Map;
-class PacketCreator;
-class PacketReader;
 class Player;
+namespace Timer {
+	class Container;
+};
 
 struct MapleTVMessage {
 	MapleTVMessage() : msg1(""), msg2(""), msg3(""), msg4(""), msg5(""), time(0), megaphoneid(0), hasreceiver(false) { }
@@ -51,7 +49,7 @@ struct MapleTVMessage {
 	int32_t time;
 	int32_t megaphoneid;
 	int32_t senderid;
-	int32_t tickcount;
+	uint32_t counter;
 	bool hasreceiver;
 	PacketCreator recvdisplay;
 	PacketCreator senddisplay;
@@ -67,11 +65,12 @@ public:
 
 	void addMap(Map *map);
 
-	void addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time, int32_t tickcount);
+	void addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time);
 	void getMapleTVEntryPacket(PacketCreator &packet);
 	bool isMapleTVNPC(int32_t id) const;
 	bool isMapleTVMap(int32_t id) const { return (m_maps.find(id) != m_maps.end()); }
-	bool hasMessage() const { return hasmessage; }
+	bool hasMessage() const { return m_hasmessage; }
+	uint32_t getCounter() { return ++m_counter; }
 private:
 	MapleTVs();
 	MapleTVs(const MapleTVs&);
@@ -83,14 +82,15 @@ private:
 	void endMapleTVPacket(PacketCreator &packet);
 	void sendPacket(PacketCreator &packet);
 	int32_t checkMessageTimer() const;
-	Timer::Container * getTimers() const { return timers.get(); }
+	Timer::Container * getTimers() const { return m_timers.get(); }
 
-	scoped_ptr<Timer::Container> timers;
+	boost::scoped_ptr<Timer::Container> m_timers;
 	unordered_map<int32_t, Map *> m_maps;
 	vector<int32_t> m_tvs;
 	list<MapleTVMessage> m_buffer;
-	bool hasmessage;
-	MapleTVMessage currentmessage;
+	bool m_hasmessage;
+	uint32_t m_counter;
+	MapleTVMessage m_currentmessage;
 };
 
 #endif
