@@ -5,8 +5,8 @@ project(Vana)
 #### Finding libraries
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-set(Boost_ADDITIONAL_VERSIONS 1.38.0 1.37.0)
-find_package(Boost REQUIRED COMPONENTS filesystem regex system thread)
+set(Boost_USE_MULTITHREADED ON)
+find_package(Boost 1.37.0 REQUIRED COMPONENTS filesystem regex system thread)
 
 find_package(MySQL REQUIRED)
 include_directories(${MYSQL_INCLUDE_DIR})
