@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2009 Vana Development Team
+Copyright (C) 2008 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -15,29 +15,25 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef TIMER_TYPES_H
-#define TIMER_TYPES_H
+#ifndef LUAINSTANCE_H
+#define LUAINSTANCE_H
 
-namespace Timer {
+#include "Instance.h"
+#include "LuaScriptable.h"
+#include "Types.h"
+#include <string>
 
-struct Types {
-	enum {
-		BuffTimer,
-		CoolTimer,
-		MapTimer,
-		MobStatusTimer,
-		PetTimer,
-		PingTimer,
-		RankTimer,
-		ReactionTimer,
-		SkillActTimer,
-		TradeTimer,
-		HorntailTimer,
-		MapleTVTimer,
-		InstanceTimer
-	};
+using std::string;
+
+class LuaInstance : public LuaScriptable {
+public:
+	LuaInstance(const string &name, int32_t playerid);
+
+	bool run(InstanceMessages message);
+	bool run(InstanceMessages message, int32_t);
+	bool run(InstanceMessages message, const string &);
+	bool run(InstanceMessages message, int32_t, int32_t);
+	bool run(InstanceMessages message, const string &, int32_t);
+	bool run(InstanceMessages message, int32_t, int32_t, int32_t);
 };
-
-}
-
 #endif

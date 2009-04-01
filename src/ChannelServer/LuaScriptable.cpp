@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.h"
+#include "Instance.h"
+#include "Instances.h"
 #include "Inventory.h"
 #include "Player.h"
 #include "Players.h"
@@ -44,6 +46,9 @@ LuaScriptable::~LuaScriptable() {
 void LuaScriptable::initialize() {
 	luaopen_base(luaVm);
 	setVariable("playerid", playerid); // Pushing id for reference from static functions
+	Player *player = LuaExports::getPlayer(luaVm);
+	if (player->getInstance() != 0)
+		setVariable("instancename", player->getInstance()->getName());
 
 	// Miscellanous
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
@@ -160,6 +165,36 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 	lua_register(luaVm, "getDropRate", &LuaExports::getDropRate);
+
+	// Instance
+	lua_register(luaVm, "setInstancePlayer", &LuaExports::setInstancePlayer);
+	lua_register(luaVm, "revertInstancePlayer", &LuaExports::revertInstancePlayer);
+	lua_register(luaVm, "createInstance", &LuaExports::createInstance);
+	lua_register(luaVm, "destroyInstance", &LuaExports::destroyInstance);
+	lua_register(luaVm, "isInstance", &LuaExports::isInstance);
+	lua_register(luaVm, "isInstancePersistent", &LuaExports::isInstancePersistent);
+	lua_register(luaVm, "setInstancePersistence", &LuaExports::setInstancePersistence);
+	lua_register(luaVm, "setInstanceMax", &LuaExports::setInstanceMax);
+	lua_register(luaVm, "getInstanceMax", &LuaExports::getInstanceMax);
+	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
+	lua_register(luaVm, "addInstanceReactor", &LuaExports::addInstanceReactor);
+	lua_register(luaVm, "addInstancePlayer", &LuaExports::addInstancePlayer);
+	lua_register(luaVm, "removeInstancePlayer", &LuaExports::removeInstancePlayer);
+	lua_register(luaVm, "getInstanceTime", &LuaExports::getInstanceTime);
+	lua_register(luaVm, "setInstanceTime", &LuaExports::setInstanceTime);
+	lua_register(luaVm, "startInstanceTimer", &LuaExports::startInstanceTimer);
+	lua_register(luaVm, "checkInstanceTimer", &LuaExports::checkInstanceTimer);
+	lua_register(luaVm, "stopInstanceTimer", &LuaExports::stopInstanceTimer);
+	lua_register(luaVm, "setInstanceVariable", &LuaExports::setInstanceVariable);
+	lua_register(luaVm, "getInstanceVariable", &LuaExports::getInstanceVariable);
+	lua_register(luaVm, "deleteInstanceVariable", &LuaExports::deleteInstanceVariable);
+	lua_register(luaVm, "getInstancePlayerCount", &LuaExports::getInstancePlayerCount);
+	lua_register(luaVm, "getInstancePlayerId", &LuaExports::getInstancePlayerId);
+	lua_register(luaVm, "getInstancePlayerByIndex", &LuaExports::getInstancePlayerByIndex);
+	lua_register(luaVm, "banInstancePlayer", &LuaExports::banInstancePlayer);
+	lua_register(luaVm, "unbanInstancePlayer", &LuaExports::unbanInstancePlayer);
+	lua_register(luaVm, "isBannedInstancePlayer", &LuaExports::isBannedInstancePlayer);
+	lua_register(luaVm, "setInstanceReactorReset", &LuaExports::setInstanceReactorReset);
 }
 
 bool LuaScriptable::run() {
@@ -194,6 +229,11 @@ void LuaScriptable::setVariable(const string &name, const string &val) {
 Player * LuaExports::getPlayer(lua_State *luaVm) {
 	lua_getglobal(luaVm, "playerid");
 	return Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+}
+
+Instance * LuaExports::getInstance(lua_State *luaVm) {
+	lua_getglobal(luaVm, "instancename");
+	return Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
 }
 
 // Miscellaneous
@@ -834,4 +874,199 @@ int LuaExports::getMesoRate(lua_State *luaVm) {
 int LuaExports::getDropRate(lua_State *luaVm) {
 	lua_pushnumber(luaVm, ChannelServer::Instance()->getDroprate());
 	return 1;
+}
+
+// Instance
+int LuaExports::setInstancePlayer(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_isstring(luaVm, -1))
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	if (player != 0)
+		getInstance(luaVm)->setPlayerId(player->getId());
+	return 0;
+}
+
+int LuaExports::revertInstancePlayer(lua_State *luaVm) {
+	getInstance(luaVm)->setPlayerId(0);
+	return 0;
+}
+
+int LuaExports::createInstance(lua_State *luaVm) {
+	string name = lua_tostring(luaVm, 1);
+	int32_t time = lua_tointeger(luaVm, 2);
+	bool persistent = lua_toboolean(luaVm, 3) != 0;
+	bool showtimer = lua_toboolean(luaVm, 4) != 0;
+	Instance *instance = new Instance(name, getPlayer(luaVm)->getMap(), getPlayer(luaVm)->getId(), time, persistent, showtimer);
+	Instances::InstancePtr()->addInstance(instance);
+	instance->sendMessage(BEGIN_INSTANCE);
+	lua_pushstring(luaVm, name.c_str());
+	lua_setglobal(luaVm, "instancename");
+	return 0;
+}
+
+int LuaExports::destroyInstance(lua_State *luaVm) {
+	Instance *instance = getInstance(luaVm);
+	delete instance;
+	return 0;
+}
+
+int LuaExports::isInstance(lua_State *luaVm) {
+	lua_pushboolean(luaVm, Instances::InstancePtr()->isInstance(lua_tostring(luaVm, 1)));
+	return 1;
+}
+
+int LuaExports::isInstancePersistent(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getInstance(luaVm)->getPersistence());
+	return 1;
+}
+
+int LuaExports::setInstancePersistence(lua_State *luaVm) {
+	getInstance(luaVm)->setPersistence(lua_toboolean(luaVm, 1) != 0);
+	return 0;
+}
+
+int LuaExports::setInstanceMax(lua_State *luaVm) {
+	getInstance(luaVm)->setMaxPlayers(lua_tointeger(luaVm, 1));
+	return 0;
+}
+
+int LuaExports::getInstanceMax(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getInstance(luaVm)->getMaxPlayers());
+	return 1;
+}
+
+int LuaExports::addInstanceMap(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	getInstance(luaVm)->addMap(mapid);
+	return 0;
+}
+
+int LuaExports::addInstanceReactor(lua_State *luaVm) {
+	Reactor * reactor = Maps::getMap(lua_tointeger(luaVm, 1))->getReactor(lua_tointeger(luaVm, 2));
+	getInstance(luaVm)->addReactor(reactor);
+	return 0;
+}
+
+int LuaExports::addInstancePlayer(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_isstring(luaVm, -1))
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	getInstance(luaVm)->addPlayer(player);
+	return 0;
+}
+
+int LuaExports::removeInstancePlayer(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_isstring(luaVm, -1))
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	getInstance(luaVm)->removePlayer(player);
+	return 0;
+}
+
+int LuaExports::getInstanceTime(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getInstance(luaVm)->checkInstanceTimer());
+	return 1;
+}
+
+int LuaExports::setInstanceTime(lua_State *luaVm) {
+	getInstance(luaVm)->setInstanceTimer(lua_tointeger(luaVm, 1));
+	return 0;
+}
+
+int LuaExports::startInstanceTimer(lua_State *luaVm) {
+	string name = lua_tostring(luaVm, 1);
+	TimerAction t;
+	t.time = lua_tointeger(luaVm, 2);
+	t.persistent = lua_toboolean(luaVm, 3) != 0;
+	t.counterid = getInstance(luaVm)->getCounterId();
+	lua_pushboolean(luaVm, getInstance(luaVm)->addTimer(name, t));
+	return 1;
+}
+
+int LuaExports::checkInstanceTimer(lua_State *luaVm) {
+	string name = lua_tostring(luaVm, 1);
+	lua_pushinteger(luaVm, getInstance(luaVm)->checkTimer(name));
+	return 1;
+}
+
+int LuaExports::stopInstanceTimer(lua_State *luaVm) {
+	string name = lua_tostring(luaVm, 1);
+	getInstance(luaVm)->removeTimer(name);
+	return 0;
+}
+
+int LuaExports::setInstanceVariable(lua_State *luaVm) {
+	getInstance(luaVm)->setVariable(lua_tostring(luaVm, 1), lua_tostring(luaVm, 2));
+	return 0;
+}
+
+int LuaExports::getInstanceVariable(lua_State *luaVm) {
+	lua_pushstring(luaVm, getInstance(luaVm)->getVariable(lua_tostring(luaVm, 1)).c_str());
+	return 1;
+}
+
+int LuaExports::deleteInstanceVariable(lua_State *luaVm) {
+	getInstance(luaVm)->deleteVariable(lua_tostring(luaVm, 1));
+	return 0;
+}
+
+int LuaExports::getInstancePlayerCount(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getInstance(luaVm)->getPlayerNum());
+	return 1;
+}
+
+int LuaExports::getInstancePlayerId(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_isstring(luaVm, -1))
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	lua_pushinteger(luaVm, player->getId());
+	return 1;
+}
+
+int LuaExports::getInstancePlayerByIndex(lua_State *luaVm) {
+	lua_pushstring(luaVm, getInstance(luaVm)->getPlayerByIndex(lua_tointeger(luaVm, -1)).c_str());
+	return 1;
+}
+
+int LuaExports::banInstancePlayer(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_isstring(luaVm, -1))
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	getInstance(luaVm)->setBanned(player->getName(), true);
+	return 0;
+}
+
+int LuaExports::unbanInstancePlayer(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_isstring(luaVm, -1))
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	getInstance(luaVm)->setBanned(player->getName(), false);
+	return 0;
+}
+
+int LuaExports::isBannedInstancePlayer(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_isstring(luaVm, -1))
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	lua_pushboolean(luaVm, getInstance(luaVm)->isBanned(player->getName()));
+	return 1;
+}
+
+int LuaExports::setInstanceReactorReset(lua_State *luaVm) {
+	getInstance(luaVm)->setResetAtEnd(lua_toboolean(luaVm, 1) != 0);
+	return 0;
 }

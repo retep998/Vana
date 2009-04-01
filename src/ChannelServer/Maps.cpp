@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Maps.h"
+#include "Instance.h"
 #include "LuaPortal.h"
 #include "MapDataProvider.h"
 #include "MapPacket.h"
@@ -43,7 +44,6 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 		struct stat fileInfo;
 		if (!stat(filename.c_str(), &fileInfo)) { // Lua Portal script exists
 			int32_t map = player->getMap();
-
 			LuaPortal(filename, player->getId(), portal);
 
 			if (map == player->getMap()) {
@@ -97,6 +97,10 @@ void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
 	}
 	if (portal == 0)
 		portal = getMap(mapid)->getSpawnPoint();
+
+	if (player->getInstance() != 0) {
+		player->getInstance()->sendMessage(PLAYER_CHANGEMAP, mapid, player->getMap());
+	}
 
 	getMap(player->getMap())->removePlayer(player);
 	player->setMap(mapid);

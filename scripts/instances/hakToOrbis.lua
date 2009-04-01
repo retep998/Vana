@@ -1,4 +1,4 @@
-/*
+--[[
 Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,30 +14,38 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-#ifndef TIMER_TYPES_H
-#define TIMER_TYPES_H
+--]]
+function beginInstance()
+	addInstanceMap(200090310);
+end
 
-namespace Timer {
+function playerDeath(playerid)
 
-struct Types {
-	enum {
-		BuffTimer,
-		CoolTimer,
-		MapTimer,
-		MobStatusTimer,
-		PetTimer,
-		PingTimer,
-		RankTimer,
-		ReactionTimer,
-		SkillActTimer,
-		TradeTimer,
-		HorntailTimer,
-		MapleTVTimer,
-		InstanceTimer
-	};
-};
+end
 
-}
+function playerDisconnect(playerid)
+	destroyInstance();
+end
 
-#endif
+function instanceTimerEnd(fromtimer)
+	setInstancePlayer(getInstancePlayerByIndex(1));
+	setMap(200000141);
+	removeInstancePlayer(getName());
+	revertInstancePlayer();
+end
+
+function timerEnd(name, fromtimer)
+
+end
+
+function mobDeath(mobid, mapmobid)
+
+end
+
+function mobSpawn(mobid, mapmobid)
+
+end
+
+function changeMap(playerid, newmap, oldmap)
+
+end

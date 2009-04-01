@@ -39,12 +39,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
+class Instance;
 class NPC;
 class PacketReader;
 
 class Player : public AbstractPlayer, public MovableLife {
 public:
-	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), partyid(0), save_on_dc(true), isconnect(false), npc(0) { }
+	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), partyid(0), save_on_dc(true), isconnect(false), npc(0), instance(0) { }
 
 	~Player();
 
@@ -87,6 +88,7 @@ public:
 	void setPartyId(int32_t id) { this->partyid = id; }
 	void setShop(int32_t shopid) { shop = shopid; }
 	void setNPC(NPC *npc) { this->npc = npc; }
+	void setInstance(Instance *instance) { this->instance = instance; }
 	void setChair(int32_t chair) { this->chair = chair; }
 	void setItemEffect(int32_t effect) { this->itemEffect = effect; }
 	void setSpecialSkill(SpecialSkillInfo info) { this->info = info; }
@@ -129,6 +131,7 @@ public:
 	int32_t getPartyId() const { return partyid; }
 	string getName() const { return name; }
 	NPC * getNPC() const { return npc; }
+	Instance * getInstance() const { return instance; }
 	bool isGM() const { return gm > 0; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
@@ -200,6 +203,7 @@ private:
 	string name;
 	unordered_map<string, string> variables;
 	NPC *npc;
+	Instance *instance;
 	vector<int32_t> warnings;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 

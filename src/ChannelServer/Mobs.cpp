@@ -16,20 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Mobs.h"
-#include "Maps.h"
-#include "Player.h"
-#include "MobsPacket.h"
-#include "DropsPacket.h"
-#include "SkillsPacket.h"
 #include "Drops.h"
+#include "DropsPacket.h"
+#include "Instance.h"
 #include "Inventory.h"
 #include "Levels.h"
-#include "Skills.h"
+#include "Maps.h"
+#include "MobsPacket.h"
 #include "Movement.h"
-#include "Randomizer.h"
-#include "PacketReader.h"
-#include "Summons.h"
 #include "PacketCreator.h"
+#include "PacketReader.h"
+#include "Randomizer.h"
+#include "Skills.h"
+#include "SkillsPacket.h"
+#include "Summons.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
@@ -56,6 +56,10 @@ control(0)
 {
 	this->hp = info.hp;
 	this->mp = info.mp;
+	Instance *instance = Maps::getMap(mapid)->getInstance();
+	if (instance != 0) {
+		instance->sendMessage(MOB_SPAWN, mobid, id);
+	}
 }
 
 void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
@@ -190,6 +194,10 @@ void Mob::die(Player *player) {
 	MobsPacket::dieMob(this);
 	Drops::doDrops(highestdamager, mapid, mobid, getPos());
 	player->getQuests()->updateQuestMob(mobid);
+	Instance *instance = Maps::getMap(mapid)->getInstance();
+	if (instance != 0) {
+		instance->sendMessage(MOB_DEATH, mobid, id);
+	}
 	Maps::getMap(mapid)->removeMob(id, spawnid);
 
 	delete this;
@@ -199,6 +207,10 @@ void Mob::die(bool showpacket) {
 	if (showpacket) {
 		endControl();
 		MobsPacket::dieMob(this);
+		Instance *instance = Maps::getMap(mapid)->getInstance();
+		if (instance != 0) {
+			instance->sendMessage(MOB_DEATH, mobid, id);
+		}
 	}
 	Maps::getMap(mapid)->removeMob(id, spawnid);
 	delete this;
