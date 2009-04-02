@@ -49,19 +49,9 @@ void RankingCalculator::all() {
 	clock_t startTime = clock();
 
 	RankingCalculator::overall();
-	std::cout << (clock() - startTime) / (float) 1000 << " ";
-	
-	clock_t startTime2 = clock();
 	RankingCalculator::world();
-	std::cout << (clock() - startTime2) / (float) 1000 << " ";
-	
-	clock_t startTime3 = clock();
 	RankingCalculator::job();
-	std::cout << (clock() - startTime3) / (float) 1000 << " ";
-	
-	clock_t startTime4 = clock();
 	RankingCalculator::fame();
-	std::cout << (clock() - startTime4) / (float) 1000 << " ";
 
 	float loadingTime = (clock() - startTime) / (float) 1000;
 	std::cout << "DONE in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl;
