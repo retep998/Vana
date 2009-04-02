@@ -46,18 +46,25 @@ void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo le
 void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t skillid = packet.get<int32_t>();
-	if (!BEGINNER_SKILL(skillid) && player->getSP() == 0) {
-		// hacking
-		return;
-	}
-	if (player->getSkills()->addSkillLevel(skillid, 1) && !BEGINNER_SKILL(skillid)) {
-		player->setSP(player->getSP() - 1);
+	if (!BEGINNER_SKILL(skillid)) {
+		if (player->getSP() == 0) {
+			// hacking
+			return;
+		}
+		if (!player->isGM() && ((skillid / 1000000 != player->getJob() / 100) || (skillid / 10000 > player->getJob()))) {
+			// hacking
+			return;
+		}
+		if (player->getSkills()->addSkillLevel(skillid, 1)) {
+			player->setSP(player->getSP() - 1);
+		}
 	}
 }
 
 void Skills::cancelSkill(Player *player, PacketReader &packet) {
 	stopSkill(player, packet.get<int32_t>());
 }
+
 void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	switch (skillid) {
 		case 3121004:
@@ -84,6 +91,10 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	int16_t addedinfo = 0;
 	uint8_t level = packet.get<int8_t>();
 	uint8_t type = 0;
+	if (level == 0 || player->getSkills()->getSkillLevel(skillid) != level) {
+		// hacking
+		return;
+	}
 	switch (skillid) { // Packet processing
 		case 1121001: // Monster Magnet processing
 		case 1221001:
@@ -181,10 +192,6 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					break;
 			}
 			break;
-	}
-	if (level == 0) {
-		// hacking
-		return;
 	}
 	applySkillCosts(player, skillid, level);
 	SkillsPacket::showSkill(player, skillid, level);
