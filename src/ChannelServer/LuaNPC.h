@@ -35,41 +35,37 @@ public:
 namespace LuaExports {
 	NPC * getNPC(lua_State *luaVm);
 
-	// The exports
-	int addText(lua_State *luaVm);
+	// NPC exports
 
-	int sendSimple(lua_State *luaVm);
-	int sendYesNo(lua_State *luaVm);
-	int sendNext(lua_State *luaVm);
-	int sendBackNext(lua_State *luaVm);
-	int sendBackOK(lua_State *luaVm);
-	int sendOK(lua_State *luaVm);
-	int sendAcceptDecline(lua_State *luaVm);
-	int sendGetText(lua_State *luaVm);
-	int sendGetNumber(lua_State *luaVm);
-	int sendStyle(lua_State *luaVm);
+	// Miscellaneous
 	int showStorage(lua_State *luaVm);
 
-	int giveItem(lua_State *luaVm);
-	int giveMesos(lua_State *luaVm);
-	int giveEXP(lua_State *luaVm);
-	int giveSP(lua_State *luaVm);
-	int giveAP(lua_State *luaVm);
-
-	int getSelected(lua_State *luaVm);
+	// NPC interaction
+	int addText(lua_State *luaVm);
+	int endNPC(lua_State *luaVm);
 	int getNumber(lua_State *luaVm);
+	int getSelected(lua_State *luaVm);
 	int getText(lua_State *luaVm);
-	int getMaxSkillLevel(lua_State *luaVm);
-
+	int restart(lua_State *luaVm);
+	int sendAcceptDecline(lua_State *luaVm);
+	int sendBackNext(lua_State *luaVm);
+	int sendBackOK(lua_State *luaVm);
+	int sendGetNumber(lua_State *luaVm);
+	int sendGetText(lua_State *luaVm);
+	int sendNext(lua_State *luaVm);
+	int sendOK(lua_State *luaVm);
+	int sendSimple(lua_State *luaVm);
+	int sendStyle(lua_State *luaVm);
+	int sendYesNo(lua_State *luaVm);
 	int setState(lua_State *luaVm);
-	int setMaxSkillLevel(lua_State *luaVm);
 
+	// Quest
 	int addQuest(lua_State *luaVm);
 	int endQuest(lua_State *luaVm);
 
-	int endNPC(lua_State *luaVm);
-
-	int restart(lua_State *luaVm);
+	// Skill
+	int getMaxSkillLevel(lua_State *luaVm);
+	int setMaxSkillLevel(lua_State *luaVm);
 };
 
 #endif
