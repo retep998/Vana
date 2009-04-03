@@ -394,7 +394,7 @@ Buffs::Buffs() {
 	player.byte = TYPE_4;
 	player.value = SKILL_X;
 	player.hasmapval = true;
-	skillsinfo[Hermit::SHADOWPARTER].player.push_back(player);
+	skillsinfo[Hermit::SHADOWPARTNER].player.push_back(player);
 	// 1111002 - Combo Attack
 	player.type = 0x20;
 	player.byte = TYPE_3;
@@ -503,7 +503,7 @@ SkillActiveInfo Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t
 		}
 		int16_t value = 0;
 		switch (skillid) {
-			case Hermit::SHADOWPARTER: // Shadow Partner
+			case Hermit::SHADOWPARTNER: // Shadow Partner
 				value = Skills::skills[skillid][level].x * 256 + Skills::skills[skillid][level].y;
 				break;
 			case Crusader::COMBOATTACK: // Combo Attack
