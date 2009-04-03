@@ -44,7 +44,8 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 	int8_t inv = packet.get<int8_t>();
 	int16_t slot1 = packet.get<int16_t>();
 	int16_t slot2 = packet.get<int16_t>();
-
+	if (inv < 1 || inv > 5)
+		return;
 	if (slot2 == 0) {
 		int16_t amount = packet.get<int16_t>();
 		Item *item = player->getInventory()->getItem(inv, slot1);
@@ -52,7 +53,7 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 			return;
 		if (ISEQUIP(item->id) || ISRECHARGEABLE(item->id))
 			amount = item->amount;
-		else if (amount == 0)
+		else if (amount <= 0)
 			return;
 
 		Item droppeditem = Item(item);
