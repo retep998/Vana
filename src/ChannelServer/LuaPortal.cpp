@@ -24,6 +24,7 @@ unordered_map<int32_t, PortalInfo *> LuaExports::portals;
 LuaPortal::LuaPortal(const string &filename, int32_t playerid, PortalInfo *portal) : LuaScriptable(filename, playerid), portal(portal) {
 	LuaExports::portals[playerid] = portal;
 
+	// Portal
 	lua_register(luaVm, "getPortalName", &LuaExports::getPortalName);
 
 	run();
@@ -33,6 +34,7 @@ PortalInfo * LuaExports::getPortal(lua_State *luaVm) {
 	return portals[getPlayer(luaVm)->getId()];
 }
 
+// Portal
 int LuaExports::getPortalName(lua_State *luaVm) {
 	lua_pushstring(luaVm, getPortal(luaVm)->name.c_str());
 	return 1;
