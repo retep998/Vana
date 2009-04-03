@@ -37,10 +37,14 @@ private:
 namespace LuaExports {
 	Reactor * getReactor(lua_State *luaVm);
 
-	// The exports
-	int setReactorState(lua_State *luaVm);
-	int spawnMobReactor(lua_State *luaVm);
+	// Reactor exports
+
+	// Reactor
 	int reset(lua_State *luaVm);
+	int setReactorState(lua_State *luaVm);
+
+	// Mob
+	int spawnMobReactor(lua_State *luaVm);
 };
 
 #endif
