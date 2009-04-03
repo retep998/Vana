@@ -52,7 +52,7 @@ namespace LuaExports {
 	Player * getPlayer(lua_State *luaVm);
 	Instance * getInstance(lua_State *luaVm);
 
-	// Exports
+	// Global exports
 
 	// Miscellaneous
 	int getChannel(lua_State *luaVm);
