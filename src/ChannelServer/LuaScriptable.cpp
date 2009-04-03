@@ -316,7 +316,7 @@ int LuaExports::getMesos(lua_State *luaVm) {
 
 int LuaExports::getOpenSlots(lua_State *luaVm) {
 	int8_t inv = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getOpenSlotsNum(inv));ffffffff
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getOpenSlotsNum(inv));
 	return 1;
 }
 
