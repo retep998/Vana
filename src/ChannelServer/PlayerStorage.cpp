@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerStorage.h"
 #include "Database.h"
+#include "GameConstants.h"
 #include "Inventory.h"
 #include "Player.h"
 #include "StoragePacket.h"
@@ -32,10 +33,10 @@ void PlayerStorage::setSlots(int8_t slots) {
 }
 
 void PlayerStorage::addItem(Item *item) {
-	int8_t inv = GETINVENTORY(item->id);
+	int8_t inv = HelperFunctions::getInventory(item->id);
 	int8_t i;
 	for (i = 0; i < (int8_t) items.size(); i++)
-		if (GETINVENTORY(items[i]->id) > inv)
+		if (HelperFunctions::getInventory(items[i]->id) > inv)
 			break;
 	items.insert(items.begin() + i, item);
 }
@@ -43,7 +44,7 @@ void PlayerStorage::addItem(Item *item) {
 int8_t PlayerStorage::getNumItems(int8_t inv) {
 	int8_t itemNum = 0;
 	for (int8_t i = 0; i < (int8_t) items.size(); i++) {
-		if (GETINVENTORY(items[i]->id) == inv)
+		if (HelperFunctions::getInventory(items[i]->id) == inv)
 			itemNum ++;
 	}
 	return itemNum;

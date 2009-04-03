@@ -18,9 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SUMMONS_H
 #define SUMMONS_H
 
-#define ISSUMMON(skillid) (skillid == 3111002 || skillid == 3211002 || skillid == 2311006 || skillid == 3111005 || skillid == 3211005 || skillid == 1321007 || skillid == 2121005 || skillid == 2221005 || skillid == 2321003 || skillid == 3121006 || skillid == 3221005 || skillid == 5211001 || skillid == 5211002)
-#define ISPUPPET(skillid) (skillid == 3111002 || skillid == 3211002)
-
 #include "Player.h"
 class Summon;
 class PacketReader;

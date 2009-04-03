@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Inventory.h"
+#include "MobsPacket.h"
+#include "GameConstants.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "Mobs.h"
-#include "MobsPacket.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "PacketReader.h"
@@ -102,7 +102,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	uint8_t hits = tbyte % 0x10;
 	int32_t skillid = pack.get<int32_t>();
 	bool s4211006 = false;
-	if (skillid == 4211006) {
+	if (skillid == ChiefBandit::MESOEXPLOSION) {
 		tbyte = (targets * 0x10) + 0x0A;
 		s4211006 = true;
 	}
@@ -121,41 +121,41 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	pack.skipBytes(1); // Weapon subclass
 	packet.add<int8_t>(pack.get<int8_t>()); // Weapon speed
 	pack.skipBytes(4); // Ticks
-	if (skillid == 5201002 || skillid == 5101004) {
+	if (skillid == Gunslinger::GRENADE || skillid == Infighter::CORKSCREWBLOW) {
 		pack.skipBytes(4); // Charge
 	}
 	int32_t masteryid = 0;
-	switch (GETWEAPONTYPE(player->getInventory()->getEquippedID(11))) {
+	switch (HelperFunctions::getItemType(player->getInventory()->getEquippedID(11))) {
 		case WEAPON_1H_SWORD:
 		case WEAPON_2H_SWORD:
 			switch ((player->getJob() / 10)) {
-				case 11: masteryid = 1100000; break;
-				case 12: masteryid = 1200000; break;
+				case 11: masteryid = Fighter::SWORDMASTERY; break;
+				case 12: masteryid = Page::SWORDMASTERY; break;
 				case 90:
 				case 91:
-					masteryid = (player->getSkills()->getSkillLevel(1100000) >= player->getSkills()->getSkillLevel(1200000) ? 1100000 : 1200000);
+					masteryid = (player->getSkills()->getSkillLevel(Fighter::SWORDMASTERY) >= player->getSkills()->getSkillLevel(Page::SWORDMASTERY) ? Fighter::SWORDMASTERY : Page::SWORDMASTERY);
 					break;
 			}
 			break;
 		case WEAPON_1H_AXE:
 		case WEAPON_2H_AXE:
-			masteryid = 1100001;
+			masteryid = Fighter::AXEMASTERY;
 			break;
 		case WEAPON_1H_MACE:
 		case WEAPON_2H_MACE:
-			masteryid = 1200001;
+			masteryid = Page::BWMASTERY;
 			break;
 		case WEAPON_SPEAR:
-			masteryid = 1300000;
+			masteryid = Spearman::SPEARMASTERY;
 			break;
 		case WEAPON_POLEARM:
-			masteryid = 1300001;
+			masteryid = Spearman::POLEARMMASTERY;
 			break;
 		case WEAPON_DAGGER:
-			masteryid = 4200000;
+			masteryid = Bandit::DAGGERMASTERY;
 			break;
 		case WEAPON_KNUCKLE:
-			masteryid = 5100001;
+			masteryid = Infighter::KNUCKLERMASTERY;
 			break;
 	}
 	packet.add<int8_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
@@ -187,13 +187,13 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = pack.get<int32_t>();
 	switch (skillid) {
-		case 3121004:
-		case 3221001:
-		case 5221004:
+		case Bowmaster::HURRICANE:
+		case Marksman::PIERCINGARROW:
+		case Corsair::RAPIDFIRE:
 			pack.skipBytes(4);
 			break;
 	}
-	bool shadow_meso = (skillid == 4111004);
+	bool shadow_meso = (skillid == Hermit::SHADOWMESO);
 	uint8_t display = pack.get<int8_t>(); // Projectile display
 	uint8_t animation = pack.get<int8_t>(); // Direction/animation
 	uint8_t w_class = pack.get<int8_t>(); // Weapon subclass
@@ -220,18 +220,18 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(animation);
 	packet.add<int8_t>(w_speed);
 	int32_t masteryid = 0;
-	switch (GETWEAPONTYPE(player->getInventory()->getEquippedID(11))) {
+	switch (HelperFunctions::getItemType(player->getInventory()->getEquippedID(11))) {
 		case WEAPON_BOW:
-			masteryid = 3100000;
+			masteryid = Hunter::BOWMASTERY;
 			break;
 		case WEAPON_CROSSBOW:
-			masteryid = 3200000;
+			masteryid = Crossbowman::CROSSBOWMASTERY;
 			break;
 		case WEAPON_CLAW:
-			masteryid = 4100000;
+			masteryid = Assassin::CLAWMASTERY;
 			break;
 		case WEAPON_GUN:
-			masteryid = 5200000;
+			masteryid = Gunslinger::GUNMASTERY;
 			break;
 	}
 	packet.add<int8_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
@@ -257,7 +257,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 		for (int8_t j = 0; j < hits; j++) {
 			int32_t damage = pack.get<int32_t>();
 			switch (skillid) {
-				case 3221007: // Snipe is always crit
+				case Marksman::SNIPE: // Snipe is always crit
 					damage += 0x80000000; // Critical damage = 0x80000000 + damage
 					break;
 				default:
@@ -283,7 +283,7 @@ void MobsPacket::damageMobSpell(Player *player, PacketReader &pack) {
 	int32_t skillid = pack.get<int32_t>();
 	int32_t charge = 0;
 	packet.add<int32_t>(skillid);
-	if (skillid == 2121001 || skillid == 2221001 || skillid == 2321001) // Big Bang has a 4 byte charge time after skillid
+	if (skillid == FPArchMage::BIGBANG || skillid == ILArchMage::BIGBANG || skillid == Bishop::BIGBANG) // Big Bang has a 4 byte charge time after skillid
 		charge = pack.get<int32_t>();
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
 	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation

@@ -884,6 +884,22 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Constants"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\ChatHandlerConstants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\GameConstants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\InstanceMessageConstants.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

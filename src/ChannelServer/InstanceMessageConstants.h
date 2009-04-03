@@ -15,27 +15,27 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef CHATHANDLER_H
-#define CHATHANDLER_H
+#ifndef INSTANCEMESSAGECONSTANTS_H
+#define INSTANCEMESSAGECONSTANTS_H
 
-#include "ChatHandlerConstants.h"
-#include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <string>
-#include <utility>
+enum InstanceMessages {
+	// 3 parameters
+	PLAYER_CHANGEMAP, // Player ID, new map ID, old map ID
 
-using std::pair;
-using std::string;
-using std::tr1::unordered_map;
+	// 2 parameters
+	MOB_DEATH, // Mob ID, map mob ID
+	MOB_SPAWN, // Mob ID, map mob ID
+	TIMER_END, // Timer name, boolean false
+	TIMER_NATURAL_END, // Timer name, boolean true
 
-class Player;
-class PacketReader;
+	// 1 parameter
+	PLAYER_DEATH, // Player ID
+	PLAYER_DC, // Player ID
+	INSTANCETIMER_END, // Boolean false
+	INSTANCETIMER_NATURAL_END, // Boolean true
 
-namespace ChatHandler {
-	extern unordered_map<string, pair<CMD, int32_t> > commandlist;
-	void initializeCommands();
-	void handleChat(Player *player, PacketReader &packet);
-	void handleGroupChat(Player *player, PacketReader &packet);
+	// 0 parameters
+	BEGIN_INSTANCE
 };
 
 #endif

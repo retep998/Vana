@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "Drops.h"
 #include "Fame.h"
+#include "GameConstants.h"
 #include "Instance.h"
 #include "Inventory.h"
 #include "KeyMaps.h"
@@ -303,7 +304,7 @@ void Player::damageHP(uint16_t dhp) {
 }
 
 void Player::setMP(int16_t smp, bool is) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(2121004) > 0 || getActiveBuffs()->getActiveSkillLevel(2221004) > 0 || getActiveBuffs()->getActiveSkillLevel(2321004) > 0)) {
+	if (!(getActiveBuffs()->getActiveSkillLevel(FPArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(ILArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(Bishop::INFINITY) > 0)) {
 		if (smp < 0)
 			mp = 0;
 		else if (smp > mmp)
@@ -315,7 +316,7 @@ void Player::setMP(int16_t smp, bool is) {
 }
 
 void Player::modifyMP(int16_t nmp, bool is) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(2121004) > 0 || getActiveBuffs()->getActiveSkillLevel(2221004) > 0 || getActiveBuffs()->getActiveSkillLevel(2321004) > 0)) {
+	if (!(getActiveBuffs()->getActiveSkillLevel(FPArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(ILArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(Bishop::INFINITY) > 0)) {
 		if ((mp + nmp) < 0)
 			mp = 0;
 		else if ((mp + nmp) > mmp)
@@ -327,7 +328,7 @@ void Player::modifyMP(int16_t nmp, bool is) {
 }
 
 void Player::damageMP(uint16_t dmp) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(2121004) > 0 ||	getActiveBuffs()->getActiveSkillLevel(2221004) > 0 || getActiveBuffs()->getActiveSkillLevel(2321004) > 0)) {
+	if (!(getActiveBuffs()->getActiveSkillLevel(FPArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(ILArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(Bishop::INFINITY) > 0)) {
 		mp = (dmp > mp ? 0 : mp - dmp);
 	}
 	PlayerPacket::updateStatShort(this, 0x1000, mp, false);
@@ -626,13 +627,13 @@ void Player::acceptDeath() {
 }
 
 bool Player::hasGMEquip() {
-	if (getInventory()->getEquippedID(1) == 1002140) // Hat
+	if (getInventory()->getEquippedID(1) == GMSuit::HAT)
 		return true;
-	if (getInventory()->getEquippedID(5) == 1042003) // Top
+	if (getInventory()->getEquippedID(5) == GMSuit::TOP)
 		return true;
-	if (getInventory()->getEquippedID(6) == 1062007) // Pants
+	if (getInventory()->getEquippedID(6) == GMSuit::BOTTOM)
 		return true;
-	if (getInventory()->getEquippedID(11) == 1322013) // Weapon
+	if (getInventory()->getEquippedID(11) == GMSuit::WEAPON)
 		return true;
 	return false;
 }

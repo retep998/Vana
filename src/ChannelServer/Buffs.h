@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef BUFFS_H
 #define BUFFS_H
 
+#include "GameConstants.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
@@ -26,38 +27,6 @@ using std::tr1::unordered_map;
 using std::vector;
 
 class Player;
-
-enum Act {
-	ACT_HEAL,
-	ACT_HURT
-};
-
-enum SkillValues {
-	SKILL_X,
-	SKILL_Y,
-	SKILL_SPEED,
-	SKILL_JUMP,
-	SKILL_WATK,
-	SKILL_WDEF,
-	SKILL_MATK,
-	SKILL_MDEF,
-	SKILL_ACC,
-	SKILL_AVO,
-	SKILL_PROP,
-	SKILL_MORPH,
-	SKILL_LV
-};
-
-enum ByteTypes {
-	TYPE_5,
-	TYPE_6,
-	TYPE_7,
-	TYPE_8,
-	TYPE_1,
-	TYPE_2,
-	TYPE_3,
-	TYPE_4
-};
 
 struct BuffInfo {
 	BuffInfo() : type(0), byte(0), value(0), hasmapval(false), useval(false), ismount(false) { }

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "Drops.h"
 #include "DropsPacket.h"
+#include "GameConstants.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
 #include "Maps.h"
@@ -130,7 +131,7 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	bool master = packet.get<int8_t>() == 1;
-	bool multipet = player->getSkills()->getSkillLevel(8) > 0;
+	bool multipet = player->getSkills()->getSkillLevel(Beginner::FOLLOWTHELEAD) > 0;
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5, slot)->petid);
 
 	if (pet->isSummoned()) { // Removing a pet

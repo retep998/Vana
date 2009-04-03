@@ -18,17 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
-#define GETINVENTORY(itemid) static_cast<uint8_t>(itemid/1000000)
-#define ISARROW(x) (x/10000 == 206)
-#define ISSTAR(x) (x/10000 == 207)
-#define ISBULLET(x) (x/10000 == 233) // Pirate's bullets and capsules
-#define ISRECHARGEABLE(x) (ISSTAR(x) || ISBULLET(x))
-#define ISEQUIP(x) (GETINVENTORY(x) == 1)
-#define ISPET(x) (x >= 5000000 && x <= 5000053)
-#define GETWEAPONTYPE(x) (x/10000)
-#define ISOVERALL(itemid) (itemid/10000 == 105)
-#define IS2HWEAPON(itemid) (itemid/100000 == 14)
-
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
@@ -39,25 +28,6 @@ using std::tr1::unordered_map;
 class Player;
 class PacketReader;
 struct Item;
-
-enum {
-	WEAPON_1H_SWORD = 130,
-	WEAPON_1H_AXE = 131,
-	WEAPON_1H_MACE = 132,
-	WEAPON_DAGGER = 133,
-	WEAPON_WAND = 137,
-	WEAPON_STAFF = 138,
-	WEAPON_2H_SWORD = 140,
-	WEAPON_2H_AXE = 141,
-	WEAPON_2H_MACE = 142,
-	WEAPON_SPEAR = 143,
-	WEAPON_POLEARM = 144,
-	WEAPON_BOW = 145,
-	WEAPON_CROSSBOW = 146,
-	WEAPON_CLAW = 147,
-	WEAPON_KNUCKLE = 148,
-	WEAPON_GUN = 149
-};
 
 namespace Inventory {
 	void useShop(Player *player, PacketReader &packet);

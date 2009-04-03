@@ -5,6 +5,7 @@ set(SOURCES
 	BuffsPacket.h
 	ChannelServer.h
 	ChatHandler.h
+	ChatHandlerConstants.h
 	CommandHandler.h
 	Connectable.h
 	DropDataProvider.h
@@ -12,8 +13,10 @@ set(SOURCES
 	DropsPacket.h
 	Fame.h
 	FamePacket.h
+	GameConstants.h
 	InitializeChannel.h
 	Instance.h
+	InstanceMessageConstants.h
 	Instances.h
 	Inventory.h
 	InventoryPacket.h
