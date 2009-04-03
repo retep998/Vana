@@ -26,7 +26,8 @@ using std::vector;
 class Player;
 class Mob;
 class PacketReader;
-struct MobHPInfo;
+struct StatusInfo;
+struct MobInfo;
 
 namespace MobsPacket {
 	void spawnMob(Player *player, Mob *mob, Mob *owner = 0, bool spawn = false, bool show = false);

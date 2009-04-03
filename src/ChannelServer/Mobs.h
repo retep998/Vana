@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Pos.h"
 #include "Timer/Container.h"
+#include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
 #include <boost/scoped_ptr.hpp>
@@ -35,28 +36,6 @@ class Mob;
 class PacketReader;
 class PacketCreator;
 struct MPEaterInfo;
-
-enum MobStatus {
-	WATK = 0x1,
-	WDEF = 0x2,
-	MATK = 0x4,
-	MDEF = 0x8,
-	ACC = 0x10,
-	AVOID = 0x20,
-	SPEED = 0x40,
-	STUN = 0x80,
-	FREEZE = 0x100,
-	POISON = 0x200,
-	SEAL = 0x400,
-	WEAPON_ATTACK_UP = 0x1000,
-	WEAPON_DEFENSE_UP = 0x2000,
-	MAGIC_ATTACK_UP = 0x4000,
-	MAGIC_DEFENSE_UP = 0x8000,
-	DOOM = 0x10000,
-	SHADOW_WEB = 0x20000,
-	WEAPON_IMMUNITY = 0x40000,
-	MAGIC_IMMUNITY = 0x80000
-};
 
 struct StatusInfo {
 	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0), time(0) { }

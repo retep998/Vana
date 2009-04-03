@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "Buffs.h"
 #include "Database.h"
+#include "GameConstants.h"
 #include "InitializeCommon.h"
 #include "Inventory.h"
 #include "MiscUtilities.h"
@@ -213,7 +214,7 @@ void ItemDataProvider::loadData() {
 }
 
 void ItemDataProvider::addItemInfo(int32_t id, ItemInfo item) {
-	if (ISRECHARGEABLE(id))
+	if (HelperFunctions::isRechargeable(id))
 		ShopDataProvider::Instance()->addRechargable(id);
 	// Set all types to 0 initially
 	memset(item.cons.types, 0, sizeof(item.cons.types));
@@ -263,14 +264,14 @@ bool ItemDataProvider::itemExists(int32_t id) {
 }
 
 int32_t ItemDataProvider::getPrice(int32_t itemid) {
-	if (ISEQUIP(itemid))
+	if (HelperFunctions::isEquip(itemid))
 		return equips.find(itemid) != equips.end() ? equips[itemid].price : 0;
 	else
 		return items.find(itemid) != items.end() ? items[itemid].price : 0;
 }
 
 int16_t ItemDataProvider::getMaxslot(int32_t itemid) {
-	if (ISEQUIP(itemid))
+	if (HelperFunctions::isEquip(itemid))
 		return 1;
 	else
 		return items.find(itemid) != items.end() ? items[itemid].maxslot : 0;

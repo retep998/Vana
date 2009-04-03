@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include "Drops.h"
 #include "DropsPacket.h"
+#include "GameConstants.h"
 #include "Instance.h"
 #include "Inventory.h"
 #include "Levels.h"
@@ -177,10 +178,10 @@ void Mob::die(Player *player) {
 		uint8_t multiplier = damager == player ? 10 : 8; // Multiplier for player to give the finishing blow is 1 and .8 for others. We therefore set this to 10 or 8 and divide the result in the formula found later on by 10.
 		// Account for Holy Symbol
 		int16_t hsrate = 0;
-		if (damager->getActiveBuffs()->getActiveSkillLevel(2311003) > 0)
-			hsrate = Skills::skills[2311003][damager->getActiveBuffs()->getActiveSkillLevel(2311003)].x;
-		else if (damager->getActiveBuffs()->getActiveSkillLevel(9101002) > 0)
-			hsrate = Skills::skills[9101002][damager->getActiveBuffs()->getActiveSkillLevel(9101002)].x;
+		if (damager->getActiveBuffs()->getActiveSkillLevel(Priest::HOLYSYMBOL) > 0)
+			hsrate = Skills::skills[Priest::HOLYSYMBOL][damager->getActiveBuffs()->getActiveSkillLevel(Priest::HOLYSYMBOL)].x;
+		else if (damager->getActiveBuffs()->getActiveSkillLevel(SuperGM::HOLYSYMBOL) > 0)
+			hsrate = Skills::skills[SuperGM::HOLYSYMBOL][damager->getActiveBuffs()->getActiveSkillLevel(SuperGM::HOLYSYMBOL)].x;
 
 		uint32_t exp = (info.exp * (multiplier * iter->second / info.hp)) / 10;
 		Levels::giveEXP(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
@@ -252,13 +253,13 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	packet.skipBytes(1); // Useless
 	uint8_t tbyte = packet.get<int8_t>();
 	int8_t targets = tbyte / 0x10;
-	if (player->getSkills()->getSkillLevel(5110001) > 0)
+	if (player->getSkills()->getSkillLevel(Marauder::ENERGYCHARGE) > 0)
 		player->getActiveBuffs()->increaseEnergyChargeLevel(targets);
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet.get<int32_t>();
 	switch (skillid) {
-		case 5201002:
-		case 5101004:
+		case Gunslinger::GRENADE:
+		case Infighter::CORKSCREWBLOW:
 			packet.skipBytes(4); // Charge
 			break;
 	}
@@ -268,7 +269,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	int32_t useless = 0;
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, 0, true);
 	switch (skillid) {
-		case 4211006: { // Meso Explosion
+		case ChiefBandit::MESOEXPLOSION: { // Meso Explosion
 			uint8_t items = packet.get<int8_t>();
 			int32_t map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
@@ -283,16 +284,16 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 1111003: // Crusader finishers
-		case 1111004:
-		case 1111005:
-		case 1111006:
+		case Crusader::SWORDPANIC: // Crusader finishers
+		case Crusader::SWORDCOMA:
+		case Crusader::AXEPANIC:
+		case Crusader::AXECOMA:
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
-		case 1111008: // Shout
-		case 9001001: // Super Dragon Roar
+		case Crusader::SHOUT: // Shout
+		case GM::SUPERDRAGONROAR: // Super Dragon Roar
 			break;
-		case 1311006: { // Dragon Roar
+		case DragonKnight::DRAGONROAR: { // Dragon Roar
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
 			int16_t x_value = Skills::skills[skillid][roarlv].x;
 			int16_t y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
@@ -306,7 +307,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			// TODO: Add stun here
 			break;
 		}
-		case 1311005: { // Sacrifice
+		case DragonKnight::SACRIFICE: { // Sacrifice
 			int16_t hp_damage_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
 			uint16_t hp_damage = (uint16_t) totaldmg * hp_damage_x / 100;
 			if ((player->getHP() - hp_damage) < 1)
@@ -315,28 +316,28 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 				player->damageHP(hp_damage);
 			break;
 		}
-		case 1211002: { // Charged Blow
-			int8_t acb_level = player->getSkills()->getSkillLevel(1220010);
+		case WhiteKnight::CHARGEBLOW: { // Charge Blow
+			int8_t acb_level = player->getSkills()->getSkillLevel(skillid);
 			int16_t acb_x = 0;
 			if (acb_level > 0)
-				acb_x = Skills::skills[1220010][acb_level].x;
+				acb_x = Skills::skills[skillid][acb_level].x;
 			int32_t charge_id = 0;
-			if (player->getActiveBuffs()->getActiveSkillLevel(1211003) > 0) // Fire - Sword
-				charge_id = 1211003;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(1211004) > 0) // Fire - BW
-				charge_id = 1211004;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(1211005) > 0) // Ice - Sword
-				charge_id = 1211005;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(1211006) > 0) // Ice - BW
-				charge_id = 1211006;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(1211007) > 0) // Lightning - Sword
-				charge_id = 1211007;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(1211008) > 0) // Lightning - BW
-				charge_id = 1211008;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(1221003) > 0) // Holy - Sword
-				charge_id = 1221003;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(1221004) > 0) // Holy - BW
-				charge_id = 1221004;
+			if (player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::SWORDFIRECHARGE) > 0) // Fire - Sword
+				charge_id = WhiteKnight::SWORDFIRECHARGE;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::BWFIRECHARGE) > 0) // Fire - BW
+				charge_id = WhiteKnight::BWFIRECHARGE;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::SWORDICECHARGE) > 0) // Ice - Sword
+				charge_id = WhiteKnight::SWORDICECHARGE;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::BWICECHARGE) > 0) // Ice - BW
+				charge_id = WhiteKnight::BWICECHARGE;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::SWORDLITCHARGE) > 0) // Lightning - Sword
+				charge_id = WhiteKnight::SWORDLITCHARGE;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::BWLITCHARGE) > 0) // Lightning - BW
+				charge_id = WhiteKnight::BWLITCHARGE;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(Paladin::SWORDHOLYCHARGE) > 0) // Holy - Sword
+				charge_id = Paladin::SWORDHOLYCHARGE;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(Paladin::BWHOLYCHARGE) > 0) // Holy - BW
+				charge_id = Paladin::BWHOLYCHARGE;
 			if (charge_id == 0) {
 				// Hacking
 				return;
@@ -362,12 +363,12 @@ void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 	int32_t skillid = packet.get<int32_t>();
 	uint8_t display = 0;
 	switch (skillid) {
-		case 3121004:
-		case 3221001:
-		case 5221004:
+		case Bowmaster::HURRICANE:
+		case Marksman::PIERCINGARROW:
+		case Corsair::RAPIDFIRE:
 			packet.skipBytes(4); // Charge time
 			display = packet.get<int8_t>();
-			if ((skillid == 3121004 || skillid == 5221004) && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
+			if ((skillid == Bowmaster::HURRICANE || skillid == Corsair::RAPIDFIRE) && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
 				SpecialSkillInfo info;
 				info.skillid = skillid;
 				info.direction = packet.get<int8_t>();
@@ -391,12 +392,12 @@ void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 	int16_t pos = packet.get<int16_t>();
 	packet.skipBytes(2); // Cash Shop star cover
 	packet.skipBytes(1); // 0x00 = AoE, 0x41 = other
-	if (skillid != 4111004 && ((display & 0x40) > 0))
+	if (skillid != Hermit::SHADOWMESO && ((display & 0x40) > 0))
 		packet.skipBytes(4); // Star ID added by Shadow Claw
 	Skills::useAttackSkillRanged(player, skillid, pos, display);
 	int32_t mhp = 0;
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, mhp);
-	if (skillid == 4101005) { // Drain
+	if (skillid == Assassin::DRAIN) { // Drain
 		int16_t drain_x = Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x;
 		int32_t hpRecover = totaldmg * drain_x / 100;
 		if (hpRecover > mhp)
@@ -419,9 +420,9 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet.get<int32_t>();
 	switch (skillid) {
-		case 2121001: // Big Bang has a 4 byte charge time after skillid
-		case 2221001:
-		case 2321001:
+		case FPArchMage::BIGBANG: // Big Bang has a 4 byte charge time after skillid
+		case ILArchMage::BIGBANG:
+		case Bishop::BIGBANG:
 			packet.skipBytes(4);
 			break;
 	}
@@ -435,7 +436,7 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 	packet.skipBytes(2); // Display, direction/animation
 	packet.skipBytes(2); // Weapon subclass, casting speed
 	packet.skipBytes(4); // Ticks
-	if (skillid != 2301002) // Heal is sent as both an attack and as a use skill
+	if (skillid != Cleric::HEAL) // Heal is sent as both an attack and as a use skill
 		// Prevent this from incurring cost since Heal is always a used skill but only an attack in certain circumstances
 		Skills::useAttackSkill(player, skillid);
 	int32_t useless = 0;
@@ -480,13 +481,13 @@ void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
-	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(4211003); // Check for active pickpocket level
+	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(ChiefBandit::PICKPOCKET); // Check for active pickpocket level
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mapmobid = packet.get<int32_t>();
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
-		uint8_t weapontype = (uint8_t) GETWEAPONTYPE(player->getInventory()->getEquippedID(11));
+		uint8_t weapontype = (uint8_t) HelperFunctions::getItemType(player->getInventory()->getEquippedID(11));
 		handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
 		int32_t mobid = mob->getMobID();
 		Mob *htabusetaker = 0;
@@ -505,22 +506,22 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		packet.skipBytes(3); // Useless
 		packet.skipBytes(1); // State
 		packet.skipBytes(8); // Useless
-		if (skillid != 4211006)
+		if (skillid != ChiefBandit::MESOEXPLOSION)
 			packet.skipBytes(1); // Distance, first half for non-Meso Explosion
 		int8_t num = packet.get<int8_t>(); // Distance, second half for non-Meso Explosion OR hits for Meso Explosion
-		hits = skillid == 4211006 ? num : hits;
+		hits = skillid == ChiefBandit::MESOEXPLOSION ? num : hits;
 		Pos origin = mob->getPos(); // Info for
 		vector<int32_t> ppdamages; // Pickpocket
 		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet.get<int32_t>();
 			total += damage;
-			if (ismelee && skillid != 4211006 && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
-				if (Randomizer::Instance()->randInt(99) < Skills::skills[4211003][pplevel].prop) {
+			if (ismelee && skillid != ChiefBandit::MESOEXPLOSION && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
+				if (Randomizer::Instance()->randInt(99) < Skills::skills[ChiefBandit::PICKPOCKET][pplevel].prop) {
 					ppdamages.push_back(damage);
 				}
 			}
 			if (mob == 0) {
-				if (ismelee && skillid != 4211006 && pplevel > 0) // Roll along after the mob is dead to finish getting damage values for pickpocket
+				if (ismelee && skillid != ChiefBandit::MESOEXPLOSION && pplevel > 0) // Roll along after the mob is dead to finish getting damage values for pickpocket
 					continue;
 				else {
 					packet.skipBytes(4 * (hits - 1 - k));
@@ -542,11 +543,11 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 				}
 			}
 
-			if (skillid == 1221011 && mob->isBoss()) {
+			if (skillid == Paladin::HEAVENSHAMMER && mob->isBoss()) {
 				// Damage calculation goes in here, I think? Hearing conflicted views.
 			}
 			else {
-				if (skillid == 1221011)
+				if (skillid == Paladin::HEAVENSHAMMER)
 					damage = mob->getHP() - 1;
 
 				int32_t temphp = mob->getHP();
@@ -566,14 +567,14 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			pos.x = origin.x - 25 * ((ppdamages.size() - pp) / 2);
 			pos.y = origin.y;
 			clock_t time = 150 * pp;
-			int32_t mesos = ((ppdamages[pp] * Skills::skills[4211003][pplevel].x) / 10000); // TODO: Check on this formula in different situations
+			int32_t mesos = ((ppdamages[pp] * Skills::skills[ChiefBandit::PICKPOCKET][pplevel].x) / 10000); // TODO: Check on this formula in different situations
 			Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId(), true);
 			drop->setTime(100);
 			new Timer::Timer(bind(&Drop::doDrop, drop, origin),
-				Timer::Id(Timer::Types::BuffTimer, 4211003, pp),
+				Timer::Id(Timer::Types::BuffTimer, ChiefBandit::PICKPOCKET, pp),
 				0, Timer::Time::fromNow(time));
 		}
-		if (!ISSUMMON(skillid))
+		if (!HelperFunctions::isSummon(skillid))
 			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 	packet.skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
@@ -585,96 +586,96 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 	vector<StatusInfo> statuses;
 	if (mob->canFreeze()) { // Freezing stuff
 		switch (skillid) {
-			case 2201004: // Cold Beam
-			case 2211002: // Ice Strike
-			case 2211006: // Element Composition
-			case 3211003: // Blizzard (Sniper)
-			case 2221007: // Blizzard (Arch Mage)
-			case 5211005: // Cooling Effect
+			case ILWizard::COLDBEAM: // Cold Beam
+			case ILMage::ICESTRIKE: // Ice Strike
+			case ILMage::ELEMENTCOMPOSITION: // Element Composition
+			case Sniper::BLIZZARD: // Blizzard (Sniper)
+			case ILArchMage::BLIZZARD: // Blizzard (Arch Mage)
+			case Outlaw::ICESPLITTER: // Cooling Effect
 				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid, Skills::skills[skillid][level].time));
 				break;
-			case 2121005: // Elquines
-			case 3221005: // Frostprey
+			case FPArchMage::ELQUINES: // Elquines
+			case Marksman::FROSTPREY: // Frostprey
 				statuses.push_back(StatusInfo(FREEZE, FREEZE, skillid, Skills::skills[skillid][level].x));
 				break;
 		}
-		if ((weapon_type == WEAPON_1H_SWORD || weapon_type == WEAPON_2H_SWORD) && player->getActiveBuffs()->getActiveSkillLevel(1211005) > 0) { // Ice Charge Sword
-			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211005, Skills::skills[1211005][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y));
+		if ((weapon_type == WEAPON_1H_SWORD || weapon_type == WEAPON_2H_SWORD) && player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::SWORDICECHARGE) > 0) { // Ice Charge Sword
+			statuses.push_back(StatusInfo(FREEZE, FREEZE, WhiteKnight::SWORDICECHARGE, Skills::skills[WhiteKnight::SWORDICECHARGE][player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::SWORDICECHARGE)].y));
 		}
-		else if ((weapon_type == WEAPON_1H_MACE || weapon_type == WEAPON_2H_MACE) && player->getActiveBuffs()->getActiveSkillLevel(1211006) > 0) { // Blizzard Charge BW
-			statuses.push_back(StatusInfo(FREEZE, FREEZE, 1211006, Skills::skills[1211006][player->getActiveBuffs()->getActiveSkillLevel(1211005)].y));
+		else if ((weapon_type == WEAPON_1H_MACE || weapon_type == WEAPON_2H_MACE) && player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::BWICECHARGE) > 0) { // Blizzard Charge BW
+			statuses.push_back(StatusInfo(FREEZE, FREEZE, WhiteKnight::BWICECHARGE, Skills::skills[WhiteKnight::BWICECHARGE][player->getActiveBuffs()->getActiveSkillLevel(WhiteKnight::BWICECHARGE)].y));
 		}
 	}
 	if (mob->canPoison()) { // Poisoning stuff
-		if ((skillid == 2101005 || skillid == 2111006 || skillid == 2111003) && Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) { // Poison brace, Element composition, and Poison mist
+		if ((skillid == FPWizard::POISONBREATH || skillid == FPMage::POISONMIST || skillid == FPMage::ELEMENTCOMPOSITION) && Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) { // Poison brace, Element composition, and Poison mist
 			int16_t pdamage = (int16_t)(mob->getMHP() / (70 - level));
 			statuses.push_back(StatusInfo(POISON, pdamage, skillid, Skills::skills[skillid][level].time));
 		}
 	}
 	if (!mob->isBoss()) { // Seal, Stun, etc
 		switch (skillid) {
-			case 3101005: // Arrow Bomb
-			case 1111005: // Coma: Sword
-			case 1111006: // Coma: Axe
-			case 1111008: // Shout
-			case 1211002: // Charged Blow
-			case 4211002: // Assaulter
-			case 4221007: // Boomerang Step
-			case 5201004: // Fake Shot
+			case Hunter::ARROWBOMB: // Arrow Bomb
+			case Crusader::SWORDCOMA: // Coma: Sword
+			case Crusader::AXECOMA: // Coma: Axe
+			case Crusader::SHOUT: // Shout
+			case WhiteKnight::CHARGEBLOW: // Charged Blow
+			case ChiefBandit::ASSAULTER: // Assaulter
+			case Shadower::BOOMERANGSTEP: // Boomerang Step
+			case Gunslinger::BLANKSHOT: // Fake Shot
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
-			case 5101002: // Backspin Blow
-			case 5101003: // Double Uppercut
-			case 5121004: // Demolition
-			case 5121005: // Snatch
+			case Infighter::BACKSPINBLOW: // Backspin Blow
+			case Infighter::DOUBLEUPPERCUT: // Double Uppercut
+			case Buccaneer::DEMOLITION: // Demolition
+			case Buccaneer::SNATCH: // Snatch
 				statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time));
 				break;
-			case 3111005: // Silver Hawk
-			case 3211005: // Golden Eagle
+			case Ranger::SILVERHAWK: // Silver Hawk
+			case Sniper::GOLDENEAGLE: // Golden Eagle
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].x));
 				}
 				break;
-			case 2111004: // Seal - F/P
-			case 2211004: // Seal - I/L
+			case FPMage::SEAL: // Seal - F/P
+			case ILMage::SEAL: // Seal - I/L
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(STUN, STUN, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
-			case 2311005: // Doom
+			case Priest::DOOM: // Doom
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(DOOM, 0x100, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
-			case 4111003: // Shadow Web
+			case Hermit::SHADOWWEB: // Shadow Web
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(SHADOW_WEB, 0x100, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
 		}
 	}
-	if (skillid == 4001002) { // Disorder
+	if (skillid == Rogue::DISORDER) { // Disorder
 		clock_t time = Skills::skills[skillid][level].time;
 		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid, time));
 		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid, time));
 	}
-	else if (skillid == 1201006) { // Threaten
+	else if (skillid == Page::THREATEN) { // Threaten
 		clock_t time = Skills::skills[skillid][level].time;
 		statuses.push_back(StatusInfo(WATK, Skills::skills[skillid][level].x, skillid, time));
 		statuses.push_back(StatusInfo(WDEF, Skills::skills[skillid][level].y, skillid, time));
 	}
-	else if (skillid == 2101003 || skillid == 2201003) { // Slow
+	else if (skillid == FPWizard::SLOW || skillid == ILWizard::SLOW) { // Slow
 		statuses.push_back(StatusInfo(SPEED, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
 	}
-	if (weapon_type == WEAPON_BOW && player->getActiveBuffs()->getActiveSkillLevel(3121007) > 0) { // Hamstring
-		uint8_t hamlevel = player->getActiveBuffs()->getActiveSkillLevel(3121007);
-		statuses.push_back(StatusInfo(SPEED, Skills::skills[3121007][hamlevel].x, 3121007, Skills::skills[3121007][hamlevel].y));
+	if (weapon_type == WEAPON_BOW && player->getActiveBuffs()->getActiveSkillLevel(Bowmaster::HAMSTRING) > 0) { // Hamstring
+		uint8_t hamlevel = player->getActiveBuffs()->getActiveSkillLevel(Bowmaster::HAMSTRING);
+		statuses.push_back(StatusInfo(SPEED, Skills::skills[Bowmaster::HAMSTRING][hamlevel].x, Bowmaster::HAMSTRING, Skills::skills[Bowmaster::HAMSTRING][hamlevel].y));
 	}
-	if (weapon_type == WEAPON_CROSSBOW && player->getActiveBuffs()->getActiveSkillLevel(3221006) > 0) { // Blind
-		uint8_t blindlevel = player->getActiveBuffs()->getActiveSkillLevel(3221006);
-		statuses.push_back(StatusInfo(ACC, -Skills::skills[3221006][blindlevel].x, 3221006, Skills::skills[3221006][blindlevel].y));
+	if (weapon_type == WEAPON_CROSSBOW && player->getActiveBuffs()->getActiveSkillLevel(Marksman::BLIND) > 0) { // Blind
+		uint8_t blindlevel = player->getActiveBuffs()->getActiveSkillLevel(Marksman::BLIND);
+		statuses.push_back(StatusInfo(ACC, -Skills::skills[Marksman::BLIND][blindlevel].x, Marksman::BLIND, Skills::skills[Marksman::BLIND][blindlevel].y));
 	}
 
 	if (statuses.size() > 0)

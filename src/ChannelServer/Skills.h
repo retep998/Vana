@@ -26,9 +26,6 @@ using std::tr1::unordered_map;
 class Player;
 class PacketReader;
 
-#define BEGINNER_SKILL(x) (x / 1000000 == 0)
-#define FOURTHJOB_SKILL(x) ((x / 10000) % 10 == 2)
-
 struct SkillLevelInfo {
 	int32_t time;
 	int16_t mp;

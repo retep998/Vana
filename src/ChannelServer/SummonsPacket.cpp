@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SummonsPacket.h"
-#include "Summons.h"
+#include "GameConstants.h"
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "SendHeader.h"
+#include "Summons.h"
 
 void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Player *toplayer) {
 	PacketCreator packet;
@@ -33,7 +34,7 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 	packet.add<int8_t>(0x53); // ?
 	packet.add<int8_t>(1); // ?
 	packet.add<int8_t>(summon->getType()); // Movement type
-	packet.add<int8_t>(!ISPUPPET(summon->getSummonID())); // Attack or not
+	packet.add<int8_t>(!HelperFunctions::isPuppet(summon->getSummonID())); // Attack or not
 	packet.add<int8_t>(!animated);
 	if (toplayer != 0)
 		toplayer->getSession()->send(packet);

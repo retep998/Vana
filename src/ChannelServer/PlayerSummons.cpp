@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSummons.h"
+#include "GameConstants.h"
 #include "Summons.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
@@ -24,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 void PlayerSummons::addSummon(Summon *summon, int32_t time) {
-	bool puppet = ISPUPPET(summon->getSummonID());
+	bool puppet = HelperFunctions::isPuppet(summon->getSummonID());
 	if (!puppet)
 		this->summon = summon;
 	else

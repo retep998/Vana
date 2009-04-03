@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ShopDataProvider.h"
 #include "Database.h"
+#include "GameConstants.h"
 #include "InitializeCommon.h"
 #include "Inventory.h"
 #include "ItemDataProvider.h"
@@ -69,7 +70,7 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 	for (size_t i = 0; i < shops[id].items.size(); i++) {
 		packet.add<int32_t>(shops[id].items[i]);
 		packet.add<int32_t>(shops[id].prices[shops[id].items[i]]);
-		if (ISRECHARGEABLE(shops[id].items[i])) {
+		if (HelperFunctions::isRechargeable(shops[id].items[i])) {
 			packet.add<int16_t>(0);
 			packet.add<int32_t>(0);
 			packet.add<int16_t>((uint16_t) shops[id].prices[shops[id].items[i]]);
@@ -78,10 +79,10 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 			packet.add<int16_t>(1);
 		}
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(shops[id].items[i]);
-		if (ISSTAR(shops[id].items[i]))
-			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(4100000) * 10);
-		else if (ISBULLET(shops[id].items[i]))
-			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(5200000) * 10);
+		if (HelperFunctions::isStar(shops[id].items[i]))
+			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Assassin::CLAWMASTERY) * 10);
+		else if (HelperFunctions::isBullet(shops[id].items[i]))
+			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Gunslinger::GUNMASTERY) * 10);
 		else
 			packet.add<int16_t>(maxslot);
 	}
@@ -92,7 +93,7 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 		packet.add<int16_t>(0);
 		packet.add<int32_t>(0);
 		packet.add<int16_t>(1);
-		packet.add<int16_t>(ItemDataProvider::Instance()->getMaxslot(rechargables[i]) + (ISSTAR(rechargables[i]) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10));
+		packet.add<int16_t>(ItemDataProvider::Instance()->getMaxslot(rechargables[i]) + (HelperFunctions::isStar(rechargables[i]) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10));
 	}
 
 	player->getSession()->send(packet);

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerInventory.h"
 #include "Database.h"
+#include "GameConstants.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
@@ -193,8 +194,8 @@ uint16_t PlayerInventory::getItemAmount(int32_t itemid) {
 
 bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack) {
 	int16_t required = 0;
-	int8_t inv = GETINVENTORY(itemid);
-	if (inv == 1 || ISRECHARGEABLE(itemid))
+	int8_t inv = HelperFunctions::getInventory(itemid);
+	if (inv == 1 || HelperFunctions::isRechargeable(itemid))
 		required = amount; // These aren't stackable
 	else {
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(itemid);
@@ -385,7 +386,7 @@ int32_t PlayerInventory::doShadowClaw() {
 		Item *item = getItem(2, s);
 		if (item == 0)
 			continue;
-		if (ISSTAR(item->id) && item->amount >= 200) {
+		if (HelperFunctions::isStar(item->id) && item->amount >= 200) {
 			Inventory::takeItemSlot(player, 2, s, 200);
 			return item->id;
 		}

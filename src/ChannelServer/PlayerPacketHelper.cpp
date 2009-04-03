@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacketHelper.h"
-#include "PacketCreator.h"
-#include "Player.h"
+#include "GameConstants.h"
 #include "Inventory.h"
+#include "PacketCreator.h"
 #include "Pets.h"
+#include "Player.h"
 
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) {
 	if (slot != 0) {
@@ -31,12 +32,12 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 			packet.add<int8_t>((int8_t) slot);
 		}
 	}
-	packet.add<int8_t>(!ISEQUIP(item->id) + 1);
+	packet.add<int8_t>(!HelperFunctions::isEquip(item->id) + 1);
 	packet.add<int32_t>(item->id);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
 	packet.addBytes("8005BB46E61702");
-	if (ISEQUIP(item->id)) {
+	if (HelperFunctions::isEquip(item->id)) {
 		packet.add<int8_t>(item->slots); // Slots
 		packet.add<int8_t>(item->scrolls); // Scrolls
 		packet.add<int16_t>(item->istr); // STR
@@ -65,7 +66,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		packet.add<int8_t>(0);
 		packet.add<int8_t>(item->flags);
 		packet.add<int8_t>(0);
-		if (ISRECHARGEABLE(item->id)) {
+		if (HelperFunctions::isRechargeable(item->id)) {
 			packet.add<int32_t>(2);
 			packet.add<int16_t>(0x54);
 			packet.add<int8_t>(0);

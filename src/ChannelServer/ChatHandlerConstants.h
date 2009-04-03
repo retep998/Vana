@@ -15,27 +15,58 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef CHATHANDLER_H
-#define CHATHANDLER_H
+#ifndef CHATHANDLERCONSTANTS_H
+#define CHATHANDLERCONSTANTS_H
 
-#include "ChatHandlerConstants.h"
-#include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <string>
-#include <utility>
-
-using std::pair;
-using std::string;
-using std::tr1::unordered_map;
-
-class Player;
-class PacketReader;
-
-namespace ChatHandler {
-	extern unordered_map<string, pair<CMD, int32_t> > commandlist;
-	void initializeCommands();
-	void handleChat(Player *player, PacketReader &packet);
-	void handleGroupChat(Player *player, PacketReader &packet);
+enum CMD {
+	CMD_HEADER,
+	CMD_BAN,
+	CMD_UNBAN,
+	CMD_SHUTDOWN,
+	CMD_KICK,
+	CMD_KILL,
+	CMD_KILLALL,
+	CMD_ZAKUM,
+	CMD_MAP,
+	CMD_HORNTAIL,
+	CMD_LOOKUP,
+	CMD_NOTICE,
+	CMD_ME,
+	CMD_PACKET,
+	CMD_TIMER,
+	CMD_INSTRUCTION,
+	CMD_SUMMON,
+	CMD_MAXSTATS,
+	CMD_LEVEL,
+	CMD_STR,
+	CMD_DEX,
+	CMD_INT,
+	CMD_LUK,
+	CMD_HP,
+	CMD_MP,
+	CMD_AP,
+	CMD_SP,
+	CMD_FAME,
+	CMD_ADDSP,
+	CMD_NPC,
+	CMD_ADDNPC,
+	CMD_KILLNPC,
+	CMD_MUSIC,
+	CMD_DC,
+	CMD_EVENTINSTRUCTION,
+	CMD_JOB,
+	CMD_POS,
+	CMD_SHOP,
+	CMD_STORAGE,
+	CMD_HEAL,
+	CMD_ITEM,
+	CMD_MESOS,
+	CMD_SAVE,
+	CMD_CLEARDROPS,
+	CMD_WARPALL,
+	CMD_WARP,
+	CMD_WARPTO,
+	CMD_RANKINGCALC
 };
 
 #endif

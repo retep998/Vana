@@ -16,29 +16,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Summons.h"
-#include "SummonsPacket.h"
-#include "Skills.h"
-#include "Maps.h"
+#include "GameConstants.h"
 #include "LoopingId.h"
-#include "PlayerPacket.h"
-#include "PacketReader.h"
+#include "Maps.h"
 #include "Movement.h"
+#include "PacketReader.h"
+#include "PlayerPacket.h"
+#include "Skills.h"
+#include "SummonsPacket.h"
 
 // Summon Class
 Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(summonid), level(level), hp(0) {
 	switch (summonid) {
-		case 3111002:
-		case 3211002:
+		case Ranger::PUPPET:
+		case Sniper::PUPPET:
 			hp = Skills::skills[summonid][level].x; // Get HP for puppet
-		case 5211001:
+		case Outlaw::OCTOPUS:
 			type = 0; // No movement - Puppets and Octopus
 			break;
-		case 2311006:
-		case 3111005:
-		case 3211005:
-		case 3121006:
-		case 3221005:
-		case 5211002:
+		case Priest::SUMMONDRAGON:
+		case Ranger::SILVERHAWK:
+		case Sniper::GOLDENEAGLE:
+		case Bowmaster::PHOENIX:
+		case Marksman::FROSTPREY:
+		case Outlaw::GAVIOTA:
 			type = 3; // Flying - Birds and Priest dragon
 			break;
 		default:
@@ -52,7 +53,7 @@ LoopingId Summons::summonids;
 
 void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 	Summon *summon = new Summon(summonids.next(), skillid, level);
-	bool puppet = ISPUPPET(skillid);
+	bool puppet = HelperFunctions::isPuppet(skillid);
 	removeSummon(player, puppet, true, false);
 	if (puppet)
 		summon->setPos( Maps::getMap(player->getMap())->findFloor(Pos((player->getPos().x + 200 * (player->getStance() % 2 == 1 ? -1 : 1)), player->getPos().y)) );

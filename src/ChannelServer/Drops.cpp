@@ -17,18 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Drops.h"
 #include "DropDataProvider.h"
-#include "Maps.h"
-#include "Reactors.h"
 #include "DropsPacket.h"
+#include "GameConstants.h"
 #include "Inventory.h"
 #include "ItemDataProvider.h"
-#include "Quests.h"
-#include "Randomizer.h"
+#include "Maps.h"
+#include "PacketReader.h"
 #include "Pets.h"
 #include "Pos.h"
+#include "Quests.h"
+#include "Randomizer.h"
+#include "Reactors.h"
 #include "Skills.h"
 #include "TimeUtilities.h"
-#include "PacketReader.h"
 
 // Drop class
 Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : questid(0), owner(owner), mapid(mapid), mesos(mesos), dropped(0), playerid(0), playerdrop(playerdrop), tradeable(true), pos(pos) {
@@ -122,7 +123,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 						continue;
 				}
 
-				if (ISEQUIP(itemid))
+				if (HelperFunctions::isEquip(itemid))
 					drop = new Drop(mapid, Item(itemid, true), pos, playerid);
 				else
 					drop = new Drop(mapid, Item(itemid, amount), pos, playerid);
@@ -134,8 +135,8 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 			}
 			else {
 				int32_t mesos = (amount * ChannelServer::Instance()->getMesorate());
-				if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(4111001) > 0) { // Account for Meso Up
-					mesos = (mesos * Skills::skills[4111001][player->getActiveBuffs()->getActiveSkillLevel(4111001)].x) / 100;
+				if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(Hermit::MESOUP) > 0) { // Account for Meso Up
+					mesos = (mesos * Skills::skills[Hermit::MESOUP][player->getActiveBuffs()->getActiveSkillLevel(Hermit::MESOUP)].x) / 100;
 				}
 				drop = new Drop(mapid, mesos, pos, playerid);
 			}
@@ -210,7 +211,7 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	}
 	else {
 		Item dropitem = drop->getItem();
-		if (ISEQUIP(dropitem.id) || !ItemDataProvider::Instance()->getItemInfo(dropitem.id).cons.autoconsume) {
+		if (HelperFunctions::isEquip(dropitem.id) || !ItemDataProvider::Instance()->getItemInfo(dropitem.id).cons.autoconsume) {
 			Item *item = new Item(dropitem);
 			int16_t dropAmount = drop->getAmount();
 			int16_t amount = Inventory::addItem(player, item, true);

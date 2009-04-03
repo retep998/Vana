@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Trades.h"
+#include "GameConstants.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
@@ -141,7 +142,7 @@ void Trades::tradeHandler(Player *player, PacketReader &packet) {
 			if (isreceiver) {
 				item = two->getInventory()->getItem(inventory, slot);
 				use = new Item(item);
-				if (ISRECHARGEABLE(item->id))
+				if (HelperFunctions::isRechargeable(item->id))
 					amount = item->amount;
 				if (amount == item->amount || inventory == 1) {
 					two->getInventory()->setItem(inventory, slot, 0);
@@ -163,7 +164,7 @@ void Trades::tradeHandler(Player *player, PacketReader &packet) {
 			else {
 				item = one->getInventory()->getItem(inventory, slot);
 				use = new Item(item);
-				if (ISRECHARGEABLE(item->id))
+				if (HelperFunctions::isRechargeable(item->id))
 					amount = item->amount;
 				if (amount == item->amount || inventory == 1) {
 					one->getInventory()->setItem(inventory, slot, 0);
@@ -394,8 +395,8 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 		if (info->slot[i]) {
 			Item *check = info->items[i];
 			int32_t itemid = check->id;
-			int8_t inv = GETINVENTORY(itemid);
-			if (inv == 1 || ISRECHARGEABLE(itemid)) // Equips and rechargeables always take 1 slot, no need to clutter unordered map
+			int8_t inv = HelperFunctions::getInventory(itemid);
+			if (inv == 1 || HelperFunctions::isRechargeable(itemid)) // Equips and rechargeables always take 1 slot, no need to clutter unordered map
 				totals[inv - 1]++;
 			else {
 				if (added.find(itemid) != added.end()) // Already initialized this item
@@ -409,8 +410,8 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 		if (info->slot[i]) {
 			Item *check = info->items[i];
 			int32_t itemid = check->id;
-			int8_t inv = GETINVENTORY(itemid);
-			if (inv != 1 && !ISRECHARGEABLE(itemid)) { // Already did these
+			int8_t inv = HelperFunctions::getInventory(itemid);
+			if (inv != 1 && !HelperFunctions::isRechargeable(itemid)) { // Already did these
 				if (added.find(itemid) == added.end()) // Already did this item
 					continue;
 				int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(itemid);

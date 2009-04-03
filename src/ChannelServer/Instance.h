@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef INSTANCE_H
 #define INSTANCE_H
 
+#include "InstanceMessageConstants.h"
 #include "Types.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
@@ -41,23 +42,6 @@ struct TimerAction {
 	int32_t counterid;
 	int32_t time; // How long the timer lasts, negative integers indicate second of hour (-1 to -3601)
 	bool persistent; // Does it repeat?
-};
-
-enum InstanceMessages {
-	// 3 parameters
-	PLAYER_CHANGEMAP, // Player ID, new map ID, old map ID
-	// 2 parameters
-	MOB_DEATH, // Mob ID, map mob ID
-	MOB_SPAWN, // Mob ID, map mob ID
-	TIMER_END, // Timer name, boolean false
-	TIMER_NATURAL_END, // Timer name, boolean true
-	// 1 parameter
-	PLAYER_DEATH, // Player ID
-	PLAYER_DC, // Player ID
-	INSTANCETIMER_END, // Boolean false
-	INSTANCETIMER_NATURAL_END, // Boolean true
-	// 0 parameters
-	BEGIN_INSTANCE
 };
 
 class Instance {

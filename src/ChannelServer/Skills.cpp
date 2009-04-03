@@ -17,15 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Skills.h"
 #include "Buffs.h"
-#include "Summons.h"
+#include "GameConstants.h"
 #include "Inventory.h"
 #include "MapPacket.h"
 #include "Maps.h"
+#include "PacketReader.h"
 #include "Player.h"
 #include "Players.h"
 #include "Randomizer.h"
-#include "PacketReader.h"
 #include "SkillsPacket.h"
+#include "Summons.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
@@ -46,7 +47,7 @@ void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo le
 void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t skillid = packet.get<int32_t>();
-	if (!BEGINNER_SKILL(skillid)) {
+	if (HelperFunctions::isBeginnerSkill(skillid)) {
 		if (player->getSP() == 0) {
 			// hacking
 			return;
@@ -56,7 +57,7 @@ void Skills::addSkill(Player *player, PacketReader &packet) {
 			return;
 		}
 	}
-	if (player->getSkills()->addSkillLevel(skillid, 1) && !BEGINNER_SKILL(skillid)) {
+	if (player->getSkills()->addSkillLevel(skillid, 1) && !HelperFunctions::isBeginnerSkill(skillid)) {
 		player->setSP(player->getSP() - 1);
 	}
 }
@@ -67,17 +68,17 @@ void Skills::cancelSkill(Player *player, PacketReader &packet) {
 
 void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	switch (skillid) {
-		case 3121004:
-		case 3221001:
-		case 2121001:
-		case 2221001:
-		case 2321001:
-		case 5221004: // Special skills like hurricane, monster magnet, rapid fire, and etc
+		case Bowmaster::HURRICANE:
+		case Marksman::PIERCINGARROW:
+		case FPArchMage::BIGBANG:
+		case ILArchMage::BIGBANG:
+		case Bishop::BIGBANG:
+		case Corsair::RAPIDFIRE: // Special skills like hurricane, monster magnet, rapid fire, and etc
 			SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
 			player->setSpecialSkill(SpecialSkillInfo());
 			break;
 		default:
-			if (skillid == 9101004) // GM Hide
+			if (skillid == SuperGM::HIDE) // GM Hide
 				MapPacket::showPlayer(player);
 			player->getActiveBuffs()->removeBuff(skillid, fromTimer);
 			Buffs::Instance()->endBuff(player, skillid);
@@ -96,9 +97,9 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		return;
 	}
 	switch (skillid) { // Packet processing
-		case 1121001: // Monster Magnet processing
-		case 1221001:
-		case 1321001: {
+		case Hero::MONSTERMAGNET: // Monster Magnet processing
+		case Paladin::MONSTERMAGNET:
+		case DarkKnight::MONSTERMAGNET: {
 			int32_t mobs = packet.get<int32_t>();
 			for (int8_t k = 0; k < mobs; k++) {
 				int32_t mapmobid = packet.get<int32_t>();
@@ -107,13 +108,13 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 1201006: // Threaten
-		case 2101003: // Slow - F/P
-		case 2201003: // Slow - I/L
-		case 2111004: // Seal - F/P
-		case 2211004: // Seal - I/L
-		case 2311005: // Doom
-		case 4111003: { // Shadow Web
+		case Page::THREATEN: // Threaten
+		case FPWizard::SLOW: // Slow - F/P
+		case ILWizard::SLOW: // Slow - I/L
+		case FPMage::SEAL: // Seal - F/P
+		case ILMage::SEAL: // Seal - I/L
+		case Priest::DOOM: // Doom
+		case Hermit::SHADOWWEB: { // Shadow Web
 			uint8_t mobs = packet.get<int8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.get<int32_t>())) {
@@ -122,31 +123,31 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 1301007: // Hyper Body
-		case 2101001: // Meditation
-		case 2201001: // Meditation
-		case 2301004: // Bless
-		case 2311003: // Holy Symbol
-		case 3121002: // Sharp Eyes
-		case 3221002: // Sharp Eyes
-		case 4101004: // Haste
-		case 4201003: // Haste
-		case 1121000: // Maple Warrior
-		case 1221000: //
-		case 1321000: //
-		case 2121000: //
-		case 2221000: //
-		case 2321000: //
-		case 3121000: //
-		case 3221000: //
-		case 4121000: //
-		case 4221000: //
-		case 5121000: //
-		case 5221000: // End of Maple Warrior
-		case 9101001: // GM Haste
-		case 9101002: // GM Holy Symbol
-		case 9101003: // GM Bless
-		case 9101008: { // GM Hyper Body
+		case Spearman::HYPERBODY: // Hyper Body
+		case FPWizard::MEDITATION: // Meditation
+		case ILWizard::MEDITATION: // Meditation
+		case Cleric::BLESS: // Bless
+		case Priest::HOLYSYMBOL: // Holy Symbol
+		case Bowmaster::SHARPEYES: // Sharp Eyes
+		case Marksman::SHARPEYES: // Sharp Eyes
+		case Assassin::HASTE: // Haste
+		case Bandit::HASTE: // Haste
+		case Hero::MAPLEWARRIOR: // Maple Warrior
+		case Paladin::MAPLEWARRIOR: //
+		case DarkKnight::MAPLEWARRIOR: //
+		case FPArchMage::MAPLEWARRIOR: //
+		case ILArchMage::MAPLEWARRIOR: //
+		case Bishop::MAPLEWARRIOR: //
+		case Bowmaster::MAPLEWARRIOR: //
+		case Marksman::MAPLEWARRIOR: //
+		case NightLord::MAPLEWARRIOR: //
+		case Shadower::MAPLEWARRIOR: //
+		case Buccaneer::MAPLEWARRIOR: //
+		case Corsair::MAPLEWARRIOR: // End of Maple Warrior
+		case SuperGM::HASTE: // GM Haste
+		case SuperGM::HOLYSYMBOL: // GM Holy Symbol
+		case SuperGM::BLESS: // GM Bless
+		case SuperGM::HYPERBODY: { // GM Hyper Body
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
@@ -159,7 +160,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 2301002: { // Heal
+		case Cleric::HEAL: { // Heal
 			// TODO PARTY
 			uint16_t healrate = skills[skillid][level].hpP;
 			if (healrate > 100)
@@ -167,11 +168,11 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			player->modifyHP(healrate * player->getMHP() / 100);
 			break;
 		}
-		case 9101000: // GM Heal + Dispel - needs to be modified for map?
+		case SuperGM::HEALPLUSDISPEL: // GM Heal + Dispel - needs to be modified for map?
 			player->setHP(player->getMHP());
 			player->setMP(player->getMMP());
 			break;
-		case 9101005: { // GM Resurrection
+		case SuperGM::RESURRECTION: { // GM Resurrection
 			for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 				Player *resplayer;
 				resplayer = Maps::getMap(player->getMap())->getPlayer(i);
@@ -181,7 +182,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 9101004: // GM Hide
+		case SuperGM::HIDE: // GM Hide
 			MapPacket::removePlayer(player);
 			break;
 		default:
@@ -197,7 +198,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	SkillsPacket::showSkill(player, skillid, level);
 	if (Buffs::Instance()->addBuff(player, skillid, level, addedinfo))
 		return;
-	else if (ISSUMMON(skillid))
+	else if (HelperFunctions::isSummon(skillid))
 		Summons::useSummon(player, skillid, level);
 }
 
@@ -208,14 +209,14 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 	int16_t moneycon = skills[skillid][level].moneycon;
 	int32_t item = skills[skillid][level].item;
 	if (mpuse > 0) {
-		if (player->getActiveBuffs()->getActiveSkillLevel(3121008) > 0) { // Reduced MP usage for Concentration
-			int16_t mprate = skills[3121008][player->getActiveBuffs()->getActiveSkillLevel(3121008)].x;
+		if (player->getActiveBuffs()->getActiveSkillLevel(Bowmaster::CONCENTRATE) > 0) { // Reduced MP usage for Concentration
+			int16_t mprate = skills[Bowmaster::CONCENTRATE][player->getActiveBuffs()->getActiveSkillLevel(Bowmaster::CONCENTRATE)].x;
 			int16_t mploss = (mpuse * mprate) / 100;
 			player->modifyMP(-mploss, true);
 		}
 		else {
 			if (elementalamp) {
-				int32_t sid = ((player->getJob() / 10) == 22 ? 2210001 : 2110001);
+				int32_t sid = ((player->getJob() / 10) == 22 ? ILMage::ELEMENTAMPLIFICATION : FPMage::ELEMENTAMPLIFICATION);
 				int8_t slv = player->getSkills()->getSkillLevel(sid);
 				if (slv > 0)
 					player->modifyMP(-1 * (mpuse * skills[sid][slv].x / 100), true);
