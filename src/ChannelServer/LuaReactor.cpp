@@ -28,14 +28,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactorid, int32_t mapid) : LuaScriptable(filename, playerid), reactorid(reactorid) {
-	lua_pushinteger(luaVm, reactorid);
-	lua_setglobal(luaVm, "reactorid");
-	lua_pushinteger(luaVm, mapid);
-	lua_setglobal(luaVm, "mapid");
+	setVariable("reactorid", reactorid);
+	setVariable("mapid", mapid);
 
-	lua_register(luaVm, "setState", &LuaExports::setReactorState);
-	lua_register(luaVm, "spawnMob", &LuaExports::spawnMobReactor);
+	// Reactor
 	lua_register(luaVm, "reset", &LuaExports::reset);
+	lua_register(luaVm, "setState", &LuaExports::setReactorState);
+
+	// Mob
+	lua_register(luaVm, "spawnMob", &LuaExports::spawnMobReactor);
 
 	run();
 }
@@ -48,21 +49,23 @@ Reactor * LuaExports::getReactor(lua_State *luaVm) {
 	return Maps::getMap(mapid)->getReactor(reactorid);
 }
 
+// Reactor
+int LuaExports::reset(lua_State *luaVm) {
+	getReactor(luaVm)->revive();
+	getReactor(luaVm)->setState(0, true);
+	ReactorPacket::triggerReactor(getReactor(luaVm));
+	return 0;
+}
+
 int LuaExports::setReactorState(lua_State *luaVm) {
 	getReactor(luaVm)->setState(lua_tointeger(luaVm, -1), true);
 	return 0;
 }
 
+// Mob
 int LuaExports::spawnMobReactor(lua_State *luaVm) {
 	int32_t mobid = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
 	Maps::getMap(reactor->getMapID())->spawnMob(mobid, reactor->getPos());
-	return 0;
-}
-
-int LuaExports::reset(lua_State *luaVm) {
-	getReactor(luaVm)->revive();
-	getReactor(luaVm)->setState(0, true);
-	ReactorPacket::triggerReactor(getReactor(luaVm));
 	return 0;
 }
