@@ -38,7 +38,9 @@ namespace LuaExports {
 	PortalInfo * getPortal(lua_State *luaVm);
 	extern unordered_map<int32_t, PortalInfo *> portals;
 
-	// The exports
+	// Portal exports
+
+	// Portal
 	int getPortalName(lua_State *luaVm);
 };
 
