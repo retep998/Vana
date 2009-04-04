@@ -72,6 +72,12 @@ const unsigned char * PacketCreator::getBuffer() const {
 }
 
 inline
+void PacketCreator::addBuffer(const unsigned char *bytes, size_t len) {
+	memcpy(packet + pos, bytes, len);
+	pos += len;
+}
+
+inline
 size_t PacketCreator::getSize() const {
 	return pos;
 }
