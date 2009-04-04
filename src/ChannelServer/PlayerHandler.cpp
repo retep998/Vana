@@ -236,13 +236,9 @@ void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 
 void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	if (player->getHP() == 0) {
-		// hacking
-		return;
-	}
 	int16_t hp = packet.get<int16_t>();
 	int16_t mp = packet.get<int16_t>();
-	if (hp > 400 || mp > 1000) {
+	if (player->getHP() == 0 || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
 		// hacking
 		return;
 	}
