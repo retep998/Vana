@@ -14,6 +14,7 @@ set(SOURCES
 	Fame.h
 	FamePacket.h
 	GameConstants.h
+	GameLogicUtilities.h
 	InitializeChannel.h
 	Instance.h
 	InstanceMessageConstants.h
