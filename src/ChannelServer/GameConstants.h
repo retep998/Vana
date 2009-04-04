@@ -570,22 +570,4 @@ namespace GMSuit {
 	};
 };
 
-namespace HelperFunctions {
-	inline uint8_t getInventory(int32_t itemid) { return static_cast<uint8_t>(itemid / 1000000); }
-	inline int32_t getItemType(int32_t itemid) { return (itemid / 10000); }
-	inline bool isArrow(int32_t itemid) { return (getItemType(itemid) == 206); }
-	inline bool isStar(int32_t itemid) { return (getItemType(itemid) == 207); }
-	inline bool isBullet(int32_t itemid) { return (getItemType(itemid) == 233); }
-	inline bool isRechargeable(int32_t itemid) { return (isBullet(itemid) || isStar(itemid)); }
-	inline bool isEquip(int32_t itemid) { return (getInventory(itemid) == 1); }
-	inline bool isPet(int32_t itemid) { return (itemid >= 5000000 && itemid <= 5000053); }
-	inline bool isOverall(int32_t itemid) { return (getItemType(itemid) == 105); }
-	inline bool is2hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 14); }
-
-	inline bool isBeginnerSkill(int32_t skillid) { return (skillid / 1000000 == 0); }
-	inline bool isFourthJobSkill(int32_t skillid) { return ((skillid / 10000) % 10 == 2); }
-	inline bool isSummon(int32_t skillid) { return (skillid == Sniper::PUPPET  || skillid == Ranger::PUPPET || skillid == Priest::SUMMONDRAGON || skillid == Ranger::SILVERHAWK || skillid == Sniper::GOLDENEAGLE || skillid == DarkKnight::BEHOLDER || skillid == FPArchMage::ELQUINES || skillid == ILArchMage::IFRIT || skillid == Bishop::BAHAMUT || skillid == Bowmaster::PHOENIX || skillid == Marksman::FROSTPREY || skillid == Outlaw::OCTOPUS || skillid == Outlaw::GAVIOTA); }
-	inline bool isPuppet(int32_t skillid) { return (skillid == Sniper::PUPPET || skillid == Ranger::PUPPET); }
-};
-
 #endif

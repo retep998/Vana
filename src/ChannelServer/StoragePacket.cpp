@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "StoragePacket.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
@@ -54,7 +55,7 @@ void StoragePacket::addItem(Player *player, int8_t inv) {
 	packet.add<int8_t>(player->getStorage()->getNumItems(inv));
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
-		if (HelperFunctions::getInventory(item->id) == inv)
+		if (GameLogicUtilities::getInventory(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
 	player->getSession()->send(packet);
@@ -71,7 +72,7 @@ void StoragePacket::takeItem(Player *player, int8_t inv) {
 	packet.add<int8_t>(player->getStorage()->getNumItems(inv));
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
-		if (HelperFunctions::getInventory(item->id) == inv)
+		if (GameLogicUtilities::getInventory(item->id) == inv)
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
 	}
 	player->getSession()->send(packet);

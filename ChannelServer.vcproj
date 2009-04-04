@@ -900,6 +900,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Utilities"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\GameLogicUtilities.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
