@@ -454,10 +454,10 @@ void Inventory::useSummonBag(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	Item *item = player->getInventory()->getItem(2, slot);
+	Item *inventoryitem = player->getInventory()->getItem(2, slot);
 	if (!ItemDataProvider::Instance()->itemExists(itemid))
 		return;
-	if (item == 0 || item->id != itemid) {
+	if (inventoryitem == 0 || inventoryitem->id != itemid) {
 		// hacking
 		return;
 	}
