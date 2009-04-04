@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffsPacket.h"
+#include "Buffs.h"
+#include "GameConstants.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "SendHeader.h"
-#include "Buffs.h"
 
 void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill) {
 	PacketCreator packet;
@@ -41,7 +42,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, S
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
@@ -75,7 +76,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, SkillA
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0); // Number of times you've been buffed total
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
@@ -108,7 +109,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, SkillA
 	packet.add<int16_t>(addedinfo);
 	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	if (!isitem || (isitem && ismorph)) {
 		packet = PacketCreator();
@@ -142,7 +143,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t time, SkillActiveInfo
 	packet.add<int16_t>(castedtime);
 	packet.add<int16_t>(addedinfo);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
@@ -168,7 +169,7 @@ void BuffsPacket::endSkill(Player *player, SkillActiveInfo pskill) {
 		packet.add<int8_t>(pskill.types[i]);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_CANCEL_OTHERS_BUFF);

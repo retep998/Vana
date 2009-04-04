@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryPacket.h"
+#include "GameConstants.h"
 #include "InterHeader.h"
 #include "Inventory.h"
 #include "MapleSession.h"
@@ -41,7 +42,7 @@ void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_
 }
 
 void InventoryPacket::updatePlayer(Player *player) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_UPDATE_CHAR_LOOK);
@@ -101,7 +102,7 @@ void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot
 }
 
 void InventoryPacket::sitChair(Player *player, int32_t chairid) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_UPDATE_STAT);
@@ -116,7 +117,7 @@ void InventoryPacket::sitChair(Player *player, int32_t chairid) {
 }
 
 void InventoryPacket::stopChair(Player *player) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_STOP_CHAIR);
@@ -129,7 +130,7 @@ void InventoryPacket::stopChair(Player *player) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SCROLL);

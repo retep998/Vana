@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayersPacket.h"
+#include "GameConstants.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
@@ -26,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_PLAYER);
@@ -37,7 +38,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 }
 
 void PlayersPacket::faceExpression(Player *player, int32_t face) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_FACE_EXPRESSION);
@@ -57,7 +58,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, int8_t bubbleOnl
 }
 
 void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, uint8_t type, uint8_t stance, int32_t nodamageskill, PGMRInfo pgmr) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_DAMAGE_PLAYER);
