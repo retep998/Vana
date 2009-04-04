@@ -35,11 +35,6 @@ void PacketCreator::addBuffer(PacketReader &packet) {
 	addBuffer(packet.getBuffer(), packet.getBufferLength());
 }
 
-void PacketCreator::addBuffer(const unsigned char *bytes, size_t len) {
-	memcpy(packet + pos, bytes, len);
-	pos += len;
-}
-
 void PacketCreator::addBytes(const char *hex) {
 	for (size_t i = 0; i < strlen(hex) / 2; i++) {
 		unsigned char byte1 = hex[i * 2];
