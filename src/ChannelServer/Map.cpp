@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Map.h"
 #include "Drops.h"
+#include "GameConstants.h"
 #include "Instance.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
@@ -63,7 +64,7 @@ void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
 	if (info->fieldType == 82 || info->fieldType == 81) // Apple training maps/Showa spa
 		MapPacket::forceMapEquip(player);
-	if (player->getActiveBuffs()->getActiveSkillLevel(9101004) == 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) == 0)
 		MapPacket::showPlayer(player);
 	if (timer > 0)
 		MapPacket::showTimer(player, timer - static_cast<int32_t>(time(0) - timerstart));
@@ -307,7 +308,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 
 	// Players
 	for (size_t i = 0; i < players.size(); i++) {
-		if (player != players[i] && players[i]->getActiveBuffs()->getActiveSkillLevel(9101004) == 0) {
+		if (player != players[i] && players[i]->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) == 0) {
 			PacketCreator packet = MapPacket::playerPacket(players[i]);
 			player->getSession()->send(packet);
 			Summons::showSummons(players[i], player);
