@@ -374,13 +374,13 @@ void Inventory::useItem(Player *player, PacketReader &packet) {
 void Inventory::useItem(Player *player, int32_t itemid) {
 	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
 	// Alchemist
-	int16_t alchemist = 0;
+	int16_t alchemist = 100;
 	if (player->getSkills()->getSkillLevel(Hermit::ALCHEMIST) > 0)
 		alchemist = Skills::skills[Hermit::ALCHEMIST][player->getSkills()->getSkillLevel(Hermit::ALCHEMIST)].x;
 	if (item.cons.hp > 0)
-		player->modifyHP(item.cons.hp + ((item.cons.hp * alchemist) / 100));
+		player->modifyHP(item.cons.hp * alchemist / 100));
 	if (item.cons.mp > 0)
-		player->modifyMP(item.cons.mp + ((item.cons.mp * alchemist) / 100));
+		player->modifyMP(item.cons.mp * alchemist / 100));
 	else
 		player->setMP(player->getMP(), true);
 	if (item.cons.hpr > 0)
@@ -389,9 +389,7 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 		player->modifyMP(item.cons.mpr * player->getMMP() / 100);
 	// Item buffs
 	if (item.cons.time > 0) {
-		int32_t time = item.cons.time;
-		if (alchemist > 0)
-			time = (time * alchemist) / 100;
+		int32_t time = item.cons.time * alchemist / 100;
 		SkillActiveInfo iteminfo;
 		memcpy(iteminfo.types, item.cons.types, sizeof(uint8_t[8]));
 		iteminfo.vals = item.cons.vals;
