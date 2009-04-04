@@ -125,7 +125,7 @@ void Characters::showCharacters(PlayerLogin *player) {
 
 void Characters::checkCharacterName(PlayerLogin *player, PacketReader &packet) {
 	string name = packet.getString();
-	if (name.size() > 15) {
+	if (name.size() > 15 || name.size() < 4) {
 		return;
 	}
 
@@ -146,7 +146,7 @@ void Characters::createEquip(int32_t equipid, int32_t type, int32_t charid) {
 void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 	Character charc;
 	string name = packet.getString();
-	if (name.size() > 15) {
+	if (name.size() > 15 || name.size() < 4) {
 		return;
 	}
 
