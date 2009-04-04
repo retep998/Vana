@@ -378,9 +378,9 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	if (player->getSkills()->getSkillLevel(Hermit::ALCHEMIST) > 0)
 		alchemist = Skills::skills[Hermit::ALCHEMIST][player->getSkills()->getSkillLevel(Hermit::ALCHEMIST)].x;
 	if (item.cons.hp > 0)
-		player->modifyHP(item.cons.hp * alchemist / 100));
+		player->modifyHP(item.cons.hp * alchemist / 100);
 	if (item.cons.mp > 0)
-		player->modifyMP(item.cons.mp * alchemist / 100));
+		player->modifyMP(item.cons.mp * alchemist / 100);
 	else
 		player->setMP(player->getMP(), true);
 	if (item.cons.hpr > 0)
