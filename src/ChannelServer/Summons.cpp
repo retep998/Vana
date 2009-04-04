@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Summons.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "LoopingId.h"
 #include "Maps.h"
 #include "Movement.h"
@@ -53,7 +54,7 @@ LoopingId Summons::summonids;
 
 void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 	Summon *summon = new Summon(summonids.next(), skillid, level);
-	bool puppet = HelperFunctions::isPuppet(skillid);
+	bool puppet = GameLogicUtilities::isPuppet(skillid);
 	removeSummon(player, puppet, true, false);
 	if (puppet)
 		summon->setPos( Maps::getMap(player->getMap())->findFloor(Pos((player->getPos().x + 200 * (player->getStance() % 2 == 1 ? -1 : 1)), player->getPos().y)) );

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "DropsPacket.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Instance.h"
 #include "Inventory.h"
 #include "Levels.h"
@@ -487,7 +488,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
-		uint8_t weapontype = (uint8_t) HelperFunctions::getItemType(player->getInventory()->getEquippedID(11));
+		uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11));
 		handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
 		int32_t mobid = mob->getMobID();
 		Mob *htabusetaker = 0;
@@ -574,7 +575,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 				Timer::Id(Timer::Types::BuffTimer, ChiefBandit::PICKPOCKET, pp),
 				0, Timer::Time::fromNow(time));
 		}
-		if (!HelperFunctions::isSummon(skillid))
+		if (!GameLogicUtilities::isSummon(skillid))
 			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 	packet.skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection

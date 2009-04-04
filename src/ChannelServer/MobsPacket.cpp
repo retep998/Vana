@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MobsPacket.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "Mobs.h"
@@ -125,7 +126,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 		pack.skipBytes(4); // Charge
 	}
 	int32_t masteryid = 0;
-	switch (HelperFunctions::getItemType(player->getInventory()->getEquippedID(11))) {
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11))) {
 		case WEAPON_1H_SWORD:
 		case WEAPON_2H_SWORD:
 			switch ((player->getJob() / 10)) {
@@ -220,7 +221,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(animation);
 	packet.add<int8_t>(w_speed);
 	int32_t masteryid = 0;
-	switch (HelperFunctions::getItemType(player->getInventory()->getEquippedID(11))) {
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11))) {
 		case WEAPON_BOW:
 			masteryid = Hunter::BOWMASTERY;
 			break;

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropDataProvider.h"
 #include "DropsPacket.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "ItemDataProvider.h"
 #include "Maps.h"
@@ -123,7 +124,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 						continue;
 				}
 
-				if (HelperFunctions::isEquip(itemid))
+				if (GameLogicUtilities::isEquip(itemid))
 					drop = new Drop(mapid, Item(itemid, true), pos, playerid);
 				else
 					drop = new Drop(mapid, Item(itemid, amount), pos, playerid);
@@ -211,7 +212,7 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	}
 	else {
 		Item dropitem = drop->getItem();
-		if (HelperFunctions::isEquip(dropitem.id) || !ItemDataProvider::Instance()->getItemInfo(dropitem.id).cons.autoconsume) {
+		if (GameLogicUtilities::isEquip(dropitem.id) || !ItemDataProvider::Instance()->getItemInfo(dropitem.id).cons.autoconsume) {
 			Item *item = new Item(dropitem);
 			int16_t dropAmount = drop->getAmount();
 			int16_t amount = Inventory::addItem(player, item, true);

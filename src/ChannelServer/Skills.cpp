@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Buffs.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "MapPacket.h"
 #include "Maps.h"
@@ -47,7 +48,7 @@ void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo le
 void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t skillid = packet.get<int32_t>();
-	if (HelperFunctions::isBeginnerSkill(skillid)) {
+	if (GameLogicUtilities::isBeginnerSkill(skillid)) {
 		if (player->getSP() == 0) {
 			// hacking
 			return;
@@ -57,7 +58,7 @@ void Skills::addSkill(Player *player, PacketReader &packet) {
 			return;
 		}
 	}
-	if (player->getSkills()->addSkillLevel(skillid, 1) && !HelperFunctions::isBeginnerSkill(skillid)) {
+	if (player->getSkills()->addSkillLevel(skillid, 1) && !GameLogicUtilities::isBeginnerSkill(skillid)) {
 		player->setSP(player->getSP() - 1);
 	}
 }
@@ -198,7 +199,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	SkillsPacket::showSkill(player, skillid, level);
 	if (Buffs::Instance()->addBuff(player, skillid, level, addedinfo))
 		return;
-	else if (HelperFunctions::isSummon(skillid))
+	else if (GameLogicUtilities::isSummon(skillid))
 		Summons::useSummon(player, skillid, level);
 }
 

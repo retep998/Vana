@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerSkills.h"
 #include "Database.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Randomizer.h"
@@ -94,7 +95,7 @@ void PlayerSkills::connectData(PacketCreator &packet) {
 	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
 		packet.add<int32_t>(iter->first);
 		packet.add<int32_t>(iter->second.level);
-		if (HelperFunctions::isFourthJobSkill(iter->first))
+		if (GameLogicUtilities::isFourthJobSkill(iter->first))
 			packet.add<int32_t>(iter->second.maxlevel); // Max Level for 4th job skills
 	}
 }
