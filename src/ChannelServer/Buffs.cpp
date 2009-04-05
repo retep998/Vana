@@ -34,7 +34,7 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::Fighter::SwordBooster].player.push_back(player); // Sword Booster
 	skillsinfo[Jobs::Fighter::AxeBooster].player.push_back(player); // Axe Booster
 	skillsinfo[Jobs::Page::SwordBooster].player.push_back(player); // Sword Booster
-	skillsinfo[Jobs::Page::BowBooster].player.push_back(player); // Blunt Booster
+	skillsinfo[Jobs::Page::BwBooster].player.push_back(player); // Blunt Booster
 	skillsinfo[Jobs::Spearman::SpearBooster].player.push_back(player); // Spear Booster
 	skillsinfo[Jobs::Spearman::PolearmBooster].player.push_back(player); // Polearm Booster
 	skillsinfo[Jobs::FPMage::SpellBooster].player.push_back(player); // Spell Booster
@@ -219,24 +219,24 @@ Buffs::Buffs() {
 	player.byte = Type1;
 	player.value = SkillMatk;
 	skillsinfo[Jobs::WhiteKnight::SwordFireCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BowFireCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwFireCharge].player.push_back(player);
 	skillsinfo[Jobs::WhiteKnight::SwordIceCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BowIceCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwIceCharge].player.push_back(player);
 	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BowLitCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwLitCharge].player.push_back(player);
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
-	skillsinfo[Jobs::Paladin::BowHolyCharge].player.push_back(player);
+	skillsinfo[Jobs::Paladin::BwHolyCharge].player.push_back(player);
 	player.type = 0x40;
 	player.byte = Type3;
 	player.value = SkillMatk;
 	skillsinfo[Jobs::WhiteKnight::SwordFireCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BowFireCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwFireCharge].player.push_back(player);
 	skillsinfo[Jobs::WhiteKnight::SwordIceCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BowIceCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwIceCharge].player.push_back(player);
 	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BowLitCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwLitCharge].player.push_back(player);
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
-	skillsinfo[Jobs::Paladin::BowHolyCharge].player.push_back(player);
+	skillsinfo[Jobs::Paladin::BwHolyCharge].player.push_back(player);
 	// 2311003 & 9101002 - Holy Symbol
 	player.type = 0x1;
 	player.byte = Type4;
