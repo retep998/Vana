@@ -887,7 +887,7 @@ int LuaExports::addInstanceMap(lua_State *luaVm) {
 
 int LuaExports::addInstancePlayer(lua_State *luaVm) {
 	Player *player = 0;
-	if (lua_isstring(luaVm, -1))
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
 		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
@@ -903,7 +903,7 @@ int LuaExports::addInstanceReactor(lua_State *luaVm) {
 
 int LuaExports::banInstancePlayer(lua_State *luaVm) {
 	Player *player = 0;
-	if (lua_isstring(luaVm, -1))
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
 		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
@@ -958,7 +958,7 @@ int LuaExports::getInstancePlayerCount(lua_State *luaVm) {
 
 int LuaExports::getInstancePlayerId(lua_State *luaVm) {
 	Player *player = 0;
-	if (lua_isstring(luaVm, -1))
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
 		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
@@ -978,7 +978,7 @@ int LuaExports::getInstanceVariable(lua_State *luaVm) {
 
 int LuaExports::isBannedInstancePlayer(lua_State *luaVm) {
 	Player *player = 0;
-	if (lua_isstring(luaVm, -1))
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
 		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
@@ -1008,7 +1008,7 @@ int LuaExports::setInstancePersistence(lua_State *luaVm) {
 
 int LuaExports::setInstancePlayer(lua_State *luaVm) {
 	Player *player = 0;
-	if (lua_isstring(luaVm, -1))
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
 		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
@@ -1050,7 +1050,7 @@ int LuaExports::stopInstanceTimer(lua_State *luaVm) {
 
 int LuaExports::removeInstancePlayer(lua_State *luaVm) {
 	Player *player = 0;
-	if (lua_isstring(luaVm, -1))
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
 		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
@@ -1065,7 +1065,7 @@ int LuaExports::revertInstancePlayer(lua_State *luaVm) {
 
 int LuaExports::unbanInstancePlayer(lua_State *luaVm) {
 	Player *player = 0;
-	if (lua_isstring(luaVm, -1))
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
 		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
