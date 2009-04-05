@@ -459,7 +459,7 @@ namespace Jobs {
 
 	namespace Shadower {
 		enum {
-			Boomerang_Step = 4221007,
+			BoomerangStep = 4221007,
 			HerosWill = 4221008,
 			MapleWarrior = 4221000,
 			NinjaAmbush = 4221004,
