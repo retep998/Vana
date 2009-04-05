@@ -81,9 +81,9 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 		}
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(shops[id].items[i]);
 		if (GameLogicUtilities::isStar(shops[id].items[i]))
-			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Jobs::Assassin::Claw_Mastery) * 10);
+			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10);
 		else if (GameLogicUtilities::isBullet(shops[id].items[i]))
-			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Jobs::Gunslinger::Gun_Mastery) * 10);
+			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
 		else
 			packet.add<int16_t>(maxslot);
 	}

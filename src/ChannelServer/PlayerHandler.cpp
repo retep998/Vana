@@ -102,14 +102,14 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			stance = packet.get<int8_t>(); // Power Stance
 			if (stance > 0) {
 				int32_t skillid = 0;
-				if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hero::Power_Stance) > 0)
-					skillid = Jobs::Hero::Power_Stance;
-				else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Paladin::Power_Stance) > 0)
-					skillid = Jobs::Paladin::Power_Stance;
-				else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::DarkKnight::Power_Stance) > 0)
-					skillid = Jobs::DarkKnight::Power_Stance;
-				else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Marauder::Energy_Charge) > 0)
-					skillid = Jobs::Marauder::Energy_Charge;
+				if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hero::PowerStance) > 0)
+					skillid = Jobs::Hero::PowerStance;
+				else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0)
+					skillid = Jobs::Paladin::PowerStance;
+				else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0)
+					skillid = Jobs::DarkKnight::PowerStance;
+				else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
+					skillid = Jobs::Marauder::EnergyCharge;
 				if (skillid == 0 || player->getSkills()->getSkillLevel(skillid) == 0) {
 					// Hacking
 					return;
@@ -120,8 +120,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	}
 	if (damage == -1) {
 		switch (job) {
-			case 412: nodamageid = Jobs::NightLord::Shadow_Shifter; break; // Fake
-			case 422: nodamageid = Jobs::Shadower::Shadow_Shifter; break; // Fake
+			case 412: nodamageid = Jobs::NightLord::ShadowShifter; break; // Fake
+			case 422: nodamageid = Jobs::Shadower::ShadowShifter; break; // Fake
 			case 112: nodamageid = Jobs::Hero::Guardian; break; // Guardian
 			case 122: nodamageid = Jobs::Paladin::Guardian; break; // Guardian
 		}
@@ -134,8 +134,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		// Status ailment processing here
 	}
 	if (damage > 0 && !player->hasGMEquip()) {
-		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Meso_Guard) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
-			int16_t mesorate = Skills::skills[Jobs::ChiefBandit::Meso_Guard][player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Meso_Guard)].x; // Meso Guard meso %
+		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
+			int16_t mesorate = Skills::skills[Jobs::ChiefBandit::MesoGuard][player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard)].x; // Meso Guard meso %
 			int16_t hp = player->getHP();
 			int16_t mesoloss = (int16_t)(mesorate * damage / 2 / 100);
 			int32_t mesos = player->getInventory()->getMesos();
@@ -148,7 +148,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			else
 				damage /= 2; // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
 			player->getInventory()->setMesos(newmesos);
-			SkillsPacket::showSkillEffect(player, Jobs::ChiefBandit::Meso_Guard);
+			SkillsPacket::showSkillEffect(player, Jobs::ChiefBandit::MesoGuard);
 			player->damageHP((uint16_t) damage);
 			if (attack.deadlyattack && player->getMP() > 0)
 				player->setMP(1);
@@ -156,7 +156,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->damageMP(attack.mpburn);
 			applieddamage = true;
 		}
-		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Magician::Magic_Guard) > 0) { // Magic Guard
+		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0) { // Magic Guard
 			int16_t mp = player->getMP();
 			int16_t hp = player->getHP();
 			if (attack.deadlyattack) {
@@ -169,7 +169,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->damageHP((uint16_t) damage);
 			}
 			else {
-				int16_t reduc = Skills::skills[Jobs::Magician::Magic_Guard][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Magician::Magic_Guard)].x;
+				int16_t reduc = Skills::skills[Jobs::Magician::MagicGuard][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Magician::MagicGuard)].x;
 				uint16_t mpdamage = (uint16_t)((damage * reduc) / 100);
 				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
 				bool ison = false;
@@ -256,13 +256,13 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 	int32_t skillid = packet.get<int32_t>();
 	switch (skillid) {
-		case Jobs::Hero::Monster_Magnet: // Monster Magnet x3
-		case Jobs::Paladin::Monster_Magnet:
-		case Jobs::DarkKnight::Monster_Magnet:
-		case Jobs::Marksman::Piercing_Arrow: // Pierce
-		case Jobs::FPArchMage::Big_Bang: // Big Bang x3
-		case Jobs::ILArchMage::Big_Bang:
-		case Jobs::Bishop::Big_Bang: {
+		case Jobs::Hero::MonsterMagnet: // Monster Magnet x3
+		case Jobs::Paladin::MonsterMagnet:
+		case Jobs::DarkKnight::MonsterMagnet:
+		case Jobs::Marksman::PiercingArrow: // Pierce
+		case Jobs::FPArchMage::BigBang: // Big Bang x3
+		case Jobs::ILArchMage::BigBang:
+		case Jobs::Bishop::BigBang: {
 			SpecialSkillInfo info;
 			info.skillid = skillid;
 			info.level = packet.get<int8_t>();

@@ -22,60 +22,60 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Enumerations
 enum WeaponTypes {
-	Weapon_1h_Sword = 130,
-	Weapon_1h_Axe = 131,
-	Weapon_1h_Mace = 132,
-	Weapon_Dagger = 133,
-	Weapon_Wand = 137,
-	Weapon_Staff = 138,
-	Weapon_2h_Sword = 140,
-	Weapon_2h_Axe = 141,
-	Weapon_2h_Mace = 142,
-	Weapon_Spear = 143,
-	Weapon_Polearm = 144,
-	Weapon_Bow = 145,
-	Weapon_Crossbow = 146,
-	Weapon_Claw = 147,
-	Weapon_Knuckle = 148,
-	Weapon_Gun = 149
+	Weapon1hSword = 130,
+	Weapon1hAxe = 131,
+	Weapon1hMace = 132,
+	WeaponDagger = 133,
+	WeaponWand = 137,
+	WeaponStaff = 138,
+	Weapon2hSword = 140,
+	Weapon2hAxe = 141,
+	Weapon2hMace = 142,
+	WeaponSpear = 143,
+	WeaponPolearm = 144,
+	WeaponBow = 145,
+	WeaponCrossbow = 146,
+	WeaponClaw = 147,
+	WeaponKnuckle = 148,
+	WeaponGun = 149
 };
 
 enum ItemFlags {
-	Flag_Lock = 0x01,
-	Flag_Spikes = 0x02,
-	Flag_Cold = 0x04
+	FlagLock = 0x01,
+	FlagSpikes = 0x02,
+	FlagCold = 0x04
 };
 
 enum Act {
-	Act_Heal,
-	Act_Hurt
+	ActHeal,
+	ActHurt
 };
 
 enum SkillValues {
-	Skill_X,
-	Skill_Y,
-	Skill_Speed,
-	Skill_Jump,
-	Skill_Watk,
-	Skill_Wdef,
-	Skill_Matk,
-	Skill_Mdef,
-	Skill_Acc,
-	Skill_Avo,
-	Skill_Prop,
-	Skill_Morph,
-	Skill_Lv
+	SkillX,
+	SkillY,
+	SkillSpeed,
+	SkillJump,
+	SkillWatk,
+	SkillWdef,
+	SkillMatk,
+	SkillMdef,
+	SkillAcc,
+	SkillAvo,
+	SkillProp,
+	SkillMorph,
+	SkillLv
 };
 
 enum ByteTypes {
-	Type_5,
-	Type_6,
-	Type_7,
-	Type_8,
-	Type_1,
-	Type_2,
-	Type_3,
-	Type_4
+	Type5,
+	Type6,
+	Type7,
+	Type8,
+	Type1,
+	Type2,
+	Type3,
+	Type4
 };
 
 enum MobStatus {
@@ -91,126 +91,126 @@ enum MobStatus {
 	Poison = 0x200,
 	Seal = 0x400,
 	// 0x800?
-	Weapon_Attack_Up = 0x1000,
-	Weapon_Defense_Up = 0x2000,
-	Magic_Attack_Up = 0x4000,
-	Magic_Defense_Up = 0x8000,
+	WeaponAttackUp = 0x1000,
+	WeaponDefenseUp = 0x2000,
+	MagicAttackUp = 0x4000,
+	MagicDefenseUp = 0x8000,
 	Doom = 0x10000,
-	Shadow_Web = 0x20000,
-	Weapon_Immunity = 0x40000,
-	Magic_Immunity = 0x80000
+	ShadowWeb = 0x20000,
+	WeaponImmunity = 0x40000,
+	MagicImmunity = 0x80000
 };
 
 // Skills so there are fewer magic numbers
 namespace Jobs {
 	namespace Beginner {
 		enum {
-			Echo_Of_Hero = 1005,
-			Follow_The_Lead = 8,
-			Monster_Rider = 1004,
-			Nimble_Feet = 1002,
+			EchoOfHero = 1005,
+			FollowTheLead = 8,
+			MonsterRider = 1004,
+			NimbleFeet = 1002,
 			Recovery = 1001
 		};
 	};
 
 	namespace Swordsman {
 		enum {
-			Improved_Max_Hp_Increase = 1000001,
-			Iron_Body = 1000003,
+			ImprovedMaxHpIncrease = 1000001,
+			IronBody = 1000003,
 		};
 	};
 
 	namespace Fighter {
 		enum {
-			Axe_Booster = 1101005,
-			Axe_Mastery = 1100001,
-			Power_Guard = 1101007,
+			AxeBooster = 1101005,
+			AxeMastery = 1100001,
+			PowerGuard = 1101007,
 			Rage = 1101006,
-			Sword_Booster = 1101004,
-			Sword_Mastery = 1100000
+			SwordBooster = 1101004,
+			SwordMastery = 1100000
 		};
 	};
 
 	namespace Crusader {
 		enum {
-			Armor_Crash = 1111007,
-			Axe_Coma = 1111006,
-			Axe_Panic = 1111004,
-			Combo_Attack = 1111002,
+			ArmorCrash = 1111007,
+			AxeComa = 1111006,
+			AxePanic = 1111004,
+			ComboAttack = 1111002,
 			Shout = 1111008,
-			Sword_Coma = 1111005,
-			Sword_Panic = 1111003
+			SwordComa = 1111005,
+			SwordPanic = 1111003
 		};
 	};
 
 	namespace Hero {
 		enum {
 			Achilles = 1120004,
-			Advanced_Combo_Attack = 1120003,
+			AdvancedComboAttack = 1120003,
 			Enrage = 1121010,
 			Guardian = 1120005,
-			Heros_Will = 1121011,
-			Maple_Warrior = 1121000,
-			Monster_Magnet = 1121001,
-			Power_Stance = 1121002
+			HerosWill = 1121011,
+			MapleWarrior = 1121000,
+			MonsterMagnet = 1121001,
+			PowerStance = 1121002
 		};
 	};
 
 	namespace Page {
 		enum {
-			Bw_Booster = 1201005,
-			Bw_Mastery = 1200001,
-			Power_Guard = 1201007,
-			Sword_Booster = 1201004,
-			Sword_Mastery = 1200000,
+			BowBooster = 1201005,
+			BowMastery = 1200001,
+			PowerGuard = 1201007,
+			SwordBooster = 1201004,
+			SwordMastery = 1200000,
 			Threaten = 1201006
 		};
 	};
 
 	namespace WhiteKnight {
 		enum {
-			Bw_Fire_Charge = 1211004,
-			Bw_Ice_Charge = 1211006,
-			Bw_Lit_Charge = 1211008,
-			Charge_Blow = 1211002,
-			Magic_Crash = 1211009,
-			Sword_Fire_Charge = 1211003,
-			Sword_Ice_Charge = 1211005,
-			Sword_Lit_Charge = 1211007
+			BowFireCharge = 1211004,
+			BowIceCharge = 1211006,
+			BowLitCharge = 1211008,
+			ChargeBlow = 1211002,
+			MagicCrash = 1211009,
+			SwordFireCharge = 1211003,
+			SwordIceCharge = 1211005,
+			SwordLitCharge = 1211007
 		};
 	};
 
 	namespace Paladin {
 		enum {
 			Achilles = 1220005,
-			Advanced_Charge = 1220010,
-			Bw_Holy_Charge = 1221004,
+			AdvancedCharge = 1220010,
+			BowHolyCharge = 1221004,
 			Guardian = 1220006,
-			Heavens_Hammer = 1221011,
-			Heros_Will = 1221012,
-			Maple_Warrior = 1221000,
-			Monster_Magnet = 1221001,
-			Power_Stance = 1221002,
-			Sword_Holy_Charge = 1221003
+			HeavensHammer = 1221011,
+			HerosWill = 1221012,
+			MapleWarrior = 1221000,
+			MonsterMagnet = 1221001,
+			PowerStance = 1221002,
+			SwordHolyCharge = 1221003
 		};
 	};
 
 	namespace Spearman {
 		enum {
-			Hyper_Body = 1301007,
-			Iron_Will = 1301006,
-			Polearm_Booster = 1301005,
-			Polearm_Mastery = 1300001,
-			Spear_Booster = 1301004,
-			Spear_Mastery = 1300000
+			HyperBody = 1301007,
+			IronWill = 1301006,
+			PolearmBooster = 1301005,
+			PolearmMastery = 1300001,
+			SpearBooster = 1301004,
+			SpearMastery = 1300000
 		};
 	};
 
 	namespace DragonKnight {
 		enum {
-			Dragon_Blood = 1311008,
-			Dragon_Roar = 1311006,
-			Power_Crash = 1311007,
+			DragonBlood = 1311008,
+			DragonRoar = 1311006,
+			PowerCrash = 1311007,
 			Sacrifice = 1311005
 		};
 	};
@@ -218,86 +218,86 @@ namespace Jobs {
 	namespace DarkKnight {
 		enum {
 			Achilles = 1320005,
-			Aura_Of_Beholder = 1320008,
+			AuraOfBeholder = 1320008,
 			Beholder = 1321007,
 			Berserk = 1320006,
-			Heros_Will = 1321010,
-			Hex_Of_Beholder = 1320009,
-			Maple_Warrior = 1321000,
-			Monster_Magnet = 1321001,
-			Power_Stance = 1321002
+			HerosWill = 1321010,
+			HexOfBeholder = 1320009,
+			MapleWarrior = 1321000,
+			MonsterMagnet = 1321001,
+			PowerStance = 1321002
 		};
 	};
 
 	namespace Magician {
 		enum {
-			Improved_Max_Mp_Increase = 2000001,
-			Magic_Armor = 2001003,
-			Magic_Guard = 2001002
+			ImprovedMaxMpIncrease = 2000001,
+			MagicArmor = 2001003,
+			MagicGuard = 2001002
 		};
 	};
 
 	namespace FPWizard {
 		enum {
 			Meditation = 2101001,
-			Mp_Eater = 2100000,
-			Poison_Breath = 2101005,
+			MpEater = 2100000,
+			PoisonBreath = 2101005,
 			Slow = 2101003
 		};
 	};
 
 	namespace FPMage {
 		enum {
-			Element_Amplification = 2110001,
-			Element_Composition = 2111006,
-			Poison_Mist = 2111003,
+			ElementAmplification = 2110001,
+			ElementComposition = 2111006,
+			PoisonMist = 2111003,
 			Seal = 2111004,
-			Spell_Booster = 2111005
+			SpellBooster = 2111005
 		};
 	};
 
 	namespace FPArchMage {
 		enum {
-			Big_Bang = 2121001,
+			BigBang = 2121001,
 			Elquines = 2121005,
-			Fire_Demon = 2121003,
-			Heros_Will = 2121008,
+			FireDemon = 2121003,
+			HerosWill = 2121008,
 			Infinity = 2121004,
-			Mana_Reflection = 2121002,
-			Maple_Warrior = 2121000,
+			ManaReflection = 2121002,
+			MapleWarrior = 2121000,
 			Paralyze = 2121006
 		};
 	};
 
 	namespace ILWizard {
 		enum {
-			Cold_Beam = 2201004,
+			ColdBeam = 2201004,
 			Meditation = 2201001,
-			Mp_Eater = 2200000,
+			MpEater = 2200000,
 			Slow = 2201003
 		};
 	};
 
 	namespace ILMage {
 		enum {
-			Element_Amplification = 2210001,
-			Element_Composition = 2211006,
-			Ice_Strike = 2211002,
+			ElementAmplification = 2210001,
+			ElementComposition = 2211006,
+			IceStrike = 2211002,
 			Seal = 2211004,
-			Spell_Booster = 2211005
+			SpellBooster = 2211005
 		};
 	};
 
 	namespace ILArchMage {
 		enum {
-			Big_Bang = 22210001,
+			BigBang = 22210001,
 			Blizzard = 2221007,
-			Heros_Will = 2221008,
-			Ice_Demon = 2221003,
+			HerosWill = 2221008,
+			IceDemon = 2221003,
 			Ifrit = 2221005,
 			Infinity = 2221004,
-			Mana_Reflection = 2221002,
-			Maple_Warrior = 2221000
+			ManaReflection = 2221002,
+			MapleWarrior = 2221000
 		};
 	};
 
@@ -306,7 +306,7 @@ namespace Jobs {
 			Bless = 2301004,
 			Heal = 2301002,
 			Invincible = 2301003,
-			Mp_Eater = 2300000
+			MpEater = 2300000
 		};
 	};
 
@@ -314,46 +314,46 @@ namespace Jobs {
 		enum {
 			Dispel = 2311001,
 			Doom = 2311005,
-			Holy_Symbol = 2311003,
-			Mystic_Door = 2311002,
-			Summon_Dragon = 2311006
+			HolySymbol = 2311003,
+			MysticDoor = 2311002,
+			SummonDragon = 2311006
 		};
 	};
 
 	namespace Bishop {
 		enum {
 			Bahamut = 2321003,
-			Big_Bang = 2321001,
-			Heros_Will = 2321009,
-			Holy_Shield = 2321005,
+			BigBang = 2321001,
+			HerosWill = 2321009,
+			HolyShield = 2321005,
 			Infinity = 2321004,
-			Mana_Reflection = 2321002,
-			Maple_Warrior = 2321000,
+			ManaReflection = 2321002,
+			MapleWarrior = 2321000,
 			Resurrection = 2321006
 		};
 	};
 
 	namespace Archer {
 		enum {
-			Critical_Shot = 3000001,
+			CriticalShot = 3000001,
 			Focus = 3001003
 		};
 	};
 
 	namespace Hunter {
 		enum {
-			Arrow_Bomb = 3101005,
-			Bow_Booster = 3101002,
-			Bow_Mastery = 3100000,
-			Soul_Arrow = 3101004
+			ArrowBomb = 3101005,
+			BowBooster = 3101002,
+			BowMastery = 3100000,
+			SoulArrow = 3101004
 		};
 	};
 
 	namespace Ranger {
 		enum {
-			Mortal_Blow = 3110001,
+			MortalBlow = 3110001,
 			Puppet = 3111002,
-			Silver_Hawk = 3111005
+			SilverHawk = 3111005
 		};
 	};
 
@@ -361,27 +361,27 @@ namespace Jobs {
 		enum {
 			Concentrate = 3121008,
 			Hamstring = 3121007,
-			Heros_Will = 3121009,
+			HerosWill = 3121009,
 			Hurricane = 3121004,
-			Maple_Warrior = 3121000,
+			MapleWarrior = 3121000,
 			Phoenix = 3121006,
-			Sharp_Eyes = 3121002
+			SharpEyes = 3121002
 		};
 	};
 
 	namespace Crossbowman {
 		enum {
-			Crossbow_Booster = 3201002,
-			Crossbow_Mastery = 3200000,
-			Soul_Arrow = 3201004
+			CrossbowBooster = 3201002,
+			CrossbowMastery = 3200000,
+			SoulArrow = 3201004
 		};
 	};
 
 	namespace Sniper {
 		enum {
 			Blizzard = 3211003,
-			Golden_Eagle = 3211005,
-			Mortal_Blow = 3210001,
+			GoldenEagle = 3211005,
+			MortalBlow = 3210001,
 			Puppet = 3211002
 		};
 	};
@@ -390,26 +390,26 @@ namespace Jobs {
 		enum {
 			Blind = 3221006,
 			Frostprey = 3221005,
-			Heros_Will = 3221008,
-			Maple_Warrior = 3221000,
-			Piercing_Arrow = 3221001,
-			Sharp_Eyes = 3221002,
+			HerosWill = 3221008,
+			MapleWarrior = 3221000,
+			PiercingArrow = 3221001,
+			SharpEyes = 3221002,
 			Snipe = 3221007
 		};
 	};
 
 	namespace Rogue {
 		enum {
-			Dark_Sight = 4001003,
+			DarkSight = 4001003,
 			Disorder = 4001002
 		};
 	};
 
 	namespace Assassin {
 		enum {
-			Claw_Booster = 4101003,
-			Claw_Mastery = 4100000,
-			Critical_Throw = 4100001,
+			ClawBooster = 4101003,
+			ClawMastery = 4100000,
+			CriticalThrow = 4100001,
 			Drain = 4101005,
 			Haste = 4101004
 		};
@@ -418,30 +418,30 @@ namespace Jobs {
 	namespace Hermit {
 		enum {
 			Alchemist = 4110000,
-			Meso_Up = 4111001,
-			Shadow_Meso = 4111004,
-			Shadow_Partner = 4111002,
-			Shadow_Web = 4111003
+			MesoUp = 4111001,
+			ShadowMeso = 4111004,
+			ShadowPartner = 4111002,
+			ShadowWeb = 4111003
 		};
 	};
 
 	namespace NightLord {
 		enum {
-			Heros_Will = 4121009,
-			Maple_Warrior = 4121000,
-			Ninja_Ambush = 4121004,
-			Ninja_Storm = 4121008,
-			Shadow_Claw = 4121006,
-			Shadow_Shifter = 4120002,
+			HerosWill = 4121009,
+			MapleWarrior = 4121000,
+			NinjaAmbush = 4121004,
+			NinjaStorm = 4121008,
+			ShadowClaw = 4121006,
+			ShadowShifter = 4120002,
 			Taunt = 4121003,
-			Venomous_Star = 4120005,
+			VenomousStar = 4120005,
 		};
 	};
 
 	namespace Bandit {
 		enum {
-			Dagger_Booster = 4201002,
-			Dagger_Mastery = 4200000,
+			DaggerBooster = 4201002,
+			DaggerMastery = 4200000,
 			Haste = 4201003,
 			Steal = 4201004
 		};
@@ -451,8 +451,8 @@ namespace Jobs {
 		enum {
 			Assaulter = 4211002,
 			Chakra = 4211001,
-			Meso_Explosion = 4211006,
-			Meso_Guard = 4211005,
+			MesoExplosion = 4211006,
+			MesoGuard = 4211005,
 			Pickpocket = 4211003
 		};
 	};
@@ -460,13 +460,13 @@ namespace Jobs {
 	namespace Shadower {
 		enum {
 			Boomerang_Step = 4221007,
-			Heros_Will = 4221008,
-			Maple_Warrior = 4221000,
-			Ninja_Ambush = 4221004,
-			Shadow_Shifter = 4220002,
+			HerosWill = 4221008,
+			MapleWarrior = 4221000,
+			NinjaAmbush = 4221004,
+			ShadowShifter = 4220002,
 			Smokescreen = 4221006,
 			Taunt = 4221003,
-			Venomous_Stab = 4220005
+			VenomousStab = 4220005
 		};
 	};
 
@@ -478,21 +478,21 @@ namespace Jobs {
 
 	namespace Infighter {
 		enum {
-			Backspin_Blow = 5101002,
-			Corkscrew_Blow = 5101004,
-			Double_Uppercut = 5101003,
-			Improve_Max_Hp = 5100000,
-			Knuckler_Booster = 5101006,
-			Knuckler_Mastery = 5100001,
-			Mp_Recovery = 5101005,
-			Oak_Barrel = 5101007
+			BackspinBlow = 5101002,
+			CorkscrewBlow = 5101004,
+			DoubleUppercut = 5101003,
+			ImproveMaxHp = 5100000,
+			KnucklerBooster = 5101006,
+			KnucklerMastery = 5100001,
+			MpRecovery = 5101005,
+			OakBarrel = 5101007
 		};
 	};
 
 	namespace Marauder {
 		enum {
-			Energy_Charge = 5110001,
-			Stun_Mastery = 5110000,
+			EnergyCharge = 5110001,
+			StunMastery = 5110000,
 			Transformation = 5111005
 		};
 	};
@@ -500,21 +500,21 @@ namespace Jobs {
 	namespace Buccaneer {
 		enum {
 			Demolition = 5121004,
-			Maple_Warrior = 5121000,
-			Pirates_Rage = 5121008, // Hero's Will
+			MapleWarrior = 5121000,
+			PiratesRage = 5121008, // Hero's Will
 			Snatch = 5121005,
-			Speed_Infusion = 5121009,
-			Super_Transformation = 5121003,
-			Time_Leap = 5121010
+			SpeedInfusion = 5121009,
+			SuperTransformation = 5121003,
+			TimeLeap = 5121010
 		};
 	};
 
 	namespace Gunslinger {
 		enum {
-			Blank_Shot = 5201004,
+			BlankShot = 5201004,
 			Grenade = 5201002,
-			Gun_Booster = 5201003,
-			Gun_Mastery = 5200000
+			GunBooster = 5201003,
+			GunMastery = 5200000
 		};
 	};
 
@@ -522,44 +522,44 @@ namespace Jobs {
 		enum {
 			Flamethrower = 5211004,
 			Gaviota = 5211002,
-			Homing_Beacon = 5211006,
-			Ice_Splitter = 5211005,
+			HomingBeacon = 5211006,
+			IceSplitter = 5211005,
 			Octopus = 5211001
 		};
 	};
 
 	namespace Corsair {
 		enum {
-			Aerial_Strike = 5221003,
+			AerialStrike = 5221003,
 			Battleship = 5221006,
 			Bullseye = 5220011,
-			Elemental_Boost = 5220001,
+			ElementalBoost = 5220001,
 			Hypnotize = 5221009,
-			Maple_Warrior = 5221000,
-			Rapid_Fire = 5221004,
-			Speed_Infusion = 5221010 // Technically Hero's Will
+			MapleWarrior = 5221000,
+			RapidFire = 5221004,
+			SpeedInfusion = 5221010 // Technically Hero's Will
 		};
 	};
 
 	namespace GM {
 		enum {
 			Haste = 9001000,
-			Super_Dragon_Roar = 9001001,
+			SuperDragonRoar = 9001001,
 			Teleport = 9001002,
 		};
 	};
 
 	namespace SuperGM {
 		enum {
-			Heal_Plus_Dispel = 9101000,
+			HealPlusDispel = 9101000,
 			Haste = 9101001,
-			Holy_Symbol = 9101002,
+			HolySymbol = 9101002,
 			Bless = 9101003,
 			Hide = 9101004,
 			Resurrection = 9101005,
-			Super_Dragon_Roar = 9101006,
+			SuperDragonRoar = 9101006,
 			Teleport = 9101007,
-			Hyper_Body = 9101008
+			HyperBody = 9101008
 		};
 	};
 };

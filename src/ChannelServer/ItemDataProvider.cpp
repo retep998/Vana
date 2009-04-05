@@ -221,39 +221,39 @@ void ItemDataProvider::addItemInfo(int32_t id, ItemInfo item) {
 	memset(item.cons.types, 0, sizeof(item.cons.types));
 
 	if (item.cons.watk > 0) {
-		item.cons.types[Type_1] += 0x01;
+		item.cons.types[Type1] += 0x01;
 		item.cons.vals.push_back(item.cons.watk);
 	}
 	if (item.cons.wdef > 0) {
-		item.cons.types[Type_1] += 0x02;
+		item.cons.types[Type1] += 0x02;
 		item.cons.vals.push_back(item.cons.wdef);
 	}
 	if (item.cons.matk > 0) {
-		item.cons.types[Type_1] += 0x04;
+		item.cons.types[Type1] += 0x04;
 		item.cons.vals.push_back(item.cons.matk);
 	}
 	if (item.cons.mdef > 0) {
-		item.cons.types[Type_1] += 0x08;
+		item.cons.types[Type1] += 0x08;
 		item.cons.vals.push_back(item.cons.mdef);
 	}
 	if (item.cons.acc > 0) {
-		item.cons.types[Type_1] += 0x10;
+		item.cons.types[Type1] += 0x10;
 		item.cons.vals.push_back(item.cons.acc);
 	}
 	if (item.cons.avo > 0) {
-		item.cons.types[Type_1] += 0x20;
+		item.cons.types[Type1] += 0x20;
 		item.cons.vals.push_back(item.cons.avo);
 	}
 	if (item.cons.speed > 0) {
-		item.cons.types[Type_1] += 0x80;
+		item.cons.types[Type1] += 0x80;
 		item.cons.vals.push_back(item.cons.speed);
 	}
 	if (item.cons.jump > 0) {
-		item.cons.types[Type_2] = 0x01;
+		item.cons.types[Type2] = 0x01;
 		item.cons.vals.push_back(item.cons.jump);
 	}
 	if (item.cons.morph > 0) {
-		item.cons.types[Type_5] = 0x02;
+		item.cons.types[Type5] = 0x02;
 		item.cons.vals.push_back(item.cons.morph);
 	}
 
