@@ -45,14 +45,14 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 
 	/* Code that needs to be modified
 	SkillMapEnterActiveInfo enter = player->getActiveBuffs()->getSkillMapEnterInfo();
-	packet.add<int8_t>(enter.types[TYPE_1]);
-	packet.add<int8_t>(enter.types[TYPE_2]);
-	packet.add<int8_t>(enter.types[TYPE_3]);
-	packet.add<int8_t>(enter.types[TYPE_4]);
-	packet.add<int8_t>(enter.types[TYPE_5]);
-	packet.add<int8_t>(enter.types[TYPE_6]);
-	packet.add<int8_t>(enter.types[TYPE_7]);
-	packet.add<int8_t>(enter.types[TYPE_8]);
+	packet.add<int8_t>(enter.types[Type_1]);
+	packet.add<int8_t>(enter.types[Type_2]);
+	packet.add<int8_t>(enter.types[Type_3]);
+	packet.add<int8_t>(enter.types[Type_4]);
+	packet.add<int8_t>(enter.types[Type_5]);
+	packet.add<int8_t>(enter.types[Type_6]);
+	packet.add<int8_t>(enter.types[Type_7]);
+	packet.add<int8_t>(enter.types[Type_8]);
 	if (enter.isval) {
 		packet.add<int8_t>(enter.val);
 	}

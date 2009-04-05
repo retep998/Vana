@@ -56,7 +56,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Player::~Player() {
 	if (isconnect) {
 		if (getInstance() != 0) {
-			getInstance()->sendMessage(PLAYER_DC, getId());
+			getInstance()->sendMessage(Player_Disconnect, getId());
 		}
 		//if (this->getHP() == 0)
 		//	this->acceptDeath();
@@ -271,7 +271,7 @@ void Player::setHP(int16_t shp, bool is) {
 		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(PLAYER_DEATH, getId());
+		getInstance()->sendMessage(Player_Death, getId());
 	}
 }
 
@@ -288,7 +288,7 @@ void Player::modifyHP(int16_t nhp, bool is) {
 		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(PLAYER_DEATH, getId());
+		getInstance()->sendMessage(Player_Death, getId());
 	}
 }
 
@@ -299,12 +299,12 @@ void Player::damageHP(uint16_t dhp) {
 		Party::showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(PLAYER_DEATH, getId());
+		getInstance()->sendMessage(Player_Death, getId());
 	}
 }
 
 void Player::setMP(int16_t smp, bool is) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(FPArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(ILArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(Bishop::INFINITY) > 0)) {
+	if (!(getActiveBuffs()->getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::Bishop::Infinity) > 0)) {
 		if (smp < 0)
 			mp = 0;
 		else if (smp > mmp)
@@ -316,7 +316,7 @@ void Player::setMP(int16_t smp, bool is) {
 }
 
 void Player::modifyMP(int16_t nmp, bool is) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(FPArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(ILArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(Bishop::INFINITY) > 0)) {
+	if (!(getActiveBuffs()->getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::Bishop::Infinity) > 0)) {
 		if ((mp + nmp) < 0)
 			mp = 0;
 		else if ((mp + nmp) > mmp)
@@ -328,7 +328,7 @@ void Player::modifyMP(int16_t nmp, bool is) {
 }
 
 void Player::damageMP(uint16_t dmp) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(FPArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(ILArchMage::INFINITY) > 0 || getActiveBuffs()->getActiveSkillLevel(Bishop::INFINITY) > 0)) {
+	if (!(getActiveBuffs()->getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::Bishop::Infinity) > 0)) {
 		mp = (dmp > mp ? 0 : mp - dmp);
 	}
 	PlayerPacket::updateStatShort(this, 0x1000, mp, false);
@@ -627,13 +627,13 @@ void Player::acceptDeath() {
 }
 
 bool Player::hasGMEquip() {
-	if (getInventory()->getEquippedID(1) == GMSuit::HAT)
+	if (getInventory()->getEquippedID(1) == GMSuit::Hat)
 		return true;
-	if (getInventory()->getEquippedID(5) == GMSuit::TOP)
+	if (getInventory()->getEquippedID(5) == GMSuit::Top)
 		return true;
-	if (getInventory()->getEquippedID(6) == GMSuit::BOTTOM)
+	if (getInventory()->getEquippedID(6) == GMSuit::Bottom)
 		return true;
-	if (getInventory()->getEquippedID(11) == GMSuit::WEAPON)
+	if (getInventory()->getEquippedID(11) == GMSuit::Weapon)
 		return true;
 	return false;
 }

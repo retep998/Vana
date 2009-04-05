@@ -30,7 +30,7 @@ LuaInstance::LuaInstance(const string &name, int32_t playerid) : LuaScriptable("
 
 bool LuaInstance::run(InstanceMessages message) {
 	switch (message) {
-		case BEGIN_INSTANCE:
+		case Begin_Instance:
 			lua_getglobal(luaVm, "beginInstance");
 			break;
 	}
@@ -43,16 +43,16 @@ bool LuaInstance::run(InstanceMessages message) {
 
 bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
 	switch (message) {
-		case PLAYER_DEATH:
+		case Player_Death:
 			lua_getglobal(luaVm, "playerDeath");
 			lua_pushinteger(luaVm, parameter);
 			break;
-		case PLAYER_DC:
+		case Player_Disconnect:
 			lua_getglobal(luaVm, "playerDisconnect");
 			lua_pushinteger(luaVm, parameter);
 			break;
-		case INSTANCETIMER_END:
-		case INSTANCETIMER_NATURAL_END:
+		case Instance_Timer_End:
+		case Instance_Timer_Natural_End:
 			lua_getglobal(luaVm, "instanceTimerEnd");
 			lua_pushboolean(luaVm, (parameter != 0));
 			break;
@@ -66,8 +66,8 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
 
 bool LuaInstance::run(InstanceMessages message, const string &parameter1, int32_t parameter2) {
 	switch (message) {
-		case TIMER_END:
-		case TIMER_NATURAL_END:
+		case Timer_End:
+		case Timer_Natural_End:
 			lua_getglobal(luaVm, "timerEnd");
 			lua_pushstring(luaVm, parameter1.c_str());
 			lua_pushboolean(luaVm, (parameter2 != 0));
@@ -82,10 +82,10 @@ bool LuaInstance::run(InstanceMessages message, const string &parameter1, int32_
 
 bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2) {
 	switch (message) {
-		case MOB_DEATH:
+		case Mob_Death:
 			lua_getglobal(luaVm, "mobDeath");
 			break;
-		case MOB_SPAWN:
+		case Mob_Spawn:
 			lua_getglobal(luaVm, "mobSpawn");
 			break;
 	}
@@ -100,7 +100,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 
 bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) {
 	switch (message) {
-		case PLAYER_CHANGEMAP:
+		case Player_Changemap:
 			lua_getglobal(luaVm, "changeMap");
 			break;
 	}

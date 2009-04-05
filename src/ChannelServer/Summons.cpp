@@ -29,18 +29,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Summon Class
 Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(summonid), level(level), hp(0) {
 	switch (summonid) {
-		case Ranger::PUPPET:
-		case Sniper::PUPPET:
+		case Jobs::Ranger::Puppet:
+		case Jobs::Sniper::Puppet:
 			hp = Skills::skills[summonid][level].x; // Get HP for puppet
-		case Outlaw::OCTOPUS:
+		case Jobs::Outlaw::Octopus:
 			type = 0; // No movement - Puppets and Octopus
 			break;
-		case Priest::SUMMONDRAGON:
-		case Ranger::SILVERHAWK:
-		case Sniper::GOLDENEAGLE:
-		case Bowmaster::PHOENIX:
-		case Marksman::FROSTPREY:
-		case Outlaw::GAVIOTA:
+		case Jobs::Priest::Summon_Dragon:
+		case Jobs::Ranger::Silver_Hawk:
+		case Jobs::Sniper::Golden_Eagle:
+		case Jobs::Bowmaster::Phoenix:
+		case Jobs::Marksman::Frostprey:
+		case Jobs::Outlaw::Gaviota:
 			type = 3; // Flying - Birds and Priest dragon
 			break;
 		default:

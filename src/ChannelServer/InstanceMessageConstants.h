@@ -20,22 +20,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 enum InstanceMessages {
 	// 3 parameters
-	PLAYER_CHANGEMAP, // Player ID, new map ID, old map ID
+	Player_Changemap, // Player ID, new map ID, old map ID
 
 	// 2 parameters
-	MOB_DEATH, // Mob ID, map mob ID
-	MOB_SPAWN, // Mob ID, map mob ID
-	TIMER_END, // Timer name, boolean false
-	TIMER_NATURAL_END, // Timer name, boolean true
+	Mob_Death, // Mob ID, map mob ID
+	Mob_Spawn, // Mob ID, map mob ID
+	Timer_End, // Timer name, boolean false
+	Timer_Natural_End, // Timer name, boolean true
 
 	// 1 parameter
-	PLAYER_DEATH, // Player ID
-	PLAYER_DC, // Player ID
-	INSTANCETIMER_END, // Boolean false
-	INSTANCETIMER_NATURAL_END, // Boolean true
+	Player_Death, // Player ID
+	Player_Disconnect, // Player ID
+	Instance_Timer_End, // Boolean false
+	Instance_Timer_Natural_End, // Boolean true
 
 	// 0 parameters
-	BEGIN_INSTANCE
+	Begin_Instance
 };
 
 #endif

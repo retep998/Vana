@@ -42,7 +42,7 @@ using std::tr1::regex;
 using std::tr1::cmatch;
 using std::tr1::regex_match;
 
-unordered_map<string, pair<CMD, int32_t> > ChatHandler::commandlist;
+unordered_map<string, pair<Commands, int32_t> > ChatHandler::commandlist;
 
 struct MeFunctor {
 	void operator() (Player *gmplayer) {
@@ -64,7 +64,7 @@ struct WarpFunctor {
 };
 
 void ChatHandler::initializeCommands() {
-	typedef pair<CMD, int32_t> command;
+	typedef pair<Commands, int32_t> command;
 	commandlist["ban"] = command(CMD_BAN, 3);
 	commandlist["unban"] = command(CMD_UNBAN, 3);
 	commandlist["header"] = command(CMD_HEADER, 3);

@@ -924,7 +924,7 @@ int LuaExports::createInstance(lua_State *luaVm) {
 	bool showtimer = lua_toboolean(luaVm, 4) != 0;
 	Instance *instance = new Instance(name, getPlayer(luaVm)->getMap(), getPlayer(luaVm)->getId(), time, persistent, showtimer);
 	Instances::InstancePtr()->addInstance(instance);
-	instance->sendMessage(BEGIN_INSTANCE);
+	instance->sendMessage(Begin_Instance);
 	lua_pushstring(luaVm, name.c_str());
 	lua_setglobal(luaVm, "instancename");
 	return 0;

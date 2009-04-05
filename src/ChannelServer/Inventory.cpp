@@ -212,7 +212,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			item->amount = ItemDataProvider::Instance()->getMaxslot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Assassin::CLAWMASTERY) * 10 : player->getSkills()->getSkillLevel(Gunslinger::GUNMASTERY) * 10);
+			item->amount = ItemDataProvider::Instance()->getMaxslot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::Claw_Mastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::Gun_Mastery) * 10);
 			player->getInventory()->modifyMesos(-1); // TODO: Calculate price, letting players recharge for 1 meso for now
 			InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
 			InventoryPacket::bought(player, 0);
@@ -284,11 +284,11 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	int16_t max = ItemDataProvider::Instance()->getMaxslot(itemid);
 	int16_t thisamount = 0;
 	if (GameLogicUtilities::isStar(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(Assassin::CLAWMASTERY) * 10;
+		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Assassin::Claw_Mastery) * 10;
 		amount -= 1;
 	}
 	else if (GameLogicUtilities::isBullet(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(Gunslinger::GUNMASTERY) * 10;
+		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Gunslinger::Gun_Mastery) * 10;
 		amount -= 1;
 	}
 	else if (GameLogicUtilities::isEquip(itemid) || GameLogicUtilities::isPet(itemid)) {
@@ -375,8 +375,8 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
 	// Alchemist
 	int16_t alchemist = 100;
-	if (player->getSkills()->getSkillLevel(Hermit::ALCHEMIST) > 0)
-		alchemist = Skills::skills[Hermit::ALCHEMIST][player->getSkills()->getSkillLevel(Hermit::ALCHEMIST)].x;
+	if (player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist) > 0)
+		alchemist = Skills::skills[Jobs::Hermit::Alchemist][player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist)].x;
 	if (item.cons.hp > 0)
 		player->modifyHP(item.cons.hp * alchemist / 100);
 	if (item.cons.mp > 0)
@@ -581,10 +581,10 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // These do not take slots and can be used even after success
 				switch (itemid) {
 					case 2040727:
-						equip->flags |= FLAG_SPIKES;
+						equip->flags |= Flag_Spikes;
 						break;
 					case 2041058:
-						equip->flags |= FLAG_COLD;
+						equip->flags |= Flag_Cold;
 						break;
 				}
 				succeed = 1;
@@ -733,7 +733,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 					// Hacking or failure, dunno
 					return;
 				}
-				item->flags |= FLAG_LOCK;
+				item->flags |= Flag_Lock;
 				InventoryPacket::addNewItem(player, inventory, slot, item, true);
 				used = true;
 			}

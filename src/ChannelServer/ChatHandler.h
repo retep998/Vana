@@ -32,7 +32,7 @@ class Player;
 class PacketReader;
 
 namespace ChatHandler {
-	extern unordered_map<string, pair<CMD, int32_t> > commandlist;
+	extern unordered_map<string, pair<Commands, int32_t> > commandlist;
 	void initializeCommands();
 	void handleChat(Player *player, PacketReader &packet);
 	void handleGroupChat(Player *player, PacketReader &packet);

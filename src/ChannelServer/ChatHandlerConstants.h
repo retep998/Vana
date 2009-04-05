@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CHATHANDLERCONSTANTS_H
 #define CHATHANDLERCONSTANTS_H
 
-enum CMD {
+enum Commands {
 	CMD_HEADER,
 	CMD_BAN,
 	CMD_UNBAN,
