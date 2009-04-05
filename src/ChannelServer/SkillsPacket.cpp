@@ -37,7 +37,7 @@ void SkillsPacket::addSkill(Player *player, int32_t skillid, PlayerSkillInfo ski
 }
 
 void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, bool party, bool self) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hide) > 0)
 		return;
  	PacketCreator packet;
 	if (party && self) {
@@ -85,7 +85,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t leve
 	}
 	if (send)
 		player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hide) > 0)
 		return;
 	packet = PacketCreator();
 	send = false;
@@ -112,7 +112,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t leve
 }
 
 void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang, Monster Magnet
-	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hide) > 0)
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SPECIAL_SKILL);
@@ -125,7 +125,7 @@ void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // 
 }
 
 void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hide) > 0)
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SPECIAL_SKILL_END);
@@ -158,7 +158,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int8_t>(level);
 	packet.add<int8_t>(on ? 1 : 0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->getActiveSkillLevel(SuperGM::HIDE) > 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hide) > 0)
 		return;
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_SKILL);  // For others

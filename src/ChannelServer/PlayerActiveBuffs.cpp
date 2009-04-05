@@ -65,8 +65,8 @@ int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) {
 struct RunAct {
 	void operator()() {
 		switch (act) {
-			case ACT_HEAL: Skills::heal(player, value, skill); break;
-			case ACT_HURT: Skills::hurt(player, value, skill); break;
+			case Act_Heal: Skills::heal(player, value, skill); break;
+			case Act_Hurt: Skills::hurt(player, value, skill); break;
 		}
 	}
 	Player *player;
@@ -101,19 +101,19 @@ void PlayerActiveBuffs::removeAct(int32_t skill) {
 void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	m_combo = combo;
 	if (sendPacket) {
-		SkillActiveInfo playerSkill = getBuffInfo(Crusader::COMBOATTACK);
+		SkillActiveInfo playerSkill = getBuffInfo(Jobs::Crusader::Combo_Attack);
 		playerSkill.vals[0] = combo + 1;
-		BuffsPacket::useSkill(m_player, Crusader::COMBOATTACK, buffTimeLeft(Crusader::COMBOATTACK), playerSkill, 0);
+		BuffsPacket::useSkill(m_player, Jobs::Crusader::Combo_Attack, buffTimeLeft(Jobs::Crusader::Combo_Attack), playerSkill, 0);
 	}
 }
 
 void PlayerActiveBuffs::addCombo() { // Add combo orbs
-	if (getActiveSkillLevel(Crusader::COMBOATTACK) > 0) {
-		int8_t advcombo = m_player->getSkills()->getSkillLevel(Hero::ADVANCEDCOMBOATTACK);
-		int8_t maxcombo = (int8_t) (advcombo > 0 ? Skills::skills[Hero::ADVANCEDCOMBOATTACK][advcombo].x : Skills::skills[Crusader::COMBOATTACK][m_player->getSkills()->getSkillLevel(Crusader::COMBOATTACK)].x);
+	if (getActiveSkillLevel(Jobs::Crusader::Combo_Attack) > 0) {
+		int8_t advcombo = m_player->getSkills()->getSkillLevel(Jobs::Hero::Advanced_Combo_Attack);
+		int8_t maxcombo = (int8_t) (advcombo > 0 ? Skills::skills[Jobs::Hero::Advanced_Combo_Attack][advcombo].x : Skills::skills[Jobs::Crusader::Combo_Attack][m_player->getSkills()->getSkillLevel(Jobs::Crusader::Combo_Attack)].x);
 		if (m_combo == maxcombo)
 			return;
-		if (advcombo > 0 && Randomizer::Instance()->randShort(99) < Skills::skills[Hero::ADVANCEDCOMBOATTACK][advcombo].prop)
+		if (advcombo > 0 && Randomizer::Instance()->randShort(99) < Skills::skills[Jobs::Hero::Advanced_Combo_Attack][advcombo].prop)
 			m_combo += 1; // 4th job skill gives chance to add second orb
 		m_combo += 1;
 		if (m_combo > maxcombo)
@@ -124,7 +124,7 @@ void PlayerActiveBuffs::addCombo() { // Add combo orbs
 
 void PlayerActiveBuffs::checkBerserk(bool display) {
 	if (m_player->getJob() == 132) { // Berserk calculations
-		int32_t skillid = DarkKnight::BERSERK;
+		int32_t skillid = Jobs::DarkKnight::Berserk;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
 			int16_t r_hp = m_player->getMHP() * Skills::skills[skillid][level].x / 100;
@@ -197,16 +197,16 @@ void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
 
 void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 	if (m_energycharge != 10000 && targets > 0) {
-		Timer::Id id(Timer::Types::BuffTimer, Marauder::ENERGYCHARGE, timeseed);
+		Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::Energy_Charge, timeseed);
 		if (m_player->getTimers()->checkTimer(id) > 0)
 			stopEnergyChargeTimer();
 		startEnergyChargeTimer();
-		m_energycharge += Skills::skills[Marauder::ENERGYCHARGE][m_player->getSkills()->getSkillLevel(Marauder::ENERGYCHARGE)].x * targets;
+		m_energycharge += Skills::skills[Jobs::Marauder::Energy_Charge][m_player->getSkills()->getSkillLevel(Jobs::Marauder::Energy_Charge)].x * targets;
 		if (m_energycharge > 10000) {
 			m_energycharge = 10000;
 			stopEnergyChargeTimer();
 		}
-		Buffs::Instance()->addBuff(m_player, Marauder::ENERGYCHARGE, m_player->getSkills()->getSkillLevel(Marauder::ENERGYCHARGE), 0);
+		Buffs::Instance()->addBuff(m_player, Jobs::Marauder::Energy_Charge, m_player->getSkills()->getSkillLevel(Jobs::Marauder::Energy_Charge), 0);
 	}
 }
 
@@ -218,7 +218,7 @@ void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
 	else {
 		startEnergyChargeTimer();
 	}
-	Buffs::Instance()->addBuff(m_player, Marauder::ENERGYCHARGE, m_player->getSkills()->getSkillLevel(Marauder::ENERGYCHARGE), 0);
+	Buffs::Instance()->addBuff(m_player, Jobs::Marauder::Energy_Charge, m_player->getSkills()->getSkillLevel(Jobs::Marauder::Energy_Charge), 0);
 }
 
 void PlayerActiveBuffs::resetEnergyChargeLevel() {
@@ -227,12 +227,12 @@ void PlayerActiveBuffs::resetEnergyChargeLevel() {
 
 void PlayerActiveBuffs::startEnergyChargeTimer() {
 	timeseed = static_cast<uint32_t>(clock());
-	Timer::Id id(Timer::Types::BuffTimer, Marauder::ENERGYCHARGE, timeseed); // Causes heap errors when it's a static number, but we need it for ID
+	Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::Energy_Charge, timeseed); // Causes heap errors when it's a static number, but we need it for ID
 	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
 		id, m_player->getTimers(), Timer::Time::fromNow(12 * 1000)); // 12 Seconds
 }
 
 void PlayerActiveBuffs::stopEnergyChargeTimer() {
-	Timer::Id id(Timer::Types::BuffTimer, Marauder::ENERGYCHARGE, timeseed);
+	Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::Energy_Charge, timeseed);
 	m_player->getTimers()->removeTimer(id);
 }
