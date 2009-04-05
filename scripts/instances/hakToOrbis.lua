@@ -30,7 +30,7 @@ end
 function instanceTimerEnd(fromtimer)
 	setInstancePlayer(getInstancePlayerByIndex(1));
 	setMap(200000141);
-	removeInstancePlayer(getName());
+	removeInstancePlayer(getID());
 	revertInstancePlayer();
 end
 
