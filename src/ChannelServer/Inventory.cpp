@@ -212,7 +212,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			item->amount = ItemDataProvider::Instance()->getMaxslot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::Claw_Mastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::Gun_Mastery) * 10);
+			item->amount = ItemDataProvider::Instance()->getMaxslot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
 			player->getInventory()->modifyMesos(-1); // TODO: Calculate price, letting players recharge for 1 meso for now
 			InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
 			InventoryPacket::bought(player, 0);
@@ -284,11 +284,11 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	int16_t max = ItemDataProvider::Instance()->getMaxslot(itemid);
 	int16_t thisamount = 0;
 	if (GameLogicUtilities::isStar(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Assassin::Claw_Mastery) * 10;
+		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
 		amount -= 1;
 	}
 	else if (GameLogicUtilities::isBullet(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Gunslinger::Gun_Mastery) * 10;
+		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10;
 		amount -= 1;
 	}
 	else if (GameLogicUtilities::isEquip(itemid) || GameLogicUtilities::isPet(itemid)) {
@@ -581,10 +581,10 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // These do not take slots and can be used even after success
 				switch (itemid) {
 					case 2040727:
-						equip->flags |= Flag_Spikes;
+						equip->flags |= FlagSpikes;
 						break;
 					case 2041058:
-						equip->flags |= Flag_Cold;
+						equip->flags |= FlagCold;
 						break;
 				}
 				succeed = 1;
@@ -733,7 +733,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 					// Hacking or failure, dunno
 					return;
 				}
-				item->flags |= Flag_Lock;
+				item->flags |= FlagLock;
 				InventoryPacket::addNewItem(player, inventory, slot, item, true);
 				used = true;
 			}

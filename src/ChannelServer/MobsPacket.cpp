@@ -103,7 +103,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	uint8_t hits = tbyte % 0x10;
 	int32_t skillid = pack.get<int32_t>();
 	bool s4211006 = false;
-	if (skillid == Jobs::ChiefBandit::Meso_Explosion) {
+	if (skillid == Jobs::ChiefBandit::MesoExplosion) {
 		tbyte = (targets * 0x10) + 0x0A;
 		s4211006 = true;
 	}
@@ -122,41 +122,41 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	pack.skipBytes(1); // Weapon subclass
 	packet.add<int8_t>(pack.get<int8_t>()); // Weapon speed
 	pack.skipBytes(4); // Ticks
-	if (skillid == Jobs::Gunslinger::Grenade || skillid == Jobs::Infighter::Corkscrew_Blow) {
+	if (skillid == Jobs::Gunslinger::Grenade || skillid == Jobs::Infighter::CorkscrewBlow) {
 		pack.skipBytes(4); // Charge
 	}
 	int32_t masteryid = 0;
 	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11))) {
-		case Weapon_1h_Sword:
-		case Weapon_2h_Sword:
+		case Weapon1hSword:
+		case Weapon2hSword:
 			switch ((player->getJob() / 10)) {
-				case 11: masteryid = Jobs::Fighter::Sword_Mastery; break;
-				case 12: masteryid = Jobs::Page::Sword_Mastery; break;
+				case 11: masteryid = Jobs::Fighter::SwordMastery; break;
+				case 12: masteryid = Jobs::Page::SwordMastery; break;
 				case 90:
 				case 91:
-					masteryid = (player->getSkills()->getSkillLevel(Jobs::Fighter::Sword_Mastery) >= player->getSkills()->getSkillLevel(Jobs::Page::Sword_Mastery) ? Jobs::Fighter::Sword_Mastery : Jobs::Page::Sword_Mastery);
+					masteryid = (player->getSkills()->getSkillLevel(Jobs::Fighter::SwordMastery) >= player->getSkills()->getSkillLevel(Jobs::Page::SwordMastery) ? Jobs::Fighter::SwordMastery : Jobs::Page::SwordMastery);
 					break;
 			}
 			break;
-		case Weapon_1h_Axe:
-		case Weapon_2h_Axe:
-			masteryid = Jobs::Fighter::Axe_Mastery;
+		case Weapon1hAxe:
+		case Weapon2hAxe:
+			masteryid = Jobs::Fighter::AxeMastery;
 			break;
-		case Weapon_1h_Mace:
-		case Weapon_2h_Mace:
-			masteryid = Jobs::Page::Bw_Mastery;
+		case Weapon1hMace:
+		case Weapon2hMace:
+			masteryid = Jobs::Page::BowMastery;
 			break;
-		case Weapon_Spear:
-			masteryid = Jobs::Spearman::Spear_Mastery;
+		case WeaponSpear:
+			masteryid = Jobs::Spearman::SpearMastery;
 			break;
-		case Weapon_Polearm:
-			masteryid = Jobs::Spearman::Polearm_Mastery;
+		case WeaponPolearm:
+			masteryid = Jobs::Spearman::PolearmMastery;
 			break;
-		case Weapon_Dagger:
-			masteryid = Jobs::Bandit::Dagger_Mastery;
+		case WeaponDagger:
+			masteryid = Jobs::Bandit::DaggerMastery;
 			break;
-		case Weapon_Knuckle:
-			masteryid = Jobs::Infighter::Knuckler_Mastery;
+		case WeaponKnuckle:
+			masteryid = Jobs::Infighter::KnucklerMastery;
 			break;
 	}
 	packet.add<int8_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
@@ -189,12 +189,12 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	int32_t skillid = pack.get<int32_t>();
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
-		case Jobs::Marksman::Piercing_Arrow:
-		case Jobs::Corsair::Rapid_Fire:
+		case Jobs::Marksman::PiercingArrow:
+		case Jobs::Corsair::RapidFire:
 			pack.skipBytes(4);
 			break;
 	}
-	bool shadow_meso = (skillid == Jobs::Hermit::Shadow_Meso);
+	bool shadow_meso = (skillid == Jobs::Hermit::ShadowMeso);
 	uint8_t display = pack.get<int8_t>(); // Projectile display
 	uint8_t animation = pack.get<int8_t>(); // Direction/animation
 	uint8_t w_class = pack.get<int8_t>(); // Weapon subclass
@@ -222,17 +222,17 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(w_speed);
 	int32_t masteryid = 0;
 	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11))) {
-		case Weapon_Bow:
-			masteryid = Jobs::Hunter::Bow_Mastery;
+		case WeaponBow:
+			masteryid = Jobs::Hunter::BowMastery;
 			break;
-		case Weapon_Crossbow:
-			masteryid = Jobs::Crossbowman::Crossbow_Mastery;
+		case WeaponCrossbow:
+			masteryid = Jobs::Crossbowman::CrossbowMastery;
 			break;
-		case Weapon_Claw:
-			masteryid = Jobs::Assassin::Claw_Mastery;
+		case WeaponClaw:
+			masteryid = Jobs::Assassin::ClawMastery;
 			break;
-		case Weapon_Gun:
-			masteryid = Jobs::Gunslinger::Gun_Mastery;
+		case WeaponGun:
+			masteryid = Jobs::Gunslinger::GunMastery;
 			break;
 	}
 	packet.add<int8_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
@@ -284,7 +284,7 @@ void MobsPacket::damageMobSpell(Player *player, PacketReader &pack) {
 	int32_t skillid = pack.get<int32_t>();
 	int32_t charge = 0;
 	packet.add<int32_t>(skillid);
-	if (skillid == Jobs::FPArchMage::Big_Bang || skillid == Jobs::ILArchMage::Big_Bang || skillid == Jobs::Bishop::Big_Bang) // Big Bang has a 4 byte charge time after skillid
+	if (skillid == Jobs::FPArchMage::BigBang || skillid == Jobs::ILArchMage::BigBang || skillid == Jobs::Bishop::BigBang) // Big Bang has a 4 byte charge time after skillid
 		charge = pack.get<int32_t>();
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
 	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation

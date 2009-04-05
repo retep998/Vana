@@ -77,14 +77,14 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 					mpgain += Randomizer::Instance()->randShort(2) + 10 + intt;
 					break;
 				case 1: // Warrior
-					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Swordsman::Improved_Max_Hp_Increase) > 0) // Only check the first time for these skills
-						x = Skills::skills[Jobs::Swordsman::Improved_Max_Hp_Increase][player->getSkills()->getSkillLevel(Jobs::Swordsman::Improved_Max_Hp_Increase)].x;
+					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0) // Only check the first time for these skills
+						x = Skills::skills[Jobs::Swordsman::ImprovedMaxHpIncrease][player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease)].x;
 					hpgain += Randomizer::Instance()->randShort(4) + 24 + x;
 					mpgain += Randomizer::Instance()->randShort(2) + 4 + intt;
 					break;
 				case 2: // Magician
-					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Magician::Improved_Max_Mp_Increase) > 0)
-						x = Skills::skills[Jobs::Magician::Improved_Max_Mp_Increase][player->getSkills()->getSkillLevel(Jobs::Magician::Improved_Max_Mp_Increase)].x;
+					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
+						x = Skills::skills[Jobs::Magician::ImprovedMaxMpIncrease][player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease)].x;
 					hpgain += Randomizer::Instance()->randShort(4) + 10;
 					mpgain += Randomizer::Instance()->randShort(2) + 22 + 2 * x + intt;
 					break;
@@ -94,8 +94,8 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 					mpgain += Randomizer::Instance()->randShort(2) + 14 + intt;
 					break;
 				case 5: // Pirate
-					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Infighter::Improve_Max_Hp) > 0)
-						x = Skills::skills[Jobs::Infighter::Improve_Max_Hp][player->getSkills()->getSkillLevel(Jobs::Infighter::Improve_Max_Hp)].x;
+					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
+						x = Skills::skills[Jobs::Infighter::ImproveMaxHp][player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp)].x;
 					hpgain += Randomizer::Instance()->randShort(4) + 22 + x;
 					mpgain += Randomizer::Instance()->randShort(2) + 18 + intt;
 					break;
@@ -123,10 +123,10 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 			player->setSP(player->getSP() + spgain);
 			// Let hyperbody remain on if on during a level up, as it should
 			int32_t skillid = 0;
-			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Spearman::Hyper_Body) > 0)
-				skillid = Jobs::Spearman::Hyper_Body;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hyper_Body) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
-				skillid = Jobs::SuperGM::Hyper_Body;
+			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0)
+				skillid = Jobs::Spearman::HyperBody;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::HyperBody) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
+				skillid = Jobs::SuperGM::HyperBody;
 			if (skillid > 0) {
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
 				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
@@ -209,20 +209,20 @@ void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract
 					mpgain = (isreset ? (issubtract ? -8 : 6) : Randomizer::Instance()->randShort(2) + 6);
 					break;
 				case 1: // Warrior
-					if (player->getSkills()->getSkillLevel(Jobs::Swordsman::Improved_Max_Hp_Increase) > 0)
-						y = Skills::skills[Jobs::Swordsman::Improved_Max_Hp_Increase][player->getSkills()->getSkillLevel(Jobs::Swordsman::Improved_Max_Hp_Increase)].y;
+					if (player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
+						y = Skills::skills[Jobs::Swordsman::ImprovedMaxHpIncrease][player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease)].y;
 					hpgain = (isreset ? (issubtract ? (-1 * (24 + y)) : 20) : (Randomizer::Instance()->randShort(4) + 20 + y));
 					mpgain = (isreset ? (issubtract ? -4 : 2) : Randomizer::Instance()->randShort(2) + 2);
 					break;
 				case 2: // Magician
-					if (player->getSkills()->getSkillLevel(Jobs::Magician::Improved_Max_Mp_Increase) > 0)
-						y = Skills::skills[Jobs::Magician::Improved_Max_Mp_Increase][player->getSkills()->getSkillLevel(Jobs::Magician::Improved_Max_Mp_Increase)].y;
+					if (player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
+						y = Skills::skills[Jobs::Magician::ImprovedMaxMpIncrease][player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease)].y;
 					hpgain = (isreset ? (issubtract ? -10 : 6) : Randomizer::Instance()->randShort(4) + 6);
 					mpgain = (isreset ? (issubtract ? (-1 * (20 + 2 * y)) : 18) : (Randomizer::Instance()->randShort(2) + 18 + 2 * y));
 					break;
 				case 5: // Pirate
-					if (player->getSkills()->getSkillLevel(Jobs::Infighter::Improve_Max_Hp) > 0)
-						y = Skills::skills[Jobs::Infighter::Improve_Max_Hp][player->getSkills()->getSkillLevel(Jobs::Infighter::Improve_Max_Hp)].y;
+					if (player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
+						y = Skills::skills[Jobs::Infighter::ImproveMaxHp][player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp)].y;
 					hpgain = (isreset ? (issubtract ? (-1 * (22 + y)) : 18) : (Randomizer::Instance()->randShort(4) + 18 + y));
 					mpgain = (isreset ? (issubtract ? -16 : 14) : Randomizer::Instance()->randShort(2) + 2);
 					break;
@@ -237,10 +237,10 @@ void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract
 				case 0x2000: player->modifyRMMP(mpgain); break;
 			}
 			int32_t skillid = 0;
-			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Spearman::Hyper_Body) > 0)
-				skillid = Jobs::Spearman::Hyper_Body;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hyper_Body) > 0)
-				skillid = Jobs::SuperGM::Hyper_Body;
+			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0)
+				skillid = Jobs::Spearman::HyperBody;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::HyperBody) > 0)
+				skillid = Jobs::SuperGM::HyperBody;
 			if (skillid > 0) {
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
 				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);

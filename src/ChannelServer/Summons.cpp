@@ -35,9 +35,9 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(s
 		case Jobs::Outlaw::Octopus:
 			type = 0; // No movement - Puppets and Octopus
 			break;
-		case Jobs::Priest::Summon_Dragon:
-		case Jobs::Ranger::Silver_Hawk:
-		case Jobs::Sniper::Golden_Eagle:
+		case Jobs::Priest::SummonDragon:
+		case Jobs::Ranger::SilverHawk:
+		case Jobs::Sniper::GoldenEagle:
 		case Jobs::Bowmaster::Phoenix:
 		case Jobs::Marksman::Frostprey:
 		case Jobs::Outlaw::Gaviota:

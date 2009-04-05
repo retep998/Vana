@@ -131,7 +131,7 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	bool master = packet.get<int8_t>() == 1;
-	bool multipet = player->getSkills()->getSkillLevel(Jobs::Beginner::Follow_The_Lead) > 0;
+	bool multipet = player->getSkills()->getSkillLevel(Jobs::Beginner::FollowTheLead) > 0;
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5, slot)->petid);
 
 	if (pet->isSummoned()) { // Removing a pet

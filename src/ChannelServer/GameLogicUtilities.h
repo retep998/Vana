@@ -34,7 +34,7 @@ namespace GameLogicUtilities {
 
 	inline bool isBeginnerSkill(int32_t skillid) { return (skillid / 1000000 == 0); }
 	inline bool isFourthJobSkill(int32_t skillid) { return ((skillid / 10000) % 10 == 2); }
-	inline bool isSummon(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet  || skillid == Jobs::Ranger::Puppet || skillid == Jobs::Priest::Summon_Dragon || skillid == Jobs::Ranger::Silver_Hawk || skillid == Jobs::Sniper::Golden_Eagle || skillid == Jobs::DarkKnight::Beholder || skillid == Jobs::FPArchMage::Elquines || skillid == Jobs::ILArchMage::Ifrit || skillid == Jobs::Bishop::Bahamut || skillid == Jobs::Bowmaster::Phoenix || skillid == Jobs::Marksman::Frostprey || skillid == Jobs::Outlaw::Octopus || skillid == Jobs::Outlaw::Gaviota); }
+	inline bool isSummon(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet  || skillid == Jobs::Ranger::Puppet || skillid == Jobs::Priest::SummonDragon || skillid == Jobs::Ranger::SilverHawk || skillid == Jobs::Sniper::GoldenEagle || skillid == Jobs::DarkKnight::Beholder || skillid == Jobs::FPArchMage::Elquines || skillid == Jobs::ILArchMage::Ifrit || skillid == Jobs::Bishop::Bahamut || skillid == Jobs::Bowmaster::Phoenix || skillid == Jobs::Marksman::Frostprey || skillid == Jobs::Outlaw::Octopus || skillid == Jobs::Outlaw::Gaviota); }
 	inline bool isPuppet(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet || skillid == Jobs::Ranger::Puppet); }
 };
 

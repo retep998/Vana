@@ -136,8 +136,8 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos ori
 			}
 			else {
 				int32_t mesos = (amount * ChannelServer::Instance()->getMesorate());
-				if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::Meso_Up) > 0) { // Account for Meso Up
-					mesos = (mesos * Skills::skills[Jobs::Hermit::Meso_Up][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::Meso_Up)].x) / 100;
+				if (player != 0 && player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::MesoUp) > 0) { // Account for Meso Up
+					mesos = (mesos * Skills::skills[Jobs::Hermit::MesoUp][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::MesoUp)].x) / 100;
 				}
 				drop = new Drop(mapid, mesos, pos, playerid);
 			}
