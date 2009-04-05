@@ -62,7 +62,7 @@ elseif state == 1 then
 		endNPC();
 	end
 
-	sendStyle(styles, #styles);
+	sendStyle(styles);
 
 elseif state == 2 then
 	if styles[getSelected()+1] >= 0 then

@@ -44,7 +44,7 @@ elseif state == 1 then
 		addText("I can totally change up your hairstyle and make it look so good. Why don't you change it up a bit? If you have #b#t5420002##k I'll change it for you. With this coupon, you have the power to change your hairstyle to something totally new, as often as you want, for ONE MONTH! Now, please choose the hairstyle of your liking.");
 		getHairs(hairs, newHair)
 	end
-	sendStyle(newHair, #newHair);
+	sendStyle(newHair);
 elseif state == 2 then
 	if what == 0 then
 		item = 5150001;

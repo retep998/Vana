@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "Quests.h"
 #include "StoragePacket.h"
-#include <boost/scoped_array.hpp>
+#include <vector>
+
+using std::vector;
 
 LuaNPC::LuaNPC(const string &filename, int32_t playerid) : LuaScriptable(filename, playerid) {
 	// Miscellaneous
@@ -148,17 +150,15 @@ int LuaExports::sendSimple(lua_State *luaVm) {
 }
 
 int LuaExports::sendStyle(lua_State *luaVm) {
-	int8_t size = (int8_t) lua_tointeger(luaVm, -1);
-	boost::scoped_array<int32_t> styles(new int32_t[size]);
+	vector<int32_t> styles;
 
-	lua_pop(luaVm, 1);
 	lua_pushnil(luaVm);
-	while (lua_next(luaVm, -2) != 0) {
-		styles[lua_tointeger(luaVm, -2)-1] = lua_tointeger(luaVm, -1);
+	while (lua_next(luaVm, 1) != 0) {
+		styles.push_back(lua_tointeger(luaVm, -1));
 		lua_pop(luaVm, 1);
 	}
 
-	getNPC(luaVm)->sendStyle(styles.get(), size);
+	getNPC(luaVm)->sendStyle(&styles[0], styles.size());
 	return 0;
 }
 
