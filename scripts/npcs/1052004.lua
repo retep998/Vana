@@ -35,7 +35,7 @@ if state == 0 then
 			newface[#newface + 1] = current + i;
 		end
 	end
-	sendStyle(newface, #newface);
+	sendStyle(newface);
 elseif state == 1 then
 	if getItemAmount(5152001) > 0 then
 		giveItem(5152001, -1);

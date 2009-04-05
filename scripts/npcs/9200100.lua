@@ -33,7 +33,7 @@ elseif state == 1 then
 		addText("With our specialized machine, you can see yourself after the treatment in advance. What kind of lens would you like to wear? Choose the style of your liking...");
 		newEyes = {};
 		getEyeColour(newEyes);
-		sendStyle(newEyes, #newEyes);
+		sendStyle(newEyes);
 	end
 elseif state == 2 then
 	if what == 0 then
