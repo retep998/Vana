@@ -144,7 +144,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 			break;
 		case Weapon1hMace:
 		case Weapon2hMace:
-			masteryid = Jobs::Page::BowMastery;
+			masteryid = Jobs::Page::BwMastery;
 			break;
 		case WeaponSpear:
 			masteryid = Jobs::Spearman::SpearMastery;

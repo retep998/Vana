@@ -325,20 +325,20 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			int32_t charge_id = 0;
 			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordFireCharge) > 0) // Fire - Sword
 				charge_id = Jobs::WhiteKnight::SwordFireCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BowFireCharge) > 0) // Fire - BW
-				charge_id = Jobs::WhiteKnight::BowFireCharge;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwFireCharge) > 0) // Fire - BW
+				charge_id = Jobs::WhiteKnight::BwFireCharge;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordIceCharge) > 0) // Ice - Sword
 				charge_id = Jobs::WhiteKnight::SwordIceCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BowIceCharge) > 0) // Ice - BW
-				charge_id = Jobs::WhiteKnight::BowIceCharge;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwIceCharge) > 0) // Ice - BW
+				charge_id = Jobs::WhiteKnight::BwIceCharge;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordLitCharge) > 0) // Lightning - Sword
 				charge_id = Jobs::WhiteKnight::SwordLitCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BowLitCharge) > 0) // Lightning - BW
-				charge_id = Jobs::WhiteKnight::BowLitCharge;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwLitCharge) > 0) // Lightning - BW
+				charge_id = Jobs::WhiteKnight::BwLitCharge;
 			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Paladin::SwordHolyCharge) > 0) // Holy - Sword
 				charge_id = Jobs::Paladin::SwordHolyCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Paladin::BowHolyCharge) > 0) // Holy - BW
-				charge_id = Jobs::Paladin::BowHolyCharge;
+			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Paladin::BwHolyCharge) > 0) // Holy - BW
+				charge_id = Jobs::Paladin::BwHolyCharge;
 			if (charge_id == 0) {
 				// Hacking
 				return;
@@ -603,8 +603,8 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 		if ((weapon_type == Weapon1hSword || weapon_type == Weapon2hSword) && player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordIceCharge) > 0) { // Ice Charge Sword
 			statuses.push_back(StatusInfo(Freeze, Freeze, Jobs::WhiteKnight::SwordIceCharge, Skills::skills[Jobs::WhiteKnight::SwordIceCharge][player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordIceCharge)].y));
 		}
-		else if ((weapon_type == Weapon1hMace || weapon_type == Weapon2hMace) && player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BowIceCharge) > 0) { // Blizzard Charge BW
-			statuses.push_back(StatusInfo(Freeze, Freeze, Jobs::WhiteKnight::BowIceCharge, Skills::skills[Jobs::WhiteKnight::BowIceCharge][player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BowIceCharge)].y));
+		else if ((weapon_type == Weapon1hMace || weapon_type == Weapon2hMace) && player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwIceCharge) > 0) { // Blizzard Charge BW
+			statuses.push_back(StatusInfo(Freeze, Freeze, Jobs::WhiteKnight::BwIceCharge, Skills::skills[Jobs::WhiteKnight::BwIceCharge][player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwIceCharge)].y));
 		}
 	}
 	if (mob->canPoison()) { // Poisoning stuff

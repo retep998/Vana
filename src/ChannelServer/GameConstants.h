@@ -158,8 +158,8 @@ namespace Jobs {
 
 	namespace Page {
 		enum {
-			BowBooster = 1201005,
-			BowMastery = 1200001,
+			BwBooster = 1201005,
+			BwMastery = 1200001,
 			PowerGuard = 1201007,
 			SwordBooster = 1201004,
 			SwordMastery = 1200000,
@@ -169,9 +169,9 @@ namespace Jobs {
 
 	namespace WhiteKnight {
 		enum {
-			BowFireCharge = 1211004,
-			BowIceCharge = 1211006,
-			BowLitCharge = 1211008,
+			BwFireCharge = 1211004,
+			BwIceCharge = 1211006,
+			BwLitCharge = 1211008,
 			ChargeBlow = 1211002,
 			MagicCrash = 1211009,
 			SwordFireCharge = 1211003,
@@ -184,7 +184,7 @@ namespace Jobs {
 		enum {
 			Achilles = 1220005,
 			AdvancedCharge = 1220010,
-			BowHolyCharge = 1221004,
+			BwHolyCharge = 1221004,
 			Guardian = 1220006,
 			HeavensHammer = 1221011,
 			HerosWill = 1221012,
