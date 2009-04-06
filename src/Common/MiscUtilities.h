@@ -31,8 +31,8 @@ class PakcetReader;
 
 namespace MiscUtilities {
 	bool atob(const char *str);
-	uint32_t nameToIP(const string &name);
-	string IPToString(uint32_t ip);
+	uint32_t stringToIp(const string &name);
+	string ipToString(uint32_t ip);
 	uint32_t matchIpSubnet(uint32_t ip, const vector<vector<uint32_t> > &ipMatrix, uint32_t defaultIp = 0);
 
 	// Used for receiving vectors of external IPs

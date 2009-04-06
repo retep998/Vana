@@ -35,7 +35,7 @@ void AbstractServer::initialize() {
 	inter_password = config.getString("inter_password");
 
 	ConfigFile configExtIp("conf/external_ip.lua");
-	external_ip = configExtIp.getIPMatrix("external_ip");
+	external_ip = configExtIp.getIpMatrix("external_ip");
 
 	if (inter_password == "changeme") {
 		std::cerr << "ERROR: inter_password is not changed." << std::endl;

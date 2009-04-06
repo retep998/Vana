@@ -39,8 +39,8 @@ public:
 
 	MapleSession * getSession() const { return session; }
 	void setSession(MapleSession *val);
-	uint32_t getIP() const { return ip; }
-	void setIP(uint32_t ip) { this->ip = ip; }
+	uint32_t getIp() const { return ip; }
+	void setIp(uint32_t ip) { this->ip = ip; }
 	Timer::Container * getTimers() const { return timers.get(); }
 protected:
 	MapleSession *session;

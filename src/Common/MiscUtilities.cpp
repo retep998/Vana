@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using boost::asio::ip::tcp;
 
-uint32_t MiscUtilities::nameToIP(const string &name) {
+uint32_t MiscUtilities::stringToIp(const string &name) {
 	boost::asio::io_service io_service;
 	tcp::resolver resolver(io_service); 
 	tcp::resolver::query query(tcp::v4(), name, "http"); // Resolver wants a service...
@@ -35,7 +35,7 @@ uint32_t MiscUtilities::nameToIP(const string &name) {
 	return ep.address().to_v4().to_ulong();
 }
 
-string MiscUtilities::IPToString(uint32_t ip) {
+string MiscUtilities::ipToString(uint32_t ip) {
 	return boost::asio::ip::address_v4(ip).to_string();
 }
 

@@ -210,7 +210,7 @@ void LoginPacket::deleteCharacter(PlayerLogin *player, int32_t id, bool success)
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::connectIP(PlayerLogin *player, int32_t charid) {
+void LoginPacket::connectIp(PlayerLogin *player, int32_t charid) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CHANNEL_SERVER_INFO);
 	packet.add<int16_t>(0);
@@ -218,7 +218,7 @@ void LoginPacket::connectIP(PlayerLogin *player, int32_t charid) {
 	World *world = Worlds::worlds[player->getWorld()];
 	if (world->channels.find(player->getChannel()) != world->channels.end()) {
 		shared_ptr<Channel> channel = world->channels[player->getChannel()];
-		uint32_t chanIp = MiscUtilities::matchIpSubnet(player->getIP(), channel->external_ip, channel->ip);
+		uint32_t chanIp = MiscUtilities::matchIpSubnet(player->getIp(), channel->external_ip, channel->ip);
 		packet.add<uint32_t>(htonl(chanIp)); // MapleStory accepts IP addresses in big-endian
 		packet.add<int16_t>(channel->port);
 	}

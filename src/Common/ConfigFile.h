@@ -40,7 +40,7 @@ public:
 	int32_t getInt(const string &value);
 	int16_t getShort(const string &value);
 	string getString(const string &value);
-	vector<vector<uint32_t> > getIPMatrix(const string &value);
+	vector<vector<uint32_t> > getIpMatrix(const string &value);
 	bool getBool(const string &value);
 private:
 	lua_State *luaVm;
