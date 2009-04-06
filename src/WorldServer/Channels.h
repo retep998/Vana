@@ -19,11 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CHANNELS_H
 
 #include "Types.h"
+#include <string>
+#include <vector>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
-#include <string>
 
 using std::string;
+using std::vector;
 using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
@@ -36,6 +38,8 @@ struct Channel {
 	WorldServerAcceptPlayer *player;
 	uint16_t id;
 	uint32_t ip;
+	vector<vector<uint32_t> > external_ip;
+
 	uint16_t port;
 	int32_t players;
 };
@@ -47,7 +51,7 @@ public:
 			singleton = new Channels;
 		return singleton;
 	}
-	void registerChannel(WorldServerAcceptPlayer *player, uint16_t channel, uint32_t ip, uint16_t port);
+	void registerChannel(WorldServerAcceptPlayer *player, uint16_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, uint16_t port);
 	void removeChannel(uint16_t channel);
 	Channel * getChannel(uint16_t num);
 	void sendToAll(PacketCreator &packet);

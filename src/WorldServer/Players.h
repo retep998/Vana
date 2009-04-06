@@ -26,6 +26,7 @@ using std::string;
 using std::tr1::unordered_map;
 
 struct Player {
+	uint32_t ip;
 	int32_t id;
 	string name;
 	uint16_t channel;
@@ -43,7 +44,7 @@ public:
 			singleton = new Players;
 		return singleton;
 	}
-	void registerPlayer(int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level);
+	void registerPlayer(uint32_t ip, int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level);
 	void remove(int32_t id, uint16_t channel = -1);
 	void removeChannelPlayers(uint16_t channel);
 	Player * getPlayerFromName(const string &name, bool includeOffline = false);

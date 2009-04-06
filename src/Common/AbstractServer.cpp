@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.h"
 #include "ConfigFile.h"
 #include "ConnectionManager.h"
+#include "MiscUtilities.h"
 #include "TimeUtilities.h"
 #include <ctime>
 #include <iostream>
@@ -32,6 +33,9 @@ void AbstractServer::initialize() {
 
 	ConfigFile config("conf/inter_password.lua");
 	inter_password = config.getString("inter_password");
+
+	ConfigFile configExtIp("conf/external_ip.lua");
+	external_ip = configExtIp.getIPMatrix("external_ip");
 
 	if (inter_password == "changeme") {
 		std::cerr << "ERROR: inter_password is not changed." << std::endl;

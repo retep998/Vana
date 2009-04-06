@@ -21,15 +21,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractPlayer.h"
 #include "Types.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 class PacketReader;
 
 class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
 	AbstractServerConnectPlayer() { is_server = true; }
-	void sendAuth(const string &pass);
+	void sendAuth(const string &pass, vector<vector<uint32_t> > extIp);
 	int8_t getType() { return type; }
 protected:
 	int8_t type;
@@ -42,8 +44,10 @@ public:
 	virtual void authenticated(int8_t type) = 0;
 
 	bool isAuthenticated() const { return is_authenticated; }
+	const vector<vector<uint32_t> > & getExternalIp() const { return external_ip; }
 private:
 	bool is_authenticated;
+	vector<vector<uint32_t> > external_ip;
 };
 
 #endif

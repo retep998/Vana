@@ -20,13 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 class LoginServerConnectPlayer;
 
 namespace LoginServerConnectPacket {
-	void registerChannel(LoginServerConnectPlayer *player, int32_t channel, uint32_t ip, int16_t port);
+	void registerChannel(LoginServerConnectPlayer *player, int32_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, int16_t port);
 	void updateChannelPop(LoginServerConnectPlayer *player, int32_t channel, int32_t population);
 	void removeChannel(LoginServerConnectPlayer *player, int32_t channel);
 };

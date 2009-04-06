@@ -20,13 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 class AbstractServerConnectPlayer;
 
 namespace AuthenticationPacket {
-	void sendPassword(AbstractServerConnectPlayer *player, string pass, uint32_t ip);
+	void sendPassword(AbstractServerConnectPlayer *player, string pass, vector<vector<uint32_t> > extIp);
 }
 
 #endif

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "LoginServerConnectPacket.h"
 #include "MapleSession.h"
+#include "MiscUtilities.h"
 #include "Rates.h"
 #include "PacketReader.h"
 #include "Players.h"
@@ -60,11 +61,11 @@ void WorldServerAcceptPlayer::authenticated(int8_t type) {
 	if (Channels::Instance()->size() < WorldServer::Instance()->getMaxChannels()) {
 		channel = Channels::Instance()->size();
 		uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
-		Channels::Instance()->registerChannel(this, channel, ip, port);
+		Channels::Instance()->registerChannel(this, channel, ip, getExternalIp(), port);
 		WorldServerAcceptPacket::connect(this, channel, port, WorldServer::Instance()->getMaxMultiLevel(), WorldServer::Instance()->getMaxStats());
 		WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
 		WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
-		LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, port);
+		LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, getExternalIp(), port);
 		std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 	}
 	else {

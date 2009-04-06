@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.h"
 #include "LoginPacketHelper.h"
 #include "MapleSession.h"
+#include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "PlayerLogin.h"
 #include "SendHeader.h"
@@ -217,7 +218,8 @@ void LoginPacket::connectIP(PlayerLogin *player, int32_t charid) {
 	World *world = Worlds::worlds[player->getWorld()];
 	if (world->channels.find(player->getChannel()) != world->channels.end()) {
 		shared_ptr<Channel> channel = world->channels[player->getChannel()];
-		packet.add<uint32_t>(htonl(channel->ip)); // MapleStory accepts IP addresses in big-endian
+		uint32_t chanIp = MiscUtilities::matchIpSubnet(player->getIP(), channel->external_ip, channel->ip);
+		packet.add<uint32_t>(htonl(chanIp)); // MapleStory accepts IP addresses in big-endian
 		packet.add<int16_t>(channel->port);
 	}
 	else { // Channel does not exist, let's be mean and send something non-existent

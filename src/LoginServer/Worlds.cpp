@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayer.h"
 #include "LoginServerAcceptPacket.h"
 #include "MapleSession.h"
+#include "MiscUtilities.h"
 #include "PlayerLogin.h"
 #include "PacketReader.h"
 
@@ -66,7 +67,6 @@ int8_t Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 			world = iter->second;
 			iter->second->connected = true;
 			iter->second->player = player;
-			iter->second->ip = player->getIP();
 			break;
 		}
 	}
@@ -87,16 +87,18 @@ int8_t Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	int8_t worldid = -1;
 	int16_t port;
-	uint32_t ip;
+	AbstractServerAcceptPlayer *worldPlayer;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->channels.size() < (size_t) iter->second->maxChannels && iter->second->connected) {
 			worldid = iter->second->id;
 			port = iter->second->port;
-			ip = iter->second->ip;
+			worldPlayer = iter->second->player;
 			break;
 		}
 	}
-	LoginServerAcceptPacket::connectChannel(player, worldid, ip, port);
+
+	uint32_t worldIp = MiscUtilities::matchIpSubnet(player->getIP(), worldPlayer->getExternalIp(), worldPlayer->getIP());
+	LoginServerAcceptPacket::connectChannel(player, worldid, worldIp, port);
 	if (worldid != -1) {
 		std::cout << "Assigning channel server to world server " << (int32_t) worldid << "." << std::endl;
 	}

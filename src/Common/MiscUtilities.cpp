@@ -1,3 +1,4 @@
+
 /*
 Copyright (C) 2008-2009 Vana Development Team
 
@@ -16,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MiscUtilities.h"
+#include "PacketReader.h"
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
@@ -35,4 +37,37 @@ uint32_t MiscUtilities::nameToIP(const string &name) {
 
 string MiscUtilities::IPToString(uint32_t ip) {
 	return boost::asio::ip::address_v4(ip).to_string();
+}
+
+uint32_t MiscUtilities::matchIpSubnet(uint32_t ip, const vector<vector<uint32_t> > &ipMatrix, uint32_t defaultIp) {
+	typedef vector<uint32_t> IpArray;
+	typedef vector<IpArray> IpMatrix;
+
+	uint32_t ret = defaultIp;
+
+	for (IpMatrix::const_iterator iter = ipMatrix.begin(); iter != ipMatrix.end(); iter++) {
+		const IpArray &ipArray = *iter;
+		uint32_t serverIp = ipArray[0];
+		uint32_t subnet = ipArray[1];
+		
+		if ((ip & subnet) == (serverIp & subnet)) {
+			ret = serverIp;
+			break;
+		}
+	}
+
+	return ret;
+}
+
+void MiscUtilities::extractExternalIp(PacketReader &packet, vector<vector<uint32_t> > &extIp) {
+	uint32_t ipSize = packet.get<uint32_t>();
+	for (uint32_t i = 0; i < ipSize; i++) {
+		vector<uint32_t> ip;
+		ip.reserve(2);
+
+		ip.push_back(packet.get<uint32_t>());
+		ip.push_back(packet.get<uint32_t>());
+
+		extIp.push_back(ip);
+	}
 }

@@ -19,11 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
 #include "MapleSession.h"
+#include "MiscUtilities.h"
 #include "PacketReader.h"
 #include <iostream>
 
-void AbstractServerConnectPlayer::sendAuth(const string &pass) {
-	AuthenticationPacket::sendPassword(this, pass, getIP());
+void AbstractServerConnectPlayer::sendAuth(const string &pass, vector<vector<uint32_t> > extIp) {
+	AuthenticationPacket::sendPassword(this, pass, extIp);
 }
 
 bool AbstractServerAcceptPlayer::processAuth(PacketReader &packet, const string &pass) {
@@ -31,9 +32,9 @@ bool AbstractServerAcceptPlayer::processAuth(PacketReader &packet, const string 
 		if (packet.getString() == pass) {
 			std::cout << "Server successfully authenticated." << std::endl;
 			is_authenticated = true;
-			uint32_t ip = packet.get<uint32_t>();
-			if (ip)
-				setIP(ip); // setIP in abstractPlayer
+
+			MiscUtilities::extractExternalIp(packet, external_ip);
+
 			authenticated(packet.get<int8_t>());
 		}
 		else {
