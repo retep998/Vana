@@ -116,7 +116,7 @@ namespace Jobs {
 	namespace Swordsman {
 		enum {
 			ImprovedMaxHpIncrease = 1000001,
-			IronBody = 1000003,
+			IronBody = 1000003
 		};
 	};
 
