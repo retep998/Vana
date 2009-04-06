@@ -249,7 +249,7 @@ void Characters::connectGame(PlayerLogin *player, int32_t charid) {
 	}
 
 	LoginServerAcceptPacket::newPlayer(Worlds::worlds[player->getWorld()]->player, player->getChannel(), charid);
-	LoginPacket::connectIP(player, charid);
+	LoginPacket::connectIp(player, charid);
 }
 
 void Characters::connectGame(PlayerLogin *player, PacketReader &packet) {

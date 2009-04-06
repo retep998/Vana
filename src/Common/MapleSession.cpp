@@ -42,10 +42,10 @@ void MapleSession::start() {
 
 void MapleSession::handle_start() {
 	m_player->setSession(this);
-	m_player->setIP(m_socket.remote_endpoint().address().to_v4().to_ulong());
+	m_player->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
 
 	if (m_is_server) {
-		std::cout << "Accepted connection from " << MiscUtilities::IPToString(m_player->getIP()) << std::endl;
+		std::cout << "Accepted connection from " << MiscUtilities::ipToString(m_player->getIp()) << std::endl;
 
 		PacketCreator connectPacket = m_decoder.getConnectPacket(m_connect_packet_unknown);
 		send(connectPacket, false);

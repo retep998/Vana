@@ -97,7 +97,7 @@ int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 		}
 	}
 
-	uint32_t worldIp = MiscUtilities::matchIpSubnet(player->getIP(), worldPlayer->getExternalIp(), worldPlayer->getIP());
+	uint32_t worldIp = MiscUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
 	LoginServerAcceptPacket::connectChannel(player, worldid, worldIp, port);
 	if (worldid != -1) {
 		std::cout << "Assigning channel server to world server " << (int32_t) worldid << "." << std::endl;
