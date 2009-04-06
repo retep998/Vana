@@ -18,9 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef ABSTRACTSERVER_H
 #define ABSTRACTSERVER_H
 
+#include "Types.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 class AbstractServer {
 public:
@@ -38,6 +41,7 @@ protected:
 
 	bool to_listen;
 	string inter_password;
+	vector<vector<uint32_t> > external_ip;
 };
 
 #endif

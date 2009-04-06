@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ConfigFile.h"
+#include "MiscUtilities.h"
 #include <iostream>
 #include <sys/stat.h>
 
@@ -58,6 +59,36 @@ int16_t ConfigFile::getShort(const string &value) {
 string ConfigFile::getString(const string &value) {
 	lua_getglobal(luaVm, value.c_str());
 	return string(lua_tostring(luaVm, -1));
+}
+
+vector<vector<uint32_t> > ConfigFile::getIPMatrix(const string &value) {
+	vector<vector<uint32_t> > matrix;
+	
+	lua_getglobal(luaVm, value.c_str());
+	lua_pushnil(luaVm);
+	while (lua_next(luaVm, -2)) {
+		vector<uint32_t> arr;
+		arr.reserve(2);
+
+		lua_pushnil(luaVm);
+		while (lua_next(luaVm, -2)) {
+			arr.push_back(MiscUtilities::nameToIP(lua_tostring(luaVm, -1)));
+			lua_pop(luaVm, 1);
+		}
+
+		if (arr.size() != 2) {
+			std::cerr << "ERROR: external_ip configuration is malformed!" << std::endl;
+			std::cout << "Press enter to quit ...";
+			getchar();
+			exit(1);
+		}
+
+		matrix.push_back(arr);
+
+		lua_pop(luaVm, 1);
+	}
+
+	return matrix;
 }
 
 bool ConfigFile::getBool(const string &value) {

@@ -92,9 +92,10 @@ void WorldServerConnectPacket::playerChangeChannel(WorldServerConnectPlayer *pla
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPacket::registerPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level) {
+void WorldServerConnectPacket::registerPlayer(WorldServerConnectPlayer *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_REGISTER_PLAYER);
+	packet.add<uint32_t>(ip);
 	packet.add<int32_t>(playerid);
 	packet.addString(name);
 	packet.add<int32_t>(map);

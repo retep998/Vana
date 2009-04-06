@@ -255,7 +255,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	setOnline(true);
 	isconnect = true;
-	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), id, name, map, job, level);
+	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), ip, id, name, map, job, level);
 }
 
 void Player::setHP(int16_t shp, bool is) {

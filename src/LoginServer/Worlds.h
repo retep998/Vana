@@ -21,11 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <map>
 #include <string>
+#include <vector>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
 
 using std::map;
 using std::string;
+using std::vector;
 using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
@@ -36,6 +38,7 @@ class PacketReader;
 struct Channel {
 	Channel() : population(0) { }
 	uint32_t ip;
+	vector<vector<uint32_t> > external_ip;
 	int16_t port;
 	int32_t population;
 };
@@ -47,7 +50,6 @@ struct World {
 	int8_t id;
 	int8_t ribbon;
 	bool connected;
-	uint32_t ip;
 	int16_t port;
 	LoginServerAcceptPlayer *player;
 	// Rates

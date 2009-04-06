@@ -22,11 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Channels * Channels::singleton = 0;
 
-void Channels::registerChannel(WorldServerAcceptPlayer *player, uint16_t channel, uint32_t ip, uint16_t port) {
+void Channels::registerChannel(WorldServerAcceptPlayer *player, uint16_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, uint16_t port) {
 	Channel *chan = new Channel();
 	chan->player = player;
 	chan->id = channel;
 	chan->ip = ip;
+	chan->external_ip = extIp;
 	chan->port = port;
 	channels[channel] = shared_ptr<Channel>(chan);
 }

@@ -26,6 +26,7 @@ void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, 
 	int32_t channel = packet.get<int32_t>();
 	Channel *chan = new Channel();
 	chan->ip = packet.get<int32_t>();
+	MiscUtilities::extractExternalIp(packet, chan->external_ip);
 	chan->port = packet.get<int16_t>();
 	Worlds::worlds[player->getWorldId()]->channels[channel] = shared_ptr<Channel>(chan);
 	std::cout << "Registering channel " << channel << " with IP " << MiscUtilities::IPToString(chan->ip) << " and port " << chan->port << std::endl;

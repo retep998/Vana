@@ -29,15 +29,14 @@ void WorldServer::listen() {
 void WorldServer::loadData() {
 	loginPlayer = new LoginServerConnectPlayer;
 	ConnectionManager::Instance()->connect(login_ip, login_inter_port, loginPlayer);
-	loginPlayer->setIP(external_ip);
-	loginPlayer->sendAuth(inter_password);
+	loginPlayer->sendAuth(inter_password, external_ip);
 }
 
 void WorldServer::loadConfig() {
 	ConfigFile config("conf/worldserver.lua");
 	login_ip = MiscUtilities::nameToIP(config.getString("login_ip"));
 	login_inter_port = config.getShort("login_inter_port");
-	external_ip = MiscUtilities::nameToIP(config.getString("external_ip"));
+
 	inter_port = -1; // Will get from login server later
 	scrollingHeader = ""; // Will get from login server later
 }

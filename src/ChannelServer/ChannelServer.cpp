@@ -42,22 +42,19 @@ void ChannelServer::loadData() {
 
 	WorldServerConnectPlayer *loginPlayer = new WorldServerConnectPlayer;
 	ConnectionManager::Instance()->connect(login_ip, login_inter_port, loginPlayer);
-	loginPlayer->setIP(external_ip);
-	loginPlayer->sendAuth(inter_password);
+	loginPlayer->sendAuth(inter_password, external_ip);
 }
 
 void ChannelServer::connectWorld() {
 	worldPlayer = new WorldServerConnectPlayer;
 	ConnectionManager::Instance()->connect(world_ip, world_port, worldPlayer);
-	worldPlayer->setIP(external_ip);
-	worldPlayer->sendAuth(inter_password);
+	worldPlayer->sendAuth(inter_password, external_ip);
 }
 
 void ChannelServer::loadConfig() {
 	ConfigFile config("conf/channelserver.lua");
 	login_ip = MiscUtilities::nameToIP(config.getString("login_ip"));
 	login_inter_port = config.getShort("login_inter_port");
-	external_ip = MiscUtilities::nameToIP(config.getString("external_ip"));
 
 	world = -1; // Will get from login server
 	port = -1; // Will get from world server

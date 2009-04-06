@@ -1,6 +1,3 @@
 -- What ip and port should the channel server use to connect to the login server?
 login_ip = "127.0.0.1";
 login_inter_port = 8485;
-
--- What ip should the players use to connect to the channel server?
-external_ip = "127.0.0.1";

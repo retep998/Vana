@@ -87,7 +87,6 @@ private:
 	int32_t mesorate;
 	int32_t droprate;
 	clock_t worldClock;
-	uint32_t external_ip;
 	uint32_t login_ip;
 	uint32_t world_ip;
 	string scrollingHeader;

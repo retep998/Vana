@@ -24,9 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Players * Players::singleton = 0;
 
-void Players::registerPlayer(int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level) {
+void Players::registerPlayer(uint32_t ip, int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level) {
 	if (players.find(id) == players.end()) {
 		Player *player = new Player();
+		player->ip = ip;
 		player->id = id;
 		player->name = name;
 		player->channel = channel;

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PacketReader.h"
 #include "PartyHandler.h"
+#include "MiscUtilities.h"
 
 void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
@@ -56,7 +57,9 @@ void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *play
 
 	if (chan) {
 		WorldServerAcceptPacket::newConnectable(chan->id, playerid);
-		WorldServerAcceptPacket::playerChangeChannel(player, playerid, chan->ip, chan->port);
+		Player *gamePlayer = Players::Instance()->getPlayer(playerid);
+		uint32_t chanIp = MiscUtilities::matchIpSubnet(gamePlayer->ip, chan->external_ip, chan->ip);
+		WorldServerAcceptPacket::playerChangeChannel(player, playerid, chanIp, chan->port);
 	}
 	else { // Channel doesn't exist (offline)
 		WorldServerAcceptPacket::playerChangeChannel(player, playerid, 0, -1);
@@ -89,12 +92,13 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, Pa
 }
 
 void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, PacketReader &packet) {
+	uint32_t ip = packet.get<uint32_t>();
 	int32_t id = packet.get<int32_t>();
 	string name = packet.getString();
 	int32_t map = packet.get<int32_t>();
 	int32_t job = packet.get<int32_t>();
 	int32_t level = packet.get<int32_t>();
-	Players::Instance()->registerPlayer(id, name, player->getChannel(), map, job, level);
+	Players::Instance()->registerPlayer(ip, id, name, player->getChannel(), map, job, level);
 }
 
 void WorldServerAcceptHandler::removePlayer(WorldServerAcceptPlayer *player, PacketReader &packet) {

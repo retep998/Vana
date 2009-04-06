@@ -18,14 +18,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
 #include "MapleSession.h"
+#include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "ServerPlayer.h"
+#include <algorithm>
 
-void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, string pass, uint32_t ip) {
+void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, string pass, vector<vector<uint32_t> > extIp) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PASSWORD);
 	packet.addString(pass);
-	packet.add<uint32_t>(ip);
+
+	packet.add<uint32_t>(extIp.size());
+	std::for_each(extIp.begin(), extIp.end(), MiscUtilities::SendIpArray(packet));
+
 	packet.add<int8_t>(player->getType());
 	player->getSession()->send(packet);
 }
