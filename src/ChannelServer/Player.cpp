@@ -56,6 +56,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Player::~Player() {
 	if (isconnect) {
 		if (getInstance() != 0) {
+			getInstance()->removePlayer(getId());
 			getInstance()->sendMessage(Player_Disconnect, getId());
 		}
 		//if (this->getHP() == 0)
