@@ -170,11 +170,11 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
 	lua_register(luaVm, "addInstancePlayer", &LuaExports::addInstancePlayer);
 	lua_register(luaVm, "addInstanceReactor", &LuaExports::addInstanceReactor);
+	lua_register(luaVm, "addPlayerSignUp", &LuaExports::addPlayerSignUp);
 	lua_register(luaVm, "banInstancePlayer", &LuaExports::banInstancePlayer);
 	lua_register(luaVm, "checkInstanceTimer", &LuaExports::checkInstanceTimer);
 	lua_register(luaVm, "createInstance", &LuaExports::createInstance);
 	lua_register(luaVm, "deleteInstanceVariable", &LuaExports::deleteInstanceVariable);
-	lua_register(luaVm, "destroyInstance", &LuaExports::destroyInstance);
 	lua_register(luaVm, "getInstanceMax", &LuaExports::getInstanceMax);
 	lua_register(luaVm, "getInstancePlayerByIndex", &LuaExports::getInstancePlayerByIndex);
 	lua_register(luaVm, "getInstancePlayerCount", &LuaExports::getInstancePlayerCount);
@@ -184,6 +184,13 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "isBannedInstancePlayer", &LuaExports::isBannedInstancePlayer);
 	lua_register(luaVm, "isInstance", &LuaExports::isInstance);
 	lua_register(luaVm, "isInstancePersistent", &LuaExports::isInstancePersistent);
+	lua_register(luaVm, "isPlayerSignedUp", &LuaExports::isPlayerSignedUp);
+	lua_register(luaVm, "markForDelete", &LuaExports::markForDelete);
+	lua_register(luaVm, "moveAllPlayers", &LuaExports::moveAllPlayers);
+	lua_register(luaVm, "removeAllInstancePlayers", &LuaExports::removeAllInstancePlayers);
+	lua_register(luaVm, "removeInstancePlayer", &LuaExports::removeInstancePlayer);
+	lua_register(luaVm, "removePlayerSignUp", &LuaExports::removePlayerSignUp);
+	lua_register(luaVm, "revertInstancePlayer", &LuaExports::revertInstancePlayer);
 	lua_register(luaVm, "setInstanceMax", &LuaExports::setInstanceMax);
 	lua_register(luaVm, "setInstancePersistence", &LuaExports::setInstancePersistence);
 	lua_register(luaVm, "setInstancePlayer", &LuaExports::setInstancePlayer);
@@ -192,8 +199,6 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setInstanceVariable", &LuaExports::setInstanceVariable);
 	lua_register(luaVm, "startInstanceTimer", &LuaExports::startInstanceTimer);
 	lua_register(luaVm, "stopInstanceTimer", &LuaExports::stopInstanceTimer);
-	lua_register(luaVm, "removeInstancePlayer", &LuaExports::removeInstancePlayer);
-	lua_register(luaVm, "revertInstancePlayer", &LuaExports::revertInstancePlayer);
 	lua_register(luaVm, "unbanInstancePlayer", &LuaExports::unbanInstancePlayer);
 }
 
@@ -901,6 +906,16 @@ int LuaExports::addInstanceReactor(lua_State *luaVm) {
 	return 0;
 }
 
+int LuaExports::addPlayerSignUp(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	getInstance(luaVm)->addPlayerSignUp(player);
+	return 0;
+}
+
 int LuaExports::banInstancePlayer(lua_State *luaVm) {
 	Player *player = 0;
 	if (lua_type(luaVm, -1) == LUA_TSTRING)
@@ -932,12 +947,6 @@ int LuaExports::createInstance(lua_State *luaVm) {
 
 int LuaExports::deleteInstanceVariable(lua_State *luaVm) {
 	getInstance(luaVm)->deleteVariable(lua_tostring(luaVm, 1));
-	return 0;
-}
-
-int LuaExports::destroyInstance(lua_State *luaVm) {
-	Instance *instance = getInstance(luaVm);
-	delete instance;
 	return 0;
 }
 
@@ -996,6 +1005,46 @@ int LuaExports::isInstancePersistent(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::isPlayerSignedUp(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getInstance(luaVm)->isPlayerSignedUp(lua_tostring(luaVm, -1)));
+	return 1;
+}
+
+int LuaExports::markForDelete(lua_State *luaVm) {
+	getInstance(luaVm)->setMarkedForDelete(true);
+	return 0;
+}
+
+int LuaExports::moveAllPlayers(lua_State *luaVm) {
+	getInstance(luaVm)->moveAllPlayers(lua_tointeger(luaVm, 1));
+	return 0;
+}
+
+int LuaExports::removeAllInstancePlayers(lua_State *luaVm) {
+	getInstance(luaVm)->removeAllPlayers();
+	return 0;
+}
+
+int LuaExports::removeInstancePlayer(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	getInstance(luaVm)->removePlayer(player);
+	return 0;
+}
+
+int LuaExports::removePlayerSignUp(lua_State *luaVm) {
+	getInstance(luaVm)->removePlayerSignUp(lua_tostring(luaVm, -1));
+	return 0;
+}
+
+int LuaExports::revertInstancePlayer(lua_State *luaVm) {
+	getInstance(luaVm)->setPlayerId(0);
+	return 0;
+}
+
 int LuaExports::setInstanceMax(lua_State *luaVm) {
 	getInstance(luaVm)->setMaxPlayers(lua_tointeger(luaVm, 1));
 	return 0;
@@ -1045,21 +1094,6 @@ int LuaExports::startInstanceTimer(lua_State *luaVm) {
 int LuaExports::stopInstanceTimer(lua_State *luaVm) {
 	string name = lua_tostring(luaVm, 1);
 	getInstance(luaVm)->removeTimer(name);
-	return 0;
-}
-
-int LuaExports::removeInstancePlayer(lua_State *luaVm) {
-	Player *player = 0;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
-	getInstance(luaVm)->removePlayer(player);
-	return 0;
-}
-
-int LuaExports::revertInstancePlayer(lua_State *luaVm) {
-	getInstance(luaVm)->setPlayerId(0);
 	return 0;
 }
 

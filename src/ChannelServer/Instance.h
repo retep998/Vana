@@ -62,16 +62,22 @@ public:
 	string getVariable(const string &name);
 
 	// Players
+	const string getPlayerByIndex(uint32_t index) const;
 	void setMaxPlayers(int32_t maxplayers) { m_max_players = maxplayers; }
 	void addPlayer(Player *player);
 	void removePlayer(Player *player);
 	void removePlayer(int32_t id);
+	void removeAllPlayers();
 	void setBanned(const string &name, bool isbanned);
+	void addPlayerSignUp(Player *player);
+	void removePlayerSignUp(const string &name);
+	void moveAllPlayers(int32_t mapid);
+	bool isPlayerSignedUp(const string &name);
 	bool isBanned(const string &name);
-	int32_t getMaxPlayers() const { return m_max_players; }
-	size_t getPlayerNum() const { return m_players.size(); } // Number of players for the instance (squads, etc.)
-	const string getPlayerByIndex(uint32_t index) const;
 	bool instanceHasPlayers() const;
+	int32_t getMaxPlayers() const { return m_max_players; }
+	size_t getPlayerNum() const { return m_players.size(); }
+	size_t getPlayerSignupNum() const { return m_players_order.size(); } // Number of players for the instance (squads, etc.)
 
 	// Maps
 	void addMap(Map *map);

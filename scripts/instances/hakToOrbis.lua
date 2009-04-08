@@ -24,14 +24,14 @@ function playerDeath(playerid)
 end
 
 function playerDisconnect(playerid)
-	destroyInstance();
+	markForDelete();
 end
 
 function instanceTimerEnd(fromtimer)
-	setInstancePlayer(getInstancePlayerByIndex(1));
-	setMap(200000141);
-	removeInstancePlayer(getID());
-	revertInstancePlayer();
+	if getInstancePlayerCount() > 0 then
+		moveAllPlayers(200000141);
+		removeAllInstancePlayers();
+	end
 end
 
 function timerEnd(name, fromtimer)

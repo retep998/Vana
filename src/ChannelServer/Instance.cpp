@@ -40,20 +40,21 @@ Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t ti
 	m_start(clock()),
 	m_reset_on_destroy(false),
 	m_marked_for_delete(false)
-	{
-		if (time < 0) {
-			m_time = -(time + 1);
-			Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
-			new Timer::Timer(bind(&Instance::instanceEnd, this, true),
-				id, getTimers(), Timer::Time::nthSecondOfHour(static_cast<uint16_t>(m_time)), m_persistent ? 3600000 : 0);
-		}
-		else if (time > 0) {
-			m_time = time * 1000;
-			Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
-			new Timer::Timer(bind(&Instance::instanceEnd, this, true),
-				id, getTimers(), Timer::Time::fromNow(m_time), m_persistent ? m_time : 0);
-		}
+{
+	if (time < 0) {
+		m_time = -(time + 1);
+		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
+		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
+			id, getTimers(), Timer::Time::nthSecondOfHour(static_cast<uint16_t>(m_time)), m_persistent ? 3600000 : 0);
 	}
+	else if (time > 0) {
+		m_time = time * 1000;
+		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
+		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
+			id, getTimers(), Timer::Time::fromNow(m_time), m_persistent ? m_time : 0);
+	}
+}
+
 Instance::~Instance() {
 	// Reactors
 	if (m_reset_on_destroy) // Reset all reactors if bool is true
@@ -92,8 +93,10 @@ string Instance::getVariable(const string &name) {
 }
 
 void Instance::setBanned(const string &name, bool isbanned) {
-	if (isbanned)
+	if (isbanned) {
 		m_banned.push_back(name);
+		removePlayerSignUp(name);
+	}
 	else {
 		for (size_t i = 0; i < m_banned.size(); i++) {
 			if (m_banned[i] == name) {
@@ -115,7 +118,6 @@ bool Instance::isBanned(const string &name) {
 
 void Instance::addPlayer(Player *player) {
 	m_players[player->getId()] = player;
-	m_players_order.push_back(player->getName());
 	player->setInstance(this);
 }
 
@@ -128,6 +130,42 @@ void Instance::removePlayer(int32_t id) {
 	if (m_players.find(id) != m_players.end()) {
 		m_players.erase(id);
 	}
+}
+
+void Instance::removeAllPlayers() {
+	unordered_map<int32_t, Player *> temp = m_players;
+	for (unordered_map<int32_t, Player *>::iterator iter = temp.begin(); iter != temp.end(); iter++) {
+		removePlayer(iter->second);
+	}
+}
+
+void Instance::addPlayerSignUp(Player *player) {
+	m_players_order.push_back(player->getName());
+}
+
+void Instance::removePlayerSignUp(const string &name) {
+	for (size_t i = 0; i < m_players_order.size(); i++) {
+		if (m_players_order[i] == name) {
+			m_players_order.erase(m_players_order.begin() + i);
+		}
+	}
+}
+
+void Instance::moveAllPlayers(int32_t mapid) {
+	if (!Maps::getMap(mapid))
+		return;
+	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+		Maps::changeMap(iter->second, mapid, 0);
+	}
+}
+
+bool Instance::isPlayerSignedUp(const string &name) {
+	for (size_t i = 0; i < m_players_order.size(); i++) {
+		if (m_players_order[i] == name) {
+			return true;
+		}
+	}
+	return false;
 }
 
 const string Instance::getPlayerByIndex(uint32_t index) const {
