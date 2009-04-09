@@ -350,10 +350,16 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (matches[1] == "map") type = 3;
 						else if (matches[1] == "mob") type = 4;
 						else if (matches[1] == "npc") type = 5;
+						else if (matches[1] == "id")  type = 6;
 
 						if (type != 0) {
 							mysqlpp::Query query = Database::getDataDB().query();
-							query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+							if (type < 6) {
+								query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+							}
+							else if (type == 6) {
+								query << "SELECT objectid, name FROM stringdata WHERE objectid=" << matches[2];
+							}
 							mysqlpp::StoreQueryResult res = query.store();
 
 							if (res.num_rows() == 0) {
@@ -367,11 +373,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 							}
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc}", 6);
+							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, id}", 6);
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc}> <$search string>", 6);
+						PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc | id}> <$search string>", 6);
 					}
 					break;
 				}
