@@ -637,7 +637,7 @@ int32_t Buffs::parseMountInfo(Player *player, int32_t skillid, uint8_t level) {
 	int32_t mountid = 0;
 	switch (skillid) {
 		case Jobs::Beginner::MonsterRider:
-			mountid = player->getInventory()->getEquippedID(18);
+			mountid = player->getInventory()->getEquippedID(EquipSlots::Mount);
 			break;
 		case Jobs::Corsair::Battleship:
 			mountid = 1932000; // Battleship item ID

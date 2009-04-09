@@ -126,7 +126,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 		pack.skipBytes(4); // Charge
 	}
 	int32_t masteryid = 0;
-	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11))) {
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(EquipSlots::Weapon))) {
 		case Weapon1hSword:
 		case Weapon2hSword:
 			switch ((player->getJob() / 10)) {
@@ -221,7 +221,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(animation);
 	packet.add<int8_t>(w_speed);
 	int32_t masteryid = 0;
-	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11))) {
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(EquipSlots::Weapon))) {
 		case WeaponBow:
 			masteryid = Jobs::Hunter::BowMastery;
 			break;
