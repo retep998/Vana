@@ -24,13 +24,13 @@ class Player;
 struct ActiveBuff;
 
 namespace BuffsPacket {
-	void useSkill(Player *player, int32_t skillid, int32_t time, ActiveBuff pskill, ActiveMapBuff mskill, int16_t addedinfo);
-	void endSkill(Player *player, ActiveBuff pskill);
+	void useSkill(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo);
+	void endSkill(Player *player, ActiveBuff &pskill);
 
 	// Specific skills
-	void usePirateBuff(Player *player, int32_t skillid, int32_t time, ActiveBuff pskill, ActiveMapBuff mskill);
-	void useSpeedInfusion(Player *player, int32_t time, ActiveBuff pskill, ActiveMapBuff mskill, int16_t addedinfo);
-	void useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff pskill, int16_t addedinfo, int32_t mountid);
+	void usePirateBuff(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill);
+	void useSpeedInfusion(Player *player, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo);
+	void useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, int16_t addedinfo, int32_t mountid);
 };
 
 #endif
