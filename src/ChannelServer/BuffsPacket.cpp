@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, ActiveBuff pskill, ActiveMapBuff mskill, int16_t addedinfo) {
+void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILL);
@@ -69,7 +69,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Active
 	}
 }
 
-void BuffsPacket::endSkill(Player *player, ActiveBuff pskill) {
+void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CANCEL_SKILL);
 	packet.add<int64_t>(0);
@@ -88,7 +88,7 @@ void BuffsPacket::endSkill(Player *player, ActiveBuff pskill) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, ActiveBuff pskill, ActiveMapBuff mskill) {
+void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill) {
 	PacketCreator packet;
 	int16_t castedtime = static_cast<int16_t>(time);
 	packet.add<int16_t>(SEND_USE_SKILL);
@@ -126,7 +126,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useSpeedInfusion(Player *player, int32_t time, ActiveBuff pskill, ActiveMapBuff mskill, int16_t addedinfo) {
+void BuffsPacket::useSpeedInfusion(Player *player, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
 	int32_t castedvalue = static_cast<int32_t>(pskill.vals[0]);
 	int16_t castedtime = static_cast<int16_t>(time);
 	PacketCreator packet;
@@ -160,7 +160,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t time, ActiveBuff pski
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff pskill, int16_t addedinfo, int32_t mountid) {
+void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, int16_t addedinfo, int32_t mountid) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILL);
