@@ -108,6 +108,80 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 			}
 		}
 		else {
+			if (slot2 < 0) {
+				Item *remove = 0;
+				int16_t oldslot = 0;
+				bool weapon = -slot2 == EquipSlots::Weapon;
+				bool shield = -slot2 == EquipSlots::Shield;
+				bool top = -slot2 == EquipSlots::Top;
+				bool bottom = -slot2 == EquipSlots::Bottom;
+
+				if (weapon && GameLogicUtilities::is2hWeapon(item1->id) && player->getInventory()->getEquippedID(EquipSlots::Shield) != 0) {
+					oldslot = -EquipSlots::Shield;
+				}
+				else if (shield && GameLogicUtilities::is2hWeapon(player->getInventory()->getEquippedID(EquipSlots::Weapon))) {
+					oldslot = -EquipSlots::Weapon;
+				}
+				else if (top && GameLogicUtilities::isOverall(item1->id) && player->getInventory()->getEquippedID(EquipSlots::Bottom) != 0) {
+					oldslot = -EquipSlots::Bottom;
+				}
+				else if (bottom && GameLogicUtilities::isOverall(player->getInventory()->getEquippedID(EquipSlots::Top))) {
+					oldslot = -EquipSlots::Top;
+				}
+				if (oldslot != 0) {
+					remove = player->getInventory()->getItem(inv, oldslot);
+					bool onlyswap = true;
+					if ((player->getInventory()->getEquippedID(EquipSlots::Shield) != 0) && (player->getInventory()->getEquippedID(EquipSlots::Weapon) != 0)) {
+						onlyswap = false;
+					}
+					else if ((player->getInventory()->getEquippedID(EquipSlots::Top) != 0) && (player->getInventory()->getEquippedID(EquipSlots::Bottom) != 0)) {
+						onlyswap = false;
+					}
+					if (onlyswap) {
+						int16_t swapslot = 0;
+						if (weapon) {
+							swapslot = -EquipSlots::Shield;
+							player->getActiveBuffs()->stopBooster();
+							player->getActiveBuffs()->stopCharge();
+						}
+						else if (shield) {
+							swapslot = -EquipSlots::Weapon;
+							player->getActiveBuffs()->stopBooster();
+							player->getActiveBuffs()->stopCharge();
+						}
+						else if (top) {
+							swapslot = -EquipSlots::Bottom;
+						}
+						else if (bottom) {
+							swapslot = -EquipSlots::Top;
+						}
+						player->getInventory()->setItem(inv, swapslot, 0);
+						player->getInventory()->setItem(inv, slot1, remove);
+						player->getInventory()->setItem(inv, slot2, item1);
+						InventoryPacket::moveItem(player, inv, slot1, slot2);
+						InventoryPacket::moveItem(player, inv, swapslot, slot1);
+						InventoryPacket::updatePlayer(player);
+						return;
+					}
+					else {
+						if (player->getInventory()->getOpenSlotsNum(inv) == 0) {
+							InventoryPacket::blankUpdate(player);
+							return;
+						}
+						int16_t freeslot = 0;
+						for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
+							Item *olditem = player->getInventory()->getItem(inv, s);
+							if (olditem == 0) {
+								freeslot = s;
+								break;
+							}
+						}
+						player->getInventory()->setItem(inv, freeslot, remove);
+						player->getInventory()->setItem(inv, oldslot, 0);
+						InventoryPacket::moveItem(player, inv, oldslot, freeslot);
+					}
+				}
+			}
 			player->getInventory()->setItem(inv, slot1, item2);
 			player->getInventory()->setItem(inv, slot2, item1);
 			if (item1->petid > 0)
@@ -117,8 +191,13 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 		}
 	}
-	if (slot1 < 0 || slot2 < 0)
+	if ((slot1 < 0 && -slot1 == EquipSlots::Weapon) || (slot2 < 0 && -slot2 == EquipSlots::Weapon)) {
+		player->getActiveBuffs()->stopBooster();
+		player->getActiveBuffs()->stopCharge();
+	}
+	if (slot1 < 0 || slot2 < 0) {
 		InventoryPacket::updatePlayer(player);
+	}
 }
 
 int16_t Inventory::addItem(Player *player, Item *item, bool is) {
