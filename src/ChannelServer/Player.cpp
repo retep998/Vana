@@ -305,7 +305,7 @@ void Player::damageHP(uint16_t dhp) {
 }
 
 void Player::setMP(int16_t smp, bool is) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::Bishop::Infinity) > 0)) {
+	if (!getActiveBuffs()->hasInfinity()) {
 		if (smp < 0)
 			mp = 0;
 		else if (smp > mmp)
@@ -317,7 +317,7 @@ void Player::setMP(int16_t smp, bool is) {
 }
 
 void Player::modifyMP(int16_t nmp, bool is) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::Bishop::Infinity) > 0)) {
+	if (!getActiveBuffs()->hasInfinity()) {
 		if ((mp + nmp) < 0)
 			mp = 0;
 		else if ((mp + nmp) > mmp)
@@ -329,7 +329,7 @@ void Player::modifyMP(int16_t nmp, bool is) {
 }
 
 void Player::damageMP(uint16_t dmp) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::Bishop::Infinity) > 0)) {
+	if (!getActiveBuffs()->hasInfinity()) {
 		mp = (dmp > mp ? 0 : mp - dmp);
 	}
 	PlayerPacket::updateStatShort(this, 0x1000, mp, false);

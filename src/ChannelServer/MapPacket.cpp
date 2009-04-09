@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
+	MapEntryBuffs enter = player->getActiveBuffs()->getMapEntryBuffs();
 	packet.add<int16_t>(SEND_SHOW_PLAYER);
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName());
@@ -39,27 +40,44 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(1);
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
+	packet.add<int8_t>(enter.types[Byte5]);
+	packet.add<int8_t>(enter.types[Byte6]);
+	packet.add<int8_t>(enter.types[Byte7]);
 	packet.add<uint8_t>(0xF8);
+	packet.add<int8_t>(enter.types[Byte1]);
+	packet.add<int8_t>(enter.types[Byte2]);
+	packet.add<int8_t>(enter.types[Byte3]);
+	packet.add<int8_t>(enter.types[Byte4]);
 
-	/* Code that needs to be modified
-	SkillMapEnterActiveInfo enter = player->getActiveBuffs()->getSkillMapEnterInfo();
-	packet.add<int8_t>(enter.types[Type_1]);
-	packet.add<int8_t>(enter.types[Type_2]);
-	packet.add<int8_t>(enter.types[Type_3]);
-	packet.add<int8_t>(enter.types[Type_4]);
-	packet.add<int8_t>(enter.types[Type_5]);
-	packet.add<int8_t>(enter.types[Type_6]);
-	packet.add<int8_t>(enter.types[Type_7]);
-	packet.add<int8_t>(enter.types[Type_8]);
-	if (enter.isval) {
-		packet.add<int8_t>(enter.val);
+	const uint8_t byteorder[8] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
+	for (int8_t i = 0; i < 8; i++) {
+		uint8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
+		if (enter.types[cbyte] != 0 && enter.val[cbyte]) {
+			for (size_t f = 0; f < enter.values[cbyte].size(); f++) {
+				int16_t value = enter.values[cbyte][f];
+				if (cbyte == Byte3) {
+					if ((enter.types[cbyte] & 0x20) > 0) {
+						packet.add<int8_t>(player->getActiveBuffs()->getCombo() + 1);
+					}
+					if ((enter.types[cbyte] & 0x40) > 0) {
+						packet.add<int32_t>(player->getActiveBuffs()->getCharge());
+					}
+				}
+				else if (cbyte == Byte5) {
+					packet.add<int16_t>(value);
+				}
+				else {
+					packet.add<int8_t>(static_cast<int8_t>(value));
+				}
+			}
+		}
 	}
-	*/
-	packet.add<int64_t>(0); // Temporary addition until all the buffs are working properly with no disconnections
+
 	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
+	packet.add<int8_t>(enter.types[Byte8]);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(0);
+
 	packet.add<int32_t>(1065638850); // Unknown
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
@@ -71,15 +89,9 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(1065638850);
 	packet.add<int16_t>(0);
 
-	int32_t mount = player->getInventory()->getEquippedID(18);
-	if (mount != 0 && player->getActiveBuffs()->getActiveSkillLevel(1004) > 0) {
-		packet.add<int32_t>(mount);
-		packet.add<int32_t>(1004);
-		packet.add<int32_t>(1066113350);
-	}
-	else if (player->getActiveBuffs()->getActiveSkillLevel(5221006) > 0) {
-		packet.add<int32_t>(1932000);
-		packet.add<int32_t>(5221006);
+	if (enter.mountid > 0) {
+		packet.add<int32_t>(enter.mountid);
+		packet.add<int32_t>(enter.mountskill);
 		packet.add<int32_t>(1066113350);
 	}
 	else {

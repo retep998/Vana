@@ -52,6 +52,8 @@ enum Act {
 };
 
 enum SkillValues {
+	SkillNone, // Predefined value
+	SkillSpecialProc, // Special processing required
 	SkillX,
 	SkillY,
 	SkillSpeed,
@@ -68,14 +70,14 @@ enum SkillValues {
 };
 
 enum ByteTypes {
-	Type5,
-	Type6,
-	Type7,
-	Type8,
-	Type1,
-	Type2,
-	Type3,
-	Type4
+	Byte5,
+	Byte6,
+	Byte7,
+	Byte8,
+	Byte1,
+	Byte2,
+	Byte3,
+	Byte4
 };
 
 enum MobStatus {

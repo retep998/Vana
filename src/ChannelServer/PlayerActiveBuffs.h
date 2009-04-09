@@ -38,9 +38,16 @@ namespace Timer {
 
 class PlayerActiveBuffs {
 public:
-	PlayerActiveBuffs(Player *player) : m_player(player), m_combo(0), m_berserk(false), m_energycharge(0) { }
+	PlayerActiveBuffs(Player *player) :
+		m_player(player),
+		m_combo(0),
+		m_energycharge(0),
+		m_activecharge(0),
+		m_activebooster(0),
+		m_berserk(false)
+		{ }
 
-	// Buff Skills
+	// Buff skills
 	void addBuff(int32_t skill, int32_t time);
 	void removeBuff(int32_t skill, bool fromTimer = false);
 	void removeBuff();
@@ -51,7 +58,7 @@ public:
 	Timer::Container * getActTimer(int32_t skill);
 	void removeAct(int32_t skill);
 
-	// Combo attack
+	// Combo Attack
 	void setCombo(uint8_t combo, bool sendPacket);
 	void addCombo();
 	uint8_t getCombo() const { return m_combo; }
@@ -68,25 +75,50 @@ public:
 	void startEnergyChargeTimer();
 	void stopEnergyChargeTimer();
 
+	// Boosters
+	void setBooster(int32_t skillid) { m_activebooster = skillid; }
+	void stopBooster();
+	int32_t getBooster() const { return m_activebooster; }
+	
+	// White Knight/Paladin charges
+	void setCharge(int32_t skillid) { m_activecharge = skillid; }
+	void stopCharge();
+	bool hasIceCharge() const;
+	int32_t getCharge() const { return m_activecharge; }
+
+	// Commonly referred to buffs on the server end
+	const bool hasInfinity();
+	const bool hasMesoUp();
+	const bool hasHolySymbol();
+	const bool hasPowerStance();
+	const bool hasMagicGuard();
+	const bool hasHyperBody();
+	const int32_t getHolySymbol();
+	const int32_t getPowerStance();
+	const int32_t getHyperBody();
+
 	// Map garbage
-	void deleteSkillMapEnterInfo(int32_t skillid);
-	SkillMapEnterActiveInfo getSkillMapEnterInfo();
-	SkillActiveInfo getBuffInfo(int32_t skillid);
-	uint8_t getActiveSkillLevel(int32_t skillid);
-	void setBuffInfo(int32_t skillid, SkillActiveInfo skill);
-	void setSkillMapEnterInfo(int32_t skillid, const vector<SkillMapActiveInfo> &skill);
+	void addBuffInfo(int32_t skillid, const vector<Buff> &buffs);
 	void setActiveSkillLevel(int32_t skillid, uint8_t level);
+	void addMapEntryBuffInfo(ActiveMapBuff &buff);
+	void deleteMapEntryBuffInfo(ActiveMapBuff &buff);
+	void setMountInfo(int32_t skillid, int32_t mountid);
+	uint8_t getActiveSkillLevel(int32_t skillid);
+	ActiveBuff removeBuffInfo(int32_t skillid, const vector<Buff> &buffs);
+	MapEntryBuffs getMapEntryBuffs();
 private:
 	Player *m_player;
-	list<int32_t> m_buffs;
-	unordered_map<int32_t, SkillActiveInfo> activeplayerskill;
-	vector<SkillMapActiveInfo> activemapenterskill;
-	unordered_map<int32_t, uint8_t> activelevels;
-	unordered_map<int32_t, shared_ptr<Timer::Container> > m_skill_acts;
-	uint32_t timeseed;
-	int16_t m_energycharge;
 	uint8_t m_combo;
+	int16_t m_energycharge;
+	int32_t m_activecharge;
+	int32_t m_activebooster;
+	uint32_t m_timeseed;
 	bool m_berserk;
+	list<int32_t> m_buffs;
+	ActiveBuffsByType m_activebuffsbytype[8];
+	MapEntryBuffs m_mapbuffs;
+	unordered_map<int32_t, uint8_t> m_activelevels;
+	unordered_map<int32_t, shared_ptr<Timer::Container> > m_skill_acts;
 };
 
 #endif

@@ -112,6 +112,8 @@ namespace LuaExports {
 	int giveAP(lua_State *luaVm);
 	int giveEXP(lua_State *luaVm);
 	int giveSP(lua_State *luaVm);
+	int isActiveItem(lua_State *luaVm);
+	int isActiveSkill(lua_State *luaVm);
 	int isGM(lua_State *luaVm);
 	int setAP(lua_State *luaVm);
 	int setDEX(lua_State *luaVm);

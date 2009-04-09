@@ -122,12 +122,8 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 			player->setAP(player->getAP() + apgain);
 			player->setSP(player->getSP() + spgain);
 			// Let hyperbody remain on if on during a level up, as it should
-			int32_t skillid = 0;
-			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0)
-				skillid = Jobs::Spearman::HyperBody;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::HyperBody) > 0) // GM Hyperbody, separating because any player may get a map-wide effect of GM Hyperbody
-				skillid = Jobs::SuperGM::HyperBody;
-			if (skillid > 0) {
+			if (player->getActiveBuffs()->hasHyperBody()) {
+				int32_t skillid = player->getActiveBuffs()->getHyperBody();
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
 				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
@@ -236,12 +232,8 @@ void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract
 				case 0x800: player->modifyRMHP(hpgain); break;
 				case 0x2000: player->modifyRMMP(mpgain); break;
 			}
-			int32_t skillid = 0;
-			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0)
-				skillid = Jobs::Spearman::HyperBody;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::HyperBody) > 0)
-				skillid = Jobs::SuperGM::HyperBody;
-			if (skillid > 0) {
+			if (player->getActiveBuffs()->hasHyperBody()) {
+				int32_t skillid = player->getActiveBuffs()->getHyperBody();
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
 				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
