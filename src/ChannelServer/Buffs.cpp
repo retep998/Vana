@@ -936,8 +936,9 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 	}
 	vector<Buff> buffs = parseBuffs(skill);
 	ActiveMapBuff meskill = parseBuffMapEntryInfo(player, skill, playerbuffs->getActiveSkillLevel(skill));
+	ActiveBuff pskill = playerbuffs->removeBuffInfo(skill, buffs);
 
-	BuffsPacket::endSkill(player, playerbuffs->removeBuffInfo(skill, buffs));
+	BuffsPacket::endSkill(player, pskill);
 
 	playerbuffs->deleteMapEntryBuffInfo(meskill);
 	playerbuffs->setActiveSkillLevel(skill, 0);
