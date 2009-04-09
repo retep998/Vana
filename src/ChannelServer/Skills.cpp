@@ -93,6 +93,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	int16_t addedinfo = 0;
 	uint8_t level = packet.get<int8_t>();
 	uint8_t type = 0;
+	uint8_t direction = 0;
 	if (level == 0 || player->getSkills()->getSkillLevel(skillid) != level) {
 		// hacking
 		return;
@@ -107,15 +108,16 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 				uint8_t success = packet.get<int8_t>();
 				SkillsPacket::showMagnetSuccess(player, mapmobid, success);
 			}
+			direction = packet.get<uint8_t>();
 			break;
 		}
-		case Jobs::Page::Threaten: // Threaten
-		case Jobs::FPWizard::Slow: // Slow - F/P
-		case Jobs::ILWizard::Slow: // Slow - I/L
-		case Jobs::FPMage::Seal: // Seal - F/P
-		case Jobs::ILMage::Seal: // Seal - I/L
-		case Jobs::Priest::Doom: // Doom
-		case Jobs::Hermit::ShadowWeb: { // Shadow Web
+		case Jobs::Page::Threaten:
+		case Jobs::FPWizard::Slow:
+		case Jobs::ILWizard::Slow:
+		case Jobs::FPMage::Seal:
+		case Jobs::ILMage::Seal:
+		case Jobs::Priest::Doom:
+		case Jobs::Hermit::ShadowWeb: {
 			uint8_t mobs = packet.get<int8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.get<int32_t>())) {
@@ -124,31 +126,31 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Spearman::HyperBody: // Hyper Body
-		case Jobs::FPWizard::Meditation: // Meditation
-		case Jobs::ILWizard::Meditation: // Meditation
-		case Jobs::Cleric::Bless: // Bless
-		case Jobs::Priest::HolySymbol: // Holy Symbol
-		case Jobs::Bowmaster::SharpEyes: // Sharp Eyes
-		case Jobs::Marksman::SharpEyes: // Sharp Eyes
-		case Jobs::Assassin::Haste: // Haste
-		case Jobs::Bandit::Haste: // Haste
-		case Jobs::Hero::MapleWarrior: // Maple Warrior
-		case Jobs::Paladin::MapleWarrior: //
-		case Jobs::DarkKnight::MapleWarrior: //
-		case Jobs::FPArchMage::MapleWarrior: //
-		case Jobs::ILArchMage::MapleWarrior: //
-		case Jobs::Bishop::MapleWarrior: //
-		case Jobs::Bowmaster::MapleWarrior: //
-		case Jobs::Marksman::MapleWarrior: //
-		case Jobs::NightLord::MapleWarrior: //
-		case Jobs::Shadower::MapleWarrior: //
-		case Jobs::Buccaneer::MapleWarrior: //
-		case Jobs::Corsair::MapleWarrior: // End of Maple Warrior
-		case Jobs::SuperGM::Haste: // GM Haste
-		case Jobs::SuperGM::HolySymbol: // GM Holy Symbol
-		case Jobs::SuperGM::Bless: // GM Bless
-		case Jobs::SuperGM::HyperBody: { // GM Hyper Body
+		case Jobs::Spearman::HyperBody:
+		case Jobs::FPWizard::Meditation:
+		case Jobs::ILWizard::Meditation:
+		case Jobs::Cleric::Bless:
+		case Jobs::Priest::HolySymbol:
+		case Jobs::Bowmaster::SharpEyes:
+		case Jobs::Marksman::SharpEyes:
+		case Jobs::Assassin::Haste:
+		case Jobs::Bandit::Haste:
+		case Jobs::Hero::MapleWarrior:
+		case Jobs::Paladin::MapleWarrior:
+		case Jobs::DarkKnight::MapleWarrior:
+		case Jobs::FPArchMage::MapleWarrior:
+		case Jobs::ILArchMage::MapleWarrior:
+		case Jobs::Bishop::MapleWarrior:
+		case Jobs::Bowmaster::MapleWarrior:
+		case Jobs::Marksman::MapleWarrior:
+		case Jobs::NightLord::MapleWarrior:
+		case Jobs::Shadower::MapleWarrior:
+		case Jobs::Buccaneer::MapleWarrior:
+		case Jobs::Corsair::MapleWarrior:
+		case Jobs::SuperGM::Haste:
+		case Jobs::SuperGM::HolySymbol:
+		case Jobs::SuperGM::Bless:
+		case Jobs::SuperGM::HyperBody: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
@@ -161,7 +163,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Cleric::Heal: { // Heal
+		case Jobs::Cleric::Heal: {
 			// TODO PARTY
 			uint16_t healrate = skills[skillid][level].hpP;
 			if (healrate > 100)
@@ -169,11 +171,11 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			player->modifyHP(healrate * player->getMHP() / 100);
 			break;
 		}
-		case Jobs::SuperGM::HealPlusDispel: // GM Heal + Dispel - needs to be modified for map?
+		case Jobs::SuperGM::HealPlusDispel:
 			player->setHP(player->getMHP());
 			player->setMP(player->getMMP());
 			break;
-		case Jobs::SuperGM::Resurrection: { // GM Resurrection
+		case Jobs::SuperGM::Resurrection: {
 			for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 				Player *resplayer;
 				resplayer = Maps::getMap(player->getMap())->getPlayer(i);
@@ -183,7 +185,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::SuperGM::Hide: // GM Hide
+		case Jobs::SuperGM::Hide:
 			MapPacket::removePlayer(player);
 			break;
 		default:
@@ -196,7 +198,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 	}
 	applySkillCosts(player, skillid, level);
-	SkillsPacket::showSkill(player, skillid, level);
+	SkillsPacket::showSkill(player, skillid, level, direction);
 	if (Buffs::Instance()->addBuff(player, skillid, level, addedinfo))
 		return;
 	else if (GameLogicUtilities::isSummon(skillid))

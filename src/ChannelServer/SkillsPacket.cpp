@@ -36,7 +36,7 @@ void SkillsPacket::addSkill(Player *player, int32_t skillid, PlayerSkillInfo ski
 	player->getSession()->send(packet);
 }
 
-void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, bool party, bool self) {
+void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, uint8_t direction, bool party, bool self) {
 	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hide) > 0)
 		return;
  	PacketCreator packet;
@@ -50,6 +50,13 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, boo
 	packet.add<int8_t>(party ? 2 : 1);
  	packet.add<int32_t>(skillid);
 	packet.add<int8_t>(level); // TODO
+	switch (skillid) {
+		case Jobs::Hero::MonsterMagnet: // Monster Magnet processing
+		case Jobs::Paladin::MonsterMagnet:
+		case Jobs::DarkKnight::MonsterMagnet:
+			packet.add<uint8_t>(direction);
+			break;
+	}
 	if (self)
 		player->getSession()->send(packet);
 	else
@@ -69,15 +76,15 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t leve
 	packet.add<int16_t>(SEND_GAIN_ITEM); // For the using player
 	bool send = false;
 	switch (skillid) {
-		case 2100000:
-		case 2200000:
-		case 2300000: // MP Eater
+		case Jobs::FPWizard::MpEater:
+		case Jobs::ILWizard::MpEater:
+		case Jobs::Cleric::MpEater:
 			packet.add<int8_t>(1);
 			packet.add<int32_t>(skillid);
 			packet.add<int8_t>(1);
 			send = true;
 			break;
-		case 1311008: // Dragon Blood
+		case Jobs::DragonKnight::DragonBlood: // Dragon Blood
 			packet.add<int8_t>(5);
 			packet.add<int32_t>(skillid);
 			send = true;
@@ -92,16 +99,16 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t leve
 	packet.add<int16_t>(SEND_SHOW_SKILL);  // For others
 	packet.add<int32_t>(player->getId());
 	switch (skillid) {
-		case 2100000:
-		case 2200000:
-		case 2300000: // MP Eater
+		case Jobs::FPWizard::MpEater:
+		case Jobs::ILWizard::MpEater:
+		case Jobs::Cleric::MpEater:
 			packet.add<int8_t>(1);
 			packet.add<int32_t>(skillid);
 			packet.add<int8_t>(1);
 			send = true;
 			break;
-		case 4211005: // Meso Guard
-		case 1311008: // Dragon Blood
+		case Jobs::ChiefBandit::MesoGuard:
+		case Jobs::DragonKnight::DragonBlood:
 			packet.add<int8_t>(5);
 			packet.add<int32_t>(skillid);
 			send = true;
@@ -154,7 +161,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_GAIN_ITEM);
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(1320006);
+	packet.add<int32_t>(Jobs::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
 	packet.add<int8_t>(on ? 1 : 0);
 	player->getSession()->send(packet);
@@ -164,7 +171,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int16_t>(SEND_SHOW_SKILL);  // For others
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(1320006);
+	packet.add<int32_t>(Jobs::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
 	packet.add<int8_t>(on ? 1 : 0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
