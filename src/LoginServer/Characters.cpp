@@ -162,15 +162,11 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 	packet.skipBytes(16);
 
 	uint16_t gender = packet.get<int8_t>();
-	uint16_t str = packet.get<int8_t>();
-	uint16_t dex = packet.get<int8_t>();
-	uint16_t intt = packet.get<int8_t>();
-	uint16_t luk = packet.get<int8_t>();
+	uint16_t str = 12;
+	uint16_t dex = 5;
+	uint16_t intt = 4;
+	uint16_t luk = 4;
 
-	if (str + dex + intt + luk != 25) {
-		// hacking
-		return;
-	}
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO characters (name, userid, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES ("
 			<< mysqlpp::quote << name << ","
@@ -187,7 +183,7 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 	mysqlpp::SimpleResult res = query.execute();
 	int32_t id = (int32_t) res.insert_id();
 
-	packet.skipBytes(-21);
+	packet.skipBytes(-17);
 	createEquip(packet.get<int32_t>(), 0x05, id);
 	createEquip(packet.get<int32_t>(), 0x06, id);
 	createEquip(packet.get<int32_t>(), 0x07, id);
