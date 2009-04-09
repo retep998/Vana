@@ -64,32 +64,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_USE_RETURN_SCROLL 0x4e
 #define RECV_USE_SCROLL 0x4f
 #define RECV_ADD_STAT 0x50
-#define RECV_HEAL_PLAYER 0x51
-#define RECV_ADD_SKILL 0x52
-#define RECV_USE_SKILL 0x53
-#define RECV_CANCEL_SKILL 0x54
-#define RECV_SPECIAL_SKILL 0x55 // Chakra, Pierce, Monster Magnet, Big Bang
-#define RECV_DROP_MESO 0x56
-#define RECV_FAME 0x57
-#define RECV_GET_PLAYER_INFO 0x59
-#define RECV_PET_SUMMON 0x5A
-#define RECV_CHANGE_MAP_SPECIAL 0x5c
-#define RECV_GET_QUEST 0x62
-#define RECV_SKILL_MACRO 0x65
-#define RECV_GROUP_CHAT 0x6b // Party, buddy and guild chat
-#define RECV_COMMAND 0x6c // / commands like "/find"
-#define RECV_PLAYER_ROOM_ACTION 0x6f // Trades, player shops, minigames, etc.
-#define RECV_PARTY_ACTION 0x70
-#define RECV_BUDDYLIST 0x76
-#define RECV_KEYMAP 0x7b
-#define RECV_PET_MOVE 0x8c
-#define RECV_PET_CHAT 0x8d
-#define RECV_PET_COMMAND 0x8e
-#define RECV_PET_LOOT 0x8f
-#define RECV_MOVE_SUMMON 0x94
-#define RECV_DAMAGE_MOB_SUMMON 0x95
-#define RECV_DAMAGE_SUMMON 0x96
-#define RECV_CONTROL_MOB 0x9d
-#define RECV_ANIMATE_NPC 0xa6
-#define RECV_LOOT_ITEM 0xab
-#define RECV_HIT_REACTOR 0xae
+#define RECV_HEAL_PLAYER 0x52
+#define RECV_ADD_SKILL 0x53
+#define RECV_USE_SKILL 0x54
+#define RECV_CANCEL_SKILL 0x55
+#define RECV_SPECIAL_SKILL 0x56 // Chakra, Pierce, Monster Magnet, Big Bang
+#define RECV_DROP_MESO 0x57
+#define RECV_FAME 0x58
+#define RECV_GET_PLAYER_INFO 0x5a
+#define RECV_PET_SUMMON 0x5b
+#define RECV_CHANGE_MAP_SPECIAL 0x5d
+#define RECV_GET_QUEST 0x63
+#define RECV_SKILL_MACRO 0x66
+#define RECV_GROUP_CHAT 0x6c // Party, buddy and guild chat
+#define RECV_COMMAND 0x6d // / commands like "/find"
+#define RECV_PLAYER_ROOM_ACTION 0x70 // Trades, player shops, minigames, etc.
+#define RECV_PARTY_ACTION 0x71
+#define RECV_BUDDYLIST 0x77
+#define RECV_KEYMAP 0x7c
+#define RECV_PET_MOVE 0x8f
+#define RECV_PET_CHAT 0x90
+#define RECV_PET_COMMAND 0x91
+#define RECV_PET_LOOT 0x92
+#define RECV_MOVE_SUMMON 0x97
+#define RECV_DAMAGE_MOB_SUMMON 0x98
+#define RECV_DAMAGE_SUMMON 0x99
+#define RECV_CONTROL_MOB 0xa0
+#define RECV_ANIMATE_NPC 0xa9
+#define RECV_LOOT_ITEM 0xae
+#define RECV_HIT_REACTOR 0xb1

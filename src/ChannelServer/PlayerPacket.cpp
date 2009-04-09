@@ -79,6 +79,11 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
+	for (int32_t i = 0; i < 225; i++)
+		packet.add<int8_t>(0);
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
 	for (int32_t i = 0; i < 15; i++)
 		packet.addBytes("FFC99A3B");
 	packet.add<int32_t>(0);
