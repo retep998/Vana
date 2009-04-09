@@ -21,14 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 class Player;
-struct SkillActiveInfo;
+struct ActiveBuff;
 
 namespace BuffsPacket {
-	void usePirateBuff(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill);
-	void useSkill(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, int16_t addedinfo, bool ismorph = false, bool isitem = false);
-	void useSpeedInfusion(Player *player, int32_t time, SkillActiveInfo pskill, int16_t addedinfo);
-	void useMount(Player *player, int32_t skillid, int32_t time, SkillActiveInfo pskill, int16_t addedinfo, int32_t mountid);
-	void endSkill(Player *player, SkillActiveInfo pskill);
+	void useSkill(Player *player, int32_t skillid, int32_t time, ActiveBuff pskill, ActiveMapBuff mskill, int16_t addedinfo);
+	void endSkill(Player *player, ActiveBuff pskill);
+
+	// Specific skills
+	void usePirateBuff(Player *player, int32_t skillid, int32_t time, ActiveBuff pskill, ActiveMapBuff mskill);
+	void useSpeedInfusion(Player *player, int32_t time, ActiveBuff pskill, ActiveMapBuff mskill, int16_t addedinfo);
+	void useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff pskill, int16_t addedinfo, int32_t mountid);
 };
 
 #endif

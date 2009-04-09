@@ -101,15 +101,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		default:  {
 			stance = packet.get<int8_t>(); // Power Stance
 			if (stance > 0) {
-				int32_t skillid = 0;
-				if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hero::PowerStance) > 0)
-					skillid = Jobs::Hero::PowerStance;
-				else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0)
-					skillid = Jobs::Paladin::PowerStance;
-				else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0)
-					skillid = Jobs::DarkKnight::PowerStance;
-				else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
-					skillid = Jobs::Marauder::EnergyCharge;
+				int32_t skillid = player->getActiveBuffs()->getPowerStance();
 				if (skillid == 0 || player->getSkills()->getSkillLevel(skillid) == 0) {
 					// Hacking
 					return;
@@ -172,13 +164,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				int16_t reduc = Skills::skills[Jobs::Magician::MagicGuard][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Magician::MagicGuard)].x;
 				uint16_t mpdamage = (uint16_t)((damage * reduc) / 100);
 				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
-				bool ison = false;
-				if (job % 10 == 2) {
-					int32_t infinity = player->getJob() * 10000 + 1004;
-					if (player->getActiveBuffs()->getActiveSkillLevel(infinity) > 0)
-						ison = true;
-				}
-				if (mpdamage < mp || ison) {
+				if (mpdamage < mp || player->getActiveBuffs()->hasInfinity()) {
 					player->damageMP(mpdamage);
 					player->damageHP(hpdamage);
 				}

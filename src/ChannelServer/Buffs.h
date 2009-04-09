@@ -21,58 +21,88 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <utility>
 #include <vector>
 
 using std::tr1::unordered_map;
+using std::pair;
 using std::vector;
 
 class Player;
 
-struct BuffInfo {
-	BuffInfo() : type(0), byte(0), value(0), hasmapval(false), useval(false), ismount(false) { }
+struct Buff {
+	Buff() : type(0), byte(0), value(0) { }
 	uint8_t type;
 	int8_t byte;
 	int8_t value;
-	bool hasmapval;
-	bool useval;
-	bool ismount;
 };
 
-struct SkillAct {
+struct BuffInfo {
+	BuffInfo() : itemval(0), hasmapval(false), hasmapentry(false), useval(false) { }
+	Buff buff;
+	int16_t itemval;
+	bool hasmapval;
+	bool hasmapentry;
+	bool useval;
+};
+
+struct BuffMapInfo {
+	BuffMapInfo() : useval(false) { }
+	Buff buff;
+	bool useval;
+};
+
+struct BuffAct {
 	Act type;
 	int8_t value;
 	int32_t time;
 };
 
-struct SkillsInfo {
+struct SkillInfo {
 	vector<BuffInfo> player;
-	SkillAct act;
-	vector<bool> bact;
+	vector<BuffMapInfo> map;
+	BuffAct act;
+	bool bact;
 };
 
-struct SkillActiveInfo {
-	uint8_t types[8];
-	vector<int16_t> vals;
-};
-
-struct SkillMapActiveInfo {
-	int8_t byte;
-	int8_t type;
-	int8_t value;
-	bool isvalue;
-	int32_t skill;
-};
-
-struct SkillMapEnterActiveInfo {
-	SkillMapEnterActiveInfo() : val(0), isval(false) {
+struct ActiveBuff {
+	ActiveBuff() : hasmapbuff(false) {
 		for (size_t i = 0; i < 8; i++) {
 			types[i] = 0;
 		}
 	}
 	uint8_t types[8];
-	int8_t val;
-	bool isval;
+	vector<int16_t> vals;
+	bool hasmapbuff;
 };
+
+struct ActiveMapBuff {
+	ActiveMapBuff() {
+		for (int8_t i = 0; i < 8; i++)
+			typelist[i] = 0;
+	}
+	vector<uint8_t> bytes;
+	vector<int8_t> types;
+	vector<int16_t> values;
+	vector<bool> usevals;
+	uint8_t typelist[8];
+};
+
+struct MapEntryBuffs {
+	MapEntryBuffs() : mountid(0), mountskill(0) {
+		for (int8_t i = 0; i < 8; i++) {
+			types[i] = 0;
+			val[i] = false;
+		}
+	}
+	uint8_t types[8];
+	bool val[8];
+	vector<int16_t> values[8];
+	int32_t mountid;
+	int32_t mountskill;
+};
+
+typedef unordered_map<uint8_t, int32_t> ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
 
 class Buffs {
 public:
@@ -81,21 +111,24 @@ public:
 			singleton = new Buffs();
 		return singleton;
 	}
-	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo);
-	void addBuff(Player *player, int32_t itemid, int32_t time, SkillActiveInfo &iteminfo, bool morph);
+	void addItemInfo(int32_t itemid, const vector<uint8_t> &types, const vector<int8_t> &bytes, const vector<int16_t> &values);
+	void addBuff(Player *player, int32_t itemid, int32_t time);
 	void endBuff(Player *player, int32_t skill);
-
+	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo);
+	ActiveBuff parseBuffInfo(Player *player, int32_t skillid, uint8_t level);
+	ActiveMapBuff parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level);
+	vector<Buff> parseBuffs(int32_t skillid);
 private:
 	Buffs();
 	Buffs(const Buffs&);
 	Buffs& operator=(const Buffs&);
 	static Buffs *singleton;
 
-	unordered_map<int32_t, SkillsInfo> skillsinfo;
+	unordered_map<int32_t, SkillInfo> skillsinfo;
 
+	ActiveMapBuff parseBuffMapEntryInfo(Player *player, int32_t skillid, uint8_t level);
 	int16_t getValue(int8_t value, int32_t skillid, uint8_t level);
-	SkillActiveInfo parseBuffInfo(Player *player, int32_t skillid, uint8_t level, int32_t &mountid);
-	SkillActiveInfo parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill);
+	int32_t parseMountInfo(Player *player, int32_t skillid, uint8_t level);
 };
 
 #endif

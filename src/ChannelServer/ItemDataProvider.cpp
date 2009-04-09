@@ -217,45 +217,69 @@ void ItemDataProvider::loadData() {
 void ItemDataProvider::addItemInfo(int32_t id, ItemInfo item) {
 	if (GameLogicUtilities::isRechargeable(id))
 		ShopDataProvider::Instance()->addRechargable(id);
-	// Set all types to 0 initially
-	memset(item.cons.types, 0, sizeof(item.cons.types));
+
+	vector<uint8_t> types;
+	vector<int8_t> bytes;
+	vector<int16_t> values;
+	bool buff = false;
 
 	if (item.cons.watk > 0) {
-		item.cons.types[Type1] += 0x01;
-		item.cons.vals.push_back(item.cons.watk);
+		types.push_back(0x01);
+		bytes.push_back(Byte1);
+		values.push_back(item.cons.watk);
+		buff = true;
 	}
 	if (item.cons.wdef > 0) {
-		item.cons.types[Type1] += 0x02;
-		item.cons.vals.push_back(item.cons.wdef);
+		types.push_back(0x02);
+		bytes.push_back(Byte1);
+		values.push_back(item.cons.wdef);
+		buff = true;
 	}
 	if (item.cons.matk > 0) {
-		item.cons.types[Type1] += 0x04;
-		item.cons.vals.push_back(item.cons.matk);
+		types.push_back(0x04);
+		bytes.push_back(Byte1);
+		values.push_back(item.cons.matk);
+		buff = true;
 	}
 	if (item.cons.mdef > 0) {
-		item.cons.types[Type1] += 0x08;
-		item.cons.vals.push_back(item.cons.mdef);
+		types.push_back(0x08);
+		bytes.push_back(Byte1);
+		values.push_back(item.cons.mdef);
+		buff = true;
 	}
 	if (item.cons.acc > 0) {
-		item.cons.types[Type1] += 0x10;
-		item.cons.vals.push_back(item.cons.acc);
+		types.push_back(0x10);
+		bytes.push_back(Byte1);
+		values.push_back(item.cons.acc);
+		buff = true;
 	}
 	if (item.cons.avo > 0) {
-		item.cons.types[Type1] += 0x20;
-		item.cons.vals.push_back(item.cons.avo);
+		types.push_back(0x20);
+		bytes.push_back(Byte1);
+		values.push_back(item.cons.avo);
+		buff = true;
 	}
 	if (item.cons.speed > 0) {
-		item.cons.types[Type1] += 0x80;
-		item.cons.vals.push_back(item.cons.speed);
+		types.push_back(0x80);
+		bytes.push_back(Byte1);
+		values.push_back(item.cons.speed);
+		buff = true;
 	}
 	if (item.cons.jump > 0) {
-		item.cons.types[Type2] = 0x01;
-		item.cons.vals.push_back(item.cons.jump);
+		types.push_back(0x01);
+		bytes.push_back(Byte2);
+		values.push_back(item.cons.jump);
+		buff = true;
 	}
 	if (item.cons.morph > 0) {
-		item.cons.types[Type5] = 0x02;
-		item.cons.vals.push_back(item.cons.morph);
+		types.push_back(0x02);
+		bytes.push_back(Byte5);
+		values.push_back(item.cons.morph);
+		buff = true;
 	}
+
+	if (buff)
+		Buffs::Instance()->addItemInfo(id, types, bytes, values);
 
 	items[id] = item;
 }

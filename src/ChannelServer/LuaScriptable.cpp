@@ -108,6 +108,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "giveAP", &LuaExports::giveAP);
 	lua_register(luaVm, "giveEXP", &LuaExports::giveEXP);
 	lua_register(luaVm, "giveSP", &LuaExports::giveSP);
+	lua_register(luaVm, "isActiveItem", &LuaExports::isActiveItem);
+	lua_register(luaVm, "isActiveSkill", &LuaExports::isActiveSkill);
 	lua_register(luaVm, "isGM", &LuaExports::isGM);
 	lua_register(luaVm, "setAP", &LuaExports::setAP);
 	lua_register(luaVm, "setDEX", &LuaExports::setDEX);
@@ -520,6 +522,16 @@ int LuaExports::giveSP(lua_State *luaVm) {
 	int16_t sp = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setSP(getPlayer(luaVm)->getSP() + sp);
 	return 0;
+}
+
+int LuaExports::isActiveItem(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getActiveBuffs()->getActiveSkillLevel(-1 * lua_tointeger(luaVm, -1)) > 0);
+	return 1;
+}
+
+int LuaExports::isActiveSkill(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getActiveBuffs()->getActiveSkillLevel(lua_tointeger(luaVm, -1)) > 0);
+	return 1;
 }
 
 int LuaExports::isGM(lua_State *luaVm) {

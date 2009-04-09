@@ -22,403 +22,595 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Skills.h"
 
-Buffs *Buffs::singleton = 0;
+Buffs * Buffs::singleton = 0;
 
 Buffs::Buffs() {
+	Buff buff;
+	BuffAct act;
 	BuffInfo player;
-	SkillAct act;
+	BuffMapInfo map;
+
 	// Boosters
-	player.type = 0x08;
-	player.byte = Type2;
-	player.value = SkillX;
-	skillsinfo[Jobs::Fighter::SwordBooster].player.push_back(player); // Sword Booster
-	skillsinfo[Jobs::Fighter::AxeBooster].player.push_back(player); // Axe Booster
-	skillsinfo[Jobs::Page::SwordBooster].player.push_back(player); // Sword Booster
-	skillsinfo[Jobs::Page::BwBooster].player.push_back(player); // Blunt Booster
-	skillsinfo[Jobs::Spearman::SpearBooster].player.push_back(player); // Spear Booster
-	skillsinfo[Jobs::Spearman::PolearmBooster].player.push_back(player); // Polearm Booster
-	skillsinfo[Jobs::FPMage::SpellBooster].player.push_back(player); // Spell Booster
-	skillsinfo[Jobs::ILMage::SpellBooster].player.push_back(player); // Spell Booster
-	skillsinfo[Jobs::Hunter::BowBooster].player.push_back(player); // Bow Booster
-	skillsinfo[Jobs::Crossbowman::CrossbowBooster].player.push_back(player); // Crossbow Booster
-	skillsinfo[Jobs::Assassin::ClawBooster].player.push_back(player); // Claw Booster
-	skillsinfo[Jobs::Bandit::DaggerBooster].player.push_back(player); // Dagger Booster
-	skillsinfo[Jobs::Infighter::KnucklerBooster].player.push_back(player); // Knuckle Booster
-	skillsinfo[Jobs::Gunslinger::GunBooster].player.push_back(player); // Gun Booster
+	buff.type = 0x08;
+	buff.byte = Byte2;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Fighter::SwordBooster].player.push_back(player);
+	skillsinfo[Jobs::Fighter::AxeBooster].player.push_back(player);
+	skillsinfo[Jobs::Page::SwordBooster].player.push_back(player);
+	skillsinfo[Jobs::Page::BwBooster].player.push_back(player);
+	skillsinfo[Jobs::Spearman::SpearBooster].player.push_back(player);
+	skillsinfo[Jobs::Spearman::PolearmBooster].player.push_back(player);
+	skillsinfo[Jobs::FPMage::SpellBooster].player.push_back(player);
+	skillsinfo[Jobs::ILMage::SpellBooster].player.push_back(player);
+	skillsinfo[Jobs::Hunter::BowBooster].player.push_back(player);
+	skillsinfo[Jobs::Crossbowman::CrossbowBooster].player.push_back(player);
+	skillsinfo[Jobs::Assassin::ClawBooster].player.push_back(player);
+	skillsinfo[Jobs::Bandit::DaggerBooster].player.push_back(player);
+	skillsinfo[Jobs::Infighter::KnucklerBooster].player.push_back(player);
+	skillsinfo[Jobs::Gunslinger::GunBooster].player.push_back(player);
+
 	// Speed Infusion
-	player.type = 0x80;
-	player.byte = Type8;
-	player.value = SkillX;
+	buff.type = 0x80;
+	buff.byte = Byte8;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::Buccaneer::SpeedInfusion].player.push_back(player);
+
 	// Maple Warriors
-	player.type = 0x8;
-	player.byte = Type5;
-	player.value = SkillX;
-	skillsinfo[Jobs::Hero::MapleWarrior].player.push_back(player); // Hero
-	skillsinfo[Jobs::Paladin::MapleWarrior].player.push_back(player); // Paladin
-	skillsinfo[Jobs::DarkKnight::MapleWarrior].player.push_back(player); // Dark Knight
-	skillsinfo[Jobs::FPArchMage::MapleWarrior].player.push_back(player); // FP Arch Mage
-	skillsinfo[Jobs::ILArchMage::MapleWarrior].player.push_back(player); // IL Arch Mage
-	skillsinfo[Jobs::Bishop::MapleWarrior].player.push_back(player); // Bishop
-	skillsinfo[Jobs::Bowmaster::MapleWarrior].player.push_back(player); // Bowmaster
-	skillsinfo[Jobs::Marksman::MapleWarrior].player.push_back(player); // Marksman
-	skillsinfo[Jobs::NightLord::MapleWarrior].player.push_back(player); // Night Lord
-	skillsinfo[Jobs::Shadower::MapleWarrior].player.push_back(player); // Shadower
-	skillsinfo[Jobs::Buccaneer::MapleWarrior].player.push_back(player); // Buccaneer
-	skillsinfo[Jobs::Corsair::MapleWarrior].player.push_back(player); // Corsair
-	// 1002 - Nimble Feet
-	player.type = 0x80;
-	player.byte = Type1;
-	player.value = SkillSpeed;
-	skillsinfo[Jobs::Beginner::NimbleFeet].player.push_back(player);
-	// 1001003 - Iron Body
-	player.type = 0x02;
-	player.byte = Type1;
-	player.value = SkillWdef;
-	skillsinfo[Jobs::Swordsman::IronBody].player.push_back(player);
-	// 2001002 - Magic Guard
-	player.type = 0x02;
-	player.byte = Type2;
-	player.value = SkillX;
+	buff.type = 0x8;
+	buff.byte = Byte5;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Hero::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::Paladin::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::DarkKnight::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::FPArchMage::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::ILArchMage::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::Bishop::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::Bowmaster::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::Marksman::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::NightLord::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::Shadower::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::Buccaneer::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::Corsair::MapleWarrior].player.push_back(player);
+
+	// Magic Guard
+	buff.type = 0x02;
+	buff.byte = Byte2;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::Magician::MagicGuard].player.push_back(player);
-	// 2001003 - Magic Armor
-	player.type = 0x02;
-	player.byte = Type1;
-	player.value = SkillWdef;
+
+	// Magic Armor, Iron Body
+	buff.type = 0x02;
+	buff.byte = Byte1;
+	buff.value = SkillWdef;
+	player.buff = buff;
 	skillsinfo[Jobs::Magician::MagicArmor].player.push_back(player);
-	// 3001003 - Focus
-	player.type = 0x10;
-	player.byte = Type1;
-	player.value = SkillAcc;
+	skillsinfo[Jobs::Swordsman::IronBody].player.push_back(player);
+
+	// Focus
+	buff.type = 0x10;
+	buff.byte = Byte1;
+	buff.value = SkillAcc;
+	player.buff = buff;
 	skillsinfo[Jobs::Archer::Focus].player.push_back(player);
-	player.type = 0x20;
-	player.byte = Type1;
-	player.value = SkillAvo;
+	buff.type = 0x20;
+	buff.byte = Byte1;
+	buff.value = SkillAvo;
+	player.buff = buff;
 	skillsinfo[Jobs::Archer::Focus].player.push_back(player);
-	// 1101006 - Rage
-	player.type = 0x1;
-	player.byte = Type1;
-	player.value = SkillWatk;
+
+	// Rage
+	buff.type = 0x01;
+	buff.byte = Byte1;
+	buff.value = SkillWatk;
+	player.buff = buff;
 	skillsinfo[Jobs::Fighter::Rage].player.push_back(player);
-	player.type = 0x2;
-	player.byte = Type1;
-	player.value = SkillWdef;
+	buff.type = 0x02;
+	buff.byte = Byte1;
+	buff.value = SkillWdef;
+	player.buff = buff;
 	skillsinfo[Jobs::Fighter::Rage].player.push_back(player);
-	// 1101007 & 1201007 - Power Guard
-	player.type = 0x10;
-	player.byte = Type2;
-	player.value = SkillX;
+
+	// Power Guard
+	buff.type = 0x10;
+	buff.byte = Byte2;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::Fighter::PowerGuard].player.push_back(player);
 	skillsinfo[Jobs::Page::PowerGuard].player.push_back(player);
-	// 1301006 - Iron Will
-	player.type = 0x2;
-	player.byte = Type1;
-	player.value = SkillWdef;
+
+	// Iron Will
+	buff.type = 0x02;
+	buff.byte = Byte1;
+	buff.value = SkillWdef;
+	player.buff = buff;
 	skillsinfo[Jobs::Spearman::IronWill].player.push_back(player);
-	player.type = 0x8;
-	player.byte = Type1;
-	player.value = SkillMdef;
+	buff.type = 0x08;
+	buff.byte = Byte1;
+	buff.value = SkillMdef;
+	player.buff = buff;
 	skillsinfo[Jobs::Spearman::IronWill].player.push_back(player);
-	// 1301007 & 9101008 - Hyper Body, GM Hyper Body
-	player.type = 0x20;
-	player.byte = Type2;
-	player.value = SkillX;
+
+	// Hyper Body, GM Hyper Body
+	buff.type = 0x20;
+	buff.byte = Byte2;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::Spearman::HyperBody].player.push_back(player);
 	skillsinfo[Jobs::SuperGM::HyperBody].player.push_back(player);
-	player.type = 0x40;
-	player.byte = Type2;
-	player.value = SkillY;
+	buff.type = 0x40;
+	buff.byte = Byte2;
+	buff.value = SkillY;
+	player.buff = buff;
 	skillsinfo[Jobs::Spearman::HyperBody].player.push_back(player);
 	skillsinfo[Jobs::SuperGM::HyperBody].player.push_back(player);
-	// 2101001 & 2201001 - Meditation
-	player.type = 0x04;
-	player.byte = Type1;
-	player.value = SkillMatk;
+
+	// Meditation
+	buff.type = 0x04;
+	buff.byte = Byte1;
+	buff.value = SkillMatk;
+	player.buff = buff;
 	skillsinfo[Jobs::FPWizard::Meditation].player.push_back(player);
 	skillsinfo[Jobs::ILWizard::Meditation].player.push_back(player);
-	// 2301003 - Invincible
-	player.type = 0x80;
-	player.byte = Type2;
-	player.value = SkillX;
+
+	// Invincible
+	buff.type = 0x80;
+	buff.byte = Byte2;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Invincible].player.push_back(player);
-	// 2301004 - Bless
-	player.type = 0x2;
-	player.byte = Type1;
-	player.value = SkillWdef;
+
+	// Bless, GM Bless
+	buff.type = 0x01;
+	buff.byte = Byte1;
+	buff.value = SkillWatk;
+	player.buff = buff;
+	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	buff.type = 0x02;
+	buff.byte = Byte1;
+	buff.value = SkillWdef;
+	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Bless].player.push_back(player);
-	player.type = 0x8;
-	player.byte = Type1;
-	player.value = SkillMdef;
+	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	buff.type = 0x04;
+	buff.byte = Byte1;
+	buff.value = SkillMatk;
+	player.buff = buff;
+	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	buff.type = 0x08;
+	buff.byte = Byte1;
+	buff.value = SkillMdef;
+	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Bless].player.push_back(player);
-	player.type = 0x10;
-	player.byte = Type1;
-	player.value = SkillAcc;
+	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	buff.type = 0x10;
+	buff.byte = Byte1;
+	buff.value = SkillAcc;
+	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Bless].player.push_back(player);
-	player.type = 0x20;
-	player.byte = Type1;
-	player.value = SkillAvo;
+	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	buff.type = 0x20;
+	buff.byte = Byte1;
+	buff.value = SkillAvo;
+	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Bless].player.push_back(player);
-	// 9101003 - GM Bless
-	player.type = 0x1;
-	player.byte = Type1;
-	player.value = SkillWatk;
 	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
-	player.type = 0x2;
-	player.byte = Type1;
-	player.value = SkillWdef;
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
-	player.type = 0x4;
-	player.byte = Type1;
-	player.value = SkillMatk;
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
-	player.type = 0x8;
-	player.byte = Type1;
-	player.value = SkillMdef;
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
-	player.type = 0x10;
-	player.byte = Type1;
-	player.value = SkillAcc;
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
-	player.type = 0x20;
-	player.byte = Type1;
-	player.value = SkillAvo;
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
-	// 9101004 - GM Hide
-	player.type = 0x01;
-	player.byte = Type8;
-	player.value = 0;
+
+	// GM Hide
+	buff.type = 0x01;
+	buff.byte = Byte8;
+	buff.value = SkillSpecialProc;
+	player.buff = buff;
 	skillsinfo[Jobs::SuperGM::Hide].player.push_back(player);
-	// 4101004, 4201003, 9001000, & 9101001 - Haste
-	player.type = 0x80;
-	player.byte = Type1;
-	player.value = SkillSpeed;
-	skillsinfo[Jobs::Assassin::Haste].player.push_back(player);
-	skillsinfo[Jobs::Bandit::Haste].player.push_back(player);
-	skillsinfo[Jobs::GM::Haste].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::Haste].player.push_back(player);
-	player.type = 0x1;
-	player.byte = Type2;
-	player.value = SkillJump;
-	skillsinfo[Jobs::Assassin::Haste].player.push_back(player);
-	skillsinfo[Jobs::Bandit::Haste].player.push_back(player);
-	skillsinfo[Jobs::GM::Haste].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::Haste].player.push_back(player);
-	// 4211005 - Meso Guard
-	player.type = 0x10;
-	player.byte = Type4;
-	player.value = SkillX;
+
+	// Meso Guard
+	buff.type = 0x10;
+	buff.byte = Byte4;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::ChiefBandit::MesoGuard].player.push_back(player);
-	// 3121002 & 3221002 - Sharp Eyes
-	player.type = 0x20;
-	player.byte = Type5;
-	player.value = SkillX;
+
+	// Sharp Eyes
+	buff.type = 0x20;
+	buff.byte = Byte5;
+	buff.value = SkillSpecialProc;
+	player.buff = buff;
 	skillsinfo[Jobs::Bowmaster::SharpEyes].player.push_back(player);
 	skillsinfo[Jobs::Marksman::SharpEyes].player.push_back(player);
-	// 1211003, 1211004, 1211005, 1211006, 1211007, 1211008, 1221003, & 1221004 - WK/Paladin Charges
-	player.type = 0x4;
-	player.byte = Type1;
-	player.value = SkillMatk;
-	skillsinfo[Jobs::WhiteKnight::SwordFireCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BwFireCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::SwordIceCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BwIceCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BwLitCharge].player.push_back(player);
-	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
-	skillsinfo[Jobs::Paladin::BwHolyCharge].player.push_back(player);
-	player.type = 0x40;
-	player.byte = Type3;
-	player.value = SkillMatk;
-	skillsinfo[Jobs::WhiteKnight::SwordFireCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BwFireCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::SwordIceCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BwIceCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].player.push_back(player);
-	skillsinfo[Jobs::WhiteKnight::BwLitCharge].player.push_back(player);
-	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
-	skillsinfo[Jobs::Paladin::BwHolyCharge].player.push_back(player);
-	// 2311003 & 9101002 - Holy Symbol
-	player.type = 0x1;
-	player.byte = Type4;
-	player.value = SkillX;
-	skillsinfo[Jobs::Priest::HolySymbol].player.push_back(player); // Priest
-	skillsinfo[Jobs::SuperGM::HolySymbol].player.push_back(player); // Super GM
-	// 1121010 - Enrage
-	player.type = 0x1;
-	player.byte = Type1;
-	player.value = SkillWatk;
+
+	// Holy Symbol
+	buff.type = 0x01;
+	buff.byte = Byte4;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Priest::HolySymbol].player.push_back(player);
+	skillsinfo[Jobs::SuperGM::HolySymbol].player.push_back(player);
+
+	// Enrage
+	buff.type = 0x01;
+	buff.byte = Byte1;
+	buff.value = SkillWatk;
+	player.buff = buff;
 	skillsinfo[Jobs::Hero::Enrage].player.push_back(player);
-	// 3121008 - Concentrate
-	player.type = 0x1;
-	player.byte = Type1;
-	player.value = SkillWatk;
+
+	// Concentrate
+	buff.type = 0x01;
+	buff.byte = Byte1;
+	buff.value = SkillWatk;
+	player.buff = buff;
 	skillsinfo[Jobs::Bowmaster::Concentrate].player.push_back(player);
-	// 4211003 - Pickpocket
-	player.type = 0x8;
-	player.byte = Type4;
-	player.value = SkillX;
+
+	// Pickpocket
+	buff.type = 0x08;
+	buff.byte = Byte4;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::ChiefBandit::Pickpocket].player.push_back(player);
-	// 4111001 - Meso Up
-	player.type = 0x8;
-	player.byte = Type4;
-	player.value = SkillX;
+
+	// Meso Up
+	buff.type = 0x08;
+	buff.byte = Byte4;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::Hermit::MesoUp].player.push_back(player);
-	// 4121006 - Shadow Claw
-	player.type = 0x1;
-	player.byte = Type6;
-	player.value = SkillX;
-	skillsinfo[Jobs::NightLord::ShadowClaw].player.push_back(player);
-	// 2121004, 2221004, & 2321004 - Infinity
-	player.type = 0x2;
-	player.byte = Type6;
-	player.value = SkillX;
+
+	// Infinity
+	buff.type = 0x02;
+	buff.byte = Byte6;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::FPArchMage::Infinity].player.push_back(player);
 	skillsinfo[Jobs::ILArchMage::Infinity].player.push_back(player);
 	skillsinfo[Jobs::Bishop::Infinity].player.push_back(player);
-	// 1005 - Echo of Hero
-	player.type = 0x80;
-	player.byte = Type6;
-	player.value = SkillX;
+
+	// Echo of Hero
+	buff.type = 0x80;
+	buff.byte = Byte6;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::Beginner::EchoOfHero].player.push_back(player);
-	// 1121002, 1221002, & 1321002 - Power Stance
-	player.type = 0x10;
-	player.byte = Type5;
-	player.value = SkillProp;
+
+	// Power Stance
+	buff.type = 0x10;
+	buff.byte = Byte5;
+	buff.value = SkillProp;
+	player.buff = buff;
 	skillsinfo[Jobs::Hero::PowerStance].player.push_back(player);
 	skillsinfo[Jobs::Paladin::PowerStance].player.push_back(player);
 	skillsinfo[Jobs::DarkKnight::PowerStance].player.push_back(player);
-	// 2121002, 2221002, & 2321002 - Mana Reflection
-	player.type = 0x40;
-	player.byte = Type5;
-	player.value = SkillLv;
+
+	// Mana Reflection
+	buff.type = 0x40;
+	buff.byte = Byte5;
+	buff.value = SkillLv;
+	player.buff = buff;
 	skillsinfo[Jobs::FPArchMage::ManaReflection].player.push_back(player);
 	skillsinfo[Jobs::ILArchMage::ManaReflection].player.push_back(player);
 	skillsinfo[Jobs::Bishop::ManaReflection].player.push_back(player);
-	// 5001005 - Dash
-	player.type = 0x10;
-	player.byte = Type8;
-	player.value = SkillX;
+
+	// Dash
+	buff.type = 0x10;
+	buff.byte = Byte8;
+	buff.value = SkillX;
+	player.buff = buff;
 	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
-	player.type = 0x20;
-	player.byte = Type8;
-	player.value = SkillY;
+	buff.type = 0x20;
+	buff.byte = Byte8;
+	buff.value = SkillY;
+	player.buff = buff;
 	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
-	// 5110001 - Energy Charge
-	player.type = 0x8;
-	player.byte = Type8;
-	player.value = SkillX;
-	skillsinfo[Jobs::Marauder::EnergyCharge].player.push_back(player);
 	// End regular buffs
 
 	// Begin act buffs
-	// 1001 - Recovery
-	player.type = 0x4;
-	player.byte = Type5;
-	player.value = SkillX;
+	// Recovery
+	buff.type = 0x04;
+	buff.byte = Byte5;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Beginner::Recovery].player.push_back(player);
 	act.type = ActHeal;
 	act.time = 4900;
 	act.value = SkillX;
-	skillsinfo[Jobs::Beginner::Recovery].player.push_back(player);
 	skillsinfo[Jobs::Beginner::Recovery].act = act;
-	skillsinfo[Jobs::Beginner::Recovery].bact.push_back(true);
-	// 1311008 - Dragon Blood
-	player.type = 0x1;
-	player.byte = Type1;
-	player.value = SkillWatk;
+	skillsinfo[Jobs::Beginner::Recovery].bact = true;
+
+	// Dragon Blood
+	buff.type = 0x01;
+	buff.byte = Byte1;
+	buff.value = SkillWatk;
+	player.buff = buff;
 	skillsinfo[Jobs::DragonKnight::DragonBlood].player.push_back(player);
-	player.type = 0x80;
-	player.byte = Type3;
-	player.value = SkillLv;
+	buff.type = 0x80;
+	buff.byte = Byte3;
+	buff.value = SkillLv;
+	player.buff = buff;
 	skillsinfo[Jobs::DragonKnight::DragonBlood].player.push_back(player);
 	act.type = ActHurt;
 	act.time = 4000;
 	act.value = SkillX;
 	skillsinfo[Jobs::DragonKnight::DragonBlood].act = act;
-	skillsinfo[Jobs::DragonKnight::DragonBlood].bact.push_back(true);
+	skillsinfo[Jobs::DragonKnight::DragonBlood].bact = true;
 	// End act buffs
 
 	// Begin map buffs
-	// 4001003 - Dark Sight
-	player.type = 0x80;
-	player.byte = Type1;
-	player.value = SkillSpeed;
-	skillsinfo[Jobs::Rogue::DarkSight].player.push_back(player);
-	player.type = 0x04;
-	player.byte = Type2;
-	player.value = SkillX;
+	// Nimble Feet
+	buff.type = 0x80;
+	buff.byte = Byte1;
+	buff.value = SkillSpeed;
+	player.buff = buff;
 	player.hasmapval = true;
-	skillsinfo[Jobs::Rogue::DarkSight].player.push_back(player);
-	// 3101004 & 3201004 - Soul Arrow
-	player.type = 0x1;
-	player.byte = Type3;
-	player.value = SkillX;
+	player.hasmapentry = true;
+	skillsinfo[Jobs::Beginner::NimbleFeet].player.push_back(player);
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Beginner::NimbleFeet].map.push_back(map);
+
+	// Shadow Claw
+	buff.type = 0x01;
+	buff.byte = Byte6;
+	buff.value = SkillSpecialProc;
+	player.buff = buff;
 	player.hasmapval = true;
+	player.hasmapentry = false;
+	skillsinfo[Jobs::NightLord::ShadowClaw].player.push_back(player);
+	buff.type = 0x00;
+	map.buff = buff;
+	map.useval = false;
+	skillsinfo[Jobs::NightLord::ShadowClaw].map.push_back(map);
+
+	// WK/Paladin Charges
+	buff.type = 0x04;
+	buff.byte = Byte1;
+	buff.value = SkillMatk;
+	player.buff = buff;
+	player.hasmapval = false;
+	player.hasmapentry = false;
+	skillsinfo[Jobs::WhiteKnight::BwFireCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwIceCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwLitCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::SwordFireCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::SwordIceCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].player.push_back(player);
+	skillsinfo[Jobs::Paladin::BwHolyCharge].player.push_back(player);
+	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
+	buff.type = 0x40;
+	buff.byte = Byte3;
+	buff.value = SkillMatk;
+	player.buff = buff;
+	player.hasmapval = true;
+	player.hasmapentry = true;
+	skillsinfo[Jobs::WhiteKnight::BwFireCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwIceCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::BwLitCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::SwordFireCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::SwordIceCharge].player.push_back(player);
+	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].player.push_back(player);
+	skillsinfo[Jobs::Paladin::BwHolyCharge].player.push_back(player);
+	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::WhiteKnight::BwFireCharge].map.push_back(map);
+	skillsinfo[Jobs::WhiteKnight::BwIceCharge].map.push_back(map);
+	skillsinfo[Jobs::WhiteKnight::BwLitCharge].map.push_back(map);
+	skillsinfo[Jobs::WhiteKnight::SwordFireCharge].map.push_back(map);
+	skillsinfo[Jobs::WhiteKnight::SwordIceCharge].map.push_back(map);
+	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].map.push_back(map);
+	skillsinfo[Jobs::Paladin::BwHolyCharge].map.push_back(map);
+	skillsinfo[Jobs::Paladin::SwordHolyCharge].map.push_back(map);
+
+	// Haste
+	buff.type = 0x80;
+	buff.byte = Byte1;
+	buff.value = SkillSpeed;
+	player.buff = buff;
+	player.hasmapval = true;
+	player.hasmapentry = true;
+	skillsinfo[Jobs::Assassin::Haste].player.push_back(player);
+	skillsinfo[Jobs::Bandit::Haste].player.push_back(player);
+	skillsinfo[Jobs::GM::Haste].player.push_back(player);
+	skillsinfo[Jobs::SuperGM::Haste].player.push_back(player);
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Assassin::Haste].map.push_back(map);
+	skillsinfo[Jobs::Bandit::Haste].map.push_back(map);
+	skillsinfo[Jobs::GM::Haste].map.push_back(map);
+	skillsinfo[Jobs::SuperGM::Haste].map.push_back(map);
+	buff.type = 0x01;
+	buff.byte = Byte2;
+	buff.value = SkillJump;
+	player.buff = buff;
+	player.hasmapval = false;
+	player.hasmapentry = false;
+	skillsinfo[Jobs::Assassin::Haste].player.push_back(player);
+	skillsinfo[Jobs::Bandit::Haste].player.push_back(player);
+	skillsinfo[Jobs::GM::Haste].player.push_back(player);
+	skillsinfo[Jobs::SuperGM::Haste].player.push_back(player);
+
+	// Dark Sight
+	buff.type = 0x80;
+	buff.byte = Byte1;
+	buff.value = SkillSpeed;
+	player.buff = buff;
+	player.hasmapval = true;
+	player.hasmapentry = true;
+	skillsinfo[Jobs::Rogue::DarkSight].player.push_back(player);
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Rogue::DarkSight].map.push_back(map);
+	buff.type = 0x04;
+	buff.byte = Byte2;
+	buff.value = SkillX;
+	player.buff = buff;
+	player.hasmapval = true;
+	player.hasmapentry = true;
+	skillsinfo[Jobs::Rogue::DarkSight].player.push_back(player);
+	map.buff = buff;
+	map.useval = false;
+	skillsinfo[Jobs::Rogue::DarkSight].map.push_back(map);
+
+	// Soul Arrow
+	buff.type = 0x01;
+	buff.byte = Byte3;
+	buff.value = SkillX;
+	player.buff = buff;
+	player.hasmapval = true;
+	player.hasmapentry = true;
 	skillsinfo[Jobs::Hunter::SoulArrow].player.push_back(player);
 	skillsinfo[Jobs::Crossbowman::SoulArrow].player.push_back(player);
-	// 5101007 - Oak Barrel 
-	player.type = 0x02;
-	player.byte = Type5;
-	player.value = SkillMorph;
+	map.buff = buff;
+	map.useval = false;
+	skillsinfo[Jobs::Hunter::SoulArrow].map.push_back(map);
+	skillsinfo[Jobs::Crossbowman::SoulArrow].map.push_back(map);
+
+	// Energy Charge
+	buff.type = 0x08;
+	buff.byte = Byte8;
+	buff.value = SkillSpecialProc;
+	player.buff = buff;
 	player.hasmapval = true;
+	player.hasmapentry = true;
+	skillsinfo[Jobs::Marauder::EnergyCharge].player.push_back(player);
+	map.buff = buff;
+	map.useval = false;
+	skillsinfo[Jobs::Marauder::EnergyCharge].map.push_back(map);
+
+	// Oak Barrel 
+	buff.type = 0x02;
+	buff.byte = Byte5;
+	buff.value = SkillMorph;
+	player.buff = buff;
+	player.hasmapval = true;
+	player.hasmapentry = true;
 	skillsinfo[Jobs::Infighter::OakBarrel].player.push_back(player);
-	// 5111005, 5121003 - Transformation & Super Transformation
-	player.type = 0x02;
-	player.byte = Type1;
-	player.value = SkillWdef;
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Infighter::OakBarrel].map.push_back(map);
+
+	// Transformation, Super Transformation
+	buff.type = 0x02;
+	buff.byte = Byte1;
+	buff.value = SkillWdef;
+	player.buff = buff;
 	player.hasmapval = false;
+	player.hasmapentry = false;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	player.type = 0x08;
-	player.byte = Type1;
-	player.value = SkillMdef;
+	buff.type = 0x08;
+	buff.byte = Byte1;
+	buff.value = SkillMdef;
+	player.buff = buff;
+	player.hasmapval = false;
+	player.hasmapentry = false;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	player.type = 0x80;
-	player.byte = Type1;
-	player.value = SkillSpeed;
-	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
-	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	player.type = 0x1;
-	player.byte = Type2;
-	player.value = SkillJump;
-	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
-	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	player.type = 0x02;
-	player.byte = Type5;
-	player.value = SkillMorph;
+	buff.type = 0x80;
+	buff.byte = Byte1;
+	buff.value = SkillSpeed;
+	player.buff = buff;
 	player.hasmapval = true;
+	player.hasmapentry = true;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	// 4111002 - Shadow Partner
-	player.type = 0x4;
-	player.byte = Type4;
-	player.value = SkillX;
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Marauder::Transformation].map.push_back(map);
+	skillsinfo[Jobs::Buccaneer::SuperTransformation].map.push_back(map);
+	buff.type = 0x01;
+	buff.byte = Byte2;
+	buff.value = SkillJump;
+	player.buff = buff;
+	player.hasmapval = false;
+	player.hasmapentry = false;
+	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
+	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
+	buff.type = 0x02;
+	buff.byte = Byte5;
+	buff.value = SkillMorph;
+	player.buff = buff;
 	player.hasmapval = true;
+	player.hasmapentry = true;
+	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
+	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Marauder::Transformation].map.push_back(map);
+	skillsinfo[Jobs::Buccaneer::SuperTransformation].map.push_back(map);
+
+	// Shadow Partner
+	buff.type = 0x04;
+	buff.byte = Byte4;
+	buff.value = SkillSpecialProc;
+	player.buff = buff;
+	player.hasmapval = true;
+	player.hasmapentry = true;
 	skillsinfo[Jobs::Hermit::ShadowPartner].player.push_back(player);
-	// 1111002 - Combo Attack
-	player.type = 0x20;
-	player.byte = Type3;
-	player.value = SkillX;
-	//player.hasmapval = true;
-	//player.useval = true;
+	map.buff = buff;
+	map.useval = false;
+	skillsinfo[Jobs::Hermit::ShadowPartner].map.push_back(map);
+	
+	// Combo Attack
+	buff.type = 0x20;
+	buff.byte = Byte3;
+	buff.value = SkillSpecialProc;
+	player.buff = buff;
+	player.hasmapval = true;
+	player.hasmapentry = true;
 	skillsinfo[Jobs::Crusader::ComboAttack].player.push_back(player);
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Crusader::ComboAttack].map.push_back(map);
 	// End map buffs
 
 	// Begin mount buffs
 	player = BuffInfo(); // Placed to clear any previous value pushes
-	// 1004 - Monster Rider
-	player.type = 0x40;
-	player.byte = Type8;
-	player.value = SkillX;
-	player.ismount = true;
+	// Monster Rider
+	buff.type = 0x40;
+	buff.byte = Byte8;
+	buff.value = SkillSpecialProc;
+	player.buff = buff;
 	skillsinfo[Jobs::Beginner::MonsterRider].player.push_back(player);
-	// 5221006 - Battleship
-	player.type = 0x40;
-	player.byte = Type8;
-	player.value = SkillX;
-	player.ismount = true;
+
+	// Battleship
+	buff.type = 0x40;
+	buff.byte = Byte8;
+	buff.value = SkillSpecialProc;
+	player.buff = buff;
 	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
 	// End mount buffs
+}
+
+void Buffs::addItemInfo(int32_t itemid, const vector<uint8_t> &types, const vector<int8_t> &bytes, const vector<int16_t> &values) {
+	Buff buff;
+	BuffInfo player;
+	BuffMapInfo map;
+
+	itemid *= -1;
+
+	for (size_t i = 0; i < types.size(); i++) {
+		buff = Buff();
+		player = BuffInfo();
+		map = BuffMapInfo();
+		buff.byte = bytes[i];
+		buff.type = types[i];
+		buff.value = SkillNone;
+		player.buff = buff;
+		player.itemval = values[i];
+		player.useval = true;
+		if ((buff.byte == Byte1 && (buff.type & 0x80) > 0) || buff.byte == Byte5) {
+			player.hasmapval = true;
+			player.hasmapentry = true;
+			skillsinfo[itemid].player.push_back(player);
+			map.buff = buff;
+			map.useval = true;
+			skillsinfo[itemid].map.push_back(map);
+		}
+		else {
+			skillsinfo[itemid].player.push_back(player);
+		}
+	}
 }
 
 int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
@@ -441,147 +633,236 @@ int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 	return rvalue;
 }
 
-SkillActiveInfo Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level, int32_t &mountid) {
-	SkillActiveInfo playerskill;
-	memset(playerskill.types, 0, 8 * sizeof(uint8_t)); // Reset player/map types to 0
+int32_t Buffs::parseMountInfo(Player *player, int32_t skillid, uint8_t level) {
+	int32_t mountid = 0;
+	switch (skillid) {
+		case Jobs::Beginner::MonsterRider:
+			mountid = player->getInventory()->getEquippedID(18);
+			break;
+		case Jobs::Corsair::Battleship:
+			mountid = 1932000; // Battleship item ID
+			break;
+	}
+	return mountid;
+}
+
+ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) {
+	ActiveBuff playerskill;
+	BuffInfo cur;
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
-		BuffInfo cur = skillsinfo[skillid].player[i];
-		playerskill.types[cur.byte] += cur.type;
-		int8_t val = cur.value;
-		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) { // Cancel speed change for maxed dark sight
-			playerskill.types[Type1] = 0;
+		cur = skillsinfo[skillid].player[i];
+		int8_t val = cur.buff.value;
+		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) // Cancel speed change for maxed dark sight
 			continue;
-		}
+		playerskill.types[cur.buff.byte] += cur.buff.type;
 		int16_t value = 0;
-		switch (skillid) {
-			case Jobs::Beginner::MonsterRider: // Monster Rider
-				mountid = player->getInventory()->getEquippedID(18);
-				break;
-			case Jobs::Corsair::Battleship:
-				mountid = 1932000; // Battleship item ID
-				break;
-			case Jobs::Bowmaster::SharpEyes: // Sharp Eyes
-			case Jobs::Marksman::SharpEyes: // Sharp Eyes
-			case 4111002: // Shadow Partner
-				value = Skills::skills[skillid][level].x * 256 + Skills::skills[skillid][level].y;
-				break;
-			case Jobs::Crusader::ComboAttack: // Combo
-				player->getActiveBuffs()->setCombo(0, false);
-				value = 1;
-				break;
-			case Jobs::NightLord::ShadowClaw: // Shadow Claw
-				value = (player->getInventory()->doShadowClaw() % 10000) + 1;
-				break;
-			case Jobs::Marauder::Transformation: // Transformation
-			case Jobs::Buccaneer::SuperTransformation: // Super Transformation
-				value = getValue(val, skillid, level) + (player->getGender() * 100); // Females are +100
-				break;
-			case Jobs::Marauder::EnergyCharge: // Energy Charge
-				value = player->getActiveBuffs()->getEnergyChargeLevel();
-				break;
-			default:
-				value = getValue(val, skillid, level);
-				break;
+		if (cur.hasmapval)
+			playerskill.hasmapbuff = true;
+		if (val == SkillNone)
+			value = cur.itemval;
+		else {
+			switch (skillid) {
+				case Jobs::Bowmaster::SharpEyes:
+				case Jobs::Marksman::SharpEyes:
+				case Jobs::Hermit::ShadowPartner:
+					value = Skills::skills[skillid][level].x * 256 + Skills::skills[skillid][level].y;
+					break;
+				case Jobs::Crusader::ComboAttack:
+					value = player->getActiveBuffs()->getCombo() + 1;
+					break;
+				case Jobs::NightLord::ShadowClaw:
+					value = (player->getInventory()->doShadowClaw() % 10000) + 1;
+					break;
+				case Jobs::Marauder::Transformation:
+				case Jobs::Buccaneer::SuperTransformation:
+					value = getValue(val, skillid, level);
+					if (val == SkillMorph)
+						value += (player->getGender() * 100); // Females are +100
+					break;
+				case Jobs::Marauder::EnergyCharge:
+					value = player->getActiveBuffs()->getEnergyChargeLevel();
+					break;
+				default:
+					value = getValue(val, skillid, level);
+					break;
+			}
 		}
 		playerskill.vals.push_back(value);
 	}
 	return playerskill;
 }
 
-SkillActiveInfo Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level, vector<SkillMapActiveInfo> &mapenterskill) {
-	SkillActiveInfo mapskill;
-	memset(mapskill.types, 0, 8 * sizeof(uint8_t));
+ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level) {
+	ActiveMapBuff mapskill;
+	BuffInfo cur;
+	BuffMapInfo map;
+	int32_t maps = 0;
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
-		BuffInfo cur = skillsinfo[skillid].player[i];
-		if (!cur.hasmapval && !cur.ismount)
+		cur = skillsinfo[skillid].player[i];
+		if (!cur.hasmapval)
 			continue;
-		mapskill.types[cur.byte] += cur.type;
-		int8_t val = cur.value;
+		map = skillsinfo[skillid].map[maps++];
+		int8_t val = map.buff.value;
 		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) { // Cancel speed update for maxed dark sight
-			mapskill.types[Type1] = 0;
 			continue;
 		}
-		int16_t value = 0;
-		switch (skillid) {
-			case Jobs::Hermit::ShadowPartner: // Shadow Partner
-				value = Skills::skills[skillid][level].x * 256 + Skills::skills[skillid][level].y;
-				break;
-			case Jobs::Crusader::ComboAttack: // Combo Attack
-				value = player->getActiveBuffs()->getCombo() + 1;
-				break;
-			default:
-				value = getValue(val, skillid, level);
-				break;
-		}
-		mapskill.vals.push_back(value);
-		if (!cur.ismount) {
-			SkillMapActiveInfo map;
-			map.byte = cur.byte;
-			map.type = cur.type;
-			if (cur.useval) {
-				map.isvalue = true;
-				map.value = (int8_t)value;
+		mapskill.bytes.push_back(map.buff.byte);
+		mapskill.types.push_back(map.buff.type);
+		mapskill.typelist[map.buff.byte] += map.buff.type;
+		mapskill.usevals.push_back(map.useval);
+		if (map.useval) {
+			int16_t value = 0;
+			if (val == SkillNone) {
+				value = cur.itemval;
 			}
 			else {
-				map.isvalue = false;
-				map.value = 0;
+				switch (skillid) {
+					case Jobs::Crusader::ComboAttack:
+						value = player->getActiveBuffs()->getCombo() + 1;
+						break;
+					default:
+						value = getValue(val, skillid, level);
+						break;
+				}
 			}
-			map.skill = skillid;
-			mapenterskill.push_back(map);
+			mapskill.values.push_back(value);
 		}
 	}
 	return mapskill;
+}
+
+ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint8_t level) {
+	ActiveMapBuff mapskill;
+	BuffInfo cur;
+	BuffMapInfo map;
+	int8_t mapctr = 0;
+	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
+		cur = skillsinfo[skillid].player[i];
+		if (!cur.hasmapentry) {
+			continue;
+		}
+		map = skillsinfo[skillid].map[mapctr++];
+		int8_t val = map.buff.value;
+		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) { // Cancel speed change for maxed dark sight
+			continue;
+		}
+		int16_t value = 0;
+		mapskill.bytes.push_back(map.buff.byte);
+		mapskill.types.push_back(map.buff.type);
+		mapskill.typelist[map.buff.byte] += map.buff.type;
+		mapskill.usevals.push_back(map.useval);
+		if (map.useval) {
+			int16_t value = 0;
+			if (val == SkillNone) {
+				value = cur.itemval;
+			}
+			else {
+				switch (skillid) {
+					case Jobs::Crusader::ComboAttack:
+						value = player->getActiveBuffs()->getCombo() + 1;
+						break;
+					default:
+						value = getValue(val, skillid, level);
+						break;
+				}
+			}
+			mapskill.values.push_back(value);
+		}
+	}
+	return mapskill;
+}
+
+vector<Buff> Buffs::parseBuffs(int32_t skillid) {
+	vector<Buff> ret;
+	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
+		BuffInfo cur = skillsinfo[skillid].player[i];
+		ret.push_back(cur.buff);
+	}
+	return ret;
 }
 
 bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo) {
 	if (skillsinfo.find(skillid) == skillsinfo.end())
 		return false; // Not a buff, so return false
 
-	int32_t mountid = 0;
-	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
-	vector<SkillMapActiveInfo> mapenterskill;
-	SkillActiveInfo playerskill = parseBuffInfo(player, skillid, level, mountid);
-	SkillActiveInfo mapskill = parseBuffMapInfo(player, skillid, level, mapenterskill);
+	int32_t mountid = parseMountInfo(player, skillid, level);
 	int32_t time = Skills::skills[skillid][level].time;
 	switch (skillid) {
-		case Jobs::Beginner::MonsterRider: // Monster Rider
+		case Jobs::Beginner::MonsterRider:
+		case Jobs::Corsair::Battleship:
 			if (mountid == 0) {
 				// Hacking
 				return true;
 			}
+			player->getActiveBuffs()->setMountInfo(skillid, mountid);
 			break;
-		case Jobs::SuperGM::Hide: // GM Hide
+		case Jobs::SuperGM::Hide:
 			time = 2100000;
 			break;
-		case Jobs::Spearman::HyperBody: // Hyper Body
-		case Jobs::SuperGM::HyperBody: // GM Hyper Body
+		case Jobs::Spearman::HyperBody:
+		case Jobs::SuperGM::HyperBody:
 			// TODO: Party
 			player->setHyperBody(Skills::skills[skillid][level].x, Skills::skills[skillid][level].y);
 			break;
-		case Jobs::Hero::Enrage: // Enrage
-			if (playerbuffs->getCombo() != 10)
+		case Jobs::Crusader::ComboAttack:
+			player->getActiveBuffs()->setCombo(0, false);
+			break;
+		case Jobs::Hero::Enrage:
+			if (player->getActiveBuffs()->getCombo() != 10)
 				return true;
-			playerbuffs->setCombo(0, true);
+			player->getActiveBuffs()->setCombo(0, true);
+			break;
+		case Jobs::Fighter::SwordBooster:
+		case Jobs::Fighter::AxeBooster:
+		case Jobs::Page::SwordBooster:
+		case Jobs::Page::BwBooster:
+		case Jobs::Spearman::SpearBooster:
+		case Jobs::Spearman::PolearmBooster:
+		case Jobs::FPMage::SpellBooster:
+		case Jobs::ILMage::SpellBooster:
+		case Jobs::Hunter::BowBooster:
+		case Jobs::Crossbowman::CrossbowBooster:
+		case Jobs::Assassin::ClawBooster:
+		case Jobs::Bandit::DaggerBooster:
+		case Jobs::Infighter::KnucklerBooster:
+		case Jobs::Gunslinger::GunBooster:
+			player->getActiveBuffs()->setBooster(skillid); // Makes switching equips MUCH easier
+			break;
+		case Jobs::WhiteKnight::BwFireCharge:
+		case Jobs::WhiteKnight::BwIceCharge:
+		case Jobs::WhiteKnight::BwLitCharge:
+		case Jobs::WhiteKnight::SwordFireCharge:
+		case Jobs::WhiteKnight::SwordIceCharge:
+		case Jobs::WhiteKnight::SwordLitCharge:
+		case Jobs::Paladin::BwHolyCharge:
+		case Jobs::Paladin::SwordHolyCharge:
+			player->getActiveBuffs()->setCharge(skillid); // Makes switching equips/Charged Blow easier
 			break;
 	}
+	ActiveBuff playerskill = parseBuffInfo(player, skillid, level);
+	ActiveMapBuff mapskill = parseBuffMapInfo(player, skillid, level);
+	ActiveMapBuff enterskill = parseBuffMapEntryInfo(player, skillid, level);
+
 	if (mountid > 0)
 		BuffsPacket::useMount(player, skillid, time, playerskill, addedinfo, mountid);
 	else {
-		if (skillid == Jobs::Pirate::Dash) // I honestly wish I didn't have to do this
-			BuffsPacket::usePirateBuff(player, skillid, time, playerskill);
+		if (skillid == Jobs::Pirate::Dash)
+			BuffsPacket::usePirateBuff(player, skillid, time, playerskill, mapskill);
 		else if (skillid == Jobs::Marauder::EnergyCharge)
-			BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == 10000 ? time : 0), playerskill);
-		else if (skillid == Jobs::Buccaneer::SpeedInfusion) // SIGH
-			BuffsPacket::useSpeedInfusion(player, time, playerskill, addedinfo);
-		else
-			BuffsPacket::useSkill(player, skillid, time, playerskill, addedinfo);
+			BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == 10000 ? time : 0), playerskill, mapskill);
+		else if (skillid == Jobs::Buccaneer::SpeedInfusion)
+			BuffsPacket::useSpeedInfusion(player, time, playerskill, mapskill, addedinfo);
+		else // Non-Pirate skills
+			BuffsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
 	}
-	if (skillid != Jobs::Marauder::EnergyCharge || playerbuffs->getEnergyChargeLevel() == 10000) {
-		playerbuffs->setBuffInfo(skillid, playerskill);
-		playerbuffs->setSkillMapEnterInfo(skillid, mapenterskill);
+	if (skillid != Jobs::Marauder::EnergyCharge || player->getActiveBuffs()->getEnergyChargeLevel() == 10000) {
+		PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
+
+		playerbuffs->addBuffInfo(skillid, parseBuffs(skillid));
+		playerbuffs->addMapEntryBuffInfo(enterskill);
 		playerbuffs->setActiveSkillLevel(skillid, level);
 		playerbuffs->removeBuff(skillid);
-		if (Buffs::skillsinfo[skillid].bact.size() > 0) {
+		if (skillsinfo[skillid].bact) {
 			int16_t value = getValue(skillsinfo[skillid].act.value, skillid, level);
 			playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 		}
@@ -590,17 +871,26 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	return true;
 }
 
-void Buffs::addBuff(Player *player, int32_t itemid, int32_t time, SkillActiveInfo &iteminfo, bool morph) {
-	itemid = itemid * -1; // Make the Item ID negative for the packet and to discern from skill buffs
+void Buffs::addBuff(Player *player, int32_t itemid, int32_t time) {
+	itemid *= -1; // Make the Item ID negative for the packet and to discern from skill buffs
 	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
-	BuffsPacket::useSkill(player, itemid, time, iteminfo, 0, morph, true);
-	playerbuffs->setBuffInfo(itemid, iteminfo);
+	BuffsPacket::useSkill(player, itemid, time, parseBuffInfo(player, itemid, 0), parseBuffMapInfo(player, itemid, 0), 0);
 	playerbuffs->removeBuff(itemid);
+	playerbuffs->addBuffInfo(itemid, parseBuffs(itemid));
 	playerbuffs->addBuff(itemid, time);
+	playerbuffs->addMapEntryBuffInfo(parseBuffMapEntryInfo(player, itemid, 0));
+	playerbuffs->setActiveSkillLevel(itemid, 1);
 }
 
 void Buffs::endBuff(Player *player, int32_t skill) {
+	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
 	switch (skill) {
+		case Jobs::Beginner::MonsterRider:
+		case Jobs::Corsair::Battleship:
+			playerbuffs->setMountInfo(0, 0);
+		case Jobs::Crusader::ComboAttack:
+			playerbuffs->setCombo(0, false);
+			break;
 		case Jobs::Spearman::HyperBody: // Hyper Body
 		case Jobs::SuperGM::HyperBody: // GM Hyper Body
 			player->setHyperBody(0, 0);
@@ -608,10 +898,36 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 			player->setMP(player->getMP());
 			break;
 		case Jobs::Marauder::EnergyCharge: // Energy Charge
-			player->getActiveBuffs()->resetEnergyChargeLevel();
+			playerbuffs->resetEnergyChargeLevel();
+			break;
+		case Jobs::Fighter::SwordBooster:
+		case Jobs::Fighter::AxeBooster:
+		case Jobs::Page::SwordBooster:
+		case Jobs::Page::BwBooster:
+		case Jobs::Spearman::SpearBooster:
+		case Jobs::Spearman::PolearmBooster:
+		case Jobs::FPMage::SpellBooster:
+		case Jobs::ILMage::SpellBooster:
+		case Jobs::Hunter::BowBooster:
+		case Jobs::Crossbowman::CrossbowBooster:
+		case Jobs::Assassin::ClawBooster:
+		case Jobs::Bandit::DaggerBooster:
+		case Jobs::Infighter::KnucklerBooster:
+		case Jobs::Gunslinger::GunBooster:
+			playerbuffs->setBooster(0);
+			break;
+		case Jobs::WhiteKnight::BwFireCharge:
+		case Jobs::WhiteKnight::BwIceCharge:
+		case Jobs::WhiteKnight::BwLitCharge:
+		case Jobs::WhiteKnight::SwordFireCharge:
+		case Jobs::WhiteKnight::SwordIceCharge:
+		case Jobs::WhiteKnight::SwordLitCharge:
+		case Jobs::Paladin::BwHolyCharge:
+		case Jobs::Paladin::SwordHolyCharge:
+			playerbuffs->setCharge(0);
 			break;
 	}
-	BuffsPacket::endSkill(player, player->getActiveBuffs()->getBuffInfo(skill));
-	player->getActiveBuffs()->deleteSkillMapEnterInfo(skill);
-	player->getActiveBuffs()->setActiveSkillLevel(skill, 0);
+	BuffsPacket::endSkill(player, playerbuffs->removeBuffInfo(skill, parseBuffs(skill)));
+	playerbuffs->deleteMapEntryBuffInfo(parseBuffMapEntryInfo(player, skill, playerbuffs->getActiveSkillLevel(skill)));
+	playerbuffs->setActiveSkillLevel(skill, 0);
 }
