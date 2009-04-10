@@ -27,6 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillMacros.h"
 #include "Skills.h"
 #include "TimeUtilities.h"
+#include <boost/tr1/unordered_map.hpp>
+
+using std::tr1::unordered_map;
 
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
@@ -74,8 +77,17 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int8_t>(player->getBuddyListSize());
 	player->getInventory()->connectData(packet); // Inventory data
 	player->getSkills()->connectData(packet); // Skills
+
+	// Cooldowns
+	packet.add<int16_t>(player->getCooldownSize());
+	unordered_map<int32_t, int16_t> cooldowns = player->getCooldowns();
+	for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); iter++) {
+		packet.add<int32_t>(iter->first);
+		packet.add<int16_t>(iter->second);
+	}
+
 	// End
-	packet.add<int32_t>(0);
+	packet.add<int16_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
