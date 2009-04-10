@@ -296,23 +296,36 @@ void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
 	}
 }
 
-void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime) {
+void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime, bool sendpacket) {
 	if (isCooling(player, skillid)) {
 		// Hacking
 		return;
 	}
-	SkillsPacket::sendCooldown(player, skillid, cooltime);
+	if (sendpacket)
+		SkillsPacket::sendCooldown(player, skillid, cooltime);
 
-	new Timer::Timer(bind(&Skills::stopCooldown, player,
-		skillid), Timer::Id(Timer::Types::CoolTimer,
-		skillid, 0), player->getTimers(), Timer::Time::fromNow(cooltime * 1000));
+	player->addCooldown(skillid, cooltime);
+
+	new Timer::Timer(bind(&Skills::stopCooldown, player, skillid),
+		Timer::Id(Timer::Types::CoolTimer, skillid, 0),
+		player->getTimers(), Timer::Time::fromNow(cooltime * 1000));
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillid) {
+	player->removeCooldown(skillid);
 	SkillsPacket::sendCooldown(player, skillid, 0);
 }
 
 bool Skills::isCooling(Player *player, int32_t skillid) {
 	Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
 	return player->getTimers()->checkTimer(id) > 0;
+}
+
+int16_t Skills::getCooldownTimeLeft(Player *player, int32_t skillid) {
+	int16_t cooltime = 0;
+	if (isCooling(player, skillid)) {
+		Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
+		cooltime = static_cast<int16_t>(player->getTimers()->checkTimer(id) / 1000);
+	}
+	return cooltime;
 }

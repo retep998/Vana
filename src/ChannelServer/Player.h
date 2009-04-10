@@ -150,11 +150,17 @@ public:
 	void setVariable(const string &name, const string &val);
 	string getVariable(const string &name);
 
+	void addCooldown(int32_t skillid, int16_t time);
+	void removeCooldown(int32_t skillid);
+	int16_t getCooldownSize() const { return static_cast<int16_t>(cooldowns.size()); }
+	unordered_map<int32_t, int16_t> getCooldowns() const { return cooldowns; }
+
 	bool addWarning();
 	void changeChannel(int8_t channel);
 	void saveStats();
 	void saveVariables();
-	void saveAll();
+	void saveCooldowns();
+	void saveAll(bool savecooldowns = false);
 	void setOnline(bool online);
 	void setLevelDate();
 	void acceptDeath();
@@ -202,6 +208,7 @@ private:
 	bool isconnect;
 	string name;
 	unordered_map<string, string> variables;
+	unordered_map<int32_t, int16_t> cooldowns;
 	NPC *npc;
 	Instance *instance;
 	vector<int32_t> warnings;
