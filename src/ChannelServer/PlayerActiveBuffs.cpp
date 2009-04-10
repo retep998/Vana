@@ -328,5 +328,5 @@ const bool PlayerActiveBuffs::hasHyperBody() {
 }
 
 const int32_t PlayerActiveBuffs::getHyperBody() {
-	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 ? Jobs::Spearman::HyperBody : Jobs::SuperGM::HyperBody);
+	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 ? (int32_t)Jobs::Spearman::HyperBody : (int32_t)Jobs::SuperGM::HyperBody);
 }
