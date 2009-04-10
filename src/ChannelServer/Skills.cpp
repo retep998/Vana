@@ -48,7 +48,7 @@ void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo le
 void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t skillid = packet.get<int32_t>();
-	if (GameLogicUtilities::isBeginnerSkill(skillid)) {
+	if (!GameLogicUtilities::isBeginnerSkill(skillid)) {
 		if (player->getSP() == 0) {
 			// hacking
 			return;
