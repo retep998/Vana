@@ -205,7 +205,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			if (attack.mpburn > 0)
 				player->damageMP(attack.mpburn);
 		}
-		if (player->getActiveBuffs()->getCurrentMorph() < 0) {
+		if (player->getActiveBuffs()->getCurrentMorph() < 0  || (player->getActiveBuffs()->getCurrentMorph() != 0 && player->getHP() == 0)) {
 			Skills::stopSkill(player, player->getActiveBuffs()->getCurrentMorph());
 		}
 	}
