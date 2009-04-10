@@ -50,9 +50,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INTER_CALCULATE_RANKING 0x2018
 
 enum {
-	INTER_LOGIN_SERVER,
-	INTER_WORLD_SERVER,
-	INTER_CHANNEL_SERVER
+	InterLoginServer,
+	InterWorldServer,
+	InterChannelServer
 };
 
 #endif
