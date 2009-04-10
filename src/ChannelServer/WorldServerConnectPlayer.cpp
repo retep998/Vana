@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 
 WorldServerConnectPlayer::WorldServerConnectPlayer() {
-	type = INTER_CHANNEL_SERVER;
+	type = InterChannelServer;
 }
 
 void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
