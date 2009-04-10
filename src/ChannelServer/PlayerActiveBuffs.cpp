@@ -302,7 +302,7 @@ const bool PlayerActiveBuffs::hasHolySymbol() {
 }
 
 const int32_t PlayerActiveBuffs::getHolySymbol() {
-	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 ? Jobs::Priest::HolySymbol : Jobs::SuperGM::HolySymbol);
+	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 ? (int32_t)Jobs::Priest::HolySymbol : (int32_t)Jobs::SuperGM::HolySymbol);
 }
 
 const bool PlayerActiveBuffs::hasPowerStance() {

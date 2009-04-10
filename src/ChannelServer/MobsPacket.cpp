@@ -134,7 +134,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 				case 12: masteryid = Jobs::Page::SwordMastery; break;
 				case 90:
 				case 91:
-					masteryid = (player->getSkills()->getSkillLevel(Jobs::Fighter::SwordMastery) >= player->getSkills()->getSkillLevel(Jobs::Page::SwordMastery) ? Jobs::Fighter::SwordMastery : Jobs::Page::SwordMastery);
+					masteryid = (player->getSkills()->getSkillLevel(Jobs::Fighter::SwordMastery) >= player->getSkills()->getSkillLevel(Jobs::Page::SwordMastery) ? (int32_t)Jobs::Fighter::SwordMastery : (int32_t)Jobs::Page::SwordMastery);
 					break;
 			}
 			break;
