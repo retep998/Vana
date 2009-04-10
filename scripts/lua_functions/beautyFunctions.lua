@@ -18,7 +18,7 @@ function getHairs(hairs, styles)
 	colour = hair % 10;
 	for i = 1, #hairs do
 		if not (hairs[i] + colour == hair) then
-			styles[#styles+1] = hairs[i] + colour;
+			styles[#styles + 1] = hairs[i] + colour;
 		end
 	end
 end
@@ -27,7 +27,7 @@ function getHairColours(styles)
 	cur = hair - hair % 10;
 	for i = 0, 7 do
 		if not (cur + i == hair) then
-			styles[#styles+1] = cur + i;
+			styles[#styles + 1] = cur + i;
 		end
 	end
 end
@@ -56,7 +56,7 @@ function getEyeStyles(eyes, styles)
 	colour = (eye % 1000) - (eye % 100);
 	for i = 1, #eyes do
 		if not (eyes[i] + colour == eye) then
-			styles[#styles+1] = eyes[i] + colour;
+			styles[#styles + 1] = eyes[i] + colour;
 		end
 	end
 end
@@ -65,7 +65,7 @@ function getEyeColour(styles)
 	cur = eye - (eye % 1000 - eye % 100);
 	for i = 0, 700, 100 do
 		if not (cur + i == eye) then
-			styles[#styles+1] = cur + i;
+			styles[#styles + 1] = cur + i;
 		end
 	end
 end
