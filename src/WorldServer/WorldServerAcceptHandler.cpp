@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptHandler.h"
-#include "WorldServerAcceptPacket.h"
-#include "WorldServerAcceptPlayer.h"
-#include "WorldServer.h"
+#include "ChannelChangeRequests.h"
 #include "Channels.h"
-#include "Players.h"
+#include "MiscUtilities.h"
 #include "PacketReader.h"
 #include "PartyHandler.h"
-#include "MiscUtilities.h"
+#include "Players.h"
+#include "WorldServer.h"
+#include "WorldServerAcceptPacket.h"
+#include "WorldServerAcceptPlayer.h"
 
 void WorldServerAcceptHandler::groupChat(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
@@ -56,13 +57,30 @@ void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *play
 	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
 
 	if (chan) {
-		WorldServerAcceptPacket::newConnectable(chan->id, playerid);
-		Player *gamePlayer = Players::Instance()->getPlayer(playerid);
-		uint32_t chanIp = MiscUtilities::matchIpSubnet(gamePlayer->ip, chan->external_ip, chan->ip);
-		WorldServerAcceptPacket::playerChangeChannel(player, playerid, chanIp, chan->port);
+		WorldServerAcceptPacket::sendBuffsToChannel(chan->id, playerid, packet);
+		ChannelChangeRequests::Instance()->addPendingPlayer(playerid, chan->id);
 	}
 	else { // Channel doesn't exist (offline)
 		WorldServerAcceptPacket::playerChangeChannel(player, playerid, 0, -1);
+	}
+}
+
+void WorldServerAcceptHandler::handleChangeChannel(WorldServerAcceptPlayer *player, PacketReader &packet) {
+	int32_t playerid = packet.get<int32_t>();
+	Player *gamePlayer = Players::Instance()->getPlayer(playerid);
+	if (gamePlayer) {
+		uint16_t chanid = ChannelChangeRequests::Instance()->getPendingPlayerChannel(playerid);
+		Channel *chan = Channels::Instance()->getChannel(chanid);
+		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->channel);
+		if (chan) {
+			WorldServerAcceptPacket::newConnectable(chan->id, playerid);
+			uint32_t chanIp = MiscUtilities::matchIpSubnet(gamePlayer->ip, chan->external_ip, chan->ip);
+			WorldServerAcceptPacket::playerChangeChannel(curchan->player, playerid, chanIp, chan->port);
+		}
+		else {
+			WorldServerAcceptPacket::playerChangeChannel(curchan->player, playerid, 0, -1);
+		}
+		ChannelChangeRequests::Instance()->removePendingPlayer(playerid);
 	}
 }
 
@@ -71,7 +89,7 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptPlayer *player, Packe
 	string findee_name = packet.getString();
 
 	Player *findee = Players::Instance()->getPlayerFromName(findee_name);
-	if (findee->channel != 65535) // Thanks for changing the datatype, pawitp ;_;
+	if (findee->channel != 65535)
 		WorldServerAcceptPacket::findPlayer(player, finder, findee->channel, findee->name);
 	else
 		WorldServerAcceptPacket::findPlayer(player, finder, findee->channel, findee_name);
@@ -83,7 +101,7 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptPlayer *player, Pa
 	string message = packet.getString();
 
 	Player *whisperee = Players::Instance()->getPlayerFromName(whisperee_name);
-	if (whisperee->channel != 65535) { // Thanks for changing the datatype, pawitp ;_;
+	if (whisperee->channel != 65535) {
 		WorldServerAcceptPacket::findPlayer(player, whisperer, -1, whisperee->name, 1);
 		WorldServerAcceptPacket::whisperPlayer(Channels::Instance()->getChannel(whisperee->channel)->player, whisperee->id, Players::Instance()->getPlayer(whisperer)->name, player->getChannel(),  message);
 	}
@@ -104,6 +122,7 @@ void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptPlayer *player, P
 void WorldServerAcceptHandler::removePlayer(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	Players::Instance()->remove(id, player->getChannel());
+	ChannelChangeRequests::Instance()->removePendingPlayerEarly(id);
 }
 
 void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptPlayer *player, PacketReader &packet) {

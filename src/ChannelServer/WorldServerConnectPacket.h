@@ -26,9 +26,11 @@ using std::string;
 using std::vector;
 
 class WorldServerConnectPlayer;
+class PlayerActiveBuffs;
 
 namespace WorldServerConnectPacket {
-	void playerChangeChannel(WorldServerConnectPlayer *player, int32_t playerid, uint16_t channel);
+	void playerChangeChannel(WorldServerConnectPlayer *player, int32_t playerid, uint16_t channel, PlayerActiveBuffs *playerbuffs);
+	void playerBuffsTransferred(WorldServerConnectPlayer *player, int32_t playerid);
 	void registerPlayer(WorldServerConnectPlayer *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level);
 	void removePlayer(WorldServerConnectPlayer *player, int32_t playerid);
 	void findPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &findee_name);

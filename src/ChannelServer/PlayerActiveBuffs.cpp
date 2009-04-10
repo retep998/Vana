@@ -134,6 +134,10 @@ void PlayerActiveBuffs::setMountInfo(int32_t skillid, int32_t mountid) {
 	m_mapbuffs.mountid = mountid;
 }
 
+void PlayerActiveBuffs::setMapEntryBuffs(MapEntryBuffs &buffs) {
+	m_mapbuffs = buffs;
+}
+
 // Active skill levels
 uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
 	return m_activelevels.find(skillid) != m_activelevels.end() ? m_activelevels[skillid] : 0;
@@ -161,6 +165,10 @@ ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillid, const vector<Buff>
 		}
 	}
 	return ret;
+}
+
+void PlayerActiveBuffs::setActiveBuffsByType(ActiveBuffsByType &buffs) {
+	m_activebuffsbytype = buffs;
 }
 
 // Specific skill stuff
@@ -247,6 +255,13 @@ void PlayerActiveBuffs::startEnergyChargeTimer() {
 	Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, m_timeseed); // Causes heap errors when it's a static number, but we need it for ID
 	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
 		id, m_player->getTimers(), Timer::Time::fromNow(10 * 1000)); // 10 seconds
+}
+
+void PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargelevel, bool startTimer) {
+	m_energycharge = chargelevel;
+	if (startTimer) {
+		startEnergyChargeTimer();
+	}
 }
 
 void PlayerActiveBuffs::stopEnergyChargeTimer() {

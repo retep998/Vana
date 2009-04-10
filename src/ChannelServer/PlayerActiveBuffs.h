@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Buffs.h"
 #include "Types.h"
-#include <list>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <list>
 #include <vector>
 
 using std::list;
@@ -34,6 +34,10 @@ class Player;
 
 namespace Timer {
 	class Container;
+};
+
+struct BuffContainer {
+
 };
 
 class PlayerActiveBuffs {
@@ -52,6 +56,7 @@ public:
 	void removeBuff(int32_t skill, bool fromTimer = false);
 	void removeBuff();
 	int32_t buffTimeLeft(int32_t skill);
+	list<int32_t> getBuffs() const { return m_buffs; }
 
 	// Skill "acts"
 	void addAct(int32_t skill, Act act, int16_t value, int32_t time);
@@ -71,6 +76,7 @@ public:
 	int16_t getEnergyChargeLevel() const { return m_energycharge; }
 	void increaseEnergyChargeLevel(int8_t targets = 1);
 	void decreaseEnergyChargeLevel();
+	void setEnergyChargeLevel(int16_t chargelevel, bool startTimer = false);
 	void resetEnergyChargeLevel();
 	void startEnergyChargeTimer();
 	void stopEnergyChargeTimer();
@@ -98,13 +104,16 @@ public:
 	const int32_t getHyperBody();
 
 	// Map garbage
+	void setActiveBuffsByType(ActiveBuffsByType &buffs);
 	void addBuffInfo(int32_t skillid, const vector<Buff> &buffs);
 	void setActiveSkillLevel(int32_t skillid, uint8_t level);
 	void addMapEntryBuffInfo(ActiveMapBuff &buff);
 	void deleteMapEntryBuffInfo(ActiveMapBuff &buff);
 	void setMountInfo(int32_t skillid, int32_t mountid);
+	void setMapEntryBuffs(MapEntryBuffs &buffs);
 	uint8_t getActiveSkillLevel(int32_t skillid);
 	ActiveBuff removeBuffInfo(int32_t skillid, const vector<Buff> &buffs);
+	ActiveBuffsByType getBuffTypes() const { return m_activebuffsbytype; }
 	MapEntryBuffs getMapEntryBuffs();
 private:
 	Player *m_player;
@@ -115,7 +124,7 @@ private:
 	uint32_t m_timeseed;
 	bool m_berserk;
 	list<int32_t> m_buffs;
-	ActiveBuffsByType m_activebuffsbytype[8];
+	ActiveBuffsByType m_activebuffsbytype;
 	MapEntryBuffs m_mapbuffs;
 	unordered_map<int32_t, uint8_t> m_activelevels;
 	unordered_map<int32_t, shared_ptr<Timer::Container> > m_skill_acts;

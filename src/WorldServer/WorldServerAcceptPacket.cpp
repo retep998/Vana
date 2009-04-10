@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
+#include "PacketReader.h"
 #include "Rates.h"
 #include "SendHeader.h"
 #include "TimeUtilities.h"
@@ -46,6 +47,21 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t 
 	packet.add<int16_t>(maxStats);
 	packet.add<clock_t>(TimeUtilities::clock_in_ms());
 	player->getSession()->send(packet);
+}
+
+void WorldServerAcceptPacket::sendBuffsToChannel(uint16_t channel, int32_t playerid, PacketReader &buffer) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_TRANSFER_BUFFS);
+	packet.add<int32_t>(playerid);
+	packet.addBuffer(buffer);
+	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
+}
+
+void WorldServerAcceptPacket::sendBuffRemoval(uint16_t channel, int32_t playerid) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_TRANSFER_BUFFS_DISCONNECT);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, uint32_t ip, int16_t port) {

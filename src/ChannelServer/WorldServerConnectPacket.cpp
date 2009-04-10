@@ -19,12 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
+#include "PlayerActiveBuffs.h"
 #include "WorldServerConnectPlayer.h"
-#include <string>
-#include <vector>
+#include <boost/tr1/unordered_map.hpp>
+#include <list>
 
-using std::vector;
-using std::string;
+using std::list;
+using std::tr1::unordered_map;
 
 void WorldServerConnectPacket::groupChat(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat) {
 	PacketCreator packet;
@@ -84,11 +85,49 @@ void WorldServerConnectPacket::partyInvite(WorldServerConnectPlayer *player, int
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPacket::playerChangeChannel(WorldServerConnectPlayer *player, int32_t playerid, uint16_t channel) {
+void WorldServerConnectPacket::playerChangeChannel(WorldServerConnectPlayer *player, int32_t playerid, uint16_t channel, PlayerActiveBuffs *playerbuffs) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.add<int32_t>(playerid);
 	packet.add<int16_t>(channel);
+
+	// Buff information nuisance ahoy
+	packet.add<int8_t>(playerbuffs->getCombo());
+	packet.add<int16_t>(playerbuffs->getEnergyChargeLevel());
+	packet.add<int32_t>(playerbuffs->getCharge());
+	packet.add<int32_t>(playerbuffs->getBooster());
+	MapEntryBuffs enterbuffs = playerbuffs->getMapEntryBuffs();
+	packet.add<int32_t>(enterbuffs.mountid);
+	packet.add<int32_t>(enterbuffs.mountskill);
+	for (int8_t i = 0; i < 8; i++) {
+		packet.add<uint8_t>(enterbuffs.types[i]);
+		packet.add<uint8_t>(enterbuffs.val[i]);
+		vector<int16_t> vals = enterbuffs.values[i];
+		packet.add<uint8_t>((uint8_t)(vals.size()));
+		for (size_t f = 0; f < vals.size(); f++) {
+			packet.add<int16_t>(vals[f]);
+		}
+	}
+	list<int32_t> currentbuffs = playerbuffs->getBuffs();
+	packet.add<uint8_t>((uint8_t)(currentbuffs.size()));
+	for (list<int32_t>::iterator iter = currentbuffs.begin(); iter != currentbuffs.end(); iter++) {
+		int32_t buffid = *iter;
+		packet.add<int32_t>(buffid);
+		packet.add<int32_t>(playerbuffs->buffTimeLeft(buffid) / 1000);
+		packet.add<uint8_t>(playerbuffs->getActiveSkillLevel(buffid));
+	}
+	ActiveBuffsByType bufftypes = playerbuffs->getBuffTypes();
+	unordered_map<uint8_t, int32_t> currentbyte;
+	for (int8_t i = 0; i < 8; i++) {
+		currentbyte = bufftypes[i];
+		packet.add<uint8_t>((uint8_t)(currentbyte.size()));
+		for (unordered_map<uint8_t, int32_t>::iterator iter = currentbyte.begin(); iter != currentbyte.end(); iter++) {
+			packet.add<uint8_t>(iter->first);
+			packet.add<int32_t>(iter->second);
+		}
+	}
+	// Buff information end
+
 	player->getSession()->send(packet);
 }
 
@@ -139,5 +178,12 @@ void WorldServerConnectPacket::rankingCalculation(WorldServerConnectPlayer *play
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TO_LOGIN);
 	packet.add<int16_t>(INTER_CALCULATE_RANKING);
+	player->getSession()->send(packet);
+}
+
+void WorldServerConnectPacket::playerBuffsTransferred(WorldServerConnectPlayer *player, int32_t playerid) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_TRANSFER_BUFFS);
+	packet.add<int32_t>(playerid);
 	player->getSession()->send(packet);
 }
