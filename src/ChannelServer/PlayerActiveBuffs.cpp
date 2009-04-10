@@ -330,3 +330,14 @@ const bool PlayerActiveBuffs::hasHyperBody() {
 const int32_t PlayerActiveBuffs::getHyperBody() {
 	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 ? (int32_t)Jobs::Spearman::HyperBody : (int32_t)Jobs::SuperGM::HyperBody);
 }
+
+const int32_t PlayerActiveBuffs::getCurrentMorph() {
+	int32_t morphid = 0;
+	if (m_activebuffsbytype.find(Byte5) != m_activebuffsbytype.end()) {
+		unordered_map<uint8_t, int32_t> byte = m_activebuffsbytype[Byte5];
+		if (byte.find(0x02) != byte.end()) {
+			morphid = byte[0x02];
+		}
+	}
+	return morphid;
+}

@@ -102,6 +102,7 @@ public:
 	const int32_t getHolySymbol();
 	const int32_t getPowerStance();
 	const int32_t getHyperBody();
+	const int32_t getCurrentMorph();
 
 	// Map garbage
 	void setActiveBuffsByType(ActiveBuffsByType &buffs);
