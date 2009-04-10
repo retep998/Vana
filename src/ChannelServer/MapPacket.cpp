@@ -25,6 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
+#include <boost/tr1/unordered_map.hpp>
+#include <utility>
+
+using std::tr1::unordered_map;
+using std::pair;
 
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
@@ -50,24 +55,27 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int8_t>(enter.types[Byte4]);
 
 	const uint8_t byteorder[8] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
+
 	for (int8_t i = 0; i < 8; i++) {
 		uint8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
-		if (enter.types[cbyte] != 0 && enter.val[cbyte]) {
-			for (size_t f = 0; f < enter.values[cbyte].size(); f++) {
-				int16_t value = enter.values[cbyte][f];
-				if (cbyte == Byte3) {
-					if ((enter.types[cbyte] & 0x20) > 0) {
-						packet.add<int8_t>(player->getActiveBuffs()->getCombo() + 1);
+		if (enter.types[cbyte] != 0) {
+			for (unordered_map<uint8_t, pair<bool, int16_t> >::iterator iter = enter.values[cbyte].begin(); iter != enter.values[cbyte].end(); iter++) {
+				if (iter->second.first) {
+					int16_t value = iter->second.second;
+					if (cbyte == Byte3) {
+						if (iter->first == 0x20) {
+							packet.add<int8_t>(player->getActiveBuffs()->getCombo() + 1);
+						}
+						if (iter->first == 0x40) {
+							packet.add<int32_t>(player->getActiveBuffs()->getCharge());
+						}
 					}
-					if ((enter.types[cbyte] & 0x40) > 0) {
-						packet.add<int32_t>(player->getActiveBuffs()->getCharge());
+					else if (cbyte == Byte5) {
+						packet.add<int16_t>(value);
 					}
-				}
-				else if (cbyte == Byte5) {
-					packet.add<int16_t>(value);
-				}
-				else {
-					packet.add<int8_t>(static_cast<int8_t>(value));
+					else {
+						packet.add<int8_t>(static_cast<int8_t>(value));
+					}
 				}
 			}
 		}

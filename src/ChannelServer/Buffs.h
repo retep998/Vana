@@ -92,12 +92,10 @@ struct MapEntryBuffs {
 	MapEntryBuffs() : mountid(0), mountskill(0) {
 		for (int8_t i = 0; i < 8; i++) {
 			types[i] = 0;
-			val[i] = false;
 		}
 	}
 	uint8_t types[8];
-	bool val[8];
-	vector<int16_t> values[8];
+	unordered_map<int8_t, unordered_map<uint8_t, pair<bool, int16_t> > > values;
 	int32_t mountid;
 	int32_t mountskill;
 };

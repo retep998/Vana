@@ -102,11 +102,8 @@ void PlayerActiveBuffs::deleteMapEntryBuffInfo(ActiveMapBuff &buff) {
 	for (size_t i = 0; i < buff.bytes.size(); i++) {
 		uint8_t byte = buff.bytes[i];
 		m_mapbuffs.types[byte] -= buff.types[i];
-		if (!m_mapbuffs.types[byte] == 0) {
-			m_mapbuffs.val[byte] = false;
-		}
-		if (buff.usevals[i]) {
-			m_mapbuffs.values[byte].clear(); // Might not be so swell, I'd have to think about it
+		if (m_mapbuffs.values[byte].find(buff.types[i]) != m_mapbuffs.values[byte].end()) {
+			m_mapbuffs.values[byte].erase(buff.types[i]);
 		}
 	}
 }
@@ -115,13 +112,14 @@ void PlayerActiveBuffs::addMapEntryBuffInfo(ActiveMapBuff &buff) {
 	size_t vals = 0;
 	for (size_t i = 0; i < buff.bytes.size(); i++) {
 		uint8_t byte = buff.bytes[i];
-		m_mapbuffs.types[byte] += buff.types[i];
-		if (!m_mapbuffs.val[byte]) {
-			m_mapbuffs.val[byte] = buff.usevals[i];
-		}
+		if ((m_mapbuffs.types[byte] & buff.types[i]) == 0)
+			m_mapbuffs.types[byte] += buff.types[i];
+		pair<bool, int16_t> valpair;
+		valpair.first = buff.usevals[i];
 		if (buff.usevals[i]) {
-			m_mapbuffs.values[byte].push_back(buff.values[vals++]);
+			valpair.second = buff.values[vals++];
 		}
+		m_mapbuffs.values[byte][buff.types[i]] = valpair;
 	}
 }
 

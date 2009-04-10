@@ -20,6 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "PlayerActiveBuffs.h"
 #include "WorldServerConnectPacket.h"
+#include <utility>
+
+using std::pair;
 
 BuffHolder * BuffHolder::singleton = 0;
 
@@ -35,15 +38,18 @@ void BuffHolder::parseIncomingBuffs(PacketReader &packet) {
 	int32_t mountskill = packet.get<int32_t>();
 	playerbuffs->setMountInfo(mountskill, mountid);
 	MapEntryBuffs enterbuffs;
+	pair<bool, int16_t> valuepair;
 	for (int8_t i = 0; i < 8; i++) {
 		enterbuffs.types[i] = packet.get<uint8_t>();
-		enterbuffs.val[i] = packet.get<uint8_t>() != 0;
-		vector<int16_t> vals;
 		uint8_t size = packet.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
-			vals.push_back(packet.get<int16_t>());
+			uint8_t type = packet.get<uint8_t>();
+			bool usesval = packet.get<int8_t>() > 0;
+			int16_t value = packet.get<int16_t>();
+			valuepair.first = usesval;
+			valuepair.second = value;
+			enterbuffs.values[i][type] = valuepair;
 		}
-		enterbuffs.values[i] = vals;
 	}
 	playerbuffs->setMapEntryBuffs(enterbuffs);
 
