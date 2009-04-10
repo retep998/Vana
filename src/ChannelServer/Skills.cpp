@@ -219,7 +219,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 		}
 		else {
 			if (elementalamp) {
-				int32_t sid = ((player->getJob() / 10) == 22 ? Jobs::ILMage::ElementAmplification : Jobs::FPMage::ElementAmplification);
+				int32_t sid = ((player->getJob() / 10) == 22 ? (int32_t)Jobs::ILMage::ElementAmplification : (int32_t)Jobs::FPMage::ElementAmplification);
 				int8_t slv = player->getSkills()->getSkillLevel(sid);
 				if (slv > 0)
 					player->modifyMP(-1 * (mpuse * skills[sid][slv].x / 100), true);
