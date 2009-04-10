@@ -72,9 +72,9 @@ end
 
 function giveRandomEyes(eyes)
 	colour = (eye % 1000) - (eye % 100);
-	newEyes = hairs[getRandomNumber(#eyes)] + colour;
+	newEyes = eyes[getRandomNumber(#eyes)] + colour;
 	while (newEyes == eye) do
-		newHair = hairs[getRandomNumber(#eyes)] + colour;
+		newEyes = eyes[getRandomNumber(#eyes)] + colour;
 	end
 	setStyle(newEyes)
 end
