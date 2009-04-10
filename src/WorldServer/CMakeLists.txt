@@ -1,4 +1,5 @@
 set(SOURCES 
+	ChannelChangeRequests.h
 	Channels.h
 	LoginServerConnectHandler.h
 	LoginServerConnectPacket.h
@@ -11,6 +12,7 @@ set(SOURCES
 	WorldServerAcceptHandler.h
 	WorldServerAcceptPacket.h
 	WorldServerAcceptPlayer.h
+	ChannelChangeRequests.cpp
 	Channels.cpp
 	LoginServerConnectHandler.cpp
 	LoginServerConnectPacket.cpp

@@ -212,6 +212,10 @@
 				Name="WorldServer"
 				>
 				<File
+					RelativePath=".\src\WorldServer\ChannelChangeRequests.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\WorldServer\Channels.cpp"
 					>
 				</File>
@@ -305,6 +309,10 @@
 			<Filter
 				Name="WorldServer"
 				>
+				<File
+					RelativePath=".\src\WorldServer\ChannelChangeRequests.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\WorldServer\Channels.h"
 					>

@@ -772,10 +772,13 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 	return mapskill;
 }
 
-vector<Buff> Buffs::parseBuffs(int32_t skillid) {
+vector<Buff> Buffs::parseBuffs(int32_t skillid, uint8_t level) {
 	vector<Buff> ret;
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		BuffInfo cur = skillsinfo[skillid].player[i];
+		if (skillid == Jobs::Rogue::DarkSight && level == 20 && cur.buff.value == SkillSpeed) { // Cancel speed change for maxed dark sight
+			continue;
+		}
 		ret.push_back(cur.buff);
 	}
 	return ret;
@@ -839,7 +842,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			player->getActiveBuffs()->setCharge(skillid); // Makes switching equips/Charged Blow easier
 			break;
 	}
-	vector<Buff> buffs = parseBuffs(skillid);
+	vector<Buff> buffs = parseBuffs(skillid, level);
 	ActiveBuff playerskill = parseBuffInfo(player, skillid, level);
 	ActiveMapBuff mapskill = parseBuffMapInfo(player, skillid, level);
 	ActiveMapBuff enterskill = parseBuffMapEntryInfo(player, skillid, level);
@@ -858,23 +861,19 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	}
 	if (skillid != Jobs::Marauder::EnergyCharge || player->getActiveBuffs()->getEnergyChargeLevel() == 10000) {
 		PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
-
 		playerbuffs->addBuffInfo(skillid, buffs);
 		playerbuffs->addMapEntryBuffInfo(enterskill);
 		playerbuffs->setActiveSkillLevel(skillid, level);
 		playerbuffs->removeBuff(skillid);
-		if (skillsinfo[skillid].bact) {
-			int16_t value = getValue(skillsinfo[skillid].act.value, skillid, level);
-			playerbuffs->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
-		}
 		playerbuffs->addBuff(skillid, time);
+		doAct(player, skillid, level);
 	}
 	return true;
 }
 
 void Buffs::addBuff(Player *player, int32_t itemid, int32_t time) {
 	itemid *= -1; // Make the Item ID negative for the packet and to discern from skill buffs
-	vector<Buff> buffs = parseBuffs(itemid);
+	vector<Buff> buffs = parseBuffs(itemid, 0);
 	ActiveBuff pskill = parseBuffInfo(player, itemid, 0);
 	ActiveMapBuff mskill = parseBuffMapInfo(player, itemid, 0);
 	ActiveMapBuff meskill = parseBuffMapEntryInfo(player, itemid, 0);
@@ -934,12 +933,20 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 			playerbuffs->setCharge(0);
 			break;
 	}
-	vector<Buff> buffs = parseBuffs(skill);
-	ActiveMapBuff meskill = parseBuffMapEntryInfo(player, skill, playerbuffs->getActiveSkillLevel(skill));
+	uint8_t level = playerbuffs->getActiveSkillLevel(skill);
+	vector<Buff> buffs = parseBuffs(skill, level);
+	ActiveMapBuff meskill = parseBuffMapEntryInfo(player, skill, level);
 	ActiveBuff pskill = playerbuffs->removeBuffInfo(skill, buffs);
 
 	BuffsPacket::endSkill(player, pskill);
 
 	playerbuffs->deleteMapEntryBuffInfo(meskill);
 	playerbuffs->setActiveSkillLevel(skill, 0);
+}
+
+void Buffs::doAct(Player *player, int32_t skillid, uint8_t level) {
+	if (skillsinfo[skillid].bact) {
+		int16_t value = getValue(skillsinfo[skillid].act.value, skillid, level);
+		player->getActiveBuffs()->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
+	}
 }

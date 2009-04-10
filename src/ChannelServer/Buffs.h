@@ -102,7 +102,7 @@ struct MapEntryBuffs {
 	int32_t mountskill;
 };
 
-typedef unordered_map<uint8_t, int32_t> ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
+typedef unordered_map<int8_t, unordered_map<uint8_t, int32_t> > ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
 
 class Buffs {
 public:
@@ -117,7 +117,8 @@ public:
 	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo);
 	ActiveBuff parseBuffInfo(Player *player, int32_t skillid, uint8_t level);
 	ActiveMapBuff parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level);
-	vector<Buff> parseBuffs(int32_t skillid);
+	vector<Buff> parseBuffs(int32_t skillid, uint8_t level);
+	void doAct(Player *player, int32_t skillid, uint8_t level);
 private:
 	Buffs();
 	Buffs(const Buffs&);

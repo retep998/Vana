@@ -214,6 +214,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\BuffHolder.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Buffs.cpp"
 					>
 				</File>
@@ -553,6 +557,10 @@
 				>
 				<File
 					RelativePath=".\src\ChannelServer\BuddyListHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\BuffHolder.h"
 					>
 				</File>
 				<File

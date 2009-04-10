@@ -23,6 +23,7 @@ class PacketReader;
 
 namespace WorldServerAcceptHandler {
 	void playerChangeChannel(WorldServerAcceptPlayer *player, PacketReader &packet);
+	void handleChangeChannel(WorldServerAcceptPlayer *player, PacketReader &packet);
 	void findPlayer(WorldServerAcceptPlayer *player, PacketReader &packet);
 	void whisperPlayer(WorldServerAcceptPlayer *player, PacketReader &packet);
 	void registerPlayer(WorldServerAcceptPlayer *player, PacketReader &packet);

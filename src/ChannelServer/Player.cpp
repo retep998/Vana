@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "BuddyListHandler.h"
 #include "BuddyListPacket.h"
+#include "BuffHolder.h"
 #include "ChannelServer.h"
 #include "ChatHandler.h"
 #include "CommandHandler.h"
@@ -138,6 +139,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet); break;
 	}
 }
+
 void Player::playerConnect(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	if (!Connectable::Instance()->checkPlayer(id)) {
@@ -151,6 +153,30 @@ void Player::playerConnect(PacketReader &packet) {
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
 	pets.reset(new PlayerPets(this));
+	if (BuffHolder::Instance()->checkPlayer(id)) {
+		PlayerActiveBuffs *mybuffs = getActiveBuffs();
+		PlayerActiveBuffs *existingbuffs = BuffHolder::Instance()->getBuffs(id);
+		vector<BuffStorage> buffstoadd = BuffHolder::Instance()->getStoredBuffs(id);
+		for (size_t i = 0; i < buffstoadd.size(); i++) {
+			BuffStorage cbuff = buffstoadd[i];
+			mybuffs->addBuff(cbuff.skillid, cbuff.timeleft);
+			mybuffs->setActiveSkillLevel(cbuff.skillid, cbuff.level);
+			Buffs::Instance()->doAct(this, cbuff.skillid, cbuff.level);
+		}
+		mybuffs->setEnergyChargeLevel(existingbuffs->getEnergyChargeLevel(), true);
+		mybuffs->setBooster(existingbuffs->getBooster());
+		mybuffs->setCharge(existingbuffs->getCharge());
+		mybuffs->setCombo(existingbuffs->getCombo(), false);
+		
+		MapEntryBuffs entr = existingbuffs->getMapEntryBuffs();
+		mybuffs->setMountInfo(entr.mountskill, entr.mountid);
+		mybuffs->setMapEntryBuffs(entr);
+		
+		ActiveBuffsByType bufftypes = existingbuffs->getBuffTypes();
+		mybuffs->setActiveBuffsByType(bufftypes);
+
+		BuffHolder::Instance()->removeBuffs(id);
+	}
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << id;
@@ -446,7 +472,7 @@ void Player::setLevel(uint8_t level) {
 }
 
 void Player::changeChannel(int8_t channel) {
-	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel);
+	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel, getActiveBuffs());
 }
 
 void Player::changeKey(PacketReader &packet) {

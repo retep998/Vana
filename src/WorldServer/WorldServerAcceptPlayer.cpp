@@ -54,6 +54,7 @@ void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 		case INTER_UPDATE_MAP: WorldServerAcceptHandler::updateMap(this, packet); break;
 		case INTER_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
 		case INTER_TO_LOGIN: WorldServerAcceptPacket::sendToLogin(packet.getBuffer(), packet.getBufferLength()); break;
+		case INTER_TRANSFER_BUFFS: WorldServerAcceptHandler::handleChangeChannel(this, packet); break;
 	}
 }
 
