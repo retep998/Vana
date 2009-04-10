@@ -566,6 +566,7 @@ Buffs::Buffs() {
 
 	// Begin mount buffs
 	player = BuffInfo(); // Placed to clear any previous value pushes
+
 	// Monster Rider
 	buff.type = 0x40;
 	buff.byte = Byte8;
@@ -577,6 +578,16 @@ Buffs::Buffs() {
 	buff.type = 0x40;
 	buff.byte = Byte8;
 	buff.value = SkillSpecialProc;
+	player.buff = buff;
+	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
+	buff.type = 0x02;
+	buff.byte = Byte1;
+	buff.value = SkillWdef;
+	player.buff = buff;
+	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
+	buff.type = 0x08;
+	buff.byte = Byte1;
+	buff.value = SkillMdef;
 	player.buff = buff;
 	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
 	// End mount buffs
