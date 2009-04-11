@@ -185,6 +185,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getInstanceVariable", &LuaExports::getInstanceVariable);
 	lua_register(luaVm, "isBannedInstancePlayer", &LuaExports::isBannedInstancePlayer);
 	lua_register(luaVm, "isInstance", &LuaExports::isInstance);
+	lua_register(luaVm, "isInstanceMap", &LuaExports::isInstanceMap);
 	lua_register(luaVm, "isInstancePersistent", &LuaExports::isInstancePersistent);
 	lua_register(luaVm, "isPlayerSignedUp", &LuaExports::isPlayerSignedUp);
 	lua_register(luaVm, "markForDelete", &LuaExports::markForDelete);
@@ -1009,6 +1010,11 @@ int LuaExports::isBannedInstancePlayer(lua_State *luaVm) {
 
 int LuaExports::isInstance(lua_State *luaVm) {
 	lua_pushboolean(luaVm, Instances::InstancePtr()->isInstance(lua_tostring(luaVm, 1)));
+	return 1;
+}
+
+int LuaExports::isInstanceMap(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getInstance(luaVm)->getMap(lua_tointeger(luaVm, -1)) != 0);
 	return 1;
 }
 
