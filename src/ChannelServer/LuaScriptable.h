@@ -144,7 +144,7 @@ namespace LuaExports {
 	int playSoundMap(lua_State *luaVm);
 	int playSoundPlayer(lua_State *luaVm);
 	int setMusic(lua_State *luaVm);
-	int setReactorsState(lua_State *luaVm);
+	int setReactorState(lua_State *luaVm);
 	int showInstructionBubble(lua_State *luaVm);
 	int showMapEvent(lua_State *luaVm);
 	int showMapMessage(lua_State *luaVm);

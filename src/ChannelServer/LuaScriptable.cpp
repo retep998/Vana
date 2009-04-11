@@ -140,7 +140,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "playSoundMap", &LuaExports::playSoundMap);
 	lua_register(luaVm, "playSoundPlayer", &LuaExports::playSoundPlayer);
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
-	lua_register(luaVm, "setReactorsState", &LuaExports::setReactorsState);
+	lua_register(luaVm, "setReactorState", &LuaExports::setReactorState);
 	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
 	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
@@ -737,7 +737,7 @@ int LuaExports::setMusic(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::setReactorsState(lua_State *luaVm) {
+int LuaExports::setReactorState(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, -3);
 	int32_t reactorid = lua_tointeger(luaVm, -2);
 	uint8_t state = lua_tointeger(luaVm, -1);
