@@ -46,7 +46,7 @@ LuaNPC::LuaNPC(const string &filename, int32_t playerid) : LuaScriptable(filenam
 	lua_register(luaVm, "sendSimple", &LuaExports::sendSimple);
 	lua_register(luaVm, "sendStyle", &LuaExports::sendStyle);
 	lua_register(luaVm, "sendYesNo", &LuaExports::sendYesNo);
-	lua_register(luaVm, "setState", &LuaExports::setState);
+	lua_register(luaVm, "setState", &LuaExports::setStateNPC);
 
 	// Quest
 	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
@@ -167,7 +167,7 @@ int LuaExports::sendYesNo(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::setState(lua_State *luaVm) {
+int LuaExports::setStateNPC(lua_State *luaVm) {
 	getNPC(luaVm)->setState(lua_tointeger(luaVm, -1));
 	return 0;
 }
