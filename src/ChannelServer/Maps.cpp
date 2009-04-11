@@ -73,13 +73,13 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 
 void Maps::usePortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
-	int32_t test = packet.get<int32_t>();
-	if (test == 0 && player->getHP() == 0) { // Dead
-		player->acceptDeath();
-		return;
-	}
-	else if (test == 0) {
-		// hacking
+	if (packet.get<int32_t>() == 0) { // Dead
+		if (player->getHP() == 0) {
+			player->acceptDeath();
+		}
+		else {
+			// hacking
+		}
 		return;
 	}
 	string portalname = packet.getString();
