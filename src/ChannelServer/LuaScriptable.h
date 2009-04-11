@@ -189,6 +189,7 @@ namespace LuaExports {
 	int getInstanceVariable(lua_State *luaVm);
 	int isBannedInstancePlayer(lua_State *luaVm);
 	int isInstance(lua_State *luaVm);
+	int isInstanceMap(lua_State *luaVm);
 	int isInstancePersistent(lua_State *luaVm);
 	int isPlayerSignedUp(lua_State *luaVm);
 	int markForDelete(lua_State *luaVm);
