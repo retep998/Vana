@@ -26,4 +26,4 @@ spawnMobPos(8800007, -11, -215, 70);
 spawnMobPos(8800008, -11, -215, 70);
 spawnMobPos(8800009, -11, -215, 70);
 spawnMobPos(8800010, -11, -215, 70);
-setReactorsState(211042300, 2118002, 1);
+setReactorState(211042300, 2118002, 1);
