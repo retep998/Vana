@@ -21,10 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Players.h"
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
+#include <map>
 #include <vector>
+#include <string>
 
-using std::tr1::unordered_map;
+using std::map;
 using std::vector;
 using std::string;
 
@@ -38,9 +39,14 @@ class WorldServerAcceptPlayer;
 #define PARTY_LOG_IN_OUT 0x05
 #define PARTY_EXPEL 0x06
 
+#define PARTY_SYNC_CHANNEL_START 0x01
+#define PARTY_SYNC_DISBAND 0x02
+#define PARTY_SYNC_CREATE 0x03
+#define PARTY_SYNC_SWITCH_LEADER 0x04
+#define PARTY_SYNC_REMOVE_MEMBER 0x05
+#define PARTY_SYNC_ADD_MEMBER 0x06
+
 namespace PartyHandler {
-	extern int32_t partyCount;
-	extern unordered_map<int32_t, Party *> parties;
 	void createParty(WorldServerAcceptPlayer *player, int32_t playerid);
 	void leaveParty(WorldServerAcceptPlayer *player, int32_t playerid);
 	void invitePlayer(WorldServerAcceptPlayer *player, int32_t playerid, const string &invitee);
@@ -53,19 +59,15 @@ namespace PartyHandler {
 
 class Party {
 public:
-	void setId(int32_t partyid) { this->partyid = partyid; }
 	void setLeader(int32_t playerid) { this->leaderid = playerid; }
 	void addMember(Player *player) { this->members[player->id] = player; }
 	void deleteMember(Player *player) { this->members.erase(player->id); }
 
-	int32_t getId() const { return this->partyid; }
 	int32_t getLeader() const { return this->leaderid; }
 	bool isLeader(int32_t playerid) const { return playerid == leaderid; }
-
-	unordered_map<int32_t, Player *> members;
+	map<int32_t, Player *> members;
 	vector<int32_t> oldLeader;
 private:
-	int32_t partyid;
 	int32_t leaderid;
 };
 

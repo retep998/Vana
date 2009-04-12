@@ -27,12 +27,14 @@ enum InstanceMessages {
 	Mob_Spawn, // Mob ID, map mob ID
 	Timer_End, // Timer name, boolean false
 	Timer_Natural_End, // Timer name, boolean true
+	Party_Remove_Member, // Party ID, Player ID
 
 	// 1 parameter
 	Player_Death, // Player ID
 	Player_Disconnect, // Player ID
 	Instance_Timer_End, // Boolean false
 	Instance_Timer_Natural_End, // Boolean true
+	Party_Disband, // Party ID
 
 	// 0 parameters
 	Begin_Instance

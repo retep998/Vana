@@ -1,4 +1,4 @@
---[[
+/*
 Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,46 +14,36 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
---]]
-function beginInstance()
-	addInstanceMap(200090300);
-end
+*/
+#ifndef PARTIES_H
+#define PARTIES_H
 
-function playerDeath(playerid)
+#include "Types.h"
+#include <boost/tr1/unordered_map.hpp>
 
-end
+using std::tr1::unordered_map;
 
-function playerDisconnect(playerid)
-	markForDelete();
-end
+class Party;
 
-function instanceTimerEnd(fromtimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(250000100);
-		removeAllInstancePlayers();
-	end
-end
+class Parties {
+public:
+	static Parties * Instance() {
+		if (singleton == 0)
+			singleton = new Parties;
+		return singleton;
+	}
 
-function timerEnd(name, fromtimer)
+	int32_t addParty(Party *party);
+	void removeParty(int32_t id);
+	Party * getParty(int32_t id);
+	unordered_map<int32_t, Party *> getParties();
+private:
+	Parties() : pid(0) {};
+	Parties(const Parties&);
+	Parties& operator=(const Parties&);
+	static Parties *singleton;
 
-end
-
-function mobDeath(mobid, mapmobid)
-
-end
-
-function mobSpawn(mobid, mapmobid)
-
-end
-
-function changeMap(playerid, newmap, oldmap)
-
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
-end
+	int32_t pid;
+	unordered_map<int32_t, Party *> m_map;
+};
+#endif

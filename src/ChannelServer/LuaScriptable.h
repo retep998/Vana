@@ -172,8 +172,14 @@ namespace LuaExports {
 	int getMesoRate(lua_State *luaVm);
 	int getQuestEXPRate(lua_State *luaVm);
 
+	// Party
+	int getPartyCount(lua_State *luaVm);
+	int getPartyID(lua_State *luaVm);
+	int isPartyLeader(lua_State *luaVm);
+
 	// Instance
 	int addInstanceMap(lua_State *luaVm);
+	int addInstanceParty(lua_State *luaVm);
 	int addInstancePlayer(lua_State *luaVm);
 	int addInstanceReactor(lua_State *luaVm);
 	int addPlayerSignUp(lua_State *luaVm);

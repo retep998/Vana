@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Maps.h"
 #include "PacketReader.h"
+#include "Party.h"
 #include "Player.h"
 #include "Players.h"
 #include "Randomizer.h"
@@ -31,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
+
+#include "displaypacket.h"
 
 using std::tr1::bind;
 
@@ -126,15 +129,28 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
+		case Jobs::Cleric::Heal: { // Heal
+			uint16_t healrate = skills[skillid][level].hpP;
+			if (healrate > 100)
+				healrate = 100;
+			player->modifyHP(healrate * player->getMHP() / 100);
+			break;
+		}
+		case Jobs::Fighter::Rage:
+		case Jobs::Spearman::IronWill:
 		case Jobs::Spearman::HyperBody:
 		case Jobs::FPWizard::Meditation:
 		case Jobs::ILWizard::Meditation:
 		case Jobs::Cleric::Bless:
 		case Jobs::Priest::HolySymbol:
+		case Jobs::Bishop::Resurrection:
 		case Jobs::Bowmaster::SharpEyes:
 		case Jobs::Marksman::SharpEyes:
 		case Jobs::Assassin::Haste:
+		case Jobs::Hermit::MesoUp:
 		case Jobs::Bandit::Haste:
+		case Jobs::Buccaneer::SpeedInfusion:
+		case Jobs::Buccaneer::TimeLeap:
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
 		case Jobs::DarkKnight::MapleWarrior:
@@ -146,41 +162,78 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::NightLord::MapleWarrior:
 		case Jobs::Shadower::MapleWarrior:
 		case Jobs::Buccaneer::MapleWarrior:
-		case Jobs::Corsair::MapleWarrior:
+		case Jobs::Corsair::MapleWarrior: {
+			Party *party = player->getParty();
+			if (party != 0) {
+				int8_t affected = packet.get<int8_t>();
+				int8_t pmembers = party->getMembersCount();
+				Player *pmember1 = 0, *pmember2 = 0, *pmember3 = 0, *pmember4 = 0, *pmember5 = 0, *pmember6 = 0;
+				if (affected & GameLogicUtilities::getPartyMember1(pmembers))
+					pmember1 = party->getMemberByIndex(1);
+				if (affected & GameLogicUtilities::getPartyMember2(pmembers))
+					pmember2 = party->getMemberByIndex(2);
+				if (affected & GameLogicUtilities::getPartyMember3(pmembers))
+					pmember3 = party->getMemberByIndex(3);
+				if (affected & GameLogicUtilities::getPartyMember4(pmembers))
+					pmember4 = party->getMemberByIndex(4);
+				if (affected & GameLogicUtilities::getPartyMember5(pmembers))
+					pmember5 = party->getMemberByIndex(5);
+				if (affected & GameLogicUtilities::getPartyMember6(pmembers))
+					pmember6 = party->getMemberByIndex(6);
+				if (pmember1 != 0 && pmember1 != player && pmember1->getMap() == player->getMap()) {
+					SkillsPacket::showSkill(pmember1, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(pmember1, skillid, level, direction, true);
+					Buffs::Instance()->addBuff(pmember1, skillid, level, addedinfo);
+				}
+				if (pmember2 != 0 && pmember2 != player && pmember2->getMap() == player->getMap()) {
+					SkillsPacket::showSkill(pmember2, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(pmember2, skillid, level, direction, true);
+					Buffs::Instance()->addBuff(pmember2, skillid, level, addedinfo);
+				}
+				if (pmember3 != 0 && pmember3 != player && pmember3->getMap() == player->getMap()) {
+					SkillsPacket::showSkill(pmember3, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(pmember3, skillid, level, direction, true);
+					Buffs::Instance()->addBuff(pmember3, skillid, level, addedinfo);
+				}
+				if (pmember4 != 0 && pmember4 != player && pmember4->getMap() == player->getMap()) {
+					SkillsPacket::showSkill(pmember4, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(pmember4, skillid, level, direction, true);
+					Buffs::Instance()->addBuff(pmember4, skillid, level, addedinfo);
+				}
+				if (pmember5 != 0 && pmember5 != player && pmember5->getMap() == player->getMap()) {
+					SkillsPacket::showSkill(pmember5, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(pmember5, skillid, level, direction, true);
+					Buffs::Instance()->addBuff(pmember5, skillid, level, addedinfo);
+				}
+				if (pmember6 != 0 && pmember6 != player && pmember6->getMap() == player->getMap()) {
+					SkillsPacket::showSkill(pmember6, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(pmember6, skillid, level, direction, true);
+					Buffs::Instance()->addBuff(pmember6, skillid, level, addedinfo);
+				}
+			}
+			break;
+		}
+		case Jobs::Beginner::EchoOfHero:
+		case Jobs::SuperGM::HealPlusDispel:
 		case Jobs::SuperGM::Haste:
 		case Jobs::SuperGM::HolySymbol:
 		case Jobs::SuperGM::Bless:
+		case Jobs::SuperGM::Resurrection:
 		case Jobs::SuperGM::HyperBody: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = Players::Instance()->getPlayer(playerid);
 				if (target != 0 && target != player) { // ???
-					SkillsPacket::showSkill(target, skillid, level, true, true);
-					SkillsPacket::showSkill(target, skillid, level, true);
+					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					Buffs::Instance()->addBuff(target, skillid, level, addedinfo);
-				}
-			}
-			break;
-		}
-		case Jobs::Cleric::Heal: {
-			// TODO PARTY
-			uint16_t healrate = skills[skillid][level].hpP;
-			if (healrate > 100)
-				healrate = 100;
-			player->modifyHP(healrate * player->getMHP() / 100);
-			break;
-		}
-		case Jobs::SuperGM::HealPlusDispel:
-			player->setHP(player->getMHP());
-			player->setMP(player->getMMP());
-			break;
-		case Jobs::SuperGM::Resurrection: {
-			for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-				Player *resplayer;
-				resplayer = Maps::getMap(player->getMap())->getPlayer(i);
-				if (resplayer->getHP() <= 0) {
-					resplayer->setHP(resplayer->getMHP());
+					if (skillid == Jobs::SuperGM::Resurrection)
+						target->setHP(target->getMHP());
+					else if (skillid == Jobs::SuperGM::HealPlusDispel) {
+						target->setHP(target->getMHP());
+						target->setMP(target->getMMP());
+					}
 				}
 			}
 			break;
@@ -198,7 +251,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 	}
 	applySkillCosts(player, skillid, level);
-	SkillsPacket::showSkill(player, skillid, level, direction);
+	if (skillid != Jobs::Cleric::Heal)
+		SkillsPacket::showSkill(player, skillid, level, direction);
 	if (Buffs::Instance()->addBuff(player, skillid, level, addedinfo))
 		return;
 	else if (GameLogicUtilities::isSummon(skillid))

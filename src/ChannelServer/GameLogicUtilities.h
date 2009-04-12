@@ -39,6 +39,12 @@ namespace GameLogicUtilities {
 	inline bool isFourthJobSkill(int32_t skillid) { return ((skillid / 10000) % 10 == 2); }
 	inline bool isSummon(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet || skillid == Jobs::Ranger::Puppet || skillid == Jobs::Priest::SummonDragon || skillid == Jobs::Ranger::SilverHawk || skillid == Jobs::Sniper::GoldenEagle || skillid == Jobs::DarkKnight::Beholder || skillid == Jobs::FPArchMage::Elquines || skillid == Jobs::ILArchMage::Ifrit || skillid == Jobs::Bishop::Bahamut || skillid == Jobs::Bowmaster::Phoenix || skillid == Jobs::Marksman::Frostprey || skillid == Jobs::Outlaw::Octopus || skillid == Jobs::Outlaw::Gaviota); }
 	inline bool isPuppet(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet || skillid == Jobs::Ranger::Puppet); }
+	inline int8_t getPartyMember1(int8_t totalmembers) { return (totalmembers >= 1 ? (0x40 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember2(int8_t totalmembers) { return (totalmembers >= 2 ? (0x80 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember3(int8_t totalmembers) { return (totalmembers >= 3 ? (0x100 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember4(int8_t totalmembers) { return (totalmembers >= 4 ? (0x200 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember5(int8_t totalmembers) { return (totalmembers >= 5 ? (0x400 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember6(int8_t totalmembers) { return (totalmembers >= 6 ? (0x800 >> totalmembers) : 0xFF); }
 };
 
 #endif

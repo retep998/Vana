@@ -220,6 +220,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\WorldServer\Parties.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\WorldServer\Players.cpp"
 					>
 				</File>
@@ -315,6 +319,10 @@
 				</File>
 				<File
 					RelativePath=".\src\WorldServer\Channels.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\Parties.h"
 					>
 				</File>
 				<File

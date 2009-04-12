@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Mobs.h"
 #include "NPCs.h"
+#include "Party.h"
 #include "Reactors.h"
 #include "Quests.h"
 #include "Levels.h"
@@ -168,8 +169,14 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 
+	// Party
+	lua_register(luaVm, "getPartyCount", &LuaExports::getPartyCount);
+	lua_register(luaVm, "getPartyID", &LuaExports::getPartyID);
+	lua_register(luaVm, "isPartyLeader", &LuaExports::isPartyLeader);
+
 	// Instance
 	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
+	lua_register(luaVm, "addInstanceParty", &LuaExports::addInstanceParty);
 	lua_register(luaVm, "addInstancePlayer", &LuaExports::addInstancePlayer);
 	lua_register(luaVm, "addInstanceReactor", &LuaExports::addInstanceReactor);
 	lua_register(luaVm, "addPlayerSignUp", &LuaExports::addPlayerSignUp);
@@ -896,10 +903,35 @@ int LuaExports::getMesoRate(lua_State *luaVm) {
 	return 1;
 }
 
+// Party
+int LuaExports::getPartyCount(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getParty()->getMembersCount());
+	return 1;
+}
+
+int LuaExports::getPartyID(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getParty()->getId());
+	return 1;
+}
+
+int LuaExports::isPartyLeader(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getPlayer(luaVm) == getPlayer(luaVm)->getParty()->getLeader());
+	return 1;
+}
+
 // Instance
 int LuaExports::addInstanceMap(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
 	getInstance(luaVm)->addMap(mapid);
+	return 0;
+}
+
+int LuaExports::addInstanceParty(lua_State *luaVm) {
+	int32_t id = lua_tointeger(luaVm, -1);
+	if (PartyFunctions::parties.find(id) != PartyFunctions::parties.end()) {
+		Party *p = PartyFunctions::parties[id];
+		getInstance(luaVm)->addParty(p);
+	}
 	return 0;
 }
 
