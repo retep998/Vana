@@ -42,9 +42,12 @@ public:
 
 	void setVariable(const string &name, int32_t val);
 	void setVariable(const string &name, const string &val);
+	void setPlayer(Player *player);
+	void revertPlayer();
 protected:
 	string filename;
 	int32_t playerid;
+	int32_t scriptplayerid;
 	lua_State *luaVm;
 };
 
@@ -58,6 +61,8 @@ namespace LuaExports {
 	int getChannel(lua_State *luaVm);
 	int getRandomNumber(lua_State *luaVm);
 	int runNPC(lua_State *luaVm);
+	int revertPlayer(lua_State *luaVm);
+	int setPlayer(lua_State *luaVm);
 	int showShop(lua_State *luaVm);
 
 	// Buddy
@@ -206,10 +211,8 @@ namespace LuaExports {
 	int removeAllInstancePlayers(lua_State *luaVm);
 	int removeInstancePlayer(lua_State *luaVm);
 	int removePlayerSignUp(lua_State *luaVm);
-	int revertInstancePlayer(lua_State *luaVm);
 	int setInstanceMax(lua_State *luaVm);
 	int setInstancePersistence(lua_State *luaVm);
-	int setInstancePlayer(lua_State *luaVm);
 	int setInstanceReactorReset(lua_State *luaVm);
 	int setInstanceTime(lua_State *luaVm);
 	int setInstanceVariable(lua_State *luaVm);

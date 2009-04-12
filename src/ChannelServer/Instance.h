@@ -109,7 +109,6 @@ public:
 	Timer::Container * getTimers() const { return m_timers.get(); }
 
 	// Lua interaction
-	void setPlayerId(int32_t id);
 	void sendMessage(InstanceMessages message);
 	void sendMessage(InstanceMessages message, int32_t);
 	void sendMessage(InstanceMessages message, int32_t, int32_t);
