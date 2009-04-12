@@ -27,6 +27,7 @@ using std::tr1::unordered_map;
 
 class Instance;
 class PacketReader;
+class Party;
 class Player;
 
 #define PARTY_SYNC_CHANNEL_START 0x01
