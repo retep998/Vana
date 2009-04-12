@@ -65,8 +65,8 @@ void LuaScriptable::initialize() {
 	// Miscellanous
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
-	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
+	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
 
@@ -293,15 +293,15 @@ int LuaExports::getRandomNumber(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::revertPlayer(lua_State *luaVm) {
+	getPlayer(luaVm)->getLuaScriptable()->revertPlayer();
+	return 0;
+}
+
 int LuaExports::runNPC(lua_State *luaVm) {
 	int32_t npcid = lua_tointeger(luaVm, -1);
 	NPC *npc = new NPC(npcid, getPlayer(luaVm));
 	npc->run();
-	return 0;
-}
-
-int LuaExports::revertPlayer(lua_State *luaVm) {
-	getPlayer(luaVm)->getLuaScriptable()->revertPlayer();
 	return 0;
 }
 
