@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Movement.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
+#include "Party.h"
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
@@ -176,15 +177,43 @@ void Mob::die(Player *player) {
 		if (damager == 0 || damager->getMap() != this->mapid) // Only give EXP if the damager is in the same channel and on the same map
 			continue;
 
-		uint8_t multiplier = damager == player ? 10 : 8; // Multiplier for player to give the finishing blow is 1 and .8 for others. We therefore set this to 10 or 8 and divide the result in the formula found later on by 10.
-		// Account for Holy Symbol
-		int16_t hsrate = 0;
-		if (damager->getActiveBuffs()->hasHolySymbol()) {
-			int32_t hsid = damager->getActiveBuffs()->getHolySymbol();
-			hsrate = Skills::skills[hsid][damager->getActiveBuffs()->getActiveSkillLevel(hsid)].x;
+		uint32_t exp;
+
+		if (damager->getParty()) {
+			uint32_t totalPartyDamage = 0;
+			uint8_t multiplier = 0;
+			Player *lasthit = 0;
+			vector<int32_t> members;
+			for (size_t i = 0; i < Maps::getMap(damager->getMap())->getNumPlayers(); i++) {
+				Player *m_player = Maps::getMap(damager->getMap())->getPlayer(i);
+				if (m_player->getParty()) {
+					if (m_player->getParty()->getId() == damager->getParty()->getId()) {
+						// Deals 1 damage to mob || Player's level is larger than moblevel-5 || player's level is larger then lasthitter-5
+						if ((damages.find(m_player->getId()) != damages.end() || (m_player->getLevel() >= (info.level - 5)) || (m_player->getLevel() >= (player->getLevel() - 5))) && m_player->getHP() != 0)
+							members.push_back(m_player->getId());
+						if (damages.find(m_player->getId()) != damages.end())
+							totalPartyDamage += damages[m_player->getId()]; // Calculate the total party damage done to the mob to calculate the party's share of the exp
+						if (m_player == player) { // Check if mob killer is any one of the party members
+							lasthit = m_player;
+							multiplier = 2;
+						}
+					}
+				}
+			}
+			exp = (info.exp * (multiplier + (8 * totalPartyDamage / info.hp))) / 10;
+			distributePartyExp((lasthit == 0 ? damager : lasthit), members, exp);
 		}
-		uint32_t exp = (info.exp * (multiplier * iter->second / info.hp)) / 10;
-		Levels::giveEXP(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
+		else {
+			uint8_t multiplier = damager == player ? 2 : 0; // Multiplier for player to give the finishing blow is 1 and .8 for others. We therefore set this to 10 or 8 and divide the result in the formula found later on by 10.
+			// Account for Holy Symbol
+			int16_t hsrate = 0;
+			if (damager->getActiveBuffs()->hasHolySymbol()) {
+				int32_t hsid = damager->getActiveBuffs()->getHolySymbol();
+				hsrate = Skills::skills[hsid][damager->getActiveBuffs()->getActiveSkillLevel(hsid)].x;
+			}
+			exp = (info.exp * (multiplier + (8 * iter->second / info.hp))) / 10;
+			Levels::giveEXP(damager, static_cast<uint32_t>(exp * ((100 + (hsrate / 5)) / 100.0)) * ChannelServer::Instance()->getExprate(), false, 0, (damager == player));
+		}
 	}
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
@@ -221,6 +250,42 @@ void Mob::cleanHorntail(int32_t mapid, Player *player) {
 	for (int8_t q = 0; q < 8; q++) {
 		Maps::getMap(mapid)->killMobs(player, (8810010 + q)); // Dead Horntail's parts
 	}
+}
+
+void Mob::distributePartyExp(Player *player, vector<int32_t> &members, uint32_t exp) { // Formula based on: http://www.hidden-street.net/forum/showthread.php?t=25342
+	// Note: I used float/double because some mobs gives large amount of exp that when using (val * (100+x)) may cause it to overflow
+	for (size_t i = 0; i < getGivenPartiesSize(); i++) // Exp was already given to the member that has also hit the mob 
+		if (givenParties[i] == player->getParty()->getId())
+			return;
+
+	int32_t Lt = 0; // Total party level
+	uint8_t Bp = (members.size() == 1) ? 0 : (members.size() * 5); // Bonus party exp (only if the party is > 1)
+
+	for (size_t i = 0; i < members.size(); i++)
+		Lt += Players::Instance()->getPlayer(members[i])->getLevel();
+
+	for (size_t i = 0; i < members.size(); i++) {
+		uint32_t expShare;
+		Player *member = Players::Instance()->getPlayer(members[i]);
+
+		// Account for Holy Symbol
+		int16_t hsrate = 0;
+		if (member->getActiveBuffs()->hasHolySymbol()) {
+			int32_t hsid = member->getActiveBuffs()->getHolySymbol();
+			hsrate = Skills::skills[hsid][member->getActiveBuffs()->getActiveSkillLevel(hsid)].x;
+		}
+
+		hsrate = (hsrate == 0) ? 0 : (members.size() == 1) ? (hsrate / 5) : (members.size() == 2) ? static_cast<int16_t>(hsrate / 1.2) : hsrate;
+
+		if (player == member)
+			expShare = static_cast<uint32_t>(((exp * 0.8 * (member->getLevel() / (Lt * 1.0))) + (exp * 0.2)) * ((100 + Bp) / 100.0) * ((100 + hsrate) / 100.0)) * ChannelServer::Instance()->getExprate();
+		else
+			expShare = static_cast<uint32_t>((exp * 0.8 * (member->getLevel() / (Lt * 1.0))) * ((100 + Bp) / 100.0) * ((100 + hsrate) / 100.0)) * ChannelServer::Instance()->getExprate();
+
+		Levels::giveEXP(member, expShare, false, Bp, (player == member));
+	}
+
+	this->givenParties.push_back(player->getParty()->getId()); // Store the partyid for use later
 }
 
 /* Mobs namespace */

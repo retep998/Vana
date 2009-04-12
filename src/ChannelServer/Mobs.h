@@ -72,6 +72,7 @@ public:
 	void setControl(Player *control);
 	void endControl();
 	void cleanHorntail(int32_t mapid, Player *player);
+	void distributePartyExp(Player *player, vector<int32_t> &members, uint32_t exp);
 
 	int16_t getOriginFH() const { return originfh; }
 	int32_t getID() const { return id; }
@@ -90,6 +91,7 @@ public:
 	void statusPacket(PacketCreator &packet);
 	Timer::Container * getTimers() const { return timers.get(); }
 	Player * getControl() const { return control; }
+	size_t getGivenPartiesSize() { return givenParties.size(); }
 
 	void die(bool showpacket = false); // Removes mob, no EXP, no summoning
 private:
@@ -106,6 +108,7 @@ private:
 	boost::scoped_ptr<Timer::Container> timers;
 	unordered_map<int32_t, uint32_t> damages;
 	Player *control;
+	vector<int32_t> givenParties;
 
 	void die(Player *player);
 };
