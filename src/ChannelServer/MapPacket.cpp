@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tr1/unordered_map.hpp>
 #include <utility>
 
-using std::tr1::unordered_map;
 using std::pair;
+using std::tr1::unordered_map;
 
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
@@ -54,10 +54,10 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int8_t>(enter.types[Byte3]);
 	packet.add<int8_t>(enter.types[Byte4]);
 
-	const uint8_t byteorder[8] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
+	const int8_t byteorder[8] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
 
 	for (int8_t i = 0; i < 8; i++) {
-		uint8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
+		int8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
 		if (enter.types[cbyte] != 0) {
 			for (unordered_map<uint8_t, pair<bool, int16_t> >::iterator iter = enter.values[cbyte].begin(); iter != enter.values[cbyte].end(); iter++) {
 				if (iter->second.first) {
