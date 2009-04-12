@@ -41,8 +41,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(-1);
 	packet.add<int32_t>(-1);
 	packet.add<int32_t>(player->getId());
-	packet.addString(player->getName(), 12);
-	packet.add<int8_t>(0);
+	packet.addString(player->getName(), 13);
 	packet.add<int8_t>(player->getGender());
 	packet.add<int8_t>(player->getSkin());
 	packet.add<int32_t>(player->getEyes());
@@ -79,14 +78,12 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
-	for (int32_t i = 0; i < 225; i++)
-		packet.add<int8_t>(0);
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
 	for (int32_t i = 0; i < 15; i++)
 		packet.addBytes("FFC99A3B");
 	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(0);
 	packet.add<int64_t>(TimeUtilities::getServerTime());
 	player->getSession()->send(packet);
 }
@@ -175,6 +172,8 @@ void PlayerPacket::showMessage(Player *player, const string &msg, int8_t type) {
 	packet.add<int16_t>(SEND_NOTICE); 
 	packet.add<int8_t>(type);
 	packet.addString(msg);
+	if (type == 6)
+		packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 

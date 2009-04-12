@@ -70,7 +70,8 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 		case 1: packet.add<int8_t>(0x0b); break; // Pin Select
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
-	packet.addBytes("0465");
+	packet.add<int8_t>(0);
+	packet.add<int16_t>(0); // Admin, beware - the client won't let them chat, no known benefit
 	packet.addString(username);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);

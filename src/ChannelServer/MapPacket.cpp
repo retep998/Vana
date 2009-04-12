@@ -38,10 +38,9 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int8_t>(0); // Guild icon garbage
 
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(1);
+	packet.add<uint8_t>(0xf8);
+	packet.add<int8_t>(3);
 	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
-	packet.add<uint8_t>(0xF8);
 
 	/* Code that needs to be modified
 	SkillMapEnterActiveInfo enter = player->getActiveBuffs()->getSkillMapEnterInfo();
@@ -59,44 +58,53 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	*/
 	packet.add<int64_t>(0); // Temporary addition until all the buffs are working properly with no disconnections
 	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(1065638850); // Unknown
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
-	packet.add<int32_t>(1065638850);
+	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
 	packet.add<int32_t>(1065638850);
 	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(1065638850);
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
 
 	int32_t mount = player->getInventory()->getEquippedID(18);
 	if (mount != 0 && player->getActiveBuffs()->getActiveSkillLevel(1004) > 0) {
 		packet.add<int32_t>(mount);
 		packet.add<int32_t>(1004);
-		packet.add<int32_t>(1066113350);
 	}
 	else if (player->getActiveBuffs()->getActiveSkillLevel(5221006) > 0) {
 		packet.add<int32_t>(1932000);
 		packet.add<int32_t>(5221006);
-		packet.add<int32_t>(1066113350);
 	}
 	else {
 		packet.add<int32_t>(0);
 		packet.add<int32_t>(0);
-		packet.add<int32_t>(1065638850);
 	}
 
+	packet.add<int32_t>(1065638850);
+	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(1065638850);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(1065638850);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(1065638850);
 	packet.add<int16_t>(0);
-	packet.add<int32_t>(1065638850);
-	packet.add<int32_t>(0);
+	packet.add<int8_t>(0);
 	packet.add<int16_t>(player->getJob());
 
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
@@ -127,6 +135,9 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int16_t>(0);
 	return packet;
 }
 
