@@ -33,8 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include <functional>
 
-#include "displaypacket.h"
-
 using std::tr1::bind;
 
 unordered_map<int32_t, SkillsLevelInfo> Skills::skills;
