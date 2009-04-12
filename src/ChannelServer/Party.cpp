@@ -246,5 +246,44 @@ void Party::receiveHPBar(Player *player) {
 		Player *m_player = iter->second;
 		if (m_player != 0 && m_player != player && m_player->getMap() == player->getMap())
 			PlayerPacket::showHPBar(m_player, player);
-	}	
+	}
+}
+
+int8_t Party::getMemberCountOnMap(int32_t mapid) {
+	int8_t count = 0;
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		Player *m_player = iter->second;
+		if (m_player != 0 && m_player->getMap() == mapid)
+			count++;
+	}
+	return count;
+}
+
+bool Party::isWithinLevelRange(uint8_t lowbound, uint8_t highbound) {
+	bool is = true;
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		Player *m_player = iter->second;
+		if (m_player != 0) {
+			if (m_player->getLevel() < lowbound || m_player->getLevel() > highbound) {
+				is = false;
+				break;
+			}
+		}
+	}
+	return is;
+}
+
+void Party::warpAllMembers(int32_t mapid, const string &portalname) {
+	if (Maps::getMap(mapid)) {
+		PortalInfo *portal = 0;
+		if (portalname != "") { // Optional portal parameter
+			portal = Maps::getMap(mapid)->getPortal(portalname);
+		}
+		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+			Player *m_player = iter->second;
+			if (m_player != 0) {
+				Maps::changeMap(m_player, mapid, portal);
+			}
+		}
+	}
 }

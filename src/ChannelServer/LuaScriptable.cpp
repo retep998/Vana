@@ -172,7 +172,10 @@ void LuaScriptable::initialize() {
 	// Party
 	lua_register(luaVm, "getPartyCount", &LuaExports::getPartyCount);
 	lua_register(luaVm, "getPartyID", &LuaExports::getPartyID);
+	lua_register(luaVm, "getPartyMapCount", &LuaExports::getPartyMapCount);
+	lua_register(luaVm, "isPartyInLevelRange", &LuaExports::isPartyInLevelRange);
 	lua_register(luaVm, "isPartyLeader", &LuaExports::isPartyLeader);
+	lua_register(luaVm, "warpParty", &LuaExports::warpParty);
 
 	// Instance
 	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
@@ -924,6 +927,31 @@ int LuaExports::getPartyID(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getPartyMapCount(lua_State *luaVm) {
+	Player *player = getPlayer(luaVm);
+	Party *p = player->getParty();
+	int8_t members = 0;
+	if (p != 0) {
+		int32_t mapid = lua_tointeger(luaVm, 1);
+		members = p->getMemberCountOnMap(mapid);
+	}
+	lua_pushinteger(luaVm, members);
+	return 1;	
+}
+
+int LuaExports::isPartyInLevelRange(lua_State *luaVm) {
+	Player *player = getPlayer(luaVm);
+	Party *p = player->getParty();
+	bool iswithin = false;
+	if (p != 0) {
+		int32_t lowbound = lua_tointeger(luaVm, 1);
+		int32_t highbound = lua_tointeger(luaVm, 2);
+		iswithin = p->isWithinLevelRange(lowbound, highbound);
+	}
+	lua_pushboolean(luaVm, iswithin);
+	return 1;
+}
+
 int LuaExports::isPartyLeader(lua_State *luaVm) {
 	Player *player = getPlayer(luaVm);
 	Party *p = player->getParty();
@@ -933,6 +961,20 @@ int LuaExports::isPartyLeader(lua_State *luaVm) {
 	}
 	lua_pushboolean(luaVm, isleader);
 	return 1;
+}
+
+int LuaExports::warpParty(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	string to;
+	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+		string to = lua_tostring(luaVm, 2);
+	}
+	Player *player = getPlayer(luaVm);
+	Party *p = player->getParty();
+	if (p != 0) {
+		p->warpAllMembers(mapid, to);
+	}
+	return 0;
 }
 
 // Instance

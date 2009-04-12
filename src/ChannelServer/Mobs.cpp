@@ -545,7 +545,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
 		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
 			Pos pppos;
-			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 0 : 5) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
+			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 5 : 0) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
 			pppos.y = origin.y;
 //			clock_t pptime = 175 * pickpocket;
 			int32_t ppmesos = ((ppdamages[pickpocket] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
