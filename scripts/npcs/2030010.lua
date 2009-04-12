@@ -24,8 +24,8 @@ if getMap() == 280030000 then -- Zakum's Altar
 	elseif state == 1 then
 		if getSelected() == 1 then
 			if getNumPlayers(280030000) == 1 then
-				setReactorsState(280030000, 2111001, 0); -- Zakum's altar
-				setReactorsState(211042300, 2118002, 0); -- Zakum's door
+				setReactorState(280030000, 2111001, 0); -- Zakum's altar
+				setReactorState(211042300, 2118002, 0); -- Zakum's door
 				clearDrops();
 				clearMobs();
 			end

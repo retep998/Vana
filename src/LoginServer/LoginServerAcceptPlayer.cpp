@@ -35,9 +35,9 @@ void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 }
 
 void LoginServerAcceptPlayer::authenticated(int8_t type) {
-	if (type == INTER_WORLD_SERVER)
+	if (type == InterWorldServer)
 		Worlds::connectWorldServer(this);
-	else if (type == INTER_CHANNEL_SERVER)
+	else if (type == InterChannelServer)
 		Worlds::connectChannelServer(this);
 	else
 		getSession()->disconnect();

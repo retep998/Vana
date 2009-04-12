@@ -85,13 +85,13 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, 
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int32_t skill, unsigned char *buf, int32_t len) {
+void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int32_t skill, int8_t trajectory, unsigned char *buf, int32_t len) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_MOB);
 	packet.add<int32_t>(mobid);
 	packet.add<int8_t>(useskill);
 	packet.add<int32_t>(skill);
-	packet.add<int8_t>(0);
+	packet.add<int8_t>(trajectory);
 	packet.addBuffer(buf, len);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
@@ -127,7 +127,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 		pack.skipBytes(4); // Charge
 	}
 	int32_t masteryid = 0;
-	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11))) {
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(EquipSlots::Weapon))) {
 		case Weapon1hSword:
 		case Weapon2hSword:
 			switch ((player->getJob() / 10)) {
@@ -135,7 +135,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 				case 12: masteryid = Jobs::Page::SwordMastery; break;
 				case 90:
 				case 91:
-					masteryid = (player->getSkills()->getSkillLevel(Jobs::Fighter::SwordMastery) >= player->getSkills()->getSkillLevel(Jobs::Page::SwordMastery) ? Jobs::Fighter::SwordMastery : Jobs::Page::SwordMastery);
+					masteryid = (player->getSkills()->getSkillLevel(Jobs::Fighter::SwordMastery) >= player->getSkills()->getSkillLevel(Jobs::Page::SwordMastery) ? (int32_t)Jobs::Fighter::SwordMastery : (int32_t)Jobs::Page::SwordMastery);
 					break;
 			}
 			break;
@@ -223,7 +223,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(animation);
 	packet.add<int8_t>(w_speed);
 	int32_t masteryid = 0;
-	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11))) {
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(EquipSlots::Weapon))) {
 		case WeaponBow:
 			masteryid = Jobs::Hunter::BowMastery;
 			break;

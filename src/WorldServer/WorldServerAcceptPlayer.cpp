@@ -54,6 +54,7 @@ void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 		case INTER_UPDATE_MAP: WorldServerAcceptHandler::updateMap(this, packet); break;
 		case INTER_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
 		case INTER_TO_LOGIN: WorldServerAcceptPacket::sendToLogin(packet.getBuffer(), packet.getBufferLength()); break;
+		case INTER_TRANSFER_BUFFS: WorldServerAcceptHandler::handleChangeChannel(this, packet); break;
 	}
 }
 
@@ -65,6 +66,7 @@ void WorldServerAcceptPlayer::authenticated(int8_t type) {
 		WorldServerAcceptPacket::connect(this, channel, port, WorldServer::Instance()->getMaxMultiLevel(), WorldServer::Instance()->getMaxStats());
 		WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
 		WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
+		WorldServerAcceptPacket::sendParties(this);
 		LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, getExternalIp(), port);
 		std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 	}

@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Mobs.h"
 #include "NPCs.h"
+#include "Party.h"
 #include "Reactors.h"
 #include "Quests.h"
 #include "Levels.h"
@@ -108,6 +109,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "giveAP", &LuaExports::giveAP);
 	lua_register(luaVm, "giveEXP", &LuaExports::giveEXP);
 	lua_register(luaVm, "giveSP", &LuaExports::giveSP);
+	lua_register(luaVm, "isActiveItem", &LuaExports::isActiveItem);
+	lua_register(luaVm, "isActiveSkill", &LuaExports::isActiveSkill);
 	lua_register(luaVm, "isGM", &LuaExports::isGM);
 	lua_register(luaVm, "setAP", &LuaExports::setAP);
 	lua_register(luaVm, "setDEX", &LuaExports::setDEX);
@@ -138,7 +141,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "playSoundMap", &LuaExports::playSoundMap);
 	lua_register(luaVm, "playSoundPlayer", &LuaExports::playSoundPlayer);
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
-	lua_register(luaVm, "setReactorsState", &LuaExports::setReactorsState);
+	lua_register(luaVm, "setReactorState", &LuaExports::setReactorState);
 	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
 	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
@@ -166,8 +169,14 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 
+	// Party
+	lua_register(luaVm, "getPartyCount", &LuaExports::getPartyCount);
+	lua_register(luaVm, "getPartyID", &LuaExports::getPartyID);
+	lua_register(luaVm, "isPartyLeader", &LuaExports::isPartyLeader);
+
 	// Instance
 	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
+	lua_register(luaVm, "addInstanceParty", &LuaExports::addInstanceParty);
 	lua_register(luaVm, "addInstancePlayer", &LuaExports::addInstancePlayer);
 	lua_register(luaVm, "addInstanceReactor", &LuaExports::addInstanceReactor);
 	lua_register(luaVm, "addPlayerSignUp", &LuaExports::addPlayerSignUp);
@@ -183,6 +192,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getInstanceVariable", &LuaExports::getInstanceVariable);
 	lua_register(luaVm, "isBannedInstancePlayer", &LuaExports::isBannedInstancePlayer);
 	lua_register(luaVm, "isInstance", &LuaExports::isInstance);
+	lua_register(luaVm, "isInstanceMap", &LuaExports::isInstanceMap);
 	lua_register(luaVm, "isInstancePersistent", &LuaExports::isInstancePersistent);
 	lua_register(luaVm, "isPlayerSignedUp", &LuaExports::isPlayerSignedUp);
 	lua_register(luaVm, "markForDelete", &LuaExports::markForDelete);
@@ -522,6 +532,16 @@ int LuaExports::giveSP(lua_State *luaVm) {
 	return 0;
 }
 
+int LuaExports::isActiveItem(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getActiveBuffs()->getActiveSkillLevel(-1 * lua_tointeger(luaVm, -1)) > 0);
+	return 1;
+}
+
+int LuaExports::isActiveSkill(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getActiveBuffs()->getActiveSkillLevel(lua_tointeger(luaVm, -1)) > 0);
+	return 1;
+}
+
 int LuaExports::isGM(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->isGM());
 	return 1;
@@ -724,7 +744,7 @@ int LuaExports::setMusic(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::setReactorsState(lua_State *luaVm) {
+int LuaExports::setReactorState(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, -3);
 	int32_t reactorid = lua_tointeger(luaVm, -2);
 	uint8_t state = lua_tointeger(luaVm, -1);
@@ -883,10 +903,51 @@ int LuaExports::getMesoRate(lua_State *luaVm) {
 	return 1;
 }
 
+// Party
+int LuaExports::getPartyCount(lua_State *luaVm) {
+	int32_t mcount = 0;
+	Party *p = getPlayer(luaVm)->getParty();
+	if (p != 0) {
+		mcount = p->getMembersCount();
+	}
+	lua_pushinteger(luaVm, mcount);
+	return 1;
+}
+
+int LuaExports::getPartyID(lua_State *luaVm) {
+	int32_t pid = 0;
+	Party *p = getPlayer(luaVm)->getParty();
+	if (p != 0) {
+		pid = p->getId();
+	}
+	lua_pushinteger(luaVm, pid);
+	return 1;
+}
+
+int LuaExports::isPartyLeader(lua_State *luaVm) {
+	Player *player = getPlayer(luaVm);
+	Party *p = player->getParty();
+	bool isleader = false;
+	if (p != 0) {
+		isleader = player == p->getLeader();
+	}
+	lua_pushboolean(luaVm, isleader);
+	return 1;
+}
+
 // Instance
 int LuaExports::addInstanceMap(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
 	getInstance(luaVm)->addMap(mapid);
+	return 0;
+}
+
+int LuaExports::addInstanceParty(lua_State *luaVm) {
+	int32_t id = lua_tointeger(luaVm, -1);
+	if (PartyFunctions::parties.find(id) != PartyFunctions::parties.end()) {
+		Party *p = PartyFunctions::parties[id];
+		getInstance(luaVm)->addParty(p);
+	}
 	return 0;
 }
 
@@ -997,6 +1058,11 @@ int LuaExports::isBannedInstancePlayer(lua_State *luaVm) {
 
 int LuaExports::isInstance(lua_State *luaVm) {
 	lua_pushboolean(luaVm, Instances::InstancePtr()->isInstance(lua_tostring(luaVm, 1)));
+	return 1;
+}
+
+int LuaExports::isInstanceMap(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getInstance(luaVm)->getMap(lua_tointeger(luaVm, -1)) != 0);
 	return 1;
 }
 

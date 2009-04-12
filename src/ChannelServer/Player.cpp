@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "BuddyListHandler.h"
 #include "BuddyListPacket.h"
+#include "BuffHolder.h"
 #include "ChannelServer.h"
 #include "ChatHandler.h"
 #include "CommandHandler.h"
@@ -55,6 +56,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Player::~Player() {
 	if (isconnect) {
+		if (getParty() != 0) {
+			getParty()->setMember(getId(), 0);
+		}
 		if (getInstance() != 0) {
 			getInstance()->removePlayer(getId());
 			getInstance()->sendMessage(Player_Disconnect, getId());
@@ -65,7 +69,7 @@ Player::~Player() {
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
 		// (that means that it's parsed while logging in, not while logging out)
 		if (save_on_dc) {
-			saveAll();
+			saveAll(true);
 			setOnline(false);
 		}
 		if (isTrading()) {
@@ -114,7 +118,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
-		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
+		case RECV_PARTY_ACTION: PartyFunctions::handleRequest(this, packet); break;
 		case RECV_PET_CHAT: Pets::handleChat(this, packet); break;
 		case RECV_PET_COMMAND: Pets::handleCommand(this, packet); break;
 		case RECV_PET_FEED: Pets::handleFeed(this, packet); break;
@@ -138,6 +142,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet); break;
 	}
 }
+
 void Player::playerConnect(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	if (!Connectable::Instance()->checkPlayer(id)) {
@@ -146,11 +151,39 @@ void Player::playerConnect(PacketReader &packet) {
 		return;
 	}
 	this->id = id;
+
+	// Buffs
 	activeBuffs.reset(new PlayerActiveBuffs(this));
+	if (BuffHolder::Instance()->checkPlayer(id)) {
+		PlayerActiveBuffs *mybuffs = getActiveBuffs();
+		PlayerActiveBuffs *existingbuffs = BuffHolder::Instance()->getBuffs(id);
+		vector<BuffStorage> buffstoadd = BuffHolder::Instance()->getStoredBuffs(id);
+		for (size_t i = 0; i < buffstoadd.size(); i++) {
+			BuffStorage cbuff = buffstoadd[i];
+			mybuffs->addBuff(cbuff.skillid, cbuff.timeleft);
+			mybuffs->setActiveSkillLevel(cbuff.skillid, cbuff.level);
+			Buffs::Instance()->doAct(this, cbuff.skillid, cbuff.level);
+		}
+		mybuffs->setEnergyChargeLevel(existingbuffs->getEnergyChargeLevel(), true);
+		mybuffs->setBooster(existingbuffs->getBooster());
+		mybuffs->setCharge(existingbuffs->getCharge());
+		mybuffs->setCombo(existingbuffs->getCombo(), false);
+		
+		MapEntryBuffs entr = existingbuffs->getMapEntryBuffs();
+		mybuffs->setMountInfo(entr.mountskill, entr.mountid);
+		mybuffs->setMapEntryBuffs(entr);
+		
+		ActiveBuffsByType bufftypes = existingbuffs->getBuffTypes();
+		mybuffs->setActiveBuffsByType(bufftypes);
+
+		BuffHolder::Instance()->removeBuffs(id);
+	}
+
 	summons.reset(new PlayerSummons(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
 	pets.reset(new PlayerPets(this));
+
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << id;
@@ -218,6 +251,15 @@ void Player::playerConnect(PacketReader &packet) {
 		variables[(string) res[i]["key"]] = string(res[i]["value"]);
 	}
 
+	// Cooldowns
+	query << "SELECT * FROM cooldowns WHERE charid = " << id;
+	res = query.store();
+	for (size_t i = 0; i < res.size(); i++) {
+		int32_t skillid = res[i]["skillid"];
+		int16_t timeleft = static_cast<int16_t>(res[i]["timeleft"]);
+		Skills::startCooldown(this, skillid, timeleft, false);
+	}
+
 	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
 		mappos = 0;
@@ -268,8 +310,8 @@ void Player::setHP(int16_t shp, bool is) {
 		hp = shp;
 	if (is)
 		PlayerPacket::updateStatShort(this, 0x400, hp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
 		getInstance()->sendMessage(Player_Death, getId());
@@ -285,8 +327,8 @@ void Player::modifyHP(int16_t nhp, bool is) {
 		hp = (hp + nhp);
 	if (is)
 		PlayerPacket::updateStatShort(this, 0x400, hp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
 		getInstance()->sendMessage(Player_Death, getId());
@@ -296,8 +338,8 @@ void Player::modifyHP(int16_t nhp, bool is) {
 void Player::damageHP(uint16_t dhp) {
 	hp = (dhp > hp ? 0 : hp - dhp);
 	PlayerPacket::updateStatShort(this, 0x400, hp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
 		getInstance()->sendMessage(Player_Death, getId());
@@ -305,7 +347,7 @@ void Player::damageHP(uint16_t dhp) {
 }
 
 void Player::setMP(int16_t smp, bool is) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::Bishop::Infinity) > 0)) {
+	if (!getActiveBuffs()->hasInfinity()) {
 		if (smp < 0)
 			mp = 0;
 		else if (smp > mmp)
@@ -317,7 +359,7 @@ void Player::setMP(int16_t smp, bool is) {
 }
 
 void Player::modifyMP(int16_t nmp, bool is) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::Bishop::Infinity) > 0)) {
+	if (!getActiveBuffs()->hasInfinity()) {
 		if ((mp + nmp) < 0)
 			mp = 0;
 		else if ((mp + nmp) > mmp)
@@ -329,7 +371,7 @@ void Player::modifyMP(int16_t nmp, bool is) {
 }
 
 void Player::damageMP(uint16_t dmp) {
-	if (!(getActiveBuffs()->getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveBuffs()->getActiveSkillLevel(Jobs::Bishop::Infinity) > 0)) {
+	if (!getActiveBuffs()->hasInfinity()) {
 		mp = (dmp > mp ? 0 : mp - dmp);
 	}
 	PlayerPacket::updateStatShort(this, 0x1000, mp, false);
@@ -379,8 +421,8 @@ void Player::setMHP(int16_t mhp) {
 		mhp = 1;
 	this->mhp = mhp;
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
@@ -400,8 +442,8 @@ void Player::setHyperBody(int16_t modx, int16_t mody) {
 	mmp = ((rmmp * mody / 100) > 30000 ? 30000 : rmmp * mody / 100);
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
@@ -446,7 +488,7 @@ void Player::setLevel(uint8_t level) {
 }
 
 void Player::changeChannel(int8_t channel) {
-	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel);
+	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel, getActiveBuffs());
 }
 
 void Player::changeKey(PacketReader &packet) {
@@ -520,6 +562,15 @@ void Player::setVariable(const string &name, const string &val) {
 
 string Player::getVariable(const string &name) {
 	return (variables.find(name) == variables.end()) ? "" : variables[name];
+}
+
+void Player::addCooldown(int32_t skillid, int16_t time) {
+	cooldowns[skillid] = time;
+}
+
+void Player::removeCooldown(int32_t skillid) {
+	if (cooldowns.find(skillid) != cooldowns.end())
+		cooldowns.erase(skillid);
 }
 
 bool Player::addWarning() {
@@ -597,13 +648,38 @@ void Player::saveVariables() {
 	}
 }
 
-void Player::saveAll() {
+void Player::saveCooldowns() {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "DELETE FROM cooldowns WHERE charid = " << this->id;
+	query.exec();
+
+	if (cooldowns.size() > 0) {
+		bool firstrun = true;
+		for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); iter++) {
+			if (firstrun) {
+				query << "INSERT INTO cooldowns (charid, skillid, timeleft) VALUES (";
+				firstrun = false;
+			}
+			else {
+				query << ",(";
+			}
+			query << id << ","
+					<< iter->first << ","
+					<< Skills::getCooldownTimeLeft(this, iter->first) << ")";
+		}
+		query.exec();
+	}
+}
+
+void Player::saveAll(bool savecooldowns) {
 	saveStats();
 	saveVariables();
 	getInventory()->save();
 	getPets()->save();
 	getSkills()->save();
 	getStorage()->save();
+	if (savecooldowns)
+		saveCooldowns();
 }
 
 void Player::setOnline(bool online) {
@@ -628,13 +704,13 @@ void Player::acceptDeath() {
 }
 
 bool Player::hasGMEquip() {
-	if (getInventory()->getEquippedID(1) == GMSuit::Hat)
+	if (getInventory()->getEquippedID(EquipSlots::Helm) == GMSuit::Hat)
 		return true;
-	if (getInventory()->getEquippedID(5) == GMSuit::Top)
+	if (getInventory()->getEquippedID(EquipSlots::Top) == GMSuit::Top)
 		return true;
-	if (getInventory()->getEquippedID(6) == GMSuit::Bottom)
+	if (getInventory()->getEquippedID(EquipSlots::Bottom) == GMSuit::Bottom)
 		return true;
-	if (getInventory()->getEquippedID(11) == GMSuit::Weapon)
+	if (getInventory()->getEquippedID(EquipSlots::Weapon) == GMSuit::Weapon)
 		return true;
 	return false;
 }

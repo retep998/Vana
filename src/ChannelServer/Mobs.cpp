@@ -179,11 +179,10 @@ void Mob::die(Player *player) {
 		uint8_t multiplier = damager == player ? 10 : 8; // Multiplier for player to give the finishing blow is 1 and .8 for others. We therefore set this to 10 or 8 and divide the result in the formula found later on by 10.
 		// Account for Holy Symbol
 		int16_t hsrate = 0;
-		if (damager->getActiveBuffs()->getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0)
-			hsrate = Skills::skills[Jobs::Priest::HolySymbol][damager->getActiveBuffs()->getActiveSkillLevel(Jobs::Priest::HolySymbol)].x;
-		else if (damager->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::HolySymbol) > 0)
-			hsrate = Skills::skills[Jobs::SuperGM::HolySymbol][damager->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::HolySymbol)].x;
-
+		if (damager->getActiveBuffs()->hasHolySymbol()) {
+			int32_t hsid = damager->getActiveBuffs()->getHolySymbol();
+			hsrate = Skills::skills[hsid][damager->getActiveBuffs()->getActiveSkillLevel(hsid)].x;
+		}
 		uint32_t exp = (info.exp * (multiplier * iter->second / info.hp)) / 10;
 		Levels::giveEXP(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
 	}
@@ -237,7 +236,8 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	int16_t moveid = packet.get<int16_t>();
 	bool useskill = (packet.get<int8_t>() != 0);
 	int32_t skill = packet.get<int32_t>();
-	packet.skipBytes(10);
+	int8_t trajectory = packet.get<int8_t>();
+	packet.skipBytes(9);
 	Pos cpos = Movement::parseMovement(mob, packet);
 	if (cpos - mob->getPos() > 300) {
 		if (player->addWarning())
@@ -245,7 +245,7 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	}
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMP());
 	packet.reset(19);
-	MobsPacket::moveMob(player, mobid, useskill, skill, packet.getBuffer(), packet.getBufferLength());
+	MobsPacket::moveMob(player, mobid, useskill, skill, trajectory, packet.getBuffer(), packet.getBufferLength());
 }
 
 void Mobs::damageMob(Player *player, PacketReader &packet) {
@@ -323,29 +323,8 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			int16_t acb_x = 0;
 			if (acb_level > 0)
 				acb_x = Skills::skills[skillid][acb_level].x;
-			int32_t charge_id = 0;
-			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordFireCharge) > 0) // Fire - Sword
-				charge_id = Jobs::WhiteKnight::SwordFireCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwFireCharge) > 0) // Fire - BW
-				charge_id = Jobs::WhiteKnight::BwFireCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordIceCharge) > 0) // Ice - Sword
-				charge_id = Jobs::WhiteKnight::SwordIceCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwIceCharge) > 0) // Ice - BW
-				charge_id = Jobs::WhiteKnight::BwIceCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordLitCharge) > 0) // Lightning - Sword
-				charge_id = Jobs::WhiteKnight::SwordLitCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwLitCharge) > 0) // Lightning - BW
-				charge_id = Jobs::WhiteKnight::BwLitCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Paladin::SwordHolyCharge) > 0) // Holy - Sword
-				charge_id = Jobs::Paladin::SwordHolyCharge;
-			else if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Paladin::BwHolyCharge) > 0) // Holy - BW
-				charge_id = Jobs::Paladin::BwHolyCharge;
-			if (charge_id == 0) {
-				// Hacking
-				return;
-			}
 			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1)))
-				Skills::stopSkill(player, charge_id);
+				player->getActiveBuffs()->stopCharge();
 			break;
 		}
 		default:
@@ -492,7 +471,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
-		uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(11));
+		uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(EquipSlots::Weapon));
 		handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
 		int32_t mobid = mob->getMobID();
 		Mob *htabusetaker = 0;
@@ -567,17 +546,19 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					mob = 0;
 			}
 		}
-		for (uint8_t pp = 0; pp < (uint8_t) ppdamages.size(); pp++) { // Drop stuff for Pickpocket
-			Pos pos;
-			pos.x = origin.x - 25 * ((ppdamages.size() - pp) / 2);
-			pos.y = origin.y;
-			clock_t time = 150 * pp;
-			int32_t mesos = ((ppdamages[pp] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
-			Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId(), true);
-			drop->setTime(100);
-			new Timer::Timer(bind(&Drop::doDrop, drop, origin),
-				Timer::Id(Timer::Types::BuffTimer, Jobs::ChiefBandit::Pickpocket, pp),
-				0, Timer::Time::fromNow(time));
+		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
+		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
+			Pos pppos;
+			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 0 : 5) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
+			pppos.y = origin.y;
+//			clock_t pptime = 175 * pickpocket;
+			int32_t ppmesos = ((ppdamages[pickpocket] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
+			Drop *ppdrop = new Drop(player->getMap(), ppmesos, pppos, player->getId(), true);
+			ppdrop->setTime(100);
+			ppdrop->doDrop(origin);
+//			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
+//				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
+//				0, Timer::Time::fromNow(pptime));
 		}
 		if (!GameLogicUtilities::isSummon(skillid))
 			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
@@ -591,24 +572,22 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 	vector<StatusInfo> statuses;
 	if (mob->canFreeze()) { // Freezing stuff
 		switch (skillid) {
-			case Jobs::ILWizard::ColdBeam: // Cold Beam
-			case Jobs::ILMage::IceStrike: // Ice Strike
-			case Jobs::ILMage::ElementComposition: // Element Composition
-			case Jobs::Sniper::Blizzard: // Blizzard (Sniper)
-			case Jobs::ILArchMage::Blizzard: // Blizzard (Arch Mage)
-			case Jobs::Outlaw::IceSplitter: // Cooling Effect
+			case Jobs::ILWizard::ColdBeam:
+			case Jobs::ILMage::IceStrike:
+			case Jobs::ILMage::ElementComposition:
+			case Jobs::Sniper::Blizzard:
+			case Jobs::ILArchMage::Blizzard:
+			case Jobs::Outlaw::IceSplitter:
 				statuses.push_back(StatusInfo(Freeze, Freeze, skillid, Skills::skills[skillid][level].time));
 				break;
-			case Jobs::FPArchMage::Elquines: // Elquines
-			case Jobs::Marksman::Frostprey: // Frostprey
+			case Jobs::FPArchMage::Elquines:
+			case Jobs::Marksman::Frostprey:
 				statuses.push_back(StatusInfo(Freeze, Freeze, skillid, Skills::skills[skillid][level].x));
 				break;
 		}
-		if ((weapon_type == Weapon1hSword || weapon_type == Weapon2hSword) && player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordIceCharge) > 0) { // Ice Charge Sword
-			statuses.push_back(StatusInfo(Freeze, Freeze, Jobs::WhiteKnight::SwordIceCharge, Skills::skills[Jobs::WhiteKnight::SwordIceCharge][player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::SwordIceCharge)].y));
-		}
-		else if ((weapon_type == Weapon1hMace || weapon_type == Weapon2hMace) && player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwIceCharge) > 0) { // Blizzard Charge BW
-			statuses.push_back(StatusInfo(Freeze, Freeze, Jobs::WhiteKnight::BwIceCharge, Skills::skills[Jobs::WhiteKnight::BwIceCharge][player->getActiveBuffs()->getActiveSkillLevel(Jobs::WhiteKnight::BwIceCharge)].y));
+		if ((weapon_type == Weapon1hSword || weapon_type == Weapon2hSword || weapon_type == Weapon1hMace || weapon_type == Weapon2hMace) && player->getActiveBuffs()->hasIceCharge()) { // Ice Charges
+			int32_t charge = player->getActiveBuffs()->getCharge();
+			statuses.push_back(StatusInfo(Freeze, Freeze, charge, Skills::skills[charge][player->getActiveBuffs()->getActiveSkillLevel(charge)].y));
 		}
 	}
 	if (mob->canPoison()) { // Poisoning stuff
@@ -619,66 +598,66 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 	}
 	if (!mob->isBoss()) { // Seal, Stun, etc
 		switch (skillid) {
-			case Jobs::Hunter::ArrowBomb: // Arrow Bomb
-			case Jobs::Crusader::SwordComa: // Coma: Sword
-			case Jobs::Crusader::AxeComa: // Coma: Axe
-			case Jobs::Crusader::Shout: // Shout
-			case Jobs::WhiteKnight::ChargeBlow: // Charged Blow
-			case Jobs::ChiefBandit::Assaulter: // Assaulter
-			case Jobs::Shadower::BoomerangStep: // Boomerang Step
-			case Jobs::Gunslinger::BlankShot: // Fake Shot
+			case Jobs::Hunter::ArrowBomb:
+			case Jobs::Crusader::SwordComa:
+			case Jobs::Crusader::AxeComa:
+			case Jobs::Crusader::Shout:
+			case Jobs::WhiteKnight::ChargeBlow:
+			case Jobs::ChiefBandit::Assaulter:
+			case Jobs::Shadower::BoomerangStep:
+			case Jobs::Gunslinger::BlankShot:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(Stun, Stun, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
-			case Jobs::Infighter::BackspinBlow: // Backspin Blow
-			case Jobs::Infighter::DoubleUppercut: // Double Uppercut
-			case Jobs::Buccaneer::Demolition: // Demolition
-			case Jobs::Buccaneer::Snatch: // Snatch
+			case Jobs::Infighter::BackspinBlow:
+			case Jobs::Infighter::DoubleUppercut:
+			case Jobs::Buccaneer::Demolition:
+			case Jobs::Buccaneer::Snatch:
 				statuses.push_back(StatusInfo(Stun, Stun, skillid, Skills::skills[skillid][level].time));
 				break;
-			case Jobs::Ranger::SilverHawk: // Silver Hawk
-			case Jobs::Sniper::GoldenEagle: // Golden Eagle
+			case Jobs::Ranger::SilverHawk:
+			case Jobs::Sniper::GoldenEagle:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(Stun, Stun, skillid, Skills::skills[skillid][level].x));
 				}
 				break;
-			case Jobs::FPMage::Seal: // Seal - F/P
-			case Jobs::ILMage::Seal: // Seal - I/L
+			case Jobs::FPMage::Seal:
+			case Jobs::ILMage::Seal:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(Stun, Stun, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
-			case Jobs::Priest::Doom: // Doom
+			case Jobs::Priest::Doom:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(Doom, 0x100, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
-			case Jobs::Hermit::ShadowWeb: // Shadow Web
+			case Jobs::Hermit::ShadowWeb:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(ShadowWeb, 0x100, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
 		}
 	}
-	if (skillid == Jobs::Rogue::Disorder) { // Disorder
+	if (skillid == Jobs::Rogue::Disorder) {
 		clock_t time = Skills::skills[skillid][level].time;
 		statuses.push_back(StatusInfo(Watk, Skills::skills[skillid][level].x, skillid, time));
 		statuses.push_back(StatusInfo(Wdef, Skills::skills[skillid][level].y, skillid, time));
 	}
-	else if (skillid == Jobs::Page::Threaten) { // Threaten
+	else if (skillid == Jobs::Page::Threaten) {
 		clock_t time = Skills::skills[skillid][level].time;
 		statuses.push_back(StatusInfo(Watk, Skills::skills[skillid][level].x, skillid, time));
 		statuses.push_back(StatusInfo(Wdef, Skills::skills[skillid][level].y, skillid, time));
 	}
-	else if (skillid == Jobs::FPWizard::Slow || skillid == Jobs::ILWizard::Slow) { // Slow
+	else if (skillid == Jobs::FPWizard::Slow || skillid == Jobs::ILWizard::Slow) {
 		statuses.push_back(StatusInfo(Speed, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
 	}
-	if (weapon_type == WeaponBow && player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Hamstring) > 0) { // Hamstring
+	if (weapon_type == WeaponBow && player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Hamstring) > 0) {
 		uint8_t hamlevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Hamstring);
 		statuses.push_back(StatusInfo(Speed, Skills::skills[Jobs::Bowmaster::Hamstring][hamlevel].x, Jobs::Bowmaster::Hamstring, Skills::skills[Jobs::Bowmaster::Hamstring][hamlevel].y));
 	}
-	if (weapon_type == WeaponCrossbow && player->getActiveBuffs()->getActiveSkillLevel(Jobs::Marksman::Blind) > 0) { // Blind
+	if (weapon_type == WeaponCrossbow && player->getActiveBuffs()->getActiveSkillLevel(Jobs::Marksman::Blind) > 0) {
 		uint8_t blindlevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::Marksman::Blind);
 		statuses.push_back(StatusInfo(Acc, -Skills::skills[Jobs::Marksman::Blind][blindlevel].x, Jobs::Marksman::Blind, Skills::skills[Jobs::Marksman::Blind][blindlevel].y));
 	}

@@ -57,7 +57,7 @@ namespace LuaExports {
 	int sendSimple(lua_State *luaVm);
 	int sendStyle(lua_State *luaVm);
 	int sendYesNo(lua_State *luaVm);
-	int setState(lua_State *luaVm);
+	int setStateNPC(lua_State *luaVm);
 
 	// Quest
 	int addQuest(lua_State *luaVm);

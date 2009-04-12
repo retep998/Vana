@@ -343,9 +343,9 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		}
 	}
 
-	if (player->getPartyId()) {
-		Party::showHPBar(player);
-		Party::receiveHPBar(player);
+	if (player->getParty()) {
+		player->getParty()->showHPBar(player);
+		player->getParty()->receiveHPBar(player);
 	}
 
 	if (info->clock) {

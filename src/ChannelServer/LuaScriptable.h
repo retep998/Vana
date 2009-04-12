@@ -112,6 +112,8 @@ namespace LuaExports {
 	int giveAP(lua_State *luaVm);
 	int giveEXP(lua_State *luaVm);
 	int giveSP(lua_State *luaVm);
+	int isActiveItem(lua_State *luaVm);
+	int isActiveSkill(lua_State *luaVm);
 	int isGM(lua_State *luaVm);
 	int setAP(lua_State *luaVm);
 	int setDEX(lua_State *luaVm);
@@ -142,7 +144,7 @@ namespace LuaExports {
 	int playSoundMap(lua_State *luaVm);
 	int playSoundPlayer(lua_State *luaVm);
 	int setMusic(lua_State *luaVm);
-	int setReactorsState(lua_State *luaVm);
+	int setReactorState(lua_State *luaVm);
 	int showInstructionBubble(lua_State *luaVm);
 	int showMapEvent(lua_State *luaVm);
 	int showMapMessage(lua_State *luaVm);
@@ -170,8 +172,14 @@ namespace LuaExports {
 	int getMesoRate(lua_State *luaVm);
 	int getQuestEXPRate(lua_State *luaVm);
 
+	// Party
+	int getPartyCount(lua_State *luaVm);
+	int getPartyID(lua_State *luaVm);
+	int isPartyLeader(lua_State *luaVm);
+
 	// Instance
 	int addInstanceMap(lua_State *luaVm);
+	int addInstanceParty(lua_State *luaVm);
 	int addInstancePlayer(lua_State *luaVm);
 	int addInstanceReactor(lua_State *luaVm);
 	int addPlayerSignUp(lua_State *luaVm);
@@ -187,6 +195,7 @@ namespace LuaExports {
 	int getInstanceVariable(lua_State *luaVm);
 	int isBannedInstancePlayer(lua_State *luaVm);
 	int isInstance(lua_State *luaVm);
+	int isInstanceMap(lua_State *luaVm);
 	int isInstancePersistent(lua_State *luaVm);
 	int isPlayerSignedUp(lua_State *luaVm);
 	int markForDelete(lua_State *luaVm);

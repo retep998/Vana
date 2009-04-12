@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class LuaInstance;
 class Map;
+class Party;
 class Player;
 class Reactor;
 
@@ -92,6 +93,9 @@ public:
 	Reactor * getReactor(int32_t reactorid);
 	size_t getReactorNum();
 
+	// Parties
+	void addParty(Party *party);
+
 	// Timers
 	void removeTimer(const string &name);
 	void setInstanceTimer(int32_t time);
@@ -120,6 +124,7 @@ private:
 	vector<string> m_players_order; // For squads
 	vector<Reactor *> m_reactors;
 	vector<Map *> m_maps;
+	vector<Party *> m_parties;
 	LuaInstance *m_luainstance; // Lua instance for interacting with scripts
 	clock_t m_start; // Clock time when instance started
 	string m_name; // Identification for the instance

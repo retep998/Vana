@@ -20,11 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
+#include "PacketReader.h"
+#include "Parties.h"
+#include "PartyHandler.h"
 #include "Rates.h"
 #include "SendHeader.h"
 #include "TimeUtilities.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptPlayer.h"
+#include <boost/tr1/unordered_map.hpp>
+#include <map>
+
+using std::map;
+using std::tr1::unordered_map;
 
 void WorldServerAcceptPacket::groupChat(WorldServerAcceptPlayer *player, int32_t playerid, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;
@@ -46,6 +54,21 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t 
 	packet.add<int16_t>(maxStats);
 	packet.add<clock_t>(TimeUtilities::clock_in_ms());
 	player->getSession()->send(packet);
+}
+
+void WorldServerAcceptPacket::sendBuffsToChannel(uint16_t channel, int32_t playerid, PacketReader &buffer) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_TRANSFER_BUFFS);
+	packet.add<int32_t>(playerid);
+	packet.addBuffer(buffer);
+	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
+}
+
+void WorldServerAcceptPacket::sendBuffRemoval(uint16_t channel, int32_t playerid) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_TRANSFER_BUFFS_DISCONNECT);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
 }
 
 void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, uint32_t ip, int16_t port) {
@@ -126,4 +149,70 @@ void WorldServerAcceptPacket::sendRates(WorldServerAcceptPlayer *player, int32_t
 	}
 
 	player->getSession()->send(packet);
+}
+
+void WorldServerAcceptPacket::sendParties(WorldServerAcceptPlayer *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_PARTY_SYNC);
+	packet.add<int8_t>(PARTY_SYNC_CHANNEL_START);
+
+	unordered_map<int32_t, Party *> parties = Parties::Instance()->getParties();
+	map<int32_t, Player *> players;
+
+	packet.add<int32_t>((int32_t)(parties.size()));
+	for (unordered_map<int32_t, Party *>::iterator iter = parties.begin(); iter != parties.end(); iter++) {
+		packet.add<int32_t>(iter->first);
+		players = iter->second->members;
+		packet.add<int8_t>((int8_t)(players.size()));
+		for (map<int32_t, Player *>::iterator playeriter = players.begin(); playeriter != players.end(); playeriter++) {
+			packet.add<int32_t>(playeriter->first);
+		}
+		packet.add<int32_t>(iter->second->getLeader());
+	}
+
+	player->getSession()->send(packet);
+}
+
+void WorldServerAcceptPacket::sendRemovePartyPlayer(int32_t playerid, int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_PARTY_SYNC);
+	packet.add<int8_t>(PARTY_SYNC_REMOVE_MEMBER);
+	packet.add<int32_t>(partyid);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void WorldServerAcceptPacket::sendAddPartyPlayer(int32_t playerid, int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_PARTY_SYNC);
+	packet.add<int8_t>(PARTY_SYNC_ADD_MEMBER);
+	packet.add<int32_t>(partyid);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void WorldServerAcceptPacket::sendSwitchPartyLeader(int32_t playerid, int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_PARTY_SYNC);
+	packet.add<int8_t>(PARTY_SYNC_SWITCH_LEADER);
+	packet.add<int32_t>(partyid);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void WorldServerAcceptPacket::sendCreateParty(int32_t playerid, int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_PARTY_SYNC);
+	packet.add<int8_t>(PARTY_SYNC_CREATE);
+	packet.add<int32_t>(partyid);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void WorldServerAcceptPacket::sendDisbandParty(int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_PARTY_SYNC);
+	packet.add<int8_t>(PARTY_SYNC_DISBAND);
+	packet.add<int32_t>(partyid);
+	Channels::Instance()->sendToAll(packet);
 }

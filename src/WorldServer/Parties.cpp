@@ -1,4 +1,4 @@
---[[
+/*
 Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,46 +14,29 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
---]]
-function beginInstance()
-	addInstanceMap(200090300);
-end
+*/
+#include "Parties.h"
+#include "PartyHandler.h"
 
-function playerDeath(playerid)
+Parties * Parties::singleton = 0;
 
-end
+int32_t Parties::addParty(Party *party) {
+	m_map[++pid] = party;
+	return pid;
+}
 
-function playerDisconnect(playerid)
-	markForDelete();
-end
+void Parties::removeParty(int32_t id) {
+	if (m_map.find(id) != m_map.end()) {
+		Party *party = m_map[id];
+		delete party;
+		m_map.erase(id);
+	}
+}
 
-function instanceTimerEnd(fromtimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(250000100);
-		removeAllInstancePlayers();
-	end
-end
+Party * Parties::getParty(int32_t id) {
+	return (m_map.find(id) != m_map.end() ? m_map[id] : 0);
+}
 
-function timerEnd(name, fromtimer)
-
-end
-
-function mobDeath(mobid, mapmobid)
-
-end
-
-function mobSpawn(mobid, mapmobid)
-
-end
-
-function changeMap(playerid, newmap, oldmap)
-
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
-end
+unordered_map<int32_t, Party *> Parties::getParties() {
+	return m_map;
+}

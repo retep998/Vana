@@ -15,7 +15,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "LuaReactor.h"
 #include "Reactors.h"
 #include "ReactorPacket.h"
@@ -33,7 +32,7 @@ LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactor
 
 	// Reactor
 	lua_register(luaVm, "reset", &LuaExports::reset);
-	lua_register(luaVm, "setState", &LuaExports::setReactorState);
+	lua_register(luaVm, "setState", &LuaExports::setStateReactor);
 
 	// Mob
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMobReactor);
@@ -57,7 +56,7 @@ int LuaExports::reset(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::setReactorState(lua_State *luaVm) {
+int LuaExports::setStateReactor(lua_State *luaVm) {
 	getReactor(luaVm)->setState(lua_tointeger(luaVm, -1), true);
 	return 0;
 }
