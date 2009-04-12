@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+class PacketCreator;
 class Player;
 class Pet;
 
@@ -37,6 +38,7 @@ namespace PetsPacket {
 	void showPet(Player *player, Pet *pet);
 	void updateSummonedPets(Player *player);
 	void blankUpdate(Player *player);
+	void addInfo(PacketCreator &packet, Pet *pet);
 };
 
 #endif

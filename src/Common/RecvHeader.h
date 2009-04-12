@@ -16,9 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#define RECV_PONG 0x18
-
-//Login
 #define RECV_LOGIN_INFO 0x01
 #define RECV_SHOW_WORLD2 0x04 // Click back after select channel
 #define RECV_CHANNEL_SELECT 0x05
@@ -30,66 +27,65 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_VIEW_ALL_CHAR 0x0d
 #define RECV_VIEW_ALL_CHAR_GET_CHANNEL_SERVER_INFO 0x0e
 #define RECV_GET_CHANNEL_SERVER_INFO 0x13
+#define RECV_CHANNEL_LOGIN 0x14
 #define RECV_CHECK_CHAR_NAME 0x15
 #define RECV_CREATE_CHAR 0x16
-#define RECV_DELETE_CHAR 0x17
-#define RECV_RELOG 0x1c
-
-//Channel
-#define RECV_CHANNEL_LOGIN 0x14
-#define RECV_CHANGE_MAP 0x23
-#define RECV_CHANGE_CHANNEL 0x24
-#define RECV_MOVE_PLAYER 0x26
-#define RECV_STOP_CHAIR 0x27
-#define RECV_USE_CHAIR 0x28
-#define RECV_DAMAGE_MOB 0x29
-#define RECV_DAMAGE_MOB_RANGED 0x2a
-#define RECV_DAMAGE_MOB_SPELL 0x2b
-#define RECV_DAMAGE_MOB_ENERGYCHARGE 0x2c
-#define RECV_DAMAGE_PLAYER 0x2d
-#define RECV_CHAT 0x2e
-#define RECV_FACE_EXPRESSION 0x30
-#define RECV_USE_ITEM_EFFECT 0x31
-#define RECV_NPC_TALK 0x36
-#define RECV_NPC_TALK_CONT 0x38 // i.e. clicking next on NPC
-#define RECV_SHOP_ENTER 0x39
-#define RECV_USE_STORAGE 0x3a
-#define RECV_MOVE_ITEM 0x42
-#define RECV_USE_ITEM 0x43
-#define RECV_CANCEL_ITEM 0x44
-#define RECV_USE_SUMMON_BAG 0x46
-#define RECV_PET_FEED 0x47
-#define RECV_USE_CASH_ITEM 0x49
-#define RECV_USE_SKILLBOOK 0x4b
-#define RECV_USE_RETURN_SCROLL 0x4e
-#define RECV_USE_SCROLL 0x4f
-#define RECV_ADD_STAT 0x50
-#define RECV_HEAL_PLAYER 0x52
-#define RECV_ADD_SKILL 0x53
-#define RECV_USE_SKILL 0x54
-#define RECV_CANCEL_SKILL 0x55
-#define RECV_SPECIAL_SKILL 0x56 // Chakra, Pierce, Monster Magnet, Big Bang
-#define RECV_DROP_MESO 0x57
-#define RECV_FAME 0x58
-#define RECV_GET_PLAYER_INFO 0x5a
-#define RECV_PET_SUMMON 0x5b
-#define RECV_CHANGE_MAP_SPECIAL 0x5d
-#define RECV_GET_QUEST 0x63
-#define RECV_SKILL_MACRO 0x66
-#define RECV_GROUP_CHAT 0x6c // Party, buddy and guild chat
-#define RECV_COMMAND 0x6d // / commands like "/find"
-#define RECV_PLAYER_ROOM_ACTION 0x70 // Trades, player shops, minigames, etc.
-#define RECV_PARTY_ACTION 0x71
-#define RECV_BUDDYLIST 0x77
-#define RECV_KEYMAP 0x7c
-#define RECV_PET_MOVE 0x8f
-#define RECV_PET_CHAT 0x90
-#define RECV_PET_COMMAND 0x91
-#define RECV_PET_LOOT 0x92
-#define RECV_MOVE_SUMMON 0x97
-#define RECV_DAMAGE_MOB_SUMMON 0x98
-#define RECV_DAMAGE_SUMMON 0x99
-#define RECV_CONTROL_MOB 0xa0
-#define RECV_ANIMATE_NPC 0xa9
-#define RECV_LOOT_ITEM 0xae
-#define RECV_HIT_REACTOR 0xb1
+#define RECV_DELETE_CHAR 0x18
+#define RECV_PONG 0x19
+#define RECV_RELOG 0x1d
+#define RECV_CHANGE_MAP 0x24
+#define RECV_CHANGE_CHANNEL 0x25
+#define RECV_MOVE_PLAYER 0x27
+#define RECV_STOP_CHAIR 0x28
+#define RECV_USE_CHAIR 0x29
+#define RECV_DAMAGE_MOB 0x2a
+#define RECV_DAMAGE_MOB_RANGED 0x2b
+#define RECV_DAMAGE_MOB_SPELL 0x2c
+#define RECV_DAMAGE_MOB_ENERGYCHARGE 0x2d
+#define RECV_DAMAGE_PLAYER 0x2e
+#define RECV_CHAT 0x2f
+#define RECV_FACE_EXPRESSION 0x31
+#define RECV_USE_ITEM_EFFECT 0x32
+#define RECV_NPC_TALK 0x38
+#define RECV_NPC_TALK_CONT 0x3a // i.e. clicking next on NPC
+#define RECV_SHOP_ENTER 0x3b
+#define RECV_USE_STORAGE 0x3c
+#define RECV_MOVE_ITEM 0x45
+#define RECV_USE_ITEM 0x46
+#define RECV_CANCEL_ITEM 0x47
+#define RECV_USE_SUMMON_BAG 0x49
+#define RECV_PET_FEED 0x4a
+#define RECV_USE_CASH_ITEM 0x4d
+#define RECV_USE_SKILLBOOK 0x50
+#define RECV_USE_RETURN_SCROLL 0x53
+#define RECV_USE_SCROLL 0x54
+#define RECV_ADD_STAT 0x55
+#define RECV_HEAL_PLAYER 0x57
+#define RECV_ADD_SKILL 0x58
+#define RECV_USE_SKILL 0x59
+#define RECV_CANCEL_SKILL 0x5a
+#define RECV_SPECIAL_SKILL 0x5b // Chakra, Pierce, Monster Magnet, Big Bang
+#define RECV_DROP_MESO 0x5c
+#define RECV_FAME 0x5d
+#define RECV_GET_PLAYER_INFO 0x5f
+#define RECV_PET_SUMMON 0x60
+#define RECV_CHANGE_MAP_SPECIAL 0x62
+#define RECV_GET_QUEST 0x69
+#define RECV_SKILL_MACRO 0x6c
+#define RECV_GROUP_CHAT 0x74 // Party, buddy and guild chat
+#define RECV_COMMAND 0x75 // / commands like "/find"
+#define RECV_PLAYER_ROOM_ACTION 0x78 // Trades, player shops, minigames, etc.
+#define RECV_PARTY_ACTION 0x79
+#define RECV_BUDDYLIST 0x7f
+#define RECV_KEYMAP 0x84
+#define RECV_PET_MOVE 0xa0
+#define RECV_PET_CHAT 0xa1
+#define RECV_PET_COMMAND 0xa2
+#define RECV_PET_LOOT 0xa3
+#define RECV_MOVE_SUMMON 0xa8
+#define RECV_DAMAGE_MOB_SUMMON 0xa9
+#define RECV_DAMAGE_SUMMON 0xaa
+#define RECV_CONTROL_MOB 0xb1
+#define RECV_ANIMATE_NPC 0xba
+#define RECV_LOOT_ITEM 0xbf
+#define RECV_HIT_REACTOR 0xc2

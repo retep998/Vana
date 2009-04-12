@@ -88,20 +88,7 @@ void PetsPacket::updatePet(Player *player, Pet *pet) {
 	packet.add<int8_t>(5);
 	packet.add<int8_t>(pet->getInventorySlot());
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(3);
-	packet.add<int32_t>(pet->getType());
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(pet->getId());
-	packet.add<int32_t>(0);
-	packet.addBytes("008005BB46E61702");
-	packet.addString(pet->getName(), 13);
-	packet.add<int8_t>(pet->getLevel());
-	packet.add<int16_t>(pet->getCloseness());
-	packet.add<int8_t>(pet->getFullness());
-	packet.add<int8_t>(0);
-	packet.addBytes("B8D56000CEC8"); // TODO: Expire date
-	packet.add<int8_t>(1); // Alive or dead
-	packet.add<int32_t>(0);
+	addInfo(packet, pet);
 	player->getSession()->send(packet);
 }
 
@@ -167,4 +154,22 @@ void PetsPacket::blankUpdate(Player *player) {
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
+}
+
+void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
+	packet.add<int8_t>(3);
+	packet.add<int32_t>(pet->getType());
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(pet->getId());
+	packet.add<int32_t>(0);
+	packet.addBytes("008005BB46E61702");
+	packet.addString(pet->getName(), 13);
+	packet.add<int8_t>(pet->getLevel());
+	packet.add<int16_t>(pet->getCloseness());
+	packet.add<int8_t>(pet->getFullness());
+	packet.add<int8_t>(0);
+	packet.addBytes("B8D56000CEC8"); // TODO: Expire date
+	packet.add<int8_t>(1); // Alive or dead
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0); // Time to expire (for trial pet)
 }
