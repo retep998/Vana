@@ -66,6 +66,7 @@ void WorldServerAcceptPlayer::authenticated(int8_t type) {
 		WorldServerAcceptPacket::connect(this, channel, port, WorldServer::Instance()->getMaxMultiLevel(), WorldServer::Instance()->getMaxStats());
 		WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
 		WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
+		WorldServerAcceptPacket::sendParties(this);
 		LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, getExternalIp(), port);
 		std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 	}

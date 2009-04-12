@@ -56,6 +56,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Player::~Player() {
 	if (isconnect) {
+		if (getParty() != 0) {
+			getParty()->setMember(getId(), 0);
+		}
 		if (getInstance() != 0) {
 			getInstance()->removePlayer(getId());
 			getInstance()->sendMessage(Player_Disconnect, getId());
@@ -115,7 +118,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
-		case RECV_PARTY_ACTION: Party::handleRequest(this, packet); break;
+		case RECV_PARTY_ACTION: PartyFunctions::handleRequest(this, packet); break;
 		case RECV_PET_CHAT: Pets::handleChat(this, packet); break;
 		case RECV_PET_COMMAND: Pets::handleCommand(this, packet); break;
 		case RECV_PET_FEED: Pets::handleFeed(this, packet); break;
@@ -148,11 +151,9 @@ void Player::playerConnect(PacketReader &packet) {
 		return;
 	}
 	this->id = id;
+
+	// Buffs
 	activeBuffs.reset(new PlayerActiveBuffs(this));
-	summons.reset(new PlayerSummons(this));
-	buddyList.reset(new PlayerBuddyList(this));
-	quests.reset(new PlayerQuests(this));
-	pets.reset(new PlayerPets(this));
 	if (BuffHolder::Instance()->checkPlayer(id)) {
 		PlayerActiveBuffs *mybuffs = getActiveBuffs();
 		PlayerActiveBuffs *existingbuffs = BuffHolder::Instance()->getBuffs(id);
@@ -177,6 +178,12 @@ void Player::playerConnect(PacketReader &packet) {
 
 		BuffHolder::Instance()->removeBuffs(id);
 	}
+
+	summons.reset(new PlayerSummons(this));
+	buddyList.reset(new PlayerBuddyList(this));
+	quests.reset(new PlayerQuests(this));
+	pets.reset(new PlayerPets(this));
+
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << id;
@@ -303,8 +310,8 @@ void Player::setHP(int16_t shp, bool is) {
 		hp = shp;
 	if (is)
 		PlayerPacket::updateStatShort(this, 0x400, hp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
 		getInstance()->sendMessage(Player_Death, getId());
@@ -320,8 +327,8 @@ void Player::modifyHP(int16_t nhp, bool is) {
 		hp = (hp + nhp);
 	if (is)
 		PlayerPacket::updateStatShort(this, 0x400, hp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
 		getInstance()->sendMessage(Player_Death, getId());
@@ -331,8 +338,8 @@ void Player::modifyHP(int16_t nhp, bool is) {
 void Player::damageHP(uint16_t dhp) {
 	hp = (dhp > hp ? 0 : hp - dhp);
 	PlayerPacket::updateStatShort(this, 0x400, hp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
 		getInstance()->sendMessage(Player_Death, getId());
@@ -414,8 +421,8 @@ void Player::setMHP(int16_t mhp) {
 		mhp = 1;
 	this->mhp = mhp;
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
@@ -435,8 +442,8 @@ void Player::setHyperBody(int16_t modx, int16_t mody) {
 	mmp = ((rmmp * mody / 100) > 30000 ? 30000 : rmmp * mody / 100);
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
-	if (getPartyId())
-		Party::showHPBar(this);
+	if (getParty())
+		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 

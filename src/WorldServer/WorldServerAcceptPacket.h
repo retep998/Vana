@@ -39,6 +39,12 @@ namespace WorldServerAcceptPacket {
 	void newConnectable(uint16_t channel, int32_t playerid);
 	void groupChat(WorldServerAcceptPlayer *player, int32_t playerid, int8_t type, const string &message, const string &sender);
 	void sendRates(WorldServerAcceptPlayer *player, int32_t setBit);
+	void sendParties(WorldServerAcceptPlayer *player);
+	void sendRemovePartyPlayer(int32_t playerid, int32_t partyid);
+	void sendAddPartyPlayer(int32_t playerid, int32_t partyid);
+	void sendSwitchPartyLeader(int32_t playerid, int32_t partyid);
+	void sendCreateParty(int32_t playerid, int32_t partyid);
+	void sendDisbandParty(int32_t partyid);
 };
 
 #endif

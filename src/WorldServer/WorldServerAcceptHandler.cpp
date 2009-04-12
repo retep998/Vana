@@ -55,7 +55,6 @@ void WorldServerAcceptHandler::partyOperation(WorldServerAcceptPlayer *player, P
 void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
-
 	if (chan) {
 		WorldServerAcceptPacket::sendBuffsToChannel(chan->id, playerid, packet);
 		ChannelChangeRequests::Instance()->addPendingPlayer(playerid, chan->id);

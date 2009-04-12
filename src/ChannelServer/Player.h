@@ -42,10 +42,11 @@ using std::vector;
 class Instance;
 class NPC;
 class PacketReader;
+class Party;
 
 class Player : public AbstractPlayer, public MovableLife {
 public:
-	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), partyid(0), save_on_dc(true), isconnect(false), npc(0), instance(0) { }
+	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), party(0), save_on_dc(true), isconnect(false), npc(0), instance(0) { }
 
 	~Player();
 
@@ -85,9 +86,9 @@ public:
 	void setBuddyListSize(uint8_t size);
 	void setTradeSendID(int32_t id) { this->tradesendid = id; }
 	void setTradeRecvID(int32_t id) { this->traderecvid = id; }
-	void setPartyId(int32_t id) { this->partyid = id; }
 	void setShop(int32_t shopid) { shop = shopid; }
 	void setNPC(NPC *npc) { this->npc = npc; }
+	void setParty(Party *party) { this->party = party; }
 	void setInstance(Instance *instance) { this->instance = instance; }
 	void setChair(int32_t chair) { this->chair = chair; }
 	void setItemEffect(int32_t effect) { this->itemEffect = effect; }
@@ -128,9 +129,9 @@ public:
 	int32_t getSpecialSkill() const { return info.skillid; }
 	int32_t getTradeSendID() const { return tradesendid; }
 	int32_t getTradeRecvID() const { return traderecvid; }
-	int32_t getPartyId() const { return partyid; }
 	string getName() const { return name; }
 	NPC * getNPC() const { return npc; }
+	Party * getParty() const { return party; }
 	Instance * getInstance() const { return instance; }
 	bool isGM() const { return gm > 0; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
@@ -203,7 +204,6 @@ private:
 	int32_t gm;
 	int32_t tradesendid;
 	int32_t traderecvid;
-	int32_t partyid;
 	bool save_on_dc;
 	bool isconnect;
 	string name;
@@ -211,6 +211,7 @@ private:
 	unordered_map<int32_t, int16_t> cooldowns;
 	NPC *npc;
 	Instance *instance;
+	Party *party;
 	vector<int32_t> warnings;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 

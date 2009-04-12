@@ -41,7 +41,8 @@ void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
 		case INTER_NEW_CONNECTABLE: WorldServerConnectHandler::newConnectable(packet); break;
 		case INTER_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
 		case INTER_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
-		case INTER_PARTY_OPERATION: Party::handleResponse(packet); break;
+		case INTER_PARTY_OPERATION: PartyFunctions::handleResponse(packet); break;
+		case INTER_PARTY_SYNC: PartyFunctions::handleDataSync(packet); break;
 		case INTER_TRANSFER_BUFFS: BuffHolder::Instance()->parseIncomingBuffs(packet); break;
 		case INTER_TRANSFER_BUFFS_DISCONNECT: BuffHolder::Instance()->removeBuffs(packet.get<int32_t>()); break;
 	}

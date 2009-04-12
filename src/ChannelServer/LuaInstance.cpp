@@ -56,6 +56,10 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
 			lua_getglobal(luaVm, "instanceTimerEnd");
 			lua_pushboolean(luaVm, (parameter != 0));
 			break;
+		case Party_Disband:
+			lua_getglobal(luaVm, "partyDisband");
+			lua_pushinteger(luaVm, parameter);
+			break;
 	}
 	if (lua_pcall(luaVm, 1, 0, 0)) {
 		std::cout << lua_tostring(luaVm, -1) << std::endl;
@@ -87,6 +91,9 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 			break;
 		case Mob_Spawn:
 			lua_getglobal(luaVm, "mobSpawn");
+			break;
+		case Party_Remove_Member:
+			lua_getglobal(luaVm, "partyRemoveMember");
 			break;
 	}
 	lua_pushinteger(luaVm, parameter1);
