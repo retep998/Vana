@@ -247,10 +247,6 @@ size_t Instance::getMapNum() {
 	return m_maps.size();
 }
 
-void Instance::setPlayerId(int32_t id) {
-	m_luainstance->setVariable("playerid", id);
-}
-
 void Instance::addParty(Party *party) {
 	m_parties.push_back(party);
 	party->setInstance(this);

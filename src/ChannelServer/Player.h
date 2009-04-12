@@ -22,31 +22,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "MovableLife.h"
 #include "PlayerActiveBuffs.h"
-#include "PlayerSummons.h"
 #include "PlayerBuddyList.h"
 #include "PlayerInventory.h"
 #include "PlayerPets.h"
 #include "PlayerQuests.h"
 #include "PlayerSkills.h"
 #include "PlayerStorage.h"
+#include "PlayerSummons.h"
 #include "Pos.h"
 #include "Quests.h"
 #include "Skills.h"
+#include <boost/scoped_ptr.hpp>
 #include <string>
 #include <vector>
-#include <boost/scoped_ptr.hpp>
 
 using std::string;
 using std::vector;
 
 class Instance;
+class LuaScriptable;
 class NPC;
 class PacketReader;
 class Party;
 
 class Player : public AbstractPlayer, public MovableLife {
 public:
-	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), party(0), save_on_dc(true), isconnect(false), npc(0), instance(0) { }
+	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), party(0), save_on_dc(true), isconnect(false), npc(0), luascriptable(0), instance(0) { }
 
 	~Player();
 
@@ -90,6 +91,7 @@ public:
 	void setNPC(NPC *npc) { this->npc = npc; }
 	void setParty(Party *party) { this->party = party; }
 	void setInstance(Instance *instance) { this->instance = instance; }
+	void setLuaScriptable(LuaScriptable *lua) { luascriptable = lua; }
 	void setChair(int32_t chair) { this->chair = chair; }
 	void setItemEffect(int32_t effect) { this->itemEffect = effect; }
 	void setSpecialSkill(SpecialSkillInfo info) { this->info = info; }
@@ -133,6 +135,7 @@ public:
 	NPC * getNPC() const { return npc; }
 	Party * getParty() const { return party; }
 	Instance * getInstance() const { return instance; }
+	LuaScriptable * getLuaScriptable() const { return luascriptable; }
 	bool isGM() const { return gm > 0; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
@@ -211,6 +214,7 @@ private:
 	unordered_map<int32_t, int16_t> cooldowns;
 	NPC *npc;
 	Instance *instance;
+	LuaScriptable *luascriptable;
 	Party *party;
 	vector<int32_t> warnings;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
