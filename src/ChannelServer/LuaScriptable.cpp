@@ -905,17 +905,33 @@ int LuaExports::getMesoRate(lua_State *luaVm) {
 
 // Party
 int LuaExports::getPartyCount(lua_State *luaVm) {
-	lua_pushinteger(luaVm, getPlayer(luaVm)->getParty()->getMembersCount());
+	int32_t mcount = 0;
+	Party *p = getPlayer(luaVm)->getParty();
+	if (p != 0) {
+		mcount = p->getMembersCount();
+	}
+	lua_pushinteger(luaVm, mcount);
 	return 1;
 }
 
 int LuaExports::getPartyID(lua_State *luaVm) {
-	lua_pushinteger(luaVm, getPlayer(luaVm)->getParty()->getId());
+	int32_t pid = 0;
+	Party *p = getPlayer(luaVm)->getParty();
+	if (p != 0) {
+		pid = p->getId();
+	}
+	lua_pushinteger(luaVm, pid);
 	return 1;
 }
 
 int LuaExports::isPartyLeader(lua_State *luaVm) {
-	lua_pushboolean(luaVm, getPlayer(luaVm) == getPlayer(luaVm)->getParty()->getLeader());
+	Player *player = getPlayer(luaVm);
+	Party *p = player->getParty();
+	bool isleader = false;
+	if (p != 0) {
+		isleader = player == p->getLeader();
+	}
+	lua_pushboolean(luaVm, isleader);
 	return 1;
 }
 
