@@ -19,11 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PARTY_H
 
 #include "Types.h"
-#include <map>
 #include <boost/tr1/unordered_map.hpp>
+#include <map>
+#include <vector>
 
 using std::map;
 using std::tr1::unordered_map;
+using std::vector;
 
 class Instance;
 class PacketReader;
