@@ -542,17 +542,19 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					mob = 0;
 			}
 		}
-		for (uint8_t pp = 0; pp < (uint8_t) ppdamages.size(); pp++) { // Drop stuff for Pickpocket
-			Pos pos;
-			pos.x = origin.x - 25 * ((ppdamages.size() - pp) / 2);
-			pos.y = origin.y;
-			clock_t time = 150 * pp;
-			int32_t mesos = ((ppdamages[pp] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
-			Drop *drop = new Drop(player->getMap(), mesos, pos, player->getId(), true);
-			drop->setTime(100);
-			new Timer::Timer(bind(&Drop::doDrop, drop, origin),
-				Timer::Id(Timer::Types::BuffTimer, Jobs::ChiefBandit::Pickpocket, pp),
-				0, Timer::Time::fromNow(time));
+		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
+		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
+			Pos pppos;
+			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 0 : 5) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
+			pppos.y = origin.y;
+//			clock_t pptime = 175 * pickpocket;
+			int32_t ppmesos = ((ppdamages[pickpocket] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
+			Drop *ppdrop = new Drop(player->getMap(), ppmesos, pppos, player->getId(), true);
+			ppdrop->setTime(100);
+			ppdrop->doDrop(origin);
+//			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
+//				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
+//				0, Timer::Time::fromNow(pptime));
 		}
 		if (!GameLogicUtilities::isSummon(skillid))
 			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56

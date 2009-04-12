@@ -48,6 +48,7 @@ public:
 		m_energycharge(0),
 		m_activecharge(0),
 		m_activebooster(0),
+		m_pickpocketcounter(0),
 		m_berserk(false)
 		{ }
 
@@ -92,6 +93,9 @@ public:
 	bool hasIceCharge() const;
 	int32_t getCharge() const { return m_activecharge; }
 
+	// Pickpocket
+	int32_t getPickpocketCounter() { return ++m_pickpocketcounter; }
+
 	// Commonly referred to buffs on the server end
 	const bool hasInfinity();
 	const bool hasMesoUp();
@@ -122,6 +126,7 @@ private:
 	int16_t m_energycharge;
 	int32_t m_activecharge;
 	int32_t m_activebooster;
+	int32_t m_pickpocketcounter;
 	uint32_t m_timeseed;
 	bool m_berserk;
 	list<int32_t> m_buffs;

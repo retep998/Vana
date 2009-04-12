@@ -23,6 +23,7 @@ namespace Timer {
 struct Types {
 	enum {
 		BuffTimer,
+		PickpocketTimer,
 		CoolTimer,
 		MapTimer,
 		MobStatusTimer,
