@@ -65,57 +65,57 @@ struct WarpFunctor {
 
 void ChatHandler::initializeCommands() {
 	typedef pair<Commands, int32_t> command;
-	commandlist["ban"] = command(CMD_BAN, 3);
-	commandlist["unban"] = command(CMD_UNBAN, 3);
-	commandlist["header"] = command(CMD_HEADER, 3);
-	commandlist["shutdown"] = command(CMD_SHUTDOWN, 3);
-	commandlist["packet"] = command(CMD_PACKET, 3);
-	commandlist["timer"] = command(CMD_TIMER, 3);
-	commandlist["instruction"] = command(CMD_INSTRUCTION, 3);
-	commandlist["addnpc"] = command(CMD_ADDNPC, 3);
-	commandlist["dorankings"] = command(CMD_RANKINGCALC, 3);
+	commandlist["ban"] = command(CmdBan, 3);
+	commandlist["unban"] = command(CmdUnban, 3);
+	commandlist["header"] = command(CmdHeader, 3);
+	commandlist["shutdown"] = command(CmdShutdown, 3);
+	commandlist["packet"] = command(CmdPacket, 3);
+	commandlist["timer"] = command(CmdTimer, 3);
+	commandlist["instruction"] = command(CmdInstruction, 3);
+	commandlist["addnpc"] = command(CmdAddNpc, 3);
+	commandlist["dorankings"] = command(CmdRankingCalc, 3);
 
-	commandlist["me"] = command(CMD_ME, 2);
-	commandlist["kick"] = command(CMD_KICK, 2);
-	commandlist["warp"] = command(CMD_WARP, 2);
-	commandlist["warpall"] = command(CMD_WARPALL, 2);
-	commandlist["killall"] = command(CMD_KILLALL, 2);
-	commandlist["cleardrops"] = command(CMD_CLEARDROPS, 2);
+	commandlist["me"] = command(CmdMe, 2);
+	commandlist["kick"] = command(CmdKick, 2);
+	commandlist["warp"] = command(CmdWarp, 2);
+	commandlist["warpall"] = command(CmdWarpAll, 2);
+	commandlist["killall"] = command(CmdKillAll, 2);
+	commandlist["cleardrops"] = command(CmdClearDrops, 2);
 
-	commandlist["kill"] = command(CMD_KILL, 1);
-	commandlist["lookup"] = command(CMD_LOOKUP, 1);
-	commandlist["map"] = command(CMD_MAP, 1);
-	commandlist["job"] = command(CMD_JOB, 1);
-	commandlist["level"] = command(CMD_LEVEL, 1);
-	commandlist["hp"] = command(CMD_HP, 1);
-	commandlist["mp"] = command(CMD_MP, 1);
-	commandlist["ap"] = command(CMD_AP, 1);
-	commandlist["sp"] = command(CMD_SP, 1);
-	commandlist["addsp"] = command(CMD_ADDSP, 1);
-	commandlist["int"] = command(CMD_INT, 1);
-	commandlist["luk"] = command(CMD_LUK, 1);
-	commandlist["dex"] = command(CMD_DEX, 1);
-	commandlist["str"] = command(CMD_STR, 1);
-	commandlist["fame"] = command(CMD_FAME, 1);
-	commandlist["maxstats"] = command(CMD_MAXSTATS, 1);
-	commandlist["npc"] = command(CMD_NPC, 1);
-	commandlist["item"] = command(CMD_ITEM, 1);
-	commandlist["summon"] = command(CMD_SUMMON, 1);
-	commandlist["spawn"] = command(CMD_SUMMON, 1);
-	commandlist["notice"] = command(CMD_NOTICE, 1);
-	commandlist["shop"] = command(CMD_SHOP, 1);
-	commandlist["pos"] = command(CMD_POS, 1);
-	commandlist["zakum"] = command(CMD_ZAKUM, 1);
-	commandlist["horntail"] = command(CMD_HORNTAIL, 1);
-	commandlist["heal"] = command(CMD_HEAL, 1);
-	commandlist["mesos"] = command(CMD_MESOS, 1);
-	commandlist["dc"] = command(CMD_DC, 1);
-	commandlist["music"] = command(CMD_MUSIC, 1);
-	commandlist["storage"] = command(CMD_STORAGE, 1);
-	commandlist["eventinstruct"] = command(CMD_EVENTINSTRUCTION, 1);
-	commandlist["save"] = command(CMD_SAVE, 1);
-	commandlist["warpto"] = command(CMD_WARPTO, 1);
-	commandlist["killnpc"] = command(CMD_KILLNPC, 1);
+	commandlist["kill"] = command(CmdKill, 1);
+	commandlist["lookup"] = command(CmdLookUp, 1);
+	commandlist["map"] = command(CmdMap, 1);
+	commandlist["job"] = command(CmdJob, 1);
+	commandlist["level"] = command(CmdLevel, 1);
+	commandlist["hp"] = command(CmdHp, 1);
+	commandlist["mp"] = command(CmdMp, 1);
+	commandlist["ap"] = command(CmdAp, 1);
+	commandlist["sp"] = command(CmdSp, 1);
+	commandlist["addsp"] = command(CmdAddSp, 1);
+	commandlist["int"] = command(CmdInt, 1);
+	commandlist["luk"] = command(CmdLuk, 1);
+	commandlist["dex"] = command(CmdDex, 1);
+	commandlist["str"] = command(CmdStr, 1);
+	commandlist["fame"] = command(CmdFame, 1);
+	commandlist["maxstats"] = command(CmdMaxStats, 1);
+	commandlist["npc"] = command(CmdNpc, 1);
+	commandlist["item"] = command(CmdItem, 1);
+	commandlist["summon"] = command(CmdSummon, 1);
+	commandlist["spawn"] = command(CmdSummon, 1);
+	commandlist["notice"] = command(CmdNotice, 1);
+	commandlist["shop"] = command(CmdShop, 1);
+	commandlist["pos"] = command(CmdPos, 1);
+	commandlist["zakum"] = command(CmdZakum, 1);
+	commandlist["horntail"] = command(CmdHorntail, 1);
+	commandlist["heal"] = command(CmdHeal, 1);
+	commandlist["mesos"] = command(CmdMesos, 1);
+	commandlist["dc"] = command(CmdDisconnect, 1);
+	commandlist["music"] = command(CmdMusic, 1);
+	commandlist["storage"] = command(CmdStorage, 1);
+	commandlist["eventinstruct"] = command(CmdEventInstruction, 1);
+	commandlist["save"] = command(CmdSave, 1);
+	commandlist["warpto"] = command(CmdWarpTo, 1);
+	commandlist["killnpc"] = command(CmdKillNpc, 1);
 }
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
@@ -134,10 +134,10 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 
 		if (player->getGMLevel() >= commandlist[command].second) { // GM level for the command
 			switch (commandlist[command].first) { // CMD constant associated with command
-				case CMD_HEADER:
+				case CmdHeader:
 					WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), args);
 					break;
-				case CMD_BAN: {
+				case CmdBan: {
 					re = "(\\w+) ?(\\d+)?";
 					if (regex_match(args.c_str(), matches, re)) {
 						string targetname = matches[1];
@@ -177,7 +177,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_UNBAN: {
+				case CmdUnban: {
 					if (args.length() != 0) {
 						// Unban account
 						mysqlpp::Query accbanquery = Database::getCharDB().query();
@@ -191,10 +191,10 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_SHUTDOWN:
+				case CmdShutdown:
 					ChannelServer::Instance()->shutdown();
 					break;
-				case CMD_PACKET: {
+				case CmdPacket: {
 					if (args.length() != 0) {
 						PacketCreator packet;
 						packet.addBytes(args.c_str());
@@ -205,7 +205,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_TIMER:
+				case CmdTimer:
 					if (args.length() != 0) {
 						Maps::getMap(player->getMap())->setMapTimer(atoi(args.c_str()));
 					}
@@ -213,7 +213,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						PlayerPacket::showMessage(player, "Usage: !timer <#time>", 6);
 					}
 					break;
-				case CMD_INSTRUCTION:
+				case CmdInstruction:
 					if (args.length() != 0) {
 						for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 							PlayerPacket::instructionBubble(Maps::getMap(player->getMap())->getPlayer(i), args);
@@ -223,7 +223,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						PlayerPacket::showMessage(player, "Usage: !instruction <$bubbletext>", 6);
 					}
 					break;
-				case CMD_ADDNPC: {
+				case CmdAddNpc: {
 					if (args.length() != 0) {
 						NPCSpawnInfo npc;
 						npc.id = atoi(args.c_str());
@@ -238,7 +238,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_ME: {
+				case CmdMe: {
 					if (args.length() != 0) {
 						string msg = player->getName() + " : " + args;
 						MeFunctor func = {msg};
@@ -249,7 +249,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_KICK:
+				case CmdKick:
 					if (args.length() != 0) {
 						if (Player *target = Players::Instance()->getPlayer(args)) {
 							if (player->getGMLevel() > target->getGMLevel())
@@ -264,7 +264,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						PlayerPacket::showMessage(player, "Usage: !kick <$playername>", 6);
 					}
 					break;
-				case CMD_WARP:
+				case CmdWarp:
 					re = "(\\w+) ?(\\d*)?";
 					if (regex_match(args.c_str(), matches, re)) {
 						if (Player *warpee = Players::Instance()->getPlayer(matches[1])) {
@@ -280,7 +280,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						PlayerPacket::showMessage(player, "Usage: !warp <$playername> [#mapid]", 6);
 					}
 					break;
-				case CMD_WARPALL: {
+				case CmdWarpAll: {
 					int32_t mapid = args.length() != 0 ? atoi(args.c_str()) : player->getMap();
 
 					if (Maps::getMap(mapid)) {
@@ -292,13 +292,13 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_KILLALL:
+				case CmdKillAll:
 					Maps::getMap(player->getMap())->killMobs(player);
 					break;
-				case CMD_CLEARDROPS:
+				case CmdClearDrops:
 					Maps::getMap(player->getMap())->clearDrops();
 					break;
-				case CMD_KILL:
+				case CmdKill:
 					if (player->getGMLevel() == 1)
 						player->setHP(0);
 					else {
@@ -341,7 +341,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					break;
-				case CMD_LOOKUP: {
+				case CmdLookUp: {
 					re = "(\\w+) (.+)";
 					if (regex_match(args.c_str(), matches, re)) {
 						uint16_t type = 0;
@@ -350,10 +350,16 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (matches[1] == "map") type = 3;
 						else if (matches[1] == "mob") type = 4;
 						else if (matches[1] == "npc") type = 5;
+						else if (matches[1] == "id")  type = 6;
 
 						if (type != 0) {
 							mysqlpp::Query query = Database::getDataDB().query();
-							query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+							if (type < 6) {
+								query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+							}
+							else if (type == 6) {
+								query << "SELECT objectid, name FROM stringdata WHERE objectid=" << matches[2];
+							}
 							mysqlpp::StoreQueryResult res = query.store();
 
 							if (res.num_rows() == 0) {
@@ -367,15 +373,15 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 							}
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc}", 6);
+							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, id}", 6);
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc}> <$search string>", 6);
+						PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc | id}> <$search string>", 6);
 					}
 					break;
 				}
-				case CMD_MAP: {
+				case CmdMap: {
 					if (args.length() != 0) {
 						int32_t mapid = -1;
 						if (args == "town") mapid = Maps::getMap(player->getMap())->getInfo()->rm;
@@ -445,7 +451,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_NPC: {
+				case CmdNpc: {
 					if (args.length() != 0) {
 						int32_t npcid = atoi(args.c_str());
 						NPC *npc = new NPC(npcid, player);
@@ -456,7 +462,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_ADDSP: {
+				case CmdAddSp: {
 					re = "(\\d+) ?(-{0,1}\\d+)?";
 					if (regex_match(args.c_str(), matches, re)) {
 						int32_t skillid = atoi(string(matches[1]).c_str());
@@ -475,7 +481,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_SUMMON: {
+				case CmdSummon: {
 					re = "(\\d+) ?(\\d+)?";
 					if (regex_match(args.c_str(), matches, re)) {
 						int32_t mobid = atoi(string(matches[1]).c_str());
@@ -495,11 +501,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_NOTICE:
+				case CmdNotice:
 					if (args.length() != 0)
 						PlayersPacket::showMessage(args, 0);
 					break;
-				case CMD_MAXSTATS:
+				case CmdMaxStats:
 					player->setFame(30000);
 					player->setRMHP(30000);
 					player->setRMMP(30000);
@@ -510,23 +516,23 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					player->setInt(30000);
 					player->setLuk(30000);
 					break;
-				case CMD_STR:
+				case CmdStr:
 					if (args.length() != 0)
 						player->setStr(atoi(args.c_str()));
 					break;
-				case CMD_DEX:
+				case CmdDex:
 					if (args.length() != 0)
 						player->setDex(atoi(args.c_str()));
 					break;
-				case CMD_LUK:
+				case CmdLuk:
 					if (args.length() != 0)
 						player->setLuk(atoi(args.c_str()));
 					break;
-				case CMD_INT:
+				case CmdInt:
 					if (args.length() != 0)
 						player->setInt(atoi(args.c_str()));
 					break;
-				case CMD_HP:
+				case CmdHp:
 					if (args.length() != 0) {
 						uint16_t amount = atoi(args.c_str());
 						player->setRMHP(amount);
@@ -535,7 +541,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 							player->setHP(player->getMHP());
 					}
 					break;
-				case CMD_MP:
+				case CmdMp:
 					if (args.length() != 0) {
 						uint16_t amount = atoi(args.c_str());
 						player->setRMMP(amount);
@@ -544,11 +550,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 							player->setMP(player->getMMP());
 					}
 					break;
-				case CMD_FAME:
+				case CmdFame:
 					if (args.length() != 0)
 						player->setFame(atoi(args.c_str()));
 					break;
-				case CMD_SHOP: {
+				case CmdShop: {
 					if (args.length() != 0) {
 						int32_t shopid = -1;
 						if (args == "gear") shopid = 9999999;
@@ -570,13 +576,13 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_POS: {
+				case CmdPos: {
 					char msg[50];
 					sprintf(msg, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFH());
 					PlayerPacket::showMessage(player, msg, 6);
 					break;
 				}
-				case CMD_ITEM: {
+				case CmdItem: {
 					re = "(\\d+) ?(\\d*)?";
 					if (regex_match(args.c_str(), matches, re)) {
 						int32_t itemid = atoi(string(matches[1]).c_str());
@@ -594,11 +600,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_LEVEL:
+				case CmdLevel:
 					if (args.length() != 0)
 						player->setLevel(atoi(args.c_str()));
 					break;
-				case CMD_JOB: {
+				case CmdJob: {
 					if (args.length() != 0) {
 						int16_t job = -1;
 						if (args == "beginner") job = 0;
@@ -657,40 +663,40 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				}
-				case CMD_AP:
+				case CmdAp:
 					if (args.length() != 0)
 						player->setAP(atoi(args.c_str()));
 					break;
-				case CMD_SP:
+				case CmdSp:
 					if (args.length() != 0)
 						player->setSP(atoi(args.c_str()));
 					break;
-				case CMD_KILLNPC:
+				case CmdKillNpc:
 					player->setNPC(0);
 					break;
-				case CMD_HORNTAIL:
+				case CmdHorntail:
 					Maps::getMap(player->getMap())->spawnMob(8810026, player->getPos());
 					Maps::getMap(player->getMap())->killMobs(player, 8810026);
 					break;
-				case CMD_HEAL:
+				case CmdHeal:
 					player->setHP(player->getMHP());
 					player->setMP(player->getMMP());
 					break;
-				case CMD_MESOS:
+				case CmdMesos:
 					if (args.length() != 0)
 						player->getInventory()->setMesos(atoi(args.c_str()));
 					break;
-				case CMD_SAVE:
+				case CmdSave:
 					player->saveAll();
 					PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
 					break;
-				case CMD_WARPTO:
+				case CmdWarpTo:
 					Player *warptoee;
 					if (warptoee = Players::Instance()->getPlayer(args)) {
 						Maps::changeMap(player, warptoee->getMap(), 0);
 					}
 					break;
-				case CMD_ZAKUM:
+				case CmdZakum:
 					Maps::getMap(player->getMap())->spawnMob(8800000, player->getPos());
 					Maps::getMap(player->getMap())->spawnMob(8800003, player->getPos());
 					Maps::getMap(player->getMap())->spawnMob(8800004, player->getPos());
@@ -701,19 +707,19 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					Maps::getMap(player->getMap())->spawnMob(8800009, player->getPos());
 					Maps::getMap(player->getMap())->spawnMob(8800010, player->getPos());
 					break;
-				case CMD_MUSIC:
+				case CmdMusic:
 					Maps::getMap(player->getMap())->setMusic(args);
 					break;
-				case CMD_DC:
+				case CmdDisconnect:
 					player->getSession()->disconnect();
 					break;
-				case CMD_EVENTINSTRUCTION:
+				case CmdEventInstruction:
 					MapPacket::showEventInstructions(player->getMap());
 					break;
-				case CMD_STORAGE:
+				case CmdStorage:
 					StoragePacket::showStorage(player, 9900000);
 					break;
-				case CMD_RANKINGCALC:
+				case CmdRankingCalc:
 					WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldPlayer());
 					PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", 5);
 					break;

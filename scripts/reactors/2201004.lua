@@ -18,5 +18,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Papulatus summon reactor
 setMusic("Bgm09/TimeAttack");
 spawnMobPos(8500000, -410, -385);
-setReactorsState(220080000, 2208001, 1);
-setReactorsState(220080000, 2208003, 1);
+setReactorState(220080000, 2208001, 1);
+setReactorState(220080000, 2208003, 1);

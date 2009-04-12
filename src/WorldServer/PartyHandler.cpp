@@ -15,19 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "PartyHandler.h"
-#include "WorldServerAcceptPlayer.h"
-#include "PartyPacket.h"
 #include "Channels.h"
-
-unordered_map<int32_t, Party*> PartyHandler::parties;
-int32_t PartyHandler::partyCount = 0x01;
+#include "Parties.h"
+#include "PartyPacket.h"
+#include "WorldServerAcceptPacket.h"
+#include "WorldServerAcceptPlayer.h"
 
 void PartyHandler::silentUpdate(int32_t playerid) {
 	Player *pplayer = Players::Instance()->getPlayer(playerid);
-	Party *party = parties[pplayer->party];
-	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	Party *party = Parties::Instance()->getParty(pplayer->party);
+	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
 			WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
 			PartyPacket::updateParty(channel, PARTY_SILENT_UPDATE, iter->second->id);
@@ -37,8 +35,8 @@ void PartyHandler::silentUpdate(int32_t playerid) {
 
 void PartyHandler::logInLogOut(int32_t playerid) {
 	Player *pplayer = Players::Instance()->getPlayer(playerid, true);
-	Party *party = parties[pplayer->party];
-	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	Party *party = Parties::Instance()->getParty(pplayer->party);
+	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
 			WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
 			PartyPacket::updateParty(channel, PARTY_LOG_IN_OUT, iter->second->id);
@@ -52,48 +50,48 @@ void PartyHandler::createParty(WorldServerAcceptPlayer *player, int32_t playerid
 		return; // hacking
 	}
 	Party *party = new Party;
-	party->setId(partyCount);
 	party->addMember(pplayer);
 	party->setLeader(pplayer->id);
-	parties[partyCount] = party;
-	pplayer->party = partyCount;
-	partyCount ++;
+	pplayer->party = Parties::Instance()->addParty(party);
 	PartyPacket::createParty(player, playerid);
+	WorldServerAcceptPacket::sendCreateParty(pplayer->id, pplayer->party);
 }
 
 void PartyHandler::giveLeader(WorldServerAcceptPlayer *player, int32_t playerid, int32_t target, bool is) {
 	Player *pplayer = Players::Instance()->getPlayer(playerid);
-	if (pplayer->party == 0 || !parties[pplayer->party]->isLeader(playerid)) {
+	if (pplayer->party == 0 || !Parties::Instance()->getParty(pplayer->party)->isLeader(playerid)) {
 		return; //Hacking
 	}
-	Party *party = parties[pplayer->party];
+	Party *party = Parties::Instance()->getParty(pplayer->party);
 	party->setLeader(target);
-	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
 			WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
 			PartyPacket::giveLeader(channel, iter->second->id, target, is);
 		}
 	}
+	WorldServerAcceptPacket::sendSwitchPartyLeader(target, pplayer->party);
 }
 
 void PartyHandler::expelPlayer(WorldServerAcceptPlayer *player, int32_t playerid, int32_t target) {
 	Player *pplayer = Players::Instance()->getPlayer(playerid);
 	Player *tplayer = Players::Instance()->getPlayer(target);
-	if (pplayer->party == 0 || !parties[pplayer->party]->isLeader(playerid)) {
+	if (pplayer->party == 0 || !Parties::Instance()->getParty(pplayer->party)->isLeader(playerid)) {
 		return; //Hacking
 	}
-	Party *party = parties[pplayer->party];
+	Party *party = Parties::Instance()->getParty(pplayer->party);
 	party->deleteMember(tplayer);
-	for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
 			WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
-			PartyPacket::updateParty(channel, PARTY_EXPEL, playerid, target);
+			PartyPacket::updateParty(channel, PARTY_EXPEL, iter->first, target);
 		}
 	}
 	if (tplayer->online) {
 		WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(tplayer->channel)->player;
 		PartyPacket::updateParty(channel, PARTY_EXPEL, target, target);
 	}
+	WorldServerAcceptPacket::sendRemovePartyPlayer(target, pplayer->party);
 	Players::Instance()->getPlayer(target)->party = 0;
 }
 
@@ -102,19 +100,21 @@ void PartyHandler::leaveParty(WorldServerAcceptPlayer *player, int32_t playerid)
 	if (pplayer->party == 0) {
 		return; //hacking
 	}
-	Party *party = parties[pplayer->party];
+	Party *party = Parties::Instance()->getParty(pplayer->party);
 	if (party->isLeader(playerid)) {
-		for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+		for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 			if (iter->second->online) {
 				PartyPacket::disbandParty(Channels::Instance()->getChannel(iter->second->channel)->player, iter->second->id);
 				iter->second->party = 0;
 			}
 		}
-		parties.erase(pplayer->party);
+		WorldServerAcceptPacket::sendDisbandParty(pplayer->party);
+		Parties::Instance()->removeParty(pplayer->party);
 	}
 	else {
+		WorldServerAcceptPacket::sendRemovePartyPlayer(pplayer->id, pplayer->party);
 		party->deleteMember(pplayer);
-		for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+		for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 			if (iter->second->online) {
 				WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
 				PartyPacket::updateParty(channel, PARTY_LEAVE, iter->second->id, playerid);
@@ -130,25 +130,26 @@ void PartyHandler::joinParty(WorldServerAcceptPlayer *player, int32_t playerid, 
 	if (pplayer->party != 0) {
 		return; //Hacking
 	}
-	Party *party = parties[partyid];
+	Party *party = Parties::Instance()->getParty(partyid);
 	if (party->members.size() == 6) {
 		PartyPacket::partyError(player, playerid, 0x11);
 	}
 	else {
-		pplayer->party = party->getId();
+		pplayer->party = partyid;
 		party->addMember(pplayer);
-		for (unordered_map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+		for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 			if (iter->second->online) {
 				WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
 				PartyPacket::updateParty(channel, PARTY_JOIN, iter->second->id, playerid);
 			}
 		}
+		WorldServerAcceptPacket::sendAddPartyPlayer(playerid, partyid);
 	}
 }
 
 void PartyHandler::invitePlayer(WorldServerAcceptPlayer *player, int32_t playerid, const string &invitee) {
 	Player *pplayer = Players::Instance()->getPlayer(playerid);
-	if (pplayer->party == 0 || !parties[pplayer->party]->isLeader(playerid)) {
+	if (pplayer->party == 0 || !Parties::Instance()->getParty(pplayer->party)->isLeader(playerid)) {
 		return; //hacking
 	}
 	Player *invited = Players::Instance()->getPlayerFromName(invitee);

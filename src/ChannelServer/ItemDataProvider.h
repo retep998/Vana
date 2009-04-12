@@ -96,8 +96,6 @@ struct ConsumeInfo {
 	int16_t ihand;
 	int16_t ijump;
 	int16_t ispeed;
-	uint8_t types[8];
-	vector<int16_t> vals;
 	vector<SummonBag> mobs;
 	vector<Skillbook> skills;
 };

@@ -16,15 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectPlayer.h"
-#include "WorldServerConnectPacket.h"
-#include "WorldServerConnectHandler.h"
-#include "Party.h"
-#include "PlayersPacket.h"
+#include "BuffHolder.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
+#include "Party.h"
+#include "PlayerActiveBuffs.h"
+#include "PlayersPacket.h"
+#include "WorldServerConnectHandler.h"
+#include "WorldServerConnectPacket.h"
 
 WorldServerConnectPlayer::WorldServerConnectPlayer() {
-	type = INTER_CHANNEL_SERVER;
+	type = InterChannelServer;
 }
 
 void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
@@ -39,10 +41,13 @@ void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
 		case INTER_NEW_CONNECTABLE: WorldServerConnectHandler::newConnectable(packet); break;
 		case INTER_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
 		case INTER_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
-		case INTER_PARTY_OPERATION: Party::handleResponse(packet); break;
+		case INTER_PARTY_OPERATION: PartyFunctions::handleResponse(packet); break;
+		case INTER_PARTY_SYNC: PartyFunctions::handleDataSync(packet); break;
+		case INTER_TRANSFER_BUFFS: BuffHolder::Instance()->parseIncomingBuffs(packet); break;
+		case INTER_TRANSFER_BUFFS_DISCONNECT: BuffHolder::Instance()->removeBuffs(packet.get<int32_t>()); break;
 	}
 }
 
-void WorldServerConnectPlayer::playerChangeChannel(int32_t playerid, uint16_t channel) {
-	WorldServerConnectPacket::playerChangeChannel(this, playerid, channel);
+void WorldServerConnectPlayer::playerChangeChannel(int32_t playerid, uint16_t channel, PlayerActiveBuffs *playerbuffs) {
+	WorldServerConnectPacket::playerChangeChannel(this, playerid, channel, playerbuffs);
 }

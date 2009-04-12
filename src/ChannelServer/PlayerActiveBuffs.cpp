@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerActiveBuffs.h"
-#include "Buffs.h"
 #include "BuffsPacket.h"
 #include "GameConstants.h"
 #include "Maps.h"
@@ -31,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-// Buff Skills
+// Buff skills
 void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
 	clock_t skillExpire = time * 1000;
 	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
@@ -97,17 +96,92 @@ void PlayerActiveBuffs::removeAct(int32_t skill) {
 	m_skill_acts.erase(skill);
 }
 
-// Combo attack stuff
-void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
-	m_combo = combo;
-	if (sendPacket) {
-		SkillActiveInfo playerSkill = getBuffInfo(Jobs::Crusader::ComboAttack);
-		playerSkill.vals[0] = combo + 1;
-		BuffsPacket::useSkill(m_player, Jobs::Crusader::ComboAttack, buffTimeLeft(Jobs::Crusader::ComboAttack), playerSkill, 0);
+// Map entry stuff
+void PlayerActiveBuffs::deleteMapEntryBuffInfo(ActiveMapBuff &buff) {
+	size_t vals = 0;
+	for (size_t i = 0; i < buff.bytes.size(); i++) {
+		uint8_t byte = buff.bytes[i];
+		m_mapbuffs.types[byte] -= buff.types[i];
+		if (m_mapbuffs.values[byte].find(buff.types[i]) != m_mapbuffs.values[byte].end()) {
+			m_mapbuffs.values[byte].erase(buff.types[i]);
+		}
 	}
 }
 
-void PlayerActiveBuffs::addCombo() { // Add combo orbs
+void PlayerActiveBuffs::addMapEntryBuffInfo(ActiveMapBuff &buff) {
+	size_t vals = 0;
+	for (size_t i = 0; i < buff.bytes.size(); i++) {
+		uint8_t byte = buff.bytes[i];
+		if ((m_mapbuffs.types[byte] & buff.types[i]) == 0)
+			m_mapbuffs.types[byte] += buff.types[i];
+		pair<bool, int16_t> valpair;
+		valpair.first = buff.usevals[i];
+		if (buff.usevals[i]) {
+			valpair.second = buff.values[vals++];
+		}
+		m_mapbuffs.values[byte][buff.types[i]] = valpair;
+	}
+}
+
+MapEntryBuffs PlayerActiveBuffs::getMapEntryBuffs() {
+	return m_mapbuffs;
+}
+
+void PlayerActiveBuffs::setMountInfo(int32_t skillid, int32_t mountid) {
+	m_mapbuffs.mountskill = skillid;
+	m_mapbuffs.mountid = mountid;
+}
+
+void PlayerActiveBuffs::setMapEntryBuffs(MapEntryBuffs &buffs) {
+	m_mapbuffs = buffs;
+}
+
+// Active skill levels
+uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
+	return m_activelevels.find(skillid) != m_activelevels.end() ? m_activelevels[skillid] : 0;
+}
+
+void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
+	m_activelevels[skillid] = level;
+}
+
+// Buff addition/removal
+void PlayerActiveBuffs::addBuffInfo(int32_t skillid, const vector<Buff> &buffs) {
+	for (size_t i = 0; i < buffs.size(); i++) {
+		Buff cur = buffs[i];
+		m_activebuffsbytype[cur.byte][cur.type] = skillid;
+	}
+}
+
+ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillid, const vector<Buff> &buffs) {
+	ActiveBuff ret;
+	for (size_t i = 0; i < buffs.size(); i++) {
+		Buff cur = buffs[i];
+		if (m_activebuffsbytype[cur.byte][cur.type] == skillid) { // Make sure that the buff types are still affected by the skill
+			m_activebuffsbytype[cur.byte].erase(cur.type);
+			ret.types[cur.byte] += cur.type;
+		}
+	}
+	return ret;
+}
+
+void PlayerActiveBuffs::setActiveBuffsByType(ActiveBuffsByType &buffs) {
+	m_activebuffsbytype = buffs;
+}
+
+// Specific skill stuff
+void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
+	m_combo = combo;
+	if (sendPacket) {
+		int32_t skillid = Jobs::Crusader::ComboAttack;
+		int32_t timeleft = buffTimeLeft(skillid) / 1000;
+		ActiveBuff playerskill = Buffs::Instance()->parseBuffInfo(m_player, skillid, getActiveSkillLevel(skillid));
+		ActiveMapBuff mapskill = Buffs::Instance()->parseBuffMapInfo(m_player, skillid, getActiveSkillLevel(skillid));
+		BuffsPacket::useSkill(m_player, skillid, timeleft, playerskill, mapskill, 0);
+	}
+}
+
+void PlayerActiveBuffs::addCombo() { // Add orbs
 	if (getActiveSkillLevel(Jobs::Crusader::ComboAttack) > 0) {
 		int8_t advcombo = m_player->getSkills()->getSkillLevel(Jobs::Hero::AdvancedComboAttack);
 		int8_t maxcombo = (int8_t) (advcombo > 0 ? Skills::skills[Jobs::Hero::AdvancedComboAttack][advcombo].x : Skills::skills[Jobs::Crusader::ComboAttack][m_player->getSkills()->getSkillLevel(Jobs::Crusader::ComboAttack)].x);
@@ -144,60 +218,9 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 	}
 }
 
-void PlayerActiveBuffs::deleteSkillMapEnterInfo(int32_t skillid) {
-	for (size_t i = 0; i < activemapenterskill.size(); i++) {
-		if (activemapenterskill[i].skill == skillid) {
-			activemapenterskill.erase(activemapenterskill.begin() + i);
-		}
-	}
-}
-
-SkillMapEnterActiveInfo PlayerActiveBuffs::getSkillMapEnterInfo() {
-	SkillMapEnterActiveInfo skill;
-	for (size_t i = 0; i < activemapenterskill.size(); i++) {
-		SkillMapActiveInfo cur = activemapenterskill[i];
-		skill.types[cur.byte] += cur.type;
-		if (cur.isvalue) {
-			skill.val = cur.value;
-			skill.isval = true;
-		}
-	}
-	return skill;
-}
-
-SkillActiveInfo PlayerActiveBuffs::getBuffInfo(int32_t skillid) {
-	return activeplayerskill[skillid];
-}
-
-uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
-	return activelevels.find(skillid) != activelevels.end() ? activelevels[skillid] : 0;
-}
-
-void PlayerActiveBuffs::setSkillMapEnterInfo(int32_t skillid, const vector<SkillMapActiveInfo> &skill) {
-	// TEMP //
-	for (size_t i = 0; i < activemapenterskill.size(); i++) {
-		if (activemapenterskill[i].isvalue) {
-			activemapenterskill.erase(activemapenterskill.begin() + i);
-			break;
-		}
-	}
-	//////////
-	for (size_t i = 0; i < skill.size(); i++) {
-		activemapenterskill.push_back(skill[i]);
-	}
-}
-
-void PlayerActiveBuffs::setBuffInfo(int32_t skillid, SkillActiveInfo skill) {
-	activeplayerskill[skillid] = skill;
-}
-
-void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
-	activelevels[skillid] = level;
-}
-
 void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 	if (m_energycharge != 10000 && targets > 0) {
-		Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, timeseed);
+		Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, m_timeseed);
 		if (m_player->getTimers()->checkTimer(id) > 0)
 			stopEnergyChargeTimer();
 		startEnergyChargeTimer();
@@ -226,13 +249,93 @@ void PlayerActiveBuffs::resetEnergyChargeLevel() {
 }
 
 void PlayerActiveBuffs::startEnergyChargeTimer() {
-	timeseed = static_cast<uint32_t>(clock());
-	Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, timeseed); // Causes heap errors when it's a static number, but we need it for ID
+	m_timeseed = static_cast<uint32_t>(clock());
+	Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, m_timeseed); // Causes heap errors when it's a static number, but we need it for ID
 	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
-		id, m_player->getTimers(), Timer::Time::fromNow(12 * 1000)); // 12 Seconds
+		id, m_player->getTimers(), Timer::Time::fromNow(10 * 1000)); // 10 seconds
+}
+
+void PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargelevel, bool startTimer) {
+	m_energycharge = chargelevel;
+	if (startTimer) {
+		startEnergyChargeTimer();
+	}
 }
 
 void PlayerActiveBuffs::stopEnergyChargeTimer() {
-	Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, timeseed);
+	Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, m_timeseed);
 	m_player->getTimers()->removeTimer(id);
+}
+
+void PlayerActiveBuffs::stopBooster() {
+	if (m_activebooster != 0) {
+		Skills::stopSkill(m_player, m_activebooster);
+	}
+}
+
+void PlayerActiveBuffs::stopCharge() {
+	if (m_activecharge != 0) {
+		Skills::stopSkill(m_player, m_activecharge);
+	}
+}
+
+bool PlayerActiveBuffs::hasIceCharge() const {
+	return (m_activecharge == Jobs::WhiteKnight::BwIceCharge || m_activecharge == Jobs::WhiteKnight::SwordIceCharge);
+}
+
+const bool PlayerActiveBuffs::hasInfinity() {
+	return (getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveSkillLevel(Jobs::Bishop::Infinity) > 0);
+}
+
+const bool PlayerActiveBuffs::hasMesoUp() {
+	return getActiveSkillLevel(Jobs::Hermit::MesoUp) > 0;
+}
+
+const bool PlayerActiveBuffs::hasMagicGuard() {
+	return getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0;
+}
+
+const bool PlayerActiveBuffs::hasHolySymbol() {
+	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 || getActiveSkillLevel(Jobs::SuperGM::HolySymbol) > 0);
+}
+
+const int32_t PlayerActiveBuffs::getHolySymbol() {
+	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 ? (int32_t)Jobs::Priest::HolySymbol : (int32_t)Jobs::SuperGM::HolySymbol);
+}
+
+const bool PlayerActiveBuffs::hasPowerStance() {
+	// Energy Charge exhibits Power Stance effect as well
+	return (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0 || getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0 || getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0 || getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0);
+}
+
+const int32_t PlayerActiveBuffs::getPowerStance() {
+	int32_t skillid = 0;
+	if (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0)
+		skillid = Jobs::Hero::PowerStance;
+	else if (getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0)
+		skillid = Jobs::Paladin::PowerStance;
+	else if (getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0)
+		skillid = Jobs::DarkKnight::PowerStance;
+	else if (getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
+		skillid = Jobs::Marauder::EnergyCharge;
+	return skillid;
+}
+
+const bool PlayerActiveBuffs::hasHyperBody() {
+	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 || getActiveSkillLevel(Jobs::SuperGM::HyperBody) > 0);
+}
+
+const int32_t PlayerActiveBuffs::getHyperBody() {
+	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 ? (int32_t)Jobs::Spearman::HyperBody : (int32_t)Jobs::SuperGM::HyperBody);
+}
+
+const int32_t PlayerActiveBuffs::getCurrentMorph() {
+	int32_t morphid = 0;
+	if (m_activebuffsbytype.find(Byte5) != m_activebuffsbytype.end()) {
+		unordered_map<uint8_t, int32_t> byte = m_activebuffsbytype[Byte5];
+		if (byte.find(0x02) != byte.end()) {
+			morphid = byte[0x02];
+		}
+	}
+	return morphid;
 }

@@ -16,11 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Players.h"
+#include "ChannelChangeRequests.h"
 #include "Channels.h"
-#include "WorldServer.h"
-#include "StringUtilities.h"
 #include "LoginServerConnectPacket.h"
 #include "PartyHandler.h"
+#include "StringUtilities.h"
+#include "WorldServer.h"
 
 Players * Players::singleton = 0;
 
@@ -94,7 +95,9 @@ Player * Players::getPlayer(int32_t id, bool includeOffline) {
 
 void Players::removeChannelPlayers(uint16_t channel) {
 	for (unordered_map<int32_t, Player *>::iterator iter = players.begin(); iter != players.end(); iter++) {
-		if (iter->second->channel == channel)
+		if (iter->second->channel == channel) {
 			iter->second->online = false;
+			ChannelChangeRequests::Instance()->removePendingPlayerEarly(iter->second->id);
+		}
 	}
 }

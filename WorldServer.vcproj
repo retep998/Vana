@@ -212,7 +212,15 @@
 				Name="WorldServer"
 				>
 				<File
+					RelativePath=".\src\WorldServer\ChannelChangeRequests.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\WorldServer\Channels.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\Parties.cpp"
 					>
 				</File>
 				<File
@@ -306,7 +314,15 @@
 				Name="WorldServer"
 				>
 				<File
+					RelativePath=".\src\WorldServer\ChannelChangeRequests.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\WorldServer\Channels.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\Parties.h"
 					>
 				</File>
 				<File

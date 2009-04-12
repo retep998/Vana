@@ -49,3 +49,11 @@ end
 function changeMap(playerid, newmap, oldmap)
 
 end
+
+function partyDisband(partyid)
+
+end
+
+function partyRemoveMember(partyid, playerid)
+
+end

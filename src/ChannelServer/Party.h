@@ -18,14 +18,64 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PARTY_H
 #define PARTY_H
 
-class Player;
-class PacketReader;
+#include "Types.h"
+#include <boost/tr1/unordered_map.hpp>
+#include <map>
+#include <vector>
 
-namespace Party {
-	void showHPBar(Player *player);
-	void receiveHPBar(Player *player);
+using std::map;
+using std::tr1::unordered_map;
+using std::vector;
+
+class Instance;
+class PacketReader;
+class Party;
+class Player;
+
+#define PARTY_SYNC_CHANNEL_START 0x01
+#define PARTY_SYNC_DISBAND 0x02
+#define PARTY_SYNC_CREATE 0x03
+#define PARTY_SYNC_SWITCH_LEADER 0x04
+#define PARTY_SYNC_REMOVE_MEMBER 0x05
+#define PARTY_SYNC_ADD_MEMBER 0x06
+
+namespace PartyFunctions {
+	extern unordered_map<int32_t, Party *> parties;
 	void handleRequest(Player* player, PacketReader &packet);
 	void handleResponse(PacketReader &packet);
+	void handleDataSync(PacketReader &packet);
+	void handleChannelStart(PacketReader &packet);
+	void disbandParty(PacketReader &packet);
+};
+
+class Party {
+public:
+	Party(int32_t pid) : partyid(pid), instance(0) { }
+	void setLeader(int32_t playerid, bool firstload = false);
+	void addMember(Player *player);
+	void addMember(int32_t id);
+	void deleteMember(Player *player);
+	void deleteMember(int32_t id);
+	void disband();
+	void setMember(int32_t playerid, Player *player);
+	void showHPBar(Player *player);
+	void receiveHPBar(Player *player);
+	void setInstance(Instance *inst) { instance = inst; }
+	Player * getMember(int32_t id) { return (members.find(id) != members.end() ? members[id] : 0); }
+	Player * getMemberByIndex(uint8_t index);
+	Player * getLeader() { return members[leaderid]; }
+	Instance * getInstance() const { return instance; }
+	int32_t getLeaderId() const { return leaderid; }
+	int32_t getId() const { return partyid; }
+	int8_t getMembersCount() const { return members.size(); }
+	bool isLeader(int32_t playerid) const { return playerid == leaderid; }
+
+private:
+	map<int32_t, Player *, std::greater<int32_t> > members;
+	vector<int32_t> oldleader;
+	int32_t leaderid;
+	int32_t partyid;
+	Instance *instance;
 };
 
 #endif

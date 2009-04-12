@@ -21,7 +21,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 // Enumerations
-enum WeaponTypes {
+enum ItemTypes {
+	ArmorHelm = 100,
+	ArmorFace = 101,
+	ArmorEye = 102,
+	ArmorEarring = 103,
+	ArmorTop = 104,
+	ArmorOverall = 105,
+	ArmorBottom = 106,
+	ArmorShoe = 107,
+	ArmorGlove = 108,
+	ArmorShield = 109,
+	ArmorCape = 110,
+	ArmorRing = 111,
+	ArmorPendant = 112,
 	Weapon1hSword = 130,
 	Weapon1hAxe = 131,
 	Weapon1hMace = 132,
@@ -37,7 +50,10 @@ enum WeaponTypes {
 	WeaponCrossbow = 146,
 	WeaponClaw = 147,
 	WeaponKnuckle = 148,
-	WeaponGun = 149
+	WeaponGun = 149,
+	ItemArrow = 206,
+	ItemStar = 207,
+	ItemBullet = 233
 };
 
 enum ItemFlags {
@@ -52,6 +68,8 @@ enum Act {
 };
 
 enum SkillValues {
+	SkillNone, // Predefined value
+	SkillSpecialProc, // Special processing required
 	SkillX,
 	SkillY,
 	SkillSpeed,
@@ -68,14 +86,14 @@ enum SkillValues {
 };
 
 enum ByteTypes {
-	Type5,
-	Type6,
-	Type7,
-	Type8,
-	Type1,
-	Type2,
-	Type3,
-	Type4
+	Byte5,
+	Byte6,
+	Byte7,
+	Byte8,
+	Byte1,
+	Byte2,
+	Byte3,
+	Byte4
 };
 
 enum MobStatus {
@@ -99,6 +117,29 @@ enum MobStatus {
 	ShadowWeb = 0x20000,
 	WeaponImmunity = 0x40000,
 	MagicImmunity = 0x80000
+};
+
+namespace EquipSlots {
+	enum {
+		Helm = 1,
+		Face = 2,
+		Eye = 3,
+		Earring = 4,
+		Top = 5,
+		Bottom = 6,
+		Shoe = 7,
+		Glove = 8,
+		Cape = 9,
+		Shield = 10,
+		Weapon = 11,
+		CoupleRing = 12,
+		LabelRing = 13,
+		CoupleRing2 = 14, // ????
+		QuoteRing = 15,
+		Pendant = 17,
+		Mount = 18,
+		Saddle = 19
+	};
 };
 
 // Skills so there are fewer magic numbers

@@ -40,19 +40,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INTER_SCROLLING_HEADER 0x2008
 #define INTER_NEW_CONNECTABLE 0x2009
 #define INTER_PARTY_OPERATION 0x2010
-#define INTER_UPDATE_LEVEL 0x2011
-#define INTER_UPDATE_JOB 0x2012
-#define INTER_UPDATE_MAP 0x2013
-#define INTER_FORWARD_TO 0x2014
-#define INTER_GROUP_CHAT 0x2015
-#define INTER_SET_RATES 0x2016
-#define INTER_TO_LOGIN 0x2017 // Channel servers send this to ask the world server to send something to login server
-#define INTER_CALCULATE_RANKING 0x2018
+#define INTER_PARTY_SYNC 0x2011
+#define INTER_UPDATE_LEVEL 0x2012
+#define INTER_UPDATE_JOB 0x2013
+#define INTER_UPDATE_MAP 0x2014
+#define INTER_FORWARD_TO 0x2015
+#define INTER_GROUP_CHAT 0x2016
+#define INTER_SET_RATES 0x2017
+#define INTER_TO_LOGIN 0x2018 // Channel servers send this to ask the world server to send something to login server
+#define INTER_CALCULATE_RANKING 0x2019
+#define INTER_TRANSFER_BUFFS 0x2020
+#define INTER_TRANSFER_BUFFS_DISCONNECT 0x2021
 
 enum {
-	INTER_LOGIN_SERVER,
-	INTER_WORLD_SERVER,
-	INTER_CHANNEL_SERVER
+	InterLoginServer,
+	InterWorldServer,
+	InterChannelServer
 };
 
 #endif

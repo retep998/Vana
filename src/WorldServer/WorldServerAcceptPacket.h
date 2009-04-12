@@ -24,9 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class WorldServerAcceptPlayer;
+class PacketReader;
 
 namespace WorldServerAcceptPacket {
 	void connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats);
+	void sendBuffsToChannel(uint16_t channel, int32_t playerid, PacketReader &buffer);
+	void sendBuffRemoval(uint16_t channel, int32_t playerid);
 	void playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, uint32_t ip, int16_t port);
 	void sendToChannels(unsigned char *data, int32_t len);
 	void sendToLogin(unsigned char *data, int32_t len);
@@ -36,6 +39,12 @@ namespace WorldServerAcceptPacket {
 	void newConnectable(uint16_t channel, int32_t playerid);
 	void groupChat(WorldServerAcceptPlayer *player, int32_t playerid, int8_t type, const string &message, const string &sender);
 	void sendRates(WorldServerAcceptPlayer *player, int32_t setBit);
+	void sendParties(WorldServerAcceptPlayer *player);
+	void sendRemovePartyPlayer(int32_t playerid, int32_t partyid);
+	void sendAddPartyPlayer(int32_t playerid, int32_t partyid);
+	void sendSwitchPartyLeader(int32_t playerid, int32_t partyid);
+	void sendCreateParty(int32_t playerid, int32_t partyid);
+	void sendDisbandParty(int32_t partyid);
 };
 
 #endif

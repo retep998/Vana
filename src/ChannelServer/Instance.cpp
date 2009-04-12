@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Map.h"
 #include "Maps.h"
+#include "Party.h"
 #include "Reactors.h"
 #include "Timer/Container.h"
 #include "Timer/Time.h"
@@ -69,6 +70,15 @@ Instance::~Instance() {
 		map->killMobs(0, 0, false, false);
 	}
 	m_maps.clear();
+
+	// Parties
+	for (size_t k = 0; k < m_parties.size(); k++) {
+		Party *p = m_parties[k];
+		if (p != 0) {
+			p->setInstance(0);
+		}
+	}
+	m_parties.clear();
 
 	// Players
 	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
@@ -239,6 +249,11 @@ size_t Instance::getMapNum() {
 
 void Instance::setPlayerId(int32_t id) {
 	m_luainstance->setVariable("playerid", id);
+}
+
+void Instance::addParty(Party *party) {
+	m_parties.push_back(party);
+	party->setInstance(this);
 }
 
 bool Instance::addTimer(const string &timername, const TimerAction &timer) {

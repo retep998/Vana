@@ -59,7 +59,14 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	}
 	else {
 		// Normal portal
-		PortalInfo *nextportal = getMap(portal->tomap)->getPortal(portal->toname);
+		Map *tomap = getMap(portal->tomap);
+		if (tomap == 0) {
+			string message = "Bzzt. The map you're attempting to travel to doesn't exist.";
+			PlayerPacket::showMessage(player, message, 5);
+			MapPacket::portalBlocked(player);
+			return;
+		}
+		PortalInfo *nextportal = tomap->getPortal(portal->toname);
 		changeMap(player, portal->tomap, nextportal);
 	}
 }
@@ -67,12 +74,20 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 void Maps::usePortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
 	if (packet.get<int32_t>() == 0) { // Dead
-		player->acceptDeath();
+		if (player->getHP() == 0) {
+			player->acceptDeath();
+		}
+		else {
+			// hacking
+		}
 		return;
 	}
 	string portalname = packet.getString();
 
-	PortalInfo *portal = getMap(player->getMap())->getPortal(portalname);
+	Map *tomap = getMap(player->getMap());
+	if (tomap == 0)
+		return;
+	PortalInfo *portal = tomap->getPortal(portalname);
 	if (portal == 0) // Exit the function if portal is not found
 		return;
 
