@@ -63,7 +63,7 @@ public:
 	void end() { cend = true; }
 
 	Player * getPlayer() const { return player; }
-	int32_t getNpcID() const { return npcid; }
+	int32_t getNpcId() const { return npcid; }
 	int32_t getNumber() const { return getnum; }
 	int32_t getState() const { return state; }
 	int32_t getSelected() const { return selected; }

@@ -58,12 +58,12 @@ public:
 	void kill() { this->alive = false; }
 	void revive() { this->alive = true; }
 	void setState(int8_t state, bool is);
-	void setID(int32_t id) { this->id = id; }
+	void setId(int32_t id) { this->id = id; }
 
 	int8_t getState() const { return this->state; }
-	int32_t getID() const { return this->id; }
-	int32_t getReactorID() const { return this->reactorid; }
-	int32_t getMapID() const { return this->mapid; }
+	int32_t getId() const { return this->id; }
+	int32_t getReactorId() const { return this->reactorid; }
+	int32_t getMapId() const { return this->mapid; }
 	bool isAlive() const { return this->alive; }
 	Pos getPos() const { return this->pos; }
 

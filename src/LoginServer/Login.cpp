@@ -79,7 +79,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	}
 	else {
 		std::cout << username << " logged in." << std::endl;
-		player->setUserid(res[0]["id"]);
+		player->setUserId(res[0]["id"]);
 		if (LoginServer::Instance()->getPinEnabled()) {
 			if (res[0]["pin"].is_null())
 				player->setPin(-1);
@@ -112,7 +112,7 @@ void Login::setGender(PlayerLogin *player, PacketReader &packet) {
 		player->setStatus(0);
 		int8_t gender = packet.get<int8_t>();
 		mysqlpp::Query query = Database::getCharDB().query();
-		query << "UPDATE users SET gender = " << (int32_t) gender << " WHERE id = " << player->getUserid();
+		query << "UPDATE users SET gender = " << (int32_t) gender << " WHERE id = " << player->getUserId();
 		query.exec();
 		if (LoginServer::Instance()->getPinEnabled())
 			player->setStatus(1); // Set pin
@@ -184,7 +184,7 @@ void Login::registerPIN(PlayerLogin *player, PacketReader &packet) {
 	int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
 	player->setStatus(0);
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE users SET pin = " << pin << " WHERE id = " << player->getUserid();
+	query << "UPDATE users SET pin = " << pin << " WHERE id = " << player->getUserId();
 	query.exec();
 	LoginPacket::pinAssigned(player);
 }

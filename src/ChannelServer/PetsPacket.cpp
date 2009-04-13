@@ -38,7 +38,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 		packet.add<int32_t>(0);
 		packet.addPos(pet->getPos());
 		packet.add<int8_t>(pet->getStance());
-		packet.add<int32_t>(pet->getFH());
+		packet.add<int32_t>(pet->getFh());
 	}
 	onlyPlayer ? player->getSession()->send(packet) : Maps::getMap(player->getMap())->sendPacket(packet);
 }

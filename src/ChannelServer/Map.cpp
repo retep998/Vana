@@ -94,7 +94,7 @@ void Map::addReactorSpawn(ReactorSpawnInfo spawn) {
 
 void Map::addReactor(Reactor *reactor) {
 	this->reactors.push_back(reactor);
-	reactor->setID(this->reactors.size() - 1 + 200);
+	reactor->setId(this->reactors.size() - 1 + 200);
 }
 
 void Map::addReactorRespawn(ReactorRespawnInfo respawn) {
@@ -167,13 +167,13 @@ void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh, Mob *own
 	updateMobControl(mob, true);
 }
 
-Mob * Map::getMob(int32_t id, bool isMapID) {
-	if (isMapID)
+Mob * Map::getMob(int32_t id, bool isMapId) {
+	if (isMapId)
 		return (this->mobs.find(id) != mobs.end() ? this->mobs[id] : 0);
 	else {
 		for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 			if (iter->second != 0) {
-				if (iter->second->getMobID() == id)
+				if (iter->second->getMobId() == id)
 					return iter->second;
 			}
 		}
@@ -219,7 +219,7 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 	int32_t mobskilled = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
 		if (iter->second != 0) {
-			if ((mobid > 0 && iter->second->getMobID() == mobid) || mobid == 0) {
+			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0) {
 				if (playerkill && player != 0) {
 					iter->second->applyDamage(player->getId(), iter->second->getHP());
 				}
@@ -237,7 +237,7 @@ int32_t Map::countMobs(int32_t mobid) {
 	int32_t mobcount = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0) {
-			if ((mobid > 0 && iter->second->getMobID() == mobid) || mobid == 0)
+			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0)
 				mobcount++;
 		}
 	}
@@ -248,7 +248,7 @@ int32_t Map::countMobs(int32_t mobid) {
 void Map::addDrop(Drop *drop) {
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
 	int32_t id = objectids.next();
-	drop->setID(id);
+	drop->setId(id);
 	drop->setPos(findFloor(drop->getPos()));
 	this->drops[id] = drop;
 }

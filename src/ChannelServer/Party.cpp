@@ -304,7 +304,7 @@ bool Party::checkFootholds(int8_t membercount, const vector<int16_t> &footholds)
 		footholdhasplayer[fh] = false;
 		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 			Player *m_player = iter->second;
-			if (m_player != 0 && m_player->getFH() == fh) {
+			if (m_player != 0 && m_player->getFh() == fh) {
 				if (footholdhasplayer[fh]) {
 					winner = false;
 					break;
@@ -329,7 +329,7 @@ bool Party::verifyFootholds(const vector<int16_t> &footholds) {
 		footholdhasplayer[footholds[k]] = false;
 		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 			Player *m_player = iter->second;
-			if (m_player != 0 && m_player->getFH() == footholds[k]) {
+			if (m_player != 0 && m_player->getFh() == footholds[k]) {
 				footholdhasplayer[footholds[k]] = true;
 			}
 		}

@@ -104,7 +104,7 @@ public:
 
 	int16_t getItemAmountBySlot(int8_t inv, int16_t slot);
 	uint16_t getItemAmount(int32_t itemid);
-	int32_t getEquippedID(int16_t slot);
+	int32_t getEquippedId(int16_t slot);
 	Item * getItem(int8_t inv, int16_t slot);
 
 	bool hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack = false);

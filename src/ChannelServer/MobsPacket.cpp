@@ -29,39 +29,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool spawn, bool show) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_MOB);
-	packet.add<int32_t>(mob->getID());
+	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(mob->getMobID());
+	packet.add<int32_t>(mob->getMobId());
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 	packet.add<int32_t>(0);
 	packet.addPos(mob->getPos());
 	packet.add<int8_t>(owner != 0 ? 0x08 : 0x02); // Not stance, exploring further
-	packet.add<int16_t>(mob->getFH());
-	packet.add<int16_t>(mob->getOriginFH());
+	packet.add<int16_t>(mob->getFh());
+	packet.add<int16_t>(mob->getOriginFh());
 	packet.add<int8_t>(owner != 0 ? -3 : spawn ? -2 : -1);
 	if (owner != 0)
-		packet.add<int32_t>(owner->getID());
+		packet.add<int32_t>(owner->getId());
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
 	if (show)
 		player->getSession()->send(packet);
 	else
-		Maps::getMap(mob->getMapID())->sendPacket(packet);
+		Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
 void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CONTROL_MOB);
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(mob->getID());
+	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(mob->getMobID());
+	packet.add<int32_t>(mob->getMobId());
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 	packet.add<int32_t>(0);
 	packet.addPos(mob->getPos());
 	packet.add<int8_t>(2); // Not stance, exploring further
-	packet.add<int16_t>(mob->getFH());
-	packet.add<int16_t>(mob->getOriginFH());
+	packet.add<int16_t>(mob->getFh());
+	packet.add<int16_t>(mob->getOriginFh());
 	packet.add<int16_t>(-1); // ??
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
@@ -71,7 +71,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CONTROL_MOB);
 	packet.add<int8_t>(0);
-	packet.add<int32_t>(mob->getID());
+	packet.add<int32_t>(mob->getId());
 	player->getSession()->send(packet);
 }
 
@@ -126,7 +126,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 		pack.skipBytes(4); // Charge
 	}
 	int32_t masteryid = 0;
-	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(EquipSlots::Weapon))) {
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
 		case Weapon1hSword:
 		case Weapon2hSword:
 			switch ((player->getJob() / 10)) {
@@ -221,7 +221,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(animation);
 	packet.add<int8_t>(w_speed);
 	int32_t masteryid = 0;
-	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(EquipSlots::Weapon))) {
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
 		case WeaponBow:
 			masteryid = Jobs::Hunter::BowMastery;
 			break;
@@ -354,7 +354,7 @@ void MobsPacket::damageMobSummon(Player *player, PacketReader &pack) {
 void MobsPacket::applyStatus(Mob *mob, const StatusInfo &info, int16_t delay) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_APPLY_MOB_STATUS);
-	packet.add<int32_t>(mob->getID());
+	packet.add<int32_t>(mob->getId());
 	packet.add<int32_t>(info.status);
 
 	packet.add<int16_t>(info.val);
@@ -369,16 +369,16 @@ void MobsPacket::applyStatus(Mob *mob, const StatusInfo &info, int16_t delay) {
 
 	packet.add<int16_t>(delay);
 	packet.add<int8_t>(1);
-	Maps::getMap(mob->getMapID())->sendPacket(packet);
+	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
 void MobsPacket::removeStatus(Mob *mob, int32_t status) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_REMOVE_MOB_STATUS);
-	packet.add<int32_t>(mob->getID());
+	packet.add<int32_t>(mob->getId());
 	packet.add<int32_t>(status);
 	packet.add<int8_t>(1);
-	Maps::getMap(mob->getMapID())->sendPacket(packet);
+	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
 void MobsPacket::showHP(Player *player, int32_t mobid, int8_t per, bool miniboss) {
@@ -407,7 +407,7 @@ void MobsPacket::showBossHP(Player *player, int32_t mobid, int32_t hp, const Mob
 void MobsPacket::dieMob(Mob *mob) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_KILL_MOB);
-	packet.add<int32_t>(mob->getID());
+	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(1);
-	Maps::getMap(mob->getMapID())->sendPacket(packet);
+	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }

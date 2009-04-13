@@ -34,7 +34,7 @@ public:
 	void setGender(int8_t gender) { this->gender=gender; }
 	void setWorld(int8_t world) { this->world = world; }
 	void setChannel(uint16_t channel) {	this->channel = channel; }
-	void setUserid(int32_t id) { this->userid = id; }
+	void setUserId(int32_t id) { this->userid = id; }
 	void setStatus(int32_t status) { this->status = status; }
 	void setPin(int32_t pin) { this->pin = pin; }
 	void setCharDeletePassword(int32_t char_delete_password) { this->char_delete_password = char_delete_password; }
@@ -42,7 +42,7 @@ public:
 	int8_t getGender() const { return gender; }
 	int8_t getWorld() const { return world; }
 	uint16_t getChannel() const { return channel; }
-	int32_t getUserid() const { return userid; }
+	int32_t getUserId() const { return userid; }
 	int32_t getStatus() const { return status; }
 	int32_t getPin() const { return pin; }
 	int32_t getCharDeletePassword() const { return char_delete_password; }

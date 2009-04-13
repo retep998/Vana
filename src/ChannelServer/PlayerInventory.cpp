@@ -164,7 +164,7 @@ void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
 		equipped[slot][0] = itemid;
 }
 
-int32_t PlayerInventory::getEquippedID(int16_t slot) {
+int32_t PlayerInventory::getEquippedId(int16_t slot) {
 	return equipped[slot][0];
 }
 

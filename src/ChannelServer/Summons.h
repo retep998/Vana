@@ -37,10 +37,10 @@ class Summon : public MovableLife {
 public:
 	Summon() { }
 	Summon(int32_t id, int32_t summonid, uint8_t level);
-	int32_t getID() {
+	int32_t getId() {
 		return id;
 	}
-	int32_t getSummonID() {
+	int32_t getSummonId() {
 		return summonid;
 	}
 	uint8_t getLevel() {

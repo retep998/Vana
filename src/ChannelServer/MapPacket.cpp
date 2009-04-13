@@ -126,7 +126,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(player->getChair());
 	packet.addPos(player->getPos());
 	packet.add<int8_t>(player->getStance());
-	packet.add<int16_t>(player->getFH());
+	packet.add<int16_t>(player->getFh());
 	packet.add<int8_t>(0);
 	for (int8_t i = 0; i < 3; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
@@ -137,7 +137,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.add<int32_t>(0);
 			packet.addPos(pet->getPos());
 			packet.add<int8_t>(pet->getStance());
-			packet.add<int32_t>(pet->getFH());
+			packet.add<int32_t>(pet->getFh());
 		}
 	}
 	packet.add<int8_t>(0);
