@@ -331,7 +331,7 @@ namespace Jobs {
 
 	namespace ILArchMage {
 		enum {
-			BigBang = 22210001,
+			BigBang = 2221001,
 			Blizzard = 2221007,
 			HerosWill = 2221008,
 			IceDemon = 2221003,
