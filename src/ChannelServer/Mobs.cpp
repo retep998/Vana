@@ -547,14 +547,13 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			Pos pppos;
 			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 5 : 0) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
 			pppos.y = origin.y;
-//			clock_t pptime = 175 * pickpocket;
+			clock_t pptime = 175 * pickpocket;
 			int32_t ppmesos = ((ppdamages[pickpocket] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
 			Drop *ppdrop = new Drop(player->getMap(), ppmesos, pppos, player->getId(), true);
 			ppdrop->setTime(100);
-			ppdrop->doDrop(origin);
-//			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
-//				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
-//				0, Timer::Time::fromNow(pptime));
+			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
+				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
+				0, Timer::Time::fromNow(pptime));
 		}
 		if (!GameLogicUtilities::isSummon(skillid))
 			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
