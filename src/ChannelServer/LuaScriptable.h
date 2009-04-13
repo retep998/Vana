@@ -179,6 +179,7 @@ namespace LuaExports {
 
 	// Party
 	int checkPartyFootholds(lua_State *luaVm);
+	int getAllPartyPlayerIDs(lua_State *luaVm);
 	int getPartyCount(lua_State *luaVm);
 	int getPartyID(lua_State *luaVm);
 	int getPartyMapCount(lua_State *luaVm);
@@ -197,6 +198,7 @@ namespace LuaExports {
 	int checkInstanceTimer(lua_State *luaVm);
 	int createInstance(lua_State *luaVm);
 	int deleteInstanceVariable(lua_State *luaVm);
+	int getAllInstancePlayerIDs(lua_State *luaVm);
 	int getInstanceMax(lua_State *luaVm);
 	int getInstancePlayerByIndex(lua_State *luaVm);
 	int getInstancePlayerCount(lua_State *luaVm);

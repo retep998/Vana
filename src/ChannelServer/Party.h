@@ -68,6 +68,7 @@ public:
 	Player * getMemberByIndex(uint8_t index);
 	Player * getLeader() { return members[leaderid]; }
 	Instance * getInstance() const { return instance; }
+	vector<int32_t> getAllPlayerIds();
 	int32_t getLeaderId() const { return leaderid; }
 	int32_t getId() const { return partyid; }
 	int8_t getMembersCount() const { return members.size(); }
