@@ -26,12 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 void PlayerSummons::addSummon(Summon *summon, int32_t time) {
-	bool puppet = GameLogicUtilities::isPuppet(summon->getSummonID());
+	bool puppet = GameLogicUtilities::isPuppet(summon->getSummonId());
 	if (!puppet)
 		this->summon = summon;
 	else
 		this->puppet = summon;
-	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonID(), 0);
+	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
 	clock_t summonExpire = time * 1000;
 	new Timer::Timer(
 		bind(&Summons::removeSummon, player, puppet, true, false, true, true),
@@ -41,7 +41,7 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
 	if (!puppet && this->summon != 0) {
 		if (!fromTimer) {
-			Timer::Id id(Timer::Types::BuffTimer, summon->getSummonID(), 0);
+			Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
 			player->getTimers()->removeTimer(id);
 		}
 		delete this->summon;
@@ -49,7 +49,7 @@ void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
 	}
 	else if (this->puppet != 0) {
 		if (!fromTimer) {
-			Timer::Id id(Timer::Types::BuffTimer, this->puppet->getSummonID(), 0);
+			Timer::Id id(Timer::Types::BuffTimer, this->puppet->getSummonId(), 0);
 			player->getTimers()->removeTimer(id);
 		}
 		delete this->puppet;
@@ -58,9 +58,9 @@ void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
 }
 
 Summon * PlayerSummons::getSummon(int32_t summonid) {
-	if (summon != 0 && summon->getID() == summonid)
+	if (summon != 0 && summon->getId() == summonid)
 		return summon;
-	else if (puppet != 0 && puppet->getID() == summonid)
+	else if (puppet != 0 && puppet->getId() == summonid)
 		return puppet;
 	return 0;
 }

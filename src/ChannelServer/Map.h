@@ -151,7 +151,7 @@ public:
 	void removeMob(int32_t id, int32_t spawnid);
 	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
 	int32_t countMobs(int32_t mobid = 0);
-	Mob * getMob(int32_t id, bool isMapID = true);
+	Mob * getMob(int32_t id, bool isMapId = true);
 
 	// Reactors
 	void addReactorSpawn(ReactorSpawnInfo spawn);

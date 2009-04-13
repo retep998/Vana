@@ -27,7 +27,7 @@ class PacketReader;
 struct Item;
 
 namespace Drops {
-	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos origin);
+	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin);
 	void dropMesos(Player *player, PacketReader &packet);
 	void playerLoot(Player *player, PacketReader &packet);
 	void petLoot(Player *player, PacketReader &packet);
@@ -55,14 +55,14 @@ public:
 	void setQuest(int16_t questid) { this->questid = questid; }
 	void setTradeable(bool istrade) { tradeable = istrade; }
 	void setItemAmount(int16_t amount) { this->item.amount = amount; }
-	void setID(int32_t id) { this->id = id; }
+	void setId(int32_t id) { this->id = id; }
 	void setTime(int32_t time) { this->time = time; }
 	void setDropped(int32_t time) { dropped = time; }
 	void setPlayer(int32_t playerid) { playerid = playerid; }
 	void setPos(Pos pos) { this->pos = pos; }
 
 	int16_t getQuest() const { return questid; }
-	int32_t getID() const { return id; }
+	int32_t getId() const { return id; }
 	int32_t getDropped() const { return dropped; }
 	int32_t getTime() const { return time; }
 	int32_t getOwner() const { return owner; }
@@ -75,7 +75,7 @@ public:
 	Item getItem() const { return item; }
 
 	int16_t getAmount();
-	int32_t getObjectID();
+	int32_t getObjectId();
 
 	void doDrop(Pos origin);
 	void showDrop(Player *player);

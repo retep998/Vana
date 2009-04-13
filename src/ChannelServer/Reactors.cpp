@@ -72,9 +72,9 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 
 	if (reactor != 0 && reactor->isAlive()) {
-		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
-			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
-			if (revent->nextstate < maxstates[reactor->getReactorID()]) {
+		if (reactor->getState() < maxstates[reactor->getReactorId()]) {
+			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorId()][reactor->getState()];
+			if (revent->nextstate < maxstates[reactor->getReactorId()]) {
 				if (revent->type >= 100)
 					return;
 				ReactorPacket::triggerReactor(reactor);
@@ -83,12 +83,12 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 			}
 			else {
 				std::ostringstream filenameStream;
-				filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
+				filenameStream << "scripts/reactors/" << reactor->getReactorId() << ".lua";
 				string filename = filenameStream.str();
 
 				struct stat fileInfo;
 				if (!stat(filename.c_str(), &fileInfo)) { // Script found
-					LuaReactor(filenameStream.str(), player->getId(), id, reactor->getMapID());
+					LuaReactor(filenameStream.str(), player->getId(), id, reactor->getMapId());
 				}
 				else { // Default action of dropping an item
 					reactor->drop(player);
@@ -96,7 +96,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 
 				reactor->setState(revent->nextstate, false);
 				reactor->kill();
-				Maps::getMap(reactor->getMapID())->addReactorRespawn(ReactorRespawnInfo(id, TimeUtilities::clock_in_ms()));
+				Maps::getMap(reactor->getMapId())->addReactorRespawn(ReactorRespawnInfo(id, TimeUtilities::clock_in_ms()));
 				ReactorPacket::destroyReactor(reactor);
 			}
 		}
@@ -108,8 +108,8 @@ struct Reaction {
         reactor->setState(state, true);
         drop->removeDrop();
         std::ostringstream filenameStream;
-        filenameStream << "scripts/reactors/" << reactor->getReactorID() << ".lua";
-        LuaReactor(filenameStream.str(), player->getId(), reactor->getID(), reactor->getMapID());
+        filenameStream << "scripts/reactors/" << reactor->getReactorId() << ".lua";
+        LuaReactor(filenameStream.str(), player->getId(), reactor->getId(), reactor->getMapId());
         return;
     }
     Reactor *reactor;
@@ -121,9 +121,9 @@ struct Reaction {
 void Reactors::checkDrop(Player *player, Drop *drop) {
 	for (size_t i = 0; i < Maps::getMap(drop->getMap())->getNumReactors(); i++) {
 		Reactor *reactor = Maps::getMap(drop->getMap())->getReactor(i);
-		if (reactor->getState() < maxstates[reactor->getReactorID()]) {
-			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorID()][reactor->getState()];
-			if (revent->type == 100 && drop->getObjectID() == revent->itemid) {
+		if (reactor->getState() < maxstates[reactor->getReactorId()]) {
+			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorId()][reactor->getState()];
+			if (revent->type == 100 && drop->getObjectId() == revent->itemid) {
 				if ((drop->getPos().x >= reactor->getPos().x + revent->ltx && drop->getPos().x <= reactor->getPos().x + revent->rbx) && (drop->getPos().y >= reactor->getPos().y + revent->lty && drop->getPos().y <= reactor->getPos().y + revent->rby)) {
 					Reaction reaction;
 					reaction.reactor = reactor;
@@ -131,7 +131,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 					reaction.player = player;
 					reaction.state = revent->nextstate;
 
-					Timer::Id id(Timer::Types::ReactionTimer, drop->getID(), 0);
+					Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
 					new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3000));
 				}
 				return;
@@ -141,6 +141,6 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 }
 
 void Reactors::checkLoot(Drop *drop) {
-	Timer::Id id(Timer::Types::ReactionTimer, drop->getID(), 0);
+	Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
 	Timer::Thread::Instance()->getContainer()->removeTimer(id);
 }

@@ -63,6 +63,7 @@ public:
 	string getVariable(const string &name);
 
 	// Players
+	vector<int32_t> getAllPlayerIds();
 	const string getPlayerByIndex(uint32_t index) const;
 	void setMaxPlayers(int32_t maxplayers) { m_max_players = maxplayers; }
 	void addPlayer(Player *player);
@@ -109,7 +110,6 @@ public:
 	Timer::Container * getTimers() const { return m_timers.get(); }
 
 	// Lua interaction
-	void setPlayerId(int32_t id);
 	void sendMessage(InstanceMessages message);
 	void sendMessage(InstanceMessages message, int32_t);
 	void sendMessage(InstanceMessages message, int32_t, int32_t);

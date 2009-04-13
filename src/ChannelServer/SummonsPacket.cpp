@@ -27,15 +27,15 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SPAWN_SUMMON);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(summon->getID());
-	packet.add<int32_t>(summon->getSummonID());
+	packet.add<int32_t>(summon->getId());
+	packet.add<int32_t>(summon->getSummonId());
 	packet.add<int8_t>(summon->getLevel());
 	packet.addPos(summon->getPos());
 	packet.add<int8_t>(4); // ?
 	packet.add<int8_t>(0x53); // ?
 	packet.add<int8_t>(1); // ?
 	packet.add<int8_t>(summon->getType()); // Movement type
-	packet.add<int8_t>(!GameLogicUtilities::isPuppet(summon->getSummonID())); // Attack or not
+	packet.add<int8_t>(!GameLogicUtilities::isPuppet(summon->getSummonId())); // Attack or not
 	packet.add<int8_t>(!animated);
 	if (toplayer != 0)
 		toplayer->getSession()->send(packet);
@@ -47,7 +47,7 @@ void SummonsPacket::moveSummon(Player *player, Summon *summon, Pos &startPos, un
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_SUMMON);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(summon->getID());
+	packet.add<int32_t>(summon->getId());
 	packet.addPos(startPos);
 	packet.addBuffer(buf, buflen);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -57,7 +57,7 @@ void SummonsPacket::removeSummon(Player *player, Summon *summon, bool animated) 
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_REMOVE_SUMMON);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(summon->getID());
+	packet.add<int32_t>(summon->getId());
 	packet.add<int8_t>(animated ? 4 : 1); // ?
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }

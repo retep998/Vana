@@ -578,7 +578,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				}
 				case CmdPos: {
 					char msg[50];
-					sprintf(msg, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFH());
+					sprintf(msg, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFh());
 					PlayerPacket::showMessage(player, msg, 6);
 					break;
 				}

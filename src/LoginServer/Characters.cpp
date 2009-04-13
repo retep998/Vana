@@ -82,7 +82,7 @@ void Characters::loadCharacter(Character &charc, const mysqlpp::Row &row) {
 
 void Characters::showAllCharacters(PlayerLogin *player) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT * FROM characters WHERE userid = " << player->getUserid();
+	query << "SELECT * FROM characters WHERE userid = " << player->getUserId();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	typedef unordered_map<uint8_t, vector<Character> > CharsMap;
@@ -111,7 +111,7 @@ void Characters::showAllCharacters(PlayerLogin *player) {
 
 void Characters::showCharacters(PlayerLogin *player) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT * FROM characters WHERE userid = " << player->getUserid() << " AND world_id = " << (int32_t) player->getWorld();
+	query << "SELECT * FROM characters WHERE userid = " << player->getUserId() << " AND world_id = " << (int32_t) player->getWorld();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	vector<Character> chars;
@@ -170,7 +170,7 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO characters (name, userid, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES ("
 			<< mysqlpp::quote << name << ","
-			<< player->getUserid() << ","
+			<< player->getUserId() << ","
 			<< (int32_t) player->getWorld() << ","
 			<< eyes << ","
 			<< hair << ","
@@ -268,7 +268,7 @@ void Characters::connectGameWorld(PlayerLogin *player, PacketReader &packet) {
 
 bool Characters::ownerCheck(PlayerLogin *player, int32_t id) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT true FROM characters WHERE id = " << id << " AND userid = " << player->getUserid();
+	query << "SELECT true FROM characters WHERE id = " << id << " AND userid = " << player->getUserId();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	return (res.num_rows() == 1) ? 1 : 0 ;

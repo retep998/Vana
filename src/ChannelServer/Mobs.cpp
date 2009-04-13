@@ -159,7 +159,7 @@ void Mob::setControl(Player *control) {
 }
 
 void Mob::endControl() {
-	if (control != 0 && control->getMap() == getMapID())
+	if (control != 0 && control->getMap() == getMapId())
 		MobsPacket::endControlMob(control, this);
 }
 
@@ -275,12 +275,12 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			uint8_t items = packet.get<int8_t>();
 			int32_t map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
-				int32_t objID = packet.get<int32_t>();
+				int32_t objId = packet.get<int32_t>();
 				packet.skipBytes(1); // Boolean for hit a monster
-				Drop *drop = Maps::getMap(map)->getDrop(objID);
+				Drop *drop = Maps::getMap(map)->getDrop(objId);
 				if (drop != 0) {
 					DropsPacket::explodeDrop(drop);
-					Maps::getMap(map)->removeDrop(drop->getID());
+					Maps::getMap(map)->removeDrop(drop->getId());
 					delete drop;
 				}
 			}
@@ -459,7 +459,7 @@ void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 	packet.skipBytes(5);
 	int8_t targets = packet.get<int8_t>();
 	int32_t useless = 0;
-	damageMobInternal(player, packet, targets, 1, summon->getSummonID(), useless);
+	damageMobInternal(player, packet, targets, 1, summon->getSummonId(), useless);
 }
 
 uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
@@ -471,9 +471,9 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
-		uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedID(EquipSlots::Weapon));
+		uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
 		handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
-		int32_t mobid = mob->getMobID();
+		int32_t mobid = mob->getMobId();
 		Mob *htabusetaker = 0;
 		switch (mobid) {
 			case 8810002:
@@ -549,16 +549,15 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
 		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
 			Pos pppos;
-			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 0 : 5) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
+			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 5 : 0) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
 			pppos.y = origin.y;
-//			clock_t pptime = 175 * pickpocket;
+			clock_t pptime = 175 * pickpocket;
 			int32_t ppmesos = ((ppdamages[pickpocket] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
 			Drop *ppdrop = new Drop(player->getMap(), ppmesos, pppos, player->getId(), true);
 			ppdrop->setTime(100);
-			ppdrop->doDrop(origin);
-//			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
-//				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
-//				0, Timer::Time::fromNow(pptime));
+			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
+				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
+				0, Timer::Time::fromNow(pptime));
 		}
 		if (!GameLogicUtilities::isSummon(skillid))
 			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56

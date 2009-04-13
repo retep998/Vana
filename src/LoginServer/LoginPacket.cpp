@@ -64,7 +64,7 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 	packet.add<int16_t>(SEND_LOGIN_INFO_REPLY);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
-	packet.add<int32_t>(player->getUserid());
+	packet.add<int32_t>(player->getUserId());
 	switch (player->getStatus()) {
 		case 5: packet.add<int8_t>(0x0a); break; // Gender Select
 		case 1: packet.add<int8_t>(0x0b); break; // Pin Select

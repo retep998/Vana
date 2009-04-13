@@ -19,42 +19,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instance.h"
 #include "Instances.h"
 #include "Inventory.h"
-#include "Player.h"
-#include "Players.h"
+#include "InventoryPacket.h"
+#include "Levels.h"
 #include "Maps.h"
 #include "MapPacket.h"
 #include "Mobs.h"
 #include "NPCs.h"
 #include "Party.h"
-#include "Reactors.h"
+#include "Player.h"
+#include "PlayerPacket.h"
+#include "Players.h"
 #include "Quests.h"
-#include "Levels.h"
+#include "Randomizer.h"
+#include "Reactors.h"
 #include "ShopDataProvider.h"
 #include "TimeUtilities.h"
-#include "PlayerPacket.h"
-#include "InventoryPacket.h"
-#include "Randomizer.h"
 #include <iostream>
+#include <vector>
 
-LuaScriptable::LuaScriptable(const string &filename, int32_t playerid) : filename(filename), playerid(playerid), luaVm(lua_open()) {
+using std::vector;
+
+LuaScriptable::LuaScriptable(const string &filename, int32_t playerid) : filename(filename), scriptplayerid(playerid), playerid(playerid), luaVm(lua_open()) {
 	initialize();
 }
 
 LuaScriptable::~LuaScriptable() {
+	Player *player = Players::Instance()->getPlayer(playerid);
+	Player *player2 = Players::Instance()->getPlayer(scriptplayerid);
+	if (player != 0) {
+		player->setLuaScriptable(0);
+	}
+	if (player2 != 0 && player2 != player) {
+		player2->setLuaScriptable(0);
+	}
 	lua_close(luaVm);
 }
 
 void LuaScriptable::initialize() {
 	luaopen_base(luaVm);
 	setVariable("playerid", playerid); // Pushing id for reference from static functions
+
 	Player *player = LuaExports::getPlayer(luaVm);
 	if (player->getInstance() != 0)
 		setVariable("instancename", player->getInstance()->getName());
 
+	player->setLuaScriptable(this);
+
 	// Miscellanous
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
+	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
 	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
+	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
 
 	// Buddy
@@ -170,9 +186,15 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 
 	// Party
+	lua_register(luaVm, "checkPartyFootholds", &LuaExports::checkPartyFootholds);
+	lua_register(luaVm, "getAllPartyPlayerIDs", &LuaExports::getAllPartyPlayerIDs);
 	lua_register(luaVm, "getPartyCount", &LuaExports::getPartyCount);
 	lua_register(luaVm, "getPartyID", &LuaExports::getPartyID);
+	lua_register(luaVm, "getPartyMapCount", &LuaExports::getPartyMapCount);
+	lua_register(luaVm, "isPartyInLevelRange", &LuaExports::isPartyInLevelRange);
 	lua_register(luaVm, "isPartyLeader", &LuaExports::isPartyLeader);
+	lua_register(luaVm, "warpParty", &LuaExports::warpParty);
+	lua_register(luaVm, "verifyPartyFootholds", &LuaExports::verifyPartyFootholds);
 
 	// Instance
 	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
@@ -184,6 +206,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "checkInstanceTimer", &LuaExports::checkInstanceTimer);
 	lua_register(luaVm, "createInstance", &LuaExports::createInstance);
 	lua_register(luaVm, "deleteInstanceVariable", &LuaExports::deleteInstanceVariable);
+	lua_register(luaVm, "getAllInstancePlayerIDs", &LuaExports::getAllInstancePlayerIDs);
 	lua_register(luaVm, "getInstanceMax", &LuaExports::getInstanceMax);
 	lua_register(luaVm, "getInstancePlayerByIndex", &LuaExports::getInstancePlayerByIndex);
 	lua_register(luaVm, "getInstancePlayerCount", &LuaExports::getInstancePlayerCount);
@@ -200,10 +223,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "removeAllInstancePlayers", &LuaExports::removeAllInstancePlayers);
 	lua_register(luaVm, "removeInstancePlayer", &LuaExports::removeInstancePlayer);
 	lua_register(luaVm, "removePlayerSignUp", &LuaExports::removePlayerSignUp);
-	lua_register(luaVm, "revertInstancePlayer", &LuaExports::revertInstancePlayer);
 	lua_register(luaVm, "setInstanceMax", &LuaExports::setInstanceMax);
 	lua_register(luaVm, "setInstancePersistence", &LuaExports::setInstancePersistence);
-	lua_register(luaVm, "setInstancePlayer", &LuaExports::setInstancePlayer);
 	lua_register(luaVm, "setInstanceReactorReset", &LuaExports::setInstanceReactorReset);
 	lua_register(luaVm, "setInstanceTime", &LuaExports::setInstanceTime);
 	lua_register(luaVm, "setInstanceVariable", &LuaExports::setInstanceVariable);
@@ -241,6 +262,22 @@ void LuaScriptable::setVariable(const string &name, const string &val) {
 	lua_setglobal(luaVm, name.c_str());
 }
 
+void LuaScriptable::setPlayer(Player *player) {
+	player->setLuaScriptable(this);
+	scriptplayerid = player->getId();
+	setVariable("playerid", scriptplayerid);
+}
+
+void LuaScriptable::revertPlayer() {
+	Player *player = Players::Instance()->getPlayer(scriptplayerid);
+	if (player != 0) {
+		player->setLuaScriptable(0);
+		scriptplayerid = playerid;
+		setVariable("playerid", playerid);
+	}
+}
+
+// Lua Exports
 Player * LuaExports::getPlayer(lua_State *luaVm) {
 	lua_getglobal(luaVm, "playerid");
 	return Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
@@ -263,10 +300,27 @@ int LuaExports::getRandomNumber(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::revertPlayer(lua_State *luaVm) {
+	getPlayer(luaVm)->getLuaScriptable()->revertPlayer();
+	return 0;
+}
+
 int LuaExports::runNPC(lua_State *luaVm) {
 	int32_t npcid = lua_tointeger(luaVm, -1);
 	NPC *npc = new NPC(npcid, getPlayer(luaVm));
 	npc->run();
+	return 0;
+}
+
+int LuaExports::setPlayer(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	if (player != 0) {
+		getPlayer(luaVm)->getLuaScriptable()->setPlayer(player);
+	}
 	return 0;
 }
 
@@ -394,7 +448,7 @@ int LuaExports::getEyes(lua_State *luaVm) {
 }
 
 int LuaExports::getFH(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getFH());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getFh());
 	return 1;
 }
 
@@ -707,7 +761,7 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, -2);
 	int32_t reactorid = lua_tointeger(luaVm, -1);
 	for (uint32_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
-		if (Maps::getMap(mapid)->getReactor(i)->getReactorID() == reactorid) {
+		if (Maps::getMap(mapid)->getReactor(i)->getReactorId() == reactorid) {
 			lua_pushinteger(luaVm, Maps::getMap(mapid)->getReactor(i)->getState());
 			return 1;
 		}
@@ -750,7 +804,7 @@ int LuaExports::setReactorState(lua_State *luaVm) {
 	uint8_t state = lua_tointeger(luaVm, -1);
 	for (size_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
 		Reactor *reactor = Maps::getMap(mapid)->getReactor(i);
-		if (reactor->getReactorID() == reactorid) {
+		if (reactor->getReactorId() == reactorid) {
 			reactor->setState(state, true);
 			break;
 		}
@@ -904,6 +958,40 @@ int LuaExports::getMesoRate(lua_State *luaVm) {
 }
 
 // Party
+int LuaExports::checkPartyFootholds(lua_State *luaVm) {
+	int8_t numbermembers = lua_tointeger(luaVm, 1);
+	vector<int16_t> footholds;
+	Party *p = getPlayer(luaVm)->getParty();
+	bool winner = false;
+
+	lua_pushnil(luaVm);
+	while (lua_next(luaVm, 2)) {
+		footholds.push_back(lua_tointeger(luaVm, -1));
+		lua_pop(luaVm, 1);
+	}
+	if (p != 0) {
+		winner = p->checkFootholds(numbermembers, footholds);
+	}
+	lua_pushboolean(luaVm, winner);
+	return 1;
+}
+
+int LuaExports::getAllPartyPlayerIDs(lua_State *luaVm) {
+	Party *p = getPlayer(luaVm)->getParty();
+	if (p != 0) {
+		vector<int32_t> ids = p->getAllPlayerIds();
+		lua_newtable(luaVm);
+		int top = lua_gettop(luaVm);
+		for (size_t i = 0; i < ids.size(); i++) {
+			lua_pushinteger(luaVm, i + 1);
+			lua_pushinteger(luaVm, ids[i]);
+			lua_settable(luaVm, top);
+		}
+		return 1;
+	}
+	return 0;
+}
+
 int LuaExports::getPartyCount(lua_State *luaVm) {
 	int32_t mcount = 0;
 	Party *p = getPlayer(luaVm)->getParty();
@@ -924,6 +1012,31 @@ int LuaExports::getPartyID(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getPartyMapCount(lua_State *luaVm) {
+	Player *player = getPlayer(luaVm);
+	Party *p = player->getParty();
+	int8_t members = 0;
+	if (p != 0) {
+		int32_t mapid = lua_tointeger(luaVm, 1);
+		members = p->getMemberCountOnMap(mapid);
+	}
+	lua_pushinteger(luaVm, members);
+	return 1;	
+}
+
+int LuaExports::isPartyInLevelRange(lua_State *luaVm) {
+	Player *player = getPlayer(luaVm);
+	Party *p = player->getParty();
+	bool iswithin = false;
+	if (p != 0) {
+		uint8_t lowbound = lua_tointeger(luaVm, 1);
+		uint8_t highbound = lua_tointeger(luaVm, 2);
+		iswithin = p->isWithinLevelRange(lowbound, highbound);
+	}
+	lua_pushboolean(luaVm, iswithin);
+	return 1;
+}
+
 int LuaExports::isPartyLeader(lua_State *luaVm) {
 	Player *player = getPlayer(luaVm);
 	Party *p = player->getParty();
@@ -932,6 +1045,38 @@ int LuaExports::isPartyLeader(lua_State *luaVm) {
 		isleader = player == p->getLeader();
 	}
 	lua_pushboolean(luaVm, isleader);
+	return 1;
+}
+
+int LuaExports::warpParty(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	string to;
+	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+		string to = lua_tostring(luaVm, 2);
+	}
+	Player *player = getPlayer(luaVm);
+	Party *p = player->getParty();
+	if (p != 0) {
+		p->warpAllMembers(mapid, to);
+	}
+	return 0;
+}
+
+int LuaExports::verifyPartyFootholds(lua_State *luaVm) {
+	vector<int16_t> footholds;
+
+	lua_pushnil(luaVm);
+	while (lua_next(luaVm, 1) != 0) {
+		footholds.push_back(lua_tointeger(luaVm, -1));
+		lua_pop(luaVm, 1);
+	}
+
+	Party *p = getPlayer(luaVm)->getParty();
+	bool winner = false;
+	if (p != 0) {
+		winner = p->verifyFootholds(footholds);
+	}
+	lua_pushboolean(luaVm, winner);
 	return 1;
 }
 
@@ -1009,6 +1154,18 @@ int LuaExports::createInstance(lua_State *luaVm) {
 int LuaExports::deleteInstanceVariable(lua_State *luaVm) {
 	getInstance(luaVm)->deleteVariable(lua_tostring(luaVm, 1));
 	return 0;
+}
+
+int LuaExports::getAllInstancePlayerIDs(lua_State *luaVm) {
+	vector<int32_t> ids = getInstance(luaVm)->getAllPlayerIds();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < ids.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, ids[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
 }
 
 int LuaExports::getInstanceMax(lua_State *luaVm) {
@@ -1106,11 +1263,6 @@ int LuaExports::removePlayerSignUp(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::revertInstancePlayer(lua_State *luaVm) {
-	getInstance(luaVm)->setPlayerId(0);
-	return 0;
-}
-
 int LuaExports::setInstanceMax(lua_State *luaVm) {
 	getInstance(luaVm)->setMaxPlayers(lua_tointeger(luaVm, 1));
 	return 0;
@@ -1118,17 +1270,6 @@ int LuaExports::setInstanceMax(lua_State *luaVm) {
 
 int LuaExports::setInstancePersistence(lua_State *luaVm) {
 	getInstance(luaVm)->setPersistence(lua_toboolean(luaVm, 1) != 0);
-	return 0;
-}
-
-int LuaExports::setInstancePlayer(lua_State *luaVm) {
-	Player *player = 0;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
-	if (player != 0)
-		getInstance(luaVm)->setPlayerId(player->getId());
 	return 0;
 }
 
