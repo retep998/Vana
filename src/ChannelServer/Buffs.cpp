@@ -580,16 +580,6 @@ Buffs::Buffs() {
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
-	buff.type = 0x02;
-	buff.byte = Byte1;
-	buff.value = SkillWdef;
-	player.buff = buff;
-	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
-	buff.type = 0x08;
-	buff.byte = Byte1;
-	buff.value = SkillMdef;
-	player.buff = buff;
-	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
 	// End mount buffs
 }
 
