@@ -227,6 +227,14 @@ Player * Party::getMemberByIndex(uint8_t index) {
 	return p;
 }
 
+vector<int32_t> Party::getAllPlayerIds() {
+	vector<int32_t> playerids;
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		playerids.push_back(iter->first);
+	}
+	return playerids;
+}
+
 void Party::setMember(int32_t playerid, Player *player) {
 	members[playerid] = player;
 }

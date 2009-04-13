@@ -187,6 +187,7 @@ void LuaScriptable::initialize() {
 
 	// Party
 	lua_register(luaVm, "checkPartyFootholds", &LuaExports::checkPartyFootholds);
+	lua_register(luaVm, "getAllPartyPlayerIDs", &LuaExports::getAllPartyPlayerIDs);
 	lua_register(luaVm, "getPartyCount", &LuaExports::getPartyCount);
 	lua_register(luaVm, "getPartyID", &LuaExports::getPartyID);
 	lua_register(luaVm, "getPartyMapCount", &LuaExports::getPartyMapCount);
@@ -205,6 +206,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "checkInstanceTimer", &LuaExports::checkInstanceTimer);
 	lua_register(luaVm, "createInstance", &LuaExports::createInstance);
 	lua_register(luaVm, "deleteInstanceVariable", &LuaExports::deleteInstanceVariable);
+	lua_register(luaVm, "getAllInstancePlayerIDs", &LuaExports::getAllInstancePlayerIDs);
 	lua_register(luaVm, "getInstanceMax", &LuaExports::getInstanceMax);
 	lua_register(luaVm, "getInstancePlayerByIndex", &LuaExports::getInstancePlayerByIndex);
 	lua_register(luaVm, "getInstancePlayerCount", &LuaExports::getInstancePlayerCount);
@@ -974,6 +976,22 @@ int LuaExports::checkPartyFootholds(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getAllPartyPlayerIDs(lua_State *luaVm) {
+	Party *p = getPlayer(luaVm)->getParty();
+	if (p != 0) {
+		vector<int32_t> ids = p->getAllPlayerIds();
+		lua_newtable(luaVm);
+		int top = lua_gettop(luaVm);
+		for (size_t i = 0; i < ids.size(); i++) {
+			lua_pushinteger(luaVm, i + 1);
+			lua_pushinteger(luaVm, ids[i]);
+			lua_settable(luaVm, top);
+		}
+		return 1;
+	}
+	return 0;
+}
+
 int LuaExports::getPartyCount(lua_State *luaVm) {
 	int32_t mcount = 0;
 	Party *p = getPlayer(luaVm)->getParty();
@@ -1136,6 +1154,18 @@ int LuaExports::createInstance(lua_State *luaVm) {
 int LuaExports::deleteInstanceVariable(lua_State *luaVm) {
 	getInstance(luaVm)->deleteVariable(lua_tostring(luaVm, 1));
 	return 0;
+}
+
+int LuaExports::getAllInstancePlayerIDs(lua_State *luaVm) {
+	vector<int32_t> ids = getInstance(luaVm)->getAllPlayerIds();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < ids.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, ids[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
 }
 
 int LuaExports::getInstanceMax(lua_State *luaVm) {
