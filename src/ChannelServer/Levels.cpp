@@ -159,11 +159,28 @@ void Levels::addStat(Player *player, PacketReader &packet) {
 	addStat(player, type);
 }
 
-void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract) {
+void Levels::addStatMulti(Player *player, PacketReader &packet) {
+	packet.skipBytes(4);
+	uint32_t amount = packet.get<uint32_t>();
+
+	LevelsPacket::statOK(player);
+
+	for (uint32_t i = 0; i < amount; i++) {
+		int32_t type = packet.get<int32_t>();
+		int32_t value = packet.get<int32_t>();
+
+		if (value < 0 || player->getAP() < value) {
+			//hacking
+			return;
+		}
+
+		addStat(player, type, value);
+	}
+}
+
+void Levels::addStat(Player *player, int32_t type, int32_t mod, bool isreset) {
 	int16_t maxstat = ChannelServer::Instance()->getMaxStats();
-	int16_t mod = 1;
-	if (issubtract)
-		mod = -1;
+	bool issubtract = mod < 0;
 	switch (type) {
 		case 0x40:
 			if (player->getStr() >= maxstat)
@@ -250,5 +267,5 @@ void Levels::addStat(Player *player, int32_t type, bool isreset, bool issubtract
 			break;
 	}
 	if (!isreset)
-		player->setAP(player->getAP() - 1);
+		player->setAP(player->getAP() - mod);
 }
