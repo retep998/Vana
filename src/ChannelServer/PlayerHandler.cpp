@@ -56,7 +56,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				return;
 			}
 
-			mobid = mob->getMobID();
+			mobid = mob->getMobId();
 			if (type != 0xFF) {
 				try {
 					attack = mob->getAttackInfo(type);

@@ -116,25 +116,25 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 				bool top = -slot2 == EquipSlots::Top;
 				bool bottom = -slot2 == EquipSlots::Bottom;
 
-				if (weapon && GameLogicUtilities::is2hWeapon(item1->id) && player->getInventory()->getEquippedID(EquipSlots::Shield) != 0) {
+				if (weapon && GameLogicUtilities::is2hWeapon(item1->id) && player->getInventory()->getEquippedId(EquipSlots::Shield) != 0) {
 					oldslot = -EquipSlots::Shield;
 				}
-				else if (shield && GameLogicUtilities::is2hWeapon(player->getInventory()->getEquippedID(EquipSlots::Weapon))) {
+				else if (shield && GameLogicUtilities::is2hWeapon(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
 					oldslot = -EquipSlots::Weapon;
 				}
-				else if (top && GameLogicUtilities::isOverall(item1->id) && player->getInventory()->getEquippedID(EquipSlots::Bottom) != 0) {
+				else if (top && GameLogicUtilities::isOverall(item1->id) && player->getInventory()->getEquippedId(EquipSlots::Bottom) != 0) {
 					oldslot = -EquipSlots::Bottom;
 				}
-				else if (bottom && GameLogicUtilities::isOverall(player->getInventory()->getEquippedID(EquipSlots::Top))) {
+				else if (bottom && GameLogicUtilities::isOverall(player->getInventory()->getEquippedId(EquipSlots::Top))) {
 					oldslot = -EquipSlots::Top;
 				}
 				if (oldslot != 0) {
 					remove = player->getInventory()->getItem(inv, oldslot);
 					bool onlyswap = true;
-					if ((player->getInventory()->getEquippedID(EquipSlots::Shield) != 0) && (player->getInventory()->getEquippedID(EquipSlots::Weapon) != 0)) {
+					if ((player->getInventory()->getEquippedId(EquipSlots::Shield) != 0) && (player->getInventory()->getEquippedId(EquipSlots::Weapon) != 0)) {
 						onlyswap = false;
 					}
-					else if ((player->getInventory()->getEquippedID(EquipSlots::Top) != 0) && (player->getInventory()->getEquippedID(EquipSlots::Bottom) != 0)) {
+					else if ((player->getInventory()->getEquippedId(EquipSlots::Top) != 0) && (player->getInventory()->getEquippedId(EquipSlots::Bottom) != 0)) {
 						onlyswap = false;
 					}
 					if (onlyswap) {

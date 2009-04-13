@@ -208,7 +208,7 @@ Reactor * Instance::getReactor(int32_t reactorid) {
 	Reactor *reactor = 0;
 	for (size_t i = 0; i < getReactorNum(); i++) {
 		Reactor *treactor = m_reactors[i];
-		if (treactor->getID() == reactorid) {
+		if (treactor->getId() == reactorid) {
 			reactor = treactor;
 			break;
 		}

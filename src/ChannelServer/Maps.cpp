@@ -122,7 +122,7 @@ void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
 	player->setMappos(portal->id);
 	player->setPos(Pos(portal->pos.x, portal->pos.y - 40));
 	player->setStance(0);
-	player->setFH(0);
+	player->setFh(0);
 	for (int8_t i = 0; i < 3; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			pet->setPos(portal->pos);

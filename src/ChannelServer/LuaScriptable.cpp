@@ -448,7 +448,7 @@ int LuaExports::getEyes(lua_State *luaVm) {
 }
 
 int LuaExports::getFH(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getFH());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getFh());
 	return 1;
 }
 
@@ -761,7 +761,7 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, -2);
 	int32_t reactorid = lua_tointeger(luaVm, -1);
 	for (uint32_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
-		if (Maps::getMap(mapid)->getReactor(i)->getReactorID() == reactorid) {
+		if (Maps::getMap(mapid)->getReactor(i)->getReactorId() == reactorid) {
 			lua_pushinteger(luaVm, Maps::getMap(mapid)->getReactor(i)->getState());
 			return 1;
 		}
@@ -804,7 +804,7 @@ int LuaExports::setReactorState(lua_State *luaVm) {
 	uint8_t state = lua_tointeger(luaVm, -1);
 	for (size_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
 		Reactor *reactor = Maps::getMap(mapid)->getReactor(i);
-		if (reactor->getReactorID() == reactorid) {
+		if (reactor->getReactorId() == reactorid) {
 			reactor->setState(state, true);
 			break;
 		}

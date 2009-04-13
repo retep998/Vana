@@ -43,7 +43,7 @@ Drop::Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) :
 	Maps::getMap(mapid)->addDrop(this);
 }
 
-int32_t Drop::getObjectID() {
+int32_t Drop::getObjectId() {
 	if (mesos > 0)
 		return mesos;
 	else
@@ -94,8 +94,8 @@ void Drop::removeDrop(bool showPacket) {
 }
 
 // Drops namespace
-void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingID, Pos origin) {
-	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingID);
+void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin) {
+	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
 	Player *player = Players::Instance()->getPlayer(playerid);
 	int16_t d = 0;
 	Pos pos;
@@ -196,19 +196,19 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	if (drop->isQuest()) {
 		int32_t request = 0;
 		for (size_t i = 0; i < Quests::quests[drop->getQuest()].rewards.size(); i++) {
-			if (Quests::quests[drop->getQuest()].rewards[i].id == drop->getObjectID()) {
+			if (Quests::quests[drop->getQuest()].rewards[i].id == drop->getObjectId()) {
 				request = Quests::quests[drop->getQuest()].rewards[i].count;
 			}
 		}
-		if (player->getInventory()->getItemAmount(drop->getObjectID()) > request || !player->getQuests()->isQuestActive(drop->getQuest())) {
+		if (player->getInventory()->getItemAmount(drop->getObjectId()) > request || !player->getQuests()->isQuestActive(drop->getQuest())) {
 			DropsPacket::takeNote(player, 0, false, 0);
 			DropsPacket::dontTake(player);
 			return;
 		}
 	}
 	if (drop->isMesos()) {
-		if (player->getInventory()->modifyMesos(drop->getObjectID(), true))
-			DropsPacket::takeNote(player, drop->getObjectID(), true, 0);
+		if (player->getInventory()->modifyMesos(drop->getObjectId(), true))
+			DropsPacket::takeNote(player, drop->getObjectId(), true, 0);
 		else
 			return;
 	}
@@ -220,7 +220,7 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 			int16_t amount = Inventory::addItem(player, item, true);
 			if (amount > 0) {
 				if (dropAmount - amount > 0) {
-					DropsPacket::takeNote(player, drop->getObjectID(), false, dropAmount - amount);
+					DropsPacket::takeNote(player, drop->getObjectId(), false, dropAmount - amount);
 					drop->setItemAmount(amount);
 				}
 				DropsPacket::takeNote(player, 0, 0, 0);
@@ -231,7 +231,7 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		else {
 			Inventory::useItem(player, dropitem.id);
 		}
-		DropsPacket::takeNote(player, drop->getObjectID(), false, drop->getAmount());
+		DropsPacket::takeNote(player, drop->getObjectId(), false, drop->getAmount());
 	}
 	Reactors::checkLoot(drop);
 	drop->takeDrop(player, petid);

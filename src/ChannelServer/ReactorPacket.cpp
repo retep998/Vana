@@ -26,19 +26,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void ReactorPacket::spawnReactor(Reactor *reactor) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_REACTOR);
-	packet.add<int32_t>(reactor->getID());
-	packet.add<int32_t>(reactor->getReactorID());
+	packet.add<int32_t>(reactor->getId());
+	packet.add<int32_t>(reactor->getReactorId());
 	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
 	packet.add<int8_t>(0);
-	Maps::getMap(reactor->getMapID())->sendPacket(packet);
+	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }
 
 void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_REACTOR);
-	packet.add<int32_t>(reactor->getID());
-	packet.add<int32_t>(reactor->getReactorID());
+	packet.add<int32_t>(reactor->getId());
+	packet.add<int32_t>(reactor->getReactorId());
 	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
 	packet.add<int8_t>(0);
@@ -48,18 +48,18 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 void ReactorPacket::triggerReactor(Reactor *reactor) {
 	PacketCreator packet = PacketCreator();
 	packet.add<int16_t>(SEND_TRIGGER_REACTOR);
-	packet.add<int32_t>(reactor->getID());
+	packet.add<int32_t>(reactor->getId());
 	packet.add<int8_t>(reactor->getState()); // State
 	packet.addPos(reactor->getPos());
 	packet.add<int32_t>(0);
-	Maps::getMap(reactor->getMapID())->sendPacket(packet);
+	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }
 
 void ReactorPacket::destroyReactor(Reactor *reactor) {
 	PacketCreator packet = PacketCreator();
 	packet.add<int16_t>(SEND_DESTROY_REACTOR);
-	packet.add<int32_t>(reactor->getID());
+	packet.add<int32_t>(reactor->getId());
 	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
-	Maps::getMap(reactor->getMapID())->sendPacket(packet);
+	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }
