@@ -66,12 +66,10 @@ void PartyFunctions::handleResponse(PacketReader &packet) {
 			party->receiveHPBar(player);
 			break;
 		case 0x05: // LogInLogOut
-			if (player->getParty() == 0) {
-				player->setParty(party);
-				party->setMember(player->getId(), player);
-				party->showHPBar(player);
-				party->receiveHPBar(player);
-			}
+			player->setParty(party);
+			party->setMember(player->getId(), player);
+			party->showHPBar(player);
+			party->receiveHPBar(player);
 			break;
 	}
 }
@@ -286,4 +284,53 @@ void Party::warpAllMembers(int32_t mapid, const string &portalname) {
 			}
 		}
 	}
+}
+
+bool Party::checkFootholds(int8_t membercount, const vector<int16_t> &footholds) {
+	// Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
+	bool winner = true;
+	int8_t membersonfootholds = 0;
+	unordered_map<int16_t, bool> footholdhasplayer;
+	for (size_t k = 0; k < footholds.size(); k++) {
+		int16_t fh = footholds[k];
+		footholdhasplayer[fh] = false;
+		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+			Player *m_player = iter->second;
+			if (m_player != 0 && m_player->getFH() == fh) {
+				if (footholdhasplayer[fh]) {
+					winner = false;
+					break;
+				}
+				footholdhasplayer[fh] = true;
+				membersonfootholds++;
+			}
+		}
+		if (!winner)
+			break;
+	}
+	if (membersonfootholds != membercount)
+		winner = false;
+	return winner;
+}
+
+bool Party::verifyFootholds(const vector<int16_t> &footholds) {
+	// Determines if the players match your selected footholds
+	bool winner = true;
+	unordered_map<int16_t, bool> footholdhasplayer;
+	for (size_t k = 0; k < footholds.size(); k++) {
+		footholdhasplayer[footholds[k]] = false;
+		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+			Player *m_player = iter->second;
+			if (m_player != 0 && m_player->getFH() == footholds[k]) {
+				footholdhasplayer[footholds[k]] = true;
+			}
+		}
+	}
+	for (unordered_map<int16_t, bool>::iterator iter = footholdhasplayer.begin(); iter != footholdhasplayer.end(); iter++) {
+		if (!iter->second) {
+			winner = false;
+			break;
+		}
+	}
+	return winner;
 }

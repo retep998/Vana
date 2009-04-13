@@ -74,6 +74,8 @@ public:
 	int8_t getMemberCountOnMap(int32_t mapid);
 	bool isLeader(int32_t playerid) const { return playerid == leaderid; }
 	bool isWithinLevelRange(uint8_t lowbound, uint8_t highbound);
+	bool checkFootholds(int8_t membercount, const vector<int16_t> &footholds); // Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
+	bool verifyFootholds(const vector<int16_t> &footholds); // Determines if the players match your selected footholds
 private:
 	map<int32_t, Player *, std::greater<int32_t> > members;
 	vector<int32_t> oldleader;
