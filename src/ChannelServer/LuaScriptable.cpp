@@ -1011,8 +1011,8 @@ int LuaExports::isPartyInLevelRange(lua_State *luaVm) {
 	Party *p = player->getParty();
 	bool iswithin = false;
 	if (p != 0) {
-		int32_t lowbound = lua_tointeger(luaVm, 1);
-		int32_t highbound = lua_tointeger(luaVm, 2);
+		uint8_t lowbound = lua_tointeger(luaVm, 1);
+		uint8_t highbound = lua_tointeger(luaVm, 2);
 		iswithin = p->isWithinLevelRange(lowbound, highbound);
 	}
 	lua_pushboolean(luaVm, iswithin);
