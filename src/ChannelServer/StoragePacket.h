@@ -28,6 +28,7 @@ namespace StoragePacket {
 	void takeItem(Player *player, int8_t inv);
 	void changeMesos(Player *player, int32_t mesos);
 	void storageFull(Player *player);
+	void noMesos(Player *player);
 };
 
 #endif
