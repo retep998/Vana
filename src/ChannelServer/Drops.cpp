@@ -31,13 +31,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "Skills.h"
 #include "TimeUtilities.h"
+#include <limits>
 
 // Drop class
-Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : questid(0), owner(owner), mapid(mapid), mesos(mesos), dropped(0), playerid(0), playerdrop(playerdrop), tradeable(true), pos(pos) {
+// Initializing dropped time to max-value to prevent timers from deleting the drop in case doDrop did not get called right away
+Drop::Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) : questid(0), owner(owner), mapid(mapid), mesos(mesos), dropped(std::numeric_limits<int32_t>::max()), playerid(0), playerdrop(playerdrop), tradeable(true), pos(pos) {
 	Maps::getMap(mapid)->addDrop(this);
 }
 
-Drop::Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) : questid(0), owner(owner), mapid(mapid), mesos(0), dropped(0), playerid(0), playerdrop(playerdrop), tradeable(true), pos(pos), item(item) {
+Drop::Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) : questid(0), owner(owner), mapid(mapid), mesos(0), dropped(std::numeric_limits<int32_t>::max()), playerid(0), playerdrop(playerdrop), tradeable(true), pos(pos), item(item) {
 	Maps::getMap(mapid)->addDrop(this);
 }
 
