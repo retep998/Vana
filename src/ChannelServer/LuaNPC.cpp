@@ -74,7 +74,7 @@ NPC * LuaExports::getNPC(lua_State *luaVm) {
 
 // Miscellaneous
 int LuaExports::showStorage(lua_State *luaVm) {
-	StoragePacket::showStorage(getPlayer(luaVm), getNPC(luaVm)->getNpcID());
+	StoragePacket::showStorage(getPlayer(luaVm), getNPC(luaVm)->getNpcId());
 	return 0;
 }
 
@@ -175,13 +175,13 @@ int LuaExports::setStateNPC(lua_State *luaVm) {
 // Quest
 int LuaExports::addQuest(lua_State *luaVm) {
 	int16_t questid = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getQuests()->addQuest(questid, getNPC(luaVm)->getNpcID());
+	getPlayer(luaVm)->getQuests()->addQuest(questid, getNPC(luaVm)->getNpcId());
 	return 0;
 }
 
 int LuaExports::endQuest(lua_State *luaVm) {
 	int16_t questid = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getQuests()->finishQuest(questid, getNPC(luaVm)->getNpcID());
+	getPlayer(luaVm)->getQuests()->finishQuest(questid, getNPC(luaVm)->getNpcId());
 	return 0;
 }
 

@@ -96,3 +96,10 @@ void StoragePacket::storageFull(Player *player) {
 	packet.add<int8_t>(0x11);
 	player->getSession()->send(packet);
 }
+
+void StoragePacket::noMesos(Player *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int8_t>(0x10);
+	player->getSession()->send(packet);
+}

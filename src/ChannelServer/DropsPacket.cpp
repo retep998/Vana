@@ -27,9 +27,9 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_DROP_ITEM);
 	packet.add<int8_t>(type); // 3 = disappear during drop animation, 2 = show existing, 1 then 0 = show new
-	packet.add<int32_t>(drop->getID());
+	packet.add<int32_t>(drop->getId());
 	packet.add<int8_t>(drop->isMesos());
-	packet.add<int32_t>(drop->getObjectID());
+	packet.add<int32_t>(drop->getObjectId());
 	packet.add<int32_t>(drop->getOwner()); // Owner of drop
 	packet.add<int8_t>(0);
 	packet.addPos(drop->getPos());
@@ -77,7 +77,7 @@ void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_TAKE_DROP);
 	packet.add<int8_t>(pet_index != -1 ? 5 : 2);
-	packet.add<int32_t>(drop->getID());
+	packet.add<int32_t>(drop->getId());
 	packet.add<int32_t>(player->getId());
 	if (pet_index != -1)
 		packet.add<int8_t>(pet_index);
@@ -98,7 +98,7 @@ void DropsPacket::removeDrop(Drop *drop) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_TAKE_DROP);
 	packet.add<int8_t>(0);
-	packet.add<int32_t>(drop->getID());
+	packet.add<int32_t>(drop->getId());
 	Maps::getMap(drop->getMap())->sendPacket(packet);
 }
 
@@ -106,7 +106,7 @@ void DropsPacket::explodeDrop(Drop *drop) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_TAKE_DROP);
 	packet.add<int8_t>(4);
-	packet.add<int32_t>(drop->getID());
+	packet.add<int32_t>(drop->getId());
 	packet.add<int16_t>(655);
 	Maps::getMap(drop->getMap())->sendPacket(packet);
 }

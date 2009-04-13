@@ -89,7 +89,7 @@ Pos Movement::parseMovement(MovableLife *life, PacketReader &packet) {
 	}
 	Pos pos(x, y);
 	life->setPos(pos);
-	life->setFH(foothold);
+	life->setFh(foothold);
 	life->setStance(stance);
 	return pos;
 }

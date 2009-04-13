@@ -178,6 +178,14 @@ bool Instance::isPlayerSignedUp(const string &name) {
 	return false;
 }
 
+vector<int32_t> Instance::getAllPlayerIds() {
+	vector<int32_t> playerids;
+	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+		playerids.push_back(iter->first);
+	}
+	return playerids;
+}
+
 const string Instance::getPlayerByIndex(uint32_t index) const {
 	index--;
 	return m_players_order[(index > m_players_order.size() ? m_players_order.size() : index)];
@@ -200,7 +208,7 @@ Reactor * Instance::getReactor(int32_t reactorid) {
 	Reactor *reactor = 0;
 	for (size_t i = 0; i < getReactorNum(); i++) {
 		Reactor *treactor = m_reactors[i];
-		if (treactor->getID() == reactorid) {
+		if (treactor->getId() == reactorid) {
 			reactor = treactor;
 			break;
 		}
@@ -245,10 +253,6 @@ Map * Instance::getMap(int32_t mapid) {
 
 size_t Instance::getMapNum() {
 	return m_maps.size();
-}
-
-void Instance::setPlayerId(int32_t id) {
-	m_luainstance->setVariable("playerid", id);
 }
 
 void Instance::addParty(Party *party) {

@@ -66,12 +66,10 @@ void PartyFunctions::handleResponse(PacketReader &packet) {
 			party->receiveHPBar(player);
 			break;
 		case 0x05: // LogInLogOut
-			if (player->getParty() == 0) {
-				player->setParty(party);
-				party->setMember(player->getId(), player);
-				party->showHPBar(player);
-				party->receiveHPBar(player);
-			}
+			player->setParty(party);
+			party->setMember(player->getId(), player);
+			party->showHPBar(player);
+			party->receiveHPBar(player);
 			break;
 	}
 }
@@ -229,6 +227,14 @@ Player * Party::getMemberByIndex(uint8_t index) {
 	return p;
 }
 
+vector<int32_t> Party::getAllPlayerIds() {
+	vector<int32_t> playerids;
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		playerids.push_back(iter->first);
+	}
+	return playerids;
+}
+
 void Party::setMember(int32_t playerid, Player *player) {
 	members[playerid] = player;
 }
@@ -246,5 +252,93 @@ void Party::receiveHPBar(Player *player) {
 		Player *m_player = iter->second;
 		if (m_player != 0 && m_player != player && m_player->getMap() == player->getMap())
 			PlayerPacket::showHPBar(m_player, player);
-	}	
+	}
+}
+
+int8_t Party::getMemberCountOnMap(int32_t mapid) {
+	int8_t count = 0;
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		Player *m_player = iter->second;
+		if (m_player != 0 && m_player->getMap() == mapid)
+			count++;
+	}
+	return count;
+}
+
+bool Party::isWithinLevelRange(uint8_t lowbound, uint8_t highbound) {
+	bool is = true;
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		Player *m_player = iter->second;
+		if (m_player != 0) {
+			if (m_player->getLevel() < lowbound || m_player->getLevel() > highbound) {
+				is = false;
+				break;
+			}
+		}
+	}
+	return is;
+}
+
+void Party::warpAllMembers(int32_t mapid, const string &portalname) {
+	if (Maps::getMap(mapid)) {
+		PortalInfo *portal = 0;
+		if (portalname != "") { // Optional portal parameter
+			portal = Maps::getMap(mapid)->getPortal(portalname);
+		}
+		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+			Player *m_player = iter->second;
+			if (m_player != 0) {
+				Maps::changeMap(m_player, mapid, portal);
+			}
+		}
+	}
+}
+
+bool Party::checkFootholds(int8_t membercount, const vector<int16_t> &footholds) {
+	// Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
+	bool winner = true;
+	int8_t membersonfootholds = 0;
+	unordered_map<int16_t, bool> footholdhasplayer;
+	for (size_t k = 0; k < footholds.size(); k++) {
+		int16_t fh = footholds[k];
+		footholdhasplayer[fh] = false;
+		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+			Player *m_player = iter->second;
+			if (m_player != 0 && m_player->getFh() == fh) {
+				if (footholdhasplayer[fh]) {
+					winner = false;
+					break;
+				}
+				footholdhasplayer[fh] = true;
+				membersonfootholds++;
+			}
+		}
+		if (!winner)
+			break;
+	}
+	if (membersonfootholds != membercount)
+		winner = false;
+	return winner;
+}
+
+bool Party::verifyFootholds(const vector<int16_t> &footholds) {
+	// Determines if the players match your selected footholds
+	bool winner = true;
+	unordered_map<int16_t, bool> footholdhasplayer;
+	for (size_t k = 0; k < footholds.size(); k++) {
+		footholdhasplayer[footholds[k]] = false;
+		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+			Player *m_player = iter->second;
+			if (m_player != 0 && m_player->getFh() == footholds[k]) {
+				footholdhasplayer[footholds[k]] = true;
+			}
+		}
+	}
+	for (unordered_map<int16_t, bool>::iterator iter = footholdhasplayer.begin(); iter != footholdhasplayer.end(); iter++) {
+		if (!iter->second) {
+			winner = false;
+			break;
+		}
+	}
+	return winner;
 }

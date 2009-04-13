@@ -73,11 +73,11 @@ public:
 	void endControl();
 	void cleanHorntail(int32_t mapid, Player *player);
 
-	int16_t getOriginFH() const { return originfh; }
-	int32_t getID() const { return id; }
-	int32_t getMapID() const { return mapid; }
-	int32_t getMobID() const { return mobid; }
-	int32_t getSpawnID() const { return spawnid; }
+	int16_t getOriginFh() const { return originfh; }
+	int32_t getId() const { return id; }
+	int32_t getMapId() const { return mapid; }
+	int32_t getMobId() const { return mobid; }
+	int32_t getSpawnId() const { return spawnid; }
 	int32_t getHP() const { return hp; }
 	int32_t getMP() const { return mp; }
 	int32_t getMHP() const { return info.hp; }
