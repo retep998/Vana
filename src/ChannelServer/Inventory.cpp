@@ -323,6 +323,10 @@ void Inventory::useStorage(Player *player, PacketReader &packet) {
 			int16_t slot = packet.get<int16_t>();
 			int32_t itemid = packet.get<int32_t>();
 			int16_t amount = packet.get<int16_t>();
+			if (player->getInventory()->getMesos() < 100) {
+				StoragePacket::noMesos(player); // We don't have enough mesos to store this item
+				return;
+			}
 			if (player->getStorage()->isFull()) { // Storage is full, so tell the player and abort the mission.
 				StoragePacket::storageFull(player);
 				return;
