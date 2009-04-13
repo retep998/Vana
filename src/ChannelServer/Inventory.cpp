@@ -55,9 +55,10 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 			return;
 		if (GameLogicUtilities::isEquip(item->id) || GameLogicUtilities::isRechargeable(item->id))
 			amount = item->amount;
-		else if (amount <= 0)
+		else if (amount <= 0 || amount > item->amount) {
+			// hacking
 			return;
-
+		}
 		Item droppeditem = Item(item);
 		droppeditem.amount = amount;
 		if (item->amount == amount) {
@@ -333,9 +334,15 @@ void Inventory::useStorage(Player *player, PacketReader &packet) {
 			}
 			int8_t inv = GameLogicUtilities::getInventory(itemid);
 			Item *item = player->getInventory()->getItem(inv, slot);
-			if (item == 0 || (!GameLogicUtilities::isRechargeable(itemid) && amount > item->amount)) { // Be careful, it might be a trap.
+			if (item == 0) {
 				// hacking
-				return; // Do a barrel roll
+				return;
+			}
+			if (GameLogicUtilities::isRechargeable(itemid) || GameLogicUtilities::isEquip(itemid))
+				amount = 1;
+			else if (amount <= 0 || amount > item->amount) {
+				// hacking
+				return;
 			}
 			player->getStorage()->addItem((inv == 1 || GameLogicUtilities::isRechargeable(itemid)) ? new Item(item) : new Item(itemid, amount));
 			// For equips or rechargeable items (stars/bullets) we create a
