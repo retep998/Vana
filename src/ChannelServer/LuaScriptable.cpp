@@ -35,6 +35,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ShopDataProvider.h"
 #include "TimeUtilities.h"
 #include <iostream>
+#include <vector>
+
+using std::vector;
 
 LuaScriptable::LuaScriptable(const string &filename, int32_t playerid) : filename(filename), scriptplayerid(playerid), playerid(playerid), luaVm(lua_open()) {
 	initialize();
@@ -183,12 +186,14 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getQuestEXPRate", &LuaExports::getQuestEXPRate);
 
 	// Party
+	lua_register(luaVm, "checkPartyFootholds", &LuaExports::checkPartyFootholds);
 	lua_register(luaVm, "getPartyCount", &LuaExports::getPartyCount);
 	lua_register(luaVm, "getPartyID", &LuaExports::getPartyID);
 	lua_register(luaVm, "getPartyMapCount", &LuaExports::getPartyMapCount);
 	lua_register(luaVm, "isPartyInLevelRange", &LuaExports::isPartyInLevelRange);
 	lua_register(luaVm, "isPartyLeader", &LuaExports::isPartyLeader);
 	lua_register(luaVm, "warpParty", &LuaExports::warpParty);
+	lua_register(luaVm, "verifyPartyFootholds", &LuaExports::verifyPartyFootholds);
 
 	// Instance
 	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
@@ -951,6 +956,24 @@ int LuaExports::getMesoRate(lua_State *luaVm) {
 }
 
 // Party
+int LuaExports::checkPartyFootholds(lua_State *luaVm) {
+	int8_t numbermembers = lua_tointeger(luaVm, 1);
+	vector<int16_t> footholds;
+	Party *p = getPlayer(luaVm)->getParty();
+	bool winner = false;
+
+	lua_pushnil(luaVm);
+	while (lua_next(luaVm, 2)) {
+		footholds.push_back(lua_tointeger(luaVm, -1));
+		lua_pop(luaVm, 1);
+	}
+	if (p != 0) {
+		winner = p->checkFootholds(numbermembers, footholds);
+	}
+	lua_pushboolean(luaVm, winner);
+	return 1;
+}
+
 int LuaExports::getPartyCount(lua_State *luaVm) {
 	int32_t mcount = 0;
 	Party *p = getPlayer(luaVm)->getParty();
@@ -1019,6 +1042,24 @@ int LuaExports::warpParty(lua_State *luaVm) {
 		p->warpAllMembers(mapid, to);
 	}
 	return 0;
+}
+
+int LuaExports::verifyPartyFootholds(lua_State *luaVm) {
+	vector<int16_t> footholds;
+
+	lua_pushnil(luaVm);
+	while (lua_next(luaVm, 1) != 0) {
+		footholds.push_back(lua_tointeger(luaVm, -1));
+		lua_pop(luaVm, 1);
+	}
+
+	Party *p = getPlayer(luaVm)->getParty();
+	bool winner = false;
+	if (p != 0) {
+		winner = p->verifyFootholds(footholds);
+	}
+	lua_pushboolean(luaVm, winner);
+	return 1;
 }
 
 // Instance
