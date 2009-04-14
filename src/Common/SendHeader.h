@@ -47,8 +47,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_PARTY_ACTION 0x3b
 #define SEND_BUDDYLIST 0x3c
 #define SEND_NOTICE 0x41
- #define SEND_SHOW_MESSENGER 0x67 // Also known as avatar megaphone
- #define SEND_SKILL_MACRO 0x71
+#define SEND_SHOW_MESSENGER 0x67 // Also known as avatar megaphone
+#define SEND_SKILL_MACRO 0x71
 #define SEND_CHANGE_MAP 0x72
 #define SEND_FORCE_MAP_EQUIP 0x79 // Wear apple suit on training maps, all equips except bathrobe off for Showa spa, etc.
 #define SEND_GROUP_CHAT 0x7a // Groups like party, buddies and guild
@@ -80,7 +80,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_SPECIAL_SKILL_END 0xad
 #define SEND_DAMAGE_PLAYER 0xae
 #define SEND_FACE_EXPRESSION 0xaf
- #define SEND_SIT_CHAIR 0xb2
+#define SEND_SIT_CHAIR 0xb2
 #define SEND_UPDATE_CHAR_LOOK 0xb3
 #define SEND_SHOW_SKILL 0xb4
 #define SEND_SHOW_OTHERS_SKILL 0xb5 // From other player
