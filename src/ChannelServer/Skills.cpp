@@ -99,8 +99,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		// hacking
 		return;
 	}
-	switch (skillid) { // Packet processing
-		case Jobs::Hero::MonsterMagnet: // Monster Magnet processing
+	switch (skillid) {
+		case Jobs::Corsair::Battleship:
+			if (player->getActiveBuffs()->getBattleshipHp() == 0)
+				player->getActiveBuffs()->resetBattleshipHp();
+			break;
+		case Jobs::Hero::MonsterMagnet:
 		case Jobs::Paladin::MonsterMagnet:
 		case Jobs::DarkKnight::MonsterMagnet: {
 			int32_t mobs = packet.get<int32_t>();
@@ -288,7 +292,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 		player->modifyHP(-hpuse);
 	if (item > 0)
 		Inventory::takeItem(player, item, skills[skillid][level].itemcount);
-	if (cooltime > 0)
+	if (cooltime > 0 && skillid != Jobs::Corsair::Battleship)
 		startCooldown(player, skillid, cooltime);
 	if (moneycon > 0) {
 		int16_t mesos_min = moneycon - (80 + level * 5);
@@ -366,6 +370,9 @@ void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime, bo
 void Skills::stopCooldown(Player *player, int32_t skillid) {
 	player->removeCooldown(skillid);
 	SkillsPacket::sendCooldown(player, skillid, 0);
+	if (skillid == Jobs::Corsair::Battleship) {
+		player->getActiveBuffs()->resetBattleshipHp();
+	}
 }
 
 bool Skills::isCooling(Player *player, int32_t skillid) {

@@ -204,6 +204,9 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->damageHP((uint16_t) damage);
 			if (attack.mpburn > 0)
 				player->damageMP(attack.mpburn);
+			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Corsair::Battleship) > 0) {
+				player->getActiveBuffs()->reduceBattleshipHp((uint16_t) damage);
+			}
 		}
 		if (player->getActiveBuffs()->getCurrentMorph() < 0  || (player->getActiveBuffs()->getCurrentMorph() != 0 && player->getHP() == 0)) {
 			Skills::stopSkill(player, player->getActiveBuffs()->getCurrentMorph());
