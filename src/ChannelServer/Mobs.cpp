@@ -463,12 +463,12 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 	uint32_t total = 0;
 	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	for (int8_t i = 0; i < targets; i++) {
+		int32_t targettotal = 0;
 		int32_t mapmobid = packet.get<int32_t>();
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
 		uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-		handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
 		int32_t mobid = mob->getMobId();
 		Mob *htabusetaker = 0;
 		switch (mobid) {
@@ -494,7 +494,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		vector<int32_t> ppdamages; // Pickpocket
 		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet.get<int32_t>();
-			total += damage;
+			targettotal += damage;
 			if (ismelee && skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].prop) {
 					ppdamages.push_back(damage);
@@ -542,6 +542,9 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					mob = 0;
 			}
 		}
+		if (targettotal > 0)
+			handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
+		total += targettotal;
 		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
 		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
 			Pos pppos;
@@ -585,7 +588,7 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			statuses.push_back(StatusInfo(Freeze, Freeze, charge, Skills::skills[charge][player->getActiveBuffs()->getActiveSkillLevel(charge)].y));
 		}
 	}
-	if (mob->canPoison()) { // Poisoning stuff
+	if (mob->canPoison() && mob->getHP() > 1) { // Poisoning stuff
 		if ((skillid == Jobs::FPWizard::PoisonBreath || skillid == Jobs::FPMage::PoisonMist || skillid == Jobs::FPMage::ElementComposition) && Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) { // Poison brace, Element composition, and Poison mist
 			int16_t pdamage = (int16_t)(mob->getMHP() / (70 - level));
 			statuses.push_back(StatusInfo(Poison, pdamage, skillid, Skills::skills[skillid][level].time));
