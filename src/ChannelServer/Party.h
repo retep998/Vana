@@ -60,8 +60,8 @@ public:
 	void deleteMember(int32_t id);
 	void disband();
 	void setMember(int32_t playerid, Player *player);
-	void showHPBar(Player *player);
-	void receiveHPBar(Player *player);
+	void showHpBar(Player *player);
+	void receiveHpBar(Player *player);
 	void setInstance(Instance *inst) { instance = inst; }
 	void warpAllMembers(int32_t mapid, const string &portalname = "");
 	Player * getMember(int32_t id) { return (members.find(id) != members.end() ? members[id] : 0); }

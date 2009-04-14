@@ -46,7 +46,7 @@ unordered_map<string, pair<Commands, int32_t> > ChatHandler::commandlist;
 
 struct MeFunctor {
 	void operator() (Player *gmplayer) {
-		if (gmplayer->isGM()) {
+		if (gmplayer->isGm()) {
 			PlayerPacket::showMessage(gmplayer, msg, 6);
 		}
 	}
@@ -123,7 +123,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	string message = packet.getString();
 	int8_t bubbleOnly = packet.get<int8_t>(); // Skill Macros only display chat bubbles
 
-	if (player->isGM() && message[0] == '!' && message.size() > 2) {
+	if (player->isGm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
 		string command = strtok(chat+1, " ");
 		string args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
@@ -133,7 +133,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		if (commandlist.find(command) == commandlist.end())
 			return;
 
-		if (player->getGMLevel() >= commandlist[command].second) { // GM level for the command
+		if (player->getGmLevel() >= commandlist[command].second) { // GM level for the command
 			switch (commandlist[command].first) { // CMD constant associated with command
 				case CmdHeader:
 					WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), args);
@@ -253,7 +253,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				case CmdKick:
 					if (args.length() != 0) {
 						if (Player *target = Players::Instance()->getPlayer(args)) {
-							if (player->getGMLevel() > target->getGMLevel())
+							if (player->getGmLevel() > target->getGmLevel())
 								target->getSession()->disconnect();
 							else
 								PlayerPacket::showMessage(player, "Player outranks you.", 6);
@@ -300,15 +300,15 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					Maps::getMap(player->getMap())->clearDrops();
 					break;
 				case CmdKill:
-					if (player->getGMLevel() == 1)
-						player->setHP(0);
+					if (player->getGmLevel() == 1)
+						player->setHp(0);
 					else {
 						if (args == "all") {
 							for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 								Player *killpsa;
 								killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 								if (killpsa != player) {
-									killpsa->setHP(0);
+									killpsa->setHp(0);
 								}
 							}
 						}
@@ -317,8 +317,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 								Player *killpsa;
 								killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 								if (killpsa != player) {
-									if (killpsa->isGM()) {
-										killpsa->setHP(0);
+									if (killpsa->isGm()) {
+										killpsa->setHp(0);
 									}
 								}
 							}
@@ -328,17 +328,17 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 								Player *killpsa;
 								killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 								if (killpsa != player) {
-									if (!killpsa->isGM()) {
-										killpsa->setHP(0);
+									if (!killpsa->isGm()) {
+										killpsa->setHp(0);
 									}
 								}
 							}
 						}
 						else if (args == "me") {
-							player->setHP(0);
+							player->setHp(0);
 						}
 						else if (Player *killpsa = Players::Instance()->getPlayer(args)) { // Kill by name
-							killpsa->setHP(0);
+							killpsa->setHp(0);
 						}
 					}
 					break;
@@ -508,10 +508,10 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					break;
 				case CmdMaxStats:
 					player->setFame(30000);
-					player->setRMHP(30000);
-					player->setRMMP(30000);
-					player->setMHP(30000);
-					player->setMMP(30000);
+					player->setRMHp(30000);
+					player->setRMMp(30000);
+					player->setMHp(30000);
+					player->setMMp(30000);
 					player->setStr(30000);
 					player->setDex(30000);
 					player->setInt(30000);
@@ -536,19 +536,19 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				case CmdHp:
 					if (args.length() != 0) {
 						uint16_t amount = atoi(args.c_str());
-						player->setRMHP(amount);
-						player->setMHP(amount);
-						if (player->getHP() > amount)
-							player->setHP(player->getMHP());
+						player->setRMHp(amount);
+						player->setMHp(amount);
+						if (player->getHp() > amount)
+							player->setHp(player->getMHp());
 					}
 					break;
 				case CmdMp:
 					if (args.length() != 0) {
 						uint16_t amount = atoi(args.c_str());
-						player->setRMMP(amount);
-						player->setMMP(amount);
-						if (player->getMP() > amount)
-							player->setMP(player->getMMP());
+						player->setRMMp(amount);
+						player->setMMp(amount);
+						if (player->getMp() > amount)
+							player->setMp(player->getMMp());
 					}
 					break;
 				case CmdFame:
@@ -666,11 +666,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				}
 				case CmdAp:
 					if (args.length() != 0)
-						player->setAP(atoi(args.c_str()));
+						player->setAp(atoi(args.c_str()));
 					break;
 				case CmdSp:
 					if (args.length() != 0)
-						player->setSP(atoi(args.c_str()));
+						player->setSp(atoi(args.c_str()));
 					break;
 				case CmdKillNpc:
 					player->setNPC(0);
@@ -680,8 +680,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					Maps::getMap(player->getMap())->killMobs(player, 8810026);
 					break;
 				case CmdHeal:
-					player->setHP(player->getMHP());
-					player->setMP(player->getMMP());
+					player->setHp(player->getMHp());
+					player->setMp(player->getMMp());
 					break;
 				case CmdMesos:
 					if (args.length() != 0)

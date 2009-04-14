@@ -58,35 +58,35 @@ public:
 	void setSkin(int8_t id);
 	void setMappos(int8_t pos) { this->mappos = pos; }
 	void setLevel(uint8_t level);
-	void setAP(int16_t ap);
-	void setSP(int16_t sp);
+	void setAp(int16_t ap);
+	void setSp(int16_t sp);
 	void setFame(int16_t fame);
 	void setJob(int16_t job);
 	void setStr(int16_t str);
 	void setDex(int16_t dex);
 	void setInt(int16_t intt);
 	void setLuk(int16_t luk);
-	void modifyHP(int16_t hp, bool is = true); // Bases its calculations on current HP/MP
-	void modifyMP(int16_t mp, bool is = false);
-	void damageHP(uint16_t dhp); // Calculations done based on the fact that damage can range from 0 to ~55k
-	void damageMP(uint16_t dmp);
-	void setHP(int16_t hp, bool is = true); // Only use setHP/MP if you're going to do checking, they fall easily to datatype issues
-	void setMP(int16_t mp, bool is = false); // For example, Power Elixir at 30k HP = 30k + 30k = 60k, but wait! That's > 32767, so it's negative
-	void setMHP(int16_t mhp);
-	void setMMP(int16_t mmp);
-	void modifyRMHP(int16_t mod);
-	void modifyRMMP(int16_t mod);
-	void setRMHP(int16_t rmhp);
-	void setRMMP(int16_t rmmp);
+	void modifyHp(int16_t hp, bool is = true); // Bases its calculations on current HP/MP
+	void modifyMp(int16_t mp, bool is = false);
+	void damageHp(uint16_t dhp); // Calculations done based on the fact that damage can range from 0 to ~55k
+	void damageMp(uint16_t dmp);
+	void setHp(int16_t hp, bool is = true); // Only use setHp/Mp if you're going to do checking, they fall easily to datatype issues
+	void setMp(int16_t mp, bool is = false); // For example, Power Elixir at 30k HP = 30k + 30k = 60k, but wait! That's > 32767, so it's negative
+	void setMHp(int16_t mhp);
+	void setMMp(int16_t mmp);
+	void modifyRMHp(int16_t mod);
+	void modifyRMMp(int16_t mod);
+	void setRMHp(int16_t rmhp);
+	void setRMMp(int16_t rmmp);
 	void setHyperBody(int16_t modx, int16_t mody);
-	void setHPMPAP(uint16_t ap) { hpmp_ap = ap; }
+	void setHpMpAp(uint16_t ap) { hpmp_ap = ap; }
 	void setEyes(int32_t id);
 	void setHair(int32_t id);
 	void setExp(int32_t exp);
 	void setMap(int32_t map) { this->map = map; }
 	void setBuddyListSize(uint8_t size);
-	void setTradeSendID(int32_t id) { this->tradesendid = id; }
-	void setTradeRecvID(int32_t id) { this->traderecvid = id; }
+	void setTradeSendId(int32_t id) { this->tradesendid = id; }
+	void setTradeRecvId(int32_t id) { this->traderecvid = id; }
 	void setShop(int32_t shopid) { shop = shopid; }
 	void setNPC(NPC *npc) { this->npc = npc; }
 	void setParty(Party *party) { this->party = party; }
@@ -108,16 +108,16 @@ public:
 	int16_t getDex() const { return dex; }
 	int16_t getInt() const { return intt; }
 	int16_t getLuk() const { return luk; }
-	int16_t getAP() const { return ap; }
-	int16_t getSP() const { return sp; }
+	int16_t getAp() const { return ap; }
+	int16_t getSp() const { return sp; }
 	int16_t getFame() const { return fame; }
-	int16_t getHP() const { return hp; }
-	int16_t getMP() const { return mp; }
-	int16_t getMHP() const { return mhp; }
-	int16_t getRMHP() const { return rmhp; }
-	int16_t getMMP() const { return mmp; }
-	int16_t getRMMP() const { return rmmp; }
-	uint16_t getHPMPAP() const { return hpmp_ap; }
+	int16_t getHp() const { return hp; }
+	int16_t getMp() const { return mp; }
+	int16_t getMHp() const { return mhp; }
+	int16_t getRMHp() const { return rmhp; }
+	int16_t getMMp() const { return mmp; }
+	int16_t getRMMp() const { return rmmp; }
+	uint16_t getHpMpAp() const { return hpmp_ap; }
 	int32_t getId() const { return id; }
 	int32_t getUserId() const { return userid; }
 	int32_t getEyes() const { return eyes; }
@@ -127,7 +127,7 @@ public:
 	int32_t getShop() const { return shop; }
 	int32_t getChair() const { return chair; }
 	int32_t getItemEffect() const { return itemEffect; }
-	int32_t getGMLevel() const { return gm; }
+	int32_t getGmLevel() const { return gm; }
 	int32_t getSpecialSkill() const { return info.skillid; }
 	int32_t getTradeSendID() const { return tradesendid; }
 	int32_t getTradeRecvID() const { return traderecvid; }
@@ -136,10 +136,10 @@ public:
 	Party * getParty() const { return party; }
 	Instance * getInstance() const { return instance; }
 	LuaScriptable * getLuaScriptable() const { return luascriptable; }
-	bool isGM() const { return gm > 0; }
+	bool isGm() const { return gm > 0; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
-	bool hasGMEquip();
+	bool hasGmEquip();
 
 	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }
 	PlayerSummons * getSummons() const { return summons.get(); }

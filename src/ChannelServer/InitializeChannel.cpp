@@ -33,16 +33,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using MiscUtilities::atob;
 
-void Initializing::checkMCDBVersion() {
+void Initializing::checkMcdbVersion() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mcdb_info LIMIT 1");
 	mysqlpp::StoreQueryResult res = query.store();
 
 	int32_t version = (int32_t) res[0]["version"];
 	int32_t subversion = (int32_t) res[0]["subversion"];
 
-	if (version != mcdb_version || subversion != mcdb_subversion) {
+	if (version != McdbVersion || subversion != McdbSubVersion) {
 		// MCDB too old
-		std::cout << "ERROR: MCDB version imcompatible. Expected: " << mcdb_version << "." << mcdb_subversion << " ";
+		std::cout << "ERROR: MCDB version imcompatible. Expected: " << McdbVersion << "." << McdbSubVersion << " ";
 		std::cout << "Have: " << version << "." << subversion << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();

@@ -209,7 +209,7 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canSt
 	if (inv == 1 || GameLogicUtilities::isRechargeable(itemid))
 		required = amount; // These aren't stackable
 	else {
-		int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(itemid);
+		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
 		uint16_t existing = getItemAmount(itemid) % maxslot;
 		// Bug in global:
 		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot

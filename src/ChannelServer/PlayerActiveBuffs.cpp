@@ -214,8 +214,8 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 		int32_t skillid = Jobs::DarkKnight::Berserk;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
-			int16_t r_hp = m_player->getMHP() * Skills::skills[skillid][level].x / 100;
-			int16_t hp = m_player->getHP();
+			int16_t r_hp = m_player->getMHp() * Skills::skills[skillid][level].x / 100;
+			int16_t hp = m_player->getHp();
 			bool change = false;
 			if (m_berserk && hp > r_hp) { // If on and we're above Berserk HP, Berserk fails
 				m_berserk = false;
@@ -309,11 +309,11 @@ const bool PlayerActiveBuffs::hasMagicGuard() {
 }
 
 const bool PlayerActiveBuffs::hasHolySymbol() {
-	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 || getActiveSkillLevel(Jobs::SuperGM::HolySymbol) > 0);
+	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 || getActiveSkillLevel(Jobs::SuperGm::HolySymbol) > 0);
 }
 
 const int32_t PlayerActiveBuffs::getHolySymbol() {
-	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 ? (int32_t)Jobs::Priest::HolySymbol : (int32_t)Jobs::SuperGM::HolySymbol);
+	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 ? (int32_t)Jobs::Priest::HolySymbol : (int32_t)Jobs::SuperGm::HolySymbol);
 }
 
 const bool PlayerActiveBuffs::hasPowerStance() {
@@ -335,11 +335,11 @@ const int32_t PlayerActiveBuffs::getPowerStance() {
 }
 
 const bool PlayerActiveBuffs::hasHyperBody() {
-	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 || getActiveSkillLevel(Jobs::SuperGM::HyperBody) > 0);
+	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 || getActiveSkillLevel(Jobs::SuperGm::HyperBody) > 0);
 }
 
 const int32_t PlayerActiveBuffs::getHyperBody() {
-	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 ? (int32_t)Jobs::Spearman::HyperBody : (int32_t)Jobs::SuperGM::HyperBody);
+	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 ? (int32_t)Jobs::Spearman::HyperBody : (int32_t)Jobs::SuperGm::HyperBody);
 }
 
 const int32_t PlayerActiveBuffs::getCurrentMorph() {

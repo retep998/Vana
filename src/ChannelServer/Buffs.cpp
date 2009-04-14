@@ -134,19 +134,19 @@ Buffs::Buffs() {
 	player.buff = buff;
 	skillsinfo[Jobs::Spearman::IronWill].player.push_back(player);
 
-	// Hyper Body, GM Hyper Body
+	// Hyper Body, Gm Hyper Body
 	buff.type = 0x20;
 	buff.byte = Byte2;
 	buff.value = SkillX;
 	player.buff = buff;
 	skillsinfo[Jobs::Spearman::HyperBody].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::HyperBody].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::HyperBody].player.push_back(player);
 	buff.type = 0x40;
 	buff.byte = Byte2;
 	buff.value = SkillY;
 	player.buff = buff;
 	skillsinfo[Jobs::Spearman::HyperBody].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::HyperBody].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::HyperBody].player.push_back(player);
 
 	// Meditation
 	buff.type = 0x04;
@@ -163,48 +163,48 @@ Buffs::Buffs() {
 	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Invincible].player.push_back(player);
 
-	// Bless, GM Bless
+	// Bless, Gm Bless
 	buff.type = 0x01;
 	buff.byte = Byte1;
 	buff.value = SkillWatk;
 	player.buff = buff;
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::Bless].player.push_back(player);
 	buff.type = 0x02;
 	buff.byte = Byte1;
 	buff.value = SkillWdef;
 	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Bless].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::Bless].player.push_back(player);
 	buff.type = 0x04;
 	buff.byte = Byte1;
 	buff.value = SkillMatk;
 	player.buff = buff;
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::Bless].player.push_back(player);
 	buff.type = 0x08;
 	buff.byte = Byte1;
 	buff.value = SkillMdef;
 	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Bless].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::Bless].player.push_back(player);
 	buff.type = 0x10;
 	buff.byte = Byte1;
 	buff.value = SkillAcc;
 	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Bless].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::Bless].player.push_back(player);
 	buff.type = 0x20;
 	buff.byte = Byte1;
 	buff.value = SkillAvo;
 	player.buff = buff;
 	skillsinfo[Jobs::Cleric::Bless].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::Bless].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::Bless].player.push_back(player);
 
-	// GM Hide
+	// Gm Hide
 	buff.type = 0x01;
 	buff.byte = Byte8;
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
-	skillsinfo[Jobs::SuperGM::Hide].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::Hide].player.push_back(player);
 
 	// Meso Guard
 	buff.type = 0x10;
@@ -227,7 +227,7 @@ Buffs::Buffs() {
 	buff.value = SkillX;
 	player.buff = buff;
 	skillsinfo[Jobs::Priest::HolySymbol].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::HolySymbol].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::HolySymbol].player.push_back(player);
 
 	// Enrage
 	buff.type = 0x01;
@@ -410,14 +410,14 @@ Buffs::Buffs() {
 	player.hasmapentry = true;
 	skillsinfo[Jobs::Assassin::Haste].player.push_back(player);
 	skillsinfo[Jobs::Bandit::Haste].player.push_back(player);
-	skillsinfo[Jobs::GM::Haste].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::Haste].player.push_back(player);
+	skillsinfo[Jobs::Gm::Haste].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::Haste].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Assassin::Haste].map.push_back(map);
 	skillsinfo[Jobs::Bandit::Haste].map.push_back(map);
-	skillsinfo[Jobs::GM::Haste].map.push_back(map);
-	skillsinfo[Jobs::SuperGM::Haste].map.push_back(map);
+	skillsinfo[Jobs::Gm::Haste].map.push_back(map);
+	skillsinfo[Jobs::SuperGm::Haste].map.push_back(map);
 	buff.type = 0x01;
 	buff.byte = Byte2;
 	buff.value = SkillJump;
@@ -426,8 +426,8 @@ Buffs::Buffs() {
 	player.hasmapentry = false;
 	skillsinfo[Jobs::Assassin::Haste].player.push_back(player);
 	skillsinfo[Jobs::Bandit::Haste].player.push_back(player);
-	skillsinfo[Jobs::GM::Haste].player.push_back(player);
-	skillsinfo[Jobs::SuperGM::Haste].player.push_back(player);
+	skillsinfo[Jobs::Gm::Haste].player.push_back(player);
+	skillsinfo[Jobs::SuperGm::Haste].player.push_back(player);
 
 	// Dark Sight
 	buff.type = 0x80;
@@ -800,11 +800,11 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			}
 			player->getActiveBuffs()->setMountInfo(skillid, mountid);
 			break;
-		case Jobs::SuperGM::Hide:
+		case Jobs::SuperGm::Hide:
 			time = 2100000;
 			break;
 		case Jobs::Spearman::HyperBody:
-		case Jobs::SuperGM::HyperBody:
+		case Jobs::SuperGm::HyperBody:
 			// TODO: Party
 			player->setHyperBody(Skills::skills[skillid][level].x, Skills::skills[skillid][level].y);
 			break;
@@ -899,10 +899,10 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 			playerbuffs->setCombo(0, false);
 			break;
 		case Jobs::Spearman::HyperBody: // Hyper Body
-		case Jobs::SuperGM::HyperBody: // GM Hyper Body
+		case Jobs::SuperGm::HyperBody: // Gm Hyper Body
 			player->setHyperBody(0, 0);
-			player->setHP(player->getHP());
-			player->setMP(player->getMP());
+			player->setHp(player->getHp());
+			player->setMp(player->getMp());
 			break;
 		case Jobs::Marauder::EnergyCharge: // Energy Charge
 			playerbuffs->resetEnergyChargeLevel();

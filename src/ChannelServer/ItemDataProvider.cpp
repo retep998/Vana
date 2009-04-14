@@ -295,7 +295,7 @@ int32_t ItemDataProvider::getPrice(int32_t itemid) {
 		return items.find(itemid) != items.end() ? items[itemid].price : 0;
 }
 
-int16_t ItemDataProvider::getMaxslot(int32_t itemid) {
+int16_t ItemDataProvider::getMaxSlot(int32_t itemid) {
 	if (GameLogicUtilities::isEquip(itemid))
 		return 1;
 	else

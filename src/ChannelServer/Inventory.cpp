@@ -96,15 +96,15 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 		}
 
 		if (item2 != 0 && !GameLogicUtilities::isRechargeable(item1->id) && !GameLogicUtilities::isEquip(item1->id) && !GameLogicUtilities::isPet(item1->id) && item1->id == item2->id) {
-			if (item1->amount + item2->amount <= ItemDataProvider::Instance()->getMaxslot(item1->id)) {
+			if (item1->amount + item2->amount <= ItemDataProvider::Instance()->getMaxSlot(item1->id)) {
 				item2->amount += item1->amount;
 				player->getInventory()->deleteItem(inv, slot1, false);
 				InventoryPacket::updateItemAmounts(player, inv, slot2, item2->amount, 0, 0);
 				InventoryPacket::moveItem(player, inv, slot1, 0);
 			}
 			else {
-				item1->amount -= (ItemDataProvider::Instance()->getMaxslot(item1->id) - item2->amount);
-				item2->amount = ItemDataProvider::Instance()->getMaxslot(item2->id);
+				item1->amount -= (ItemDataProvider::Instance()->getMaxSlot(item1->id) - item2->amount);
+				item2->amount = ItemDataProvider::Instance()->getMaxSlot(item2->id);
 				InventoryPacket::updateItemAmounts(player, inv, slot1, item1->amount, slot2, item2->amount);
 			}
 		}
@@ -207,11 +207,11 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *olditem = player->getInventory()->getItem(inv, s);
 		if (olditem != 0) {
-			if (!GameLogicUtilities::isRechargeable(item->id) && !GameLogicUtilities::isEquip(item->id) && !GameLogicUtilities::isPet(item->id) && olditem->id == item->id && olditem->amount < ItemDataProvider::Instance()->getMaxslot(item->id)) {
-				if (item->amount + olditem->amount > ItemDataProvider::Instance()->getMaxslot(item->id)) {
-					int16_t amount = ItemDataProvider::Instance()->getMaxslot(item->id) - olditem->amount;
+			if (!GameLogicUtilities::isRechargeable(item->id) && !GameLogicUtilities::isEquip(item->id) && !GameLogicUtilities::isPet(item->id) && olditem->id == item->id && olditem->amount < ItemDataProvider::Instance()->getMaxSlot(item->id)) {
+				if (item->amount + olditem->amount > ItemDataProvider::Instance()->getMaxSlot(item->id)) {
+					int16_t amount = ItemDataProvider::Instance()->getMaxSlot(item->id) - olditem->amount;
 					item->amount -= amount;
-					olditem->amount = ItemDataProvider::Instance()->getMaxslot(item->id);
+					olditem->amount = ItemDataProvider::Instance()->getMaxSlot(item->id);
 					InventoryPacket::addItem(player, inv, s, olditem, is);
 				}
 				else {
@@ -253,7 +253,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 			int32_t itemid = packet.get<int32_t>();
 			int16_t amount = packet.get<int16_t>();
 			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemid);
-			if (price == 0 || player->getInventory()->getMesos() < (price*amount) ||  amount > ItemDataProvider::Instance()->getMaxslot(itemid)) {
+			if (price == 0 || player->getInventory()->getMesos() < (price*amount) ||  amount > ItemDataProvider::Instance()->getMaxSlot(itemid)) {
 				// Hacking
 				return;
 			}
@@ -292,7 +292,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			item->amount = ItemDataProvider::Instance()->getMaxslot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
+			item->amount = ItemDataProvider::Instance()->getMaxSlot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
 			player->getInventory()->modifyMesos(-1); // TODO: Calculate price, letting players recharge for 1 meso for now
 			InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
 			InventoryPacket::bought(player, 0);
@@ -371,7 +371,7 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	if (!ItemDataProvider::Instance()->itemExists(itemid))
 		return;
 
-	int16_t max = ItemDataProvider::Instance()->getMaxslot(itemid);
+	int16_t max = ItemDataProvider::Instance()->getMaxSlot(itemid);
 	int16_t thisamount = 0;
 	if (GameLogicUtilities::isStar(itemid)) {
 		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
@@ -453,7 +453,7 @@ void Inventory::useItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	if (player->getHP() == 0 || player->getInventory()->getItemAmountBySlot(2, slot) == 0) {
+	if (player->getHp() == 0 || player->getInventory()->getItemAmountBySlot(2, slot) == 0) {
 		// hacking
 		return;
 	}
@@ -468,15 +468,15 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	if (player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist) > 0)
 		alchemist = Skills::skills[Jobs::Hermit::Alchemist][player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist)].x;
 	if (item.cons.hp > 0)
-		player->modifyHP(item.cons.hp * alchemist / 100);
+		player->modifyHp(item.cons.hp * alchemist / 100);
 	if (item.cons.mp > 0)
-		player->modifyMP(item.cons.mp * alchemist / 100);
+		player->modifyMp(item.cons.mp * alchemist / 100);
 	else
-		player->setMP(player->getMP(), true);
+		player->setMp(player->getMp(), true);
 	if (item.cons.hpr > 0)
-		player->modifyHP(item.cons.hpr * player->getMHP() / 100);
+		player->modifyHp(item.cons.hpr * player->getMHp() / 100);
 	if (item.cons.mpr > 0)
-		player->modifyMP(item.cons.mpr * player->getMMP() / 100);
+		player->modifyMp(item.cons.mpr * player->getMMp() / 100);
 	// Item buffs
 	if (item.cons.time > 0) {
 		int32_t time = item.cons.time * alchemist / 100;

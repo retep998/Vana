@@ -70,8 +70,8 @@ struct PGMRInfo { // Power Guard/Mana Reflection
 	Pos pos;
 };
 
-struct MPEaterInfo { // MP Eater
-	MPEaterInfo() : id(0), level(0), x(0), prop(0), onlyonce(false) { }
+struct MpEaterInfo { // MP Eater
+	MpEaterInfo() : id(0), level(0), x(0), prop(0), onlyonce(false) { }
 	int32_t id;
 	uint8_t level;
 	int16_t x;
