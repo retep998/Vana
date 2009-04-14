@@ -23,14 +23,18 @@ if state == 0 then
 	sendYesNo();
 elseif state == 1 then
 	if getSelected() == 1 then
-		if getNumPlayers(220080001) == 1 then
-			setReactorState(220080000, 2208001, 0);
-			setReactorState(220080000, 2208003, 0);
-			setReactorState(220080001, 2201004, 0);
-			clearDrops();
-			clearMobs();
-		end
 		setMap(220080000);
+		if isInstance("papulatus") then
+			removeInstancePlayer(getID());
+			if getInstancePlayerCount() == 0 then
+				setReactorState(220080000, 2208001, 0);
+				setReactorState(220080000, 2208003, 0);
+				setReactorState(220080001, 2201004, 0);
+				clearDrops();
+				clearMobs();
+				markForDelete();
+			end
+		end
 	end
 	endNPC();
 else
