@@ -238,7 +238,7 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	int32_t skill = packet.get<int32_t>();
 	int8_t trajectory = packet.get<int8_t>();
 	packet.skipBytes(9);
-	Pos cpos = Movement::parseMovement(mob, packet);
+	Pos cpos = Movement::parseMovement(mob, packet, MovableLifeTypes::Mob);
 	if (cpos - mob->getPos() > 300) {
 		if (player->addWarning())
 			return;
