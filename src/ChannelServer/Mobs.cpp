@@ -542,7 +542,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					mob = 0;
 			}
 		}
-		if (targettotal > 0)
+		if (mob != 0 && targettotal > 0 && mob->getHP() > 0)
 			handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
 		total += targettotal;
 		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
