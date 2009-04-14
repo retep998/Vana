@@ -113,6 +113,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["music"] = command(CmdMusic, 1);
 	commandlist["storage"] = command(CmdStorage, 1);
 	commandlist["eventinstruct"] = command(CmdEventInstruction, 1);
+	commandlist["relog"] = command(CmdRelog, 1);
 	commandlist["save"] = command(CmdSave, 1);
 	commandlist["warpto"] = command(CmdWarpTo, 1);
 	commandlist["killnpc"] = command(CmdKillNpc, 1);
@@ -685,6 +686,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				case CmdMesos:
 					if (args.length() != 0)
 						player->getInventory()->setMesos(atoi(args.c_str()));
+					break;
+				case CmdRelog:
+					player->changeChannel(ChannelServer::Instance()->getChannel());
 					break;
 				case CmdSave:
 					player->saveAll();
