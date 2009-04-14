@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
+#include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Pets.h"
 #include "Player.h"
@@ -70,10 +71,19 @@ Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), f
 }
 
 /* PlayerInventory class */
-PlayerInventory::PlayerInventory(Player *player, uint8_t maxslots[5], int32_t mesos) : mesos(mesos), player(player) {
-	memcpy(this->maxslots, maxslots, sizeof(this->maxslots));
-	memset(this->equipped, 0, sizeof(this->equipped));
+PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, 5> &maxslots, int32_t mesos) :
+maxslots(maxslots),
+mesos(mesos), 
+player(player)
+{
 	load();
+}
+
+PlayerInventory::~PlayerInventory() {
+	typedef boost::array<ItemInventory, 5> ItemInvArr;
+	for (ItemInvArr::iterator iter = items.begin(); iter != items.end(); iter++) {
+		std::for_each(iter->begin(), iter->end(), MiscUtilities::DeleterPairAssoc<ItemInventory::value_type>());
+	}
 }
 
 void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) { // Useful with .lua
@@ -137,13 +147,9 @@ void PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) {
 }
 
 void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
-	inv -= 1;
-	if (item == 0) {
-		items[inv].erase(slot);
-		if (slot < 0)
-			addEquipped(slot, 0);
-	}
-	else {
+	deleteItem(inv, slot, false);
+	if (item) {
+		inv -= 1;
 		items[inv][slot] = item;
 		if (slot < 0)
 			addEquipped(slot, item->id);
@@ -283,8 +289,8 @@ void PlayerInventory::save() {
 
 	bool firstrun = true;
 	for (int8_t i = 1; i <= 5; i++) {
-		iteminventory &itemsinv = items[i - 1];
-		for (iteminventory::iterator iter = itemsinv.begin(); iter != itemsinv.end(); iter++) {
+		ItemInventory &itemsinv = items[i - 1];
+		for (ItemInventory::iterator iter = itemsinv.begin(); iter != itemsinv.end(); iter++) {
 			Item *item = iter->second;
 			if (firstrun) {
 				query << "INSERT INTO items VALUES (";
@@ -331,20 +337,20 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 	packet.add<int8_t>(getMaxSlots(3));
 	packet.add<int8_t>(getMaxSlots(4));
 	packet.add<int8_t>(getMaxSlots(5));
-	iteminventory &equips = items[0];
-	for (iteminventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+	ItemInventory &equips = items[0];
+	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
 		if (iter->first < 0 && iter->first > -100) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
 	packet.add<int8_t>(0);
-	for (iteminventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
 		if (iter->first < -100) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
 	packet.add<int8_t>(0);
-	for (iteminventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
 		if (iter->first > 0) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}

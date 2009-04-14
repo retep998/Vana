@@ -29,10 +29,11 @@ struct Item;
 class PlayerStorage {
 public:
 	PlayerStorage(Player *player);
+	~PlayerStorage();
 
 	void setSlots(int8_t slots);
 	void addItem(Item *item);
-	void takeItem(int8_t slot) { items.erase(items.begin() + slot); }
+	void takeItem(int8_t slot);
 	void setMesos(int32_t mesos) { this->mesos = mesos; }
 	void changeMesos(int32_t mesos);
 
@@ -55,5 +56,12 @@ private:
 	int8_t slots;
 	int32_t mesos;
 };
+
+inline
+void PlayerStorage::takeItem(int8_t slot) {
+	vector<Item *>::iterator iter = items.begin() + slot;
+	delete *iter;
+	items.erase(iter);
+}
 
 #endif
