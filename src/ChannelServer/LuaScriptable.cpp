@@ -977,16 +977,22 @@ int LuaExports::getMesoRate(lua_State *luaVm) {
 // Party
 int LuaExports::checkPartyFootholds(lua_State *luaVm) {
 	int8_t numbermembers = lua_tointeger(luaVm, 1);
-	vector<int16_t> footholds;
 	Party *p = getPlayer(luaVm)->getParty();
 	bool winner = false;
-
-	lua_pushnil(luaVm);
-	while (lua_next(luaVm, 2)) {
-		footholds.push_back(lua_tointeger(luaVm, -1));
-		lua_pop(luaVm, 1);
-	}
 	if (p != 0) {
+		vector<vector<int16_t> > footholds;
+		lua_pushnil(luaVm);
+		while (lua_next(luaVm, 2)) {
+			vector<int16_t> arr;
+			lua_pushnil(luaVm);
+			while (lua_next(luaVm, -2)) {
+				int16_t haaaaaaaaaaaaate = lua_tointeger(luaVm, -1);
+				arr.push_back(haaaaaaaaaaaaate);
+				lua_pop(luaVm, 1);
+			}
+			footholds.push_back(arr);
+			lua_pop(luaVm, 1);
+		}
 		winner = p->checkFootholds(numbermembers, footholds);
 	}
 	lua_pushboolean(luaVm, winner);
@@ -1080,17 +1086,23 @@ int LuaExports::warpParty(lua_State *luaVm) {
 }
 
 int LuaExports::verifyPartyFootholds(lua_State *luaVm) {
-	vector<int16_t> footholds;
-
-	lua_pushnil(luaVm);
-	while (lua_next(luaVm, 1) != 0) {
-		footholds.push_back(lua_tointeger(luaVm, -1));
-		lua_pop(luaVm, 1);
-	}
-
+	int8_t numbermembers = lua_tointeger(luaVm, 1);
 	Party *p = getPlayer(luaVm)->getParty();
 	bool winner = false;
 	if (p != 0) {
+		vector<vector<int16_t> > footholds;
+		lua_pushnil(luaVm);
+		while (lua_next(luaVm, 1)) {
+			vector<int16_t> arr;
+			lua_pushnil(luaVm);
+			while (lua_next(luaVm, -2)) {
+				int16_t fff = lua_tointeger(luaVm, -1);
+				arr.push_back(fff);
+				lua_pop(luaVm, 1);
+			}
+			footholds.push_back(arr);
+			lua_pop(luaVm, 1);
+		}
 		winner = p->verifyFootholds(footholds);
 	}
 	lua_pushboolean(luaVm, winner);
