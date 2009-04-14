@@ -187,20 +187,20 @@ void Party::deleteMember(Player *player) {
 	members.erase(player->getId());
 	player->setParty(0);
 	if (getInstance() != 0) {
-		getInstance()->sendMessage(Party_Remove_Member, getId(), player->getId());
+		getInstance()->sendMessage(PartyRemoveMember, getId(), player->getId());
 	}
 }
 
 void Party::deleteMember(int32_t id) {
 	if (getInstance() != 0) {
-		getInstance()->sendMessage(Party_Remove_Member, getId(), id);
+		getInstance()->sendMessage(PartyRemoveMember, getId(), id);
 	}
 	members.erase(id);
 }
 
 void Party::disband() {
 	if (getInstance() != 0) {
-		getInstance()->sendMessage(Party_Disband, getId());
+		getInstance()->sendMessage(PartyDisband, getId());
 		setInstance(0);
 	}
 	map<int32_t, Player *, std::greater<int32_t> > temp = members;

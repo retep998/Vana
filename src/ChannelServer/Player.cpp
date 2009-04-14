@@ -62,7 +62,7 @@ Player::~Player() {
 		}
 		if (getInstance() != 0) {
 			getInstance()->removePlayer(getId());
-			getInstance()->sendMessage(Player_Disconnect, getId());
+			getInstance()->sendMessage(PlayerDisconnect, getId());
 		}
 		//if (this->getHP() == 0)
 		//	this->acceptDeath();
@@ -315,7 +315,7 @@ void Player::setHP(int16_t shp, bool is) {
 		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(Player_Death, getId());
+		getInstance()->sendMessage(PlayerDeath, getId());
 	}
 }
 
@@ -332,7 +332,7 @@ void Player::modifyHP(int16_t nhp, bool is) {
 		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(Player_Death, getId());
+		getInstance()->sendMessage(PlayerDeath, getId());
 	}
 }
 
@@ -343,7 +343,7 @@ void Player::damageHP(uint16_t dhp) {
 		getParty()->showHPBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(Player_Death, getId());
+		getInstance()->sendMessage(PlayerDeath, getId());
 	}
 }
 
