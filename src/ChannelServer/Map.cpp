@@ -190,16 +190,19 @@ void Map::updateMobControl(Player *player) {
 
 void Map::updateMobControl(Mob *mob, bool spawn) {
 	if (players.size() > 0 && mob->getControl() == 0) {
-		int32_t maxpos = mob->getPos() - players[0]->getPos();
-		int32_t player = 0;
+		int32_t maxpos = 200000;
+		Player *p = 0;
 		for (size_t j = 0; j < players.size(); j++) {
-			int32_t curpos = mob->getPos() - players[j]->getPos();
-			if (curpos < maxpos) {
-				maxpos = curpos;
-				player = j;
+			Player *test = players[j];
+			if (!(test->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) > 0)) {
+				int32_t curpos = mob->getPos() - test->getPos();
+				if (curpos < maxpos) {
+					maxpos = curpos;
+					p = test;
+				}
 			}
 		}
-		mob->setControl(players[player]);
+		mob->setControl(p);
 	}
 	else if (players.size() == 0) {
 		mob->setControl(0);
