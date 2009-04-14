@@ -20,11 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
+#include "MiscUtilities.h"
 #include "Player.h"
 #include "StoragePacket.h"
+#include <algorithm>
 
 PlayerStorage::PlayerStorage(Player *player) : player(player) {
 	load();
+}
+
+PlayerStorage::~PlayerStorage() {
+	std::for_each(items.begin(), items.end(), MiscUtilities::DeleterSeq<Item>());
 }
 
 void PlayerStorage::setSlots(int8_t slots) {
@@ -36,9 +42,10 @@ void PlayerStorage::setSlots(int8_t slots) {
 void PlayerStorage::addItem(Item *item) {
 	int8_t inv = GameLogicUtilities::getInventory(item->id);
 	int8_t i;
-	for (i = 0; i < (int8_t) items.size(); i++)
+	for (i = 0; i < (int8_t) items.size(); i++) {
 		if (GameLogicUtilities::getInventory(items[i]->id) > inv)
 			break;
+	}
 	items.insert(items.begin() + i, item);
 }
 
@@ -46,7 +53,7 @@ int8_t PlayerStorage::getNumItems(int8_t inv) {
 	int8_t itemNum = 0;
 	for (int8_t i = 0; i < (int8_t) items.size(); i++) {
 		if (GameLogicUtilities::getInventory(items[i]->id) == inv)
-			itemNum ++;
+			itemNum++;
 	}
 	return itemNum;
 }
@@ -68,6 +75,8 @@ void PlayerStorage::load() {
 		slots = 4;
 		mesos = 0;
 	}
+
+	items.reserve(slots);
 
 	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, name FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
 	res = query.store();

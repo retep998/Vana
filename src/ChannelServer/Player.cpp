@@ -53,6 +53,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Trades.h"
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPacket.h"
+#include <boost/array.hpp>
 
 Player::~Player() {
 	if (isconnect) {
@@ -223,7 +224,7 @@ void Player::playerConnect(PacketReader &packet) {
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
 	// Inventory
-	uint8_t maxslots[5];
+	boost::array<uint8_t, 5> maxslots;
 	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
 	maxslots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
 	maxslots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);

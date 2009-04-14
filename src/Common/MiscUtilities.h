@@ -50,6 +50,17 @@ namespace MiscUtilities {
 	private:
 		PacketCreator &packet;
 	};
+
+	// The following methods are used for deleting (freeing) pointers in an array
+	template<class T>
+	struct DeleterSeq {
+		void operator()(T *t) { delete t; }
+	};
+
+	template<class T>
+	struct DeleterPairAssoc {
+		void operator()(T pair) { delete pair.second; } 
+	};
 };
 
 inline
