@@ -60,7 +60,7 @@ control(0)
 	this->mp = info.mp;
 	Instance *instance = Maps::getMap(mapid)->getInstance();
 	if (instance != 0) {
-		instance->sendMessage(Mob_Spawn, mobid, id);
+		instance->sendMessage(MobSpawn, mobid, id);
 	}
 }
 
@@ -197,7 +197,7 @@ void Mob::die(Player *player) {
 	player->getQuests()->updateQuestMob(mobid);
 	Instance *instance = Maps::getMap(mapid)->getInstance();
 	if (instance != 0) {
-		instance->sendMessage(Mob_Death, mobid, id);
+		instance->sendMessage(MobDeath, mobid, id);
 	}
 	Maps::getMap(mapid)->removeMob(id, spawnid);
 
@@ -210,7 +210,7 @@ void Mob::die(bool showpacket) {
 		MobsPacket::dieMob(this);
 		Instance *instance = Maps::getMap(mapid)->getInstance();
 		if (instance != 0) {
-			instance->sendMessage(Mob_Death, mobid, id);
+			instance->sendMessage(MobDeath, mobid, id);
 		}
 	}
 	Maps::getMap(mapid)->removeMob(id, spawnid);

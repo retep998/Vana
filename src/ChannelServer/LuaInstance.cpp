@@ -30,7 +30,7 @@ LuaInstance::LuaInstance(const string &name, int32_t playerid) : LuaScriptable("
 
 bool LuaInstance::run(InstanceMessages message) {
 	switch (message) {
-		case Begin_Instance:
+		case BeginInstance:
 			lua_getglobal(luaVm, "beginInstance");
 			break;
 	}
@@ -43,20 +43,20 @@ bool LuaInstance::run(InstanceMessages message) {
 
 bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
 	switch (message) {
-		case Player_Death:
+		case PlayerDeath:
 			lua_getglobal(luaVm, "playerDeath");
 			lua_pushinteger(luaVm, parameter);
 			break;
-		case Player_Disconnect:
+		case PlayerDisconnect:
 			lua_getglobal(luaVm, "playerDisconnect");
 			lua_pushinteger(luaVm, parameter);
 			break;
-		case Instance_Timer_End:
-		case Instance_Timer_Natural_End:
+		case InstanceTimerEnd:
+		case InstanceTimerNaturalEnd:
 			lua_getglobal(luaVm, "instanceTimerEnd");
 			lua_pushboolean(luaVm, (parameter != 0));
 			break;
-		case Party_Disband:
+		case PartyDisband:
 			lua_getglobal(luaVm, "partyDisband");
 			lua_pushinteger(luaVm, parameter);
 			break;
@@ -70,8 +70,8 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
 
 bool LuaInstance::run(InstanceMessages message, const string &parameter1, int32_t parameter2) {
 	switch (message) {
-		case Timer_End:
-		case Timer_Natural_End:
+		case TimerEnd:
+		case TimerNaturalEnd:
 			lua_getglobal(luaVm, "timerEnd");
 			lua_pushstring(luaVm, parameter1.c_str());
 			lua_pushboolean(luaVm, (parameter2 != 0));
@@ -86,13 +86,13 @@ bool LuaInstance::run(InstanceMessages message, const string &parameter1, int32_
 
 bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2) {
 	switch (message) {
-		case Mob_Death:
+		case MobDeath:
 			lua_getglobal(luaVm, "mobDeath");
 			break;
-		case Mob_Spawn:
+		case MobSpawn:
 			lua_getglobal(luaVm, "mobSpawn");
 			break;
-		case Party_Remove_Member:
+		case PartyRemoveMember:
 			lua_getglobal(luaVm, "partyRemoveMember");
 			break;
 	}
@@ -107,7 +107,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 
 bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) {
 	switch (message) {
-		case Player_Changemap:
+		case PlayerChangeMap:
 			lua_getglobal(luaVm, "changeMap");
 			break;
 	}

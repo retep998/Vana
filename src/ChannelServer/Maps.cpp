@@ -114,7 +114,7 @@ void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
 		portal = getMap(mapid)->getSpawnPoint();
 
 	if (player->getInstance() != 0) {
-		player->getInstance()->sendMessage(Player_Changemap, mapid, player->getMap());
+		player->getInstance()->sendMessage(PlayerChangeMap, mapid, player->getMap());
 	}
 
 	getMap(player->getMap())->removePlayer(player);
