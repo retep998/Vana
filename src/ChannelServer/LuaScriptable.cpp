@@ -151,7 +151,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "clearDrops", &LuaExports::clearDrops);
 	lua_register(luaVm, "clearMobs", &LuaExports::clearMobs);
 	lua_register(luaVm, "countMobs", &LuaExports::countMobs);
-	lua_register(luaVm, "getMapPlayerIDs", &LuaExports::getMapPlayerIDs);
+	lua_register(luaVm, "getAllMapPlayerIDs", &LuaExports::getAllMapPlayerIDs);
 	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
 	lua_register(luaVm, "killMob", &LuaExports::killMob);
@@ -752,7 +752,7 @@ int LuaExports::countMobs(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaExports::getMapPlayerIDs(lua_State *luaVm) {
+int LuaExports::getAllMapPlayerIDs(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
 	Map *map = Maps::getMap(mapid);
 	if (map != 0) {
