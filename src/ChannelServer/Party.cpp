@@ -62,14 +62,14 @@ void PartyFunctions::handleResponse(PacketReader &packet) {
 		case 0x02: // Create / Join
 			player->setParty(party);
 			party->addMember(player);
-			party->showHPBar(player);
-			party->receiveHPBar(player);
+			party->showHpBar(player);
+			party->receiveHpBar(player);
 			break;
 		case 0x05: // LogInLogOut
 			player->setParty(party);
 			party->setMember(player->getId(), player);
-			party->showHPBar(player);
-			party->receiveHPBar(player);
+			party->showHpBar(player);
+			party->receiveHpBar(player);
 			break;
 	}
 }
@@ -239,19 +239,19 @@ void Party::setMember(int32_t playerid, Player *player) {
 	members[playerid] = player;
 }
 
-void Party::showHPBar(Player *player) {
+void Party::showHpBar(Player *player) {
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 		Player *m_player = iter->second;
 		if (m_player != 0 && m_player != player && m_player->getMap() == player->getMap())
-			PlayerPacket::showHPBar(player, m_player);
+			PlayerPacket::showHpBar(player, m_player);
 	}
 }
 
-void Party::receiveHPBar(Player *player) {
+void Party::receiveHpBar(Player *player) {
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 		Player *m_player = iter->second;
 		if (m_player != 0 && m_player != player && m_player->getMap() == player->getMap())
-			PlayerPacket::showHPBar(m_player, player);
+			PlayerPacket::showHpBar(m_player, player);
 	}
 }
 

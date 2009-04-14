@@ -74,7 +74,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 void Maps::usePortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
 	if (packet.get<int32_t>() == 0) { // Dead
-		if (player->getHP() == 0) {
+		if (player->getHp() == 0) {
 			player->acceptDeath();
 		}
 		else {

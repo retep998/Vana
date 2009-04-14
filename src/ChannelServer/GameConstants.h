@@ -582,7 +582,7 @@ namespace Jobs {
 		};
 	};
 
-	namespace GM {
+	namespace Gm {
 		enum {
 			Haste = 9001000,
 			SuperDragonRoar = 9001001,
@@ -590,7 +590,7 @@ namespace Jobs {
 		};
 	};
 
-	namespace SuperGM {
+	namespace SuperGm {
 		enum {
 			HealPlusDispel = 9101000,
 			Haste = 9101001,
@@ -605,7 +605,7 @@ namespace Jobs {
 	};
 };
 
-namespace GMSuit {
+namespace GmSuit {
 	enum {
 		Hat = 1002140,
 		Top = 1042003,

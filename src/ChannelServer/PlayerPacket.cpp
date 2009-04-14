@@ -62,12 +62,12 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int16_t>(player->getDex());
 	packet.add<int16_t>(player->getInt());
 	packet.add<int16_t>(player->getLuk());
-	packet.add<int16_t>(player->getHP());
-	packet.add<int16_t>(player->getMHP());
-	packet.add<int16_t>(player->getMP());
-	packet.add<int16_t>(player->getMMP());
-	packet.add<int16_t>(player->getAP());
-	packet.add<int16_t>(player->getSP());
+	packet.add<int16_t>(player->getHp());
+	packet.add<int16_t>(player->getMHp());
+	packet.add<int16_t>(player->getMp());
+	packet.add<int16_t>(player->getMMp());
+	packet.add<int16_t>(player->getAp());
+	packet.add<int16_t>(player->getSp());
 	packet.add<int32_t>(player->getExp());
 	packet.add<int16_t>(player->getFame());
 	packet.add<int32_t>(0); // Unknown int32 added in .62
@@ -211,11 +211,11 @@ void PlayerPacket::sendSound(Player *player, const string &soundname) { // Send 
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::showHPBar(Player *player, Player *target) {
+void PlayerPacket::showHpBar(Player *player, Player *target) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_PARTY_HP_BAR);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(player->getHP());
-	packet.add<int32_t>(player->getMHP());
+	packet.add<int32_t>(player->getHp());
+	packet.add<int32_t>(player->getMHp());
 	target->getSession()->send(packet);
 }

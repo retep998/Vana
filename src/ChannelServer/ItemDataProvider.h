@@ -118,7 +118,7 @@ public:
 	void loadData();
 	bool itemExists(int32_t id);
 	int32_t getPrice(int32_t itemid);
-	int16_t getMaxslot(int32_t itemid);
+	int16_t getMaxSlot(int32_t itemid);
 	EquipInfo const getEquipInfo(int32_t equipid) {
 		return equips[equipid];
 	}

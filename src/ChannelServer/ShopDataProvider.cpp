@@ -79,7 +79,7 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 		else {
 			packet.add<int16_t>(1);
 		}
-		int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(shops[id].items[i]);
+		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(shops[id].items[i]);
 		if (GameLogicUtilities::isStar(shops[id].items[i]))
 			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10);
 		else if (GameLogicUtilities::isBullet(shops[id].items[i]))
@@ -94,7 +94,7 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 		packet.add<int16_t>(0);
 		packet.add<int32_t>(0);
 		packet.add<int16_t>(1);
-		packet.add<int16_t>(ItemDataProvider::Instance()->getMaxslot(rechargables[i]) + (GameLogicUtilities::isStar(rechargables[i]) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10));
+		packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(rechargables[i]) + (GameLogicUtilities::isStar(rechargables[i]) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10));
 	}
 
 	player->getSession()->send(packet);
