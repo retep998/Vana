@@ -240,7 +240,7 @@ void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 
 void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 	packet.reset(7);
-	Movement::parseMovement(player, packet);
+	Movement::parseMovement(player, packet, MovableLifeTypes::Player);
 	packet.reset(7);
 	PlayersPacket::showMoving(player, packet.getBuffer(), packet.getBufferLength());
 }

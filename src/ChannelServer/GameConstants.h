@@ -142,10 +142,20 @@ namespace EquipSlots {
 	};
 };
 
+namespace MovableLifeTypes {
+	enum Type {
+		Player,
+		Summon,
+		Pet,
+		Npc,
+		Mob
+	};
+};
+
 // Skills so there are fewer magic numbers
 namespace Jobs {
 	namespace Beginner {
-		enum {
+		enum Skills {
 			EchoOfHero = 1005,
 			FollowTheLead = 8,
 			MonsterRider = 1004,
@@ -155,14 +165,14 @@ namespace Jobs {
 	};
 
 	namespace Swordsman {
-		enum {
+		enum Skills {
 			ImprovedMaxHpIncrease = 1000001,
 			IronBody = 1000003
 		};
 	};
 
 	namespace Fighter {
-		enum {
+		enum Skills {
 			AxeBooster = 1101005,
 			AxeMastery = 1100001,
 			PowerGuard = 1101007,
@@ -173,7 +183,7 @@ namespace Jobs {
 	};
 
 	namespace Crusader {
-		enum {
+		enum Skills {
 			ArmorCrash = 1111007,
 			AxeComa = 1111006,
 			AxePanic = 1111004,
@@ -185,7 +195,7 @@ namespace Jobs {
 	};
 
 	namespace Hero {
-		enum {
+		enum Skills {
 			Achilles = 1120004,
 			AdvancedComboAttack = 1120003,
 			Enrage = 1121010,
@@ -198,7 +208,7 @@ namespace Jobs {
 	};
 
 	namespace Page {
-		enum {
+		enum Skills {
 			BwBooster = 1201005,
 			BwMastery = 1200001,
 			PowerGuard = 1201007,
@@ -209,7 +219,7 @@ namespace Jobs {
 	};
 
 	namespace WhiteKnight {
-		enum {
+		enum Skills {
 			BwFireCharge = 1211004,
 			BwIceCharge = 1211006,
 			BwLitCharge = 1211008,
@@ -222,7 +232,7 @@ namespace Jobs {
 	};
 
 	namespace Paladin {
-		enum {
+		enum Skills {
 			Achilles = 1220005,
 			AdvancedCharge = 1220010,
 			BwHolyCharge = 1221004,
@@ -237,7 +247,7 @@ namespace Jobs {
 	};
 
 	namespace Spearman {
-		enum {
+		enum Skills {
 			HyperBody = 1301007,
 			IronWill = 1301006,
 			PolearmBooster = 1301005,
@@ -248,7 +258,7 @@ namespace Jobs {
 	};
 
 	namespace DragonKnight {
-		enum {
+		enum Skills {
 			DragonBlood = 1311008,
 			DragonRoar = 1311006,
 			PowerCrash = 1311007,
@@ -257,7 +267,7 @@ namespace Jobs {
 	};
 
 	namespace DarkKnight {
-		enum {
+		enum Skills {
 			Achilles = 1320005,
 			AuraOfBeholder = 1320008,
 			Beholder = 1321007,
@@ -271,7 +281,7 @@ namespace Jobs {
 	};
 
 	namespace Magician {
-		enum {
+		enum Skills {
 			ImprovedMaxMpIncrease = 2000001,
 			MagicArmor = 2001003,
 			MagicGuard = 2001002
@@ -279,7 +289,7 @@ namespace Jobs {
 	};
 
 	namespace FPWizard {
-		enum {
+		enum Skills {
 			Meditation = 2101001,
 			MpEater = 2100000,
 			PoisonBreath = 2101005,
@@ -288,7 +298,7 @@ namespace Jobs {
 	};
 
 	namespace FPMage {
-		enum {
+		enum Skills {
 			ElementAmplification = 2110001,
 			ElementComposition = 2111006,
 			PoisonMist = 2111003,
@@ -298,7 +308,7 @@ namespace Jobs {
 	};
 
 	namespace FPArchMage {
-		enum {
+		enum Skills {
 			BigBang = 2121001,
 			Elquines = 2121005,
 			FireDemon = 2121003,
@@ -311,7 +321,7 @@ namespace Jobs {
 	};
 
 	namespace ILWizard {
-		enum {
+		enum Skills {
 			ColdBeam = 2201004,
 			Meditation = 2201001,
 			MpEater = 2200000,
@@ -320,7 +330,7 @@ namespace Jobs {
 	};
 
 	namespace ILMage {
-		enum {
+		enum Skills {
 			ElementAmplification = 2210001,
 			ElementComposition = 2211006,
 			IceStrike = 2211002,
@@ -330,7 +340,7 @@ namespace Jobs {
 	};
 
 	namespace ILArchMage {
-		enum {
+		enum Skills {
 			BigBang = 2221001,
 			Blizzard = 2221007,
 			HerosWill = 2221008,
@@ -343,7 +353,7 @@ namespace Jobs {
 	};
 
 	namespace Cleric {
-		enum {
+		enum Skills {
 			Bless = 2301004,
 			Heal = 2301002,
 			Invincible = 2301003,
@@ -352,7 +362,7 @@ namespace Jobs {
 	};
 
 	namespace Priest {
-		enum {
+		enum Skills {
 			Dispel = 2311001,
 			Doom = 2311005,
 			HolySymbol = 2311003,
@@ -362,7 +372,7 @@ namespace Jobs {
 	};
 
 	namespace Bishop {
-		enum {
+		enum Skills {
 			Bahamut = 2321003,
 			BigBang = 2321001,
 			HerosWill = 2321009,
@@ -375,14 +385,14 @@ namespace Jobs {
 	};
 
 	namespace Archer {
-		enum {
+		enum Skills {
 			CriticalShot = 3000001,
 			Focus = 3001003
 		};
 	};
 
 	namespace Hunter {
-		enum {
+		enum Skills {
 			ArrowBomb = 3101005,
 			BowBooster = 3101002,
 			BowMastery = 3100000,
@@ -391,7 +401,7 @@ namespace Jobs {
 	};
 
 	namespace Ranger {
-		enum {
+		enum Skills {
 			MortalBlow = 3110001,
 			Puppet = 3111002,
 			SilverHawk = 3111005
@@ -399,7 +409,7 @@ namespace Jobs {
 	};
 
 	namespace Bowmaster {
-		enum {
+		enum Skills {
 			Concentrate = 3121008,
 			Hamstring = 3121007,
 			HerosWill = 3121009,
@@ -411,7 +421,7 @@ namespace Jobs {
 	};
 
 	namespace Crossbowman {
-		enum {
+		enum Skills {
 			CrossbowBooster = 3201002,
 			CrossbowMastery = 3200000,
 			SoulArrow = 3201004
@@ -419,7 +429,7 @@ namespace Jobs {
 	};
 
 	namespace Sniper {
-		enum {
+		enum Skills {
 			Blizzard = 3211003,
 			GoldenEagle = 3211005,
 			MortalBlow = 3210001,
@@ -428,7 +438,7 @@ namespace Jobs {
 	};
 
 	namespace Marksman {
-		enum {
+		enum Skills {
 			Blind = 3221006,
 			Frostprey = 3221005,
 			HerosWill = 3221008,
@@ -440,14 +450,14 @@ namespace Jobs {
 	};
 
 	namespace Rogue {
-		enum {
+		enum Skills {
 			DarkSight = 4001003,
 			Disorder = 4001002
 		};
 	};
 
 	namespace Assassin {
-		enum {
+		enum Skills {
 			ClawBooster = 4101003,
 			ClawMastery = 4100000,
 			CriticalThrow = 4100001,
@@ -457,7 +467,7 @@ namespace Jobs {
 	};
 
 	namespace Hermit {
-		enum {
+		enum Skills {
 			Alchemist = 4110000,
 			MesoUp = 4111001,
 			ShadowMeso = 4111004,
@@ -467,7 +477,7 @@ namespace Jobs {
 	};
 
 	namespace NightLord {
-		enum {
+		enum Skills {
 			HerosWill = 4121009,
 			MapleWarrior = 4121000,
 			NinjaAmbush = 4121004,
@@ -480,7 +490,7 @@ namespace Jobs {
 	};
 
 	namespace Bandit {
-		enum {
+		enum Skills {
 			DaggerBooster = 4201002,
 			DaggerMastery = 4200000,
 			Haste = 4201003,
@@ -489,7 +499,7 @@ namespace Jobs {
 	};
 
 	namespace ChiefBandit {
-		enum {
+		enum Skills {
 			Assaulter = 4211002,
 			Chakra = 4211001,
 			MesoExplosion = 4211006,
@@ -499,7 +509,7 @@ namespace Jobs {
 	};
 
 	namespace Shadower {
-		enum {
+		enum Skills {
 			BoomerangStep = 4221007,
 			HerosWill = 4221008,
 			MapleWarrior = 4221000,
@@ -512,13 +522,13 @@ namespace Jobs {
 	};
 
 	namespace Pirate {
-		enum {
+		enum Skills {
 			Dash = 5001005
 		};
 	};
 
 	namespace Infighter {
-		enum {
+		enum Skills {
 			BackspinBlow = 5101002,
 			CorkscrewBlow = 5101004,
 			DoubleUppercut = 5101003,
@@ -531,7 +541,7 @@ namespace Jobs {
 	};
 
 	namespace Marauder {
-		enum {
+		enum Skills {
 			EnergyCharge = 5110001,
 			StunMastery = 5110000,
 			Transformation = 5111005
@@ -539,7 +549,7 @@ namespace Jobs {
 	};
 
 	namespace Buccaneer {
-		enum {
+		enum Skills {
 			Demolition = 5121004,
 			MapleWarrior = 5121000,
 			PiratesRage = 5121008, // Hero's Will
@@ -551,7 +561,7 @@ namespace Jobs {
 	};
 
 	namespace Gunslinger {
-		enum {
+		enum Skills {
 			BlankShot = 5201004,
 			Grenade = 5201002,
 			GunBooster = 5201003,
@@ -560,7 +570,7 @@ namespace Jobs {
 	};
 
 	namespace Outlaw {
-		enum {
+		enum Skills {
 			Flamethrower = 5211004,
 			Gaviota = 5211002,
 			HomingBeacon = 5211006,
@@ -570,7 +580,7 @@ namespace Jobs {
 	};
 
 	namespace Corsair {
-		enum {
+		enum Skills {
 			AerialStrike = 5221003,
 			Battleship = 5221006,
 			Bullseye = 5220011,
@@ -583,7 +593,7 @@ namespace Jobs {
 	};
 
 	namespace Gm {
-		enum {
+		enum Skills {
 			Haste = 9001000,
 			SuperDragonRoar = 9001001,
 			Teleport = 9001002,
@@ -591,7 +601,7 @@ namespace Jobs {
 	};
 
 	namespace SuperGm {
-		enum {
+		enum Skills {
 			HealPlusDispel = 9101000,
 			Haste = 9101001,
 			HolySymbol = 9101002,
