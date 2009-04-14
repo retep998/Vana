@@ -33,6 +33,12 @@ PlayerStorage::~PlayerStorage() {
 	std::for_each(items.begin(), items.end(), MiscUtilities::DeleterSeq<Item>());
 }
 
+void PlayerStorage::takeItem(int8_t slot) {
+	vector<Item *>::iterator iter = items.begin() + slot;
+	delete *iter;
+	items.erase(iter);
+}
+
 void PlayerStorage::setSlots(int8_t slots) {
 	if (slots < 4) slots = 4;
 	else if (slots > 100) slots = 100;

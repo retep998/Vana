@@ -57,11 +57,4 @@ private:
 	int32_t mesos;
 };
 
-inline
-void PlayerStorage::takeItem(int8_t slot) {
-	vector<Item *>::iterator iter = items.begin() + slot;
-	delete *iter;
-	items.erase(iter);
-}
-
 #endif
