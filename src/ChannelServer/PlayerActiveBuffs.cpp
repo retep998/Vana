@@ -170,6 +170,19 @@ void PlayerActiveBuffs::setActiveBuffsByType(ActiveBuffsByType &buffs) {
 }
 
 // Specific skill stuff
+void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
+	m_battleshiphp -= amount;
+	if (m_battleshiphp <= 0) {
+		m_battleshiphp = 0;
+		Skills::startCooldown(m_player, Jobs::Corsair::Battleship, Skills::skills[Jobs::Corsair::Battleship][m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship)].cooltime);
+		Skills::stopSkill(m_player, Jobs::Corsair::Battleship);
+	}
+}
+
+void PlayerActiveBuffs::resetBattleshipHp() {
+	m_battleshiphp = (4000 * m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship)) + ((m_player->getLevel() - 120) * 2000);
+}
+
 void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	m_combo = combo;
 	if (sendPacket) {

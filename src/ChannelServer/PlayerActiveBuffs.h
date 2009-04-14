@@ -49,6 +49,7 @@ public:
 		m_activecharge(0),
 		m_activebooster(0),
 		m_pickpocketcounter(0),
+		m_battleshiphp(0),
 		m_berserk(false)
 		{ }
 
@@ -96,6 +97,12 @@ public:
 	// Pickpocket
 	int32_t getPickpocketCounter() { return ++m_pickpocketcounter; }
 
+	// Battleship
+	int32_t getBattleshipHp() const { return m_battleshiphp; }
+	void setBattleshipHp(int32_t amount) { m_battleshiphp = amount; }
+	void reduceBattleshipHp(uint16_t amount);
+	void resetBattleshipHp();
+
 	// Commonly referred to buffs on the server end
 	const bool hasInfinity();
 	const bool hasMesoUp();
@@ -127,6 +134,7 @@ private:
 	int32_t m_activecharge;
 	int32_t m_activebooster;
 	int32_t m_pickpocketcounter;
+	int32_t m_battleshiphp;
 	uint32_t m_timeseed;
 	bool m_berserk;
 	list<int32_t> m_buffs;

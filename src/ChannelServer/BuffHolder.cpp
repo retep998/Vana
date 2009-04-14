@@ -34,6 +34,7 @@ void BuffHolder::parseIncomingBuffs(PacketReader &packet) {
 	playerbuffs->setEnergyChargeLevel(packet.get<int16_t>());
 	playerbuffs->setCharge(packet.get<int32_t>());
 	playerbuffs->setBooster(packet.get<int32_t>());
+	playerbuffs->setBattleshipHp(packet.get<int32_t>());
 	int32_t mountid = packet.get<int32_t>();
 	int32_t mountskill = packet.get<int32_t>();
 	playerbuffs->setMountInfo(mountskill, mountid);
