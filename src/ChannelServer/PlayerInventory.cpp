@@ -147,9 +147,13 @@ void PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) {
 }
 
 void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
-	deleteItem(inv, slot, false);
-	if (item) {
-		inv -= 1;
+	inv -= 1;
+	if (item == 0) {
+		items[inv].erase(slot);
+		if (slot < 0)
+			addEquipped(slot, 0);
+	}
+	else {
 		items[inv][slot] = item;
 		if (slot < 0)
 			addEquipped(slot, item->id);
