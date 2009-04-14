@@ -294,50 +294,73 @@ void Party::warpAllMembers(int32_t mapid, const string &portalname) {
 	}
 }
 
-bool Party::checkFootholds(int8_t membercount, const vector<int16_t> &footholds) {
+bool Party::checkFootholds(int8_t membercount, const vector<vector<int16_t> > &footholds) {
 	// Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
 	bool winner = true;
 	int8_t membersonfootholds = 0;
-	unordered_map<int16_t, bool> footholdhasplayer;
-	for (size_t k = 0; k < footholds.size(); k++) {
-		int16_t fh = footholds[k];
-		footholdhasplayer[fh] = false;
+	unordered_map<size_t, bool> footholdhasplayer; // foothold group ID = key
+	for (size_t m = 0; m < footholds.size(); m++) {
+		footholdhasplayer[m] = false;
 		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 			Player *m_player = iter->second;
-			if (m_player != 0 && m_player->getFh() == fh) {
-				if (footholdhasplayer[fh]) {
-					winner = false;
-					break;
+			if (m_player != 0) {
+				for (size_t k = 0; k < footholds[m].size(); k++) {
+					if (m_player->getFh() == footholds[m][k]) {
+						if (footholdhasplayer[m]) {
+							winner = false;
+						}
+						else {
+							footholdhasplayer[m] = true;
+							membersonfootholds++;
+						}
+						break;
+					}
 				}
-				footholdhasplayer[fh] = true;
-				membersonfootholds++;
+			}
+			if (!winner)
+				break;
+		}
+		if (!winner)
+			break;
+	}
+	if (winner && (membersonfootholds != membercount)) // Not all the foothold groups were indexed
+		winner = false;
+	return winner;
+}
+
+bool Party::verifyFootholds(const vector<vector<int16_t> > &footholds) {
+	// Determines if the players match your selected footholds
+	bool winner = true;
+	unordered_map<size_t, bool> footholdhasplayer; // foothold group ID = key
+	for (size_t m = 0; m < footholds.size(); m++) {
+		footholdhasplayer[m] = false;
+		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+			Player *m_player = iter->second;
+			if (m_player != 0) {
+				for (size_t k = 0; k < footholds[m].size(); k++) {
+					if (m_player->getFh() == footholds[m][k]) {
+						if (footholdhasplayer[m]) {
+							winner = false;
+						}
+						else {
+							footholdhasplayer[m] = true;
+						}
+						break;
+					}
+				}
+				if (!winner)
+					break;
 			}
 		}
 		if (!winner)
 			break;
 	}
-	if (membersonfootholds != membercount)
-		winner = false;
-	return winner;
-}
-
-bool Party::verifyFootholds(const vector<int16_t> &footholds) {
-	// Determines if the players match your selected footholds
-	bool winner = true;
-	unordered_map<int16_t, bool> footholdhasplayer;
-	for (size_t k = 0; k < footholds.size(); k++) {
-		footholdhasplayer[footholds[k]] = false;
-		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
-			Player *m_player = iter->second;
-			if (m_player != 0 && m_player->getFh() == footholds[k]) {
-				footholdhasplayer[footholds[k]] = true;
+	if (winner) {
+		for (unordered_map<size_t, bool>::iterator iter = footholdhasplayer.begin(); iter != footholdhasplayer.end(); iter++) {
+			if (!iter->second) {
+				winner = false;
+				break;
 			}
-		}
-	}
-	for (unordered_map<int16_t, bool>::iterator iter = footholdhasplayer.begin(); iter != footholdhasplayer.end(); iter++) {
-		if (!iter->second) {
-			winner = false;
-			break;
 		}
 	}
 	return winner;
