@@ -153,7 +153,7 @@ void PartyHandler::invitePlayer(WorldServerAcceptPlayer *player, int32_t playeri
 		return; //hacking
 	}
 	Player *invited = Players::Instance()->getPlayerFromName(invitee);
-	if (invited->channel != USHRT_MAX && invited->channel == pplayer->channel) {
+	if (invited->channel != -1 && invited->channel == pplayer->channel) {
 		if (invited->party != 0) {
 			PartyPacket::partyError(player, playerid, 0x10);
 		}
