@@ -68,3 +68,13 @@ function getSavedFootholds()
 	end
 	return footholds;
 end
+
+function partyQuestClear()
+	showMapEvent("quest/party/clear");
+	playSoundMap("Party1/Clear");
+end
+
+function partyQuestWrong()
+	showMapEvent("quest/party/wrong_kor");
+	playSoundMap("Party1/Failed");
+end
