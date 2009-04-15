@@ -8,6 +8,7 @@
 -- The format of a subnet configuration is {"IP", "Subnet"}
 -- an example:
 -- 	external_ip = {
+--      {"127.0.0.1", "255.0.0.0"},
 -- 	{"192.168.1.2", "255.255.255.0"},
 --	{"your.wan.ip", "0.0.0.0"}
 -- 	}
@@ -15,6 +16,9 @@
 -- the server sends 192.168.1.2 to the client, otherwise
 -- your.wan.ip gets sent to the client.
 -- 
+-- The 127.0.0.1 rule is needed so that the ChannelServer 
+-- know how to connect to the WorldServer
+--
 -- Domain names are supported in the IP field.
 
 external_ip = {}
