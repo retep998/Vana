@@ -203,6 +203,5 @@ string Login::hashPassword(const string &password, const string &salt) {
 			new CryptoPP::HexEncoder(
 				new CryptoPP::StringSink(digest))));
 
-	std::cout << digest << std::endl;
 	return digest;
 }
