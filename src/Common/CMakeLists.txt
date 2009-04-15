@@ -2,7 +2,6 @@ set(SOURCES
 	AbstractPlayer.h
 	AbstractServer.h
 	AbstractSession.h
-	AESEncryption.h
 	AuthenticationPacket.h
 	ConfigFile.h
 	ConnectionManager.h
@@ -43,7 +42,6 @@ set(SOURCES
 	Types.h
 	AbstractPlayer.cpp
 	AbstractServer.cpp
-	AESEncryption.cpp
 	AuthenticationPacket.cpp
 	ConfigFile.cpp
 	ConnectionManager.cpp

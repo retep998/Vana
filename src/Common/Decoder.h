@@ -18,12 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef DECODER_H
 #define DECODER_H
 
-#include "SendHeader.h"
 #include "Types.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <memory.h>
-#include <time.h>
+#include "MapleEncryption.h"
 #include <string>
 
 using std::string;
@@ -32,16 +28,17 @@ class PacketCreator;
 
 class Decoder {
 private:
-	unsigned char ivRecv[4];
-	unsigned char ivSend[4];
+	unsigned char ivRecv[16];
+	unsigned char ivSend[16];
 public:
 	static int32_t getLength(unsigned char *header);
+	static void setIv(unsigned char *dest, unsigned char *source);
 	void createHeader(unsigned char *header, int16_t size);
 
 	PacketCreator getConnectPacket(string unknown = "");
 
-	void setIvRecv(unsigned char *iv) { memcpy(ivRecv, iv, 4); }
-	void setIvSend(unsigned char *iv) { memcpy(ivSend, iv, 4); }
+	void setIvRecv(unsigned char *iv) { MapleEncryption::setIv(ivRecv, iv); }
+	void setIvSend(unsigned char *iv) { MapleEncryption::setIv(ivSend, iv); }
 
 	void encrypt(unsigned char *buffer, int32_t size);
 	void decrypt(unsigned char *buffer, int32_t size);
