@@ -232,10 +232,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\sha1.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Common\StringUtilities.cpp"
 					>
 				</File>
@@ -419,10 +415,6 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\Randomizer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\sha1.h"
 					>
 				</File>
 				<File
