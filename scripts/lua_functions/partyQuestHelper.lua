@@ -42,3 +42,29 @@ function getRandomFootholds(desiredamount, tablefootholds)
 	end
 	return returnfootholds;
 end
+
+function saveFootholds(tablefootholds)
+	setInstanceVariable("FootholdGroups", #tablefootholds);
+	for i = 1, #tablefootholds do
+		group = tablefootholds[i];
+		setInstanceVariable("FootholdGroup" .. i .. "Count", #group);
+		for k = 1, #group do
+			setInstanceVariable("FootholdGroup" .. i .. "Element" .. k, group[k]);
+		end
+	end
+end
+
+function getSavedFootholds()
+	footholds = {};
+	group = {};
+	n = tonumber(getInstanceVariable("FootholdGroups"));
+	for i = 1, n do
+		p = tonumber(getInstanceVariable("FootholdGroup" .. i .. "Count"));
+		for k = 1, p do
+			group[k] = tonumber(getInstanceVariable("FootholdGroup" .. i .. "Element" .. k));
+		end
+		footholds[i] = group;
+		group = {};
+	end
+	return footholds;
+end
