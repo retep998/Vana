@@ -732,13 +732,25 @@ int LuaExports::setStyle(lua_State *luaVm) {
 
 // Map
 int LuaExports::clearDrops(lua_State *luaVm) {
-	int32_t mapid = getPlayer(luaVm)->getMap();
+	int32_t mapid = 0;
+	if (lua_type(luaVm, 1) == LUA_TNUMBER) {
+		mapid = lua_tointeger(luaVm, 1);
+	}
+	else {
+		mapid = getPlayer(luaVm)->getMap();
+	}
 	Maps::getMap(mapid)->clearDrops(false);
 	return 0;
 }
 
 int LuaExports::clearMobs(lua_State *luaVm) {
-	int32_t mapid = getPlayer(luaVm)->getMap();
+	int32_t mapid = 0;
+	if (lua_type(luaVm, 1) == LUA_TNUMBER) {
+		mapid = lua_tointeger(luaVm, 1);
+	}
+	else {
+		mapid = getPlayer(luaVm)->getMap();
+	}
 	Maps::getMap(mapid)->killMobs(0, 0, false, false);
 	return 0;
 }
