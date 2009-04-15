@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-Pos Movement::parseMovement(MovableLife *life, PacketReader &packet, enum MovableLifeTypes::Type source) {
+Pos Movement::parseMovement(MovableLife *life, PacketReader &packet) {
 	int16_t foothold = 0;
 	int8_t stance = 0;
 	int16_t x = 0;
@@ -34,6 +34,9 @@ Pos Movement::parseMovement(MovableLife *life, PacketReader &packet, enum Movabl
 			case 10: // Falling of some kind
 				packet.skipBytes(1);
 				break;
+			case 16: // Wings
+				packet.skipBytes(7);
+				break;
 			case 17: // Part of Wings, the falling, I believe
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
@@ -41,7 +44,6 @@ Pos Movement::parseMovement(MovableLife *life, PacketReader &packet, enum Movabl
 				stance = packet.get<int8_t>();	
 				packet.skipBytes(6);
 				break;
-			case 16: // Wings
 			case 12: // Horntail knockback
 				packet.skipBytes(7);
 				break;

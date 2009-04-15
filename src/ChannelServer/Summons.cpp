@@ -98,7 +98,7 @@ void Summons::moveSummon(Player *player, PacketReader &packet) {
 		// Up to no good, lag, or something else
 		return;
 	Pos startPos = summon->getPos(); // Original gangsta
-	Movement::parseMovement(summon, packet, MovableLifeTypes::Summon);
+	Movement::parseMovement(summon, packet);
 	packet.reset(10);
 	SummonsPacket::moveSummon(player, summon, startPos, packet.getBuffer(), (packet.getBufferLength() - 9));
 }
