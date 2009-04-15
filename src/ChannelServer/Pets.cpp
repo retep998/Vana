@@ -114,7 +114,7 @@ void Pets::handleMovement(Player *player, PacketReader &packet) {
 	int32_t petid = packet.get<int32_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	packet.skipBytes(8);
-	Movement::parseMovement(pet, packet, MovableLifeTypes::Pet);
+	Movement::parseMovement(pet, packet);
 	packet.reset(10);
 	PetsPacket::showMovement(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
 }

@@ -142,16 +142,6 @@ namespace EquipSlots {
 	};
 };
 
-namespace MovableLifeTypes {
-	enum Type {
-		Player,
-		Summon,
-		Pet,
-		Npc,
-		Mob
-	};
-};
-
 // Skills so there are fewer magic numbers
 namespace Jobs {
 	namespace Beginner {

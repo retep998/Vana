@@ -18,14 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
 
-#include "GameConstants.h"
-
 class MovableLife;
 class PacketReader;
 struct Pos;
 
 namespace Movement {
-	Pos parseMovement(MovableLife *life, PacketReader &packet, enum MovableLifeTypes::Type source);
+	Pos parseMovement(MovableLife *life, PacketReader &packet);
 };
 
 #endif
