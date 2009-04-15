@@ -30,7 +30,6 @@ set(SOURCES
 	SendHeader.h
 	ServerPlayer.h
 	SessionManager.h
-	sha1.h
 	StringUtilities.h
 	Timer/Container.h
 	Timer/Id.h
@@ -62,7 +61,6 @@ set(SOURCES
 	Randomizer.cpp
 	ServerPlayer.cpp
 	SessionManager.cpp
-	sha1.cpp
 	StringUtilities.cpp
 	Timer/Container.cpp
 	Timer/Id.cpp
