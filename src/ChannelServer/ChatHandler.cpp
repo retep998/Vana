@@ -688,7 +688,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						player->getInventory()->setMesos(atoi(args.c_str()));
 					break;
 				case CmdRelog:
-					player->changeChannel(ChannelServer::Instance()->getChannel());
+					player->changeChannel((int8_t)ChannelServer::Instance()->getChannel());
 					break;
 				case CmdSave:
 					player->saveAll();
