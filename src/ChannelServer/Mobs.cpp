@@ -470,6 +470,10 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			return 0;
 		uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
 		int32_t mobid = mob->getMobId();
+		if (skillid == Jobs::Cleric::Heal && !mob->isUndead()) {
+			// hacking
+			return 0;
+		}
 		Mob *htabusetaker = 0;
 		switch (mobid) {
 			case 8810002:
