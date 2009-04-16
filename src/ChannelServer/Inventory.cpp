@@ -292,9 +292,14 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			item->amount = ItemDataProvider::Instance()->getMaxSlot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
-			player->getInventory()->modifyMesos(-1); // TODO: Calculate price, letting players recharge for 1 meso for now
-			InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
+			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
+			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->id, maxslot - item->amount);
+			if (modifiedmesos > 0) {
+				// Probably hacking
+				return;
+			}
+			player->getInventory()->modifyMesos(modifiedmesos); // TODO: Calculate price, letting players recharge for 1 meso for now
+			InventoryPacket::updateItemAmounts(player, 2, slot, maxslot, 0, 0);
 			InventoryPacket::bought(player, 0);
 			break;
 		}
@@ -313,7 +318,7 @@ void Inventory::useStorage(Player *player, PacketReader &packet) {
 			Item *item = player->getStorage()->getItem(slot);
 			if (item == 0) { // It's a trap
 				// hacking
-				return; // Abort
+				return;
 			}
 			addItem(player, new Item(item));
 			player->getStorage()->takeItem(slot);
