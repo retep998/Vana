@@ -189,7 +189,7 @@ void Mob::die(Player *player) {
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
 	for (size_t i = 0; i < info.summon.size(); i++) {
-		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, 0, this);
+		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
 	}
 
 	MobsPacket::dieMob(this);
