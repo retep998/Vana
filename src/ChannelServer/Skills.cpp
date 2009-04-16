@@ -160,22 +160,6 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			player->modifyHp(healrate * player->getMHp() / 100);
 			break;
 		}
-		case Jobs::Buccaneer::TimeLeap: {
-			Party *party = player->getParty();
-			player->removeAllCooldowns();
-			if (party != 0) {
-				int8_t affected = packet.get<int8_t>();
-				int8_t pmembers = party->getMembersCount();
-				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
-				for (size_t i = 0; i < members.size(); i++) {
-					Player *cmem = members[i];
-					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
-						cmem->removeAllCooldowns();
-					}
-				}
-			}
-			break;
-		}
 		case Jobs::Fighter::Rage:
 		case Jobs::Spearman::IronWill:
 		case Jobs::Spearman::HyperBody:
@@ -190,6 +174,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Hermit::MesoUp:
 		case Jobs::Bandit::Haste:
 		case Jobs::Buccaneer::SpeedInfusion:
+		case Jobs::Buccaneer::TimeLeap: 
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
 		case Jobs::DarkKnight::MapleWarrior:
@@ -203,6 +188,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Buccaneer::MapleWarrior:
 		case Jobs::Corsair::MapleWarrior: {
 			Party *party = player->getParty();
+			if (skillid == Jobs::Buccaneer::TimeLeap)
+				player->removeAllCooldowns();
 			if (party != 0) {
 				int8_t affected = packet.get<int8_t>();
 				int8_t pmembers = party->getMembersCount();
@@ -213,6 +200,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true);
 						Buffs::Instance()->addBuff(cmem, skillid, level, addedinfo);
+						if (skillid == Jobs::Buccaneer::TimeLeap)
+							cmem->removeAllCooldowns();
 					}
 				}
 			}
