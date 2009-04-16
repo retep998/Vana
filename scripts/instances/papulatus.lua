@@ -48,7 +48,7 @@ function mobSpawn(mobid, mapmobid)
 end
 
 function changeMap(playerid, newmap, oldmap)
-	if isInstanceMap(newmap) == false then -- Player probably died, want to make sure this doesn't keep the room full
+	if not isInstanceMap(newmap) then -- Player probably died, want to make sure this doesn't keep the room full
 		removeInstancePlayer(playerid);
 		startInstanceTimer("clean", 1, false);
 	end
