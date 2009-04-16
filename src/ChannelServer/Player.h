@@ -168,6 +168,7 @@ public:
 	void setOnline(bool online);
 	void setLevelDate();
 	void acceptDeath();
+	void loseExp();
 private:
 	void playerConnect(PacketReader &packet);
 	void changeKey(PacketReader &packet);
