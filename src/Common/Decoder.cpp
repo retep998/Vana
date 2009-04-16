@@ -36,9 +36,11 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 	int32_t pos = 0;
 	uint8_t first = 1;
 
-	CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption ofbEncryption(AesKey, AesKeySize, ivSend);
+	CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption ofbEncryption;
 
 	while (size > pos) {
+		ofbEncryption.SetKeyWithIV(AesKey, AesKeySize, ivSend); // Need to set it before every encryption
+
 		if (size > (pos + 1460 - first * 4)) {
 			ofbEncryption.ProcessData(buffer + pos, buffer + pos, 1460 - first * 4);
 		}
