@@ -41,7 +41,7 @@ class Player;
 class Reactor;
 
 struct MapInfo {
-	MapInfo() : musicname("") {}
+	MapInfo() : musicname(""), top(0), left(0), right(0), bottom(0) {}
 	int32_t id;
 	int32_t rm;
 	int32_t forcedReturn;
@@ -49,7 +49,12 @@ struct MapInfo {
 	int32_t fieldLimit;
 	double spawnrate;
 	bool clock;
+	bool town;
 	int32_t shipInterval;
+	int16_t left;
+	int16_t top;
+	int16_t bottom;
+	int16_t right;
 	string musicname;
 };
 typedef shared_ptr<MapInfo> MapInfoPtr;

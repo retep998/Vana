@@ -83,10 +83,12 @@ public:
 	int32_t getMHp() const { return info.hp; }
 	int32_t getMMp() const { return info.mp; }
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
-	MobAttackInfo getAttackInfo(uint8_t id) const { return info.skills.at(id); }
+	MobAttackInfo getAttackInfo(uint8_t id) const { return info.attacks.at(id); }
+	MobSkillInfo getSkillInfo(uint8_t id) const { return info.skills.at(id); }
 	bool isBoss() const { return info.boss; }
 	bool canFreeze() const { return info.canfreeze; }
 	bool canPoison() const { return info.canpoison; }
+	bool isUndead() const { return info.undead; }
 	void statusPacket(PacketCreator &packet);
 	Timer::Container * getTimers() const { return timers.get(); }
 	Player * getControl() const { return control; }

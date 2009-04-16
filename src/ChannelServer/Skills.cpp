@@ -37,6 +37,7 @@ using std::tr1::bind;
 
 unordered_map<int32_t, SkillsLevelInfo> Skills::skills;
 unordered_map<int32_t, uint8_t> Skills::maxlevels;
+unordered_map<uint8_t, MobSkillsLevelInfo> Skills::mobskills;
 
 void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo levelinfo) {
 	skills[skillid][level] = levelinfo;
@@ -44,6 +45,10 @@ void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo le
 	if (maxlevels.find(skillid) == maxlevels.end() || maxlevels[skillid] < level) {
 		maxlevels[skillid] = level;
 	}
+}
+
+void Skills::addMobSkillLevelInfo(uint8_t skillid, uint8_t level, MobSkillLevelInfo levelinfo) {
+	mobskills[skillid][level] = levelinfo;
 }
 
 void Skills::addSkill(Player *player, PacketReader &packet) {

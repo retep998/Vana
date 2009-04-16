@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
 
-using std::vector;
 using std::tr1::unordered_map;
+using std::vector;
 
 struct MobAttackInfo {
 	MobAttackInfo() : id(0), level(0), mpconsume(0), mpburn(0), mobid(-1), deadlyattack(false) { }
@@ -36,6 +36,14 @@ struct MobAttackInfo {
 	bool deadlyattack;
 };
 
+struct MobSkillInfo {
+	MobSkillInfo() : id(0), level(0), action(0), effectAfter(0) { }
+	uint8_t id;
+	uint8_t level;
+	uint8_t action;
+	int16_t effectAfter;
+};
+
 struct MobInfo {
 	uint8_t level;
 	uint32_t hp;
@@ -46,10 +54,12 @@ struct MobInfo {
 	bool boss;
 	bool canfreeze;
 	bool canpoison;
+	bool undead;
 	int8_t hpcolor;
 	int8_t hpbgcolor;
 	vector<int32_t> summon;
-	vector<MobAttackInfo> skills;
+	vector<MobAttackInfo> attacks;
+	vector<MobSkillInfo> skills;
 };
 
 class MobDataProvider {
