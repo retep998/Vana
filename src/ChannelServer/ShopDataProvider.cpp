@@ -138,3 +138,16 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 int32_t ShopDataProvider::getPrice(int32_t shopid, int32_t itemid) {
 	return shops[shopid].prices.find(itemid) != shops[shopid].prices.end() ? shops[shopid].prices[itemid] : 0;
 }
+
+int32_t ShopDataProvider::getRechargeCost(int32_t shopid, int32_t itemid, int16_t amount) {
+	int32_t cost = 1;
+	if (shops.find(shopid) != shops.end()) {
+		int8_t tier = shops[shopid].rechargetier;
+		if (rechargecosts.find(tier) != rechargecosts.end()) {
+			if (rechargecosts[tier].find(itemid) != rechargecosts[tier].end()) {
+				cost = -1 * static_cast<int32_t>(rechargecosts[tier][itemid] * amount);
+			}
+		}
+	}
+	return cost;
+}
