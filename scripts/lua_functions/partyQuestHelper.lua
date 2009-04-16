@@ -78,3 +78,21 @@ function partyQuestWrong()
 	showMapEvent("quest/party/wrong_kor");
 	playSoundMap("Party1/Failed");
 end
+
+function giveAllMembersEXP(exp, mapid)
+	members = getAllPartyPlayerIDs();
+	for i = 1, #members do
+		member = members[i];
+		if isOnline(member) then
+			setPlayer(member);
+			if mapid == nil then
+				giveEXP(exp);
+			else
+				if getMap() == mapid then
+					giveEXP(exp);
+				end
+			end
+			revertPlayer();
+		end
+	end
+end
