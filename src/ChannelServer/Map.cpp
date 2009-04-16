@@ -64,7 +64,7 @@ void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
 	if (info->fieldType == 82 || info->fieldType == 81) // Apple training maps/Showa spa
 		MapPacket::forceMapEquip(player);
-	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hide) == 0)
+	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) == 0)
 		MapPacket::showPlayer(player);
 	if (timer > 0)
 		MapPacket::showTimer(player, timer - static_cast<int32_t>(time(0) - timerstart));
@@ -190,16 +190,19 @@ void Map::updateMobControl(Player *player) {
 
 void Map::updateMobControl(Mob *mob, bool spawn) {
 	if (players.size() > 0 && mob->getControl() == 0) {
-		int32_t maxpos = mob->getPos() - players[0]->getPos();
-		int32_t player = 0;
+		int32_t maxpos = 200000;
+		Player *p = 0;
 		for (size_t j = 0; j < players.size(); j++) {
-			int32_t curpos = mob->getPos() - players[j]->getPos();
-			if (curpos < maxpos) {
-				maxpos = curpos;
-				player = j;
+			Player *test = players[j];
+			if (!(test->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) > 0)) {
+				int32_t curpos = mob->getPos() - test->getPos();
+				if (curpos < maxpos) {
+					maxpos = curpos;
+					p = test;
+				}
 			}
 		}
-		mob->setControl(players[player]);
+		mob->setControl(p);
 	}
 	else if (players.size() == 0) {
 		mob->setControl(0);
@@ -221,7 +224,7 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 		if (iter->second != 0) {
 			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0) {
 				if (playerkill && player != 0) {
-					iter->second->applyDamage(player->getId(), iter->second->getHP());
+					iter->second->applyDamage(player->getId(), iter->second->getHp());
 				}
 				else
 					iter->second->die(showpacket);
@@ -308,7 +311,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 
 	// Players
 	for (size_t i = 0; i < players.size(); i++) {
-		if (player != players[i] && players[i]->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGM::Hide) == 0) {
+		if (player != players[i] && players[i]->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) == 0) {
 			PacketCreator packet = MapPacket::playerPacket(players[i]);
 			player->getSession()->send(packet);
 			Summons::showSummons(players[i], player);
@@ -344,8 +347,8 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	}
 
 	if (player->getParty()) {
-		player->getParty()->showHPBar(player);
-		player->getParty()->receiveHPBar(player);
+		player->getParty()->showHpBar(player);
+		player->getParty()->receiveHpBar(player);
 	}
 
 	if (info->clock) {

@@ -35,7 +35,7 @@ class Player;
 class Mob;
 class PacketReader;
 class PacketCreator;
-struct MPEaterInfo;
+struct MpEaterInfo;
 
 struct StatusInfo {
 	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0), time(0) { }
@@ -56,7 +56,7 @@ namespace Mobs {
 	void damageMobSpell(Player *player, PacketReader &packet);
 	void damageMobEnergyCharge(Player *player, PacketReader &packet);
 	void damageMobSummon(Player *player, PacketReader &packet);
-	uint32_t damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater = 0, bool ismelee = false);
+	uint32_t damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater = 0, bool ismelee = false);
 	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type);
 	void monsterControl(Player *player, PacketReader &packet);
 	void checkSpawn(int32_t mapid);
@@ -66,7 +66,7 @@ class Mob : public MovableLife {
 public:
 	Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
-	void setMP(int32_t mp) { this->mp = mp; }
+	void setMp(int32_t mp) { this->mp = mp; }
 	void addStatus(int32_t playerid, vector<StatusInfo> statusinfo);
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
@@ -78,15 +78,17 @@ public:
 	int32_t getMapId() const { return mapid; }
 	int32_t getMobId() const { return mobid; }
 	int32_t getSpawnId() const { return spawnid; }
-	int32_t getHP() const { return hp; }
-	int32_t getMP() const { return mp; }
-	int32_t getMHP() const { return info.hp; }
-	int32_t getMMP() const { return info.mp; }
+	int32_t getHp() const { return hp; }
+	int32_t getMp() const { return mp; }
+	int32_t getMHp() const { return info.hp; }
+	int32_t getMMp() const { return info.mp; }
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
-	MobAttackInfo getAttackInfo(uint8_t id) const { return info.skills.at(id); }
+	MobAttackInfo getAttackInfo(uint8_t id) const { return info.attacks.at(id); }
+	MobSkillInfo getSkillInfo(uint8_t id) const { return info.skills.at(id); }
 	bool isBoss() const { return info.boss; }
 	bool canFreeze() const { return info.canfreeze; }
 	bool canPoison() const { return info.canpoison; }
+	bool isUndead() const { return info.undead; }
 	void statusPacket(PacketCreator &packet);
 	Timer::Container * getTimers() const { return timers.get(); }
 	Player * getControl() const { return control; }

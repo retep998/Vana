@@ -52,9 +52,9 @@ void Trades::tradeHandler(Player *player, PacketReader &packet) {
 						ActiveTrade *trade = new ActiveTrade(player, receiver);
 						Trades::addTrade(trade);
 						player->setTrading(1); // Busy
-						player->setTradeSendID(receiver->getId());
+						player->setTradeSendId(receiver->getId());
 						receiver->setTrading(-1); // Handling request
-						receiver->setTradeRecvID(player->getId());
+						receiver->setTradeRecvId(player->getId());
 						TradesPacket::sendTradeRequest(player, receiver, trade->getID());
 						Trades::startTimeout(player, receiver, player->getId());
 						break;
@@ -76,9 +76,9 @@ void Trades::tradeHandler(Player *player, PacketReader &packet) {
 				Player *receiver = traderecv->player;
 				Trades::removeTrade(tradeid);
 				sender->setTrading(0);
-				sender->setTradeSendID(0);
+				sender->setTradeSendId(0);
 				receiver->setTrading(0);
-				receiver->setTradeRecvID(0);
+				receiver->setTradeRecvId(0);
 				TradesPacket::sendTradeMessage(receiver, sender, 0x03, packet.get<int8_t>());
 			}
 			break;
@@ -269,9 +269,9 @@ void Trades::tradeHandler(Player *player, PacketReader &packet) {
 					Trades::returnMesos(two, recv);
 					Trades::removeTrade(playerid);
 					one->setTrading(0);
-					one->setTradeSendID(0);
+					one->setTradeSendId(0);
 					two->setTrading(0);
-					two->setTradeRecvID(0);
+					two->setTradeRecvId(0);
 				}
 				else {
 					if (send->mesos > 0) {
@@ -310,9 +310,9 @@ void Trades::tradeHandler(Player *player, PacketReader &packet) {
 					TradesPacket::sendEndTrade(two, 0x06);
 					Trades::removeTrade(playerid);
 					one->setTrading(0);
-					one->setTradeSendID(0);
+					one->setTradeSendId(0);
 					two->setTrading(0);
-					two->setTradeRecvID(0);
+					two->setTradeRecvId(0);
 				}
 			}
 			break;
@@ -376,9 +376,9 @@ void Trades::cancelTrade(Player *player) {
 		}
 		Trades::removeTrade(playerid);
 		one->setTrading(0);
-		one->setTradeSendID(0);
+		one->setTradeSendId(0);
 		two->setTrading(0);
-		two->setTradeRecvID(0);
+		two->setTradeRecvId(0);
 		Timer::Id id(Timer::Types::TradeTimer, one->getId(), two->getId());
 		if (Timer::Thread::Instance()->getContainer()->checkTimer(id)) {
 			Trades::stopTimeout(one, two);
@@ -415,7 +415,7 @@ bool Trades::canTrade(Player *player, TradeInfo *info) {
 			if (inv != 1 && !GameLogicUtilities::isRechargeable(itemid)) { // Already did these
 				if (added.find(itemid) == added.end()) // Already did this item
 					continue;
-				int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(itemid);
+				int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
 				int32_t current_amount = player->getInventory()->getItemAmount(itemid);
 				int32_t last_slot = (current_amount % maxslot); // Get the number of items in the last slot
 				int32_t item_sum = last_slot + added[itemid];

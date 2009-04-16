@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "WorldServerConnectPlayer.h"
 #include <iostream>
+#include <limits>
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, PacketReader &packet) {
 	int8_t worldid = packet.get<int8_t>();
@@ -45,10 +46,10 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, P
 }
 
 void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, PacketReader &packet) {
-	uint16_t channel = packet.get<int16_t>();
-	if (channel != USHRT_MAX) {
+	int16_t channel = packet.get<int16_t>();
+	if (channel != -1) {
 		ChannelServer::Instance()->setChannel(channel);
-		int16_t port = packet.get<int16_t>();
+		uint16_t port = packet.get<uint16_t>();
 		ChannelServer::Instance()->setPort(port);
 		ChannelServer::Instance()->setMaxMultiLevel(packet.get<int8_t>());
 		ChannelServer::Instance()->setMaxStats(packet.get<int16_t>());
@@ -79,10 +80,10 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 
 void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
 	int32_t finder = packet.get<int32_t>();
-	uint16_t channel = packet.get<int16_t>();
+	int16_t channel = packet.get<int16_t>();
 	string name = packet.getString();
 	int8_t is = packet.get<int8_t>();
-	if (channel == USHRT_MAX) {
+	if (channel == -1) {
 		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, -1, is);
 	}
 	else {

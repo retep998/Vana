@@ -20,10 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <map>
 #include <vector>
 
-using std::vector;
+using std::map;
 using std::tr1::unordered_map;
+using std::vector;
 
 class Player;
 
@@ -31,6 +33,7 @@ struct ShopInfo {
 	int32_t npc;
 	vector<int32_t> items;
 	unordered_map<int32_t, int32_t> prices;
+	int8_t rechargetier;
 };
 
 class ShopDataProvider {
@@ -41,18 +44,15 @@ public:
 		return singleton;
 	}
 	void loadData();
-	void addRechargable(int32_t itemid) {
-		rechargables.push_back(itemid);
-	}
 	bool showShop(Player *player, int32_t id);
 	int32_t getPrice(int32_t shopid, int32_t itemid);
-
+	int32_t getRechargeCost(int32_t shopid, int32_t itemid, int16_t amount);
 private:
 	ShopDataProvider() {}
 	static ShopDataProvider *singleton;
 
 	unordered_map<int32_t, ShopInfo> shops;
-	vector<int32_t> rechargables;
+	unordered_map<int8_t, map<int32_t, double> > rechargecosts;
 };
 
 #endif

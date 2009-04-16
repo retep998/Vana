@@ -293,7 +293,7 @@ void Instance::removeTimer(const string &timername) {
 		if (checkTimer(timername) > 0) {
 			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
 			getTimers()->removeTimer(id);
-			sendMessage(Timer_End, timername, false);
+			sendMessage(TimerEnd, timername, false);
 		}
 		m_timer_actions.erase(timername);
 	}
@@ -348,12 +348,12 @@ void Instance::sendMessage(InstanceMessages message, const string &parameter1, i
 }
 
 void Instance::timerEnd(const string &name, bool fromTimer) {
-	sendMessage(Timer_Natural_End, name, fromTimer ? 1 : 0);
+	sendMessage(TimerNaturalEnd, name, fromTimer ? 1 : 0);
 	removeTimer(name);
 }
 
 void Instance::instanceEnd(bool fromTimer) {
-	sendMessage(Instance_Timer_Natural_End, fromTimer ? 1 : 0);
+	sendMessage(InstanceTimerNaturalEnd, fromTimer ? 1 : 0);
 	if (!getPersistence()) {
 		setMarkedForDelete(true);
 	}

@@ -35,6 +35,7 @@ add_executable(WorldServer ${SOURCES})
 target_link_libraries(WorldServer
 	Common
 	${LUA_LIBRARIES}
+	${CRYPTO++_LIBRARIES}
 	${Boost_SYSTEM_LIBRARY}
 	${Boost_THREAD_LIBRARY}
 )

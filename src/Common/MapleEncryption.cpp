@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleEncryption.h"
 
-void MapleEncryption::nextIV(unsigned char *vector) {
+void MapleEncryption::nextIv(unsigned char *vector) {
 	uint8_t values[256] = {
 		0xEC, 0x3F, 0x77, 0xA4, 0x45, 0xD0, 0x71, 0xBF, 0xB7, 0x98, 0x20, 0xFC, 0x4B, 0xE9, 0xB3, 0xE1,
 		0x5C, 0x22, 0xF7, 0x0C,	0x44, 0x1B, 0x81, 0xBD, 0x63, 0x8D, 0xD4, 0xC3, 0xF2, 0x10, 0x19, 0xE0,
@@ -72,8 +72,8 @@ void MapleEncryption::nextIV(unsigned char *vector) {
 		x[2] = (uint8_t)(c % 0x100);
 		x[3] = (uint8_t)(c / 0x100);
 	}
-	for (uint8_t i = 0; i < 4; i++)
-		vector[i] = x[i];
+
+	setIv(vector, x);
 }
 
 uint8_t MapleEncryption::rol(uint8_t val, int32_t num) {

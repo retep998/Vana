@@ -10,15 +10,15 @@ find_package(Boost 1.37.0 REQUIRED COMPONENTS filesystem regex system thread)
 
 find_package(MySQL REQUIRED)
 include_directories(${MYSQL_INCLUDE_DIR})
-set(LIBS ${LIBS} ${MYSQL_LIBRARIES})
 
 find_package(MySQL++ REQUIRED)
 include_directories(${MYSQL++_INCLUDE_DIR})
-set(LIBS ${LIBS} ${MYSQL++_LIBRARIES})
 
 find_package(Lua REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
-set(LIBS ${LIBS} ${LUA_LIBRARIES})
+
+find_package(Crypto++ REQUIRED)
+include_directories(${CRYPTO++_INCLUDE_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR}/src/Common)
 

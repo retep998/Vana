@@ -29,10 +29,11 @@ struct Item;
 class PlayerStorage {
 public:
 	PlayerStorage(Player *player);
+	~PlayerStorage();
 
 	void setSlots(int8_t slots);
 	void addItem(Item *item);
-	void takeItem(int8_t slot) { items.erase(items.begin() + slot); }
+	void takeItem(int8_t slot);
 	void setMesos(int32_t mesos) { this->mesos = mesos; }
 	void changeMesos(int32_t mesos);
 

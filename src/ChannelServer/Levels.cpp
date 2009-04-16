@@ -116,11 +116,11 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 		}
 
 		if (levelsgained) { // Check if the player has leveled up at all, it is possible that the user hasn't leveled up if multi-level limit is 0
-			player->modifyRMHP(hpgain);
-			player->modifyRMMP(mpgain);
+			player->modifyRMHp(hpgain);
+			player->modifyRMMp(mpgain);
 			player->setLevel(level);
-			player->setAP(player->getAP() + apgain);
-			player->setSP(player->getSP() + spgain);
+			player->setAp(player->getAp() + apgain);
+			player->setSp(player->getSp() + spgain);
 			// Let hyperbody remain on if on during a level up, as it should
 			if (player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillid = player->getActiveBuffs()->getHyperBody();
@@ -128,13 +128,13 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
 			else {
-				player->setMHP(player->getRMHP());
-				player->setMMP(player->getRMMP());
+				player->setMHp(player->getRMHp());
+				player->setMMp(player->getRMMp());
 			}
-			player->setHP(player->getMHP());
-			player->setMP(player->getMMP());
+			player->setHp(player->getMHp());
+			player->setMp(player->getMMp());
 			player->setLevelDate();
-			if (player->getLevel() == 200 && !player->isGM()) {
+			if (player->getLevel() == 200 && !player->isGm()) {
 				string message;
 				message = "[Congrats] ";
 				message += player->getName();
@@ -151,7 +151,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 void Levels::addStat(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t type = packet.get<int32_t>();
-	if (player->getAP() == 0) {
+	if (player->getAp() == 0) {
 		// hacking
 		return;
 	}
@@ -169,7 +169,7 @@ void Levels::addStatMulti(Player *player, PacketReader &packet) {
 		int32_t type = packet.get<int32_t>();
 		int32_t value = packet.get<int32_t>();
 
-		if (value < 0 || player->getAP() < value) {
+		if (value < 0 || player->getAp() < value) {
 			//hacking
 			return;
 		}
@@ -204,11 +204,11 @@ void Levels::addStat(Player *player, int32_t type, int32_t mod, bool isreset) {
 			break;
 		case 0x800:
 		case 0x2000: {
-			if (type == 0x800 && player->getRMHP() >= 30000)
+			if (type == 0x800 && player->getRMHp() >= 30000)
 				return;
-			else if (type == 0x2000 && player->getRMMP() >= 30000)
+			else if (type == 0x2000 && player->getRMMp() >= 30000)
 				return;
-			if (issubtract && player->getHPMPAP() == 0) {
+			if (issubtract && player->getHpMpAp() == 0) {
 				// Hacking
 				return;
 			}
@@ -244,10 +244,10 @@ void Levels::addStat(Player *player, int32_t type, int32_t mod, bool isreset) {
 					mpgain = (isreset ? (issubtract ? -12 : 10) : Randomizer::Instance()->randShort(2) + 10);
 					break;
 			}
-			player->setHPMPAP(player->getHPMPAP() + mod);
+			player->setHpMpAp(player->getHpMpAp() + mod);
 			switch (type) {
-				case 0x800: player->modifyRMHP(hpgain); break;
-				case 0x2000: player->modifyRMMP(mpgain); break;
+				case 0x800: player->modifyRMHp(hpgain); break;
+				case 0x2000: player->modifyRMMp(mpgain); break;
 			}
 			if (player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillid = player->getActiveBuffs()->getHyperBody();
@@ -255,11 +255,11 @@ void Levels::addStat(Player *player, int32_t type, int32_t mod, bool isreset) {
 				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
 			else {
-				player->setMHP(player->getRMHP());
-				player->setMMP(player->getRMMP());
+				player->setMHp(player->getRMHp());
+				player->setMMp(player->getRMMp());
 			}
-			player->setHP(player->getHP());
-			player->setMP(player->getMP());
+			player->setHp(player->getHp());
+			player->setMp(player->getMp());
 			break;
 		}
 		default:
@@ -267,5 +267,5 @@ void Levels::addStat(Player *player, int32_t type, int32_t mod, bool isreset) {
 			break;
 	}
 	if (!isreset)
-		player->setAP(player->getAP() - mod);
+		player->setAp(player->getAp() - mod);
 }

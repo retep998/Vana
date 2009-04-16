@@ -24,10 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerLogin.h"
 #include "Randomizer.h"
 #include "TimeUtilities.h"
-#include "sha1.h"
 #include <iostream>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
+// CryptoPP
+#include <filters.h>
+#include <hex.h>
+#include <sha.h>
 
 void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	string username = packet.getString();
@@ -190,15 +193,15 @@ void Login::registerPIN(PlayerLogin *player, PacketReader &packet) {
 }
 
 string Login::hashPassword(const string &password, const string &salt) {
-	SHA1 sha;
 	string salted = salt + password;
-	unsigned digest[5];
-	sha.Reset();
-	sha.Input(salted.c_str(), salted.size());
-	sha.Result(digest);
-	
-	boost::format formatter("%08X%08X%08X%08X%08X");
-	formatter % digest[0] % digest[1] % digest[2] % digest[3] % digest[4];
+	string digest;
 
-	return formatter.str();
+	CryptoPP::SHA1 hash;
+
+	CryptoPP::StringSource(salted, true,
+		new CryptoPP::HashFilter(hash,
+			new CryptoPP::HexEncoder(
+				new CryptoPP::StringSink(digest))));
+
+	return digest;
 }

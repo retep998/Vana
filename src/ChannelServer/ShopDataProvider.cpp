@@ -29,33 +29,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using Initializing::outputWidth;
 
-ShopDataProvider *ShopDataProvider::singleton = 0;
+ShopDataProvider * ShopDataProvider::singleton = 0;
 
 void ShopDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT shopdata.shopid, shopdata.npcid, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid=shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT shopdata.shopid, shopdata.npcid, shopdata.rechargetier, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid = shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW shopRow;
 	while ((shopRow = res.fetch_raw_row())) {
 		// Col0 : Shop ID
 		//    1 : NPC ID
-		//    2 : Item ID
-		//    3 : Price
+		//    2 : Recharge Tier
+		//    3 : Item ID
+		//    4 : Price
 		int32_t shopid = atoi(shopRow[0]);
 
 		if (shops.find(shopid) == shops.end()) {
 			ShopInfo shop = ShopInfo();
 			shop.npc = atoi(shopRow[1]);
+			shop.rechargetier = atoi(shopRow[2]);
 			shops[shopid] = shop;
 		}
 
-		if (shopRow[2] != 0) {
-			shops[shopid].items.push_back(atoi(shopRow[2]));
-			shops[shopid].prices[atoi(shopRow[2])] = atoi(shopRow[3]);
+		if (shopRow[3] != 0) {
+			shops[shopid].items.push_back(atoi(shopRow[3]));
+			shops[shopid].prices[atoi(shopRow[3])] = atoi(shopRow[4]);
 		}
-		else std::cout << "Warning: Shop " << shopid << " does not have any shop items on record.";
+		else
+			std::cout << "Warning: Shop " << shopid << " does not have any shop items on record.";
 	}
+
+	query << "SELECT * FROM rechargedata";
+	res = query.use();
+
+	while ((shopRow = res.fetch_raw_row())) {
+		// Col0 : Recharge Tier ID
+		//    1 : Item ID
+		//    2 : Price
+		int8_t rechargetier = atoi(shopRow[0]);
+		int32_t itemid = atoi(shopRow[1]);
+		double price = atof(shopRow[2]);
+
+		rechargecosts[rechargetier][itemid] = price;
+	}
+
 	std::cout << "DONE" << std::endl;
 }
 
@@ -64,38 +82,54 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 		return false;
 
 	player->setShop(id);
+
+	unordered_map<int32_t, bool> idsdone;
+	int8_t rechargetier = shops[id].rechargetier;
+	map<int32_t, double> rechargables = rechargecosts[rechargetier];
+	int16_t shopcount = shops[id].items.size() + rechargables.size();
+
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOP_OPEN);
 	packet.add<int32_t>(shops[id].npc);
-	packet.add<int16_t>(shops[id].items.size() + rechargables.size());
+	packet.add<int16_t>(0); // To be set later
+
+	// Items
 	for (size_t i = 0; i < shops[id].items.size(); i++) {
-		packet.add<int32_t>(shops[id].items[i]);
-		packet.add<int32_t>(shops[id].prices[shops[id].items[i]]);
-		if (GameLogicUtilities::isRechargeable(shops[id].items[i])) {
-			packet.add<int16_t>(0);
-			packet.add<int32_t>(0);
-			packet.add<int16_t>((uint16_t) shops[id].prices[shops[id].items[i]]);
+		int32_t itemid = shops[id].items[i];
+		int32_t price = shops[id].prices[itemid];
+		packet.add<int32_t>(itemid);
+		packet.add<int32_t>(price);
+		if (GameLogicUtilities::isRechargeable(itemid)) {
+			idsdone[itemid] = true;
+			shopcount--;
+			double cost = 0.0;
+			if (rechargables.find(itemid) != rechargables.end())
+				cost = rechargables[itemid];
+			packet.add<double>(cost);
 		}
 		else {
-			packet.add<int16_t>(1);
+			packet.add<int16_t>(1); // Item amount
 		}
-		int16_t maxslot = ItemDataProvider::Instance()->getMaxslot(shops[id].items[i]);
-		if (GameLogicUtilities::isStar(shops[id].items[i]))
+		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
+		if (GameLogicUtilities::isStar(itemid))
 			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10);
-		else if (GameLogicUtilities::isBullet(shops[id].items[i]))
+		else if (GameLogicUtilities::isBullet(itemid))
 			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
 		else
 			packet.add<int16_t>(maxslot);
 	}
 
-	for (size_t i = 0; i < rechargables.size(); i++) {
-		packet.add<int32_t>(rechargables[i]);
-		packet.add<int32_t>(0);
-		packet.add<int16_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int16_t>(1);
-		packet.add<int16_t>(ItemDataProvider::Instance()->getMaxslot(rechargables[i]) + (GameLogicUtilities::isStar(rechargables[i]) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10));
+	// Rechargables
+	for (map<int32_t, double>::iterator iter = rechargables.begin(); iter != rechargables.end(); iter++) {
+		if (idsdone.find(iter->first) == idsdone.end()) {
+			packet.add<int32_t>(iter->first);
+			packet.add<int32_t>(0);
+			packet.add<double>(iter->second);
+			packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(iter->first) + (GameLogicUtilities::isStar(iter->first) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10));
+		}
 	}
+
+	packet.set<int16_t>(shopcount, 6);
 
 	player->getSession()->send(packet);
 	return true;
@@ -103,4 +137,17 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 
 int32_t ShopDataProvider::getPrice(int32_t shopid, int32_t itemid) {
 	return shops[shopid].prices.find(itemid) != shops[shopid].prices.end() ? shops[shopid].prices[itemid] : 0;
+}
+
+int32_t ShopDataProvider::getRechargeCost(int32_t shopid, int32_t itemid, int16_t amount) {
+	int32_t cost = 1;
+	if (shops.find(shopid) != shops.end()) {
+		int8_t tier = shops[shopid].rechargetier;
+		if (rechargecosts.find(tier) != rechargecosts.end()) {
+			if (rechargecosts[tier].find(itemid) != rechargecosts[tier].end()) {
+				cost = -1 * static_cast<int32_t>(rechargecosts[tier][itemid] * amount);
+			}
+		}
+	}
+	return cost;
 }

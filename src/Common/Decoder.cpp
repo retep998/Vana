@@ -16,22 +16,37 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Decoder.h"
-#include "AESEncryption.h"
 #include "MapleEncryption.h"
 #include "MapleVersion.h"
 #include "PacketCreator.h"
 #include "Randomizer.h"
+#include "SendHeader.h"
+// CryptoPP
+#include <aes.h>
+#include <modes.h>
+
+const uint8_t AesKeySize = 32;
+const uint8_t AesKey[AesKeySize] = {
+	0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0xB4, 0x00, 0x00, 0x00,
+	0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00
+};
 
 void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 	MapleEncryption::mapleEncrypt(buffer, size);
 	int32_t pos = 0;
 	uint8_t first = 1;
+
+	CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption ofbEncryption;
+
 	while (size > pos) {
+		ofbEncryption.SetKeyWithIV(AesKey, AesKeySize, ivSend); // Need to set it before every encryption
+
 		if (size > (pos + 1460 - first * 4)) {
-			AESEncryption::decryptofb(buffer + pos, Decoder::ivSend, 1460 - first * 4);
+			ofbEncryption.ProcessData(buffer + pos, buffer + pos, 1460 - first * 4);
 		}
-		else
-			AESEncryption::decryptofb(buffer + pos, Decoder::ivSend, size - pos);
+		else {
+			ofbEncryption.ProcessData(buffer + pos, buffer + pos, size - pos);
+		}
 		pos += 1460 - first * 4;
 		if (first == 1)
 			first = 0;
@@ -39,12 +54,13 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 } 
  
 void Decoder::next() {
-	MapleEncryption::nextIV(Decoder::ivSend);
+	MapleEncryption::nextIv(ivSend);
 }
 
 void Decoder::decrypt(unsigned char *buffer, int32_t size) {
-	AESEncryption::decryptofb(buffer, Decoder::ivRecv, size);
-	MapleEncryption::nextIV(Decoder::ivRecv); 
+	CryptoPP::OFB_Mode<CryptoPP::AES>::Decryption ofbDecryption(AesKey, AesKeySize, ivRecv);
+	ofbDecryption.ProcessData(buffer, buffer, size);
+	MapleEncryption::nextIv(ivRecv); 
 	MapleEncryption::mapleDecrypt(buffer, size);
 }
 
@@ -61,6 +77,9 @@ void Decoder::createHeader(unsigned char *header, int16_t size) {
 PacketCreator Decoder::getConnectPacket(string unknown) {
 	(*(int32_t*)ivRecv) = Randomizer::Instance()->randInt();
 	(*(int32_t*)ivSend) = Randomizer::Instance()->randInt();
+	// Use the setter to prepare the IV
+	setIvRecv(ivRecv);
+	setIvSend(ivSend);
 
 	PacketCreator packet;
 	packet.add<int16_t>(0); // Packet len, this will be added later in the packet

@@ -18,10 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SKILLS_H
 #define SKILLS_H
 
-#include <boost/tr1/unordered_map.hpp>
 #include "Pos.h"
+#include <boost/tr1/unordered_map.hpp>
+#include <string>
+#include <vector>
 
+using std::string;
 using std::tr1::unordered_map;
+using std::vector;
 
 class Player;
 class PacketReader;
@@ -70,8 +74,8 @@ struct PGMRInfo { // Power Guard/Mana Reflection
 	Pos pos;
 };
 
-struct MPEaterInfo { // MP Eater
-	MPEaterInfo() : id(0), level(0), x(0), prop(0), onlyonce(false) { }
+struct MpEaterInfo { // MP Eater
+	MpEaterInfo() : id(0), level(0), x(0), prop(0), onlyonce(false) { }
 	int32_t id;
 	uint8_t level;
 	int16_t x;
@@ -79,10 +83,30 @@ struct MPEaterInfo { // MP Eater
 	bool onlyonce;
 };
 
+struct MobSkillLevelInfo {
+	uint8_t mp;
+	uint8_t hp;
+	uint8_t count;
+	int16_t interval;
+	int16_t x;
+	int16_t y;
+	int16_t lt;
+	int16_t rb;
+	int16_t prop;
+	int16_t limit;
+	int32_t time;
+	string elemattr;
+	vector<int32_t> summons;
+};
+
+typedef unordered_map<uint8_t, MobSkillLevelInfo> MobSkillsLevelInfo;
+
 namespace Skills {
+	extern unordered_map<uint8_t, MobSkillsLevelInfo> mobskills;
 	extern unordered_map<int32_t, SkillsLevelInfo> skills;
 	extern unordered_map<int32_t, uint8_t> maxlevels;
 	void addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo levelinfo);
+	void addMobSkillLevelInfo(uint8_t skillid, uint8_t level, MobSkillLevelInfo levelinfo);
 	void addSkill(Player *player, PacketReader &packet);
 	void cancelSkill(Player *player, PacketReader &packet);
 	void useSkill(Player *player, PacketReader &packet);

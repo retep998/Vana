@@ -74,7 +74,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 void Maps::usePortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
 	if (packet.get<int32_t>() == 0) { // Dead
-		if (player->getHP() == 0) {
+		if (player->getHp() == 0) {
 			player->acceptDeath();
 		}
 		else {
@@ -114,7 +114,7 @@ void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
 		portal = getMap(mapid)->getSpawnPoint();
 
 	if (player->getInstance() != 0) {
-		player->getInstance()->sendMessage(Player_Changemap, mapid, player->getMap());
+		player->getInstance()->sendMessage(PlayerChangeMap, player->getId(), mapid, player->getMap());
 	}
 
 	getMap(player->getMap())->removePlayer(player);
