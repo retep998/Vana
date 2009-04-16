@@ -31,7 +31,7 @@ using MiscUtilities::atob;
 using std::string;
 using Initializing::outputWidth;
 
-ItemDataProvider *ItemDataProvider::singleton = 0;
+ItemDataProvider * ItemDataProvider::singleton = 0;
 
 void ItemDataProvider::loadData() {
 	// Equips
@@ -89,7 +89,7 @@ void ItemDataProvider::loadData() {
 	}
 
 	// Items
-	query << "SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid=itemsummondata.itemid ORDER BY itemid ASC";
+	query << "SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid = itemsummondata.itemid ORDER BY itemid ASC";
 	res = query.use();
 
 	int32_t currentid = 0;
@@ -115,26 +115,29 @@ void ItemDataProvider::loadData() {
 		//   16 : Magic Defense
 		//   17 : Speed
 		//   18 : Jump
-		//   19 : Morph
-		//   20 : Auto Consume?
-		//   21 : Success
-		//   22 : Cursed
-		//   23 : Item STR
-		//   24 : Item DEX
-		//   25 : Item INT
-		//   26 : Item LUK
-		//   27 : Item HP
-		//   28 : Item MP
-		//   29 : Item Weapon Attack
-		//   30 : Item Magic Attack
-		//   31 : Item Weapon Defense
-		//   32 : Item Magic Defense
-		//   33 : Item Accuracy
-		//   34 : Item Avoid
-		//   35 : Item Jump
-		//   36 : Item Speed
-		//   37 : Mob ID
-		//   38 : Chance
+		//   19 : Ailment
+		//   20 : Morph
+		//   21 : Auto Consume?
+		//   22 : Success
+		//   23 : Cursed
+		//   24 : Randstat
+		//   25 : Recover
+		//   26 : Item STR
+		//   27 : Item DEX
+		//   28 : Item INT
+		//   29 : Item LUK
+		//   30 : Item HP
+		//   31 : Item MP
+		//   32 : Item Weapon Attack
+		//   33 : Item Magic Attack
+		//   34 : Item Weapon Defense
+		//   35 : Item Magic Defense
+		//   36 : Item Accuracy
+		//   37 : Item Avoid
+		//   38 : Item Jump
+		//   39 : Item Speed
+		//   40 : Mob ID
+		//   41 : Chance
 		currentid = atoi(dataRow[0]);
 
 		if (currentid != previousid && previousid != -1) { // Add the items into the cache
@@ -150,6 +153,7 @@ void ItemDataProvider::loadData() {
 		item.cons.hpr = atoi(dataRow[7]);
 		item.cons.mpr = atoi(dataRow[8]);
 		item.cons.moveTo = atoi(dataRow[9]);
+		item.cons.ailment = atoi(dataRow[19]);
 		// Buffs
 		item.cons.time = atoi(dataRow[10]);
 		item.cons.watk = atoi(dataRow[11]);
@@ -160,31 +164,33 @@ void ItemDataProvider::loadData() {
 		item.cons.mdef = atoi(dataRow[16]);
 		item.cons.speed = atoi(dataRow[17]);
 		item.cons.jump = atoi(dataRow[18]);
-		item.cons.morph = atoi(dataRow[19]);
-		item.cons.autoconsume = atob(dataRow[20]);
+		item.cons.morph = atoi(dataRow[20]);
+		item.cons.autoconsume = atob(dataRow[21]);
 		// Scrolling
-		item.cons.success = atoi(dataRow[21]);
-		item.cons.cursed = atoi(dataRow[22]);
-		item.cons.istr = atoi(dataRow[23]);
-		item.cons.idex = atoi(dataRow[24]);
-		item.cons.iint = atoi(dataRow[25]);
-		item.cons.iluk = atoi(dataRow[26]);
-		item.cons.ihp = atoi(dataRow[27]);
-		item.cons.imp = atoi(dataRow[28]);
-		item.cons.iwatk = atoi(dataRow[29]);
-		item.cons.imatk = atoi(dataRow[30]);
-		item.cons.iwdef = atoi(dataRow[31]);
-		item.cons.imdef = atoi(dataRow[32]);
-		item.cons.iacc = atoi(dataRow[33]);
-		item.cons.iavo = atoi(dataRow[34]);
-		item.cons.ijump = atoi(dataRow[35]);
-		item.cons.ispeed = atoi(dataRow[36]);
+		item.cons.success = atoi(dataRow[22]);
+		item.cons.cursed = atoi(dataRow[23]);
+		item.cons.randstat = atob(dataRow[24]);
+		item.cons.recover = atob(dataRow[25]);
+		item.cons.istr = atoi(dataRow[26]);
+		item.cons.idex = atoi(dataRow[27]);
+		item.cons.iint = atoi(dataRow[28]);
+		item.cons.iluk = atoi(dataRow[29]);
+		item.cons.ihp = atoi(dataRow[30]);
+		item.cons.imp = atoi(dataRow[31]);
+		item.cons.iwatk = atoi(dataRow[32]);
+		item.cons.imatk = atoi(dataRow[33]);
+		item.cons.iwdef = atoi(dataRow[34]);
+		item.cons.imdef = atoi(dataRow[35]);
+		item.cons.iacc = atoi(dataRow[36]);
+		item.cons.iavo = atoi(dataRow[37]);
+		item.cons.ijump = atoi(dataRow[38]);
+		item.cons.ispeed = atoi(dataRow[39]);
 		item.cons.ihand = 0;
 		// Summoning
-		if (dataRow[37] != 0) {
+		if (dataRow[40] != 0) {
 			SummonBag summon;
-			summon.mobid = atoi(dataRow[37]);
-			summon.chance = atoi(dataRow[38]);
+			summon.mobid = atoi(dataRow[40]);
+			summon.chance = atoi(dataRow[41]);
 			item.cons.mobs.push_back(summon);
 		}
 
@@ -215,9 +221,6 @@ void ItemDataProvider::loadData() {
 }
 
 void ItemDataProvider::addItemInfo(int32_t id, ItemInfo item) {
-	if (GameLogicUtilities::isRechargeable(id))
-		ShopDataProvider::Instance()->addRechargable(id);
-
 	vector<uint8_t> types;
 	vector<int8_t> bytes;
 	vector<int16_t> values;

@@ -205,7 +205,6 @@ void Initializing::initializeSkills() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW skillRow;
-	SkillsLevelInfo skill;
 	while ((skillRow = res.fetch_raw_row())) {
 		// Col0 : Skill ID
 		//    1 : Level
@@ -259,6 +258,60 @@ void Initializing::initializeSkills() {
 		level.rb = Pos(atoi(skillRow[24]), atoi(skillRow[25]));
 		level.cooltime = atoi(skillRow[26]);
 		Skills::addSkillLevelInfo(atoi(skillRow[0]), atoi(skillRow[1]), level);
+	}
+
+	query << "SELECT mobskills.*, mobskillsummons.mobid FROM mobskills LEFT JOIN mobskillsummons ON mobskills.level = mobskillsummons.level AND mobskills.skillid = 200 ORDER BY skillid ASC";
+	res = query.use();
+
+	int16_t currentid = 0;
+	int16_t previousid = -1;
+	int16_t currentlevel = 0;
+	int16_t previouslevel = -1;
+
+	MobSkillLevelInfo moblevel;
+
+	while ((skillRow = res.fetch_raw_row())) {
+		// Col0 : Skill ID
+		//    1 : Level
+		//    2 : Time
+		//    3 : MP
+		//    4 : X
+		//    5 : Y
+		//    6 : Prop
+		//    7 : Count
+		//    8 : Interval
+		//    9 : ElemAttr
+		//   10 : LT
+		//   11 : RB
+		//   12 : HP
+		//   13 : Limit
+		//   14 : Mob IDs for summons
+		currentid = atoi(skillRow[0]);
+		currentlevel = atoi(skillRow[1]);
+
+		if ((currentid != previousid && previousid != -1) || (currentlevel != previouslevel && previouslevel != -1)) { // Add the items into the cache
+			Skills::addMobSkillLevelInfo((uint8_t)(previousid), (uint8_t)(previouslevel), moblevel);
+			moblevel.summons.clear();
+		}
+		moblevel.time = atoi(skillRow[2]);
+		moblevel.mp = atoi(skillRow[3]);
+		moblevel.x = atoi(skillRow[4]);
+		moblevel.y = atoi(skillRow[5]);
+		moblevel.prop = atoi(skillRow[6]);
+		moblevel.count = atoi(skillRow[7]);
+		moblevel.interval = atoi(skillRow[8]);
+		moblevel.elemattr = atoi(skillRow[9]);
+		moblevel.lt = atoi(skillRow[10]);
+		moblevel.rb = atoi(skillRow[11]);
+		moblevel.hp = atoi(skillRow[12]);
+		moblevel.limit = atoi(skillRow[13]);
+
+		if (skillRow[14] != 0) {
+			moblevel.summons.push_back(atoi(skillRow[14]));
+		}
+
+		previousid = currentid;
+		previouslevel = currentlevel;
 	}
 	std::cout << "DONE" << std::endl;
 }
