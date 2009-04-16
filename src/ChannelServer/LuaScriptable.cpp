@@ -68,6 +68,7 @@ void LuaScriptable::initialize() {
 	// Miscellanous
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
+	lua_register(luaVm, "isOnline", &LuaExports::isOnline);
 	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
 	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
@@ -298,6 +299,16 @@ int LuaExports::getChannel(lua_State *luaVm) {
 int LuaExports::getRandomNumber(lua_State *luaVm) {
 	int32_t number = lua_tointeger(luaVm, -1);
 	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number - 1) + 1);
+	return 1;
+}
+
+int LuaExports::isOnline(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	lua_pushboolean(luaVm, player != 0);
 	return 1;
 }
 
