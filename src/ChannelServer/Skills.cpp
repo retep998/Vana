@@ -143,6 +143,41 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			player->modifyHp(healrate * player->getMHp() / 100);
 			break;
 		}
+		case Jobs::Buccaneer::TimeLeap: {
+			Party *party = player->getParty();
+			player->removeAllCooldowns();
+			if (party != 0) {
+				int8_t affected = packet.get<int8_t>();
+				int8_t pmembers = party->getMembersCount();
+				Player *pmember1 = 0, *pmember2 = 0, *pmember3 = 0, *pmember4 = 0, *pmember5 = 0, *pmember6 = 0;
+				if (affected & GameLogicUtilities::getPartyMember1(pmembers))
+					pmember1 = party->getMemberByIndex(1);
+				if (affected & GameLogicUtilities::getPartyMember2(pmembers))
+					pmember2 = party->getMemberByIndex(2);
+				if (affected & GameLogicUtilities::getPartyMember3(pmembers))
+					pmember3 = party->getMemberByIndex(3);
+				if (affected & GameLogicUtilities::getPartyMember4(pmembers))
+					pmember4 = party->getMemberByIndex(4);
+				if (affected & GameLogicUtilities::getPartyMember5(pmembers))
+					pmember5 = party->getMemberByIndex(5);
+				if (affected & GameLogicUtilities::getPartyMember6(pmembers))
+					pmember6 = party->getMemberByIndex(6);
+
+				if (pmember1 != 0 && pmember1 != player && pmember1->getMap() == player->getMap())
+					pmember1->removeAllCooldowns();
+				if (pmember2 != 0 && pmember2 != player && pmember2->getMap() == player->getMap())
+					pmember2->removeAllCooldowns();
+				if (pmember3 != 0 && pmember3 != player && pmember3->getMap() == player->getMap())
+					pmember3->removeAllCooldowns();
+				if (pmember4 != 0 && pmember4 != player && pmember4->getMap() == player->getMap())
+					pmember4->removeAllCooldowns();
+				if (pmember5 != 0 && pmember5 != player && pmember5->getMap() == player->getMap())
+					pmember5->removeAllCooldowns();
+				if (pmember6 != 0 && pmember6 != player && pmember6->getMap() == player->getMap())
+					pmember6->removeAllCooldowns();
+			}
+			break;
+		}
 		case Jobs::Fighter::Rage:
 		case Jobs::Spearman::IronWill:
 		case Jobs::Spearman::HyperBody:
@@ -157,7 +192,6 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Hermit::MesoUp:
 		case Jobs::Bandit::Haste:
 		case Jobs::Buccaneer::SpeedInfusion:
-		case Jobs::Buccaneer::TimeLeap:
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
 		case Jobs::DarkKnight::MapleWarrior:
@@ -187,6 +221,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					pmember5 = party->getMemberByIndex(5);
 				if (affected & GameLogicUtilities::getPartyMember6(pmembers))
 					pmember6 = party->getMemberByIndex(6);
+
 				if (pmember1 != 0 && pmember1 != player && pmember1->getMap() == player->getMap()) {
 					SkillsPacket::showSkill(pmember1, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(pmember1, skillid, level, direction, true);
@@ -377,6 +412,11 @@ void Skills::stopCooldown(Player *player, int32_t skillid) {
 	SkillsPacket::sendCooldown(player, skillid, 0);
 	if (skillid == Jobs::Corsair::Battleship) {
 		player->getActiveBuffs()->resetBattleshipHp();
+	}
+
+	Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
+	if (player->getTimers()->checkTimer(id) > 0) {
+		player->getTimers()->removeTimer(id);
 	}
 }
 

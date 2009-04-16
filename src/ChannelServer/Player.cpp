@@ -580,6 +580,15 @@ void Player::removeCooldown(int32_t skillid) {
 		cooldowns.erase(skillid);
 }
 
+void Player::removeAllCooldowns() {
+	unordered_map<int32_t, int16_t> dupe = cooldowns;
+	for (unordered_map<int32_t, int16_t>::iterator iter = dupe.begin(); iter != dupe.end(); iter++) {
+		if (iter->first != Jobs::Buccaneer::TimeLeap) {
+			Skills::stopCooldown(this, iter->first);
+		}
+	}
+}
+
 bool Player::addWarning() {
 	int32_t t = TimeUtilities::clock_in_ms();
 	// Deleting old warnings

@@ -156,6 +156,7 @@ public:
 
 	void addCooldown(int32_t skillid, int16_t time);
 	void removeCooldown(int32_t skillid);
+	void removeAllCooldowns();
 	int16_t getCooldownSize() const { return static_cast<int16_t>(cooldowns.size()); }
 	unordered_map<int32_t, int16_t> getCooldowns() const { return cooldowns; }
 
