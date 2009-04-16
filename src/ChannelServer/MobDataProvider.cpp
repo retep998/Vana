@@ -72,7 +72,7 @@ void MobDataProvider::loadData() {
 		}
 
 		if (mobRow[12] != 0) {
-			mobinfo[mobid].summon.push_back(atoi(mobRow[11]));
+			mobinfo[mobid].summon.push_back(atoi(mobRow[12]));
 		}
 
 	}
