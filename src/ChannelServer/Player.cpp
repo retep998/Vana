@@ -317,6 +317,8 @@ void Player::setHp(int16_t shp, bool is) {
 	if (hp == 0 && getInstance() != 0) {
 		getInstance()->sendMessage(PlayerDeath, getId());
 	}
+	if (hp == 0)
+		loseExp();
 }
 
 void Player::modifyHp(int16_t nhp, bool is) {
@@ -334,6 +336,8 @@ void Player::modifyHp(int16_t nhp, bool is) {
 	if (hp == 0 && getInstance() != 0) {
 		getInstance()->sendMessage(PlayerDeath, getId());
 	}
+	if (hp == 0)
+		loseExp();
 }
 
 void Player::damageHp(uint16_t dhp) {
@@ -345,6 +349,8 @@ void Player::damageHp(uint16_t dhp) {
 	if (hp == 0 && getInstance() != 0) {
 		getInstance()->sendMessage(PlayerDeath, getId());
 	}
+	if (hp == 0)
+		loseExp();
 }
 
 void Player::setMp(int16_t smp, bool is) {
@@ -719,4 +725,27 @@ bool Player::hasGmEquip() {
 void Player::setBuddyListSize(uint8_t size) {
 	buddylist_size = size;
 	BuddyListPacket::showSize(this);
+}
+
+void Player::loseExp() {
+	if (getJob() != 0 && getLevel() < 200) {
+		Map *loc = Maps::getMap(getMap());
+		int32_t fieldlimit = loc->getInfo()->fieldLimit;
+		int8_t exploss = 10;
+		if (fieldlimit & 0x20 || loc->getInfo()->town)
+			exploss = 1;
+		else {
+			switch (getJob() / 100) {
+				case 2: // Magicians
+					exploss = 7;
+					break;
+				case 4: // Thieves
+					exploss = 5;
+					break;
+			}
+		}
+		uint64_t exp = getExp();
+		exp -= Levels::exps[getLevel() - 1] * exploss / 100;
+		setExp(static_cast<int32_t>(exp));
+	}
 }
