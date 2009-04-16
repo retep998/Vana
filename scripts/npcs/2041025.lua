@@ -30,10 +30,12 @@ elseif state == 1 then
 				setReactorState(220080000, 2208001, 0);
 				setReactorState(220080000, 2208003, 0);
 				setReactorState(220080001, 2201004, 0);
-				clearDrops();
-				clearMobs();
 				markForDelete();
 			end
+		end
+		if getNumPlayers(220080001) == 0 then
+			clearDrops(220080001);
+			clearMobs(220080001);
 		end
 	end
 	endNPC();
