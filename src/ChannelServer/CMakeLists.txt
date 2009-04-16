@@ -164,6 +164,7 @@ target_link_libraries(ChannelServer
 	${MYSQL_LIBRARIES}	
 	${MYSQL++_LIBRARIES}
 	${LUA_LIBRARIES}
+	${CRYPTO++_LIBRARIES}
 	${Boost_FILESYSTEM_LIBRARY}
 	${Boost_REGEX_LIBRARY}
 	${Boost_SYSTEM_LIBRARY}

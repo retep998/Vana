@@ -53,8 +53,8 @@ void Players::registerPlayer(uint32_t ip, int32_t id, const string &name, uint16
 	}
 }
 
-void Players::remove(int32_t id, uint16_t channel) {
-	if (channel == USHRT_MAX || players[id]->channel == channel) {
+void Players::remove(int32_t id, int16_t channel) {
+	if (channel == -1 || players[id]->channel == channel) {
 		players[id]->online = false;
 		if (players[id]->party != 0) {
 			PartyHandler::logInLogOut(id);

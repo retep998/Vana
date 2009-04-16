@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 namespace Initializing {
-	void checkMCDBVersion();
+	void checkMcdbVersion();
 	void loadData();
 	void initializeReactors();
 	void initializeQuests();
@@ -29,8 +29,8 @@ namespace Initializing {
 	void initializePets();
 	void initializeChat();
 
-	const int32_t mcdb_version = 2;
-	const int32_t mcdb_subversion = 3;
+	const int32_t McdbVersion = 2;
+	const int32_t McdbSubVersion = 5;
 };
 
 #endif

@@ -16,7 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Papulatus summon reactor
+
 setMusic("Bgm09/TimeAttack");
 spawnMobPos(8500000, -410, -385);
 setReactorState(220080000, 2208001, 1);
 setReactorState(220080000, 2208003, 1);
+createInstance("papulatus", 0, false, false);

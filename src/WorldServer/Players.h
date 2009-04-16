@@ -29,7 +29,7 @@ struct Player {
 	uint32_t ip;
 	int32_t id;
 	string name;
-	uint16_t channel;
+	int16_t channel;
 	int32_t party;
 	int32_t map;
 	int32_t job;
@@ -45,7 +45,7 @@ public:
 		return singleton;
 	}
 	void registerPlayer(uint32_t ip, int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level);
-	void remove(int32_t id, uint16_t channel = -1);
+	void remove(int32_t id, int16_t channel = -1);
 	void removeChannelPlayers(uint16_t channel);
 	Player * getPlayerFromName(const string &name, bool includeOffline = false);
 	Player * getPlayer(int32_t id, bool includeOffline = false);

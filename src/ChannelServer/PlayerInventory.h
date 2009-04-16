@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
+#include <boost/array.hpp>
 #include <boost/tr1/unordered_map.hpp>
 
 using std::string;
@@ -84,11 +85,11 @@ struct Item {
 	int32_t petid;
 	string name;
 };
-typedef unordered_map<int16_t, Item *> iteminventory;
 
 class PlayerInventory {
 public:
-	PlayerInventory(Player *player, uint8_t maxslots[5], int32_t mesos);
+	PlayerInventory(Player *player, const boost::array<uint8_t, 5> &maxslots, int32_t mesos);
+	~PlayerInventory();
 
 	void setMesos(int32_t mesos, bool is = false);
 	bool modifyMesos(int32_t mod, bool is = false);
@@ -116,11 +117,13 @@ public:
 	void save();
 	void connectData(PacketCreator &packet);
 private:
-	uint8_t maxslots[5];
+	typedef unordered_map<int16_t, Item *> ItemInventory;
+
+	boost::array<uint8_t, 5> maxslots;
 	int32_t mesos;
-	int32_t equipped[50][2];
+	boost::array<boost::array<int32_t, 2>, 50> equipped;
 	Player *player;
-	iteminventory items[5];
+	boost::array<ItemInventory, 5> items;
 	unordered_map<int32_t, uint16_t> itemamounts;
 	void addEquipped(int16_t slot, int32_t itemid);
 };

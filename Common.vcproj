@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(ProgramFiles)/boost/boost_1_38_0/"
+				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_38_0/"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -108,7 +108,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;C:/MySQL++/include;C:/lua/include;$(ProgramFiles)/boost/boost_1_38_0/"
+				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_38_0/"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -232,10 +232,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\sha1.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Common\StringUtilities.cpp"
 					>
 				</File>
@@ -271,10 +267,6 @@
 			<Filter
 				Name="Decoder"
 				>
-				<File
-					RelativePath=".\src\Common\AESEncryption.cpp"
-					>
-				</File>
 				<File
 					RelativePath=".\src\Common\Decoder.cpp"
 					>
@@ -426,10 +418,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\sha1.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Common\StringUtilities.h"
 					>
 				</File>
@@ -469,10 +457,6 @@
 			<Filter
 				Name="Decoder"
 				>
-				<File
-					RelativePath=".\src\Common\AESEncryption.h"
-					>
-				</File>
 				<File
 					RelativePath=".\src\Common\Decoder.h"
 					>

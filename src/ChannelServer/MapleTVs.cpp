@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleTVs.h"
 #include "PlayerPacketHelper.h"
 #include "Map.h"
+#include "SendHeader.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>

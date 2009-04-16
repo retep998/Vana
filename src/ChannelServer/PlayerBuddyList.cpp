@@ -44,7 +44,7 @@ uint8_t PlayerBuddyList::add(const string &name) {
 		return 0x0f;
 	}
 
-	if ((int32_t) res[0][2] > 0 && !player->isGM()) { // GM cannot be in buddy list unless the player is a GM
+	if ((int32_t) res[0][2] > 0 && !player->isGm()) { // GM cannot be in buddy list unless the player is a GM
 		return 0x0e;
 	}
 

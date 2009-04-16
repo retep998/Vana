@@ -143,6 +143,7 @@ namespace LuaExports {
 	int clearDrops(lua_State *luaVm);
 	int clearMobs(lua_State *luaVm);
 	int countMobs(lua_State *luaVm);
+	int getAllMapPlayerIDs(lua_State *luaVm);
 	int getNumPlayers(lua_State *luaVm);
 	int getReactorState(lua_State *luaVm);
 	int killMob(lua_State *luaVm);

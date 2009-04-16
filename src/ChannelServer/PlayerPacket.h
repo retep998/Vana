@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERPACK_H
-#define PLAYERPACK_H
+#ifndef PLAYERPACKET_H
+#define PLAYERPACKET_H
 
 #include "Types.h"
 #include <string>
@@ -38,7 +38,7 @@ namespace PlayerPacket {
 	void showMessage(Player *player, const string &msg, int8_t type);
 	void instructionBubble(Player *player, const string &msg, int16_t width = -1, int16_t height = 5);
 	void sendSound(Player *player, const string &soundname);
-	void showHPBar(Player *player, Player *target);
+	void showHpBar(Player *player, Player *target);
 };
 
 #endif

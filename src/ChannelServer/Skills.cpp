@@ -37,6 +37,7 @@ using std::tr1::bind;
 
 unordered_map<int32_t, SkillsLevelInfo> Skills::skills;
 unordered_map<int32_t, uint8_t> Skills::maxlevels;
+unordered_map<uint8_t, MobSkillsLevelInfo> Skills::mobskills;
 
 void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo levelinfo) {
 	skills[skillid][level] = levelinfo;
@@ -46,21 +47,25 @@ void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo le
 	}
 }
 
+void Skills::addMobSkillLevelInfo(uint8_t skillid, uint8_t level, MobSkillLevelInfo levelinfo) {
+	mobskills[skillid][level] = levelinfo;
+}
+
 void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t skillid = packet.get<int32_t>();
 	if (!GameLogicUtilities::isBeginnerSkill(skillid)) {
-		if (player->getSP() == 0) {
+		if (player->getSp() == 0) {
 			// hacking
 			return;
 		}
-		if (!player->isGM() && ((skillid / 1000000 != player->getJob() / 100) || (skillid / 10000 > player->getJob()))) {
+		if (!player->isGm() && ((skillid / 1000000 != player->getJob() / 100) || (skillid / 10000 > player->getJob()))) {
 			// hacking
 			return;
 		}
 	}
 	if (player->getSkills()->addSkillLevel(skillid, 1) && !GameLogicUtilities::isBeginnerSkill(skillid)) {
-		player->setSP(player->getSP() - 1);
+		player->setSp(player->getSp() - 1);
 	}
 }
 
@@ -80,7 +85,7 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			player->setSpecialSkill(SpecialSkillInfo());
 			break;
 		default:
-			if (skillid == Jobs::SuperGM::Hide) // GM Hide
+			if (skillid == Jobs::SuperGm::Hide) // GM Hide
 				MapPacket::showPlayer(player);
 			player->getActiveBuffs()->removeBuff(skillid, fromTimer);
 			Buffs::Instance()->endBuff(player, skillid);
@@ -99,8 +104,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		// hacking
 		return;
 	}
-	switch (skillid) { // Packet processing
-		case Jobs::Hero::MonsterMagnet: // Monster Magnet processing
+	switch (skillid) {
+		case Jobs::Corsair::Battleship:
+			if (player->getActiveBuffs()->getBattleshipHp() == 0)
+				player->getActiveBuffs()->resetBattleshipHp();
+			break;
+		case Jobs::Hero::MonsterMagnet:
 		case Jobs::Paladin::MonsterMagnet:
 		case Jobs::DarkKnight::MonsterMagnet: {
 			int32_t mobs = packet.get<int32_t>();
@@ -131,7 +140,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint16_t healrate = skills[skillid][level].hpP;
 			if (healrate > 100)
 				healrate = 100;
-			player->modifyHP(healrate * player->getMHP() / 100);
+			player->modifyHp(healrate * player->getMHp() / 100);
 			break;
 		}
 		case Jobs::Fighter::Rage:
@@ -212,12 +221,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Beginner::EchoOfHero:
-		case Jobs::SuperGM::HealPlusDispel:
-		case Jobs::SuperGM::Haste:
-		case Jobs::SuperGM::HolySymbol:
-		case Jobs::SuperGM::Bless:
-		case Jobs::SuperGM::Resurrection:
-		case Jobs::SuperGM::HyperBody: {
+		case Jobs::SuperGm::HealPlusDispel:
+		case Jobs::SuperGm::Haste:
+		case Jobs::SuperGm::HolySymbol:
+		case Jobs::SuperGm::Bless:
+		case Jobs::SuperGm::Resurrection:
+		case Jobs::SuperGm::HyperBody: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
@@ -226,17 +235,17 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					Buffs::Instance()->addBuff(target, skillid, level, addedinfo);
-					if (skillid == Jobs::SuperGM::Resurrection)
-						target->setHP(target->getMHP());
-					else if (skillid == Jobs::SuperGM::HealPlusDispel) {
-						target->setHP(target->getMHP());
-						target->setMP(target->getMMP());
+					if (skillid == Jobs::SuperGm::Resurrection)
+						target->setHp(target->getMHp());
+					else if (skillid == Jobs::SuperGm::HealPlusDispel) {
+						target->setHp(target->getMHp());
+						target->setMp(target->getMMp());
 					}
 				}
 			}
 			break;
 		}
-		case Jobs::SuperGM::Hide:
+		case Jobs::SuperGm::Hide:
 			MapPacket::removePlayer(player);
 			break;
 		default:
@@ -267,28 +276,28 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Concentrate) > 0) { // Reduced MP usage for Concentration
 			int16_t mprate = skills[Jobs::Bowmaster::Concentrate][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Concentrate)].x;
 			int16_t mploss = (mpuse * mprate) / 100;
-			player->modifyMP(-mploss, true);
+			player->modifyMp(-mploss, true);
 		}
 		else {
 			if (elementalamp) {
 				int32_t sid = ((player->getJob() / 10) == 22 ? (int32_t)Jobs::ILMage::ElementAmplification : (int32_t)Jobs::FPMage::ElementAmplification);
 				int8_t slv = player->getSkills()->getSkillLevel(sid);
 				if (slv > 0)
-					player->modifyMP(-1 * (mpuse * skills[sid][slv].x / 100), true);
+					player->modifyMp(-1 * (mpuse * skills[sid][slv].x / 100), true);
 				else
-					player->modifyMP(-mpuse, true);
+					player->modifyMp(-mpuse, true);
 			}
 			else
-				player->modifyMP(-mpuse, true);
+				player->modifyMp(-mpuse, true);
 		}
 	}
 	else
-		player->setMP(player->getMP(), true);
+		player->setMp(player->getMp(), true);
 	if (hpuse > 0)
-		player->modifyHP(-hpuse);
+		player->modifyHp(-hpuse);
 	if (item > 0)
 		Inventory::takeItem(player, item, skills[skillid][level].itemcount);
-	if (cooltime > 0)
+	if (cooltime > 0 && skillid != Jobs::Corsair::Battleship)
 		startCooldown(player, skillid, cooltime);
 	if (moneycon > 0) {
 		int16_t mesos_min = moneycon - (80 + level * 5);
@@ -332,15 +341,15 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, 
 }
 
 void Skills::heal(Player *player, int16_t value, int32_t skillid) {
-	if (player->getHP() < player->getMHP() && player->getHP() > 0) {
-		player->modifyHP(value);
+	if (player->getHp() < player->getMHp() && player->getHp() > 0) {
+		player->modifyHp(value);
 		SkillsPacket::healHP(player, value);
 	}
 }
 
 void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
-	if (player->getHP() - value > 1) {
-		player->modifyHP(-value);
+	if (player->getHp() - value > 1) {
+		player->modifyHp(-value);
 		SkillsPacket::showSkillEffect(player, skillid);
 	}
 	else {
@@ -366,6 +375,9 @@ void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime, bo
 void Skills::stopCooldown(Player *player, int32_t skillid) {
 	player->removeCooldown(skillid);
 	SkillsPacket::sendCooldown(player, skillid, 0);
+	if (skillid == Jobs::Corsair::Battleship) {
+		player->getActiveBuffs()->resetBattleshipHp();
+	}
 }
 
 bool Skills::isCooling(Player *player, int32_t skillid) {

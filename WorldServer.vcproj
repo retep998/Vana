@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="src/Common;$(SystemDrive)/lua/include;$(ProgramFiles)/boost/boost_1_38_0/"
+				AdditionalIncludeDirectories="src/Common;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_38_0/"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -64,10 +64,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib lua_d.lib common.lib"
+				AdditionalDependencies="ws2_32.lib lua_d.lib cryptlib_d.lib common.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(ConfigurationName)/Common;$(SystemDrive)/lua/lib;$(ProgramFiles)/boost/boost_1_38_0/lib"
+				AdditionalLibraryDirectories="$(ConfigurationName)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(ProgramFiles)/boost/boost_1_38_0/lib"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				SubSystem="1"
@@ -122,7 +122,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="src/Common;$(SystemDrive)/lua/include;$(ProgramFiles)/boost/boost_1_38_0/"
+				AdditionalIncludeDirectories="src/Common;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_38_0/"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -143,10 +143,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib lua.lib common.lib"
+				AdditionalDependencies="ws2_32.lib lua.lib cryptlib.lib common.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(ConfigurationName)/Common;$(SystemDrive)/lua/lib;$(ProgramFiles)/boost/boost_1_38_0/lib"
+				AdditionalLibraryDirectories="$(ConfigurationName)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(ProgramFiles)/boost/boost_1_38_0/lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

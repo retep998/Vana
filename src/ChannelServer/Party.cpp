@@ -62,14 +62,14 @@ void PartyFunctions::handleResponse(PacketReader &packet) {
 		case 0x02: // Create / Join
 			player->setParty(party);
 			party->addMember(player);
-			party->showHPBar(player);
-			party->receiveHPBar(player);
+			party->showHpBar(player);
+			party->receiveHpBar(player);
 			break;
 		case 0x05: // LogInLogOut
 			player->setParty(party);
 			party->setMember(player->getId(), player);
-			party->showHPBar(player);
-			party->receiveHPBar(player);
+			party->showHpBar(player);
+			party->receiveHpBar(player);
 			break;
 	}
 }
@@ -187,20 +187,20 @@ void Party::deleteMember(Player *player) {
 	members.erase(player->getId());
 	player->setParty(0);
 	if (getInstance() != 0) {
-		getInstance()->sendMessage(Party_Remove_Member, getId(), player->getId());
+		getInstance()->sendMessage(PartyRemoveMember, getId(), player->getId());
 	}
 }
 
 void Party::deleteMember(int32_t id) {
 	if (getInstance() != 0) {
-		getInstance()->sendMessage(Party_Remove_Member, getId(), id);
+		getInstance()->sendMessage(PartyRemoveMember, getId(), id);
 	}
 	members.erase(id);
 }
 
 void Party::disband() {
 	if (getInstance() != 0) {
-		getInstance()->sendMessage(Party_Disband, getId());
+		getInstance()->sendMessage(PartyDisband, getId());
 		setInstance(0);
 	}
 	map<int32_t, Player *, std::greater<int32_t> > temp = members;
@@ -239,19 +239,19 @@ void Party::setMember(int32_t playerid, Player *player) {
 	members[playerid] = player;
 }
 
-void Party::showHPBar(Player *player) {
+void Party::showHpBar(Player *player) {
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 		Player *m_player = iter->second;
 		if (m_player != 0 && m_player != player && m_player->getMap() == player->getMap())
-			PlayerPacket::showHPBar(player, m_player);
+			PlayerPacket::showHpBar(player, m_player);
 	}
 }
 
-void Party::receiveHPBar(Player *player) {
+void Party::receiveHpBar(Player *player) {
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 		Player *m_player = iter->second;
 		if (m_player != 0 && m_player != player && m_player->getMap() == player->getMap())
-			PlayerPacket::showHPBar(m_player, player);
+			PlayerPacket::showHpBar(m_player, player);
 	}
 }
 
@@ -294,50 +294,73 @@ void Party::warpAllMembers(int32_t mapid, const string &portalname) {
 	}
 }
 
-bool Party::checkFootholds(int8_t membercount, const vector<int16_t> &footholds) {
+bool Party::checkFootholds(int8_t membercount, const vector<vector<int16_t> > &footholds) {
 	// Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
 	bool winner = true;
 	int8_t membersonfootholds = 0;
-	unordered_map<int16_t, bool> footholdhasplayer;
-	for (size_t k = 0; k < footholds.size(); k++) {
-		int16_t fh = footholds[k];
-		footholdhasplayer[fh] = false;
+	unordered_map<size_t, bool> footholdhasplayer; // foothold group ID = key
+	for (size_t m = 0; m < footholds.size(); m++) {
+		footholdhasplayer[m] = false;
 		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 			Player *m_player = iter->second;
-			if (m_player != 0 && m_player->getFh() == fh) {
-				if (footholdhasplayer[fh]) {
-					winner = false;
-					break;
+			if (m_player != 0) {
+				for (size_t k = 0; k < footholds[m].size(); k++) {
+					if (m_player->getFh() == footholds[m][k]) {
+						if (footholdhasplayer[m]) {
+							winner = false;
+						}
+						else {
+							footholdhasplayer[m] = true;
+							membersonfootholds++;
+						}
+						break;
+					}
 				}
-				footholdhasplayer[fh] = true;
-				membersonfootholds++;
+			}
+			if (!winner)
+				break;
+		}
+		if (!winner)
+			break;
+	}
+	if (winner && (membersonfootholds != membercount)) // Not all the foothold groups were indexed
+		winner = false;
+	return winner;
+}
+
+bool Party::verifyFootholds(const vector<vector<int16_t> > &footholds) {
+	// Determines if the players match your selected footholds
+	bool winner = true;
+	unordered_map<size_t, bool> footholdhasplayer; // foothold group ID = key
+	for (size_t m = 0; m < footholds.size(); m++) {
+		footholdhasplayer[m] = false;
+		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+			Player *m_player = iter->second;
+			if (m_player != 0) {
+				for (size_t k = 0; k < footholds[m].size(); k++) {
+					if (m_player->getFh() == footholds[m][k]) {
+						if (footholdhasplayer[m]) {
+							winner = false;
+						}
+						else {
+							footholdhasplayer[m] = true;
+						}
+						break;
+					}
+				}
+				if (!winner)
+					break;
 			}
 		}
 		if (!winner)
 			break;
 	}
-	if (membersonfootholds != membercount)
-		winner = false;
-	return winner;
-}
-
-bool Party::verifyFootholds(const vector<int16_t> &footholds) {
-	// Determines if the players match your selected footholds
-	bool winner = true;
-	unordered_map<int16_t, bool> footholdhasplayer;
-	for (size_t k = 0; k < footholds.size(); k++) {
-		footholdhasplayer[footholds[k]] = false;
-		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
-			Player *m_player = iter->second;
-			if (m_player != 0 && m_player->getFh() == footholds[k]) {
-				footholdhasplayer[footholds[k]] = true;
+	if (winner) {
+		for (unordered_map<size_t, bool>::iterator iter = footholdhasplayer.begin(); iter != footholdhasplayer.end(); iter++) {
+			if (!iter->second) {
+				winner = false;
+				break;
 			}
-		}
-	}
-	for (unordered_map<int16_t, bool>::iterator iter = footholdhasplayer.begin(); iter != footholdhasplayer.end(); iter++) {
-		if (!iter->second) {
-			winner = false;
-			break;
 		}
 	}
 	return winner;

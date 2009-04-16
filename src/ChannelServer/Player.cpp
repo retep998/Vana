@@ -53,6 +53,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Trades.h"
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPacket.h"
+#include <boost/array.hpp>
 
 Player::~Player() {
 	if (isconnect) {
@@ -61,9 +62,9 @@ Player::~Player() {
 		}
 		if (getInstance() != 0) {
 			getInstance()->removePlayer(getId());
-			getInstance()->sendMessage(Player_Disconnect, getId());
+			getInstance()->sendMessage(PlayerDisconnect, getId());
 		}
-		//if (this->getHP() == 0)
+		//if (this->getHp() == 0)
 		//	this->acceptDeath();
 		// "Bug" in global, would be fixed here:
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
@@ -224,7 +225,7 @@ void Player::playerConnect(PacketReader &packet) {
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
 	// Inventory
-	uint8_t maxslots[5];
+	boost::array<uint8_t, 5> maxslots;
 	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
 	maxslots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
 	maxslots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);
@@ -302,7 +303,7 @@ void Player::playerConnect(PacketReader &packet) {
 	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), ip, id, name, map, job, level);
 }
 
-void Player::setHP(int16_t shp, bool is) {
+void Player::setHp(int16_t shp, bool is) {
 	if (shp < 0)
 		hp = 0;
 	else if (shp > mhp)
@@ -312,14 +313,16 @@ void Player::setHP(int16_t shp, bool is) {
 	if (is)
 		PlayerPacket::updateStatShort(this, 0x400, hp);
 	if (getParty())
-		getParty()->showHPBar(this);
+		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(Player_Death, getId());
+		getInstance()->sendMessage(PlayerDeath, getId());
 	}
+	if (hp == 0)
+		loseExp();
 }
 
-void Player::modifyHP(int16_t nhp, bool is) {
+void Player::modifyHp(int16_t nhp, bool is) {
 	if ((hp + nhp) < 0)
 		hp = 0;
 	else if ((hp + nhp) > mhp)
@@ -329,25 +332,29 @@ void Player::modifyHP(int16_t nhp, bool is) {
 	if (is)
 		PlayerPacket::updateStatShort(this, 0x400, hp);
 	if (getParty())
-		getParty()->showHPBar(this);
+		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(Player_Death, getId());
+		getInstance()->sendMessage(PlayerDeath, getId());
 	}
+	if (hp == 0)
+		loseExp();
 }
 
-void Player::damageHP(uint16_t dhp) {
+void Player::damageHp(uint16_t dhp) {
 	hp = (dhp > hp ? 0 : hp - dhp);
 	PlayerPacket::updateStatShort(this, 0x400, hp);
 	if (getParty())
-		getParty()->showHPBar(this);
+		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
 	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(Player_Death, getId());
+		getInstance()->sendMessage(PlayerDeath, getId());
 	}
+	if (hp == 0)
+		loseExp();
 }
 
-void Player::setMP(int16_t smp, bool is) {
+void Player::setMp(int16_t smp, bool is) {
 	if (!getActiveBuffs()->hasInfinity()) {
 		if (smp < 0)
 			mp = 0;
@@ -359,7 +366,7 @@ void Player::setMP(int16_t smp, bool is) {
 	PlayerPacket::updateStatShort(this, 0x1000, mp, is);
 }
 
-void Player::modifyMP(int16_t nmp, bool is) {
+void Player::modifyMp(int16_t nmp, bool is) {
 	if (!getActiveBuffs()->hasInfinity()) {
 		if ((mp + nmp) < 0)
 			mp = 0;
@@ -371,19 +378,19 @@ void Player::modifyMP(int16_t nmp, bool is) {
 	PlayerPacket::updateStatShort(this, 0x1000, mp, is);
 }
 
-void Player::damageMP(uint16_t dmp) {
+void Player::damageMp(uint16_t dmp) {
 	if (!getActiveBuffs()->hasInfinity()) {
 		mp = (dmp > mp ? 0 : mp - dmp);
 	}
 	PlayerPacket::updateStatShort(this, 0x1000, mp, false);
 }
 
-void Player::setSP(int16_t sp) {
+void Player::setSp(int16_t sp) {
 	this->sp = sp;
 	PlayerPacket::updateStatShort(this, 0x8000, sp);
 }
 
-void Player::setAP(int16_t ap) {
+void Player::setAp(int16_t ap) {
 	this->ap = ap;
 	PlayerPacket::updateStatShort(this, 0x4000, ap);
 }
@@ -415,7 +422,7 @@ void Player::setLuk(int16_t luk) {
 	PlayerPacket::updateStatShort(this, 0x200, luk);
 }
 
-void Player::setMHP(int16_t mhp) {
+void Player::setMHp(int16_t mhp) {
 	if (mhp > 30000)
 		mhp = 30000;
 	else if (mhp < 1)
@@ -423,11 +430,11 @@ void Player::setMHP(int16_t mhp) {
 	this->mhp = mhp;
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 	if (getParty())
-		getParty()->showHPBar(this);
+		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
-void Player::setMMP(int16_t mmp) {
+void Player::setMMp(int16_t mmp) {
 	if (mmp > 30000)
 		mmp = 30000;
 	else if (mmp < 1)
@@ -444,11 +451,11 @@ void Player::setHyperBody(int16_t modx, int16_t mody) {
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 	if (getParty())
-		getParty()->showHPBar(this);
+		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
-void Player::setRMHP(int16_t rmhp) {
+void Player::setRMHp(int16_t rmhp) {
 	if (rmhp > 30000)
 		rmhp = 30000;
 	else if (rmhp < 1)
@@ -457,7 +464,7 @@ void Player::setRMHP(int16_t rmhp) {
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 }
 
-void Player::setRMMP(int16_t rmmp) {
+void Player::setRMMp(int16_t rmmp) {
 	if (rmmp > 30000)
 		rmmp = 30000;
 	else if (rmmp < 1)
@@ -466,12 +473,12 @@ void Player::setRMMP(int16_t rmmp) {
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
 
-void Player::modifyRMHP(int16_t mod) {
+void Player::modifyRMHp(int16_t mod) {
 	rmhp = (((rmhp + mod) > 30000) ? 30000 : (rmhp + mod));
 	PlayerPacket::updateStatShort(this, 0x800, rmhp);
 }
 
-void Player::modifyRMMP(int16_t mod) {
+void Player::modifyRMMp(int16_t mod) {
 	rmmp = (((rmmp + mod) > 30000) ? 30000 : (rmmp + mod));
 	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
 }
@@ -699,19 +706,19 @@ void Player::setLevelDate() {
 
 void Player::acceptDeath() {
 	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
-	setHP(50, false);
+	setHp(50, false);
 	getActiveBuffs()->removeBuff();
 	Maps::changeMap(this, tomap, 0);
 }
 
-bool Player::hasGMEquip() {
-	if (getInventory()->getEquippedId(EquipSlots::Helm) == GMSuit::Hat)
+bool Player::hasGmEquip() {
+	if (getInventory()->getEquippedId(EquipSlots::Helm) == GmSuit::Hat)
 		return true;
-	if (getInventory()->getEquippedId(EquipSlots::Top) == GMSuit::Top)
+	if (getInventory()->getEquippedId(EquipSlots::Top) == GmSuit::Top)
 		return true;
-	if (getInventory()->getEquippedId(EquipSlots::Bottom) == GMSuit::Bottom)
+	if (getInventory()->getEquippedId(EquipSlots::Bottom) == GmSuit::Bottom)
 		return true;
-	if (getInventory()->getEquippedId(EquipSlots::Weapon) == GMSuit::Weapon)
+	if (getInventory()->getEquippedId(EquipSlots::Weapon) == GmSuit::Weapon)
 		return true;
 	return false;
 }
@@ -719,4 +726,27 @@ bool Player::hasGMEquip() {
 void Player::setBuddyListSize(uint8_t size) {
 	buddylist_size = size;
 	BuddyListPacket::showSize(this);
+}
+
+void Player::loseExp() {
+	if (getJob() != 0 && getLevel() < 200) {
+		Map *loc = Maps::getMap(getMap());
+		int32_t fieldlimit = loc->getInfo()->fieldLimit;
+		int8_t exploss = 10;
+		if (fieldlimit & 0x20 || loc->getInfo()->town)
+			exploss = 1;
+		else {
+			switch (getJob() / 100) {
+				case 2: // Magicians
+					exploss = 7;
+					break;
+				case 4: // Thieves
+					exploss = 5;
+					break;
+			}
+		}
+		uint64_t exp = getExp();
+		exp -= Levels::exps[getLevel() - 1] * exploss / 100;
+		setExp(static_cast<int32_t>(exp));
+	}
 }

@@ -98,6 +98,7 @@ void WorldServerConnectPacket::playerChangeChannel(WorldServerConnectPlayer *pla
 	packet.add<int16_t>(playerbuffs->getEnergyChargeLevel());
 	packet.add<int32_t>(playerbuffs->getCharge());
 	packet.add<int32_t>(playerbuffs->getBooster());
+	packet.add<int32_t>(playerbuffs->getBattleshipHp());
 	MapEntryBuffs enterbuffs = playerbuffs->getMapEntryBuffs();
 	packet.add<int32_t>(enterbuffs.mountid);
 	packet.add<int32_t>(enterbuffs.mountskill);

@@ -63,12 +63,14 @@ struct Skillbook {
 };
 
 struct ConsumeInfo {
+	bool autoconsume;
+	bool randstat;
+	bool recover;
+	int8_t ailment;
 	int16_t hp;
 	int16_t mp;
 	int16_t hpr;
 	int16_t mpr;
-	int32_t moveTo;
-	int32_t time;
 	int16_t watk;
 	int16_t matk;
 	int16_t avo;
@@ -78,7 +80,6 @@ struct ConsumeInfo {
 	int16_t speed;
 	int16_t jump;
 	int16_t morph;
-	bool autoconsume;
 	int16_t success;
 	int16_t cursed;
 	int16_t istr;
@@ -96,6 +97,8 @@ struct ConsumeInfo {
 	int16_t ihand;
 	int16_t ijump;
 	int16_t ispeed;
+	int32_t moveTo;
+	int32_t time;
 	vector<SummonBag> mobs;
 	vector<Skillbook> skills;
 };
@@ -118,7 +121,7 @@ public:
 	void loadData();
 	bool itemExists(int32_t id);
 	int32_t getPrice(int32_t itemid);
-	int16_t getMaxslot(int32_t itemid);
+	int16_t getMaxSlot(int32_t itemid);
 	EquipInfo const getEquipInfo(int32_t equipid) {
 		return equips[equipid];
 	}

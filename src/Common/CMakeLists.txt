@@ -2,7 +2,6 @@ set(SOURCES
 	AbstractPlayer.h
 	AbstractServer.h
 	AbstractSession.h
-	AESEncryption.h
 	AuthenticationPacket.h
 	ConfigFile.h
 	ConnectionManager.h
@@ -31,7 +30,6 @@ set(SOURCES
 	SendHeader.h
 	ServerPlayer.h
 	SessionManager.h
-	sha1.h
 	StringUtilities.h
 	Timer/Container.h
 	Timer/Id.h
@@ -43,7 +41,6 @@ set(SOURCES
 	Types.h
 	AbstractPlayer.cpp
 	AbstractServer.cpp
-	AESEncryption.cpp
 	AuthenticationPacket.cpp
 	ConfigFile.cpp
 	ConnectionManager.cpp
@@ -64,7 +61,6 @@ set(SOURCES
 	Randomizer.cpp
 	ServerPlayer.cpp
 	SessionManager.cpp
-	sha1.cpp
 	StringUtilities.cpp
 	Timer/Container.cpp
 	Timer/Id.cpp

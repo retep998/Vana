@@ -60,7 +60,7 @@ control(0)
 	this->mp = info.mp;
 	Instance *instance = Maps::getMap(mapid)->getInstance();
 	if (instance != 0) {
-		instance->sendMessage(Mob_Spawn, mobid, id);
+		instance->sendMessage(MobSpawn, mobid, id);
 	}
 }
 
@@ -75,10 +75,10 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 		Player *player = Players::Instance()->getPlayer(playerid);
 
 		if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
-			MobsPacket::showBossHP(player, mobid, hp, info);
+			MobsPacket::showBossHp(player, mobid, hp, info);
 		else { // Normal/Miniboss HP bars
 			uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
-			MobsPacket::showHP(player, id, percent, info.boss);
+			MobsPacket::showHp(player, id, percent, info.boss);
 		}
 
 		if (hp == 0) { // Time to die
@@ -197,7 +197,7 @@ void Mob::die(Player *player) {
 	player->getQuests()->updateQuestMob(mobid);
 	Instance *instance = Maps::getMap(mapid)->getInstance();
 	if (instance != 0) {
-		instance->sendMessage(Mob_Death, mobid, id);
+		instance->sendMessage(MobDeath, mobid, id);
 	}
 	Maps::getMap(mapid)->removeMob(id, spawnid);
 
@@ -210,7 +210,7 @@ void Mob::die(bool showpacket) {
 		MobsPacket::dieMob(this);
 		Instance *instance = Maps::getMap(mapid)->getInstance();
 		if (instance != 0) {
-			instance->sendMessage(Mob_Death, mobid, id);
+			instance->sendMessage(MobDeath, mobid, id);
 		}
 	}
 	Maps::getMap(mapid)->removeMob(id, spawnid);
@@ -243,7 +243,7 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 		if (player->addWarning())
 			return;
 	}
-	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMP());
+	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMp());
 	packet.reset(19);
 	MobsPacket::moveMob(player, mobid, useskill, skill, trajectory, packet.getBuffer(), packet.getBufferLength());
 }
@@ -293,15 +293,15 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
 		case Jobs::Crusader::Shout: // Shout
-		case Jobs::GM::SuperDragonRoar: // Super Dragon Roar
+		case Jobs::Gm::SuperDragonRoar: // Super Dragon Roar
 			break;
 		case Jobs::DragonKnight::DragonRoar: { // Dragon Roar
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
 			int16_t x_value = Skills::skills[skillid][roarlv].x;
 			int16_t y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
-			uint16_t reduction = (player->getMHP() / 100) * x_value;
-			if ((player->getHP() - reduction) > 0)
-				player->damageHP(reduction);
+			uint16_t reduction = (player->getMHp() / 100) * x_value;
+			if ((player->getHp() - reduction) > 0)
+				player->damageHp(reduction);
 			else {
 				// Hacking
 				return;
@@ -312,10 +312,10 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 		case Jobs::DragonKnight::Sacrifice: { // Sacrifice
 			int16_t hp_damage_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
 			uint16_t hp_damage = (uint16_t) totaldmg * hp_damage_x / 100;
-			if ((player->getHP() - hp_damage) < 1)
-				player->setHP(1);
+			if ((player->getHp() - hp_damage) < 1)
+				player->setHp(1);
 			else
-				player->damageHP(hp_damage);
+				player->damageHp(hp_damage);
 			break;
 		}
 		case Jobs::WhiteKnight::ChargeBlow: { // Charge Blow
@@ -384,12 +384,12 @@ void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 		int32_t hpRecover = totaldmg * drain_x / 100;
 		if (hpRecover > mhp)
 			hpRecover = mhp;
-		if (hpRecover > (player->getMHP() / 2))
-			hpRecover = player->getMHP() / 2;
-		if (hpRecover > player->getMHP())
-			player->setHP(player->getMHP());
+		if (hpRecover > (player->getMHp() / 2))
+			hpRecover = player->getMHp() / 2;
+		if (hpRecover > player->getMHp())
+			player->setHp(player->getMHp());
 		else
-			player->modifyHP((int16_t) hpRecover);
+			player->modifyHp((int16_t) hpRecover);
 	}
 }
 
@@ -408,7 +408,7 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 			packet.skipBytes(4);
 			break;
 	}
-	MPEaterInfo eater;
+	MpEaterInfo eater;
 	eater.id = (player->getJob() / 10) * 100000;
 	eater.level = player->getSkills()->getSkillLevel(eater.id);
 	if (eater.level > 0) {
@@ -462,18 +462,22 @@ void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 	damageMobInternal(player, packet, targets, 1, summon->getSummonId(), useless);
 }
 
-uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MPEaterInfo *eater, bool ismelee) {
+uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater, bool ismelee) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
 	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	for (int8_t i = 0; i < targets; i++) {
+		int32_t targettotal = 0;
 		int32_t mapmobid = packet.get<int32_t>();
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
 		uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-		handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
 		int32_t mobid = mob->getMobId();
+		if (skillid == Jobs::Cleric::Heal && !mob->isUndead()) {
+			// hacking
+			return 0;
+		}
 		Mob *htabusetaker = 0;
 		switch (mobid) {
 			case 8810002:
@@ -498,7 +502,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		vector<int32_t> ppdamages; // Pickpocket
 		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet.get<int32_t>();
-			total += damage;
+			targettotal += damage;
 			if (ismelee && skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].prop) {
 					ppdamages.push_back(damage);
@@ -513,16 +517,16 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 				}
 			}
 
-			extra = mob->getMHP();
+			extra = mob->getMHp();
 			if (eater != 0) { // MP Eater
-				int32_t cmp = mob->getMP();
+				int32_t cmp = mob->getMp();
 				if ((!eater->onlyonce) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < eater->prop)) {
 					eater->onlyonce = true;
-					int32_t mp = mob->getMMP() * eater->x / 100;
+					int32_t mp = mob->getMMp() * eater->x / 100;
 					if (mp > cmp)
 						mp = cmp;
-					mob->setMP(cmp - mp);
-					player->modifyMP((int16_t) mp);
+					mob->setMp(cmp - mp);
+					player->modifyMp((int16_t) mp);
 					SkillsPacket::showSkillEffect(player, eater->id);
 				}
 			}
@@ -532,9 +536,9 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 			}
 			else {
 				if (skillid == Jobs::Paladin::HeavensHammer)
-					damage = mob->getHP() - 1;
+					damage = mob->getHp() - 1;
 
-				int32_t temphp = mob->getHP();
+				int32_t temphp = mob->getHp();
 				mob->applyDamage(player->getId(), damage);
 
 				if (htabusetaker != 0) {
@@ -546,6 +550,9 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					mob = 0;
 			}
 		}
+		if (mob != 0 && targettotal > 0 && mob->getHp() > 0)
+			handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
+		total += targettotal;
 		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
 		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
 			Pos pppos;
@@ -589,9 +596,9 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			statuses.push_back(StatusInfo(Freeze, Freeze, charge, Skills::skills[charge][player->getActiveBuffs()->getActiveSkillLevel(charge)].y));
 		}
 	}
-	if (mob->canPoison()) { // Poisoning stuff
+	if (mob->canPoison() && mob->getHp() > 1) { // Poisoning stuff
 		if ((skillid == Jobs::FPWizard::PoisonBreath || skillid == Jobs::FPMage::PoisonMist || skillid == Jobs::FPMage::ElementComposition) && Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) { // Poison brace, Element composition, and Poison mist
-			int16_t pdamage = (int16_t)(mob->getMHP() / (70 - level));
+			int16_t pdamage = (int16_t)(mob->getMHp() / (70 - level));
 			statuses.push_back(StatusInfo(Poison, pdamage, skillid, Skills::skills[skillid][level].time));
 		}
 	}

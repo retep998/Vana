@@ -55,9 +55,10 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 			return;
 		if (GameLogicUtilities::isEquip(item->id) || GameLogicUtilities::isRechargeable(item->id))
 			amount = item->amount;
-		else if (amount <= 0)
+		else if (amount <= 0 || amount > item->amount) {
+			// hacking
 			return;
-
+		}
 		Item droppeditem = Item(item);
 		droppeditem.amount = amount;
 		if (item->amount == amount) {
@@ -95,15 +96,15 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 		}
 
 		if (item2 != 0 && !GameLogicUtilities::isRechargeable(item1->id) && !GameLogicUtilities::isEquip(item1->id) && !GameLogicUtilities::isPet(item1->id) && item1->id == item2->id) {
-			if (item1->amount + item2->amount <= ItemDataProvider::Instance()->getMaxslot(item1->id)) {
+			if (item1->amount + item2->amount <= ItemDataProvider::Instance()->getMaxSlot(item1->id)) {
 				item2->amount += item1->amount;
 				player->getInventory()->deleteItem(inv, slot1, false);
 				InventoryPacket::updateItemAmounts(player, inv, slot2, item2->amount, 0, 0);
 				InventoryPacket::moveItem(player, inv, slot1, 0);
 			}
 			else {
-				item1->amount -= (ItemDataProvider::Instance()->getMaxslot(item1->id) - item2->amount);
-				item2->amount = ItemDataProvider::Instance()->getMaxslot(item2->id);
+				item1->amount -= (ItemDataProvider::Instance()->getMaxSlot(item1->id) - item2->amount);
+				item2->amount = ItemDataProvider::Instance()->getMaxSlot(item2->id);
 				InventoryPacket::updateItemAmounts(player, inv, slot1, item1->amount, slot2, item2->amount);
 			}
 		}
@@ -206,11 +207,11 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *olditem = player->getInventory()->getItem(inv, s);
 		if (olditem != 0) {
-			if (!GameLogicUtilities::isRechargeable(item->id) && !GameLogicUtilities::isEquip(item->id) && !GameLogicUtilities::isPet(item->id) && olditem->id == item->id && olditem->amount < ItemDataProvider::Instance()->getMaxslot(item->id)) {
-				if (item->amount + olditem->amount > ItemDataProvider::Instance()->getMaxslot(item->id)) {
-					int16_t amount = ItemDataProvider::Instance()->getMaxslot(item->id) - olditem->amount;
+			if (!GameLogicUtilities::isRechargeable(item->id) && !GameLogicUtilities::isEquip(item->id) && !GameLogicUtilities::isPet(item->id) && olditem->id == item->id && olditem->amount < ItemDataProvider::Instance()->getMaxSlot(item->id)) {
+				if (item->amount + olditem->amount > ItemDataProvider::Instance()->getMaxSlot(item->id)) {
+					int16_t amount = ItemDataProvider::Instance()->getMaxSlot(item->id) - olditem->amount;
 					item->amount -= amount;
-					olditem->amount = ItemDataProvider::Instance()->getMaxslot(item->id);
+					olditem->amount = ItemDataProvider::Instance()->getMaxSlot(item->id);
 					InventoryPacket::addItem(player, inv, s, olditem, is);
 				}
 				else {
@@ -252,7 +253,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 			int32_t itemid = packet.get<int32_t>();
 			int16_t amount = packet.get<int16_t>();
 			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemid);
-			if (price == 0 || player->getInventory()->getMesos() < (price*amount) ||  amount > ItemDataProvider::Instance()->getMaxslot(itemid)) {
+			if (price == 0 || player->getInventory()->getMesos() < (price*amount) ||  amount > ItemDataProvider::Instance()->getMaxSlot(itemid)) {
 				// Hacking
 				return;
 			}
@@ -291,9 +292,14 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			item->amount = ItemDataProvider::Instance()->getMaxslot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
-			player->getInventory()->modifyMesos(-1); // TODO: Calculate price, letting players recharge for 1 meso for now
-			InventoryPacket::updateItemAmounts(player, 2, slot, item->amount, 0, 0);
+			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
+			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->id, maxslot - item->amount);
+			if (modifiedmesos > 0) {
+				// Probably hacking
+				return;
+			}
+			player->getInventory()->modifyMesos(modifiedmesos); // TODO: Calculate price, letting players recharge for 1 meso for now
+			InventoryPacket::updateItemAmounts(player, 2, slot, maxslot, 0, 0);
 			InventoryPacket::bought(player, 0);
 			break;
 		}
@@ -312,7 +318,7 @@ void Inventory::useStorage(Player *player, PacketReader &packet) {
 			Item *item = player->getStorage()->getItem(slot);
 			if (item == 0) { // It's a trap
 				// hacking
-				return; // Abort
+				return;
 			}
 			addItem(player, new Item(item));
 			player->getStorage()->takeItem(slot);
@@ -333,9 +339,15 @@ void Inventory::useStorage(Player *player, PacketReader &packet) {
 			}
 			int8_t inv = GameLogicUtilities::getInventory(itemid);
 			Item *item = player->getInventory()->getItem(inv, slot);
-			if (item == 0 || (!GameLogicUtilities::isRechargeable(itemid) && amount > item->amount)) { // Be careful, it might be a trap.
+			if (item == 0) {
 				// hacking
-				return; // Do a barrel roll
+				return;
+			}
+			if (GameLogicUtilities::isRechargeable(itemid) || GameLogicUtilities::isEquip(itemid))
+				amount = 1;
+			else if (amount <= 0 || amount > item->amount) {
+				// hacking
+				return;
 			}
 			player->getStorage()->addItem((inv == 1 || GameLogicUtilities::isRechargeable(itemid)) ? new Item(item) : new Item(itemid, amount));
 			// For equips or rechargeable items (stars/bullets) we create a
@@ -364,7 +376,7 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	if (!ItemDataProvider::Instance()->itemExists(itemid))
 		return;
 
-	int16_t max = ItemDataProvider::Instance()->getMaxslot(itemid);
+	int16_t max = ItemDataProvider::Instance()->getMaxSlot(itemid);
 	int16_t thisamount = 0;
 	if (GameLogicUtilities::isStar(itemid)) {
 		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
@@ -446,7 +458,7 @@ void Inventory::useItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	if (player->getHP() == 0 || player->getInventory()->getItemAmountBySlot(2, slot) == 0) {
+	if (player->getHp() == 0 || player->getInventory()->getItemAmountBySlot(2, slot) == 0) {
 		// hacking
 		return;
 	}
@@ -461,15 +473,15 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	if (player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist) > 0)
 		alchemist = Skills::skills[Jobs::Hermit::Alchemist][player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist)].x;
 	if (item.cons.hp > 0)
-		player->modifyHP(item.cons.hp * alchemist / 100);
+		player->modifyHp(item.cons.hp * alchemist / 100);
 	if (item.cons.mp > 0)
-		player->modifyMP(item.cons.mp * alchemist / 100);
+		player->modifyMp(item.cons.mp * alchemist / 100);
 	else
-		player->setMP(player->getMP(), true);
+		player->setMp(player->getMp(), true);
 	if (item.cons.hpr > 0)
-		player->modifyHP(item.cons.hpr * player->getMHP() / 100);
+		player->modifyHp(item.cons.hpr * player->getMHp() / 100);
 	if (item.cons.mpr > 0)
-		player->modifyMP(item.cons.mpr * player->getMMP() / 100);
+		player->modifyMp(item.cons.mpr * player->getMMp() / 100);
 	// Item buffs
 	if (item.cons.time > 0) {
 		int32_t time = item.cons.time * alchemist / 100;
@@ -591,121 +603,119 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 		return;
 
 	ItemInfo iteminfo = ItemDataProvider::Instance()->getItemInfo(itemid);
-	switch (itemid) {
-		case 2049000: // Clean Slate 1%
-		case 2049001: // Clean Slate 3%
-		case 2049002: // Clean Slate 5%
-		case 2049003: // Clean Slate 20%
-			if ((ItemDataProvider::Instance()->getEquipInfo(equip->id).slots - equip->scrolls) > equip->slots) {
-				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Give back a slot
-					equip->slots++;
-					succeed = 1;
-				}
-				else {
-					if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
-						cursed = true;
-					succeed = 0;
-				}
-			}
-			break;
-		case 2049102: // Maple Syrup 100%
-		case 2049101: // Liar Tree Sap 100%
-		case 2049100: // Chaos Scroll
-			if (equip->slots > 0) {
-				succeed = 0;
-				if (wscroll)
-					takeItem(player, 2340000, 1);
-				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
-					int8_t n = -1; // Default - Decrease stats
-					if ((int16_t) Randomizer::Instance()->randShort(99) < 50) // Increase
-						n = 1;
-					// Gives/takes 0-5 stats on every stat on the item
-					if (equip->istr > 0)
-						equip->istr += Randomizer::Instance()->randShort(5) * n;
-					if (equip->idex > 0)
-						equip->idex += Randomizer::Instance()->randShort(5) * n;
-					if (equip->iint > 0)
-						equip->iint += Randomizer::Instance()->randShort(5) * n;
-					if (equip->iluk > 0)
-						equip->iluk += Randomizer::Instance()->randShort(5) * n;
-					if (equip->iavo > 0)
-						equip->iavo += Randomizer::Instance()->randShort(5) * n;
-					if (equip->iacc > 0)
-						equip->iacc += Randomizer::Instance()->randShort(5) * n;
-					if (equip->ihand > 0)
-						equip->ihand += Randomizer::Instance()->randShort(5) * n;
-					if (equip->ijump > 0)
-						equip->ijump += Randomizer::Instance()->randShort(5) * n;
-					if (equip->ispeed > 0)
-						equip->ispeed += Randomizer::Instance()->randShort(5) * n;
-					if (equip->imatk > 0)
-						equip->imatk += Randomizer::Instance()->randShort(5) * n;
-					if (equip->iwatk > 0)
-						equip->iwatk += Randomizer::Instance()->randShort(5) * n;
-					if (equip->imdef > 0)
-						equip->imdef += Randomizer::Instance()->randShort(5) * n;
-					if (equip->iwdef > 0)
-						equip->iwdef += Randomizer::Instance()->randShort(5) * n;
-					if (equip->ihp > 0)
-						equip->ihp += Randomizer::Instance()->randShort(5) * n;
-					if (equip->imp > 0)
-						equip->imp += Randomizer::Instance()->randShort(5) * n;
-					equip->scrolls++;
-					equip->slots--;
-					succeed = 1;
-				}
-				else if (!wscroll)
-					equip->slots--;
-			}
-			break;
-		case 2040727: // Shoe for Spikes 10%
-		case 2041058: // Cape for Cold Protection 10%
+
+	if (iteminfo.cons.randstat) {
+		if (equip->slots > 0) {
 			succeed = 0;
-			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // These do not take slots and can be used even after success
-				switch (itemid) {
-					case 2040727:
-						equip->flags |= FlagSpikes;
-						break;
-					case 2041058:
-						equip->flags |= FlagCold;
-						break;
-				}
+			if (wscroll)
+				takeItem(player, 2340000, 1);
+			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
+				int8_t n = -1; // Default - Decrease stats
+				if ((int16_t) Randomizer::Instance()->randShort(99) < 50) // Increase
+					n = 1;
+				// Gives/takes 0-5 stats on every stat on the item
+				if (equip->istr > 0)
+					equip->istr += Randomizer::Instance()->randShort(5) * n;
+				if (equip->idex > 0)
+					equip->idex += Randomizer::Instance()->randShort(5) * n;
+				if (equip->iint > 0)
+					equip->iint += Randomizer::Instance()->randShort(5) * n;
+				if (equip->iluk > 0)
+					equip->iluk += Randomizer::Instance()->randShort(5) * n;
+				if (equip->iavo > 0)
+					equip->iavo += Randomizer::Instance()->randShort(5) * n;
+				if (equip->iacc > 0)
+					equip->iacc += Randomizer::Instance()->randShort(5) * n;
+				if (equip->ihand > 0)
+					equip->ihand += Randomizer::Instance()->randShort(5) * n;
+				if (equip->ijump > 0)
+					equip->ijump += Randomizer::Instance()->randShort(5) * n;
+				if (equip->ispeed > 0)
+					equip->ispeed += Randomizer::Instance()->randShort(5) * n;
+				if (equip->imatk > 0)
+					equip->imatk += Randomizer::Instance()->randShort(5) * n;
+				if (equip->iwatk > 0)
+					equip->iwatk += Randomizer::Instance()->randShort(5) * n;
+				if (equip->imdef > 0)
+					equip->imdef += Randomizer::Instance()->randShort(5) * n;
+				if (equip->iwdef > 0)
+					equip->iwdef += Randomizer::Instance()->randShort(5) * n;
+				if (equip->ihp > 0)
+					equip->ihp += Randomizer::Instance()->randShort(5) * n;
+				if (equip->imp > 0)
+					equip->imp += Randomizer::Instance()->randShort(5) * n;
+				equip->scrolls++;
+				equip->slots--;
 				succeed = 1;
 			}
-			break;
-		default: // Most scrolls
-			if (equip->slots > 0) {
-				if (wscroll)
-					takeItem(player, 2340000, 1);
-				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
-					succeed = 1;
-					equip->istr += iteminfo.cons.istr;
-					equip->idex += iteminfo.cons.idex;
-					equip->iint += iteminfo.cons.iint;
-					equip->iluk += iteminfo.cons.iluk;
-					equip->ihp += iteminfo.cons.ihp;
-					equip->imp += iteminfo.cons.imp;
-					equip->iwatk += iteminfo.cons.iwatk;
-					equip->imatk += iteminfo.cons.imatk;
-					equip->iwdef += iteminfo.cons.iwdef;
-					equip->imdef += iteminfo.cons.imdef;
-					equip->iacc += iteminfo.cons.iacc;
-					equip->iavo += iteminfo.cons.iavo;
-					equip->ihand += iteminfo.cons.ihand;
-					equip->ijump += iteminfo.cons.ijump;
-					equip->ispeed += iteminfo.cons.ispeed;
-					equip->scrolls++;
-					equip->slots--;
-				}
-				else {
-					succeed = 0;
-					if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
-						cursed = true;
-					else if (!wscroll)
-						equip->slots--;
-				}
+			else if (!wscroll)
+				equip->slots--;
+		}
+	}
+	else if (iteminfo.cons.recover) {
+		if ((ItemDataProvider::Instance()->getEquipInfo(equip->id).slots - equip->scrolls) > equip->slots) {
+			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Give back a slot
+				equip->slots++;
+				succeed = 1;
 			}
-			break;
+			else {
+				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
+					cursed = true;
+				succeed = 0;
+			}
+		}
+	}
+	else {
+		switch (itemid) {
+			case 2040727: // Shoe for Spikes 10%
+			case 2041058: // Cape for Cold Protection 10%
+				succeed = 0;
+				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // These do not take slots and can be used even after success
+					switch (itemid) {
+						case 2040727:
+							equip->flags |= FlagSpikes;
+							break;
+						case 2041058:
+							equip->flags |= FlagCold;
+							break;
+					}
+					succeed = 1;
+				}
+				break;
+			default: // Most scrolls
+				if (equip->slots > 0) {
+					if (wscroll)
+						takeItem(player, 2340000, 1);
+					if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
+						succeed = 1;
+						equip->istr += iteminfo.cons.istr;
+						equip->idex += iteminfo.cons.idex;
+						equip->iint += iteminfo.cons.iint;
+						equip->iluk += iteminfo.cons.iluk;
+						equip->ihp += iteminfo.cons.ihp;
+						equip->imp += iteminfo.cons.imp;
+						equip->iwatk += iteminfo.cons.iwatk;
+						equip->imatk += iteminfo.cons.imatk;
+						equip->iwdef += iteminfo.cons.iwdef;
+						equip->imdef += iteminfo.cons.imdef;
+						equip->iacc += iteminfo.cons.iacc;
+						equip->iavo += iteminfo.cons.iavo;
+						equip->ihand += iteminfo.cons.ihand;
+						equip->ijump += iteminfo.cons.ijump;
+						equip->ispeed += iteminfo.cons.ispeed;
+						equip->scrolls++;
+						equip->slots--;
+					}
+					else {
+						succeed = 0;
+						if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
+							cursed = true;
+						else if (!wscroll)
+							equip->slots--;
+					}
+				}
+				break;
+		}
 	}
 	if (succeed != -1) {
 		takeItemSlot(player, 2, slot, 1);

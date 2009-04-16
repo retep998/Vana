@@ -42,7 +42,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	boost::mutex::scoped_lock l(loadmap_mutex);
 
 	mysqlpp::Query query = Database::getDataDB().query();
-	query << "SELECT returnmap, forcedreturn, fieldtype, fieldlimit, mobrate, clock, ship FROM mapdata WHERE mapid = " << mapid;
+	query << "SELECT returnmap, forcedreturn, fieldtype, fieldlimit, mobrate, clock, ship, town, `top`, `right`, `left`, `bottom` FROM mapdata WHERE mapid = " << mapid;
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW dataRow;
@@ -54,6 +54,12 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    4 : Mob Spawn Rate
 		//    5 : Clock
 		//    6 : Ship Interval
+		//    7 : Town?
+		//    8 : Top
+		//    9 : Right
+		//   10 : Left
+		//   11 : Bottom
+
 		MapInfoPtr mapinfo(new MapInfo);
 		mapinfo->id = mapid;
 		mapinfo->rm = atoi(dataRow[0]);
@@ -63,6 +69,12 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		mapinfo->spawnrate = atof(dataRow[4]);
 		mapinfo->clock = atob(dataRow[5]);
 		mapinfo->shipInterval = atoi(dataRow[6]);
+		mapinfo->town = atob(dataRow[7]);
+		mapinfo->top = atoi(dataRow[8]);
+		mapinfo->right = atoi(dataRow[9]);
+		mapinfo->left = atoi(dataRow[10]);
+		mapinfo->bottom = atoi(dataRow[11]);
+
 		map = new Map(mapinfo);
 	}
 	maps[mapid] = map;

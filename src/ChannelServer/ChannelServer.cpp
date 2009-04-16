@@ -36,7 +36,7 @@ void ChannelServer::listen() {
 
 void ChannelServer::loadData() {
 	Initializing::checkSchemaVersion();
-	Initializing::checkMCDBVersion();
+	Initializing::checkMcdbVersion();
 	Initializing::loadData();
 	Initializing::initializeChat();
 

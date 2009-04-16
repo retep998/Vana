@@ -19,12 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LOOPINGID_H
 
 #include "Types.h"
-#include <climits>
+#include <limits>
 
 // LoopingId, keep track and returns a number between min and max, restarts when number reaches max
 class LoopingId {
 public:
-	LoopingId(int32_t minimum = 1, int32_t maximum = INT_MAX);
+	LoopingId(int32_t minimum = 1, int32_t maximum = std::numeric_limits<int32_t>::max());
 	int32_t next();
 	void reset();
 private:

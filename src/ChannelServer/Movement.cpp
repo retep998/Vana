@@ -34,6 +34,16 @@ Pos Movement::parseMovement(MovableLife *life, PacketReader &packet) {
 			case 10: // Falling of some kind
 				packet.skipBytes(1);
 				break;
+			case 16: // Wings
+				packet.skipBytes(7);
+				break;
+			case 17: // Part of Wings, the falling, I believe
+				x = packet.get<int16_t>();
+				y = packet.get<int16_t>();
+				foothold = packet.get<int16_t>();
+				stance = packet.get<int8_t>();	
+				packet.skipBytes(6);
+				break;
 			case 12: // Horntail knockback
 				packet.skipBytes(7);
 				break;
@@ -52,10 +62,11 @@ Pos Movement::parseMovement(MovableLife *life, PacketReader &packet) {
 			case 1: // Jumping
 			case 2: // Jumping/knockback?
 			case 6: // Flash Jump
+			case 13: // Recoil Shot
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
 				stance = packet.get<int8_t>();
-				packet.skipBytes(2);
+				foothold = packet.get<int16_t>();
 				break;
 			case 15: // Jump down
 				x = packet.get<int16_t>();

@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MOBSPACK_H
-#define MOBSPACK_H
+#ifndef MOBSPACKET_H
+#define MOBSPACKET_H
 
 #include "Types.h"
 #include <vector>
@@ -42,8 +42,8 @@ namespace MobsPacket {
 	void damageMobSummon(Player *player, PacketReader &pack);
 	void applyStatus(Mob *mob, const StatusInfo &info, int16_t delay);
 	void removeStatus(Mob *mob, int32_t status);
-	void showHP(Player *player, int32_t mobid, int8_t per, bool miniboss);
-	void showBossHP(Player *player, int32_t mobid, int32_t hp, const MobInfo &info); // For major bosses
+	void showHp(Player *player, int32_t mobid, int8_t per, bool miniboss);
+	void showBossHp(Player *player, int32_t mobid, int32_t hp, const MobInfo &info); // For major bosses
 	void dieMob(Mob *mob);
 };
 
