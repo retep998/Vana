@@ -79,7 +79,7 @@ function partyQuestWrong()
 	playSoundMap("Party1/Failed");
 end
 
-function giveAllMembersEXP(exp, mapid)
+function giveAllPartyMembersEXP(exp, mapid)
 	members = getAllPartyPlayerIDs();
 	for i = 1, #members do
 		member = members[i];
