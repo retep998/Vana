@@ -344,16 +344,15 @@ void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
 	}
 }
 
-void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime, bool sendpacket) {
+void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime, bool initialload) {
 	if (isCooling(player, skillid)) {
 		// Hacking
 		return;
 	}
-	if (sendpacket)
+	if (!initialload) {
 		SkillsPacket::sendCooldown(player, skillid, cooltime);
-
-	player->getSkills()->addCooldown(skillid, cooltime);
-
+		player->getSkills()->addCooldown(skillid, cooltime);
+	}
 	new Timer::Timer(bind(&Skills::stopCooldown, player, skillid),
 		Timer::Id(Timer::Types::CoolTimer, skillid, 0),
 		player->getTimers(), Timer::Time::fromNow(cooltime * 1000));

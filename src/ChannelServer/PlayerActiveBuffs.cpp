@@ -174,8 +174,10 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 	m_battleshiphp -= amount;
 	if (m_battleshiphp <= 0) {
 		m_battleshiphp = 0;
-		Skills::startCooldown(m_player, Jobs::Corsair::Battleship, Skills::skills[Jobs::Corsair::Battleship][m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship)].cooltime);
-		Skills::stopSkill(m_player, Jobs::Corsair::Battleship);
+		int32_t skillid = Jobs::Corsair::Battleship;
+		int16_t cooltime = Skills::skills[skillid][m_player->getSkills()->getSkillLevel(skillid)].cooltime;
+		Skills::startCooldown(m_player, skillid, cooltime);
+		Skills::stopSkill(m_player, skillid);
 	}
 }
 
