@@ -189,7 +189,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Corsair::MapleWarrior: {
 			Party *party = player->getParty();
 			if (skillid == Jobs::Buccaneer::TimeLeap)
-				player->removeAllCooldowns();
+				player->getSkills()->removeAllCooldowns();
 			if (party != 0) {
 				int8_t affected = packet.get<int8_t>();
 				int8_t pmembers = party->getMembersCount();
@@ -201,7 +201,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true);
 						Buffs::Instance()->addBuff(cmem, skillid, level, addedinfo);
 						if (skillid == Jobs::Buccaneer::TimeLeap)
-							cmem->removeAllCooldowns();
+							cmem->getSkills()->removeAllCooldowns();
 					}
 				}
 			}
@@ -352,7 +352,7 @@ void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime, bo
 	if (sendpacket)
 		SkillsPacket::sendCooldown(player, skillid, cooltime);
 
-	player->addCooldown(skillid, cooltime);
+	player->getSkills()->addCooldown(skillid, cooltime);
 
 	new Timer::Timer(bind(&Skills::stopCooldown, player, skillid),
 		Timer::Id(Timer::Types::CoolTimer, skillid, 0),
@@ -360,7 +360,7 @@ void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime, bo
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillid) {
-	player->removeCooldown(skillid);
+	player->getSkills()->removeCooldown(skillid);
 	SkillsPacket::sendCooldown(player, skillid, 0);
 	if (skillid == Jobs::Corsair::Battleship) {
 		player->getActiveBuffs()->resetBattleshipHp();

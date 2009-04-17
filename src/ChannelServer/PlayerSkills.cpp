@@ -70,9 +70,17 @@ void PlayerSkills::load() {
 		skill.maxlevel = (uint8_t) res[i][2];
 		playerskills[res[i][0]] = skill;
 	}
+
+	query << "SELECT * FROM cooldowns WHERE charid = " << player->getId();
+	res = query.store();
+	for (size_t i = 0; i < res.size(); i++) {
+		int32_t skillid = res[i]["skillid"];
+		int16_t timeleft = static_cast<int16_t>(res[i]["timeleft"]);
+		Skills::startCooldown(player, skillid, timeleft, false);
+	}
 }
 
-void PlayerSkills::save() {
+void PlayerSkills::save(bool savecooldowns) {
 	mysqlpp::Query query = Database::getCharDB().query();
 
 	bool firstrun = true;
@@ -88,14 +96,60 @@ void PlayerSkills::save() {
 	}
 	if (!firstrun)
 		query.exec();
+
+	if (savecooldowns) {
+		query << "DELETE FROM cooldowns WHERE charid = " << player->getId();
+		query.exec();
+		if (cooldowns.size() > 0) {
+			firstrun = true;
+			for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); iter++) {
+				if (firstrun) {
+					query << "INSERT INTO cooldowns (charid, skillid, timeleft) VALUES (";
+					firstrun = false;
+				}
+				else {
+					query << ",(";
+				}
+				query << player->getId() << ","
+						<< iter->first << ","
+						<< Skills::getCooldownTimeLeft(player, iter->first) << ")";
+			}
+			query.exec();
+		}
+	}
 }
 
 void PlayerSkills::connectData(PacketCreator &packet) {
+	// Skill levels
 	packet.add<int16_t>((int16_t) playerskills.size());
 	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
 		packet.add<int32_t>(iter->first);
 		packet.add<int32_t>(iter->second.level);
 		if (GameLogicUtilities::isFourthJobSkill(iter->first))
 			packet.add<int32_t>(iter->second.maxlevel); // Max Level for 4th job skills
+	}
+	// Cooldowns
+	packet.add<int16_t>((int16_t) cooldowns.size());
+	for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); iter++) {
+		packet.add<int32_t>(iter->first);
+		packet.add<int16_t>(iter->second);
+	}
+}
+
+void PlayerSkills::addCooldown(int32_t skillid, int16_t time) {
+	cooldowns[skillid] = time;
+}
+
+void PlayerSkills::removeCooldown(int32_t skillid) {
+	if (cooldowns.find(skillid) != cooldowns.end())
+		cooldowns.erase(skillid);
+}
+
+void PlayerSkills::removeAllCooldowns() {
+	unordered_map<int32_t, int16_t> dupe = cooldowns;
+	for (unordered_map<int32_t, int16_t>::iterator iter = dupe.begin(); iter != dupe.end(); iter++) {
+		if (iter->first != Jobs::Buccaneer::TimeLeap) {
+			Skills::stopCooldown(player, iter->first);
+		}
 	}
 }
