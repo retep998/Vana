@@ -76,7 +76,8 @@ void PlayerSkills::load() {
 	for (size_t i = 0; i < res.size(); i++) {
 		int32_t skillid = res[i]["skillid"];
 		int16_t timeleft = static_cast<int16_t>(res[i]["timeleft"]);
-		Skills::startCooldown(player, skillid, timeleft, false);
+		Skills::startCooldown(player, skillid, timeleft, true);
+		cooldowns[skillid] = timeleft;
 	}
 }
 
