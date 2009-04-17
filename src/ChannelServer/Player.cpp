@@ -483,6 +483,8 @@ void Player::modifyRMMp(int16_t mod) {
 }
 
 void Player::setExp(int32_t exp) {
+	if (this->exp < 0)
+		exp = 0;
 	this->exp = exp;
 	PlayerPacket::updateStatInt(this, 0x10000, exp);
 }
