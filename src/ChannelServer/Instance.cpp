@@ -37,12 +37,12 @@ Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t ti
 	m_persistent(persistent),
 	m_show_timer(showtimer),
 	m_timers(new Timer::Container),
+	m_variables(new Variables),
 	m_luainstance(new LuaInstance(name, playerid)),
 	m_start(clock()),
 	m_reset_on_destroy(false),
 	m_marked_for_delete(false)
 {
-	m_variables.reset(new Variables());
 	if (time < 0) {
 		m_time = -(time + 1);
 		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
