@@ -245,12 +245,8 @@ void Player::playerConnect(PacketReader &packet) {
 	SkillMacros skillMacros;
 	skillMacros.load(id);
 
-	// Character variables
-	query << "SELECT * FROM character_variables WHERE charid = " << id;
-	res = query.store();
-	for (size_t i = 0; i < res.size(); i++) {
-		variables[(string) res[i]["key"]] = string(res[i]["value"]);
-	}
+	// Player variables
+	playervars.reset(new PlayerVariables(this));
 
 	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
@@ -551,19 +547,6 @@ void Player::setFame(int16_t fame) {
 	PlayerPacket::updateStatInt(this, 0x20000, fame);
 }
 
-void Player::deleteVariable(const string &name) {
-	if (variables.find(name) != variables.end())
-		variables.erase(name);
-}
-
-void Player::setVariable(const string &name, const string &val) {
-	variables[name] = val;
-}
-
-string Player::getVariable(const string &name) {
-	return (variables.find(name) == variables.end()) ? "" : variables[name];
-}
-
 bool Player::addWarning() {
 	int32_t t = TimeUtilities::clock_in_ms();
 	// Deleting old warnings
@@ -616,36 +599,13 @@ void Player::saveStats() {
 	query.exec();
 }
 
-void Player::saveVariables() {
-	mysqlpp::Query query = Database::getCharDB().query();
-	query << "DELETE FROM character_variables WHERE charid = " << this->id;
-	query.exec();
-
-	if (variables.size() > 0) {
-		bool firstrun = true;
-		for (unordered_map<string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++) {
-			if (firstrun) {
-				query << "INSERT INTO character_variables VALUES (";
-				firstrun = false;
-			}
-			else {
-				query << ",(";
-			}
-			query << id << ","
-					<< mysqlpp::quote << iter->first << ","
-					<< mysqlpp::quote << iter->second << ")";
-		}
-		query.exec();
-	}
-}
-
 void Player::saveAll(bool savecooldowns) {
 	saveStats();
-	saveVariables();
 	getInventory()->save();
 	getPets()->save();
 	getSkills()->save(savecooldowns);
 	getStorage()->save();
+	getVariables()->save();
 }
 
 void Player::setOnline(bool online) {

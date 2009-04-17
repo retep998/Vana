@@ -42,6 +42,7 @@ Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t ti
 	m_reset_on_destroy(false),
 	m_marked_for_delete(false)
 {
+	m_variables.reset(new Variables());
 	if (time < 0) {
 		m_time = -(time + 1);
 		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
@@ -87,19 +88,6 @@ Instance::~Instance() {
 	m_players.clear();
 	Instances::InstancePtr()->removeInstance(this);
 	delete m_luainstance;
-}
-
-void Instance::deleteVariable(const string &name) {
-	if (m_variables.find(name) != m_variables.end())
-		m_variables.erase(name);
-}
-
-void Instance::setVariable(const string &name, const string &val) {
-	m_variables[name] = val;
-}
-
-string Instance::getVariable(const string &name) {
-	return (m_variables.find(name) == m_variables.end()) ? "" : m_variables[name];
 }
 
 void Instance::setBanned(const string &name, bool isbanned) {

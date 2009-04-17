@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "InstanceMessageConstants.h"
 #include "Types.h"
+#include "Variables.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <string>
@@ -56,11 +57,7 @@ public:
 	void setMarkedForDelete(bool mark) { m_marked_for_delete = mark; }
 	void instanceEnd(bool fromTimer = false);
 	int32_t getCounterId();
-
-	// Variables
-	void deleteVariable(const string &name);
-	void setVariable(const string &name, const string &val);
-	string getVariable(const string &name);
+	Variables * getVariables() const { return m_variables.get(); }
 
 	// Players
 	vector<int32_t> getAllPlayerIds();
@@ -117,8 +114,8 @@ public:
 	void sendMessage(InstanceMessages message, const string &, int32_t);
 private:
 	boost::scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
+	boost::scoped_ptr<Variables> m_variables;
 	unordered_map<string, TimerAction> m_timer_actions; // Timers indexed by name
-	unordered_map<string, string> m_variables; // Instance variables
 	unordered_map<int32_t, Player *> m_players;
 	vector<string> m_banned; // For squads
 	vector<string> m_players_order; // For squads
