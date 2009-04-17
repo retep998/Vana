@@ -153,33 +153,6 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 	this->id = id;
 
-	// Buffs
-	activeBuffs.reset(new PlayerActiveBuffs(this));
-	if (BuffHolder::Instance()->checkPlayer(id)) {
-		PlayerActiveBuffs *mybuffs = getActiveBuffs();
-		PlayerActiveBuffs *existingbuffs = BuffHolder::Instance()->getBuffs(id);
-		vector<BuffStorage> buffstoadd = BuffHolder::Instance()->getStoredBuffs(id);
-		for (size_t i = 0; i < buffstoadd.size(); i++) {
-			BuffStorage cbuff = buffstoadd[i];
-			mybuffs->addBuff(cbuff.skillid, cbuff.timeleft);
-			mybuffs->setActiveSkillLevel(cbuff.skillid, cbuff.level);
-			Buffs::Instance()->doAct(this, cbuff.skillid, cbuff.level);
-		}
-		mybuffs->setEnergyChargeLevel(existingbuffs->getEnergyChargeLevel(), true);
-		mybuffs->setBooster(existingbuffs->getBooster());
-		mybuffs->setCharge(existingbuffs->getCharge());
-		mybuffs->setCombo(existingbuffs->getCombo(), false);
-		
-		MapEntryBuffs entr = existingbuffs->getMapEntryBuffs();
-		mybuffs->setMountInfo(entr.mountskill, entr.mountid);
-		mybuffs->setMapEntryBuffs(entr);
-		
-		ActiveBuffsByType bufftypes = existingbuffs->getBuffTypes();
-		mybuffs->setActiveBuffsByType(bufftypes);
-
-		BuffHolder::Instance()->removeBuffs(id);
-	}
-
 	summons.reset(new PlayerSummons(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
@@ -231,6 +204,37 @@ void Player::playerConnect(PacketReader &packet) {
 	maxslots[3] = static_cast<uint8_t>(res[0]["etc_slots"]);
 	maxslots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
 	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
+
+	// Buffs
+	activeBuffs.reset(new PlayerActiveBuffs(this));
+	if (BuffHolder::Instance()->checkPlayer(id)) {
+		PlayerActiveBuffs *mybuffs = getActiveBuffs();
+		PlayerActiveBuffs *existingbuffs = BuffHolder::Instance()->getBuffs(id);
+		vector<BuffStorage> buffstoadd = BuffHolder::Instance()->getStoredBuffs(id);
+		for (size_t i = 0; i < buffstoadd.size(); i++) {
+			BuffStorage cbuff = buffstoadd[i];
+			mybuffs->addBuff(cbuff.skillid, cbuff.timeleft);
+			mybuffs->setActiveSkillLevel(cbuff.skillid, cbuff.level);
+			Buffs::Instance()->doAct(this, cbuff.skillid, cbuff.level);
+		}
+		mybuffs->setEnergyChargeLevel(existingbuffs->getEnergyChargeLevel(), true);
+		mybuffs->setBooster(existingbuffs->getBooster());
+		mybuffs->setCharge(existingbuffs->getCharge());
+		mybuffs->setCombo(existingbuffs->getCombo(), false);
+		
+		MapEntryBuffs entr = existingbuffs->getMapEntryBuffs();
+		mybuffs->setMountInfo(entr.mountskill, entr.mountid);
+		mybuffs->setMapEntryBuffs(entr);
+		
+		ActiveBuffsByType bufftypes = existingbuffs->getBuffTypes();
+		mybuffs->setActiveBuffsByType(bufftypes);
+		if (mybuffs->hasHyperBody()) {
+			int32_t skillid = mybuffs->getHyperBody();
+			uint8_t hblevel = mybuffs->getActiveSkillLevel(skillid);
+			setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
+		}
+		BuffHolder::Instance()->removeBuffs(id);
+	}
 
 	// Skills
 	skills.reset(new PlayerSkills(this));
