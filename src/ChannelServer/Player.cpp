@@ -755,7 +755,7 @@ void Player::loseExp() {
 					break;
 			}
 		}
-		uint64_t exp = getExp();
+		int64_t exp = getExp();
 		exp -= Levels::exps[getLevel() - 1] * exploss / 100;
 		setExp(static_cast<int32_t>(exp));
 	}
