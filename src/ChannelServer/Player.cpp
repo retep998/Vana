@@ -252,15 +252,6 @@ void Player::playerConnect(PacketReader &packet) {
 		variables[(string) res[i]["key"]] = string(res[i]["value"]);
 	}
 
-	// Cooldowns
-	query << "SELECT * FROM cooldowns WHERE charid = " << id;
-	res = query.store();
-	for (size_t i = 0; i < res.size(); i++) {
-		int32_t skillid = res[i]["skillid"];
-		int16_t timeleft = static_cast<int16_t>(res[i]["timeleft"]);
-		Skills::startCooldown(this, skillid, timeleft, false);
-	}
-
 	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
 		mappos = 0;
@@ -573,24 +564,6 @@ string Player::getVariable(const string &name) {
 	return (variables.find(name) == variables.end()) ? "" : variables[name];
 }
 
-void Player::addCooldown(int32_t skillid, int16_t time) {
-	cooldowns[skillid] = time;
-}
-
-void Player::removeCooldown(int32_t skillid) {
-	if (cooldowns.find(skillid) != cooldowns.end())
-		cooldowns.erase(skillid);
-}
-
-void Player::removeAllCooldowns() {
-	unordered_map<int32_t, int16_t> dupe = cooldowns;
-	for (unordered_map<int32_t, int16_t>::iterator iter = dupe.begin(); iter != dupe.end(); iter++) {
-		if (iter->first != Jobs::Buccaneer::TimeLeap) {
-			Skills::stopCooldown(this, iter->first);
-		}
-	}
-}
-
 bool Player::addWarning() {
 	int32_t t = TimeUtilities::clock_in_ms();
 	// Deleting old warnings
@@ -666,38 +639,13 @@ void Player::saveVariables() {
 	}
 }
 
-void Player::saveCooldowns() {
-	mysqlpp::Query query = Database::getCharDB().query();
-	query << "DELETE FROM cooldowns WHERE charid = " << this->id;
-	query.exec();
-
-	if (cooldowns.size() > 0) {
-		bool firstrun = true;
-		for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); iter++) {
-			if (firstrun) {
-				query << "INSERT INTO cooldowns (charid, skillid, timeleft) VALUES (";
-				firstrun = false;
-			}
-			else {
-				query << ",(";
-			}
-			query << id << ","
-					<< iter->first << ","
-					<< Skills::getCooldownTimeLeft(this, iter->first) << ")";
-		}
-		query.exec();
-	}
-}
-
 void Player::saveAll(bool savecooldowns) {
 	saveStats();
 	saveVariables();
 	getInventory()->save();
 	getPets()->save();
-	getSkills()->save();
+	getSkills()->save(savecooldowns);
 	getStorage()->save();
-	if (savecooldowns)
-		saveCooldowns();
 }
 
 void Player::setOnline(bool online) {

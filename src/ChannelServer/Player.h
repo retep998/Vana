@@ -154,17 +154,10 @@ public:
 	void setVariable(const string &name, const string &val);
 	string getVariable(const string &name);
 
-	void addCooldown(int32_t skillid, int16_t time);
-	void removeCooldown(int32_t skillid);
-	void removeAllCooldowns();
-	int16_t getCooldownSize() const { return static_cast<int16_t>(cooldowns.size()); }
-	unordered_map<int32_t, int16_t> getCooldowns() const { return cooldowns; }
-
 	bool addWarning();
 	void changeChannel(int8_t channel);
 	void saveStats();
 	void saveVariables();
-	void saveCooldowns();
 	void saveAll(bool savecooldowns = false);
 	void setOnline(bool online);
 	void setLevelDate();
@@ -213,7 +206,6 @@ private:
 	bool isconnect;
 	string name;
 	unordered_map<string, string> variables;
-	unordered_map<int32_t, int16_t> cooldowns;
 	NPC *npc;
 	Instance *instance;
 	LuaScriptable *luascriptable;
