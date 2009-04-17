@@ -325,6 +325,10 @@
 					RelativePath=".\src\ChannelServer\Trades.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Variables.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Packets"
@@ -529,6 +533,10 @@
 					RelativePath=".\src\ChannelServer\PlayerSummons.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerVariables.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Instance"
@@ -673,6 +681,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Trades.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Variables.h"
 					>
 				</File>
 			</Filter>
@@ -877,6 +889,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerSummons.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerVariables.h"
 					>
 				</File>
 			</Filter>

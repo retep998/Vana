@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerSkills.h"
 #include "PlayerStorage.h"
 #include "PlayerSummons.h"
+#include "PlayerVariables.h"
 #include "Pos.h"
 #include "Quests.h"
 #include "Skills.h"
@@ -151,15 +152,11 @@ public:
 	PlayerQuests * getQuests() const { return quests.get(); }
 	PlayerSkills * getSkills() const { return skills.get(); }
 	PlayerStorage * getStorage() const { return storage.get(); }
-
-	void deleteVariable(const string &name);
-	void setVariable(const string &name, const string &val);
-	string getVariable(const string &name);
+	PlayerVariables * getVariables() const { return playervars.get(); }
 
 	bool addWarning();
 	void changeChannel(int8_t channel);
 	void saveStats();
-	void saveVariables();
 	void saveAll(bool savecooldowns = false);
 	void setOnline(bool online);
 	void setLevelDate();
@@ -208,7 +205,6 @@ private:
 	bool save_on_dc;
 	bool isconnect;
 	string name;
-	unordered_map<string, string> variables;
 	NPC *npc;
 	Instance *instance;
 	LuaScriptable *luascriptable;
@@ -224,6 +220,7 @@ private:
 	boost::scoped_ptr<PlayerQuests> quests;
 	boost::scoped_ptr<PlayerSkills> skills;
 	boost::scoped_ptr<PlayerStorage> storage;
+	boost::scoped_ptr<PlayerVariables> playervars;
 };
 
 class PlayerFactory : public AbstractPlayerFactory {
