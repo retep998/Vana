@@ -243,6 +243,36 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 	Movement::parseMovement(player, packet);
 	packet.reset(7);
 	PlayersPacket::showMoving(player, packet.getBuffer(), packet.getBufferLength());
+	if (player->getFh() == 0) {
+		int32_t mapid = player->getMap();
+		Pos playerpos = player->getPos();
+		Map *map = Maps::getMap(mapid);
+		MapInfoPtr mapinfo = map->getInfo();
+		int16_t bottom = mapinfo->bottom;
+
+		if (bottom == 0 && mapinfo->left == 0 && mapinfo->right == 0 && mapinfo->top == 0) {
+			// This map has no dimensions, we have to make a custom position mover
+			Pos floor = map->findFloor(playerpos);
+			if (floor.y == playerpos.y) { // There are no footholds below the player
+				int8_t count = player->getFallCounter();
+				if (count > 3) {
+					Maps::changeMap(player, mapid, 0);
+					player->setFallCounter(0);
+				}
+				else {
+					player->setFallCounter(++count);
+				}
+			}
+		}
+		else if (playerpos.y > bottom) {
+			Maps::changeMap(player, mapid, 0);
+		}
+	}
+	else {
+		if (player->getFallCounter() > 0) {
+			player->setFallCounter(0);
+		}
+	}
 }
 
 void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
