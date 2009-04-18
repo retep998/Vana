@@ -17,19 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptHandler.h"
 #include "LoginServerAcceptPlayer.h"
-#include "MiscUtilities.h"
-#include "Worlds.h"
+#include "IpUtilities.h"
 #include "PacketReader.h"
+#include "Worlds.h"
 #include <iostream>
 
 void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
 	Channel *chan = new Channel();
 	chan->ip = packet.get<int32_t>();
-	MiscUtilities::extractExternalIp(packet, chan->external_ip);
+	IpUtilities::extractExternalIp(packet, chan->external_ip);
 	chan->port = packet.get<int16_t>();
 	Worlds::worlds[player->getWorldId()]->channels[channel] = shared_ptr<Channel>(chan);
-	std::cout << "Registering channel " << channel << " with IP " << MiscUtilities::ipToString(chan->ip) << " and port " << chan->port << std::endl;
+	std::cout << "Registering channel " << channel << " with IP " << IpUtilities::ipToString(chan->ip) << " and port " << chan->port << std::endl;
 }
 
 void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptPlayer *player, PacketReader &packet) {

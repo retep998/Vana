@@ -18,10 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGIN_H
 #define LOGIN_H
 
-#include <string>
-
-using std::string;
-
 class PlayerLogin;
 class PacketReader;
 
@@ -32,7 +28,6 @@ namespace Login {
 	void registerPIN(PlayerLogin *player, PacketReader &packet);
 	void loginBack(PlayerLogin *player);
 	void checkPin(PlayerLogin *player, PacketReader &packet);
-	string hashPassword(const string &password, const string &salt);
 };
 
 #endif

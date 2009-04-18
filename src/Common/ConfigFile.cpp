@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ConfigFile.h"
-#include "MiscUtilities.h"
+#include "IpUtilities.h"
 #include <iostream>
 #include <sys/stat.h>
 
@@ -72,7 +72,7 @@ vector<vector<uint32_t> > ConfigFile::getIpMatrix(const string &value) {
 
 		lua_pushnil(luaVm);
 		while (lua_next(luaVm, -2)) {
-			arr.push_back(MiscUtilities::stringToIp(lua_tostring(luaVm, -1)));
+			arr.push_back(IpUtilities::stringToIp(lua_tostring(luaVm, -1)));
 			lua_pop(luaVm, 1);
 		}
 

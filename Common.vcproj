@@ -224,6 +224,10 @@
 				Name="Utilities"
 				>
 				<File
+					RelativePath=".\src\Common\IpUtilities.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\MiscUtilities.cpp"
 					>
 				</File>
@@ -405,6 +409,10 @@
 			<Filter
 				Name="Utilities"
 				>
+				<File
+					RelativePath=".\src\Common\IpUtilities.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Common\LoopingId.h"
 					>

@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleSession.h"
-#include "MiscUtilities.h"
 #include "AbstractPlayer.h"
 #include "Decoder.h"
+#include "IpUtilities.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "SessionManager.h"
@@ -45,7 +45,7 @@ void MapleSession::handle_start() {
 	m_player->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
 
 	if (m_is_server) {
-		std::cout << "Accepted connection from " << MiscUtilities::ipToString(m_player->getIp()) << std::endl;
+		std::cout << "Accepted connection from " << IpUtilities::ipToString(m_player->getIp()) << std::endl;
 
 		PacketCreator connectPacket = m_decoder.getConnectPacket(m_connect_packet_unknown);
 		send(connectPacket, false);
