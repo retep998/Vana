@@ -153,11 +153,6 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 	this->id = id;
 
-	summons.reset(new PlayerSummons(this));
-	buddyList.reset(new PlayerBuddyList(this));
-	quests.reset(new PlayerQuests(this));
-	pets.reset(new PlayerPets(this));
-
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << id;
@@ -239,8 +234,17 @@ void Player::playerConnect(PacketReader &packet) {
 	// Skills
 	skills.reset(new PlayerSkills(this));
 
+	// Player variables
+	playervars.reset(new PlayerVariables(this));
+
 	// Storage
 	storage.reset(new PlayerStorage(this));
+
+	// The rest
+	summons.reset(new PlayerSummons(this));
+	buddyList.reset(new PlayerBuddyList(this));
+	quests.reset(new PlayerQuests(this));
+	pets.reset(new PlayerPets(this));
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
@@ -248,9 +252,6 @@ void Player::playerConnect(PacketReader &packet) {
 
 	SkillMacros skillMacros;
 	skillMacros.load(id);
-
-	// Player variables
-	playervars.reset(new PlayerVariables(this));
 
 	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
@@ -264,6 +265,11 @@ void Player::playerConnect(PacketReader &packet) {
 			map = Maps::getMap(map)->getInfo()->rm;
 		}
 	}
+
+	if (hp > mhp)
+		hp = mhp;
+	if (mp > mmp)
+		mp = mmp;
 
 	m_pos = Maps::getMap(map)->getSpawnPoint(mappos)->pos;
 	m_stance = 0;
@@ -578,9 +584,9 @@ void Player::saveStats() {
 		<< "dex = " << dex << ","
 		<< "`int` = " << intt << ","
 		<< "luk = " << luk << ","
-		<< "chp = " << (hp > rmhp ? rmhp : hp) << "," // TODO: Change for HP gear calculation
+		<< "chp = " << hp << ","
 		<< "mhp = " << rmhp << ","
-		<< "cmp = " << (mp > rmmp ? rmmp : mp) << "," // TODO: Change for MP gear calculation
+		<< "cmp = " << mp << ","
 		<< "mmp = " << rmmp << ","
 		<< "hpmp_ap = " << hpmp_ap << ","
 		<< "ap = " << ap << ","
