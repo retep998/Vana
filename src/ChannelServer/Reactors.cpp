@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Reactors.h"
 #include "Drops.h"
+#include "GameLogicUtilities.h"
 #include "LuaReactor.h"
 #include "Maps.h"
 #include "Player.h"
@@ -124,7 +125,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 		if (reactor->getState() < maxstates[reactor->getReactorId()]) {
 			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorId()][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectId() == revent->itemid) {
-				if ((drop->getPos().x >= reactor->getPos().x + revent->ltx && drop->getPos().x <= reactor->getPos().x + revent->rbx) && (drop->getPos().y >= reactor->getPos().y + revent->lty && drop->getPos().y <= reactor->getPos().y + revent->rby)) {
+				if (GameLogicUtilities::isInBox(reactor->getPos(), revent->lt, revent->rb, drop->getPos())) {
 					Reaction reaction;
 					reaction.reactor = reactor;
 					reaction.drop = drop;
