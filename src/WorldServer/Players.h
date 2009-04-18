@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 #include <string>
 
 using std::string;
@@ -37,7 +38,7 @@ struct Player {
 	bool online;
 };
 
-class Players {
+class Players : boost::noncopyable {
 public:
 	static Players * Instance() {
 		if (singleton == 0)
@@ -52,8 +53,6 @@ public:
 	int32_t size();
 private:
 	Players() {};
-	Players(const Players&);
-	Players& operator=(const Players&);
 	static Players *singleton;
 
 	unordered_map<int32_t, Player *> players;

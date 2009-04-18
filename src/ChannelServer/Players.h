@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <boost/tr1/functional.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
 using std::string;
 using std::tr1::function;
@@ -31,7 +32,7 @@ class PacketCreator;
 class Player;
 class PacketReader;
 
-class Players {
+class Players : boost::noncopyable {
 public:
 	static Players * Instance() {
 		if (singleton == 0)
@@ -48,8 +49,6 @@ public:
 	void sendPacket(PacketCreator &packet);
 private:
 	Players() {};
-	Players(const Players&);
-	Players& operator=(const Players&);
 	static Players *singleton;
 
 	unordered_map<int32_t, Player *> m_players;
