@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+struct Pos;
+
 class PacketReader {
 public:
 	PacketReader(unsigned char *buffer, size_t length);
@@ -35,6 +37,7 @@ public:
 	string getString();
 	string getString(size_t len);
 	unsigned char * getBuffer();
+	Pos getPos();
 	size_t getBufferLength();
 
 	PacketReader & reset(int32_t len = 0);
