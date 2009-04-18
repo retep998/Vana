@@ -24,7 +24,7 @@ class Player;
 
 class PlayerVariables : public Variables {
 public:
-	PlayerVariables(Player *p) { player = p; }
+	PlayerVariables(Player *p);
 	void save();
 	void load();
 private:
