@@ -170,7 +170,7 @@ void Login::checkPin(PlayerLogin *player, PacketReader &packet) {
 	}
 }
 
-void Login::registerPIN(PlayerLogin *player, PacketReader &packet) {
+void Login::registerPin(PlayerLogin *player, PacketReader &packet) {
 	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != 1) {
 		//hacking
 		return;
