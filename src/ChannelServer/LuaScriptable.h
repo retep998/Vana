@@ -60,6 +60,7 @@ namespace LuaExports {
 	// Miscellaneous
 	int getChannel(lua_State *luaVm);
 	int getRandomNumber(lua_State *luaVm);
+	int isOnline(lua_State *luaVm);
 	int revertPlayer(lua_State *luaVm);
 	int runNPC(lua_State *luaVm);
 	int setPlayer(lua_State *luaVm);

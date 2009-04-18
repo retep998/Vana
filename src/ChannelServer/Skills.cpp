@@ -93,6 +93,23 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	}
 }
 
+const vector<Player *> Skills::getAffectedPartyMembers(Party *party, int8_t affected, int8_t members) {
+	vector<Player *> ret;
+	if (affected & GameLogicUtilities::getPartyMember1(members))
+		ret.push_back(party->getMemberByIndex(1));
+	if (affected & GameLogicUtilities::getPartyMember2(members))
+		ret.push_back(party->getMemberByIndex(2));
+	if (affected & GameLogicUtilities::getPartyMember3(members))
+		ret.push_back(party->getMemberByIndex(3));
+	if (affected & GameLogicUtilities::getPartyMember4(members))
+		ret.push_back(party->getMemberByIndex(4));
+	if (affected & GameLogicUtilities::getPartyMember5(members))
+		ret.push_back(party->getMemberByIndex(5));
+	if (affected & GameLogicUtilities::getPartyMember6(members))
+		ret.push_back(party->getMemberByIndex(6));
+	return ret;
+}
+
 void Skills::useSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Ticks
 	int32_t skillid = packet.get<int32_t>();
@@ -157,7 +174,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Hermit::MesoUp:
 		case Jobs::Bandit::Haste:
 		case Jobs::Buccaneer::SpeedInfusion:
-		case Jobs::Buccaneer::TimeLeap:
+		case Jobs::Buccaneer::TimeLeap: 
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
 		case Jobs::DarkKnight::MapleWarrior:
@@ -171,51 +188,21 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Buccaneer::MapleWarrior:
 		case Jobs::Corsair::MapleWarrior: {
 			Party *party = player->getParty();
+			if (skillid == Jobs::Buccaneer::TimeLeap)
+				player->getSkills()->removeAllCooldowns();
 			if (party != 0) {
 				int8_t affected = packet.get<int8_t>();
 				int8_t pmembers = party->getMembersCount();
-				Player *pmember1 = 0, *pmember2 = 0, *pmember3 = 0, *pmember4 = 0, *pmember5 = 0, *pmember6 = 0;
-				if (affected & GameLogicUtilities::getPartyMember1(pmembers))
-					pmember1 = party->getMemberByIndex(1);
-				if (affected & GameLogicUtilities::getPartyMember2(pmembers))
-					pmember2 = party->getMemberByIndex(2);
-				if (affected & GameLogicUtilities::getPartyMember3(pmembers))
-					pmember3 = party->getMemberByIndex(3);
-				if (affected & GameLogicUtilities::getPartyMember4(pmembers))
-					pmember4 = party->getMemberByIndex(4);
-				if (affected & GameLogicUtilities::getPartyMember5(pmembers))
-					pmember5 = party->getMemberByIndex(5);
-				if (affected & GameLogicUtilities::getPartyMember6(pmembers))
-					pmember6 = party->getMemberByIndex(6);
-				if (pmember1 != 0 && pmember1 != player && pmember1->getMap() == player->getMap()) {
-					SkillsPacket::showSkill(pmember1, skillid, level, direction, true, true);
-					SkillsPacket::showSkill(pmember1, skillid, level, direction, true);
-					Buffs::Instance()->addBuff(pmember1, skillid, level, addedinfo);
-				}
-				if (pmember2 != 0 && pmember2 != player && pmember2->getMap() == player->getMap()) {
-					SkillsPacket::showSkill(pmember2, skillid, level, direction, true, true);
-					SkillsPacket::showSkill(pmember2, skillid, level, direction, true);
-					Buffs::Instance()->addBuff(pmember2, skillid, level, addedinfo);
-				}
-				if (pmember3 != 0 && pmember3 != player && pmember3->getMap() == player->getMap()) {
-					SkillsPacket::showSkill(pmember3, skillid, level, direction, true, true);
-					SkillsPacket::showSkill(pmember3, skillid, level, direction, true);
-					Buffs::Instance()->addBuff(pmember3, skillid, level, addedinfo);
-				}
-				if (pmember4 != 0 && pmember4 != player && pmember4->getMap() == player->getMap()) {
-					SkillsPacket::showSkill(pmember4, skillid, level, direction, true, true);
-					SkillsPacket::showSkill(pmember4, skillid, level, direction, true);
-					Buffs::Instance()->addBuff(pmember4, skillid, level, addedinfo);
-				}
-				if (pmember5 != 0 && pmember5 != player && pmember5->getMap() == player->getMap()) {
-					SkillsPacket::showSkill(pmember5, skillid, level, direction, true, true);
-					SkillsPacket::showSkill(pmember5, skillid, level, direction, true);
-					Buffs::Instance()->addBuff(pmember5, skillid, level, addedinfo);
-				}
-				if (pmember6 != 0 && pmember6 != player && pmember6->getMap() == player->getMap()) {
-					SkillsPacket::showSkill(pmember6, skillid, level, direction, true, true);
-					SkillsPacket::showSkill(pmember6, skillid, level, direction, true);
-					Buffs::Instance()->addBuff(pmember6, skillid, level, addedinfo);
+				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
+				for (size_t i = 0; i < members.size(); i++) {
+					Player *cmem = members[i];
+					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
+						SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
+						SkillsPacket::showSkill(cmem, skillid, level, direction, true);
+						Buffs::Instance()->addBuff(cmem, skillid, level, addedinfo);
+						if (skillid == Jobs::Buccaneer::TimeLeap)
+							cmem->getSkills()->removeAllCooldowns();
+					}
 				}
 			}
 			break;
@@ -357,26 +344,30 @@ void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
 	}
 }
 
-void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime, bool sendpacket) {
+void Skills::startCooldown(Player *player, int32_t skillid, int16_t cooltime, bool initialload) {
 	if (isCooling(player, skillid)) {
 		// Hacking
 		return;
 	}
-	if (sendpacket)
+	if (!initialload) {
 		SkillsPacket::sendCooldown(player, skillid, cooltime);
-
-	player->addCooldown(skillid, cooltime);
-
+		player->getSkills()->addCooldown(skillid, cooltime);
+	}
 	new Timer::Timer(bind(&Skills::stopCooldown, player, skillid),
 		Timer::Id(Timer::Types::CoolTimer, skillid, 0),
 		player->getTimers(), Timer::Time::fromNow(cooltime * 1000));
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillid) {
-	player->removeCooldown(skillid);
+	player->getSkills()->removeCooldown(skillid);
 	SkillsPacket::sendCooldown(player, skillid, 0);
 	if (skillid == Jobs::Corsair::Battleship) {
 		player->getActiveBuffs()->resetBattleshipHp();
+	}
+
+	Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
+	if (player->getTimers()->checkTimer(id) > 0) {
+		player->getTimers()->removeTimer(id);
 	}
 }
 

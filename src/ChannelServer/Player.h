@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerSkills.h"
 #include "PlayerStorage.h"
 #include "PlayerSummons.h"
+#include "PlayerVariables.h"
 #include "Pos.h"
 #include "Quests.h"
 #include "Skills.h"
@@ -47,7 +48,7 @@ class Party;
 
 class Player : public AbstractPlayer, public MovableLife {
 public:
-	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), party(0), save_on_dc(true), isconnect(false), npc(0), luascriptable(0), instance(0) { }
+	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), party(0), save_on_dc(true), isconnect(false), npc(0), luascriptable(0), instance(0), fallctr(0) { }
 
 	~Player();
 
@@ -57,6 +58,7 @@ public:
 	void setTrading(int8_t newstate) { tradestate = newstate; }
 	void setSkin(int8_t id);
 	void setMappos(int8_t pos) { this->mappos = pos; }
+	void setFallCounter(int8_t falls) { fallctr = falls; }
 	void setLevel(uint8_t level);
 	void setAp(int16_t ap);
 	void setSp(int16_t sp);
@@ -101,6 +103,7 @@ public:
 	int8_t getSkin() const { return skin; }
 	int8_t isTrading() const { return tradestate; }
 	int8_t getMappos() const { return mappos; }
+	int8_t getFallCounter() const { return fallctr; }
 	uint8_t getLevel() const { return level; }
 	uint8_t getBuddyListSize() const { return buddylist_size; }
 	int16_t getJob() const { return job; }
@@ -149,21 +152,11 @@ public:
 	PlayerQuests * getQuests() const { return quests.get(); }
 	PlayerSkills * getSkills() const { return skills.get(); }
 	PlayerStorage * getStorage() const { return storage.get(); }
-
-	void deleteVariable(const string &name);
-	void setVariable(const string &name, const string &val);
-	string getVariable(const string &name);
-
-	void addCooldown(int32_t skillid, int16_t time);
-	void removeCooldown(int32_t skillid);
-	int16_t getCooldownSize() const { return static_cast<int16_t>(cooldowns.size()); }
-	unordered_map<int32_t, int16_t> getCooldowns() const { return cooldowns; }
+	PlayerVariables * getVariables() const { return playervars.get(); }
 
 	bool addWarning();
 	void changeChannel(int8_t channel);
 	void saveStats();
-	void saveVariables();
-	void saveCooldowns();
 	void saveAll(bool savecooldowns = false);
 	void setOnline(bool online);
 	void setLevelDate();
@@ -179,6 +172,7 @@ private:
 	int8_t tradestate;
 	int8_t gender;
 	int8_t skin;
+	int8_t fallctr;
 	uint8_t level;
 	uint8_t buddylist_size;
 	int16_t job;
@@ -211,8 +205,6 @@ private:
 	bool save_on_dc;
 	bool isconnect;
 	string name;
-	unordered_map<string, string> variables;
-	unordered_map<int32_t, int16_t> cooldowns;
 	NPC *npc;
 	Instance *instance;
 	LuaScriptable *luascriptable;
@@ -228,6 +220,7 @@ private:
 	boost::scoped_ptr<PlayerQuests> quests;
 	boost::scoped_ptr<PlayerSkills> skills;
 	boost::scoped_ptr<PlayerStorage> storage;
+	boost::scoped_ptr<PlayerVariables> playervars;
 };
 
 class PlayerFactory : public AbstractPlayerFactory {

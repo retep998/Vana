@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
 using std::string;
 using std::vector;
@@ -32,7 +33,7 @@ using std::tr1::unordered_map;
 class WorldServerAcceptPlayer;
 class PacketCreator;
 
-struct Channel {
+struct Channel : boost::noncopyable {
 	Channel() : players(0) { }
 
 	WorldServerAcceptPlayer *player;
@@ -58,8 +59,6 @@ public:
 	uint16_t size();
 private:
 	Channels() {};
-	Channels(const Channels&);
-	Channels& operator=(const Channels&);
 	static Channels *singleton;
 
 	unordered_map<uint16_t, shared_ptr<Channel> > channels;

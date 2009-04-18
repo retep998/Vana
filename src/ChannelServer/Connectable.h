@@ -20,12 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
 using std::tr1::unordered_map;
 
 typedef unordered_map<int32_t, int64_t> ConnectableMap;
 
-class Connectable {
+class Connectable : boost::noncopyable {
 public:
 	static Connectable * Instance() {
 		if (singleton == 0)
@@ -37,8 +38,6 @@ public:
 	bool checkPlayer(int32_t id);
 private:
 	Connectable() {};
-	Connectable(const Connectable&);
-	Connectable& operator=(const Connectable&);
 	static Connectable *singleton;
 
 	ConnectableMap map;

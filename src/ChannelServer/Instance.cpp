@@ -37,6 +37,7 @@ Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t ti
 	m_persistent(persistent),
 	m_show_timer(showtimer),
 	m_timers(new Timer::Container),
+	m_variables(new Variables),
 	m_luainstance(new LuaInstance(name, playerid)),
 	m_start(clock()),
 	m_reset_on_destroy(false),
@@ -87,19 +88,6 @@ Instance::~Instance() {
 	m_players.clear();
 	Instances::InstancePtr()->removeInstance(this);
 	delete m_luainstance;
-}
-
-void Instance::deleteVariable(const string &name) {
-	if (m_variables.find(name) != m_variables.end())
-		m_variables.erase(name);
-}
-
-void Instance::setVariable(const string &name, const string &val) {
-	m_variables[name] = val;
-}
-
-string Instance::getVariable(const string &name) {
-	return (m_variables.find(name) == m_variables.end()) ? "" : m_variables[name];
 }
 
 void Instance::setBanned(const string &name, bool isbanned) {

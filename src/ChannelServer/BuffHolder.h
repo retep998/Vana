@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 #include <vector>
 
 using std::tr1::unordered_map;
@@ -35,7 +36,7 @@ struct BuffStorage {
 	uint8_t level;
 };
 
-class BuffHolder {
+class BuffHolder : boost::noncopyable {
 public:
 	static BuffHolder * Instance() {
 		if (singleton == 0)
@@ -50,8 +51,6 @@ public:
 	vector<BuffStorage> getStoredBuffs(int32_t playerid);
 private:
 	BuffHolder() {};
-	BuffHolder(const BuffHolder&);
-	BuffHolder& operator=(const BuffHolder&);
 	static BuffHolder *singleton;
 
 	unordered_map<int32_t, PlayerActiveBuffs *> m_map;

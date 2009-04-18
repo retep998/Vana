@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 #include <vector>
 
 using std::tr1::unordered_map;
@@ -36,7 +37,7 @@ struct DropInfo {
 };
 typedef vector<DropInfo> DropsInfo;
 
-class DropDataProvider {
+class DropDataProvider : boost::noncopyable {
 public:
 	static DropDataProvider * Instance() {
 		if (singleton == 0)
@@ -50,8 +51,6 @@ public:
 
 private:
 	DropDataProvider() {}
-	DropDataProvider(const DropDataProvider&);
-	DropDataProvider& operator=(const DropDataProvider&);
 	static DropDataProvider *singleton;
 
 	unordered_map<int32_t, DropsInfo> dropdata;

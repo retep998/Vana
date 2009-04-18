@@ -28,7 +28,7 @@ class WorldServerConnectPlayer;
 class PacketCreator;
 
 // ChannelServer main application class, implemented as singleton
-class ChannelServer : public AbstractServer {
+class ChannelServer : public AbstractServer, boost::noncopyable {
 public:
 	static ChannelServer * Instance() {
 		if (singleton == 0)
@@ -69,8 +69,6 @@ public:
 	WorldServerConnectPlayer * getWorldPlayer() const { return worldPlayer; }
 private:
 	ChannelServer() {};
-	ChannelServer(const ChannelServer&);
-	ChannelServer& operator=(const ChannelServer&);
 	static ChannelServer *singleton;
 
 	WorldServerConnectPlayer *worldPlayer;
