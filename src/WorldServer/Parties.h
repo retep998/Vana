@@ -20,12 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
 using std::tr1::unordered_map;
 
 class Party;
 
-class Parties {
+class Parties : boost::noncopyable {
 public:
 	static Parties * Instance() {
 		if (singleton == 0)
@@ -39,8 +40,6 @@ public:
 	unordered_map<int32_t, Party *> getParties();
 private:
 	Parties() : pid(0) {};
-	Parties(const Parties&);
-	Parties& operator=(const Parties&);
 	static Parties *singleton;
 
 	int32_t pid;

@@ -22,11 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
 using std::string;
 using std::tr1::unordered_map;
 
-class Instances {
+class Instances : boost::noncopyable {
 public:
 	static Instances * InstancePtr() { // The irony, it burns!
 		if (singleton == 0)
@@ -40,8 +41,6 @@ public:
 	bool isInstance(const string &name);
 private:
 	Instances() {};
-	Instances(const Instances&);
-	Instances& operator=(const Instances&);
 	static Instances *singleton;
 
 	unordered_map<string, Instance *> m_instances; // Index of instances by name

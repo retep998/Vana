@@ -20,10 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
 using std::tr1::unordered_map;
 
-class ChannelChangeRequests {
+class ChannelChangeRequests : boost::noncopyable {
 public:
 	static ChannelChangeRequests * Instance() {
 		if (singleton == 0)
@@ -37,8 +38,6 @@ public:
 	uint16_t getPendingPlayerChannel(int32_t id);
 private:
 	ChannelChangeRequests() {};
-	ChannelChangeRequests(const ChannelChangeRequests&);
-	ChannelChangeRequests& operator=(const ChannelChangeRequests&);
 	static ChannelChangeRequests *singleton;
 
 	unordered_map<int32_t, uint16_t> m_map;

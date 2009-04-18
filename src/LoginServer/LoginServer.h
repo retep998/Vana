@@ -24,9 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPlayer.h"
 #include "PlayerLogin.h"
 #include "Types.h"
+#include <boost/utility.hpp>
 
 // LoginServer main application class, implemented as singleton
-class LoginServer : public AbstractServer {
+class LoginServer : public AbstractServer, boost::noncopyable {
 public:
 	static LoginServer * Instance() {
 		if (singleton == 0)
@@ -42,8 +43,6 @@ public:
 	int32_t getInvalidLoginThreshold() const { return invalid_login_threshold; }
 private:
 	LoginServer() {};
-	LoginServer(const LoginServer&);
-	LoginServer& operator=(const LoginServer&);
 	static LoginServer *singleton;
 
 	bool pinEnabled;

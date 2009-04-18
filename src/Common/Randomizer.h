@@ -27,12 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
+#include <boost/utility.hpp>
 
 using std::string;
 
 class MTRand;
 
-class Randomizer {
+class Randomizer : boost::noncopyable {
 public:
 	static Randomizer * Instance() {
 		if (singleton == 0)
@@ -48,8 +49,6 @@ public:
 	string generateSalt(size_t length);
 private:
 	Randomizer() {};
-	Randomizer(const Randomizer&);
-	Randomizer& operator=(const Randomizer&);
 	static Randomizer *singleton;
 
 	MTRand mtrand;

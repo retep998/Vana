@@ -21,12 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/utility.hpp>
 
 using std::tr1::unordered_map;
 
 class Map;
 
-class MapDataProvider {
+class MapDataProvider : boost::noncopyable {
 public:
 	static MapDataProvider * Instance() {
 		if (singleton == 0)
@@ -37,8 +38,6 @@ public:
 
 private:
 	MapDataProvider() {}
-	MapDataProvider(const MapDataProvider&);
-	MapDataProvider& operator=(const MapDataProvider&);
 	static MapDataProvider *singleton;
 	unordered_map<int32_t, Map *> maps;
 	boost::mutex loadmap_mutex;
