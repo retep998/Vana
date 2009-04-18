@@ -330,7 +330,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\PlayerStatus.h"
+					RelativePath=".\src\LoginServer\PlayerStatus.h"
 					>
 				</File>
 				<File
