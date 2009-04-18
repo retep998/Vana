@@ -192,6 +192,7 @@ void Player::playerConnect(PacketReader &packet) {
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
 	// Inventory
+	pets.reset(new PlayerPets(this));
 	boost::array<uint8_t, 5> maxslots;
 	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
 	maxslots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
@@ -199,6 +200,7 @@ void Player::playerConnect(PacketReader &packet) {
 	maxslots[3] = static_cast<uint8_t>(res[0]["etc_slots"]);
 	maxslots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
 	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
+	storage.reset(new PlayerStorage(this));
 
 	// Buffs
 	activeBuffs.reset(new PlayerActiveBuffs(this));
@@ -237,14 +239,10 @@ void Player::playerConnect(PacketReader &packet) {
 	// Player variables
 	playervars.reset(new PlayerVariables(this));
 
-	// Storage
-	storage.reset(new PlayerStorage(this));
-
 	// The rest
 	summons.reset(new PlayerSummons(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
-	pets.reset(new PlayerPets(this));
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
