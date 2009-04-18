@@ -11,6 +11,7 @@ set(SOURCES
 	Decoder.h
 	InitializeCommon.h
 	InterHeader.h
+	IpUtilities.h
 	LoopingId.h
 	MapleClient.h
 	MapleEncryption.h
@@ -49,6 +50,7 @@ set(SOURCES
 	DatabaseMigrationRunner.cpp
 	Decoder.cpp
 	InitializeCommon.cpp
+	IpUtilities.cpp
 	MapleClient.cpp
 	MapleEncryption.cpp
 	MapleServer.cpp

@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerPlayer.h"
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
+#include "IpUtilities.h"
 #include "MapleSession.h"
-#include "MiscUtilities.h"
 #include "PacketReader.h"
 #include <iostream>
 
@@ -33,7 +33,7 @@ bool AbstractServerAcceptPlayer::processAuth(PacketReader &packet, const string 
 			std::cout << "Server successfully authenticated." << std::endl;
 			is_authenticated = true;
 
-			MiscUtilities::extractExternalIp(packet, external_ip);
+			IpUtilities::extractExternalIp(packet, external_ip);
 
 			authenticated(packet.get<int8_t>());
 		}
