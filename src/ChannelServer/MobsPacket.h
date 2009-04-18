@@ -28,6 +28,7 @@ class Mob;
 class PacketReader;
 struct StatusInfo;
 struct MobInfo;
+struct Pos;
 
 namespace MobsPacket {
 	void spawnMob(Player *player, Mob *mob, Mob *owner = 0, bool spawn = false, bool show = false);
