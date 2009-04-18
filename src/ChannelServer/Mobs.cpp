@@ -235,8 +235,9 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 
 	int16_t moveid = packet.get<int16_t>();
 	bool useskill = (packet.get<int8_t>() != 0);
-	int32_t skill = packet.get<int32_t>();
-	int8_t trajectory = packet.get<int8_t>();
+	int8_t skill = packet.get<int8_t>();
+	Pos target = packet.getPos();
+
 	packet.skipBytes(9);
 	Pos cpos = Movement::parseMovement(mob, packet);
 	if (cpos - mob->getPos() > 300) {
@@ -245,7 +246,7 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	}
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMp());
 	packet.reset(19);
-	MobsPacket::moveMob(player, mobid, useskill, skill, trajectory, packet.getBuffer(), packet.getBufferLength());
+	MobsPacket::moveMob(player, mobid, useskill, skill, target, packet.getBuffer(), packet.getBufferLength());
 }
 
 void Mobs::damageMob(Player *player, PacketReader &packet) {
