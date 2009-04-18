@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
 using std::list;
 using std::string;
@@ -55,7 +56,7 @@ struct MapleTVMessage {
 	PacketCreator senddisplay;
 };
 
-class MapleTVs {
+class MapleTVs : boost::noncopyable {
 public:
 	static MapleTVs * Instance() {
 		if (singleton == 0)
@@ -73,8 +74,6 @@ public:
 	uint32_t getCounter() { return ++m_counter; }
 private:
 	MapleTVs();
-	MapleTVs(const MapleTVs&);
-	MapleTVs& operator=(const MapleTVs&);
 	static MapleTVs *singleton;
 
 	void parseBuffer();

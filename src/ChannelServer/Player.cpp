@@ -154,33 +154,6 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 	this->id = id;
 
-	// Buffs
-	activeBuffs.reset(new PlayerActiveBuffs(this));
-	if (BuffHolder::Instance()->checkPlayer(id)) {
-		PlayerActiveBuffs *mybuffs = getActiveBuffs();
-		PlayerActiveBuffs *existingbuffs = BuffHolder::Instance()->getBuffs(id);
-		vector<BuffStorage> buffstoadd = BuffHolder::Instance()->getStoredBuffs(id);
-		for (size_t i = 0; i < buffstoadd.size(); i++) {
-			BuffStorage cbuff = buffstoadd[i];
-			mybuffs->addBuff(cbuff.skillid, cbuff.timeleft);
-			mybuffs->setActiveSkillLevel(cbuff.skillid, cbuff.level);
-			Buffs::Instance()->doAct(this, cbuff.skillid, cbuff.level);
-		}
-		mybuffs->setEnergyChargeLevel(existingbuffs->getEnergyChargeLevel(), true);
-		mybuffs->setBooster(existingbuffs->getBooster());
-		mybuffs->setCharge(existingbuffs->getCharge());
-		mybuffs->setCombo(existingbuffs->getCombo(), false);
-		
-		MapEntryBuffs entr = existingbuffs->getMapEntryBuffs();
-		mybuffs->setMountInfo(entr.mountskill, entr.mountid);
-		mybuffs->setMapEntryBuffs(entr);
-		
-		ActiveBuffsByType bufftypes = existingbuffs->getBuffTypes();
-		mybuffs->setActiveBuffsByType(bufftypes);
-
-		BuffHolder::Instance()->removeBuffs(id);
-	}
-
 	summons.reset(new PlayerSummons(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
@@ -233,6 +206,37 @@ void Player::playerConnect(PacketReader &packet) {
 	maxslots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
 	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
 
+	// Buffs
+	activeBuffs.reset(new PlayerActiveBuffs(this));
+	if (BuffHolder::Instance()->checkPlayer(id)) {
+		PlayerActiveBuffs *mybuffs = getActiveBuffs();
+		PlayerActiveBuffs *existingbuffs = BuffHolder::Instance()->getBuffs(id);
+		vector<BuffStorage> buffstoadd = BuffHolder::Instance()->getStoredBuffs(id);
+		for (size_t i = 0; i < buffstoadd.size(); i++) {
+			BuffStorage cbuff = buffstoadd[i];
+			mybuffs->addBuff(cbuff.skillid, cbuff.timeleft);
+			mybuffs->setActiveSkillLevel(cbuff.skillid, cbuff.level);
+			Buffs::Instance()->doAct(this, cbuff.skillid, cbuff.level);
+		}
+		mybuffs->setEnergyChargeLevel(existingbuffs->getEnergyChargeLevel(), true);
+		mybuffs->setBooster(existingbuffs->getBooster());
+		mybuffs->setCharge(existingbuffs->getCharge());
+		mybuffs->setCombo(existingbuffs->getCombo(), false);
+		
+		MapEntryBuffs entr = existingbuffs->getMapEntryBuffs();
+		mybuffs->setMountInfo(entr.mountskill, entr.mountid);
+		mybuffs->setMapEntryBuffs(entr);
+		
+		ActiveBuffsByType bufftypes = existingbuffs->getBuffTypes();
+		mybuffs->setActiveBuffsByType(bufftypes);
+		if (mybuffs->hasHyperBody()) {
+			int32_t skillid = mybuffs->getHyperBody();
+			uint8_t hblevel = mybuffs->getActiveSkillLevel(skillid);
+			setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
+		}
+		BuffHolder::Instance()->removeBuffs(id);
+	}
+
 	// Skills
 	skills.reset(new PlayerSkills(this));
 
@@ -246,21 +250,8 @@ void Player::playerConnect(PacketReader &packet) {
 	SkillMacros skillMacros;
 	skillMacros.load(id);
 
-	// Character variables
-	query << "SELECT * FROM character_variables WHERE charid = " << id;
-	res = query.store();
-	for (size_t i = 0; i < res.size(); i++) {
-		variables[(string) res[i]["key"]] = string(res[i]["value"]);
-	}
-
-	// Cooldowns
-	query << "SELECT * FROM cooldowns WHERE charid = " << id;
-	res = query.store();
-	for (size_t i = 0; i < res.size(); i++) {
-		int32_t skillid = res[i]["skillid"];
-		int16_t timeleft = static_cast<int16_t>(res[i]["timeleft"]);
-		Skills::startCooldown(this, skillid, timeleft, false);
-	}
+	// Player variables
+	playervars.reset(new PlayerVariables(this));
 
 	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
@@ -484,6 +475,8 @@ void Player::modifyRMMp(int16_t mod) {
 }
 
 void Player::setExp(int32_t exp) {
+	if (this->exp < 0)
+		exp = 0;
 	this->exp = exp;
 	PlayerPacket::updateStatInt(this, 0x10000, exp);
 }
@@ -559,28 +552,6 @@ void Player::setFame(int16_t fame) {
 	PlayerPacket::updateStatInt(this, 0x20000, fame);
 }
 
-void Player::deleteVariable(const string &name) {
-	if (variables.find(name) != variables.end())
-		variables.erase(name);
-}
-
-void Player::setVariable(const string &name, const string &val) {
-	variables[name] = val;
-}
-
-string Player::getVariable(const string &name) {
-	return (variables.find(name) == variables.end()) ? "" : variables[name];
-}
-
-void Player::addCooldown(int32_t skillid, int16_t time) {
-	cooldowns[skillid] = time;
-}
-
-void Player::removeCooldown(int32_t skillid) {
-	if (cooldowns.find(skillid) != cooldowns.end())
-		cooldowns.erase(skillid);
-}
-
 bool Player::addWarning() {
 	int32_t t = TimeUtilities::clock_in_ms();
 	// Deleting old warnings
@@ -633,61 +604,13 @@ void Player::saveStats() {
 	query.exec();
 }
 
-void Player::saveVariables() {
-	mysqlpp::Query query = Database::getCharDB().query();
-	query << "DELETE FROM character_variables WHERE charid = " << this->id;
-	query.exec();
-
-	if (variables.size() > 0) {
-		bool firstrun = true;
-		for (unordered_map<string, string>::iterator iter = variables.begin(); iter != variables.end(); iter++) {
-			if (firstrun) {
-				query << "INSERT INTO character_variables VALUES (";
-				firstrun = false;
-			}
-			else {
-				query << ",(";
-			}
-			query << id << ","
-					<< mysqlpp::quote << iter->first << ","
-					<< mysqlpp::quote << iter->second << ")";
-		}
-		query.exec();
-	}
-}
-
-void Player::saveCooldowns() {
-	mysqlpp::Query query = Database::getCharDB().query();
-	query << "DELETE FROM cooldowns WHERE charid = " << this->id;
-	query.exec();
-
-	if (cooldowns.size() > 0) {
-		bool firstrun = true;
-		for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); iter++) {
-			if (firstrun) {
-				query << "INSERT INTO cooldowns (charid, skillid, timeleft) VALUES (";
-				firstrun = false;
-			}
-			else {
-				query << ",(";
-			}
-			query << id << ","
-					<< iter->first << ","
-					<< Skills::getCooldownTimeLeft(this, iter->first) << ")";
-		}
-		query.exec();
-	}
-}
-
 void Player::saveAll(bool savecooldowns) {
 	saveStats();
-	saveVariables();
 	getInventory()->save();
 	getPets()->save();
-	getSkills()->save();
+	getSkills()->save(savecooldowns);
 	getStorage()->save();
-	if (savecooldowns)
-		saveCooldowns();
+	getVariables()->save();
 }
 
 void Player::setOnline(bool online) {
@@ -745,7 +668,7 @@ void Player::loseExp() {
 					break;
 			}
 		}
-		uint64_t exp = getExp();
+		int64_t exp = getExp();
 		exp -= Levels::exps[getLevel() - 1] * exploss / 100;
 		setExp(static_cast<int32_t>(exp));
 	}

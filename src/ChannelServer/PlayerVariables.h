@@ -15,34 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PARTIES_H
-#define PARTIES_H
+#ifndef PLAYERVARIABLES_H
+#define PLAYERVARIABLES_H
 
-#include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include "Variables.h"
 
-using std::tr1::unordered_map;
+class Player;
 
-class Party;
-
-class Parties : boost::noncopyable {
+class PlayerVariables : public Variables {
 public:
-	static Parties * Instance() {
-		if (singleton == 0)
-			singleton = new Parties;
-		return singleton;
-	}
-
-	int32_t addParty(Party *party);
-	void removeParty(int32_t id);
-	Party * getParty(int32_t id);
-	unordered_map<int32_t, Party *> getParties();
+	PlayerVariables(Player *p) { player = p; }
+	void save();
+	void load();
 private:
-	Parties() : pid(0) {};
-	static Parties *singleton;
-
-	int32_t pid;
-	unordered_map<int32_t, Party *> m_map;
+	Player *player;
 };
+
 #endif

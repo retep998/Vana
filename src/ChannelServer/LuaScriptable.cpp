@@ -68,6 +68,7 @@ void LuaScriptable::initialize() {
 	// Miscellanous
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
+	lua_register(luaVm, "isOnline", &LuaExports::isOnline);
 	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
 	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
@@ -301,6 +302,16 @@ int LuaExports::getRandomNumber(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::isOnline(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	lua_pushboolean(luaVm, player != 0);
+	return 1;
+}
+
 int LuaExports::revertPlayer(lua_State *luaVm) {
 	getPlayer(luaVm)->getLuaScriptable()->revertPlayer();
 	return 0;
@@ -423,7 +434,7 @@ int LuaExports::useItem(lua_State *luaVm) {
 // Player
 int LuaExports::deletePlayerVariable(lua_State *luaVm) {
 	string key = string(lua_tostring(luaVm, -1));
-	getPlayer(luaVm)->deleteVariable(key);
+	getPlayer(luaVm)->getVariables()->deleteVariable(key);
 	return 0;
 }
 
@@ -530,7 +541,7 @@ int LuaExports::getName(lua_State *luaVm) {
 
 int LuaExports::getPlayerVariable(lua_State *luaVm) {
 	string key = string(lua_tostring(luaVm, -1));
-	lua_pushstring(luaVm, getPlayer(luaVm)->getVariable(key).c_str());
+	lua_pushstring(luaVm, getPlayer(luaVm)->getVariables()->getVariable(key).c_str());
 	return 1;
 }
 
@@ -686,7 +697,7 @@ int LuaExports::setMP(lua_State *luaVm) {
 int LuaExports::setPlayerVariable(lua_State *luaVm) {
 	string value = string(lua_tostring(luaVm, -1));
 	string key = string(lua_tostring(luaVm, -2));
-	getPlayer(luaVm)->setVariable(key, value);
+	getPlayer(luaVm)->getVariables()->setVariable(key, value);
 	return 0;
 }
 
@@ -1193,7 +1204,7 @@ int LuaExports::createInstance(lua_State *luaVm) {
 }
 
 int LuaExports::deleteInstanceVariable(lua_State *luaVm) {
-	getInstance(luaVm)->deleteVariable(lua_tostring(luaVm, 1));
+	getInstance(luaVm)->getVariables()->deleteVariable(lua_tostring(luaVm, 1));
 	return 0;
 }
 
@@ -1240,7 +1251,7 @@ int LuaExports::getInstanceTime(lua_State *luaVm) {
 }
 
 int LuaExports::getInstanceVariable(lua_State *luaVm) {
-	lua_pushstring(luaVm, getInstance(luaVm)->getVariable(lua_tostring(luaVm, 1)).c_str());
+	lua_pushstring(luaVm, getInstance(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1)).c_str());
 	return 1;
 }
 
@@ -1325,7 +1336,7 @@ int LuaExports::setInstanceTime(lua_State *luaVm) {
 }
 
 int LuaExports::setInstanceVariable(lua_State *luaVm) {
-	getInstance(luaVm)->setVariable(lua_tostring(luaVm, 1), lua_tostring(luaVm, 2));
+	getInstance(luaVm)->getVariables()->setVariable(lua_tostring(luaVm, 1), lua_tostring(luaVm, 2));
 	return 0;
 }
 

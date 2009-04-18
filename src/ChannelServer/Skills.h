@@ -27,6 +27,7 @@ using std::string;
 using std::tr1::unordered_map;
 using std::vector;
 
+class Party;
 class Player;
 class PacketReader;
 
@@ -110,13 +111,14 @@ namespace Skills {
 	void addSkill(Player *player, PacketReader &packet);
 	void cancelSkill(Player *player, PacketReader &packet);
 	void useSkill(Player *player, PacketReader &packet);
+	const vector<Player *> getAffectedPartyMembers(Party *party, int8_t affected, int8_t members);
 	void applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp = false);
 	void useAttackSkill(Player *player, int32_t skillid);
 	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display);
 	void heal(Player *player, int16_t value, int32_t skillid);
 	void hurt(Player *player, int16_t value, int32_t skillid);
 	void stopSkill(Player *player, int32_t skillid, bool fromTimer = false);
-	void startCooldown(Player *player, int32_t skillid, int16_t cooltime, bool sendpacket = true);
+	void startCooldown(Player *player, int32_t skillid, int16_t cooltime, bool initialload = false);
 	void stopCooldown(Player *player, int32_t skillid);
 	bool isCooling(Player *player, int32_t skillid);
 	int16_t getCooldownTimeLeft(Player *player, int32_t skillid);

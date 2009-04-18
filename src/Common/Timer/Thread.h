@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <list>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
+#include <boost/utility.hpp>
 
 namespace Timer {
 
@@ -29,7 +30,7 @@ using std::list;
 class Container;
 class Timer;
 
-class Thread {
+class Thread : boost::noncopyable {
 public:
 	static Thread * Instance() {
 		if (singleton == 0)
@@ -46,8 +47,6 @@ public:
 	void forceReSort();
 private:
 	Thread();
-	Thread(const Thread&);
-	Thread& operator=(const Thread&);
 	static Thread *singleton;
 
 	Timer * findMin();

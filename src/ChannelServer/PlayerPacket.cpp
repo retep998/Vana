@@ -75,17 +75,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 	packet.add<int8_t>(player->getBuddyListSize());
 	player->getInventory()->connectData(packet); // Inventory data
-	player->getSkills()->connectData(packet); // Skills
-
-	// Cooldowns
-	packet.add<int16_t>(player->getCooldownSize());
-	unordered_map<int32_t, int16_t> cooldowns = player->getCooldowns();
-	for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); iter++) {
-		packet.add<int32_t>(iter->first);
-		packet.add<int16_t>(iter->second);
-	}
-
-	// End
+	player->getSkills()->connectData(packet); // Skills - levels and cooldowns
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);

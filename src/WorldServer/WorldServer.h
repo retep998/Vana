@@ -24,11 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include "WorldServerAcceptPlayer.h"
 #include <string>
+#include <boost/utility.hpp>
 
 using std::string;
 
 // WorldServer main application class, implemented as singleton
-class WorldServer : public AbstractServer {
+class WorldServer : public AbstractServer, boost::noncopyable {
 public:
 	static WorldServer * Instance() {
 		if (singleton == 0)
@@ -64,8 +65,6 @@ public:
 
 private:
 	WorldServer() { }
-	WorldServer(const WorldServer&);
-	WorldServer& operator=(const WorldServer&);
 	static WorldServer *singleton;
 
 	int8_t worldId;

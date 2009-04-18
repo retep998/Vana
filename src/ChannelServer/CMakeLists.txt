@@ -60,6 +60,7 @@ set(SOURCES
 	PlayersPacket.h
 	PlayerStorage.h
 	PlayerSummons.h
+	PlayerVariables.h
 	PrecompiledHeader.h
 	Quests.h
 	QuestsPacket.h
@@ -76,6 +77,7 @@ set(SOURCES
 	Trade.h
 	Trades.h
 	TradesPacket.h
+	Variables.h
 	WorldServerConnectHandler.h
 	WorldServerConnectPacket.h
 	WorldServerConnectPlayer.h
@@ -136,6 +138,7 @@ set(SOURCES
 	PlayersPacket.cpp
 	PlayerStorage.cpp
 	PlayerSummons.cpp
+	PlayerVariables.cpp
 	PrecompiledHeader.cpp
 	Quests.cpp
 	QuestsPacket.cpp
@@ -152,6 +155,7 @@ set(SOURCES
 	Trade.cpp
 	Trades.cpp
 	TradesPacket.cpp
+	Variables.cpp
 	WorldServerConnectHandler.cpp
 	WorldServerConnectPacket.cpp
 	WorldServerConnectPlayer.cpp

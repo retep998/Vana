@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 #include <vector>
 
 using std::tr1::unordered_map;
@@ -62,7 +63,7 @@ struct MobInfo {
 	vector<MobSkillInfo> skills;
 };
 
-class MobDataProvider {
+class MobDataProvider : boost::noncopyable {
 public:
 	static MobDataProvider * Instance() {
 		if (singleton == 0)
@@ -79,8 +80,6 @@ public:
 
 private:
 	MobDataProvider() {}
-	MobDataProvider(const MobDataProvider&);
-	MobDataProvider& operator=(const MobDataProvider&);
 	static MobDataProvider *singleton;
 
 	unordered_map<int32_t, MobInfo> mobinfo;
