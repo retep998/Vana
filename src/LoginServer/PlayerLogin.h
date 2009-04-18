@@ -19,13 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERLOGIN_H
 
 #include "AbstractPlayer.h"
+#include "PlayerStatus.h"
 #include "Types.h"
 
 class PacketReader;
 
 class PlayerLogin : public AbstractPlayer {
 public:
-	PlayerLogin() : status(0), invalid_logins(0) { }
+	PlayerLogin() : status(PlayerStatus::NotLoggedIn), invalid_logins(0) { }
 
 	~PlayerLogin();
 
@@ -35,7 +36,7 @@ public:
 	void setWorld(int8_t world) { this->world = world; }
 	void setChannel(uint16_t channel) {	this->channel = channel; }
 	void setUserId(int32_t id) { this->userid = id; }
-	void setStatus(int32_t status) { this->status = status; }
+	void setStatus(PlayerStatus::PlayerStatus status) { this->status = status; }
 	void setPin(int32_t pin) { this->pin = pin; }
 	void setCharDeletePassword(int32_t char_delete_password) { this->char_delete_password = char_delete_password; }
 
@@ -43,7 +44,7 @@ public:
 	int8_t getWorld() const { return world; }
 	uint16_t getChannel() const { return channel; }
 	int32_t getUserId() const { return userid; }
-	int32_t getStatus() const { return status; }
+	PlayerStatus::PlayerStatus getStatus() const { return status; }
 	int32_t getPin() const { return pin; }
 	int32_t getCharDeletePassword() const { return char_delete_password; }
 
@@ -53,7 +54,7 @@ private:
 	int8_t gender;
 	int8_t world;
 	uint16_t channel;
-	int32_t status;
+	PlayerStatus::PlayerStatus status;
 	int32_t userid;
 	int32_t pin;
 	int32_t invalid_logins;

@@ -330,6 +330,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\PlayerStatus.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\LoginServer\RankingCalculator.h"
 					>
 				</File>

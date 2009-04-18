@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "PlayerLogin.h"
+#include "PlayerStatus.h"
 #include "SendHeader.h"
 #include "Worlds.h"
 
@@ -66,8 +67,8 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(player->getUserId());
 	switch (player->getStatus()) {
-		case 5: packet.add<int8_t>(0x0a); break; // Gender Select
-		case 1: packet.add<int8_t>(0x0b); break; // Pin Select
+		case PlayerStatus::SetGender: packet.add<int8_t>(0x0a); break; // Gender Select
+		case PlayerStatus::SetPin: packet.add<int8_t>(0x0b); break; // Pin Select
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
 	packet.addBytes("0465");

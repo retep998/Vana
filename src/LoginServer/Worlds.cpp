@@ -24,11 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "PlayerLogin.h"
 #include "PacketReader.h"
+#include "PlayerStatus.h"
 
 map<uint8_t, World *> Worlds::worlds;
 
 void Worlds::showWorld(PlayerLogin *player) {
-	if (player->getStatus() != 4) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// hacking
 		return;
 	}
@@ -40,7 +41,7 @@ void Worlds::showWorld(PlayerLogin *player) {
 }
 
 void Worlds::selectWorld(PlayerLogin *player, PacketReader &packet) {
-	if (player->getStatus() != 4) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// hacking
 		return;
 	}
@@ -49,7 +50,7 @@ void Worlds::selectWorld(PlayerLogin *player, PacketReader &packet) {
 }
 
 void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
-	if (player->getStatus() != 4) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// hacking
 		return;
 	}
