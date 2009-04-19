@@ -19,6 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "Player.h"
 
+PlayerVariables::PlayerVariables(Player *p) : player(p) {
+	load();
+}
+
 void PlayerVariables::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "DELETE FROM character_variables WHERE charid = " << player->getId();

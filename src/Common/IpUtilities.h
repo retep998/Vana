@@ -15,43 +15,39 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PACKETREADER_H
-#define PACKETREADER_H
+#ifndef IPUTILITIES
+#define IPUTILITIES
 
 #include "Types.h"
-#include <boost/tr1/memory.hpp>
+#include "PacketCreator.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
-struct Pos;
+class PakcetReader;
 
-class PacketReader {
-public:
-	PacketReader(unsigned char *buffer, size_t length);
+namespace IpUtilities {
+	uint32_t stringToIp(const string &name);
+	string ipToString(uint32_t ip);
+	uint32_t matchIpSubnet(uint32_t ip, const vector<vector<uint32_t> > &ipMatrix, uint32_t defaultIp = 0);
 
-	template<typename T>
-	T get();
-	void skipBytes(int32_t len);
-	int16_t getHeader(); // Basically getShort that always read at start
-	string getString();
-	string getString(size_t len);
-	unsigned char * getBuffer();
-	Pos getPos();
-	size_t getBufferLength();
+	// Used for receiving vectors of external IPs
+	void extractExternalIp(PacketReader &packet, vector<vector<uint32_t> > &extIp);
+	// Used for passing vectors of external IPs
+	struct SendIpArray {
+	public:
+		SendIpArray(PacketCreator &packet) : packet(packet) { }
 
-	PacketReader & reset(int32_t len = 0);
-private:
-	unsigned char *buffer;
-	size_t length;
-	size_t pos;
+		void operator()(vector<uint32_t> ip) {
+			packet.add<uint32_t>(ip[0]); // IP
+			packet.add<uint32_t>(ip[1]); // Subnet
+		}
+
+	private:
+		PacketCreator &packet;
+	};
 };
-
-template<typename T>
-T PacketReader::get() {
-	T val = (*(T *)(buffer + pos));
-	pos += sizeof(T);
-	return val;
-}
 
 #endif

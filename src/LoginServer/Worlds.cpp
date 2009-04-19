@@ -17,18 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Worlds.h"
 #include "Characters.h"
+#include "IpUtilities.h"
 #include "LoginPacket.h"
 #include "LoginServerAcceptPlayer.h"
 #include "LoginServerAcceptPacket.h"
 #include "MapleSession.h"
-#include "MiscUtilities.h"
 #include "PlayerLogin.h"
 #include "PacketReader.h"
+#include "PlayerStatus.h"
 
 map<uint8_t, World *> Worlds::worlds;
 
 void Worlds::showWorld(PlayerLogin *player) {
-	if (player->getStatus() != 4) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// hacking
 		return;
 	}
@@ -40,7 +41,7 @@ void Worlds::showWorld(PlayerLogin *player) {
 }
 
 void Worlds::selectWorld(PlayerLogin *player, PacketReader &packet) {
-	if (player->getStatus() != 4) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// hacking
 		return;
 	}
@@ -49,7 +50,7 @@ void Worlds::selectWorld(PlayerLogin *player, PacketReader &packet) {
 }
 
 void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
-	if (player->getStatus() != 4) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// hacking
 		return;
 	}
@@ -97,7 +98,7 @@ int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 		}
 	}
 
-	uint32_t worldIp = MiscUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
+	uint32_t worldIp = IpUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
 	LoginServerAcceptPacket::connectChannel(player, worldid, worldIp, port);
 	if (worldid != -1) {
 		std::cout << "Assigning channel server to world server " << (int32_t) worldid << "." << std::endl;

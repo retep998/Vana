@@ -42,7 +42,7 @@ void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_
 }
 
 void InventoryPacket::updatePlayer(Player *player) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) > 0)
+	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_UPDATE_CHAR_LOOK);
@@ -102,7 +102,7 @@ void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot
 }
 
 void InventoryPacket::sitChair(Player *player, int32_t chairid) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) > 0)
+	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_UPDATE_STAT);
@@ -117,7 +117,7 @@ void InventoryPacket::sitChair(Player *player, int32_t chairid) {
 }
 
 void InventoryPacket::stopChair(Player *player) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) > 0)
+	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_STOP_CHAIR);
@@ -130,7 +130,7 @@ void InventoryPacket::stopChair(Player *player) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit) {
-	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) > 0)
+	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SCROLL);

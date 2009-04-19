@@ -20,19 +20,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <cstring>
-#include <iostream>
 #include <string>
-#include <vector>
+#include <boost/shared_array.hpp>
 
 using std::string;
-using std::vector;
+using boost::shared_array;
 
 class PacketReader;
 struct Pos;
 
 class PacketCreator {
 public:
-	PacketCreator() : pos(0) { }
+	PacketCreator();
 
 	template <typename T>
 	void add(T value);
@@ -49,31 +48,34 @@ public:
 	const unsigned char * getBuffer() const;
 	size_t getSize() const;
 private:
-	static const size_t bufferLen = 10000;
+	static const size_t bufferLen = 1000; // Initial buffer length
+
+	unsigned char * getBuffer(size_t pos, size_t len);
 
 	size_t pos;
-	unsigned char packet[bufferLen];
+	shared_array<unsigned char> packet;
+	size_t packetCapacity;
 };
 
 template <typename T>
 void PacketCreator::add(T value) {
-	(*(T *)(packet + pos)) = value;
+	(*(T *) getBuffer(pos, sizeof(T))) = value;
 	pos += sizeof(T);
 }
 
 template <typename T>
 void PacketCreator::set(T value, size_t pos) {
-	(*(T *)(packet + pos)) = value;
+	(*(T *) getBuffer(pos, sizeof(T))) = value;
 }
 
 inline
 const unsigned char * PacketCreator::getBuffer() const {
-	return packet;
+	return packet.get();
 }
 
 inline
 void PacketCreator::addBuffer(const unsigned char *bytes, size_t len) {
-	memcpy(packet + pos, bytes, len);
+	memcpy(getBuffer(pos, len), bytes, len);
 	pos += len;
 }
 

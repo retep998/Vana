@@ -24,6 +24,7 @@ if state == 0 then
 	sendNext();
 elseif state == 1 then
 	addText("With our specialized machine, you can see yourself after the treatment in advance. What kind of skin-treatment would you like to do? Choose the style of your liking...");
+	styles = {};
 	getSkins(styles);
 	sendStyle(styles);
 elseif state == 2 then

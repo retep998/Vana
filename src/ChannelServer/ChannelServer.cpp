@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionManager.h"
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
-#include "MiscUtilities.h"
+#include "IpUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Players.h"
@@ -53,7 +53,7 @@ void ChannelServer::connectWorld() {
 
 void ChannelServer::loadConfig() {
 	ConfigFile config("conf/channelserver.lua");
-	login_ip = MiscUtilities::stringToIp(config.getString("login_ip"));
+	login_ip = IpUtilities::stringToIp(config.getString("login_ip"));
 	login_inter_port = config.getShort("login_inter_port");
 
 	world = -1; // Will get from login server

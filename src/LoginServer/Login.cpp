@@ -20,17 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginPacket.h"
 #include "LoginServer.h"
 #include "MapleSession.h"
+#include "MiscUtilities.h"
 #include "PacketReader.h"
 #include "PlayerLogin.h"
+#include "PlayerStatus.h"
 #include "Randomizer.h"
 #include "TimeUtilities.h"
 #include <iostream>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
-// CryptoPP
-#include <filters.h>
-#include <hex.h>
-#include <sha.h>
 
 void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	string username = packet.getString();
@@ -57,11 +55,11 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 		}
 		// We have a valid password here, so lets hash the password
 		string salt = Randomizer::Instance()->generateSalt(5);
-		string hashed_pass = hashPassword(password, salt);
+		string hashed_pass = MiscUtilities::hashPassword(password, salt);
 		query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << res[0]["id"];
 		query.exec();
 	}
-	else if (res[0]["password"] != hashPassword(password, string(res[0]["salt"].data()))) {
+	else if (res[0]["password"] != MiscUtilities::hashPassword(password, string(res[0]["salt"].data()))) {
 		LoginPacket::loginError(player, 0x04); //Invalid password
 		valid = false;
 	}
@@ -90,14 +88,14 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 				player->setPin(res[0]["pin"]);
 			int32_t pin = player->getPin();
 			if (pin == -1)
-				player->setStatus(1); // New PIN
+				player->setStatus(PlayerStatus::SetPin); // New PIN
 			else
-				player->setStatus(2); // Ask for PIN
+				player->setStatus(PlayerStatus::AskPin); // Ask for PIN
 		}
 		else
-			player->setStatus(4);
+			player->setStatus(PlayerStatus::LoggedIn);
 		if (res[0]["gender"].is_null())
-			player->setStatus(5);
+			player->setStatus(PlayerStatus::SetGender);
 		else
 			player->setGender((uint8_t) res[0]["gender"]);
 
@@ -107,35 +105,35 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 }
 
 void Login::setGender(PlayerLogin *player, PacketReader &packet) {
-	if (player->getStatus() != 5) {
+	if (player->getStatus() != PlayerStatus::SetGender) {
 		//hacking
 		return;
 	}
 	if (packet.get<int8_t>() == 1) {
-		player->setStatus(0);
+		player->setStatus(PlayerStatus::NotLoggedIn);
 		int8_t gender = packet.get<int8_t>();
 		mysqlpp::Query query = Database::getCharDB().query();
 		query << "UPDATE users SET gender = " << (int32_t) gender << " WHERE id = " << player->getUserId();
 		query.exec();
 		if (LoginServer::Instance()->getPinEnabled())
-			player->setStatus(1); // Set pin
+			player->setStatus(PlayerStatus::SetPin); // Set pin
 		else
-			player->setStatus(4);
+			player->setStatus(PlayerStatus::LoggedIn);
 		LoginPacket::genderDone(player, gender);
 	}
 }
 
 void Login::handleLogin(PlayerLogin *player, PacketReader &packet) {
 	int32_t status = player->getStatus();
-	if (status == 1)
+	if (status == PlayerStatus::SetPin)
 		LoginPacket::loginProcess(player, 0x01);
-	else if (status == 2) {
+	else if (status == PlayerStatus::AskPin) {
 		LoginPacket::loginProcess(player, 0x04);
-		player->setStatus(3);
+		player->setStatus(PlayerStatus::CheckPin);
 	}
-	else if (status == 3)
+	else if (status == PlayerStatus::CheckPin)
 		checkPin(player, packet);
-	else if (status == 4) {
+	else if (status == PlayerStatus::LoggedIn) {
 		LoginPacket::loginProcess(player, 0x00);
 		// The player successfully logged in, so let set the login column
 		player->setOnline(true);
@@ -149,13 +147,13 @@ void Login::checkPin(PlayerLogin *player, PacketReader &packet) {
 	int8_t act = packet.get<int8_t>();
 	packet.skipBytes(5);
 	if (act == 0x00) {
-		player->setStatus(2);
+		player->setStatus(PlayerStatus::AskPin);
 	}
 	else if (act == 0x01) {
 		int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
 		int32_t curpin = player->getPin();
 		if (pin == curpin) {
-			player->setStatus(4);
+			player->setStatus(PlayerStatus::LoggedIn);
 			handleLogin(player, packet);
 		}
 		else
@@ -165,7 +163,7 @@ void Login::checkPin(PlayerLogin *player, PacketReader &packet) {
 		int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
 		int32_t curpin = player->getPin();
 		if (pin == curpin) {
-			player->setStatus(1);
+			player->setStatus(PlayerStatus::SetPin);
 			handleLogin(player, packet);
 		}
 		else
@@ -173,35 +171,21 @@ void Login::checkPin(PlayerLogin *player, PacketReader &packet) {
 	}
 }
 
-void Login::registerPIN(PlayerLogin *player, PacketReader &packet) {
-	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != 1) {
+void Login::registerPin(PlayerLogin *player, PacketReader &packet) {
+	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != PlayerStatus::SetPin) {
 		//hacking
 		return;
 	}
 	if (packet.get<int8_t>() == 0x00) {
 		if (player->getPin() != -1) {
-			player->setStatus(2);
+			player->setStatus(PlayerStatus::AskPin);
 		}
 		return;
 	}
 	int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
-	player->setStatus(0);
+	player->setStatus(PlayerStatus::NotLoggedIn);
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users SET pin = " << pin << " WHERE id = " << player->getUserId();
 	query.exec();
 	LoginPacket::pinAssigned(player);
-}
-
-string Login::hashPassword(const string &password, const string &salt) {
-	string salted = salt + password;
-	string digest;
-
-	CryptoPP::SHA1 hash;
-
-	CryptoPP::StringSource(salted, true,
-		new CryptoPP::HashFilter(hash,
-			new CryptoPP::HexEncoder(
-				new CryptoPP::StringSink(digest))));
-
-	return digest;
 }

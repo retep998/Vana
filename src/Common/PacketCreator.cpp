@@ -18,9 +18,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Pos.h"
 #include "PacketReader.h"
+#include <iostream>
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
+
+PacketCreator::PacketCreator() : 
+pos(0),
+packet(new unsigned char[bufferLen]),
+packetCapacity(bufferLen)
+{
+}
 
 void PacketCreator::addPos(Pos pos) {
 	add<int16_t>(pos.x);
@@ -52,7 +60,7 @@ void PacketCreator::addBytes(const char *hex) {
 		else if (byte2 >= '0' && byte2 <= '9')
 			byte2 -= '0';
 		unsigned char byte = byte1 * 0x10 + byte2;
-		packet[pos++] = byte;
+		add<uint8_t>(byte);
 	}
 }
 
@@ -61,7 +69,7 @@ void PacketCreator::addString(const string &str, size_t len) {
 	if (len < slen) {
 		std::cout << "ERROR: addString used with length shorter than string size." << std::endl; // TODO: Throw exception
 	}
-	strncpy((char *) packet + pos, str.c_str(), slen);
+	strncpy((char *) getBuffer(pos, slen), str.c_str(), slen);
 	for (size_t i = slen; i < len; i++) {
 		packet[pos + i] = 0;
 	}
@@ -71,6 +79,16 @@ void PacketCreator::addString(const string &str, size_t len) {
 void PacketCreator::addString(const string &str) {
 	size_t len = str.size();
 	add<int16_t>(len);
-	strcpy((char *) packet + pos, str.c_str());
-	pos += len;
+	addString(str, str.size());
+}
+
+unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {
+	if (packetCapacity < pos + len) { // Buffer is not large enough
+		packetCapacity *= 2; // Double the capacity each time the buffer is full
+		unsigned char * newBuffer = new unsigned char[packetCapacity];
+		memcpy(newBuffer, packet.get(), pos);
+		packet.reset(newBuffer);	
+	}
+
+	return packet.get() + pos;
 }

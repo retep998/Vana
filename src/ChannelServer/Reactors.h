@@ -34,10 +34,8 @@ struct ReactorEventInfo {
 	int8_t state;
 	int16_t type;
 	int32_t itemid;
-	int16_t ltx;
-	int16_t lty;
-	int16_t rbx;
-	int16_t rby;
+	Pos lt;
+	Pos rb;
 	int8_t nextstate;
 };
 typedef vector<ReactorEventInfo> ReactorEventsInfo;

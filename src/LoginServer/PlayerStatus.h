@@ -15,33 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MISCUTILITIES
-#define MISCUTILITIES
+#ifndef PLAYERSTATUS_H
+#define PLAYERSTATUS_H
 
-#include <cstdlib>
-#include <string>
-
-using std::string;
-
-namespace MiscUtilities {
-	bool atob(const char *str);
-	string hashPassword(const string &password, const string &salt);
-
-	// The following methods are used for deleting (freeing) pointers in an array
-	template<class T>
-	struct DeleterSeq {
-		void operator()(T *t) { delete t; }
+namespace PlayerStatus {
+	enum PlayerStatus {
+		NotLoggedIn,
+		SetPin,
+		AskPin,
+		CheckPin,
+		SetGender,
+		LoggedIn
 	};
-
-	template<class T>
-	struct DeleterPairAssoc {
-		void operator()(T pair) { delete pair.second; } 
-	};
-};
-
-inline
-bool MiscUtilities::atob(const char *str) {
-	return atoi(str) != 0;
 }
 
 #endif

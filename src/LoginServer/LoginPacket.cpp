@@ -18,10 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginPacket.h"
 #include "Characters.h"
 #include "LoginPacketHelper.h"
+#include "IpUtilities.h"
 #include "MapleSession.h"
-#include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "PlayerLogin.h"
+#include "PlayerStatus.h"
 #include "SendHeader.h"
 #include "Worlds.h"
 
@@ -66,8 +67,8 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(player->getUserId());
 	switch (player->getStatus()) {
-		case 5: packet.add<int8_t>(0x0a); break; // Gender Select
-		case 1: packet.add<int8_t>(0x0b); break; // Pin Select
+		case PlayerStatus::SetGender: packet.add<int8_t>(0x0a); break; // Gender Select
+		case PlayerStatus::SetPin: packet.add<int8_t>(0x0b); break; // Pin Select
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
 	packet.add<int8_t>(0);
@@ -219,7 +220,7 @@ void LoginPacket::connectIp(PlayerLogin *player, int32_t charid) {
 	World *world = Worlds::worlds[player->getWorld()];
 	if (world->channels.find(player->getChannel()) != world->channels.end()) {
 		shared_ptr<Channel> channel = world->channels[player->getChannel()];
-		uint32_t chanIp = MiscUtilities::matchIpSubnet(player->getIp(), channel->external_ip, channel->ip);
+		uint32_t chanIp = IpUtilities::matchIpSubnet(player->getIp(), channel->external_ip, channel->ip);
 		packet.add<uint32_t>(htonl(chanIp)); // MapleStory accepts IP addresses in big-endian
 		packet.add<int16_t>(channel->port);
 	}
