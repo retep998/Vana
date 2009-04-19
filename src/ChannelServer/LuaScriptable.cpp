@@ -161,6 +161,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
 	lua_register(luaVm, "setReactorState", &LuaExports::setReactorState);
 	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
+	lua_register(luaVm, "showMapEffect", &LuaExports::showMapEffect);
 	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
 	lua_register(luaVm, "showMapTimer", &LuaExports::showMapTimer);
@@ -865,6 +866,12 @@ int LuaExports::showInstructionBubble(lua_State *luaVm) {
 	}
 
 	PlayerPacket::instructionBubble(getPlayer(luaVm), msg, width, height);
+	return 0;
+}
+
+int LuaExports::showMapEffect(lua_State *luaVm) {
+	string val = lua_tostring(luaVm, -1);
+	MapPacket::sendEffect(getPlayer(luaVm)->getMap(), val);
 	return 0;
 }
 

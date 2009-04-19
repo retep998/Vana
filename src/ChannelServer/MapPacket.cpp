@@ -45,14 +45,14 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(1);
-	packet.add<int8_t>(enter.types[Byte5]);
-	packet.add<int8_t>(enter.types[Byte6]);
-	packet.add<int8_t>(enter.types[Byte7]);
+	packet.add<uint8_t>(enter.types[Byte5]);
+	packet.add<uint8_t>(enter.types[Byte6]);
+	packet.add<uint8_t>(enter.types[Byte7]);
 	packet.add<uint8_t>(0xF8);
-	packet.add<int8_t>(enter.types[Byte1]);
-	packet.add<int8_t>(enter.types[Byte2]);
-	packet.add<int8_t>(enter.types[Byte3]);
-	packet.add<int8_t>(enter.types[Byte4]);
+	packet.add<uint8_t>(enter.types[Byte1]);
+	packet.add<uint8_t>(enter.types[Byte2]);
+	packet.add<uint8_t>(enter.types[Byte3]);
+	packet.add<uint8_t>(enter.types[Byte4]);
 
 	const int8_t byteorder[8] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
 
@@ -82,7 +82,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	}
 
 	packet.add<int32_t>(0);
-	packet.add<int8_t>(enter.types[Byte8]);
+	packet.add<uint8_t>(enter.types[Byte8]);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
 
@@ -229,7 +229,7 @@ void MapPacket::forceMapEquip(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::setMusic(int32_t mapid, const string &musicname) { // Set music
+void MapPacket::setMusic(int32_t mapid, const string &musicname) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MAP_EFFECT);
 	packet.add<int8_t>(0x06);
@@ -237,7 +237,7 @@ void MapPacket::setMusic(int32_t mapid, const string &musicname) { // Set music
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
-void MapPacket::sendSound(int32_t mapid, const string &soundname) { // Send Sound
+void MapPacket::sendSound(int32_t mapid, const string &soundname) {
 	// Party1/Clear = Clear
 	// Party1/Failed = Wrong
 	// Cokeplay/Victory = Victory
@@ -250,7 +250,7 @@ void MapPacket::sendSound(int32_t mapid, const string &soundname) { // Send Soun
 	packet.addString(soundname);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
-// Send Event
+
 void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
 	// quest/party/clear = Clear
 	// quest/party/wrong_kor = Wrong
@@ -265,7 +265,16 @@ void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
-void MapPacket::showEventInstructions(int32_t mapid) { // Thanks to Snow/Raz who found this by playing around
+void MapPacket::sendEffect(int32_t mapid, const string &effectname) {
+	// gate = KerningPQ Door
+	PacketCreator packet = PacketCreator();
+	packet.add<int16_t>(SEND_MAP_EFFECT);
+	packet.add<int8_t>(0x02);
+	packet.addString(effectname);
+	Maps::getMap(mapid)->sendPacket(packet);
+}
+
+void MapPacket::showEventInstructions(int32_t mapid) {
 	PacketCreator packet = PacketCreator();
 	packet.add<int16_t>(SEND_GM_EVENT_INSTRUCTIONS);
 	packet.add<int8_t>(0x00);
