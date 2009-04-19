@@ -110,6 +110,7 @@ public:
 	const bool hasPowerStance();
 	const bool hasMagicGuard();
 	const bool hasHyperBody();
+	const bool isUsingHide();
 	const int32_t getHolySymbol();
 	const int32_t getPowerStance();
 	const int32_t getHyperBody();

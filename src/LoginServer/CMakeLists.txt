@@ -9,6 +9,7 @@ set(SOURCES
 	LoginServerAcceptPacket.h
 	LoginServerAcceptPlayer.h
 	PlayerLogin.h
+	PlayerStatus.h
 	PrecompiledHeader.h
 	RankingCalculator.h
 	Worlds.h

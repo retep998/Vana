@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
+#include "IpUtilities.h"
 #include "MapleSession.h"
-#include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "ServerPlayer.h"
 #include <algorithm>
@@ -29,7 +29,7 @@ void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, str
 	packet.addString(pass);
 
 	packet.add<uint32_t>(extIp.size());
-	std::for_each(extIp.begin(), extIp.end(), MiscUtilities::SendIpArray(packet));
+	std::for_each(extIp.begin(), extIp.end(), IpUtilities::SendIpArray(packet));
 
 	packet.add<int8_t>(player->getType());
 	player->getSession()->send(packet);

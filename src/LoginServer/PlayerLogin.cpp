@@ -39,7 +39,7 @@ void PlayerLogin::realHandleRequest(PacketReader &packet) {
 		case RECV_CREATE_CHAR: Characters::createCharacter(this, packet); break;
 		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, packet); break;
 		case RECV_SET_GENDER: Login::setGender(this, packet); break;
-		case RECV_REGISTER_PIN: Login::registerPIN(this, packet); break;
+		case RECV_REGISTER_PIN: Login::registerPin(this, packet); break;
 		case RECV_RELOG: LoginPacket::relogResponse(this);
 	}
 }

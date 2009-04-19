@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketReader.h"
+#include "Pos.h"
 
 PacketReader::PacketReader(unsigned char *buffer, size_t length) : buffer(buffer), length(length), pos(0) { }
 
@@ -54,4 +55,11 @@ PacketReader & PacketReader::reset(int32_t len) {
 	}
 
 	return *this;
+}
+
+Pos PacketReader::getPos() {
+	Pos ret;
+	ret.x = get<int16_t>();
+	ret.y = get<int16_t>();
+	return ret;
 }

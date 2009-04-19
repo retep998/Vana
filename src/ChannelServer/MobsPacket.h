@@ -28,13 +28,14 @@ class Mob;
 class PacketReader;
 struct StatusInfo;
 struct MobInfo;
+struct Pos;
 
 namespace MobsPacket {
 	void spawnMob(Player *player, Mob *mob, Mob *owner = 0, bool spawn = false, bool show = false);
 	void requestControl(Player *player, Mob *mob, bool spawn = false);
 	void endControlMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp);
-	void moveMob(Player *player, int32_t mobid, bool useskill, int32_t skill, int8_t trajectory, unsigned char *buf, int32_t len);
+	void moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, Pos target, unsigned char *buf, int32_t len);
 	void damageMob(Player *player, PacketReader &pack);
 	void damageMobRanged(Player *player, PacketReader &pack);
 	void damageMobSpell(Player *player, PacketReader &pack);

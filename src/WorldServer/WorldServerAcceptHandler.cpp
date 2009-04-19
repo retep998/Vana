@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptHandler.h"
 #include "ChannelChangeRequests.h"
 #include "Channels.h"
-#include "MiscUtilities.h"
+#include "IpUtilities.h"
 #include "PacketReader.h"
 #include "PartyHandler.h"
 #include "Players.h"
@@ -73,7 +73,7 @@ void WorldServerAcceptHandler::handleChangeChannel(WorldServerAcceptPlayer *play
 		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->channel);
 		if (chan) {
 			WorldServerAcceptPacket::newConnectable(chan->id, playerid);
-			uint32_t chanIp = MiscUtilities::matchIpSubnet(gamePlayer->ip, chan->external_ip, chan->ip);
+			uint32_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->ip, chan->external_ip, chan->ip);
 			WorldServerAcceptPacket::playerChangeChannel(curchan->player, playerid, chanIp, chan->port);
 		}
 		else {

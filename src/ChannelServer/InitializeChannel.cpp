@@ -17,17 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeChannel.h"
 #include "ChatHandler.h"
+#include "Database.h"
 #include "DropDataProvider.h"
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
-#include "MobDataProvider.h"
-#include "ShopDataProvider.h"
-#include "Reactors.h"
-#include "Quests.h"
-#include "Skills.h"
-#include "Database.h"
+#include "MapleVersion.h"
 #include "MiscUtilities.h"
+#include "MobDataProvider.h"
 #include "Pets.h"
+#include "Quests.h"
+#include "Reactors.h"
+#include "ShopDataProvider.h"
+#include "Skills.h"
 #include <iostream>
 
 using std::string;
@@ -39,14 +40,19 @@ void Initializing::checkMcdbVersion() {
 
 	int32_t version = (int32_t) res[0]["version"];
 	int32_t subversion = (int32_t) res[0]["subversion"];
+	int32_t maple_version = (int32_t) res[0]["maple_version"];
 
 	if (version != McdbVersion || subversion != McdbSubVersion) {
-		// MCDB too old
+		// MCDB incompatible
 		std::cout << "ERROR: MCDB version imcompatible. Expected: " << McdbVersion << "." << McdbSubVersion << " ";
 		std::cout << "Have: " << version << "." << subversion << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
 		exit(4);
+	}
+
+	if (maple_version != MAPLE_VERSION) {
+		std::cout << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files. Vana: " << MAPLE_VERSION << " MCDB: " << maple_version << std::endl;
 	}
 }
 
@@ -84,10 +90,10 @@ void Initializing::initializeReactors() {
 		revent.state = atoi(reactorRow[2]);
 		revent.type = atoi(reactorRow[3]);
 		revent.itemid = atoi(reactorRow[4]);
-		revent.ltx = atoi(reactorRow[5]);
-		revent.lty = atoi(reactorRow[6]);
-		revent.rbx = atoi(reactorRow[7]);
-		revent.rby = atoi(reactorRow[8]);
+		revent.lt.x = atoi(reactorRow[5]);
+		revent.lt.y = atoi(reactorRow[6]);
+		revent.rb.x = atoi(reactorRow[7]);
+		revent.rb.y = atoi(reactorRow[8]);
 		revent.nextstate = atoi(reactorRow[9]);
 		Reactors::setMaxstates(atoi(reactorRow[1]), revent.nextstate);
 		Reactors::addEventInfo(atoi(reactorRow[1]), revent);
