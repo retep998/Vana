@@ -344,6 +344,10 @@ const int32_t PlayerActiveBuffs::getHyperBody() {
 	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 ? (int32_t)Jobs::Spearman::HyperBody : (int32_t)Jobs::SuperGm::HyperBody);
 }
 
+const bool PlayerActiveBuffs::isUsingHide() {
+	return (getActiveSkillLevel(Jobs::SuperGm::Hide) > 0);
+}
+
 const int32_t PlayerActiveBuffs::getCurrentMorph() {
 	int32_t morphid = 0;
 	if (m_activebuffsbytype.find(Byte5) != m_activebuffsbytype.end()) {
