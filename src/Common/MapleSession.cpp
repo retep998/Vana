@@ -80,7 +80,7 @@ void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
 
 		// Encrypt packet
 		m_decoder.createHeader(buffer, (int16_t) len);
-		m_decoder.encrypt(buffer + 4, len);
+		m_decoder.encrypt(buffer + headerLen, len);
 		m_decoder.next();
 	}
 	else {
