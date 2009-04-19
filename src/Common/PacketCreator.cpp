@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Pos.h"
 #include "PacketReader.h"
+#include <iostream>
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>

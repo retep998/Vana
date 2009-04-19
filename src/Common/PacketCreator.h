@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PACKETCREATOR_H
 
 #include "Types.h"
+#include <cstring>
 #include <string>
 #include <boost/shared_array.hpp>
 
