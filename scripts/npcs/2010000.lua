@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/itemProduction.lua");
 
-takereqs = {
+if defined == nil then
+	takereqs = {
 		{4000073, 100}, -- Solid Horn
 		{4000059, 100}, -- Star Pixie's Starpiece
 		{4000076, 100}, -- Fly-Eye Wings
@@ -45,9 +46,8 @@ takereqs = {
 		{4000053, 100}, -- Werewolf Toenail
 		{4000054, 100}, -- Lycanthrope Toenail
 		{4000080, 100}  -- Bain's Spiky Collar
-	   };
-
-rewards = {
+	};
+	rewards = {
 		{{2000001, 20},	{2010004, 10}, {2000003, 15}, {4003001, 15}, {2020001, 15}, {2030000, 15}},
 		{{2000001, 30},	{2010001, 40}, {2000003, 20}, {4003001, 20}, {2040002, 01}},
 		{{2000001, 30},	{2010001, 40}, {2000003, 20}, {4003001, 20}, {2040002, 01}},
@@ -73,73 +73,75 @@ rewards = {
 		{{2000006, 30}, {4020006, 07}, {4020007, 02}, {4020008, 02}, {2070010, 01}, {2040805, 01}},
 		{{2000006, 30}, {4020006, 07}, {4020007, 02}, {4020008, 02}, {2041020, 01}},
 		{{2000006, 35}, {4020006, 09}, {4020007, 04}, {4020008, 04}, {2041008, 01}},
-	  };
+	};
+	defined = true;
 
--- Default rewards:
+	-- Default rewards:
 
--- Meat: 2010001
--- Orange Potion: 2000001
--- Fried Chicken: 2020001
--- White Potion: 2000002
--- Hot Dog: 2020005
--- Hot Dog Supreme: 2020006
+	-- Meat: 2010001
+	-- Orange Potion: 2000001
+	-- Fried Chicken: 2020001
+	-- White Potion: 2000002
+	-- Hot Dog: 2020005
+	-- Hot Dog Supreme: 2020006
 
--- Blue Potion: 2000003
--- Lemon: 2010004
--- Salad: 2020000
--- Mana Elixir: 2000006
--- Pure Water: 2022000
+	-- Blue Potion: 2000003
+	-- Lemon: 2010004
+	-- Salad: 2020000
+	-- Mana Elixir: 2000006
+	-- Pure Water: 2022000
 
--- All Cure: 2050004
--- Warrior Potion: 2002004
--- Sniper Potion: 2002005
--- Wizard Potion: 2002003
--- Icicles: 2070010
--- Red Bean Porridge: 2022001
+	-- All Cure: 2050004
+	-- Warrior Potion: 2002004
+	-- Sniper Potion: 2002005
+	-- Wizard Potion: 2002003
+	-- Icicles: 2070010
+	-- Red Bean Porridge: 2022001
 
--- Nearest Town Scroll: 2030000
--- 10% helmet for def: 2040002
--- 10% shield for def: 2040902
--- 10% earring for int: 2040302
--- 10% topwear for def: 2040402
--- 10% bottomwear for def: 2040602
--- 10% overall for def: 2040505
--- 10% overall for dex: 2040502
--- 10% shoes for jump: 2040705
--- 10% shoes for speed: 2040708
--- 10% shoes for dex: 2040702
--- 10% gloves for dex: 2040802
--- 10% gloves for att: 2040805
--- 10% cape for dex: 2041020
--- 10% cape for luk: 2041023
--- 10% cape for mdef: 2041002
--- 10% cape for wdef: 2041005
--- 10% cape for HP: 2041008
--- 60% cape for int: 2041016
+	-- Nearest Town Scroll: 2030000
+	-- 10% helmet for def: 2040002
+	-- 10% shield for def: 2040902
+	-- 10% earring for int: 2040302
+	-- 10% topwear for def: 2040402
+	-- 10% bottomwear for def: 2040602
+	-- 10% overall for def: 2040505
+	-- 10% overall for dex: 2040502
+	-- 10% shoes for jump: 2040705
+	-- 10% shoes for speed: 2040708
+	-- 10% shoes for dex: 2040702
+	-- 10% gloves for dex: 2040802
+	-- 10% gloves for att: 2040805
+	-- 10% cape for dex: 2041020
+	-- 10% cape for luk: 2041023
+	-- 10% cape for mdef: 2041002
+	-- 10% cape for wdef: 2041005
+	-- 10% cape for HP: 2041008
+	-- 60% cape for int: 2041016
 
--- Dragon Skin: 4000030
--- Screw: 4003000
--- Processed Wood: 4003001
--- Ancient Scroll: 4001005
--- Piece of Ice: 4003002
--- Fairy Wing: 4003003
+	-- Dragon Skin: 4000030
+	-- Screw: 4003000
+	-- Processed Wood: 4003001
+	-- Ancient Scroll: 4001005
+	-- Piece of Ice: 4003002
+	-- Fairy Wing: 4003003
 
--- Silver Ore: 4010004
--- Orihalcon Ore: 4010005
--- Mithril Ore: 4010002
--- Steel Ore: 4010001
--- Bronze Ore: 4010000
--- Adamantium Ore: 4010003
--- Gold Ore: 4010006
--- Garnet Ore: 4020000
--- Amethyst Ore: 4020001
--- Aquamarine Ore: 4020002
--- Emerald Ore: 4020003
--- Opal Ore: 4020004
--- Sapphire Ore: 4020005
--- Topaz Ore: 4020006
--- Diamond Ore: 4020007
--- Black Crystal Ore: 4020008
+	-- Silver Ore: 4010004
+	-- Orihalcon Ore: 4010005
+	-- Mithril Ore: 4010002
+	-- Steel Ore: 4010001
+	-- Bronze Ore: 4010000
+	-- Adamantium Ore: 4010003
+	-- Gold Ore: 4010006
+	-- Garnet Ore: 4020000
+	-- Amethyst Ore: 4020001
+	-- Aquamarine Ore: 4020002
+	-- Emerald Ore: 4020003
+	-- Opal Ore: 4020004
+	-- Sapphire Ore: 4020005
+	-- Topaz Ore: 4020006
+	-- Diamond Ore: 4020007
+	-- Black Crystal Ore: 4020008
+end
 
 if state == 0 then
 	addText("Hey, got a little bit of time? Well, my job is to collect items here and sell them elsewhere, but these days the monsters have become much more hostile so it's been difficult getting good items ... What do you think? Do you want to do some business with me?");
