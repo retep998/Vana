@@ -64,7 +64,7 @@ void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
 	if (info->fieldType == 82 || info->fieldType == 81) // Apple training maps/Showa spa
 		MapPacket::forceMapEquip(player);
-	if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) == 0)
+	if (!player->getActiveBuffs()->isUsingHide())
 		MapPacket::showPlayer(player);
 	if (timer > 0)
 		MapPacket::showTimer(player, timer - static_cast<int32_t>(time(0) - timerstart));
@@ -194,7 +194,7 @@ void Map::updateMobControl(Mob *mob, bool spawn) {
 		Player *p = 0;
 		for (size_t j = 0; j < players.size(); j++) {
 			Player *test = players[j];
-			if (!(test->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) > 0)) {
+			if (!test->getActiveBuffs()->isUsingHide()) {
 				int32_t curpos = mob->getPos() - test->getPos();
 				if (curpos < maxpos) {
 					maxpos = curpos;
@@ -311,7 +311,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 
 	// Players
 	for (size_t i = 0; i < players.size(); i++) {
-		if (player != players[i] && players[i]->getActiveBuffs()->getActiveSkillLevel(Jobs::SuperGm::Hide) == 0) {
+		if (player != players[i] && !players[i]->getActiveBuffs()->isUsingHide()) {
 			PacketCreator packet = MapPacket::playerPacket(players[i]);
 			player->getSession()->send(packet);
 			Summons::showSummons(players[i], player);
