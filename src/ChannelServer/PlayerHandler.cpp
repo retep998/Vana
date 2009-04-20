@@ -35,7 +35,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	uint8_t stance = 0;
 	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	int16_t job = player->getJob();
-	int16_t disease = 0;
+	uint8_t disease = 0;
+	uint8_t level = 0;
 	int32_t mapmobid = 0; // Map Mob ID
 	Mob *mob = 0;
 	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
@@ -61,6 +62,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				try {
 					attack = mob->getAttackInfo(type);
 					disease = attack.disease;
+					level = attack.level;
 				}
 				catch (std::out_of_range) {
 					// Not having data about linked monsters causes crashes with linked monsters
@@ -96,7 +98,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	}
 	switch (type) { // Packet endings
 		case 0xFE:
-			disease = packet.get<int16_t>(); // Disease
+			level = packet.get<uint8_t>();
+			disease = packet.get<uint8_t>();
 			break;
 		default:  {
 			stance = packet.get<int8_t>(); // Power Stance
@@ -123,7 +126,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		}
 	}
 	if (disease > 0 && damage != 0) { // Fake/Guardian don't prevent disease
-		// Status ailment processing here
+		player->getActiveBuffs()->addDebuff(disease, level);
 	}
 	if (damage > 0 && !player->hasGmEquip()) {
 		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 

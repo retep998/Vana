@@ -31,7 +31,7 @@ MobDataProvider * MobDataProvider::singleton = 0;
 
 void MobDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.level, mobdata.hp, mobdata.mp, mobdata.elemAttr, mobdata.hprecovery, mobdata.mprecovery, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobdata.undead, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.level, mobdata.hp, mobdata.mp, mobdata.elemAttr, mobdata.hprecovery, mobdata.mprecovery, mobdata.selfdestruction, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobdata.undead, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid=mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW mobRow;
@@ -43,12 +43,13 @@ void MobDataProvider::loadData() {
 		//    4 : Elemental Attributes
 		//    5 : HP Recovery
 		//    6 : MP Recovery
-		//    7 : EXP
-		//    8 : Boss
-		//    9 : HP Color
-		//   10 : HP BG Color
-		//   11 : Undead?
-		//   12 : Mob Summon
+		//    7 : Self-Destruction HP
+		//    8 : EXP
+		//    9 : Boss
+		//   10 : HP Color
+		//   11 : HP BG Color
+		//   12 : Undead?
+		//   13 : Mob Summon
 		int32_t mobid = atoi(mobRow[0]);
 
 		if (mobinfo.find(mobid) == mobinfo.end()) {
@@ -59,11 +60,12 @@ void MobDataProvider::loadData() {
 			string elemattr(mobRow[4]);
 			mob.hprecovery = atoi(mobRow[5]);
 			mob.mprecovery = atoi(mobRow[6]);
-			mob.exp = atoi(mobRow[7]);
-			mob.boss = atob(mobRow[8]);
-			mob.hpcolor = atoi(mobRow[9]);
-			mob.hpbgcolor = atoi(mobRow[10]);
-			mob.undead = atob(mobRow[11]);
+			mob.selfdestruction = atoi(mobRow[7]);
+			mob.exp = atoi(mobRow[8]);
+			mob.boss = atob(mobRow[9]);
+			mob.hpcolor = atoi(mobRow[10]);
+			mob.hpbgcolor = atoi(mobRow[11]);
+			mob.undead = atob(mobRow[12]);
 
 			mob.canfreeze = (!mob.boss && elemattr.find("I2") == string::npos && elemattr.find("I1") == string::npos);
 			mob.canpoison = (!mob.boss && elemattr.find("S2") == string::npos && elemattr.find("S1") == string::npos);
@@ -71,8 +73,8 @@ void MobDataProvider::loadData() {
 			mobinfo[mobid] = mob;
 		}
 
-		if (mobRow[12] != 0) {
-			mobinfo[mobid].summon.push_back(atoi(mobRow[12]));
+		if (mobRow[13] != 0) {
+			mobinfo[mobid].summon.push_back(atoi(mobRow[13]));
 		}
 
 	}
@@ -98,20 +100,18 @@ void MobDataProvider::loadData() {
 		mobinfo[atoi(mobRow[0])].attacks.push_back(mobattack);
 	}
 
-	query << "SELECT mobid, skillid, level, action, effectAfter FROM mobskilldata";
+	query << "SELECT mobid, skillid, level, effectAfter FROM mobskilldata";
 	res = query.use();
 
 	while ((mobRow = res.fetch_raw_row())) {
 		// Col0 : Mob ID
 		//    1 : Skill ID
 		//    2 : Level
-		//    3 : Action
-		//    4 : EffectAfter
+		//    3 : EffectAfter
 		MobSkillInfo mobskill;
-		mobskill.id = atoi(mobRow[1]);
+		mobskill.skillid = atoi(mobRow[1]);
 		mobskill.level = atoi(mobRow[2]);
-		mobskill.action = atoi(mobRow[3]);
-		mobskill.effectAfter = atoi(mobRow[4]);
+		mobskill.effectAfter = atoi(mobRow[3]);
 		mobinfo[atoi(mobRow[0])].skills.push_back(mobskill);
 	}
 	std::cout << "DONE" << std::endl;

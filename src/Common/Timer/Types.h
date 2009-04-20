@@ -23,19 +23,20 @@ namespace Timer {
 struct Types {
 	enum {
 		BuffTimer,
-		PickpocketTimer,
 		CoolTimer,
+		HorntailTimer,
+		InstanceTimer,
+		MapleTVTimer,
 		MapTimer,
 		MobStatusTimer,
+		MobSkillTimer,
 		PetTimer,
+		PickpocketTimer,
 		PingTimer,
 		RankTimer,
 		ReactionTimer,
 		SkillActTimer,
-		TradeTimer,
-		HorntailTimer,
-		MapleTVTimer,
-		InstanceTimer
+		TradeTimer
 	};
 };
 

@@ -26,9 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
 #include <boost/tr1/unordered_map.hpp>
-#include <utility>
 
-using std::pair;
 using std::tr1::unordered_map;
 
 PacketCreator MapPacket::playerPacket(Player *player) {
@@ -59,9 +57,15 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	for (int8_t i = 0; i < 8; i++) {
 		int8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
 		if (enter.types[cbyte] != 0) {
-			for (unordered_map<uint8_t, pair<bool, int16_t> >::iterator iter = enter.values[cbyte].begin(); iter != enter.values[cbyte].end(); iter++) {
-				if (iter->second.first) {
-					int16_t value = iter->second.second;
+			for (unordered_map<uint8_t, MapEntryVals>::iterator iter = enter.values[cbyte].begin(); iter != enter.values[cbyte].end(); iter++) {
+				if (iter->second.debuff) {
+					if (!(iter->first == 0x01 && cbyte == Byte5)) { // Glitch in global, Slow doesn't display properly and if you try, it error 38s
+						packet.add<int16_t>(iter->second.skill);
+						packet.add<int16_t>(iter->second.val);
+					}
+				}
+				else if (iter->second.use) {
+					int16_t value = iter->second.val;
 					if (cbyte == Byte3) {
 						if (iter->first == 0x20) {
 							packet.add<int8_t>(player->getActiveBuffs()->getCombo() + 1);
@@ -80,7 +84,6 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			}
 		}
 	}
-
 	packet.add<int32_t>(0);
 	packet.add<uint8_t>(enter.types[Byte8]);
 	packet.add<int8_t>(0);

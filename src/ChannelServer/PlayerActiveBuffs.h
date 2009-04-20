@@ -50,20 +50,45 @@ public:
 		m_activebooster(0),
 		m_pickpocketcounter(0),
 		m_battleshiphp(0),
+		m_debuffmask(0),
 		m_berserk(false)
 		{ }
 
-	// Buff skills
+	// Buff handling
 	void addBuff(int32_t skill, int32_t time);
 	void removeBuff(int32_t skill, bool fromTimer = false);
 	void removeBuff();
 	int32_t buffTimeLeft(int32_t skill);
 	list<int32_t> getBuffs() const { return m_buffs; }
+	void dispelBuffs();
+
+	// Buff info
+	void setActiveBuffsByType(ActiveBuffsByType &buffs);
+	void addBuffInfo(int32_t skillid, const vector<Buff> &buffs);
+	void setActiveSkillLevel(int32_t skillid, uint8_t level);
+	uint8_t getActiveSkillLevel(int32_t skillid);
+	ActiveBuff removeBuffInfo(int32_t skillid, const vector<Buff> &buffs);
+	ActiveBuffsByType getBuffTypes() const { return m_activebuffsbytype; }
+
+	// Buff map info
+	void addMapEntryBuffInfo(ActiveMapBuff &buff);
+	void deleteMapEntryBuffInfo(ActiveMapBuff &buff);
+	void setMountInfo(int32_t skillid, int32_t mountid);
+	void setMapEntryBuffs(MapEntryBuffs &buffs);
+	MapEntryBuffs getMapEntryBuffs();
 
 	// Skill "acts"
 	void addAct(int32_t skill, Act act, int16_t value, int32_t time);
 	Timer::Container * getActTimer(int32_t skill);
 	void removeAct(int32_t skill);
+
+	// Debuffs
+	void addDebuff(uint8_t skill, uint8_t level);
+	void useDispel();
+	void useDebuffHealingItem(int32_t mask);
+	void removeDebuff(uint8_t skill, bool fromTimer = false);
+	int32_t getDebuffMask() const { return m_debuffmask; }
+	void setDebuffMask(int32_t newmask) { m_debuffmask = newmask; }
 
 	// Combo Attack
 	void setCombo(uint8_t combo, bool sendPacket);
@@ -110,24 +135,13 @@ public:
 	const bool hasPowerStance();
 	const bool hasMagicGuard();
 	const bool hasHyperBody();
+	const bool hasHolyShield();
 	const bool isUsingHide();
+	const bool isCursed();
 	const int32_t getHolySymbol();
 	const int32_t getPowerStance();
 	const int32_t getHyperBody();
 	const int32_t getCurrentMorph();
-
-	// Map garbage
-	void setActiveBuffsByType(ActiveBuffsByType &buffs);
-	void addBuffInfo(int32_t skillid, const vector<Buff> &buffs);
-	void setActiveSkillLevel(int32_t skillid, uint8_t level);
-	void addMapEntryBuffInfo(ActiveMapBuff &buff);
-	void deleteMapEntryBuffInfo(ActiveMapBuff &buff);
-	void setMountInfo(int32_t skillid, int32_t mountid);
-	void setMapEntryBuffs(MapEntryBuffs &buffs);
-	uint8_t getActiveSkillLevel(int32_t skillid);
-	ActiveBuff removeBuffInfo(int32_t skillid, const vector<Buff> &buffs);
-	ActiveBuffsByType getBuffTypes() const { return m_activebuffsbytype; }
-	MapEntryBuffs getMapEntryBuffs();
 private:
 	Player *m_player;
 	uint8_t m_combo;
@@ -137,12 +151,15 @@ private:
 	int32_t m_pickpocketcounter;
 	int32_t m_battleshiphp;
 	uint32_t m_timeseed;
+	uint32_t m_debuffmask;
 	bool m_berserk;
 	list<int32_t> m_buffs;
 	ActiveBuffsByType m_activebuffsbytype;
 	MapEntryBuffs m_mapbuffs;
 	unordered_map<int32_t, uint8_t> m_activelevels;
 	unordered_map<int32_t, shared_ptr<Timer::Container> > m_skill_acts;
+
+	int32_t calculateDebuffMaskBit(uint8_t skill);
 };
 
 #endif

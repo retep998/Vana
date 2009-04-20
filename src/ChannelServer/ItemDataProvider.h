@@ -66,7 +66,6 @@ struct ConsumeInfo {
 	bool autoconsume;
 	bool randstat;
 	bool recover;
-	int8_t ailment;
 	int16_t hp;
 	int16_t mp;
 	int16_t hpr;
@@ -99,6 +98,7 @@ struct ConsumeInfo {
 	int16_t ispeed;
 	int32_t moveTo;
 	int32_t time;
+	int32_t ailment;
 	vector<SummonBag> mobs;
 	vector<Skillbook> skills;
 };

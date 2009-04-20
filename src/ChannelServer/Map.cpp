@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.h"
 #include "Drops.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Instance.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
@@ -85,6 +86,30 @@ void Map::removePlayer(Player *player) {
 	updateMobControl(player);
 }
 
+void Map::dispelPlayers(int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb) {
+	for (size_t i = 0; i < players.size(); i++) {
+		Player *dispelee = players[i];
+		if (dispelee != 0 && GameLogicUtilities::isInBox(origin, lt, rb, dispelee->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
+			dispelee->getActiveBuffs()->dispelBuffs();
+		}
+	}
+}
+
+void Map::statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb) {
+	int16_t done = 0;
+	for (size_t i = 0; i < players.size(); i++) {
+		Player *toy = players[i];
+		if (toy != 0) {
+			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
+				toy->getActiveBuffs()->addDebuff(status, level);
+				done++;
+			}
+		}
+		if (count > 0 && done == count)
+			break;
+	}
+}
+
 // Reactors
 void Map::addReactorSpawn(ReactorSpawnInfo spawn) {
 	reactorspawns.push_back(spawn);
@@ -133,6 +158,18 @@ Pos Map::findFloor(Pos pos) {
 	return Pos(x, maxy);
 }
 
+int16_t Map::getFhAtPosition(Pos pos) {
+	int16_t foothold = 0;
+	for (size_t i = 0; i < footholds.size(); i++) {
+		FootholdInfo cur = footholds[i];
+		if (((pos.x > cur.pos1.x && pos.x <= cur.pos2.x) || (pos.x > cur.pos2.x && pos.x <= cur.pos1.x)) && ((pos.y > cur.pos1.x && pos.y <= cur.pos2.x) || (pos.y > cur.pos2.x && pos.y <= cur.pos1.x))) {
+			foothold = cur.id;
+			break;
+		}
+	}
+	return foothold;
+}
+
 // Portals
 PortalInfo * Map::getSpawnPoint(int32_t pid) {
 	int32_t id = (pid != -1 ? pid : Randomizer::Instance()->randInt(spawnpoints.size() - 1));
@@ -157,13 +194,16 @@ void Map::checkMobSpawn(clock_t time) {
 	}
 }
 
-void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh, Mob *owner) {
+void Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh, Mob *owner, int8_t summoneffect) {
 	int32_t id = objectids.next();
 
 	Mob *mob = new Mob(id, info->id, mobid, pos, spawnid, fh);
 	mobs[id] = mob;
-
-	MobsPacket::spawnMob(0, mob, owner, (owner == 0));
+	if (summoneffect != 0) {
+		mob->setOwner(owner);
+		owner->addSpawn(id, mob);
+	}
+	MobsPacket::spawnMob(0, mob, summoneffect, owner, (owner == 0));
 	updateMobControl(mob, true);
 }
 
@@ -241,6 +281,28 @@ int32_t Map::countMobs(int32_t mobid) {
 		}
 	}
 	return mobcount;
+}
+
+void Map::healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb) {
+	unordered_map<int32_t, Mob *> mobmap = this->mobs;
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
+		if (iter->second != 0) {
+			if (GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
+				iter->second->skillHeal(hp, mp);
+			}
+		}
+	}
+}
+
+void Map::statusMobs(const vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb) {
+	unordered_map<int32_t, Mob *> mobmap = this->mobs;
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
+		if (iter->second != 0) {
+			if (GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
+				iter->second->addStatus(0, statuses);
+			}
+		}
+	}
 }
 
 // Drops

@@ -23,10 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPlayer.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <list>
-#include <utility>
 
 using std::list;
-using std::pair;
 using std::tr1::unordered_map;
 
 void WorldServerConnectPacket::groupChat(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat) {
@@ -99,16 +97,24 @@ void WorldServerConnectPacket::playerChangeChannel(WorldServerConnectPlayer *pla
 	packet.add<int32_t>(playerbuffs->getCharge());
 	packet.add<int32_t>(playerbuffs->getBooster());
 	packet.add<int32_t>(playerbuffs->getBattleshipHp());
+	packet.add<int32_t>(playerbuffs->getDebuffMask());
 	MapEntryBuffs enterbuffs = playerbuffs->getMapEntryBuffs();
 	packet.add<int32_t>(enterbuffs.mountid);
 	packet.add<int32_t>(enterbuffs.mountskill);
 	for (int8_t i = 0; i < 8; i++) {
 		packet.add<uint8_t>(enterbuffs.types[i]);
 		packet.add<uint8_t>((uint8_t)(enterbuffs.values[i].size()));
-		for (unordered_map<uint8_t, pair<bool, int16_t> >::iterator iter = enterbuffs.values[i].begin(); iter != enterbuffs.values[i].end(); iter++) {
+		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = enterbuffs.values[i].begin(); iter != enterbuffs.values[i].end(); iter++) {
 			packet.add<uint8_t>(iter->first);
-			packet.add<int8_t>(iter->second.first ? 1 : 0);
-			packet.add<int16_t>(iter->second.second);
+			packet.add<int8_t>(iter->second.debuff ? 1 : 0);
+			if (iter->second.debuff) {
+				packet.add<int16_t>(iter->second.skill);
+				packet.add<int16_t>(iter->second.val);
+			}
+			else {
+				packet.add<int8_t>(iter->second.use ? 1 : 0);
+				packet.add<int16_t>(iter->second.val);
+			}
 		}
 	}
 	list<int32_t> currentbuffs = playerbuffs->getBuffs();
