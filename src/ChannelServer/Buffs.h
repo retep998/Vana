@@ -21,12 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
-#include <utility>
 #include <vector>
 
 using std::tr1::unordered_map;
-using std::pair;
 using std::vector;
 
 class Player;
@@ -66,6 +63,13 @@ struct SkillInfo {
 	bool bact;
 };
 
+struct MobAilmentInfo {
+	vector<BuffInfo> mob;
+	int16_t delay;
+	BuffAct act;
+	bool bact;
+};
+
 struct ActiveBuff {
 	ActiveBuff() : hasmapbuff(false) {
 		for (size_t i = 0; i < 8; i++) {
@@ -78,7 +82,7 @@ struct ActiveBuff {
 };
 
 struct ActiveMapBuff {
-	ActiveMapBuff() {
+	ActiveMapBuff() : debuff(false) {
 		for (int8_t i = 0; i < 8; i++)
 			typelist[i] = 0;
 	}
@@ -87,6 +91,15 @@ struct ActiveMapBuff {
 	vector<int16_t> values;
 	vector<bool> usevals;
 	uint8_t typelist[8];
+	bool debuff;
+};
+
+struct MapEntryVals {
+	MapEntryVals() : use(false), debuff(false), val(0), skill(0) { }
+	bool use;
+	bool debuff;
+	int16_t val;
+	int16_t skill;
 };
 
 struct MapEntryBuffs {
@@ -96,7 +109,8 @@ struct MapEntryBuffs {
 		}
 	}
 	uint8_t types[8];
-	unordered_map<int8_t, unordered_map<uint8_t, pair<bool, int16_t> > > values;
+	unordered_map<int8_t, unordered_map<uint8_t, MapEntryVals> > values;
+
 	int32_t mountid;
 	int32_t mountskill;
 };
@@ -112,20 +126,29 @@ public:
 	}
 	void addItemInfo(int32_t itemid, const vector<uint8_t> &types, const vector<int8_t> &bytes, const vector<int16_t> &values);
 	void addBuff(Player *player, int32_t itemid, int32_t time);
-	void endBuff(Player *player, int32_t skill);
 	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo);
+	void endBuff(Player *player, int32_t skill);
+	void doAct(Player *player, int32_t skillid, uint8_t level);
+	void addDebuff(Player *player, uint8_t skillid, uint8_t level);
+	void endDebuff(Player *player, uint8_t skillid);
+
 	ActiveBuff parseBuffInfo(Player *player, int32_t skillid, uint8_t level);
 	ActiveMapBuff parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level);
 	vector<Buff> parseBuffs(int32_t skillid, uint8_t level);
-	void doAct(Player *player, int32_t skillid, uint8_t level);
+	ActiveBuff parseMobBuffInfo(Player *player, uint8_t skillid, uint8_t level);
+	ActiveMapBuff parseMobBuffMapInfo(Player *player, uint8_t skillid, uint8_t level);
+	vector<Buff> parseMobBuffs(uint8_t skillid);
 private:
 	Buffs();
 	static Buffs *singleton;
 
 	unordered_map<int32_t, SkillInfo> skillsinfo;
+	unordered_map<uint8_t, MobAilmentInfo> mobskillsinfo;
 
 	ActiveMapBuff parseBuffMapEntryInfo(Player *player, int32_t skillid, uint8_t level);
+	ActiveMapBuff parseMobBuffMapEntryInfo(Player *player, uint8_t skillid, uint8_t level);
 	int16_t getValue(int8_t value, int32_t skillid, uint8_t level);
+	int16_t getMobSkillValue(int8_t value, uint8_t skillid, uint8_t level);
 	int32_t parseMountInfo(Player *player, int32_t skillid, uint8_t level);
 };
 

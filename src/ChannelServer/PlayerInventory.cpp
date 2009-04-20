@@ -118,7 +118,7 @@ bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
 }
 
 void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item) {
-	items[inv-1][slot] = item;
+	items[inv - 1][slot] = item;
 	if (itemamounts.find(item->id) != itemamounts.end())
 		itemamounts[item->id] += item->amount;
 	else

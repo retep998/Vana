@@ -482,6 +482,8 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 		player->modifyHp(item.cons.hpr * player->getMHp() / 100);
 	if (item.cons.mpr > 0)
 		player->modifyMp(item.cons.mpr * player->getMMp() / 100);
+	if (item.cons.ailment > 0)
+		player->getActiveBuffs()->useDebuffHealingItem(item.cons.ailment);
 	// Item buffs
 	if (item.cons.time > 0) {
 		int32_t time = item.cons.time * alchemist / 100;

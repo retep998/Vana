@@ -29,6 +29,7 @@ Buffs::Buffs() {
 	BuffAct act;
 	BuffInfo player;
 	BuffMapInfo map;
+	MobAilmentInfo mob;
 
 	// Boosters
 	buff.type = 0x08;
@@ -581,6 +582,71 @@ Buffs::Buffs() {
 	player.buff = buff;
 	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
 	// End mount buffs
+
+	// Debuffs
+	// Slow
+	buff.type = 0x01;
+	buff.byte = Byte5;
+	buff.value = SkillX;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Slow].mob.push_back(player);
+	mobskillsinfo[MobSkills::Slow].delay = 900;
+
+	// Stun
+	buff.type = 0x02;
+	buff.byte = Byte3;
+	buff.value = SkillNone;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Stun].mob.push_back(player);
+	mobskillsinfo[MobSkills::Stun].delay = 0;
+
+	// Darkness
+	buff.type = 0x10;
+	buff.byte = Byte3;
+	buff.value = SkillNone;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Darkness].mob.push_back(player);
+	mobskillsinfo[MobSkills::Darkness].delay = 900;
+
+	// Seal
+	buff.type = 0x08;
+	buff.byte = Byte3;
+	buff.value = SkillNone;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Seal].mob.push_back(player);
+	mobskillsinfo[MobSkills::Seal].delay = 900;
+
+	// Weakness
+	buff.type = 0x40;
+	buff.byte = Byte4;
+	buff.value = SkillNone;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Weakness].mob.push_back(player);
+	mobskillsinfo[MobSkills::Weakness].delay = 900;
+
+	// Seduce
+	buff.type = 0x80;
+	buff.byte = Byte5;
+	buff.value = SkillNone;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Seduce].mob.push_back(player);
+	mobskillsinfo[MobSkills::Seduce].delay = 900;
+
+	// Curse
+	buff.type = 0x80;
+	buff.byte = Byte4;
+	buff.value = SkillNone;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Curse].mob.push_back(player);
+	mobskillsinfo[MobSkills::Curse].delay = 900;
+
+	// Poison
+	buff.type = 0x04;
+	buff.byte = Byte3;
+	buff.value = SkillX;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Poison].mob.push_back(player);
+	mobskillsinfo[MobSkills::Poison].delay = 500;
 }
 
 void Buffs::addItemInfo(int32_t itemid, const vector<uint8_t> &types, const vector<int8_t> &bytes, const vector<int16_t> &values) {
@@ -629,6 +695,17 @@ int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 		case SkillAvo: rvalue = Skills::skills[skillid][level].avo; break;
 		case SkillProp: rvalue = Skills::skills[skillid][level].prop; break;
 		case SkillMorph: rvalue = Skills::skills[skillid][level].morph; break;
+		case SkillLv: rvalue = level; break;
+	}
+	return rvalue;
+}
+
+int16_t Buffs::getMobSkillValue(int8_t value, uint8_t skillid, uint8_t level) {
+	int16_t rvalue = 0;
+	switch (value) {
+		case SkillX: rvalue = Skills::mobskills[skillid][level].x; break;
+		case SkillY: rvalue = Skills::mobskills[skillid][level].y; break;
+		case SkillProp: rvalue = Skills::mobskills[skillid][level].prop; break;
 		case SkillLv: rvalue = level; break;
 	}
 	return rvalue;
@@ -747,7 +824,6 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) { // Cancel speed change for maxed dark sight
 			continue;
 		}
-		int16_t value = 0;
 		mapskill.bytes.push_back(map.buff.byte);
 		mapskill.types.push_back(map.buff.type);
 		mapskill.typelist[map.buff.byte] += map.buff.type;
@@ -780,6 +856,63 @@ vector<Buff> Buffs::parseBuffs(int32_t skillid, uint8_t level) {
 		if (skillid == Jobs::Rogue::DarkSight && level == 20 && cur.buff.value == SkillSpeed) { // Cancel speed change for maxed dark sight
 			continue;
 		}
+		ret.push_back(cur.buff);
+	}
+	return ret;
+}
+
+ActiveBuff Buffs::parseMobBuffInfo(Player *player, uint8_t skillid, uint8_t level) {
+	ActiveBuff playerskill;
+	BuffInfo cur;
+	for (size_t i = 0; i < mobskillsinfo[skillid].mob.size(); i++) {
+		cur = mobskillsinfo[skillid].mob[i];
+		int8_t val = cur.buff.value;
+		playerskill.types[cur.buff.byte] += cur.buff.type;
+		playerskill.hasmapbuff = true;
+		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillid, level));
+		playerskill.vals.push_back(value);
+	}
+	return playerskill;
+}
+
+ActiveMapBuff Buffs::parseMobBuffMapInfo(Player *player, uint8_t skillid, uint8_t level) {
+	ActiveMapBuff mapskill;
+	BuffInfo cur;
+	for (size_t i = 0; i < mobskillsinfo[skillid].mob.size(); i++) {
+		cur = mobskillsinfo[skillid].mob[i];
+		int8_t val = cur.buff.value;
+		mapskill.bytes.push_back(cur.buff.byte);
+		mapskill.types.push_back(cur.buff.type);
+		mapskill.typelist[cur.buff.byte] += cur.buff.type;
+		mapskill.usevals.push_back(cur.useval);
+		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillid, level));
+		mapskill.values.push_back(value);
+	}
+	return mapskill;
+}
+
+ActiveMapBuff Buffs::parseMobBuffMapEntryInfo(Player *player, uint8_t skillid, uint8_t level) {
+	ActiveMapBuff mapskill;
+	BuffInfo cur;
+	for (size_t i = 0; i < mobskillsinfo[skillid].mob.size(); i++) {
+		cur = mobskillsinfo[skillid].mob[i];
+		int8_t val = cur.buff.value;
+		mapskill.bytes.push_back(cur.buff.byte);
+		mapskill.types.push_back(cur.buff.type);
+		mapskill.typelist[cur.buff.byte] += cur.buff.type;
+		mapskill.usevals.push_back(true);
+		mapskill.usevals.push_back(false);
+		mapskill.values.push_back(skillid);
+		mapskill.values.push_back(level);
+	}
+	mapskill.debuff = true;
+	return mapskill;
+}
+
+vector<Buff> Buffs::parseMobBuffs(uint8_t skillid) {
+	vector<Buff> ret;
+	for (size_t i = 0; i < mobskillsinfo[skillid].mob.size(); i++) {
+		BuffInfo cur = mobskillsinfo[skillid].mob[i];
 		ret.push_back(cur.buff);
 	}
 	return ret;
@@ -950,4 +1083,32 @@ void Buffs::doAct(Player *player, int32_t skillid, uint8_t level) {
 		int16_t value = getValue(skillsinfo[skillid].act.value, skillid, level);
 		player->getActiveBuffs()->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 	}
+}
+
+void Buffs::addDebuff(Player *player, uint8_t skillid, uint8_t level) {
+	int16_t time = Skills::mobskills[skillid][level].time;
+	vector<Buff> buffs = parseMobBuffs(skillid);
+	ActiveBuff playerskill = parseMobBuffInfo(player, skillid, level);
+	ActiveMapBuff mapskill = parseMobBuffMapInfo(player, skillid, level);
+	ActiveMapBuff enterskill = parseMobBuffMapEntryInfo(player, skillid, level);
+
+	BuffsPacket::giveDebuff(player, skillid, level, time, mobskillsinfo[skillid].delay, playerskill, mapskill);
+
+	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
+	playerbuffs->setActiveSkillLevel(skillid, level);
+	playerbuffs->addBuffInfo(skillid, buffs);
+	playerbuffs->addMapEntryBuffInfo(enterskill);
+	playerbuffs->addBuff(skillid, time);
+}
+
+void Buffs::endDebuff(Player *player, uint8_t skill) {
+	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
+	vector<Buff> buffs = parseMobBuffs(skill);
+	ActiveMapBuff meskill = parseMobBuffMapEntryInfo(player, skill, 1);
+	ActiveBuff pskill = playerbuffs->removeBuffInfo(skill, buffs);
+
+	BuffsPacket::endDebuff(player, pskill);
+
+	playerbuffs->deleteMapEntryBuffInfo(meskill);
+	playerbuffs->setActiveSkillLevel(skill, 0);
 }

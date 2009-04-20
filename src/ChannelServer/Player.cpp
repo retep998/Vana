@@ -114,6 +114,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet); break;
 		case RECV_LOOT_ITEM: Drops::playerLoot(this, packet); break;
+		case RECV_MOB_BOMB_EXPLOSION: Mobs::handleBomb(this, packet); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
@@ -218,7 +219,8 @@ void Player::playerConnect(PacketReader &packet) {
 		mybuffs->setBooster(existingbuffs->getBooster());
 		mybuffs->setCharge(existingbuffs->getCharge());
 		mybuffs->setCombo(existingbuffs->getCombo(), false);
-		
+		mybuffs->setDebuffMask(existingbuffs->getDebuffMask());
+
 		MapEntryBuffs entr = existingbuffs->getMapEntryBuffs();
 		mybuffs->setMountInfo(entr.mountskill, entr.mountid);
 		mybuffs->setMapEntryBuffs(entr);
