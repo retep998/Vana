@@ -85,7 +85,9 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, 
 	packet.add<int32_t>(mobid);
 	packet.add<int16_t>(moveid);
 	packet.add<int8_t>(useskill);
-	packet.add<int32_t>(mp);
+	packet.add<int16_t>(static_cast<int16_t>(mp));
+	packet.add<uint8_t>(skill);
+	packet.add<uint8_t>(level);
 	player->getSession()->send(packet);
 }
 
@@ -337,6 +339,7 @@ void MobsPacket::damageMobEnergyCharge(Player *player, PacketReader &pack) {
 
 	//Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
+
 void MobsPacket::damageMobSummon(Player *player, PacketReader &pack) {
 	int32_t summonid = pack.get<int32_t>();
 	pack.skipBytes(5);
@@ -429,6 +432,6 @@ void MobsPacket::dieMob(Mob *mob, int8_t death) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_KILL_MOB);
 	packet.add<int32_t>(mob->getId());
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(death);
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
