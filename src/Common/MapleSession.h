@@ -69,12 +69,12 @@ protected:
 
 	static const size_t connectHeaderLen = 2;
 	static const size_t headerLen = 4;
-	static const size_t bufferLen = 10000;
+	static const size_t maxBufferLen = 65535;
 
 	tcp::socket m_socket;
 	Decoder m_decoder;
 	std::tr1::shared_ptr<AbstractPlayer> m_player;
-	unsigned char m_buffer[bufferLen];
+	shared_array<unsigned char> m_buffer;
 	bool m_is_server;
 	string m_connect_packet_unknown;
 
