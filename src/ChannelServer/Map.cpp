@@ -189,24 +189,20 @@ void Map::updateMobControl(Player *player) {
 }
 
 void Map::updateMobControl(Mob *mob, bool spawn) {
-	if (players.size() > 0 && mob->getControl() == 0) {
-		int32_t maxpos = 200000;
-		Player *p = 0;
-		for (size_t j = 0; j < players.size(); j++) {
-			Player *test = players[j];
-			if (!test->getActiveBuffs()->isUsingHide()) {
-				int32_t curpos = mob->getPos() - test->getPos();
-				if (curpos < maxpos) {
-					maxpos = curpos;
-					p = test;
-				}
+	int32_t maxpos = 200000;
+	Player *p = 0;
+	for (size_t j = 0; j < players.size(); j++) {
+		Player *test = players[j];
+		if (!(test->getActiveBuffs()->isUsingHide())) {
+			int32_t curpos = mob->getPos() - test->getPos();
+			if (curpos < maxpos) {
+				maxpos = curpos;
+				p = test;
+				break;
 			}
 		}
-		mob->setControl(p);
 	}
-	else if (players.size() == 0) {
-		mob->setControl(0);
-	}
+	mob->setControl(p);
 }
 
 void Map::removeMob(int32_t id, int32_t spawnid) {

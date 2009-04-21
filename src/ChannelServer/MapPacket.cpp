@@ -248,7 +248,7 @@ void MapPacket::setMusic(int32_t mapid, const string &musicname) { // Set music
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
-void MapPacket::sendSound(int32_t mapid, const string &soundname) { // Send Sound
+void MapPacket::sendSound(int32_t mapid, const string &soundname) {
 	// Party1/Clear = Clear
 	// Party1/Failed = Wrong
 	// Cokeplay/Victory = Victory
@@ -261,7 +261,7 @@ void MapPacket::sendSound(int32_t mapid, const string &soundname) { // Send Soun
 	packet.addString(soundname);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
-// Send Event
+
 void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
 	// quest/party/clear = Clear
 	// quest/party/wrong_kor = Wrong
@@ -273,6 +273,15 @@ void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
 	packet.add<int16_t>(SEND_MAP_EFFECT);
 	packet.add<int8_t>(0x03);
 	packet.addString(eventname);
+	Maps::getMap(mapid)->sendPacket(packet);
+}
+
+void MapPacket::sendEffect(int32_t mapid, const string &effectname) {
+	// gate = KerningPQ Door
+	PacketCreator packet = PacketCreator();
+	packet.add<int16_t>(SEND_MAP_EFFECT);
+	packet.add<int8_t>(0x02);
+	packet.addString(effectname);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 

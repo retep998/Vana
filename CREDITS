@@ -2,9 +2,9 @@ PROJECT LEADER
 pawitp
 
 CORE DEVELOPERS
-LazyBui
 doyos
 KilledWhale
+LazyBui
 MooMoo
 zinmirai
 
@@ -35,8 +35,8 @@ Bri - Lots of work surrounding NPCs
 DeanSan - Lots of bug reports
 Diamondo25 - Numerous patches
 Diamondo25 - Base guild code
-doyos - VEDB
-ExtremeDevilz - Map crash packet
+doyos - VEDB/MCDB
+ExtremeDevilz - Map crash packet and used to hang out with us :( 
 Flowsion - Major help with Stance
 Jonathan - Numerous guides
 Jonathan - phpVana
@@ -54,10 +54,10 @@ MooMoo - Provides website and SVN
 robtbs - Creating a helpful guide for connection to Vana
 Ruezu - Helping with MySQL indexing
 Ruezu - Pointed out a couple bugs
-Snow - GM event instruction packet (original source)
+Snow - GM event instruction packet (original discoverer)
 Snow - Lots of packet-related/information contributions
 synexic - Original SVN
-Tris - Contributed some help regarding content and used to hang out with us. :( 
+Tris - Contributed some help regarding content and hangs out with us
 yuejun54321 - Contributing numerous Gachapon scripts
 yuejun54321 - Lots of bug reports
 Zak aka Mudkipz (Geno) - Most pretentious credit name ever; contributed Lua code and gave us a Chakra formula
