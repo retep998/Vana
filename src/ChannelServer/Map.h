@@ -60,6 +60,7 @@ struct MapInfo {
 typedef shared_ptr<MapInfo> MapInfoPtr;
 
 struct FootholdInfo {
+	int16_t id;
 	Pos pos1;
 	Pos pos2;
 };
@@ -126,6 +127,7 @@ public:
 	// Footholds
 	void addFoothold(FootholdInfo foothold) { footholds.push_back(foothold); }
 	Pos findFloor(Pos pos);
+	int16_t getFhAtPosition(Pos pos);
 
 	// Portals
 	void addPortal(PortalInfo portal) {
@@ -144,6 +146,8 @@ public:
 	size_t getNumPlayers() const { return this->players.size(); }
 	Player * getPlayer(uint32_t i) const { return this->players[i]; }
 	void removePlayer(Player *player);
+	void dispelPlayers(int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
+	void statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
 
 	// NPCs
 	void addNPC(NPCSpawnInfo npc) { this->npcs.push_back(npc); }
@@ -152,11 +156,13 @@ public:
 	// Mobs
 	void addMobSpawn(MobSpawnInfo spawn);
 	void checkMobSpawn(clock_t time);
-	void spawnMob(int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0, Mob *owner = 0);
+	void spawnMob(int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0, Mob *owner = 0, int8_t summoneffect = 0);
 	void removeMob(int32_t id, int32_t spawnid);
 	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
 	int32_t countMobs(int32_t mobid = 0);
 	Mob * getMob(int32_t id, bool isMapId = true);
+	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
+	void statusMobs(const vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
 
 	// Reactors
 	void addReactorSpawn(ReactorSpawnInfo spawn);

@@ -26,19 +26,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "SendHeader.h"
 
-void MobsPacket::spawnMob(Player *player, Mob *mob, Mob *owner, bool spawn, bool show) {
+void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *owner, bool spawn, bool show) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_MOB);
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(mob->getMobId());
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
-	packet.add<int32_t>(0);
 	packet.addPos(mob->getPos());
 	packet.add<int8_t>(owner != 0 ? 0x08 : 0x02); // Not stance, exploring further
 	packet.add<int16_t>(mob->getFh());
 	packet.add<int16_t>(mob->getOriginFh());
-	packet.add<int8_t>(owner != 0 ? -3 : spawn ? -2 : -1);
+	if (owner != 0) {
+		packet.add<int8_t>(summoneffect != 0 ? summoneffect : -3);
+	}
+	else {
+		packet.add<int8_t>(spawn ? -2 : -1);
+	}
 	if (owner != 0)
 		packet.add<int32_t>(owner->getId());
 	packet.add<int8_t>(-1);
@@ -75,7 +79,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp) {
+void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp, uint8_t skill, uint8_t level) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_MOB_RESPONSE);
 	packet.add<int32_t>(mobid);
@@ -356,6 +360,18 @@ void MobsPacket::damageMobSummon(Player *player, PacketReader &pack) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
+void MobsPacket::healMob(Mob *mob, int32_t amount) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_DAMAGE_MOB);
+	packet.add<int32_t>(mob->getId());
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(-amount);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(0);
+	Maps::getMap(mob->getMapId())->sendPacket(packet);
+}
+
 void MobsPacket::applyStatus(Mob *mob, const StatusInfo &info, int16_t delay) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_APPLY_MOB_STATUS);
@@ -409,7 +425,7 @@ void MobsPacket::showBossHp(Player *player, int32_t mobid, int32_t hp, const Mob
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void MobsPacket::dieMob(Mob *mob) {
+void MobsPacket::dieMob(Mob *mob, int8_t death) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_KILL_MOB);
 	packet.add<int32_t>(mob->getId());

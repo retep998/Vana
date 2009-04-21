@@ -286,12 +286,14 @@ void Initializing::initializeSkills() {
 		//    6 : Prop
 		//    7 : Count
 		//    8 : Interval
-		//    9 : ElemAttr
-		//   10 : LT
-		//   11 : RB
-		//   12 : HP
-		//   13 : Limit
-		//   14 : Mob IDs for summons
+		//    9 : LTX
+		//   10 : RBX
+		//   11 : LTY
+		//   12 : RBY
+		//   13 : HP
+		//   14 : Limit
+		//   15 : Summon Effect
+		//   16 : Mob IDs for summons
 		currentid = atoi(skillRow[0]);
 		currentlevel = atoi(skillRow[1]);
 
@@ -306,14 +308,16 @@ void Initializing::initializeSkills() {
 		moblevel.prop = atoi(skillRow[6]);
 		moblevel.count = atoi(skillRow[7]);
 		moblevel.interval = atoi(skillRow[8]);
-		moblevel.elemattr = atoi(skillRow[9]);
-		moblevel.lt = atoi(skillRow[10]);
-		moblevel.rb = atoi(skillRow[11]);
-		moblevel.hp = atoi(skillRow[12]);
-		moblevel.limit = atoi(skillRow[13]);
+		moblevel.lt.x = atoi(skillRow[9]);
+		moblevel.rb.x = atoi(skillRow[10]);
+		moblevel.lt.y = atoi(skillRow[11]);
+		moblevel.rb.y = atoi(skillRow[12]);
+		moblevel.hp = atoi(skillRow[13]);
+		moblevel.limit = atoi(skillRow[14]);
+		moblevel.summoneffect = atoi(skillRow[15]);
 
-		if (skillRow[14] != 0) {
-			moblevel.summons.push_back(atoi(skillRow[14]));
+		if (skillRow[16] != 0) {
+			moblevel.summons.push_back(atoi(skillRow[16]));
 		}
 
 		previousid = currentid;

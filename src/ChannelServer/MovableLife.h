@@ -27,6 +27,7 @@ public:
 	MovableLife(int16_t foothold, Pos pos, int8_t stance) : m_stance(stance), m_foothold(foothold), m_pos(pos) { }
 	virtual ~MovableLife() { }
 
+	bool isFacingRight() const { return m_stance % 2 == 0; }
 	virtual int8_t getStance() const { return m_stance; }
 	virtual int16_t getFh() const { return m_foothold; }
 	virtual Pos getPos() const { return m_pos; }

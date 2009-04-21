@@ -27,9 +27,9 @@ using std::tr1::unordered_map;
 using std::vector;
 
 struct MobAttackInfo {
-	MobAttackInfo() : id(0), level(0), mpconsume(0), mpburn(0), mobid(-1), deadlyattack(false) { }
+	MobAttackInfo() : id(0), level(0), mpconsume(0), mpburn(0), mobid(-1), disease(0), deadlyattack(false) { }
 	int8_t id;
-	int8_t level;
+	uint8_t level;
 	uint8_t disease;
 	uint8_t mpconsume;
 	uint16_t mpburn;
@@ -38,10 +38,9 @@ struct MobAttackInfo {
 };
 
 struct MobSkillInfo {
-	MobSkillInfo() : id(0), level(0), action(0), effectAfter(0) { }
-	uint8_t id;
+	MobSkillInfo() : skillid(0), level(0), effectAfter(0) { }
+	uint8_t skillid;
 	uint8_t level;
-	uint8_t action;
 	int16_t effectAfter;
 };
 
@@ -52,6 +51,7 @@ struct MobInfo {
 	uint32_t hprecovery;
 	uint32_t mprecovery;
 	int32_t exp;
+	int32_t selfdestruction;
 	bool boss;
 	bool canfreeze;
 	bool canpoison;

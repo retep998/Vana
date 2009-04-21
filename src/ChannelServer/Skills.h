@@ -85,18 +85,18 @@ struct MpEaterInfo { // MP Eater
 };
 
 struct MobSkillLevelInfo {
+	int8_t summoneffect;
 	uint8_t mp;
 	uint8_t hp;
 	uint8_t count;
 	int16_t interval;
 	int16_t x;
 	int16_t y;
-	int16_t lt;
-	int16_t rb;
 	int16_t prop;
 	int16_t limit;
 	int32_t time;
-	string elemattr;
+	Pos lt;
+	Pos rb;
 	vector<int32_t> summons;
 };
 
