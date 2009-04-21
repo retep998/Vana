@@ -61,7 +61,7 @@ class Party {
 public:
 	void setLeader(int32_t playerid) { this->leaderid = playerid; }
 	void addMember(Player *player) { this->members[player->id] = player; }
-	void deleteMember(Player *player) { this->members.erase(player->id); }
+	void deleteMember(int32_t target) { this->members.erase(target); }
 
 	int32_t getLeader() const { return this->leaderid; }
 	bool isLeader(int32_t playerid) const { return playerid == leaderid; }
