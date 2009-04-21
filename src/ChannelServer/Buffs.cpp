@@ -303,6 +303,14 @@ Buffs::Buffs() {
 	buff.value = SkillY;
 	player.buff = buff;
 	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+
+	// Dragon Roar
+	buff.type = 0x02;
+	buff.byte = Byte3;
+	buff.value = SkillNone;
+	player.buff = buff;
+	player.itemval = 1;
+	skillsinfo[Jobs::DragonKnight::DragonRoar].player.push_back(player);
 	// End regular buffs
 
 	// Begin act buffs
@@ -925,6 +933,9 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	int32_t mountid = parseMountInfo(player, skillid, level);
 	int32_t time = Skills::skills[skillid][level].time;
 	switch (skillid) {
+		case Jobs::DragonKnight::DragonRoar:
+			time = Skills::skills[skillid][level].y;
+			break;
 		case Jobs::Beginner::MonsterRider:
 		case Jobs::Corsair::Battleship:
 			if (mountid == 0) {

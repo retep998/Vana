@@ -681,7 +681,6 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 		case Jobs::DragonKnight::DragonRoar: { // Dragon Roar
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
 			int16_t x_value = Skills::skills[skillid][roarlv].x;
-			int16_t y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
 			uint16_t reduction = (player->getMHp() / 100) * x_value;
 			if ((player->getHp() - reduction) > 0)
 				player->damageHp(reduction);
@@ -689,7 +688,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			// TODO: Add stun here
+			Buffs::Instance()->addBuff(player, Jobs::DragonKnight::DragonRoar, roarlv, 0);
 			break;
 		}
 		case Jobs::DragonKnight::Sacrifice: { // Sacrifice
