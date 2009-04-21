@@ -584,9 +584,15 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			case Jobs::ILMage::ElementComposition:
 			case Jobs::Sniper::Blizzard:
 			case Jobs::ILArchMage::Blizzard:
-			case Jobs::Outlaw::IceSplitter:
 				statuses.push_back(StatusInfo(Freeze, Freeze, skillid, Skills::skills[skillid][level].time));
 				break;
+			case Jobs::Outlaw::IceSplitter: { 
+				int16_t y = 0; 
+				if (player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost) > 0) 
+					y = Skills::skills[Jobs::Corsair::ElementalBoost][player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost)].y; 
+				statuses.push_back(StatusInfo(Freeze, Freeze, skillid, Skills::skills[skillid][level].time + y)); 
+				break; 
+			} 
 			case Jobs::FPArchMage::Elquines:
 			case Jobs::Marksman::Frostprey:
 				statuses.push_back(StatusInfo(Freeze, Freeze, skillid, Skills::skills[skillid][level].x));
