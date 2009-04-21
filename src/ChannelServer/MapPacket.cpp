@@ -26,9 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
 #include <boost/tr1/unordered_map.hpp>
-#include <utility>
 
-using std::pair;
 using std::tr1::unordered_map;
 
 PacketCreator MapPacket::playerPacket(Player *player) {
@@ -47,14 +45,14 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<uint8_t>(0xf8);
 	packet.add<int8_t>(3);
 	packet.add<int16_t>(0);
-	packet.add<int8_t>(enter.types[Byte5]);
-	packet.add<int8_t>(enter.types[Byte6]);
-	packet.add<int8_t>(enter.types[Byte7]);
-	packet.add<int8_t>(enter.types[Byte8]);
-	packet.add<int8_t>(enter.types[Byte1]);
-	packet.add<int8_t>(enter.types[Byte2]);
-	packet.add<int8_t>(enter.types[Byte3]);
-	packet.add<int8_t>(enter.types[Byte4]);
+	packet.add<uint8_t>(enter.types[Byte5]);
+	packet.add<uint8_t>(enter.types[Byte6]);
+	packet.add<uint8_t>(enter.types[Byte7]);
+	packet.add<uint8_t>(enter.types[Byte8]);
+	packet.add<uint8_t>(enter.types[Byte1]);
+	packet.add<uint8_t>(enter.types[Byte2]);
+	packet.add<uint8_t>(enter.types[Byte3]);
+	packet.add<uint8_t>(enter.types[Byte4]);
 	const int8_t byteorder[8] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
 
 	for (int8_t i = 0; i < 8; i++) {
@@ -87,7 +85,6 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			}
 		}
 	}
-
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
@@ -246,7 +243,7 @@ void MapPacket::forceMapEquip(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::setMusic(int32_t mapid, const string &musicname) { // Set music
+void MapPacket::setMusic(int32_t mapid, const string &musicname) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MAP_EFFECT);
 	packet.add<int8_t>(0x06);
@@ -291,7 +288,7 @@ void MapPacket::sendEffect(int32_t mapid, const string &effectname) {
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
-void MapPacket::showEventInstructions(int32_t mapid) { // Thanks to Snow/Raz who found this by playing around
+void MapPacket::showEventInstructions(int32_t mapid) {
 	PacketCreator packet = PacketCreator();
 	packet.add<int16_t>(SEND_GM_EVENT_INSTRUCTIONS);
 	packet.add<int8_t>(0x00);

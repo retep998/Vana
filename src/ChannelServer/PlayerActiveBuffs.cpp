@@ -34,9 +34,15 @@ using std::tr1::bind;
 void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
 	clock_t skillExpire = time * 1000;
 	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
-	new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
-		id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
 
+	if (skill > 0 && skill < 200) {
+		new Timer::Timer(bind(&PlayerActiveBuffs::removeDebuff, this, (uint8_t)(skill), true),
+			id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
+	}
+	else {
+		new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
+			id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
+	}
 	m_buffs.push_back(skill);
 }
 

@@ -1084,6 +1084,7 @@ void Buffs::doAct(Player *player, int32_t skillid, uint8_t level) {
 		player->getActiveBuffs()->addAct(skillid, skillsinfo[skillid].act.type, value, skillsinfo[skillid].act.time);
 	}
 }
+
 void Buffs::addDebuff(Player *player, uint8_t skillid, uint8_t level) {
 	int16_t time = Skills::mobskills[skillid][level].time;
 	vector<Buff> buffs = parseMobBuffs(skillid);
