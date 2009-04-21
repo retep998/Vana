@@ -80,7 +80,7 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 		case Jobs::FPArchMage::BigBang:
 		case Jobs::ILArchMage::BigBang:
 		case Jobs::Bishop::BigBang:
-		case Jobs::Corsair::RapidFire: // Special skills like hurricane, monster magnet, rapid fire, and etc
+		case Jobs::Corsair::RapidFire: // Special skills
 			SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
 			player->setSpecialSkill(SpecialSkillInfo());
 			break;
@@ -88,7 +88,10 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			if (skillid == Jobs::SuperGm::Hide) // GM Hide
 				MapPacket::showPlayer(player);
 			player->getActiveBuffs()->removeBuff(skillid, fromTimer);
-			Buffs::Instance()->endBuff(player, skillid);
+			if (skillid > 100 && skillid < 200)
+				Buffs::Instance()->endDebuff(player, (uint8_t)(skillid));
+			else
+				Buffs::Instance()->endBuff(player, skillid);
 			break;
 	}
 }
@@ -126,6 +129,20 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			if (player->getActiveBuffs()->getBattleshipHp() == 0)
 				player->getActiveBuffs()->resetBattleshipHp();
 			break;
+		case Jobs::Crusader::ArmorCrash:
+		case Jobs::WhiteKnight::MagicCrash:
+		case Jobs::DragonKnight::PowerCrash: {
+			int8_t mobs = packet.get<int8_t>();
+			for (int8_t k = 0; k < mobs; k++) {
+				int32_t mapmobid = packet.get<int32_t>();
+				if (Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid)) {
+					if (Randomizer::Instance()->randShort(99) < skills[skillid][level].prop) {
+						mob->doCrashSkill(skillid);
+					}
+				}
+			}
+			break;
+		}
 		case Jobs::Hero::MonsterMagnet:
 		case Jobs::Paladin::MonsterMagnet:
 		case Jobs::DarkKnight::MonsterMagnet: {
@@ -153,6 +170,50 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
+		case Jobs::Bishop::HerosWill:
+		case Jobs::ILArchMage::HerosWill:
+		case Jobs::FPArchMage::HerosWill:
+		case Jobs::DarkKnight::HerosWill:
+		case Jobs::Hero::HerosWill:
+		case Jobs::Paladin::HerosWill:
+		case Jobs::NightLord::HerosWill:
+		case Jobs::Shadower::HerosWill:
+		case Jobs::Bowmaster::HerosWill:
+		case Jobs::Marksman::HerosWill:
+		case Jobs::Buccaneer::PiratesRage:
+		case Jobs::Corsair::SpeedInfusion:
+			player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
+			break;
+		case Jobs::Priest::Dispel: {
+			int8_t affected = packet.get<int8_t>();
+			player->getActiveBuffs()->useDispel();
+			Party *party = player->getParty();
+			if (party != 0) {
+				int8_t pmembers = party->getMembersCount();
+				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
+				for (size_t i = 0; i < members.size(); i++) {
+					Player *cmem = members[i];
+					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
+						if (Randomizer::Instance()->randShort(99) < skills[skillid][level].prop) {
+							SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
+							SkillsPacket::showSkill(cmem, skillid, level, direction, true);
+							cmem->getActiveBuffs()->useDispel();
+						}
+					}
+				}
+			}
+			packet.skipBytes(2);
+			affected = packet.get<int8_t>();
+			for (int8_t k = 0; k < affected; k++) {
+				int32_t mapmobid = packet.get<int32_t>();
+				if (Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid)) {
+					if (Randomizer::Instance()->randShort(99) < skills[skillid][level].prop) {
+						mob->dispelBuffs();
+					}
+				}
+			}
+			break;
+		}
 		case Jobs::Cleric::Heal: { // Heal
 			uint16_t healrate = skills[skillid][level].hpP;
 			if (healrate > 100)
@@ -168,6 +229,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Cleric::Bless:
 		case Jobs::Priest::HolySymbol:
 		case Jobs::Bishop::Resurrection:
+		case Jobs::Bishop::HolyShield:
 		case Jobs::Bowmaster::SharpEyes:
 		case Jobs::Marksman::SharpEyes:
 		case Jobs::Assassin::Haste:
@@ -227,6 +289,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					else if (skillid == Jobs::SuperGm::HealPlusDispel) {
 						target->setHp(target->getMHp());
 						target->setMp(target->getMMp());
+						target->getActiveBuffs()->useDispel();
 					}
 				}
 			}

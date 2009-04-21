@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "Timer/Container.h"
 #include "Types.h"
+#include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
-#include <boost/scoped_ptr.hpp>
 
 using std::vector;
 using std::tr1::unordered_map;
@@ -58,6 +58,8 @@ namespace Mobs {
 	void damageMobSummon(Player *player, PacketReader &packet);
 	uint32_t damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater = 0, bool ismelee = false);
 	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type);
+	void handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSkillLevelInfo &skillinfo);
+	void handleBomb(Player *player, PacketReader &packet);
 	void monsterControl(Player *player, PacketReader &packet);
 	void checkSpawn(int32_t mapid);
 };
@@ -72,6 +74,16 @@ public:
 	void setControl(Player *control);
 	void endControl();
 	void cleanHorntail(int32_t mapid, Player *player);
+	void setOwner(Mob *owner) { this->owner = owner; }
+	void setLastSkillUse(uint8_t skill, time_t usetime) { skilluse[skill] = usetime; }
+	void statusPacket(PacketCreator &packet);
+	void addSpawn(int32_t mapmobid, Mob *mob) { spawns[mapmobid] = mob; }
+	void removeSpawn(int32_t mapmobid) { spawns.erase(mapmobid); }
+	void skillHeal(int32_t healhp, int32_t healmp);
+	void dispelBuffs();
+	void doCrashSkill(int32_t skillid);
+	void setImmunity(bool isimmune) { hasimmunity = isimmune; }
+	void explode();
 
 	int16_t getOriginFh() const { return originfh; }
 	int32_t getId() const { return id; }
@@ -82,14 +94,21 @@ public:
 	int32_t getMp() const { return mp; }
 	int32_t getMHp() const { return info.hp; }
 	int32_t getMMp() const { return info.mp; }
-	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
-	MobAttackInfo getAttackInfo(uint8_t id) const { return info.attacks.at(id); }
-	MobSkillInfo getSkillInfo(uint8_t id) const { return info.skills.at(id); }
+	int32_t getCounter() { return ++counter; }
+	int32_t getSelfDestructHp() const { return info.selfdestruction; }
+	time_t getLastSkillUse(uint8_t skill) { return (skilluse.find(skill) != skilluse.end() ? skilluse[skill] : 0); }
 	bool isBoss() const { return info.boss; }
 	bool canFreeze() const { return info.canfreeze; }
 	bool canPoison() const { return info.canpoison; }
 	bool isUndead() const { return info.undead; }
-	void statusPacket(PacketCreator &packet);
+	bool hasImmunity() const { return hasimmunity; }
+	bool hasStatus(int32_t status);
+	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
+	Mob * getOwner() const { return owner; }
+	MobAttackInfo getAttackInfo(uint8_t id) const { return info.attacks.at(id); }
+	vector<MobSkillInfo> getSkills() const { return info.skills; }
+	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
+
 	Timer::Container * getTimers() const { return timers.get(); }
 	Player * getControl() const { return control; }
 
@@ -103,13 +122,18 @@ private:
 	int32_t hp;
 	int32_t mp;
 	int32_t status;
+	int32_t counter;
+	Mob *owner;
 	const MobInfo info;
+	bool hasimmunity;
 	unordered_map<int32_t, StatusInfo> statuses;
-	boost::scoped_ptr<Timer::Container> timers;
 	unordered_map<int32_t, uint32_t> damages;
+	unordered_map<uint8_t, time_t> skilluse;
+	unordered_map<int32_t, Mob *> spawns;
 	Player *control;
+	boost::scoped_ptr<Timer::Container> timers;
 
-	void die(Player *player);
+	void die(Player *player, bool fromexplosion = false);
 };
 
 #endif

@@ -20,9 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "PlayerActiveBuffs.h"
 #include "WorldServerConnectPacket.h"
-#include <utility>
-
-using std::pair;
 
 BuffHolder * BuffHolder::singleton = 0;
 
@@ -35,21 +32,27 @@ void BuffHolder::parseIncomingBuffs(PacketReader &packet) {
 	playerbuffs->setCharge(packet.get<int32_t>());
 	playerbuffs->setBooster(packet.get<int32_t>());
 	playerbuffs->setBattleshipHp(packet.get<int32_t>());
+	playerbuffs->setDebuffMask(packet.get<int32_t>());
 	int32_t mountid = packet.get<int32_t>();
 	int32_t mountskill = packet.get<int32_t>();
 	playerbuffs->setMountInfo(mountskill, mountid);
 	MapEntryBuffs enterbuffs;
-	pair<bool, int16_t> valuepair;
+	MapEntryVals values;
 	for (int8_t i = 0; i < 8; i++) {
 		enterbuffs.types[i] = packet.get<uint8_t>();
 		uint8_t size = packet.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
 			uint8_t type = packet.get<uint8_t>();
-			bool usesval = packet.get<int8_t>() > 0;
-			int16_t value = packet.get<int16_t>();
-			valuepair.first = usesval;
-			valuepair.second = value;
-			enterbuffs.values[i][type] = valuepair;
+			values.debuff = (packet.get<int8_t>() > 0);
+			if (values.debuff) {
+				values.skill = packet.get<int16_t>();
+				values.val = packet.get<int16_t>();
+			}
+			else {
+				values.use = packet.get<int8_t>() > 0;
+				values.val = packet.get<int16_t>();
+			}
+			enterbuffs.values[i][type] = values;
 		}
 	}
 	playerbuffs->setMapEntryBuffs(enterbuffs);
@@ -58,12 +61,9 @@ void BuffHolder::parseIncomingBuffs(PacketReader &packet) {
 	vector<BuffStorage> holdbuffs;
 	BuffStorage cbuff;
 	for (uint8_t i = 0; i < nbuffs; i++) {
-		int32_t buffid = packet.get<int32_t>();
-		int32_t bufftimeleft = packet.get<int32_t>();
-		uint8_t skilllevel = packet.get<uint8_t>();
-		cbuff.skillid = buffid;
-		cbuff.timeleft = bufftimeleft;
-		cbuff.level = skilllevel;
+		cbuff.skillid = packet.get<int32_t>();
+		cbuff.timeleft = packet.get<int32_t>();
+		cbuff.level = packet.get<uint8_t>();
 		holdbuffs.push_back(cbuff);
 	}
 	m_buff_map[playerid] = holdbuffs;

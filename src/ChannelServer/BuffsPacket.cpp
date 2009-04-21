@@ -69,6 +69,59 @@ void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Active
 	}
 }
 
+void BuffsPacket::giveDebuff(Player *player, uint8_t skillid, uint8_t level, int16_t time, int16_t delay, ActiveBuff &pskill, ActiveMapBuff &mskill) {
+	time *= 1000;
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_USE_SKILL);
+	packet.add<int64_t>(0);
+	for (int8_t i = 0; i < 8; i++)
+		packet.add<int8_t>(pskill.types[i]);
+	for (size_t i = 0; i < pskill.vals.size(); i++) {
+		packet.add<int16_t>(pskill.vals[i]);
+		packet.add<uint16_t>(skillid);
+		packet.add<uint16_t>(level);
+		packet.add<int32_t>(time);
+	}
+	packet.add<int16_t>(0);
+	packet.add<int16_t>(delay);
+	packet.add<int8_t>(0);
+	player->getSession()->send(packet);
+	if (player->getActiveBuffs()->isUsingHide())
+		return;
+	packet = PacketCreator();
+	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
+	packet.add<int32_t>(player->getId());
+	packet.add<int64_t>(0);
+	for (int8_t i = 0; i < 8; i++)
+		packet.add<uint8_t>(mskill.typelist[i]);
+	for (size_t i = 0; i < mskill.values.size(); i++) {
+		packet.add<uint16_t>(skillid);
+		packet.add<uint16_t>(level);
+	}
+	packet.add<int16_t>(0);
+	packet.add<int16_t>(delay);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void BuffsPacket::endDebuff(Player *player, ActiveBuff &pskill) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_CANCEL_SKILL);
+	packet.add<int64_t>(0);
+	for (int8_t i = 0; i < 8; i++)
+		packet.add<int8_t>(pskill.types[i]);
+	packet.add<int8_t>(0);
+	player->getSession()->send(packet);
+	if (player->getActiveBuffs()->isUsingHide())
+		return;
+	packet = PacketCreator();
+	packet.add<int16_t>(SEND_CANCEL_OTHERS_BUFF);
+	packet.add<int32_t>(player->getId());
+	packet.add<int64_t>(0);
+	for (int8_t i = 0; i < 8; i++)
+		packet.add<int8_t>(pskill.types[i]);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
 void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CANCEL_SKILL);

@@ -96,6 +96,78 @@ void PlayerActiveBuffs::removeAct(int32_t skill) {
 	m_skill_acts.erase(skill);
 }
 
+// Debuffs
+void PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) {
+	if (m_player->getHp() > 0 && !hasHolyShield()) {
+		int32_t maskbit = calculateDebuffMaskBit(skill);
+		if ((m_debuffmask & maskbit) == 0) { // Don't have the debuff, continue processing
+			m_debuffmask += maskbit;
+			Buffs::Instance()->addDebuff(m_player, skill, level);
+		}
+	}
+}
+
+void PlayerActiveBuffs::removeDebuff(uint8_t skill, bool fromTimer) {
+	int32_t maskbit = calculateDebuffMaskBit(skill);
+	if ((m_debuffmask & maskbit) != 0) {
+		m_debuffmask -= maskbit;
+		Skills::stopSkill(m_player, skill, fromTimer);
+	}
+}
+
+void PlayerActiveBuffs::useDebuffHealingItem(int32_t mask) {
+	if ((mask & StatusEffects::Player::Seal) != 0)
+		removeDebuff(MobSkills::Seal);
+	if ((mask & StatusEffects::Player::Poison) != 0)
+		removeDebuff(MobSkills::Poison);
+	if ((mask & StatusEffects::Player::Curse) != 0)
+		removeDebuff(MobSkills::Curse);
+	if ((mask & StatusEffects::Player::Darkness) != 0)
+		removeDebuff(MobSkills::Darkness);
+	if ((mask & StatusEffects::Player::Weakness) != 0)
+		removeDebuff(MobSkills::Weakness);
+}
+
+void PlayerActiveBuffs::useDispel() {
+	removeDebuff(MobSkills::Seal);
+	removeDebuff(MobSkills::Slow);
+	removeDebuff(MobSkills::Darkness);
+	removeDebuff(MobSkills::Weakness);
+	removeDebuff(MobSkills::Curse);
+	removeDebuff(MobSkills::Poison);
+}
+
+int32_t PlayerActiveBuffs::calculateDebuffMaskBit(uint8_t skill) {
+	int32_t bitfield = 0;
+	switch (skill) {
+		case MobSkills::Seal:
+			bitfield = StatusEffects::Player::Seal;
+			break;
+		case MobSkills::Darkness:
+			bitfield = StatusEffects::Player::Darkness;
+			break;
+		case MobSkills::Weakness:
+			bitfield = StatusEffects::Player::Weakness;
+			break;
+		case MobSkills::Stun:
+			bitfield = StatusEffects::Player::Stun;
+			break;
+		case MobSkills::Curse:
+			bitfield = StatusEffects::Player::Curse;
+			break;
+		case MobSkills::Poison:
+			bitfield = StatusEffects::Player::Poison;
+			break;
+		case MobSkills::Slow:
+			bitfield = StatusEffects::Player::Slow;
+			break;
+		case MobSkills::Seduce:
+			bitfield = StatusEffects::Player::Seduce;
+			break;
+	}
+	return bitfield;
+}
+
 // Map entry stuff
 void PlayerActiveBuffs::deleteMapEntryBuffInfo(ActiveMapBuff &buff) {
 	size_t vals = 0;
@@ -114,12 +186,19 @@ void PlayerActiveBuffs::addMapEntryBuffInfo(ActiveMapBuff &buff) {
 		uint8_t byte = buff.bytes[i];
 		if ((m_mapbuffs.types[byte] & buff.types[i]) == 0)
 			m_mapbuffs.types[byte] += buff.types[i];
-		pair<bool, int16_t> valpair;
-		valpair.first = buff.usevals[i];
-		if (buff.usevals[i]) {
-			valpair.second = buff.values[vals++];
+		MapEntryVals val;
+		val.use = buff.usevals[i];
+		if (val.use) {
+			if (buff.debuff) {
+				val.debuff = true;
+				val.skill = buff.values[vals++];
+				val.val = buff.values[vals++];
+			}
+			else {
+				val.val = buff.values[vals++];
+			}
 		}
-		m_mapbuffs.values[byte][buff.types[i]] = valpair;
+		m_mapbuffs.values[byte][buff.types[i]] = val;
 	}
 }
 
@@ -167,6 +246,15 @@ ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillid, const vector<Buff>
 
 void PlayerActiveBuffs::setActiveBuffsByType(ActiveBuffsByType &buffs) {
 	m_activebuffsbytype = buffs;
+}
+
+void PlayerActiveBuffs::dispelBuffs() {
+	unordered_map<int32_t, uint8_t> activelevels = m_activelevels;
+	for (unordered_map<int32_t, uint8_t>::iterator iter = activelevels.begin(); iter != activelevels.end(); iter++) {
+		if (iter->second > 0 && iter->first > 200) { // Only want active skills and skill buffs - no item buffs or debuffs
+			Skills::stopSkill(m_player, iter->first);
+		}
+	}
 }
 
 // Specific skill stuff
@@ -316,6 +404,14 @@ const bool PlayerActiveBuffs::hasHolySymbol() {
 
 const int32_t PlayerActiveBuffs::getHolySymbol() {
 	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 ? (int32_t)Jobs::Priest::HolySymbol : (int32_t)Jobs::SuperGm::HolySymbol);
+}
+
+const bool PlayerActiveBuffs::hasHolyShield() {
+	return (getActiveSkillLevel(Jobs::Bishop::HolyShield) > 0);
+}
+
+const bool PlayerActiveBuffs::isCursed() {
+	return ((m_debuffmask & StatusEffects::Player::Curse) > 0);
 }
 
 const bool PlayerActiveBuffs::hasPowerStance() {

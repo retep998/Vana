@@ -156,19 +156,19 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	}
 
 	// Footholds
-	query << "SELECT x1, y1, x2, y2 FROM mapfootholddata WHERE mapid = " << mapid;
+	query << "SELECT id, x1, y1, x2, y2 FROM mapfootholddata WHERE mapid = " << mapid;
 	res = query.use();
 
 	while ((dataRow = res.fetch_raw_row())) {
-		// Col0 : x1
-		//    1 : y1
-		//    2 : x2
-		//    3 : y2
-		//    4 : Previous
-		//    5 : Next
+		// Col0 : id
+		//    1 : x1
+		//    2 : y1
+		//    3 : x2
+		//    4 : y2
 		FootholdInfo foot;
-		foot.pos1 = Pos(atoi(dataRow[0]), atoi(dataRow[1]));
-		foot.pos2 = Pos(atoi(dataRow[2]), atoi(dataRow[3]));
+		foot.id = atoi(dataRow[0]) - 1;
+		foot.pos1 = Pos(atoi(dataRow[1]), atoi(dataRow[2]));
+		foot.pos2 = Pos(atoi(dataRow[3]), atoi(dataRow[4]));
 		map->addFoothold(foot);
 	}
 }

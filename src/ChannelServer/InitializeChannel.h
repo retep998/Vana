@@ -30,7 +30,7 @@ namespace Initializing {
 	void initializeChat();
 
 	const int32_t McdbVersion = 2;
-	const int32_t McdbSubVersion = 5;
+	const int32_t McdbSubVersion = 6;
 };
 
 #endif
