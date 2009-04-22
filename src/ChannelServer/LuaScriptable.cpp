@@ -334,7 +334,8 @@ int LuaExports::setPlayer(lua_State *luaVm) {
 	if (player != 0) {
 		getPlayer(luaVm)->getLuaScriptable()->setPlayer(player);
 	}
-	return 0;
+	lua_pushboolean(luaVm, player != 0);
+	return 1;
 }
 
 int LuaExports::showShop(lua_State *luaVm) {
