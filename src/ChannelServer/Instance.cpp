@@ -335,6 +335,13 @@ void Instance::sendMessage(InstanceMessages message, const string &parameter1, i
 	m_luainstance->run(message, parameter1, parameter2);
 }
 
+void Instance::setPlayer(Player *player) {
+	if (player != 0)
+		m_luainstance->setPlayer(player);
+	else
+		m_luainstance->revertPlayer();
+}
+
 void Instance::timerEnd(const string &name, bool fromTimer) {
 	sendMessage(TimerNaturalEnd, name, fromTimer ? 1 : 0);
 	removeTimer(name);

@@ -23,6 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 LuaInstance::LuaInstance(const string &name, int32_t playerid) : LuaScriptable("scripts/instances/" + name + ".lua", playerid) {
 	initialize();
 	setVariable("instancename", name);
+
+	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayerInstance);
+	lua_register(luaVm, "setPlayer", &LuaExports::setPlayerInstance);
+
 	if (luaL_dofile(luaVm, filename.c_str())) {
 		std::cout << lua_tostring(luaVm, -1) << std::endl;
 	}
@@ -119,4 +123,22 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 		return false;
 	}
 	return true;
+}
+
+int LuaExports::revertPlayerInstance(lua_State *luaVm) {
+	getInstance(luaVm)->setPlayer(0);
+	return 0;
+}
+
+int LuaExports::setPlayerInstance(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	if (player != 0) {
+		getInstance(luaVm)->setPlayer(player);
+	}
+	lua_pushboolean(luaVm, player != 0);
+	return 1;
 }

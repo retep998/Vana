@@ -112,6 +112,7 @@ public:
 	void sendMessage(InstanceMessages message, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, const string &, int32_t);
+	void setPlayer(Player *player);
 private:
 	boost::scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
 	boost::scoped_ptr<Variables> m_variables;
