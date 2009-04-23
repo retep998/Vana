@@ -55,6 +55,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.h"
 #include <boost/array.hpp>
 
+Player::Player() :
+fall_counter(0),
+tradestate(0),
+shop(0),
+itemEffect(0),
+chair(0),
+party(0),
+save_on_dc(true),
+isconnect(false),
+npc(0),
+luascriptable(0),
+instance(0)
+{
+}
+
 Player::~Player() {
 	if (isconnect) {
 		if (getParty() != 0) {

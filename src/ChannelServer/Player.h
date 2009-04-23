@@ -48,7 +48,7 @@ class Party;
 
 class Player : public AbstractPlayer, public MovableLife {
 public:
-	Player() : tradestate(0), shop(0), itemEffect(0), chair(0), party(0), save_on_dc(true), isconnect(false), npc(0), luascriptable(0), instance(0), fallctr(0) { }
+	Player();
 
 	~Player();
 
@@ -58,7 +58,7 @@ public:
 	void setTrading(int8_t newstate) { tradestate = newstate; }
 	void setSkin(int8_t id);
 	void setMappos(int8_t pos) { this->mappos = pos; }
-	void setFallCounter(int8_t falls) { fallctr = falls; }
+	void setFallCounter(int8_t falls) { fall_counter = falls; }
 	void setLevel(uint8_t level);
 	void setAp(int16_t ap);
 	void setSp(int16_t sp);
@@ -103,7 +103,7 @@ public:
 	int8_t getSkin() const { return skin; }
 	int8_t isTrading() const { return tradestate; }
 	int8_t getMappos() const { return mappos; }
-	int8_t getFallCounter() const { return fallctr; }
+	int8_t getFallCounter() const { return fall_counter; }
 	uint8_t getLevel() const { return level; }
 	uint8_t getBuddyListSize() const { return buddylist_size; }
 	int16_t getJob() const { return job; }
@@ -172,7 +172,7 @@ private:
 	int8_t tradestate;
 	int8_t gender;
 	int8_t skin;
-	int8_t fallctr;
+	int8_t fall_counter;
 	uint8_t level;
 	uint8_t buddylist_size;
 	int16_t job;
