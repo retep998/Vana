@@ -103,14 +103,13 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	if (enter.mountid > 0) {
 		packet.add<int32_t>(enter.mountid);
 		packet.add<int32_t>(enter.mountskill);
-		packet.add<int32_t>(1066113350);
 	}
 	else {
 		packet.add<int32_t>(0);
 		packet.add<int32_t>(0);
-		packet.add<int32_t>(1065638850);
 	}
 
+	packet.add<int32_t>(1065638850);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(1065638850);
