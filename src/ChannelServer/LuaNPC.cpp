@@ -157,8 +157,8 @@ int LuaExports::sendStyle(lua_State *luaVm) {
 		styles.push_back(lua_tointeger(luaVm, -1));
 		lua_pop(luaVm, 1);
 	}
-
-	getNPC(luaVm)->sendStyle(&styles[0], styles.size());
+	if (styles.size() > 0)
+		getNPC(luaVm)->sendStyle(&styles[0], styles.size());
 	return 0;
 }
 
