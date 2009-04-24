@@ -701,7 +701,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::WhiteKnight::ChargeBlow: { // Charge Blow
-			int8_t acb_level = player->getSkills()->getSkillLevel(skillid);
+			int8_t acb_level = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
 			int16_t acb_x = 0;
 			if (acb_level > 0)
 				acb_x = Skills::skills[skillid][acb_level].x;
