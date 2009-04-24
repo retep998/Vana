@@ -50,7 +50,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "Summons.h"
 #include "TimeUtilities.h"
-#include "Trades.h"
+#include "TradeHandler.h"
 #include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPacket.h"
 #include <boost/array.hpp>
@@ -89,7 +89,7 @@ Player::~Player() {
 			setOnline(false);
 		}
 		if (isTrading()) {
-			Trades::cancelTrade(this);
+			TradeHandler::cancelTrade(this);
 		}
 		WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
 		Maps::getMap(map)->removePlayer(this);
@@ -142,7 +142,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_PET_LOOT: Drops::petLoot(this, packet); break;
 		case RECV_PET_MOVE: Pets::handleMovement(this, packet); break;
 		case RECV_PET_SUMMON: Pets::handleSummon(this, packet); break;
-		case RECV_PLAYER_ROOM_ACTION: Trades::tradeHandler(this, packet); break;
+		case RECV_PLAYER_ROOM_ACTION: TradeHandler::tradeHandler(this, packet); break;
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
 		case RECV_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
