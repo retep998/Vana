@@ -31,17 +31,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t time, bool persistent, bool showtimer) :
-	m_name(name),
-	m_max_players(0),
-	m_timer_counter(0),
-	m_persistent(persistent),
-	m_show_timer(showtimer),
-	m_timers(new Timer::Container),
-	m_variables(new Variables),
-	m_luainstance(new LuaInstance(name, playerid)),
-	m_start(clock()),
-	m_reset_on_destroy(false),
-	m_marked_for_delete(false)
+m_name(name),
+m_max_players(0),
+m_timer_counter(0),
+m_persistent(persistent),
+m_show_timer(showtimer),
+m_timers(new Timer::Container),
+m_variables(new Variables),
+m_luainstance(new LuaInstance(name, playerid)),
+m_start(clock()),
+m_reset_on_destroy(false),
+m_marked_for_delete(false)
 {
 	if (time < 0) {
 		m_time = -(time + 1);
@@ -333,13 +333,6 @@ void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t
 
 void Instance::sendMessage(InstanceMessages message, const string &parameter1, int32_t parameter2) {
 	m_luainstance->run(message, parameter1, parameter2);
-}
-
-void Instance::setPlayer(Player *player) {
-	if (player != 0)
-		m_luainstance->setPlayer(player);
-	else
-		m_luainstance->revertPlayer();
 }
 
 void Instance::timerEnd(const string &name, bool fromTimer) {
