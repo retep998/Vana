@@ -45,7 +45,7 @@ private:
 	Trades() {};
 	static Trades *singleton;
 
-	unordered_map<int32_t, boost::shared_ptr<ActiveTrade>> trades;
+	unordered_map<int32_t, boost::shared_ptr<ActiveTrade> > trades;
 };
 
 #endif
