@@ -42,8 +42,8 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 		case 0x00: // Open trade - this usually comes with 03 00 - no clue why
 			TradesPacket::sendOpenTrade(player, player, 0);
 			break;
-		case 0x02: {
-			if (player->isTrading() == 0) {  // Send trade request
+		case 0x02: { // Send trade request
+			if (player->isTrading() == 0) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *receiver = Players::Instance()->getPlayer(playerid);
 				switch (receiver->isTrading()) {
@@ -56,7 +56,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 						receiver->setTrading(-1); // Handling request
 						receiver->setTradeRecvId(player->getId());
 						TradesPacket::sendTradeRequest(player, receiver, trade->getId());
-						TradeHandler::startTimeout(player, receiver, player->getId());
+						TradeHandler::startTimeout(player, receiver, trade->getId());
 						break;
 					}
 					case 1: // Busy
@@ -83,7 +83,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 0x04: {
+		case 0x04: { // Accept request
 			int32_t tradeid = packet.get<int32_t>();
 			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
 			if (trade != 0) {
@@ -99,13 +99,10 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			break;
 		}
 		case 0x06: { // Chat in a trade
-			string chat = player->getName();
-			chat.append(" : ");
-			chat.append(packet.getString());
+			string chat = player->getName() + " : " + packet.getString();
 			int32_t playerid = player->getId();
-			bool isself = false;
-			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) // Receiver chatting
-				playerid = player->getTradeRecvID();
+			if (!(player->getTradeSendId() > 0) && (player->getTradeRecvId() > 0)) // Receiver chatting
+				playerid = player->getTradeRecvId();
 			ActiveTrade *trade = Trades::Instance()->getTrade(playerid);
 			Player *one = trade->getStarter()->player;
 			Player *two = trade->getReceiver()->player;
@@ -116,14 +113,14 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			TradesPacket::sendTradeChat(two, blue, chat);
 			break;
 		}
-		case 0x0A:
+		case 0x0a:
 			TradeHandler::cancelTrade(player);
 			break;
-		case 0x0E: { // Add items
+		case 0x0e: { // Add items
 			int32_t playerid = player->getId();
 			bool isreceiver = false;
-			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver
-				playerid = player->getTradeRecvID();
+			if (!(player->getTradeSendId() > 0) && (player->getTradeRecvId() > 0)) { // Receiver
+				playerid = player->getTradeRecvId();
 				isreceiver = true;
 			}
 			ActiveTrade *trade = Trades::Instance()->getTrade(playerid);
@@ -186,11 +183,11 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 0x0F: { // Add mesos
+		case 0x0f: { // Add mesos
 			int32_t playerid = player->getId();
 			bool isreceiver = false;
-			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver
-				playerid = player->getTradeRecvID();
+			if (!(player->getTradeSendId() > 0) && (player->getTradeRecvId() > 0)) { // Receiver
+				playerid = player->getTradeRecvId();
 				isreceiver = true;
 			}
 			ActiveTrade *trade = Trades::Instance()->getTrade(playerid);
@@ -220,8 +217,8 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 		case 0x10: { // Accept trade
 			int32_t playerid = player->getId();
 			bool isreceiver = false;
-			if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver leaving
-				playerid = player->getTradeRecvID();
+			if (!(player->getTradeSendId() > 0) && (player->getTradeRecvId() > 0)) { // Receiver leaving
+				playerid = player->getTradeRecvId();
 				isreceiver = true;
 			}
 			ActiveTrade *trade = Trades::Instance()->getTrade(playerid);
@@ -339,8 +336,8 @@ float TradeHandler::getTaxLevel(int32_t mesos) {
 void TradeHandler::cancelTrade(Player *player) {
 	int32_t playerid = player->getId();
 	bool isreceiver = false;
-	if (!(player->getTradeSendID() > 0) && (player->getTradeRecvID() > 0)) { // Receiver leaving
-		playerid = player->getTradeRecvID();
+	if (!(player->getTradeSendId() > 0) && (player->getTradeRecvId() > 0)) { // Receiver leaving
+		playerid = player->getTradeRecvId();
 		isreceiver = true;
 	}
 	ActiveTrade *trade = Trades::Instance()->getTrade(playerid);
