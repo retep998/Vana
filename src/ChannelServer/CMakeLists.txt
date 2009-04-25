@@ -75,6 +75,7 @@ set(SOURCES
 	Summons.h
 	SummonsPacket.h
 	Trade.h
+	TradeHandler.h
 	Trades.h
 	TradesPacket.h
 	Variables.h
@@ -153,6 +154,7 @@ set(SOURCES
 	Summons.cpp
 	SummonsPacket.cpp
 	Trade.cpp
+	TradeHandler.cpp
 	Trades.cpp
 	TradesPacket.cpp
 	Variables.cpp
