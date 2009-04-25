@@ -42,12 +42,9 @@ public:
 
 	void setVariable(const string &name, int32_t val);
 	void setVariable(const string &name, const string &val);
-	void setPlayer(Player *player);
-	void revertPlayer();
 protected:
 	string filename;
 	int32_t playerid;
-	int32_t scriptplayerid;
 	lua_State *luaVm;
 };
 

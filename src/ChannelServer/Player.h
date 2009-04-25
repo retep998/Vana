@@ -41,7 +41,6 @@ using std::string;
 using std::vector;
 
 class Instance;
-class LuaScriptable;
 class NPC;
 class PacketReader;
 class Party;
@@ -93,7 +92,6 @@ public:
 	void setNPC(NPC *npc) { this->npc = npc; }
 	void setParty(Party *party) { this->party = party; }
 	void setInstance(Instance *instance) { this->instance = instance; }
-	void setLuaScriptable(LuaScriptable *lua) { luascriptable = lua; }
 	void setChair(int32_t chair) { this->chair = chair; }
 	void setItemEffect(int32_t effect) { this->itemEffect = effect; }
 	void setSpecialSkill(SpecialSkillInfo info) { this->info = info; }
@@ -138,7 +136,6 @@ public:
 	NPC * getNPC() const { return npc; }
 	Party * getParty() const { return party; }
 	Instance * getInstance() const { return instance; }
-	LuaScriptable * getLuaScriptable() const { return luascriptable; }
 	bool isGm() const { return gm > 0; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
@@ -207,7 +204,6 @@ private:
 	string name;
 	NPC *npc;
 	Instance *instance;
-	LuaScriptable *luascriptable;
 	Party *party;
 	vector<int32_t> warnings;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.

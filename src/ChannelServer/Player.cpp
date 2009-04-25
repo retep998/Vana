@@ -65,7 +65,6 @@ party(0),
 save_on_dc(true),
 isconnect(false),
 npc(0),
-luascriptable(0),
 instance(0)
 {
 }
