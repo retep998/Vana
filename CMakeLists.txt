@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.6)
 
 project(Vana)
 
+set(LIBRARY_OUTPUT_PATH "../../lib")
+set(EXECUTABLE_OUTPUT_PATH "../../bin")
+
 #### Finding libraries
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
