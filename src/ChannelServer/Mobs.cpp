@@ -704,7 +704,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			int8_t acb_level = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
 			int16_t acb_x = 0;
 			if (acb_level > 0)
-				acb_x = Skills::skills[skillid][acb_level].x;
+				acb_x = Skills::skills[Jobs::Paladin::AdvancedCharge][acb_level].x;
 			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1)))
 				player->getActiveBuffs()->stopCharge();
 			break;
