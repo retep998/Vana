@@ -132,8 +132,8 @@ public:
 	int32_t getItemEffect() const { return itemEffect; }
 	int32_t getGmLevel() const { return gm; }
 	int32_t getSpecialSkill() const { return info.skillid; }
-	int32_t getTradeSendID() const { return tradesendid; }
-	int32_t getTradeRecvID() const { return traderecvid; }
+	int32_t getTradeSendId() const { return tradesendid; }
+	int32_t getTradeRecvId() const { return traderecvid; }
 	string getName() const { return name; }
 	NPC * getNPC() const { return npc; }
 	Party * getParty() const { return party; }
