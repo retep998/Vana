@@ -101,12 +101,27 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 			uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
 			MobsPacket::showHp(player, id, percent, info.boss);
 		}
-
+		Mob *htabusetaker = 0;
+		switch (getMobId()) {
+			case 8810002:
+			case 8810003:
+			case 8810004:
+			case 8810005:
+			case 8810006:
+			case 8810007:
+			case 8810008:
+			case 8810009:
+				htabusetaker = Maps::getMap(getMapId())->getMob(8810018, false);
+				break;
+		}
+		if (htabusetaker != 0) {
+			htabusetaker->applyDamage(playerid, damage, false);
+		}
 		if (hp == 0) { // Time to die
 			if (mobid == 8810018) { // Horntail damage sponge, we want to be sure that his parts have spawned after death before we clean up
 				new Timer::Timer(bind(&Mob::cleanHorntail, this, mapid, player),
 					Timer::Id(Timer::Types::HorntailTimer, id, 0),
-					0, Timer::Time::fromNow(100));
+					0, Timer::Time::fromNow(500));
 			}
 			die(Players::Instance()->getPlayer(playerid));
 		}
@@ -567,8 +582,78 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
-	int32_t useless = 0;
-	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, 0, true);
+	int32_t map = player->getMap();
+	uint32_t totaldmg = 0;
+	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
+	for (int8_t i = 0; i < targets; i++) {
+		int32_t targettotal = 0;
+		int32_t mapmobid = packet.get<int32_t>();
+		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
+		if (mob == 0)
+			continue;
+		packet.skipBytes(3); // Useless
+		packet.skipBytes(1); // State
+		packet.skipBytes(8); // Useless
+		if (skillid != Jobs::ChiefBandit::MesoExplosion)
+			packet.skipBytes(1); // Distance, first half for non-Meso Explosion
+		int8_t num = packet.get<int8_t>(); // Distance, second half for non-Meso Explosion OR hits for Meso Explosion
+		hits = skillid == Jobs::ChiefBandit::MesoExplosion ? num : hits;
+		vector<int32_t> ppdamages; // Pickpocket
+		for (int8_t k = 0; k < hits; k++) {
+			int32_t damage = packet.get<int32_t>();
+			targettotal += damage;
+			if (skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
+				if (Randomizer::Instance()->randInt(99) < Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].prop) {
+					ppdamages.push_back(damage);
+				}
+			}
+			if (mob == 0) {
+				if (skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) // Roll along after the mob is dead to finish getting damage values for pickpocket
+					continue;
+				else {
+					packet.skipBytes(4 * (hits - 1 - k));
+					break;
+				}
+			}
+			if (skillid == Jobs::Paladin::HeavensHammer && mob->isBoss()) {
+				// Damage calculation goes in here, I think? Hearing conflicted views.
+			}
+			else {
+				if (skillid == Jobs::Paladin::HeavensHammer)
+					damage = mob->getHp() - 1;
+
+				int32_t temphp = mob->getHp();
+				mob->applyDamage(player->getId(), damage);
+				if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
+					mob = 0;
+			}
+		}
+		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
+			uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
+			handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
+			if (mob->getHp() < mob->getSelfDestructHp()) {
+				mob->explode();
+			}
+		}
+		totaldmg += targettotal;
+		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
+		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
+			Pos origin = mob->getPos(); // Info for
+			Pos pppos;
+			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 5 : 0) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
+			pppos.y = origin.y;
+			clock_t pptime = 175 * pickpocket;
+			int32_t ppmesos = ((ppdamages[pickpocket] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
+			Drop *ppdrop = new Drop(player->getMap(), ppmesos, pppos, player->getId(), true);
+			ppdrop->setTime(100);
+			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
+				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
+				0, Timer::Time::fromNow(pptime));
+		}
+		if (!GameLogicUtilities::isSummon(skillid))
+			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
+	}
+	packet.skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 	switch (skillid) {
 		case Jobs::ChiefBandit::MesoExplosion: { // Meso Explosion
 			uint8_t items = packet.get<int8_t>();
@@ -597,7 +682,6 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 		case Jobs::DragonKnight::DragonRoar: { // Dragon Roar
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
 			int16_t x_value = Skills::skills[skillid][roarlv].x;
-			int16_t y_value = Skills::skills[skillid][roarlv].y; // Stun length in seconds
 			uint16_t reduction = (player->getMHp() / 100) * x_value;
 			if ((player->getHp() - reduction) > 0)
 				player->damageHp(reduction);
@@ -605,7 +689,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			// TODO: Add stun here
+			Buffs::Instance()->addBuff(player, Jobs::DragonKnight::DragonRoar, roarlv, 0);
 			break;
 		}
 		case Jobs::DragonKnight::Sacrifice: { // Sacrifice
@@ -618,10 +702,10 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::WhiteKnight::ChargeBlow: { // Charge Blow
-			int8_t acb_level = player->getSkills()->getSkillLevel(skillid);
+			int8_t acb_level = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
 			int16_t acb_x = 0;
 			if (acb_level > 0)
-				acb_x = Skills::skills[skillid][acb_level].x;
+				acb_x = Skills::skills[Jobs::Paladin::AdvancedCharge][acb_level].x;
 			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1)))
 				player->getActiveBuffs()->stopCharge();
 			break;
@@ -718,8 +802,7 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 	packet.skipBytes(2); // Display, direction/animation
 	packet.skipBytes(2); // Weapon subclass, casting speed
 	packet.skipBytes(4); // Ticks
-	if (skillid != Jobs::Cleric::Heal) // Heal is sent as both an attack and as a use skill
-		// Prevent this from incurring cost since Heal is always a used skill but only an attack in certain circumstances
+	if (skillid != Jobs::Cleric::Heal) // Heal is sent as both an attack and as a used skill - always used, sometimes attack
 		Skills::useAttackSkill(player, skillid);
 	int32_t useless = 0;
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, &eater);
@@ -761,61 +844,30 @@ void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 	damageMobInternal(player, packet, targets, 1, summon->getSummonId(), useless);
 }
 
-uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater, bool ismelee) {
+uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
-	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t targettotal = 0;
 		int32_t mapmobid = packet.get<int32_t>();
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
-		uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-		int32_t mobid = mob->getMobId();
 		if (skillid == Jobs::Cleric::Heal && !mob->isUndead()) {
 			// hacking
 			return 0;
 		}
-		Mob *htabusetaker = 0;
-		switch (mobid) {
-			case 8810002:
-			case 8810003:
-			case 8810004:
-			case 8810005:
-			case 8810006:
-			case 8810007:
-			case 8810008:
-			case 8810009:
-				htabusetaker = Maps::getMap(map)->getMob(8810018, false);
-				break;
-		}
 		packet.skipBytes(3); // Useless
 		packet.skipBytes(1); // State
 		packet.skipBytes(8); // Useless
-		if (skillid != Jobs::ChiefBandit::MesoExplosion)
-			packet.skipBytes(1); // Distance, first half for non-Meso Explosion
-		int8_t num = packet.get<int8_t>(); // Distance, second half for non-Meso Explosion OR hits for Meso Explosion
-		hits = skillid == Jobs::ChiefBandit::MesoExplosion ? num : hits;
-		Pos origin = mob->getPos(); // Info for
-		vector<int32_t> ppdamages; // Pickpocket
+		packet.skipBytes(2); // Distance
 		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet.get<int32_t>();
 			targettotal += damage;
-			if (ismelee && skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
-				if (Randomizer::Instance()->randInt(99) < Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].prop) {
-					ppdamages.push_back(damage);
-				}
-			}
 			if (mob == 0) {
-				if (ismelee && skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) // Roll along after the mob is dead to finish getting damage values for pickpocket
-					continue;
-				else {
-					packet.skipBytes(4 * (hits - 1 - k));
-					break;
-				}
+				packet.skipBytes(4 * (hits - 1 - k));
+				break;
 			}
-
 			extra = mob->getMHp();
 			if (eater != 0) { // MP Eater
 				int32_t cmp = mob->getMp();
@@ -829,46 +881,18 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					SkillsPacket::showSkillEffect(player, eater->id);
 				}
 			}
-
-			if (skillid == Jobs::Paladin::HeavensHammer && mob->isBoss()) {
-				// Damage calculation goes in here, I think? Hearing conflicted views.
-			}
-			else {
-				if (skillid == Jobs::Paladin::HeavensHammer)
-					damage = mob->getHp() - 1;
-
-				int32_t temphp = mob->getHp();
-				mob->applyDamage(player->getId(), damage);
-
-				if (htabusetaker != 0) {
-					if (temphp - damage < 0) // Horntail will die before all of his parts otherwise
-						damage = temphp; // Damage isn't used again from here on anyway
-					htabusetaker->applyDamage(player->getId(), damage);
-				}
-				if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
-					mob = 0;
-			}
+			int32_t temphp = mob->getHp();
+			mob->applyDamage(player->getId(), damage);
+			if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
+				mob = 0;
 		}
 		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
-			handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
+			handleMobStatus(player, mob, skillid, 0); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
 		}
 		total += targettotal;
-		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
-		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
-			Pos pppos;
-			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 5 : 0) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
-			pppos.y = origin.y;
-			clock_t pptime = 175 * pickpocket;
-			int32_t ppmesos = ((ppdamages[pickpocket] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
-			Drop *ppdrop = new Drop(player->getMap(), ppmesos, pppos, player->getId(), true);
-			ppdrop->setTime(100);
-			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
-				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
-				0, Timer::Time::fromNow(pptime));
-		}
 		if (!GameLogicUtilities::isSummon(skillid))
 			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}

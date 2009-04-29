@@ -39,19 +39,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::vector;
 
-LuaScriptable::LuaScriptable(const string &filename, int32_t playerid) : filename(filename), scriptplayerid(playerid), playerid(playerid), luaVm(lua_open()) {
+LuaScriptable::LuaScriptable(const string &filename, int32_t playerid) : filename(filename), playerid(playerid), luaVm(lua_open()) {
 	initialize();
 }
 
 LuaScriptable::~LuaScriptable() {
-	Player *player = Players::Instance()->getPlayer(playerid);
-	Player *player2 = Players::Instance()->getPlayer(scriptplayerid);
-	if (player != 0) {
-		player->setLuaScriptable(0);
-	}
-	if (player2 != 0 && player2 != player) {
-		player2->setLuaScriptable(0);
-	}
 	lua_close(luaVm);
 }
 
@@ -62,8 +54,6 @@ void LuaScriptable::initialize() {
 	Player *player = LuaExports::getPlayer(luaVm);
 	if (player->getInstance() != 0)
 		setVariable("instancename", player->getInstance()->getName());
-
-	player->setLuaScriptable(this);
 
 	// Miscellanous
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
@@ -265,21 +255,6 @@ void LuaScriptable::setVariable(const string &name, const string &val) {
 	lua_setglobal(luaVm, name.c_str());
 }
 
-void LuaScriptable::setPlayer(Player *player) {
-	player->setLuaScriptable(this);
-	scriptplayerid = player->getId();
-	setVariable("playerid", scriptplayerid);
-}
-
-void LuaScriptable::revertPlayer() {
-	Player *player = Players::Instance()->getPlayer(scriptplayerid);
-	if (player != 0) {
-		player->setLuaScriptable(0);
-		scriptplayerid = playerid;
-		setVariable("playerid", playerid);
-	}
-}
-
 // Lua Exports
 Player * LuaExports::getPlayer(lua_State *luaVm) {
 	lua_getglobal(luaVm, "playerid");
@@ -314,7 +289,8 @@ int LuaExports::isOnline(lua_State *luaVm) {
 }
 
 int LuaExports::revertPlayer(lua_State *luaVm) {
-	getPlayer(luaVm)->getLuaScriptable()->revertPlayer();
+	lua_getglobal(luaVm, "oldplayerid");
+	lua_setglobal(luaVm, "playerid");
 	return 0;
 }
 
@@ -332,9 +308,14 @@ int LuaExports::setPlayer(lua_State *luaVm) {
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 	if (player != 0) {
-		getPlayer(luaVm)->getLuaScriptable()->setPlayer(player);
+		lua_getglobal(luaVm, "playerid");
+		lua_setglobal(luaVm, "oldplayerid");
+
+		lua_pushinteger(luaVm, player->getId());
+		lua_setglobal(luaVm, "playerid");
 	}
-	return 0;
+	lua_pushboolean(luaVm, player != 0);
+	return 1;
 }
 
 int LuaExports::showShop(lua_State *luaVm) {

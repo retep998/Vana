@@ -54,9 +54,11 @@ void MapleClient::start_connect() {
 void MapleClient::readConnectPacket() {
 	boost::system::error_code error;
 
+	m_buffer.reset(new unsigned char[connectHeaderLen]);
+
 	// Get the size of the connect packet
 	boost::asio::read(m_socket,
-		boost::asio::buffer(m_buffer, connectHeaderLen),
+		boost::asio::buffer(m_buffer.get(), connectHeaderLen),
 		boost::asio::transfer_all(), 
 		error);
 
@@ -67,9 +69,11 @@ void MapleClient::readConnectPacket() {
 
 	uint16_t packetLen = m_buffer[0] + m_buffer[1] * 0x100;
 
+	m_buffer.reset(new unsigned char[packetLen]);
+
 	// Get the rest of the packet
 	boost::asio::read(m_socket,
-		boost::asio::buffer(m_buffer, packetLen),
+		boost::asio::buffer(m_buffer.get(), packetLen),
 		boost::asio::transfer_all(),
 		error);
 
@@ -79,7 +83,7 @@ void MapleClient::readConnectPacket() {
 	}
 
 	// Now finally process it
-	PacketReader packet(m_buffer, packetLen);
+	PacketReader packet(m_buffer.get(), packetLen);
 
 	uint16_t version = packet.get<int16_t>(); // Maple Version, TODO: Verify it
 	packet.getString(); // Unknown

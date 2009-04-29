@@ -83,8 +83,7 @@ function giveAllPartyMembersEXP(exp, mapid)
 	members = getAllPartyPlayerIDs();
 	for i = 1, #members do
 		member = members[i];
-		if isOnline(member) then
-			setPlayer(member);
+		if setPlayer(member) then
 			if mapid == nil then
 				giveEXP(exp);
 			else

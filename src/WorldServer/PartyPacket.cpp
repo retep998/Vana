@@ -108,7 +108,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, int8_t type, int3
 			packet.add<int32_t>(target);
 			packet.add<int8_t>(0x01);
 			packet.add<int8_t>(type == PARTY_LEAVE ? 0x00 : 0x01);
-			packet.addString(Players::Instance()->getPlayer(target)->name);
+			packet.addString(Players::Instance()->getPlayer(target, true)->name);
 			break;	
 		case PARTY_SILENT_UPDATE:
 		case PARTY_LOG_IN_OUT:
@@ -129,7 +129,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, int8_t type, int3
 	packet.add<int16_t>(INTER_PARTY_OPERATION);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(target);
-	packet.add<int32_t>(Players::Instance()->getPlayer(target)->party);
+	packet.add<int32_t>(Players::Instance()->getPlayer(target, true)->party);
 	player->getSession()->send(packet);
 }
 

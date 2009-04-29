@@ -322,6 +322,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\TradeHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Trades.cpp"
 					>
 				</File>
@@ -677,6 +681,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Trade.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\TradeHandler.h"
 					>
 				</File>
 				<File

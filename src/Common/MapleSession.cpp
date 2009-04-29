@@ -102,8 +102,10 @@ void MapleSession::send(const PacketCreator &packet, bool encrypt) {
 }
 
 void MapleSession::start_read_header() {
+	m_buffer.reset(new unsigned char[headerLen]);
+
 	boost::asio::async_read(m_socket,
-		boost::asio::buffer(m_buffer, headerLen),
+		boost::asio::buffer(m_buffer.get(), headerLen),
 		boost::bind(
 			&MapleSession::handle_read_header, shared_from_this(),
 			boost::asio::placeholders::error,
@@ -126,15 +128,17 @@ void MapleSession::handle_write(const boost::system::error_code &error,
 void MapleSession::handle_read_header(const boost::system::error_code &error,
 									  size_t bytes_transferred) {
 	if (!error) {
-		size_t len = Decoder::getLength(m_buffer);
+		size_t len = Decoder::getLength(m_buffer.get());
 
-		if (len < 2 || len > bufferLen) {
+		if (len < 2 || len > maxBufferLen) {
 			// Hacking or trying to crash server
 			disconnect();
 		}
 
+		m_buffer.reset(new unsigned char[len]);
+
 		boost::asio::async_read(m_socket,
-			boost::asio::buffer(m_buffer, len),
+			boost::asio::buffer(m_buffer.get(), len),
 			boost::bind(
 				&MapleSession::handle_read_body, shared_from_this(),
 				boost::asio::placeholders::error,
@@ -148,9 +152,9 @@ void MapleSession::handle_read_header(const boost::system::error_code &error,
 void MapleSession::handle_read_body(const boost::system::error_code &error,
 									size_t bytes_transferred) {
 	if (!error) {
-		m_decoder.decrypt(m_buffer, bytes_transferred);
+		m_decoder.decrypt(m_buffer.get(), bytes_transferred);
 
-		PacketReader packet(m_buffer, bytes_transferred);
+		PacketReader packet(m_buffer.get(), bytes_transferred);
 		m_player->handleRequest(packet);
 
 		start_read_header();

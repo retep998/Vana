@@ -101,13 +101,13 @@ void NPCs::handleNPCIn(Player *player, PacketReader &packet) {
 			npc->end();
 		}
 		else {
-			npc->setSelected(packet.get<int8_t>());
+			npc->setSelected(packet.get<uint8_t>());
 		}
 	}
 	else if (type == NPCDialogs::style) {
 		npc->setState(npc->getState() + 1);
 		if (what == 1) {
-			npc->setSelected(packet.get<int16_t>());
+			npc->setSelected(packet.get<uint8_t>());
 		}
 		else  {
 			npc->end();
