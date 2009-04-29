@@ -277,7 +277,7 @@ elseif state == 1 then
 		addSkillLevel(1121002, 30);--	Stance
 		-- Paladin (4th Job)
 		addSkillLevel(1220005, 30);--	Achilles
-		addSkillLevel(1220010, 30);--	Advanced Charge
+		addSkillLevel(1220010, 10);--	Advanced Charge
 		addSkillLevel(1221012, 1);--	Awakening
 		addSkillLevel(1221009, 30);--	Blast
 		addSkillLevel(1220006, 30);--	Blocking

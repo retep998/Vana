@@ -32,7 +32,6 @@ private:
 	unsigned char ivSend[16];
 public:
 	static int32_t getLength(unsigned char *header);
-	static void setIv(unsigned char *dest, unsigned char *source);
 	void createHeader(unsigned char *header, int16_t size);
 
 	PacketCreator getConnectPacket(string unknown = "");

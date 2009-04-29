@@ -45,9 +45,8 @@ class ActiveTrade {
 public:
 	ActiveTrade(Player *starter, Player *receiver);
 
-	void setID(int32_t id) { this->id = id; }
-
-	int32_t getID() const { return id; }
+	void setId(int32_t id) { this->id = id; }
+	int32_t getId() const { return id; }
 	TradeInfo * getStarter() const { return starter.get(); }
 	TradeInfo * getReceiver() const { return receiver.get(); }
 private:

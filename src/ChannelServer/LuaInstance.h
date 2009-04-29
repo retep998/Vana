@@ -36,4 +36,10 @@ public:
 	bool run(InstanceMessages message, const string &, int32_t);
 	bool run(InstanceMessages message, int32_t, int32_t, int32_t);
 };
+
+namespace LuaExports {
+	int revertPlayerInstance(lua_State *luaVm);
+	int setPlayerInstance(lua_State *luaVm);
+}
+
 #endif

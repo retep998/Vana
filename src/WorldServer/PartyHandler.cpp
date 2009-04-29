@@ -80,19 +80,19 @@ void PartyHandler::expelPlayer(WorldServerAcceptPlayer *player, int32_t playerid
 		return; //Hacking
 	}
 	Party *party = Parties::Instance()->getParty(pplayer->party);
-	party->deleteMember(tplayer);
+	party->deleteMember(target);
 	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
 			WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;
 			PartyPacket::updateParty(channel, PARTY_EXPEL, iter->first, target);
 		}
 	}
-	if (tplayer->online) {
+	if (tplayer != 0) {
 		WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(tplayer->channel)->player;
 		PartyPacket::updateParty(channel, PARTY_EXPEL, target, target);
 	}
 	WorldServerAcceptPacket::sendRemovePartyPlayer(target, pplayer->party);
-	Players::Instance()->getPlayer(target)->party = 0;
+	Players::Instance()->getPlayer(target, true)->party = 0;
 }
 
 void PartyHandler::leaveParty(WorldServerAcceptPlayer *player, int32_t playerid) {
@@ -113,7 +113,7 @@ void PartyHandler::leaveParty(WorldServerAcceptPlayer *player, int32_t playerid)
 	}
 	else {
 		WorldServerAcceptPacket::sendRemovePartyPlayer(pplayer->id, pplayer->party);
-		party->deleteMember(pplayer);
+		party->deleteMember(pplayer->id);
 		for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 			if (iter->second->online) {
 				WorldServerAcceptPlayer *channel = Channels::Instance()->getChannel(iter->second->channel)->player;

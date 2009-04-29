@@ -292,15 +292,19 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id) + (GameLogicUtilities::isStar(item->id) ? player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10 : player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
+			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id);
+			if (GameLogicUtilities::isStar(item->id))
+				maxslot += player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
+			else
+				maxslot += player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10;
+
 			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->id, maxslot - item->amount);
-			if (modifiedmesos > 0) {
-				// Probably hacking
-				return;
+			if ((modifiedmesos < 0) && (player->getInventory()->getMesos() > -modifiedmesos)) {
+				player->getInventory()->modifyMesos(modifiedmesos);
+				InventoryPacket::updateItemAmounts(player, 2, slot, maxslot, 0, 0);
+				item->amount = maxslot;
+				InventoryPacket::bought(player, 0);
 			}
-			player->getInventory()->modifyMesos(modifiedmesos); // TODO: Calculate price, letting players recharge for 1 meso for now
-			InventoryPacket::updateItemAmounts(player, 2, slot, maxslot, 0, 0);
-			InventoryPacket::bought(player, 0);
 			break;
 		}
 		case 3:

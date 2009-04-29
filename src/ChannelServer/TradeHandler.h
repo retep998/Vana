@@ -15,37 +15,25 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef TRADES_H
-#define TRADES_H
+#ifndef TRADEHANDLER_H
+#define TRADEHANDLER_H
 
-#include "Trade.h"
 #include "Types.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
 
-using std::tr1::unordered_map;
-
-class ActiveTrade;
-class Player;
 class PacketReader;
+class Player;
+struct TradeInfo;
 
-class Trades : boost::noncopyable {
-public:
-	static Trades * Instance() {
-		if (singleton == 0)
-			singleton = new Trades;
-		return singleton;
-	}
-
-	void addTrade(ActiveTrade *trade);
-	void removeTrade(int32_t id);
-	ActiveTrade * getTrade(int32_t id);
-private:
-	Trades() {};
-	static Trades *singleton;
-
-	unordered_map<int32_t, boost::shared_ptr<ActiveTrade> > trades;
-};
+namespace TradeHandler {
+	void tradeHandler(Player *player, PacketReader &packet);
+	float getTaxLevel(int32_t mesos);
+	void cancelTrade(Player *player);
+	void returnItems(Player *player, TradeInfo *info);
+	void returnMesos(Player *player, TradeInfo *info);
+	void timeout(Player *starter, Player *receiver, int32_t tradeid);
+	void stopTimeout(Player *starter, Player *receiver);
+	void startTimeout(Player *starter, Player *receiver, int32_t tradeid);
+	bool canTrade(Player *player, TradeInfo *info);
+}
 
 #endif
