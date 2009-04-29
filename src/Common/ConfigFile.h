@@ -44,7 +44,6 @@ public:
 	bool getBool(const string &value);
 private:
 	lua_State *luaVm;
-	void initialize();
 };
 
 #endif
