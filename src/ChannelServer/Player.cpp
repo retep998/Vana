@@ -78,6 +78,9 @@ Player::~Player() {
 			getInstance()->removePlayer(getId());
 			getInstance()->sendMessage(PlayerDisconnect, getId());
 		}
+		if (getNPC() != 0) {
+			delete getNPC();
+		}
 		//if (this->getHp() == 0)
 		//	this->acceptDeath();
 		// "Bug" in global, would be fixed here:
