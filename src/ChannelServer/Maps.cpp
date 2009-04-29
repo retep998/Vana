@@ -80,7 +80,8 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 			if (player->getHp() == 0) { // else, hacking
 				player->acceptDeath();
 			}
-		case -1: { // The fall through is intentional
+			break;
+		case -1: {
 			string portalname = packet.getString();
 
 			Map *tomap = getMap(player->getMap());
