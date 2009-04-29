@@ -650,7 +650,7 @@ void Player::acceptDeath() {
 	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
 	setHp(50, false);
 	getActiveBuffs()->removeBuff();
-	Maps::changeMap(this, tomap, 0);
+	Maps::changeMap(this, tomap);
 }
 
 bool Player::hasGmEquip() {

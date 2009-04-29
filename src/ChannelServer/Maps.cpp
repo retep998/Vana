@@ -73,25 +73,32 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 
 void Maps::usePortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
-	if (packet.get<int32_t>() == 0) { // Dead
-		if (player->getHp() == 0) {
-			player->acceptDeath();
+
+	int32_t opcode = packet.get<int32_t>();
+	switch(opcode) {
+		case 0: // Dead
+			if (player->getHp() == 0) { // else, hacking
+				player->acceptDeath();
+			}
+		case -1: { // The fall through is intentional
+			string portalname = packet.getString();
+
+			Map *tomap = getMap(player->getMap());
+			if (tomap == 0)
+				return;
+			PortalInfo *portal = tomap->getPortal(portalname);
+			if (portal == 0) // Exit the function if portal is not found
+				return;
+
+			usePortal(player, portal);
+			break;
 		}
-		else {
-			// hacking
+		default: { // GM Map change (command "/m")
+			if (player->isGm() && getMap(opcode)) {
+				changeMap(player, opcode);
+			}
 		}
-		return;
 	}
-	string portalname = packet.getString();
-
-	Map *tomap = getMap(player->getMap());
-	if (tomap == 0)
-		return;
-	PortalInfo *portal = tomap->getPortal(portalname);
-	if (portal == 0) // Exit the function if portal is not found
-		return;
-
-	usePortal(player, portal);
 }
 
 void Maps::useScriptedPortal(Player *player, PacketReader &packet) {

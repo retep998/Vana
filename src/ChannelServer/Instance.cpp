@@ -153,7 +153,7 @@ void Instance::moveAllPlayers(int32_t mapid) {
 	if (!Maps::getMap(mapid))
 		return;
 	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
-		Maps::changeMap(iter->second, mapid, 0);
+		Maps::changeMap(iter->second, mapid);
 	}
 }
 

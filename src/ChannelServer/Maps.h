@@ -33,7 +33,7 @@ namespace Maps {
 	void usePortal(Player *player, PortalInfo *portal);
 	void usePortal(Player *player, PacketReader &packet);
 	void useScriptedPortal(Player *player, PacketReader &packet);
-	void changeMap(Player *player, int32_t mapid, PortalInfo *portal);
+	void changeMap(Player *player, int32_t mapid, PortalInfo *portal = 0);
 	void newMap(Player *player, int32_t mapid);
 };
 
