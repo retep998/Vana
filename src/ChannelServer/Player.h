@@ -53,10 +53,10 @@ public:
 
 	void realHandleRequest(PacketReader &packet);
 
-	void setSaveOnDC(bool save) { save_on_dc = save; }
+	void setSaveOnDc(bool save) { save_on_dc = save; }
 	void setTrading(int8_t newstate) { tradestate = newstate; }
 	void setSkin(int8_t id);
-	void setMappos(int8_t pos) { this->mappos = pos; }
+	void setMapPos(int8_t pos) { this->map_pos = pos; }
 	void setFallCounter(int8_t falls) { fall_counter = falls; }
 	void setLevel(uint8_t level);
 	void setAp(int16_t ap);
@@ -86,21 +86,21 @@ public:
 	void setExp(int32_t exp);
 	void setMap(int32_t map) { this->map = map; }
 	void setBuddyListSize(uint8_t size);
-	void setTradeSendId(int32_t id) { this->tradesendid = id; }
-	void setTradeRecvId(int32_t id) { this->traderecvid = id; }
+	void setTradeSendId(int32_t id) { this->trade_send_id = id; }
+	void setTradeRecvId(int32_t id) { this->trade_recv_id = id; }
 	void setShop(int32_t shopid) { shop = shopid; }
 	void setNPC(NPC *npc) { this->npc = npc; }
 	void setParty(Party *party) { this->party = party; }
 	void setInstance(Instance *instance) { this->instance = instance; }
 	void setChair(int32_t chair) { this->chair = chair; }
-	void setItemEffect(int32_t effect) { this->itemEffect = effect; }
+	void setItemEffect(int32_t effect) { this->item_effect = effect; }
 	void setSpecialSkill(SpecialSkillInfo info) { this->info = info; }
 
 	int8_t getWorldId() const { return world_id; }
 	int8_t getGender() const { return gender; }
 	int8_t getSkin() const { return skin; }
 	int8_t isTrading() const { return tradestate; }
-	int8_t getMappos() const { return mappos; }
+	int8_t getMappos() const { return map_pos; }
 	int8_t getFallCounter() const { return fall_counter; }
 	uint8_t getLevel() const { return level; }
 	uint8_t getBuddyListSize() const { return buddylist_size; }
@@ -120,23 +120,23 @@ public:
 	int16_t getRMMp() const { return rmmp; }
 	uint16_t getHpMpAp() const { return hpmp_ap; }
 	int32_t getId() const { return id; }
-	int32_t getUserId() const { return userid; }
+	int32_t getUserId() const { return user_id; }
 	int32_t getEyes() const { return eyes; }
 	int32_t getHair() const { return hair; }
 	int32_t getExp() const { return exp; }
 	int32_t getMap() const { return map; }
 	int32_t getShop() const { return shop; }
 	int32_t getChair() const { return chair; }
-	int32_t getItemEffect() const { return itemEffect; }
-	int32_t getGmLevel() const { return gm; }
+	int32_t getItemEffect() const { return item_effect; }
+	int32_t getGmLevel() const { return gm_level; }
 	int32_t getSpecialSkill() const { return info.skillid; }
-	int32_t getTradeSendId() const { return tradesendid; }
-	int32_t getTradeRecvId() const { return traderecvid; }
+	int32_t getTradeSendId() const { return trade_send_id; }
+	int32_t getTradeRecvId() const { return trade_recv_id; }
 	string getName() const { return name; }
 	NPC * getNPC() const { return npc; }
 	Party * getParty() const { return party; }
 	Instance * getInstance() const { return instance; }
-	bool isGm() const { return gm > 0; }
+	bool isGm() const { return gm_level > 0; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
 	bool hasGmEquip();
@@ -149,7 +149,7 @@ public:
 	PlayerQuests * getQuests() const { return quests.get(); }
 	PlayerSkills * getSkills() const { return skills.get(); }
 	PlayerStorage * getStorage() const { return storage.get(); }
-	PlayerVariables * getVariables() const { return playervars.get(); }
+	PlayerVariables * getVariables() const { return variables.get(); }
 
 	bool addWarning();
 	void changeChannel(int8_t channel);
@@ -165,7 +165,7 @@ private:
 	void changeSkillMacros(PacketReader &packet);
 
 	int8_t world_id;
-	int8_t mappos;
+	int8_t map_pos;
 	int8_t tradestate;
 	int8_t gender;
 	int8_t skin;
@@ -188,19 +188,19 @@ private:
 	int16_t rmmp;
 	uint16_t hpmp_ap;
 	int32_t id;
-	int32_t userid;
+	int32_t user_id;
 	int32_t eyes;
 	int32_t hair;
 	int32_t exp;
 	int32_t map;
 	int32_t shop;
-	int32_t itemEffect;
+	int32_t item_effect;
 	int32_t chair;
-	int32_t gm;
-	int32_t tradesendid;
-	int32_t traderecvid;
+	int32_t gm_level;
+	int32_t trade_send_id;
+	int32_t trade_recv_id;
 	bool save_on_dc;
-	bool isconnect;
+	bool is_connect;
 	string name;
 	NPC *npc;
 	Instance *instance;
@@ -216,7 +216,7 @@ private:
 	boost::scoped_ptr<PlayerQuests> quests;
 	boost::scoped_ptr<PlayerSkills> skills;
 	boost::scoped_ptr<PlayerStorage> storage;
-	boost::scoped_ptr<PlayerVariables> playervars;
+	boost::scoped_ptr<PlayerVariables> variables;
 };
 
 class PlayerFactory : public AbstractPlayerFactory {

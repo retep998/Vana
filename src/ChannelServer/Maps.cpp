@@ -126,7 +126,7 @@ void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
 
 	getMap(player->getMap())->removePlayer(player);
 	player->setMap(mapid);
-	player->setMappos(portal->id);
+	player->setMapPos(portal->id);
 	player->setPos(Pos(portal->pos.x, portal->pos.y - 40));
 	player->setStance(0);
 	player->setFh(0);
