@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PacketReader.h"
 #include "Summons.h"
-#include "WorldServerConnectPacket.h"
 #include <sys/stat.h>
 #include <string>
 
@@ -67,7 +66,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 			return;
 		}
 		PortalInfo *nextportal = tomap->getPortal(portal->toname);
-		changeMap(player, portal->tomap, nextportal);
+		player->setMap(portal->tomap, nextportal);
 	}
 }
 
@@ -96,7 +95,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 		}
 		default: { // GM Map change (command "/m")
 			if (player->isGm() && getMap(opcode)) {
-				changeMap(player, opcode);
+				player->setMap(opcode);
 			}
 		}
 	}
@@ -111,34 +110,6 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 		return;
 
 	usePortal(player, portal);
-}
-
-void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
-	if (!getMap(mapid)) {
-		MapPacket::portalBlocked(player);
-		return;
-	}
-	if (portal == 0)
-		portal = getMap(mapid)->getSpawnPoint();
-
-	if (player->getInstance() != 0) {
-		player->getInstance()->sendMessage(PlayerChangeMap, player->getId(), mapid, player->getMap());
-	}
-
-	getMap(player->getMap())->removePlayer(player);
-	player->setMap(mapid);
-	player->setMapPos(portal->id);
-	player->setPos(Pos(portal->pos.x, portal->pos.y - 40));
-	player->setStance(0);
-	player->setFh(0);
-	for (int8_t i = 0; i < 3; i++) {
-		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			pet->setPos(portal->pos);
-		}
-	}
-	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getId(), mapid);
-	MapPacket::changeMap(player);
-	newMap(player, mapid);
 }
 
 void Maps::newMap(Player *player, int32_t mapid) {

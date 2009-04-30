@@ -44,6 +44,7 @@ class Instance;
 class NPC;
 class PacketReader;
 class Party;
+struct PortalInfo;
 
 class Player : public AbstractPlayer, public MovableLife {
 public:
@@ -56,7 +57,6 @@ public:
 	void setSaveOnDc(bool save) { save_on_dc = save; }
 	void setTrading(int8_t newstate) { tradestate = newstate; }
 	void setSkin(int8_t id);
-	void setMapPos(int8_t pos) { this->map_pos = pos; }
 	void setFallCounter(int8_t falls) { fall_counter = falls; }
 	void setLevel(uint8_t level);
 	void setAp(int16_t ap);
@@ -84,7 +84,7 @@ public:
 	void setEyes(int32_t id);
 	void setHair(int32_t id);
 	void setExp(int32_t exp);
-	void setMap(int32_t map) { this->map = map; }
+	void setMap(int32_t mapid, PortalInfo *portal = 0);
 	void setBuddyListSize(uint8_t size);
 	void setTradeSendId(int32_t id) { this->trade_send_id = id; }
 	void setTradeRecvId(int32_t id) { this->trade_recv_id = id; }

@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "LevelsPacket.h"
 #include "MapleSession.h"
+#include "MapPacket.h"
 #include "Maps.h"
 #include "Mobs.h"
 #include "NPCs.h"
@@ -51,8 +52,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summons.h"
 #include "TimeUtilities.h"
 #include "TradeHandler.h"
-#include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPacket.h"
+#include "WorldServerConnectPlayer.h"
 #include <boost/array.hpp>
 
 Player::Player() :
@@ -503,6 +504,34 @@ void Player::setExp(int32_t exp) {
 	PlayerPacket::updateStatInt(this, 0x10000, exp);
 }
 
+void Player::setMap(int32_t mapid, PortalInfo *portal) {
+	if (!Maps::getMap(mapid)) {
+		MapPacket::portalBlocked(this);
+		return;
+	}
+	if (portal == 0)
+		portal = Maps::getMap(mapid)->getSpawnPoint();
+
+	if (getInstance() != 0) {
+		getInstance()->sendMessage(PlayerChangeMap, id, mapid, map);
+	}
+
+	Maps::getMap(map)->removePlayer(this);
+	map = mapid;
+	map_pos = portal->id;
+	setPos(Pos(portal->pos.x, portal->pos.y - 40));
+	setStance(0);
+	setFh(0);
+	for (int8_t i = 0; i < 3; i++) {
+		if (Pet *pet = getPets()->getSummoned(i)) {
+			pet->setPos(portal->pos);
+		}
+	}
+	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), id, mapid);
+	MapPacket::changeMap(this);
+	Maps::newMap(this, mapid);
+}
+
 void Player::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(this, 0x10, level);
@@ -653,7 +682,7 @@ void Player::acceptDeath() {
 	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
 	setHp(50, false);
 	getActiveBuffs()->removeBuff();
-	Maps::changeMap(this, tomap);
+	setMap(tomap);
 }
 
 bool Player::hasGmEquip() {
