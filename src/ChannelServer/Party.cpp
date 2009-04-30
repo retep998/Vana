@@ -288,7 +288,7 @@ void Party::warpAllMembers(int32_t mapid, const string &portalname) {
 		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 			Player *m_player = iter->second;
 			if (m_player != 0) {
-				Maps::changeMap(m_player, mapid, portal);
+				m_player->setMap(mapid, portal);
 			}
 		}
 	}
