@@ -32,6 +32,8 @@ void LevelsPacket::showEXP(Player *player, int32_t exp, bool white, bool inChat)
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
+	if (inChat)
+		packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
