@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "LevelsPacket.h"
 #include "MapleSession.h"
+#include "MapPacket.h"
 #include "Maps.h"
 #include "Mobs.h"
 #include "NPCs.h"
@@ -51,32 +52,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summons.h"
 #include "TimeUtilities.h"
 #include "TradeHandler.h"
-#include "WorldServerConnectPlayer.h"
 #include "WorldServerConnectPacket.h"
+#include "WorldServerConnectPlayer.h"
 #include <boost/array.hpp>
 
 Player::Player() :
 fall_counter(0),
 tradestate(0),
 shop(0),
-itemEffect(0),
+item_effect(0),
 chair(0),
 party(0),
 save_on_dc(true),
-isconnect(false),
+is_connect(false),
 npc(0),
 instance(0)
 {
 }
 
 Player::~Player() {
-	if (isconnect) {
+	if (is_connect) {
 		if (getParty() != 0) {
 			getParty()->setMember(getId(), 0);
 		}
 		if (getInstance() != 0) {
 			getInstance()->removePlayer(getId());
 			getInstance()->sendMessage(PlayerDisconnect, getId());
+		}
+		if (getNPC() != 0) {
+			delete getNPC();
 		}
 		//if (this->getHp() == 0)
 		//	this->acceptDeath();
@@ -181,16 +185,16 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 
 	res[0]["name"].to_string(name);
-	userid		= res[0]["userid"];
+	user_id		= res[0]["userid"];
 	exp			= res[0]["exp"];
 	map			= res[0]["map"];
-	gm			= res[0]["gm"];
+	gm_level			= res[0]["gm"];
 	eyes		= res[0]["eyes"];
 	hair		= res[0]["hair"];
 	world_id	= static_cast<int8_t>(res[0]["world_id"]);
 	gender		= static_cast<int8_t>(res[0]["gender"]);
 	skin		= static_cast<int8_t>(res[0]["skin"]);
-	mappos		= static_cast<int8_t>(res[0]["pos"]);
+	map_pos		= static_cast<int8_t>(res[0]["pos"]);
 	level		= static_cast<uint8_t>(res[0]["level"]);
 	job			= static_cast<int16_t>(res[0]["job"]);
 	str			= static_cast<int16_t>(res[0]["str"]);
@@ -254,7 +258,7 @@ void Player::playerConnect(PacketReader &packet) {
 	skills.reset(new PlayerSkills(this));
 
 	// Player variables
-	playervars.reset(new PlayerVariables(this));
+	variables.reset(new PlayerVariables(this));
 
 	// The rest
 	summons.reset(new PlayerSummons(this));
@@ -270,7 +274,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
-		mappos = 0;
+		map_pos = 0;
 		if (hp == 0)
 			hp = 50;
 	}
@@ -286,7 +290,7 @@ void Player::playerConnect(PacketReader &packet) {
 	if (mp > mmp)
 		mp = mmp;
 
-	m_pos = Maps::getMap(map)->getSpawnPoint(mappos)->pos;
+	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
 	m_stance = 0;
 	m_foothold = 0;
 
@@ -297,7 +301,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	for (int8_t i = 0; i < 3; i++) {
 		if (Pet *pet = pets->getSummoned(i))
-			pet->setPos(Maps::getMap(map)->getSpawnPoint(mappos)->pos);
+			pet->setPos(Maps::getMap(map)->getSpawnPoint(map_pos)->pos);
 	}
 
 	PlayerPacket::showKeys(this, &keyMaps);
@@ -310,7 +314,7 @@ void Player::playerConnect(PacketReader &packet) {
 	Maps::newMap(this, map);
 
 	setOnline(true);
-	isconnect = true;
+	is_connect = true;
 	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), ip, id, name, map, job, level);
 }
 
@@ -501,6 +505,34 @@ void Player::setExp(int32_t exp) {
 	PlayerPacket::updateStatInt(this, 0x10000, exp);
 }
 
+void Player::setMap(int32_t mapid, PortalInfo *portal) {
+	if (!Maps::getMap(mapid)) {
+		MapPacket::portalBlocked(this);
+		return;
+	}
+	if (portal == 0)
+		portal = Maps::getMap(mapid)->getSpawnPoint();
+
+	if (getInstance() != 0) {
+		getInstance()->sendMessage(PlayerChangeMap, id, mapid, map);
+	}
+
+	Maps::getMap(map)->removePlayer(this);
+	map = mapid;
+	map_pos = portal->id;
+	setPos(Pos(portal->pos.x, portal->pos.y - 40));
+	setStance(0);
+	setFh(0);
+	for (int8_t i = 0; i < 3; i++) {
+		if (Pet *pet = getPets()->getSummoned(i)) {
+			pet->setPos(portal->pos);
+		}
+	}
+	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), id, mapid);
+	MapPacket::changeMap(this);
+	Maps::newMap(this, mapid);
+}
+
 void Player::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(this, 0x10, level);
@@ -651,7 +683,7 @@ void Player::acceptDeath() {
 	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
 	setHp(50, false);
 	getActiveBuffs()->removeBuff();
-	Maps::changeMap(this, tomap, 0);
+	setMap(tomap);
 }
 
 bool Player::hasGmEquip() {

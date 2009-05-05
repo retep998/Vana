@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PacketReader.h"
 #include "Summons.h"
-#include "WorldServerConnectPacket.h"
 #include <sys/stat.h>
 #include <string>
 
@@ -67,31 +66,39 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 			return;
 		}
 		PortalInfo *nextportal = tomap->getPortal(portal->toname);
-		changeMap(player, portal->tomap, nextportal);
+		player->setMap(portal->tomap, nextportal);
 	}
 }
 
 void Maps::usePortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
-	if (packet.get<int32_t>() == 0) { // Dead
-		if (player->getHp() == 0) {
-			player->acceptDeath();
+
+	int32_t opcode = packet.get<int32_t>();
+	switch(opcode) {
+		case 0: // Dead
+			if (player->getHp() == 0) { // else, hacking
+				player->acceptDeath();
+			}
+			break;
+		case -1: {
+			string portalname = packet.getString();
+
+			Map *tomap = getMap(player->getMap());
+			if (tomap == 0)
+				return;
+			PortalInfo *portal = tomap->getPortal(portalname);
+			if (portal == 0) // Exit the function if portal is not found
+				return;
+
+			usePortal(player, portal);
+			break;
 		}
-		else {
-			// hacking
+		default: { // GM Map change (command "/m")
+			if (player->isGm() && getMap(opcode)) {
+				player->setMap(opcode);
+			}
 		}
-		return;
 	}
-	string portalname = packet.getString();
-
-	Map *tomap = getMap(player->getMap());
-	if (tomap == 0)
-		return;
-	PortalInfo *portal = tomap->getPortal(portalname);
-	if (portal == 0) // Exit the function if portal is not found
-		return;
-
-	usePortal(player, portal);
 }
 
 void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
@@ -103,34 +110,6 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 		return;
 
 	usePortal(player, portal);
-}
-
-void Maps::changeMap(Player *player, int32_t mapid, PortalInfo *portal) {
-	if (!getMap(mapid)) {
-		MapPacket::portalBlocked(player);
-		return;
-	}
-	if (portal == 0)
-		portal = getMap(mapid)->getSpawnPoint();
-
-	if (player->getInstance() != 0) {
-		player->getInstance()->sendMessage(PlayerChangeMap, player->getId(), mapid, player->getMap());
-	}
-
-	getMap(player->getMap())->removePlayer(player);
-	player->setMap(mapid);
-	player->setMappos(portal->id);
-	player->setPos(Pos(portal->pos.x, portal->pos.y - 40));
-	player->setStance(0);
-	player->setFh(0);
-	for (int8_t i = 0; i < 3; i++) {
-		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			pet->setPos(portal->pos);
-		}
-	}
-	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), player->getId(), mapid);
-	MapPacket::changeMap(player);
-	newMap(player, mapid);
 }
 
 void Maps::newMap(Player *player, int32_t mapid) {
