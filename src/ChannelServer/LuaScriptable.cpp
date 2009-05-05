@@ -654,7 +654,7 @@ int LuaExports::setMap(lua_State *luaVm) {
 	}
 
 	if (Maps::getMap(mapid))
-		Maps::changeMap(getPlayer(luaVm), mapid, portal);
+		getPlayer(luaVm)->setMap(mapid, portal);
 	return 0;
 }
 

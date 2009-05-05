@@ -599,6 +599,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 		int8_t num = packet.get<int8_t>(); // Distance, second half for non-Meso Explosion OR hits for Meso Explosion
 		hits = skillid == Jobs::ChiefBandit::MesoExplosion ? num : hits;
 		vector<int32_t> ppdamages; // Pickpocket
+		Pos origin = mob->getPos(); // Info for pickpocket before mob is set to 0 (in the case that mob dies)
 		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet.get<int32_t>();
 			targettotal += damage;
@@ -638,7 +639,6 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 		totaldmg += targettotal;
 		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
 		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
-			Pos origin = mob->getPos(); // Info for
 			Pos pppos;
 			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 5 : 0) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
 			pppos.y = origin.y;

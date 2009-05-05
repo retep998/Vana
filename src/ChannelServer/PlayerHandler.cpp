@@ -259,7 +259,7 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 			if (floor.y == playerpos.y) { // There are no footholds below the player
 				int8_t count = player->getFallCounter();
 				if (count > 3) {
-					Maps::changeMap(player, mapid, 0);
+					player->setMap(mapid);
 					player->setFallCounter(0);
 				}
 				else {
@@ -268,7 +268,7 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 			}
 		}
 		else if (playerpos.y > bottom) {
-			Maps::changeMap(player, mapid, 0);
+			player->setMap(mapid);
 		}
 	}
 	else {

@@ -56,7 +56,7 @@ struct MeFunctor {
 struct WarpFunctor {
 	void operator() (Player *warpee) {
 		if (warpee->getMap() != mapid) {
-			Maps::changeMap(warpee, mapid, 0);
+			warpee->setMap(mapid);
 		}
 	}
 	int32_t mapid;
@@ -273,7 +273,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 							int32_t mapid = mapstring.length() > 0 ? atoi(mapstring.c_str()) : player->getMap();
 
 							if (Maps::getMap(mapid)) {
-								Maps::changeMap(warpee, mapid, 0);
+								warpee->setMap(mapid);
 							}
 						}
 					}
@@ -441,7 +441,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 							if (strlen(endptr) != 0) mapid = -1;
 						}
 						if (Maps::getMap(mapid))
-							Maps::changeMap(player, mapid, 0);
+							player->setMap(mapid);
 						else
 							PlayerPacket::showMessage(player, "Invalid Map ID", 6);
 					}
@@ -697,7 +697,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				case CmdWarpTo:
 					Player *warptoee;
 					if (warptoee = Players::Instance()->getPlayer(args)) {
-						Maps::changeMap(player, warptoee->getMap(), 0);
+						player->setMap(warptoee->getMap());
 					}
 					break;
 				case CmdZakum:
