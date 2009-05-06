@@ -73,7 +73,7 @@ struct PortalInfo {
 	int32_t tomap;
 	string toname;
 	string script;
-	bool onlyOnce;
+	bool onlyOnce; // Run it only once per map entry
 };
 typedef unordered_map<string, PortalInfo> PortalsInfo;
 typedef vector<PortalInfo> SpawnPoints;

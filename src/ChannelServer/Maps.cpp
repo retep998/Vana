@@ -36,8 +36,18 @@ Map * Maps::getMap(int32_t mapid) {
 }
 
 void Maps::usePortal(Player *player, PortalInfo *portal) {
-	if (portal->script.size() != 0) {
-		// Scripted portal
+	if (portal->script.size() != 0) { // Scripted portal
+		// Check for "onlyOnce" portal
+		if (portal->onlyOnce) {
+			if (player->usedPortal(portal->id)) {
+				MapPacket::portalBlocked(player);
+				return;
+			}
+			else {
+				player->addUsedPortal(portal->id);
+			}
+		}
+		
 		string filename = "scripts/portals/" + portal->script + ".lua";
 
 		struct stat fileInfo;

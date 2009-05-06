@@ -519,6 +519,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal) {
 	Maps::getMap(map)->removePlayer(this);
 	map = mapid;
 	map_pos = portal->id;
+	used_portals.clear();
 	setPos(Pos(portal->pos.x, portal->pos.y - 40));
 	setStance(0);
 	setFh(0);
