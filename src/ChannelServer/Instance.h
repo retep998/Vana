@@ -115,6 +115,7 @@ public:
 private:
 	boost::scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
 	boost::scoped_ptr<Variables> m_variables;
+	boost::scoped_ptr<LuaInstance> m_luainstance; // Lua instance for interacting with scripts
 	unordered_map<string, TimerAction> m_timer_actions; // Timers indexed by name
 	unordered_map<int32_t, Player *> m_players;
 	vector<string> m_banned; // For squads
@@ -122,7 +123,6 @@ private:
 	vector<Reactor *> m_reactors;
 	vector<Map *> m_maps;
 	vector<Party *> m_parties;
-	LuaInstance *m_luainstance; // Lua instance for interacting with scripts
 	clock_t m_start; // Clock time when instance started
 	string m_name; // Identification for the instance
 	int32_t m_max_players; // Maximum players allowed for instance
@@ -132,5 +132,7 @@ private:
 	bool m_show_timer; // Show timer
 	bool m_reset_on_destroy; // Reset reactors when done
 	bool m_marked_for_delete; // End of instance time
+
+	LuaInstance * getLuaInstance() { return m_luainstance.get(); }
 };
 #endif
