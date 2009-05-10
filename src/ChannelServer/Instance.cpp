@@ -87,7 +87,6 @@ Instance::~Instance() {
 	}
 	m_players.clear();
 	Instances::InstancePtr()->removeInstance(this);
-	delete m_luainstance;
 }
 
 void Instance::setBanned(const string &name, bool isbanned) {
@@ -316,23 +315,23 @@ void Instance::setInstanceTimer(int32_t time) {
 }
 
 void Instance::sendMessage(InstanceMessages message) {
-	m_luainstance->run(message);
+	getLuaInstance()->run(message);
 }
 
 void Instance::sendMessage(InstanceMessages message, int32_t parameter) {
-	m_luainstance->run(message, parameter);
+	getLuaInstance()->run(message, parameter);
 }
 
 void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2) {
-	m_luainstance->run(message, parameter1, parameter2);
+	getLuaInstance()->run(message, parameter1, parameter2);
 }
 
 void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) {
-	m_luainstance->run(message, parameter1, parameter2, parameter3);
+	getLuaInstance()->run(message, parameter1, parameter2, parameter3);
 }
 
 void Instance::sendMessage(InstanceMessages message, const string &parameter1, int32_t parameter2) {
-	m_luainstance->run(message, parameter1, parameter2);
+	getLuaInstance()->run(message, parameter1, parameter2);
 }
 
 void Instance::timerEnd(const string &name, bool fromTimer) {

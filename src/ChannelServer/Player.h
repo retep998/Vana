@@ -34,11 +34,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Skills.h"
 #include <boost/scoped_ptr.hpp>
+#include <boost/tr1/unordered_set.hpp>
 #include <string>
 #include <vector>
 
 using std::string;
 using std::vector;
+using std::tr1::unordered_set;
 
 class Instance;
 class NPC;
@@ -151,6 +153,10 @@ public:
 	PlayerStorage * getStorage() const { return storage.get(); }
 	PlayerVariables * getVariables() const { return variables.get(); }
 
+	// For "onlyOnce" portals
+	void addUsedPortal(int8_t portalId) { used_portals.insert(portalId); }
+	bool usedPortal(int8_t portalId) const { return used_portals.find(portalId) != used_portals.end(); }
+
 	bool addWarning();
 	void changeChannel(int8_t channel);
 	void saveStats();
@@ -205,6 +211,7 @@ private:
 	NPC *npc;
 	Instance *instance;
 	Party *party;
+	unordered_set<int8_t> used_portals;
 	vector<int32_t> warnings;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 

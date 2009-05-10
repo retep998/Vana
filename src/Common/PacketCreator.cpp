@@ -84,7 +84,9 @@ void PacketCreator::addString(const string &str) {
 
 unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {
 	if (packetCapacity < pos + len) { // Buffer is not large enough
-		packetCapacity *= 2; // Double the capacity each time the buffer is full
+		while (packetCapacity < pos + len) {
+			packetCapacity *= 2; // Double the capacity each time the buffer is full
+		}
 		unsigned char * newBuffer = new unsigned char[packetCapacity];
 		memcpy(newBuffer, packet.get(), pos);
 		packet.reset(newBuffer);	

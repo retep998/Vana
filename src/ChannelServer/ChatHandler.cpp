@@ -16,31 +16,33 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandler.h"
+#include "Database.h"
 #include "Inventory.h"
 #include "ItemDataProvider.h"
-#include "MapPacket.h"
 #include "MapleSession.h"
+#include "MapPacket.h"
 #include "Maps.h"
 #include "Mobs.h"
-#include "Database.h"
 #include "NPCs.h"
 #include "PacketCreator.h"
+#include "PacketReader.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Players.h"
 #include "PlayersPacket.h"
 #include "Pos.h"
-#include "PacketReader.h"
 #include "ShopDataProvider.h"
 #include "StoragePacket.h"
 #include "WorldServerConnectPacket.h"
-#include <vector>
 #include <boost/tr1/regex.hpp>
+#include <utility>
+#include <vector>
 
-using std::vector;
-using std::tr1::regex;
+using std::make_pair;
 using std::tr1::cmatch;
+using std::tr1::regex;
 using std::tr1::regex_match;
+using std::vector;
 
 unordered_map<string, pair<Commands, int32_t> > ChatHandler::commandlist;
 
@@ -64,59 +66,58 @@ struct WarpFunctor {
 };
 
 void ChatHandler::initializeCommands() {
-	typedef pair<Commands, int32_t> command;
-	commandlist["ban"] = command(CmdBan, 3);
-	commandlist["unban"] = command(CmdUnban, 3);
-	commandlist["header"] = command(CmdHeader, 3);
-	commandlist["shutdown"] = command(CmdShutdown, 3);
-	commandlist["packet"] = command(CmdPacket, 3);
-	commandlist["timer"] = command(CmdTimer, 3);
-	commandlist["instruction"] = command(CmdInstruction, 3);
-	commandlist["addnpc"] = command(CmdAddNpc, 3);
-	commandlist["dorankings"] = command(CmdRankingCalc, 3);
+	commandlist["ban"] = make_pair(CmdBan, 3);
+	commandlist["unban"] = make_pair(CmdUnban, 3);
+	commandlist["header"] = make_pair(CmdHeader, 3);
+	commandlist["shutdown"] = make_pair(CmdShutdown, 3);
+	commandlist["packet"] = make_pair(CmdPacket, 3);
+	commandlist["timer"] = make_pair(CmdTimer, 3);
+	commandlist["instruction"] = make_pair(CmdInstruction, 3);
+	commandlist["addnpc"] = make_pair(CmdAddNpc, 3);
+	commandlist["dorankings"] = make_pair(CmdRankingCalc, 3);
 
-	commandlist["me"] = command(CmdMe, 2);
-	commandlist["kick"] = command(CmdKick, 2);
-	commandlist["warp"] = command(CmdWarp, 2);
-	commandlist["warpall"] = command(CmdWarpAll, 2);
-	commandlist["killall"] = command(CmdKillAll, 2);
-	commandlist["cleardrops"] = command(CmdClearDrops, 2);
+	commandlist["me"] = make_pair(CmdMe, 2);
+	commandlist["kick"] = make_pair(CmdKick, 2);
+	commandlist["warp"] = make_pair(CmdWarp, 2);
+	commandlist["warpall"] = make_pair(CmdWarpAll, 2);
+	commandlist["killall"] = make_pair(CmdKillAll, 2);
+	commandlist["cleardrops"] = make_pair(CmdClearDrops, 2);
 
-	commandlist["kill"] = command(CmdKill, 1);
-	commandlist["lookup"] = command(CmdLookUp, 1);
-	commandlist["map"] = command(CmdMap, 1);
-	commandlist["job"] = command(CmdJob, 1);
-	commandlist["level"] = command(CmdLevel, 1);
-	commandlist["hp"] = command(CmdHp, 1);
-	commandlist["mp"] = command(CmdMp, 1);
-	commandlist["ap"] = command(CmdAp, 1);
-	commandlist["sp"] = command(CmdSp, 1);
-	commandlist["addsp"] = command(CmdAddSp, 1);
-	commandlist["int"] = command(CmdInt, 1);
-	commandlist["luk"] = command(CmdLuk, 1);
-	commandlist["dex"] = command(CmdDex, 1);
-	commandlist["str"] = command(CmdStr, 1);
-	commandlist["fame"] = command(CmdFame, 1);
-	commandlist["maxstats"] = command(CmdMaxStats, 1);
-	commandlist["npc"] = command(CmdNpc, 1);
-	commandlist["item"] = command(CmdItem, 1);
-	commandlist["summon"] = command(CmdSummon, 1);
-	commandlist["spawn"] = command(CmdSummon, 1);
-	commandlist["notice"] = command(CmdNotice, 1);
-	commandlist["shop"] = command(CmdShop, 1);
-	commandlist["pos"] = command(CmdPos, 1);
-	commandlist["zakum"] = command(CmdZakum, 1);
-	commandlist["horntail"] = command(CmdHorntail, 1);
-	commandlist["heal"] = command(CmdHeal, 1);
-	commandlist["mesos"] = command(CmdMesos, 1);
-	commandlist["dc"] = command(CmdDisconnect, 1);
-	commandlist["music"] = command(CmdMusic, 1);
-	commandlist["storage"] = command(CmdStorage, 1);
-	commandlist["eventinstruct"] = command(CmdEventInstruction, 1);
-	commandlist["relog"] = command(CmdRelog, 1);
-	commandlist["save"] = command(CmdSave, 1);
-	commandlist["warpto"] = command(CmdWarpTo, 1);
-	commandlist["killnpc"] = command(CmdKillNpc, 1);
+	commandlist["kill"] = make_pair(CmdKill, 1);
+	commandlist["lookup"] = make_pair(CmdLookUp, 1);
+	commandlist["map"] = make_pair(CmdMap, 1);
+	commandlist["job"] = make_pair(CmdJob, 1);
+	commandlist["level"] = make_pair(CmdLevel, 1);
+	commandlist["hp"] = make_pair(CmdHp, 1);
+	commandlist["mp"] = make_pair(CmdMp, 1);
+	commandlist["ap"] = make_pair(CmdAp, 1);
+	commandlist["sp"] = make_pair(CmdSp, 1);
+	commandlist["addsp"] = make_pair(CmdAddSp, 1);
+	commandlist["int"] = make_pair(CmdInt, 1);
+	commandlist["luk"] = make_pair(CmdLuk, 1);
+	commandlist["dex"] = make_pair(CmdDex, 1);
+	commandlist["str"] = make_pair(CmdStr, 1);
+	commandlist["fame"] = make_pair(CmdFame, 1);
+	commandlist["maxstats"] = make_pair(CmdMaxStats, 1);
+	commandlist["npc"] = make_pair(CmdNpc, 1);
+	commandlist["item"] = make_pair(CmdItem, 1);
+	commandlist["summon"] = make_pair(CmdSummon, 1);
+	commandlist["spawn"] = make_pair(CmdSummon, 1);
+	commandlist["notice"] = make_pair(CmdNotice, 1);
+	commandlist["shop"] = make_pair(CmdShop, 1);
+	commandlist["pos"] = make_pair(CmdPos, 1);
+	commandlist["zakum"] = make_pair(CmdZakum, 1);
+	commandlist["horntail"] = make_pair(CmdHorntail, 1);
+	commandlist["heal"] = make_pair(CmdHeal, 1);
+	commandlist["mesos"] = make_pair(CmdMesos, 1);
+	commandlist["dc"] = make_pair(CmdDisconnect, 1);
+	commandlist["music"] = make_pair(CmdMusic, 1);
+	commandlist["storage"] = make_pair(CmdStorage, 1);
+	commandlist["eventinstruct"] = make_pair(CmdEventInstruction, 1);
+	commandlist["relog"] = make_pair(CmdRelog, 1);
+	commandlist["save"] = make_pair(CmdSave, 1);
+	commandlist["warpto"] = make_pair(CmdWarpTo, 1);
+	commandlist["killnpc"] = make_pair(CmdKillNpc, 1);
 }
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
