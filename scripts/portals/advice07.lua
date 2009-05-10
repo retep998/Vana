@@ -15,7 +15,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-if tonumber(getPlayerVariable("advice07")) ~= 1 then
-	showInstructionBubble("You can view the World Map by pressing the #e#b[W]#k#nkey.", 350, 5);
-	setPlayerVariable("advice07","1");
-end
+showInstructionBubble("You can view the World Map by pressing the #e#b[W]#k#nkey.", 350, 5);
