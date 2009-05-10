@@ -219,7 +219,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 			highestdamage = iter->second;
 		}
 		Player *damager = Players::Instance()->getPlayer(iter->first);
-		if (damager == 0 || damager->getMap() != this->mapid) // Only give EXP if the damager is in the same channel and on the same map
+		if (damager == 0 || damager->getMap() != this->mapid || damager->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
 			continue;
 
 		uint8_t multiplier = damager == player ? 10 : 8; // Multiplier for player to give the finishing blow is 1 and .8 for others. We therefore set this to 10 or 8 and divide the result in the formula found later on by 10.
