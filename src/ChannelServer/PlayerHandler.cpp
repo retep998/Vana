@@ -242,9 +242,9 @@ void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
-	packet.reset(7);
+	packet.reset(11);
 	Movement::parseMovement(player, packet);
-	packet.reset(7);
+	packet.reset(11);
 	PlayersPacket::showMoving(player, packet.getBuffer(), packet.getBufferLength());
 	if (player->getFh() == 0) {
 		int32_t mapid = player->getMap();
