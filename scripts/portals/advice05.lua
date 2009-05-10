@@ -15,4 +15,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-showInstructionBubble("Press #e#b[S]#k#n to view your character information.", 250, 5);
+showInstructionBubble("Press #e#b[Q]#k#n to view the Quest window.", 250, 5);
