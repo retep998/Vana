@@ -67,6 +67,7 @@ struct WarpFunctor {
 
 void ChatHandler::initializeCommands() {
 	commandlist["ban"] = make_pair(CmdBan, 3);
+	commandlist["tempban"] = make_pair(CmdTempBan, 3);	
 	commandlist["unban"] = make_pair(CmdUnban, 3);
 	commandlist["header"] = make_pair(CmdHeader, 3);
 	commandlist["shutdown"] = make_pair(CmdShutdown, 3);
@@ -176,6 +177,47 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					else {
 						PlayerPacket::showMessage(player, "Usage: !ban <$playername> [#reason]", 6);
+					}
+					break;
+				}
+				case CmdTempBan: {
+					re = "(\\w+) (\\d+) (\\d+)";
+					if (regex_match(args.c_str(), matches, re)) {
+						string targetname = matches[1];
+						if (Player *target = Players::Instance()->getPlayer(targetname))
+							target->getSession()->disconnect();
+
+						string reasonstring = matches[2];
+						string length = matches[3];
+						int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
+
+						// Ban account
+						mysqlpp::Query accbanquery = Database::getCharDB().query();
+						accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY) WHERE characters.name = '" << targetname << "'";
+						accbanquery.exec();
+
+						string banmsg = targetname + " has been banned";
+
+						switch (reason) {
+							case 0x01: banmsg += " for hacking."; break;
+							case 0x02: banmsg += " for using macro/auto-keyboard."; break;
+							case 0x03: banmsg += " for illicit promotion or advertising."; break;
+							case 0x04: banmsg += " for harassment."; break;
+							case 0x05: banmsg += " for using profane language."; break;
+							case 0x06: banmsg += " for scamming."; break;
+							case 0x07: banmsg += " for misconduct."; break;
+							case 0x08: banmsg += " for illegal cash transaction."; break;
+							case 0x09: banmsg += " for illegal charging/funding. Please contact customer support for further details."; break;
+							case 0x0A: banmsg += " for temporary request."; break;
+							case 0x0B: banmsg += " for impersonating GM."; break;
+							case 0x0C: banmsg += " for using illegal programs or violating the game policy."; break;
+							case 0x0D: banmsg += " for one of cursing, scamming, or illegal trading via Megaphones."; break;
+							default: banmsg += "."; break;
+						}
+						PlayersPacket::showMessage(banmsg, 0);
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !tempban <$playername> <#reason> <#length in days>", 6);
 					}
 					break;
 				}
