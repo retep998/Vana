@@ -513,10 +513,10 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					player->setRMMp(30000);
 					player->setMHp(30000);
 					player->setMMp(30000);
-					player->setStr(30000);
-					player->setDex(30000);
-					player->setInt(30000);
-					player->setLuk(30000);
+					player->setStr(32767);
+					player->setDex(32767);
+					player->setInt(32767);
+					player->setLuk(32767);
 					break;
 				case CmdStr:
 					if (args.length() != 0)
