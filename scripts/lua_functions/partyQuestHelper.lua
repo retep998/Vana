@@ -95,3 +95,18 @@ function giveAllPartyMembersEXP(exp, mapid)
 		end
 	end
 end
+
+function moveAllMapMembers(mapid, portalstring)
+	players = getAllMapPlayerIDs();
+	for i = 1, #players do
+		player = players[i];
+		if setPlayer(player) then
+			if portalstring == nil then
+				setMap(mapid);
+			else
+				setMap(mapid, portalstring);
+			end
+			revertPlayer();
+		end
+	end
+end
