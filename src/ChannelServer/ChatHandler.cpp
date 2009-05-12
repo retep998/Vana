@@ -67,7 +67,7 @@ struct WarpFunctor {
 
 void ChatHandler::initializeCommands() {
 	commandlist["ban"] = make_pair(CmdBan, 3);
-	commandlist["tempban"] = make_pair(CmdTempBan, 3);	
+	commandlist["tempban"] = make_pair(CmdTempBan, 3);
 	commandlist["unban"] = make_pair(CmdUnban, 3);
 	commandlist["header"] = make_pair(CmdHeader, 3);
 	commandlist["shutdown"] = make_pair(CmdShutdown, 3);
