@@ -193,13 +193,12 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			if (player == two) {
 				recv->mesos += amount;
 				mesos = recv->mesos;
-				two->getInventory()->modifyMesos(-amount);
 			}
 			else {
 				send->mesos += amount;
 				mesos = send->mesos;
-				one->getInventory()->modifyMesos(-amount);
 			}
+			player->getInventory()->modifyMesos(-amount);
 			TradesPacket::sendAddMesos(one, (player == two ? 0x01 : 0x00), mesos);
 			TradesPacket::sendAddMesos(two, (player == two ? 0x00 : 0x01), mesos);
 			break;
