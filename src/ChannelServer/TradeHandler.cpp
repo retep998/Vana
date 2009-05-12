@@ -128,16 +128,11 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			int16_t amount = packet.get<int16_t>();
 			int8_t addslot = packet.get<int8_t>();
 			Item *item = player->getInventory()->getItem(inventory, slot);
-			if (item == 0) {
-				// Hacking, most likely
+			if (item == 0 || (!isreceiver && send->slot[addslot - 1]) || (isreceiver && recv->slot[addslot - 1])) {
+				// Hacking
 				return;
 			}
 			Item *use = new Item(item);
-			if ((!isreceiver && send->slot[addslot - 1]) || (isreceiver && recv->slot[addslot - 1])) {
-				// Hacking
-				delete use;
-				return;
-			}
 
 			if (GameLogicUtilities::isRechargeable(item->id)) {
 				amount = item->amount;
