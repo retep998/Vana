@@ -53,7 +53,7 @@ void RankingCalculator::all() {
 	RankingCalculator::job();
 	RankingCalculator::fame();
 
-	float loadingTime = (clock() - startTime) / (float) 1000;
+	float loadingTime = (clock() - startTime) / (float) CLOCKS_PER_SEC;
 	std::cout << "DONE in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl;
 }
 
