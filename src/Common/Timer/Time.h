@@ -44,7 +44,7 @@ clock_t Time::nthSecondOfHour(uint16_t second) {
 	else // The requested time is within this hour
 		secDest = second - secThisHour;
 
-	return TimeUtilities::getTickCount() + (secDest * CLOCKS_PER_SEC);
+	return TimeUtilities::getTickCount() + (secDest * 1000);
 }
 
 }
