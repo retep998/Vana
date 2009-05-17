@@ -16,5 +16,5 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#define MAPLE_VERSION 62
+#define MAPLE_VERSION 70
 #define MAPLE_VERSION_UNK 0x08 // The byte at the end of the iv packet
