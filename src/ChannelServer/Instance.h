@@ -51,7 +51,7 @@ public:
 	Instance(const string &name, int32_t map, int32_t playerid, int32_t time, bool persistent, bool showtimer);
 	~Instance();
 
-	clock_t getStart() const { return m_start; }
+	uint32_t getStart() const { return m_start; }
 	string getName() const { return m_name; }
 	bool getMarkedForDelete() const { return m_marked_for_delete; }
 	void setMarkedForDelete(bool mark) { m_marked_for_delete = mark; }
@@ -123,7 +123,7 @@ private:
 	vector<Reactor *> m_reactors;
 	vector<Map *> m_maps;
 	vector<Party *> m_parties;
-	clock_t m_start; // Clock time when instance started
+	uint32_t m_start; // Tick count when instance started
 	string m_name; // Identification for the instance
 	int32_t m_max_players; // Maximum players allowed for instance
 	int32_t m_time; // Instance time

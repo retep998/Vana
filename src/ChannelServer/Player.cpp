@@ -606,7 +606,7 @@ void Player::setFame(int16_t fame) {
 }
 
 bool Player::addWarning() {
-	int32_t t = TimeUtilities::clock_in_ms();
+	int32_t t = TimeUtilities::getTickCount();
 	// Deleting old warnings
 	for (size_t i = 0; i < warnings.size(); i++) {
 		if (warnings[i] + 300000 < t) {

@@ -58,8 +58,25 @@ void Decoder::next() {
 }
 
 void Decoder::decrypt(unsigned char *buffer, int32_t size) {
-	CryptoPP::OFB_Mode<CryptoPP::AES>::Decryption ofbDecryption(AesKey, AesKeySize, ivRecv);
-	ofbDecryption.ProcessData(buffer, buffer, size);
+	int32_t pos = 0;
+	uint8_t first = 1;
+
+	CryptoPP::OFB_Mode<CryptoPP::AES>::Decryption ofbDecryption;
+
+	while (size > pos) {
+		ofbDecryption.SetKeyWithIV(AesKey, AesKeySize, ivRecv); // Need to set it before every decryption
+
+		if (size > (pos + 1460 - first * 4)) {
+			ofbDecryption.ProcessData(buffer + pos, buffer + pos, 1460 - first * 4);
+		}
+		else {
+			ofbDecryption.ProcessData(buffer + pos, buffer + pos, size - pos);
+		}
+		pos += 1460 - first * 4;
+		if (first == 1)
+			first = 0;
+	}
+	
 	MapleEncryption::nextIv(ivRecv); 
 	MapleEncryption::mapleDecrypt(buffer, size);
 }

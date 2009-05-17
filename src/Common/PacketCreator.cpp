@@ -69,7 +69,7 @@ void PacketCreator::addString(const string &str, size_t len) {
 	if (len < slen) {
 		std::cout << "ERROR: addString used with length shorter than string size." << std::endl; // TODO: Throw exception
 	}
-	strncpy((char *) getBuffer(pos, slen), str.c_str(), slen);
+	strncpy((char *) getBuffer(pos, len), str.c_str(), slen);
 	for (size_t i = slen; i < len; i++) {
 		packet[pos + i] = 0;
 	}
@@ -87,7 +87,7 @@ unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {
 		while (packetCapacity < pos + len) {
 			packetCapacity *= 2; // Double the capacity each time the buffer is full
 		}
-		unsigned char * newBuffer = new unsigned char[packetCapacity];
+		unsigned char *newBuffer = new unsigned char[packetCapacity];
 		memcpy(newBuffer, packet.get(), pos);
 		packet.reset(newBuffer);	
 	}

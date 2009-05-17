@@ -52,7 +52,6 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t 
 	packet.add<int16_t>(port);
 	packet.add<int8_t>(maxMultiLevel);
 	packet.add<int16_t>(maxStats);
-	packet.add<clock_t>(TimeUtilities::clock_in_ms());
 	player->getSession()->send(packet);
 }
 

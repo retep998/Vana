@@ -105,15 +105,14 @@ struct MobSpawnInfo {
 	int32_t id;
 	Pos pos;
 	int16_t fh;
-	int32_t last;
 	int32_t time;
 };
 typedef vector<MobSpawnInfo> MobSpawnsInfo;
 
 struct MobRespawnInfo {
-	MobRespawnInfo(int32_t spawnid, clock_t killed) : spawnid(spawnid), killed(killed) {}
+	MobRespawnInfo(int32_t spawnid, clock_t spawnat) : spawnid(spawnid), spawnat(spawnat) {}
 	int32_t spawnid;
-	clock_t killed;
+	clock_t spawnat;
 };
 typedef vector<MobRespawnInfo> MobRespawnsInfo;
 
