@@ -38,7 +38,7 @@ public:
 
 	Id getId() const { return m_id; }
 	clock_t getRunAt() const { return m_run_at; }
-	int32_t getTimeLeft() const { return m_run_at - TimeUtilities::clock_in_ms(); }
+	int32_t getTimeLeft() const { return m_run_at - TimeUtilities::getTickCount(); }
 
 	void run();
 	void reset(); // Only available for repeated timers

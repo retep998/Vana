@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include "Timer/Thread.h"
+#include "TimeUtilities.h"
 #include "Worlds.h"
 #include <boost/scoped_ptr.hpp>
 #include <ctime>
@@ -46,14 +47,14 @@ void RankingCalculator::runThread() {
 
 void RankingCalculator::all() {
 	std::cout << std::setw(outputWidth) << std::left << "Calculating rankings... ";
-	clock_t startTime = clock();
+	clock_t startTime = TimeUtilities::getTickCount();
 
 	RankingCalculator::overall();
 	RankingCalculator::world();
 	RankingCalculator::job();
 	RankingCalculator::fame();
 
-	float loadingTime = (clock() - startTime) / (float) CLOCKS_PER_SEC;
+	float loadingTime = (TimeUtilities::getTickCount() - startTime) / (float) 1000;
 	std::cout << "DONE in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl;
 }
 

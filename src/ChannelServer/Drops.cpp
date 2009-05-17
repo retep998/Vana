@@ -55,7 +55,7 @@ int16_t Drop::getAmount() {
 }
 
 void Drop::doDrop(Pos origin) {
-	setDropped(TimeUtilities::clock_in_ms());
+	setDropped(TimeUtilities::getTickCount());
 	if (!isQuest()) {
 		if (!isTradeable()) {
 			DropsPacket::showDrop(0, this, 3, false, origin);
