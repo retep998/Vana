@@ -26,11 +26,12 @@ struct TradeInfo;
 
 namespace TradeHandler {
 	void tradeHandler(Player *player, PacketReader &packet);
-	float getTaxLevel(int32_t mesos);
+	int32_t getTaxLevel(int32_t mesos);
 	void cancelTrade(Player *player);
-	void returnItems(Player *player, TradeInfo *info);
-	void returnMesos(Player *player, TradeInfo *info);
+	void giveItems(Player *player, TradeInfo *info);
+	void giveMesos(Player *player, TradeInfo *info, bool traded = false);
 	void timeout(Player *starter, Player *receiver, int32_t tradeid);
+	void removeTrade(int32_t id, Player *one, Player *two);
 	void stopTimeout(Player *starter, Player *receiver);
 	void startTimeout(Player *starter, Player *receiver, int32_t tradeid);
 	bool canTrade(Player *player, TradeInfo *info);

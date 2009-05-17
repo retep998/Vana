@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Connectable * Connectable::singleton = 0;
 
 void Connectable::newPlayer(int32_t id) {
-	map[id] = TimeUtilities::clock_in_ms();
+	map[id] = TimeUtilities::getTickCount();
 }
 
 bool Connectable::checkPlayer(int32_t id) {
 	if (map[id]) {
-		if (TimeUtilities::clock_in_ms() - map[id] < 5000)
+		if (TimeUtilities::getTickCount() - map[id] < 5000)
 			return true;
 		map.erase(id);
 	}

@@ -135,7 +135,10 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	}
 	packet.add<int8_t>(0); // End of pets / start of taming mob
 	packet.add<int8_t>(0); // End of taming mob / start of wish list
-	packet.add<int8_t>(0); // Wish list count
+	vector<int32_t> wishlist = getinfo->getWishlist(); 
+	packet.add<uint8_t>((uint8_t)(wishlist.size())); // Wish list count
+	for (size_t i = 0; i < wishlist.size(); i++)
+		packet.add<int32_t>(wishlist[i]);
 	packet.add<int32_t>(1);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);

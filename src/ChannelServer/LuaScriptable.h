@@ -159,7 +159,6 @@ namespace LuaExports {
 	int spawnMobPos(lua_State *luaVm);
 
 	// Time
-	int getChannelClock(lua_State *luaVm);
 	int getDate(lua_State *luaVm);
 	int getDay(lua_State *luaVm);
 	int getDST(lua_State *luaVm);
@@ -168,7 +167,6 @@ namespace LuaExports {
 	int getMonth(lua_State *luaVm);
 	int getSecond(lua_State *luaVm);
 	int getTime(lua_State *luaVm);
-	int getWorldClock(lua_State *luaVm);
 	int getYear(lua_State *luaVm);
 
 	// Rates
