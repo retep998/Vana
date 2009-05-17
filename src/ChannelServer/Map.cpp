@@ -249,7 +249,7 @@ void Map::removeMob(int32_t id, int32_t spawnid) {
 	if (mobs.find(id) != mobs.end()) {
 		if (spawnid > -1 && mobspawns[spawnid].time > -1) { // Add spawn point to respawns if mob was spawned by a spawn point.
 			clock_t spawntime = mobspawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(100) + 100) / 100; // Randomly spawn between 1x and 2x the spawn time
-			mobrespawns.push_back(MobRespawnInfo(spawnid, TimeUtilities::clock_in_ms() + spawntime));
+			mobrespawns.push_back(MobRespawnInfo(spawnid, TimeUtilities::getTickCount() + spawntime));
 		}
 		this->mobs.erase(id);
 	}
@@ -338,7 +338,7 @@ void Map::clearDrops(clock_t time) { // Clear drops based on how long they have 
 }
 
 void Map::runTimer() {
-	clock_t time = TimeUtilities::clock_in_ms();
+	clock_t time = TimeUtilities::getTickCount();
 	checkReactorSpawn(time);
 	checkMobSpawn(time);
 	clearDrops(time);

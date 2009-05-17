@@ -122,6 +122,20 @@ bool TimeUtilities::getDST(time_t ctime) {
 	return (timeinfo->tm_isdst > 0);
 }
 
-clock_t TimeUtilities::clock_in_ms() {
-	return (clock() / (CLOCKS_PER_SEC / 1000));
+#ifdef WIN32
+# include <windows.h>
+uint32_t TimeUtilities::getTickCount() {
+	return GetTickCount();
 }
+#else
+# include <sys/times.h>
+uint32_t TimeUtilities::getTickCount() {
+	tms tm;
+	// Note: No matter what people say, CLK_TCK != CLOCKS_PER_SEC on many POSIX systems
+# if CLK_TCK < 1000
+	return times(&tm) * (1000 / CLK_TCK);
+# else
+	return times(&tm) * (CLK_TCK / 1000);
+# endif
+}
+#endif

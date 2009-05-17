@@ -31,7 +31,7 @@ namespace Time {
 
 inline
 clock_t Time::fromNow(clock_t msec) {
-	return msec + TimeUtilities::clock_in_ms();
+	return msec + TimeUtilities::getTickCount();
 }
 
 inline
@@ -44,7 +44,7 @@ clock_t Time::nthSecondOfHour(uint16_t second) {
 	else // The requested time is within this hour
 		secDest = second - secThisHour;
 
-	return TimeUtilities::clock_in_ms() + (secDest * CLOCKS_PER_SEC);
+	return TimeUtilities::getTickCount() + (secDest * CLOCKS_PER_SEC);
 }
 
 }
