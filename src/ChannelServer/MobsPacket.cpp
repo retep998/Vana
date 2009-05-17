@@ -123,6 +123,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	} 
 	else
 		packet.add<int8_t>(0);
+	pack.skipBytes(4); // Unk
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
 	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
 	pack.skipBytes(1); // Weapon subclass
@@ -201,6 +202,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 			break;
 	}
 	bool shadow_meso = (skillid == Jobs::Hermit::ShadowMeso);
+	pack.skipBytes(4); // Unk
 	uint8_t display = pack.get<int8_t>(); // Projectile display
 	uint8_t animation = pack.get<int8_t>(); // Direction/animation
 	uint8_t w_class = pack.get<int8_t>(); // Weapon subclass
@@ -270,10 +272,12 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 				default:
 					break;
 			}
-			packet.add<int32_t>(damage); 
+			packet.add<int32_t>(damage);
 		}
 		pack.skipBytes(4);
 	}
+	pack.skipBytes(4);
+	packet.add<int32_t>(pack.get<int32_t>()); // Position
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -292,6 +296,7 @@ void MobsPacket::damageMobSpell(Player *player, PacketReader &pack) {
 	packet.add<int32_t>(skillid);
 	if (skillid == Jobs::FPArchMage::BigBang || skillid == Jobs::ILArchMage::BigBang || skillid == Jobs::Bishop::BigBang) // Big Bang has a 4 byte charge time after skillid
 		charge = pack.get<int32_t>();
+	pack.skipBytes(4); // Unk
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
 	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
 	pack.skipBytes(1); // Weapon subclass

@@ -104,6 +104,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
+		case RECV_ADD_STAT_MULTI: Levels::addStatMulti(this, packet); break;
 		case RECV_ANIMATE_NPC: NPCs::handleNPCAnimation(this, packet); break;
 		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;

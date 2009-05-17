@@ -42,16 +42,17 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int8_t>(0); // Guild icon garbage
 
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(1);
+	packet.add<uint8_t>(0xf8);
+	packet.add<int8_t>(3);
+	packet.add<int16_t>(0);
 	packet.add<uint8_t>(enter.types[Byte5]);
 	packet.add<uint8_t>(enter.types[Byte6]);
 	packet.add<uint8_t>(enter.types[Byte7]);
-	packet.add<uint8_t>(0xF8);
+	packet.add<uint8_t>(enter.types[Byte8]);
 	packet.add<uint8_t>(enter.types[Byte1]);
 	packet.add<uint8_t>(enter.types[Byte2]);
 	packet.add<uint8_t>(enter.types[Byte3]);
 	packet.add<uint8_t>(enter.types[Byte4]);
-
 	const int8_t byteorder[8] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
 
 	for (int8_t i = 0; i < 8; i++) {
@@ -85,20 +86,21 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 		}
 	}
 	packet.add<int32_t>(0);
-	packet.add<uint8_t>(enter.types[Byte8]);
+	packet.add<int32_t>(0);
+	packet.add<int16_t>(0);
+	packet.add<int32_t>(1065638850); // Unknown
+	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
-
-	packet.add<int32_t>(1065638850); // Unknown
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
-	packet.add<int32_t>(1065638850);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
 	packet.add<int32_t>(1065638850);
 	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(1065638850);
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
 
 	if (enter.mountid > 0) {
 		packet.add<int32_t>(enter.mountid);
@@ -110,15 +112,22 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	}
 
 	packet.add<int32_t>(1065638850);
+	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(1065638850);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(1065638850);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(1065638850);
 	packet.add<int16_t>(0);
-	packet.add<int32_t>(1065638850);
-	packet.add<int32_t>(0);
+	packet.add<int8_t>(0);
 	packet.add<int16_t>(player->getJob());
 
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
@@ -149,6 +158,9 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int16_t>(0);
 	return packet;
 }
 

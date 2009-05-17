@@ -15,4 +15,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-showInstructionBubble("You can check your character's stats by pressing the #e#b[S]#k#nkey.", 350, 5);
+showInstructionBubble("Press #e#b[S]#k#n to view your character information.", 250, 5);

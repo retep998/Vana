@@ -773,8 +773,8 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 		case 5050000: { // AP Reset
 			int32_t tostat = packet.get<int32_t>();
 			int32_t fromstat = packet.get<int32_t>();
-			Levels::addStat(player, tostat, true, false);
-			Levels::addStat(player, fromstat, true, true);
+			Levels::addStat(player, tostat, 1, true);
+			Levels::addStat(player, fromstat, -1, true);
 			used = true;
 			break;
 		}

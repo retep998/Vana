@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Pets.h"
+#include "PetsPacket.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PlayerPacketHelper.h"
@@ -371,21 +372,7 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 			else {
 				Pet *pet = player->getPets()->getPet(item->petid);
 				packet.add<int8_t>((int8_t) s);
-				packet.add<int8_t>(3);
-				packet.add<int32_t>(item->id);
-				packet.add<int8_t>(1);
-				packet.add<int32_t>(pet->getId());
-				packet.add<int32_t>(0);
-				packet.add<int8_t>(0);
-				packet.addBytes("8005BB46E61702");
-				packet.addString(pet->getName(), 13);
-				packet.add<int8_t>(pet->getLevel());
-				packet.add<int16_t>(pet->getCloseness());
-				packet.add<int8_t>(pet->getFullness());
-				packet.add<int8_t>(0);
-				packet.addBytes("B8D56000CEC8"); // Most likely Korean timestamp expiration
-				packet.add<int8_t>(1); // Probably living status (1 = alive, 2 = dead)
-				packet.add<int32_t>(0);
+				PetsPacket::addInfo(packet, pet);
 			}
 		}
 		packet.add<int8_t>(0);

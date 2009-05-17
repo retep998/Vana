@@ -58,8 +58,8 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		packet.add<int16_t>(item->ijump); // Jump
 		packet.addString(item->name); // Owner string
 		packet.add<int8_t>(item->flags); // Lock, shoe spikes, cape cold protection, etc.
-		packet.add<int64_t>(0); // Expiration time
 		packet.add<int8_t>(0); // No clue
+		packet.addBytes("000000000000FFFFFFFFFFFFFFFF0040E0FD3B374F01FFFFFFFF");
 	}
 	else {
 		packet.add<int16_t>(item->amount); // Amount
