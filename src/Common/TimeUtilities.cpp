@@ -129,13 +129,19 @@ uint32_t TimeUtilities::getTickCount() {
 }
 #else
 # include <sys/times.h>
+# include <unistd.h>
 uint32_t TimeUtilities::getTickCount() {
 	tms tm;
-	// Note: No matter what people say, CLK_TCK != CLOCKS_PER_SEC on many POSIX systems
-# if CLK_TCK < 1000
-	return times(&tm) * (1000 / CLK_TCK);
-# else
-	return times(&tm) * (CLK_TCK / 1000);
-# endif
+	
+	// Note:
+	// CLOCKS_PER_SEC is always 1,000,000
+	// CLK_TCK is the real vlaue (deprecated)
+	// sysconf(_SC_CLK_TCK) is the current way of getting CLK_TCK
+	uint32_t clkTck = sysconf(_SC_CLK_TCK);
+	
+	if (clkTck < 1000)
+		return times(&tm) * (1000 / clkTck);
+	else
+		return times(&tm) * (clkTck / 1000);
 }
 #endif
