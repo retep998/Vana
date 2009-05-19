@@ -188,7 +188,7 @@ void Player::playerConnect(PacketReader &packet) {
 	user_id		= res[0]["userid"];
 	exp			= res[0]["exp"];
 	map			= res[0]["map"];
-	gm_level			= res[0]["gm"];
+	gm_level	= res[0]["gm"];
 	eyes		= res[0]["eyes"];
 	hair		= res[0]["hair"];
 	world_id	= static_cast<int8_t>(res[0]["world_id"]);
