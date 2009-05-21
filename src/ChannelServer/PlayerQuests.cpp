@@ -51,7 +51,7 @@ void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 					QuestsPacket::giveItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
 					Inventory::takeItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
 				}
-				else {
+				else if (questinfo.rewards[i].id > 0) {
 					QuestsPacket::giveItem(player, questinfo.rewards[i].id, -player->getInventory()->getItemAmount(questinfo.rewards[i].id));
 					Inventory::takeItem(player, questinfo.rewards[i].id, player->getInventory()->getItemAmount(questinfo.rewards[i].id));
 				}
@@ -140,7 +140,7 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 					chance += questinfo.rewards[i].prop;
 				}
 			}
-			else if (questinfo.rewards[i].ismesos) {
+			else if (questinfo.rewards[i].ismesos && questinfo.rewards[i].id > 0) {
 				player->getInventory()->modifyMesos(questinfo.rewards[i].id);
 				QuestsPacket::giveMesos(player, questinfo.rewards[i].id);
 			}
