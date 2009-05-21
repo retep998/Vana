@@ -186,8 +186,8 @@ void Player::playerConnect(PacketReader &packet) {
 
 	res[0]["name"].to_string(name);
 	user_id		= res[0]["userid"];
-	exp			= res[0]["exp"];
-	map			= res[0]["map"];
+	exp		= res[0]["exp"];
+	map		= res[0]["map"];
 	gm_level	= res[0]["gm"];
 	eyes		= res[0]["eyes"];
 	hair		= res[0]["hair"];
@@ -196,17 +196,17 @@ void Player::playerConnect(PacketReader &packet) {
 	skin		= static_cast<int8_t>(res[0]["skin"]);
 	map_pos		= static_cast<int8_t>(res[0]["pos"]);
 	level		= static_cast<uint8_t>(res[0]["level"]);
-	job			= static_cast<int16_t>(res[0]["job"]);
-	str			= static_cast<int16_t>(res[0]["str"]);
-	dex			= static_cast<int16_t>(res[0]["dex"]);
+	job		= static_cast<int16_t>(res[0]["job"]);
+	str		= static_cast<int16_t>(res[0]["str"]);
+	dex		= static_cast<int16_t>(res[0]["dex"]);
 	intt		= static_cast<int16_t>(res[0]["int"]);
-	luk			= static_cast<int16_t>(res[0]["luk"]);
-	hp			= static_cast<int16_t>(res[0]["chp"]);
+	luk		= static_cast<int16_t>(res[0]["luk"]);
+	hp		= static_cast<int16_t>(res[0]["chp"]);
 	rmhp = mhp	= static_cast<int16_t>(res[0]["mhp"]);
-	mp			= static_cast<int16_t>(res[0]["cmp"]);
+	mp		= static_cast<int16_t>(res[0]["cmp"]);
 	rmmp = mmp	= static_cast<int16_t>(res[0]["mmp"]);
-	ap			= static_cast<int16_t>(res[0]["ap"]);
-	sp			= static_cast<int16_t>(res[0]["sp"]);
+	ap		= static_cast<int16_t>(res[0]["ap"]);
+	sp		= static_cast<int16_t>(res[0]["sp"]);
 	fame		= static_cast<int16_t>(res[0]["fame"]);
 	hpmp_ap		= static_cast<uint16_t>(res[0]["hpmp_ap"]);
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
