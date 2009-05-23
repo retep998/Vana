@@ -17,7 +17,7 @@ include_directories(${MYSQL_INCLUDE_DIR})
 find_package(MySQL++ REQUIRED)
 include_directories(${MYSQL++_INCLUDE_DIR})
 
-find_package(Lua REQUIRED)
+find_package(Lua51 REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
 find_package(Crypto++ REQUIRED)
