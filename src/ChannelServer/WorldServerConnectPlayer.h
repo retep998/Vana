@@ -26,6 +26,7 @@ class PlayerActiveBuffs;
 class WorldServerConnectPlayer : public AbstractServerConnectPlayer {
 public:
 	WorldServerConnectPlayer();
+	~WorldServerConnectPlayer();
 	void realHandleRequest(PacketReader &packet);
 	void playerChangeChannel(int32_t playerid, uint16_t channel, PlayerActiveBuffs *playerbuffs);
 };

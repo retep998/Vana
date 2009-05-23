@@ -25,6 +25,8 @@ class PacketReader;
 
 class LoginServerAcceptPlayer : public AbstractServerAcceptPlayer {
 public:
+	LoginServerAcceptPlayer() : worldId(-1) { };
+	~LoginServerAcceptPlayer();
 	void realHandleRequest(PacketReader &packet);
 	void authenticated(int8_t type);
 
