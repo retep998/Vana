@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectPlayer.h"
+#include "ChannelServer.h"
 #include "BuffHolder.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
@@ -27,6 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 WorldServerConnectPlayer::WorldServerConnectPlayer() {
 	type = InterChannelServer;
+}
+
+WorldServerConnectPlayer::~WorldServerConnectPlayer() {
+	if (ChannelServer::Instance()->getChannel() != -1) {
+		std::cout << "Disconnected from the worldserver. Shutting down..." << std::endl;
+		exit(6);
+	}
 }
 
 void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {

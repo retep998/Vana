@@ -24,6 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RankingCalculator.h"
 #include "Worlds.h"
 
+LoginServerAcceptPlayer::~LoginServerAcceptPlayer() {
+	if (worldId != -1) {
+		Worlds::worlds[worldId]->connected = false;
+		Worlds::worlds[worldId]->channels.clear(); // Remove the channels (they will automaticly disconnect)
+		std::cout << "World " << (int32_t) worldId << " disconnected." << std::endl;
+	}
+}
+
 void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
 	switch (packet.get<int16_t>()) {
