@@ -94,7 +94,9 @@ Player::~Player() {
 		if (isTrading()) {
 			TradeHandler::cancelTrade(this);
 		}
-		WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);
+		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
+			WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);	
+		}
 		Maps::getMap(map)->removePlayer(this);
 		Players::Instance()->removePlayer(this);
 	}

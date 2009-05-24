@@ -67,6 +67,8 @@ public:
 	int32_t getDroprate() const { return droprate; }
 	string getScrollingHeader() const { return scrollingHeader; }
 	WorldServerConnectPlayer * getWorldPlayer() const { return worldPlayer; }
+	
+	bool isConnected() const { return channel != -1; }
 private:
 	ChannelServer() : channel(-1) {};
 	static ChannelServer *singleton;

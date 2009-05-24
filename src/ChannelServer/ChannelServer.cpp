@@ -35,8 +35,8 @@ void ChannelServer::listen() {
 }
 
 void ChannelServer::shutdown() {
-	channel = -1; // Else we get the error code 6
-	ConnectionManager::Instance()->stop();
+	channel = -1; // Else when WorldServerConnectPlayer disconnects, it will try to call shutdown() again
+	AbstractServer::shutdown();
 }
 
 void ChannelServer::loadData() {
