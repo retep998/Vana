@@ -39,6 +39,7 @@ public:
 	void loadData();
 	void loadConfig();
 	void listen();
+	void shutdown();
 	void connectWorld();
 	void sendToWorld(PacketCreator &packet);
 
