@@ -31,9 +31,9 @@ WorldServerConnectPlayer::WorldServerConnectPlayer() {
 }
 
 WorldServerConnectPlayer::~WorldServerConnectPlayer() {
-	if (ChannelServer::Instance()->getChannel() != -1) {
+	if (ChannelServer::Instance()->isConnected()) {
 		std::cout << "Disconnected from the worldserver. Shutting down..." << std::endl;
-		exit(6);
+		ChannelServer::Instance()->shutdown();
 	}
 }
 
