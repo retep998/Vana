@@ -236,10 +236,11 @@ void NPC::sendAcceptDecline() {
 	player->getSession()->send(packet);
 }
 
-void NPC::sendGetText() {
+void NPC::sendGetText(int16_t min, int16_t max) {
 	PacketCreator packet = npcPacket(NPCDialogs::getText);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+	packet.add<int16_t>(max);
+	packet.add<int16_t>(min);
 	player->getSession()->send(packet);
 }
 
