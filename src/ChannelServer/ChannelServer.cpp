@@ -34,6 +34,11 @@ void ChannelServer::listen() {
 	Initializing::setUsersOffline(getOnlineId());
 }
 
+void ChannelServer::shutdown() {
+	channel = -1; // Else we get the error code 6
+	ConnectionManager::Instance()->stop();
+}
+
 void ChannelServer::loadData() {
 	Initializing::checkSchemaVersion();
 	Initializing::checkMcdbVersion();
