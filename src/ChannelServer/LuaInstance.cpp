@@ -23,10 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 LuaInstance::LuaInstance(const string &name, int32_t playerid) : LuaScriptable("scripts/instances/" + name + ".lua", playerid) {
 	initialize();
 	setVariable("instancename", name);
-
-	if (luaL_dofile(luaVm, filename.c_str())) {
-		std::cout << lua_tostring(luaVm, -1) << std::endl;
-	}
+	LuaScriptable::run(); // Running is loading the functions
 }
 
 bool LuaInstance::run(InstanceMessages message) {
