@@ -61,7 +61,6 @@ set(SOURCES
 	PlayerStorage.h
 	PlayerSummons.h
 	PlayerVariables.h
-	PrecompiledHeader.h
 	Quests.h
 	QuestsPacket.h
 	ReactorPacket.h
@@ -140,7 +139,6 @@ set(SOURCES
 	PlayerStorage.cpp
 	PlayerSummons.cpp
 	PlayerVariables.cpp
-	PrecompiledHeader.cpp
 	Quests.cpp
 	QuestsPacket.cpp
 	ReactorPacket.cpp
