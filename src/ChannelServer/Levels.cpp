@@ -174,11 +174,11 @@ void Levels::addStatMulti(Player *player, PacketReader &packet) {
 			return;
 		}
 
-		addStat(player, type, value);
+		addStat(player, type, static_cast<int16_t>(value)); // Prefer a single cast to countless casts/modification down the line
 	}
 }
 
-void Levels::addStat(Player *player, int32_t type, int32_t mod, bool isreset) {
+void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 	int16_t maxstat = ChannelServer::Instance()->getMaxStats();
 	bool issubtract = mod < 0;
 	switch (type) {
