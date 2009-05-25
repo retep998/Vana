@@ -28,7 +28,7 @@ namespace Levels {
 	void giveEXP(Player *player, uint32_t exp, bool inChat = false, bool white = true);
 	void addStat(Player *player, PacketReader &packet);
 	void addStatMulti(Player *player, PacketReader &packet);
-	void addStat(Player *player, int32_t type, int32_t mod = 1, bool isreset = false);
+	void addStat(Player *player, int32_t type, int16_t mod = 1, bool isreset = false);
 };
 
 #endif
