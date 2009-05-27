@@ -405,12 +405,35 @@ const bool PlayerActiveBuffs::hasMagicGuard() {
 	return getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0;
 }
 
+const int32_t PlayerActiveBuffs::getMagicGuard() {
+	int32_t id = 0;
+	if (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0)
+		id = Jobs::Magician::MagicGuard;
+	return id;
+}
+
+const bool PlayerActiveBuffs::hasMesoGuard() {
+	return getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0;
+}
+
+const int32_t PlayerActiveBuffs::getMesoGuard() {
+	int32_t id = 0;
+	if (getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0)
+		id = Jobs::ChiefBandit::MesoGuard;
+	return id;
+}
+
 const bool PlayerActiveBuffs::hasHolySymbol() {
 	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 || getActiveSkillLevel(Jobs::SuperGm::HolySymbol) > 0);
 }
 
 const int32_t PlayerActiveBuffs::getHolySymbol() {
-	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 ? (int32_t)Jobs::Priest::HolySymbol : (int32_t)Jobs::SuperGm::HolySymbol);
+	int32_t id = 0;
+	if (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0)
+		id = Jobs::Priest::HolySymbol;
+	else if (getActiveSkillLevel(Jobs::SuperGm::HolySymbol) > 0)
+		id = Jobs::SuperGm::HolySymbol;
+	return id;
 }
 
 const bool PlayerActiveBuffs::hasHolyShield() {
@@ -444,7 +467,12 @@ const bool PlayerActiveBuffs::hasHyperBody() {
 }
 
 const int32_t PlayerActiveBuffs::getHyperBody() {
-	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 ? (int32_t)Jobs::Spearman::HyperBody : (int32_t)Jobs::SuperGm::HyperBody);
+	int32_t id = 0;
+	if (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0)
+		id = Jobs::Spearman::HyperBody;
+	else if (getActiveSkillLevel(Jobs::SuperGm::HyperBody) > 0)
+		id = Jobs::SuperGm::HyperBody;
+	return id;
 }
 
 const bool PlayerActiveBuffs::isUsingHide() {
