@@ -42,6 +42,7 @@ namespace GameLogicUtilities {
 	inline bool isPuppet(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet || skillid == Jobs::Ranger::Puppet); }
 	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return (((test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)) && ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y))); }
 	inline bool isMaxDarkSight(int32_t skillid, uint8_t level) { return (skillid == Jobs::Rogue::DarkSight && level == 20); }
+	inline bool skillMatchesJob(int32_t skillid, int16_t job) { return ((skillid / 1000000 == job / 100) && (skillid / 10000 <= job)); }
 	inline int8_t getPartyMember1(int8_t totalmembers) { return (totalmembers >= 1 ? (0x40 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember2(int8_t totalmembers) { return (totalmembers >= 2 ? (0x80 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember3(int8_t totalmembers) { return (totalmembers >= 3 ? (0x100 >> totalmembers) : 0xFF); }
