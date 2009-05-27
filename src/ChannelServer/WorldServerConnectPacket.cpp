@@ -91,51 +91,7 @@ void WorldServerConnectPacket::playerChangeChannel(WorldServerConnectPlayer *pla
 	packet.add<int32_t>(playerid);
 	packet.add<int16_t>(channel);
 
-	// Buff information nuisance ahoy
-	packet.add<int8_t>(playerbuffs->getCombo());
-	packet.add<int16_t>(playerbuffs->getEnergyChargeLevel());
-	packet.add<int32_t>(playerbuffs->getCharge());
-	packet.add<int32_t>(playerbuffs->getBooster());
-	packet.add<int32_t>(playerbuffs->getBattleshipHp());
-	packet.add<int32_t>(playerbuffs->getDebuffMask());
-	MapEntryBuffs enterbuffs = playerbuffs->getMapEntryBuffs();
-	packet.add<int32_t>(enterbuffs.mountid);
-	packet.add<int32_t>(enterbuffs.mountskill);
-	for (int8_t i = 0; i < 8; i++) {
-		packet.add<uint8_t>(enterbuffs.types[i]);
-		packet.add<uint8_t>((uint8_t)(enterbuffs.values[i].size()));
-		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = enterbuffs.values[i].begin(); iter != enterbuffs.values[i].end(); iter++) {
-			packet.add<uint8_t>(iter->first);
-			packet.add<int8_t>(iter->second.debuff ? 1 : 0);
-			if (iter->second.debuff) {
-				packet.add<int16_t>(iter->second.skill);
-				packet.add<int16_t>(iter->second.val);
-			}
-			else {
-				packet.add<int8_t>(iter->second.use ? 1 : 0);
-				packet.add<int16_t>(iter->second.val);
-			}
-		}
-	}
-	list<int32_t> currentbuffs = playerbuffs->getBuffs();
-	packet.add<uint8_t>((uint8_t)(currentbuffs.size()));
-	for (list<int32_t>::iterator iter = currentbuffs.begin(); iter != currentbuffs.end(); iter++) {
-		int32_t buffid = *iter;
-		packet.add<int32_t>(buffid);
-		packet.add<int32_t>(playerbuffs->buffTimeLeft(buffid) / 1000);
-		packet.add<uint8_t>(playerbuffs->getActiveSkillLevel(buffid));
-	}
-	ActiveBuffsByType bufftypes = playerbuffs->getBuffTypes();
-	unordered_map<uint8_t, int32_t> currentbyte;
-	for (int8_t i = 0; i < 8; i++) {
-		currentbyte = bufftypes[i];
-		packet.add<uint8_t>((uint8_t)(currentbyte.size()));
-		for (unordered_map<uint8_t, int32_t>::iterator iter = currentbyte.begin(); iter != currentbyte.end(); iter++) {
-			packet.add<uint8_t>(iter->first);
-			packet.add<int32_t>(iter->second);
-		}
-	}
-	// Buff information end
+	playerbuffs->getBuffTransferPacket(packet);
 
 	player->getSession()->send(packet);
 }

@@ -30,6 +30,7 @@ using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 using std::vector;
 
+class PacketCreator;
 class Player;
 
 namespace Timer {
@@ -142,6 +143,9 @@ public:
 	const int32_t getPowerStance();
 	const int32_t getHyperBody();
 	const int32_t getCurrentMorph();
+
+	// Packet marshaling
+	void getBuffTransferPacket(PacketCreator &packet);
 private:
 	Player *m_player;
 	uint8_t m_combo;
