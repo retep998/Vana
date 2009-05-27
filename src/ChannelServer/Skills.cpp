@@ -88,7 +88,7 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			if (skillid == Jobs::SuperGm::Hide) // GM Hide
 				MapPacket::showPlayer(player);
 			player->getActiveBuffs()->removeBuff(skillid, fromTimer);
-			if (skillid > 100 && skillid < 200)
+			if (GameLogicUtilities::isMobSkill(skillid))
 				Buffs::Instance()->endDebuff(player, (uint8_t)(skillid));
 			else
 				Buffs::Instance()->endBuff(player, skillid);

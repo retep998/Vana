@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerActiveBuffs.h"
 #include "BuffsPacket.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
@@ -36,7 +37,7 @@ void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
 	clock_t skillExpire = time * 1000;
 	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 
-	if (skill > 0 && skill < 200) {
+	if (GameLogicUtilities::isMobSkill(skill)) {
 		new Timer::Timer(bind(&PlayerActiveBuffs::removeDebuff, this, (uint8_t)(skill), true),
 			id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
 	}
@@ -258,7 +259,7 @@ void PlayerActiveBuffs::setActiveBuffsByType(ActiveBuffsByType &buffs) {
 void PlayerActiveBuffs::dispelBuffs() {
 	unordered_map<int32_t, uint8_t> activelevels = m_activelevels;
 	for (unordered_map<int32_t, uint8_t>::iterator iter = activelevels.begin(); iter != activelevels.end(); iter++) {
-		if (iter->second > 0 && iter->first > 200) { // Only want active skills and skill buffs - no item buffs or debuffs
+		if (iter->second > 0 && !GameLogicUtilities::isMobSkill(iter->first)) { // Only want active skills and skill buffs - no item buffs or debuffs
 			Skills::stopSkill(m_player, iter->first);
 		}
 	}
