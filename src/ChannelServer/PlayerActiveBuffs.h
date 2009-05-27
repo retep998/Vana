@@ -135,6 +135,7 @@ public:
 	const bool hasHolySymbol();
 	const bool hasPowerStance();
 	const bool hasMagicGuard();
+	const bool hasMesoGuard();
 	const bool hasHyperBody();
 	const bool hasHolyShield();
 	const bool isUsingHide();
@@ -143,6 +144,8 @@ public:
 	const int32_t getPowerStance();
 	const int32_t getHyperBody();
 	const int32_t getCurrentMorph();
+	const int32_t getMagicGuard();
+	const int32_t getMesoGuard();
 
 	// Packet marshaling
 	void getBuffTransferPacket(PacketCreator &packet);
