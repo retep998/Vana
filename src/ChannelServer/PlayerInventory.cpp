@@ -379,7 +379,7 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 	}
 }
 
-int32_t PlayerInventory::doShadowClaw() {
+int32_t PlayerInventory::doShadowStars() {
 	for (int16_t s = 1; s <= getMaxSlots(2); s++) {
 		Item *item = getItem(2, s);
 		if (item == 0)

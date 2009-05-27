@@ -111,7 +111,7 @@ public:
 	bool hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack = false);
 	int16_t getOpenSlotsNum(int8_t inv);
 
-	int32_t doShadowClaw();
+	int32_t doShadowStars();
 
 	void load();
 	void save();

@@ -540,8 +540,8 @@ namespace Jobs {
 			MapleWarrior = 4121000,
 			NinjaAmbush = 4121004,
 			NinjaStorm = 4121008,
-			ShadowClaw = 4121006,
 			ShadowShifter = 4120002,
+			ShadowStars = 4121006,
 			Taunt = 4121003,
 			VenomousStar = 4120005
 		};

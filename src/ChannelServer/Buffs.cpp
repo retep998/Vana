@@ -365,11 +365,11 @@ Buffs::Buffs() {
 	player.buff = buff;
 	player.hasmapval = true;
 	player.hasmapentry = false;
-	skillsinfo[Jobs::NightLord::ShadowClaw].player.push_back(player);
+	skillsinfo[Jobs::NightLord::ShadowStars].player.push_back(player);
 	buff.type = 0x00;
 	map.buff = buff;
 	map.useval = false;
-	skillsinfo[Jobs::NightLord::ShadowClaw].map.push_back(map);
+	skillsinfo[Jobs::NightLord::ShadowStars].map.push_back(map);
 
 	// WK/Paladin Charges
 	buff.type = 0x04;
@@ -757,8 +757,8 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 				case Jobs::Crusader::ComboAttack:
 					value = player->getActiveBuffs()->getCombo() + 1;
 					break;
-				case Jobs::NightLord::ShadowClaw:
-					value = (player->getInventory()->doShadowClaw() % 10000) + 1;
+				case Jobs::NightLord::ShadowStars:
+					value = (player->getInventory()->doShadowStars() % 10000) + 1;
 					break;
 				case Jobs::Marauder::Transformation:
 				case Jobs::Buccaneer::SuperTransformation:
