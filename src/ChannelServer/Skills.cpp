@@ -377,11 +377,10 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, 
 	uint16_t hits = 1;
 	if (skills[skillid][level].bulletcon > 0)
 		hits = skills[skillid][level].bulletcon;
-	if (display == 0x08)
-		hits = hits * 2;
-	if (pos > 0 && (!((display & 0x40) == 0x40 || display == 0x02)))
-		// Display is 0x40 for Shadow Claw and 0x48 for Shadow Claw + Shadow Partner
-		// Bitwise and with 0x40 will make it 0x40 for both
+	if (player->getActiveBuffs()->hasShadowPartner())
+		hits *= 2;
+	if (pos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow()))
+		// If they don't have Shadow Stars or Soul Arrow, take the items
 		Inventory::takeItemSlot(player, 2, pos, hits);
 }
 
