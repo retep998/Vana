@@ -479,6 +479,18 @@ const bool PlayerActiveBuffs::isUsingHide() {
 	return (getActiveSkillLevel(Jobs::SuperGm::Hide) > 0);
 }
 
+const bool PlayerActiveBuffs::hasShadowPartner() {
+	return (getActiveSkillLevel(Jobs::Hermit::ShadowPartner) > 0);
+}
+
+const bool PlayerActiveBuffs::hasShadowStars() {
+	return (getActiveSkillLevel(Jobs::NightLord::ShadowStars) > 0);
+}
+
+const bool PlayerActiveBuffs::hasSoulArrow() {
+	return (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0 || getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0);
+}
+
 const int32_t PlayerActiveBuffs::getCurrentMorph() {
 	int32_t morphid = 0;
 	if (m_activebuffsbytype.find(Byte5) != m_activebuffsbytype.end()) {

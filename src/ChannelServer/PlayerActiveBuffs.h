@@ -138,6 +138,9 @@ public:
 	const bool hasMesoGuard();
 	const bool hasHyperBody();
 	const bool hasHolyShield();
+	const bool hasShadowPartner();
+	const bool hasShadowStars();
+	const bool hasSoulArrow();
 	const bool isUsingHide();
 	const bool isCursed();
 	const int32_t getHolySymbol();
