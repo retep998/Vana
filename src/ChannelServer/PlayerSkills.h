@@ -41,6 +41,9 @@ public:
 	uint8_t getMaxSkillLevel(int32_t skillid);
 	void setMaxSkillLevel(int32_t skillid, uint8_t maxlevel, bool sendpacket = true);
 
+	bool hasElementalAmp();
+	int32_t getElementalAmp();
+
 	void addCooldown(int32_t skillid, int16_t time);
 	void removeCooldown(int32_t skillid);
 	void removeAllCooldowns();

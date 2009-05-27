@@ -115,10 +115,10 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	}
 	if (damage == -1) {
 		switch (job) {
-			case 412: nodamageid = Jobs::NightLord::ShadowShifter; break; // Fake
-			case 422: nodamageid = Jobs::Shadower::ShadowShifter; break; // Fake
-			case 112: nodamageid = Jobs::Hero::Guardian; break; // Guardian
-			case 122: nodamageid = Jobs::Paladin::Guardian; break; // Guardian
+			case Jobs::JobIds::NightLord: nodamageid = Jobs::NightLord::ShadowShifter; break; // Fake
+			case Jobs::JobIds::Shadower: nodamageid = Jobs::Shadower::ShadowShifter; break; // Fake
+			case Jobs::JobIds::Hero: nodamageid = Jobs::Hero::Guardian; break; // Guardian
+			case Jobs::JobIds::Paladin: nodamageid = Jobs::Paladin::Guardian; break; // Guardian
 		}
 		if (nodamageid == 0 || player->getSkills()->getSkillLevel(nodamageid) == 0) {
 			// Hacking
@@ -184,9 +184,9 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			float achx = 1000.0;
 			int32_t sid = 0;
 			switch (job) {
-				case 112: sid = Jobs::Hero::Achilles; break;
-				case 122: sid = Jobs::Paladin::Achilles; break;
-				case 132: sid = Jobs::DarkKnight::Achilles; break;
+				case Jobs::JobIds::Hero: sid = Jobs::Hero::Achilles; break;
+				case Jobs::JobIds::Paladin: sid = Jobs::Paladin::Achilles; break;
+				case Jobs::JobIds::DarkKnight: sid = Jobs::DarkKnight::Achilles; break;
 			}
 			uint8_t slv = player->getSkills()->getSkillLevel(sid);
 			if (slv > 0)

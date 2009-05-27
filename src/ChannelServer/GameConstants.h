@@ -188,8 +188,56 @@ namespace EquipSlots {
 	};
 }
 
-// Skills so there are fewer magic numbers
+// Skills and jobs so there are fewer magic numbers
 namespace Jobs {
+	namespace JobIds {
+		enum Jobs {
+			Beginner = 0,
+			Swordsman = 100,
+			Fighter = 110,
+			Crusader = 111,
+			Hero = 112,
+			Page = 120,
+			WhiteKnight = 121,
+			Paladin = 122,
+			Spearman = 130,
+			DragonKnight = 131,
+			DarkKnight = 132,
+			Magician = 200,
+			FPWizard = 210,
+			FPMage = 211,
+			FPArchMage = 212,
+			ILWizard = 220,
+			ILMage = 221,
+			ILArchMage = 222,
+			Cleric = 230,
+			Priest = 231,
+			Bishop = 232,
+			Archer = 300,
+			Hunter = 310,
+			Ranger = 311,
+			Bowmaster = 312,
+			Crossbowman = 320,
+			Sniper = 321,
+			Marksman = 322,
+			Rogue = 400,
+			Assassin = 410,
+			Hermit = 411,
+			NightLord = 412,
+			Bandit = 420,
+			ChiefBandit = 421,
+			Shadower = 422,
+			Pirate = 500,
+			Infighter = 510,
+			Brawler = 511,
+			Buccaneer = 512,
+			Gunslinger = 520,
+			Outlaw = 521,
+			Corsair = 522,
+			Gm = 900,
+			SuperGm = 910
+		};
+	}
 	namespace Beginner {
 		enum Skills {
 			EchoOfHero = 1005,
