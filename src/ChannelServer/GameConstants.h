@@ -495,7 +495,7 @@ namespace Jobs {
 			ShadowClaw = 4121006,
 			ShadowShifter = 4120002,
 			Taunt = 4121003,
-			VenomousStar = 4120005,
+			VenomousStar = 4120005
 		};
 	}
 	namespace Bandit {

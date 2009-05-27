@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.h"
 #include "BuffsPacket.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "Player.h"
 #include "Skills.h"
@@ -738,7 +739,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		cur = skillsinfo[skillid].player[i];
 		int8_t val = cur.buff.value;
-		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) // Cancel speed change for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) // Cancel speed change for maxed dark sight
 			continue;
 		playerskill.types[cur.buff.byte] += cur.buff.type;
 		int16_t value = 0;
@@ -789,7 +790,7 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t l
 			continue;
 		map = skillsinfo[skillid].map[maps++];
 		int8_t val = map.buff.value;
-		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) { // Cancel speed update for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
 		}
 		mapskill.bytes.push_back(map.buff.byte);
@@ -829,7 +830,7 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 		}
 		map = skillsinfo[skillid].map[mapctr++];
 		int8_t val = map.buff.value;
-		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) { // Cancel speed change for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) { // Cancel speed change for maxed dark sight
 			continue;
 		}
 		mapskill.bytes.push_back(map.buff.byte);
@@ -861,7 +862,7 @@ vector<Buff> Buffs::parseBuffs(int32_t skillid, uint8_t level) {
 	vector<Buff> ret;
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		BuffInfo cur = skillsinfo[skillid].player[i];
-		if (skillid == Jobs::Rogue::DarkSight && level == 20 && cur.buff.value == SkillSpeed) { // Cancel speed change for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && cur.buff.value == SkillSpeed) { // Cancel speed change for maxed dark sight
 			continue;
 		}
 		ret.push_back(cur.buff);
@@ -995,14 +996,19 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	if (mountid > 0)
 		BuffsPacket::useMount(player, skillid, time, playerskill, addedinfo, mountid);
 	else {
-		if (skillid == Jobs::Pirate::Dash)
-			BuffsPacket::usePirateBuff(player, skillid, time, playerskill, mapskill);
-		else if (skillid == Jobs::Marauder::EnergyCharge)
-			BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == 10000 ? time : 0), playerskill, mapskill);
-		else if (skillid == Jobs::Buccaneer::SpeedInfusion)
-			BuffsPacket::useSpeedInfusion(player, time, playerskill, mapskill, addedinfo);
-		else // Non-Pirate skills
-			BuffsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
+		switch (skillid) {
+			case Jobs::Pirate::Dash:
+				BuffsPacket::usePirateBuff(player, skillid, time, playerskill, mapskill);
+				break;
+			case Jobs::Marauder::EnergyCharge:
+				BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == 10000 ? time : 0), playerskill, mapskill);
+				break;
+			case Jobs::Buccaneer::SpeedInfusion:
+				BuffsPacket::useSpeedInfusion(player, time, playerskill, mapskill, addedinfo);
+				break;
+			default:
+				BuffsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
+		}
 	}
 	if (skillid != Jobs::Marauder::EnergyCharge || player->getActiveBuffs()->getEnergyChargeLevel() == 10000) {
 		PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
