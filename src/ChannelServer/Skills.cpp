@@ -59,7 +59,7 @@ void Skills::addSkill(Player *player, PacketReader &packet) {
 			// hacking
 			return;
 		}
-		if (!player->isGm() && ((skillid / 1000000 != player->getJob() / 100) || (skillid / 10000 > player->getJob()))) {
+		if (!player->isGm() && !GameLogicUtilities::skillMatchesJob(skillid, player->getJob())) {
 			// hacking
 			return;
 		}
