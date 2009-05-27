@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BuffsPacket.h"
 #include "GameConstants.h"
 #include "Maps.h"
+#include "PacketCreator.h"
 #include "Player.h"
 #include "Randomizer.h"
 #include "Skills.h"
@@ -459,4 +460,50 @@ const int32_t PlayerActiveBuffs::getCurrentMorph() {
 		}
 	}
 	return morphid;
+}
+
+void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
+	// Map entry buff info
+	packet.add<int8_t>(getCombo());
+	packet.add<int16_t>(getEnergyChargeLevel());
+	packet.add<int32_t>(getCharge());
+	packet.add<int32_t>(getBooster());
+	packet.add<int32_t>(getBattleshipHp());
+	packet.add<int32_t>(getDebuffMask());
+	packet.add<int32_t>(m_mapbuffs.mountid);
+	packet.add<int32_t>(m_mapbuffs.mountskill);
+	for (int8_t i = 0; i < 8; i++) {
+		packet.add<uint8_t>(m_mapbuffs.types[i]);
+		packet.add<uint8_t>((uint8_t)(m_mapbuffs.values[i].size()));
+		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = m_mapbuffs.values[i].begin(); iter != m_mapbuffs.values[i].end(); iter++) {
+			packet.add<uint8_t>(iter->first);
+			packet.add<int8_t>(iter->second.debuff ? 1 : 0);
+			if (iter->second.debuff) {
+				packet.add<int16_t>(iter->second.skill);
+				packet.add<int16_t>(iter->second.val);
+			}
+			else {
+				packet.add<int8_t>(iter->second.use ? 1 : 0);
+				packet.add<int16_t>(iter->second.val);
+			}
+		}
+	}
+	// Current buff info (IDs, times, levels)
+	packet.add<uint8_t>((uint8_t)(m_buffs.size()));
+	for (list<int32_t>::iterator iter = m_buffs.begin(); iter != m_buffs.end(); iter++) {
+		int32_t buffid = *iter;
+		packet.add<int32_t>(buffid);
+		packet.add<int32_t>(buffTimeLeft(buffid) / 1000);
+		packet.add<uint8_t>(getActiveSkillLevel(buffid));
+	}
+	// Current buffs by type info
+	unordered_map<uint8_t, int32_t> currentbyte;
+	for (int8_t i = 0; i < 8; i++) {
+		currentbyte = m_activebuffsbytype[i];
+		packet.add<uint8_t>((uint8_t)(currentbyte.size()));
+		for (unordered_map<uint8_t, int32_t>::iterator iter = currentbyte.begin(); iter != currentbyte.end(); iter++) {
+			packet.add<uint8_t>(iter->first);
+			packet.add<int32_t>(iter->second);
+		}
+	}
 }
