@@ -60,6 +60,38 @@ uint8_t PlayerSkills::getMaxSkillLevel(int32_t skillid) {
 	return 0;
 }
 
+bool PlayerSkills::hasElementalAmp() {
+	bool has = false;
+	switch (player->getJob()) {
+		case Jobs::JobIds::FPMage:
+		case Jobs::JobIds::FPArchMage:
+			if (getSkillLevel(Jobs::FPMage::ElementAmplification) > 0)
+				has = true;
+			break;
+		case Jobs::JobIds::ILMage:
+		case Jobs::JobIds::ILArchMage:
+			if (getSkillLevel(Jobs::ILMage::ElementAmplification) > 0)
+				has = true;
+			break;
+	}
+	return has;
+}
+
+int32_t PlayerSkills::getElementalAmp() {
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::FPMage:
+		case Jobs::JobIds::FPArchMage:
+			skillid = Jobs::FPMage::ElementAmplification;
+			break;
+		case Jobs::JobIds::ILMage:
+		case Jobs::JobIds::ILArchMage:
+			skillid = Jobs::ILMage::ElementAmplification;
+			break;
+	}
+	return skillid;
+}
+
 void PlayerSkills::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << player->getId();
