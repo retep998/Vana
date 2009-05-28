@@ -191,8 +191,7 @@ void ActiveTrade::accept(TradeInfo *unit) {
 
 int32_t ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) {
 	unit->mesos += amount;
-	holder->getInventory()->modifyMesos(-amount);
-	InventoryPacket::blankUpdate(holder); // Should prevent locking up in .70, don't know why it locks
+	holder->getInventory()->modifyMesos(-amount, true);
 	return unit->mesos;
 }
 
