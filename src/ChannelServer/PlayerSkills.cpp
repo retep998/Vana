@@ -92,6 +92,25 @@ int32_t PlayerSkills::getElementalAmp() {
 	return skillid;
 }
 
+bool PlayerSkills::hasEnergyCharge() {
+	return (getSkillLevel(Jobs::Marauder::EnergyCharge) > 0);
+}
+
+int32_t PlayerSkills::getEnergyCharge() {
+	int32_t skillid = Jobs::Marauder::EnergyCharge;
+	return skillid;
+}
+
+int32_t PlayerSkills::getComboAttack() {
+	int32_t skillid = Jobs::Crusader::ComboAttack;
+	return skillid;
+}
+
+int32_t PlayerSkills::getAdvancedCombo() {
+	int32_t skillid = Jobs::Hero::AdvancedComboAttack;
+	return skillid;
+}
+
 void PlayerSkills::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << player->getId();

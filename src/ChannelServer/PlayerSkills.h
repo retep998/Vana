@@ -42,7 +42,11 @@ public:
 	void setMaxSkillLevel(int32_t skillid, uint8_t maxlevel, bool sendpacket = true);
 
 	bool hasElementalAmp();
+	bool hasEnergyCharge();
 	int32_t getElementalAmp();
+	int32_t getEnergyCharge();
+	int32_t getComboAttack();
+	int32_t getAdvancedCombo();
 
 	void addCooldown(int32_t skillid, int16_t time);
 	void removeCooldown(int32_t skillid);
