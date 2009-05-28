@@ -58,20 +58,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Player::Player() :
 fall_counter(0),
-tradestate(0),
 shop(0),
 item_effect(0),
 chair(0),
-party(0),
+trade_state(false),
 save_on_dc(true),
 is_connect(false),
 npc(0),
+party(0),
 instance(0)
 {
 }
 
 Player::~Player() {
 	if (is_connect) {
+		if (isTrading()) {
+			TradeHandler::cancelTrade(this);
+		}
 		if (getParty() != 0) {
 			getParty()->setMember(getId(), 0);
 		}
@@ -90,9 +93,6 @@ Player::~Player() {
 		if (save_on_dc) {
 			saveAll(true);
 			setOnline(false);
-		}
-		if (isTrading()) {
-			TradeHandler::cancelTrade(this);
 		}
 		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
 			WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);	
