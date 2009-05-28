@@ -219,17 +219,10 @@ void Player::playerConnect(PacketReader &packet) {
 		if (hp == 0)
 			hp = 50;
 	}
-	else {
-		if (hp == 0) {
-			hp = 50;
-			map = Maps::getMap(map)->getInfo()->rm;
-		}
+	else if (hp == 0) {
+		hp = 50;
+		map = Maps::getMap(map)->getInfo()->rm;
 	}
-
-	if (hp > mhp)
-		hp = mhp;
-	if (mp > mmp)
-		mp = mmp;
 
 	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
 	m_stance = 0;
@@ -279,6 +272,11 @@ void Player::playerConnect(PacketReader &packet) {
 
 	SkillMacros skillMacros;
 	skillMacros.load(id);
+
+	if (hp > mhp)
+		hp = mhp;
+	if (mp > mmp)
+		mp = mmp;
 
 	PlayerPacket::connectData(this);
 
