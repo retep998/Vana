@@ -90,11 +90,11 @@ struct MobSkillLevelInfo {
 	uint8_t hp;
 	uint8_t count;
 	int16_t interval;
-	int16_t x;
-	int16_t y;
 	int16_t prop;
 	int16_t limit;
 	int16_t time;
+	int32_t x;
+	int32_t y;
 	Pos lt;
 	Pos rb;
 	vector<int32_t> summons;

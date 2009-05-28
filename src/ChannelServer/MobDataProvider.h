@@ -46,10 +46,10 @@ struct MobSkillInfo {
 
 struct MobInfo {
 	uint8_t level;
-	uint32_t hp;
-	uint32_t mp;
-	uint32_t hprecovery;
-	uint32_t mprecovery;
+	int32_t hp;
+	int32_t mp;
+	int32_t hprecovery;
+	int32_t mprecovery;
 	int32_t exp;
 	int32_t selfdestruction;
 	bool boss;

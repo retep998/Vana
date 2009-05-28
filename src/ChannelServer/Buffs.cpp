@@ -712,8 +712,8 @@ int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 int16_t Buffs::getMobSkillValue(int8_t value, uint8_t skillid, uint8_t level) {
 	int16_t rvalue = 0;
 	switch (value) {
-		case SkillX: rvalue = Skills::mobskills[skillid][level].x; break;
-		case SkillY: rvalue = Skills::mobskills[skillid][level].y; break;
+		case SkillX: rvalue = static_cast<int16_t>(Skills::mobskills[skillid][level].x); break;
+		case SkillY: rvalue = static_cast<int16_t>(Skills::mobskills[skillid][level].y); break;
 		case SkillProp: rvalue = Skills::mobskills[skillid][level].prop; break;
 		case SkillLv: rvalue = level; break;
 	}

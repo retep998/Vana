@@ -291,9 +291,9 @@ void Mob::skillHeal(int32_t healhp, int32_t healmp) {
 	maxamount = healmp * 15 / 10;
 	range = maxamount - minamount;
 	mp += Randomizer::Instance()->randInt(range) + minamount;
-	if (hp > getMHp())
+	if (hp > getMHp() || hp < 0)
 		hp = getMHp();
-	if (mp > getMMp())
+	if (mp > getMMp() || mp < 0)
 		mp = getMMp();
 	MobsPacket::healMob(this, amount);
 }
@@ -454,22 +454,22 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 	switch (skillid) {
 		case MobSkills::WeaponAttackUp:
 		case MobSkills::WeaponAttackUpAoe:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			pushed = true;
 			break;
 		case MobSkills::MagicAttackUp:
 		case MobSkills::MagicAttackUpAoe:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Matk, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Matk, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			pushed = true;
 			break;
 		case MobSkills::WeaponDefenseUp:
 		case MobSkills::WeaponDefenseUpAoe:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			pushed = true;
 			break;
 		case MobSkills::MagicDefenseUp:
 		case MobSkills::MagicDefenseUpAoe:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			pushed = true;
 			break;
 		case MobSkills::Heal:
@@ -498,12 +498,12 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 			// ???
 			break;
 		case MobSkills::WeaponImmunity:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			mob->addStatus(0, statuses);
 			mob->setImmunity(true);
 			break;
 		case MobSkills::MagicImmunity:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			mob->addStatus(0, statuses);
 			mob->setImmunity(true);
 			break;
