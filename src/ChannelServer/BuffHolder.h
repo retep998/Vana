@@ -39,7 +39,7 @@ public:
 	void parseIncomingBuffs(PacketReader &packet);
 	void removePacket(int32_t playerid);
 	bool checkPlayer(int32_t playerid);
-	PacketReader getPacket(int32_t playerid);
+	PacketReader & getPacket(int32_t playerid);
 private:
 	BuffHolder() {};
 	static BuffHolder *singleton;
