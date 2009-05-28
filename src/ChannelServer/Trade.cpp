@@ -64,7 +64,7 @@ bool ActiveTrade::bothCanTrade() {
 
 bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 	bool yes = true;
-	int8_t totals[4] = {0};
+	boost::array<int8_t, Inventories::InventoryCount> totals = {0};
 	unordered_map<int32_t, int16_t> added;
 	for (int8_t i = 0; i < TradeInfo::TradeSize; i++) {
 		// Create item structure to determine needed slots among stackable items
@@ -73,7 +73,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 			Item *check = unit->items[i];
 			int32_t itemid = check->id;
 			int8_t inv = GameLogicUtilities::getInventory(itemid);
-			if (inv == 1 || GameLogicUtilities::isRechargeable(itemid)) // Equips and rechargeables always take 1 slot, no need to clutter unordered map
+			if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) // Equips and rechargeables always take 1 slot, no need to clutter unordered map
 				totals[inv - 1]++;
 			else {
 				if (added.find(itemid) != added.end()) // Already initialized this item
@@ -88,7 +88,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 			Item *check = unit->items[i];
 			int32_t itemid = check->id;
 			int8_t inv = GameLogicUtilities::getInventory(itemid);
-			if (inv != 1 && !GameLogicUtilities::isRechargeable(itemid)) { // Already did these
+			if (inv != Inventories::EquipInventory && !GameLogicUtilities::isRechargeable(itemid)) { // Already did these
 				if (added.find(itemid) == added.end()) // Already did this item
 					continue;
 				int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
@@ -113,7 +113,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 			}
 		}
 	}
-	for (int8_t i = 0; i < 4; i++) { // Determine if needed slots are available
+	for (int8_t i = 0; i < Inventories::InventoryCount; i++) { // Determine if needed slots are available
 		if (totals[i] > 0) {
 			int8_t incrementor = 0;
 			for (int8_t g = 1; g <= target->getInventory()->getMaxSlots(i + 1); g++) {
@@ -197,7 +197,7 @@ int32_t ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) {
 
 Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, int8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount) {
 	Item *use = new Item(item);
-	if (amount == item->amount || inventory == 1) {
+	if (amount == item->amount || inventory == Inventories::EquipInventory) {
 		holder->getInventory()->setItem(inventory, inventoryslot, 0);
 		InventoryPacket::moveItem(holder, inventory, inventoryslot, 0);
 		holder->getInventory()->deleteItem(inventory, inventoryslot);

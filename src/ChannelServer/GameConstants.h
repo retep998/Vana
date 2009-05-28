@@ -96,6 +96,15 @@ enum ByteTypes {
 	Byte4
 };
 
+namespace Inventories {
+	const uint8_t InventoryCount = 5;
+	const uint8_t EquipInventory = 1;
+	const uint8_t UseInventory = 2;
+	const uint8_t SetupInventory = 3;
+	const uint8_t EtcInventory = 4;
+	const uint8_t CashInventory = 5;
+}
+
 namespace FieldLimitBits {
 	enum Limit {
 		Jump = 0x1,
