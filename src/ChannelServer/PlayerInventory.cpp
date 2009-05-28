@@ -72,7 +72,7 @@ Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), f
 }
 
 /* PlayerInventory class */
-PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, 5> &maxslots, int32_t mesos) :
+PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos) :
 maxslots(maxslots),
 mesos(mesos), 
 player(player)
@@ -81,7 +81,7 @@ player(player)
 }
 
 PlayerInventory::~PlayerInventory() {
-	typedef boost::array<ItemInventory, 5> ItemInvArr;
+	typedef boost::array<ItemInventory, Inventories::InventoryCount> ItemInvArr;
 	for (ItemInvArr::iterator iter = items.begin(); iter != items.end(); iter++) {
 		std::for_each(iter->begin(), iter->end(), MiscUtilities::DeleterPairAssoc<ItemInventory::value_type>());
 	}
@@ -207,7 +207,7 @@ uint16_t PlayerInventory::getItemAmount(int32_t itemid) {
 bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack) {
 	int16_t required = 0;
 	int8_t inv = GameLogicUtilities::getInventory(itemid);
-	if (inv == 1 || GameLogicUtilities::isRechargeable(itemid))
+	if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid))
 		required = amount; // These aren't stackable
 	else {
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
@@ -235,7 +235,7 @@ int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
 	int16_t openslots = 0;
 	for (int16_t i = 1; i <= getMaxSlots(inv); i++) {
 		if (getItem(inv, i) == 0)
-			openslots ++;
+			openslots++;
 	}
 	return openslots;
 }
@@ -293,7 +293,7 @@ void PlayerInventory::save() {
 	query.exec();
 
 	bool firstrun = true;
-	for (int8_t i = 1; i <= 5; i++) {
+	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
 		ItemInventory &itemsinv = items[i - 1];
 		for (ItemInventory::iterator iter = itemsinv.begin(); iter != itemsinv.end(); iter++) {
 			Item *item = iter->second;
@@ -337,11 +337,11 @@ void PlayerInventory::save() {
 
 void PlayerInventory::connectData(PacketCreator &packet) {
 	packet.add<int32_t>(mesos);
-	packet.add<int8_t>(getMaxSlots(1));
-	packet.add<int8_t>(getMaxSlots(2));
-	packet.add<int8_t>(getMaxSlots(3));
-	packet.add<int8_t>(getMaxSlots(4));
-	packet.add<int8_t>(getMaxSlots(5));
+
+	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++)
+		packet.add<int8_t>(getMaxSlots(i));
+
+	// Go through equips
 	ItemInventory &equips = items[0];
 	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
 		if (iter->first < 0 && iter->first > -100) {
@@ -361,7 +361,9 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 		}
 	}
 	packet.add<int8_t>(0);
-	for (int8_t i = 2; i <= 5; i++) {
+
+	// Equips done, do rest of user's items starting with Use
+	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; i++) {
 		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
 			Item *item = getItem(i, s);
 			if (item == 0)
@@ -380,12 +382,12 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 }
 
 int32_t PlayerInventory::doShadowStars() {
-	for (int16_t s = 1; s <= getMaxSlots(2); s++) {
-		Item *item = getItem(2, s);
+	for (int16_t s = 1; s <= getMaxSlots(Inventories::UseInventory); s++) {
+		Item *item = getItem(Inventories::UseInventory, s);
 		if (item == 0)
 			continue;
 		if (GameLogicUtilities::isStar(item->id) && item->amount >= 200) {
-			Inventory::takeItemSlot(player, 2, s, 200);
+			Inventory::takeItemSlot(player, Inventories::UseInventory, s, 200);
 			return item->id;
 		}
 	}

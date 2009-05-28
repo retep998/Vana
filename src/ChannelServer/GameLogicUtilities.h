@@ -28,7 +28,7 @@ namespace GameLogicUtilities {
 	inline bool isStar(int32_t itemid) { return (getItemType(itemid) == ItemStar); }
 	inline bool isBullet(int32_t itemid) { return (getItemType(itemid) == ItemBullet); }
 	inline bool isRechargeable(int32_t itemid) { return (isBullet(itemid) || isStar(itemid)); }
-	inline bool isEquip(int32_t itemid) { return (getInventory(itemid) == 1); }
+	inline bool isEquip(int32_t itemid) { return (getInventory(itemid) == Inventories::EquipInventory); }
 	inline bool isPet(int32_t itemid) {	return ((itemid / 100 * 100) == 5000000); }
 	inline bool isOverall(int32_t itemid) { return (getItemType(itemid) == ArmorOverall); }
 	inline bool isTop(int32_t itemid) { return (getItemType(itemid) == ArmorTop); }
