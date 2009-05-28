@@ -294,12 +294,14 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 }
 
 void PlayerActiveBuffs::addCombo() { // Add orbs
-	if (getActiveSkillLevel(Jobs::Crusader::ComboAttack) > 0) {
-		int8_t advcombo = m_player->getSkills()->getSkillLevel(Jobs::Hero::AdvancedComboAttack);
-		int8_t maxcombo = (int8_t) (advcombo > 0 ? Skills::skills[Jobs::Hero::AdvancedComboAttack][advcombo].x : Skills::skills[Jobs::Crusader::ComboAttack][m_player->getSkills()->getSkillLevel(Jobs::Crusader::ComboAttack)].x);
+	int32_t skillid = Jobs::Crusader::ComboAttack;
+	if (getActiveSkillLevel(skillid) > 0) {
+		int32_t advskill = Jobs::Hero::AdvancedComboAttack;
+		int8_t advcombo = m_player->getSkills()->getSkillLevel(advskill);
+		int8_t maxcombo = (int8_t) (advcombo > 0 ? Skills::skills[advskill][advcombo].x : Skills::skills[skillid][m_player->getSkills()->getSkillLevel(skillid)].x);
 		if (m_combo == maxcombo)
 			return;
-		if (advcombo > 0 && Randomizer::Instance()->randShort(99) < Skills::skills[Jobs::Hero::AdvancedComboAttack][advcombo].prop)
+		if (advcombo > 0 && Randomizer::Instance()->randShort(99) < Skills::skills[advskill][advcombo].prop)
 			m_combo += 1; // 4th job skill gives chance to add second orb
 		m_combo += 1;
 		if (m_combo > maxcombo)
@@ -309,7 +311,7 @@ void PlayerActiveBuffs::addCombo() { // Add orbs
 }
 
 void PlayerActiveBuffs::checkBerserk(bool display) {
-	if (m_player->getJob() == 132) { // Berserk calculations
+	if (m_player->getJob() == Jobs::JobIds::DarkKnight) { // Berserk calculations
 		int32_t skillid = Jobs::DarkKnight::Berserk;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
@@ -332,28 +334,30 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 
 void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 	if (m_energycharge != 10000 && targets > 0) {
-		Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, m_timeseed);
+		int32_t skillid = Jobs::Marauder::EnergyCharge;
+		Timer::Id id(Timer::Types::BuffTimer, skillid, m_timeseed);
 		if (m_player->getTimers()->checkTimer(id) > 0)
 			stopEnergyChargeTimer();
 		startEnergyChargeTimer();
-		m_energycharge += Skills::skills[Jobs::Marauder::EnergyCharge][m_player->getSkills()->getSkillLevel(Jobs::Marauder::EnergyCharge)].x * targets;
+		m_energycharge += Skills::skills[skillid][m_player->getSkills()->getSkillLevel(skillid)].x * targets;
 		if (m_energycharge > 10000) {
 			m_energycharge = 10000;
 			stopEnergyChargeTimer();
 		}
-		Buffs::Instance()->addBuff(m_player, Jobs::Marauder::EnergyCharge, m_player->getSkills()->getSkillLevel(Jobs::Marauder::EnergyCharge), 0);
+		Buffs::Instance()->addBuff(m_player, skillid, m_player->getSkills()->getSkillLevel(skillid), 0);
 	}
 }
 
 void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
 	m_energycharge -= 200; // Always the same
+	int32_t skillid = Jobs::Marauder::EnergyCharge;
 	if (m_energycharge < 0) {
 		m_energycharge = 0;
 	}
 	else {
 		startEnergyChargeTimer();
 	}
-	Buffs::Instance()->addBuff(m_player, Jobs::Marauder::EnergyCharge, m_player->getSkills()->getSkillLevel(Jobs::Marauder::EnergyCharge), 0);
+	Buffs::Instance()->addBuff(m_player, skillid, m_player->getSkills()->getSkillLevel(skillid), 0);
 }
 
 void PlayerActiveBuffs::resetEnergyChargeLevel() {
@@ -362,7 +366,8 @@ void PlayerActiveBuffs::resetEnergyChargeLevel() {
 
 void PlayerActiveBuffs::startEnergyChargeTimer() {
 	m_timeseed = static_cast<uint32_t>(clock());
-	Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, m_timeseed); // Causes heap errors when it's a static number, but we need it for ID
+	int32_t skillid = Jobs::Marauder::EnergyCharge;
+	Timer::Id id(Timer::Types::BuffTimer, skillid, m_timeseed); // Causes heap errors when it's a static number, but we need it for ID
 	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
 		id, m_player->getTimers(), Timer::Time::fromNow(10 * 1000)); // 10 seconds
 }
@@ -375,7 +380,8 @@ void PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargelevel, bool startTime
 }
 
 void PlayerActiveBuffs::stopEnergyChargeTimer() {
-	Timer::Id id(Timer::Types::BuffTimer, Jobs::Marauder::EnergyCharge, m_timeseed);
+	int32_t skillid = Jobs::Marauder::EnergyCharge;
+	Timer::Id id(Timer::Types::BuffTimer, skillid, m_timeseed);
 	m_player->getTimers()->removeTimer(id);
 }
 
