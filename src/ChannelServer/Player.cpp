@@ -714,7 +714,7 @@ void Player::loseExp() {
 		Map *loc = Maps::getMap(getMap());
 		int32_t fieldlimit = loc->getInfo()->fieldLimit;
 		int8_t exploss = 10;
-		if (fieldlimit & 0x20 || loc->getInfo()->town)
+		if (fieldlimit & FieldLimitBits::RegularExpLoss || loc->getInfo()->town)
 			exploss = 1;
 		else {
 			switch (getJob() / 100) {
