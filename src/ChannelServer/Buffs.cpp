@@ -358,7 +358,7 @@ Buffs::Buffs() {
 	map.useval = true;
 	skillsinfo[Jobs::Beginner::NimbleFeet].map.push_back(map);
 
-	// Shadow Claw
+	// Shadow Stars
 	buff.type = 0x01;
 	buff.byte = Byte6;
 	buff.value = SkillSpecialProc;
