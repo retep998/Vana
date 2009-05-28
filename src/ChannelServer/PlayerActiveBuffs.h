@@ -31,6 +31,7 @@ using std::tr1::unordered_map;
 using std::vector;
 
 class PacketCreator;
+class PacketReader;
 class Player;
 
 namespace Timer {
@@ -152,6 +153,7 @@ public:
 
 	// Packet marshaling
 	void getBuffTransferPacket(PacketCreator &packet);
+	void parseBuffTransferPacket(PacketReader &packet);
 private:
 	Player *m_player;
 	uint8_t m_combo;
