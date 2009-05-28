@@ -81,23 +81,23 @@ void Pet::setName(const string &name) {
 }
 
 void Pet::addCloseness(int16_t amount) {
-	this->closeness += amount;
-	if (this->closeness > 30000)
-		this->closeness = 30000;
+	closeness += amount;
+	if (closeness > 30000)
+		closeness = 30000;
 
-	while (this->closeness >= Pets::exps[level - 1] && level < 30) {
+	while (closeness >= Pets::exps[level - 1] && level < 30) {
 		levelUp();
 	}
 	PetsPacket::updatePet(player, this);
 }
 
 void Pet::modifyFullness(int8_t offset, bool sendPacket) {
-	this->fullness += offset;
+	fullness += offset;
 
-	if (this->fullness > 100)
-		this->fullness = 100;
-	else if (this->fullness < 0)
-		this->fullness = 0;
+	if (fullness > 100)
+		fullness = 100;
+	else if (fullness < 0)
+		fullness = 0;
 
 	if (sendPacket)
 		PetsPacket::updatePet(player, this);
@@ -141,9 +141,9 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 			player->getTimers()->removeTimer(id);
 		}
 		if (multipet) {
-			for (int8_t i = (pet->getIndex() + 1); i < 3; i++) { // Shift around pets if using multipet
-				if (Pet *move = player->getPets()->getSummoned(i)) {
-					move->setIndex(i - 1);
+			for (int8_t i = pet->getIndex(); i < Inventories::MaxPetCount; i++) { // Shift around pets if using multipet
+				if (Pet *move = player->getPets()->getSummoned(i + 1)) {
+					move->setIndex(i);
 					player->getPets()->setSummoned(move->getIndex(), move->getId());
 					player->getPets()->setSummoned(i, 0);
 					if (move->getIndex() == 0)
@@ -183,7 +183,7 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 			pet->startTimer();
 		}
 		else {
-			for (int8_t i = 0; i < 3; i++) {
+			for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 				if (!player->getPets()->getSummoned(i)) {
 					player->getPets()->setSummoned(i, pet->getId());
 					pet->setIndex(i);
@@ -236,7 +236,7 @@ void Pets::changeName(Player *player, const string &name) {
 }
 
 void Pets::showPets(Player *player) {
-	for (int8_t i = 0; i < 3; i++) {
+	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			pet->setPos(player->getPos());
 			PetsPacket::petSummoned(player, pet, false, true);

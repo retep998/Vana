@@ -135,7 +135,7 @@ void PetsPacket::updateSummonedPets(Player *player) {
 	packet.add<int8_t>(0);
 	packet.add<int16_t>(0x8);
 	packet.add<int16_t>(0x18);
-	for (int8_t i = 0; i < 3; i++) {
+	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			packet.add<int32_t>(pet->getId());
 		}

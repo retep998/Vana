@@ -25,19 +25,20 @@ using std::tr1::unordered_map;
 class Pet;
 class Player;
 
-
 class PlayerPets {
 public:
-	PlayerPets(Player *player) : player(player) { }
-	void addPet(Pet *pet);
+	PlayerPets(Player *player) : m_player(player) { }
+
 	Pet * getPet(int32_t petid);
-	void setSummoned(int8_t index, int32_t petid);
 	Pet * getSummoned(int8_t index);
+
+	void addPet(Pet *pet);
+	void setSummoned(int8_t index, int32_t petid);
 	void save();
 private:
-	unordered_map<int32_t, Pet *> playerpets;
-	unordered_map<int8_t, int32_t> summoned;
-	Player *player;
+	unordered_map<int32_t, Pet *> m_playerpets;
+	unordered_map<int8_t, int32_t> m_summoned;
+	Player *m_player;
 };
 
 #endif

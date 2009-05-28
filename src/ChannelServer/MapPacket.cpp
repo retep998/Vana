@@ -139,7 +139,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int8_t>(player->getStance());
 	packet.add<int16_t>(player->getFh());
 	packet.add<int8_t>(0);
-	for (int8_t i = 0; i < 3; i++) {
+	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			packet.add<int8_t>(1);
 			packet.add<int32_t>(pet->getType());
