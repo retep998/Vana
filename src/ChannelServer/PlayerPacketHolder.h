@@ -28,21 +28,21 @@ using std::vector;
 
 class PacketReader;
 
-class BuffHolder : boost::noncopyable {
+class PlayerPacketHolder : boost::noncopyable {
 public:
-	static BuffHolder * Instance() {
+	static PlayerPacketHolder * Instance() {
 		if (singleton == 0)
-			singleton = new BuffHolder;
+			singleton = new PlayerPacketHolder;
 		return singleton;
 	}
 
-	void parseIncomingBuffs(PacketReader &packet);
+	void parseIncomingPacket(PacketReader &packet);
 	void removePacket(int32_t playerid);
 	bool checkPlayer(int32_t playerid);
 	PacketReader & getPacket(int32_t playerid);
 private:
-	BuffHolder() {};
-	static BuffHolder *singleton;
+	PlayerPacketHolder() {};
+	static PlayerPacketHolder *singleton;
 
 	unordered_map<int32_t, PacketReader> m_map;
 };

@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectPlayer.h"
 #include "ChannelServer.h"
-#include "BuffHolder.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
 #include "Party.h"
 #include "PlayerActiveBuffs.h"
+#include "PlayerPacketHolder.h"
 #include "PlayersPacket.h"
 #include "WorldServerConnectHandler.h"
 #include "WorldServerConnectPacket.h"
@@ -51,11 +51,11 @@ void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
 		case INTER_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
 		case INTER_PARTY_OPERATION: PartyFunctions::handleResponse(packet); break;
 		case INTER_PARTY_SYNC: PartyFunctions::handleDataSync(packet); break;
-		case INTER_TRANSFER_BUFFS: BuffHolder::Instance()->parseIncomingBuffs(packet); break;
-		case INTER_TRANSFER_BUFFS_DISCONNECT: BuffHolder::Instance()->removePacket(packet.get<int32_t>()); break;
+		case INTER_TRANSFER_PLAYER_PACKET: PlayerPacketHolder::Instance()->parseIncomingPacket(packet); break;
+		case INTER_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerPacketHolder::Instance()->removePacket(packet.get<int32_t>()); break;
 	}
 }
 
-void WorldServerConnectPlayer::playerChangeChannel(int32_t playerid, uint16_t channel, PlayerActiveBuffs *playerbuffs) {
-	WorldServerConnectPacket::playerChangeChannel(this, playerid, channel, playerbuffs);
+void WorldServerConnectPlayer::playerChangeChannel(Player *info, uint16_t channel) {
+	WorldServerConnectPacket::playerChangeChannel(this, info, channel);
 }

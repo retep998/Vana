@@ -31,30 +31,20 @@ namespace Summons {
 	void showSummons(Player *ofplayer, Player *toplayer);
 	void moveSummon(Player *Player, PacketReader &packet);
 	void damageSummon(Player *player, PacketReader &packet);
+	int32_t loopId();
 };
 
 class Summon : public MovableLife {
 public:
 	Summon() { }
 	Summon(int32_t id, int32_t summonid, uint8_t level);
-	int32_t getId() {
-		return id;
-	}
-	int32_t getSummonId() {
-		return summonid;
-	}
-	uint8_t getLevel() {
-		return level;
-	}
-	uint8_t getType() {
-		return type;
-	}
-	int32_t getHP() {
-		return hp;
-	}
-	void doDamage(int32_t damage) {
-		hp -= damage;
-	}
+
+	int32_t getId() { return id; }
+	int32_t getSummonId() { return summonid; }
+	uint8_t getLevel() { return level; }
+	uint8_t getType() { return type; }
+	int32_t getHP() { return hp; }
+	void doDamage(int32_t damage) { hp -= damage; }
 private:
 	int32_t id;
 	int32_t summonid;

@@ -1,7 +1,6 @@
 set(SOURCES
 	BuddyListHandler.h
 	BuddyListPacket.h
-	BuffHolder.h
 	Buffs.h
 	BuffsPacket.h
 	ChannelServer.h
@@ -53,6 +52,7 @@ set(SOURCES
 	PlayerInventory.h
 	PlayerPacket.h
 	PlayerPacketHelper.h
+	PlayerPacketHolder.h
 	PlayerPets.h
 	PlayerQuests.h
 	Players.h
@@ -83,7 +83,6 @@ set(SOURCES
 	WorldServerConnectPlayer.h
 	BuddyListHandler.cpp
 	BuddyListPacket.cpp
-	BuffHolder.cpp
 	Buffs.cpp
 	BuffsPacket.cpp
 	ChannelServer.cpp
@@ -131,6 +130,7 @@ set(SOURCES
 	PlayerInventory.cpp
 	PlayerPacket.cpp
 	PlayerPacketHelper.cpp
+	PlayerPacketHolder.cpp
 	PlayerPets.cpp
 	PlayerQuests.cpp
 	Players.cpp

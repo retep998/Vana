@@ -52,8 +52,12 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(s
 // Summons namespace
 LoopingId Summons::summonids;
 
+int32_t Summons::loopId() {
+	return summonids.next();
+}
+
 void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
-	Summon *summon = new Summon(summonids.next(), skillid, level);
+	Summon *summon = new Summon(loopId(), skillid, level);
 	bool puppet = GameLogicUtilities::isPuppet(skillid);
 	removeSummon(player, puppet, true, false);
 	if (puppet)
