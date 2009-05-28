@@ -142,8 +142,8 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 						return;
 					}
 					int32_t mesos = trade->addMesos(player, isreceiver ? recv : send, amount);
-					TradesPacket::sendAddMesos(one, (player == two ? 0x01 : 0x00), mesos);
-					TradesPacket::sendAddMesos(two, (player == two ? 0x00 : 0x01), mesos);
+					TradesPacket::sendAddMesos(one, (isreceiver ? 0x01 : 0x00), mesos);
+					TradesPacket::sendAddMesos(two, (isreceiver ? 0x00 : 0x01), mesos);
 					break;
 				}
 				case 0x10: { // Accept trade
