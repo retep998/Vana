@@ -96,6 +96,38 @@ enum ByteTypes {
 	Byte4
 };
 
+namespace Stats {
+	const uint8_t PlayerLevels = 200;
+	const uint8_t PetLevels = 30;
+	const int16_t MaxMaxHp = 30000;
+	const int16_t MinMaxHp = 1;
+	const int16_t MaxMaxMp = 30000;
+	const int16_t MinMaxMp = 1;
+	const int16_t MaxFame = 30000;
+	const int16_t MinFame = -30000;
+	enum Constants {
+		Skin = 0x01,
+		Eyes = 0x02,
+		Hair = 0x04,
+		// 0x08?
+		Level = 0x10,
+		Job = 0x20,
+		Str = 0x40,
+		Dex = 0x80,
+		Int = 0x100,
+		Luk = 0x200,
+		Hp = 0x400,
+		MaxHp = 0x800,
+		Mp = 0x1000,
+		MaxMp = 0x2000,
+		Ap = 0x4000,
+		Sp = 0x8000,
+		Exp = 0x10000,
+		Fame = 0x20000,
+		Mesos = 0x40000
+	};
+}
+
 namespace Inventories {
 	const uint8_t InventoryCount = 5;
 	const uint8_t EquipInventory = 1;
@@ -108,10 +140,10 @@ namespace Inventories {
 
 namespace FieldLimitBits {
 	enum Limit {
-		Jump = 0x1,
-		MovementSkills = 0x2,
-		SummoningBag = 0x4,
-		MysticDoor = 0x8,
+		Jump = 0x01,
+		MovementSkills = 0x02,
+		SummoningBag = 0x04,
+		MysticDoor = 0x08,
 		ChannelSwitch = 0x10,
 		RegularExpLoss = 0x20,
 		VipRock = 0x40,

@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PETS_H
 #define PETS_H
 
+#include "GameConstants.h"
 #include "MovableLife.h"
+#include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <string>
 
@@ -43,7 +45,7 @@ struct PetInteractInfo {
 namespace Pets {
 	extern unordered_map<int32_t, PetInfo> petsInfo;
 	extern unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > petsInteractInfo;
-	extern int16_t exps[29];
+	extern int16_t exps[Stats::PetLevels];
 	void showPets(Player *player);
 	void handleChat(Player *player, PacketReader &packet);
 	void handleFeed(Player *player, PacketReader &packet);

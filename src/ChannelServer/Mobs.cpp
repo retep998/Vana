@@ -230,7 +230,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 			hsrate = Skills::skills[hsid][damager->getActiveBuffs()->getActiveSkillLevel(hsid)].x;
 		}
 		uint32_t exp = (info.exp * (multiplier * iter->second / info.hp)) / 10;
-		Levels::giveEXP(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
+		Levels::giveExp(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
 	}
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies

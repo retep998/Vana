@@ -40,7 +40,7 @@ void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 	for (size_t i = 0; i < questinfo.rewards.size(); i++) {
 		if (!questinfo.rewards[i].start) {
 			if (questinfo.rewards[i].isexp) {
-				Levels::giveEXP(player, questinfo.rewards[i].id, true);
+				Levels::giveExp(player, questinfo.rewards[i].id, true);
 			}
 			else if (questinfo.rewards[i].isitem) {
 				if (questinfo.rewards[i].count > 0) {
@@ -119,7 +119,7 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 	for (size_t i = 0; i < questinfo.rewards.size(); i++) {
 		if (questinfo.rewards[i].start) {
 			if (questinfo.rewards[i].isexp) {
-				Levels::giveEXP(player, questinfo.rewards[i].id * ChannelServer::Instance()->getQuestExprate(), true);
+				Levels::giveExp(player, questinfo.rewards[i].id * ChannelServer::Instance()->getQuestExprate(), true);
 			}
 			else if (questinfo.rewards[i].isitem) {
 				if (questinfo.rewards[i].prop == 0) {

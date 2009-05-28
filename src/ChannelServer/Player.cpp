@@ -310,7 +310,7 @@ void Player::setHp(int16_t shp, bool is) {
 	else
 		hp = shp;
 	if (is)
-		PlayerPacket::updateStatShort(this, 0x400, hp);
+		PlayerPacket::updateStatShort(this, Stats::Hp, hp);
 	if (getParty())
 		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
@@ -330,7 +330,7 @@ void Player::modifyHp(int16_t nhp, bool is) {
 	else
 		hp = (hp + nhp);
 	if (is)
-		PlayerPacket::updateStatShort(this, 0x400, hp);
+		PlayerPacket::updateStatShort(this, Stats::Hp, hp);
 	if (getParty())
 		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
@@ -344,7 +344,7 @@ void Player::modifyHp(int16_t nhp, bool is) {
 
 void Player::damageHp(uint16_t dhp) {
 	hp = (dhp > hp ? 0 : hp - dhp);
-	PlayerPacket::updateStatShort(this, 0x400, hp);
+	PlayerPacket::updateStatShort(this, Stats::Hp, hp);
 	if (getParty())
 		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
@@ -365,7 +365,7 @@ void Player::setMp(int16_t smp, bool is) {
 		else
 			mp = smp;
 	}
-	PlayerPacket::updateStatShort(this, 0x1000, mp, is);
+	PlayerPacket::updateStatShort(this, Stats::Mp, mp, is);
 }
 
 void Player::modifyMp(int16_t nmp, bool is) {
@@ -377,119 +377,119 @@ void Player::modifyMp(int16_t nmp, bool is) {
 		else
 			mp = (mp + nmp);
 	}
-	PlayerPacket::updateStatShort(this, 0x1000, mp, is);
+	PlayerPacket::updateStatShort(this, Stats::Mp, mp, is);
 }
 
 void Player::damageMp(uint16_t dmp) {
 	if (!getActiveBuffs()->hasInfinity()) {
 		mp = (dmp > mp ? 0 : mp - dmp);
 	}
-	PlayerPacket::updateStatShort(this, 0x1000, mp, false);
+	PlayerPacket::updateStatShort(this, Stats::Mp, mp, false);
 }
 
 void Player::setSp(int16_t sp) {
 	this->sp = sp;
-	PlayerPacket::updateStatShort(this, 0x8000, sp);
+	PlayerPacket::updateStatShort(this, Stats::Sp, sp);
 }
 
 void Player::setAp(int16_t ap) {
 	this->ap = ap;
-	PlayerPacket::updateStatShort(this, 0x4000, ap);
+	PlayerPacket::updateStatShort(this, Stats::Ap, ap);
 }
 
 void Player::setJob(int16_t job) {
 	this->job = job;
-	PlayerPacket::updateStatShort(this, 0x20, job);
+	PlayerPacket::updateStatShort(this, Stats::Job, job);
 	LevelsPacket::jobChange(this);
 	WorldServerConnectPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), id, job);
 }
 
 void Player::setStr(int16_t str) {
 	this->str = str;
-	PlayerPacket::updateStatShort(this, 0x40, str);
+	PlayerPacket::updateStatShort(this, Stats::Str, str);
 }
 
 void Player::setDex(int16_t dex) {
 	this->dex = dex;
-	PlayerPacket::updateStatShort(this, 0x80, dex);
+	PlayerPacket::updateStatShort(this, Stats::Dex, dex);
 }
 
 void Player::setInt(int16_t intt) {
 	this->intt = intt;
-	PlayerPacket::updateStatShort(this, 0x100, intt);
+	PlayerPacket::updateStatShort(this, Stats::Int, intt);
 }
 
 void Player::setLuk(int16_t luk) {
 	this->luk = luk;
-	PlayerPacket::updateStatShort(this, 0x200, luk);
+	PlayerPacket::updateStatShort(this, Stats::Luk, luk);
 }
 
 void Player::setMHp(int16_t mhp) {
-	if (mhp > 30000)
-		mhp = 30000;
-	else if (mhp < 1)
-		mhp = 1;
+	if (mhp > Stats::MaxMaxHp)
+		mhp = Stats::MaxMaxHp;
+	else if (mhp < Stats::MinMaxHp)
+		mhp = Stats::MinMaxHp;
 	this->mhp = mhp;
-	PlayerPacket::updateStatShort(this, 0x800, rmhp);
+	PlayerPacket::updateStatShort(this, Stats::MaxHp, rmhp);
 	if (getParty())
 		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
 void Player::setMMp(int16_t mmp) {
-	if (mmp > 30000)
-		mmp = 30000;
-	else if (mmp < 1)
-		mmp = 1;
+	if (mmp > Stats::MaxMaxMp)
+		mmp = Stats::MaxMaxMp;
+	else if (mmp < Stats::MinMaxMp)
+		mmp = Stats::MinMaxMp;
 	this->mmp = mmp;
-	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
+	PlayerPacket::updateStatShort(this, Stats::MaxMp, rmmp);
 }
 
 void Player::setHyperBody(int16_t modx, int16_t mody) {
 	modx += 100;
 	mody += 100;
-	mhp = ((rmhp * modx / 100) > 30000 ? 30000 : rmhp * modx / 100);
-	mmp = ((rmmp * mody / 100) > 30000 ? 30000 : rmmp * mody / 100);
-	PlayerPacket::updateStatShort(this, 0x800, rmhp);
-	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
+	mhp = ((rmhp * modx / 100) > Stats::MaxMaxHp ? Stats::MaxMaxHp : rmhp * modx / 100);
+	mmp = ((rmmp * mody / 100) > Stats::MaxMaxMp ? Stats::MaxMaxMp : rmmp * mody / 100);
+	PlayerPacket::updateStatShort(this, Stats::MaxHp, rmhp);
+	PlayerPacket::updateStatShort(this, Stats::MaxMp, rmmp);
 	if (getParty())
 		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
 }
 
 void Player::setRMHp(int16_t rmhp) {
-	if (rmhp > 30000)
-		rmhp = 30000;
-	else if (rmhp < 1)
-		rmhp = 1;
+	if (rmhp > Stats::MaxMaxHp)
+		rmhp = Stats::MaxMaxHp;
+	else if (rmhp < Stats::MinMaxHp)
+		rmhp = Stats::MinMaxHp;
 	this->rmhp = rmhp;
-	PlayerPacket::updateStatShort(this, 0x800, rmhp);
+	PlayerPacket::updateStatShort(this, Stats::MaxHp, rmhp);
 }
 
 void Player::setRMMp(int16_t rmmp) {
-	if (rmmp > 30000)
-		rmmp = 30000;
-	else if (rmmp < 1)
-		rmmp = 1;
+	if (rmmp > Stats::MaxMaxMp)
+		rmmp = Stats::MaxMaxMp;
+	else if (rmmp < Stats::MinMaxMp)
+		rmmp = Stats::MinMaxMp;
 	this->rmmp = rmmp;
-	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
+	PlayerPacket::updateStatShort(this, Stats::MaxMp, rmmp);
 }
 
 void Player::modifyRMHp(int16_t mod) {
-	rmhp = (((rmhp + mod) > 30000) ? 30000 : (rmhp + mod));
-	PlayerPacket::updateStatShort(this, 0x800, rmhp);
+	rmhp = (((rmhp + mod) > Stats::MaxMaxHp) ? Stats::MaxMaxHp : (rmhp + mod));
+	PlayerPacket::updateStatShort(this, Stats::MaxHp, rmhp);
 }
 
 void Player::modifyRMMp(int16_t mod) {
-	rmmp = (((rmmp + mod) > 30000) ? 30000 : (rmmp + mod));
-	PlayerPacket::updateStatShort(this, 0x2000, rmmp);
+	rmmp = (((rmmp + mod) > Stats::MaxMaxMp) ? Stats::MaxMaxMp : (rmmp + mod));
+	PlayerPacket::updateStatShort(this, Stats::MaxMp, rmmp);
 }
 
 void Player::setExp(int32_t exp) {
 	if (this->exp < 0)
 		exp = 0;
 	this->exp = exp;
-	PlayerPacket::updateStatInt(this, 0x10000, exp);
+	PlayerPacket::updateStatInt(this, Stats::Exp, exp);
 }
 
 void Player::setMap(int32_t mapid, PortalInfo *portal) {
@@ -523,7 +523,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal) {
 
 void Player::setLevel(uint8_t level) {
 	this->level = level;
-	PlayerPacket::updateStatShort(this, 0x10, level);
+	PlayerPacket::updateStatShort(this, Stats::Level, level);
 	LevelsPacket::levelUp(this);
 	WorldServerConnectPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), id, level);
 }
@@ -570,26 +570,26 @@ void Player::changeSkillMacros(PacketReader &packet) {
 
 void Player::setHair(int32_t id) {
 	this->hair = id;
-	PlayerPacket::updateStatInt(this, 0x04, id);
+	PlayerPacket::updateStatInt(this, Stats::Hair, id);
 }
 
 void Player::setEyes(int32_t id) {
 	this->eyes = id;
-	PlayerPacket::updateStatInt(this, 0x02, id);
+	PlayerPacket::updateStatInt(this, Stats::Eyes, id);
 }
 
 void Player::setSkin(int8_t id) {
 	this->skin = id;
-	PlayerPacket::updateStatInt(this, 0x01, id);
+	PlayerPacket::updateStatInt(this, Stats::Skin, id);
 }
 
 void Player::setFame(int16_t fame) {
-	if (fame < -30000)
-		fame = -30000;
-	else if (fame > 30000)
-		fame = 30000;
+	if (fame < Stats::MinFame)
+		fame = Stats::MinFame;
+	else if (fame > Stats::MaxFame)
+		fame = Stats::MaxFame;
 	this->fame = fame;
-	PlayerPacket::updateStatInt(this, 0x20000, fame);
+	PlayerPacket::updateStatInt(this, Stats::Fame, fame);
 }
 
 bool Player::addWarning() {
@@ -692,7 +692,7 @@ void Player::setBuddyListSize(uint8_t size) {
 }
 
 void Player::loseExp() {
-	if (getJob() != 0 && getLevel() < 200) {
+	if (getJob() != 0 && getLevel() < Stats::PlayerLevels) {
 		Map *loc = Maps::getMap(getMap());
 		int32_t fieldlimit = loc->getInfo()->fieldLimit;
 		int8_t exploss = 10;

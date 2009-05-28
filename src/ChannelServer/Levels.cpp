@@ -23,11 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Randomizer.h"
 #include "Skills.h"
+#include <boost/lexical_cast.hpp>
 #include <string>
 
 using std::string;
 
-uint32_t Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
+uint32_t Levels::exps[Stats::PlayerLevels] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 2360, 3216, 4200,
 	5460, 7050, 8840, 11040, 13716, 16680, 20216, 24402, 28980, 34320, 40512, 47216, 54900,
 	63666, 73080, 83720, 95700, 108480, 122760, 138666, 155540, 174216, 194832, 216600, 240500,
 	266682, 294216, 324240, 356916, 391160, 428280, 468450, 510420, 555680, 604416, 655200,
@@ -49,8 +50,8 @@ uint32_t Levels::exps[200] = {15, 34, 57, 92, 135, 372, 560, 840, 1242, 1716, 23
 	1005114529, 1060194805, 1118293480, 1179575962, 1244216724, 1312399800, 1384319309,
 	1460180007, 1540197871, 1624600714, 1713628833, 1807535693, 1906558648, 2011069705, 2121276324};
 
-void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
-	if (player->getLevel() >= 200) // Do not give EXP to characters level 200 or over
+void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
+	if (player->getLevel() >= Stats::PlayerLevels) // Do not give EXP to characters of max level or over
 		return;
 	uint32_t cexp = player->getExp() + exp;
 	if (exp != 0)
@@ -65,7 +66,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 		uint8_t levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
 		int16_t job = player->getJob() / 100;
 		int16_t intt = player->getInt() / 10;
-		int16_t x = 0; // X value for Improving *P Increase skills
+		int16_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
 		while (cexp >= exps[level - 1] && levelsgained < levelsmax) {
 			cexp -= exps[player->getLevel() - 1];
 			level++;
@@ -73,31 +74,31 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 			apgain += 5;
 			switch (job) {
 				case 0: // Beginner
-					hpgain += Randomizer::Instance()->randShort(4) + 12;
-					mpgain += Randomizer::Instance()->randShort(2) + 10 + intt;
+					hpgain += randHp() + 12;
+					mpgain += randMp() + 10 + intt;
 					break;
 				case 1: // Warrior
-					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0) // Only check the first time for these skills
-						x = Skills::skills[Jobs::Swordsman::ImprovedMaxHpIncrease][player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease)].x;
-					hpgain += Randomizer::Instance()->randShort(4) + 24 + x;
-					mpgain += Randomizer::Instance()->randShort(2) + 4 + intt;
+					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
+						x = getX(player, Jobs::Swordsman::ImprovedMaxHpIncrease);
+					hpgain += randHp() + 24 + x;
+					mpgain += randMp() + 4 + intt;
 					break;
 				case 2: // Magician
 					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
-						x = Skills::skills[Jobs::Magician::ImprovedMaxMpIncrease][player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease)].x;
-					hpgain += Randomizer::Instance()->randShort(4) + 10;
-					mpgain += Randomizer::Instance()->randShort(2) + 22 + 2 * x + intt;
+						x = getX(player, Jobs::Magician::ImprovedMaxMpIncrease);
+					hpgain += randHp() + 10;
+					mpgain += randMp() + 22 + 2 * x + intt;
 					break;
 				case 3: // Bowman
 				case 4: // Thief
-					hpgain += Randomizer::Instance()->randShort(4) + 20;
-					mpgain += Randomizer::Instance()->randShort(2) + 14 + intt;
+					hpgain += randHp() + 20;
+					mpgain += randMp() + 14 + intt;
 					break;
 				case 5: // Pirate
 					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
-						x = Skills::skills[Jobs::Infighter::ImproveMaxHp][player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp)].x;
-					hpgain += Randomizer::Instance()->randShort(4) + 22 + x;
-					mpgain += Randomizer::Instance()->randShort(2) + 18 + intt;
+						x = getX(player, Jobs::Infighter::ImproveMaxHp);
+					hpgain += randHp() + 22 + x;
+					mpgain += randMp() + 18 + intt;
 					break;
 				default: // GM
 					hpgain += 150;
@@ -105,7 +106,7 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 			}
 			if (player->getJob() > 0)
 				spgain += 3;
-			if (level >= 200) { // Do not let people level past the level 200 cap
+			if (level >= Stats::PlayerLevels) { // Do not let people level past the level 200 cap
 				cexp = 0;
 				break;
 			}
@@ -134,11 +135,13 @@ void Levels::giveEXP(Player *player, uint32_t exp, bool inChat, bool white) {
 			player->setHp(player->getMHp());
 			player->setMp(player->getMMp());
 			player->setLevelDate();
-			if (player->getLevel() == 200 && !player->isGm()) {
+			if (player->getLevel() == Stats::PlayerLevels && !player->isGm()) {
 				string message;
 				message = "[Congrats] ";
 				message += player->getName();
-				message += " has reached Level 200! Congratulate ";
+				message += " has reached Level ";
+				message += boost::lexical_cast<string>(Stats::PlayerLevels);
+				message += "! Congratulate ";
 				message += player->getName();
 				message += " on such an amazing achievement!";
 				PlayersPacket::showMessageWorld(message, 6);
@@ -182,31 +185,31 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 	int16_t maxstat = ChannelServer::Instance()->getMaxStats();
 	bool issubtract = mod < 0;
 	switch (type) {
-		case 0x40:
+		case Stats::Str:
 			if (player->getStr() >= maxstat)
 				return;
 			player->setStr(player->getStr() + mod);
 			break;
-		case 0x80:
+		case Stats::Dex:
 			if (player->getDex() >= maxstat)
 				return;
 			player->setDex(player->getDex() + mod);
 			break;
-		case 0x100:
+		case Stats::Int:
 			if (player->getInt() >= maxstat)
 				return;
 			player->setInt(player->getInt() + mod);
 			break;
-		case 0x200:
+		case Stats::Luk:
 			if (player->getLuk() >= maxstat)
 				return;
 			player->setLuk(player->getLuk() + mod);
 			break;
-		case 0x800:
-		case 0x2000: {
-			if (type == 0x800 && player->getRMHp() >= 30000)
+		case Stats::MaxHp:
+		case Stats::MaxMp: {
+			if (type == Stats::MaxHp && player->getRMHp() >= Stats::MaxMaxHp)
 				return;
-			else if (type == 0x2000 && player->getRMMp() >= 30000)
+			if (type == Stats::MaxMp && player->getRMMp() >= Stats::MaxMaxMp)
 				return;
 			if (issubtract && player->getHpMpAp() == 0) {
 				// Hacking
@@ -218,36 +221,36 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 			int16_t y = 0;
 			switch (job) {
 				case 0: // Beginner
-					hpgain = (isreset ? (issubtract ? -12 : 8) : Randomizer::Instance()->randShort(4) + 8);
-					mpgain = (isreset ? (issubtract ? -8 : 6) : Randomizer::Instance()->randShort(2) + 6);
+					hpgain = (isreset ? (issubtract ? -12 : 8) : randHp() + 8);
+					mpgain = (isreset ? (issubtract ? -8 : 6) : randMp() + 6);
 					break;
 				case 1: // Warrior
 					if (player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
-						y = Skills::skills[Jobs::Swordsman::ImprovedMaxHpIncrease][player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease)].y;
-					hpgain = (isreset ? (issubtract ? (-1 * (24 + y)) : 20) : (Randomizer::Instance()->randShort(4) + 20 + y));
-					mpgain = (isreset ? (issubtract ? -4 : 2) : Randomizer::Instance()->randShort(2) + 2);
+						y = getY(player, Jobs::Swordsman::ImprovedMaxHpIncrease);
+					hpgain = (isreset ? (issubtract ? (-(24 + y)) : 20) : (randHp() + 20 + y));
+					mpgain = (isreset ? (issubtract ? -4 : 2) : randMp() + 2);
 					break;
 				case 2: // Magician
 					if (player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
-						y = Skills::skills[Jobs::Magician::ImprovedMaxMpIncrease][player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease)].y;
-					hpgain = (isreset ? (issubtract ? -10 : 6) : Randomizer::Instance()->randShort(4) + 6);
-					mpgain = (isreset ? (issubtract ? (-1 * (20 + 2 * y)) : 18) : (Randomizer::Instance()->randShort(2) + 18 + 2 * y));
+						y = getY(player, Jobs::Magician::ImprovedMaxMpIncrease);
+					hpgain = (isreset ? (issubtract ? -10 : 6) : randHp() + 6);
+					mpgain = (isreset ? (issubtract ? (-(20 + 2 * y)) : 18) : (randMp() + 18 + 2 * y));
 					break;
 				case 5: // Pirate
 					if (player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
-						y = Skills::skills[Jobs::Infighter::ImproveMaxHp][player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp)].y;
-					hpgain = (isreset ? (issubtract ? (-1 * (22 + y)) : 18) : (Randomizer::Instance()->randShort(4) + 18 + y));
-					mpgain = (isreset ? (issubtract ? -16 : 14) : Randomizer::Instance()->randShort(2) + 2);
+						y = getY(player, Jobs::Infighter::ImproveMaxHp);
+					hpgain = (isreset ? (issubtract ? (-(22 + y)) : 18) : (randHp() + 18 + y));
+					mpgain = (isreset ? (issubtract ? -16 : 14) : randMp() + 2);
 					break;
 				default: // Bowman, Thief, GM
-					hpgain = (isreset ? (issubtract ? -20 : 16) : Randomizer::Instance()->randShort(4) + 16);
-					mpgain = (isreset ? (issubtract ? -12 : 10) : Randomizer::Instance()->randShort(2) + 10);
+					hpgain = (isreset ? (issubtract ? -20 : 16) : randHp() + 16);
+					mpgain = (isreset ? (issubtract ? -12 : 10) : randMp() + 10);
 					break;
 			}
 			player->setHpMpAp(player->getHpMpAp() + mod);
 			switch (type) {
-				case 0x800: player->modifyRMHp(hpgain); break;
-				case 0x2000: player->modifyRMMp(mpgain); break;
+				case Stats::MaxHp: player->modifyRMHp(hpgain); break;
+				case Stats::MaxMp: player->modifyRMMp(mpgain); break;
 			}
 			if (player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillid = player->getActiveBuffs()->getHyperBody();
@@ -268,4 +271,20 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 	}
 	if (!isreset)
 		player->setAp(player->getAp() - mod);
+}
+
+int16_t Levels::randHp() {
+	return Randomizer::Instance()->randShort(4); // Max HP range per class (e.g. Beginner is 8-12)
+}
+
+int16_t Levels::randMp() {
+	return Randomizer::Instance()->randShort(2); // Max MP range per class (e.g. Beginner is 6-8)
+}
+
+int16_t Levels::getX(Player *player, int32_t skillid) {
+	return Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+}
+
+int16_t Levels::getY(Player *player, int32_t skillid) {
+	return Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].y;
 }
