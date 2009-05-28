@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "ShopDataProvider.h"
 #include "Skills.h"
+#include <cstdio>
 #include <iostream>
 
 using std::string;
