@@ -32,7 +32,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 	packet.add<int8_t>(pet->isSummoned());
 	packet.add<int8_t>(kick); // Kick existing pet (only when player doesn't have follow the lead)
 	if (pet->isSummoned()) {
-		packet.add<int32_t>(pet->getType());
+		packet.add<int32_t>(pet->getItemId());
 		packet.addString(pet->getName());
 		packet.add<int32_t>(pet->getId());
 		packet.add<int32_t>(0);
@@ -158,7 +158,7 @@ void PetsPacket::blankUpdate(Player *player) {
 
 void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(3);
-	packet.add<int32_t>(pet->getType());
+	packet.add<int32_t>(pet->getItemId());
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(pet->getId());
 	packet.add<int32_t>(0);

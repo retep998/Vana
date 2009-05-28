@@ -124,7 +124,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getinfo->getPets()->getSummoned(i)) {
 			packet.add<int8_t>(1);
-			packet.add<int32_t>(pet->getType());
+			packet.add<int32_t>(pet->getItemId());
 			packet.addString(pet->getName());
 			packet.add<int8_t>(pet->getLevel());
 			packet.add<int16_t>(pet->getCloseness());
