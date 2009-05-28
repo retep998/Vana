@@ -332,11 +332,12 @@ void Player::setHp(int16_t shp, bool is) {
 	if (getParty())
 		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
-	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(PlayerDeath, getId());
-	}
-	if (hp == 0)
+	if (hp == 0) {
+		if (getInstance() != 0) {
+			getInstance()->sendMessage(PlayerDeath, getId());
+		}
 		loseExp();
+	}
 }
 
 void Player::modifyHp(int16_t nhp, bool is) {
@@ -351,11 +352,12 @@ void Player::modifyHp(int16_t nhp, bool is) {
 	if (getParty())
 		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
-	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(PlayerDeath, getId());
-	}
-	if (hp == 0)
+	if (hp == 0) {
+		if (getInstance() != 0) {
+			getInstance()->sendMessage(PlayerDeath, getId());
+		}
 		loseExp();
+	}
 }
 
 void Player::damageHp(uint16_t dhp) {
@@ -364,11 +366,12 @@ void Player::damageHp(uint16_t dhp) {
 	if (getParty())
 		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
-	if (hp == 0 && getInstance() != 0) {
-		getInstance()->sendMessage(PlayerDeath, getId());
-	}
-	if (hp == 0)
+	if (hp == 0) {
+		if (getInstance() != 0) {
+			getInstance()->sendMessage(PlayerDeath, getId());
+		}
 		loseExp();
+	}
 }
 
 void Player::setMp(int16_t smp, bool is) {
