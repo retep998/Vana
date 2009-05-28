@@ -60,7 +60,7 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::Buccaneer::SpeedInfusion].player.push_back(player);
 
 	// Maple Warriors
-	buff.type = 0x8;
+	buff.type = 0x08;
 	buff.byte = Byte5;
 	buff.value = SkillX;
 	player.buff = buff;

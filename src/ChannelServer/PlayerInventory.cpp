@@ -101,7 +101,7 @@ void PlayerInventory::setMesos(int32_t mesos, bool is) {
 	if (mesos < 0)
 		mesos = 0;
 	m_mesos = mesos;
-	PlayerPacket::updateStatInt(m_player, 0x40000, m_mesos, is);
+	PlayerPacket::updateStatInt(m_player, Stats::Mesos, m_mesos, is);
 }
 
 bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
@@ -114,7 +114,7 @@ bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
 			return false;
 		m_mesos = mesotest;
 	}
-	PlayerPacket::updateStatInt(m_player, 0x40000, m_mesos, is);
+	PlayerPacket::updateStatInt(m_player, Stats::Mesos, m_mesos, is);
 	return true;
 }
 
