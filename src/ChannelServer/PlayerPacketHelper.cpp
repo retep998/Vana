@@ -85,7 +85,7 @@ void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player)
 	player->getInventory()->addEquippedPacket(packet);
 	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			packet.add<int32_t>(pet->getType());
+			packet.add<int32_t>(pet->getItemId());
 		}
 		else {
 			packet.add<int32_t>(0);

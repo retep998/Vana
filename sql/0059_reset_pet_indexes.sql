@@ -1,0 +1,1 @@
+UPDATE pets SET `index` = -1;

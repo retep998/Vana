@@ -32,6 +32,7 @@ Pet * PlayerPets::getPet(int32_t petid) {
 }
 
 void PlayerPets::setSummoned(int8_t index, int32_t petid) {
+	index -= 1;
 	m_summoned[index] = petid;
 }
 
