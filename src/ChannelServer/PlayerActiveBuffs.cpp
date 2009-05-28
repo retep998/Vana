@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "Maps.h"
 #include "PacketCreator.h"
+#include "PacketReader.h"
 #include "Player.h"
 #include "Randomizer.h"
 #include "Skills.h"
@@ -546,5 +547,56 @@ void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
 			packet.add<uint8_t>(iter->first);
 			packet.add<int32_t>(iter->second);
 		}
+	}
+}
+
+void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
+	// Map entry buff info
+	setCombo(packet.get<uint8_t>(), false);
+	setEnergyChargeLevel(packet.get<int16_t>());
+	setCharge(packet.get<int32_t>());
+	setBooster(packet.get<int32_t>());
+	setBattleshipHp(packet.get<int32_t>());
+	setDebuffMask(packet.get<int32_t>());
+	m_mapbuffs.mountid = packet.get<int32_t>();
+	m_mapbuffs.mountskill = packet.get<int32_t>();
+	MapEntryVals values;
+	for (int8_t i = 0; i < 8; i++) {
+		m_mapbuffs.types[i] = packet.get<uint8_t>();
+		uint8_t size = packet.get<uint8_t>();
+		for (uint8_t f = 0; f < size; f++) {
+			uint8_t type = packet.get<uint8_t>();
+			values.debuff = (packet.get<int8_t>() > 0);
+			if (values.debuff) {
+				values.skill = packet.get<int16_t>();
+				values.val = packet.get<int16_t>();
+			}
+			else {
+				values.use = packet.get<int8_t>() > 0;
+				values.val = packet.get<int16_t>();
+			}
+			m_mapbuffs.values[i][type] = values;
+		}
+	}
+	// Current buff info
+	uint8_t nbuffs = packet.get<uint8_t>();
+	for (uint8_t i = 0; i < nbuffs; i++) {
+		int32_t skillid = packet.get<int32_t>();
+		int32_t timeleft = packet.get<int32_t>();
+		uint8_t level = packet.get<uint8_t>();
+		addBuff(skillid, timeleft);
+		setActiveSkillLevel(skillid, level);
+		Buffs::Instance()->doAct(m_player, skillid, level);
+	}
+	// Current buffs by type
+	unordered_map<uint8_t, int32_t> currentbyte;
+	for (int8_t i = 0; i < 8; i++) {
+		uint8_t size = packet.get<uint8_t>();
+		for (uint8_t f = 0; f < size; f++) {
+			uint8_t key = packet.get<uint8_t>();
+			int32_t value = packet.get<int32_t>();
+			currentbyte[key] = value;
+		}
+		m_activebuffsbytype[i] = currentbyte;
 	}
 }

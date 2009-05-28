@@ -27,14 +27,6 @@ using std::tr1::unordered_map;
 using std::vector;
 
 class PacketReader;
-class PlayerActiveBuffs;
-
-struct BuffStorage {
-	BuffStorage() : skillid(0), timeleft(0), level(0) { }
-	int32_t skillid;
-	int32_t timeleft;
-	uint8_t level;
-};
 
 class BuffHolder : boost::noncopyable {
 public:
@@ -45,16 +37,14 @@ public:
 	}
 
 	void parseIncomingBuffs(PacketReader &packet);
-	void removeBuffs(int32_t playerid);
+	void removePacket(int32_t playerid);
 	bool checkPlayer(int32_t playerid);
-	PlayerActiveBuffs * getBuffs(int32_t playerid);
-	vector<BuffStorage> getStoredBuffs(int32_t playerid);
+	PacketReader getPacket(int32_t playerid);
 private:
 	BuffHolder() {};
 	static BuffHolder *singleton;
 
-	unordered_map<int32_t, PlayerActiveBuffs *> m_map;
-	unordered_map<int32_t, vector<BuffStorage> > m_buff_map;
+	unordered_map<int32_t, PacketReader> m_map;
 };
 
 #endif

@@ -52,7 +52,7 @@ void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
 		case INTER_PARTY_OPERATION: PartyFunctions::handleResponse(packet); break;
 		case INTER_PARTY_SYNC: PartyFunctions::handleDataSync(packet); break;
 		case INTER_TRANSFER_BUFFS: BuffHolder::Instance()->parseIncomingBuffs(packet); break;
-		case INTER_TRANSFER_BUFFS_DISCONNECT: BuffHolder::Instance()->removeBuffs(packet.get<int32_t>()); break;
+		case INTER_TRANSFER_BUFFS_DISCONNECT: BuffHolder::Instance()->removePacket(packet.get<int32_t>()); break;
 	}
 }
 
