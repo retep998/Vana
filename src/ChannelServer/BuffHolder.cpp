@@ -38,6 +38,6 @@ bool BuffHolder::checkPlayer(int32_t playerid) {
 	return m_map.find(playerid) != m_map.end();
 }
 
-PacketReader BuffHolder::getPacket(int32_t playerid) {
+PacketReader & BuffHolder::getPacket(int32_t playerid) {
 	return m_map[playerid];
 }
