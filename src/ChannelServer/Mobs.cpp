@@ -725,14 +725,13 @@ void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet.get<int32_t>();
-	uint8_t display = 0;
 	packet.skipBytes(4); // Unk
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
 		case Jobs::Corsair::RapidFire:
 			packet.skipBytes(4); // Charge time
-			display = packet.get<int8_t>();
+			packet.skipBytes(1); // Projectile display
 			if ((skillid == Jobs::Bowmaster::Hurricane || skillid == Jobs::Corsair::RapidFire) && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
 				SpecialSkillInfo info;
 				info.skillid = skillid;
@@ -747,23 +746,20 @@ void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 				packet.skipBytes(3);
 			break;
 		default:
-			display = packet.get<int8_t>(); // Projectile display
-			packet.skipBytes(1); // Direction/animation
-			packet.skipBytes(1); // Weapon subclass
-			packet.skipBytes(1); // Weapon speed
+			packet.skipBytes(4); // Projectile display [1], direction/animation [1], weapon subclass [1], weapon speed [1]
 			break;
 	}
 	packet.skipBytes(4); // Ticks
 	int16_t pos = packet.get<int16_t>();
 	packet.skipBytes(2); // Cash Shop star cover
 	packet.skipBytes(1); // 0x00 = AoE, 0x41 = other
-	if (skillid != Jobs::Hermit::ShadowMeso && ((display & 0x40) > 0))
-		packet.skipBytes(4); // Star ID added by Shadow Claw
-	Skills::useAttackSkillRanged(player, skillid, pos, display);
+	if (skillid != Jobs::Hermit::ShadowMeso && player->getActiveBuffs()->hasShadowStars())
+		packet.skipBytes(4); // Star ID added by Shadow Stars
+	Skills::useAttackSkillRanged(player, skillid, pos);
 	int32_t mhp = 0;
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, mhp);
 	if (skillid == Jobs::Assassin::Drain) { // Drain
-		int16_t drain_x = Skills::skills[4101005][player->getSkills()->getSkillLevel(4101005)].x;
+		int16_t drain_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
 		int32_t hpRecover = totaldmg * drain_x / 100;
 		if (hpRecover > mhp)
 			hpRecover = mhp;

@@ -366,7 +366,7 @@ void Skills::useAttackSkill(Player *player, int32_t skillid) {
 	applySkillCosts(player, skillid, level, true);
 }
 
-void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display) {
+void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos) {
 	uint8_t level = 0;
 	if (skillid != 0) {
 		level = player->getSkills()->getSkillLevel(skillid);
