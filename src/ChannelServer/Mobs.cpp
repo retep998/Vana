@@ -568,9 +568,8 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	packet.skipBytes(1); // Useless
 	uint8_t tbyte = packet.get<int8_t>();
 	int8_t targets = tbyte / 0x10;
-	if (player->getSkills()->getSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
-		player->getActiveBuffs()->increaseEnergyChargeLevel(targets);
 	int8_t hits = tbyte % 0x10;
+	int8_t damagedtargets = 0;
 	int32_t skillid = packet.get<int32_t>();
 	switch (skillid) {
 		case Jobs::Gunslinger::Grenade:
@@ -629,12 +628,15 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 					mob = 0;
 			}
 		}
-		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
-			uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-			handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
-			if (mob->getHp() < mob->getSelfDestructHp()) {
-				mob->explode();
+		if (targettotal > 0) {
+			if (mob != 0 && mob->getHp() > 0) {
+				uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
+				handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
+				if (mob->getHp() < mob->getSelfDestructHp()) {
+					mob->explode();
+				}
 			}
+			damagedtargets++;
 		}
 		totaldmg += targettotal;
 		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
@@ -654,6 +656,10 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 	packet.skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
+
+	if (player->getSkills()->hasEnergyCharge())
+		player->getActiveBuffs()->increaseEnergyChargeLevel(damagedtargets);
+
 	switch (skillid) {
 		case Jobs::ChiefBandit::MesoExplosion: { // Meso Explosion
 			uint8_t items = packet.get<int8_t>();
