@@ -230,7 +230,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	// Inventory
 	pets.reset(new PlayerPets(this));
-	boost::array<uint8_t, 5> maxslots;
+	boost::array<uint8_t, Inventories::InventoryCount> maxslots;
 	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
 	maxslots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
 	maxslots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);
@@ -283,7 +283,7 @@ void Player::playerConnect(PacketReader &packet) {
 	if (ChannelServer::Instance()->getScrollingHeader().size() > 0)
 		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
 
-	for (int8_t i = 0; i < 3; i++) {
+	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = pets->getSummoned(i))
 			pet->setPos(Maps::getMap(map)->getSpawnPoint(map_pos)->pos);
 	}
@@ -511,7 +511,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal) {
 	setPos(Pos(portal->pos.x, portal->pos.y - 40));
 	setStance(0);
 	setFh(0);
-	for (int8_t i = 0; i < 3; i++) {
+	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getPets()->getSummoned(i)) {
 			pet->setPos(portal->pos);
 		}
@@ -634,11 +634,11 @@ void Player::saveStats() {
 		<< "eyes = " << eyes << ","
 		<< "hair = " << hair << ","
 		<< "mesos = " << inv->getMesos() << ","
-		<< "equip_slots = " << static_cast<int16_t>(inv->getMaxSlots(1)) << ","
-		<< "use_slots = " << static_cast<int16_t>(inv->getMaxSlots(2)) << ","
-		<< "setup_slots = " << static_cast<int16_t>(inv->getMaxSlots(3)) << ","
-		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(4)) << ","
-		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(5)) << ","
+		<< "equip_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EquipInventory)) << ","
+		<< "use_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::UseInventory)) << ","
+		<< "setup_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::SetupInventory)) << ","
+		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EtcInventory)) << ","
+		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::CashInventory)) << ","
 		<< "buddylist_size = " << static_cast<int16_t>(buddylist_size)
 		<< " WHERE id = " << id;
 	query.exec();
