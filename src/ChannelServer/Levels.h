@@ -32,6 +32,10 @@ namespace Levels {
 	void addStat(Player *player, int32_t type, int16_t mod = 1, bool isreset = false);
 	int16_t randHp();
 	int16_t randMp();
+	int16_t levelHp(int16_t val, int16_t bonus = 0);
+	int16_t levelMp(int16_t val, int16_t bonus = 0);
+	int16_t apResetHp(bool isreset, bool issubtract, int16_t val, int16_t sval = 0);
+	int16_t apResetMp(bool isreset, bool issubtract, int16_t val, int16_t sval = 0);
 	int16_t getX(Player *player, int32_t skillid);
 	int16_t getY(Player *player, int32_t skillid);
 };

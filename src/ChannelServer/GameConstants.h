@@ -105,6 +105,44 @@ namespace Stats {
 	const int16_t MinMaxMp = 1;
 	const int16_t MaxFame = 30000;
 	const int16_t MinFame = -30000;
+	namespace BaseHp {
+		const int16_t Variation = 4; // This is the range of HP that the server will give
+
+		const int16_t Beginner = 12;
+		const int16_t Warrior = 24;
+		const int16_t Magician = 10;
+		const int16_t Bowman = 20;
+		const int16_t Thief = 20;
+		const int16_t Pirate = 22;
+		const int16_t Gm = 150;
+
+		const int16_t BeginnerAp = 8;
+		const int16_t WarriorAp = 20;
+		const int16_t MagicianAp = 8;
+		const int16_t BowmanAp = 16;
+		const int16_t ThiefAp = 16;
+		const int16_t PirateAp = 18;
+		const int16_t GmAp = 16;
+	}
+	namespace BaseMp {
+		const int16_t Variation = 2; // This is the range of MP that the server will give
+
+		const int16_t Beginner = 10;
+		const int16_t Warrior = 4;
+		const int16_t Magician = 6;
+		const int16_t Bowman = 14;
+		const int16_t Thief = 14;
+		const int16_t Pirate = 18;
+		const int16_t Gm = 150;
+
+		const int16_t BeginnerAp = 6;
+		const int16_t WarriorAp = 2;
+		const int16_t MagicianAp = 18;
+		const int16_t BowmanAp = 10;
+		const int16_t ThiefAp = 10;
+		const int16_t PirateAp = 14;
+		const int16_t GmAp = 10;
+	}
 	enum Constants {
 		Skin = 0x01,
 		Eyes = 0x02,

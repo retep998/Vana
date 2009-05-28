@@ -74,35 +74,38 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 			apgain += 5;
 			switch (job) {
 				case 0: // Beginner
-					hpgain += randHp() + 12;
-					mpgain += randMp() + 10 + intt;
+					hpgain += levelHp(Stats::BaseHp::Beginner);
+					mpgain += levelMp(Stats::BaseMp::Beginner, intt);
 					break;
 				case 1: // Warrior
 					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
 						x = getX(player, Jobs::Swordsman::ImprovedMaxHpIncrease);
-					hpgain += randHp() + 24 + x;
-					mpgain += randMp() + 4 + intt;
+					hpgain += levelHp(Stats::BaseHp::Warrior, x);
+					mpgain += levelMp(Stats::BaseMp::Warrior, intt);
 					break;
 				case 2: // Magician
 					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
 						x = getX(player, Jobs::Magician::ImprovedMaxMpIncrease);
-					hpgain += randHp() + 10;
-					mpgain += randMp() + 22 + 2 * x + intt;
+					hpgain += levelHp(Stats::BaseHp::Magician);
+					mpgain += levelMp(Stats::BaseMp::Magician, 2 * x + intt);
 					break;
 				case 3: // Bowman
+					hpgain += levelHp(Stats::BaseHp::Bowman);
+					mpgain += levelMp(Stats::BaseMp::Bowman, intt);
+					break;
 				case 4: // Thief
-					hpgain += randHp() + 20;
-					mpgain += randMp() + 14 + intt;
+					hpgain += levelHp(Stats::BaseHp::Thief);
+					mpgain += levelMp(Stats::BaseMp::Thief, intt);
 					break;
 				case 5: // Pirate
 					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
 						x = getX(player, Jobs::Infighter::ImproveMaxHp);
-					hpgain += randHp() + 22 + x;
-					mpgain += randMp() + 18 + intt;
+					hpgain += levelHp(Stats::BaseHp::Pirate, x);
+					mpgain += levelMp(Stats::BaseMp::Pirate, intt);
 					break;
 				default: // GM
-					hpgain += 150;
-					mpgain += 150;
+					hpgain += Stats::BaseHp::Gm;
+					mpgain += Stats::BaseMp::Gm;
 			}
 			if (player->getJob() > 0)
 				spgain += 3;
@@ -221,30 +224,38 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 			int16_t y = 0;
 			switch (job) {
 				case 0: // Beginner
-					hpgain = (isreset ? (issubtract ? -12 : 8) : randHp() + 8);
-					mpgain = (isreset ? (issubtract ? -8 : 6) : randMp() + 6);
+					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::BeginnerAp);
+					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::BeginnerAp);
 					break;
 				case 1: // Warrior
 					if (player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
 						y = getY(player, Jobs::Swordsman::ImprovedMaxHpIncrease);
-					hpgain = (isreset ? (issubtract ? (-(24 + y)) : 20) : (randHp() + 20 + y));
-					mpgain = (isreset ? (issubtract ? -4 : 2) : randMp() + 2);
+					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::WarriorAp, y);
+					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::WarriorAp);
 					break;
 				case 2: // Magician
 					if (player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
 						y = getY(player, Jobs::Magician::ImprovedMaxMpIncrease);
-					hpgain = (isreset ? (issubtract ? -10 : 6) : randHp() + 6);
-					mpgain = (isreset ? (issubtract ? (-(20 + 2 * y)) : 18) : (randMp() + 18 + 2 * y));
+					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::MagicianAp);
+					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::MagicianAp, 2 * y);
+					break;
+				case 3: // Bowman
+					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::BowmanAp);
+					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::BowmanAp);
+					break;
+				case 4: // Thief
+					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::ThiefAp);
+					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::ThiefAp);
 					break;
 				case 5: // Pirate
 					if (player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
 						y = getY(player, Jobs::Infighter::ImproveMaxHp);
-					hpgain = (isreset ? (issubtract ? (-(22 + y)) : 18) : (randHp() + 18 + y));
-					mpgain = (isreset ? (issubtract ? -16 : 14) : randMp() + 2);
+					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::PirateAp, y);
+					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::PirateAp);
 					break;
-				default: // Bowman, Thief, GM
-					hpgain = (isreset ? (issubtract ? -20 : 16) : randHp() + 16);
-					mpgain = (isreset ? (issubtract ? -12 : 10) : randMp() + 10);
+				default: // GM
+					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::GmAp);
+					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::GmAp);
 					break;
 			}
 			player->setHpMpAp(player->getHpMpAp() + mod);
@@ -274,11 +285,11 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 }
 
 int16_t Levels::randHp() {
-	return Randomizer::Instance()->randShort(4); // Max HP range per class (e.g. Beginner is 8-12)
+	return Randomizer::Instance()->randShort(Stats::BaseHp::Variation); // Max HP range per class (e.g. Beginner is 8-12)
 }
 
 int16_t Levels::randMp() {
-	return Randomizer::Instance()->randShort(2); // Max MP range per class (e.g. Beginner is 6-8)
+	return Randomizer::Instance()->randShort(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
 }
 
 int16_t Levels::getX(Player *player, int32_t skillid) {
@@ -287,4 +298,20 @@ int16_t Levels::getX(Player *player, int32_t skillid) {
 
 int16_t Levels::getY(Player *player, int32_t skillid) {
 	return Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].y;
+}
+
+int16_t Levels::apResetHp(bool isreset, bool issubtract, int16_t val, int16_t sval) {
+	return (isreset ? (issubtract ? -(sval + val + Stats::BaseHp::Variation) : val) : levelHp(val, sval));
+}
+
+int16_t Levels::apResetMp(bool isreset, bool issubtract, int16_t val, int16_t sval) {
+	return (isreset ? (issubtract ? -(sval + val + Stats::BaseMp::Variation) : val) : levelMp(val, sval));
+}
+
+int16_t Levels::levelHp(int16_t val, int16_t bonus) {
+	return randHp() + val + bonus;
+}
+
+int16_t Levels::levelMp(int16_t val, int16_t bonus) {
+	return randMp() + val + bonus;
 }
