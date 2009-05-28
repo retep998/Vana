@@ -96,6 +96,30 @@ enum ByteTypes {
 	Byte4
 };
 
+namespace FieldLimitBits {
+	enum Limit {
+		Jump = 0x1,
+		MovementSkills = 0x2,
+		SummoningBag = 0x4,
+		MysticDoor = 0x8,
+		ChannelSwitch = 0x10,
+		RegularExpLoss = 0x20,
+		VipRock = 0x40,
+		Minigames = 0x80,
+		NoClue1 = 0x100, // APQ and a couple quest maps have this
+		Mount = 0x200,
+		NoClue2 = 0x400, // Monster carnival?
+		NoClue3 = 0x800, // Monster carnival?
+		PotionUse = 0x1000,
+		NoClue4 = 0x2000, // No notes
+		Unused = 0x4000,
+		NoClue5 = 0x8000, // Ariant colosseum-related?
+		NoClue6 = 0x10000, // No notes
+		DropDown = 0x20000,
+		NoClue7 = 0x40000 // Seems to .. disable Rush if 0x2 is set
+	};
+}
+
 namespace StatusEffects {
 	namespace Mob {
 		enum MobStatus {
