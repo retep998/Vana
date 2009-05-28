@@ -253,7 +253,7 @@ namespace Jobs {
 			Shadower = 422,
 			Pirate = 500,
 			Infighter = 510,
-			Brawler = 511,
+			Marauder = 511,
 			Buccaneer = 512,
 			Gunslinger = 520,
 			Outlaw = 521,
