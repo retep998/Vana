@@ -105,6 +105,10 @@ namespace Stats {
 	const int16_t MinMaxMp = 1;
 	const int16_t MaxFame = 30000;
 	const int16_t MinFame = -30000;
+	const int16_t MaxCloseness = 30000;
+	const int8_t MaxFullness = 100;
+	const int8_t MinFullness = 0;
+	const int8_t PetFeedFullness = 30;
 	namespace BaseHp {
 		const int16_t Variation = 4; // This is the range of HP that the server will give
 

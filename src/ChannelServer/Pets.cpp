@@ -82,10 +82,10 @@ void Pet::setName(const string &name) {
 
 void Pet::addCloseness(int16_t amount) {
 	closeness += amount;
-	if (closeness > 30000)
-		closeness = 30000;
+	if (closeness > Stats::MaxCloseness)
+		closeness = Stats::MaxCloseness;
 
-	while (closeness >= Pets::exps[level - 1] && level < 30) {
+	while (closeness >= Pets::exps[level - 1] && level < Stats::PetLevels) {
 		levelUp();
 	}
 	PetsPacket::updatePet(player, this);
@@ -94,10 +94,10 @@ void Pet::addCloseness(int16_t amount) {
 void Pet::modifyFullness(int8_t offset, bool sendPacket) {
 	fullness += offset;
 
-	if (fullness > 100)
-		fullness = 100;
-	else if (fullness < 0)
-		fullness = 0;
+	if (fullness > Stats::MaxFullness)
+		fullness = Stats::MaxFullness;
+	else if (fullness < Stats::MinFullness)
+		fullness = Stats::MinFullness;
 
 	if (sendPacket)
 		PetsPacket::updatePet(player, this);
@@ -141,9 +141,9 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 			player->getTimers()->removeTimer(id);
 		}
 		if (multipet) {
-			for (int8_t i = pet->getIndex(); i < Inventories::MaxPetCount; i++) { // Shift around pets if using multipet
-				if (Pet *move = player->getPets()->getSummoned(i + 1)) {
-					move->setIndex(i);
+			for (int8_t i = (pet->getIndex() + 1); i <= Inventories::MaxPetCount; i++) { // Shift around pets if using multipet
+				if (Pet *move = player->getPets()->getSummoned(i)) {
+					move->setIndex(i - 1);
 					player->getPets()->setSummoned(move->getIndex(), move->getId());
 					player->getPets()->setSummoned(i, 0);
 					if (move->getIndex() == 1)
@@ -160,12 +160,12 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 		if (!multipet || master) {
 			pet->setIndex(0);
 			if (multipet) {
-				for (int8_t i = 2; i > 0; i--) {
-					if (player->getPets()->getSummoned(i) && !player->getPets()->getSummoned(i + 1)) {
-						Pet *move = player->getPets()->getSummoned(i);
-						player->getPets()->setSummoned(i + 1, move->getId());
-						player->getPets()->setSummoned(i, 0);
-						move->setIndex(i + 1);
+				for (int8_t i = Inventories::MaxPetCount; i > 1; i--) {
+					if (player->getPets()->getSummoned(i - 1) && !player->getPets()->getSummoned(i)) {
+						Pet *move = player->getPets()->getSummoned(i - 1);
+						player->getPets()->setSummoned(i, move->getId());
+						player->getPets()->setSummoned(i - 1, 0);
+						move->setIndex(i);
 					}
 				}
 				PetsPacket::petSummoned(player, pet);
@@ -204,11 +204,11 @@ void Pets::handleFeed(Player *player, PacketReader &packet) {
 	if (Pet *pet = player->getPets()->getSummoned(1)) {
 		Inventory::takeItem(player, item, 1);
 
-		bool success = (pet->getFullness() < 100);
+		bool success = (pet->getFullness() < Stats::MaxFullness);
 		PetsPacket::showAnimation(player, pet, 1, success);
 		if (success) {
-			pet->modifyFullness(30, false);
-			if (Randomizer::Instance()->randInt(99) < 60)
+			pet->modifyFullness(Stats::PetFeedFullness, false);
+			if (Randomizer::Instance()->randInt(99) < 60) // 60% chance for feed to add closeness
 				pet->addCloseness(1);
 		}
 	}
