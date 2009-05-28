@@ -114,7 +114,7 @@ namespace Skills {
 	const vector<Player *> getAffectedPartyMembers(Party *party, int8_t affected, int8_t members);
 	void applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp = false);
 	void useAttackSkill(Player *player, int32_t skillid);
-	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display);
+	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos);
 	void heal(Player *player, int16_t value, int32_t skillid);
 	void hurt(Player *player, int16_t value, int32_t skillid);
 	void stopSkill(Player *player, int32_t skillid, bool fromTimer = false);
