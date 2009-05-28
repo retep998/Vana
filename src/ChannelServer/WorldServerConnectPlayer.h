@@ -21,14 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerPlayer.h"
 
 class PacketReader;
-class PlayerActiveBuffs;
+class Player;
 
 class WorldServerConnectPlayer : public AbstractServerConnectPlayer {
 public:
 	WorldServerConnectPlayer();
 	~WorldServerConnectPlayer();
 	void realHandleRequest(PacketReader &packet);
-	void playerChangeChannel(int32_t playerid, uint16_t channel, PlayerActiveBuffs *playerbuffs);
+	void playerChangeChannel(Player *info, uint16_t channel);
 };
 
 class WorldServerConnectPlayerFactory : public AbstractPlayerFactory {

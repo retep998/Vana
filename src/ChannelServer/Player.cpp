@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "BuddyListHandler.h"
 #include "BuddyListPacket.h"
-#include "BuffHolder.h"
 #include "ChannelServer.h"
 #include "ChatHandler.h"
 #include "CommandHandler.h"
@@ -42,6 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 #include "PlayerHandler.h"
 #include "PlayerPacket.h"
+#include "PlayerPacketHolder.h"
 #include "Players.h"
 #include "Quests.h"
 #include "Reactors.h"
@@ -213,47 +213,6 @@ void Player::playerConnect(PacketReader &packet) {
 	hpmp_ap		= static_cast<uint16_t>(res[0]["hpmp_ap"]);
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
-	// Inventory
-	pets.reset(new PlayerPets(this));
-	boost::array<uint8_t, 5> maxslots;
-	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
-	maxslots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
-	maxslots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);
-	maxslots[3] = static_cast<uint8_t>(res[0]["etc_slots"]);
-	maxslots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
-	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
-	storage.reset(new PlayerStorage(this));
-
-	// Buffs
-	activeBuffs.reset(new PlayerActiveBuffs(this));
-	if (BuffHolder::Instance()->checkPlayer(id)) {
-		getActiveBuffs()->parseBuffTransferPacket(BuffHolder::Instance()->getPacket(id));
-		if (getActiveBuffs()->hasHyperBody()) {
-			int32_t skillid = getActiveBuffs()->getHyperBody();
-			uint8_t hblevel = getActiveBuffs()->getActiveSkillLevel(skillid);
-			setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
-		}
-		BuffHolder::Instance()->removePacket(id);
-	}
-
-	// Skills
-	skills.reset(new PlayerSkills(this));
-
-	// Player variables
-	variables.reset(new PlayerVariables(this));
-
-	// The rest
-	summons.reset(new PlayerSummons(this));
-	buddyList.reset(new PlayerBuddyList(this));
-	quests.reset(new PlayerQuests(this));
-
-	// Key Maps and Macros
-	KeyMaps keyMaps;
-	keyMaps.load(id);
-
-	SkillMacros skillMacros;
-	skillMacros.load(id);
-
 	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
 		map_pos = 0;
@@ -275,6 +234,51 @@ void Player::playerConnect(PacketReader &packet) {
 	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
 	m_stance = 0;
 	m_foothold = 0;
+
+	// Inventory
+	pets.reset(new PlayerPets(this));
+	boost::array<uint8_t, 5> maxslots;
+	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
+	maxslots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
+	maxslots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);
+	maxslots[3] = static_cast<uint8_t>(res[0]["etc_slots"]);
+	maxslots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
+	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
+	storage.reset(new PlayerStorage(this));
+
+	// Buffs/summons
+	activeBuffs.reset(new PlayerActiveBuffs(this));
+	summons.reset(new PlayerSummons(this));
+	if (PlayerPacketHolder::Instance()->checkPlayer(id)) {
+		PacketReader pack = PlayerPacketHolder::Instance()->getPacket(id);
+
+		getActiveBuffs()->parseBuffTransferPacket(pack);
+		if (getActiveBuffs()->hasHyperBody()) {
+			int32_t skillid = getActiveBuffs()->getHyperBody();
+			uint8_t hblevel = getActiveBuffs()->getActiveSkillLevel(skillid);
+			setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
+		}
+
+		getSummons()->parseSummonTransferPacket(pack);
+		PlayerPacketHolder::Instance()->removePacket(id);
+	}
+
+	// Skills
+	skills.reset(new PlayerSkills(this));
+
+	// Player variables
+	variables.reset(new PlayerVariables(this));
+
+	// The rest
+	buddyList.reset(new PlayerBuddyList(this));
+	quests.reset(new PlayerQuests(this));
+
+	// Key Maps and Macros
+	KeyMaps keyMaps;
+	keyMaps.load(id);
+
+	SkillMacros skillMacros;
+	skillMacros.load(id);
 
 	PlayerPacket::connectData(this);
 
@@ -527,7 +531,7 @@ void Player::setLevel(uint8_t level) {
 }
 
 void Player::changeChannel(int8_t channel) {
-	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(id, channel, getActiveBuffs());
+	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(this, channel);
 }
 
 void Player::changeKey(PacketReader &packet) {

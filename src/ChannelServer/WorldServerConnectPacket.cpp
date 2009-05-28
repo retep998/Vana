@@ -19,13 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
-#include "PlayerActiveBuffs.h"
+#include "Player.h"
 #include "WorldServerConnectPlayer.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <list>
-
-using std::list;
-using std::tr1::unordered_map;
 
 void WorldServerConnectPacket::groupChat(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat) {
 	PacketCreator packet;
@@ -85,13 +80,14 @@ void WorldServerConnectPacket::partyInvite(WorldServerConnectPlayer *player, int
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPacket::playerChangeChannel(WorldServerConnectPlayer *player, int32_t playerid, uint16_t channel, PlayerActiveBuffs *playerbuffs) {
+void WorldServerConnectPacket::playerChangeChannel(WorldServerConnectPlayer *player, Player *info, uint16_t channel) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PLAYER_CHANGE_CHANNEL);
-	packet.add<int32_t>(playerid);
+	packet.add<int32_t>(info->getId());
 	packet.add<int16_t>(channel);
 
-	playerbuffs->getBuffTransferPacket(packet);
+	info->getActiveBuffs()->getBuffTransferPacket(packet);
+	info->getSummons()->getSummonTransferPacket(packet);
 
 	player->getSession()->send(packet);
 }
@@ -148,7 +144,7 @@ void WorldServerConnectPacket::rankingCalculation(WorldServerConnectPlayer *play
 
 void WorldServerConnectPacket::playerBuffsTransferred(WorldServerConnectPlayer *player, int32_t playerid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_TRANSFER_BUFFS);
+	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET);
 	packet.add<int32_t>(playerid);
 	player->getSession()->send(packet);
 }

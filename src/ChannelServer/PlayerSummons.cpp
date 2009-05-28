@@ -18,7 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerSummons.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
+#include "PacketCreator.h"
+#include "PacketReader.h"
 #include "Summons.h"
+#include "SummonsPacket.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
@@ -28,39 +31,68 @@ using std::tr1::bind;
 void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 	bool puppet = GameLogicUtilities::isPuppet(summon->getSummonId());
 	if (!puppet)
-		this->summon = summon;
+		m_summon = summon;
 	else
-		this->puppet = summon;
+		m_puppet = summon;
 	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
-	clock_t summonExpire = time * 1000;
-	new Timer::Timer(
-		bind(&Summons::removeSummon, player, puppet, true, false, true, true),
-		id, player->getTimers(), Timer::Time::fromNow(summonExpire));
+	new Timer::Timer(bind(&Summons::removeSummon, m_player, puppet, true, false, true, true),
+		id, m_player->getTimers(), Timer::Time::fromNow(time * 1000));
 }
 
 void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
-	if (!puppet && this->summon != 0) {
+	if (!puppet && m_summon != 0) {
 		if (!fromTimer) {
-			Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
-			player->getTimers()->removeTimer(id);
+			Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
+			m_player->getTimers()->removeTimer(id);
 		}
-		delete this->summon;
-		this->summon = 0;
+		delete m_summon;
+		m_summon = 0;
 	}
-	else if (this->puppet != 0) {
+	else if (m_puppet != 0) {
 		if (!fromTimer) {
-			Timer::Id id(Timer::Types::BuffTimer, this->puppet->getSummonId(), 0);
-			player->getTimers()->removeTimer(id);
+			Timer::Id id(Timer::Types::BuffTimer, m_puppet->getSummonId(), 0);
+			m_player->getTimers()->removeTimer(id);
 		}
-		delete this->puppet;
-		this->puppet = 0;
+		delete m_puppet;
+		m_puppet = 0;
 	}
 }
 
 Summon * PlayerSummons::getSummon(int32_t summonid) {
-	if (summon != 0 && summon->getId() == summonid)
-		return summon;
-	else if (puppet != 0 && puppet->getId() == summonid)
-		return puppet;
+	if (m_summon != 0 && m_summon->getId() == summonid)
+		return m_summon;
+	else if (m_puppet != 0 && m_puppet->getId() == summonid)
+		return m_puppet;
 	return 0;
+}
+
+int32_t PlayerSummons::getSummonTimeRemaining() {
+	Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
+	return m_player->getTimers()->checkTimer(id);
+}
+
+void PlayerSummons::getSummonTransferPacket(PacketCreator &packet) {
+	int32_t summonid = 0;
+	int32_t timeleft = 0;
+	uint8_t level = 0;
+	if (m_summon != 0) {
+		summonid = m_summon->getSummonId();
+		timeleft = getSummonTimeRemaining() / 1000;
+		level = m_summon->getLevel();
+	}
+	packet.add<int32_t>(summonid);
+	packet.add<int32_t>(timeleft);
+	packet.add<uint8_t>(level);
+}
+
+void PlayerSummons::parseSummonTransferPacket(PacketReader &packet) {
+	int32_t skillid = packet.get<int32_t>();
+	int32_t timeleft = packet.get<int32_t>();
+	uint8_t level = packet.get<uint8_t>();
+	if (skillid != 0) {
+		Summon *summon = new Summon(Summons::loopId(), skillid, level);
+		summon->setPos(m_player->getPos());
+		addSummon(summon, timeleft);
+		SummonsPacket::showSummon(m_player, summon, true);
+	}
 }
