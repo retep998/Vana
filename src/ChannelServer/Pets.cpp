@@ -132,7 +132,7 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	bool master = packet.get<int8_t>() == 1;
 	bool multipet = player->getSkills()->getSkillLevel(Jobs::Beginner::FollowTheLead) > 0;
-	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5, slot)->petid);
+	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(Inventories::CashInventory, slot)->petid);
 
 	if (pet->isSummoned()) { // Removing a pet
 		player->getPets()->setSummoned(pet->getIndex(), 0);
@@ -161,16 +161,16 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 			pet->setIndex(0);
 			if (multipet) {
 				for (int8_t i = 2; i > 0; i--) {
-					if (player->getPets()->getSummoned(i - 1) && !player->getPets()->getSummoned(i)) {
-						Pet *move = player->getPets()->getSummoned(i - 1);
-						player->getPets()->setSummoned(i, move->getId());
-						player->getPets()->setSummoned(i - 1, 0);
-						move->setIndex(i);
+					if (player->getPets()->getSummoned(i) && !player->getPets()->getSummoned(i + 1)) {
+						Pet *move = player->getPets()->getSummoned(i);
+						player->getPets()->setSummoned(i + 1, move->getId());
+						player->getPets()->setSummoned(i, 0);
+						move->setIndex(i + 1);
 					}
 				}
 				PetsPacket::petSummoned(player, pet);
 			}
-			else if (Pet *kicked = player->getPets()->getSummoned(0)) {
+			else if (Pet *kicked = player->getPets()->getSummoned(1)) {
 				kicked->setIndex(-1);
 				Timer::Id id(Timer::Types::PetTimer, kicked->getIndex(), 0);
 				player->getTimers()->removeTimer(id);
@@ -201,7 +201,7 @@ void Pets::handleFeed(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t item = packet.get<int32_t>();
-	if (Pet *pet = player->getPets()->getSummoned(0)) {
+	if (Pet *pet = player->getPets()->getSummoned(1)) {
 		Inventory::takeItem(player, item, 1);
 
 		bool success = (pet->getFullness() < 100);
