@@ -74,7 +74,6 @@ private:
 	bool canTrade(Player *target, TradeInfo *unit);
 	void giveItems(Player *target, TradeInfo *unit);
 	void giveMesos(Player *player, TradeInfo *info, bool traded = false);
-	int32_t getTaxLevel(int32_t mesos);
 };
 
 #endif
