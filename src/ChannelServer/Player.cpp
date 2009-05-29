@@ -694,9 +694,8 @@ void Player::setBuddyListSize(uint8_t size) {
 void Player::loseExp() {
 	if (getJob() != 0 && getLevel() < Stats::PlayerLevels) {
 		Map *loc = Maps::getMap(getMap());
-		int32_t fieldlimit = loc->getInfo()->fieldLimit;
 		int8_t exploss = 10;
-		if (fieldlimit & FieldLimitBits::RegularExpLoss || loc->getInfo()->town)
+		if ((loc->getInfo()->fieldLimit & FieldLimitBits::RegularExpLoss) != 0 || loc->getInfo()->town)
 			exploss = 1;
 		else {
 			switch (getJob() / 100) {
@@ -709,7 +708,7 @@ void Player::loseExp() {
 			}
 		}
 		int64_t exp = getExp();
-		exp -= Levels::exps[getLevel() - 1] * exploss / 100;
+		exp -= Levels::getExp(getLevel()) * exploss / 100;
 		setExp(static_cast<int32_t>(exp));
 	}
 }

@@ -45,7 +45,7 @@ struct PetInteractInfo {
 namespace Pets {
 	extern unordered_map<int32_t, PetInfo> petsInfo;
 	extern unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > petsInteractInfo;
-	extern int16_t exps[Stats::PetLevels];
+	extern int16_t exps[Stats::PetLevels - 1];
 	void showPets(Player *player);
 	void handleChat(Player *player, PacketReader &packet);
 	void handleFeed(Player *player, PacketReader &packet);

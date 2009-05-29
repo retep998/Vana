@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Players.h"
 #include "Trades.h"
+#include "VersionConstants.h"
 
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, int32_t id) :
 sender(new TradeInfo()),
@@ -146,7 +147,7 @@ void ActiveTrade::giveItems(Player *player, TradeInfo *info) {
 
 void ActiveTrade::giveMesos(Player *player, TradeInfo *info, bool traded) {
 	if (info->mesos > 0) {
-		int32_t taxlevel = getTaxLevel(info->mesos);
+		int32_t taxlevel = TradeHandler::getTaxLevel(info->mesos);
 		if (traded && taxlevel != 0) {
 			int64_t mesos = info->mesos * taxlevel / 10000;
 			info->mesos -= (int32_t)(mesos);
@@ -214,24 +215,6 @@ Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, int8_t 
 	unit->items[index] = use;
 	unit->slot[index] = true;
 	return use;
-}
-
-int32_t ActiveTrade::getTaxLevel(int32_t mesos) {
-	// Tax levels as of .70
-	// Tax levels are divided by 10000 to prevent ever needing decimals, so 600 = 6%
-	if (mesos < 100000)
-		return 0;
-	if (mesos >= 100000000)
-		return 600;
-	if (mesos >= 25000000)
-		return 500;
-	if (mesos >= 10000000)
-		return 400;
-	if (mesos >= 5000000)
-		return 300;
-	if (mesos >= 1000000)
-		return 180;
-	return 80;
 }
 
 Player * ActiveTrade::getSender() {

@@ -78,6 +78,7 @@ set(SOURCES
 	Trades.h
 	TradesPacket.h
 	Variables.h
+	VersionConstants.h
 	WorldServerConnectHandler.h
 	WorldServerConnectPacket.h
 	WorldServerConnectPlayer.h
@@ -156,6 +157,7 @@ set(SOURCES
 	Trades.cpp
 	TradesPacket.cpp
 	Variables.cpp
+	VersionConstants.cpp
 	WorldServerConnectHandler.cpp
 	WorldServerConnectPacket.cpp
 	WorldServerConnectPlayer.cpp
