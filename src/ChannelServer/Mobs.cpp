@@ -61,6 +61,19 @@ const int32_t Mobs::mobstatuses[19] = { // Order by value ascending
 	StatusEffects::Mob::MagicImmunity
 };
 
+StatusInfo::StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time) :
+status(status),
+val(val),
+skillid(skillid),
+mobskill(0),
+level(0),
+time(time)
+{
+	if (val == StatusEffects::Mob::Freeze) {
+		this->time += Randomizer::Instance()->randInt(time);
+	}
+}
+
 /* Mob class */
 Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid, int16_t fh) :
 MovableLife(fh, pos, 2),
@@ -993,6 +1006,13 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 					statuses.push_back(StatusInfo(StatusEffects::Mob::ShadowWeb, 0x100, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
+			case Jobs::ILArchMage::IceDemon:
+			case Jobs::FPArchMage::FireDemon: {
+				int16_t pdamage = (int16_t)(mob->getMHp() / (70 - level));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, pdamage, skillid, Skills::skills[skillid][level].time));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, Skills::skills[skillid][level].x));
+				break;
+			}
 		}
 	}
 	switch (skillid) {
