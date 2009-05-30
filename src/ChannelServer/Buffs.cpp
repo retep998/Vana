@@ -244,6 +244,11 @@ Buffs::Buffs() {
 	buff.value = SkillWatk;
 	player.buff = buff;
 	skillsinfo[Jobs::Bowmaster::Concentrate].player.push_back(player);
+	buff.type = 0x20;
+	buff.byte = Byte6;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Bowmaster::Concentrate].player.push_back(player);
 
 	// Pickpocket
 	buff.type = 0x08;
@@ -305,6 +310,20 @@ Buffs::Buffs() {
 	player.buff = buff;
 	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
 
+	// Hamstring
+	buff.type = 0x08;
+	buff.byte = Byte6;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Bowmaster::Hamstring].player.push_back(player);
+
+	// Blind
+	buff.type = 0x10;
+	buff.byte = Byte6;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Marksman::Blind].player.push_back(player);
+
 	// Dragon Roar
 	buff.type = 0x02;
 	buff.byte = Byte3;
@@ -312,6 +331,13 @@ Buffs::Buffs() {
 	player.buff = buff;
 	player.itemval = 1;
 	skillsinfo[Jobs::DragonKnight::DragonRoar].player.push_back(player);
+
+	// Holy Shield
+	buff.type = 0x04;
+	buff.byte = Byte6;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Bishop::HolyShield].player.push_back(player);
 	// End regular buffs
 
 	// Begin act buffs
