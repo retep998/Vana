@@ -977,6 +977,7 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			case Jobs::ChiefBandit::Assaulter:
 			case Jobs::Shadower::BoomerangStep:
 			case Jobs::Gunslinger::BlankShot:
+			case Jobs::NightLord::NinjaStorm:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, Skills::skills[skillid][level].time));
 				}
