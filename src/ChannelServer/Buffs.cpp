@@ -54,7 +54,7 @@ Buffs::Buffs() {
 
 	// Speed Infusion
 	buff.type = 0x80;
-	buff.byte = Byte8;
+	buff.byte = Byte1;
 	buff.value = SkillX;
 	player.buff = buff;
 	skillsinfo[Jobs::Buccaneer::SpeedInfusion].player.push_back(player);
@@ -298,18 +298,6 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::ILArchMage::ManaReflection].player.push_back(player);
 	skillsinfo[Jobs::Bishop::ManaReflection].player.push_back(player);
 
-	// Dash
-	buff.type = 0x10;
-	buff.byte = Byte8;
-	buff.value = SkillX;
-	player.buff = buff;
-	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
-	buff.type = 0x20;
-	buff.byte = Byte8;
-	buff.value = SkillY;
-	player.buff = buff;
-	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
-
 	// Hamstring
 	buff.type = 0x08;
 	buff.byte = Byte6;
@@ -436,6 +424,28 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].map.push_back(map);
 	skillsinfo[Jobs::Paladin::BwHolyCharge].map.push_back(map);
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].map.push_back(map);
+	
+	// Dash
+	buff.type = 0x10;
+	buff.byte = Byte1;
+	buff.value = SkillX;
+	player.buff = buff;
+	player.hasmapval = true;
+	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+	buff.type = 0x20;
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
+	buff.type = 0x20;
+	buff.byte = Byte1;
+	buff.value = SkillY;
+	player.buff = buff;
+	player.hasmapval = true;
+	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+	buff.type = 0x40;
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
 
 	// Haste
 	buff.type = 0x80;
@@ -503,7 +513,7 @@ Buffs::Buffs() {
 
 	// Energy Charge
 	buff.type = 0x08;
-	buff.byte = Byte8;
+	buff.byte = Byte1;
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	player.hasmapval = true;
@@ -1114,8 +1124,16 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 	vector<Buff> buffs = parseBuffs(skill, level);
 	ActiveMapBuff meskill = parseBuffMapEntryInfo(player, skill, level);
 	ActiveBuff pskill = playerbuffs->removeBuffInfo(skill, buffs);
+	bool assbackward = false;
+	switch (skill) {
+		case Jobs::Pirate::Dash:
+		case Jobs::Marauder::EnergyCharge:
+		case Jobs::Buccaneer::SpeedInfusion:
+			assbackward = true;
+			break;
+	}
 
-	BuffsPacket::endSkill(player, pskill);
+	BuffsPacket::endSkill(player, pskill, assbackward);
 
 	playerbuffs->deleteMapEntryBuffInfo(meskill);
 	playerbuffs->setActiveSkillLevel(skill, 0);
