@@ -862,6 +862,7 @@ void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater) {
 	int32_t map = player->getMap();
 	uint32_t total = 0;
+	int32_t firsthit = 0;
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t targettotal = 0;
 		int32_t mapmobid = packet.get<int32_t>();
@@ -879,6 +880,8 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet.get<int32_t>();
 			targettotal += damage;
+			if (firsthit == 0)
+				firsthit = damage;
 			if (mob == 0) {
 				packet.skipBytes(4 * (hits - 1 - k));
 				break;
@@ -910,7 +913,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		}
 		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
 			uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-			handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
+			handleMobStatus(player, mob, skillid, weapontype, firsthit); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -923,7 +926,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 	return total;
 }
 
-void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type) {
+void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type, int32_t damage) {
 	uint8_t level = skillid > 0 ? player->getSkills()->getSkillLevel(skillid) : 0;
 	vector<StatusInfo> statuses;
 	if (mob->canFreeze()) { // Freezing stuff
@@ -1011,6 +1014,15 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 				int16_t pdamage = (int16_t)(mob->getMHp() / (70 - level));
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, pdamage, skillid, Skills::skills[skillid][level].time));
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, Skills::skills[skillid][level].x));
+				break;
+			}
+			case Jobs::Outlaw::Flamethrower: {
+				int16_t y = 0;
+				if (player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost) > 0)
+					y = Skills::skills[Jobs::Corsair::ElementalBoost][player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost)].x;
+				int32_t test = (damage * (5 + y) / 100);
+				int16_t pdamage = (test > 30000 ? 30000 : static_cast<int16_t>(test));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, pdamage, skillid, Skills::skills[skillid][level].time));
 				break;
 			}
 		}
