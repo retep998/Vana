@@ -73,6 +73,10 @@ bool PlayerSkills::hasElementalAmp() {
 			if (getSkillLevel(Jobs::ILMage::ElementAmplification) > 0)
 				has = true;
 			break;
+		case Jobs::JobIds::FlameWizard3:
+			if (getSkillLevel(Jobs::FlameWizard::ElementAmplification) > 0)
+				has = true;
+			break;
 	}
 	return has;
 }
@@ -88,26 +92,156 @@ int32_t PlayerSkills::getElementalAmp() {
 		case Jobs::JobIds::ILArchMage:
 			skillid = Jobs::ILMage::ElementAmplification;
 			break;
+		case Jobs::JobIds::FlameWizard3:
+			skillid = Jobs::FlameWizard::ElementAmplification;
+			break;
 	}
 	return skillid;
 }
 
 bool PlayerSkills::hasEnergyCharge() {
-	return (getSkillLevel(Jobs::Marauder::EnergyCharge) > 0);
+	bool has = false;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Marauder:
+		case Jobs::JobIds::Buccaneer:
+			if (getSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
+				has = true;
+			break;
+		case Jobs::JobIds::Striker2:
+		case Jobs::JobIds::Striker3:
+			if (getSkillLevel(Jobs::Striker::EnergyCharge) > 0)
+				has = true;
+			break;
+	}
+	return has;
 }
 
 int32_t PlayerSkills::getEnergyCharge() {
-	int32_t skillid = Jobs::Marauder::EnergyCharge;
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Marauder:
+		case Jobs::JobIds::Buccaneer:
+			skillid = Jobs::Marauder::EnergyCharge;
+			break;
+		case Jobs::JobIds::Striker2:
+		case Jobs::JobIds::Striker3:
+			skillid = Jobs::Striker::EnergyCharge;
+			break;
+	}
 	return skillid;
 }
 
 int32_t PlayerSkills::getComboAttack() {
-	int32_t skillid = Jobs::Crusader::ComboAttack;
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Crusader:
+		case Jobs::JobIds::Hero:
+			skillid = Jobs::Crusader::ComboAttack;
+			break;
+		case Jobs::JobIds::SoulWarrior3:
+			skillid = Jobs::SoulWarrior::ComboAttack;
+			break;
+	}
 	return skillid;
 }
 
 int32_t PlayerSkills::getAdvancedCombo() {
-	int32_t skillid = Jobs::Hero::AdvancedComboAttack;
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Hero:
+			skillid = Jobs::Hero::AdvancedComboAttack;
+			break;
+		case Jobs::JobIds::SoulWarrior3:
+			skillid = Jobs::SoulWarrior::AdvancedComboAttack;
+			break;
+	}
+	return skillid;
+}
+
+int32_t PlayerSkills::getAlchemist() {
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Hermit:
+		case Jobs::JobIds::NightLord:
+			skillid = Jobs::Hermit::Alchemist;
+			break;
+		case Jobs::JobIds::NightWalker3:
+			skillid = Jobs::NightWalker::Alchemist;
+			break;
+	}
+	return skillid;
+}
+
+bool PlayerSkills::hasHpIncrease() {
+	bool has = false;
+	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+		case Jobs::JobTracks::Warrior:
+			if (getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
+				has = true;
+			break;
+		case Jobs::JobTracks::SoulWarrior:
+			if (getSkillLevel(Jobs::SoulWarrior::ImprovedMaxHpIncrease) > 0)
+				has = true;
+			break;
+		case Jobs::JobTracks::Striker:
+			if (getSkillLevel(Jobs::Striker::ImproveMaxHp) > 0)
+				has = true;
+			break;
+		case Jobs::JobTracks::Pirate:
+			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10)) {
+				if (getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
+					has = true;
+			}
+			break;
+	}
+	return has;
+}
+
+int32_t PlayerSkills::getHpIncrease() {
+	int32_t skillid = 0;
+	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+		case Jobs::JobTracks::Warrior:
+			skillid = Jobs::Swordsman::ImprovedMaxHpIncrease;
+			break;
+		case Jobs::JobTracks::SoulWarrior:
+			skillid = Jobs::SoulWarrior::ImprovedMaxHpIncrease;
+			break;
+		case Jobs::JobTracks::Striker:
+			skillid = Jobs::Striker::ImproveMaxHp;
+			break;
+		case Jobs::JobTracks::Pirate:
+			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
+				skillid = Jobs::Infighter::ImproveMaxHp;
+			break;
+	}
+	return skillid;
+}
+
+bool PlayerSkills::hasMpIncrease() {
+	bool has = false;
+	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+		case Jobs::JobTracks::Magician:
+			if (getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
+				has = true;
+			break;
+		case Jobs::JobTracks::FlameWizard:
+			if (getSkillLevel(Jobs::FlameWizard::ImprovedMaxMpIncrease) > 0)
+				has = true;
+			break;
+	}
+	return has;
+}
+
+int32_t PlayerSkills::getMpIncrease() {
+	int32_t skillid = 0;
+	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+		case Jobs::JobTracks::Magician:
+			skillid = Jobs::Magician::ImprovedMaxMpIncrease;
+			break;
+		case Jobs::JobTracks::FlameWizard:
+			skillid = Jobs::FlameWizard::ImprovedMaxMpIncrease;
+			break;
+	}
 	return skillid;
 }
 

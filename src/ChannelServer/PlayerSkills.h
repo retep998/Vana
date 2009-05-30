@@ -43,10 +43,15 @@ public:
 
 	bool hasElementalAmp();
 	bool hasEnergyCharge();
+	bool hasHpIncrease();
+	bool hasMpIncrease();
 	int32_t getElementalAmp();
 	int32_t getEnergyCharge();
 	int32_t getComboAttack();
 	int32_t getAdvancedCombo();
+	int32_t getAlchemist();
+	int32_t getHpIncrease();
+	int32_t getMpIncrease();
 
 	void addCooldown(int32_t skillid, int16_t time);
 	void removeCooldown(int32_t skillid);

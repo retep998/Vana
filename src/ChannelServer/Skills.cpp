@@ -76,6 +76,7 @@ void Skills::cancelSkill(Player *player, PacketReader &packet) {
 void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
+		case Jobs::WindBreaker::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
 		case Jobs::FPArchMage::BigBang:
 		case Jobs::ILArchMage::BigBang:
@@ -158,10 +159,13 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Page::Threaten:
 		case Jobs::FPWizard::Slow:
 		case Jobs::ILWizard::Slow:
+		case Jobs::FlameWizard::Slow:
 		case Jobs::FPMage::Seal:
 		case Jobs::ILMage::Seal:
+		case Jobs::FlameWizard::Seal:
 		case Jobs::Priest::Doom:
-		case Jobs::Hermit::ShadowWeb: {
+		case Jobs::Hermit::ShadowWeb:
+		case Jobs::NightWalker::ShadowWeb: {
 			uint8_t mobs = packet.get<int8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.get<int32_t>())) {
@@ -222,10 +226,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Fighter::Rage:
+		case Jobs::SoulWarrior::Rage:
 		case Jobs::Spearman::IronWill:
 		case Jobs::Spearman::HyperBody:
 		case Jobs::FPWizard::Meditation:
 		case Jobs::ILWizard::Meditation:
+		case Jobs::FlameWizard::Meditation:
 		case Jobs::Cleric::Bless:
 		case Jobs::Priest::HolySymbol:
 		case Jobs::Bishop::Resurrection:
@@ -233,9 +239,11 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Bowmaster::SharpEyes:
 		case Jobs::Marksman::SharpEyes:
 		case Jobs::Assassin::Haste:
+		case Jobs::NightWalker::Haste:
 		case Jobs::Hermit::MesoUp:
 		case Jobs::Bandit::Haste:
 		case Jobs::Buccaneer::SpeedInfusion:
+		case Jobs::Striker::SpeedInfusion:
 		case Jobs::Buccaneer::TimeLeap: 
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
@@ -270,6 +278,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Beginner::EchoOfHero:
+		case Jobs::Noblesse::EchoOfHero:
 		case Jobs::SuperGm::HealPlusDispel:
 		case Jobs::SuperGm::Haste:
 		case Jobs::SuperGm::HolySymbol:

@@ -410,13 +410,15 @@ const bool PlayerActiveBuffs::hasMesoUp() {
 }
 
 const bool PlayerActiveBuffs::hasMagicGuard() {
-	return getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0;
+	return (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0 || getActiveSkillLevel(Jobs::FlameWizard::MagicGuard) > 0);
 }
 
 const int32_t PlayerActiveBuffs::getMagicGuard() {
 	int32_t id = 0;
 	if (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0)
 		id = Jobs::Magician::MagicGuard;
+	else if (getActiveSkillLevel(Jobs::FlameWizard::MagicGuard) > 0)
+		id = Jobs::FlameWizard::MagicGuard;
 	return id;
 }
 
@@ -454,7 +456,7 @@ const bool PlayerActiveBuffs::isCursed() {
 
 const bool PlayerActiveBuffs::hasPowerStance() {
 	// Energy Charge exhibits Power Stance effect as well
-	return (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0 || getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0 || getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0 || getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0);
+	return (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0 || getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0 || getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0 || getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0 || getActiveSkillLevel(Jobs::Striker::EnergyCharge) > 0);
 }
 
 const int32_t PlayerActiveBuffs::getPowerStance() {
@@ -467,6 +469,8 @@ const int32_t PlayerActiveBuffs::getPowerStance() {
 		skillid = Jobs::DarkKnight::PowerStance;
 	else if (getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
 		skillid = Jobs::Marauder::EnergyCharge;
+	else if (getActiveSkillLevel(Jobs::Striker::EnergyCharge) > 0)
+		skillid = Jobs::Striker::EnergyCharge;
 	return skillid;
 }
 
@@ -488,7 +492,7 @@ const bool PlayerActiveBuffs::isUsingHide() {
 }
 
 const bool PlayerActiveBuffs::hasShadowPartner() {
-	return (getActiveSkillLevel(Jobs::Hermit::ShadowPartner) > 0);
+	return (getActiveSkillLevel(Jobs::Hermit::ShadowPartner) > 0 || getActiveSkillLevel(Jobs::NightWalker::ShadowPartner) > 0);
 }
 
 const bool PlayerActiveBuffs::hasShadowStars() {
@@ -496,7 +500,7 @@ const bool PlayerActiveBuffs::hasShadowStars() {
 }
 
 const bool PlayerActiveBuffs::hasSoulArrow() {
-	return (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0 || getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0);
+	return (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0 || getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0 || getActiveSkillLevel(Jobs::WindBreaker::SoulArrow) > 0);
 }
 
 const int32_t PlayerActiveBuffs::getCurrentMorph() {

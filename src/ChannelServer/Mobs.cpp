@@ -609,6 +609,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	switch (skillid) {
 		case Jobs::Gunslinger::Grenade:
 		case Jobs::Infighter::CorkscrewBlow:
+		case Jobs::NightWalker::PoisonSling:
 			packet.skipBytes(4); // Charge
 			break;
 	}
@@ -711,7 +712,8 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Marauder::EnergyDrain: {
+		case Jobs::Marauder::EnergyDrain:
+		case Jobs::Striker::EnergyDrain: {
 			int32_t hpRecover = totaldmg * Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x / 100;
 			if (hpRecover > player->getMHp())
 				player->setHp(player->getMHp());
@@ -720,7 +722,9 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Crusader::SwordPanic: // Crusader finishers
+		case Jobs::SoulWarrior::SwordPanic:
 		case Jobs::Crusader::SwordComa:
+		case Jobs::SoulWarrior::SwordComa:
 		case Jobs::Crusader::AxePanic:
 		case Jobs::Crusader::AxeComa:
 			player->getActiveBuffs()->setCombo(0, true);
@@ -777,11 +781,12 @@ void Mobs::damageMobRanged(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Unk
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
+		case Jobs::WindBreaker::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
 		case Jobs::Corsair::RapidFire:
 			packet.skipBytes(4); // Charge time
 			packet.skipBytes(1); // Projectile display
-			if ((skillid == Jobs::Bowmaster::Hurricane || skillid == Jobs::Corsair::RapidFire) && player->getSpecialSkill() == 0) { // Only Hurricane constantly does damage and display it if not displayed
+			if (skillid != Jobs::Marksman::PiercingArrow && player->getSpecialSkill() == 0) { // Only Piercing Arrow doesn't fit the mold
 				SpecialSkillInfo info;
 				info.skillid = skillid;
 				info.direction = packet.get<int8_t>();
@@ -990,6 +995,7 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			case Jobs::FPWizard::PoisonBreath:
 			case Jobs::FPMage::PoisonMist:
 			case Jobs::FPMage::ElementComposition:
+			case Jobs::NightWalker::PoisonSling:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					int16_t pdamage = (int16_t)(mob->getMHp() / (70 - level));
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, pdamage, skillid, Skills::skills[skillid][level].time));
@@ -1001,6 +1007,7 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 		switch (skillid) {
 			case Jobs::Hunter::ArrowBomb:
 			case Jobs::Crusader::SwordComa:
+			case Jobs::SoulWarrior::SwordComa:
 			case Jobs::Crusader::AxeComa:
 			case Jobs::Crusader::Shout:
 			case Jobs::WhiteKnight::ChargeBlow:
@@ -1026,6 +1033,7 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 				break;
 			case Jobs::FPMage::Seal:
 			case Jobs::ILMage::Seal:
+			case Jobs::FlameWizard::Seal:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, Skills::skills[skillid][level].time));
 				}
@@ -1036,6 +1044,7 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 				}
 				break;
 			case Jobs::Hermit::ShadowWeb:
+			case Jobs::NightWalker::ShadowWeb:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::ShadowWeb, level, skillid, Skills::skills[skillid][level].time));
 				}
@@ -1064,12 +1073,14 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 	}
 	switch (skillid) {
 		case Jobs::Rogue::Disorder:
+		case Jobs::NightWalker::Disorder:
 		case Jobs::Page::Threaten:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, Skills::skills[skillid][level].y, skillid, Skills::skills[skillid][level].time));
 			break;
 		case Jobs::FPWizard::Slow:
 		case Jobs::ILWizard::Slow:
+		case Jobs::FlameWizard::Slow:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
 			break;
 	}
