@@ -889,7 +889,8 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 				mob = 0;
 		}
 		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
-			handleMobStatus(player, mob, skillid, 0); // Mob status handler (freeze, stun, etc)
+			uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
+			handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
