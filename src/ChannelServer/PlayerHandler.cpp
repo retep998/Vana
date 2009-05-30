@@ -273,10 +273,8 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 			player->setMap(mapid);
 		}
 	}
-	else {
-		if (player->getFallCounter() > 0) {
-			player->setFallCounter(0);
-		}
+	else if (player->getFallCounter() > 0) {
+		player->setFallCounter(0);
 	}
 }
 
