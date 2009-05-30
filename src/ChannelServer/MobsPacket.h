@@ -42,6 +42,7 @@ namespace MobsPacket {
 	void damageMobEnergyCharge(Player *player, PacketReader &pack);
 	void damageMobSummon(Player *player, PacketReader &pack);
 	void healMob(Mob *mob, int32_t amount);
+	void hurtMob(Mob *mob, int32_t amount);
 	void applyStatus(Mob *mob, const StatusInfo &info, int16_t delay);
 	void removeStatus(Mob *mob, int32_t status);
 	void showHp(Player *player, int32_t mobid, int8_t per, bool miniboss);
