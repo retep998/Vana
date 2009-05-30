@@ -714,6 +714,7 @@ namespace Jobs {
 	namespace Marauder {
 		enum Skills {
 			EnergyCharge = 5110001,
+			EnergyDrain = 5111004,
 			StunMastery = 5110000,
 			Transformation = 5111005
 		};

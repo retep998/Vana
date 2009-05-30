@@ -696,7 +696,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 		player->getActiveBuffs()->increaseEnergyChargeLevel(damagedtargets);
 
 	switch (skillid) {
-		case Jobs::ChiefBandit::MesoExplosion: { // Meso Explosion
+		case Jobs::ChiefBandit::MesoExplosion: {
 			uint8_t items = packet.get<int8_t>();
 			int32_t map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
@@ -711,16 +711,24 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
+		case Jobs::Marauder::EnergyDrain: {
+			int32_t hpRecover = totaldmg * Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x / 100;
+			if (hpRecover > player->getMHp())
+				player->setHp(player->getMHp());
+			else
+				player->modifyHp((int16_t) hpRecover);
+			break;
+		}
 		case Jobs::Crusader::SwordPanic: // Crusader finishers
 		case Jobs::Crusader::SwordComa:
 		case Jobs::Crusader::AxePanic:
 		case Jobs::Crusader::AxeComa:
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
-		case Jobs::Crusader::Shout: // Shout
-		case Jobs::Gm::SuperDragonRoar: // Super Dragon Roar
+		case Jobs::Crusader::Shout:
+		case Jobs::Gm::SuperDragonRoar:
 			break;
-		case Jobs::DragonKnight::DragonRoar: { // Dragon Roar
+		case Jobs::DragonKnight::DragonRoar: {
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
 			int16_t x_value = Skills::skills[skillid][roarlv].x;
 			uint16_t reduction = (player->getMHp() / 100) * x_value;
@@ -733,7 +741,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 			Buffs::Instance()->addBuff(player, Jobs::DragonKnight::DragonRoar, roarlv, 0);
 			break;
 		}
-		case Jobs::DragonKnight::Sacrifice: { // Sacrifice
+		case Jobs::DragonKnight::Sacrifice: {
 			int16_t hp_damage_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
 			uint16_t hp_damage = (uint16_t) totaldmg * hp_damage_x / 100;
 			if ((player->getHp() - hp_damage) < 1)
@@ -742,7 +750,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 				player->damageHp(hp_damage);
 			break;
 		}
-		case Jobs::WhiteKnight::ChargeBlow: { // Charge Blow
+		case Jobs::WhiteKnight::ChargeBlow: {
 			int8_t acb_level = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
 			int16_t acb_x = 0;
 			if (acb_level > 0)
