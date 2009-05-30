@@ -122,12 +122,19 @@ void BuffsPacket::endDebuff(Player *player, ActiveBuff &pskill) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
+void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill, bool assbackward) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CANCEL_SKILL);
-	packet.add<int64_t>(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.add<int8_t>(pskill.types[i]);
+	if (assbackward) {
+		for (int8_t i = 0; i < 8; i++)
+			packet.add<int8_t>(pskill.types[i]);
+		packet.add<int64_t>(0);
+	}
+	else {
+		packet.add<int64_t>(0);
+		for (int8_t i = 0; i < 8; i++)
+			packet.add<int8_t>(pskill.types[i]);
+	}
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide())
@@ -135,9 +142,16 @@ void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_CANCEL_OTHERS_BUFF);
 	packet.add<int32_t>(player->getId());
-	packet.add<int64_t>(0);
-	for (int8_t i = 0; i < 8; i++)
-		packet.add<int8_t>(pskill.types[i]);
+	if (assbackward) {
+		for (int8_t i = 0; i < 8; i++)
+			packet.add<int8_t>(pskill.types[i]);
+		packet.add<int64_t>(0);
+	}
+	else {
+		packet.add<int64_t>(0);
+		for (int8_t i = 0; i < 8; i++)
+			packet.add<int8_t>(pskill.types[i]);
+	}
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -145,15 +159,16 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	PacketCreator packet;
 	int16_t castedtime = static_cast<int16_t>(time);
 	packet.add<int16_t>(SEND_USE_SKILL);
-	packet.add<int64_t>(0);
 	for (int8_t i = 0; i < 8; i++)
 		packet.add<int8_t>(pskill.types[i]);
+	packet.add<int64_t>(0);
 	packet.add<int16_t>(0);
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
 		packet.add<int16_t>(0);
 		packet.add<int32_t>(skillid);
 		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
+		packet.add<int8_t>(0);
 		packet.add<int16_t>(castedtime);
 	}
 	packet.add<int16_t>(0);
@@ -164,15 +179,16 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
-	packet.add<int64_t>(0);
 	for (int8_t i = 0; i < 8; i++)
 		packet.add<int8_t>(pskill.types[i]);
+	packet.add<int64_t>(0);
 	packet.add<int16_t>(0);
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
 		packet.add<int16_t>(0);
 		packet.add<int32_t>(skillid);
 		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
+		packet.add<int8_t>(0);
 		packet.add<int16_t>(castedtime);
 	}
 	packet.add<int16_t>(0);
@@ -184,14 +200,15 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t time, ActiveBuff &psk
 	int16_t castedtime = static_cast<int16_t>(time);
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILL);
-	packet.add<int64_t>(0);
 	for (int8_t i = 0; i < 8; i++)
 		packet.add<int8_t>(pskill.types[i]);
+	packet.add<int64_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(castedvalue);
-	packet.add<int32_t>(5121009);
+	packet.add<int32_t>(Jobs::Buccaneer::SpeedInfusion);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
+	packet.add<int16_t>(0);
 	packet.add<int16_t>(castedtime);
 	packet.add<int16_t>(addedinfo);
 	player->getSession()->send(packet);
@@ -200,14 +217,15 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t time, ActiveBuff &psk
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
-	packet.add<int64_t>(0);
 	for (int8_t i = 0; i < 8; i++)
 		packet.add<int8_t>(pskill.types[i]);
+	packet.add<int64_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(castedvalue);
-	packet.add<int32_t>(5121009);
+	packet.add<int32_t>(Jobs::Buccaneer::SpeedInfusion);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
+	packet.add<int16_t>(0);
 	packet.add<int16_t>(castedtime);
 	packet.add<int16_t>(addedinfo);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -217,9 +235,9 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILL);
-	packet.add<int64_t>(0);
 	for (int8_t i = 0; i < 8; i++)
 		packet.add<int8_t>(pskill.types[i]);
+	packet.add<int64_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(mountid);
 	packet.add<int32_t>(skillid);
@@ -232,9 +250,9 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
-	packet.add<int64_t>(0);
 	for (int8_t i = 0; i < 8; i++)
 		packet.add<int8_t>(pskill.types[i]);
+	packet.add<int64_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(mountid);
 	packet.add<int32_t>(skillid);
