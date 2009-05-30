@@ -98,6 +98,7 @@ enum ByteTypes {
 
 namespace Stats {
 	const uint8_t PlayerLevels = 200;
+	const uint8_t CygnusLevels = 120;
 	const uint8_t PetLevels = 30;
 	const int16_t MaxMaxHp = 30000;
 	const int16_t MinMaxHp = 1;
@@ -107,14 +108,17 @@ namespace Stats {
 	const int16_t MinFame = -30000;
 	const int16_t MaxCloseness = 30000;
 	const int16_t ApPerLevel = 5;
+	const int16_t ApPerCygnusLevel = 6;
+	const uint8_t CygnusApCutoff = 70;
 	const int16_t SpPerLevel = 3;
 	const int8_t MaxFullness = 100;
 	const int8_t MinFullness = 0;
 	const int8_t PetFeedFullness = 30;
+
 	namespace BaseHp {
 		const int16_t Variation = 4; // This is the range of HP that the server will give
 
-		const int16_t Beginner = 12;
+		const int16_t Beginner = 12; // These are base HP values rewarded on level up
 		const int16_t Warrior = 24;
 		const int16_t Magician = 10;
 		const int16_t Bowman = 20;
@@ -122,7 +126,7 @@ namespace Stats {
 		const int16_t Pirate = 22;
 		const int16_t Gm = 150;
 
-		const int16_t BeginnerAp = 8;
+		const int16_t BeginnerAp = 8; // These are base HP values rewarded on AP distribution
 		const int16_t WarriorAp = 20;
 		const int16_t MagicianAp = 8;
 		const int16_t BowmanAp = 16;
@@ -133,7 +137,7 @@ namespace Stats {
 	namespace BaseMp {
 		const int16_t Variation = 2; // This is the range of MP that the server will give
 
-		const int16_t Beginner = 10;
+		const int16_t Beginner = 10; // These are base MP values rewarded on level up
 		const int16_t Warrior = 4;
 		const int16_t Magician = 6;
 		const int16_t Bowman = 14;
@@ -141,7 +145,7 @@ namespace Stats {
 		const int16_t Pirate = 18;
 		const int16_t Gm = 150;
 
-		const int16_t BeginnerAp = 6;
+		const int16_t BeginnerAp = 6; // These are base MP values rewarded on AP distribution
 		const int16_t WarriorAp = 2;
 		const int16_t MagicianAp = 18;
 		const int16_t BowmanAp = 10;
@@ -307,7 +311,13 @@ namespace Jobs {
 			Magician = 2,
 			Bowman = 3,
 			Thief = 4,
-			Pirate = 5
+			Pirate = 5,
+			Noblesse = 10,
+			SoulWarrior = 11,
+			FlameWizard = 12,
+			WindBreaker = 13,
+			NightWalker = 14,
+			Striker = 15
 		};
 	}
 	namespace JobIds {
@@ -355,7 +365,23 @@ namespace Jobs {
 			Outlaw = 521,
 			Corsair = 522,
 			Gm = 900,
-			SuperGm = 910
+			SuperGm = 910,
+			Noblesse = 1000,
+			SoulWarrior1 = 1100,
+			SoulWarrior2 = 1110,
+			SoulWarrior3 = 1111,
+			FlameWizard1 = 1200,
+			FlameWizard2 = 1210,
+			FlameWizard3 = 1211,
+			WindBreaker1 = 1300,
+			WindBreaker2 = 1310,
+			WindBreaker3 = 1311,
+			NightWalker1 = 1400,
+			NightWalker2 = 1410,
+			NightWalker3 = 1411,
+			Striker1 = 1500,
+			Striker2 = 1510,
+			Striker3 = 1511
 		};
 	}
 	namespace Beginner {
@@ -480,7 +506,7 @@ namespace Jobs {
 			MagicArmor = 2001003,
 			MagicGuard = 2001002
 		};
-	};
+	}
 	namespace FPWizard {
 		enum Skills {
 			Meditation = 2101001,
@@ -777,6 +803,99 @@ namespace Jobs {
 			SuperDragonRoar = 9101006,
 			Teleport = 9101007,
 			HyperBody = 9101008
+		};
+	}
+	namespace Noblesse {
+		enum Skills {
+			BlessingOfTheSpirit = 10000012,
+			EchoOfHero = 10001005,
+			MonsterRider = 10001004,
+			NimbleFeet = 10001002,
+			Recovery = 10001001
+		};
+	}
+	namespace SoulWarrior {
+		enum Skills {
+			AdvancedComboAttack = 11110005,
+			ComboAttack = 11111001,
+			FinalAttackSword = 11101002,
+			ImprovedMaxHpIncrease = 11000000,
+			IronBody = 11001001,
+			Rage = 11101003,
+			Soul = 11001004,
+			SoulCharge = 11111007,
+			SwordBooster = 11101001,
+			SwordComa = 11111003,
+			SwordMastery = 11100000,
+			SwordPanic = 11111002
+		};
+	}
+	namespace FlameWizard {
+		enum Skills {
+			ElementalReset = 12101005,
+			ElementAmplification = 12110001,
+			FireCurtain = 12111005,
+			Flame = 12001004,
+			FlameStrike = 12111006,
+			Ifrit = 12111004,
+			ImprovedMaxMpIncrease = 12000000,
+			MagicArmor = 12001002,
+			MagicGuard = 12001001,
+			Meditation = 12101000,
+			Seal = 12111002,
+			Slow = 12101001,
+			SpellBooster = 12101004
+		};
+	}
+	namespace WindBreaker {
+		enum Skills {
+			Albatross = 13111005,
+			BowBooster = 13101001,
+			BowMastery = 13100000,
+			CriticalShot = 13000000,
+			FinalAttackBow = 13101002,
+			Focus = 13001002,
+			Hurricane = 13111002,
+			MagnumShot = 13111006,
+			Puppet = 13111004,
+			SoulArrow = 13101003,
+			Storm = 13001004,
+			WindShot = 13111007,
+			WindWalk = 13101006
+		};
+	}
+	namespace NightWalker {
+		enum Skills {
+			Alchemist = 14110003,
+			Disorder = 14001002,
+			DarkSight = 14001003,
+			Darkness = 14001005,
+			ClawBooster = 14101002,
+			ClawMastery = 14100000,
+			CriticalThrow = 14100001,
+			Haste = 14101003,
+			PoisonSling = 14111006,
+			ShadowPartner = 14111000,
+			ShadowWeb = 14111001,
+			SuddenAttack = 14100005,
+			Vampire = 14101006,
+			VenomousStar = 14110004
+		};
+	}
+	namespace Striker {
+		enum Skills {
+			CorkscrewBlow = 15101003,
+			Dash = 15001003,
+			EnergyCharge = 15100004,
+			EnergyDrain = 15111001,
+			ImproveMaxHp = 15100000,
+			KnucklerBooster = 15101002,
+			KnucklerMastery = 15100001,
+			Lightning = 15001004,
+			LightningCharge = 15101006,
+			Spark = 15111006,
+			SpeedInfusion = 15111005,
+			Transformation = 15111002
 		};
 	}
 }

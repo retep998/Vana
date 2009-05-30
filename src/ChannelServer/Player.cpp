@@ -693,13 +693,13 @@ void Player::setBuddyListSize(uint8_t size) {
 }
 
 void Player::loseExp() {
-	if (getJob() != Jobs::JobIds::Beginner && getLevel() < Stats::PlayerLevels) {
+	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < Levels::getMaxLevel(getJob())) {
 		Map *loc = Maps::getMap(getMap());
 		int8_t exploss = 10;
 		if ((loc->getInfo()->fieldLimit & FieldLimitBits::RegularExpLoss) != 0 || loc->getInfo()->town)
 			exploss = 1;
 		else {
-			switch (GameLogicUtilities::getJobTrack(getJob())) {
+			switch (GameLogicUtilities::getJobTrack(getJob(), true)) {
 				case Jobs::JobTracks::Magician:
 					exploss = 7;
 					break;

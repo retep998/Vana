@@ -196,6 +196,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	int32_t skillid = pack.get<int32_t>();
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
+		case Jobs::WindBreaker::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
 		case Jobs::Corsair::RapidFire:
 			pack.skipBytes(4);

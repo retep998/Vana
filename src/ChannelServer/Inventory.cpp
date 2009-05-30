@@ -474,8 +474,9 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
 	// Alchemist
 	int16_t alchemist = 100;
-	if (player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist) > 0)
-		alchemist = Skills::skills[Jobs::Hermit::Alchemist][player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist)].x;
+	int32_t skillid = player->getSkills()->getAlchemist();
+	if (player->getSkills()->getSkillLevel(skillid) > 0)
+		alchemist = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
 	if (item.cons.hp > 0)
 		player->modifyHp(item.cons.hp * alchemist / 100);
 	if (item.cons.mp > 0)

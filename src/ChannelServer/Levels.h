@@ -37,6 +37,7 @@ namespace Levels {
 	int16_t getX(Player *player, int32_t skillid);
 	int16_t getY(Player *player, int32_t skillid);
 	uint32_t getExp(uint8_t level);
+	uint8_t getMaxLevel(int16_t jobid);
 };
 
 #endif

@@ -31,41 +31,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
-	if (player->getLevel() >= Stats::PlayerLevels) // Do not give EXP to characters of max level or over
+	int16_t fulljob = player->getJob();
+	if (player->getLevel() >= getMaxLevel(fulljob)) // Do not give EXP to characters of max level or over
 		return;
 	uint32_t cexp = player->getExp() + exp;
 	if (exp != 0)
 		LevelsPacket::showEXP(player, exp, white, inChat);
 	uint8_t level = player->getLevel();
 	if (cexp >= getExp(level)) {
+		bool cygnus = GameLogicUtilities::isCygnus(fulljob);
 		uint8_t levelsgained = 0;
 		uint8_t levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
 		int16_t apgain = 0;
 		int16_t spgain = 0;
 		int16_t hpgain = 0;
 		int16_t mpgain = 0;
-		int16_t job = GameLogicUtilities::getJobTrack(player->getJob());
+		int16_t job = GameLogicUtilities::getJobTrack(fulljob, true);
 		int16_t intt = player->getInt() / 10;
 		int16_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
 		while (cexp >= getExp(level) && levelsgained < levelsmax) {
 			cexp -= getExp(player->getLevel());
 			level++;
 			levelsgained++;
-			apgain += Stats::ApPerLevel;
+			if (cygnus && level <= Stats::CygnusApCutoff) {
+				apgain += Stats::ApPerCygnusLevel;
+			}
+			else {
+				apgain += Stats::ApPerLevel;
+			}
 			switch (job) {
 				case Jobs::JobTracks::Beginner:
 					hpgain += levelHp(Stats::BaseHp::Beginner);
 					mpgain += levelMp(Stats::BaseMp::Beginner, intt);
 					break;
 				case Jobs::JobTracks::Warrior:
-					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
-						x = getX(player, Jobs::Swordsman::ImprovedMaxHpIncrease);
+					if (levelsgained == 1 && player->getSkills()->hasHpIncrease())
+						x = getX(player, player->getSkills()->getHpIncrease());
 					hpgain += levelHp(Stats::BaseHp::Warrior, x);
 					mpgain += levelMp(Stats::BaseMp::Warrior, intt);
 					break;
 				case Jobs::JobTracks::Magician:
-					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
-						x = getX(player, Jobs::Magician::ImprovedMaxMpIncrease);
+					if (levelsgained == 1 && player->getSkills()->hasMpIncrease())
+						x = getX(player, player->getSkills()->getMpIncrease());
 					hpgain += levelHp(Stats::BaseHp::Magician);
 					mpgain += levelMp(Stats::BaseMp::Magician, 2 * x + intt);
 					break;
@@ -78,8 +85,8 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 					mpgain += levelMp(Stats::BaseMp::Thief, intt);
 					break;
 				case Jobs::JobTracks::Pirate:
-					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
-						x = getX(player, Jobs::Infighter::ImproveMaxHp);
+					if (levelsgained == 1 && player->getSkills()->hasHpIncrease())
+						x = getX(player, player->getSkills()->getHpIncrease());
 					hpgain += levelHp(Stats::BaseHp::Pirate, x);
 					mpgain += levelMp(Stats::BaseMp::Pirate, intt);
 					break;
@@ -87,9 +94,9 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 					hpgain += Stats::BaseHp::Gm;
 					mpgain += Stats::BaseMp::Gm;
 			}
-			if (player->getJob() != Jobs::JobIds::Beginner)
+			if (!GameLogicUtilities::isBeginnerJob(fulljob))
 				spgain += Stats::SpPerLevel;
-			if (level >= Stats::PlayerLevels) { // Do not let people level past the level cap
+			if (level >= getMaxLevel(fulljob)) { // Do not let people level past the level cap
 				cexp = 0;
 				break;
 			}
@@ -118,12 +125,12 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 			player->setHp(player->getMHp());
 			player->setMp(player->getMMp());
 			player->setLevelDate();
-			if (player->getLevel() == Stats::PlayerLevels && !player->isGm()) {
+			if (player->getLevel() == getMaxLevel(fulljob) && !player->isGm()) {
 				string message;
 				message = "[Congrats] ";
 				message += player->getName();
 				message += " has reached Level ";
-				message += boost::lexical_cast<string>(Stats::PlayerLevels);
+				message += boost::lexical_cast<string>(getMaxLevel(fulljob));
 				message += "! Congratulate ";
 				message += player->getName();
 				message += " on such an amazing achievement!";
@@ -208,14 +215,14 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::BeginnerAp);
 					break;
 				case Jobs::JobTracks::Warrior:
-					if (player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
-						y = getY(player, Jobs::Swordsman::ImprovedMaxHpIncrease);
+					if (player->getSkills()->hasHpIncrease())
+						y = getY(player, player->getSkills()->getHpIncrease());
 					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::WarriorAp, y);
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::WarriorAp);
 					break;
 				case Jobs::JobTracks::Magician:
-					if (player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
-						y = getY(player, Jobs::Magician::ImprovedMaxMpIncrease);
+					if (player->getSkills()->hasMpIncrease())
+						y = getY(player, player->getSkills()->getMpIncrease());
 					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::MagicianAp);
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::MagicianAp, 2 * y);
 					break;
@@ -228,8 +235,8 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::ThiefAp);
 					break;
 				case Jobs::JobTracks::Pirate:
-					if (player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
-						y = getY(player, Jobs::Infighter::ImproveMaxHp);
+					if (player->getSkills()->hasHpIncrease())
+						y = getY(player, player->getSkills()->getHpIncrease());
 					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::PirateAp, y);
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::PirateAp);
 					break;
@@ -298,4 +305,8 @@ int16_t Levels::levelMp(int16_t val, int16_t bonus) {
 
 uint32_t Levels::getExp(uint8_t level) {
 	return Levels::exps[level - 1];
+}
+
+uint8_t Levels::getMaxLevel(int16_t jobid) {
+	return (GameLogicUtilities::isCygnus(jobid) ? Stats::CygnusLevels : Stats::PlayerLevels);
 }
