@@ -375,6 +375,18 @@ void MobsPacket::healMob(Mob *mob, int32_t amount) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
+void MobsPacket::hurtMob(Mob *mob, int32_t amount) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_DAMAGE_MOB);
+	packet.add<int32_t>(mob->getId());
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(amount);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(0);
+	Maps::getMap(mob->getMapId())->sendPacket(packet);
+}
+
 void MobsPacket::applyStatus(Mob *mob, const StatusInfo &info, int16_t delay) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_APPLY_MOB_STATUS);

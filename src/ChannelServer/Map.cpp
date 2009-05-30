@@ -288,10 +288,8 @@ int32_t Map::countMobs(int32_t mobid) {
 void Map::healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb) {
 	unordered_map<int32_t, Mob *> mobmap = this->mobs;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
-		if (iter->second != 0) {
-			if (GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
-				iter->second->skillHeal(hp, mp);
-			}
+		if (iter->second != 0 && GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
+			iter->second->skillHeal(hp, mp);
 		}
 	}
 }
@@ -299,10 +297,17 @@ void Map::healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, con
 void Map::statusMobs(const vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb) {
 	unordered_map<int32_t, Mob *> mobmap = this->mobs;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
-		if (iter->second != 0) {
-			if (GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
-				iter->second->addStatus(0, statuses);
-			}
+		if (iter->second != 0 && GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
+			iter->second->addStatus(0, statuses);
+		}
+	}
+}
+
+void Map::checkShadowWeb() {
+	unordered_map<int32_t, Mob *> mobmap = this->mobs;
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
+		if (iter->second != 0 && iter->second->hasStatus(StatusEffects::Mob::ShadowWeb)) {
+			iter->second->applyWebDamage();
 		}
 	}
 }
@@ -342,6 +347,8 @@ void Map::runTimer() {
 	checkReactorSpawn(time);
 	checkMobSpawn(time);
 	clearDrops(time);
+	if (TimeUtilities::getSecond() % 3 == 0)
+		checkShadowWeb();
 }
 
 void Map::setMapTimer(int32_t t) {

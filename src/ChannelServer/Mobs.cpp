@@ -83,6 +83,8 @@ mapid(mapid),
 spawnid(spawnid),
 mobid(mobid),
 status(0x8000000),
+webplayerid(0),
+weblevel(0),
 owner(0),
 counter(0),
 hasimmunity(false),
@@ -141,10 +143,26 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	}
 }
 
+void Mob::applyWebDamage() {
+	int32_t webdamage = getMHp() / (50 - weblevel);
+	if (webdamage > hp)
+		webdamage = hp - 1; // Keep HP from hitting 0
+
+	if (webdamage != 0) {
+		damages[webplayerid] += webdamage;
+		hp -= webdamage;
+		MobsPacket::hurtMob(this, webdamage);
+	}
+}
+
 void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 	for (size_t i = 0; i < statusinfo.size(); i++) {
 		if (statusinfo[i].status == StatusEffects::Mob::Poison && statuses.find(StatusEffects::Mob::Poison) != statuses.end()) {
 			continue; // Already poisoned, so do not poison again
+		}
+		if (statusinfo[i].status == StatusEffects::Mob::ShadowWeb) {
+			webplayerid = playerid;
+			weblevel = static_cast<uint8_t>(statusinfo[i].val);
 		}
 		statuses[statusinfo[i].status] = statusinfo[i];
 		MobsPacket::applyStatus(this, statusinfo[i], 300);
@@ -194,6 +212,10 @@ bool Mob::hasStatus(int32_t status) {
 void Mob::removeStatus(int32_t status) {
 	if (status == StatusEffects::Mob::WeaponImmunity || status == StatusEffects::Mob::MagicImmunity)
 		setImmunity(false);
+	if (status == StatusEffects::Mob::ShadowWeb) {
+		weblevel = 0;
+		webplayerid = 0;
+	}
 	this->status -= status;
 	statuses.erase(status);
 	if (status == StatusEffects::Mob::Poison) // Stop poison damage timer
@@ -1007,7 +1029,7 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 				break;
 			case Jobs::Hermit::ShadowWeb:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::ShadowWeb, 0x100, skillid, Skills::skills[skillid][level].time));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::ShadowWeb, level, skillid, Skills::skills[skillid][level].time));
 				}
 				break;
 			case Jobs::ILArchMage::IceDemon:

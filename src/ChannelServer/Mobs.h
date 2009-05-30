@@ -68,6 +68,7 @@ class Mob : public MovableLife {
 public:
 	Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
+	void applyWebDamage();
 	void setMp(int32_t mp) { this->mp = mp; }
 	void addStatus(int32_t playerid, vector<StatusInfo> statusinfo);
 	void removeStatus(int32_t status);
@@ -114,6 +115,7 @@ public:
 
 	void die(bool showpacket = false); // Removes mob, no EXP, no summoning
 private:
+	uint8_t weblevel;
 	int16_t originfh;
 	int32_t id;
 	int32_t mapid;
@@ -123,6 +125,7 @@ private:
 	int32_t mp;
 	int32_t status;
 	int32_t counter;
+	int32_t webplayerid;
 	Mob *owner;
 	const MobInfo info;
 	bool hasimmunity;
