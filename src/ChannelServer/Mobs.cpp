@@ -69,7 +69,7 @@ mobskill(0),
 level(0),
 time(time)
 {
-	if (val == StatusEffects::Mob::Freeze) {
+	if (val == StatusEffects::Mob::Freeze && skillid != Jobs::FPArchMage::Paralyze) {
 		this->time += Randomizer::Instance()->randInt(time);
 	}
 }
@@ -1031,6 +1031,10 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::ShadowWeb, level, skillid, Skills::skills[skillid][level].time));
 				}
+				break;
+			case Jobs::FPArchMage::Paralyze:
+				if (mob->canPoison())
+					statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, Skills::skills[skillid][level].time));
 				break;
 			case Jobs::ILArchMage::IceDemon:
 			case Jobs::FPArchMage::FireDemon: {
