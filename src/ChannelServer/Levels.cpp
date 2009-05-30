@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Levels.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "LevelsPacket.h"
 #include "PacketReader.h"
 #include "Player.h"
@@ -37,46 +38,46 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 		LevelsPacket::showEXP(player, exp, white, inChat);
 	uint8_t level = player->getLevel();
 	if (cexp >= getExp(level)) {
+		uint8_t levelsgained = 0;
+		uint8_t levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
 		int16_t apgain = 0;
 		int16_t spgain = 0;
 		int16_t hpgain = 0;
 		int16_t mpgain = 0;
-		uint8_t levelsgained = 0;
-		uint8_t levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
-		int16_t job = player->getJob() / 100;
+		int16_t job = GameLogicUtilities::getJobTrack(player->getJob());
 		int16_t intt = player->getInt() / 10;
 		int16_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
 		while (cexp >= getExp(level) && levelsgained < levelsmax) {
 			cexp -= getExp(player->getLevel());
 			level++;
 			levelsgained++;
-			apgain += 5;
+			apgain += Stats::ApPerLevel;
 			switch (job) {
-				case 0: // Beginner
+				case Jobs::JobTracks::Beginner:
 					hpgain += levelHp(Stats::BaseHp::Beginner);
 					mpgain += levelMp(Stats::BaseMp::Beginner, intt);
 					break;
-				case 1: // Warrior
+				case Jobs::JobTracks::Warrior:
 					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
 						x = getX(player, Jobs::Swordsman::ImprovedMaxHpIncrease);
 					hpgain += levelHp(Stats::BaseHp::Warrior, x);
 					mpgain += levelMp(Stats::BaseMp::Warrior, intt);
 					break;
-				case 2: // Magician
+				case Jobs::JobTracks::Magician:
 					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
 						x = getX(player, Jobs::Magician::ImprovedMaxMpIncrease);
 					hpgain += levelHp(Stats::BaseHp::Magician);
 					mpgain += levelMp(Stats::BaseMp::Magician, 2 * x + intt);
 					break;
-				case 3: // Bowman
+				case Jobs::JobTracks::Bowman:
 					hpgain += levelHp(Stats::BaseHp::Bowman);
 					mpgain += levelMp(Stats::BaseMp::Bowman, intt);
 					break;
-				case 4: // Thief
+				case Jobs::JobTracks::Thief:
 					hpgain += levelHp(Stats::BaseHp::Thief);
 					mpgain += levelMp(Stats::BaseMp::Thief, intt);
 					break;
-				case 5: // Pirate
+				case Jobs::JobTracks::Pirate:
 					if (levelsgained == 1 && player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
 						x = getX(player, Jobs::Infighter::ImproveMaxHp);
 					hpgain += levelHp(Stats::BaseHp::Pirate, x);
@@ -86,9 +87,9 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 					hpgain += Stats::BaseHp::Gm;
 					mpgain += Stats::BaseMp::Gm;
 			}
-			if (player->getJob() > 0)
-				spgain += 3;
-			if (level >= Stats::PlayerLevels) { // Do not let people level past the level 200 cap
+			if (player->getJob() != Jobs::JobIds::Beginner)
+				spgain += Stats::SpPerLevel;
+			if (level >= Stats::PlayerLevels) { // Do not let people level past the level cap
 				cexp = 0;
 				break;
 			}
@@ -197,36 +198,36 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 				// Hacking
 				return;
 			}
-			int16_t job = player->getJob() / 100;
+			int16_t job = GameLogicUtilities::getJobTrack(player->getJob());
 			int16_t hpgain = 0;
 			int16_t mpgain = 0;
 			int16_t y = 0;
 			switch (job) {
-				case 0: // Beginner
+				case Jobs::JobTracks::Beginner: // Beginner
 					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::BeginnerAp);
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::BeginnerAp);
 					break;
-				case 1: // Warrior
+				case Jobs::JobTracks::Warrior:
 					if (player->getSkills()->getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
 						y = getY(player, Jobs::Swordsman::ImprovedMaxHpIncrease);
 					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::WarriorAp, y);
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::WarriorAp);
 					break;
-				case 2: // Magician
+				case Jobs::JobTracks::Magician:
 					if (player->getSkills()->getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
 						y = getY(player, Jobs::Magician::ImprovedMaxMpIncrease);
 					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::MagicianAp);
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::MagicianAp, 2 * y);
 					break;
-				case 3: // Bowman
+				case Jobs::JobTracks::Bowman:
 					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::BowmanAp);
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::BowmanAp);
 					break;
-				case 4: // Thief
+				case Jobs::JobTracks::Thief:
 					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::ThiefAp);
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::ThiefAp);
 					break;
-				case 5: // Pirate
+				case Jobs::JobTracks::Pirate:
 					if (player->getSkills()->getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
 						y = getY(player, Jobs::Infighter::ImproveMaxHp);
 					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::PirateAp, y);

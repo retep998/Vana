@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "Fame.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Instance.h"
 #include "Inventory.h"
 #include "KeyMaps.h"
@@ -692,17 +693,17 @@ void Player::setBuddyListSize(uint8_t size) {
 }
 
 void Player::loseExp() {
-	if (getJob() != 0 && getLevel() < Stats::PlayerLevels) {
+	if (getJob() != Jobs::JobIds::Beginner && getLevel() < Stats::PlayerLevels) {
 		Map *loc = Maps::getMap(getMap());
 		int8_t exploss = 10;
 		if ((loc->getInfo()->fieldLimit & FieldLimitBits::RegularExpLoss) != 0 || loc->getInfo()->town)
 			exploss = 1;
 		else {
-			switch (getJob() / 100) {
-				case 2: // Magicians
+			switch (GameLogicUtilities::getJobTrack(getJob())) {
+				case Jobs::JobTracks::Magician:
 					exploss = 7;
 					break;
-				case 4: // Thieves
+				case Jobs::JobTracks::Thief:
 					exploss = 5;
 					break;
 			}
