@@ -106,6 +106,8 @@ namespace Stats {
 	const int16_t MaxFame = 30000;
 	const int16_t MinFame = -30000;
 	const int16_t MaxCloseness = 30000;
+	const int16_t ApPerLevel = 5;
+	const int16_t SpPerLevel = 3;
 	const int8_t MaxFullness = 100;
 	const int8_t MinFullness = 0;
 	const int8_t PetFeedFullness = 30;
@@ -298,6 +300,16 @@ namespace EquipSlots {
 
 // Skills and jobs so there are fewer magic numbers
 namespace Jobs {
+	namespace JobTracks {
+		enum Tracks {
+			Beginner = 0,
+			Warrior = 1,
+			Magician = 2,
+			Bowman = 3,
+			Thief = 4,
+			Pirate = 5
+		};
+	}
 	namespace JobIds {
 		enum Jobs {
 			Beginner = 0,
@@ -462,7 +474,6 @@ namespace Jobs {
 			PowerStance = 1321002
 		};
 	}
-
 	namespace Magician {
 		enum Skills {
 			ImprovedMaxMpIncrease = 2000001,
@@ -662,7 +673,6 @@ namespace Jobs {
 			Steal = 4201004
 		};
 	}
-
 	namespace ChiefBandit {
 		enum Skills {
 			Assaulter = 4211002,
