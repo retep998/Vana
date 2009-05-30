@@ -883,6 +883,13 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 					SkillsPacket::showSkillEffect(player, eater->id);
 				}
 			}
+			if (skillid == Jobs::Ranger::MortalBlow || skillid == Jobs::Sniper::MortalBlow) {
+				SkillLevelInfo sk = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)];
+				int32_t hp_p = mob->getMHp() * sk.x / 100; // Percentage of HP required for Mortal Blow activation
+				if ((mob->getHp() < hp_p) && (Randomizer::Instance()->randShort(99) < sk.y)) {
+					damage = mob->getHp();
+				}
+			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
 			if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
