@@ -293,10 +293,8 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 				return;
 			}
 			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id);
-			if (GameLogicUtilities::isStar(item->id))
-				maxslot += player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
-			else
-				maxslot += player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10;
+			if (GameLogicUtilities::isRechargeable(item->id))
+				maxslot += player->getSkills()->getRechareableBonus();
 
 			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->id, maxslot - item->amount);
 			if ((modifiedmesos < 0) && (player->getInventory()->getMesos() > -modifiedmesos)) {
@@ -382,12 +380,8 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 
 	int16_t max = ItemDataProvider::Instance()->getMaxSlot(itemid);
 	int16_t thisamount = 0;
-	if (GameLogicUtilities::isStar(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
-		amount -= 1;
-	}
-	else if (GameLogicUtilities::isBullet(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10;
+	if (GameLogicUtilities::isRechargeable(itemid)) {
+		thisamount = max + player->getSkills()->getRechargeableBonus();
 		amount -= 1;
 	}
 	else if (GameLogicUtilities::isEquip(itemid) || GameLogicUtilities::isPet(itemid)) {
