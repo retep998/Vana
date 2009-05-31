@@ -195,7 +195,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useSpeedInfusion(Player *player, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
+void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
 	int32_t castedvalue = static_cast<int32_t>(pskill.vals[0]);
 	int16_t castedtime = static_cast<int16_t>(time);
 	PacketCreator packet;
@@ -205,7 +205,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t time, ActiveBuff &psk
 	packet.add<int64_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(castedvalue);
-	packet.add<int32_t>(Jobs::Buccaneer::SpeedInfusion);
+	packet.add<int32_t>(skillid);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
@@ -222,7 +222,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t time, ActiveBuff &psk
 	packet.add<int64_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(castedvalue);
-	packet.add<int32_t>(Jobs::Buccaneer::SpeedInfusion);
+	packet.add<int32_t>(skillid);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);

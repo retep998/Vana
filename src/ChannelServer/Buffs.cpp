@@ -469,20 +469,24 @@ Buffs::Buffs() {
 	player.buff = buff;
 	player.hasmapval = true;
 	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+	skillsinfo[Jobs::Striker::Dash].player.push_back(player);
 	buff.type = 0x20;
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
+	skillsinfo[Jobs::Striker::Dash].map.push_back(map);
 	buff.type = 0x20;
 	buff.byte = Byte1;
 	buff.value = SkillY;
 	player.buff = buff;
 	player.hasmapval = true;
 	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+	skillsinfo[Jobs::Striker::Dash].player.push_back(player);
 	buff.type = 0x40;
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
+	skillsinfo[Jobs::Striker::Dash].map.push_back(map);
 
 	// Haste
 	buff.type = 0x80;
@@ -1127,7 +1131,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 				break;
 			case Jobs::Buccaneer::SpeedInfusion:
 			case Jobs::Striker::SpeedInfusion:
-				BuffsPacket::useSpeedInfusion(player, time, playerskill, mapskill, addedinfo);
+				BuffsPacket::useSpeedInfusion(player, skillid, time, playerskill, mapskill, addedinfo);
 				break;
 			default:
 				BuffsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
@@ -1224,8 +1228,11 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 	bool assbackward = false;
 	switch (skill) {
 		case Jobs::Pirate::Dash:
+		case Jobs::Striker::Dash:
 		case Jobs::Marauder::EnergyCharge:
+		case Jobs::Striker::EnergyCharge:
 		case Jobs::Buccaneer::SpeedInfusion:
+		case Jobs::Striker::SpeedInfusion:
 			assbackward = true;
 			break;
 	}
