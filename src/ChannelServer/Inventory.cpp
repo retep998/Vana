@@ -294,7 +294,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 			}
 			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id);
 			if (GameLogicUtilities::isRechargeable(item->id))
-				maxslot += player->getSkills()->getRechareableBonus();
+				maxslot += player->getSkills()->getRechargeableBonus();
 
 			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->id, maxslot - item->amount);
 			if ((modifiedmesos < 0) && (player->getInventory()->getMesos() > -modifiedmesos)) {
