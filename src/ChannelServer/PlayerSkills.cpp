@@ -245,6 +245,27 @@ int32_t PlayerSkills::getMpIncrease() {
 	return skillid;
 }
 
+int16_t PlayerSkills::getRechargeableBonus() {
+	int16_t bonus = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Assassin:
+		case Jobs::JobIds::Hermit:
+		case Jobs::JobIds::NightLord:
+			bonus = getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
+			break;
+		case Jobs::JobIds::Gunslinger:
+		case Jobs::JobIds::Outlaw:
+		case Jobs::JobIds::Corsair:
+			bonus = getSkillLevel(Jobs::Gunslinger::GunMastery) * 10;
+			break;
+		case Jobs::JobIds::NightWalker2:
+		case Jobs::JobIds::NightWalker3:
+			bonus = getSkillLevel(Jobs::NightWalker::ClawMastery) * 10;
+			break;
+	}
+	return bonus;
+}
+
 void PlayerSkills::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << player->getId();

@@ -52,6 +52,7 @@ public:
 	int32_t getAlchemist();
 	int32_t getHpIncrease();
 	int32_t getMpIncrease();
+	int16_t getRechargeableBonus();
 
 	void addCooldown(int32_t skillid, int16_t time);
 	void removeCooldown(int32_t skillid);
