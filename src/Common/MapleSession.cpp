@@ -66,7 +66,7 @@ void MapleSession::handle_stop() {
 	boost::system::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
-		std::cout << "FAILURE TO CLOSE SESSION: " << ec.message() << std::endl;
+		std::cout << "FAILURE TO CLOSE SESSION (" << ec.value() << "): " << ec.message() << std::endl;
 	}
 }
 
