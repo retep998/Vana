@@ -111,12 +111,9 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 			packet.add<int16_t>(1); // Item amount
 		}
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
-		if (GameLogicUtilities::isStar(itemid))
-			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10);
-		else if (GameLogicUtilities::isBullet(itemid))
-			packet.add<int16_t>(maxslot + player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10);
-		else
-			packet.add<int16_t>(maxslot);
+		if (GameLogicUtilities::isRechargeable(itemid))
+			maxslot += player->getSkills()->getRechargeableBonus();
+		packet.add<int16_t>(maxslot);
 	}
 
 	// Rechargables
@@ -125,7 +122,7 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 			packet.add<int32_t>(iter->first);
 			packet.add<int32_t>(0);
 			packet.add<double>(iter->second);
-			packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(iter->first) + (GameLogicUtilities::isStar(iter->first) ? player->getSkills()->getSkillLevel(4100000) * 10 : player->getSkills()->getSkillLevel(5200000) * 10));
+			packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(iter->first) + player->getSkills()->getRechargeableBonus());
 		}
 	}
 
