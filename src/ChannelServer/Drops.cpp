@@ -59,7 +59,7 @@ dropped(std::numeric_limits<int32_t>::max()),
 playerid(0), playerdrop(playerdrop),
 tradeable(true),
 pos(pos),
-tem(item)
+item(item)
 {
 	Maps::getMap(mapid)->addDrop(this);
 }
