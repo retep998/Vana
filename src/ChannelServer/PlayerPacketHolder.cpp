@@ -24,7 +24,12 @@ PlayerPacketHolder * PlayerPacketHolder::singleton = 0;
 
 void PlayerPacketHolder::parseIncomingPacket(PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
-	m_map[playerid] = packet;
+
+	size_t psize = packet.getBufferLength();
+	unsigned char *buf = new unsigned char[psize]; // Prevent the packet memory from being freed by external sources
+	memcpy(buf, packet.getBuffer(), psize);
+	
+	m_map[playerid].reset(new PacketReader(buf, psize));
 	WorldServerConnectPacket::playerBuffsTransferred(ChannelServer::Instance()->getWorldPlayer(), playerid);
 }
 
@@ -39,5 +44,5 @@ bool PlayerPacketHolder::checkPlayer(int32_t playerid) {
 }
 
 PacketReader & PlayerPacketHolder::getPacket(int32_t playerid) {
-	return m_map[playerid];
+	return *(m_map[playerid].get());
 }
