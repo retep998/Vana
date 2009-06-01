@@ -240,6 +240,9 @@ void Player::playerConnect(PacketReader &packet) {
 	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
 	storage.reset(new PlayerStorage(this));
 
+	// Skills
+	skills.reset(new PlayerSkills(this));
+
 	// Buffs/summons
 	activeBuffs.reset(new PlayerActiveBuffs(this));
 	summons.reset(new PlayerSummons(this));
@@ -256,9 +259,6 @@ void Player::playerConnect(PacketReader &packet) {
 		getSummons()->parseSummonTransferPacket(pack);
 		PlayerPacketHolder::Instance()->removePacket(id);
 	}
-
-	// Skills
-	skills.reset(new PlayerSkills(this));
 
 	// Player variables
 	variables.reset(new PlayerVariables(this));
