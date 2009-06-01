@@ -524,7 +524,7 @@ void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
 	packet.add<int32_t>(getDebuffMask());
 	packet.add<int32_t>(m_mapbuffs.mountid);
 	packet.add<int32_t>(m_mapbuffs.mountskill);
-	for (int8_t i = 0; i < 8; i++) {
+	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 		packet.add<uint8_t>(m_mapbuffs.types[i]);
 		packet.add<uint8_t>((uint8_t)(m_mapbuffs.values[i].size()));
 		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = m_mapbuffs.values[i].begin(); iter != m_mapbuffs.values[i].end(); iter++) {
@@ -550,7 +550,7 @@ void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
 	}
 	// Current buffs by type info
 	unordered_map<uint8_t, int32_t> currentbyte;
-	for (int8_t i = 0; i < 8; i++) {
+	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 		currentbyte = m_activebuffsbytype[i];
 		packet.add<uint8_t>((uint8_t)(currentbyte.size()));
 		for (unordered_map<uint8_t, int32_t>::iterator iter = currentbyte.begin(); iter != currentbyte.end(); iter++) {
@@ -571,7 +571,7 @@ void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
 	m_mapbuffs.mountid = packet.get<int32_t>();
 	m_mapbuffs.mountskill = packet.get<int32_t>();
 	MapEntryVals values;
-	for (int8_t i = 0; i < 8; i++) {
+	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 		m_mapbuffs.types[i] = packet.get<uint8_t>();
 		uint8_t size = packet.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
@@ -600,7 +600,7 @@ void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
 	}
 	// Current buffs by type
 	unordered_map<uint8_t, int32_t> currentbyte;
-	for (int8_t i = 0; i < 8; i++) {
+	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 		uint8_t size = packet.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
 			uint8_t key = packet.get<uint8_t>();
