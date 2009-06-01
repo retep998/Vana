@@ -19,12 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define BUFFHOLDER_H
 
 #include "Types.h"
+#include <boost/shared_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
-#include <vector>
 
 using std::tr1::unordered_map;
-using std::vector;
 
 class PacketReader;
 
@@ -44,7 +43,7 @@ private:
 	PlayerPacketHolder() {};
 	static PlayerPacketHolder *singleton;
 
-	unordered_map<int32_t, PacketReader> m_map;
+	unordered_map<int32_t, boost::shared_ptr<PacketReader> > m_map;
 };
 
 #endif
