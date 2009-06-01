@@ -26,7 +26,7 @@ struct ActiveMapBuff;
 
 namespace BuffsPacket {
 	void useSkill(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo);
-	void endSkill(Player *player, ActiveBuff &pskill, bool assbackward = false);
+	void endSkill(Player *player, ActiveBuff &pskill);
 	void giveDebuff(Player *player, uint8_t skillid, uint8_t level, int16_t time, int16_t delay, ActiveBuff &pskill, ActiveMapBuff &mskill);
 	void endDebuff(Player *player, ActiveBuff &pskill);
 

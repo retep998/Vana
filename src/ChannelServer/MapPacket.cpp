@@ -53,9 +53,9 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<uint8_t>(enter.types[Byte2]);
 	packet.add<uint8_t>(enter.types[Byte3]);
 	packet.add<uint8_t>(enter.types[Byte4]);
-	const int8_t byteorder[8] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
+	const int8_t byteorder[BuffBytes::EntryByteQuantity] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
 
-	for (int8_t i = 0; i < 8; i++) {
+	for (int8_t i = 0; i < BuffBytes::EntryByteQuantity; i++) {
 		int8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
 		if (enter.types[cbyte] != 0) {
 			for (unordered_map<uint8_t, MapEntryVals>::iterator iter = enter.values[cbyte].begin(); iter != enter.values[cbyte].end(); iter++) {

@@ -59,7 +59,7 @@ Buffs::Buffs() {
 
 	// Speed Infusion
 	buff.type = 0x80;
-	buff.byte = Byte1;
+	buff.byte = Byte9;
 	buff.value = SkillX;
 	player.buff = buff;
 	skillsinfo[Jobs::Buccaneer::SpeedInfusion].player.push_back(player);
@@ -464,7 +464,7 @@ Buffs::Buffs() {
 
 	// Dash
 	buff.type = 0x10;
-	buff.byte = Byte1;
+	buff.byte = Byte9;
 	buff.value = SkillX;
 	player.buff = buff;
 	player.hasmapval = true;
@@ -476,7 +476,7 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
 	skillsinfo[Jobs::Striker::Dash].map.push_back(map);
 	buff.type = 0x20;
-	buff.byte = Byte1;
+	buff.byte = Byte9;
 	buff.value = SkillY;
 	player.buff = buff;
 	player.hasmapval = true;
@@ -563,7 +563,7 @@ Buffs::Buffs() {
 
 	// Energy Charge
 	buff.type = 0x08;
-	buff.byte = Byte1;
+	buff.byte = Byte9;
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	player.hasmapval = true;
@@ -1225,19 +1225,8 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 	vector<Buff> buffs = parseBuffs(skill, level);
 	ActiveMapBuff meskill = parseBuffMapEntryInfo(player, skill, level);
 	ActiveBuff pskill = playerbuffs->removeBuffInfo(skill, buffs);
-	bool assbackward = false;
-	switch (skill) {
-		case Jobs::Pirate::Dash:
-		case Jobs::Striker::Dash:
-		case Jobs::Marauder::EnergyCharge:
-		case Jobs::Striker::EnergyCharge:
-		case Jobs::Buccaneer::SpeedInfusion:
-		case Jobs::Striker::SpeedInfusion:
-			assbackward = true;
-			break;
-	}
 
-	BuffsPacket::endSkill(player, pskill, assbackward);
+	BuffsPacket::endSkill(player, pskill);
 
 	playerbuffs->deleteMapEntryBuffInfo(meskill);
 	playerbuffs->setActiveSkillLevel(skill, 0);
