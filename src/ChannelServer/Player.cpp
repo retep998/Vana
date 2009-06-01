@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Player.h" // Emmy was here
+#include "Player.h"
 #include "BuddyListHandler.h"
 #include "BuddyListPacket.h"
 #include "ChannelServer.h"
@@ -708,8 +708,8 @@ void Player::loseExp() {
 					break;
 			}
 		}
-		int64_t exp = getExp();
-		exp -= Levels::getExp(getLevel()) * exploss / 100;
-		setExp(static_cast<int32_t>(exp));
+		int32_t exp = getExp();
+		exp -= static_cast<int32_t>(static_cast<int64_t>(Levels::getExp(getLevel())) * exploss / 100);
+		setExp(exp);
 	}
 }
