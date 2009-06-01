@@ -70,7 +70,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 			packet.add<int32_t>(dmg);
 			break;
 		default:
-			packet.add<int32_t>((pgmr.reduction > 0 ? pgmr.damage : dmg));
+			packet.add<int32_t>(pgmr.reduction > 0 ? pgmr.damage : dmg);
 			packet.add<int32_t>(mob);
 			packet.add<int8_t>(hit);
 			if (pgmr.reduction > 0) {

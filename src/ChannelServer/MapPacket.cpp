@@ -102,14 +102,8 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 
-	if (enter.mountid > 0) {
-		packet.add<int32_t>(enter.mountid);
-		packet.add<int32_t>(enter.mountskill);
-	}
-	else {
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-	}
+	packet.add<int32_t>(enter.mountid); // No point to having an if, these are 0 when not in use
+	packet.add<int32_t>(enter.mountskill);
 
 	packet.add<int32_t>(1065638850);
 	packet.add<int8_t>(0);

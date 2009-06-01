@@ -65,10 +65,7 @@ item(item)
 }
 
 int32_t Drop::getObjectId() {
-	if (mesos > 0)
-		return mesos;
-	else
-		return item.id;
+	return (mesos > 0 ? mesos : item.id);
 }
 
 int16_t Drop::getAmount() {
