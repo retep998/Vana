@@ -230,6 +230,7 @@ void Player::playerConnect(PacketReader &packet) {
 	m_foothold = 0;
 
 	// Inventory
+	mounts.reset(new PlayerMounts(this));
 	pets.reset(new PlayerPets(this));
 	boost::array<uint8_t, Inventories::InventoryCount> maxslots;
 	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
@@ -648,6 +649,7 @@ void Player::saveStats() {
 void Player::saveAll(bool savecooldowns) {
 	saveStats();
 	getInventory()->save();
+	getMounts()->save();
 	getPets()->save();
 	getSkills()->save(savecooldowns);
 	getStorage()->save();

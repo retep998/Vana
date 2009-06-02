@@ -398,13 +398,17 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	}
 
 	Item *item = 0;
-	if (GameLogicUtilities::isEquip(itemid))
+	if (GameLogicUtilities::isEquip(itemid)) {
 		item = new Item(itemid, false);
-	else
+		if (GameLogicUtilities::isMount(itemid))
+			player->getMounts()->addMount(itemid);
+	}
+	else {
 		item = new Item(itemid, thisamount);
-
-	if (addItem(player, item, GameLogicUtilities::isPet(itemid)) == 0 && amount > 0)
+	}
+	if (addItem(player, item, GameLogicUtilities::isPet(itemid)) == 0 && amount > 0) {
 		addNewItem(player, itemid, amount);
+	}
 }
 
 void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {

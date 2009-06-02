@@ -514,6 +514,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerMounts.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerPacketHolder.cpp"
 					>
 				</File>
@@ -877,6 +881,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerMounts.h"
 					>
 				</File>
 				<File
