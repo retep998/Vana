@@ -775,13 +775,13 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			break;
 		}
 		case 5071000: { // Megaphone
-			string msg = packet.getString();
+			string msg = player->getName() + " : " + packet.getString();
 			InventoryPacket::showMegaphone(player, msg);
 			used = true;
 			break;
 		}
 		case 5072000: { // Super Megaphone
-			string msg = packet.getString();
+			string msg = player->getName() + " : " + packet.getString();
 			uint8_t whisper = packet.get<int8_t>();
 			InventoryPacket::showSuperMegaphone(player, msg, whisper);
 			used = true;
@@ -887,10 +887,12 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 		default:
 			break;
 	}
-	if (used)
+	if (used) {
 		Inventory::takeItem(player, itemid, 1);
-	else
+	}
+	else {
 		InventoryPacket::blankUpdate(player);
+	}
 }
 
 void Inventory::useItemEffect(Player *player, PacketReader &packet) {

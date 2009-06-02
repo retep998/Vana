@@ -141,22 +141,20 @@ void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bo
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void InventoryPacket::showMegaphone(Player *player, const string & msg) {
-	string fullMessage = string(player->getName()) + " : " + msg;
+void InventoryPacket::showMegaphone(Player *player, const string &msg) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_NOTICE);
 	packet.add<int8_t>(2);
-	packet.addString(fullMessage);
-	Maps::getMap(player->getMap())->sendPacket(packet);
+	packet.addString(msg);
+	Players::Instance()->sendPacket(packet); // In global, this sends to everyone on the current channel, not the map
 }
 
-void InventoryPacket::showSuperMegaphone(Player *player, const string & msg, uint8_t whisper) {
-	string fullMessage = string(player->getName()) + " : " + msg;
+void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, uint8_t whisper) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TO_PLAYERS);
 	packet.add<int16_t>(SEND_NOTICE);
 	packet.add<int8_t>(3);
-	packet.addString(fullMessage);
+	packet.addString(msg);
 	packet.add<int8_t>((uint8_t) ChannelServer::Instance()->getChannel());
 	packet.add<int8_t>(whisper);
 	ChannelServer::Instance()->sendToWorld(packet);
@@ -176,16 +174,16 @@ void InventoryPacket::showMessenger(Player *player, const string &msg, const str
 	packet.addBuffer(displayInfo, displayInfo_size);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
-// Skill Books
+
 void InventoryPacket::useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILLBOOK);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(1); // Number of skills? Maybe just padding or random boolean
-	packet.add<int32_t>(skillid); // Skill ID
-	packet.add<int32_t>(newMaxLevel); // New max level
-	packet.add<int8_t>(use); // Use/Cannot use
-	packet.add<int8_t>(succeed); // Pass/Fail
+	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(newMaxLevel);
+	packet.add<int8_t>(use); // Use/cannot use
+	packet.add<int8_t>(succeed); // Pass/fail
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
