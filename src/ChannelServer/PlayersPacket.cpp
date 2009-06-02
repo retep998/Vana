@@ -134,7 +134,15 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 		}
 	}
 	packet.add<int8_t>(0); // End of pets / start of taming mob
-	packet.add<int8_t>(0); // End of taming mob / start of wish list
+	if (getinfo->getMounts()->getCurrentMount() > 0 && getinfo->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
+		packet.add<int8_t>(1);
+		packet.add<int32_t>(getinfo->getMounts()->getCurrentLevel());
+		packet.add<int32_t>(getinfo->getMounts()->getCurrentExp());
+		packet.add<int32_t>(getinfo->getMounts()->getCurrentTiredness());
+	}
+	else {
+		packet.add<int8_t>(0); // End of taming mob
+	}
 	vector<int32_t> wishlist = getinfo->getWishlist(); 
 	packet.add<uint8_t>((uint8_t)(wishlist.size())); // Wish list count
 	for (size_t i = 0; i < wishlist.size(); i++)

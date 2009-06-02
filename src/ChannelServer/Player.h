@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerActiveBuffs.h"
 #include "PlayerBuddyList.h"
 #include "PlayerInventory.h"
+#include "PlayerMounts.h"
 #include "PlayerPets.h"
 #include "PlayerQuests.h"
 #include "PlayerSkills.h"
@@ -145,6 +146,7 @@ public:
 	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }
 	PlayerBuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerInventory * getInventory() const { return inv.get(); }
+	PlayerMounts * getMounts() const { return mounts.get(); }
 	PlayerPets * getPets() const { return pets.get(); }
 	PlayerQuests * getQuests() const { return quests.get(); }
 	PlayerSkills * getSkills() const { return skills.get(); }
@@ -219,6 +221,7 @@ private:
 	scoped_ptr<PlayerActiveBuffs> activeBuffs;
 	scoped_ptr<PlayerBuddyList> buddyList;
 	scoped_ptr<PlayerInventory> inv;
+	scoped_ptr<PlayerMounts> mounts;
 	scoped_ptr<PlayerPets> pets;
 	scoped_ptr<PlayerQuests> quests;
 	scoped_ptr<PlayerSkills> skills;

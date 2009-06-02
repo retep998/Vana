@@ -168,6 +168,8 @@ int16_t PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) {
 
 void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
 	slot = abs(slot);
+	if (slot == EquipSlots::Mount)
+		m_player->getMounts()->setCurrentMount(itemid);
 
 	if (slot > 100) // Cash items
 		m_equipped[slot - 100][1] = itemid;

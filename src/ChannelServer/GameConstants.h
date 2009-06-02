@@ -51,6 +51,7 @@ enum ItemTypes {
 	WeaponClaw = 147,
 	WeaponKnuckle = 148,
 	WeaponGun = 149,
+	Mount = 190,
 	ItemArrow = 206,
 	ItemStar = 207,
 	ItemBullet = 233
