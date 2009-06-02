@@ -835,7 +835,7 @@ int32_t Buffs::parseMountInfo(Player *player, int32_t skillid, uint8_t level) {
 			mountid = player->getInventory()->getEquippedId(EquipSlots::Mount);
 			break;
 		case Jobs::Corsair::Battleship:
-			mountid = 1932000; // Battleship item ID
+			mountid = Items::BattleshipMount;
 			break;
 	}
 	return mountid;
@@ -1062,11 +1062,10 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			player->getActiveBuffs()->setMountInfo(skillid, mountid);
 			break;
 		case Jobs::SuperGm::Hide:
-			time = 2100000;
+			time = 2100000; // Make sure that it doesn't end any time soon
 			break;
 		case Jobs::Spearman::HyperBody:
 		case Jobs::SuperGm::HyperBody:
-			// TODO: Party
 			player->setHyperBody(Skills::skills[skillid][level].x, Skills::skills[skillid][level].y);
 			break;
 		case Jobs::Crusader::ComboAttack:
@@ -1170,20 +1169,20 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
 	switch (skill) {
 		case Jobs::Beginner::MonsterRider:
-		case Jobs::Corsair::Battleship:
 		case Jobs::Noblesse::MonsterRider:
+		case Jobs::Corsair::Battleship:
 			playerbuffs->setMountInfo(0, 0);
 		case Jobs::Crusader::ComboAttack:
 		case Jobs::SoulWarrior::ComboAttack:
 			playerbuffs->setCombo(0, false);
 			break;
-		case Jobs::Spearman::HyperBody: // Hyper Body
-		case Jobs::SuperGm::HyperBody: // Gm Hyper Body
+		case Jobs::Spearman::HyperBody:
+		case Jobs::SuperGm::HyperBody:
 			player->setHyperBody(0, 0);
 			player->setHp(player->getHp());
 			player->setMp(player->getMp());
 			break;
-		case Jobs::Marauder::EnergyCharge: // Energy Charge
+		case Jobs::Marauder::EnergyCharge:
 		case Jobs::Striker::EnergyCharge:
 			playerbuffs->resetEnergyChargeLevel();
 			break;

@@ -610,7 +610,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 		if (equip->slots > 0) {
 			succeed = 0;
 			if (wscroll)
-				takeItem(player, 2340000, 1);
+				takeItem(player, Items::WhiteScroll, 1);
 			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
 				int8_t n = -1; // Default - Decrease stats
 				if ((int16_t) Randomizer::Instance()->randShort(99) < 50) // Increase
@@ -669,15 +669,16 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 	}
 	else {
 		switch (itemid) {
-			case 2040727: // Shoe for Spikes 10%
-			case 2041058: // Cape for Cold Protection 10%
+			case Items::ShoeSpikes: // 10%
+			case Items::CapeColdProtection: // 10%
 				succeed = 0;
-				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // These do not take slots and can be used even after success
+				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
+					// These do not take slots and can be used even after success
 					switch (itemid) {
-						case 2040727:
+						case Items::ShoeSpikes:
 							equip->flags |= FlagSpikes;
 							break;
-						case 2041058:
+						case Items::CapeColdProtection:
 							equip->flags |= FlagCold;
 							break;
 					}
@@ -687,7 +688,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			default: // Most scrolls
 				if (equip->slots > 0) {
 					if (wscroll)
-						takeItem(player, 2340000, 1);
+						takeItem(player, Items::WhiteScroll, 1);
 					if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
 						succeed = 1;
 						equip->istr += iteminfo.cons.istr;
@@ -749,10 +750,10 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 
 	bool used = false;
 	switch (itemid) {
-		case 5050001: // 1st job SP Reset
-		case 5050002: // 2nd job SP Reset
-		case 5050003: // 3rd job SP Reset
-		case 5050004: { // 4th job SP Reset
+		case Items::FirstJobSpReset:
+		case Items::SecondJobSpReset:
+		case Items::ThirdJobSpReset:
+		case Items::FourthJobSpReset: {
 			int32_t toskill = packet.get<int32_t>();
 			int32_t fromskill = packet.get<int32_t>();
 			if (!player->getSkills()->addSkillLevel(fromskill, -1, true)) {
@@ -766,7 +767,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			used = true;
 			break;
 		}
-		case 5050000: { // AP Reset
+		case Items::ApReset: {
 			int32_t tostat = packet.get<int32_t>();
 			int32_t fromstat = packet.get<int32_t>();
 			Levels::addStat(player, tostat, 1, true);
@@ -774,22 +775,22 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			used = true;
 			break;
 		}
-		case 5071000: { // Megaphone
+		case Items::Megaphone: {
 			string msg = player->getName() + " : " + packet.getString();
 			InventoryPacket::showMegaphone(player, msg);
 			used = true;
 			break;
 		}
-		case 5072000: { // Super Megaphone
+		case Items::SuperMegaphone: {
 			string msg = player->getName() + " : " + packet.getString();
 			uint8_t whisper = packet.get<int8_t>();
 			InventoryPacket::showSuperMegaphone(player, msg, whisper);
 			used = true;
 			break;
 		}
-		case 5390000: // Diablo Messenger
-		case 5390001: // Cloud 9 Messenger
-		case 5390002: { // Loveholic Messenger
+		case Items::DiabloMessenger:
+		case Items::Cloud9Messenger:
+		case Items::LoveholicMessenger: {
 			string msg = packet.getString();
 			string msg2 = packet.getString();
 			string msg3 = packet.getString();
@@ -799,13 +800,13 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			used = true;
 			break;
 		}
-		case 5170000: { // Pet Name Tag
+		case Items::PetNameTag: {
 			string name = packet.getString();
 			Pets::changeName(player, name);
 			used = true;
 			break;
 		}
-		case 5060000: { // Item Name Tag
+		case Items::ItemNameTag: {
 			int16_t slot = packet.get<int16_t>();
 			if (slot != 0) {
 				Item *item = player->getInventory()->getItem(Inventories::EquipInventory, slot);
@@ -819,7 +820,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 5060001: { // Item Lock
+		case Items::ItemLock: {
 			int8_t inventory = (int8_t) packet.get<int32_t>();
 			int16_t slot = (int16_t) packet.get<int32_t>();
 			if (slot != 0) {
@@ -834,7 +835,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 5075000: { // MapleTV Messenger
+		case Items::MapleTvMessenger: {
 			bool hasreceiver = (packet.get<int8_t>() == 3);
 			Player *receiver = Players::Instance()->getPlayer(packet.getString());
 			int32_t time = 15;
@@ -850,7 +851,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 5075001: { // MapleTV Star Messenger
+		case Items::MapleTvStarMessenger: {
 			int32_t time = 30;
 			string msg = packet.getString();
 			string msg2 = packet.getString();
@@ -862,7 +863,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			used = true;
 			break;
 		}
-		case 5075002: { // MapleTV Heart Messenger
+		case Items::MapleTvHeartMessenger: {
 			string name = packet.getString();
 			Player *receiver = Players::Instance()->getPlayer(name);
 			int32_t time = 60;
@@ -878,9 +879,9 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 5300000: // Fungus Scroll
-		case 5300001: // Oinker Delight
-		case 5300002: // Zeta Nightmare
+		case Items::FungusScroll:
+		case Items::OinkerDelight:
+		case Items::ZetaNightmare:
 			useItem(player, itemid);
 			used = true;
 			break;

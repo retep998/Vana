@@ -678,13 +678,13 @@ void Player::acceptDeath() {
 }
 
 bool Player::hasGmEquip() {
-	if (getInventory()->getEquippedId(EquipSlots::Helm) == GmSuit::Hat)
+	if (getInventory()->getEquippedId(EquipSlots::Helm) == Items::GmHat)
 		return true;
-	if (getInventory()->getEquippedId(EquipSlots::Top) == GmSuit::Top)
+	if (getInventory()->getEquippedId(EquipSlots::Top) == Items::GmTop)
 		return true;
-	if (getInventory()->getEquippedId(EquipSlots::Bottom) == GmSuit::Bottom)
+	if (getInventory()->getEquippedId(EquipSlots::Bottom) == Items::GmBottom)
 		return true;
-	if (getInventory()->getEquippedId(EquipSlots::Weapon) == GmSuit::Weapon)
+	if (getInventory()->getEquippedId(EquipSlots::Weapon) == Items::GmWeapon)
 		return true;
 	return false;
 }
