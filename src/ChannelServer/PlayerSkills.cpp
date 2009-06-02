@@ -245,6 +245,60 @@ int32_t PlayerSkills::getMpIncrease() {
 	return skillid;
 }
 
+int32_t PlayerSkills::getMastery() {
+	int32_t masteryid = 0;
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
+		case Weapon1hSword:
+		case Weapon2hSword:
+			switch (player->getJob()) {
+				case Jobs::JobIds::Fighter:
+				case Jobs::JobIds::Crusader:
+				case Jobs::JobIds::Hero:
+					masteryid = Jobs::Fighter::SwordMastery;
+					break;
+				case Jobs::JobIds::Page:
+				case Jobs::JobIds::WhiteKnight:
+				case Jobs::JobIds::Paladin:
+					masteryid = Jobs::Page::SwordMastery;
+					break;
+			}
+			break;
+		case Weapon1hAxe:
+		case Weapon2hAxe:
+			masteryid = Jobs::Fighter::AxeMastery;
+			break;
+		case Weapon1hMace:
+		case Weapon2hMace:
+			masteryid = Jobs::Page::BwMastery;
+			break;
+		case WeaponSpear:
+			masteryid = Jobs::Spearman::SpearMastery;
+			break;
+		case WeaponPolearm:
+			masteryid = Jobs::Spearman::PolearmMastery;
+			break;
+		case WeaponDagger:
+			masteryid = Jobs::Bandit::DaggerMastery;
+			break;
+		case WeaponKnuckle:
+			masteryid = Jobs::Infighter::KnucklerMastery;
+			break;
+		case WeaponBow:
+			masteryid = Jobs::Hunter::BowMastery;
+			break;
+		case WeaponCrossbow:
+			masteryid = Jobs::Crossbowman::CrossbowMastery;
+			break;
+		case WeaponClaw:
+			masteryid = Jobs::Assassin::ClawMastery;
+			break;
+		case WeaponGun:
+			masteryid = Jobs::Gunslinger::GunMastery;
+			break;
+	}
+	return masteryid;
+}
+
 int16_t PlayerSkills::getRechargeableBonus() {
 	int16_t bonus = 0;
 	switch (player->getJob()) {
