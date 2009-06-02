@@ -914,12 +914,40 @@ namespace Jobs {
 	}
 }
 
-namespace GmSuit {
+namespace Items {
 	enum {
-		Hat = 1002140,
-		Top = 1042003,
-		Bottom = 1062007,
-		Weapon = 1322013
+		// Equip
+		GmHat = 1002140,
+		GmTop = 1042003,
+		GmBottom = 1062007,
+		GmWeapon = 1322013,
+		BattleshipMount = 1932000,
+
+		// Use
+		ShoeSpikes = 2040727,
+		CapeColdProtection = 2041058,
+		WhiteScroll = 2340000,
+
+		// Cash
+		ApReset = 5050000,
+		FirstJobSpReset = 5050001,
+		SecondJobSpReset = 5050002,
+		ThirdJobSpReset = 5050003,
+		FourthJobSpReset = 5050004,
+		ItemNameTag = 5060000,
+		ItemLock = 5060001,
+		Megaphone = 5071000,
+		SuperMegaphone = 5072000,
+		MapleTvMessenger = 5075000,
+		MapleTvStarMessenger = 5075001,
+		MapleTvHeartMessenger = 5075002,
+		PetNameTag = 5170000,
+		FungusScroll = 5300000,
+		OinkerDelight = 5300001,
+		ZetaNightmare = 5300002,
+		DiabloMessenger = 5390000,
+		Cloud9Messenger = 5390001,
+		LoveholicMessenger = 5390002
 	};
 }
 
