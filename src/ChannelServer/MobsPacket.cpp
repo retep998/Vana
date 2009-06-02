@@ -132,42 +132,11 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	if (skillid == Jobs::Gunslinger::Grenade || skillid == Jobs::Infighter::CorkscrewBlow) {
 		pack.skipBytes(4); // Charge
 	}
-	int32_t masteryid = 0;
-	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
-		case Weapon1hSword:
-		case Weapon2hSword:
-			switch ((player->getJob() / 10)) {
-				case 11: masteryid = Jobs::Fighter::SwordMastery; break;
-				case 12: masteryid = Jobs::Page::SwordMastery; break;
-				case 90:
-				case 91:
-					masteryid = (player->getSkills()->getSkillLevel(Jobs::Fighter::SwordMastery) >= player->getSkills()->getSkillLevel(Jobs::Page::SwordMastery) ? (int32_t)Jobs::Fighter::SwordMastery : (int32_t)Jobs::Page::SwordMastery);
-					break;
-			}
-			break;
-		case Weapon1hAxe:
-		case Weapon2hAxe:
-			masteryid = Jobs::Fighter::AxeMastery;
-			break;
-		case Weapon1hMace:
-		case Weapon2hMace:
-			masteryid = Jobs::Page::BwMastery;
-			break;
-		case WeaponSpear:
-			masteryid = Jobs::Spearman::SpearMastery;
-			break;
-		case WeaponPolearm:
-			masteryid = Jobs::Spearman::PolearmMastery;
-			break;
-		case WeaponDagger:
-			masteryid = Jobs::Bandit::DaggerMastery;
-			break;
-		case WeaponKnuckle:
-			masteryid = Jobs::Infighter::KnucklerMastery;
-			break;
-	}
-	packet.add<int8_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
+
+	int32_t masteryid = player->getSkills()->getMastery();
+	packet.add<int8_t>(masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0);
 	packet.add<int32_t>(0);
+
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mapmobid = pack.get<int32_t>();
 		packet.add<int32_t>(mapmobid);
@@ -224,29 +193,18 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 		packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
 		packet.add<int32_t>(skillid);
 	}
-	else
+	else {
 		packet.add<int8_t>(0);
+	}
 	packet.add<int8_t>(display);
 	packet.add<int8_t>(animation);
 	packet.add<int8_t>(w_speed);
-	int32_t masteryid = 0;
-	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
-		case WeaponBow:
-			masteryid = Jobs::Hunter::BowMastery;
-			break;
-		case WeaponCrossbow:
-			masteryid = Jobs::Crossbowman::CrossbowMastery;
-			break;
-		case WeaponClaw:
-			masteryid = Jobs::Assassin::ClawMastery;
-			break;
-		case WeaponGun:
-			masteryid = Jobs::Gunslinger::GunMastery;
-			break;
-	}
-	packet.add<int8_t>((masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0));
+
+	int32_t masteryid = player->getSkills()->getMastery();
+	packet.add<int8_t>(masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0);
 	// Bug in global:
 	// The colored swoosh does not display as it should
+
 	int32_t itemid = 0;
 	if (!shadow_meso) {
 		if (csstar > 0)
