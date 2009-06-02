@@ -108,10 +108,10 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	uint8_t targets = tbyte / 0x10;
 	uint8_t hits = tbyte % 0x10;
 	int32_t skillid = pack.get<int32_t>();
-	bool s4211006 = false;
+	bool mesoexplosion = false;
 	if (skillid == Jobs::ChiefBandit::MesoExplosion) {
 		tbyte = (targets * 0x10) + 0x0A;
-		s4211006 = true;
+		mesoexplosion = true;
 	}
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_DAMAGE_MOB_MELEE);
@@ -134,7 +134,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 	}
 
 	int32_t masteryid = player->getSkills()->getMastery();
-	packet.add<int8_t>(masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0);
+	packet.add<int8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
 	packet.add<int32_t>(0);
 
 	for (int8_t i = 0; i < targets; i++) {
@@ -142,7 +142,7 @@ void MobsPacket::damageMob(Player *player, PacketReader &pack) {
 		packet.add<int32_t>(mapmobid);
 		packet.add<int8_t>(0x06);
 		pack.skipBytes(12);
-		if (s4211006) {
+		if (mesoexplosion) {
 			hits = pack.get<int8_t>();
 			packet.add<int8_t>(hits);
 		}
@@ -173,6 +173,7 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	}
 	bool shadow_meso = (skillid == Jobs::Hermit::ShadowMeso);
 	pack.skipBytes(4); // Unk
+
 	uint8_t display = pack.get<int8_t>(); // Projectile display
 	uint8_t animation = pack.get<int8_t>(); // Direction/animation
 	uint8_t w_class = pack.get<int8_t>(); // Weapon subclass
@@ -180,10 +181,9 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	pack.skipBytes(4); // Ticks
 	int16_t slot = pack.get<int16_t>(); // Slot
 	int16_t csstar = pack.get<int16_t>(); // Cash Shop star
-	if (!shadow_meso) {
-		if ((display & 0x40) == 0x40)
-			// Shadow Claw/+Shadow Partner = 0x40/0x48 - bitwise and with 0x40 = 0x40 for both
-			pack.skipBytes(4); // Shadow Claw star ID
+
+	if (!shadow_meso && player->getActiveBuffs()->hasShadowStars()) {
+		pack.skipBytes(4); // Shadow Stars star ID
 	}
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_DAMAGE_MOB_RANGED);
@@ -201,16 +201,16 @@ void MobsPacket::damageMobRanged(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(w_speed);
 
 	int32_t masteryid = player->getSkills()->getMastery();
-	packet.add<int8_t>(masteryid > 0 ? ((player->getSkills()->getSkillLevel(masteryid) + 1) / 2) : 0);
+	packet.add<int8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
 	// Bug in global:
 	// The colored swoosh does not display as it should
 
 	int32_t itemid = 0;
 	if (!shadow_meso) {
 		if (csstar > 0)
-			itemid = player->getInventory()->getItem(5, csstar)->id;
+			itemid = player->getInventory()->getItem(Inventories::CashInventory, csstar)->id;
 		else if (slot > 0) {
-			Item *item = player->getInventory()->getItem(2, slot);
+			Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 			if (item != 0)
 				itemid = item->id;
 		}
