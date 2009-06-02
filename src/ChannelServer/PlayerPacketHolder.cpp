@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "PacketReader.h"
 #include "WorldServerConnectPacket.h"
+#include <cstring>
 
 PlayerPacketHolder * PlayerPacketHolder::singleton = 0;
 
