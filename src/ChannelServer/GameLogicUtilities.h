@@ -47,6 +47,7 @@ namespace GameLogicUtilities {
 	inline bool isMobSkill(int32_t skillid) { return (skillid >= 100 && skillid <= 200); }
 	inline bool isCygnus(int16_t jobid) { return (jobid >= 1000); }
 	inline bool isBeginnerJob(int16_t jobid) { return (jobid == 0 || jobid == 1000); }
+	inline bool isAoeMobSkill(uint8_t skillid) { return (((skillid / 10) * 10 % 100) == 10); }
 	inline int16_t getJobTrack(int16_t job, bool flattencygnus = false) { return (flattencygnus && isCygnus(job) ? ((job / 100) % 10) : (job / 100)); }
 	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
 	inline int8_t getPartyMember1(int8_t totalmembers) { return (totalmembers >= 1 ? (0x40 >> totalmembers) : 0xFF); }
