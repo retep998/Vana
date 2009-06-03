@@ -299,6 +299,28 @@ int32_t PlayerSkills::getMastery() {
 	return masteryid;
 }
 
+int32_t PlayerSkills::getMpEater() {
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::FPWizard:
+		case Jobs::JobIds::FPMage:
+		case Jobs::JobIds::FPArchMage:
+			skillid = Jobs::FPWizard::MpEater;
+			break;
+		case Jobs::JobIds::ILWizard:
+		case Jobs::JobIds::ILMage:
+		case Jobs::JobIds::ILArchMage:
+			skillid = Jobs::ILWizard::MpEater;
+			break;
+		case Jobs::JobIds::Cleric:
+		case Jobs::JobIds::Priest:
+		case Jobs::JobIds::Bishop:
+			skillid = Jobs::Cleric::MpEater;
+			break;
+	}
+	return skillid;
+}
+
 int16_t PlayerSkills::getRechargeableBonus() {
 	int16_t bonus = 0;
 	switch (player->getJob()) {
