@@ -851,7 +851,7 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 			break;
 	}
 	MpEaterInfo eater;
-	eater.id = (player->getJob() / 10) * 100000;
+	eater.id = player->getSkills()->getMpEater();
 	eater.level = player->getSkills()->getSkillLevel(eater.id);
 	if (eater.level > 0) {
 		eater.prop = Skills::skills[eater.id][eater.level].prop;
@@ -894,9 +894,10 @@ void Mobs::damageMobSummon(Player *player, PacketReader &packet) {
 	packet.reset(2);
 	packet.skipBytes(4); // Summon ID
 	Summon *summon = player->getSummons()->getSummon();
-	if (summon == 0)
+	if (summon == 0) {
 		// Hacking or some other form of tomfoolery
 		return;
+	}
 	packet.skipBytes(5);
 	int8_t targets = packet.get<int8_t>();
 	int32_t useless = 0;

@@ -53,6 +53,7 @@ public:
 	int32_t getHpIncrease();
 	int32_t getMpIncrease();
 	int32_t getMastery();
+	int32_t getMpEater();
 	int16_t getRechargeableBonus();
 
 	void addCooldown(int32_t skillid, int16_t time);
