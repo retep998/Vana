@@ -65,17 +65,14 @@ bool PlayerSkills::hasElementalAmp() {
 	switch (player->getJob()) {
 		case Jobs::JobIds::FPMage:
 		case Jobs::JobIds::FPArchMage:
-			if (getSkillLevel(Jobs::FPMage::ElementAmplification) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::FPMage::ElementAmplification) > 0);
 			break;
 		case Jobs::JobIds::ILMage:
 		case Jobs::JobIds::ILArchMage:
-			if (getSkillLevel(Jobs::ILMage::ElementAmplification) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::ILMage::ElementAmplification) > 0);
 			break;
 		case Jobs::JobIds::FlameWizard3:
-			if (getSkillLevel(Jobs::FlameWizard::ElementAmplification) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::FlameWizard::ElementAmplification) > 0);
 			break;
 	}
 	return has;
@@ -104,13 +101,11 @@ bool PlayerSkills::hasEnergyCharge() {
 	switch (player->getJob()) {
 		case Jobs::JobIds::Marauder:
 		case Jobs::JobIds::Buccaneer:
-			if (getSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::Marauder::EnergyCharge) > 0);
 			break;
 		case Jobs::JobIds::Striker2:
 		case Jobs::JobIds::Striker3:
-			if (getSkillLevel(Jobs::Striker::EnergyCharge) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::Striker::EnergyCharge) > 0);
 			break;
 	}
 	return has;
@@ -176,22 +171,17 @@ bool PlayerSkills::hasHpIncrease() {
 	bool has = false;
 	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
 		case Jobs::JobTracks::Warrior:
-			if (getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0);
 			break;
 		case Jobs::JobTracks::SoulWarrior:
-			if (getSkillLevel(Jobs::SoulWarrior::ImprovedMaxHpIncrease) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::SoulWarrior::ImprovedMaxHpIncrease) > 0);
 			break;
 		case Jobs::JobTracks::Striker:
-			if (getSkillLevel(Jobs::Striker::ImproveMaxHp) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::Striker::ImproveMaxHp) > 0);
 			break;
 		case Jobs::JobTracks::Pirate:
-			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10)) {
-				if (getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0)
-					has = true;
-			}
+			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
+				has = (getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0);
 			break;
 	}
 	return has;
@@ -221,12 +211,10 @@ bool PlayerSkills::hasMpIncrease() {
 	bool has = false;
 	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
 		case Jobs::JobTracks::Magician:
-			if (getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0);
 			break;
 		case Jobs::JobTracks::FlameWizard:
-			if (getSkillLevel(Jobs::FlameWizard::ImprovedMaxMpIncrease) > 0)
-				has = true;
+			has = (getSkillLevel(Jobs::FlameWizard::ImprovedMaxMpIncrease) > 0);
 			break;
 	}
 	return has;
