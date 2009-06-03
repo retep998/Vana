@@ -951,4 +951,29 @@ namespace Items {
 	};
 }
 
+namespace Mobs {
+	enum {
+		HighDarkstar = 8500003,
+		LowDarkstar = 8500004,
+		HorntailHeadA = 8810002,
+		HorntailHeadB = 8810003,
+		HorntailHeadC = 8810004,
+		HorntailLeftHand = 8810005,
+		HorntailRightHand = 8810006,
+		HorntailWings = 8810007,
+		HorntailLegs = 8810008,
+		HorntailTail = 8810009,
+		DeadHorntailHeadA = 8810010,
+		DeadHorntailHeadB = 8810011,
+		DeadHorntailHeadC = 8810012,
+		DeadHorntailLeftHand = 8810013,
+		DeadHorntailRightHand = 8810014,
+		DeadHorntailWings = 8810015,
+		DeadHorntailLegs = 8810016,
+		DeadHorntailTail = 8810017,
+		HorntailSponge = 8810018,
+		SummonHorntail = 8810026
+	};
+}
+
 #endif

@@ -74,8 +74,8 @@ public:
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
 	void endControl();
-	void cleanHorntail(int32_t mapid, Player *player);
 	void setOwner(Mob *owner) { this->owner = owner; }
+	void setSponge(Mob *sponge) { horntailsponge = sponge; }
 	void setLastSkillUse(uint8_t skill, time_t usetime) { skilluse[skill] = usetime; }
 	void statusPacket(PacketCreator &packet);
 	void addSpawn(int32_t mapmobid, Mob *mob) { spawns[mapmobid] = mob; }
@@ -106,6 +106,7 @@ public:
 	bool hasStatus(int32_t status);
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return owner; }
+	Mob * getSponge() const { return horntailsponge; }
 	MobAttackInfo getAttackInfo(uint8_t id) const { return info.attacks.at(id); }
 	vector<MobSkillInfo> getSkills() const { return info.skills; }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
@@ -127,6 +128,7 @@ private:
 	int32_t counter;
 	int32_t webplayerid;
 	Mob *owner;
+	Mob *horntailsponge;
 	const MobInfo info;
 	bool hasimmunity;
 	unordered_map<int32_t, StatusInfo> statuses;

@@ -86,6 +86,7 @@ status(0x8000000),
 webplayerid(0),
 weblevel(0),
 owner(0),
+horntailsponge(0),
 counter(0),
 hasimmunity(false),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
@@ -101,6 +102,8 @@ control(0)
 }
 
 void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
+	if (damage < 0)
+		damage = 0;
 	if (damage > hp)
 		damage = hp - poison; // Keep HP from hitting 0 for poison and from going below 0
 
@@ -116,29 +119,19 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 			uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
 			MobsPacket::showHp(player, id, percent, info.boss);
 		}
-		Mob *htabusetaker = 0;
-		switch (getMobId()) {
-			case 8810002:
-			case 8810003:
-			case 8810004:
-			case 8810005:
-			case 8810006:
-			case 8810007:
-			case 8810008:
-			case 8810009:
-				htabusetaker = Maps::getMap(getMapId())->getMob(8810018, false);
-				break;
-		}
-		if (htabusetaker != 0) {
-			htabusetaker->applyDamage(playerid, damage, false);
-		}
+		Mob *sponge = getSponge(); // Need to preserve the pointer through mob deletion in die()
 		if (hp == 0) { // Time to die
-			if (mobid == 8810018) { // Horntail damage sponge, we want to be sure that his parts have spawned after death before we clean up
-				new Timer::Timer(bind(&Mob::cleanHorntail, this, mapid, player),
-					Timer::Id(Timer::Types::HorntailTimer, id, 0),
-					0, Timer::Time::fromNow(500));
+			if (getMobId() == Mobs::HorntailSponge) { // Horntail damage sponge
+				for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
+					new Timer::Timer(bind(&Mob::die, spawniter->second, true),
+						Timer::Id(Timer::Types::HorntailTimer, id, spawniter->first),
+						0, Timer::Time::fromNow(400));
+				}
 			}
 			die(Players::Instance()->getPlayer(playerid));
+		}
+		if (sponge != 0) {
+			sponge->applyDamage(playerid, damage, false); // Apply damage after you can be sure that all the units are linked and ready
 		}
 	}
 }
@@ -210,17 +203,19 @@ bool Mob::hasStatus(int32_t status) {
 }
 
 void Mob::removeStatus(int32_t status) {
-	if (status == StatusEffects::Mob::WeaponImmunity || status == StatusEffects::Mob::MagicImmunity)
-		setImmunity(false);
-	if (status == StatusEffects::Mob::ShadowWeb) {
-		weblevel = 0;
-		webplayerid = 0;
+	if (hasStatus(status)) {
+		if (status == StatusEffects::Mob::WeaponImmunity || status == StatusEffects::Mob::MagicImmunity)
+			setImmunity(false);
+		if (status == StatusEffects::Mob::ShadowWeb) {
+			weblevel = 0;
+			webplayerid = 0;
+		}
+		this->status -= status;
+		statuses.erase(status);
+		if (status == StatusEffects::Mob::Poison) // Stop poison damage timer
+			getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 1));
+		MobsPacket::removeStatus(this, status);
 	}
-	this->status -= status;
-	statuses.erase(status);
-	if (status == StatusEffects::Mob::Poison) // Stop poison damage timer
-		getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 1));
-	MobsPacket::removeStatus(this, status);
 }
 
 void Mob::setControl(Player *control) {
@@ -238,16 +233,10 @@ void Mob::endControl() {
 
 void Mob::die(Player *player, bool fromexplosion) {
 	endControl();
+
+	// Calculate EXP distribution
 	int32_t highestdamager = 0;
 	uint32_t highestdamage = 0;
-	if (spawns.size() > 0) {
-		for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
-			spawniter->second->setOwner(0);
-		}
-	}
-	if (getOwner() != 0) {
-		owner->removeSpawn(getId());
-	}
 	for (unordered_map<int32_t, uint32_t>::iterator iter = damages.begin(); iter != damages.end(); iter++) {
 		if (iter->second > highestdamage) { // Find the highest damager to give drop ownership
 			highestdamager = iter->first;
@@ -269,15 +258,51 @@ void Mob::die(Player *player, bool fromexplosion) {
 	}
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
-	for (size_t i = 0; i < info.summon.size(); i++) {
-		Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
+	if (getMobId() == Mobs::SummonHorntail) { // Special Horntail logic to keep Horntail units linked
+		int32_t spongeid = 0;
+		vector<int32_t> parts;
+		for (size_t i = 0; i < info.summon.size(); i++) {
+			int32_t spawnid = info.summon[i];
+			if (spawnid == Mobs::HorntailSponge)
+				spongeid = Maps::getMap(mapid)->spawnMob(spawnid, m_pos, -1, getFh(), this);
+			else {
+				int32_t identifier = Maps::getMap(mapid)->spawnMob(spawnid, m_pos, -1, getFh(), this);
+				parts.push_back(identifier);
+			}
+		}
+		Mob *htsponge = Maps::getMap(mapid)->getMob(spongeid);
+		for (size_t m = 0; m < parts.size(); m++) {
+			Mob *f = Maps::getMap(mapid)->getMob(parts[m]);
+			f->setSponge(htsponge);
+			htsponge->addSpawn(parts[m], f);
+		}
+	}
+	else if (getSponge() != 0) { // More special Horntail logic to keep units linked
+		getSponge()->removeSpawn(getId());
+		for (size_t i = 0; i < info.summon.size(); i++) {
+			int32_t ident = Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
+			Mob *mob = Maps::getMap(mapid)->getMob(ident);
+			getSponge()->addSpawn(ident, mob);
+		}
+	}
+	else {
+		for (size_t i = 0; i < info.summon.size(); i++) {
+			Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
+		}
 	}
 
-	if (fromexplosion)
-		MobsPacket::dieMob(this, 4);
-	else
-		MobsPacket::dieMob(this, 1);
+	// Spawn stuff
+	if (spawns.size() > 0) {
+		for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
+			spawniter->second->setOwner(0);
+		}
+	}
+	if (getOwner() != 0) {
+		owner->removeSpawn(getId());
+	}
 
+	// Ending of death stuff
+	MobsPacket::dieMob(this, fromexplosion ? 4 : 1);
 	Drops::doDrops(highestdamager, mapid, mobid, getPos());
 
 	if (player != 0)
@@ -309,12 +334,6 @@ void Mob::die(bool showpacket) {
 	delete this;
 }
 
-void Mob::cleanHorntail(int32_t mapid, Player *player) {
-	for (int8_t q = 0; q < 8; q++) {
-		Maps::getMap(mapid)->killMobs(player, (8810010 + q)); // Dead Horntail's parts
-	}
-}
-
 void Mob::skillHeal(int32_t healhp, int32_t healmp) {
 	int32_t minamount, maxamount, range, amount;
 	minamount = healhp * 10 / 15;
@@ -326,43 +345,36 @@ void Mob::skillHeal(int32_t healhp, int32_t healmp) {
 	maxamount = healmp * 15 / 10;
 	range = maxamount - minamount;
 	mp += Randomizer::Instance()->randInt(range) + minamount;
+	if (getSponge() != 0)
+		getSponge()->skillHeal(healhp, 0);
 	if (hp > getMHp() || hp < 0)
 		hp = getMHp();
 	if (mp > getMMp() || mp < 0)
 		mp = getMMp();
-	MobsPacket::healMob(this, amount);
+	if (getMobId() != Mobs::HorntailSponge)
+		MobsPacket::healMob(this, amount);
 }
 
 void Mob::dispelBuffs() {
-	if (hasStatus(StatusEffects::Mob::Watk))
-		removeStatus(StatusEffects::Mob::Watk);
-	if (hasStatus(StatusEffects::Mob::Wdef))
-		removeStatus(StatusEffects::Mob::Wdef);
-	if (hasStatus(StatusEffects::Mob::Matk))
-		removeStatus(StatusEffects::Mob::Matk);
-	if (hasStatus(StatusEffects::Mob::Mdef))
-		removeStatus(StatusEffects::Mob::Mdef);
-	if (hasStatus(StatusEffects::Mob::Acc))
-		removeStatus(StatusEffects::Mob::Acc);
-	if (hasStatus(StatusEffects::Mob::Avoid))
-		removeStatus(StatusEffects::Mob::Avoid);
-	if (hasStatus(StatusEffects::Mob::Speed))
-		removeStatus(StatusEffects::Mob::Speed);
+	removeStatus(StatusEffects::Mob::Watk);
+	removeStatus(StatusEffects::Mob::Wdef);
+	removeStatus(StatusEffects::Mob::Matk);
+	removeStatus(StatusEffects::Mob::Mdef);
+	removeStatus(StatusEffects::Mob::Acc);
+	removeStatus(StatusEffects::Mob::Avoid);
+	removeStatus(StatusEffects::Mob::Speed);
 }
 
 void Mob::doCrashSkill(int32_t skillid) {
 	switch (skillid) {
 		case Jobs::Crusader::ArmorCrash:
-			if (hasStatus(StatusEffects::Mob::Wdef))
-				removeStatus(StatusEffects::Mob::Wdef);
+			removeStatus(StatusEffects::Mob::Wdef);
 			break;
 		case Jobs::WhiteKnight::MagicCrash:
-			if (hasStatus(StatusEffects::Mob::Matk))
-				removeStatus(StatusEffects::Mob::Matk);
+			removeStatus(StatusEffects::Mob::Matk);
 			break;
 		case Jobs::DragonKnight::PowerCrash:
-			if (hasStatus(StatusEffects::Mob::Watk))
-				removeStatus(StatusEffects::Mob::Watk);
+			removeStatus(StatusEffects::Mob::Watk);
 			break;
 	}
 }
@@ -408,48 +420,43 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 			vector<MobSkillInfo> hurf = mob->getSkills();
 			bool used = false;
 			if (hurf.size()) {
-				bool keepgoing = true;
+				bool stop = false;
 				uint8_t rand = (uint8_t)(Randomizer::Instance()->randInt() % hurf.size());
 				realskill = hurf[rand].skillid;
 				level = hurf[rand].level;
 				MobSkillLevelInfo mobskill = Skills::mobskills[realskill][level];
 				switch (realskill) {
-					case 100:
-					case 110:
-						if (mob->hasStatus(StatusEffects::Mob::Watk))
-							keepgoing = false;
+					case MobSkills::WeaponAttackUp:
+					case MobSkills::WeaponAttackUpAoe:
+						stop = mob->hasStatus(StatusEffects::Mob::Watk);
 						break;
-					case 101:
-					case 111:
-						if (mob->hasStatus(StatusEffects::Mob::Matk))
-							keepgoing = false;
+					case MobSkills::MagicAttackUp:
+					case MobSkills::MagicAttackUpAoe:
+						stop = mob->hasStatus(StatusEffects::Mob::Matk);
 						break;
-					case 102:
-					case 112:
-						if (mob->hasStatus(StatusEffects::Mob::Wdef))
-							keepgoing = false;
+					case MobSkills::WeaponDefenseUp:
+					case MobSkills::WeaponDefenseUpAoe:
+						stop = mob->hasStatus(StatusEffects::Mob::Wdef);
 						break;
-					case 103:
-					case 113:
-						if (mob->hasStatus(StatusEffects::Mob::Mdef))
-							keepgoing = false;
+					case MobSkills::MagicDefenseUp:
+					case MobSkills::MagicDefenseUpAoe:
+						stop = mob->hasStatus(StatusEffects::Mob::Mdef);
 						break;					
-					case 140:
-					case 141:
-						if (mob->hasImmunity())
-							keepgoing = false;
+					case MobSkills::WeaponImmunity:
+					case MobSkills::MagicImmunity:
+						stop = mob->hasImmunity();
 						break;
-					case 200: {
+					case MobSkills::Summon: {
 						int16_t spawns = (int16_t)(mob->getSpawns().size());
 						int16_t limit = mobskill.limit;
 						if (limit == 5000) // Custom limit based on number of players on map
 							limit = 30 + Maps::getMap(mob->getMapId())->getNumPlayers() * 2;
 						if (spawns >= limit)
-							keepgoing = false;
+							stop = true;
 						break;
 					}
 				}
-				if (keepgoing) {
+				if (!stop) {
 					time_t now = time(0);
 					time_t ls = mob->getLastSkillUse(realskill);
 					if (ls == 0 || ((int16_t)(now - ls) > mobskill.interval)) {
@@ -566,14 +573,15 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 				int16_t moby = Randomizer::Instance()->randShort(rangey) + miny;
 				Pos floor;
 				if (mob->getMapId() == 220080001) { // Papulatus' map
-					if (spawnid == 8500003) { // Keep High Darkstars high
-						while ((floor.y > -538 || floor.y == moby) || !GameLogicUtilities::isInBox(mob->getPos(), skillinfo.lt, skillinfo.rb, floor)) { // Mobs spawn on the ground, we need them up top
+					if (spawnid == Mobs::HighDarkstar) { // Keep High Darkstars high
+						while ((floor.y > -538 || floor.y == moby) || !GameLogicUtilities::isInBox(mob->getPos(), skillinfo.lt, skillinfo.rb, floor)) {
+							// Mobs spawn on the ground, we need them up top
 							mobx = Randomizer::Instance()->randShort(rangex) + minx;
 							moby = -590;
 							floor = map->findFloor(Pos(mobx, moby));
 						}
 					}
-					else if (spawnid == 8500004) { // Keep Low Darkstars low
+					else if (spawnid == Mobs::LowDarkstar) { // Keep Low Darkstars low
 						floor = map->findFloor(Pos(mobx, mobpos.y));
 					}
 				}
@@ -589,11 +597,12 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 		}
 	}
 	if (pushed) {
-		skillid = (skillid / 10) * 10 % 100;
-		if (skillid == 0)
-			mob->addStatus(0, statuses);
-		if (skillid == 10)
+		if (GameLogicUtilities::isAoeMobSkill(skillid)) {
 			map->statusMobs(statuses, mob->getPos(), skillinfo.lt, skillinfo.rb);
+		}
+		else {
+			mob->addStatus(0, statuses);
+		}
 	}
 }
 
