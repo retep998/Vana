@@ -6,6 +6,6 @@ CREATE TABLE `mounts` (
   `tiredness` int(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`charid`,`mountid`),
   KEY `mountid` (`mountid`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+);
 
-DELETE FROM `items` WHERE FLOOR(itemid / 10000) = 190;
+INSERT INTO mounts (`charid`, `mountid`) SELECT `charid`, `itemid` FROM `items` WHERE FLOOR(items.itemid / 10000) = 190;
