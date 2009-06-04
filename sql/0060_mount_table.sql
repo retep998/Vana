@@ -8,4 +8,4 @@ CREATE TABLE `mounts` (
   KEY `mountid` (`mountid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
-DELETE FROM `items` WHERE FLOOR(`items.itemid` / 10000) = 190;
+DELETE FROM `items` WHERE FLOOR(itemid / 10000) = 190;
