@@ -53,6 +53,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<uint8_t>(enter.types[Byte2]);
 	packet.add<uint8_t>(enter.types[Byte3]);
 	packet.add<uint8_t>(enter.types[Byte4]);
+
 	const int8_t byteorder[BuffBytes::EntryByteQuantity] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
 
 	for (int8_t i = 0; i < BuffBytes::EntryByteQuantity; i++) {
