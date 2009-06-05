@@ -15,9 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#ifndef VERSIONCONSTANTS_H
+#define VERSIONCONSTANTS_H
 
-// No need for header guard, this precompiled header file will never
-// be included twice.
+#include "GameConstants.h"
 
-#include "../Common/PrecompiledHeader.h" // Common project precompiled header
-#include "Player.h"
+namespace Levels {
+	extern uint32_t exps[Stats::PlayerLevels - 1];
+}
+
+namespace TradeHandler {
+	int32_t getTaxLevel(int32_t mesos);
+}
+
+#endif

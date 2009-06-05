@@ -1,7 +1,6 @@
 set(SOURCES
 	BuddyListHandler.h
 	BuddyListPacket.h
-	BuffHolder.h
 	Buffs.h
 	BuffsPacket.h
 	ChannelServer.h
@@ -51,8 +50,10 @@ set(SOURCES
 	PlayerBuddyList.h
 	PlayerHandler.h
 	PlayerInventory.h
+	PlayerMounts.h
 	PlayerPacket.h
 	PlayerPacketHelper.h
+	PlayerPacketHolder.h
 	PlayerPets.h
 	PlayerQuests.h
 	Players.h
@@ -61,7 +62,6 @@ set(SOURCES
 	PlayerStorage.h
 	PlayerSummons.h
 	PlayerVariables.h
-	PrecompiledHeader.h
 	Quests.h
 	QuestsPacket.h
 	ReactorPacket.h
@@ -79,12 +79,12 @@ set(SOURCES
 	Trades.h
 	TradesPacket.h
 	Variables.h
+	VersionConstants.h
 	WorldServerConnectHandler.h
 	WorldServerConnectPacket.h
 	WorldServerConnectPlayer.h
 	BuddyListHandler.cpp
 	BuddyListPacket.cpp
-	BuffHolder.cpp
 	Buffs.cpp
 	BuffsPacket.cpp
 	ChannelServer.cpp
@@ -130,8 +130,10 @@ set(SOURCES
 	PlayerBuddyList.cpp
 	PlayerHandler.cpp
 	PlayerInventory.cpp
+	PlayerMounts.cpp
 	PlayerPacket.cpp
 	PlayerPacketHelper.cpp
+	PlayerPacketHolder.cpp
 	PlayerPets.cpp
 	PlayerQuests.cpp
 	Players.cpp
@@ -140,7 +142,6 @@ set(SOURCES
 	PlayerStorage.cpp
 	PlayerSummons.cpp
 	PlayerVariables.cpp
-	PrecompiledHeader.cpp
 	Quests.cpp
 	QuestsPacket.cpp
 	ReactorPacket.cpp
@@ -158,6 +159,7 @@ set(SOURCES
 	Trades.cpp
 	TradesPacket.cpp
 	Variables.cpp
+	VersionConstants.cpp
 	WorldServerConnectHandler.cpp
 	WorldServerConnectPacket.cpp
 	WorldServerConnectPlayer.cpp

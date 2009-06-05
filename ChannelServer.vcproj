@@ -214,10 +214,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\BuffHolder.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Buffs.cpp"
 					>
 				</File>
@@ -518,6 +514,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerMounts.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerPacketHolder.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerPets.cpp"
 					>
 				</File>
@@ -554,25 +558,25 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Constants"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\VersionConstants.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\src\ChannelServer\PrecompiledHeader.h"
-				>
-			</File>
 			<Filter
 				Name="ChannelServer"
 				>
 				<File
 					RelativePath=".\src\ChannelServer\BuddyListHandler.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\BuffHolder.h"
 					>
 				</File>
 				<File
@@ -880,6 +884,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerMounts.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerPacketHolder.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerPets.h"
 					>
 				</File>
@@ -929,6 +941,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\InstanceMessageConstants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\VersionConstants.h"
 					>
 				</File>
 			</Filter>

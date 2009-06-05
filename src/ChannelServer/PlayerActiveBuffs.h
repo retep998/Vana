@@ -30,6 +30,8 @@ using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 using std::vector;
 
+class PacketCreator;
+class PacketReader;
 class Player;
 
 namespace Timer {
@@ -134,14 +136,24 @@ public:
 	const bool hasHolySymbol();
 	const bool hasPowerStance();
 	const bool hasMagicGuard();
+	const bool hasMesoGuard();
 	const bool hasHyperBody();
 	const bool hasHolyShield();
+	const bool hasShadowPartner();
+	const bool hasShadowStars();
+	const bool hasSoulArrow();
 	const bool isUsingHide();
 	const bool isCursed();
 	const int32_t getHolySymbol();
 	const int32_t getPowerStance();
 	const int32_t getHyperBody();
 	const int32_t getCurrentMorph();
+	const int32_t getMagicGuard();
+	const int32_t getMesoGuard();
+
+	// Packet marshaling
+	void getBuffTransferPacket(PacketCreator &packet);
+	void parseBuffTransferPacket(PacketReader &packet);
 private:
 	Player *m_player;
 	uint8_t m_combo;

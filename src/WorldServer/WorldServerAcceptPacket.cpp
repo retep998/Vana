@@ -57,7 +57,7 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t 
 
 void WorldServerAcceptPacket::sendBuffsToChannel(uint16_t channel, int32_t playerid, PacketReader &buffer) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_TRANSFER_BUFFS);
+	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET);
 	packet.add<int32_t>(playerid);
 	packet.addBuffer(buffer);
 	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
@@ -65,7 +65,7 @@ void WorldServerAcceptPacket::sendBuffsToChannel(uint16_t channel, int32_t playe
 
 void WorldServerAcceptPacket::sendBuffRemoval(uint16_t channel, int32_t playerid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_TRANSFER_BUFFS_DISCONNECT);
+	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET_DISCONNECT);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
 }

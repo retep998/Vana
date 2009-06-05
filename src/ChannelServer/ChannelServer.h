@@ -39,6 +39,7 @@ public:
 	void loadData();
 	void loadConfig();
 	void listen();
+	void shutdown();
 	void connectWorld();
 	void sendToWorld(PacketCreator &packet);
 
@@ -46,7 +47,7 @@ public:
 	void setMaxMultiLevel(uint8_t level) { maxMultiLevel = level; }
 	void setWorldPort(uint16_t port) { world_port = port; }
 	void setPort(uint16_t port) { this->port = port; }
-	void setChannel(uint16_t channel) { this->channel = channel; }
+	void setChannel(int16_t channel) { this->channel = channel; }
 	void setExprate(int32_t exprate) { this->exprate = exprate; }
 	void setQuestExprate(int32_t questexprate) { this->questexprate = questexprate; }
 	void setMesorate(int32_t mesorate) { this->mesorate = mesorate; }
@@ -58,7 +59,7 @@ public:
 	int8_t getWorld() const { return world; }
 	uint8_t getMaxMultiLevel() const { return maxMultiLevel; }
 	int16_t getMaxStats() const { return maxStats; }
-	uint16_t getChannel() const { return channel; }
+	int16_t getChannel() const { return channel; }
 	int32_t getOnlineId() const { return 20000 + (int32_t) world * 100 + channel; }
 	int32_t getExprate() const { return exprate; }
 	int32_t getQuestExprate() const { return questexprate; }
@@ -66,8 +67,10 @@ public:
 	int32_t getDroprate() const { return droprate; }
 	string getScrollingHeader() const { return scrollingHeader; }
 	WorldServerConnectPlayer * getWorldPlayer() const { return worldPlayer; }
+	
+	bool isConnected() const { return channel != -1; }
 private:
-	ChannelServer() {};
+	ChannelServer() : channel(-1) {};
 	static ChannelServer *singleton;
 
 	WorldServerConnectPlayer *worldPlayer;
@@ -76,7 +79,7 @@ private:
 	uint8_t maxMultiLevel;
 	int16_t maxStats;
 	uint16_t world_port;
-	uint16_t channel;
+	int16_t channel;
 	uint16_t login_inter_port;
 	uint16_t port;
 	int32_t exprate;

@@ -19,42 +19,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define BUFFHOLDER_H
 
 #include "Types.h"
+#include <boost/shared_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
-#include <vector>
 
 using std::tr1::unordered_map;
-using std::vector;
 
 class PacketReader;
-class PlayerActiveBuffs;
 
-struct BuffStorage {
-	BuffStorage() : skillid(0), timeleft(0), level(0) { }
-	int32_t skillid;
-	int32_t timeleft;
-	uint8_t level;
-};
-
-class BuffHolder : boost::noncopyable {
+class PlayerPacketHolder : boost::noncopyable {
 public:
-	static BuffHolder * Instance() {
+	static PlayerPacketHolder * Instance() {
 		if (singleton == 0)
-			singleton = new BuffHolder;
+			singleton = new PlayerPacketHolder;
 		return singleton;
 	}
 
-	void parseIncomingBuffs(PacketReader &packet);
-	void removeBuffs(int32_t playerid);
+	void parseIncomingPacket(PacketReader &packet);
+	void removePacket(int32_t playerid);
 	bool checkPlayer(int32_t playerid);
-	PlayerActiveBuffs * getBuffs(int32_t playerid);
-	vector<BuffStorage> getStoredBuffs(int32_t playerid);
+	PacketReader & getPacket(int32_t playerid);
 private:
-	BuffHolder() {};
-	static BuffHolder *singleton;
+	PlayerPacketHolder() {};
+	static PlayerPacketHolder *singleton;
 
-	unordered_map<int32_t, PlayerActiveBuffs *> m_map;
-	unordered_map<int32_t, vector<BuffStorage> > m_buff_map;
+	unordered_map<int32_t, boost::shared_ptr<PacketReader> > m_map;
 };
 
 #endif

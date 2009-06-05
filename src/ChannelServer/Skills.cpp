@@ -59,7 +59,7 @@ void Skills::addSkill(Player *player, PacketReader &packet) {
 			// hacking
 			return;
 		}
-		if (!player->isGm() && ((skillid / 1000000 != player->getJob() / 100) || (skillid / 10000 > player->getJob()))) {
+		if (!player->isGm() && !GameLogicUtilities::skillMatchesJob(skillid, player->getJob())) {
 			// hacking
 			return;
 		}
@@ -88,7 +88,7 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			if (skillid == Jobs::SuperGm::Hide) // GM Hide
 				MapPacket::showPlayer(player);
 			player->getActiveBuffs()->removeBuff(skillid, fromTimer);
-			if (skillid > 100 && skillid < 200)
+			if (GameLogicUtilities::isMobSkill(skillid))
 				Buffs::Instance()->endDebuff(player, (uint8_t)(skillid));
 			else
 				Buffs::Instance()->endBuff(player, skillid);
@@ -328,17 +328,12 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 			int16_t mploss = (mpuse * mprate) / 100;
 			player->modifyMp(-mploss, true);
 		}
+		else if (elementalamp && player->getSkills()->hasElementalAmp()) {
+			int32_t sid = player->getSkills()->getElementalAmp();
+			player->modifyMp(-1 * (mpuse * skills[sid][player->getSkills()->getSkillLevel(sid)].x / 100), true);
+		}
 		else {
-			if (elementalamp) {
-				int32_t sid = ((player->getJob() / 10) == 22 ? (int32_t)Jobs::ILMage::ElementAmplification : (int32_t)Jobs::FPMage::ElementAmplification);
-				int8_t slv = player->getSkills()->getSkillLevel(sid);
-				if (slv > 0)
-					player->modifyMp(-1 * (mpuse * skills[sid][slv].x / 100), true);
-				else
-					player->modifyMp(-mpuse, true);
-			}
-			else
-				player->modifyMp(-mpuse, true);
+			player->modifyMp(-mpuse, true);
 		}
 	}
 	else
@@ -371,7 +366,7 @@ void Skills::useAttackSkill(Player *player, int32_t skillid) {
 	applySkillCosts(player, skillid, level, true);
 }
 
-void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display) {
+void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos) {
 	uint8_t level = 0;
 	if (skillid != 0) {
 		level = player->getSkills()->getSkillLevel(skillid);
@@ -382,11 +377,10 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, 
 	uint16_t hits = 1;
 	if (skills[skillid][level].bulletcon > 0)
 		hits = skills[skillid][level].bulletcon;
-	if (display == 0x08)
-		hits = hits * 2;
-	if (pos > 0 && (!((display & 0x40) == 0x40 || display == 0x02)))
-		// Display is 0x40 for Shadow Claw and 0x48 for Shadow Claw + Shadow Partner
-		// Bitwise and with 0x40 will make it 0x40 for both
+	if (player->getActiveBuffs()->hasShadowPartner())
+		hits *= 2;
+	if (pos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow()))
+		// If they don't have Shadow Stars or Soul Arrow, take the items
 		Inventory::takeItemSlot(player, 2, pos, hits);
 }
 

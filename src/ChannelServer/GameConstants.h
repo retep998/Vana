@@ -51,6 +51,7 @@ enum ItemTypes {
 	WeaponClaw = 147,
 	WeaponKnuckle = 148,
 	WeaponGun = 149,
+	Mount = 190,
 	ItemArrow = 206,
 	ItemStar = 207,
 	ItemBullet = 233
@@ -86,6 +87,14 @@ enum SkillValues {
 };
 
 enum ByteTypes {
+	Byte13,
+	Byte14,
+	Byte15,
+	Byte16,
+	Byte9,
+	Byte10,
+	Byte11,
+	Byte12,
 	Byte5,
 	Byte6,
 	Byte7,
@@ -95,6 +104,122 @@ enum ByteTypes {
 	Byte3,
 	Byte4
 };
+
+namespace BuffBytes {
+	const int8_t ByteQuantity = 16;
+	const int8_t EntryByteQuantity = 8;
+}
+
+namespace Stats {
+	const uint8_t PlayerLevels = 200;
+	const uint8_t PetLevels = 30;
+	const int16_t MaxMaxHp = 30000;
+	const int16_t MinMaxHp = 1;
+	const int16_t MaxMaxMp = 30000;
+	const int16_t MinMaxMp = 1;
+	const int16_t MaxFame = 30000;
+	const int16_t MinFame = -30000;
+	const int16_t MaxCloseness = 30000;
+	const int16_t ApPerLevel = 5;
+	const int16_t SpPerLevel = 3;
+	const int8_t MaxFullness = 100;
+	const int8_t MinFullness = 0;
+	const int8_t PetFeedFullness = 30;
+
+	namespace BaseHp {
+		const int16_t Variation = 4; // This is the range of HP that the server will give
+
+		const int16_t Beginner = 12; // These are base HP values rewarded on level up
+		const int16_t Warrior = 24;
+		const int16_t Magician = 10;
+		const int16_t Bowman = 20;
+		const int16_t Thief = 20;
+		const int16_t Pirate = 22;
+		const int16_t Gm = 150;
+
+		const int16_t BeginnerAp = 8; // These are base HP values rewarded on AP distribution
+		const int16_t WarriorAp = 20;
+		const int16_t MagicianAp = 8;
+		const int16_t BowmanAp = 16;
+		const int16_t ThiefAp = 16;
+		const int16_t PirateAp = 18;
+		const int16_t GmAp = 16;
+	}
+	namespace BaseMp {
+		const int16_t Variation = 2; // This is the range of MP that the server will give
+
+		const int16_t Beginner = 10; // These are base MP values rewarded on level up
+		const int16_t Warrior = 4;
+		const int16_t Magician = 6;
+		const int16_t Bowman = 14;
+		const int16_t Thief = 14;
+		const int16_t Pirate = 18;
+		const int16_t Gm = 150;
+
+		const int16_t BeginnerAp = 6; // These are base MP values rewarded on AP distribution
+		const int16_t WarriorAp = 2;
+		const int16_t MagicianAp = 18;
+		const int16_t BowmanAp = 10;
+		const int16_t ThiefAp = 10;
+		const int16_t PirateAp = 14;
+		const int16_t GmAp = 10;
+	}
+	enum Constants {
+		Skin = 0x01,
+		Eyes = 0x02,
+		Hair = 0x04,
+		// 0x08?
+		Level = 0x10,
+		Job = 0x20,
+		Str = 0x40,
+		Dex = 0x80,
+		Int = 0x100,
+		Luk = 0x200,
+		Hp = 0x400,
+		MaxHp = 0x800,
+		Mp = 0x1000,
+		MaxMp = 0x2000,
+		Ap = 0x4000,
+		Sp = 0x8000,
+		Exp = 0x10000,
+		Fame = 0x20000,
+		Mesos = 0x40000
+	};
+}
+
+namespace Inventories {
+	const uint8_t InventoryCount = 5;
+	const uint8_t EquipInventory = 1;
+	const uint8_t UseInventory = 2;
+	const uint8_t SetupInventory = 3;
+	const uint8_t EtcInventory = 4;
+	const uint8_t CashInventory = 5;
+	const int8_t MaxPetCount = 3;
+}
+
+namespace FieldLimitBits {
+	enum Limit {
+		Jump = 0x01,
+		MovementSkills = 0x02,
+		SummoningBag = 0x04,
+		MysticDoor = 0x08,
+		ChannelSwitch = 0x10,
+		RegularExpLoss = 0x20,
+		VipRock = 0x40,
+		Minigames = 0x80,
+		NoClue1 = 0x100, // APQ and a couple quest maps have this
+		Mount = 0x200,
+		NoClue2 = 0x400, // Monster carnival?
+		NoClue3 = 0x800, // Monster carnival?
+		PotionUse = 0x1000,
+		NoClue4 = 0x2000, // No notes
+		Unused = 0x4000,
+		NoClue5 = 0x8000, // Ariant colosseum-related?
+		NoClue6 = 0x10000, // No notes
+		DropDown = 0x20000,
+		NoClue7 = 0x40000 // Seems to .. disable Rush if 0x2 is set
+	};
+}
 
 namespace StatusEffects {
 	namespace Mob {
@@ -188,8 +313,66 @@ namespace EquipSlots {
 	};
 }
 
-// Skills so there are fewer magic numbers
+// Skills and jobs so there are fewer magic numbers
 namespace Jobs {
+	namespace JobTracks {
+		enum Tracks {
+			Beginner = 0,
+			Warrior = 1,
+			Magician = 2,
+			Bowman = 3,
+			Thief = 4,
+			Pirate = 5
+		};
+	}
+	namespace JobIds {
+		enum Jobs {
+			Beginner = 0,
+			Swordsman = 100,
+			Fighter = 110,
+			Crusader = 111,
+			Hero = 112,
+			Page = 120,
+			WhiteKnight = 121,
+			Paladin = 122,
+			Spearman = 130,
+			DragonKnight = 131,
+			DarkKnight = 132,
+			Magician = 200,
+			FPWizard = 210,
+			FPMage = 211,
+			FPArchMage = 212,
+			ILWizard = 220,
+			ILMage = 221,
+			ILArchMage = 222,
+			Cleric = 230,
+			Priest = 231,
+			Bishop = 232,
+			Archer = 300,
+			Hunter = 310,
+			Ranger = 311,
+			Bowmaster = 312,
+			Crossbowman = 320,
+			Sniper = 321,
+			Marksman = 322,
+			Rogue = 400,
+			Assassin = 410,
+			Hermit = 411,
+			NightLord = 412,
+			Bandit = 420,
+			ChiefBandit = 421,
+			Shadower = 422,
+			Pirate = 500,
+			Infighter = 510,
+			Marauder = 511,
+			Buccaneer = 512,
+			Gunslinger = 520,
+			Outlaw = 521,
+			Corsair = 522,
+			Gm = 900,
+			SuperGm = 910
+		};
+	}
 	namespace Beginner {
 		enum Skills {
 			EchoOfHero = 1005,
@@ -306,14 +489,13 @@ namespace Jobs {
 			PowerStance = 1321002
 		};
 	}
-
 	namespace Magician {
 		enum Skills {
 			ImprovedMaxMpIncrease = 2000001,
 			MagicArmor = 2001003,
 			MagicGuard = 2001002
 		};
-	};
+	}
 	namespace FPWizard {
 		enum Skills {
 			Meditation = 2101001,
@@ -492,10 +674,10 @@ namespace Jobs {
 			MapleWarrior = 4121000,
 			NinjaAmbush = 4121004,
 			NinjaStorm = 4121008,
-			ShadowClaw = 4121006,
 			ShadowShifter = 4120002,
+			ShadowStars = 4121006,
 			Taunt = 4121003,
-			VenomousStar = 4120005,
+			VenomousStar = 4120005
 		};
 	}
 	namespace Bandit {
@@ -506,7 +688,6 @@ namespace Jobs {
 			Steal = 4201004
 		};
 	}
-
 	namespace ChiefBandit {
 		enum Skills {
 			Assaulter = 4211002,
@@ -548,6 +729,7 @@ namespace Jobs {
 	namespace Marauder {
 		enum Skills {
 			EnergyCharge = 5110001,
+			EnergyDrain = 5111004,
 			StunMastery = 5110000,
 			Transformation = 5111005
 		};
@@ -614,12 +796,65 @@ namespace Jobs {
 	}
 }
 
-namespace GmSuit {
+namespace Items {
 	enum {
-		Hat = 1002140,
-		Top = 1042003,
-		Bottom = 1062007,
-		Weapon = 1322013
+		// Equip
+		GmHat = 1002140,
+		GmTop = 1042003,
+		GmBottom = 1062007,
+		GmWeapon = 1322013,
+		BattleshipMount = 1932000,
+
+		// Use
+		ShoeSpikes = 2040727,
+		CapeColdProtection = 2041058,
+		WhiteScroll = 2340000,
+
+		// Cash
+		ApReset = 5050000,
+		FirstJobSpReset = 5050001,
+		SecondJobSpReset = 5050002,
+		ThirdJobSpReset = 5050003,
+		FourthJobSpReset = 5050004,
+		ItemNameTag = 5060000,
+		ItemLock = 5060001,
+		Megaphone = 5071000,
+		SuperMegaphone = 5072000,
+		MapleTvMessenger = 5075000,
+		MapleTvStarMessenger = 5075001,
+		MapleTvHeartMessenger = 5075002,
+		PetNameTag = 5170000,
+		FungusScroll = 5300000,
+		OinkerDelight = 5300001,
+		ZetaNightmare = 5300002,
+		DiabloMessenger = 5390000,
+		Cloud9Messenger = 5390001,
+		LoveholicMessenger = 5390002
+	};
+}
+
+namespace Mobs {
+	enum {
+		HighDarkstar = 8500003,
+		LowDarkstar = 8500004,
+		HorntailHeadA = 8810002,
+		HorntailHeadB = 8810003,
+		HorntailHeadC = 8810004,
+		HorntailLeftHand = 8810005,
+		HorntailRightHand = 8810006,
+		HorntailWings = 8810007,
+		HorntailLegs = 8810008,
+		HorntailTail = 8810009,
+		DeadHorntailHeadA = 8810010,
+		DeadHorntailHeadB = 8810011,
+		DeadHorntailHeadC = 8810012,
+		DeadHorntailLeftHand = 8810013,
+		DeadHorntailRightHand = 8810014,
+		DeadHorntailWings = 8810015,
+		DeadHorntailLegs = 8810016,
+		DeadHorntailTail = 8810017,
+		HorntailSponge = 8810018,
+		SummonHorntail = 8810026
 	};
 }
 

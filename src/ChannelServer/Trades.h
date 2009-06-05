@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef TRADES_H
 #define TRADES_H
 
-#include "Trade.h"
 #include "Types.h"
+#include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
@@ -28,7 +28,9 @@ using std::tr1::unordered_map;
 
 class ActiveTrade;
 class Player;
-class PacketReader;
+namespace Timer {
+	class Container;
+};
 
 class Trades : boost::noncopyable {
 public:
@@ -38,14 +40,24 @@ public:
 		return singleton;
 	}
 
-	void addTrade(ActiveTrade *trade);
+	int32_t newTrade(Player *start, Player *recv);
 	void removeTrade(int32_t id);
+	void stopTimeout(int32_t id);
 	ActiveTrade * getTrade(int32_t id);
 private:
-	Trades() {};
+	Trades();
 	static Trades *singleton;
+	const static int32_t TradeTimeout = 180; // Trade timeout in seconds
 
+	boost::scoped_ptr<Timer::Container> container;
 	unordered_map<int32_t, boost::shared_ptr<ActiveTrade> > trades;
+	int32_t ids;
+
+	Timer::Container * getContainer() const { return container.get(); }
+	int32_t getNewId() { return ++ids; }
+	int32_t checkTimer(int32_t id);
+	void timeout(Player *sender);
+	void startTimeout(int32_t id, Player *sender);
 };
 
 #endif

@@ -28,6 +28,7 @@ struct Pos;
 
 class PacketReader {
 public:
+	PacketReader();
 	PacketReader(unsigned char *buffer, size_t length);
 
 	template<typename T>

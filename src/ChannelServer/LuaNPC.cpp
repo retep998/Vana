@@ -130,7 +130,13 @@ int LuaExports::sendGetNumber(lua_State *luaVm) {
 }
 
 int LuaExports::sendGetText(lua_State *luaVm) {
-	getNPC(luaVm)->sendGetText();
+	int16_t min = 0;
+	int16_t max = 0;
+	if (lua_isnumber(luaVm, -2) && lua_isnumber(luaVm, -1)) {
+		min = lua_tointeger(luaVm, -2);
+		max = lua_tointeger(luaVm, -1);
+	}
+	getNPC(luaVm)->sendGetText(min, max);
 	return 0;
 }
 

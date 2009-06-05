@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "DatabaseMigration.h"
 #include "Database.h"
+#include <cstdio>
 #include <iostream>
 #include <string>
 

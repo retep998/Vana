@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GameConstants.h"
 #include "Types.h"
+#include <boost/array.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <vector>
@@ -73,25 +74,25 @@ struct MobAilmentInfo {
 
 struct ActiveBuff {
 	ActiveBuff() : hasmapbuff(false) {
-		for (size_t i = 0; i < 8; i++) {
+		for (size_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 			types[i] = 0;
 		}
 	}
-	uint8_t types[8];
+	boost::array<uint8_t, BuffBytes::ByteQuantity> types;
 	vector<int16_t> vals;
 	bool hasmapbuff;
 };
 
 struct ActiveMapBuff {
 	ActiveMapBuff() : debuff(false) {
-		for (int8_t i = 0; i < 8; i++)
+		for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
 			typelist[i] = 0;
 	}
 	vector<uint8_t> bytes;
 	vector<int8_t> types;
 	vector<int16_t> values;
 	vector<bool> usevals;
-	uint8_t typelist[8];
+	boost::array<uint8_t, BuffBytes::ByteQuantity> typelist;
 	bool debuff;
 };
 
@@ -105,11 +106,11 @@ struct MapEntryVals {
 
 struct MapEntryBuffs {
 	MapEntryBuffs() : mountid(0), mountskill(0) {
-		for (int8_t i = 0; i < 8; i++) {
+		for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 			types[i] = 0;
 		}
 	}
-	uint8_t types[8];
+	boost::array<uint8_t, BuffBytes::ByteQuantity> types;
 	unordered_map<int8_t, unordered_map<uint8_t, MapEntryVals> > values;
 
 	int32_t mountid;

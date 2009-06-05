@@ -41,10 +41,14 @@ using std::tr1::bind;
 unordered_map<int32_t, PetInfo> Pets::petsInfo;
 unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > Pets::petsInteractInfo;
 
-int16_t Pets::exps[29] = {1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000};
+int16_t Pets::exps[Stats::PetLevels - 1] = {
+	1, 3, 6, 14, 31, 60, 108, 181, 287, 434,
+	632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801,
+	8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000
+};
 
 /* Pet class */
-Pet::Pet(Player *player, Item *item) : player(player), type(item->id), index(-1), name(Pets::petsInfo[type].name), level(1), fullness(100), closeness(0) {
+Pet::Pet(Player *player, Item *item) : player(player), itemid(item->id), index(-1), name(Pets::petsInfo[itemid].name), level(1), fullness(100), closeness(0) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
@@ -55,7 +59,7 @@ Pet::Pet(Player *player, Item *item) : player(player), type(item->id), index(-1)
 Pet::Pet(Player *player, Item *item, int8_t index, string name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot) :
 player(player),
 id(item->petid),
-type(item->id),
+itemid(item->id),
 index(index),
 name(name),
 level(level),
@@ -63,7 +67,7 @@ fullness(fullness),
 closeness(closeness),
 inventorySlot(inventorySlot) {
 	if (isSummoned()) {
-		if (index == 0)
+		if (index == 1)
 			startTimer();
 		player->getPets()->setSummoned(index, id);
 	}
@@ -81,23 +85,23 @@ void Pet::setName(const string &name) {
 }
 
 void Pet::addCloseness(int16_t amount) {
-	this->closeness += amount;
-	if (this->closeness > 30000)
-		this->closeness = 30000;
+	closeness += amount;
+	if (closeness > Stats::MaxCloseness)
+		closeness = Stats::MaxCloseness;
 
-	while (this->closeness >= Pets::exps[level - 1] && level < 30) {
+	while (closeness >= Pets::exps[level - 1] && level < Stats::PetLevels) {
 		levelUp();
 	}
 	PetsPacket::updatePet(player, this);
 }
 
 void Pet::modifyFullness(int8_t offset, bool sendPacket) {
-	this->fullness += offset;
+	fullness += offset;
 
-	if (this->fullness > 100)
-		this->fullness = 100;
-	else if (this->fullness < 0)
-		this->fullness = 0;
+	if (fullness > Stats::MaxFullness)
+		fullness = Stats::MaxFullness;
+	else if (fullness < Stats::MinFullness)
+		fullness = Stats::MinFullness;
 
 	if (sendPacket)
 		PetsPacket::updatePet(player, this);
@@ -105,7 +109,7 @@ void Pet::modifyFullness(int8_t offset, bool sendPacket) {
 
 void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
-	clock_t length = (6 - Pets::petsInfo[getType()].hunger) * 60000; // TODO: Better formula
+	clock_t length = (6 - Pets::petsInfo[getItemId()].hunger) * 60000; // TODO: Better formula
 	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, player->getTimers(), 0, length);
 }
 
@@ -132,21 +136,21 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	bool master = packet.get<int8_t>() == 1;
 	bool multipet = player->getSkills()->getSkillLevel(Jobs::Beginner::FollowTheLead) > 0;
-	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(5, slot)->petid);
+	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(Inventories::CashInventory, slot)->petid);
 
 	if (pet->isSummoned()) { // Removing a pet
 		player->getPets()->setSummoned(pet->getIndex(), 0);
-		if (pet->getIndex() == 0) {
+		if (pet->getIndex() == 1) {
 			Timer::Id id(Timer::Types::PetTimer, pet->getIndex(), 0);
 			player->getTimers()->removeTimer(id);
 		}
 		if (multipet) {
-			for (int8_t i = (pet->getIndex() + 1); i < 3; i++) { // Shift around pets if using multipet
+			for (int8_t i = (pet->getIndex() + 1); i <= Inventories::MaxPetCount; i++) { // Shift around pets if using multipet
 				if (Pet *move = player->getPets()->getSummoned(i)) {
 					move->setIndex(i - 1);
 					player->getPets()->setSummoned(move->getIndex(), move->getId());
 					player->getPets()->setSummoned(i, 0);
-					if (move->getIndex() == 0)
+					if (move->getIndex() == 1)
 						move->startTimer();
 				}
 			}
@@ -160,7 +164,7 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 		if (!multipet || master) {
 			pet->setIndex(0);
 			if (multipet) {
-				for (int8_t i = 2; i > 0; i--) {
+				for (int8_t i = Inventories::MaxPetCount; i > 1; i--) {
 					if (player->getPets()->getSummoned(i - 1) && !player->getPets()->getSummoned(i)) {
 						Pet *move = player->getPets()->getSummoned(i - 1);
 						player->getPets()->setSummoned(i, move->getId());
@@ -170,7 +174,7 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 				}
 				PetsPacket::petSummoned(player, pet);
 			}
-			else if (Pet *kicked = player->getPets()->getSummoned(0)) {
+			else if (Pet *kicked = player->getPets()->getSummoned(1)) {
 				kicked->setIndex(-1);
 				Timer::Id id(Timer::Types::PetTimer, kicked->getIndex(), 0);
 				player->getTimers()->removeTimer(id);
@@ -179,11 +183,11 @@ void Pets::handleSummon(Player *player, PacketReader &packet) {
 			else
 				PetsPacket::petSummoned(player, pet);
 
-			player->getPets()->setSummoned(0, pet->getId());
+			player->getPets()->setSummoned(1, pet->getId());
 			pet->startTimer();
 		}
 		else {
-			for (int8_t i = 0; i < 3; i++) {
+			for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 				if (!player->getPets()->getSummoned(i)) {
 					player->getPets()->setSummoned(i, pet->getId());
 					pet->setIndex(i);
@@ -201,14 +205,14 @@ void Pets::handleFeed(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t item = packet.get<int32_t>();
-	if (Pet *pet = player->getPets()->getSummoned(0)) {
+	if (Pet *pet = player->getPets()->getSummoned(1)) {
 		Inventory::takeItem(player, item, 1);
 
-		bool success = (pet->getFullness() < 100);
+		bool success = (pet->getFullness() < Stats::MaxFullness);
 		PetsPacket::showAnimation(player, pet, 1, success);
 		if (success) {
-			pet->modifyFullness(30, false);
-			if (Randomizer::Instance()->randInt(99) < 60)
+			pet->modifyFullness(Stats::PetFeedFullness, false);
+			if (Randomizer::Instance()->randInt(99) < 60) // 60% chance for feed to add closeness
 				pet->addCloseness(1);
 		}
 	}
@@ -222,21 +226,21 @@ void Pets::handleCommand(Player *player, PacketReader &packet) {
 	packet.skipBytes(5);
 	int8_t act = packet.get<int8_t>();
 	Pet *pet = player->getPets()->getPet(petid);
-	bool success = (Randomizer::Instance()->randInt(100) < petsInteractInfo[pet->getType()][act].prob);
+	bool success = (Randomizer::Instance()->randInt(100) < petsInteractInfo[pet->getItemId()][act].prob);
 	if (success) {
-		pet->addCloseness(petsInteractInfo[pet->getType()][act].increase);
+		pet->addCloseness(petsInteractInfo[pet->getItemId()][act].increase);
 	}
 	PetsPacket::showAnimation(player, pet, act, success);
 }
 
 void Pets::changeName(Player *player, const string &name) {
-	if (Pet *pet = player->getPets()->getSummoned(0)) {
+	if (Pet *pet = player->getPets()->getSummoned(1)) {
 		pet->setName(name);
 	}
 }
 
 void Pets::showPets(Player *player) {
-	for (int8_t i = 0; i < 3; i++) {
+	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			pet->setPos(player->getPos());
 			PetsPacket::petSummoned(player, pet, false, true);

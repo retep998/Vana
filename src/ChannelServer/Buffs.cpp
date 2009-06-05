@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.h"
 #include "BuffsPacket.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "Player.h"
 #include "Skills.h"
@@ -59,7 +60,7 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::Buccaneer::SpeedInfusion].player.push_back(player);
 
 	// Maple Warriors
-	buff.type = 0x8;
+	buff.type = 0x08;
 	buff.byte = Byte5;
 	buff.value = SkillX;
 	player.buff = buff;
@@ -243,6 +244,11 @@ Buffs::Buffs() {
 	buff.value = SkillWatk;
 	player.buff = buff;
 	skillsinfo[Jobs::Bowmaster::Concentrate].player.push_back(player);
+	buff.type = 0x20;
+	buff.byte = Byte6;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Bowmaster::Concentrate].player.push_back(player);
 
 	// Pickpocket
 	buff.type = 0x08;
@@ -292,17 +298,19 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::ILArchMage::ManaReflection].player.push_back(player);
 	skillsinfo[Jobs::Bishop::ManaReflection].player.push_back(player);
 
-	// Dash
-	buff.type = 0x10;
-	buff.byte = Byte8;
+	// Hamstring
+	buff.type = 0x08;
+	buff.byte = Byte6;
 	buff.value = SkillX;
 	player.buff = buff;
-	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
-	buff.type = 0x20;
-	buff.byte = Byte8;
-	buff.value = SkillY;
+	skillsinfo[Jobs::Bowmaster::Hamstring].player.push_back(player);
+
+	// Blind
+	buff.type = 0x10;
+	buff.byte = Byte6;
+	buff.value = SkillX;
 	player.buff = buff;
-	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+	skillsinfo[Jobs::Marksman::Blind].player.push_back(player);
 
 	// Dragon Roar
 	buff.type = 0x02;
@@ -311,6 +319,13 @@ Buffs::Buffs() {
 	player.buff = buff;
 	player.itemval = 1;
 	skillsinfo[Jobs::DragonKnight::DragonRoar].player.push_back(player);
+
+	// Holy Shield
+	buff.type = 0x04;
+	buff.byte = Byte6;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Bishop::HolyShield].player.push_back(player);
 	// End regular buffs
 
 	// Begin act buffs
@@ -357,20 +372,20 @@ Buffs::Buffs() {
 	map.useval = true;
 	skillsinfo[Jobs::Beginner::NimbleFeet].map.push_back(map);
 
-	// Shadow Claw
+	// Shadow Stars
 	buff.type = 0x01;
 	buff.byte = Byte6;
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	player.hasmapval = true;
 	player.hasmapentry = false;
-	skillsinfo[Jobs::NightLord::ShadowClaw].player.push_back(player);
+	skillsinfo[Jobs::NightLord::ShadowStars].player.push_back(player);
 	buff.type = 0x00;
 	map.buff = buff;
 	map.useval = false;
-	skillsinfo[Jobs::NightLord::ShadowClaw].map.push_back(map);
+	skillsinfo[Jobs::NightLord::ShadowStars].map.push_back(map);
 
-	// WK/Paladin Charges
+	// Skill Charges
 	buff.type = 0x04;
 	buff.byte = Byte1;
 	buff.value = SkillMatk;
@@ -409,6 +424,28 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].map.push_back(map);
 	skillsinfo[Jobs::Paladin::BwHolyCharge].map.push_back(map);
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].map.push_back(map);
+
+	// Dash
+	buff.type = 0x10;
+	buff.byte = Byte9;
+	buff.value = SkillX;
+	player.buff = buff;
+	player.hasmapval = true;
+	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+	buff.type = 0x20;
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
+	buff.type = 0x20;
+	buff.byte = Byte9;
+	buff.value = SkillY;
+	player.buff = buff;
+	player.hasmapval = true;
+	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+	buff.type = 0x40;
+	map.buff = buff;
+	map.useval = true;
+	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
 
 	// Haste
 	buff.type = 0x80;
@@ -476,7 +513,7 @@ Buffs::Buffs() {
 
 	// Energy Charge
 	buff.type = 0x08;
-	buff.byte = Byte8;
+	buff.byte = Byte9;
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	player.hasmapval = true;
@@ -711,8 +748,8 @@ int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 int16_t Buffs::getMobSkillValue(int8_t value, uint8_t skillid, uint8_t level) {
 	int16_t rvalue = 0;
 	switch (value) {
-		case SkillX: rvalue = Skills::mobskills[skillid][level].x; break;
-		case SkillY: rvalue = Skills::mobskills[skillid][level].y; break;
+		case SkillX: rvalue = static_cast<int16_t>(Skills::mobskills[skillid][level].x); break;
+		case SkillY: rvalue = static_cast<int16_t>(Skills::mobskills[skillid][level].y); break;
 		case SkillProp: rvalue = Skills::mobskills[skillid][level].prop; break;
 		case SkillLv: rvalue = level; break;
 	}
@@ -726,7 +763,7 @@ int32_t Buffs::parseMountInfo(Player *player, int32_t skillid, uint8_t level) {
 			mountid = player->getInventory()->getEquippedId(EquipSlots::Mount);
 			break;
 		case Jobs::Corsair::Battleship:
-			mountid = 1932000; // Battleship item ID
+			mountid = Items::BattleshipMount;
 			break;
 	}
 	return mountid;
@@ -738,7 +775,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		cur = skillsinfo[skillid].player[i];
 		int8_t val = cur.buff.value;
-		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) // Cancel speed change for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) // Cancel speed change for maxed dark sight
 			continue;
 		playerskill.types[cur.buff.byte] += cur.buff.type;
 		int16_t value = 0;
@@ -756,8 +793,8 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 				case Jobs::Crusader::ComboAttack:
 					value = player->getActiveBuffs()->getCombo() + 1;
 					break;
-				case Jobs::NightLord::ShadowClaw:
-					value = (player->getInventory()->doShadowClaw() % 10000) + 1;
+				case Jobs::NightLord::ShadowStars:
+					value = (player->getInventory()->doShadowStars() % 10000) + 1;
 					break;
 				case Jobs::Marauder::Transformation:
 				case Jobs::Buccaneer::SuperTransformation:
@@ -789,7 +826,7 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t l
 			continue;
 		map = skillsinfo[skillid].map[maps++];
 		int8_t val = map.buff.value;
-		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) { // Cancel speed update for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
 		}
 		mapskill.bytes.push_back(map.buff.byte);
@@ -829,7 +866,7 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 		}
 		map = skillsinfo[skillid].map[mapctr++];
 		int8_t val = map.buff.value;
-		if (skillid == Jobs::Rogue::DarkSight && level == 20 && val == SkillSpeed) { // Cancel speed change for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
 		}
 		mapskill.bytes.push_back(map.buff.byte);
@@ -861,7 +898,7 @@ vector<Buff> Buffs::parseBuffs(int32_t skillid, uint8_t level) {
 	vector<Buff> ret;
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		BuffInfo cur = skillsinfo[skillid].player[i];
-		if (skillid == Jobs::Rogue::DarkSight && level == 20 && cur.buff.value == SkillSpeed) { // Cancel speed change for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && cur.buff.value == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
 		}
 		ret.push_back(cur.buff);
@@ -945,11 +982,10 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			player->getActiveBuffs()->setMountInfo(skillid, mountid);
 			break;
 		case Jobs::SuperGm::Hide:
-			time = 2100000;
+			time = 2100000; // Make sure that it doesn't end any time soon
 			break;
 		case Jobs::Spearman::HyperBody:
 		case Jobs::SuperGm::HyperBody:
-			// TODO: Party
 			player->setHyperBody(Skills::skills[skillid][level].x, Skills::skills[skillid][level].y);
 			break;
 		case Jobs::Crusader::ComboAttack:
@@ -995,16 +1031,21 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	if (mountid > 0)
 		BuffsPacket::useMount(player, skillid, time, playerskill, addedinfo, mountid);
 	else {
-		if (skillid == Jobs::Pirate::Dash)
-			BuffsPacket::usePirateBuff(player, skillid, time, playerskill, mapskill);
-		else if (skillid == Jobs::Marauder::EnergyCharge)
-			BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == 10000 ? time : 0), playerskill, mapskill);
-		else if (skillid == Jobs::Buccaneer::SpeedInfusion)
-			BuffsPacket::useSpeedInfusion(player, time, playerskill, mapskill, addedinfo);
-		else // Non-Pirate skills
-			BuffsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
+		switch (skillid) {
+			case Jobs::Pirate::Dash:
+				BuffsPacket::usePirateBuff(player, skillid, time, playerskill, mapskill);
+				break;
+			case Jobs::Marauder::EnergyCharge:
+				BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == 10000 ? time : 0), playerskill, mapskill);
+				break;
+			case Jobs::Buccaneer::SpeedInfusion:
+				BuffsPacket::useSpeedInfusion(player, skillid, time, playerskill, mapskill, addedinfo);
+				break;
+			default:
+				BuffsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
+		}
 	}
-	if (skillid != Jobs::Marauder::EnergyCharge || player->getActiveBuffs()->getEnergyChargeLevel() == 10000) {
+	if (skillid != player->getSkills()->getEnergyCharge() || player->getActiveBuffs()->getEnergyChargeLevel() == 10000) {
 		PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
 		playerbuffs->addBuffInfo(skillid, buffs);
 		playerbuffs->addMapEntryBuffInfo(enterskill);
@@ -1042,13 +1083,13 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Crusader::ComboAttack:
 			playerbuffs->setCombo(0, false);
 			break;
-		case Jobs::Spearman::HyperBody: // Hyper Body
-		case Jobs::SuperGm::HyperBody: // Gm Hyper Body
+		case Jobs::Spearman::HyperBody:
+		case Jobs::SuperGm::HyperBody:
 			player->setHyperBody(0, 0);
 			player->setHp(player->getHp());
 			player->setMp(player->getMp());
 			break;
-		case Jobs::Marauder::EnergyCharge: // Energy Charge
+		case Jobs::Marauder::EnergyCharge:
 			playerbuffs->resetEnergyChargeLevel();
 			break;
 		case Jobs::Fighter::SwordBooster:

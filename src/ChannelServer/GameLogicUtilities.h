@@ -28,7 +28,7 @@ namespace GameLogicUtilities {
 	inline bool isStar(int32_t itemid) { return (getItemType(itemid) == ItemStar); }
 	inline bool isBullet(int32_t itemid) { return (getItemType(itemid) == ItemBullet); }
 	inline bool isRechargeable(int32_t itemid) { return (isBullet(itemid) || isStar(itemid)); }
-	inline bool isEquip(int32_t itemid) { return (getInventory(itemid) == 1); }
+	inline bool isEquip(int32_t itemid) { return (getInventory(itemid) == Inventories::EquipInventory); }
 	inline bool isPet(int32_t itemid) {	return ((itemid / 100 * 100) == 5000000); }
 	inline bool isOverall(int32_t itemid) { return (getItemType(itemid) == ArmorOverall); }
 	inline bool isTop(int32_t itemid) { return (getItemType(itemid) == ArmorTop); }
@@ -36,11 +36,19 @@ namespace GameLogicUtilities {
 	inline bool isShield(int32_t itemid) { return (getItemType(itemid) == ArmorShield); }
 	inline bool is2hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 14); }
 	inline bool is1hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 13); }
-	inline bool isBeginnerSkill(int32_t skillid) { return (skillid / 1000000 == 0); }
+	inline bool isMount(int32_t itemid) { return (getItemType(itemid) == Mount); }
+	inline bool isBeginnerSkill(int32_t skillid) { return ((skillid / 1000000) == (skillid < 10000000 ? 0 : 10)); }
 	inline bool isFourthJobSkill(int32_t skillid) { return ((skillid / 10000) % 10 == 2); }
 	inline bool isSummon(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet || skillid == Jobs::Ranger::Puppet || skillid == Jobs::Priest::SummonDragon || skillid == Jobs::Ranger::SilverHawk || skillid == Jobs::Sniper::GoldenEagle || skillid == Jobs::DarkKnight::Beholder || skillid == Jobs::FPArchMage::Elquines || skillid == Jobs::ILArchMage::Ifrit || skillid == Jobs::Bishop::Bahamut || skillid == Jobs::Bowmaster::Phoenix || skillid == Jobs::Marksman::Frostprey || skillid == Jobs::Outlaw::Octopus || skillid == Jobs::Outlaw::Gaviota); }
 	inline bool isPuppet(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet || skillid == Jobs::Ranger::Puppet); }
 	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return (((test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)) && ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y))); }
+	inline bool isMaxDarkSight(int32_t skillid, uint8_t level) { return (skillid == Jobs::Rogue::DarkSight && level == 20); }
+	inline bool skillMatchesJob(int32_t skillid, int16_t job) { return ((skillid / 1000000 == job / 100) && (skillid / 10000 <= job)); }
+	inline bool isMobSkill(int32_t skillid) { return (skillid >= 100 && skillid <= 200); }
+	inline bool isBeginnerJob(int16_t jobid) { return (jobid == 0); }
+	inline bool isAoeMobSkill(uint8_t skillid) { return (((skillid / 10) * 10 % 100) == 10); }
+	inline int16_t getJobTrack(int16_t job) { return (job / 100); }
+	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
 	inline int8_t getPartyMember1(int8_t totalmembers) { return (totalmembers >= 1 ? (0x40 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember2(int8_t totalmembers) { return (totalmembers >= 2 ? (0x80 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember3(int8_t totalmembers) { return (totalmembers >= 3 ? (0x100 >> totalmembers) : 0xFF); }

@@ -39,7 +39,7 @@ struct MpEaterInfo;
 
 struct StatusInfo {
 	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0), time(0) { }
-	StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time) : status(status), val(val), skillid(skillid), mobskill(0), level(0), time(time) { }
+	StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time);
 	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, clock_t time) : status(status), val(val), skillid(-1), mobskill(mobskill), level(level), time(time) { }
 	int32_t status;
 	int16_t val;
@@ -57,7 +57,7 @@ namespace Mobs {
 	void damageMobEnergyCharge(Player *player, PacketReader &packet);
 	void damageMobSummon(Player *player, PacketReader &packet);
 	uint32_t damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater = 0);
-	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type);
+	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type, int32_t damage = 0);
 	void handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSkillLevelInfo &skillinfo);
 	void handleBomb(Player *player, PacketReader &packet);
 	void monsterControl(Player *player, PacketReader &packet);
@@ -68,13 +68,14 @@ class Mob : public MovableLife {
 public:
 	Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
+	void applyWebDamage();
 	void setMp(int32_t mp) { this->mp = mp; }
 	void addStatus(int32_t playerid, vector<StatusInfo> statusinfo);
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
 	void endControl();
-	void cleanHorntail(int32_t mapid, Player *player);
 	void setOwner(Mob *owner) { this->owner = owner; }
+	void setSponge(Mob *sponge) { horntailsponge = sponge; }
 	void setLastSkillUse(uint8_t skill, time_t usetime) { skilluse[skill] = usetime; }
 	void statusPacket(PacketCreator &packet);
 	void addSpawn(int32_t mapmobid, Mob *mob) { spawns[mapmobid] = mob; }
@@ -105,6 +106,7 @@ public:
 	bool hasStatus(int32_t status);
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return owner; }
+	Mob * getSponge() const { return horntailsponge; }
 	MobAttackInfo getAttackInfo(uint8_t id) const { return info.attacks.at(id); }
 	vector<MobSkillInfo> getSkills() const { return info.skills; }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
@@ -114,6 +116,7 @@ public:
 
 	void die(bool showpacket = false); // Removes mob, no EXP, no summoning
 private:
+	uint8_t weblevel;
 	int16_t originfh;
 	int32_t id;
 	int32_t mapid;
@@ -123,7 +126,9 @@ private:
 	int32_t mp;
 	int32_t status;
 	int32_t counter;
+	int32_t webplayerid;
 	Mob *owner;
+	Mob *horntailsponge;
 	const MobInfo info;
 	bool hasimmunity;
 	unordered_map<int32_t, StatusInfo> statuses;

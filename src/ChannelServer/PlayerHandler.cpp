@@ -115,10 +115,10 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	}
 	if (damage == -1) {
 		switch (job) {
-			case 412: nodamageid = Jobs::NightLord::ShadowShifter; break; // Fake
-			case 422: nodamageid = Jobs::Shadower::ShadowShifter; break; // Fake
-			case 112: nodamageid = Jobs::Hero::Guardian; break; // Guardian
-			case 122: nodamageid = Jobs::Paladin::Guardian; break; // Guardian
+			case Jobs::JobIds::NightLord: nodamageid = Jobs::NightLord::ShadowShifter; break; // Fake
+			case Jobs::JobIds::Shadower: nodamageid = Jobs::Shadower::ShadowShifter; break; // Fake
+			case Jobs::JobIds::Hero: nodamageid = Jobs::Hero::Guardian; break; // Guardian
+			case Jobs::JobIds::Paladin: nodamageid = Jobs::Paladin::Guardian; break; // Guardian
 		}
 		if (nodamageid == 0 || player->getSkills()->getSkillLevel(nodamageid) == 0) {
 			// Hacking
@@ -129,8 +129,9 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		player->getActiveBuffs()->addDebuff(disease, level);
 	}
 	if (damage > 0 && !player->hasGmEquip()) {
-		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0 && player->getInventory()->getMesos() > 0) { // Meso Guard 
-			int16_t mesorate = Skills::skills[Jobs::ChiefBandit::MesoGuard][player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard)].x; // Meso Guard meso %
+		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) { // Meso Guard 
+			int32_t sid = player->getActiveBuffs()->getMesoGuard();
+			int16_t mesorate = Skills::skills[sid][player->getActiveBuffs()->getActiveSkillLevel(sid)].x; // Meso Guard meso %
 			int16_t hp = player->getHp();
 			int16_t mesoloss = (int16_t)(mesorate * damage / 2 / 100);
 			int32_t mesos = player->getInventory()->getMesos();
@@ -143,7 +144,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			else
 				damage /= 2; // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
 			player->getInventory()->setMesos(newmesos);
-			SkillsPacket::showSkillEffect(player, Jobs::ChiefBandit::MesoGuard);
+			SkillsPacket::showSkillEffect(player, sid);
 			player->damageHp((uint16_t) damage);
 			if (attack.deadlyattack && player->getMp() > 0)
 				player->setMp(1);
@@ -151,7 +152,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->damageMp(attack.mpburn);
 			applieddamage = true;
 		}
-		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0) { // Magic Guard
+		if (player->getActiveBuffs()->hasMagicGuard()) { // Magic Guard
 			int16_t mp = player->getMp();
 			int16_t hp = player->getHp();
 			if (attack.deadlyattack) {
@@ -164,7 +165,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->damageHp((uint16_t) damage);
 			}
 			else {
-				int16_t reduc = Skills::skills[Jobs::Magician::MagicGuard][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Magician::MagicGuard)].x;
+				int32_t sid = player->getActiveBuffs()->getMagicGuard();
+				int16_t reduc = Skills::skills[sid][player->getActiveBuffs()->getActiveSkillLevel(sid)].x;
 				uint16_t mpdamage = (uint16_t)((damage * reduc) / 100);
 				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
 				if (mpdamage < mp || player->getActiveBuffs()->hasInfinity()) {
@@ -180,11 +182,11 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		}
 		if (((job / 100) == 1) && ((job % 10) == 2)) { // Achilles for 4th job warriors
 			float achx = 1000.0;
-			int32_t sid = Jobs::Hero::Achilles;
+			int32_t sid = 0;
 			switch (job) {
-				case 112: sid = Jobs::Hero::Achilles; break;
-				case 122: sid = Jobs::Paladin::Achilles; break;
-				case 132: sid = Jobs::DarkKnight::Achilles; break;
+				case Jobs::JobIds::Hero: sid = Jobs::Hero::Achilles; break;
+				case Jobs::JobIds::Paladin: sid = Jobs::Paladin::Achilles; break;
+				case Jobs::JobIds::DarkKnight: sid = Jobs::DarkKnight::Achilles; break;
 			}
 			uint8_t slv = player->getSkills()->getSkillLevel(sid);
 			if (slv > 0)
@@ -271,10 +273,8 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 			player->setMap(mapid);
 		}
 	}
-	else {
-		if (player->getFallCounter() > 0) {
-			player->setFallCounter(0);
-		}
+	else if (player->getFallCounter() > 0) {
+		player->setFallCounter(0);
 	}
 }
 

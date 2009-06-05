@@ -60,6 +60,231 @@ uint8_t PlayerSkills::getMaxSkillLevel(int32_t skillid) {
 	return 0;
 }
 
+bool PlayerSkills::hasElementalAmp() {
+	bool has = false;
+	switch (player->getJob()) {
+		case Jobs::JobIds::FPMage:
+		case Jobs::JobIds::FPArchMage:
+			has = (getSkillLevel(Jobs::FPMage::ElementAmplification) > 0);
+			break;
+		case Jobs::JobIds::ILMage:
+		case Jobs::JobIds::ILArchMage:
+			has = (getSkillLevel(Jobs::ILMage::ElementAmplification) > 0);
+			break;
+	}
+	return has;
+}
+
+int32_t PlayerSkills::getElementalAmp() {
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::FPMage:
+		case Jobs::JobIds::FPArchMage:
+			skillid = Jobs::FPMage::ElementAmplification;
+			break;
+		case Jobs::JobIds::ILMage:
+		case Jobs::JobIds::ILArchMage:
+			skillid = Jobs::ILMage::ElementAmplification;
+			break;
+	}
+	return skillid;
+}
+
+bool PlayerSkills::hasEnergyCharge() {
+	bool has = false;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Marauder:
+		case Jobs::JobIds::Buccaneer:
+			has = (getSkillLevel(Jobs::Marauder::EnergyCharge) > 0);
+			break;
+	}
+	return has;
+}
+
+int32_t PlayerSkills::getEnergyCharge() {
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Marauder:
+		case Jobs::JobIds::Buccaneer:
+			skillid = Jobs::Marauder::EnergyCharge;
+			break;
+	}
+	return skillid;
+}
+
+int32_t PlayerSkills::getComboAttack() {
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Crusader:
+		case Jobs::JobIds::Hero:
+			skillid = Jobs::Crusader::ComboAttack;
+			break;
+	}
+	return skillid;
+}
+
+int32_t PlayerSkills::getAdvancedCombo() {
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Hero:
+			skillid = Jobs::Hero::AdvancedComboAttack;
+			break;
+	}
+	return skillid;
+}
+
+int32_t PlayerSkills::getAlchemist() {
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Hermit:
+		case Jobs::JobIds::NightLord:
+			skillid = Jobs::Hermit::Alchemist;
+			break;
+	}
+	return skillid;
+}
+
+bool PlayerSkills::hasHpIncrease() {
+	bool has = false;
+	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+		case Jobs::JobTracks::Warrior:
+			has = (getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0);
+			break;
+		case Jobs::JobTracks::Pirate:
+			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
+				has = (getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0);
+			break;
+	}
+	return has;
+}
+
+int32_t PlayerSkills::getHpIncrease() {
+	int32_t skillid = 0;
+	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+		case Jobs::JobTracks::Warrior:
+			skillid = Jobs::Swordsman::ImprovedMaxHpIncrease;
+			break;
+		case Jobs::JobTracks::Pirate:
+			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
+				skillid = Jobs::Infighter::ImproveMaxHp;
+			break;
+	}
+	return skillid;
+}
+
+bool PlayerSkills::hasMpIncrease() {
+	bool has = false;
+	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+		case Jobs::JobTracks::Magician:
+			has = (getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0);
+			break;
+	}
+	return has;
+}
+
+int32_t PlayerSkills::getMpIncrease() {
+	int32_t skillid = 0;
+	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+		case Jobs::JobTracks::Magician:
+			skillid = Jobs::Magician::ImprovedMaxMpIncrease;
+			break;
+	}
+	return skillid;
+}
+
+int32_t PlayerSkills::getMastery() {
+	int32_t masteryid = 0;
+	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
+		case Weapon1hSword:
+		case Weapon2hSword:
+			switch (player->getJob()) {
+				case Jobs::JobIds::Fighter:
+				case Jobs::JobIds::Crusader:
+				case Jobs::JobIds::Hero:
+					masteryid = Jobs::Fighter::SwordMastery;
+					break;
+				case Jobs::JobIds::Page:
+				case Jobs::JobIds::WhiteKnight:
+				case Jobs::JobIds::Paladin:
+					masteryid = Jobs::Page::SwordMastery;
+					break;
+			}
+			break;
+		case Weapon1hAxe:
+		case Weapon2hAxe:
+			masteryid = Jobs::Fighter::AxeMastery;
+			break;
+		case Weapon1hMace:
+		case Weapon2hMace:
+			masteryid = Jobs::Page::BwMastery;
+			break;
+		case WeaponSpear:
+			masteryid = Jobs::Spearman::SpearMastery;
+			break;
+		case WeaponPolearm:
+			masteryid = Jobs::Spearman::PolearmMastery;
+			break;
+		case WeaponDagger:
+			masteryid = Jobs::Bandit::DaggerMastery;
+			break;
+		case WeaponKnuckle:
+			masteryid = Jobs::Infighter::KnucklerMastery;
+			break;
+		case WeaponBow:
+			masteryid = Jobs::Hunter::BowMastery;
+			break;
+		case WeaponCrossbow:
+			masteryid = Jobs::Crossbowman::CrossbowMastery;
+			break;
+		case WeaponClaw:
+			masteryid = Jobs::Assassin::ClawMastery;
+			break;
+		case WeaponGun:
+			masteryid = Jobs::Gunslinger::GunMastery;
+			break;
+	}
+	return masteryid;
+}
+
+int32_t PlayerSkills::getMpEater() {
+	int32_t skillid = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::FPWizard:
+		case Jobs::JobIds::FPMage:
+		case Jobs::JobIds::FPArchMage:
+			skillid = Jobs::FPWizard::MpEater;
+			break;
+		case Jobs::JobIds::ILWizard:
+		case Jobs::JobIds::ILMage:
+		case Jobs::JobIds::ILArchMage:
+			skillid = Jobs::ILWizard::MpEater;
+			break;
+		case Jobs::JobIds::Cleric:
+		case Jobs::JobIds::Priest:
+		case Jobs::JobIds::Bishop:
+			skillid = Jobs::Cleric::MpEater;
+			break;
+	}
+	return skillid;
+}
+
+int16_t PlayerSkills::getRechargeableBonus() {
+	int16_t bonus = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::Assassin:
+		case Jobs::JobIds::Hermit:
+		case Jobs::JobIds::NightLord:
+			bonus = getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
+			break;
+		case Jobs::JobIds::Gunslinger:
+		case Jobs::JobIds::Outlaw:
+		case Jobs::JobIds::Corsair:
+			bonus = getSkillLevel(Jobs::Gunslinger::GunMastery) * 10;
+			break;
+	}
+	return bonus;
+}
+
 void PlayerSkills::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << player->getId();

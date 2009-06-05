@@ -52,7 +52,7 @@ public:
 	void sendBackOK();
 	void sendOK();
 	void sendAcceptDecline();
-	void sendGetText();
+	void sendGetText(int16_t min, int16_t max);
 	void sendGetNumber(int32_t def, int32_t min, int32_t max);
 	void sendStyle(int32_t styles[], int8_t size);
 	void setState(int32_t state);

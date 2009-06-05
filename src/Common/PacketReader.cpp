@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Pos.h"
 
+PacketReader::PacketReader() : length(0), pos(0) { }
 PacketReader::PacketReader(unsigned char *buffer, size_t length) : buffer(buffer), length(length), pos(0) { }
 
 void PacketReader::skipBytes(int32_t len) {

@@ -52,9 +52,9 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<uint8_t>(enter.types[Byte3]);
 	packet.add<uint8_t>(enter.types[Byte4]);
 
-	const int8_t byteorder[8] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
+	const int8_t byteorder[BuffBytes::EntryByteQuantity] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
 
-	for (int8_t i = 0; i < 8; i++) {
+	for (int8_t i = 0; i < BuffBytes::EntryByteQuantity; i++) {
 		int8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
 		if (enter.types[cbyte] != 0) {
 			for (unordered_map<uint8_t, MapEntryVals>::iterator iter = enter.values[cbyte].begin(); iter != enter.values[cbyte].end(); iter++) {
@@ -100,14 +100,8 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(1065638850);
 	packet.add<int16_t>(0);
 
-	if (enter.mountid > 0) {
-		packet.add<int32_t>(enter.mountid);
-		packet.add<int32_t>(enter.mountskill);
-	}
-	else {
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-	}
+	packet.add<int32_t>(enter.mountid); // No point to having an if, these are 0 when not in use
+	packet.add<int32_t>(enter.mountskill);
 
 	packet.add<int32_t>(1065638850);
 	packet.add<int32_t>(0);
@@ -130,10 +124,10 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int8_t>(player->getStance());
 	packet.add<int16_t>(player->getFh());
 	packet.add<int8_t>(0);
-	for (int8_t i = 0; i < 3; i++) {
+	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			packet.add<int8_t>(1);
-			packet.add<int32_t>(pet->getType());
+			packet.add<int32_t>(pet->getItemId());
 			packet.addString(pet->getName());
 			packet.add<int32_t>(pet->getId());
 			packet.add<int32_t>(0);

@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerActiveBuffs.h"
 #include "PlayerBuddyList.h"
 #include "PlayerInventory.h"
+#include "PlayerMounts.h"
 #include "PlayerPets.h"
 #include "PlayerQuests.h"
 #include "PlayerSkills.h"
@@ -38,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
+using boost::scoped_ptr;
 using std::string;
 using std::vector;
 using std::tr1::unordered_set;
@@ -57,7 +59,7 @@ public:
 	void realHandleRequest(PacketReader &packet);
 
 	void setSaveOnDc(bool save) { save_on_dc = save; }
-	void setTrading(int8_t newstate) { tradestate = newstate; }
+	void setTrading(bool state) { trade_state = state; }
 	void setSkin(int8_t id);
 	void setFallCounter(int8_t falls) { fall_counter = falls; }
 	void setLevel(uint8_t level);
@@ -88,8 +90,7 @@ public:
 	void setExp(int32_t exp);
 	void setMap(int32_t mapid, PortalInfo *portal = 0);
 	void setBuddyListSize(uint8_t size);
-	void setTradeSendId(int32_t id) { this->trade_send_id = id; }
-	void setTradeRecvId(int32_t id) { this->trade_recv_id = id; }
+	void setTradeId(int32_t id) { this->trade_id = id; }
 	void setShop(int32_t shopid) { shop = shopid; }
 	void setNPC(NPC *npc) { this->npc = npc; }
 	void setParty(Party *party) { this->party = party; }
@@ -101,7 +102,6 @@ public:
 	int8_t getWorldId() const { return world_id; }
 	int8_t getGender() const { return gender; }
 	int8_t getSkin() const { return skin; }
-	int8_t isTrading() const { return tradestate; }
 	int8_t getMappos() const { return map_pos; }
 	int8_t getFallCounter() const { return fall_counter; }
 	uint8_t getLevel() const { return level; }
@@ -132,25 +132,26 @@ public:
 	int32_t getItemEffect() const { return item_effect; }
 	int32_t getGmLevel() const { return gm_level; }
 	int32_t getSpecialSkill() const { return info.skillid; }
-	int32_t getTradeSendId() const { return trade_send_id; }
-	int32_t getTradeRecvId() const { return trade_recv_id; }
+	int32_t getTradeId() const { return trade_id; }
 	string getName() const { return name; }
 	NPC * getNPC() const { return npc; }
 	Party * getParty() const { return party; }
 	Instance * getInstance() const { return instance; }
 	bool isGm() const { return gm_level > 0; }
+	bool isTrading() const { return trade_state; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
 	bool hasGmEquip();
 
 	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }
-	PlayerSummons * getSummons() const { return summons.get(); }
 	PlayerBuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerInventory * getInventory() const { return inv.get(); }
+	PlayerMounts * getMounts() const { return mounts.get(); }
 	PlayerPets * getPets() const { return pets.get(); }
 	PlayerQuests * getQuests() const { return quests.get(); }
 	PlayerSkills * getSkills() const { return skills.get(); }
 	PlayerStorage * getStorage() const { return storage.get(); }
+	PlayerSummons * getSummons() const { return summons.get(); }
 	PlayerVariables * getVariables() const { return variables.get(); }
 
 	// For "onlyOnce" portals
@@ -174,7 +175,6 @@ private:
 
 	int8_t world_id;
 	int8_t map_pos;
-	int8_t tradestate;
 	int8_t gender;
 	int8_t skin;
 	int8_t fall_counter;
@@ -205,8 +205,8 @@ private:
 	int32_t item_effect;
 	int32_t chair;
 	int32_t gm_level;
-	int32_t trade_send_id;
-	int32_t trade_recv_id;
+	int32_t trade_id;
+	bool trade_state;
 	bool save_on_dc;
 	bool is_connect;
 	string name;
@@ -218,15 +218,16 @@ private:
 	vector<int32_t> wishlist;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
-	boost::scoped_ptr<PlayerActiveBuffs> activeBuffs;
-	boost::scoped_ptr<PlayerSummons> summons;
-	boost::scoped_ptr<PlayerBuddyList> buddyList;
-	boost::scoped_ptr<PlayerInventory> inv;
-	boost::scoped_ptr<PlayerPets> pets;
-	boost::scoped_ptr<PlayerQuests> quests;
-	boost::scoped_ptr<PlayerSkills> skills;
-	boost::scoped_ptr<PlayerStorage> storage;
-	boost::scoped_ptr<PlayerVariables> variables;
+	scoped_ptr<PlayerActiveBuffs> activeBuffs;
+	scoped_ptr<PlayerBuddyList> buddyList;
+	scoped_ptr<PlayerInventory> inv;
+	scoped_ptr<PlayerMounts> mounts;
+	scoped_ptr<PlayerPets> pets;
+	scoped_ptr<PlayerQuests> quests;
+	scoped_ptr<PlayerSkills> skills;
+	scoped_ptr<PlayerStorage> storage;
+	scoped_ptr<PlayerSummons> summons;
+	scoped_ptr<PlayerVariables> variables;
 };
 
 class PlayerFactory : public AbstractPlayerFactory {

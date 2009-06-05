@@ -87,7 +87,6 @@ void PlayerBuddyList::remove(int32_t charid) {
 	BuddyListPacket::update(player, BuddyListPacket::remove);
 }
 
-inline
 void PlayerBuddyList::add(const mysqlpp::Row &row) {
 	int32_t charid = (int32_t) row["buddy_charid"];
 

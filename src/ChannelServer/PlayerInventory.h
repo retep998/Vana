@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERINVENTORY_H
 
 #include "Types.h"
+#include "GameConstants.h"
 #include <string>
 #include <boost/array.hpp>
 #include <boost/tr1/unordered_map.hpp>
@@ -88,7 +89,7 @@ struct Item {
 
 class PlayerInventory {
 public:
-	PlayerInventory(Player *player, const boost::array<uint8_t, 5> &maxslots, int32_t mesos);
+	PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos);
 	~PlayerInventory();
 
 	void setMesos(int32_t mesos, bool is = false);
@@ -98,10 +99,10 @@ public:
 	void deleteItem(int8_t inv, int16_t slot, bool updateAmount = true);
 	void setItem(int8_t inv, int16_t slot, Item *item);
 	void addEquippedPacket(PacketCreator &packet);
-	void changeItemAmount(int32_t itemid, int16_t amount) { itemamounts[itemid] += amount; }
+	void changeItemAmount(int32_t itemid, int16_t amount) { m_itemamounts[itemid] += amount; }
 
-	uint8_t getMaxSlots(int8_t inv) const { return maxslots[inv - 1]; }
-	int32_t getMesos() const { return this->mesos; }
+	uint8_t getMaxSlots(int8_t inv) const { return m_maxslots[inv - 1]; }
+	int32_t getMesos() const { return m_mesos; }
 
 	int16_t getItemAmountBySlot(int8_t inv, int16_t slot);
 	uint16_t getItemAmount(int32_t itemid);
@@ -111,7 +112,7 @@ public:
 	bool hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack = false);
 	int16_t getOpenSlotsNum(int8_t inv);
 
-	int32_t doShadowClaw();
+	int32_t doShadowStars();
 
 	void load();
 	void save();
@@ -119,12 +120,13 @@ public:
 private:
 	typedef unordered_map<int16_t, Item *> ItemInventory;
 
-	boost::array<uint8_t, 5> maxslots;
-	int32_t mesos;
-	boost::array<boost::array<int32_t, 2>, 50> equipped;
-	Player *player;
-	boost::array<ItemInventory, 5> items;
-	unordered_map<int32_t, uint16_t> itemamounts;
+	boost::array<uint8_t, Inventories::InventoryCount> m_maxslots;
+	boost::array<boost::array<int32_t, 2>, 50> m_equipped;
+	boost::array<ItemInventory, Inventories::InventoryCount> m_items;
+	unordered_map<int32_t, uint16_t> m_itemamounts;
+	int32_t m_mesos;
+	Player *m_player;
+
 	void addEquipped(int16_t slot, int32_t itemid);
 };
 

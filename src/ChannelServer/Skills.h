@@ -90,11 +90,11 @@ struct MobSkillLevelInfo {
 	uint8_t hp;
 	uint8_t count;
 	int16_t interval;
-	int16_t x;
-	int16_t y;
 	int16_t prop;
 	int16_t limit;
-	int32_t time;
+	int16_t time;
+	int32_t x;
+	int32_t y;
 	Pos lt;
 	Pos rb;
 	vector<int32_t> summons;
@@ -114,7 +114,7 @@ namespace Skills {
 	const vector<Player *> getAffectedPartyMembers(Party *party, int8_t affected, int8_t members);
 	void applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp = false);
 	void useAttackSkill(Player *player, int32_t skillid);
-	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos, uint8_t display);
+	void useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos);
 	void heal(Player *player, int16_t value, int32_t skillid);
 	void hurt(Player *player, int16_t value, int32_t skillid);
 	void stopSkill(Player *player, int32_t skillid, bool fromTimer = false);

@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PETS_H
 #define PETS_H
 
+#include "GameConstants.h"
 #include "MovableLife.h"
+#include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <string>
 
@@ -43,7 +45,7 @@ struct PetInteractInfo {
 namespace Pets {
 	extern unordered_map<int32_t, PetInfo> petsInfo;
 	extern unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > petsInteractInfo;
-	extern int16_t exps[29];
+	extern int16_t exps[Stats::PetLevels - 1];
 	void showPets(Player *player);
 	void handleChat(Player *player, PacketReader &packet);
 	void handleFeed(Player *player, PacketReader &packet);
@@ -73,22 +75,22 @@ public:
 	int16_t getPosX() const { return m_pos.x; }
 	int16_t getPosY() const { return m_pos.y - 1; }
 	int32_t getId() const { return this->id; }
-	int32_t getType() const { return this->type; }
+	int32_t getItemId() const { return this->itemid; }
 	bool isSummoned() const { return this->index != -1; }
 	string getName() { return this->name; }
 	Pos getPos() const { return Pos(getPosX(), getPosY()); }
 
 	void startTimer();
 private:
-	Player *player;
-	int32_t id;
-	int32_t type;
 	int8_t index;
-	string name;
 	int8_t level;
 	int8_t fullness;
-	int16_t closeness;
 	int8_t inventorySlot;
+	int16_t closeness;
+	int32_t id;
+	int32_t itemid;
+	string name;
+	Player *player;
 
 	void levelUp();
 };

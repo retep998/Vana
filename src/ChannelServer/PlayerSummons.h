@@ -20,25 +20,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 
+class PacketCreator;
+class PacketReader;
 class Player;
 class Summon;
 
 class PlayerSummons {
 public:
-	PlayerSummons(Player *player) : player(player), summon(0), puppet(0) { }
+	PlayerSummons(Player *player) : m_player(player), m_summon(0), m_puppet(0) { }
+
+	Summon * getSummon() { return m_summon; }
+	Summon * getPuppet() { return m_puppet; }
+	Summon * getSummon(int32_t summonid);
+
 	void addSummon(Summon *summon, int32_t time);
 	void removeSummon(bool puppet, bool fromTimer);
-	Summon * getSummon() {
-		return summon;
-	}
-	Summon * getPuppet() {
-		return puppet;
-	}
-	Summon * getSummon(int32_t summonid);
+
+	// Packet marshaling
+	void getSummonTransferPacket(PacketCreator &packet);
+	void parseSummonTransferPacket(PacketReader &packet);
 private:
-	Player *player;
-	Summon *summon;
-	Summon *puppet;
+	Player *m_player;
+	Summon *m_summon;
+	Summon *m_puppet;
+
+	int32_t getSummonTimeRemaining();
 };
 
 #endif

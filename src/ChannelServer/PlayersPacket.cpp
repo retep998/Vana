@@ -70,7 +70,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 			packet.add<int32_t>(dmg);
 			break;
 		default:
-			packet.add<int32_t>((pgmr.reduction > 0 ? pgmr.damage : dmg));
+			packet.add<int32_t>(pgmr.reduction > 0 ? pgmr.damage : dmg);
 			packet.add<int32_t>(mob);
 			packet.add<int8_t>(hit);
 			if (pgmr.reduction > 0) {
@@ -119,10 +119,10 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
 	packet.add<int8_t>(isself); // Is 1 when the character is clicking themselves
-	for (int8_t i = 0; i < 3; i++) {
+	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getinfo->getPets()->getSummoned(i)) {
 			packet.add<int8_t>(1);
-			packet.add<int32_t>(pet->getType());
+			packet.add<int32_t>(pet->getItemId());
 			packet.addString(pet->getName());
 			packet.add<int8_t>(pet->getLevel());
 			packet.add<int16_t>(pet->getCloseness());
@@ -132,7 +132,15 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 		}
 	}
 	packet.add<int8_t>(0); // End of pets / start of taming mob
-	packet.add<int8_t>(0); // End of taming mob / start of wish list
+	if (getinfo->getMounts()->getCurrentMount() > 0 && getinfo->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
+		packet.add<int8_t>(1);
+		packet.add<int32_t>(getinfo->getMounts()->getCurrentLevel());
+		packet.add<int32_t>(getinfo->getMounts()->getCurrentExp());
+		packet.add<int32_t>(getinfo->getMounts()->getCurrentTiredness());
+	}
+	else {
+		packet.add<int8_t>(0); // End of taming mob
+	}
 	vector<int32_t> wishlist = getinfo->getWishlist(); 
 	packet.add<uint8_t>((uint8_t)(wishlist.size())); // Wish list count
 	for (size_t i = 0; i < wishlist.size(); i++)

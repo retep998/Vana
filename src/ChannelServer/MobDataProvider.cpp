@@ -67,7 +67,7 @@ void MobDataProvider::loadData() {
 			mob.hpbgcolor = atoi(mobRow[11]);
 			mob.undead = atob(mobRow[12]);
 
-			mob.canfreeze = (!mob.boss && elemattr.find("I2") == string::npos && elemattr.find("I1") == string::npos);
+			mob.canfreeze = (!mob.boss && elemattr.find("I2") == string::npos && elemattr.find("I1") == string::npos && elemattr.find("I") == string::npos);
 			mob.canpoison = (!mob.boss && elemattr.find("S2") == string::npos && elemattr.find("S1") == string::npos);
 
 			mobinfo[mobid] = mob;

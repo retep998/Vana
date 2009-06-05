@@ -15,30 +15,47 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERPETS_H
-#define PLAYERPETS_H
+#ifndef PLAYERMOUNTS_H
+#define PLAYERMOUNTS_H
 
+#include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 
 using std::tr1::unordered_map;
 
-class Pet;
 class Player;
 
-class PlayerPets {
+struct MountData {
+	int16_t exp;
+	int8_t tiredness;
+	int8_t level;
+};
+
+class PlayerMounts {
 public:
-	PlayerPets(Player *player) : m_player(player) { }
+	PlayerMounts(Player *p);
 
-	Pet * getPet(int32_t petid);
-	Pet * getSummoned(int8_t index);
-
-	void addPet(Pet *pet);
-	void setSummoned(int8_t index, int32_t petid);
 	void save();
+	void load();
+
+	int32_t getCurrentMount() const { return m_currentmount; }
+	int16_t getCurrentExp();
+	int8_t getCurrentLevel();
+	int8_t getCurrentTiredness();
+	void setCurrentMount(int32_t id) { m_currentmount = id; }
+	void setCurrentExp(int16_t exp);
+	void setCurrentLevel(int8_t level);
+	void setCurrentTiredness(int8_t tiredness);
+
+	void addMount(int32_t id);
+
+	int16_t getMountExp(int32_t id);
+	int8_t getMountLevel(int32_t id);
+	int8_t getMountTiredness(int32_t id);
 private:
-	unordered_map<int32_t, Pet *> m_playerpets;
-	unordered_map<int8_t, int32_t> m_summoned;
 	Player *m_player;
+	unordered_map<int32_t, MountData> m_mounts;
+	int32_t m_currentmount;
 };
 
 #endif

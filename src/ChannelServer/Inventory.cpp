@@ -46,7 +46,7 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 	int8_t inv = packet.get<int8_t>();
 	int16_t slot1 = packet.get<int16_t>();
 	int16_t slot2 = packet.get<int16_t>();
-	if (inv < 1 || inv > 5)
+	if (inv < Inventories::EquipInventory || inv > Inventories::CashInventory)
 		return;
 	if (slot2 == 0) {
 		int16_t amount = packet.get<int16_t>();
@@ -253,7 +253,7 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 			int32_t itemid = packet.get<int32_t>();
 			int16_t amount = packet.get<int16_t>();
 			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemid);
-			if (price == 0 || player->getInventory()->getMesos() < (price*amount) ||  amount > ItemDataProvider::Instance()->getMaxSlot(itemid)) {
+			if (price == 0 || player->getInventory()->getMesos() < (price * amount) ||  amount > ItemDataProvider::Instance()->getMaxSlot(itemid)) {
 				// Hacking
 				return;
 			}
@@ -287,21 +287,19 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 		}
 		case 2: { // Recharge
 			int16_t slot = packet.get<int16_t>();
-			Item *item = player->getInventory()->getItem(2, slot);
+			Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 			if (item == 0 || GameLogicUtilities::isRechargeable(item->id) == false) {
 				// Hacking
 				return;
 			}
 			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id);
-			if (GameLogicUtilities::isStar(item->id))
-				maxslot += player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
-			else
-				maxslot += player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10;
+			if (GameLogicUtilities::isRechargeable(item->id))
+				maxslot += player->getSkills()->getRechargeableBonus();
 
 			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->id, maxslot - item->amount);
 			if ((modifiedmesos < 0) && (player->getInventory()->getMesos() > -modifiedmesos)) {
 				player->getInventory()->modifyMesos(modifiedmesos);
-				InventoryPacket::updateItemAmounts(player, 2, slot, maxslot, 0, 0);
+				InventoryPacket::updateItemAmounts(player, Inventories::UseInventory, slot, maxslot, 0, 0);
 				item->amount = maxslot;
 				InventoryPacket::bought(player, 0);
 			}
@@ -353,7 +351,7 @@ void Inventory::useStorage(Player *player, PacketReader &packet) {
 				// hacking
 				return;
 			}
-			player->getStorage()->addItem((inv == 1 || GameLogicUtilities::isRechargeable(itemid)) ? new Item(item) : new Item(itemid, amount));
+			player->getStorage()->addItem((inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) ? new Item(item) : new Item(itemid, amount));
 			// For equips or rechargeable items (stars/bullets) we create a
 			// new object for storage with the inventory object, and allow
 			// the one in the inventory to go bye bye.
@@ -382,12 +380,8 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 
 	int16_t max = ItemDataProvider::Instance()->getMaxSlot(itemid);
 	int16_t thisamount = 0;
-	if (GameLogicUtilities::isStar(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
-		amount -= 1;
-	}
-	else if (GameLogicUtilities::isBullet(itemid)) {
-		thisamount = max + player->getSkills()->getSkillLevel(Jobs::Gunslinger::GunMastery) * 10;
+	if (GameLogicUtilities::isRechargeable(itemid)) {
+		thisamount = max + player->getSkills()->getRechargeableBonus();
 		amount -= 1;
 	}
 	else if (GameLogicUtilities::isEquip(itemid) || GameLogicUtilities::isPet(itemid)) {
@@ -404,13 +398,17 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	}
 
 	Item *item = 0;
-	if (GameLogicUtilities::isEquip(itemid))
+	if (GameLogicUtilities::isEquip(itemid)) {
 		item = new Item(itemid, false);
-	else
+		if (GameLogicUtilities::isMount(itemid))
+			player->getMounts()->addMount(itemid);
+	}
+	else {
 		item = new Item(itemid, thisamount);
-
-	if (addItem(player, item, GameLogicUtilities::isPet(itemid)) == 0 && amount > 0)
+	}
+	if (addItem(player, item, GameLogicUtilities::isPet(itemid)) == 0 && amount > 0) {
 		addNewItem(player, itemid, amount);
+	}
 }
 
 void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
@@ -462,11 +460,11 @@ void Inventory::useItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	if (player->getHp() == 0 || player->getInventory()->getItemAmountBySlot(2, slot) == 0) {
+	if (player->getHp() == 0 || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
 		// hacking
 		return;
 	}
-	takeItemSlot(player, 2, slot, 1);
+	takeItemSlot(player, Inventories::UseInventory, slot, 1);
 	useItem(player, itemid);
 }
 
@@ -474,8 +472,9 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
 	// Alchemist
 	int16_t alchemist = 100;
-	if (player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist) > 0)
-		alchemist = Skills::skills[Jobs::Hermit::Alchemist][player->getSkills()->getSkillLevel(Jobs::Hermit::Alchemist)].x;
+	int32_t skillid = player->getSkills()->getAlchemist();
+	if (player->getSkills()->getSkillLevel(skillid) > 0)
+		alchemist = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
 	if (item.cons.hp > 0)
 		player->modifyHp(item.cons.hp * alchemist / 100);
 	if (item.cons.mp > 0)
@@ -507,7 +506,7 @@ void Inventory::useSkillbook(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 
-	if (player->getInventory()->getItemAmountBySlot(2, slot) == 0) {
+	if (player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
 		// hacking
 		return;
 	}
@@ -530,7 +529,7 @@ void Inventory::useSkillbook(Player *player, PacketReader &packet) {
 				player->getSkills()->setMaxSkillLevel(skillid, newMaxLevel);
 				succeed = true;
 			}
-			takeItemSlot(player, 2, slot, 1);
+			takeItemSlot(player, Inventories::UseInventory, slot, 1);
 			break;
 		}
 	}
@@ -555,14 +554,14 @@ void Inventory::useSummonBag(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	Item *inventoryitem = player->getInventory()->getItem(2, slot);
+	Item *inventoryitem = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	if (!ItemDataProvider::Instance()->itemExists(itemid))
 		return;
 	if (inventoryitem == 0 || inventoryitem->id != itemid) {
 		// hacking
 		return;
 	}
-	takeItemSlot(player, 2, slot, 1);
+	takeItemSlot(player, Inventories::UseInventory, slot, 1);
 
 	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
 	for (size_t i = 0; i < item.cons.mobs.size(); i++) {
@@ -576,18 +575,15 @@ void Inventory::useReturnScroll(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	if (player->getInventory()->getItemAmountBySlot(2, slot) == 0) {
+	if (player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
 		// hacking
 		return;
 	}
 	if (!ItemDataProvider::Instance()->itemExists(itemid))
 		return;
-	takeItemSlot(player, 2, slot, 1);
+	takeItemSlot(player, Inventories::UseInventory, slot, 1);
 	int32_t map = ItemDataProvider::Instance()->getItemInfo(itemid).cons.moveTo;
-	if (map == 999999999)
-		player->setMap(Maps::getMap(player->getMap())->getInfo()->rm);
-	else
-		player->setMap(map);
+	player->setMap(map == 999999999 ? Maps::getMap(player->getMap())->getInfo()->rm : map);
 }
 
 void Inventory::useScroll(Player *player, PacketReader &packet) {
@@ -597,8 +593,8 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 	bool wscroll = (packet.get<int16_t>() == 2);
 	bool legendary_spirit = (packet.get<int8_t>() != 0);
 
-	Item *item = player->getInventory()->getItem(2, slot);
-	Item *equip = player->getInventory()->getItem(1, eslot);
+	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	Item *equip = player->getInventory()->getItem(Inventories::EquipInventory, eslot);
 	if (item == 0 || equip == 0)
 		return;
 
@@ -614,7 +610,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 		if (equip->slots > 0) {
 			succeed = 0;
 			if (wscroll)
-				takeItem(player, 2340000, 1);
+				takeItem(player, Items::WhiteScroll, 1);
 			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
 				int8_t n = -1; // Default - Decrease stats
 				if ((int16_t) Randomizer::Instance()->randShort(99) < 50) // Increase
@@ -673,15 +669,16 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 	}
 	else {
 		switch (itemid) {
-			case 2040727: // Shoe for Spikes 10%
-			case 2041058: // Cape for Cold Protection 10%
+			case Items::ShoeSpikes: // 10%
+			case Items::CapeColdProtection: // 10%
 				succeed = 0;
-				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // These do not take slots and can be used even after success
+				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
+					// These do not take slots and can be used even after success
 					switch (itemid) {
-						case 2040727:
+						case Items::ShoeSpikes:
 							equip->flags |= FlagSpikes;
 							break;
-						case 2041058:
+						case Items::CapeColdProtection:
 							equip->flags |= FlagCold;
 							break;
 					}
@@ -691,7 +688,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			default: // Most scrolls
 				if (equip->slots > 0) {
 					if (wscroll)
-						takeItem(player, 2340000, 1);
+						takeItem(player, Items::WhiteScroll, 1);
 					if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
 						succeed = 1;
 						equip->istr += iteminfo.cons.istr;
@@ -724,13 +721,13 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 		}
 	}
 	if (succeed != -1) {
-		takeItemSlot(player, 2, slot, 1);
+		takeItemSlot(player, Inventories::UseInventory, slot, 1);
 		InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
 		if (!cursed)
-			InventoryPacket::addNewItem(player, 1, eslot, equip, true);
+			InventoryPacket::addNewItem(player, Inventories::EquipInventory, eslot, equip, true);
 		else {
-			InventoryPacket::moveItem(player, 1, eslot, 0);
-			player->getInventory()->deleteItem(1, eslot);
+			InventoryPacket::moveItem(player, Inventories::EquipInventory, eslot, 0);
+			player->getInventory()->deleteItem(Inventories::EquipInventory, eslot);
 		}
 		InventoryPacket::updatePlayer(player);
 	}
@@ -753,10 +750,10 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 
 	bool used = false;
 	switch (itemid) {
-		case 5050001: // 1st job SP Reset
-		case 5050002: // 2nd job SP Reset
-		case 5050003: // 3rd job SP Reset
-		case 5050004: { // 4th job SP Reset
+		case Items::FirstJobSpReset:
+		case Items::SecondJobSpReset:
+		case Items::ThirdJobSpReset:
+		case Items::FourthJobSpReset: {
 			int32_t toskill = packet.get<int32_t>();
 			int32_t fromskill = packet.get<int32_t>();
 			if (!player->getSkills()->addSkillLevel(fromskill, -1, true)) {
@@ -770,30 +767,30 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			used = true;
 			break;
 		}
-		case 5050000: { // AP Reset
+		case Items::ApReset: {
 			int32_t tostat = packet.get<int32_t>();
 			int32_t fromstat = packet.get<int32_t>();
-			Levels::addStat(player, tostat, true, false);
-			Levels::addStat(player, fromstat, true, true);
+			Levels::addStat(player, tostat, 1, true);
+			Levels::addStat(player, fromstat, -1, true);
 			used = true;
 			break;
 		}
-		case 5071000: { // Megaphone
-			string msg = packet.getString();
+		case Items::Megaphone: {
+			string msg = player->getName() + " : " + packet.getString();
 			InventoryPacket::showMegaphone(player, msg);
 			used = true;
 			break;
 		}
-		case 5072000: { // Super Megaphone
-			string msg = packet.getString();
+		case Items::SuperMegaphone: {
+			string msg = player->getName() + " : " + packet.getString();
 			uint8_t whisper = packet.get<int8_t>();
 			InventoryPacket::showSuperMegaphone(player, msg, whisper);
 			used = true;
 			break;
 		}
-		case 5390000: // Diablo Messenger
-		case 5390001: // Cloud 9 Messenger
-		case 5390002: { // Loveholic Messenger
+		case Items::DiabloMessenger:
+		case Items::Cloud9Messenger:
+		case Items::LoveholicMessenger: {
 			string msg = packet.getString();
 			string msg2 = packet.getString();
 			string msg3 = packet.getString();
@@ -803,27 +800,27 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			used = true;
 			break;
 		}
-		case 5170000: { // Pet Name Tag
+		case Items::PetNameTag: {
 			string name = packet.getString();
 			Pets::changeName(player, name);
 			used = true;
 			break;
 		}
-		case 5060000: { // Item Name Tag
+		case Items::ItemNameTag: {
 			int16_t slot = packet.get<int16_t>();
 			if (slot != 0) {
-				Item *item = player->getInventory()->getItem(1, slot);
+				Item *item = player->getInventory()->getItem(Inventories::EquipInventory, slot);
 				if (item == 0) {
 					// Hacking or failure, dunno
 					return;
 				}
 				item->name = player->getName();
-				InventoryPacket::addNewItem(player, 1, slot, item, true);
+				InventoryPacket::addNewItem(player, Inventories::EquipInventory, slot, item, true);
 				used = true;
 			}
 			break;
 		}
-		case 5060001: { // Item Lock
+		case Items::ItemLock: {
 			int8_t inventory = (int8_t) packet.get<int32_t>();
 			int16_t slot = (int16_t) packet.get<int32_t>();
 			if (slot != 0) {
@@ -838,7 +835,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 5075000: { // MapleTV Messenger
+		case Items::MapleTvMessenger: {
 			bool hasreceiver = (packet.get<int8_t>() == 3);
 			Player *receiver = Players::Instance()->getPlayer(packet.getString());
 			int32_t time = 15;
@@ -854,7 +851,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 5075001: { // MapleTV Star Messenger
+		case Items::MapleTvStarMessenger: {
 			int32_t time = 30;
 			string msg = packet.getString();
 			string msg2 = packet.getString();
@@ -866,7 +863,7 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			used = true;
 			break;
 		}
-		case 5075002: { // MapleTV Heart Messenger
+		case Items::MapleTvHeartMessenger: {
 			string name = packet.getString();
 			Player *receiver = Players::Instance()->getPlayer(name);
 			int32_t time = 60;
@@ -882,19 +879,21 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 5300000: // Fungus Scroll
-		case 5300001: // Oinker Delight
-		case 5300002: // Zeta Nightmare
+		case Items::FungusScroll:
+		case Items::OinkerDelight:
+		case Items::ZetaNightmare:
 			useItem(player, itemid);
 			used = true;
 			break;
 		default:
 			break;
 	}
-	if (used)
+	if (used) {
 		Inventory::takeItem(player, itemid, 1);
-	else
+	}
+	else {
 		InventoryPacket::blankUpdate(player);
+	}
 }
 
 void Inventory::useItemEffect(Player *player, PacketReader &packet) {

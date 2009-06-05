@@ -34,6 +34,11 @@ void ChannelServer::listen() {
 	Initializing::setUsersOffline(getOnlineId());
 }
 
+void ChannelServer::shutdown() {
+	channel = -1; // Else when WorldServerConnectPlayer disconnects, it will try to call shutdown() again
+	AbstractServer::shutdown();
+}
+
 void ChannelServer::loadData() {
 	Initializing::checkSchemaVersion();
 	Initializing::checkMcdbVersion();

@@ -17,19 +17,65 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Trades.h"
 #include "Player.h"
+#include "Trade.h"
+#include "TradeHandler.h"
+#include "Timer/Container.h"
+#include "Timer/Time.h"
+#include "Timer/Timer.h"
+#include <functional>
+
+using std::tr1::bind;
 
 Trades * Trades::singleton = 0;
 
-void Trades::addTrade(ActiveTrade *trade) {
-	int32_t id = trade->getStarter()->player->getId();
-	trade->setId(id);
-	trades[id].reset(trade);
+Trades::Trades() : ids(0), container(new Timer::Container) {
+
+}
+
+int32_t Trades::newTrade(Player *start, Player *recv) {
+	int32_t id = getNewId();
+	trades[id].reset(new ActiveTrade(start, recv, id));
+	startTimeout(id, start);
+	return id;
 }
 
 void Trades::removeTrade(int32_t id) {
+	if (checkTimer(id) != 0)
+		stopTimeout(id);
+
+	Player *p = trades[id]->getSender();
+	if (p != 0) {
+		p->setTrading(false);
+		p->setTradeId(0);
+	}
+	p = trades[id]->getReceiver();
+	if (p != 0) {
+		p->setTrading(false);
+		p->setTradeId(0);
+	}
 	trades.erase(id);
 }
 
 ActiveTrade * Trades::getTrade(int32_t id) {
 	return (trades.find(id) != trades.end() ? trades[id].get() : 0);
+}
+
+int32_t Trades::checkTimer(int32_t id) {
+	Timer::Id check(Timer::Types::TradeTimer, id, 0);
+	return getContainer()->checkTimer(check);
+}
+
+void Trades::timeout(Player *sender) {
+	TradeHandler::cancelTrade(sender);
+}
+
+void Trades::stopTimeout(int32_t id) {
+	Timer::Id rid(Timer::Types::TradeTimer, id, 0);
+	getContainer()->removeTimer(rid);
+}
+
+void Trades::startTimeout(int32_t id, Player *sender) {
+	Timer::Id tid(Timer::Types::TradeTimer, id, 0);
+	new Timer::Timer(bind(&Trades::timeout, this, sender),
+		tid, 0, Timer::Time::fromNow(TradeTimeout * 1000));
 }

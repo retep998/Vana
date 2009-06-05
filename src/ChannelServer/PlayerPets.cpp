@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPets.h"
 
 void PlayerPets::addPet(Pet *pet) {
-	playerpets[pet->getId()] = pet;
+	m_playerpets[pet->getId()] = pet;
 
 	if (pet->getIndex() != -1) {
 		setSummoned(pet->getIndex(), pet->getId());
@@ -28,20 +28,22 @@ void PlayerPets::addPet(Pet *pet) {
 }
 
 Pet * PlayerPets::getPet(int32_t petid) {
-	return playerpets.find(petid) != playerpets.end() ? playerpets[petid] : 0;
+	return m_playerpets.find(petid) != m_playerpets.end() ? m_playerpets[petid] : 0;
 }
 
 void PlayerPets::setSummoned(int8_t index, int32_t petid) {
-	summoned[index] = petid;
+	index -= 1;
+	m_summoned[index] = petid;
 }
 
 Pet * PlayerPets::getSummoned(int8_t index) {
-	return summoned[index] > 0 ? playerpets[summoned[index]] : 0;
+	index -= 1;
+	return m_summoned[index] > 0 ? m_playerpets[m_summoned[index]] : 0;
 }
 
 void PlayerPets::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	for (unordered_map<int32_t, Pet *>::iterator iter = playerpets.begin(); iter != playerpets.end(); iter++) {
+	for (unordered_map<int32_t, Pet *>::iterator iter = m_playerpets.begin(); iter != m_playerpets.end(); iter++) {
 		query << "UPDATE pets SET "
 			<< "`index` = " << (int16_t) iter->second->getIndex() << ","
 			<< "name = " << mysqlpp::quote << iter->second->getName() << ","
