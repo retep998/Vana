@@ -145,7 +145,6 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 		packet.add<int16_t>(0);
 		packet.add<int32_t>(skillid);
 		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
-		packet.add<int8_t>(0);
 		packet.add<int16_t>(castedtime);
 	}
 	packet.add<int16_t>(0);
@@ -164,7 +163,6 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 		packet.add<int16_t>(0);
 		packet.add<int32_t>(skillid);
 		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
-		packet.add<int8_t>(0);
 		packet.add<int16_t>(castedtime);
 	}
 	packet.add<int16_t>(0);
@@ -183,7 +181,6 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 	packet.add<int32_t>(skillid);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
 	packet.add<int16_t>(castedtime);
 	packet.add<int16_t>(addedinfo);
 	player->getSession()->send(packet);
@@ -199,7 +196,6 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 	packet.add<int32_t>(skillid);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
 	packet.add<int16_t>(castedtime);
 	packet.add<int16_t>(addedinfo);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);

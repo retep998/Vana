@@ -312,6 +312,18 @@ Buffs::Buffs() {
 	player.buff = buff;
 	skillsinfo[Jobs::Marksman::Blind].player.push_back(player);
 
+	// Dash
+	buff.type = 0x10;
+	buff.byte = Byte8;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+	buff.type = 0x20;
+	buff.byte = Byte8;
+	buff.value = SkillY;
+	player.buff = buff;
+	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
+
 	// Dragon Roar
 	buff.type = 0x02;
 	buff.byte = Byte3;
@@ -425,28 +437,6 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::Paladin::BwHolyCharge].map.push_back(map);
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].map.push_back(map);
 
-	// Dash
-	buff.type = 0x10;
-	buff.byte = Byte9;
-	buff.value = SkillX;
-	player.buff = buff;
-	player.hasmapval = true;
-	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
-	buff.type = 0x20;
-	map.buff = buff;
-	map.useval = true;
-	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
-	buff.type = 0x20;
-	buff.byte = Byte9;
-	buff.value = SkillY;
-	player.buff = buff;
-	player.hasmapval = true;
-	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
-	buff.type = 0x40;
-	map.buff = buff;
-	map.useval = true;
-	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
-
 	// Haste
 	buff.type = 0x80;
 	buff.byte = Byte1;
@@ -513,7 +503,7 @@ Buffs::Buffs() {
 
 	// Energy Charge
 	buff.type = 0x08;
-	buff.byte = Byte9;
+	buff.byte = Byte8;
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	player.hasmapval = true;
