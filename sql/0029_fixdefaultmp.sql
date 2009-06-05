@@ -1,0 +1,2 @@
+ALTER TABLE `characters` CHANGE `mmp` `mmp` SMALLINT(6) NULL DEFAULT 5;
+ALTER TABLE `characters` CHANGE `cmp` `cmp` SMALLINT(6) NULL DEFAULT 5;

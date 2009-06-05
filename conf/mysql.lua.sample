@@ -1,0 +1,13 @@
+-- Character Database
+chardb_host = "localhost";
+chardb_username = "root";
+chardb_password = "";
+chardb_database = "maplestory";
+chardb_port = 3306;
+
+-- MCDB
+datadb_host = "localhost";
+datadb_username = "root";
+datadb_password = "";
+datadb_database = "mcdb";
+datadb_port = 3306;

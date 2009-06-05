@@ -1,0 +1,24 @@
+-- What IPs should clients use to connect to the server?
+--
+-- The server will try to check of the client and the
+-- server is on the same subnet, if it is, the IP is
+-- sent to the client. Otherwise, the next subnet is
+-- parsed from top-to-bottom.
+--
+-- The format of a subnet configuration is {"IP", "Subnet"}
+-- an example:
+-- 	external_ip = {
+--      {"127.0.0.1", "255.0.0.0"},
+-- 	{"192.168.1.2", "255.255.255.0"},
+--	{"your.wan.ip", "0.0.0.0"}
+-- 	}
+-- In this case, the if the client is on 192.168.1.x
+-- the server sends 192.168.1.2 to the client, otherwise
+-- your.wan.ip gets sent to the client.
+-- 
+-- The 127.0.0.1 rule is needed so that the ChannelServer 
+-- know how to connect to the WorldServer
+--
+-- Domain names are supported in the IP field.
+
+external_ip = {}
