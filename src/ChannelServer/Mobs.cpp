@@ -1003,8 +1003,9 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 	if (mob->canPoison() && mob->getHp() > 1) { // Poisoning stuff
 		switch (skillid) {
 			case Jobs::FPWizard::PoisonBreath:
-			case Jobs::FPMage::PoisonMist:
 			case Jobs::FPMage::ElementComposition:
+			case Jobs::FPMage::PoisonMist:
+			case Jobs::FlameWizard::FireCurtain:
 			case Jobs::NightWalker::PoisonSling:
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					int16_t pdamage = (int16_t)(mob->getMHp() / (70 - level));
