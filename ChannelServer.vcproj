@@ -258,10 +258,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Movement.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\NPCs.cpp"
 					>
 				</File>
@@ -562,6 +558,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\MovementHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerHandler.cpp"
 					>
 				</File>
@@ -629,10 +629,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MovableLife.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Movement.h"
 					>
 				</File>
 				<File
@@ -953,6 +949,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\CommandHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\MovementHandler.h"
 					>
 				</File>
 				<File

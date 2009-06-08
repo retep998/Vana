@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "Maps.h"
 #include "MobsPacket.h"
-#include "Movement.h"
+#include "MovementHandler.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Randomizer.h"
@@ -410,7 +410,7 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	Pos target = packet.getPos();
 
 	packet.skipBytes(9);
-	Pos cpos = Movement::parseMovement(mob, packet);
+	Pos cpos = MovementHandler::parseMovement(mob, packet);
 	if (cpos - mob->getPos() > 300) {
 		if (player->addWarning())
 			return;

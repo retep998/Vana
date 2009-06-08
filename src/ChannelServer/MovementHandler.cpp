@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Movement.h"
+#include "MovementHandler.h"
 #include "MovableLife.h"
 #include "Pos.h"
 #include "PacketReader.h"
 #include <iomanip>
 #include <iostream>
 
-Pos Movement::parseMovement(MovableLife *life, PacketReader &packet) {
+Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 	int16_t foothold = 0;
 	int8_t stance = 0;
 	int16_t x = 0;
