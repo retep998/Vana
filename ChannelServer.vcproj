@@ -210,23 +210,11 @@
 				Name="ChannelServer"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\BuddyListHandler.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Buffs.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\ChannelServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\ChatHandler.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\CommandHandler.cpp"
 					>
 				</File>
 				<File
@@ -286,10 +274,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\PlayerHandler.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Players.cpp"
 					>
 				</File>
@@ -315,10 +299,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Trade.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\TradeHandler.cpp"
 					>
 				</File>
 				<File
@@ -566,6 +546,30 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Handlers"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\BuddyListHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ChatHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\CommandHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\TradeHandler.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -576,23 +580,11 @@
 				Name="ChannelServer"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\BuddyListHandler.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Buffs.h"
 					>
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\ChannelServer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\ChatHandler.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\CommandHandler.h"
 					>
 				</File>
 				<File
@@ -656,10 +648,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\PlayerHandler.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Players.h"
 					>
 				</File>
@@ -685,10 +673,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Trade.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\TradeHandler.h"
 					>
 				</File>
 				<File
@@ -953,6 +937,30 @@
 				>
 				<File
 					RelativePath=".\src\ChannelServer\GameLogicUtilities.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Handlers"
+				>
+				<File
+					RelativePath=".\src\ChannelServer\BuddyListHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ChatHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\CommandHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\TradeHandler.h"
 					>
 				</File>
 			</Filter>
