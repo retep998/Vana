@@ -22,7 +22,7 @@ class MovableLife;
 class PacketReader;
 struct Pos;
 
-namespace Movement {
+namespace MovementHandler {
 	Pos parseMovement(MovableLife *life, PacketReader &packet);
 };
 

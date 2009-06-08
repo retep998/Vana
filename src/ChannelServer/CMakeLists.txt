@@ -39,7 +39,7 @@ set(SOURCES
 	Mobs.h
 	MobsPacket.h
 	MovableLife.h
-	Movement.h
+	MovementHandler.h
 	NPCPacket.h
 	NPCs.h
 	Party.h
@@ -119,7 +119,7 @@ set(SOURCES
 	MobDataProvider.cpp
 	Mobs.cpp
 	MobsPacket.cpp
-	Movement.cpp
+	MovementHandler.cpp
 	NPCPacket.cpp
 	NPCs.cpp
 	Party.cpp

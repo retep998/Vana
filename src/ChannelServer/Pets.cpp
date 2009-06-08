@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "InventoryPacket.h"
 #include "Maps.h"
-#include "Movement.h"
+#include "MovementHandler.h"
 #include "PacketReader.h"
 #include "PetsPacket.h"
 #include "Player.h"
@@ -118,7 +118,7 @@ void Pets::handleMovement(Player *player, PacketReader &packet) {
 	int32_t petid = packet.get<int32_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	packet.skipBytes(8);
-	Movement::parseMovement(pet, packet);
+	MovementHandler::parseMovement(pet, packet);
 	packet.reset(10);
 	PetsPacket::showMovement(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
 }

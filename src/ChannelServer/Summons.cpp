@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "LoopingId.h"
 #include "Maps.h"
-#include "Movement.h"
+#include "MovementHandler.h"
 #include "PacketReader.h"
 #include "PlayerPacket.h"
 #include "Skills.h"
@@ -102,7 +102,7 @@ void Summons::moveSummon(Player *player, PacketReader &packet) {
 		// Up to no good, lag, or something else
 		return;
 	Pos startPos = summon->getPos(); // Original gangsta
-	Movement::parseMovement(summon, packet);
+	MovementHandler::parseMovement(summon, packet);
 	packet.reset(10);
 	SummonsPacket::moveSummon(player, summon, startPos, packet.getBuffer(), (packet.getBufferLength() - 9));
 }
