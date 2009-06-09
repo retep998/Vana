@@ -301,9 +301,9 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					Buffs::Instance()->addBuff(target, skillid, level, addedinfo);
-					if (skillid == Jobs::SuperGm::Resurrection)
+					if (skillid == Jobs::SuperGm::Resurrection && target->getHp() <= 0)
 						target->setHp(target->getMHp());
-					else if (skillid == Jobs::SuperGm::HealPlusDispel) {
+					else if (skillid == Jobs::SuperGm::HealPlusDispel && target->getHp() > 0) {
 						target->setHp(target->getMHp());
 						target->setMp(target->getMMp());
 						target->getActiveBuffs()->useDispel();
