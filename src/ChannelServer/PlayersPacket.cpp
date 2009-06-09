@@ -329,6 +329,8 @@ void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
 		}
 		pack.skipBytes(4);
 	}
+	pack.skipBytes(4);
+	packet.add<int32_t>(pack.get<int32_t>()); // Position
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
