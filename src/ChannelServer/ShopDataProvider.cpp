@@ -151,16 +151,37 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 	return true;
 }
 
-int32_t ShopDataProvider::getPrice(int32_t shopid, int32_t itemid) {
+int32_t ShopDataProvider::getPrice(int32_t shopid, int16_t shopindex) {
 	vector<ShopItemInfo> s = shops[shopid].items;
-	int32_t price = 0;
-	for (size_t i = 0; i < s.size(); i++) {
-		if (s[i].itemid == itemid) {
-			price = s[i].price;
-			break;
-		}
+	try {
+		return s.at(shopindex).price;
 	}
-	return price;
+	catch (std::out_of_range) {
+
+	}
+	return 0;
+}
+
+int16_t ShopDataProvider::getAmount(int32_t shopid, int16_t shopindex) {
+	vector<ShopItemInfo> s = shops[shopid].items;
+	try {
+		return s.at(shopindex).quantity;
+	}
+	catch (std::out_of_range) {
+
+	}
+	return 0;
+}
+
+int32_t ShopDataProvider::getItemId(int32_t shopid, int16_t shopindex) {
+	vector<ShopItemInfo> s = shops[shopid].items;
+	try {
+		return s.at(shopindex).itemid;
+	}
+	catch (std::out_of_range) {
+
+	}
+	return 0;
 }
 
 int32_t ShopDataProvider::getRechargeCost(int32_t shopid, int32_t itemid, int16_t amount) {

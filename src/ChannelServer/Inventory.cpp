@@ -249,18 +249,21 @@ void Inventory::useShop(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 	switch (type) {
 		case 0: { // Buy
-			packet.skipBytes(2);
-			int32_t itemid = packet.get<int32_t>();
-			int16_t amount = packet.get<int16_t>();
-			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemid);
-			if (price == 0 || player->getInventory()->getMesos() < (price * amount) ||  amount > ItemDataProvider::Instance()->getMaxSlot(itemid)) {
+			int16_t itemindex = packet.get<int16_t>();
+			packet.skipBytes(4); // Item ID, no reason to trust this
+			int16_t quantity = packet.get<int16_t>();
+			packet.skipBytes(4); // Price, don't want to trust this
+			int16_t amount = ShopDataProvider::Instance()->getAmount(player->getShop(), itemindex);
+			int32_t itemid = ShopDataProvider::Instance()->getItemId(player->getShop(), itemindex);
+			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemindex);
+			if (quantity < 0 || price == 0 || player->getInventory()->getMesos() < (price * quantity)) {
 				// Hacking
 				return;
 			}
-			bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, amount, true);
+			bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, quantity * amount, true);
 			if (haveslot) {
-				addNewItem(player, itemid, amount);
-				player->getInventory()->modifyMesos(-(price * amount));
+				addNewItem(player, itemid, quantity * amount);
+				player->getInventory()->modifyMesos(-(quantity * price));
 			}
 			InventoryPacket::bought(player, haveslot ? 0 : 3);
 			break;
