@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+class PacketReader;
 class Player;
 struct PGMRInfo;
 
@@ -37,6 +38,11 @@ namespace PlayersPacket {
 	void findPlayer(Player *player, const string &name, int32_t map, uint8_t is = 0, bool is_channel = 0);
 	void whisperPlayer(Player *target, const string &whisperer_name, uint16_t channel, const string &message);
 	void sendToPlayers(unsigned char *data, int32_t len);
+	void useMeleeAttack(Player *player, PacketReader &pack);
+	void useRangedAttack(Player *player, PacketReader &pack);
+	void useSpellAttack(Player *player, PacketReader &pack);
+	void useEnergyChargeAttack(Player *player, PacketReader &pack);
+	void useSummonAttack(Player *player, PacketReader &pack);
 };
 
 #endif

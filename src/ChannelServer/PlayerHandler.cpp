@@ -16,8 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerHandler.h"
+#include "Drops.h"
+#include "DropsPacket.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "Maps.h"
+#include "Mist.h"
 #include "Mobs.h"
 #include "MovementHandler.h"
 #include "Player.h"
@@ -26,7 +30,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Randomizer.h"
 #include "PacketReader.h"
+#include "Skills.h"
 #include "SkillsPacket.h"
+#include "Summons.h"
+#include "Timer/Time.h"
+#include "Timer/Timer.h"
+
+#include <functional>
+
+using std::tr1::bind;
 
 void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Ticks
@@ -312,3 +324,369 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 		}
 	}
 }
+
+void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
+	PlayersPacket::useMeleeAttack(player, packet);
+	packet.reset(2);
+	packet.skipBytes(1); // Useless
+	uint8_t tbyte = packet.get<int8_t>();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
+	int8_t damagedtargets = 0;
+	int32_t skillid = packet.get<int32_t>();
+	uint8_t level = player->getSkills()->getSkillLevel(skillid);
+	switch (skillid) {
+		case Jobs::Gunslinger::Grenade:
+		case Jobs::Infighter::CorkscrewBlow:
+			packet.skipBytes(4); // Charge
+			break;
+	}
+	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
+	if (skillid > 0)
+		Skills::useAttackSkill(player, skillid);
+	int32_t map = player->getMap();
+	uint32_t totaldmg = 0;
+	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
+	for (int8_t i = 0; i < targets; i++) {
+		int32_t targettotal = 0;
+		int32_t mapmobid = packet.get<int32_t>();
+		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
+		if (mob == 0)
+			continue;
+		packet.skipBytes(3); // Useless
+		packet.skipBytes(1); // State
+		packet.skipBytes(8); // Useless
+		if (skillid != Jobs::ChiefBandit::MesoExplosion)
+			packet.skipBytes(1); // Distance, first half for non-Meso Explosion
+		int8_t num = packet.get<int8_t>(); // Distance, second half for non-Meso Explosion OR hits for Meso Explosion
+		hits = skillid == Jobs::ChiefBandit::MesoExplosion ? num : hits;
+		vector<int32_t> ppdamages; // Pickpocket
+		Pos origin = mob->getPos(); // Info for pickpocket before mob is set to 0 (in the case that mob dies)
+		for (int8_t k = 0; k < hits; k++) {
+			int32_t damage = packet.get<int32_t>();
+			targettotal += damage;
+			if (skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
+				if (Randomizer::Instance()->randInt(99) < Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].prop) {
+					ppdamages.push_back(damage);
+				}
+			}
+			if (mob == 0) {
+				if (skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) // Roll along after the mob is dead to finish getting damage values for pickpocket
+					continue;
+				else {
+					packet.skipBytes(4 * (hits - 1 - k));
+					break;
+				}
+			}
+			if (skillid == Jobs::Paladin::HeavensHammer && mob->isBoss()) {
+				// Damage calculation goes in here, I think? Hearing conflicted views.
+			}
+			else {
+				if (skillid == Jobs::Paladin::HeavensHammer)
+					damage = mob->getHp() - 1;
+
+				int32_t temphp = mob->getHp();
+				mob->applyDamage(player->getId(), damage);
+				if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
+					mob = 0;
+			}
+		}
+		if (targettotal > 0) {
+			if (mob != 0 && mob->getHp() > 0) {
+				uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
+				Mobs::handleMobStatus(player, mob, skillid, level, weapontype); // Mob status handler (freeze, stun, etc)
+				if (mob->getHp() < mob->getSelfDestructHp()) {
+					mob->explode();
+				}
+			}
+			damagedtargets++;
+		}
+		totaldmg += targettotal;
+		uint8_t ppdamagesize = (uint8_t)(ppdamages.size());
+		for (uint8_t pickpocket = 0; pickpocket < ppdamagesize; pickpocket++) { // Drop stuff for Pickpocket
+			Pos pppos;
+			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 5 : 0) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
+			pppos.y = origin.y;
+			clock_t pptime = 175 * pickpocket;
+			int32_t ppmesos = ((ppdamages[pickpocket] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
+			Drop *ppdrop = new Drop(player->getMap(), ppmesos, pppos, player->getId(), true);
+			ppdrop->setTime(100);
+			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
+				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
+				0, Timer::Time::fromNow(pptime));
+		}
+		if (!GameLogicUtilities::isSummon(skillid))
+			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
+	}
+	packet.skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
+
+	if (player->getSkills()->hasEnergyCharge())
+		player->getActiveBuffs()->increaseEnergyChargeLevel(damagedtargets);
+
+	switch (skillid) {
+		case Jobs::ChiefBandit::MesoExplosion: {
+			uint8_t items = packet.get<int8_t>();
+			int32_t map = player->getMap();
+			for (uint8_t i = 0; i < items; i++) {
+				int32_t objId = packet.get<int32_t>();
+				packet.skipBytes(1); // Boolean for hit a monster
+				Drop *drop = Maps::getMap(map)->getDrop(objId);
+				if (drop != 0) {
+					DropsPacket::explodeDrop(drop);
+					Maps::getMap(map)->removeDrop(drop->getId());
+					delete drop;
+				}
+			}
+			break;
+		}
+		case Jobs::Marauder::EnergyDrain: {
+			int32_t hpRecover = totaldmg * Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x / 100;
+			if (hpRecover > player->getMHp())
+				player->setHp(player->getMHp());
+			else
+				player->modifyHp((int16_t) hpRecover);
+			break;
+		}
+		case Jobs::Crusader::SwordPanic: // Crusader finishers
+		case Jobs::Crusader::SwordComa:
+		case Jobs::Crusader::AxePanic:
+		case Jobs::Crusader::AxeComa:
+			player->getActiveBuffs()->setCombo(0, true);
+			break;
+		case Jobs::Crusader::Shout:
+		case Jobs::Gm::SuperDragonRoar:
+			break;
+		case Jobs::DragonKnight::DragonRoar: {
+			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
+			int16_t x_value = Skills::skills[skillid][roarlv].x;
+			uint16_t reduction = (player->getMHp() / 100) * x_value;
+			if ((player->getHp() - reduction) > 0)
+				player->damageHp(reduction);
+			else {
+				// Hacking
+				return;
+			}
+			Buffs::Instance()->addBuff(player, Jobs::DragonKnight::DragonRoar, roarlv, 0);
+			break;
+		}
+		case Jobs::DragonKnight::Sacrifice: {
+			int16_t hp_damage_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+			uint16_t hp_damage = (uint16_t) totaldmg * hp_damage_x / 100;
+			if ((player->getHp() - hp_damage) < 1)
+				player->setHp(1);
+			else
+				player->damageHp(hp_damage);
+			break;
+		}
+		case Jobs::WhiteKnight::ChargeBlow: {
+			int8_t acb_level = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
+			int16_t acb_x = 0;
+			if (acb_level > 0)
+				acb_x = Skills::skills[Jobs::Paladin::AdvancedCharge][acb_level].x;
+			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1)))
+				player->getActiveBuffs()->stopCharge();
+			break;
+		}
+		default:
+			if (totaldmg > 0)
+				player->getActiveBuffs()->addCombo();
+			break;
+	}
+}
+
+void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
+	PlayersPacket::useRangedAttack(player, packet);
+	packet.reset(2); // Passing to the display function causes the buffer to be eaten, we need it
+	packet.skipBytes(1); // Number of portals taken (not kidding)
+	uint8_t tbyte = packet.get<int8_t>();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
+	int32_t skillid = packet.get<int32_t>();
+	switch (skillid) {
+		case Jobs::Bowmaster::Hurricane:
+		case Jobs::Marksman::PiercingArrow:
+		case Jobs::Corsair::RapidFire:
+			packet.skipBytes(4); // Charge time
+			packet.skipBytes(1); // Projectile display
+			if (skillid != Jobs::Marksman::PiercingArrow && player->getSpecialSkill() == 0) { // Only Piercing Arrow doesn't fit the mold
+				SpecialSkillInfo info;
+				info.skillid = skillid;
+				info.direction = packet.get<int8_t>();
+				packet.skipBytes(1); // Weapon subclass
+				info.w_speed = packet.get<int8_t>();
+				info.level = player->getSkills()->getSkillLevel(info.skillid);
+				player->setSpecialSkill(info);
+				SkillsPacket::showSpecialSkill(player, info);
+			}
+			else
+				packet.skipBytes(3);
+			break;
+		default:
+			packet.skipBytes(4); // Projectile display [1], direction/animation [1], weapon subclass [1], weapon speed [1]
+			break;
+	}
+	packet.skipBytes(4); // Ticks
+	int16_t pos = packet.get<int16_t>();
+	packet.skipBytes(2); // Cash Shop star cover
+	packet.skipBytes(1); // 0x00 = AoE, 0x41 = other
+	if (skillid != Jobs::Hermit::ShadowMeso && player->getActiveBuffs()->hasShadowStars())
+		packet.skipBytes(4); // Star ID added by Shadow Stars
+	Skills::useAttackSkillRanged(player, skillid, pos);
+	int32_t mhp = 0;
+	uint32_t totaldmg = damageMobs(player, packet, targets, hits, skillid, mhp);
+	if (skillid == Jobs::Assassin::Drain) { // Drain
+		int16_t drain_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+		int32_t hpRecover = totaldmg * drain_x / 100;
+		if (hpRecover > mhp)
+			hpRecover = mhp;
+		if (hpRecover > (player->getMHp() / 2))
+			hpRecover = player->getMHp() / 2;
+		if (hpRecover > player->getMHp())
+			player->setHp(player->getMHp());
+		else
+			player->modifyHp((int16_t) hpRecover);
+	}
+}
+
+void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
+	PlayersPacket::useSpellAttack(player, packet);
+	packet.reset(2);
+	packet.skipBytes(1);
+	uint8_t tbyte = packet.get<int8_t>();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
+	int32_t skillid = packet.get<int32_t>();
+	switch (skillid) {
+		case Jobs::FPArchMage::BigBang: // Big Bang has a 4 byte charge time after skillid
+		case Jobs::ILArchMage::BigBang:
+		case Jobs::Bishop::BigBang:
+			packet.skipBytes(4);
+			break;
+	}
+	MpEaterInfo eater;
+	eater.id = player->getSkills()->getMpEater();
+	eater.level = player->getSkills()->getSkillLevel(eater.id);
+	if (eater.level > 0) {
+		eater.prop = Skills::skills[eater.id][eater.level].prop;
+		eater.x = Skills::skills[eater.id][eater.level].x;
+	}
+	packet.skipBytes(2); // Display, direction/animation
+	packet.skipBytes(2); // Weapon subclass, casting speed
+	packet.skipBytes(4); // Ticks
+	if (skillid != Jobs::Cleric::Heal) // Heal is sent as both an attack and as a used skill - always used, sometimes attack
+		Skills::useAttackSkill(player, skillid);
+	int32_t useless = 0;
+	uint32_t totaldmg = damageMobs(player, packet, targets, hits, skillid, useless, &eater);
+	switch (skillid) {
+		case Jobs::FPMage::PoisonMist: {
+			uint8_t level = player->getSkills()->getSkillLevel(skillid);
+			Mist *mist = new Mist(player->getMap(), player, player->getPos(), Skills::skills[skillid][level], skillid, level);
+			break;
+		}
+	}
+}
+
+void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) {
+	PlayersPacket::useEnergyChargeAttack(player, packet);
+	packet.reset(2);
+	packet.skipBytes(1);
+	uint8_t tbyte = packet.get<int8_t>();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
+	int32_t skillid = packet.get<int32_t>();
+	packet.skipBytes(2); // Display, direction/animation
+	packet.skipBytes(2); // Weapon subclass, casting speed
+	packet.skipBytes(4); // Ticks
+	int32_t mapmobid = packet.get<int32_t>();
+	Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
+	if (mob == 0)
+		return;
+	packet.skipBytes(14); // ???
+	int32_t damage = packet.get<int32_t>();
+	mob->applyDamage(player->getId(), damage);
+	packet.skipBytes(8); // End of packet	
+}
+
+void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
+	PlayersPacket::useSummonAttack(player, packet);
+	packet.reset(2);
+	packet.skipBytes(4); // Summon ID
+	Summon *summon = player->getSummons()->getSummon();
+	if (summon == 0) {
+		// Hacking or some other form of tomfoolery
+		return;
+	}
+	packet.skipBytes(5);
+	int8_t targets = packet.get<int8_t>();
+	int32_t useless = 0;
+	damageMobs(player, packet, targets, 1, summon->getSummonId(), useless);
+}
+
+uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater) {
+	int32_t map = player->getMap();
+	uint32_t total = 0;
+	int32_t firsthit = 0;
+	uint8_t level = player->getSkills()->getSkillLevel(skillid);
+	for (int8_t i = 0; i < targets; i++) {
+		int32_t targettotal = 0;
+		int32_t mapmobid = packet.get<int32_t>();
+		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
+		if (mob == 0)
+			return 0;
+		if (skillid == Jobs::Cleric::Heal && !mob->isUndead()) {
+			// hacking
+			return 0;
+		}
+		packet.skipBytes(3); // Useless
+		packet.skipBytes(1); // State
+		packet.skipBytes(8); // Useless
+		packet.skipBytes(2); // Distance
+		for (int8_t k = 0; k < hits; k++) {
+			int32_t damage = packet.get<int32_t>();
+			targettotal += damage;
+			if (firsthit == 0)
+				firsthit = damage;
+			if (mob == 0) {
+				packet.skipBytes(4 * (hits - 1 - k));
+				break;
+			}
+			extra = mob->getMHp();
+			if (eater != 0) { // MP Eater
+				int32_t cmp = mob->getMp();
+				if ((!eater->onlyonce) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < eater->prop)) {
+					eater->onlyonce = true;
+					int32_t mp = mob->getMMp() * eater->x / 100;
+					if (mp > cmp)
+						mp = cmp;
+					mob->setMp(cmp - mp);
+					player->modifyMp((int16_t) mp);
+					SkillsPacket::showSkillEffect(player, eater->id);
+				}
+			}
+			if (skillid == Jobs::Ranger::MortalBlow || skillid == Jobs::Sniper::MortalBlow) {
+				SkillLevelInfo sk = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)];
+				int32_t hp_p = mob->getMHp() * sk.x / 100; // Percentage of HP required for Mortal Blow activation
+				if ((mob->getHp() < hp_p) && (Randomizer::Instance()->randShort(99) < sk.y)) {
+					damage = mob->getHp();
+				}
+			}
+			int32_t temphp = mob->getHp();
+			mob->applyDamage(player->getId(), damage);
+			if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
+				mob = 0;
+		}
+		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
+			uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
+			Mobs::handleMobStatus(player, mob, skillid, level, weapontype, firsthit); // Mob status handler (freeze, stun, etc)
+			if (mob->getHp() < mob->getSelfDestructHp()) {
+				mob->explode();
+			}
+		}
+		total += targettotal;
+		if (!GameLogicUtilities::isSummon(skillid))
+			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
+	}
+	packet.skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
+	return total;
+}
+

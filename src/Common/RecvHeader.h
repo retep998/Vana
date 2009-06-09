@@ -38,10 +38,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_MOVE_PLAYER 0x28
 #define RECV_STOP_CHAIR 0x29
 #define RECV_USE_CHAIR 0x2a
-#define RECV_DAMAGE_MOB 0x2b
-#define RECV_DAMAGE_MOB_RANGED 0x2c
-#define RECV_DAMAGE_MOB_SPELL 0x2d
-#define RECV_DAMAGE_MOB_ENERGYCHARGE 0x2e
+#define RECV_ATTACK_MELEE 0x2b
+#define RECV_ATTACK_RANGED 0x2c
+#define RECV_ATTACK_SPELL 0x2d
+#define RECV_ATTACK_ENERGYCHARGE 0x2e
 #define RECV_DAMAGE_PLAYER 0x2f
 #define RECV_CHAT 0x30
 #define RECV_FACE_EXPRESSION 0x32
@@ -84,7 +84,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_PET_COMMAND 0xa3
 #define RECV_PET_LOOT 0xa4
 #define RECV_MOVE_SUMMON 0xa9
-#define RECV_DAMAGE_MOB_SUMMON 0xaa
+#define RECV_ATTACK_SUMMON 0xaa
 #define RECV_DAMAGE_SUMMON 0xab
 #define RECV_CONTROL_MOB 0xb2
 #define RECV_MOB_BOMB_EXPLOSION 0xb7
