@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "MapleSession.h"
 #include "MapleTVs.h"
+#include "Mist.h"
 #include "Mobs.h"
 #include "MobsPacket.h"
 #include "NPCPacket.h"
@@ -47,11 +48,12 @@ spawnpoints(0),
 objectids(1000),
 instance(0),
 timer(0),
-timerstart(0)
+timerstart(0),
+poisonmists(0)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
-		0, 0, 10000);
+		getTimers(), 0, 10000);
 }
 
 // Map Info
@@ -345,13 +347,73 @@ void Map::clearDrops(clock_t time) { // Clear drops based on how long they have 
 	}
 }
 
+// Mists
+void Map::addMist(Mist *mist) {
+	mists[mist->getId()] = mist;
+
+	Timer::Id id(Timer::Types::MistTimer, mist->getId(), 0);
+	new Timer::Timer(bind(&Map::removeMist, this, mist->getId()),
+		id, getTimers(), Timer::Time::fromNow(mist->getTime() * 1000));
+
+	MapPacket::spawnMist(info->id, mist);
+	if (mist->isPoison() && !mist->isMobMist())
+		poisonmists++;
+}
+
+Mist * Map::getMist(int32_t id) {
+	return (mists.find(id) != mists.end() ? mists[id] : 0);
+}
+
+void Map::removeMist(int32_t id) {
+	if (mists.find(id) != mists.end()) {
+		Mist *f = mists[id];
+		if (f->isPoison() && !f->isMobMist())
+			poisonmists--;
+		mists.erase(id);
+		delete f;
+		MapPacket::removeMist(info->id, id);
+	}
+}
+
+void Map::checkMists() {
+	if (getPoisonMistCount() == 0) // Only player -> mob poison mists matter for checking, client does the rest
+		return;
+	for (unordered_map<int32_t, Mist *>::iterator miter = mists.begin(); miter != mists.end(); miter++) {
+		Mist *mist = miter->second;
+		if (!mist->isPoison())
+			continue;
+		for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+			Mob *mob = iter->second;
+			if (mob == 0 || mob->hasStatus(StatusEffects::Mob::Poison))
+				continue;
+			if (GameLogicUtilities::isInBox(mist->getOrigin(), mist->getSkillLt(), mist->getSkillRb(), mob->getPos())) {
+				Player *p = Players::Instance()->getPlayer(mist->getOwnerId());
+				Mobs::handleMobStatus(p, mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0);
+			}
+		}
+	}
+}
+void Map::clearMists(bool showPacket) {
+	unordered_map<int32_t, Mist *> mistlist = mists;
+	for (unordered_map<int32_t, Mist *>::iterator iter = mistlist.begin(); iter != mistlist.end(); iter++) {
+		removeMist(iter->first);
+	}
+}
+
+int32_t Map::getPoisonMistCount() {
+	return poisonmists;
+}
+
+// Timer stuff
 void Map::runTimer() {
 	clock_t time = TimeUtilities::getTickCount();
 	checkReactorSpawn(time);
 	checkMobSpawn(time);
 	clearDrops(time);
-	if (TimeUtilities::getSecond() % 3 == 0)
+	checkMists();
+	if (TimeUtilities::getSecond() % 3 == 0) {
 		checkShadowWeb();
+	}
 }
 
 void Map::setMapTimer(int32_t t) {
@@ -363,7 +425,7 @@ void Map::setMapTimer(int32_t t) {
 	if (t > 0) {
 		new Timer::Timer(bind(&Map::setMapTimer, this, 0),
 			Timer::Id(Timer::Types::MapTimer, info->id, 25),
-			0, Timer::Time::fromNow(t * 1000));
+			getTimers(), Timer::Time::fromNow(t * 1000));
 	}
 }
 
@@ -415,6 +477,12 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 			}
 		}
 	}
+	// Mists
+	for (unordered_map<int32_t, Mist *>::iterator iter = mists.begin(); iter != mists.end(); iter++) {
+		if (iter->second != 0) {
+			MapPacket::showMist(player, iter->second);
+		}
+	}
 
 	if (player->getParty()) {
 		player->getParty()->showHpBar(player);
@@ -440,4 +508,8 @@ void Map::sendPacket(PacketCreator &packet, Player *player) {
 void Map::showMessage(string &message, int8_t type) {
 	for (size_t i = 0; i < players.size(); i++)
 		PlayerPacket::showMessage(players[i], message, type);
+}
+
+int32_t Map::checkTimer(uint32_t type, uint32_t id1, uint32_t id2) {
+	return (getTimers()->checkTimer(Timer::Id(type, id1, id2)) / 1000);
 }

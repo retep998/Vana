@@ -22,11 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mobs.h"
 #include "Pos.h"
 #include <ctime>
+#include <boost/scoped_ptr.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
 #include <string>
-#include <boost/thread/recursive_mutex.hpp>
 
 using std::string;
 using std::vector;
@@ -35,10 +36,14 @@ using std::tr1::unordered_map;
 
 class Drop;
 class Instance;
+class Mist;
 class Mob;
 class PacketCreator;
 class Player;
 class Reactor;
+namespace Timer {
+	class Container;
+};
 
 struct MapInfo {
 	MapInfo() : musicname(""), top(0), left(0), right(0), bottom(0) {}
@@ -190,6 +195,14 @@ public:
 	void clearDrops(bool showPacket = true);
 	void clearDrops(clock_t time);
 
+	// Mists
+	void addMist(Mist *mist);
+	void checkMists();
+	void removeMist(int32_t id);
+	void clearMists(bool showPacket = true);
+	Mist * getMist(int32_t id);
+	int32_t getPoisonMistCount();
+
 	// Timer stuff
 	void runTimer();
 	void setMapTimer(int32_t t);
@@ -209,23 +222,28 @@ private:
 	FootholdsInfo footholds;
 	PortalsInfo portals;
 	SpawnPoints spawnpoints;
-	vector<Player *> players;
 	NPCSpawnsInfo npcs;
 	ReactorSpawnsInfo reactorspawns;
-	vector<Reactor *> reactors;
 	ReactorRespawns reactorrespawns;
 	MobSpawnsInfo mobspawns;
 	MobRespawnsInfo mobrespawns;
+	vector<Player *> players;
+	vector<Reactor *> reactors;
 	unordered_map<int32_t, Mob *> mobs;
 	unordered_map<int32_t, Drop *> drops;
+	unordered_map<int32_t, Mist *> mists;
 	boost::recursive_mutex drops_mutex;
+	boost::scoped_ptr<Timer::Container> timers;
 	LoopingId objectids;
 	Instance *instance;
-	int32_t timer;
 	time_t timerstart;
+	int32_t timer;
+	int32_t poisonmists;
 
 	void updateMobControl(Player *player);
 	void updateMobControl(Mob *mob, bool spawn = false);
+	Timer::Container * getTimers() const { return timers.get(); }
+	int32_t checkTimer(uint32_t type, uint32_t id1, uint32_t id2);
 };
 
 #endif

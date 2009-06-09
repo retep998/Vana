@@ -106,6 +106,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_ANIMATE_NPC 0xe6
 #define SEND_DROP_ITEM 0xee
 #define SEND_TAKE_DROP 0xef
+#define SEND_SPAWN_MIST 0xf3
+#define SEND_REMOVE_MIST 0xf4
 #define SEND_TRIGGER_REACTOR 0xf7
 #define SEND_SHOW_REACTOR 0xf9
 #define SEND_DESTROY_REACTOR 0xfa

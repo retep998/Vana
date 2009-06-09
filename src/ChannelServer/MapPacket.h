@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+class Mist;
 class Player;
 class PacketCreator;
 
@@ -41,6 +42,9 @@ namespace MapPacket {
 	void sendEvent(int32_t mapid, const string &eventname); // Send event - clear/wrong/etc
 	void sendEffect(int32_t mapid, const string &effectname); // Send effect - gate/etc
 	void showEventInstructions(int32_t mapid);
+	void showMist(Player *player, Mist *mist);
+	void spawnMist(int32_t mapid, Mist *mist);
+	void removeMist(int32_t mapid, int32_t id);
 };
 
 #endif
