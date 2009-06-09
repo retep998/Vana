@@ -50,7 +50,9 @@ public:
 	}
 	void loadData();
 	bool showShop(Player *player, int32_t id);
-	int32_t getPrice(int32_t shopid, int32_t itemid);
+	int32_t getPrice(int32_t shopid, int16_t shopindex);
+	int32_t getItemId(int32_t shopid, int16_t shopindex);
+	int16_t getAmount(int32_t shopid, int16_t shopindex);
 	int32_t getRechargeCost(int32_t shopid, int32_t itemid, int16_t amount);
 private:
 	ShopDataProvider() {}
