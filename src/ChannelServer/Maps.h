@@ -29,11 +29,13 @@ class Player;
 class PacketReader;
 
 namespace Maps {
+	extern int32_t mistids;
 	Map * getMap(int32_t mapid);
 	void usePortal(Player *player, PortalInfo *portal);
 	void usePortal(Player *player, PacketReader &packet);
 	void useScriptedPortal(Player *player, PacketReader &packet);
 	void newMap(Player *player, int32_t mapid);
+	int32_t getMistId();
 };
 
 #endif

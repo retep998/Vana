@@ -254,6 +254,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Mist.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Mobs.cpp"
 					>
 				</File>
@@ -621,6 +625,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Maps.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Mist.h"
 					>
 				</File>
 				<File

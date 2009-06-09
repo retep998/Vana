@@ -28,6 +28,7 @@ struct Types {
 		InstanceTimer,
 		MapleTVTimer,
 		MapTimer,
+		MistTimer,
 		MobStatusTimer,
 		MobSkillTimer,
 		PetTimer,

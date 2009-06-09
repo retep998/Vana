@@ -35,6 +35,7 @@ set(SOURCES
 	MapleTVs.h
 	MapPacket.h
 	Maps.h
+	Mist.h
 	MobDataProvider.h
 	Mobs.h
 	MobsPacket.h
@@ -116,6 +117,7 @@ set(SOURCES
 	MapleTVs.cpp
 	MapPacket.cpp
 	Maps.cpp
+	Mist.cpp
 	MobDataProvider.cpp
 	Mobs.cpp
 	MobsPacket.cpp

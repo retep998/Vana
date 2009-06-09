@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Levels.h"
 #include "Maps.h"
+#include "Mist.h"
 #include "MobsPacket.h"
 #include "MovementHandler.h"
 #include "PacketCreator.h"
@@ -533,9 +534,10 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 		case MobSkills::NoClue:
 			// ??
 			break;
-		case MobSkills::PoisonMist:
-			// TODO
+		case MobSkills::PoisonMist: {
+			Mist *mist = new Mist(mob->getMapId(), mob, mobpos, skillinfo, skillid, level);
 			break;
+		}
 		case MobSkills::NoClue2:
 			// ???
 			break;
@@ -615,6 +617,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 	int8_t hits = tbyte % 0x10;
 	int8_t damagedtargets = 0;
 	int32_t skillid = packet.get<int32_t>();
+	uint8_t level = player->getSkills()->getSkillLevel(skillid);
 	switch (skillid) {
 		case Jobs::Gunslinger::Grenade:
 		case Jobs::Infighter::CorkscrewBlow:
@@ -674,7 +677,7 @@ void Mobs::damageMob(Player *player, PacketReader &packet) {
 		if (targettotal > 0) {
 			if (mob != 0 && mob->getHp() > 0) {
 				uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-				handleMobStatus(player, mob, skillid, weapontype); // Mob status handler (freeze, stun, etc)
+				handleMobStatus(player, mob, skillid, level, weapontype); // Mob status handler (freeze, stun, etc)
 				if (mob->getHp() < mob->getSelfDestructHp()) {
 					mob->explode();
 				}
@@ -857,6 +860,13 @@ void Mobs::damageMobSpell(Player *player, PacketReader &packet) {
 		Skills::useAttackSkill(player, skillid);
 	int32_t useless = 0;
 	uint32_t totaldmg = damageMobInternal(player, packet, targets, hits, skillid, useless, &eater);
+	switch (skillid) {
+		case Jobs::FPMage::PoisonMist: {
+			uint8_t level = player->getSkills()->getSkillLevel(skillid);
+			Mist *mist = new Mist(player->getMap(), player, player->getPos(), Skills::skills[skillid][level], skillid, level);
+			break;
+		}
+	}
 }
 
 void Mobs::damageMobEnergyCharge(Player *player, PacketReader &packet) {
@@ -899,6 +909,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 	int32_t map = player->getMap();
 	uint32_t total = 0;
 	int32_t firsthit = 0;
+	uint8_t level = player->getSkills()->getSkillLevel(skillid);
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t targettotal = 0;
 		int32_t mapmobid = packet.get<int32_t>();
@@ -949,7 +960,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 		}
 		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
 			uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-			handleMobStatus(player, mob, skillid, weapontype, firsthit); // Mob status handler (freeze, stun, etc)
+			handleMobStatus(player, mob, skillid, level, weapontype, firsthit); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -962,8 +973,7 @@ uint32_t Mobs::damageMobInternal(Player *player, PacketReader &packet, int8_t ta
 	return total;
 }
 
-void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t weapon_type, int32_t damage) {
-	uint8_t level = skillid > 0 ? player->getSkills()->getSkillLevel(skillid) : 0;
+void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int32_t damage) {
 	vector<StatusInfo> statuses;
 	if (mob->canFreeze()) { // Freezing stuff
 		switch (skillid) {
@@ -996,6 +1006,8 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t we
 			case Jobs::FPWizard::PoisonBreath:
 			case Jobs::FPMage::PoisonMist:
 			case Jobs::FPMage::ElementComposition:
+				if (skillid == Jobs::FPMage::PoisonMist && damage != 0) // The attack itself doesn't poison them
+					break;
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop) {
 					int16_t pdamage = (int16_t)(mob->getMHp() / (70 - level));
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, pdamage, skillid, Skills::skills[skillid][level].time));

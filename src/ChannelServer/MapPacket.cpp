@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "MapleSession.h"
 #include "Maps.h"
+#include "Mist.h"
 #include "PacketCreator.h"
 #include "Pets.h"
 #include "Player.h"
@@ -274,5 +275,50 @@ void MapPacket::showEventInstructions(int32_t mapid) {
 	PacketCreator packet = PacketCreator();
 	packet.add<int16_t>(SEND_GM_EVENT_INSTRUCTIONS);
 	packet.add<int8_t>(0x00);
+	Maps::getMap(mapid)->sendPacket(packet);
+}
+
+void MapPacket::showMist(Player *player, Mist *mist) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_SPAWN_MIST);
+	packet.add<int32_t>(mist->getId());
+	packet.add<int32_t>(mist->isMobMist() ? 0 : mist->isPoison() ? 1 : 2);
+	packet.add<int32_t>(mist->getOwnerId());
+	packet.add<int32_t>(mist->getSkillId());
+	packet.add<uint8_t>(mist->getSkillLevel());
+	packet.add<int16_t>(0);
+	Pos lt = mist->getLt();
+	Pos rb = mist->getRb();
+	packet.add<int32_t>(lt.x);
+	packet.add<int32_t>(lt.y);
+	packet.add<int32_t>(rb.x);
+	packet.add<int32_t>(rb.y);
+	packet.add<int32_t>(0);
+	player->getSession()->send(packet);
+}
+
+void MapPacket::spawnMist(int32_t mapid, Mist *mist) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_SPAWN_MIST);
+	packet.add<int32_t>(mist->getId());
+	packet.add<int32_t>(mist->isMobMist() ? 0 : mist->isPoison() ? 1 : 2);
+	packet.add<int32_t>(mist->getOwnerId());
+	packet.add<int32_t>(mist->getSkillId());
+	packet.add<uint8_t>(mist->getSkillLevel());
+	packet.add<int16_t>(mist->getDelay());
+	Pos lt = mist->getLt();
+	Pos rb = mist->getRb();
+	packet.add<int32_t>(lt.x);
+	packet.add<int32_t>(lt.y);
+	packet.add<int32_t>(rb.x);
+	packet.add<int32_t>(rb.y);
+	packet.add<int32_t>(0);
+	Maps::getMap(mapid)->sendPacket(packet);
+}
+
+void MapPacket::removeMist(int32_t mapid, int32_t id) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_REMOVE_MIST);
+	packet.add<int32_t>(id);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
