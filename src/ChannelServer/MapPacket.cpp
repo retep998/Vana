@@ -114,7 +114,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(1065638850);
 	packet.add<int32_t>(0);
-	packet.add<int16_t>(player->getJob());
+	packet.add<int16_t>(player->getStats()->getJob());
 
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
 
@@ -167,7 +167,7 @@ void MapPacket::changeMap(Player *player) {
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
-	packet.add<int16_t>(player->getHp());
+	packet.add<int16_t>(player->getStats()->getHp());
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(-1);
 	packet.add<int16_t>(-1);

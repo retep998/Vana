@@ -514,6 +514,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerStats.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerStorage.cpp"
 					>
 				</File>
@@ -889,6 +893,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerSkills.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerStats.h"
 					>
 				</File>
 				<File

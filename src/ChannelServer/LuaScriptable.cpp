@@ -420,22 +420,22 @@ int LuaExports::deletePlayerVariable(lua_State *luaVm) {
 
 
 int LuaExports::getAP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getAp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getBaseStat(Stats::Ap));
 	return 1;
 }
 
 int LuaExports::getDEX(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getDex());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getBaseStat(Stats::Dex));
 	return 1;
 }
 
 int LuaExports::getEXP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getExp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getExp());
 	return 1;
 }
 
 int LuaExports::getEyes(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getEyes());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getEyes());
 	return 1;
 }
 
@@ -445,7 +445,7 @@ int LuaExports::getFH(lua_State *luaVm) {
 }
 
 int LuaExports::getGender(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getGender());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getGender());
 	return 1;
 }
 
@@ -455,17 +455,17 @@ int LuaExports::getGMLevel(lua_State *luaVm) {
 }
 
 int LuaExports::getHair(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getHair());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getHair());
 	return 1;
 }
 
 int LuaExports::getHP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getHp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getHp());
 	return 1;
 }
 
 int LuaExports::getHPMPAP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getHpMpAp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getBaseStat(Stats::HpMpAp));
 	return 1;
 }
 
@@ -475,22 +475,22 @@ int LuaExports::getID(lua_State *luaVm) {
 }
 
 int LuaExports::getINT(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getInt());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getBaseStat(Stats::Int));
 	return 1;
 }
 
 int LuaExports::getJob(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getJob());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getJob());
 	return 1;
 }
 
 int LuaExports::getLevel(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getLevel());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getLevel());
 	return 1;
 }
 
 int LuaExports::getLUK(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getLuk());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getBaseStat(Stats::Luk));
 	return 1;
 }
 
@@ -500,17 +500,17 @@ int LuaExports::getMap(lua_State *luaVm) {
 }
 
 int LuaExports::getMHP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getMHp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getMHp());
 	return 1;
 }
 
 int LuaExports::getMMP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getMMp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getMMp());
 	return 1;
 }
 
 int LuaExports::getMP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getMp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getMp());
 	return 1;
 }
 
@@ -536,33 +536,33 @@ int LuaExports::getPosY(lua_State *luaVm) {
 }
 
 int LuaExports::getRMHP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getRMHp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getRMHp());
 	return 1;
 }
 
 int LuaExports::getRMMP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getRMMp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getRMMp());
 	return 1;
 }
 
 int LuaExports::getSkin(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkin());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getSkin());
 	return 1;
 }
 
 int LuaExports::getSP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getSp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getBaseStat(Stats::Sp));
 	return 1;
 }
 
 int LuaExports::getSTR(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getStr());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getBaseStat(Stats::Str));
 	return 1;
 }
 
 int LuaExports::giveAP(lua_State *luaVm) {
 	int16_t ap = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setAp(getPlayer(luaVm)->getAp() + ap);
+	getPlayer(luaVm)->getStats()->setBaseStat(Stats::Ap, getPlayer(luaVm)->getStats()->getBaseStat(Stats::Ap) + ap);
 	return 0;
 }
 
@@ -574,7 +574,7 @@ int LuaExports::giveEXP(lua_State *luaVm) {
 
 int LuaExports::giveSP(lua_State *luaVm) {
 	int16_t sp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setSp(getPlayer(luaVm)->getSp() + sp);
+	getPlayer(luaVm)->getStats()->setBaseStat(Stats::Sp, getPlayer(luaVm)->getStats()->getBaseStat(Stats::Sp) + sp);
 	return 0;
 }
 
@@ -595,49 +595,49 @@ int LuaExports::isGM(lua_State *luaVm) {
 
 int LuaExports::setAP(lua_State *luaVm) {
 	int16_t ap = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setAp(ap);
+	getPlayer(luaVm)->getStats()->setBaseStat(Stats::Ap, ap);
 	return 0;
 }
 
 int LuaExports::setDEX(lua_State *luaVm) {
 	int16_t dex = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setDex(dex);
+	getPlayer(luaVm)->getStats()->setBaseStat(Stats::Dex, dex);
 	return 0;
 }
 
 int LuaExports::setEXP(lua_State *luaVm) {
 	int32_t exp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setExp(exp);
+	getPlayer(luaVm)->getStats()->setExp(exp);
 	return 0;
 }
 
 int LuaExports::setHP(lua_State *luaVm) {
 	uint16_t hp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setHp(hp);
+	getPlayer(luaVm)->getStats()->setHp(hp);
 	return 0;
 }
 
 int LuaExports::setINT(lua_State *luaVm) {
 	int16_t intt = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setInt(intt);
+	getPlayer(luaVm)->getStats()->setBaseStat(Stats::Int, intt);
 	return 0;
 }
 
 int LuaExports::setJob(lua_State *luaVm) {
 	int16_t job = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setJob(job);
+	getPlayer(luaVm)->getStats()->setJob(job);
 	return 0;
 }
 
 int LuaExports::setLevel(lua_State *luaVm) {
 	uint8_t level = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setLevel(level);
+	getPlayer(luaVm)->getStats()->setLevel(level);
 	return 0;
 }
 
 int LuaExports::setLUK(lua_State *luaVm) {
 	int16_t luk = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setLuk(luk);
+	getPlayer(luaVm)->getStats()->setBaseStat(Stats::Luk, luk);
 	return 0;
 }
 
@@ -658,19 +658,19 @@ int LuaExports::setMap(lua_State *luaVm) {
 
 int LuaExports::setMHP(lua_State *luaVm) {
 	uint16_t hp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setMHp(hp);
+	getPlayer(luaVm)->getStats()->setMHp(hp);
 	return 0;
 }
 
 int LuaExports::setMMP(lua_State *luaVm) {
 	uint16_t mp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setMMp(mp);
+	getPlayer(luaVm)->getStats()->setMMp(mp);
 	return 0;
 }
 
 int LuaExports::setMP(lua_State *luaVm) {
 	uint16_t mp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setMp(mp);
+	getPlayer(luaVm)->getStats()->setMp(mp);
 	return 0;
 }
 
@@ -683,25 +683,25 @@ int LuaExports::setPlayerVariable(lua_State *luaVm) {
 
 int LuaExports::setRMHP(lua_State *luaVm) {
 	uint16_t hp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setRMHp(hp);
+	getPlayer(luaVm)->getStats()->setRMHp(hp);
 	return 0;
 }
 
 int LuaExports::setRMMP(lua_State *luaVm) {
 	uint16_t mp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setRMMp(mp);
+	getPlayer(luaVm)->getStats()->setRMMp(mp);
 	return 0;
 }
 
 int LuaExports::setSP(lua_State *luaVm) {
 	int16_t sp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setSp(sp);
+	getPlayer(luaVm)->getStats()->setBaseStat(Stats::Sp, sp);
 	return 0;
 }
 
 int LuaExports::setSTR(lua_State *luaVm) {
 	int16_t str = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->setStr(str);
+	getPlayer(luaVm)->getStats()->setBaseStat(Stats::Str, str);
 	return 0;
 }
 
@@ -709,13 +709,13 @@ int LuaExports::setStyle(lua_State *luaVm) {
 	int32_t id = lua_tointeger(luaVm, -1);
 	int32_t type = id / 10000;
 	if (type == 0) {
-		getPlayer(luaVm)->setSkin((int8_t)id);
+		getPlayer(luaVm)->getStats()->setSkin((int8_t)id);
 	}
 	else if (type == 2) {
-		getPlayer(luaVm)->setEyes(id);
+		getPlayer(luaVm)->getStats()->setEyes(id);
 	}
 	else if (type == 3) {
-		getPlayer(luaVm)->setHair(id);
+		getPlayer(luaVm)->getStats()->setHair(id);
 	}
 	InventoryPacket::updatePlayer(getPlayer(luaVm));
 	return 0;

@@ -56,17 +56,17 @@ void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t skillid = packet.get<int32_t>();
 	if (!GameLogicUtilities::isBeginnerSkill(skillid)) {
-		if (player->getSp() == 0) {
+		if (player->getStats()->getBaseStat(Stats::Sp) == 0) {
 			// hacking
 			return;
 		}
-		if (!player->isGm() && !GameLogicUtilities::skillMatchesJob(skillid, player->getJob())) {
+		if (!player->isGm() && !GameLogicUtilities::skillMatchesJob(skillid, player->getStats()->getJob())) {
 			// hacking
 			return;
 		}
 	}
 	if (player->getSkills()->addSkillLevel(skillid, 1) && !GameLogicUtilities::isBeginnerSkill(skillid)) {
-		player->setSp(player->getSp() - 1);
+		player->getStats()->setBaseStat(Stats::Sp, player->getStats()->getBaseStat(Stats::Sp) - 1);
 	}
 }
 
@@ -226,8 +226,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		}
 		case Jobs::Cleric::Heal: { // Heal
 			Party *party = player->getParty();
-			int16_t intfactor = player->getInt() > 1000 ? 4000 : player->getInt() * 4;
-			int16_t lukfactor = player->getLuk() > 1000 ? 4000 : player->getLuk() * 4;
+			int16_t intfactor = player->getStats()->getBaseStat(Stats::Int) > 1000 ? 4000 : player->getStats()->getBaseStat(Stats::Int) * 4;
+			int16_t lukfactor = player->getStats()->getBaseStat(Stats::Luk) > 1000 ? 4000 : player->getStats()->getBaseStat(Stats::Luk) * 4;
 			int16_t maxhealing = (intfactor * 2 + lukfactor * 3) * level / 30;
 			int16_t minhealing = maxhealing * 6 / 10;
 			int16_t healing = Randomizer::Instance()->randShort(maxhealing - minhealing) + minhealing;
@@ -242,11 +242,11 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true);
-						cmem->modifyHp(healing / targets);
+						cmem->getStats()->modifyHp(healing / targets);
 					}
 				}
 			}
-			player->modifyHp(healing / targets);
+			player->getStats()->modifyHp(healing / targets);
 			break;
 		}
 		case Jobs::Fighter::Rage:
@@ -312,11 +312,11 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					Buffs::Instance()->addBuff(target, skillid, level, addedinfo);
-					if (skillid == Jobs::SuperGm::Resurrection && target->getHp() <= 0)
-						target->setHp(target->getMHp());
-					else if (skillid == Jobs::SuperGm::HealPlusDispel && target->getHp() > 0) {
-						target->setHp(target->getMHp());
-						target->setMp(target->getMMp());
+					if (skillid == Jobs::SuperGm::Resurrection && target->getStats()->getHp() <= 0)
+						target->getStats()->setHp(target->getStats()->getMHp());
+					else if (skillid == Jobs::SuperGm::HealPlusDispel && target->getStats()->getHp() > 0) {
+						target->getStats()->setHp(target->getStats()->getMHp());
+						target->getStats()->setMp(target->getStats()->getMMp());
 						target->getActiveBuffs()->useDispel();
 					}
 				}
@@ -354,20 +354,20 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Concentrate) > 0) { // Reduced MP usage for Concentration
 			int16_t mprate = skills[Jobs::Bowmaster::Concentrate][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Concentrate)].x;
 			int16_t mploss = (mpuse * mprate) / 100;
-			player->modifyMp(-mploss, true);
+			player->getStats()->modifyMp(-mploss, true);
 		}
 		else if (elementalamp && player->getSkills()->hasElementalAmp()) {
 			int32_t sid = player->getSkills()->getElementalAmp();
-			player->modifyMp(-1 * (mpuse * skills[sid][player->getSkills()->getSkillLevel(sid)].x / 100), true);
+			player->getStats()->modifyMp(-1 * (mpuse * skills[sid][player->getSkills()->getSkillLevel(sid)].x / 100), true);
 		}
 		else {
-			player->modifyMp(-mpuse, true);
+			player->getStats()->modifyMp(-mpuse, true);
 		}
 	}
 	else
-		player->setMp(player->getMp(), true);
+		player->getStats()->setMp(player->getStats()->getMp(), true);
 	if (hpuse > 0)
-		player->modifyHp(-hpuse);
+		player->getStats()->modifyHp(-hpuse);
 	if (item > 0)
 		Inventory::takeItem(player, item, skills[skillid][level].itemcount);
 	if (cooltime > 0 && skillid != Jobs::Corsair::Battleship)
@@ -413,15 +413,15 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos) 
 }
 
 void Skills::heal(Player *player, int16_t value, int32_t skillid) {
-	if (player->getHp() < player->getMHp() && player->getHp() > 0) {
-		player->modifyHp(value);
+	if (player->getStats()->getHp() < player->getStats()->getMHp() && player->getStats()->getHp() > 0) {
+		player->getStats()->modifyHp(value);
 		SkillsPacket::healHP(player, value);
 	}
 }
 
 void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
-	if (player->getHp() - value > 1) {
-		player->modifyHp(-value);
+	if (player->getStats()->getHp() - value > 1) {
+		player->getStats()->modifyHp(-value);
 		SkillsPacket::showSkillEffect(player, skillid);
 	}
 	else {

@@ -62,7 +62,7 @@ uint8_t PlayerSkills::getMaxSkillLevel(int32_t skillid) {
 
 bool PlayerSkills::hasElementalAmp() {
 	bool has = false;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::FPMage:
 		case Jobs::JobIds::FPArchMage:
 			has = (getSkillLevel(Jobs::FPMage::ElementAmplification) > 0);
@@ -77,7 +77,7 @@ bool PlayerSkills::hasElementalAmp() {
 
 int32_t PlayerSkills::getElementalAmp() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::FPMage:
 		case Jobs::JobIds::FPArchMage:
 			skillid = Jobs::FPMage::ElementAmplification;
@@ -92,7 +92,7 @@ int32_t PlayerSkills::getElementalAmp() {
 
 bool PlayerSkills::hasEnergyCharge() {
 	bool has = false;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Marauder:
 		case Jobs::JobIds::Buccaneer:
 			has = (getSkillLevel(Jobs::Marauder::EnergyCharge) > 0);
@@ -103,7 +103,7 @@ bool PlayerSkills::hasEnergyCharge() {
 
 int32_t PlayerSkills::getEnergyCharge() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Marauder:
 		case Jobs::JobIds::Buccaneer:
 			skillid = Jobs::Marauder::EnergyCharge;
@@ -114,7 +114,7 @@ int32_t PlayerSkills::getEnergyCharge() {
 
 int32_t PlayerSkills::getComboAttack() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Crusader:
 		case Jobs::JobIds::Hero:
 			skillid = Jobs::Crusader::ComboAttack;
@@ -125,7 +125,7 @@ int32_t PlayerSkills::getComboAttack() {
 
 int32_t PlayerSkills::getAdvancedCombo() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Hero:
 			skillid = Jobs::Hero::AdvancedComboAttack;
 			break;
@@ -135,7 +135,7 @@ int32_t PlayerSkills::getAdvancedCombo() {
 
 int32_t PlayerSkills::getAlchemist() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Hermit:
 		case Jobs::JobIds::NightLord:
 			skillid = Jobs::Hermit::Alchemist;
@@ -146,12 +146,12 @@ int32_t PlayerSkills::getAlchemist() {
 
 bool PlayerSkills::hasHpIncrease() {
 	bool has = false;
-	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
 		case Jobs::JobTracks::Warrior:
 			has = (getSkillLevel(Jobs::Swordsman::ImprovedMaxHpIncrease) > 0);
 			break;
 		case Jobs::JobTracks::Pirate:
-			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
+			if ((player->getStats()->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
 				has = (getSkillLevel(Jobs::Infighter::ImproveMaxHp) > 0);
 			break;
 	}
@@ -160,12 +160,12 @@ bool PlayerSkills::hasHpIncrease() {
 
 int32_t PlayerSkills::getHpIncrease() {
 	int32_t skillid = 0;
-	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
 		case Jobs::JobTracks::Warrior:
 			skillid = Jobs::Swordsman::ImprovedMaxHpIncrease;
 			break;
 		case Jobs::JobTracks::Pirate:
-			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
+			if ((player->getStats()->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
 				skillid = Jobs::Infighter::ImproveMaxHp;
 			break;
 	}
@@ -174,7 +174,7 @@ int32_t PlayerSkills::getHpIncrease() {
 
 bool PlayerSkills::hasMpIncrease() {
 	bool has = false;
-	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
 		case Jobs::JobTracks::Magician:
 			has = (getSkillLevel(Jobs::Magician::ImprovedMaxMpIncrease) > 0);
 			break;
@@ -184,7 +184,7 @@ bool PlayerSkills::hasMpIncrease() {
 
 int32_t PlayerSkills::getMpIncrease() {
 	int32_t skillid = 0;
-	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
 		case Jobs::JobTracks::Magician:
 			skillid = Jobs::Magician::ImprovedMaxMpIncrease;
 			break;
@@ -197,7 +197,7 @@ int32_t PlayerSkills::getMastery() {
 	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
 		case Weapon1hSword:
 		case Weapon2hSword:
-			switch (player->getJob()) {
+			switch (player->getStats()->getJob()) {
 				case Jobs::JobIds::Fighter:
 				case Jobs::JobIds::Crusader:
 				case Jobs::JobIds::Hero:
@@ -248,7 +248,7 @@ int32_t PlayerSkills::getMastery() {
 
 int32_t PlayerSkills::getMpEater() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::FPWizard:
 		case Jobs::JobIds::FPMage:
 		case Jobs::JobIds::FPArchMage:
@@ -270,7 +270,7 @@ int32_t PlayerSkills::getMpEater() {
 
 int16_t PlayerSkills::getRechargeableBonus() {
 	int16_t bonus = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Assassin:
 		case Jobs::JobIds::Hermit:
 		case Jobs::JobIds::NightLord:

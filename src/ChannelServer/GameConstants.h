@@ -183,7 +183,9 @@ namespace Stats {
 		Sp = 0x8000,
 		Exp = 0x10000,
 		Fame = 0x20000,
-		Mesos = 0x40000
+		Mesos = 0x40000,
+
+		HpMpAp = 0x80000000 // Non-official, internal use only
 	};
 }
 

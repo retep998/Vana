@@ -117,14 +117,14 @@ bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
 	return true;
 }
 
-void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item) {
+void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item, bool initialLoad) {
 	m_items[inv - 1][slot] = item;
 	if (m_itemamounts.find(item->id) != m_itemamounts.end())
 		m_itemamounts[item->id] += item->amount;
 	else
 		m_itemamounts[item->id] = item->amount;
 	if (slot < 0)
-		addEquipped(slot, item->id);
+		addEquipped(slot, item->id, initialLoad);
 }
 
 Item * PlayerInventory::getItem(int8_t inv, int16_t slot) {
@@ -165,10 +165,14 @@ int16_t PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) {
 	return m_items[inv].find(slot) != m_items[inv].end() ? m_items[inv][slot]->amount : 0;
 }
 
-void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
+void PlayerInventory::addEquipped(int16_t slot, int32_t itemid, bool initialLoad) {
 	slot = abs(slot);
+
 	if (slot == EquipSlots::Mount)
 		m_player->getMounts()->setCurrentMount(itemid);
+
+	if (!initialLoad)
+		countAllGear(initialLoad);
 
 	if (slot > 100) // Cash items
 		m_equipped[slot - 100][1] = itemid;
@@ -270,7 +274,7 @@ void PlayerInventory::load() {
 		item->flags = (int8_t) res[i][21];
 		item->petid = res[i][22];
 		res[i][23].to_string(item->name);
-		addItem((int8_t) res[i][0], res[i][1], item);
+		addItem((int8_t) res[i][0], res[i][1], item, true);
 		if (item->petid != 0) {
 			Pet *pet = new Pet(
 				m_player,
@@ -407,4 +411,49 @@ int32_t PlayerInventory::doShadowStars() {
 		}
 	}
 	return 0;
+}
+
+int16_t PlayerInventory::countGearStat(int32_t stat) {
+	int16_t gearstat = 0;
+	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
+	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+		if (iter->first < 0 && iter->first > -100) {
+			switch (stat) {
+				case Stats::MaxHp:
+					if (iter->second->ihp != 0)
+						gearstat += iter->second->ihp;
+					break;
+				case Stats::MaxMp:
+					if (iter->second->imp != 0)
+						gearstat += iter->second->imp;
+					break;
+				case Stats::Str:
+					if (iter->second->istr != 0)
+						gearstat += iter->second->istr;
+					break;
+				case Stats::Dex:
+					if (iter->second->idex != 0)
+						gearstat += iter->second->idex;
+					break;
+				case Stats::Int:
+					if (iter->second->iint != 0)
+						gearstat += iter->second->iint;
+					break;
+				case Stats::Luk:
+					if (iter->second->iluk != 0)
+						gearstat += iter->second->iluk;
+					break;
+			}
+		}
+	}
+	return gearstat;
+}
+
+void PlayerInventory::countAllGear(bool firstLoad) {
+	m_player->getStats()->setGearStat(Stats::Str, countGearStat(Stats::Str));
+	m_player->getStats()->setGearStat(Stats::Dex, countGearStat(Stats::Dex));
+	m_player->getStats()->setGearStat(Stats::Int, countGearStat(Stats::Int));
+	m_player->getStats()->setGearStat(Stats::Luk, countGearStat(Stats::Luk));
+	m_player->getStats()->setGearStat(Stats::MaxHp, countGearStat(Stats::MaxHp), firstLoad);
+	m_player->getStats()->setGearStat(Stats::MaxMp, countGearStat(Stats::MaxMp), firstLoad);
 }

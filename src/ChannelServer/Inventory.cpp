@@ -460,7 +460,7 @@ void Inventory::useItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	if (player->getHp() == 0 || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
+	if (player->getStats()->getHp() == 0 || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
 		// hacking
 		return;
 	}
@@ -476,15 +476,15 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	if (player->getSkills()->getSkillLevel(skillid) > 0)
 		alchemist = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
 	if (item.cons.hp > 0)
-		player->modifyHp(item.cons.hp * alchemist / 100);
+		player->getStats()->modifyHp(item.cons.hp * alchemist / 100);
 	if (item.cons.mp > 0)
-		player->modifyMp(item.cons.mp * alchemist / 100);
+		player->getStats()->modifyMp(item.cons.mp * alchemist / 100);
 	else
-		player->setMp(player->getMp(), true);
+		player->getStats()->setMp(player->getStats()->getMp(), true);
 	if (item.cons.hpr > 0)
-		player->modifyHp(item.cons.hpr * player->getMHp() / 100);
+		player->getStats()->modifyHp(item.cons.hpr * player->getStats()->getMHp() / 100);
 	if (item.cons.mpr > 0)
-		player->modifyMp(item.cons.mpr * player->getMMp() / 100);
+		player->getStats()->modifyMp(item.cons.mpr * player->getStats()->getMMp() / 100);
 	if (item.cons.ailment > 0)
 		player->getActiveBuffs()->useDebuffHealingItem(item.cons.ailment);
 	// Item buffs
@@ -520,7 +520,7 @@ void Inventory::useSkillbook(Player *player, PacketReader &packet) {
 	for (size_t i = 0; i < item.cons.skills.size(); i++) {
 		skillid = item.cons.skills[i].skillid;
 		newMaxLevel = item.cons.skills[i].maxlevel;
-		if (player->getJob() == item.cons.skills[i].skillid / 10000) { // Make sure the skill is for the person's job
+		if (player->getStats()->getJob() == item.cons.skills[i].skillid / 10000) { // Make sure the skill is for the person's job
 			if (player->getSkills()->getSkillLevel(skillid) >= item.cons.skills[i].reqlevel && player->getSkills()->getMaxSkillLevel(skillid) < newMaxLevel)
 				use = true;
 		}

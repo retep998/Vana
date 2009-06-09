@@ -790,7 +790,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 				case Jobs::Buccaneer::SuperTransformation:
 					value = getValue(val, skillid, level);
 					if (val == SkillMorph)
-						value += (player->getGender() * 100); // Females are +100
+						value += (player->getStats()->getGender() * 100); // Females are +100
 					break;
 				case Jobs::Marauder::EnergyCharge:
 					value = player->getActiveBuffs()->getEnergyChargeLevel();
@@ -976,7 +976,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			break;
 		case Jobs::Spearman::HyperBody:
 		case Jobs::SuperGm::HyperBody:
-			player->setHyperBody(Skills::skills[skillid][level].x, Skills::skills[skillid][level].y);
+			player->getStats()->setHyperBody(Skills::skills[skillid][level].x, Skills::skills[skillid][level].y);
 			break;
 		case Jobs::Crusader::ComboAttack:
 			player->getActiveBuffs()->setCombo(0, false);
@@ -1075,9 +1075,9 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 			break;
 		case Jobs::Spearman::HyperBody:
 		case Jobs::SuperGm::HyperBody:
-			player->setHyperBody(0, 0);
-			player->setHp(player->getHp());
-			player->setMp(player->getMp());
+			player->getStats()->setHyperBody(0, 0);
+			player->getStats()->setHp(player->getStats()->getHp());
+			player->getStats()->setMp(player->getStats()->getMp());
 			break;
 		case Jobs::Marauder::EnergyCharge:
 			playerbuffs->resetEnergyChargeLevel();

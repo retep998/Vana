@@ -242,7 +242,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 			highestdamage = iter->second;
 		}
 		Player *damager = Players::Instance()->getPlayer(iter->first);
-		if (damager == 0 || damager->getMap() != this->mapid || damager->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
+		if (damager == 0 || damager->getMap() != this->mapid || damager->getStats()->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
 			continue;
 
 		uint8_t multiplier = damager == player ? 10 : 8; // Multiplier for player to give the finishing blow is 1 and .8 for others. We therefore set this to 10 or 8 and divide the result in the formula found later on by 10.
@@ -382,7 +382,7 @@ void Mob::doCrashSkill(int32_t skillid) {
 void Mobs::handleBomb(Player *player, PacketReader &packet) {
 	int32_t mobid = packet.get<int32_t>();
 	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
-	if (player->getHp() == 0 || mob == 0) {
+	if (player->getStats()->getHp() == 0 || mob == 0) {
 		return;
 	}
 	if (mob->getSelfDestructHp() == 0) {
@@ -717,7 +717,7 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t le
 		case Jobs::Shadower::NinjaAmbush:
 		case Jobs::NightLord::NinjaAmbush: {
 			int16_t ihatethis = 60 + (level <= 10 ? (level * 2) : 10 + level); // Calculate damage percentage because MCDB doesn't have it
-			int32_t test = 2 * (player->getStr() + player->getLuk()) * ihatethis / 100;
+			int32_t test = 2 * (player->getStats()->getBaseStat(Stats::Str) + player->getStats()->getBaseStat(Stats::Luk)) * ihatethis / 100;
 			int16_t pdamage = (test > 30000 ? 30000 : static_cast<int16_t>(test));
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, pdamage, skillid, Skills::skills[skillid][level].time));
 			break;

@@ -150,6 +150,7 @@ public:
 	const int32_t getCurrentMorph();
 	const int32_t getMagicGuard();
 	const int32_t getMesoGuard();
+	const int16_t getMapleWarriorValue();
 
 	// Packet marshaling
 	void getBuffTransferPacket(PacketCreator &packet);

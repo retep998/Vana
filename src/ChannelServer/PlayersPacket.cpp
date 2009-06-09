@@ -114,9 +114,9 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_PLAYER_INFO);
 	packet.add<int32_t>(getinfo->getId());
-	packet.add<int8_t>(getinfo->getLevel());
-	packet.add<int16_t>(getinfo->getJob());
-	packet.add<int16_t>(getinfo->getFame());
+	packet.add<int8_t>(getinfo->getStats()->getLevel());
+	packet.add<int16_t>(getinfo->getStats()->getJob());
+	packet.add<int16_t>(getinfo->getStats()->getBaseStat(Stats::Fame));
 	packet.add<int8_t>(0); // Married
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
@@ -130,7 +130,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 			packet.add<int16_t>(pet->getCloseness());
 			packet.add<int8_t>(pet->getFullness());
 			packet.add<int16_t>(0);
-			packet.add<int32_t>(getinfo->getInventory()->getItem(1,  -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0))) != 0 ? getinfo->getInventory()->getItem(1, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)))->id : 0);
+			packet.add<int32_t>(getinfo->getInventory()->getItem(Inventories::EquipInventory,  -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0))) != 0 ? getinfo->getInventory()->getItem(Inventories::EquipInventory, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)))->id : 0);
 		}
 	}
 	packet.add<int8_t>(0); // End of pets / start of taming mob

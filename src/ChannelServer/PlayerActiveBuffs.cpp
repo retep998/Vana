@@ -107,7 +107,7 @@ void PlayerActiveBuffs::removeAct(int32_t skill) {
 
 // Debuffs
 void PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) {
-	if (m_player->getHp() > 0 && !hasHolyShield()) {
+	if (m_player->getStats()->getHp() > 0 && !hasHolyShield()) {
 		int32_t maskbit = calculateDebuffMaskBit(skill);
 		if ((m_debuffmask & maskbit) == 0) { // Don't have the debuff, continue processing
 			m_debuffmask += maskbit;
@@ -279,7 +279,7 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 }
 
 void PlayerActiveBuffs::resetBattleshipHp() {
-	m_battleshiphp = (4000 * m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship)) + ((m_player->getLevel() - 120) * 2000);
+	m_battleshiphp = (4000 * m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship)) + ((m_player->getStats()->getLevel() - 120) * 2000);
 }
 
 void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
@@ -311,12 +311,12 @@ void PlayerActiveBuffs::addCombo() { // Add orbs
 }
 
 void PlayerActiveBuffs::checkBerserk(bool display) {
-	if (m_player->getJob() == Jobs::JobIds::DarkKnight) { // Berserk calculations
+	if (m_player->getStats()->getJob() == Jobs::JobIds::DarkKnight) { // Berserk calculations
 		int32_t skillid = Jobs::DarkKnight::Berserk;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
-			int16_t r_hp = m_player->getMHp() * Skills::skills[skillid][level].x / 100;
-			int16_t hp = m_player->getHp();
+			int16_t r_hp = m_player->getStats()->getMHp() * Skills::skills[skillid][level].x / 100;
+			int16_t hp = m_player->getStats()->getHp();
 			bool change = false;
 			if (m_berserk && hp > r_hp) { // If on and we're above Berserk HP, Berserk fails
 				m_berserk = false;
@@ -508,6 +508,35 @@ const int32_t PlayerActiveBuffs::getCurrentMorph() {
 		}
 	}
 	return morphid;
+}
+
+const int16_t PlayerActiveBuffs::getMapleWarriorValue() {
+	int16_t x = 0;
+	if (getActiveSkillLevel(Jobs::Hero::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::Hero::MapleWarrior][getActiveSkillLevel(Jobs::Hero::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::Paladin::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::Paladin::MapleWarrior][getActiveSkillLevel(Jobs::Paladin::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::DarkKnight::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::DarkKnight::MapleWarrior][getActiveSkillLevel(Jobs::DarkKnight::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::FPArchMage::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::FPArchMage::MapleWarrior][getActiveSkillLevel(Jobs::FPArchMage::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::ILArchMage::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::ILArchMage::MapleWarrior][getActiveSkillLevel(Jobs::ILArchMage::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::Bishop::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::Bishop::MapleWarrior][getActiveSkillLevel(Jobs::Bishop::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::Bowmaster::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::Bowmaster::MapleWarrior][getActiveSkillLevel(Jobs::Bowmaster::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::Marksman::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::Marksman::MapleWarrior][getActiveSkillLevel(Jobs::Marksman::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::NightLord::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::NightLord::MapleWarrior][getActiveSkillLevel(Jobs::NightLord::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::Shadower::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::Shadower::MapleWarrior][getActiveSkillLevel(Jobs::Shadower::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::Buccaneer::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::Buccaneer::MapleWarrior][getActiveSkillLevel(Jobs::Buccaneer::MapleWarrior)].x;
+	else if (getActiveSkillLevel(Jobs::Corsair::MapleWarrior) > 0)
+		x = Skills::skills[Jobs::Corsair::MapleWarrior][getActiveSkillLevel(Jobs::Corsair::MapleWarrior)].x;
+	return x;
 }
 
 void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {

@@ -95,12 +95,13 @@ public:
 	void setMesos(int32_t mesos, bool is = false);
 	bool modifyMesos(int32_t mod, bool is = false);
 	void addMaxSlots(int8_t inventory, int8_t rows);
-	void addItem(int8_t inv, int16_t slot, Item *item);
+	void addItem(int8_t inv, int16_t slot, Item *item, bool initialLoad = false);
 	void deleteItem(int8_t inv, int16_t slot, bool updateAmount = true);
 	void setItem(int8_t inv, int16_t slot, Item *item);
 	void addEquippedPacket(PacketCreator &packet);
 	void changeItemAmount(int32_t itemid, int16_t amount) { m_itemamounts[itemid] += amount; }
-
+	void countAllGear(bool firstLoad = false);
+	int16_t countGearStat(int32_t stat);
 	uint8_t getMaxSlots(int8_t inv) const { return m_maxslots[inv - 1]; }
 	int32_t getMesos() const { return m_mesos; }
 
@@ -127,7 +128,7 @@ private:
 	int32_t m_mesos;
 	Player *m_player;
 
-	void addEquipped(int16_t slot, int32_t itemid);
+	void addEquipped(int16_t slot, int32_t itemid, bool initialLoad = false);
 };
 
 #endif

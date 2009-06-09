@@ -46,30 +46,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName(), 12);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(player->getGender());
-	packet.add<int8_t>(player->getSkin());
-	packet.add<int32_t>(player->getEyes());
-	packet.add<int32_t>(player->getHair());
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(player->getLevel());
-	packet.add<int16_t>(player->getJob());
-	packet.add<int16_t>(player->getStr());
-	packet.add<int16_t>(player->getDex());
-	packet.add<int16_t>(player->getInt());
-	packet.add<int16_t>(player->getLuk());
-	packet.add<int16_t>(player->getHp());
-	packet.add<int16_t>(player->getMHp());
-	packet.add<int16_t>(player->getMp());
-	packet.add<int16_t>(player->getMMp());
-	packet.add<int16_t>(player->getAp());
-	packet.add<int16_t>(player->getSp());
-	packet.add<int32_t>(player->getExp());
-	packet.add<int16_t>(player->getFame());
+	player->getStats()->connectData(packet);
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
@@ -205,7 +182,7 @@ void PlayerPacket::showHpBar(Player *player, Player *target) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_PARTY_HP_BAR);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(player->getHp());
-	packet.add<int32_t>(player->getMHp());
+	packet.add<int32_t>(player->getStats()->getHp());
+	packet.add<int32_t>(player->getStats()->getMHp());
 	target->getSession()->send(packet);
 }

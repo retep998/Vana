@@ -31,12 +31,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
-	if (player->getLevel() >= Stats::PlayerLevels) // Do not give EXP to characters of max level or over
+	if (player->getStats()->getLevel() >= Stats::PlayerLevels) // Do not give EXP to characters of max level or over
 		return;
-	uint32_t cexp = player->getExp() + exp;
+	uint32_t cexp = player->getStats()->getExp() + exp;
 	if (exp != 0)
 		LevelsPacket::showEXP(player, exp, white, inChat);
-	uint8_t level = player->getLevel();
+	uint8_t level = player->getStats()->getLevel();
 	if (cexp >= getExp(level)) {
 		uint8_t levelsgained = 0;
 		uint8_t levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
@@ -44,12 +44,12 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 		int16_t spgain = 0;
 		int16_t hpgain = 0;
 		int16_t mpgain = 0;
-		int16_t fulljob = player->getJob();
+		int16_t fulljob = player->getStats()->getJob();
 		int16_t job = GameLogicUtilities::getJobTrack(fulljob);
-		int16_t intt = player->getInt() / 10;
+		int16_t intt = player->getStats()->getTotalStat(Stats::Int) / 10;
 		int16_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
 		while (cexp >= getExp(level) && levelsgained < levelsmax) {
-			cexp -= getExp(player->getLevel());
+			cexp -= getExp(player->getStats()->getLevel());
 			level++;
 			levelsgained++;
 			apgain += Stats::ApPerLevel;
@@ -101,25 +101,25 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 		}
 
 		if (levelsgained) { // Check if the player has leveled up at all, it is possible that the user hasn't leveled up if multi-level limit is 0
-			player->modifyRMHp(hpgain);
-			player->modifyRMMp(mpgain);
-			player->setLevel(level);
-			player->setAp(player->getAp() + apgain);
-			player->setSp(player->getSp() + spgain);
+			player->getStats()->modifyRMHp(hpgain);
+			player->getStats()->modifyRMMp(mpgain);
+			player->getStats()->setLevel(level);
+			player->getStats()->setBaseStat(Stats::Ap, player->getStats()->getBaseStat(Stats::Ap) + apgain);
+			player->getStats()->setBaseStat(Stats::Sp, player->getStats()->getBaseStat(Stats::Sp) + spgain);
 			// Let hyperbody remain on if on during a level up, as it should
 			if (player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillid = player->getActiveBuffs()->getHyperBody();
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
-				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
+				player->getStats()->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
 			else {
-				player->setMHp(player->getRMHp());
-				player->setMMp(player->getRMMp());
+				player->getStats()->setMHp(player->getStats()->getRMHp());
+				player->getStats()->setMMp(player->getStats()->getRMMp());
 			}
-			player->setHp(player->getMHp());
-			player->setMp(player->getMMp());
+			player->getStats()->setHp(player->getStats()->getMHp());
+			player->getStats()->setMp(player->getStats()->getMMp());
 			player->setLevelDate();
-			if (player->getLevel() == Stats::PlayerLevels && !player->isGm()) {
+			if (player->getStats()->getLevel() == Stats::PlayerLevels && !player->isGm()) {
 				string message;
 				message = "[Congrats] ";
 				message += player->getName();
@@ -132,13 +132,13 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 			}
 		}
 	}
-	player->setExp(cexp);
+	player->getStats()->setExp(cexp);
 }
 
 void Levels::addStat(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t type = packet.get<int32_t>();
-	if (player->getAp() == 0) {
+	if (player->getStats()->getBaseStat(Stats::Ap) == 0) {
 		// hacking
 		return;
 	}
@@ -151,36 +151,36 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 	bool issubtract = mod < 0;
 	switch (type) {
 		case Stats::Str:
-			if (player->getStr() >= maxstat)
+			if (player->getStats()->getBaseStat(Stats::Str) >= maxstat)
 				return;
-			player->setStr(player->getStr() + mod);
+			player->getStats()->setBaseStat(Stats::Str, player->getStats()->getBaseStat(Stats::Str) + mod);
 			break;
 		case Stats::Dex:
-			if (player->getDex() >= maxstat)
+			if (player->getStats()->getBaseStat(Stats::Dex) >= maxstat)
 				return;
-			player->setDex(player->getDex() + mod);
+			player->getStats()->setBaseStat(Stats::Dex, player->getStats()->getBaseStat(Stats::Dex) + mod);
 			break;
 		case Stats::Int:
-			if (player->getInt() >= maxstat)
+			if (player->getStats()->getBaseStat(Stats::Int) >= maxstat)
 				return;
-			player->setInt(player->getInt() + mod);
+			player->getStats()->setBaseStat(Stats::Int, player->getStats()->getBaseStat(Stats::Int) + mod);
 			break;
 		case Stats::Luk:
-			if (player->getLuk() >= maxstat)
+			if (player->getStats()->getBaseStat(Stats::Luk) >= maxstat)
 				return;
-			player->setLuk(player->getLuk() + mod);
+			player->getStats()->setBaseStat(Stats::Luk, player->getStats()->getBaseStat(Stats::Luk) + mod);
 			break;
 		case Stats::MaxHp:
 		case Stats::MaxMp: {
-			if (type == Stats::MaxHp && player->getRMHp() >= Stats::MaxMaxHp)
+			if (type == Stats::MaxHp && player->getStats()->getRMHp() >= Stats::MaxMaxHp)
 				return;
-			if (type == Stats::MaxMp && player->getRMMp() >= Stats::MaxMaxMp)
+			if (type == Stats::MaxMp && player->getStats()->getRMMp() >= Stats::MaxMaxMp)
 				return;
-			if (issubtract && player->getHpMpAp() == 0) {
+			if (issubtract && player->getStats()->getBaseStat(Stats::HpMpAp) == 0) {
 				// Hacking
 				return;
 			}
-			int16_t job = GameLogicUtilities::getJobTrack(player->getJob());
+			int16_t job = GameLogicUtilities::getJobTrack(player->getStats()->getJob());
 			int16_t hpgain = 0;
 			int16_t mpgain = 0;
 			int16_t y = 0;
@@ -220,22 +220,22 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::GmAp);
 					break;
 			}
-			player->setHpMpAp(player->getHpMpAp() + mod);
+			player->getStats()->setBaseStat(Stats::HpMpAp, player->getStats()->getBaseStat(Stats::HpMpAp) + mod, false);
 			switch (type) {
-				case Stats::MaxHp: player->modifyRMHp(hpgain); break;
-				case Stats::MaxMp: player->modifyRMMp(mpgain); break;
+				case Stats::MaxHp: player->getStats()->modifyRMHp(hpgain); break;
+				case Stats::MaxMp: player->getStats()->modifyRMMp(mpgain); break;
 			}
 			if (player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillid = player->getActiveBuffs()->getHyperBody();
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
-				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
+				player->getStats()->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 			}
 			else {
-				player->setMHp(player->getRMHp());
-				player->setMMp(player->getRMMp());
+				player->getStats()->setMHp(player->getStats()->getRMHp());
+				player->getStats()->setMMp(player->getStats()->getRMMp());
 			}
-			player->setHp(player->getHp());
-			player->setMp(player->getMp());
+			player->getStats()->setHp(player->getStats()->getHp());
+			player->getStats()->setMp(player->getStats()->getMp());
 			break;
 		}
 		default:
@@ -243,7 +243,7 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 			break;
 	}
 	if (!isreset)
-		player->setAp(player->getAp() - 1);
+		player->getStats()->setBaseStat(Stats::Ap, player->getStats()->getBaseStat(Stats::Ap) - 1);
 }
 
 int16_t Levels::randHp() {

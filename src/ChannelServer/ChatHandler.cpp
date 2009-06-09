@@ -344,14 +344,14 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					break;
 				case CmdKill:
 					if (player->getGmLevel() == 1)
-						player->setHp(0);
+						player->getStats()->setHp(0);
 					else {
 						if (args == "all") {
 							for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 								Player *killpsa;
 								killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 								if (killpsa != player) {
-									killpsa->setHp(0);
+									killpsa->getStats()->setHp(0);
 								}
 							}
 						}
@@ -361,7 +361,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 								killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 								if (killpsa != player) {
 									if (killpsa->isGm()) {
-										killpsa->setHp(0);
+										killpsa->getStats()->setHp(0);
 									}
 								}
 							}
@@ -372,16 +372,16 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 								killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 								if (killpsa != player) {
 									if (!killpsa->isGm()) {
-										killpsa->setHp(0);
+										killpsa->getStats()->setHp(0);
 									}
 								}
 							}
 						}
 						else if (args == "me") {
-							player->setHp(0);
+							player->getStats()->setHp(0);
 						}
 						else if (Player *killpsa = Players::Instance()->getPlayer(args)) { // Kill by name
-							killpsa->setHp(0);
+							killpsa->getStats()->setHp(0);
 						}
 					}
 					break;
@@ -550,53 +550,53 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						PlayersPacket::showMessage(args, 0);
 					break;
 				case CmdMaxStats:
-					player->setFame(30000);
-					player->setRMHp(30000);
-					player->setRMMp(30000);
-					player->setMHp(30000);
-					player->setMMp(30000);
-					player->setStr(32767);
-					player->setDex(32767);
-					player->setInt(32767);
-					player->setLuk(32767);
+					player->getStats()->setFame(30000);
+					player->getStats()->setRMHp(30000);
+					player->getStats()->setRMMp(30000);
+					player->getStats()->setMHp(30000);
+					player->getStats()->setMMp(30000);
+					player->getStats()->setBaseStat(Stats::Str, 32767);
+					player->getStats()->setBaseStat(Stats::Dex, 32767);
+					player->getStats()->setBaseStat(Stats::Int, 32767);
+					player->getStats()->setBaseStat(Stats::Luk, 32767);
 					break;
 				case CmdStr:
 					if (args.length() != 0)
-						player->setStr(atoi(args.c_str()));
+						player->getStats()->setBaseStat(Stats::Str, atoi(args.c_str()));
 					break;
 				case CmdDex:
 					if (args.length() != 0)
-						player->setDex(atoi(args.c_str()));
-					break;
-				case CmdLuk:
-					if (args.length() != 0)
-						player->setLuk(atoi(args.c_str()));
+						player->getStats()->setBaseStat(Stats::Dex, atoi(args.c_str()));
 					break;
 				case CmdInt:
 					if (args.length() != 0)
-						player->setInt(atoi(args.c_str()));
+						player->getStats()->setBaseStat(Stats::Int, atoi(args.c_str()));
+					break;
+				case CmdLuk:
+					if (args.length() != 0)
+						player->getStats()->setBaseStat(Stats::Luk, atoi(args.c_str()));
 					break;
 				case CmdHp:
 					if (args.length() != 0) {
 						uint16_t amount = atoi(args.c_str());
-						player->setRMHp(amount);
-						player->setMHp(amount);
-						if (player->getHp() > amount)
-							player->setHp(player->getMHp());
+						player->getStats()->setRMHp(amount);
+						player->getStats()->setMHp(amount);
+						if (player->getStats()->getHp() > amount)
+							player->getStats()->setHp(player->getStats()->getMHp());
 					}
 					break;
 				case CmdMp:
 					if (args.length() != 0) {
 						uint16_t amount = atoi(args.c_str());
-						player->setRMMp(amount);
-						player->setMMp(amount);
-						if (player->getMp() > amount)
-							player->setMp(player->getMMp());
+						player->getStats()->setRMMp(amount);
+						player->getStats()->setMMp(amount);
+						if (player->getStats()->getMp() > amount)
+							player->getStats()->setMp(player->getStats()->getMMp());
 					}
 					break;
 				case CmdFame:
 					if (args.length() != 0)
-						player->setFame(atoi(args.c_str()));
+						player->getStats()->setFame(atoi(args.c_str()));
 					break;
 				case CmdShop: {
 					if (args.length() != 0) {
@@ -646,7 +646,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				}
 				case CmdLevel:
 					if (args.length() != 0)
-						player->setLevel(atoi(args.c_str()));
+						player->getStats()->setLevel(atoi(args.c_str()));
 					break;
 				case CmdJob: {
 					if (args.length() != 0) {
@@ -698,22 +698,22 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else job = atoi(args.c_str());
 
 						if (job >= 0)
-							player->setJob(job);
+							player->getStats()->setJob(job);
 					}
 					else {
 						char msg[60];
-						sprintf(msg, "Current Job: %i", player->getJob());
+						sprintf(msg, "Current Job: %i", player->getStats()->getJob());
 						PlayerPacket::showMessage(player, msg, 6);
 					}
 					break;
 				}
 				case CmdAp:
 					if (args.length() != 0)
-						player->setAp(atoi(args.c_str()));
+						player->getStats()->setBaseStat(Stats::Ap, atoi(args.c_str()));
 					break;
 				case CmdSp:
 					if (args.length() != 0)
-						player->setSp(atoi(args.c_str()));
+						player->getStats()->setBaseStat(Stats::Sp, atoi(args.c_str()));
 					break;
 				case CmdKillNpc:
 					player->setNPC(0);
@@ -723,8 +723,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					Maps::getMap(player->getMap())->killMobs(player, 8810026);
 					break;
 				case CmdHeal:
-					player->setHp(player->getMHp());
-					player->setMp(player->getMMp());
+					player->getStats()->setHp(player->getStats()->getMHp());
+					player->getStats()->setMp(player->getStats()->getMMp());
 					break;
 				case CmdMesos:
 					if (args.length() != 0)

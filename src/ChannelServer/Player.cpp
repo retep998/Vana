@@ -187,40 +187,24 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 
 	res[0]["name"].to_string(name);
-	user_id		= res[0]["userid"];
-	exp		= res[0]["exp"];
-	map		= res[0]["map"];
-	gm_level	= res[0]["gm"];
-	eyes		= res[0]["eyes"];
-	hair		= res[0]["hair"];
-	world_id	= static_cast<int8_t>(res[0]["world_id"]);
-	gender		= static_cast<int8_t>(res[0]["gender"]);
-	skin		= static_cast<int8_t>(res[0]["skin"]);
-	map_pos		= static_cast<int8_t>(res[0]["pos"]);
-	level		= static_cast<uint8_t>(res[0]["level"]);
-	job		= static_cast<int16_t>(res[0]["job"]);
-	str		= static_cast<int16_t>(res[0]["str"]);
-	dex		= static_cast<int16_t>(res[0]["dex"]);
-	intt		= static_cast<int16_t>(res[0]["int"]);
-	luk		= static_cast<int16_t>(res[0]["luk"]);
-	hp		= static_cast<int16_t>(res[0]["chp"]);
-	rmhp = mhp	= static_cast<int16_t>(res[0]["mhp"]);
-	mp		= static_cast<int16_t>(res[0]["cmp"]);
-	rmmp = mmp	= static_cast<int16_t>(res[0]["mmp"]);
-	ap		= static_cast<int16_t>(res[0]["ap"]);
-	sp		= static_cast<int16_t>(res[0]["sp"]);
-	fame		= static_cast<int16_t>(res[0]["fame"]);
-	hpmp_ap		= static_cast<uint16_t>(res[0]["hpmp_ap"]);
+	user_id = res[0]["userid"];
+	map = res[0]["map"];
+	gm_level = res[0]["gm"];
+	world_id = static_cast<int8_t>(res[0]["world_id"]);
+	map_pos = static_cast<int8_t>(res[0]["pos"]);
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
+
+	// Stats
+	stats.reset(new PlayerStats(this));
 
 	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
 		map_pos = 0;
-		if (hp == 0)
-			hp = 50;
+		if (getStats()->getHp() == 0)
+			getStats()->setHp(50);
 	}
-	else if (hp == 0) {
-		hp = 50;
+	else if (getStats()->getHp() == 0) {
+		getStats()->setHp(50);
 		map = Maps::getMap(map)->getInfo()->rm;
 	}
 
@@ -240,12 +224,15 @@ void Player::playerConnect(PacketReader &packet) {
 	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
 	storage.reset(new PlayerStorage(this));
 
+	getInventory()->countAllGear(true);
+
 	// Skills
 	skills.reset(new PlayerSkills(this));
 
 	// Buffs/summons
 	activeBuffs.reset(new PlayerActiveBuffs(this));
 	summons.reset(new PlayerSummons(this));
+
 	if (PlayerPacketHolder::Instance()->checkPlayer(id)) {
 		PacketReader pack = PlayerPacketHolder::Instance()->getPacket(id);
 
@@ -253,10 +240,10 @@ void Player::playerConnect(PacketReader &packet) {
 		if (getActiveBuffs()->hasHyperBody()) {
 			int32_t skillid = getActiveBuffs()->getHyperBody();
 			uint8_t hblevel = getActiveBuffs()->getActiveSkillLevel(skillid);
-			setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
+			getStats()->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
 		}
-
 		getSummons()->parseSummonTransferPacket(pack);
+
 		PlayerPacketHolder::Instance()->removePacket(id);
 	}
 
@@ -274,10 +261,10 @@ void Player::playerConnect(PacketReader &packet) {
 	SkillMacros skillMacros;
 	skillMacros.load(id);
 
-	if (hp > mhp)
-		hp = mhp;
-	if (mp > mmp)
-		mp = mmp;
+	if (getStats()->getHp() > getStats()->getMHp())
+		getStats()->setHp(getStats()->getMHp());
+	if (getStats()->getMp() > getStats()->getMMp())
+		getStats()->setMp(getStats()->getMMp());
 
 	PlayerPacket::connectData(this);
 
@@ -300,197 +287,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	setOnline(true);
 	is_connect = true;
-	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), ip, id, name, map, job, level);
-}
-
-void Player::setHp(int16_t shp, bool is) {
-	if (shp < 0)
-		hp = 0;
-	else if (shp > mhp)
-		hp = mhp;
-	else
-		hp = shp;
-	if (is)
-		PlayerPacket::updateStatShort(this, Stats::Hp, hp);
-	if (getParty())
-		getParty()->showHpBar(this);
-	getActiveBuffs()->checkBerserk();
-	if (hp == 0) {
-		if (getInstance() != 0) {
-			getInstance()->sendMessage(PlayerDeath, getId());
-		}
-		loseExp();
-	}
-}
-
-void Player::modifyHp(int16_t nhp, bool is) {
-	if ((hp + nhp) < 0)
-		hp = 0;
-	else if ((hp + nhp) > mhp)
-		hp = mhp;
-	else
-		hp = (hp + nhp);
-	if (is)
-		PlayerPacket::updateStatShort(this, Stats::Hp, hp);
-	if (getParty())
-		getParty()->showHpBar(this);
-	getActiveBuffs()->checkBerserk();
-	if (hp == 0) {
-		if (getInstance() != 0) {
-			getInstance()->sendMessage(PlayerDeath, getId());
-		}
-		loseExp();
-	}
-}
-
-void Player::damageHp(uint16_t dhp) {
-	hp = (dhp > hp ? 0 : hp - dhp);
-	PlayerPacket::updateStatShort(this, Stats::Hp, hp);
-	if (getParty())
-		getParty()->showHpBar(this);
-	getActiveBuffs()->checkBerserk();
-	if (hp == 0) {
-		if (getInstance() != 0) {
-			getInstance()->sendMessage(PlayerDeath, getId());
-		}
-		loseExp();
-	}
-}
-
-void Player::setMp(int16_t smp, bool is) {
-	if (!getActiveBuffs()->hasInfinity()) {
-		if (smp < 0)
-			mp = 0;
-		else if (smp > mmp)
-			mp = mmp;
-		else
-			mp = smp;
-	}
-	PlayerPacket::updateStatShort(this, Stats::Mp, mp, is);
-}
-
-void Player::modifyMp(int16_t nmp, bool is) {
-	if (!getActiveBuffs()->hasInfinity()) {
-		if ((mp + nmp) < 0)
-			mp = 0;
-		else if ((mp + nmp) > mmp)
-			mp = mmp;
-		else
-			mp = (mp + nmp);
-	}
-	PlayerPacket::updateStatShort(this, Stats::Mp, mp, is);
-}
-
-void Player::damageMp(uint16_t dmp) {
-	if (!getActiveBuffs()->hasInfinity()) {
-		mp = (dmp > mp ? 0 : mp - dmp);
-	}
-	PlayerPacket::updateStatShort(this, Stats::Mp, mp, false);
-}
-
-void Player::setSp(int16_t sp) {
-	this->sp = sp;
-	PlayerPacket::updateStatShort(this, Stats::Sp, sp);
-}
-
-void Player::setAp(int16_t ap) {
-	this->ap = ap;
-	PlayerPacket::updateStatShort(this, Stats::Ap, ap);
-}
-
-void Player::setJob(int16_t job) {
-	this->job = job;
-	PlayerPacket::updateStatShort(this, Stats::Job, job);
-	LevelsPacket::jobChange(this);
-	WorldServerConnectPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), id, job);
-}
-
-void Player::setStr(int16_t str) {
-	this->str = str;
-	PlayerPacket::updateStatShort(this, Stats::Str, str);
-}
-
-void Player::setDex(int16_t dex) {
-	this->dex = dex;
-	PlayerPacket::updateStatShort(this, Stats::Dex, dex);
-}
-
-void Player::setInt(int16_t intt) {
-	this->intt = intt;
-	PlayerPacket::updateStatShort(this, Stats::Int, intt);
-}
-
-void Player::setLuk(int16_t luk) {
-	this->luk = luk;
-	PlayerPacket::updateStatShort(this, Stats::Luk, luk);
-}
-
-void Player::setMHp(int16_t mhp) {
-	if (mhp > Stats::MaxMaxHp)
-		mhp = Stats::MaxMaxHp;
-	else if (mhp < Stats::MinMaxHp)
-		mhp = Stats::MinMaxHp;
-	this->mhp = mhp;
-	PlayerPacket::updateStatShort(this, Stats::MaxHp, rmhp);
-	if (getParty())
-		getParty()->showHpBar(this);
-	getActiveBuffs()->checkBerserk();
-}
-
-void Player::setMMp(int16_t mmp) {
-	if (mmp > Stats::MaxMaxMp)
-		mmp = Stats::MaxMaxMp;
-	else if (mmp < Stats::MinMaxMp)
-		mmp = Stats::MinMaxMp;
-	this->mmp = mmp;
-	PlayerPacket::updateStatShort(this, Stats::MaxMp, rmmp);
-}
-
-void Player::setHyperBody(int16_t modx, int16_t mody) {
-	modx += 100;
-	mody += 100;
-	mhp = ((rmhp * modx / 100) > Stats::MaxMaxHp ? Stats::MaxMaxHp : rmhp * modx / 100);
-	mmp = ((rmmp * mody / 100) > Stats::MaxMaxMp ? Stats::MaxMaxMp : rmmp * mody / 100);
-	PlayerPacket::updateStatShort(this, Stats::MaxHp, rmhp);
-	PlayerPacket::updateStatShort(this, Stats::MaxMp, rmmp);
-	if (getParty())
-		getParty()->showHpBar(this);
-	getActiveBuffs()->checkBerserk();
-}
-
-void Player::setRMHp(int16_t rmhp) {
-	if (rmhp > Stats::MaxMaxHp)
-		rmhp = Stats::MaxMaxHp;
-	else if (rmhp < Stats::MinMaxHp)
-		rmhp = Stats::MinMaxHp;
-	this->rmhp = rmhp;
-	PlayerPacket::updateStatShort(this, Stats::MaxHp, rmhp);
-}
-
-void Player::setRMMp(int16_t rmmp) {
-	if (rmmp > Stats::MaxMaxMp)
-		rmmp = Stats::MaxMaxMp;
-	else if (rmmp < Stats::MinMaxMp)
-		rmmp = Stats::MinMaxMp;
-	this->rmmp = rmmp;
-	PlayerPacket::updateStatShort(this, Stats::MaxMp, rmmp);
-}
-
-void Player::modifyRMHp(int16_t mod) {
-	rmhp = (((rmhp + mod) > Stats::MaxMaxHp) ? Stats::MaxMaxHp : (rmhp + mod));
-	PlayerPacket::updateStatShort(this, Stats::MaxHp, rmhp);
-}
-
-void Player::modifyRMMp(int16_t mod) {
-	rmmp = (((rmmp + mod) > Stats::MaxMaxMp) ? Stats::MaxMaxMp : (rmmp + mod));
-	PlayerPacket::updateStatShort(this, Stats::MaxMp, rmmp);
-}
-
-void Player::setExp(int32_t exp) {
-	if (exp < 0)
-		exp = 0;
-	this->exp = exp;
-	PlayerPacket::updateStatInt(this, Stats::Exp, exp);
+	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), ip, id, name, map, getStats()->getJob(), getStats()->getLevel());
 }
 
 void Player::setMap(int32_t mapid, PortalInfo *portal) {
@@ -520,13 +317,6 @@ void Player::setMap(int32_t mapid, PortalInfo *portal) {
 	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), id, mapid);
 	MapPacket::changeMap(this);
 	Maps::newMap(this, mapid);
-}
-
-void Player::setLevel(uint8_t level) {
-	this->level = level;
-	PlayerPacket::updateStatShort(this, Stats::Level, level);
-	LevelsPacket::levelUp(this);
-	WorldServerConnectPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), id, level);
 }
 
 void Player::changeChannel(int8_t channel) {
@@ -569,30 +359,6 @@ void Player::changeSkillMacros(PacketReader &packet) {
 	skillMacros.save(id);
 }
 
-void Player::setHair(int32_t id) {
-	this->hair = id;
-	PlayerPacket::updateStatInt(this, Stats::Hair, id);
-}
-
-void Player::setEyes(int32_t id) {
-	this->eyes = id;
-	PlayerPacket::updateStatInt(this, Stats::Eyes, id);
-}
-
-void Player::setSkin(int8_t id) {
-	this->skin = id;
-	PlayerPacket::updateStatInt(this, Stats::Skin, id);
-}
-
-void Player::setFame(int16_t fame) {
-	if (fame < Stats::MinFame)
-		fame = Stats::MinFame;
-	else if (fame > Stats::MaxFame)
-		fame = Stats::MaxFame;
-	this->fame = fame;
-	PlayerPacket::updateStatInt(this, Stats::Fame, fame);
-}
-
 bool Player::addWarning() {
 	int32_t t = TimeUtilities::getTickCount();
 	// Deleting old warnings
@@ -611,30 +377,11 @@ bool Player::addWarning() {
 	return false;
 }
 
-void Player::saveStats() {
+void Player::saveInformation() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE characters SET "
-		<< "level = " << static_cast<int16_t>(level) << "," // Queries have problems with int8_t due to being derived from ostream
-		<< "job = " << job << ","
-		<< "str = " << str << ","
-		<< "dex = " << dex << ","
-		<< "`int` = " << intt << ","
-		<< "luk = " << luk << ","
-		<< "chp = " << hp << ","
-		<< "mhp = " << rmhp << ","
-		<< "cmp = " << mp << ","
-		<< "mmp = " << rmmp << ","
-		<< "hpmp_ap = " << hpmp_ap << ","
-		<< "ap = " << ap << ","
-		<< "sp = " << sp << ","
-		<< "exp = " << exp << ","
-		<< "fame = " << fame << ","
-		<< "map = " << map << ","
-		<< "gender = " << static_cast<int16_t>(gender) << ","
-		<< "skin = " << static_cast<int16_t>(skin) << ","
-		<< "eyes = " << eyes << ","
-		<< "hair = " << hair << ","
 		<< "mesos = " << inv->getMesos() << ","
+		<< "map = " << map << ","
 		<< "equip_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EquipInventory)) << ","
 		<< "use_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::UseInventory)) << ","
 		<< "setup_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::SetupInventory)) << ","
@@ -646,11 +393,12 @@ void Player::saveStats() {
 }
 
 void Player::saveAll(bool savecooldowns) {
-	saveStats();
+	saveInformation();
 	getInventory()->save();
 	getMounts()->save();
 	getPets()->save();
 	getSkills()->save(savecooldowns);
+	getStats()->save();
 	getStorage()->save();
 	getVariables()->save();
 }
@@ -671,7 +419,7 @@ void Player::setLevelDate() {
 
 void Player::acceptDeath() {
 	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
-	setHp(50, false);
+	getStats()->setHp(50, false);
 	getActiveBuffs()->removeBuff();
 	setMap(tomap);
 }
@@ -694,13 +442,13 @@ void Player::setBuddyListSize(uint8_t size) {
 }
 
 void Player::loseExp() {
-	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < Stats::PlayerLevels) {
+	if (!GameLogicUtilities::isBeginnerJob(getStats()->getJob()) && getStats()->getLevel() < Stats::PlayerLevels) {
 		Map *loc = Maps::getMap(getMap());
 		int8_t exploss = 10;
 		if ((loc->getInfo()->fieldLimit & FieldLimitBits::RegularExpLoss) != 0 || loc->getInfo()->town)
 			exploss = 1;
 		else {
-			switch (GameLogicUtilities::getJobTrack(getJob())) {
+			switch (GameLogicUtilities::getJobTrack(getStats()->getJob())) {
 				case Jobs::JobTracks::Magician:
 					exploss = 7;
 					break;
@@ -709,8 +457,8 @@ void Player::loseExp() {
 					break;
 			}
 		}
-		int32_t exp = getExp();
-		exp -= static_cast<int32_t>(static_cast<int64_t>(Levels::getExp(getLevel())) * exploss / 100);
-		setExp(exp);
+		int32_t exp = getStats()->getExp();
+		exp -= static_cast<int32_t>(static_cast<int64_t>(Levels::getExp(getStats()->getLevel())) * exploss / 100);
+		getStats()->setExp(exp);
 	}
 }

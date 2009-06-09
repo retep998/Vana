@@ -77,11 +77,11 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 }
 
 void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player) {
-	packet.add<int8_t>(player->getGender());
-	packet.add<int8_t>(player->getSkin());
-	packet.add<int32_t>(player->getEyes());
+	packet.add<int8_t>(player->getStats()->getGender());
+	packet.add<int8_t>(player->getStats()->getSkin());
+	packet.add<int32_t>(player->getStats()->getEyes());
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(player->getHair());
+	packet.add<int32_t>(player->getStats()->getHair());
 	player->getInventory()->addEquippedPacket(packet);
 	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
