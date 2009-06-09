@@ -584,7 +584,8 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	int32_t useless = 0;
 	uint32_t totaldmg = damageMobs(player, packet, targets, hits, skillid, useless, &eater);
 	switch (skillid) {
-		case Jobs::FPMage::PoisonMist: {
+		case Jobs::FPMage::PoisonMist:
+		case Jobs::FlameWizard::FireCurtain: {
 			uint8_t level = player->getSkills()->getSkillLevel(skillid);
 			Mist *mist = new Mist(player->getMap(), player, player->getPos(), Skills::skills[skillid][level], skillid, level);
 			break;
