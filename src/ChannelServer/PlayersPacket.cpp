@@ -194,7 +194,6 @@ void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
 	Players::Instance()->sendPacket(packet);
 }
 
-
 void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {
 	pack.skipBytes(1);
 	uint8_t tbyte = pack.get<int8_t>();
