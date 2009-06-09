@@ -217,6 +217,7 @@ void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {
 	} 
 	else
 		packet.add<int8_t>(0);
+	pack.skipBytes(4); // Unk
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
 	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
 	pack.skipBytes(1); // Weapon subclass
@@ -259,11 +260,13 @@ void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
+		case Jobs::WindBreaker::Hurricane:
 		case Jobs::Corsair::RapidFire:
 			pack.skipBytes(4);
 			break;
 	}
 	bool shadow_meso = (skillid == Jobs::Hermit::ShadowMeso);
+	pack.skipBytes(4); // Unk
 
 	uint8_t display = pack.get<int8_t>(); // Projectile display
 	uint8_t animation = pack.get<int8_t>(); // Direction/animation
@@ -344,6 +347,7 @@ void PlayersPacket::useSpellAttack(Player *player, PacketReader &pack) {
 	packet.add<int32_t>(skillid);
 	if (skillid == Jobs::FPArchMage::BigBang || skillid == Jobs::ILArchMage::BigBang || skillid == Jobs::Bishop::BigBang) // Big Bang has a 4 byte charge time after skillid
 		charge = pack.get<int32_t>();
+	pack.skipBytes(4); // Unk
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
 	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
 	pack.skipBytes(1); // Weapon subclass

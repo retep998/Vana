@@ -341,6 +341,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			packet.skipBytes(4); // Charge
 			break;
 	}
+	packet.skipBytes(4); // Unk
 	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
 	if (skillid > 0)
 		Skills::useAttackSkill(player, skillid);
@@ -415,8 +416,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
 				0, Timer::Time::fromNow(pptime));
 		}
-		if (!GameLogicUtilities::isSummon(skillid))
-			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
+		packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 	packet.skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 
@@ -439,7 +439,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Marauder::EnergyDrain: {
+		case Jobs::Marauder::EnergyDrain:
+		case Jobs::Striker::EnergyDrain: {
 			int32_t hpRecover = totaldmg * Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x / 100;
 			if (hpRecover > player->getMHp())
 				player->setHp(player->getMHp());
@@ -451,6 +452,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::Crusader::SwordComa:
 		case Jobs::Crusader::AxePanic:
 		case Jobs::Crusader::AxeComa:
+		case Jobs::SoulWarrior::SwordPanic:
+		case Jobs::SoulWarrior::SwordComa:
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
 		case Jobs::Crusader::Shout:
@@ -502,8 +505,10 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet.get<int32_t>();
+	packet.skipBytes(4); // Unk
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
+		case Jobs::WindBreaker::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
 		case Jobs::Corsair::RapidFire:
 			packet.skipBytes(4); // Charge time
@@ -570,6 +575,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		eater.prop = Skills::skills[eater.id][eater.level].prop;
 		eater.x = Skills::skills[eater.id][eater.level].x;
 	}
+	packet.skipBytes(4); // Unk
 	packet.skipBytes(2); // Display, direction/animation
 	packet.skipBytes(2); // Weapon subclass, casting speed
 	packet.skipBytes(4); // Ticks
@@ -594,6 +600,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet.get<int32_t>();
+	packet.skipBytes(4); // Unk
 	packet.skipBytes(2); // Display, direction/animation
 	packet.skipBytes(2); // Weapon subclass, casting speed
 	packet.skipBytes(4); // Ticks
