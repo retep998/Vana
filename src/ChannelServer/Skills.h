@@ -32,7 +32,6 @@ class Player;
 class PacketReader;
 
 struct SkillLevelInfo {
-	int32_t time;
 	int16_t mp;
 	int16_t hp;
 	int32_t item;
@@ -49,12 +48,14 @@ struct SkillLevelInfo {
 	int16_t mdef;
 	int16_t acc;
 	int16_t avo;
+	int16_t cooltime;
+	int16_t morph;
+	int16_t damage;
 	uint16_t hpP;
 	uint16_t prop;
-	int16_t morph;
+	int32_t time;
 	Pos lt;
 	Pos rb;
-	int16_t cooltime;
 };
 typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 

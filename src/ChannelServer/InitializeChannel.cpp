@@ -68,7 +68,6 @@ void Initializing::loadData() {
 	initializePets();
 };
 
-// Reactors
 void Initializing::initializeReactors() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Reactors... ";
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactoreventdata ORDER BY reactorid, state ASC");
@@ -102,7 +101,7 @@ void Initializing::initializeReactors() {
 
 	std::cout << "DONE" << std::endl;
 }
-// Quests
+
 void Initializing::initializeQuests() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Quests... ";
 	// Quests
@@ -205,7 +204,7 @@ void Initializing::initializeQuests() {
 	}
 	std::cout << "DONE" << std::endl;
 }
-// Skills
+
 void Initializing::initializeSkills() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Skills... ";
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skilldata");
@@ -218,52 +217,54 @@ void Initializing::initializeSkills() {
 		//    2 : Time
 		//    3 : MP
 		//    4 : HP
-		//    5 : Item
-		//    6 : Item Count
-		//    7 : Bullet Consume
-		//    8 : Money Consume
-		//    9 : Value X
-		//	 10 : Value Y
-		//   11 : Speed
-		//   12 : Jump
-		//   13 : Weapon Attack
-		//   14 : Weapon Defense
-		//   15 : Magic Attack
-		//   16 : Magic Defense
-		//   17 : Accuracy
-		//   18 : Avoid
-		//   19 : HPP
-		//   20 : Prop(% chance)
-		//   21 : Morph
-		//   22 : Left Top X
-		//   23 : Left Top Y
-		//   24 : Right Bottom X
-		//   25 : Right Bottom Y
-		//   26 : Cooldown time
+		//    5 : Damage
+		//    6 : Item
+		//    7 : Item Count
+		//    8 : Bullet Consume
+		//    9 : Money Consume
+		//   10 : Value X
+		//	 11 : Value Y
+		//   12 : Speed
+		//   13 : Jump
+		//   14 : Weapon Attack
+		//   15 : Weapon Defense
+		//   16 : Magic Attack
+		//   17 : Magic Defense
+		//   18 : Accuracy
+		//   19 : Avoid
+		//   20 : HPP
+		//   21 : Prop(% chance)
+		//   22 : Morph
+		//   23 : Left Top X
+		//   24 : Left Top Y
+		//   25 : Right Bottom X
+		//   26 : Right Bottom Y
+		//   27 : Cooldown time
 		SkillLevelInfo level;
 		level.time = atoi(skillRow[2]);
 		level.mp = atoi(skillRow[3]);
 		level.hp = atoi(skillRow[4]);
-		level.item = atoi(skillRow[5]);
-		level.itemcount = atoi(skillRow[6]);
-		level.bulletcon = atoi(skillRow[7]);
-		level.moneycon = atoi(skillRow[8]);
-		level.x = atoi(skillRow[9]);
-		level.y = atoi(skillRow[10]);
-		level.speed = atoi(skillRow[11]);
-		level.jump = atoi(skillRow[12]);
-		level.watk = atoi(skillRow[13]);
-		level.wdef = atoi(skillRow[14]);
-		level.matk = atoi(skillRow[15]);
-		level.mdef = atoi(skillRow[16]);
-		level.acc = atoi(skillRow[17]);
-		level.avo = atoi(skillRow[18]);
-		level.hpP = atoi(skillRow[19]);
-		level.prop = atoi(skillRow[20]);
-		level.morph = atoi(skillRow[21]);
-		level.lt = Pos(atoi(skillRow[22]), atoi(skillRow[23]));
-		level.rb = Pos(atoi(skillRow[24]), atoi(skillRow[25]));
-		level.cooltime = atoi(skillRow[26]);
+		level.damage = atoi(skillRow[5]);
+		level.item = atoi(skillRow[6]);
+		level.itemcount = atoi(skillRow[7]);
+		level.bulletcon = atoi(skillRow[8]);
+		level.moneycon = atoi(skillRow[9]);
+		level.x = atoi(skillRow[10]);
+		level.y = atoi(skillRow[11]);
+		level.speed = atoi(skillRow[12]);
+		level.jump = atoi(skillRow[13]);
+		level.watk = atoi(skillRow[14]);
+		level.wdef = atoi(skillRow[15]);
+		level.matk = atoi(skillRow[16]);
+		level.mdef = atoi(skillRow[17]);
+		level.acc = atoi(skillRow[18]);
+		level.avo = atoi(skillRow[19]);
+		level.hpP = atoi(skillRow[20]);
+		level.prop = atoi(skillRow[21]);
+		level.morph = atoi(skillRow[22]);
+		level.lt = Pos(atoi(skillRow[23]), atoi(skillRow[24]));
+		level.rb = Pos(atoi(skillRow[25]), atoi(skillRow[26]));
+		level.cooltime = atoi(skillRow[27]);
 		Skills::addSkillLevelInfo(atoi(skillRow[0]), atoi(skillRow[1]), level);
 	}
 
@@ -326,7 +327,7 @@ void Initializing::initializeSkills() {
 	}
 	std::cout << "DONE" << std::endl;
 }
-// Pets
+
 void Initializing::initializePets() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Pets... ";
 

@@ -113,7 +113,7 @@ void Map::statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t pr
 }
 
 // Reactors
-void Map::addReactorSpawn(ReactorSpawnInfo spawn) {
+void Map::addReactorSpawn(const ReactorSpawnInfo &spawn) {
 	reactorspawns.push_back(spawn);
 	Reactor *reactor = new Reactor(info->id, spawn.id, spawn.pos);
 	ReactorPacket::spawnReactor(reactor);
@@ -124,7 +124,7 @@ void Map::addReactor(Reactor *reactor) {
 	reactor->setId(this->reactors.size() - 1 + 200);
 }
 
-void Map::addReactorRespawn(ReactorRespawnInfo respawn) {
+void Map::addReactorRespawn(const ReactorRespawnInfo &respawn) {
 	if (reactorspawns[respawn.id].time >= 0)
 		reactorrespawns.push_back(respawn);
 }
@@ -179,7 +179,7 @@ PortalInfo * Map::getSpawnPoint(int32_t pid) {
 }
 
 // Mobs
-void Map::addMobSpawn(MobSpawnInfo spawn) {
+void Map::addMobSpawn(const MobSpawnInfo &spawn) {
 	mobspawns.push_back(spawn);
 	spawnMob(spawn.id, spawn.pos, mobspawns.size() - 1, spawn.fh);
 }
@@ -505,7 +505,7 @@ void Map::sendPacket(PacketCreator &packet, Player *player) {
 	}
 }
 
-void Map::showMessage(string &message, int8_t type) {
+void Map::showMessage(const string &message, int8_t type) {
 	for (size_t i = 0; i < players.size(); i++)
 		PlayerPacket::showMessage(players[i], message, type);
 }

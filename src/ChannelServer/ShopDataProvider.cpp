@@ -33,37 +33,56 @@ ShopDataProvider * ShopDataProvider::singleton = 0;
 
 void ShopDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT shopdata.shopid, shopdata.npcid, shopdata.rechargetier, shopitemdata.itemid, shopitemdata.price FROM shopdata LEFT JOIN shopitemdata ON shopdata.shopid = shopitemdata.shopid ORDER BY shopdata.shopid ASC, shopitemdata.sort DESC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT shopdata.shopid, shopdata.npcid, shopdata.rechargetier FROM shopdata");
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW shopRow;
-	while ((shopRow = res.fetch_raw_row())) {
+	ShopInfo shop;
+	while (shopRow = res.fetch_raw_row()) {
 		// Col0 : Shop ID
 		//    1 : NPC ID
 		//    2 : Recharge Tier
-		//    3 : Item ID
-		//    4 : Price
 		int32_t shopid = atoi(shopRow[0]);
+		shop.npc = atoi(shopRow[1]);
+		shop.rechargetier = atoi(shopRow[2]);
+		shops[shopid] = shop;
+	}
 
-		if (shops.find(shopid) == shops.end()) {
-			ShopInfo shop = ShopInfo();
-			shop.npc = atoi(shopRow[1]);
-			shop.rechargetier = atoi(shopRow[2]);
-			shops[shopid] = shop;
-		}
+	query << "SELECT * FROM shopitemdata ORDER BY shopitemdata.sort DESC";
+	res = query.use();
 
-		if (shopRow[3] != 0) {
-			shops[shopid].items.push_back(atoi(shopRow[3]));
-			shops[shopid].prices[atoi(shopRow[3])] = atoi(shopRow[4]);
+	int32_t currentid = 0;
+	int32_t previousid = -1;
+	ShopItemInfo item;
+	while (shopRow = res.fetch_raw_row()) {
+		// Col0 : Shop ID
+		//    1 : Item ID
+		//    2 : Price
+		//    3 : Quantity
+		//    4 : Sort
+		currentid = atoi(shopRow[0]);
+		if (currentid != previousid && previousid != -1) { // Add the items into the cache
+			shops[previousid] = shop;
+			shop = shops[currentid];
 		}
-		else
-			std::cout << "Warning: Shop " << shopid << " does not have any shop items on record.";
+		item.itemid = atoi(shopRow[1]);
+		item.price = atoi(shopRow[2]);
+		item.quantity = atoi(shopRow[3]);
+
+		shop.items.push_back(item);
+
+		previousid = currentid;
+	}
+
+	if (previousid != -1) {
+		shop.items.push_back(item);
+		shops[previousid] = shop;
 	}
 
 	query << "SELECT * FROM rechargedata";
 	res = query.use();
 
-	while ((shopRow = res.fetch_raw_row())) {
+	while (shopRow = res.fetch_raw_row()) {
 		// Col0 : Recharge Tier ID
 		//    1 : Item ID
 		//    2 : Price
@@ -94,24 +113,24 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 	packet.add<int16_t>(0); // To be set later
 
 	// Items
+	ShopItemInfo item;
 	for (size_t i = 0; i < shops[id].items.size(); i++) {
-		int32_t itemid = shops[id].items[i];
-		int32_t price = shops[id].prices[itemid];
-		packet.add<int32_t>(itemid);
-		packet.add<int32_t>(price);
-		if (GameLogicUtilities::isRechargeable(itemid)) {
-			idsdone[itemid] = true;
+		item = shops[id].items[i];
+		packet.add<int32_t>(item.itemid);
+		packet.add<int32_t>(item.price);
+		if (GameLogicUtilities::isRechargeable(item.itemid)) {
+			idsdone[item.itemid] = true;
 			shopcount--;
 			double cost = 0.0;
-			if (rechargables.find(itemid) != rechargables.end())
-				cost = rechargables[itemid];
+			if (rechargables.find(item.itemid) != rechargables.end())
+				cost = rechargables[item.itemid];
 			packet.add<double>(cost);
 		}
 		else {
-			packet.add<int16_t>(1); // Item amount
+			packet.add<int16_t>(item.quantity); // Item amount
 		}
-		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
-		if (GameLogicUtilities::isRechargeable(itemid))
+		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item.itemid);
+		if (GameLogicUtilities::isRechargeable(item.itemid))
 			maxslot += player->getSkills()->getRechargeableBonus();
 		packet.add<int16_t>(maxslot);
 	}
@@ -133,7 +152,15 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 }
 
 int32_t ShopDataProvider::getPrice(int32_t shopid, int32_t itemid) {
-	return shops[shopid].prices.find(itemid) != shops[shopid].prices.end() ? shops[shopid].prices[itemid] : 0;
+	vector<ShopItemInfo> s = shops[shopid].items;
+	int32_t price = 0;
+	for (size_t i = 0; i < s.size(); i++) {
+		if (s[i].itemid == itemid) {
+			price = s[i].price;
+			break;
+		}
+	}
+	return price;
 }
 
 int32_t ShopDataProvider::getRechargeCost(int32_t shopid, int32_t itemid, int16_t amount) {

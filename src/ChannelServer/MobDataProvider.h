@@ -52,10 +52,14 @@ struct MobInfo {
 	int32_t mprecovery;
 	int32_t exp;
 	int32_t selfdestruction;
+	int32_t buff;
+	int32_t link;
 	bool boss;
 	bool canfreeze;
 	bool canpoison;
 	bool undead;
+	bool publicreward;
+	bool explosivereward;
 	int8_t hpcolor;
 	int8_t hpbgcolor;
 	vector<int32_t> summon;

@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPDATAPROVIDER_H
 
 #include "Types.h"
+#include <boost/bimap.hpp>
+#include <boost/bimap/unordered_multiset_of.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/utility.hpp>
@@ -37,12 +39,17 @@ public:
 	Map * getMap(int32_t mapid);
 
 private:
-	MapDataProvider() {}
+	MapDataProvider();
 	static MapDataProvider *singleton;
-	unordered_map<int32_t, Map *> maps;
-	boost::mutex loadmap_mutex;
+	typedef boost::bimap<int8_t, boost::bimaps::unordered_multiset_of<int8_t> > continent_map;
+	typedef continent_map::value_type continent_info;
 
+	unordered_map<int32_t, Map *> maps;
+	continent_map continents;
+	boost::mutex loadmap_mutex;
+	
 	void loadMap(int32_t mapid, Map *&map);
+	int8_t getContinent(int32_t mapid);
 };
 
 #endif

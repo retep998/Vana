@@ -19,9 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define ITEMDATA_H
 
 #include "Types.h"
+#include <boost/bimap.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
 
+using boost::bimap;
 using std::tr1::unordered_map;
 using std::vector;
 
@@ -63,6 +65,7 @@ struct Skillbook {
 };
 
 struct ConsumeInfo {
+	bool hasmapeffect;
 	bool autoconsume;
 	bool randstat;
 	bool recover;
@@ -122,19 +125,21 @@ public:
 	bool itemExists(int32_t id);
 	int32_t getPrice(int32_t itemid);
 	int16_t getMaxSlot(int32_t itemid);
-	EquipInfo const getEquipInfo(int32_t equipid) {
-		return equips[equipid];
-	}
-	ItemInfo const getItemInfo(int32_t itemid) {
-		return items[itemid];
-	}
+	int32_t getCardId(int32_t mobid);
+	int32_t getMobId(int32_t cardid);
+	EquipInfo const getEquipInfo(int32_t equipid) { return equips[equipid]; }
+	ItemInfo const getItemInfo(int32_t itemid) { return items[itemid]; }
 
 private:
 	ItemDataProvider() { }
 	static ItemDataProvider *singleton;
 
+	typedef bimap<int32_t, int32_t> card_map;
+	typedef card_map::value_type card_info;
+
 	unordered_map<int32_t, EquipInfo> equips;
 	unordered_map<int32_t, ItemInfo> items;
+	card_map cards; // Left, cardid; right, mobid 
 	void addItemInfo(int32_t id, ItemInfo item);
 };
 

@@ -25,7 +25,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using MiscUtilities::atob;
 using std::string;
 
-MapDataProvider *MapDataProvider::singleton = 0;
+MapDataProvider * MapDataProvider::singleton = 0;
+
+MapDataProvider::MapDataProvider() {
+	mysqlpp::Query query = Database::getDataDB().query();
+	query << "SELECT * FROM continentdata";
+	mysqlpp::UseQueryResult res = query.use();
+	MYSQL_ROW dataRow;
+	while (dataRow = res.fetch_raw_row()) {
+		// Col0 : Map cluster ID
+		//    1 : Continent ID
+		int8_t mapcluster = atoi(dataRow[0]);
+		int8_t continent = atoi(dataRow[1]);
+		continents.insert(continent_info(mapcluster, continent));
+	}
+}
 
 Map * MapDataProvider::getMap(int32_t mapid) {
 	if (maps.find(mapid) != maps.end()) {
@@ -46,7 +60,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW dataRow;
-	while ((dataRow = res.fetch_raw_row())) {
+	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Return Map
 		//    1 : Forced Return Map
 		//    2 : Field Type
@@ -62,6 +76,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 
 		MapInfoPtr mapinfo(new MapInfo);
 		mapinfo->id = mapid;
+		mapinfo->continent = getContinent(mapid);
 		mapinfo->rm = atoi(dataRow[0]);
 		mapinfo->forcedReturn = atoi(dataRow[1]);
 		mapinfo->fieldType = atoi(dataRow[2]);
@@ -81,11 +96,26 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	if (map == 0) // Map does not exist, so no need to run the rest of the code
 		return;
 
+	// Seats
+	query << "SELECT seatid, x, y from mapseatdata WHERE mapid = " << mapid;
+	res = query.use();
+
+	while (dataRow = res.fetch_raw_row()) {
+		// Col0 : Seat ID
+		//    1 : x
+		//    2 : y
+		SeatInfo chair;
+		int16_t id = atoi(dataRow[0]);
+		chair.pos = Pos(atoi(dataRow[1]), atoi(dataRow[2]));
+		chair.taken = false;
+		map->addSeat(id, chair);
+	}
+
 	// Portals
 	query << "SELECT id, name, x, y, tomap, toname, script, onlyonce FROM mapportaldata WHERE mapid = " << mapid;
 	res = query.use();
 
-	while ((dataRow = res.fetch_raw_row())) {
+	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Portal ID
 		//    1 : Name
 		//    2 : x
@@ -143,7 +173,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	query << "SELECT reactorid, x, y, reactortime FROM mapreactordata WHERE mapid = " << mapid;
 	res = query.use();
 
-	while ((dataRow = res.fetch_raw_row())) {
+	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Reactor ID
 		//    1 : x
 		//    2 : y
@@ -171,4 +201,15 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		foot.pos2 = Pos(atoi(dataRow[3]), atoi(dataRow[4]));
 		map->addFoothold(foot);
 	}
+}
+
+int8_t MapDataProvider::getContinent(int32_t mapid) {
+	int8_t cluster = static_cast<int8_t>(mapid / 10000000); // Leave first two digits, that's our "map cluster"
+	try {
+		return continents.left.at(cluster);
+	}
+	catch (std::out_of_range) {
+
+	}
+	return 0;
 }
