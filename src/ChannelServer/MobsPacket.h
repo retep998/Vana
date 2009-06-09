@@ -25,10 +25,9 @@ using std::vector;
 
 class Player;
 class Mob;
-class PacketReader;
-struct StatusInfo;
 struct MobInfo;
 struct Pos;
+struct StatusInfo;
 
 namespace MobsPacket {
 	void spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *owner = 0, bool spawn = false, bool show = false);
@@ -36,11 +35,6 @@ namespace MobsPacket {
 	void endControlMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp, uint8_t skill = 0, uint8_t level = 0);
 	void moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, Pos target, unsigned char *buf, int32_t len);
-	void damageMob(Player *player, PacketReader &pack);
-	void damageMobRanged(Player *player, PacketReader &pack);
-	void damageMobSpell(Player *player, PacketReader &pack);
-	void damageMobEnergyCharge(Player *player, PacketReader &pack);
-	void damageMobSummon(Player *player, PacketReader &pack);
 	void healMob(Mob *mob, int32_t amount);
 	void hurtMob(Mob *mob, int32_t amount);
 	void applyStatus(Mob *mob, const StatusInfo &info, int16_t delay);
