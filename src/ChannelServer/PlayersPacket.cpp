@@ -17,13 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayersPacket.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
+#include "InterHeader.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
+#include "PacketReader.h"
 #include "Pets.h"
 #include "Player.h"
 #include "Players.h"
-#include "InterHeader.h"
 #include "SendHeader.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
@@ -190,4 +192,219 @@ void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
 	PacketCreator packet;
 	packet.addBuffer(data, len);
 	Players::Instance()->sendPacket(packet);
+}
+
+
+void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {
+	pack.skipBytes(1);
+	uint8_t tbyte = pack.get<int8_t>();
+	uint8_t targets = tbyte / 0x10;
+	uint8_t hits = tbyte % 0x10;
+	int32_t skillid = pack.get<int32_t>();
+	bool mesoexplosion = false;
+	if (skillid == Jobs::ChiefBandit::MesoExplosion) {
+		tbyte = (targets * 0x10) + 0x0A;
+		mesoexplosion = true;
+	}
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_ATTACK_MELEE);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(tbyte);
+	if (skillid > 0) {
+		packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
+		packet.add<int32_t>(skillid);
+	} 
+	else
+		packet.add<int8_t>(0);
+	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
+	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
+	pack.skipBytes(1); // Weapon subclass
+	packet.add<int8_t>(pack.get<int8_t>()); // Weapon speed
+	pack.skipBytes(4); // Ticks
+	if (skillid == Jobs::Gunslinger::Grenade || skillid == Jobs::Infighter::CorkscrewBlow) {
+		pack.skipBytes(4); // Charge
+	}
+
+	int32_t masteryid = player->getSkills()->getMastery();
+	packet.add<int8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
+	packet.add<int32_t>(0);
+
+	for (int8_t i = 0; i < targets; i++) {
+		int32_t mapmobid = pack.get<int32_t>();
+		packet.add<int32_t>(mapmobid);
+		packet.add<int8_t>(0x06);
+		pack.skipBytes(12);
+		if (mesoexplosion) {
+			hits = pack.get<int8_t>();
+			packet.add<int8_t>(hits);
+		}
+		else
+			pack.skipBytes(2);
+		for (int8_t j = 0; j < hits; j++) {
+			int32_t damage = pack.get<int32_t>();
+			packet.add<int32_t>(damage);
+		}
+		pack.skipBytes(4);
+	}
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
+	pack.skipBytes(1);
+	uint8_t tbyte = pack.get<int8_t>();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
+	int32_t skillid = pack.get<int32_t>();
+	switch (skillid) {
+		case Jobs::Bowmaster::Hurricane:
+		case Jobs::Marksman::PiercingArrow:
+		case Jobs::Corsair::RapidFire:
+			pack.skipBytes(4);
+			break;
+	}
+	bool shadow_meso = (skillid == Jobs::Hermit::ShadowMeso);
+
+	uint8_t display = pack.get<int8_t>(); // Projectile display
+	uint8_t animation = pack.get<int8_t>(); // Direction/animation
+	uint8_t w_class = pack.get<int8_t>(); // Weapon subclass
+	uint8_t w_speed = pack.get<int8_t>(); // Weapon speed
+	pack.skipBytes(4); // Ticks
+	int16_t slot = pack.get<int16_t>(); // Slot
+	int16_t csstar = pack.get<int16_t>(); // Cash Shop star
+
+	if (!shadow_meso && player->getActiveBuffs()->hasShadowStars()) {
+		pack.skipBytes(4); // Shadow Stars star ID
+	}
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_ATTACK_RANGED);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(tbyte);
+	if (skillid > 0) {
+		packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
+		packet.add<int32_t>(skillid);
+	}
+	else {
+		packet.add<int8_t>(0);
+	}
+	packet.add<int8_t>(display);
+	packet.add<int8_t>(animation);
+	packet.add<int8_t>(w_speed);
+
+	int32_t masteryid = player->getSkills()->getMastery();
+	packet.add<int8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
+	// Bug in global:
+	// The colored swoosh does not display as it should
+
+	int32_t itemid = 0;
+	if (!shadow_meso) {
+		if (csstar > 0)
+			itemid = player->getInventory()->getItem(Inventories::CashInventory, csstar)->id;
+		else if (slot > 0) {
+			Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
+			if (item != 0)
+				itemid = item->id;
+		}
+	}
+	packet.add<int32_t>(itemid);
+	pack.skipBytes(1); // 0x00 = AoE, 0x41 = other
+	for (int8_t i = 0; i < targets; i++) {
+		int32_t mobid = pack.get<int32_t>();
+		packet.add<int32_t>(mobid);
+		packet.add<int8_t>(0x06);
+		pack.skipBytes(14);
+		for (int8_t j = 0; j < hits; j++) {
+			int32_t damage = pack.get<int32_t>();
+			switch (skillid) {
+				case Jobs::Marksman::Snipe: // Snipe is always crit
+					damage += 0x80000000; // Critical damage = 0x80000000 + damage
+					break;
+				default:
+					break;
+			}
+			packet.add<int32_t>(damage); 
+		}
+		pack.skipBytes(4);
+	}
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void PlayersPacket::useSpellAttack(Player *player, PacketReader &pack) {
+	pack.skipBytes(1);
+	uint8_t tbyte = pack.get<int8_t>();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_ATTACK_SPELL);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(tbyte);
+	packet.add<int8_t>(1); // Spells are always a skill
+	int32_t skillid = pack.get<int32_t>();
+	int32_t charge = 0;
+	packet.add<int32_t>(skillid);
+	if (skillid == Jobs::FPArchMage::BigBang || skillid == Jobs::ILArchMage::BigBang || skillid == Jobs::Bishop::BigBang) // Big Bang has a 4 byte charge time after skillid
+		charge = pack.get<int32_t>();
+	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
+	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
+	pack.skipBytes(1); // Weapon subclass
+	packet.add<int8_t>(pack.get<int8_t>()); // Casting speed
+	pack.skipBytes(4); // Ticks
+	packet.add<int8_t>(0); // Mastery byte is always 0 because spells don't have a swoosh
+	packet.add<int32_t>(0); // No clue
+	for (int8_t i = 0; i < targets; i++) {
+		int32_t mobid = pack.get<int32_t>();
+		packet.add<int32_t>(mobid);
+		packet.add<int8_t>(-1);
+		pack.skipBytes(3); // Useless crap for display
+		pack.skipBytes(1); // State
+		pack.skipBytes(10); // Useless crap for display continued
+		for (int8_t j = 0; j < hits; j++) {
+			int32_t damage = pack.get<int32_t>();
+			packet.add<int32_t>(damage);
+		}
+		pack.skipBytes(4);
+	}
+	if (charge > 0)
+		packet.add<int32_t>(charge);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void PlayersPacket::useEnergyChargeAttack(Player *player, PacketReader &pack) {
+	pack.skipBytes(1);
+	uint8_t tbyte = pack.get<int8_t>();
+	int8_t targets = tbyte / 0x10;
+	int8_t hits = tbyte % 0x10;
+	// Not sure about this packet at the moment, will finish later
+
+	//PacketCreator packet;
+	//packet.add<int16_t>(SEND_ATTACK_ENERGYCHARGE);
+	//packet.add<int32_t>(player->getId());
+	//packet.add<int8_t>(tbyte);
+	//packet.add<int8_t>(1);
+	//int32_t skillid = pack.get<int32_t>();
+	//packet.add<int32_t>(skillid);
+
+	//Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void PlayersPacket::useSummonAttack(Player *player, PacketReader &pack) {
+	int32_t summonid = pack.get<int32_t>();
+	pack.skipBytes(5);
+	int8_t targets = pack.get<int8_t>();
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_ATTACK_SUMMON);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(summonid);
+	packet.add<int8_t>(4);
+	packet.add<int8_t>(targets);
+	for (int8_t i = 0; i < targets; i++) {
+		int32_t mobid = pack.get<int32_t>();
+		packet.add<int32_t>(mobid);
+		packet.add<int8_t>(6);
+
+		pack.skipBytes(14); // Crap
+
+		int32_t damage = pack.get<int32_t>();
+		packet.add<int32_t>(damage);
+	}
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

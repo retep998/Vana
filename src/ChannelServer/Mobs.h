@@ -34,7 +34,6 @@ using std::tr1::unordered_map;
 class Player;
 class Mob;
 class PacketReader;
-class PacketCreator;
 struct MpEaterInfo;
 
 struct StatusInfo {
@@ -51,12 +50,6 @@ struct StatusInfo {
 
 namespace Mobs {
 	extern const int32_t mobstatuses[19];
-	void damageMob(Player *player, PacketReader &packet);
-	void damageMobRanged(Player *player, PacketReader &packet);
-	void damageMobSpell(Player *player, PacketReader &packet);
-	void damageMobEnergyCharge(Player *player, PacketReader &packet);
-	void damageMobSummon(Player *player, PacketReader &packet);
-	uint32_t damageMobInternal(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater = 0);
 	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int32_t damage = 0);
 	void handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSkillLevelInfo &skillinfo);
 	void handleBomb(Player *player, PacketReader &packet);

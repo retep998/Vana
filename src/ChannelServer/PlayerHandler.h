@@ -18,8 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERHANDLER_H
 #define PLAYERHANDLER_H
 
-class Player;
+#include "Types.h"
+
 class PacketReader;
+class Player;
+struct MpEaterInfo;
 
 namespace PlayerHandler {
 	void handleDamage(Player *player, PacketReader &packet);
@@ -28,6 +31,14 @@ namespace PlayerHandler {
 	void handleHeal(Player *player, PacketReader &packet);
 	void handleMoving(Player *player, PacketReader &packet);
 	void handleSpecialSkills(Player *player, PacketReader &packet);
+
+	void useMeleeAttack(Player *player, PacketReader &packet);
+	void useRangedAttack(Player *player, PacketReader &packet);
+	void useSpellAttack(Player *player, PacketReader &packet);
+	void useEnergyChargeAttack(Player *player, PacketReader &packet);
+	void useSummonAttack(Player *player, PacketReader &packet);
+	uint32_t damageMobs(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater = 0);
+
 };
 
 #endif

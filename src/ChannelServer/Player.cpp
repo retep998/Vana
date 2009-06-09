@@ -108,6 +108,11 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
 		case RECV_ANIMATE_NPC: NPCs::handleNPCAnimation(this, packet); break;
+		case RECV_ATTACK_ENERGYCHARGE: PlayerHandler::useEnergyChargeAttack(this, packet); break;
+		case RECV_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, packet); break;
+		case RECV_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, packet); break;
+		case RECV_ATTACK_SPELL: PlayerHandler::useSpellAttack(this, packet); break;
+		case RECV_ATTACK_SUMMON: PlayerHandler::useSummonAttack(this, packet); break;
 		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
@@ -118,11 +123,6 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_CHAT: ChatHandler::handleChat(this, packet); break;
 		case RECV_COMMAND: CommandHandler::handleCommand(this, packet); break;
 		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet); break;
-		case RECV_DAMAGE_MOB: Mobs::damageMob(this, packet); break;
-		case RECV_DAMAGE_MOB_RANGED: Mobs::damageMobRanged(this, packet); break;
-		case RECV_DAMAGE_MOB_SPELL: Mobs::damageMobSpell(this, packet); break;
-		case RECV_DAMAGE_MOB_ENERGYCHARGE: Mobs::damageMobEnergyCharge(this, packet); break;
-		case RECV_DAMAGE_MOB_SUMMON: Mobs::damageMobSummon(this, packet); break;
 		case RECV_DAMAGE_PLAYER: PlayerHandler::handleDamage(this, packet); break;
 		case RECV_DAMAGE_SUMMON: Summons::damageSummon(this, packet); break;
 		case RECV_DROP_MESO: Drops::dropMesos(this, packet); break;
