@@ -57,8 +57,8 @@ void ShopDataProvider::loadData() {
 	while (shopRow = res.fetch_raw_row()) {
 		// Col0 : Shop ID
 		//    1 : Item ID
-		//    2 : Price
-		//    3 : Quantity
+		//    2 : Quantity
+		//    3 : Price
 		//    4 : Sort
 		currentid = atoi(shopRow[0]);
 		if (currentid != previousid && previousid != -1) { // Add the items into the cache
@@ -66,8 +66,8 @@ void ShopDataProvider::loadData() {
 			shop = shops[currentid];
 		}
 		item.itemid = atoi(shopRow[1]);
-		item.price = atoi(shopRow[2]);
-		item.quantity = atoi(shopRow[3]);
+		item.quantity = atoi(shopRow[2]);
+		item.price = atoi(shopRow[3]);
 
 		shop.items.push_back(item);
 
