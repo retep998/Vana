@@ -550,10 +550,6 @@
 				Name="Handlers"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\AttackHandler.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\BuddyListHandler.cpp"
 					>
 				</File>
@@ -951,10 +947,6 @@
 			<Filter
 				Name="Handlers"
 				>
-				<File
-					RelativePath=".\src\ChannelServer\AttackHandler.h"
-					>
-				</File>
 				<File
 					RelativePath=".\src\ChannelServer\BuddyListHandler.h"
 					>
