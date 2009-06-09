@@ -225,10 +225,28 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Cleric::Heal: { // Heal
-			uint16_t healrate = skills[skillid][level].hpP;
-			if (healrate > 100)
-				healrate = 100;
-			player->modifyHp(healrate * player->getMHp() / 100);
+			Party *party = player->getParty();
+			int16_t intfactor = player->getInt() > 1000 ? 4000 : player->getInt() * 4;
+			int16_t lukfactor = player->getLuk() > 1000 ? 4000 : player->getLuk() * 4;
+			int16_t maxhealing = (intfactor * 2 + lukfactor * 3) * level / 30;
+			int16_t minhealing = maxhealing * 6 / 10;
+			int16_t healing = Randomizer::Instance()->randShort(maxhealing - minhealing) + minhealing;
+			int8_t targets = 1;
+			if (party != 0) {
+				int8_t affected = packet.get<int8_t>();
+				int8_t pmembers = party->getMembersCount();
+				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
+				targets = (int8_t)(members.size());
+				for (size_t i = 0; i < members.size(); i++) {
+					Player *cmem = members[i];
+					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
+						SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
+						SkillsPacket::showSkill(cmem, skillid, level, direction, true);
+						cmem->modifyHp(healing / targets);
+					}
+				}
+			}
+			player->modifyHp(healing / targets);
 			break;
 		}
 		case Jobs::Fighter::Rage:
