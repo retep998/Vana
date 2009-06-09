@@ -63,6 +63,7 @@ struct Skillbook {
 };
 
 struct ConsumeInfo {
+	bool hasmapeffect;
 	bool autoconsume;
 	bool randstat;
 	bool recover;
@@ -122,12 +123,8 @@ public:
 	bool itemExists(int32_t id);
 	int32_t getPrice(int32_t itemid);
 	int16_t getMaxSlot(int32_t itemid);
-	EquipInfo const getEquipInfo(int32_t equipid) {
-		return equips[equipid];
-	}
-	ItemInfo const getItemInfo(int32_t itemid) {
-		return items[itemid];
-	}
+	EquipInfo const getEquipInfo(int32_t equipid) { return equips[equipid]; }
+	ItemInfo const getItemInfo(int32_t itemid) { return items[itemid]; }
 
 private:
 	ItemDataProvider() { }

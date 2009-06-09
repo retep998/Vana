@@ -24,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "MiscUtilities.h"
 #include "ShopDataProvider.h"
-#include <string>
 #include <iostream>
+#include <string>
 
+using Initializing::outputWidth;
 using MiscUtilities::atob;
 using std::string;
-using Initializing::outputWidth;
 
 ItemDataProvider * ItemDataProvider::singleton = 0;
 
@@ -40,7 +40,7 @@ void ItemDataProvider::loadData() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW dataRow;
-	while ((dataRow = res.fetch_raw_row())) {
+	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : EquipID
 		//    1 : Price
 		//    2 : Slots
@@ -95,7 +95,7 @@ void ItemDataProvider::loadData() {
 	int32_t currentid = 0;
 	int32_t previousid = -1;
 	ItemInfo item;
-	while ((dataRow = res.fetch_raw_row())) {
+	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Item ID
 		//    1 : Price
 		//    2 : Max per slot
@@ -136,8 +136,9 @@ void ItemDataProvider::loadData() {
 		//   37 : Item Avoid
 		//   38 : Item Jump
 		//   39 : Item Speed
-		//   40 : Mob ID
-		//   41 : Chance
+		//   40 : Has map effect?
+		//   41 : Mob ID
+		//   42 : Chance
 		currentid = atoi(dataRow[0]);
 
 		if (currentid != previousid && previousid != -1) { // Add the items into the cache
@@ -154,6 +155,7 @@ void ItemDataProvider::loadData() {
 		item.cons.mpr = atoi(dataRow[8]);
 		item.cons.moveTo = atoi(dataRow[9]);
 		item.cons.ailment = atoi(dataRow[19]);
+		item.cons.hasmapeffect = atob(dataRow[40]);
 		// Buffs
 		item.cons.time = atoi(dataRow[10]);
 		item.cons.watk = atoi(dataRow[11]);
@@ -187,10 +189,10 @@ void ItemDataProvider::loadData() {
 		item.cons.ispeed = atoi(dataRow[39]);
 		item.cons.ihand = 0;
 		// Summoning
-		if (dataRow[40] != 0) {
+		if (dataRow[41] != 0) {
 			SummonBag summon;
-			summon.mobid = atoi(dataRow[40]);
-			summon.chance = atoi(dataRow[41]);
+			summon.mobid = atoi(dataRow[41]);
+			summon.chance = atoi(dataRow[42]);
 			item.cons.mobs.push_back(summon);
 		}
 
@@ -206,7 +208,7 @@ void ItemDataProvider::loadData() {
 	query << "SELECT * FROM itemskilldata";
 	res = query.use();
 
-	while ((dataRow = res.fetch_raw_row())) {
+	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Item ID
 		//    1 : Skill ID
 		//    2 : Required Level

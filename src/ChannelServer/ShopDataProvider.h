@@ -29,10 +29,15 @@ using std::vector;
 
 class Player;
 
+struct ShopItemInfo {
+	int32_t itemid;
+	int32_t price;
+	int16_t quantity;
+};
+
 struct ShopInfo {
 	int32_t npc;
-	vector<int32_t> items;
-	unordered_map<int32_t, int32_t> prices;
+	vector<ShopItemInfo> items;
 	int8_t rechargetier;
 };
 
