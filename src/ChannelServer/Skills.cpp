@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "MapPacket.h"
 #include "Maps.h"
+#include "Mist.h"
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
@@ -122,10 +123,17 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	uint8_t type = 0;
 	uint8_t direction = 0;
 	if (level == 0 || player->getSkills()->getSkillLevel(skillid) != level) {
-		// hacking
+		// Hacking
 		return;
 	}
 	switch (skillid) {
+		case Jobs::Shadower::Smokescreen: {
+			int16_t x = packet.get<int16_t>();
+			int16_t y = packet.get<int16_t>();
+			Pos origin = Pos(x, y);
+			Mist *m = new Mist(player->getMap(), player, origin, Skills::skills[skillid][level], skillid, level);
+			break;
+		}
 		case Jobs::Corsair::Battleship:
 			if (player->getActiveBuffs()->getBattleshipHp() == 0)
 				player->getActiveBuffs()->resetBattleshipHp();
@@ -169,7 +177,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint8_t mobs = packet.get<int8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.get<int32_t>())) {
-					Mobs::handleMobStatus(player, mob, skillid, 0);
+					Mobs::handleMobStatus(player, mob, skillid, level, 0);
 				}
 			}
 			break;
