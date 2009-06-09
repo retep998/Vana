@@ -47,19 +47,20 @@ namespace Timer {
 
 struct MapInfo {
 	MapInfo() : musicname(""), top(0), left(0), right(0), bottom(0) {}
-	int32_t id;
-	int32_t rm;
-	int32_t forcedReturn;
-	int8_t fieldType;
-	int32_t fieldLimit;
-	double spawnrate;
 	bool clock;
 	bool town;
-	int32_t shipInterval;
+	int8_t fieldType;
+	int8_t continent;
 	int16_t left;
 	int16_t top;
 	int16_t bottom;
 	int16_t right;
+	int32_t id;
+	int32_t rm;
+	int32_t forcedReturn;
+	int32_t shipInterval;
+	int32_t fieldLimit;
+	double spawnrate;
 	string musicname;
 };
 typedef shared_ptr<MapInfo> MapInfoPtr;
@@ -94,10 +95,17 @@ typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 
 struct ReactorSpawnInfo {
 	int32_t id;
-	Pos pos;
 	int32_t time;
+	Pos pos;
 };
 typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
+
+struct SeatInfo {
+	Pos pos;
+	bool taken;
+};
+
+typedef std::map<int16_t, SeatInfo> SeatsInfo;
 
 struct ReactorRespawnInfo {
 	ReactorRespawnInfo(int32_t id, clock_t killed) : id(id), killed(killed) {}
@@ -129,12 +137,16 @@ public:
 	void setMusic(const string &musicname);
 
 	// Footholds
-	void addFoothold(FootholdInfo foothold) { footholds.push_back(foothold); }
+	void addFoothold(const FootholdInfo &foothold) { footholds.push_back(foothold); }
 	Pos findFloor(Pos pos);
 	int16_t getFhAtPosition(Pos pos);
 
+	// Seats
+	void addSeat(int16_t id, const SeatInfo &seat) { seats[id] = seat; }
+	SeatInfo getSeat(int16_t id) { return seats[id]; }
+
 	// Portals
-	void addPortal(PortalInfo portal) {
+	void addPortal(const PortalInfo &portal) {
 		if (portal.name == "sp")
 			spawnpoints.push_back(portal);
 		else
@@ -154,11 +166,11 @@ public:
 	void statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
 
 	// NPCs
-	void addNPC(NPCSpawnInfo npc) { this->npcs.push_back(npc); }
+	void addNPC(const NPCSpawnInfo &npc) { this->npcs.push_back(npc); }
 	NPCSpawnInfo getNpc(int32_t id) const { return this->npcs[id]; }
 
 	// Mobs
-	void addMobSpawn(MobSpawnInfo spawn);
+	void addMobSpawn(const MobSpawnInfo &spawn);
 	void checkMobSpawn(clock_t time);
 	void removeMob(int32_t id, int32_t spawnid);
 	int32_t spawnMob(int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0, Mob *owner = 0, int8_t summoneffect = 0);
@@ -170,9 +182,9 @@ public:
 	void checkShadowWeb();
 
 	// Reactors
-	void addReactorSpawn(ReactorSpawnInfo spawn);
+	void addReactorSpawn(const ReactorSpawnInfo &spawn);
 	void addReactor(Reactor *reactor);
-	void addReactorRespawn(ReactorRespawnInfo respawn);
+	void addReactorRespawn(const ReactorRespawnInfo &respawn);
 	void checkReactorSpawn(clock_t time);
 	Reactor * getReactor(int32_t id) {
 		if ((uint32_t)id < this->reactors.size())
@@ -212,7 +224,7 @@ public:
 
 	// Packet stuff
 	void sendPacket(PacketCreator &packet, Player *player = 0);
-	void showMessage(string &message, int8_t type);
+	void showMessage(const string &message, int8_t type);
 
 	// Instance
 	void setInstance(Instance *instance) { this->instance = instance; }
@@ -227,6 +239,7 @@ private:
 	ReactorRespawns reactorrespawns;
 	MobSpawnsInfo mobspawns;
 	MobRespawnsInfo mobrespawns;
+	SeatsInfo seats;
 	vector<Player *> players;
 	vector<Reactor *> reactors;
 	unordered_map<int32_t, Mob *> mobs;
