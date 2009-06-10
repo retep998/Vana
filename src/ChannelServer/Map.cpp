@@ -513,3 +513,17 @@ void Map::showMessage(const string &message, int8_t type) {
 int32_t Map::checkTimer(uint32_t type, uint32_t id1, uint32_t id2) {
 	return (getTimers()->checkTimer(Timer::Id(type, id1, id2)) / 1000);
 }
+
+bool Map::seatOccupied(int16_t id) {
+	bool occupied = true;
+	if (seats.find(id) != seats.end()) {
+		occupied = (seats[id].occupant != 0);
+	}
+	return occupied;
+}
+
+void Map::playerSeated(int16_t id, Player *player) {
+	if (seats.find(id) != seats.end()) {
+		seats[id].occupant = player;
+	}
+}

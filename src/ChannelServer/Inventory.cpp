@@ -548,9 +548,29 @@ void Inventory::useChair(Player *player, PacketReader &packet) {
 	InventoryPacket::sitChair(player, chairid);
 }
 
-void Inventory::stopChair(Player *player, PacketReader &packet) {
-	player->setChair(0);
-	InventoryPacket::stopChair(player);
+void Inventory::handleChair(Player *player, PacketReader &packet) {
+	int16_t chair = packet.get<int16_t>();
+	Map *map = Maps::getMap(player->getMap());
+	if (chair == -1) {
+		if (player->getChair() != 0) {
+			player->setChair(0);
+		}
+		else {
+			map->playerSeated(player->getMapChair(), 0);
+			player->setMapChair(0);
+		}
+		InventoryPacket::stopChair(player);
+	}
+	else { // Map chair
+		if (map->seatOccupied(chair)) {
+			InventoryPacket::stopChair(player, false);
+		}
+		else {
+			map->playerSeated(chair, player);
+			player->setMapChair(chair);
+			InventoryPacket::sitMapChair(player, chair);
+		}
+	}
 }
 
 void Inventory::useSummonBag(Player *player, PacketReader &packet) {

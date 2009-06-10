@@ -62,6 +62,7 @@ fall_counter(0),
 shop(0),
 item_effect(0),
 chair(0),
+mapchair(0),
 trade_state(false),
 save_on_dc(true),
 is_connect(false),
@@ -85,6 +86,9 @@ Player::~Player() {
 		}
 		if (getNPC() != 0) {
 			delete getNPC();
+		}
+		if (getMapChair() != 0) {
+			Maps::getMap(getMap())->playerSeated(getMapChair(), 0);
 		}
 		//if (this->getHp() == 0)
 		//	this->acceptDeath();
@@ -117,6 +121,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
 		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
+		case RECV_CHAIR_ACTION: Inventory::handleChair(this, packet); break;
 		case RECV_CHANGE_CHANNEL: changeChannel(packet.get<int8_t>()); break;
 		case RECV_CHANGE_MAP: Maps::usePortal(this, packet); break;
 		case RECV_CHANGE_MAP_SPECIAL: Maps::useScriptedPortal(this, packet); break;
@@ -153,7 +158,6 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
 		case RECV_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
-		case RECV_STOP_CHAIR: Inventory::stopChair(this, packet); break;
 		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, packet); break;
 		case RECV_USE_CHAIR: Inventory::useChair(this, packet); break;
 		case RECV_USE_ITEM: Inventory::useItem(this, packet); break;
