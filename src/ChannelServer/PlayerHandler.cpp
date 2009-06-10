@@ -386,7 +386,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 					damage = mob->getHp() - 1;
 
 				if (skillid == Jobs::Bandit::Steal && !mob->isBoss())
-					Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), true);
+					Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), mob->getTauntEffect(), true);
 
 				int32_t temphp = mob->getHp();
 				mob->applyDamage(player->getId(), damage);
