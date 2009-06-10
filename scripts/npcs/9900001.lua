@@ -267,50 +267,50 @@ elseif state == 1 then
 		-- Hero (4th Job)
 		addSkillLevel(1120004, 30);--	Achilles
 		addSkillLevel(1120003, 30);--	Advanced Combo
-		addSkillLevel(1121011, 1);--	Awakening
+		addSkillLevel(1121011, 5);--	Hero's Will
 		addSkillLevel(1120005, 30);--	Blocking
 		addSkillLevel(1121008, 30);--	Brandish
 		addSkillLevel(1121010, 30);--	Enrage
-		addSkillLevel(1121000, 20);--	Maple Warrior
+		addSkillLevel(1121000, 30);--	Maple Warrior
 		addSkillLevel(1121001, 30);--	Monster Magnet
 		addSkillLevel(1121006, 30);--	Rush
 		addSkillLevel(1121002, 30);--	Stance
 		-- Paladin (4th Job)
 		addSkillLevel(1220005, 30);--	Achilles
 		addSkillLevel(1220010, 10);--	Advanced Charge
-		addSkillLevel(1221012, 1);--	Awakening
+		addSkillLevel(1221012, 5);--	Hero's Will
 		addSkillLevel(1221009, 30);--	Blast
 		addSkillLevel(1220006, 30);--	Blocking
 		addSkillLevel(1221004, 20);--	Divine Charge: Mace
 		addSkillLevel(1221003, 20);--	Holy Charge: Sword
-		addSkillLevel(1221000, 20);--	Maple Warrior
+		addSkillLevel(1221000, 30);--	Maple Warrior
 		addSkillLevel(1221001, 30);--	Monster Magnet
 		addSkillLevel(1221007, 30);--	Rush
 		addSkillLevel(1221011, 30);--	Sanctuary
 		addSkillLevel(1221002, 30);--	Stance
 		-- Dark Knight (4th Job)
 		addSkillLevel(1320005, 30);--	Achilles
-		addSkillLevel(1321010, 1);--	Awakening
+		addSkillLevel(1321010, 5);--	Hero's Will
 		addSkillLevel(1321007, 10);--	Beholder
 		addSkillLevel(1320009, 25);--	Beholder's Buff
 		addSkillLevel(1320008, 25);--	Beholder's Healing
 		addSkillLevel(1320006, 30);--	Berserk
-		addSkillLevel(1321000, 20);--	Maple Warrior
+		addSkillLevel(1321000, 30);--	Maple Warrior
 		addSkillLevel(1321001, 30);--	Monster Magnet
 		addSkillLevel(1321003, 30);--	Rush
 		addSkillLevel(1321002, 30);--	Stance
 		-- Fire/Poison Arch Mage (4th Job)
-		addSkillLevel(2121008, 1);--	Awakening
+		addSkillLevel(2121008, 5);--	Hero's Will
 		addSkillLevel(2121001, 30);--	Big Bang
 		addSkillLevel(2121005, 30);--	Elquines
 		addSkillLevel(2121003, 30);--	Fire Demon
 		addSkillLevel(2121004, 30);--	Infinity
 		addSkillLevel(2121002, 30);--	Mana Reflection
-		addSkillLevel(2121000, 20);--	Maple Warrior
+		addSkillLevel(2121000, 30);--	Maple Warrior
 		addSkillLevel(2121007, 30);--	Meteo
 		addSkillLevel(2121006, 30);--	Paralyze
 		-- Ice/Lightning Arch Mage (4th Job)
-		addSkillLevel(2221008, 1);--	Awakening
+		addSkillLevel(2221008, 5);--	Hero's Will
 		addSkillLevel(2221001, 30);--	Big Bang
 		addSkillLevel(2221007, 30);--	Blizzard
 		addSkillLevel(2221006, 30);--	Chain Lightning
@@ -318,81 +318,81 @@ elseif state == 1 then
 		addSkillLevel(2221005, 30);--	Ifrit
 		addSkillLevel(2221004, 30);--	Infinity
 		addSkillLevel(2221002, 30);--	Mana Reflection
-		addSkillLevel(2221000, 20);--	Maple Warrior
+		addSkillLevel(2221000, 30);--	Maple Warrior
 		-- Bishop (4th Job)
 		addSkillLevel(2321007, 30);--	Angel's Ray
-		addSkillLevel(2321009, 1);--	Awakening
+		addSkillLevel(2321009, 5);--	Hero's Will
 		addSkillLevel(2321003, 30);--	Bahamut
 		addSkillLevel(2321001, 30);--	Big Bang
 		addSkillLevel(2321008, 30);--	Genesis
 		addSkillLevel(2321005, 30);--	Holy Shield
 		addSkillLevel(2321004, 30);--	Infinity
 		addSkillLevel(2321002, 30);--	Mana Reflection
-		addSkillLevel(2321000, 20);--	Maple Warrior
+		addSkillLevel(2321000, 30);--	Maple Warrior
 		addSkillLevel(2321006, 10);--	Resurrection
 		-- Bow Master (4th Job)
-		addSkillLevel(3121009, 1);--	Awakening
+		addSkillLevel(3121009, 5);--	Hero's Will
 		addSkillLevel(3120005, 30);--	Bow Expert
 		addSkillLevel(3121008, 30);--	Concentration
 		addSkillLevel(3121003, 30);--	Dragon Pulse
 		addSkillLevel(3121007, 30);--	Hamstring
-		addSkillLevel(3121000, 20);--	Maple Warrior
+		addSkillLevel(3121000, 30);--	Maple Warrior
 		addSkillLevel(3121006, 30);--	Phoenix
 		addSkillLevel(3121002, 30);--	Sharp Eyes
 		addSkillLevel(3121004, 30);--	Storm Arrow
 		-- Crossbow Master (4th Job)
-		addSkillLevel(3221008, 1);--	Awakening
+		addSkillLevel(3221008, 5);--	Hero's Will
 		addSkillLevel(3221006, 30);--	Blind
 		addSkillLevel(3220004, 30);--	Crossbow Expert
 		addSkillLevel(3221003, 30);--	Dragon Pulse
 		addSkillLevel(3221005, 30);--	Freezer
-		addSkillLevel(3221000, 20);--	Maple Warrior
+		addSkillLevel(3221000, 30);--	Maple Warrior
 		addSkillLevel(3221001, 30);--	Piercing
 		addSkillLevel(3221002, 30);--	Sharp Eyes
 		addSkillLevel(3221007, 30);--	Sniping
 		-- Night Lord (4th Job)
-		addSkillLevel(4121009, 1);--	Awakening
-		addSkillLevel(4120002, 30);--	Fake
-		addSkillLevel(4121000, 20);--	Maple Warrior
+		addSkillLevel(4121009, 5);--	Hero's Will
+		addSkillLevel(4120002, 30);--	Shadow Shifter
+		addSkillLevel(4121000, 30);--	Maple Warrior
 		addSkillLevel(4121004, 30);--	Ninja Ambush
 		addSkillLevel(4121008, 30);--	Ninja Storm
-		addSkillLevel(4121003, 30);--	Showdown
+		addSkillLevel(4121003, 30);--	Taunt
 		addSkillLevel(4121006, 30);--	Spirit Claw
 		addSkillLevel(4121007, 30);--	Triple Throw
-		addSkillLevel(4120005, 30);--	Venom
+		addSkillLevel(4120005, 30);--	Venomous Star
 		-- Shadower (4th Job)
 		addSkillLevel(4221001, 30);--	Assassinate
-		addSkillLevel(4221008, 1);--	Awakening
+		addSkillLevel(4221008, 5);--	Hero's Will
 		addSkillLevel(4221007, 30);--	Boomerang Step
-		addSkillLevel(4220002, 30);--	Fake
-		addSkillLevel(4221000, 20);--	Maple Warrior
+		addSkillLevel(4220002, 30);--	Shadow Shifter
+		addSkillLevel(4221000, 30);--	Maple Warrior
 		addSkillLevel(4221004, 30);--	Ninja Ambush
-		addSkillLevel(4221003, 30);--	Showdown
-		addSkillLevel(4221006, 30);--	Smoke Shell
-		addSkillLevel(4220005, 30);--	Venom
+		addSkillLevel(4221003, 30);--	Taunt
+		addSkillLevel(4221006, 30);--	Smokescreen
+		addSkillLevel(4220005, 30);--	Venomous Dagger
 		-- Buccaneer (4th Job)
-		addSkillLevel(5121000, 20);--	Maple Warrior
+		addSkillLevel(5121000, 30);--	Maple Warrior
 		addSkillLevel(5121001, 30);--	Dragon Strike
 		addSkillLevel(5121002, 30);--	Energy Orb
 		addSkillLevel(5121003, 20);--	Super Transformation
 		addSkillLevel(5121004, 30);--	Demolition
 		addSkillLevel(5121005, 30);--	Snatch
 		addSkillLevel(5121007, 30);--	Barrage
-		addSkillLevel(5121008, 1);--	Pirate's Rage
+		addSkillLevel(5121008, 5);--	Pirate's Rage
 		addSkillLevel(5121009, 20);--	Speed Infusion
 		addSkillLevel(5121010, 30);--	Time Leap
 		-- Corsair (4th Job)
 		addSkillLevel(5220001, 30);--	Elemental Boost
 		addSkillLevel(5220002, 20);--	Wrath of the Octopi
 		addSkillLevel(5220011, 20);--	Bullseye
-		addSkillLevel(5221000, 20);--	Maple Warrior
+		addSkillLevel(5221000, 30);--	Maple Warrior
 		addSkillLevel(5221003, 30);--	Aerial Strike
 		addSkillLevel(5221004, 30);--	Rapid Fire
 		addSkillLevel(5221006, 10);--	Battleship
 		addSkillLevel(5221007, 30);--	Battleship Cannon
 		addSkillLevel(5221008, 30);--	Battleship Torpedo
 		addSkillLevel(5221009, 20);--	Hypnotize
-		addSkillLevel(5221010, 1);--	Speed Infusion
+		addSkillLevel(5221010, 5);--	Speed Infusion
 		-- GM Skills
 		addSkillLevel(9001000, 1);--	Haste (Normal)
 		addSkillLevel(9001001, 1);--	Super Dragon Roar
@@ -407,6 +407,127 @@ elseif state == 1 then
 		addSkillLevel(9101006, 1);--	Super Dragon Roar
 		addSkillLevel(9101007, 1);--	Teleport
 		addSkillLevel(9101008, 1);--	Hyper Body
+		-- Noblesse
+		addSkillLevel(10000012, 20);-- Blessing of the Spirit
+		addSkillLevel(10001000, 3);-- Three Snails
+		addSkillLevel(10001001, 3);-- Recovery
+		addSkillLevel(10001002, 3);-- Nimble Feet
+		addSkillLevel(10001003, 1);-- Legendary Spirit
+		addSkillLevel(10001004, 1);-- Monster Rider
+		addSkillLevel(10001005, 1);-- Echo of Hero
+		-- Soul Warrior 1st Job
+		addSkillLevel(11000000, 10);-- Improving MaxHP Increase
+		addSkillLevel(11001001, 10);-- Iron Body
+		addSkillLevel(11001002, 20);-- Power Strike
+		addSkillLevel(11001003, 20);-- Slash Blast
+		addSkillLevel(11001004, 20);-- Soul
+		-- Flame Wizard 1st Job
+		addSkillLevel(12000000, 10);-- Improving Max MP Increase
+		addSkillLevel(12001001, 10);-- Magic Guard
+		addSkillLevel(12001002, 10);-- Magic Armor
+		addSkillLevel(12001003, 20);-- Magic Claw
+		addSkillLevel(12001004, 20);-- Flame
+		-- Wind Breaker 1st Job
+		addSkillLevel(13000000, 20);-- Critical Shot
+		addSkillLevel(13000001, 8);-- The Eye of Amazon
+		addSkillLevel(13001002, 10);-- Focus
+		addSkillLevel(13001003, 20);-- Double Shot
+		addSkillLevel(13001004, 20);-- Storm
+		-- Night Walker 1st Job
+		addSkillLevel(14000000, 10);-- Nimble Body
+		addSkillLevel(14000001, 8);-- Keen Eyes
+		addSkillLevel(14001002, 10);-- Disorder
+		addSkillLevel(14001003, 10);-- Dark Sight
+		addSkillLevel(14001004, 20);-- Lucky Seven
+		addSkillLevel(14001005, 20);-- Darkness
+		-- Striker 1st Job
+		addSkillLevel(15000000, 10);-- Bullet Time
+		addSkillLevel(15001001, 20);-- Flash Fist
+		addSkillLevel(15001002, 20);-- Sommersault Kick
+		addSkillLevel(15001003, 10);-- Dash
+		addSkillLevel(15001004, 20);-- Lightning
+		-- Soul Warrior 2nd Job
+		addSkillLevel(11100000, 20);-- Sword Mastery
+		addSkillLevel(11101001, 20);-- Sword Booster
+		addSkillLevel(11101002, 30);-- Final Attack : Sword
+		addSkillLevel(11101003, 20);-- Rage
+		addSkillLevel(11101004, 30);-- Soul Blade
+		addSkillLevel(11101005, 10);-- Soul Rush
+		-- Flame Wizard 2nd Job
+		addSkillLevel(12101000, 20);-- Meditation
+		addSkillLevel(12101001, 20);-- Slow
+		addSkillLevel(12101002, 20);-- Flame Arrow
+		addSkillLevel(12101003, 20);-- Teleport
+		addSkillLevel(12101004, 20);-- Spell Booster
+		addSkillLevel(12101005, 20);-- Elemental Reset
+		addSkillLevel(12101006, 20);-- Fire Filar
+		-- Wind Breaker 2nd Job
+		addSkillLevel(13100000, 20);-- Bow Mastery
+		addSkillLevel(13100004, 20);-- Thrust
+		addSkillLevel(13101001, 20);-- Bow Booster
+		addSkillLevel(13101002, 30);-- Final Attack : Bow
+		addSkillLevel(13101003, 20);-- Soul Arrow : Bow
+		addSkillLevel(13101005, 20);-- Storm Brakes
+		addSkillLevel(13101006, 10);-- Wind Walk
+		-- Night Walker 2nd Job
+		addSkillLevel(14100000, 20);-- Claw Mastery
+		addSkillLevel(14100001, 30);-- Critical Throw
+		addSkillLevel(14100005, 10);-- Vanish
+		addSkillLevel(14101002, 20);-- Claw Booster
+		addSkillLevel(14101003, 20);-- Haste
+		addSkillLevel(14101004, 20);-- Flash Jump
+		addSkillLevel(14101006, 20);-- Vampire
+		-- Striker 2nd Job
+		addSkillLevel(15100000, 10);-- Improve MaxHP
+		addSkillLevel(15100001, 20);-- Knuckle Mastery
+		addSkillLevel(15100004, 20);-- Energy Charge
+		addSkillLevel(15101002, 20);-- Knuckle Booster
+		addSkillLevel(15101003, 20);-- Corkscrew Blow
+		addSkillLevel(15101005, 20);-- Energy Blast
+		addSkillLevel(15101006, 20);-- Lightning Charge
+		-- Soul Warrior 3rd Job
+		addSkillLevel(11110000, 20);-- Improving MP Recovery
+		addSkillLevel(11110005, 20);-- Advance Combo
+		addSkillLevel(11111001, 20);-- Combo Attack
+		addSkillLevel(11111002, 20);-- Sword: Panic
+		addSkillLevel(11111003, 20);-- Sword: Coma
+		addSkillLevel(11111004, 30);-- Brandish
+		addSkillLevel(11111006, 30);-- Soul Blow
+		addSkillLevel(11111007, 20);-- Soul Charge
+		-- Flame Wizard 3rd Job
+		addSkillLevel(12110000, 20);-- Elemental Resistance
+		addSkillLevel(12110001, 20);-- Element Amplification
+		addSkillLevel(12111002, 20);-- Seal
+		addSkillLevel(12111003, 20);-- Meteo
+		addSkillLevel(12111004, 20);-- Ifrit
+		addSkillLevel(12111005, 30);-- Flame Gear
+		addSkillLevel(12111006, 30);-- Fire Strike
+		-- Wind Breaker 3rd Job
+		addSkillLevel(13110003, 20);-- Bow Expert
+		addSkillLevel(13111000, 20);-- Arrow Rain
+		addSkillLevel(13111001, 30);-- Strafe
+		addSkillLevel(13111002, 20);-- Hurricane
+		addSkillLevel(13111004, 20);-- Puppet
+		addSkillLevel(13111005, 10);-- Albatross
+		addSkillLevel(13111006, 20);-- Wind Piercing
+		addSkillLevel(13111007, 20);-- Wind Shot
+		-- Night Walker 3rd Job
+		addSkillLevel(14110003, 20);-- Alchemist
+		addSkillLevel(14110004, 20);-- Venom
+		addSkillLevel(14111000, 30);-- Shadow Partner
+		addSkillLevel(14111001, 20);-- Shadow Web
+		addSkillLevel(14111002, 30);-- Avenger
+		addSkillLevel(14111005, 20);-- Triple Throw
+		addSkillLevel(14111006, 30);-- Poison Bomb
+		-- Striker 3rd Job
+		addSkillLevel(15110000, 20);-- Critical Punch
+		addSkillLevel(15111001, 20);-- Energy Drain
+		addSkillLevel(15111002, 10);-- Transformation
+		addSkillLevel(15111003, 20);-- Shockwave
+		addSkillLevel(15111004, 20);-- Barrage
+		addSkillLevel(15111005, 20);-- Speed Infusion
+		addSkillLevel(15111006, 20);-- Spark
+		addSkillLevel(15111007, 30);-- Shark Wave
 		addText("There we go! Have fun!");
 	else
 		addText("Okay, come back to me any time if you change your mind.")
