@@ -112,6 +112,21 @@ void Map::statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t pr
 	}
 }
 
+void Map::sendPlayersToTown(int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb) {
+	int16_t done = 0;
+	for (size_t i = 0; i < players.size(); i++) {
+		Player *toy = players[i];
+		if (toy != 0) {
+			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
+				toy->setMap(getInfo()->rm);
+				done++;
+			}
+		}
+		if (count > 0 && done == count)
+			break;
+	}
+}
+
 // Reactors
 void Map::addReactorSpawn(const ReactorSpawnInfo &spawn) {
 	reactorspawns.push_back(spawn);

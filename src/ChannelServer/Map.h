@@ -165,6 +165,7 @@ public:
 	void removePlayer(Player *player);
 	void dispelPlayers(int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
 	void statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
+	void sendPlayersToTown(int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb);
 
 	// NPCs
 	void addNPC(const NPCSpawnInfo &npc) { this->npcs.push_back(npc); }

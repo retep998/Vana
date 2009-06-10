@@ -546,7 +546,7 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 			pushed = true;
 			break;
 		case MobSkills::Heal:
-			map->healMobs(skillinfo.x, skillinfo.y, mob->getPos(), skillinfo.lt, skillinfo.rb);
+			map->healMobs(skillinfo.x, skillinfo.y, mobpos, skillinfo.lt, skillinfo.rb);
 			break;
 		case MobSkills::Seal:
 		case MobSkills::Darkness:
@@ -556,13 +556,13 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 		case MobSkills::Poison:
 		case MobSkills::Slow:
 		case MobSkills::Seduce:
-			map->statusPlayers(skillid, level, skillinfo.count, skillinfo.prop, mob->getPos(), skillinfo.lt, skillinfo.rb);
+			map->statusPlayers(skillid, level, skillinfo.count, skillinfo.prop, mobpos, skillinfo.lt, skillinfo.rb);
 			break;
 		case MobSkills::Dispel:
-			map->dispelPlayers(skillinfo.prop, mob->getPos(), skillinfo.lt, skillinfo.rb);
+			map->dispelPlayers(skillinfo.prop, mobpos, skillinfo.lt, skillinfo.rb);
 			break;
-		case MobSkills::NoClue:
-			// ??
+		case MobSkills::SendToTown:
+			map->sendPlayersToTown(skillinfo.prop, skillinfo.count, mobpos, skillinfo.lt, skillinfo.rb);
 			break;
 		case MobSkills::PoisonMist: {
 			Mist *mist = new Mist(mob->getMapId(), mob, mobpos, skillinfo, skillid, level);
