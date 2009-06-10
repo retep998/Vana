@@ -127,10 +127,10 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	}
 	switch (skillid) {
 		case Jobs::Infighter::MpRecovery: {
-			int16_t modhp = player->getMHp() * Skills::skills[skillid][level].x / 100;
+			int16_t modhp = player->getStats()->getMHp() * Skills::skills[skillid][level].x / 100;
 			int16_t healmp = modhp * Skills::skills[skillid][level].y / 100;
-			player->modifyHp(-modhp);
-			player->modifyMp(healmp);
+			player->getStats()->modifyHp(-modhp);
+			player->getStats()->modifyMp(healmp);
 			break;
 		}
 		case Jobs::Shadower::Smokescreen: {
