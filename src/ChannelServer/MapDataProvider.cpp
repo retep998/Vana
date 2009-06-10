@@ -107,7 +107,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		SeatInfo chair;
 		int16_t id = atoi(dataRow[0]);
 		chair.pos = Pos(atoi(dataRow[1]), atoi(dataRow[2]));
-		chair.taken = false;
+		chair.occupant = 0;
 		map->addSeat(id, chair);
 	}
 

@@ -71,6 +71,7 @@ public:
 	void setDex(int16_t dex);
 	void setInt(int16_t intt);
 	void setLuk(int16_t luk);
+	void setMapChair(int16_t s) { mapchair = s; }
 	void modifyHp(int16_t hp, bool is = true); // Bases its calculations on current HP/MP
 	void modifyMp(int16_t mp, bool is = false);
 	void damageHp(uint16_t dhp); // Calculations done based on the fact that damage can range from 0 to ~55k
@@ -120,6 +121,7 @@ public:
 	int16_t getRMHp() const { return rmhp; }
 	int16_t getMMp() const { return mmp; }
 	int16_t getRMMp() const { return rmmp; }
+	int16_t getMapChair() const { return mapchair; }
 	uint16_t getHpMpAp() const { return hpmp_ap; }
 	int32_t getId() const { return id; }
 	int32_t getUserId() const { return user_id; }
@@ -194,6 +196,7 @@ private:
 	int16_t mp;
 	int16_t mmp;
 	int16_t rmmp;
+	int16_t mapchair;
 	uint16_t hpmp_ap;
 	int32_t id;
 	int32_t user_id;

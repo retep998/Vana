@@ -102,7 +102,7 @@ typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
 
 struct SeatInfo {
 	Pos pos;
-	bool taken;
+	Player *occupant;
 };
 
 typedef std::map<int16_t, SeatInfo> SeatsInfo;
@@ -143,7 +143,8 @@ public:
 
 	// Seats
 	void addSeat(int16_t id, const SeatInfo &seat) { seats[id] = seat; }
-	SeatInfo getSeat(int16_t id) { return seats[id]; }
+	bool seatOccupied(int16_t id);
+	void playerSeated(int16_t id, Player *player);
 
 	// Portals
 	void addPortal(const PortalInfo &portal) {

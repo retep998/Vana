@@ -116,13 +116,21 @@ void InventoryPacket::sitChair(Player *player, int32_t chairid) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void InventoryPacket::stopChair(Player *player) {
-	if (player->getActiveBuffs()->isUsingHide())
-		return;
+void InventoryPacket::sitMapChair(Player *player, int16_t chairid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_STOP_CHAIR);
+	packet.add<int16_t>(SEND_CHAIR_ACTION);
+	packet.add<int8_t>(1);
+	packet.add<int16_t>(chairid);
+	player->getSession()->send(packet);
+}
+
+void InventoryPacket::stopChair(Player *player, bool showMap) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_CHAIR_ACTION);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
+	if (player->getActiveBuffs()->isUsingHide() || !showMap)
+		return;
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SIT_CHAIR);
 	packet.add<int32_t>(player->getId());
