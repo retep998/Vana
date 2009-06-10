@@ -250,6 +250,8 @@ void Mob::endControl() {
 }
 
 void Mob::die(Player *player, bool fromexplosion) {
+	Map *map = Maps::getMap(mapid);
+
 	endControl();
 
 	// Calculate EXP distribution
@@ -285,15 +287,15 @@ void Mob::die(Player *player, bool fromexplosion) {
 		for (size_t i = 0; i < info.summon.size(); i++) {
 			int32_t spawnid = info.summon[i];
 			if (spawnid == Mobs::HorntailSponge)
-				spongeid = Maps::getMap(mapid)->spawnMob(spawnid, m_pos, -1, getFh(), this);
+				spongeid = map->spawnMob(spawnid, m_pos, -1, getFh(), this);
 			else {
-				int32_t identifier = Maps::getMap(mapid)->spawnMob(spawnid, m_pos, -1, getFh(), this);
+				int32_t identifier = map->spawnMob(spawnid, m_pos, -1, getFh(), this);
 				parts.push_back(identifier);
 			}
 		}
 		Mob *htsponge = Maps::getMap(mapid)->getMob(spongeid);
 		for (size_t m = 0; m < parts.size(); m++) {
-			Mob *f = Maps::getMap(mapid)->getMob(parts[m]);
+			Mob *f = map->getMob(parts[m]);
 			f->setSponge(htsponge);
 			htsponge->addSpawn(parts[m], f);
 		}
@@ -301,14 +303,14 @@ void Mob::die(Player *player, bool fromexplosion) {
 	else if (getSponge() != 0) { // More special Horntail logic to keep units linked
 		getSponge()->removeSpawn(getId());
 		for (size_t i = 0; i < info.summon.size(); i++) {
-			int32_t ident = Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
-			Mob *mob = Maps::getMap(mapid)->getMob(ident);
+			int32_t ident = map->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
+			Mob *mob = map->getMob(ident);
 			getSponge()->addSpawn(ident, mob);
 		}
 	}
 	else {
 		for (size_t i = 0; i < info.summon.size(); i++) {
-			Maps::getMap(mapid)->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
+			map->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
 		}
 	}
 
@@ -324,16 +326,24 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	// Ending of death stuff
 	MobsPacket::dieMob(this, fromexplosion ? 4 : 1);
-	Drops::doDrops(highestdamager, mapid, mobid, getPos(), getTauntEffect());
+	Drops::doDrops(highestdamager, mapid, mobid, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
 
 	if (player != 0)
 		player->getQuests()->updateQuestMob(mobid);
 
-	Instance *instance = Maps::getMap(mapid)->getInstance();
+	if (info.buff != 0) {
+		for (size_t k = 0; k < map->getNumPlayers(); k++) {
+			if (Player *target = map->getPlayer(k)) {
+				Inventory::useItem(target, info.buff);
+			}
+		}
+	}
+
+	Instance *instance = map->getInstance();
 	if (instance != 0) {
 		instance->sendMessage(MobDeath, mobid, id);
 	}
-	Maps::getMap(mapid)->removeMob(id, spawnid);
+	map->removeMob(id, spawnid);
 
 	delete this;
 }

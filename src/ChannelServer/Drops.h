@@ -27,7 +27,7 @@ class PacketReader;
 struct Item;
 
 namespace Drops {
-	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin, int16_t taunt = 100, bool isSteal = false);
+	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin, bool explosive, bool ffa, int16_t taunt = 100, bool isSteal = false);
 	void dropMesos(Player *player, PacketReader &packet);
 	void playerLoot(Player *player, PacketReader &packet);
 	void petLoot(Player *player, PacketReader &packet);
@@ -49,8 +49,8 @@ private:
 	Pos pos;
 	Item item;
 public:
-	Drop (int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop = false);
-	Drop (int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop = false);
+	Drop(int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop = false);
+	Drop(int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop = false);
 
 	void setQuest(int16_t questid) { this->questid = questid; }
 	void setTradeable(bool istrade) { tradeable = istrade; }

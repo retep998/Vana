@@ -52,7 +52,7 @@ void Reactor::restore() {
 }
 
 void Reactor::drop(Player *player) {
-	Drops::doDrops(player->getId(), mapid, reactorid, pos);
+	Drops::doDrops(player->getId(), mapid, reactorid, pos, false, false);
 }
 
 // Reactors namespace
