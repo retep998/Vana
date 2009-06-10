@@ -180,7 +180,9 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::FlameWizard::Seal:
 		case Jobs::Priest::Doom:
 		case Jobs::Hermit::ShadowWeb:
-		case Jobs::NightWalker::ShadowWeb: {
+		case Jobs::NightWalker::ShadowWeb:
+		case Jobs::Shadower::NinjaAmbush:
+		case Jobs::NightLord::NinjaAmbush: {
 			uint8_t mobs = packet.get<int8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.get<int32_t>())) {
