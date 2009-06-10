@@ -113,7 +113,7 @@ void Drop::removeDrop(bool showPacket) {
 }
 
 // Drops namespace
-void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin, bool isSteal) {
+void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin, int16_t taunt, bool isSteal) {
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
 	Player *player = Players::Instance()->getPlayer(playerid);
 	int16_t d = 0;
@@ -127,6 +127,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 			chance = chance * 3 / 10;
 		}
 		else {
+			chance = chance * taunt / 100;
 			chance *= ChannelServer::Instance()->getDroprate();
 		}
  		if (Randomizer::Instance()->randInt(99999) < chance) {
