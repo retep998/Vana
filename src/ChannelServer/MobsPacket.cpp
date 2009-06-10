@@ -44,10 +44,12 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 		packet.add<int32_t>(owner->getId());
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
-	if (show)
+	if (show) {
 		player->getSession()->send(packet);
-	else
+	}
+	else {
 		Maps::getMap(mob->getMapId())->sendPacket(packet);
+	}
 }
 
 void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn) {
@@ -123,24 +125,26 @@ void MobsPacket::hurtMob(Mob *mob, int32_t amount) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
-void MobsPacket::applyStatus(Mob *mob, const StatusInfo &info, int16_t delay) {
+void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusInfo> &info, int16_t delay) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_APPLY_MOB_STATUS);
 	packet.add<int32_t>(mob->getId());
-	packet.add<int32_t>(info.status);
+	packet.add<int32_t>(statusmask);
 
-	packet.add<int16_t>(info.val);
-	if (info.skillid >= 0) {
-		packet.add<int32_t>(info.skillid);
+	for (size_t i = 0; i < info.size(); i++) {
+		packet.add<int16_t>(info[i].val);
+		if (info[i].skillid >= 0) {
+			packet.add<int32_t>(info[i].skillid);
+		}
+		else {
+			packet.add<int16_t>(info[i].mobskill);
+			packet.add<int16_t>(info[i].level);
+		}
+		packet.add<int16_t>(0); // Not sure what this is
 	}
-	else {
-		packet.add<int16_t>(info.mobskill);
-		packet.add<int16_t>(info.level);
-	}
-	packet.add<int16_t>(0);
 
 	packet.add<int16_t>(delay);
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(static_cast<int8_t>(info.size()));
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 

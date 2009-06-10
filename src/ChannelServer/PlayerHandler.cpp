@@ -35,7 +35,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summons.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
-
 #include <functional>
 
 using std::tr1::bind;
@@ -384,6 +383,9 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			else {
 				if (skillid == Jobs::Paladin::HeavensHammer)
 					damage = mob->getHp() - 1;
+
+				if (skillid == Jobs::Bandit::Steal && !mob->isBoss())
+					Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), mob->getTauntEffect(), true);
 
 				int32_t temphp = mob->getHp();
 				mob->applyDamage(player->getId(), damage);

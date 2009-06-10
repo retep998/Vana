@@ -225,27 +225,34 @@ namespace FieldLimitBits {
 
 namespace StatusEffects {
 	namespace Mob {
-		enum MobStatus {
+		const uint8_t Count = 20; // Be sure to update count if you find a new status effect
+
+		enum MobStatus { // Groups of 5 for easier counting
 			Watk = 0x01,
 			Wdef = 0x02,
 			Matk = 0x04,
 			Mdef = 0x08,
 			Acc = 0x10,
+
 			Avoid = 0x20,
 			Speed = 0x40,
 			Stun = 0x80,
 			Freeze = 0x100,
 			Poison = 0x200,
+
 			Seal = 0x400,
 			// 0x800?
 			WeaponAttackUp = 0x1000,
 			WeaponDefenseUp = 0x2000,
 			MagicAttackUp = 0x4000,
 			MagicDefenseUp = 0x8000,
+
 			Doom = 0x10000,
 			ShadowWeb = 0x20000,
 			WeaponImmunity = 0x40000,
-			MagicImmunity = 0x80000
+			MagicImmunity = 0x80000,
+			// Others
+			Empty = 0x8000000
 		};
 	}
 	namespace Player {

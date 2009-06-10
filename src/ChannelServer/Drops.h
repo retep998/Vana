@@ -27,7 +27,7 @@ class PacketReader;
 struct Item;
 
 namespace Drops {
-	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin);
+	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin, int16_t taunt = 100, bool isSteal = false);
 	void dropMesos(Player *player, PacketReader &packet);
 	void playerLoot(Player *player, PacketReader &packet);
 	void petLoot(Player *player, PacketReader &packet);

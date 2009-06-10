@@ -38,26 +38,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 // Mob status stuff
-const int32_t Mobs::mobstatuses[19] = { // Order by value ascending
+const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value ascending
 	StatusEffects::Mob::Watk,
 	StatusEffects::Mob::Wdef,
 	StatusEffects::Mob::Matk,
 	StatusEffects::Mob::Mdef,
 	StatusEffects::Mob::Acc,
+
 	StatusEffects::Mob::Avoid,
 	StatusEffects::Mob::Speed,
 	StatusEffects::Mob::Stun,
 	StatusEffects::Mob::Freeze,
 	StatusEffects::Mob::Poison,
+
 	StatusEffects::Mob::Seal,
 	StatusEffects::Mob::WeaponAttackUp,
 	StatusEffects::Mob::WeaponDefenseUp,
 	StatusEffects::Mob::MagicAttackUp,
 	StatusEffects::Mob::MagicDefenseUp,
+
 	StatusEffects::Mob::Doom,
 	StatusEffects::Mob::ShadowWeb,
 	StatusEffects::Mob::WeaponImmunity,
-	StatusEffects::Mob::MagicImmunity
+	StatusEffects::Mob::MagicImmunity,
+	StatusEffects::Mob::Empty
 };
 
 StatusInfo::StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time) :
@@ -81,12 +85,13 @@ id(id),
 mapid(mapid),
 spawnid(spawnid),
 mobid(mobid),
-status(0x8000000),
+status(StatusEffects::Mob::Empty),
 webplayerid(0),
 weblevel(0),
 owner(0),
 horntailsponge(0),
 counter(0),
+taunteffect(100),
 hasimmunity(false),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
 timers(new Timer::Container),
@@ -98,6 +103,8 @@ control(0)
 	if (instance != 0) {
 		instance->sendMessage(MobSpawn, mobid, id);
 	}
+	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
+	statuses[empty.status] = empty;
 }
 
 void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
@@ -147,18 +154,23 @@ void Mob::applyWebDamage() {
 	}
 }
 
-void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
+void Mob::addStatus(int32_t playerid, const vector<StatusInfo> &statusinfo) {
+	int32_t addedstatus = 0;
 	for (size_t i = 0; i < statusinfo.size(); i++) {
 		if (statusinfo[i].status == StatusEffects::Mob::Poison && statuses.find(StatusEffects::Mob::Poison) != statuses.end()) {
 			continue; // Already poisoned, so do not poison again
 		}
-		if (statusinfo[i].status == StatusEffects::Mob::ShadowWeb) {
+		else if (statusinfo[i].status == StatusEffects::Mob::ShadowWeb) {
 			webplayerid = playerid;
 			weblevel = static_cast<uint8_t>(statusinfo[i].val);
 		}
+		else if (statusinfo[i].status == StatusEffects::Mob::MagicAttackUp) {
+			if (statusinfo[i].skillid == Jobs::NightLord::Taunt || statusinfo[i].skillid == Jobs::Shadower::Taunt) {
+				taunteffect = (100 - statusinfo[i].val) + 100; // Value passed as 100 - x, so 100 - value will = x
+			}
+		}
 		statuses[statusinfo[i].status] = statusinfo[i];
-		MobsPacket::applyStatus(this, statusinfo[i], 300);
-
+		addedstatus += statusinfo[i].status;
 		if (statusinfo[i].status == StatusEffects::Mob::Poison) { // Damage timer for poison
 			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
 				Timer::Id(Timer::Types::MobStatusTimer, StatusEffects::Mob::Poison, 1),
@@ -170,18 +182,19 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> statusinfo) {
 			getTimers(), Timer::Time::fromNow(statusinfo[i].time * 1000));
 	}
 	// Calculate new status mask
-	this->status = 0x8000000;
+	status = 0;
 	for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
-		this->status += iter->first;
+		status += iter->first;
 	}
+	MobsPacket::applyStatus(this, addedstatus, statusinfo, 300);
 }
 
 void Mob::statusPacket(PacketCreator &packet) {
 	packet.add<int32_t>(status);
-	if (status != 0x8000000) {
-		for (uint8_t i = 0; i < 19; i++) { // Val/skillid pairs must be ordered in the packet by status value ascending
-			int32_t status = Mobs::mobstatuses[i];
-			if (statuses.find(status) != statuses.end()) {
+	for (uint8_t i = 0; i < StatusEffects::Mob::Count; i++) { // Val/skillid pairs must be ordered in the packet by status value ascending
+		int32_t status = Mobs::mobstatuses[i];
+		if (statuses.find(status) != statuses.end()) {
+			if (status != StatusEffects::Mob::Empty) {
 				packet.add<int16_t>(statuses[status].val);
 				if (statuses[status].skillid >= 0) {
 					packet.add<int32_t>(statuses[status].skillid);
@@ -192,9 +205,11 @@ void Mob::statusPacket(PacketCreator &packet) {
 				}
 				packet.add<int16_t>(1);
 			}
+			else {
+				packet.add<int32_t>(0);
+			}
 		}
 	}
-	packet.add<int32_t>(0);
 }
 
 bool Mob::hasStatus(int32_t status) {
@@ -203,11 +218,15 @@ bool Mob::hasStatus(int32_t status) {
 
 void Mob::removeStatus(int32_t status) {
 	if (hasStatus(status)) {
+		StatusInfo stat = statuses[status];
 		if (status == StatusEffects::Mob::WeaponImmunity || status == StatusEffects::Mob::MagicImmunity)
 			setImmunity(false);
 		if (status == StatusEffects::Mob::ShadowWeb) {
 			weblevel = 0;
 			webplayerid = 0;
+		}
+		if (stat.skillid == Jobs::NightLord::Taunt || stat.skillid == Jobs::Shadower::Taunt) {
+			taunteffect = 100;
 		}
 		this->status -= status;
 		statuses.erase(status);
@@ -253,7 +272,10 @@ void Mob::die(Player *player, bool fromexplosion) {
 			hsrate = Skills::skills[hsid][damager->getActiveBuffs()->getActiveSkillLevel(hsid)].x;
 		}
 		uint32_t exp = (info.exp * (multiplier * iter->second / info.hp)) / 10;
-		Levels::giveExp(damager, (exp + ((exp * hsrate) / 100)) * ChannelServer::Instance()->getExprate(), false, (damager == player));
+		exp = exp * getTauntEffect() / 100;
+		exp += ((exp * hsrate) / 100);
+		exp *= ChannelServer::Instance()->getExprate();
+		Levels::giveExp(damager, exp, false, (damager == player));
 	}
 
 	// Spawn mob(s) the mob is supposed to spawn when it dies
@@ -302,7 +324,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	// Ending of death stuff
 	MobsPacket::dieMob(this, fromexplosion ? 4 : 1);
-	Drops::doDrops(highestdamager, mapid, mobid, getPos());
+	Drops::doDrops(highestdamager, mapid, mobid, getPos(), getTauntEffect());
 
 	if (player != 0)
 		player->getQuests()->updateQuestMob(mobid);
@@ -711,6 +733,12 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t le
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, pdamage, skillid, Skills::skills[skillid][level].time));
 				break;
 			}
+			case Jobs::Shadower::Taunt:
+			case Jobs::NightLord::Taunt:
+				// I know, these status effect types make no sense, that's just how it works
+				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicAttackUp, 100 - Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDefenseUp, 100 - Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
+				break;
 		}
 	}
 	switch (skillid) {

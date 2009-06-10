@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MOBS_H
 #define MOBS_H
 
+#include "GameConstants.h"
 #include "MobDataProvider.h"
 #include "MovableLife.h"
-#include "Player.h"
 #include "Pos.h"
 #include "Timer/Container.h"
 #include "Types.h"
@@ -33,7 +33,9 @@ using std::tr1::unordered_map;
 
 class Player;
 class Mob;
+class PacketCreator;
 class PacketReader;
+struct MobSkillLevelInfo;
 struct MpEaterInfo;
 
 struct StatusInfo {
@@ -49,7 +51,7 @@ struct StatusInfo {
 };
 
 namespace Mobs {
-	extern const int32_t mobstatuses[19];
+	extern const int32_t mobstatuses[StatusEffects::Mob::Count];
 	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int32_t damage = 0);
 	void handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSkillLevelInfo &skillinfo);
 	void handleBomb(Player *player, PacketReader &packet);
@@ -63,7 +65,7 @@ public:
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
 	void applyWebDamage();
 	void setMp(int32_t mp) { this->mp = mp; }
-	void addStatus(int32_t playerid, vector<StatusInfo> statusinfo);
+	void addStatus(int32_t playerid, const vector<StatusInfo> &statusinfo);
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
 	void endControl();
@@ -79,6 +81,7 @@ public:
 	void setImmunity(bool isimmune) { hasimmunity = isimmune; }
 	void explode();
 
+	int16_t getTauntEffect() const { return taunteffect; }
 	int16_t getOriginFh() const { return originfh; }
 	int32_t getId() const { return id; }
 	int32_t getMapId() const { return mapid; }
@@ -111,6 +114,7 @@ public:
 private:
 	uint8_t weblevel;
 	int16_t originfh;
+	int16_t taunteffect;
 	int32_t id;
 	int32_t mapid;
 	int32_t spawnid;
