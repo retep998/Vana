@@ -685,18 +685,27 @@ Buffs::Buffs() {
 
 	// Monster Rider
 	buff.type = 0x40;
-	buff.byte = Byte8;
+	buff.byte = Byte9;
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
+	player.hasmapval = true;
 	skillsinfo[Jobs::Beginner::MonsterRider].player.push_back(player);
 	skillsinfo[Jobs::Noblesse::MonsterRider].player.push_back(player);
+	buff.type = 0x80;
+	map.buff = buff;
+	skillsinfo[Jobs::Beginner::MonsterRider].map.push_back(map);
+	skillsinfo[Jobs::Noblesse::MonsterRider].map.push_back(map);
 
 	// Battleship
 	buff.type = 0x40;
-	buff.byte = Byte8;
+	buff.byte = Byte9;
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
+	player.hasmapval = true;
 	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
+	buff.type = 0x80;
+	map.buff = buff;
+	skillsinfo[Jobs::Corsair::Battleship].map.push_back(map);
 	// End mount buffs
 
 	// Debuffs
@@ -1117,7 +1126,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	ActiveMapBuff enterskill = parseBuffMapEntryInfo(player, skillid, level);
 
 	if (mountid > 0)
-		BuffsPacket::useMount(player, skillid, time, playerskill, addedinfo, mountid);
+		BuffsPacket::useMount(player, skillid, time, playerskill, mapskill, addedinfo, mountid);
 	else {
 		switch (skillid) {
 			case Jobs::Pirate::Dash:

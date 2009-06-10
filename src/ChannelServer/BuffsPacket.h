@@ -33,7 +33,7 @@ namespace BuffsPacket {
 	// Specific skills
 	void usePirateBuff(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill);
 	void useSpeedInfusion(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo);
-	void useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, int16_t addedinfo, int32_t mountid);
+	void useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo, int32_t mountid);
 };
 
 #endif
