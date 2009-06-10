@@ -157,7 +157,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+		packet.add<int8_t>(mskill.typelist[i]);
 	packet.add<int16_t>(0);
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
@@ -193,7 +193,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+		packet.add<int8_t>(mskill.typelist[i]);
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(castedvalue);
 	packet.add<int32_t>(skillid);
@@ -205,7 +205,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, int16_t addedinfo, int32_t mountid) {
+void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo, int32_t mountid) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILL);
@@ -216,6 +216,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	packet.add<int32_t>(skillid);
 	packet.add<int32_t>(0); // Server tick value
 	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
 	packet.add<int8_t>(0); // Number of times you've been buffed total
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide())
@@ -224,11 +225,12 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+		packet.add<int8_t>(mskill.typelist[i]); // Ugly temporary provision, but it works
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(mountid);
 	packet.add<int32_t>(skillid);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
