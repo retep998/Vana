@@ -109,6 +109,8 @@ void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
 	packet.add<int16_t>(SEND_NOTICE);
 	packet.add<int8_t>(type);
 	packet.addString(msg);
+	if (type == 6)
+		packet.add<int32_t>(0);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
