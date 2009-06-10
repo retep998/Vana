@@ -290,7 +290,7 @@ namespace MobSkills {
 		Slow = 126,
 		Dispel = 127,
 		Seduce = 128,
-		NoClue = 129,
+		SendToTown = 129,
 		PoisonMist = 131,
 		NoClue2 = 132,
 		WeaponImmunity = 140,
