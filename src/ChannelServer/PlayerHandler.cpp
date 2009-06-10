@@ -377,21 +377,16 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 					break;
 				}
 			}
-			if (skillid == Jobs::Paladin::HeavensHammer && mob->isBoss()) {
-				// Damage calculation goes in here, I think? Hearing conflicted views.
+			if (skillid == Jobs::Paladin::HeavensHammer) {
+				damage = (mob->isBoss() ? 99999 : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
 			}
-			else {
-				if (skillid == Jobs::Paladin::HeavensHammer)
-					damage = mob->getHp() - 1;
-
-				if (skillid == Jobs::Bandit::Steal && !mob->isBoss())
-					Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), mob->getTauntEffect(), true);
-
-				int32_t temphp = mob->getHp();
-				mob->applyDamage(player->getId(), damage);
-				if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
-					mob = 0;
+			else if (skillid == Jobs::Bandit::Steal && !mob->isBoss()) {
+				Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), mob->getTauntEffect(), true);
 			}
+			int32_t temphp = mob->getHp();
+			mob->applyDamage(player->getId(), damage);
+			if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
+				mob = 0;
 		}
 		if (targettotal > 0) {
 			if (mob != 0 && mob->getHp() > 0) {
