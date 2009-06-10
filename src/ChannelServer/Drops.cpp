@@ -56,7 +56,8 @@ owner(owner),
 mapid(mapid),
 mesos(0),
 dropped(std::numeric_limits<int32_t>::max()),
-playerid(0), playerdrop(playerdrop),
+playerid(0),
+playerdrop(playerdrop),
 tradeable(true),
 pos(pos),
 item(item)
@@ -112,7 +113,7 @@ void Drop::removeDrop(bool showPacket) {
 }
 
 // Drops namespace
-void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin) {
+void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin, bool isSteal) {
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
 	Player *player = Players::Instance()->getPlayer(playerid);
 	int16_t d = 0;
@@ -121,8 +122,14 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 	for (size_t i = 0; i < drops.size(); i++) {
 		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(drops[i].maxamount - drops[i].minamount) + drops[i].minamount);
 		Drop *drop = 0;
-
- 		if (Randomizer::Instance()->randInt(99999) < drops[i].chance * ChannelServer::Instance()->getDroprate()) {
+		uint32_t chance = drops[i].chance;
+		if (isSteal) {
+			chance = chance * 3 / 10;
+		}
+		else {
+			chance *= ChannelServer::Instance()->getDroprate();
+		}
+ 		if (Randomizer::Instance()->randInt(99999) < chance) {
 			pos.x = origin.x + ((d % 2) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
 			pos.y = origin.y;
 
@@ -155,9 +162,12 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 				}
 			}
 			else {
-				int32_t mesos = (amount * ChannelServer::Instance()->getMesorate());
-				if (player != 0 && player->getActiveBuffs()->hasMesoUp()) { // Account for Meso Up
-					mesos = (mesos * Skills::skills[Jobs::Hermit::MesoUp][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::MesoUp)].x) / 100;
+				int32_t mesos = amount;
+				if (!isSteal) {
+					mesos *= ChannelServer::Instance()->getMesorate();
+					if (player != 0 && player->getActiveBuffs()->hasMesoUp()) { // Account for Meso Up
+						mesos = (mesos * Skills::skills[Jobs::Hermit::MesoUp][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::MesoUp)].x) / 100;
+					}
 				}
 				drop = new Drop(mapid, mesos, pos, playerid);
 			}

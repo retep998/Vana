@@ -385,6 +385,9 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				if (skillid == Jobs::Paladin::HeavensHammer)
 					damage = mob->getHp() - 1;
 
+				if (skillid == Jobs::Bandit::Steal && !mob->isBoss())
+					Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), true);
+
 				int32_t temphp = mob->getHp();
 				mob->applyDamage(player->getId(), damage);
 				if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0

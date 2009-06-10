@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DropsPacket.h"
 #include "Drops.h"
+#include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
@@ -47,8 +49,9 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	else
 		Maps::getMap(drop->getMap())->sendPacket(packet);
 
-	if (newdrop)
+	if (newdrop) {
 		showDrop(player, drop, 0, false, origin);
+	}
 }
 
 void DropsPacket::takeNote(Player *player, int32_t id, bool ismesos, int16_t amount) {
@@ -63,7 +66,7 @@ void DropsPacket::takeNote(Player *player, int32_t id, bool ismesos, int16_t amo
 		if (ismesos) {
 			packet.add<int16_t>(0); // Internet Cafe Bonus
 		}
-		else if (id/1000000 != 1)
+		else if (GameLogicUtilities::getInventory(id) != Inventories::EquipInventory)
 			packet.add<int16_t>(amount);
 	}
 	if (!ismesos) {
