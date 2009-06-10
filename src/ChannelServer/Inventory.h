@@ -43,7 +43,7 @@ namespace Inventory {
 	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
 	void useChair(Player *player, PacketReader &packet);
 	void useItemEffect(Player *player, PacketReader &packet);
-	void stopChair(Player *player, PacketReader &packet);
+	void handleChair(Player *player, PacketReader &packet);
 	void useSummonBag(Player *player, PacketReader &packet);
 	void useReturnScroll(Player *player, PacketReader &packet);
 	void useScroll(Player *player, PacketReader &packet);

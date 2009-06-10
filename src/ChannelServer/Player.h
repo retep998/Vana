@@ -62,6 +62,7 @@ public:
 	void setSaveOnDc(bool save) { save_on_dc = save; }
 	void setTrading(bool state) { trade_state = state; }
 	void setFallCounter(int8_t falls) { fall_counter = falls; }
+	void setMapChair(int16_t s) { mapchair = s; }
 	void setMap(int32_t mapid, PortalInfo *portal = 0);
 	void setBuddyListSize(uint8_t size);
 	void setTradeId(int32_t id) { this->trade_id = id; }
@@ -77,6 +78,7 @@ public:
 	int8_t getMappos() const { return map_pos; }
 	int8_t getFallCounter() const { return fall_counter; }
 	uint8_t getBuddyListSize() const { return buddylist_size; }
+	int16_t getMapChair() const { return mapchair; }
 	int32_t getId() const { return id; }
 	int32_t getUserId() const { return user_id; }
 	int32_t getMap() const { return map; }
@@ -131,6 +133,7 @@ private:
 	int8_t map_pos;
 	int8_t fall_counter;
 	uint8_t buddylist_size;
+	int16_t mapchair;
 	int32_t id;
 	int32_t user_id;
 	int32_t map;
