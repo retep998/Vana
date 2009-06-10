@@ -757,6 +757,13 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t le
 		}
 	}
 	switch (skillid) {
+		case Jobs::Shadower::NinjaAmbush:
+		case Jobs::NightLord::NinjaAmbush: {
+			int32_t test = 2 * (player->getStr() + player->getLuk()) * Skills::skills[skillid][level].damage / 100;
+			int16_t pdamage = (test > 30000 ? 30000 : static_cast<int16_t>(test));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, pdamage, skillid, Skills::skills[skillid][level].time));
+			break;
+		}
 		case Jobs::Rogue::Disorder:
 		case Jobs::NightWalker::Disorder:
 		case Jobs::Page::Threaten:
