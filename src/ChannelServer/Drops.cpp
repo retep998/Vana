@@ -113,7 +113,7 @@ void Drop::removeDrop(bool showPacket) {
 }
 
 // Drops namespace
-void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin, int16_t taunt, bool isSteal) {
+void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin, bool explosive, bool ffa, int16_t taunt, bool isSteal) {
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
 	Player *player = Players::Instance()->getPlayer(playerid);
 	int16_t d = 0;

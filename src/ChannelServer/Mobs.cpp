@@ -326,7 +326,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	// Ending of death stuff
 	MobsPacket::dieMob(this, fromexplosion ? 4 : 1);
-	Drops::doDrops(highestdamager, mapid, mobid, getPos(), getTauntEffect());
+	Drops::doDrops(highestdamager, mapid, mobid, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
 
 	if (player != 0)
 		player->getQuests()->updateQuestMob(mobid);

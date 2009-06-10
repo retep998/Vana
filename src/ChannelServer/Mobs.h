@@ -98,6 +98,8 @@ public:
 	bool canFreeze() const { return info.canfreeze; }
 	bool canPoison() const { return info.canpoison; }
 	bool isUndead() const { return info.undead; }
+	bool hasExplosiveDrop() const { return info.explosivereward; }
+	bool hasFfaDrop() const { return info.publicreward; }
 	bool hasImmunity() const { return hasimmunity; }
 	bool hasStatus(int32_t status);
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }

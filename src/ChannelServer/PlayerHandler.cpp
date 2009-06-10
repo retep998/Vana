@@ -382,7 +382,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				damage = (mob->isBoss() ? 99999 : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
 			}
 			else if (skillid == Jobs::Bandit::Steal && !mob->isBoss()) {
-				Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), mob->getTauntEffect(), true);
+				Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
