@@ -410,13 +410,13 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos) 
 		applySkillCosts(player, skillid, level);
 	}
 	uint16_t hits = 1;
-	if (skills[skillid][level].bulletcon > 0)
+	if (skillid != 0 && skills[skillid][level].bulletcon > 0)
 		hits = skills[skillid][level].bulletcon;
 	if (player->getActiveBuffs()->hasShadowPartner())
 		hits *= 2;
 	if (pos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow()))
 		// If they don't have Shadow Stars or Soul Arrow, take the items
-		Inventory::takeItemSlot(player, 2, pos, hits);
+		Inventory::takeItemSlot(player, Inventories::UseInventory, pos, hits);
 }
 
 void Skills::heal(Player *player, int16_t value, int32_t skillid) {
