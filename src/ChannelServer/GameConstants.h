@@ -293,9 +293,21 @@ namespace MobSkills {
 		Seduce = 128,
 		SendToTown = 129,
 		PoisonMist = 131,
-		NoClue2 = 132,
+		CrazySkull = 132,
+		Zombify = 133,
 		WeaponImmunity = 140,
 		MagicImmunity = 141,
+		NoClue1 = 143, // Two of Pink Bean's statues do these three skills, as does some Mu Lung panda
+		NoClue2 = 144, 
+		NoClue3 = 145, // Pink Bean does this... so do a few others
+		NoMonsterHasThisYet1 = 150, // All of these are in the data, but no mob has them
+		NoMonsterHasThisYet2 = 151,
+		NoMonsterHasThisYet3 = 152,
+		NoMonsterHasThisYet4 = 153,
+		NoMonsterHasThisYet5 = 154,
+		NoMonsterHasThisYet6 = 155,
+		SpecialHaste = 156,
+		NoMonsterHasThisYet7 = 157,
 		Summon = 200
 	};
 }
@@ -980,6 +992,12 @@ namespace Mobs {
 		DeadHorntailTail = 8810017,
 		HorntailSponge = 8810018,
 		SummonHorntail = 8810026
+	};
+}
+
+namespace Maps {
+	enum {
+		OriginOfClockTower = 220080001
 	};
 }
 
