@@ -445,13 +445,15 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	uint8_t realskill = 0;
 	uint8_t level = 0;
 	Pos target = packet.getPos();
-
 	packet.skipBytes(9);
-	Pos cpos = MovementHandler::parseMovement(mob, packet);
+
+	Pos cpos = mob->getPos();
+	MovementHandler::parseMovement(mob, packet);
 	if (cpos - mob->getPos() > 300) {
 		if (player->addWarning())
 			return;
 	}
+
 	if (useskill && skill == -1 || useskill && skill == 0) {
 		if (!mob->hasStatus(StatusEffects::Mob::Freeze) && !mob->hasStatus(StatusEffects::Mob::Stun)) {
 			vector<MobSkillInfo> hurf = mob->getSkills();
