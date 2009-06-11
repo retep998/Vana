@@ -52,7 +52,7 @@ struct StatusInfo {
 
 namespace Mobs {
 	extern const int32_t mobstatuses[StatusEffects::Mob::Count];
-	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int32_t damage = 0);
+	void handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int8_t hits, int32_t damage = 0);
 	void handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSkillLevelInfo &skillinfo);
 	void handleBomb(Player *player, PacketReader &packet);
 	void monsterControl(Player *player, PacketReader &packet);
@@ -62,10 +62,11 @@ namespace Mobs {
 class Mob : public MovableLife {
 public:
 	Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
+
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
 	void applyWebDamage();
 	void setMp(int32_t mp) { this->mp = mp; }
-	void addStatus(int32_t playerid, const vector<StatusInfo> &statusinfo);
+	void addStatus(int32_t playerid, vector<StatusInfo> &statusinfo);
 	void removeStatus(int32_t status);
 	void setControl(Player *control);
 	void endControl();
@@ -80,7 +81,9 @@ public:
 	void doCrashSkill(int32_t skillid);
 	void setImmunity(bool isimmune) { hasimmunity = isimmune; }
 	void explode();
+	void setVenomCount(int8_t count) { venomcount = count; }
 
+	int8_t getVenomCount() const { return venomcount; }
 	int16_t getTauntEffect() const { return taunteffect; }
 	int16_t getOriginFh() const { return originfh; }
 	int32_t getId() const { return id; }
@@ -114,6 +117,7 @@ public:
 
 	void die(bool showpacket = false); // Removes mob, no EXP, no summoning
 private:
+	int8_t venomcount;
 	uint8_t weblevel;
 	int16_t originfh;
 	int16_t taunteffect;
