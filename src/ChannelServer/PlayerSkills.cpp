@@ -330,6 +330,32 @@ int16_t PlayerSkills::getRechargeableBonus() {
 	return bonus;
 }
 
+bool PlayerSkills::hasVenomousWeapon() {
+	bool has = false;
+	switch (player->getJob()) {
+		case Jobs::JobIds::NightLord:
+			has = (getSkillLevel(Jobs::NightLord::VenomousStar) > 0);
+			break;
+		case Jobs::JobIds::Shadower:
+			has = (getSkillLevel(Jobs::Shadower::VenomousStab) > 0);
+			break;
+	}
+	return has;
+}
+
+int32_t PlayerSkills::getVenomousWeapon() {
+	int32_t skill = 0;
+	switch (player->getJob()) {
+		case Jobs::JobIds::NightLord:
+			skill = Jobs::NightLord::VenomousStar;
+			break;
+		case Jobs::JobIds::Shadower:
+			skill = Jobs::Shadower::VenomousStab;
+			break;
+	}
+	return skill;
+}
+
 void PlayerSkills::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << player->getId();

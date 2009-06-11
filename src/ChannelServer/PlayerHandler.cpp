@@ -350,6 +350,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t targettotal = 0;
 		int32_t mapmobid = packet.get<int32_t>();
+		int8_t connectedhits = 0;
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			continue;
@@ -365,6 +366,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet.get<int32_t>();
 			targettotal += damage;
+			if (damage != 0)
+				connectedhits++;
 			if (skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
 				if (Randomizer::Instance()->randInt(99) < Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].prop) {
 					ppdamages.push_back(damage);
@@ -392,7 +395,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		if (targettotal > 0) {
 			if (mob != 0 && mob->getHp() > 0) {
 				uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-				Mobs::handleMobStatus(player, mob, skillid, level, weapontype); // Mob status handler (freeze, stun, etc)
+				Mobs::handleMobStatus(player, mob, skillid, level, weapontype, connectedhits); // Mob status handler (freeze, stun, etc)
 				if (mob->getHp() < mob->getSelfDestructHp()) {
 					mob->explode();
 				}
@@ -635,6 +638,7 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t targettotal = 0;
 		int32_t mapmobid = packet.get<int32_t>();
+		int8_t connectedhits = 0;
 		Mob *mob = Maps::getMap(map)->getMob(mapmobid);
 		if (mob == 0)
 			return 0;
@@ -649,6 +653,8 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 		for (int8_t k = 0; k < hits; k++) {
 			int32_t damage = packet.get<int32_t>();
 			targettotal += damage;
+			if (damage != 0)
+				connectedhits++;
 			if (firsthit == 0)
 				firsthit = damage;
 			if (mob == 0) {
@@ -682,7 +688,7 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 		}
 		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
 			uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-			Mobs::handleMobStatus(player, mob, skillid, level, weapontype, firsthit); // Mob status handler (freeze, stun, etc)
+			Mobs::handleMobStatus(player, mob, skillid, level, weapontype, connectedhits, firsthit); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}

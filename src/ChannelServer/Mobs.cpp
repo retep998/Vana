@@ -61,6 +61,8 @@ const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value
 	StatusEffects::Mob::ShadowWeb,
 	StatusEffects::Mob::WeaponImmunity,
 	StatusEffects::Mob::MagicImmunity,
+	StatusEffects::Mob::VenomousWeapon,
+
 	StatusEffects::Mob::Empty
 };
 
@@ -154,14 +156,15 @@ void Mob::applyWebDamage() {
 	}
 }
 
-void Mob::addStatus(int32_t playerid, const vector<StatusInfo> &statusinfo) {
+void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 	int32_t addedstatus = 0;
 	for (size_t i = 0; i < statusinfo.size(); i++) {
 		int32_t cstatus = statusinfo[i].status;
+		bool alreadyhas = (statuses.find(cstatus) != statuses.end());
 		switch (cstatus) {
 			case StatusEffects::Mob::Poison: // Status effects that do not renew
 			case StatusEffects::Mob::Doom:
-				if (statuses.find(cstatus) != statuses.end())
+				if (alreadyhas)
 					continue;
 				break;
 			case StatusEffects::Mob::ShadowWeb:
@@ -173,11 +176,18 @@ void Mob::addStatus(int32_t playerid, const vector<StatusInfo> &statusinfo) {
 					taunteffect = (100 - statusinfo[i].val) + 100; // Value passed as 100 - x, so 100 - value will = x
 				}
 				break;
+			case StatusEffects::Mob::VenomousWeapon:
+				setVenomCount(getVenomCount() + 1);
+				if (alreadyhas) {
+					statusinfo[i].val += statuses[cstatus].val; // Increase the damage
+				}
+				break;
 		}
+
 		statuses[cstatus] = statusinfo[i];
 		addedstatus += cstatus;
 
-		if (cstatus == StatusEffects::Mob::Poison) { // Damage timer for poison
+		if (cstatus == StatusEffects::Mob::Poison || cstatus == StatusEffects::Mob::VenomousWeapon) { // Damage timer for poison
 			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
 				Timer::Id(Timer::Types::MobStatusTimer, cstatus, 1),
 				getTimers(), 0, 1000);
@@ -225,19 +235,28 @@ bool Mob::hasStatus(int32_t status) {
 void Mob::removeStatus(int32_t status) {
 	if (hasStatus(status)) {
 		StatusInfo stat = statuses[status];
-		if (status == StatusEffects::Mob::WeaponImmunity || status == StatusEffects::Mob::MagicImmunity)
-			setImmunity(false);
-		if (status == StatusEffects::Mob::ShadowWeb) {
-			weblevel = 0;
-			webplayerid = 0;
-		}
-		if (stat.skillid == Jobs::NightLord::Taunt || stat.skillid == Jobs::Shadower::Taunt) {
-			taunteffect = 100;
+		switch (status) {
+			case StatusEffects::Mob::WeaponImmunity:
+			case StatusEffects::Mob::MagicImmunity:
+				setImmunity(false);
+				break;
+			case StatusEffects::Mob::ShadowWeb:
+				weblevel = 0;
+				webplayerid = 0;
+				break;
+			case StatusEffects::Mob::MagicAttackUp:
+				if (stat.skillid == Jobs::NightLord::Taunt || stat.skillid == Jobs::Shadower::Taunt) {
+					taunteffect = 100;
+				}
+				break;
+			case StatusEffects::Mob::VenomousWeapon:
+				setVenomCount(0);
+			case StatusEffects::Mob::Poison: // Stop poison damage timer
+				getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 1));
+				break;
 		}
 		this->status -= status;
 		statuses.erase(status);
-		if (status == StatusEffects::Mob::Poison) // Stop poison damage timer
-			getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 1));
 		MobsPacket::removeStatus(this, status);
 	}
 }
@@ -653,7 +672,7 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 	}
 }
 
-void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int32_t damage) {
+void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int8_t hits, int32_t damage) {
 	vector<StatusInfo> statuses;
 	int16_t y = 0;
 	bool success = (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop);
@@ -683,6 +702,38 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t le
 	}
 	if (mob->canPoison() && mob->getHp() > 1) { // Poisoning stuff
 		switch (skillid) {
+			case Jobs::Rogue::LuckySeven: // Venomous Star/Stab
+			case Jobs::Hermit::Avenger:
+			case Jobs::NightLord::TripleThrow:
+			case Jobs::Rogue::DoubleStab:
+			case Jobs::Rogue::Disorder:
+			case Jobs::Bandit::SavageBlow:
+			case Jobs::ChiefBandit::Assaulter:
+			case Jobs::Shadower::Assassinate:
+			case Jobs::Shadower::BoomerangStep:
+				if (player->getSkills()->hasVenomousWeapon() && mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount) {
+					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
+					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
+					int32_t vskill = player->getSkills()->getVenomousWeapon();
+					if (!(vskill == Jobs::NightLord::VenomousStar && skillid == Jobs::Rogue::Disorder)) {
+						uint8_t vlevel = player->getSkills()->getSkillLevel(vskill);
+						int32_t part1 = player->getStr() + player->getLuk();
+						int32_t part2 = player->getDex() * 2;
+						int16_t vatk = Skills::skills[vskill][vlevel].matk;
+						int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
+						int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
+						int32_t damage = Randomizer::Instance()->randInt(maxdamage - mindamage) + mindamage;
+						for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {
+							success = (Randomizer::Instance()->randInt(99) < Skills::skills[vskill][vlevel].prop);
+							if (success) {
+								statuses.push_back(StatusInfo(StatusEffects::Mob::VenomousWeapon, static_cast<int16_t>(damage), vskill, Skills::skills[vskill][vlevel].time));
+								mob->addStatus(player->getId(), statuses);
+								statuses.clear();
+							}
+						}
+					}
+				}
+				break;
 			case Jobs::FPWizard::PoisonBreath:
 			case Jobs::FPMage::ElementComposition:
 			case Jobs::FPMage::PoisonMist:

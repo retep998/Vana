@@ -45,6 +45,8 @@ namespace InventoryPacket {
 	void showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid);
 	void useItemEffect(Player *player, int32_t itemid);
 	void updateSlots(Player *player, int8_t inventory, int8_t slots);
+	void sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector<int32_t> &maps);
+	void sendRockError(Player *player,  int8_t code, int8_t type);
 	void blankUpdate(Player *player);
 };
 
