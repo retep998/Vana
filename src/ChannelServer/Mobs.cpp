@@ -157,28 +157,34 @@ void Mob::applyWebDamage() {
 void Mob::addStatus(int32_t playerid, const vector<StatusInfo> &statusinfo) {
 	int32_t addedstatus = 0;
 	for (size_t i = 0; i < statusinfo.size(); i++) {
-		if (statusinfo[i].status == StatusEffects::Mob::Poison && statuses.find(StatusEffects::Mob::Poison) != statuses.end()) {
-			continue; // Already poisoned, so do not poison again
+		int32_t cstatus = statusinfo[i].status;
+		switch (cstatus) {
+			case StatusEffects::Mob::Poison: // Status effects that do not renew
+			case StatusEffects::Mob::Doom:
+				if (statuses.find(cstatus) != statuses.end())
+					continue;
+				break;
+			case StatusEffects::Mob::ShadowWeb:
+				webplayerid = playerid;
+				weblevel = static_cast<uint8_t>(statusinfo[i].val);
+				break;
+			case StatusEffects::Mob::MagicAttackUp:
+				if (statusinfo[i].skillid == Jobs::NightLord::Taunt || statusinfo[i].skillid == Jobs::Shadower::Taunt) {
+					taunteffect = (100 - statusinfo[i].val) + 100; // Value passed as 100 - x, so 100 - value will = x
+				}
+				break;
 		}
-		else if (statusinfo[i].status == StatusEffects::Mob::ShadowWeb) {
-			webplayerid = playerid;
-			weblevel = static_cast<uint8_t>(statusinfo[i].val);
-		}
-		else if (statusinfo[i].status == StatusEffects::Mob::MagicAttackUp) {
-			if (statusinfo[i].skillid == Jobs::NightLord::Taunt || statusinfo[i].skillid == Jobs::Shadower::Taunt) {
-				taunteffect = (100 - statusinfo[i].val) + 100; // Value passed as 100 - x, so 100 - value will = x
-			}
-		}
-		statuses[statusinfo[i].status] = statusinfo[i];
-		addedstatus += statusinfo[i].status;
-		if (statusinfo[i].status == StatusEffects::Mob::Poison) { // Damage timer for poison
+		statuses[cstatus] = statusinfo[i];
+		addedstatus += cstatus;
+
+		if (cstatus == StatusEffects::Mob::Poison) { // Damage timer for poison
 			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
-				Timer::Id(Timer::Types::MobStatusTimer, StatusEffects::Mob::Poison, 1),
+				Timer::Id(Timer::Types::MobStatusTimer, cstatus, 1),
 				getTimers(), 0, 1000);
 		}
 
-		new Timer::Timer(bind(&Mob::removeStatus, this, statusinfo[i].status),
-			Timer::Id(Timer::Types::MobStatusTimer, statusinfo[i].status, 0),
+		new Timer::Timer(bind(&Mob::removeStatus, this, cstatus),
+			Timer::Id(Timer::Types::MobStatusTimer, cstatus, 0),
 			getTimers(), Timer::Time::fromNow(statusinfo[i].time * 1000));
 	}
 	// Calculate new status mask
