@@ -20,12 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include "GameConstants.h"
-#include <string>
 #include <boost/array.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <string>
+#include <vector>
 
 using std::string;
 using std::tr1::unordered_map;
+using std::vector;
 
 class Player;
 class PacketCreator;
@@ -92,13 +94,19 @@ public:
 	PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos);
 	~PlayerInventory();
 
+	void load();
+	void save();
+
+	void connectData(PacketCreator &packet);
+	void addEquippedPacket(PacketCreator &packet);
+	void rockPacket(PacketCreator &packet);
+
 	void setMesos(int32_t mesos, bool is = false);
 	bool modifyMesos(int32_t mod, bool is = false);
 	void addMaxSlots(int8_t inventory, int8_t rows);
 	void addItem(int8_t inv, int16_t slot, Item *item, bool initialLoad = false);
 	void deleteItem(int8_t inv, int16_t slot, bool updateAmount = true);
 	void setItem(int8_t inv, int16_t slot, Item *item);
-	void addEquippedPacket(PacketCreator &packet);
 	void changeItemAmount(int32_t itemid, int16_t amount) { m_itemamounts[itemid] += amount; }
 	void countAllGear(bool firstLoad = false);
 	int16_t countGearStat(int32_t stat);
@@ -115,15 +123,19 @@ public:
 
 	int32_t doShadowStars();
 
-	void load();
-	void save();
-	void connectData(PacketCreator &packet);
+	void addRockMap(int32_t mapid, int8_t type);
+	void delRockMap(int32_t mapid, int8_t type);
+	bool ensureRockDestination(int32_t mapid);
 private:
 	typedef unordered_map<int16_t, Item *> ItemInventory;
 
 	boost::array<uint8_t, Inventories::InventoryCount> m_maxslots;
-	boost::array<boost::array<int32_t, 2>, 50> m_equipped;
+	boost::array<boost::array<int32_t, 2>, 50> m_equipped; // 50 slots for regular items, 50 slots for cash items
 	boost::array<ItemInventory, Inventories::InventoryCount> m_items;
+
+	vector<int32_t> m_viplocations;
+	vector<int32_t> m_rocklocations;
+
 	unordered_map<int32_t, uint16_t> m_itemamounts;
 	int32_t m_mesos;
 	Player *m_player;

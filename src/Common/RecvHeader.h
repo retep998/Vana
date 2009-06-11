@@ -72,8 +72,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_DROP_MESO 0x56
 #define RECV_FAME 0x57
 #define RECV_GET_PLAYER_INFO 0x59
-#define RECV_PET_SUMMON 0x5A
+#define RECV_PET_SUMMON 0x5a
 #define RECV_CHANGE_MAP_SPECIAL 0x5c
+#define RECV_TELEPORT_ROCK_FUNCTION 0x5e
 #define RECV_GET_QUEST 0x62
 #define RECV_SKILL_MACRO 0x65
 #define RECV_GROUP_CHAT 0x6b // Party, buddy and guild chat

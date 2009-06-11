@@ -218,3 +218,27 @@ void InventoryPacket::blankUpdate(Player *player) {
 	packet.add<int8_t>(0x00);
 	player->getSession()->send(packet);
 }
+
+void InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector<int32_t> &maps) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_TELEPORT_ROCK_FUNCTION);
+	packet.add<int8_t>(mode);
+	packet.add<int8_t>(type);
+	size_t remaining = 1;
+	uint8_t max = (type == 0 ? Inventories::TeleportRockMax : Inventories::VipRockMax);
+	for (; remaining <= maps.size(); remaining++) {
+		packet.add<int32_t>(maps[remaining - 1]);
+	}
+	for (; remaining <= max; remaining++) {
+		packet.add<int32_t>(999999999);
+	}
+	player->getSession()->send(packet);
+}
+
+void InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_TELEPORT_ROCK_FUNCTION);
+	packet.add<int8_t>(code);
+	packet.add<int8_t>(type);
+	player->getSession()->send(packet);
+}

@@ -289,6 +289,21 @@ void PlayerInventory::load() {
 			m_player->getPets()->addPet(pet);
 		}
 	}
+
+	query << "SELECT mapindex, mapid FROM teleport_rock_locations WHERE characterid = " << m_player->getId();
+	res = query.store();
+
+	for (size_t i = 0; i < res.num_rows(); ++i) {
+		int8_t index = static_cast<int8_t>(res[i][0]);
+		int32_t mapid = res[i][1];
+
+		if (index >= Inventories::TeleportRockMax) {
+			m_viplocations.push_back(mapid);
+		}
+		else {
+			m_rocklocations.push_back(mapid);
+		}
+	}
 }
 
 void PlayerInventory::save() {
@@ -338,6 +353,26 @@ void PlayerInventory::save() {
 	}
 	if (!firstrun)
 		query.exec();
+
+	query << "DELETE FROM teleport_rock_locations WHERE characterid = " << m_player->getId();
+	query.exec();
+
+	for (size_t i = 0; i < m_rocklocations.size(); i++) {
+		int32_t mapid = m_rocklocations[i];
+		query << "INSERT INTO teleport_rock_locations VALUES ("
+				<< m_player->getId() << ","
+				<< (uint16_t) i << ","
+				<< mapid << ")";
+		query.exec();
+	}
+	for (size_t i = 0; i < m_viplocations.size(); i++) {
+		int32_t mapid = m_viplocations[i];
+		query << "INSERT INTO teleport_rock_locations VALUES ("
+				<< m_player->getId() << ","
+				<< (uint16_t) i + Inventories::TeleportRockMax << ","
+				<< mapid << ")";
+		query.exec();
+	}
 }
 
 void PlayerInventory::connectData(PacketCreator &packet) {
@@ -456,4 +491,78 @@ void PlayerInventory::countAllGear(bool firstLoad) {
 	m_player->getStats()->setGearStat(Stats::Luk, countGearStat(Stats::Luk));
 	m_player->getStats()->setGearStat(Stats::MaxHp, countGearStat(Stats::MaxHp), firstLoad);
 	m_player->getStats()->setGearStat(Stats::MaxMp, countGearStat(Stats::MaxMp), firstLoad);
+}
+
+void PlayerInventory::addRockMap(int32_t mapid, int8_t type) {
+	const int8_t mode = 03;
+	if (type == 0) { // Regular Teleport Rock
+		if (m_rocklocations.size() < Inventories::TeleportRockMax) {
+			m_rocklocations.push_back(mapid);
+		}
+		InventoryPacket::sendRockUpdate(m_player, mode, type, m_rocklocations);
+	}
+	else if (type == 1) { // VIP Teleport Rock
+		if (m_viplocations.size() < Inventories::VipRockMax) {
+			m_viplocations.push_back(mapid);
+			// Want packet
+		}
+		InventoryPacket::sendRockUpdate(m_player, mode, type, m_viplocations);
+	}
+}
+
+void PlayerInventory::delRockMap(int32_t mapid, int8_t type) {
+	const int8_t mode = 02;
+	if (type == 0) {
+		for (size_t k = 0; k < m_rocklocations.size(); k++) {
+			if (m_rocklocations[k] == mapid) {
+				m_rocklocations.erase(m_rocklocations.begin() + k);
+				InventoryPacket::sendRockUpdate(m_player, mode, type, m_rocklocations);
+				break;
+			}
+		}
+	}
+	else if (type == 1) {
+		for (size_t k = 0; k < m_viplocations.size(); k++) {
+			if (m_viplocations[k] == mapid) {
+				m_viplocations.erase(m_viplocations.begin() + k);
+				InventoryPacket::sendRockUpdate(m_player, mode, type, m_viplocations);
+				break;
+			}
+		}
+	}
+}
+
+void PlayerInventory::rockPacket(PacketCreator &packet) {
+	size_t remaining;
+	for (remaining = 1; remaining <= m_rocklocations.size(); remaining++) {
+		int32_t mapid = m_rocklocations[remaining - 1];
+		packet.add<int32_t>(mapid);
+	}
+	for (; remaining <= Inventories::TeleportRockMax; remaining++) {
+		packet.add<int32_t>(999999999);
+	}
+	for (remaining = 1; remaining <= m_viplocations.size(); remaining++) {
+		int32_t mapid = m_viplocations[remaining - 1];
+		packet.add<int32_t>(mapid);
+	}
+	for (; remaining <= Inventories::VipRockMax; remaining++) {
+		packet.add<int32_t>(999999999);
+	}
+}
+
+bool PlayerInventory::ensureRockDestination(int32_t mapid) {
+	bool valid = false;
+	for (size_t k = 0; k < m_rocklocations.size(); k++) {
+		if (m_rocklocations[k] == mapid) {
+			valid = true;
+			break;
+		}
+	}
+	for (size_t k = 0; k < m_viplocations.size(); k++) {
+		if (m_viplocations[k] == mapid) {
+			valid = true;
+			break;
+		}
+	}
+	return valid;
 }

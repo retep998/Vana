@@ -48,6 +48,7 @@ namespace Inventory {
 	void useReturnScroll(Player *player, PacketReader &packet);
 	void useScroll(Player *player, PacketReader &packet);
 	void useCashItem(Player *player, PacketReader &packet);
+	void handleRockFunctions(Player *player, PacketReader &packet);
 };
 
 #endif

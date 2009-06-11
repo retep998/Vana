@@ -46,20 +46,25 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName(), 12);
 	packet.add<int8_t>(0);
+
 	player->getStats()->connectData(packet);
+
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 	packet.add<int8_t>(player->getBuddyListSize());
+
 	player->getInventory()->connectData(packet); // Inventory data
 	player->getSkills()->connectData(packet); // Skills - levels and cooldowns
+
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
-	for (int32_t i = 0; i < 15; i++)
-		packet.addBytes("FFC99A3B");
+
+	player->getInventory()->rockPacket(packet); // Teleport Rock/VIP Rock maps
+
 	packet.add<int32_t>(0);
 	packet.add<int64_t>(TimeUtilities::getServerTime());
 	player->getSession()->send(packet);

@@ -157,6 +157,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
 		case RECV_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
+		case RECV_TELEPORT_ROCK_FUNCTION: Inventory::handleRockFunctions(this, packet); break;
 		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, packet); break;
 		case RECV_USE_CHAIR: Inventory::useChair(this, packet); break;
 		case RECV_USE_ITEM: Inventory::useItem(this, packet); break;

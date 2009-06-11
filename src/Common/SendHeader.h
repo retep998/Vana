@@ -44,6 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_ADD_SKILL 0x21
 #define SEND_FAME 0x23
 #define SEND_NOTE 0x24 // Bottom-right corner notice
+#define SEND_TELEPORT_ROCK_FUNCTION 0x27 // Teleport Rock, VIP Teleport Rock
 #define SEND_FINISH_QUEST 0x2e
 #define SEND_USE_SKILLBOOK 0x30 // Skillbooks
 #define SEND_SHOW_ITEM_EFFECT 0x31

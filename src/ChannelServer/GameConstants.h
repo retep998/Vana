@@ -196,7 +196,10 @@ namespace Inventories {
 	const uint8_t SetupInventory = 3;
 	const uint8_t EtcInventory = 4;
 	const uint8_t CashInventory = 5;
+
 	const int8_t MaxPetCount = 3;
+	const uint8_t VipRockMax = 10;
+	const uint8_t TeleportRockMax = 5;
 }
 
 namespace FieldLimitBits {
@@ -841,6 +844,8 @@ namespace Items {
 		WhiteScroll = 2340000,
 
 		// Cash
+		TeleportRock = 5040000,
+		VipRock = 5041000,
 		ApReset = 5050000,
 		FirstJobSpReset = 5050001,
 		SecondJobSpReset = 5050002,
