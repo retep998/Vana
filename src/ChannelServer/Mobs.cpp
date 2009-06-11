@@ -706,28 +706,30 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t le
 			case Jobs::Hermit::Avenger:
 			case Jobs::NightLord::TripleThrow:
 			case Jobs::Rogue::DoubleStab:
+			case Jobs::Rogue::Disorder:
 			case Jobs::Bandit::SavageBlow:
 			case Jobs::ChiefBandit::Assaulter:
-			case Jobs::ChiefBandit::BandOfThieves:
-			case Jobs::Shadower::BoomerangStep:
 			case Jobs::Shadower::Assassinate:
+			case Jobs::Shadower::BoomerangStep:
 				if (player->getSkills()->hasVenomousWeapon() && mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount) {
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					int32_t vskill = player->getSkills()->getVenomousWeapon();
-					uint8_t vlevel = player->getSkills()->getSkillLevel(vskill);
-					int32_t part1 = player->getStats()->getBaseStat(Stats::Str) + player->getStats()->getBaseStat(Stats::Luk);
-					int32_t part2 = player->getStats()->getBaseStat(Stats::Dex) * 2;
-					int16_t vatk = Skills::skills[vskill][vlevel].matk;
-					int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
-					int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
-					int32_t damage = Randomizer::Instance()->randInt(maxdamage - mindamage) + mindamage;
-					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {
-						success = (Randomizer::Instance()->randInt(99) < Skills::skills[vskill][vlevel].prop);
-						if (success) {
-							statuses.push_back(StatusInfo(StatusEffects::Mob::VenomousWeapon, static_cast<int16_t>(damage), vskill, Skills::skills[vskill][vlevel].time));
-							mob->addStatus(player->getId(), statuses);
-							statuses.clear();
+					if (!(vskill == Jobs::NightLord::VenomousStar && skillid == Jobs::Rogue::Disorder)) {
+						uint8_t vlevel = player->getSkills()->getSkillLevel(vskill);
+						int32_t part1 = player->getStats()->getBaseStat(Stats::Str) + player->getStats()->getBaseStat(Stats::Luk);
+						int32_t part2 = player->getStats()->getBaseStat(Stats::Dex) * 2;
+						int16_t vatk = Skills::skills[vskill][vlevel].matk;
+						int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
+						int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
+						int32_t damage = Randomizer::Instance()->randInt(maxdamage - mindamage) + mindamage;
+						for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {
+							success = (Randomizer::Instance()->randInt(99) < Skills::skills[vskill][vlevel].prop);
+							if (success) {
+								statuses.push_back(StatusInfo(StatusEffects::Mob::VenomousWeapon, static_cast<int16_t>(damage), vskill, Skills::skills[vskill][vlevel].time));
+								mob->addStatus(player->getId(), statuses);
+								statuses.clear();
+							}
 						}
 					}
 				}
