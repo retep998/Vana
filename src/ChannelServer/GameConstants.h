@@ -197,7 +197,10 @@ namespace Inventories {
 	const uint8_t SetupInventory = 3;
 	const uint8_t EtcInventory = 4;
 	const uint8_t CashInventory = 5;
+
 	const int8_t MaxPetCount = 3;
+	const uint8_t VipRockMax = 10;
+	const uint8_t TeleportRockMax = 5;
 }
 
 namespace FieldLimitBits {
@@ -226,7 +229,8 @@ namespace FieldLimitBits {
 
 namespace StatusEffects {
 	namespace Mob {
-		const uint8_t Count = 20; // Be sure to update count if you find a new status effect
+		const uint8_t Count = 21; // Be sure to update count if you find a new status effect
+		const uint8_t MaxVenomCount = 3;
 
 		enum MobStatus { // Groups of 5 for easier counting
 			Watk = 0x01,
@@ -252,6 +256,7 @@ namespace StatusEffects {
 			ShadowWeb = 0x20000,
 			WeaponImmunity = 0x40000,
 			MagicImmunity = 0x80000,
+			VenomousWeapon = 0x1000000,
 			// Others
 			Empty = 0x8000000
 		};
@@ -691,7 +696,9 @@ namespace Jobs {
 	namespace Rogue {
 		enum Skills {
 			DarkSight = 4001003,
-			Disorder = 4001002
+			Disorder = 4001002,
+			DoubleStab = 4001334,
+			LuckySeven = 4001344
 		};
 	}
 	namespace Assassin {
@@ -706,6 +713,7 @@ namespace Jobs {
 	namespace Hermit {
 		enum Skills {
 			Alchemist = 4110000,
+			Avenger = 4111005,
 			MesoUp = 4111001,
 			ShadowMeso = 4111004,
 			ShadowPartner = 4111002,
@@ -721,6 +729,7 @@ namespace Jobs {
 			ShadowShifter = 4120002,
 			ShadowStars = 4121006,
 			Taunt = 4121003,
+			TripleThrow = 4121007,
 			VenomousStar = 4120005
 		};
 	}
@@ -729,12 +738,14 @@ namespace Jobs {
 			DaggerBooster = 4201002,
 			DaggerMastery = 4200000,
 			Haste = 4201003,
+			SavageBlow = 4201005,
 			Steal = 4201004
 		};
 	}
 	namespace ChiefBandit {
 		enum Skills {
 			Assaulter = 4211002,
+			BandOfThieves = 4211004,
 			Chakra = 4211001,
 			MesoExplosion = 4211006,
 			MesoGuard = 4211005,
@@ -743,6 +754,7 @@ namespace Jobs {
 	}
 	namespace Shadower {
 		enum Skills {
+			Assassinate = 4221001,
 			BoomerangStep = 4221007,
 			HerosWill = 4221008,
 			MapleWarrior = 4221000,
@@ -948,6 +960,8 @@ namespace Items {
 		WhiteScroll = 2340000,
 
 		// Cash
+		TeleportRock = 5040000,
+		VipRock = 5041000,
 		ApReset = 5050000,
 		FirstJobSpReset = 5050001,
 		SecondJobSpReset = 5050002,

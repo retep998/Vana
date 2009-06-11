@@ -180,7 +180,7 @@ public:
 	int32_t countMobs(int32_t mobid = 0);
 	Mob * getMob(int32_t id, bool isMapId = true);
 	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
-	void statusMobs(const vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
+	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
 	void checkShadowWeb();
 
 	// Reactors
