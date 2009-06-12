@@ -1267,7 +1267,16 @@ int LuaExports::markForDelete(lua_State *luaVm) {
 }
 
 int LuaExports::moveAllPlayers(lua_State *luaVm) {
-	getInstance(luaVm)->moveAllPlayers(lua_tointeger(luaVm, 1));
+	PortalInfo *portal = 0;
+	
+	int32_t mapid = lua_tointeger(luaVm, 1);
+
+	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+		string to = lua_tostring(luaVm, 2);
+		portal = Maps::getMap(mapid)->getPortal(to);
+	}
+
+	getInstance(luaVm)->moveAllPlayers(mapid, portal);
 	return 0;
 }
 
