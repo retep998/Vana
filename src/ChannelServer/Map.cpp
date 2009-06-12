@@ -393,13 +393,17 @@ void Map::removeMist(int32_t id) {
 void Map::checkMists() {
 	if (getPoisonMistCount() == 0) // Only player -> mob poison mists matter for checking, client does the rest
 		return;
-	for (unordered_map<int32_t, Mist *>::iterator miter = mists.begin(); miter != mists.end(); miter++) {
-		Mist *mist = miter->second;
-		if (!mist->isPoison())
+	Mob *mob = 0;
+	Mist *mist = 0;
+	unordered_map<int32_t, Mist *>::iterator miter;
+
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); ++iter) {
+		mob = iter->second;
+		if (mob == 0 || mob->hasStatus(StatusEffects::Mob::Poison))
 			continue;
-		for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-			Mob *mob = iter->second;
-			if (mob == 0 || mob->hasStatus(StatusEffects::Mob::Poison))
+		for (miter = mists.begin(); miter != mists.end(); ++miter) {
+			mist = miter->second;
+			if (!mist->isPoison())
 				continue;
 			if (GameLogicUtilities::isInBox(mist->getOrigin(), mist->getSkillLt(), mist->getSkillRb(), mob->getPos())) {
 				Player *p = Players::Instance()->getPlayer(mist->getOwnerId());
@@ -408,6 +412,7 @@ void Map::checkMists() {
 		}
 	}
 }
+
 void Map::clearMists(bool showPacket) {
 	unordered_map<int32_t, Mist *> mistlist = mists;
 	for (unordered_map<int32_t, Mist *>::iterator iter = mistlist.begin(); iter != mistlist.end(); iter++) {

@@ -3,4 +3,4 @@ CREATE TABLE `teleport_rock_locations` (
   `mapindex` tinyint(3) NOT NULL,
   `mapid` int(11) NOT NULL DEFAULT '999999999',
   PRIMARY KEY (`characterid`,`mapindex`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
