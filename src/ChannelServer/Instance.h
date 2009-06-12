@@ -31,6 +31,7 @@ class Map;
 class Party;
 class Player;
 class Reactor;
+struct PortalInfo;
 
 using std::tr1::unordered_map;
 using std::string;
@@ -70,7 +71,7 @@ public:
 	void setBanned(const string &name, bool isbanned);
 	void addPlayerSignUp(Player *player);
 	void removePlayerSignUp(const string &name);
-	void moveAllPlayers(int32_t mapid);
+	void moveAllPlayers(int32_t mapid, PortalInfo *portal = 0);
 	bool isPlayerSignedUp(const string &name);
 	bool isBanned(const string &name);
 	bool instanceHasPlayers() const;
