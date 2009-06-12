@@ -466,12 +466,7 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	Pos target = packet.getPos();
 	packet.skipBytes(9);
 
-	Pos cpos = mob->getPos();
 	MovementHandler::parseMovement(mob, packet);
-	if (cpos - mob->getPos() > 300) {
-		if (player->addWarning())
-			return;
-	}
 
 	if (useskill && skill == -1 || useskill && skill == 0) {
 		if (!mob->hasStatus(StatusEffects::Mob::Freeze) && !mob->hasStatus(StatusEffects::Mob::Stun)) {
