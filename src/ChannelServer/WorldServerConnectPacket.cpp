@@ -86,6 +86,8 @@ void WorldServerConnectPacket::playerChangeChannel(WorldServerConnectPlayer *pla
 	packet.add<int32_t>(info->getId());
 	packet.add<int16_t>(channel);
 
+	packet.add<int64_t>(info->getConnectionTime());
+
 	info->getActiveBuffs()->getBuffTransferPacket(packet);
 	info->getSummons()->getSummonTransferPacket(packet);
 
