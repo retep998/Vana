@@ -142,6 +142,11 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 			sponge->applyDamage(playerid, damage, false); // Apply damage after you can be sure that all the units are linked and ready
 		}
 	}
+	else {
+		if (hp == 1) {
+			removeStatus(StatusEffects::Mob::Poison);
+		}
+	}
 }
 
 void Mob::applyWebDamage() {
