@@ -241,6 +241,16 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		else
 			return;
 	}
+	else if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
+		if (!player->getMonsterBook()->isFull(drop->getObjectId())) {
+			player->getMonsterBook()->addCard(drop->getObjectId());
+			DropsPacket::dontTake(player);
+		}
+		else {
+			drop->removeDrop(true);
+			return;
+		}
+	}
 	else {
 		Item dropitem = drop->getItem();
 		if (GameLogicUtilities::isEquip(dropitem.id) || !ItemDataProvider::Instance()->getItemInfo(dropitem.id).cons.autoconsume) {

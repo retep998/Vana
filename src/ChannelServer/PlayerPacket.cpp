@@ -86,10 +86,10 @@ void PlayerPacket::connectData(Player *player) {
 
 	player->getInventory()->rockPacket(packet); // Teleport Rock/VIP Rock maps
 
+	player->getMonsterBook()->connectData(packet);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(0);
+	packet.add<int16_t>(0);
+	
 	packet.add<int64_t>(TimeUtilities::getServerTime());
 	player->getSession()->send(packet);
 }

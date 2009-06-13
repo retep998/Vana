@@ -40,6 +40,7 @@ set(SOURCES
 	MobDataProvider.h
 	Mobs.h
 	MobsPacket.h
+	MonsterBookPacket.h
 	MovableLife.h
 	MovementHandler.h
 	NPCPacket.h
@@ -52,6 +53,7 @@ set(SOURCES
 	PlayerBuddyList.h
 	PlayerHandler.h
 	PlayerInventory.h
+	PlayerMonsterBook.h
 	PlayerMounts.h
 	PlayerPacket.h
 	PlayerPacketHelper.h
@@ -123,6 +125,7 @@ set(SOURCES
 	MobDataProvider.cpp
 	Mobs.cpp
 	MobsPacket.cpp
+	MonsterBookPacket.cpp
 	MovementHandler.cpp
 	NPCPacket.cpp
 	NPCs.cpp
@@ -134,6 +137,7 @@ set(SOURCES
 	PlayerBuddyList.cpp
 	PlayerHandler.cpp
 	PlayerInventory.cpp
+	PlayerMonsterBook.cpp
 	PlayerMounts.cpp
 	PlayerPacket.cpp
 	PlayerPacketHelper.cpp

@@ -54,7 +54,8 @@ enum ItemTypes {
 	Mount = 190,
 	ItemArrow = 206,
 	ItemStar = 207,
-	ItemBullet = 233
+	ItemBullet = 233,
+	ItemMonsterCard = 238
 };
 
 enum ItemFlags {
@@ -201,6 +202,12 @@ namespace Inventories {
 	const int8_t MaxPetCount = 3;
 	const uint8_t VipRockMax = 10;
 	const uint8_t TeleportRockMax = 5;
+}
+
+namespace MonsterCards {
+	const uint8_t MaxCardLevel = 5;
+	const int32_t MaxPlayerLevel = 8;
+	const int32_t PlayerLevels[MaxPlayerLevel - 1] = {10, 30, 60, 100, 150, 210, 280};
 }
 
 namespace FieldLimitBits {
