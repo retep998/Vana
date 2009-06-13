@@ -40,7 +40,7 @@ public:
 
 	void load();
 	void save();
-	void addCard(int32_t itemid, uint8_t state = 1, bool initialload = false);
+	void addCard(int32_t itemid, uint8_t level = 1, bool initialload = false);
 	void connectData(PacketCreator &packet);
 	void calculateLevel();
 	void infoData(PacketCreator &packet);
