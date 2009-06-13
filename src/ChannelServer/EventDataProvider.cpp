@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include <cstdio>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 
 using std::tr1::bind;
