@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropsPacket.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
+#include "ItemDataProvider.h"
 #include "Maps.h"
 #include "Mist.h"
 #include "Mobs.h"
+#include "MonsterBookPacket.h"
 #include "MovementHandler.h"
 #include "Player.h"
 #include "Players.h"
@@ -321,6 +323,25 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 			player->modifyHp(Randomizer::Instance()->randShort(range) + minimum);
 			break;
 		}
+	}
+}
+
+void PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) {
+	int32_t cardid = packet.get<int32_t>();
+	if (cardid != 0 && player->getMonsterBook()->getCard(cardid) == 0) {
+		// Hacking
+		return;
+	}
+	else if (cardid != 0) {
+		int32_t mobid = ItemDataProvider::Instance()->getMobId(cardid);
+		if (mobid != 0) {
+			player->getMonsterBook()->setCover(mobid);
+			MonsterBookPacket::changeCover(player, cardid);
+		}
+	}
+	else {
+		player->getMonsterBook()->setCover(0);
+		MonsterBookPacket::changeCover(player, 0);
 	}
 }
 

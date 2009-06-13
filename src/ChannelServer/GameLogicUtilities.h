@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 
 namespace GameLogicUtilities {
+	// Inventory
 	inline uint8_t getInventory(int32_t itemid) { return static_cast<uint8_t>(itemid / 1000000); }
 	inline int32_t getItemType(int32_t itemid) { return (itemid / 10000); }
 	inline bool isArrow(int32_t itemid) { return (getItemType(itemid) == ItemArrow); }
@@ -37,6 +38,8 @@ namespace GameLogicUtilities {
 	inline bool is2hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 14); }
 	inline bool is1hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 13); }
 	inline bool isMount(int32_t itemid) { return (getItemType(itemid) == Mount); }
+
+	// Player skills
 	inline bool isBeginnerSkill(int32_t skillid) { return ((skillid / 1000000) == (skillid < 10000000 ? 0 : 10)); }
 	inline bool isFourthJobSkill(int32_t skillid) { return ((skillid / 10000) % 10 == 2); }
 	inline bool isSummon(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet || skillid == Jobs::Ranger::Puppet || skillid == Jobs::WindBreaker::Puppet || skillid == Jobs::Priest::SummonDragon || skillid == Jobs::Ranger::SilverHawk || skillid == Jobs::Sniper::GoldenEagle || skillid == Jobs::DarkKnight::Beholder || skillid == Jobs::FPArchMage::Elquines || skillid == Jobs::ILArchMage::Ifrit || skillid == Jobs::FlameWizard::Ifrit || skillid == Jobs::Bishop::Bahamut || skillid == Jobs::Bowmaster::Phoenix || skillid == Jobs::Marksman::Frostprey || skillid == Jobs::Outlaw::Octopus || skillid == Jobs::Outlaw::Gaviota || skillid == Jobs::SoulWarrior::Soul || skillid == Jobs::FlameWizard::Flame || skillid == Jobs::WindBreaker::Storm || skillid == Jobs::NightWalker::Darkness || skillid == Jobs::Striker::Lightning); }
@@ -44,12 +47,22 @@ namespace GameLogicUtilities {
 	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return (((test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)) && ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y))); }
 	inline bool isMaxDarkSight(int32_t skillid, uint8_t level) { return (skillid == Jobs::Rogue::DarkSight && level == 20 || skillid == Jobs::NightWalker::DarkSight && level == 10); }
 	inline bool skillMatchesJob(int32_t skillid, int16_t job) { return ((skillid / 1000000 == job / 100) && (skillid / 10000 <= job)); }
+	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
+
+	// Mob skills
 	inline bool isMobSkill(int32_t skillid) { return (skillid >= 100 && skillid <= 200); }
+
+	// Jobs
 	inline bool isCygnus(int16_t jobid) { return (jobid >= 1000); }
 	inline bool isBeginnerJob(int16_t jobid) { return (jobid == 0 || jobid == 1000); }
-	inline bool isAoeMobSkill(uint8_t skillid) { return (((skillid / 10) * 10 % 100) == 10); }
 	inline int16_t getJobTrack(int16_t job, bool flattencygnus = false) { return (flattencygnus && isCygnus(job) ? ((job / 100) % 10) : (job / 100)); }
-	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
+
+	// Monster card
+	inline bool isMonsterCard(int32_t itemid) { return (getItemType(itemid) == ItemMonsterCard); }
+	inline int16_t getCardShortId(int32_t cardid) { return (cardid % 10000); }
+	inline bool isSpecialCard(int32_t cardid) { return (getCardShortId(cardid) >= 8000); }
+
+	// Party
 	inline int8_t getPartyMember1(int8_t totalmembers) { return (totalmembers >= 1 ? (0x40 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember2(int8_t totalmembers) { return (totalmembers >= 2 ? (0x80 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember3(int8_t totalmembers) { return (totalmembers >= 3 ? (0x100 >> totalmembers) : 0xFF); }

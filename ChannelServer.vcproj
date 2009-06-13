@@ -346,6 +346,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\MonsterBookPacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\NPCPacket.cpp"
 					>
 				</File>
@@ -491,6 +495,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerMonsterBook.cpp"
 					>
 				</File>
 				<File
@@ -728,6 +736,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\MonsterBookPacket.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\NPCPacket.h"
 					>
 				</File>
@@ -873,6 +885,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerMonsterBook.h"
 					>
 				</File>
 				<File

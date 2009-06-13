@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Maps.h"
 #include "Mobs.h"
+#include "MonsterBookPacket.h"
 #include "NPCs.h"
 #include "PacketReader.h"
 #include "Party.h"
@@ -142,6 +143,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_KEYMAP: changeKey(packet); break;
 		case RECV_LOOT_ITEM: Drops::playerLoot(this, packet); break;
 		case RECV_MOB_BOMB_EXPLOSION: Mobs::handleBomb(this, packet); break;
+		case RECV_MONSTERBOOK: PlayerHandler::handleMonsterBook(this, packet); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
@@ -279,6 +281,9 @@ void Player::playerConnect(PacketReader &packet) {
 	variables.reset(new PlayerVariables(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
+	monsterBook.reset(new PlayerMonsterBook(this));
+
+	getMonsterBook()->setCover(res[0]["monsterbookcover"]);
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
@@ -653,7 +658,8 @@ void Player::saveStats() {
 		<< "setup_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::SetupInventory)) << ","
 		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EtcInventory)) << ","
 		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::CashInventory)) << ","
-		<< "buddylist_size = " << static_cast<int16_t>(buddylist_size)
+		<< "buddylist_size = " << static_cast<int16_t>(buddylist_size) << ","
+		<< "monsterbookcover = " << getMonsterBook()->getCover() 
 		<< " WHERE id = " << id;
 	query.exec();
 }
@@ -666,6 +672,7 @@ void Player::saveAll(bool savecooldowns) {
 	getSkills()->save(savecooldowns);
 	getStorage()->save();
 	getVariables()->save();
+	getMonsterBook()->save();
 }
 
 void Player::setOnline(bool online) {

@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 #include "PetsPacket.h"
 #include "Player.h"
+#include "PlayerMonsterBook.h"
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "ShopDataProvider.h"
@@ -495,6 +496,8 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 		int32_t time = item.cons.time * alchemist / 100;
 		Buffs::Instance()->addBuff(player, itemid, time);
 	}
+	if (GameLogicUtilities::isMonsterCard(itemid))
+		player->getMonsterBook()->addCard(itemid);
 }
 
 // Cancel item buffs

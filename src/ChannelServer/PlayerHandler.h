@@ -31,6 +31,7 @@ namespace PlayerHandler {
 	void handleHeal(Player *player, PacketReader &packet);
 	void handleMoving(Player *player, PacketReader &packet);
 	void handleSpecialSkills(Player *player, PacketReader &packet);
+	void handleMonsterBook(Player *player, PacketReader &packet);
 
 	void useMeleeAttack(Player *player, PacketReader &packet);
 	void useRangedAttack(Player *player, PacketReader &packet);
