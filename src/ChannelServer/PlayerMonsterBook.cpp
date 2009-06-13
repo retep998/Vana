@@ -100,7 +100,7 @@ void PlayerMonsterBook::connectData(PacketCreator &packet) {
 
 void PlayerMonsterBook::calculateLevel() {
 	int32_t size = getSize();
-	m_level = 0;
+	m_level = MonsterCards::MaxPlayerLevel;
 	for (int32_t i = 1; i < MonsterCards::MaxPlayerLevel; i++) {
 		// We don't calculate for the last level because that includes all values above the second to last level
 		if (size < MonsterCards::PlayerLevels[i - 1]) {
@@ -108,8 +108,6 @@ void PlayerMonsterBook::calculateLevel() {
 			break;
 		}
 	}
-	if (m_level == 0)
-		m_level = MonsterCards::MaxPlayerLevel;
 }
 
 void PlayerMonsterBook::infoData(PacketCreator &packet) {
