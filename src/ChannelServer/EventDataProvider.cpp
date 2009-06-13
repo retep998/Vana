@@ -35,7 +35,7 @@ EventDataProvider::EventDataProvider() : m_timers(new Timer::Container), m_varia
 }
 
 void EventDataProvider::loadEvents() {
-	std::cout << std::setw(Initializing::outputWidth) << std::left << "Initializing Events and Instances... ";
+	std::cout << std::setw(Initializing::outputWidth) << std::left << "Initializing Events... ";
 
 	// Declarations go here for boats and regular server events
 
@@ -43,6 +43,9 @@ void EventDataProvider::loadEvents() {
 	// new Timer::Timer(bind(&namespace::func, parameter),
 	// Timer::Id(Timer::Types::EventTimer, ??, ??),
 	// getTimers(), Timer::Time::getNthSecondOfHour(0), 60 * 60 * 1000);
+	std::cout << "DONE" << std::endl;
+
+	std::cout << std::setw(Initializing::outputWidth) << std::left << "Initializing Instances... ";
 
 	// Starts a new instance, boats or whatevers
 	// Instance *instance = new Instance("scriptName.lua", 0, 0, -3600, false, false);
