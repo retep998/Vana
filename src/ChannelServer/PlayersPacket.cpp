@@ -219,15 +219,19 @@ void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {
 	} 
 	else
 		packet.add<int8_t>(0);
+
 	pack.skipBytes(4); // Unk
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
+	switch (skillid) {
+		case Jobs::Gunslinger::Grenade:
+		case Jobs::Infighter::CorkscrewBlow:
+			pack.skipBytes(4); // Charge
+			break;
+	}
 	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
 	pack.skipBytes(1); // Weapon subclass
 	packet.add<int8_t>(pack.get<int8_t>()); // Weapon speed
 	pack.skipBytes(4); // Ticks
-	if (skillid == Jobs::Gunslinger::Grenade || skillid == Jobs::Infighter::CorkscrewBlow) {
-		pack.skipBytes(4); // Charge
-	}
 
 	int32_t masteryid = player->getSkills()->getMastery();
 	packet.add<int8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
@@ -259,6 +263,7 @@ void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = pack.get<int32_t>();
+	pack.skipBytes(4); // Unk
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
@@ -268,7 +273,6 @@ void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
 			break;
 	}
 	bool shadow_meso = (skillid == Jobs::Hermit::ShadowMeso);
-	pack.skipBytes(4); // Unk
 
 	uint8_t display = pack.get<int8_t>(); // Projectile display
 	uint8_t animation = pack.get<int8_t>(); // Direction/animation
@@ -349,13 +353,20 @@ void PlayersPacket::useSpellAttack(Player *player, PacketReader &pack) {
 	int32_t skillid = pack.get<int32_t>();
 	int32_t charge = 0;
 	packet.add<int32_t>(skillid);
-	if (skillid == Jobs::FPArchMage::BigBang || skillid == Jobs::ILArchMage::BigBang || skillid == Jobs::Bishop::BigBang) // Big Bang has a 4 byte charge time after skillid
-		charge = pack.get<int32_t>();
+
 	pack.skipBytes(4); // Unk
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
+
+	switch (skillid) {
+		case Jobs::FPArchMage::BigBang:
+		case Jobs::ILArchMage::BigBang:
+		case Jobs::Bishop::BigBang: // Big Bang has a 4 byte charge time after skillid
+			charge = pack.get<int32_t>();
+			break;
+	}
 	packet.add<int8_t>(pack.get<int8_t>()); // Direction/animation
-	pack.skipBytes(1); // Weapon subclass
 	packet.add<int8_t>(pack.get<int8_t>()); // Casting speed
+	pack.skipBytes(1); // Weapon subclass
 	pack.skipBytes(4); // Ticks
 	packet.add<int8_t>(0); // Mastery byte is always 0 because spells don't have a swoosh
 	packet.add<int32_t>(0); // No clue
