@@ -68,10 +68,10 @@ void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 
 void PlayerQuests::updateQuestMob(int32_t mobid) {
 	for (unordered_map<int32_t, Quest>::iterator iter = quests.begin(); iter != quests.end(); iter++) {
-		for (size_t i = 0; i < iter->second.mobs.size(); i ++) {
+		for (size_t i = 0; i < iter->second.mobs.size(); i++) {
 			int16_t maxcount = iter->second.mobs[i].maxcount;
 			if (iter->second.mobs[i].id == mobid && !iter->second.done && iter->second.mobs[i].count < maxcount) {
-				iter->second.mobs[i].count ++;
+				iter->second.mobs[i].count++;
 				QuestsPacket::updateQuest(player, iter->second);
 				if (iter->second.mobs[i].count == maxcount) {
 					checkDone(iter->second);
@@ -131,7 +131,7 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 						QuestsPacket::giveItem(player, questinfo.rewards[i].id, questinfo.rewards[i].count);
 						Inventory::takeItem(player, questinfo.rewards[i].id, -questinfo.rewards[i].count);
 					}
-					else if(questinfo.rewards[i].id > 0) {
+					else if (questinfo.rewards[i].id > 0) {
 						QuestsPacket::giveItem(player, questinfo.rewards[i].id, -player->getInventory()->getItemAmount(questinfo.rewards[i].id));
 						Inventory::takeItem(player, questinfo.rewards[i].id, player->getInventory()->getItemAmount(questinfo.rewards[i].id));
 					}

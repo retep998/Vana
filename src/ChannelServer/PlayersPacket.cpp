@@ -147,11 +147,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	packet.add<uint8_t>((uint8_t)(wishlist.size())); // Wish list count
 	for (size_t i = 0; i < wishlist.size(); i++)
 		packet.add<int32_t>(wishlist[i]);
-	packet.add<int32_t>(1);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+	getinfo->getMonsterBook()->infoData(packet);
 	player->getSession()->send(packet);
 }
 

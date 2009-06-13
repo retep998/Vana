@@ -16,9 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#define RECV_PONG 0x18
-
-//Login
 #define RECV_LOGIN_INFO 0x01
 #define RECV_SHOW_WORLD2 0x04 // Click back after select channel
 #define RECV_CHANNEL_SELECT 0x05
@@ -30,13 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_VIEW_ALL_CHAR 0x0d
 #define RECV_VIEW_ALL_CHAR_GET_CHANNEL_SERVER_INFO 0x0e
 #define RECV_GET_CHANNEL_SERVER_INFO 0x13
+#define RECV_CHANNEL_LOGIN 0x14
 #define RECV_CHECK_CHAR_NAME 0x15
 #define RECV_CREATE_CHAR 0x16
 #define RECV_DELETE_CHAR 0x17
+#define RECV_PONG 0x18
 #define RECV_RELOG 0x1c
-
-//Channel
-#define RECV_CHANNEL_LOGIN 0x14
 #define RECV_CHANGE_MAP 0x23
 #define RECV_CHANGE_CHANNEL 0x24
 #define RECV_MOVE_PLAYER 0x26

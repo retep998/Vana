@@ -52,6 +52,7 @@ set(SOURCES
 	PlayerBuddyList.h
 	PlayerHandler.h
 	PlayerInventory.h
+	PlayerMonsterBook.h
 	PlayerMounts.h
 	PlayerPacket.h
 	PlayerPacketHelper.h
@@ -135,6 +136,7 @@ set(SOURCES
 	PlayerBuddyList.cpp
 	PlayerHandler.cpp
 	PlayerInventory.cpp
+	PlayerMonsterBook.cpp
 	PlayerMounts.cpp
 	PlayerPacket.cpp
 	PlayerPacketHelper.cpp

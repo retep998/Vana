@@ -16,9 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#define SEND_PING 0x11
-
-// Login
 #define SEND_LOGIN_INFO_REPLY 0x00
 #define SEND_SHOW_CHANNEL 0x03
 #define SEND_GENDER_DONE 0x04
@@ -31,11 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_CHECK_NAME 0x0d
 #define SEND_SHOW_CHARACTER 0x0e
 #define SEND_DELETE_CHAR 0x0f
+#define SEND_CHANGE_CHANNEL 0x10
+#define SEND_PING 0x11
 #define SEND_CHANNEL_SELECT 0x14
 #define SEND_RELOG_RESPONSE 0x16
-
-// Channel
-#define SEND_CHANGE_CHANNEL 0x10
 #define SEND_MOVE_ITEM 0x1a
 #define SEND_UPDATE_INVENTORY_SLOTS 0x1b
 #define SEND_UPDATE_STAT 0x1c

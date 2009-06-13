@@ -263,6 +263,7 @@ void Player::playerConnect(PacketReader &packet) {
 	variables.reset(new PlayerVariables(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
+	monsterBook.reset(new PlayerMonsterBook(this));
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;

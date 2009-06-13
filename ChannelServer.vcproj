@@ -494,6 +494,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerMonsterBook.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerMounts.cpp"
 					>
 				</File>
@@ -877,6 +881,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerMonsterBook.h"
 					>
 				</File>
 				<File
