@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using MiscUtilities::atob;
 using Initializing::outputWidth;
 
-DropDataProvider *DropDataProvider::singleton = 0;
+DropDataProvider * DropDataProvider::singleton = 0;
 
 void DropDataProvider::loadData() {
 	// Mob/Reactor drops
@@ -33,7 +33,7 @@ void DropDataProvider::loadData() {
 
 	MYSQL_ROW dropRow;
 	DropInfo drop;
-	while ((dropRow = res.fetch_raw_row())) {
+	while (dropRow = res.fetch_raw_row()) {
 		// Col0 : Dropper ID
 		//    1 : Is Mesos?
 		//    2 : Item ID
