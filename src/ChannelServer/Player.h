@@ -37,6 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_set.hpp>
+#include <ctime>
 #include <string>
 #include <vector>
 
@@ -65,6 +66,7 @@ public:
 	void setMapChair(int16_t s) { mapchair = s; }
 	void setMap(int32_t mapid, PortalInfo *portal = 0);
 	void setBuddyListSize(uint8_t size);
+	void setConnectionTime(int64_t newtime) { online_time = newtime; }
 	void setTradeId(int32_t id) { this->trade_id = id; }
 	void setShop(int32_t shopid) { shop = shopid; }
 	void setNPC(NPC *npc) { this->npc = npc; }
@@ -88,6 +90,8 @@ public:
 	int32_t getGmLevel() const { return gm_level; }
 	int32_t getSpecialSkill() const { return info.skillid; }
 	int32_t getTradeId() const { return trade_id; }
+	int64_t getConnectionTime() const { return online_time; }
+	int64_t getConnectedTime() const { return time(0) - online_time; }
 	string getName() const { return name; }
 	NPC * getNPC() const { return npc; }
 	Party * getParty() const { return party; }
@@ -142,6 +146,7 @@ private:
 	int32_t chair;
 	int32_t gm_level;
 	int32_t trade_id;
+	int64_t online_time;
 	bool trade_state;
 	bool save_on_dc;
 	bool is_connect;

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChatHandler.h"
 #include "Database.h"
 #include "DropDataProvider.h"
+#include "EventDataProvider.h"
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
 #include "MapleVersion.h"
@@ -61,8 +62,9 @@ void Initializing::loadData() {
 	ItemDataProvider::Instance()->loadData();
 	ShopDataProvider::Instance()->loadData();
 	MobDataProvider::Instance()->loadData();
-	initializeReactors();
 	DropDataProvider::Instance()->loadData();
+	EventDataProvider::Instance()->loadEvents();
+	initializeReactors();
 	initializeQuests();
 	initializeSkills();
 	initializePets();
@@ -74,7 +76,7 @@ void Initializing::initializeReactors() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW reactorRow;
-	while ((reactorRow = res.fetch_raw_row())) {
+	while (reactorRow = res.fetch_raw_row()) {
 		// Col0 : Row ID
 		//    1 : Reactor ID
 		//    2 : State
@@ -109,7 +111,7 @@ void Initializing::initializeQuests() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW questRow;
-	while ((questRow = res.fetch_raw_row())) {
+	while (questRow = res.fetch_raw_row()) {
 		// Col0 : Quest ID
 		//    1 : Next Quest ID
 		Quests::setNextQuest(atoi(questRow[0]), atoi(questRow[1]));
@@ -123,7 +125,7 @@ void Initializing::initializeQuests() {
 	int32_t previousid = -1;
 	QuestRequestsInfo reqs;
 	MYSQL_ROW requestRow;
-	while ((requestRow = res.fetch_raw_row())) {
+	while (requestRow = res.fetch_raw_row()) {
 		// Col0 : Row ID
 		//    1 : Quest ID
 		//    2 : Mob
@@ -161,7 +163,7 @@ void Initializing::initializeQuests() {
 	previousid = -1;
 	QuestRewardsInfo rwas;
 	MYSQL_ROW rewardRow;
-	while ((rewardRow = res.fetch_raw_row())) {
+	while (rewardRow = res.fetch_raw_row()) {
 		// Col0 : Row ID
 		//    1 : Quest ID
 		//    2 : Start
@@ -211,7 +213,7 @@ void Initializing::initializeSkills() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW skillRow;
-	while ((skillRow = res.fetch_raw_row())) {
+	while (skillRow = res.fetch_raw_row()) {
 		// Col0 : Skill ID
 		//    1 : Level
 		//    2 : Time
@@ -278,7 +280,7 @@ void Initializing::initializeSkills() {
 
 	MobSkillLevelInfo moblevel;
 
-	while ((skillRow = res.fetch_raw_row())) {
+	while (skillRow = res.fetch_raw_row()) {
 		// Col0 : Skill ID
 		//    1 : Level
 		//    2 : Time
@@ -335,7 +337,7 @@ void Initializing::initializePets() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW petRow;
-	while ((petRow = res.fetch_raw_row())) {
+	while (petRow = res.fetch_raw_row()) {
 		// 0 : Pet id
 		// 1 : Pet breed name
 		// 2 : Pet hunger level
@@ -350,7 +352,7 @@ void Initializing::initializePets() {
 	res = query.use();
 
 	MYSQL_ROW petInteractRow;
-	while ((petInteractRow = res.fetch_raw_row())) {
+	while (petInteractRow = res.fetch_raw_row()) {
 		// 0 : Id
 		// 1 : Command
 		// 2 : Increase

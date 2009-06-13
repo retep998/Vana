@@ -534,6 +534,10 @@
 				Name="Instance"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\EventDataProvider.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Instance.cpp"
 					>
 				</File>
@@ -915,6 +919,10 @@
 			<Filter
 				Name="Instance"
 				>
+				<File
+					RelativePath=".\src\ChannelServer\EventDataProvider.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Instance.h"
 					>

@@ -142,6 +142,11 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 			sponge->applyDamage(playerid, damage, false); // Apply damage after you can be sure that all the units are linked and ready
 		}
 	}
+	else {
+		if (hp == 1) {
+			removeStatus(StatusEffects::Mob::Poison);
+		}
+	}
 }
 
 void Mob::applyWebDamage() {
@@ -667,7 +672,7 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 	}
 }
 
-void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int8_t hits, int32_t damage) {
+int32_t Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int8_t hits, int32_t damage) {
 	vector<StatusInfo> statuses;
 	int16_t y = 0;
 	bool success = (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop);
@@ -838,6 +843,8 @@ void Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t le
 		statuses.push_back(StatusInfo(StatusEffects::Mob::Acc, -Skills::skills[Jobs::Marksman::Blind][blindlevel].x, Jobs::Marksman::Blind, Skills::skills[Jobs::Marksman::Blind][blindlevel].y));
 	}
 
-	if (statuses.size() > 0)
+	if (statuses.size() > 0) {
 		mob->addStatus(player->getId(), statuses);
+	}
+	return statuses.size();
 }

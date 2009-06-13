@@ -399,7 +399,7 @@ void Map::checkMists() {
 
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); ++iter) {
 		mob = iter->second;
-		if (mob == 0 || mob->hasStatus(StatusEffects::Mob::Poison))
+		if (mob == 0 || mob->hasStatus(StatusEffects::Mob::Poison) || mob->getHp() == 1)
 			continue;
 		for (miter = mists.begin(); miter != mists.end(); ++miter) {
 			mist = miter->second;
@@ -407,7 +407,9 @@ void Map::checkMists() {
 				continue;
 			if (GameLogicUtilities::isInBox(mist->getOrigin(), mist->getSkillLt(), mist->getSkillRb(), mob->getPos())) {
 				Player *p = Players::Instance()->getPlayer(mist->getOwnerId());
-				Mobs::handleMobStatus(p, mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0);
+				bool poisoned = (Mobs::handleMobStatus(p, mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0) > 0);
+				if (poisoned) // Mob is poisoned, don't need to check any more mists
+					break;
 			}
 		}
 	}

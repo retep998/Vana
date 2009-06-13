@@ -11,6 +11,7 @@ set(SOURCES
 	DropDataProvider.h
 	Drops.h
 	DropsPacket.h
+	EventDataProvider.h
 	Fame.h
 	FamePacket.h
 	GameConstants.h
@@ -96,6 +97,7 @@ set(SOURCES
 	DropDataProvider.cpp
 	Drops.cpp
 	DropsPacket.cpp
+	EventDataProvider.cpp
 	Fame.cpp
 	FamePacket.cpp
 	InitializeChannel.cpp

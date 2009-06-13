@@ -238,8 +238,11 @@ void Player::playerConnect(PacketReader &packet) {
 	activeBuffs.reset(new PlayerActiveBuffs(this));
 	summons.reset(new PlayerSummons(this));
 
+	// Packet transferring on channel switch
 	if (PlayerPacketHolder::Instance()->checkPlayer(id)) {
 		PacketReader pack = PlayerPacketHolder::Instance()->getPacket(id);
+
+		setConnectionTime(pack.get<int64_t>());
 
 		getActiveBuffs()->parseBuffTransferPacket(pack);
 		if (getActiveBuffs()->hasHyperBody()) {
@@ -251,11 +254,13 @@ void Player::playerConnect(PacketReader &packet) {
 
 		PlayerPacketHolder::Instance()->removePacket(id);
 	}
-
-	// Player variables
-	variables.reset(new PlayerVariables(this));
+	else {
+		// No packet, that means that they're connecting for the first time
+		setConnectionTime(time(0));
+	}
 
 	// The rest
+	variables.reset(new PlayerVariables(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
 
