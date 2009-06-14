@@ -123,5 +123,5 @@ MonsterCard * PlayerMonsterBook::getCard(int32_t cardid) {
 }
 
 bool PlayerMonsterBook::isFull(int32_t cardid) {
-	return (m_cards[cardid].level == MonsterCards::MaxCardLevel);
+	return (m_cards.find(cardid) != m_cards.end() ? (m_cards[cardid].level == MonsterCards::MaxCardLevel) : false);
 }
