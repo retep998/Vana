@@ -26,11 +26,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::unordered_map;
 using std::vector;
 
+class PacketCreator;
 class Player;
 
 class PlayerQuests {
 public:
 	PlayerQuests(Player *player) : player(player) { }
+
+	void connectData(PacketCreator &packet);
 	void addQuest(int16_t questid, int32_t npcid);
 	void updateQuestMob(int32_t mobid);
 	void checkDone(Quest &quest);

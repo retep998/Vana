@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerQuests.h"
 #include "Inventory.h"
 #include "Levels.h"
+#include "PacketCreator.h"
 #include "Player.h"
 #include "QuestsPacket.h"
 #include "Randomizer.h"
@@ -176,4 +177,9 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 
 bool PlayerQuests::isQuestActive(int16_t questid) {
 	return quests.find(questid) != quests.end();
+}
+
+void PlayerQuests::connectData(PacketCreator &packet) {
+	packet.add<int16_t>(0); // Size of started quests
+	packet.add<int16_t>(0); // Size of completed quests
 }

@@ -78,15 +78,14 @@ void PlayerPacket::connectData(Player *player) {
 
 	player->getInventory()->connectData(packet); // Inventory data
 	player->getSkills()->connectData(packet); // Skills - levels and cooldowns
+	player->getQuests()->connectData(packet); // Quests
 
-	packet.add<int16_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
 
 	player->getInventory()->rockPacket(packet); // Teleport Rock/VIP Rock maps
-
 	player->getMonsterBook()->connectData(packet);
+
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
 	
