@@ -63,7 +63,10 @@ const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value
 	StatusEffects::Mob::MagicImmunity,
 	StatusEffects::Mob::VenomousWeapon,
 
-	StatusEffects::Mob::Empty
+	StatusEffects::Mob::WeaponDamageReflect,
+	StatusEffects::Mob::MagicDamageReflect,
+	StatusEffects::Mob::Empty,
+	StatusEffects::Mob::AnyDamageReflect
 };
 
 StatusInfo::StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time) :
@@ -95,6 +98,7 @@ horntailsponge(0),
 counter(0),
 taunteffect(100),
 hasimmunity(false),
+hasreflect(false),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
 timers(new Timer::Container),
 control(0)
@@ -167,6 +171,19 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 		int32_t cstatus = statusinfo[i].status;
 		bool alreadyhas = (statuses.find(cstatus) != statuses.end());
 		switch (cstatus) {
+			case StatusEffects::Mob::WeaponImmunity:
+			case StatusEffects::Mob::MagicImmunity:
+				if (hasImmunity())
+					return;
+				setImmunity(true);
+				break;
+			case StatusEffects::Mob::WeaponDamageReflect:
+			case StatusEffects::Mob::MagicDamageReflect:
+			case StatusEffects::Mob::AnyDamageReflect:
+				if (hasReflect())
+					return;
+				setReflect(true);
+				break;
 			case StatusEffects::Mob::Poison: // Status effects that do not renew
 			case StatusEffects::Mob::Doom:
 				if (alreadyhas)
@@ -245,6 +262,10 @@ void Mob::removeStatus(int32_t status) {
 			case StatusEffects::Mob::MagicImmunity:
 				setImmunity(false);
 				break;
+			case StatusEffects::Mob::WeaponDamageReflect:
+			case StatusEffects::Mob::MagicDamageReflect:
+			case StatusEffects::Mob::AnyDamageReflect:
+				setReflect(false);
 			case StatusEffects::Mob::ShadowWeb:
 				weblevel = 0;
 				webplayerid = 0;
@@ -504,9 +525,11 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 					case MobSkills::MagicImmunity:
 						stop = mob->hasImmunity();
 						break;
-			//		case MobSkills::Haste:
-			//			stop = mob->hasStatus(StatusEffects::Mob::Speed);
-			//			break;
+					case MobSkills::WeaponDamageReflect:
+					case MobSkills::MagicDamageReflect:
+					case MobSkills::AnyDamageReflect:
+						stop = mob->hasReflect();
+						break;
 					case MobSkills::Summon: {
 						int16_t spawns = (int16_t)(mob->getSpawns().size());
 						int16_t limit = mobskill.limit;
@@ -601,18 +624,20 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 			break;
 		case MobSkills::WeaponImmunity:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
-			mob->setImmunity(true);
 			break;
 		case MobSkills::MagicImmunity:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
-			mob->setImmunity(true);
 			break;
-		case MobSkills::NoClue1:
-		case MobSkills::NoClue2:
-		case MobSkills::NoClue3:
-			// ???
+		case MobSkills::WeaponDamageReflect:
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			break;
-		case MobSkills::SpecialHaste:
+		case MobSkills::MagicDamageReflect:
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			break;
+		case MobSkills::AnyDamageReflect:
+			statuses.push_back(StatusInfo(StatusEffects::Mob::AnyDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			break;
+		case MobSkills::Haste:
 			// Not sure how to handle this yet, it doesn't seem like the basic speed buff
 			break;
 		case MobSkills::Summon: {
