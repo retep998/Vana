@@ -97,6 +97,10 @@ Player::~Player() {
 		// "Bug" in global, would be fixed here:
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
 		// (that means that it's parsed while logging in, not while logging out)
+		PortalInfo *closest = Maps::getMap(getMap())->getNearestSpawnPoint(getPos());
+		if (closest != 0) {
+			map_pos = closest->id;
+		}
 		if (save_on_dc) {
 			saveAll(true);
 			setOnline(false);
@@ -396,6 +400,7 @@ void Player::saveInformation() {
 	query << "UPDATE characters SET "
 		<< "mesos = " << inv->getMesos() << ","
 		<< "map = " << map << ","
+		<< "pos = " << static_cast<int16_t>(map_pos) << ","
 		<< "equip_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EquipInventory)) << ","
 		<< "use_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::UseInventory)) << ","
 		<< "setup_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::SetupInventory)) << ","
