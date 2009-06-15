@@ -281,14 +281,14 @@ int LuaExports::deleteChannelVariable(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::getChannelVariable(lua_State *luaVm) {
-	string key = string(lua_tostring(luaVm, -1));
-	lua_pushstring(luaVm, EventDataProvider::Instance()->getVariables()->getVariable(key).c_str());
+int LuaExports::getChannel(lua_State *luaVm) {
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getChannel() + 1);
 	return 1;
 }
 
-int LuaExports::getChannel(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getChannel() + 1);
+int LuaExports::getChannelVariable(lua_State *luaVm) {
+	string key = string(lua_tostring(luaVm, -1));
+	lua_pushstring(luaVm, EventDataProvider::Instance()->getVariables()->getVariable(key).c_str());
 	return 1;
 }
 
