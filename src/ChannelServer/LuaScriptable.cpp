@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.h"
+#include "EventDataProvider.h"
 #include "Instance.h"
 #include "Instances.h"
 #include "Inventory.h"
@@ -56,11 +57,14 @@ void LuaScriptable::initialize() {
 		setVariable("instancename", player->getInstance()->getName());
 
 	// Miscellanous
+	lua_register(luaVm, "deleteChannelVariable", &LuaExports::deleteChannelVariable);
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
+	lua_register(luaVm, "getChannelVariable", &LuaExports::getChannelVariable);
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
 	lua_register(luaVm, "isOnline", &LuaExports::isOnline);
 	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
 	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
+	lua_register(luaVm, "setChannelVariable", &LuaExports::setChannelVariable);
 	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
 
@@ -271,6 +275,18 @@ Instance * LuaExports::getInstance(lua_State *luaVm) {
 }
 
 // Miscellaneous
+int LuaExports::deleteChannelVariable(lua_State *luaVm) {
+	string key = string(lua_tostring(luaVm, -1));
+	EventDataProvider::Instance()->getVariables()->deleteVariable(key);
+	return 0;
+}
+
+int LuaExports::getChannelVariable(lua_State *luaVm) {
+	string key = string(lua_tostring(luaVm, -1));
+	lua_pushstring(luaVm, EventDataProvider::Instance()->getVariables()->getVariable(key).c_str());
+	return 1;
+}
+
 int LuaExports::getChannel(lua_State *luaVm) {
 	lua_pushnumber(luaVm, ChannelServer::Instance()->getChannel() + 1);
 	return 1;
@@ -302,6 +318,13 @@ int LuaExports::runNPC(lua_State *luaVm) {
 	int32_t npcid = lua_tointeger(luaVm, -1);
 	NPC *npc = new NPC(npcid, getPlayer(luaVm));
 	npc->run();
+	return 0;
+}
+
+int LuaExports::setChannelVariable(lua_State *luaVm) {
+	string value = string(lua_tostring(luaVm, -1));
+	string key = string(lua_tostring(luaVm, -2));
+	EventDataProvider::Instance()->getVariables()->setVariable(key, value);
 	return 0;
 }
 
@@ -449,7 +472,6 @@ int LuaExports::deletePlayerVariable(lua_State *luaVm) {
 	getPlayer(luaVm)->getVariables()->deleteVariable(key);
 	return 0;
 }
-
 
 int LuaExports::getAP(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getBaseStat(Stats::Ap));
@@ -1201,8 +1223,11 @@ int LuaExports::checkInstanceTimer(lua_State *luaVm) {
 int LuaExports::createInstance(lua_State *luaVm) {
 	string name = lua_tostring(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
-	bool persistent = lua_toboolean(luaVm, 3) != 0;
-	bool showtimer = lua_toboolean(luaVm, 4) != 0;
+	bool showtimer = lua_toboolean(luaVm, 3) != 0;
+	int32_t persistent = 0;
+	if (lua_isnumber(luaVm, 4)) {
+		persistent = lua_tointeger(luaVm, 4);
+	}
 	Instance *instance = new Instance(name, getPlayer(luaVm)->getMap(), getPlayer(luaVm)->getId(), time, persistent, showtimer);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
@@ -1284,7 +1309,7 @@ int LuaExports::isInstanceMap(lua_State *luaVm) {
 }
 
 int LuaExports::isInstancePersistent(lua_State *luaVm) {
-	lua_pushboolean(luaVm, getInstance(luaVm)->getPersistence());
+	lua_pushboolean(luaVm, getInstance(luaVm)->getPersistence() != 0);
 	return 1;
 }
 
@@ -1338,7 +1363,7 @@ int LuaExports::setInstanceMax(lua_State *luaVm) {
 }
 
 int LuaExports::setInstancePersistence(lua_State *luaVm) {
-	getInstance(luaVm)->setPersistence(lua_toboolean(luaVm, 1) != 0);
+	getInstance(luaVm)->setPersistence(lua_tointeger(luaVm, 1));
 	return 0;
 }
 
