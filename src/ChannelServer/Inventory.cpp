@@ -196,6 +196,7 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 	if ((slot1 < 0 && -slot1 == EquipSlots::Weapon) || (slot2 < 0 && -slot2 == EquipSlots::Weapon)) {
 		player->getActiveBuffs()->stopBooster();
 		player->getActiveBuffs()->stopCharge();
+		player->getActiveBuffs()->stopBulletSkills();
 	}
 	if (slot1 < 0 || slot2 < 0) {
 		InventoryPacket::updatePlayer(player);
