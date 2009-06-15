@@ -173,6 +173,12 @@ int32_t PlayerActiveBuffs::calculateDebuffMaskBit(uint8_t skill) {
 		case MobSkills::Seduce:
 			bitfield = StatusEffects::Player::Seduce;
 			break;
+		case MobSkills::Zombify:
+			bitfield = StatusEffects::Player::Zombify;
+			break;
+		case MobSkills::CrazySkull:
+			bitfield = StatusEffects::Player::CrazySkull;
+			break;
 	}
 	return bitfield;
 }
@@ -220,10 +226,6 @@ void PlayerActiveBuffs::setMountInfo(int32_t skillid, int32_t mountid) {
 	m_mapbuffs.mountid = mountid;
 }
 
-void PlayerActiveBuffs::setMapEntryBuffs(MapEntryBuffs &buffs) {
-	m_mapbuffs = buffs;
-}
-
 // Active skill levels
 uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
 	return m_activelevels.find(skillid) != m_activelevels.end() ? m_activelevels[skillid] : 0;
@@ -251,10 +253,6 @@ ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillid, const vector<Buff>
 		}
 	}
 	return ret;
-}
-
-void PlayerActiveBuffs::setActiveBuffsByType(ActiveBuffsByType &buffs) {
-	m_activebuffsbytype = buffs;
 }
 
 void PlayerActiveBuffs::dispelBuffs() {
@@ -412,19 +410,19 @@ bool PlayerActiveBuffs::hasIceCharge() const {
 	return (m_activecharge == Jobs::WhiteKnight::BwIceCharge || m_activecharge == Jobs::WhiteKnight::SwordIceCharge);
 }
 
-const bool PlayerActiveBuffs::hasInfinity() {
+bool PlayerActiveBuffs::hasInfinity() {
 	return (getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveSkillLevel(Jobs::Bishop::Infinity) > 0);
 }
 
-const bool PlayerActiveBuffs::hasMesoUp() {
+bool PlayerActiveBuffs::hasMesoUp() {
 	return getActiveSkillLevel(Jobs::Hermit::MesoUp) > 0;
 }
 
-const bool PlayerActiveBuffs::hasMagicGuard() {
+bool PlayerActiveBuffs::hasMagicGuard() {
 	return (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0 || getActiveSkillLevel(Jobs::FlameWizard::MagicGuard) > 0);
 }
 
-const int32_t PlayerActiveBuffs::getMagicGuard() {
+int32_t PlayerActiveBuffs::getMagicGuard() {
 	int32_t id = 0;
 	if (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0)
 		id = Jobs::Magician::MagicGuard;
@@ -433,22 +431,22 @@ const int32_t PlayerActiveBuffs::getMagicGuard() {
 	return id;
 }
 
-const bool PlayerActiveBuffs::hasMesoGuard() {
+bool PlayerActiveBuffs::hasMesoGuard() {
 	return getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0;
 }
 
-const int32_t PlayerActiveBuffs::getMesoGuard() {
+int32_t PlayerActiveBuffs::getMesoGuard() {
 	int32_t id = 0;
 	if (getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0)
 		id = Jobs::ChiefBandit::MesoGuard;
 	return id;
 }
 
-const bool PlayerActiveBuffs::hasHolySymbol() {
+bool PlayerActiveBuffs::hasHolySymbol() {
 	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 || getActiveSkillLevel(Jobs::SuperGm::HolySymbol) > 0);
 }
 
-const int32_t PlayerActiveBuffs::getHolySymbol() {
+int32_t PlayerActiveBuffs::getHolySymbol() {
 	int32_t id = 0;
 	if (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0)
 		id = Jobs::Priest::HolySymbol;
@@ -457,20 +455,24 @@ const int32_t PlayerActiveBuffs::getHolySymbol() {
 	return id;
 }
 
-const bool PlayerActiveBuffs::hasHolyShield() {
+bool PlayerActiveBuffs::hasHolyShield() {
 	return (getActiveSkillLevel(Jobs::Bishop::HolyShield) > 0);
 }
 
-const bool PlayerActiveBuffs::isCursed() {
+bool PlayerActiveBuffs::isCursed() {
 	return ((m_debuffmask & StatusEffects::Player::Curse) > 0);
 }
 
-const bool PlayerActiveBuffs::hasPowerStance() {
+bool PlayerActiveBuffs::isZombified() {
+	return ((m_debuffmask & StatusEffects::Player::Zombify) > 0);
+}
+
+bool PlayerActiveBuffs::hasPowerStance() {
 	// Energy Charge exhibits Power Stance effect as well
 	return (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0 || getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0 || getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0 || getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0 || getActiveSkillLevel(Jobs::Striker::EnergyCharge) > 0);
 }
 
-const int32_t PlayerActiveBuffs::getPowerStance() {
+int32_t PlayerActiveBuffs::getPowerStance() {
 	int32_t skillid = 0;
 	if (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0)
 		skillid = Jobs::Hero::PowerStance;
@@ -485,11 +487,11 @@ const int32_t PlayerActiveBuffs::getPowerStance() {
 	return skillid;
 }
 
-const bool PlayerActiveBuffs::hasHyperBody() {
+bool PlayerActiveBuffs::hasHyperBody() {
 	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 || getActiveSkillLevel(Jobs::SuperGm::HyperBody) > 0);
 }
 
-const int32_t PlayerActiveBuffs::getHyperBody() {
+int32_t PlayerActiveBuffs::getHyperBody() {
 	int32_t id = 0;
 	if (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0)
 		id = Jobs::Spearman::HyperBody;
@@ -498,23 +500,23 @@ const int32_t PlayerActiveBuffs::getHyperBody() {
 	return id;
 }
 
-const bool PlayerActiveBuffs::isUsingHide() {
+bool PlayerActiveBuffs::isUsingHide() {
 	return (getActiveSkillLevel(Jobs::SuperGm::Hide) > 0);
 }
 
-const bool PlayerActiveBuffs::hasShadowPartner() {
+bool PlayerActiveBuffs::hasShadowPartner() {
 	return (getActiveSkillLevel(Jobs::Hermit::ShadowPartner) > 0 || getActiveSkillLevel(Jobs::NightWalker::ShadowPartner) > 0);
 }
 
-const bool PlayerActiveBuffs::hasShadowStars() {
+bool PlayerActiveBuffs::hasShadowStars() {
 	return (getActiveSkillLevel(Jobs::NightLord::ShadowStars) > 0);
 }
 
-const bool PlayerActiveBuffs::hasSoulArrow() {
+bool PlayerActiveBuffs::hasSoulArrow() {
 	return (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0 || getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0 || getActiveSkillLevel(Jobs::WindBreaker::SoulArrow) > 0);
 }
 
-const int32_t PlayerActiveBuffs::getCurrentMorph() {
+int32_t PlayerActiveBuffs::getCurrentMorph() {
 	int32_t morphid = 0;
 	if (m_activebuffsbytype.find(Byte5) != m_activebuffsbytype.end()) {
 		unordered_map<uint8_t, int32_t> byte = m_activebuffsbytype[Byte5];

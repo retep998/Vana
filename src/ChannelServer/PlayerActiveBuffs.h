@@ -61,7 +61,6 @@ public:
 	void dispelBuffs();
 
 	// Buff info
-	void setActiveBuffsByType(ActiveBuffsByType &buffs);
 	void addBuffInfo(int32_t skillid, const vector<Buff> &buffs);
 	void setActiveSkillLevel(int32_t skillid, uint8_t level);
 	uint8_t getActiveSkillLevel(int32_t skillid);
@@ -72,7 +71,6 @@ public:
 	void addMapEntryBuffInfo(ActiveMapBuff &buff);
 	void deleteMapEntryBuffInfo(ActiveMapBuff &buff);
 	void setMountInfo(int32_t skillid, int32_t mountid);
-	void setMapEntryBuffs(MapEntryBuffs &buffs);
 	MapEntryBuffs getMapEntryBuffs();
 
 	// Skill "acts"
@@ -130,25 +128,26 @@ public:
 	void resetBattleshipHp();
 
 	// Commonly referred to (de)buffs on the server end
-	const bool hasInfinity();
-	const bool hasMesoUp();
-	const bool hasHolySymbol();
-	const bool hasPowerStance();
-	const bool hasMagicGuard();
-	const bool hasMesoGuard();
-	const bool hasHyperBody();
-	const bool hasHolyShield();
-	const bool hasShadowPartner();
-	const bool hasShadowStars();
-	const bool hasSoulArrow();
-	const bool isUsingHide();
-	const bool isCursed();
-	const int32_t getHolySymbol();
-	const int32_t getPowerStance();
-	const int32_t getHyperBody();
-	const int32_t getCurrentMorph();
-	const int32_t getMagicGuard();
-	const int32_t getMesoGuard();
+	bool hasInfinity();
+	bool hasMesoUp();
+	bool hasHolySymbol();
+	bool hasPowerStance();
+	bool hasMagicGuard();
+	bool hasMesoGuard();
+	bool hasHyperBody();
+	bool hasHolyShield();
+	bool hasShadowPartner();
+	bool hasShadowStars();
+	bool hasSoulArrow();
+	bool isUsingHide();
+	bool isCursed();
+	bool isZombified();
+	int32_t getHolySymbol();
+	int32_t getPowerStance();
+	int32_t getHyperBody();
+	int32_t getCurrentMorph();
+	int32_t getMagicGuard();
+	int32_t getMesoGuard();
 
 	// Packet marshaling
 	void getBuffTransferPacket(PacketCreator &packet);
