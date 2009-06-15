@@ -39,7 +39,7 @@ void PlayerQuests::save() {
 	bool firstrun2 = true;
 	for (map<int16_t, ActiveQuest>::iterator q = m_quests.begin(); q != m_quests.end(); q++) {
 		if (firstrun) {
-			query << "INSERT INTO active_quests (`charid`, `questid`, `mobid`, `mobskilled`) VALUES (";
+			query << "INSERT INTO active_quests (`charid`, `questid`, `mobid`, `mobskilled`, `data`) VALUES (";
 			firstrun = false;
 		}
 		else {
@@ -57,14 +57,16 @@ void PlayerQuests::save() {
 				query << m_player->getId() << ","
 					<< q->first << ","
 					<< v->id << ","
-					<< v->count << ")";
+					<< v->count << ","
+					<< mysqlpp::quote << q->second.data << ")";
 			}
 		}
 		else {
 			query << m_player->getId() << ","
 				<< q->first << ","
 				<< 0 << ","
-				<< 0 << ")";
+				<< 0 << ","
+				<< mysqlpp::quote << q->second.data << ")";
 		}
 	}
 	if (!firstrun)
@@ -97,20 +99,23 @@ void PlayerQuests::load() {
 	ActiveQuest curquest;
 	QuestRequest questdata;
 	QuestMob curmob;
-
-	query << "SELECT questid, mobid, mobskilled FROM active_quests WHERE charid = " << m_player->getId() << " ORDER BY questid ASC";
+	string data;
+	query << "SELECT questid, mobid, mobskilled, data FROM active_quests WHERE charid = " << m_player->getId() << " ORDER BY questid ASC";
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		current = res[i]["questid"];
 		int32_t mob = res[i]["mobid"];
+		res[i]["data"].to_string(data);
 		if (previous == -1) {
 			curquest.id = current;
+			curquest.data = data;
 			questdata = Quests::quests[current].getRequest(QuestRequestTypes::Mob);
 		}
 		if (previous != -1 && current != previous) {
 			m_quests[previous] = curquest;
 			curquest = ActiveQuest();
 			curquest.id = current;
+			curquest.data = data;
 			questdata = Quests::quests[current].getRequest(QuestRequestTypes::Mob);
 		}
 		if (mob != 0) {
@@ -325,4 +330,16 @@ void PlayerQuests::connectData(PacketCreator &packet) {
 		packet.add<int16_t>(iter->first);
 		packet.add<int64_t>(iter->second);
 	}
+}
+
+void PlayerQuests::setQuestData(int16_t id, const string &data) {
+	if (isQuestActive(id)) {
+		ActiveQuest g = m_quests[id];
+		g.data = data;
+		m_quests[id] = g;
+	}
+}
+
+string PlayerQuests::getQuestData(int16_t id) {
+	return (isQuestActive(id) ? m_quests[id].data : "");
 }

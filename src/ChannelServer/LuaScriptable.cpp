@@ -72,6 +72,12 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "addSkillLevel", &LuaExports::addSkillLevel);
 	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
 
+	// Quest
+	lua_register(luaVm, "isQuestActive", &LuaExports::isQuestActive);
+	lua_register(luaVm, "isQuestCompleted", &LuaExports::isQuestCompleted);
+	lua_register(luaVm, "setQuestData", &LuaExports::setQuestData);
+	lua_register(luaVm, "getQuestData", &LuaExports::getQuestData);
+
 	// Inventory
 	lua_register(luaVm, "addSlots", &LuaExports::addSlots);
 	lua_register(luaVm, "addStorageSlots", &LuaExports::addStorageSlots);
@@ -336,7 +342,7 @@ int LuaExports::getBuddySlots(lua_State *luaVm) {
 	return 1;
 }
 
-// Skills
+// Skill
 int LuaExports::addSkillLevel(lua_State *luaVm) {
 	int32_t skillid = lua_tointeger(luaVm, -2);
 	uint8_t level = lua_tointeger(luaVm, -1);
@@ -347,6 +353,32 @@ int LuaExports::addSkillLevel(lua_State *luaVm) {
 int LuaExports::getSkillLevel(lua_State *luaVm) {
 	int32_t skillid = lua_tointeger(luaVm, -1);
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getSkillLevel(skillid));
+	return 1;
+}
+
+// Quest
+int LuaExports::isQuestActive(lua_State *luaVm) {
+	int16_t questid = lua_tointeger(luaVm, -1);
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getQuests()->isQuestActive(questid));
+	return 1;
+}
+
+int LuaExports::isQuestCompleted(lua_State *luaVm) {
+	int16_t questid = lua_tointeger(luaVm, -1);
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getQuests()->isQuestComplete(questid));
+	return 1;
+}
+
+int LuaExports::setQuestData(lua_State *luaVm) {
+	int16_t questid = lua_tointeger(luaVm, 1);
+	string data = lua_tostring(luaVm, 2);
+	getPlayer(luaVm)->getQuests()->setQuestData(questid, data);
+	return 0;
+}
+
+int LuaExports::getQuestData(lua_State *luaVm) {
+	int16_t questid = lua_tointeger(luaVm, 1);
+	lua_pushstring(luaVm, getPlayer(luaVm)->getQuests()->getQuestData(questid).c_str());
 	return 1;
 }
 

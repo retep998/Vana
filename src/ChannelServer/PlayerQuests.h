@@ -21,9 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include "Quests.h"
 #include <map>
-#include <vector>
+#include <string>
 
 using std::map;
+using std::string;
 
 class PacketCreator;
 class Player;
@@ -42,6 +43,8 @@ public:
 	void finishQuest(int16_t questid, int32_t npcid);
 	bool isQuestActive(int16_t questid);
 	bool isQuestComplete(int16_t questid);
+	void setQuestData(int16_t id, const string &data);
+	string getQuestData(int16_t id);
 private:
 	Player *m_player;
 	map<int16_t, ActiveQuest> m_quests;
