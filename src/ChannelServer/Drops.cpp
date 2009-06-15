@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "Maps.h"
 #include "PacketReader.h"
+#include "Party.h"
 #include "Pets.h"
 #include "Pos.h"
 #include "Quests.h"
@@ -236,7 +237,30 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		}
 	}
 	if (drop->isMesos()) {
-		if (player->getInventory()->modifyMesos(drop->getObjectId(), true))
+		int32_t playerrate = (player->getParty() != 0 ? 100 : 60);
+		// Player gets 100% unless partied and having others on the map, in which case it's 60%
+		if (player->getParty() != 0) {
+			vector<Player *> members;
+			for (int8_t i = 0; i < player->getParty()->getMembersCount(); i++) {
+				if (Player *test = player->getParty()->getMemberByIndex(i)) {
+					if (test != player && test->getMap() == player->getMap()) {
+						members.push_back(test);
+					}
+				}
+			}
+			if (members.size() == 0) {
+				playerrate = 100;
+			}
+			else {
+				int32_t memberrate = 40 / members.size();
+				for (uint8_t j = 0; j < members.size(); j++) {
+					if (members[j]->getInventory()->modifyMesos(drop->getObjectId() * memberrate / 100, true)) {
+						DropsPacket::takeNote(members[j], drop->getObjectId(), true, 0);
+					}
+				}
+			}
+		}
+		if (player->getInventory()->modifyMesos(drop->getObjectId() * playerrate / 100, true))
 			DropsPacket::takeNote(player, drop->getObjectId(), true, 0);
 		else
 			return;
