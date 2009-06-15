@@ -38,10 +38,6 @@ namespace Timer {
 	class Container;
 };
 
-struct BuffContainer {
-
-};
-
 class PlayerActiveBuffs {
 public:
 	PlayerActiveBuffs(Player *player) :
@@ -121,6 +117,9 @@ public:
 	bool hasIceCharge() const;
 	int32_t getCharge() const { return m_activecharge; }
 
+	// Soul Arrow/Shadow Stars
+	void stopBulletSkills();
+
 	// Pickpocket
 	int32_t getPickpocketCounter() { return ++m_pickpocketcounter; }
 
@@ -130,7 +129,7 @@ public:
 	void reduceBattleshipHp(uint16_t amount);
 	void resetBattleshipHp();
 
-	// Commonly referred to buffs on the server end
+	// Commonly referred to (de)buffs on the server end
 	const bool hasInfinity();
 	const bool hasMesoUp();
 	const bool hasHolySymbol();

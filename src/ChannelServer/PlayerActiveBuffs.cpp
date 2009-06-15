@@ -397,6 +397,17 @@ void PlayerActiveBuffs::stopCharge() {
 	}
 }
 
+void PlayerActiveBuffs::stopBulletSkills() {
+	if (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0)
+		Skills::stopSkill(m_player, Jobs::Hunter::SoulArrow);
+	else if (getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0)
+		Skills::stopSkill(m_player, Jobs::Crossbowman::SoulArrow);
+	else if (getActiveSkillLevel(Jobs::WindBreaker::SoulArrow) > 0)
+		Skills::stopSkill(m_player, Jobs::WindBreaker::SoulArrow);
+	else if (getActiveSkillLevel(Jobs::NightLord::ShadowStars) > 0)
+		Skills::stopSkill(m_player, Jobs::NightLord::ShadowStars);
+}
+
 bool PlayerActiveBuffs::hasIceCharge() const {
 	return (m_activecharge == Jobs::WhiteKnight::BwIceCharge || m_activecharge == Jobs::WhiteKnight::SwordIceCharge);
 }
