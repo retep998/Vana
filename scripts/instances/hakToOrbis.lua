@@ -23,7 +23,7 @@ function playerDeath(playerid)
 
 end
 
-function playerDisconnect(playerid)
+function playerDisconnect(playerid, ispartyleader)
 	markForDelete();
 end
 
@@ -38,15 +38,15 @@ function timerEnd(name, fromtimer)
 
 end
 
-function mobDeath(mobid, mapmobid)
+function mobDeath(mobid, mapmobid, mapid)
 
 end
 
-function mobSpawn(mobid, mapmobid)
+function mobSpawn(mobid, mapmobid, mapid)
 
 end
 
-function changeMap(playerid, newmap, oldmap)
+function changeMap(playerid, newmap, oldmap, ispartyleader)
 
 end
 

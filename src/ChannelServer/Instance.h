@@ -49,7 +49,7 @@ struct TimerAction {
 
 class Instance {
 public:
-	Instance(const string &name, int32_t map, int32_t playerid, int32_t time, bool persistent, bool showtimer);
+	Instance(const string &name, int32_t map, int32_t playerid, int32_t time, int32_t persistent, bool showtimer);
 	~Instance();
 
 	uint32_t getStart() const { return m_start; }
@@ -98,11 +98,11 @@ public:
 	// Timers
 	void removeTimer(const string &name);
 	void setInstanceTimer(int32_t time);
-	void setPersistence(bool p) { m_persistent = p; }
+	void setPersistence(int32_t p) { m_persistent = p; }
 	void timerEnd(const string &name, bool fromTimer = false);
 	bool addTimer(const string &name, const TimerAction &timer);
 	bool hasInstanceTimer() const { return m_time > 0; }
-	bool getPersistence() const { return m_persistent; }
+	int32_t getPersistence() const { return m_persistent; }
 	int32_t checkTimer(const string &name);
 	int32_t checkInstanceTimer();
 	Timer::Container * getTimers() const { return m_timers.get(); }
@@ -112,6 +112,7 @@ public:
 	void sendMessage(InstanceMessages message, int32_t);
 	void sendMessage(InstanceMessages message, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t);
+	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, const string &, int32_t);
 private:
 	boost::scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
@@ -129,7 +130,7 @@ private:
 	int32_t m_max_players; // Maximum players allowed for instance
 	int32_t m_time; // Instance time
 	int32_t m_timer_counter; // Used for uniqueness of timer IDs
-	bool m_persistent; // Does instance repeat?
+	int32_t m_persistent; // How often does instance repeat?
 	bool m_show_timer; // Show timer
 	bool m_reset_on_destroy; // Reset reactors when done
 	bool m_marked_for_delete; // End of instance time

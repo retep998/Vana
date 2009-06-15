@@ -27,7 +27,7 @@ function playerDeath(playerid)
 
 end
 
-function playerDisconnect(playerid)
+function playerDisconnect(playerid, ispartyleader)
 	startInstanceTimer("clean", 1, false);
 end
 
@@ -39,15 +39,15 @@ function timerEnd(name, fromtimer)
 	cleanUpPap();
 end
 
-function mobDeath(mobid, mapmobid)
+function mobDeath(mobid, mapmobid, mapid)
 
 end
 
-function mobSpawn(mobid, mapmobid)
+function mobSpawn(mobid, mapmobid, mapid)
 
 end
 
-function changeMap(playerid, newmap, oldmap)
+function changeMap(playerid, newmap, oldmap, ispartyleader)
 	if not isInstanceMap(newmap) then -- Player probably died, want to make sure this doesn't keep the room full
 		removeInstancePlayer(playerid);
 		startInstanceTimer("clean", 1, false);

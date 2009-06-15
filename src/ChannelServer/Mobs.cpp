@@ -103,7 +103,7 @@ control(0)
 	this->mp = info.mp;
 	Instance *instance = Maps::getMap(mapid)->getInstance();
 	if (instance != 0) {
-		instance->sendMessage(MobSpawn, mobid, id);
+		instance->sendMessage(MobSpawn, mobid, id, mapid);
 	}
 	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
 	statuses[empty.status] = empty;
@@ -371,7 +371,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	Instance *instance = map->getInstance();
 	if (instance != 0) {
-		instance->sendMessage(MobDeath, mobid, id);
+		instance->sendMessage(MobDeath, mobid, id, mapid);
 	}
 	map->removeMob(id, spawnid);
 

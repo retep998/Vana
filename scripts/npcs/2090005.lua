@@ -48,7 +48,7 @@ elseif getMap() == 250000100 then
 				sendNext();
 			else
 				if giveMesos(-6000) then
-					createInstance("hakToOrbis", 60, false, true);
+					createInstance("hakToOrbis", 60, true);
 					addInstancePlayer(getID());
 					setMap(200090310);
 				else
@@ -87,7 +87,7 @@ elseif getMap() == 200000141 then
 				sendNext();
 			else
 				if giveMesos(-6000) then
-					createInstance("hakToMuLung", 60, false, true);
+					createInstance("hakToMuLung", 60, true);
 					addInstancePlayer(getID());
 					setMap(200090300);
 				else

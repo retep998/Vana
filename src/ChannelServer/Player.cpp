@@ -78,12 +78,14 @@ Player::~Player() {
 		if (isTrading()) {
 			TradeHandler::cancelTrade(this);
 		}
+		int32_t isleader = 0;
 		if (getParty() != 0) {
 			getParty()->setMember(getId(), 0);
+			isleader = getParty()->isLeader(getId()) ? 1 : 0;
 		}
 		if (getInstance() != 0) {
 			getInstance()->removePlayer(getId());
-			getInstance()->sendMessage(PlayerDisconnect, getId());
+			getInstance()->sendMessage(PlayerDisconnect, getId(), isleader);
 		}
 		if (getNPC() != 0) {
 			delete getNPC();
@@ -520,7 +522,8 @@ void Player::setMap(int32_t mapid, PortalInfo *portal) {
 		portal = Maps::getMap(mapid)->getSpawnPoint();
 
 	if (getInstance() != 0) {
-		getInstance()->sendMessage(PlayerChangeMap, id, mapid, map);
+		int32_t ispartyleader = (getParty() != 0 ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
+		getInstance()->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
 	}
 
 	Maps::getMap(map)->removePlayer(this);

@@ -1201,8 +1201,11 @@ int LuaExports::checkInstanceTimer(lua_State *luaVm) {
 int LuaExports::createInstance(lua_State *luaVm) {
 	string name = lua_tostring(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
-	bool persistent = lua_toboolean(luaVm, 3) != 0;
-	bool showtimer = lua_toboolean(luaVm, 4) != 0;
+	bool showtimer = lua_toboolean(luaVm, 3) != 0;
+	int32_t persistent = 0;
+	if (lua_isnumber(luaVm, 4)) {
+		persistent = lua_tointeger(luaVm, 4);
+	}
 	Instance *instance = new Instance(name, getPlayer(luaVm)->getMap(), getPlayer(luaVm)->getId(), time, persistent, showtimer);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
@@ -1284,7 +1287,7 @@ int LuaExports::isInstanceMap(lua_State *luaVm) {
 }
 
 int LuaExports::isInstancePersistent(lua_State *luaVm) {
-	lua_pushboolean(luaVm, getInstance(luaVm)->getPersistence());
+	lua_pushboolean(luaVm, getInstance(luaVm)->getPersistence() != 0);
 	return 1;
 }
 
@@ -1338,7 +1341,7 @@ int LuaExports::setInstanceMax(lua_State *luaVm) {
 }
 
 int LuaExports::setInstancePersistence(lua_State *luaVm) {
-	getInstance(luaVm)->setPersistence(lua_toboolean(luaVm, 1) != 0);
+	getInstance(luaVm)->setPersistence(lua_tointeger(luaVm, 1));
 	return 0;
 }
 
