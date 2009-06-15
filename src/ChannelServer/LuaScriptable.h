@@ -55,11 +55,14 @@ namespace LuaExports {
 	// Global exports
 
 	// Miscellaneous
+	int deleteChannelVariable(lua_State *luaVm);
 	int getChannel(lua_State *luaVm);
+	int getChannelVariable(lua_State *luaVm);
 	int getRandomNumber(lua_State *luaVm);
 	int isOnline(lua_State *luaVm);
 	int revertPlayer(lua_State *luaVm);
 	int runNPC(lua_State *luaVm);
+	int setChannelVariable(lua_State *luaVm);
 	int setPlayer(lua_State *luaVm);
 	int showShop(lua_State *luaVm);
 
