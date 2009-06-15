@@ -237,8 +237,11 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		}
 	}
 	if (drop->isMesos()) {
-		int32_t playerrate = (player->getParty() != 0 ? 100 : 60);
+		int32_t playerrate = 100;
+		if (player->getParty() != 0 && !drop->isplayerDrop()) {
 		// Player gets 100% unless partied and having others on the map, in which case it's 60%
+			playerrate = 60;
+		}
 		if (player->getParty() != 0) {
 			vector<Player *> members;
 			for (int8_t i = 0; i < player->getParty()->getMembersCount(); i++) {
