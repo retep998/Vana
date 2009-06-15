@@ -188,8 +188,32 @@ int16_t Map::getFhAtPosition(Pos pos) {
 }
 
 // Portals
+void Map::addPortal(const PortalInfo &portal) {
+	if (portal.name == "sp")
+		spawnpoints.push_back(portal);
+	else
+		portals[portal.name] = portal;
+}
+
+PortalInfo * Map::getPortal(const string &name) {
+	return portals.find(name) != portals.end() ? &portals[name] : 0;
+}
+
 PortalInfo * Map::getSpawnPoint(int32_t pid) {
 	int32_t id = (pid != -1 ? pid : Randomizer::Instance()->randInt(spawnpoints.size() - 1));
+	return &spawnpoints[id];
+}
+
+PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
+	int32_t id = 0;
+	int32_t distance = 200000;
+	for (size_t i = 0; i < spawnpoints.size(); i++) {
+		int32_t cmp = spawnpoints[i].pos - pos;
+		if (cmp < distance) {
+			id = i;
+			distance = cmp;
+		}
+	}
 	return &spawnpoints[id];
 }
 

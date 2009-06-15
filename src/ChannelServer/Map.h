@@ -147,16 +147,10 @@ public:
 	void playerSeated(int16_t id, Player *player);
 
 	// Portals
-	void addPortal(const PortalInfo &portal) {
-		if (portal.name == "sp")
-			spawnpoints.push_back(portal);
-		else
-			portals[portal.name] = portal;
-	}
-	PortalInfo * getPortal(const string &name) {
-		return portals.find(name) != portals.end() ? &portals[name] : 0;
-	}
+	void addPortal(const PortalInfo &portal);
+	PortalInfo * getPortal(const string &name);
 	PortalInfo * getSpawnPoint(int32_t pid = -1);
+	PortalInfo * getNearestSpawnPoint(const Pos &pos);
 
 	// Players
 	void addPlayer(Player *player);
