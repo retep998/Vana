@@ -20,29 +20,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include "Quests.h"
-#include <boost/tr1/unordered_map.hpp>
+#include <map>
 #include <vector>
 
-using std::tr1::unordered_map;
-using std::vector;
+using std::map;
 
 class PacketCreator;
 class Player;
 
 class PlayerQuests {
 public:
-	PlayerQuests(Player *player) : player(player) { }
+	PlayerQuests(Player *player);
 
+	void load();
+	void save();
 	void connectData(PacketCreator &packet);
+
 	void addQuest(int16_t questid, int32_t npcid);
 	void updateQuestMob(int32_t mobid);
-	void checkDone(Quest &quest);
+	void checkDone(ActiveQuest &quest);
 	void finishQuest(int16_t questid, int32_t npcid);
 	bool isQuestActive(int16_t questid);
+	bool isQuestComplete(int16_t questid);
 private:
-	Player *player;
-	unordered_map<int32_t, Quest> quests;
-	vector<QuestComp> completed;
+	Player *m_player;
+	map<int16_t, ActiveQuest> m_quests;
+	map<int16_t, int64_t> m_completed;
 };
 
 #endif

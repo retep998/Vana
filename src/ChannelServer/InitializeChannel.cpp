@@ -110,49 +110,56 @@ void Initializing::initializeQuests() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM questdata");
 	mysqlpp::UseQueryResult res = query.use();
 
-	MYSQL_ROW questRow;
-	while (questRow = res.fetch_raw_row()) {
+	MYSQL_ROW Row;
+	while (Row = res.fetch_raw_row()) {
 		// Col0 : Quest ID
 		//    1 : Next Quest ID
-		Quests::setNextQuest(atoi(questRow[0]), atoi(questRow[1]));
+		Quests::setNextQuest(atoi(Row[0]), atoi(Row[1]));
 	}
 
-	// Quest Requests
-	query << "SELECT * FROM questrequestdata ORDER BY questid ASC";
-	res = query.use();
-
+	// Quest requests
+	string queries[QuestRequestTypes::Count] = {
+		"SELECT questid, oid, count FROM questrequestdata WHERE mob = 1 ORDER BY questid ASC",
+		"SELECT questid, oid, count FROM questrequestdata WHERE item = 1 ORDER BY questid ASC",
+		"SELECT questid, oid, count FROM questrequestdata WHERE quest = 1 ORDER BY questid ASC"
+	};
+	int32_t reqtypes[QuestRequestTypes::Count] = {
+		QuestRequestTypes::Mob,
+		QuestRequestTypes::Item,
+		QuestRequestTypes::Quest
+	};
 	int32_t currentid = 0;
 	int32_t previousid = -1;
-	QuestRequestsInfo reqs;
-	MYSQL_ROW requestRow;
-	while (requestRow = res.fetch_raw_row()) {
-		// Col0 : Row ID
-		//    1 : Quest ID
-		//    2 : Mob
-		//    3 : Item
-		//    4 : Quest
-		//    5 : Object ID
-		//    6 : Count
-		currentid = atoi(requestRow[1]);
+	unordered_map<int32_t, int16_t> reqs;
 
-		if (currentid != previousid && previousid != -1) {
-			Quests::addRequest(previousid, reqs);
+	for (int32_t i = 0; i < QuestRequestTypes::Count; i++) {
+		query << queries[i];
+		res = query.use();
+
+		currentid = 0;
+		previousid = -1;
+
+		while (Row = res.fetch_raw_row()) {
+			// Col0 : Quest ID
+			//    1 : Object ID
+			//    2 : Count
+			currentid = atoi(Row[0]);
+
+			if (currentid != previousid && previousid != -1) {
+				Quests::addRequest(previousid, reqtypes[i], reqs);
+				reqs.clear();
+			}
+
+			int32_t id = atoi(Row[1]);
+			int16_t count = atoi(Row[2]);
+			reqs[id] = count;
+
+			previousid = currentid;
+		}
+		if (previousid != -1) {
+			Quests::addRequest(previousid, reqtypes[i], reqs);
 			reqs.clear();
 		}
-
-		QuestRequestInfo req;
-		req.ismob = atob(requestRow[2]);
-		req.isitem = atob(requestRow[3]);
-		req.isquest = atob(requestRow[4]);
-		req.id = atoi(requestRow[5]);
-		req.count = atoi(requestRow[6]);
-		reqs.push_back(req);
-
-		previousid = atoi(requestRow[1]);
-	}
-	if (previousid != -1) {
-		Quests::addRequest(previousid, reqs);
-		reqs.clear();
 	}
 
 	// Quest Rewards
@@ -162,8 +169,7 @@ void Initializing::initializeQuests() {
 	currentid = 0;
 	previousid = -1;
 	QuestRewardsInfo rwas;
-	MYSQL_ROW rewardRow;
-	while (rewardRow = res.fetch_raw_row()) {
+	while (Row = res.fetch_raw_row()) {
 		// Col0 : Row ID
 		//    1 : Quest ID
 		//    2 : Start
@@ -177,7 +183,7 @@ void Initializing::initializeQuests() {
 		//   10 : Gender
 		//   11 : Job
 		//   12 : Prop
-		currentid = atoi(rewardRow[1]);
+		currentid = atoi(Row[1]);
 
 		if (currentid != previousid && previousid != -1) {
 			Quests::addReward(previousid, rwas);
@@ -185,20 +191,20 @@ void Initializing::initializeQuests() {
 		}
 
 		QuestRewardInfo rwa;
-		rwa.start = atob(rewardRow[2]);
-		rwa.isitem = atob(rewardRow[3]);
-		rwa.isexp = atob(rewardRow[4]);
-		rwa.ismesos = atob(rewardRow[5]);
-		rwa.isfame = atob(rewardRow[6]);
-		rwa.isskill = atob(rewardRow[7]);
-		rwa.id = atoi(rewardRow[8]);
-		rwa.count = atoi(rewardRow[9]);
-		rwa.gender = atoi(rewardRow[10]);
-		rwa.job = atoi(rewardRow[11]);
-		rwa.prop = atoi(rewardRow[12]);
+		rwa.start = atob(Row[2]);
+		rwa.isitem = atob(Row[3]);
+		rwa.isexp = atob(Row[4]);
+		rwa.ismesos = atob(Row[5]);
+		rwa.isfame = atob(Row[6]);
+		rwa.isskill = atob(Row[7]);
+		rwa.id = atoi(Row[8]);
+		rwa.count = atoi(Row[9]);
+		rwa.gender = atoi(Row[10]);
+		rwa.job = atoi(Row[11]);
+		rwa.prop = atoi(Row[12]);
 		rwas.push_back(rwa);
 
-		previousid = atoi(rewardRow[1]);
+		previousid = currentid;
 	}
 	if (previousid != -1) {
 		Quests::addReward(previousid, rwas);
