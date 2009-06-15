@@ -19,19 +19,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INSTANCEMESSAGECONSTANTS_H
 
 enum InstanceMessages {
+	// 4 parameters
+	PlayerChangeMap, // Player ID, new map ID, old map ID, is party leader
+
 	// 3 parameters
-	PlayerChangeMap, // Player ID, new map ID, old map ID
+	MobDeath, // Mob ID, map mob ID, map ID
+	MobSpawn, // Mob ID, map mob ID, map ID
 
 	// 2 parameters
-	MobDeath, // Mob ID, map mob ID
-	MobSpawn, // Mob ID, map mob ID
 	TimerEnd, // Timer name, boolean false
 	TimerNaturalEnd, // Timer name, boolean true
 	PartyRemoveMember, // Party ID, Player ID
+	PlayerDisconnect, // Player ID, is party leader
 
 	// 1 parameter
 	PlayerDeath, // Player ID
-	PlayerDisconnect, // Player ID
 	InstanceTimerEnd, // Boolean false
 	InstanceTimerNaturalEnd, // Boolean true
 	PartyDisband, // Party ID

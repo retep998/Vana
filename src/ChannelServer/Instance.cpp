@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t time, bool persistent, bool showtimer) :
+Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t time, int32_t persistent, bool showtimer) :
 m_name(name),
 m_max_players(0),
 m_timer_counter(0),
@@ -45,18 +45,7 @@ m_start(TimeUtilities::getTickCount()),
 m_reset_on_destroy(false),
 m_marked_for_delete(false)
 {
-	if (time < 0) {
-		m_time = -(time + 1);
-		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
-		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
-			id, getTimers(), Timer::Time::nthSecondOfHour(static_cast<uint16_t>(m_time)), m_persistent ? 3600000 : 0);
-	}
-	else if (time > 0) {
-		m_time = time * 1000;
-		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
-		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
-			id, getTimers(), Timer::Time::fromNow(m_time), m_persistent ? m_time : 0);
-	}
+	setInstanceTimer(time);
 }
 
 Instance::~Instance() {
@@ -306,13 +295,13 @@ void Instance::setInstanceTimer(int32_t time) {
 		m_time = -(time + 1);
 		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
 		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
-			id, getTimers(), Timer::Time::nthSecondOfHour(static_cast<uint16_t>(m_time)), m_persistent ? 3600000 : 0);
+			id, getTimers(), Timer::Time::nthSecondOfHour(static_cast<uint16_t>(m_time)), m_persistent * 1000);
 	}
 	else if (time > 0) {
 		m_time = time * 1000;
 		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
 		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
-			id, getTimers(), Timer::Time::fromNow(m_time), m_persistent ? m_time : 0);
+			id, getTimers(), Timer::Time::fromNow(m_time), m_persistent * 1000);
 	}
 }
 
@@ -330,6 +319,10 @@ void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t
 
 void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) {
 	getLuaInstance()->run(message, parameter1, parameter2, parameter3);
+}
+
+void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) {
+	getLuaInstance()->run(message, parameter1, parameter2, parameter3, parameter4);
 }
 
 void Instance::sendMessage(InstanceMessages message, const string &parameter1, int32_t parameter2) {

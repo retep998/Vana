@@ -45,10 +45,6 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
 			lua_getglobal(luaVm, "playerDeath");
 			lua_pushinteger(luaVm, parameter);
 			break;
-		case PlayerDisconnect:
-			lua_getglobal(luaVm, "playerDisconnect");
-			lua_pushinteger(luaVm, parameter);
-			break;
 		case InstanceTimerEnd:
 		case InstanceTimerNaturalEnd:
 			lua_getglobal(luaVm, "instanceTimerEnd");
@@ -84,18 +80,18 @@ bool LuaInstance::run(InstanceMessages message, const string &parameter1, int32_
 
 bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2) {
 	switch (message) {
-		case MobDeath:
-			lua_getglobal(luaVm, "mobDeath");
-			break;
-		case MobSpawn:
-			lua_getglobal(luaVm, "mobSpawn");
+		case PlayerDisconnect:
+			lua_getglobal(luaVm, "playerDisconnect");
+			lua_pushinteger(luaVm, parameter1);
+			lua_pushboolean(luaVm, parameter2 != 0);
 			break;
 		case PartyRemoveMember:
 			lua_getglobal(luaVm, "partyRemoveMember");
+			lua_pushinteger(luaVm, parameter1);
+			lua_pushinteger(luaVm, parameter2);
 			break;
 	}
-	lua_pushinteger(luaVm, parameter1);
-	lua_pushinteger(luaVm, parameter2);
+
 	if (lua_pcall(luaVm, 2, 0, 0)) {
 		std::cout << lua_tostring(luaVm, -1) << std::endl;
 		return false;
@@ -105,13 +101,33 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 
 bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) {
 	switch (message) {
-		case PlayerChangeMap:
-			lua_getglobal(luaVm, "changeMap");
+		case MobDeath:
+			lua_getglobal(luaVm, "mobDeath");
+			break;
+		case MobSpawn:
+			lua_getglobal(luaVm, "mobSpawn");
 			break;
 	}
 	lua_pushinteger(luaVm, parameter1);
 	lua_pushinteger(luaVm, parameter2);
 	lua_pushinteger(luaVm, parameter3);
+	if (lua_pcall(luaVm, 3, 0, 0)) {
+		std::cout << lua_tostring(luaVm, -1) << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) {
+	switch (message) {
+		case PlayerChangeMap:
+			lua_getglobal(luaVm, "changeMap");
+			lua_pushinteger(luaVm, parameter1);
+			lua_pushinteger(luaVm, parameter2);
+			lua_pushinteger(luaVm, parameter3);
+			lua_pushboolean(luaVm, parameter4 != 0);
+			break;
+	}
 	if (lua_pcall(luaVm, 3, 0, 0)) {
 		std::cout << lua_tostring(luaVm, -1) << std::endl;
 		return false;
