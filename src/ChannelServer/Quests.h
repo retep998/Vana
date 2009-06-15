@@ -19,23 +19,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define QUESTS_H
 
 #include "Types.h"
-#include <vector>
 #include <boost/tr1/unordered_map.hpp>
+#include <string>
+#include <vector>
 
-using std::vector;
+using std::string;
 using std::tr1::unordered_map;
+using std::vector;
 
 class Player;
 class PacketReader;
 
-struct QuestRequestInfo {
-	bool ismob;
-	bool isitem;
-	bool isquest;
-	int32_t id;
-	int16_t count;
+namespace QuestRequestTypes {
+	const int32_t Count = 3;
+	const int32_t Mob = 0x01;
+	const int32_t Item = 0x02;
+	const int32_t Quest = 0x04;
 };
-typedef vector<QuestRequestInfo> QuestRequestsInfo;
+
+typedef unordered_map<int32_t, int16_t> QuestRequest;
+typedef unordered_map<int32_t, QuestRequest> QuestRequestInfo;
 
 struct QuestRewardInfo {
 	bool start;
@@ -53,7 +56,11 @@ struct QuestRewardInfo {
 typedef vector<QuestRewardInfo> QuestRewardsInfo;
 
 struct QuestInfo {
-	QuestRequestsInfo requests;
+	bool hasRequests() { return (hasRequests(QuestRequestTypes::Mob) || hasRequests(QuestRequestTypes::Item) || hasRequests(QuestRequestTypes::Quest)); }
+	bool hasRequests(int32_t type) { return (requests.find(type) != requests.end()); }
+	QuestRequest getRequest(int32_t type) { return requests[type]; }
+
+	QuestRequestInfo requests;
 	QuestRewardsInfo rewards;
 	int16_t nextquest;
 };
@@ -65,23 +72,18 @@ struct QuestMob {
 	int16_t maxcount;
 };
 
-struct Quest {
-	Quest() : done(false) { }
+struct ActiveQuest {
+	ActiveQuest() : done(false) { }
 	int16_t id;
-	vector<QuestMob> mobs;
 	bool done;
-};
-
-struct QuestComp {
-	QuestComp(int16_t id, int64_t time) : id(id), time(time) { }
-	int16_t id;
-	int64_t time;
+	string data;
+	vector<QuestMob> mobs;
 };
 
 namespace Quests {
 	extern unordered_map<int32_t, QuestInfo> quests;
-	void addRequest(int32_t id, QuestRequestsInfo request);
-	void addReward(int32_t id, QuestRewardsInfo raws);
+	void addRequest(int32_t id, int32_t type, unordered_map<int32_t, int16_t> &request);
+	void addReward(int32_t id, QuestRewardsInfo &raws);
 	void setNextQuest(int16_t id, int16_t questid);
 	void getQuest(Player *player, PacketReader &packet);
 	bool giveItem(Player *player, int32_t itemid, int16_t amount);

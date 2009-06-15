@@ -408,6 +408,7 @@ void Player::saveAll(bool savecooldowns) {
 	getInventory()->save();
 	getMounts()->save();
 	getPets()->save();
+	getQuests()->save();
 	getSkills()->save(savecooldowns);
 	getStats()->save();
 	getStorage()->save();

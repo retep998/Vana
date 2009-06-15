@@ -290,7 +290,7 @@ void PlayerInventory::load() {
 		}
 	}
 
-	query << "SELECT mapindex, mapid FROM teleport_rock_locations WHERE characterid = " << m_player->getId();
+	query << "SELECT mapindex, mapid FROM teleport_rock_locations WHERE charid = " << m_player->getId();
 	res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -354,7 +354,7 @@ void PlayerInventory::save() {
 	if (!firstrun)
 		query.exec();
 
-	query << "DELETE FROM teleport_rock_locations WHERE characterid = " << m_player->getId();
+	query << "DELETE FROM teleport_rock_locations WHERE charid = " << m_player->getId();
 	query.exec();
 
 	for (size_t i = 0; i < m_rocklocations.size(); i++) {

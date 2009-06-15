@@ -40,6 +40,7 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
 	player->getSession()->send(packet);
+
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_UPDATE_QUEST);
 	packet.add<int8_t>(8);
@@ -49,14 +50,13 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::updateQuest(Player *player, const Quest &quest) {
+void QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) {
 	PacketCreator packet;
+	std::ostringstream info;
 	packet.add<int16_t>(SEND_NOTE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(quest.id);
 	packet.add<int8_t>(1);
-
-	std::ostringstream info;
 	for (size_t i = 0; i < quest.mobs.size(); i++) {
 		info << std::setw(3) << std::setfill('0') << quest.mobs[i].count << '\0';
 	}
@@ -81,6 +81,7 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 	packet.add<int8_t>(2);
 	packet.add<int64_t>(time);
 	player->getSession()->send(packet);
+
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_UPDATE_QUEST);
 	packet.add<int8_t>(8);
@@ -88,10 +89,12 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 	packet.add<int32_t>(npcid);
 	packet.add<int16_t>(nextquest);
 	player->getSession()->send(packet);
+
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_GAIN_ITEM);
 	packet.add<int8_t>(9);
 	player->getSession()->send(packet);
+
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_SKILL);
 	packet.add<int32_t>(player->getId());
