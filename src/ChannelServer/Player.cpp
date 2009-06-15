@@ -667,12 +667,13 @@ void Player::saveStats() {
 void Player::saveAll(bool savecooldowns) {
 	saveStats();
 	getInventory()->save();
+	getMonsterBook()->save();
 	getMounts()->save();
 	getPets()->save();
+	getQuests()->save();
 	getSkills()->save(savecooldowns);
 	getStorage()->save();
 	getVariables()->save();
-	getMonsterBook()->save();
 }
 
 void Player::setOnline(bool online) {
