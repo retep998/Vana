@@ -164,10 +164,9 @@ void Map::killReactors(bool showpacket) {
 
 void Map::checkReactorSpawn(clock_t time, bool spawnAll) {
 	for (size_t i = 0; i < reactorspawns.size(); i++) {
-		int32_t id = reactorspawns[i].id;
 		clock_t spawnat = reactorspawns[i].spawnat;
 		if (!reactorspawns[i].spawned && (spawnAll || (spawnat != -1 && time > spawnat))) {
-			getReactor(id)->restore();
+			getReactor(i)->restore();
 			reactorspawns[i].spawned = true;
 		}
 	}
