@@ -97,8 +97,6 @@ owner(0),
 horntailsponge(0),
 counter(0),
 taunteffect(100),
-hasimmunity(false),
-hasreflect(false),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
 timers(new Timer::Container),
 control(0)
@@ -171,19 +169,6 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 		int32_t cstatus = statusinfo[i].status;
 		bool alreadyhas = (statuses.find(cstatus) != statuses.end());
 		switch (cstatus) {
-			case StatusEffects::Mob::WeaponImmunity:
-			case StatusEffects::Mob::MagicImmunity:
-				if (hasImmunity())
-					return;
-				setImmunity(true);
-				break;
-			case StatusEffects::Mob::WeaponDamageReflect:
-			case StatusEffects::Mob::MagicDamageReflect:
-			case StatusEffects::Mob::AnyDamageReflect:
-				if (hasReflect())
-					return;
-				setReflect(true);
-				break;
 			case StatusEffects::Mob::Poison: // Status effects that do not renew
 			case StatusEffects::Mob::Doom:
 				if (alreadyhas)
@@ -258,14 +243,6 @@ void Mob::removeStatus(int32_t status) {
 	if (hasStatus(status)) {
 		StatusInfo stat = statuses[status];
 		switch (status) {
-			case StatusEffects::Mob::WeaponImmunity:
-			case StatusEffects::Mob::MagicImmunity:
-				setImmunity(false);
-				break;
-			case StatusEffects::Mob::WeaponDamageReflect:
-			case StatusEffects::Mob::MagicDamageReflect:
-			case StatusEffects::Mob::AnyDamageReflect:
-				setReflect(false);
 			case StatusEffects::Mob::ShadowWeb:
 				weblevel = 0;
 				webplayerid = 0;
@@ -285,6 +262,26 @@ void Mob::removeStatus(int32_t status) {
 		statuses.erase(status);
 		MobsPacket::removeStatus(this, status);
 	}
+}
+
+bool Mob::hasImmunity() const {
+	int32_t mask = StatusEffects::Mob::WeaponImmunity | StatusEffects::Mob::MagicImmunity;
+	return ((status & mask) != 0);
+}
+
+bool Mob::hasReflect() const {
+	int32_t mask = StatusEffects::Mob::WeaponDamageReflect | StatusEffects::Mob::MagicDamageReflect | StatusEffects::Mob::AnyDamageReflect;
+	return ((status & mask) != 0);
+}
+
+bool Mob::hasWeaponReflect() const {
+	int32_t mask = StatusEffects::Mob::WeaponDamageReflect | StatusEffects::Mob::AnyDamageReflect;
+	return ((status & mask) != 0);
+}
+
+bool Mob::hasMagicReflect() const {
+	int32_t mask = StatusEffects::Mob::MagicDamageReflect | StatusEffects::Mob::AnyDamageReflect;
+	return ((status & mask) != 0);
 }
 
 void Mob::setControl(Player *control) {
