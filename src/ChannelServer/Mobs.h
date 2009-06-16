@@ -85,6 +85,9 @@ public:
 	int8_t getVenomCount() const { return venomcount; }
 	int16_t getTauntEffect() const { return taunteffect; }
 	int16_t getOriginFh() const { return originfh; }
+	int16_t getStatusValue(int32_t status);
+	int16_t getWeaponReflection();
+	int16_t getMagicReflection();
 	int32_t getId() const { return id; }
 	int32_t getMapId() const { return mapid; }
 	int32_t getMobId() const { return mobid; }
