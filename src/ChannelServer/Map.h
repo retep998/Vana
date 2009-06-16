@@ -82,7 +82,7 @@ struct PortalInfo {
 	bool onlyOnce; // Run it only once per map entry
 };
 typedef unordered_map<string, PortalInfo> PortalsInfo;
-typedef vector<PortalInfo> SpawnPoints;
+typedef unordered_map<int8_t, PortalInfo> SpawnPoints;
 
 struct NPCSpawnInfo {
 	int32_t id;
@@ -141,7 +141,7 @@ public:
 	// Portals
 	void addPortal(const PortalInfo &portal);
 	PortalInfo * getPortal(const string &name);
-	PortalInfo * getSpawnPoint(int32_t pid = -1);
+	PortalInfo * getSpawnPoint(int8_t pid = -1);
 	PortalInfo * getNearestSpawnPoint(const Pos &pos);
 
 	// Players
