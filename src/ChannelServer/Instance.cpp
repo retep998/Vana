@@ -277,6 +277,13 @@ void Instance::removeTimer(const string &timername) {
 	}
 }
 
+void Instance::removeAllTimers() {
+	for (unordered_map<string, TimerAction>::iterator iter = m_timer_actions.begin(); iter != m_timer_actions.end(); iter++) {
+		removeTimer(iter->first);
+	}
+	setInstanceTimer(0);
+}
+
 int32_t Instance::checkInstanceTimer() {
 	int32_t timeleft = 0;
 	if (m_time > 0) {
@@ -337,10 +344,15 @@ void Instance::timerEnd(const string &name, bool fromTimer) {
 void Instance::instanceEnd(bool fromTimer) {
 	sendMessage(InstanceTimerNaturalEnd, fromTimer ? 1 : 0);
 	if (!getPersistence()) {
-		setMarkedForDelete(true);
+		markForDelete();
 	}
 }
 
 int32_t Instance::getCounterId() {
 	return ++m_timer_counter;
+}
+
+void Instance::markForDelete() {
+	m_marked_for_delete = true;
+	removeAllTimers();
 }

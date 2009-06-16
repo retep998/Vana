@@ -26,16 +26,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
+using boost::scoped_ptr;
+using std::string;
+using std::tr1::unordered_map;
+using std::vector;
+
 class LuaInstance;
 class Map;
 class Party;
 class Player;
 class Reactor;
 struct PortalInfo;
-
-using std::tr1::unordered_map;
-using std::string;
-using std::vector;
 
 namespace Timer {
 	class Container;
@@ -55,7 +56,7 @@ public:
 	uint32_t getStart() const { return m_start; }
 	string getName() const { return m_name; }
 	bool getMarkedForDelete() const { return m_marked_for_delete; }
-	void setMarkedForDelete(bool mark) { m_marked_for_delete = mark; }
+	void markForDelete();
 	void instanceEnd(bool fromTimer = false);
 	int32_t getCounterId();
 	Variables * getVariables() const { return m_variables.get(); }
@@ -96,6 +97,7 @@ public:
 	void addParty(Party *party);
 
 	// Timers
+	void removeAllTimers();
 	void removeTimer(const string &name);
 	void setInstanceTimer(int32_t time);
 	void setPersistence(int32_t p) { m_persistent = p; }
@@ -115,16 +117,19 @@ public:
 	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, const string &, int32_t);
 private:
-	boost::scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
-	boost::scoped_ptr<Variables> m_variables;
-	boost::scoped_ptr<LuaInstance> m_luainstance; // Lua instance for interacting with scripts
+	scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
+	scoped_ptr<Variables> m_variables;
+	scoped_ptr<LuaInstance> m_luainstance; // Lua instance for interacting with scripts
+
 	unordered_map<string, TimerAction> m_timer_actions; // Timers indexed by name
 	unordered_map<int32_t, Player *> m_players;
+
 	vector<string> m_banned; // For squads
 	vector<string> m_players_order; // For squads
 	vector<Reactor *> m_reactors;
 	vector<Map *> m_maps;
 	vector<Party *> m_parties;
+
 	uint32_t m_start; // Tick count when instance started
 	string m_name; // Identification for the instance
 	int32_t m_max_players; // Maximum players allowed for instance
