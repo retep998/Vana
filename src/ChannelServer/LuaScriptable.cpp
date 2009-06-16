@@ -1319,7 +1319,7 @@ int LuaExports::isPlayerSignedUp(lua_State *luaVm) {
 }
 
 int LuaExports::markForDelete(lua_State *luaVm) {
-	getInstance(luaVm)->setMarkedForDelete(true);
+	getInstance(luaVm)->markForDelete();
 	return 0;
 }
 
