@@ -614,7 +614,7 @@ void Inventory::useReturnScroll(Player *player, PacketReader &packet) {
 		return;
 	takeItemSlot(player, Inventories::UseInventory, slot, 1);
 	int32_t map = ItemDataProvider::Instance()->getItemInfo(itemid).cons.moveTo;
-	player->setMap(map == 999999999 ? Maps::getMap(player->getMap())->getInfo()->rm : map);
+	player->setMap(map == Maps::NoMap ? Maps::getMap(player->getMap())->getInfo()->rm : map);
 }
 
 void Inventory::useScroll(Player *player, PacketReader &packet) {

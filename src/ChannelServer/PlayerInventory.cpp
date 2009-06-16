@@ -497,14 +497,14 @@ void PlayerInventory::rockPacket(PacketCreator &packet) {
 		packet.add<int32_t>(mapid);
 	}
 	for (; remaining <= Inventories::TeleportRockMax; remaining++) {
-		packet.add<int32_t>(999999999);
+		packet.add<int32_t>(Maps::NoMap);
 	}
 	for (remaining = 1; remaining <= m_viplocations.size(); remaining++) {
 		int32_t mapid = m_viplocations[remaining - 1];
 		packet.add<int32_t>(mapid);
 	}
 	for (; remaining <= Inventories::VipRockMax; remaining++) {
-		packet.add<int32_t>(999999999);
+		packet.add<int32_t>(Maps::NoMap);
 	}
 }
 

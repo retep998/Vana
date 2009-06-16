@@ -201,7 +201,6 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
 	lua_register(luaVm, "addInstanceParty", &LuaExports::addInstanceParty);
 	lua_register(luaVm, "addInstancePlayer", &LuaExports::addInstancePlayer);
-	lua_register(luaVm, "addInstanceReactor", &LuaExports::addInstanceReactor);
 	lua_register(luaVm, "addPlayerSignUp", &LuaExports::addPlayerSignUp);
 	lua_register(luaVm, "banInstancePlayer", &LuaExports::banInstancePlayer);
 	lua_register(luaVm, "checkInstanceTimer", &LuaExports::checkInstanceTimer);
@@ -224,9 +223,11 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "removeAllInstancePlayers", &LuaExports::removeAllInstancePlayers);
 	lua_register(luaVm, "removeInstancePlayer", &LuaExports::removeInstancePlayer);
 	lua_register(luaVm, "removePlayerSignUp", &LuaExports::removePlayerSignUp);
+	lua_register(luaVm, "respawnInstanceMobs", &LuaExports::respawnInstanceMobs);
+	lua_register(luaVm, "respawnInstanceReactors", &LuaExports::respawnInstanceReactors);
 	lua_register(luaVm, "setInstanceMax", &LuaExports::setInstanceMax);
 	lua_register(luaVm, "setInstancePersistence", &LuaExports::setInstancePersistence);
-	lua_register(luaVm, "setInstanceReactorReset", &LuaExports::setInstanceReactorReset);
+	lua_register(luaVm, "setInstanceReset", &LuaExports::setInstanceReset);
 	lua_register(luaVm, "setInstanceTime", &LuaExports::setInstanceTime);
 	lua_register(luaVm, "setInstanceVariable", &LuaExports::setInstanceVariable);
 	lua_register(luaVm, "startInstanceTimer", &LuaExports::startInstanceTimer);
@@ -1188,12 +1189,6 @@ int LuaExports::addInstancePlayer(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::addInstanceReactor(lua_State *luaVm) {
-	Reactor * reactor = Maps::getMap(lua_tointeger(luaVm, 1))->getReactor(lua_tointeger(luaVm, 2));
-	getInstance(luaVm)->addReactor(reactor);
-	return 0;
-}
-
 int LuaExports::addPlayerSignUp(lua_State *luaVm) {
 	Player *player = 0;
 	if (lua_type(luaVm, -1) == LUA_TSTRING)
@@ -1362,12 +1357,30 @@ int LuaExports::setInstanceMax(lua_State *luaVm) {
 	return 0;
 }
 
+int LuaExports::respawnInstanceMobs(lua_State *luaVm) {
+	int32_t mapid = Maps::NoMap;
+	if (lua_isnumber(luaVm, 1)) {
+		mapid = lua_tointeger(luaVm, 1);
+	}
+	getInstance(luaVm)->respawnMobs(mapid);
+	return 0;
+}
+
+int LuaExports::respawnInstanceReactors(lua_State *luaVm) {
+	int32_t mapid = Maps::NoMap;
+	if (lua_isnumber(luaVm, 1)) {
+		mapid = lua_tointeger(luaVm, 1);
+	}
+	getInstance(luaVm)->respawnReactors(mapid);
+	return 0;
+}
+
 int LuaExports::setInstancePersistence(lua_State *luaVm) {
 	getInstance(luaVm)->setPersistence(lua_tointeger(luaVm, 1));
 	return 0;
 }
 
-int LuaExports::setInstanceReactorReset(lua_State *luaVm) {
+int LuaExports::setInstanceReset(lua_State *luaVm) {
 	getInstance(luaVm)->setResetAtEnd(lua_toboolean(luaVm, 1) != 0);
 	return 0;
 }

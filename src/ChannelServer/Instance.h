@@ -60,6 +60,9 @@ public:
 	void instanceEnd(bool fromTimer = false);
 	int32_t getCounterId();
 	Variables * getVariables() const { return m_variables.get(); }
+	void setResetAtEnd(bool reset) { m_reset_on_destroy = reset; }
+	void respawnMobs(int32_t mapid);
+	void respawnReactors(int32_t mapid);
 
 	// Players
 	vector<int32_t> getAllPlayerIds();
@@ -85,13 +88,6 @@ public:
 	void addMap(int32_t mapid);
 	Map * getMap(int32_t mapid);
 	size_t getMapNum();
-
-	// Reactors
-	void addReactor(Reactor *reactor);
-	void resetAll();
-	void setResetAtEnd(bool reset) { m_reset_on_destroy = reset; }
-	Reactor * getReactor(int32_t reactorid);
-	size_t getReactorNum();
 
 	// Parties
 	void addParty(Party *party);
