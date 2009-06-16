@@ -432,6 +432,11 @@ namespace Jobs {
 			Striker3 = 1511
 		};
 	}
+	namespace All {
+		enum Skills {
+			RegularAttack = 0
+		};
+	}
 	namespace Beginner {
 		enum Skills {
 			EchoOfHero = 1005,

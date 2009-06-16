@@ -363,7 +363,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	}
 	packet.skipBytes(4); // Unk
 	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
-	if (skillid > 0)
+	if (skillid != Jobs::All::RegularAttack)
 		Skills::useAttackSkill(player, skillid);
 	int32_t map = player->getMap();
 	uint32_t totaldmg = 0;
