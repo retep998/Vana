@@ -910,7 +910,8 @@ namespace Mobs {
 
 namespace Maps {
 	enum {
-		OriginOfClockTower = 220080001
+		OriginOfClockTower = 220080001,
+		NoMap = 999999999
 	};
 }
 

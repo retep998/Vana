@@ -139,18 +139,36 @@ void Map::addReactor(Reactor *reactor) {
 	reactor->setId(this->reactors.size() - 1 + 200);
 }
 
-void Map::addReactorRespawn(const ReactorRespawnInfo &respawn) {
-	if (reactorspawns[respawn.id].time >= 0)
-		reactorrespawns.push_back(respawn);
+void Map::removeReactor(int32_t id) {
+	reactorspawns[id].spawned = false;
+	if (reactorspawns[id].time >= 0) {
+		reactorspawns[id].spawnat = reactorspawns[id].time * 1000 + TimeUtilities::getTickCount();
+	}
+	else {
+		reactorspawns[id].spawnat = -1;
+	}
 }
 
-void Map::checkReactorSpawn(clock_t time) {
-	for (size_t i = 0; i < reactorrespawns.size(); i++) {
-		int32_t id = reactorrespawns[i].id;
-		if ((time - reactorrespawns[i].killed) > (reactorspawns[id].time * 1000)) {
+void Map::killReactors(bool showpacket) {
+	Reactor *r;
+	for (size_t i = 0; i < reactors.size(); i++) {
+		r = reactors[i];
+		if (r->isAlive()) {
+			r->kill();
+			if (showpacket) {
+				ReactorPacket::destroyReactor(r);
+			}
+		}
+	}
+}
+
+void Map::checkReactorSpawn(clock_t time, bool spawnAll) {
+	for (size_t i = 0; i < reactorspawns.size(); i++) {
+		int32_t id = reactorspawns[i].id;
+		clock_t spawnat = reactorspawns[i].spawnat;
+		if (!reactorspawns[i].spawned && (spawnAll || (spawnat != -1 && time > spawnat))) {
 			getReactor(id)->restore();
-			reactorrespawns.erase(reactorrespawns.begin() + i);
-			i--;
+			reactorspawns[i].spawned = true;
 		}
 	}
 }
@@ -190,7 +208,7 @@ int16_t Map::getFhAtPosition(Pos pos) {
 // Portals
 void Map::addPortal(const PortalInfo &portal) {
 	if (portal.name == "sp")
-		spawnpoints.push_back(portal);
+		spawnpoints[portal.id] = portal;
 	else
 		portals[portal.name] = portal;
 }
@@ -199,22 +217,22 @@ PortalInfo * Map::getPortal(const string &name) {
 	return portals.find(name) != portals.end() ? &portals[name] : 0;
 }
 
-PortalInfo * Map::getSpawnPoint(int32_t pid) {
-	int32_t id = (pid != -1 ? pid : Randomizer::Instance()->randInt(spawnpoints.size() - 1));
+PortalInfo * Map::getSpawnPoint(int8_t pid) {
+	int8_t id = (pid != -1 ? pid : Randomizer::Instance()->randChar(spawnpoints.size() - 1));
 	return &spawnpoints[id];
 }
 
 PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
-	int32_t id = 0;
+	int8_t id = 0;
 	int32_t distance = 200000;
-	for (size_t i = 0; i < spawnpoints.size(); i++) {
-		int32_t cmp = spawnpoints[i].pos - pos;
+	for (unordered_map<int8_t, PortalInfo>::iterator i = spawnpoints.begin(); i != spawnpoints.end(); i++) {
+		int32_t cmp = i->second.pos - pos;
 		if (cmp < distance) {
-			id = i;
+			id = i->first;
 			distance = cmp;
 		}
 	}
-	return &spawnpoints[id];
+	return (id == 0 ? getSpawnPoint() : &spawnpoints[id]);
 }
 
 // Mobs
@@ -223,14 +241,14 @@ void Map::addMobSpawn(const MobSpawnInfo &spawn) {
 	spawnMob(spawn.id, spawn.pos, mobspawns.size() - 1, spawn.fh);
 }
 
-void Map::checkMobSpawn(clock_t time) {
+void Map::checkMobSpawn(clock_t time, bool spawnAll) {
 	// (Re-)spawn Mobs
-	for (size_t i = 0; i < mobrespawns.size(); i++) {
-		int32_t id = mobrespawns[i].spawnid;
-		if (mobrespawns[i].spawnat < time) {
-			spawnMob(mobspawns[id].id, mobspawns[id].pos, id, mobspawns[id].fh);
-			mobrespawns.erase(mobrespawns.begin() + i);
-			i--;
+	for (size_t i = 0; i < mobspawns.size(); i++) {
+		int32_t id = mobspawns[i].id;
+		int32_t spawnat = mobspawns[i].spawnat;
+		if (!mobspawns[i].spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
+			spawnMob(id, mobspawns[i].pos, i, mobspawns[i].fh);
+			mobspawns[i].spawned = true;
 		}
 	}
 }
@@ -290,8 +308,9 @@ void Map::updateMobControl(Mob *mob, bool spawn) {
 void Map::removeMob(int32_t id, int32_t spawnid) {
 	if (mobs.find(id) != mobs.end()) {
 		if (spawnid > -1 && mobspawns[spawnid].time > -1) { // Add spawn point to respawns if mob was spawned by a spawn point.
-			clock_t spawntime = mobspawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(100) + 100) / 100; // Randomly spawn between 1x and 2x the spawn time
-			mobrespawns.push_back(MobRespawnInfo(spawnid, TimeUtilities::getTickCount() + spawntime));
+			clock_t spawntime = TimeUtilities::getTickCount() + mobspawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(100) + 100) / 100; // Randomly spawn between 1x and 2x the spawn time
+			mobspawns[spawnid].spawnat = spawntime;
+			mobspawns[spawnid].spawned = false;
 		}
 		this->mobs.erase(id);
 	}

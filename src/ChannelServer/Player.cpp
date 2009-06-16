@@ -208,7 +208,7 @@ void Player::playerConnect(PacketReader &packet) {
 	// Stats
 	stats.reset(new PlayerStats(this));
 
-	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
+	if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
 		map_pos = 0;
 		if (getStats()->getHp() == 0)

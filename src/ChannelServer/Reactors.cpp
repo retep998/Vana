@@ -89,7 +89,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 
 				struct stat fileInfo;
 				if (!stat(filename.c_str(), &fileInfo)) { // Script found
-					LuaReactor(filenameStream.str(), player->getId(), id, reactor->getMapId());
+					LuaReactor(filename, player->getId(), id, reactor->getMapId());
 				}
 				else { // Default action of dropping an item
 					reactor->drop(player);
@@ -97,7 +97,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 
 				reactor->setState(revent->nextstate, false);
 				reactor->kill();
-				Maps::getMap(reactor->getMapId())->addReactorRespawn(ReactorRespawnInfo(id, TimeUtilities::getTickCount()));
+				Maps::getMap(reactor->getMapId())->removeReactor(id);
 				ReactorPacket::destroyReactor(reactor);
 			}
 		}

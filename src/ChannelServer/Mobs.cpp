@@ -284,6 +284,30 @@ bool Mob::hasMagicReflect() const {
 	return ((status & mask) != 0);
 }
 
+int16_t Mob::getStatusValue(int32_t status) {
+	int16_t v = 0;
+	if ((this->status & status) != 0) {
+		v = statuses[status].val;
+	}
+	return v;
+}
+
+int16_t Mob::getMagicReflection() {
+	int16_t v = getStatusValue(StatusEffects::Mob::MagicDamageReflect);
+	if (v == 0) {
+		v = getStatusValue(StatusEffects::Mob::AnyDamageReflect);
+	}
+	return v;
+}
+
+int16_t Mob::getWeaponReflection() {
+	int16_t v = getStatusValue(StatusEffects::Mob::WeaponDamageReflect);
+	if (v == 0) {
+		v = getStatusValue(StatusEffects::Mob::AnyDamageReflect);
+	}
+	return v;
+}
+
 void Mob::setControl(Player *control) {
 	/*if (this->control != 0)
 		MobsPacket::endControlMob(this->control, this);*/

@@ -82,7 +82,7 @@ struct PortalInfo {
 	bool onlyOnce; // Run it only once per map entry
 };
 typedef unordered_map<string, PortalInfo> PortalsInfo;
-typedef vector<PortalInfo> SpawnPoints;
+typedef unordered_map<int8_t, PortalInfo> SpawnPoints;
 
 struct NPCSpawnInfo {
 	int32_t id;
@@ -94,8 +94,11 @@ struct NPCSpawnInfo {
 typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 
 struct ReactorSpawnInfo {
+	ReactorSpawnInfo() : spawnat(-1), spawned(false) { }
 	int32_t id;
 	int32_t time;
+	clock_t spawnat;
+	bool spawned;
 	Pos pos;
 };
 typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
@@ -107,27 +110,16 @@ struct SeatInfo {
 
 typedef std::map<int16_t, SeatInfo> SeatsInfo;
 
-struct ReactorRespawnInfo {
-	ReactorRespawnInfo(int32_t id, clock_t killed) : id(id), killed(killed) {}
-	int32_t id;
-	clock_t killed;
-};
-typedef vector<ReactorRespawnInfo> ReactorRespawns;
-
 struct MobSpawnInfo {
+	MobSpawnInfo() : spawnat(-1), spawned(false) { }
 	int32_t id;
 	Pos pos;
 	int16_t fh;
+	bool spawned;
 	int32_t time;
-};
-typedef vector<MobSpawnInfo> MobSpawnsInfo;
-
-struct MobRespawnInfo {
-	MobRespawnInfo(int32_t spawnid, clock_t spawnat) : spawnid(spawnid), spawnat(spawnat) {}
-	int32_t spawnid;
 	clock_t spawnat;
 };
-typedef vector<MobRespawnInfo> MobRespawnsInfo;
+typedef vector<MobSpawnInfo> MobSpawnsInfo;
 
 class Map {
 public:
@@ -149,7 +141,7 @@ public:
 	// Portals
 	void addPortal(const PortalInfo &portal);
 	PortalInfo * getPortal(const string &name);
-	PortalInfo * getSpawnPoint(int32_t pid = -1);
+	PortalInfo * getSpawnPoint(int8_t pid = -1);
 	PortalInfo * getNearestSpawnPoint(const Pos &pos);
 
 	// Players
@@ -167,7 +159,7 @@ public:
 
 	// Mobs
 	void addMobSpawn(const MobSpawnInfo &spawn);
-	void checkMobSpawn(clock_t time);
+	void checkMobSpawn(clock_t time, bool spawnAll = false);
 	void removeMob(int32_t id, int32_t spawnid);
 	int32_t spawnMob(int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0, Mob *owner = 0, int8_t summoneffect = 0);
 	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
@@ -180,8 +172,9 @@ public:
 	// Reactors
 	void addReactorSpawn(const ReactorSpawnInfo &spawn);
 	void addReactor(Reactor *reactor);
-	void addReactorRespawn(const ReactorRespawnInfo &respawn);
-	void checkReactorSpawn(clock_t time);
+	void removeReactor(int32_t id);
+	void killReactors(bool showpacket = true);
+	void checkReactorSpawn(clock_t time, bool spawnAll = false);
 	Reactor * getReactor(int32_t id) {
 		if ((uint32_t)id < this->reactors.size())
 			return this->reactors[id];
@@ -232,9 +225,7 @@ private:
 	SpawnPoints spawnpoints;
 	NPCSpawnsInfo npcs;
 	ReactorSpawnsInfo reactorspawns;
-	ReactorRespawns reactorrespawns;
 	MobSpawnsInfo mobspawns;
-	MobRespawnsInfo mobrespawns;
 	SeatsInfo seats;
 	vector<Player *> players;
 	vector<Reactor *> reactors;
