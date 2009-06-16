@@ -42,24 +42,24 @@ m_timers(new Timer::Container),
 m_variables(new Variables),
 m_luainstance(new LuaInstance(name, playerid)),
 m_start(TimeUtilities::getTickCount()),
-m_reset_on_destroy(false),
+m_reset_on_destroy(true),
 m_marked_for_delete(false)
 {
 	setInstanceTimer(time);
 }
 
 Instance::~Instance() {
-	// Reactors
-	if (m_reset_on_destroy) // Reset all reactors if bool is true
-		resetAll();
-	m_reactors.clear();
-
 	// Maps
 	for (size_t i = 0; i < getMapNum(); i++) {
 		Map *map = m_maps[i];
 		map->setInstance(0);
 		map->clearDrops(false);
 		map->killMobs(0, 0, false, false);
+		map->killReactors(false);
+		if (m_reset_on_destroy) { // Reset all mobs/reactors
+			map->checkReactorSpawn(0, true);
+			map->checkMobSpawn(0, true);
+		}
 	}
 	m_maps.clear();
 
@@ -176,35 +176,6 @@ bool Instance::instanceHasPlayers() const {
 		}
 	}
 	return false;
-}
-
-void Instance::addReactor(Reactor *reactor) {
-	m_reactors.push_back(reactor);
-}
-
-Reactor * Instance::getReactor(int32_t reactorid) {
-	Reactor *reactor = 0;
-	for (size_t i = 0; i < getReactorNum(); i++) {
-		Reactor *treactor = m_reactors[i];
-		if (treactor->getId() == reactorid) {
-			reactor = treactor;
-			break;
-		}
-	}
-	return reactor;
-}
-
-size_t Instance::getReactorNum() {
-	return m_reactors.size();
-}
-
-void Instance::resetAll() {
-	for (size_t i = 0; i < getReactorNum(); i++) {
-		Reactor *reactor = m_reactors[i];
-		if (reactor->isAlive())
-			reactor->kill();
-		reactor->restore();
-	}
 }
 
 void Instance::addMap(Map *map) {
@@ -355,4 +326,26 @@ int32_t Instance::getCounterId() {
 void Instance::markForDelete() {
 	m_marked_for_delete = true;
 	removeAllTimers();
+}
+
+void Instance::respawnMobs(int32_t mapid) {
+	if (mapid == Maps::NoMap) {
+		for (size_t i = 0; i < getMapNum(); i++) {
+			m_maps[i]->checkMobSpawn(0, true);
+		}
+	}
+	else {
+		Maps::getMap(mapid)->checkMobSpawn(0, true);
+	}
+}
+
+void Instance::respawnReactors(int32_t mapid) {
+	if (mapid == Maps::NoMap) {
+		for (size_t i = 0; i < getMapNum(); i++) {
+			m_maps[i]->checkReactorSpawn(0, true);
+		}
+	}
+	else {
+		Maps::getMap(mapid)->checkReactorSpawn(0, true);
+	}
 }

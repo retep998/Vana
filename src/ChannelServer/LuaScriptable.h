@@ -199,7 +199,6 @@ namespace LuaExports {
 	int addInstanceMap(lua_State *luaVm);
 	int addInstanceParty(lua_State *luaVm);
 	int addInstancePlayer(lua_State *luaVm);
-	int addInstanceReactor(lua_State *luaVm);
 	int addPlayerSignUp(lua_State *luaVm);
 	int banInstancePlayer(lua_State *luaVm);
 	int checkInstanceTimer(lua_State *luaVm);
@@ -222,9 +221,11 @@ namespace LuaExports {
 	int removeAllInstancePlayers(lua_State *luaVm);
 	int removeInstancePlayer(lua_State *luaVm);
 	int removePlayerSignUp(lua_State *luaVm);
+	int respawnInstanceMobs(lua_State *luaVm);
+	int respawnInstanceReactors(lua_State *luaVm);
 	int setInstanceMax(lua_State *luaVm);
 	int setInstancePersistence(lua_State *luaVm);
-	int setInstanceReactorReset(lua_State *luaVm);
+	int setInstanceReset(lua_State *luaVm);
 	int setInstanceTime(lua_State *luaVm);
 	int setInstanceVariable(lua_State *luaVm);
 	int startInstanceTimer(lua_State *luaVm);

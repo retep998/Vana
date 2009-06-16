@@ -230,7 +230,7 @@ void InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, c
 		packet.add<int32_t>(maps[remaining - 1]);
 	}
 	for (; remaining <= max; remaining++) {
-		packet.add<int32_t>(999999999);
+		packet.add<int32_t>(Maps::NoMap);
 	}
 	player->getSession()->send(packet);
 }

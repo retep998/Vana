@@ -86,7 +86,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
 
 	int32_t opcode = packet.get<int32_t>();
-	switch(opcode) {
+	switch (opcode) {
 		case 0: // Dead
 			if (player->getHp() == 0) { // else, hacking
 				player->acceptDeath();

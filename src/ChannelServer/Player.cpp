@@ -227,7 +227,7 @@ void Player::playerConnect(PacketReader &packet) {
 	hpmp_ap		= static_cast<uint16_t>(res[0]["hpmp_ap"]);
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
-	if (Maps::getMap(map)->getInfo()->forcedReturn != 999999999) {
+	if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
 		map_pos = 0;
 		if (hp == 0)
