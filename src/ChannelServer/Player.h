@@ -167,8 +167,6 @@ public:
 	bool usedPortal(int8_t portalId) const { return used_portals.find(portalId) != used_portals.end(); }
 
 	bool addWarning();
-	void addWishlistItem(int32_t id) { wishlist.push_back(id); }
-	vector<int32_t> getWishlist() const { return wishlist; }
 	void changeChannel(int8_t channel);
 	void saveStats();
 	void saveAll(bool savecooldowns = false);
@@ -225,7 +223,6 @@ private:
 	Party *party;
 	unordered_set<int8_t> used_portals;
 	vector<int32_t> warnings;
-	vector<int32_t> wishlist;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
 	scoped_ptr<PlayerActiveBuffs> activeBuffs;
