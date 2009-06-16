@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::unordered_map;
 
+class PacketCreator;
 class Player;
 
 struct MountData {
@@ -38,6 +39,7 @@ public:
 	void save();
 	void load();
 
+	void mountInfoPacket(PacketCreator &packet);
 	int32_t getCurrentMount() const { return m_currentmount; }
 	int16_t getCurrentExp();
 	int8_t getCurrentLevel();
