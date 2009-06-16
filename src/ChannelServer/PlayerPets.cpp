@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Pets.h"
 #include "Database.h"
+#include "PacketCreator.h"
+#include "Player.h"
 #include "PlayerPets.h"
 
 void PlayerPets::addPet(Pet *pet) {
@@ -53,4 +55,22 @@ void PlayerPets::save() {
 			<< " WHERE id = " << iter->second->getId();
 		query.exec();
 	}
+}
+
+void PlayerPets::petInfoPacket(PacketCreator &packet) {
+	Item *it;
+	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
+		if (Pet *pet = getSummoned(i)) {
+			packet.add<int8_t>(1);
+			packet.add<int32_t>(pet->getItemId());
+			packet.addString(pet->getName());
+			packet.add<int8_t>(pet->getLevel());
+			packet.add<int16_t>(pet->getCloseness());
+			packet.add<int8_t>(pet->getFullness());
+			packet.add<int16_t>(0);
+			it = m_player->getInventory()->getItem(Inventories::EquipInventory, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)));
+			packet.add<int32_t>(it != 0 ? it->id : 0);
+		}
+	}
+	packet.add<int8_t>(0); // End of pets / start of taming mob
 }
