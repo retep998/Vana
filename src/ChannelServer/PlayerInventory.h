@@ -100,6 +100,7 @@ public:
 	void connectData(PacketCreator &packet);
 	void addEquippedPacket(PacketCreator &packet);
 	void rockPacket(PacketCreator &packet);
+	void wishListPacket(PacketCreator &packet);
 
 	void setMesos(int32_t mesos, bool is = false);
 	bool modifyMesos(int32_t mod, bool is = false);
@@ -125,6 +126,8 @@ public:
 	void addRockMap(int32_t mapid, int8_t type);
 	void delRockMap(int32_t mapid, int8_t type);
 	bool ensureRockDestination(int32_t mapid);
+
+	void addWishListItem(int32_t itemid);
 private:
 	typedef unordered_map<int16_t, Item *> ItemInventory;
 
@@ -134,6 +137,7 @@ private:
 
 	vector<int32_t> m_viplocations;
 	vector<int32_t> m_rocklocations;
+	vector<int32_t> m_wishlist;
 
 	unordered_map<int32_t, uint16_t> m_itemamounts;
 	int32_t m_mesos;

@@ -87,6 +87,136 @@ PlayerInventory::~PlayerInventory() {
 	}
 }
 
+void PlayerInventory::load() {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << m_player->getId();
+	mysqlpp::StoreQueryResult res = query.store();
+
+	for (size_t i = 0; i < res.num_rows(); ++i) {
+		Item *item = new Item;
+		item->id = res[i][2];
+		item->amount = res[i][3];
+		item->slots = (int8_t) res[i][4];
+		item->scrolls = (int8_t) res[i][5];
+		item->istr = res[i][6];
+		item->idex = res[i][7];
+		item->iint = res[i][8];
+		item->iluk = res[i][9];
+		item->ihp = res[i][10];
+		item->imp = res[i][11];
+		item->iwatk = res[i][12];
+		item->imatk = res[i][13];
+		item->iwdef = res[i][14];
+		item->imdef = res[i][15];
+		item->iacc = res[i][16];
+		item->iavo = res[i][17];
+		item->ihand = res[i][18];
+		item->ispeed = res[i][19];
+		item->ijump = res[i][20];
+		item->flags = (int8_t) res[i][21];
+		item->petid = res[i][22];
+		res[i][23].to_string(item->name);
+		addItem((int8_t) res[i][0], res[i][1], item);
+		if (item->petid != 0) {
+			Pet *pet = new Pet(
+				m_player,
+				item, // Item - Gives id and type to pet
+				(int8_t) res[i][24], // Index
+				(string) res[i][25], // Name
+				(uint8_t) res[i][26], // Level
+				(int16_t) res[i][27], // Closeness
+				(uint8_t) res[i][28], // Fullness
+				(uint8_t) res[i][1] // Inventory Slot
+			);
+			m_player->getPets()->addPet(pet);
+		}
+	}
+
+	query << "SELECT mapindex, mapid FROM teleport_rock_locations WHERE charid = " << m_player->getId();
+	res = query.store();
+
+	for (size_t i = 0; i < res.num_rows(); ++i) {
+		int8_t index = static_cast<int8_t>(res[i][0]);
+		int32_t mapid = res[i][1];
+
+		if (index >= Inventories::TeleportRockMax) {
+			m_viplocations.push_back(mapid);
+		}
+		else {
+			m_rocklocations.push_back(mapid);
+		}
+	}
+}
+
+void PlayerInventory::save() {
+	mysqlpp::Query query = Database::getCharDB().query();
+
+	query << "DELETE FROM items WHERE charid = " << m_player->getId();
+	query.exec();
+
+	bool firstrun = true;
+	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
+		ItemInventory &itemsinv = m_items[i - 1];
+		for (ItemInventory::iterator iter = itemsinv.begin(); iter != itemsinv.end(); iter++) {
+			Item *item = iter->second;
+			if (firstrun) {
+				query << "INSERT INTO items VALUES (";
+				firstrun = false;
+			}
+			else {
+				query << ",(";
+			}
+			query << m_player->getId() << ","
+				<< (int16_t) i << ","
+				<< iter->first << ","
+				<< item->id << ","
+				<< item->amount << ","
+				<< (int16_t) item->slots << ","
+				<< (int16_t) item->scrolls << ","
+				<< item->istr << ","
+				<< item->idex << ","
+				<< item->iint << ","
+				<< item->iluk << ","
+				<< item->ihp << ","
+				<< item->imp << ","
+				<< item->iwatk << ","
+				<< item->imatk << ","
+				<< item->iwdef << ","
+				<< item->imdef << ","
+				<< item->iacc << ","
+				<< item->iavo << ","
+				<< item->ihand << ","
+				<< item->ispeed << ","
+				<< item->ijump << ","
+				<< (int16_t) item->flags << ","
+				<< item->petid << ","
+				<< mysqlpp::quote << item->name << ")";
+		}
+	}
+	if (!firstrun)
+		query.exec();
+
+	query << "DELETE FROM teleport_rock_locations WHERE charid = " << m_player->getId();
+	query.exec();
+
+	for (size_t i = 0; i < m_rocklocations.size(); i++) {
+		int32_t mapid = m_rocklocations[i];
+		query << "INSERT INTO teleport_rock_locations VALUES ("
+				<< m_player->getId() << ","
+				<< (uint16_t) i << ","
+				<< mapid << ")";
+		query.exec();
+	}
+	for (size_t i = 0; i < m_viplocations.size(); i++) {
+		int32_t mapid = m_viplocations[i];
+		query << "INSERT INTO teleport_rock_locations VALUES ("
+				<< m_player->getId() << ","
+				<< (uint16_t) i + Inventories::TeleportRockMax << ","
+				<< mapid << ")";
+		query.exec();
+	}
+}
+
 void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) { // Useful with .lua
 	inventory -= 1;
 	m_maxslots[inventory] += (rows * 4);
@@ -242,182 +372,6 @@ int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
 	return openslots;
 }
 
-void PlayerInventory::load() {
-	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << m_player->getId();
-	mysqlpp::StoreQueryResult res = query.store();
-
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		Item *item = new Item;
-		item->id = res[i][2];
-		item->amount = res[i][3];
-		item->slots = (int8_t) res[i][4];
-		item->scrolls = (int8_t) res[i][5];
-		item->istr = res[i][6];
-		item->idex = res[i][7];
-		item->iint = res[i][8];
-		item->iluk = res[i][9];
-		item->ihp = res[i][10];
-		item->imp = res[i][11];
-		item->iwatk = res[i][12];
-		item->imatk = res[i][13];
-		item->iwdef = res[i][14];
-		item->imdef = res[i][15];
-		item->iacc = res[i][16];
-		item->iavo = res[i][17];
-		item->ihand = res[i][18];
-		item->ispeed = res[i][19];
-		item->ijump = res[i][20];
-		item->flags = (int8_t) res[i][21];
-		item->petid = res[i][22];
-		res[i][23].to_string(item->name);
-		addItem((int8_t) res[i][0], res[i][1], item);
-		if (item->petid != 0) {
-			Pet *pet = new Pet(
-				m_player,
-				item, // Item - Gives id and type to pet
-				(int8_t) res[i][24], // Index
-				(string) res[i][25], // Name
-				(uint8_t) res[i][26], // Level
-				(int16_t) res[i][27], // Closeness
-				(uint8_t) res[i][28], // Fullness
-				(uint8_t) res[i][1] // Inventory Slot
-			);
-			m_player->getPets()->addPet(pet);
-		}
-	}
-
-	query << "SELECT mapindex, mapid FROM teleport_rock_locations WHERE charid = " << m_player->getId();
-	res = query.store();
-
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		int8_t index = static_cast<int8_t>(res[i][0]);
-		int32_t mapid = res[i][1];
-
-		if (index >= Inventories::TeleportRockMax) {
-			m_viplocations.push_back(mapid);
-		}
-		else {
-			m_rocklocations.push_back(mapid);
-		}
-	}
-}
-
-void PlayerInventory::save() {
-	mysqlpp::Query query = Database::getCharDB().query();
-
-	query << "DELETE FROM items WHERE charid = " << m_player->getId();
-	query.exec();
-
-	bool firstrun = true;
-	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
-		ItemInventory &itemsinv = m_items[i - 1];
-		for (ItemInventory::iterator iter = itemsinv.begin(); iter != itemsinv.end(); iter++) {
-			Item *item = iter->second;
-			if (firstrun) {
-				query << "INSERT INTO items VALUES (";
-				firstrun = false;
-			}
-			else {
-				query << ",(";
-			}
-			query << m_player->getId() << ","
-				<< (int16_t) i << ","
-				<< iter->first << ","
-				<< item->id << ","
-				<< item->amount << ","
-				<< (int16_t) item->slots << ","
-				<< (int16_t) item->scrolls << ","
-				<< item->istr << ","
-				<< item->idex << ","
-				<< item->iint << ","
-				<< item->iluk << ","
-				<< item->ihp << ","
-				<< item->imp << ","
-				<< item->iwatk << ","
-				<< item->imatk << ","
-				<< item->iwdef << ","
-				<< item->imdef << ","
-				<< item->iacc << ","
-				<< item->iavo << ","
-				<< item->ihand << ","
-				<< item->ispeed << ","
-				<< item->ijump << ","
-				<< (int16_t) item->flags << ","
-				<< item->petid << ","
-				<< mysqlpp::quote << item->name << ")";
-		}
-	}
-	if (!firstrun)
-		query.exec();
-
-	query << "DELETE FROM teleport_rock_locations WHERE charid = " << m_player->getId();
-	query.exec();
-
-	for (size_t i = 0; i < m_rocklocations.size(); i++) {
-		int32_t mapid = m_rocklocations[i];
-		query << "INSERT INTO teleport_rock_locations VALUES ("
-				<< m_player->getId() << ","
-				<< (uint16_t) i << ","
-				<< mapid << ")";
-		query.exec();
-	}
-	for (size_t i = 0; i < m_viplocations.size(); i++) {
-		int32_t mapid = m_viplocations[i];
-		query << "INSERT INTO teleport_rock_locations VALUES ("
-				<< m_player->getId() << ","
-				<< (uint16_t) i + Inventories::TeleportRockMax << ","
-				<< mapid << ")";
-		query.exec();
-	}
-}
-
-void PlayerInventory::connectData(PacketCreator &packet) {
-	packet.add<int32_t>(m_mesos);
-
-	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++)
-		packet.add<int8_t>(getMaxSlots(i));
-
-	// Go through equips
-	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
-	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
-		if (iter->first < 0 && iter->first > -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
-		}
-	}
-	packet.add<int8_t>(0);
-	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
-		if (iter->first < -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
-		}
-	}
-	packet.add<int8_t>(0);
-	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
-		if (iter->first > 0) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
-		}
-	}
-	packet.add<int8_t>(0);
-
-	// Equips done, do rest of user's items starting with Use
-	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; i++) {
-		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
-			Item *item = getItem(i, s);
-			if (item == 0)
-				continue;
-			if (item->petid == 0) {
-				PlayerPacketHelper::addItemInfo(packet, s, item);
-			}
-			else {
-				Pet *pet = m_player->getPets()->getPet(item->petid);
-				packet.add<int8_t>((int8_t) s);
-				PetsPacket::addInfo(packet, pet);
-			}
-		}
-		packet.add<int8_t>(0);
-	}
-}
-
 int32_t PlayerInventory::doShadowStars() {
 	for (int16_t s = 1; s <= getMaxSlots(Inventories::UseInventory); s++) {
 		Item *item = getItem(Inventories::UseInventory, s);
@@ -469,6 +423,73 @@ void PlayerInventory::delRockMap(int32_t mapid, int8_t type) {
 	}
 }
 
+bool PlayerInventory::ensureRockDestination(int32_t mapid) {
+	bool valid = false;
+	for (size_t k = 0; k < m_rocklocations.size(); k++) {
+		if (m_rocklocations[k] == mapid) {
+			valid = true;
+			break;
+		}
+	}
+	for (size_t k = 0; k < m_viplocations.size(); k++) {
+		if (m_viplocations[k] == mapid) {
+			valid = true;
+			break;
+		}
+	}
+	return valid;
+}
+
+void PlayerInventory::addWishListItem(int32_t itemid) {
+	m_wishlist.push_back(itemid);
+}
+
+void PlayerInventory::connectData(PacketCreator &packet) {
+	packet.add<int32_t>(m_mesos);
+
+	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++)
+		packet.add<int8_t>(getMaxSlots(i));
+
+	// Go through equips
+	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
+	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+		if (iter->first < 0 && iter->first > -100) {
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+		}
+	}
+	packet.add<int8_t>(0);
+	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+		if (iter->first < -100) {
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+		}
+	}
+	packet.add<int8_t>(0);
+	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+		if (iter->first > 0) {
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+		}
+	}
+	packet.add<int8_t>(0);
+
+	// Equips done, do rest of user's items starting with Use
+	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; i++) {
+		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
+			Item *item = getItem(i, s);
+			if (item == 0)
+				continue;
+			if (item->petid == 0) {
+				PlayerPacketHelper::addItemInfo(packet, s, item);
+			}
+			else {
+				Pet *pet = m_player->getPets()->getPet(item->petid);
+				packet.add<int8_t>((int8_t) s);
+				PetsPacket::addInfo(packet, pet);
+			}
+		}
+		packet.add<int8_t>(0);
+	}
+}
+
 void PlayerInventory::rockPacket(PacketCreator &packet) {
 	size_t remaining;
 	for (remaining = 1; remaining <= m_rocklocations.size(); remaining++) {
@@ -487,19 +508,9 @@ void PlayerInventory::rockPacket(PacketCreator &packet) {
 	}
 }
 
-bool PlayerInventory::ensureRockDestination(int32_t mapid) {
-	bool valid = false;
-	for (size_t k = 0; k < m_rocklocations.size(); k++) {
-		if (m_rocklocations[k] == mapid) {
-			valid = true;
-			break;
-		}
+void PlayerInventory::wishListPacket(PacketCreator &packet) {
+	packet.add<uint8_t>(m_wishlist.size());
+	for (size_t i = 0; i < m_wishlist.size(); i++) {
+		packet.add<int32_t>(m_wishlist[i]);
 	}
-	for (size_t k = 0; k < m_viplocations.size(); k++) {
-		if (m_viplocations[k] == mapid) {
-			valid = true;
-			break;
-		}
-	}
-	return valid;
 }

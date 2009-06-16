@@ -147,10 +147,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	else {
 		packet.add<int8_t>(0); // End of taming mob
 	}
-	vector<int32_t> wishlist = getinfo->getWishlist(); 
-	packet.add<uint8_t>((uint8_t)(wishlist.size())); // Wish list count
-	for (size_t i = 0; i < wishlist.size(); i++)
-		packet.add<int32_t>(wishlist[i]);
+	getinfo->getInventory()->wishListPacket(packet);
 	getinfo->getMonsterBook()->infoData(packet);
 	player->getSession()->send(packet);
 }
