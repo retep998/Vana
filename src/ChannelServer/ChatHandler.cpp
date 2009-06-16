@@ -448,6 +448,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "port") mapid = 120000000;
 						else if (args == "orbis") mapid = 200000000;
 						else if (args == "nath") mapid = 211000000;
+						else if (args == "mine") mapid = 211041400;
 						else if (args == "ludi") mapid = 220000000;
 						else if (args == "kft") mapid = 222000000;
 						else if (args == "aqua") mapid = 230000000;
@@ -462,6 +463,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "crimsonwood") mapid = 610020006;
 						else if (args == "singapore") mapid = 540000000;
 						else if (args == "quay") mapid = 541000000;
+						else if (args == "magatia") mapid = 261000000;
 						// Boss maps
 						else if (args == "ergoth") mapid = 990000900;
 						else if (args == "pap") mapid = 220080001;
