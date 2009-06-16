@@ -619,14 +619,6 @@ Buffs::Buffs() {
 	// End mount buffs
 
 	// Debuffs
-	// Slow
-	buff.type = 0x01;
-	buff.byte = Byte5;
-	buff.value = SkillX;
-	player.buff = buff;
-	mobskillsinfo[MobSkills::Slow].mob.push_back(player);
-	mobskillsinfo[MobSkills::Slow].delay = 900;
-
 	// Stun
 	buff.type = 0x02;
 	buff.byte = Byte3;
@@ -635,13 +627,13 @@ Buffs::Buffs() {
 	mobskillsinfo[MobSkills::Stun].mob.push_back(player);
 	mobskillsinfo[MobSkills::Stun].delay = 0;
 
-	// Darkness
-	buff.type = 0x10;
+	// Poison
+	buff.type = 0x04;
 	buff.byte = Byte3;
-	buff.value = SkillNone;
+	buff.value = SkillX;
 	player.buff = buff;
-	mobskillsinfo[MobSkills::Darkness].mob.push_back(player);
-	mobskillsinfo[MobSkills::Darkness].delay = 900;
+	mobskillsinfo[MobSkills::Poison].mob.push_back(player);
+	mobskillsinfo[MobSkills::Poison].delay = 500;
 
 	// Seal
 	buff.type = 0x08;
@@ -651,6 +643,14 @@ Buffs::Buffs() {
 	mobskillsinfo[MobSkills::Seal].mob.push_back(player);
 	mobskillsinfo[MobSkills::Seal].delay = 900;
 
+	// Darkness
+	buff.type = 0x10;
+	buff.byte = Byte3;
+	buff.value = SkillNone;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Darkness].mob.push_back(player);
+	mobskillsinfo[MobSkills::Darkness].delay = 900;
+
 	// Weakness
 	buff.type = 0x40;
 	buff.byte = Byte4;
@@ -658,14 +658,6 @@ Buffs::Buffs() {
 	player.buff = buff;
 	mobskillsinfo[MobSkills::Weakness].mob.push_back(player);
 	mobskillsinfo[MobSkills::Weakness].delay = 900;
-
-	// Seduce
-	buff.type = 0x80;
-	buff.byte = Byte5;
-	buff.value = SkillNone;
-	player.buff = buff;
-	mobskillsinfo[MobSkills::Seduce].mob.push_back(player);
-	mobskillsinfo[MobSkills::Seduce].delay = 900;
 
 	// Curse
 	buff.type = 0x80;
@@ -675,13 +667,37 @@ Buffs::Buffs() {
 	mobskillsinfo[MobSkills::Curse].mob.push_back(player);
 	mobskillsinfo[MobSkills::Curse].delay = 900;
 
-	// Poison
-	buff.type = 0x04;
-	buff.byte = Byte3;
+	// Slow
+	buff.type = 0x01;
+	buff.byte = Byte5;
 	buff.value = SkillX;
 	player.buff = buff;
-	mobskillsinfo[MobSkills::Poison].mob.push_back(player);
-	mobskillsinfo[MobSkills::Poison].delay = 500;
+	mobskillsinfo[MobSkills::Slow].mob.push_back(player);
+	mobskillsinfo[MobSkills::Slow].delay = 900;
+
+	// Seduce
+	buff.type = 0x80;
+	buff.byte = Byte5;
+	buff.value = SkillNone;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Seduce].mob.push_back(player);
+	mobskillsinfo[MobSkills::Seduce].delay = 900;
+
+	// Zombify
+	buff.type = 0x40;
+	buff.byte = Byte6;
+	buff.value = SkillX;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::Zombify].mob.push_back(player);
+	mobskillsinfo[MobSkills::Zombify].delay = 900;
+
+	// Crazy Skull
+	buff.type = 0x08;
+	buff.byte = Byte7;
+	buff.value = SkillX;
+	player.buff = buff;
+	mobskillsinfo[MobSkills::CrazySkull].mob.push_back(player);
+	mobskillsinfo[MobSkills::CrazySkull].delay = 900;
 }
 
 void Buffs::addItemInfo(int32_t itemid, const vector<uint8_t> &types, const vector<int8_t> &bytes, const vector<int16_t> &values) {

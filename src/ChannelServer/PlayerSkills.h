@@ -46,6 +46,7 @@ public:
 	bool hasHpIncrease();
 	bool hasMpIncrease();
 	bool hasVenomousWeapon();
+	bool hasAchilles();
 	int32_t getElementalAmp();
 	int32_t getEnergyCharge();
 	int32_t getComboAttack();
@@ -56,6 +57,7 @@ public:
 	int32_t getMastery();
 	int32_t getMpEater();
 	int32_t getVenomousWeapon();
+	int32_t getAchilles();
 	int16_t getRechargeableBonus();
 
 	void addCooldown(int32_t skillid, int16_t time);

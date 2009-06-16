@@ -191,14 +191,9 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 			applieddamage = true;
 		}
-		if (((job / 100) == 1) && ((job % 10) == 2)) { // Achilles for 4th job warriors
+		if (player->getSkills()->hasAchilles()) { // Achilles for 4th job warriors
 			float achx = 1000.0;
-			int32_t sid = 0;
-			switch (job) {
-				case Jobs::JobIds::Hero: sid = Jobs::Hero::Achilles; break;
-				case Jobs::JobIds::Paladin: sid = Jobs::Paladin::Achilles; break;
-				case Jobs::JobIds::DarkKnight: sid = Jobs::DarkKnight::Achilles; break;
-			}
+			int32_t sid = player->getSkills()->getAchilles();
 			uint8_t slv = player->getSkills()->getSkillLevel(sid);
 			if (slv > 0)
 				achx = Skills::skills[sid][slv].x;
@@ -341,7 +336,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 	}
 	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
-	if (skillid > 0)
+	if (skillid != Jobs::All::RegularAttack)
 		Skills::useAttackSkill(player, skillid);
 	int32_t map = player->getMap();
 	uint32_t totaldmg = 0;

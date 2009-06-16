@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerMounts.h"
 #include "Database.h"
 #include "GameConstants.h"
+#include "PacketCreator.h"
 #include "Player.h"
 
 PlayerMounts::PlayerMounts(Player *p) : m_player(p), m_currentmount(0) {
@@ -117,5 +118,17 @@ void PlayerMounts::setCurrentTiredness(int8_t tiredness) {
 		MountData c = m_mounts[m_currentmount];
 		c.tiredness = tiredness;
 		m_mounts[m_currentmount] = c;
+	}
+}
+
+void PlayerMounts::mountInfoPacket(PacketCreator &packet) {
+	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
+		packet.add<int8_t>(1);
+		packet.add<int32_t>(getCurrentLevel());
+		packet.add<int32_t>(getCurrentExp());
+		packet.add<int32_t>(getCurrentTiredness());
+	}
+	else {
+		packet.add<int8_t>(0);
 	}
 }

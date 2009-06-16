@@ -347,7 +347,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		SkillsPacket::showSkill(player, skillid, level, direction);
 	if (Buffs::Instance()->addBuff(player, skillid, level, addedinfo))
 		return;
-	else if (GameLogicUtilities::isSummon(skillid))
+	if (GameLogicUtilities::isSummon(skillid))
 		Summons::useSummon(player, skillid, level);
 }
 
@@ -395,22 +395,24 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 }
 
 void Skills::useAttackSkill(Player *player, int32_t skillid) {
-	uint8_t level = player->getSkills()->getSkillLevel(skillid);
-	if (skills.find(skillid) == skills.end() || level == 0)
-		return;
-	applySkillCosts(player, skillid, level, true);
+	if (skillid != Jobs::All::RegularAttack) {
+		uint8_t level = player->getSkills()->getSkillLevel(skillid);
+		if (skills.find(skillid) == skills.end() || level == 0)
+			return;
+		applySkillCosts(player, skillid, level, true);
+	}
 }
 
 void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos) {
 	uint8_t level = 0;
-	if (skillid != 0) {
+	if (skillid != Jobs::All::RegularAttack) {
 		level = player->getSkills()->getSkillLevel(skillid);
 		if (skills.find(skillid) == skills.end() || level == 0)
 			return;
 		applySkillCosts(player, skillid, level);
 	}
 	uint16_t hits = 1;
-	if (skillid != 0 && skills[skillid][level].bulletcon > 0)
+	if (skillid != Jobs::All::RegularAttack && skills[skillid][level].bulletcon > 0)
 		hits = skills[skillid][level].bulletcon;
 	if (player->getActiveBuffs()->hasShadowPartner())
 		hits *= 2;

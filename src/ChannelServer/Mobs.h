@@ -79,7 +79,6 @@ public:
 	void skillHeal(int32_t healhp, int32_t healmp);
 	void dispelBuffs();
 	void doCrashSkill(int32_t skillid);
-	void setImmunity(bool isimmune) { hasimmunity = isimmune; }
 	void explode();
 	void setVenomCount(int8_t count) { venomcount = count; }
 
@@ -103,7 +102,10 @@ public:
 	bool isUndead() const { return info.undead; }
 	bool hasExplosiveDrop() const { return info.explosivereward; }
 	bool hasFfaDrop() const { return info.publicreward; }
-	bool hasImmunity() const { return hasimmunity; }
+	bool hasImmunity() const;
+	bool hasReflect() const;
+	bool hasWeaponReflect() const;
+	bool hasMagicReflect() const;
 	bool hasStatus(int32_t status);
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return owner; }
@@ -133,7 +135,6 @@ private:
 	Mob *owner;
 	Mob *horntailsponge;
 	const MobInfo info;
-	bool hasimmunity;
 	unordered_map<int32_t, StatusInfo> statuses;
 	unordered_map<int32_t, uint32_t> damages;
 	unordered_map<uint8_t, time_t> skilluse;

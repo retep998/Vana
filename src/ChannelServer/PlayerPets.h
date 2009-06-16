@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::unordered_map;
 
+class PacketCreator;
 class Pet;
 class Player;
 
@@ -29,12 +30,14 @@ class PlayerPets {
 public:
 	PlayerPets(Player *player) : m_player(player) { }
 
+	void save();
+	void petInfoPacket(PacketCreator &packet);
+
 	Pet * getPet(int32_t petid);
 	Pet * getSummoned(int8_t index);
 
 	void addPet(Pet *pet);
 	void setSummoned(int8_t index, int32_t petid);
-	void save();
 private:
 	unordered_map<int32_t, Pet *> m_playerpets;
 	unordered_map<int8_t, int32_t> m_summoned;

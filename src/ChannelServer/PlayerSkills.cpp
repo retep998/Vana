@@ -90,6 +90,38 @@ int32_t PlayerSkills::getElementalAmp() {
 	return skillid;
 }
 
+bool PlayerSkills::hasAchilles() {
+	bool has = false;
+	switch (player->getStats()->getJob()) {
+		case Jobs::JobIds::Hero:
+			has = (getSkillLevel(Jobs::Hero::Achilles) > 0);
+			break;
+		case Jobs::JobIds::Paladin:
+			has = (getSkillLevel(Jobs::Paladin::Achilles) > 0);
+			break;
+		case Jobs::JobIds::DarkKnight:
+			has = (getSkillLevel(Jobs::DarkKnight::Achilles) > 0);
+			break;
+	}
+	return has;
+}
+
+int32_t PlayerSkills::getAchilles() {
+	int32_t skillid = 0;
+	switch (player->getStats()->getJob()) {
+		case Jobs::JobIds::Hero:
+			skillid = Jobs::Hero::Achilles;
+			break;
+		case Jobs::JobIds::Paladin:
+			skillid = Jobs::Paladin::Achilles;
+			break;
+		case Jobs::JobIds::DarkKnight:
+			skillid = Jobs::DarkKnight::Achilles;
+			break;
+	}
+	return skillid;
+}
+
 bool PlayerSkills::hasEnergyCharge() {
 	bool has = false;
 	switch (player->getStats()->getJob()) {

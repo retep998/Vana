@@ -235,7 +235,7 @@ namespace FieldLimitBits {
 
 namespace StatusEffects {
 	namespace Mob {
-		const uint8_t Count = 21; // Be sure to update count if you find a new status effect
+		const uint8_t Count = 24; // Be sure to update count if you find a new status effect
 		const uint8_t MaxVenomCount = 3;
 
 		enum MobStatus { // Groups of 5 for easier counting
@@ -251,8 +251,7 @@ namespace StatusEffects {
 			Freeze = 0x100,
 			Poison = 0x200,
 
-			Seal = 0x400,
-			// 0x800?
+			Seal = 0x400, // 0x800?
 			WeaponAttackUp = 0x1000,
 			WeaponDefenseUp = 0x2000,
 			MagicAttackUp = 0x4000,
@@ -263,8 +262,11 @@ namespace StatusEffects {
 			WeaponImmunity = 0x40000,
 			MagicImmunity = 0x80000,
 			VenomousWeapon = 0x1000000,
-			// Others
-			Empty = 0x8000000
+
+			WeaponDamageReflect = 0x2000000,
+			MagicDamageReflect = 0x4000000,
+			Empty = 0x8000000,
+			AnyDamageReflect = 0x10000000
 		};
 	}
 	namespace Player {
@@ -277,7 +279,8 @@ namespace StatusEffects {
 			Stun = 0x20,
 			Slow = 0x40,
 			Seduce = 0x80,
-			Zombify = 0x100
+			Zombify = 0x100,
+			CrazySkull = 0x200
 		};
 	}
 }
@@ -308,16 +311,16 @@ namespace MobSkills {
 		Zombify = 133,
 		WeaponImmunity = 140,
 		MagicImmunity = 141,
-		NoClue1 = 143, // Two of Pink Bean's statues do these three skills, as does some Mu Lung panda
-		NoClue2 = 144, 
-		NoClue3 = 145, // Pink Bean does this... so do a few others
-		NoMonsterHasThisYet1 = 150, // All of these are in the data, but no mob has them
+		WeaponDamageReflect = 143,
+		MagicDamageReflect = 144, 
+		AnyDamageReflect = 145, // May not actually be reflection, client handles this oddly
+		NoMonsterHasThisYet1 = 150, // 150-155, 157 are not verified and no mob has them, but they are in the data
 		NoMonsterHasThisYet2 = 151,
 		NoMonsterHasThisYet3 = 152,
 		NoMonsterHasThisYet4 = 153,
 		NoMonsterHasThisYet5 = 154,
 		NoMonsterHasThisYet6 = 155,
-		SpecialHaste = 156,
+		Haste = 156,
 		NoMonsterHasThisYet7 = 157,
 		Summon = 200
 	};
@@ -404,6 +407,11 @@ namespace Jobs {
 			Corsair = 522,
 			Gm = 900,
 			SuperGm = 910
+		};
+	}
+	namespace All {
+		enum Skills {
+			RegularAttack = 0
 		};
 	}
 	namespace Beginner {

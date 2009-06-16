@@ -195,6 +195,7 @@ void Inventory::itemMove(Player *player, PacketReader &packet) {
 	if ((slot1 < 0 && -slot1 == EquipSlots::Weapon) || (slot2 < 0 && -slot2 == EquipSlots::Weapon)) {
 		player->getActiveBuffs()->stopBooster();
 		player->getActiveBuffs()->stopCharge();
+		player->getActiveBuffs()->stopBulletSkills();
 	}
 	if (slot1 < 0 || slot2 < 0) {
 		InventoryPacket::updatePlayer(player);
@@ -473,26 +474,29 @@ void Inventory::useItem(Player *player, PacketReader &packet) {
 
 void Inventory::useItem(Player *player, int32_t itemid) {
 	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
-	// Alchemist
-	int16_t alchemist = 100;
+	int16_t potency = 100;
+
 	int32_t skillid = player->getSkills()->getAlchemist();
 	if (player->getSkills()->getSkillLevel(skillid) > 0)
-		alchemist = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+		potency = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+
+	bool zombie = player->getActiveBuffs()->isZombified();
+
 	if (item.cons.hp > 0)
-		player->getStats()->modifyHp(item.cons.hp * alchemist / 100);
+		player->getStats()->modifyHp(item.cons.hp * (zombie ? (potency / 2) : potency) / 100);
 	if (item.cons.mp > 0)
-		player->getStats()->modifyMp(item.cons.mp * alchemist / 100);
+		player->getStats()->modifyMp(item.cons.mp * potency / 100);
 	else
 		player->getStats()->setMp(player->getStats()->getMp(), true);
 	if (item.cons.hpr > 0)
-		player->getStats()->modifyHp(item.cons.hpr * player->getStats()->getMHp() / 100);
+		player->getStats()->modifyHp(item.cons.hpr * (zombie ? (player->getStats()->getMHp() / 2) : player->getStats()->getMHp()) / 100);
 	if (item.cons.mpr > 0)
 		player->getStats()->modifyMp(item.cons.mpr * player->getStats()->getMMp() / 100);
 	if (item.cons.ailment > 0)
 		player->getActiveBuffs()->useDebuffHealingItem(item.cons.ailment);
-	// Item buffs
+
 	if (item.cons.time > 0) {
-		int32_t time = item.cons.time * alchemist / 100;
+		int32_t time = item.cons.time * potency / 100;
 		Buffs::Instance()->addBuff(player, itemid, time);
 	}
 }

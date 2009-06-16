@@ -121,33 +121,12 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
 	packet.add<int8_t>(isself); // Is 1 when the character is clicking themselves
-	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
-		if (Pet *pet = getinfo->getPets()->getSummoned(i)) {
-			packet.add<int8_t>(1);
-			packet.add<int32_t>(pet->getItemId());
-			packet.addString(pet->getName());
-			packet.add<int8_t>(pet->getLevel());
-			packet.add<int16_t>(pet->getCloseness());
-			packet.add<int8_t>(pet->getFullness());
-			packet.add<int16_t>(0);
-			packet.add<int32_t>(getinfo->getInventory()->getItem(Inventories::EquipInventory,  -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0))) != 0 ? getinfo->getInventory()->getItem(Inventories::EquipInventory, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)))->id : 0);
-		}
-	}
-	packet.add<int8_t>(0); // End of pets / start of taming mob
-	if (getinfo->getMounts()->getCurrentMount() > 0 && getinfo->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
-		packet.add<int8_t>(1);
-		packet.add<int32_t>(getinfo->getMounts()->getCurrentLevel());
-		packet.add<int32_t>(getinfo->getMounts()->getCurrentExp());
-		packet.add<int32_t>(getinfo->getMounts()->getCurrentTiredness());
-	}
-	else {
-		packet.add<int8_t>(0); // End of taming mob
-	}
-	vector<int32_t> wishlist = getinfo->getWishlist(); 
-	packet.add<uint8_t>((uint8_t)(wishlist.size())); // Wish list count
-	for (size_t i = 0; i < wishlist.size(); i++)
-		packet.add<int32_t>(wishlist[i]);
+
+	getinfo->getPets()->petInfoPacket(packet);
+	getinfo->getMounts()->mountInfoPacket(packet);
+	getinfo->getInventory()->wishListPacket(packet);
 	getinfo->getMonsterBook()->infoData(packet);
+
 	player->getSession()->send(packet);
 }
 
@@ -167,10 +146,7 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, 
 	if (map != -1) {
 		packet.add<int8_t>(0x09);
 		packet.addString(name);
-		if (is_channel)
-			packet.add<int8_t>(0x03);
-		else
-			packet.add<int8_t>(0x01);
+		packet.add<int8_t>(is_channel ? 0x03 : 0x01);
 		packet.add<int32_t>(map);
 		packet.add<int32_t>(0);
 		packet.add<int32_t>(0);
@@ -205,12 +181,10 @@ void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {
 	packet.add<int16_t>(SEND_ATTACK_MELEE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
-	if (skillid > 0) {
-		packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
+	packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
+	if (skillid != Jobs::All::RegularAttack) {
 		packet.add<int32_t>(skillid);
 	} 
-	else
-		packet.add<int8_t>(0);
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
 	switch (skillid) {
 		case Jobs::Gunslinger::Grenade:
@@ -277,12 +251,9 @@ void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
 	packet.add<int16_t>(SEND_ATTACK_RANGED);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
-	if (skillid > 0) {
-		packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
+	packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
+	if (skillid != Jobs::All::RegularAttack) {
 		packet.add<int32_t>(skillid);
-	}
-	else {
-		packet.add<int8_t>(0);
 	}
 	packet.add<int8_t>(display);
 	packet.add<int8_t>(animation);

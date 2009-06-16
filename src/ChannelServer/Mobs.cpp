@@ -63,7 +63,10 @@ const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value
 	StatusEffects::Mob::MagicImmunity,
 	StatusEffects::Mob::VenomousWeapon,
 
-	StatusEffects::Mob::Empty
+	StatusEffects::Mob::WeaponDamageReflect,
+	StatusEffects::Mob::MagicDamageReflect,
+	StatusEffects::Mob::Empty,
+	StatusEffects::Mob::AnyDamageReflect
 };
 
 StatusInfo::StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time) :
@@ -94,7 +97,6 @@ owner(0),
 horntailsponge(0),
 counter(0),
 taunteffect(100),
-hasimmunity(false),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
 timers(new Timer::Container),
 control(0)
@@ -241,10 +243,6 @@ void Mob::removeStatus(int32_t status) {
 	if (hasStatus(status)) {
 		StatusInfo stat = statuses[status];
 		switch (status) {
-			case StatusEffects::Mob::WeaponImmunity:
-			case StatusEffects::Mob::MagicImmunity:
-				setImmunity(false);
-				break;
 			case StatusEffects::Mob::ShadowWeb:
 				weblevel = 0;
 				webplayerid = 0;
@@ -264,6 +262,26 @@ void Mob::removeStatus(int32_t status) {
 		statuses.erase(status);
 		MobsPacket::removeStatus(this, status);
 	}
+}
+
+bool Mob::hasImmunity() const {
+	int32_t mask = StatusEffects::Mob::WeaponImmunity | StatusEffects::Mob::MagicImmunity;
+	return ((status & mask) != 0);
+}
+
+bool Mob::hasReflect() const {
+	int32_t mask = StatusEffects::Mob::WeaponDamageReflect | StatusEffects::Mob::MagicDamageReflect | StatusEffects::Mob::AnyDamageReflect;
+	return ((status & mask) != 0);
+}
+
+bool Mob::hasWeaponReflect() const {
+	int32_t mask = StatusEffects::Mob::WeaponDamageReflect | StatusEffects::Mob::AnyDamageReflect;
+	return ((status & mask) != 0);
+}
+
+bool Mob::hasMagicReflect() const {
+	int32_t mask = StatusEffects::Mob::MagicDamageReflect | StatusEffects::Mob::AnyDamageReflect;
+	return ((status & mask) != 0);
 }
 
 void Mob::setControl(Player *control) {
@@ -504,9 +522,11 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 					case MobSkills::MagicImmunity:
 						stop = mob->hasImmunity();
 						break;
-			//		case MobSkills::Haste:
-			//			stop = mob->hasStatus(StatusEffects::Mob::Speed);
-			//			break;
+					case MobSkills::WeaponDamageReflect:
+					case MobSkills::MagicDamageReflect:
+					case MobSkills::AnyDamageReflect:
+						stop = mob->hasReflect();
+						break;
 					case MobSkills::Summon: {
 						int16_t spawns = (int16_t)(mob->getSpawns().size());
 						int16_t limit = mobskill.limit;
@@ -601,18 +621,20 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 			break;
 		case MobSkills::WeaponImmunity:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
-			mob->setImmunity(true);
 			break;
 		case MobSkills::MagicImmunity:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
-			mob->setImmunity(true);
 			break;
-		case MobSkills::NoClue1:
-		case MobSkills::NoClue2:
-		case MobSkills::NoClue3:
-			// ???
+		case MobSkills::WeaponDamageReflect:
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			break;
-		case MobSkills::SpecialHaste:
+		case MobSkills::MagicDamageReflect:
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			break;
+		case MobSkills::AnyDamageReflect:
+			statuses.push_back(StatusInfo(StatusEffects::Mob::AnyDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			break;
+		case MobSkills::Haste:
 			// Not sure how to handle this yet, it doesn't seem like the basic speed buff
 			break;
 		case MobSkills::Summon: {
@@ -702,7 +724,8 @@ int32_t Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t
 	}
 	if (mob->canPoison() && mob->getHp() > 1) { // Poisoning stuff
 		switch (skillid) {
-			case Jobs::Rogue::LuckySeven: // Venomous Star/Stab
+			case Jobs::All::RegularAttack: // Venomous Star/Stab
+			case Jobs::Rogue::LuckySeven:
 			case Jobs::Hermit::Avenger:
 			case Jobs::NightLord::TripleThrow:
 			case Jobs::Rogue::DoubleStab:
@@ -715,21 +738,19 @@ int32_t Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					int32_t vskill = player->getSkills()->getVenomousWeapon();
-					if (!(vskill == Jobs::NightLord::VenomousStar && skillid == Jobs::Rogue::Disorder)) {
-						uint8_t vlevel = player->getSkills()->getSkillLevel(vskill);
-						int32_t part1 = player->getStats()->getBaseStat(Stats::Str) + player->getStats()->getBaseStat(Stats::Luk);
-						int32_t part2 = player->getStats()->getBaseStat(Stats::Dex) * 2;
-						int16_t vatk = Skills::skills[vskill][vlevel].matk;
-						int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
-						int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
-						int32_t damage = Randomizer::Instance()->randInt(maxdamage - mindamage) + mindamage;
-						for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {
-							success = (Randomizer::Instance()->randInt(99) < Skills::skills[vskill][vlevel].prop);
-							if (success) {
-								statuses.push_back(StatusInfo(StatusEffects::Mob::VenomousWeapon, static_cast<int16_t>(damage), vskill, Skills::skills[vskill][vlevel].time));
-								mob->addStatus(player->getId(), statuses);
-								statuses.clear();
-							}
+					uint8_t vlevel = player->getSkills()->getSkillLevel(vskill);
+					int32_t part1 = player->getStats()->getBaseStat(Stats::Str) + player->getStats()->getBaseStat(Stats::Luk);
+					int32_t part2 = player->getStats()->getBaseStat(Stats::Dex) * 2;
+					int16_t vatk = Skills::skills[vskill][vlevel].matk;
+					int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
+					int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
+					int32_t damage = Randomizer::Instance()->randInt(maxdamage - mindamage) + mindamage;
+					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {
+						success = (Randomizer::Instance()->randInt(99) < Skills::skills[vskill][vlevel].prop);
+						if (success) {
+							statuses.push_back(StatusInfo(StatusEffects::Mob::VenomousWeapon, static_cast<int16_t>(damage), vskill, Skills::skills[vskill][vlevel].time));
+							mob->addStatus(player->getId(), statuses);
+							statuses.clear();
 						}
 					}
 				}
