@@ -174,6 +174,7 @@ public:
 	void setLevelDate();
 	void acceptDeath();
 	void loseExp();
+	void modifiedHp();
 private:
 	void playerConnect(PacketReader &packet);
 	void changeKey(PacketReader &packet);
