@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Players.h"
+#include "PlayersPacket.h"
 #include "Quests.h"
 #include "Randomizer.h"
 #include "Reactors.h"
@@ -66,6 +67,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 	lua_register(luaVm, "setChannelVariable", &LuaExports::setChannelVariable);
 	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
+	lua_register(luaVm, "showChannelMessage", &LuaExports::showChannelMessage);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
 
 	// Buddy
@@ -194,8 +196,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getPartyMapCount", &LuaExports::getPartyMapCount);
 	lua_register(luaVm, "isPartyInLevelRange", &LuaExports::isPartyInLevelRange);
 	lua_register(luaVm, "isPartyLeader", &LuaExports::isPartyLeader);
-	lua_register(luaVm, "warpParty", &LuaExports::warpParty);
 	lua_register(luaVm, "verifyPartyFootholds", &LuaExports::verifyPartyFootholds);
+	lua_register(luaVm, "warpParty", &LuaExports::warpParty);
 
 	// Instance
 	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
@@ -344,6 +346,13 @@ int LuaExports::setPlayer(lua_State *luaVm) {
 	}
 	lua_pushboolean(luaVm, player != 0);
 	return 1;
+}
+
+int LuaExports::showChannelMessage(lua_State *luaVm) {
+	string msg = lua_tostring(luaVm, -2);
+	uint8_t type = lua_tointeger(luaVm, -1);
+	PlayersPacket::showMessage(msg, type);
+	return 0;
 }
 
 int LuaExports::showShop(lua_State *luaVm) {
@@ -1125,20 +1134,6 @@ int LuaExports::isPartyLeader(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaExports::warpParty(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
-	string to;
-	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
-		string to = lua_tostring(luaVm, 2);
-	}
-	Player *player = getPlayer(luaVm);
-	Party *p = player->getParty();
-	if (p != 0) {
-		p->warpAllMembers(mapid, to);
-	}
-	return 0;
-}
-
 int LuaExports::verifyPartyFootholds(lua_State *luaVm) {
 	int8_t numbermembers = lua_tointeger(luaVm, 1);
 	Party *p = getPlayer(luaVm)->getParty();
@@ -1161,6 +1156,20 @@ int LuaExports::verifyPartyFootholds(lua_State *luaVm) {
 	}
 	lua_pushboolean(luaVm, winner);
 	return 1;
+}
+
+int LuaExports::warpParty(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	string to;
+	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+		string to = lua_tostring(luaVm, 2);
+	}
+	Player *player = getPlayer(luaVm);
+	Party *p = player->getParty();
+	if (p != 0) {
+		p->warpAllMembers(mapid, to);
+	}
+	return 0;
 }
 
 // Instance
