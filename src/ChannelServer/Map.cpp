@@ -71,7 +71,7 @@ void Map::addPlayer(Player *player) {
 		MapPacket::showPlayer(player);
 	if (timer > 0)
 		MapPacket::showTimer(player, timer - static_cast<int32_t>(time(0) - timerstart));
-	else if (instance != 0 && instance->checkInstanceTimer() > 0)
+	else if (instance != 0 && instance->showTimer() && instance->checkInstanceTimer() > 0)
 		MapPacket::showTimer(player, instance->checkInstanceTimer());
 }
 

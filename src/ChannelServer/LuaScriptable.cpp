@@ -230,6 +230,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setInstanceReset", &LuaExports::setInstanceReset);
 	lua_register(luaVm, "setInstanceTime", &LuaExports::setInstanceTime);
 	lua_register(luaVm, "setInstanceVariable", &LuaExports::setInstanceVariable);
+	lua_register(luaVm, "showInstanceTimer", &LuaExports::setInstanceVariable);
 	lua_register(luaVm, "startInstanceTimer", &LuaExports::startInstanceTimer);
 	lua_register(luaVm, "stopInstanceTimer", &LuaExports::stopInstanceTimer);
 	lua_register(luaVm, "unbanInstancePlayer", &LuaExports::unbanInstancePlayer);
@@ -1226,6 +1227,8 @@ int LuaExports::createInstance(lua_State *luaVm) {
 	Instance *instance = new Instance(name, getPlayer(luaVm)->getMap(), getPlayer(luaVm)->getId(), time, persistent, showtimer);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
+	if (instance->showTimer())
+		instance->showTimer(true, true);
 	lua_pushstring(luaVm, name.c_str());
 	lua_setglobal(luaVm, "instancename");
 	return 0;
@@ -1352,11 +1355,6 @@ int LuaExports::removePlayerSignUp(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::setInstanceMax(lua_State *luaVm) {
-	getInstance(luaVm)->setMaxPlayers(lua_tointeger(luaVm, 1));
-	return 0;
-}
-
 int LuaExports::respawnInstanceMobs(lua_State *luaVm) {
 	int32_t mapid = Maps::NoMap;
 	if (lua_isnumber(luaVm, 1)) {
@@ -1372,6 +1370,11 @@ int LuaExports::respawnInstanceReactors(lua_State *luaVm) {
 		mapid = lua_tointeger(luaVm, 1);
 	}
 	getInstance(luaVm)->respawnReactors(mapid);
+	return 0;
+}
+
+int LuaExports::setInstanceMax(lua_State *luaVm) {
+	getInstance(luaVm)->setMaxPlayers(lua_tointeger(luaVm, 1));
 	return 0;
 }
 
@@ -1392,6 +1395,11 @@ int LuaExports::setInstanceTime(lua_State *luaVm) {
 
 int LuaExports::setInstanceVariable(lua_State *luaVm) {
 	getInstance(luaVm)->getVariables()->setVariable(lua_tostring(luaVm, 1), lua_tostring(luaVm, 2));
+	return 0;
+}
+
+int LuaExports::showInstanceTimer(lua_State *luaVm) {
+	getInstance(luaVm)->showTimer(lua_toboolean(luaVm, 1) != 0);
 	return 0;
 }
 
