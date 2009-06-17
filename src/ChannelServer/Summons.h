@@ -19,6 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SUMMONS_H
 
 #include "Player.h"
+#include <string>
+
+using std::string;
+
 class Summon;
 class PacketReader;
 class LoopingId;
@@ -26,11 +30,12 @@ class LoopingId;
 namespace Summons {
 	extern LoopingId summonids;
 	void useSummon(Player *player, int32_t skillid, uint8_t level);
-	void removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, bool fromTimer = false, bool showMessage = false);
+	void removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, int8_t showMessage, bool fromTimer = false);
 	void showSummon(Player *player);
 	void showSummons(Player *ofplayer, Player *toplayer);
 	void moveSummon(Player *Player, PacketReader &packet);
 	void damageSummon(Player *player, PacketReader &packet);
+	string getSummonName(int32_t summonid);
 	int32_t loopId();
 };
 

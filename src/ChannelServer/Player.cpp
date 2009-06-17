@@ -336,15 +336,7 @@ void Player::setHp(int16_t shp, bool is) {
 		hp = shp;
 	if (is)
 		PlayerPacket::updateStatShort(this, Stats::Hp, hp);
-	if (getParty())
-		getParty()->showHpBar(this);
-	getActiveBuffs()->checkBerserk();
-	if (hp == 0) {
-		if (getInstance() != 0) {
-			getInstance()->sendMessage(PlayerDeath, getId());
-		}
-		loseExp();
-	}
+	modifiedHp();
 }
 
 void Player::modifyHp(int16_t nhp, bool is) {
@@ -356,20 +348,16 @@ void Player::modifyHp(int16_t nhp, bool is) {
 		hp = (hp + nhp);
 	if (is)
 		PlayerPacket::updateStatShort(this, Stats::Hp, hp);
-	if (getParty())
-		getParty()->showHpBar(this);
-	getActiveBuffs()->checkBerserk();
-	if (hp == 0) {
-		if (getInstance() != 0) {
-			getInstance()->sendMessage(PlayerDeath, getId());
-		}
-		loseExp();
-	}
+	modifiedHp();
 }
 
 void Player::damageHp(uint16_t dhp) {
 	hp = (dhp > hp ? 0 : hp - dhp);
 	PlayerPacket::updateStatShort(this, Stats::Hp, hp);
+	modifiedHp();
+}
+
+void Player::modifiedHp() {
 	if (getParty())
 		getParty()->showHpBar(this);
 	getActiveBuffs()->checkBerserk();
@@ -378,6 +366,7 @@ void Player::damageHp(uint16_t dhp) {
 			getInstance()->sendMessage(PlayerDeath, getId());
 		}
 		loseExp();
+		Summons::removeSummon(this, false, true, false, 2);
 	}
 }
 
@@ -456,9 +445,7 @@ void Player::setMHp(int16_t mhp) {
 		mhp = Stats::MinMaxHp;
 	this->mhp = mhp;
 	PlayerPacket::updateStatShort(this, Stats::MaxHp, rmhp);
-	if (getParty())
-		getParty()->showHpBar(this);
-	getActiveBuffs()->checkBerserk();
+	modifiedHp();
 }
 
 void Player::setMMp(int16_t mmp) {
