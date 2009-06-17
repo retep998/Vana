@@ -105,8 +105,10 @@ bool Instance::isBanned(const string &name) {
 }
 
 void Instance::addPlayer(Player *player) {
-	m_players[player->getId()] = player;
-	player->setInstance(this);
+	if (player != 0) {
+		m_players[player->getId()] = player;
+		player->setInstance(this);
+	}
 }
 
 void Instance::removePlayer(Player *player) {
