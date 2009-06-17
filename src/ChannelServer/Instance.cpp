@@ -45,7 +45,7 @@ m_start(TimeUtilities::getTickCount()),
 m_reset_on_destroy(true),
 m_marked_for_delete(false)
 {
-	setInstanceTimer(time);
+	setInstanceTimer(time, true);
 }
 
 Instance::~Instance() {
@@ -105,8 +105,10 @@ bool Instance::isBanned(const string &name) {
 }
 
 void Instance::addPlayer(Player *player) {
-	m_players[player->getId()] = player;
-	player->setInstance(this);
+	if (player != 0) {
+		m_players[player->getId()] = player;
+		player->setInstance(this);
+	}
 }
 
 void Instance::removePlayer(Player *player) {
@@ -264,22 +266,29 @@ int32_t Instance::checkInstanceTimer() {
 	return timeleft;
 }
 
-void Instance::setInstanceTimer(int32_t time) {
+void Instance::setInstanceTimer(int32_t time, bool firstrun) {
 	if (checkInstanceTimer() > 0) {
 		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
 		getTimers()->removeTimer(id);
 	}
-	if (time < 0) {
-		m_time = -(time + 1);
-		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
+	if (time != 0) {
+		clock_t runat = 0;
+		if (time < 0) {
+			m_time = -(time + 1);
+			runat = Timer::Time::nthSecondOfHour(static_cast<uint16_t>(m_time));
+		}
+		else if (time > 0) {
+			m_time = time * 1000;
+			runat = Timer::Time::fromNow(m_time);
+		}
+
 		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
-			id, getTimers(), Timer::Time::nthSecondOfHour(static_cast<uint16_t>(m_time)), m_persistent * 1000);
-	}
-	else if (time > 0) {
-		m_time = time * 1000;
-		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
-		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
-			id, getTimers(), Timer::Time::fromNow(m_time), m_persistent * 1000);
+			Timer::Id(Timer::Types::InstanceTimer, m_time, -1),
+			getTimers(), runat, m_persistent * 1000);
+
+		if (!firstrun && showTimer()) {
+			showTimer(true, true);
+		}
 	}
 }
 
@@ -347,5 +356,18 @@ void Instance::respawnReactors(int32_t mapid) {
 	}
 	else {
 		Maps::getMap(mapid)->checkReactorSpawn(0, true);
+	}
+}
+
+void Instance::showTimer(bool show, bool doit) {
+	if (!show && (doit || m_show_timer)) {
+		for (size_t i = 0; i < getMapNum(); i++) {
+			MapPacket::showTimer(m_maps[i]->getInfo()->id, 0);
+		}
+	}
+	else if (show && (doit || !m_show_timer)) {
+		for (size_t i = 0; i < getMapNum(); i++) {
+			MapPacket::showTimer(m_maps[i]->getInfo()->id, checkInstanceTimer());
+		}
 	}
 }

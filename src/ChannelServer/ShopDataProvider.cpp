@@ -48,7 +48,7 @@ void ShopDataProvider::loadData() {
 		shops[shopid] = shop;
 	}
 
-	query << "SELECT * FROM shopitemdata ORDER BY shopitemdata.sort DESC";
+	query << "SELECT * FROM shopitemdata ORDER BY shopitemdata.shopid, shopitemdata.sort DESC";
 	res = query.use();
 
 	int32_t currentid = 0;
@@ -61,10 +61,14 @@ void ShopDataProvider::loadData() {
 		//    3 : Price
 		//    4 : Sort
 		currentid = atoi(shopRow[0]);
-		if (currentid != previousid && previousid != -1) { // Add the items into the cache
+		if (previousid == -1) {
+			shop = shops[currentid];
+		}
+		else if (previousid != -1 && currentid != previousid) { // Add the items into the cache
 			shops[previousid] = shop;
 			shop = shops[currentid];
 		}
+
 		item.itemid = atoi(shopRow[1]);
 		item.quantity = atoi(shopRow[2]);
 		item.price = atoi(shopRow[3]);
@@ -120,10 +124,12 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 		packet.add<int32_t>(item.price);
 		if (GameLogicUtilities::isRechargeable(item.itemid)) {
 			idsdone[item.itemid] = true;
-			shopcount--;
 			double cost = 0.0;
-			if (rechargables.find(item.itemid) != rechargables.end())
-				cost = rechargables[item.itemid];
+			if (rechargetier != 0) {
+				shopcount--;
+				if (rechargables.find(item.itemid) != rechargables.end())
+					cost = rechargables[item.itemid];
+			}
 			packet.add<double>(cost);
 		}
 		else {
