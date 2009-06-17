@@ -76,6 +76,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["instruction"] = make_pair(CmdInstruction, 3);
 	commandlist["addnpc"] = make_pair(CmdAddNpc, 3);
 	commandlist["dorankings"] = make_pair(CmdRankingCalc, 3);
+	commandlist["globalmessage"] = make_pair(CmdGlobalMessage, 3);
 
 	commandlist["me"] = make_pair(CmdMe, 2);
 	commandlist["kick"] = make_pair(CmdKick, 2);
@@ -83,6 +84,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["warpall"] = make_pair(CmdWarpAll, 2);
 	commandlist["killall"] = make_pair(CmdKillAll, 2);
 	commandlist["cleardrops"] = make_pair(CmdClearDrops, 2);
+	commandlist["worldmessage"] = make_pair(CmdWorldMessage, 2);
 
 	commandlist["kill"] = make_pair(CmdKill, 1);
 	commandlist["lookup"] = make_pair(CmdLookUp, 1);
@@ -772,6 +774,48 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldPlayer());
 					PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", 5);
 					break;
+				case CmdWorldMessage: {
+					re = "(\\w+) (.+)";
+					if (regex_match(args.c_str(), matches, re)) {
+						int8_t type = -1;
+						if (matches[1] == "notice") type = 0;
+						else if (matches[1] == "popup") type = 1;
+						else if (matches[1] == "event") type = 5;
+						else if (matches[1] == "purple") type = 6;
+
+						if (type != -1) {
+							WorldServerConnectPacket::worldMessage(ChannelServer::Instance()->getWorldPlayer(), (string) matches[2], type);
+						}
+						else {
+							PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
+						}
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !worldmessage <${notice | popup | event | purple}> <$message string>", 6);
+					}
+					break;
+				}
+				case CmdGlobalMessage: {
+					re = "(\\w+) (.+)";
+					if (regex_match(args.c_str(), matches, re)) {
+						int8_t type = -1;
+						if (matches[1] == "notice") type = 0;
+						else if (matches[1] == "popup") type = 1;
+						else if (matches[1] == "event") type = 5;
+						else if (matches[1] == "purple") type = 6;
+
+						if (type != -1) {
+							WorldServerConnectPacket::globalMessage(ChannelServer::Instance()->getWorldPlayer(), (string) matches[2], type);
+						}
+						else {
+							PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
+						}
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !globalmessage <${notice | popup | event | purple}> <$message string>", 6);
+					}
+					break;
+				}
 			}
 		}
 		return;

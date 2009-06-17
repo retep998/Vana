@@ -33,6 +33,7 @@ using std::tr1::unordered_map;
 
 class PlayerLogin;
 class LoginServerAcceptPlayer;
+class PacketCreator;
 class PacketReader;
 
 struct Channel {
@@ -71,6 +72,7 @@ namespace Worlds {
 	void showWorld(PlayerLogin *player);
 	int8_t connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
 	int8_t connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server
+	void toWorlds(PacketCreator &packet);
 	extern map<uint8_t, World *> worlds;
 };
 

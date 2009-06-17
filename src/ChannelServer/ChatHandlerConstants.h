@@ -68,7 +68,9 @@ enum Commands {
 	CmdWarpAll,
 	CmdWarp,
 	CmdWarpTo,
-	CmdRankingCalc
+	CmdRankingCalc,
+	CmdWorldMessage,
+	CmdGlobalMessage
 };
 
 #endif

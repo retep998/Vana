@@ -155,3 +155,9 @@ void WorldServerAcceptHandler::updateMap(WorldServerAcceptPlayer *player, Packet
 		PartyHandler::silentUpdate(id);
 	}
 }
+
+void WorldServerAcceptHandler::toChannels(PacketReader &packet) {
+	PacketCreator pack;
+	pack.addBuffer(packet);
+	Channels::Instance()->sendToAll(pack);
+}

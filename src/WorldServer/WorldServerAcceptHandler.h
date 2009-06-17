@@ -34,6 +34,7 @@ namespace WorldServerAcceptHandler {
 	void updateJob(WorldServerAcceptPlayer *player, PacketReader &packet);
 	void updateMap(WorldServerAcceptPlayer *player, PacketReader &packet);
 	void groupChat(WorldServerAcceptPlayer *player, PacketReader &packet);
+	void toChannels(PacketReader &packet);
 }
 
 #endif
