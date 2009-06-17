@@ -170,7 +170,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	}
 
 	// Reactors
-	query << "SELECT reactorid, x, y, reactortime FROM mapreactordata WHERE mapid = " << mapid;
+	query << "SELECT reactorid, x, y, reactortime, link FROM mapreactordata WHERE mapid = " << mapid;
 	res = query.use();
 
 	while (dataRow = res.fetch_raw_row()) {
@@ -178,10 +178,12 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    1 : x
 		//    2 : y
 		//    3 : Reactor Time
+		//    4 : Link
 		ReactorSpawnInfo reactor;
 		reactor.id = atoi(dataRow[0]);
 		reactor.pos = Pos(atoi(dataRow[1]), atoi(dataRow[2]));
 		reactor.time = atoi(dataRow[3]);
+		reactor.link = atoi(dataRow[4]);
 		map->addReactorSpawn(reactor);
 	}
 

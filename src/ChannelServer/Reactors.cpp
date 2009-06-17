@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 // Reactor class
-Reactor::Reactor (int32_t mapid, int32_t reactorid, Pos pos) : state(0), reactorid(reactorid), mapid(mapid), alive(true), pos(pos) {
+Reactor::Reactor (int32_t mapid, int32_t reactorid, Pos pos, int32_t link) : state(0), reactorid(reactorid), mapid(mapid), alive(true), pos(pos), link(link) {
 	Maps::getMap(mapid)->addReactor(this);
 }
 
@@ -73,9 +73,13 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 
 	if (reactor != 0 && reactor->isAlive()) {
-		if (reactor->getState() < maxstates[reactor->getReactorId()]) {
-			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorId()][reactor->getState()];
-			if (revent->nextstate < maxstates[reactor->getReactorId()]) {
+		int32_t reactorid = reactor->getReactorId();
+		if (reactor->getLink() != 0) {
+			reactorid = reactor->getLink();
+		}
+		if (reactor->getState() < maxstates[reactorid]) {
+			ReactorEventInfo *revent = &reactorinfo[reactorid][reactor->getState()];
+			if (revent->nextstate < maxstates[reactorid]) {
 				if (revent->type >= 100)
 					return;
 				ReactorPacket::triggerReactor(reactor);
@@ -122,8 +126,12 @@ struct Reaction {
 void Reactors::checkDrop(Player *player, Drop *drop) {
 	for (size_t i = 0; i < Maps::getMap(drop->getMap())->getNumReactors(); i++) {
 		Reactor *reactor = Maps::getMap(drop->getMap())->getReactor(i);
-		if (reactor->getState() < maxstates[reactor->getReactorId()]) {
-			ReactorEventInfo *revent = &reactorinfo[reactor->getReactorId()][reactor->getState()];
+		int32_t reactorid = reactor->getReactorId();
+		if (reactor->getLink() != 0) {
+			reactorid = reactor->getLink();
+		}
+		if (reactor->getState() < maxstates[reactorid]) {
+			ReactorEventInfo *revent = &reactorinfo[reactorid][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectId() == revent->itemid) {
 				if (GameLogicUtilities::isInBox(reactor->getPos(), revent->lt, revent->rb, drop->getPos())) {
 					Reaction reaction;

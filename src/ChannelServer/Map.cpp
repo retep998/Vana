@@ -130,7 +130,7 @@ void Map::sendPlayersToTown(int16_t prop, int16_t count, const Pos &origin, cons
 // Reactors
 void Map::addReactorSpawn(const ReactorSpawnInfo &spawn) {
 	reactorspawns.push_back(spawn);
-	Reactor *reactor = new Reactor(info->id, spawn.id, spawn.pos);
+	Reactor *reactor = new Reactor(info->id, spawn.id, spawn.pos, spawn.link);
 	ReactorPacket::spawnReactor(reactor);
 }
 

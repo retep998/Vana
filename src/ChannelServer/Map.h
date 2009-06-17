@@ -118,6 +118,7 @@ struct MobSpawnInfo {
 	bool spawned;
 	int32_t time;
 	clock_t spawnat;
+	int32_t link;
 };
 typedef vector<MobSpawnInfo> MobSpawnsInfo;
 
