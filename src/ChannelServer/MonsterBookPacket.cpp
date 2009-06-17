@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void MonsterBookPacket::addCard(Player *player, MonsterCard *card, bool full) {
+void MonsterBookPacket::addCard(Player *player, int32_t cardid, uint8_t level, bool full) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MONSTERBOOK_ADD);
 	packet.add<int8_t>(full ? 0x00 : 0x01);
-	packet.add<int32_t>(card->id);
-	packet.add<int32_t>(card->level);
+	packet.add<int32_t>(cardid);
+	packet.add<int32_t>(level);
 	player->getSession()->send(packet);
 	if (!full) {
 		packet = PacketCreator();
