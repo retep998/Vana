@@ -269,6 +269,8 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	else if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
 		player->getMonsterBook()->addCard(drop->getObjectId());
 		DropsPacket::dontTake(player);
+		drop->removeDrop(true);
+		return;
 	}
 	else {
 		Item dropitem = drop->getItem();
