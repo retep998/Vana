@@ -43,7 +43,7 @@ LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactor
 Reactor * LuaExports::getReactor(lua_State *luaVm) {
 	lua_getglobal(luaVm, "reactorid");
 	lua_getglobal(luaVm, "mapid");
-	int32_t reactorid = (lua_tointeger(luaVm, -2) - 200);
+	int32_t reactorid = lua_tointeger(luaVm, -2);
 	int32_t mapid = lua_tointeger(luaVm, -1);
 	return Maps::getMap(mapid)->getReactor(reactorid);
 }
