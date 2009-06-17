@@ -128,7 +128,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 			lua_pushboolean(luaVm, parameter4 != 0);
 			break;
 	}
-	if (lua_pcall(luaVm, 3, 0, 0)) {
+	if (lua_pcall(luaVm, 4, 0, 0)) {
 		std::cout << lua_tostring(luaVm, -1) << std::endl;
 		return false;
 	}
