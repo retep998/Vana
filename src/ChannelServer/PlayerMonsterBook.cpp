@@ -64,31 +64,40 @@ void PlayerMonsterBook::save() {
 }
 
 void PlayerMonsterBook::addCard(int32_t cardid, uint8_t level, bool initialload) {
-	if (m_cards.find(cardid) != m_cards.end()) {
-		if (isFull(cardid)) {
-			MonsterBookPacket::addCard(m_player, &m_cards[cardid], true);
-			return;
-		}
-		m_cards[cardid].level++;
-		MonsterBookPacket::addCard(m_player, &m_cards[cardid], false);
-	}
-	else {
+	if (initialload) {
 		MonsterCard card = MonsterCard(cardid, level);
 		m_cards[cardid] = card;
-		if (!initialload) {
-			MonsterBookPacket::addCard(m_player, &m_cards[cardid], false);
-			calculateLevel();
+	}
+	else {
+		MonsterCard card;
+		if (m_cards.find(cardid) != m_cards.end()) {
+			card = m_cards[cardid];
+			if (isFull(cardid)) {
+				MonsterBookPacket::addCard(m_player, cardid, card.level, true);
+				return;
+			}
+			card.level++;
+			MonsterBookPacket::addCard(m_player, cardid, card.level, false);
 		}
-		if (GameLogicUtilities::isSpecialCard(cardid))
-			m_specialcount++;
-		else
-			m_normalcount++;
+		else {
+			card = MonsterCard(cardid, level);
+			m_cards[cardid] = card;
+
+			MonsterBookPacket::addCard(m_player, cardid, card.level, false);
+
+			calculateLevel();
+
+			if (GameLogicUtilities::isSpecialCard(cardid))
+				m_specialcount++;
+			else
+				m_normalcount++;
+		}
+		m_cards[cardid] = card; // 'Saving' the card
 	}
 }
 
 void PlayerMonsterBook::connectData(PacketCreator &packet) {
-	int32_t cover = (getCover() != 0 ? ItemDataProvider::Instance()->getCardId(getCover()) : 0);
-	packet.add<int32_t>(cover);
+	packet.add<int32_t>(getCover() != 0 ? ItemDataProvider::Instance()->getCardId(getCover()) : 0);
 	packet.add<int8_t>(0);
 	
 	packet.add<int16_t>((int16_t) m_cards.size());
@@ -100,13 +109,16 @@ void PlayerMonsterBook::connectData(PacketCreator &packet) {
 
 void PlayerMonsterBook::calculateLevel() {
 	int32_t size = getSize();
-	m_level = MonsterCards::MaxPlayerLevel;
+	m_level = 0;
 	for (int32_t i = 1; i < MonsterCards::MaxPlayerLevel; i++) {
 		// We don't calculate for the last level because that includes all values above the second to last level
 		if (size < MonsterCards::PlayerLevels[i - 1]) {
 			m_level = i;
 			break;
 		}
+	}
+	if (m_level == 0) {
+		m_level = MonsterCards::MaxPlayerLevel;
 	}
 }
 
@@ -119,9 +131,9 @@ void PlayerMonsterBook::infoData(PacketCreator &packet) {
 }
 
 MonsterCard * PlayerMonsterBook::getCard(int32_t cardid) {
-	return m_cards.find(cardid) != m_cards.end() ? &m_cards[cardid] : 0;
+	return (m_cards.find(cardid) != m_cards.end() ? &m_cards[cardid] : 0);
 }
 
 bool PlayerMonsterBook::isFull(int32_t cardid) {
-	return (m_cards.find(cardid) != m_cards.end() ? (m_cards[cardid].level == MonsterCards::MaxCardLevel) : false);
+	return (m_cards[cardid].level == MonsterCards::MaxCardLevel);
 }
