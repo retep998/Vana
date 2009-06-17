@@ -67,7 +67,7 @@ public:
 	void applyWebDamage();
 	void setMp(int32_t mp) { this->mp = mp; }
 	void addStatus(int32_t playerid, vector<StatusInfo> &statusinfo);
-	void removeStatus(int32_t status);
+	void removeStatus(int32_t status, bool fromTimer = false);
 	void setControl(Player *control);
 	void endControl();
 	void setOwner(Mob *owner) { this->owner = owner; }

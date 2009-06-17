@@ -63,6 +63,8 @@ public:
 	void setResetAtEnd(bool reset) { m_reset_on_destroy = reset; }
 	void respawnMobs(int32_t mapid);
 	void respawnReactors(int32_t mapid);
+	bool showTimer() const { return m_show_timer; }
+	void showTimer(bool show, bool doit = false);
 
 	// Players
 	vector<int32_t> getAllPlayerIds();
@@ -95,7 +97,7 @@ public:
 	// Timers
 	void removeAllTimers();
 	void removeTimer(const string &name);
-	void setInstanceTimer(int32_t time);
+	void setInstanceTimer(int32_t time, bool firstrun = false);
 	void setPersistence(int32_t p) { m_persistent = p; }
 	void timerEnd(const string &name, bool fromTimer = false);
 	bool addTimer(const string &name, const TimerAction &timer);

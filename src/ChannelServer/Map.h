@@ -97,6 +97,7 @@ struct ReactorSpawnInfo {
 	ReactorSpawnInfo() : spawnat(-1), spawned(false) { }
 	int32_t id;
 	int32_t time;
+	int32_t link;
 	clock_t spawnat;
 	bool spawned;
 	Pos pos;
@@ -118,6 +119,7 @@ struct MobSpawnInfo {
 	bool spawned;
 	int32_t time;
 	clock_t spawnat;
+	int32_t link;
 };
 typedef vector<MobSpawnInfo> MobSpawnsInfo;
 

@@ -144,11 +144,10 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 			sponge->applyDamage(playerid, damage, false); // Apply damage after you can be sure that all the units are linked and ready
 		}
 	}
-	else {
-		if (hp == 1) {
-			removeStatus(StatusEffects::Mob::Poison);
-		}
-	}
+	// TODO: Fix this, for some reason, it causes issues within the timer container
+//	else if (hp == 1) {
+//		removeStatus(StatusEffects::Mob::Poison);
+//	}
 }
 
 void Mob::applyWebDamage() {
@@ -200,7 +199,7 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 				getTimers(), 0, 1000);
 		}
 
-		new Timer::Timer(bind(&Mob::removeStatus, this, cstatus),
+		new Timer::Timer(bind(&Mob::removeStatus, this, cstatus, true),
 			Timer::Id(Timer::Types::MobStatusTimer, cstatus, 0),
 			getTimers(), Timer::Time::fromNow(statusinfo[i].time * 1000));
 	}
@@ -239,7 +238,7 @@ bool Mob::hasStatus(int32_t status) {
 	return (statuses.find(status) != statuses.end());
 }
 
-void Mob::removeStatus(int32_t status) {
+void Mob::removeStatus(int32_t status, bool fromTimer) {
 	if (hasStatus(status)) {
 		StatusInfo stat = statuses[status];
 		switch (status) {
@@ -257,6 +256,9 @@ void Mob::removeStatus(int32_t status) {
 			case StatusEffects::Mob::Poison: // Stop poison damage timer
 				getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 1));
 				break;
+		}
+		if (!fromTimer) {
+			getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 0));
 		}
 		this->status -= status;
 		statuses.erase(status);
