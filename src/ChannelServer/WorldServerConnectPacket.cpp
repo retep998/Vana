@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectPacket.h"
 #include "InterHeader.h"
+#include "SendHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
@@ -148,5 +149,46 @@ void WorldServerConnectPacket::playerBuffsTransferred(WorldServerConnectPlayer *
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET);
 	packet.add<int32_t>(playerid);
+	player->getSession()->send(packet);
+}
+
+void WorldServerConnectPacket::toChannels(WorldServerConnectPlayer *player, PacketCreator &packet) {
+	PacketCreator pack;
+	pack.add<int16_t>(INTER_TO_CHANNELS);
+	pack.addBuffer(packet);
+	player->getSession()->send(pack);
+}
+
+void WorldServerConnectPacket::toWorlds(WorldServerConnectPlayer *player, PacketCreator &packet) {
+	PacketCreator pack;
+	pack.add<int16_t>(INTER_TO_WORLDS);
+	pack.addBuffer(packet);
+	player->getSession()->send(pack);
+}
+
+void WorldServerConnectPacket::worldMessage(WorldServerConnectPlayer *player, const string &message, int8_t type) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_TO_CHANNELS);
+	packet.add<int16_t>(INTER_TO_PLAYERS);
+	packet.add<int16_t>(SEND_NOTICE); 
+	packet.add<int8_t>(type);
+	packet.addString(message);
+	if (type == 6)
+		packet.add<int32_t>(0);
+	player->getSession()->send(packet);
+}
+
+void WorldServerConnectPacket::globalMessage(WorldServerConnectPlayer *player, const string &message, int8_t type) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_TO_LOGIN);
+	packet.add<int16_t>(INTER_TO_WORLDS);
+	packet.add<int16_t>(INTER_TO_CHANNELS);
+	packet.add<int16_t>(INTER_TO_PLAYERS);
+	packet.add<int16_t>(SEND_NOTICE); 
+	packet.add<int8_t>(type);
+	packet.addString(message);
+	if (type == 6)
+		packet.add<int32_t>(0);
+	
 	player->getSession()->send(packet);
 }

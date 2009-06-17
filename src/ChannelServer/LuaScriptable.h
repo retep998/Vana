@@ -64,6 +64,7 @@ namespace LuaExports {
 	int runNPC(lua_State *luaVm);
 	int setChannelVariable(lua_State *luaVm);
 	int setPlayer(lua_State *luaVm);
+	int showChannelMessage(lua_State *luaVm);
 	int showShop(lua_State *luaVm);
 
 	// Buddy
@@ -192,8 +193,8 @@ namespace LuaExports {
 	int getPartyMapCount(lua_State *luaVm);
 	int isPartyInLevelRange(lua_State *luaVm);
 	int isPartyLeader(lua_State *luaVm);
-	int warpParty(lua_State *luaVm);
 	int verifyPartyFootholds(lua_State *luaVm);
+	int warpParty(lua_State *luaVm);
 
 	// Instance
 	int addInstanceMap(lua_State *luaVm);

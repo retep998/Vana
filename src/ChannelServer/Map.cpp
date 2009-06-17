@@ -82,8 +82,8 @@ void Map::removePlayer(Player *player) {
 			break;
 		}
 	}
-	Summons::removeSummon(player, true, false, false);
-	Summons::removeSummon(player, false, false, true);
+	Summons::removeSummon(player, true, false, false, 0);
+	Summons::removeSummon(player, false, false, true, 0);
 	MapPacket::removePlayer(player);
 	updateMobControl(player);
 }

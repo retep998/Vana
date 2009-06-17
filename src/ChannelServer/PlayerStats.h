@@ -73,6 +73,7 @@ public:
 	void setRMHp(int16_t rmhp);
 	void setRMMp(int16_t rmmp);
 	void setHyperBody(int16_t modx, int16_t mody);
+	void modifiedHp();
 private:
 	Player *m_player;
 

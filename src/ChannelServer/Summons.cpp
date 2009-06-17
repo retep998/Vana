@@ -59,7 +59,7 @@ int32_t Summons::loopId() {
 void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 	Summon *summon = new Summon(loopId(), skillid, level);
 	bool puppet = GameLogicUtilities::isPuppet(skillid);
-	removeSummon(player, puppet, true, false);
+	removeSummon(player, puppet, true, false, 0);
 	Pos sumpos = player->getPos();
 	if (puppet)
 		sumpos = Maps::getMap(player->getMap())->findFloor(Pos((player->getPos().x + 200 * (player->isFacingRight() ? 1 : -1)), player->getPos().y));
@@ -68,14 +68,17 @@ void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 	SummonsPacket::showSummon(player, summon, true);
 }
 
-void Summons::removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, bool fromTimer, bool showMessage) {
+void Summons::removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, int8_t showMessage, bool fromTimer) {
 	Summon *summon = puppet ? player->getSummons()->getPuppet() : player->getSummons()->getSummon();
 	if (summon != 0) {
 		SummonsPacket::removeSummon(player, summon, animated);
 		if (!packetOnly) {
+			string name = getSummonName(summon->getSummonId());
 			player->getSummons()->removeSummon(puppet, fromTimer);
-			if (showMessage)
-				PlayerPacket::showMessage(player, "Summon has run out of time and will disappear.", 5);
+			switch (showMessage) {
+				case 1: PlayerPacket::showMessage(player, name + " has run out of time and will disappear.", 5); break;
+				case 2: PlayerPacket::showMessage(player, name + " is disappearing.", 5); break;
+			}
 		}
 	}
 }
@@ -119,4 +122,24 @@ void Summons::damageSummon(Player *player, PacketReader &packet) {
 		if (summon->getHP() <= 0)
 			removeSummon(player, true, true, false, false, true);
 	}
+}
+
+string Summons::getSummonName(int32_t summonid) {
+	string ret = "Summon";
+	switch (summonid) {
+		case Jobs::Bishop::Bahamut: ret = "Bahamut"; break;
+		case Jobs::Outlaw::Gaviota: ret = "Gaviota"; break;
+		case Jobs::Outlaw::Octopus: ret = "Octopus"; break;
+		case Jobs::Sniper::Puppet:
+		case Jobs::Ranger::Puppet: ret = "Puppet"; break;
+		case Jobs::Priest::SummonDragon: ret = "Summon Dragon"; break;
+		case Jobs::Ranger::SilverHawk: ret = "Silver Hawk"; break;
+		case Jobs::Sniper::GoldenEagle: ret = "Golden Eagle"; break;
+		case Jobs::DarkKnight::Beholder: ret = "Beholder"; break;
+		case Jobs::FPArchMage::Elquines: ret = "Elquines"; break;
+		case Jobs::ILArchMage::Ifrit: ret = "Ifrit"; break;
+		case Jobs::Bowmaster::Phoenix: ret = "Phoenix"; break;
+		case Jobs::Marksman::Frostprey: ret = "Frostprey"; break;
+	}
+	return ret;
 }

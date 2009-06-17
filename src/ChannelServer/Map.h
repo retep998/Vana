@@ -97,6 +97,7 @@ struct ReactorSpawnInfo {
 	ReactorSpawnInfo() : spawnat(-1), spawned(false) { }
 	int32_t id;
 	int32_t time;
+	int32_t link;
 	clock_t spawnat;
 	bool spawned;
 	Pos pos;

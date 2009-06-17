@@ -8,6 +8,7 @@
 #include "Party.h"
 #include "Player.h"
 #include "PlayerPacket.h"
+#include "Summons.h"
 #include "WorldServerConnectPacket.h"
 
 PlayerStats::PlayerStats(Player *p) :
@@ -46,7 +47,6 @@ void PlayerStats::load() {
 	m_sp = static_cast<int16_t>(res[0]["sp"]);
 	m_fame = static_cast<int16_t>(res[0]["fame"]);
 	m_hpmp_ap = static_cast<uint16_t>(res[0]["hpmp_ap"]);
-
 }
 
 void PlayerStats::save() {
@@ -111,15 +111,7 @@ void PlayerStats::setHp(int16_t shp, bool is) {
 		m_hp = shp;
 	if (is)
 		PlayerPacket::updateStatShort(m_player, Stats::Hp, m_hp);
-	if (m_player->getParty())
-		m_player->getParty()->showHpBar(m_player);
-	m_player->getActiveBuffs()->checkBerserk();
-	if (m_hp == 0) {
-		if (m_player->getInstance() != 0) {
-			m_player->getInstance()->sendMessage(PlayerDeath, m_player->getId());
-		}
-		m_player->loseExp();
-	}
+	modifiedHp();
 }
 
 void PlayerStats::modifyHp(int16_t nhp, bool is) {
@@ -131,29 +123,13 @@ void PlayerStats::modifyHp(int16_t nhp, bool is) {
 		m_hp = (m_hp + nhp);
 	if (is)
 		PlayerPacket::updateStatShort(m_player, Stats::Hp, m_hp);
-	if (m_player->getParty())
-		m_player->getParty()->showHpBar(m_player);
-	m_player->getActiveBuffs()->checkBerserk();
-	if (m_hp == 0) {
-		if (m_player->getInstance() != 0) {
-			m_player->getInstance()->sendMessage(PlayerDeath, m_player->getId());
-		}
-		m_player->loseExp();
-	}
+	modifiedHp();
 }
 
 void PlayerStats::damageHp(uint16_t dhp) {
 	m_hp = (dhp > m_hp ? 0 : m_hp - dhp);
 	PlayerPacket::updateStatShort(m_player, Stats::Hp, m_hp);
-	if (m_player->getParty())
-		m_player->getParty()->showHpBar(m_player);
-	m_player->getActiveBuffs()->checkBerserk();
-	if (m_hp == 0) {
-		if (m_player->getInstance() != 0) {
-			m_player->getInstance()->sendMessage(PlayerDeath, m_player->getId());
-		}
-		m_player->loseExp();
-	}
+	modifiedHp();
 }
 
 void PlayerStats::setMp(int16_t smp, bool is) {
@@ -201,9 +177,7 @@ void PlayerStats::setMHp(int16_t mhp) {
 		mhp = Stats::MinMaxHp;
 	m_mhp = mhp;
 	PlayerPacket::updateStatShort(m_player, Stats::MaxHp, m_rmhp);
-	if (m_player->getParty())
-		m_player->getParty()->showHpBar(m_player);
-	m_player->getActiveBuffs()->checkBerserk();
+	modifiedHp();
 }
 
 void PlayerStats::setMMp(int16_t mmp) {
@@ -434,4 +408,17 @@ int16_t PlayerStats::getTotalStat(int32_t stat) const {
 			break;
 	}
 	return ret;
+}
+
+void PlayerStats::modifiedHp() {
+	if (m_player->getParty())
+		m_player->getParty()->showHpBar(m_player);
+	m_player->getActiveBuffs()->checkBerserk();
+	if (m_hp == 0) {
+		if (m_player->getInstance() != 0) {
+			m_player->getInstance()->sendMessage(PlayerDeath, m_player->getId());
+		}
+		m_player->loseExp();
+		Summons::removeSummon(m_player, false, true, false, 2);
+	}
 }
