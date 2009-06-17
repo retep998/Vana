@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPacket.h"
 #include "MapleSession.h"
 #include "PlayerLogin.h"
+#include "PacketCreator.h"
 #include "PacketReader.h"
 #include "PlayerStatus.h"
 
@@ -108,4 +109,10 @@ int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
 	}
 	player->getSession()->disconnect();
 	return worldid;
+}
+
+void Worlds::toWorlds(PacketCreator &packet) {
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
+		if (iter->second->connected == true)
+			iter->second->player->getSession()->send(packet);
 }

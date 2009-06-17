@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptHandler.h"
 #include "LoginServerAcceptPlayer.h"
 #include "IpUtilities.h"
+#include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Worlds.h"
 #include <iostream>
@@ -44,4 +45,10 @@ void LoginServerAcceptHandler::removeChannel(LoginServerAcceptPlayer *player, Pa
 
 	Worlds::worlds[player->getWorldId()]->channels.erase(channel);
 	std::cout << "Removed channel " << channel << std::endl;
+}
+
+void LoginServerAcceptHandler::toWorlds(LoginServerAcceptPlayer *player, PacketReader &packet) {
+	PacketCreator pack;
+	pack.addBuffer(packet);
+	Worlds::toWorlds(pack);
 }

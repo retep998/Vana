@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
+class PacketCreator;
 class Player;
 class WorldServerConnectPlayer;
 
@@ -43,6 +44,10 @@ namespace WorldServerConnectPacket {
 	void updateMap(WorldServerConnectPlayer *player, int32_t playerid, int32_t map);
 	void groupChat(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat);
 	void rankingCalculation(WorldServerConnectPlayer *player);
+	void toChannels(WorldServerConnectPlayer *player, PacketCreator &packet);
+	void toWorlds(WorldServerConnectPlayer *player, PacketCreator &packet);
+	void worldMessage(WorldServerConnectPlayer *player, const string &message, int8_t type);
+	void globalMessage(WorldServerConnectPlayer *player, const string &message, int8_t type);
 };
 
 #endif

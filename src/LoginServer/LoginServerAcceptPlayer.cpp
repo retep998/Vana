@@ -39,6 +39,7 @@ void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 		case INTER_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
 		case INTER_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
 		case INTER_CALCULATE_RANKING: RankingCalculator::runThread(); break;
+		case INTER_TO_WORLDS: LoginServerAcceptHandler::toWorlds(this, packet); break;
 	}
 }
 
