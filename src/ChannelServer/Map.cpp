@@ -234,6 +234,22 @@ PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 	return (id == 0 ? getSpawnPoint() : &spawnpoints[id]);
 }
 
+// NPCs
+int32_t Map::addNPC(const NPCSpawnInfo &npc) {
+	npcs.push_back(npc);
+	NPCPacket::showNPC(getInfo()->id, npc, npcs.size());
+	return npcs.size() - 1;
+}
+
+void Map::removeNPC(int32_t index) {
+	int32_t size = npcs.size();
+	if (index >= 0 && index < size) {
+		NPCSpawnInfo npc = npcs[index];
+		NPCPacket::showNPC(getInfo()->id, npc, size, false);
+		npcs.erase(npcs.begin() + index);
+	}
+}
+
 // Mobs
 void Map::addMobSpawn(const MobSpawnInfo &spawn) {
 	mobspawns.push_back(spawn);
