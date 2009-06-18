@@ -979,8 +979,8 @@ int LuaExports::showMessage(lua_State *luaVm) {
 int LuaExports::spawnMob(lua_State *luaVm) {
 	int32_t mobid = lua_tointeger(luaVm, -1);
 	Player *player = getPlayer(luaVm);
-	Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
-	return 0;
+	lua_pushinteger(luaVm, Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos()));
+	return 1;
 }
 
 int LuaExports::spawnMobPos(lua_State *luaVm) {
@@ -990,8 +990,8 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 	int16_t fh = 0;
 	if (lua_isnumber(luaVm, 4))
 		fh = lua_tointeger(luaVm, 4);
-	Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobid, Pos(x, y), -1, fh);
-	return 0;
+	lua_pushinteger(luaVm, Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobid, Pos(x, y), -1, fh));
+	return 1;
 }
 
 // Time
