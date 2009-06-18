@@ -91,7 +91,7 @@ public:
 	void setEyes(int32_t id);
 	void setHair(int32_t id);
 	void setExp(int32_t exp);
-	void setMap(int32_t mapid, PortalInfo *portal = 0);
+	void setMap(int32_t mapid, PortalInfo *portal = 0, bool instance = false);
 	void setBuddyListSize(uint8_t size);
 	void setConnectionTime(int64_t newtime) { online_time = newtime; }
 	void setTradeId(int32_t id) { this->trade_id = id; }
