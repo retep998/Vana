@@ -55,14 +55,13 @@ namespace LuaExports {
 	// Global exports
 
 	// Miscellaneous
+	int getRandomNumber(lua_State *luaVm);
+
+	// Channel
 	int deleteChannelVariable(lua_State *luaVm);
 	int getChannel(lua_State *luaVm);
 	int getChannelVariable(lua_State *luaVm);
-	int getRandomNumber(lua_State *luaVm);
-	int isOnline(lua_State *luaVm);
-	int revertPlayer(lua_State *luaVm);
 	int setChannelVariable(lua_State *luaVm);
-	int setPlayer(lua_State *luaVm);
 	int showChannelMessage(lua_State *luaVm);
 
 	// NPC
@@ -132,6 +131,9 @@ namespace LuaExports {
 	int isActiveItem(lua_State *luaVm);
 	int isActiveSkill(lua_State *luaVm);
 	int isGM(lua_State *luaVm);
+	int isOnline(lua_State *luaVm);
+	int playSoundPlayer(lua_State *luaVm);
+	int revertPlayer(lua_State *luaVm);
 	int setAP(lua_State *luaVm);
 	int setDEX(lua_State *luaVm);
 	int setEXP(lua_State *luaVm);
@@ -144,12 +146,15 @@ namespace LuaExports {
 	int setMHP(lua_State *luaVm);
 	int setMMP(lua_State *luaVm);
 	int setMP(lua_State *luaVm);
+	int setPlayer(lua_State *luaVm);
 	int setPlayerVariable(lua_State *luaVm);
 	int setRMHP(lua_State *luaVm);
 	int setRMMP(lua_State *luaVm);
 	int setSP(lua_State *luaVm);
 	int setSTR(lua_State *luaVm);
 	int setStyle(lua_State *luaVm);
+	int showInstructionBubble(lua_State *luaVm);
+	int showMessage(lua_State *luaVm);
 
 	// Map
 	int clearDrops(lua_State *luaVm);
@@ -160,17 +165,24 @@ namespace LuaExports {
 	int getReactorState(lua_State *luaVm);
 	int killMob(lua_State *luaVm);
 	int playSoundMap(lua_State *luaVm);
-	int playSoundPlayer(lua_State *luaVm);
 	int setMusic(lua_State *luaVm);
 	int setReactorState(lua_State *luaVm);
-	int showInstructionBubble(lua_State *luaVm);
 	int showMapEffect(lua_State *luaVm);
 	int showMapEvent(lua_State *luaVm);
 	int showMapMessage(lua_State *luaVm);
 	int showMapTimer(lua_State *luaVm);
-	int showMessage(lua_State *luaVm);
 	int spawnMob(lua_State *luaVm);
 	int spawnMobPos(lua_State *luaVm);
+
+	// Mob
+	int getMobFH(lua_State *luaVm);
+	int getMobHP(lua_State *luaVm);
+	int getMobMHP(lua_State *luaVm);
+	int getMobMMP(lua_State *luaVm);
+	int getMobMP(lua_State *luaVm);
+	int getMobPosX(lua_State *luaVm);
+	int getMobPosY(lua_State *luaVm);
+	int getRealMobID(lua_State *luaVm);
 
 	// Time
 	int getDate(lua_State *luaVm);

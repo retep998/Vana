@@ -58,14 +58,13 @@ void LuaScriptable::initialize() {
 		setVariable("instancename", player->getInstance()->getName());
 
 	// Miscellanous
+	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
+
+	// Channel
 	lua_register(luaVm, "deleteChannelVariable", &LuaExports::deleteChannelVariable);
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
 	lua_register(luaVm, "getChannelVariable", &LuaExports::getChannelVariable);
-	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
-	lua_register(luaVm, "isOnline", &LuaExports::isOnline);
-	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
 	lua_register(luaVm, "setChannelVariable", &LuaExports::setChannelVariable);
-	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
 	lua_register(luaVm, "showChannelMessage", &LuaExports::showChannelMessage);
 
 	// NPC
@@ -135,6 +134,9 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "isActiveItem", &LuaExports::isActiveItem);
 	lua_register(luaVm, "isActiveSkill", &LuaExports::isActiveSkill);
 	lua_register(luaVm, "isGM", &LuaExports::isGM);
+	lua_register(luaVm, "isOnline", &LuaExports::isOnline);
+	lua_register(luaVm, "playSoundPlayer", &LuaExports::playSoundPlayer);
+	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
 	lua_register(luaVm, "setAP", &LuaExports::setAP);
 	lua_register(luaVm, "setDEX", &LuaExports::setDEX);
 	lua_register(luaVm, "setEXP", &LuaExports::setEXP);
@@ -147,12 +149,15 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setMHP", &LuaExports::setMHP);
 	lua_register(luaVm, "setMMP", &LuaExports::setMMP);
 	lua_register(luaVm, "setMP", &LuaExports::setMP);
+	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
 	lua_register(luaVm, "setPlayerVariable", &LuaExports::setPlayerVariable);
 	lua_register(luaVm, "setRMHP", &LuaExports::setRMHP);
 	lua_register(luaVm, "setRMMP", &LuaExports::setRMMP);
 	lua_register(luaVm, "setSP", &LuaExports::setSP);
 	lua_register(luaVm, "setSTR", &LuaExports::setSTR);
 	lua_register(luaVm, "setStyle", &LuaExports::setStyle);
+	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
+	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
 
 	// Map
 	lua_register(luaVm, "clearDrops", &LuaExports::clearDrops);
@@ -163,17 +168,24 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
 	lua_register(luaVm, "killMob", &LuaExports::killMob);
 	lua_register(luaVm, "playSoundMap", &LuaExports::playSoundMap);
-	lua_register(luaVm, "playSoundPlayer", &LuaExports::playSoundPlayer);
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
 	lua_register(luaVm, "setReactorState", &LuaExports::setReactorState);
-	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
 	lua_register(luaVm, "showMapEffect", &LuaExports::showMapEffect);
 	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
 	lua_register(luaVm, "showMapTimer", &LuaExports::showMapTimer);
-	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMob);
 	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
+
+	// Mob
+	lua_register(luaVm, "getMobFH", &LuaExports::getMobFH);
+	lua_register(luaVm, "getMobHP", &LuaExports::getMobHP);
+	lua_register(luaVm, "getMobMHP", &LuaExports::getMobMHP);
+	lua_register(luaVm, "getMobMMP", &LuaExports::getMobMMP);
+	lua_register(luaVm, "getMobMP", &LuaExports::getMobMP);
+	lua_register(luaVm, "getMobPosX", &LuaExports::getMobPosX);
+	lua_register(luaVm, "getMobPosY", &LuaExports::getMobPosY);
+	lua_register(luaVm, "getRealMobID", &LuaExports::getRealMobID);
 
 	// Time
 	lua_register(luaVm, "getDate", &LuaExports::getDate);
@@ -283,6 +295,13 @@ Instance * LuaExports::getInstance(lua_State *luaVm) {
 }
 
 // Miscellaneous
+int LuaExports::getRandomNumber(lua_State *luaVm) {
+	int32_t number = lua_tointeger(luaVm, -1);
+	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number - 1) + 1);
+	return 1;
+}
+
+// Channel
 int LuaExports::deleteChannelVariable(lua_State *luaVm) {
 	string key = string(lua_tostring(luaVm, -1));
 	EventDataProvider::Instance()->getVariables()->deleteVariable(key);
@@ -300,50 +319,11 @@ int LuaExports::getChannelVariable(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaExports::getRandomNumber(lua_State *luaVm) {
-	int32_t number = lua_tointeger(luaVm, -1);
-	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number - 1) + 1);
-	return 1;
-}
-
-int LuaExports::isOnline(lua_State *luaVm) {
-	Player *player = 0;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
-	lua_pushboolean(luaVm, player != 0);
-	return 1;
-}
-
-int LuaExports::revertPlayer(lua_State *luaVm) {
-	lua_getglobal(luaVm, "oldplayerid");
-	lua_setglobal(luaVm, "playerid");
-	return 0;
-}
-
 int LuaExports::setChannelVariable(lua_State *luaVm) {
 	string value = string(lua_tostring(luaVm, -1));
 	string key = string(lua_tostring(luaVm, -2));
 	EventDataProvider::Instance()->getVariables()->setVariable(key, value);
 	return 0;
-}
-
-int LuaExports::setPlayer(lua_State *luaVm) {
-	Player *player = 0;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
-	if (player != 0) {
-		lua_getglobal(luaVm, "playerid");
-		lua_setglobal(luaVm, "oldplayerid");
-
-		lua_pushinteger(luaVm, player->getId());
-		lua_setglobal(luaVm, "playerid");
-	}
-	lua_pushboolean(luaVm, player != 0);
-	return 1;
 }
 
 int LuaExports::showChannelMessage(lua_State *luaVm) {
@@ -687,6 +667,28 @@ int LuaExports::isGM(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::isOnline(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	lua_pushboolean(luaVm, player != 0);
+	return 1;
+}
+
+int LuaExports::playSoundPlayer(lua_State *luaVm) {
+	string val = lua_tostring(luaVm, -1);
+	PlayerPacket::sendSound(getPlayer(luaVm), val);
+	return 0;
+}
+
+int LuaExports::revertPlayer(lua_State *luaVm) {
+	lua_getglobal(luaVm, "oldplayerid");
+	lua_setglobal(luaVm, "playerid");
+	return 0;
+}
+
 int LuaExports::setAP(lua_State *luaVm) {
 	int16_t ap = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->setAp(ap);
@@ -768,6 +770,23 @@ int LuaExports::setMP(lua_State *luaVm) {
 	return 0;
 }
 
+int LuaExports::setPlayer(lua_State *luaVm) {
+	Player *player = 0;
+	if (lua_type(luaVm, -1) == LUA_TSTRING)
+		player = Players::Instance()->getPlayer(lua_tostring(luaVm, -1));
+	else
+		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	if (player != 0) {
+		lua_getglobal(luaVm, "playerid");
+		lua_setglobal(luaVm, "oldplayerid");
+
+		lua_pushinteger(luaVm, player->getId());
+		lua_setglobal(luaVm, "playerid");
+	}
+	lua_pushboolean(luaVm, player != 0);
+	return 1;
+}
+
 int LuaExports::setPlayerVariable(lua_State *luaVm) {
 	string value = string(lua_tostring(luaVm, -1));
 	string key = string(lua_tostring(luaVm, -2));
@@ -812,6 +831,29 @@ int LuaExports::setStyle(lua_State *luaVm) {
 		getPlayer(luaVm)->setHair(id);
 	}
 	InventoryPacket::updatePlayer(getPlayer(luaVm));
+	return 0;
+}
+
+int LuaExports::showInstructionBubble(lua_State *luaVm) {
+	string msg = lua_tostring(luaVm, 1);
+	int16_t width = lua_tointeger(luaVm, 2);
+	int16_t height = lua_tointeger(luaVm, 3);
+
+	if (width == 0) {
+		width = -1;
+	}
+	if (height == 0) {
+		height = 5;
+	}
+
+	PlayerPacket::instructionBubble(getPlayer(luaVm), msg, width, height);
+	return 0;
+}
+
+int LuaExports::showMessage(lua_State *luaVm) {
+	string msg = lua_tostring(luaVm, -2);
+	uint8_t type = lua_tointeger(luaVm, -1);
+	PlayerPacket::showMessage(getPlayer(luaVm), msg, type);
 	return 0;
 }
 
@@ -901,12 +943,6 @@ int LuaExports::playSoundMap(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::playSoundPlayer(lua_State *luaVm) {
-	string val = lua_tostring(luaVm, -1);
-	PlayerPacket::sendSound(getPlayer(luaVm), val);
-	return 0;
-}
-
 int LuaExports::setMusic(lua_State *luaVm) {
 	Maps::getMap(getPlayer(luaVm)->getMap())->setMusic(lua_tostring(luaVm, -1));
 	return 0;
@@ -923,22 +959,6 @@ int LuaExports::setReactorState(lua_State *luaVm) {
 			break;
 		}
 	}
-	return 0;
-}
-
-int LuaExports::showInstructionBubble(lua_State *luaVm) {
-	string msg = lua_tostring(luaVm, 1);
-	int16_t width = lua_tointeger(luaVm, 2);
-	int16_t height = lua_tointeger(luaVm, 3);
-
-	if (width == 0) {
-		width = -1;
-	}
-	if (height == 0) {
-		height = 5;
-	}
-
-	PlayerPacket::instructionBubble(getPlayer(luaVm), msg, width, height);
 	return 0;
 }
 
@@ -969,13 +989,6 @@ int LuaExports::showMapTimer(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::showMessage(lua_State *luaVm) {
-	string msg = lua_tostring(luaVm, -2);
-	uint8_t type = lua_tointeger(luaVm, -1);
-	PlayerPacket::showMessage(getPlayer(luaVm), msg, type);
-	return 0;
-}
-
 int LuaExports::spawnMob(lua_State *luaVm) {
 	int32_t mobid = lua_tointeger(luaVm, -1);
 	Player *player = getPlayer(luaVm);
@@ -991,6 +1004,65 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 	if (lua_isnumber(luaVm, 4))
 		fh = lua_tointeger(luaVm, 4);
 	lua_pushinteger(luaVm, Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobid, Pos(x, y), -1, fh));
+	return 1;
+}
+
+// Mob
+int LuaExports::getMobFH(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getFh());
+	return 1;
+}
+
+int LuaExports::getMobHP(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getHp());
+	return 1;
+
+}
+
+int LuaExports::getMobMHP(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMHp());
+	return 1;
+
+}
+
+int LuaExports::getMobMMP(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMMp());
+	return 1;
+}
+
+int LuaExports::getMobMP(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMp());
+	return 1;
+}
+
+int LuaExports::getMobPosX(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getPos().x);
+	return 1;
+}
+
+int LuaExports::getMobPosY(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getPos().y);
+	return 1;
+}
+
+int LuaExports::getRealMobID(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getId());
 	return 1;
 }
 
