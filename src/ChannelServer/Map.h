@@ -156,7 +156,8 @@ public:
 	void sendPlayersToTown(int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb);
 
 	// NPCs
-	void addNPC(const NPCSpawnInfo &npc) { this->npcs.push_back(npc); }
+	int32_t addNPC(const NPCSpawnInfo &npc);
+	void removeNPC(int32_t index);
 	NPCSpawnInfo getNpc(int32_t id) const { return this->npcs[id]; }
 
 	// Mobs

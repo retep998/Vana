@@ -64,10 +64,14 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
 	lua_register(luaVm, "isOnline", &LuaExports::isOnline);
 	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
-	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 	lua_register(luaVm, "setChannelVariable", &LuaExports::setChannelVariable);
 	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
 	lua_register(luaVm, "showChannelMessage", &LuaExports::showChannelMessage);
+
+	// NPC
+	lua_register(luaVm, "spawnNPC", &LuaExports::spawnNPC);
+	lua_register(luaVm, "removeNPC", &LuaExports::removeNPC);
+	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
 
 	// Buddy
@@ -318,13 +322,6 @@ int LuaExports::revertPlayer(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::runNPC(lua_State *luaVm) {
-	int32_t npcid = lua_tointeger(luaVm, -1);
-	NPC *npc = new NPC(npcid, getPlayer(luaVm));
-	npc->run();
-	return 0;
-}
-
 int LuaExports::setChannelVariable(lua_State *luaVm) {
 	string value = string(lua_tostring(luaVm, -1));
 	string key = string(lua_tostring(luaVm, -2));
@@ -353,6 +350,38 @@ int LuaExports::showChannelMessage(lua_State *luaVm) {
 	string msg = lua_tostring(luaVm, -2);
 	uint8_t type = lua_tointeger(luaVm, -1);
 	PlayersPacket::showMessage(msg, type);
+	return 0;
+}
+
+// NPC
+int LuaExports::spawnNPC(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t npcid = lua_tointeger(luaVm, 2);
+	int16_t x = lua_tointeger(luaVm, 3);
+	int16_t y = lua_tointeger(luaVm, 4);
+
+	NPCSpawnInfo npc;
+	npc.id = npcid;
+	npc.fh = 0;
+	npc.pos = Pos(x, y);
+	npc.rx0 = x - 50;
+	npc.rx1 = x + 50;
+
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->addNPC(npc));
+	return 1;
+}
+
+int LuaExports::removeNPC(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t index = lua_tointeger(luaVm, 2);
+	Maps::getMap(mapid)->removeNPC(index);
+	return 0;
+}
+
+int LuaExports::runNPC(lua_State *luaVm) {
+	int32_t npcid = lua_tointeger(luaVm, -1);
+	NPC *npc = new NPC(npcid, getPlayer(luaVm));
+	npc->run();
 	return 0;
 }
 

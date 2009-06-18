@@ -61,10 +61,14 @@ namespace LuaExports {
 	int getRandomNumber(lua_State *luaVm);
 	int isOnline(lua_State *luaVm);
 	int revertPlayer(lua_State *luaVm);
-	int runNPC(lua_State *luaVm);
 	int setChannelVariable(lua_State *luaVm);
 	int setPlayer(lua_State *luaVm);
 	int showChannelMessage(lua_State *luaVm);
+
+	// NPC
+	int spawnNPC(lua_State *luaVm);
+	int removeNPC(lua_State *luaVm);
+	int runNPC(lua_State *luaVm);
 	int showShop(lua_State *luaVm);
 
 	// Buddy
