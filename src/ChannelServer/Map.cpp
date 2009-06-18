@@ -245,7 +245,7 @@ void Map::removeNPC(int32_t index) {
 	int32_t size = npcs.size();
 	if (index >= 0 && index < size) {
 		NPCSpawnInfo npc = npcs[index];
-		NPCPacket::showNPC(getInfo()->id, npc, size, false);
+		NPCPacket::showNPC(getInfo()->id, npc, size - 1, false);
 		npcs.erase(npcs.begin() + index);
 	}
 }
