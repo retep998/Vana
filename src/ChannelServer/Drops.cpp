@@ -179,6 +179,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 			drop->setTime(100);
 			drop->doDrop(origin);
 			d++;
+			Reactors::checkDrop(player, drop);
 		}
 	}
 }
