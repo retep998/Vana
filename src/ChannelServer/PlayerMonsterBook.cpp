@@ -64,6 +64,13 @@ void PlayerMonsterBook::save() {
 }
 
 void PlayerMonsterBook::addCard(int32_t cardid, uint8_t level, bool initialload) {
+	if (m_cards.find(cardid) == m_cards.end()) {
+		if (GameLogicUtilities::isSpecialCard(cardid))
+			m_specialcount++;
+		else
+			m_normalcount++;
+	}
+
 	if (initialload) {
 		MonsterCard card = MonsterCard(cardid, level);
 		m_cards[cardid] = card;
@@ -86,11 +93,6 @@ void PlayerMonsterBook::addCard(int32_t cardid, uint8_t level, bool initialload)
 			MonsterBookPacket::addCard(m_player, cardid, card.level, false);
 
 			calculateLevel();
-
-			if (GameLogicUtilities::isSpecialCard(cardid))
-				m_specialcount++;
-			else
-				m_normalcount++;
 		}
 		m_cards[cardid] = card; // 'Saving' the card
 	}
