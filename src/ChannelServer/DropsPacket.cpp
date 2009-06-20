@@ -33,7 +33,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	packet.add<int8_t>(drop->isMesos());
 	packet.add<int32_t>(drop->getObjectId());
 	packet.add<int32_t>(drop->getOwner()); // Owner of drop
-	packet.add<int8_t>(0);
+	packet.add<int8_t>(drop->isPartyDrop());
 	packet.addPos(drop->getPos());
 	packet.add<int32_t>(drop->getTime());
 	if (type == 0 || type == 1 || type == 3) { // Give the point of origin for things that are just being dropped
