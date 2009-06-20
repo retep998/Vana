@@ -215,6 +215,21 @@ void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
 		query << "DELETE FROM characters WHERE id = " << id;
 		query.exec();
 
+		query << "DELETE FROM active_quests WHERE charid = " << id;
+		query.exec();
+
+		query << "DELETE FROM completed_quests WHERE charid = " << id;
+		query.exec();
+
+		query << "DELETE FROM cooldowns WHERE charid = " << id;
+		query.exec();
+
+		query << "DELETE FROM teleport_rock_locations WHERE charid = " << id;
+		query.exec();
+
+		query << "DELETE FROM buddylist WHERE charid = " << id;
+		query.exec();
+
 		query << "DELETE FROM keymap WHERE charid = " << id;
 		query.exec();
 
@@ -231,6 +246,12 @@ void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
 		query.exec();
 
 		query << "DELETE FROM character_variables WHERE charid = " << id;
+		query.exec();
+
+		query << "DELETE FROM monsterbook WHERE charid = " << id;
+		query.exec();
+
+		query << "DELETE FROM mounts WHERE charid = " << id;
 		query.exec();
 
 		success = true;
