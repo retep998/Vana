@@ -46,6 +46,7 @@ dropped(std::numeric_limits<int32_t>::max()),
 playerid(0),
 playerdrop(playerdrop),
 tradeable(true),
+partydrop(false),
 pos(pos)
 {
 	Maps::getMap(mapid)->addDrop(this);
@@ -60,6 +61,7 @@ dropped(std::numeric_limits<int32_t>::max()),
 playerid(0),
 playerdrop(playerdrop),
 tradeable(true),
+partydrop(false),
 pos(pos),
 item(item)
 {
@@ -118,7 +120,12 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
 	Player *player = Players::Instance()->getPlayer(playerid);
 	int16_t d = 0;
+	int32_t partyid = 0;
 	Pos pos;
+
+	if (Party *party = player->getParty()) {
+		partyid = party->getId();
+	}
 
 	for (size_t i = 0; i < drops.size(); i++) {
 		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(drops[i].maxamount - drops[i].minamount) + drops[i].minamount);
@@ -154,9 +161,9 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 				}
 
 				if (GameLogicUtilities::isEquip(itemid))
-					drop = new Drop(mapid, Item(itemid, true), pos, playerid);
+					drop = new Drop(mapid, Item(itemid, true), pos, (partyid > 0 ? partyid : playerid));
 				else
-					drop = new Drop(mapid, Item(itemid, amount), pos, playerid);
+					drop = new Drop(mapid, Item(itemid, amount), pos, (partyid > 0 ? partyid : playerid));
 
 				if (questid > 0) {
 					drop->setPlayer(playerid);
@@ -171,11 +178,14 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 						mesos = (mesos * Skills::skills[Jobs::Hermit::MesoUp][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::MesoUp)].x) / 100;
 					}
 				}
-				drop = new Drop(mapid, mesos, pos, playerid);
+				drop = new Drop(mapid, mesos, pos, (partyid > 0 ? partyid : playerid));
 			}
 		}
 
 		if (drop != 0) {
+			if (partyid > 0) {
+				drop->setPartyDrop(true);
+			}
 			drop->setTime(100);
 			drop->doDrop(origin);
 			d++;
