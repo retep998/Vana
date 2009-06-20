@@ -267,7 +267,7 @@ namespace StatusEffects {
 			WeaponDamageReflect = 0x2000000,
 			MagicDamageReflect = 0x4000000,
 			Empty = 0x8000000,
-			AnyDamageReflect = 0x10000000
+			InertMob = 0x10000000
 		};
 	}
 	namespace Player {
@@ -1003,6 +1003,15 @@ namespace Mobs {
 	enum {
 		HighDarkstar = 8500003,
 		LowDarkstar = 8500004,
+		ZakumBody1 = 8800000,
+		ZakumArm1 = 8800003,
+		ZakumArm2 = 8800004,
+		ZakumArm3 = 8800005,
+		ZakumArm4 = 8800006,
+		ZakumArm5 = 8800007,
+		ZakumArm6 = 8800008,
+		ZakumArm7 = 8800009,
+		ZakumArm8 = 8800010,
 		HorntailHeadA = 8810002,
 		HorntailHeadB = 8810003,
 		HorntailHeadC = 8810004,

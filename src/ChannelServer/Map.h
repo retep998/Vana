@@ -171,6 +171,7 @@ public:
 	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
 	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
 	void checkShadowWeb();
+	void spawnZakum(const Pos &pos, int16_t fh = 0);
 
 	// Reactors
 	void addReactorSpawn(const ReactorSpawnInfo &spawn);

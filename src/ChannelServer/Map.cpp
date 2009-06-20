@@ -390,6 +390,18 @@ void Map::checkShadowWeb() {
 	}
 }
 
+void Map::spawnZakum(const Pos &pos, int16_t fh) {
+	spawnMob(Mobs::ZakumBody1, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm1, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm2, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm3, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm4, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm5, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm6, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm7, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm8, pos, -1, fh);
+}
+
 // Drops
 void Map::addDrop(Drop *drop) {
 	boost::recursive_mutex::scoped_lock l(drops_mutex);
