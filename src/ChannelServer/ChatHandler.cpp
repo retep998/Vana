@@ -723,8 +723,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					player->setNPC(0);
 					break;
 				case CmdHorntail:
-					Maps::getMap(player->getMap())->spawnMob(8810026, player->getPos());
-					Maps::getMap(player->getMap())->killMobs(player, 8810026);
+					Maps::getMap(player->getMap())->spawnMob(Mobs::HorntailSponge, player->getPos());
+					Maps::getMap(player->getMap())->killMobs(player, Mobs::HorntailSponge);
 					break;
 				case CmdHeal:
 					player->setHp(player->getMHp());
@@ -748,15 +748,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					break;
 				case CmdZakum:
-					Maps::getMap(player->getMap())->spawnMob(8800000, player->getPos());
-					Maps::getMap(player->getMap())->spawnMob(8800003, player->getPos());
-					Maps::getMap(player->getMap())->spawnMob(8800004, player->getPos());
-					Maps::getMap(player->getMap())->spawnMob(8800005, player->getPos());
-					Maps::getMap(player->getMap())->spawnMob(8800006, player->getPos());
-					Maps::getMap(player->getMap())->spawnMob(8800007, player->getPos());
-					Maps::getMap(player->getMap())->spawnMob(8800008, player->getPos());
-					Maps::getMap(player->getMap())->spawnMob(8800009, player->getPos());
-					Maps::getMap(player->getMap())->spawnMob(8800010, player->getPos());
+					Maps::getMap(player->getMap())->spawnZakum(player->getPos());
 					break;
 				case CmdMusic:
 					Maps::getMap(player->getMap())->setMusic(args);
