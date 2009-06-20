@@ -66,7 +66,7 @@ const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value
 	StatusEffects::Mob::WeaponDamageReflect,
 	StatusEffects::Mob::MagicDamageReflect,
 	StatusEffects::Mob::Empty,
-	StatusEffects::Mob::AnyDamageReflect
+	StatusEffects::Mob::InertMob
 };
 
 StatusInfo::StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time) :
@@ -215,7 +215,7 @@ void Mob::statusPacket(PacketCreator &packet) {
 	packet.add<int32_t>(status);
 	for (uint8_t i = 0; i < StatusEffects::Mob::Count; i++) { // Val/skillid pairs must be ordered in the packet by status value ascending
 		int32_t status = Mobs::mobstatuses[i];
-		if (statuses.find(status) != statuses.end()) {
+		if (hasStatus(status)) {
 			if (status != StatusEffects::Mob::Empty) {
 				packet.add<int16_t>(statuses[status].val);
 				if (statuses[status].skillid >= 0) {
@@ -235,7 +235,7 @@ void Mob::statusPacket(PacketCreator &packet) {
 }
 
 bool Mob::hasStatus(int32_t status) {
-	return (statuses.find(status) != statuses.end());
+	return ((this->status & status) != 0);
 }
 
 void Mob::removeStatus(int32_t status, bool fromTimer) {
@@ -271,19 +271,16 @@ bool Mob::hasImmunity() const {
 	return ((status & mask) != 0);
 }
 
-bool Mob::hasReflect() const {
-	int32_t mask = StatusEffects::Mob::WeaponDamageReflect | StatusEffects::Mob::MagicDamageReflect | StatusEffects::Mob::AnyDamageReflect;
-	return ((status & mask) != 0);
+bool Mob::hasReflect() {
+	return (hasWeaponReflect() || hasMagicReflect());
 }
 
-bool Mob::hasWeaponReflect() const {
-	int32_t mask = StatusEffects::Mob::WeaponDamageReflect | StatusEffects::Mob::AnyDamageReflect;
-	return ((status & mask) != 0);
+bool Mob::hasWeaponReflect() {
+	return hasStatus(StatusEffects::Mob::WeaponDamageReflect);
 }
 
-bool Mob::hasMagicReflect() const {
-	int32_t mask = StatusEffects::Mob::MagicDamageReflect | StatusEffects::Mob::AnyDamageReflect;
-	return ((status & mask) != 0);
+bool Mob::hasMagicReflect() {
+	return hasStatus(StatusEffects::Mob::MagicDamageReflect);
 }
 
 int16_t Mob::getStatusValue(int32_t status) {
@@ -295,19 +292,11 @@ int16_t Mob::getStatusValue(int32_t status) {
 }
 
 int16_t Mob::getMagicReflection() {
-	int16_t v = getStatusValue(StatusEffects::Mob::MagicDamageReflect);
-	if (v == 0) {
-		v = getStatusValue(StatusEffects::Mob::AnyDamageReflect);
-	}
-	return v;
+	return getStatusValue(StatusEffects::Mob::MagicDamageReflect);
 }
 
 int16_t Mob::getWeaponReflection() {
-	int16_t v = getStatusValue(StatusEffects::Mob::WeaponDamageReflect);
-	if (v == 0) {
-		v = getStatusValue(StatusEffects::Mob::AnyDamageReflect);
-	}
-	return v;
+	return getStatusValue(StatusEffects::Mob::WeaponDamageReflect);
 }
 
 void Mob::setControl(Player *control) {
@@ -515,6 +504,11 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	Pos target = packet.getPos();
 	packet.skipBytes(9);
 
+	if (mob->hasStatus(StatusEffects::Mob::InertMob)) {
+		skill = 0;
+		useskill = false;
+	}
+
 	MovementHandler::parseMovement(mob, packet);
 
 	if (useskill && skill == -1 || useskill && skill == 0) {
@@ -550,7 +544,6 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 						break;
 					case MobSkills::WeaponDamageReflect:
 					case MobSkills::MagicDamageReflect:
-					case MobSkills::AnyDamageReflect:
 						stop = mob->hasReflect();
 						break;
 					case MobSkills::Summon: {
@@ -658,7 +651,8 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			break;
 		case MobSkills::AnyDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::AnyDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			break;
 		case MobSkills::Haste:
 			// Not sure how to handle this yet, it doesn't seem like the basic speed buff

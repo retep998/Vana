@@ -234,6 +234,22 @@ PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 	return (id == 0 ? getSpawnPoint() : &spawnpoints[id]);
 }
 
+// NPCs
+int32_t Map::addNPC(const NPCSpawnInfo &npc) {
+	npcs.push_back(npc);
+	NPCPacket::showNPC(getInfo()->id, npc, npcs.size());
+	return npcs.size() - 1;
+}
+
+void Map::removeNPC(int32_t index) {
+	int32_t size = npcs.size();
+	if (index >= 0 && index < size) {
+		NPCSpawnInfo npc = npcs[index];
+		NPCPacket::showNPC(getInfo()->id, npc, size - 1, false);
+		npcs.erase(npcs.begin() + index);
+	}
+}
+
 // Mobs
 void Map::addMobSpawn(const MobSpawnInfo &spawn) {
 	mobspawns.push_back(spawn);
@@ -372,6 +388,18 @@ void Map::checkShadowWeb() {
 			iter->second->applyWebDamage();
 		}
 	}
+}
+
+void Map::spawnZakum(const Pos &pos, int16_t fh) {
+	spawnMob(Mobs::ZakumBody1, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm1, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm2, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm3, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm4, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm5, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm6, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm7, pos, -1, fh);
+	spawnMob(Mobs::ZakumArm8, pos, -1, fh);
 }
 
 // Drops

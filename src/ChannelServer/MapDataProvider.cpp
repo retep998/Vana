@@ -139,7 +139,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	query << "SELECT isnpc, lifeid, x, cy, fh, rx0, rx1, mobtime FROM maplifedata WHERE mapid = " << mapid;
 	res = query.use();
 
-	while ((dataRow = res.fetch_raw_row())) {
+	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Is NPC?
 		//    1 : Life ID
 		//    2 : x
@@ -191,7 +191,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	query << "SELECT id, x1, y1, x2, y2 FROM mapfootholddata WHERE mapid = " << mapid;
 	res = query.use();
 
-	while ((dataRow = res.fetch_raw_row())) {
+	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : id
 		//    1 : x1
 		//    2 : y1

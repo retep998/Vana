@@ -307,7 +307,7 @@ void Player::playerConnect(PacketReader &packet) {
 	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), ip, id, name, map, getStats()->getJob(), getStats()->getLevel());
 }
 
-void Player::setMap(int32_t mapid, PortalInfo *portal) {
+void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (!Maps::getMap(mapid)) {
 		MapPacket::portalBlocked(this);
 		return;
@@ -315,7 +315,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal) {
 	if (portal == 0)
 		portal = Maps::getMap(mapid)->getSpawnPoint();
 
-	if (getInstance() != 0) {
+	if (!instance && getInstance() != 0) { // Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
 		int32_t ispartyleader = (getParty() != 0 ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
 		getInstance()->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
 	}
