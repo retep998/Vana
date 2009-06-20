@@ -61,7 +61,7 @@ public:
 	void setDropped(int32_t time) { dropped = time; }
 	void setPlayer(int32_t playerid) { playerid = playerid; }
 	void setPos(Pos pos) { this->pos = pos; }
-	void setPartyDrop(bool isdrop) { partydrop = isparty; }
+	void setPartyDrop(bool isparty) { partydrop = isparty; }
 
 	int16_t getQuest() const { return questid; }
 	int32_t getId() const { return id; }
