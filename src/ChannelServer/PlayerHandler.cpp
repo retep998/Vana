@@ -42,27 +42,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
+	const int8_t BumpDamage = 0xFF;
+	const int8_t MapDamage = 0xFE;
+
 	packet.skipBytes(4); // Ticks
 	uint8_t type = packet.get<int8_t>();
-	uint8_t hit = 0;
-	uint8_t stance = 0;
 	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
-	int16_t job = player->getJob();
-	uint8_t disease = 0;
-	uint8_t level = 0;
-	int32_t mapmobid = 0; // Map Mob ID
-	Mob *mob = 0;
-	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zak
-	int32_t nodamageid = 0;
 	int32_t damage = packet.get<int32_t>();
 	bool applieddamage = false;
+	uint8_t hit = 0;
+	uint8_t stance = 0;
+	uint8_t disease = 0;
+	uint8_t level = 0;
+	int16_t job = player->getJob();
+	int32_t mapmobid = 0; // Map Mob ID
+	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zakum
+	int32_t nodamageid = 0;
+	Mob *mob = 0;
 	PGMRInfo pgmr;
-	MobAttackInfo attack;
+	MobAttackInfo *attack = 0;
 	switch (type) {
-		case 0xFE: // Map/fall damage is an oddball packet
+		case MapDamage: // Map/fall damage is an oddball packet
 			break;
 		default: // Code in common, minimizes repeated code
-			packet.skipBytes(4); // Mob ID
+			packet.skipBytes(4); // Real mob ID, no reason to rely on the packet
+
 			mapmobid = packet.get<int32_t>();
 			mob = Maps::getMap(player->getMap())->getMob(mapmobid);
 			if (mob == 0) {
@@ -71,25 +75,21 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 
 			mobid = mob->getMobId();
-			if (type != 0xFF) {
-				try {
-					attack = mob->getAttackInfo(type);
-					disease = attack.disease;
-					level = attack.level;
+			if (type != BumpDamage) {
+				int32_t attackerid = (mob->hasLink() ? mob->getLink() : mobid);
+				attack = MobDataProvider::Instance()->getMobAttack(attackerid, type);
+				if (attack == 0) {
+					// Hacking, I think
+					return;
 				}
-				catch (std::out_of_range) {
-					// Not having data about linked monsters causes crashes with linked monsters
-					// For example - those quest Dark Lords or the El Nath PQ Lycanthropes
-					// We have no way of transferring the data at the moment
-
-					// Now we leave attack and disease at their default values
-				}
+				disease = attack->disease;
+				level = attack->level;
 			}
 			hit = packet.get<int8_t>(); // Knock direction
 			break;
 	}
 	switch (type) { // Account for special sections of the damage packet
-		case 0xFE:
+		case MapDamage:
 			break;
 		default: // Else: Power Guard/Mana Reflection
 			pgmr.reduction = packet.get<int8_t>();
@@ -110,7 +110,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			break;
 	}
 	switch (type) { // Packet endings
-		case 0xFE:
+		case MapDamage:
 			level = packet.get<uint8_t>();
 			disease = packet.get<uint8_t>();
 			break;
@@ -159,22 +159,22 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			player->getInventory()->setMesos(newmesos);
 			SkillsPacket::showSkillEffect(player, sid);
 			player->damageHp((uint16_t) damage);
-			if (attack.deadlyattack && player->getMp() > 0)
+			if (attack->deadlyattack && player->getMp() > 0)
 				player->setMp(1);
-			if (attack.mpburn > 0)
-				player->damageMp(attack.mpburn);
+			if (attack->mpburn > 0)
+				player->damageMp(attack->mpburn);
 			applieddamage = true;
 		}
 		if (player->getActiveBuffs()->hasMagicGuard()) { // Magic Guard
 			int16_t mp = player->getMp();
 			int16_t hp = player->getHp();
-			if (attack.deadlyattack) {
+			if (attack->deadlyattack) {
 				if (mp > 0)
 					player->setMp(1);
 				player->setHp(1);
 			}
-			else if (attack.mpburn > 0) {
-				player->damageMp(attack.mpburn);
+			else if (attack->mpburn > 0) {
+				player->damageMp(attack->mpburn);
 				player->damageHp((uint16_t) damage);
 			}
 			else {
@@ -201,22 +201,22 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				achx = Skills::skills[sid][slv].x;
 			double red = (2.0 - achx / 1000.0);
 			player->damageHp((uint16_t) (damage / red));
-			if (attack.deadlyattack && player->getMp() > 0)
+			if (attack->deadlyattack && player->getMp() > 0)
 				player->setMp(1);
-			if (attack.mpburn > 0)
-				player->damageMp(attack.mpburn);
+			if (attack->mpburn > 0)
+				player->damageMp(attack->mpburn);
 			applieddamage = true;
 		}
 		if (applieddamage == false) {
-			if (attack.deadlyattack) {
+			if (attack->deadlyattack) {
 				if (player->getMp() > 0)
 					player->setMp(1);
 				player->setHp(1);
 			}
 			else
 				player->damageHp((uint16_t) damage);
-			if (attack.mpburn > 0)
-				player->damageMp(attack.mpburn);
+			if (attack->mpburn > 0)
+				player->damageMp(attack->mpburn);
 			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Corsair::Battleship) > 0) {
 				player->getActiveBuffs()->reduceBattleshipHp((uint16_t) damage);
 			}
