@@ -190,8 +190,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			double red = 0.0;
 			int32_t sid = player->getSkills()->getAchilles();
 
-			if (slv > 0)
-				achx = Skills::skills[sid][player->getSkills()->getSkillLevel(sid)].x;
+			achx = Skills::skills[sid][player->getSkills()->getSkillLevel(sid)].x;
 			red = (2.0 - achx / 1000.0);
 
 			player->damageHp((uint16_t) (damage / red));
