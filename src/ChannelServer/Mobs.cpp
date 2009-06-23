@@ -775,13 +775,13 @@ int32_t Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t
 					}
 				}
 				break;
+			case Jobs::FPMage::PoisonMist:
+				if (damage != 0) // The attack itself doesn't poison them
+					break;
 			case Jobs::FPWizard::PoisonBreath:
 			case Jobs::FPMage::ElementComposition:
-			case Jobs::FPMage::PoisonMist:
 			case Jobs::FlameWizard::FireCurtain:
-			case Jobs::NightWalker::PoisonSling:
-				if (skillid == Jobs::FPMage::PoisonMist && damage != 0) // The attack itself doesn't poison them
-					break;
+			case Jobs::NightWalker::PoisonSling:	
 				if (success) {
 					y = (int16_t)(mob->getMHp() / (70 - level));
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, y, skillid, Skills::skills[skillid][level].time));
