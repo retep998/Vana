@@ -50,17 +50,18 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	int32_t damage = packet.get<int32_t>();
 	bool applieddamage = false;
+	bool deadlyattack = false;
 	uint8_t hit = 0;
 	uint8_t stance = 0;
 	uint8_t disease = 0;
 	uint8_t level = 0;
 	int16_t job = player->getJob();
+	uint16_t mpburn = 0;
 	int32_t mapmobid = 0; // Map Mob ID
 	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zakum
 	int32_t nodamageid = 0;
 	Mob *mob = 0;
 	PGMRInfo pgmr;
-	MobAttackInfo *attack = 0;
 	switch (type) {
 		case MapDamage: // Map/fall damage is an oddball packet
 			break;
@@ -77,13 +78,15 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			mobid = mob->getMobId();
 			if (type != BumpDamage) {
 				int32_t attackerid = (mob->hasLink() ? mob->getLink() : mobid);
-				attack = MobDataProvider::Instance()->getMobAttack(attackerid, type);
+				MobAttackInfo *attack = MobDataProvider::Instance()->getMobAttack(attackerid, type);
 				if (attack == 0) {
 					// Hacking, I think
 					return;
 				}
 				disease = attack->disease;
 				level = attack->level;
+				mpburn = attack->mpburn;
+				deadlyattack = attack->deadlyattack;
 			}
 			hit = packet.get<int8_t>(); // Knock direction
 			break;
@@ -159,22 +162,22 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			player->getInventory()->setMesos(newmesos);
 			SkillsPacket::showSkillEffect(player, sid);
 			player->damageHp((uint16_t) damage);
-			if (attack->deadlyattack && player->getMp() > 0)
+			if (deadlyattack && player->getMp() > 0)
 				player->setMp(1);
-			if (attack->mpburn > 0)
-				player->damageMp(attack->mpburn);
+			if (mpburn > 0)
+				player->damageMp(mpburn);
 			applieddamage = true;
 		}
 		if (player->getActiveBuffs()->hasMagicGuard()) { // Magic Guard
 			int16_t mp = player->getMp();
 			int16_t hp = player->getHp();
-			if (attack->deadlyattack) {
+			if (deadlyattack) {
 				if (mp > 0)
 					player->setMp(1);
 				player->setHp(1);
 			}
-			else if (attack->mpburn > 0) {
-				player->damageMp(attack->mpburn);
+			else if (mpburn > 0) {
+				player->damageMp(mpburn);
 				player->damageHp((uint16_t) damage);
 			}
 			else {
@@ -201,22 +204,22 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				achx = Skills::skills[sid][slv].x;
 			double red = (2.0 - achx / 1000.0);
 			player->damageHp((uint16_t) (damage / red));
-			if (attack->deadlyattack && player->getMp() > 0)
+			if (deadlyattack && player->getMp() > 0)
 				player->setMp(1);
-			if (attack->mpburn > 0)
-				player->damageMp(attack->mpburn);
+			if (mpburn > 0)
+				player->damageMp(mpburn);
 			applieddamage = true;
 		}
 		if (applieddamage == false) {
-			if (attack->deadlyattack) {
+			if (deadlyattack) {
 				if (player->getMp() > 0)
 					player->setMp(1);
 				player->setHp(1);
 			}
 			else
 				player->damageHp((uint16_t) damage);
-			if (attack->mpburn > 0)
-				player->damageMp(attack->mpburn);
+			if (mpburn > 0)
+				player->damageMp(mpburn);
 			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Corsair::Battleship) > 0) {
 				player->getActiveBuffs()->reduceBattleshipHp((uint16_t) damage);
 			}
