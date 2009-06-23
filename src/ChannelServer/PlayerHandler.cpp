@@ -55,122 +55,110 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	uint8_t stance = 0;
 	uint8_t disease = 0;
 	uint8_t level = 0;
-	int16_t job = player->getJob();
 	uint16_t mpburn = 0;
 	int32_t mapmobid = 0; // Map Mob ID
 	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zakum
 	int32_t nodamageid = 0;
 	Mob *mob = 0;
 	PGMRInfo pgmr;
-	switch (type) {
-		case MapDamage: // Map/fall damage is an oddball packet
-			break;
-		default: // Code in common, minimizes repeated code
-			packet.skipBytes(4); // Real mob ID, no reason to rely on the packet
 
-			mapmobid = packet.get<int32_t>();
-			mob = Maps::getMap(player->getMap())->getMob(mapmobid);
-			if (mob == 0) {
-				// Hacking
+	if (type != MapDamage) {
+		packet.skipBytes(4); // Real mob ID, no reason to rely on the packet
+
+		mapmobid = packet.get<int32_t>();
+		mob = Maps::getMap(player->getMap())->getMob(mapmobid);
+		if (mob == 0) {
+			// Hacking
+			return;
+		}
+
+		mobid = mob->getMobId();
+		if (type != BumpDamage) {
+			int32_t attackerid = (mob->hasLink() ? mob->getLink() : mobid);
+			MobAttackInfo *attack = MobDataProvider::Instance()->getMobAttack(attackerid, type);
+			if (attack == 0) {
+				// Hacking, I think
 				return;
 			}
+			disease = attack->disease;
+			level = attack->level;
+			mpburn = attack->mpburn;
+			deadlyattack = attack->deadlyattack;
+		}
+		hit = packet.get<int8_t>(); // Knock direction
+		pgmr.reduction = packet.get<int8_t>();
+		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
+		if (pgmr.reduction != 0) {
+			if (packet.get<int8_t>() == 0)
+				pgmr.isphysical = false;
+			pgmr.mapmobid = packet.get<int32_t>();
+			packet.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
+			packet.skipBytes(4); // Mob position garbage
+			pgmr.pos.x = packet.get<int16_t>();
+			pgmr.pos.y = packet.get<int16_t>();
+			pgmr.damage = damage;
+			if (pgmr.isphysical) // Only Power Guard decreases damage
+				damage = (damage - (damage * pgmr.reduction / 100)); 
+			mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
+		}
+	}
 
-			mobid = mob->getMobId();
-			if (type != BumpDamage) {
-				int32_t attackerid = (mob->hasLink() ? mob->getLink() : mobid);
-				MobAttackInfo *attack = MobDataProvider::Instance()->getMobAttack(attackerid, type);
-				if (attack == 0) {
-					// Hacking, I think
-					return;
-				}
-				disease = attack->disease;
-				level = attack->level;
-				mpburn = attack->mpburn;
-				deadlyattack = attack->deadlyattack;
-			}
-			hit = packet.get<int8_t>(); // Knock direction
-			break;
+	if (type == MapDamage) {
+		level = packet.get<uint8_t>();
+		disease = packet.get<uint8_t>();
 	}
-	switch (type) { // Account for special sections of the damage packet
-		case MapDamage:
-			break;
-		default: // Else: Power Guard/Mana Reflection
-			pgmr.reduction = packet.get<int8_t>();
-			packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
-			if (pgmr.reduction != 0) {
-				if (packet.get<int8_t>() == 0)
-					pgmr.isphysical = false;
-				pgmr.mapmobid = packet.get<int32_t>();
-				packet.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
-				packet.skipBytes(4); // Mob position garbage
-				pgmr.pos.x = packet.get<int16_t>();
-				pgmr.pos.y = packet.get<int16_t>();
-				pgmr.damage = damage;
-				if (pgmr.isphysical) // Only Power Guard decreases damage
-					damage = (damage - (damage * pgmr.reduction / 100)); 
-				mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
-			}
-			break;
-	}
-	switch (type) { // Packet endings
-		case MapDamage:
-			level = packet.get<uint8_t>();
-			disease = packet.get<uint8_t>();
-			break;
-		default:  {
-			stance = packet.get<int8_t>(); // Power Stance
-			if (stance > 0) {
-				int32_t skillid = player->getActiveBuffs()->getPowerStance();
-				if (skillid == 0 || player->getSkills()->getSkillLevel(skillid) == 0) {
-					// Hacking
-					return;
-				}
-			}
-			break;
-		}
-	}
-	if (damage == -1) {
-		switch (job) {
-			case Jobs::JobIds::NightLord: nodamageid = Jobs::NightLord::ShadowShifter; break; // Fake
-			case Jobs::JobIds::Shadower: nodamageid = Jobs::Shadower::ShadowShifter; break; // Fake
-			case Jobs::JobIds::Hero: nodamageid = Jobs::Hero::Guardian; break; // Guardian
-			case Jobs::JobIds::Paladin: nodamageid = Jobs::Paladin::Guardian; break; // Guardian
-		}
-		if (nodamageid == 0 || player->getSkills()->getSkillLevel(nodamageid) == 0) {
+	else {
+		stance = packet.get<int8_t>(); // Power Stance
+		if (stance > 0 && !player->getActiveBuffs()->hasPowerStance()) {
 			// Hacking
 			return;
 		}
 	}
+
+	if (damage == -1) {
+		if (!player->getSkills()->hasNoDamageSkill()) {
+			// Hacking
+			return;
+		}
+		nodamageid = player->getSkills()->getNoDamageSkill();
+	}
+
 	if (disease > 0 && damage != 0) { // Fake/Guardian don't prevent disease
 		player->getActiveBuffs()->addDebuff(disease, level);
 	}
+
 	if (damage > 0 && !player->hasGmEquip()) {
-		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) { // Meso Guard 
+		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) {
 			int32_t sid = player->getActiveBuffs()->getMesoGuard();
 			int16_t mesorate = Skills::skills[sid][player->getActiveBuffs()->getActiveSkillLevel(sid)].x; // Meso Guard meso %
-			int16_t hp = player->getHp();
 			int16_t mesoloss = (int16_t)(mesorate * damage / 2 / 100);
 			int32_t mesos = player->getInventory()->getMesos();
 			int32_t newmesos = mesos - mesoloss;
+
 			if (newmesos < 0) { // Special damage calculation for not having enough mesos
-				double mesos2 = mesos + 0.0; // You can't get a double from math involving 2 ints, even if a decimal results
-				double reduction = 2.0 - ((mesos2 / mesoloss) / 2);
+				double reduction = 2.0 - ((double)(mesos / mesoloss)) / 2.0;
 				damage = (uint16_t)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
 			}
-			else
+			else {
 				damage /= 2; // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
+			}
+
 			player->getInventory()->setMesos(newmesos);
-			SkillsPacket::showSkillEffect(player, sid);
 			player->damageHp((uint16_t) damage);
+
 			if (deadlyattack && player->getMp() > 0)
 				player->setMp(1);
 			if (mpburn > 0)
 				player->damageMp(mpburn);
+
 			applieddamage = true;
+
+			SkillsPacket::showSkillEffect(player, sid);
 		}
-		if (player->getActiveBuffs()->hasMagicGuard()) { // Magic Guard
+		if (player->getActiveBuffs()->hasMagicGuard()) {
 			int16_t mp = player->getMp();
 			int16_t hp = player->getHp();
+
 			if (deadlyattack) {
 				if (mp > 0)
 					player->setMp(1);
@@ -185,6 +173,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				int16_t reduc = Skills::skills[sid][player->getActiveBuffs()->getActiveSkillLevel(sid)].x;
 				uint16_t mpdamage = (uint16_t)((damage * reduc) / 100);
 				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
+
 				if (mpdamage < mp || player->getActiveBuffs()->hasInfinity()) {
 					player->damageMp(mpdamage);
 					player->damageHp(hpdamage);
@@ -196,35 +185,43 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 			applieddamage = true;
 		}
-		if (player->getSkills()->hasAchilles()) { // Achilles for 4th job warriors
+		if (player->getSkills()->hasAchilles()) {
 			float achx = 1000.0;
+			double red = 0.0;
 			int32_t sid = player->getSkills()->getAchilles();
-			uint8_t slv = player->getSkills()->getSkillLevel(sid);
+
 			if (slv > 0)
-				achx = Skills::skills[sid][slv].x;
-			double red = (2.0 - achx / 1000.0);
+				achx = Skills::skills[sid][player->getSkills()->getSkillLevel(sid)].x;
+			red = (2.0 - achx / 1000.0);
+
 			player->damageHp((uint16_t) (damage / red));
+
 			if (deadlyattack && player->getMp() > 0)
 				player->setMp(1);
 			if (mpburn > 0)
 				player->damageMp(mpburn);
+
 			applieddamage = true;
 		}
-		if (applieddamage == false) {
+
+		if (!applieddamage) {
 			if (deadlyattack) {
 				if (player->getMp() > 0)
 					player->setMp(1);
 				player->setHp(1);
 			}
-			else
+			else {
 				player->damageHp((uint16_t) damage);
+			}
+
 			if (mpburn > 0)
 				player->damageMp(mpburn);
+
 			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Corsair::Battleship) > 0) {
 				player->getActiveBuffs()->reduceBattleshipHp((uint16_t) damage);
 			}
 		}
-		if (player->getActiveBuffs()->getCurrentMorph() < 0  || (player->getActiveBuffs()->getCurrentMorph() != 0 && player->getHp() == 0)) {
+		if (player->getActiveBuffs()->getCurrentMorph() < 0 || (player->getActiveBuffs()->getCurrentMorph() != 0 && player->getHp() == 0)) {
 			Skills::stopSkill(player, player->getActiveBuffs()->getCurrentMorph());
 		}
 	}
