@@ -42,8 +42,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
-	const int8_t BumpDamage = 0xFF;
-	const int8_t MapDamage = 0xFE;
+	const int8_t BumpDamage = -1;
+	const int8_t MapDamage = -2;
 
 	packet.skipBytes(4); // Ticks
 	uint8_t type = packet.get<int8_t>();
