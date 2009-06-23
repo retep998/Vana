@@ -81,7 +81,7 @@ public:
 	MobInfo const getMobInfo(int32_t mobid) {
 		return mobinfo[mobid];
 	}
-
+	MobAttackInfo * getMobAttack(int32_t mobid, uint8_t type);
 private:
 	MobDataProvider() {}
 	static MobDataProvider *singleton;
