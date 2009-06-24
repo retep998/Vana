@@ -121,6 +121,9 @@ namespace LuaExports {
 	int getPlayerVariable(lua_State *luaVm);
 	int getPosX(lua_State *luaVm);
 	int getPosY(lua_State *luaVm);
+	int getRandomFace(lua_State *luaVm);
+	int getRandomHair(lua_State *luaVm);
+	int getRandomSkin(lua_State *luaVm);
 	int getRMHP(lua_State *luaVm);
 	int getRMMP(lua_State *luaVm);
 	int getSkin(lua_State *luaVm);
