@@ -532,32 +532,33 @@ void PlayerActiveBuffs::endMorph() {
 }
 
 const int16_t PlayerActiveBuffs::getMapleWarriorValue() {
-	int16_t x = 0;
+	int32_t skill = 0;
 	if (getActiveSkillLevel(Jobs::Hero::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::Hero::MapleWarrior][getActiveSkillLevel(Jobs::Hero::MapleWarrior)].x;
+		skill = Jobs::Hero::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::Paladin::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::Paladin::MapleWarrior][getActiveSkillLevel(Jobs::Paladin::MapleWarrior)].x;
+		skill = Jobs::Paladin::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::DarkKnight::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::DarkKnight::MapleWarrior][getActiveSkillLevel(Jobs::DarkKnight::MapleWarrior)].x;
+		skill = Jobs::DarkKnight::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::FPArchMage::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::FPArchMage::MapleWarrior][getActiveSkillLevel(Jobs::FPArchMage::MapleWarrior)].x;
+		skill = Jobs::FPArchMage::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::ILArchMage::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::ILArchMage::MapleWarrior][getActiveSkillLevel(Jobs::ILArchMage::MapleWarrior)].x;
+		skill = Jobs::ILArchMage::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::Bishop::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::Bishop::MapleWarrior][getActiveSkillLevel(Jobs::Bishop::MapleWarrior)].x;
+		skill = Jobs::Bishop::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::Bowmaster::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::Bowmaster::MapleWarrior][getActiveSkillLevel(Jobs::Bowmaster::MapleWarrior)].x;
+		skill = Jobs::Bowmaster::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::Marksman::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::Marksman::MapleWarrior][getActiveSkillLevel(Jobs::Marksman::MapleWarrior)].x;
+		skill = Jobs::Marksman::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::NightLord::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::NightLord::MapleWarrior][getActiveSkillLevel(Jobs::NightLord::MapleWarrior)].x;
+		skill = Jobs::NightLord::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::Shadower::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::Shadower::MapleWarrior][getActiveSkillLevel(Jobs::Shadower::MapleWarrior)].x;
+		skill = Jobs::Shadower::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::Buccaneer::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::Buccaneer::MapleWarrior][getActiveSkillLevel(Jobs::Buccaneer::MapleWarrior)].x;
+		skill = Jobs::Buccaneer::MapleWarrior;
 	else if (getActiveSkillLevel(Jobs::Corsair::MapleWarrior) > 0)
-		x = Skills::skills[Jobs::Corsair::MapleWarrior][getActiveSkillLevel(Jobs::Corsair::MapleWarrior)].x;
-	return x;
+		skill = Jobs::Corsair::MapleWarrior;
+
+	return (skill != 0 ? Skills::skills[skill][getActiveSkillLevel(skill)].x : 0);
 }
 
 void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
