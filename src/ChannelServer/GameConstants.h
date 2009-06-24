@@ -972,10 +972,12 @@ namespace Items {
 		// Use
 		ShoeSpikes = 2040727,
 		CapeColdProtection = 2041058,
+		SpecialTeleportRock = 2320000,
 		WhiteScroll = 2340000,
 
 		// Cash
 		TeleportRock = 5040000,
+		TeleportCoke = 5040001,
 		VipRock = 5041000,
 		ApReset = 5050000,
 		FirstJobSpReset = 5050001,
