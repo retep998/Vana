@@ -237,7 +237,7 @@ PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 // NPCs
 int32_t Map::addNPC(const NPCSpawnInfo &npc) {
 	npcs.push_back(npc);
-	NPCPacket::showNPC(getInfo()->id, npc, npcs.size());
+	NPCPacket::showNPC(getInfo()->id, npc, npcs.size() - 1);
 	return npcs.size() - 1;
 }
 

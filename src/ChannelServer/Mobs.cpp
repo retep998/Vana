@@ -775,8 +775,10 @@ int32_t Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t
 					}
 				}
 				break;
-			case Jobs::FPWizard::PoisonBreath:
 			case Jobs::FPMage::PoisonMist:
+				if (damage != 0) // The attack itself doesn't poison them
+					break;
+			case Jobs::FPWizard::PoisonBreath:
 			case Jobs::FPMage::ElementComposition:
 				if (skillid == Jobs::FPMage::PoisonMist && damage != 0) // The attack itself doesn't poison them
 					break;

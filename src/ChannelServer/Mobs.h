@@ -96,6 +96,7 @@ public:
 	int32_t getMp() const { return mp; }
 	int32_t getMHp() const { return info.hp; }
 	int32_t getMMp() const { return info.mp; }
+	int32_t getLink() const { return info.link; }
 	int32_t getCounter() { return ++counter; }
 	int32_t getSelfDestructHp() const { return info.selfdestruction; }
 	time_t getLastSkillUse(uint8_t skill) { return (skilluse.find(skill) != skilluse.end() ? skilluse[skill] : 0); }
@@ -103,6 +104,7 @@ public:
 	bool canFreeze() const { return info.canfreeze; }
 	bool canPoison() const { return info.canpoison; }
 	bool isUndead() const { return info.undead; }
+	bool hasLink() const { return info.link != 0; }
 	bool hasExplosiveDrop() const { return info.explosivereward; }
 	bool hasFfaDrop() const { return info.publicreward; }
 	bool hasImmunity() const;
@@ -113,7 +115,6 @@ public:
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return owner; }
 	Mob * getSponge() const { return horntailsponge; }
-	MobAttackInfo getAttackInfo(uint8_t id) const { return info.attacks.at(id); }
 	vector<MobSkillInfo> getSkills() const { return info.skills; }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
 

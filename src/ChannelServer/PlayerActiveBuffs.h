@@ -150,6 +150,8 @@ public:
 	int32_t getMesoGuard();
 	const int16_t getMapleWarriorValue();
 
+	void endMorph();
+
 	// Packet marshaling
 	void getBuffTransferPacket(PacketCreator &packet);
 	void parseBuffTransferPacket(PacketReader &packet);

@@ -124,7 +124,6 @@ private:
 
 	vector<string> m_banned; // For squads
 	vector<string> m_players_order; // For squads
-	vector<Reactor *> m_reactors;
 	vector<Map *> m_maps;
 	vector<Party *> m_parties;
 

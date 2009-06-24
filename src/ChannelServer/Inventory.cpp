@@ -778,50 +778,10 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 	bool used = false;
 	switch (itemid) {
 		case Items::TeleportRock:
-		case Items::VipRock: { // Only occurs when you actually try to move somewhere
-			uint8_t mode = packet.get<uint8_t>();
-			int8_t type = (itemid == Items::TeleportRock ? 0 : 1);
-			int32_t targetmapid = -1;
-			if (mode == 0) { // Preset map
-				targetmapid = packet.get<int32_t>();
-				if (!player->getInventory()->ensureRockDestination(targetmapid)) {
-					// Hacking
-					return;
-				}
-			}
-			else if (mode == 1) { // IGN
-				string tname = packet.getString();
-				Player *target = Players::Instance()->getPlayer(tname);
-				if (target != 0 && target != player) {
-					targetmapid = target->getMap();
-				}
-				else if (target == 0) {
-					InventoryPacket::sendRockError(player, 0x06, type);
-				}
-				else if (target == player) {
-					// Hacking
-					return;
-				}
-			}
-			if (targetmapid != -1) {
-				MapInfoPtr destination = Maps::getMap(targetmapid)->getInfo();
-				MapInfoPtr origin = Maps::getMap(player->getMap())->getInfo();
-				if ((destination->fieldLimit & FieldLimitBits::VipRock) != 0) {
-					InventoryPacket::sendRockError(player, 0x08, type);
-				}
-				else if ((origin->fieldLimit & FieldLimitBits::VipRock) != 0) {
-					InventoryPacket::sendRockError(player, 0x08, type);
-				}
-				else if (type == 0 && destination->continent != origin->continent) {
-					InventoryPacket::sendRockError(player, 0x08, type);
-				}
-				else {
-					player->setMap(targetmapid);
-					used = true;
-				}
-			}
+		case Items::TeleportCoke:
+		case Items::VipRock: // Only occurs when you actually try to move somewhere
+			used = handleRockTeleport(player, (itemid == Items::VipRock ? 1 : 0), itemid, packet);
 			break;
-		}
 		case Items::FirstJobSpReset:
 		case Items::SecondJobSpReset:
 		case Items::ThirdJobSpReset:
@@ -989,4 +949,57 @@ void Inventory::handleRockFunctions(Player *player, PacketReader &packet) {
 		int32_t map = player->getMap();
 		player->getInventory()->addRockMap(map, type);
 	}
+}
+
+bool Inventory::handleRockTeleport(Player *player, int8_t type, int32_t itemid, PacketReader &packet) {
+	bool used = false;
+	uint8_t mode = packet.get<uint8_t>();
+	int32_t targetmapid = -1;
+	if (mode == 0) { // Preset map
+		targetmapid = packet.get<int32_t>();
+		if (!player->getInventory()->ensureRockDestination(targetmapid)) {
+			// Hacking
+			return false;
+		}
+	}
+	else if (mode == 1) { // IGN
+		string tname = packet.getString();
+		Player *target = Players::Instance()->getPlayer(tname);
+		if (target != 0 && target != player) {
+			targetmapid = target->getMap();
+		}
+		else if (target == 0) {
+			InventoryPacket::sendRockError(player, 0x06, type);
+		}
+		else if (target == player) {
+			// Hacking
+			return false;
+		}
+	}
+	if (targetmapid != -1) {
+		MapInfoPtr destination = Maps::getMap(targetmapid)->getInfo();
+		MapInfoPtr origin = Maps::getMap(player->getMap())->getInfo();
+		if ((destination->fieldLimit & FieldLimitBits::VipRock) != 0) {
+			InventoryPacket::sendRockError(player, 0x08, type);
+		}
+		else if ((origin->fieldLimit & FieldLimitBits::VipRock) != 0) {
+			InventoryPacket::sendRockError(player, 0x08, type);
+		}
+		else if (type == 0 && destination->continent != origin->continent) {
+			InventoryPacket::sendRockError(player, 0x08, type);
+		}
+		else {
+			player->setMap(targetmapid);
+			used = true;
+		}
+	}
+	if (itemid == Items::SpecialTeleportRock) {
+		if (used) {
+			Inventory::takeItem(player, itemid, 1);
+		}
+		else {
+			InventoryPacket::blankUpdate(player);
+		}
+	}
+	return used;
 }

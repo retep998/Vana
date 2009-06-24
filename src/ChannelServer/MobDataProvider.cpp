@@ -35,7 +35,7 @@ void MobDataProvider::loadData() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW mobRow;
-	while ((mobRow = res.fetch_raw_row())) {
+	while (mobRow = res.fetch_raw_row()) {
 		// Col0 : Mob ID
 		//    1 : Level
 		//    2 : HP
@@ -90,7 +90,7 @@ void MobDataProvider::loadData() {
 	query << "SELECT mobid, attackid, mpconsume, mpburn, disease, level, deadly FROM mobattackdata";
 	res = query.use();
 
-	while ((mobRow = res.fetch_raw_row())) {
+	while (mobRow = res.fetch_raw_row()) {
 		// Col0 : Mob ID
 		//    1 : Attack ID
 		//    2 : MP Consumption
@@ -111,7 +111,7 @@ void MobDataProvider::loadData() {
 	query << "SELECT mobid, skillid, level, effectAfter FROM mobskilldata";
 	res = query.use();
 
-	while ((mobRow = res.fetch_raw_row())) {
+	while (mobRow = res.fetch_raw_row()) {
 		// Col0 : Mob ID
 		//    1 : Skill ID
 		//    2 : Level
@@ -123,4 +123,14 @@ void MobDataProvider::loadData() {
 		mobinfo[atoi(mobRow[0])].skills.push_back(mobskill);
 	}
 	std::cout << "DONE" << std::endl;
+}
+
+MobAttackInfo * MobDataProvider::getMobAttack(int32_t mobid, uint8_t type) {
+	try {
+		return &mobinfo[mobid].attacks.at(type);
+	}
+	catch (std::out_of_range) {
+
+	}
+	return 0;
 }

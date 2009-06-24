@@ -174,6 +174,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, packet); break;
 		case RECV_USE_STORAGE: Inventory::useStorage(this, packet); break;
 		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet); break;
+		case RECV_USE_TELEPORT_ROCK: packet.skipBytes(5); Inventory::handleRockTeleport(this, packet.get<int8_t>(), Items::SpecialTeleportRock, packet); break;
 	}
 }
 

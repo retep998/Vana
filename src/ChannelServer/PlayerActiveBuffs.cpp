@@ -417,81 +417,27 @@ bool PlayerActiveBuffs::hasMesoUp() {
 }
 
 bool PlayerActiveBuffs::hasMagicGuard() {
-	return (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0);
-}
-
-int32_t PlayerActiveBuffs::getMagicGuard() {
-	int32_t id = 0;
-	if (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0)
-		id = Jobs::Magician::MagicGuard;
-	return id;
+	int32_t sid = getMagicGuard();
+	return (sid != 0 && getActiveSkillLevel(sid) > 0);
 }
 
 bool PlayerActiveBuffs::hasMesoGuard() {
-	return getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0;
-}
-
-int32_t PlayerActiveBuffs::getMesoGuard() {
-	int32_t id = 0;
-	if (getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0)
-		id = Jobs::ChiefBandit::MesoGuard;
-	return id;
+	int32_t sid = getMesoGuard();
+	return (sid != 0 && getActiveSkillLevel(sid) > 0);
 }
 
 bool PlayerActiveBuffs::hasHolySymbol() {
-	return (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0 || getActiveSkillLevel(Jobs::SuperGm::HolySymbol) > 0);
-}
-
-int32_t PlayerActiveBuffs::getHolySymbol() {
-	int32_t id = 0;
-	if (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0)
-		id = Jobs::Priest::HolySymbol;
-	else if (getActiveSkillLevel(Jobs::SuperGm::HolySymbol) > 0)
-		id = Jobs::SuperGm::HolySymbol;
-	return id;
-}
-
-bool PlayerActiveBuffs::hasHolyShield() {
-	return (getActiveSkillLevel(Jobs::Bishop::HolyShield) > 0);
-}
-
-bool PlayerActiveBuffs::isCursed() {
-	return ((m_debuffmask & StatusEffects::Player::Curse) > 0);
-}
-
-bool PlayerActiveBuffs::isZombified() {
-	return ((m_debuffmask & StatusEffects::Player::Zombify) > 0);
+	int32_t sid = getHolySymbol();
+	return (sid != 0 && getActiveSkillLevel(sid) > 0);
 }
 
 bool PlayerActiveBuffs::hasPowerStance() {
-	// Energy Charge exhibits Power Stance effect as well
-	return (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0 || getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0 || getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0 || getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0);
+	int32_t sid = getPowerStance();
+	return (sid != 0 && getActiveSkillLevel(sid) > 0);
 }
-
-int32_t PlayerActiveBuffs::getPowerStance() {
-	int32_t skillid = 0;
-	if (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0)
-		skillid = Jobs::Hero::PowerStance;
-	else if (getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0)
-		skillid = Jobs::Paladin::PowerStance;
-	else if (getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0)
-		skillid = Jobs::DarkKnight::PowerStance;
-	else if (getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
-		skillid = Jobs::Marauder::EnergyCharge;
-	return skillid;
-}
-
 bool PlayerActiveBuffs::hasHyperBody() {
-	return (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0 || getActiveSkillLevel(Jobs::SuperGm::HyperBody) > 0);
-}
-
-int32_t PlayerActiveBuffs::getHyperBody() {
-	int32_t id = 0;
-	if (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0)
-		id = Jobs::Spearman::HyperBody;
-	else if (getActiveSkillLevel(Jobs::SuperGm::HyperBody) > 0)
-		id = Jobs::SuperGm::HyperBody;
-	return id;
+	int32_t sid = getHyperBody();
+	return (sid != 0 && getActiveSkillLevel(sid) > 0);
 }
 
 bool PlayerActiveBuffs::isUsingHide() {
@@ -510,6 +456,63 @@ bool PlayerActiveBuffs::hasSoulArrow() {
 	return (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0 || getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0);
 }
 
+bool PlayerActiveBuffs::hasHolyShield() {
+	return (getActiveSkillLevel(Jobs::Bishop::HolyShield) > 0);
+}
+
+bool PlayerActiveBuffs::isCursed() {
+	return ((m_debuffmask & StatusEffects::Player::Curse) > 0);
+}
+
+bool PlayerActiveBuffs::isZombified() {
+	return ((m_debuffmask & StatusEffects::Player::Zombify) > 0);
+}
+
+int32_t PlayerActiveBuffs::getMagicGuard() {
+	int32_t id = 0;
+	if (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0)
+		id = Jobs::Magician::MagicGuard;
+	return id;
+}
+
+int32_t PlayerActiveBuffs::getMesoGuard() {
+	int32_t id = 0;
+	if (getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0)
+		id = Jobs::ChiefBandit::MesoGuard;
+	return id;
+}
+
+int32_t PlayerActiveBuffs::getHolySymbol() {
+	int32_t id = 0;
+	if (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0)
+		id = Jobs::Priest::HolySymbol;
+	else if (getActiveSkillLevel(Jobs::SuperGm::HolySymbol) > 0)
+		id = Jobs::SuperGm::HolySymbol;
+	return id;
+}
+
+int32_t PlayerActiveBuffs::getPowerStance() {
+	int32_t skillid = 0;
+	if (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0)
+		skillid = Jobs::Hero::PowerStance;
+	else if (getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0)
+		skillid = Jobs::Paladin::PowerStance;
+	else if (getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0)
+		skillid = Jobs::DarkKnight::PowerStance;
+	else if (getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
+		skillid = Jobs::Marauder::EnergyCharge;
+	return skillid;
+}
+
+int32_t PlayerActiveBuffs::getHyperBody() {
+	int32_t id = 0;
+	if (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0)
+		id = Jobs::Spearman::HyperBody;
+	else if (getActiveSkillLevel(Jobs::SuperGm::HyperBody) > 0)
+		id = Jobs::SuperGm::HyperBody;
+	return id;
+}
+
 int32_t PlayerActiveBuffs::getCurrentMorph() {
 	int32_t morphid = 0;
 	if (m_activebuffsbytype.find(Byte5) != m_activebuffsbytype.end()) {
@@ -519,6 +522,13 @@ int32_t PlayerActiveBuffs::getCurrentMorph() {
 		}
 	}
 	return morphid;
+}
+
+void PlayerActiveBuffs::endMorph() {
+	int32_t morphid = getCurrentMorph();
+	if (morphid != 0) {
+		Skills::stopSkill(m_player, morphid);
+	}
 }
 
 const int16_t PlayerActiveBuffs::getMapleWarriorValue() {
