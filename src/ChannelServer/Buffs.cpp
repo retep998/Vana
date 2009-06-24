@@ -768,7 +768,7 @@ Buffs::Buffs() {
 	// Seduce
 	buff.type = 0x80;
 	buff.byte = Byte5;
-	buff.value = SkillNone;
+	buff.value = SkillX;
 	player.buff = buff;
 	mobskillsinfo[MobSkills::Seduce].mob.push_back(player);
 	mobskillsinfo[MobSkills::Seduce].delay = 900;
