@@ -46,7 +46,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	const int8_t MapDamage = -2;
 
 	packet.skipBytes(4); // Ticks
-	uint8_t type = packet.get<int8_t>();
+	int8_t type = packet.get<int8_t>();
 	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	int32_t damage = packet.get<int32_t>();
 	bool applieddamage = false;
