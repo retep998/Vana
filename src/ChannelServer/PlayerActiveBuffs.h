@@ -149,6 +149,8 @@ public:
 	int32_t getMagicGuard();
 	int32_t getMesoGuard();
 
+	void endMorph();
+
 	// Packet marshaling
 	void getBuffTransferPacket(PacketCreator &packet);
 	void parseBuffTransferPacket(PacketReader &packet);

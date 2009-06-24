@@ -100,6 +100,7 @@ void LuaScriptable::initialize() {
 
 	// Player
 	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
+	lua_register(luaVm, "endMorph", &LuaExports::endMorph);
 	lua_register(luaVm, "getAP", &LuaExports::getAP);
 	lua_register(luaVm, "getDEX", &LuaExports::getDEX);
 	lua_register(luaVm, "getEXP", &LuaExports::getEXP);
@@ -490,6 +491,11 @@ int LuaExports::useItem(lua_State *luaVm) {
 int LuaExports::deletePlayerVariable(lua_State *luaVm) {
 	string key = string(lua_tostring(luaVm, -1));
 	getPlayer(luaVm)->getVariables()->deleteVariable(key);
+	return 0;
+}
+
+int LuaExports::endMorph(lua_State *luaVm) {
+	getPlayer(luaVm)->getActiveBuffs()->endMorph();
 	return 0;
 }
 

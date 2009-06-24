@@ -97,6 +97,7 @@ namespace LuaExports {
 
 	// Player
 	int deletePlayerVariable(lua_State *luaVm);
+	int endMorph(lua_State *luaVm);
 	int getAP(lua_State *luaVm);
 	int getDEX(lua_State *luaVm);
 	int getEXP(lua_State *luaVm);

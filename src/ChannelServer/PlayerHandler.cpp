@@ -216,8 +216,9 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->getActiveBuffs()->reduceBattleshipHp((uint16_t) damage);
 			}
 		}
-		if (player->getActiveBuffs()->getCurrentMorph() < 0 || (player->getActiveBuffs()->getCurrentMorph() != 0 && player->getHp() == 0)) {
-			Skills::stopSkill(player, player->getActiveBuffs()->getCurrentMorph());
+		int32_t morph = player->getActiveBuffs()->getCurrentMorph();
+		if (morph < 0  || (morph != 0 && player->getHp() == 0)) {
+			player->getActiveBuffs()->endMorph();
 		}
 	}
 	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, stance, nodamageid, pgmr);
