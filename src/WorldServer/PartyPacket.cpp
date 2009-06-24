@@ -99,7 +99,7 @@ void PartyPacket::updateParty(WorldServerAcceptPlayer *player, int8_t type, int3
 		case PARTY_JOIN: 
 			packet.add<int8_t>(0x0F);
 			packet.add<int32_t>(partyplayer->party);
-			packet.addString(partyplayer->name);
+			packet.addString(Players::Instance()->getPlayer(target)->name);
 			break;
 		case PARTY_LEAVE:
 		case PARTY_EXPEL:
