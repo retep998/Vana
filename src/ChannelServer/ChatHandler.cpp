@@ -466,6 +466,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "singapore") mapid = 540000000;
 						else if (args == "quay") mapid = 541000000;
 						else if (args == "magatia") mapid = 261000000;
+						else if (args == "temple") mapid = 270000000;
+						else if (args == "altair") mapid = 300000000;
 						// Boss maps
 						else if (args == "ergoth") mapid = 990000900;
 						else if (args == "pap") mapid = 220080001;
