@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 uint32_t Levels::exps[Stats::PlayerLevels - 1] = {
 	// 20 rows of 10 levels each (with 9 in the last row)
-#if MAPLE_VERSION == 70
+#if MAPLE_VERSION >= 70
 	15, 34, 57, 92, 135, 372, 560, 840, 1242, 1144,
 	1573, 2144, 2800, 3640, 4700, 5893, 7360, 9144, 11120, 13478,
 	16268, 19320, 22881, 27009, 31478, 36601, 42446, 48722, 55816, 76560,

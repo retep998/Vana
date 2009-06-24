@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeChannel.h"
+#include "BeautyDataProvider.h"
 #include "ChatHandler.h"
 #include "Database.h"
 #include "DropDataProvider.h"
@@ -63,6 +64,7 @@ void Initializing::loadData() {
 	ShopDataProvider::Instance()->loadData();
 	MobDataProvider::Instance()->loadData();
 	DropDataProvider::Instance()->loadData();
+	BeautyDataProvider::Instance()->loadData();
 	EventDataProvider::Instance()->loadEvents();
 	initializeReactors();
 	initializeQuests();

@@ -53,10 +53,8 @@ elseif state == 1 then
 	elseif what == 4 then
 		getEyeColour(styles);
 	elseif what == 5 then
-		giveRandomHair(hairs);
-		giveRandomHairColour();
-		giveRandomEyes(eyes);
-		giveRandomEyeColour();
+		setStyle(getRandomFace());
+		setStyle(getRandomHair());
 		endNPC();
 	else
 		endNPC();

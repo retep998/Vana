@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.h"
+#include "BeautyDataProvider.h"
 #include "EventDataProvider.h"
 #include "Instance.h"
 #include "Instances.h"
@@ -124,6 +125,9 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
 	lua_register(luaVm, "getPosX", &LuaExports::getPosX);
 	lua_register(luaVm, "getPosY", &LuaExports::getPosY);
+	lua_register(luaVm, "getRandomFace", &LuaExports::getRandomFace);
+	lua_register(luaVm, "getRandomHair", &LuaExports::getRandomHair);
+	lua_register(luaVm, "getRandomSkin", &LuaExports::getRandomSkin);
 	lua_register(luaVm, "getRMHP", &LuaExports::getRMHP);
 	lua_register(luaVm, "getRMMP", &LuaExports::getRMMP);
 	lua_register(luaVm, "getSkin", &LuaExports::getSkin);
@@ -612,6 +616,21 @@ int LuaExports::getPosX(lua_State *luaVm) {
 
 int LuaExports::getPosY(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getPos().y);
+	return 1;
+}
+
+int LuaExports::getRandomFace(lua_State *luaVm) {
+	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomFace(getPlayer(luaVm)->getGender()));
+	return 1;
+}
+
+int LuaExports::getRandomHair(lua_State *luaVm) {
+	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomHair(getPlayer(luaVm)->getGender()));
+	return 1;
+}
+
+int LuaExports::getRandomSkin(lua_State *luaVm) {
+	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomSkin());
 	return 1;
 }
 

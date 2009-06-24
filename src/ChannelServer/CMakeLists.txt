@@ -1,4 +1,5 @@
 set(SOURCES
+	BeautyDataProvider.h
 	BuddyListHandler.h
 	BuddyListPacket.h
 	Buffs.h
@@ -87,6 +88,7 @@ set(SOURCES
 	WorldServerConnectHandler.h
 	WorldServerConnectPacket.h
 	WorldServerConnectPlayer.h
+	BeautyDataProvider.cpp
 	BuddyListHandler.cpp
 	BuddyListPacket.cpp
 	Buffs.cpp
