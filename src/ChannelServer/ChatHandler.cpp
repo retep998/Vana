@@ -488,6 +488,10 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "grandpa") mapid = 801040100;
 						else if (args == "anego") mapid = 801040003;
 						else if (args == "tengu") mapid = 800020130;
+						else if (args == "lilynouch") mapid = 270020500;
+						else if (args == "dodo") mapid = 270010500;
+						else if (args == "lyka") mapid = 270030500;
+						else if (args == "bean") mapid = 270050100;
 						else {
 							char *endptr;
 							mapid = strtol(args.c_str(), &endptr, 0);
