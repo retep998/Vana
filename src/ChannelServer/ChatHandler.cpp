@@ -396,15 +396,16 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (matches[1] == "map") type = 3;
 						else if (matches[1] == "mob") type = 4;
 						else if (matches[1] == "npc") type = 5;
-						else if (matches[1] == "id")  type = 6;
+						else if (matches[1] == "quest") type = 6;
+						else if (matches[1] == "id")  type = 10;
 
 						if (type != 0) {
 							mysqlpp::Query query = Database::getDataDB().query();
-							if (type < 6) {
-								query << "SELECT objectid, name FROM stringdata WHERE type=" << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+							if (type < 10) {
+								query << "SELECT objectid, name FROM stringdata WHERE type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
 							}
-							else if (type == 6) {
-								query << "SELECT objectid, name FROM stringdata WHERE objectid=" << matches[2];
+							else if (type == 10) {
+								query << "SELECT objectid, name FROM stringdata WHERE objectid = " << matches[2];
 							}
 							mysqlpp::StoreQueryResult res = query.store();
 
