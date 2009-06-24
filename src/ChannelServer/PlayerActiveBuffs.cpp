@@ -530,6 +530,13 @@ int32_t PlayerActiveBuffs::getCurrentMorph() {
 	return morphid;
 }
 
+void PlayerActiveBuffs::endMorph() {
+	int32_t morphid = getCurrentMorph();
+	if (morphid != 0) {
+		Skills::stopSkill(m_player, morphid);
+	}
+}
+
 void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
 	// Map entry buff info
 	packet.add<int8_t>(getCombo());
