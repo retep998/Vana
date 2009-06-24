@@ -876,6 +876,40 @@ void Inventory::useCashItem(Player *player, PacketReader &packet) {
 			used = true;
 			break;
 		}
+		case Items::ItemMegaphone: {
+			string msg = player->getName() + " : " + packet.getString();
+			uint8_t whisper = packet.get<int8_t>();
+			Item *item = 0;
+			if (packet.get<int8_t>() == 1) {
+				int8_t inv = (int8_t) packet.get<int32_t>();
+				int16_t slot = (int16_t) packet.get<int32_t>();
+				item = player->getInventory()->getItem(inv, slot);
+				if (item == 0) {
+					// hacking
+					return;
+				}
+			}
+			InventoryPacket::showItemMegaphone(player, msg, whisper, item);
+			used = true;
+			break;
+		}
+		case Items::ArtMegaphone: {
+			int8_t lines = packet.get<int8_t>();
+			if (lines < 1 || lines > 3) {
+				// Hacking
+				return;
+			}
+			string text[3] = {"", "", ""};
+			for (int8_t i = 0; i < lines; i++) {
+				text[i] = player->getName() + " : " + packet.getString();
+			}
+			uint8_t whisper = packet.get<int8_t>();
+			for (int8_t i = 0; i < lines; i++) {
+				InventoryPacket::showSuperMegaphone(player, text[i], whisper);
+			}
+			used = true;
+			break;
+		}
 		case Items::PetNameTag: {
 			string name = packet.getString();
 			Pets::changeName(player, name);

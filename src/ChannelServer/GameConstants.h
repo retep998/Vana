@@ -986,6 +986,8 @@ namespace Items {
 		ItemLock = 5060001,
 		Megaphone = 5071000,
 		SuperMegaphone = 5072000,
+		ItemMegaphone = 5076000,
+		ArtMegaphone = 5077000,
 		MapleTvMessenger = 5075000,
 		MapleTvStarMessenger = 5075001,
 		MapleTvHeartMessenger = 5075002,

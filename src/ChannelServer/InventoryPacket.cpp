@@ -183,6 +183,23 @@ void InventoryPacket::showMessenger(Player *player, const string &msg, const str
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
+void InventoryPacket::showItemMegaphone(Player *player, const string &msg, uint8_t whisper, Item *item) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_TO_PLAYERS);
+	packet.add<int16_t>(SEND_NOTICE);
+	packet.add<int8_t>(8);
+	packet.addString(msg);
+	packet.add<int8_t>((uint8_t) ChannelServer::Instance()->getChannel());
+	packet.add<int8_t>(whisper);
+	if (item == 0) {
+		packet.add<int8_t>(0);
+	}
+	else {
+		PlayerPacketHelper::addItemInfo(packet, 1, item);
+	}
+	ChannelServer::Instance()->sendToWorld(packet);
+}
+
 void InventoryPacket::useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILLBOOK);
