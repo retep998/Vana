@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Portal to Altaire Camp
+-- Portal to leave the Time Temple
 
-showMessage("Now moving past Gate of Time.", 5);
-setMap(300000100, "out00");
+useItem(2210016);
+setMap(200090510);
