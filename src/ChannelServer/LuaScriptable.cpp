@@ -620,12 +620,12 @@ int LuaExports::getPosY(lua_State *luaVm) {
 }
 
 int LuaExports::getRandomFace(lua_State *luaVm) {
-	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomFace(getPlayer(luaVm)->getGender()));
+	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomFace(getPlayer(luaVm)->getStats()->getGender()));
 	return 1;
 }
 
 int LuaExports::getRandomHair(lua_State *luaVm) {
-	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomHair(getPlayer(luaVm)->getGender()));
+	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomHair(getPlayer(luaVm)->getStats()->getGender()));
 	return 1;
 }
 
