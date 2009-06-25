@@ -332,7 +332,6 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			packet.skipBytes(4); // Charge
 			break;
 	}
-	packet.skipBytes(4); // Unk
 	packet.skipBytes(8); // In order: Display [1], Animation [1], Weapon subclass [1], Weapon speed [1], Tick count [4]
 	if (skillid != Jobs::All::RegularAttack)
 		Skills::useAttackSkill(player, skillid);
@@ -408,7 +407,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
 				0, Timer::Time::fromNow(pptime));
 		}
-		packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
+		if (!GameLogicUtilities::isSummon(skillid))
+			packet.skipBytes(4); // 4 bytes of unknown purpose, new in .56
 	}
 	packet.skipBytes(4); // Character positioning, end of packet, might eventually be useful for hacking detection
 
@@ -494,7 +494,6 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet.get<int32_t>();
-	packet.skipBytes(4); // Unk
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
@@ -563,7 +562,6 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		eater.prop = Skills::skills[eater.id][eater.level].prop;
 		eater.x = Skills::skills[eater.id][eater.level].x;
 	}
-	packet.skipBytes(4); // Unk
 	packet.skipBytes(2); // Display, direction/animation
 	packet.skipBytes(2); // Weapon subclass, casting speed
 	packet.skipBytes(4); // Ticks
@@ -588,7 +586,6 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = packet.get<int32_t>();
-	packet.skipBytes(4); // Unk
 	packet.skipBytes(2); // Display, direction/animation
 	packet.skipBytes(2); // Weapon subclass, casting speed
 	packet.skipBytes(4); // Ticks
