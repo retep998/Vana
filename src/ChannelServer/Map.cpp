@@ -163,6 +163,7 @@ void Map::killReactors(bool showpacket) {
 }
 
 void Map::checkReactorSpawn(clock_t time, bool spawnAll) {
+	boost::mutex::scoped_lock l(respawns_mutex);
 	for (size_t i = 0; i < reactorspawns.size(); i++) {
 		clock_t spawnat = reactorspawns[i].spawnat;
 		if (!reactorspawns[i].spawned && (spawnAll || (spawnat != -1 && time > spawnat))) {
@@ -258,12 +259,14 @@ void Map::addMobSpawn(const MobSpawnInfo &spawn) {
 
 void Map::checkMobSpawn(clock_t time, bool spawnAll) {
 	// (Re-)spawn Mobs
+	boost::mutex::scoped_lock l(respawns_mutex);
 	for (size_t i = 0; i < mobspawns.size(); i++) {
-		int32_t id = mobspawns[i].id;
-		int32_t spawnat = mobspawns[i].spawnat;
-		if (!mobspawns[i].spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
-			spawnMob(id, mobspawns[i].pos, i, mobspawns[i].fh);
-			mobspawns[i].spawned = true;
+		MobSpawnInfo g = mobspawns[i];
+		int32_t id = g.id;
+		int32_t spawnat = g.spawnat;
+ 		if (!g.spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
+			spawnMob(id, g.pos, i, g.fh);
+			g.spawned = true;
 		}
 	}
 }

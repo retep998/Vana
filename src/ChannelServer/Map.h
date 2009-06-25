@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include <ctime>
 #include <boost/scoped_ptr.hpp>
+#include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
@@ -237,6 +238,7 @@ private:
 	unordered_map<int32_t, Drop *> drops;
 	unordered_map<int32_t, Mist *> mists;
 	boost::recursive_mutex drops_mutex;
+	boost::mutex respawns_mutex;
 	boost::scoped_ptr<Timer::Container> timers;
 	LoopingId objectids;
 	Instance *instance;
