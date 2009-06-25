@@ -56,6 +56,7 @@ namespace LuaExports {
 
 	// Miscellaneous
 	int getRandomNumber(lua_State *luaVm);
+	int consoleOutput(lua_State *luaVm);
 
 	// Channel
 	int deleteChannelVariable(lua_State *luaVm);
@@ -69,6 +70,17 @@ namespace LuaExports {
 	int removeNPC(lua_State *luaVm);
 	int runNPC(lua_State *luaVm);
 	int showShop(lua_State *luaVm);
+
+	// Beauty
+	int getAllFaces(lua_State *luaVm);
+	int getAllHair(lua_State *luaVm);
+	int getAllSkins(lua_State *luaVm);
+	int getRandomFace(lua_State *luaVm);
+	int getRandomHair(lua_State *luaVm);
+	int getRandomSkin(lua_State *luaVm);
+	int isValidFace(lua_State *luaVm);
+	int isValidHair(lua_State *luaVm);
+	int isValidSkin(lua_State *luaVm);
 
 	// Buddy
 	int addBuddySlots(lua_State *luaVm);
@@ -121,9 +133,6 @@ namespace LuaExports {
 	int getPlayerVariable(lua_State *luaVm);
 	int getPosX(lua_State *luaVm);
 	int getPosY(lua_State *luaVm);
-	int getRandomFace(lua_State *luaVm);
-	int getRandomHair(lua_State *luaVm);
-	int getRandomSkin(lua_State *luaVm);
 	int getRMHP(lua_State *luaVm);
 	int getRMMP(lua_State *luaVm);
 	int getSkin(lua_State *luaVm);

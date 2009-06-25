@@ -74,6 +74,17 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
 
+	// Beauty
+	lua_register(luaVm, "getAllFaces", &LuaExports::getAllFaces);
+	lua_register(luaVm, "getAllHair", &LuaExports::getAllHair);
+	lua_register(luaVm, "getAllSkins", &LuaExports::getAllSkins);
+	lua_register(luaVm, "getRandomFace", &LuaExports::getRandomFace);
+	lua_register(luaVm, "getRandomHair", &LuaExports::getRandomHair);
+	lua_register(luaVm, "getRandomSkin", &LuaExports::getRandomSkin);
+	lua_register(luaVm, "isValidFace", &LuaExports::isValidFace);
+	lua_register(luaVm, "isValidHair", &LuaExports::isValidHair);
+	lua_register(luaVm, "isValidSkin", &LuaExports::isValidSkin);
+
 	// Buddy
 	lua_register(luaVm, "addBuddySlots", &LuaExports::addBuddySlots);
 	lua_register(luaVm, "getBuddySlots", &LuaExports::getBuddySlots);
@@ -125,9 +136,6 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
 	lua_register(luaVm, "getPosX", &LuaExports::getPosX);
 	lua_register(luaVm, "getPosY", &LuaExports::getPosY);
-	lua_register(luaVm, "getRandomFace", &LuaExports::getRandomFace);
-	lua_register(luaVm, "getRandomHair", &LuaExports::getRandomHair);
-	lua_register(luaVm, "getRandomSkin", &LuaExports::getRandomSkin);
 	lua_register(luaVm, "getRMHP", &LuaExports::getRMHP);
 	lua_register(luaVm, "getRMMP", &LuaExports::getRMMP);
 	lua_register(luaVm, "getSkin", &LuaExports::getSkin);
@@ -376,6 +384,73 @@ int LuaExports::showShop(lua_State *luaVm) {
 	return 0;
 }
 
+// Beauty
+int LuaExports::getAllFaces(lua_State *luaVm) {
+	vector<int32_t> ids = BeautyDataProvider::Instance()->getFaces(getPlayer(luaVm)->getStats()->getGender());
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < ids.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, ids[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+int LuaExports::getAllHair(lua_State *luaVm) {
+	vector<int32_t> ids = BeautyDataProvider::Instance()->getHair(getPlayer(luaVm)->getStats()->getGender());
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < ids.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, ids[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+int LuaExports::getAllSkins(lua_State *luaVm) {
+	vector<int8_t> ids = BeautyDataProvider::Instance()->getSkins();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < ids.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, ids[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+int LuaExports::getRandomFace(lua_State *luaVm) {
+	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomFace(getPlayer(luaVm)->getStats()->getGender()));
+	return 1;
+}
+
+int LuaExports::getRandomHair(lua_State *luaVm) {
+	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomHair(getPlayer(luaVm)->getStats()->getGender()));
+	return 1;
+}
+
+int LuaExports::getRandomSkin(lua_State *luaVm) {
+	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomSkin());
+	return 1;
+}
+
+int LuaExports::isValidFace(lua_State *luaVm) {
+	lua_pushboolean(luaVm, BeautyDataProvider::Instance()->isValidFace(getPlayer(luaVm)->getStats()->getGender(), lua_tointeger(luaVm, 1)));
+	return 1;
+}
+
+int LuaExports::isValidHair(lua_State *luaVm) {
+	lua_pushboolean(luaVm, BeautyDataProvider::Instance()->isValidHair(getPlayer(luaVm)->getStats()->getGender(), lua_tointeger(luaVm, 1)));
+	return 1;
+}
+
+int LuaExports::isValidSkin(lua_State *luaVm) {
+	lua_pushboolean(luaVm, BeautyDataProvider::Instance()->isValidSkin(lua_tointeger(luaVm, 1)));
+	return 1;
+}
+
 // Buddy
 int LuaExports::addBuddySlots(lua_State *luaVm) {
 	Player *p = getPlayer(luaVm);
@@ -616,21 +691,6 @@ int LuaExports::getPosX(lua_State *luaVm) {
 
 int LuaExports::getPosY(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getPos().y);
-	return 1;
-}
-
-int LuaExports::getRandomFace(lua_State *luaVm) {
-	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomFace(getPlayer(luaVm)->getStats()->getGender()));
-	return 1;
-}
-
-int LuaExports::getRandomHair(lua_State *luaVm) {
-	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomHair(getPlayer(luaVm)->getStats()->getGender()));
-	return 1;
-}
-
-int LuaExports::getRandomSkin(lua_State *luaVm) {
-	lua_pushinteger(luaVm, BeautyDataProvider::Instance()->getRandomSkin());
 	return 1;
 }
 

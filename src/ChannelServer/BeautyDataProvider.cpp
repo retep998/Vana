@@ -28,7 +28,7 @@ BeautyDataProvider * BeautyDataProvider::singleton = 0;
 
 void BeautyDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Skins... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skindata");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skindata ORDER BY skinid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 	MYSQL_ROW Row;
 	while (Row = res.fetch_raw_row()) {
@@ -38,7 +38,7 @@ void BeautyDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Hair... ";
-	query << "SELECT * FROM hairdata";
+	query << "SELECT * FROM hairdata ORDER BY hairid ASC";
 	res = query.use();
 	bool female;
 	while (Row = res.fetch_raw_row()) {
@@ -55,7 +55,7 @@ void BeautyDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Faces... ";
-	query << "SELECT * FROM facedata";
+	query << "SELECT * FROM facedata ORDER BY faceid ASC";
 	res = query.use();
 	while (Row = res.fetch_raw_row()) {
 		// Col0 : Face ID
@@ -76,21 +76,64 @@ int8_t BeautyDataProvider::getRandomSkin() {
 }
 
 int32_t BeautyDataProvider::getRandomHair(int8_t gender) {
-	if (gender == 1) { // Female
+	if (gender == 1) // Female
 		return femalehair[Randomizer::Instance()->randInt(femalehair.size() - 1)];
-	}
-	else {
-		return malehair[Randomizer::Instance()->randInt(malehair.size() - 1)];
-	}
-	return 0;
+	return malehair[Randomizer::Instance()->randInt(malehair.size() - 1)];
 }
 
 int32_t BeautyDataProvider::getRandomFace(int8_t gender) {
-	if (gender == 1) { // Female
+	if (gender == 1) // Female
 		return femalefaces[Randomizer::Instance()->randInt(femalefaces.size() - 1)];
+	return malefaces[Randomizer::Instance()->randInt(malefaces.size() - 1)];
+}
+
+vector<int8_t> BeautyDataProvider::getSkins() {
+	return skins;
+}
+
+vector<int32_t> BeautyDataProvider::getHair(int8_t gender) {
+	if (gender == 1)  // Female
+		return femalehair;
+	return malehair;
+}
+
+vector<int32_t> BeautyDataProvider::getFaces(int8_t gender) {
+	if (gender == 1)  // Female
+		return femalefaces;
+	return malefaces;
+}
+
+bool BeautyDataProvider::isValidHair(int8_t gender, int32_t hair) {
+	vector<int32_t> v = getHair(gender);
+	bool valid = false;
+	for (size_t i = 0; i < v.size(); i++) {
+		if (hair == v[i]) {
+			valid = true;
+			break;
+		}
 	}
-	else {
-		return malefaces[Randomizer::Instance()->randInt(malefaces.size() - 1)];
+	return valid;
+}
+
+bool BeautyDataProvider::isValidFace(int8_t gender, int32_t face) {
+	vector<int32_t> v = getFaces(gender);
+	bool valid = false;
+	for (size_t i = 0; i < v.size(); i++) {
+		if (face == v[i]) {
+			valid = true;
+			break;
+		}
 	}
-	return 0;
+	return valid;
+}
+
+bool BeautyDataProvider::isValidSkin(int8_t skin) {
+	bool valid = false;
+	for (size_t i = 0; i < skins.size(); i++) {
+		if (skin == skins[i]) {
+			valid = true;
+			break;
+		}
+	}
+	return valid;
 }
