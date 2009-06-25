@@ -289,7 +289,7 @@ void Player::playerConnect(PacketReader &packet) {
 	if (ChannelServer::Instance()->getScrollingHeader().size() > 0)
 		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
 
-	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
+	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = pets->getSummoned(i))
 			pet->setPos(Maps::getMap(map)->getSpawnPoint(map_pos)->pos);
 	}
@@ -328,7 +328,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	setPos(Pos(portal->pos.x, portal->pos.y - 40));
 	setStance(0);
 	setFh(0);
-	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
+	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getPets()->getSummoned(i)) {
 			pet->setPos(portal->pos);
 		}
