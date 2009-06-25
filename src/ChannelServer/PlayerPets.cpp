@@ -34,12 +34,10 @@ Pet * PlayerPets::getPet(int32_t petid) {
 }
 
 void PlayerPets::setSummoned(int8_t index, int32_t petid) {
-	index -= 1;
 	m_summoned[index] = petid;
 }
 
 Pet * PlayerPets::getSummoned(int8_t index) {
-	index -= 1;
 	return m_summoned[index] > 0 ? m_playerpets[m_summoned[index]] : 0;
 }
 
@@ -59,7 +57,7 @@ void PlayerPets::save() {
 
 void PlayerPets::petInfoPacket(PacketCreator &packet) {
 	Item *it;
-	for (int8_t i = 1; i <= Inventories::MaxPetCount; i++) {
+	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getSummoned(i)) {
 			packet.add<int8_t>(1);
 			packet.add<int32_t>(pet->getItemId());
