@@ -23,27 +23,33 @@ eye = getEyes(); -- Player's current eyes
 
 -- Skin functions
 function getSkins(styles)
-	for i = 0, 4 do
-		if not (currentSkin == i) then
-			styles[i + 1] = i;
+	v = getAllSkins();
+	for i = 1, #v do
+		if not (currentSkin == v[i]) then
+			styles[i] = v[i];
 		end
 	end
 end
 
 -- Hair functions
-function getHairs(hairs, styles)
+function getHairs(styles)
 	colour = hair % 10;
+	hairs = getAllHair();
 	for i = 1, #hairs do
-		if not (hairs[i] + colour == hair) then
-			styles[#styles + 1] = hairs[i] + colour;
+		if (hairs[i] % 10 == 0) and not (hairs[i] + colour == hair) then
+			if isValidHair(hairs[i] + colour) then
+				styles[#styles + 1] = hairs[i] + colour;
+			else
+				styles[#styles + 1] = hairs[i];
+			end
 		end
 	end
 end
 
 function getHairColours(styles)
 	cur = hair - hair % 10;
-	for i = 0, 7 do
-		if not (cur + i == hair) then
+	for i = 0, 9 do
+		if isValidHair(cur + i) and not (cur + i == hair) then
 			styles[#styles + 1] = cur + i;
 		end
 	end
@@ -69,19 +75,24 @@ function giveRandomHairColour()
 end
 
 -- Eye functions
-function getEyeStyles(eyes, styles)
+function getEyeStyles(styles)
 	colour = (eye % 1000) - (eye % 100);
+	eyes = getAllFaces();
 	for i = 1, #eyes do
-		if not (eyes[i] + colour == eye) then
-			styles[#styles + 1] = eyes[i] + colour;
+		if ((eyes[i] % 1000 - eyes[i] % 100) == 0) and not (eyes[i] + colour == eye) then
+			if isValidFace(eyes[i] + colour) then
+				styles[#styles + 1] = eyes[i] + colour;
+			else
+				styles[#styles + 1] = eyes[i];
+			end
 		end
 	end
 end
 
 function getEyeColour(styles)
 	cur = eye - (eye % 1000 - eye % 100);
-	for i = 0, 700, 100 do
-		if not (cur + i == eye) then
+	for i = 0, 900, 100 do
+		if isValidFace(cur + i) and not (cur + i == eye) then
 			styles[#styles + 1] = cur + i;
 		end
 	end
