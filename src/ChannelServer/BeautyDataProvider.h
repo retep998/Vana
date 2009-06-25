@@ -38,6 +38,14 @@ public:
 	int8_t getRandomSkin();
 	int32_t getRandomHair(int8_t gender);
 	int32_t getRandomFace(int8_t gender);
+
+	vector<int8_t> getSkins();
+	vector<int32_t> getHair(int8_t gender);
+	vector<int32_t> getFaces(int8_t gender);
+
+	bool isValidSkin(int8_t skin);
+	bool isValidHair(int8_t gender, int32_t hair);
+	bool isValidFace(int8_t gender, int32_t face);
 private:
 	BeautyDataProvider() {}
 	static BeautyDataProvider *singleton;
