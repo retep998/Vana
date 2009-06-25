@@ -261,7 +261,7 @@ void Map::checkMobSpawn(clock_t time, bool spawnAll) {
 	for (size_t i = 0; i < mobspawns.size(); i++) {
 		int32_t id = mobspawns[i].id;
 		int32_t spawnat = mobspawns[i].spawnat;
-		if (!mobspawns[i].spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
+ 		if (!mobspawns[i].spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
 			spawnMob(id, mobspawns[i].pos, i, mobspawns[i].fh);
 			mobspawns[i].spawned = true;
 		}
@@ -322,9 +322,11 @@ void Map::updateMobControl(Mob *mob, bool spawn) {
 
 void Map::removeMob(int32_t id, int32_t spawnid) {
 	if (mobs.find(id) != mobs.end()) {
-		if (spawnid > -1 && mobspawns[spawnid].time > -1) { // Add spawn point to respawns if mob was spawned by a spawn point.
-			clock_t spawntime = TimeUtilities::getTickCount() + mobspawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(100) + 100) / 100; // Randomly spawn between 1x and 2x the spawn time
-			mobspawns[spawnid].spawnat = spawntime;
+		if (spawnid > -1) {
+			if (mobspawns[spawnid].time > -1) { // Add spawn point to respawns if mob was spawned by a spawn point.
+				clock_t spawntime = TimeUtilities::getTickCount() + mobspawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(100) + 100) / 100; // Randomly spawn between 1x and 2x the spawn time
+				mobspawns[spawnid].spawnat = spawntime;
+			}
 			mobspawns[spawnid].spawned = false;
 		}
 		this->mobs.erase(id);
