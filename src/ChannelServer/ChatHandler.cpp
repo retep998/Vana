@@ -121,6 +121,9 @@ void ChatHandler::initializeCommands() {
 	commandlist["save"] = make_pair(CmdSave, 1);
 	commandlist["warpto"] = make_pair(CmdWarpTo, 1);
 	commandlist["killnpc"] = make_pair(CmdKillNpc, 1);
+	commandlist["listmobs"] = make_pair(CmdListMobs, 1);
+	commandlist["getmobhp"] = make_pair(CmdGetMobHp, 1);
+	commandlist["killmob"] = make_pair(CmdKillMob, 1);
 }
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
@@ -815,6 +818,59 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					else {
 						PlayerPacket::showMessage(player, "Usage: !globalmessage <${notice | popup | event | purple}> <$message string>", 6);
+					}
+					break;
+				}
+				case CmdListMobs: {
+					string message = "No mobs on the current map.";
+					if (Maps::getMap(player->getMap())->countMobs(0) > 0) {
+						typedef unordered_map<int32_t, Mob *> mobmap;
+						mobmap mobs = Maps::getMap(player->getMap())->getMobs();
+						for (mobmap::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+							message = "Mob ";
+							message += boost::lexical_cast<string>(iter->first);
+							message += " (ID: ";
+							message += boost::lexical_cast<string>(iter->second->getMobId());
+							message += ", HP: ";
+							message += boost::lexical_cast<string>(iter->second->getHp());
+							message += "/";
+							message += boost::lexical_cast<string>(iter->second->getMHp());
+							message += ")";
+							PlayerPacket::showMessage(player, message, 6);
+						}
+					}
+					else {
+						PlayerPacket::showMessage(player, message, 5);
+					}
+					break;
+				}
+				case CmdGetMobHp: {
+					string message = "Mob does not exist.";
+					if (args.length() != 0) {
+						int32_t mobid = atoi(args.c_str());
+						Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
+						if (mob != 0) {
+							message = "Mob ";
+							message += boost::lexical_cast<string>(mobid);
+							message += " HP: ";
+							message += boost::lexical_cast<string>(mob->getHp());
+							message += "/";
+							message += boost::lexical_cast<string>(mob->getMHp());
+							message += " (";
+							message += boost::lexical_cast<string>(static_cast<int64_t>(mob->getHp()) * 100 / mob->getMHp());
+							message += "%)";
+						}
+					}
+					PlayerPacket::showMessage(player, message, 5);
+					break;
+				}
+				case CmdKillMob: {
+					if (args.length() != 0) {
+						int32_t mobid = atoi(args.c_str());
+						Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
+						if (mob != 0) {
+							mob->applyDamage(player->getId(), mob->getHp());
+						}
 					}
 					break;
 				}

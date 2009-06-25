@@ -70,7 +70,10 @@ enum Commands {
 	CmdWarpTo,
 	CmdRankingCalc,
 	CmdWorldMessage,
-	CmdGlobalMessage
+	CmdGlobalMessage,
+	CmdListMobs,
+	CmdGetMobHp,
+	CmdKillMob
 };
 
 #endif
