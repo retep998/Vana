@@ -32,9 +32,11 @@ function getSkins(styles)
 end
 
 -- Hair functions
-function getHairs(styles)
+function getHairs(styles, hairs)
 	colour = hair % 10;
-	hairs = getAllHair();
+	if hairs == nil then
+		hairs = getAllHair();
+	end
 	for i = 1, #hairs do
 		if (hairs[i] % 10 == 0) and not (hairs[i] + colour == hair) then
 			if isValidHair(hairs[i] + colour) then
@@ -75,9 +77,11 @@ function giveRandomHairColour()
 end
 
 -- Eye functions
-function getEyeStyles(styles)
+function getEyeStyles(styles, eyes)
 	colour = (eye % 1000) - (eye % 100);
-	eyes = getAllFaces();
+	if eyes == nil then
+		eyes = getAllFaces();
+	end
 	for i = 1, #eyes do
 		if ((eyes[i] % 1000 - eyes[i] % 100) == 0) and not (eyes[i] + colour == eye) then
 			if isValidFace(eyes[i] + colour) then
