@@ -172,7 +172,7 @@ namespace Stats {
 		Skin = 0x01,
 		Eyes = 0x02,
 		Hair = 0x04,
-		// 0x08?
+		Pet = 0x08,
 		Level = 0x10,
 		Job = 0x20,
 		Str = 0x40,
