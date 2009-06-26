@@ -278,9 +278,15 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 			return;
 	}
 	else if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
+		bool bookIsFull = player->getMonsterBook()->isFull(drop->getObjectId());
 		player->getMonsterBook()->addCard(drop->getObjectId());
+		if (!bookIsFull) {
+			drop->takeDrop(player, petid);
+		}
+		else {
+			drop->removeDrop(true);
+		}
 		DropsPacket::dontTake(player);
-		drop->removeDrop(true);
 		return;
 	}
 	else {
