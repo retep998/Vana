@@ -426,11 +426,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 							}
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, id}", 6);
+							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, id}", 6);
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc | id}> <$search string>", 6);
+						PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc | quest | id}> <$search string>", 6);
 					}
 					break;
 				}

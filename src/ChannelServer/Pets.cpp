@@ -234,7 +234,7 @@ void Pets::handleCommand(Player *player, PacketReader &packet) {
 }
 
 void Pets::changeName(Player *player, const string &name) {
-	if (Pet *pet = player->getPets()->getSummoned(1)) {
+	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		pet->setName(name);
 	}
 }
