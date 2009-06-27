@@ -63,10 +63,10 @@ const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value
 	StatusEffects::Mob::MagicImmunity,
 	StatusEffects::Mob::VenomousWeapon,
 
-	StatusEffects::Mob::WeaponDamageReflect,
-	StatusEffects::Mob::MagicDamageReflect,
 	StatusEffects::Mob::Empty,
-	StatusEffects::Mob::InertMob
+	StatusEffects::Mob::InertMob,
+	StatusEffects::Mob::WeaponDamageReflect,
+	StatusEffects::Mob::MagicDamageReflect
 };
 
 StatusInfo::StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time) :
@@ -80,6 +80,28 @@ time(time)
 	if (val == StatusEffects::Mob::Freeze && skillid != Jobs::FPArchMage::Paralyze) {
 		this->time += Randomizer::Instance()->randInt(time);
 	}
+}
+
+StatusInfo::StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, clock_t time) :
+status(status),
+val(val),
+skillid(-1),
+mobskill(mobskill),
+level(level),
+time(time),
+reflection(-1)
+{
+}
+
+StatusInfo::StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, int32_t reflect, clock_t time) :
+status(status),
+val(val),
+skillid(-1),
+mobskill(mobskill),
+level(level),
+time(time),
+reflection(reflect)
+{
 }
 
 /* Mob class */
@@ -164,6 +186,7 @@ void Mob::applyWebDamage() {
 
 void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 	int32_t addedstatus = 0;
+	vector<int32_t> reflection;
 	for (size_t i = 0; i < statusinfo.size(); i++) {
 		int32_t cstatus = statusinfo[i].status;
 		bool alreadyhas = (statuses.find(cstatus) != statuses.end());
@@ -188,6 +211,10 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 					statusinfo[i].val += statuses[cstatus].val; // Increase the damage
 				}
 				break;
+			case StatusEffects::Mob::WeaponDamageReflect:
+			case StatusEffects::Mob::MagicDamageReflect:
+				reflection.push_back(statusinfo[i].reflection);
+				break;
 		}
 
 		statuses[cstatus] = statusinfo[i];
@@ -208,7 +235,7 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 	for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
 		status += iter->first;
 	}
-	MobsPacket::applyStatus(this, addedstatus, statusinfo, 300);
+	MobsPacket::applyStatus(this, addedstatus, statusinfo, 300, reflection);
 }
 
 void Mob::statusPacket(PacketCreator &packet) {
@@ -645,14 +672,18 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			break;
 		case MobSkills::WeaponDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.y, skillinfo.time));
 			break;
 		case MobSkills::MagicDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.y, skillinfo.time));
 			break;
 		case MobSkills::AnyDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.y, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.y, skillinfo.time));
 			break;
 		case MobSkills::Haste:
 			// Not sure how to handle this yet, it doesn't seem like the basic speed buff

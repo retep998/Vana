@@ -39,12 +39,14 @@ struct MobSkillLevelInfo;
 struct MpEaterInfo;
 
 struct StatusInfo {
-	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0), time(0) { }
+	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0), time(0), reflection(-1) { }
 	StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time);
-	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, clock_t time) : status(status), val(val), skillid(-1), mobskill(mobskill), level(level), time(time) { }
+	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, clock_t time);
+	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, int32_t reflect, clock_t time);
 	int32_t status;
-	int16_t val;
 	int32_t skillid;
+	int32_t reflection;
+	int16_t val;
 	int16_t mobskill;
 	int16_t level;
 	clock_t time;
