@@ -79,7 +79,7 @@ public:
 	void statusPacket(PacketCreator &packet);
 	void addSpawn(int32_t mapmobid, Mob *mob) { spawns[mapmobid] = mob; }
 	void removeSpawn(int32_t mapmobid) { spawns.erase(mapmobid); }
-	void skillHeal(int32_t healhp, int32_t healmp);
+	void skillHeal(int32_t basehealhp, int32_t healrange);
 	void dispelBuffs();
 	void doCrashSkill(int32_t skillid);
 	void explode();
