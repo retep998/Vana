@@ -455,14 +455,13 @@ void Mob::die(bool showpacket) {
 	delete this;
 }
 
-void Mob::skillHeal(int32_t healhp, int32_t healmp) {
+void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
 	if (getMobId() == Mobs::HorntailSponge)
 		return;
-	int32_t minamount, maxamount, range, amount, original;
-	minamount = healhp * 10 / 15;
-	maxamount = healhp * 15 / 10;
-	range = maxamount - minamount;
-	original = amount = Randomizer::Instance()->randInt(range) + minamount;
+
+	int32_t amount = Randomizer::Instance()->randInt(healrange) + (basehealhp - (healrange / 2));
+	int32_t original = amount;
+
 	if (hp + amount > getMHp()) {
 		amount = getMHp() - hp;
 		hp = getMHp();
@@ -470,20 +469,14 @@ void Mob::skillHeal(int32_t healhp, int32_t healmp) {
 	else {
 		hp += amount;
 	}
+
 	if (getSponge() != 0) {
-		int32_t shp = getSponge()->getHp() + amount;
-		if (shp > getSponge()->getMHp()) {
-			shp = getSponge()->getMHp();
+		basehealhp = getSponge()->getHp() + amount;
+		if (basehealhp < 0 || basehealhp > getSponge()->getMHp()) {
+			basehealhp = getSponge()->getMHp();
 		}
 		getSponge()->setHp(shp);
 	}
-
-	minamount = healmp * 10 / 15;
-	maxamount = healmp * 15 / 10;
-	range = maxamount - minamount;
-	mp += Randomizer::Instance()->randInt(range) + minamount;
-	if (mp > getMMp() || mp < 0)
-		mp = getMMp();
 
 	MobsPacket::healMob(this, original);
 }
