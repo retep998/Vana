@@ -67,6 +67,7 @@ public:
 
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
 	void applyWebDamage();
+	void setHp(int32_t hp) { this->hp = hp; }
 	void setMp(int32_t mp) { this->mp = mp; }
 	void addStatus(int32_t playerid, vector<StatusInfo> &statusinfo);
 	void removeStatus(int32_t status, bool fromTimer = false);

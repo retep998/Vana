@@ -314,7 +314,7 @@ namespace MobSkills {
 		MagicImmunity = 141,
 		WeaponDamageReflect = 143,
 		MagicDamageReflect = 144, 
-		AnyDamageReflect = 145, // May not actually be reflection, client handles this oddly
+		AnyDamageReflect = 145,
 		NoMonsterHasThisYet1 = 150, // 150-155, 157 are not verified and no mob has them, but they are in the data
 		NoMonsterHasThisYet2 = 151,
 		NoMonsterHasThisYet3 = 152,
@@ -360,6 +360,7 @@ namespace Jobs {
 			Bowman = 3,
 			Thief = 4,
 			Pirate = 5,
+
 			Noblesse = 10,
 			SoulWarrior = 11,
 			FlameWizard = 12,
@@ -371,6 +372,7 @@ namespace Jobs {
 	namespace JobIds {
 		enum Jobs {
 			Beginner = 0,
+
 			Swordsman = 100,
 			Fighter = 110,
 			Crusader = 111,
@@ -381,6 +383,7 @@ namespace Jobs {
 			Spearman = 130,
 			DragonKnight = 131,
 			DarkKnight = 132,
+
 			Magician = 200,
 			FPWizard = 210,
 			FPMage = 211,
@@ -391,6 +394,7 @@ namespace Jobs {
 			Cleric = 230,
 			Priest = 231,
 			Bishop = 232,
+
 			Archer = 300,
 			Hunter = 310,
 			Ranger = 311,
@@ -398,6 +402,7 @@ namespace Jobs {
 			Crossbowman = 320,
 			Sniper = 321,
 			Marksman = 322,
+
 			Rogue = 400,
 			Assassin = 410,
 			Hermit = 411,
@@ -405,6 +410,7 @@ namespace Jobs {
 			Bandit = 420,
 			ChiefBandit = 421,
 			Shadower = 422,
+
 			Pirate = 500,
 			Infighter = 510,
 			Marauder = 511,
@@ -412,21 +418,28 @@ namespace Jobs {
 			Gunslinger = 520,
 			Outlaw = 521,
 			Corsair = 522,
+
 			Gm = 900,
 			SuperGm = 910,
+
 			Noblesse = 1000,
+
 			SoulWarrior1 = 1100,
 			SoulWarrior2 = 1110,
 			SoulWarrior3 = 1111,
+
 			FlameWizard1 = 1200,
 			FlameWizard2 = 1210,
 			FlameWizard3 = 1211,
+
 			WindBreaker1 = 1300,
 			WindBreaker2 = 1310,
 			WindBreaker3 = 1311,
+
 			NightWalker1 = 1400,
 			NightWalker2 = 1410,
 			NightWalker3 = 1411,
+
 			Striker1 = 1500,
 			Striker2 = 1510,
 			Striker3 = 1511
