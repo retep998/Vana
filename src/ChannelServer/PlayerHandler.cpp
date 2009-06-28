@@ -674,17 +674,8 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 				break;
 			}
 			extra = mob->getMHp();
-			if (eater != 0) { // MP Eater
-				int32_t cmp = mob->getMp();
-				if ((!eater->onlyonce) && (damage != 0) && (cmp > 0) && (Randomizer::Instance()->randInt(99) < eater->prop)) {
-					eater->onlyonce = true;
-					int32_t mp = mob->getMMp() * eater->x / 100;
-					if (mp > cmp)
-						mp = cmp;
-					mob->setMp(cmp - mp);
-					player->modifyMp((int16_t) mp);
-					SkillsPacket::showSkillEffect(player, eater->id);
-				}
+			if (eater != 0 && damage != 0 && !eater->onlyonce) { // MP Eater
+				mob->mpEat(player, eater);
 			}
 			if (skillid == Jobs::Ranger::MortalBlow || skillid == Jobs::Sniper::MortalBlow) {
 				SkillLevelInfo sk = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)];
