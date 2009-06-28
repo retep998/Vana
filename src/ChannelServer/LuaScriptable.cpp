@@ -264,8 +264,9 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setInstanceReset", &LuaExports::setInstanceReset);
 	lua_register(luaVm, "setInstanceTime", &LuaExports::setInstanceTime);
 	lua_register(luaVm, "setInstanceVariable", &LuaExports::setInstanceVariable);
-	lua_register(luaVm, "showInstanceTimer", &LuaExports::setInstanceVariable);
+	lua_register(luaVm, "showInstanceTime", &LuaExports::showInstanceTime);
 	lua_register(luaVm, "startInstanceTimer", &LuaExports::startInstanceTimer);
+	lua_register(luaVm, "stopAllInstanceTimers", &LuaExports::stopAllInstanceTimers);
 	lua_register(luaVm, "stopInstanceTimer", &LuaExports::stopInstanceTimer);
 	lua_register(luaVm, "unbanInstancePlayer", &LuaExports::unbanInstancePlayer);
 }
@@ -1623,7 +1624,7 @@ int LuaExports::setInstanceVariable(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::showInstanceTimer(lua_State *luaVm) {
+int LuaExports::showInstanceTime(lua_State *luaVm) {
 	getInstance(luaVm)->showTimer(lua_toboolean(luaVm, 1) != 0);
 	return 0;
 }
@@ -1636,6 +1637,11 @@ int LuaExports::startInstanceTimer(lua_State *luaVm) {
 	t.counterid = getInstance(luaVm)->getCounterId();
 	lua_pushboolean(luaVm, getInstance(luaVm)->addTimer(name, t));
 	return 1;
+}
+
+int LuaExports::stopAllInstanceTimers(lua_State *luaVm) {
+	getInstance(luaVm)->removeAllTimers();
+	return 0;
 }
 
 int LuaExports::stopInstanceTimer(lua_State *luaVm) {

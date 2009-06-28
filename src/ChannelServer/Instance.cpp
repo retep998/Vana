@@ -334,7 +334,6 @@ int32_t Instance::getCounterId() {
 
 void Instance::markForDelete() {
 	m_marked_for_delete = true;
-	removeAllTimers();
 }
 
 void Instance::respawnMobs(int32_t mapid) {
