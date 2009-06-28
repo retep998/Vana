@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.h"
 #include "Database.h"
+#include "IpUtilities.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
 #include "MapleSession.h"
@@ -33,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	string username = packet.getString();
 	string password = packet.getString();
+	string ip = IpUtilities::ipToString(player->getIp());
 
 	if (username.size() > 15 || password.size() > 15) {
 		return;
@@ -41,10 +43,17 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
+	query << "SELECT id FROM ipbans WHERE ip = " << mysqlpp::quote << ip << " LIMIT 1";	
+	mysqlpp::StoreQueryResult resIp = query.store();
 
 	bool valid = true;
 	if (res.empty()) {
 		LoginPacket::loginError(player, 0x05); //Invalid username
+		valid = false;
+	}
+	else if (!resIp.empty()) {
+		int32_t time = TimeUtilities::tickToTick32(TimeUtilities::timeToTick((time_t) mysqlpp::DateTime("9000-00-00 00:00:00")));
+		LoginPacket::loginBan(player, 0, time); // Blocked from connection
 		valid = false;
 	}
 	else if (res[0]["salt"].is_null()) {
