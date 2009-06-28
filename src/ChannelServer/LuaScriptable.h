@@ -255,6 +255,8 @@ namespace LuaExports {
 	int removePlayerSignUp(lua_State *luaVm);
 	int respawnInstanceMobs(lua_State *luaVm);
 	int respawnInstanceReactors(lua_State *luaVm);
+	int revertInstance(lua_State *luaVm);
+	int setInstance(lua_State *luaVm);
 	int setInstanceMax(lua_State *luaVm);
 	int setInstancePersistence(lua_State *luaVm);
 	int setInstanceReset(lua_State *luaVm);
