@@ -148,7 +148,13 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 	}
 
 	packet.add<int16_t>(delay);
-	packet.add<int8_t>(static_cast<int8_t>(info.size()));
+	
+	int8_t buffcount = info.size();
+	if (reflection.size() > 0) {
+		buffcount /= 2; // This gives 2 buffs per reflection but it's really one buff
+	}
+	packet.add<int8_t>(buffcount);
+
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
