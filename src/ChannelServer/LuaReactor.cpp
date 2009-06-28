@@ -37,6 +37,7 @@ LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactor
 
 	// Miscellaneous
 	lua_register(luaVm, "dropItem", &LuaExports::dropItemReactor);
+	lua_register(luaVm, "getDistanceToPlayer", &LuaExports::getDistanceReactor);
 
 	// Mob
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMobReactor);
@@ -78,6 +79,11 @@ int LuaExports::dropItemReactor(lua_State *luaVm) {
 	drop->setTime(player != 0 ? 100 : 0); // FFA if player isn't around
 	drop->doDrop(reactor->getPos());
 	return 0;
+}
+
+int LuaExports::getDistanceReactor(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getPos() - getReactor(luaVm)->getPos());
+	return 1;
 }
 
 // Mob
