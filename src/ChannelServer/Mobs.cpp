@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Randomizer.h"
 #include "Skills.h"
+#include "SkillsPacket.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
@@ -118,6 +119,8 @@ weblevel(0),
 owner(0),
 horntailsponge(0),
 counter(0),
+venomcount(0),
+mpeatercount(0),
 taunteffect(100),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
 timers(new Timer::Container),
@@ -506,6 +509,24 @@ void Mob::doCrashSkill(int32_t skillid) {
 		case Jobs::DragonKnight::PowerCrash:
 			removeStatus(StatusEffects::Mob::Watk);
 			break;
+	}
+}
+
+void Mob::mpEat(Player *player, MpEaterInfo *mp) {
+	if ((mpeatercount < 3) && (getMp() > 0) && (Randomizer::Instance()->randInt(99) < mp->prop)) {
+		mp->onlyonce = true;
+		int32_t emp = getMMp() * mp->x / 100;
+
+		if (emp > getMp())
+			emp = getMp();
+		setMp(getMp() - emp);
+
+		if (emp > 30000)
+			emp = 30000;
+		player->getStats()->modifyMp(static_cast<int16_t>(emp));
+
+		SkillsPacket::showSkillEffect(player, mp->id);
+		mpeatercount++;
 	}
 }
 

@@ -84,6 +84,7 @@ public:
 	void doCrashSkill(int32_t skillid);
 	void explode();
 	void setVenomCount(int8_t count) { venomcount = count; }
+	void mpEat(Player *player, MpEaterInfo *mp);
 
 	int8_t getVenomCount() const { return venomcount; }
 	int16_t getTauntEffect() const { return taunteffect; }
@@ -127,6 +128,7 @@ public:
 	void die(bool showpacket = false); // Removes mob, no EXP, no summoning
 private:
 	int8_t venomcount;
+	int8_t mpeatercount;
 	uint8_t weblevel;
 	int16_t originfh;
 	int16_t taunteffect;
