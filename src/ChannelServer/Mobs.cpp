@@ -475,7 +475,7 @@ void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
 		if (basehealhp < 0 || basehealhp > getSponge()->getMHp()) {
 			basehealhp = getSponge()->getMHp();
 		}
-		getSponge()->setHp(shp);
+		getSponge()->setHp(basehealhp);
 	}
 
 	MobsPacket::healMob(this, original);
