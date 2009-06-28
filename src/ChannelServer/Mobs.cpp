@@ -134,6 +134,40 @@ control(0)
 	}
 	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
 	statuses[empty.status] = empty;
+	if (info.hprecovery > 0) {
+		new Timer::Timer(bind(&Mob::naturalHealHp, this, info.hprecovery),
+			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
+			getTimers(), 0, 10 * 1000);
+	}
+	if (info.mprecovery > 0) {
+		new Timer::Timer(bind(&Mob::naturalHealMp, this, info.mprecovery),
+			Timer::Id(Timer::Types::MobHealTimer, 1, 1),
+			getTimers(), 0, 10 * 1000);
+	}
+}
+
+void Mob::naturalHealHp(int32_t amount) {
+	if (getHp() < getMHp()) {
+		int32_t hp = getHp() + amount;
+		int32_t sponge = amount;
+		if (hp < 0 || hp > getMHp()) {
+			sponge = getMHp() - getHp(); // This is the amount for the sponge
+			hp = getMHp();
+		}
+		setHp(hp);
+		if (getSponge() != 0) {
+			getSponge()->setHp(getSponge()->getHp() + sponge);
+		}
+	}
+}
+
+void Mob::naturalHealMp(int32_t amount) {
+	if (getMp() < getMMp()) {
+		int32_t mp = getMp() + amount;
+		if (mp < 0 || mp > getMMp())
+			mp = getMMp();
+		setMp(mp);
+	}
 }
 
 void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {

@@ -28,6 +28,7 @@ using std::vector;
 LuaNPC::LuaNPC(const string &filename, int32_t playerid) : LuaScriptable(filename, playerid) {
 	// Miscellaneous
 	lua_register(luaVm, "showStorage", &LuaExports::showStorage);
+	lua_register(luaVm, "getDistanceToPlayer", &LuaExports::getDistanceNpc);
 
 	// NPC interaction
 	lua_register(luaVm, "addText", &LuaExports::addText);
@@ -76,6 +77,11 @@ NPC * LuaExports::getNPC(lua_State *luaVm) {
 int LuaExports::showStorage(lua_State *luaVm) {
 	StoragePacket::showStorage(getPlayer(luaVm), getNPC(luaVm)->getNpcId());
 	return 0;
+}
+
+int LuaExports::getDistanceNpc(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getPos() - getNPC(luaVm)->getPos());
+	return 1;
 }
 
 // NPC interaction

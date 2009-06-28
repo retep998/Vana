@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define NPCS_H
 
 #include "LuaNPC.h"
+#include "Pos.h"
+#include "Types.h"
 #include <string>
 #include <boost/scoped_ptr.hpp>
 
@@ -39,6 +41,7 @@ namespace NPCs {
 class NPC {
 public:
 	NPC(int32_t npcid, Player *player, bool isquest = false, bool isstart = false);
+	NPC(int32_t npcid, Player *player, const Pos &pos, bool isquest = false, bool isstart = false);
 	~NPC();
 
 	bool run();
@@ -70,20 +73,23 @@ public:
 
 	string & getText() { return gettext; }
 	bool isEnd() const { return cend; }
+	Pos getPos() const { return pos; }
 
 	void showShop();
+	void initScript(int32_t npcid, Player *player, bool isquest, bool isstart);
 private:
-	bool checkEnd();
-
-	Player *player;
+	bool cend;
 	int32_t npcid;
 	int32_t state;
 	int32_t selected;
 	int32_t getnum;
 	string text;
 	string gettext;
-	bool cend;
+	Player *player;
+	Pos pos;
 	scoped_ptr<LuaNPC> luaNPC;
+
+	bool checkEnd();
 };
 
 namespace NPCDialogs {

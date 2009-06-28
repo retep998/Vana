@@ -178,6 +178,7 @@ namespace LuaExports {
 	int getReactorState(lua_State *luaVm);
 	int killMobs(lua_State *luaVm);
 	int playSoundMap(lua_State *luaVm);
+	int setMapSpawn(lua_State *luaVm);
 	int setMusic(lua_State *luaVm);
 	int setReactorState(lua_State *luaVm);
 	int showMapEffect(lua_State *luaVm);
@@ -255,6 +256,8 @@ namespace LuaExports {
 	int removePlayerSignUp(lua_State *luaVm);
 	int respawnInstanceMobs(lua_State *luaVm);
 	int respawnInstanceReactors(lua_State *luaVm);
+	int revertInstance(lua_State *luaVm);
+	int setInstance(lua_State *luaVm);
 	int setInstanceMax(lua_State *luaVm);
 	int setInstancePersistence(lua_State *luaVm);
 	int setInstanceReset(lua_State *luaVm);

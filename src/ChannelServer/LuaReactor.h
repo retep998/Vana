@@ -45,6 +45,7 @@ namespace LuaExports {
 
 	// Miscellaneous
 	int dropItemReactor(lua_State *luaVm);
+	int getDistanceReactor(lua_State *luaVm);
 
 	// Mob
 	int spawnMobReactor(lua_State *luaVm);

@@ -182,6 +182,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
 	lua_register(luaVm, "killMobs", &LuaExports::killMobs);
 	lua_register(luaVm, "playSoundMap", &LuaExports::playSoundMap);
+	lua_register(luaVm, "setMapSpawn", &LuaExports::setMapSpawn);
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
 	lua_register(luaVm, "setReactorState", &LuaExports::setReactorState);
 	lua_register(luaVm, "showMapEffect", &LuaExports::showMapEffect);
@@ -259,6 +260,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "removePlayerSignUp", &LuaExports::removePlayerSignUp);
 	lua_register(luaVm, "respawnInstanceMobs", &LuaExports::respawnInstanceMobs);
 	lua_register(luaVm, "respawnInstanceReactors", &LuaExports::respawnInstanceReactors);
+	lua_register(luaVm, "revertInstance", &LuaExports::revertInstance);
+	lua_register(luaVm, "setInstance", &LuaExports::setInstance);
 	lua_register(luaVm, "setInstanceMax", &LuaExports::setInstanceMax);
 	lua_register(luaVm, "setInstancePersistence", &LuaExports::setInstancePersistence);
 	lua_register(luaVm, "setInstanceReset", &LuaExports::setInstanceReset);
@@ -1032,6 +1035,13 @@ int LuaExports::playSoundMap(lua_State *luaVm) {
 	return 0;
 }
 
+int LuaExports::setMapSpawn(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	bool spawn = (lua_toboolean(luaVm, 2) != 0);
+	Maps::getMap(mapid)->setMobSpawning(spawn);
+	return 0;
+}
+
 int LuaExports::setMusic(lua_State *luaVm) {
 	Maps::getMap(getPlayer(luaVm)->getMap())->setMusic(lua_tostring(luaVm, -1));
 	return 0;
@@ -1597,6 +1607,25 @@ int LuaExports::respawnInstanceReactors(lua_State *luaVm) {
 	}
 	getInstance(luaVm)->respawnReactors(mapid);
 	return 0;
+}
+
+int LuaExports::revertInstance(lua_State *luaVm) {
+	lua_getglobal(luaVm, "oldinstancename");
+	lua_setglobal(luaVm, "instancename");
+	return 0;
+}
+
+int LuaExports::setInstance(lua_State *luaVm) {
+	Instance *instance = Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
+	if (instance != 0) {
+		lua_getglobal(luaVm, "instancename");
+		lua_setglobal(luaVm, "oldinstancename");
+
+		lua_pushstring(luaVm, instance->getName().c_str());
+		lua_setglobal(luaVm, "instancename");
+	}
+	lua_pushboolean(luaVm, instance != 0);
+	return 1;
 }
 
 int LuaExports::setInstanceMax(lua_State *luaVm) {

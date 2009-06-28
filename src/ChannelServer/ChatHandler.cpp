@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChatHandler.h"
 #include "Database.h"
 #include "Inventory.h"
+#include "IpUtilities.h"
 #include "ItemDataProvider.h"
 #include "MapleSession.h"
 #include "MapPacket.h"
@@ -67,6 +68,7 @@ struct WarpFunctor {
 
 void ChatHandler::initializeCommands() {
 	commandlist["ban"] = make_pair(CmdBan, 3);
+	commandlist["ipban"] = make_pair(CmdIpBan, 3);
 	commandlist["tempban"] = make_pair(CmdTempBan, 3);
 	commandlist["unban"] = make_pair(CmdUnban, 3);
 	commandlist["header"] = make_pair(CmdHeader, 3);
@@ -182,6 +184,48 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					else {
 						PlayerPacket::showMessage(player, "Usage: !ban <$playername> [#reason]", 6);
+					}
+					break;
+				}
+				case CmdIpBan: {
+					re = "(\\w+) ?(\\d+)?";
+					if (regex_match(args.c_str(), matches, re)) {
+						string targetname = matches[1];
+						if (Player *target = Players::Instance()->getPlayer(targetname)) {
+							string targetip = IpUtilities::ipToString(target->getIp());
+							target->getSession()->disconnect();
+
+							string reasonstring = matches[2];
+							int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
+
+							// Ip ban
+							mysqlpp::Query accipbanquery = Database::getCharDB().query();
+							accipbanquery << "INSERT INTO `ipbans`(`id`, `ip`) VALUES (NULL, '" << targetip << "')";
+							accipbanquery.exec();
+
+							string banmsg = targetname + " has been IP banned";
+
+							switch (reason) {
+								case 0x01: banmsg += " for hacking."; break;
+								case 0x02: banmsg += " for using macro/auto-keyboard."; break;
+								case 0x03: banmsg += " for illicit promotion or advertising."; break;
+								case 0x04: banmsg += " for harassment."; break;
+								case 0x05: banmsg += " for using profane language."; break;
+								case 0x06: banmsg += " for scamming."; break;
+								case 0x07: banmsg += " for misconduct."; break;
+								case 0x08: banmsg += " for illegal cash transaction."; break;
+								case 0x09: banmsg += " for illegal charging/funding. Please contact customer support for further details."; break;
+								case 0x0A: banmsg += " for temporary request."; break;
+								case 0x0B: banmsg += " for impersonating GM."; break;
+								case 0x0C: banmsg += " for using illegal programs or violating the game policy."; break;
+								case 0x0D: banmsg += " for one of cursing, scamming, or illegal trading via Megaphones."; break;
+								default: banmsg += "."; break;
+							}
+							PlayersPacket::showMessage(banmsg, 0);
+						}
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !ipban <$playername> [#reason]", 6);
 					}
 					break;
 				}

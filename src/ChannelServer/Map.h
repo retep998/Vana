@@ -172,6 +172,7 @@ public:
 	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
 	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
 	void checkShadowWeb();
+	void setMobSpawning(bool spawn) { spawnmobs = spawn; }
 	void spawnZakum(const Pos &pos, int16_t fh = 0);
 
 	// Reactors
@@ -244,6 +245,7 @@ private:
 	time_t timerstart;
 	int32_t timer;
 	int32_t poisonmists;
+	bool spawnmobs;
 
 	void updateMobControl(Player *player);
 	void updateMobControl(Mob *mob, bool spawn = false);

@@ -42,14 +42,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-Map::Map (MapInfoPtr info) :
+Map::Map(MapInfoPtr info) :
 info(info),
 spawnpoints(0),
 objectids(1000),
 instance(0),
 timer(0),
 timerstart(0),
-poisonmists(0)
+poisonmists(0),
+spawnmobs(true)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
@@ -258,10 +259,10 @@ void Map::addMobSpawn(const MobSpawnInfo &spawn) {
 
 void Map::checkMobSpawn(clock_t time, bool spawnAll) {
 	// (Re-)spawn Mobs
-	for (size_t i = 0; i < mobspawns.size(); i++) {
+	for (size_t i = 0; spawnmobs && i < mobspawns.size(); i++) {
 		int32_t id = mobspawns[i].id;
 		int32_t spawnat = mobspawns[i].spawnat;
- 		if (!mobspawns[i].spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
+		if (!mobspawns[i].spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
 			spawnMob(id, mobspawns[i].pos, i, mobspawns[i].fh);
 			mobspawns[i].spawned = true;
 		}
