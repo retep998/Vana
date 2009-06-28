@@ -260,8 +260,9 @@ namespace LuaExports {
 	int setInstanceReset(lua_State *luaVm);
 	int setInstanceTime(lua_State *luaVm);
 	int setInstanceVariable(lua_State *luaVm);
-	int showInstanceTimer(lua_State *luaVm);
+	int showInstanceTime(lua_State *luaVm);
 	int startInstanceTimer(lua_State *luaVm);
+	int stopAllInstanceTimers(lua_State *luaVm);
 	int stopInstanceTimer(lua_State *luaVm);
 	int unbanInstancePlayer(lua_State *luaVm);
 };
