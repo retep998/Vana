@@ -178,6 +178,7 @@ namespace LuaExports {
 	int getReactorState(lua_State *luaVm);
 	int killMobs(lua_State *luaVm);
 	int playSoundMap(lua_State *luaVm);
+	int setMapSpawn(lua_State *luaVm);
 	int setMusic(lua_State *luaVm);
 	int setReactorState(lua_State *luaVm);
 	int showMapEffect(lua_State *luaVm);

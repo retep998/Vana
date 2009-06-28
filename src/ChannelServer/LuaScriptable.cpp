@@ -183,6 +183,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
 	lua_register(luaVm, "killMobs", &LuaExports::killMobs);
 	lua_register(luaVm, "playSoundMap", &LuaExports::playSoundMap);
+	lua_register(luaVm, "setMapSpawn", &LuaExports::setMapSpawn);
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
 	lua_register(luaVm, "setReactorState", &LuaExports::setReactorState);
 	lua_register(luaVm, "showMapEffect", &LuaExports::showMapEffect);
@@ -1037,6 +1038,13 @@ int LuaExports::killMobs(lua_State *luaVm) {
 int LuaExports::playSoundMap(lua_State *luaVm) {
 	string val = lua_tostring(luaVm, -1);
 	MapPacket::sendSound(getPlayer(luaVm)->getMap(), val);
+	return 0;
+}
+
+int LuaExports::setMapSpawn(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	bool spawn = (lua_toboolean(luaVm, 2) != 0);
+	Maps::getMap(mapid)->setMobSpawning(spawn);
 	return 0;
 }
 
