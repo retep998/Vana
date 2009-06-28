@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Rocks at the top of Land of Wild Boar
-if (killMob(3230301, false) + killMob(3230300, false)) > 0 then
+
+if (killMobs(3230301, false) + killMobs(3230300, false)) > 0 then
 	showMapMessage("Once the rock crumbled, Jr. Boogie was in great pain and disappeared..", 6);
 end

@@ -176,7 +176,7 @@ namespace LuaExports {
 	int getAllMapPlayerIDs(lua_State *luaVm);
 	int getNumPlayers(lua_State *luaVm);
 	int getReactorState(lua_State *luaVm);
-	int killMob(lua_State *luaVm);
+	int killMobs(lua_State *luaVm);
 	int playSoundMap(lua_State *luaVm);
 	int setMusic(lua_State *luaVm);
 	int setReactorState(lua_State *luaVm);
@@ -196,6 +196,8 @@ namespace LuaExports {
 	int getMobPosX(lua_State *luaVm);
 	int getMobPosY(lua_State *luaVm);
 	int getRealMobID(lua_State *luaVm);
+	int killMob(lua_State *luaVm);
+	int mobDropItem(lua_State *luaVm);
 
 	// Time
 	int getDate(lua_State *luaVm);

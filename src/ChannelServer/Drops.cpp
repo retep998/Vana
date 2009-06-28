@@ -123,8 +123,10 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 	int32_t partyid = 0;
 	Pos pos;
 
-	if (Party *party = player->getParty()) {
-		partyid = party->getId();
+	if (player != 0) {
+		if (Party *party = player->getParty()) {
+			partyid = party->getId();
+		}
 	}
 
 	for (size_t i = 0; i < drops.size(); i++) {
