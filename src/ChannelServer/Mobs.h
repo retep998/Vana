@@ -111,10 +111,10 @@ public:
 	bool hasExplosiveDrop() const { return info.explosivereward; }
 	bool hasFfaDrop() const { return info.publicreward; }
 	bool hasImmunity() const;
-	bool hasReflect();
-	bool hasWeaponReflect();
-	bool hasMagicReflect();
-	bool hasStatus(int32_t status);
+	bool hasReflect() const;
+	bool hasWeaponReflect() const;
+	bool hasMagicReflect() const;
+	bool hasStatus(int32_t status) const;
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return owner; }
 	Mob * getSponge() const { return horntailsponge; }

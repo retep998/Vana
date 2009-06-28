@@ -264,10 +264,6 @@ void Mob::statusPacket(PacketCreator &packet) {
 	}
 }
 
-bool Mob::hasStatus(int32_t status) {
-	return ((this->status & status) != 0);
-}
-
 void Mob::removeStatus(int32_t status, bool fromTimer) {
 	if (hasStatus(status)) {
 		StatusInfo stat = statuses[status];
@@ -296,20 +292,25 @@ void Mob::removeStatus(int32_t status, bool fromTimer) {
 	}
 }
 
+bool Mob::hasStatus(int32_t status) const {
+	return ((this->status & status) != 0);
+}
+
 bool Mob::hasImmunity() const {
 	int32_t mask = StatusEffects::Mob::WeaponImmunity | StatusEffects::Mob::MagicImmunity;
+	return ((status & mask) != 0 || hasReflect());
+}
+
+bool Mob::hasReflect() const {
+	int32_t mask = StatusEffects::Mob::WeaponDamageReflect | StatusEffects::Mob::MagicDamageReflect;
 	return ((status & mask) != 0);
 }
 
-bool Mob::hasReflect() {
-	return (hasWeaponReflect() || hasMagicReflect());
-}
-
-bool Mob::hasWeaponReflect() {
+bool Mob::hasWeaponReflect() const {
 	return hasStatus(StatusEffects::Mob::WeaponDamageReflect);
 }
 
-bool Mob::hasMagicReflect() {
+bool Mob::hasMagicReflect() const {
 	return hasStatus(StatusEffects::Mob::MagicDamageReflect);
 }
 
@@ -575,11 +576,9 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 						break;					
 					case MobSkills::WeaponImmunity:
 					case MobSkills::MagicImmunity:
-						stop = mob->hasImmunity();
-						break;
 					case MobSkills::WeaponDamageReflect:
 					case MobSkills::MagicDamageReflect:
-						stop = mob->hasReflect();
+						stop = mob->hasImmunity();
 						break;
 					case MobSkills::Summon: {
 						int16_t spawns = (int16_t)(mob->getSpawns().size());
