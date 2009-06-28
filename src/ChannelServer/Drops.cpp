@@ -152,13 +152,8 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 					if (player == 0 || !player->getQuests()->isQuestActive(questid))
 						continue;
 
-					int32_t request = 0;
-					for (size_t r = 0; r < Quests::quests[questid].rewards.size(); r++) {
-						if (Quests::quests[questid].rewards[r].id == itemid) {
-							request = Quests::quests[questid].rewards[r].count;
-						}
-					}
-					if (player->getInventory()->getItemAmount(itemid) > request)
+					int16_t request = Quests::quests[questid].getRequest(QuestRequestTypes::Item)[itemid];
+					if (player->getInventory()->getItemAmount(itemid) >= request)
 						continue;
 				}
 
@@ -237,13 +232,14 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	}
 
 	if (drop->isQuest()) {
-		int32_t request = 0;
-		for (size_t i = 0; i < Quests::quests[drop->getQuest()].rewards.size(); i++) {
-			if (Quests::quests[drop->getQuest()].rewards[i].id == drop->getObjectId()) {
-				request = Quests::quests[drop->getQuest()].rewards[i].count;
-			}
+		if (!player->getQuests()->isQuestActive(drop->getQuest())) {
+			DropsPacket::takeNote(player, 0, false, 0);
+			DropsPacket::dontTake(player);
+			return;
 		}
-		if (player->getInventory()->getItemAmount(drop->getObjectId()) > request || !player->getQuests()->isQuestActive(drop->getQuest())) {
+
+		int16_t request = Quests::quests[drop->getQuest()].getRequest(QuestRequestTypes::Item)[drop->getObjectId()];
+		if (player->getInventory()->getItemAmount(drop->getObjectId()) >= request) {
 			DropsPacket::takeNote(player, 0, false, 0);
 			DropsPacket::dontTake(player);
 			return;
