@@ -145,12 +145,15 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	if (!poison) { // HP bar packet does nothing for showing damage when poison is damaging for whatever reason
 		Player *player = Players::Instance()->getPlayer(playerid);
 
-		if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
-			MobsPacket::showBossHp(player, mobid, hp, info);
-		else { // Normal/Miniboss HP bars
-			uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
-			MobsPacket::showHp(player, id, percent, info.boss);
+		if (player != 0) {
+			if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
+				MobsPacket::showBossHp(player, mobid, hp, info);
+			else { // Normal/Miniboss HP bars
+				uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
+				MobsPacket::showHp(player, id, percent, info.boss);
+			}
 		}
+
 		Mob *sponge = getSponge(); // Need to preserve the pointer through mob deletion in die()
 		if (hp == 0) { // Time to die
 			if (getMobId() == Mobs::HorntailSponge) { // Horntail damage sponge
@@ -160,7 +163,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 						0, Timer::Time::fromNow(400));
 				}
 			}
-			die(Players::Instance()->getPlayer(playerid));
+			die(player);
 		}
 		if (sponge != 0) {
 			sponge->applyDamage(playerid, damage, false); // Apply damage after you can be sure that all the units are linked and ready
