@@ -36,11 +36,11 @@ void NPCs::handleNPC(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int32_t npcid = Maps::getMap(player->getMap())->getNpc(packet.get<int32_t>() - 100).id;
-	if (ShopDataProvider::Instance()->showShop(player, npcid)) // Shop
+	NPCSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(packet.get<int32_t>() - 100);
+	if (ShopDataProvider::Instance()->showShop(player, npcs.id)) // Shop
 		return;
 
-	NPC *npc = new NPC(npcid, player);
+	NPC *npc = new NPC(npcs.id, player, npcs.pos);
 	npc->run();
 }
 
@@ -127,10 +127,30 @@ void NPCs::handleNPCAnimation(Player *player, PacketReader &packet) {
 NPC::NPC(int32_t npcid, Player *player, bool isquest, bool isstart) :
 player(player),
 npcid(npcid),
+pos(Pos(0, 0)),
 state(0),
 text(""),
 cend(false)
 {
+	initScript(npcid, player, isquest, isstart);
+}
+
+NPC::NPC(int32_t npcid, Player *player, const Pos &pos, bool isquest, bool isstart) :
+player(player),
+npcid(npcid),
+pos(pos),
+state(0),
+text(""),
+cend(false)
+{
+	initScript(npcid, player, isquest, isstart);
+}
+
+NPC::~NPC() {
+	player->setNPC(0);
+}
+
+void NPC::initScript(int32_t npcid, Player *player, bool isquest, bool isstart) {
 	struct stat fileinfo;
 	std::ostringstream filenameStream;
 	filenameStream << "scripts/npcs/" << npcid;
@@ -151,10 +171,6 @@ cend(false)
 	else {
 		end();
 	}
-}
-
-NPC::~NPC() {
-	player->setNPC(0);
 }
 
 bool NPC::checkEnd() {
