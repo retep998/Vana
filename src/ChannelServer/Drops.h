@@ -59,7 +59,7 @@ public:
 	void setId(int32_t id) { this->id = id; }
 	void setTime(int32_t time) { this->time = time; }
 	void setDropped(int32_t time) { dropped = time; }
-	void setPlayer(int32_t playerid) { playerid = playerid; }
+	void setPlayer(int32_t playerid) { this->playerid = playerid; }
 	void setPos(Pos pos) { this->pos = pos; }
 	void setPartyDrop(bool isparty) { partydrop = isparty; }
 
