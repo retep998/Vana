@@ -85,6 +85,8 @@ public:
 	void explode();
 	void setVenomCount(int8_t count) { venomcount = count; }
 	void mpEat(Player *player, MpEaterInfo *mp);
+	void naturalHealHp(int32_t amount);
+	void naturalHealMp(int32_t amount);
 
 	int8_t getVenomCount() const { return venomcount; }
 	int16_t getTauntEffect() const { return taunteffect; }
