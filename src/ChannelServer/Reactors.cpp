@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "LuaReactor.h"
 #include "Maps.h"
+#include "PacketReader.h"
 #include "Player.h"
 #include "Pos.h"
 #include "ReactorPacket.h"
-#include "PacketReader.h"
 #include "Timer/Thread.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
@@ -35,14 +35,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 // Reactor class
-Reactor::Reactor (int32_t mapid, int32_t reactorid, Pos pos, int32_t link) : state(0), reactorid(reactorid), mapid(mapid), alive(true), pos(pos), link(link) {
+Reactor::Reactor(int32_t mapid, int32_t reactorid, Pos pos, int32_t link) :
+state(0),
+reactorid(reactorid),
+mapid(mapid),
+alive(true),
+pos(pos),
+link(link)
+{
 	Maps::getMap(mapid)->addReactor(this);
 }
 
 void Reactor::setState(int8_t state, bool is) {
 	this->state = state;
-	if (is)
+	if (is) {
 		ReactorPacket::triggerReactor(this);
+	}
 }
 
 void Reactor::restore() {
@@ -73,15 +81,14 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 
 	if (reactor != 0 && reactor->isAlive()) {
-		int32_t reactorid = reactor->getReactorId();
-		if (reactor->getLink() != 0) {
-			reactorid = reactor->getLink();
-		}
+		int32_t reactorid = (reactor->getLink() != 0 ? reactor->getLink() : reactor->getReactorId());
+
 		if (reactor->getState() < maxstates[reactorid]) {
 			ReactorEventInfo *revent = &reactorinfo[reactorid][reactor->getState()];
 			if (revent->nextstate < maxstates[reactorid]) {
 				if (revent->type >= 100)
 					return;
+
 				ReactorPacket::triggerReactor(reactor);
 				reactor->setState(revent->nextstate, true);
 				return;
@@ -114,7 +121,7 @@ struct Reaction {
         drop->removeDrop();
         std::ostringstream filenameStream;
         filenameStream << "scripts/reactors/" << reactor->getReactorId() << ".lua";
-        LuaReactor(filenameStream.str(), player->getId(), reactor->getId(), reactor->getMapId());
+        LuaReactor(filenameStream.str(), player->getId(), reactor->getId() - 200, reactor->getMapId());
         return;
     }
     Reactor *reactor;
@@ -126,10 +133,8 @@ struct Reaction {
 void Reactors::checkDrop(Player *player, Drop *drop) {
 	for (size_t i = 0; i < Maps::getMap(drop->getMap())->getNumReactors(); i++) {
 		Reactor *reactor = Maps::getMap(drop->getMap())->getReactor(i);
-		int32_t reactorid = reactor->getReactorId();
-		if (reactor->getLink() != 0) {
-			reactorid = reactor->getLink();
-		}
+		int32_t reactorid = (reactor->getLink() != 0 ? reactor->getLink() : reactor->getReactorId());
+
 		if (reactor->getState() < maxstates[reactorid]) {
 			ReactorEventInfo *revent = &reactorinfo[reactorid][reactor->getState()];
 			if (revent->type == 100 && drop->getObjectId() == revent->itemid) {

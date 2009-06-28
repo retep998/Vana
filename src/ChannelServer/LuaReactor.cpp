@@ -16,14 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaReactor.h"
-#include "Reactors.h"
-#include "ReactorPacket.h"
+#include "Drops.h"
+#include "Maps.h"
+#include "Mobs.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Players.h"
 #include "Quests.h"
-#include "Maps.h"
-#include "Mobs.h"
+#include "ReactorPacket.h"
+#include "Reactors.h"
 #include <string>
 
 LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactorid, int32_t mapid) : LuaScriptable(filename, playerid), reactorid(reactorid) {
@@ -33,6 +34,9 @@ LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactor
 	// Reactor
 	lua_register(luaVm, "reset", &LuaExports::reset);
 	lua_register(luaVm, "setState", &LuaExports::setStateReactor);
+
+	// Miscellaneous
+	lua_register(luaVm, "dropItem", &LuaExports::dropItemReactor);
 
 	// Mob
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMobReactor);
@@ -58,6 +62,21 @@ int LuaExports::reset(lua_State *luaVm) {
 
 int LuaExports::setStateReactor(lua_State *luaVm) {
 	getReactor(luaVm)->setState(lua_tointeger(luaVm, -1), true);
+	return 0;
+}
+
+// Miscellaneous
+int LuaExports::dropItemReactor(lua_State *luaVm) {
+	int32_t itemid = lua_tointeger(luaVm, 1);
+	int16_t amount = 1;
+	if (lua_isnumber(luaVm, 2)) {
+		amount = lua_tointeger(luaVm, 2);
+	}
+	Reactor *reactor = getReactor(luaVm);
+	Player *player = getPlayer(luaVm);
+	Drop *drop = new Drop(reactor->getMapId(), Item(itemid, amount), reactor->getPos(), player != 0 ? player->getId() : 0);
+	drop->setTime(player != 0 ? 100 : 0); // FFA if player isn't around
+	drop->doDrop(reactor->getPos());
 	return 0;
 }
 
