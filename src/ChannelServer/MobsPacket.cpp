@@ -125,7 +125,7 @@ void MobsPacket::hurtMob(Mob *mob, int32_t amount) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
-void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusInfo> &info, int16_t delay) {
+void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusInfo> &info, int16_t delay, const vector<int32_t> &reflection) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_APPLY_MOB_STATUS);
 	packet.add<int32_t>(mob->getId());
@@ -141,6 +141,10 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 			packet.add<int16_t>(info[i].level);
 		}
 		packet.add<int16_t>(0); // Not sure what this is
+	}
+
+	for (size_t i = 0; i < reflection.size(); i++) {
+		packet.add<int32_t>(reflection[i]);
 	}
 
 	packet.add<int16_t>(delay);

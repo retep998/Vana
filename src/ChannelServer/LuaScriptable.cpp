@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.h"
 #include "BeautyDataProvider.h"
+#include "Drops.h"
 #include "EventDataProvider.h"
 #include "Instance.h"
 #include "Instances.h"
@@ -179,7 +180,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getAllMapPlayerIDs", &LuaExports::getAllMapPlayerIDs);
 	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
-	lua_register(luaVm, "killMob", &LuaExports::killMob);
+	lua_register(luaVm, "killMobs", &LuaExports::killMobs);
 	lua_register(luaVm, "playSoundMap", &LuaExports::playSoundMap);
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
 	lua_register(luaVm, "setReactorState", &LuaExports::setReactorState);
@@ -199,6 +200,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMobPosX", &LuaExports::getMobPosX);
 	lua_register(luaVm, "getMobPosY", &LuaExports::getMobPosY);
 	lua_register(luaVm, "getRealMobID", &LuaExports::getRealMobID);
+	lua_register(luaVm, "killMob", &LuaExports::killMob);
+	lua_register(luaVm, "mobDropItem", &LuaExports::mobDropItem);
 
 	// Time
 	lua_register(luaVm, "getDate", &LuaExports::getDate);
@@ -1011,7 +1014,7 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaExports::killMob(lua_State *luaVm) {
+int LuaExports::killMobs(lua_State *luaVm) {
 	int32_t mobid = lua_tointeger(luaVm, 1);
 	int32_t mapid = getPlayer(luaVm)->getMap();
 	bool playerkill = true;
@@ -1149,6 +1152,33 @@ int LuaExports::getRealMobID(lua_State *luaVm) {
 	int32_t mapmobid = lua_tointeger(luaVm, 2);
 	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getId());
 	return 1;
+}
+
+int LuaExports::killMob(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	Mob *m = Maps::getMap(mapid)->getMob(mapmobid);
+	if (m != 0) {
+		m->applyDamage(0, m->getHp());
+	}
+	return 0;
+}
+
+int LuaExports::mobDropItem(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	int32_t itemid = lua_tointeger(luaVm, 3);
+	int16_t amount = 1;
+	if (lua_isnumber(luaVm, 4)) {
+		amount = lua_tointeger(luaVm, 4);
+	}
+	Mob *m = Maps::getMap(mapid)->getMob(mapmobid);
+	if (m != 0) {
+		Drop *drop = new Drop(mapid, Item(itemid, amount), m->getPos(), 0);
+		drop->setTime(0);
+		drop->doDrop(m->getPos());
+	}
+	return 0;
 }
 
 // Time

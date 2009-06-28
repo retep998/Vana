@@ -63,10 +63,10 @@ const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value
 	StatusEffects::Mob::MagicImmunity,
 	StatusEffects::Mob::VenomousWeapon,
 
-	StatusEffects::Mob::WeaponDamageReflect,
-	StatusEffects::Mob::MagicDamageReflect,
 	StatusEffects::Mob::Empty,
-	StatusEffects::Mob::InertMob
+	StatusEffects::Mob::InertMob,
+	StatusEffects::Mob::WeaponDamageReflect,
+	StatusEffects::Mob::MagicDamageReflect
 };
 
 StatusInfo::StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time) :
@@ -80,6 +80,28 @@ time(time)
 	if (val == StatusEffects::Mob::Freeze && skillid != Jobs::FPArchMage::Paralyze) {
 		this->time += Randomizer::Instance()->randInt(time);
 	}
+}
+
+StatusInfo::StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, clock_t time) :
+status(status),
+val(val),
+skillid(-1),
+mobskill(mobskill),
+level(level),
+time(time),
+reflection(-1)
+{
+}
+
+StatusInfo::StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, int32_t reflect, clock_t time) :
+status(status),
+val(val),
+skillid(-1),
+mobskill(mobskill),
+level(level),
+time(time),
+reflection(reflect)
+{
 }
 
 /* Mob class */
@@ -123,12 +145,15 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	if (!poison) { // HP bar packet does nothing for showing damage when poison is damaging for whatever reason
 		Player *player = Players::Instance()->getPlayer(playerid);
 
-		if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
-			MobsPacket::showBossHp(player, mobid, hp, info);
-		else { // Normal/Miniboss HP bars
-			uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
-			MobsPacket::showHp(player, id, percent, info.boss);
+		if (player != 0) {
+			if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
+				MobsPacket::showBossHp(player, mobid, hp, info);
+			else { // Normal/Miniboss HP bars
+				uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
+				MobsPacket::showHp(player, id, percent, info.boss);
+			}
 		}
+
 		Mob *sponge = getSponge(); // Need to preserve the pointer through mob deletion in die()
 		if (hp == 0) { // Time to die
 			if (getMobId() == Mobs::HorntailSponge) { // Horntail damage sponge
@@ -138,7 +163,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 						0, Timer::Time::fromNow(400));
 				}
 			}
-			die(Players::Instance()->getPlayer(playerid));
+			die(player);
 		}
 		if (sponge != 0) {
 			sponge->applyDamage(playerid, damage, false); // Apply damage after you can be sure that all the units are linked and ready
@@ -164,6 +189,7 @@ void Mob::applyWebDamage() {
 
 void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 	int32_t addedstatus = 0;
+	vector<int32_t> reflection;
 	for (size_t i = 0; i < statusinfo.size(); i++) {
 		int32_t cstatus = statusinfo[i].status;
 		bool alreadyhas = (statuses.find(cstatus) != statuses.end());
@@ -188,6 +214,10 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 					statusinfo[i].val += statuses[cstatus].val; // Increase the damage
 				}
 				break;
+			case StatusEffects::Mob::WeaponDamageReflect:
+			case StatusEffects::Mob::MagicDamageReflect:
+				reflection.push_back(statusinfo[i].reflection);
+				break;
 		}
 
 		statuses[cstatus] = statusinfo[i];
@@ -208,7 +238,7 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 	for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
 		status += iter->first;
 	}
-	MobsPacket::applyStatus(this, addedstatus, statusinfo, 300);
+	MobsPacket::applyStatus(this, addedstatus, statusinfo, 300, reflection);
 }
 
 void Mob::statusPacket(PacketCreator &packet) {
@@ -428,25 +458,30 @@ void Mob::die(bool showpacket) {
 	delete this;
 }
 
-void Mob::skillHeal(int32_t healhp, int32_t healmp) {
-	int32_t minamount, maxamount, range, amount;
-	minamount = healhp * 10 / 15;
-	maxamount = healhp * 15 / 10;
-	range = maxamount - minamount;
-	amount = Randomizer::Instance()->randInt(range) + minamount;
-	hp += amount;
-	minamount = healmp * 10 / 15;
-	maxamount = healmp * 15 / 10;
-	range = maxamount - minamount;
-	mp += Randomizer::Instance()->randInt(range) + minamount;
-	if (getSponge() != 0)
-		getSponge()->skillHeal(healhp, 0);
-	if (hp > getMHp() || hp < 0)
+void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
+	if (getMobId() == Mobs::HorntailSponge)
+		return;
+
+	int32_t amount = Randomizer::Instance()->randInt(healrange) + (basehealhp - (healrange / 2));
+	int32_t original = amount;
+
+	if (hp + amount > getMHp()) {
+		amount = getMHp() - hp;
 		hp = getMHp();
-	if (mp > getMMp() || mp < 0)
-		mp = getMMp();
-	if (getMobId() != Mobs::HorntailSponge)
-		MobsPacket::healMob(this, amount);
+	}
+	else {
+		hp += amount;
+	}
+
+	if (getSponge() != 0) {
+		basehealhp = getSponge()->getHp() + amount;
+		if (basehealhp < 0 || basehealhp > getSponge()->getMHp()) {
+			basehealhp = getSponge()->getMHp();
+		}
+		getSponge()->setHp(basehealhp);
+	}
+
+	MobsPacket::healMob(this, original);
 }
 
 void Mob::dispelBuffs() {
@@ -645,14 +680,18 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
 			break;
 		case MobSkills::WeaponDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.y, skillinfo.time));
 			break;
 		case MobSkills::MagicDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.y, skillinfo.time));
 			break;
 		case MobSkills::AnyDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, (int16_t)(skillinfo.x), skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.y, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, (int16_t)(skillinfo.x), skillid, level, skillinfo.y, skillinfo.time));
 			break;
 		case MobSkills::Haste:
 			// Not sure how to handle this yet, it doesn't seem like the basic speed buff

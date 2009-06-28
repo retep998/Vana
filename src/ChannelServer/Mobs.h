@@ -39,12 +39,14 @@ struct MobSkillLevelInfo;
 struct MpEaterInfo;
 
 struct StatusInfo {
-	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0), time(0) { }
+	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0), time(0), reflection(-1) { }
 	StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time);
-	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, clock_t time) : status(status), val(val), skillid(-1), mobskill(mobskill), level(level), time(time) { }
+	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, clock_t time);
+	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, int32_t reflect, clock_t time);
 	int32_t status;
-	int16_t val;
 	int32_t skillid;
+	int32_t reflection;
+	int16_t val;
 	int16_t mobskill;
 	int16_t level;
 	clock_t time;
@@ -65,6 +67,7 @@ public:
 
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
 	void applyWebDamage();
+	void setHp(int32_t hp) { this->hp = hp; }
 	void setMp(int32_t mp) { this->mp = mp; }
 	void addStatus(int32_t playerid, vector<StatusInfo> &statusinfo);
 	void removeStatus(int32_t status, bool fromTimer = false);
@@ -76,7 +79,7 @@ public:
 	void statusPacket(PacketCreator &packet);
 	void addSpawn(int32_t mapmobid, Mob *mob) { spawns[mapmobid] = mob; }
 	void removeSpawn(int32_t mapmobid) { spawns.erase(mapmobid); }
-	void skillHeal(int32_t healhp, int32_t healmp);
+	void skillHeal(int32_t basehealhp, int32_t healrange);
 	void dispelBuffs();
 	void doCrashSkill(int32_t skillid);
 	void explode();

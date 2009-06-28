@@ -169,7 +169,7 @@ namespace Stats {
 		Skin = 0x01,
 		Eyes = 0x02,
 		Hair = 0x04,
-		// 0x08?
+		Pet = 0x08,
 		Level = 0x10,
 		Job = 0x20,
 		Str = 0x40,
@@ -263,10 +263,10 @@ namespace StatusEffects {
 			MagicImmunity = 0x80000,
 			VenomousWeapon = 0x1000000,
 
-			WeaponDamageReflect = 0x2000000,
-			MagicDamageReflect = 0x4000000,
 			Empty = 0x8000000,
-			InertMob = 0x10000000
+			InertMob = 0x10000000,
+			WeaponDamageReflect = 0x20000000,
+			MagicDamageReflect = 0x40000000
 		};
 	}
 	namespace Player {
@@ -313,7 +313,7 @@ namespace MobSkills {
 		MagicImmunity = 141,
 		WeaponDamageReflect = 143,
 		MagicDamageReflect = 144, 
-		AnyDamageReflect = 145, // May not actually be reflection, client handles this oddly
+		AnyDamageReflect = 145,
 		NoMonsterHasThisYet1 = 150, // 150-155, 157 are not verified and no mob has them, but they are in the data
 		NoMonsterHasThisYet2 = 151,
 		NoMonsterHasThisYet3 = 152,
@@ -364,6 +364,7 @@ namespace Jobs {
 	namespace JobIds {
 		enum Jobs {
 			Beginner = 0,
+
 			Swordsman = 100,
 			Fighter = 110,
 			Crusader = 111,
@@ -374,6 +375,7 @@ namespace Jobs {
 			Spearman = 130,
 			DragonKnight = 131,
 			DarkKnight = 132,
+
 			Magician = 200,
 			FPWizard = 210,
 			FPMage = 211,
@@ -384,6 +386,7 @@ namespace Jobs {
 			Cleric = 230,
 			Priest = 231,
 			Bishop = 232,
+
 			Archer = 300,
 			Hunter = 310,
 			Ranger = 311,
@@ -391,6 +394,7 @@ namespace Jobs {
 			Crossbowman = 320,
 			Sniper = 321,
 			Marksman = 322,
+
 			Rogue = 400,
 			Assassin = 410,
 			Hermit = 411,
@@ -398,6 +402,7 @@ namespace Jobs {
 			Bandit = 420,
 			ChiefBandit = 421,
 			Shadower = 422,
+
 			Pirate = 500,
 			Infighter = 510,
 			Marauder = 511,
@@ -405,6 +410,7 @@ namespace Jobs {
 			Gunslinger = 520,
 			Outlaw = 521,
 			Corsair = 522,
+
 			Gm = 900,
 			SuperGm = 910
 		};

@@ -168,6 +168,7 @@ public:
 	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
 	int32_t countMobs(int32_t mobid = 0);
 	Mob * getMob(int32_t id, bool isMapId = true);
+	unordered_map<int32_t, Mob *> getMobs() const { return mobs; }
 	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
 	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
 	void checkShadowWeb();

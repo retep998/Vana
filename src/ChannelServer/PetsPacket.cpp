@@ -146,7 +146,7 @@ void PetsPacket::updateSummonedPets(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_UPDATE_STAT);
 	packet.add<int8_t>(0);
-	packet.add<int16_t>(0x8);
+	packet.add<int16_t>(Stats::Pet);
 	packet.add<int16_t>(0x18);
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
@@ -180,9 +180,7 @@ void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(pet->getLevel());
 	packet.add<int16_t>(pet->getCloseness());
 	packet.add<int8_t>(pet->getFullness());
-	packet.add<int8_t>(0);
-	packet.addBytes("B8D56000CEC8"); // TODO: Expire date
-	packet.add<int8_t>(1); // Alive or dead
+	packet.add<int64_t>(180000000000); // Item expiration
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0); // Time to expire (for trial pet)
 }
