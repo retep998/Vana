@@ -90,6 +90,7 @@ struct NPCSpawnInfo {
 	int16_t fh;
 	int16_t rx0;
 	int16_t rx1;
+	int8_t facingside;
 };
 typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 

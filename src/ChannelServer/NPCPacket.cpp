@@ -29,7 +29,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i, bool show) 
 	packet.add<int32_t>(i + 0x64);
 	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(npc.facingside);
 	packet.add<int16_t>(npc.fh);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
@@ -42,7 +42,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i, bool show) 
 	packet.add<int32_t>(i + 0x64);
 	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(npc.facingside);
 	packet.add<int16_t>(npc.fh);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
@@ -56,7 +56,7 @@ void NPCPacket::showNPC(int32_t mapid, NPCSpawnInfo npc, int32_t i, bool show) {
 	packet.add<int32_t>(i + 0x64);
 	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(npc.facingside);
 	packet.add<int16_t>(npc.fh);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
@@ -69,7 +69,7 @@ void NPCPacket::showNPC(int32_t mapid, NPCSpawnInfo npc, int32_t i, bool show) {
 	packet.add<int32_t>(i + 0x64);
 	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(npc.facingside);
 	packet.add<int16_t>(npc.fh);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
