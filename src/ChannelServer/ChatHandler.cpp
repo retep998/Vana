@@ -324,6 +324,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						npc.pos = player->getPos();
 						npc.rx0 = npc.pos.x - 50;
 						npc.rx1 = npc.pos.x + 50;
+						npc.facingside = 1;
 						Maps::getMap(player->getMap())->addNPC(npc);
 					}
 					else {

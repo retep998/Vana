@@ -136,7 +136,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	}
 
 	// Life [NPCs and Mobs]
-	query << "SELECT isnpc, lifeid, x, cy, fh, rx0, rx1, mobtime FROM maplifedata WHERE mapid = " << mapid;
+	query << "SELECT isnpc, lifeid, x, cy, fh, rx0, rx1, mobtime, facesright FROM maplifedata WHERE mapid = " << mapid;
 	res = query.use();
 
 	while (dataRow = res.fetch_raw_row()) {
@@ -148,6 +148,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    5 : rx0
 		//    6 : rx1
 		//    7 : Mob Time
+		//    8 : Faces right
 		if (atob(dataRow[0])) {
 			NPCSpawnInfo npc;
 			npc.id = atoi(dataRow[1]);
@@ -155,6 +156,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 			npc.fh = atoi(dataRow[4]);
 			npc.rx0 = atoi(dataRow[5]);
 			npc.rx1 = atoi(dataRow[6]);
+			npc.facingside = (atoi(dataRow[8]) == 1 ? 0 : 1);
 			map->addNPC(npc);
 			if (MapleTVs::Instance()->isMapleTVNPC(npc.id))
 				MapleTVs::Instance()->addMap(map);
