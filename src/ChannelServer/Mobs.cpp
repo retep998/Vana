@@ -144,6 +144,11 @@ control(0)
 			Timer::Id(Timer::Types::MobHealTimer, 1, 1),
 			getTimers(), 0, 10 * 1000);
 	}
+	if (info.removeafter > 0) {
+		new Timer::Timer(bind(&Mob::applyDamage, this, 0, info.hp, false),
+			Timer::Id(Timer::Types::MobRemoveTimer, mapid, id),
+			0, Timer::Time::fromNow(info.removeafter * 1000));
+	}
 }
 
 void Mob::naturalHealHp(int32_t amount) {
