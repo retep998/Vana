@@ -52,7 +52,7 @@ namespace Reactors {
 
 class Reactor {
 public:
-	Reactor (int32_t mapid, int32_t reactorid, Pos pos, int32_t link);
+	Reactor(int32_t mapid, int32_t reactorid, Pos pos, int32_t link);
 	void kill() { this->alive = false; }
 	void revive() { this->alive = true; }
 	void setState(int8_t state, bool is);

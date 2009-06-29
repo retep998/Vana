@@ -140,7 +140,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 			chance = chance * taunt / 100;
 			chance *= ChannelServer::Instance()->getDroprate();
 		}
- 		if (Randomizer::Instance()->randInt(99999) < chance) {
+		if (Randomizer::Instance()->randInt(99999) < chance) {
 			pos.x = origin.x + ((d % 2) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
 			pos.y = origin.y;
 

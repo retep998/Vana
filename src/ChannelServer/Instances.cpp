@@ -29,12 +29,12 @@ void Instances::removeInstance(Instance *instance) {
 }
 
 Instance * Instances::getInstance(const string &name) {
-  	string upCaseName = boost::to_upper_copy(name);
+	string upCaseName = boost::to_upper_copy(name);
 	return (m_instances.find(upCaseName) == m_instances.end()) ? 0 : m_instances[upCaseName];
 }
 
 bool Instances::isInstance(const string &name) {
-  	string upCaseName = boost::to_upper_copy(name);
+	string upCaseName = boost::to_upper_copy(name);
 	bool is = m_instances.find(upCaseName) != m_instances.end();
 	if (is && m_instances[upCaseName]->getMarkedForDelete()) {
 		is = false;

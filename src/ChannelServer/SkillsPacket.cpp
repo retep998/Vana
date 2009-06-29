@@ -39,16 +39,16 @@ void SkillsPacket::addSkill(Player *player, int32_t skillid, PlayerSkillInfo ski
 void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, uint8_t direction, bool party, bool self) {
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
- 	PacketCreator packet;
+	PacketCreator packet;
 	if (party && self) {
 		packet.add<int16_t>(SEND_GAIN_ITEM);
 	}
 	else {
- 		packet.add<int16_t>(SEND_SHOW_SKILL);
- 		packet.add<int32_t>(player->getId());
+		packet.add<int16_t>(SEND_SHOW_SKILL);
+		packet.add<int32_t>(player->getId());
 	}
 	packet.add<int8_t>(party ? 2 : 1);
- 	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(skillid);
 	packet.add<int8_t>(level); // TODO
 	switch (skillid) {
 		case Jobs::Hero::MonsterMagnet: // Monster Magnet processing
