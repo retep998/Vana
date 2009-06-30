@@ -205,7 +205,7 @@ void Pets::handleFeed(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t item = packet.get<int32_t>();
-	if (Pet *pet = player->getPets()->getSummoned(1)) {
+	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		Inventory::takeItem(player, item, 1);
 
 		bool success = (pet->getFullness() < Stats::MaxFullness);
