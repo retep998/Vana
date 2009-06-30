@@ -160,6 +160,7 @@ void Map::killReactors(bool showpacket) {
 			if (showpacket) {
 				ReactorPacket::destroyReactor(r);
 			}
+			removeReactor(r->getId() - 200); 
 		}
 	}
 }
