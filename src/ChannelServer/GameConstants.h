@@ -855,7 +855,8 @@ namespace Jobs {
 			Hypnotize = 5221009,
 			MapleWarrior = 5221000,
 			RapidFire = 5221004,
-			SpeedInfusion = 5221010 // Technically Hero's Will
+			SpeedInfusion = 5221010, // Technically Hero's Will
+			WrathOfTheOctopi = 5220002
 		};
 	}
 	namespace Gm {
