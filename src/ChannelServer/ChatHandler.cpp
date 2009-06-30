@@ -324,6 +324,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						npc.pos = player->getPos();
 						npc.rx0 = npc.pos.x - 50;
 						npc.rx1 = npc.pos.x + 50;
+						npc.facingside = 1;
 						Maps::getMap(player->getMap())->addNPC(npc);
 					}
 					else {
@@ -772,8 +773,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					player->setNPC(0);
 					break;
 				case CmdHorntail:
-					Maps::getMap(player->getMap())->spawnMob(Mobs::HorntailSponge, player->getPos());
-					Maps::getMap(player->getMap())->killMobs(player, Mobs::HorntailSponge);
+					Maps::getMap(player->getMap())->spawnMob(Mobs::SummonHorntail, player->getPos());
 					break;
 				case CmdHeal:
 					player->getStats()->setHp(player->getStats()->getMHp());

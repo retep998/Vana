@@ -54,6 +54,7 @@ struct MobInfo {
 	int32_t selfdestruction;
 	int32_t buff;
 	int32_t link;
+	int32_t removeafter;
 	bool boss;
 	bool canfreeze;
 	bool canpoison;

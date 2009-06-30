@@ -366,6 +366,7 @@ int LuaExports::spawnNPC(lua_State *luaVm) {
 	npc.pos = Pos(x, y);
 	npc.rx0 = x - 50;
 	npc.rx1 = x + 50;
+	npc.facingside = 1;
 
 	lua_pushinteger(luaVm, Maps::getMap(mapid)->addNPC(npc));
 	return 1;
@@ -1102,7 +1103,7 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 	int16_t fh = 0;
 	if (lua_isnumber(luaVm, 4))
 		fh = lua_tointeger(luaVm, 4);
-	lua_pushinteger(luaVm, Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobid, Pos(x, y), -1, fh));
+	lua_pushinteger(luaVm, Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobid, Pos(x, y), fh));
 	return 1;
 }
 

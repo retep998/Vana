@@ -50,7 +50,8 @@ instance(0),
 timer(0),
 timerstart(0),
 poisonmists(0),
-spawnmobs(true)
+spawnmobs(true),
+timers(new Timer::Container)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
@@ -254,7 +255,7 @@ void Map::removeNPC(int32_t index) {
 // Mobs
 void Map::addMobSpawn(const MobSpawnInfo &spawn) {
 	mobspawns.push_back(spawn);
-	spawnMob(spawn.id, spawn.pos, mobspawns.size() - 1, spawn.fh);
+	spawnMob(mobspawns.size() - 1, spawn);
 }
 
 void Map::checkMobSpawn(clock_t time, bool spawnAll) {
@@ -263,22 +264,32 @@ void Map::checkMobSpawn(clock_t time, bool spawnAll) {
 		int32_t id = mobspawns[i].id;
 		int32_t spawnat = mobspawns[i].spawnat;
 		if (!mobspawns[i].spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
-			spawnMob(id, mobspawns[i].pos, i, mobspawns[i].fh);
+			spawnMob(i, mobspawns[i]);
 			mobspawns[i].spawned = true;
 		}
 	}
 }
 
-int32_t Map::spawnMob(int32_t mobid, Pos pos, int32_t spawnid, int16_t fh, Mob *owner, int8_t summoneffect) {
+int32_t Map::spawnMob(int32_t mobid, const Pos &pos, int16_t fh, Mob *owner, int8_t summoneffect) {
 	int32_t id = objectids.next();
 
-	Mob *mob = new Mob(id, info->id, mobid, pos, spawnid, fh);
+	Mob *mob = new Mob(id, info->id, mobid, pos, fh);
 	mobs[id] = mob;
 	if (summoneffect != 0) {
 		mob->setOwner(owner);
 		owner->addSpawn(id, mob);
 	}
 	MobsPacket::spawnMob(0, mob, summoneffect, owner, (owner == 0));
+	updateMobControl(mob, true);
+	return id;
+}
+
+int32_t Map::spawnMob(int32_t spawnid, const MobSpawnInfo &info) {
+	int32_t id = objectids.next();
+
+	Mob *mob = new Mob(id, this->info->id, info.id, info.pos, spawnid, info.facingside, info.fh);
+	mobs[id] = mob;
+	MobsPacket::spawnMob(0, mob, 0);
 	updateMobControl(mob, true);
 	return id;
 }
@@ -394,15 +405,15 @@ void Map::checkShadowWeb() {
 }
 
 void Map::spawnZakum(const Pos &pos, int16_t fh) {
-	spawnMob(Mobs::ZakumBody1, pos, -1, fh);
-	spawnMob(Mobs::ZakumArm1, pos, -1, fh);
-	spawnMob(Mobs::ZakumArm2, pos, -1, fh);
-	spawnMob(Mobs::ZakumArm3, pos, -1, fh);
-	spawnMob(Mobs::ZakumArm4, pos, -1, fh);
-	spawnMob(Mobs::ZakumArm5, pos, -1, fh);
-	spawnMob(Mobs::ZakumArm6, pos, -1, fh);
-	spawnMob(Mobs::ZakumArm7, pos, -1, fh);
-	spawnMob(Mobs::ZakumArm8, pos, -1, fh);
+	spawnMob(Mobs::ZakumBody1, pos, fh);
+	spawnMob(Mobs::ZakumArm1, pos, fh);
+	spawnMob(Mobs::ZakumArm2, pos, fh);
+	spawnMob(Mobs::ZakumArm3, pos, fh);
+	spawnMob(Mobs::ZakumArm4, pos, fh);
+	spawnMob(Mobs::ZakumArm5, pos, fh);
+	spawnMob(Mobs::ZakumArm6, pos, fh);
+	spawnMob(Mobs::ZakumArm7, pos, fh);
+	spawnMob(Mobs::ZakumArm8, pos, fh);
 }
 
 // Drops
@@ -603,10 +614,6 @@ void Map::sendPacket(PacketCreator &packet, Player *player) {
 void Map::showMessage(const string &message, int8_t type) {
 	for (size_t i = 0; i < players.size(); i++)
 		PlayerPacket::showMessage(players[i], message, type);
-}
-
-int32_t Map::checkTimer(uint32_t type, uint32_t id1, uint32_t id2) {
-	return (getTimers()->checkTimer(Timer::Id(type, id1, id2)) / 1000);
 }
 
 bool Map::seatOccupied(int16_t id) {

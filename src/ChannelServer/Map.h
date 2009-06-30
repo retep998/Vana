@@ -90,6 +90,7 @@ struct NPCSpawnInfo {
 	int16_t fh;
 	int16_t rx0;
 	int16_t rx1;
+	int8_t facingside;
 };
 typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 
@@ -113,13 +114,14 @@ typedef std::map<int16_t, SeatInfo> SeatsInfo;
 
 struct MobSpawnInfo {
 	MobSpawnInfo() : spawnat(-1), spawned(false) { }
-	int32_t id;
-	Pos pos;
+	int8_t facingside;
 	int16_t fh;
-	bool spawned;
+	int32_t id;
 	int32_t time;
-	clock_t spawnat;
 	int32_t link;
+	bool spawned;
+	clock_t spawnat;
+	Pos pos;
 };
 typedef vector<MobSpawnInfo> MobSpawnsInfo;
 
@@ -164,7 +166,8 @@ public:
 	void addMobSpawn(const MobSpawnInfo &spawn);
 	void checkMobSpawn(clock_t time, bool spawnAll = false);
 	void removeMob(int32_t id, int32_t spawnid);
-	int32_t spawnMob(int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0, Mob *owner = 0, int8_t summoneffect = 0);
+	int32_t spawnMob(int32_t mobid, const Pos &pos, int16_t fh = 0, Mob *owner = 0, int8_t summoneffect = 0);
+	int32_t spawnMob(int32_t spawnid, const MobSpawnInfo &info);
 	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
 	int32_t countMobs(int32_t mobid = 0);
 	Mob * getMob(int32_t id, bool isMapId = true);
@@ -213,6 +216,7 @@ public:
 	// Timer stuff
 	void runTimer();
 	void setMapTimer(int32_t t);
+	Timer::Container * getTimers() const { return timers.get(); }
 
 	// Show all map objects
 	void showObjects(Player *player);
@@ -249,8 +253,6 @@ private:
 
 	void updateMobControl(Player *player);
 	void updateMobControl(Mob *mob, bool spawn = false);
-	Timer::Container * getTimers() const { return timers.get(); }
-	int32_t checkTimer(uint32_t type, uint32_t id1, uint32_t id2);
 };
 
 #endif

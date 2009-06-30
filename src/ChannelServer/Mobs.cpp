@@ -106,34 +106,57 @@ reflection(reflect)
 }
 
 /* Mob class */
-Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid, int16_t fh) :
+Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int16_t fh) :
+MovableLife(fh, pos, 2),
+originfh(fh),
+id(id),
+mapid(mapid),
+spawnid(-1),
+mobid(mobid),
+timers(new Timer::Container),
+info(MobDataProvider::Instance()->getMobInfo(mobid)),
+facingdirection(1)
+{
+	initMob();
+}
+
+Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int32_t spawnid, int8_t direction, int16_t fh) :
 MovableLife(fh, pos, 2),
 originfh(fh),
 id(id),
 mapid(mapid),
 spawnid(spawnid),
 mobid(mobid),
-status(StatusEffects::Mob::Empty),
-webplayerid(0),
-weblevel(0),
-owner(0),
-horntailsponge(0),
-counter(0),
-venomcount(0),
-mpeatercount(0),
-taunteffect(100),
-info(MobDataProvider::Instance()->getMobInfo(mobid)),
 timers(new Timer::Container),
-control(0)
+info(MobDataProvider::Instance()->getMobInfo(mobid)),
+facingdirection(direction)
 {
+	initMob();
+}
+
+void Mob::initMob() {
 	this->hp = info.hp;
 	this->mp = info.mp;
-	Instance *instance = Maps::getMap(mapid)->getInstance();
+	webplayerid = 0;
+	weblevel = 0;
+	owner = 0;
+	horntailsponge = 0;
+	counter = 0;
+	venomcount = 0;
+	mpeatercount = 0;
+	taunteffect = 100;
+	control = 0;
+
+	Map *map = Maps::getMap(mapid);
+	Instance *instance = map->getInstance();
 	if (instance != 0) {
 		instance->sendMessage(MobSpawn, mobid, id, mapid);
 	}
+
+	status = StatusEffects::Mob::Empty;
 	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
 	statuses[empty.status] = empty;
+
 	if (info.hprecovery > 0) {
 		new Timer::Timer(bind(&Mob::naturalHealHp, this, info.hprecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
@@ -143,6 +166,11 @@ control(0)
 		new Timer::Timer(bind(&Mob::naturalHealMp, this, info.mprecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 1, 1),
 			getTimers(), 0, 10 * 1000);
+	}
+	if (info.removeafter > 0) {
+		new Timer::Timer(bind(&Mob::applyDamage, this, 0, info.hp, false),
+			Timer::Id(Timer::Types::MobRemoveTimer, mobid, id),
+			map->getTimers(), Timer::Time::fromNow(info.removeafter * 1000));
 	}
 }
 
@@ -385,6 +413,11 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	endControl();
 
+	Timer::Id tid(Timer::Types::MobRemoveTimer, mobid, id);
+	if (map->getTimers()->checkTimer(tid) > 0) {
+		map->getTimers()->removeTimer(tid);
+	}
+
 	// Calculate EXP distribution
 	int32_t highestdamager = 0;
 	uint32_t highestdamage = 0;
@@ -418,9 +451,9 @@ void Mob::die(Player *player, bool fromexplosion) {
 		for (size_t i = 0; i < info.summon.size(); i++) {
 			int32_t spawnid = info.summon[i];
 			if (spawnid == Mobs::HorntailSponge)
-				spongeid = map->spawnMob(spawnid, m_pos, -1, getFh(), this);
+				spongeid = map->spawnMob(spawnid, m_pos, getFh(), this);
 			else {
-				int32_t identifier = map->spawnMob(spawnid, m_pos, -1, getFh(), this);
+				int32_t identifier = map->spawnMob(spawnid, m_pos, getFh(), this);
 				parts.push_back(identifier);
 			}
 		}
@@ -434,14 +467,14 @@ void Mob::die(Player *player, bool fromexplosion) {
 	else if (getSponge() != 0) { // More special Horntail logic to keep units linked
 		getSponge()->removeSpawn(getId());
 		for (size_t i = 0; i < info.summon.size(); i++) {
-			int32_t ident = map->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
+			int32_t ident = map->spawnMob(info.summon[i], m_pos, getFh(), this);
 			Mob *mob = map->getMob(ident);
 			getSponge()->addSpawn(ident, mob);
 		}
 	}
 	else {
 		for (size_t i = 0; i < info.summon.size(); i++) {
-			map->spawnMob(info.summon[i], m_pos, -1, getFh(), this);
+			map->spawnMob(info.summon[i], m_pos, getFh(), this);
 		}
 	}
 
@@ -792,7 +825,7 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 						floor.y = mobpos.y;
 					}
 				}
-				map->spawnMob(spawnid, floor, -1, 0, mob, skillinfo.summoneffect);
+				map->spawnMob(spawnid, floor, 0, mob, skillinfo.summoneffect);
 			}
 			break;
 		}

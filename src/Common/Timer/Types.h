@@ -30,6 +30,7 @@ struct Types {
 		MapTimer,
 		MistTimer,
 		MobHealTimer,
+		MobRemoveTimer,
 		MobStatusTimer,
 		MobSkillTimer,
 		PetTimer,
