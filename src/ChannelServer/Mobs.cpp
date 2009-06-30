@@ -115,7 +115,7 @@ spawnid(-1),
 mobid(mobid),
 timers(new Timer::Container),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
-facingdirection(0)
+facingdirection(1)
 {
 	initMob();
 }
