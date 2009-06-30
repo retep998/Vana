@@ -50,7 +50,8 @@ instance(0),
 timer(0),
 timerstart(0),
 poisonmists(0),
-spawnmobs(true)
+spawnmobs(true),
+timers(new Timer::Container)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
@@ -613,10 +614,6 @@ void Map::sendPacket(PacketCreator &packet, Player *player) {
 void Map::showMessage(const string &message, int8_t type) {
 	for (size_t i = 0; i < players.size(); i++)
 		PlayerPacket::showMessage(players[i], message, type);
-}
-
-int32_t Map::checkTimer(uint32_t type, uint32_t id1, uint32_t id2) {
-	return (getTimers()->checkTimer(Timer::Id(type, id1, id2)) / 1000);
 }
 
 bool Map::seatOccupied(int16_t id) {
