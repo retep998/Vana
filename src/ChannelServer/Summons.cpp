@@ -34,6 +34,7 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(s
 		case Jobs::WindBreaker::Puppet:
 			hp = Skills::skills[summonid][level].x; // Get HP for puppet
 		case Jobs::Outlaw::Octopus:
+		case Jobs::Corsair::WrathOfTheOctopi:
 			type = 0; // No movement - Puppets and Octopus
 			break;
 		case Jobs::Priest::SummonDragon:
