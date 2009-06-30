@@ -781,8 +781,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					player->setNPC(0);
 					break;
 				case CmdHorntail:
-					Maps::getMap(player->getMap())->spawnMob(Mobs::HorntailSponge, player->getPos());
-					Maps::getMap(player->getMap())->killMobs(player, Mobs::HorntailSponge);
+					Maps::getMap(player->getMap())->spawnMob(Mobs::SummonHorntail, player->getPos());
 					break;
 				case CmdHeal:
 					player->setHp(player->getMHp());
