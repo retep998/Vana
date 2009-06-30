@@ -63,7 +63,8 @@ namespace Mobs {
 
 class Mob : public MovableLife {
 public:
-	Mob(int32_t id, int32_t mapid, int32_t mobid, Pos pos, int32_t spawnid = -1, int16_t fh = 0);
+	Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int16_t fh = 0);
+	Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int32_t spawnid, int8_t direction, int16_t fh);
 
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
 	void applyWebDamage();
@@ -89,6 +90,7 @@ public:
 	void naturalHealMp(int32_t amount);
 
 	int8_t getVenomCount() const { return venomcount; }
+	int8_t getFacingDirection() const { return facingdirection; }
 	int16_t getTauntEffect() const { return taunteffect; }
 	int16_t getOriginFh() const { return originfh; }
 	int16_t getStatusValue(int32_t status);
@@ -131,6 +133,7 @@ public:
 private:
 	int8_t venomcount;
 	int8_t mpeatercount;
+	int8_t facingdirection;
 	uint8_t weblevel;
 	int16_t originfh;
 	int16_t taunteffect;
@@ -153,6 +156,7 @@ private:
 	Player *control;
 	boost::scoped_ptr<Timer::Container> timers;
 
+	void initMob();
 	void die(Player *player, bool fromexplosion = false);
 };
 
