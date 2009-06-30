@@ -216,6 +216,7 @@ public:
 	// Timer stuff
 	void runTimer();
 	void setMapTimer(int32_t t);
+	Timer::Container * getTimers() const { return timers.get(); }
 
 	// Show all map objects
 	void showObjects(Player *player);
@@ -252,8 +253,6 @@ private:
 
 	void updateMobControl(Player *player);
 	void updateMobControl(Mob *mob, bool spawn = false);
-	Timer::Container * getTimers() const { return timers.get(); }
-	int32_t checkTimer(uint32_t type, uint32_t id1, uint32_t id2);
 };
 
 #endif

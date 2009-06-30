@@ -147,7 +147,8 @@ void Mob::initMob() {
 	taunteffect = 100;
 	control = 0;
 
-	Instance *instance = Maps::getMap(mapid)->getInstance();
+	Map *map = Maps::getMap(mapid);
+	Instance *instance = map->getInstance();
 	if (instance != 0) {
 		instance->sendMessage(MobSpawn, mobid, id, mapid);
 	}
@@ -168,8 +169,8 @@ void Mob::initMob() {
 	}
 	if (info.removeafter > 0) {
 		new Timer::Timer(bind(&Mob::applyDamage, this, 0, info.hp, false),
-			Timer::Id(Timer::Types::MobRemoveTimer, mapid, id),
-			0, Timer::Time::fromNow(info.removeafter * 1000));
+			Timer::Id(Timer::Types::MobRemoveTimer, mobid, id),
+			map->getTimers(), Timer::Time::fromNow(info.removeafter * 1000));
 	}
 }
 
@@ -411,6 +412,11 @@ void Mob::die(Player *player, bool fromexplosion) {
 	Map *map = Maps::getMap(mapid);
 
 	endControl();
+
+	Timer::Id tid(Timer::Types::MobRemoveTimer, mobid, id);
+	if (map->getTimers()->checkTimer(tid) > 0) {
+		map->getTimers()->removeTimer(tid);
+	}
 
 	// Calculate EXP distribution
 	int32_t highestdamager = 0;
