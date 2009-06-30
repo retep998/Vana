@@ -131,7 +131,8 @@ string Summons::getSummonName(int32_t summonid) {
 	switch (summonid) {
 		case Jobs::Bishop::Bahamut: ret = "Bahamut"; break;
 		case Jobs::Outlaw::Gaviota: ret = "Gaviota"; break;
-		case Jobs::Outlaw::Octopus: ret = "Octopus"; break;
+		case Jobs::Outlaw::Octopus:
+		case Jobs::Corsair::WrathOfTheOctopi: ret = "Octopus"; break;
 		case Jobs::Sniper::Puppet:
 		case Jobs::Ranger::Puppet:
 		case Jobs::WindBreaker::Puppet: ret = "Puppet"; break;
