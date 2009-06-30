@@ -31,7 +31,10 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	packet.add<int32_t>(mob->getMobId());
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 	packet.addPos(mob->getPos());
-	packet.add<int8_t>(owner != 0 ? 0x08 : 0x02); // Not stance, exploring further
+
+	int8_t bitfield = (owner != 0 ? 0x08 : 0x02) | mob->getFacingDirection();
+
+	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x02 - ???, 0x01 - faces right
 	packet.add<int16_t>(mob->getFh());
 	packet.add<int16_t>(mob->getOriginFh());
 	if (owner != 0) {

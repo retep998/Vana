@@ -148,7 +148,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    5 : rx0
 		//    6 : rx1
 		//    7 : Mob Time
-		//    8 : Faces right
+		//    8 : Faces Right
 		if (atob(dataRow[0])) {
 			NPCSpawnInfo npc;
 			npc.id = atoi(dataRow[1]);
@@ -167,6 +167,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 			spawn.pos = Pos(atoi(dataRow[2]), atoi(dataRow[3]));
 			spawn.fh = atoi(dataRow[4]);
 			spawn.time = atoi(dataRow[7]);
+			spawn.facingside = (atoi(dataRow[8]) == 1 ? 0 : 1);
 			map->addMobSpawn(spawn);
 		}
 	}
