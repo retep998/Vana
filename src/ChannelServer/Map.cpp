@@ -289,7 +289,7 @@ int32_t Map::spawnMob(int32_t spawnid, const MobSpawnInfo &info) {
 
 	Mob *mob = new Mob(id, this->info->id, info.id, info.pos, spawnid, info.facingside, info.fh);
 	mobs[id] = mob;
-	MobsPacket::spawnMob(0, mob, 0);
+	MobsPacket::spawnMob(0, mob, 0, 0, true);
 	updateMobControl(mob, true);
 	return id;
 }
