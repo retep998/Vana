@@ -272,6 +272,9 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 				m_player->getInventory()->modifyMesos(info.id);
 				QuestsPacket::giveMesos(m_player, info.id);
 			}
+			else if (info.isfame) {
+				m_player->setFame(m_player->getFame() + static_cast<int16_t>(info.id));
+			}
 		}
 	}
 	if (chance > 0) {
