@@ -530,6 +530,14 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 			pet->setPos(portal->pos);
 		}
 	}
+
+	if (getSummons()->getPuppet() != 0) { // Puppets and non-moving summons don't go with you
+		Summons::removeSummon(this, true, true, false, 0);
+	}
+	if (getSummons()->getSummon() != 0 && getSummons()->getSummon()->getType() == 0) {
+		Summons::removeSummon(this, false, true, false, 0);
+	}
+
 	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), id, mapid);
 	MapPacket::changeMap(this);
 	Maps::newMap(this, mapid);
