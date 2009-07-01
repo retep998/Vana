@@ -33,19 +33,33 @@ void Channels::registerChannel(WorldServerAcceptPlayer *player, uint16_t channel
 }
 
 void Channels::removeChannel(uint16_t channel) {
-	channels.erase(channel);
+	Channel *chan = getChannel(channel);
+	if (chan != 0)
+		chan->connected = false;
 }
 
 Channel * Channels::getChannel(uint16_t num) {
-	return (channels.find(num) != channels.end() ? channels[num].get() : 0);
+	return channels.find(num) != channels.end() && channels[num]->connected ? channels[num].get() : 0;
 }
 
 void Channels::sendToAll(PacketCreator &packet) {
 	for (unordered_map<uint16_t, shared_ptr<Channel> >::iterator iter = channels.begin(); iter != channels.end(); iter++) {
-		iter->second->player->getSession()->send(packet);
+		if (iter->second->connected)
+			iter->second->player->getSession()->send(packet);
 	}
 }
 
 uint16_t Channels::size() {
 	return channels.size();
+}
+
+uint16_t Channels::getAvailableChannel() {
+	uint16_t channel = channels.size();
+	for (unordered_map<uint16_t, shared_ptr<Channel> >::iterator iter = channels.begin(); iter != channels.end(); iter++) {
+		if (!iter->second->connected) {
+			channel = iter->second->id;
+			break;
+		}
+	}
+	return channel;
 }

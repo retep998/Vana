@@ -25,6 +25,7 @@ class PacketReader;
 class LoginServerConnectPlayer : public AbstractServerConnectPlayer {
 public:
 	LoginServerConnectPlayer();
+	~LoginServerConnectPlayer();
 	void realHandleRequest(PacketReader &packet);
 };
 

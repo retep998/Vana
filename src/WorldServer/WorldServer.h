@@ -62,9 +62,10 @@ public:
 	int32_t getDroprate() const { return droprate; }
 	LoginServerConnectPlayer * getLoginPlayer() const { return loginPlayer; }
 	string getScrollingHeader() { return scrollingHeader.c_str(); }
+	bool isConnected() const { return worldId != -1; }
 
 private:
-	WorldServer() { }
+	WorldServer() : worldId(-1) { }
 	static WorldServer *singleton;
 
 	int8_t worldId;
