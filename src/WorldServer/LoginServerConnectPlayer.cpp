@@ -19,10 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectHandler.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
+#include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 
 LoginServerConnectPlayer::LoginServerConnectPlayer() {
 	type = InterWorldServer;
+}
+
+LoginServerConnectPlayer::~LoginServerConnectPlayer() {
+	if (WorldServer::Instance()->isConnected()) {
+		WorldServer::Instance()->setWorldId(-1);
+		std::cout << "Disconnected from loginserver. Shutting down..." << std::endl;
+		WorldServer::Instance()->shutdown();
+	}
 }
 
 void LoginServerConnectPlayer::realHandleRequest(PacketReader &packet) {
