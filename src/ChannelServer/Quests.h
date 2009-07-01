@@ -101,6 +101,7 @@ namespace Quests {
 	void addReward(int32_t id, QuestRewardsInfo &raws);
 	void setNextQuest(int16_t id, int16_t questid);
 	void getQuest(Player *player, PacketReader &packet);
+	void giveFame(Player *player, int32_t amount);
 	bool giveItem(Player *player, int32_t itemid, int16_t amount);
 	bool giveMesos(Player *player, int32_t amount);
 };
