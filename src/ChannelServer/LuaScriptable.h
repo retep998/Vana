@@ -114,6 +114,7 @@ namespace LuaExports {
 	int getDEX(lua_State *luaVm);
 	int getEXP(lua_State *luaVm);
 	int getEyes(lua_State *luaVm);
+	int getFame(lua_State *luaVm);
 	int getFH(lua_State *luaVm);
 	int getGender(lua_State *luaVm);
 	int getGMLevel(lua_State *luaVm);
@@ -140,6 +141,7 @@ namespace LuaExports {
 	int getSTR(lua_State *luaVm);
 	int giveAP(lua_State *luaVm);
 	int giveEXP(lua_State *luaVm);
+	int giveFame(lua_State *luaVm);
 	int giveSP(lua_State *luaVm);
 	int isActiveItem(lua_State *luaVm);
 	int isActiveSkill(lua_State *luaVm);

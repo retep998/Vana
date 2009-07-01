@@ -30,6 +30,7 @@ namespace QuestsPacket {
 	void questFinish(Player *player, int16_t questid, int32_t npcid, int16_t nextquest, int64_t time);
 	void giveItem(Player *player, int32_t itemid, int32_t amount);
 	void giveMesos(Player *player, int32_t amount);
+	void giveFame(Player *player, int32_t amount);
 };
 
 #endif

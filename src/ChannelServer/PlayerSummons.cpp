@@ -61,7 +61,7 @@ void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
 Summon * PlayerSummons::getSummon(int32_t summonid) {
 	if (m_summon != 0 && m_summon->getId() == summonid)
 		return m_summon;
-	else if (m_puppet != 0 && m_puppet->getId() == summonid)
+	if (m_puppet != 0 && m_puppet->getId() == summonid)
 		return m_puppet;
 	return 0;
 }

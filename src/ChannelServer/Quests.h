@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -74,6 +76,19 @@ struct QuestMob {
 
 struct ActiveQuest {
 	ActiveQuest() : done(false) { }
+
+	string getQuestData() const {
+		size_t s = mobs.size();
+		if (s == 0)
+			return data;
+
+		std::ostringstream info;
+		for (size_t i = 0; i < s; i++) {
+			info << std::setw(3) << std::setfill('0') << mobs[(s - i - 1)].count;
+		}
+		return info.str();
+	}
+
 	int16_t id;
 	bool done;
 	string data;
@@ -86,6 +101,7 @@ namespace Quests {
 	void addReward(int32_t id, QuestRewardsInfo &raws);
 	void setNextQuest(int16_t id, int16_t questid);
 	void getQuest(Player *player, PacketReader &packet);
+	void giveFame(Player *player, int32_t amount);
 	bool giveItem(Player *player, int32_t itemid, int16_t amount);
 	bool giveMesos(Player *player, int32_t amount);
 };

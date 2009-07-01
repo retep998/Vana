@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Quests.h"
 #include "SendHeader.h"
-#include <iomanip>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -52,17 +50,11 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 
 void QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) {
 	PacketCreator packet;
-	std::ostringstream info;
 	packet.add<int16_t>(SEND_NOTE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(quest.id);
 	packet.add<int8_t>(1);
-	for (size_t i = 0; i < quest.mobs.size(); i++) {
-		info << std::setw(3) << std::setfill('0') << quest.mobs[i].count << '\0';
-	}
-	packet.addString(info.str());
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+	packet.addString(quest.getQuestData());
 	player->getSession()->send(packet);
 }
 
@@ -116,6 +108,14 @@ void QuestsPacket::giveMesos(Player *player, int32_t amount) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_NOTE);
 	packet.add<int8_t>(5);
+	packet.add<int32_t>(amount);
+	player->getSession()->send(packet);
+}
+
+void QuestsPacket::giveFame(Player *player, int32_t amount) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int8_t>(4);
 	packet.add<int32_t>(amount);
 	player->getSession()->send(packet);
 }

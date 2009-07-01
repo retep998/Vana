@@ -33,6 +33,7 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(s
 		case Jobs::Sniper::Puppet:
 			hp = Skills::skills[summonid][level].x; // Get HP for puppet
 		case Jobs::Outlaw::Octopus:
+		case Jobs::Corsair::WrathOfTheOctopi:
 			type = 0; // No movement - Puppets and Octopus
 			break;
 		case Jobs::Priest::SummonDragon:
@@ -129,7 +130,8 @@ string Summons::getSummonName(int32_t summonid) {
 	switch (summonid) {
 		case Jobs::Bishop::Bahamut: ret = "Bahamut"; break;
 		case Jobs::Outlaw::Gaviota: ret = "Gaviota"; break;
-		case Jobs::Outlaw::Octopus: ret = "Octopus"; break;
+		case Jobs::Outlaw::Octopus:
+		case Jobs::Corsair::WrathOfTheOctopi: ret = "Octopus"; break;
 		case Jobs::Sniper::Puppet:
 		case Jobs::Ranger::Puppet: ret = "Puppet"; break;
 		case Jobs::Priest::SummonDragon: ret = "Summon Dragon"; break;

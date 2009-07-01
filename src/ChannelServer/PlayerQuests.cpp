@@ -272,6 +272,10 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 				m_player->getInventory()->modifyMesos(info.id);
 				QuestsPacket::giveMesos(m_player, info.id);
 			}
+			else if (info.isfame) {
+				m_player->getStats()->setFame(m_player->getStats()->getBaseStat(Stats::Fame) + static_cast<int16_t>(info.id));
+				QuestsPacket::giveFame(m_player, info.id);
+			}
 		}
 	}
 	if (chance > 0) {
@@ -308,21 +312,10 @@ bool PlayerQuests::isQuestComplete(int16_t questid) {
 }
 
 void PlayerQuests::connectData(PacketCreator &packet) {
-	std::ostringstream info;
-
 	packet.add<int16_t>(m_quests.size()); // Active quests
 	for (map<int16_t, ActiveQuest>::iterator iter = m_quests.begin(); iter != m_quests.end(); iter++) {
 		packet.add<int16_t>(iter->first);
-		if (iter->second.data != "") {
-			packet.addString(iter->second.data);
-		}
-		else {
-			for (size_t i = 0; i < iter->second.mobs.size(); i++) {
-				info << std::setw(3) << std::setfill('0') << iter->second.mobs[i].count << '\0';
-			}
-			packet.addString(info.str());
-			info.clear();
-		}
+		packet.addString(iter->second.getQuestData());
 	}
 
 	packet.add<int16_t>(m_completed.size()); // Completed quests
