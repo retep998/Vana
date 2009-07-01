@@ -119,6 +119,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getDEX", &LuaExports::getDEX);
 	lua_register(luaVm, "getEXP", &LuaExports::getEXP);
 	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
+	lua_register(luaVm, "getFame", &LuaExports::getFame);
 	lua_register(luaVm, "getFH", &LuaExports::getFH);
 	lua_register(luaVm, "getGender", &LuaExports::getGender);
 	lua_register(luaVm, "getGMLevel", &LuaExports::getGMLevel);
@@ -145,6 +146,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getSTR", &LuaExports::getSTR);
 	lua_register(luaVm, "giveAP", &LuaExports::giveAP);
 	lua_register(luaVm, "giveEXP", &LuaExports::giveEXP);
+	lua_register(luaVm, "giveFame", &LuaExports::giveFame);
 	lua_register(luaVm, "giveSP", &LuaExports::giveSP);
 	lua_register(luaVm, "isActiveItem", &LuaExports::isActiveItem);
 	lua_register(luaVm, "isActiveSkill", &LuaExports::isActiveSkill);
@@ -612,6 +614,11 @@ int LuaExports::getEyes(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getFame(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getFame());
+	return 1;
+}
+
 int LuaExports::getFH(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getFh());
 	return 1;
@@ -742,6 +749,12 @@ int LuaExports::giveAP(lua_State *luaVm) {
 int LuaExports::giveEXP(lua_State *luaVm) {
 	int32_t exp = lua_tointeger(luaVm, -1);
 	Levels::giveExp(getPlayer(luaVm), exp, true);
+	return 0;
+}
+
+int LuaExports::giveFame(lua_State *luaVm) {
+	int32_t fame = lua_tointeger(luaVm, 1);
+	Quests::giveFame(getPlayer(luaVm), fame);
 	return 0;
 }
 

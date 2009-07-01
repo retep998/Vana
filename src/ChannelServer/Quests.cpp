@@ -72,6 +72,11 @@ bool Quests::giveMesos(Player *player, int32_t amount) {
 	return true;
 }
 
+void Quests::giveFame(Player *player, int32_t amount) {
+	player->setFame(player->getFame() + amount);
+	QuestsPacket::giveFame(player, amount);
+}
+
 void Quests::getQuest(Player *player, PacketReader &packet) {
 	int8_t act = packet.get<int8_t>();
 	int16_t questid = packet.get<int16_t>();
