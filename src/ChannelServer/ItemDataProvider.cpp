@@ -231,6 +231,16 @@ void ItemDataProvider::loadData() {
 		skill.maxlevel = atoi(dataRow[3]);
 		items[atoi(dataRow[0])].cons.skills.push_back(skill);
 	}
+
+	// Item names
+	query << "SELECT objectid, name FROM stringdata WHERE type = 1";
+	res = query.use();
+
+	while (dataRow = res.fetch_raw_row()) {
+		// Col0 : Object/Item ID
+		//    1 : Name
+		item_names[atoi(dataRow[0])] = (string) dataRow[1];
+	}
 	std::cout << "DONE" << std::endl;
 }
 
@@ -337,4 +347,8 @@ int32_t ItemDataProvider::getMobId(int32_t cardid) {
 
 	}
 	return 0;
+}
+
+string ItemDataProvider::getItemName(int32_t itemid) {
+	return item_names.find(itemid) != item_names.end() ? item_names[itemid] : "";
 }
