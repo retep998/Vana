@@ -94,6 +94,15 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
+void QuestsPacket::forfeitQuest(Player *player, int16_t questid) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int8_t>(1);
+	packet.add<int16_t>(questid);
+	packet.add<int8_t>(0);
+	player->getSession()->send(packet);
+}
+
 void QuestsPacket::giveItem(Player *player, int32_t itemid, int32_t amount) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_GAIN_ITEM);
