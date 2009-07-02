@@ -34,14 +34,13 @@ class WorldServerAcceptPlayer;
 class PacketCreator;
 
 struct Channel : boost::noncopyable {
-	Channel() : players(0), connected(true) { }
+	Channel() : players(0) { }
 
 	WorldServerAcceptPlayer *player;
 	uint16_t id;
 	uint32_t ip;
 	vector<vector<uint32_t> > external_ip;
 
-	bool connected;
 	uint16_t port;
 	int32_t players;
 };
