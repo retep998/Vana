@@ -303,6 +303,13 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 	QuestsPacket::questFinish(m_player, questid, npcid, questinfo.nextquest, endtime);
 }
 
+void PlayerQuests::removeQuest(int16_t questid) {
+	if (isQuestActive(questid)) {
+		m_quests.erase(questid);
+		QuestsPacket::forfeitQuest(m_player, questid);
+	}
+}
+
 bool PlayerQuests::isQuestActive(int16_t questid) {
 	return m_quests.find(questid) != m_quests.end();
 }

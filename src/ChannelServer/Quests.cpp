@@ -73,13 +73,19 @@ bool Quests::giveMesos(Player *player, int32_t amount) {
 }
 
 void Quests::giveFame(Player *player, int32_t amount) {
-	player->getStats()->setFame(player->getStats()->getBaseStat(Stats::Fame) + amount);
+	player->getStats()->setFame(player->getStats()->getBaseStat(Stats::Fame) + static_cast<int16_t>(amount));
 	QuestsPacket::giveFame(player, amount);
 }
 
 void Quests::getQuest(Player *player, PacketReader &packet) {
 	int8_t act = packet.get<int8_t>();
 	int16_t questid = packet.get<int16_t>();
+
+	if (act == 3) {
+		player->getQuests()->removeQuest(questid);
+		return;
+	}
+
 	int32_t npcid = packet.get<int32_t>();
 	if (act == 0) {	
 		// Absolutely no idea what this does

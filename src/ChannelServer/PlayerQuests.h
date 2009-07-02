@@ -41,6 +41,7 @@ public:
 	void updateQuestMob(int32_t mobid);
 	void checkDone(ActiveQuest &quest);
 	void finishQuest(int16_t questid, int32_t npcid);
+	void removeQuest(int16_t questid);
 	bool isQuestActive(int16_t questid);
 	bool isQuestComplete(int16_t questid);
 	void setQuestData(int16_t id, const string &data);

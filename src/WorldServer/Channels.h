@@ -57,6 +57,7 @@ public:
 	Channel * getChannel(uint16_t num);
 	void sendToAll(PacketCreator &packet);
 	uint16_t size();
+	uint16_t getAvailableChannel();
 private:
 	Channels() {};
 	static Channels *singleton;
