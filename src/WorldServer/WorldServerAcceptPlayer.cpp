@@ -62,8 +62,8 @@ void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 }
 
 void WorldServerAcceptPlayer::authenticated(int8_t type) {
-	if (Channels::Instance()->size() < WorldServer::Instance()->getMaxChannels()) {
-		channel = Channels::Instance()->getAvailableChannel();
+	channel = Channels::Instance()->getAvailableChannel();
+	if (channel != -1) {
 		uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
 		Channels::Instance()->registerChannel(this, channel, ip, getExternalIp(), port);
 		WorldServerAcceptPacket::connect(this, channel, port, WorldServer::Instance()->getMaxMultiLevel(), WorldServer::Instance()->getMaxStats());
