@@ -59,6 +59,7 @@ namespace Mobs {
 	void handleBomb(Player *player, PacketReader &packet);
 	void monsterControl(Player *player, PacketReader &packet);
 	void checkSpawn(int32_t mapid);
+	void friendlyDamaged(Player *player, PacketReader &packet);
 };
 
 class Mob : public MovableLife {
@@ -123,6 +124,7 @@ public:
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return owner; }
 	Mob * getSponge() const { return horntailsponge; }
+	const MobInfo * getInfo() const { return &info; }
 	vector<MobSkillInfo> getSkills() const { return info.skills; }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
 
