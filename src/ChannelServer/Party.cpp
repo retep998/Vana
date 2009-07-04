@@ -235,6 +235,18 @@ vector<int32_t> Party::getAllPlayerIds() {
 	return playerids;
 }
 
+vector<Player *> Party::getPartyMembers(int32_t mapid) {
+	vector<Player *> players;
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		if (iter->second != 0) {
+			if (mapid == -1 || iter->second->getMap() == mapid) {
+				players.push_back(iter->second);
+			}
+		}
+	}
+	return players;
+}
+
 void Party::setMember(int32_t playerid, Player *player) {
 	members[playerid] = player;
 }

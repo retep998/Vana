@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MovementHandler.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
+#include "Party.h"
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
@@ -492,8 +493,20 @@ void Mob::die(Player *player, bool fromexplosion) {
 	MobsPacket::dieMob(this, fromexplosion ? 4 : 1);
 	Drops::doDrops(highestdamager, mapid, mobid, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
 
-	if (player != 0)
+	if (player != 0) {
+		Party *party = player->getParty();
+		if (party != 0) {
+			vector<Player *> members = party->getPartyMembers();
+			Player *current;
+			for (size_t memsize = 0; memsize < members.size(); memsize++) {
+				current = members[memsize];
+				if (current != player) {
+					current->getQuests()->updateQuestMob(mobid);
+				}
+			}
+		}
 		player->getQuests()->updateQuestMob(mobid);
+	}
 
 	if (info.buff != 0) {
 		for (size_t k = 0; k < map->getNumPlayers(); k++) {
