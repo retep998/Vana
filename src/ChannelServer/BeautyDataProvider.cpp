@@ -27,7 +27,9 @@ using Initializing::outputWidth;
 BeautyDataProvider * BeautyDataProvider::singleton = 0;
 
 void BeautyDataProvider::loadData() {
+	// Skin data
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Skins... ";
+	skins.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skindata ORDER BY skinid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 	MYSQL_ROW Row;
@@ -37,7 +39,10 @@ void BeautyDataProvider::loadData() {
 	}
 	std::cout << "DONE" << std::endl;
 
+	// Hair data
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Hair... ";
+	femalehair.clear();
+	malehair.clear();
 	query << "SELECT * FROM hairdata ORDER BY hairid ASC";
 	res = query.use();
 	bool female;
@@ -54,7 +59,10 @@ void BeautyDataProvider::loadData() {
 	}
 	std::cout << "DONE" << std::endl;
 
+	// Face data
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Faces... ";
+	femalefaces.clear();
+	malefaces.clear();
 	query << "SELECT * FROM facedata ORDER BY faceid ASC";
 	res = query.use();
 	while (Row = res.fetch_raw_row()) {

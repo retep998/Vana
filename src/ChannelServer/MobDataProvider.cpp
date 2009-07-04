@@ -31,6 +31,7 @@ MobDataProvider * MobDataProvider::singleton = 0;
 
 void MobDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
+	mobinfo.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT mobdata.mobid, mobdata.level, mobdata.hp, mobdata.mp, mobdata.elemAttr, mobdata.hprecovery, mobdata.mprecovery, mobdata.selfdestruction, mobdata.exp, mobdata.boss, mobdata.hpcolor, mobdata.hpbgcolor, mobdata.undead, mobdata.buff, mobdata.publicreward, mobdata.explosivereward, mobdata.link, mobdata.removeafter, mobsummondata.summonid FROM mobdata LEFT JOIN mobsummondata ON mobdata.mobid = mobsummondata.mobid ORDER BY mobdata.mobid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 
