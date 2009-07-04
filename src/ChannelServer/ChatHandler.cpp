@@ -16,7 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandler.h"
+#include "BeautyDataProvider.h"
 #include "Database.h"
+#include "DropDataProvider.h"
 #include "Inventory.h"
 #include "IpUtilities.h"
 #include "ItemDataProvider.h"
@@ -126,6 +128,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["listmobs"] = make_pair(CmdListMobs, 1);
 	commandlist["getmobhp"] = make_pair(CmdGetMobHp, 1);
 	commandlist["killmob"] = make_pair(CmdKillMob, 1);
+	commandlist["reload"] = make_pair(CmdReload, 1);
 }
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
@@ -652,6 +655,23 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					if (args.length() != 0)
 						player->getStats()->setFame(atoi(args.c_str()));
 					break;
+				case CmdReload: {
+					if (args.length() != 0) {
+						if (args == "items") ItemDataProvider::Instance()->loadData();
+						else if (args == "drops") DropDataProvider::Instance()->loadData();
+						else if (args == "shops") ShopDataProvider::Instance()->loadData();
+						else if (args == "mobs") MobDataProvider::Instance()->loadData();
+						else if (args == "beauty") BeautyDataProvider::Instance()->loadData();
+						else {
+							PlayerPacket::showMessage(player, "Usage: !reload <${items, drops, mobs, beauty, shops}>", 6);
+						}
+
+					}
+					else {
+						PlayerPacket::showMessage(player, "Usage: !reload <${items, drops, mobs, beauty, shops}>", 6);
+					}
+					break;
+				}
 				case CmdShop: {
 					if (args.length() != 0) {
 						int32_t shopid = -1;

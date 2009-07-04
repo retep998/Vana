@@ -36,6 +36,7 @@ ItemDataProvider * ItemDataProvider::singleton = 0;
 void ItemDataProvider::loadData() {
 	// Equips
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Items... ";
+	equips.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM equipdata");
 	mysqlpp::UseQueryResult res = query.use();
 
@@ -89,6 +90,7 @@ void ItemDataProvider::loadData() {
 	}
 
 	// Items
+	items.clear();
 	query << "SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid = itemsummondata.itemid ORDER BY itemid ASC";
 	res = query.use();
 
@@ -219,6 +221,17 @@ void ItemDataProvider::loadData() {
 		skill.maxlevel = atoi(dataRow[3]);
 		items[atoi(dataRow[0])].cons.skills.push_back(skill);
 	}
+
+	// Item names
+	item_names.clear();
+	query << "SELECT objectid, name FROM stringdata WHERE type = 1";
+	res = query.use();
+
+	while (dataRow = res.fetch_raw_row()) {
+		// Col0 : Object/Item ID
+		//    1 : Name
+		item_names[atoi(dataRow[0])] = (string) dataRow[1];
+	}
 	std::cout << "DONE" << std::endl;
 }
 
@@ -305,4 +318,8 @@ int16_t ItemDataProvider::getMaxSlot(int32_t itemid) {
 		return 1;
 	else
 		return items.find(itemid) != items.end() ? items[itemid].maxslot : 0;
+}
+
+string ItemDataProvider::getItemName(int32_t itemid) {
+	return item_names.find(itemid) != item_names.end() ? item_names[itemid] : "";
 }
