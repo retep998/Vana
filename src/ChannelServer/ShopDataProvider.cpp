@@ -33,6 +33,7 @@ ShopDataProvider * ShopDataProvider::singleton = 0;
 
 void ShopDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
+	shops.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT shopdata.shopid, shopdata.npcid, shopdata.rechargetier FROM shopdata");
 	mysqlpp::UseQueryResult res = query.use();
 
@@ -83,6 +84,7 @@ void ShopDataProvider::loadData() {
 		shops[previousid] = shop;
 	}
 
+	rechargecosts.clear();
 	query << "SELECT * FROM rechargedata";
 	res = query.use();
 

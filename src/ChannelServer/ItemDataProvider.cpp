@@ -37,6 +37,7 @@ ItemDataProvider * ItemDataProvider::singleton = 0;
 void ItemDataProvider::loadData() {
 	// Equips
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Items... ";
+	equips.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM equipdata");
 	mysqlpp::UseQueryResult res = query.use();
 
@@ -90,6 +91,7 @@ void ItemDataProvider::loadData() {
 	}
 
 	// Monster cards
+	cards.clear();
 	query << "SELECT monstercarddata.cardid, monstercarddata.mobid FROM monstercarddata";
 	res = query.use();
 	while (dataRow = res.fetch_raw_row()) {
@@ -101,6 +103,7 @@ void ItemDataProvider::loadData() {
 	}
 
 	// Items
+	items.clear();
 	query << "SELECT itemdata.*, itemsummondata.mobid, itemsummondata.chance FROM itemdata LEFT JOIN itemsummondata ON itemdata.itemid = itemsummondata.itemid ORDER BY itemid ASC";
 	res = query.use();
 
@@ -233,6 +236,7 @@ void ItemDataProvider::loadData() {
 	}
 
 	// Item names
+	item_names.clear();
 	query << "SELECT objectid, name FROM stringdata WHERE type = 1";
 	res = query.use();
 

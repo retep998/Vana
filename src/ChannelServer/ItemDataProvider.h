@@ -143,7 +143,8 @@ private:
 	unordered_map<int32_t, EquipInfo> equips;
 	unordered_map<int32_t, ItemInfo> items;
 	unordered_map<int32_t, string> item_names;
-	card_map cards; // Left, cardid; right, mobid 
+	card_map cards; // Left, cardid; right, mobid
+
 	void addItemInfo(int32_t id, ItemInfo item);
 };
 

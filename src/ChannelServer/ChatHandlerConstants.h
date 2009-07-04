@@ -63,6 +63,7 @@ enum Commands {
 	CmdHeal,
 	CmdItem,
 	CmdMesos,
+	CmdReload,
 	CmdRelog,
 	CmdSave,
 	CmdClearDrops,

@@ -28,6 +28,7 @@ DropDataProvider * DropDataProvider::singleton = 0;
 void DropDataProvider::loadData() {
 	// Mob/Reactor drops
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Drops... ";
+	dropdata.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT dropperid, ismesos, itemid, min, max, questid, chance FROM dropdata");
 	mysqlpp::UseQueryResult res = query.use();
 
