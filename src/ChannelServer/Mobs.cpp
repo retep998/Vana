@@ -210,14 +210,17 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 
 	if (!poison) { // HP bar packet does nothing for showing damage when poison is damaging for whatever reason
 		Player *player = Players::Instance()->getPlayer(playerid);
+	
+		uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
 
-		if (player != 0) {
-			if (info.hpcolor > 0) // Boss HP bars - Horntail's damage sponge isn't a boss in the data
-				MobsPacket::showBossHp(player, mobid, hp, info);
-			else { // Normal/Miniboss HP bars
-				uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
-				MobsPacket::showHp(player, id, percent, info.boss);
-			}
+		if (info.hpcolor > 0) { // Boss HP bars - Horntail's damage sponge isn't a boss in the data
+			MobsPacket::showBossHp(mapid, mobid, hp, info);
+		}
+		else if (info.boss) { // Minibosses
+			MobsPacket::showHp(mapid, id, percent);
+		}
+		else if (player != 0) {
+			MobsPacket::showHp(player, id, percent);
 		}
 
 		Mob *sponge = getSponge(); // Need to preserve the pointer through mob deletion in die()
@@ -622,6 +625,18 @@ void Mobs::handleBomb(Player *player, PacketReader &packet) {
 	mob->explode();
 }
 
+void Mobs::friendlyDamaged(Player *player, PacketReader &packet) {
+	int32_t damagedealer = packet.get<int32_t>();
+	packet.skipBytes(4); // Always 1?
+	int32_t damagetaker = packet.get<int32_t>();
+	Mob *dealer = Maps::getMap(player->getMap())->getMob(damagedealer);
+	Mob *taker = Maps::getMap(player->getMap())->getMob(damagetaker);
+	if (dealer != 0 && taker != 0) {
+		int32_t damage = dealer->getInfo()->level * Randomizer::Instance()->randInt(100) / 10; // Temp for now until I figure out something more effective
+		taker->applyDamage(0, damage);
+	}
+}
+
 void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	int32_t mobid = packet.get<int32_t>();
 
@@ -646,7 +661,7 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 
 	MovementHandler::parseMovement(mob, packet);
 
-	if (useskill && skill == -1 || useskill && skill == 0) {
+	if (useskill && (skill == -1 || skill == 0)) {
 		if (!mob->hasStatus(StatusEffects::Mob::Freeze) && !mob->hasStatus(StatusEffects::Mob::Stun)) {
 			vector<MobSkillInfo> hurf = mob->getSkills();
 			bool used = false;

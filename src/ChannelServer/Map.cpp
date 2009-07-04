@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Party.h"
 #include "Player.h"
+#include "Players.h"
 #include "PlayerPacket.h"
 #include "Randomizer.h"
 #include "ReactorPacket.h"
