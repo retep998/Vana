@@ -496,16 +496,14 @@ void Mob::die(Player *player, bool fromexplosion) {
 	if (player != 0) {
 		Party *party = player->getParty();
 		if (party != 0) {
-			vector<Player *> members = party->getPartyMembers();
-			Player *current;
+			vector<Player *> members = party->getPartyMembers(mapid);
 			for (size_t memsize = 0; memsize < members.size(); memsize++) {
-				current = members[memsize];
-				if (current != player) {
-					current->getQuests()->updateQuestMob(mobid);
-				}
+				members[memsize]->getQuests()->updateQuestMob(mobid);
 			}
 		}
-		player->getQuests()->updateQuestMob(mobid);
+		else {
+			player->getQuests()->updateQuestMob(mobid);
+		}
 	}
 
 	if (info.buff != 0) {
