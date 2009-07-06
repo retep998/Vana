@@ -100,9 +100,9 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 		player->getQuests()->finishQuest(questid, npcid);
 	}
 	else if (act == 4) {
-		NPCs::handleQuestNPC(player, npcid, true);
+		NPCs::handleQuestNPC(player, npcid, true, questid);
 	}
 	else if (act == 5) {
-		NPCs::handleQuestNPC(player, npcid, false);
+		NPCs::handleQuestNPC(player, npcid, false, questid);
 	}
 }
