@@ -20,11 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include "Quests.h"
+#include <boost/tr1/unordered_map.hpp>
 #include <map>
 #include <string>
 
 using std::map;
 using std::string;
+using std::tr1::unordered_map;
 
 class PacketCreator;
 class Player;
@@ -48,8 +50,13 @@ public:
 	string getQuestData(int16_t id);
 private:
 	Player *m_player;
+	unordered_map<int32_t, vector<int16_t> > m_mobtoquest;
 	map<int16_t, ActiveQuest> m_quests;
 	map<int16_t, int64_t> m_completed;
+
+	bool giveRewards(const QuestRewardInfo &info);
+	void addQuest(int16_t questid);
+	void addQuestMobs(int16_t questid, bool dbload = false);
 };
 
 #endif

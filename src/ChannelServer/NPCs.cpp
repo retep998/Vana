@@ -44,12 +44,12 @@ void NPCs::handleNPC(Player *player, PacketReader &packet) {
 	npc->run();
 }
 
-void NPCs::handleQuestNPC(Player *player, int32_t npcid, bool start) {
+void NPCs::handleQuestNPC(Player *player, int32_t npcid, bool start, int16_t questid) {
 	if (player->getNPC() != 0) {
 		return;
 	}
 
-	NPC *npc = new NPC(npcid, player, true, start);
+	NPC *npc = new NPC(npcid, player, questid, start);
 	npc->run();
 }
 
@@ -124,47 +124,46 @@ void NPCs::handleNPCAnimation(Player *player, PacketReader &packet) {
 	NPCPacket::animateNPC(player, packet);
 }
 
-NPC::NPC(int32_t npcid, Player *player, bool isquest, bool isstart) :
+NPC::NPC(int32_t npcid, Player *player, int16_t questid, bool isstart) :
 player(player),
 npcid(npcid),
+questid(questid),
 pos(Pos(0, 0)),
 state(0),
 text(""),
 cend(false)
 {
-	initScript(npcid, player, isquest, isstart);
+	initScript(npcid, player, questid, isstart);
 }
 
-NPC::NPC(int32_t npcid, Player *player, const Pos &pos, bool isquest, bool isstart) :
+NPC::NPC(int32_t npcid, Player *player, const Pos &pos, int16_t questid, bool isstart) :
 player(player),
 npcid(npcid),
+questid(questid),
 pos(pos),
 state(0),
 text(""),
 cend(false)
 {
-	initScript(npcid, player, isquest, isstart);
+	initScript(npcid, player, questid, isstart);
 }
 
 NPC::~NPC() {
 	player->setNPC(0);
 }
 
-void NPC::initScript(int32_t npcid, Player *player, bool isquest, bool isstart) {
+void NPC::initScript(int32_t npcid, Player *player, int16_t questid, bool isstart) {
 	struct stat fileinfo;
 	std::ostringstream filenameStream;
 	filenameStream << "scripts/npcs/" << npcid;
-	if (isquest) {
-		if (isstart)
-			filenameStream << "s";
-		else
-			filenameStream << "e";
+	if (questid != 0) {
+		filenameStream << (isstart ? "s" : "e");
 	}
 	filenameStream << ".lua";
 	string filename = filenameStream.str();
 
 	if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC exists
-		luaNPC.reset(new LuaNPC(filename, player->getId()));
+		luaNPC.reset(new LuaNPC(filename, player->getId(), questid));
 		player->setNPC(this);
 		setState(state);
 	}

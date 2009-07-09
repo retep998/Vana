@@ -139,6 +139,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_DROP_MESO: Drops::dropMesos(this, packet); break;
 		case RECV_FACE_EXPRESSION: PlayerHandler::handleFacialExpression(this, packet); break;
 		case RECV_FAME: Fame::handleFame(this, packet); break;
+		case RECV_FRIENDLY_MOB_DAMAGED: Mobs::friendlyDamaged(this, packet); break;
 		case RECV_GET_PLAYER_INFO: PlayerHandler::handleGetInfo(this, packet); break;
 		case RECV_GET_QUEST: Quests::getQuest(this, packet); break;
 		case RECV_GROUP_CHAT: ChatHandler::handleGroupChat(this, packet); break;

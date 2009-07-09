@@ -27,7 +27,7 @@ class NPC;
 
 class LuaNPC : public LuaScriptable {
 public:
-	LuaNPC(const string &filename, int32_t playerid);
+	LuaNPC(const string &filename, int32_t playerid, int16_t questid = 0);
 	
 	bool run();
 };
@@ -63,6 +63,7 @@ namespace LuaExports {
 	// Quest
 	int addQuest(lua_State *luaVm);
 	int endQuest(lua_State *luaVm);
+	int getQuestID(lua_State *luaVm);
 
 	// Skill
 	int getMaxSkillLevel(lua_State *luaVm);

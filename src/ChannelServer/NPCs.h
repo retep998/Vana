@@ -33,15 +33,15 @@ class PacketReader;
 
 namespace NPCs {
 	void handleNPC(Player *player, PacketReader &packet);
-	void handleQuestNPC(Player *player, int32_t npcid, bool start);
+	void handleQuestNPC(Player *player, int32_t npcid, bool start, int16_t questid = 0);
 	void handleNPCIn(Player *player, PacketReader &packet);
 	void handleNPCAnimation(Player *player, PacketReader &packet);
 };
 
 class NPC {
 public:
-	NPC(int32_t npcid, Player *player, bool isquest = false, bool isstart = false);
-	NPC(int32_t npcid, Player *player, const Pos &pos, bool isquest = false, bool isstart = false);
+	NPC(int32_t npcid, Player *player, int16_t questid = 0, bool isstart = false);
+	NPC(int32_t npcid, Player *player, const Pos &pos, int16_t questid = 0, bool isstart = false);
 	~NPC();
 
 	bool run();
@@ -70,19 +70,21 @@ public:
 	int32_t getNumber() const { return getnum; }
 	int32_t getState() const { return state; }
 	int32_t getSelected() const { return selected; }
+	int16_t getQuestId() const { return questid; }
 
 	string & getText() { return gettext; }
 	bool isEnd() const { return cend; }
 	Pos getPos() const { return pos; }
 
 	void showShop();
-	void initScript(int32_t npcid, Player *player, bool isquest, bool isstart);
+	void initScript(int32_t npcid, Player *player, int16_t questid, bool isstart);
 private:
 	bool cend;
 	int32_t npcid;
 	int32_t state;
 	int32_t selected;
 	int32_t getnum;
+	int16_t questid;
 	string text;
 	string gettext;
 	Player *player;

@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 #include "PetsPacket.h"
 #include "Player.h"
+#include "Players.h"
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "ShopDataProvider.h"

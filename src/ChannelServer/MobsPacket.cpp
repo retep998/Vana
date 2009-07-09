@@ -170,18 +170,24 @@ void MobsPacket::removeStatus(Mob *mob, int32_t status) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
-void MobsPacket::showHp(Player *player, int32_t mobid, int8_t per, bool miniboss) {
+void MobsPacket::showHp(Player *player, int32_t mobid, int8_t per) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_MOB_HP);
 	packet.add<int32_t>(mobid);
 	packet.add<int8_t>(per);
-	if (miniboss)
-		Maps::getMap(player->getMap())->sendPacket(packet);
-	else
-		player->getSession()->send(packet);
+	player->getSession()->send(packet);
 }
+
+void MobsPacket::showHp(int32_t mapid, int32_t mobid, int8_t per) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_SHOW_MOB_HP);
+	packet.add<int32_t>(mobid);
+	packet.add<int8_t>(per);
+	Maps::getMap(mapid)->sendPacket(packet);
+}
+
 // Boss hp
-void MobsPacket::showBossHp(Player *player, int32_t mobid, int32_t hp, const MobInfo &info) {
+void MobsPacket::showBossHp(int32_t mapid, int32_t mobid, int32_t hp, const MobInfo &info) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MAP_EFFECT);
 	packet.add<int8_t>(0x05);
@@ -190,7 +196,7 @@ void MobsPacket::showBossHp(Player *player, int32_t mobid, int32_t hp, const Mob
 	packet.add<int32_t>(info.hp);
 	packet.add<int8_t>(info.hpcolor);
 	packet.add<int8_t>(info.hpbgcolor);
-	Maps::getMap(player->getMap())->sendPacket(packet);
+	Maps::getMap(mapid)->sendPacket(packet);
 }
 
 void MobsPacket::dieMob(Mob *mob, int8_t death) {
