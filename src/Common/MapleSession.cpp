@@ -87,7 +87,7 @@ void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
 		memcpy(buffer, buf, len);
 	}
 
-	bool isWriting = !m_send_packet_queue.empty();
+	bool isWriting = (!m_send_packet_queue.empty() && !m_send_size_queue.empty());
 
 	m_send_packet_queue.push(shared_array<unsigned char>(buffer));
 	m_send_size_queue.push(realLength);
@@ -116,7 +116,7 @@ void MapleSession::handle_write(const boost::system::error_code &error,
 								size_t bytes_transferred) {
 	boost::mutex::scoped_lock l(m_send_mutex);
 	if (!error) {
-		if (!m_send_packet_queue.empty()) { // More packet(s) to send
+		if (!m_send_packet_queue.empty() && !m_send_size_queue.empty()) { // More packet(s) to send
 			send_next_packet();
 		}
 	}
