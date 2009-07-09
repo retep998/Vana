@@ -137,15 +137,20 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 
 	if (player->isGm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
-		string command = strtok(chat+1, " ");
+		string command = strtok(chat + 1, " ");
 		string args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
 		regex re; // Regular expression for use by commands with more complicated structures
 		cmatch matches; // Regular expressions match for such commands
 
-		if (commandlist.find(command) == commandlist.end())
+		if (commandlist.find(command) == commandlist.end()) {
+			PlayerPacket::showMessage(player, "Command \"" + command + "\" does not exist.", 6);
 			return;
-
-		if (player->getGmLevel() >= commandlist[command].second) { // GM level for the command
+		}
+		if (player->getGmLevel() < commandlist[command].second) { // GM level for the command
+			PlayerPacket::showMessage(player, "You are not at a high enough GM level to use the command.", 6);
+			return;
+		}
+		else {
 			switch (commandlist[command].first) { // CMD constant associated with command
 				case CmdHeader:
 					WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), args);
