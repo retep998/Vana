@@ -63,8 +63,9 @@ const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value
 	StatusEffects::Mob::ShadowWeb,
 	StatusEffects::Mob::WeaponImmunity,
 	StatusEffects::Mob::MagicImmunity,
-	StatusEffects::Mob::VenomousWeapon,
+	StatusEffects::Mob::NinjaAmbush,
 
+	StatusEffects::Mob::VenomousWeapon,
 	StatusEffects::Mob::Empty,
 	StatusEffects::Mob::InertMob,
 	StatusEffects::Mob::WeaponDamageReflect,
@@ -292,10 +293,14 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 		statuses[cstatus] = statusinfo[i];
 		addedstatus += cstatus;
 
-		if (cstatus == StatusEffects::Mob::Poison || cstatus == StatusEffects::Mob::VenomousWeapon) { // Damage timer for poison
-			new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
-				Timer::Id(Timer::Types::MobStatusTimer, cstatus, 1),
-				getTimers(), 0, 1000);
+		switch (cstatus) {
+			case StatusEffects::Mob::Poison:
+			case StatusEffects::Mob::VenomousWeapon:
+			case StatusEffects::Mob::NinjaAmbush: // Damage timer for poison(s)
+				new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
+					Timer::Id(Timer::Types::MobStatusTimer, cstatus, 1),
+					getTimers(), 0, 1000);
+				break;
 		}
 
 		new Timer::Timer(bind(&Mob::removeStatus, this, cstatus, true),
@@ -384,11 +389,7 @@ bool Mob::hasMagicReflect() const {
 }
 
 int16_t Mob::getStatusValue(int32_t status) {
-	int16_t v = 0;
-	if ((this->status & status) != 0) {
-		v = statuses[status].val;
-	}
-	return v;
+	return (hasStatus(status) ? statuses[status].val : 0);
 }
 
 int16_t Mob::getMagicReflection() {
@@ -866,7 +867,8 @@ void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSki
 	}
 }
 
-int32_t Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int8_t hits, int32_t damage) {
+int32_t Mobs::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int8_t hits, int32_t damage) {
+	Player *player = Players::Instance()->getPlayer(playerid);
 	vector<StatusInfo> statuses;
 	int16_t y = 0;
 	bool success = (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop);
@@ -1016,7 +1018,7 @@ int32_t Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t
 		case Jobs::NightLord::NinjaAmbush: {
 			int32_t test = 2 * (player->getStats()->getBaseStat(Stats::Str) + player->getStats()->getBaseStat(Stats::Luk)) * Skills::skills[skillid][level].damage / 100;
 			y = (test > 30000 ? 30000 : static_cast<int16_t>(test));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, y, skillid, Skills::skills[skillid][level].time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::NinjaAmbush, y, skillid, Skills::skills[skillid][level].time));
 			break;
 		}
 		case Jobs::Rogue::Disorder:
@@ -1039,7 +1041,7 @@ int32_t Mobs::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t
 	}
 
 	if (statuses.size() > 0) {
-		mob->addStatus(player->getId(), statuses);
+		mob->addStatus(playerid, statuses);
 	}
 	return statuses.size();
 }

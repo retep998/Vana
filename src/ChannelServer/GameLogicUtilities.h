@@ -44,7 +44,7 @@ namespace GameLogicUtilities {
 	inline bool isFourthJobSkill(int32_t skillid) { return ((skillid / 10000) % 10 == 2); }
 	inline bool isPuppet(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet || skillid == Jobs::Ranger::Puppet); }
 	inline bool isSummon(int32_t skillid) { return (isPuppet(skillid) || skillid == Jobs::Priest::SummonDragon || skillid == Jobs::Ranger::SilverHawk || skillid == Jobs::Sniper::GoldenEagle || skillid == Jobs::DarkKnight::Beholder || skillid == Jobs::FPArchMage::Elquines || skillid == Jobs::ILArchMage::Ifrit || skillid == Jobs::Bishop::Bahamut || skillid == Jobs::Bowmaster::Phoenix || skillid == Jobs::Marksman::Frostprey || skillid == Jobs::Outlaw::Octopus || skillid == Jobs::Corsair::WrathOfTheOctopi || skillid == Jobs::Outlaw::Gaviota); }
-	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return (((test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)) && ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y))); }
+	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y) && (test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)); }
 	inline bool isMaxDarkSight(int32_t skillid, uint8_t level) { return (skillid == Jobs::Rogue::DarkSight && level == 20); }
 	inline bool skillMatchesJob(int32_t skillid, int16_t job) { return ((skillid / 1000000 == job / 100) && (skillid / 10000 <= job)); }
 	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
