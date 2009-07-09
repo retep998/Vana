@@ -236,7 +236,7 @@ namespace FieldLimitBits {
 
 namespace StatusEffects {
 	namespace Mob {
-		const uint8_t Count = 24; // Be sure to update count if you find a new status effect
+		const uint8_t Count = 25; // Be sure to update count if you find a new status effect
 		const uint8_t MaxVenomCount = 3;
 
 		enum MobStatus { // Groups of 5 for easier counting
@@ -262,8 +262,9 @@ namespace StatusEffects {
 			ShadowWeb = 0x20000,
 			WeaponImmunity = 0x40000,
 			MagicImmunity = 0x80000,
-			VenomousWeapon = 0x1000000,
+			NinjaAmbush = 0x400000,
 
+			VenomousWeapon = 0x1000000,
 			Empty = 0x8000000,
 			InertMob = 0x10000000,
 			WeaponDamageReflect = 0x20000000,
