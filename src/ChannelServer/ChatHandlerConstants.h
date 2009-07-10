@@ -66,6 +66,7 @@ enum Commands {
 	CmdReload,
 	CmdRelog,
 	CmdSave,
+	CmdHelp,
 	CmdClearDrops,
 	CmdWarpAll,
 	CmdWarp,
