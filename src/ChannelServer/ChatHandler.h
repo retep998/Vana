@@ -39,7 +39,7 @@ namespace ChatHandler {
 	extern unordered_map<string, vector<string> > commandnotes;
 
 	void initializeCommands();
-	void showSyntax(Player *player, const string &command);
+	void showSyntax(Player *player, const string &command, bool fromHelp = false);
 	void handleChat(Player *player, PacketReader &packet);
 	void handleGroupChat(Player *player, PacketReader &packet);
 };
