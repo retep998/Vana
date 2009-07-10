@@ -1154,8 +1154,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
 	vector<int32_t> receivers;
 	int8_t type = packet.get<int8_t>();
-	uint8_t amount = packet.get<int8_t>();
-	for (size_t i = 0; i < amount; i++) {
+	uint8_t amount = packet.get<uint8_t>();
+	for (uint8_t i = 0; i < amount; i++) {
 		receivers.push_back(packet.get<int32_t>());
 	}
 	string chat = packet.getString();
