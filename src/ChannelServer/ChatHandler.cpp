@@ -291,7 +291,7 @@ void ChatHandler::initializeCommands() {
 	commandnotes["help"].push_back("[#time in seconds] = optional parameter");
 }
 
-void ChatHandler::showSyntax(Player *player, const string &command) {
+void ChatHandler::showSyntax(Player *player, const string &command, bool fromHelp) {
 	if (commandsyntax.find(command) != commandsyntax.end()) {
 		string msg = "Usage: !" + command + " " + commandsyntax[command];
 		PlayerPacket::showMessage(player, msg, 6);
@@ -299,7 +299,7 @@ void ChatHandler::showSyntax(Player *player, const string &command) {
 	else {
 		PlayerPacket::showMessage(player, "Usage: !" + command, 6);
 	}
-	if (commandnotes.find(command) != commandnotes.end()) {
+	if (fromHelp && commandnotes.find(command) != commandnotes.end()) {
 		PlayerPacket::showMessage(player, "Notes: " + commandnotes[command][0], 6);
 		for (size_t i = 1; i < commandnotes[command].size(); i++) {
 			PlayerPacket::showMessage(player, commandnotes[command][i], 6);
@@ -331,7 +331,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				case CmdHelp: {
 					if (args.length() != 0) {
 						if (commandlist.find(args) != commandlist.end()) {
-							showSyntax(player, args);
+							showSyntax(player, args, true);
 						}
 						else {
 							PlayerPacket::showMessage(player, "Command \"" + args + "\" does not exist.", 6);
