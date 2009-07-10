@@ -130,7 +130,7 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 				message = "[Congrats] ";
 				message += player->getName();
 				message += " has reached Level ";
-				message += boost::lexical_cast<string>(getMaxLevel(fulljob));
+				message += boost::lexical_cast<string>((int16_t) getMaxLevel(fulljob));
 				message += "! Congratulate ";
 				message += player->getName();
 				message += " on such an amazing achievement!";
