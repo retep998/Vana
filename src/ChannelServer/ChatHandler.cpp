@@ -793,7 +793,6 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					else {
 						showSyntax(player, command);
-						PlayerPacket::showMessage(player, "Usage: !addsp <#skillid> [#amount]", 6);
 					}
 					break;
 				}
@@ -930,7 +929,6 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					}
 					else {
 						showSyntax(player, command);
-						PlayerPacket::showMessage(player, "Usage: !item <#itemid> [#amount]", 6);
 					}
 					break;
 				}
