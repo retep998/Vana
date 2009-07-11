@@ -36,7 +36,14 @@ void NPCs::handleNPC(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	NPCSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(packet.get<int32_t>() - 100);
+	int32_t npcid = packet.get<int32_t>() - 100;
+
+	if (!Maps::getMap(player->getMap())->isValidNpcIndex(npcid)) {
+		// Shouldn't ever happen except in edited packets
+		return;
+	}
+
+	NPCSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
 	if (ShopDataProvider::Instance()->showShop(player, npcs.id)) // Shop
 		return;
 
