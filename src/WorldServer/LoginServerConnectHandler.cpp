@@ -31,6 +31,7 @@ void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, Packet
 		WorldServer::Instance()->setWorldId(worldid);
 		WorldServer::Instance()->setInterPort(packet.get<int16_t>());
 		WorldServer::Instance()->setMaxChannels(packet.get<int32_t>());
+		WorldServer::Instance()->setMaxChars(packet.get<int32_t>());
 		WorldServer::Instance()->setMaxMultiLevel(packet.get<int8_t>());
 		WorldServer::Instance()->setMaxStats(packet.get<int16_t>());
 		WorldServer::Instance()->setScrollingHeader(packet.getString());
