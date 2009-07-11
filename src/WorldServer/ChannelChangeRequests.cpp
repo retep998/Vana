@@ -32,7 +32,7 @@ void ChannelChangeRequests::removePendingPlayer(int32_t id) {
 void ChannelChangeRequests::removePendingPlayerEarly(int32_t id) {
 	if (m_map.find(id) != m_map.end()) {
 		uint16_t channel = m_map[id];
-		WorldServerAcceptPacket::sendBuffRemoval(channel, id);
+		WorldServerAcceptPacket::sendHeldPacketRemoval(channel, id);
 		m_map.erase(id);
 	}
 }

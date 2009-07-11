@@ -56,7 +56,7 @@ void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptPlayer *play
 	int32_t playerid = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
 	if (chan) {
-		WorldServerAcceptPacket::sendBuffsToChannel(chan->id, playerid, packet);
+		WorldServerAcceptPacket::sendPacketToChannelForHolding(chan->id, playerid, packet);
 		ChannelChangeRequests::Instance()->addPendingPlayer(playerid, chan->id);
 	}
 	else { // Channel doesn't exist (offline)
