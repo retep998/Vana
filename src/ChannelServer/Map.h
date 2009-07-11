@@ -160,6 +160,7 @@ public:
 	// NPCs
 	int32_t addNPC(const NPCSpawnInfo &npc);
 	void removeNPC(int32_t index);
+	bool isValidNpcIndex(uint32_t id) { return (id < npcs.size()); }
 	NPCSpawnInfo getNpc(int32_t id) const { return this->npcs[id]; }
 
 	// Mobs
