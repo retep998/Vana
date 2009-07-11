@@ -56,7 +56,7 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t 
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::sendBuffsToChannel(uint16_t channel, int32_t playerid, PacketReader &buffer) {
+void WorldServerAcceptPacket::sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET);
 	packet.add<int32_t>(playerid);
@@ -64,7 +64,7 @@ void WorldServerAcceptPacket::sendBuffsToChannel(uint16_t channel, int32_t playe
 	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::sendBuffRemoval(uint16_t channel, int32_t playerid) {
+void WorldServerAcceptPacket::sendHeldPacketRemoval(uint16_t channel, int32_t playerid) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET_DISCONNECT);
 	packet.add<int32_t>(playerid);
