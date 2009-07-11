@@ -116,7 +116,7 @@ void PlayerStorage::load() {
 void PlayerStorage::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	// Using MySQL's non-standard ON DUPLICATE KEY UPDATE extension
-	query << "INSERT INTO storage VALUES ("
+	query << "INSERT INTO storage (userid, world_id, slots, mesos) VALUES ("
 		<< player->getUserId() << ", "
 		<< (int16_t) player->getWorldId() << ", "
 		<< (int16_t) getSlots() << ", "

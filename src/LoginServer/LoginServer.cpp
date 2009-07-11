@@ -90,6 +90,9 @@ void LoginServer::loadConfig() {
 		formatter % i % "scrolling_header";
 		world->scrollingHeader = config.getString(formatter.str());
 
+		formatter % i % "maxchars";
+		world->maxChars = config.getInt(formatter.str());
+
 		world->connected = false;
 		Worlds::worlds[world->id] = world;
 		i++;
