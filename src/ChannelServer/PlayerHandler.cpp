@@ -452,7 +452,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Marauder::EnergyDrain:
-		case Jobs::Striker::EnergyDrain: {
+		case Jobs::ThunderBreaker::EnergyDrain: {
 			int32_t hpRecover = totaldmg * Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x / 100;
 			if (hpRecover > player->getMHp())
 				player->setHp(player->getMHp());
@@ -464,8 +464,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::Crusader::SwordComa:
 		case Jobs::Crusader::AxePanic:
 		case Jobs::Crusader::AxeComa:
-		case Jobs::SoulWarrior::SwordPanic:
-		case Jobs::SoulWarrior::SwordComa:
+		case Jobs::DawnWarrior::SwordPanic:
+		case Jobs::DawnWarrior::SwordComa:
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
 		case Jobs::Crusader::Shout:
@@ -520,7 +520,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Unk
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
-		case Jobs::WindBreaker::Hurricane:
+		case Jobs::WindArcher::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
 		case Jobs::Corsair::RapidFire:
 			packet.skipBytes(4); // Charge time
@@ -597,7 +597,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	uint32_t totaldmg = damageMobs(player, packet, targets, hits, skillid, useless, &eater);
 	switch (skillid) {
 		case Jobs::FPMage::PoisonMist:
-		case Jobs::FlameWizard::FireCurtain: {
+		case Jobs::BlazeWizard::FireCurtain: {
 			uint8_t level = player->getSkills()->getSkillLevel(skillid);
 			Mist *mist = new Mist(player->getMap(), player, player->getPos(), Skills::skills[skillid][level], skillid, level);
 			break;

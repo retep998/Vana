@@ -934,7 +934,7 @@ int32_t Mobs::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8
 					break;
 			case Jobs::FPWizard::PoisonBreath:
 			case Jobs::FPMage::ElementComposition:
-			case Jobs::FlameWizard::FireCurtain:
+			case Jobs::BlazeWizard::FireCurtain:
 			case Jobs::NightWalker::PoisonSling:	
 				if (success) {
 					y = (int16_t)(mob->getMHp() / (70 - level));
@@ -953,7 +953,7 @@ int32_t Mobs::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8
 				break;
 			case Jobs::Hunter::ArrowBomb:
 			case Jobs::Crusader::SwordComa:
-			case Jobs::SoulWarrior::SwordComa:
+			case Jobs::DawnWarrior::SwordComa:
 			case Jobs::Crusader::AxeComa:
 			case Jobs::Crusader::Shout:
 			case Jobs::WhiteKnight::ChargeBlow:
@@ -973,7 +973,7 @@ int32_t Mobs::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8
 				break;
 			case Jobs::FPMage::Seal:
 			case Jobs::ILMage::Seal:
-			case Jobs::FlameWizard::Seal:
+			case Jobs::BlazeWizard::Seal:
 				if (success) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, Skills::skills[skillid][level].time));
 				}
@@ -1032,7 +1032,7 @@ int32_t Mobs::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8
 			break;
 		case Jobs::FPWizard::Slow:
 		case Jobs::ILWizard::Slow:
-		case Jobs::FlameWizard::Slow:
+		case Jobs::BlazeWizard::Slow:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
 			break;
 	}

@@ -77,7 +77,7 @@ void Skills::cancelSkill(Player *player, PacketReader &packet) {
 void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
-		case Jobs::WindBreaker::Hurricane:
+		case Jobs::WindArcher::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
 		case Jobs::FPArchMage::BigBang:
 		case Jobs::ILArchMage::BigBang:
@@ -174,10 +174,10 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Page::Threaten:
 		case Jobs::FPWizard::Slow:
 		case Jobs::ILWizard::Slow:
-		case Jobs::FlameWizard::Slow:
+		case Jobs::BlazeWizard::Slow:
 		case Jobs::FPMage::Seal:
 		case Jobs::ILMage::Seal:
-		case Jobs::FlameWizard::Seal:
+		case Jobs::BlazeWizard::Seal:
 		case Jobs::Priest::Doom:
 		case Jobs::Hermit::ShadowWeb:
 		case Jobs::NightWalker::ShadowWeb:
@@ -243,12 +243,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Fighter::Rage:
-		case Jobs::SoulWarrior::Rage:
+		case Jobs::DawnWarrior::Rage:
 		case Jobs::Spearman::IronWill:
 		case Jobs::Spearman::HyperBody:
 		case Jobs::FPWizard::Meditation:
 		case Jobs::ILWizard::Meditation:
-		case Jobs::FlameWizard::Meditation:
+		case Jobs::BlazeWizard::Meditation:
 		case Jobs::Cleric::Bless:
 		case Jobs::Priest::HolySymbol:
 		case Jobs::Bishop::Resurrection:
@@ -260,7 +260,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Hermit::MesoUp:
 		case Jobs::Bandit::Haste:
 		case Jobs::Buccaneer::SpeedInfusion:
-		case Jobs::Striker::SpeedInfusion:
+		case Jobs::ThunderBreaker::SpeedInfusion:
 		case Jobs::Buccaneer::TimeLeap: 
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:

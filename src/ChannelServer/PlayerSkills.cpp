@@ -166,8 +166,8 @@ int32_t PlayerSkills::getElementalAmp() {
 		case Jobs::JobIds::ILArchMage:
 			skillid = Jobs::ILMage::ElementAmplification;
 			break;
-		case Jobs::JobIds::FlameWizard3:
-			skillid = Jobs::FlameWizard::ElementAmplification;
+		case Jobs::JobIds::BlazeWizard3:
+			skillid = Jobs::BlazeWizard::ElementAmplification;
 			break;
 	}
 	return skillid;
@@ -196,9 +196,9 @@ int32_t PlayerSkills::getEnergyCharge() {
 		case Jobs::JobIds::Buccaneer:
 			skillid = Jobs::Marauder::EnergyCharge;
 			break;
-		case Jobs::JobIds::Striker2:
-		case Jobs::JobIds::Striker3:
-			skillid = Jobs::Striker::EnergyCharge;
+		case Jobs::JobIds::ThunderBreaker2:
+		case Jobs::JobIds::ThunderBreaker3:
+			skillid = Jobs::ThunderBreaker::EnergyCharge;
 			break;
 	}
 	return skillid;
@@ -211,8 +211,8 @@ int32_t PlayerSkills::getComboAttack() {
 		case Jobs::JobIds::Hero:
 			skillid = Jobs::Crusader::ComboAttack;
 			break;
-		case Jobs::JobIds::SoulWarrior3:
-			skillid = Jobs::SoulWarrior::ComboAttack;
+		case Jobs::JobIds::DawnWarrior3:
+			skillid = Jobs::DawnWarrior::ComboAttack;
 			break;
 	}
 	return skillid;
@@ -224,8 +224,8 @@ int32_t PlayerSkills::getAdvancedCombo() {
 		case Jobs::JobIds::Hero:
 			skillid = Jobs::Hero::AdvancedComboAttack;
 			break;
-		case Jobs::JobIds::SoulWarrior3:
-			skillid = Jobs::SoulWarrior::AdvancedComboAttack;
+		case Jobs::JobIds::DawnWarrior3:
+			skillid = Jobs::DawnWarrior::AdvancedComboAttack;
 			break;
 	}
 	return skillid;
@@ -251,11 +251,11 @@ int32_t PlayerSkills::getHpIncrease() {
 		case Jobs::JobTracks::Warrior:
 			skillid = Jobs::Swordsman::ImprovedMaxHpIncrease;
 			break;
-		case Jobs::JobTracks::SoulWarrior:
-			skillid = Jobs::SoulWarrior::ImprovedMaxHpIncrease;
+		case Jobs::JobTracks::DawnWarrior:
+			skillid = Jobs::DawnWarrior::ImprovedMaxHpIncrease;
 			break;
-		case Jobs::JobTracks::Striker:
-			skillid = Jobs::Striker::ImproveMaxHp;
+		case Jobs::JobTracks::ThunderBreaker:
+			skillid = Jobs::ThunderBreaker::ImproveMaxHp;
 			break;
 		case Jobs::JobTracks::Pirate:
 			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
@@ -271,8 +271,8 @@ int32_t PlayerSkills::getMpIncrease() {
 		case Jobs::JobTracks::Magician:
 			skillid = Jobs::Magician::ImprovedMaxMpIncrease;
 			break;
-		case Jobs::JobTracks::FlameWizard:
-			skillid = Jobs::FlameWizard::ImprovedMaxMpIncrease;
+		case Jobs::JobTracks::BlazeWizard:
+			skillid = Jobs::BlazeWizard::ImprovedMaxMpIncrease;
 			break;
 	}
 	return skillid;

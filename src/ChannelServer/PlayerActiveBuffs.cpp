@@ -395,8 +395,8 @@ void PlayerActiveBuffs::stopBulletSkills() {
 		Skills::stopSkill(m_player, Jobs::Hunter::SoulArrow);
 	else if (getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0)
 		Skills::stopSkill(m_player, Jobs::Crossbowman::SoulArrow);
-	else if (getActiveSkillLevel(Jobs::WindBreaker::SoulArrow) > 0)
-		Skills::stopSkill(m_player, Jobs::WindBreaker::SoulArrow);
+	else if (getActiveSkillLevel(Jobs::WindArcher::SoulArrow) > 0)
+		Skills::stopSkill(m_player, Jobs::WindArcher::SoulArrow);
 	else if (getActiveSkillLevel(Jobs::NightLord::ShadowStars) > 0)
 		Skills::stopSkill(m_player, Jobs::NightLord::ShadowStars);
 }
@@ -450,7 +450,7 @@ bool PlayerActiveBuffs::hasShadowStars() {
 }
 
 bool PlayerActiveBuffs::hasSoulArrow() {
-	return (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0 || getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0 || getActiveSkillLevel(Jobs::WindBreaker::SoulArrow) > 0);
+	return (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0 || getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0 || getActiveSkillLevel(Jobs::WindArcher::SoulArrow) > 0);
 }
 
 bool PlayerActiveBuffs::hasHolyShield() {
@@ -469,8 +469,8 @@ int32_t PlayerActiveBuffs::getMagicGuard() {
 	int32_t id = 0;
 	if (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0)
 		id = Jobs::Magician::MagicGuard;
-	else if (getActiveSkillLevel(Jobs::FlameWizard::MagicGuard) > 0)
-		id = Jobs::FlameWizard::MagicGuard;
+	else if (getActiveSkillLevel(Jobs::BlazeWizard::MagicGuard) > 0)
+		id = Jobs::BlazeWizard::MagicGuard;
 	return id;
 }
 
@@ -500,8 +500,8 @@ int32_t PlayerActiveBuffs::getPowerStance() {
 		skillid = Jobs::DarkKnight::PowerStance;
 	else if (getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
 		skillid = Jobs::Marauder::EnergyCharge;
-	else if (getActiveSkillLevel(Jobs::Striker::EnergyCharge) > 0)
-		skillid = Jobs::Striker::EnergyCharge;
+	else if (getActiveSkillLevel(Jobs::ThunderBreaker::EnergyCharge) > 0)
+		skillid = Jobs::ThunderBreaker::EnergyCharge;
 	return skillid;
 }
 
