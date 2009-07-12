@@ -720,7 +720,7 @@ void Player::setBuddyListSize(uint8_t size) {
 }
 
 void Player::loseExp() {
-	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < Levels::getMaxLevel(getJob())) {
+	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < Levels::getMaxLevel(getJob()) && getMap() != Maps::SorcerersRoom) {
 		Map *loc = Maps::getMap(getMap());
 		int8_t exploss = 10;
 		if ((loc->getInfo()->fieldLimit & FieldLimitBits::RegularExpLoss) != 0 || loc->getInfo()->town)

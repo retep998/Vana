@@ -1055,6 +1055,7 @@ namespace Mobs {
 namespace Maps {
 	enum {
 		OriginOfClockTower = 220080001,
+		SorcerersRoom = 270020211,
 		NoMap = 999999999
 	};
 }
