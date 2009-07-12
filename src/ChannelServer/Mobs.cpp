@@ -78,6 +78,7 @@ val(val),
 skillid(skillid),
 mobskill(0),
 level(0),
+reflection(0),
 time(time)
 {
 	if (val == StatusEffects::Mob::Freeze && skillid != Jobs::FPArchMage::Paralyze) {
@@ -339,7 +340,7 @@ void Mob::statusPacket(PacketCreator &packet) {
 }
 
 void Mob::removeStatus(int32_t status, bool fromTimer) {
-	if (hasStatus(status)) {
+	if (hasStatus(status) && getHp() > 0) {
 		StatusInfo stat = statuses[status];
 		switch (status) {
 			case StatusEffects::Mob::ShadowWeb:
