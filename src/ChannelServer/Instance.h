@@ -43,9 +43,10 @@ namespace Timer {
 };
 
 struct TimerAction {
+	TimerAction() : persistent(0) { }
 	int32_t counterid;
-	int32_t time; // How long the timer lasts, negative integers indicate second of hour (-1 to -3601)
-	bool persistent; // Does it repeat?
+	int32_t time; // How long the timer lasts, negative integers indicate second of hour (-1 to -3600)
+	int32_t persistent; // How often does it repeat?
 };
 
 class Instance {
@@ -53,18 +54,13 @@ public:
 	Instance(const string &name, int32_t map, int32_t playerid, int32_t time, int32_t persistent, bool showtimer);
 	~Instance();
 
-	uint32_t getStart() const { return m_start; }
 	string getName() const { return m_name; }
+	uint32_t getStart() const { return m_start; }
+	int32_t getCounterId();
 	bool getMarkedForDelete() const { return m_marked_for_delete; }
 	void markForDelete();
 	void instanceEnd(bool fromTimer = false);
-	int32_t getCounterId();
 	Variables * getVariables() const { return m_variables.get(); }
-	void setResetAtEnd(bool reset) { m_reset_on_destroy = reset; }
-	void respawnMobs(int32_t mapid);
-	void respawnReactors(int32_t mapid);
-	bool showTimer() const { return m_show_timer; }
-	void showTimer(bool show, bool doit = false);
 
 	// Players
 	vector<int32_t> getAllPlayerIds();
@@ -90,21 +86,29 @@ public:
 	void addMap(int32_t mapid);
 	Map * getMap(int32_t mapid);
 	size_t getMapNum();
+	void setResetAtEnd(bool reset) { m_reset_on_destroy = reset; }
+	void respawnMobs(int32_t mapid);
+	void respawnReactors(int32_t mapid);
 
 	// Parties
 	void addParty(Party *party);
 
+	// Instance time
+	bool hasInstanceTimer() const { return m_time > 0; }
+	void setInstanceTimer(int32_t time, bool firstrun = false);
+	void setPersistence(int32_t p) { m_persistent = p; }
+	int32_t getPersistence() const { return m_persistent; }
+	int32_t checkInstanceTimer();
+	bool showTimer() const { return m_show_timer; }
+	void showTimer(bool show, bool doit = false);
+
 	// Timers
 	void removeAllTimers();
 	void removeTimer(const string &name);
-	void setInstanceTimer(int32_t time, bool firstrun = false);
-	void setPersistence(int32_t p) { m_persistent = p; }
 	void timerEnd(const string &name, bool fromTimer = false);
 	bool addTimer(const string &name, const TimerAction &timer);
-	bool hasInstanceTimer() const { return m_time > 0; }
-	int32_t getPersistence() const { return m_persistent; }
+	bool isTimerPersistent(const string &name);
 	int32_t checkTimer(const string &name);
-	int32_t checkInstanceTimer();
 	Timer::Container * getTimers() const { return m_timers.get(); }
 
 	// Lua interaction

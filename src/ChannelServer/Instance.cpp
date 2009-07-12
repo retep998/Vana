@@ -217,11 +217,11 @@ bool Instance::addTimer(const string &timername, const TimerAction &timer) {
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
 		if (timer.time > 0) { // Positive, occurs in the future
 			new Timer::Timer(bind(&Instance::timerEnd, this, timername, true),
-				id, getTimers(), Timer::Time::fromNow(timer.time * 1000));
+				id, getTimers(), Timer::Time::fromNow(timer.time * 1000), timer.persistent * 1000);
 		}
 		else { // Negative, occurs nth second of hour
 			new Timer::Timer(bind(&Instance::timerEnd, this, timername, true),
-				id, getTimers(), Timer::Time::nthSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))));
+				id, getTimers(), Timer::Time::nthSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), timer.persistent * 1000);
 		}
 		return true;
 	}
@@ -318,7 +318,9 @@ void Instance::sendMessage(InstanceMessages message, const string &parameter1, i
 
 void Instance::timerEnd(const string &name, bool fromTimer) {
 	sendMessage(TimerNaturalEnd, name, fromTimer ? 1 : 0);
-	removeTimer(name);
+	if (!fromTimer || (fromTimer && !isTimerPersistent(name))) {
+		removeTimer(name);
+	}
 }
 
 void Instance::instanceEnd(bool fromTimer) {
@@ -326,6 +328,10 @@ void Instance::instanceEnd(bool fromTimer) {
 	if (!getPersistence()) {
 		markForDelete();
 	}
+}
+
+bool Instance::isTimerPersistent(const string &name) {
+	return (m_timer_actions.find(name) != m_timer_actions.end() ? (m_timer_actions[name].persistent > 0) : false);
 }
 
 int32_t Instance::getCounterId() {

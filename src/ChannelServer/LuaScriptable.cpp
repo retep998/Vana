@@ -1682,7 +1682,9 @@ int LuaExports::startInstanceTimer(lua_State *luaVm) {
 	string name = lua_tostring(luaVm, 1);
 	TimerAction t;
 	t.time = lua_tointeger(luaVm, 2);
-	t.persistent = lua_toboolean(luaVm, 3) != 0;
+	if (lua_isnumber(luaVm, 3)) {
+		t.persistent = lua_tointeger(luaVm, 3);
+	}
 	t.counterid = getInstance(luaVm)->getCounterId();
 	lua_pushboolean(luaVm, getInstance(luaVm)->addTimer(name, t));
 	return 1;
