@@ -40,7 +40,6 @@ namespace TimeUtilities {
 	bool getDST(time_t ctime = time(0));
 	int32_t getTimeZoneOffset();
 	uint32_t getTickCount(); // The relative value can be used like GetTickCount on windows
-	int64_t getKoreanTimestamp(time_t ctime = time(0));
 }
 
 #endif

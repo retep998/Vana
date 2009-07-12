@@ -269,7 +269,7 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 		}
 	}
 	m_quests.erase(questid);
-	int64_t endtime = TimeUtilities::getKoreanTimestamp();
+	int64_t endtime = TimeUtilities::getServerTime();
 	m_completed[questid] = endtime;
 	QuestsPacket::questFinish(m_player, questid, npcid, questinfo.nextquest, endtime);
 }

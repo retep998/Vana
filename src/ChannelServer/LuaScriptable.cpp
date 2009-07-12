@@ -216,6 +216,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMonth", &LuaExports::getMonth);
 	lua_register(luaVm, "getSecond", &LuaExports::getSecond);
 	lua_register(luaVm, "getTime", &LuaExports::getTime);
+	lua_register(luaVm, "getTimeZoneOffset", &LuaExports::getTimeZoneOffset);
 	lua_register(luaVm, "getWeek", &LuaExports::getWeek);
 	lua_register(luaVm, "getYear", &LuaExports::getYear);
 
@@ -1257,6 +1258,11 @@ int LuaExports::getSecond(lua_State *luaVm) {
 
 int LuaExports::getTime(lua_State *luaVm) {
 	lua_pushinteger(luaVm, (lua_Integer) time(0)); // Here's to hoping that lua_Integer is an 8-byte type on most platforms!
+	return 1;
+}
+
+int LuaExports::getTimeZoneOffset(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getTimeZoneOffset());
 	return 1;
 }
 
