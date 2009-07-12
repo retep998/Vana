@@ -31,7 +31,7 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(s
 	switch (summonid) {
 		case Jobs::Ranger::Puppet:
 		case Jobs::Sniper::Puppet:
-		case Jobs::WindBreaker::Puppet:
+		case Jobs::WindArcher::Puppet:
 			hp = Skills::skills[summonid][level].x; // Get HP for puppet
 		case Jobs::Outlaw::Octopus:
 		case Jobs::Corsair::WrathOfTheOctopi:
@@ -135,7 +135,7 @@ string Summons::getSummonName(int32_t summonid) {
 		case Jobs::Corsair::WrathOfTheOctopi: ret = "Octopus"; break;
 		case Jobs::Sniper::Puppet:
 		case Jobs::Ranger::Puppet:
-		case Jobs::WindBreaker::Puppet: ret = "Puppet"; break;
+		case Jobs::WindArcher::Puppet: ret = "Puppet"; break;
 		case Jobs::Priest::SummonDragon: ret = "Summon Dragon"; break;
 		case Jobs::Ranger::SilverHawk: ret = "Silver Hawk"; break;
 		case Jobs::Sniper::GoldenEagle: ret = "Golden Eagle"; break;
@@ -146,12 +146,12 @@ string Summons::getSummonName(int32_t summonid) {
 		case Jobs::Marksman::Frostprey: ret = "Frostprey"; break;
 /* 
 	// No translated names yet, will simply leave them as "Summon" until there are
-		case Jobs::SoulWarrior::Soul: ret = "Soul"; break;
-		case Jobs::FlameWizard::Ifrit: ret = "Ifrit"; break;
-		case Jobs::FlameWizard::Flame: ret = "Flame"; break;
-		case Jobs::WindBreaker::Storm: ret = "Storm"; break;
+		case Jobs::DawnWarrior::Soul: ret = "Soul"; break;
+		case Jobs::BlazeWizard::Ifrit: ret = "Ifrit"; break;
+		case Jobs::BlazeWizard::Flame: ret = "Flame"; break;
+		case Jobs::WindArcher::Storm: ret = "Storm"; break;
 		case Jobs::NightWalker::Darkness: ret = "Darkness"; break;
-		case Jobs::Striker::Lightning: ret = "Lightning"; break;
+		case Jobs::ThunderBreaker::Lightning: ret = "Lightning"; break;
 */
 	}
 	return ret;

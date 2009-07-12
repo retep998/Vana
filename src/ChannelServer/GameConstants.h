@@ -363,11 +363,11 @@ namespace Jobs {
 			Pirate = 5,
 
 			Noblesse = 10,
-			SoulWarrior = 11,
-			FlameWizard = 12,
-			WindBreaker = 13,
+			DawnWarrior = 11,
+			BlazeWizard = 12,
+			WindArcher = 13,
 			NightWalker = 14,
-			Striker = 15
+			ThunderBreaker = 15
 		};
 	}
 	namespace JobIds {
@@ -425,25 +425,25 @@ namespace Jobs {
 
 			Noblesse = 1000,
 
-			SoulWarrior1 = 1100,
-			SoulWarrior2 = 1110,
-			SoulWarrior3 = 1111,
+			DawnWarrior1 = 1100,
+			DawnWarrior2 = 1110,
+			DawnWarrior3 = 1111,
 
-			FlameWizard1 = 1200,
-			FlameWizard2 = 1210,
-			FlameWizard3 = 1211,
+			BlazeWizard1 = 1200,
+			BlazeWizard2 = 1210,
+			BlazeWizard3 = 1211,
 
-			WindBreaker1 = 1300,
-			WindBreaker2 = 1310,
-			WindBreaker3 = 1311,
+			WindArcher1 = 1300,
+			WindArcher2 = 1310,
+			WindArcher3 = 1311,
 
 			NightWalker1 = 1400,
 			NightWalker2 = 1410,
 			NightWalker3 = 1411,
 
-			Striker1 = 1500,
-			Striker2 = 1510,
-			Striker3 = 1511
+			ThunderBreaker1 = 1500,
+			ThunderBreaker2 = 1510,
+			ThunderBreaker3 = 1511
 		};
 	}
 	namespace All {
@@ -889,7 +889,7 @@ namespace Jobs {
 			Recovery = 10001001
 		};
 	}
-	namespace SoulWarrior {
+	namespace DawnWarrior {
 		enum Skills {
 			AdvancedComboAttack = 11110005,
 			ComboAttack = 11111001,
@@ -905,7 +905,7 @@ namespace Jobs {
 			SwordPanic = 11111002
 		};
 	}
-	namespace FlameWizard {
+	namespace BlazeWizard {
 		enum Skills {
 			ElementalReset = 12101005,
 			ElementAmplification = 12110001,
@@ -922,7 +922,7 @@ namespace Jobs {
 			SpellBooster = 12101004
 		};
 	}
-	namespace WindBreaker {
+	namespace WindArcher {
 		enum Skills {
 			Albatross = 13111005,
 			BowBooster = 13101001,
@@ -957,7 +957,7 @@ namespace Jobs {
 			VenomousStar = 14110004
 		};
 	}
-	namespace Striker {
+	namespace ThunderBreaker {
 		enum Skills {
 			CorkscrewBlow = 15101003,
 			Dash = 15001003,

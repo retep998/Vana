@@ -51,11 +51,11 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::Bandit::DaggerBooster].player.push_back(player);
 	skillsinfo[Jobs::Infighter::KnucklerBooster].player.push_back(player);
 	skillsinfo[Jobs::Gunslinger::GunBooster].player.push_back(player);
-	skillsinfo[Jobs::SoulWarrior::SwordBooster].player.push_back(player);
-	skillsinfo[Jobs::FlameWizard::SpellBooster].player.push_back(player);
-	skillsinfo[Jobs::WindBreaker::BowBooster].player.push_back(player);
+	skillsinfo[Jobs::DawnWarrior::SwordBooster].player.push_back(player);
+	skillsinfo[Jobs::BlazeWizard::SpellBooster].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::BowBooster].player.push_back(player);
 	skillsinfo[Jobs::NightWalker::ClawBooster].player.push_back(player);
-	skillsinfo[Jobs::Striker::KnucklerBooster].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::KnucklerBooster].player.push_back(player);
 
 	// Speed Infusion
 	buff.type = 0x80;
@@ -63,7 +63,7 @@ Buffs::Buffs() {
 	buff.value = SkillX;
 	player.buff = buff;
 	skillsinfo[Jobs::Buccaneer::SpeedInfusion].player.push_back(player);
-	skillsinfo[Jobs::Striker::SpeedInfusion].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::SpeedInfusion].player.push_back(player);
 
 	// Maple Warriors
 	buff.type = 0x08;
@@ -89,7 +89,7 @@ Buffs::Buffs() {
 	buff.value = SkillX;
 	player.buff = buff;
 	skillsinfo[Jobs::Magician::MagicGuard].player.push_back(player);
-	skillsinfo[Jobs::FlameWizard::MagicGuard].player.push_back(player);
+	skillsinfo[Jobs::BlazeWizard::MagicGuard].player.push_back(player);
 
 	// Magic Armor, Iron Body
 	buff.type = 0x02;
@@ -98,8 +98,8 @@ Buffs::Buffs() {
 	player.buff = buff;
 	skillsinfo[Jobs::Magician::MagicArmor].player.push_back(player);
 	skillsinfo[Jobs::Swordsman::IronBody].player.push_back(player);
-	skillsinfo[Jobs::FlameWizard::MagicArmor].player.push_back(player);
-	skillsinfo[Jobs::SoulWarrior::IronBody].player.push_back(player);
+	skillsinfo[Jobs::BlazeWizard::MagicArmor].player.push_back(player);
+	skillsinfo[Jobs::DawnWarrior::IronBody].player.push_back(player);
 
 	// Focus
 	buff.type = 0x10;
@@ -107,13 +107,13 @@ Buffs::Buffs() {
 	buff.value = SkillAcc;
 	player.buff = buff;
 	skillsinfo[Jobs::Archer::Focus].player.push_back(player);
-	skillsinfo[Jobs::WindBreaker::Focus].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::Focus].player.push_back(player);
 	buff.type = 0x20;
 	buff.byte = Byte1;
 	buff.value = SkillAvo;
 	player.buff = buff;
 	skillsinfo[Jobs::Archer::Focus].player.push_back(player);
-	skillsinfo[Jobs::WindBreaker::Focus].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::Focus].player.push_back(player);
 
 	// Rage
 	buff.type = 0x01;
@@ -121,13 +121,13 @@ Buffs::Buffs() {
 	buff.value = SkillWatk;
 	player.buff = buff;
 	skillsinfo[Jobs::Fighter::Rage].player.push_back(player);
-	skillsinfo[Jobs::SoulWarrior::Rage].player.push_back(player);
+	skillsinfo[Jobs::DawnWarrior::Rage].player.push_back(player);
 	buff.type = 0x02;
 	buff.byte = Byte1;
 	buff.value = SkillWdef;
 	player.buff = buff;
 	skillsinfo[Jobs::Fighter::Rage].player.push_back(player);
-	skillsinfo[Jobs::SoulWarrior::Rage].player.push_back(player);
+	skillsinfo[Jobs::DawnWarrior::Rage].player.push_back(player);
 
 	// Power Guard
 	buff.type = 0x10;
@@ -170,7 +170,7 @@ Buffs::Buffs() {
 	player.buff = buff;
 	skillsinfo[Jobs::FPWizard::Meditation].player.push_back(player);
 	skillsinfo[Jobs::ILWizard::Meditation].player.push_back(player);
-	skillsinfo[Jobs::FlameWizard::Meditation].player.push_back(player);
+	skillsinfo[Jobs::BlazeWizard::Meditation].player.push_back(player);
 
 	// Invincible
 	buff.type = 0x80;
@@ -419,8 +419,8 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].player.push_back(player);
 	skillsinfo[Jobs::Paladin::BwHolyCharge].player.push_back(player);
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
-	skillsinfo[Jobs::SoulWarrior::SoulCharge].player.push_back(player);
-	skillsinfo[Jobs::Striker::LightningCharge].player.push_back(player);
+	skillsinfo[Jobs::DawnWarrior::SoulCharge].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::LightningCharge].player.push_back(player);
 	buff.type = 0x40;
 	buff.byte = Byte3;
 	buff.value = SkillMatk;
@@ -435,8 +435,8 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].player.push_back(player);
 	skillsinfo[Jobs::Paladin::BwHolyCharge].player.push_back(player);
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
-	skillsinfo[Jobs::SoulWarrior::SoulCharge].player.push_back(player);
-	skillsinfo[Jobs::Striker::LightningCharge].player.push_back(player);
+	skillsinfo[Jobs::DawnWarrior::SoulCharge].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::LightningCharge].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::WhiteKnight::BwFireCharge].map.push_back(map);
@@ -447,8 +447,8 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::WhiteKnight::SwordLitCharge].map.push_back(map);
 	skillsinfo[Jobs::Paladin::BwHolyCharge].map.push_back(map);
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].map.push_back(map);
-	skillsinfo[Jobs::SoulWarrior::SoulCharge].map.push_back(map);
-	skillsinfo[Jobs::Striker::LightningCharge].map.push_back(map);
+	skillsinfo[Jobs::DawnWarrior::SoulCharge].map.push_back(map);
+	skillsinfo[Jobs::ThunderBreaker::LightningCharge].map.push_back(map);
 
 	// Wind Walk
 	buff.type = 0x80;
@@ -457,10 +457,10 @@ Buffs::Buffs() {
 	player.buff = buff;
 	player.hasmapval = true;
 	player.hasmapentry = true;
-	skillsinfo[Jobs::WindBreaker::WindWalk].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::WindWalk].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
-	skillsinfo[Jobs::WindBreaker::WindWalk].map.push_back(map);
+	skillsinfo[Jobs::WindArcher::WindWalk].map.push_back(map);
 
 	// Dash
 	buff.type = 0x10;
@@ -469,24 +469,24 @@ Buffs::Buffs() {
 	player.buff = buff;
 	player.hasmapval = true;
 	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
-	skillsinfo[Jobs::Striker::Dash].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::Dash].player.push_back(player);
 	buff.type = 0x20;
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
-	skillsinfo[Jobs::Striker::Dash].map.push_back(map);
+	skillsinfo[Jobs::ThunderBreaker::Dash].map.push_back(map);
 	buff.type = 0x20;
 	buff.byte = Byte9;
 	buff.value = SkillY;
 	player.buff = buff;
 	player.hasmapval = true;
 	skillsinfo[Jobs::Pirate::Dash].player.push_back(player);
-	skillsinfo[Jobs::Striker::Dash].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::Dash].player.push_back(player);
 	buff.type = 0x40;
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Pirate::Dash].map.push_back(map);
-	skillsinfo[Jobs::Striker::Dash].map.push_back(map);
+	skillsinfo[Jobs::ThunderBreaker::Dash].map.push_back(map);
 
 	// Haste
 	buff.type = 0x80;
@@ -554,12 +554,12 @@ Buffs::Buffs() {
 	player.hasmapentry = true;
 	skillsinfo[Jobs::Hunter::SoulArrow].player.push_back(player);
 	skillsinfo[Jobs::Crossbowman::SoulArrow].player.push_back(player);
-	skillsinfo[Jobs::WindBreaker::SoulArrow].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::SoulArrow].player.push_back(player);
 	map.buff = buff;
 	map.useval = false;
 	skillsinfo[Jobs::Hunter::SoulArrow].map.push_back(map);
 	skillsinfo[Jobs::Crossbowman::SoulArrow].map.push_back(map);
-	skillsinfo[Jobs::WindBreaker::SoulArrow].map.push_back(map);
+	skillsinfo[Jobs::WindArcher::SoulArrow].map.push_back(map);
 
 	// Energy Charge
 	buff.type = 0x08;
@@ -569,11 +569,11 @@ Buffs::Buffs() {
 	player.hasmapval = true;
 	player.hasmapentry = true;
 	skillsinfo[Jobs::Marauder::EnergyCharge].player.push_back(player);
-	skillsinfo[Jobs::Striker::EnergyCharge].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::EnergyCharge].player.push_back(player);
 	map.buff = buff;
 	map.useval = false;
 	skillsinfo[Jobs::Marauder::EnergyCharge].map.push_back(map);
-	skillsinfo[Jobs::Striker::EnergyCharge].map.push_back(map);
+	skillsinfo[Jobs::ThunderBreaker::EnergyCharge].map.push_back(map);
 
 	// Oak Barrel 
 	buff.type = 0x02;
@@ -596,8 +596,8 @@ Buffs::Buffs() {
 	player.hasmapentry = false;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindBreaker::Albatross].player.push_back(player);
-	skillsinfo[Jobs::Striker::Transformation].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	buff.type = 0x08;
 	buff.byte = Byte1;
 	buff.value = SkillMdef;
@@ -606,8 +606,8 @@ Buffs::Buffs() {
 	player.hasmapentry = false;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindBreaker::Albatross].player.push_back(player);
-	skillsinfo[Jobs::Striker::Transformation].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	buff.type = 0x80;
 	buff.byte = Byte1;
 	buff.value = SkillSpeed;
@@ -616,14 +616,14 @@ Buffs::Buffs() {
 	player.hasmapentry = true;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindBreaker::Albatross].player.push_back(player);
-	skillsinfo[Jobs::Striker::Transformation].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Marauder::Transformation].map.push_back(map);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].map.push_back(map);
-	skillsinfo[Jobs::WindBreaker::Albatross].map.push_back(map);
-	skillsinfo[Jobs::Striker::Transformation].map.push_back(map);
+	skillsinfo[Jobs::WindArcher::Albatross].map.push_back(map);
+	skillsinfo[Jobs::ThunderBreaker::Transformation].map.push_back(map);
 	buff.type = 0x01;
 	buff.byte = Byte2;
 	buff.value = SkillJump;
@@ -632,8 +632,8 @@ Buffs::Buffs() {
 	player.hasmapentry = false;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindBreaker::Albatross].player.push_back(player);
-	skillsinfo[Jobs::Striker::Transformation].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	buff.type = 0x02;
 	buff.byte = Byte5;
 	buff.value = SkillMorph;
@@ -642,14 +642,14 @@ Buffs::Buffs() {
 	player.hasmapentry = true;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindBreaker::Albatross].player.push_back(player);
-	skillsinfo[Jobs::Striker::Transformation].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Marauder::Transformation].map.push_back(map);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].map.push_back(map);
-	skillsinfo[Jobs::WindBreaker::Albatross].map.push_back(map);
-	skillsinfo[Jobs::Striker::Transformation].map.push_back(map);
+	skillsinfo[Jobs::WindArcher::Albatross].map.push_back(map);
+	skillsinfo[Jobs::ThunderBreaker::Transformation].map.push_back(map);
 
 	// Shadow Partner
 	buff.type = 0x04;
@@ -673,11 +673,11 @@ Buffs::Buffs() {
 	player.hasmapval = true;
 	player.hasmapentry = true;
 	skillsinfo[Jobs::Crusader::ComboAttack].player.push_back(player);
-	skillsinfo[Jobs::SoulWarrior::ComboAttack].player.push_back(player);
+	skillsinfo[Jobs::DawnWarrior::ComboAttack].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Crusader::ComboAttack].map.push_back(map);
-	skillsinfo[Jobs::SoulWarrior::ComboAttack].map.push_back(map);
+	skillsinfo[Jobs::DawnWarrior::ComboAttack].map.push_back(map);
 	// End map buffs
 
 	// Begin mount buffs
@@ -889,7 +889,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 					value = Skills::skills[skillid][level].x * 256 + Skills::skills[skillid][level].y;
 					break;
 				case Jobs::Crusader::ComboAttack:
-				case Jobs::SoulWarrior::ComboAttack:
+				case Jobs::DawnWarrior::ComboAttack:
 					value = player->getActiveBuffs()->getCombo() + 1;
 					break;
 				case Jobs::NightLord::ShadowStars:
@@ -897,14 +897,14 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 					break;
 				case Jobs::Marauder::Transformation:
 				case Jobs::Buccaneer::SuperTransformation:
-				case Jobs::WindBreaker::Albatross:
-				case Jobs::Striker::Transformation:
+				case Jobs::WindArcher::Albatross:
+				case Jobs::ThunderBreaker::Transformation:
 					value = getValue(val, skillid, level);
 					if (val == SkillMorph)
 						value += (player->getGender() * 100); // Females are +100
 					break;
 				case Jobs::Marauder::EnergyCharge:
-				case Jobs::Striker::EnergyCharge:
+				case Jobs::ThunderBreaker::EnergyCharge:
 					value = player->getActiveBuffs()->getEnergyChargeLevel();
 					break;
 				default:
@@ -943,7 +943,7 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t l
 			else {
 				switch (skillid) {
 					case Jobs::Crusader::ComboAttack:
-					case Jobs::SoulWarrior::ComboAttack:
+					case Jobs::DawnWarrior::ComboAttack:
 						value = player->getActiveBuffs()->getCombo() + 1;
 						break;
 					default:
@@ -984,7 +984,7 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 			else {
 				switch (skillid) {
 					case Jobs::Crusader::ComboAttack:
-					case Jobs::SoulWarrior::ComboAttack:
+					case Jobs::DawnWarrior::ComboAttack:
 						value = player->getActiveBuffs()->getCombo() + 1;
 						break;
 					default:
@@ -1094,7 +1094,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			player->setHyperBody(Skills::skills[skillid][level].x, Skills::skills[skillid][level].y);
 			break;
 		case Jobs::Crusader::ComboAttack:
-		case Jobs::SoulWarrior::ComboAttack:
+		case Jobs::DawnWarrior::ComboAttack:
 			player->getActiveBuffs()->setCombo(0, false);
 			break;
 		case Jobs::Hero::Enrage:
@@ -1116,11 +1116,11 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case Jobs::Bandit::DaggerBooster:
 		case Jobs::Infighter::KnucklerBooster:
 		case Jobs::Gunslinger::GunBooster:
-		case Jobs::SoulWarrior::SwordBooster:
-		case Jobs::FlameWizard::SpellBooster:
-		case Jobs::WindBreaker::BowBooster:
+		case Jobs::DawnWarrior::SwordBooster:
+		case Jobs::BlazeWizard::SpellBooster:
+		case Jobs::WindArcher::BowBooster:
 		case Jobs::NightWalker::ClawBooster:
-		case Jobs::Striker::KnucklerBooster:
+		case Jobs::ThunderBreaker::KnucklerBooster:
 			player->getActiveBuffs()->setBooster(skillid); // Makes switching equips MUCH easier
 			break;
 		case Jobs::WhiteKnight::BwFireCharge:
@@ -1131,8 +1131,8 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case Jobs::WhiteKnight::SwordLitCharge:
 		case Jobs::Paladin::BwHolyCharge:
 		case Jobs::Paladin::SwordHolyCharge:
-		case Jobs::SoulWarrior::SoulCharge:
-		case Jobs::Striker::LightningCharge:
+		case Jobs::DawnWarrior::SoulCharge:
+		case Jobs::ThunderBreaker::LightningCharge:
 			player->getActiveBuffs()->setCharge(skillid); // Makes switching equips/Charged Blow easier
 			break;
 	}
@@ -1146,15 +1146,15 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	else {
 		switch (skillid) {
 			case Jobs::Pirate::Dash:
-			case Jobs::Striker::Dash:
+			case Jobs::ThunderBreaker::Dash:
 				BuffsPacket::usePirateBuff(player, skillid, time, playerskill, mapskill);
 				break;
 			case Jobs::Marauder::EnergyCharge:
-			case Jobs::Striker::EnergyCharge:
+			case Jobs::ThunderBreaker::EnergyCharge:
 				BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == 10000 ? time : 0), playerskill, mapskill);
 				break;
 			case Jobs::Buccaneer::SpeedInfusion:
-			case Jobs::Striker::SpeedInfusion:
+			case Jobs::ThunderBreaker::SpeedInfusion:
 				BuffsPacket::useSpeedInfusion(player, skillid, time, playerskill, mapskill, addedinfo);
 				break;
 			default:
@@ -1198,7 +1198,7 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Corsair::Battleship:
 			playerbuffs->setMountInfo(0, 0);
 		case Jobs::Crusader::ComboAttack:
-		case Jobs::SoulWarrior::ComboAttack:
+		case Jobs::DawnWarrior::ComboAttack:
 			playerbuffs->setCombo(0, false);
 			break;
 		case Jobs::Spearman::HyperBody:
@@ -1208,7 +1208,7 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 			player->setMp(player->getMp());
 			break;
 		case Jobs::Marauder::EnergyCharge:
-		case Jobs::Striker::EnergyCharge:
+		case Jobs::ThunderBreaker::EnergyCharge:
 			playerbuffs->resetEnergyChargeLevel();
 			break;
 		case Jobs::Fighter::SwordBooster:
@@ -1225,11 +1225,11 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Bandit::DaggerBooster:
 		case Jobs::Infighter::KnucklerBooster:
 		case Jobs::Gunslinger::GunBooster:
-		case Jobs::SoulWarrior::SwordBooster:
-		case Jobs::FlameWizard::SpellBooster:
-		case Jobs::WindBreaker::BowBooster:
+		case Jobs::DawnWarrior::SwordBooster:
+		case Jobs::BlazeWizard::SpellBooster:
+		case Jobs::WindArcher::BowBooster:
 		case Jobs::NightWalker::ClawBooster:
-		case Jobs::Striker::KnucklerBooster:
+		case Jobs::ThunderBreaker::KnucklerBooster:
 			playerbuffs->setBooster(0);
 			break;
 		case Jobs::WhiteKnight::BwFireCharge:
@@ -1240,8 +1240,8 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::WhiteKnight::SwordLitCharge:
 		case Jobs::Paladin::BwHolyCharge:
 		case Jobs::Paladin::SwordHolyCharge:
-		case Jobs::SoulWarrior::SoulCharge:
-		case Jobs::Striker::LightningCharge:
+		case Jobs::DawnWarrior::SoulCharge:
+		case Jobs::ThunderBreaker::LightningCharge:
 			playerbuffs->setCharge(0);
 			break;
 	}

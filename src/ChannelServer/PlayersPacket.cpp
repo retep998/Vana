@@ -237,7 +237,7 @@ void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
-		case Jobs::WindBreaker::Hurricane:
+		case Jobs::WindArcher::Hurricane:
 		case Jobs::Corsair::RapidFire:
 			pack.skipBytes(4);
 			break;
