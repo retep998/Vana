@@ -110,6 +110,12 @@ int32_t TimeUtilities::getSecond(time_t ctime) {
 	return result;
 }
 
+int32_t TimeUtilities::getWeek(time_t ctime) {
+	tm *timeinfo = localtime(&ctime);
+	int32_t result = ((timeinfo->tm_yday + 1) + (timeinfo->tm_wday + (timeinfo->tm_yday % 7))) / 7; // Determine which day the year started on and start counting from the first full week
+	return result;
+}
+
 bool TimeUtilities::getDST(time_t ctime) {
 	tm *timeinfo = localtime(&ctime);
 	return (timeinfo->tm_isdst > 0);
