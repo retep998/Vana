@@ -84,7 +84,7 @@ struct ActiveQuest {
 
 		std::ostringstream info;
 		for (size_t i = 0; i < s; i++) {
-			info << std::setw(3) << std::setfill('0') << mobs[(s - i - 1)].count;
+			info << std::setw(3) << std::setfill('0') << mobs[i].count;
 		}
 		return info.str();
 	}
