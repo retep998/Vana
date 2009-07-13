@@ -16,8 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Door to Zakum
+
 if getReactorState(211042300, 2118002) == 1 then
 	showMessage("The battle with Zakum has already begun.", 5);
 else
+	playPortalSE();
 	setMap(211042400, "west00");
 end

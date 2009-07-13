@@ -211,6 +211,8 @@ namespace LuaExports {
 	int getMonth(lua_State *luaVm);
 	int getSecond(lua_State *luaVm);
 	int getTime(lua_State *luaVm);
+	int getTimeZoneOffset(lua_State *luaVm);
+	int getWeek(lua_State *luaVm);
 	int getYear(lua_State *luaVm);
 
 	// Rates

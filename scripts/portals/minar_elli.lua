@@ -16,14 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Ellinia <-> Leafre
+
 if getItemAmount(4031346) > 0 then
 	giveItem(4031346, -1);
+
+	showMessage("The Magical Seed is spent and you are transferred to somewhere.", 5);
+	playPortalSE();
+
 	if getMap() == 240010100 then
 		setMap(101010000, "minar00");
 	else
 		setMap(240010100, "elli00");
 	end
-	showMessage("The Magical Seed is spent and you are transferred to somewhere.", 5);
 else
 	showMessage("Magic Seed is needed to go through the portal.", 5);
 end

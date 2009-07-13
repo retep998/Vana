@@ -110,19 +110,21 @@ int32_t TimeUtilities::getSecond(time_t ctime) {
 	return result;
 }
 
+int32_t TimeUtilities::getWeek(time_t ctime) {
+	tm *timeinfo = localtime(&ctime);
+	int32_t result = ((timeinfo->tm_yday + 1) + (timeinfo->tm_wday + (timeinfo->tm_yday % 7))) / 7; // Determine which day the year started on and start counting from the first full week
+	return result;
+}
+
 bool TimeUtilities::getDST(time_t ctime) {
 	tm *timeinfo = localtime(&ctime);
 	return (timeinfo->tm_isdst > 0);
 }
 
-int64_t TimeUtilities::getKoreanTimestamp(time_t ctime) {
-	return (int64_t)(ctime + getTimeZoneOffset()) * 1000 * 10000 + 116444736000000000LL;
-}
-
 int32_t TimeUtilities::getTimeZoneOffset() {
 	time_t ctime = time(0);
 	tm * ts = localtime(&ctime);
-	int32_t hour = ts->tm_hour; // C++ has extremely unsightly time handling, beware
+	int32_t hour = ts->tm_hour; // C/C++ have extremely unsightly time handling, beware
 	ts = gmtime(&ctime);
 	return ((hour - ts->tm_hour) * 60 * 60);
 }

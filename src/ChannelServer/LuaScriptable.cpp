@@ -215,6 +215,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getMonth", &LuaExports::getMonth);
 	lua_register(luaVm, "getSecond", &LuaExports::getSecond);
 	lua_register(luaVm, "getTime", &LuaExports::getTime);
+	lua_register(luaVm, "getTimeZoneOffset", &LuaExports::getTimeZoneOffset);
+	lua_register(luaVm, "getWeek", &LuaExports::getWeek);
 	lua_register(luaVm, "getYear", &LuaExports::getYear);
 
 	// Rates
@@ -1253,6 +1255,16 @@ int LuaExports::getTime(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getTimeZoneOffset(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getTimeZoneOffset());
+	return 1;
+}
+
+int LuaExports::getWeek(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getWeek());
+	return 1;
+}
+
 int LuaExports::getYear(lua_State *luaVm) {
 	lua_pushinteger(luaVm, TimeUtilities::getYear());
 	return 1;
@@ -1676,7 +1688,9 @@ int LuaExports::startInstanceTimer(lua_State *luaVm) {
 	string name = lua_tostring(luaVm, 1);
 	TimerAction t;
 	t.time = lua_tointeger(luaVm, 2);
-	t.persistent = lua_toboolean(luaVm, 3) != 0;
+	if (lua_isnumber(luaVm, 3)) {
+		t.persistent = lua_tointeger(luaVm, 3);
+	}
 	t.counterid = getInstance(luaVm)->getCounterId();
 	lua_pushboolean(luaVm, getInstance(luaVm)->addTimer(name, t));
 	return 1;

@@ -35,11 +35,11 @@ namespace TimeUtilities {
 	int32_t getMinute(time_t ctime = time(0));
 	int32_t getSecond(time_t ctime = time(0));
 	int32_t getDay(time_t ctime = time(0));
+	int32_t getWeek(time_t ctime = time(0));
 	string getDayString(time_t ctime = time(0));
 	bool getDST(time_t ctime = time(0));
 	int32_t getTimeZoneOffset();
 	uint32_t getTickCount(); // The relative value can be used like GetTickCount on windows
-	int64_t getKoreanTimestamp(time_t ctime = time(0));
 }
 
 #endif

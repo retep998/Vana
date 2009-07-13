@@ -41,6 +41,7 @@ namespace MapPacket {
 	void sendSound(int32_t mapid, const string &soundname); // Send sound - clear/wrong/etc
 	void sendEvent(int32_t mapid, const string &eventname); // Send event - clear/wrong/etc
 	void sendEffect(int32_t mapid, const string &effectname); // Send effect - gate/etc
+	void playPortalSoundEffect(Player *player);
 	void showEventInstructions(int32_t mapid);
 	void showMist(Player *player, Mist *mist);
 	void spawnMist(int32_t mapid, Mist *mist);

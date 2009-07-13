@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+-- Dragon Gate at Crossroads 3
+
 if getItemAmount(3992040) > 0 then -- Map of Phantom Forest
-	setMap(610010005, "sU6_1");
+	playPortalSE();
+	setMap(610010005, "U6_1");
 end

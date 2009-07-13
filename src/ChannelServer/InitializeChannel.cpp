@@ -121,9 +121,9 @@ void Initializing::initializeQuests() {
 
 	// Quest requests
 	string queries[QuestRequestTypes::Count] = {
-		"SELECT questid, oid, count FROM questrequestdata WHERE mob = 1 ORDER BY questid ASC",
-		"SELECT questid, oid, count FROM questrequestdata WHERE item = 1 ORDER BY questid ASC",
-		"SELECT questid, oid, count FROM questrequestdata WHERE quest = 1 ORDER BY questid ASC"
+		"SELECT questid, oid, count FROM questrequestdata WHERE mob = 1 ORDER BY questid, id ASC",
+		"SELECT questid, oid, count FROM questrequestdata WHERE item = 1 ORDER BY questid, id ASC",
+		"SELECT questid, oid, count FROM questrequestdata WHERE quest = 1 ORDER BY questid, id ASC"
 	};
 	int32_t reqtypes[QuestRequestTypes::Count] = {
 		QuestRequestTypes::Mob,
