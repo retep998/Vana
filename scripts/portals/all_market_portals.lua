@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Second warping statue in Valley of Heroes 1
+-- Free Market entry portals
 
-if getItemAmount(3992039) > 0 then -- Marker of Heroism
-	playPortalSE();
-	setMap(610020000, "CM1_C");
-end
+setPlayerVariable("fm_origin", getMap());
+setPlayerVariable("fm_origin_portal", getPortalName());
+playPortalSE();
+setMap(910000000, "out00");

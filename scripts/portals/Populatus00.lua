@@ -29,15 +29,15 @@ if getNumPlayers(220080001) < 12 then
 		if entry2 == nil then
 			entry2 = 0;
 		end
-		if time < (entry1 + secondsinday) then
-			if time < (entry2 + secondsinday) then
-				showMessage("You may only enter twice per day.", 5);
+		if (time < (entry1 + secondsinday)) and (time < (entry2 + secondsinday)) then
+			showMessage("You may only enter twice per day.", 5);
+		else
+			if time > (entry1 + secondsinday) then
+				setPlayerVariable("Papulatus1", time);
 			else
 				setPlayerVariable("Papulatus2", time);
-				setMap(220080001, "st00");
 			end
-		else
-			setPlayerVariable("Papulatus1", time);
+			playPortalSE();
 			setMap(220080001, "st00");
 		end
 	else

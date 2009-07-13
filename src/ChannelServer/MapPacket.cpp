@@ -335,3 +335,10 @@ void MapPacket::removeMist(int32_t mapid, int32_t id) {
 	packet.add<int32_t>(id);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
+
+void MapPacket::playPortalSoundEffect(Player *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_GAIN_ITEM);
+	packet.add<int8_t>(0x07);
+	player->getSession()->send(packet);
+}
