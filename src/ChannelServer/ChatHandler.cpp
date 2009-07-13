@@ -230,13 +230,13 @@ void ChatHandler::initializeCommands() {
 	commandnotes["map"].push_back("gm | fm | happyville");
 	commandnotes["map"].push_back("showa | armory | shrine | singapore | quay");
 	commandnotes["map"].push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port");
-	commandnotes["map"].push_back("4th | orbis | nath | mine | leafre | temple | mulung | herbtown | ariant | magatia");
-	commandnotes["map"].push_back("ludi | kft | aqua | omega | altair");
+	commandnotes["map"].push_back("4th | orbis | nath | mine | leafre | mulung | herbtown | ariant");
+	commandnotes["map"].push_back("ludi | kft | aqua | omega");
 	commandnotes["map"].push_back("mansion | nlc | amoria | crimsonwood");
 	commandnotes["map"].push_back("Valid boss map strings:");
 	commandnotes["map"].push_back("ergoth | lordpirate | alishar | papapixie | kingslime");
-	commandnotes["map"].push_back("pap | zakum | horntail | pianus | bean");
-	commandnotes["map"].push_back("manon | griffey | jrbalrog | grandpa | anego | tengu | lilynouch | dodo | lyka");
+	commandnotes["map"].push_back("pap | zakum | horntail | pianus");
+	commandnotes["map"].push_back("manon | griffey | jrbalrog | grandpa | anego | tengu");
 	commandnotes["job"].push_back("Sets your job.");
 	commandnotes["job"].push_back("Valid job strings:");
 	commandnotes["job"].push_back("beginner");
