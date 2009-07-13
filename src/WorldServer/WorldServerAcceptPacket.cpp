@@ -45,17 +45,18 @@ void WorldServerAcceptPacket::groupChat(WorldServerAcceptPlayer *player, int32_t
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats) {
+void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats, int32_t maxChars) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_CHANNEL_CONNECT);
 	packet.add<int16_t>(channel);
 	packet.add<int16_t>(port);
 	packet.add<int8_t>(maxMultiLevel);
 	packet.add<int16_t>(maxStats);
+	packet.add<int32_t>(maxChars);
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::sendBuffsToChannel(uint16_t channel, int32_t playerid, PacketReader &buffer) {
+void WorldServerAcceptPacket::sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET);
 	packet.add<int32_t>(playerid);
@@ -63,7 +64,7 @@ void WorldServerAcceptPacket::sendBuffsToChannel(uint16_t channel, int32_t playe
 	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::sendBuffRemoval(uint16_t channel, int32_t playerid) {
+void WorldServerAcceptPacket::sendHeldPacketRemoval(uint16_t channel, int32_t playerid) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET_DISCONNECT);
 	packet.add<int32_t>(playerid);

@@ -44,6 +44,7 @@ public:
 	void setMaxMultiLevel(uint8_t level) { maxMultiLevel = level; }
 	void setInterPort(uint16_t port) { inter_port = port; }
 	void setMaxChannels(int32_t maxchan) { maxChannels = maxchan; }
+	void setMaxChars(int32_t maxchar) { maxChars = maxchar; }
 	void setExprate(int32_t exprate) { this->exprate = exprate; }
 	void setQuestExprate(int32_t questexprate) { this->questexprate = questexprate; }
 	void setMesorate(int32_t mesorate) { this->mesorate = mesorate; }
@@ -60,6 +61,7 @@ public:
 	int32_t getQuestExprate() const { return questexprate; }
 	int32_t getMesorate() const { return mesorate; }
 	int32_t getDroprate() const { return droprate; }
+	int32_t getMaxChars() const { return maxChars; }
 	LoginServerConnectPlayer * getLoginPlayer() const { return loginPlayer; }
 	string getScrollingHeader() { return scrollingHeader.c_str(); }
 	bool isConnected() const { return worldId != -1; }
@@ -78,6 +80,7 @@ private:
 	int32_t mesorate;
 	int32_t droprate;
 	int32_t maxChannels;
+	int32_t maxChars;
 	uint32_t login_ip;
 	string scrollingHeader;
 	LoginServerConnectPlayer *loginPlayer;

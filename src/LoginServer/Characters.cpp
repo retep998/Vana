@@ -120,7 +120,16 @@ void Characters::showCharacters(PlayerLogin *player) {
 		loadCharacter(charc, res[i]);
 		chars.push_back(charc);
 	}
-	LoginPacket::showCharacters(player, chars);
+
+	query << "SELECT char_slots FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (int32_t) player->getWorld();
+	res = query.store();
+
+	int32_t max = 3;
+	if (!res.empty()) {
+		max = (int32_t)(res[0][0]);
+	}
+
+	LoginPacket::showCharacters(player, chars, max);
 }
 
 void Characters::checkCharacterName(PlayerLogin *player, PacketReader &packet) {

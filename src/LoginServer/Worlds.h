@@ -60,6 +60,8 @@ struct World {
 	int32_t droprate;
 	// Multi-level limit
 	uint8_t maxMultiLevel;
+	// Max character slots
+	int32_t maxChars;
 	// Max stats
 	int16_t maxStats;
 	string eventMsg;

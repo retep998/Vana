@@ -23,17 +23,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tr1/unordered_map.hpp>
 #include <string>
 #include <utility>
+#include <vector>
 
 using std::pair;
 using std::string;
 using std::tr1::unordered_map;
+using std::vector;
 
 class Player;
 class PacketReader;
 
 namespace ChatHandler {
 	extern unordered_map<string, pair<Commands, int32_t> > commandlist;
+	extern unordered_map<string, string> commandsyntax;
+	extern unordered_map<string, vector<string> > commandnotes;
+
 	void initializeCommands();
+	void showSyntax(Player *player, const string &command, bool fromHelp = false);
 	void handleChat(Player *player, PacketReader &packet);
 	void handleGroupChat(Player *player, PacketReader &packet);
 };

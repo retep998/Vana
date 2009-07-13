@@ -125,16 +125,11 @@ void PlayerActiveBuffs::removeDebuff(uint8_t skill, bool fromTimer) {
 }
 
 void PlayerActiveBuffs::useDebuffHealingItem(int32_t mask) {
-	if ((mask & StatusEffects::Player::Seal) != 0)
-		removeDebuff(MobSkills::Seal);
-	if ((mask & StatusEffects::Player::Poison) != 0)
-		removeDebuff(MobSkills::Poison);
-	if ((mask & StatusEffects::Player::Curse) != 0)
-		removeDebuff(MobSkills::Curse);
-	if ((mask & StatusEffects::Player::Darkness) != 0)
-		removeDebuff(MobSkills::Darkness);
-	if ((mask & StatusEffects::Player::Weakness) != 0)
-		removeDebuff(MobSkills::Weakness);
+	removeDebuff(MobSkills::Seal);
+	removeDebuff(MobSkills::Poison);
+	removeDebuff(MobSkills::Curse);
+	removeDebuff(MobSkills::Darkness);
+	removeDebuff(MobSkills::Weakness);
 }
 
 void PlayerActiveBuffs::useDispel() {

@@ -20,6 +20,9 @@ world0_questexprate = 1;
 world0_mesorate = 1;
 world0_droprate = 1;
 
+-- Max allowed character slots (between 1 and 6; doesn't do much for now)
+world0_maxchars = 6;
+
 -- Max AP a user is allowed to put into their core stats (minimum 4, maximum 32767)
 world0_maxstats = 999;
 
@@ -48,6 +51,7 @@ world0_scrolling_header = "Welcome to Vana";
 -- world1_questexprate = 1;
 -- world1_mesorate = 1;
 -- world1_droprate = 1;
+-- world1_maxchars = 6;
 -- world1_maxstats = 999;
 -- world1_max_multi_level = 1;
 -- world1_port = 7200;

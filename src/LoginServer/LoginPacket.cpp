@@ -154,7 +154,7 @@ void LoginPacket::channelSelect(PlayerLogin *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showCharacters(PlayerLogin *player, const vector<Character> &chars) {
+void LoginPacket::showCharacters(PlayerLogin *player, const vector<Character> &chars, int32_t maxchars) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_CHARACTERS);
 	packet.add<int8_t>(0);
@@ -162,7 +162,7 @@ void LoginPacket::showCharacters(PlayerLogin *player, const vector<Character> &c
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
-	packet.add<int32_t>(3); // Max char you have have?
+	packet.add<int32_t>(maxchars);
 	player->getSession()->send(packet);
 }
 

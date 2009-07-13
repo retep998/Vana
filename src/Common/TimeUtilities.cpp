@@ -116,7 +116,7 @@ bool TimeUtilities::getDST(time_t ctime) {
 }
 
 int64_t TimeUtilities::getKoreanTimestamp(time_t ctime) {
-	return (int64_t)(ctime + getTimeZoneOffset()) * 1000 * 10000 + 116444736000000000;
+	return (int64_t)(ctime + getTimeZoneOffset()) * 1000 * 10000 + 116444736000000000LL;
 }
 
 int32_t TimeUtilities::getTimeZoneOffset() {

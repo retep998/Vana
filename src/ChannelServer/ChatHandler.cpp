@@ -48,6 +48,8 @@ using std::tr1::regex_match;
 using std::vector;
 
 unordered_map<string, pair<Commands, int32_t> > ChatHandler::commandlist;
+unordered_map<string, vector<string> > ChatHandler::commandnotes;
+unordered_map<string, string> ChatHandler::commandsyntax;
 
 struct MeFunctor {
 	void operator() (Player *gmplayer) {
@@ -69,6 +71,9 @@ struct WarpFunctor {
 };
 
 void ChatHandler::initializeCommands() {
+	// Set up commands and appropriate GM levels
+
+	// GM level 3
 	commandlist["ban"] = make_pair(CmdBan, 3);
 	commandlist["ipban"] = make_pair(CmdIpBan, 3);
 	commandlist["tempban"] = make_pair(CmdTempBan, 3);
@@ -82,6 +87,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["dorankings"] = make_pair(CmdRankingCalc, 3);
 	commandlist["globalmessage"] = make_pair(CmdGlobalMessage, 3);
 
+	// GM level 2
 	commandlist["me"] = make_pair(CmdMe, 2);
 	commandlist["kick"] = make_pair(CmdKick, 2);
 	commandlist["warp"] = make_pair(CmdWarp, 2);
@@ -90,6 +96,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["cleardrops"] = make_pair(CmdClearDrops, 2);
 	commandlist["worldmessage"] = make_pair(CmdWorldMessage, 2);
 
+	// GM level 1
 	commandlist["kill"] = make_pair(CmdKill, 1);
 	commandlist["lookup"] = make_pair(CmdLookUp, 1);
 	commandlist["map"] = make_pair(CmdMap, 1);
@@ -129,6 +136,175 @@ void ChatHandler::initializeCommands() {
 	commandlist["getmobhp"] = make_pair(CmdGetMobHp, 1);
 	commandlist["killmob"] = make_pair(CmdKillMob, 1);
 	commandlist["reload"] = make_pair(CmdReload, 1);
+
+	// No GM level needed
+	commandlist["help"] = make_pair(CmdHelp, 0);
+
+	// Set up syntax display, don't add commands that don't take parameters
+	commandsyntax["ban"] = "<$playername> [#reason]";
+	commandsyntax["ipban"] = "<$playername> [#reason]";
+	commandsyntax["tempban"] = "<$playername> <#reason> <#length in days>";
+	commandsyntax["unban"] = "<$playername>";
+	commandsyntax["header"] = "[$message]";
+	commandsyntax["packet"] = "<$hexbytes>";
+	commandsyntax["timer"] = "<#time in seconds>";
+	commandsyntax["instruction"] = "<$bubbletext>";
+	commandsyntax["addnpc"] = "<#npcid>";
+	commandsyntax["me"] = "<$message>";
+	commandsyntax["kick"] = "<$playername>";
+	commandsyntax["warp"] = "<$playername> [#mapid]";
+	commandsyntax["warpall"] = "[#mapid]";
+	commandsyntax["worldmessage"] = "<${notice | popup | event | purple}> <$message string>";
+	commandsyntax["globalmessage"] = "<${notice | popup | event | purple}> <$message string>";
+	commandsyntax["kill"] = "<${players | gm | all | me} | $playername>";
+	commandsyntax["lookup"] = "<${item | skill | map | mob | npc | quest | id}> <$search string>";
+	commandsyntax["map"] = "<${town | mapstring | bossmapstring} | #mapid>";
+	commandsyntax["job"] = "<${jobstring} | #jobid>";
+	commandsyntax["level"] = "<#level>";
+	commandsyntax["hp"] = "<#hp>";
+	commandsyntax["mp"] = "<#mp>";
+	commandsyntax["ap"] = "<#ap>";
+	commandsyntax["sp"] = "<#sp>";
+	commandsyntax["addsp"] = "<#skillid> [#skillpoints]";
+	commandsyntax["int"] = "<#int>";
+	commandsyntax["luk"] = "<#luk>";
+	commandsyntax["dex"] = "<#dex>";
+	commandsyntax["str"] = "<#str>";
+	commandsyntax["fame"] = "<#fame>";
+	commandsyntax["npc"] = "<#npcid>";
+	commandsyntax["item"] = "<#itemid> [#amount]";
+	commandsyntax["summon"] = "<#mobid> [#amount]";
+	commandsyntax["spawn"] = "<#mobid> [#amount]";
+	commandsyntax["notice"] = "<$message>";
+	commandsyntax["shop"] = "<${gear, scrolls, nx, face, ring, chair, mega, pet} | #shopid>";
+	commandsyntax["mesos"] = "<#mesosamount>";
+	commandsyntax["music"] = "[$musicname]";
+	commandsyntax["warpto"] = "<$playername>";
+	commandsyntax["getmobhp"] = "<#mapmobid>";
+	commandsyntax["killmob"] = "<#mapmobid>";
+	commandsyntax["reload"] = "<${items, drops, mobs, beauty, shops}>";
+	commandsyntax["help"] = "[$command]";
+
+	// Set up function notes
+	commandnotes["ban"].push_back("Permanently bans a player by name.");
+	commandnotes["ban"].push_back("Reason codes:");
+	commandnotes["ban"].push_back("1 - Hacking");
+	commandnotes["ban"].push_back("2 - Using macro/auto-keyboard");
+	commandnotes["ban"].push_back("3 - Illicit promotion or advertising");
+	commandnotes["ban"].push_back("4 - Harassment");
+	commandnotes["ban"].push_back("5 - Using profane language");
+	commandnotes["ban"].push_back("6 - Scamming");
+	commandnotes["ban"].push_back("7 - Misconduct");
+	commandnotes["ban"].push_back("8 - Illegal cash transaction");
+	commandnotes["ban"].push_back("9 - Illegal charging/funding");
+	commandnotes["ban"].push_back("10 - Temporary request");
+	commandnotes["ban"].push_back("11 - Impersonating GM");
+	commandnotes["ban"].push_back("12 - Using illegal programs or violating the game policy");
+	commandnotes["ban"].push_back("13 - Cursing, scamming, or illegal trading via megaphones");
+	commandnotes["ipban"].push_back("Permanently bans a player's IP based on their name. Does not ban the account for various reasons.");
+	commandnotes["ipban"].push_back("Use !help ban to see the applicable reason codes.");
+	commandnotes["tempban"].push_back("Temporarily bans a player by name.");
+	commandnotes["tempban"].push_back("Use !help ban to see the applicable reason codes.");
+	commandnotes["unban"].push_back("Removes a ban from the database.");
+	commandnotes["header"].push_back("Changes the scrolling message at the top of the screen.");
+	commandnotes["shutdown"].push_back("Stops the current ChannelServer.");
+	commandnotes["packet"].push_back("Sends a specific packet to yourself. Should only be used for testing.");
+	commandnotes["timer"].push_back("Displays a timer at the top of the map.");
+	commandnotes["instruction"].push_back("Displays a ");
+	commandnotes["addnpc"].push_back("Permanently adds an NPC to a map.");
+	commandnotes["dorankings"].push_back("Forces ranking recalculation.");
+	commandnotes["globalmessage"].push_back("Displays a message to every channel on every world.");
+	commandnotes["me"].push_back("Displays a message to all other online GMs.");
+	commandnotes["kick"].push_back("Forcibly disconnects a player, cannot be used on players that outrank you in GM level.");
+	commandnotes["warp"].push_back("Warps the specified player to your map or the map you specify.");
+	commandnotes["warpall"].push_back("Warps all players to your map or the map you specify.");
+	commandnotes["killall"].push_back("Kills all mobs on the current map.");
+	commandnotes["cleardrops"].push_back("Clears all drops from the current map.");
+	commandnotes["worldmessage"].push_back("Displays a message to every channel on the current world.");
+	commandnotes["kill"].push_back("If you are GM level 1, you can only kill yourself with this.");
+	commandnotes["kill"].push_back("If you are above GM level 1, you may kill GMs, players, everyone on a map, yourself, or the specified player.");
+	commandnotes["lookup"].push_back("Uses the database to give you the string values for an ID or the IDs for a given string value.");
+	commandnotes["map"].push_back("Warps you to a desired map.");
+	commandnotes["map"].push_back("Valid map strings:");
+	commandnotes["map"].push_back("southperry | amherst");
+	commandnotes["map"].push_back("gm | fm | happyville");
+	commandnotes["map"].push_back("showa | armory | shrine | singapore | quay");
+	commandnotes["map"].push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port");
+	commandnotes["map"].push_back("4th | orbis | nath | mine | leafre | temple | mulung | herbtown | ariant | magatia");
+	commandnotes["map"].push_back("ludi | kft | aqua | omega | altair");
+	commandnotes["map"].push_back("mansion | nlc | amoria | crimsonwood");
+	commandnotes["map"].push_back("Valid boss map strings:");
+	commandnotes["map"].push_back("ergoth | lordpirate | alishar | papapixie | kingslime");
+	commandnotes["map"].push_back("pap | zakum | horntail | pianus | bean");
+	commandnotes["map"].push_back("manon | griffey | jrbalrog | grandpa | anego | tengu | lilynouch | dodo | lyka");
+	commandnotes["job"].push_back("Sets your job.");
+	commandnotes["job"].push_back("Valid job strings:");
+	commandnotes["job"].push_back("beginner");
+	commandnotes["job"].push_back("warrior - fighter | sader | hero, page | wk | paladin, spearman | dk | drk");
+	commandnotes["job"].push_back("magician - fpwiz | fpmage | fparch, ilwiz | ilmage | ilarch, cleric | priest | bishop");
+	commandnotes["job"].push_back("bowman - hunter | ranger | bm, xbowman | sniper | marksman");
+	commandnotes["job"].push_back("thief - sin | hermit | nl, dit | cb | shadower");
+	commandnotes["job"].push_back("pirate - brawler | marauder | buccaneer, gunslinger | outlaw | corsair");
+	commandnotes["job"].push_back("gm");
+	commandnotes["job"].push_back("sgm");
+	commandnotes["level"].push_back("Sets your player's level to the specified amount.");
+	commandnotes["hp"].push_back("Sets your player's HP to the specified amount.");
+	commandnotes["mp"].push_back("Sets your player's MP to the specified amount.");
+	commandnotes["ap"].push_back("Sets your player's AP to the specified amount.");
+	commandnotes["sp"].push_back("Sets your player's SP to the specified amount.");
+	commandnotes["addsp"].push_back("Adds SP to the desired skill.");
+	commandnotes["int"].push_back("Sets your player's INT to the specified amount.");
+	commandnotes["luk"].push_back("Sets your player's LUK to the specified amount.");
+	commandnotes["dex"].push_back("Sets your player's DEX to the specified amount.");
+	commandnotes["str"].push_back("Sets your player's STR to the specified amount.");
+	commandnotes["fame"].push_back("Sets your player's fame to the specified amount.");
+	commandnotes["maxstats"].push_back("Sets all your core stats to their maximum values.");
+	commandnotes["npc"].push_back("Runs the NPC script of the NPC you specify.");
+	commandnotes["item"].push_back("Gives you an item.");
+	commandnotes["summon"].push_back("Spawns monsters.");
+	commandnotes["spawn"].push_back("Spawns monsters.");
+	commandnotes["notice"].push_back("Displays a blue GM notice.");
+	commandnotes["shop"].push_back("Shows you the desired shop.");
+	commandnotes["pos"].push_back("Displays your current position and foothold on the map.");
+	commandnotes["zakum"].push_back("Spawns Zakum.");
+	commandnotes["horntail"].push_back("Spawns Horntail.");
+	commandnotes["heal"].push_back("Sets your HP and MP to 100%.");
+	commandnotes["mesos"].push_back("Sets your mesos to the specified amount.");
+	commandnotes["dc"].push_back("Disconnects yourself.");
+	commandnotes["music"].push_back("Sets the music for a given map.");
+	commandnotes["storage"].push_back("Shows your storage.");
+	commandnotes["eventinstruct"].push_back("Shows event instructions for Ola Ola, etc.");
+	commandnotes["relog"].push_back("Logs you back in to the current channel.");
+	commandnotes["save"].push_back("Saves your stats.");
+	commandnotes["warpto"].push_back("Warps you to the specified player.");
+	commandnotes["killnpc"].push_back("Used when scripts leave an NPC hanging. This command will clear the NPC and allow you to use other NPCs.");
+	commandnotes["listmobs"].push_back("Lists all the mobs on the map.");
+	commandnotes["getmobhp"].push_back("Gets the HP of a specific mob based on the map mob ID that you can get from !listmobs.");
+	commandnotes["killmob"].push_back("Kills a specific mob based on the map mob ID that you can get from !listmobs.");
+	commandnotes["reload"].push_back("Reloads data from the database.");
+	commandnotes["help"].push_back("I wonder what it does?");
+	commandnotes["help"].push_back("Syntax for help display:");
+	commandnotes["help"].push_back("$ = string");
+	commandnotes["help"].push_back("# = number");
+	commandnotes["help"].push_back("${hi | bye} = specific choices, in this case, strings of hi or bye");
+	commandnotes["help"].push_back("<#time in seconds> = required parameter");
+	commandnotes["help"].push_back("[#time in seconds] = optional parameter");
+}
+
+void ChatHandler::showSyntax(Player *player, const string &command, bool fromHelp) {
+	if (commandsyntax.find(command) != commandsyntax.end()) {
+		string msg = "Usage: !" + command + " " + commandsyntax[command];
+		PlayerPacket::showMessage(player, msg, 6);
+	}
+	else {
+		PlayerPacket::showMessage(player, "Usage: !" + command, 6);
+	}
+	if (fromHelp && commandnotes.find(command) != commandnotes.end()) {
+		PlayerPacket::showMessage(player, "Notes: " + commandnotes[command][0], 6);
+		for (size_t i = 1; i < commandnotes[command].size(); i++) {
+			PlayerPacket::showMessage(player, commandnotes[command][i], 6);
+		}
+	}
 }
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
@@ -152,6 +328,31 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		}
 		else {
 			switch (commandlist[command].first) { // CMD constant associated with command
+				case CmdHelp: {
+					if (args.length() != 0) {
+						if (commandlist.find(args) != commandlist.end()) {
+							showSyntax(player, args, true);
+						}
+						else {
+							PlayerPacket::showMessage(player, "Command \"" + args + "\" does not exist.", 6);
+						}
+					}
+					else {
+						string msg = "You may not use any commands.";
+						bool has = false;
+						for (unordered_map<string, pair<Commands, int32_t> >::iterator iter = commandlist.begin(); iter != commandlist.end(); iter++) {
+							if (player->getGmLevel() >= iter->second.second) {
+								if (!has) {
+									msg = "Available commands: ";
+									has = true;
+								}
+								msg += iter->first + " ";
+							}
+						}
+						PlayerPacket::showMessage(player, msg, 6);
+					}
+					break;
+				}
 				case CmdHeader:
 					WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), args);
 					break;
@@ -191,7 +392,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						PlayersPacket::showMessage(banmsg, 0);
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !ban <$playername> [#reason]", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -233,7 +434,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !ipban <$playername> [#reason]", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -274,7 +475,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						PlayersPacket::showMessage(banmsg, 0);
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !tempban <$playername> <#reason> <#length in days>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -288,7 +489,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						PlayerPacket::showMessage(player, string(args) + " has been unbanned.", 6);
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !unban <$playername>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -302,7 +503,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						player->getSession()->send(packet);
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !packet <$hexbytes>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -311,7 +512,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						Maps::getMap(player->getMap())->setMapTimer(atoi(args.c_str()));
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !timer <#time>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				case CmdInstruction:
@@ -321,7 +522,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !instruction <$bubbletext>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				case CmdAddNpc: {
@@ -336,7 +537,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						Maps::getMap(player->getMap())->addNPC(npc);
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !addnpc <#npcid>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -347,7 +548,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						Players::Instance()->run(func);
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !me <$message>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -363,7 +564,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 							PlayerPacket::showMessage(player, "Invalid player or player is offline.", 6);
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !kick <$playername>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				case CmdWarp:
@@ -379,7 +580,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !warp <$playername> [#mapid]", 6);
+						showSyntax(player, command);
 					}
 					break;
 				case CmdWarpAll: {
@@ -483,7 +684,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !lookup <${item | skill | map | mob | npc | quest | id}> <$search string>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -564,7 +765,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						npc->run();
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !npc <#npcid>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -583,7 +784,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !addsp <#skillid> [#amount]", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -603,7 +804,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !" + command + " <#mobid> [#amount]", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -668,12 +869,12 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "mobs") MobDataProvider::Instance()->loadData();
 						else if (args == "beauty") BeautyDataProvider::Instance()->loadData();
 						else {
-							PlayerPacket::showMessage(player, "Usage: !reload <${items, drops, mobs, beauty, shops}>", 6);
+							showSyntax(player, command);
 						}
 
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !reload <${items, drops, mobs, beauty, shops}>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -691,11 +892,11 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else shopid = atoi(args.c_str());
 
 						if (!ShopDataProvider::Instance()->showShop(player, shopid)) {
-							PlayerPacket::showMessage(player, "Usage: !shop <${gear, scrolls, nx, face, ring, chair, mega, pet} | #shopid>", 6);
+							showSyntax(player, command);
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !shop <${gear, scrolls, nx, face, ring, chair, mega, pet} | #shopid>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -719,7 +920,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !item <#itemid> [#amount]", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -741,7 +942,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "spearman") job = 130;
 						else if (args == "dk") job  = 131;
 						else if (args == "drk") job = 132;
-						else if (args == "mage") job = 200;
+						else if (args == "magician") job = 200;
 						else if (args == "fpwiz") job = 210;
 						else if (args == "fpmage") job = 211;
 						else if (args == "fparch") job = 212;
@@ -766,12 +967,12 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "cb") job = 421;
 						else if (args == "shadower") job = 422;
 						else if (args == "pirate") job = 500;
-						else if (args == "infighter") job = 510;
-						else if (args == "buccaneer") job = 511;
-						else if (args == "viper") job = 512;
+						else if (args == "brawler") job = 510;
+						else if (args == "marauder") job = 511;
+						else if (args == "buccaneer") job = 512;
 						else if (args == "gunslinger") job = 520;
-						else if (args == "valkyrie") job = 521;
-						else if (args == "captain") job = 522;
+						else if (args == "outlaw") job = 521;
+						else if (args == "corsair") job = 522;
 						else if (args == "gm") job = 900;
 						else if (args == "sgm") job = 910;
 						else job = atoi(args.c_str());
@@ -857,7 +1058,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !worldmessage <${notice | popup | event | purple}> <$message string>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -878,7 +1079,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						}
 					}
 					else {
-						PlayerPacket::showMessage(player, "Usage: !globalmessage <${notice | popup | event | purple}> <$message string>", 6);
+						showSyntax(player, command);
 					}
 					break;
 				}
@@ -945,8 +1146,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
 	vector<int32_t> receivers;
 	int8_t type = packet.get<int8_t>();
-	uint8_t amount = packet.get<int8_t>();
-	for (size_t i = 0; i < amount; i++) {
+	uint8_t amount = packet.get<uint8_t>();
+	for (uint8_t i = 0; i < amount; i++) {
 		receivers.push_back(packet.get<int32_t>());
 	}
 	string chat = packet.getString();

@@ -29,6 +29,7 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptPlayer *player, World *wo
 	packet.add<int8_t>(world->id);
 	packet.add<int16_t>(world->port);
 	packet.add<int32_t>(world->maxChannels);
+	packet.add<int32_t>(world->maxChars);
 	packet.add<int8_t>(world->maxMultiLevel);
 	packet.add<int16_t>(world->maxStats);
 	packet.addString(world->scrollingHeader);
