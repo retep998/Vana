@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
+#include "TimeUtilities.h"
 #include <boost/tr1/unordered_map.hpp>
 
 using std::tr1::unordered_map;
@@ -176,16 +177,12 @@ void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel()); // Channel
-	packet.add<int16_t>(0); // 2?
-	packet.add<int16_t>(0);
+	packet.add<int32_t>(0x02); // 2?
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
 	packet.add<int16_t>(player->getHp());
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(-1);
-	packet.add<int16_t>(-1);
-	packet.add<int8_t>(-1);
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(0x00);
+	packet.add<int64_t>(TimeUtilities::getServerTime());
 	player->getSession()->send(packet);
 }
 
