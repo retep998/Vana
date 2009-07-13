@@ -16,4 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- 4th job portal (Valley of the Antelope -> Forest of the Priest)
+
+playPortalSE();
 setMap(240010501, "out00");

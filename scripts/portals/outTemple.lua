@@ -18,4 +18,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Portal to leave the Time Temple
 
 useItem(2210016);
+playPortalSE();
 setMap(200090510);

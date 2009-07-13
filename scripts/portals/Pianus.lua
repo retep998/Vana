@@ -16,4 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Pianus portal
-setMap(230040420, "out00");
+
+if getNumPlayers(230040420) < 10 then
+	playPortalSE();
+	setMap(230040420, "out00");
+else
+	showMessage("The Cave of Pianus is currently full. Please come back later.", 5);
+end

@@ -96,8 +96,10 @@ elseif map == 270040000 then
 end
 
 if isQuestCompleted(quest) then
+	playPortalSE();
 	setMap(tomapifdone, "out00");
 else
 	showMessage("Those who have not received permission cannot walk against the flow of the temple and will return to the previous place.", 5);
+	playPortalSE();
 	setMap(tomap);
 end

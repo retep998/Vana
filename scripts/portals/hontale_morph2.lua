@@ -16,4 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Cave of Life - Entrance -> Peak of the Big Nest
+
+playPortalSE();
 setMap(240040600, "east00");

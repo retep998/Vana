@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+-- Dragon Gate at Swamp Bog
+
 if getItemAmount(3992040) > 0 then -- Map of Phantom Forest
-	setMap(610010201, "sB2_1");
+	playPortalSE();
+	setMap(610010201, "B2_1");
 end

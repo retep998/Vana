@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaPortal.h"
 #include "Player.h"
+#include "MapPacket.h"
 #include "Maps.h"
 
 unordered_map<int32_t, PortalInfo *> LuaExports::portals;
@@ -26,6 +27,7 @@ LuaPortal::LuaPortal(const string &filename, int32_t playerid, PortalInfo *porta
 
 	// Portal
 	lua_register(luaVm, "getPortalName", &LuaExports::getPortalName);
+	lua_register(luaVm, "playPortalSE", &LuaExports::playPortalSe);
 
 	run();
 }
@@ -38,4 +40,9 @@ PortalInfo * LuaExports::getPortal(lua_State *luaVm) {
 int LuaExports::getPortalName(lua_State *luaVm) {
 	lua_pushstring(luaVm, getPortal(luaVm)->name.c_str());
 	return 1;
+}
+
+int LuaExports::playPortalSe(lua_State *luaVm) {
+	MapPacket::playPortalSoundEffect(getPlayer(luaVm));
+	return 0;
 }
