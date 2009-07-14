@@ -67,7 +67,7 @@ const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value
 
 	StatusEffects::Mob::VenomousWeapon,
 	StatusEffects::Mob::Empty,
-	StatusEffects::Mob::InertMob,
+	StatusEffects::Mob::Hypnotize,
 	StatusEffects::Mob::WeaponDamageReflect,
 	StatusEffects::Mob::MagicDamageReflect
 };
@@ -628,14 +628,31 @@ void Mobs::handleBomb(Player *player, PacketReader &packet) {
 }
 
 void Mobs::friendlyDamaged(Player *player, PacketReader &packet) {
-	int32_t damagedealer = packet.get<int32_t>();
-	packet.skipBytes(4); // Always 1?
-	int32_t damagetaker = packet.get<int32_t>();
-	Mob *dealer = Maps::getMap(player->getMap())->getMob(damagedealer);
-	Mob *taker = Maps::getMap(player->getMap())->getMob(damagetaker);
+	int32_t mobfrom = packet.get<int32_t>();
+	int32_t playerid = packet.get<int32_t>();
+	int32_t mobto = packet.get<int32_t>();
+
+	Mob *dealer = Maps::getMap(player->getMap())->getMob(mobfrom);
+	Mob *taker = Maps::getMap(player->getMap())->getMob(mobto);
 	if (dealer != 0 && taker != 0) {
 		int32_t damage = dealer->getInfo()->level * Randomizer::Instance()->randInt(100) / 10; // Temp for now until I figure out something more effective
-		taker->applyDamage(0, damage);
+		taker->applyDamage(playerid, damage);
+	}
+}
+
+void Mobs::handleTurncoats(Player *player, PacketReader &packet) {
+	int32_t mobfrom = packet.get<int32_t>();
+	int32_t playerid = packet.get<int32_t>();
+	int32_t mobto = packet.get<int32_t>();
+	packet.skipBytes(1); // Same as player damage, -1 = bump, integer = skill ID
+	int32_t damage = packet.get<int32_t>();
+	packet.skipBytes(1); // Facing direction
+	packet.skipBytes(4); // Some type of pos, damage display, I think
+
+	Mob *damager = Maps::getMap(player->getMap())->getMob(mobfrom);
+	Mob *taker = Maps::getMap(player->getMap())->getMob(mobto);
+	if (damager != 0 && taker != 0) {
+		taker->applyDamage(playerid, damage);
 	}
 }
 
@@ -655,11 +672,6 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 	uint8_t level = 0;
 	Pos target = packet.getPos();
 	packet.skipBytes(9);
-
-	if (mob->hasStatus(StatusEffects::Mob::InertMob)) {
-		skill = 0;
-		useskill = false;
-	}
 
 	MovementHandler::parseMovement(mob, packet);
 
@@ -946,6 +958,9 @@ int32_t Mobs::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8
 	}
 	if (!mob->isBoss()) { // Seal, Stun, etc
 		switch (skillid) {
+			case Jobs::Corsair::Hypnotize:
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Hypnotize, 1, skillid, Skills::skills[skillid][level].time));
+				break;
 			case Jobs::Infighter::BackspinBlow:
 			case Jobs::Infighter::DoubleUppercut:
 			case Jobs::Buccaneer::Demolition:

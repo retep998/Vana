@@ -266,7 +266,7 @@ namespace StatusEffects {
 
 			VenomousWeapon = 0x1000000,
 			Empty = 0x8000000,
-			InertMob = 0x10000000,
+			Hypnotize = 0x10000000,
 			WeaponDamageReflect = 0x20000000,
 			MagicDamageReflect = 0x40000000
 		};
