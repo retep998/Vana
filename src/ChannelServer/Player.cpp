@@ -150,6 +150,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_KEYMAP: changeKey(packet); break;
 		case RECV_LOOT_ITEM: Drops::playerLoot(this, packet); break;
 		case RECV_MOB_BOMB_EXPLOSION: Mobs::handleBomb(this, packet); break;
+		case RECV_MOB_DAMAGE_MOB: Mobs::handleTurncoats(this, packet); break;
 		case RECV_MONSTERBOOK: PlayerHandler::handleMonsterBook(this, packet); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;

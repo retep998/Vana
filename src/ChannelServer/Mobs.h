@@ -60,6 +60,7 @@ namespace Mobs {
 	void monsterControl(Player *player, PacketReader &packet);
 	void checkSpawn(int32_t mapid);
 	void friendlyDamaged(Player *player, PacketReader &packet);
+	void handleTurncoats(Player *player, PacketReader &packet);
 };
 
 class Mob : public MovableLife {
