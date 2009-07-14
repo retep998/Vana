@@ -137,3 +137,13 @@ MobAttackInfo * MobDataProvider::getMobAttack(int32_t mobid, uint8_t type) {
 	}
 	return 0;
 }
+
+MobSkillInfo * MobDataProvider::getMobSkill(int32_t mobid, uint8_t index) {
+	try {
+		return &mobinfo[mobid].skills.at(index);
+	}
+	catch (std::out_of_range) {
+
+	}
+	return 0;
+}

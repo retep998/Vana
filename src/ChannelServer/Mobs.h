@@ -40,13 +40,13 @@ struct MpEaterInfo;
 
 struct StatusInfo {
 	StatusInfo() : status(0), val(0), skillid(0), mobskill(0), level(0), time(0), reflection(-1) { }
-	StatusInfo(int32_t status, int16_t val, int32_t skillid, clock_t time);
-	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, clock_t time);
-	StatusInfo(int32_t status, int16_t val, int16_t mobskill, int16_t level, int32_t reflect, clock_t time);
+	StatusInfo(int32_t status, int32_t val, int32_t skillid, clock_t time);
+	StatusInfo(int32_t status, int32_t val, int16_t mobskill, int16_t level, clock_t time);
+	StatusInfo(int32_t status, int32_t val, int16_t mobskill, int16_t level, int32_t reflect, clock_t time);
 	int32_t status;
 	int32_t skillid;
 	int32_t reflection;
-	int16_t val;
+	int32_t val;
 	int16_t mobskill;
 	int16_t level;
 	clock_t time;
@@ -93,11 +93,10 @@ public:
 
 	int8_t getVenomCount() const { return venomcount; }
 	int8_t getFacingDirection() const { return facingdirection; }
-	int16_t getTauntEffect() const { return taunteffect; }
 	int16_t getOriginFh() const { return originfh; }
-	int16_t getStatusValue(int32_t status);
-	int16_t getWeaponReflection();
-	int16_t getMagicReflection();
+	int32_t getWeaponReflection();
+	int32_t getMagicReflection();
+	int32_t getStatusValue(int32_t status);
 	int32_t getId() const { return id; }
 	int32_t getMapId() const { return mapid; }
 	int32_t getMobId() const { return mobid; }
@@ -109,6 +108,7 @@ public:
 	int32_t getLink() const { return info.link; }
 	int32_t getCounter() { return ++counter; }
 	int32_t getSelfDestructHp() const { return info.selfdestruction; }
+	int32_t getTauntEffect() const { return taunteffect; }
 	time_t getLastSkillUse(uint8_t skill) { return (skilluse.find(skill) != skilluse.end() ? skilluse[skill] : 0); }
 	bool isBoss() const { return info.boss; }
 	bool canFreeze() const { return info.canfreeze; }
@@ -126,7 +126,7 @@ public:
 	Mob * getOwner() const { return owner; }
 	Mob * getSponge() const { return horntailsponge; }
 	const MobInfo * getInfo() const { return &info; }
-	vector<MobSkillInfo> getSkills() const { return info.skills; }
+	int32_t getSkillCount() const { return info.skills.size(); }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
 
 	Timer::Container * getTimers() const { return timers.get(); }
@@ -139,7 +139,7 @@ private:
 	int8_t facingdirection;
 	uint8_t weblevel;
 	int16_t originfh;
-	int16_t taunteffect;
+	int32_t taunteffect;
 	int32_t id;
 	int32_t mapid;
 	int32_t spawnid;
