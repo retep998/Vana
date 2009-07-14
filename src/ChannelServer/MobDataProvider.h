@@ -83,6 +83,7 @@ public:
 		return mobinfo[mobid];
 	}
 	MobAttackInfo * getMobAttack(int32_t mobid, uint8_t type);
+	MobSkillInfo * getMobSkill(int32_t mobid, uint8_t index);
 private:
 	MobDataProvider() {}
 	static MobDataProvider *singleton;

@@ -135,7 +135,7 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 	packet.add<int32_t>(statusmask);
 
 	for (size_t i = 0; i < info.size(); i++) {
-		packet.add<int16_t>(info[i].val);
+		packet.add<int16_t>(static_cast<int16_t>(info[i].val));
 		if (info[i].skillid >= 0) {
 			packet.add<int32_t>(info[i].skillid);
 		}
