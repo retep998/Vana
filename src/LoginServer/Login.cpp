@@ -111,7 +111,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 		time_t qban = (time_t) mysqlpp::DateTime(res[0]["quiet_ban"]);
 		if (qban > 0) {
 			if (time(0) > qban) {
-				query << "UPDATE users SET quiet_ban = " << mysqlpp::DateTime("0000-00-00 00:00:00") << " WHERE id = " << player->getUserId();
+				query << "UPDATE users SET quiet_ban = '0000-00-00 00:00:00' WHERE id = " << player->getUserId();
 				query.exec();
 			}
 			else {
