@@ -53,9 +53,10 @@ void LoginPacket::loginBan(PlayerLogin *player, int8_t reason, int32_t expire) {
 	*/
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_LOGIN_INFO_REPLY);
-	packet.addBytes("020000000000");
+	packet.add<int16_t>(2);
+	packet.add<int32_t>(0);
 	packet.add<int8_t>(reason);
-	packet.addBytes("00000000");
+	packet.add<int32_t>(0);
 	packet.add<int32_t>(expire); // Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
 	player->getSession()->send(packet);
 }
@@ -73,9 +74,10 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 	}
 	packet.addBytes("0465");
 	packet.addString(username);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.addBytes("000000A6B89C2B4CC701");
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(player->isQuietBanned() ? 1 : 0);
+	packet.add<int64_t>(player->getQuietBanTime());
+	packet.add<int64_t>(player->getCreationTime());
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }

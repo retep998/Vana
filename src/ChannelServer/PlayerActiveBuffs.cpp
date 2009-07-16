@@ -253,7 +253,7 @@ ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillid, const vector<Buff>
 void PlayerActiveBuffs::dispelBuffs() {
 	unordered_map<int32_t, uint8_t> activelevels = m_activelevels;
 	for (unordered_map<int32_t, uint8_t>::iterator iter = activelevels.begin(); iter != activelevels.end(); iter++) {
-		if (iter->second > 0 && !GameLogicUtilities::isMobSkill(iter->first)) { // Only want active skills and skill buffs - no item buffs or debuffs
+		if (iter->first > 0 && !GameLogicUtilities::isMobSkill(iter->first)) { // Only want active skills and skill buffs - no item buffs or debuffs
 			Skills::stopSkill(m_player, iter->first);
 		}
 	}

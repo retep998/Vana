@@ -169,7 +169,7 @@ void PartyFunctions::disbandParty(PacketReader &packet) {
 // Party class
 void Party::setLeader(int32_t playerid, bool firstload) {
 	if (!firstload) {
-		oldleader.push_back(members[leaderid]->getId());
+		oldleader.push_back(leaderid);
 	}
 	leaderid = playerid;
 }
