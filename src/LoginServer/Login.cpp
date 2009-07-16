@@ -41,7 +41,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
+	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, quiet_ban, creation_date, ban_reason, ban_expire, (ban_expire > NOW()) as banned FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	query << "SELECT id FROM ipbans WHERE ip = " << mysqlpp::quote << ip << " LIMIT 1";	
 	mysqlpp::StoreQueryResult resIp = query.store();
@@ -108,7 +108,20 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 		else
 			player->setGender((uint8_t) res[0]["gender"]);
 
+		time_t qban = (time_t) mysqlpp::DateTime(res[0]["quiet_ban"]);
+		if (qban > 0) {
+			if (time(0) > qban) {
+				query << "UPDATE users SET quiet_ban = " << mysqlpp::DateTime("0000-00-00 00:00:00") << " WHERE id = " << player->getUserId();
+				query.exec();
+			}
+			else {
+				player->setQuietBanTime(TimeUtilities::timeToTick(qban));
+			}
+		}
+
+		player->setCreationTime(TimeUtilities::timeToTick((time_t) mysqlpp::DateTime(res[0]["creation_date"])));
 		player->setCharDeletePassword(res[0]["char_delete_password"]);
+
 		LoginPacket::loginConnect(player, username);
 	}
 }
