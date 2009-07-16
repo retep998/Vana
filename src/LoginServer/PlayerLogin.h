@@ -26,7 +26,7 @@ class PacketReader;
 
 class PlayerLogin : public AbstractPlayer {
 public:
-	PlayerLogin() : status(PlayerStatus::NotLoggedIn), invalid_logins(0) { }
+	PlayerLogin() : status(PlayerStatus::NotLoggedIn), invalid_logins(0), quiet_ban_time(0) { }
 
 	~PlayerLogin();
 
@@ -39,6 +39,8 @@ public:
 	void setStatus(PlayerStatus::PlayerStatus status) { this->status = status; }
 	void setPin(int32_t pin) { this->pin = pin; }
 	void setCharDeletePassword(int32_t char_delete_password) { this->char_delete_password = char_delete_password; }
+	void setQuietBanTime(int64_t t) { quiet_ban_time = t; }
+	void setCreationTime(int64_t t) { user_creation = t; }
 
 	int8_t getGender() const { return gender; }
 	int8_t getWorld() const { return world; }
@@ -47,6 +49,9 @@ public:
 	PlayerStatus::PlayerStatus getStatus() const { return status; }
 	int32_t getPin() const { return pin; }
 	int32_t getCharDeletePassword() const { return char_delete_password; }
+	bool isQuietBanned() const { return (quiet_ban_time > 0); }
+	int64_t getQuietBanTime() const { return quiet_ban_time; }
+	int64_t getCreationTime() const { return user_creation; }
 
 	int32_t addInvalidLogin() {	return ++invalid_logins; }
 	void setOnline(bool online);
@@ -59,6 +64,8 @@ private:
 	int32_t pin;
 	int32_t invalid_logins;
 	int32_t char_delete_password;
+	int64_t quiet_ban_time;
+	int64_t user_creation;
 	bool checked_pin;
 };
 
