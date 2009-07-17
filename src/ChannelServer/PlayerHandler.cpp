@@ -231,8 +231,9 @@ void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet)
 
 void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	int32_t playerid = packet.get<int32_t>();
-	PlayersPacket::showInfo(player, Players::Instance()->getPlayer(playerid), packet.get<int8_t>());
+	if (Player *info = Players::Instance()->getPlayer(packet.get<int32_t>())) {
+		PlayersPacket::showInfo(player, info, packet.get<int8_t>());
+	}
 }
 
 void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
