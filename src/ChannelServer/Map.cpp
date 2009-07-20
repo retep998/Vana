@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drops.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
+#include "GMPacket.h"
 #include "Instance.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
@@ -72,6 +73,8 @@ void Map::addPlayer(Player *player) {
 		MapPacket::forceMapEquip(player);
 	if (!player->getActiveBuffs()->isUsingHide())
 		MapPacket::showPlayer(player);
+	else
+		GmPacket::beginHide(player);
 	if (timer > 0)
 		MapPacket::showTimer(player, timer - static_cast<int32_t>(time(0) - timerstart));
 	else if (instance != 0 && instance->showTimer() && instance->checkInstanceTimer() > 0)

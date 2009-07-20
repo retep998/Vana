@@ -17,6 +17,7 @@ set(SOURCES
 	FamePacket.h
 	GameConstants.h
 	GameLogicUtilities.h
+	GMPacket.h
 	InitializeChannel.h
 	Instance.h
 	InstanceMessageConstants.h
@@ -103,6 +104,7 @@ set(SOURCES
 	EventDataProvider.cpp
 	Fame.cpp
 	FamePacket.cpp
+	GMPacket.cpp
 	InitializeChannel.cpp
 	Instance.cpp
 	Instances.cpp

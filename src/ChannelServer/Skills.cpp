@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
+#include "GMPacket.h"
 #include "Inventory.h"
 #include "MapPacket.h"
 #include "Maps.h"
@@ -87,8 +88,10 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			player->setSpecialSkill(SpecialSkillInfo());
 			break;
 		default:
-			if (skillid == Jobs::SuperGm::Hide) // GM Hide
+			if (skillid == Jobs::SuperGm::Hide) { // GM Hide
 				MapPacket::showPlayer(player);
+				GmPacket::endHide(player);
+			}
 			player->getActiveBuffs()->removeBuff(skillid, fromTimer);
 			if (GameLogicUtilities::isMobSkill(skillid))
 				Buffs::Instance()->endDebuff(player, (uint8_t)(skillid));
@@ -323,6 +326,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		}
 		case Jobs::SuperGm::Hide:
 			MapPacket::removePlayer(player);
+			GmPacket::beginHide(player);
 			break;
 		default:
 			type = packet.get<int8_t>();
