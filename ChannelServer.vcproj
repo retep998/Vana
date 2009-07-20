@@ -330,6 +330,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\GMPacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\InventoryPacket.cpp"
 					>
 				</File>
@@ -721,6 +725,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\FamePacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\GMPacket.h"
 					>
 				</File>
 				<File

@@ -57,6 +57,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_GROUP_CHAT 0x7a // Groups like party, buddies and guild
 #define SEND_COMMAND_RESPOND 0x7b // Respond to / commands i.e. "/find"
 #define SEND_MAP_EFFECT 0x7e // Change Music/Boss HP Bars
+#define SEND_GM_FUNCTION 0x84 // Hide, other miscellaneous junk
 #define SEND_GM_EVENT_INSTRUCTIONS 0x86 // GM event instructions - Ola Ola, etc.
 #define SEND_TIME 0x87 // For places with clock i.e. ship station
 #define SEND_STOP_TIME 0x8e // Makes timer disappear from map
