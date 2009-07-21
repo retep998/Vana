@@ -25,12 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Timer {
 
 namespace Time {
-	clock_t fromNow(clock_t msec);
+	int64_t fromNow(clock_t msec);
 	clock_t nthSecondOfHour(uint16_t second);
 }
 
 inline
-clock_t Time::fromNow(clock_t msec) {
+int64_t Time::fromNow(clock_t msec) {
 	return msec + TimeUtilities::getTickCount();
 }
 
