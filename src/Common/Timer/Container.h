@@ -34,6 +34,7 @@ using std::tr1::unordered_map;
 class Container {
 public:
 	int32_t checkTimer(const Id &id);
+	int64_t checkTimer(const Id &id, bool msec);
 	void registerTimer(Timer *timer);
 	void removeTimer(const Id &id);
 private:

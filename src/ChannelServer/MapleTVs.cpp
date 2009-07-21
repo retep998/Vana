@@ -135,7 +135,7 @@ int32_t MapleTVs::checkMessageTimer() const {
 }
 
 void MapleTVs::getMapleTVEntryPacket(PacketCreator &packet) {
-	 getMapleTVPacket(m_currentmessage, packet, checkMessageTimer() / 1000);
+	 getMapleTVPacket(m_currentmessage, packet, checkMessageTimer());
 }
 
 void MapleTVs::getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, int32_t timeleft) {

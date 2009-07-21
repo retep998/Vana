@@ -261,7 +261,7 @@ int32_t Instance::checkInstanceTimer() {
 	int32_t timeleft = 0;
 	if (m_time > 0) {
 		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
-		timeleft = getTimers()->checkTimer(id) / 1000;
+		timeleft = getTimers()->checkTimer(id);
 	}
 	return timeleft;
 }

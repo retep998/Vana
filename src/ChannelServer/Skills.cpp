@@ -469,7 +469,7 @@ int16_t Skills::getCooldownTimeLeft(Player *player, int32_t skillid) {
 	int16_t cooltime = 0;
 	if (isCooling(player, skillid)) {
 		Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
-		cooltime = static_cast<int16_t>(player->getTimers()->checkTimer(id) / 1000);
+		cooltime = static_cast<int16_t>(player->getTimers()->checkTimer(id));
 	}
 	return cooltime;
 }
