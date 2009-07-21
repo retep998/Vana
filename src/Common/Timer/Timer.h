@@ -33,19 +33,19 @@ class Container;
 class Timer {
 public:
 	Timer(function<void ()> func, Id id, Container *container,
-		clock_t runAt, clock_t repeat = 0);
+		int64_t runAt, clock_t repeat = 0);
 	~Timer();
 
 	Id getId() const { return m_id; }
-	clock_t getRunAt() const { return m_run_at; }
-	int32_t getTimeLeft() const { return m_run_at - TimeUtilities::getTickCount(); }
+	int64_t getRunAt() const { return m_run_at; }
+	int64_t getTimeLeft() const { return m_run_at - TimeUtilities::getTickCount(); }
 
 	void run();
 	void reset(); // Only available for repeated timers
 private:
 	Id m_id;
 	Container *m_container;
-	clock_t m_run_at; // The time that this timer will run
+	int64_t m_run_at; // The time that this timer will run
 	clock_t m_repeat; // Repeat this timer x msec after the timer ran
 	function<void ()> m_function;
 };
