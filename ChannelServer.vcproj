@@ -442,6 +442,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\ScriptDataProvider.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\ShopDataProvider.cpp"
 					>
 				</File>
@@ -837,6 +841,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MobDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ScriptDataProvider.h"
 					>
 				</File>
 				<File

@@ -15,7 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Blue Goblin
-spawnMob(7130401);
-showMapMessage("Here comes Blue King Goblin!", 6);
-reset();
+-- Time Temple quest to unfreeze memories
+
+if state == 0 then
+	endQuest(3514);
+	addText("Hah... I found that very amusing. Very well, I'll unfreeze your memories.");
+	sendOK();
+end
+endNPC();

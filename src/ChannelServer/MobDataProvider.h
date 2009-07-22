@@ -18,11 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MOBDATA_H
 #define MOBDATA_H
 
+#include "GameConstants.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
+#include <string>
 #include <vector>
 
+using std::string;
 using std::tr1::unordered_map;
 using std::vector;
 
@@ -59,6 +62,8 @@ struct MobInfo {
 	bool canfreeze;
 	bool canpoison;
 	bool undead;
+	bool flying;
+	bool friendly;
 	bool publicreward;
 	bool explosivereward;
 	int8_t hpcolor;
@@ -66,6 +71,13 @@ struct MobInfo {
 	vector<int32_t> summon;
 	vector<MobAttackInfo> attacks;
 	vector<MobSkillInfo> skills;
+};
+
+struct BanishField {
+	BanishField() : message(""), portal(""), field(Maps::NoMap) { }
+	string message;
+	string portal;
+	int32_t field;
 };
 
 class MobDataProvider : boost::noncopyable {
@@ -76,19 +88,21 @@ public:
 		return singleton;
 	}
 	void loadData();
-	bool mobExists(int32_t mobid) {
-		return mobinfo.find(mobid) != mobinfo.end();
-	}
-	MobInfo const getMobInfo(int32_t mobid) {
-		return mobinfo[mobid];
-	}
+
+	bool mobExists(int32_t mobid) { return mobinfo.find(mobid) != mobinfo.end(); }
+	MobInfo const getMobInfo(int32_t mobid) { return mobinfo[mobid]; }
 	MobAttackInfo * getMobAttack(int32_t mobid, uint8_t type);
 	MobSkillInfo * getMobSkill(int32_t mobid, uint8_t index);
+	bool hasBanishData(int32_t mobid) { return banishinfo.find(mobid) != banishinfo.end(); }
+	string getBanishMessage(int32_t mobid) { return banishinfo[mobid].message; }
+	string getBanishPortal(int32_t mobid) { return banishinfo[mobid].portal; }
+	int32_t getBanishMap(int32_t mobid) { return banishinfo[mobid].field; }
 private:
 	MobDataProvider() {}
 	static MobDataProvider *singleton;
 
 	unordered_map<int32_t, MobInfo> mobinfo;
+	unordered_map<int32_t, BanishField> banishinfo;
 };
 
 #endif

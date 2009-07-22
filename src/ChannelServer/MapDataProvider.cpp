@@ -56,54 +56,62 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	boost::mutex::scoped_lock l(loadmap_mutex);
 
 	mysqlpp::Query query = Database::getDataDB().query();
-	query << "SELECT returnmap, forcedreturn, fieldtype, fieldlimit, mobrate, clock, ship, town, `top`, `right`, `left`, `bottom` FROM mapdata WHERE mapid = " << mapid;
+	query << "SELECT * FROM mapdata WHERE mapid = " << mapid;
 	mysqlpp::UseQueryResult res = query.use();
 
+	int32_t link = 0;
 	MYSQL_ROW dataRow;
+	enum MapColumns {
+		MapId = 0,
+		Top, Left, Right, Bottom, ReturnMap,
+		ForcedReturn, FieldType, FieldLimit, DecHp, ProtectItem,
+		TimeMob, StartHour, EndHour, Message, MobRate,
+		Town, Clock, Ship, Link
+	};
 	while (dataRow = res.fetch_raw_row()) {
-		// Col0 : Return Map
-		//    1 : Forced Return Map
-		//    2 : Field Type
-		//    3 : Field Limit
-		//    4 : Mob Spawn Rate
-		//    5 : Clock
-		//    6 : Ship Interval
-		//    7 : Town?
-		//    8 : Top
-		//    9 : Right
-		//   10 : Left
-		//   11 : Bottom
+		link = atoi(dataRow[Link]);
 
 		MapInfoPtr mapinfo(new MapInfo);
+
+		mapinfo->link = link;
 		mapinfo->id = mapid;
+
 		mapinfo->continent = getContinent(mapid);
-		mapinfo->rm = atoi(dataRow[0]);
-		mapinfo->forcedReturn = atoi(dataRow[1]);
-		mapinfo->fieldType = atoi(dataRow[2]);
-		mapinfo->fieldLimit = atoi(dataRow[3]);
-		mapinfo->spawnrate = atof(dataRow[4]);
-		mapinfo->clock = atob(dataRow[5]);
-		mapinfo->shipInterval = atoi(dataRow[6]);
-		mapinfo->town = atob(dataRow[7]);
-		mapinfo->top = atoi(dataRow[8]);
-		mapinfo->right = atoi(dataRow[9]);
-		mapinfo->left = atoi(dataRow[10]);
-		mapinfo->bottom = atoi(dataRow[11]);
+		mapinfo->rm = atoi(dataRow[ReturnMap]);
+		mapinfo->forcedReturn = atoi(dataRow[ForcedReturn]);
+		mapinfo->fieldType = atoi(dataRow[FieldType]);
+		mapinfo->fieldLimit = atoi(dataRow[FieldLimit]);
+		mapinfo->spawnrate = atof(dataRow[MobRate]);
+		mapinfo->clock = atob(dataRow[Clock]);
+		mapinfo->shipInterval = atoi(dataRow[Ship]);
+		mapinfo->town = atob(dataRow[Town]);
+		mapinfo->top = atoi(dataRow[Top]);
+		mapinfo->right = atoi(dataRow[Right]);
+		mapinfo->left = atoi(dataRow[Left]);
+		mapinfo->bottom = atoi(dataRow[Bottom]);
+		mapinfo->timemob = atoi(dataRow[TimeMob]);
+		mapinfo->starthour = atoi(dataRow[StartHour]);
+		mapinfo->endhour = atoi(dataRow[EndHour]);
+		mapinfo->message = dataRow[Message];
 
 		map = new Map(mapinfo);
 	}
+
 	maps[mapid] = map;
 	if (map == 0) // Map does not exist, so no need to run the rest of the code
 		return;
 
+	int32_t checkmap = (link == 0 ? mapid : link);
+
 	// Seats
-	query << "SELECT seatid, x, y from mapseatdata WHERE mapid = " << mapid;
+	query << "SELECT seatid, x, y from mapseatdata WHERE mapid = " << checkmap;
 	res = query.use();
 
 	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Seat ID
 		//    1 : x
 		//    2 : y
+
 		SeatInfo chair;
 		int16_t id = atoi(dataRow[0]);
 		chair.pos = Pos(atoi(dataRow[1]), atoi(dataRow[2]));
@@ -112,7 +120,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	}
 
 	// Portals
-	query << "SELECT id, name, x, y, tomap, toname, script, onlyonce FROM mapportaldata WHERE mapid = " << mapid;
+	query << "SELECT id, name, x, y, tomap, toname, script, onlyonce FROM mapportaldata WHERE mapid = " << checkmap;
 	res = query.use();
 
 	while (dataRow = res.fetch_raw_row()) {
@@ -124,6 +132,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    5 : To Name
 		//    6 : Script
 		//    7 : Only once
+
 		PortalInfo portal;
 		portal.id = atoi(dataRow[0]);
 		portal.name = dataRow[1];
@@ -136,7 +145,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	}
 
 	// Life [NPCs and Mobs]
-	query << "SELECT isnpc, lifeid, x, cy, fh, rx0, rx1, mobtime, facesright FROM maplifedata WHERE mapid = " << mapid;
+	query << "SELECT isnpc, lifeid, x, cy, fh, rx0, rx1, mobtime, facesright FROM maplifedata WHERE mapid = " << checkmap;
 	res = query.use();
 
 	while (dataRow = res.fetch_raw_row()) {
@@ -149,6 +158,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    6 : rx1
 		//    7 : Mob Time
 		//    8 : Faces Right
+
 		if (atob(dataRow[0])) {
 			NPCSpawnInfo npc;
 			npc.id = atoi(dataRow[1]);
@@ -173,7 +183,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	}
 
 	// Reactors
-	query << "SELECT reactorid, x, y, reactortime, link FROM mapreactordata WHERE mapid = " << mapid;
+	query << "SELECT reactorid, x, y, reactortime, link FROM mapreactordata WHERE mapid = " << checkmap;
 	res = query.use();
 
 	while (dataRow = res.fetch_raw_row()) {
@@ -182,6 +192,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    2 : y
 		//    3 : Reactor Time
 		//    4 : Link
+
 		ReactorSpawnInfo reactor;
 		reactor.id = atoi(dataRow[0]);
 		reactor.pos = Pos(atoi(dataRow[1]), atoi(dataRow[2]));
@@ -191,7 +202,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	}
 
 	// Footholds
-	query << "SELECT id, x1, y1, x2, y2 FROM mapfootholddata WHERE mapid = " << mapid;
+	query << "SELECT id, x1, y1, x2, y2 FROM mapfootholddata WHERE mapid = " << checkmap;
 	res = query.use();
 
 	while (dataRow = res.fetch_raw_row()) {
@@ -200,6 +211,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    2 : y1
 		//    3 : x2
 		//    4 : y2
+
 		FootholdInfo foot;
 		foot.id = atoi(dataRow[0]) - 1;
 		foot.pos1 = Pos(atoi(dataRow[1]), atoi(dataRow[2]));

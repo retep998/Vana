@@ -51,6 +51,8 @@ struct MapInfo {
 	bool town;
 	int8_t fieldType;
 	int8_t continent;
+	int8_t starthour;
+	int8_t endhour;
 	int16_t left;
 	int16_t top;
 	int16_t bottom;
@@ -60,8 +62,11 @@ struct MapInfo {
 	int32_t forcedReturn;
 	int32_t shipInterval;
 	int32_t fieldLimit;
+	int32_t link;
+	int32_t timemob;
 	double spawnrate;
 	string musicname;
+	string message;
 };
 typedef shared_ptr<MapInfo> MapInfoPtr;
 
@@ -134,8 +139,9 @@ public:
 
 	// Footholds
 	void addFoothold(const FootholdInfo &foothold) { footholds.push_back(foothold); }
-	Pos findFloor(Pos pos);
-	int16_t getFhAtPosition(Pos pos);
+	Pos findFloor(const Pos &pos);
+	Pos findRandomPos();
+	int16_t getFhAtPosition(const Pos &pos);
 
 	// Seats
 	void addSeat(int16_t id, const SeatInfo &seat) { seats[id] = seat; }
@@ -155,7 +161,8 @@ public:
 	void removePlayer(Player *player);
 	void dispelPlayers(int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
 	void statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
-	void sendPlayersToTown(int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb);
+	void sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb);
+	void buffPlayers(int32_t buffid);
 
 	// NPCs
 	int32_t addNPC(const NPCSpawnInfo &npc);
@@ -164,6 +171,8 @@ public:
 	NPCSpawnInfo getNpc(int32_t id) const { return this->npcs[id]; }
 
 	// Mobs
+	void setWebbedCount(int32_t w) { webbed = w; }
+	int32_t getWebbedCount() const { return webbed; }
 	void addMobSpawn(const MobSpawnInfo &spawn);
 	void checkMobSpawn(clock_t time, bool spawnAll = false);
 	void removeMob(int32_t id, int32_t spawnid);
@@ -216,6 +225,7 @@ public:
 
 	// Timer stuff
 	void runTimer();
+	void timeMob(bool firstLoad = true);
 	void setMapTimer(int32_t t);
 	Timer::Container * getTimers() const { return timers.get(); }
 
@@ -250,10 +260,13 @@ private:
 	time_t timerstart;
 	int32_t timer;
 	int32_t poisonmists;
+	int32_t webbed;
+	int32_t timemob;
 	bool spawnmobs;
 
 	void updateMobControl(Player *player);
 	void updateMobControl(Mob *mob, bool spawn = false);
+	int32_t getTimeMobId() const { return timemob; }
 };
 
 #endif

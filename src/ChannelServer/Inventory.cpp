@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "Maps.h"
 #include "MapleTVs.h"
+#include "MonsterBookPacket.h"
 #include "PacketReader.h"
 #include "Pets.h"
 #include "PetsPacket.h"
@@ -497,12 +498,16 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	if (item.cons.ailment > 0)
 		player->getActiveBuffs()->useDebuffHealingItem(item.cons.ailment);
 
-	if (item.cons.time > 0) {
+	if (item.cons.time > 0 && item.cons.mcprob == 0) {
 		int32_t time = item.cons.time * potency / 100;
 		Buffs::Instance()->addBuff(player, itemid, time);
 	}
 	if (GameLogicUtilities::isMonsterCard(itemid)) {
-		player->getMonsterBook()->addCard(itemid);
+		bool isFull = player->getMonsterBook()->addCard(itemid); // Has a special buff for being full?
+		MonsterBookPacket::addCard(player, itemid, player->getMonsterBook()->getCardLevel(itemid), isFull);
+		if (item.cons.mcprob != 0 && Randomizer::Instance()->randShort(99) < item.cons.mcprob) {
+			Buffs::Instance()->addBuff(player, itemid, item.cons.time);
+		}
 	}
 }
 
@@ -643,9 +648,9 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			succeed = 0;
 			if (wscroll)
 				takeItem(player, Items::WhiteScroll, 1);
-			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
+			if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
 				int8_t n = -1; // Default - Decrease stats
-				if ((int16_t) Randomizer::Instance()->randShort(99) < 50) // Increase
+				if (Randomizer::Instance()->randShort(99) < 50U) // Increase
 					n = 1;
 				// Gives/takes 0-5 stats on every stat on the item
 				if (equip->istr > 0)
@@ -688,12 +693,12 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 	}
 	else if (iteminfo.cons.recover) {
 		if ((ItemDataProvider::Instance()->getEquipInfo(equip->id).slots - equip->scrolls) > equip->slots) {
-			if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Give back a slot
+			if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Give back a slot
 				equip->slots++;
 				succeed = 1;
 			}
 			else {
-				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
+				if (Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
 					cursed = true;
 				succeed = 0;
 			}
@@ -704,7 +709,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 			case Items::ShoeSpikes: // 10%
 			case Items::CapeColdProtection: // 10%
 				succeed = 0;
-				if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
+				if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
 					// These do not take slots and can be used even after success
 					switch (itemid) {
 						case Items::ShoeSpikes:
@@ -721,7 +726,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 				if (equip->slots > 0) {
 					if (wscroll)
 						takeItem(player, Items::WhiteScroll, 1);
-					if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
+					if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
 						succeed = 1;
 						equip->istr += iteminfo.cons.istr;
 						equip->idex += iteminfo.cons.idex;
@@ -743,7 +748,7 @@ void Inventory::useScroll(Player *player, PacketReader &packet) {
 					}
 					else {
 						succeed = 0;
-						if ((int16_t) Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
+						if (Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
 							cursed = true;
 						else if (!wscroll)
 							equip->slots--;

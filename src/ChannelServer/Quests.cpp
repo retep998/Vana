@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 unordered_map<int32_t, QuestInfo> Quests::quests;
 
-void Quests::addRequest(int32_t id, int32_t type, unordered_map<int32_t, int16_t> &request) {
+void Quests::addRequest(int32_t id, int32_t type, QuestRequest &request) {
 	QuestInfo quest;
 	if (quests.find(id) != quests.end())
 		quest = quests[id];

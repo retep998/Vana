@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PlayersPacket.h"
 #include "Pos.h"
+#include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "StoragePacket.h"
 #include "WorldServerConnectPacket.h"
@@ -876,6 +877,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "shops") ShopDataProvider::Instance()->loadData();
 						else if (args == "mobs") MobDataProvider::Instance()->loadData();
 						else if (args == "beauty") BeautyDataProvider::Instance()->loadData();
+						else if (args == "scripts") ScriptDataProvider::Instance()->loadData();
 						else {
 							showSyntax(player, command);
 						}

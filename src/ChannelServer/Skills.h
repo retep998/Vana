@@ -32,6 +32,8 @@ class Player;
 class PacketReader;
 
 struct SkillLevelInfo {
+	int8_t mobcount;
+	int8_t hitcount;
 	int16_t mp;
 	int16_t hp;
 	int32_t item;
@@ -52,6 +54,7 @@ struct SkillLevelInfo {
 	int16_t morph;
 	int16_t damage;
 	uint16_t hpP;
+	uint16_t mpP;
 	uint16_t prop;
 	int32_t time;
 	Pos lt;

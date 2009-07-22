@@ -54,6 +54,7 @@ private:
 	map<int16_t, ActiveQuest> m_quests;
 	map<int16_t, int64_t> m_completed;
 
+	bool giveRewards(int16_t questid, bool start);
 	bool giveRewards(const QuestRewardInfo &info);
 	void addQuest(int16_t questid);
 	void addQuestMobs(int16_t questid, bool dbload = false);

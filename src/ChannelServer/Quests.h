@@ -21,10 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <iomanip>
+#include <map>
 #include <sstream>
 #include <string>
 #include <vector>
 
+using std::map;
 using std::string;
 using std::tr1::unordered_map;
 using std::vector;
@@ -39,7 +41,7 @@ namespace QuestRequestTypes {
 	const int32_t Quest = 0x04;
 };
 
-typedef unordered_map<int32_t, int16_t> QuestRequest;
+typedef map<int32_t, int16_t, std::less<int32_t> > QuestRequest;
 typedef unordered_map<int32_t, QuestRequest> QuestRequestInfo;
 
 struct QuestRewardInfo {
@@ -49,13 +51,19 @@ struct QuestRewardInfo {
 	bool isexp;
 	bool isfame;
 	bool isskill;
-	int32_t id;
-	int16_t count;
+	bool ismasterlevelonly;
+	bool isbuff;
 	int8_t gender;
-	int8_t job;
-	int8_t prop;
+	int16_t count;
+	int16_t masterlevel;
+	int32_t prop;
+	int32_t id;
 };
-typedef vector<QuestRewardInfo> QuestRewardsInfo;
+
+struct QuestRewardsInfo {
+	vector<QuestRewardInfo> rewards;
+	unordered_map<int32_t, vector<QuestRewardInfo> > jobrewards;
+};
 
 struct QuestInfo {
 	bool hasRequests() { return (hasRequests(QuestRequestTypes::Mob) || hasRequests(QuestRequestTypes::Item) || hasRequests(QuestRequestTypes::Quest)); }
@@ -97,7 +105,7 @@ struct ActiveQuest {
 
 namespace Quests {
 	extern unordered_map<int32_t, QuestInfo> quests;
-	void addRequest(int32_t id, int32_t type, unordered_map<int32_t, int16_t> &request);
+	void addRequest(int32_t id, int32_t type, QuestRequest &request);
 	void addReward(int32_t id, QuestRewardsInfo &raws);
 	void setNextQuest(int16_t id, int16_t questid);
 	void getQuest(Player *player, PacketReader &packet);

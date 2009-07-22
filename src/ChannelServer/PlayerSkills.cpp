@@ -258,8 +258,8 @@ int32_t PlayerSkills::getHpIncrease() {
 			skillid = Jobs::ThunderBreaker::ImproveMaxHp;
 			break;
 		case Jobs::JobTracks::Pirate:
-			if ((player->getJob() / 10) == (Jobs::JobIds::Infighter / 10))
-				skillid = Jobs::Infighter::ImproveMaxHp;
+			if ((player->getJob() / 10) == (Jobs::JobIds::Brawler / 10))
+				skillid = Jobs::Brawler::ImproveMaxHp;
 			break;
 	}
 	return skillid;
@@ -314,7 +314,7 @@ int32_t PlayerSkills::getMastery() {
 			masteryid = Jobs::Bandit::DaggerMastery;
 			break;
 		case WeaponKnuckle:
-			masteryid = Jobs::Infighter::KnucklerMastery;
+			masteryid = Jobs::Brawler::KnucklerMastery;
 			break;
 		case WeaponBow:
 			masteryid = Jobs::Hunter::BowMastery;

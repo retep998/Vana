@@ -40,13 +40,15 @@ public:
 
 	void load();
 	void save();
-	void addCard(int32_t itemid, uint8_t level = 1, bool initialload = false);
 	void connectData(PacketCreator &packet);
+
+	bool addCard(int32_t itemid, uint8_t level = 1, bool initialload = false);
 	void calculateLevel();
 	void infoData(PacketCreator &packet);
 	void setCover(int32_t newcover) { m_cover = newcover; }
 
 	MonsterCard * getCard(int32_t cardid);
+	uint8_t getCardLevel(int32_t cardid);
 	int32_t getSpecials() const { return m_specialcount; }
 	int32_t getNormals() const { return m_normalcount; }
 	int32_t getSize() const { return (int32_t) m_cards.size(); }
