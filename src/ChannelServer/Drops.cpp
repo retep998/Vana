@@ -116,7 +116,7 @@ void Drop::removeDrop(bool showPacket) {
 }
 
 // Drops namespace
-void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) {
+void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int32_t droppingId, Pos origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) {
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
 	Player *player = Players::Instance()->getPlayer(playerid);
 	int16_t d = 0;
@@ -128,7 +128,22 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 			partyid = party->getId();
 		}
 	}
-
+	if (droppingLevel != 0) { // Check for global drops, add to the vector if needed
+		GlobalDrops gdrops = DropDataProvider::Instance()->getGlobalDrops();
+		DropInfo d;
+		for (size_t i = 0; i < gdrops.size(); i++) {
+			if (droppingLevel >= gdrops[i].minamount && droppingLevel <= gdrops[i].maxamount) {
+				d = DropInfo();
+				d.chance = gdrops[i].chance;
+				d.ismesos = gdrops[i].ismesos;
+				d.itemid = gdrops[i].itemid;
+				d.minamount = gdrops[i].minamount;
+				d.maxamount = gdrops[i].maxamount;
+				d.questid = gdrops[i].questid;
+				drops.push_back(d);
+			}
+		}
+	}
 	for (size_t i = 0; i < drops.size(); i++) {
 		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(drops[i].maxamount - drops[i].minamount) + drops[i].minamount);
 		Drop *drop = 0;
@@ -140,7 +155,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingId, Pos ori
 			chance = chance * taunt / 100;
 			chance *= ChannelServer::Instance()->getDroprate();
 		}
-		if (Randomizer::Instance()->randInt(99999) < chance) {
+		if (Randomizer::Instance()->randInt(999999) < chance) {
 			pos.x = origin.x + ((d % 2) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
 			pos.y = origin.y;
 

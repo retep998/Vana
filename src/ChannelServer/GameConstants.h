@@ -126,6 +126,7 @@ namespace Stats {
 	const int8_t MaxFullness = 100;
 	const int8_t MinFullness = 0;
 	const int8_t PetFeedFullness = 30;
+	const int32_t MaxDamage = 99999;
 
 	namespace BaseHp {
 		const int16_t Variation = 4; // This is the range of HP that the server will give
@@ -315,14 +316,14 @@ namespace MobSkills {
 		WeaponDamageReflect = 143,
 		MagicDamageReflect = 144, 
 		AnyDamageReflect = 145,
-		NoMonsterHasThisYet1 = 150, // 150-155, 157 are not verified and no mob has them, but they are in the data
-		NoMonsterHasThisYet2 = 151,
-		NoMonsterHasThisYet3 = 152,
-		NoMonsterHasThisYet4 = 153,
-		NoMonsterHasThisYet5 = 154,
-		NoMonsterHasThisYet6 = 155,
-		Haste = 156,
-		NoMonsterHasThisYet7 = 157,
+		McWeaponAttackUp = 150,
+		McMagicAttackUp = 151,
+		McWeaponDefenseUp = 152,
+		McMagicDefenseUp = 153,
+		McAccuracyUp = 154,
+		McAvoidUp = 155,
+		McSpeedUp = 156,
+		NoClue = 157, // Not found anywhere that I know of
 		Summon = 200
 	};
 }
@@ -405,7 +406,7 @@ namespace Jobs {
 			Shadower = 422,
 
 			Pirate = 500,
-			Infighter = 510,
+			Brawler = 510,
 			Marauder = 511,
 			Buccaneer = 512,
 			Gunslinger = 520,
@@ -769,7 +770,7 @@ namespace Jobs {
 			Dash = 5001005
 		};
 	}
-	namespace Infighter {
+	namespace Brawler {
 		enum Skills {
 			BackspinBlow = 5101002,
 			CorkscrewBlow = 5101004,

@@ -77,7 +77,7 @@ void PlayerSummons::getSummonTransferPacket(PacketCreator &packet) {
 	uint8_t level = 0;
 	if (m_summon != 0) {
 		summonid = m_summon->getSummonId();
-		timeleft = getSummonTimeRemaining() / 1000;
+		timeleft = getSummonTimeRemaining();
 		level = m_summon->getLevel();
 	}
 	packet.add<int32_t>(summonid);

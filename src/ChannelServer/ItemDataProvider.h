@@ -65,6 +65,12 @@ struct Skillbook {
 };
 
 struct ConsumeInfo {
+	ConsumeInfo() :
+		fireresist(0), lightningresist(0), poisonresist(0), iceresist(0),
+		cursedef(0), stundef(0), weaknessdef(0), darknessdef(0), sealdef(0),
+		ignorewdef(0), ignoremdef(0)
+		{ }
+
 	bool hasmapeffect;
 	bool autoconsume;
 	bool randstat;
@@ -82,8 +88,6 @@ struct ConsumeInfo {
 	int16_t speed;
 	int16_t jump;
 	int16_t morph;
-	int16_t success;
-	int16_t cursed;
 	int16_t istr;
 	int16_t idex;
 	int16_t iint;
@@ -99,6 +103,22 @@ struct ConsumeInfo {
 	int16_t ihand;
 	int16_t ijump;
 	int16_t ispeed;
+	int16_t fireresist;
+	int16_t iceresist;
+	int16_t lightningresist;
+	int16_t poisonresist;
+	int16_t mesoup;
+	int16_t dropup;
+	int16_t cursedef;
+	int16_t stundef;
+	int16_t weaknessdef;
+	int16_t darknessdef;
+	int16_t sealdef;
+	int16_t ignorewdef;
+	int16_t ignoremdef;
+	uint16_t success;
+	uint16_t cursed;
+	uint16_t mcprob;
 	int32_t moveTo;
 	int32_t time;
 	int32_t ailment;

@@ -230,8 +230,9 @@ void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet)
 
 void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	int32_t playerid = packet.get<int32_t>();
-	PlayersPacket::showInfo(player, Players::Instance()->getPlayer(playerid), packet.get<int8_t>());
+	if (Player *info = Players::Instance()->getPlayer(packet.get<int32_t>())) {
+		PlayersPacket::showInfo(player, info, packet.get<int8_t>());
+	}
 }
 
 void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
@@ -328,7 +329,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	uint8_t level = player->getSkills()->getSkillLevel(skillid);
 	switch (skillid) {
 		case Jobs::Gunslinger::Grenade:
-		case Jobs::Infighter::CorkscrewBlow:
+		case Jobs::Brawler::CorkscrewBlow:
 			packet.skipBytes(4); // Charge
 			break;
 	}
@@ -373,10 +374,10 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				}
 			}
 			if (skillid == Jobs::Paladin::HeavensHammer) {
-				damage = (mob->isBoss() ? 99999 : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
+				damage = (mob->isBoss() ? Stats::MaxDamage : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
 			}
 			else if (skillid == Jobs::Bandit::Steal && !mob->isBoss()) {
-				Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
+				Drops::doDrops(player->getId(), map, mob->getInfo()->level, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);

@@ -53,6 +53,8 @@ namespace GameLogicUtilities {
 	inline bool isMobSkill(int32_t skillid) { return (skillid >= 100 && skillid <= 200); }
 
 	// Jobs
+	inline bool isRegularJob(int32_t job) { return (job == Jobs::JobIds::Beginner || (job >= 100 && job <= 910)); }
+	inline bool isNonBitJob(int32_t job) { return (isRegularJob(job)); }
 	inline bool isBeginnerJob(int16_t jobid) { return (jobid == 0); }
 	inline int16_t getJobTrack(int16_t job) { return (job / 100); }
 

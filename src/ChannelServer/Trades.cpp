@@ -62,7 +62,7 @@ ActiveTrade * Trades::getTrade(int32_t id) {
 
 int32_t Trades::checkTimer(int32_t id) {
 	Timer::Id check(Timer::Types::TradeTimer, id, 0);
-	return getContainer()->checkTimer(check);
+	return getTimers()->checkTimer(check);
 }
 
 void Trades::timeout(Player *sender) {
@@ -71,7 +71,7 @@ void Trades::timeout(Player *sender) {
 
 void Trades::stopTimeout(int32_t id) {
 	Timer::Id rid(Timer::Types::TradeTimer, id, 0);
-	getContainer()->removeTimer(rid);
+	getTimers()->removeTimer(rid);
 }
 
 void Trades::startTimeout(int32_t id, Player *sender) {

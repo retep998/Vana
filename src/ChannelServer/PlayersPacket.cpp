@@ -188,7 +188,7 @@ void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
 	switch (skillid) {
 		case Jobs::Gunslinger::Grenade:
-		case Jobs::Infighter::CorkscrewBlow:
+		case Jobs::Brawler::CorkscrewBlow:
 			pack.skipBytes(4); // Charge
 			break;
 	}

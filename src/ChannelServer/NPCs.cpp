@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "PacketReader.h"
 #include "SendHeader.h"
+#include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include <sys/stat.h>
 #include <string>
@@ -161,14 +162,13 @@ NPC::~NPC() {
 
 void NPC::initScript(int32_t npcid, Player *player, int16_t questid, bool isstart) {
 	struct stat fileinfo;
-	std::ostringstream filenameStream;
-	filenameStream << "scripts/npcs/" << npcid;
-	if (questid != 0) {
-		filenameStream << (isstart ? "s" : "e");
+	string filename;
+	if (questid == 0) {
+		filename = ScriptDataProvider::Instance()->getNpcScript(npcid);
 	}
-	filenameStream << ".lua";
-	string filename = filenameStream.str();
-
+	else {
+		filename = ScriptDataProvider::Instance()->getQuestScript(questid, (isstart ? 0 : 1));
+	}
 	if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC exists
 		luaNPC.reset(new LuaNPC(filename, player->getId(), questid));
 		player->setNPC(this);

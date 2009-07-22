@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Timer {
 
 Timer::Timer(function<void ()> func, Id id,
-	Container *container, clock_t runAt, clock_t repeat) :
+	Container *container, int64_t runAt, clock_t repeat) :
 m_id(id),
 m_container(container),
 m_run_at(runAt),

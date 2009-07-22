@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Pos.h"
 #include "ReactorPacket.h"
+#include "ScriptDataProvider.h"
 #include "Timer/Thread.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
@@ -60,19 +61,24 @@ void Reactor::restore() {
 }
 
 void Reactor::drop(Player *player) {
-	Drops::doDrops(player->getId(), mapid, reactorid, pos, false, false);
+	Drops::doDrops(player->getId(), mapid, 0, reactorid, pos, false, false);
 }
 
 // Reactors namespace
-unordered_map<int32_t, ReactorEventsInfo> Reactors::reactorinfo;
+unordered_map<int32_t, unordered_map<uint8_t, ReactorEventsInfo> > Reactors::reactorinfo;
 unordered_map<int32_t, int16_t> Reactors::maxstates;
 
-void Reactors::addEventInfo(int32_t id, ReactorEventInfo revent) {
-	reactorinfo[id].push_back(revent);
+void Reactors::addEventInfo(int32_t id, uint8_t state, const ReactorEventInfo &revent) {
+	reactorinfo[id][state].push_back(revent);
 }
 
-void Reactors::setMaxstates(int32_t id, int16_t state) {
-	maxstates[id] = state;
+void Reactors::setMaxStates(int32_t id, int16_t state) {
+	if (maxstates.find(id) == maxstates.end()) {
+		maxstates[id] = state;	
+	}
+	else if (maxstates[id] < state) {
+		maxstates[id] = state;
+	}
 }
 
 void Reactors::hitReactor(Player *player, PacketReader &packet) {
@@ -84,7 +90,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 		int32_t reactorid = (reactor->getLink() != 0 ? reactor->getLink() : reactor->getReactorId());
 
 		if (reactor->getState() < maxstates[reactorid]) {
-			ReactorEventInfo *revent = &reactorinfo[reactorid][reactor->getState()];
+			ReactorEventInfo *revent = &reactorinfo[reactorid][reactor->getState()][0]; // There's only one way to hit something
 			if (revent->nextstate < maxstates[reactorid]) {
 				if (revent->type >= 100)
 					return;
@@ -94,9 +100,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 				return;
 			}
 			else {
-				std::ostringstream filenameStream;
-				filenameStream << "scripts/reactors/" << reactor->getReactorId() << ".lua";
-				string filename = filenameStream.str();
+				string filename = ScriptDataProvider::Instance()->getReactorScript(reactor->getReactorId());
 
 				struct stat fileInfo;
 				if (!stat(filename.c_str(), &fileInfo)) { // Script found
@@ -119,9 +123,8 @@ struct Reaction {
     void operator()() {
         reactor->setState(state, true);
         drop->removeDrop();
-        std::ostringstream filenameStream;
-        filenameStream << "scripts/reactors/" << reactor->getReactorId() << ".lua";
-        LuaReactor(filenameStream.str(), player->getId(), reactor->getId() - 200, reactor->getMapId());
+		string filename = ScriptDataProvider::Instance()->getReactorScript(reactor->getReactorId());
+        LuaReactor(filename, player->getId(), reactor->getId() - 200, reactor->getMapId());
         return;
     }
     Reactor *reactor;
@@ -136,19 +139,23 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 		int32_t reactorid = (reactor->getLink() != 0 ? reactor->getLink() : reactor->getReactorId());
 
 		if (reactor->getState() < maxstates[reactorid]) {
-			ReactorEventInfo *revent = &reactorinfo[reactorid][reactor->getState()];
-			if (revent->type == 100 && drop->getObjectId() == revent->itemid) {
-				if (GameLogicUtilities::isInBox(reactor->getPos(), revent->lt, revent->rb, drop->getPos())) {
-					Reaction reaction;
-					reaction.reactor = reactor;
-					reaction.drop = drop;
-					reaction.player = player;
-					reaction.state = revent->nextstate;
+			size_t vsize = reactorinfo[reactorid][reactor->getState()].size();
+			ReactorEventInfo *revent;
+			for (size_t j = 0; j < vsize; j++) {
+				revent = &reactorinfo[reactorid][reactor->getState()][j];
+				if (revent->type == 100 && drop->getObjectId() == revent->itemid) {
+					if (GameLogicUtilities::isInBox(reactor->getPos(), revent->lt, revent->rb, drop->getPos())) {
+						Reaction reaction;
+						reaction.reactor = reactor;
+						reaction.drop = drop;
+						reaction.player = player;
+						reaction.state = revent->nextstate;
 
-					Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
-					new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3000));
+						Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
+						new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3000));
+					}
+					return;
 				}
-				return;
 			}
 		}
 	}

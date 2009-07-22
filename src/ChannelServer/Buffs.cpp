@@ -49,7 +49,7 @@ Buffs::Buffs() {
 	skillsinfo[Jobs::Crossbowman::CrossbowBooster].player.push_back(player);
 	skillsinfo[Jobs::Assassin::ClawBooster].player.push_back(player);
 	skillsinfo[Jobs::Bandit::DaggerBooster].player.push_back(player);
-	skillsinfo[Jobs::Infighter::KnucklerBooster].player.push_back(player);
+	skillsinfo[Jobs::Brawler::KnucklerBooster].player.push_back(player);
 	skillsinfo[Jobs::Gunslinger::GunBooster].player.push_back(player);
 
 	// Speed Infusion
@@ -520,10 +520,10 @@ Buffs::Buffs() {
 	player.buff = buff;
 	player.hasmapval = true;
 	player.hasmapentry = true;
-	skillsinfo[Jobs::Infighter::OakBarrel].player.push_back(player);
+	skillsinfo[Jobs::Brawler::OakBarrel].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
-	skillsinfo[Jobs::Infighter::OakBarrel].map.push_back(map);
+	skillsinfo[Jobs::Brawler::OakBarrel].map.push_back(map);
 
 	// Transformation, Super Transformation
 	buff.type = 0x02;
@@ -1014,7 +1014,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case Jobs::Crossbowman::CrossbowBooster:
 		case Jobs::Assassin::ClawBooster:
 		case Jobs::Bandit::DaggerBooster:
-		case Jobs::Infighter::KnucklerBooster:
+		case Jobs::Brawler::KnucklerBooster:
 		case Jobs::Gunslinger::GunBooster:
 			player->getActiveBuffs()->setBooster(skillid); // Makes switching equips MUCH easier
 			break;
@@ -1110,7 +1110,7 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Crossbowman::CrossbowBooster:
 		case Jobs::Assassin::ClawBooster:
 		case Jobs::Bandit::DaggerBooster:
-		case Jobs::Infighter::KnucklerBooster:
+		case Jobs::Brawler::KnucklerBooster:
 		case Jobs::Gunslinger::GunBooster:
 			playerbuffs->setBooster(0);
 			break;

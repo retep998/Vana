@@ -15,32 +15,36 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef TIMER_CONTAINER_H
-#define TIMER_CONTAINER_H
+#ifndef SCRIPTDATA_H
+#define SCRIPTDATA_H
 
-#include "Id.h"
-#include "../Types.h"
-#include <boost/tr1/memory.hpp>
+#include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
-#include <boost/functional/hash.hpp>
+#include <boost/utility.hpp>
+#include <string>
 
-namespace Timer {
-
-class Timer;
-
-using std::tr1::shared_ptr;
+using std::string;
 using std::tr1::unordered_map;
 
-class Container {
+class ScriptDataProvider : boost::noncopyable {
 public:
-	int32_t checkTimer(const Id &id);
-	int64_t checkTimer(const Id &id, bool msec);
-	void registerTimer(Timer *timer);
-	void removeTimer(const Id &id);
-private:
-	unordered_map<Id, shared_ptr<Timer>, boost::hash<Id> > m_timers;
-};
+	static ScriptDataProvider * Instance() {
+		if (singleton == 0)
+			singleton = new ScriptDataProvider();
+		return singleton;
+	}
+	void loadData();
 
-}
+	string getNpcScript(int32_t npcid);
+	string getReactorScript(int32_t reactorid);
+	string getQuestScript(int16_t questid, int8_t state);
+private:
+	ScriptDataProvider() {}
+	static ScriptDataProvider *singleton;
+
+	unordered_map<int32_t, string> npcscripts;
+	unordered_map<int32_t, string> reactorscripts;
+	unordered_map<int16_t, unordered_map<int8_t, string> > questscripts;
+};
 
 #endif

@@ -53,7 +53,7 @@ private:
 	unordered_map<int32_t, boost::shared_ptr<ActiveTrade> > trades;
 	int32_t ids;
 
-	Timer::Container * getContainer() const { return container.get(); }
+	Timer::Container * getTimers() const { return container.get(); }
 	int32_t getNewId() { return ++ids; }
 	int32_t checkTimer(int32_t id);
 	void timeout(Player *sender);

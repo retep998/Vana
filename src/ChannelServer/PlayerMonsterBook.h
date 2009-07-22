@@ -41,6 +41,7 @@ public:
 	void connectData(PacketCreator &packet);
 	void infoData(PacketCreator &packet);
 
+	uint8_t getCardLevel(int32_t cardid);
 	int32_t getSpecials() const { return m_specialcount; }
 	int32_t getNormals() const { return m_normalcount; }
 	int32_t getSize() const { return (int32_t) m_cards.size(); }

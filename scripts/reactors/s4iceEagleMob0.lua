@@ -15,7 +15,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Green Goblin
-spawnMobPos(7130402, -340, 100);
-showMapMessage("Here comes Green King Goblin!", 6);
-reset();
+-- Leafre Reactor - Egg for Frostprey Quest (4th job Marksman)
+
+spawnMob(9300090); 

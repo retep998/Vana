@@ -1,4 +1,4 @@
---[[
+/*
 Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,7 +14,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
---]]
--- KFT Reactor - Nolbu Gourd
-spawnMob(9500400);
-reset();
+*/
+#ifndef GMPACKET_H
+#define GMPACKET_H
+
+#include "Types.h"
+#include <string>
+
+using std::string;
+
+class Player;
+class PacketCreator;
+
+namespace GmPacket {
+	void beginHide(Player *player);
+	void endHide(Player *player);
+};
+
+#endif

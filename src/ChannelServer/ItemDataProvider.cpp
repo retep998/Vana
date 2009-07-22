@@ -63,6 +63,7 @@ void ItemDataProvider::loadData() {
 		//   18 : Only one?
 		//   19 : No trading?
 		//   20 : Quest item?
+
 		EquipInfo equip = EquipInfo();
 		equip.price = atoi(dataRow[1]);
 		equip.slots = atoi(dataRow[2]);
@@ -97,104 +98,112 @@ void ItemDataProvider::loadData() {
 	int32_t currentid = 0;
 	int32_t previousid = -1;
 	ItemInfo item;
+
+	enum ItemDataColumns {
+		ItemId = 0,
+		Price, SlotMax, Tradeable, Quest, AutoConsume,
+		Hp, Mp, HpRate, MpRate, MoveTo,
+		Ailment, MonCardBuffProb, Time, WeaponAtt, MagicAtt,
+		Avoid, Accuracy, WeaponDef, MagicDef, Speed,
+		Jump, Morph, MesoUp, DropUp, IgnoreWeaponDef,
+		IgnoreMagicDef, IncreaseElementDef, IncreaseAilmentDef, Success, Cursed,
+		RandStat, Recover, ItemStr, ItemDex, ItemInt,
+		ItemLuk, ItemHp, ItemMp, ItemWeaponAtt, ItemMagicAtt,
+		ItemWeaponDef, ItemMagicDef, ItemAccuracy, ItemAvoid, ItemJump,
+		ItemSpeed, HasMapEffect, MobId, MobChance
+	};
+
 	while (dataRow = res.fetch_raw_row()) {
-		// Col0 : Item ID
-		//    1 : Price
-		//    2 : Max per slot
-		//    3 : Not tradable?
-		//    4 : Quest item?
-		//    5 : HP
-		//    6 : MP
-		//    7 : HP Rate
-		//    8 : MP Rate
-		//    9 : Move to
-		//   10 : Time
-		//   11 : Weapon Attack
-		//   12 : Magic Attack
-		//   13 : Avoidability
-		//   14 : Accuracy
-		//   15 : Weapon Defense
-		//   16 : Magic Defense
-		//   17 : Speed
-		//   18 : Jump
-		//   19 : Ailment
-		//   20 : Morph
-		//   21 : Auto Consume?
-		//   22 : Success
-		//   23 : Cursed
-		//   24 : Randstat
-		//   25 : Recover
-		//   26 : Item STR
-		//   27 : Item DEX
-		//   28 : Item INT
-		//   29 : Item LUK
-		//   30 : Item HP
-		//   31 : Item MP
-		//   32 : Item Weapon Attack
-		//   33 : Item Magic Attack
-		//   34 : Item Weapon Defense
-		//   35 : Item Magic Defense
-		//   36 : Item Accuracy
-		//   37 : Item Avoid
-		//   38 : Item Jump
-		//   39 : Item Speed
-		//   40 : Has map effect?
-		//   41 : Mob ID
-		//   42 : Chance
-		currentid = atoi(dataRow[0]);
+		currentid = atoi(dataRow[ItemId]);
 
 		if (currentid != previousid && previousid != -1) { // Add the items into the cache
 			addItemInfo(previousid, item);
 			item.cons.mobs.clear();
 		}
-		item.price = atoi(dataRow[1]);
-		item.maxslot = atoi(dataRow[2]);
-		item.notrade = atob(dataRow[3]);
-		item.quest = atob(dataRow[4]);
-		item.cons.hp = atoi(dataRow[5]);
-		item.cons.mp = atoi(dataRow[6]);
-		item.cons.hpr = atoi(dataRow[7]);
-		item.cons.mpr = atoi(dataRow[8]);
-		item.cons.moveTo = atoi(dataRow[9]);
-		item.cons.ailment = atoi(dataRow[19]);
-		item.cons.hasmapeffect = atob(dataRow[40]);
+
+		item.price = atoi(dataRow[Price]);
+		item.maxslot = atoi(dataRow[SlotMax]);
+		item.notrade = atob(dataRow[Tradeable]);
+		item.quest = atob(dataRow[Quest]);
+		item.cons.autoconsume = atob(dataRow[AutoConsume]);
+		item.cons.hp = atoi(dataRow[Hp]);
+		item.cons.mp = atoi(dataRow[Mp]);
+		item.cons.hpr = atoi(dataRow[HpRate]);
+		item.cons.mpr = atoi(dataRow[MpRate]);
+		item.cons.moveTo = atoi(dataRow[MoveTo]);
+		item.cons.ailment = atoi(dataRow[Ailment]);
+		item.cons.hasmapeffect = atob(dataRow[HasMapEffect]);
+
 		// Buffs
-		item.cons.time = atoi(dataRow[10]);
-		item.cons.watk = atoi(dataRow[11]);
-		item.cons.matk = atoi(dataRow[12]);
-		item.cons.avo = atoi(dataRow[13]);
-		item.cons.acc = atoi(dataRow[14]);
-		item.cons.wdef = atoi(dataRow[15]);
-		item.cons.mdef = atoi(dataRow[16]);
-		item.cons.speed = atoi(dataRow[17]);
-		item.cons.jump = atoi(dataRow[18]);
-		item.cons.morph = atoi(dataRow[20]);
-		item.cons.autoconsume = atob(dataRow[21]);
+		item.cons.mcprob = atoi(dataRow[MonCardBuffProb]);
+		item.cons.time = atoi(dataRow[Time]);
+		item.cons.watk = atoi(dataRow[WeaponAtt]);
+		item.cons.matk = atoi(dataRow[MagicAtt]);
+		item.cons.avo = atoi(dataRow[Avoid]);
+		item.cons.acc = atoi(dataRow[Accuracy]);
+		item.cons.wdef = atoi(dataRow[WeaponDef]);
+		item.cons.mdef = atoi(dataRow[MagicDef]);
+		item.cons.speed = atoi(dataRow[Speed]);
+		item.cons.jump = atoi(dataRow[Jump]);
+		item.cons.morph = atoi(dataRow[Morph]);
+		item.cons.mesoup = atoi(dataRow[MesoUp]);
+		item.cons.dropup = atoi(dataRow[DropUp]);
+
+		if (atoi(dataRow[IgnoreWeaponDef]) != 0) {
+			item.cons.ignorewdef = item.cons.mcprob;
+		}
+		if (atoi(dataRow[IgnoreMagicDef]) != 0) {
+			item.cons.ignoremdef = item.cons.mcprob;
+		}
+
+		string elemattr(dataRow[IncreaseElementDef]);
+		if (!(elemattr.find("S") == string::npos))
+			item.cons.poisonresist = item.cons.mcprob;
+		if (!(elemattr.find("I") == string::npos))
+			item.cons.iceresist = item.cons.mcprob;
+		if (!(elemattr.find("F") == string::npos))
+			item.cons.fireresist = item.cons.mcprob;
+		if (!(elemattr.find("L") == string::npos))
+			item.cons.lightningresist = item.cons.mcprob;
+
+		string ailmentdef(dataRow[IncreaseAilmentDef]);
+		if (!(ailmentdef.find("W") == string::npos))
+			item.cons.weaknessdef = item.cons.mcprob;
+		if (!(ailmentdef.find("C") == string::npos))
+			item.cons.cursedef = item.cons.mcprob;
+		if (!(ailmentdef.find("S") == string::npos))
+			item.cons.sealdef = item.cons.mcprob;
+		if (!(ailmentdef.find("D") == string::npos))
+			item.cons.darknessdef = item.cons.mcprob;
+		if (!(ailmentdef.find("F") == string::npos))
+			item.cons.stundef = item.cons.mcprob;
+
 		// Scrolling
-		item.cons.success = atoi(dataRow[22]);
-		item.cons.cursed = atoi(dataRow[23]);
-		item.cons.randstat = atob(dataRow[24]);
-		item.cons.recover = atob(dataRow[25]);
-		item.cons.istr = atoi(dataRow[26]);
-		item.cons.idex = atoi(dataRow[27]);
-		item.cons.iint = atoi(dataRow[28]);
-		item.cons.iluk = atoi(dataRow[29]);
-		item.cons.ihp = atoi(dataRow[30]);
-		item.cons.imp = atoi(dataRow[31]);
-		item.cons.iwatk = atoi(dataRow[32]);
-		item.cons.imatk = atoi(dataRow[33]);
-		item.cons.iwdef = atoi(dataRow[34]);
-		item.cons.imdef = atoi(dataRow[35]);
-		item.cons.iacc = atoi(dataRow[36]);
-		item.cons.iavo = atoi(dataRow[37]);
-		item.cons.ijump = atoi(dataRow[38]);
-		item.cons.ispeed = atoi(dataRow[39]);
+		item.cons.success = atoi(dataRow[Success]);
+		item.cons.cursed = atoi(dataRow[Cursed]);
+		item.cons.randstat = atob(dataRow[RandStat]);
+		item.cons.recover = atob(dataRow[Recover]);
+		item.cons.istr = atoi(dataRow[ItemStr]);
+		item.cons.idex = atoi(dataRow[ItemDex]);
+		item.cons.iint = atoi(dataRow[ItemInt]);
+		item.cons.iluk = atoi(dataRow[ItemLuk]);
+		item.cons.ihp = atoi(dataRow[ItemHp]);
+		item.cons.imp = atoi(dataRow[ItemMp]);
+		item.cons.iwatk = atoi(dataRow[ItemWeaponAtt]);
+		item.cons.imatk = atoi(dataRow[ItemMagicAtt]);
+		item.cons.iwdef = atoi(dataRow[ItemWeaponDef]);
+		item.cons.imdef = atoi(dataRow[ItemMagicDef]);
+		item.cons.iacc = atoi(dataRow[ItemAccuracy]);
+		item.cons.iavo = atoi(dataRow[ItemAvoid]);
+		item.cons.ijump = atoi(dataRow[ItemJump]);
+		item.cons.ispeed = atoi(dataRow[ItemSpeed]);
 		item.cons.ihand = 0;
+
 		// Summoning
-		if (dataRow[41] != 0) {
+		if (dataRow[MobId] != 0) {
 			SummonBag summon;
-			summon.mobid = atoi(dataRow[41]);
-			summon.chance = atoi(dataRow[42]);
+			summon.mobid = atoi(dataRow[MobId]);
+			summon.chance = atoi(dataRow[MobChance]);
 			item.cons.mobs.push_back(summon);
 		}
 
@@ -239,64 +248,99 @@ void ItemDataProvider::addItemInfo(int32_t id, ItemInfo item) {
 	vector<uint8_t> types;
 	vector<int8_t> bytes;
 	vector<int16_t> values;
-	bool buff = false;
 
 	if (item.cons.watk > 0) {
 		types.push_back(0x01);
 		bytes.push_back(Byte1);
 		values.push_back(item.cons.watk);
-		buff = true;
 	}
 	if (item.cons.wdef > 0) {
 		types.push_back(0x02);
 		bytes.push_back(Byte1);
 		values.push_back(item.cons.wdef);
-		buff = true;
 	}
 	if (item.cons.matk > 0) {
 		types.push_back(0x04);
 		bytes.push_back(Byte1);
 		values.push_back(item.cons.matk);
-		buff = true;
 	}
 	if (item.cons.mdef > 0) {
 		types.push_back(0x08);
 		bytes.push_back(Byte1);
 		values.push_back(item.cons.mdef);
-		buff = true;
 	}
 	if (item.cons.acc > 0) {
 		types.push_back(0x10);
 		bytes.push_back(Byte1);
 		values.push_back(item.cons.acc);
-		buff = true;
 	}
 	if (item.cons.avo > 0) {
 		types.push_back(0x20);
 		bytes.push_back(Byte1);
 		values.push_back(item.cons.avo);
-		buff = true;
 	}
 	if (item.cons.speed > 0) {
 		types.push_back(0x80);
 		bytes.push_back(Byte1);
 		values.push_back(item.cons.speed);
-		buff = true;
 	}
 	if (item.cons.jump > 0) {
 		types.push_back(0x01);
 		bytes.push_back(Byte2);
 		values.push_back(item.cons.jump);
-		buff = true;
 	}
 	if (item.cons.morph > 0) {
 		types.push_back(0x02);
 		bytes.push_back(Byte5);
 		values.push_back(item.cons.morph);
-		buff = true;
 	}
+	// Need some buff bytes/types for ALL of the following
+	if (item.cons.iceresist > 0) {
 
-	if (buff)
+	}
+	if (item.cons.fireresist > 0) {
+
+	}
+	if (item.cons.poisonresist > 0) {
+
+	}
+	if (item.cons.lightningresist > 0) {
+
+	}
+	if (item.cons.cursedef > 0) {
+
+	}
+	if (item.cons.stundef > 0) {
+
+	}
+	if (item.cons.weaknessdef > 0) {
+
+	}
+	if (item.cons.darknessdef > 0) {
+
+	}
+	if (item.cons.sealdef > 0) {
+
+	}
+	if (item.cons.ignorewdef > 0) {
+
+	}
+	if (item.cons.ignoremdef > 0) {
+
+	}
+	if (item.cons.mesoup > 0) {
+
+	}
+	if (item.cons.dropup > 0) {
+		switch (item.cons.dropup) {
+			case 1: // Regular drop rate increase for all items, the only one I can parse at the moment
+				break;
+			//case 2: // Specific item drop rate increase
+			//case 3: // Specific item range (itemid / 10000) increase
+		}
+	}
+	
+	if (bytes.size())
 		Buffs::Instance()->addItemInfo(id, types, bytes, values);
 
 	items[id] = item;

@@ -125,11 +125,16 @@ void PlayerActiveBuffs::removeDebuff(uint8_t skill, bool fromTimer) {
 }
 
 void PlayerActiveBuffs::useDebuffHealingItem(int32_t mask) {
-	removeDebuff(MobSkills::Seal);
-	removeDebuff(MobSkills::Poison);
-	removeDebuff(MobSkills::Curse);
-	removeDebuff(MobSkills::Darkness);
-	removeDebuff(MobSkills::Weakness);
+	if ((mask & StatusEffects::Player::Seal) != 0)
+		removeDebuff(MobSkills::Seal);
+	if ((mask & StatusEffects::Player::Poison) != 0)
+		removeDebuff(MobSkills::Poison);
+	if ((mask & StatusEffects::Player::Curse) != 0)
+		removeDebuff(MobSkills::Curse);
+	if ((mask & StatusEffects::Player::Darkness) != 0)
+		removeDebuff(MobSkills::Darkness);
+	if ((mask & StatusEffects::Player::Weakness) != 0)
+		removeDebuff(MobSkills::Weakness);
 }
 
 void PlayerActiveBuffs::useDispel() {
@@ -279,7 +284,7 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	m_combo = combo;
 	if (sendPacket) {
 		int32_t skillid = m_player->getSkills()->getComboAttack();
-		int32_t timeleft = buffTimeLeft(skillid) / 1000;
+		int32_t timeleft = buffTimeLeft(skillid);
 		ActiveBuff playerskill = Buffs::Instance()->parseBuffInfo(m_player, skillid, getActiveSkillLevel(skillid));
 		ActiveMapBuff mapskill = Buffs::Instance()->parseBuffMapInfo(m_player, skillid, getActiveSkillLevel(skillid));
 		BuffsPacket::useSkill(m_player, skillid, timeleft, playerskill, mapskill, 0);
@@ -587,7 +592,7 @@ void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
 	for (list<int32_t>::iterator iter = m_buffs.begin(); iter != m_buffs.end(); iter++) {
 		int32_t buffid = *iter;
 		packet.add<int32_t>(buffid);
-		packet.add<int32_t>(buffTimeLeft(buffid) / 1000);
+		packet.add<int32_t>(buffTimeLeft(buffid));
 		packet.add<uint8_t>(getActiveSkillLevel(buffid));
 	}
 	// Current buffs by type info

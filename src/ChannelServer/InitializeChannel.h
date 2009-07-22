@@ -29,8 +29,8 @@ namespace Initializing {
 	void initializePets();
 	void initializeChat();
 
-	const int32_t McdbVersion = 2;
-	const int32_t McdbSubVersion = 8;
+	const int32_t McdbVersion = 3;
+	const int32_t McdbSubVersion = 0;
 };
 
 #endif

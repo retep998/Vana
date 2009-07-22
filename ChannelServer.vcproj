@@ -330,6 +330,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\GMPacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\InventoryPacket.cpp"
 					>
 				</File>
@@ -431,6 +435,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MobDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ScriptDataProvider.cpp"
 					>
 				</File>
 				<File
@@ -724,6 +732,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\GMPacket.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\InventoryPacket.h"
 					>
 				</File>
@@ -825,6 +837,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MobDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ScriptDataProvider.h"
 					>
 				</File>
 				<File

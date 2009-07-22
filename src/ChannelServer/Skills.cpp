@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
+#include "GMPacket.h"
 #include "Inventory.h"
 #include "MapPacket.h"
 #include "Maps.h"
@@ -86,8 +87,10 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			player->setSpecialSkill(SpecialSkillInfo());
 			break;
 		default:
-			if (skillid == Jobs::SuperGm::Hide) // GM Hide
+			if (skillid == Jobs::SuperGm::Hide) { // GM Hide
 				MapPacket::showPlayer(player);
+				GmPacket::endHide(player);
+			}
 			player->getActiveBuffs()->removeBuff(skillid, fromTimer);
 			if (GameLogicUtilities::isMobSkill(skillid))
 				Buffs::Instance()->endDebuff(player, (uint8_t)(skillid));
@@ -126,7 +129,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		return;
 	}
 	switch (skillid) {
-		case Jobs::Infighter::MpRecovery: {
+		case Jobs::Brawler::MpRecovery: {
 			int16_t modhp = player->getStats()->getMHp() * Skills::skills[skillid][level].x / 100;
 			int16_t healmp = modhp * Skills::skills[skillid][level].y / 100;
 			player->getStats()->modifyHp(-modhp);
@@ -332,6 +335,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		}
 		case Jobs::SuperGm::Hide:
 			MapPacket::removePlayer(player);
+			GmPacket::beginHide(player);
 			break;
 		default:
 			type = packet.get<int8_t>();
@@ -474,7 +478,7 @@ int16_t Skills::getCooldownTimeLeft(Player *player, int32_t skillid) {
 	int16_t cooltime = 0;
 	if (isCooling(player, skillid)) {
 		Timer::Id id(Timer::Types::CoolTimer, skillid, 0);
-		cooltime = static_cast<int16_t>(player->getTimers()->checkTimer(id) / 1000);
+		cooltime = static_cast<int16_t>(player->getTimers()->checkTimer(id));
 	}
 	return cooltime;
 }

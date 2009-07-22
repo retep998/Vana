@@ -29,22 +29,28 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(mob->getMobId());
+
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
+
 	packet.addPos(mob->getPos());
 
 	int8_t bitfield = (owner != 0 ? 0x08 : 0x02) | mob->getFacingDirection();
+	if (mob->canFly()) {
+		bitfield |= 0x04;
+	}
 
-	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x02 - ???, 0x01 - faces right
+	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x04 - flying, 0x02 - ???, 0x01 - faces right
+
 	packet.add<int16_t>(mob->getFh());
 	packet.add<int16_t>(mob->getOriginFh());
+
 	if (owner != 0) {
 		packet.add<int8_t>(summoneffect != 0 ? summoneffect : -3);
+		packet.add<int32_t>(owner->getId());
 	}
 	else {
 		packet.add<int8_t>(spawn ? -2 : -1);
 	}
-	if (owner != 0)
-		packet.add<int32_t>(owner->getId());
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
 	if (show) {
@@ -93,13 +99,15 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, 
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, Pos target, unsigned char *buf, int32_t len) {
+void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, const Pos &pos, const Pos &projectiletarget, unsigned char *buf, int32_t len) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_MOB);
 	packet.add<int32_t>(mobid);
 	packet.add<int8_t>(useskill);
 	packet.add<int8_t>(skill);
-	packet.addPos(target);
+	if (skill > 0)
+		packet.addPos(projectiletarget);
+	packet.addPos(pos);
 	packet.addBuffer(buf, len);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
@@ -143,7 +151,7 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 			packet.add<int16_t>(info[i].mobskill);
 			packet.add<int16_t>(info[i].level);
 		}
-		packet.add<int16_t>(0); // Not sure what this is
+		packet.add<int16_t>(-1); // Not sure what this is
 	}
 
 	for (size_t i = 0; i < reflection.size(); i++) {
