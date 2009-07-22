@@ -46,12 +46,10 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 
 	if (owner != 0) {
 		packet.add<int8_t>(summoneffect != 0 ? summoneffect : -3);
+		packet.add<int32_t>(owner->getId());
 	}
 	else {
 		packet.add<int8_t>(spawn ? -2 : -1);
-	}
-	if (owner != 0) {
-		packet.add<int32_t>(owner->getId());
 	}
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
