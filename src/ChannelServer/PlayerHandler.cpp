@@ -349,7 +349,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	uint8_t level = player->getSkills()->getSkillLevel(skillid);
 	switch (skillid) {
 		case Jobs::Gunslinger::Grenade:
-		case Jobs::Infighter::CorkscrewBlow:
+		case Jobs::Brawler::CorkscrewBlow:
 			packet.skipBytes(4); // Charge
 			break;
 	}
@@ -395,10 +395,10 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				}
 			}
 			if (skillid == Jobs::Paladin::HeavensHammer) {
-				damage = (mob->isBoss() ? 99999 : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
+				damage = (mob->isBoss() ? Stats::MaxDamage : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
 			}
 			else if (skillid == Jobs::Bandit::Steal && !mob->isBoss()) {
-				Drops::doDrops(player->getId(), map, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
+				Drops::doDrops(player->getId(), map, mob->getInfo()->level, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);

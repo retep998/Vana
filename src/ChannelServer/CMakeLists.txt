@@ -72,6 +72,7 @@ set(SOURCES
 	QuestsPacket.h
 	ReactorPacket.h
 	Reactors.h
+	ScriptDataProvider.h
 	ServerPacket.h
 	ShopDataProvider.h
 	SkillMacros.h
@@ -158,6 +159,7 @@ set(SOURCES
 	QuestsPacket.cpp
 	ReactorPacket.cpp
 	Reactors.cpp
+	ScriptDataProvider.cpp
 	ServerPacket.cpp
 	ShopDataProvider.cpp
 	SkillMacros.cpp

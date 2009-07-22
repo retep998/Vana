@@ -113,6 +113,8 @@ public:
 	bool isBoss() const { return info.boss; }
 	bool canFreeze() const { return info.canfreeze; }
 	bool canPoison() const { return info.canpoison; }
+	bool canFly() const { return info.flying; }
+	bool isFriendly() const { return info.friendly; }
 	bool isUndead() const { return info.undead; }
 	bool hasLink() const { return info.link != 0; }
 	bool hasExplosiveDrop() const { return info.explosivereward; }

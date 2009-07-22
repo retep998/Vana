@@ -37,6 +37,19 @@ struct DropInfo {
 };
 typedef vector<DropInfo> DropsInfo;
 
+struct GlobalDrop {
+	GlobalDrop() : ismesos(false), itemid(0), minamount(0), maxamount(0), minlevel(1), maxlevel(200), questid(0), chance(0) { }
+	bool ismesos;
+	int32_t itemid;
+	int32_t minamount;
+	int32_t maxamount;
+	uint8_t minlevel;
+	uint8_t maxlevel;
+	int16_t questid;
+	uint32_t chance;
+};
+typedef vector<GlobalDrop> GlobalDrops;
+
 class DropDataProvider : boost::noncopyable {
 public:
 	static DropDataProvider * Instance() {
@@ -45,15 +58,15 @@ public:
 		return singleton;
 	}
 	void loadData();
-	DropsInfo const getDrops(int32_t objectid) {
-		return dropdata[objectid];
-	}
 
+	DropsInfo const getDrops(int32_t objectid) { return dropdata[objectid]; }
+	GlobalDrops const getGlobalDrops() { return globaldrops; }
 private:
 	DropDataProvider() {}
 	static DropDataProvider *singleton;
 
 	unordered_map<int32_t, DropsInfo> dropdata;
+	GlobalDrops globaldrops;
 };
 
 #endif

@@ -15,7 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Yellow Goblin
-spawnMob(7130400);
-showMapMessage("Here comes Yellow King Goblin!", 6);
-reset();
+-- Time Temple quest to retrieve memories
+
+if state == 0 then
+	addQuest(3525);
+	endQuest(3525);
+	endQuest(3507);
+	addText("Oh my gosh, you've grown so much since we first met! You've lost your memories? I'll take care of that.");
+	sendOK();
+end
+endNPC();

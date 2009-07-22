@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "GMPacket.h"
 #include "Instance.h"
+#include "Inventory.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
 #include "MapleTVs.h"
+#include "Maps.h"
 #include "Mist.h"
 #include "Mobs.h"
 #include "MobsPacket.h"
@@ -52,12 +54,24 @@ instance(0),
 timer(0),
 timerstart(0),
 poisonmists(0),
+timemob(0),
+webbed(0),
 spawnmobs(true),
 timers(new Timer::Container)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
 		getTimers(), 0, 10000);
+	if (info->timemob != 0) {
+		new Timer::Timer(bind(&Map::timeMob, this, false),
+			Timer::Id(Timer::Types::MapTimer, info->id, 1),
+			getTimers(), Timer::Time::nthSecondOfHour(0), 60 * 60 * 1000); // Every hour, check for timeMob stuff
+
+		// Players logging in need something else to be their first packet
+		new Timer::Timer(bind(&Map::timeMob, this, true),
+			Timer::Id(Timer::Types::MapTimer, info->id, 2),
+			getTimers(), Timer::Time::fromNow(3 * 1000), 0);
+	}
 }
 
 // Map Info
@@ -118,18 +132,40 @@ void Map::statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t pr
 	}
 }
 
-void Map::sendPlayersToTown(int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb) {
+void Map::sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb) {
 	int16_t done = 0;
+	string message = "";
+	PortalInfo *p = 0;
+	int32_t field = getInfo()->rm;
+	if (MobDataProvider::Instance()->hasBanishData(mobid)) {
+		field = MobDataProvider::Instance()->getBanishMap(mobid);
+		message = MobDataProvider::Instance()->getBanishMessage(mobid);
+		string portal = MobDataProvider::Instance()->getBanishPortal(mobid);
+		if (portal != "" && portal != "sp") {
+			p = Maps::getMap(field)->getPortal(portal);
+		}
+	}
 	for (size_t i = 0; i < players.size(); i++) {
 		Player *toy = players[i];
 		if (toy != 0) {
 			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
-				toy->setMap(getInfo()->rm);
+				if (message != "") {
+					PlayerPacket::showMessage(toy, message, 6);
+				}
+				toy->setMap(field, p);
 				done++;
 			}
 		}
 		if (count > 0 && done == count)
 			break;
+	}
+}
+
+void Map::buffPlayers(int32_t buffid) {
+	for (size_t i = 0; i < players.size(); i++) {
+		if (Player *toy = players[i]) {
+			Inventory::useItem(toy, buffid);
+		}
 	}
 }
 
@@ -180,7 +216,7 @@ void Map::checkReactorSpawn(clock_t time, bool spawnAll) {
 }
 
 // Footholds
-Pos Map::findFloor(Pos pos) {
+Pos Map::findFloor(const Pos &pos) {
 	// Determines where a drop falls using the footholds data
 	// to check the platforms and find the correct one.
 	int16_t x = pos.x;
@@ -199,7 +235,32 @@ Pos Map::findFloor(Pos pos) {
 	return Pos(x, maxy);
 }
 
-int16_t Map::getFhAtPosition(Pos pos) {
+Pos Map::findRandomPos() {
+	int16_t min_x = (info->left != 0 ? info->left : 0x8000);
+	int16_t max_x = (info->right != 0 ? info->right : 0x7FFF);
+	int16_t min_y = (info->top != 0 ? info->top : 0x8000);
+	int16_t max_y = (info->bottom != 0 ? info->bottom : 0x7FFF);
+	int16_t posx = 0;
+	int16_t posy = 0;
+	int16_t tempx = 0;
+	int16_t tempy = 0;
+	Pos pos(0, 0);
+	Pos tpos;
+	while (pos.x == 0 && pos.y == 0) {
+		tempx = Randomizer::Instance()->randShort(max_x - min_x) + min_x;
+		tempy = Randomizer::Instance()->randShort(max_y - min_y) + min_y;
+		tpos.x = tempx;
+		tpos.y = tempy;
+		tpos = findFloor(tpos);
+		if (tpos.y != tempy) {
+			pos.x = tpos.x;
+			pos.y = tpos.y;
+		}
+	}
+	return pos;
+}
+
+int16_t Map::getFhAtPosition(const Pos &pos) {
 	int16_t foothold = 0;
 	for (size_t i = 0; i < footholds.size(); i++) {
 		FootholdInfo cur = footholds[i];
@@ -347,6 +408,9 @@ void Map::removeMob(int32_t id, int32_t spawnid) {
 			mobspawns[spawnid].spawned = false;
 		}
 		this->mobs.erase(id);
+		if (timemob == id) {
+			timemob = 0;
+		}
 	}
 }
 
@@ -401,11 +465,22 @@ void Map::statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos 
 }
 
 void Map::checkShadowWeb() {
-	unordered_map<int32_t, Mob *> mobmap = this->mobs;
-	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
-		if (iter->second != 0 && iter->second->hasStatus(StatusEffects::Mob::ShadowWeb)) {
-			iter->second->applyWebDamage();
+	int32_t wcount = getWebbedCount();
+	if (wcount > 0) {
+		unordered_map<int32_t, Mob *> mobmap = this->mobs;
+		int32_t done = 0;
+		for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
+			if (iter->second != 0 && iter->second->hasStatus(StatusEffects::Mob::ShadowWeb)) {
+				iter->second->applyWebDamage();
+				done++;
+			}
+			if (done == wcount) {
+				break;
+			}
 		}
+	}
+	else if (wcount < 0) { // ??
+		setWebbedCount(0);
 	}
 }
 
@@ -523,6 +598,27 @@ void Map::runTimer() {
 	checkMists();
 	if (TimeUtilities::getSecond() % 3 == 0) {
 		checkShadowWeb();
+	}
+}
+
+void Map::timeMob(bool firstLoad) {
+	int32_t chour = TimeUtilities::getHour();
+
+	if (firstLoad && (chour >= info->starthour && chour < info->endhour)) {
+		Pos p = findRandomPos();
+		timemob = spawnMob(info->timemob, p, getFhAtPosition(p), 0, 0);
+		showMessage(info->message, 6);
+	}
+	else {
+		if (chour == info->starthour) {
+			Pos p = findRandomPos();
+			timemob = spawnMob(info->timemob, p, getFhAtPosition(p), 0, 0);
+			showMessage(info->message, 6);
+		}
+		else if (chour == info->endhour && timemob != 0) {
+			Mob *m = getMob(timemob);
+			m->applyDamage(0, m->getHp());
+		}
 	}
 }
 

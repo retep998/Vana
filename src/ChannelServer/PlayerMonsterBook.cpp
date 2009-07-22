@@ -63,12 +63,18 @@ void PlayerMonsterBook::save() {
 		query.exec();
 }
 
-void PlayerMonsterBook::addCard(int32_t cardid, uint8_t level, bool initialload) {
+uint8_t PlayerMonsterBook::getCardLevel(int32_t cardid) {
+	return m_cards[cardid].level;
+}
+
+bool PlayerMonsterBook::addCard(int32_t cardid, uint8_t level, bool initialload) {
 	if (m_cards.find(cardid) == m_cards.end()) {
-		if (GameLogicUtilities::isSpecialCard(cardid))
+		if (GameLogicUtilities::isSpecialCard(cardid)) {
 			m_specialcount++;
-		else
+		}
+		else {
 			m_normalcount++;
+		}
 	}
 
 	if (initialload) {
@@ -76,26 +82,18 @@ void PlayerMonsterBook::addCard(int32_t cardid, uint8_t level, bool initialload)
 		m_cards[cardid] = card;
 	}
 	else {
-		MonsterCard card;
-		if (m_cards.find(cardid) != m_cards.end()) {
-			card = m_cards[cardid];
-			if (isFull(cardid)) {
-				MonsterBookPacket::addCard(m_player, cardid, card.level, true);
-				return;
-			}
-			card.level++;
-			MonsterBookPacket::addCard(m_player, cardid, card.level, false);
+		MonsterCard card = (m_cards.find(cardid) != m_cards.end() ? m_cards[cardid] : MonsterCard(cardid, 0));
+		if (isFull(cardid)) {
+			return true;
 		}
-		else {
-			card = MonsterCard(cardid, level);
-			m_cards[cardid] = card;
-
-			MonsterBookPacket::addCard(m_player, cardid, card.level, false);
-
+		card.level++;
+		m_cards[cardid] = card;
+		if (card.level == 1) {
 			calculateLevel();
 		}
-		m_cards[cardid] = card; // 'Saving' the card
+		return false;
 	}
+	return false;
 }
 
 void PlayerMonsterBook::connectData(PacketCreator &packet) {

@@ -140,12 +140,9 @@ void PlayerQuests::load() {
 void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 	QuestsPacket::acceptQuest(m_player, questid, npcid);
 	addQuest(questid);
-	QuestRewardsInfo &info = Quests::quests[questid].rewards;
-	for (size_t i = 0; i < info.size(); i++) {
-		if (!info[i].start) {
-			giveRewards(info[i]);
-		}
-	}
+
+	giveRewards(questid, false);
+
 	checkDone(m_quests[questid]);
 }
 
@@ -244,14 +241,9 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 
 void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 	QuestInfo &questinfo = Quests::quests[questid];
-	QuestRewardInfo info;
-	int32_t chance = 0;
-	for (size_t i = 0; i < questinfo.rewards.size(); i++) {
-		info = questinfo.rewards[i];
-		if (info.start) {
-			giveRewards(info);
-		}
-	}
+
+	giveRewards(questid, true);
+
 	if (questinfo.hasRequests(QuestRequestTypes::Mob)) {
 		QuestRequest mobs = questinfo.getRequest(QuestRequestTypes::Mob);
 		for (QuestRequest::iterator i = mobs.begin(); i != mobs.end(); i++) {
@@ -274,42 +266,43 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 	QuestsPacket::questFinish(m_player, questid, npcid, questinfo.nextquest, endtime);
 }
 
-bool PlayerQuests::giveRewards(const QuestRewardInfo &info) {
+bool PlayerQuests::giveRewards(int16_t questid, bool start) {
+	QuestInfo &questinfo = Quests::quests[questid];
+	QuestRewardInfo info;
+	vector<QuestRewardInfo> items;
 	int32_t chance = 0;
-	if (info.isexp) {
-		Levels::giveExp(m_player, info.id * ChannelServer::Instance()->getQuestExprate(), true);
-	}
-	else if (info.isitem) {
-		if (info.prop == 0) {
-			if (info.count > 0) {
-				QuestsPacket::giveItem(m_player, info.id, info.count);
-				Inventory::addNewItem(m_player, info.id, info.count);
+	size_t i;
+	for (i = 0; i < questinfo.rewards.rewards.size(); i++) { // Give all applicable rewards
+		info = questinfo.rewards.rewards[i];
+		if ((info.start && start) || (!info.start && !start)) {
+			if (info.isitem && info.prop > 0) {
+				chance += info.prop;
+				items.push_back(info);		
 			}
-			else if (info.count < 0) {
-				QuestsPacket::giveItem(m_player, info.id, info.count);
-				Inventory::takeItem(m_player, info.id, -info.count);
-			}
-			else if (info.id > 0) {
-				QuestsPacket::giveItem(m_player, info.id, -m_player->getInventory()->getItemAmount(info.id));
-				Inventory::takeItem(m_player, info.id, m_player->getInventory()->getItemAmount(info.id));
+			else {
+				giveRewards(info);
 			}
 		}
-		else if (info.prop > 0) {
-			chance += info.prop;
+	}
+	if (questinfo.rewards.jobrewards.find(m_player->getJob()) != questinfo.rewards.jobrewards.end()) {
+		for (i = 0; i < questinfo.rewards.jobrewards[m_player->getJob()].size(); i++) {
+			info = questinfo.rewards.jobrewards[m_player->getJob()][i];
+			if ((info.start && start) || (!info.start && !start)) {
+				if (info.isitem && info.prop > 0) {
+					chance += info.prop;
+					items.push_back(info);		
+				}
+				else {
+					giveRewards(info);
+				}
+			}
 		}
-	}
-	else if (info.ismesos) {
-		m_player->getInventory()->modifyMesos(info.id);
-		QuestsPacket::giveMesos(m_player, info.id);
-	}
-	else if (info.isfame) {
-		m_player->setFame(m_player->getFame() + static_cast<int16_t>(info.id));
-		QuestsPacket::giveFame(m_player, info.id);
 	}
 	if (chance > 0) {
 		int32_t random = Randomizer::Instance()->randInt(chance - 1);
 		chance = 0;
-		if (info.start && info.isitem && info.prop > 0) {
+		for (i = 0; i < items.size(); i++) {
+			info = items[i];
 			if (chance >= random) {
 				QuestsPacket::giveItem(m_player, info.id, info.count);
 				if (info.count > 0) {
@@ -322,6 +315,44 @@ bool PlayerQuests::giveRewards(const QuestRewardInfo &info) {
 			else {
 				chance += info.prop;
 			}
+		}
+	}
+	return true;
+}
+
+bool PlayerQuests::giveRewards(const QuestRewardInfo &info) {
+	if (info.isitem) {
+		if (info.count > 0) {
+			QuestsPacket::giveItem(m_player, info.id, info.count);
+			Inventory::addNewItem(m_player, info.id, info.count);
+		}
+		else if (info.count < 0) {
+			QuestsPacket::giveItem(m_player, info.id, info.count);
+			Inventory::takeItem(m_player, info.id, -info.count);
+		}
+		else if (info.id > 0) {
+			QuestsPacket::giveItem(m_player, info.id, -m_player->getInventory()->getItemAmount(info.id));
+			Inventory::takeItem(m_player, info.id, m_player->getInventory()->getItemAmount(info.id));
+		}
+	}
+	else if (info.isexp) {
+		Levels::giveExp(m_player, info.id * ChannelServer::Instance()->getQuestExprate(), true);
+	}
+	else if (info.ismesos) {
+		m_player->getInventory()->modifyMesos(info.id);
+		QuestsPacket::giveMesos(m_player, info.id);
+	}
+	else if (info.isfame) {
+		m_player->setFame(m_player->getFame() + static_cast<int16_t>(info.id));
+		QuestsPacket::giveFame(m_player, info.id);
+	}
+	else if (info.isbuff) {
+		Inventory::useItem(m_player, info.id);
+	}
+	else if (info.isskill) {
+		m_player->getSkills()->setMaxSkillLevel(info.id, static_cast<uint8_t>(info.masterlevel), true);
+		if (!info.ismasterlevelonly) {
+			m_player->getSkills()->addSkillLevel(info.id, static_cast<uint8_t>(info.count), true);
 		}
 	}
 	return true;

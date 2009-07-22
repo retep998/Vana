@@ -42,6 +42,7 @@ void DropDataProvider::loadData() {
 		//    4 : Maximum Amount
 		//    5 : Quest ID
 		//    6 : Chance of dropping
+
 		drop.ismesos = atob(dropRow[1]);
 		drop.itemid = atoi(dropRow[2]);
 		drop.minamount = atoi(dropRow[3]);
@@ -49,6 +50,33 @@ void DropDataProvider::loadData() {
 		drop.questid = atoi(dropRow[5]);
 		drop.chance = atoi(dropRow[6]);
 		dropdata[atoi(dropRow[0])].push_back(drop);
+	}
+
+	globaldrops.clear();
+	query << "SELECT * FROM dropglobaldata";
+	res = query.use();
+
+	GlobalDrop g;
+	while (dropRow = res.fetch_raw_row()) {
+		// Col0 : Useless
+		//    1 : Is Mesos?
+		//    2 : Item ID
+		//    3 : Minimum Amount (of mesos or of item)
+		//    4 : Maximum Amount
+		//    5 : Minimum Mob Level
+		//    6 : Maxmimum Mob Level
+		//    7 : Quest ID
+		//    8 : Chance of dropping
+
+		g.ismesos = atob(dropRow[1]);
+		g.itemid = atoi(dropRow[2]);
+		g.minamount = atoi(dropRow[3]);
+		g.maxamount = atoi(dropRow[4]);
+		g.minamount = atoi(dropRow[3]);
+		g.maxamount = atoi(dropRow[4]);
+		g.questid = atoi(dropRow[7]);
+		g.chance = atoi(dropRow[8]);
+		globaldrops.push_back(g);
 	}
 
 	std::cout << "DONE" << std::endl;

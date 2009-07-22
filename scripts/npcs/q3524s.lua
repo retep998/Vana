@@ -1,4 +1,4 @@
-/*
+--[[
 Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,23 +14,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-#ifndef INITIALIZECHANNEL_H
-#define INITIALIZECHANNEL_H
+--]]
+-- Time Temple quest to retrieve memories
 
-#include "Types.h"
-
-namespace Initializing {
-	void checkMcdbVersion();
-	void loadData();
-	void initializeReactors();
-	void initializeQuests();
-	void initializeSkills();
-	void initializePets();
-	void initializeChat();
-
-	const int32_t McdbVersion = 3;
-	const int32_t McdbSubVersion = 0;
-};
-
-#endif
+if state == 0 then
+	addQuest(3524);
+	endQuest(3524);
+	endQuest(3507);
+	addText("Oh my gosh, you've grown so much since we first met! You've lost your memories? I'll take care of that.");
+	sendOK();
+end
+endNPC();
