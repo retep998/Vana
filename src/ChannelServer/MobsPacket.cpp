@@ -105,9 +105,7 @@ void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int8_t sk
 	packet.add<int32_t>(mobid);
 	packet.add<int8_t>(useskill);
 	packet.add<int8_t>(skill);
-	if (skill > 0)
-		packet.addPos(projectiletarget);
-	packet.addPos(pos);
+	packet.addPos(skill > 0 ? projectiletarget : pos);
 	packet.addBuffer(buf, len);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
