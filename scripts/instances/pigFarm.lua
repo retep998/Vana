@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 function beginInstance()
-	addInstanceMap(240040611);
+	addInstanceMap(900000000);
 end
 
 function playerDeath(playerid)
@@ -29,9 +29,8 @@ end
 
 function instanceTimerEnd(fromtimer)
 	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(240040610);
+		moveAllPlayers(100030000, "quest00");
 		removeAllInstancePlayers();
-		removeNPC();
 	end
 end
 
@@ -62,14 +61,6 @@ function partyRemoveMember(partyid, playerid)
 end
 
 function finish(playerid)
-	removeNPC();
 	removeInstancePlayer(playerid);
 	markForDelete();
-end
-
-function removeNPC()
-	g = tonumber(getInstanceVariable("npc"));
-	if g then
-		removeNPC(240040611, g);
-	end
 end
