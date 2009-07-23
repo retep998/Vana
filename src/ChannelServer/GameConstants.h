@@ -236,7 +236,7 @@ namespace FieldLimitBits {
 
 namespace StatusEffects {
 	namespace Mob {
-		const uint8_t Count = 25; // Be sure to update count if you find a new status effect
+		const uint8_t Count = 32; // Be sure to update count if you find a new status effect
 		const uint8_t MaxVenomCount = 3;
 
 		enum MobStatus { // Groups of 5 for easier counting
@@ -252,23 +252,32 @@ namespace StatusEffects {
 			Freeze = 0x100,
 			Poison = 0x200,
 
-			Seal = 0x400, // 0x800?
+			Seal = 0x400, 
+			NoClue1 = 0x800,
 			WeaponAttackUp = 0x1000,
 			WeaponDefenseUp = 0x2000,
 			MagicAttackUp = 0x4000,
-			MagicDefenseUp = 0x8000,
 
+			MagicDefenseUp = 0x8000,
 			Doom = 0x10000,
 			ShadowWeb = 0x20000,
 			WeaponImmunity = 0x40000,
 			MagicImmunity = 0x80000,
-			NinjaAmbush = 0x400000,
 
+			NoClue2 = 0x100000,
+			NoClue3 = 0x200000,
+			NinjaAmbush = 0x400000,
+			NoClue4 = 0x800000,
 			VenomousWeapon = 0x1000000,
-			Empty = 0x8000000,
+
+			NoClue5 = 0x2000000,
+			NoClue6 = 0x4000000,
+			Empty = 0x8000000, // All mobs have this when they spawn
 			Hypnotize = 0x10000000,
 			WeaponDamageReflect = 0x20000000,
-			MagicDamageReflect = 0x40000000
+
+			MagicDamageReflect = 0x40000000,
+			NoClue7 = 0x80000000 // Not any more bits you can use with 4 bytes
 		};
 	}
 	namespace Player {
@@ -926,6 +935,12 @@ namespace Mobs {
 		HorntailSponge = 8810018,
 		SummonHorntail = 8810026
 	};
+	namespace ControlStatus {
+		enum {
+			ControlNormal = 1,
+			ControlNone = 5
+		};
+	}
 }
 
 namespace Maps {

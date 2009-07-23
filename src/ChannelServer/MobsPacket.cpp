@@ -27,9 +27,8 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_MOB);
 	packet.add<int32_t>(mob->getId());
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(mob->getControlStatus());
 	packet.add<int32_t>(mob->getMobId());
-
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
 	packet.addPos(mob->getPos());
@@ -53,7 +52,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	}
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
-	if (show) {
+	if (show && player != 0) {
 		player->getSession()->send(packet);
 	}
 	else {
@@ -61,22 +60,39 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	}
 }
 
-void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn) {
+void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *display) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CONTROL_MOB);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(mob->getId());
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(mob->getControlStatus());
 	packet.add<int32_t>(mob->getMobId());
+
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
-	packet.add<int32_t>(0);
+
 	packet.addPos(mob->getPos());
-	packet.add<int8_t>(2); // Not stance, exploring further
+
+	int8_t bitfield = 0x02 | mob->getFacingDirection();
+	if (mob->canFly()) {
+		bitfield |= 0x04;
+	}
+
+	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x04 - flying, 0x02 - ???, 0x01 - faces right
+
 	packet.add<int16_t>(mob->getFh());
 	packet.add<int16_t>(mob->getOriginFh());
-	packet.add<int16_t>(-1); // ??
+	packet.add<int8_t>(spawn ? -2 : -1);
+	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
-	player->getSession()->send(packet);
+	if (player != 0) {
+		player->getSession()->send(packet);
+	}
+	else if (display != 0) {
+		display->getSession()->send(packet);
+	}
+	else {
+		Maps::getMap(mob->getMapId())->sendPacket(packet);
+	}
 }
 
 void MobsPacket::endControlMob(Player *player, Mob *mob) {
@@ -84,7 +100,12 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	packet.add<int16_t>(SEND_CONTROL_MOB);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(mob->getId());
-	player->getSession()->send(packet);
+	if (player != 0) {
+		player->getSession()->send(packet);
+	}
+	else {
+		Maps::getMap(mob->getMapId())->sendPacket(packet);	
+	}
 }
 
 void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp, uint8_t skill, uint8_t level) {
