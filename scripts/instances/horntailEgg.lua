@@ -24,14 +24,14 @@ function playerDeath(playerid)
 end
 
 function playerDisconnect(playerid, ispartyleader)
-	finish(false);
+	finish(playerid);
 end
 
 function instanceTimerEnd(fromtimer)
 	if getInstancePlayerCount() > 0 then
 		moveAllPlayers(240040610);
 		removeAllInstancePlayers();
-		finish(true);
+		removeNPC();
 	end
 end
 
@@ -48,7 +48,7 @@ function mobSpawn(mobid, mapmobid, mapid)
 end
 
 function changeMap(playerid, newmap, oldmap, ispartyleader)
-	finish(false);
+	finish(playerid);
 end
 
 function partyDisband(partyid)
@@ -59,12 +59,15 @@ function partyRemoveMember(partyid, playerid)
 
 end
 
-function finish(fromtimer)
+function finish(playerid)
+	removeNPC();
+	removeInstancePlayer(playerid);
+	markForDelete();
+end
+
+function removeNPC()
 	g = tonumber(getInstanceVariable("npc"));
 	if g then
 		removeNPC(240040611, g);
-	end
-	if not fromtimer then
-		markForDelete();
 	end
 end
