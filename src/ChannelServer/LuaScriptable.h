@@ -66,10 +66,11 @@ namespace LuaExports {
 	int showChannelMessage(lua_State *luaVm);
 
 	// NPC
-	int spawnNPC(lua_State *luaVm);
+	int isBusy(lua_State *luaVm);
 	int removeNPC(lua_State *luaVm);
 	int runNPC(lua_State *luaVm);
 	int showShop(lua_State *luaVm);
+	int spawnNPC(lua_State *luaVm);
 
 	// Beauty
 	int getAllFaces(lua_State *luaVm);
