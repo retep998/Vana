@@ -68,54 +68,54 @@ void NPCs::handleNPCIn(Player *player, PacketReader &packet) {
 	}
 
 	int8_t type = packet.get<int8_t>();
+	if (type != npc->getSentDialog()) {
+		// hacking
+		return;
+	}
+
 	int8_t what = packet.get<int8_t>();
 
 	if (type == NPCDialogs::normal) {
 		switch (what) {
-			case 0: npc->setState(npc->getState() - 1); break;
-			case 1:	npc->setState(npc->getState() + 1); break;
+			case 0: npc->proceedBack(); break;
+			case 1:	npc->proceedNext(); break;
 			default: npc->end(); break;
 		}
 	}
 	else if (type == NPCDialogs::yesNo || type == NPCDialogs::acceptDecline) {
-		npc->setState(npc->getState() + 1);
 		switch (what) {
-			case 0: npc->setSelected(0); break;
-			case 1:	npc->setSelected(1); break;
+			case 0: npc->proceedSelection(0); break;
+			case 1:	npc->proceedSelection(1); break;
 			default: npc->end(); break;
 		}
 	}
 	else if (type == NPCDialogs::getText) {
-		npc->setState(npc->getState() + 1);
 		if (what != 0) {
-			npc->setGetText(packet.getString());
+			npc->proceedText(packet.getString());
 		}
 		else {
 			npc->end();
 		}
 	}
 	else if (type == NPCDialogs::getNumber) {
-		npc->setState(npc->getState() + 1);
 		if (what == 1) {
-			npc->setGetNumber(packet.get<int32_t>());
+			npc->proceedNumber(packet.get<int32_t>());
 		}
 		else {
 			npc->end();
 		}
 	}
 	else if (type == NPCDialogs::simple) {
-		npc->setState(npc->getState() + 1);
 		if (what == 0) {
 			npc->end();
 		}
 		else {
-			npc->setSelected(packet.get<uint8_t>());
+			npc->proceedSelection(packet.get<uint8_t>());
 		}
 	}
 	else if (type == NPCDialogs::style) {
-		npc->setState(npc->getState() + 1);
 		if (what == 1) {
-			npc->setSelected(packet.get<uint8_t>());
+			npc->proceedSelection(packet.get<uint8_t>());
 		}
 		else  {
 			npc->end();
@@ -124,8 +124,7 @@ void NPCs::handleNPCIn(Player *player, PacketReader &packet) {
 	else {
 		npc->end();
 	}
-
-	npc->run();
+	npc->checkEnd();
 }
 
 void NPCs::handleNPCAnimation(Player *player, PacketReader &packet) {
@@ -172,7 +171,6 @@ void NPC::initScript(int32_t npcid, Player *player, int16_t questid, bool isstar
 	if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC exists
 		luaNPC.reset(new LuaNPC(filename, player->getId(), questid));
 		player->setNPC(this);
-		setState(state);
 	}
 	else {
 		end();
@@ -188,21 +186,17 @@ bool NPC::checkEnd() {
 	return false;
 }
 
-bool NPC::run() {
-	if (checkEnd()) { //  NPC Ended
-		return false;
-	}
-
-	bool ret = luaNPC->run();
-
+void NPC::run() {
 	if (checkEnd()) {
-		return false;
+		return;
 	}
-
-	return ret;
+	luaNPC->run();
+	checkEnd();
 }
 
 PacketCreator NPC::npcPacket(int8_t type) {
+	sentDialog = type;
+
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_NPC_TALK);
 	packet.add<int8_t>(4);
@@ -226,31 +220,20 @@ void NPC::sendYesNo() {
 	player->getSession()->send(packet);
 }
 
-void NPC::sendNext() {
+void NPC::sendDialog(bool back, bool next, bool save) {
+	if (save) { // Store the current NPC state, for future "back" button use
+		previousStates.push_back(StatePtr(new State(text, back, next)));
+	}
+
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(1);
+	packet.add<int8_t>(back);
+	packet.add<int8_t>(next);
 	player->getSession()->send(packet);
 }
 
-void NPC::sendBackNext() {
-	PacketCreator packet = npcPacket(NPCDialogs::normal);
-	packet.add<int8_t>(1);
-	packet.add<int8_t>(1);
-	player->getSession()->send(packet);
-}
-
-void NPC::sendBackOK() {
-	PacketCreator packet = npcPacket(NPCDialogs::normal);
-	packet.add<int8_t>(1);
-	packet.add<int8_t>(0);
-	player->getSession()->send(packet);
-}
-
-void NPC::sendOK() {
-	PacketCreator packet = npcPacket(NPCDialogs::normal);
-	packet.add<int16_t>(0);
-	player->getSession()->send(packet);
+void NPC::sendDialog(StatePtr npcState) {
+	text = npcState->text;
+	sendDialog(npcState->back, npcState->next, false);
 }
 
 void NPC::sendAcceptDecline() {
@@ -283,7 +266,35 @@ void NPC::sendStyle(int32_t styles[], int8_t size) {
 	player->getSession()->send(packet);
 }
 
-void NPC::setState(int32_t state) {
-	this->state = state;
-	luaNPC->setVariable("state", state);
+void NPC::proceedBack() {
+	if (state == 0) {
+		// hacking
+		return;
+	}
+
+	state--;
+	sendDialog(previousStates[state]);
+}
+
+void NPC::proceedNext() {
+	state++;
+	if (state < previousStates.size()) {
+		// Usage of "next" button after the "back" button
+		sendDialog(previousStates[state]);
+	}
+	else {
+		luaNPC->proceedNext();
+	}
+}
+
+void NPC::proceedSelection(uint8_t selected) {
+	luaNPC->proceedSelection(selected);
+}
+
+void NPC::proceedNumber(int32_t number) {
+	luaNPC->proceedNumber(number);
+}
+
+void NPC::proceedText(const string &text) {
+	luaNPC->proceedText(text);
 }

@@ -18,37 +18,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Thomas Swift (warps to/from Amoria)
 
 if getMap() == 100000000 then
-	if state == 0 then
-		addText("I can take you to Amoria Village. Are you ready to go?");
-		sendYesNo();
-	elseif state == 1 then
-		if getSelected() == 1 then
-			addText("I hope you had a great time! See you around!");
-			sendNext();
-		else
-			addText("Ok, feel free to hang around until you're ready to go!");
-			sendOK();
-			endNPC();
-		end
-	elseif state == 2 then
+	addText("I can take you to Amoria Village. Are you ready to go?");
+	yes = askYesNo();
+    
+	if yes == 1 then
+		addText("I hope you had a great time! See you around!");
+		sendNext();
+		
 		setMap(680000000);
-		endNPC();
+	else
+		addText("Ok, feel free to hang around until you're ready to go!");
+		sendOK();
 	end
 else	
-	if state == 0 then
-		addText("I can take you back to your original location. Are you ready to go?");
-		sendYesNo();
-	elseif state == 1 then
-		if getSelected() == 1 then
-			addText("I hope you had a great time! See you around!");
-			sendNext();
-		else
-			addText("Ok, feel free to hang around until you're ready to go!");
-			sendNext();
-			endNPC();
-		end
-	elseif state == 2 then
+	addText("I can take you back to your original location. Are you ready to go?");
+	yes = askYesNo();
+
+	if yes == 1 then
+		addText("I hope you had a great time! See you around!");
+		sendNext();
+	
 		setMap(100000000);
-		endNPC();
+	else
+		addText("Ok, feel free to hang around until you're ready to go!");
+		sendNext();
 	end
 end

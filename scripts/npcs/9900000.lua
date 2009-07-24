@@ -19,18 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/beautyFunctions.lua");
 
-if state == 0 then
-	addText("Hello, what can I do for you today?\r\n");
-	addText("#L0##bSkin#k#l\r\n");
-	addText("#L1##bHair#k#l\r\n");
-	addText("#L2##bHair Color#k#l\r\n");
-	addText("#L3##bEyes#k#l\r\n");
-	addText("#L4##bEyes Color#k#l\r\n");
-	addText("#L5##bRandom New Look#k#l\r\n");
-	sendSimple();
-elseif state == 1 then
+addText("Hello, what can I do for you today?\r\n");
+addText("#L0##bSkin#k#l\r\n");
+addText("#L1##bHair#k#l\r\n");
+addText("#L2##bHair Color#k#l\r\n");
+addText("#L3##bEyes#k#l\r\n");
+addText("#L4##bEyes Color#k#l\r\n");
+addText("#L5##bRandom New Look#k#l\r\n");
+what = askChoice();
+
+if what == 5 then
+	setStyle(getRandomFace());
+	setStyle(getRandomHair());
+else
 	styles = {};
-	what = getSelected();
 	if what == 0 then
 		getSkins(styles);
 	elseif what == 1 then
@@ -44,16 +46,10 @@ elseif state == 1 then
 	elseif what == 5 then
 		setStyle(getRandomFace());
 		setStyle(getRandomHair());
-		endNPC();
-	else
-		endNPC();
 	end
-
-	sendStyle(styles);
-
-elseif state == 2 then
-	if styles[getSelected() + 1] >= 0 then
-		setStyle(styles[getSelected() + 1]);
+	style = askStyle(styles) + 1;
+	
+	if styles[style] >= 0 then
+		setStyle(styles[style]);
 	end
-	endNPC();
 end

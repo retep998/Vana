@@ -18,20 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- First Eos Rock
 
 if getItemAmount(4001020) >= 1 then
-	if state == 0 then
-		addText("You can use #b#t4001020##k to activate #b#p2040024##k. Will you teleport to #b#p2040025##k at the 71st floor?");
-		sendYesNo();
-	elseif state == 1 then
-		if getSelected() == 1 then
-			giveItem(4001020, -1);
-			setMap(221022900, "go00");
-		end
-		endNPC();
+	addText("You can use #b#t4001020##k to activate #b#p2040024##k. Will you teleport to #b#p2040025##k at the 71st floor?");
+	yes = askYesNo();
+    
+	if yes == 1 then
+		giveItem(4001020, -1);
+		setMap(221022900, "go00");
 	end
 elseif getItemAmount(4001020) == 0 then
-	if state == 0 then
-		addText("There's a rock that will enable you to teleport to #b#p2040025##k, but it cannot be activated without the scroll.");
-		sendOK();
-		endNPC();
-	end
+	addText("There's a rock that will enable you to teleport to #b#p2040025##k, but it cannot be activated without the scroll.");
+	sendOK();
 end

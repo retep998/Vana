@@ -26,24 +26,22 @@ end
 -- Get player's eyes to get the face
 eye = getEyes();
 
-if state == 0 then
-	addText("Let's see... I can totally transform your face into something new. Don't you want to try it? For #b#t5152001##k, you can get the face of your liking. Take your time in choosing the face of your preference...");
-	current = eye - (eye % 10000);
-	newface = {};
-	for i = 0, #face do
-		if not (current + i == eye) then
-			newface[#newface + 1] = current + i;
-		end
+addText("Let's see... I can totally transform your face into something new. Don't you want to try it? For #b#t5152001##k, you can get the face of your liking. Take your time in choosing the face of your preference...");
+current = eye - (eye % 10000);
+newface = {};
+for i = 0, #face do
+	if not (current + i == eye) then
+		newface[#newface + 1] = current + i;
 	end
-	sendStyle(newface);
-elseif state == 1 then
-	if getItemAmount(5152001) > 0 then
-		giveItem(5152001, -1);
-		setStyle(newface[getSelected() + 1]);
-		addText("Enjoy your new and improved face!");
-	else
-		addText("Hmm ... it looks like you don't have the coupon specifically for this place...sorry to say this, but without the coupon, there's no plastic surgery for you.");
-	end
+end
+style = askStyle(newface) + 1;
+
+if getItemAmount(5152001) > 0 then
+	giveItem(5152001, -1);
+	setStyle(newface[style]);
+	addText("Enjoy your new and improved face!");
 	sendNext();
-	endNPC();
+else
+	addText("Hmm ... it looks like you don't have the coupon specifically for this place...sorry to say this, but without the coupon, there's no plastic surgery for you.");
+	sendNext();
 end

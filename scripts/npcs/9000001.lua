@@ -17,41 +17,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Jean (Event Assistant)
 
-if state == 0 then
-	addText("Hey, I'm #b#p9000001##k. I am waiting for my brother #bPaul#k. He is supposed to be here by now...");
+addText("Hey, I'm #b#p9000001##k. I am waiting for my brother #bPaul#k. He is supposed to be here by now...");
+sendNext();
+
+addText("Hmm... What should I do? The event will start, soon... Many people went to participate in the event, so we better be hurry...");
+sendBackNext();
+
+addText("hey... Why don't you go with me? I think my brother will come with other people.\r\n");
+addText("#L0##e1. #n#bWhat kind of an event is it?#k#l\r\n");
+addText("#L1##e2. #n#bExplain the event game to me.#k#l\r\n");
+addText("#L2##e3. #n#bAlright, let's go!#k#l");
+option = askChoice();
+
+if option == 0 then
+	addText("All this month MapleStory Global is celebrating its 1st anniversary! The GM's will be holding surprise GM Events throughout the event, so stay on your toes and make sure to participate in at least one of the events for great prizes!");
 	sendNext();
-elseif state == 1 then
-	addText("Hmm... What should I do? The event will start, soon... Many people went to participate in the event, so we better be hurry...");
-	sendBackNext();
-elseif state == 2 then
-	addText("hey... Why don't you go with me? I think my brother will come with other people.\r\n");
-	addText("#L0##e1. #n#bWhat kind of an event is it?#k#l\r\n");
-	addText("#L1##e2. #n#bExplain the event game to me.#k#l\r\n");
-	addText("#L2##e3. #n#bAlright, let's go!#k#l");
-	sendSimple();
-elseif state == 3 then
-	option = getSelected();
-	if option == 0 then
-		addText("All this month MapleStory Global is celebrating its 1st anniversary! The GM's will be holding surprise GM Events throughout the event, so stay on your toes and make sure to participate in at least one of the events for great prizes!");
-		sendNext();
-		endNPC();
-	elseif option == 1 then
-		addText("There are many games for this event. It will help you a lot to know how to play the game before you play it. Choose the one you want to know more of!\r\n");
-		addText("#b#L0# Ola Ola#l\r\n");
-		addText("#L1# MapleStory Maple Physical Fitness Test#l\r\n");
-		addText("#L2# Snow Ball#l\r\n");
-		addText("#L3# Coconut Harvest#l\r\n");
-		addText("#L4# OX Quiz#l\r\n");
-		addText("#L5# Treasure Hunt#l#k");
-		sendSimple();
-	elseif option == 2 then
-		-- TODO: Add event code
-		addText("Either the event has not been started, you already have #t4031019#, or have already participated in this event within the last 24 hours. Please try again later!");
-		sendNext();
-		endNPC();
-	end
-elseif state == 4 then
-	info = getSelected();
+elseif option == 1 then
+	addText("There are many games for this event. It will help you a lot to know how to play the game before you play it. Choose the one you want to know more of!\r\n");
+	addText("#b#L0# Ola Ola#l\r\n");
+	addText("#L1# MapleStory Maple Physical Fitness Test#l\r\n");
+	addText("#L2# Snow Ball#l\r\n");
+	addText("#L3# Coconut Harvest#l\r\n");
+	addText("#L4# OX Quiz#l\r\n");
+	addText("#L5# Treasure Hunt#l#k");
+	info = askChoice();
+	
 	if info == 0 then
 		addText("#b[Ola Ola]#k is a game where participants climb ladders to reach the top. Climb your way up and move to the next level by choosing the correct portal out of the numerous portals available. \r\n");
 		addText("The game consists of three levels, and the time limit is #b6 MINUTES#k. During [Ola Ola], you #bwon't be able to jump, teleport, haste, or boost your speed using potions or items#k. There are also trick portals that'll lead you to a strange place, so please be aware of those.");
@@ -76,5 +66,8 @@ elseif state == 4 then
 		addText("During the game of Treasure Hunt, all attack skills will be #rdisabled#k, so please break the treasure chest with the regular attack.");
 	end
 	sendNext();
-	endNPC();
+elseif option == 2 then
+	-- TODO: Add event code
+	addText("Either the event has not been started, you already have #t4031019#, or have already participated in this event within the last 24 hours. Please try again later!");
+	sendNext();
 end

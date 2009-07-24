@@ -17,28 +17,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Machine Apparatus - Origin of Clocktower
 
-if state == 0 then
-	addText("Beep... beep... you can make you escape to a safer place through me. ");
-	addText("Beep ... beep ... would you like to leave this place?");
-	sendYesNo();
-elseif state == 1 then
-	if getSelected() == 1 then
-		setMap(220080000);
-		if isInstance("papulatus") then
-			removeInstancePlayer(getID());
-			if getInstancePlayerCount() == 0 then
-				setReactorState(220080000, 2208001, 0);
-				setReactorState(220080000, 2208003, 0);
-				setReactorState(220080001, 2201004, 0);
-				markForDelete();
-			end
-		end
-		if getNumPlayers(220080001) == 0 then
-			clearDrops(220080001);
-			clearMobs(220080001);
+addText("Beep... beep... you can make you escape to a safer place through me. ");
+addText("Beep ... beep ... would you like to leave this place?");
+yes = askYesNo();
+
+if yes == 1 then
+	setMap(220080000);
+	if isInstance("papulatus") then
+		removeInstancePlayer(getID());
+		if getInstancePlayerCount() == 0 then
+			setReactorState(220080000, 2208001, 0);
+			setReactorState(220080000, 2208003, 0);
+			setReactorState(220080001, 2201004, 0);
+			markForDelete();
 		end
 	end
-	endNPC();
-else
-	endNPC();
+	if getNumPlayers(220080001) == 0 then
+		clearDrops(220080001);
+		clearMobs(220080001);
+	end
 end

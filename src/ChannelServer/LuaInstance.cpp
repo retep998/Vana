@@ -33,7 +33,7 @@ bool LuaInstance::run(InstanceMessages message) {
 			break;
 	}
 	if (lua_pcall(luaVm, 0, 0, 0)) {
-		std::cout << lua_tostring(luaVm, -1) << std::endl;
+		handleError();
 		return false;
 	}
 	return true;
@@ -56,7 +56,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
 			break;
 	}
 	if (lua_pcall(luaVm, 1, 0, 0)) {
-		std::cout << lua_tostring(luaVm, -1) << std::endl;
+		handleError();
 		return false;
 	}
 	return true;
@@ -72,7 +72,7 @@ bool LuaInstance::run(InstanceMessages message, const string &parameter1, int32_
 			break;
 	}
 	if (lua_pcall(luaVm, 2, 0, 0)) {
-		std::cout << lua_tostring(luaVm, -1) << std::endl;
+		handleError();
 		return false;
 	}
 	return true;
@@ -93,7 +93,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 	}
 
 	if (lua_pcall(luaVm, 2, 0, 0)) {
-		std::cout << lua_tostring(luaVm, -1) << std::endl;
+		handleError();
 		return false;
 	}
 	return true;
@@ -112,7 +112,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 	lua_pushinteger(luaVm, parameter2);
 	lua_pushinteger(luaVm, parameter3);
 	if (lua_pcall(luaVm, 3, 0, 0)) {
-		std::cout << lua_tostring(luaVm, -1) << std::endl;
+		handleError();
 		return false;
 	}
 	return true;

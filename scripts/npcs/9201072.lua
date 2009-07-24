@@ -17,8 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Moonstone Grave
 
-if state == 0 then
-	addText("30, 101, Hidden.");
-	sendOK();
-	endNPC();
-end
+addText("30, 101, Hidden.");
+sendOK();

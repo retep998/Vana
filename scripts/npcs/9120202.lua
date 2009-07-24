@@ -17,19 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Konpei (warps to Hideout entrance from Bodyguard room)
 
-if state == 0 then
-	if getItemAmount(4000141) == 0 then
-		addText("Once you eliminate the boss, you'll have to show me the boss's flashlight as evidence. I won't believe it until you show me the flashlight! What? You want to leave this room?");
-		sendYesNo();
-	else
-		endNPC(); -- No clue what happens here yet
-	end
-elseif state == 1 then
-	if getSelected() == 0 then
+if getItemAmount(4000141) == 0 then
+	addText("Once you eliminate the boss, you'll have to show me the boss's flashlight as evidence. I won't believe it until you show me the flashlight! What? You want to leave this room?");
+	yes = askYesNo();
+	
+	if yes == 0 then
 		addText("I really admire your toughness! Well, if you decide to return to Showa Town, let me know~!");
 		sendOK();
 	else
 		setMap(801040000);
 	end
-	endNPC();
+else
+	-- No clue what happens here yet
 end
