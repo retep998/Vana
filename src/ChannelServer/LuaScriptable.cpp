@@ -71,10 +71,11 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "showChannelMessage", &LuaExports::showChannelMessage);
 
 	// NPC
-	lua_register(luaVm, "spawnNPC", &LuaExports::spawnNPC);
+	lua_register(luaVm, "isBusy", &LuaExports::isBusy);
 	lua_register(luaVm, "removeNPC", &LuaExports::removeNPC);
 	lua_register(luaVm, "runNPC", &LuaExports::runNPC);
 	lua_register(luaVm, "showShop", &LuaExports::showShop);
+	lua_register(luaVm, "spawnNPC", &LuaExports::spawnNPC);
 
 	// Beauty
 	lua_register(luaVm, "getAllFaces", &LuaExports::getAllFaces);
@@ -370,21 +371,8 @@ int LuaExports::showChannelMessage(lua_State *luaVm) {
 }
 
 // NPC
-int LuaExports::spawnNPC(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t npcid = lua_tointeger(luaVm, 2);
-	int16_t x = lua_tointeger(luaVm, 3);
-	int16_t y = lua_tointeger(luaVm, 4);
-
-	NPCSpawnInfo npc;
-	npc.id = npcid;
-	npc.fh = 0;
-	npc.pos = Pos(x, y);
-	npc.rx0 = x - 50;
-	npc.rx1 = x + 50;
-	npc.facingside = 1;
-
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->addNPC(npc));
+int LuaExports::isBusy(lua_State *luaVm) {
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getNPC() != 0);
 	return 1;
 }
 
@@ -406,6 +394,24 @@ int LuaExports::showShop(lua_State *luaVm) {
 	int32_t shopid = lua_tointeger(luaVm, -1);
 	ShopDataProvider::Instance()->showShop(getPlayer(luaVm), shopid);
 	return 0;
+}
+
+int LuaExports::spawnNPC(lua_State *luaVm) {
+	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t npcid = lua_tointeger(luaVm, 2);
+	int16_t x = lua_tointeger(luaVm, 3);
+	int16_t y = lua_tointeger(luaVm, 4);
+
+	NPCSpawnInfo npc;
+	npc.id = npcid;
+	npc.fh = 0;
+	npc.pos = Pos(x, y);
+	npc.rx0 = x - 50;
+	npc.rx1 = x + 50;
+	npc.facingside = 1;
+
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->addNPC(npc));
+	return 1;
 }
 
 // Beauty

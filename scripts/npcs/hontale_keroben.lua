@@ -15,46 +15,27 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-function beginInstance()
-	addInstanceMap(200090310);
-end
+-- Keroben, bouncer to Horntail's Cave
 
-function playerDeath(playerid)
-
-end
-
-function playerDisconnect(playerid, ispartyleader)
-	markForDelete();
-end
-
-function instanceTimerEnd(fromtimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(200000141);
-		removeAllInstancePlayers();
+if state == 0 then
+	if isActiveItem(2210003) then
+		addText("Oh, my Brother! Don't worry about human's invasion. I'll protect you all. Come in.");
+		sendNext();
+	else
+		addText("That's far enough, human! No one is allowed beyond this point. Get away from here!");
+		sendNext();
+		if getHP() > 500 then
+			setHP(getHP() - 500);
+		elseif getHP() > 1 then
+			setHP(1);
+		end
 	end
-end
-
-function timerEnd(name, fromtimer)
-
-end
-
-function mobDeath(mobid, mapmobid, mapid)
-
-end
-
-function mobSpawn(mobid, mapmobid, mapid)
-
-end
-
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	removeInstancePlayer(playerid);
-	markForDelete();
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
+elseif state == 1 then
+	if isActiveItem(2210003) then
+		endMorph();
+		setMap(240050000, "st00");
+	else
+		setMap(240040600, "st00");
+	end
+	endNPC();
 end

@@ -172,21 +172,23 @@ public:
 
 	// Mobs
 	void setWebbedCount(int32_t w) { webbed = w; }
-	int32_t getWebbedCount() const { return webbed; }
 	void addMobSpawn(const MobSpawnInfo &spawn);
 	void checkMobSpawn(clock_t time, bool spawnAll = false);
 	void removeMob(int32_t id, int32_t spawnid);
+	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
+	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
+	void checkShadowWeb();
+	void setMobSpawning(bool spawn) { spawnmobs = spawn; }
+	void spawnZakum(const Pos &pos, int16_t fh = 0);
+	void updateMobControl(Mob *mob, bool spawn = false, Player *display = 0);
+	int32_t getWebbedCount() const { return webbed; }
+	int32_t spawnShell(int32_t mobid, const Pos &pos, int16_t fh);
 	int32_t spawnMob(int32_t mobid, const Pos &pos, int16_t fh = 0, Mob *owner = 0, int8_t summoneffect = 0);
 	int32_t spawnMob(int32_t spawnid, const MobSpawnInfo &info);
 	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
 	int32_t countMobs(int32_t mobid = 0);
 	Mob * getMob(int32_t id, bool isMapId = true);
 	unordered_map<int32_t, Mob *> getMobs() const { return mobs; }
-	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
-	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
-	void checkShadowWeb();
-	void setMobSpawning(bool spawn) { spawnmobs = spawn; }
-	void spawnZakum(const Pos &pos, int16_t fh = 0);
 
 	// Reactors
 	void addReactorSpawn(const ReactorSpawnInfo &spawn);
@@ -265,7 +267,6 @@ private:
 	bool spawnmobs;
 
 	void updateMobControl(Player *player);
-	void updateMobControl(Mob *mob, bool spawn = false);
 	int32_t getTimeMobId() const { return timemob; }
 };
 

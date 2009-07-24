@@ -15,46 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-function beginInstance()
-	addInstanceMap(200090310);
-end
+-- Nine Spirit's Egg portal that summons the dragon
 
-function playerDeath(playerid)
-
-end
-
-function playerDisconnect(playerid, ispartyleader)
-	markForDelete();
-end
-
-function instanceTimerEnd(fromtimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(200000141);
-		removeAllInstancePlayers();
-	end
-end
-
-function timerEnd(name, fromtimer)
-
-end
-
-function mobDeath(mobid, mapmobid, mapid)
-
-end
-
-function mobSpawn(mobid, mapmobid, mapid)
-
-end
-
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	removeInstancePlayer(playerid);
-	markForDelete();
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
+if tonumber(getInstanceVariable("egg")) ~= 1 and getItemAmount(4001094) > 0 then
+	giveItem(4001094, -1);
+	setReactorState(240040611, 2406000, 1);
+	showMessage("The Egg of Nine Spirit, which was comfotably nested, has emitted a mysterious light and has returned to its nest.", 5);
+	setInstanceVariable("egg", "1");
 end

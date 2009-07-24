@@ -15,46 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-function beginInstance()
-	addInstanceMap(200090310);
-end
+-- Nine Spirits Egg portal
 
-function playerDeath(playerid)
-
-end
-
-function playerDisconnect(playerid, ispartyleader)
-	markForDelete();
-end
-
-function instanceTimerEnd(fromtimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(200000141);
-		removeAllInstancePlayers();
+if getItemAmount(4001094) > 0 then
+	if not isInstance("horntailEgg") then
+		createInstance("horntailEgg", 5 * 60, true);
+		addInstancePlayer(getID());
+		playPortalSE();
+		setMap(240040611);
+	else
+		showMessage("Someone else is already inside in an attempt to complete the quest. Please try again later.", 5);
 	end
-end
-
-function timerEnd(name, fromtimer)
-
-end
-
-function mobDeath(mobid, mapmobid, mapid)
-
-end
-
-function mobSpawn(mobid, mapmobid, mapid)
-
-end
-
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	removeInstancePlayer(playerid);
-	markForDelete();
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
+else
+	showMessage("In order to enter the premise, you'll need to have the Nine Spirit's Egg in possession..", 5);
 end

@@ -47,7 +47,8 @@ function mobSpawn(mobid, mapmobid, mapid)
 end
 
 function changeMap(playerid, newmap, oldmap, ispartyleader)
-
+	removeInstancePlayer(playerid);
+	markForDelete();
 end
 
 function partyDisband(partyid)
