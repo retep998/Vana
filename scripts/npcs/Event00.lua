@@ -15,18 +15,46 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Tony (Event Assistant)
+-- Paul, Jean, Martin, Tony (Event Assistants)
 
-addText("Hi, I'm #b#p9000013##k. I've been waiting for my brothers for a while, but they haven't gotten here yet. I'm sick and tired of doing things by myself. At least during the event, I don't feel quite so lonely with so many people around me and all. All events require a limited number of people, so if I don't get there fast enough, I won't be able to join.");
-sendNext();
+n = getNPCID();
+addText("Hey, I'm #b#p" .. n .. "##k");
+if n == 9000000 then
+	addText(", if you're not busy and all ... then can I hang out with you? I heard there are people gathering up around here for an #revent#k but I don't want to go there by myself ... Well, do you want to go check it out with me?");
+	sendNext();
 
-addText("We may be cousins and all, but we keep on missing each other. Man, what should I do? The event should start any minute ... A lot of people should be there waiting, and there may not be any space for them ...");
-sendBackNext();
+	addText("Huh? What kind of an event? Well, that's... \r\n");
+elseif n == 9000001 then
+	addText(". I am waiting for my brother #bPaul#k. He is supposed to be here by now...");
+	sendNext();
 
-addText("What do you think? Do you want to join me and head over to the event?\r\n");
-addText("#b#L0# What kind of an event?#l\r\n");
-addText("#L1# Explain to me the event games.#l\r\n");
-addText("#L2# Alright, let's go!#l#k");
+	addText("Hmm... What should I do? The event will start, soon... Many people went to participate in the event, so we better be hurry...");
+	sendBackNext();
+
+	addText("hey... Why don't you go with me? I think my brother will come with other people.\r\n");
+elseif n == 9000011 then
+	addText(". I am waiting for my brothers... What takes them so long? I got bored now... If we do not get there on time, we might not be able to participate in the event...");
+	sendNext();
+
+	addText("Hmm... What should I do? The event will start, soon... Many people went to participate in the event, so we better be hurry...");
+	sendBackNext();
+
+	addText("Hey... why don't you go with me, then?\r\n");
+elseif n == 9000013
+	addText(". I've been waiting for my brothers for a while, but they haven't gotten here yet. I'm sick and tired of doing things by myself. At least during the event, I don't feel quite so lonely with so many people around me and all. All events require a limited number of people, so if I don't get there fast enough, I won't be able to join.");
+	sendNext();
+
+	addText("We may be cousins and all, but we keep on missing each other. Man, what should I do? The event should start any minute ... A lot of people should be there waiting, and there may not be any space for them ...");
+	sendBackNext();
+
+	addText("What do you think? Do you want to join me and head over to the event?\r\n");
+else
+	sendNext();
+end
+
+addText("#L0##e1. #n#bWhat kind of an event is it?#k#l\r\n");
+addText("#L1##e2. #n#bExplain the event game to me.#k#l\r\n");
+addText("#L2##e3. #n#bAlright, let's go!#k#l");
 option = askChoice();
 
 if option == 0 then

@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Pason (Tour Guide, teleports to Florina Beach)
+-- Pason and Shuri (Tour Guides, teleport to Florina Beach)
 
 addText("Have you heard of the beach with a spectacular view of the ocean called #b#m110000000##k, located near #m104000000#? I can take you there right now for either #b1500 mesos#k, or if you have #b#t4031134##k with you, in which case you'll be in for free.\r\n");
 addText("#b#L0# I'll pay #b1500 mesos#k.#l\r\n");
