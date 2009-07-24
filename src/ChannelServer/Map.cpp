@@ -56,7 +56,7 @@ timerstart(0),
 poisonmists(0),
 timemob(0),
 webbed(0),
-spawnmobs(true),
+spawnmobs(-1),
 timers(new Timer::Container)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
@@ -326,8 +326,10 @@ void Map::addMobSpawn(const MobSpawnInfo &spawn) {
 
 void Map::checkMobSpawn(clock_t time, bool spawnAll) {
 	// (Re-)spawn Mobs
-	for (size_t i = 0; spawnmobs && i < mobspawns.size(); i++) {
-		int32_t id = mobspawns[i].id;
+	for (size_t i = 0; spawnmobs != 0 && i < mobspawns.size(); i++) {
+		if (spawnmobs > 0 && mobspawns[i].id != spawnmobs) {
+			continue;
+		}
 		int32_t spawnat = mobspawns[i].spawnat;
 		if (!mobspawns[i].spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
 			spawnMob(i, mobspawns[i]);

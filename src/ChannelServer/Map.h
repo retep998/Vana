@@ -178,7 +178,7 @@ public:
 	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
 	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
 	void checkShadowWeb();
-	void setMobSpawning(bool spawn) { spawnmobs = spawn; }
+	void setMobSpawning(int32_t spawn) { spawnmobs = spawn; }
 	void spawnZakum(const Pos &pos, int16_t fh = 0);
 	void updateMobControl(Mob *mob, bool spawn = false, Player *display = 0);
 	int32_t getWebbedCount() const { return webbed; }
@@ -264,7 +264,7 @@ private:
 	int32_t poisonmists;
 	int32_t webbed;
 	int32_t timemob;
-	bool spawnmobs;
+	int32_t spawnmobs;
 
 	void updateMobControl(Player *player);
 	int32_t getTimeMobId() const { return timemob; }
