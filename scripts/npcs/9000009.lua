@@ -17,8 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Vikin
 
-if state == 0 then
-	addText("Hey hey!!! Find the #t4031018#! I lost the map somewhere and I can't leave without it.");
-	sendOK();
-	endNPC();
-end
+addText("Hey hey!!! Find the #t4031018#! I lost the map somewhere and I can't leave without it.");
+sendOK();

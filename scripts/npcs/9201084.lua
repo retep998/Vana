@@ -17,8 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Tombstone
 
-if state == 0 then
-	addText("Looking for head, will return if unsuccessful. - Headless Horseman");
-	sendOK();
-	endNPC();
-end
+addText("Looking for head, will return if unsuccessful. - Headless Horseman");
+sendOK();

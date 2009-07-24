@@ -26,28 +26,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::vector;
 
 LuaNPC::LuaNPC(const string &filename, int32_t playerid, int16_t questid) : LuaScriptable(filename, playerid) {
+	luaThread = lua_newthread(luaVm);
+
 	// Miscellaneous
 	lua_register(luaVm, "showStorage", &LuaExports::showStorage);
 	lua_register(luaVm, "getDistanceToPlayer", &LuaExports::getDistanceNpc);
 
 	// NPC interaction
 	lua_register(luaVm, "addText", &LuaExports::addText);
-	lua_register(luaVm, "endNPC", &LuaExports::endNPC); // end() is reserved.
-	lua_register(luaVm, "getNumber", &LuaExports::getNumber);
-	lua_register(luaVm, "getSelected", &LuaExports::getSelected);
-	lua_register(luaVm, "getText", &LuaExports::getText);
-	lua_register(luaVm, "restart", &LuaExports::restart);
-	lua_register(luaVm, "sendAcceptDecline", &LuaExports::sendAcceptDecline);
 	lua_register(luaVm, "sendBackNext", &LuaExports::sendBackNext);
 	lua_register(luaVm, "sendBackOK", &LuaExports::sendBackOK);
-	lua_register(luaVm, "sendGetNumber", &LuaExports::sendGetNumber);
-	lua_register(luaVm, "sendGetText", &LuaExports::sendGetText);
 	lua_register(luaVm, "sendNext", &LuaExports::sendNext);
 	lua_register(luaVm, "sendOK", &LuaExports::sendOK);
-	lua_register(luaVm, "sendSimple", &LuaExports::sendSimple);
-	lua_register(luaVm, "sendStyle", &LuaExports::sendStyle);
-	lua_register(luaVm, "sendYesNo", &LuaExports::sendYesNo);
-	lua_register(luaVm, "setState", &LuaExports::setStateNPC);
+	lua_register(luaVm, "askAcceptDecline", &LuaExports::askAcceptDecline);
+	lua_register(luaVm, "askChoice", &LuaExports::askChoice);
+	lua_register(luaVm, "askNumber", &LuaExports::askNumber);
+	lua_register(luaVm, "askStyle", &LuaExports::askStyle);
+	lua_register(luaVm, "askText", &LuaExports::askText);
+	lua_register(luaVm, "askYesNo", &LuaExports::askYesNo);
 
 	// Quest
 	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
@@ -61,15 +57,49 @@ LuaNPC::LuaNPC(const string &filename, int32_t playerid, int16_t questid) : LuaS
 	LuaScriptable::setVariable("questid", questid);
 }
 
-bool LuaNPC::run() {
-	bool ret = LuaScriptable::run();
+bool LuaNPC::run(){
+	if (luaL_loadfile(luaThread, filename.c_str())) {
+		// Error in lua script
+		handleError();
+		return false;
+	}
+	return resume(0); // Start running the script
+}
 
-	if (!ret) {
-		// Error in NPC script
+bool LuaNPC::resume(int32_t nargs) {
+	int32_t ret = lua_resume(luaThread, nargs);
+	if (ret == 0) { // NPC finished
 		Players::Instance()->getPlayer(playerid)->getNPC()->end();
 	}
+	else if (ret != LUA_YIELD) { // error, a working NPC returns either 0 or LUA_YIELD
+		handleError();
+		return false;
+	}
+	return true;
+}
 
-	return ret;
+bool LuaNPC::proceedNext() {
+	return resume(0);
+}
+
+bool LuaNPC::proceedSelection(uint8_t selected) {
+	lua_pushinteger(luaThread, selected);
+	return resume(1);
+}
+
+bool LuaNPC::proceedNumber(int32_t number) {
+	lua_pushinteger(luaThread, number);
+	return resume(1);
+}
+
+bool LuaNPC::proceedText(const string &text) {
+	lua_pushstring(luaThread, text.c_str());
+	return resume(1);
+}
+
+void LuaNPC::handleError() {
+	printError(lua_tostring(luaThread, -1));
+	Players::Instance()->getPlayer(playerid)->getNPC()->end();
 }
 
 NPC * LuaExports::getNPC(lua_State *luaVm) {
@@ -93,78 +123,42 @@ int LuaExports::addText(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::endNPC(lua_State *luaVm) {
-	getNPC(luaVm)->end();
-	return 0;
-}
-
-int LuaExports::getNumber(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getNumber());
-	return 1;
-}
-
-int LuaExports::getSelected(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getNPC(luaVm)->getSelected());
-	return 1;
-}
-
-int LuaExports::getText(lua_State *luaVm) {
-	lua_pushstring(luaVm, getNPC(luaVm)->getText().c_str());
-	return 1;
-}
-
-int LuaExports::restart(lua_State *luaVm) {
-	getNPC(luaVm)->run();
-	return 0;
-}
-
-int LuaExports::sendAcceptDecline(lua_State *luaVm) {
-	getNPC(luaVm)->sendAcceptDecline();
-	return 0;
-}
-
 int LuaExports::sendBackNext(lua_State *luaVm) {
-	getNPC(luaVm)->sendBackNext();
-	return 0;
+	getNPC(luaVm)->sendDialog(true, true);
+	return lua_yield(luaVm, 0);
 }
 
 int LuaExports::sendBackOK(lua_State *luaVm) {
-	getNPC(luaVm)->sendBackOK();
-	return 0;
-}
-
-int LuaExports::sendGetNumber(lua_State *luaVm) {
-	getNPC(luaVm)->sendGetNumber(lua_tointeger(luaVm, -3), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
-	return 0;
-}
-
-int LuaExports::sendGetText(lua_State *luaVm) {
-	int16_t min = 0;
-	int16_t max = 0;
-	if (lua_isnumber(luaVm, -2) && lua_isnumber(luaVm, -1)) {
-		min = lua_tointeger(luaVm, -2);
-		max = lua_tointeger(luaVm, -1);
-	}
-	getNPC(luaVm)->sendGetText(min, max);
-	return 0;
+	getNPC(luaVm)->sendDialog(true, false);
+	return lua_yield(luaVm, 0);
 }
 
 int LuaExports::sendNext(lua_State *luaVm) {
-	getNPC(luaVm)->sendNext();
-	return 0;
+	getNPC(luaVm)->sendDialog(false, true);
+	return lua_yield(luaVm, 0);
 }
 
 int LuaExports::sendOK(lua_State *luaVm) {
-	getNPC(luaVm)->sendOK();
-	return 0;
+	getNPC(luaVm)->sendDialog(false, false);
+	return lua_yield(luaVm, 0);
 }
 
-int LuaExports::sendSimple(lua_State *luaVm) {
+int LuaExports::askAcceptDecline(lua_State *luaVm) {
+	getNPC(luaVm)->sendAcceptDecline();
+	return lua_yield(luaVm, 1);
+}
+
+int LuaExports::askChoice(lua_State *luaVm) {
 	getNPC(luaVm)->sendSimple();
-	return 0;
+	return lua_yield(luaVm, 1);
 }
 
-int LuaExports::sendStyle(lua_State *luaVm) {
+int LuaExports::askNumber(lua_State *luaVm) {
+	getNPC(luaVm)->sendGetNumber(lua_tointeger(luaVm, -3), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
+	return lua_yield(luaVm, 1);
+}
+
+int LuaExports::askStyle(lua_State *luaVm) {
 	vector<int32_t> styles;
 
 	lua_pushnil(luaVm);
@@ -174,17 +168,23 @@ int LuaExports::sendStyle(lua_State *luaVm) {
 	}
 	if (styles.size() > 0)
 		getNPC(luaVm)->sendStyle(&styles[0], styles.size());
-	return 0;
+	return lua_yield(luaVm, 1);
 }
 
-int LuaExports::sendYesNo(lua_State *luaVm) {
+int LuaExports::askText(lua_State *luaVm) {
+	int16_t min = 0;
+	int16_t max = 0;
+	if (lua_isnumber(luaVm, -2) && lua_isnumber(luaVm, -1)) {
+		min = lua_tointeger(luaVm, -2);
+		max = lua_tointeger(luaVm, -1);
+	}
+	getNPC(luaVm)->sendGetText(min, max);
+	return lua_yield(luaVm, 1);
+}
+
+int LuaExports::askYesNo(lua_State *luaVm) {
 	getNPC(luaVm)->sendYesNo();
-	return 0;
-}
-
-int LuaExports::setStateNPC(lua_State *luaVm) {
-	getNPC(luaVm)->setState(lua_tointeger(luaVm, -1));
-	return 0;
+	return lua_yield(luaVm, 1);
 }
 
 // Quest

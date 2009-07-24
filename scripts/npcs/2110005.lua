@@ -23,21 +23,17 @@ elseif getMap() == 260020000 then
 	tomap = 261000000;
 end
 
-if state == 0 then
+addText("Will you move to #b#m260000000##k now? The price is #b1500 mesos#k.");
+yes = askYesNo();
+
+if yes == 0 then
 	addText("Will you ride the #b#p2110005##k and move to #b#m" .. tomap .. "##k now? The price is #b1500 mesos#k.");
-	sendYesNo();
-elseif state == 1 then
-	if getSelected() == 0 then
-		addText("Hmmm ... too busy to do it right now? If you feel like doing it, though, come back and find me.");
-		sendNext();
+	sendNext();
+else
+	if giveMesos(-1500) then
+		setMap(tomap);
 	else
-		if getMesos() < 1500 then
-			addText("I am sorry, but I think you are short on mesos. I am afraid I can't let you ride this if you do not have enough money to do so. Please come back when you have enough money to use this.");
-			sendNext();
-		else
-			giveMesos(-1500);
-			setMap(tomap);
-		end
+		addText("I am sorry, but I think you are short on mesos. I am afraid I can't let you ride this if you do not have enough money to do so. Please come back when you have enough money to use this.");
+		sendNext();
 	end
-	endNPC();
 end

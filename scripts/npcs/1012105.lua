@@ -19,22 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/beautyFunctions.lua");
 
-if state == 0 then
-	addText("Well, hello! Welcome to the Henesys Skin-Care! Would you like to have a firm, tight, healthy looking skin like mine?  With #b#t5153000##k, you can let us take care of the rest and have the kind of skin you've always wanted~!");
+addText("Well, hello! Welcome to the Henesys Skin-Care! Would you like to have a firm, tight, healthy looking skin like mine?  With #b#t5153000##k, you can let us take care of the rest and have the kind of skin you've always wanted~!");
+sendNext();
+
+addText("With our specialized machine, you can see yourself after the treatment in advance. What kind of skin-treatment would you like to do? Choose the style of your liking...");
+styles = {};
+getSkins(styles);
+style = askStyle(styles) + 1;
+
+if getItemAmount(5153000) > 0 then
+	giveItem(5153000, -1);
+	setStyle(styles[style]);
+	addText("Enjoy your new and improved skin!");
 	sendNext();
-elseif state == 1 then
-	addText("With our specialized machine, you can see yourself after the treatment in advance. What kind of skin-treatment would you like to do? Choose the style of your liking...");
-	styles = {};
-	getSkins(styles);
-	sendStyle(styles);
-elseif state == 2 then
-	if getItemAmount(5153000) > 0 then
-		giveItem(5153000, -1);
-		setStyle(styles[getSelected() + 1]);
-		addText("Enjoy your new and improved skin!");
-	else
-		addText("Um...you don't have the skin-care coupon you need to receive the treatment. Sorry, but I am afraid we can't do it for you.");
-	end
+else
+	addText("Um...you don't have the skin-care coupon you need to receive the treatment. Sorry, but I am afraid we can't do it for you.");
 	sendNext();
-	endNPC();
 end

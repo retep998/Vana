@@ -17,12 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Corba, turns you into a dragon so you can fly to the Time Temple
 
-if state == 0 then
-	addText("If you had wings, I'm sure you could go there.  But, that alone won't be enough.  If you want to fly though the wind that's sharper than a blade, you'll need tough scales as well.  I'm the only Halfling left that knows the way back... If you want to go there, I can transform you.  No matter what you are, for this moment, you will become a #bDragon#k...\r\n");
-	addText("#L0##bI want to become a dragon.#k#l");
-	sendSimple();
-elseif state == 1 then
-	useItem(2210016);
-	setMap(200090500);
-	endNPC();
-end
+addText("If you had wings, I'm sure you could go there.  But, that alone won't be enough.  If you want to fly though the wind that's sharper than a blade, you'll need tough scales as well.  I'm the only Halfling left that knows the way back... If you want to go there, I can transform you.  No matter what you are, for this moment, you will become a #bDragon#k...\r\n");
+addText("#L0##bI want to become a dragon.#k#l");
+sendSimple();
+
+useItem(2210016);
+setMap(200090500);

@@ -23,21 +23,20 @@ else
 	face = {21000, 21001, 21002, 21003, 21004, 21005, 21006, 21007, 21008, 21012, 21014};
 end
 
-if state == 0 then
-	addText("If you use the regular coupon, your face may transform into a random new look...do you still want to do it using #b#t5152000##k?");
-	sendYesNo();
-elseif state == 1 then
-	if getSelected() == 1 then
-		if getItemAmount(5152000) > 0 then
-			giveItem(5152000, -1);
-			setStyle(face[getRandomNumber(#face)]);
-			addText("Enjoy!");
-		else
-			addText("Hmm ... it looks like you don't have the coupon specifically for this place. Sorry to say this, but without the coupon, there's no plastic surgery for you.");
-		end
+addText("If you use the regular coupon, your face may transform into a random new look...do you still want to do it using #b#t5152000##k?");
+yes = askYesNo();
+
+if yes == 1 then
+	if getItemAmount(5152000) > 0 then
+		giveItem(5152000, -1);
+		setStyle(face[getRandomNumber(#face)]);
+		addText("Enjoy!");
+		sendNext();
 	else
-		addText("I see ... take your time, see if you really want it. Let me know when you make up your mind.");
+		addText("Hmm ... it looks like you don't have the coupon specifically for this place. Sorry to say this, but without the coupon, there's no plastic surgery for you.");
+		sendNext();
 	end
+else
+	addText("I see ... take your time, see if you really want it. Let me know when you make up your mind.");
 	sendNext();
-	endNPC();
 end

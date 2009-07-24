@@ -17,8 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Tombstone
 
-if state == 0 then
-	addText("Here lies Cristopher Crimsonheart, the immortal warrior.");
-	sendOK();
-	endNPC();
-end
+addText("Here lies Cristopher Crimsonheart, the immortal warrior.");
+sendOK();

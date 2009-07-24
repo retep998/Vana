@@ -43,6 +43,9 @@ public:
 	void setVariable(const string &name, int32_t val);
 	void setVariable(const string &name, const string &val);
 protected:
+	virtual void handleError();
+	void printError(const string &error);
+
 	string filename;
 	int32_t playerid;
 	lua_State *luaVm;

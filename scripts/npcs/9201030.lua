@@ -17,8 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Maple Claws
 
-if state == 0 then
-	addText("Christmas is over.");
-	sendNext();
-	endNPC();
-end
+addText("Christmas is over.");
+sendNext();

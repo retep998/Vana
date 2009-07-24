@@ -17,17 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- NimaKIN, credits TerraEnvy of Ragezone/Terra of dev.chisoft & Bri/Zak for adding new skills
 
-if state == 0 then
-	if isGM() == 1 then
-		addText("Hi #h #! Would you like your skills maxed?");
-		sendYesNo();
-	else
-		addText("You need to be a GM in order for me to max your skills, #h #!");
-		sendOK();
-		endNPC();
-	end
-elseif state == 1 then
-	if getSelected() == 1 then
+if isGM() == 1 then
+	addText("Hi #h #! Would you like your skills maxed?");
+	yes = askYesNo();
+	
+	if yes == 1 then
 		-- Beginner
 		addSkillLevel(1003, 1);--	Legendary Spirit
 		addSkillLevel(1004, 1);--	Monster Rider
@@ -529,9 +523,12 @@ elseif state == 1 then
 		addSkillLevel(15111006, 20);-- Spark
 		addSkillLevel(15111007, 30);-- Shark Wave
 		addText("There we go! Have fun!");
+		sendOK();
 	else
 		addText("Okay, come back to me any time if you change your mind.")
+		sendOK();
 	end
+else
+	addText("You need to be a GM in order for me to max your skills, #h #!");
 	sendOK();
-	endNPC();
 end

@@ -17,41 +17,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Tony (Event Assistant)
 
-if state == 0 then
-	addText("Hi, I'm #b#p9000013##k. I've been waiting for my brothers for a while, but they haven't gotten here yet. I'm sick and tired of doing things by myself. At least during the event, I don't feel quite so lonely with so many people around me and all. All events require a limited number of people, so if I don't get there fast enough, I won't be able to join.");
+addText("Hi, I'm #b#p9000013##k. I've been waiting for my brothers for a while, but they haven't gotten here yet. I'm sick and tired of doing things by myself. At least during the event, I don't feel quite so lonely with so many people around me and all. All events require a limited number of people, so if I don't get there fast enough, I won't be able to join.");
+sendNext();
+
+addText("We may be cousins and all, but we keep on missing each other. Man, what should I do? The event should start any minute ... A lot of people should be there waiting, and there may not be any space for them ...");
+sendBackNext();
+
+addText("What do you think? Do you want to join me and head over to the event?\r\n");
+addText("#b#L0# What kind of an event?#l\r\n");
+addText("#L1# Explain to me the event games.#l\r\n");
+addText("#L2# Alright, let's go!#l#k");
+option = askChoice();
+
+if option == 0 then
+	addText("All this month MapleStory Global is celebrating its 1st anniversary! The GM's will be holding surprise GM Events throughout the event, so stay on your toes and make sure to participate in at least one of the events for great prizes!");
 	sendNext();
-elseif state == 1 then
-	addText("We may be cousins and all, but we keep on missing each other. Man, what should I do? The event should start any minute ... A lot of people should be there waiting, and there may not be any space for them ...");
-	sendBackNext();
-elseif state == 2 then
-	addText("What do you think? Do you want to join me and head over to the event?\r\n");
-	addText("#b#L0# What kind of an event?#l\r\n");
-	addText("#L1# Explain to me the event games.#l\r\n");
-	addText("#L2# Alright, let's go!#l#k");
-	sendSimple();
-elseif state == 3 then
-	option = getSelected();
-	if option == 0 then
-		addText("All this month MapleStory Global is celebrating its 1st anniversary! The GM's will be holding surprise GM Events throughout the event, so stay on your toes and make sure to participate in at least one of the events for great prizes!");
-		sendNext();
-		endNPC();
-	elseif option == 1 then
-		addText("There are many games for this event. It will help you a lot to know how to play the game before you play it. Choose the one you want to know more of!\r\n");
-		addText("#b#L0# Ola Ola#l\r\n");
-		addText("#L1# MapleStory Maple Physical Fitness Test#l\r\n");
-		addText("#L2# Snow Ball#l\r\n");
-		addText("#L3# Coconut Harvest#l\r\n");
-		addText("#L4# OX Quiz#l\r\n");
-		addText("#L5# Treasure Hunt#l#k");
-		sendSimple();
-	elseif option == 2 then
-		-- TODO: Add event code
-		addText("Either the event has not been started, you already have #t4031019#, or have already participated in this event within the last 24 hours. Please try again later!");
-		sendNext();
-		endNPC();
-	end
-elseif state == 4 then
-	info = getSelected();
+elseif option == 1 then
+	addText("There are many games for this event. It will help you a lot to know how to play the game before you play it. Choose the one you want to know more of!\r\n");
+	addText("#b#L0# Ola Ola#l\r\n");
+	addText("#L1# MapleStory Maple Physical Fitness Test#l\r\n");
+	addText("#L2# Snow Ball#l\r\n");
+	addText("#L3# Coconut Harvest#l\r\n");
+	addText("#L4# OX Quiz#l\r\n");
+	addText("#L5# Treasure Hunt#l#k");
+	info = askChoice();
+
 	if info == 0 then
 		addText("#b[Ola Ola]#k is a game where participants climb ladders to reach the top. Climb your way up and move to the next level by choosing the correct portal out of the numerous portals available. \r\n");
 		addText("The game consists of three levels, and the time limit is #b6 MINUTES#k. During [Ola Ola], you #bwon't be able to jump, teleport, haste, or boost your speed using potions or items#k. There are also trick portals that'll lead you to a strange place, so please be aware of those.");
@@ -76,5 +66,8 @@ elseif state == 4 then
 		addText("During the game of Treasure Hunt, all attack skills will be #rdisabled#k, so please break the treasure chest with the regular attack.");
 	end
 	sendNext();
-	endNPC();
+elseif option == 2 then
+	-- TODO: Add event code
+	addText("Either the event has not been started, you already have #t4031019#, or have already participated in this event within the last 24 hours. Please try again later!");
+	sendNext();
 end
