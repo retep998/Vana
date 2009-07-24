@@ -15,13 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Egnet (Orbis->Ariant waiting room)
+-- Various waiting room attendants
 
 addText("Do you want to leave the waiting room? You can, but the ticket is NOT refundable. Are you sure you still want to leave this room?");
 yes = askYesNo();
 
 if yes == 1 then
-	setMap(200000100, "sp");
+	if getMap() == 200000152 then
+		setMap(200000100, "sp");
+	elseif getMap() == 240000111 then
+		setMap(240000100, "sp");
+	elseif getMap() == 260000110 then
+		setMap(260000100, "sp");
+	end
 else
 	addText("You'll get to your destination in a few. Go ahead and talk to other people, and before you know it, you'll be there already.");
 	sendNext();

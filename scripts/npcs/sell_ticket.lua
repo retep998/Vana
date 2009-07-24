@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Syras - Ariant to Orbis ticket seller
+-- Joel and Syras, tickets to Orbis
 
 if getLevel() < 10 then
 	addText("Your level seems to be too low for this. We do not allow anyone below Level 10 to get on this ride, for the sake of safety.");
@@ -26,9 +26,10 @@ else
 		price = 1000;
 	else
 		item = 4031045; -- Ticket to Orbis (Regular)
-		price = 3000;
+		price = 5000;
 	end
-	addText("Hello, I'm in charge of selling tickets for the ship ride to Orbis Station of Ossyria. The ride to Orbis takes off every 15 minutes, beginning on the hour, and it'll cost you #b3000 mesos#k. Are you sure you want to purchase #b#t4031045##k?");
+	
+	addText("Hello, I'm in charge of selling tickets for the ship ride to Orbis Station of Ossyria. The ride to Orbis takes off every 15 minutes, beginning on the hour, and it'll cost you #b" .. price .. " mesos#k. Are you sure you want to purchase #b#t" .. item .. "##k?");
 	yes = askYesNo();
 
 	if yes == 1 then

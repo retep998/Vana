@@ -31,6 +31,7 @@ LuaNPC::LuaNPC(const string &filename, int32_t playerid, int16_t questid) : LuaS
 	// Miscellaneous
 	lua_register(luaVm, "showStorage", &LuaExports::showStorage);
 	lua_register(luaVm, "getDistanceToPlayer", &LuaExports::getDistanceNpc);
+	lua_register(luaVm, "getNPCID", &LuaExports::getNpcId);
 
 	// NPC interaction
 	lua_register(luaVm, "addText", &LuaExports::addText);
@@ -114,6 +115,11 @@ int LuaExports::showStorage(lua_State *luaVm) {
 
 int LuaExports::getDistanceNpc(lua_State *luaVm) {
 	lua_pushinteger(luaVm, getPlayer(luaVm)->getPos() - getNPC(luaVm)->getPos());
+	return 1;
+}
+
+int LuaExports::getNpcId(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getNPC(luaVm)->getNpcId());
 	return 1;
 }
 
