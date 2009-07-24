@@ -17,32 +17,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Door to Origin of Clocktower
 
-if getNumPlayers(220080001) < 12 then
-	if isInstance("papulatus") == false then
-		local time = getTime();
-		local secondsinday = 1 * 60 * 60 * 24;
-		local entry1 = tonumber(getPlayerVariable("Papulatus1"));
-		local entry2 = tonumber(getPlayerVariable("Papulatus2"));
-		if entry1 == nil then
-			entry1 = 0;
-		end
-		if entry2 == nil then
-			entry2 = 0;
-		end
-		if (time < (entry1 + secondsinday)) and (time < (entry2 + secondsinday)) then
-			showMessage("You may only enter twice per day.", 5);
-		else
-			if time > (entry1 + secondsinday) then
-				setPlayerVariable("Papulatus1", time);
-			else
-				setPlayerVariable("Papulatus2", time);
+if getItemAmount(4031172) > 0 then -- Medal
+	if getNumPlayers(220080001) < 12 then
+		if isInstance("papulatus") == false then
+			local time = getTime();
+			local secondsinday = 60 * 60 * 24;
+			local entry1 = tonumber(getPlayerVariable("Papulatus1"));
+			local entry2 = tonumber(getPlayerVariable("Papulatus2"));
+			if entry1 == nil then
+				entry1 = 0;
 			end
-			playPortalSE();
-			setMap(220080001, "st00");
+			if entry2 == nil then
+				entry2 = 0;
+			end
+			if (time < (entry1 + secondsinday)) and (time < (entry2 + secondsinday)) then
+				showMessage("You can only enter The Origin of Clocktower twice a day.", 5);
+			else
+				if time > (entry1 + secondsinday) then
+					setPlayerVariable("Papulatus1", time);
+				else
+					setPlayerVariable("Papulatus2", time);
+				end
+				playPortalSE();
+				setMap(220080001, "st00");
+			end
+		else
+			showMessage("The battle with Papulatus has already begun, so you cannot enter this place.", 5);
 		end
 	else
-		showMessage("The battle with Papulatus has already begun, so you cannot enter this portal.", 5);
+		showMessage("The room is already in full capacity with people battling against Papulatus.", 5);
 	end
-else
-	showMessage("Only 12 warriors may enter the fight.", 5);
 end

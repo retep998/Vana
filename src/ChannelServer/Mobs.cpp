@@ -54,22 +54,31 @@ const int32_t Mobs::mobstatuses[StatusEffects::Mob::Count] = { // Order by value
 	StatusEffects::Mob::Poison,
 
 	StatusEffects::Mob::Seal,
+	StatusEffects::Mob::NoClue1,
 	StatusEffects::Mob::WeaponAttackUp,
 	StatusEffects::Mob::WeaponDefenseUp,
 	StatusEffects::Mob::MagicAttackUp,
-	StatusEffects::Mob::MagicDefenseUp,
 
+	StatusEffects::Mob::MagicDefenseUp,
 	StatusEffects::Mob::Doom,
 	StatusEffects::Mob::ShadowWeb,
 	StatusEffects::Mob::WeaponImmunity,
 	StatusEffects::Mob::MagicImmunity,
-	StatusEffects::Mob::NinjaAmbush,
 
+	StatusEffects::Mob::NoClue2,
+	StatusEffects::Mob::NoClue3,
+	StatusEffects::Mob::NinjaAmbush,
+	StatusEffects::Mob::NoClue4,
 	StatusEffects::Mob::VenomousWeapon,
+
+	StatusEffects::Mob::NoClue5,
+	StatusEffects::Mob::NoClue6,
 	StatusEffects::Mob::Empty,
 	StatusEffects::Mob::Hypnotize,
 	StatusEffects::Mob::WeaponDamageReflect,
-	StatusEffects::Mob::MagicDamageReflect
+
+	StatusEffects::Mob::MagicDamageReflect,
+	StatusEffects::Mob::NoClue7
 };
 
 StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillid, clock_t time) :
@@ -109,7 +118,7 @@ reflection(reflect)
 }
 
 /* Mob class */
-Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int16_t fh) :
+Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int16_t fh, int8_t controlstatus) :
 MovableLife(fh, pos, 2),
 originfh(fh),
 id(id),
@@ -118,7 +127,8 @@ spawnid(-1),
 mobid(mobid),
 timers(new Timer::Container),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
-facingdirection(1)
+facingdirection(1),
+controlstatus(controlstatus)
 {
 	initMob();
 }
@@ -132,7 +142,8 @@ spawnid(spawnid),
 mobid(mobid),
 timers(new Timer::Container),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
-facingdirection(direction)
+facingdirection(direction),
+controlstatus(1)
 {
 	initMob();
 }
@@ -233,12 +244,28 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 
 		Mob *sponge = getSponge(); // Need to preserve the pointer through mob deletion in die()
 		if (hp == 0) { // Time to die
-			if (getMobId() == Mobs::HorntailSponge) { // Horntail damage sponge
-				for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
-					new Timer::Timer(bind(&Mob::die, spawniter->second, true),
-						Timer::Id(Timer::Types::HorntailTimer, id, spawniter->first),
-						0, Timer::Time::fromNow(400));
-				}
+			switch (getMobId()) {
+				case Mobs::HorntailSponge:
+					for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
+						new Timer::Timer(bind(&Mob::die, spawniter->second, true),
+							Timer::Id(Timer::Types::HorntailTimer, id, spawniter->first),
+							0, Timer::Time::fromNow(400));
+					}
+					break;
+				case Mobs::ZakumArm1:
+				case Mobs::ZakumArm2:
+				case Mobs::ZakumArm3:
+				case Mobs::ZakumArm4:
+				case Mobs::ZakumArm5:
+				case Mobs::ZakumArm6:
+				case Mobs::ZakumArm7:
+				case Mobs::ZakumArm8:
+					if (getOwner() != 0 && getOwner()->getSpawnCount() == 1) {
+						// Last linked arm died
+						int8_t cstatus = Mobs::ControlStatus::ControlNormal;
+						getOwner()->setControlStatus(cstatus);
+					}
+					break;
 			}
 			die(player);
 		}
@@ -409,12 +436,15 @@ int32_t Mob::getWeaponReflection() {
 	return getStatusValue(StatusEffects::Mob::WeaponDamageReflect);
 }
 
-void Mob::setControl(Player *control) {
+void Mob::setControl(Player *control, bool spawn, Player *display) {
 	/*if (this->control != 0)
 		MobsPacket::endControlMob(this->control, this);*/
 	this->control = control;
 	if (control != 0)
 		MobsPacket::requestControl(control, this, false);
+	else if (spawn) {
+		MobsPacket::requestControl(control, this, spawn, display);
+	}
 }
 
 void Mob::endControl() {
@@ -621,6 +651,13 @@ void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 	}
 }
 
+void Mob::setControlStatus(int8_t newstat) {
+	MobsPacket::endControlMob(0, this);
+	MobsPacket::spawnMob(0, this, 0, 0);
+	controlstatus = newstat;
+	Maps::getMap(getMapId())->updateMobControl(this);
+}
+
 /* Mobs namespace */
 void Mobs::handleBomb(Player *player, PacketReader &packet) {
 	int32_t mobid = packet.get<int32_t>();
@@ -669,7 +706,7 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 
 	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
 
-	if (mob == 0) {
+	if (mob == 0 || mob->getControlStatus() == Mobs::ControlStatus::ControlNone) {
 		return;
 	}
 

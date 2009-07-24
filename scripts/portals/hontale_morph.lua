@@ -15,46 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-function beginInstance()
-	addInstanceMap(200090310);
-end
+-- Entry to Horntail's Cave
 
-function playerDeath(playerid)
-
-end
-
-function playerDisconnect(playerid, ispartyleader)
-	markForDelete();
-end
-
-function instanceTimerEnd(fromtimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(200000141);
-		removeAllInstancePlayers();
-	end
-end
-
-function timerEnd(name, fromtimer)
-
-end
-
-function mobDeath(mobid, mapmobid, mapid)
-
-end
-
-function mobSpawn(mobid, mapmobid, mapid)
-
-end
-
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	removeInstancePlayer(playerid);
-	markForDelete();
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
+if not isBusy() then
+	runNPC(2081005);
 end

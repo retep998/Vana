@@ -65,7 +65,7 @@ namespace Mobs {
 
 class Mob : public MovableLife {
 public:
-	Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int16_t fh = 0);
+	Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int16_t fh = 0, int8_t controlstatus = 1);
 	Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int32_t spawnid, int8_t direction, int16_t fh);
 
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
@@ -74,7 +74,7 @@ public:
 	void setMp(int32_t mp) { this->mp = mp; }
 	void addStatus(int32_t playerid, vector<StatusInfo> &statusinfo);
 	void removeStatus(int32_t status, bool fromTimer = false);
-	void setControl(Player *control);
+	void setControl(Player *control, bool spawn = false, Player *display = 0);
 	void endControl();
 	void setOwner(Mob *owner) { this->owner = owner; }
 	void setSponge(Mob *sponge) { horntailsponge = sponge; }
@@ -90,7 +90,9 @@ public:
 	void mpEat(Player *player, MpEaterInfo *mp);
 	void naturalHealHp(int32_t amount);
 	void naturalHealMp(int32_t amount);
+	void setControlStatus(int8_t newstat);
 
+	int8_t getControlStatus() const { return controlstatus; }
 	int8_t getVenomCount() const { return venomcount; }
 	int8_t getFacingDirection() const { return facingdirection; }
 	int16_t getOriginFh() const { return originfh; }
@@ -129,6 +131,7 @@ public:
 	Mob * getSponge() const { return horntailsponge; }
 	const MobInfo * getInfo() const { return &info; }
 	int32_t getSkillCount() const { return info.skills.size(); }
+	size_t getSpawnCount() const { return spawns.size(); }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
 
 	Timer::Container * getTimers() const { return timers.get(); }
@@ -139,6 +142,7 @@ private:
 	int8_t venomcount;
 	int8_t mpeatercount;
 	int8_t facingdirection;
+	int8_t controlstatus;
 	uint8_t weblevel;
 	int16_t originfh;
 	int32_t taunteffect;

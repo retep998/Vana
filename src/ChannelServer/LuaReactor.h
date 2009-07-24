@@ -49,6 +49,7 @@ namespace LuaExports {
 
 	// Mob
 	int spawnMobReactor(lua_State *luaVm);
+	int spawnZakum(lua_State *luaVm);
 };
 
 #endif

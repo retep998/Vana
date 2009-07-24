@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 function beginInstance()
-	addInstanceMap(200090310);
+	addInstanceMap(900000000);
 end
 
 function playerDeath(playerid)
@@ -24,12 +24,12 @@ function playerDeath(playerid)
 end
 
 function playerDisconnect(playerid, ispartyleader)
-	markForDelete();
+	finish(playerid);
 end
 
 function instanceTimerEnd(fromtimer)
 	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(200000141);
+		moveAllPlayers(100030000, "quest00");
 		removeAllInstancePlayers();
 	end
 end
@@ -47,8 +47,9 @@ function mobSpawn(mobid, mapmobid, mapid)
 end
 
 function changeMap(playerid, newmap, oldmap, ispartyleader)
-	removeInstancePlayer(playerid);
-	markForDelete();
+	if not isInstanceMap(newmap) then
+		finish(playerid);
+	end
 end
 
 function partyDisband(partyid)
@@ -57,4 +58,9 @@ end
 
 function partyRemoveMember(partyid, playerid)
 
+end
+
+function finish(playerid)
+	removeInstancePlayer(playerid);
+	markForDelete();
 end

@@ -15,46 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-function beginInstance()
-	addInstanceMap(200090310);
-end
+-- Nine Spirit's Egg
 
-function playerDeath(playerid)
-
-end
-
-function playerDisconnect(playerid, ispartyleader)
-	markForDelete();
-end
-
-function instanceTimerEnd(fromtimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(200000141);
-		removeAllInstancePlayers();
-	end
-end
-
-function timerEnd(name, fromtimer)
-
-end
-
-function mobDeath(mobid, mapmobid, mapid)
-
-end
-
-function mobSpawn(mobid, mapmobid, mapid)
-
-end
-
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	removeInstancePlayer(playerid);
-	markForDelete();
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
-end
+npcid = spawnNPC(240040611, 2081008, -11, -227);
+setInstanceVariable("npc", npcid);

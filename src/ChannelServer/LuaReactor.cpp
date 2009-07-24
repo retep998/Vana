@@ -41,6 +41,7 @@ LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactor
 
 	// Mob
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMobReactor);
+	lua_register(luaVm, "spawnZakum", &LuaExports::spawnZakum);
 
 	run();
 }
@@ -92,4 +93,15 @@ int LuaExports::spawnMobReactor(lua_State *luaVm) {
 	Reactor *reactor = getReactor(luaVm);
 	lua_pushinteger(luaVm, Maps::getMap(reactor->getMapId())->spawnMob(mobid, reactor->getPos()));
 	return 1;
+}
+
+int LuaExports::spawnZakum(lua_State *luaVm) {
+	int16_t x = lua_tointeger(luaVm, 1);
+	int16_t y = lua_tointeger(luaVm, 2);
+	int16_t fh = 0;
+	if (lua_isnumber(luaVm, 3)) {
+		fh = lua_tointeger(luaVm, 3);
+	}
+	Maps::getMap(getReactor(luaVm)->getMapId())->spawnZakum(Pos(x, y), fh);
+	return 0;
 }

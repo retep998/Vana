@@ -360,6 +360,15 @@ int32_t Map::spawnMob(int32_t spawnid, const MobSpawnInfo &info) {
 	return id;
 }
 
+int32_t Map::spawnShell(int32_t mobid, const Pos &pos, int16_t fh) {
+	int32_t id = objectids.next();
+
+	Mob *mob = new Mob(id, info->id, mobid, pos, fh, 5);
+	mobs[id] = mob;
+	updateMobControl(mob, true);
+	return id;
+}
+
 Mob * Map::getMob(int32_t id, bool isMapId) {
 	if (isMapId)
 		return (this->mobs.find(id) != mobs.end() ? this->mobs[id] : 0);
@@ -381,21 +390,23 @@ void Map::updateMobControl(Player *player) {
 	}
 }
 
-void Map::updateMobControl(Mob *mob, bool spawn) {
+void Map::updateMobControl(Mob *mob, bool spawn, Player *display) {
 	int32_t maxpos = 200000;
 	Player *p = 0;
-	for (size_t j = 0; j < players.size(); j++) {
-		Player *test = players[j];
-		if (!(test->getActiveBuffs()->isUsingHide())) {
-			int32_t curpos = mob->getPos() - test->getPos();
-			if (curpos < maxpos) {
-				maxpos = curpos;
-				p = test;
-				break;
+	if (mob->getControlStatus() != Mobs::ControlStatus::ControlNone) {
+		for (size_t j = 0; j < players.size(); j++) {
+			Player *test = players[j];
+			if (!(test->getActiveBuffs()->isUsingHide())) {
+				int32_t curpos = mob->getPos() - test->getPos();
+				if (curpos < maxpos) {
+					maxpos = curpos;
+					p = test;
+					break;
+				}
 			}
 		}
 	}
-	mob->setControl(p);
+	mob->setControl(p, spawn, display);
 }
 
 void Map::removeMob(int32_t id, int32_t spawnid) {
@@ -485,15 +496,20 @@ void Map::checkShadowWeb() {
 }
 
 void Map::spawnZakum(const Pos &pos, int16_t fh) {
-	spawnMob(Mobs::ZakumBody1, pos, fh);
-	spawnMob(Mobs::ZakumArm1, pos, fh);
-	spawnMob(Mobs::ZakumArm2, pos, fh);
-	spawnMob(Mobs::ZakumArm3, pos, fh);
-	spawnMob(Mobs::ZakumArm4, pos, fh);
-	spawnMob(Mobs::ZakumArm5, pos, fh);
-	spawnMob(Mobs::ZakumArm6, pos, fh);
-	spawnMob(Mobs::ZakumArm7, pos, fh);
-	spawnMob(Mobs::ZakumArm8, pos, fh);
+	int32_t pid = 0;
+	Mob *p = 0;
+	Mob *body = getMob(spawnShell(Mobs::ZakumBody1, pos, fh));
+	int32_t parts[8] = {
+		Mobs::ZakumArm1, Mobs::ZakumArm2, Mobs::ZakumArm3,
+		Mobs::ZakumArm4, Mobs::ZakumArm5, Mobs::ZakumArm6,
+		Mobs::ZakumArm7, Mobs::ZakumArm8
+	};
+	for (int32_t g = 0; g < 8; g++) {
+		pid = spawnMob(parts[g], pos, fh);
+		p = getMob(pid);
+		p->setOwner(body);
+		body->addSpawn(pid, p);
+	}
 }
 
 // Drops
@@ -670,8 +686,13 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	// Mobs
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != 0) {
-			MobsPacket::spawnMob(player, iter->second, 0, false, true);
-			updateMobControl(iter->second);
+			if (iter->second->getControlStatus() == Mobs::ControlStatus::ControlNone) {
+				updateMobControl(iter->second, true, player);
+			}
+			else {
+				MobsPacket::spawnMob(player, iter->second, 0, 0, false, true);
+				updateMobControl(iter->second);
+			}
 		}
 	}
 	// Drops

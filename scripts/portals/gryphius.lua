@@ -15,46 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-function beginInstance()
-	addInstanceMap(200090310);
-end
+-- Griffey portal
 
-function playerDeath(playerid)
-
-end
-
-function playerDisconnect(playerid, ispartyleader)
-	markForDelete();
-end
-
-function instanceTimerEnd(fromtimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(200000141);
-		removeAllInstancePlayers();
-	end
-end
-
-function timerEnd(name, fromtimer)
-
-end
-
-function mobDeath(mobid, mapmobid, mapid)
-
-end
-
-function mobSpawn(mobid, mapmobid, mapid)
-
-end
-
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	removeInstancePlayer(playerid);
-	markForDelete();
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
+if getNumPlayers(240020102) < 6 then
+	playPortalSE();
+	setMap(240020102, "out00");
+else
+	showMessage("You may not enter the Griffey Forest.", 5);
 end
