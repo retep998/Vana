@@ -120,15 +120,13 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, 
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, const Pos &pos, const Pos &projectiletarget, unsigned char *buf, int32_t len) {
+void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, const Pos &projectiletarget, unsigned char *buf, int32_t len) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_MOB);
 	packet.add<int32_t>(mobid);
 	packet.add<int8_t>(useskill);
 	packet.add<int8_t>(skill);
-	if (skill > 0)
-		packet.addPos(projectiletarget);
-	packet.addPos(pos);
+	packet.addPos(projectiletarget);
 	packet.addBuffer(buf, len);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

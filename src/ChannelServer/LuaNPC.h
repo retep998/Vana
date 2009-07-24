@@ -30,6 +30,15 @@ public:
 	LuaNPC(const string &filename, int32_t playerid, int16_t questid = 0);
 	
 	bool run();
+	bool proceedNext();
+	bool proceedSelection(uint8_t selected);
+	bool proceedNumber(int32_t number);
+	bool proceedText(const string &text);
+protected:
+	bool resume(int32_t nargs);
+	void handleError();
+
+	lua_State *luaThread; // For executing scripts (pausable)
 };
 
 namespace LuaExports {
@@ -40,25 +49,20 @@ namespace LuaExports {
 	// Miscellaneous
 	int showStorage(lua_State *luaVm);
 	int getDistanceNpc(lua_State *luaVm);
+	int getNpcId(lua_State *luaVm);
 
 	// NPC interaction
 	int addText(lua_State *luaVm);
-	int endNPC(lua_State *luaVm);
-	int getNumber(lua_State *luaVm);
-	int getSelected(lua_State *luaVm);
-	int getText(lua_State *luaVm);
-	int restart(lua_State *luaVm);
-	int sendAcceptDecline(lua_State *luaVm);
 	int sendBackNext(lua_State *luaVm);
 	int sendBackOK(lua_State *luaVm);
-	int sendGetNumber(lua_State *luaVm);
-	int sendGetText(lua_State *luaVm);
 	int sendNext(lua_State *luaVm);
 	int sendOK(lua_State *luaVm);
-	int sendSimple(lua_State *luaVm);
-	int sendStyle(lua_State *luaVm);
-	int sendYesNo(lua_State *luaVm);
-	int setStateNPC(lua_State *luaVm);
+	int askAcceptDecline(lua_State *luaVm);
+	int askChoice(lua_State *luaVm);
+	int askNumber(lua_State *luaVm);
+	int askStyle(lua_State *luaVm);
+	int askText(lua_State *luaVm);
+	int askYesNo(lua_State *luaVm);
 
 	// Quest
 	int addQuest(lua_State *luaVm);

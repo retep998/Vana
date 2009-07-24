@@ -17,8 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Rock Covered in Snow
 
-if state == 0 then
-	addText("");
-	sendOK();
-	endNPC();
-end
+addText("");
+sendOK();

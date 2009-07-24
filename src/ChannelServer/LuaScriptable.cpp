@@ -282,17 +282,7 @@ void LuaScriptable::initialize() {
 bool LuaScriptable::run() {
 	if (luaL_dofile(luaVm, filename.c_str())) {
 		// Error in lua script
-		string error = lua_tostring(luaVm, -1);
-		std::cout << error << std::endl;
-
-		Player *player = Players::Instance()->getPlayer(playerid);
-
-		if (player->isGm()) {
-			PlayerPacket::showMessage(player, error, 6);
-		}
-		else {
-			PlayerPacket::showMessage(player, "There is an error in the script '" + filename +"'", 6);
-		}
+		handleError();
 		return false;
 	}
 	return true;
@@ -308,6 +298,22 @@ void LuaScriptable::setVariable(const string &name, const string &val) {
 	lua_setglobal(luaVm, name.c_str());
 }
 
+void LuaScriptable::handleError() {
+	printError(lua_tostring(luaVm, -1));
+}
+
+void LuaScriptable::printError(const string &error) {
+	std::cout << error << std::endl;
+
+	Player *player = Players::Instance()->getPlayer(playerid);
+
+	if (player->isGm()) {
+		PlayerPacket::showMessage(player, error, 6);
+	}
+	else {
+		PlayerPacket::showMessage(player, "There is an error in the script '" + filename +"'", 6);
+	}
+}
 // Lua Exports
 Player * LuaExports::getPlayer(lua_State *luaVm) {
 	lua_getglobal(luaVm, "playerid");

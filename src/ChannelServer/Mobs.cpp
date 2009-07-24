@@ -796,8 +796,8 @@ void Mobs::monsterControl(Player *player, PacketReader &packet) {
 		}
 	}
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMp(), realskill, level);
-	packet.reset(23);
-	MobsPacket::moveMob(player, mobid, useskill, skill, spot, projectiletarget, packet.getBuffer(), packet.getBufferLength());
+	packet.reset(19);
+	MobsPacket::moveMob(player, mobid, useskill, skill, projectiletarget, packet.getBuffer(), packet.getBufferLength());
 }
 
 void Mobs::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSkillLevelInfo &skillinfo) {

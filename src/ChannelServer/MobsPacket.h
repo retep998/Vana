@@ -34,7 +34,7 @@ namespace MobsPacket {
 	void requestControl(Player *player, Mob *mob, bool spawn = false, Player *display = 0);
 	void endControlMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp, uint8_t skill = 0, uint8_t level = 0);
-	void moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, const Pos &pos, const Pos &projectiletarget, unsigned char *buf, int32_t len);
+	void moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, const Pos &projectiletarget, unsigned char *buf, int32_t len);
 	void healMob(Mob *mob, int32_t amount);
 	void hurtMob(Mob *mob, int32_t amount);
 	void applyStatus(Mob *mob, int32_t statusmask, const vector<StatusInfo> &info, int16_t delay, const vector<int32_t> &reflection);

@@ -218,28 +218,31 @@ void ItemDataProvider::loadData() {
 	// Item Skills (Skill/Mastery Books)
 	query << "SELECT * FROM itemskilldata";
 	res = query.use();
-
+	Skillbook skill;
+	enum SkillbookColumns {
+		SkItemId = 0,
+		SkillId, ReqLevel, MaxLevel
+	};
 	while (dataRow = res.fetch_raw_row()) {
-		// Col0 : Item ID
-		//    1 : Skill ID
-		//    2 : Required Level
-		//    3 : Master Level
-		Skillbook skill;
-		skill.skillid = atoi(dataRow[1]);
-		skill.reqlevel = atoi(dataRow[2]);
-		skill.maxlevel = atoi(dataRow[3]);
-		items[atoi(dataRow[0])].cons.skills.push_back(skill);
+		currentid = atoi(dataRow[SkItemId]);
+
+		skill.skillid = atoi(dataRow[SkillId]);
+		skill.reqlevel = atoi(dataRow[ReqLevel]);
+		skill.maxlevel = atoi(dataRow[MaxLevel]);
+
+		items[currentid].cons.skills.push_back(skill);
 	}
 
 	// Item names
 	item_names.clear();
 	query << "SELECT objectid, name FROM stringdata WHERE type = 1";
 	res = query.use();
-
+	enum NameColumns {
+		ObjectId = 0,
+		Name
+	};
 	while (dataRow = res.fetch_raw_row()) {
-		// Col0 : Object/Item ID
-		//    1 : Name
-		item_names[atoi(dataRow[0])] = (string) dataRow[1];
+		item_names[atoi(dataRow[ObjectId])] = (string) dataRow[Name];
 	}
 	std::cout << "DONE" << std::endl;
 }
