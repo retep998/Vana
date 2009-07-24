@@ -17,25 +17,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Keroben, bouncer to Horntail's Cave
 
-if state == 0 then
-	if isActiveItem(2210003) then
-		addText("Oh, my Brother! Don't worry about human's invasion. I'll protect you all. Come in.");
-		sendNext();
-	else
-		addText("That's far enough, human! No one is allowed beyond this point. Get away from here!");
-		sendNext();
-		if getHP() > 500 then
-			setHP(getHP() - 500);
-		elseif getHP() > 1 then
-			setHP(1);
-		end
+if isActiveItem(2210003) then
+	addText("Oh, my Brother! Don't worry about human's invasion. I'll protect you all. Come in.");
+	sendNext();
+
+	endMorph();
+	setMap(240050000, "st00");
+else
+	if getHP() > 500 then
+		setHP(getHP() - 500);
+	elseif getHP() > 1 then
+		setHP(1);
 	end
-elseif state == 1 then
-	if isActiveItem(2210003) then
-		endMorph();
-		setMap(240050000, "st00");
-	else
-		setMap(240040600, "st00");
-	end
-	endNPC();
+
+	addText("That's far enough, human! No one is allowed beyond this point. Get away from here!");
+	sendNext();
+
+	setMap(240040600, "st00");
 end
