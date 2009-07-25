@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DropsPacket.h"
-#include "Drops.h"
+#include "Drop.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "MapleSession.h"
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, Pos origin) {
+void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, const Pos &origin) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_DROP_ITEM);
 	packet.add<int8_t>(type); // 3 = disappear during drop animation, 2 = show existing, 1 then 0 = show new
@@ -33,7 +33,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	packet.add<int8_t>(drop->isMesos());
 	packet.add<int32_t>(drop->getObjectId());
 	packet.add<int32_t>(drop->getOwner()); // Owner of drop
-	packet.add<int8_t>(drop->isPartyDrop());
+	packet.add<int8_t>(drop->getType()); // // 0 = timeout for non-owner, 1 = timeout for non-owner's party, 2 = FFA, 3 = explosive/FFA
 	packet.addPos(drop->getPos());
 	packet.add<int32_t>(drop->getTime());
 	if (type == 0 || type == 1 || type == 3) { // Give the point of origin for things that are just being dropped
@@ -43,7 +43,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	if (!drop->isMesos()) {
 		packet.addBytes("008005BB46E61702");
 	}
-	packet.add<int8_t>(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
+	packet.add<int8_t>(!drop->isPlayerDrop()); // Determines whether pets can pick item up or not
 	if (player != 0)
 		player->getSession()->send(packet);
 	else

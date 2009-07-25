@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.h"
 #include "BeautyDataProvider.h"
-#include "Drops.h"
+#include "Drop.h"
 #include "EventDataProvider.h"
 #include "Instance.h"
 #include "Instances.h"

@@ -16,7 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerHandler.h"
-#include "Drops.h"
+#include "Drop.h"
+#include "DropHandler.h"
 #include "DropsPacket.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
@@ -377,7 +378,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				damage = (mob->isBoss() ? Stats::MaxDamage : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
 			}
 			else if (skillid == Jobs::Bandit::Steal && !mob->isBoss()) {
-				Drops::doDrops(player->getId(), map, mob->getInfo()->level, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
+				DropHandler::doDrops(player->getId(), map, mob->getInfo()->level, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);

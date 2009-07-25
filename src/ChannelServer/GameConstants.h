@@ -61,7 +61,9 @@ enum ItemTypes {
 enum ItemFlags {
 	FlagLock = 0x01,
 	FlagSpikes = 0x02,
-	FlagCold = 0x04
+	FlagCold = 0x04,
+	FlagTradeAvailable = 0x08,
+	FlagKarmaScissors = 0x10
 };
 
 enum Act {
