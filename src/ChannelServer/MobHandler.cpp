@@ -175,7 +175,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 						stop = mob->hasStatus(StatusEffects::Mob::Speed);
 						break;
 					case MobSkills::Summon: {
-						int16_t spawns = (int16_t)(mob->getSpawns().size());
+						int16_t spawns = (int16_t)(mob->getSpawnCount());
 						int16_t limit = mobskill.limit;
 						if (limit == 5000) // Custom limit based on number of players on map
 							limit = 30 + Maps::getMap(mob->getMapId())->getNumPlayers() * 2;
