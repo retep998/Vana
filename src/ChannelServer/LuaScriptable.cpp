@@ -1219,7 +1219,8 @@ int LuaExports::mobDropItem(lua_State *luaVm) {
 	}
 	Mob *m = Maps::getMap(mapid)->getMob(mapmobid);
 	if (m != 0) {
-		Drop *drop = new Drop(mapid, Item(itemid, amount), m->getPos(), 0);
+		Item f(itemid, amount);
+		Drop *drop = new Drop(mapid, f, m->getPos(), 0);
 		drop->setTime(0);
 		drop->doDrop(m->getPos());
 	}

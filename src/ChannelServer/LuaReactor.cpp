@@ -76,7 +76,8 @@ int LuaExports::dropItemReactor(lua_State *luaVm) {
 	}
 	Reactor *reactor = getReactor(luaVm);
 	Player *player = getPlayer(luaVm);
-	Drop *drop = new Drop(reactor->getMapId(), Item(itemid, amount), reactor->getPos(), player != 0 ? player->getId() : 0);
+	Item f(itemid, amount);
+	Drop *drop = new Drop(reactor->getMapId(), f, reactor->getPos(), player != 0 ? player->getId() : 0);
 	drop->setTime(player != 0 ? 100 : 0); // FFA if player isn't around
 	drop->doDrop(reactor->getPos());
 	return 0;
