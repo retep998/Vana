@@ -16,8 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Mob.h"
-#include "Drops.h"
-#include "DropsPacket.h"
+#include "DropHandler.h"
 #include "GameConstants.h"
 #include "Instance.h"
 #include "Levels.h"
@@ -26,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobsPacket.h"
 #include "PacketCreator.h"
 #include "Party.h"
+#include "Player.h"
+#include "Players.h"
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
@@ -428,7 +429,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	// Ending of death stuff
 	MobsPacket::dieMob(this, fromexplosion ? 4 : 1);
-	Drops::doDrops(highestdamager, mapid, info.level, mobid, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
+	DropHandler::doDrops(highestdamager, mapid, info.level, mobid, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
 
 	if (player != 0) {
 		Party *party = player->getParty();
