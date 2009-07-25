@@ -397,8 +397,8 @@ void Mob::setControl(Player *control, bool spawn, Player *display) {
 		MobsPacket::endControlMob(this->control, this);*/
 	this->control = control;
 	if (control != 0)
-		MobsPacket::requestControl(control, this, false);
-	else if (spawn) {
+		MobsPacket::requestControl(control, this, spawn);
+	else if (getControlStatus() == Mobs::ControlStatus::ControlNone) {
 		MobsPacket::requestControl(control, this, spawn, display);
 	}
 }
