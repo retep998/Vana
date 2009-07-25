@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "Skills.h"
+#include <algorithm>
 
 void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) {
 	GlobalDrops *gdrops = DropDataProvider::Instance()->getGlobalDrops();
@@ -66,6 +67,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			}
 		}
 	}
+	std::random_shuffle(drops.begin(), drops.end());
 	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); i++) {
 		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxamount - i->minamount) + i->minamount);
 		Drop *drop = 0;
@@ -78,8 +80,17 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			chance *= ChannelServer::Instance()->getDroprate();
 		}
 		if (Randomizer::Instance()->randInt(999999) < chance) {
-			pos.x = origin.x + ((d % 2) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
+			if (explosive) {
+				pos.x = origin.x + ((d % 2) ? (35 * (d + 1) / 2) : -(35 * (d / 2)));
+			}
+			else {
+				pos.x = origin.x + ((d % 2) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
+			}
 			pos.y = origin.y;
+
+//			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
+//				Need something to keep drops inside the map here		
+//			}
 
 			if (!i->ismesos) {
 				int32_t itemid = i->itemid;
