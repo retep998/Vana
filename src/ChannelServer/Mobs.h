@@ -32,6 +32,7 @@ using std::vector;
 using std::tr1::unordered_map;
 
 class Player;
+class Map;
 class Mob;
 class PacketCreator;
 class PacketReader;
@@ -58,7 +59,6 @@ namespace Mobs {
 	void handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSkillLevelInfo &skillinfo);
 	void handleBomb(Player *player, PacketReader &packet);
 	void monsterControl(Player *player, PacketReader &packet);
-	void checkSpawn(int32_t mapid);
 	void friendlyDamaged(Player *player, PacketReader &packet);
 	void handleTurncoats(Player *player, PacketReader &packet);
 };
@@ -155,11 +155,12 @@ private:
 	int32_t status;
 	int32_t counter;
 	int32_t webplayerid;
+	uint64_t totalhealth;
 	Mob *owner;
 	Mob *horntailsponge;
 	const MobInfo info;
 	unordered_map<int32_t, StatusInfo> statuses;
-	unordered_map<int32_t, uint32_t> damages;
+	unordered_map<int32_t, uint64_t> damages;
 	unordered_map<uint8_t, time_t> skilluse;
 	unordered_map<int32_t, Mob *> spawns;
 	Player *control;
@@ -167,6 +168,9 @@ private:
 
 	void initMob();
 	void die(Player *player, bool fromexplosion = false);
+	int32_t giveExp(Player *killer);
+	void spawnDeathMobs(Map *map);
+	void updateSpawnLinks();
 };
 
 #endif
