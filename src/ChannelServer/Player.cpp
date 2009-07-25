@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "MapPacket.h"
 #include "Maps.h"
-#include "Mobs.h"
+#include "MobHandler.h"
 #include "NPCs.h"
 #include "PacketReader.h"
 #include "Party.h"
@@ -133,13 +133,13 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_CHANNEL_LOGIN: playerConnect(packet); break;
 		case RECV_CHAT: ChatHandler::handleChat(this, packet); break;
 		case RECV_COMMAND: CommandHandler::handleCommand(this, packet); break;
-		case RECV_CONTROL_MOB: Mobs::monsterControl(this, packet); break;
+		case RECV_CONTROL_MOB: MobHandler::monsterControl(this, packet); break;
 		case RECV_DAMAGE_PLAYER: PlayerHandler::handleDamage(this, packet); break;
 		case RECV_DAMAGE_SUMMON: Summons::damageSummon(this, packet); break;
 		case RECV_DROP_MESO: Drops::dropMesos(this, packet); break;
 		case RECV_FACE_EXPRESSION: PlayerHandler::handleFacialExpression(this, packet); break;
 		case RECV_FAME: Fame::handleFame(this, packet); break;
-		case RECV_FRIENDLY_MOB_DAMAGED: Mobs::friendlyDamaged(this, packet); break;
+		case RECV_FRIENDLY_MOB_DAMAGED: MobHandler::friendlyDamaged(this, packet); break;
 		case RECV_GET_PLAYER_INFO: PlayerHandler::handleGetInfo(this, packet); break;
 		case RECV_GET_QUEST: Quests::getQuest(this, packet); break;
 		case RECV_GROUP_CHAT: ChatHandler::handleGroupChat(this, packet); break;
@@ -147,8 +147,8 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet); break;
 		case RECV_LOOT_ITEM: Drops::playerLoot(this, packet); break;
-		case RECV_MOB_BOMB_EXPLOSION: Mobs::handleBomb(this, packet); break;
-		case RECV_MOB_DAMAGE_MOB: Mobs::handleTurncoats(this, packet); break;
+		case RECV_MOB_BOMB_EXPLOSION: MobHandler::handleBomb(this, packet); break;
+		case RECV_MOB_DAMAGE_MOB: MobHandler::handleTurncoats(this, packet); break;
 		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;

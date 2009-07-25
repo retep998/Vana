@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Maps.h"
 #include "Mist.h"
+#include "MobHandler.h"
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
@@ -185,7 +186,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint8_t mobs = packet.get<int8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.get<int32_t>())) {
-					Mobs::handleMobStatus(player->getId(), mob, skillid, level, 0, 0);
+					MobHandler::handleMobStatus(player->getId(), mob, skillid, level, 0, 0);
 				}
 			}
 			break;

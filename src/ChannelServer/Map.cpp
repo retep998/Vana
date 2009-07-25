@@ -27,7 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleTVs.h"
 #include "Maps.h"
 #include "Mist.h"
-#include "Mobs.h"
+#include "Mob.h"
+#include "MobHandler.h"
 #include "MobsPacket.h"
 #include "NPCPacket.h"
 #include "PacketCreator.h"
@@ -56,7 +57,7 @@ timerstart(0),
 poisonmists(0),
 timemob(0),
 webbed(0),
-spawnmobs(true),
+spawnmobs(-1),
 timers(new Timer::Container)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
@@ -326,8 +327,10 @@ void Map::addMobSpawn(const MobSpawnInfo &spawn) {
 
 void Map::checkMobSpawn(clock_t time, bool spawnAll) {
 	// (Re-)spawn Mobs
-	for (size_t i = 0; spawnmobs && i < mobspawns.size(); i++) {
-		int32_t id = mobspawns[i].id;
+	for (size_t i = 0; spawnmobs != 0 && i < mobspawns.size(); i++) {
+		if (spawnmobs > 0 && mobspawns[i].id != spawnmobs) {
+			continue;
+		}
 		int32_t spawnat = mobspawns[i].spawnat;
 		if (!mobspawns[i].spawned && (spawnAll || (spawnat != -1 && spawnat < time))) {
 			spawnMob(i, mobspawns[i]);
@@ -586,7 +589,7 @@ void Map::checkMists() {
 			if (!mist->isPoison())
 				continue;
 			if (GameLogicUtilities::isInBox(mist->getOrigin(), mist->getSkillLt(), mist->getSkillRb(), mob->getPos())) {
-				bool poisoned = (Mobs::handleMobStatus(mist->getOwnerId(), mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0) > 0);
+				bool poisoned = (MobHandler::handleMobStatus(mist->getOwnerId(), mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0) > 0);
 				if (poisoned) // Mob is poisoned, don't need to check any more mists
 					break;
 			}

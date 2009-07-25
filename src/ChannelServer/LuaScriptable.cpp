@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "Maps.h"
 #include "MapPacket.h"
-#include "Mobs.h"
+#include "Mob.h"
 #include "NPCs.h"
 #include "Party.h"
 #include "Player.h"
@@ -1065,7 +1065,7 @@ int LuaExports::playSoundMap(lua_State *luaVm) {
 
 int LuaExports::setMapSpawn(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	bool spawn = (lua_toboolean(luaVm, 2) != 0);
+	int32_t spawn = lua_tointeger(luaVm, 2);
 	Maps::getMap(mapid)->setMobSpawning(spawn);
 	return 0;
 }

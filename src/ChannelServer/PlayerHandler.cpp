@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "Maps.h"
 #include "Mist.h"
-#include "Mobs.h"
+#include "MobHandler.h"
 #include "MovementHandler.h"
 #include "Player.h"
 #include "Players.h"
@@ -387,7 +387,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		if (targettotal > 0) {
 			if (mob != 0 && mob->getHp() > 0) {
 				uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-				Mobs::handleMobStatus(player->getId(), mob, skillid, level, weapontype, connectedhits); // Mob status handler (freeze, stun, etc)
+				MobHandler::handleMobStatus(player->getId(), mob, skillid, level, weapontype, connectedhits); // Mob status handler (freeze, stun, etc)
 				if (mob->getHp() < mob->getSelfDestructHp()) {
 					mob->explode();
 				}
@@ -664,7 +664,7 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 		}
 		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
 			uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-			Mobs::handleMobStatus(player->getId(), mob, skillid, level, weapontype, connectedhits, firsthit); // Mob status handler (freeze, stun, etc)
+			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, weapontype, connectedhits, firsthit); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}

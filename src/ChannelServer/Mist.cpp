@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Mist.h"
 #include "Maps.h"
-#include "Mobs.h"
+#include "Mob.h"
 #include "Player.h"
 
 Mist::Mist(int32_t mapid, Player *owner, Pos origin, SkillLevelInfo skill, int32_t skillid, uint8_t level) :
