@@ -156,6 +156,8 @@ void Mob::initMob() {
 		originfh = 0;
 	}
 
+	totalhealth = hp;
+
 	owner = 0; // Pointers
 	horntailsponge = 0;
 	control = 0;
@@ -203,6 +205,7 @@ void Mob::naturalHealHp(int32_t amount) {
 			hp = getMHp();
 		}
 		setHp(hp);
+		totalhealth += sponge;
 		if (getSponge() != 0) {
 			getSponge()->setHp(getSponge()->getHp() + sponge);
 		}
@@ -462,75 +465,9 @@ void Mob::die(Player *player, bool fromexplosion) {
 		map->getTimers()->removeTimer(tid);
 	}
 
-	// Calculate EXP distribution
-	int32_t highestdamager = 0;
-	uint32_t highestdamage = 0;
-	for (unordered_map<int32_t, uint32_t>::iterator iter = damages.begin(); iter != damages.end(); iter++) {
-		if (iter->second > highestdamage) { // Find the highest damager to give drop ownership
-			highestdamager = iter->first;
-			highestdamage = iter->second;
-		}
-		Player *damager = Players::Instance()->getPlayer(iter->first);
-		if (damager == 0 || damager->getMap() != this->mapid || damager->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
-			continue;
-
-		uint8_t multiplier = damager == player ? 10 : 8; // Multiplier for player to give the finishing blow is 1 and .8 for others. We therefore set this to 10 or 8 and divide the result in the formula found later on by 10.
-		// Account for Holy Symbol
-		int16_t hsrate = 0;
-		if (damager->getActiveBuffs()->hasHolySymbol()) {
-			int32_t hsid = damager->getActiveBuffs()->getHolySymbol();
-			hsrate = Skills::skills[hsid][damager->getActiveBuffs()->getActiveSkillLevel(hsid)].x;
-		}
-		uint32_t exp = (info.exp * (multiplier * iter->second / info.hp)) / 10;
-		exp = exp * getTauntEffect() / 100;
-		exp += ((exp * hsrate) / 100);
-		exp *= ChannelServer::Instance()->getExprate();
-		Levels::giveExp(damager, exp, false, (damager == player));
-	}
-
-	// Spawn mob(s) the mob is supposed to spawn when it dies
-	if (getMobId() == Mobs::SummonHorntail) { // Special Horntail logic to keep Horntail units linked
-		int32_t spongeid = 0;
-		vector<int32_t> parts;
-		for (size_t i = 0; i < info.summon.size(); i++) {
-			int32_t spawnid = info.summon[i];
-			if (spawnid == Mobs::HorntailSponge)
-				spongeid = map->spawnMob(spawnid, m_pos, getFh(), this);
-			else {
-				int32_t identifier = map->spawnMob(spawnid, m_pos, getFh(), this);
-				parts.push_back(identifier);
-			}
-		}
-		Mob *htsponge = Maps::getMap(mapid)->getMob(spongeid);
-		for (size_t m = 0; m < parts.size(); m++) {
-			Mob *f = map->getMob(parts[m]);
-			f->setSponge(htsponge);
-			htsponge->addSpawn(parts[m], f);
-		}
-	}
-	else if (getSponge() != 0) { // More special Horntail logic to keep units linked
-		getSponge()->removeSpawn(getId());
-		for (size_t i = 0; i < info.summon.size(); i++) {
-			int32_t ident = map->spawnMob(info.summon[i], m_pos, getFh(), this);
-			Mob *mob = map->getMob(ident);
-			getSponge()->addSpawn(ident, mob);
-		}
-	}
-	else {
-		for (size_t i = 0; i < info.summon.size(); i++) {
-			map->spawnMob(info.summon[i], m_pos, getFh(), this);
-		}
-	}
-
-	// Spawn stuff
-	if (spawns.size() > 0) {
-		for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
-			spawniter->second->setOwner(0);
-		}
-	}
-	if (getOwner() != 0) {
-		owner->removeSpawn(getId());
-	}
+	int32_t highestdamager = giveExp(player);
+	spawnDeathMobs(map);
+	updateSpawnLinks();
 
 	if (hasStatus(StatusEffects::Mob::ShadowWeb)) {
 		map->setWebbedCount(map->getWebbedCount() - 1);
@@ -583,6 +520,80 @@ void Mob::die(bool showpacket) {
 	delete this;
 }
 
+int32_t Mob::giveExp(Player *killer) {
+	int32_t highestdamager = 0;
+	uint64_t highestdamage = 0;
+	for (unordered_map<int32_t, uint64_t>::iterator iter = damages.begin(); iter != damages.end(); iter++) {
+		if (iter->second > highestdamage) { // Find the highest damager to give drop ownership
+			highestdamager = iter->first;
+			highestdamage = iter->second;
+		}
+		Player *damager = Players::Instance()->getPlayer(iter->first);
+		if (damager == 0 || damager->getMap() != this->mapid || damager->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
+			continue;
+
+		uint8_t multiplier = damager == killer ? 10 : 8; // Multiplier for player to give the finishing blow is 1 and .8 for others. We therefore set this to 10 or 8 and divide the result in the formula found later on by 10.
+		// Account for Holy Symbol
+		int16_t hsrate = 0;
+		if (damager->getActiveBuffs()->hasHolySymbol()) {
+			int32_t hsid = damager->getActiveBuffs()->getHolySymbol();
+			hsrate = Skills::skills[hsid][damager->getActiveBuffs()->getActiveSkillLevel(hsid)].x;
+		}
+		uint32_t exp = static_cast<uint32_t>((info.exp * (multiplier * iter->second / totalhealth)) / 10);
+		exp = exp * getTauntEffect() / 100;
+		exp += ((exp * hsrate) / 100);
+		exp *= ChannelServer::Instance()->getExprate();
+		Levels::giveExp(damager, exp, false, (damager == killer));
+	}
+	return highestdamager;
+}
+
+void Mob::spawnDeathMobs(Map *map) { 
+	if (getMobId() == Mobs::SummonHorntail) { // Special Horntail logic to keep Horntail units linked
+		int32_t spongeid = 0;
+		vector<int32_t> parts;
+		for (size_t i = 0; i < info.summon.size(); i++) {
+			int32_t spawnid = info.summon[i];
+			if (spawnid == Mobs::HorntailSponge)
+				spongeid = map->spawnMob(spawnid, m_pos, getFh(), this);
+			else {
+				int32_t identifier = map->spawnMob(spawnid, m_pos, getFh(), this);
+				parts.push_back(identifier);
+			}
+		}
+		Mob *htsponge = Maps::getMap(mapid)->getMob(spongeid);
+		for (size_t m = 0; m < parts.size(); m++) {
+			Mob *f = map->getMob(parts[m]);
+			f->setSponge(htsponge);
+			htsponge->addSpawn(parts[m], f);
+		}
+	}
+	else if (getSponge() != 0) { // More special Horntail logic to keep units linked
+		getSponge()->removeSpawn(getId());
+		for (size_t i = 0; i < info.summon.size(); i++) {
+			int32_t ident = map->spawnMob(info.summon[i], m_pos, getFh(), this);
+			Mob *mob = map->getMob(ident);
+			getSponge()->addSpawn(ident, mob);
+		}
+	}
+	else {
+		for (size_t i = 0; i < info.summon.size(); i++) {
+			map->spawnMob(info.summon[i], m_pos, getFh(), this);
+		}
+	}
+}
+
+void Mob::updateSpawnLinks() {
+	if (spawns.size() > 0) {
+		for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
+			spawniter->second->setOwner(0);
+		}
+	}
+	if (getOwner() != 0) {
+		owner->removeSpawn(getId());
+	}
+}
+
 void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
 	if (getMobId() == Mobs::HorntailSponge)
 		return;
@@ -597,6 +608,7 @@ void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
 	else {
 		hp += amount;
 	}
+	totalhealth += amount;
 
 	if (getSponge() != 0) {
 		basehealhp = getSponge()->getHp() + amount;
