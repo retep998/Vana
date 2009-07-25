@@ -41,6 +41,7 @@ namespace ChatHandler {
 	void initializeCommands();
 	void showSyntax(Player *player, const string &command, bool fromHelp = false);
 	void handleChat(Player *player, PacketReader &packet);
+	int32_t getMap(const string &query, Player *player);
 	void handleGroupChat(Player *player, PacketReader &packet);
 };
 
