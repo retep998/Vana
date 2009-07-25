@@ -258,7 +258,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Mobs.cpp"
+					RelativePath=".\src\ChannelServer\Mob.cpp"
 					>
 				</File>
 				<File
@@ -586,6 +586,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\MobHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\MovementHandler.cpp"
 					>
 				</File>
@@ -656,7 +660,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Mobs.h"
+					RelativePath=".\src\ChannelServer\Mob.h"
 					>
 				</File>
 				<File
@@ -1005,6 +1009,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\CommandHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\MobHandler.h"
 					>
 				</File>
 				<File

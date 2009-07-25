@@ -27,7 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleTVs.h"
 #include "Maps.h"
 #include "Mist.h"
-#include "Mobs.h"
+#include "Mob.h"
+#include "MobHandler.h"
 #include "MobsPacket.h"
 #include "NPCPacket.h"
 #include "PacketCreator.h"
@@ -588,7 +589,7 @@ void Map::checkMists() {
 			if (!mist->isPoison())
 				continue;
 			if (GameLogicUtilities::isInBox(mist->getOrigin(), mist->getSkillLt(), mist->getSkillRb(), mob->getPos())) {
-				bool poisoned = (Mobs::handleMobStatus(mist->getOwnerId(), mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0) > 0);
+				bool poisoned = (MobHandler::handleMobStatus(mist->getOwnerId(), mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0) > 0);
 				if (poisoned) // Mob is poisoned, don't need to check any more mists
 					break;
 			}

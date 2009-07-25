@@ -39,8 +39,9 @@ set(SOURCES
 	MapPacket.h
 	Maps.h
 	Mist.h
+	Mob.h
 	MobDataProvider.h
-	Mobs.h
+	MobHandler.h
 	MobsPacket.h
 	MonsterBookPacket.h
 	MovableLife.h
@@ -127,8 +128,9 @@ set(SOURCES
 	MapPacket.cpp
 	Maps.cpp
 	Mist.cpp
+	Mob.cpp
 	MobDataProvider.cpp
-	Mobs.cpp
+	MobHandler.cpp
 	MobsPacket.cpp
 	MonsterBookPacket.cpp
 	MovementHandler.cpp
