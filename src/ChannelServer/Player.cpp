@@ -238,7 +238,7 @@ void Player::playerConnect(PacketReader &packet) {
 	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
 	storage.reset(new PlayerStorage(this));
 
-	getInventory()->countAllGear(true);
+	// getInventory()->countAllGear(true); // Commenting for now, causes problems
 
 	// Skills
 	skills.reset(new PlayerSkills(this));

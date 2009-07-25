@@ -116,7 +116,7 @@ void PlayerInventory::load() {
 		item->flags = (int8_t) res[i][21];
 		item->petid = res[i][22];
 		res[i][23].to_string(item->name);
-		addItem((int8_t) res[i][0], res[i][1], item);
+		addItem((int8_t) res[i][0], res[i][1], item, true);
 		if (item->petid != 0) {
 			Pet *pet = new Pet(
 				m_player,
@@ -302,8 +302,9 @@ void PlayerInventory::addEquipped(int16_t slot, int32_t itemid, bool initialLoad
 	if (slot == EquipSlots::Mount)
 		m_player->getMounts()->setCurrentMount(itemid);
 
-	if (!initialLoad)
-		countAllGear(initialLoad);
+//	if (initialLoad)
+//		countAllGear(initialLoad);
+// Commenting for now, problems
 
 	if (slot > 100) // Cash items
 		m_equipped[slot - 100][1] = itemid;
