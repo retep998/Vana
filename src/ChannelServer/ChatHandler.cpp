@@ -685,7 +685,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 							}
 						}
 						else if (type == 200) {
-							int32_t mapid = getMap(matches[2]);
+							int32_t mapid = getMap(matches[2], player);
 							if (Maps::getMap(mapid) != 0) {
 								string message = boost::lexical_cast<string>(mapid) + " : " + boost::lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
 								PlayerPacket::showMessage(player, message, 6);
