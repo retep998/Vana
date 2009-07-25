@@ -10,7 +10,8 @@ set(SOURCES
 	CommandHandler.h
 	Connectable.h
 	DropDataProvider.h
-	Drops.h
+	Drop.h
+	DropHandler.h
 	DropsPacket.h
 	EventDataProvider.h
 	Fame.h
@@ -101,7 +102,8 @@ set(SOURCES
 	CommandHandler.cpp
 	Connectable.cpp
 	DropDataProvider.cpp
-	Drops.cpp
+	Drop.cpp
+	DropHandler.cpp
 	DropsPacket.cpp
 	EventDataProvider.cpp
 	Fame.cpp
