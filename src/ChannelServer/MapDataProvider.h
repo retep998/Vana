@@ -36,8 +36,9 @@ public:
 			singleton = new MapDataProvider();
 		return singleton;
 	}
-	Map * getMap(int32_t mapid);
 
+	Map * getMap(int32_t mapid);
+	int8_t getContinent(int32_t mapid);
 private:
 	MapDataProvider();
 	static MapDataProvider *singleton;
@@ -49,7 +50,6 @@ private:
 	boost::mutex loadmap_mutex;
 	
 	void loadMap(int32_t mapid, Map *&map);
-	int8_t getContinent(int32_t mapid);
 };
 
 #endif
