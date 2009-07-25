@@ -15,7 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Drops.h"
+#include "DropHandler.h"
+#include "ChannelServer.h"
+#include "Drop.h"
 #include "DropDataProvider.h"
 #include "DropsPacket.h"
 #include "GameConstants.h"
@@ -25,98 +27,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "PacketReader.h"
 #include "Party.h"
-#include "Pets.h"
+#include "Player.h"
+#include "Players.h"
 #include "Pos.h"
 #include "Quests.h"
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "Skills.h"
-#include "TimeUtilities.h"
-#include <limits>
 
-// Drop class
-Drop::Drop(int32_t mapid, int32_t mesos, Pos pos, int32_t owner, bool playerdrop) :
-questid(0),
-owner(owner),
-mapid(mapid),
-mesos(mesos),
-// Initializing dropped time to max-value to prevent timers from
-// deleting the drop in case doDrop did not get called right away
-dropped(std::numeric_limits<int32_t>::max()),
-playerid(0),
-playerdrop(playerdrop),
-tradeable(true),
-partydrop(false),
-pos(pos)
-{
-	Maps::getMap(mapid)->addDrop(this);
-}
-
-Drop::Drop(int32_t mapid, Item item, Pos pos, int32_t owner, bool playerdrop) :
-questid(0),
-owner(owner),
-mapid(mapid),
-mesos(0),
-dropped(std::numeric_limits<int32_t>::max()),
-playerid(0),
-playerdrop(playerdrop),
-tradeable(true),
-partydrop(false),
-pos(pos),
-item(item)
-{
-	Maps::getMap(mapid)->addDrop(this);
-}
-
-int32_t Drop::getObjectId() {
-	return (mesos > 0 ? mesos : item.id);
-}
-
-int16_t Drop::getAmount() {
-	return item.amount;
-}
-
-void Drop::doDrop(Pos origin) {
-	setDropped(TimeUtilities::getTickCount());
-	if (!isQuest()) {
-		if (!isTradeable()) {
-			DropsPacket::showDrop(0, this, 3, false, origin);
-			this->removeDrop(false);
-		}
-		else
-			DropsPacket::showDrop(0, this, 1, true, origin);
-	}
-	else if (Player *player = Players::Instance()->getPlayer(playerid)) {
-		if (player->getMap() == this->mapid) {
-			DropsPacket::showDrop(player, this, 1, true, origin);
-		}
-	}
-}
-
-void Drop::showDrop(Player *player) {
-	if (isQuest() && player->getId() != playerid)
+void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) {
+	GlobalDrops *gdrops = DropDataProvider::Instance()->getGlobalDrops();
+	if (!DropDataProvider::Instance()->hasDrops(droppingId) && gdrops == 0) {
 		return;
-	DropsPacket::showDrop(player, this, 2, false, Pos());
-}
-
-void Drop::takeDrop(Player *player, int32_t petid) {
-	Maps::getMap(mapid)->removeDrop(this->id);
-	if (petid == 0)
-		DropsPacket::takeDrop(player, this);
-	else
-		DropsPacket::takeDrop(player, this, player->getPets()->getPet(petid)->getIndex());
-	delete this;
-}
-
-void Drop::removeDrop(bool showPacket) {
-	Maps::getMap(this->mapid)->removeDrop(this->id);
-	if (showPacket)
-		DropsPacket::removeDrop(this);
-	delete this;
-}
-
-// Drops namespace
-void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int32_t droppingId, Pos origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) {
+	}
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
 	Player *player = Players::Instance()->getPlayer(playerid);
 	int16_t d = 0;
@@ -128,26 +51,25 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int3
 			partyid = party->getId();
 		}
 	}
-	if (droppingLevel != 0) { // Check for global drops, add to the vector if needed
-		GlobalDrops gdrops = DropDataProvider::Instance()->getGlobalDrops();
+	if (droppingLevel != 0 && gdrops != 0) { // Check for global drops, add to the vector if needed
 		DropInfo d;
-		for (size_t i = 0; i < gdrops.size(); i++) {
-			if (droppingLevel >= gdrops[i].minamount && droppingLevel <= gdrops[i].maxamount) {
+		for (GlobalDrops::iterator i = gdrops->begin(); i != gdrops->end(); i++) {
+			if (droppingLevel >= i->minlevel && droppingLevel <= i->maxlevel) {
 				d = DropInfo();
-				d.chance = gdrops[i].chance;
-				d.ismesos = gdrops[i].ismesos;
-				d.itemid = gdrops[i].itemid;
-				d.minamount = gdrops[i].minamount;
-				d.maxamount = gdrops[i].maxamount;
-				d.questid = gdrops[i].questid;
+				d.chance = i->chance;
+				d.ismesos = i->ismesos;
+				d.itemid = i->itemid;
+				d.minamount = i->minamount;
+				d.maxamount = i->maxamount;
+				d.questid = i->questid;
 				drops.push_back(d);
 			}
 		}
 	}
-	for (size_t i = 0; i < drops.size(); i++) {
-		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(drops[i].maxamount - drops[i].minamount) + drops[i].minamount);
+	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); i++) {
+		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxamount - i->minamount) + i->minamount);
 		Drop *drop = 0;
-		uint32_t chance = drops[i].chance;
+		uint32_t chance = i->chance;
 		if (isSteal) {
 			chance = chance * 3 / 10;
 		}
@@ -159,9 +81,9 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int3
 			pos.x = origin.x + ((d % 2) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
 			pos.y = origin.y;
 
-			if (!drops[i].ismesos) {
-				int32_t itemid = drops[i].itemid;
-				int16_t questid = drops[i].questid;
+			if (!i->ismesos) {
+				int32_t itemid = i->itemid;
+				int16_t questid = i->questid;
 
 				if (questid > 0) {
 					if (player == 0 || !player->getQuests()->isQuestActive(questid))
@@ -178,7 +100,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int3
 					drop = new Drop(mapid, Item(itemid, amount), pos, (partyid > 0 ? partyid : playerid));
 
 				if (questid > 0) {
-					drop->setPlayer(playerid);
+					drop->setPlayerId(playerid);
 					drop->setQuest(questid);
 				}
 			}
@@ -195,8 +117,14 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int3
 		}
 
 		if (drop != 0) {
-			if (partyid > 0) {
-				drop->setPartyDrop(true);
+			if (explosive) {
+				drop->setType(3);
+			}
+			else if (ffa) {
+				drop->setType(2);
+			}
+			else if (partyid > 0) {
+				drop->setType(1);
 			}
 			drop->setTime(100);
 			drop->doDrop(origin);
@@ -206,7 +134,7 @@ void Drops::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int3
 	}
 }
 
-void Drops::dropMesos(Player *player, PacketReader &packet) {
+void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t amount = packet.get<int32_t>();
 	if (amount < 10 || amount > 50000 || amount > player->getInventory()->getMesos()) {
@@ -219,14 +147,14 @@ void Drops::dropMesos(Player *player, PacketReader &packet) {
 	drop->doDrop(player->getPos());
 }
 
-void Drops::playerLoot(Player *player, PacketReader &packet) {
+void DropHandler::playerLoot(Player *player, PacketReader &packet) {
 	packet.skipBytes(9);
 	int32_t dropid = packet.get<int32_t>();
 
 	lootItem(player, dropid);
 }
 
-void Drops::petLoot(Player *player, PacketReader &packet) {
+void DropHandler::petLoot(Player *player, PacketReader &packet) {
 	int32_t petid = packet.get<int32_t>();
 	packet.skipBytes(13);
 	int32_t dropid = packet.get<int32_t>();
@@ -234,7 +162,7 @@ void Drops::petLoot(Player *player, PacketReader &packet) {
 	lootItem(player, dropid, petid);
 }
 
-void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
+void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	Drop *drop = Maps::getMap(player->getMap())->getDrop(dropid);
 
 	if (drop == 0) {
@@ -262,7 +190,7 @@ void Drops::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	}
 	if (drop->isMesos()) {
 		int32_t playerrate = 100;
-		if (player->getParty() != 0 && !drop->isplayerDrop()) {
+		if (player->getParty() != 0 && !drop->isPlayerDrop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
 			playerrate = 60;
 			vector<Player *> members;

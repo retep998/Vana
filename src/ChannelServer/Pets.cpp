@@ -17,8 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Pets.h"
 #include "Database.h"
-#include "Drops.h"
-#include "DropsPacket.h"
 #include "GameConstants.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"

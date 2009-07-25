@@ -72,8 +72,8 @@ void DropDataProvider::loadData() {
 		g.itemid = atoi(dropRow[2]);
 		g.minamount = atoi(dropRow[3]);
 		g.maxamount = atoi(dropRow[4]);
-		g.minamount = atoi(dropRow[3]);
-		g.maxamount = atoi(dropRow[4]);
+		g.minlevel = atoi(dropRow[5]);
+		g.maxlevel = atoi(dropRow[6]);
 		g.questid = atoi(dropRow[7]);
 		g.chance = atoi(dropRow[8]);
 		globaldrops.push_back(g);

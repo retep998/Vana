@@ -222,7 +222,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Drops.cpp"
+					RelativePath=".\src\ChannelServer\Drop.cpp"
 					>
 				</File>
 				<File
@@ -586,6 +586,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\DropHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\MobHandler.cpp"
 					>
 				</File>
@@ -624,7 +628,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Drops.h"
+					RelativePath=".\src\ChannelServer\Drop.h"
 					>
 				</File>
 				<File
@@ -1009,6 +1013,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\CommandHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\DropHandler.h"
 					>
 				</File>
 				<File

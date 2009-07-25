@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CommandHandler.h"
 #include "Connectable.h"
 #include "Database.h"
-#include "Drops.h"
+#include "DropHandler.h"
 #include "Fame.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
@@ -138,7 +138,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_CONTROL_MOB: MobHandler::monsterControl(this, packet); break;
 		case RECV_DAMAGE_PLAYER: PlayerHandler::handleDamage(this, packet); break;
 		case RECV_DAMAGE_SUMMON: Summons::damageSummon(this, packet); break;
-		case RECV_DROP_MESO: Drops::dropMesos(this, packet); break;
+		case RECV_DROP_MESO: DropHandler::dropMesos(this, packet); break;
 		case RECV_FACE_EXPRESSION: PlayerHandler::handleFacialExpression(this, packet); break;
 		case RECV_FAME: Fame::handleFame(this, packet); break;
 		case RECV_FRIENDLY_MOB_DAMAGED: MobHandler::friendlyDamaged(this, packet); break;
@@ -148,7 +148,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_HEAL_PLAYER: PlayerHandler::handleHeal(this, packet); break;
 		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet); break;
-		case RECV_LOOT_ITEM: Drops::playerLoot(this, packet); break;
+		case RECV_LOOT_ITEM: DropHandler::playerLoot(this, packet); break;
 		case RECV_MOB_BOMB_EXPLOSION: MobHandler::handleBomb(this, packet); break;
 		case RECV_MOB_DAMAGE_MOB: MobHandler::handleTurncoats(this, packet); break;
 		case RECV_MONSTERBOOK: PlayerHandler::handleMonsterBook(this, packet); break;
@@ -161,7 +161,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_PET_CHAT: Pets::handleChat(this, packet); break;
 		case RECV_PET_COMMAND: Pets::handleCommand(this, packet); break;
 		case RECV_PET_FEED: Pets::handleFeed(this, packet); break;
-		case RECV_PET_LOOT: Drops::petLoot(this, packet); break;
+		case RECV_PET_LOOT: DropHandler::petLoot(this, packet); break;
 		case RECV_PET_MOVE: Pets::handleMovement(this, packet); break;
 		case RECV_PET_SUMMON: Pets::handleSummon(this, packet); break;
 		case RECV_PLAYER_ROOM_ACTION: TradeHandler::tradeHandler(this, packet); break;

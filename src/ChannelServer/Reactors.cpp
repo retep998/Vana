@@ -16,7 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Reactors.h"
-#include "Drops.h"
+#include "Drop.h"
+#include "DropHandler.h"
 #include "GameLogicUtilities.h"
 #include "LuaReactor.h"
 #include "Maps.h"
@@ -61,7 +62,7 @@ void Reactor::restore() {
 }
 
 void Reactor::drop(Player *player) {
-	Drops::doDrops(player->getId(), mapid, 0, reactorid, pos, false, false);
+	DropHandler::doDrops(player->getId(), mapid, 0, reactorid, pos, false, false);
 }
 
 // Reactors namespace

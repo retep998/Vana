@@ -59,8 +59,9 @@ public:
 	}
 	void loadData();
 
-	DropsInfo const getDrops(int32_t objectid) { return dropdata[objectid]; }
-	GlobalDrops const getGlobalDrops() { return globaldrops; }
+	bool hasDrops(int32_t oid) { return (dropdata.find(oid) != dropdata.end()); }
+	DropsInfo getDrops(int32_t objectid) { return dropdata[objectid]; }
+	GlobalDrops * getGlobalDrops() { return (globaldrops.size() > 0 ? &globaldrops : 0); }
 private:
 	DropDataProvider() {}
 	static DropDataProvider *singleton;

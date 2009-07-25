@@ -15,23 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef DROPPACKET_H
-#define DROPPACKET_H
+#ifndef DROPHANDLER_H
+#define DROPHANDLER_H
 
 #include "Types.h"
 
 class Player;
-class Drop;
-class Pet;
+class PacketReader;
 struct Pos;
 
-namespace DropsPacket {
-	void showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, const Pos &origin);
-	void takeNote(Player *player, int32_t id, bool ismesos, int16_t amount);
-	void takeDrop(Player *player, Drop *drop, int8_t pet_index = -1);
-	void dontTake(Player *player);
-	void removeDrop(Drop *drop);
-	void explodeDrop(Drop *drop);
+namespace DropHandler {
+	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt = 100, bool isSteal = false);
+	void dropMesos(Player *player, PacketReader &packet);
+	void playerLoot(Player *player, PacketReader &packet);
+	void petLoot(Player *player, PacketReader &packet);
+	void lootItem(Player *player, int32_t dropid, int32_t petid = 0);
 };
 
 #endif
