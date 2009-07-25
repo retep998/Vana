@@ -705,7 +705,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				}
 				case CmdMap: {
 					if (args.length() != 0) {
-						int32_t mapid = getMap(args);
+						int32_t mapid = getMap(args, player);
 						if (Maps::getMap(mapid)) {
 							player->setMap(mapid);
 						}
