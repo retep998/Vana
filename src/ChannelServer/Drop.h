@@ -27,7 +27,7 @@ class Player;
 class Drop {
 public:
 	Drop(int32_t mapid, int32_t mesos, const Pos &pos, int32_t owner, bool playerdrop = false);
-	Drop(int32_t mapid, Item &item, const Pos &pos, int32_t owner, bool playerdrop = false);
+	Drop(int32_t mapid, const Item &item, const Pos &pos, int32_t owner, bool playerdrop = false);
 
 	void setQuest(int16_t questid) { this->questid = questid; }
 	void setTradeable(bool istrade) { tradeable = istrade; }
@@ -36,6 +36,7 @@ public:
 	void setTime(int32_t time) { this->time = time; }
 	void setDropped(int32_t time) { dropped = time; }
 	void setPlayerId(int32_t playerid) { this->playerid = playerid; }
+	void setOwner(int32_t owner) { this->owner = owner; }
 	void setPos(Pos pos) { this->pos = pos; }
 	void setType(int8_t t) { type = t; }
 
