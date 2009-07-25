@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MOBS_H
 #define MOBS_H
 
-#include "GameConstants.h"
 #include "MobDataProvider.h"
 #include "MovableLife.h"
 #include "Pos.h"
@@ -28,15 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
 
-using std::vector;
 using std::tr1::unordered_map;
+using std::vector;
 
 class Player;
 class Map;
-class Mob;
 class PacketCreator;
-class PacketReader;
-struct MobSkillLevelInfo;
 struct MpEaterInfo;
 
 struct StatusInfo {
@@ -51,16 +47,6 @@ struct StatusInfo {
 	int16_t mobskill;
 	int16_t level;
 	clock_t time;
-};
-
-namespace Mobs {
-	extern const int32_t mobstatuses[StatusEffects::Mob::Count];
-	int32_t handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int8_t hits, int32_t damage = 0);
-	void handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSkillLevelInfo &skillinfo);
-	void handleBomb(Player *player, PacketReader &packet);
-	void monsterControl(Player *player, PacketReader &packet);
-	void friendlyDamaged(Player *player, PacketReader &packet);
-	void handleTurncoats(Player *player, PacketReader &packet);
 };
 
 class Mob : public MovableLife {

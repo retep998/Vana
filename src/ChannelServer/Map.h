@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAP_H
 
 #include "LoopingId.h"
-#include "Mobs.h"
+#include "Mob.h"
 #include "Pos.h"
-#include <ctime>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <ctime>
 #include <vector>
 #include <string>
 

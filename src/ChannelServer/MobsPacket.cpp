@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobsPacket.h"
 #include "MapleSession.h"
 #include "Maps.h"
-#include "Mobs.h"
+#include "Mob.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "SendHeader.h"
