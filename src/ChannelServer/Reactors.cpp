@@ -121,17 +121,17 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 }
 
 struct Reaction {
-    void operator()() {
-        reactor->setState(state, true);
-        drop->removeDrop();
+	void operator()() {
+		reactor->setState(state, true);
+		drop->removeDrop();
 		string filename = ScriptDataProvider::Instance()->getReactorScript(reactor->getReactorId());
-        LuaReactor(filename, player->getId(), reactor->getId() - 200, reactor->getMapId());
-        return;
-    }
-    Reactor *reactor;
-    Drop *drop;
-    Player *player;
-    int8_t state;
+		LuaReactor(filename, player->getId(), reactor->getId() - 200, reactor->getMapId());
+		return;
+	}
+	Reactor *reactor;
+	Drop *drop;
+	Player *player;
+	int8_t state;
 };
 
 void Reactors::checkDrop(Player *player, Drop *drop) {
