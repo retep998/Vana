@@ -97,7 +97,7 @@ mobid(mobid),
 timers(new Timer::Container),
 info(MobDataProvider::Instance()->getMobInfo(mobid)),
 facingdirection(direction),
-controlstatus(1)
+controlstatus(Mobs::ControlStatus::ControlNormal)
 {
 	initMob();
 }
