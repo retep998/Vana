@@ -351,7 +351,7 @@ bool PlayerQuests::giveRewards(const QuestRewardInfo &info) {
 	}
 	else if (info.isskill) {
 		m_player->getSkills()->setMaxSkillLevel(info.id, static_cast<uint8_t>(info.masterlevel), true);
-		if (!info.ismasterlevelonly) {
+		if (!info.ismasterlevelonly && info.count) {
 			m_player->getSkills()->addSkillLevel(info.id, static_cast<uint8_t>(info.count), true);
 		}
 	}
