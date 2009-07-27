@@ -17,4 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Leafre Reactor - Egg for Frostprey Quest (4th job Marksman)
 
-spawnMob(9300090); 
+if getState() == 3 then
+	spawnMob(9300090); 
+end
