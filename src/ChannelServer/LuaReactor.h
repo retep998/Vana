@@ -40,6 +40,7 @@ namespace LuaExports {
 	// Reactor exports
 
 	// Reactor
+	int getState(lua_State *luaVm);
 	int reset(lua_State *luaVm);
 	int setStateReactor(lua_State *luaVm);
 

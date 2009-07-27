@@ -15,9 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Leafre Reactor - Egg for Phoenix Quest (4th job Bowmaster)
+-- Portal to pick up egg for Frostprey
 
-if getState() == 3 then
-	spawnMob(9300089);
+if getItemAmount(4001114) > 0 then
+	showMessage("You already have Freezer's egg. You can't enter.", 5);
+else
+	if (isQuestActive(6242) or isQuestActive(6243)) or (isQuestCompleted(6242) and isQuestInactive(6243)) then
+		playPortalSE();
+		setMap(921100210);
+	end
 end
-

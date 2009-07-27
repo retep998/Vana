@@ -15,9 +15,25 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Leafre Reactor - Egg for Phoenix Quest (4th job Bowmaster)
+-- Portal to 4th job bowman bird nest
 
-if getState() == 3 then
-	spawnMob(9300089);
+if isQuestActive(6241) or isQuestActive(6243) then
+	if getItemAmount(4001113) > 0 or getItemAmount(4001114) > 0 then
+		if not isInstance("bird4th") then
+			createInstance("bird4th", 20 * 60, true);
+			playPortalSE();
+			addInstancePlayer(getID());
+			setMap(924000100);
+		else
+			showMessage("Other characters are on request. You can't enter.", 5);
+		end
+	else
+		if isQuestActive(6241) then
+			showMessage("You don't have Phoenix's Egg. You can't enter.", 5);
+		else
+			showMessage("You don't have Freezer's Egg. You can't enter.", 5);
+		end
+	end
+else
+	showMessage("You can't enter sealed place.", 5);
 end
-
