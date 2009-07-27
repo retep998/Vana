@@ -34,10 +34,11 @@ if isQuestActive(6108) then
 				sendOK();
 			else
 				memberctr = 0
+				mapid = getMap();
 				for i = 1, #members do
 					member = members[i];
 					if setPlayer(member) then
-						if getJobLine() == 3 and getJobProgression() == 2 then -- Only want 4th job bowmen
+						if getJobLine() == 3 and getJobProgression() == 2 and getMap() == mapid then -- Only want 4th job bowmen
 							memberctr = memberctr + 1;
 						end
 						revertPlayer();
@@ -49,9 +50,11 @@ if isQuestActive(6108) then
 				else
 					if not isInstance("snipe4th") then
 						createInstance("snipe4th", 20 * 60, true);
-						addInstancePlayer(getID());
+						for i = 1, #members do
+							addInstancePlayer(members[i]);
+						end
 						addInstanceParty(getPartyID());
-						setMap(910500000);
+						warpParty(910500000);
 					else
 						addText("Other parties are challenging on quest clear now. Try again later.");
 						sendOK();
