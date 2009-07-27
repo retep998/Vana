@@ -224,7 +224,7 @@ void Initializing::initializeQuests() {
 		rwa.isbuff = atob(Row[9]);
 		rwa.id = atoi(Row[10]);
 		rwa.count = atoi(Row[11]);
-		rwa.masterlevel = atoi(Row[11]); 
+		rwa.masterlevel = atoi(Row[12]); 
 		rwa.gender = atoi(Row[13]);
 		rwa.prop = atoi(Row[15]);
 
