@@ -100,7 +100,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 					if (player == 0 || !player->getQuests()->isQuestActive(questid))
 						continue;
 
-					int16_t request = Quests::quests[questid].getRequest(QuestRequestTypes::Item)[itemid];
+					int16_t request = Quests::quests[questid].getItemRequestQuantity(itemid);
 					if (player->getInventory()->getItemAmount(itemid) >= request)
 						continue;
 				}
@@ -191,7 +191,7 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 			return;
 		}
 
-		int16_t request = Quests::quests[drop->getQuest()].getRequest(QuestRequestTypes::Item)[drop->getObjectId()];
+		int16_t request = Quests::quests[drop->getQuest()].getItemRequestQuantity(drop->getObjectId());
 		if (player->getInventory()->getItemAmount(drop->getObjectId()) >= request) {
 			DropsPacket::takeNote(player, 0, false, 0);
 			DropsPacket::dontTake(player);

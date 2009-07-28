@@ -34,18 +34,7 @@ using std::vector;
 class Player;
 class PacketReader;
 
-namespace QuestRequestTypes {
-	const int32_t Count = 3;
-	const int32_t Mob = 0x01;
-	const int32_t Item = 0x02;
-	const int32_t Quest = 0x04;
-};
-
-typedef map<int32_t, int16_t, std::less<int32_t> > QuestRequest;
-typedef unordered_map<int32_t, QuestRequest> QuestRequestInfo;
-
 struct QuestRewardInfo {
-	bool start;
 	bool ismesos;
 	bool isitem;
 	bool isexp;
@@ -60,39 +49,72 @@ struct QuestRewardInfo {
 	int32_t id;
 };
 
+typedef vector<QuestRewardInfo> Rewards;
+
 struct QuestRewardsInfo {
-	vector<QuestRewardInfo> rewards;
-	unordered_map<int32_t, vector<QuestRewardInfo> > jobrewards;
+	Rewards rewards;
+	unordered_map<int16_t, Rewards> jobrewards;
 };
 
-struct QuestInfo {
-	bool hasRequests() { return (hasRequests(QuestRequestTypes::Mob) || hasRequests(QuestRequestTypes::Item) || hasRequests(QuestRequestTypes::Quest)); }
-	bool hasRequests(int32_t type) { return (requests.find(type) != requests.end()); }
-	QuestRequest getRequest(int32_t type) { return requests[type]; }
+typedef map<int32_t, int16_t, std::less<int32_t> > MobRequests;
+typedef unordered_map<int32_t, int16_t> ItemRequests;
+typedef unordered_map<int16_t, int8_t> QuestRequests;
 
-	QuestRequestInfo requests;
-	QuestRewardsInfo rewards;
+class Quest {
+public:
+	Quest() : nextquest(0) { }
+	void addReward(bool start, const QuestRewardInfo &info, int16_t job = -1);
+	void addMobRequest(int32_t mobid, int16_t quantity);
+	void addItemRequest(int32_t itemid, int16_t quantity);
+	void addQuestRequest(int16_t questid, int8_t state);
+	void setNextQuest(int16_t questid) { nextquest = questid; }
+	void setQuestId(int16_t q) { id = q; }
+
+	bool hasRequests() { return (hasMobRequests() || hasItemRequests() || hasQuestRequests()); }
+	bool hasMobRequests() { return (mobrequests.size() > 0); }
+	bool hasItemRequests() { return (itemrequests.size() > 0); }
+	bool hasQuestRequests() { return (questrequests.size() > 0); }
+	bool hasStartJobRewards(int16_t job) { return (startrewards.jobrewards.find(job) != startrewards.jobrewards.end()); }
+	bool hasEndJobRewards(int16_t job) { return (endrewards.jobrewards.find(job) != endrewards.jobrewards.end()); }
+	int16_t getNextQuest() const { return nextquest; }
+	int16_t getQuestId() const { return id; }
+	int16_t getMobRequestQuantity(int32_t mobid) { return (mobrequests.find(mobid) != mobrequests.end() ? mobrequests[mobid] : 0); }
+	int16_t getItemRequestQuantity(int32_t itemid) { return (itemrequests.find(itemid) != itemrequests.end() ? itemrequests[itemid] : 0); }
+	MobRequests::iterator getMobBegin() { return mobrequests.begin(); }
+	MobRequests::iterator getMobEnd() { return mobrequests.end(); }
+	ItemRequests::iterator getItemBegin() { return itemrequests.begin(); }
+	ItemRequests::iterator getItemEnd() { return itemrequests.end(); }
+	QuestRequests::iterator getQuestBegin() { return questrequests.begin(); }
+	QuestRequests::iterator getQuestEnd() { return questrequests.end(); }
+	Rewards::iterator getStartRewardsBegin() { return startrewards.rewards.begin(); }
+	Rewards::iterator getStartRewardsEnd() { return startrewards.rewards.end(); }
+	Rewards::iterator getStartJobRewardsBegin(int16_t job) { return startrewards.jobrewards[job].begin(); }
+	Rewards::iterator getStartJobRewardsEnd(int16_t job) { return startrewards.jobrewards[job].end(); }
+	Rewards::iterator getEndRewardsBegin() { return endrewards.rewards.begin(); }
+	Rewards::iterator getEndRewardsEnd() { return endrewards.rewards.end(); }
+	Rewards::iterator getEndJobRewardsBegin(int16_t job) { return endrewards.jobrewards[job].begin(); }
+	Rewards::iterator getEndJobRewardsEnd(int16_t job) { return endrewards.jobrewards[job].end(); }
+private:
+	MobRequests mobrequests;
+	ItemRequests itemrequests;
+	QuestRequests questrequests;
+	QuestRewardsInfo startrewards;
+	QuestRewardsInfo endrewards;
 	int16_t nextquest;
-};
-
-struct QuestMob {
-	QuestMob() : count(0) { }
-	int32_t id;
-	int16_t count;
-	int16_t maxcount;
+	int16_t id;
 };
 
 struct ActiveQuest {
 	ActiveQuest() : done(false) { }
 
 	string getQuestData() const {
-		size_t s = mobs.size();
+		size_t s = kills.size();
 		if (s == 0)
 			return data;
 
 		std::ostringstream info;
-		for (size_t i = 0; i < s; i++) {
-			info << std::setw(3) << std::setfill('0') << mobs[i].count;
+		for (map<int32_t, int16_t, std::less<int32_t> >::const_iterator iter = kills.begin(); iter != kills.end(); iter++) {
+			info << std::setw(3) << std::setfill('0') << iter->second;
 		}
 		return info.str();
 	}
@@ -100,14 +122,11 @@ struct ActiveQuest {
 	int16_t id;
 	bool done;
 	string data;
-	vector<QuestMob> mobs;
+	map<int32_t, int16_t, std::less<int32_t> > kills;
 };
 
 namespace Quests {
-	extern unordered_map<int32_t, QuestInfo> quests;
-	void addRequest(int32_t id, int32_t type, QuestRequest &request);
-	void addReward(int32_t id, QuestRewardsInfo &raws);
-	void setNextQuest(int16_t id, int16_t questid);
+	extern unordered_map<int16_t, Quest> quests;
 	void getQuest(Player *player, PacketReader &packet);
 	void giveFame(Player *player, int32_t amount);
 	bool giveItem(Player *player, int32_t itemid, int16_t amount);
