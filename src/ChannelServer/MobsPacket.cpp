@@ -155,6 +155,17 @@ void MobsPacket::hurtMob(Mob *mob, int32_t amount) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
+void MobsPacket::damageFriendlyMob(Mob *mob, int32_t damage) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_DAMAGE_MOB);
+	packet.add<int32_t>(mob->getId());
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(damage);
+	packet.add<int32_t>(mob->getHp());
+	packet.add<int32_t>(mob->getMHp());
+	Maps::getMap(mob->getMapId())->sendPacket(packet);
+}
+
 void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusInfo> &info, int16_t delay, const vector<int32_t> &reflection) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_APPLY_MOB_STATUS);
@@ -213,7 +224,6 @@ void MobsPacket::showHp(int32_t mapid, int32_t mobid, int8_t per) {
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
-// Boss hp
 void MobsPacket::showBossHp(int32_t mapid, int32_t mobid, int32_t hp, const MobInfo &info) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MAP_EFFECT);

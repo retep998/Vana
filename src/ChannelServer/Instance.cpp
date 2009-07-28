@@ -312,6 +312,10 @@ void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t
 	getLuaInstance()->run(message, parameter1, parameter2, parameter3, parameter4);
 }
 
+void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) {
+	getLuaInstance()->run(message, parameter1, parameter2, parameter3, parameter4, parameter5);
+}
+
 void Instance::sendMessage(InstanceMessages message, const string &parameter1, int32_t parameter2) {
 	getLuaInstance()->run(message, parameter1, parameter2);
 }

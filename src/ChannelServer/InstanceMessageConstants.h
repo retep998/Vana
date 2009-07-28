@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INSTANCEMESSAGECONSTANTS_H
 
 enum InstanceMessages {
+	// 5 parameters
+	FriendlyMobHit, // Mob ID, map mob ID, map ID, HP, max HP
+
 	// 4 parameters
 	PlayerChangeMap, // Player ID, new map ID, old map ID, is party leader
 

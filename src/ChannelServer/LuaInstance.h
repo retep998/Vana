@@ -36,6 +36,7 @@ public:
 	bool run(InstanceMessages message, const string &, int32_t);
 	bool run(InstanceMessages message, int32_t, int32_t, int32_t);
 	bool run(InstanceMessages message, int32_t, int32_t, int32_t, int32_t);
+	bool run(InstanceMessages message, int32_t, int32_t, int32_t, int32_t, int32_t);
 };
 
 namespace LuaExports {

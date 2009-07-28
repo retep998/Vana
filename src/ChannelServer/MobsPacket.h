@@ -37,6 +37,7 @@ namespace MobsPacket {
 	void moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, const Pos &projectiletarget, unsigned char *buf, int32_t len);
 	void healMob(Mob *mob, int32_t amount);
 	void hurtMob(Mob *mob, int32_t amount);
+	void damageFriendlyMob(Mob *mob, int32_t damage);
 	void applyStatus(Mob *mob, int32_t statusmask, const vector<StatusInfo> &info, int16_t delay, const vector<int32_t> &reflection);
 	void removeStatus(Mob *mob, int32_t status);
 	void showHp(Player *player, int32_t mobid, int8_t per);

@@ -129,7 +129,25 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 			break;
 	}
 	if (lua_pcall(luaVm, 4, 0, 0)) {
-		std::cout << lua_tostring(luaVm, -1) << std::endl;
+		handleError();
+		return false;
+	}
+	return true;
+}
+
+bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) {
+	switch (message) {
+		case PlayerChangeMap:
+			lua_getglobal(luaVm, "friendlyHit");
+			lua_pushinteger(luaVm, parameter1);
+			lua_pushinteger(luaVm, parameter2);
+			lua_pushinteger(luaVm, parameter3);
+			lua_pushboolean(luaVm, parameter4);
+			lua_pushboolean(luaVm, parameter5);
+			break;
+	}
+	if (lua_pcall(luaVm, 5, 0, 0)) {
+		handleError();
 		return false;
 	}
 	return true;
