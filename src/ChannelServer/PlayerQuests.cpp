@@ -45,9 +45,9 @@ void PlayerQuests::save() {
 		else {
 			query << ",(";
 		}
-		if (q->second.mobs.size()) {
+		if (q->second.kills.size()) {
 			firstrun2 = true;
-			for (vector<QuestMob>::iterator v = q->second.mobs.begin(); v != q->second.mobs.end(); v++) {
+			for (map<int32_t, int16_t, std::less<int32_t> >::iterator v = q->second.kills.begin(); v != q->second.kills.end(); v++) {
 				if (!firstrun2) {
 					query << ",(";
 				}
@@ -56,8 +56,8 @@ void PlayerQuests::save() {
 				}
 				query << m_player->getId() << ","
 					<< q->first << ","
-					<< v->id << ","
-					<< v->count << ","
+					<< v->first << ","
+					<< v->second << ","
 					<< mysqlpp::quote << q->second.data << ")";
 			}
 		}
@@ -97,7 +97,6 @@ void PlayerQuests::load() {
 	int16_t previous = -1;
 	int16_t current = 0;
 	ActiveQuest curquest;
-	QuestMob curmob;
 	string data;
 	query << "SELECT questid, mobid, mobskilled, data FROM active_quests WHERE charid = " << m_player->getId() << " ORDER BY questid ASC";
 	mysqlpp::StoreQueryResult res = query.store();
@@ -112,22 +111,19 @@ void PlayerQuests::load() {
 		}
 		else if (previous != -1 && current != previous) {
 			m_quests[previous] = curquest;
-			addQuestMobs(previous, true);
 			curquest = ActiveQuest();
 			curquest.id = current;
 			curquest.data = data;
 		}
 		if (mob != 0) {
-			curmob.id = mob;
-			curmob.count = res[i]["mobskilled"];
-			curquest.mobs.push_back(curmob);
-			curmob = QuestMob();
+			int16_t kills = res[i]["mobskilled"];
+			curquest.kills[mob] = kills;
+			m_mobtoquest[mob].push_back(current);
 		}
 		previous = current;
 	}
 	if (previous != -1) {
 		m_quests[previous] = curquest;
-		addQuestMobs(previous, true);
 	}
 
 	query << "SELECT questid, endtime FROM completed_quests WHERE charid = " << m_player->getId();
@@ -141,36 +137,26 @@ void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 	QuestsPacket::acceptQuest(m_player, questid, npcid);
 	addQuest(questid);
 
-	giveRewards(questid, false);
+	giveRewards(questid, true);
 
 	checkDone(m_quests[questid]);
 }
 
 void PlayerQuests::addQuest(int16_t questid) {
-	QuestInfo &questinfo = Quests::quests[questid];
+	Quest &questinfo = Quests::quests[questid];
 	ActiveQuest quest;
 	quest.id = questid;
 	m_quests[questid] = quest;
 	addQuestMobs(questid);
 }
 
-void PlayerQuests::addQuestMobs(int16_t questid, bool dbload) {
-	QuestInfo &questinfo = Quests::quests[questid];
-	if (questinfo.hasRequests(QuestRequestTypes::Mob)) {
-		QuestRequest mobs = questinfo.getRequest(QuestRequestTypes::Mob);
-		QuestMob mob;
+void PlayerQuests::addQuestMobs(int16_t questid) {
+	Quest &questinfo = Quests::quests[questid];
+	if (questinfo.hasMobRequests()) {
 		size_t index = 0;
-		for (QuestRequest::iterator i = mobs.begin(); i != mobs.end(); i++) {
-			mob = (dbload ? m_quests[questid].mobs[index++] : QuestMob());
-			mob.id = i->first;
-			mob.maxcount = i->second;
-			if (dbload) {
-				m_quests[questid].mobs[index - 1] = mob;
-			}
-			else {
-				m_quests[questid].mobs.push_back(mob);
-			}
-			m_mobtoquest[mob.id].push_back(questid);
+		for (MobRequests::iterator i = questinfo.getMobBegin(); i != questinfo.getMobEnd(); i++) {
+			m_quests[questid].kills[i->first] = 0;
+			m_mobtoquest[i->first].push_back(questid);
 		}
 	}
 }
@@ -179,37 +165,34 @@ void PlayerQuests::updateQuestMob(int32_t mobid) {
 	if (m_mobtoquest.find(mobid) != m_mobtoquest.end()) {
 		int16_t qid = 0;
 		ActiveQuest q;
+		Quest realquest;
 		for (size_t i = 0; i < m_mobtoquest[mobid].size(); i++) {
 			qid = m_mobtoquest[mobid][i];
 			q = m_quests[qid];
-			for (size_t k = 0; k < q.mobs.size(); k++) {
-				int16_t maxcount = q.mobs[k].maxcount;
-				if (q.mobs[k].id == mobid && !q.done && q.mobs[k].count < maxcount) {
-					q.mobs[k].count++;
-					QuestsPacket::updateQuest(m_player, q);
-					if (q.mobs[k].count == maxcount) {
-						checkDone(q);
-					}
-					m_quests[qid] = q;
-					break;
+			realquest = Quests::quests[qid];
+			int16_t maxcount = realquest.getMobRequestQuantity(mobid);
+			if (!q.done && q.kills[mobid] < maxcount) {
+				q.kills[mobid] += 1;
+				QuestsPacket::updateQuest(m_player, q);
+				if (q.kills[mobid] == maxcount) {
+					checkDone(q);
 				}
+				m_quests[qid] = q;
 			}
 		}
 	}
 }
 
 void PlayerQuests::checkDone(ActiveQuest &quest) {
-	QuestInfo &questinfo = Quests::quests[quest.id];
-	QuestRequest reqs;
+	Quest &questinfo = Quests::quests[quest.id];
 	quest.done = true;
 	if (!questinfo.hasRequests()) {
 		return;
 	}
-	if (questinfo.hasRequests(QuestRequestTypes::Item)) {
+	if (questinfo.hasItemRequests()) {
 		int32_t iid = 0;
 		int16_t iamt = 0;
-		reqs = questinfo.getRequest(QuestRequestTypes::Item);
-		for (QuestRequest::iterator i = reqs.begin(); i != reqs.end(); i++) {
+		for (ItemRequests::iterator i = questinfo.getItemBegin(); i != questinfo.getItemEnd(); i++) {
 			iid = i->first;
 			iamt = i->second;
 			if ((m_player->getInventory()->getItemAmount(iid) < iamt && iamt > 0) || (iamt == 0 && m_player->getInventory()->getItemAmount(iid) != 0)) {
@@ -218,17 +201,10 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 			}
 		}
 	}
-	else if (questinfo.hasRequests(QuestRequestTypes::Mob)) {
+	else if (questinfo.hasMobRequests()) {
 		int32_t killed = 0;
-		reqs = questinfo.getRequest(QuestRequestTypes::Mob);
-		for (QuestRequest::iterator i = reqs.begin(); i != reqs.end(); i++) {
-			for (uint32_t j = 0; j < quest.mobs.size(); j++) {
-				if (quest.mobs[j].id == i->first) {
-					killed = quest.mobs[j].count;
-					break;
-				}
-			}
-			if (killed < i->second) {
+		for (MobRequests::iterator i = questinfo.getMobBegin(); i != questinfo.getMobEnd(); i++) {
+			if (quest.kills[i->first] < i->second) {
 				quest.done = false;
 				break;
 			}
@@ -240,13 +216,12 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 }
 
 void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
-	QuestInfo &questinfo = Quests::quests[questid];
+	Quest &questinfo = Quests::quests[questid];
 
-	giveRewards(questid, true);
+	giveRewards(questid, false);
 
-	if (questinfo.hasRequests(QuestRequestTypes::Mob)) {
-		QuestRequest mobs = questinfo.getRequest(QuestRequestTypes::Mob);
-		for (QuestRequest::iterator i = mobs.begin(); i != mobs.end(); i++) {
+	if (questinfo.hasMobRequests()) {
+		for (MobRequests::iterator i = questinfo.getMobBegin(); i != questinfo.getMobEnd(); i++) {
 			for (size_t k = 0; k < m_mobtoquest[i->first].size(); k++) {
 				if (m_mobtoquest[i->first][k] == questid) {
 					if (m_mobtoquest[i->first].size() == 1) { // Only one quest for this mob
@@ -263,45 +238,58 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 	m_quests.erase(questid);
 	int64_t endtime = TimeUtilities::getServerTime();
 	m_completed[questid] = endtime;
-	QuestsPacket::questFinish(m_player, questid, npcid, questinfo.nextquest, endtime);
+	QuestsPacket::questFinish(m_player, questid, npcid, questinfo.getNextQuest(), endtime);
 }
 
 bool PlayerQuests::giveRewards(int16_t questid, bool start) {
-	QuestInfo &questinfo = Quests::quests[questid];
+	Quest &questinfo = Quests::quests[questid];
 	QuestRewardInfo info;
 	vector<QuestRewardInfo> items;
 	int32_t chance = 0;
-	size_t i;
-	for (i = 0; i < questinfo.rewards.rewards.size(); i++) { // Give all applicable rewards
-		info = questinfo.rewards.rewards[i];
-		if ((info.start && start) || (!info.start && !start)) {
-			if (info.isitem && info.prop > 0) {
-				chance += info.prop;
-				items.push_back(info);		
-			}
-			else {
-				giveRewards(info);
-			}
+	Rewards::iterator startiter;
+	Rewards::iterator enditer;
+	Rewards::iterator iter;
+	if (start) {
+			startiter = questinfo.getStartRewardsBegin();
+			enditer = questinfo.getStartRewardsEnd();
+	}
+	else {
+			startiter = questinfo.getEndRewardsBegin();
+			enditer = questinfo.getEndRewardsEnd();
+	}
+	for (iter = startiter; iter != enditer; iter++) { // Give all applicable rewards
+		if (iter->isitem && iter->prop > 0) {
+			chance += iter->prop;
+			items.push_back(*iter);		
+		}
+		else {
+			giveRewards(*iter);
 		}
 	}
-	if (questinfo.rewards.jobrewards.find(m_player->getJob()) != questinfo.rewards.jobrewards.end()) {
-		for (i = 0; i < questinfo.rewards.jobrewards[m_player->getJob()].size(); i++) {
-			info = questinfo.rewards.jobrewards[m_player->getJob()][i];
-			if ((info.start && start) || (!info.start && !start)) {
-				if (info.isitem && info.prop > 0) {
-					chance += info.prop;
-					items.push_back(info);		
-				}
-				else {
-					giveRewards(info);
-				}
+	int16_t job = m_player->getJob();
+	if ((start && questinfo.hasStartJobRewards(job)) || (!start && questinfo.hasEndJobRewards(job))) {
+		if (start) {
+			startiter = questinfo.getStartJobRewardsBegin(job);
+			enditer = questinfo.getStartJobRewardsEnd(job);
+		}
+		else {
+			startiter = questinfo.getEndJobRewardsBegin(job);
+			enditer = questinfo.getEndJobRewardsEnd(job);
+		}
+		for (iter = startiter; iter != enditer; iter++) {
+			if (iter->isitem && iter->prop > 0) {
+				chance += iter->prop;
+				items.push_back(*iter);		
+			}
+			else {
+				giveRewards(*iter);
 			}
 		}
 	}
 	if (chance > 0) {
 		int32_t random = Randomizer::Instance()->randInt(chance - 1);
 		chance = 0;
-		for (i = 0; i < items.size(); i++) {
+		for (size_t i = 0; i < items.size(); i++) {
 			info = items[i];
 			if (chance >= random) {
 				QuestsPacket::giveItem(m_player, info.id, info.count);
