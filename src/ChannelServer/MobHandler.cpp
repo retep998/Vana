@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MobHandler.h"
 #include "GameLogicUtilities.h"
+#include "Instance.h"
+#include "InstanceMessageConstants.h"
 #include "Maps.h"
 #include "Mist.h"
 #include "Mob.h"
@@ -114,6 +116,10 @@ void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 	Mob *taker = Maps::getMap(player->getMap())->getMob(mobto);
 	if (damager != 0 && taker != 0) {
 		taker->applyDamage(playerid, damage);
+		Map *m = Maps::getMap(player->getMap());
+		if (m->getInstance() != 0) {
+			m->getInstance()->sendMessage(FriendlyMobHit, taker->getMobId(), taker->getId(), taker->getMapId(), taker->getHp(), taker->getMHp());
+		}
 	}
 }
 

@@ -40,7 +40,7 @@ elseif n == 9000011 then
 	sendBackNext();
 
 	addText("Hey... why don't you go with me, then?\r\n");
-elseif n == 9000013
+elseif n == 9000013 then
 	addText(". I've been waiting for my brothers for a while, but they haven't gotten here yet. I'm sick and tired of doing things by myself. At least during the event, I don't feel quite so lonely with so many people around me and all. All events require a limited number of people, so if I don't get there fast enough, I won't be able to join.");
 	sendNext();
 

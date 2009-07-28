@@ -17,4 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Leafre Reactor - Egg for Phoenix Quest (4th job Bowmaster)
 
-spawnMob(9300089);
+if getState() == 3 then
+	spawnMob(9300089);
+end
+

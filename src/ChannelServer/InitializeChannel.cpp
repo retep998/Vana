@@ -124,57 +124,64 @@ void Initializing::initializeQuests() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW Row;
-	while (Row = res.fetch_raw_row()) {
-		// Col0 : Quest ID
-		//    1 : Next Quest ID
+	Quest curquest;
 
-		Quests::setNextQuest(atoi(Row[0]), atoi(Row[1]));
+	enum QuestData {
+		QuestIdData = 0,
+		NextQuest
+	};
+	while (Row = res.fetch_raw_row()) {
+		int16_t questid = atoi(Row[QuestIdData]);
+
+		curquest.setNextQuest(atoi(Row[NextQuest]));
+		curquest.setQuestId(questid);
+
+		Quests::quests[questid] = curquest;
 	}
 
 	// Quest requests
-	string queries[QuestRequestTypes::Count] = {
-		"SELECT questid, oid, count FROM questrequestdata WHERE mob = 1 ORDER BY questid, id ASC",
-		"SELECT questid, oid, count FROM questrequestdata WHERE item = 1 ORDER BY questid, id ASC",
-		"SELECT questid, oid, count FROM questrequestdata WHERE quest = 1 ORDER BY questid, id ASC"
+	int16_t currentid = 0;
+	int16_t previousid = -1;
+
+	query << "SELECT * FROM questrequestdata ORDER BY questid, id ASC";
+	res = query.use();
+
+	enum QuestRequestData {
+		TableId = 0,
+		QuestId, IsMob, IsItem, IsQuest, ObjectIdRequest,
+		CountRequest
 	};
-	int32_t reqtypes[QuestRequestTypes::Count] = {
-		QuestRequestTypes::Mob,
-		QuestRequestTypes::Item,
-		QuestRequestTypes::Quest
-	};
-	int32_t currentid = 0;
-	int32_t previousid = -1;
-	map<int32_t, int16_t, std::less<int32_t> > reqs;
+	while (Row = res.fetch_raw_row()) {
+		currentid = atoi(Row[QuestId]);
 
-	for (int32_t i = 0; i < QuestRequestTypes::Count; i++) {
-		query << queries[i];
-		res = query.use();
-
-		currentid = 0;
-		previousid = -1;
-
-		while (Row = res.fetch_raw_row()) {
-			// Col0 : Quest ID
-			//    1 : Object ID
-			//    2 : Count
-
-			currentid = atoi(Row[0]);
-
-			if (currentid != previousid && previousid != -1) {
-				Quests::addRequest(previousid, reqtypes[i], reqs);
-				reqs.clear();
-			}
-
-			int32_t id = atoi(Row[1]);
-			int16_t count = atoi(Row[2]);
-			reqs[id] = count;
-
-			previousid = currentid;
+		if (previousid == -1) {
+			curquest = Quests::quests[currentid];
 		}
-		if (previousid != -1) {
-			Quests::addRequest(previousid, reqtypes[i], reqs);
-			reqs.clear();
+		if (currentid != previousid && previousid != -1) {
+			Quests::quests[previousid] = curquest;
+			curquest = Quests::quests[currentid];
 		}
+		
+		bool ismob = atob(Row[IsMob]);
+		bool isitem = atob(Row[IsItem]);
+		bool isquest = atob(Row[IsQuest]);
+		int32_t id = atoi(Row[ObjectIdRequest]);
+		int16_t count = atoi(Row[CountRequest]);
+
+		if (ismob) {
+			curquest.addMobRequest(id, count);
+		}
+		else if (isitem) {
+			curquest.addItemRequest(id, count);
+		}
+		else if (isquest) {
+			curquest.addQuestRequest(static_cast<int16_t>(id), static_cast<int8_t>(count));
+		}
+
+		previousid = currentid;
+	}
+	if (previousid != -1) {
+		Quests::quests[previousid] = curquest;
 	}
 
 	// Quest Rewards
@@ -184,123 +191,107 @@ void Initializing::initializeQuests() {
 	currentid = 0;
 	previousid = -1;
 	QuestRewardInfo rwa;
-	QuestRewardsInfo rwas;
 
+	enum QuestRewardData {
+		RowId = 0,
+		QuestIdReward, Start, Item, Exp, Mesos,
+		Fame, Skill, MasterLevelOnly, Buff, ObjectIdReward,
+		CountReward, MasterLevel, Gender, Job, Prop
+	};
 	while (Row = res.fetch_raw_row()) {
-		// Col0 : Row ID
-		//    1 : Quest ID
-		//    2 : Start
-		//    3 : Item
-		//    4 : EXP
-		//    5 : Mesos
-		//    6 : Fame
-		//    7 : Skill
-		//    8 : Only master level
-		//    9 : Buff
-		//   10 : Object ID
-		//   11 : Count
-		//   12 : Master level
-		//   13 : Gender
-		//   14 : Job
-		//   15 : Prop
-
-		currentid = atoi(Row[1]);
+		currentid = atoi(Row[QuestIdReward]);
 
 		if (currentid != previousid && previousid != -1) {
-			Quests::addReward(previousid, rwas);
-			rwas.rewards.clear();
-			rwas.jobrewards.clear();
+			Quests::quests[previousid] = curquest;
+			curquest = Quests::quests[currentid];
 		}
 
-		int32_t job = atoi(Row[14]);
+		int16_t job = atoi(Row[Job]);
+		bool start = !atob(Row[Start]);
 
-		rwa.start = atob(Row[2]);
-		rwa.isitem = atob(Row[3]);
-		rwa.isexp = atob(Row[4]);
-		rwa.ismesos = atob(Row[5]);
-		rwa.isfame = atob(Row[6]);
-		rwa.isskill = atob(Row[7]);
-		rwa.ismasterlevelonly = atob(Row[8]);
-		rwa.isbuff = atob(Row[9]);
-		rwa.id = atoi(Row[10]);
-		rwa.count = atoi(Row[11]);
-		rwa.masterlevel = atoi(Row[11]); 
-		rwa.gender = atoi(Row[13]);
-		rwa.prop = atoi(Row[15]);
+		rwa.isitem = atob(Row[Item]);
+		rwa.isexp = atob(Row[Exp]);
+		rwa.ismesos = atob(Row[Mesos]);
+		rwa.isfame = atob(Row[Fame]);
+		rwa.isskill = atob(Row[Skill]);
+		rwa.ismasterlevelonly = atob(Row[MasterLevelOnly]);
+		rwa.isbuff = atob(Row[Buff]);
+		rwa.id = atoi(Row[ObjectIdReward]);
+		rwa.count = atoi(Row[CountReward]);
+		rwa.masterlevel = atoi(Row[MasterLevel]); 
+		rwa.gender = atoi(Row[Gender]);
+		rwa.prop = atoi(Row[Prop]);
 
-		if (job == -1) {
-			rwas.rewards.push_back(rwa);
-		}
-		else if (GameLogicUtilities::isNonBitJob(job)) {
-			rwas.jobrewards[job].push_back(rwa);
+		if ((job == -1) || (GameLogicUtilities::isNonBitJob(job))) {
+			curquest.addReward(start, rwa, job);
 		}
 		else { // Job tracks are indicated by series of bits between 1 and 32
 			 // Beginners
 			if ((job & 0x01) != 0) {
-				rwas.jobrewards[Jobs::JobIds::Beginner].push_back(rwa);
+				curquest.addReward(start, rwa, Jobs::JobIds::Beginner);
 			}
 			// Warriors
 			if ((job & 0x02) != 0) {
-				rwas.jobrewards[Jobs::JobIds::Swordsman].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Fighter].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Crusader].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Hero].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Page].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::WhiteKnight].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Paladin].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Spearman].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::DragonKnight].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::DarkKnight].push_back(rwa);
+				curquest.addReward(start, rwa, Jobs::JobIds::Swordsman);
+				curquest.addReward(start, rwa, Jobs::JobIds::Fighter);
+				curquest.addReward(start, rwa, Jobs::JobIds::Crusader);
+				curquest.addReward(start, rwa, Jobs::JobIds::Hero);
+				curquest.addReward(start, rwa, Jobs::JobIds::Page);
+				curquest.addReward(start, rwa, Jobs::JobIds::WhiteKnight);
+				curquest.addReward(start, rwa, Jobs::JobIds::Paladin);
+				curquest.addReward(start, rwa, Jobs::JobIds::Spearman);
+				curquest.addReward(start, rwa, Jobs::JobIds::DragonKnight);
+				curquest.addReward(start, rwa, Jobs::JobIds::DarkKnight);
 			}
 			// Magicians
 			if ((job & 0x04) != 0) {
-				rwas.jobrewards[Jobs::JobIds::Magician].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::FPWizard].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::FPMage].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::FPArchMage].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::ILWizard].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::ILMage].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::ILArchMage].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Cleric].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Priest].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Bishop].push_back(rwa);
+				curquest.addReward(start, rwa, Jobs::JobIds::Magician);
+				curquest.addReward(start, rwa, Jobs::JobIds::FPWizard);
+				curquest.addReward(start, rwa, Jobs::JobIds::FPMage);
+				curquest.addReward(start, rwa, Jobs::JobIds::FPArchMage);
+				curquest.addReward(start, rwa, Jobs::JobIds::ILWizard);
+				curquest.addReward(start, rwa, Jobs::JobIds::ILMage);
+				curquest.addReward(start, rwa, Jobs::JobIds::ILArchMage);
+				curquest.addReward(start, rwa, Jobs::JobIds::Cleric);
+				curquest.addReward(start, rwa, Jobs::JobIds::Priest);
+				curquest.addReward(start, rwa, Jobs::JobIds::Bishop);
 			}
 			// Bowmen
 			if ((job & 0x08) != 0) {
-				rwas.jobrewards[Jobs::JobIds::Archer].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Hunter].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Ranger].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Bowmaster].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Crossbowman].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Sniper].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Marksman].push_back(rwa);
+				curquest.addReward(start, rwa, Jobs::JobIds::Archer);
+				curquest.addReward(start, rwa, Jobs::JobIds::Hunter);
+				curquest.addReward(start, rwa, Jobs::JobIds::Ranger);
+				curquest.addReward(start, rwa, Jobs::JobIds::Bowmaster);
+				curquest.addReward(start, rwa, Jobs::JobIds::Crossbowman);
+				curquest.addReward(start, rwa, Jobs::JobIds::Sniper);
+				curquest.addReward(start, rwa, Jobs::JobIds::Marksman);
 			}
 			// Thieves
 			if ((job & 0x10) != 0) {
-				rwas.jobrewards[Jobs::JobIds::Rogue].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Assassin].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Hermit].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::NightLord].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Bandit].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::ChiefBandit].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Shadower].push_back(rwa);
+				curquest.addReward(start, rwa, Jobs::JobIds::Rogue);
+				curquest.addReward(start, rwa, Jobs::JobIds::Assassin);
+				curquest.addReward(start, rwa, Jobs::JobIds::Hermit);
+				curquest.addReward(start, rwa, Jobs::JobIds::NightLord);
+				curquest.addReward(start, rwa, Jobs::JobIds::Bandit);
+				curquest.addReward(start, rwa, Jobs::JobIds::ChiefBandit);
+				curquest.addReward(start, rwa, Jobs::JobIds::Shadower);
 			}
 			// Pirates
 			if ((job & 0x20) != 0) {
-				rwas.jobrewards[Jobs::JobIds::Pirate].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Brawler].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Marauder].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Buccaneer].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Gunslinger].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Outlaw].push_back(rwa);
-				rwas.jobrewards[Jobs::JobIds::Corsair].push_back(rwa);
+				curquest.addReward(start, rwa, Jobs::JobIds::Pirate);
+				curquest.addReward(start, rwa, Jobs::JobIds::Brawler);
+				curquest.addReward(start, rwa, Jobs::JobIds::Marauder);
+				curquest.addReward(start, rwa, Jobs::JobIds::Buccaneer);
+				curquest.addReward(start, rwa, Jobs::JobIds::Gunslinger);
+				curquest.addReward(start, rwa, Jobs::JobIds::Outlaw);
+				curquest.addReward(start, rwa, Jobs::JobIds::Corsair);
 			}
 		}
 
 		previousid = currentid;
 	}
 	if (previousid != -1) {
-		Quests::addReward(previousid, rwas);
+		Quests::quests[previousid] = curquest;
 	}
 	std::cout << "DONE" << std::endl;
 }

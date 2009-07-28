@@ -195,6 +195,9 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 		else if (info.boss) { // Minibosses
 			MobsPacket::showHp(mapid, id, percent);
 		}
+		else if (info.friendly) {
+			MobsPacket::damageFriendlyMob(this, damage);
+		}
 		else if (player != 0) {
 			MobsPacket::showHp(player, id, percent);
 		}

@@ -117,6 +117,7 @@ public:
 	void sendMessage(InstanceMessages message, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t);
+	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, const string &, int32_t);
 private:
 	scoped_ptr<Timer::Container> m_timers; // Timer container for the instance

@@ -91,6 +91,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_PARTY_HP_BAR 0x9c
 #define SEND_CHAIR_ACTION 0xa0
 #define SEND_GAIN_ITEM 0xa1 // Gain item notice in chat
+#define SEND_MAP_TELEPORT 0xa2 // Instantaneous transfer
 #define SEND_UPDATE_QUEST 0xa6
 #define SEND_INSTRUCTION_BUBBLE 0xa9
 #define SEND_COOLDOWN 0xad // Skill cooldown

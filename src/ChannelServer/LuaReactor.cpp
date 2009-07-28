@@ -32,6 +32,7 @@ LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactor
 	setVariable("mapid", mapid);
 
 	// Reactor
+	lua_register(luaVm, "getState", &LuaExports::getState);
 	lua_register(luaVm, "reset", &LuaExports::reset);
 	lua_register(luaVm, "setState", &LuaExports::setStateReactor);
 
@@ -55,6 +56,11 @@ Reactor * LuaExports::getReactor(lua_State *luaVm) {
 }
 
 // Reactor
+int LuaExports::getState(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getReactor(luaVm)->getState());
+	return 1;
+}
+
 int LuaExports::reset(lua_State *luaVm) {
 	getReactor(luaVm)->revive();
 	getReactor(luaVm)->setState(0, true);

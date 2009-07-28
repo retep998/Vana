@@ -95,10 +95,11 @@ namespace LuaExports {
 	int getSkillLevel(lua_State *luaVm);
 
 	// Quest
+	int getQuestData(lua_State *luaVm);
 	int isQuestActive(lua_State *luaVm);
+	int isQuestInactive(lua_State *luaVm);
 	int isQuestCompleted(lua_State *luaVm);
 	int setQuestData(lua_State *luaVm);
-	int getQuestData(lua_State *luaVm);
 
 	// Inventory
 	int addSlots(lua_State *luaVm);

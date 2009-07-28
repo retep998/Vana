@@ -23,28 +23,12 @@ function beginInstance()
 	end
 end
 
-function playerDeath(playerid)
-
-end
-
 function playerDisconnect(playerid, ispartyleader)
 	startInstanceTimer("clean", 1, false);
 end
 
-function instanceTimerEnd(fromtimer)
-
-end
-
 function timerEnd(name, fromtimer)
 	cleanUpPap();
-end
-
-function mobDeath(mobid, mapmobid, mapid)
-
-end
-
-function mobSpawn(mobid, mapmobid, mapid)
-
 end
 
 function changeMap(playerid, newmap, oldmap, ispartyleader)
@@ -52,14 +36,6 @@ function changeMap(playerid, newmap, oldmap, ispartyleader)
 		removeInstancePlayer(playerid);
 		startInstanceTimer("clean", 1, false);
 	end
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
 end
 
 function cleanUpPap()
@@ -70,3 +46,11 @@ function cleanUpPap()
 		markForDelete();
 	end
 end
+
+function playerDeath(playerid) end
+function instanceTimerEnd(fromtimer) end
+function mobDeath(mobid, mapmobid, mapid) end
+function mobSpawn(mobid, mapmobid, mapid) end
+function friendlyHit(mobid, mapmobid, mapid, hp, maxhp) end
+function partyDisband(partyid) end
+function partyRemoveMember(partyid, playerid) end

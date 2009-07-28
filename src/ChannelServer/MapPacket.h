@@ -46,6 +46,7 @@ namespace MapPacket {
 	void showMist(Player *player, Mist *mist);
 	void spawnMist(int32_t mapid, Mist *mist);
 	void removeMist(int32_t mapid, int32_t id);
+	void instantWarp(Player *player, int8_t pid);
 };
 
 #endif

@@ -19,10 +19,6 @@ function beginInstance()
 	addInstanceMap(240040611);
 end
 
-function playerDeath(playerid)
-
-end
-
 function playerDisconnect(playerid, ispartyleader)
 	finish(playerid);
 end
@@ -35,30 +31,10 @@ function instanceTimerEnd(fromtimer)
 	end
 end
 
-function timerEnd(name, fromtimer)
-
-end
-
-function mobDeath(mobid, mapmobid, mapid)
-
-end
-
-function mobSpawn(mobid, mapmobid, mapid)
-
-end
-
 function changeMap(playerid, newmap, oldmap, ispartyleader)
 	if not isInstanceMap(newmap) then
 		finish(playerid);
 	end
-end
-
-function partyDisband(partyid)
-
-end
-
-function partyRemoveMember(partyid, playerid)
-
 end
 
 function finish(playerid)
@@ -73,3 +49,11 @@ function removeNPC()
 		removeNPC(240040611, g);
 	end
 end
+
+function playerDeath(playerid) end
+function timerEnd(name, fromtimer) end
+function mobDeath(mobid, mapmobid, mapid) end
+function mobSpawn(mobid, mapmobid, mapid) end
+function friendlyHit(mobid, mapmobid, mapid, hp, maxhp) end
+function partyDisband(partyid) end
+function partyRemoveMember(partyid, playerid) end
