@@ -1,4 +1,4 @@
-/*
+--[[
 Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,27 +14,26 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-#ifndef INVENTORY_H
-#define INVENTORY_H
+--]]
+-- A subset of Lua functions that helps with common job-related tasks
 
-#include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <vector>
+function getJobLine()
+	local g = getJob();
+	g = (g - (g % 100)) / 100;
+	return g;
+end
 
-using std::vector;
-using std::tr1::unordered_map;
+function getJobTrack()
+	local g = getJob();
+	g = ((g - (g % 10)) / 10) % 10;
+	return g;
+end
 
-class Player;
-class PacketReader;
-struct Item;
+function getJobProgression()
+	local g = getJob() % 10;
+	return g;
+end
 
-namespace Inventory {
-	int16_t addItem(Player *player, Item *item, bool is = false);
-	void addNewItem(Player *player, int32_t itemid, int16_t amount);
-	void takeItem(Player *player, int32_t itemid, uint16_t howmany);
-	void useItem(Player *player, int32_t itemid);
-	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
-};
-
-#endif
+function isCygnus()
+	return getJob() >= 1000;
+end

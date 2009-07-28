@@ -590,6 +590,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\InventoryHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\MobHandler.cpp"
 					>
 				</File>
@@ -1017,6 +1021,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\DropHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\InventoryHandler.h"
 					>
 				</File>
 				<File

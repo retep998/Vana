@@ -1,4 +1,4 @@
-/*
+--[[
 Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,27 +14,25 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-#ifndef INVENTORY_H
-#define INVENTORY_H
+--]]
+-- Sparkling Crystal
 
-#include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <vector>
+addText("You can use the Sparkling Crystal to go back to the real world. Are you sure you want to go back?");
+yes = askYesNo();
 
-using std::vector;
-using std::tr1::unordered_map;
-
-class Player;
-class PacketReader;
-struct Item;
-
-namespace Inventory {
-	int16_t addItem(Player *player, Item *item, bool is = false);
-	void addNewItem(Player *player, int32_t itemid, int16_t amount);
-	void takeItem(Player *player, int32_t itemid, uint16_t howmany);
-	void useItem(Player *player, int32_t itemid);
-	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
-};
-
-#endif
+if yes == 1 then
+	tomap = 0;
+	m = getMap();
+	if m == 108010101 then
+		tomap = 100000000;
+	elseif m == 108010201 then
+		tomap = 101000000;
+	elseif m == 108010301 then
+		tomap = 102000000;
+	elseif m == 108010401 then
+		tomap = 103000000;
+	elseif m == 108010501 then
+		tomap = 120000000;
+	end
+	setMap(tomap);
+end

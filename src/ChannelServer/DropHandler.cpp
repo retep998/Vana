@@ -105,10 +105,8 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 						continue;
 				}
 
-				if (GameLogicUtilities::isEquip(itemid))
-					drop = new Drop(mapid, Item(itemid, true), pos, (partyid > 0 ? partyid : playerid));
-				else
-					drop = new Drop(mapid, Item(itemid, amount), pos, (partyid > 0 ? partyid : playerid));
+				Item f = (GameLogicUtilities::isEquip(itemid) ? Item(itemid, true) : Item(itemid, amount));
+				drop = new Drop(mapid, f, pos, playerid);
 
 				if (questid > 0) {
 					drop->setPlayerId(playerid);
@@ -123,7 +121,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 						mesos = (mesos * Skills::skills[Jobs::Hermit::MesoUp][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::MesoUp)].x) / 100;
 					}
 				}
-				drop = new Drop(mapid, mesos, pos, (partyid > 0 ? partyid : playerid));
+				drop = new Drop(mapid, mesos, pos, playerid);
 			}
 		}
 
@@ -136,6 +134,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			}
 			else if (partyid > 0) {
 				drop->setType(1);
+				drop->setOwner(partyid);
 			}
 			drop->setTime(100);
 			drop->doDrop(origin);

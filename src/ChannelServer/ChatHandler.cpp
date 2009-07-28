@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "IpUtilities.h"
 #include "ItemDataProvider.h"
+#include "MapDataProvider.h"
 #include "MapleSession.h"
 #include "MapPacket.h"
 #include "Maps.h"
@@ -158,7 +159,7 @@ void ChatHandler::initializeCommands() {
 	commandsyntax["worldmessage"] = "<${notice | popup | event | purple}> <$message string>";
 	commandsyntax["globalmessage"] = "<${notice | popup | event | purple}> <$message string>";
 	commandsyntax["kill"] = "<${players | gm | all | me} | $playername>";
-	commandsyntax["lookup"] = "<${item | skill | map | mob | npc | quest | id}> <$search string>";
+	commandsyntax["lookup"] = "<${item | skill | map | mob | npc | quest | continent | id}> <$search string | #id>";
 	commandsyntax["map"] = "<${town | mapstring | bossmapstring} | #mapid>";
 	commandsyntax["job"] = "<${jobstring} | #jobid>";
 	commandsyntax["level"] = "<#level>";
@@ -225,10 +226,11 @@ void ChatHandler::initializeCommands() {
 	commandnotes["kill"].push_back("If you are GM level 1, you can only kill yourself with this.");
 	commandnotes["kill"].push_back("If you are above GM level 1, you may kill GMs, players, everyone on a map, yourself, or the specified player.");
 	commandnotes["lookup"].push_back("Uses the database to give you the string values for an ID or the IDs for a given string value.");
+	commandnotes["lookup"].push_back("Use !help map to see valid string values for continent lookup.");
 	commandnotes["map"].push_back("Warps you to a desired map.");
 	commandnotes["map"].push_back("Valid map strings:");
 	commandnotes["map"].push_back("southperry | amherst");
-	commandnotes["map"].push_back("gm | fm | happyville");
+	commandnotes["map"].push_back("gm | fm | happyville | town | here");
 	commandnotes["map"].push_back("showa | armory | shrine | singapore | quay");
 	commandnotes["map"].push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port");
 	commandnotes["map"].push_back("4th | orbis | nath | mine | leafre | mulung | herbtown | ariant");
@@ -241,11 +243,11 @@ void ChatHandler::initializeCommands() {
 	commandnotes["job"].push_back("Sets your job.");
 	commandnotes["job"].push_back("Valid job strings:");
 	commandnotes["job"].push_back("beginner");
-	commandnotes["job"].push_back("warrior - fighter | sader | hero, page | wk | paladin, spearman | dk | drk");
-	commandnotes["job"].push_back("magician - fpwiz | fpmage | fparch, ilwiz | ilmage | ilarch, cleric | priest | bishop");
-	commandnotes["job"].push_back("bowman - hunter | ranger | bm, xbowman | sniper | marksman");
-	commandnotes["job"].push_back("thief - sin | hermit | nl, dit | cb | shadower");
-	commandnotes["job"].push_back("pirate - brawler | marauder | buccaneer, gunslinger | outlaw | corsair");
+	commandnotes["job"].push_back("warrior - fighter | sader | hero | page | wk | paladin | spearman | dk | drk");
+	commandnotes["job"].push_back("magician - fpwiz | fpmage | fparch | ilwiz | ilmage | ilarch | cleric | priest | bishop");
+	commandnotes["job"].push_back("bowman - hunter | ranger | bm | xbowman | sniper | marksman");
+	commandnotes["job"].push_back("thief - sin | hermit | nl | dit | cb | shadower");
+	commandnotes["job"].push_back("pirate - brawler | marauder | buccaneer | gunslinger | outlaw | corsair");
 	commandnotes["job"].push_back("gm");
 	commandnotes["job"].push_back("sgm");
 	commandnotes["level"].push_back("Sets your player's level to the specified amount.");
@@ -659,7 +661,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 
 						else if (matches[1] == "id")  type = 100;
 
-						if (type != 0) {
+						else if (matches[1] == "continent") type = 200;
+
+						if (type != 0 && type < 200) {
 							mysqlpp::Query query = Database::getDataDB().query();
 							if (type == 100) {
 								query << "SELECT objectid, name FROM stringdata WHERE objectid = " << matches[2];
@@ -680,8 +684,18 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 								}
 							}
 						}
+						else if (type == 200) {
+							int32_t mapid = getMap(matches[2], player);
+							if (Maps::getMap(mapid) != 0) {
+								string message = boost::lexical_cast<string>(mapid) + " : " + boost::lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
+								PlayerPacket::showMessage(player, message, 6);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Invalid map", 6);
+							}
+						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, id}", 6);
+							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id}", 6);
 						}
 					}
 					else {
@@ -691,62 +705,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				}
 				case CmdMap: {
 					if (args.length() != 0) {
-						int32_t mapid = -1;
-						if (args == "town") mapid = Maps::getMap(player->getMap())->getInfo()->rm;
-						else if (args == "southperry") mapid = 60000;
-						else if (args == "amherst") mapid = 1010000;
-						else if (args == "gm") mapid = 180000000;
-						else if (args == "fm") mapid = 910000000;
-						else if (args == "4th") mapid = 240010501;
-						else if (args == "showa") mapid = 801000000;
-						else if (args == "armory") mapid = 801040004;
-						else if (args == "shrine") mapid = 800000000;
-						else if (args == "mansion") mapid = 682000000;
-						else if (args == "henesys") mapid = 100000000;
-						else if (args == "perion") mapid = 102000000;
-						else if (args == "ellinia") mapid = 101000000;
-						else if (args == "sleepywood") mapid = 105040300;
-						else if (args == "lith") mapid = 104000000;
-						else if (args == "florina") mapid = 110000000;
-						else if (args == "kerning") mapid = 103000000;
-						else if (args == "port") mapid = 120000000;
-						else if (args == "orbis") mapid = 200000000;
-						else if (args == "nath") mapid = 211000000;
-						else if (args == "ludi") mapid = 220000000;
-						else if (args == "kft") mapid = 222000000;
-						else if (args == "aqua") mapid = 230000000;
-						else if (args == "omega") mapid = 221000000;
-						else if (args == "leafre") mapid = 240000000;
-						else if (args == "mulung") mapid = 250000000;
-						else if (args == "herbtown") mapid = 251000000;
-						else if (args == "ariant") mapid = 260000000;
-						else if (args == "nlc") mapid = 600000000;
-						else if (args == "amoria") mapid = 680000000;
-						else if (args == "happyville") mapid = 209000000;
-						else if (args == "crimsonwood") mapid = 610020006;
-						else if (args == "singapore") mapid = 540000000;
-						else if (args == "quay") mapid = 541000000;
-						// Boss maps
-						else if (args == "ergoth") mapid = 990000900;
-						else if (args == "pap") mapid = 220080001;
-						else if (args == "zakum") mapid = 280030000;
-						else if (args == "horntail") mapid = 240060200;
-						else if (args == "lordpirate") mapid = 925100500;
-						else if (args == "alishar") mapid = 922010900;
-						else if (args == "papapixie") mapid = 920010800;
-						else if (args == "kingslime") mapid = 103000804;
-						else if (args == "pianus") mapid = 230040420;
-						else if (args == "manon") mapid = 240020401;
-						else if (args == "griffey") mapid = 240020101;
-						else if (args == "jrbalrog") mapid = 105090900;
-						else if (args == "grandpa") mapid = 801040100;
-						else if (args == "anego") mapid = 801040003;
-						else if (args == "tengu") mapid = 800020130;
-						else {
-							char *endptr;
-							mapid = strtol(args.c_str(), &endptr, 0);
-							if (strlen(endptr) != 0) mapid = -1;
-						}
+						int32_t mapid = getMap(args, player);
 						if (Maps::getMap(mapid))
 							player->setMap(mapid);
 						else
@@ -1143,6 +1102,67 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 		return;
 	}
 	PlayersPacket::showChat(player, message, bubbleOnly);
+}
+
+int32_t ChatHandler::getMap(const string &query, Player *player) {
+	int32_t mapid = -1;
+	if (query == "here") mapid = player->getMap();
+	else if (query == "town") mapid = Maps::getMap(player->getMap())->getInfo()->rm;
+	else if (query == "southperry") mapid = 60000;
+	else if (query == "amherst") mapid = 1010000;
+	else if (query == "gm") mapid = 180000000;
+	else if (query == "fm") mapid = 910000000;
+	else if (query == "4th") mapid = 240010501;
+	else if (query == "showa") mapid = 801000000;
+	else if (query == "armory") mapid = 801040004;
+	else if (query == "shrine") mapid = 800000000;
+	else if (query == "mansion") mapid = 682000000;
+	else if (query == "henesys") mapid = 100000000;
+	else if (query == "perion") mapid = 102000000;
+	else if (query == "ellinia") mapid = 101000000;
+	else if (query == "sleepywood") mapid = 105040300;
+	else if (query == "lith") mapid = 104000000;
+	else if (query == "florina") mapid = 110000000;
+	else if (query == "kerning") mapid = 103000000;
+	else if (query == "port") mapid = 120000000;
+	else if (query == "orbis") mapid = 200000000;
+	else if (query == "nath") mapid = 211000000;
+	else if (query == "ludi") mapid = 220000000;
+	else if (query == "kft") mapid = 222000000;
+	else if (query == "aqua") mapid = 230000000;
+	else if (query == "omega") mapid = 221000000;
+	else if (query == "leafre") mapid = 240000000;
+	else if (query == "mulung") mapid = 250000000;
+	else if (query == "herbtown") mapid = 251000000;
+	else if (query == "ariant") mapid = 260000000;
+	else if (query == "nlc") mapid = 600000000;
+	else if (query == "amoria") mapid = 680000000;
+	else if (query == "happyville") mapid = 209000000;
+	else if (query == "crimsonwood") mapid = 610020006;
+	else if (query == "singapore") mapid = 540000000;
+	else if (query == "quay") mapid = 541000000;
+	// Boss maps
+	else if (query == "ergoth") mapid = 990000900;
+	else if (query == "pap") mapid = 220080001;
+	else if (query == "zakum") mapid = 280030000;
+	else if (query == "horntail") mapid = 240060200;
+	else if (query == "lordpirate") mapid = 925100500;
+	else if (query == "alishar") mapid = 922010900;
+	else if (query == "papapixie") mapid = 920010800;
+	else if (query == "kingslime") mapid = 103000804;
+	else if (query == "pianus") mapid = 230040420;
+	else if (query == "manon") mapid = 240020401;
+	else if (query == "griffey") mapid = 240020101;
+	else if (query == "jrbalrog") mapid = 105090900;
+	else if (query == "grandpa") mapid = 801040100;
+	else if (query == "anego") mapid = 801040003;
+	else if (query == "tengu") mapid = 800020130;
+	else {
+		char *endptr;
+		mapid = strtol(query.c_str(), &endptr, 0);
+		if (strlen(endptr) != 0) mapid = -1;
+	}
+	return mapid;
 }
 
 void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {

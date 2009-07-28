@@ -41,7 +41,7 @@ pos(pos)
 	Maps::getMap(mapid)->addDrop(this);
 }
 
-Drop::Drop(int32_t mapid, Item &item, const Pos &pos, int32_t owner, bool playerdrop) :
+Drop::Drop(int32_t mapid, const Item &item, const Pos &pos, int32_t owner, bool playerdrop) :
 questid(0),
 owner(owner),
 mapid(mapid),

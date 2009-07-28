@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Instance.h"
-#include "Inventory.h"
+#include "InventoryHandler.h"
 #include "KeyMaps.h"
 #include "Levels.h"
 #include "LevelsPacket.h"
@@ -124,9 +124,9 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_ATTACK_SPELL: PlayerHandler::useSpellAttack(this, packet); break;
 		case RECV_ATTACK_SUMMON: PlayerHandler::useSummonAttack(this, packet); break;
 		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
-		case RECV_CANCEL_ITEM: Inventory::cancelItem(this, packet); break;
+		case RECV_CANCEL_ITEM: InventoryHandler::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
-		case RECV_CHAIR_ACTION: Inventory::handleChair(this, packet); break;
+		case RECV_CHAIR_ACTION: InventoryHandler::handleChair(this, packet); break;
 		case RECV_CHANGE_CHANNEL: changeChannel(packet.get<int8_t>()); break;
 		case RECV_CHANGE_MAP: Maps::usePortal(this, packet); break;
 		case RECV_CHANGE_MAP_SPECIAL: Maps::useScriptedPortal(this, packet); break;
@@ -149,7 +149,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_LOOT_ITEM: DropHandler::playerLoot(this, packet); break;
 		case RECV_MOB_BOMB_EXPLOSION: MobHandler::handleBomb(this, packet); break;
 		case RECV_MOB_DAMAGE_MOB: MobHandler::handleTurncoats(this, packet); break;
-		case RECV_MOVE_ITEM: Inventory::itemMove(this, packet); break;
+		case RECV_MOVE_ITEM: InventoryHandler::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
@@ -162,21 +162,21 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_PET_MOVE: Pets::handleMovement(this, packet); break;
 		case RECV_PET_SUMMON: Pets::handleSummon(this, packet); break;
 		case RECV_PLAYER_ROOM_ACTION: TradeHandler::tradeHandler(this, packet); break;
-		case RECV_SHOP_ENTER: Inventory::useShop(this, packet); break;
+		case RECV_SHOP_ENTER: InventoryHandler::useShop(this, packet); break;
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
 		case RECV_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
-		case RECV_TELEPORT_ROCK_FUNCTION: Inventory::handleRockFunctions(this, packet); break;
-		case RECV_USE_CASH_ITEM: Inventory::useCashItem(this, packet); break;
-		case RECV_USE_CHAIR: Inventory::useChair(this, packet); break;
-		case RECV_USE_ITEM: Inventory::useItem(this, packet); break;
-		case RECV_USE_ITEM_EFFECT: Inventory::useItemEffect(this, packet); break;
-		case RECV_USE_RETURN_SCROLL: Inventory::useReturnScroll(this, packet); break;
-		case RECV_USE_SCROLL: Inventory::useScroll(this, packet); break;
+		case RECV_TELEPORT_ROCK_FUNCTION: InventoryHandler::handleRockFunctions(this, packet); break;
+		case RECV_USE_CASH_ITEM: InventoryHandler::useCashItem(this, packet); break;
+		case RECV_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
+		case RECV_USE_ITEM: InventoryHandler::useItem(this, packet); break;
+		case RECV_USE_ITEM_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
+		case RECV_USE_RETURN_SCROLL: InventoryHandler::useReturnScroll(this, packet); break;
+		case RECV_USE_SCROLL: InventoryHandler::useScroll(this, packet); break;
 		case RECV_USE_SKILL: Skills::useSkill(this, packet); break;
-		case RECV_USE_SKILLBOOK: Inventory::useSkillbook(this, packet); break;
-		case RECV_USE_STORAGE: Inventory::useStorage(this, packet); break;
-		case RECV_USE_SUMMON_BAG: Inventory::useSummonBag(this, packet); break;
-		case RECV_USE_TELEPORT_ROCK: packet.skipBytes(5); Inventory::handleRockTeleport(this, packet.get<int8_t>(), Items::SpecialTeleportRock, packet); break;
+		case RECV_USE_SKILLBOOK: InventoryHandler::useSkillbook(this, packet); break;
+		case RECV_USE_STORAGE: InventoryHandler::useStorage(this, packet); break;
+		case RECV_USE_SUMMON_BAG: InventoryHandler::useSummonBag(this, packet); break;
+		case RECV_USE_TELEPORT_ROCK: packet.skipBytes(5); InventoryHandler::handleRockTeleport(this, packet.get<int8_t>(), Items::SpecialTeleportRock, packet); break;
 	}
 }
 

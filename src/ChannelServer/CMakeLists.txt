@@ -24,6 +24,7 @@ set(SOURCES
 	InstanceMessageConstants.h
 	Instances.h
 	Inventory.h
+	InventoryHandler.h
 	InventoryPacket.h
 	ItemDataProvider.h
 	KeyMaps.h
@@ -113,6 +114,7 @@ set(SOURCES
 	Instance.cpp
 	Instances.cpp
 	Inventory.cpp
+	InventoryHandler.cpp
 	InventoryPacket.cpp
 	ItemDataProvider.cpp
 	KeyMaps.cpp
