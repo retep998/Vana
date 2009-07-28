@@ -27,6 +27,7 @@ LuaPortal::LuaPortal(const string &filename, int32_t playerid, PortalInfo *porta
 
 	// Portal
 	lua_register(luaVm, "getPortalName", &LuaExports::getPortalName);
+	lua_register(luaVm, "instantWarp", &LuaExports::instantWarp);
 	lua_register(luaVm, "playPortalSE", &LuaExports::playPortalSe);
 
 	run();
@@ -40,6 +41,14 @@ PortalInfo * LuaExports::getPortal(lua_State *luaVm) {
 int LuaExports::getPortalName(lua_State *luaVm) {
 	lua_pushstring(luaVm, getPortal(luaVm)->name.c_str());
 	return 1;
+}
+
+int LuaExports::instantWarp(lua_State *luaVm) {
+	Player *p = getPlayer(luaVm);
+	string portal = lua_tostring(luaVm, 1);
+	int8_t pid = Maps::getMap(p->getMap())->getPortal(portal)->id;
+	MapPacket::instantWarp(p, pid);
+	return 0;
 }
 
 int LuaExports::playPortalSe(lua_State *luaVm) {

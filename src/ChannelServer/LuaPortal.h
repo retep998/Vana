@@ -42,6 +42,7 @@ namespace LuaExports {
 
 	// Portal
 	int getPortalName(lua_State *luaVm);
+	int instantWarp(lua_State *luaVm);
 	int playPortalSe(lua_State *luaVm);
 };
 
