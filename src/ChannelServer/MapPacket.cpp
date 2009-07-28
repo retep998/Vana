@@ -339,3 +339,11 @@ void MapPacket::playPortalSoundEffect(Player *player) {
 	packet.add<int8_t>(0x07);
 	player->getSession()->send(packet);
 }
+
+void MapPacket::instantWarp(Player *player, int8_t pid) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_MAP_TELEPORT);
+	packet.add<int8_t>(0x01);
+	packet.add<int8_t>(pid);
+	player->getSession()->send(packet);
+}
