@@ -104,7 +104,7 @@ PacketCreator Decoder::getConnectPacket(string unknown) {
 	packet.addString(unknown); // Unknown, the official login server sends a "0", the channel server sends nothing
 	packet.add<int32_t>(*(int32_t*) ivRecv);
 	packet.add<int32_t>(*(int32_t*) ivSend);
-	packet.add<int8_t>(MAPLE_VERSION_UNK);
+	packet.add<int8_t>(MAPLE_LOCALE_IDENTIFIER);
 
 	packet.set<int16_t>(packet.getSize() - 2, 0); // -2 as the size does not include the size of the size header
 
