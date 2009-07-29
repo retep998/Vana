@@ -234,7 +234,7 @@ void ChatHandler::initializeCommands() {
 	commandnotes["map"].push_back("showa | armory | shrine | singapore | quay");
 	commandnotes["map"].push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | dungeon | sharenian");
 	commandnotes["map"].push_back("4th | orbis | nath | mine | leafre | temple | mulung | herbtown | ariant | magatia");
-	commandnotes["map"].push_back("ludi | kft | aqua | omega | altair");
+	commandnotes["map"].push_back("ludi | ereve | kft | aqua | omega | altair");
 	commandnotes["map"].push_back("mansion | nlc | amoria | crimsonwood");
 	commandnotes["map"].push_back("Valid boss map strings:");
 	commandnotes["map"].push_back("ergoth | lordpirate | alishar | papapixie | kingslime");
@@ -1133,6 +1133,7 @@ int32_t ChatHandler::getMap(const string &query, Player *player) {
 	else if (query == "nath") mapid = 211000000;
 	else if (query == "mine") mapid = 211041400;
 	else if (query == "ludi") mapid = 220000000;
+	else if (query == "ereve") mapid = 130000200;
 	else if (query == "kft") mapid = 222000000;
 	else if (query == "aqua") mapid = 230000000;
 	else if (query == "omega") mapid = 221000000;
