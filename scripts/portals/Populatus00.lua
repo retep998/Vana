@@ -22,8 +22,8 @@ if getItemAmount(4031172) > 0 then -- Medal
 		if isInstance("papulatus") == false then
 			local time = getTime();
 			local secondsinday = 60 * 60 * 24;
-			local entry1 = tonumber(getPlayerVariable("Papulatus1"));
-			local entry2 = tonumber(getPlayerVariable("Papulatus2"));
+			local entry1 = getPlayerVariable("Papulatus1", true);
+			local entry2 = getPlayerVariable("Papulatus2", true);
 			if entry1 == nil then
 				entry1 = 0;
 			end

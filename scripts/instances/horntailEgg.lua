@@ -27,7 +27,7 @@ function instanceTimerEnd(fromtimer)
 	if getInstancePlayerCount() > 0 then
 		moveAllPlayers(240040610);
 		removeAllInstancePlayers();
-		removeNPC();
+		removeTheNPC();
 	end
 end
 
@@ -38,13 +38,13 @@ function changeMap(playerid, newmap, oldmap, ispartyleader)
 end
 
 function finish(playerid)
-	removeNPC();
 	removeInstancePlayer(playerid);
+	removeTheNPC();
 	markForDelete();
 end
 
-function removeNPC()
-	g = tonumber(getInstanceVariable("npc"));
+function removeTheNPC()
+	g = getInstanceVariable("npc", true);
 	if g then
 		removeNPC(240040611, g);
 	end
