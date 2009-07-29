@@ -527,6 +527,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	setPos(Pos(portal->pos.x, portal->pos.y - 40));
 	setStance(0);
 	setFh(0);
+	setFallCounter(0);
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getPets()->getSummoned(i)) {
 			pet->setPos(portal->pos);
