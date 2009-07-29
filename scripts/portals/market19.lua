@@ -1,4 +1,4 @@
-/*
+--[[
 Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,7 +14,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+--]]
+-- Ereve Free Market entrance
 
-#define MAPLE_VERSION 73
-#define MAPLE_LOCALE 0x08 // 0x08 = global, 0x09 = European, etc. etc.
+dofile("scripts/portals/all_market_portals.lua");

@@ -59,7 +59,12 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		packet.addString(item->name); // Owner string
 		packet.add<int8_t>(item->flags); // Lock, shoe spikes, cape cold protection, etc.
 		packet.add<int8_t>(0); // No clue
-		packet.addBytes("000000000000FFFFFFFFFFFFFFFF0040E0FD3B374F01FFFFFFFF");
+		packet.add<int32_t>(0);
+		packet.add<int16_t>(0);
+		packet.add<int32_t>(0); //  Hammer
+		packet.add<int64_t>(-1);
+		packet.addBytes("0040E0FD3B374F01"); // Always the same?
+		packet.add<int32_t>(-1);
 	}
 	else {
 		packet.add<int16_t>(item->amount); // Amount
