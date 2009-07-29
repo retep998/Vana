@@ -106,12 +106,14 @@ void LuaScriptable::initialize() {
 	// Inventory
 	lua_register(luaVm, "addSlots", &LuaExports::addSlots);
 	lua_register(luaVm, "addStorageSlots", &LuaExports::addStorageSlots);
+	lua_register(luaVm, "getEquippedItemInSlot", &LuaExports::getEquippedItemInSlot);
 	lua_register(luaVm, "getItemAmount", &LuaExports::getItemAmount);
 	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
 	lua_register(luaVm, "getOpenSlots", &LuaExports::getOpenSlots);
 	lua_register(luaVm, "giveItem", &LuaExports::giveItem);
 	lua_register(luaVm, "giveMesos", &LuaExports::giveMesos);
 	lua_register(luaVm, "hasOpenSlotsFor", &LuaExports::hasOpenSlotsFor);
+	lua_register(luaVm, "isEquippedItem", &LuaExports::isEquippedItem);
 	lua_register(luaVm, "useItem", &LuaExports::useItem);
 
 	// Player
@@ -557,6 +559,12 @@ int LuaExports::addStorageSlots(lua_State *luaVm) {
 	return 0;
 }
 
+int LuaExports::getEquippedItemInSlot(lua_State *luaVm) {
+	int16_t slot = lua_tointeger(luaVm, 1);
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getInventory()->getEquippedId(slot));
+	return 1;
+}
+
 int LuaExports::getItemAmount(lua_State *luaVm) {
 	int32_t itemid = lua_tointeger(luaVm, -1);
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getItemAmount(itemid));
@@ -595,6 +603,12 @@ int LuaExports::hasOpenSlotsFor(lua_State *luaVm) {
 	if (lua_isnumber(luaVm, 2))
 		amount = lua_tointeger(luaVm, 2);
 	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->hasOpenSlotsFor(itemid, amount));
+	return 1;
+}
+
+int LuaExports::isEquippedItem(lua_State *luaVm) {
+	int32_t itemid = lua_tointeger(luaVm, 1);
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->isEquippedItem(itemid));
 	return 1;
 }
 

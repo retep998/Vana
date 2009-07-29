@@ -336,6 +336,18 @@ uint16_t PlayerInventory::getItemAmount(int32_t itemid) {
 	return m_itemamounts.find(itemid) != m_itemamounts.end() ? m_itemamounts[itemid] : 0;
 }
 
+bool PlayerInventory::isEquippedItem(int32_t itemid) {
+	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
+	bool has = false;
+	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+		if (iter->first == itemid) {
+			has = true;
+			break;
+		}
+	}
+	return has;
+}
+
 bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack) {
 	int16_t required = 0;
 	int8_t inv = GameLogicUtilities::getInventory(itemid);
