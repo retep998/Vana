@@ -361,7 +361,12 @@ int LuaExports::getChannelVariable(lua_State *luaVm) {
 	}
 	string val = EventDataProvider::Instance()->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	if (integral) {
-		lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+		if (val == "") {
+			lua_pushnil(luaVm);
+		}
+		else {
+			lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+		}
 	}
 	else {
 		lua_pushstring(luaVm, val.c_str());
@@ -752,7 +757,12 @@ int LuaExports::getPlayerVariable(lua_State *luaVm) {
 	}
 	string val = getPlayer(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	if (integral) {
-		lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+		if (val == "") {
+			lua_pushnil(luaVm);
+		}
+		else {
+			lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+		}
 	}
 	else {
 		lua_pushstring(luaVm, val.c_str());
@@ -1610,7 +1620,12 @@ int LuaExports::getInstanceVariable(lua_State *luaVm) {
 	}
 	string val = getInstance(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	if (integral) {
-		lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+		if (val == "") {
+			lua_pushnil(luaVm);
+		}
+		else {
+			lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+		}
 	}
 	else {
 		lua_pushstring(luaVm, val.c_str());

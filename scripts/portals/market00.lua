@@ -18,6 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Exiting the Free Market
 
 playPortalSE();
-setMap(getPlayerVariable("fm_origin"), getPlayerVariable("fm_origin_portal"));
+setMap(getPlayerVariable("fm_origin", true), getPlayerVariable("fm_origin_portal"));
 deletePlayerVariable("fm_origin");
 deletePlayerVariable("fm_origin_portal");
