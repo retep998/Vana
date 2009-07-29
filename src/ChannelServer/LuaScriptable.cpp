@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "ShopDataProvider.h"
 #include "TimeUtilities.h"
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <vector>
 
@@ -354,8 +355,17 @@ int LuaExports::getChannel(lua_State *luaVm) {
 }
 
 int LuaExports::getChannelVariable(lua_State *luaVm) {
-	string key = string(lua_tostring(luaVm, -1));
-	lua_pushstring(luaVm, EventDataProvider::Instance()->getVariables()->getVariable(key).c_str());
+	bool integral = false;
+	if (lua_isboolean(luaVm, 2)) {
+		integral = true;
+	}
+	string val = EventDataProvider::Instance()->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	if (integral) {
+		lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+	}
+	else {
+		lua_pushstring(luaVm, val.c_str());
+	}
 	return 1;
 }
 
@@ -736,8 +746,17 @@ int LuaExports::getName(lua_State *luaVm) {
 }
 
 int LuaExports::getPlayerVariable(lua_State *luaVm) {
-	string key = string(lua_tostring(luaVm, -1));
-	lua_pushstring(luaVm, getPlayer(luaVm)->getVariables()->getVariable(key).c_str());
+	bool integral = false;
+	if (lua_isboolean(luaVm, 2)) {
+		integral = true;
+	}
+	string val = getPlayer(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	if (integral) {
+		lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+	}
+	else {
+		lua_pushstring(luaVm, val.c_str());
+	}
 	return 1;
 }
 
@@ -1585,7 +1604,17 @@ int LuaExports::getInstanceTime(lua_State *luaVm) {
 }
 
 int LuaExports::getInstanceVariable(lua_State *luaVm) {
-	lua_pushstring(luaVm, getInstance(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1)).c_str());
+	bool integral = false;
+	if (lua_isboolean(luaVm, 2)) {
+		integral = true;
+	}
+	string val = getInstance(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	if (integral) {
+		lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+	}
+	else {
+		lua_pushstring(luaVm, val.c_str());
+	}
 	return 1;
 }
 
