@@ -28,8 +28,8 @@ class Player;
 
 class Mist {
 public:
-	Mist(int32_t mapid, Player *owner, Pos origin, SkillLevelInfo skill, int32_t skillid, uint8_t level);
-	Mist(int32_t mapid, Mob *owner, Pos origin, MobSkillLevelInfo skill, uint8_t skillid, uint8_t level);
+	Mist(int32_t mapid, Player *owner, const Pos &origin, const SkillLevelInfo &skill, int32_t skillid, uint8_t level, bool ispoison = false);
+	Mist(int32_t mapid, Mob *owner, const Pos &origin, const MobSkillLevelInfo &skill, uint8_t skillid, uint8_t level);
 
 	uint8_t getSkillLevel() const { return m_level; }
 	int16_t getTime() const { return m_time; }
