@@ -518,6 +518,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 		case Jobs::Bowmaster::Hurricane:
 		case Jobs::WindArcher::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
+		case Jobs::NightWalker::PoisonBomb:
 		case Jobs::Corsair::RapidFire:
 			packet.skipBytes(4); // Charge time
 			packet.skipBytes(1); // Projectile display
