@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mob.h"
 #include "Player.h"
 
-Mist::Mist(int32_t mapid, Player *owner, Pos origin, SkillLevelInfo skill, int32_t skillid, uint8_t level) :
+Mist::Mist(int32_t mapid, Player *owner, const Pos &origin, const SkillLevelInfo &skill, int32_t skillid, uint8_t level, bool ispoison) :
 m_ownermap(mapid),
 m_ownerid(owner->getId()),
 m_skill(skillid),
@@ -28,34 +28,25 @@ m_level(level),
 m_origin(origin),
 m_time((int16_t)(skill.time)),
 m_delay(8),
-m_ismobmist(false)
+m_ismobmist(false),
+m_poison(ispoison)
 {
-	switch (skillid) {
-		case Jobs::FPMage::PoisonMist:
-		case Jobs::BlazeWizard::FlameGear: 
-			m_poison = true;
-			break;
-		default:
-			m_poison = false;
-	}
-	Pos lt = skill.lt;
-	Pos rb = skill.rb;
 	if (owner->isFacingRight()) {
-		m_rb = Pos(lt.x * -1 + origin.x, rb.y + origin.y);
-		m_lt = Pos(rb.x * -1 + origin.x, lt.y + origin.y);
+		m_rb = Pos(skill.lt.x * -1 + origin.x, skill.rb.y + origin.y);
+		m_lt = Pos(skill.rb.x * -1 + origin.x, skill.lt.y + origin.y);
 	}
 	else {
-		m_lt = Pos(lt.x + origin.x, lt.y + origin.y);
-		m_rb = Pos(rb.x + origin.x, rb.y + origin.y);
+		m_lt = Pos(skill.lt.x + origin.x, skill.lt.y + origin.y);
+		m_rb = Pos(skill.rb.x + origin.x, skill.rb.y + origin.y);
 	}
-	m_skilllt = lt;
-	m_skillrb = rb;
+	m_skilllt = skill.lt;
+	m_skillrb = skill.rb;
 
 	m_id = Maps::getMistId();
 	Maps::getMap(mapid)->addMist(this);
 }
 
-Mist::Mist(int32_t mapid, Mob *owner, Pos origin, MobSkillLevelInfo skill, uint8_t skillid, uint8_t level) :
+Mist::Mist(int32_t mapid, Mob *owner, const Pos &origin, const MobSkillLevelInfo &skill, uint8_t skillid, uint8_t level) :
 m_ownermap(mapid),
 m_ownerid(owner->getId()),
 m_skill(skillid),
@@ -66,18 +57,16 @@ m_delay(0),
 m_ismobmist(true),
 m_poison(true)
 {
-	Pos lt = skill.lt;
-	Pos rb = skill.rb;
 	if (owner->isFacingRight()) {
-		m_rb = Pos(lt.x * -1 + origin.x, rb.y + origin.y);
-		m_lt = Pos(rb.x * -1 + origin.x, lt.y + origin.y);
+		m_rb = Pos(skill.lt.x * -1 + origin.x, skill.rb.y + origin.y);
+		m_lt = Pos(skill.rb.x * -1 + origin.x, skill.lt.y + origin.y);
 	}
 	else {
-		m_lt = Pos(lt.x + origin.x, lt.y + origin.y);
-		m_rb = Pos(rb.x + origin.x, rb.y + origin.y);
+		m_lt = Pos(skill.lt.x + origin.x, skill.lt.y + origin.y);
+		m_rb = Pos(skill.rb.x + origin.x, skill.rb.y + origin.y);
 	}
-	m_skilllt = lt;
-	m_skillrb = rb;
+	m_skilllt = skill.lt;
+	m_skillrb = skill.rb;
 
 	m_id = Maps::getMistId();
 	Maps::getMap(mapid)->addMist(this);

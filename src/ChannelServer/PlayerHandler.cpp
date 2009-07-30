@@ -595,7 +595,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		case Jobs::FPMage::PoisonMist:
 		case Jobs::BlazeWizard::FlameGear: {
 			uint8_t level = player->getSkills()->getSkillLevel(skillid);
-			Mist *mist = new Mist(player->getMap(), player, player->getPos(), Skills::skills[skillid][level], skillid, level);
+			Mist *mist = new Mist(player->getMap(), player, player->getPos(), Skills::skills[skillid][level], skillid, level, true);
 			break;
 		}
 	}
