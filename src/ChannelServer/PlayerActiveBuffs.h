@@ -142,6 +142,7 @@ public:
 	bool isUsingHide();
 	bool isCursed();
 	bool isZombified();
+	int16_t getHolySymbolRate();
 	int32_t getHolySymbol();
 	int32_t getPowerStance();
 	int32_t getHyperBody();
