@@ -144,15 +144,12 @@ string Summons::getSummonName(int32_t summonid) {
 		case Jobs::ILArchMage::Ifrit: ret = "Ifrit"; break;
 		case Jobs::Bowmaster::Phoenix: ret = "Phoenix"; break;
 		case Jobs::Marksman::Frostprey: ret = "Frostprey"; break;
-/* 
-	// No translated names yet, will simply leave them as "Summon" until there are
 		case Jobs::DawnWarrior::Soul: ret = "Soul"; break;
 		case Jobs::BlazeWizard::Ifrit: ret = "Ifrit"; break;
 		case Jobs::BlazeWizard::Flame: ret = "Flame"; break;
 		case Jobs::WindArcher::Storm: ret = "Storm"; break;
 		case Jobs::NightWalker::Darkness: ret = "Darkness"; break;
 		case Jobs::ThunderBreaker::Lightning: ret = "Lightning"; break;
-*/
 	}
 	return ret;
 }
