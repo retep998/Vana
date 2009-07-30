@@ -465,6 +465,7 @@ namespace Jobs {
 	}
 	namespace Beginner {
 		enum Skills {
+			BlessingOfTheFairty = 12,
 			EchoOfHero = 1005,
 			FollowTheLead = 8,
 			MonsterRider = 1004,
@@ -874,28 +875,36 @@ namespace Jobs {
 	}
 	namespace Gm {
 		enum Skills {
-			Haste = 9001000,
-			SuperDragonRoar = 9001001,
-			Teleport = 9001002,
+			AntiMacro = 9001009,
+			Bless = 9101003,
+			Haste = 9101000,
+			Hide = 9001004,
+			HyperBody = 9001008,
+			Resurrection = 9001005,
+			SuperDragonRoar1 = 9001001,
+			SuperDragonRoar2 = 9001006,
+			Teleport1 = 9001002,
+			Teleport2 = 9001007
 		};
 	}
 	namespace SuperGm {
 		enum Skills {
-			HealPlusDispel = 9101000,
-			Haste = 9101001,
-			HolySymbol = 9101002,
 			Bless = 9101003,
+			Haste = 9101001,
+			HealPlusDispel = 9101000,
 			Hide = 9101004,
+			HolySymbol = 9101002,
+			HyperBody = 9101008,
 			Resurrection = 9101005,
 			SuperDragonRoar = 9101006,
-			Teleport = 9101007,
-			HyperBody = 9101008
+			Teleport = 9101007
 		};
 	}
 	namespace Noblesse {
 		enum Skills {
-			BlessingOfTheSpirit = 10000012,
+			BlessingOfTheFairy = 10000012,
 			EchoOfHero = 10001005,
+			Maker = 10001007,
 			MonsterRider = 10001004,
 			NimbleFeet = 10001002,
 			Recovery = 10001001
@@ -903,29 +912,29 @@ namespace Jobs {
 	}
 	namespace DawnWarrior {
 		enum Skills {
-			AdvancedComboAttack = 11110005,
+			AdvancedCombo = 11110005,
+			Coma = 11111003,
 			ComboAttack = 11111001,
-			FinalAttackSword = 11101002,
-			ImprovedMaxHpIncrease = 11000000,
+			FinalAttack = 11101002,
 			IronBody = 11001001,
+			MaxHpEnhancement = 11000000,
+			Panic = 11111002,
 			Rage = 11101003,
 			Soul = 11001004,
 			SoulCharge = 11111007,
 			SwordBooster = 11101001,
-			SwordComa = 11111003,
-			SwordMastery = 11100000,
-			SwordPanic = 11111002
+			SwordMastery = 11100000
 		};
 	}
 	namespace BlazeWizard {
 		enum Skills {
 			ElementalReset = 12101005,
 			ElementAmplification = 12110001,
-			FireCurtain = 12111005,
+			FireStrike = 12111006,
 			Flame = 12001004,
-			FlameStrike = 12111006,
+			FlameGear = 12111005,
 			Ifrit = 12111004,
-			ImprovedMaxMpIncrease = 12000000,
+			IncreasingMaxMp = 12000000,
 			MagicArmor = 12001002,
 			MagicGuard = 12001001,
 			Meditation = 12101000,
@@ -936,17 +945,17 @@ namespace Jobs {
 	}
 	namespace WindArcher {
 		enum Skills {
-			Albatross = 13111005,
+			EagleEye = 13111005,
 			BowBooster = 13101001,
 			BowMastery = 13100000,
 			CriticalShot = 13000000,
-			FinalAttackBow = 13101002,
+			FinalAttack = 13101002,
 			Focus = 13001002,
 			Hurricane = 13111002,
-			MagnumShot = 13111006,
 			Puppet = 13111004,
 			SoulArrow = 13101003,
 			Storm = 13001004,
+			WindPiercing = 13111006,
 			WindShot = 13111007,
 			WindWalk = 13101006
 		};
@@ -961,12 +970,12 @@ namespace Jobs {
 			ClawMastery = 14100000,
 			CriticalThrow = 14100001,
 			Haste = 14101003,
-			PoisonSling = 14111006,
+			PoisonBomb = 14111006,
 			ShadowPartner = 14111000,
 			ShadowWeb = 14111001,
 			SuddenAttack = 14100005,
 			Vampire = 14101006,
-			VenomousStar = 14110004
+			Venom = 14110004
 		};
 	}
 	namespace ThunderBreaker {

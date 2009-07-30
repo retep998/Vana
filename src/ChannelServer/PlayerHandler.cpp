@@ -458,12 +458,14 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::Crusader::SwordComa:
 		case Jobs::Crusader::AxePanic:
 		case Jobs::Crusader::AxeComa:
-		case Jobs::DawnWarrior::SwordPanic:
-		case Jobs::DawnWarrior::SwordComa:
+		case Jobs::DawnWarrior::Panic:
+		case Jobs::DawnWarrior::Coma:
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
 		case Jobs::Crusader::Shout:
-		case Jobs::Gm::SuperDragonRoar:
+		case Jobs::Gm::SuperDragonRoar1:
+		case Jobs::Gm::SuperDragonRoar2:
+		case Jobs::SuperGm::SuperDragonRoar:
 			break;
 		case Jobs::DragonKnight::DragonRoar: {
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
@@ -591,7 +593,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	uint32_t totaldmg = damageMobs(player, packet, targets, hits, skillid, useless, &eater);
 	switch (skillid) {
 		case Jobs::FPMage::PoisonMist:
-		case Jobs::BlazeWizard::FireCurtain: {
+		case Jobs::BlazeWizard::FlameGear: {
 			uint8_t level = player->getSkills()->getSkillLevel(skillid);
 			Mist *mist = new Mist(player->getMap(), player, player->getPos(), Skills::skills[skillid][level], skillid, level);
 			break;

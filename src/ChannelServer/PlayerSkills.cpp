@@ -225,7 +225,7 @@ int32_t PlayerSkills::getAdvancedCombo() {
 			skillid = Jobs::Hero::AdvancedComboAttack;
 			break;
 		case Jobs::JobIds::DawnWarrior3:
-			skillid = Jobs::DawnWarrior::AdvancedComboAttack;
+			skillid = Jobs::DawnWarrior::AdvancedCombo;
 			break;
 	}
 	return skillid;
@@ -252,7 +252,7 @@ int32_t PlayerSkills::getHpIncrease() {
 			skillid = Jobs::Swordsman::ImprovedMaxHpIncrease;
 			break;
 		case Jobs::JobTracks::DawnWarrior:
-			skillid = Jobs::DawnWarrior::ImprovedMaxHpIncrease;
+			skillid = Jobs::DawnWarrior::MaxHpEnhancement;
 			break;
 		case Jobs::JobTracks::ThunderBreaker:
 			skillid = Jobs::ThunderBreaker::ImproveMaxHp;
@@ -272,7 +272,7 @@ int32_t PlayerSkills::getMpIncrease() {
 			skillid = Jobs::Magician::ImprovedMaxMpIncrease;
 			break;
 		case Jobs::JobTracks::BlazeWizard:
-			skillid = Jobs::BlazeWizard::ImprovedMaxMpIncrease;
+			skillid = Jobs::BlazeWizard::IncreasingMaxMp;
 			break;
 	}
 	return skillid;

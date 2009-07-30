@@ -32,7 +32,7 @@ m_ismobmist(false)
 {
 	switch (skillid) {
 		case Jobs::FPMage::PoisonMist:
-		case Jobs::BlazeWizard::FireCurtain: 
+		case Jobs::BlazeWizard::FlameGear: 
 			m_poison = true;
 			break;
 		default:
