@@ -596,7 +596,7 @@ Buffs::Buffs() {
 	player.hasmapentry = false;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::EagleEye].player.push_back(player);
 	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	buff.type = 0x08;
 	buff.byte = Byte1;
@@ -606,7 +606,7 @@ Buffs::Buffs() {
 	player.hasmapentry = false;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::EagleEye].player.push_back(player);
 	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	buff.type = 0x80;
 	buff.byte = Byte1;
@@ -616,13 +616,13 @@ Buffs::Buffs() {
 	player.hasmapentry = true;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::EagleEye].player.push_back(player);
 	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Marauder::Transformation].map.push_back(map);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].map.push_back(map);
-	skillsinfo[Jobs::WindArcher::Albatross].map.push_back(map);
+	skillsinfo[Jobs::WindArcher::EagleEye].map.push_back(map);
 	skillsinfo[Jobs::ThunderBreaker::Transformation].map.push_back(map);
 	buff.type = 0x01;
 	buff.byte = Byte2;
@@ -632,7 +632,7 @@ Buffs::Buffs() {
 	player.hasmapentry = false;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::EagleEye].player.push_back(player);
 	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	buff.type = 0x02;
 	buff.byte = Byte5;
@@ -642,13 +642,13 @@ Buffs::Buffs() {
 	player.hasmapentry = true;
 	skillsinfo[Jobs::Marauder::Transformation].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].player.push_back(player);
-	skillsinfo[Jobs::WindArcher::Albatross].player.push_back(player);
+	skillsinfo[Jobs::WindArcher::EagleEye].player.push_back(player);
 	skillsinfo[Jobs::ThunderBreaker::Transformation].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Marauder::Transformation].map.push_back(map);
 	skillsinfo[Jobs::Buccaneer::SuperTransformation].map.push_back(map);
-	skillsinfo[Jobs::WindArcher::Albatross].map.push_back(map);
+	skillsinfo[Jobs::WindArcher::EagleEye].map.push_back(map);
 	skillsinfo[Jobs::ThunderBreaker::Transformation].map.push_back(map);
 
 	// Shadow Partner
@@ -897,7 +897,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 					break;
 				case Jobs::Marauder::Transformation:
 				case Jobs::Buccaneer::SuperTransformation:
-				case Jobs::WindArcher::Albatross:
+				case Jobs::WindArcher::EagleEye:
 				case Jobs::ThunderBreaker::Transformation:
 					value = getValue(val, skillid, level);
 					if (val == SkillMorph)

@@ -424,8 +424,8 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 					break;
 			case Jobs::FPWizard::PoisonBreath:
 			case Jobs::FPMage::ElementComposition:
-			case Jobs::BlazeWizard::FireCurtain:
-			case Jobs::NightWalker::PoisonSling:	
+			case Jobs::BlazeWizard::FlameGear:
+			case Jobs::NightWalker::PoisonBomb:	
 				if (success) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMHp() / (70 - level), skillid, Skills::skills[skillid][level].time));
 				}
@@ -445,7 +445,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 				break;
 			case Jobs::Hunter::ArrowBomb:
 			case Jobs::Crusader::SwordComa:
-			case Jobs::DawnWarrior::SwordComa:
+			case Jobs::DawnWarrior::Coma:
 			case Jobs::Crusader::AxeComa:
 			case Jobs::Crusader::Shout:
 			case Jobs::WhiteKnight::ChargeBlow:
