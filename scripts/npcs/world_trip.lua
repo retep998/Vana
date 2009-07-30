@@ -28,7 +28,7 @@ if getMap() == 800000000 then
 		addText("Alright. I'll now take you back to where you were before the visit to Japan. If you ever feel like traveling again down the road, please let me know!");
 		sendNext();
 		
-		wt_origin = getPlayerVariable("wt_origin");
+		wt_origin = getPlayerVariable("wt_origin", true);
 		setMap(wt_origin);
 		deletePlayerVariable("wt_origin");
 	else

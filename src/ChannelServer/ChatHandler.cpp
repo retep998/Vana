@@ -232,7 +232,7 @@ void ChatHandler::initializeCommands() {
 	commandnotes["map"].push_back("southperry | amherst");
 	commandnotes["map"].push_back("gm | fm | happyville | town | here");
 	commandnotes["map"].push_back("showa | armory | shrine | singapore | quay");
-	commandnotes["map"].push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port");
+	commandnotes["map"].push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | dungeon | sharenian");
 	commandnotes["map"].push_back("4th | orbis | nath | mine | leafre | mulung | herbtown | ariant");
 	commandnotes["map"].push_back("ludi | kft | aqua | omega");
 	commandnotes["map"].push_back("mansion | nlc | amoria | crimsonwood");
@@ -1119,8 +1119,10 @@ int32_t ChatHandler::getMap(const string &query, Player *player) {
 	else if (query == "mansion") mapid = 682000000;
 	else if (query == "henesys") mapid = 100000000;
 	else if (query == "perion") mapid = 102000000;
+	else if (query == "sharenian") mapid = 101030104;
 	else if (query == "ellinia") mapid = 101000000;
 	else if (query == "sleepywood") mapid = 105040300;
+	else if (query == "dungeon") mapid = 105090200;
 	else if (query == "lith") mapid = 104000000;
 	else if (query == "florina") mapid = 110000000;
 	else if (query == "kerning") mapid = 103000000;

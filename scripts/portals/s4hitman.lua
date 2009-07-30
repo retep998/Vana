@@ -15,11 +15,22 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Nine Spirit's Egg portal that summons the dragon
+-- Assassinate quest
 
-if getInstanceVariable("egg", true) ~= 1 and getItemAmount(4001094) > 0 then
-	giveItem(4001094, -1);
-	setReactorState(240040611, 2406000, 1);
-	showMessage("The Egg of Nine Spirit, which was comfotably nested, has emitted a mysterious light and has returned to its nest.", 5);
-	setInstanceVariable("egg", "1");
+if isQuestActive(6201) then
+	if getItemAmount(4031452) == 0 then
+		if not isInstance("assassinate4th") then
+			createInstance("assassinate4th", 20 * 60, true);
+			addInstancePlayer(getID());
+			playPortalSE();
+			maps = {910200000, 910200001, 910200002};
+			setMap(maps[getRandomNumber(#maps)]);
+		else
+			showMessage("Other characters are on request. You can't enter.", 5);
+		end
+	else
+		showMessage("Shawn's request is completed. You don't need to go in again.", 5);
+	end
+else
+	showMessage("You can't go. You didn't get Shawn's request.", 5);
 end

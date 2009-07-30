@@ -257,25 +257,17 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 		int32_t mapid = player->getMap();
 		Pos playerpos = player->getPos();
 		Map *map = Maps::getMap(mapid);
-		MapInfoPtr mapinfo = map->getInfo();
-		int16_t bottom = mapinfo->bottom;
 
-		if (bottom == 0 && mapinfo->left == 0 && mapinfo->right == 0 && mapinfo->top == 0) {
-			// This map has no dimensions, we have to make a custom position mover
-			Pos floor = map->findFloor(playerpos);
-			if (floor.y == playerpos.y) { // There are no footholds below the player
-				int8_t count = player->getFallCounter();
-				if (count > 3) {
-					player->setMap(mapid);
-					player->setFallCounter(0);
-				}
-				else {
-					player->setFallCounter(++count);
-				}
+		// This map has no dimensions, we have to make a custom position mover
+		Pos floor = map->findFloor(playerpos);
+		if (floor.y == playerpos.y) { // There are no footholds below the player
+			int8_t count = player->getFallCounter();
+			if (count > 3) {
+				player->setMap(mapid);
 			}
-		}
-		else if (playerpos.y > bottom) {
-			player->setMap(mapid);
+			else {
+				player->setFallCounter(++count);
+			}
 		}
 	}
 	else if (player->getFallCounter() > 0) {

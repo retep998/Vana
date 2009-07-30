@@ -15,11 +15,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Nine Spirit's Egg portal that summons the dragon
+-- One of the MANY Assassinate reactors
 
-if getInstanceVariable("egg", true) ~= 1 and getItemAmount(4001094) > 0 then
-	giveItem(4001094, -1);
-	setReactorState(240040611, 2406000, 1);
-	showMessage("The Egg of Nine Spirit, which was comfotably nested, has emitted a mysterious light and has returned to its nest.", 5);
-	setInstanceVariable("egg", "1");
-end
+setMap(getMap(), "pt01");

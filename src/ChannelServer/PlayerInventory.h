@@ -118,6 +118,7 @@ public:
 	uint16_t getItemAmount(int32_t itemid);
 	int32_t getEquippedId(int16_t slot);
 	Item * getItem(int8_t inv, int16_t slot);
+	bool isEquippedItem(int32_t itemid);
 
 	bool hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack = false);
 	int16_t getOpenSlotsNum(int8_t inv);
