@@ -470,6 +470,14 @@ bool PlayerActiveBuffs::isZombified() {
 	return ((m_debuffmask & StatusEffects::Player::Zombify) > 0);
 }
 
+int16_t PlayerActiveBuffs::getHolySymbolRate() {
+	int16_t val = 0;
+	if (hasHolySymbol()) {
+		int32_t hsid = getHolySymbol();
+		val = Skills::skills[hsid][getActiveSkillLevel(hsid)].x;
+	}
+	return val;
+}
 int32_t PlayerActiveBuffs::getMagicGuard() {
 	int32_t id = 0;
 	if (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0)

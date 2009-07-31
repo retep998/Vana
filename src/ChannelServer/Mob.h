@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::unordered_map;
 using std::vector;
 
+class Party;
 class Player;
 class Map;
 class PacketCreator;
@@ -47,6 +48,15 @@ struct StatusInfo {
 	int16_t mobskill;
 	int16_t level;
 	clock_t time;
+};
+
+struct PartyExp {
+	PartyExp() : totalexp(0), party(0), highestdamager(0), highestdamage(0), minhitlevel(200) { }
+	uint8_t minhitlevel;
+	uint32_t totalexp;
+	uint64_t highestdamage;
+	Player *highestdamager;
+	Party *party;
 };
 
 class Mob : public MovableLife {
