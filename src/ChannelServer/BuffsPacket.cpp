@@ -91,6 +91,8 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillid, uint8_t level, int
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
 		packet.add<uint8_t>(mskill.typelist[i]);
 	for (size_t i = 0; i < mskill.values.size(); i++) {
+		if (skillid == MobSkills::Poison)
+			packet.add<int16_t>(mskill.values[i]);
 		packet.add<uint16_t>(skillid);
 		packet.add<uint16_t>(level);
 	}
