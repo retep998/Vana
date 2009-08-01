@@ -182,5 +182,4 @@ void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(pet->getFullness());
 	packet.add<int64_t>(180000000000LL); // Item expiration
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(0); // Time to expire (for trial pet)
 }
