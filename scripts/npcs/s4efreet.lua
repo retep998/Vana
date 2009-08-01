@@ -37,7 +37,6 @@ if item ~= 0 then
 			sendOK();
 		else
 			members = getAllPartyPlayerIDs();
---[[
 			if #members ~= 2 then
 				addText("You can make a quest when you have a party with two. Please make your party with two members.");
 				sendOK();
@@ -61,7 +60,6 @@ if item ~= 0 then
 						addText("You can't enter. Your party member's job is not Arch Mage or Your party doesn't consist of two members.");
 						sendOK();
 					else
-]]--
 						if not isInstance("elementalSummon4th") then
 							createInstance("elementalSummon4th", 20 * 60, true);
 							for i = 1, #members do
@@ -73,11 +71,9 @@ if item ~= 0 then
 							addText("Other parties are challenging on quest clear now. Try again later.");
 							sendOK();
 						end
---[[
 					end
 				end
 			end
-]]--
 		end
 	else
 		addText("Party leader can't apply for entering.");
