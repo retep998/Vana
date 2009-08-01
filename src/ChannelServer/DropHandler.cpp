@@ -215,6 +215,9 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 				playerrate = 100;
 			}
 			else {
+				if (!player->getInventory()->modifyMesos(drop->getObjectId() * playerrate / 100, true))
+					return;
+
 				int32_t memberrate = 40 / members.size();
 				for (uint8_t j = 0; j < members.size(); j++) {
 					if (members[j]->getInventory()->modifyMesos(drop->getObjectId() * memberrate / 100, true)) {
@@ -223,7 +226,7 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 				}
 			}
 		}
-		if (player->getInventory()->modifyMesos(drop->getObjectId() * playerrate / 100, true))
+		if (playerrate == 100 && player->getInventory()->modifyMesos(drop->getObjectId() * playerrate / 100, true))
 			DropsPacket::takeNote(player, drop->getObjectId(), true, 0);
 		else
 			return;
