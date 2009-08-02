@@ -27,7 +27,7 @@ class NPC;
 
 class LuaNPC : public LuaScriptable {
 public:
-	LuaNPC(const string &filename, int32_t playerid, int16_t questid = 0);
+	LuaNPC(const string &filename, int32_t playerid);
 	
 	bool run();
 	bool proceedNext();
