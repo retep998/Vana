@@ -88,7 +88,7 @@ void PlayerSkills::save(bool savecooldowns) {
 bool PlayerSkills::addSkillLevel(int32_t skillid, uint8_t amount, bool sendpacket) {
 	// Keep people from adding too much SP and prevent it from going negative
 	uint8_t newlevel = ((playerskills.find(skillid) != playerskills.end()) ? playerskills[skillid].level : 0) + amount;
-	if (newlevel > Skills::maxlevels[skillid]) {
+	if (newlevel > Skills::maxlevels[skillid] || (GameLogicUtilities::isFourthJobSkill(skillid) && newlevel > getMaxSkillLevel(skillid))) {
 		return false; // Let the caller handle this
 	}
 

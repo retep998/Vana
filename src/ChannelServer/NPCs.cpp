@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NPCs.h"
+#include "FileUtilities.h"
 #include "LuaNPC.h"
 #include "MapleSession.h"
 #include "Maps.h"
@@ -27,7 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
-#include <sys/stat.h>
 #include <string>
 
 using std::string;
@@ -134,7 +134,6 @@ void NPCs::handleNPCAnimation(Player *player, PacketReader &packet) {
 NPC::NPC(int32_t npcid, Player *player, int16_t questid, bool isstart) :
 player(player),
 npcid(npcid),
-questid(questid),
 pos(Pos(0, 0)),
 state(0),
 text(""),
@@ -146,7 +145,6 @@ cend(false)
 NPC::NPC(int32_t npcid, Player *player, const Pos &pos, int16_t questid, bool isstart) :
 player(player),
 npcid(npcid),
-questid(questid),
 pos(pos),
 state(0),
 text(""),
@@ -160,7 +158,6 @@ NPC::~NPC() {
 }
 
 void NPC::initScript(int32_t npcid, Player *player, int16_t questid, bool isstart) {
-	struct stat fileinfo;
 	string filename;
 	if (questid == 0) {
 		filename = ScriptDataProvider::Instance()->getNpcScript(npcid);
@@ -168,8 +165,8 @@ void NPC::initScript(int32_t npcid, Player *player, int16_t questid, bool isstar
 	else {
 		filename = ScriptDataProvider::Instance()->getQuestScript(questid, (isstart ? 0 : 1));
 	}
-	if (!stat(filename.c_str(), &fileinfo)) { // Lua NPC exists
-		luaNPC.reset(new LuaNPC(filename, player->getId(), questid));
+	if (FileUtilities::fileExists(filename)) {
+		luaNPC.reset(new LuaNPC(filename, player->getId()));
 		player->setNPC(this);
 	}
 	else {
