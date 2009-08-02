@@ -109,9 +109,10 @@ void PlayerStats::setHp(int16_t shp, bool is) {
 		m_hp = m_mhp;
 	else
 		m_hp = shp;
-	if (is)
+	if (is) {
 		PlayerPacket::updateStatShort(m_player, Stats::Hp, m_hp);
-	modifiedHp();
+		modifiedHp();
+	}
 }
 
 void PlayerStats::modifyHp(int16_t nhp, bool is) {

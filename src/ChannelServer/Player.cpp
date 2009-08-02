@@ -28,7 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Instance.h"
+#include "Inventory.h"
 #include "InventoryHandler.h"
+#include "InventoryPacket.h"
 #include "KeyMaps.h"
 #include "Levels.h"
 #include "LevelsPacket.h"
@@ -215,10 +217,10 @@ void Player::playerConnect(PacketReader &packet) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
 		map_pos = 0;
 		if (getStats()->getHp() == 0)
-			getStats()->setHp(50);
+			getStats()->setHp(50, false);
 	}
 	else if (getStats()->getHp() == 0) {
-		getStats()->setHp(50);
+		getStats()->setHp(50, false);
 		map = Maps::getMap(map)->getInfo()->rm;
 	}
 
@@ -282,7 +284,7 @@ void Player::playerConnect(PacketReader &packet) {
 	skillMacros.load(id);
 
 	if (getStats()->getHp() > getStats()->getMHp())
-		getStats()->setHp(getStats()->getMHp());
+		getStats()->setHp(getStats()->getMHp(), false);
 	if (getStats()->getMp() > getStats()->getMMp())
 		getStats()->setMp(getStats()->getMMp());
 
@@ -483,6 +485,15 @@ void Player::setBuddyListSize(uint8_t size) {
 
 void Player::loseExp() {
 	if (!GameLogicUtilities::isBeginnerJob(getStats()->getJob()) && getStats()->getLevel() < Stats::PlayerLevels) {
+		uint16_t charms = getInventory()->getItemAmount(Items::SafetyCharm);
+		if (charms > 0) {
+			Inventory::takeItem(this, Items::SafetyCharm, 1);
+			charms--;
+			if (charms > 0xFF)
+				charms = 0xFF;
+			InventoryPacket::useCharm(this, static_cast<uint8_t>(charms));
+			return;
+		}
 		Map *loc = Maps::getMap(getMap());
 		int8_t exploss = 10;
 		if ((loc->getInfo()->fieldLimit & FieldLimitBits::RegularExpLoss) != 0 || loc->getInfo()->town)
