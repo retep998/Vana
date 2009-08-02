@@ -55,7 +55,7 @@ LuaNPC::LuaNPC(const string &filename, int32_t playerid) : LuaScriptable(filenam
 	lua_register(luaVm, "setMaxSkillLevel", &LuaExports::setMaxSkillLevel);
 }
 
-bool LuaNPC::run(){
+bool LuaNPC::run() {
 	if (luaL_loadfile(luaThread, filename.c_str())) {
 		// Error in lua script
 		handleError();
