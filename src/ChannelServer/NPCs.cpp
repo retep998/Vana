@@ -75,54 +75,56 @@ void NPCs::handleNPCIn(Player *player, PacketReader &packet) {
 
 	int8_t what = packet.get<int8_t>();
 
-	if (type == NPCDialogs::normal) {
-		switch (what) {
-			case 0: npc->proceedBack(); break;
-			case 1:	npc->proceedNext(); break;
-			default: npc->end(); break;
-		}
-	}
-	else if (type == NPCDialogs::yesNo || type == NPCDialogs::acceptDecline) {
-		switch (what) {
-			case 0: npc->proceedSelection(0); break;
-			case 1:	npc->proceedSelection(1); break;
-			default: npc->end(); break;
-		}
-	}
-	else if (type == NPCDialogs::getText) {
-		if (what != 0) {
-			npc->proceedText(packet.getString());
-		}
-		else {
+	switch (type) {
+		case NPCDialogs::normal:
+			switch (what) {
+				case 0: npc->proceedBack(); break;
+				case 1:	npc->proceedNext(); break;
+				default: npc->end(); break;
+			}
+			break;
+		case NPCDialogs::yesNo:
+		case NPCDialogs::acceptDecline:
+			switch (what) {
+				case 0: npc->proceedSelection(0); break;
+				case 1:	npc->proceedSelection(1); break;
+				default: npc->end(); break;
+			}
+			break;
+		case NPCDialogs::getText:
+			if (what != 0) {
+				npc->proceedText(packet.getString());
+			}
+			else {
+				npc->end();
+			}
+			break;
+		case NPCDialogs::getNumber:
+			if (what == 1) {
+				npc->proceedNumber(packet.get<int32_t>());
+			}
+			else {
+				npc->end();
+			}
+			break;
+		case NPCDialogs::simple:
+			if (what == 0) {
+				npc->end();
+			}
+			else {
+				npc->proceedSelection(packet.get<uint8_t>());
+			}
+			break;
+		case NPCDialogs::style:
+			if (what == 1) {
+				npc->proceedSelection(packet.get<uint8_t>());
+			}
+			else  {
+				npc->end();
+			}
+			break;
+		default:
 			npc->end();
-		}
-	}
-	else if (type == NPCDialogs::getNumber) {
-		if (what == 1) {
-			npc->proceedNumber(packet.get<int32_t>());
-		}
-		else {
-			npc->end();
-		}
-	}
-	else if (type == NPCDialogs::simple) {
-		if (what == 0) {
-			npc->end();
-		}
-		else {
-			npc->proceedSelection(packet.get<uint8_t>());
-		}
-	}
-	else if (type == NPCDialogs::style) {
-		if (what == 1) {
-			npc->proceedSelection(packet.get<uint8_t>());
-		}
-		else  {
-			npc->end();
-		}
-	}
-	else {
-		npc->end();
 	}
 	npc->checkEnd();
 }
