@@ -315,15 +315,23 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 		MapPacket::portalBlocked(this);
 		return;
 	}
-	if (portal == 0)
-		portal = Maps::getMap(mapid)->getSpawnPoint();
+	Map *oldmap = Maps::getMap(map);
+	Map *newmap = Maps::getMap(mapid);
 
-	if (!instance && getInstance() != 0) { // Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
+	if (portal == 0)
+		portal = newmap->getSpawnPoint();
+
+	if (!instance) { // Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
 		int32_t ispartyleader = (getParty() != 0 ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
-		getInstance()->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+		if (oldmap->getInstance() != 0) {
+			oldmap->getInstance()->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+		}
+		if (newmap->getInstance() != 0) {
+			newmap->getInstance()->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+		}
 	}
 
-	Maps::getMap(map)->removePlayer(this);
+	oldmap->removePlayer(this);
 	map = mapid;
 	map_pos = portal->id;
 	used_portals.clear();
