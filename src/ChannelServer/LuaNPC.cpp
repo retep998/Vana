@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::vector;
 
-LuaNPC::LuaNPC(const string &filename, int32_t playerid, int16_t questid) : LuaScriptable(filename, playerid) {
+LuaNPC::LuaNPC(const string &filename, int32_t playerid) : LuaScriptable(filename, playerid) {
 	luaThread = lua_newthread(luaVm);
 
 	// Miscellaneous
@@ -49,13 +49,10 @@ LuaNPC::LuaNPC(const string &filename, int32_t playerid, int16_t questid) : LuaS
 	// Quest
 	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
 	lua_register(luaVm, "endQuest", &LuaExports::endQuest);
-	lua_register(luaVm, "getQuestID", &LuaExports::getQuestID);
 	
 	// Skill
 	lua_register(luaVm, "getMaxSkillLevel", &LuaExports::getMaxSkillLevel);
 	lua_register(luaVm, "setMaxSkillLevel", &LuaExports::setMaxSkillLevel);
-
-	LuaScriptable::setVariable("questid", questid);
 }
 
 bool LuaNPC::run(){
@@ -204,11 +201,6 @@ int LuaExports::endQuest(lua_State *luaVm) {
 	int16_t questid = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getQuests()->finishQuest(questid, getNPC(luaVm)->getNpcId());
 	return 0;
-}
-
-int LuaExports::getQuestID(lua_State *luaVm) {
-	lua_pushinteger(luaVm, getNPC(luaVm)->getQuestId());
-	return 1;
 }
 
 // Skill

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Maps.h"
+#include "FileUtilities.h"
 #include "Instance.h"
 #include "LuaPortal.h"
 #include "MapDataProvider.h"
@@ -26,7 +27,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PacketReader.h"
 #include "Summons.h"
-#include <sys/stat.h>
 #include <string>
 
 using std::string;
@@ -52,8 +52,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 		
 		string filename = "scripts/portals/" + portal->script + ".lua";
 
-		struct stat fileInfo;
-		if (!stat(filename.c_str(), &fileInfo)) { // Lua Portal script exists
+		if (FileUtilities::fileExists(filename)) { // Lua Portal script exists
 			int32_t map = player->getMap();
 			LuaPortal(filename, player->getId(), portal);
 

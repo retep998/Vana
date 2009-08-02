@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "Drop.h"
 #include "DropHandler.h"
+#include "FileUtilities.h"
 #include "GameLogicUtilities.h"
 #include "LuaReactor.h"
 #include "Maps.h"
@@ -32,7 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <iostream>
 #include <sstream>
-#include <sys/stat.h>
 
 using std::string;
 
@@ -103,8 +103,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 			else {
 				string filename = ScriptDataProvider::Instance()->getReactorScript(reactor->getReactorId());
 
-				struct stat fileInfo;
-				if (!stat(filename.c_str(), &fileInfo)) { // Script found
+				if (!FileUtilities::fileExists(filename)) { // Script found
 					LuaReactor(filename, player->getId(), id, reactor->getMapId());
 				}
 				else { // Default action of dropping an item
