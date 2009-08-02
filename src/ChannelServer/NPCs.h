@@ -73,7 +73,6 @@ public:
 	int32_t getNpcId() const { return npcid; }
 	int32_t getNumber() const { return getnum; }
 	int32_t getSelected() const { return selected; }
-	int16_t getQuestId() const { return questid; }
 	string & getText() { return gettext; }
 
 	bool isEnd() const { return cend; }
@@ -98,7 +97,6 @@ private:
 	int32_t npcid;
 	uint8_t selected;
 	int32_t getnum;
-	int16_t questid;
 	string text;
 	string gettext;
 	Player *player;

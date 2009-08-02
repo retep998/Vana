@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ScriptDataProvider.h"
 #include "Database.h"
+#include "FileUtilities.h"
 #include "InitializeCommon.h"
 #include "MiscUtilities.h"
 #include <iostream>
 #include <string>
-#include <sys/stat.h>
 
 using MiscUtilities::atob;
 using Initializing::outputWidth;
@@ -64,9 +64,8 @@ void ScriptDataProvider::loadData() {
 }
 
 string ScriptDataProvider::getNpcScript(int32_t npcid) {
-	struct stat fileinfo;
 	string s = "scripts/npcs/" + (npcscripts.find(npcid) != npcscripts.end() ? npcscripts[npcid] : "") + ".lua";
-	if (s == "scripts/npcs/.lua" || stat(s.c_str(), &fileinfo)) { // File doesn't exist or NPC has no script replacement
+	if (s == "scripts/npcs/.lua" || !FileUtilities::fileExists(s)) { // File doesn't exist or NPC has no script replacement
 		std::ostringstream filestream;
 		filestream << "scripts/npcs/" << npcid << ".lua";
 		s = filestream.str();
@@ -75,9 +74,8 @@ string ScriptDataProvider::getNpcScript(int32_t npcid) {
 }
 
 string ScriptDataProvider::getReactorScript(int32_t reactorid) {
-	struct stat fileinfo;
 	string s = "scripts/reactors/" + (reactorscripts.find(reactorid) != reactorscripts.end() ? reactorscripts[reactorid] : "") + ".lua";
-	if (s == "scripts/reactors/.lua" || stat(s.c_str(), &fileinfo)) { // File doesn't exist or reactor has no script replacement
+	if (s == "scripts/reactors/.lua" || !FileUtilities::fileExists(s)) { // File doesn't exist or reactor has no script replacement
 		std::ostringstream filestream;
 		filestream << "scripts/reactors/" << reactorid << ".lua";
 		s = filestream.str();
@@ -86,9 +84,8 @@ string ScriptDataProvider::getReactorScript(int32_t reactorid) {
 }
 
 string ScriptDataProvider::getQuestScript(int16_t questid, int8_t state) {
-	struct stat fileinfo;
 	string s = "scripts/npcs/" + (questscripts.find(questid) != questscripts.end() && questscripts[questid].find(state) != questscripts[questid].end() ? questscripts[questid][state] : "") + ".lua";
-	if (s == "scripts/npcs/.lua" || stat(s.c_str(), &fileinfo)) { // File doesn't exist or quest NPC has no script replacement
+	if (s == "scripts/npcs/.lua" || !FileUtilities::fileExists(s)) { // File doesn't exist or quest NPC has no script replacement
 		std::ostringstream filestream;
 		filestream << "scripts/npcs/" << questid << (state == 0 ? "s" : "e") << ".lua";
 		s = filestream.str();

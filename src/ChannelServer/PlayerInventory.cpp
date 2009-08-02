@@ -77,6 +77,12 @@ m_maxslots(maxslots),
 m_mesos(mesos), 
 m_player(player)
 {
+	boost::array<int32_t, 2> g = {0};
+
+	for (size_t i = 0; i < 50; i++) {
+		m_equipped[i] = g;
+	}
+
 	load();
 }
 

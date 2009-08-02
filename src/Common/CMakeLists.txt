@@ -9,6 +9,7 @@ set(SOURCES
 	DatabaseMigration.h
 	DatabaseMigrationRunner.h
 	Decoder.h
+	FileUtilities.h
 	InitializeCommon.h
 	InterHeader.h
 	IpUtilities.h
@@ -49,6 +50,7 @@ set(SOURCES
 	DatabaseMigration.cpp
 	DatabaseMigrationRunner.cpp
 	Decoder.cpp
+	FileUtilities.cpp
 	InitializeCommon.cpp
 	IpUtilities.cpp
 	MapleClient.cpp
