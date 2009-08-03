@@ -78,6 +78,7 @@ set(SOURCES
 	ScriptDataProvider.h
 	ServerPacket.h
 	ShopDataProvider.h
+	SkillDataProvider.h
 	SkillMacros.h
 	Skills.h
 	SkillsPacket.h
@@ -168,6 +169,7 @@ set(SOURCES
 	ScriptDataProvider.cpp
 	ServerPacket.cpp
 	ShopDataProvider.cpp
+	SkillDataProvider.cpp
 	SkillMacros.cpp
 	Skills.cpp
 	SkillsPacket.cpp

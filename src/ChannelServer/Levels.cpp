@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayersPacket.h"
 #include "Randomizer.h"
-#include "Skills.h"
+#include "SkillDataProvider.h"
 #include "VersionConstants.h"
 #include <boost/lexical_cast.hpp>
 #include <string>
@@ -116,7 +116,8 @@ void Levels::giveExp(Player *player, uint32_t exp, bool inChat, bool white) {
 			if (player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillid = player->getActiveBuffs()->getHyperBody();
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
-				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
+				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillid, hblevel);
+				player->setHyperBody(hb->x, hb->y);
 			}
 			else {
 				player->setMHp(player->getRMHp());
@@ -253,7 +254,8 @@ void Levels::addStat(Player *player, int32_t type, int16_t mod, bool isreset) {
 			if (player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillid = player->getActiveBuffs()->getHyperBody();
 				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
-				player->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
+				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillid, hblevel);
+				player->setHyperBody(hb->x, hb->y);
 			}
 			else {
 				player->setMHp(player->getRMHp());
@@ -280,11 +282,11 @@ int16_t Levels::randMp() {
 }
 
 int16_t Levels::getX(Player *player, int32_t skillid) {
-	return Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+	return SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x;
 }
 
 int16_t Levels::getY(Player *player, int32_t skillid) {
-	return Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].y;
+	return SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->y;
 }
 
 int16_t Levels::apResetHp(bool isreset, bool issubtract, int16_t val, int16_t sval) {

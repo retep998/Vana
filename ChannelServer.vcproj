@@ -449,6 +449,10 @@
 					RelativePath=".\src\ChannelServer\ShopDataProvider.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\src\ChannelServer\SkillDataProvider.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="ServerToServer"
@@ -861,6 +865,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\ShopDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\SkillDataProvider.h"
 					>
 				</File>
 			</Filter>

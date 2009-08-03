@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "Pos.h"
 #include "Randomizer.h"
-#include "Skills.h"
+#include "SkillDataProvider.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
 #include <functional>
@@ -153,7 +153,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
 				realskill = info->skillid;
  				level = info->level;
-				MobSkillLevelInfo mobskill = Skills::mobskills[realskill][level];
+				MobSkillLevelInfo *mobskill = SkillDataProvider::Instance()->getMobSkill(realskill, level);
 				switch (realskill) {
 					case MobSkills::WeaponAttackUp:
 					case MobSkills::WeaponAttackUpAoe:
@@ -182,7 +182,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 						break;
 					case MobSkills::Summon: {
 						int16_t spawns = (int16_t)(mob->getSpawnCount());
-						int16_t limit = mobskill.limit;
+						int16_t limit = mobskill->limit;
 						if (limit == 5000) // Custom limit based on number of players on map
 							limit = 30 + Maps::getMap(mob->getMapId())->getNumPlayers() * 2;
 						if (spawns >= limit)
@@ -193,11 +193,11 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 				if (!stop) {
 					time_t now = time(0);
 					time_t ls = mob->getLastSkillUse(realskill);
-					if (ls == 0 || ((int16_t)(now - ls) > mobskill.interval)) {
+					if (ls == 0 || ((int16_t)(now - ls) > mobskill->interval)) {
 						mob->setLastSkillUse(realskill, now);
 						int64_t reqhp = mob->getHp() * 100;
 						reqhp /= mob->getMHp();
-						if ((uint8_t)(reqhp) <= mobskill.hp) {
+						if ((uint8_t)(reqhp) <= mobskill->hp) {
 							if (info->effectAfter == 0) {
 								handleMobSkill(mob, realskill, level, mobskill);
 							}
@@ -222,7 +222,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	MobsPacket::moveMob(player, mobid, useskill, skill, projectiletarget, packet.getBuffer(), packet.getBufferLength());
 }
 
-void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const MobSkillLevelInfo &skillinfo) {
+void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, MobSkillLevelInfo *skillinfo) {
 	Pos mobpos = mob->getPos();
 	Map *map = Maps::getMap(mob->getMapId());
 	vector<StatusInfo> statuses;
@@ -231,25 +231,25 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const 
 		case MobSkills::WeaponAttackUpAoe:
 			aoe = true;
 		case MobSkills::WeaponAttackUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, skillinfo->x, skillid, level, skillinfo->time));
 			break;
 		case MobSkills::MagicAttackUpAoe:
 			aoe = true;
 		case MobSkills::MagicAttackUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Matk, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Matk, skillinfo->x, skillid, level, skillinfo->time));
 			break;
 		case MobSkills::WeaponDefenseUpAoe:
 			aoe = true;
 		case MobSkills::WeaponDefenseUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, skillinfo->x, skillid, level, skillinfo->time));
 			break;
 		case MobSkills::MagicDefenseUpAoe:
 			aoe = true;
 		case MobSkills::MagicDefenseUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, skillinfo->x, skillid, level, skillinfo->time));
 			break;
 		case MobSkills::Heal:
-			map->healMobs(skillinfo.x, skillinfo.y, mobpos, skillinfo.lt, skillinfo.rb);
+			map->healMobs(skillinfo->x, skillinfo->y, mobpos, skillinfo->lt, skillinfo->rb);
 			break;
 		case MobSkills::Seal:
 		case MobSkills::Darkness:
@@ -261,52 +261,52 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const 
 		case MobSkills::Seduce:
 		case MobSkills::CrazySkull:
 		case MobSkills::Zombify:
-			map->statusPlayers(skillid, level, skillinfo.count, skillinfo.prop, mobpos, skillinfo.lt, skillinfo.rb);
+			map->statusPlayers(skillid, level, skillinfo->count, skillinfo->prop, mobpos, skillinfo->lt, skillinfo->rb);
 			break;
 		case MobSkills::Dispel:
-			map->dispelPlayers(skillinfo.prop, mobpos, skillinfo.lt, skillinfo.rb);
+			map->dispelPlayers(skillinfo->prop, mobpos, skillinfo->lt, skillinfo->rb);
 			break;
 		case MobSkills::SendToTown:
-			map->sendPlayersToTown(mob->getMobId(), skillinfo.prop, skillinfo.count, mobpos, skillinfo.lt, skillinfo.rb);
+			map->sendPlayersToTown(mob->getMobId(), skillinfo->prop, skillinfo->count, mobpos, skillinfo->lt, skillinfo->rb);
 			break;
 		case MobSkills::PoisonMist:
 			new Mist(mob->getMapId(), mob, mobpos, skillinfo, skillid, level);
 			break;
 		case MobSkills::WeaponImmunity:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo->x, skillid, level, skillinfo->time));
 			break;
 		case MobSkills::MagicImmunity:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo->x, skillid, level, skillinfo->time));
 			break;
 		case MobSkills::WeaponDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo.x, skillid, level, skillinfo.time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillinfo.x, skillid, level, skillinfo.y, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo->x, skillid, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillinfo->x, skillid, level, skillinfo->y, skillinfo->time));
 			break;
 		case MobSkills::MagicDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo.x, skillid, level, skillinfo.time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillinfo.x, skillid, level, skillinfo.y, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo->x, skillid, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillinfo->x, skillid, level, skillinfo->y, skillinfo->time));
 			break;
 		case MobSkills::AnyDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo.x, skillid, level, skillinfo.time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo.x, skillid, level, skillinfo.time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillinfo.x, skillid, level, skillinfo.y, skillinfo.time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillinfo.x, skillid, level, skillinfo.y, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo->x, skillid, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo->x, skillid, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillinfo->x, skillid, level, skillinfo->y, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillinfo->x, skillid, level, skillinfo->y, skillinfo->time));
 			break;
 		case MobSkills::McSpeedUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, skillinfo.x, skillid, level, skillinfo.time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, skillinfo->x, skillid, level, skillinfo->time));
 			break;
 		case MobSkills::Summon: {
 			int16_t minx, maxx;
-			int16_t miny = mobpos.y + skillinfo.lt.y;
-			int16_t maxy = mobpos.y + skillinfo.rb.y;
+			int16_t miny = mobpos.y + skillinfo->lt.y;
+			int16_t maxy = mobpos.y + skillinfo->rb.y;
 			int16_t d = 0;
 			if (mob->isFacingRight()) {
-				minx = mobpos.x + skillinfo.rb.x * -1;
-				maxx = mobpos.x + skillinfo.lt.x * -1;
+				minx = mobpos.x + skillinfo->rb.x * -1;
+				maxx = mobpos.x + skillinfo->lt.x * -1;
 			}
 			else {
-				minx = mobpos.x + skillinfo.lt.x;
-				maxx = mobpos.x + skillinfo.rb.x;
+				minx = mobpos.x + skillinfo->lt.x;
+				maxx = mobpos.x + skillinfo->rb.x;
 			}
 			int16_t rangex = maxx - minx;
 			int16_t rangey = maxy - miny;
@@ -314,14 +314,14 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const 
 				rangex *= -1;
 			if (rangey < 0)
 				rangey *= -1;
-			for (size_t summonsize = 0; summonsize < skillinfo.summons.size(); summonsize++) {
-				int32_t spawnid = skillinfo.summons[summonsize];
+			for (size_t summonsize = 0; summonsize < skillinfo->summons.size(); summonsize++) {
+				int32_t spawnid = skillinfo->summons[summonsize];
 				int16_t mobx = Randomizer::Instance()->randShort(rangex) + minx;
 				int16_t moby = Randomizer::Instance()->randShort(rangey) + miny;
 				Pos floor;
 				if (mob->getMapId() == Maps::OriginOfClockTower) { // Papulatus' map
 					if (spawnid == Mobs::HighDarkstar) { // Keep High Darkstars high
-						while ((floor.y > -538 || floor.y == moby) || !GameLogicUtilities::isInBox(mob->getPos(), skillinfo.lt, skillinfo.rb, floor)) {
+						while ((floor.y > -538 || floor.y == moby) || !GameLogicUtilities::isInBox(mob->getPos(), skillinfo->lt, skillinfo->rb, floor)) {
 							// Mobs spawn on the ground, we need them up top
 							mobx = Randomizer::Instance()->randShort(rangex) + minx;
 							moby = -590;
@@ -339,7 +339,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const 
 						floor.y = mobpos.y;
 					}
 				}
-				map->spawnMob(spawnid, floor, 0, mob, skillinfo.summoneffect);
+				map->spawnMob(spawnid, floor, 0, mob, skillinfo->summoneffect);
 				d++;
 			}
 			break;
@@ -347,7 +347,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, const 
 	}
 	if (statuses.size() > 0) {
 		if (aoe) {
-			map->statusMobs(statuses, mob->getPos(), skillinfo.lt, skillinfo.rb);
+			map->statusMobs(statuses, mob->getPos(), skillinfo->lt, skillinfo->rb);
 		}
 		else {
 			mob->addStatus(0, statuses);
@@ -359,7 +359,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 	Player *player = Players::Instance()->getPlayer(playerid);
 	vector<StatusInfo> statuses;
 	int16_t y = 0;
-	bool success = (Randomizer::Instance()->randInt(99) < Skills::skills[skillid][level].prop);
+	bool success = (skillid == 0 ? false : (Randomizer::Instance()->randInt(99) < SkillDataProvider::Instance()->getSkill(skillid, level)->prop));
 	if (mob->canFreeze()) { // Freezing stuff
 		switch (skillid) {
 			case Jobs::ILWizard::ColdBeam:
@@ -367,21 +367,21 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 			case Jobs::ILMage::ElementComposition:
 			case Jobs::Sniper::Blizzard:
 			case Jobs::ILArchMage::Blizzard:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, Skills::skills[skillid][level].time));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				break;
 			case Jobs::Outlaw::IceSplitter:
 				if (player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost) > 0)
-					y = Skills::skills[Jobs::Corsair::ElementalBoost][player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost)].y;
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, Skills::skills[skillid][level].time + y));
+					y = SkillDataProvider::Instance()->getSkill(Jobs::Corsair::ElementalBoost, player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost))->y;
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time + y));
 				break;
 			case Jobs::FPArchMage::Elquines:
 			case Jobs::Marksman::Frostprey:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, Skills::skills[skillid][level].x));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->x));
 				break;
 		}
 		if ((weapon_type == Weapon1hSword || weapon_type == Weapon2hSword || weapon_type == Weapon1hMace || weapon_type == Weapon2hMace) && player->getActiveBuffs()->hasIceCharge()) { // Ice Charges
 			int32_t charge = player->getActiveBuffs()->getCharge();
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, charge, Skills::skills[charge][player->getActiveBuffs()->getActiveSkillLevel(charge)].y));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, charge, SkillDataProvider::Instance()->getSkill(charge, player->getActiveBuffs()->getActiveSkillLevel(charge))->y));
 		}
 	}
 	if (mob->canPoison() && mob->getHp() > 1) { // Poisoning stuff
@@ -401,18 +401,20 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					int32_t vskill = player->getSkills()->getVenomousWeapon();
 					uint8_t vlevel = player->getSkills()->getSkillLevel(vskill);
+					SkillLevelInfo *venom = SkillDataProvider::Instance()->getSkill(vskill, vlevel);
+
 					int32_t part1 = player->getStr() + player->getLuk();
 					int32_t part2 = player->getDex() * 2;
-					int16_t vatk = Skills::skills[vskill][vlevel].matk;
+					int16_t vatk = venom->matk;
 					int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
 					int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
 					
 					damage = Randomizer::Instance()->randInt(maxdamage - mindamage) + mindamage;
 
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {
-						success = (Randomizer::Instance()->randInt(99) < Skills::skills[vskill][vlevel].prop);
+						success = (Randomizer::Instance()->randInt(99) < venom->prop);
 						if (success) {
-							statuses.push_back(StatusInfo(StatusEffects::Mob::VenomousWeapon, damage, vskill, Skills::skills[vskill][vlevel].time));
+							statuses.push_back(StatusInfo(StatusEffects::Mob::VenomousWeapon, damage, vskill, venom->time));
 							mob->addStatus(player->getId(), statuses);
 							statuses.clear();
 						}
@@ -427,7 +429,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 			case Jobs::BlazeWizard::FlameGear:
 			case Jobs::NightWalker::PoisonBomb:	
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMHp() / (70 - level), skillid, Skills::skills[skillid][level].time));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMHp() / (70 - level), skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				}
 				break;
 		}
@@ -435,13 +437,13 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 	if (!mob->isBoss()) { // Seal, Stun, etc
 		switch (skillid) {
 			case Jobs::Corsair::Hypnotize:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Hypnotize, 1, skillid, Skills::skills[skillid][level].time));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Hypnotize, 1, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				break;
 			case Jobs::Brawler::BackspinBlow:
 			case Jobs::Brawler::DoubleUppercut:
 			case Jobs::Buccaneer::Demolition:
 			case Jobs::Buccaneer::Snatch:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, Skills::skills[skillid][level].time));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				break;
 			case Jobs::Hunter::ArrowBomb:
 			case Jobs::Crusader::SwordComa:
@@ -454,81 +456,83 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 			case Jobs::Gunslinger::BlankShot:
 			case Jobs::NightLord::NinjaStorm:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, Skills::skills[skillid][level].time));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				}
 				break;
 			case Jobs::Ranger::SilverHawk:
 			case Jobs::Sniper::GoldenEagle:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, Skills::skills[skillid][level].x));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->x));
 				}
 				break;
 			case Jobs::FPMage::Seal:
 			case Jobs::ILMage::Seal:
 			case Jobs::BlazeWizard::Seal:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, Skills::skills[skillid][level].time));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				}
 				break;
 			case Jobs::Priest::Doom:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Doom, 0x100, skillid, Skills::skills[skillid][level].time));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::Doom, 0x100, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				}
 				break;
 			case Jobs::Hermit::ShadowWeb:
 			case Jobs::NightWalker::ShadowWeb:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::ShadowWeb, level, skillid, Skills::skills[skillid][level].time));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::ShadowWeb, level, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				}
 				break;
 			case Jobs::FPArchMage::Paralyze:
 				if (mob->canPoison()) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, Skills::skills[skillid][level].time));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				}
 				break;
 			case Jobs::ILArchMage::IceDemon:
 			case Jobs::FPArchMage::FireDemon:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMHp() / (70 - level), skillid, Skills::skills[skillid][level].time));
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, Skills::skills[skillid][level].x));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMHp() / (70 - level), skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->x));
 				break;
 			case Jobs::Shadower::Taunt:
 			case Jobs::NightLord::Taunt:
 				// I know, these status effect types make no sense, that's just how it works
-				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicAttackUp, 100 - Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
-				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDefenseUp, 100 - Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicAttackUp, 100 - SkillDataProvider::Instance()->getSkill(skillid, level)->x, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDefenseUp, 100 - SkillDataProvider::Instance()->getSkill(skillid, level)->x, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				break;
 			case Jobs::Outlaw::Flamethrower:
 				if (player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost) > 0)
-					y = Skills::skills[Jobs::Corsair::ElementalBoost][player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost)].x;
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, (damage * (5 + y) / 100), skillid, Skills::skills[skillid][level].time));
+					y = SkillDataProvider::Instance()->getSkill(Jobs::Corsair::ElementalBoost, player->getSkills()->getSkillLevel(Jobs::Corsair::ElementalBoost))->x;
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, (damage * (5 + y) / 100), skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				break;
 		}
 	}
 	switch (skillid) {
 		case Jobs::Shadower::NinjaAmbush:
 		case Jobs::NightLord::NinjaAmbush:
-			damage = 2 * (player->getStr() + player->getLuk()) * Skills::skills[skillid][level].damage / 100;
-			statuses.push_back(StatusInfo(StatusEffects::Mob::NinjaAmbush, damage, skillid, Skills::skills[skillid][level].time));
+			damage = 2 * (player->getStr() + player->getLuk()) * SkillDataProvider::Instance()->getSkill(skillid, level)->damage / 100;
+			statuses.push_back(StatusInfo(StatusEffects::Mob::NinjaAmbush, damage, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 			break;
 		case Jobs::Rogue::Disorder:
 		case Jobs::NightWalker::Disorder:
 		case Jobs::Page::Threaten:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, Skills::skills[skillid][level].y, skillid, Skills::skills[skillid][level].time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, SkillDataProvider::Instance()->getSkill(skillid, level)->x, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, SkillDataProvider::Instance()->getSkill(skillid, level)->y, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 			break;
 		case Jobs::FPWizard::Slow:
 		case Jobs::ILWizard::Slow:
 		case Jobs::BlazeWizard::Slow:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, Skills::skills[skillid][level].x, skillid, Skills::skills[skillid][level].time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, SkillDataProvider::Instance()->getSkill(skillid, level)->x, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 			break;
 	}
 	if (weapon_type == WeaponBow && player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Hamstring) > 0 && skillid != Jobs::Bowmaster::Phoenix && skillid != Jobs::Ranger::SilverHawk) {
 		uint8_t hamlevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Hamstring);
-		statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, Skills::skills[Jobs::Bowmaster::Hamstring][hamlevel].x, Jobs::Bowmaster::Hamstring, Skills::skills[Jobs::Bowmaster::Hamstring][hamlevel].y));
+		SkillLevelInfo *hamstring = SkillDataProvider::Instance()->getSkill(Jobs::Bowmaster::Hamstring, hamlevel);
+		statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, hamstring->x, Jobs::Bowmaster::Hamstring, hamstring->y));
 	}
 	else if (weapon_type == WeaponCrossbow && player->getActiveBuffs()->getActiveSkillLevel(Jobs::Marksman::Blind) > 0 && skillid != Jobs::Marksman::Frostprey && skillid != Jobs::Sniper::GoldenEagle) {
 		uint8_t blindlevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::Marksman::Blind);
-		statuses.push_back(StatusInfo(StatusEffects::Mob::Acc, -Skills::skills[Jobs::Marksman::Blind][blindlevel].x, Jobs::Marksman::Blind, Skills::skills[Jobs::Marksman::Blind][blindlevel].y));
+		SkillLevelInfo *blind = SkillDataProvider::Instance()->getSkill(Jobs::Marksman::Blind, blindlevel);
+		statuses.push_back(StatusInfo(StatusEffects::Mob::Acc, -blind->x, Jobs::Marksman::Blind, blind->y));
 	}
 
 	if (statuses.size() > 0) {
