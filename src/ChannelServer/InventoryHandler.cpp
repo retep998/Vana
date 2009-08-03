@@ -546,7 +546,9 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 		}
 	}
 	else {
-		if (GameLogicUtilities::itemTypeToScrollData(equip->id) != GameLogicUtilities::getItemData(itemid)) {
+		int32_t one = GameLogicUtilities::itemTypeToScrollType(equip->id);
+		int32_t two = GameLogicUtilities::getScrollType(itemid);
+		if (one != two) {
 			// Hacking, equip slot different from the scroll slot
 			return;
 		}
