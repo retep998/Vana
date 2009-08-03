@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Randomizer.h"
+#include "SkillDataProvider.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
 
@@ -88,7 +89,7 @@ void PlayerSkills::save(bool savecooldowns) {
 bool PlayerSkills::addSkillLevel(int32_t skillid, uint8_t amount, bool sendpacket) {
 	// Keep people from adding too much SP and prevent it from going negative
 	uint8_t newlevel = ((playerskills.find(skillid) != playerskills.end()) ? playerskills[skillid].level : 0) + amount;
-	if (newlevel > Skills::maxlevels[skillid] || (GameLogicUtilities::isFourthJobSkill(skillid) && newlevel > getMaxSkillLevel(skillid))) {
+	if (newlevel > SkillDataProvider::Instance()->getMaxLevel(skillid) || (GameLogicUtilities::isFourthJobSkill(skillid) && newlevel > getMaxSkillLevel(skillid))) {
 		return false; // Let the caller handle this
 	}
 

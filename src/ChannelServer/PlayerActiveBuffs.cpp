@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "Randomizer.h"
+#include "SkillDataProvider.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
 #include "Timer/Container.h"
@@ -272,7 +273,7 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 	if (m_battleshiphp <= 0) {
 		m_battleshiphp = 0;
 		int32_t skillid = Jobs::Corsair::Battleship;
-		int16_t cooltime = Skills::skills[skillid][m_player->getSkills()->getSkillLevel(skillid)].cooltime;
+		int16_t cooltime = SkillDataProvider::Instance()->getSkill(skillid, m_player->getSkills()->getSkillLevel(skillid))->cooltime;
 		Skills::startCooldown(m_player, skillid, cooltime);
 		Skills::stopSkill(m_player, skillid);
 	}
@@ -298,10 +299,10 @@ void PlayerActiveBuffs::addCombo() { // Add orbs
 	if (getActiveSkillLevel(skillid) > 0) {
 		int32_t advskill = m_player->getSkills()->getAdvancedCombo();
 		int8_t advcombo = m_player->getSkills()->getSkillLevel(advskill);
-		int8_t maxcombo = (int8_t) (advcombo > 0 ? Skills::skills[advskill][advcombo].x : Skills::skills[skillid][m_player->getSkills()->getSkillLevel(skillid)].x);
+		int8_t maxcombo = (int8_t) SkillDataProvider::Instance()->getSkill((advcombo > 0 ? advskill : skillid), (advcombo > 0 ? advcombo : m_player->getSkills()->getSkillLevel(skillid)))->x;
 		if (m_combo == maxcombo)
 			return;
-		if (advcombo > 0 && Randomizer::Instance()->randShort(99) < Skills::skills[advskill][advcombo].prop)
+		if (advcombo > 0 && Randomizer::Instance()->randShort(99) < SkillDataProvider::Instance()->getSkill(advskill, advcombo)->prop)
 			m_combo += 1; // 4th job skill gives chance to add second orb
 		m_combo += 1;
 		if (m_combo > maxcombo)
@@ -315,7 +316,7 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 		int32_t skillid = Jobs::DarkKnight::Berserk;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
-			int16_t r_hp = m_player->getMHp() * Skills::skills[skillid][level].x / 100;
+			int16_t r_hp = m_player->getMHp() * SkillDataProvider::Instance()->getSkill(skillid, level)->x / 100;
 			int16_t hp = m_player->getHp();
 			bool change = false;
 			if (m_berserk && hp > r_hp) { // If on and we're above Berserk HP, Berserk fails
@@ -339,7 +340,7 @@ void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 		if (m_player->getTimers()->checkTimer(id) > 0)
 			stopEnergyChargeTimer();
 		startEnergyChargeTimer();
-		m_energycharge += Skills::skills[skillid][m_player->getSkills()->getSkillLevel(skillid)].x * targets;
+		m_energycharge += SkillDataProvider::Instance()->getSkill(skillid, m_player->getSkills()->getSkillLevel(skillid))->x * targets;
 		if (m_energycharge > 10000) {
 			m_energycharge = 10000;
 			stopEnergyChargeTimer();
@@ -476,7 +477,7 @@ int16_t PlayerActiveBuffs::getHolySymbolRate() {
 	int16_t val = 0;
 	if (hasHolySymbol()) {
 		int32_t hsid = getHolySymbol();
-		val = Skills::skills[hsid][getActiveSkillLevel(hsid)].x;
+		val = SkillDataProvider::Instance()->getSkill(hsid, getActiveSkillLevel(hsid))->x;
 	}
 	return val;
 }

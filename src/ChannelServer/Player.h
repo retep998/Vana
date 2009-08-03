@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerVariables.h"
 #include "Pos.h"
 #include "Quests.h"
-#include "Skills.h"
+#include "SkillDataProvider.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_set.hpp>
 #include <ctime>
@@ -101,7 +101,7 @@ public:
 	void setInstance(Instance *instance) { this->instance = instance; }
 	void setChair(int32_t chair) { this->chair = chair; }
 	void setItemEffect(int32_t effect) { this->item_effect = effect; }
-	void setSpecialSkill(SpecialSkillInfo info) { this->info = info; }
+	void setSpecialSkill(const SpecialSkillInfo &info) { this->info = info; }
 
 	int8_t getWorldId() const { return world_id; }
 	int8_t getGender() const { return gender; }
