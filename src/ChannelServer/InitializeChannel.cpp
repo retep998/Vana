@@ -346,7 +346,7 @@ void Initializing::initializePets() {
 	// Pet command info
 	query << "SELECT * FROM petinteractdata";
 	res = query.use();
-	PetInteractInfo pet;
+	PetInteractInfo petinteract;
 
 	while (Row = res.fetch_raw_row()) {
 		// 0 : Id
@@ -354,9 +354,9 @@ void Initializing::initializePets() {
 		// 2 : Increase
 		// 3 : Prob
 
-		pet.increase = atoi(Row[2]);
-		pet.prob = atoi(Row[3]);
-		Pets::petsInteractInfo[atoi(Row[0])][atoi(Row[1])] = pet;
+		petinteract.increase = atoi(Row[2]);
+		petinteract.prob = atoi(Row[3]);
+		Pets::petsInteractInfo[atoi(Row[0])][atoi(Row[1])] = petinteract;
 	}
 	std::cout << "DONE" << std::endl;
 }
