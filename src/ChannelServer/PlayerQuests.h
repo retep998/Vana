@@ -56,6 +56,7 @@ private:
 
 	bool giveRewards(int16_t questid, bool start);
 	bool giveRewards(const QuestRewardInfo &info);
+	bool checkRewards(int16_t questid, Rewards::iterator &begin, Rewards::iterator &end);
 	void addQuest(int16_t questid);
 	void addQuestMobs(int16_t questid);
 };
