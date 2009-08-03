@@ -43,7 +43,8 @@ void BuddyListPacket::update(Player *player, uint8_t type) {
 		packet.addString(buddy->name, 13);
 		packet.add<int8_t>(buddy->oppositeStatus);
 		packet.add<int32_t>(buddy->channel);
-		packet.addString("Default Group", 17);
+		packet.addString("Default Group", 13);
+		packet.add<int32_t>(0);
 	}
 
 	for (uint8_t i = 0; i < size; i++) {
