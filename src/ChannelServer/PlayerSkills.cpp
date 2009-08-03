@@ -30,8 +30,9 @@ void PlayerSkills::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT skillid, points, maxlevel FROM skills WHERE charid = " << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
+	PlayerSkillInfo skill;
+
 	for (size_t i = 0; i < res.num_rows(); i++) {
-		PlayerSkillInfo skill;
 		skill.level = (uint8_t) res[i][1];
 		skill.maxlevel = (uint8_t) res[i][2];
 		playerskills[res[i][0]] = skill;
@@ -39,6 +40,7 @@ void PlayerSkills::load() {
 
 	query << "SELECT * FROM cooldowns WHERE charid = " << player->getId();
 	res = query.store();
+
 	for (size_t i = 0; i < res.size(); i++) {
 		int32_t skillid = res[i]["skillid"];
 		int16_t timeleft = static_cast<int16_t>(res[i]["timeleft"]);

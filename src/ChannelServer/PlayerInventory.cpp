@@ -98,8 +98,9 @@ void PlayerInventory::load() {
 	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
+	Item *item;
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		Item *item = new Item;
+		item = new Item;
 		item->id = res[i][2];
 		item->amount = res[i][3];
 		item->slots = (int8_t) res[i][4];

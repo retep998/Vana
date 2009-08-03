@@ -331,12 +331,13 @@ void Initializing::initializePets() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW Row;
+	PetInfo pet;
+
 	while (Row = res.fetch_raw_row()) {
 		// 0 : Pet id
 		// 1 : Pet breed name
 		// 2 : Pet hunger level
 
-		PetInfo pet;
 		pet.name = Row[1];
 		pet.hunger = atoi(Row[2]);
 		Pets::petsInfo[atoi(Row[0])] = pet;
@@ -345,8 +346,8 @@ void Initializing::initializePets() {
 	// Pet command info
 	query << "SELECT * FROM petinteractdata";
 	res = query.use();
-
 	PetInteractInfo pet;
+
 	while (Row = res.fetch_raw_row()) {
 		// 0 : Id
 		// 1 : Command
