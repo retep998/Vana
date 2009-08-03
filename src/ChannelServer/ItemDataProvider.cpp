@@ -103,11 +103,11 @@ void ItemDataProvider::loadData() {
 
 	enum ItemDataColumns {
 		ItemId = 0,
-		Price, SlotMax, Tradeable, Quest, AutoConsume,
-		Hp, Mp, HpRate, MpRate, MoveTo,
+		ItemPrice, SlotMax, Tradeable, ItemQuest, AutoConsume,
+		HealHp, HealMp, HpRate, MpRate, MoveTo,
 		Ailment, MonCardBuffProb, Time, WeaponAtt, MagicAtt,
-		Avoid, Accuracy, WeaponDef, MagicDef, Speed,
-		Jump, Morph, MesoUp, DropUp, IgnoreWeaponDef,
+		BuffAvoid, Accuracy, WeaponDef, MagicDef, BuffSpeed,
+		BuffJump, Morph, MesoUp, DropUp, IgnoreWeaponDef,
 		IgnoreMagicDef, IncreaseElementDef, IncreaseAilmentDef, Success, Cursed,
 		RandStat, Recover, ItemStr, ItemDex, ItemInt,
 		ItemLuk, ItemHp, ItemMp, ItemWeaponAtt, ItemMagicAtt,
@@ -123,13 +123,13 @@ void ItemDataProvider::loadData() {
 			item.cons.mobs.clear();
 		}
 
-		item.price = atoi(dataRow[Price]);
+		item.price = atoi(dataRow[ItemPrice]);
 		item.maxslot = atoi(dataRow[SlotMax]);
 		item.notrade = atob(dataRow[Tradeable]);
-		item.quest = atob(dataRow[Quest]);
+		item.quest = atob(dataRow[ItemQuest]);
 		item.cons.autoconsume = atob(dataRow[AutoConsume]);
-		item.cons.hp = atoi(dataRow[Hp]);
-		item.cons.mp = atoi(dataRow[Mp]);
+		item.cons.hp = atoi(dataRow[HealHp]);
+		item.cons.mp = atoi(dataRow[HealMp]);
 		item.cons.hpr = atoi(dataRow[HpRate]);
 		item.cons.mpr = atoi(dataRow[MpRate]);
 		item.cons.moveTo = atoi(dataRow[MoveTo]);
@@ -141,12 +141,12 @@ void ItemDataProvider::loadData() {
 		item.cons.time = atoi(dataRow[Time]);
 		item.cons.watk = atoi(dataRow[WeaponAtt]);
 		item.cons.matk = atoi(dataRow[MagicAtt]);
-		item.cons.avo = atoi(dataRow[Avoid]);
+		item.cons.avo = atoi(dataRow[BuffAvoid]);
 		item.cons.acc = atoi(dataRow[Accuracy]);
 		item.cons.wdef = atoi(dataRow[WeaponDef]);
 		item.cons.mdef = atoi(dataRow[MagicDef]);
-		item.cons.speed = atoi(dataRow[Speed]);
-		item.cons.jump = atoi(dataRow[Jump]);
+		item.cons.speed = atoi(dataRow[BuffSpeed]);
+		item.cons.jump = atoi(dataRow[BuffJump]);
 		item.cons.morph = atoi(dataRow[Morph]);
 		item.cons.mesoup = atoi(dataRow[MesoUp]);
 		item.cons.dropup = atoi(dataRow[DropUp]);
