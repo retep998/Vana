@@ -277,7 +277,7 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 						sendBackNext();
 					end
 				end
-			if job == 1 then 
+			elseif job == 1 then 
 				addText("So you want to make the 2nd job advancement as the #bBandit#k? Once you have made the decision, ");
 				addText("you can't go back and change your mind. You ARE sure about this, right?");
 				yes = askYesNo();
