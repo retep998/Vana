@@ -65,6 +65,22 @@ void QuestsPacket::doneQuest(Player *player, int16_t questid) {
 	player->getSession()->send(packet);
 }
 
+void QuestsPacket::questError(Player *player, int16_t questid, int8_t errorcode) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_UPDATE_QUEST);
+	packet.add<int8_t>(errorcode);
+	packet.add<int16_t>(questid);
+	player->getSession()->send(packet);
+}
+
+void QuestsPacket::questExpire(Player *player, int16_t questid) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_UPDATE_QUEST);
+	packet.add<int8_t>(0x0F);
+	packet.add<int16_t>(questid);
+	player->getSession()->send(packet);
+}
+
 void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, int16_t nextquest, int64_t time) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_NOTE);
