@@ -241,15 +241,11 @@ void PlayerInventory::setMesos(int32_t mesos, bool is) {
 }
 
 bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
-	bool negative = mod < 0;
-	if (negative && (m_mesos + mod) < 0)
-		m_mesos = 0;
-	else {
-		int32_t mesotest = m_mesos + mod;
-		if (!negative && mesotest < 0) // Refuse to modify mesos when it would put you over the cap
-			return false;
-		m_mesos = mesotest;
+	int32_t mesotest = m_mesos + mod;
+	if (mesotest < 0) {
+		return false;
 	}
+	m_mesos = mesotest;
 	PlayerPacket::updateStatInt(m_player, Stats::Mesos, m_mesos, is);
 	return true;
 }
