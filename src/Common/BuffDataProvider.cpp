@@ -898,6 +898,11 @@ void BuffDataProvider::addItemInfo(int32_t itemid, const ConsumeInfo &cons) {
 
 		itemid *= -1;
 
+		if (isBuff(itemid)) { // Already loaded, don't want doubles
+			skillsinfo[itemid].player.clear();
+			skillsinfo[itemid].map.clear();
+		}
+
 		for (size_t i = 0; i < types.size(); i++) {
 			buff = Buff();
 			player = BuffInfo();
