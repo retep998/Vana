@@ -72,6 +72,7 @@ set(SOURCES
 	PlayerStorage.h
 	PlayerSummons.h
 	PlayerVariables.h
+	QuestDataProvider.h
 	Quests.h
 	QuestsPacket.h
 	ReactorDataProvider.h
@@ -165,6 +166,7 @@ set(SOURCES
 	PlayerStorage.cpp
 	PlayerSummons.cpp
 	PlayerVariables.cpp
+	QuestDataProvider.cpp
 	Quests.cpp
 	QuestsPacket.cpp
 	ReactorDataProvider.cpp
