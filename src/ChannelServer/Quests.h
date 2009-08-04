@@ -74,6 +74,9 @@ public:
 	bool hasMobRequests() { return (mobrequests.size() > 0); }
 	bool hasItemRequests() { return (itemrequests.size() > 0); }
 	bool hasQuestRequests() { return (questrequests.size() > 0); }
+	bool hasStartRewards() { return (startrewards.rewards.size() > 0 || startrewards.jobrewards.size() > 0); }
+	bool hasEndRewards() { return (endrewards.rewards.size() > 0 || endrewards.jobrewards.size() > 0); }
+	bool hasRewards() { return (hasStartRewards() || hasEndRewards()); }
 	bool hasStartJobRewards(int16_t job) { return (startrewards.jobrewards.find(job) != startrewards.jobrewards.end()); }
 	bool hasEndJobRewards(int16_t job) { return (endrewards.jobrewards.find(job) != endrewards.jobrewards.end()); }
 	int16_t getNextQuest() const { return nextquest; }

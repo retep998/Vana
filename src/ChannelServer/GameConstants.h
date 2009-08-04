@@ -58,6 +58,43 @@ enum ItemTypes {
 	ItemMonsterCard = 238
 };
 
+namespace ScrollTypes {
+	enum ScrollTypes {
+		Helm = 0,
+		Face = 100,
+		Eye = 200,
+		Earring = 300,
+		Topwear = 400,
+		Overall = 500,
+		Bottomwear = 600,
+		Shoes = 700,
+		Gloves = 800,
+		Shield = 900,
+		Cape = 1000,
+		Ring = 1100,
+		Pendant = 1200,
+		OneHandedSword = 3000,
+		OneHandedAxe = 3100,
+		OneHandedMace = 3200,
+		Dagger = 3300,
+		Wand = 3700,
+		Staff = 3800,
+		TwoHandedSword = 4000,
+		TwoHandedAxe = 4100,
+		TwoHandedMace = 4200,
+		Spear = 4300,
+		Polearm = 4400,
+		Bow = 4500,
+		Crossbow = 4600,
+		Claw = 4700,
+		Knuckle = 4800,
+		Gun = 4900,
+		PetEquip = 8000,
+		CleanSlate = 9000,
+		Chaos = 9100
+	};
+}
+
 enum ItemFlags {
 	FlagLock = 0x01,
 	FlagSpikes = 0x02,

@@ -530,57 +530,58 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 			}
 		}
 	}
+	else if (itemid == Items::ShoeSpikes || itemid == Items::CapeColdProtection) {
+		succeed = 0;
+		if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
+			// These do not take slots and can be used even after success
+			switch (itemid) {
+				case Items::ShoeSpikes:
+					equip->flags |= FlagSpikes;
+					break;
+				case Items::CapeColdProtection:
+					equip->flags |= FlagCold;
+					break;
+			}
+			succeed = 1;
+		}
+	}
 	else {
-		switch (itemid) {
-			case Items::ShoeSpikes: // 10%
-			case Items::CapeColdProtection: // 10%
+		int32_t one = GameLogicUtilities::itemTypeToScrollType(equip->id);
+		int32_t two = GameLogicUtilities::getScrollType(itemid);
+		if (one != two) {
+			// Hacking, equip slot different from the scroll slot
+			return;
+		}
+		if (equip->slots > 0) {
+			if (wscroll)
+				Inventory::takeItem(player, Items::WhiteScroll, 1);
+			if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
+				succeed = 1;
+				equip->istr += iteminfo.cons.istr;
+				equip->idex += iteminfo.cons.idex;
+				equip->iint += iteminfo.cons.iint;
+				equip->iluk += iteminfo.cons.iluk;
+				equip->ihp += iteminfo.cons.ihp;
+				equip->imp += iteminfo.cons.imp;
+				equip->iwatk += iteminfo.cons.iwatk;
+				equip->imatk += iteminfo.cons.imatk;
+				equip->iwdef += iteminfo.cons.iwdef;
+				equip->imdef += iteminfo.cons.imdef;
+				equip->iacc += iteminfo.cons.iacc;
+				equip->iavo += iteminfo.cons.iavo;
+				equip->ihand += iteminfo.cons.ihand;
+				equip->ijump += iteminfo.cons.ijump;
+				equip->ispeed += iteminfo.cons.ispeed;
+				equip->scrolls++;
+				equip->slots--;
+			}
+			else {
 				succeed = 0;
-				if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
-					// These do not take slots and can be used even after success
-					switch (itemid) {
-						case Items::ShoeSpikes:
-							equip->flags |= FlagSpikes;
-							break;
-						case Items::CapeColdProtection:
-							equip->flags |= FlagCold;
-							break;
-					}
-					succeed = 1;
-				}
-				break;
-			default: // Most scrolls
-				if (equip->slots > 0) {
-					if (wscroll)
-						Inventory::takeItem(player, Items::WhiteScroll, 1);
-					if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
-						succeed = 1;
-						equip->istr += iteminfo.cons.istr;
-						equip->idex += iteminfo.cons.idex;
-						equip->iint += iteminfo.cons.iint;
-						equip->iluk += iteminfo.cons.iluk;
-						equip->ihp += iteminfo.cons.ihp;
-						equip->imp += iteminfo.cons.imp;
-						equip->iwatk += iteminfo.cons.iwatk;
-						equip->imatk += iteminfo.cons.imatk;
-						equip->iwdef += iteminfo.cons.iwdef;
-						equip->imdef += iteminfo.cons.imdef;
-						equip->iacc += iteminfo.cons.iacc;
-						equip->iavo += iteminfo.cons.iavo;
-						equip->ihand += iteminfo.cons.ihand;
-						equip->ijump += iteminfo.cons.ijump;
-						equip->ispeed += iteminfo.cons.ispeed;
-						equip->scrolls++;
-						equip->slots--;
-					}
-					else {
-						succeed = 0;
-						if (Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
-							cursed = true;
-						else if (!wscroll)
-							equip->slots--;
-					}
-				}
-				break;
+				if (Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
+					cursed = true;
+				else if (!wscroll)
+					equip->slots--;
+			}
 		}
 	}
 	if (succeed != -1) {

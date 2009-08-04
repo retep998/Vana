@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Players.h"
 #include "Randomizer.h"
+#include "SkillDataProvider.h"
 #include "SkillsPacket.h"
 #include "Summons.h"
 #include "Timer/Time.h"
@@ -37,22 +38,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 
 using std::tr1::bind;
-
-unordered_map<int32_t, SkillsLevelInfo> Skills::skills;
-unordered_map<int32_t, uint8_t> Skills::maxlevels;
-unordered_map<uint8_t, MobSkillsLevelInfo> Skills::mobskills;
-
-void Skills::addSkillLevelInfo(int32_t skillid, uint8_t level, SkillLevelInfo levelinfo) {
-	skills[skillid][level] = levelinfo;
-
-	if (maxlevels.find(skillid) == maxlevels.end() || maxlevels[skillid] < level) {
-		maxlevels[skillid] = level;
-	}
-}
-
-void Skills::addMobSkillLevelInfo(uint8_t skillid, uint8_t level, MobSkillLevelInfo levelinfo) {
-	mobskills[skillid][level] = levelinfo;
-}
 
 void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
@@ -129,10 +114,11 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
+	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
 	switch (skillid) {
 		case Jobs::Brawler::MpRecovery: {
-			int16_t modhp = player->getStats()->getMHp() * Skills::skills[skillid][level].x / 100;
-			int16_t healmp = modhp * Skills::skills[skillid][level].y / 100;
+			int16_t modhp = player->getStats()->getMHp() * skill->x / 100;
+			int16_t healmp = modhp * skill->y / 100;
 			player->getStats()->modifyHp(-modhp);
 			player->getStats()->modifyMp(healmp);
 			break;
@@ -141,7 +127,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			int16_t x = packet.get<int16_t>();
 			int16_t y = packet.get<int16_t>();
 			Pos origin = Pos(x, y);
-			Mist *m = new Mist(player->getMap(), player, origin, Skills::skills[skillid][level], skillid, level);
+			Mist *m = new Mist(player->getMap(), player, origin, skill, skillid, level);
 			break;
 		}
 		case Jobs::Corsair::Battleship:
@@ -155,7 +141,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (int8_t k = 0; k < mobs; k++) {
 				int32_t mapmobid = packet.get<int32_t>();
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid)) {
-					if (Randomizer::Instance()->randShort(99) < skills[skillid][level].prop) {
+					if (Randomizer::Instance()->randShort(99) < skill->prop) {
 						mob->doCrashSkill(skillid);
 					}
 				}
@@ -215,7 +201,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 				for (size_t i = 0; i < members.size(); i++) {
 					Player *cmem = members[i];
 					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
-						if (Randomizer::Instance()->randShort(99) < skills[skillid][level].prop) {
+						if (Randomizer::Instance()->randShort(99) < skill->prop) {
 							SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
 							SkillsPacket::showSkill(cmem, skillid, level, direction, true);
 							cmem->getActiveBuffs()->useDispel();
@@ -228,7 +214,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (int8_t k = 0; k < affected; k++) {
 				int32_t mapmobid = packet.get<int32_t>();
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid)) {
-					if (Randomizer::Instance()->randShort(99) < skills[skillid][level].prop) {
+					if (Randomizer::Instance()->randShort(99) < skill->prop) {
 						mob->dispelBuffs();
 					}
 				}
@@ -357,20 +343,21 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 }
 
 void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, bool elementalamp) {
-	int16_t cooltime = skills[skillid][level].cooltime;
-	int16_t mpuse = skills[skillid][level].mp;
-	int16_t hpuse = skills[skillid][level].hp;
-	int16_t moneycon = skills[skillid][level].moneycon;
-	int32_t item = skills[skillid][level].item;
+	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
+	int16_t cooltime = skill->cooltime;
+	int16_t mpuse = skill->mp;
+	int16_t hpuse = skill->hp;
+	int16_t moneycon = skill->moneycon;
+	int32_t item = skill->item;
 	if (mpuse > 0) {
 		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Concentrate) > 0) { // Reduced MP usage for Concentration
-			int16_t mprate = skills[Jobs::Bowmaster::Concentrate][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Concentrate)].x;
+			int16_t mprate = SkillDataProvider::Instance()->getSkill(Jobs::Bowmaster::Concentrate, player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Concentrate))->x;
 			int16_t mploss = (mpuse * mprate) / 100;
 			player->getStats()->modifyMp(-mploss, true);
 		}
 		else if (elementalamp && player->getSkills()->hasElementalAmp()) {
 			int32_t sid = player->getSkills()->getElementalAmp();
-			player->getStats()->modifyMp(-1 * (mpuse * skills[sid][player->getSkills()->getSkillLevel(sid)].x / 100), true);
+			player->getStats()->modifyMp(-1 * (mpuse * SkillDataProvider::Instance()->getSkill(sid, player->getSkills()->getSkillLevel(sid))->x / 100), true);
 		}
 		else {
 			player->getStats()->modifyMp(-mpuse, true);
@@ -381,7 +368,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 	if (hpuse > 0)
 		player->getStats()->modifyHp(-hpuse);
 	if (item > 0)
-		Inventory::takeItem(player, item, skills[skillid][level].itemcount);
+		Inventory::takeItem(player, item, skill->itemcount);
 	if (cooltime > 0 && skillid != Jobs::Corsair::Battleship)
 		startCooldown(player, skillid, cooltime);
 	if (moneycon > 0) {
@@ -402,7 +389,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 void Skills::useAttackSkill(Player *player, int32_t skillid) {
 	if (skillid != Jobs::All::RegularAttack) {
 		uint8_t level = player->getSkills()->getSkillLevel(skillid);
-		if (skills.find(skillid) == skills.end() || level == 0)
+		if (!SkillDataProvider::Instance()->isSkill(skillid) || level == 0)
 			return;
 		applySkillCosts(player, skillid, level, true);
 	}
@@ -412,13 +399,13 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos) 
 	uint8_t level = 0;
 	if (skillid != Jobs::All::RegularAttack) {
 		level = player->getSkills()->getSkillLevel(skillid);
-		if (skills.find(skillid) == skills.end() || level == 0)
+		if (!SkillDataProvider::Instance()->isSkill(skillid) || level == 0)
 			return;
 		applySkillCosts(player, skillid, level);
 	}
 	uint16_t hits = 1;
-	if (skillid != Jobs::All::RegularAttack && skills[skillid][level].bulletcon > 0)
-		hits = skills[skillid][level].bulletcon;
+	if (skillid != Jobs::All::RegularAttack && SkillDataProvider::Instance()->getSkill(skillid, level)->bulletcon > 0)
+		hits = SkillDataProvider::Instance()->getSkill(skillid, level)->bulletcon;
 	if (player->getActiveBuffs()->hasShadowPartner())
 		hits *= 2;
 	if (pos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow()))

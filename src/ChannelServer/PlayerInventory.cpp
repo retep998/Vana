@@ -98,8 +98,9 @@ void PlayerInventory::load() {
 	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
+	Item *item;
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		Item *item = new Item;
+		item = new Item;
 		item->id = res[i][2];
 		item->amount = res[i][3];
 		item->slots = (int8_t) res[i][4];
@@ -241,13 +242,17 @@ void PlayerInventory::setMesos(int32_t mesos, bool is) {
 }
 
 bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
-	bool negative = mod < 0;
-	if (negative && (m_mesos + mod) < 0)
-		m_mesos = 0;
+	if (mod < 0) {
+		if (-mod > m_mesos) {
+			return false;
+		}
+		m_mesos += mod;
+	}
 	else {
 		int32_t mesotest = m_mesos + mod;
-		if (!negative && mesotest < 0) // Refuse to modify mesos when it would put you over the cap
+		if (mesotest < 0) {
 			return false;
+		}
 		m_mesos = mesotest;
 	}
 	PlayerPacket::updateStatInt(m_player, Stats::Mesos, m_mesos, is);

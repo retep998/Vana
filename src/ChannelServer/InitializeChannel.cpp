@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
-#include "Skills.h"
+#include "SkillDataProvider.h"
 #include <cstdio>
 #include <iostream>
 
@@ -68,10 +68,10 @@ void Initializing::loadData() {
 	DropDataProvider::Instance()->loadData();
 	BeautyDataProvider::Instance()->loadData();
 	ScriptDataProvider::Instance()->loadData();
+	SkillDataProvider::Instance()->loadData();
 	EventDataProvider::Instance()->loadEvents();
 	initializeReactors();
 	initializeQuests();
-	initializeSkills();
 	initializePets();
 };
 
@@ -296,122 +296,6 @@ void Initializing::initializeQuests() {
 	std::cout << "DONE" << std::endl;
 }
 
-void Initializing::initializeSkills() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Skills... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skilldata");
-	mysqlpp::UseQueryResult res = query.use();
-
-	MYSQL_ROW skillRow;
-	SkillLevelInfo level;
-
-	enum SkillRows {
-		SkillId = 0,
-		Level, MobCount, HitCount, Time, Mp,
-		Hp, Damage, Item, ItemCount, BulletCon,
-		MoneyCon, X, Y, Speed, Jump,
-		Watk, Wdef, Matk, Mdef, Acc,
-		Avoid, HpP, MpP, Prop, Morph,
-		LTX, LTY, RBX, RBY, CoolTime
-	};
-
-	while (skillRow = res.fetch_raw_row()) {
-		level.mobcount = atoi(skillRow[MobCount]);
-		level.hitcount = atoi(skillRow[HitCount]);
-		level.time = atoi(skillRow[Time]);
-		level.mp = atoi(skillRow[Mp]);
-		level.hp = atoi(skillRow[Hp]);
-		level.damage = atoi(skillRow[Damage]);
-		level.item = atoi(skillRow[Item]);
-		level.itemcount = atoi(skillRow[ItemCount]);
-		level.bulletcon = atoi(skillRow[BulletCon]);
-		level.moneycon = atoi(skillRow[MoneyCon]);
-		level.x = atoi(skillRow[X]);
-		level.y = atoi(skillRow[Y]);
-		level.speed = atoi(skillRow[Speed]);
-		level.jump = atoi(skillRow[Jump]);
-		level.watk = atoi(skillRow[Watk]);
-		level.wdef = atoi(skillRow[Wdef]);
-		level.matk = atoi(skillRow[Matk]);
-		level.mdef = atoi(skillRow[Mdef]);
-		level.acc = atoi(skillRow[Acc]);
-		level.avo = atoi(skillRow[Avoid]);
-		level.hpP = atoi(skillRow[HpP]);
-		level.mpP = atoi(skillRow[MpP]);
-		level.prop = atoi(skillRow[Prop]);
-		level.morph = atoi(skillRow[Morph]);
-		level.lt = Pos(atoi(skillRow[LTX]), atoi(skillRow[LTY]));
-		level.rb = Pos(atoi(skillRow[RBX]), atoi(skillRow[RBY]));
-		level.cooltime = atoi(skillRow[CoolTime]);
-
-		Skills::addSkillLevelInfo(atoi(skillRow[0]), atoi(skillRow[1]), level);
-	}
-
-	query << "SELECT mobskills.*, mobskillsummons.mobid FROM mobskills LEFT JOIN mobskillsummons ON mobskills.level = mobskillsummons.level AND mobskills.skillid = 200 ORDER BY skillid ASC";
-	res = query.use();
-
-	int16_t currentid = 0;
-	int16_t previousid = -1;
-	int16_t currentlevel = 0;
-	int16_t previouslevel = -1;
-
-	MobSkillLevelInfo moblevel;
-
-	while (skillRow = res.fetch_raw_row()) {
-		// Col0 : Skill ID
-		//    1 : Level
-		//    2 : Time
-		//    3 : MP
-		//    4 : X
-		//    5 : Y
-		//    6 : Prop
-		//    7 : Count
-		//    8 : Interval
-		//    9 : LTX
-		//   10 : RBX
-		//   11 : LTY
-		//   12 : RBY
-		//   13 : HP
-		//   14 : Limit
-		//   15 : Summon Effect
-		//   16 : Mob IDs for summons
-
-		currentid = atoi(skillRow[0]);
-		currentlevel = atoi(skillRow[1]);
-
-		if ((currentid != previousid && previousid != -1) || (currentlevel != previouslevel && previouslevel != -1)) { // Add the items into the cache
-			Skills::addMobSkillLevelInfo((uint8_t)(previousid), (uint8_t)(previouslevel), moblevel);
-			moblevel.summons.clear();
-		}
-
-		moblevel.time = atoi(skillRow[2]);
-		moblevel.mp = atoi(skillRow[3]);
-		moblevel.x = atoi(skillRow[4]);
-		moblevel.y = atoi(skillRow[5]);
-		moblevel.prop = atoi(skillRow[6]);
-		moblevel.count = atoi(skillRow[7]);
-		moblevel.interval = atoi(skillRow[8]);
-		moblevel.lt.x = atoi(skillRow[9]);
-		moblevel.rb.x = atoi(skillRow[10]);
-		moblevel.lt.y = atoi(skillRow[11]);
-		moblevel.rb.y = atoi(skillRow[12]);
-		moblevel.hp = atoi(skillRow[13]);
-		moblevel.limit = atoi(skillRow[14]);
-		moblevel.summoneffect = atoi(skillRow[15]);
-
-		if (skillRow[16] != 0) {
-			moblevel.summons.push_back(atoi(skillRow[16]));
-		}
-
-		previousid = currentid;
-		previouslevel = currentlevel;
-	}
-	if (previousid != -1) {
-		Skills::addMobSkillLevelInfo((uint8_t)(previousid), (uint8_t)(previouslevel), moblevel);
-	}
-
-	std::cout << "DONE" << std::endl;
-}
-
 void Initializing::initializePets() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Pets... ";
 
@@ -419,12 +303,13 @@ void Initializing::initializePets() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW Row;
+	PetInfo pet;
+
 	while (Row = res.fetch_raw_row()) {
 		// 0 : Pet id
 		// 1 : Pet breed name
 		// 2 : Pet hunger level
 
-		PetInfo pet;
 		pet.name = Row[1];
 		pet.hunger = atoi(Row[2]);
 		Pets::petsInfo[atoi(Row[0])] = pet;
@@ -433,17 +318,17 @@ void Initializing::initializePets() {
 	// Pet command info
 	query << "SELECT * FROM petinteractdata";
 	res = query.use();
+	PetInteractInfo petinteract;
 
-	PetInteractInfo pet;
 	while (Row = res.fetch_raw_row()) {
 		// 0 : Id
 		// 1 : Command
 		// 2 : Increase
 		// 3 : Prob
 
-		pet.increase = atoi(Row[2]);
-		pet.prob = atoi(Row[3]);
-		Pets::petsInteractInfo[atoi(Row[0])][atoi(Row[1])] = pet;
+		petinteract.increase = atoi(Row[2]);
+		petinteract.prob = atoi(Row[3]);
+		Pets::petsInteractInfo[atoi(Row[0])][atoi(Row[1])] = petinteract;
 	}
 	std::cout << "DONE" << std::endl;
 }

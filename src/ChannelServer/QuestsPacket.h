@@ -24,9 +24,18 @@ class Player;
 struct ActiveQuest;
 
 namespace QuestsPacket {
+	enum ErrorCodes {
+		ErrorUnk = 0x09,
+		ErrorNoItemSpace = 0x0A,
+		ErrorNotEnoughMesos = 0x0B,
+		ErrorEquipWorn = 0x0D,
+		ErrorOnlyOne = 0x0E
+	};
 	void acceptQuest(Player *player, int16_t questid, int32_t npcid);
 	void updateQuest(Player *player, const ActiveQuest &quest);
 	void doneQuest(Player *player, int16_t questid);
+	void questError(Player *player, int16_t questid, int8_t errorcode);
+	void questExpire(Player *player, int16_t questid);
 	void questFinish(Player *player, int16_t questid, int32_t npcid, int16_t nextquest, int64_t time);
 	void forfeitQuest(Player *player, int16_t questid);
 	void giveItem(Player *player, int32_t itemid, int32_t amount);

@@ -25,6 +25,8 @@ namespace GameLogicUtilities {
 	// Inventory
 	inline uint8_t getInventory(int32_t itemid) { return static_cast<uint8_t>(itemid / 1000000); }
 	inline int32_t getItemType(int32_t itemid) { return (itemid / 10000); }
+	inline int32_t getScrollType(int32_t itemid) { return ((itemid % 10000) - (itemid % 100)); }
+	inline int32_t itemTypeToScrollType(int32_t itemid) { return ((getItemType(itemid) % 100) * 100); }
 	inline bool isArrow(int32_t itemid) { return (getItemType(itemid) == ItemArrow); }
 	inline bool isStar(int32_t itemid) { return (getItemType(itemid) == ItemStar); }
 	inline bool isBullet(int32_t itemid) { return (getItemType(itemid) == ItemBullet); }

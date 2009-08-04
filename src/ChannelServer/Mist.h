@@ -18,18 +18,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MIST_H
 #define MIST_H
 
-#include "Types.h"
 #include "Pos.h"
-#include "Skills.h"
+#include "Types.h"
 
 class Map;
 class Mob;
 class Player;
+struct SkillLevelInfo;
+struct MobSkillLevelInfo;
 
 class Mist {
 public:
-	Mist(int32_t mapid, Player *owner, const Pos &origin, const SkillLevelInfo &skill, int32_t skillid, uint8_t level, bool ispoison = false);
-	Mist(int32_t mapid, Mob *owner, const Pos &origin, const MobSkillLevelInfo &skill, uint8_t skillid, uint8_t level);
+	Mist(int32_t mapid, Player *owner, const Pos &origin, SkillLevelInfo *skill, int32_t skillid, uint8_t level, bool ispoison = false);
+	Mist(int32_t mapid, Mob *owner, const Pos &origin, MobSkillLevelInfo *skill, uint8_t skillid, uint8_t level);
 
 	uint8_t getSkillLevel() const { return m_level; }
 	int16_t getTime() const { return m_time; }

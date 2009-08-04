@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PetsPacket.h"
 #include "Player.h"
 #include "Randomizer.h"
-#include "Skills.h"
+#include "SkillDataProvider.h"
 
 int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 	int8_t inv = GameLogicUtilities::getInventory(item->id);
@@ -159,7 +159,7 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 
 	int32_t skillid = player->getSkills()->getAlchemist();
 	if (player->getSkills()->getSkillLevel(skillid) > 0)
-		potency = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+		potency = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x;
 
 	bool zombie = player->getActiveBuffs()->isZombified();
 

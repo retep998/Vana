@@ -36,55 +36,42 @@ void MobDataProvider::loadData() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW mobRow;
-	while (mobRow = res.fetch_raw_row()) {
-		// Col0 : Mob ID
-		//    1 : Level
-		//    2 : HP
-		//    3 : MP
-		//    4 : HP Recovery
-		//    5 : MP Recovery
-		//    6 : Self-Destruction HP
-		//    7 : EXP
-		//    8 : Link
-		//    9 : Buff
-		//   10 : Remove After
-		//   11 : Boss?
-		//   12 : Undead?
-		//   13 : Flying?
-		//   14 : Friendly?
-		//   15 : Public Reward?
-		//   16 : Explosive Reward?
-		//   17 : HP Color
-		//   18 : HP BG Color
-		//   19 : Elemental Attributes
-		//   20 : Mob Summon
+	MobInfo mob;
+	enum MobData {
+		MobId = 0,
+		Level, Hp, Mp, HpRecovery, MpRecovery,
+		SelfDestruct, Exp, Link, Buff, RemoveAfter,
+		Boss, Undead, Flying, Friendly, PublicReward,
+		ExplosiveReward, HpBar, HpBarBg, ElemAttr, Summon
+	};
 
-		int32_t mobid = atoi(mobRow[0]);
+	while (mobRow = res.fetch_raw_row()) {
+		int32_t mobid = atoi(mobRow[MobId]);
 
 		if (mobinfo.find(mobid) == mobinfo.end()) {
-			MobInfo mob = MobInfo();
-			mob.level = atoi(mobRow[1]);
-			mob.hp = atoi(mobRow[2]);
-			mob.mp = atoi(mobRow[3]);
-			mob.hprecovery = atoi(mobRow[4]);
-			mob.mprecovery = atoi(mobRow[5]);
-			mob.selfdestruction = atoi(mobRow[6]);
-			mob.exp = atoi(mobRow[7]);
-			mob.link = atoi(mobRow[8]);
-			mob.buff = atoi(mobRow[9]);
-			mob.removeafter = atoi(mobRow[10]);
+			mob = MobInfo();
+			mob.level = atoi(mobRow[Level]);
+			mob.hp = atoi(mobRow[Hp]);
+			mob.mp = atoi(mobRow[Mp]);
+			mob.hprecovery = atoi(mobRow[HpRecovery]);
+			mob.mprecovery = atoi(mobRow[MpRecovery]);
+			mob.selfdestruction = atoi(mobRow[SelfDestruct]);
+			mob.exp = atoi(mobRow[Exp]);
+			mob.link = atoi(mobRow[Link]);
+			mob.buff = atoi(mobRow[Buff]);
+			mob.removeafter = atoi(mobRow[RemoveAfter]);
 
-			mob.boss = atob(mobRow[11]);
-			mob.undead = atob(mobRow[12]);
-			mob.flying = atob(mobRow[13]);
-			mob.friendly = atob(mobRow[14]);
-			mob.publicreward = atob(mobRow[15]);
-			mob.explosivereward = atob(mobRow[16]);
+			mob.boss = atob(mobRow[Boss]);
+			mob.undead = atob(mobRow[Undead]);
+			mob.flying = atob(mobRow[Flying]);
+			mob.friendly = atob(mobRow[Friendly]);
+			mob.publicreward = atob(mobRow[PublicReward]);
+			mob.explosivereward = atob(mobRow[ExplosiveReward]);
 
-			mob.hpcolor = atoi(mobRow[17]);
-			mob.hpbgcolor = atoi(mobRow[18]);
+			mob.hpcolor = atoi(mobRow[HpBar]);
+			mob.hpbgcolor = atoi(mobRow[HpBarBg]);
 
-			string elemattr(mobRow[19]);
+			string elemattr(mobRow[ElemAttr]);
 
 			mob.canfreeze = (!mob.boss && elemattr.find("I2") == string::npos && elemattr.find("I1") == string::npos);
 			mob.canpoison = (!mob.boss && elemattr.find("S2") == string::npos && elemattr.find("S1") == string::npos);
@@ -92,8 +79,8 @@ void MobDataProvider::loadData() {
 			mobinfo[mobid] = mob;
 		}
 
-		if (mobRow[20] != 0) {
-			mobinfo[mobid].summon.push_back(atoi(mobRow[20]));
+		if (mobRow[Summon] != 0) {
+			mobinfo[mobid].summon.push_back(atoi(mobRow[Summon]));
 		}
 
 	}

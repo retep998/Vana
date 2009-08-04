@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Randomizer.h"
 #include "Reactors.h"
+#include "SkillDataProvider.h"
 #include "Skills.h"
 #include <algorithm>
 
@@ -118,7 +119,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 				if (!isSteal) {
 					mesos *= ChannelServer::Instance()->getMesorate();
 					if (player != 0 && player->getActiveBuffs()->hasMesoUp()) { // Account for Meso Up
-						mesos = (mesos * Skills::skills[Jobs::Hermit::MesoUp][player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::MesoUp)].x) / 100;
+						mesos = (mesos * SkillDataProvider::Instance()->getSkill(Jobs::Hermit::MesoUp, player->getActiveBuffs()->getActiveSkillLevel(Jobs::Hermit::MesoUp))->x) / 100;
 					}
 				}
 				drop = new Drop(mapid, mesos, pos, playerid);

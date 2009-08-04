@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Randomizer.h"
 #include "PacketReader.h"
+#include "SkillDataProvider.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
 #include "Summons.h"
@@ -130,7 +131,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	if (damage > 0 && !player->hasGmEquip()) {
 		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) {
 			int32_t sid = player->getActiveBuffs()->getMesoGuard();
-			int16_t mesorate = Skills::skills[sid][player->getActiveBuffs()->getActiveSkillLevel(sid)].x; // Meso Guard meso %
+			int16_t mesorate = SkillDataProvider::Instance()->getSkill(sid, player->getActiveBuffs()->getActiveSkillLevel(sid))->x; // Meso Guard meso %
 			int16_t mesoloss = (int16_t)(mesorate * damage / 2 / 100);
 			int32_t mesos = player->getInventory()->getMesos();
 			int32_t newmesos = mesos - mesoloss;
@@ -170,7 +171,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 			else {
 				int32_t sid = player->getActiveBuffs()->getMagicGuard();
-				int16_t reduc = Skills::skills[sid][player->getActiveBuffs()->getActiveSkillLevel(sid)].x;
+				int16_t reduc = SkillDataProvider::Instance()->getSkill(sid, player->getActiveBuffs()->getActiveSkillLevel(sid))->x;
 				uint16_t mpdamage = (uint16_t)((damage * reduc) / 100);
 				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
 
@@ -187,7 +188,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		}
 		if (player->getSkills()->hasAchilles()) {
 			int32_t sid = player->getSkills()->getAchilles();
-			double red = (2.0 - Skills::skills[sid][player->getSkills()->getSkillLevel(sid)].x / 1000.0);
+			double red = (2.0 - SkillDataProvider::Instance()->getSkill(sid, player->getSkills()->getSkillLevel(sid))->x / 1000.0);
 
 			player->getStats()->damageHp((uint16_t) (damage / red));
 
@@ -297,7 +298,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 		case Jobs::ChiefBandit::Chakra: { // Chakra
 			int16_t dex = player->getStats()->getBaseStat(Stats::Dex);
 			int16_t luk = player->getStats()->getBaseStat(Stats::Luk);
-			int16_t recovery = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].y;
+			int16_t recovery = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->y;
 			int16_t maximum = (luk * 66 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
 			int16_t minimum = (luk * 33 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
 			// Maximum = (luk * 6.6 + dex) * 0.2 * (recovery% / 100 + 1)
@@ -332,6 +333,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	int32_t map = player->getMap();
 	uint32_t totaldmg = 0;
 	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
+	SkillLevelInfo *picking = SkillDataProvider::Instance()->getSkill(Jobs::ChiefBandit::Pickpocket, pplevel);
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t targettotal = 0;
 		int32_t mapmobid = packet.get<int32_t>();
@@ -354,7 +356,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			if (damage != 0)
 				connectedhits++;
 			if (skillid != Jobs::ChiefBandit::MesoExplosion && pplevel > 0) { // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
-				if (Randomizer::Instance()->randInt(99) < Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].prop) {
+				if (Randomizer::Instance()->randInt(99) < picking->prop) {
 					ppdamages.push_back(damage);
 				}
 			}
@@ -394,7 +396,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			pppos.x = origin.x + (ppdamagesize % 2 == 0 ? 5 : 0) + (ppdamagesize / 2) - 20 * ((ppdamagesize / 2) - pickpocket);
 			pppos.y = origin.y;
 			clock_t pptime = 175 * pickpocket;
-			int32_t ppmesos = ((ppdamages[pickpocket] * Skills::skills[Jobs::ChiefBandit::Pickpocket][pplevel].x) / 10000); // TODO: Check on this formula in different situations
+			int32_t ppmesos = ((ppdamages[pickpocket] * picking->x) / 10000); // TODO: Check on this formula in different situations
 			Drop *ppdrop = new Drop(player->getMap(), ppmesos, pppos, player->getId(), true);
 			ppdrop->setTime(100);
 			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
@@ -426,7 +428,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Marauder::EnergyDrain: {
-			int32_t hpRecover = totaldmg * Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x / 100;
+			int32_t hpRecover = totaldmg * SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x / 100;
 			if (hpRecover > player->getStats()->getMHp())
 				player->getStats()->setHp(player->getStats()->getMHp());
 			else
@@ -444,7 +446,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 		case Jobs::DragonKnight::DragonRoar: {
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
-			int16_t x_value = Skills::skills[skillid][roarlv].x;
+			int16_t x_value = SkillDataProvider::Instance()->getSkill(skillid, roarlv)->x;
 			uint16_t reduction = (player->getStats()->getMHp() / 100) * x_value;
 			if ((player->getStats()->getHp() - reduction) > 0)
 				player->getStats()->damageHp(reduction);
@@ -456,7 +458,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::DragonKnight::Sacrifice: {
-			int16_t hp_damage_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+			int16_t hp_damage_x = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x;
 			uint16_t hp_damage = (uint16_t) totaldmg * hp_damage_x / 100;
 			if ((player->getStats()->getHp() - hp_damage) < 1)
 				player->getStats()->setHp(1);
@@ -468,7 +470,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			int8_t acb_level = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
 			int16_t acb_x = 0;
 			if (acb_level > 0)
-				acb_x = Skills::skills[Jobs::Paladin::AdvancedCharge][acb_level].x;
+				acb_x = SkillDataProvider::Instance()->getSkill(Jobs::Paladin::AdvancedCharge, acb_level)->x;
 			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1)))
 				player->getActiveBuffs()->stopCharge();
 			break;
@@ -521,7 +523,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	int32_t mhp = 0;
 	uint32_t totaldmg = damageMobs(player, packet, targets, hits, skillid, mhp);
 	if (skillid == Jobs::Assassin::Drain) { // Drain
-		int16_t drain_x = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)].x;
+		int16_t drain_x = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x;
 		int32_t hpRecover = totaldmg * drain_x / 100;
 		if (hpRecover > mhp)
 			hpRecover = mhp;
@@ -553,8 +555,9 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	eater.id = player->getSkills()->getMpEater();
 	eater.level = player->getSkills()->getSkillLevel(eater.id);
 	if (eater.level > 0) {
-		eater.prop = Skills::skills[eater.id][eater.level].prop;
-		eater.x = Skills::skills[eater.id][eater.level].x;
+		SkillLevelInfo *eaaat = SkillDataProvider::Instance()->getSkill(eater.id, eater.level);
+		eater.prop = eaaat->prop;
+		eater.x = eaaat->x;
 	}
 	packet.skipBytes(2); // Display, direction/animation
 	packet.skipBytes(2); // Weapon subclass, casting speed
@@ -566,7 +569,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	switch (skillid) {
 		case Jobs::FPMage::PoisonMist: {
 			uint8_t level = player->getSkills()->getSkillLevel(skillid);
-			Mist *mist = new Mist(player->getMap(), player, player->getPos(), Skills::skills[skillid][level], skillid, level, true);
+			Mist *mist = new Mist(player->getMap(), player, player->getPos(), SkillDataProvider::Instance()->getSkill(skillid, level), skillid, level, true);
 			break;
 		}
 	}
@@ -644,9 +647,9 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 				mob->mpEat(player, eater);
 			}
 			if (skillid == Jobs::Ranger::MortalBlow || skillid == Jobs::Sniper::MortalBlow) {
-				SkillLevelInfo sk = Skills::skills[skillid][player->getSkills()->getSkillLevel(skillid)];
-				int32_t hp_p = mob->getMHp() * sk.x / 100; // Percentage of HP required for Mortal Blow activation
-				if ((mob->getHp() < hp_p) && (Randomizer::Instance()->randShort(99) < sk.y)) {
+				SkillLevelInfo *sk = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid));
+				int32_t hp_p = mob->getMHp() * sk->x / 100; // Percentage of HP required for Mortal Blow activation
+				if ((mob->getHp() < hp_p) && (Randomizer::Instance()->randShort(99) < sk->y)) {
 					damage = mob->getHp();
 				}
 			}

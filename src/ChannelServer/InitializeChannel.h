@@ -25,7 +25,6 @@ namespace Initializing {
 	void loadData();
 	void initializeReactors();
 	void initializeQuests();
-	void initializeSkills();
 	void initializePets();
 	void initializeChat();
 

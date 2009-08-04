@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MovementHandler.h"
 #include "PacketReader.h"
 #include "PlayerPacket.h"
-#include "Skills.h"
+#include "SkillDataProvider.h"
 #include "SummonsPacket.h"
 
 // Summon Class
@@ -31,7 +31,7 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(s
 	switch (summonid) {
 		case Jobs::Ranger::Puppet:
 		case Jobs::Sniper::Puppet:
-			hp = Skills::skills[summonid][level].x; // Get HP for puppet
+			hp = SkillDataProvider::Instance()->getSkill(summonid, level)->x; // Get HP for puppet
 		case Jobs::Outlaw::Octopus:
 		case Jobs::Corsair::WrathOfTheOctopi:
 			type = 0; // No movement - Puppets and Octopus
@@ -65,7 +65,7 @@ void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 	if (puppet)
 		sumpos = Maps::getMap(player->getMap())->findFloor(Pos((player->getPos().x + 200 * (player->isFacingRight() ? 1 : -1)), player->getPos().y));
 	summon->setPos(sumpos);
-	player->getSummons()->addSummon(summon, Skills::skills[skillid][level].time);
+	player->getSummons()->addSummon(summon, SkillDataProvider::Instance()->getSkill(skillid, level)->time);
 	SummonsPacket::showSummon(player, summon, true);
 }
 

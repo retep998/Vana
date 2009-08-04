@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerQuests.h"
 #include "Database.h"
+#include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "Levels.h"
 #include "PacketCreator.h"
@@ -24,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "QuestsPacket.h"
 #include "Randomizer.h"
 #include "TimeUtilities.h"
+#include <boost/array.hpp>
 
 PlayerQuests::PlayerQuests(Player *player) : m_player(player) {
 	load();
@@ -218,7 +220,9 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 	Quest &questinfo = Quests::quests[questid];
 
-	giveRewards(questid, false);
+	if (!giveRewards(questid, false)) { // Failed, don't complete the quest yet
+		return;
+	}
 
 	if (questinfo.hasMobRequests()) {
 		for (MobRequests::iterator i = questinfo.getMobBegin(); i != questinfo.getMobEnd(); i++) {
@@ -243,19 +247,42 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 
 bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 	Quest &questinfo = Quests::quests[questid];
+
+	if (!questinfo.hasRewards()) {
+		return true;
+	}
+
 	QuestRewardInfo info;
 	vector<QuestRewardInfo> items;
 	int32_t chance = 0;
 	Rewards::iterator startiter;
 	Rewards::iterator enditer;
+	Rewards::iterator sjobiter;
+	Rewards::iterator ejobiter;
 	Rewards::iterator iter;
+	bool jobrewards = false;
+	int16_t job = m_player->getStats()->getJob();
+
 	if (start) {
 			startiter = questinfo.getStartRewardsBegin();
 			enditer = questinfo.getStartRewardsEnd();
+			if (questinfo.hasStartJobRewards(job)) {
+				sjobiter = questinfo.getStartJobRewardsBegin(job);
+				ejobiter = questinfo.getStartJobRewardsEnd(job);
+				jobrewards = true;
+			}
 	}
 	else {
 			startiter = questinfo.getEndRewardsBegin();
 			enditer = questinfo.getEndRewardsEnd();
+			if (questinfo.hasEndJobRewards(job)) {
+				sjobiter = questinfo.getEndJobRewardsBegin(job);
+				ejobiter = questinfo.getEndJobRewardsEnd(job);
+				jobrewards = true;
+			}
+	}
+	if (!checkRewards(questid, startiter, enditer) || (jobrewards && !checkRewards(questid, sjobiter, ejobiter))) {
+		return false;
 	}
 	for (iter = startiter; iter != enditer; iter++) { // Give all applicable rewards
 		if (iter->isitem && iter->prop > 0) {
@@ -266,17 +293,8 @@ bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 			giveRewards(*iter);
 		}
 	}
-	int16_t job = m_player->getStats()->getJob();
-	if ((start && questinfo.hasStartJobRewards(job)) || (!start && questinfo.hasEndJobRewards(job))) {
-		if (start) {
-			startiter = questinfo.getStartJobRewardsBegin(job);
-			enditer = questinfo.getStartJobRewardsEnd(job);
-		}
-		else {
-			startiter = questinfo.getEndJobRewardsBegin(job);
-			enditer = questinfo.getEndJobRewardsEnd(job);
-		}
-		for (iter = startiter; iter != enditer; iter++) {
+	if (jobrewards) {
+		for (iter = sjobiter; iter != ejobiter; iter++) {
 			if (iter->isitem && iter->prop > 0) {
 				chance += iter->prop;
 				items.push_back(*iter);		
@@ -299,10 +317,44 @@ bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 				else {
 					Inventory::takeItem(m_player, info.id, -info.count);
 				}
+				break;
 			}
 			else {
 				chance += info.prop;
 			}
+		}
+	}
+	return true;
+}
+
+bool PlayerQuests::checkRewards(int16_t questid, Rewards::iterator &begin, Rewards::iterator &end) {
+	boost::array<uint8_t, Inventories::InventoryCount> neededslots = {0};
+	boost::array<bool, Inventories::InventoryCount> chanceitem = {false};
+
+	for (Rewards::iterator iter = begin; iter != end; iter++) { // Loop through rewards, make sure it can be done
+		if (iter->isitem){
+			uint8_t inv = GameLogicUtilities::getInventory(iter->id) - 1;
+			if (iter->prop > 0 && !chanceitem[inv]) {
+				chanceitem[inv] = true;
+				neededslots[inv]++;
+			}
+			else if (iter->prop == 0) {
+				neededslots[inv]++;
+			}
+		}
+		else if (iter->ismesos) {
+			int32_t m = iter->id + m_player->getInventory()->getMesos();
+			if (m < 0) {
+				// Will trigger for both too low and too high
+				QuestsPacket::questError(m_player, questid, QuestsPacket::ErrorNotEnoughMesos);
+				return false;
+			}
+		}
+	}
+	for (size_t i = 0; i < Inventories::InventoryCount; i++) {
+		if (neededslots[i] != 0 && m_player->getInventory()->getOpenSlotsNum(i + 1) < neededslots[i]) {
+			QuestsPacket::questError(m_player, questid, QuestsPacket::ErrorNoItemSpace);
+			return false;
 		}
 	}
 	return true;

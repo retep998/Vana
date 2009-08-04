@@ -41,53 +41,41 @@ void ItemDataProvider::loadData() {
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW dataRow;
-	while (dataRow = res.fetch_raw_row()) {
-		// Col0 : EquipID
-		//    1 : Price
-		//    2 : Slots
-		//    3 : HP
-		//    4 : MP
-		//    5 : STR
-		//    6 : DEX
-		//    7 : INT
-		//    8 : LUK
-		//    9 : WAtk
-		//   10 : WDef
-		//   11 : MAtk
-		//   12 : MDef
-		//   13 : Acc
-		//   14 : Avo
-		//   15 : Jump
-		//   16 : Speed
-		//   17 : Taming Mob
-		//   18 : Only one?
-		//   19 : No trading?
-		//   20 : Quest item?
+	EquipInfo equip;
 
-		EquipInfo equip = EquipInfo();
-		equip.price = atoi(dataRow[1]);
-		equip.slots = atoi(dataRow[2]);
-		equip.ihp = atoi(dataRow[3]);
-		equip.imp = atoi(dataRow[4]);
-		equip.istr = atoi(dataRow[5]);
-		equip.idex = atoi(dataRow[6]);
-		equip.iint = atoi(dataRow[7]);
-		equip.iluk = atoi(dataRow[8]);
-		equip.iwatk = atoi(dataRow[9]);
-		equip.iwdef = atoi(dataRow[10]);
-		equip.imatk = atoi(dataRow[11]);
-		equip.imdef = atoi(dataRow[12]);
-		equip.iacc = atoi(dataRow[13]);
-		equip.iavo = atoi(dataRow[14]);
-		equip.ijump = atoi(dataRow[15]);
-		equip.ispeed = atoi(dataRow[16]);
-		equip.tamingmob = atoi(dataRow[17]);
-		equip.onlyone = atob(dataRow[18]);
-		equip.notrade = atob(dataRow[19]);
-		equip.quest = atob(dataRow[20]);
+	enum EquipData {
+		EquipId = 0,
+		Price, Slots, Hp, Mp, Str,
+		Dex, Int, Luk, Watk, Wdef,
+		Matk, Mdef, Acc, Avoid, Jump,
+		Speed, TamingMob, OnlyOne, NoTrade, Quest
+	};
+
+	while (dataRow = res.fetch_raw_row()) {
+		equip = EquipInfo();
+		equip.price = atoi(dataRow[Price]);
+		equip.slots = atoi(dataRow[Slots]);
+		equip.ihp = atoi(dataRow[Hp]);
+		equip.imp = atoi(dataRow[Mp]);
+		equip.istr = atoi(dataRow[Str]);
+		equip.idex = atoi(dataRow[Dex]);
+		equip.iint = atoi(dataRow[Int]);
+		equip.iluk = atoi(dataRow[Luk]);
+		equip.iwatk = atoi(dataRow[Watk]);
+		equip.iwdef = atoi(dataRow[Wdef]);
+		equip.imatk = atoi(dataRow[Matk]);
+		equip.imdef = atoi(dataRow[Mdef]);
+		equip.iacc = atoi(dataRow[Acc]);
+		equip.iavo = atoi(dataRow[Avoid]);
+		equip.ijump = atoi(dataRow[Jump]);
+		equip.ispeed = atoi(dataRow[Speed]);
+		equip.tamingmob = atoi(dataRow[TamingMob]);
+		equip.onlyone = atob(dataRow[OnlyOne]);
+		equip.notrade = atob(dataRow[NoTrade]);
+		equip.quest = atob(dataRow[Quest]);
 		equip.ihand = 0;
 		// Add equip to the equip info table
-		equips[atoi(dataRow[0])] = equip;
+		equips[atoi(dataRow[EquipId])] = equip;
 	}
 
 	// Items
@@ -101,11 +89,11 @@ void ItemDataProvider::loadData() {
 
 	enum ItemDataColumns {
 		ItemId = 0,
-		Price, SlotMax, Tradeable, Quest, AutoConsume,
-		Hp, Mp, HpRate, MpRate, MoveTo,
+		ItemPrice, SlotMax, Tradeable, ItemQuest, AutoConsume,
+		HealHp, HealMp, HpRate, MpRate, MoveTo,
 		Ailment, MonCardBuffProb, Time, WeaponAtt, MagicAtt,
-		Avoid, Accuracy, WeaponDef, MagicDef, Speed,
-		Jump, Morph, MesoUp, DropUp, IgnoreWeaponDef,
+		BuffAvoid, Accuracy, WeaponDef, MagicDef, BuffSpeed,
+		BuffJump, Morph, MesoUp, DropUp, IgnoreWeaponDef,
 		IgnoreMagicDef, IncreaseElementDef, IncreaseAilmentDef, Success, Cursed,
 		RandStat, Recover, ItemStr, ItemDex, ItemInt,
 		ItemLuk, ItemHp, ItemMp, ItemWeaponAtt, ItemMagicAtt,
@@ -121,13 +109,13 @@ void ItemDataProvider::loadData() {
 			item.cons.mobs.clear();
 		}
 
-		item.price = atoi(dataRow[Price]);
+		item.price = atoi(dataRow[ItemPrice]);
 		item.maxslot = atoi(dataRow[SlotMax]);
 		item.notrade = atob(dataRow[Tradeable]);
-		item.quest = atob(dataRow[Quest]);
+		item.quest = atob(dataRow[ItemQuest]);
 		item.cons.autoconsume = atob(dataRow[AutoConsume]);
-		item.cons.hp = atoi(dataRow[Hp]);
-		item.cons.mp = atoi(dataRow[Mp]);
+		item.cons.hp = atoi(dataRow[HealHp]);
+		item.cons.mp = atoi(dataRow[HealMp]);
 		item.cons.hpr = atoi(dataRow[HpRate]);
 		item.cons.mpr = atoi(dataRow[MpRate]);
 		item.cons.moveTo = atoi(dataRow[MoveTo]);
@@ -139,12 +127,12 @@ void ItemDataProvider::loadData() {
 		item.cons.time = atoi(dataRow[Time]);
 		item.cons.watk = atoi(dataRow[WeaponAtt]);
 		item.cons.matk = atoi(dataRow[MagicAtt]);
-		item.cons.avo = atoi(dataRow[Avoid]);
+		item.cons.avo = atoi(dataRow[BuffAvoid]);
 		item.cons.acc = atoi(dataRow[Accuracy]);
 		item.cons.wdef = atoi(dataRow[WeaponDef]);
 		item.cons.mdef = atoi(dataRow[MagicDef]);
-		item.cons.speed = atoi(dataRow[Speed]);
-		item.cons.jump = atoi(dataRow[Jump]);
+		item.cons.speed = atoi(dataRow[BuffSpeed]);
+		item.cons.jump = atoi(dataRow[BuffJump]);
 		item.cons.morph = atoi(dataRow[Morph]);
 		item.cons.mesoup = atoi(dataRow[MesoUp]);
 		item.cons.dropup = atoi(dataRow[DropUp]);

@@ -259,7 +259,8 @@ void Player::playerConnect(PacketReader &packet) {
 		if (getActiveBuffs()->hasHyperBody()) {
 			int32_t skillid = getActiveBuffs()->getHyperBody();
 			uint8_t hblevel = getActiveBuffs()->getActiveSkillLevel(skillid);
-			getStats()->setHyperBody(Skills::skills[skillid][hblevel].x, Skills::skills[skillid][hblevel].y);
+			SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillid, hblevel);
+			getStats()->setHyperBody(hb->x, hb->y);
 		}
 		getSummons()->parseSummonTransferPacket(pack);
 

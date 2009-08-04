@@ -37,6 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
+#include "SkillDataProvider.h"
 #include "StoragePacket.h"
 #include "WorldServerConnectPacket.h"
 #include <boost/tr1/regex.hpp>
@@ -184,7 +185,7 @@ void ChatHandler::initializeCommands() {
 	commandsyntax["warpto"] = "<$playername>";
 	commandsyntax["getmobhp"] = "<#mapmobid>";
 	commandsyntax["killmob"] = "<#mapmobid>";
-	commandsyntax["reload"] = "<${items, drops, mobs, beauty, shops}>";
+	commandsyntax["reload"] = "<${items, drops, mobs, beauty, shops, skills}>";
 	commandsyntax["help"] = "[$command]";
 
 	// Set up function notes
@@ -733,7 +734,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					re = "(\\d+) ?(-{0,1}\\d+)?";
 					if (regex_match(args.c_str(), matches, re)) {
 						int32_t skillid = atoi(string(matches[1]).c_str());
-						if (Skills::skills.find(skillid) != Skills::skills.end()) { // Don't allow skills that do not exist to be added
+						if (SkillDataProvider::Instance()->isSkill(skillid)) { // Don't allow skills that do not exist to be added
 							string countstring = matches[2];
 							uint8_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
 
@@ -829,10 +830,12 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "mobs") MobDataProvider::Instance()->loadData();
 						else if (args == "beauty") BeautyDataProvider::Instance()->loadData();
 						else if (args == "scripts") ScriptDataProvider::Instance()->loadData();
+						else if (args == "skills") SkillDataProvider::Instance()->loadData();
 						else {
 							showSyntax(player, command);
+							return;
 						}
-
+						PlayerPacket::showMessage(player, "Reloading " + args + " done!", 6);
 					}
 					else {
 						showSyntax(player, command);

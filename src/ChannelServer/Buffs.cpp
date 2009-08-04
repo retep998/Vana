@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "Player.h"
+#include "SkillDataProvider.h"
 #include "Skills.h"
 
 Buffs * Buffs::singleton = 0;
@@ -733,19 +734,20 @@ void Buffs::addItemInfo(int32_t itemid, const vector<uint8_t> &types, const vect
 
 int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 	int16_t rvalue = 0;
+	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
 	switch (value) {
-		case SkillX: rvalue = Skills::skills[skillid][level].x; break;
-		case SkillY: rvalue = Skills::skills[skillid][level].y; break;
-		case SkillSpeed: rvalue = Skills::skills[skillid][level].speed; break;
-		case SkillJump: rvalue = Skills::skills[skillid][level].jump; break;
-		case SkillWatk: rvalue = Skills::skills[skillid][level].watk; break;
-		case SkillWdef: rvalue = Skills::skills[skillid][level].wdef; break;
-		case SkillMatk: rvalue = Skills::skills[skillid][level].matk; break;
-		case SkillMdef: rvalue = Skills::skills[skillid][level].mdef; break;
-		case SkillAcc: rvalue = Skills::skills[skillid][level].acc; break;
-		case SkillAvo: rvalue = Skills::skills[skillid][level].avo; break;
-		case SkillProp: rvalue = Skills::skills[skillid][level].prop; break;
-		case SkillMorph: rvalue = Skills::skills[skillid][level].morph; break;
+		case SkillX: rvalue = skill->x; break;
+		case SkillY: rvalue = skill->y; break;
+		case SkillSpeed: rvalue = skill->speed; break;
+		case SkillJump: rvalue = skill->jump; break;
+		case SkillWatk: rvalue = skill->watk; break;
+		case SkillWdef: rvalue = skill->wdef; break;
+		case SkillMatk: rvalue = skill->matk; break;
+		case SkillMdef: rvalue = skill->mdef; break;
+		case SkillAcc: rvalue = skill->acc; break;
+		case SkillAvo: rvalue = skill->avo; break;
+		case SkillProp: rvalue = skill->prop; break;
+		case SkillMorph: rvalue = skill->morph; break;
 		case SkillLv: rvalue = level; break;
 	}
 	return rvalue;
@@ -753,10 +755,11 @@ int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 
 int16_t Buffs::getMobSkillValue(int8_t value, uint8_t skillid, uint8_t level) {
 	int16_t rvalue = 0;
+	MobSkillLevelInfo *skill = SkillDataProvider::Instance()->getMobSkill(skillid, level);
 	switch (value) {
-		case SkillX: rvalue = static_cast<int16_t>(Skills::mobskills[skillid][level].x); break;
-		case SkillY: rvalue = static_cast<int16_t>(Skills::mobskills[skillid][level].y); break;
-		case SkillProp: rvalue = Skills::mobskills[skillid][level].prop; break;
+		case SkillX: rvalue = static_cast<int16_t>(skill->x); break;
+		case SkillY: rvalue = static_cast<int16_t>(skill->y); break;
+		case SkillProp: rvalue = skill->prop; break;
 		case SkillLv: rvalue = level; break;
 	}
 	return rvalue;
@@ -778,6 +781,7 @@ int32_t Buffs::parseMountInfo(Player *player, int32_t skillid, uint8_t level) {
 ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) {
 	ActiveBuff playerskill;
 	BuffInfo cur;
+	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
 	for (size_t i = 0; i < skillsinfo[skillid].player.size(); i++) {
 		cur = skillsinfo[skillid].player[i];
 		int8_t val = cur.buff.value;
@@ -794,7 +798,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 				case Jobs::Bowmaster::SharpEyes:
 				case Jobs::Marksman::SharpEyes:
 				case Jobs::Hermit::ShadowPartner:
-					value = Skills::skills[skillid][level].x * 256 + Skills::skills[skillid][level].y;
+					value = skill->x * 256 + skill->y;
 					break;
 				case Jobs::Crusader::ComboAttack:
 					value = player->getActiveBuffs()->getCombo() + 1;
@@ -974,10 +978,11 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		return false; // Not a buff, so return false
 
 	int32_t mountid = parseMountInfo(player, skillid, level);
-	int32_t time = Skills::skills[skillid][level].time;
+	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
+	int32_t time = skill->time;
 	switch (skillid) {
 		case Jobs::DragonKnight::DragonRoar:
-			time = Skills::skills[skillid][level].y;
+			time = skill->y;
 			break;
 		case Jobs::Beginner::MonsterRider:
 		case Jobs::Corsair::Battleship:
@@ -992,7 +997,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			break;
 		case Jobs::Spearman::HyperBody:
 		case Jobs::SuperGm::HyperBody:
-			player->getStats()->setHyperBody(Skills::skills[skillid][level].x, Skills::skills[skillid][level].y);
+			player->getStats()->setHyperBody(skill->x, skill->y);
 			break;
 		case Jobs::Crusader::ComboAttack:
 			player->getActiveBuffs()->setCombo(0, false);
@@ -1144,7 +1149,7 @@ void Buffs::doAct(Player *player, int32_t skillid, uint8_t level) {
 }
 
 void Buffs::addDebuff(Player *player, uint8_t skillid, uint8_t level) {
-	int16_t time = Skills::mobskills[skillid][level].time;
+	int16_t time = SkillDataProvider::Instance()->getMobSkill(skillid, level)->time;
 	vector<Buff> buffs = parseMobBuffs(skillid);
 	ActiveBuff playerskill = parseMobBuffInfo(player, skillid, level);
 	ActiveMapBuff mapskill = parseMobBuffMapInfo(player, skillid, level);

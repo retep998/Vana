@@ -106,13 +106,13 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	// Seats
 	query << "SELECT seatid, x, y from mapseatdata WHERE mapid = " << checkmap;
 	res = query.use();
+	SeatInfo chair;
 
 	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Seat ID
 		//    1 : x
 		//    2 : y
 
-		SeatInfo chair;
 		int16_t id = atoi(dataRow[0]);
 		chair.pos = Pos(atoi(dataRow[1]), atoi(dataRow[2]));
 		chair.occupant = 0;
@@ -122,6 +122,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	// Portals
 	query << "SELECT id, name, x, y, tomap, toname, script, onlyonce FROM mapportaldata WHERE mapid = " << checkmap;
 	res = query.use();
+	PortalInfo portal;
 
 	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Portal ID
@@ -133,7 +134,6 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    6 : Script
 		//    7 : Only once
 
-		PortalInfo portal;
 		portal.id = atoi(dataRow[0]);
 		portal.name = dataRow[1];
 		portal.pos = Pos(atoi(dataRow[2]), atoi(dataRow[3]));
@@ -147,6 +147,8 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	// Life [NPCs and Mobs]
 	query << "SELECT isnpc, lifeid, x, cy, fh, rx0, rx1, mobtime, facesright FROM maplifedata WHERE mapid = " << checkmap;
 	res = query.use();
+	NPCSpawnInfo npc;
+	MobSpawnInfo spawn;
 
 	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Is NPC?
@@ -160,7 +162,6 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    8 : Faces Right
 
 		if (atob(dataRow[0])) {
-			NPCSpawnInfo npc;
 			npc.id = atoi(dataRow[1]);
 			npc.pos = Pos(atoi(dataRow[2]), atoi(dataRow[3]));
 			npc.fh = atoi(dataRow[4]);
@@ -172,7 +173,6 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 				MapleTVs::Instance()->addMap(map);
 		}
 		else {
-			MobSpawnInfo spawn;
 			spawn.id = atoi(dataRow[1]);
 			spawn.pos = Pos(atoi(dataRow[2]), atoi(dataRow[3]));
 			spawn.fh = atoi(dataRow[4]);
@@ -185,6 +185,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	// Reactors
 	query << "SELECT reactorid, x, y, reactortime, link FROM mapreactordata WHERE mapid = " << checkmap;
 	res = query.use();
+	ReactorSpawnInfo reactor;
 
 	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : Reactor ID
@@ -193,7 +194,6 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    3 : Reactor Time
 		//    4 : Link
 
-		ReactorSpawnInfo reactor;
 		reactor.id = atoi(dataRow[0]);
 		reactor.pos = Pos(atoi(dataRow[1]), atoi(dataRow[2]));
 		reactor.time = atoi(dataRow[3]);
@@ -204,6 +204,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	// Footholds
 	query << "SELECT id, x1, y1, x2, y2 FROM mapfootholddata WHERE mapid = " << checkmap;
 	res = query.use();
+	FootholdInfo foot;
 
 	while (dataRow = res.fetch_raw_row()) {
 		// Col0 : id
@@ -212,7 +213,6 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		//    3 : x2
 		//    4 : y2
 
-		FootholdInfo foot;
 		foot.id = atoi(dataRow[0]) - 1;
 		foot.pos1 = Pos(atoi(dataRow[1]), atoi(dataRow[2]));
 		foot.pos2 = Pos(atoi(dataRow[3]), atoi(dataRow[4]));
