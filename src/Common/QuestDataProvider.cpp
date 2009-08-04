@@ -31,6 +31,7 @@ void QuestDataProvider::loadData() {
 	// Quests
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM questdata");
 	mysqlpp::UseQueryResult res = query.use();
+	quests.clear();
 
 	MYSQL_ROW Row;
 	Quest curquest;

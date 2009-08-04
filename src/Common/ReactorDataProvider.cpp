@@ -32,6 +32,8 @@ void ReactorDataProvider::loadData() {
 
 	MYSQL_ROW reactorRow;
 	ReactorEventInfo revent;
+	reactorinfo.clear();
+	maxstates.clear();
 
 	enum ReactorEvent {
 		RowId = 0,
