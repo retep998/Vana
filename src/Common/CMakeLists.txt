@@ -52,6 +52,7 @@ set(SOURCES
 	Timer/Types.h
 	TimeUtilities.h
 	Types.h
+	Variables.h
 	AbstractPlayer.cpp
 	AbstractServer.cpp
 	AuthenticationPacket.cpp
@@ -91,6 +92,7 @@ set(SOURCES
 	Timer/Thread.cpp
 	Timer/Timer.cpp
 	TimeUtilities.cpp
+	Variables.cpp
 )
 
 add_library(Common STATIC ${SOURCES})
