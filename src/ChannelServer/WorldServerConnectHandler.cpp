@@ -142,7 +142,16 @@ void WorldServerConnectHandler::setRates(PacketReader &packet) {
 
 void WorldServerConnectHandler::reloadMcdb(PacketReader &packet) {
 	string args = packet.getString();
-	if (args == "items") ItemDataProvider::Instance()->loadData();
+	if (args == "all") {
+		ItemDataProvider::Instance()->loadData();
+		DropDataProvider::Instance()->loadData();
+		ShopDataProvider::Instance()->loadData();
+		MobDataProvider::Instance()->loadData();
+		BeautyDataProvider::Instance()->loadData();
+		ScriptDataProvider::Instance()->loadData();
+		SkillDataProvider::Instance()->loadData();
+	}
+	else if (args == "items") ItemDataProvider::Instance()->loadData();
 	else if (args == "drops") DropDataProvider::Instance()->loadData();
 	else if (args == "shops") ShopDataProvider::Instance()->loadData();
 	else if (args == "mobs") MobDataProvider::Instance()->loadData();
