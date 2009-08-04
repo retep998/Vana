@@ -16,12 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ItemDataProvider.h"
-#include "Buffs.h"
+#include "BuffDataProvider.h"
 #include "Database.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
-#include "Inventory.h"
 #include "MiscUtilities.h"
 #include "ShopDataProvider.h"
 #include <iostream>
@@ -249,105 +248,8 @@ void ItemDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void ItemDataProvider::addItemInfo(int32_t id, ItemInfo item) {
-	vector<uint8_t> types;
-	vector<int8_t> bytes;
-	vector<int16_t> values;
-
-	if (item.cons.watk > 0) {
-		types.push_back(0x01);
-		bytes.push_back(Byte1);
-		values.push_back(item.cons.watk);
-	}
-	if (item.cons.wdef > 0) {
-		types.push_back(0x02);
-		bytes.push_back(Byte1);
-		values.push_back(item.cons.wdef);
-	}
-	if (item.cons.matk > 0) {
-		types.push_back(0x04);
-		bytes.push_back(Byte1);
-		values.push_back(item.cons.matk);
-	}
-	if (item.cons.mdef > 0) {
-		types.push_back(0x08);
-		bytes.push_back(Byte1);
-		values.push_back(item.cons.mdef);
-	}
-	if (item.cons.acc > 0) {
-		types.push_back(0x10);
-		bytes.push_back(Byte1);
-		values.push_back(item.cons.acc);
-	}
-	if (item.cons.avo > 0) {
-		types.push_back(0x20);
-		bytes.push_back(Byte1);
-		values.push_back(item.cons.avo);
-	}
-	if (item.cons.speed > 0) {
-		types.push_back(0x80);
-		bytes.push_back(Byte1);
-		values.push_back(item.cons.speed);
-	}
-	if (item.cons.jump > 0) {
-		types.push_back(0x01);
-		bytes.push_back(Byte2);
-		values.push_back(item.cons.jump);
-	}
-	if (item.cons.morph > 0) {
-		types.push_back(0x02);
-		bytes.push_back(Byte5);
-		values.push_back(item.cons.morph);
-	}
-	// Need some buff bytes/types for ALL of the following
-	if (item.cons.iceresist > 0) {
-
-	}
-	if (item.cons.fireresist > 0) {
-
-	}
-	if (item.cons.poisonresist > 0) {
-
-	}
-	if (item.cons.lightningresist > 0) {
-
-	}
-	if (item.cons.cursedef > 0) {
-
-	}
-	if (item.cons.stundef > 0) {
-
-	}
-	if (item.cons.weaknessdef > 0) {
-
-	}
-	if (item.cons.darknessdef > 0) {
-
-	}
-	if (item.cons.sealdef > 0) {
-
-	}
-	if (item.cons.ignorewdef > 0) {
-
-	}
-	if (item.cons.ignoremdef > 0) {
-
-	}
-	if (item.cons.mesoup > 0) {
-
-	}
-	if (item.cons.dropup > 0) {
-		switch (item.cons.dropup) {
-			case 1: // Regular drop rate increase for all items, the only one I can parse at the moment
-				break;
-			//case 2: // Specific item drop rate increase
-			//case 3: // Specific item range (itemid / 10000) increase
-		}
-	}
-	
-	if (bytes.size())
-		Buffs::Instance()->addItemInfo(id, types, bytes, values);
-
+void ItemDataProvider::addItemInfo(int32_t id, const ItemInfo &item) {
+	BuffDataProvider::Instance()->addItemInfo(id, item.cons);
 	items[id] = item;
 }
 

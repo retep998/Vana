@@ -22,7 +22,6 @@ set(SOURCES
 	Inventory.h
 	InventoryHandler.h
 	InventoryPacket.h
-	ItemDataProvider.h
 	KeyMaps.h
 	Levels.h
 	LevelsPacket.h
@@ -106,7 +105,6 @@ set(SOURCES
 	Inventory.cpp
 	InventoryHandler.cpp
 	InventoryPacket.cpp
-	ItemDataProvider.cpp
 	KeyMaps.cpp
 	Levels.cpp
 	LevelsPacket.cpp

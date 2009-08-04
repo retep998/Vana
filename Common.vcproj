@@ -184,11 +184,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\BuffDataProvider.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\DropDataProvider.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\Common\InitializeCommon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ItemDataProvider.cpp"
 					>
 				</File>
 				<File
@@ -406,11 +414,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\BuffDataProvider.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\DropDataProvider.h"
 					>
 				</File>
 				<File
 					RelativePath=".\src\Common\InitializeCommon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ItemDataProvider.h"
 					>
 				</File>
 				<File

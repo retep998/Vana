@@ -4,6 +4,7 @@ set(SOURCES
 	AbstractSession.h
 	AuthenticationPacket.h
 	BeautyDataProvider.h
+	BuffDataProvider.h
 	ConfigFile.h
 	ConnectionManager.h
 	Database.h
@@ -17,6 +18,7 @@ set(SOURCES
 	InitializeCommon.h
 	InterHeader.h
 	IpUtilities.h
+	ItemDataProvider.h
 	LoopingId.h
 	MapleClient.h
 	MapleEncryption.h
@@ -57,6 +59,7 @@ set(SOURCES
 	AbstractServer.cpp
 	AuthenticationPacket.cpp
 	BeautyDataProvider.cpp
+	BuffDataProvider.cpp
 	ConfigFile.cpp
 	ConnectionManager.cpp
 	Database.cpp
@@ -67,6 +70,7 @@ set(SOURCES
 	FileUtilities.cpp
 	InitializeCommon.cpp
 	IpUtilities.cpp
+	ItemDataProvider.cpp
 	MapleClient.cpp
 	MapleEncryption.cpp
 	MapleServer.cpp

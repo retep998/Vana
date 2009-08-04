@@ -112,7 +112,7 @@ void PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) {
 		int32_t maskbit = calculateDebuffMaskBit(skill);
 		if ((m_debuffmask & maskbit) == 0) { // Don't have the debuff, continue processing
 			m_debuffmask += maskbit;
-			Buffs::Instance()->addDebuff(m_player, skill, level);
+			Buffs::addDebuff(m_player, skill, level);
 		}
 	}
 }
@@ -288,8 +288,8 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	if (sendPacket) {
 		int32_t skillid = m_player->getSkills()->getComboAttack();
 		int32_t timeleft = buffTimeLeft(skillid);
-		ActiveBuff playerskill = Buffs::Instance()->parseBuffInfo(m_player, skillid, getActiveSkillLevel(skillid));
-		ActiveMapBuff mapskill = Buffs::Instance()->parseBuffMapInfo(m_player, skillid, getActiveSkillLevel(skillid));
+		ActiveBuff playerskill = Buffs::parseBuffInfo(m_player, skillid, getActiveSkillLevel(skillid));
+		ActiveMapBuff mapskill = Buffs::parseBuffMapInfo(m_player, skillid, getActiveSkillLevel(skillid));
 		BuffsPacket::useSkill(m_player, skillid, timeleft, playerskill, mapskill, 0);
 	}
 }
@@ -345,7 +345,7 @@ void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 			m_energycharge = 10000;
 			stopEnergyChargeTimer();
 		}
-		Buffs::Instance()->addBuff(m_player, skillid, m_player->getSkills()->getSkillLevel(skillid), 0);
+		Buffs::addBuff(m_player, skillid, m_player->getSkills()->getSkillLevel(skillid), 0);
 	}
 }
 
@@ -358,7 +358,7 @@ void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
 	else {
 		startEnergyChargeTimer();
 	}
-	Buffs::Instance()->addBuff(m_player, skillid, m_player->getSkills()->getSkillLevel(skillid), 0);
+	Buffs::addBuff(m_player, skillid, m_player->getSkills()->getSkillLevel(skillid), 0);
 }
 
 void PlayerActiveBuffs::resetEnergyChargeLevel() {
@@ -630,7 +630,7 @@ void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
 		uint8_t level = packet.get<uint8_t>();
 		addBuff(skillid, timeleft);
 		setActiveSkillLevel(skillid, level);
-		Buffs::Instance()->doAct(m_player, skillid, level);
+		Buffs::doAct(m_player, skillid, level);
 	}
 	// Current buffs by type
 	unordered_map<uint8_t, int32_t> currentbyte;

@@ -165,7 +165,7 @@ private:
 	unordered_map<int32_t, string> item_names;
 	card_map cards; // Left, cardid; right, mobid
 
-	void addItemInfo(int32_t id, ItemInfo item);
+	void addItemInfo(int32_t id, const ItemInfo &item);
 };
 
 #endif
