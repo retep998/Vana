@@ -48,6 +48,7 @@ namespace WorldServerConnectPacket {
 	void toWorlds(WorldServerConnectPlayer *player, PacketCreator &packet);
 	void worldMessage(WorldServerConnectPlayer *player, const string &message, int8_t type);
 	void globalMessage(WorldServerConnectPlayer *player, const string &message, int8_t type);
+	void reloadMcdb(WorldServerConnectPlayer *player, const string &type);
 };
 
 #endif
