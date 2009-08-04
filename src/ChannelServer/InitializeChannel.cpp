@@ -24,10 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
-#include "MapleVersion.h"
 #include "MiscUtilities.h"
 #include "MobDataProvider.h"
-#include "Pets.h"
+#include "PetDataProvider.h"
 #include "Quests.h"
 #include "Reactors.h"
 #include "ScriptDataProvider.h"
@@ -39,28 +38,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using MiscUtilities::atob;
 
-void Initializing::checkMcdbVersion() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mcdb_info LIMIT 1");
-	mysqlpp::StoreQueryResult res = query.store();
-
-	int32_t version = (int32_t) res[0]["version"];
-	int32_t subversion = (int32_t) res[0]["subversion"];
-	int32_t maple_version = (int32_t) res[0]["maple_version"];
-
-	if (version != McdbVersion || subversion != McdbSubVersion) {
-		// MCDB incompatible
-		std::cout << "ERROR: MCDB version imcompatible. Expected: " << McdbVersion << "." << McdbSubVersion << " ";
-		std::cout << "Have: " << version << "." << subversion << std::endl;
-		std::cout << "Press enter to quit ...";
-		getchar();
-		exit(4);
-	}
-
-	if (maple_version != MAPLE_VERSION) {
-		std::cout << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files. Vana: " << MAPLE_VERSION << " MCDB: " << maple_version << std::endl;
-	}
-}
-
 void Initializing::loadData() {
 	ItemDataProvider::Instance()->loadData();
 	ShopDataProvider::Instance()->loadData();
@@ -69,10 +46,11 @@ void Initializing::loadData() {
 	BeautyDataProvider::Instance()->loadData();
 	ScriptDataProvider::Instance()->loadData();
 	SkillDataProvider::Instance()->loadData();
+	PetDataProvider::Instance()->loadData();
 	EventDataProvider::Instance()->loadEvents();
 	initializeReactors();
 	initializeQuests();
-	initializePets();
+	initializeChat();
 };
 
 void Initializing::initializeReactors() {
@@ -320,43 +298,6 @@ void Initializing::initializeQuests() {
 	}
 	if (previousid != -1) {
 		Quests::quests[previousid] = curquest;
-	}
-	std::cout << "DONE" << std::endl;
-}
-
-void Initializing::initializePets() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Pets... ";
-
-	mysqlpp::Query query = Database::getDataDB().query("SELECT id, name, hunger FROM petdata");
-	mysqlpp::UseQueryResult res = query.use();
-
-	MYSQL_ROW Row;
-	PetInfo pet;
-
-	while (Row = res.fetch_raw_row()) {
-		// 0 : Pet id
-		// 1 : Pet breed name
-		// 2 : Pet hunger level
-
-		pet.name = Row[1];
-		pet.hunger = atoi(Row[2]);
-		Pets::petsInfo[atoi(Row[0])] = pet;
-	}
-	
-	// Pet command info
-	query << "SELECT * FROM petinteractdata";
-	res = query.use();
-	PetInteractInfo petinteract;
-
-	while (Row = res.fetch_raw_row()) {
-		// 0 : Id
-		// 1 : Command
-		// 2 : Increase
-		// 3 : Prob
-
-		petinteract.increase = atoi(Row[2]);
-		petinteract.prob = atoi(Row[3]);
-		Pets::petsInteractInfo[atoi(Row[0])][atoi(Row[1])] = petinteract;
 	}
 	std::cout << "DONE" << std::endl;
 }

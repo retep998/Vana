@@ -51,6 +51,7 @@ set(SOURCES
 	NPCPacket.h
 	NPCs.h
 	Party.h
+	PetDataProvider.h
 	Pets.h
 	PetsPacket.h
 	Player.h
@@ -142,6 +143,7 @@ set(SOURCES
 	NPCPacket.cpp
 	NPCs.cpp
 	Party.cpp
+	PetDataProvider.cpp
 	Pets.cpp
 	PetsPacket.cpp
 	Player.cpp
