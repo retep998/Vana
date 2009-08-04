@@ -24,12 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.h"
 #include "ShopDataProvider.h"
 #include <iostream>
-#include <string>
 
-using boost::bimap;
 using Initializing::outputWidth;
 using MiscUtilities::atob;
-using std::string;
 
 ItemDataProvider * ItemDataProvider::singleton = 0;
 
@@ -76,19 +73,6 @@ void ItemDataProvider::loadData() {
 		equip.ihand = 0;
 		// Add equip to the equip info table
 		equips[atoi(dataRow[EquipId])] = equip;
-	}
-
-	// Monster cards
-	cards.clear();
-	query << "SELECT monstercarddata.cardid, monstercarddata.mobid FROM monstercarddata";
-	res = query.use();
-	while (dataRow = res.fetch_raw_row()) {
-		// Col0 : Card ID
-		//    1 : Mob ID
-
-		int32_t cardid = atoi(dataRow[0]);
-		int32_t mobid = atoi(dataRow[1]);
-		cards.insert(card_info(cardid, mobid));
 	}
 
 	// Items
@@ -269,26 +253,6 @@ int16_t ItemDataProvider::getMaxSlot(int32_t itemid) {
 		return 1;
 	else
 		return items.find(itemid) != items.end() ? items[itemid].maxslot : 0;
-}
-
-int32_t ItemDataProvider::getCardId(int32_t mobid) {
-	try {
-		return cards.right.at(mobid);
-	}
-	catch (std::out_of_range) {
-
-	}
-	return 0;
-}
-
-int32_t ItemDataProvider::getMobId(int32_t cardid) {
-	try {
-		return cards.left.at(cardid);
-	}
-	catch (std::out_of_range) {
-
-	}
-	return 0;
 }
 
 string ItemDataProvider::getItemName(int32_t itemid) {
