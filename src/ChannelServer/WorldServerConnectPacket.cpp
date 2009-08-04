@@ -192,3 +192,10 @@ void WorldServerConnectPacket::globalMessage(WorldServerConnectPlayer *player, c
 	
 	player->getSession()->send(packet);
 }
+
+void WorldServerConnectPacket::reloadMcdb(WorldServerConnectPlayer *player, const string &type) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_REFRESH_DATA);
+	packet.addString(type);
+	toChannels(player, packet);
+}
