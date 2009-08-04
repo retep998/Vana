@@ -305,10 +305,6 @@
 					RelativePath=".\src\ChannelServer\Trades.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Variables.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Packets"
@@ -406,7 +402,7 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.cpp"
@@ -415,7 +411,7 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="DataBaseLoading"
+				Name="Database Loading"
 				>
 				<File
 					RelativePath=".\src\ChannelServer\InitializeChannel.cpp"
@@ -431,7 +427,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.cpp"
@@ -699,10 +695,6 @@
 					RelativePath=".\src\ChannelServer\Trades.h"
 					>
 				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Variables.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Packets"
@@ -800,7 +792,7 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.h"
@@ -809,7 +801,7 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="DataBaseLoading"
+				Name="Database Loading"
 				>
 				<File
 					RelativePath=".\src\ChannelServer\InitializeChannel.h"
@@ -825,7 +817,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.h"

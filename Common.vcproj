@@ -177,7 +177,7 @@
 				</FileConfiguration>
 			</File>
 			<Filter
-				Name="DataBaseLoading"
+				Name="Database Loading"
 				>
 				<File
 					RelativePath=".\src\Common\BeautyDataProvider.cpp"
@@ -221,7 +221,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="DataBaseManager"
+				Name="Database Manager"
 				>
 				<File
 					RelativePath=".\src\Common\ConfigFile.cpp"
@@ -353,7 +353,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="DatabaseMigration"
+				Name="Database Migration"
 				>
 				<File
 					RelativePath=".\src\Common\DatabaseMigration.cpp"
@@ -365,10 +365,18 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\Common\ServerPlayer.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Data Structures"
+				>
+				<File
+					RelativePath=".\src\Common\Variables.cpp"
 					>
 				</File>
 			</Filter>
@@ -391,7 +399,7 @@
 				>
 			</File>
 			<Filter
-				Name="DataBaseLoading"
+				Name="Database Loading"
 				>
 				<File
 					RelativePath=".\src\Common\BeautyDataProvider.h"
@@ -435,7 +443,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="DataBaseManager"
+				Name="Database Manager"
 				>
 				<File
 					RelativePath=".\src\Common\ConfigFile.h"
@@ -478,7 +486,7 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\Common\AuthenticationPacket.h"
@@ -607,7 +615,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\Common\Rates.h"
@@ -619,15 +627,19 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Structs"
+				Name="Data Structures"
 				>
 				<File
 					RelativePath=".\src\Common\Pos.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\Common\Variables.h"
+					>
+				</File>
 			</Filter>
 			<Filter
-				Name="DatabaseMigration"
+				Name="Database Migration"
 				>
 				<File
 					RelativePath=".\src\Common\DatabaseMigration.h"
