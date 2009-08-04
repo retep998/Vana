@@ -479,7 +479,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			Buffs::Instance()->addBuff(player, Jobs::DragonKnight::DragonRoar, roarlv, 0);
+			Buffs::addBuff(player, Jobs::DragonKnight::DragonRoar, roarlv, 0);
 			break;
 		}
 		case Jobs::DragonKnight::Sacrifice: {

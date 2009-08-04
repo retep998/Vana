@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeChannel.h"
 #include "BeautyDataProvider.h"
+#include "BuffDataProvider.h"
 #include "ChatHandler.h"
 #include "DropDataProvider.h"
 #include "EventDataProvider.h"
@@ -33,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 void Initializing::loadData() {
+	BuffDataProvider::Instance()->loadData();
 	ItemDataProvider::Instance()->loadData();
 	ShopDataProvider::Instance()->loadData();
 	MobDataProvider::Instance()->loadData();

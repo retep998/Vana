@@ -101,8 +101,6 @@ void ShopDataProvider::loadData() {
 }
 
 void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCreator &packet) {
-	//player->setShop(id);
-
 	unordered_map<int32_t, bool> idsdone;
 	int8_t rechargetier = shops[id].rechargetier;
 	map<int32_t, double> rechargables = rechargecosts[rechargetier];
