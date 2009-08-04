@@ -18,11 +18,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "DatabaseMigration.h"
 #include "Database.h"
+#include "MapleVersion.h"
 #include <cstdio>
 #include <iostream>
 #include <string>
 
 using std::string;
+
+void Initializing::checkMcdbVersion() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mcdb_info LIMIT 1");
+	mysqlpp::StoreQueryResult res = query.store();
+
+	int32_t version = (int32_t) res[0]["version"];
+	int32_t subversion = (int32_t) res[0]["subversion"];
+	int32_t maple_version = (int32_t) res[0]["maple_version"];
+
+	if (version != McdbVersion || subversion != McdbSubVersion) {
+		// MCDB incompatible
+		std::cout << "ERROR: MCDB version imcompatible. Expected: " << McdbVersion << "." << McdbSubVersion << " ";
+		std::cout << "Have: " << version << "." << subversion << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
+		exit(4);
+	}
+
+	if (maple_version != MAPLE_VERSION) {
+		std::cout << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files. Vana: " << MAPLE_VERSION << " MCDB: " << maple_version << std::endl;
+	}
+}
 
 void Initializing::checkSchemaVersion(bool update) {
 	DatabaseMigration dbMigration(update);

@@ -21,15 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 namespace Initializing {
-	void checkMcdbVersion();
 	void loadData();
 	void initializeReactors();
 	void initializeQuests();
-	void initializePets();
 	void initializeChat();
-
-	const int32_t McdbVersion = 3;
-	const int32_t McdbSubVersion = 0;
 };
 
 #endif
