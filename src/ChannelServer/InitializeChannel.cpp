@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobDataProvider.h"
 #include "PetDataProvider.h"
 #include "Quests.h"
-#include "Reactors.h"
+#include "ReactorDataProvider.h"
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "SkillDataProvider.h"
@@ -47,53 +47,11 @@ void Initializing::loadData() {
 	ScriptDataProvider::Instance()->loadData();
 	SkillDataProvider::Instance()->loadData();
 	PetDataProvider::Instance()->loadData();
+	ReactorDataProvider::Instance()->loadData();
 	EventDataProvider::Instance()->loadEvents();
-	initializeReactors();
 	initializeQuests();
 	initializeChat();
 };
-
-void Initializing::initializeReactors() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Reactors... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactoreventdata ORDER BY reactorid, state ASC");
-	mysqlpp::UseQueryResult res = query.use();
-
-	MYSQL_ROW reactorRow;
-	ReactorEventInfo revent;
-
-	while (reactorRow = res.fetch_raw_row()) {
-		// Col0 : Row ID
-		//    1 : Reactor ID
-		//    2 : State
-		//    3 : Type
-		//    4 : Item ID
-		//    5 : LT X
-		//    6 : LT Y
-		//    7 : RB X
-		//    8 : RB Y
-		//    9 : Next State
-		//   10 : Repeat
-		//   11 : Timeout
-
-		int32_t id = atoi(reactorRow[1]);
-		uint8_t state = atoi(reactorRow[2]);
-
-		revent.type = atoi(reactorRow[3]);
-		revent.itemid = atoi(reactorRow[4]);
-		revent.lt.x = atoi(reactorRow[5]);
-		revent.lt.y = atoi(reactorRow[6]);
-		revent.rb.x = atoi(reactorRow[7]);
-		revent.rb.y = atoi(reactorRow[8]);
-		revent.nextstate = atoi(reactorRow[9]);
-		revent.repeat = atob(reactorRow[10]);
-		revent.timeout = atoi(reactorRow[11]);
-
-		Reactors::setMaxStates(id, revent.nextstate);
-		Reactors::addEventInfo(id, state, revent);
-	}
-
-	std::cout << "DONE" << std::endl;
-}
 
 void Initializing::initializeQuests() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Quests... ";

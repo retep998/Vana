@@ -74,6 +74,7 @@ set(SOURCES
 	PlayerVariables.h
 	Quests.h
 	QuestsPacket.h
+	ReactorDataProvider.h
 	ReactorPacket.h
 	Reactors.h
 	ScriptDataProvider.h
@@ -166,6 +167,7 @@ set(SOURCES
 	PlayerVariables.cpp
 	Quests.cpp
 	QuestsPacket.cpp
+	ReactorDataProvider.cpp
 	ReactorPacket.cpp
 	Reactors.cpp
 	ScriptDataProvider.cpp
