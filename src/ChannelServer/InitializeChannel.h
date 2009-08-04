@@ -18,11 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef INITIALIZECHANNEL_H
 #define INITIALIZECHANNEL_H
 
-#include "Types.h"
-
 namespace Initializing {
 	void loadData();
-	void initializeReactors();
 	void initializeQuests();
 	void initializeChat();
 };

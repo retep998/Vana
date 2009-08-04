@@ -446,6 +446,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\ReactorDataProvider.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\ScriptDataProvider.cpp"
 					>
 				</File>
@@ -865,6 +869,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PetDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ReactorDataProvider.h"
 					>
 				</File>
 				<File
