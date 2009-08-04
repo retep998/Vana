@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "PacketCreator.h"
 #include "Player.h"
+#include "QuestDataProvider.h"
 #include "QuestsPacket.h"
 #include "Randomizer.h"
 #include "TimeUtilities.h"
@@ -137,15 +138,13 @@ void PlayerQuests::load() {
 
 void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
 	QuestsPacket::acceptQuest(m_player, questid, npcid);
+
 	addQuest(questid);
-
 	giveRewards(questid, true);
-
 	checkDone(m_quests[questid]);
 }
 
 void PlayerQuests::addQuest(int16_t questid) {
-	Quest &questinfo = Quests::quests[questid];
 	ActiveQuest quest;
 	quest.id = questid;
 	m_quests[questid] = quest;
@@ -153,10 +152,10 @@ void PlayerQuests::addQuest(int16_t questid) {
 }
 
 void PlayerQuests::addQuestMobs(int16_t questid) {
-	Quest &questinfo = Quests::quests[questid];
-	if (questinfo.hasMobRequests()) {
+	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questid);
+	if (questinfo->hasMobRequests()) {
 		size_t index = 0;
-		for (MobRequests::iterator i = questinfo.getMobBegin(); i != questinfo.getMobEnd(); i++) {
+		for (MobRequests::iterator i = questinfo->getMobBegin(); i != questinfo->getMobEnd(); i++) {
 			m_quests[questid].kills[i->first] = 0;
 			m_mobtoquest[i->first].push_back(questid);
 		}
@@ -167,12 +166,12 @@ void PlayerQuests::updateQuestMob(int32_t mobid) {
 	if (m_mobtoquest.find(mobid) != m_mobtoquest.end()) {
 		int16_t qid = 0;
 		ActiveQuest q;
-		Quest realquest;
+		Quest *realquest;
 		for (size_t i = 0; i < m_mobtoquest[mobid].size(); i++) {
 			qid = m_mobtoquest[mobid][i];
 			q = m_quests[qid];
-			realquest = Quests::quests[qid];
-			int16_t maxcount = realquest.getMobRequestQuantity(mobid);
+			realquest = QuestDataProvider::Instance()->getInfo(qid);
+			int16_t maxcount = realquest->getMobRequestQuantity(mobid);
 			if (!q.done && q.kills[mobid] < maxcount) {
 				q.kills[mobid] += 1;
 				QuestsPacket::updateQuest(m_player, q);
@@ -186,15 +185,15 @@ void PlayerQuests::updateQuestMob(int32_t mobid) {
 }
 
 void PlayerQuests::checkDone(ActiveQuest &quest) {
-	Quest &questinfo = Quests::quests[quest.id];
+	Quest *questinfo = QuestDataProvider::Instance()->getInfo(quest.id);
 	quest.done = true;
-	if (!questinfo.hasRequests()) {
+	if (!questinfo->hasRequests()) {
 		return;
 	}
-	if (questinfo.hasItemRequests()) {
+	if (questinfo->hasItemRequests()) {
 		int32_t iid = 0;
 		int16_t iamt = 0;
-		for (ItemRequests::iterator i = questinfo.getItemBegin(); i != questinfo.getItemEnd(); i++) {
+		for (ItemRequests::iterator i = questinfo->getItemBegin(); i != questinfo->getItemEnd(); i++) {
 			iid = i->first;
 			iamt = i->second;
 			if ((m_player->getInventory()->getItemAmount(iid) < iamt && iamt > 0) || (iamt == 0 && m_player->getInventory()->getItemAmount(iid) != 0)) {
@@ -203,9 +202,9 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 			}
 		}
 	}
-	else if (questinfo.hasMobRequests()) {
+	else if (questinfo->hasMobRequests()) {
 		int32_t killed = 0;
-		for (MobRequests::iterator i = questinfo.getMobBegin(); i != questinfo.getMobEnd(); i++) {
+		for (MobRequests::iterator i = questinfo->getMobBegin(); i != questinfo->getMobEnd(); i++) {
 			if (quest.kills[i->first] < i->second) {
 				quest.done = false;
 				break;
@@ -218,14 +217,14 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 }
 
 void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
-	Quest &questinfo = Quests::quests[questid];
+	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questid);
 
 	if (!giveRewards(questid, false)) { // Failed, don't complete the quest yet
 		return;
 	}
 
-	if (questinfo.hasMobRequests()) {
-		for (MobRequests::iterator i = questinfo.getMobBegin(); i != questinfo.getMobEnd(); i++) {
+	if (questinfo->hasMobRequests()) {
+		for (MobRequests::iterator i = questinfo->getMobBegin(); i != questinfo->getMobEnd(); i++) {
 			for (size_t k = 0; k < m_mobtoquest[i->first].size(); k++) {
 				if (m_mobtoquest[i->first][k] == questid) {
 					if (m_mobtoquest[i->first].size() == 1) { // Only one quest for this mob
@@ -242,13 +241,13 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 	m_quests.erase(questid);
 	int64_t endtime = TimeUtilities::getServerTime();
 	m_completed[questid] = endtime;
-	QuestsPacket::questFinish(m_player, questid, npcid, questinfo.getNextQuest(), endtime);
+	QuestsPacket::questFinish(m_player, questid, npcid, questinfo->getNextQuest(), endtime);
 }
 
 bool PlayerQuests::giveRewards(int16_t questid, bool start) {
-	Quest &questinfo = Quests::quests[questid];
+	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questid);
 
-	if (!questinfo.hasRewards()) {
+	if (!questinfo->hasRewards()) {
 		return true;
 	}
 
@@ -264,20 +263,20 @@ bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 	int16_t job = m_player->getJob();
 
 	if (start) {
-			startiter = questinfo.getStartRewardsBegin();
-			enditer = questinfo.getStartRewardsEnd();
-			if (questinfo.hasStartJobRewards(job)) {
-				sjobiter = questinfo.getStartJobRewardsBegin(job);
-				ejobiter = questinfo.getStartJobRewardsEnd(job);
+			startiter = questinfo->getStartRewardsBegin();
+			enditer = questinfo->getStartRewardsEnd();
+			if (questinfo->hasStartJobRewards(job)) {
+				sjobiter = questinfo->getStartJobRewardsBegin(job);
+				ejobiter = questinfo->getStartJobRewardsEnd(job);
 				jobrewards = true;
 			}
 	}
 	else {
-			startiter = questinfo.getEndRewardsBegin();
-			enditer = questinfo.getEndRewardsEnd();
-			if (questinfo.hasEndJobRewards(job)) {
-				sjobiter = questinfo.getEndJobRewardsBegin(job);
-				ejobiter = questinfo.getEndJobRewardsEnd(job);
+			startiter = questinfo->getEndRewardsBegin();
+			enditer = questinfo->getEndRewardsEnd();
+			if (questinfo->hasEndJobRewards(job)) {
+				sjobiter = questinfo->getEndJobRewardsBegin(job);
+				ejobiter = questinfo->getEndJobRewardsEnd(job);
 				jobrewards = true;
 			}
 	}

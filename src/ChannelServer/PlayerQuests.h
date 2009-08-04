@@ -19,9 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYERQUESTS_H
 
 #include "Types.h"
+#include "QuestDataProvider.h"
 #include "Quests.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <iomanip>
 #include <map>
+#include <sstream>
 #include <string>
 
 using std::map;
@@ -30,6 +33,26 @@ using std::tr1::unordered_map;
 
 class PacketCreator;
 class Player;
+
+struct ActiveQuest {
+	ActiveQuest() : done(false) { }
+
+	string getQuestData() const {
+		if (kills.size() == 0)
+			return data;
+
+		std::ostringstream info;
+		for (map<int32_t, int16_t, std::less<int32_t> >::const_iterator iter = kills.begin(); iter != kills.end(); iter++) {
+			info << std::setw(3) << std::setfill('0') << iter->second;
+		}
+		return info.str();
+	}
+
+	int16_t id;
+	bool done;
+	string data;
+	map<int32_t, int16_t, std::less<int32_t> > kills;
+};
 
 class PlayerQuests {
 public:
