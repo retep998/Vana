@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Dark Lord - Thief Instructor
 
+dofile("scripts/lua_functions/jobFunctions.lua");
+
 if getJob() == 0 then
 	addText("Want to be a thief? There are some standards to meet, because we can't just accept ");
 	addText("EVERYONE in ... #bYour level should be at least 10, with your DEX over 25#k. ");

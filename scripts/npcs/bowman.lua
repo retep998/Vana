@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Athena Pierce - Bowman Instructor
 
+dofile("scripts/lua_functions/jobFunctions.lua");
+
 if getJob() == 0 then
 	addText("So you want to become the Bowman??? Well...you need to meet some requirements to do so...at ");
 	addText("least #bLevel10, and 25 of DEX#k. Let's see...hmm...");

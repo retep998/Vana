@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Dances With Balrog - Warrior Instructor
 
+dofile("scripts/lua_functions/jobFunctions.lua");
+
 if getJob() == 0 then
 	addText("Do you wish to be a Warrior? You need to meet some ");
 	addText("criteria in order to do so. #bYou need to be at least in Level 10,");
