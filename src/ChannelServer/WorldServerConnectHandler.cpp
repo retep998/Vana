@@ -16,16 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectHandler.h"
+#include "BeautyDataProvider.h"
 #include "ChannelServer.h"
 #include "Connectable.h"
+#include "DropDataProvider.h"
+#include "ItemDataProvider.h"
+#include "MapDataProvider.h"
 #include "MapleSession.h"
+#include "MobDataProvider.h"
 #include "PacketCreator.h"
+#include "PacketReader.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Players.h"
 #include "PlayersPacket.h"
 #include "Rates.h"
-#include "PacketReader.h"
+#include "ScriptDataProvider.h"
+#include "ShopDataProvider.h"
+#include "SkillDataProvider.h"
 #include "WorldServerConnectPlayer.h"
 #include <iostream>
 #include <limits>
@@ -130,4 +138,24 @@ void WorldServerConnectHandler::setRates(PacketReader &packet) {
 	if (ratesSetBit & Rates::SetBits::drop) {
 		ChannelServer::Instance()->setDroprate(packet.get<int32_t>());
 	}
+}
+
+void WorldServerConnectHandler::reloadMcdb(PacketReader &packet) {
+	string args = packet.getString();
+	if (args == "all") {
+		ItemDataProvider::Instance()->loadData();
+		DropDataProvider::Instance()->loadData();
+		ShopDataProvider::Instance()->loadData();
+		MobDataProvider::Instance()->loadData();
+		BeautyDataProvider::Instance()->loadData();
+		ScriptDataProvider::Instance()->loadData();
+		SkillDataProvider::Instance()->loadData();
+	}
+	else if (args == "items") ItemDataProvider::Instance()->loadData();
+	else if (args == "drops") DropDataProvider::Instance()->loadData();
+	else if (args == "shops") ShopDataProvider::Instance()->loadData();
+	else if (args == "mobs") MobDataProvider::Instance()->loadData();
+	else if (args == "beauty") BeautyDataProvider::Instance()->loadData();
+	else if (args == "scripts") ScriptDataProvider::Instance()->loadData();
+	else if (args == "skills") SkillDataProvider::Instance()->loadData();
 }

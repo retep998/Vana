@@ -16,9 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandler.h"
-#include "BeautyDataProvider.h"
 #include "Database.h"
-#include "DropDataProvider.h"
 #include "Inventory.h"
 #include "IpUtilities.h"
 #include "ItemDataProvider.h"
@@ -35,9 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Players.h"
 #include "PlayersPacket.h"
 #include "Pos.h"
-#include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
-#include "SkillDataProvider.h"
 #include "StoragePacket.h"
 #include "WorldServerConnectPacket.h"
 #include <boost/tr1/regex.hpp>
@@ -185,7 +181,7 @@ void ChatHandler::initializeCommands() {
 	commandsyntax["warpto"] = "<$playername>";
 	commandsyntax["getmobhp"] = "<#mapmobid>";
 	commandsyntax["killmob"] = "<#mapmobid>";
-	commandsyntax["reload"] = "<${items, drops, mobs, beauty, shops, skills}>";
+	commandsyntax["reload"] = "<${all, items, drops, mobs, beauty, shops, skills}>";
 	commandsyntax["help"] = "[$command]";
 
 	// Set up function notes
@@ -824,18 +820,15 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					break;
 				case CmdReload: {
 					if (args.length() != 0) {
-						if (args == "items") ItemDataProvider::Instance()->loadData();
-						else if (args == "drops") DropDataProvider::Instance()->loadData();
-						else if (args == "shops") ShopDataProvider::Instance()->loadData();
-						else if (args == "mobs") MobDataProvider::Instance()->loadData();
-						else if (args == "beauty") BeautyDataProvider::Instance()->loadData();
-						else if (args == "scripts") ScriptDataProvider::Instance()->loadData();
-						else if (args == "skills") SkillDataProvider::Instance()->loadData();
-						else {
-							showSyntax(player, command);
-							return;
+						if (args == "items" || args == "drops" || args == "shops" ||
+							args == "mobs" || args == "beauty" || args == "scripts" ||
+							args == "skills" || args == "all") {
+							WorldServerConnectPacket::reloadMcdb(ChannelServer::Instance()->getWorldPlayer(), args);
+							PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", 6);
 						}
-						PlayerPacket::showMessage(player, "Reloading " + args + " done!", 6);
+						else {
+							PlayerPacket::showMessage(player, "Invalid reload type", 6);
+						}
 					}
 					else {
 						showSyntax(player, command);
