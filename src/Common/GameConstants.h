@@ -160,6 +160,7 @@ namespace Stats {
 	const int16_t MaxFame = 30000;
 	const int16_t MinFame = -30000;
 	const int16_t MaxCloseness = 30000;
+	const int16_t ApPerLevel = 5;
 	const int16_t SpPerLevel = 3;
 	const int8_t MaxFullness = 100;
 	const int8_t MinFullness = 0;
@@ -223,7 +224,9 @@ namespace Stats {
 		Sp = 0x8000,
 		Exp = 0x10000,
 		Fame = 0x20000,
-		Mesos = 0x40000
+		Mesos = 0x40000,
+
+		HpMpAp = 0x80000000 // Non-official, internal use only
 	};
 }
 
@@ -872,16 +875,9 @@ namespace Jobs {
 	}
 	namespace Gm {
 		enum Skills {
-			AntiMacro = 9001009,
-			Bless = 9101003,
 			Haste = 9101000,
-			Hide = 9001004,
-			HyperBody = 9001008,
-			Resurrection = 9001005,
-			SuperDragonRoar1 = 9001001,
-			SuperDragonRoar2 = 9001006,
-			Teleport1 = 9001002,
-			Teleport2 = 9001007
+			SuperDragonRoar = 9001001,
+			Teleport = 9001002
 		};
 	}
 	namespace SuperGm {
