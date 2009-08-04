@@ -307,6 +307,10 @@ PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 int32_t Map::addNPC(const NPCSpawnInfo &npc) {
 	npcs.push_back(npc);
 	NPCPacket::showNPC(getInfo()->id, npc, npcs.size() - 1);
+
+	if (MapleTVs::Instance()->isMapleTVNPC(npc.id))
+		MapleTVs::Instance()->addMap(this);
+
 	return npcs.size() - 1;
 }
 

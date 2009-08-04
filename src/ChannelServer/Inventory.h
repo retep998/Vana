@@ -35,6 +35,7 @@ namespace Inventory {
 	void takeItem(Player *player, int32_t itemid, uint16_t howmany);
 	void useItem(Player *player, int32_t itemid);
 	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
+	bool showShop(Player *player, int32_t shopid);
 };
 
 #endif

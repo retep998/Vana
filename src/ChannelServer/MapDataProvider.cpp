@@ -169,8 +169,6 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 			npc.rx1 = atoi(dataRow[6]);
 			npc.facingside = (atoi(dataRow[8]) == 1 ? 0 : 1);
 			map->addNPC(npc);
-			if (MapleTVs::Instance()->isMapleTVNPC(npc.id))
-				MapleTVs::Instance()->addMap(map);
 		}
 		else {
 			spawn.id = atoi(dataRow[1]);

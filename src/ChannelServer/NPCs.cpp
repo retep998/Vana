@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NPCs.h"
+#include "Inventory.h"
 #include "FileUtilities.h"
 #include "LuaNPC.h"
 #include "MapleSession.h"
@@ -27,7 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "SendHeader.h"
 #include "ScriptDataProvider.h"
-#include "ShopDataProvider.h"
 #include <string>
 
 using std::string;
@@ -45,7 +45,7 @@ void NPCs::handleNPC(Player *player, PacketReader &packet) {
 	}
 
 	NPCSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
-	if (ShopDataProvider::Instance()->showShop(player, npcs.id)) // Shop
+	if (Inventory::showShop(player, npcs.id)) // Shop
 		return;
 
 	NPC *npc = new NPC(npcs.id, player, npcs.pos);

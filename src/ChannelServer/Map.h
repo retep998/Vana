@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAP_H
 
 #include "LoopingId.h"
+#include "MapDataProvider.h"
 #include "Mob.h"
 #include "Pos.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/recursive_mutex.hpp>
-#include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <ctime>
 #include <vector>
@@ -31,7 +31,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 using std::vector;
-using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
 class Drop;
@@ -44,91 +43,6 @@ class Reactor;
 namespace Timer {
 	class Container;
 };
-
-struct MapInfo {
-	MapInfo() : musicname(""), top(0), left(0), right(0), bottom(0) {}
-	bool clock;
-	bool town;
-	int8_t fieldType;
-	int8_t continent;
-	int8_t starthour;
-	int8_t endhour;
-	int16_t left;
-	int16_t top;
-	int16_t bottom;
-	int16_t right;
-	int32_t id;
-	int32_t rm;
-	int32_t forcedReturn;
-	int32_t shipInterval;
-	int32_t fieldLimit;
-	int32_t link;
-	int32_t timemob;
-	double spawnrate;
-	string musicname;
-	string message;
-};
-typedef shared_ptr<MapInfo> MapInfoPtr;
-
-struct FootholdInfo {
-	int16_t id;
-	Pos pos1;
-	Pos pos2;
-};
-typedef vector<FootholdInfo> FootholdsInfo;
-
-struct PortalInfo {
-	int8_t id;
-	string name;
-	Pos pos;
-	int32_t tomap;
-	string toname;
-	string script;
-	bool onlyOnce; // Run it only once per map entry
-};
-typedef unordered_map<string, PortalInfo> PortalsInfo;
-typedef unordered_map<int8_t, PortalInfo> SpawnPoints;
-
-struct NPCSpawnInfo {
-	int32_t id;
-	Pos pos;
-	int16_t fh;
-	int16_t rx0;
-	int16_t rx1;
-	int8_t facingside;
-};
-typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
-
-struct ReactorSpawnInfo {
-	ReactorSpawnInfo() : spawnat(-1), spawned(false) { }
-	int32_t id;
-	int32_t time;
-	int32_t link;
-	clock_t spawnat;
-	bool spawned;
-	Pos pos;
-};
-typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
-
-struct SeatInfo {
-	Pos pos;
-	Player *occupant;
-};
-
-typedef std::map<int16_t, SeatInfo> SeatsInfo;
-
-struct MobSpawnInfo {
-	MobSpawnInfo() : spawnat(-1), spawned(false) { }
-	int8_t facingside;
-	int16_t fh;
-	int32_t id;
-	int32_t time;
-	int32_t link;
-	bool spawned;
-	clock_t spawnat;
-	Pos pos;
-};
-typedef vector<MobSpawnInfo> MobSpawnsInfo;
 
 class Map {
 public:

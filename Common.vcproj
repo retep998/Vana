@@ -180,7 +180,43 @@
 				Name="DataBaseLoading"
 				>
 				<File
+					RelativePath=".\src\Common\BeautyDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\DropDataProvider.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\InitializeCommon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\MobDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\PetDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\QuestDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ReactorDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ScriptDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ShopDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\SkillDataProvider.cpp"
 					>
 				</File>
 			</Filter>
@@ -343,6 +379,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\src\Common\GameConstants.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Common\PrecompiledHeader.h"
 				>
 			</File>
@@ -354,7 +394,43 @@
 				Name="DataBaseLoading"
 				>
 				<File
+					RelativePath=".\src\Common\BeautyDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\DropDataProvider.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\InitializeCommon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\MobDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\PetDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\QuestDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ReactorDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ScriptDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ShopDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\SkillDataProvider.h"
 					>
 				</File>
 			</Filter>
@@ -415,6 +491,10 @@
 				>
 				<File
 					RelativePath=".\src\Common\FileUtilities.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\GameLogicUtilities.h"
 					>
 				</File>
 				<File

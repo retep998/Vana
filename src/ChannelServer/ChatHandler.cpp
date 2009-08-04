@@ -850,7 +850,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "pet") shopid = 9999992;
 						else shopid = atoi(args.c_str());
 
-						if (!ShopDataProvider::Instance()->showShop(player, shopid)) {
+						if (!Inventory::showShop(player, shopid)) {
 							showSyntax(player, command);
 						}
 					}
