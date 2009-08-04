@@ -242,11 +242,19 @@ void PlayerInventory::setMesos(int32_t mesos, bool is) {
 }
 
 bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
-	int32_t mesotest = m_mesos + mod;
-	if (mesotest < 0) {
-		return false;
+	if (mod < 0) {
+		if (-mod > m_mesos) {
+			return false;
+		}
+		m_mesos += mod;
 	}
-	m_mesos = mesotest;
+	else {
+		int32_t mesotest = m_mesos + mod;
+		if (mesotest < 0) {
+			return false;
+		}
+		m_mesos = mesotest;
+	}
 	PlayerPacket::updateStatInt(m_player, Stats::Mesos, m_mesos, is);
 	return true;
 }
