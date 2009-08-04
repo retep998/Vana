@@ -3,13 +3,17 @@ set(SOURCES
 	AbstractServer.h
 	AbstractSession.h
 	AuthenticationPacket.h
+	BeautyDataProvider.h
 	ConfigFile.h
 	ConnectionManager.h
 	Database.h
 	DatabaseMigration.h
 	DatabaseMigrationRunner.h
 	Decoder.h
+	DropDataProvider.h
 	FileUtilities.h
+	GameConstants.h
+	GameLogicUtilities.h
 	InitializeCommon.h
 	InterHeader.h
 	IpUtilities.h
@@ -21,17 +25,24 @@ set(SOURCES
 	MapleVersion.h
 	MersenneTwister.h
 	MiscUtilities.h
+	MobDataProvider.h
+	PetDataProvider.h
 	PacketCreator.h
 	PacketReader.h
 	PingPacket.h
 	Pos.h
 	PrecompiledHeader.h
+	QuestDataProvider.h
 	Randomizer.h
 	Rates.h
+	ReactorDataProvider.h
 	RecvHeader.h
+	ScriptDataProvider.h
 	SendHeader.h
 	ServerPlayer.h
 	SessionManager.h
+	ShopDataProvider.h
+	SkillDataProvider.h
 	StringUtilities.h
 	Timer/Container.h
 	Timer/Id.h
@@ -44,12 +55,14 @@ set(SOURCES
 	AbstractPlayer.cpp
 	AbstractServer.cpp
 	AuthenticationPacket.cpp
+	BeautyDataProvider.cpp
 	ConfigFile.cpp
 	ConnectionManager.cpp
 	Database.cpp
 	DatabaseMigration.cpp
 	DatabaseMigrationRunner.cpp
 	Decoder.cpp
+	DropDataProvider.cpp
 	FileUtilities.cpp
 	InitializeCommon.cpp
 	IpUtilities.cpp
@@ -58,13 +71,20 @@ set(SOURCES
 	MapleServer.cpp
 	MapleSession.cpp
 	MiscUtilities.cpp
+	MobDataProvider.cpp
 	PacketCreator.cpp
 	PacketReader.cpp
+	PetDataProvider.cpp
 	PingPacket.cpp
 	PrecompiledHeader.cpp
+	QuestDataProvider.cpp
 	Randomizer.cpp
+	ReactorDataProvider.cpp
+	ScriptDataProvider.cpp
 	ServerPlayer.cpp
 	SessionManager.cpp
+	ShopDataProvider.cpp
+	SkillDataProvider.cpp
 	StringUtilities.cpp
 	Timer/Container.cpp
 	Timer/Id.cpp

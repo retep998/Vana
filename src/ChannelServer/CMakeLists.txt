@@ -1,5 +1,4 @@
 set(SOURCES
-	BeautyDataProvider.h
 	BuddyListHandler.h
 	BuddyListPacket.h
 	Buffs.h
@@ -9,15 +8,12 @@ set(SOURCES
 	ChatHandlerConstants.h
 	CommandHandler.h
 	Connectable.h
-	DropDataProvider.h
 	Drop.h
 	DropHandler.h
 	DropsPacket.h
 	EventDataProvider.h
 	Fame.h
 	FamePacket.h
-	GameConstants.h
-	GameLogicUtilities.h
 	GMPacket.h
 	InitializeChannel.h
 	Instance.h
@@ -42,7 +38,6 @@ set(SOURCES
 	Maps.h
 	Mist.h
 	Mob.h
-	MobDataProvider.h
 	MobHandler.h
 	MobsPacket.h
 	MonsterBookPacket.h
@@ -51,7 +46,6 @@ set(SOURCES
 	NPCPacket.h
 	NPCs.h
 	Party.h
-	PetDataProvider.h
 	Pets.h
 	PetsPacket.h
 	Player.h
@@ -72,16 +66,11 @@ set(SOURCES
 	PlayerStorage.h
 	PlayerSummons.h
 	PlayerVariables.h
-	QuestDataProvider.h
 	Quests.h
 	QuestsPacket.h
-	ReactorDataProvider.h
 	ReactorPacket.h
 	Reactors.h
-	ScriptDataProvider.h
 	ServerPacket.h
-	ShopDataProvider.h
-	SkillDataProvider.h
 	SkillMacros.h
 	Skills.h
 	SkillsPacket.h
@@ -97,7 +86,6 @@ set(SOURCES
 	WorldServerConnectHandler.h
 	WorldServerConnectPacket.h
 	WorldServerConnectPlayer.h
-	BeautyDataProvider.cpp
 	BuddyListHandler.cpp
 	BuddyListPacket.cpp
 	Buffs.cpp
@@ -106,7 +94,6 @@ set(SOURCES
 	ChatHandler.cpp
 	CommandHandler.cpp
 	Connectable.cpp
-	DropDataProvider.cpp
 	Drop.cpp
 	DropHandler.cpp
 	DropsPacket.cpp
@@ -137,7 +124,6 @@ set(SOURCES
 	Maps.cpp
 	Mist.cpp
 	Mob.cpp
-	MobDataProvider.cpp
 	MobHandler.cpp
 	MobsPacket.cpp
 	MonsterBookPacket.cpp
@@ -145,7 +131,6 @@ set(SOURCES
 	NPCPacket.cpp
 	NPCs.cpp
 	Party.cpp
-	PetDataProvider.cpp
 	Pets.cpp
 	PetsPacket.cpp
 	Player.cpp
@@ -166,16 +151,11 @@ set(SOURCES
 	PlayerStorage.cpp
 	PlayerSummons.cpp
 	PlayerVariables.cpp
-	QuestDataProvider.cpp
 	Quests.cpp
 	QuestsPacket.cpp
-	ReactorDataProvider.cpp
 	ReactorPacket.cpp
 	Reactors.cpp
-	ScriptDataProvider.cpp
 	ServerPacket.cpp
-	ShopDataProvider.cpp
-	SkillDataProvider.cpp
 	SkillMacros.cpp
 	Skills.cpp
 	SkillsPacket.cpp
