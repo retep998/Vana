@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Grendel the Really Old - Magician Instructor
 
+dofile("scripts/lua_functions/jobFunctions.lua");
+
 if getJob() == 0 then
 	addText("Do you want to be a Magician? You need to meet some requirements in ");
 	addText("order to do so. You need to be at least at #bLevel 8, and INT 20#k. ");
