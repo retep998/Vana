@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Players.h"
 #include "Pos.h"
-#include "Quests.h"
+#include "QuestDataProvider.h"
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "SkillDataProvider.h"
@@ -101,7 +101,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 					if (player == 0 || !player->getQuests()->isQuestActive(questid))
 						continue;
 
-					int16_t request = Quests::quests[questid].getItemRequestQuantity(itemid);
+					int16_t request = QuestDataProvider::Instance()->getItemRequest(questid, itemid);
 					if (player->getInventory()->getItemAmount(itemid) >= request)
 						continue;
 				}
@@ -192,7 +192,7 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 			return;
 		}
 
-		int16_t request = Quests::quests[drop->getQuest()].getItemRequestQuantity(drop->getObjectId());
+		int16_t request = QuestDataProvider::Instance()->getItemRequest(drop->getQuest(), drop->getObjectId());
 		if (player->getInventory()->getItemAmount(drop->getObjectId()) >= request) {
 			DropsPacket::takeNote(player, 0, false, 0);
 			DropsPacket::dontTake(player);

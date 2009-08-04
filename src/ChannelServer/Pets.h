@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GameConstants.h"
 #include "MovableLife.h"
+#include "Pos.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <string>
@@ -32,19 +33,7 @@ class Player;
 class PacketReader;
 struct Item;
 
-struct PetInfo {
-	string name;
-	int32_t hunger;
-};
-
-struct PetInteractInfo {
-	uint32_t prob;
-	int16_t increase;
-};
-
 namespace Pets {
-	extern unordered_map<int32_t, PetInfo> petsInfo;
-	extern unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > petsInteractInfo;
 	extern int16_t exps[Stats::PetLevels - 1];
 	void showPets(Player *player);
 	void handleChat(Player *player, PacketReader &packet);
@@ -72,13 +61,11 @@ public:
 	int8_t getInventorySlot() const { return this->inventorySlot; }
 	int8_t getFullness() const { return this->fullness; }
 	int16_t getCloseness() const { return this->closeness; }
-	int16_t getPosX() const { return m_pos.x; }
-	int16_t getPosY() const { return m_pos.y - 1; }
 	int32_t getId() const { return this->id; }
 	int32_t getItemId() const { return this->itemid; }
 	bool isSummoned() const { return this->index != -1; }
 	string getName() { return this->name; }
-	Pos getPos() const { return Pos(getPosX(), getPosY()); }
+	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 
 	void startTimer();
 private:

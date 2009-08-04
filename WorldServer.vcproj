@@ -236,7 +236,7 @@
 				Name="Packets"
 				>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\WorldServer\LoginServerConnectPacket.cpp"
@@ -253,7 +253,7 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\WorldServer\LoginServerConnectPlayer.cpp"
@@ -294,7 +294,7 @@
 				Name="Packets"
 				>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\WorldServer\LoginServerConnectPacket.h"
@@ -335,7 +335,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\WorldServer\LoginServerConnectPlayer.h"

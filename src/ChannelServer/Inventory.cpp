@@ -21,10 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
+#include "PacketCreator.h"
 #include "Pets.h"
 #include "PetsPacket.h"
 #include "Player.h"
 #include "Randomizer.h"
+#include "ShopDataProvider.h"
 #include "SkillDataProvider.h"
 
 int16_t Inventory::addItem(Player *player, Item *item, bool is) {
@@ -176,8 +178,19 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	if (item.cons.ailment > 0)
 		player->getActiveBuffs()->useDebuffHealingItem(item.cons.ailment);
 
-	if (item.cons.time > 0 && item.cons.mcprob == 0) {
+	if (item.cons.time > 0) {
 		int32_t time = item.cons.time * potency / 100;
-		Buffs::Instance()->addBuff(player, itemid, time);
+		Buffs::addBuff(player, itemid, time);
 	}
+}
+
+bool Inventory::showShop(Player *player, int32_t shopid) {
+	if (ShopDataProvider::Instance()->isShop(shopid)) {
+		PacketCreator p;
+		ShopDataProvider::Instance()->showShop(shopid, player->getSkills()->getRechargeableBonus(), p);
+		player->setShop(shopid);
+		player->getSession()->send(p);
+		return true;
+	}
+	return false;
 }

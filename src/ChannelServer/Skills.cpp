@@ -79,9 +79,9 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			}
 			player->getActiveBuffs()->removeBuff(skillid, fromTimer);
 			if (GameLogicUtilities::isMobSkill(skillid))
-				Buffs::Instance()->endDebuff(player, (uint8_t)(skillid));
+				Buffs::endDebuff(player, (uint8_t)(skillid));
 			else
-				Buffs::Instance()->endBuff(player, skillid);
+				Buffs::endBuff(player, skillid);
 			break;
 	}
 }
@@ -286,7 +286,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true);
-						Buffs::Instance()->addBuff(cmem, skillid, level, addedinfo);
+						Buffs::addBuff(cmem, skillid, level, addedinfo);
 						if (skillid == Jobs::Buccaneer::TimeLeap)
 							cmem->getSkills()->removeAllCooldowns();
 					}
@@ -308,7 +308,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 				if (target != 0 && target != player) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
-					Buffs::Instance()->addBuff(target, skillid, level, addedinfo);
+					Buffs::addBuff(target, skillid, level, addedinfo);
 					if (skillid == Jobs::SuperGm::Resurrection && target->getStats()->getHp() <= 0)
 						target->getStats()->setHp(target->getStats()->getMHp());
 					else if (skillid == Jobs::SuperGm::HealPlusDispel && target->getStats()->getHp() > 0) {
@@ -336,7 +336,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	applySkillCosts(player, skillid, level);
 	if (skillid != Jobs::Cleric::Heal)
 		SkillsPacket::showSkill(player, skillid, level, direction);
-	if (Buffs::Instance()->addBuff(player, skillid, level, addedinfo))
+	if (Buffs::addBuff(player, skillid, level, addedinfo))
 		return;
 	if (GameLogicUtilities::isSummon(skillid))
 		Summons::useSummon(player, skillid, level);
@@ -426,7 +426,7 @@ void Skills::hurt(Player *player, int16_t value, int32_t skillid) {
 		SkillsPacket::showSkillEffect(player, skillid);
 	}
 	else {
-		Buffs::Instance()->endBuff(player, skillid);
+		Buffs::endBuff(player, skillid);
 	}
 }
 

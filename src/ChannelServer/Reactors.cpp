@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "Pos.h"
+#include "ReactorDataProvider.h"
 #include "ReactorPacket.h"
 #include "ScriptDataProvider.h"
 #include "Timer/Thread.h"
@@ -66,22 +67,6 @@ void Reactor::drop(Player *player) {
 }
 
 // Reactors namespace
-unordered_map<int32_t, unordered_map<uint8_t, ReactorEventsInfo> > Reactors::reactorinfo;
-unordered_map<int32_t, int16_t> Reactors::maxstates;
-
-void Reactors::addEventInfo(int32_t id, uint8_t state, const ReactorEventInfo &revent) {
-	reactorinfo[id][state].push_back(revent);
-}
-
-void Reactors::setMaxStates(int32_t id, int16_t state) {
-	if (maxstates.find(id) == maxstates.end()) {
-		maxstates[id] = state;	
-	}
-	else if (maxstates[id] < state) {
-		maxstates[id] = state;
-	}
-}
-
 void Reactors::hitReactor(Player *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>() - 200;
 
@@ -89,10 +74,10 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 
 	if (reactor != 0 && reactor->isAlive()) {
 		int32_t reactorid = (reactor->getLink() != 0 ? reactor->getLink() : reactor->getReactorId());
-
-		if (reactor->getState() < maxstates[reactorid]) {
-			ReactorEventInfo *revent = &reactorinfo[reactorid][reactor->getState()][0]; // There's only one way to hit something
-			if (revent->nextstate < maxstates[reactorid]) {
+		int8_t maxstate = ReactorDataProvider::Instance()->getMaxState(reactorid);
+		if (reactor->getState() < maxstate) {
+			ReactorEventInfo *revent = ReactorDataProvider::Instance()->getEvent(reactorid , reactor->getState()); // There's only one way to hit something
+			if (revent->nextstate < maxstate) {
 				if (revent->type >= 100)
 					return;
 
@@ -137,12 +122,11 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 	for (size_t i = 0; i < Maps::getMap(drop->getMap())->getNumReactors(); i++) {
 		Reactor *reactor = Maps::getMap(drop->getMap())->getReactor(i);
 		int32_t reactorid = (reactor->getLink() != 0 ? reactor->getLink() : reactor->getReactorId());
-
-		if (reactor->getState() < maxstates[reactorid]) {
-			size_t vsize = reactorinfo[reactorid][reactor->getState()].size();
+		if (reactor->getState() < ReactorDataProvider::Instance()->getMaxState(reactorid)) {
+			int8_t vsize = ReactorDataProvider::Instance()->getEventCount(reactorid, reactor->getState());
 			ReactorEventInfo *revent;
-			for (size_t j = 0; j < vsize; j++) {
-				revent = &reactorinfo[reactorid][reactor->getState()][j];
+			for (int8_t j = 0; j < vsize; j++) {
+				revent = ReactorDataProvider::Instance()->getEvent(reactorid, reactor->getState(), j);
 				if (revent->type == 100 && drop->getObjectId() == revent->itemid) {
 					if (GameLogicUtilities::isInBox(reactor->getPos(), revent->lt, revent->rb, drop->getPos())) {
 						Reaction reaction;

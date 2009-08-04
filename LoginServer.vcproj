@@ -244,7 +244,7 @@
 					>
 				</File>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\LoginServer\LoginServerAcceptPacket.cpp"
@@ -261,7 +261,7 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.cpp"
@@ -294,7 +294,7 @@
 					>
 				</File>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\LoginServer\LoginServerAcceptPacket.h"
@@ -343,7 +343,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="DataBaseLoading"
+				Name="Database Loading"
 				>
 				<File
 					RelativePath=".\src\LoginServer\InitializeLogin.h"
@@ -351,7 +351,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.h"

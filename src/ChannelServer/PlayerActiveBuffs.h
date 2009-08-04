@@ -38,6 +38,21 @@ namespace Timer {
 	class Container;
 };
 
+struct MapEntryBuffs {
+	MapEntryBuffs() : mountid(0), mountskill(0) {
+		for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
+			types[i] = 0;
+		}
+	}
+	boost::array<uint8_t, BuffBytes::ByteQuantity> types;
+	unordered_map<int8_t, unordered_map<uint8_t, MapEntryVals> > values;
+
+	int32_t mountid;
+	int32_t mountskill;
+};
+
+typedef unordered_map<int8_t, unordered_map<uint8_t, int32_t> > ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
+
 class PlayerActiveBuffs {
 public:
 	PlayerActiveBuffs(Player *player) :

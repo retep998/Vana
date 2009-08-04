@@ -181,7 +181,7 @@ void ChatHandler::initializeCommands() {
 	commandsyntax["warpto"] = "<$playername>";
 	commandsyntax["getmobhp"] = "<#mapmobid>";
 	commandsyntax["killmob"] = "<#mapmobid>";
-	commandsyntax["reload"] = "<${all, items, drops, mobs, beauty, shops, skills}>";
+	commandsyntax["reload"] = "<${all, items, drops, mobs, beauty, shops, scripts, reactors, pets, quests, skills}>";
 	commandsyntax["help"] = "[$command]";
 
 	// Set up function notes
@@ -822,7 +822,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 					if (args.length() != 0) {
 						if (args == "items" || args == "drops" || args == "shops" ||
 							args == "mobs" || args == "beauty" || args == "scripts" ||
-							args == "skills" || args == "all") {
+							args == "skills" || args == "reactors" || args == "pets" ||
+							args == "quests" || args == "all") {
 							WorldServerConnectPacket::reloadMcdb(ChannelServer::Instance()->getWorldPlayer(), args);
 							PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", 6);
 						}
@@ -848,7 +849,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "pet") shopid = 9999992;
 						else shopid = atoi(args.c_str());
 
-						if (!ShopDataProvider::Instance()->showShop(player, shopid)) {
+						if (!Inventory::showShop(player, shopid)) {
 							showSyntax(player, command);
 						}
 					}

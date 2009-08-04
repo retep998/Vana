@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "MovementHandler.h"
 #include "PacketReader.h"
+#include "PetDataProvider.h"
 #include "PetsPacket.h"
 #include "Player.h"
 #include "Pos.h"
@@ -36,9 +37,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::tr1::bind;
 
-unordered_map<int32_t, PetInfo> Pets::petsInfo;
-unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > Pets::petsInteractInfo;
-
 int16_t Pets::exps[Stats::PetLevels - 1] = {
 	1, 3, 6, 14, 31, 60, 108, 181, 287, 434,
 	632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801,
@@ -46,7 +44,7 @@ int16_t Pets::exps[Stats::PetLevels - 1] = {
 };
 
 /* Pet class */
-Pet::Pet(Player *player, Item *item) : player(player), itemid(item->id), index(-1), name(Pets::petsInfo[itemid].name), level(1), fullness(100), closeness(0) {
+Pet::Pet(Player *player, Item *item) : player(player), itemid(item->id), index(-1), name(PetDataProvider::Instance()->getName(itemid)), level(1), fullness(100), closeness(0) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
@@ -107,7 +105,7 @@ void Pet::modifyFullness(int8_t offset, bool sendPacket) {
 
 void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
-	clock_t length = (6 - Pets::petsInfo[getItemId()].hunger) * 60000; // TODO: Better formula
+	clock_t length = (6 - PetDataProvider::Instance()->getHunger(getItemId())) * 60000; // TODO: Better formula
 	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, player->getTimers(), 0, length);
 }
 
@@ -224,9 +222,12 @@ void Pets::handleCommand(Player *player, PacketReader &packet) {
 	packet.skipBytes(5);
 	int8_t act = packet.get<int8_t>();
 	Pet *pet = player->getPets()->getPet(petid);
-	bool success = (Randomizer::Instance()->randInt(100) < petsInteractInfo[pet->getItemId()][act].prob);
+	PetInteractInfo *action = PetDataProvider::Instance()->getInteraction(pet->getItemId(), act);
+	if (action == 0)
+		return;
+	bool success = (Randomizer::Instance()->randInt(100) < action->prob);
 	if (success) {
-		pet->addCloseness(petsInteractInfo[pet->getItemId()][act].increase);
+		pet->addCloseness(action->increase);
 	}
 	PetsPacket::showAnimation(player, pet, act, success);
 }

@@ -404,7 +404,7 @@ int LuaExports::runNPC(lua_State *luaVm) {
 
 int LuaExports::showShop(lua_State *luaVm) {
 	int32_t shopid = lua_tointeger(luaVm, -1);
-	ShopDataProvider::Instance()->showShop(getPlayer(luaVm), shopid);
+	Inventory::showShop(getPlayer(luaVm), shopid);
 	return 0;
 }
 

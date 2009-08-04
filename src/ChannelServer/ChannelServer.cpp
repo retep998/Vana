@@ -43,7 +43,6 @@ void ChannelServer::loadData() {
 	Initializing::checkSchemaVersion();
 	Initializing::checkMcdbVersion();
 	Initializing::loadData();
-	Initializing::initializeChat();
 
 	WorldServerConnectPlayer *loginPlayer = new WorldServerConnectPlayer;
 	ConnectionManager::Instance()->connect(login_ip, login_inter_port, loginPlayer);

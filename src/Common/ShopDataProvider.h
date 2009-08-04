@@ -28,7 +28,7 @@ using std::map;
 using std::tr1::unordered_map;
 using std::vector;
 
-class Player;
+class PacketCreator;
 
 struct ShopItemInfo {
 	int32_t itemid;
@@ -50,7 +50,9 @@ public:
 		return singleton;
 	}
 	void loadData();
-	bool showShop(Player *player, int32_t id);
+
+	bool isShop(int32_t id) { return (shops.find(id) != shops.end()); }
+	void showShop(int32_t id, int16_t rechargeablebonus, PacketCreator &packet);
 	int32_t getPrice(int32_t shopid, int16_t shopindex);
 	int32_t getItemId(int32_t shopid, int16_t shopindex);
 	int16_t getAmount(int32_t shopid, int16_t shopindex);

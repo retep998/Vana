@@ -305,10 +305,6 @@
 					RelativePath=".\src\ChannelServer\Trades.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Variables.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Packets"
@@ -402,7 +398,7 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.cpp"
@@ -411,47 +407,19 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="DataBaseLoading"
+				Name="Database Loading"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\BeautyDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\DropDataProvider.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\InitializeChannel.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\ItemDataProvider.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MapDataProvider.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\src\ChannelServer\MobDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\ScriptDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\ShopDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\SkillDataProvider.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.cpp"
@@ -723,10 +691,6 @@
 					RelativePath=".\src\ChannelServer\Trades.h"
 					>
 				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Variables.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Packets"
@@ -820,7 +784,7 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.h"
@@ -829,47 +793,19 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="DataBaseLoading"
+				Name="Database Loading"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\BeautyDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\DropDataProvider.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\InitializeChannel.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\ItemDataProvider.h"
 					>
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MapDataProvider.h"
 					>
 				</File>
-				<File
-					RelativePath=".\src\ChannelServer\MobDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\ScriptDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\ShopDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\SkillDataProvider.h"
-					>
-				</File>
 			</Filter>
 			<Filter
-				Name="ServerToServer"
+				Name="Inter-Server"
 				>
 				<File
 					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.h"
@@ -992,23 +928,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\GameConstants.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\InstanceMessageConstants.h"
 					>
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\VersionConstants.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Utilities"
-				>
-				<File
-					RelativePath=".\src\ChannelServer\GameLogicUtilities.h"
 					>
 				</File>
 			</Filter>

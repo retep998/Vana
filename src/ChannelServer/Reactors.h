@@ -30,22 +30,7 @@ class Player;
 class Drop;
 class PacketReader;
 
-struct ReactorEventInfo {
-	bool repeat;
-	int8_t nextstate;
-	int16_t type;
-	int32_t itemid;
-	int32_t timeout;
-	Pos lt;
-	Pos rb;
-};
-typedef vector<ReactorEventInfo> ReactorEventsInfo;
-
 namespace Reactors {
-	extern unordered_map<int32_t, unordered_map<uint8_t, ReactorEventsInfo> > reactorinfo;
-	extern unordered_map<int32_t, int16_t> maxstates;
-	void addEventInfo(int32_t id, uint8_t state, const ReactorEventInfo &revent);
-	void setMaxStates(int32_t id, int16_t state);
 	void hitReactor(Player *player, PacketReader &packet);
 	void checkDrop(Player *player, Drop *drop);
 	void checkLoot(Drop *drop);

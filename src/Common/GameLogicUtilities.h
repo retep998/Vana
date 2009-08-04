@@ -58,7 +58,7 @@ namespace GameLogicUtilities {
 	inline bool isRegularJob(int32_t job) { return (job == Jobs::JobIds::Beginner || (job >= 100 && job <= 910)); }
 	inline bool isNonBitJob(int32_t job) { return (isRegularJob(job)); }
 	inline bool isBeginnerJob(int16_t jobid) { return (jobid == 0); }
-	inline int16_t getJobTrack(int16_t job) { return (job / 100); }
+	inline int16_t getJobTrack(int16_t job, bool flattencygnus = false) { return (job / 100); }
 
 	// Monster card
 	inline bool isMonsterCard(int32_t itemid) { return (getItemType(itemid) == ItemMonsterCard); }

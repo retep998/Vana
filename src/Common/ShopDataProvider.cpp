@@ -20,11 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
-#include "Inventory.h"
 #include "ItemDataProvider.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
-#include "Player.h"
 #include "SendHeader.h"
 
 using Initializing::outputWidth;
@@ -102,18 +100,12 @@ void ShopDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-bool ShopDataProvider::showShop(Player *player, int32_t id) {
-	if (shops.find(id) == shops.end())
-		return false;
-
-	player->setShop(id);
-
+void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCreator &packet) {
 	unordered_map<int32_t, bool> idsdone;
 	int8_t rechargetier = shops[id].rechargetier;
 	map<int32_t, double> rechargables = rechargecosts[rechargetier];
 	int16_t shopcount = shops[id].items.size() + rechargables.size();
 
-	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOP_OPEN);
 	packet.add<int32_t>(shops[id].npc);
 	packet.add<int16_t>(0); // To be set later
@@ -139,7 +131,7 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 		}
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item.itemid);
 		if (GameLogicUtilities::isRechargeable(item.itemid))
-			maxslot += player->getSkills()->getRechargeableBonus();
+			maxslot += rechargeablebonus;
 		packet.add<int16_t>(maxslot);
 	}
 
@@ -149,14 +141,11 @@ bool ShopDataProvider::showShop(Player *player, int32_t id) {
 			packet.add<int32_t>(iter->first);
 			packet.add<int32_t>(0);
 			packet.add<double>(iter->second);
-			packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(iter->first) + player->getSkills()->getRechargeableBonus());
+			packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(iter->first) + rechargeablebonus);
 		}
 	}
 
 	packet.set<int16_t>(shopcount, 6);
-
-	player->getSession()->send(packet);
-	return true;
 }
 
 int32_t ShopDataProvider::getPrice(int32_t shopid, int16_t shopindex) {

@@ -160,7 +160,6 @@ namespace Stats {
 	const int16_t MaxFame = 30000;
 	const int16_t MinFame = -30000;
 	const int16_t MaxCloseness = 30000;
-	const int16_t ApPerLevel = 5;
 	const int16_t SpPerLevel = 3;
 	const int8_t MaxFullness = 100;
 	const int8_t MinFullness = 0;
@@ -224,9 +223,7 @@ namespace Stats {
 		Sp = 0x8000,
 		Exp = 0x10000,
 		Fame = 0x20000,
-		Mesos = 0x40000,
-
-		HpMpAp = 0x80000000 // Non-official, internal use only
+		Mesos = 0x40000
 	};
 }
 
@@ -241,12 +238,6 @@ namespace Inventories {
 	const int8_t MaxPetCount = 3;
 	const uint8_t VipRockMax = 10;
 	const uint8_t TeleportRockMax = 5;
-}
-
-namespace MonsterCards {
-	const uint8_t MaxCardLevel = 5;
-	const int32_t MaxPlayerLevel = 8;
-	const int32_t PlayerLevels[MaxPlayerLevel - 1] = {10, 30, 60, 100, 150, 210, 280};
 }
 
 namespace FieldLimitBits {
@@ -881,22 +872,29 @@ namespace Jobs {
 	}
 	namespace Gm {
 		enum Skills {
-			Haste = 9001000,
-			SuperDragonRoar = 9001001,
-			Teleport = 9001002,
+			AntiMacro = 9001009,
+			Bless = 9101003,
+			Haste = 9101000,
+			Hide = 9001004,
+			HyperBody = 9001008,
+			Resurrection = 9001005,
+			SuperDragonRoar1 = 9001001,
+			SuperDragonRoar2 = 9001006,
+			Teleport1 = 9001002,
+			Teleport2 = 9001007
 		};
 	}
 	namespace SuperGm {
 		enum Skills {
-			HealPlusDispel = 9101000,
-			Haste = 9101001,
-			HolySymbol = 9101002,
 			Bless = 9101003,
+			Haste = 9101001,
+			HealPlusDispel = 9101000,
 			Hide = 9101004,
+			HolySymbol = 9101002,
+			HyperBody = 9101008,
 			Resurrection = 9101005,
 			SuperDragonRoar = 9101006,
-			Teleport = 9101007,
-			HyperBody = 9101008
+			Teleport = 9101007
 		};
 	}
 }
@@ -929,6 +927,8 @@ namespace Items {
 		ItemLock = 5060001,
 		Megaphone = 5071000,
 		SuperMegaphone = 5072000,
+		ItemMegaphone = 5076000,
+		ArtMegaphone = 5077000,
 		MapleTvMessenger = 5075000,
 		MapleTvStarMessenger = 5075001,
 		MapleTvHeartMessenger = 5075002,
@@ -986,6 +986,7 @@ namespace Mobs {
 namespace Maps {
 	enum {
 		OriginOfClockTower = 220080001,
+		SorcerersRoom = 270020211,
 		NoMap = 999999999
 	};
 }

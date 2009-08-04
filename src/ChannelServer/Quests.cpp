@@ -19,41 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "NPCs.h"
 #include "Player.h"
+#include "QuestDataProvider.h"
 #include "QuestsPacket.h"
 #include "PacketReader.h"
-
-unordered_map<int16_t, Quest> Quests::quests;
-
-void Quest::addItemRequest(int32_t itemid, int16_t quantity) {
-	itemrequests[itemid] = quantity;
-}
-
-void Quest::addMobRequest(int32_t mobid, int16_t quantity) {
-	mobrequests[mobid] = quantity;
-}
-
-void Quest::addQuestRequest(int16_t questid, int8_t state) {
-	questrequests[questid] = state;
-}
-
-void Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) {
-	if (start) {
-		if (job == -1) {
-			startrewards.rewards.push_back(info);
-		}
-		else {
-			startrewards.jobrewards[job].push_back(info);
-		}
-	}
-	else {
-		if (job == -1) {
-			endrewards.rewards.push_back(info);
-		}
-		else {
-			endrewards.jobrewards[job].push_back(info);
-		}
-	}
-}
 
 bool Quests::giveItem(Player *player, int32_t itemid, int16_t amount) {
 	//Temp
@@ -88,6 +56,10 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 	int8_t act = packet.get<int8_t>();
 	int16_t questid = packet.get<int16_t>();
 
+	if (!QuestDataProvider::Instance()->isQuest(questid)) {
+		// Hacking
+		return;
+	}
 	if (act == 3) {
 		player->getQuests()->removeQuest(questid);
 		return;

@@ -341,7 +341,7 @@ void InventoryHandler::useItem(Player *player, PacketReader &packet) {
 
 void InventoryHandler::cancelItem(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.get<int32_t>();
-	Buffs::Instance()->endBuff(player, itemid);
+	Buffs::endBuff(player, itemid);
 }
 
 void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
