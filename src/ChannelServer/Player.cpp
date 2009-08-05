@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "Instance.h"
 #include "InventoryHandler.h"
+#include "InventoryPacket.h"
 #include "KeyMaps.h"
 #include "Levels.h"
 #include "LevelsPacket.h"
@@ -128,6 +129,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
 		case RECV_CANCEL_ITEM: InventoryHandler::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
+		case RECV_CASH_BUTTON: unlock("Cash Shop"); break;
 		case RECV_CHAIR_ACTION: InventoryHandler::handleChair(this, packet); break;
 		case RECV_CHANGE_CHANNEL: changeChannel(packet.get<int8_t>()); break;
 		case RECV_CHANGE_MAP: Maps::usePortal(this, packet); break;
@@ -155,6 +157,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_MOVE_ITEM: InventoryHandler::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
+		case RECV_MTS_BUTTON: unlock("MTS"); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
 		case RECV_PARTY_ACTION: PartyFunctions::handleRequest(this, packet); break;
@@ -329,6 +332,11 @@ void Player::playerConnect(PacketReader &packet) {
 	setOnline(true);
 	is_connect = true;
 	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), ip, id, name, map, job, level);
+}
+
+void Player::unlock(const string &source) {
+	PlayerPacket::showMessage(this, "The " + source + " is unavailable.", 5);
+	InventoryPacket::blankUpdate(this);
 }
 
 void Player::setHp(int16_t shp, bool is) {
