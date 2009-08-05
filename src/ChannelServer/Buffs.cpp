@@ -479,24 +479,27 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 }
 
 void Buffs::doAct(Player *player, int32_t skillid, uint8_t level) {
-	SkillInfo skillsinfo = *BuffDataProvider::Instance()->getSkillInfo(skillid);
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
 
-	if (skillsinfo.bact) {
-		int16_t value = getValue(skillsinfo.act.value, skillid, level);
-		player->getActiveBuffs()->addAct(skillid, skillsinfo.act.type, value, skillsinfo.act.time);
+	if (skillsinfo->bact) {
+		int16_t value = getValue(skillsinfo->act.value, skillid, level);
+		player->getActiveBuffs()->addAct(skillid, skillsinfo->act.type, value, skillsinfo->act.time);
 	}
 }
 
 void Buffs::addDebuff(Player *player, uint8_t skillid, uint8_t level) {
+	if (!BuffDataProvider::Instance()->isDebuff(skillid))
+		return;
+
 	int16_t time = SkillDataProvider::Instance()->getMobSkill(skillid, level)->time;
-	MobAilmentInfo mobskillsinfo = *BuffDataProvider::Instance()->getMobSkillInfo(skillid);
+	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillid);
 
 	vector<Buff> buffs = parseMobBuffs(skillid);
 	ActiveBuff playerskill = parseMobBuffInfo(player, skillid, level);
 	ActiveMapBuff mapskill = parseMobBuffMapInfo(player, skillid, level);
 	ActiveMapBuff enterskill = parseMobBuffMapEntryInfo(player, skillid, level);
 
-	BuffsPacket::giveDebuff(player, skillid, level, time, mobskillsinfo.delay, playerskill, mapskill);
+	BuffsPacket::giveDebuff(player, skillid, level, time, mobskillsinfo->delay, playerskill, mapskill);
 
 	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
 	playerbuffs->setActiveSkillLevel(skillid, level);

@@ -110,7 +110,7 @@ void PlayerActiveBuffs::removeAct(int32_t skill) {
 void PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) {
 	if (m_player->getHp() > 0 && !hasHolyShield()) {
 		int32_t maskbit = calculateDebuffMaskBit(skill);
-		if ((m_debuffmask & maskbit) == 0) { // Don't have the debuff, continue processing
+		if (maskbit != 0 && (m_debuffmask & maskbit) == 0) { // Don't have the debuff, continue processing
 			m_debuffmask += maskbit;
 			Buffs::addDebuff(m_player, skill, level);
 		}
