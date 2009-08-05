@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYER_H
 
 #include "AbstractPlayer.h"
-#include "ChannelServer.h"
 #include "MovableLife.h"
 #include "PlayerActiveBuffs.h"
 #include "PlayerBuddyList.h"
@@ -33,8 +32,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerStorage.h"
 #include "PlayerSummons.h"
 #include "PlayerVariables.h"
-#include "Pos.h"
-#include "Quests.h"
 #include "SkillDataProvider.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_set.hpp>

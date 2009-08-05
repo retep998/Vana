@@ -30,9 +30,11 @@ public:
 	void realHandleRequest(PacketReader &packet);
 	void authenticated(int8_t type);
 
-	uint16_t getChannel() { return channel; }
+	uint16_t getChannel() const { return channel; }
+	int8_t getType() const { return type; }
 private:
 	uint16_t channel;
+	int8_t type;
 };
 
 class WorldServerAcceptPlayerFactory : public AbstractPlayerFactory {
