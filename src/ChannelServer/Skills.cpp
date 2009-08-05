@@ -74,6 +74,10 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			player->setSpecialSkill(SpecialSkillInfo());
 			break;
 		default:
+			if (player->getActiveBuffs()->getActiveSkillLevel(skillid) == 0) {
+				// Hacking
+				return;
+			}
 			if (skillid == Jobs::SuperGm::Hide) { // GM Hide
 				MapPacket::showPlayer(player);
 				GmPacket::endHide(player);
