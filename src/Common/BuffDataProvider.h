@@ -82,6 +82,7 @@ public:
 	void addItemInfo(int32_t itemid, const ConsumeInfo &cons);
 
 	bool isBuff(int32_t skillid) { return (skillsinfo.find(skillid) != skillsinfo.end()); }
+	bool isDebuff(uint8_t skillid) { return (mobskillsinfo.find(skillid) != mobskillsinfo.end()); }
 	SkillInfo * getSkillInfo(int32_t skillid) { return &skillsinfo[skillid]; }
 	MobAilmentInfo * getMobSkillInfo(uint8_t skillid) { return (mobskillsinfo.find(skillid) != mobskillsinfo.end() ? &mobskillsinfo[skillid] : 0); }
 private:
