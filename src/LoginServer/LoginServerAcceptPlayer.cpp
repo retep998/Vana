@@ -44,10 +44,15 @@ void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 }
 
 void LoginServerAcceptPlayer::authenticated(int8_t type) {
-	if (type == InterWorldServer)
-		Worlds::connectWorldServer(this);
-	else if (type == InterChannelServer)
-		Worlds::connectChannelServer(this);
-	else
-		getSession()->disconnect();
+	this->type = type;
+	switch (type) {
+		case InterWorldServer:
+			Worlds::connectWorldServer(this);
+			break;
+		case InterChannelServer:
+			Worlds::connectChannelServer(this);
+			break;
+		default:
+			getSession()->disconnect();
+	}
 }
