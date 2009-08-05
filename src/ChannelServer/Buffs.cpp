@@ -74,10 +74,10 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 	ActiveBuff playerskill;
 	BuffInfo cur;
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
-	SkillInfo skillsinfo = *BuffDataProvider::Instance()->getSkillInfo(skillid);
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
 
-	for (size_t i = 0; i < skillsinfo.player.size(); i++) {
-		cur = skillsinfo.player[i];
+	for (size_t i = 0; i < skillsinfo->player.size(); i++) {
+		cur = skillsinfo->player[i];
 		int8_t val = cur.buff.value;
 		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) // Cancel speed change for maxed dark sight
 			continue;
@@ -129,13 +129,13 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t l
 	BuffInfo cur;
 	BuffMapInfo map;
 	int32_t maps = 0;
-	SkillInfo skillsinfo = *BuffDataProvider::Instance()->getSkillInfo(skillid);
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
 
-	for (size_t i = 0; i < skillsinfo.player.size(); i++) {
-		cur = skillsinfo.player[i];
+	for (size_t i = 0; i < skillsinfo->player.size(); i++) {
+		cur = skillsinfo->player[i];
 		if (!cur.hasmapval)
 			continue;
-		map = skillsinfo.map[maps++];
+		map = skillsinfo->map[maps++];
 		int8_t val = map.buff.value;
 		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
@@ -171,14 +171,14 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 	BuffInfo cur;
 	BuffMapInfo map;
 	int8_t mapctr = 0;
-	SkillInfo skillsinfo = *BuffDataProvider::Instance()->getSkillInfo(skillid);
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
 
-	for (size_t i = 0; i < skillsinfo.player.size(); i++) {
-		cur = skillsinfo.player[i];
+	for (size_t i = 0; i < skillsinfo->player.size(); i++) {
+		cur = skillsinfo->player[i];
 		if (!cur.hasmapentry) {
 			continue;
 		}
-		map = skillsinfo.map[mapctr++];
+		map = skillsinfo->map[mapctr++];
 		int8_t val = map.buff.value;
 		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
@@ -211,10 +211,10 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 
 vector<Buff> Buffs::parseBuffs(int32_t skillid, uint8_t level) {
 	vector<Buff> ret;
-	SkillInfo skillsinfo = *BuffDataProvider::Instance()->getSkillInfo(skillid);
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
 
-	for (size_t i = 0; i < skillsinfo.player.size(); i++) {
-		BuffInfo cur = skillsinfo.player[i];
+	for (size_t i = 0; i < skillsinfo->player.size(); i++) {
+		BuffInfo cur = skillsinfo->player[i];
 		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && cur.buff.value == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
 		}
@@ -226,10 +226,10 @@ vector<Buff> Buffs::parseBuffs(int32_t skillid, uint8_t level) {
 ActiveBuff Buffs::parseMobBuffInfo(Player *player, uint8_t skillid, uint8_t level) {
 	ActiveBuff playerskill;
 	BuffInfo cur;
-	MobAilmentInfo mobskillsinfo = *BuffDataProvider::Instance()->getMobSkillInfo(skillid);
+	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillid);
 
-	for (size_t i = 0; i < mobskillsinfo.mob.size(); i++) {
-		cur = mobskillsinfo.mob[i];
+	for (size_t i = 0; i < mobskillsinfo->mob.size(); i++) {
+		cur = mobskillsinfo->mob[i];
 		int8_t val = cur.buff.value;
 		playerskill.types[cur.buff.byte] += cur.buff.type;
 		playerskill.hasmapbuff = true;
@@ -242,10 +242,10 @@ ActiveBuff Buffs::parseMobBuffInfo(Player *player, uint8_t skillid, uint8_t leve
 ActiveMapBuff Buffs::parseMobBuffMapInfo(Player *player, uint8_t skillid, uint8_t level) {
 	ActiveMapBuff mapskill;
 	BuffInfo cur;
-	MobAilmentInfo mobskillsinfo = *BuffDataProvider::Instance()->getMobSkillInfo(skillid);
+	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillid);
 
-	for (size_t i = 0; i < mobskillsinfo.mob.size(); i++) {
-		cur = mobskillsinfo.mob[i];
+	for (size_t i = 0; i < mobskillsinfo->mob.size(); i++) {
+		cur = mobskillsinfo->mob[i];
 		int8_t val = cur.buff.value;
 		mapskill.bytes.push_back(cur.buff.byte);
 		mapskill.types.push_back(cur.buff.type);
@@ -260,10 +260,10 @@ ActiveMapBuff Buffs::parseMobBuffMapInfo(Player *player, uint8_t skillid, uint8_
 ActiveMapBuff Buffs::parseMobBuffMapEntryInfo(Player *player, uint8_t skillid, uint8_t level) {
 	ActiveMapBuff mapskill;
 	BuffInfo cur;
-	MobAilmentInfo mobskillsinfo = *BuffDataProvider::Instance()->getMobSkillInfo(skillid);
+	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillid);
 
-	for (size_t i = 0; i < mobskillsinfo.mob.size(); i++) {
-		cur = mobskillsinfo.mob[i];
+	for (size_t i = 0; i < mobskillsinfo->mob.size(); i++) {
+		cur = mobskillsinfo->mob[i];
 		int8_t val = cur.buff.value;
 		mapskill.bytes.push_back(cur.buff.byte);
 		mapskill.types.push_back(cur.buff.type);
