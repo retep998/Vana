@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "Connectable.h"
 #include "DropDataProvider.h"
+#include "InventoryPacket.h"
 #include "ItemDataProvider.h"
 #include "MapDataProvider.h"
 #include "MapleSession.h"
@@ -83,10 +84,16 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 	if (!ccPlayer) {
 		return;
 	}
-	ccPlayer->setOnline(0); // Set online to 0 BEFORE CC packet is sent to player
-	PlayerPacket::changeChannel(ccPlayer, ip, port);
-	ccPlayer->saveAll(true);
-	ccPlayer->setSaveOnDc(false);
+	if (ip == 0) {
+		PlayerPacket::showMessage(ccPlayer, "That server is not available at this time. Try again later.", 5);
+		InventoryPacket::blankUpdate(ccPlayer);
+	}
+	else {
+		ccPlayer->setOnline(0); // Set online to 0 BEFORE CC packet is sent to player
+		PlayerPacket::changeChannel(ccPlayer, ip, port);
+		ccPlayer->saveAll(true);
+		ccPlayer->setSaveOnDc(false);
+	}
 }
 
 void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
