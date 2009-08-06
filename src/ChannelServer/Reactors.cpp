@@ -88,7 +88,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 			else {
 				string filename = ScriptDataProvider::Instance()->getReactorScript(reactor->getReactorId());
 
-				if (!FileUtilities::fileExists(filename)) { // Script found
+				if (FileUtilities::fileExists(filename)) { // Script found
 					LuaReactor(filename, player->getId(), id, reactor->getMapId());
 				}
 				else { // Default action of dropping an item
