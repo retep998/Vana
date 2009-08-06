@@ -1,4 +1,5 @@
 #include "PlayerStats.h"
+#include "ChannelServer.h"
 #include "Database.h"
 #include "GameConstants.h"
 #include "Instance.h"
