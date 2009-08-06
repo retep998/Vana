@@ -39,8 +39,6 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 	int8_t inv = packet.get<int8_t>();
 	int16_t slot1 = packet.get<int16_t>();
 	int16_t slot2 = packet.get<int16_t>();
-	if (inv < Inventories::EquipInventory || inv > Inventories::CashInventory)
-		return;
 	if (slot2 == 0) {
 		int16_t amount = packet.get<int16_t>();
 		Item *item = player->getInventory()->getItem(inv, slot1);
