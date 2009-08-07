@@ -149,7 +149,7 @@ elseif (getJobLine() == 4 and getJobTrack() > 0) then
 		sendNext();
 
 		addText("If you are using throwing-stars, skills like #bKeen Eyes#k or #bLucky Seven#k are perfect. Lucky Seven ");
-		addText("allows you to throw multiple throwing-stars at once, so it'll help you greatly in hunting down enemies."):
+		addText("allows you to throw multiple throwing-stars at once, so it'll help you greatly in hunting down enemies.");
 		sendBackNext();
 
 		addText("If you are using daggers choose #bDisorder#k or #bDouble Stab#k as skills. Double Stab, in fact, will be ");
