@@ -203,31 +203,21 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		int32_t playerrate = 100;
 		if (player->getParty() != 0 && !drop->isPlayerDrop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
-			playerrate = 60;
-			vector<Player *> members;
-			for (int8_t i = 0; i < player->getParty()->getMembersCount(); i++) {
-				if (Player *test = player->getParty()->getMemberByIndex(i)) {
-					if (test != player && test->getMap() == player->getMap()) {
-						members.push_back(test);
-					}
-				}
-			}
-			if (members.size() == 0) {
-				playerrate = 100;
-			}
-			else {
-				if (!player->getInventory()->modifyMesos(drop->getObjectId() * playerrate / 100, true))
+			vector<Player *> members = player->getParty()->getPartyMembers(player->getMap());
+			if (members.size() != 0) {
+				playerrate = 60;
+				if (!player->getInventory()->modifyMesos(drop->getObjectId() * playerrate / 100))
 					return;
 
 				int32_t memberrate = 40 / members.size();
 				for (uint8_t j = 0; j < members.size(); j++) {
-					if (members[j]->getInventory()->modifyMesos(drop->getObjectId() * memberrate / 100, true)) {
+					if (members[j]->getInventory()->modifyMesos(drop->getObjectId() * memberrate / 100)) {
 						DropsPacket::takeNote(members[j], drop->getObjectId(), true, 0);
 					}
 				}
 			}
 		}
-		if (playerrate == 100 && player->getInventory()->modifyMesos(drop->getObjectId() * playerrate / 100, true))
+		if (playerrate == 100 && player->getInventory()->modifyMesos(drop->getObjectId()))
 			DropsPacket::takeNote(player, drop->getObjectId(), true, 0);
 		else
 			return;
