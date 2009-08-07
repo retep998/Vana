@@ -290,11 +290,9 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		}
 		case Jobs::Beginner::EchoOfHero:
 		case Jobs::Noblesse::EchoOfHero:
-		case Jobs::SuperGm::HealPlusDispel:
 		case Jobs::SuperGm::Haste:
 		case Jobs::SuperGm::HolySymbol:
 		case Jobs::SuperGm::Bless:
-		case Jobs::SuperGm::Resurrection:
 		case Jobs::SuperGm::HyperBody: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
@@ -304,13 +302,34 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					Buffs::addBuff(target, skillid, level, addedinfo);
-					if (skillid == Jobs::SuperGm::Resurrection && target->getHp() <= 0)
-						target->setHp(target->getMHp());
-					else if (skillid == Jobs::SuperGm::HealPlusDispel && target->getHp() > 0) {
-						target->setHp(target->getMHp());
-						target->setMp(target->getMMp());
-						target->getActiveBuffs()->useDispel();
-					}
+				}
+			}
+			break;
+		}
+		case Jobs::SuperGm::HealPlusDispel: {
+			uint8_t players = packet.get<int8_t>();
+			for (uint8_t i = 0; i < players; i++) {
+				int32_t playerid = packet.get<int32_t>();
+				Player *target = Players::Instance()->getPlayer(playerid);
+				if (target != 0 && target != player && target->getHp() > 0) { // ???
+					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(target, skillid, level, direction, true);
+					target->setHp(target->getMHp());
+					target->setMp(target->getMMp());
+					target->getActiveBuffs()->useDispel();
+				}
+			}
+			break;
+		}
+		case Jobs::SuperGm::Resurrection: {
+			uint8_t players = packet.get<int8_t>();
+			for (uint8_t i = 0; i < players; i++) {
+				int32_t playerid = packet.get<int32_t>();
+				Player *target = Players::Instance()->getPlayer(playerid);
+				if (target != 0 && target != player && target->getHp() <= 0) { // ???
+					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(target, skillid, level, direction, true);
+					target->setHp(target->getMHp());
 				}
 			}
 			break;
