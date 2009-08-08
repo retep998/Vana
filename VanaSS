@@ -1,0 +1,130 @@
+#!/bin/sh
+me=$$
+channelServers=1
+
+checkPid() {
+	TEST_RUNNING=`ps -p $2 | grep $2`
+	if [ -z "${TEST_RUNNING}" ]; then
+		echo "FAILED"
+	else
+		echo "DONE"
+		echo $1":" $2 >> runtime.pid
+	fi
+}
+
+start() {
+	echo -n > runtime.pid
+	
+	date >> runtime.log
+	
+	start_loginserver
+	start_worldserver
+	for (( i=0; i<${channelServers}; i++ ))
+	do
+		start_channelserver;
+	done
+	
+	echo $me > runtime.lock
+	
+	check;
+}
+
+start_loginserver() {
+	echo -n "Starting LoginServer ...  "
+	./bin/LoginServer >> runtime.log &
+	LoginServer=$!
+	sleep 1
+	checkPid LoginServer ${LoginServer};
+}
+
+start_worldserver() {
+	echo -n "Starting WorldServer ...  "
+	./bin/WorldServer >> runtime.log &
+	WorldServer=$!
+	sleep 1
+	checkPid WorldServer ${WorldServer};
+}
+
+start_channelserver() {
+	echo -n "Starting ChannelServer ...  "
+	./bin/ChannelServer >> runtime.log &
+	ChannelServer=$!
+	sleep 1
+	checkPid ChannelServer ${ChannelServer};
+}
+
+check() {
+	for (( ; ; ))
+	do
+		loginserver=`cat runtime.pid | grep 'LoginServer' | awk {'print $2'}`
+		TEST_LOGINSERVER=`ps -p $loginserver| grep $loginserver`
+		
+		if [ -z "${TEST_LOGINSERVER}" ]; then
+			start
+		else
+			worldserver=`cat runtime.pid | grep 'WorldServer' | awk {'print $2'}`
+			TEST_WS=`ps -p $worldserver| grep $worldserver`
+
+			if [ -z "${TEST_WS}" ]; then
+				sed -i '/WorldServer:/ d' runtime.pid
+				start_worldserver
+				
+				sed -i '/ChannelServer:/ d' runtime.pid
+				for (( i=0; i<${channelServers}; i++ ))
+				do
+					start_channelserver;
+				done
+			else
+				servers=`cat runtime.pid | grep 'ChannelServer' | awk {'print $2'}`
+				for i in ${servers}
+				do
+					TEST_RUNNING=`ps -p $i | grep $i`
+					if [ -z "${TEST_RUNNING}" ]; then
+						sed -i '/'$i'/ d' runtime.pid
+						start_channelserver
+					fi
+				done
+			fi
+		fi
+		sleep 3
+	done
+}
+
+case "$1" in
+	start)
+		if [ -e runtime.lock ]; then
+			echo "Server is running!"
+			exit
+		fi
+		
+		start;
+		check;
+		;;
+
+
+	stop)
+		myself=`cat runtime.lock`
+		kill -9 $myself
+		pids=`cat runtime.pid | awk {'print $2'}`
+		kill -9 $pids
+		rm -f runtime.lock
+		;;
+
+	restart)
+		$0 stop
+		$0 start
+		;;
+
+	status)
+		echo -n "Server is "
+		if [ -e runtime.lock ]; then
+			echo "running "
+				else
+			echo "not running ]:"
+		fi
+		;;
+
+	*)
+		echo "Usage VanaSS {start|stop|restart|status}"
+		;;
+esac
