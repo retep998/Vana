@@ -201,36 +201,48 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	}
 	if (drop->isMesos()) {
 		int32_t playerrate = 100;
+		int32_t mesos = drop->getObjectId();
 		if (player->getParty() != 0 && !drop->isPlayerDrop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
-			playerrate = 60;
-			vector<Player *> members;
-			for (int8_t i = 0; i < player->getParty()->getMembersCount(); i++) {
-				if (Player *test = player->getParty()->getMemberByIndex(i)) {
-					if (test != player && test->getMap() == player->getMap()) {
-						members.push_back(test);
-					}
-				}
-			}
-			if (members.size() == 0) {
-				playerrate = 100;
-			}
-			else {
-				if (!player->getInventory()->modifyMesos(drop->getObjectId() * playerrate / 100, true))
-					return;
+			vector<Player *> members = player->getParty()->getPartyMembers(player->getMap());
+			if (members.size() != 1) {
+				playerrate = 60;
+				mesos = mesos * playerrate / 100;
 
-				int32_t memberrate = 40 / members.size();
+				if (player->getInventory()->modifyMesos(mesos, true)) {
+					DropsPacket::takeNote(player, mesos, true, 0);
+				}
+				else {
+					DropsPacket::dontTake(player);
+					return;
+				}
+
+				playerrate = 40 / (members.size() - 1);
+				mesos = drop->getObjectId() * playerrate / 100;
+				Player *p = 0;
+
 				for (uint8_t j = 0; j < members.size(); j++) {
-					if (members[j]->getInventory()->modifyMesos(drop->getObjectId() * memberrate / 100, true)) {
-						DropsPacket::takeNote(members[j], drop->getObjectId(), true, 0);
+					p = members[j];
+					if (p != player) {
+						if (p->getInventory()->modifyMesos(mesos, true)) {
+							DropsPacket::takeNote(p, mesos, true, 0);
+						}
+						else {
+							DropsPacket::dontTake(p);
+						}
 					}
 				}
 			}
 		}
-		if (playerrate == 100 && player->getInventory()->modifyMesos(drop->getObjectId() * playerrate / 100, true))
-			DropsPacket::takeNote(player, drop->getObjectId(), true, 0);
-		else
-			return;
+		if (playerrate == 100) {
+			if (player->getInventory()->modifyMesos(mesos, true)) {
+				DropsPacket::takeNote(player, drop->getObjectId(), true, 0);
+			}
+			else {
+				DropsPacket::dontTake(player);
+				return;
+			}
+		}
 	}
 	else {
 		Item dropitem = drop->getItem();

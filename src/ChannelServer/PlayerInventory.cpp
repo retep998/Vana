@@ -270,6 +270,8 @@ void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item, bool initial
 }
 
 Item * PlayerInventory::getItem(int8_t inv, int16_t slot) {
+	if (!GameLogicUtilities::isValidInventory(inv))
+		return 0;
 	inv -= 1;
 	if (m_items[inv].find(slot) != m_items[inv].end())
 		return m_items[inv][slot];

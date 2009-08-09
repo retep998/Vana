@@ -83,10 +83,15 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 	if (!ccPlayer) {
 		return;
 	}
-	ccPlayer->setOnline(0); // Set online to 0 BEFORE CC packet is sent to player
-	PlayerPacket::changeChannel(ccPlayer, ip, port);
-	ccPlayer->saveAll(true);
-	ccPlayer->setSaveOnDc(false);
+	if (ip == 0) {
+		ccPlayer->unlock("channel");
+	}
+	else {
+		ccPlayer->setOnline(0); // Set online to 0 BEFORE CC packet is sent to player
+		PlayerPacket::changeChannel(ccPlayer, ip, port);
+		ccPlayer->saveAll(true);
+		ccPlayer->setSaveOnDc(false);
+	}
 }
 
 void WorldServerConnectHandler::findPlayer(PacketReader &packet) {

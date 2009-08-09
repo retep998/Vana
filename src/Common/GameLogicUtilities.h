@@ -40,6 +40,7 @@ namespace GameLogicUtilities {
 	inline bool is2hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 14); }
 	inline bool is1hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 13); }
 	inline bool isMount(int32_t itemid) { return (getItemType(itemid) == Mount); }
+	inline bool isValidInventory(int8_t inv) { return (inv > 0 && inv <= Inventories::InventoryCount); }
 
 	// Player skills
 	inline bool isBeginnerSkill(int32_t skillid) { return ((skillid / 1000000) == (skillid < 10000000 ? 0 : 10)); }

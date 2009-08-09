@@ -73,6 +73,10 @@ void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 			player->setSpecialSkill(SpecialSkillInfo());
 			break;
 		default:
+			if (player->getActiveBuffs()->getActiveSkillLevel(skillid) == 0) {
+				// Hacking
+				return;
+			}
 			if (skillid == Jobs::SuperGm::Hide) { // GM Hide
 				MapPacket::showPlayer(player);
 				GmPacket::endHide(player);
@@ -295,11 +299,9 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Beginner::EchoOfHero:
-		case Jobs::SuperGm::HealPlusDispel:
 		case Jobs::SuperGm::Haste:
 		case Jobs::SuperGm::HolySymbol:
 		case Jobs::SuperGm::Bless:
-		case Jobs::SuperGm::Resurrection:
 		case Jobs::SuperGm::HyperBody: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
@@ -309,13 +311,34 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					Buffs::addBuff(target, skillid, level, addedinfo);
-					if (skillid == Jobs::SuperGm::Resurrection && target->getStats()->getHp() <= 0)
-						target->getStats()->setHp(target->getStats()->getMHp());
-					else if (skillid == Jobs::SuperGm::HealPlusDispel && target->getStats()->getHp() > 0) {
-						target->getStats()->setHp(target->getStats()->getMHp());
-						target->getStats()->setMp(target->getStats()->getMMp());
-						target->getActiveBuffs()->useDispel();
-					}
+				}
+			}
+			break;
+		}
+		case Jobs::SuperGm::HealPlusDispel: {
+			uint8_t players = packet.get<int8_t>();
+			for (uint8_t i = 0; i < players; i++) {
+				int32_t playerid = packet.get<int32_t>();
+				Player *target = Players::Instance()->getPlayer(playerid);
+				if (target != 0 && target != player && target->getStats()->getHp() > 0) { // ???
+					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(target, skillid, level, direction, true);
+					target->getStats()->setHp(target->getStats()->getMHp());
+					target->getStats()->setMp(target->getStats()->getMMp());
+					target->getActiveBuffs()->useDispel();
+				}
+			}
+			break;
+		}
+		case Jobs::SuperGm::Resurrection: {
+			uint8_t players = packet.get<int8_t>();
+			for (uint8_t i = 0; i < players; i++) {
+				int32_t playerid = packet.get<int32_t>();
+				Player *target = Players::Instance()->getPlayer(playerid);
+				if (target != 0 && target != player && target->getStats()->getHp() <= 0) { // ???
+					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
+					SkillsPacket::showSkill(target, skillid, level, direction, true);
+					target->getStats()->setHp(target->getStats()->getMHp());
 				}
 			}
 			break;

@@ -593,8 +593,11 @@ int LuaExports::getOpenSlots(lua_State *luaVm) {
 }
 
 int LuaExports::giveItem(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, -2);
-	int16_t amount = lua_tointeger(luaVm, -1);
+	int32_t itemid = lua_tointeger(luaVm, 1);
+	int16_t amount = 1;
+	if (lua_isnumber(luaVm, 2)) {
+		amount = lua_tointeger(luaVm, 2);
+	}
 	bool success = Quests::giveItem(getPlayer(luaVm), itemid, amount);
 	lua_pushboolean(luaVm, success);
 	return 1;
