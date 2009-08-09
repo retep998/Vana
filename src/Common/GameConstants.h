@@ -1066,6 +1066,7 @@ namespace Items {
 		MapleTvMessenger = 5075000,
 		MapleTvStarMessenger = 5075001,
 		MapleTvHeartMessenger = 5075002,
+		SafetyCharm = 5130000,
 		PetNameTag = 5170000,
 		FungusScroll = 5300000,
 		OinkerDelight = 5300001,

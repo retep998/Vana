@@ -260,3 +260,13 @@ void InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) {
 	packet.add<int8_t>(type);
 	player->getSession()->send(packet);
 }
+
+void InventoryPacket::useCharm(Player *player, uint8_t charmsleft, uint8_t daysleft) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_GAIN_ITEM);
+	packet.add<int8_t>(0x06);
+	packet.add<int8_t>(0x01);
+	packet.add<uint8_t>(charmsleft);
+	packet.add<uint8_t>(daysleft);
+	player->getSession()->send(packet);
+}
