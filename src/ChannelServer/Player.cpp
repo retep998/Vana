@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Instance.h"
+#include "Inventory.h"
 #include "InventoryHandler.h"
 #include "InventoryPacket.h"
 #include "KeyMaps.h"
@@ -740,6 +741,15 @@ void Player::setBuddyListSize(uint8_t size) {
 
 void Player::loseExp() {
 	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < Levels::getMaxLevel(getJob()) && getMap() != Maps::SorcerersRoom) {
+		uint16_t charms = getInventory()->getItemAmount(Items::SafetyCharm);
+		if (charms > 0) {
+			Inventory::takeItem(this, Items::SafetyCharm, 1);
+			charms--;
+			if (charms > 0xFF)
+				charms = 0xFF;
+			InventoryPacket::useCharm(this, static_cast<uint8_t>(charms));
+			return;
+		}
 		Map *loc = Maps::getMap(getMap());
 		int8_t exploss = 10;
 		if ((loc->getInfo()->fieldLimit & FieldLimitBits::RegularExpLoss) != 0 || loc->getInfo()->town)
