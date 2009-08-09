@@ -155,7 +155,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_MOVE_ITEM: InventoryHandler::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
-	//	case RECV_MTS_BUTTON: unlock("MTS"); break;
+		case RECV_MTS_BUTTON: unlock("MTS"); break;
 		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
 		case RECV_PARTY_ACTION: PartyFunctions::handleRequest(this, packet); break;
