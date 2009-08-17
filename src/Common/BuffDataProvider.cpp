@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
 #include <iostream>
+#include <iomanip>
 
 using Initializing::outputWidth;
 
