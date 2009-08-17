@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 #include <cstdio>
 #include <iostream>
+#include <iomanip>
 
 void Initializing::loadData() {
 	BuffDataProvider::Instance()->loadData();
