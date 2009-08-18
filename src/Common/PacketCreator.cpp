@@ -24,13 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tokenizer.hpp>
 
 PacketCreator::PacketCreator() : 
-pos(0),
-packet(new unsigned char[bufferLen]),
-packetCapacity(bufferLen)
+m_pos(0),
+m_packet(new unsigned char[bufferLen]),
+m_packetCapacity(bufferLen)
 {
 }
 
-void PacketCreator::addPos(Pos pos) {
+void PacketCreator::addPos(const Pos &pos) {
 	add<int16_t>(pos.x);
 	add<int16_t>(pos.y);
 }
@@ -69,11 +69,11 @@ void PacketCreator::addString(const string &str, size_t len) {
 	if (len < slen) {
 		std::cout << "ERROR: addString used with length shorter than string size." << std::endl; // TODO: Throw exception
 	}
-	strncpy((char *) getBuffer(pos, len), str.c_str(), slen);
+	strncpy((char *) getBuffer(m_pos, len), str.c_str(), slen);
 	for (size_t i = slen; i < len; i++) {
-		packet[pos + i] = 0;
+		m_packet[m_pos + i] = 0;
 	}
-	pos += len;
+	m_pos += len;
 }
 
 void PacketCreator::addString(const string &str) {
@@ -83,14 +83,14 @@ void PacketCreator::addString(const string &str) {
 }
 
 unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {
-	if (packetCapacity < pos + len) { // Buffer is not large enough
-		while (packetCapacity < pos + len) {
-			packetCapacity *= 2; // Double the capacity each time the buffer is full
+	if (m_packetCapacity < pos + len) { // Buffer is not large enough
+		while (m_packetCapacity < pos + len) {
+			m_packetCapacity *= 2; // Double the capacity each time the buffer is full
 		}
-		unsigned char *newBuffer = new unsigned char[packetCapacity];
-		memcpy(newBuffer, packet.get(), pos);
-		packet.reset(newBuffer);	
+		unsigned char *newBuffer = new unsigned char[m_packetCapacity];
+		memcpy(newBuffer, m_packet.get(), pos);
+		m_packet.reset(newBuffer);	
 	}
 
-	return packet.get() + pos;
+	return m_packet.get() + pos;
 }

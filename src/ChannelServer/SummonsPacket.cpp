@@ -43,7 +43,7 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 		Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void SummonsPacket::moveSummon(Player *player, Summon *summon, Pos &startPos, unsigned char *buf, int32_t buflen) {
+void SummonsPacket::moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t buflen) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_SUMMON);
 	packet.add<int32_t>(player->getId());
