@@ -26,7 +26,7 @@ struct Pos;
 
 namespace SummonsPacket {
 	void showSummon(Player *player, Summon *summon, bool animated, Player *toplayer = 0);
-	void moveSummon(Player *player, Summon *summon, Pos &startPos, unsigned char *buf, int32_t buflen);
+	void moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t buflen);
 	void removeSummon(Player *player, Summon *summon, bool animated);
 	void damageSummon(Player *player, int32_t summonid, int8_t notsure, int32_t damage, int32_t mobid);
 };

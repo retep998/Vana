@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "Skills.h"
 
-void SkillsPacket::addSkill(Player *player, int32_t skillid, PlayerSkillInfo skillinfo) {
+void SkillsPacket::addSkill(Player *player, int32_t skillid, const PlayerSkillInfo &skillinfo) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_ADD_SKILL);
 	packet.add<int8_t>(1);
@@ -118,7 +118,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t leve
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // Hurricane, Pierce, Big Bang, Monster Magnet
+void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info) { // Hurricane, Pierce, Big Bang, Monster Magnet
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
@@ -131,7 +131,7 @@ void SkillsPacket::showSpecialSkill(Player *player, SpecialSkillInfo info) { // 
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void SkillsPacket::endSpecialSkill(Player *player, SpecialSkillInfo info) {
+void SkillsPacket::endSpecialSkill(Player *player, const SpecialSkillInfo &info) {
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;

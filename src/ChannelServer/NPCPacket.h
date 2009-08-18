@@ -25,8 +25,8 @@ class PacketReader;
 struct NPCSpawnInfo;
 
 namespace NPCPacket {
-	void showNPC(Player *player, NPCSpawnInfo npc, int32_t i, bool show = true);
-	void showNPC(int32_t mapid, NPCSpawnInfo npc, int32_t i, bool show = true);
+	void showNPC(Player *player, const NPCSpawnInfo &npc, int32_t i, bool show = true);
+	void showNPC(int32_t mapid, const NPCSpawnInfo &npc, int32_t i, bool show = true);
 	void animateNPC(Player *player, PacketReader &pack);
 };
 

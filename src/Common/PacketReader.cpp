@@ -18,15 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Pos.h"
 
-PacketReader::PacketReader() : length(0), pos(0) { }
-PacketReader::PacketReader(unsigned char *buffer, size_t length) : buffer(buffer), length(length), pos(0) { }
+PacketReader::PacketReader() : m_length(0), m_pos(0) { }
+PacketReader::PacketReader(unsigned char *buffer, size_t length) : m_buffer(buffer), m_length(length), m_pos(0) { }
 
 void PacketReader::skipBytes(int32_t len) {
-	pos += len;
+	m_pos += len;
 }
 
 int16_t PacketReader::getHeader() {
-	return (*(int16_t *)(buffer));
+	return (*(int16_t *)(m_buffer));
 }
 
 string PacketReader::getString() {
@@ -34,25 +34,25 @@ string PacketReader::getString() {
 }
 
 string PacketReader::getString(size_t len) {
-	string s((char *) buffer + pos, len);
-	pos += len;
+	string s((char *) m_buffer + m_pos, len);
+	m_pos += len;
 	return s;
 }
 
 unsigned char * PacketReader::getBuffer() {
-	return buffer + pos;
+	return m_buffer + m_pos;
 }
 
 size_t PacketReader::getBufferLength() {
-	return length - pos;
+	return m_length - m_pos;
 }
 
 PacketReader & PacketReader::reset(int32_t len) {
 	if (len >= 0) {
-		pos = len;
+		m_pos = len;
 	}
 	else {
-		pos = length + len; // In this case, len is negative here so we take the total length and plus (minus) it by len
+		m_pos = m_length + len; // In this case, len is negative here so we take the total length and plus (minus) it by len
 	}
 
 	return *this;

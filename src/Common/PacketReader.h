@@ -43,15 +43,15 @@ public:
 
 	PacketReader & reset(int32_t len = 0);
 private:
-	unsigned char *buffer;
-	size_t length;
-	size_t pos;
+	unsigned char *m_buffer;
+	size_t m_length;
+	size_t m_pos;
 };
 
 template<typename T>
 T PacketReader::get() {
-	T val = (*(T *)(buffer + pos));
-	pos += sizeof(T);
+	T val = (*(T *)(m_buffer + m_pos));
+	m_pos += sizeof(T);
 	return val;
 }
 

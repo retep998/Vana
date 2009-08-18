@@ -39,7 +39,7 @@ public:
 	void set(T value, size_t pos);
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
-	void addPos(Pos pos); // Positions
+	void addPos(const Pos &pos); // Positions
 	void addBytes(const char *hex);
 	void addBuffer(const unsigned char *bytes, size_t len);
 	void addBuffer(PacketCreator &packet);
@@ -52,15 +52,15 @@ private:
 
 	unsigned char * getBuffer(size_t pos, size_t len);
 
-	size_t pos;
-	shared_array<unsigned char> packet;
-	size_t packetCapacity;
+	size_t m_pos;
+	shared_array<unsigned char> m_packet;
+	size_t m_packetCapacity;
 };
 
 template <typename T>
 void PacketCreator::add(T value) {
-	(*(T *) getBuffer(pos, sizeof(T))) = value;
-	pos += sizeof(T);
+	(*(T *) getBuffer(m_pos, sizeof(T))) = value;
+	m_pos += sizeof(T);
 }
 
 template <typename T>
@@ -70,18 +70,18 @@ void PacketCreator::set(T value, size_t pos) {
 
 inline
 const unsigned char * PacketCreator::getBuffer() const {
-	return packet.get();
+	return m_packet.get();
 }
 
 inline
 void PacketCreator::addBuffer(const unsigned char *bytes, size_t len) {
-	memcpy(getBuffer(pos, len), bytes, len);
-	pos += len;
+	memcpy(getBuffer(m_pos, len), bytes, len);
+	m_pos += len;
 }
 
 inline
 size_t PacketCreator::getSize() const {
-	return pos;
+	return m_pos;
 }
 
 #endif

@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i, bool show) {
+void NPCPacket::showNPC(Player *player, const NPCSpawnInfo &npc, int32_t i, bool show) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_NPC);
 	packet.add<int32_t>(i + 0x64);
@@ -50,7 +50,7 @@ void NPCPacket::showNPC(Player *player, NPCSpawnInfo npc, int32_t i, bool show) 
 	player->getSession()->send(packet);
 }
 
-void NPCPacket::showNPC(int32_t mapid, NPCSpawnInfo npc, int32_t i, bool show) {
+void NPCPacket::showNPC(int32_t mapid, const NPCSpawnInfo &npc, int32_t i, bool show) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_NPC);
 	packet.add<int32_t>(i + 0x64);
