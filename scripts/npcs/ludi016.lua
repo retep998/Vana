@@ -24,10 +24,10 @@ if getItemAmount(4001020) >= 1 then
 	what = askChoice();
 	
 	if what == 0 then
-		map = 221022900
+		map = 221022900;
 		addText("You can use #b#t4001020##k to activate #b#p2040026##k. Will you teleport to #b#p2040025##k at the 71st floor?");
 	elseif what == 1 then
-		map = 221020000
+		map = 221020000;
 		addText("You can use #b#t4001020##k to activate #b#p2040026##k. Will you teleport to #b#p2040027##k at the 1st floor?");
 	end
 	yes = askYesNo();
