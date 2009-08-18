@@ -574,6 +574,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\NPCHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerHandler.cpp"
 					>
 				</File>
@@ -965,6 +969,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MovementHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\NPCHandler.h"
 					>
 				</File>
 				<File

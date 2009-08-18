@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "MapPacket.h"
 #include "Mob.h"
+#include "NPCHandler.h"
 #include "NPCs.h"
 #include "Party.h"
 #include "Player.h"
@@ -411,7 +412,7 @@ int LuaExports::runNPC(lua_State *luaVm) {
 
 int LuaExports::showShop(lua_State *luaVm) {
 	int32_t shopid = lua_tointeger(luaVm, -1);
-	Inventory::showShop(getPlayer(luaVm), shopid);
+	NpcHandler::showShop(getPlayer(luaVm), shopid);
 	return 0;
 }
 

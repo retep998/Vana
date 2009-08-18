@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "MobHandler.h"
 #include "MonsterBookPacket.h"
+#include "NPCHandler.h"
 #include "NPCs.h"
 #include "PacketReader.h"
 #include "Party.h"
@@ -66,6 +67,7 @@ shop(0),
 item_effect(0),
 chair(0),
 mapchair(0),
+trade_id(0),
 trade_state(false),
 save_on_dc(true),
 is_connect(false),
@@ -121,7 +123,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
 		case RECV_ADD_STAT_MULTI: Levels::addStatMulti(this, packet); break;
-		case RECV_ANIMATE_NPC: NPCs::handleNPCAnimation(this, packet); break;
+		case RECV_ANIMATE_NPC: NpcHandler::handleNPCAnimation(this, packet); break;
 		case RECV_ATTACK_ENERGYCHARGE: PlayerHandler::useEnergyChargeAttack(this, packet); break;
 		case RECV_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, packet); break;
 		case RECV_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, packet); break;
@@ -159,8 +161,8 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
 		case RECV_MTS_BUTTON: unlock("MTS"); break;
-		case RECV_NPC_TALK: NPCs::handleNPC(this, packet); break;
-		case RECV_NPC_TALK_CONT: NPCs::handleNPCIn(this, packet); break;
+		case RECV_NPC_TALK: NpcHandler::handleNPC(this, packet); break;
+		case RECV_NPC_TALK_CONT: NpcHandler::handleNPCIn(this, packet); break;
 		case RECV_PARTY_ACTION: PartyFunctions::handleRequest(this, packet); break;
 		case RECV_PET_CHAT: Pets::handleChat(this, packet); break;
 		case RECV_PET_COMMAND: Pets::handleCommand(this, packet); break;

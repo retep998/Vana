@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quests.h"
 #include "Inventory.h"
-#include "NPCs.h"
+#include "NPCHandler.h"
 #include "Player.h"
 #include "QuestDataProvider.h"
 #include "QuestsPacket.h"
@@ -79,9 +79,9 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 		player->getQuests()->finishQuest(questid, npcid);
 	}
 	else if (act == 4) {
-		NPCs::handleQuestNPC(player, npcid, true, questid);
+		NpcHandler::handleQuestNPC(player, npcid, true, questid);
 	}
 	else if (act == 5) {
-		NPCs::handleQuestNPC(player, npcid, false, questid);
+		NpcHandler::handleQuestNPC(player, npcid, false, questid);
 	}
 }
