@@ -21,26 +21,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaNPC.h"
 #include "Pos.h"
 #include "Types.h"
-#include <string>
-#include <vector>
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/memory.hpp>
+#include <string>
+#include <vector>
 
-using std::string;
-using std::vector;
-using std::tr1::shared_ptr;
 using boost::scoped_ptr;
+using std::string;
+using std::tr1::shared_ptr;
+using std::vector;
 
-class Player;
 class PacketCreator;
-class PacketReader;
-
-namespace NPCs {
-	void handleNPC(Player *player, PacketReader &packet);
-	void handleQuestNPC(Player *player, int32_t npcid, bool start, int16_t questid = 0);
-	void handleNPCIn(Player *player, PacketReader &packet);
-	void handleNPCAnimation(Player *player, PacketReader &packet);
-};
+class Player;
 
 class NPC {
 public:

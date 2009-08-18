@@ -22,13 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
 #include "MonsterBookPacket.h"
-#include "PacketCreator.h"
 #include "Pets.h"
 #include "PetsPacket.h"
 #include "Player.h"
 #include "PlayerMonsterBook.h"
 #include "Randomizer.h"
-#include "ShopDataProvider.h"
 #include "SkillDataProvider.h"
 
 int16_t Inventory::addItem(Player *player, Item *item, bool is) {
@@ -191,15 +189,4 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 			Buffs::addBuff(player, itemid, item.cons.time);
 		}
 	}
-}
-
-bool Inventory::showShop(Player *player, int32_t shopid) {
-	if (ShopDataProvider::Instance()->isShop(shopid)) {
-		PacketCreator p;
-		ShopDataProvider::Instance()->showShop(shopid, player->getSkills()->getRechargeableBonus(), p);
-		player->setShop(shopid);
-		player->getSession()->send(p);
-		return true;
-	}
-	return false;
 }

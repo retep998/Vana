@@ -42,6 +42,7 @@ set(SOURCES
 	MonsterBookPacket.h
 	MovableLife.h
 	MovementHandler.h
+	NPCHandler.h
 	NPCPacket.h
 	NPCs.h
 	Party.h
@@ -125,6 +126,7 @@ set(SOURCES
 	MobsPacket.cpp
 	MonsterBookPacket.cpp
 	MovementHandler.cpp
+	NPCHandler.cpp
 	NPCPacket.cpp
 	NPCs.cpp
 	Party.cpp

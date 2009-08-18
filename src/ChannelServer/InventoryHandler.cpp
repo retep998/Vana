@@ -194,6 +194,10 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useShop(Player *player, PacketReader &packet) {
+	if (player->getShop() == 0) {
+		// Hacking
+		return;
+	}
 	int8_t type = packet.get<int8_t>();
 	switch (type) {
 		case 0: { // Buy
@@ -256,8 +260,8 @@ void InventoryHandler::useShop(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case 3:
-			// 3 is close shop. For now we have no reason to handle this.
+		case 3: // Close shop
+			player->setShop(0);
 			break;
 	}
 }

@@ -16,122 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NPCs.h"
-#include "Inventory.h"
 #include "FileUtilities.h"
 #include "LuaNPC.h"
 #include "MapleSession.h"
-#include "Maps.h"
-#include "NPCPacket.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "Quests.h"
-#include "PacketReader.h"
 #include "SendHeader.h"
 #include "ScriptDataProvider.h"
 #include <string>
 
 using std::string;
-
-void NPCs::handleNPC(Player *player, PacketReader &packet) {
-	if (player->getNPC() != 0) {
-		return;
-	}
-
-	int32_t npcid = packet.get<int32_t>() - 100;
-
-	if (!Maps::getMap(player->getMap())->isValidNpcIndex(npcid)) {
-		// Shouldn't ever happen except in edited packets
-		return;
-	}
-
-	NPCSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
-	if (Inventory::showShop(player, npcs.id)) // Shop
-		return;
-
-	NPC *npc = new NPC(npcs.id, player, npcs.pos);
-	npc->run();
-}
-
-void NPCs::handleQuestNPC(Player *player, int32_t npcid, bool start, int16_t questid) {
-	if (player->getNPC() != 0) {
-		return;
-	}
-
-	NPC *npc = new NPC(npcid, player, questid, start);
-	npc->run();
-}
-
-void NPCs::handleNPCIn(Player *player, PacketReader &packet) {
-	NPC *npc = player->getNPC();
-	if (npc == 0) {
-		return;
-	}
-
-	int8_t type = packet.get<int8_t>();
-	if (type != npc->getSentDialog()) {
-		// hacking
-		return;
-	}
-
-	int8_t what = packet.get<int8_t>();
-
-	switch (type) {
-		case NPCDialogs::normal:
-			switch (what) {
-				case 0: npc->proceedBack(); break;
-				case 1:	npc->proceedNext(); break;
-				default: npc->end(); break;
-			}
-			break;
-		case NPCDialogs::yesNo:
-		case NPCDialogs::acceptDecline:
-			switch (what) {
-				case 0: npc->proceedSelection(0); break;
-				case 1:	npc->proceedSelection(1); break;
-				default: npc->end(); break;
-			}
-			break;
-		case NPCDialogs::getText:
-			if (what != 0) {
-				npc->proceedText(packet.getString());
-			}
-			else {
-				npc->end();
-			}
-			break;
-		case NPCDialogs::getNumber:
-			if (what == 1) {
-				npc->proceedNumber(packet.get<int32_t>());
-			}
-			else {
-				npc->end();
-			}
-			break;
-		case NPCDialogs::simple:
-			if (what == 0) {
-				npc->end();
-			}
-			else {
-				npc->proceedSelection(packet.get<uint8_t>());
-			}
-			break;
-		case NPCDialogs::style:
-			if (what == 1) {
-				npc->proceedSelection(packet.get<uint8_t>());
-			}
-			else  {
-				npc->end();
-			}
-			break;
-		default:
-			npc->end();
-	}
-	npc->checkEnd();
-}
-
-void NPCs::handleNPCAnimation(Player *player, PacketReader &packet) {
-	NPCPacket::animateNPC(player, packet);
-}
 
 NPC::NPC(int32_t npcid, Player *player, int16_t questid, bool isstart) :
 player(player),

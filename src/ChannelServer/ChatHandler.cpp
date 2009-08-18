@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Maps.h"
 #include "Mob.h"
+#include "NPCHandler.h"
 #include "NPCs.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
@@ -852,7 +853,7 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 						else if (args == "pet") shopid = 9999992;
 						else shopid = atoi(args.c_str());
 
-						if (!Inventory::showShop(player, shopid)) {
+						if (!NpcHandler::showShop(player, shopid)) {
 							showSyntax(player, command);
 						}
 					}
