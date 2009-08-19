@@ -262,7 +262,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\NPCs.cpp"
+					RelativePath=".\src\ChannelServer\NPC.cpp"
 					>
 				</File>
 				<File
@@ -652,7 +652,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\NPCs.h"
+					RelativePath=".\src\ChannelServer\NPC.h"
 					>
 				</File>
 				<File

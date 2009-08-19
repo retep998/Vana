@@ -16,10 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaNPC.h"
-#include "NPCs.h"
+#include "NPC.h"
 #include "Player.h"
 #include "Players.h"
 #include "Quests.h"
+#include "ScriptDataProvider.h"
 #include "StoragePacket.h"
 #include <vector>
 
@@ -32,6 +33,7 @@ LuaNPC::LuaNPC(const string &filename, int32_t playerid) : LuaScriptable(filenam
 	lua_register(luaVm, "showStorage", &LuaExports::showStorage);
 	lua_register(luaVm, "getDistanceToPlayer", &LuaExports::getDistanceNpc);
 	lua_register(luaVm, "getNPCID", &LuaExports::getNpcId);
+	lua_register(luaVm, "runNPC", &LuaExports::npcRunNpc);
 
 	// NPC interaction
 	lua_register(luaVm, "addText", &LuaExports::addText);
@@ -118,6 +120,20 @@ int LuaExports::getDistanceNpc(lua_State *luaVm) {
 int LuaExports::getNpcId(lua_State *luaVm) {
 	lua_pushinteger(luaVm, getNPC(luaVm)->getNpcId());
 	return 1;
+}
+
+int LuaExports::npcRunNpc(lua_State *luaVm) {
+	int32_t npcid = lua_tointeger(luaVm, 1);
+	string script;
+	if (lua_type(luaVm, 2) == LUA_TSTRING) { // We already have our script name
+		string specified = lua_tostring(luaVm, 2);
+		script = "scripts/npcs/" + specified + ".lua";
+	}
+	else {
+		script = ScriptDataProvider::Instance()->getNpcScript(npcid);
+	}
+	getNPC(luaVm)->setEndScript(npcid, script);
+	return 0;
 }
 
 // NPC interaction

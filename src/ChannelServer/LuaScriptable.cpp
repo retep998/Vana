@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Mob.h"
 #include "NPCHandler.h"
-#include "NPCs.h"
+#include "NPC.h"
 #include "Party.h"
 #include "Player.h"
 #include "PlayerPacket.h"
@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quests.h"
 #include "Randomizer.h"
 #include "Reactors.h"
+#include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "TimeUtilities.h"
 #include <boost/lexical_cast.hpp>
@@ -405,7 +406,15 @@ int LuaExports::removeNPC(lua_State *luaVm) {
 
 int LuaExports::runNPC(lua_State *luaVm) {
 	int32_t npcid = lua_tointeger(luaVm, -1);
-	NPC *npc = new NPC(npcid, getPlayer(luaVm));
+	string script;
+	if (lua_type(luaVm, 2) == LUA_TSTRING) { // We already have our script name
+		string specified = lua_tostring(luaVm, 2);
+		script = "scripts/npcs/" + specified + ".lua";
+	}
+	else {
+		script = ScriptDataProvider::Instance()->getNpcScript(npcid);
+	}
+	NPC *npc = new NPC(npcid, getPlayer(luaVm), script);
 	npc->run();
 	return 0;
 }
