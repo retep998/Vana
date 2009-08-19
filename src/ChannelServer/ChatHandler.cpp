@@ -313,6 +313,12 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	string message = packet.getString();
 	int8_t bubbleOnly = packet.get<int8_t>(); // Skill Macros only display chat bubbles
 
+	if (!ChatHandler::handleCommand(player, message)) { // Returns false if there was no command handled
+		PlayersPacket::showChat(player, message, bubbleOnly);
+	}
+}
+
+bool ChatHandler::handleCommand(Player *player, const string &message) {
 	if (player->isGm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
 		string command = strtok(chat + 1, " ");
@@ -322,11 +328,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 
 		if (commandlist.find(command) == commandlist.end()) {
 			PlayerPacket::showMessage(player, "Command \"" + command + "\" does not exist.", 6);
-			return;
 		}
-		if (player->getGmLevel() < commandlist[command].second) { // GM level for the command
+		else if (player->getGmLevel() < commandlist[command].second) { // GM level for the command
 			PlayerPacket::showMessage(player, "You are not at a high enough GM level to use the command.", 6);
-			return;
 		}
 		else {
 			switch (commandlist[command].first) { // CMD constant associated with command
@@ -1100,9 +1104,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 				}
 			}
 		}
-		return;
+		return true;
 	}
-	PlayersPacket::showChat(player, message, bubbleOnly);
+	return false;
 }
 
 int32_t ChatHandler::getMap(const string &query, Player *player) {
@@ -1181,10 +1185,13 @@ void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
 	vector<int32_t> receivers;
 	int8_t type = packet.get<int8_t>();
 	uint8_t amount = packet.get<uint8_t>();
+
 	for (uint8_t i = 0; i < amount; i++) {
 		receivers.push_back(packet.get<int32_t>());
 	}
 	string chat = packet.getString();
 
-	WorldServerConnectPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), receivers, chat);
+	if (!ChatHandler::handleCommand(player, chat)) {
+		WorldServerConnectPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), receivers, chat);
+	}
 }
