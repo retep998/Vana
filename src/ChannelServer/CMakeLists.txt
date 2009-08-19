@@ -44,7 +44,7 @@ set(SOURCES
 	MovementHandler.h
 	NPCHandler.h
 	NPCPacket.h
-	NPCs.h
+	NPC.h
 	Party.h
 	Pets.h
 	PetsPacket.h
@@ -128,7 +128,7 @@ set(SOURCES
 	MovementHandler.cpp
 	NPCHandler.cpp
 	NPCPacket.cpp
-	NPCs.cpp
+	NPC.cpp
 	Party.cpp
 	Pets.cpp
 	PetsPacket.cpp

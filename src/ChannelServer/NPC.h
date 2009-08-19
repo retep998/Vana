@@ -38,6 +38,7 @@ class NPC {
 public:
 	NPC(int32_t npcid, Player *player, int16_t questid = 0, bool isstart = false);
 	NPC(int32_t npcid, Player *player, const Pos &pos, int16_t questid = 0, bool isstart = false);
+	NPC(int32_t npcid, Player *player, const string &script);
 	~NPC();
 
 	void run();
@@ -70,9 +71,10 @@ public:
 	bool isEnd() const { return cend; }
 	Pos getPos() const { return pos; }
 
+	void setEndScript(int32_t npcid, const string &fullscript);
+
 	bool checkEnd();
 	void showShop();
-	void initScript(int32_t npcid, Player *player, int16_t questid, bool isstart);
 private:
 	struct State { // For "back" button
 		State(const string &text, bool back, bool next) : text(text), back(back), next(next) {}
@@ -91,6 +93,8 @@ private:
 	int32_t getnum;
 	string text;
 	string gettext;
+	string script;
+	int32_t nextnpc;
 	Player *player;
 	Pos pos;
 
@@ -98,6 +102,10 @@ private:
 	vector<StatePtr> previousStates; // For "back" button
 
 	scoped_ptr<LuaNPC> luaNPC;
+
+	void initData(Player *p, int32_t id);
+	string getScript(int16_t questid, bool start);
+	void initScript(Player *player, int32_t npcid, const string &filename);
 };
 
 namespace NPCDialogs {

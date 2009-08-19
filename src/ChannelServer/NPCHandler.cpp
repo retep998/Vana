@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.h"
 #include "Maps.h"
 #include "NPCPacket.h"
-#include "NPCs.h"
+#include "NPC.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Player.h"

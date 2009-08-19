@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "NPCs.h"
+#include "NPC.h"
 #include "FileUtilities.h"
 #include "LuaNPC.h"
 #include "MapleSession.h"
@@ -28,39 +28,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 NPC::NPC(int32_t npcid, Player *player, int16_t questid, bool isstart) :
-player(player),
-npcid(npcid),
-pos(Pos(0, 0)),
-state(0),
-text(""),
-cend(false)
+pos(Pos(0, 0))
 {
-	initScript(npcid, player, questid, isstart);
+	initData(player, npcid);
+	initScript(player, npcid, getScript(questid, isstart));
 }
 
 NPC::NPC(int32_t npcid, Player *player, const Pos &pos, int16_t questid, bool isstart) :
-player(player),
-npcid(npcid),
-pos(pos),
-state(0),
-text(""),
-cend(false)
+pos(pos)
 {
-	initScript(npcid, player, questid, isstart);
+	initData(player, npcid);
+	initScript(player, npcid, getScript(questid, isstart));
+}
+
+NPC::NPC(int32_t npcid, Player *player, const string &script) :
+pos(Pos(0, 0))
+{
+	initData(player, npcid);
+	initScript(player, npcid, script);
 }
 
 NPC::~NPC() {
 	player->setNPC(0);
 }
 
-void NPC::initScript(int32_t npcid, Player *player, int16_t questid, bool isstart) {
-	string filename;
+void NPC::initData(Player *p, int32_t id) {
+	player = p;
+	npcid = id;
+
+	nextnpc = 0;
+	script = "";
+
+	state = 0;
+	text = "";
+	cend = false;
+}
+
+string NPC::getScript(int16_t questid, bool start) {
 	if (questid == 0) {
-		filename = ScriptDataProvider::Instance()->getNpcScript(npcid);
+		return ScriptDataProvider::Instance()->getNpcScript(npcid);
 	}
-	else {
-		filename = ScriptDataProvider::Instance()->getQuestScript(questid, (isstart ? 0 : 1));
-	}
+	return ScriptDataProvider::Instance()->getQuestScript(questid, (start ? 0 : 1));
+}
+
+void NPC::initScript(Player *player, int32_t npcid, const string &filename) {
 	if (FileUtilities::fileExists(filename)) {
 		luaNPC.reset(new LuaNPC(filename, player->getId()));
 		player->setNPC(this);
@@ -70,8 +81,17 @@ void NPC::initScript(int32_t npcid, Player *player, int16_t questid, bool isstar
 	}
 }
 
+void NPC::setEndScript(int32_t npcid, const string &fullscript) {
+	nextnpc = npcid;
+	script = fullscript;
+}
+
 bool NPC::checkEnd() {
 	if (isEnd()) {
+		if (nextnpc != 0) {
+			NPC *npc = new NPC(nextnpc, player, script);
+			npc->run();
+		}
 		delete this;
 		return true;
 	}
