@@ -48,9 +48,7 @@ if getJob() == 0 then
 
 			setJob(300);
 			giveItem(1452051, 1); -- Beginner Bow
-			giveItem(2060000, 2000); -- Arrow for Bow
-			giveItem(2060000, 2000); -- Arrow for Bow
-			giveItem(2060000, 2000); -- Arrow for Bow
+			giveItem(2060000, 6000); -- Arrow for Bow
 			hpinc = 100 + getRandomNumber(50); -- Extra HP Given
 			mpinc = 25 + getRandomNumber(25); -- Extra MP Given
 			setMHP(getMHP() + hpinc); -- Set HP to current HP plus full amount of hp increase
@@ -87,8 +85,7 @@ if getJob() == 0 then
 
 			addText("Oh, and... if you have any other questions about being the Bowman, feel free to ask. I don't ");
 			addText("every single thing about  being the bowman, but I'll answer as many questions as I can. Til then...");
-			sendBackNext();	
-			end 
+			sendBackNext();
 		else
 			addText("Really? Have to give more though to it, huh? Take your time, take your time. This is not ");
 			addText("something you should take lightly...come talk to me once you have made your decision.");
@@ -98,6 +95,7 @@ if getJob() == 0 then
 		addText("You need to train more. Don't think being the Bowman is a walk in the park...");
 		sendBackNext();
 	end
+
 elseif (getJobLine() == 3 and getJobTrack() > 0) then
 	addText("Do you have any questions regarding the life of the Bowman?\r\n");
 	addText("#L0##bWhat are the basic characters of a Bowman?#k#l\r\n");
@@ -151,6 +149,7 @@ elseif (getJobLine() == 3 and getJobTrack() > 0) then
 		addText("get it after boosting Arrow Blow to at least higher than 1, so remember that. Whatever the choice, make it your own.");
 		sendBackNext();
 	end
+
 elseif (getJob() == 300 and getLevel() >= 30) then 
 	if (getItemAmount(4031010) == 0 and getItemAmount(4031012) == 0) then 
 		addText("Hmmm...you have grown a lot since I last saw you. I don't see the weakling I saw before, and instead, look much ");
