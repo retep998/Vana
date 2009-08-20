@@ -113,7 +113,7 @@ Player::~Player() {
 		Maps::getMap(map)->removePlayer(this);
 		Players::Instance()->removePlayer(this);
 	}
-
+}
 
 void Player::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
