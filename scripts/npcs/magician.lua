@@ -21,11 +21,11 @@ dofile("scripts/lua_functions/jobFunctions.lua");
 
 if getJob() == 0 then
 	addText("Do you want to be a Magician? You need to meet some requirements in ");
-	addText("order to do so. You need to be at least at #bLevel 8, and INT 20#k. ");
+	addText("order to do so. You need to be at least at #bLevel 8#k. ");
 	addText("Let's see if you have what it takes to become a Magician...");
 	sendNext();
 
-	if (getLevel() >= 8 and getINT() >= 20) then
+	if (getLevel() >= 8) then
 		addText("You definitely have the look of a Magician. You may not be there yet, but I can ");
 		addText("see the Magician in you...what do you think? Do you want to become the Magician?");
 		yes = askYesNo();
@@ -34,8 +34,6 @@ if getJob() == 0 then
 			addText("Alright, you're a Magician from here on out, since I, Grendel the Really old, the ");
 			addText("head Magician, allow you so. It isn't much, but I'll give you a little bit of what I have...");
 			sendNext();
-
-			setJob(200);
 
 			if getLevel() >= 30 then -- For rare "too high level" instance.
 				addText("I think you've made the job advancement way too late. Usually, for beginners under Level 29 ");
@@ -48,10 +46,16 @@ if getJob() == 0 then
 				giveSP((getLevel() - 8) * 3 + 1); -- Make up SP for any over-leveling like in GMS
 			end
 
+			setJob(200);
 			giveItem(1372043, 1); 
 			mpinc = 100 + getRandomNumber(50); 
 			setRMMP(getRMMP() + mpinc); 
 			setMMP(getMMP() + mpinc); 
+			setSTR(4); -- Stat reset
+			setDEX(4);
+			setINT(20);
+			setLUK(4);
+			setAP((getLevel() - 1) * 5 - 7);
 			addText("You have just equipped yourself with much more magicial power. Please keep training and ");
 			addText("make yourself much better...I'll be watching you from here and there...");
 			sendNext();
