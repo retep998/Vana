@@ -36,8 +36,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 	packet.add<int8_t>(!GameLogicUtilities::isEquip(item->id) + 1);
 	packet.add<int32_t>(item->id);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(0);
-	packet.addBytes("8005BB46E61702");
+	packet.add<int64_t>(0); // Expiration, I think
 	if (GameLogicUtilities::isEquip(item->id)) {
 		packet.add<int8_t>(item->slots); // Slots
 		packet.add<int8_t>(item->scrolls); // Scrolls
@@ -57,10 +56,11 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		packet.add<int16_t>(item->ispeed); // Speed
 		packet.add<int16_t>(item->ijump); // Jump
 		packet.addString(item->name); // Owner string
-		packet.add<int8_t>(item->flags); // Lock, shoe spikes, cape cold protection, etc.
-		packet.add<int8_t>(0); // No clue
-		packet.add<int32_t>(0);
+		packet.add<int16_t>(item->flags); // Lock, shoe spikes, cape cold protection, etc.
+		packet.add<int8_t>(0);
+		packet.add<int8_t>(0); // Item level
 		packet.add<int16_t>(0);
+		packet.add<int16_t>(0); // Item EXP of.. some sort
 		packet.add<int32_t>(0); //  Hammer
 		packet.add<int64_t>(-1);
 		packet.addBytes("0040E0FD3B374F01"); // Always the same?
@@ -68,15 +68,10 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 	}
 	else {
 		packet.add<int16_t>(item->amount); // Amount
-		packet.add<int8_t>(0);
-		packet.add<int8_t>(0);
-		packet.add<int8_t>(item->flags);
-		packet.add<int8_t>(0);
+		packet.addString(item->name); // Specially made by <IGN>
+		packet.add<int16_t>(item->flags);
 		if (GameLogicUtilities::isRechargeable(item->id)) {
-			packet.add<int32_t>(2);
-			packet.add<int16_t>(0x54);
-			packet.add<int8_t>(0);
-			packet.add<int8_t>(0x34);
+			packet.add<int64_t>(0); // Might be rechargeable ID for internal tracking/duping tracking
 		}
 	}
 }
