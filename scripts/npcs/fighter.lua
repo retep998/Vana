@@ -21,11 +21,11 @@ dofile("scripts/lua_functions/jobFunctions.lua");
 
 if getJob() == 0 then
 	addText("Do you wish to be a Warrior? You need to meet some ");
-	addText("criteria in order to do so. #bYou need to be at least in Level 10,");
-	addText("with at least 35 in STR#k. Let's see...");
+	addText("criteria in order to do so. #bYou need to be at least in Level 10");
+	addText("#k. Let's see...");
 	sendNext();
 
-	if (getLevel() >= 10 and getSTR() >= 35) then
+	if (getLevel() >= 10) then
 		addText("You definitely have the look of a Warrior. You may not be ");
 		addText("there just yet, but I can see the Warrior in you.");
 		addText("What do you think? Do you want to become a Warrior?");
@@ -35,8 +35,6 @@ if getJob() == 0 then
 			addText("From here on out, you are going to be the Warrior! Please continue working hard...I'll enhance your abilities a bit with the hope of you training yourself to be even stronger than you're now. Haaaaaap!!");
 			sendNext();
 
-			setJob(100);
-
 			if getLevel() >= 30 then -- For rare "too high level" instance.
 				addText("I think you've made the job advancement way too late. Usually, for beginners under Level 29 ");
 				addText("that were late in making job advancements, we compensate them with lost Skill Points, ");
@@ -45,17 +43,24 @@ if getJob() == 0 then
 
 				giveSP(1);
 			else
-				giveSP((getLevel() - 8) * 3 + 1); -- Make up SP for any over-leveling like in GMS
+				giveSP((getLevel() - 10) * 3 + 1); -- Make up SP for any over-leveling like in GMS
 			end
 
+			setJob(100);
 			giveItem(1302077, 1); -- Give beginner warrior's sword
 			hpinc = 200 + getRandomNumber(50); -- Extra HP given
 			setMHP(getMHP() + hpinc); -- Set HP to current HP plus amount to be added for this job
 			setRMHP(getRMHP() + hpinc);
+			setSTR(35); -- Stat reset
+			setDEX(4);
+			setINT(4);
+			setLUK(4);
+			setAP((getLevel() - 1) * 5 - (22));
 			addSlots(1, 1); -- Add extra inventory rows
 			addSlots(2, 1);
 			addSlots(3, 1);
 			addSlots(4, 1);
+
 			addText("You've gotten much stronger now. Plus every single one of your inventories have added slots. A whole row, to be exact. Go see for it yourself. I just gave you a little bit of #bSP#k. When you open up the #bSkill menu#k on the lower left corner of the screen, there are skills you can learn by using SP's. One warning, though: You can't raise it all together all at once. There are also skills you can accquire only after having learned a couple of skills first.");
 			sendNext();
 

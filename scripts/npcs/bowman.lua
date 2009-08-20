@@ -21,10 +21,10 @@ dofile("scripts/lua_functions/jobFunctions.lua");
 
 if getJob() == 0 then
 	addText("So you want to become the Bowman??? Well...you need to meet some requirements to do so...at ");
-	addText("least #bLevel10, and 25 of DEX#k. Let's see...hmm...");
+	addText("least #bLevel10#k. Let's see...hmm...");
 	sendNext();
 
-	if (getLevel() >= 10 and getDEX() >= 25) then
+	if (getLevel() >= 10) then
 		addText("You look qualified for this. With a great pair of eyes being able to spot the real monsters ");
 		addText("and have the coldhearted skills to shoot the arrow through them...we needed someone like that. ");
 		addText("Do you want to become a Bowman?");
@@ -34,8 +34,6 @@ if getJob() == 0 then
 			addText("Alright! You are the Bowman from here on out, because I said so...haha here's a little bit ");
 			addText("of my power to you...Haahhhh!");
 			sendNext();
-
-			setJob(300);
 
 			if getLevel() >= 30 then -- For the rare "too high level" instance.
 				addText("I think you've made the job advancement way too late. Usually, for beginners under Level 29 ");
@@ -47,6 +45,8 @@ if getJob() == 0 then
 			else
 				giveSP((getLevel() - 10) * 3 + 1); -- Make up any SP for over-leveling like in GMS
 			end
+
+			setJob(300);
 			giveItem(1452051, 1); -- Beginner Bow
 			giveItem(2060000, 2000); -- Arrow for Bow
 			giveItem(2060000, 2000); -- Arrow for Bow
@@ -57,8 +57,14 @@ if getJob() == 0 then
 			setRMHP(getRMHP() + hpinc);
 			setMMP(getMMP() + mpinc); -- Set MP to current MP plus full amount of hp increase
 			setRMMP(getRMMP() + mpinc);
+			setSTR(4); -- Stat reset
+			setDEX(25);
+			setINT(4);
+			setLUK(4);
+			setAP((getLevel() - 1) * 5 - 12);
 			addSlots(1, 1);
 			addSlots(2, 1);
+
 			addText("I have added slots for your equipment and etc. inventory. You have also gotten much stronger. ");
 			addText("Train harder, and you may one day reach the very top of the bowman. I'll be watching you from ");
 			addText("afar. Please work hard.");

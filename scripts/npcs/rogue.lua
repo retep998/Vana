@@ -21,11 +21,11 @@ dofile("scripts/lua_functions/jobFunctions.lua");
 
 if getJob() == 0 then
 	addText("Want to be a thief? There are some standards to meet, because we can't just accept ");
-	addText("EVERYONE in ... #bYour level should be at least 10, with your DEX over 25#k. ");
+	addText("EVERYONE in ... #bYour level should be at least 10#k. ");
 	addText("Let's see...");
 	sendNext();
 
-	if (getLevel() >= 10 and getDEX() >= 25) then
+	if (getLevel() >= 10) then
 		addText("Oh...! You look like someone that can definitely be a part of us...all you need is ");
 		addText("a little sinister mind, and...yeah...so, what do you think? Wanna be the Rouge?");
 		yes = askYesNo();
@@ -35,8 +35,6 @@ if getJob() == 0 then
 			addText("at first, but just be patient and soon, you'll be living the high life. Alright, it ");
 			addText("ain't much, but I'll give you some of my abilities...HAAAHHH!!");
 			sendNext();
-
-			setJob(400);
 
 			if getLevel() >= 30 then 
 				addText("I think you've made the job advancement way too late. Usually, for beginners under Level 29 ");
@@ -49,17 +47,21 @@ if getJob() == 0 then
 				giveSP((getLevel() - 10) * 3 + 1); -- Make up any SP for over-leveling like in GMS
 			end
 
+			setJob(400);
 			giveItem(1472061, 1); -- Beginners Garnier
 			giveItem(1332063, 1); -- Beginners Dagger
-			giveItem(2070015, 1); -- Special subis
-			giveItem(2070015, 1);
-			giveItem(2070015, 1);
+			giveItem(2070015, 3); -- Special subis
 			hpinc = 100 + getRandomNumber(50); -- Generate a random number from 0-50 to add to the base hp increase
 			mpinc = 25 + getRandomNumber(25); -- Generate a random number from 0-25 to add to the base mp increase
 			setMHP(getMHP() + hpinc); -- Set HP to current HP plus full amount of hp increase
 			setRMHP(getRMHP() + hpinc);
 			setMMP(getMMP() + mpinc); -- Set MP to current MP plus full amount of mp increase
 			setRMMP(getRMMP() + mpinc);
+			setSTR(4); -- Stat reset
+			setDEX(25);
+			setINT(4);
+			setLUK(4);
+			setAP((getLevel() - 1) * 5 - 12);
 			addSlots(1, 1); -- Add inventory slots
 			addSlots(4, 1);
 			addText("I've just created more slots for your equipment and etc. storage. Not only that, but you've also ");
