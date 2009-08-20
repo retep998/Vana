@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "MobHandler.h"
 #include "MonsterBookPacket.h"
+#include "NPC.h"
 #include "NPCHandler.h"
 #include "PacketReader.h"
 #include "Party.h"
