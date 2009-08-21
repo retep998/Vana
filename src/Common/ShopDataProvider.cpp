@@ -148,37 +148,19 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 	packet.set<int16_t>(shopcount, 6);
 }
 
-int32_t ShopDataProvider::getPrice(int32_t shopid, int16_t shopindex) {
+int32_t ShopDataProvider::getPrice(int32_t shopid, uint16_t shopindex) {
 	vector<ShopItemInfo> s = shops[shopid].items;
-	try {
-		return s.at(shopindex).price;
-	}
-	catch (std::out_of_range) {
-
-	}
-	return 0;
+	return (shopindex < s.size() ? s[shopindex].price : 0);
 }
 
-int16_t ShopDataProvider::getAmount(int32_t shopid, int16_t shopindex) {
+int16_t ShopDataProvider::getAmount(int32_t shopid, uint16_t shopindex) {
 	vector<ShopItemInfo> s = shops[shopid].items;
-	try {
-		return s.at(shopindex).quantity;
-	}
-	catch (std::out_of_range) {
-
-	}
-	return 0;
+	return (shopindex < s.size() ? s[shopindex].quantity : 0);
 }
 
-int32_t ShopDataProvider::getItemId(int32_t shopid, int16_t shopindex) {
+int32_t ShopDataProvider::getItemId(int32_t shopid, uint16_t shopindex) {
 	vector<ShopItemInfo> s = shops[shopid].items;
-	try {
-		return s.at(shopindex).itemid;
-	}
-	catch (std::out_of_range) {
-
-	}
-	return 0;
+	return (shopindex < s.size() ? s[shopindex].itemid : 0);
 }
 
 int32_t ShopDataProvider::getRechargeCost(int32_t shopid, int32_t itemid, int16_t amount) {
