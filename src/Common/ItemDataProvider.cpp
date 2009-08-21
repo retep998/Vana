@@ -264,11 +264,10 @@ int32_t ItemDataProvider::getPrice(int32_t itemid) {
 		return items.find(itemid) != items.end() ? items[itemid].price : 0;
 }
 
-int16_t ItemDataProvider::getMaxSlot(int32_t itemid) {
+uint16_t ItemDataProvider::getMaxSlot(int32_t itemid) {
 	if (GameLogicUtilities::isEquip(itemid))
 		return 1;
-	else
-		return items.find(itemid) != items.end() ? items[itemid].maxslot : 0;
+	return (items.find(itemid) != items.end() ? items[itemid].maxslot : 0);
 }
 
 int32_t ItemDataProvider::getCardId(int32_t mobid) {

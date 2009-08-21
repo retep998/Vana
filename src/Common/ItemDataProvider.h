@@ -129,7 +129,7 @@ struct ConsumeInfo {
 };
 
 struct ItemInfo {
-	int16_t maxslot;
+	uint16_t maxslot;
 	int32_t price;
 	bool notrade;
 	bool quest;
@@ -146,7 +146,7 @@ public:
 	void loadData();
 	bool itemExists(int32_t id);
 	int32_t getPrice(int32_t itemid);
-	int16_t getMaxSlot(int32_t itemid);
+	uint16_t getMaxSlot(int32_t itemid);
 	int32_t getCardId(int32_t mobid);
 	int32_t getMobId(int32_t cardid);
 	string getItemName(int32_t itemid);

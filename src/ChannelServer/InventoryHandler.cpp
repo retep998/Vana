@@ -201,21 +201,23 @@ void InventoryHandler::useShop(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 	switch (type) {
 		case 0: { // Buy
-			int16_t itemindex = packet.get<int16_t>();
+			uint16_t itemindex = packet.get<uint16_t>();
 			packet.skipBytes(4); // Item ID, no reason to trust this
-			int16_t quantity = packet.get<int16_t>();
+			uint16_t quantity = packet.get<uint16_t>();
 			packet.skipBytes(4); // Price, don't want to trust this
 			int16_t amount = ShopDataProvider::Instance()->getAmount(player->getShop(), itemindex);
 			int32_t itemid = ShopDataProvider::Instance()->getItemId(player->getShop(), itemindex);
 			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemindex);
-			if (quantity < 0 || price == 0 || player->getInventory()->getMesos() < (price * quantity)) {
+			uint32_t totalamount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxslot
+			int32_t totalprice = quantity * price;
+			if (price == 0 || totalamount > ItemDataProvider::Instance()->getMaxSlot(itemid) || player->getInventory()->getMesos() < totalprice) {
 				// Hacking
 				return;
 			}
-			bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, quantity * amount, true);
+			bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, static_cast<int16_t>(totalamount), true);
 			if (haveslot) {
-				Inventory::addNewItem(player, itemid, quantity * amount);
-				player->getInventory()->modifyMesos(-(quantity * price));
+				Inventory::addNewItem(player, itemid, static_cast<int16_t>(totalamount));
+				player->getInventory()->modifyMesos(-totalprice);
 			}
 			InventoryPacket::bought(player, haveslot ? 0 : 3);
 			break;

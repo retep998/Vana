@@ -138,6 +138,7 @@ void InventoryPacket::stopChair(Player *player, bool showMap) {
 	packet.add<int32_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
+
 void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit) {
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
