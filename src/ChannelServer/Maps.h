@@ -34,7 +34,7 @@ namespace Maps {
 	void usePortal(Player *player, PortalInfo *portal);
 	void usePortal(Player *player, PacketReader &packet);
 	void useScriptedPortal(Player *player, PacketReader &packet);
-	void newMap(Player *player, int32_t mapid);
+	void addPlayer(Player *player, int32_t mapid);
 	int32_t getMistId();
 };
 
