@@ -327,8 +327,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	BuddyListPacket::update(this, BuddyListPacket::add);
 
-	if (skillMacros.getMax() > -1)
-		PlayerPacket::showSkillMacros(this, &skillMacros);
+	PlayerPacket::showSkillMacros(this, &skillMacros);
 
 	Maps::newMap(this, map);
 
