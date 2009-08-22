@@ -329,7 +329,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	PlayerPacket::showSkillMacros(this, &skillMacros);
 
-	Maps::newMap(this, map);
+	Maps::addPlayer(this, map);
 
 	setOnline(true);
 	is_connect = true;
@@ -562,7 +562,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 
 	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), id, mapid);
 	MapPacket::changeMap(this);
-	Maps::newMap(this, mapid);
+	Maps::addPlayer(this, mapid);
 }
 
 void Player::setLevel(uint8_t level) {

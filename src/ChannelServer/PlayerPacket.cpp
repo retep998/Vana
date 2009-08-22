@@ -133,7 +133,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 			packet.add<int32_t>(0);
 		}
 	}
-	
+
 	player->getSession()->send(packet);
 }
 

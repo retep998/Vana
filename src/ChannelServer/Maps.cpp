@@ -123,7 +123,7 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	usePortal(player, portal);
 }
 
-void Maps::newMap(Player *player, int32_t mapid) {
+void Maps::addPlayer(Player *player, int32_t mapid) {
 	Players::Instance()->addPlayer(player);
 	getMap(mapid)->addPlayer(player);
 	getMap(mapid)->showObjects(player);
