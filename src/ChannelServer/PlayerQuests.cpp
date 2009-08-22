@@ -334,14 +334,14 @@ bool PlayerQuests::checkRewards(int16_t questid, Rewards::iterator &begin, Rewar
 	for (Rewards::iterator iter = begin; iter != end; iter++) { // Loop through rewards, make sure it can be done
 		if (iter->isitem){
 			uint8_t inv = GameLogicUtilities::getInventory(iter->id) - 1;
-			if (iter->count > 0) {
-				if (iter->prop > 0 && !chanceitem[inv]) {
-					chanceitem[inv] = true;
-					neededslots[inv]++;
-				}
-				else if (iter->prop == 0) {
-					neededslots[inv]++;
-				}
+			if (iter->count < 0) continue;
+
+			else if (iter->prop > 0 && !chanceitem[inv]) {
+				chanceitem[inv] = true;
+				neededslots[inv]++;
+			}
+			else if (iter->prop == 0) {
+				neededslots[inv]++;
 			}
 		}
 		else if (iter->ismesos) {
