@@ -605,7 +605,7 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
-	int8_t type = packet.get<int8_t>();
+	packet.get<int8_t>(); // Type
 	packet.skipBytes(1);
 	int32_t itemid = packet.get<int32_t>();
 
@@ -750,7 +750,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg3 = packet.getString();
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
-				int32_t ticks = packet.get<int32_t>();
+				packet.get<int32_t>(); // Ticks
 				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time);
 				used = true;
 			}
@@ -763,7 +763,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			string msg3 = packet.getString();
 			string msg4 = packet.getString();
 			string msg5 = packet.getString();
-			int32_t ticks = packet.get<int32_t>();
+			packet.get<int32_t>(); // Ticks
 			MapleTVs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid, time);
 			used = true;
 			break;
@@ -778,7 +778,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg3 = packet.getString();
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
-				int32_t ticks = packet.get<int32_t>();
+				packet.get<int32_t>(); // Ticks
 				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time);
 				used = true;
 			}

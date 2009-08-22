@@ -38,7 +38,7 @@ class Map;
 class Player;
 
 struct MapInfo {
-	MapInfo() : musicname(""), top(0), left(0), right(0), bottom(0) {}
+	MapInfo() : left(0), top(0), bottom(0), right(0), musicname("") {}
 	bool clock;
 	bool town;
 	int8_t fieldType;
@@ -110,7 +110,7 @@ struct SeatInfo {
 typedef std::map<int16_t, SeatInfo> SeatsInfo;
 
 struct MobSpawnInfo {
-	MobSpawnInfo() : spawnat(-1), spawned(false) { }
+	MobSpawnInfo() : spawned(false), spawnat(-1) { }
 	int8_t facingside;
 	int16_t fh;
 	int32_t id;

@@ -68,7 +68,7 @@ struct Skillbook {
 
 struct ConsumeInfo {
 	ConsumeInfo() :
-		fireresist(0), lightningresist(0), poisonresist(0), iceresist(0),
+		fireresist(0), iceresist(0), lightningresist(0), poisonresist(0),
 		cursedef(0), stundef(0), weaknessdef(0), darknessdef(0), sealdef(0),
 		ignorewdef(0), ignoremdef(0)
 		{ }
