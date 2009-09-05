@@ -177,6 +177,7 @@ void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {
 	uint8_t targets = tbyte / 0x10;
 	uint8_t hits = tbyte % 0x10;
 	int32_t skillid = pack.get<int32_t>();
+	pack.skipBytes(4); // .74 reads mob's .img size for dmg hack check
 	bool mesoexplosion = false;
 	if (skillid == Jobs::ChiefBandit::MesoExplosion) {
 		tbyte = (targets * 0x10) + 0x0A;
@@ -234,6 +235,7 @@ void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	int32_t skillid = pack.get<int32_t>();
+	pack.skipBytes(4); // .74 reads mob's .img size for dmg hack check
 	pack.skipBytes(4); // Unk
 	switch (skillid) {
 		case Jobs::Bowmaster::Hurricane:
@@ -319,6 +321,7 @@ void PlayersPacket::useSpellAttack(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(1); // Spells are always a skill
 	int32_t skillid = pack.get<int32_t>();
+	pack.skipBytes(4); // .74 reads mob's .img size for dmg hack check
 	int32_t charge = 0;
 	packet.add<int32_t>(skillid);
 
