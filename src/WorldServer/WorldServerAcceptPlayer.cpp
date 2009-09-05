@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
 	if (isAuthenticated()) {
-		if (type == InterChannelServer) {
+		if (getType() == InterChannelServer) {
 			if (WorldServer::Instance()->isConnected()) {
 				LoginServerConnectPacket::removeChannel(WorldServer::Instance()->getLoginPlayer(), channel);
 			}
@@ -65,16 +65,15 @@ void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 
 void WorldServerAcceptPlayer::authenticated(int8_t type) {
 	channel = Channels::Instance()->getAvailableChannel();
-	this->type = type;
 	if (type == InterChannelServer) {
 		if (channel != -1) {
 			uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
-			Channels::Instance()->registerChannel(this, channel, ip, getExternalIp(), port);
+			Channels::Instance()->registerChannel(this, channel, getIp(), getExternalIp(), port);
 			WorldServerAcceptPacket::connect(this, channel, port, WorldServer::Instance()->getMaxMultiLevel(), WorldServer::Instance()->getMaxStats(), WorldServer::Instance()->getMaxChars());
 			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 			WorldServerAcceptPacket::sendParties(this);
-			LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, ip, getExternalIp(), port);
+			LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, getIp(), getExternalIp(), port);
 			std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 		}
 		else {

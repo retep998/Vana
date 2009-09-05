@@ -333,7 +333,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	setOnline(true);
 	is_connect = true;
-	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), ip, id, name, map, job, level);
+	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), getIp(), id, name, map, job, level);
 }
 
 void Player::unlock(const string &source) {
