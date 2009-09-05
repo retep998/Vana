@@ -31,18 +31,20 @@ bool AbstractServerAcceptPlayer::processAuth(PacketReader &packet, const string 
 	if (packet.get<int16_t>() == INTER_PASSWORD) {
 		if (packet.getString() == pass) {
 			std::cout << "Server successfully authenticated." << std::endl;
-			is_authenticated = true;
+			m_is_authenticated = true;
 
-			IpUtilities::extractExternalIp(packet, external_ip);
+			IpUtilities::extractExternalIp(packet, m_external_ip);
 
-			authenticated(packet.get<int8_t>());
+			int8_t type = packet.get<int8_t>();
+			setType(type);
+			authenticated(type);
 		}
 		else {
 			getSession()->disconnect();
 			return false;
 		}
 	}
-	else if (is_authenticated == false) {
+	else if (m_is_authenticated == false) {
 		// Trying to do something while unauthenticated? DC!
 		getSession()->disconnect();
 		return false;

@@ -27,16 +27,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 AbstractPlayer::AbstractPlayer() :
-is_server(false),
-is_pinged(false),
-timers(new Timer::Container)
+m_is_server(false),
+m_is_pinged(false),
+m_timers(new Timer::Container)
 {
 }
 
 void AbstractPlayer::handleRequest(PacketReader &packet) {
 	try {
-		is_pinged = false;
-		if (is_server && packet.getHeader() == SEND_PING) {
+		m_is_pinged = false;
+		if (m_is_server && packet.getHeader() == SEND_PING) {
 			PingPacket::pong(this);
 		}
 		realHandleRequest(packet);
@@ -53,15 +53,15 @@ void AbstractPlayer::setTimer() {
 }
 
 void AbstractPlayer::ping() {
-	if (is_pinged) { // We have a timeout now
-		session->disconnect();
+	if (m_is_pinged) { // We have a timeout now
+		getSession()->disconnect();
 		return;
 	}
-	is_pinged = true;
+	m_is_pinged = true;
 	PingPacket::ping(this);
 }
 
 void AbstractPlayer::setSession(MapleSession *val) {
-	session = val;
+	m_session = val;
 	setTimer();
 }

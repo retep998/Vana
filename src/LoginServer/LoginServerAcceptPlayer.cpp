@@ -44,7 +44,6 @@ void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 }
 
 void LoginServerAcceptPlayer::authenticated(int8_t type) {
-	this->type = type;
 	switch (type) {
 		case InterWorldServer:
 			Worlds::connectWorldServer(this);

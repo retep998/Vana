@@ -32,10 +32,8 @@ public:
 
 	void setWorldId(int8_t id) { worldId = id; }
 	int8_t getWorldId() const { return worldId; }
-	int8_t getType() const { return type; }
 private:
 	int8_t worldId;
-	int8_t type;
 };
 
 class LoginServerAcceptPlayerFactory : public AbstractPlayerFactory {

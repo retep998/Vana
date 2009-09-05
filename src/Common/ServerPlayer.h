@@ -30,24 +30,30 @@ class PacketReader;
 
 class AbstractServerConnectPlayer : public AbstractPlayer {
 public:
-	AbstractServerConnectPlayer() { is_server = true; }
+	AbstractServerConnectPlayer() { m_is_server = true; }
 	void sendAuth(const string &pass, vector<vector<uint32_t> > extIp);
-	int8_t getType() { return type; }
+	int8_t getType() const { return m_type; }
 protected:
-	int8_t type;
+	void setType(int8_t type) { m_type = type; }
+private:
+	int8_t m_type;
 };
 
 class AbstractServerAcceptPlayer : public AbstractPlayer {
 public:
-	AbstractServerAcceptPlayer() : is_authenticated(false) { is_server = true; }
+	AbstractServerAcceptPlayer() : m_is_authenticated(false) { m_is_server = true; }
 	bool processAuth(PacketReader &packet, const string &pass);
 	virtual void authenticated(int8_t type) = 0;
 
-	bool isAuthenticated() const { return is_authenticated; }
-	const vector<vector<uint32_t> > & getExternalIp() const { return external_ip; }
+	bool isAuthenticated() const { return m_is_authenticated; }
+	const vector<vector<uint32_t> > & getExternalIp() const { return m_external_ip; }
+	int8_t getType() const { return m_type; }
+protected:
+	void setType(int8_t type) { m_type = type; }
 private:
-	bool is_authenticated;
-	vector<vector<uint32_t> > external_ip;
+	int8_t m_type;
+	bool m_is_authenticated;
+	vector<vector<uint32_t> > m_external_ip;
 };
 
 #endif

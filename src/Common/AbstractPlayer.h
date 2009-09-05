@@ -37,18 +37,18 @@ public:
 	void setTimer();
 	void ping();
 
-	MapleSession * getSession() const { return session; }
+	MapleSession * getSession() const { return m_session; }
 	void setSession(MapleSession *val);
-	uint32_t getIp() const { return ip; }
-	void setIp(uint32_t ip) { this->ip = ip; }
-	Timer::Container * getTimers() const { return timers.get(); }
+	uint32_t getIp() const { return m_ip; }
+	void setIp(uint32_t ip) { m_ip = ip; }
+	Timer::Container * getTimers() const { return m_timers.get(); }
 protected:
-	MapleSession *session;
-	uint32_t ip;
-	bool is_server;
+	MapleSession *m_session;
+	uint32_t m_ip;
+	bool m_is_server;
 private:
-	bool is_pinged;
-	boost::scoped_ptr<Timer::Container> timers;
+	bool m_is_pinged;
+	boost::scoped_ptr<Timer::Container> m_timers;
 };
 
 class AbstractPlayerFactory {
