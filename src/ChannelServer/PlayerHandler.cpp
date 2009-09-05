@@ -355,6 +355,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	uint32_t totaldmg = 0;
 	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	SkillLevelInfo *picking = SkillDataProvider::Instance()->getSkill(Jobs::ChiefBandit::Pickpocket, pplevel);
+	packet.skipBytes(4); // Unknown int added in V.74+
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t targettotal = 0;
 		int32_t mapmobid = packet.get<int32_t>();
@@ -541,6 +542,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			packet.skipBytes(4); // Projectile display [1], direction/animation [1], weapon subclass [1], weapon speed [1]
 			break;
 	}
+	packet.skipBytes(4); // 0.74 added sumthin
 	packet.skipBytes(4); // Ticks
 	int16_t pos = packet.get<int16_t>();
 	packet.skipBytes(2); // Cash Shop star cover
@@ -587,6 +589,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		eater.prop = eaaat->prop;
 		eater.x = eaaat->x;
 	}
+	packet.skipBytes(4); //added in 0.74
 	packet.skipBytes(4); // Unk
 	packet.skipBytes(2); // Display, direction/animation
 	packet.skipBytes(2); // Weapon subclass, casting speed
