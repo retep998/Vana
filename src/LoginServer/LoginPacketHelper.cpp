@@ -21,8 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &charc) {
 	packet.add<int32_t>(charc.id);
-	packet.addString(charc.name, 12);
-	packet.add<int8_t>(0);
+	packet.addString(charc.name, 13);
 	packet.add<int8_t>(charc.gender);
 	packet.add<int8_t>(charc.skin);
 	packet.add<int32_t>(charc.eyes);

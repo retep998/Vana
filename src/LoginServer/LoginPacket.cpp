@@ -72,8 +72,8 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 		case PlayerStatus::SetPin: packet.add<int8_t>(0x0b); break; // Pin Select
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
+	packet.add<int8_t>(0); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(0); // Admin, beware - the client won't let them chat, no known benefit
 	packet.add<int8_t>(0);
 	packet.addString(username);
 	packet.add<int8_t>(0);
@@ -114,8 +114,8 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 	packet.add<int8_t>(world->ribbon);
 	packet.addString(world->eventMsg);
 	packet.add<int16_t>(100); // EXP rate. x/100. Changing this will show event message.
-	packet.add<int8_t>(100);
-	packet.add<int16_t>(0);
+	packet.add<int16_t>(100);
+	packet.add<int8_t>(0);
 	packet.add<int8_t>(world->maxChannels);
 	for (size_t i = 0; i < world->maxChannels; i++) {
 		std::ostringstream cnStream;
@@ -129,10 +129,14 @@ void LoginPacket::showWorld(PlayerLogin *player, World *world) {
 		else { // Channel doesn't exist
 			packet.add<int32_t>(0);
 		}
-		packet.add<int8_t>(1); // Char creation (the part that is server-decided)
+
+		packet.add<int8_t>(world->id);
 		packet.add<int16_t>(i);
 	}
-	packet.add<int16_t>(0);
+	packet.add<int16_t>(0); // Amount of messages
+	// packet.addPos(); // Pos of message
+	// packet.addString("message"); // message
+	// When you set a pos of (0, 0), the message will be on the Scania/first world tab.
 	player->getSession()->send(packet);
 }
 
@@ -146,7 +150,12 @@ void LoginPacket::worldEnd(PlayerLogin *player) {
 void LoginPacket::showChannels(PlayerLogin *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_CHANNEL);
-	packet.add<int16_t>(0x00);
+	/*	Byte/short types:
+		0x00 = no message
+		0x01 = "Since There Are Many Concurrent Users in This World, You May Encounter Some Difficulties During the Game Play."
+		0x02 = "The Concurrent Users in This World Have Reached the Max. Please Try Again Later."
+	*/
+	packet.add<int16_t>(0);
 	player->getSession()->send(packet);
 }
 
