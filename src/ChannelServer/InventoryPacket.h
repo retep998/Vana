@@ -49,6 +49,8 @@ namespace InventoryPacket {
 	void sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector<int32_t> &maps);
 	void sendRockError(Player *player, int8_t code, int8_t type);
 	void useCharm(Player *player, uint8_t charmsleft, uint8_t daysleft = 99);
+	void sendMesobagSucceed(Player *player, int32_t mesos);
+	void sendMesobagFailed(Player *player);
 	void blankUpdate(Player *player);
 };
 

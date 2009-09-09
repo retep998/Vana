@@ -784,6 +784,39 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
+		case Items::BronzeSackOfMesos: {
+			int32_t mesos = 1000000;
+			if (!player->getInventory()->modifyMesos(mesos)) {
+				InventoryPacket::sendMesobagFailed(player);
+			}
+			else {
+				InventoryPacket::sendMesobagSucceed(player, mesos);
+				used = true;
+			}
+			break;
+		}
+		case Items::SilverSackOfMesos: {
+			int32_t mesos = 5000000;
+			if (!player->getInventory()->modifyMesos(mesos)) {
+				InventoryPacket::sendMesobagFailed(player);
+			}
+			else {
+				InventoryPacket::sendMesobagSucceed(player, mesos);
+				used = true;
+			}
+			break;
+		}
+		case Items::GoldSackOfMesos: {
+			int32_t mesos = 10000000;
+			if (!player->getInventory()->modifyMesos(mesos)) {
+				InventoryPacket::sendMesobagFailed(player);
+			}
+			else {
+				InventoryPacket::sendMesobagSucceed(player, mesos);
+				used = true;
+			}
+			break;
+		}
 		case Items::FungusScroll:
 		case Items::OinkerDelight:
 		case Items::ZetaNightmare:

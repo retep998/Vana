@@ -93,6 +93,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_CHAIR_ACTION 0xbb
 #define SEND_GAIN_ITEM 0xbc // Gain item notice in chat
 #define SEND_MAP_TELEPORT 0xbd // Instantaneous transfer
+#define SEND_GAIN_MESOBAG_MESOS 0xbf // "You recieved ... mesos from mesobag"
+#define SEND_USE_MESOBAG_FAILED 0xc0 // If the mesobag has failed?
 #define SEND_UPDATE_QUEST 0xc1
 #define SEND_INSTRUCTION_BUBBLE 0xc4
 #define SEND_COOLDOWN 0xce // Skill cooldown
