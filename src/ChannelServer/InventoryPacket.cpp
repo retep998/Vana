@@ -254,6 +254,19 @@ void InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, c
 	player->getSession()->send(packet);
 }
 
+void InventoryPacket::sendMesobagSucceed(Player *player, int32_t mesos) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_GAIN_MESOBAG_MESOS);
+	packet.add<int32_t>(mesos);
+	player->getSession()->send(packet);
+}
+
+void InventoryPacket::sendMesobagFailed(Player *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_USE_MESOBAG_FAILED);
+	player->getSession()->send(packet);
+}
+
 void InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_TELEPORT_ROCK_FUNCTION);
