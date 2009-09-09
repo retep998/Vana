@@ -39,6 +39,7 @@ namespace PlayerPacket {
 	void instructionBubble(Player *player, const string &msg, int16_t width = -1, int16_t height = 5);
 	void sendSound(Player *player, const string &soundname);
 	void showHpBar(Player *player, Player *target);
+	void sendBlockedMessage(Player *player, uint8_t type);
 };
 
 #endif

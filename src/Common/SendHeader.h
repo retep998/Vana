@@ -53,6 +53,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SEND_SHOW_MESSENGER 0x67 // Also known as avatar megaphone
 #define SEND_SKILL_MACRO 0x71
 #define SEND_CHANGE_MAP 0x72
+#define SEND_CC_BLOCKED 0x78 // For messages like 'This server is unavailable'
 #define SEND_FORCE_MAP_EQUIP 0x79 // Wear apple suit on training maps, all equips except bathrobe off for Showa spa, etc.
 #define SEND_GROUP_CHAT 0x7a // Groups like party, buddies and guild
 #define SEND_COMMAND_RESPOND 0x7b // Respond to / commands i.e. "/find"
