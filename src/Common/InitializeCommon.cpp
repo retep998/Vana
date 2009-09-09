@@ -53,14 +53,14 @@ void Initializing::checkSchemaVersion(bool update) {
 	bool succeed = dbMigration.checkVersion();
 
 	if (!succeed && !update) {
-		// Wrong version and we're not allowed to update, so lets quit.
+		// Wrong version and we're not allowed to update, so let's quit
 		std::cout << "ERROR: Wrong version of database, please run Login Server to update." << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
 		exit(4);
 	}
 	else if (!succeed) {
-		// Failed, but we can update it.
+		// Failed, but we can update it
 		std::cout << std::setw(outputWidth) <<  "Updating database...";
 		
 		dbMigration.update();

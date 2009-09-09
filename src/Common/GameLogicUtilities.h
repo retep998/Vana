@@ -69,12 +69,12 @@ namespace GameLogicUtilities {
 	inline bool isSpecialCard(int32_t cardid) { return (getCardShortId(cardid) >= 8000); }
 
 	// Party
-	inline int8_t getPartyMember1(int8_t totalmembers) { return (totalmembers >= 1 ? (0x40 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember2(int8_t totalmembers) { return (totalmembers >= 2 ? (0x80 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember3(int8_t totalmembers) { return (totalmembers >= 3 ? (0x100 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember4(int8_t totalmembers) { return (totalmembers >= 4 ? (0x200 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember5(int8_t totalmembers) { return (totalmembers >= 5 ? (0x400 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember6(int8_t totalmembers) { return (totalmembers >= 6 ? (0x800 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember1(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 1 ? (0x40 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember2(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 2 ? (0x80 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember3(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 3 ? (0x100 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember4(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 4 ? (0x200 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember5(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 5 ? (0x400 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember6(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 6 ? (0x800 >> totalmembers) : 0xFF); }
 };
 
 #endif
