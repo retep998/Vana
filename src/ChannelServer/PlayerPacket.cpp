@@ -71,10 +71,13 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(player->getExp());
 	packet.add<int16_t>(player->getFame());
 
-	packet.add<int32_t>(0); // Unknown int32 added in .62
+	packet.add<int32_t>(0); // Gachapon EXP
+
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
+
 	packet.add<int32_t>(0); // Unknown int32 added in .62
+
 	packet.add<int8_t>(player->getBuddyListSize());
 
 	player->getInventory()->connectData(packet); // Inventory data
@@ -87,7 +90,12 @@ void PlayerPacket::connectData(Player *player) {
 	player->getInventory()->rockPacket(packet); // Teleport Rock/VIP Rock maps
 	player->getMonsterBook()->connectData(packet);
 
-	packet.add<int32_t>(0);
+	packet.add<int16_t>(0);
+
+	// Party Quest data (quest needs to be added in the quests list)
+	packet.add<int16_t>(0); // Amount of pquests
+	// for every pquest: int16_t questid, string questdata
+
 	packet.add<int16_t>(0);
 	
 	packet.add<int64_t>(TimeUtilities::getServerTime());
@@ -216,4 +224,18 @@ void PlayerPacket::showHpBar(Player *player, Player *target) {
 	packet.add<int32_t>(player->getHp());
 	packet.add<int32_t>(player->getMHp());
 	target->getSession()->send(packet);
+}
+
+void PlayerPacket::sendBlockedMessage(Player *player, uint8_t type) {
+	/* Types:
+		0x01: You cannot move that channel. Please try again later.
+		0x02: You cannot go into the cash shop. Please try again later.
+		0x03: The Item-Trading shop is currently unavailable, please try again later.
+		0x04: You cannot go into the trade shop, due to the limitation of user count.
+		0x05: You do not meet the minimum level requirement to access the Trade Shop.
+	*/
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_CC_BLOCKED);
+	packet.add<uint8_t>(type);
+	player->getSession()->send(packet);
 }

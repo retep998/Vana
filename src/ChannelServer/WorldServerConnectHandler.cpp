@@ -47,7 +47,7 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, P
 		ChannelServer::Instance()->setWorld(worldid);
 		ChannelServer::Instance()->setWorldIp(packet.get<uint32_t>());
 		ChannelServer::Instance()->setWorldPort(packet.get<int16_t>());
-		std::cout << "Connecting to world " << (int32_t) worldid << std::endl;
+		std::cout << "Connecting to world " << (int16_t) worldid << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}
 	else {
@@ -84,7 +84,7 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *pl
 		return;
 	}
 	if (ip == 0) {
-		ccPlayer->unlock("channel");
+		PlayerPacket::sendBlockedMessage(ccPlayer, 0x01);
 	}
 	else {
 		ccPlayer->setOnline(0); // Set online to 0 BEFORE CC packet is sent to player

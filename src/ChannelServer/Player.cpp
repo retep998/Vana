@@ -132,7 +132,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_BUDDYLIST: BuddyListHandler::handleBuddyList(this, packet); break;
 		case RECV_CANCEL_ITEM: InventoryHandler::cancelItem(this, packet); break;
 		case RECV_CANCEL_SKILL: Skills::cancelSkill(this, packet); break;
-		case RECV_CASH_BUTTON: unlock("Cash Shop"); break;
+		case RECV_CASH_BUTTON: PlayerPacket::sendBlockedMessage(this, 0x02); break;
 		case RECV_CHAIR_ACTION: InventoryHandler::handleChair(this, packet); break;
 		case RECV_CHANGE_CHANNEL: changeChannel(packet.get<int8_t>()); break;
 		case RECV_CHANGE_MAP: Maps::usePortal(this, packet); break;
@@ -160,7 +160,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_MOVE_ITEM: InventoryHandler::itemMove(this, packet); break;
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
-		case RECV_MTS_BUTTON: unlock("MTS"); break;
+		case RECV_MTS_BUTTON: PlayerPacket::sendBlockedMessage(this, 0x03); break;
 		case RECV_NPC_TALK: NpcHandler::handleNPC(this, packet); break;
 		case RECV_NPC_TALK_CONT: NpcHandler::handleNPCIn(this, packet); break;
 		case RECV_PARTY_ACTION: PartyFunctions::handleRequest(this, packet); break;
@@ -334,11 +334,6 @@ void Player::playerConnect(PacketReader &packet) {
 	setOnline(true);
 	is_connect = true;
 	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), getIp(), id, name, map, job, level);
-}
-
-void Player::unlock(const string &source) {
-	PlayerPacket::showMessage(this, "The " + source + " is unavailable.", 5);
-	InventoryPacket::blankUpdate(this);
 }
 
 void Player::setHp(int16_t shp, bool is) {
