@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MapleClient.h"
+#include "MapleServerClient.h"
 #include "AbstractPlayer.h"
 #include "PacketReader.h"
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
-MapleClient::MapleClient(boost::asio::io_service &io_service,
+MapleServerClient::MapleServerClient(boost::asio::io_service &io_service,
 		uint32_t server, uint16_t port,
 		SessionManagerPtr sessionManager,
 		AbstractPlayer *player) :
@@ -32,7 +32,7 @@ m_resolver(io_service)
 {
 }
 
-void MapleClient::start_connect() {
+void MapleServerClient::start_connect() {
 	// Synchronously connect and process the connect packet
 
 	tcp::endpoint endpoint(boost::asio::ip::address_v4(m_server), m_port);
@@ -51,7 +51,7 @@ void MapleClient::start_connect() {
 	}
 }
 
-void MapleClient::readConnectPacket() {
+void MapleServerClient::readConnectPacket() {
 	boost::system::error_code error;
 
 	m_buffer.reset(new unsigned char[connectHeaderLen]);
