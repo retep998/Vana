@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "SkillDataProvider.h"
-#include "WorldServerConnectPlayer.h"
+#include "WorldServerConnection.h"
 #include <iostream>
 #include <limits>
 

@@ -418,11 +418,11 @@
 				Name="Inter-Server"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\WorldServerConnectPacket.cpp"
+					RelativePath=".\src\ChannelServer\WorldServerConnection.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.cpp"
+					RelativePath=".\src\ChannelServer\WorldServerConnectPacket.cpp"
 					>
 				</File>
 				<Filter
@@ -804,11 +804,11 @@
 				Name="Inter-Server"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\WorldServerConnectPacket.h"
+					RelativePath=".\src\ChannelServer\WorldServerConnection.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.h"
+					RelativePath=".\src\ChannelServer\WorldServerConnectPacket.h"
 					>
 				</File>
 				<Filter

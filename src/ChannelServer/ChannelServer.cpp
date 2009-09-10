@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Players.h"
 #include "ServerPacket.h"
-#include "WorldServerConnectPlayer.h"
+#include "WorldServerConnection.h"
 
 ChannelServer * ChannelServer::singleton = 0;
 
@@ -35,7 +35,7 @@ void ChannelServer::listen() {
 }
 
 void ChannelServer::shutdown() {
-	channel = -1; // Else when WorldServerConnectPlayer disconnects, it will try to call shutdown() again
+	channel = -1; // Else when WorldServerConnection disconnects, it will try to call shutdown() again
 	AbstractServer::shutdown();
 }
 

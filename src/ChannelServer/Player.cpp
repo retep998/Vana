@@ -57,8 +57,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summons.h"
 #include "TimeUtilities.h"
 #include "TradeHandler.h"
+#include "WorldServerConnection.h"
 #include "WorldServerConnectPacket.h"
-#include "WorldServerConnectPlayer.h"
 #include <boost/array.hpp>
 
 Player::Player() :
