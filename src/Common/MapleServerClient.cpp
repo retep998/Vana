@@ -17,9 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleServerClient.h"
 #include "AbstractPlayer.h"
+#include "MapleVersion.h"
 #include "PacketReader.h"
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
+#include <cstdio>
+#include <iostream>
 
 MapleServerClient::MapleServerClient(boost::asio::io_service &io_service,
 		uint32_t server, uint16_t port,
@@ -85,7 +88,15 @@ void MapleServerClient::readConnectPacket() {
 	// Now finally process it
 	PacketReader packet(m_buffer.get(), packetLen);
 
-	uint16_t version = packet.get<int16_t>(); // Maple Version, TODO: Verify it
+	int16_t version = packet.get<int16_t>(); // Maple version
+	if (version != MAPLE_VERSION) {
+		std::cout << "ERROR: The server you are connecting to lacks the same MapleStory version." << std::endl;
+		std::cout << "Expected version: " << version << std::endl;
+		std::cout << "Local version: " << MAPLE_VERSION << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
+		exit(5);
+	}
 	packet.getString(); // Unknown
 
 	unsigned char *rawpacket = packet.getBuffer();
