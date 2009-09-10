@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MAPLECLIENT_H
-#define MAPLECLIENT_H
+#ifndef MapleServerClient_H
+#define MapleServerClient_H
 
 #include "MapleSession.h"
 #include "SessionManager.h"
@@ -29,9 +29,9 @@ using boost::asio::ip::tcp;
 
 class AbstractPlayer;
 
-class MapleClient : public MapleSession {
+class MapleServerClient : public MapleSession {
 public:
-	MapleClient(boost::asio::io_service &io_service,
+	MapleServerClient(boost::asio::io_service &io_service,
 		uint32_t server, uint16_t port,
 		SessionManagerPtr sessionManager,
 		AbstractPlayer *player);
@@ -44,6 +44,6 @@ private:
 	tcp::resolver m_resolver;
 };
 
-typedef boost::shared_ptr<MapleClient> MapleClientPtr;
+typedef boost::shared_ptr<MapleServerClient> MapleServerClientPtr;
 
 #endif

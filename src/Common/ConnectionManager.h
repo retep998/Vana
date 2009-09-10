@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef CONNECTIONMANAGER_H
 #define CONNECTIONMANAGER_H
 
-#include "MapleClient.h"
+#include "MapleServerClient.h"
 #include "MapleServer.h"
 #include "SessionManager.h"
 #include "Types.h"

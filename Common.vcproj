@@ -300,11 +300,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\MapleClient.cpp"
+					RelativePath=".\src\Common\MapleServer.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\MapleServer.cpp"
+					RelativePath=".\src\Common\MapleServerClient.cpp"
 					>
 				</File>
 				<File
@@ -558,11 +558,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\MapleClient.h"
+					RelativePath=".\src\Common\MapleServer.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\MapleServer.h"
+					RelativePath=".\src\Common\MapleServerClient.h"
 					>
 				</File>
 				<File
