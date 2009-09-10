@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 WorldServer * WorldServer::singleton = 0;
 
 void WorldServer::listen() {
-	ConnectionManager::Instance()->accept(inter_port, new WorldServerAcceptPlayerFactory());
+	ConnectionManager::Instance()->accept(inter_port, new WorldServerAcceptConnectionFactory());
 }
 
 void WorldServer::loadData() {
-	loginPlayer = new LoginServerConnectPlayer;
+	loginPlayer = new LoginServerConnection;
 	ConnectionManager::Instance()->connect(login_ip, login_inter_port, loginPlayer);
 	loginPlayer->sendAuth(inter_password, external_ip);
 }

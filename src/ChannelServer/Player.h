@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "AbstractPlayer.h"
+#include "AbstractConnection.h"
 #include "MovableLife.h"
 #include "PlayerActiveBuffs.h"
 #include "PlayerBuddyList.h"
@@ -49,7 +49,7 @@ class PacketReader;
 class Party;
 struct PortalInfo;
 
-class Player : public AbstractPlayer, public MovableLife {
+class Player : public AbstractConnection, public MovableLife {
 public:
 	Player();
 
@@ -236,9 +236,9 @@ private:
 	scoped_ptr<PlayerVariables> variables;
 };
 
-class PlayerFactory : public AbstractPlayerFactory {
+class PlayerFactory : public AbstractConnectionFactory {
 public:
-	AbstractPlayer * createPlayer() {
+	AbstractConnection * createConnection() {
 		return new Player();
 	}
 };

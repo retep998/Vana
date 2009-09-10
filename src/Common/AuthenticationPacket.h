@@ -25,10 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-class AbstractServerConnectPlayer;
+class AbstractServerConnection;
 
 namespace AuthenticationPacket {
-	void sendPassword(AbstractServerConnectPlayer *player, string pass, vector<vector<uint32_t> > extIp);
+	void sendPassword(AbstractServerConnection *player, string pass, vector<vector<uint32_t> > extIp);
 }
 
 #endif

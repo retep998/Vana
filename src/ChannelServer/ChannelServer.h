@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class WorldServerConnectPlayer;
+class WorldServerConnection;
 class PacketCreator;
 
 // ChannelServer main application class, implemented as singleton
@@ -68,14 +68,14 @@ public:
 	int32_t getDroprate() const { return droprate; }
 	int32_t getMaxChars() const { return maxChars; }
 	string getScrollingHeader() const { return scrollingHeader; }
-	WorldServerConnectPlayer * getWorldPlayer() const { return worldPlayer; }
+	WorldServerConnection * getWorldConnection() const { return worldPlayer; }
 	
 	bool isConnected() const { return channel != -1; }
 private:
 	ChannelServer() : channel(-1) {};
 	static ChannelServer *singleton;
 
-	WorldServerConnectPlayer *worldPlayer;
+	WorldServerConnection *worldPlayer;
 
 	int8_t world;
 	uint8_t maxMultiLevel;

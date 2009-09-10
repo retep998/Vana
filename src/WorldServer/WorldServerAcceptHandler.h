@@ -18,22 +18,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WORLDSERVERACCEPTHANDLER_H
 #define WORLDSERVERACCEPTHANDLER_H
 
-class WorldServerAcceptPlayer;
+class WorldServerAcceptConnection;
 class PacketReader;
 
 namespace WorldServerAcceptHandler {
-	void playerChangeChannel(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void handleChangeChannel(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void findPlayer(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void whisperPlayer(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void registerPlayer(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void removePlayer(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void scrollingHeader(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void partyOperation(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void updateLevel(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void updateJob(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void updateMap(WorldServerAcceptPlayer *player, PacketReader &packet);
-	void groupChat(WorldServerAcceptPlayer *player, PacketReader &packet);
+	void playerChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet);
+	void handleChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet);
+	void findPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
+	void whisperPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
+	void registerPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
+	void removePlayer(WorldServerAcceptConnection *player, PacketReader &packet);
+	void scrollingHeader(WorldServerAcceptConnection *player, PacketReader &packet);
+	void partyOperation(WorldServerAcceptConnection *player, PacketReader &packet);
+	void updateLevel(WorldServerAcceptConnection *player, PacketReader &packet);
+	void updateJob(WorldServerAcceptConnection *player, PacketReader &packet);
+	void updateMap(WorldServerAcceptConnection *player, PacketReader &packet);
+	void groupChat(WorldServerAcceptConnection *player, PacketReader &packet);
 	void toChannels(PacketReader &packet);
 }
 

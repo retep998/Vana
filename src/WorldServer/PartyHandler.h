@@ -30,7 +30,7 @@ using std::vector;
 using std::string;
 
 class Party;
-class WorldServerAcceptPlayer;
+class WorldServerAcceptConnection;
 
 #define PARTY_LEAVE 0x01
 #define PARTY_JOIN 0x02
@@ -47,12 +47,12 @@ class WorldServerAcceptPlayer;
 #define PARTY_SYNC_ADD_MEMBER 0x06
 
 namespace PartyHandler {
-	void createParty(WorldServerAcceptPlayer *player, int32_t playerid);
-	void leaveParty(WorldServerAcceptPlayer *player, int32_t playerid);
-	void invitePlayer(WorldServerAcceptPlayer *player, int32_t playerid, const string &invitee);
-	void joinParty(WorldServerAcceptPlayer *player, int32_t playerid, int32_t partyid);
-	void giveLeader(WorldServerAcceptPlayer *player, int32_t playerid, int32_t target, bool is);
-	void expelPlayer(WorldServerAcceptPlayer *player, int32_t playerid, int32_t target);
+	void createParty(WorldServerAcceptConnection *player, int32_t playerid);
+	void leaveParty(WorldServerAcceptConnection *player, int32_t playerid);
+	void invitePlayer(WorldServerAcceptConnection *player, int32_t playerid, const string &invitee);
+	void joinParty(WorldServerAcceptConnection *player, int32_t playerid, int32_t partyid);
+	void giveLeader(WorldServerAcceptConnection *player, int32_t playerid, int32_t target, bool is);
+	void expelPlayer(WorldServerAcceptConnection *player, int32_t playerid, int32_t target);
 	void silentUpdate(int32_t playerid);
 	void logInLogOut(int32_t playerid);
 };

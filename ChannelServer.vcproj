@@ -401,14 +401,6 @@
 						>
 					</File>
 				</Filter>
-				<Filter
-					Name="Inter-Server"
-					>
-					<File
-						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.cpp"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Database Loading"
@@ -425,6 +417,10 @@
 			<Filter
 				Name="Inter-Server"
 				>
+				<File
+					RelativePath=".\src\ChannelServer\WorldServerConnectPacket.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.cpp"
 					>
@@ -791,14 +787,6 @@
 						>
 					</File>
 				</Filter>
-				<Filter
-					Name="Inter-Server"
-					>
-					<File
-						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Database Loading"
@@ -815,6 +803,10 @@
 			<Filter
 				Name="Inter-Server"
 				>
+				<File
+					RelativePath=".\src\ChannelServer\WorldServerConnectPacket.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\ChannelServer\WorldServerConnectPlayer.h"
 					>

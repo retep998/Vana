@@ -26,18 +26,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectHandler.h"
 #include "WorldServerConnectPacket.h"
 
-WorldServerConnectPlayer::WorldServerConnectPlayer() {
+WorldServerConnection::WorldServerConnection() {
 	setType(InterChannelServer);
 }
 
-WorldServerConnectPlayer::~WorldServerConnectPlayer() {
+WorldServerConnection::~WorldServerConnection() {
 	if (ChannelServer::Instance()->isConnected()) {
 		std::cout << "Disconnected from the worldserver. Shutting down..." << std::endl;
 		ChannelServer::Instance()->shutdown();
 	}
 }
 
-void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
+void WorldServerConnection::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
 		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
 		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
@@ -57,6 +57,6 @@ void WorldServerConnectPlayer::realHandleRequest(PacketReader &packet) {
 	}
 }
 
-void WorldServerConnectPlayer::playerChangeChannel(Player *info, uint16_t channel) {
+void WorldServerConnection::playerChangeChannel(Player *info, uint16_t channel) {
 	WorldServerConnectPacket::playerChangeChannel(this, info, channel);
 }

@@ -15,18 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerConnectPlayer.h"
+#include "LoginServerConnection.h"
 #include "LoginServerConnectHandler.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 
-LoginServerConnectPlayer::LoginServerConnectPlayer() {
+LoginServerConnection::LoginServerConnection() {
 	setType(InterWorldServer);
 }
 
-LoginServerConnectPlayer::~LoginServerConnectPlayer() {
+LoginServerConnection::~LoginServerConnection() {
 	if (WorldServer::Instance()->isConnected()) {
 		WorldServer::Instance()->setWorldId(-1);
 		std::cout << "Disconnected from loginserver. Shutting down..." << std::endl;
@@ -34,7 +34,7 @@ LoginServerConnectPlayer::~LoginServerConnectPlayer() {
 	}
 }
 
-void LoginServerConnectPlayer::realHandleRequest(PacketReader &packet) {
+void LoginServerConnection::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
 		case INTER_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
 		case INTER_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;

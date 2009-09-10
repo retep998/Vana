@@ -18,13 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERLOGIN_H
 #define PLAYERLOGIN_H
 
-#include "AbstractPlayer.h"
+#include "AbstractConnection.h"
 #include "PlayerStatus.h"
 #include "Types.h"
 
 class PacketReader;
 
-class PlayerLogin : public AbstractPlayer {
+class PlayerLogin : public AbstractConnection {
 public:
 	PlayerLogin() : status(PlayerStatus::NotLoggedIn), invalid_logins(0), quiet_ban_time(0) { }
 
@@ -69,9 +69,9 @@ private:
 	bool checked_pin;
 };
 
-class PlayerLoginFactory : public AbstractPlayerFactory {
+class PlayerLoginFactory : public AbstractConnectionFactory {
 public:
-	AbstractPlayer * createPlayer() {
+	AbstractConnection * createConnection() {
 		return new PlayerLogin();
 	}
 };

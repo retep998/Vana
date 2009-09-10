@@ -25,12 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-class LoginServerConnectPlayer;
+class LoginServerConnection;
 
 namespace LoginServerConnectPacket {
-	void registerChannel(LoginServerConnectPlayer *player, int32_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, int16_t port);
-	void updateChannelPop(LoginServerConnectPlayer *player, int32_t channel, int32_t population);
-	void removeChannel(LoginServerConnectPlayer *player, int32_t channel);
+	void registerChannel(LoginServerConnection *player, int32_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, int16_t port);
+	void updateChannelPop(LoginServerConnection *player, int32_t channel, int32_t population);
+	void removeChannel(LoginServerConnection *player, int32_t channel);
 };
 
 #endif

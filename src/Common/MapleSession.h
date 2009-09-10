@@ -35,7 +35,7 @@ using std::string;
 using boost::asio::ip::tcp;
 using boost::shared_array;
 
-class AbstractPlayer;
+class AbstractConnection;
 class PacketCreator;
 
 class MapleSession :
@@ -45,7 +45,7 @@ public boost::enable_shared_from_this<MapleSession>
 public:
 	MapleSession(boost::asio::io_service &io_service,
 				SessionManagerPtr sessionManager,
-				AbstractPlayer *player, bool isServer,
+				AbstractConnection *player, bool isServer,
 				string connectPacketUnknown = "");
 
 	tcp::socket & getSocket() { return m_socket; }
@@ -73,7 +73,7 @@ protected:
 
 	tcp::socket m_socket;
 	Decoder m_decoder;
-	std::tr1::shared_ptr<AbstractPlayer> m_player;
+	std::tr1::shared_ptr<AbstractConnection> m_player;
 	shared_array<unsigned char> m_buffer;
 	bool m_is_server;
 	string m_connect_packet_unknown;

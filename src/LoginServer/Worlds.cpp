@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.h"
 #include "IpUtilities.h"
 #include "LoginPacket.h"
-#include "LoginServerAcceptPlayer.h"
+#include "LoginServerAcceptConnection.h"
 #include "LoginServerAcceptPacket.h"
 #include "MapleSession.h"
 #include "PlayerLogin.h"
@@ -61,7 +61,7 @@ void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
 	Characters::showCharacters(player);
 }
 
-int8_t Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
+int8_t Worlds::connectWorldServer(LoginServerAcceptConnection *player) {
 	World *world = 0;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->connected == 0) {
@@ -86,10 +86,10 @@ int8_t Worlds::connectWorldServer(LoginServerAcceptPlayer *player) {
 	}
 }
 
-int8_t Worlds::connectChannelServer(LoginServerAcceptPlayer *player) {
+int8_t Worlds::connectChannelServer(LoginServerAcceptConnection *player) {
 	int8_t worldid = -1;
 	int16_t port;
-	AbstractServerAcceptPlayer *worldPlayer;
+	AbstractServerAcceptConnection *worldPlayer;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->channels.size() < (size_t) iter->second->maxChannels && iter->second->connected) {
 			worldid = iter->second->id;

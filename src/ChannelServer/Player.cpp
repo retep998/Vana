@@ -111,7 +111,7 @@ Player::~Player() {
 			setOnline(false);
 		}
 		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
-			WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldPlayer(), id);	
+			WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);	
 		}
 		Maps::getMap(map)->removePlayer(this);
 		Players::Instance()->removePlayer(this);
@@ -333,7 +333,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	setOnline(true);
 	is_connect = true;
-	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldPlayer(), getIp(), id, name, map, job, level);
+	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, job, level);
 }
 
 void Player::setHp(int16_t shp, bool is) {
@@ -424,7 +424,7 @@ void Player::setJob(int16_t job) {
 	this->job = job;
 	PlayerPacket::updateStatShort(this, Stats::Job, job);
 	LevelsPacket::jobChange(this);
-	WorldServerConnectPacket::updateJob(ChannelServer::Instance()->getWorldPlayer(), id, job);
+	WorldServerConnectPacket::updateJob(ChannelServer::Instance()->getWorldConnection(), id, job);
 }
 
 void Player::setStr(int16_t str) {
@@ -555,7 +555,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 		Summons::removeSummon(this, false, true, false, 0);
 	}
 
-	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldPlayer(), id, mapid);
+	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
 	MapPacket::changeMap(this);
 	Maps::addPlayer(this, mapid);
 }
@@ -564,11 +564,11 @@ void Player::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(this, Stats::Level, level);
 	LevelsPacket::levelUp(this);
-	WorldServerConnectPacket::updateLevel(ChannelServer::Instance()->getWorldPlayer(), id, level);
+	WorldServerConnectPacket::updateLevel(ChannelServer::Instance()->getWorldConnection(), id, level);
 }
 
 void Player::changeChannel(int8_t channel) {
-	ChannelServer::Instance()->getWorldPlayer()->playerChangeChannel(this, channel);
+	ChannelServer::Instance()->getWorldConnection()->playerChangeChannel(this, channel);
 }
 
 void Player::changeKey(PacketReader &packet) {

@@ -32,7 +32,7 @@ using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
 class PlayerLogin;
-class LoginServerAcceptPlayer;
+class LoginServerAcceptConnection;
 class PacketCreator;
 class PacketReader;
 
@@ -52,7 +52,7 @@ struct World {
 	int8_t ribbon;
 	bool connected;
 	int16_t port;
-	LoginServerAcceptPlayer *player;
+	LoginServerAcceptConnection *player;
 	// Rates
 	int32_t exprate;
 	int32_t questexprate;
@@ -72,8 +72,8 @@ namespace Worlds {
 	void channelSelect(PlayerLogin *player, PacketReader &packet);
 	void selectWorld(PlayerLogin *player, PacketReader &packet);
 	void showWorld(PlayerLogin *player);
-	int8_t connectWorldServer(LoginServerAcceptPlayer *player); //Inter-server
-	int8_t connectChannelServer(LoginServerAcceptPlayer *player); //Inter-server
+	int8_t connectWorldServer(LoginServerAcceptConnection *player); //Inter-server
+	int8_t connectChannelServer(LoginServerAcceptConnection *player); //Inter-server
 	void toWorlds(PacketCreator &packet);
 	extern map<uint8_t, World *> worlds;
 };

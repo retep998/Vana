@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectPacket.h"
 #include "InterHeader.h"
 #include "IpUtilities.h"
-#include "LoginServerConnectPlayer.h"
+#include "LoginServerConnection.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 
-void LoginServerConnectPacket::registerChannel(LoginServerConnectPlayer *player, int32_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, int16_t port) {
+void LoginServerConnectPacket::registerChannel(LoginServerConnection *player, int32_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, int16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_REGISTER_CHANNEL);
 	packet.add<int32_t>(channel);
@@ -35,7 +35,7 @@ void LoginServerConnectPacket::registerChannel(LoginServerConnectPlayer *player,
 	player->getSession()->send(packet);
 }
 
-void LoginServerConnectPacket::updateChannelPop(LoginServerConnectPlayer *player, int32_t channel, int32_t population) {
+void LoginServerConnectPacket::updateChannelPop(LoginServerConnection *player, int32_t channel, int32_t population) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_UPDATE_CHANNEL_POP);
 	packet.add<int32_t>(channel);
@@ -44,7 +44,7 @@ void LoginServerConnectPacket::updateChannelPop(LoginServerConnectPlayer *player
 	player->getSession()->send(packet);
 }
 
-void LoginServerConnectPacket::removeChannel(LoginServerConnectPlayer *player, int32_t channel) {
+void LoginServerConnectPacket::removeChannel(LoginServerConnection *player, int32_t channel) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_REMOVE_CHANNEL);
 	packet.add<int32_t>(channel);

@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ServerPlayer.h"
+#include "ServerConnection.h"
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
 #include "IpUtilities.h"
@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include <iostream>
 
-void AbstractServerConnectPlayer::sendAuth(const string &pass, vector<vector<uint32_t> > extIp) {
+void AbstractServerConnection::sendAuth(const string &pass, vector<vector<uint32_t> > extIp) {
 	AuthenticationPacket::sendPassword(this, pass, extIp);
 }
 
-bool AbstractServerAcceptPlayer::processAuth(PacketReader &packet, const string &pass) {
+bool AbstractServerAcceptConnection::processAuth(PacketReader &packet, const string &pass) {
 	if (packet.get<int16_t>() == INTER_PASSWORD) {
 		if (packet.getString() == pass) {
 			std::cout << "Server successfully authenticated." << std::endl;

@@ -23,17 +23,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class WorldServerAcceptPlayer;
+class WorldServerAcceptConnection;
 class Party;
 class PacketCreator;
 
 namespace PartyPacket {
-	void createParty(WorldServerAcceptPlayer *player, int32_t playerid);
-	void disbandParty(WorldServerAcceptPlayer *player, int32_t playerid);
-	void partyError(WorldServerAcceptPlayer *player, int32_t playerid, int8_t error);
-	void giveLeader(WorldServerAcceptPlayer *player, int32_t playerid, int32_t target, bool is);
-	void invitePlayer(WorldServerAcceptPlayer *player, int32_t playerid, const string &inviter);
-	void updateParty(WorldServerAcceptPlayer *player, int8_t type, int32_t playerid, int32_t target = 0);
+	void createParty(WorldServerAcceptConnection *player, int32_t playerid);
+	void disbandParty(WorldServerAcceptConnection *player, int32_t playerid);
+	void partyError(WorldServerAcceptConnection *player, int32_t playerid, int8_t error);
+	void giveLeader(WorldServerAcceptConnection *player, int32_t playerid, int32_t target, bool is);
+	void invitePlayer(WorldServerAcceptConnection *player, int32_t playerid, const string &inviter);
+	void updateParty(WorldServerAcceptConnection *player, int8_t type, int32_t playerid, int32_t target = 0);
 	void addParty(PacketCreator &packet, Party *party, int32_t tochan);
 };
 

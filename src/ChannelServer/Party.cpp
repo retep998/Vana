@@ -33,15 +33,15 @@ void PartyFunctions::handleRequest(Player *player, PacketReader &packet) {
 	switch (type) {
 		case 0x01: // Create party
 		case 0x02: // Leave party
-			WorldServerConnectPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId());
+			WorldServerConnectPacket::partyOperation(ChannelServer::Instance()->getWorldConnection(), type, player->getId());
 			break;
 		case 0x03: // Join party
 		case 0x05: // Expel Player
 		case 0x06: // Give leader rights
-			WorldServerConnectPacket::partyOperation(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), packet.get<int32_t>());
+			WorldServerConnectPacket::partyOperation(ChannelServer::Instance()->getWorldConnection(), type, player->getId(), packet.get<int32_t>());
 			break;
 		case 0x04: // Invite
-			WorldServerConnectPacket::partyInvite(ChannelServer::Instance()->getWorldPlayer(), player->getId(), packet.getString());
+			WorldServerConnectPacket::partyInvite(ChannelServer::Instance()->getWorldConnection(), player->getId(), packet.getString());
 			break;
 	}
 }

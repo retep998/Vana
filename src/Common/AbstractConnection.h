@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef ABSTRACTPLAYER_H
-#define ABSTRACTPLAYER_H
+#ifndef ABSTRACTCONNECTION_H
+#define ABSTRACTCONNECTION_H
 
 #include "MapleSession.h"
 #include "Timer/Container.h"
@@ -27,10 +27,10 @@ using std::string;
 
 class PacketReader;
 
-class AbstractPlayer {
+class AbstractConnection {
 public:
-	AbstractPlayer();
-	virtual ~AbstractPlayer() { }
+	AbstractConnection();
+	virtual ~AbstractConnection() { }
 	
 	virtual void realHandleRequest(PacketReader &packet) = 0;
 	void handleRequest(PacketReader &packet);
@@ -51,9 +51,9 @@ private:
 	boost::scoped_ptr<Timer::Container> m_timers;
 };
 
-class AbstractPlayerFactory {
+class AbstractConnectionFactory {
 public:
-	virtual AbstractPlayer * createPlayer () = 0;
-	virtual ~AbstractPlayerFactory() { }
+	virtual AbstractConnection * createConnection() = 0;
+	virtual ~AbstractConnectionFactory() { }
 };
 #endif

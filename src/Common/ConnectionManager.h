@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class AbstractPlayerFactory;
+class AbstractConnectionFactory;
 class MapleServer;
 
 class ConnectionManager : private boost::noncopyable {
@@ -42,8 +42,8 @@ public:
 		return singleton;
 	}
 
-	void accept(uint16_t port, AbstractPlayerFactory *apf, string ivUnknown = "");
-	void connect(uint32_t server, uint16_t port, AbstractPlayer *player);
+	void accept(uint16_t port, AbstractConnectionFactory *apf, string ivUnknown = "");
+	void connect(uint32_t server, uint16_t port, AbstractConnection *player);
 	void stop();
 
 	void run();

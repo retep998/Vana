@@ -27,14 +27,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "TimeUtilities.h"
 #include "WorldServer.h"
-#include "WorldServerAcceptPlayer.h"
+#include "WorldServerAcceptConnection.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <map>
 
 using std::map;
 using std::tr1::unordered_map;
 
-void WorldServerAcceptPacket::groupChat(WorldServerAcceptPlayer *player, int32_t playerid, int8_t type, const string &message, const string &sender) {
+void WorldServerAcceptPacket::groupChat(WorldServerAcceptConnection *player, int32_t playerid, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
@@ -45,7 +45,7 @@ void WorldServerAcceptPacket::groupChat(WorldServerAcceptPlayer *player, int32_t
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats, int32_t maxChars) {
+void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats, int32_t maxChars) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_CHANNEL_CONNECT);
 	packet.add<int16_t>(channel);
@@ -71,7 +71,7 @@ void WorldServerAcceptPacket::sendHeldPacketRemoval(uint16_t channel, int32_t pl
 	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, uint32_t ip, int16_t port) {
+void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PLAYER_CHANGE_CHANNEL);
 	packet.add<int32_t>(playerid);
@@ -89,10 +89,10 @@ void WorldServerAcceptPacket::sendToChannels(unsigned char *data, int32_t len) {
 void WorldServerAcceptPacket::sendToLogin(unsigned char *data, int32_t len) {
 	PacketCreator packet;
 	packet.addBuffer(data, len);
-	WorldServer::Instance()->getLoginPlayer()->getSession()->send(packet);
+	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::findPlayer(WorldServerAcceptPlayer *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
+void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FIND);
 	packet.add<int32_t>(finder);
@@ -103,7 +103,7 @@ void WorldServerAcceptPacket::findPlayer(WorldServerAcceptPlayer *player, int32_
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::whisperPlayer(WorldServerAcceptPlayer *player, int32_t whisperee, const string &whisperer, uint16_t channel, const string &message) {
+void WorldServerAcceptPacket::whisperPlayer(WorldServerAcceptConnection *player, int32_t whisperee, const string &whisperer, uint16_t channel, const string &message) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_WHISPER);
 	packet.add<int32_t>(whisperee);
@@ -130,7 +130,7 @@ void WorldServerAcceptPacket::newConnectable(uint16_t channel, int32_t playerid)
 	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::sendRates(WorldServerAcceptPlayer *player, int32_t setBit) {
+void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *player, int32_t setBit) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_SET_RATES);
 	packet.add<int32_t>(setBit);
@@ -151,7 +151,7 @@ void WorldServerAcceptPacket::sendRates(WorldServerAcceptPlayer *player, int32_t
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::sendParties(WorldServerAcceptPlayer *player) {
+void WorldServerAcceptPacket::sendParties(WorldServerAcceptConnection *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PARTY_SYNC);
 	packet.add<int8_t>(PARTY_SYNC_CHANNEL_START);

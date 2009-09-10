@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AbstractPlayer.h"
+#include "AbstractConnection.h"
 #include "ConnectionManager.h"
 #include <algorithm>
 #include <boost/bind.hpp>
@@ -28,12 +28,12 @@ m_work(new boost::asio::io_service::work(m_io_service))
 {
 }
 
-void ConnectionManager::accept(uint16_t port, AbstractPlayerFactory *apf, string ivUnknown) {
+void ConnectionManager::accept(uint16_t port, AbstractConnectionFactory *apf, string ivUnknown) {
 	tcp::endpoint endpoint(tcp::v4(), port);
 	m_servers.push_back(MapleServerPtr(new MapleServer(m_io_service, endpoint, apf, ivUnknown)));
 }
 
-void ConnectionManager::connect(uint32_t server, uint16_t port, AbstractPlayer *player) {
+void ConnectionManager::connect(uint32_t server, uint16_t port, AbstractConnection *player) {
 	MapleServerClientPtr c = MapleServerClientPtr(new MapleServerClient(m_io_service, server, port, m_clients, player));
 	c->start_connect();
 }

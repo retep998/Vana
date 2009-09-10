@@ -27,28 +27,28 @@ using std::vector;
 
 class PacketCreator;
 class Player;
-class WorldServerConnectPlayer;
+class WorldServerConnection;
 
 namespace WorldServerConnectPacket {
-	void playerChangeChannel(WorldServerConnectPlayer *player, Player *info, uint16_t channel);
-	void playerBuffsTransferred(WorldServerConnectPlayer *player, int32_t playerid);
-	void registerPlayer(WorldServerConnectPlayer *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level);
-	void removePlayer(WorldServerConnectPlayer *player, int32_t playerid);
-	void findPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &findee_name);
-	void whisperPlayer(WorldServerConnectPlayer *player, int32_t playerid, const string &whisperee, const string &message);
-	void scrollingHeader(WorldServerConnectPlayer *player, const string &message);
-	void partyOperation(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, int32_t target = 0);
-	void partyInvite(WorldServerConnectPlayer *player, int32_t playerid, const string &invitee);
-	void updateLevel(WorldServerConnectPlayer *player, int32_t playerid, int32_t level);
-	void updateJob(WorldServerConnectPlayer *player, int32_t playerid, int32_t job);
-	void updateMap(WorldServerConnectPlayer *player, int32_t playerid, int32_t map);
-	void groupChat(WorldServerConnectPlayer *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat);
-	void rankingCalculation(WorldServerConnectPlayer *player);
-	void toChannels(WorldServerConnectPlayer *player, PacketCreator &packet);
-	void toWorlds(WorldServerConnectPlayer *player, PacketCreator &packet);
-	void worldMessage(WorldServerConnectPlayer *player, const string &message, int8_t type);
-	void globalMessage(WorldServerConnectPlayer *player, const string &message, int8_t type);
-	void reloadMcdb(WorldServerConnectPlayer *player, const string &type);
+	void playerChangeChannel(WorldServerConnection *player, Player *info, uint16_t channel);
+	void playerBuffsTransferred(WorldServerConnection *player, int32_t playerid);
+	void registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level);
+	void removePlayer(WorldServerConnection *player, int32_t playerid);
+	void findPlayer(WorldServerConnection *player, int32_t playerid, const string &findee_name);
+	void whisperPlayer(WorldServerConnection *player, int32_t playerid, const string &whisperee, const string &message);
+	void scrollingHeader(WorldServerConnection *player, const string &message);
+	void partyOperation(WorldServerConnection *player, int8_t type, int32_t playerid, int32_t target = 0);
+	void partyInvite(WorldServerConnection *player, int32_t playerid, const string &invitee);
+	void updateLevel(WorldServerConnection *player, int32_t playerid, int32_t level);
+	void updateJob(WorldServerConnection *player, int32_t playerid, int32_t job);
+	void updateMap(WorldServerConnection *player, int32_t playerid, int32_t map);
+	void groupChat(WorldServerConnection *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat);
+	void rankingCalculation(WorldServerConnection *player);
+	void toChannels(WorldServerConnection *player, PacketCreator &packet);
+	void toWorlds(WorldServerConnection *player, PacketCreator &packet);
+	void worldMessage(WorldServerConnection *player, const string &message, int8_t type);
+	void globalMessage(WorldServerConnection *player, const string &message, int8_t type);
+	void reloadMcdb(WorldServerConnection *player, const string &type);
 };
 
 #endif

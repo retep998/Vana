@@ -47,10 +47,10 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 	}	
 	else { // Let's connect to the world server to see if the player is on any other channel
 		if (type == 0x05) {
-			WorldServerConnectPacket::findPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getId(), name);
+			WorldServerConnectPacket::findPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name);
 		}
 		else if (type == 0x06) {
-			WorldServerConnectPacket::whisperPlayer(ChannelServer::Instance()->getWorldPlayer(), player->getId(), name, chat);
+			WorldServerConnectPacket::whisperPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name, chat);
 		}
 	}
 }

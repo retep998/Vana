@@ -17,19 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "PingPacket.h"
-#include "AbstractPlayer.h"
+#include "AbstractConnection.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "RecvHeader.h"
 #include "SendHeader.h"
 
-void PingPacket::ping(AbstractPlayer *player) {
+void PingPacket::ping(AbstractConnection *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_PING);
 	player->getSession()->send(packet);
 }
 
-void PingPacket::pong(AbstractPlayer *player) {
+void PingPacket::pong(AbstractConnection *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(RECV_PONG);
 	player->getSession()->send(packet);
