@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-class PakcetReader;
+class PacketReader;
 
 namespace IpUtilities {
 	uint32_t stringToIp(const string &name);
