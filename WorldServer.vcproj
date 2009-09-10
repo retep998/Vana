@@ -233,34 +233,26 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Packets"
-				>
-				<Filter
-					Name="Inter-Server"
-					>
-					<File
-						RelativePath=".\src\WorldServer\LoginServerConnectPacket.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\src\WorldServer\PartyPacket.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\src\WorldServer\WorldServerAcceptPacket.cpp"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
 				Name="Inter-Server"
 				>
 				<File
-					RelativePath=".\src\WorldServer\LoginServerConnectPlayer.cpp"
+					RelativePath=".\src\WorldServer\LoginServerConnection.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\WorldServer\WorldServerAcceptPlayer.cpp"
+					RelativePath=".\src\WorldServer\LoginServerConnectPacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\PartyPacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\WorldServerAcceptConnection.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\WorldServerAcceptPacket.cpp"
 					>
 				</File>
 				<Filter
@@ -291,26 +283,6 @@
 				>
 			</File>
 			<Filter
-				Name="Packets"
-				>
-				<Filter
-					Name="Inter-Server"
-					>
-					<File
-						RelativePath=".\src\WorldServer\LoginServerConnectPacket.h"
-						>
-					</File>
-					<File
-						RelativePath=".\src\WorldServer\PartyPacket.h"
-						>
-					</File>
-					<File
-						RelativePath=".\src\WorldServer\WorldServerAcceptPacket.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
 				Name="WorldServer"
 				>
 				<File
@@ -338,11 +310,23 @@
 				Name="Inter-Server"
 				>
 				<File
-					RelativePath=".\src\WorldServer\LoginServerConnectPlayer.h"
+					RelativePath=".\src\WorldServer\LoginServerConnection.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\WorldServer\WorldServerAcceptPlayer.h"
+					RelativePath=".\src\WorldServer\LoginServerConnectPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\PartyPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\WorldServerAcceptConnection.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\WorldServerAcceptPacket.h"
 					>
 				</File>
 				<Filter

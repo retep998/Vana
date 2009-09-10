@@ -15,26 +15,26 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDSERVERCONNECTPLAYER_H
-#define WORLDSERVERCONNECTPLAYER_H
+#ifndef WORLDSERVERCONNECTCONNECTION_H
+#define WORLDSERVERCONNECTCONNECTION_H
 
-#include "ServerPlayer.h"
+#include "ServerConnection.h"
 
 class PacketReader;
 class Player;
 
-class WorldServerConnectPlayer : public AbstractServerConnectPlayer {
+class WorldServerConnection : public AbstractServerConnection {
 public:
-	WorldServerConnectPlayer();
-	~WorldServerConnectPlayer();
+	WorldServerConnection();
+	~WorldServerConnection();
 	void realHandleRequest(PacketReader &packet);
 	void playerChangeChannel(Player *info, uint16_t channel);
 };
 
-class WorldServerConnectPlayerFactory : public AbstractPlayerFactory {
+class WorldServerConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractPlayer * createPlayer() {
-		return new WorldServerConnectPlayer();
+	AbstractConnection * createPlayer() {
+		return new WorldServerConnection();
 	}
 };
 

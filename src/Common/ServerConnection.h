@@ -15,10 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SERVERPLAYER_H
-#define SERVERPLAYER_H
+#ifndef SERVERCONNECTION_H
+#define SERVERCONNECTION_H
 
-#include "AbstractPlayer.h"
+#include "AbstractConnection.h"
 #include "Types.h"
 #include <string>
 #include <vector>
@@ -28,9 +28,9 @@ using std::vector;
 
 class PacketReader;
 
-class AbstractServerConnectPlayer : public AbstractPlayer {
+class AbstractServerConnection : public AbstractConnection {
 public:
-	AbstractServerConnectPlayer() { m_is_server = true; }
+	AbstractServerConnection() { m_is_server = true; }
 	void sendAuth(const string &pass, vector<vector<uint32_t> > extIp);
 	int8_t getType() const { return m_type; }
 protected:
@@ -39,9 +39,9 @@ private:
 	int8_t m_type;
 };
 
-class AbstractServerAcceptPlayer : public AbstractPlayer {
+class AbstractServerAcceptConnection : public AbstractConnection {
 public:
-	AbstractServerAcceptPlayer() : m_is_authenticated(false) { m_is_server = true; }
+	AbstractServerAcceptConnection() : m_is_authenticated(false) { m_is_server = true; }
 	bool processAuth(PacketReader &packet, const string &pass);
 	virtual void authenticated(int8_t type) = 0;
 

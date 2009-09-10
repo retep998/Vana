@@ -39,7 +39,7 @@ void Players::registerPlayer(uint32_t ip, int32_t id, const string &name, uint16
 		player->online = true;
 		players[id] = player;
 
-		LoginServerConnectPacket::updateChannelPop(WorldServer::Instance()->getLoginPlayer(), channel, ++Channels::Instance()->getChannel(channel)->players);
+		LoginServerConnectPacket::updateChannelPop(WorldServer::Instance()->getLoginConnection(), channel, ++Channels::Instance()->getChannel(channel)->players);
 	}
 	else {
 		players[id]->channel = channel;
@@ -59,7 +59,7 @@ void Players::remove(int32_t id, int16_t channel) {
 		if (players[id]->party != 0) {
 			PartyHandler::logInLogOut(id);
 		}
-		LoginServerConnectPacket::updateChannelPop(WorldServer::Instance()->getLoginPlayer(), channel, --Channels::Instance()->getChannel(channel)->players);
+		LoginServerConnectPacket::updateChannelPop(WorldServer::Instance()->getLoginConnection(), channel, --Channels::Instance()->getChannel(channel)->players);
 	}
 }
 

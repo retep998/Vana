@@ -244,14 +244,6 @@
 					>
 				</File>
 				<Filter
-					Name="Inter-Server"
-					>
-					<File
-						RelativePath=".\src\LoginServer\LoginServerAcceptPacket.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="Helpers"
 					>
 					<File
@@ -264,7 +256,11 @@
 				Name="Inter-Server"
 				>
 				<File
-					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.cpp"
+					RelativePath=".\src\LoginServer\LoginServerAcceptConnection.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\LoginServer\LoginServerAcceptPacket.cpp"
 					>
 				</File>
 				<Filter
@@ -293,14 +289,6 @@
 					RelativePath=".\src\LoginServer\LoginPacket.h"
 					>
 				</File>
-				<Filter
-					Name="Inter-Server"
-					>
-					<File
-						RelativePath=".\src\LoginServer\LoginServerAcceptPacket.h"
-						>
-					</File>
-				</Filter>
 				<Filter
 					Name="Helpers"
 					>
@@ -354,7 +342,11 @@
 				Name="Inter-Server"
 				>
 				<File
-					RelativePath=".\src\LoginServer\LoginServerAcceptPlayer.h"
+					RelativePath=".\src\LoginServer\LoginServerAcceptConnection.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\LoginServer\LoginServerAcceptPacket.h"
 					>
 				</File>
 				<Filter

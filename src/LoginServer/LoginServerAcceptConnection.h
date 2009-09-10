@@ -15,30 +15,31 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDSERVERACCEPTPLAYER_H
-#define WORLDSERVERACCEPTPLAYER_H
+#ifndef LOGINSERVERACCEPTCONNECTION_H
+#define LOGINSERVERACCEPTCONNECTION_H
 
-#include "ServerPlayer.h"
+#include "ServerConnection.h"
 #include "Types.h"
 
 class PacketReader;
 
-class WorldServerAcceptPlayer : public AbstractServerAcceptPlayer {
+class LoginServerAcceptConnection : public AbstractServerAcceptConnection {
 public:
-	~WorldServerAcceptPlayer();
-
+	LoginServerAcceptConnection() : worldId(-1) { };
+	~LoginServerAcceptConnection();
 	void realHandleRequest(PacketReader &packet);
 	void authenticated(int8_t type);
 
-	uint16_t getChannel() const { return channel; }
+	void setWorldId(int8_t id) { worldId = id; }
+	int8_t getWorldId() const { return worldId; }
 private:
-	uint16_t channel;
+	int8_t worldId;
 };
 
-class WorldServerAcceptPlayerFactory : public AbstractPlayerFactory {
+class LoginServerAcceptConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractPlayer * createPlayer() {
-		return new WorldServerAcceptPlayer();
+	AbstractConnection * createConnection() {
+		return new LoginServerAcceptConnection();
 	}
 };
 

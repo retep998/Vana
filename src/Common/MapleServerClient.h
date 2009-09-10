@@ -27,14 +27,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using boost::asio::ip::tcp;
 
-class AbstractPlayer;
+class AbstractConnection;
 
 class MapleServerClient : public MapleSession {
 public:
 	MapleServerClient(boost::asio::io_service &io_service,
 		uint32_t server, uint16_t port,
 		SessionManagerPtr sessionManager,
-		AbstractPlayer *player);
+		AbstractConnection *player);
 	void start_connect();
 private:
 	void readConnectPacket();

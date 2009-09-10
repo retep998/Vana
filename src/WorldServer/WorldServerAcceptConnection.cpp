@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerAcceptPlayer.h"
+#include "WorldServerAcceptConnection.h"
 #include "Channels.h"
 #include "InterHeader.h"
 #include "LoginServerConnectPacket.h"
@@ -29,11 +29,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPacket.h"
 #include <iostream>
 
-WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
+WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 	if (isAuthenticated()) {
 		if (getType() == InterChannelServer) {
 			if (WorldServer::Instance()->isConnected()) {
-				LoginServerConnectPacket::removeChannel(WorldServer::Instance()->getLoginPlayer(), channel);
+				LoginServerConnectPacket::removeChannel(WorldServer::Instance()->getLoginConnection(), channel);
 			}
 			Players::Instance()->removeChannelPlayers(channel);
 			Channels::Instance()->removeChannel(channel);
@@ -42,7 +42,7 @@ WorldServerAcceptPlayer::~WorldServerAcceptPlayer() {
 	}
 }
 
-void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
+void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
 	switch (packet.get<int16_t>()) {
 		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet); break;
@@ -63,7 +63,7 @@ void WorldServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 	}
 }
 
-void WorldServerAcceptPlayer::authenticated(int8_t type) {
+void WorldServerAcceptConnection::authenticated(int8_t type) {
 	channel = Channels::Instance()->getAvailableChannel();
 	if (type == InterChannelServer) {
 		if (channel != -1) {
@@ -73,7 +73,7 @@ void WorldServerAcceptPlayer::authenticated(int8_t type) {
 			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 			WorldServerAcceptPacket::sendParties(this);
-			LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginPlayer(), channel, getIp(), getExternalIp(), port);
+			LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginConnection(), channel, getIp(), getExternalIp(), port);
 			std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 		}
 		else {

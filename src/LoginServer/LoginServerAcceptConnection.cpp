@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptPlayer.h"
+#include "LoginServerAcceptConnection.h"
 #include "InterHeader.h"
 #include "LoginServer.h"
 #include "LoginServerAcceptHandler.h"
@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RankingCalculator.h"
 #include "Worlds.h"
 
-LoginServerAcceptPlayer::~LoginServerAcceptPlayer() {
+LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (worldId != -1) {
 		Worlds::worlds[worldId]->connected = false;
 		Worlds::worlds[worldId]->channels.clear(); // Remove the channels (they will automaticly disconnect)
@@ -32,7 +32,7 @@ LoginServerAcceptPlayer::~LoginServerAcceptPlayer() {
 	}
 }
 
-void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
+void LoginServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
 	switch (packet.get<int16_t>()) {
 		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
@@ -43,7 +43,7 @@ void LoginServerAcceptPlayer::realHandleRequest(PacketReader &packet) {
 	}
 }
 
-void LoginServerAcceptPlayer::authenticated(int8_t type) {
+void LoginServerAcceptConnection::authenticated(int8_t type) {
 	switch (type) {
 		case InterWorldServer:
 			Worlds::connectWorldServer(this);

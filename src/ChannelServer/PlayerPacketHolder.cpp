@@ -31,7 +31,7 @@ void PlayerPacketHolder::parseIncomingPacket(PacketReader &packet) {
 	memcpy(buf, packet.getBuffer(), psize);
 	
 	m_map[playerid].reset(new PacketReader(buf, psize));
-	WorldServerConnectPacket::playerBuffsTransferred(ChannelServer::Instance()->getWorldPlayer(), playerid);
+	WorldServerConnectPacket::playerBuffsTransferred(ChannelServer::Instance()->getWorldConnection(), playerid);
 }
 
 void PlayerPacketHolder::removePacket(int32_t playerid) {

@@ -44,13 +44,13 @@ void ChannelServer::loadData() {
 	Initializing::checkMcdbVersion();
 	Initializing::loadData();
 
-	WorldServerConnectPlayer *loginPlayer = new WorldServerConnectPlayer;
+	WorldServerConnection *loginPlayer = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(login_ip, login_inter_port, loginPlayer);
 	loginPlayer->sendAuth(inter_password, external_ip);
 }
 
 void ChannelServer::connectWorld() {
-	worldPlayer = new WorldServerConnectPlayer;
+	worldPlayer = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(world_ip, world_port, worldPlayer);
 	worldPlayer->sendAuth(inter_password, external_ip);
 }

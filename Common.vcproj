@@ -352,7 +352,7 @@
 				Name="Abstracts"
 				>
 				<File
-					RelativePath=".\src\Common\AbstractPlayer.cpp"
+					RelativePath=".\src\Common\AbstractConnection.cpp"
 					>
 				</File>
 				<File
@@ -376,7 +376,7 @@
 				Name="Inter-Server"
 				>
 				<File
-					RelativePath=".\src\Common\ServerPlayer.cpp"
+					RelativePath=".\src\Common\ServerConnection.cpp"
 					>
 				</File>
 			</Filter>
@@ -396,6 +396,10 @@
 			>
 			<File
 				RelativePath=".\src\Common\GameConstants.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Common\MapleVersion.h"
 				>
 			</File>
 			<File
@@ -550,10 +554,6 @@
 				Name="Connection"
 				>
 				<File
-					RelativePath=".\src\Common\AbstractSession.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Common\ConnectionManager.h"
 					>
 				</File>
@@ -583,10 +583,6 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\MapleEncryption.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\MapleVersion.h"
 					>
 				</File>
 			</Filter>
@@ -622,11 +618,15 @@
 				Name="Abstracts"
 				>
 				<File
-					RelativePath=".\src\Common\AbstractPlayer.h"
+					RelativePath=".\src\Common\AbstractConnection.h"
 					>
 				</File>
 				<File
 					RelativePath=".\src\Common\AbstractServer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\AbstractSession.h"
 					>
 				</File>
 			</Filter>
@@ -638,7 +638,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\ServerPlayer.h"
+					RelativePath=".\src\Common\ServerConnection.h"
 					>
 				</File>
 			</Filter>

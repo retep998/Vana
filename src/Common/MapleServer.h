@@ -28,13 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using boost::asio::ip::tcp;
 
-class AbstractPlayerFactory;
+class AbstractConnectionFactory;
 
 class MapleServer {
 public:
 	MapleServer(boost::asio::io_service &io_service,
 		const tcp::endpoint &endpoint,
-		AbstractPlayerFactory *apf,
+		AbstractConnectionFactory *apf,
 		string connectPacketUnknown);
 	void stop();
 private:
@@ -43,7 +43,7 @@ private:
 		const boost::system::error_code &error);
 
 	tcp::acceptor m_acceptor;
-	boost::scoped_ptr<AbstractPlayerFactory> m_apf;
+	boost::scoped_ptr<AbstractConnectionFactory> m_apf;
 	SessionManagerPtr m_session_manager;
 	string m_connect_packet_unknown;
 };

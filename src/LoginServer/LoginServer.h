@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.h"
 #include "ConfigFile.h"
 #include "InitializeLogin.h"
-#include "LoginServerAcceptPlayer.h"
+#include "LoginServerAcceptConnection.h"
 #include "PlayerLogin.h"
 #include "Types.h"
 #include <boost/utility.hpp>

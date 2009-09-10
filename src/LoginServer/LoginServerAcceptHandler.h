@@ -18,14 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGINSERVERACCEPTHANDLER_H
 #define LOGINSERVERACCEPTHANDLER_H
 
-class LoginServerAcceptPlayer;
+class LoginServerAcceptConnection;
 class PacketReader;
 
 namespace LoginServerAcceptHandler {
-	void registerChannel(LoginServerAcceptPlayer *player, PacketReader &packet);
-	void updateChannelPop(LoginServerAcceptPlayer *player, PacketReader &packet);
-	void removeChannel(LoginServerAcceptPlayer *player, PacketReader &packet);
-	void toWorlds(LoginServerAcceptPlayer *player, PacketReader &packet);
+	void registerChannel(LoginServerAcceptConnection *player, PacketReader &packet);
+	void updateChannelPop(LoginServerAcceptConnection *player, PacketReader &packet);
+	void removeChannel(LoginServerAcceptConnection *player, PacketReader &packet);
+	void toWorlds(LoginServerAcceptConnection *player, PacketReader &packet);
 }
 
 #endif

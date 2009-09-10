@@ -16,14 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptHandler.h"
-#include "LoginServerAcceptPlayer.h"
+#include "LoginServerAcceptConnection.h"
 #include "IpUtilities.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Worlds.h"
 #include <iostream>
 
-void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, PacketReader &packet) {
+void LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *player, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
 	Channel *chan = new Channel();
 	chan->ip = packet.get<int32_t>();
@@ -33,21 +33,21 @@ void LoginServerAcceptHandler::registerChannel(LoginServerAcceptPlayer *player, 
 	std::cout << "Registering channel " << channel << " with IP " << IpUtilities::ipToString(chan->ip) << " and port " << chan->port << std::endl;
 }
 
-void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptPlayer *player, PacketReader &packet) {
+void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *player, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
 	int32_t population = packet.get<int32_t>();
 
 	Worlds::worlds[player->getWorldId()]->channels[channel]->population = population;
 }
 
-void LoginServerAcceptHandler::removeChannel(LoginServerAcceptPlayer *player, PacketReader &packet) {
+void LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *player, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
 
 	Worlds::worlds[player->getWorldId()]->channels.erase(channel);
 	std::cout << "Removed channel " << channel << std::endl;
 }
 
-void LoginServerAcceptHandler::toWorlds(LoginServerAcceptPlayer *player, PacketReader &packet) {
+void LoginServerAcceptHandler::toWorlds(LoginServerAcceptConnection *player, PacketReader &packet) {
 	PacketCreator pack;
 	pack.addBuffer(packet);
 	Worlds::toWorlds(pack);

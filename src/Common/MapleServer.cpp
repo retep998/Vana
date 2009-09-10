@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AbstractPlayer.h"
+#include "AbstractConnection.h"
 #include "MapleServer.h"
 #include "MapleSession.h"
 #include <boost/bind.hpp>
 
 MapleServer::MapleServer(boost::asio::io_service &io_service,
 						 const tcp::endpoint &endpoint,
-						 AbstractPlayerFactory *apf,
+						 AbstractConnectionFactory *apf,
 						 string connectPacketUnknown) :
 m_acceptor(io_service, endpoint),
 m_apf(apf),
@@ -39,7 +39,7 @@ void MapleServer::stop() {
 
 void MapleServer::start_accept() {
 	MapleSessionPtr new_session(new MapleSession(m_acceptor.io_service(),
-		m_session_manager, m_apf->createPlayer(), true, m_connect_packet_unknown));
+		m_session_manager, m_apf->createConnection(), true, m_connect_packet_unknown));
 
     m_acceptor.async_accept(new_session->getSocket(),
 		boost::bind(&MapleServer::handle_accept, this, new_session,

@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractServer.h"
 #include "ConfigFile.h"
-#include "LoginServerConnectPlayer.h"
+#include "LoginServerConnection.h"
 #include "Types.h"
-#include "WorldServerAcceptPlayer.h"
+#include "WorldServerAcceptConnection.h"
 #include <string>
 #include <boost/utility.hpp>
 
@@ -62,7 +62,7 @@ public:
 	int32_t getMesorate() const { return mesorate; }
 	int32_t getDroprate() const { return droprate; }
 	int32_t getMaxChars() const { return maxChars; }
-	LoginServerConnectPlayer * getLoginPlayer() const { return loginPlayer; }
+	LoginServerConnection * getLoginConnection() const { return loginPlayer; }
 	string getScrollingHeader() { return scrollingHeader.c_str(); }
 	bool isConnected() const { return worldId != -1; }
 
@@ -83,7 +83,7 @@ private:
 	int32_t maxChars;
 	uint32_t login_ip;
 	string scrollingHeader;
-	LoginServerConnectPlayer *loginPlayer;
+	LoginServerConnection *loginPlayer;
 };
 
 #endif

@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleSession.h"
-#include "AbstractPlayer.h"
+#include "AbstractConnection.h"
 #include "Decoder.h"
 #include "IpUtilities.h"
 #include "PacketCreator.h"
@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 MapleSession::MapleSession(boost::asio::io_service &io_service,
 						   SessionManagerPtr sessionManager,
-						   AbstractPlayer *player, bool isServer,
+						   AbstractConnection *player, bool isServer,
 						   string connectPacketUnknown) :
 AbstractSession(sessionManager),
 m_socket(io_service),

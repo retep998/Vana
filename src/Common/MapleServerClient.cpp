@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleServerClient.h"
-#include "AbstractPlayer.h"
+#include "AbstractConnection.h"
 #include "MapleVersion.h"
 #include "PacketReader.h"
 #include <boost/bind.hpp>
@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 MapleServerClient::MapleServerClient(boost::asio::io_service &io_service,
 		uint32_t server, uint16_t port,
 		SessionManagerPtr sessionManager,
-		AbstractPlayer *player) :
+		AbstractConnection *player) :
 MapleSession(io_service, sessionManager, player, false),
 m_server(server),
 m_port(port),

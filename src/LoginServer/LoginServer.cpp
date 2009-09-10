@@ -25,7 +25,7 @@ LoginServer * LoginServer::singleton = 0;
 
 void LoginServer::listen() {
 	ConnectionManager::Instance()->accept(port, new PlayerLoginFactory(), "0");
-	ConnectionManager::Instance()->accept(inter_port, new LoginServerAcceptPlayerFactory());
+	ConnectionManager::Instance()->accept(inter_port, new LoginServerAcceptConnectionFactory());
 }
 
 void LoginServer::loadData() {

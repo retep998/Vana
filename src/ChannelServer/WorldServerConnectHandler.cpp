@@ -41,7 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <limits>
 
-void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, PacketReader &packet) {
+void WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &packet) {
 	int8_t worldid = packet.get<int8_t>();
 	if (worldid != -1) {
 		ChannelServer::Instance()->setWorld(worldid);
@@ -56,7 +56,7 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnectPlayer *player, P
 	}
 }
 
-void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, PacketReader &packet) {
+void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketReader &packet) {
 	int16_t channel = packet.get<int16_t>();
 	if (channel != -1) {
 		ChannelServer::Instance()->setChannel(channel);
@@ -74,7 +74,7 @@ void WorldServerConnectHandler::connect(WorldServerConnectPlayer *player, Packet
 	}
 }
 
-void WorldServerConnectHandler::playerChangeChannel(WorldServerConnectPlayer *player, PacketReader &packet) {
+void WorldServerConnectHandler::playerChangeChannel(WorldServerConnection *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	uint32_t ip = packet.get<uint32_t>();
 	int16_t port = packet.get<int16_t>();

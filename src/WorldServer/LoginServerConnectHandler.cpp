@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.h"
-#include "LoginServerConnectPlayer.h"
+#include "LoginServerConnection.h"
 #include "WorldServerAcceptPacket.h"
 #include "WorldServer.h"
 #include "Channels.h"
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Rates.h"
 #include <iostream>
 
-void LoginServerConnectHandler::connect(LoginServerConnectPlayer *player, PacketReader &packet) {
+void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketReader &packet) {
 	int8_t worldid = packet.get<int8_t>();
 	if (worldid != -1) {
 		WorldServer::Instance()->setWorldId(worldid);

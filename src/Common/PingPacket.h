@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PINGPACKET_H
 #define PINGPACKET_H
 
-class AbstractPlayer;
+class AbstractConnection;
 
 namespace PingPacket {
-	void ping(AbstractPlayer *player);
-	void pong(AbstractPlayer *player);
+	void ping(AbstractConnection *player);
+	void pong(AbstractConnection *player);
 };
 
 #endif

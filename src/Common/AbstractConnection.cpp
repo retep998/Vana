@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AbstractPlayer.h"
+#include "AbstractConnection.h"
 #include "MapleSession.h"
 #include "PingPacket.h"
 #include "PacketReader.h"
@@ -26,14 +26,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-AbstractPlayer::AbstractPlayer() :
+AbstractConnection::AbstractConnection() :
 m_is_server(false),
 m_is_pinged(false),
 m_timers(new Timer::Container)
 {
 }
 
-void AbstractPlayer::handleRequest(PacketReader &packet) {
+void AbstractConnection::handleRequest(PacketReader &packet) {
 	try {
 		m_is_pinged = false;
 		if (m_is_server && packet.getHeader() == SEND_PING) {
@@ -46,13 +46,13 @@ void AbstractPlayer::handleRequest(PacketReader &packet) {
 	}
 }
 
-void AbstractPlayer::setTimer() {
-	new Timer::Timer(bind(&AbstractPlayer::ping, this),
+void AbstractConnection::setTimer() {
+	new Timer::Timer(bind(&AbstractConnection::ping, this),
 		Timer::Id(Timer::Types::PingTimer, 0, 0),
 		getTimers(), Timer::Time::fromNow(60000), 15000); // Set the initial ping to 1 minutes for some people with slow computers
 }
 
-void AbstractPlayer::ping() {
+void AbstractConnection::ping() {
 	if (m_is_pinged) { // We have a timeout now
 		getSession()->disconnect();
 		return;
@@ -61,7 +61,7 @@ void AbstractPlayer::ping() {
 	PingPacket::ping(this);
 }
 
-void AbstractPlayer::setSession(MapleSession *val) {
+void AbstractConnection::setSession(MapleSession *val) {
 	m_session = val;
 	setTimer();
 }

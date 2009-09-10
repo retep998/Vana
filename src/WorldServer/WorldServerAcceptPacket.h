@@ -23,23 +23,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class WorldServerAcceptPlayer;
+class WorldServerAcceptConnection;
 class PacketReader;
 
 namespace WorldServerAcceptPacket {
-	void connect(WorldServerAcceptPlayer *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats, int32_t maxChars);
+	void connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats, int32_t maxChars);
 	void sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer);
 	void sendHeldPacketRemoval(uint16_t channel, int32_t playerid);
-	void playerChangeChannel(WorldServerAcceptPlayer *player, int32_t playerid, uint32_t ip, int16_t port);
+	void playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port);
 	void sendToChannels(unsigned char *data, int32_t len);
 	void sendToLogin(unsigned char *data, int32_t len);
-	void findPlayer(WorldServerAcceptPlayer *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
-	void whisperPlayer(WorldServerAcceptPlayer *player, int32_t whisperee, const string &whisperer, uint16_t channel, const string &message);
+	void findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
+	void whisperPlayer(WorldServerAcceptConnection *player, int32_t whisperee, const string &whisperer, uint16_t channel, const string &message);
 	void scrollingHeader(const string &message);
 	void newConnectable(uint16_t channel, int32_t playerid);
-	void groupChat(WorldServerAcceptPlayer *player, int32_t playerid, int8_t type, const string &message, const string &sender);
-	void sendRates(WorldServerAcceptPlayer *player, int32_t setBit);
-	void sendParties(WorldServerAcceptPlayer *player);
+	void groupChat(WorldServerAcceptConnection *player, int32_t playerid, int8_t type, const string &message, const string &sender);
+	void sendRates(WorldServerAcceptConnection *player, int32_t setBit);
+	void sendParties(WorldServerAcceptConnection *player);
 	void sendRemovePartyPlayer(int32_t playerid, int32_t partyid);
 	void sendAddPartyPlayer(int32_t playerid, int32_t partyid);
 	void sendSwitchPartyLeader(int32_t playerid, int32_t partyid);

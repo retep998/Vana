@@ -360,7 +360,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					break;
 				}
 				case CmdHeader:
-					WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldPlayer(), args);
+					WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldConnection(), args);
 					break;
 				case CmdBan: {
 					re = "(\\w+) ?(\\d+)?";
@@ -832,7 +832,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							args == "mobs" || args == "beauty" || args == "scripts" ||
 							args == "skills" || args == "reactors" || args == "pets" ||
 							args == "quests" || args == "all") {
-							WorldServerConnectPacket::reloadMcdb(ChannelServer::Instance()->getWorldPlayer(), args);
+							WorldServerConnectPacket::reloadMcdb(ChannelServer::Instance()->getWorldConnection(), args);
 							PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", 6);
 						}
 						else {
@@ -1004,7 +1004,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					StoragePacket::showStorage(player, 9900000);
 					break;
 				case CmdRankingCalc:
-					WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldPlayer());
+					WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldConnection());
 					PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", 5);
 					break;
 				case CmdWorldMessage: {
@@ -1017,7 +1017,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						else if (matches[1] == "purple") type = 6;
 
 						if (type != -1) {
-							WorldServerConnectPacket::worldMessage(ChannelServer::Instance()->getWorldPlayer(), (string) matches[2], type);
+							WorldServerConnectPacket::worldMessage(ChannelServer::Instance()->getWorldConnection(), (string) matches[2], type);
 						}
 						else {
 							PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
@@ -1038,7 +1038,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						else if (matches[1] == "purple") type = 6;
 
 						if (type != -1) {
-							WorldServerConnectPacket::globalMessage(ChannelServer::Instance()->getWorldPlayer(), (string) matches[2], type);
+							WorldServerConnectPacket::globalMessage(ChannelServer::Instance()->getWorldConnection(), (string) matches[2], type);
 						}
 						else {
 							PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
@@ -1192,6 +1192,6 @@ void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
 	string chat = packet.getString();
 
 	if (!ChatHandler::handleCommand(player, chat)) {
-		WorldServerConnectPacket::groupChat(ChannelServer::Instance()->getWorldPlayer(), type, player->getId(), receivers, chat);
+		WorldServerConnectPacket::groupChat(ChannelServer::Instance()->getWorldConnection(), type, player->getId(), receivers, chat);
 	}
 }

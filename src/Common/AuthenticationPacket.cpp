@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IpUtilities.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
-#include "ServerPlayer.h"
+#include "ServerConnection.h"
 #include <algorithm>
 
-void AuthenticationPacket::sendPassword(AbstractServerConnectPlayer *player, string pass, vector<vector<uint32_t> > extIp) {
+void AuthenticationPacket::sendPassword(AbstractServerConnection *player, string pass, vector<vector<uint32_t> > extIp) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PASSWORD);
 	packet.addString(pass);
