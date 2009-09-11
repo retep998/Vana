@@ -36,16 +36,18 @@ using std::tr1::bind;
 
 // Buff skills
 void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
-	clock_t skillExpire = time * 1000;
-	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
+	if (time > 0) { // Only bother with timers when there is a time
+		clock_t skillExpire = time * 1000;
+		Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 
-	if (GameLogicUtilities::isMobSkill(skill)) {
-		new Timer::Timer(bind(&PlayerActiveBuffs::removeDebuff, this, (uint8_t)(skill), true),
-			id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
-	}
-	else {
-		new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
-			id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
+		if (GameLogicUtilities::isMobSkill(skill)) {
+			new Timer::Timer(bind(&PlayerActiveBuffs::removeDebuff, this, (uint8_t)(skill), true),
+				id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
+		}
+		else {
+			new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
+				id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
+		}
 	}
 	m_buffs.push_back(skill);
 }
@@ -150,36 +152,16 @@ void PlayerActiveBuffs::useDispel() {
 int32_t PlayerActiveBuffs::calculateDebuffMaskBit(uint8_t skill) {
 	int32_t bitfield = 0;
 	switch (skill) {
-		case MobSkills::Seal:
-			bitfield = StatusEffects::Player::Seal;
-			break;
-		case MobSkills::Darkness:
-			bitfield = StatusEffects::Player::Darkness;
-			break;
-		case MobSkills::Weakness:
-			bitfield = StatusEffects::Player::Weakness;
-			break;
-		case MobSkills::Stun:
-			bitfield = StatusEffects::Player::Stun;
-			break;
-		case MobSkills::Curse:
-			bitfield = StatusEffects::Player::Curse;
-			break;
-		case MobSkills::Poison:
-			bitfield = StatusEffects::Player::Poison;
-			break;
-		case MobSkills::Slow:
-			bitfield = StatusEffects::Player::Slow;
-			break;
-		case MobSkills::Seduce:
-			bitfield = StatusEffects::Player::Seduce;
-			break;
-		case MobSkills::Zombify:
-			bitfield = StatusEffects::Player::Zombify;
-			break;
-		case MobSkills::CrazySkull:
-			bitfield = StatusEffects::Player::CrazySkull;
-			break;
+		case MobSkills::Seal: bitfield = StatusEffects::Player::Seal; break;
+		case MobSkills::Darkness: bitfield = StatusEffects::Player::Darkness; break;
+		case MobSkills::Weakness: bitfield = StatusEffects::Player::Weakness; break;
+		case MobSkills::Stun: bitfield = StatusEffects::Player::Stun; break;
+		case MobSkills::Curse: bitfield = StatusEffects::Player::Curse; break;
+		case MobSkills::Poison: bitfield = StatusEffects::Player::Poison; break;
+		case MobSkills::Slow: bitfield = StatusEffects::Player::Slow; break;
+		case MobSkills::Seduce: bitfield = StatusEffects::Player::Seduce; break;
+		case MobSkills::Zombify: bitfield = StatusEffects::Player::Zombify; break;
+		case MobSkills::CrazySkull: bitfield = StatusEffects::Player::CrazySkull; break;
 	}
 	return bitfield;
 }
@@ -530,10 +512,19 @@ int32_t PlayerActiveBuffs::getHyperBody() {
 	return id;
 }
 
+int32_t PlayerActiveBuffs::getHomingBeacon() {
+	int32_t id = 0;
+	if (getActiveSkillLevel(Jobs::Outlaw::HomingBeacon) > 0)
+		id = Jobs::Outlaw::HomingBeacon;
+	else if (getActiveSkillLevel(Jobs::Corsair::Bullseye) > 0)
+		id = Jobs::Corsair::Bullseye;
+	return id;
+}
+
 int32_t PlayerActiveBuffs::getCurrentMorph() {
 	int32_t morphid = 0;
-	if (m_activebuffsbytype.find(Byte5) != m_activebuffsbytype.end()) {
-		unordered_map<uint8_t, int32_t> byte = m_activebuffsbytype[Byte5];
+	if (m_activebuffsbytype.find(BuffBytes::Byte5) != m_activebuffsbytype.end()) {
+		unordered_map<uint8_t, int32_t> byte = m_activebuffsbytype[BuffBytes::Byte5];
 		if (byte.find(0x02) != byte.end()) {
 			morphid = byte[0x02];
 		}

@@ -34,6 +34,7 @@ namespace BuffsPacket {
 	void usePirateBuff(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill);
 	void useSpeedInfusion(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo);
 	void useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo, int32_t mountid);
+	void useHomingBeacon(Player *player, int32_t skillid, ActiveBuff &pskill, int32_t mapmobid);
 };
 
 #endif

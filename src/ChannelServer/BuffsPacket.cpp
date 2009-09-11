@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffsPacket.h"
 #include "Buffs.h"
+#include "BuffsPacketHelper.h"
 #include "GameConstants.h"
 #include "MapleSession.h"
 #include "Maps.h"
@@ -28,8 +29,9 @@ void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Active
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILL);
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
 		packet.add<int32_t>(skillid);
@@ -45,15 +47,16 @@ void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Active
 		packet = PacketCreator();
 		packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 		packet.add<int32_t>(player->getId());
-		for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-			packet.add<uint8_t>(mskill.typelist[i]);
-		if ((mskill.typelist[Byte3] & 0x40) > 0) {
+
+		BuffsPacketHelper::addBytes(packet, mskill.typelist);
+
+		if ((mskill.typelist[BuffBytes::Byte3] & 0x40) > 0) {
 			packet.add<int32_t>(skillid);
 		}
 		else {
 			for (size_t i = 0; i < mskill.values.size(); i++) {
 				uint8_t byte = mskill.bytes[i];
-				if (byte == Byte5) {
+				if (byte == BuffBytes::Byte5) {
 					packet.add<int16_t>(mskill.values[i]);
 				}
 				else {
@@ -71,8 +74,9 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillid, uint8_t level, int
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILL);
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
 		packet.add<uint16_t>(skillid);
@@ -88,8 +92,9 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillid, uint8_t level, int
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<uint8_t>(mskill.typelist[i]);
+
+	BuffsPacketHelper::addBytes(packet, mskill.typelist);
+
 	for (size_t i = 0; i < mskill.values.size(); i++) {
 		if (skillid == MobSkills::Poison)
 			packet.add<int16_t>(mskill.values[i]);
@@ -104,8 +109,9 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillid, uint8_t level, int
 void BuffsPacket::endDebuff(Player *player, ActiveBuff &pskill) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CANCEL_SKILL);
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide())
@@ -113,16 +119,18 @@ void BuffsPacket::endDebuff(Player *player, ActiveBuff &pskill) {
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_CANCEL_OTHERS_BUFF);
 	packet.add<int32_t>(player->getId());
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CANCEL_SKILL);
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide())
@@ -130,8 +138,9 @@ void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_CANCEL_OTHERS_BUFF);
 	packet.add<int32_t>(player->getId());
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -139,8 +148,9 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	PacketCreator packet;
 	int16_t castedtime = static_cast<int16_t>(time);
 	packet.add<int16_t>(SEND_USE_SKILL);
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
 	packet.add<int16_t>(0);
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
@@ -158,8 +168,9 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(mskill.typelist[i]);
+
+	BuffsPacketHelper::addBytes(packet, mskill.typelist);
+	
 	packet.add<int16_t>(0);
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
@@ -178,8 +189,9 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 	int16_t castedtime = static_cast<int16_t>(time);
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILL);
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(castedvalue);
 	packet.add<int32_t>(skillid);
@@ -194,8 +206,9 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(mskill.typelist[i]);
+
+	BuffsPacketHelper::addBytes(packet, mskill.typelist);
+
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(castedvalue);
 	packet.add<int32_t>(skillid);
@@ -211,8 +224,9 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SKILL);
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(pskill.types[i]);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(mountid);
 	packet.add<int32_t>(skillid);
@@ -226,8 +240,9 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	packet = PacketCreator();
 	packet.add<int16_t>(SEND_SHOW_OTHERS_SKILL);
 	packet.add<int32_t>(player->getId());
-	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-		packet.add<int8_t>(mskill.typelist[i]); // Ugly temporary provision, but it works
+
+	BuffsPacketHelper::addBytes(packet, mskill.typelist);
+
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(mountid);
 	packet.add<int32_t>(skillid);
@@ -235,4 +250,23 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void BuffsPacket::useHomingBeacon(Player *player, int32_t skillid, ActiveBuff &pskill, int32_t mapmobid) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_USE_SKILL);
+
+	BuffsPacketHelper::addBytes(packet, pskill.types);
+
+	packet.add<int16_t>(0);
+	for (size_t i = 0; i < pskill.vals.size(); i++) {
+		packet.add<int16_t>(pskill.vals[i]);
+	}
+	packet.add<int16_t>(0);
+	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(0); // Time
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(mapmobid);
+	packet.add<int16_t>(0);
+	player->getSession()->send(packet);
 }

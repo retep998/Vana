@@ -397,6 +397,10 @@
 					Name="Helpers"
 					>
 					<File
+						RelativePath=".\src\ChannelServer\BuffsPacketHelper.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\src\ChannelServer\PlayerPacketHelper.cpp"
 						>
 					</File>
@@ -782,6 +786,10 @@
 				<Filter
 					Name="Helpers"
 					>
+					<File
+						RelativePath=".\src\ChannelServer\BuffsPacketHelper.h"
+						>
+					</File>
 					<File
 						RelativePath=".\src\ChannelServer\PlayerPacketHelper.h"
 						>

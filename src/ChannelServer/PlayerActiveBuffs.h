@@ -64,6 +64,7 @@ public:
 		m_pickpocketcounter(0),
 		m_battleshiphp(0),
 		m_debuffmask(0),
+		m_markedmonster(0),
 		m_berserk(false)
 		{ }
 
@@ -142,6 +143,11 @@ public:
 	void reduceBattleshipHp(uint16_t amount);
 	void resetBattleshipHp();
 
+	// Homing Beacon
+	int32_t getMarkedMonster() const { return m_markedmonster; }
+	bool hasMarkedMonster() const { return (m_markedmonster != 0); }
+	void setMarkedMonster(int32_t mapmobid) { m_markedmonster = mapmobid; }
+
 	// Commonly referred to (de)buffs on the server end
 	bool hasInfinity();
 	bool hasMesoUp();
@@ -164,6 +170,7 @@ public:
 	int32_t getCurrentMorph();
 	int32_t getMagicGuard();
 	int32_t getMesoGuard();
+	int32_t getHomingBeacon();
 
 	void endMorph();
 
@@ -178,6 +185,7 @@ private:
 	int32_t m_activebooster;
 	int32_t m_pickpocketcounter;
 	int32_t m_battleshiphp;
+	int32_t m_markedmonster;
 	uint32_t m_timeseed;
 	uint32_t m_debuffmask;
 	bool m_berserk;

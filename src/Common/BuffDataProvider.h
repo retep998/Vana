@@ -58,6 +58,7 @@ struct BuffAct {
 };
 
 struct SkillInfo {
+	SkillInfo() : bact(false) { }
 	vector<BuffInfo> player;
 	vector<BuffMapInfo> map;
 	BuffAct act;
@@ -65,10 +66,9 @@ struct SkillInfo {
 };
 
 struct MobAilmentInfo {
+	MobAilmentInfo() : delay(0) { }
 	vector<BuffInfo> mob;
 	int16_t delay;
-	BuffAct act;
-	bool bact;
 };
 
 class BuffDataProvider {
