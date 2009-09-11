@@ -428,7 +428,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 			case Jobs::ILMage::Seal:
 			case Jobs::BlazeWizard::Seal:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::Seal, StatusEffects::Mob::Seal, skillid, SkillDataProvider::Instance()->getSkill(skillid, level)->time));
 				}
 				break;
 			case Jobs::Priest::Doom:
