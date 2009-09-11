@@ -27,7 +27,6 @@ class Player;
 struct MobSkillLevelInfo;
 
 namespace MobHandler {
-	extern const int32_t mobstatuses[StatusEffects::Mob::Count];
 	int32_t handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8_t level, uint8_t weapon_type, int8_t hits, int32_t damage = 0);
 	void handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, MobSkillLevelInfo *skillinfo);
 	void handleBomb(Player *player, PacketReader &packet);
