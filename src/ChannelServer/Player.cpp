@@ -554,7 +554,9 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (getSummons()->getSummon() != 0 && getSummons()->getSummon()->getType() == 0) {
 		Summons::removeSummon(this, false, true, false, 0);
 	}
-
+	if (getActiveBuffs()->hasMarkedMonster()) {
+		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
+	}
 	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
 	MapPacket::changeMap(this);
 	Maps::addPlayer(this, mapid);

@@ -288,7 +288,7 @@ vector<Buff> Buffs::parseMobBuffs(uint8_t skillid) {
 	return ret;
 }
 
-bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo) {
+bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo, int32_t mapmobid) {
 	if (!BuffDataProvider::Instance()->isBuff(skillid))
 		return false; // Not a buff, so return false
 
@@ -363,8 +363,9 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 	ActiveMapBuff mapskill = parseBuffMapInfo(player, skillid, level);
 	ActiveMapBuff enterskill = parseBuffMapEntryInfo(player, skillid, level);
 
-	if (mountid > 0)
+	if (mountid > 0) {
 		BuffsPacket::useMount(player, skillid, time, playerskill, mapskill, addedinfo, mountid);
+	}
 	else {
 		switch (skillid) {
 			case Jobs::Pirate::Dash:
@@ -378,6 +379,13 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			case Jobs::Buccaneer::SpeedInfusion:
 			case Jobs::ThunderBreaker::SpeedInfusion:
 				BuffsPacket::useSpeedInfusion(player, skillid, time, playerskill, mapskill, addedinfo);
+				break;
+			case Jobs::Outlaw::HomingBeacon:
+			case Jobs::Corsair::Bullseye:
+				if (player->getActiveBuffs()->hasMarkedMonster()) // Otherwise the animation appears above numerous
+					BuffsPacket::endSkill(player, playerskill);
+				player->getActiveBuffs()->setMarkedMonster(mapmobid);
+				BuffsPacket::useHomingBeacon(player, skillid, playerskill, mapmobid);
 				break;
 			default:
 				BuffsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
@@ -465,6 +473,10 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::DawnWarrior::SoulCharge:
 		case Jobs::ThunderBreaker::LightningCharge:
 			playerbuffs->setCharge(0);
+			break;
+		case Jobs::Outlaw::HomingBeacon:
+		case Jobs::Corsair::Bullseye:
+			playerbuffs->setMarkedMonster(0);
 			break;
 	}
 	uint8_t level = playerbuffs->getActiveSkillLevel(skill);

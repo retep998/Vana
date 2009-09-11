@@ -126,28 +126,28 @@ enum SkillValues {
 	SkillLv
 };
 
-enum ByteTypes {
-	Byte13,
-	Byte14,
-	Byte15,
-	Byte16,
-	Byte9,
-	Byte10,
-	Byte11,
-	Byte12,
-	Byte5,
-	Byte6,
-	Byte7,
-	Byte8,
-	Byte1,
-	Byte2,
-	Byte3,
-	Byte4
-};
-
 namespace BuffBytes {
 	const int8_t ByteQuantity = 16;
 	const int8_t EntryByteQuantity = 8;
+
+	enum ByteTypes {
+		Byte13,
+		Byte14,
+		Byte15,
+		Byte16,
+		Byte9,
+		Byte10,
+		Byte11,
+		Byte12,
+		Byte5,
+		Byte6,
+		Byte7,
+		Byte8,
+		Byte1,
+		Byte2,
+		Byte3,
+		Byte4
+	};
 }
 
 namespace Stats {

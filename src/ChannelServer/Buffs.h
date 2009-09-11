@@ -61,7 +61,7 @@ struct MapEntryVals {
 
 namespace Buffs {
 	void addBuff(Player *player, int32_t itemid, int32_t time);
-	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo);
+	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo, int32_t mapmobid = 0);
 	void endBuff(Player *player, int32_t skill);
 	void doAct(Player *player, int32_t skillid, uint8_t level);
 	void addDebuff(Player *player, uint8_t skillid, uint8_t level);

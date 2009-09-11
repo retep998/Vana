@@ -28,6 +28,7 @@ using Initializing::outputWidth;
 BuffDataProvider * BuffDataProvider::singleton = 0;
 
 void BuffDataProvider::loadData() {
+	using namespace BuffBytes;
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Buffs... ";
 
 	Buff buff;
@@ -345,40 +346,6 @@ void BuffDataProvider::loadData() {
 	player.buff = buff;
 	skillsinfo[Jobs::Bishop::HolyShield].player.push_back(player);
 	// End regular buffs
-
-	// Begin act buffs
-	// Recovery
-	buff.type = 0x04;
-	buff.byte = Byte5;
-	buff.value = SkillX;
-	player.buff = buff;
-	skillsinfo[Jobs::Beginner::Recovery].player.push_back(player);
-	skillsinfo[Jobs::Noblesse::Recovery].player.push_back(player);
-	act.type = ActHeal;
-	act.time = 4900;
-	act.value = SkillX;
-	skillsinfo[Jobs::Beginner::Recovery].act = act;
-	skillsinfo[Jobs::Beginner::Recovery].bact = true;
-	skillsinfo[Jobs::Noblesse::Recovery].act = act;
-	skillsinfo[Jobs::Noblesse::Recovery].bact = true;
-
-	// Dragon Blood
-	buff.type = 0x01;
-	buff.byte = Byte1;
-	buff.value = SkillWatk;
-	player.buff = buff;
-	skillsinfo[Jobs::DragonKnight::DragonBlood].player.push_back(player);
-	buff.type = 0x80;
-	buff.byte = Byte3;
-	buff.value = SkillLv;
-	player.buff = buff;
-	skillsinfo[Jobs::DragonKnight::DragonBlood].player.push_back(player);
-	act.type = ActHurt;
-	act.time = 4000;
-	act.value = SkillX;
-	skillsinfo[Jobs::DragonKnight::DragonBlood].act = act;
-	skillsinfo[Jobs::DragonKnight::DragonBlood].bact = true;
-	// End act buffs
 
 	// Begin map buffs
 	// Nimble Feet
@@ -712,6 +679,59 @@ void BuffDataProvider::loadData() {
 	skillsinfo[Jobs::Corsair::Battleship].map.push_back(map);
 	// End mount buffs
 
+	// Begin very unusual buffs
+	player = BuffInfo(); // Placed to clear any previous value pushes
+
+	// Homing Beacon
+	buff.type = 0x01;
+	buff.byte = Byte10;
+	buff.value = SkillNone;
+	player.buff = buff;
+	player.itemval = 1;
+	skillsinfo[Jobs::Outlaw::HomingBeacon].player.push_back(player);
+	// Bullseye
+	buff.type = 0x01;
+	buff.byte = Byte10;
+	buff.value = SkillNone;
+	player.buff = buff;
+	player.itemval = 1;
+	skillsinfo[Jobs::Corsair::Bullseye].player.push_back(player);
+	// End very unusual buffs
+
+	// Begin act buffs
+	// Recovery
+	buff.type = 0x04;
+	buff.byte = Byte5;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Beginner::Recovery].player.push_back(player);
+	skillsinfo[Jobs::Noblesse::Recovery].player.push_back(player);
+	act.type = ActHeal;
+	act.time = 4900;
+	act.value = SkillX;
+	skillsinfo[Jobs::Beginner::Recovery].act = act;
+	skillsinfo[Jobs::Beginner::Recovery].bact = true;
+	skillsinfo[Jobs::Noblesse::Recovery].act = act;
+	skillsinfo[Jobs::Noblesse::Recovery].bact = true;
+
+	// Dragon Blood
+	buff.type = 0x01;
+	buff.byte = Byte1;
+	buff.value = SkillWatk;
+	player.buff = buff;
+	skillsinfo[Jobs::DragonKnight::DragonBlood].player.push_back(player);
+	buff.type = 0x80;
+	buff.byte = Byte3;
+	buff.value = SkillLv;
+	player.buff = buff;
+	skillsinfo[Jobs::DragonKnight::DragonBlood].player.push_back(player);
+	act.type = ActHurt;
+	act.time = 4000;
+	act.value = SkillX;
+	skillsinfo[Jobs::DragonKnight::DragonBlood].act = act;
+	skillsinfo[Jobs::DragonKnight::DragonBlood].bact = true;
+	// End act buffs
+
 	// Debuffs
 	// Stun
 	buff.type = 0x02;
@@ -797,6 +817,7 @@ void BuffDataProvider::loadData() {
 }
 
 void BuffDataProvider::addItemInfo(int32_t itemid, const ConsumeInfo &cons) {
+	using namespace BuffBytes;
 	vector<uint8_t> types;
 	vector<int8_t> bytes;
 	vector<int16_t> values;

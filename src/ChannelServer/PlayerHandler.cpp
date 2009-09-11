@@ -687,6 +687,9 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 					damage = mob->getHp();
 				}
 			}
+			else if (skillid == Jobs::Outlaw::HomingBeacon || skillid == Jobs::Corsair::Bullseye) {
+				Buffs::addBuff(player, skillid, level, 0, mapmobid);
+			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
 			if (temphp - damage <= 0) // Mob was killed, so set the Mob pointer to 0
