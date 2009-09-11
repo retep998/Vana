@@ -25,8 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <map>
 #include <vector>
 
+using std::map;
 using std::tr1::unordered_map;
 using std::vector;
 
@@ -73,7 +75,7 @@ public:
 	void setControl(Player *control, bool spawn = false, Player *display = 0);
 	void endControl();
 	void setOwner(Mob *owner) { this->owner = owner; }
-	void setSponge(Mob *sponge) { horntailsponge = sponge; }
+	void setSponge(Mob *sponge) { this->sponge = sponge; }
 	void setLastSkillUse(uint8_t skill, time_t usetime) { skilluse[skill] = usetime; }
 	void statusPacket(PacketCreator &packet);
 	void addSpawn(int32_t mapmobid, Mob *mob) { spawns[mapmobid] = mob; }
@@ -124,7 +126,7 @@ public:
 	bool hasStatus(int32_t status) const;
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return owner; }
-	Mob * getSponge() const { return horntailsponge; }
+	Mob * getSponge() const { return sponge; }
 	const MobInfo * getInfo() const { return &info; }
 	int32_t getSkillCount() const { return info.skills.size(); }
 	size_t getSpawnCount() const { return spawns.size(); }
@@ -153,9 +155,9 @@ private:
 	int32_t webplayerid;
 	uint64_t totalhealth;
 	Mob *owner;
-	Mob *horntailsponge;
+	Mob *sponge;
 	const MobInfo info;
-	unordered_map<int32_t, StatusInfo> statuses;
+	map<int32_t, StatusInfo> statuses;
 	unordered_map<int32_t, uint64_t> damages;
 	unordered_map<uint8_t, time_t> skilluse;
 	unordered_map<int32_t, Mob *> spawns;

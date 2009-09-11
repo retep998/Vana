@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instance.h"
 #include "Levels.h"
 #include "Maps.h"
-#include "MobHandler.h"
 #include "MobsPacket.h"
 #include "PacketCreator.h"
 #include "Party.h"
@@ -114,7 +113,7 @@ void Mob::initMob() {
 	totalhealth = hp;
 
 	owner = 0; // Pointers
-	horntailsponge = 0;
+	sponge = 0;
 	control = 0;
 
 	webplayerid = 0; // Skill stuff
@@ -209,7 +208,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 				case Mobs::HorntailSponge:
 					for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
 						new Timer::Timer(bind(&Mob::die, spawniter->second, true),
-							Timer::Id(Timer::Types::HorntailTimer, id, spawniter->first),
+							Timer::Id(Timer::Types::SpongeCleanupTimer, id, spawniter->first),
 							0, Timer::Time::fromNow(400));
 					}
 					break;
@@ -305,7 +304,7 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 	}
 	// Calculate new status mask
 	status = 0;
-	for (unordered_map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
+	for (map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
 		status += iter->first;
 	}
 	MobsPacket::applyStatus(this, addedstatus, statusinfo, 300, reflection);
@@ -313,23 +312,21 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 
 void Mob::statusPacket(PacketCreator &packet) {
 	packet.add<int32_t>(status);
-	for (uint8_t i = 0; i < StatusEffects::Mob::Count; i++) { // Val/skillid pairs must be ordered in the packet by status value ascending
-		int32_t status = MobHandler::mobstatuses[i];
-		if (hasStatus(status)) {
-			if (status != StatusEffects::Mob::Empty) {
-				packet.add<int16_t>(static_cast<int16_t>(statuses[status].val));
-				if (statuses[status].skillid >= 0) {
-					packet.add<int32_t>(statuses[status].skillid);
-				}
-				else {
-					packet.add<int16_t>(statuses[status].mobskill);
-					packet.add<int16_t>(statuses[status].level);
-				}
-				packet.add<int16_t>(1);
+	for (map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
+		// Val/skillid pairs must be ordered in the packet by status value ascending, this is done for us by std::map
+		if (iter->first != StatusEffects::Mob::Empty) {
+			packet.add<int16_t>(static_cast<int16_t>(iter->second.val));
+			if (iter->second.skillid >= 0) {
+				packet.add<int32_t>(iter->second.skillid);
 			}
 			else {
-				packet.add<int32_t>(0);
+				packet.add<int16_t>(iter->second.mobskill);
+				packet.add<int16_t>(iter->second.level);
 			}
+			packet.add<int16_t>(1);
+		}
+		else {
+			packet.add<int32_t>(0);
 		}
 	}
 }

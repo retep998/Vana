@@ -24,7 +24,6 @@ struct Types {
 	enum {
 		BuffTimer,
 		CoolTimer,
-		HorntailTimer,
 		InstanceTimer,
 		MapleTVTimer,
 		MapTimer,
@@ -39,6 +38,7 @@ struct Types {
 		RankTimer,
 		ReactionTimer,
 		SkillActTimer,
+		SpongeCleanupTimer,
 		TradeTimer
 	};
 };

@@ -36,47 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-const int32_t MobHandler::mobstatuses[StatusEffects::Mob::Count] = { // Order by value ascending
-	StatusEffects::Mob::Watk,
-	StatusEffects::Mob::Wdef,
-	StatusEffects::Mob::Matk,
-	StatusEffects::Mob::Mdef,
-	StatusEffects::Mob::Acc,
-
-	StatusEffects::Mob::Avoid,
-	StatusEffects::Mob::Speed,
-	StatusEffects::Mob::Stun,
-	StatusEffects::Mob::Freeze,
-	StatusEffects::Mob::Poison,
-
-	StatusEffects::Mob::Seal,
-	StatusEffects::Mob::NoClue1,
-	StatusEffects::Mob::WeaponAttackUp,
-	StatusEffects::Mob::WeaponDefenseUp,
-	StatusEffects::Mob::MagicAttackUp,
-
-	StatusEffects::Mob::MagicDefenseUp,
-	StatusEffects::Mob::Doom,
-	StatusEffects::Mob::ShadowWeb,
-	StatusEffects::Mob::WeaponImmunity,
-	StatusEffects::Mob::MagicImmunity,
-
-	StatusEffects::Mob::NoClue2,
-	StatusEffects::Mob::NoClue3,
-	StatusEffects::Mob::NinjaAmbush,
-	StatusEffects::Mob::NoClue4,
-	StatusEffects::Mob::VenomousWeapon,
-
-	StatusEffects::Mob::NoClue5,
-	StatusEffects::Mob::NoClue6,
-	StatusEffects::Mob::Empty,
-	StatusEffects::Mob::Hypnotize,
-	StatusEffects::Mob::WeaponDamageReflect,
-
-	StatusEffects::Mob::MagicDamageReflect,
-	StatusEffects::Mob::NoClue7
-};
-
 void MobHandler::handleBomb(Player *player, PacketReader &packet) {
 	int32_t mobid = packet.get<int32_t>();
 	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
