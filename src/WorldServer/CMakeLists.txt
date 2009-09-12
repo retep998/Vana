@@ -1,23 +1,23 @@
 set(SOURCES 
 	ChannelChangeRequests.h
 	Channels.h
+	LoginServerConnection.h
 	LoginServerConnectHandler.h
 	LoginServerConnectPacket.h
-	LoginServerConnectPlayer.h
 	Parties.h
 	PartyHandler.h
 	PartyPacket.h
 	Players.h
 	PrecompiledHeader.h
 	WorldServer.h
+	WorldServerAcceptConnection.h
 	WorldServerAcceptHandler.h
 	WorldServerAcceptPacket.h
-	WorldServerAcceptPlayer.h
 	ChannelChangeRequests.cpp
 	Channels.cpp
+	LoginServerConnection.cpp
 	LoginServerConnectHandler.cpp
 	LoginServerConnectPacket.cpp
-	LoginServerConnectPlayer.cpp
 	main_world.cpp
 	Parties.cpp
 	PartyHandler.cpp
@@ -25,9 +25,9 @@ set(SOURCES
 	Players.cpp
 	PrecompiledHeader.cpp
 	WorldServer.cpp
+	WorldServerAcceptConnection.cpp
 	WorldServerAcceptHandler.cpp
 	WorldServerAcceptPacket.cpp
-	WorldServerAcceptPlayer.cpp
 )
 
 add_executable(WorldServer ${SOURCES})

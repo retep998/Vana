@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.h"
 #include "WorldServerConnectPacket.h"
 #include <boost/tr1/regex.hpp>
+#include <boost/lexical_cast.hpp>
 #include <utility>
 #include <vector>
 

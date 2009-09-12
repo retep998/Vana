@@ -1,5 +1,5 @@
 set(SOURCES
-	AbstractPlayer.h
+	AbstractConnection.h 
 	AbstractServer.h
 	AbstractSession.h
 	AuthenticationPacket.h
@@ -20,7 +20,7 @@ set(SOURCES
 	IpUtilities.h
 	ItemDataProvider.h
 	LoopingId.h
-	MapleClient.h
+	MapleServerClient.h
 	MapleEncryption.h
 	MapleServer.h
 	MapleSession.h
@@ -41,7 +41,7 @@ set(SOURCES
 	RecvHeader.h
 	ScriptDataProvider.h
 	SendHeader.h
-	ServerPlayer.h
+	ServerConnection.h
 	SessionManager.h
 	ShopDataProvider.h
 	SkillDataProvider.h
@@ -55,7 +55,7 @@ set(SOURCES
 	TimeUtilities.h
 	Types.h
 	Variables.h
-	AbstractPlayer.cpp
+	AbstractConnection.cpp 
 	AbstractServer.cpp
 	AuthenticationPacket.cpp
 	BeautyDataProvider.cpp
@@ -71,7 +71,7 @@ set(SOURCES
 	InitializeCommon.cpp
 	IpUtilities.cpp
 	ItemDataProvider.cpp
-	MapleClient.cpp
+	MapleServerClient.cpp
 	MapleEncryption.cpp
 	MapleServer.cpp
 	MapleSession.cpp
@@ -86,7 +86,7 @@ set(SOURCES
 	Randomizer.cpp
 	ReactorDataProvider.cpp
 	ScriptDataProvider.cpp
-	ServerPlayer.cpp
+	ServerConnection.cpp
 	SessionManager.cpp
 	ShopDataProvider.cpp
 	SkillDataProvider.cpp

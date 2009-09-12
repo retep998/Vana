@@ -5,9 +5,9 @@ set(SOURCES
 	LoginPacket.h
 	LoginPacketHelper.h
 	LoginServer.h
+	LoginServerAcceptConnection.h
 	LoginServerAcceptHandler.h
 	LoginServerAcceptPacket.h
-	LoginServerAcceptPlayer.h
 	PlayerLogin.h
 	PlayerStatus.h
 	PrecompiledHeader.h
@@ -18,9 +18,9 @@ set(SOURCES
 	LoginPacket.cpp
 	LoginPacketHelper.cpp
 	LoginServer.cpp
+	LoginServerAcceptConnection.cpp
 	LoginServerAcceptHandler.cpp
 	LoginServerAcceptPacket.cpp
-	LoginServerAcceptPlayer.cpp
 	main_login.cpp
 	PlayerLogin.cpp
 	PrecompiledHeader.cpp

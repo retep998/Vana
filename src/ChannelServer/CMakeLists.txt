@@ -3,6 +3,7 @@ set(SOURCES
 	BuddyListPacket.h
 	Buffs.h
 	BuffsPacket.h
+	BuffsPacketHelper.h
 	ChannelServer.h
 	ChatHandler.h
 	ChatHandlerConstants.h
@@ -82,13 +83,14 @@ set(SOURCES
 	Trades.h
 	TradesPacket.h
 	VersionConstants.h
+	WorldServerConnection.h
 	WorldServerConnectHandler.h
 	WorldServerConnectPacket.h
-	WorldServerConnectPlayer.h
 	BuddyListHandler.cpp
 	BuddyListPacket.cpp
 	Buffs.cpp
 	BuffsPacket.cpp
+	BuffsPacketHelper.cpp
 	ChannelServer.cpp
 	ChatHandler.cpp
 	CommandHandler.cpp
@@ -166,9 +168,9 @@ set(SOURCES
 	Trades.cpp
 	TradesPacket.cpp
 	VersionConstants.cpp
+	WorldServerConnection.cpp
 	WorldServerConnectHandler.cpp
 	WorldServerConnectPacket.cpp
-	WorldServerConnectPlayer.cpp
 )
 
 add_executable(ChannelServer ${SOURCES})

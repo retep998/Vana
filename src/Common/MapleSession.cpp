@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "SessionManager.h"
 #include <boost/bind.hpp>
+#include <iostream>
 
 MapleSession::MapleSession(boost::asio::io_service &io_service,
 						   SessionManagerPtr sessionManager,
