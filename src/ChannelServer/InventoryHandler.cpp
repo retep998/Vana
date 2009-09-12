@@ -367,25 +367,28 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 	for (size_t i = 0; i < item.cons.skills.size(); i++) {
 		skillid = item.cons.skills[i].skillid;
 		newMaxLevel = item.cons.skills[i].maxlevel;
-		if (player->getJob() == item.cons.skills[i].skillid / 10000) { // Make sure the skill is for the person's job
-			if (player->getSkills()->getSkillLevel(skillid) >= item.cons.skills[i].reqlevel && player->getSkills()->getMaxSkillLevel(skillid) < newMaxLevel)
-				use = true;
-		}
-		if (use) {
-			if ((int16_t) Randomizer::Instance()->randShort(100) <= item.cons.success) {
-				player->getSkills()->setMaxSkillLevel(skillid, newMaxLevel);
-				succeed = true;
+		if (GameLogicUtilities::itemSkillMatchesJob(skillid, player->getJob())) {
+			// Make sure the skill is for the person's job
+			if (player->getSkills()->getSkillLevel(skillid) >= item.cons.skills[i].reqlevel) {
+				// I know the multiple levels of if aren't necessary, but they're large/verbose comparisons
+				if (player->getSkills()->getMaxSkillLevel(skillid) < newMaxLevel) {
+					// Don't want to break up this vertical spacing
+					if (Randomizer::Instance()->randShort(99) < item.cons.success) {
+						player->getSkills()->setMaxSkillLevel(skillid, newMaxLevel);
+						succeed = true;
+					}
+					Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
+					break;
+				}
 			}
-			Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
-			break;
 		}
 	}
 
-	if (skillid == 0)
-		return;
-
-	InventoryPacket::useSkillbook(player, skillid, newMaxLevel, use, succeed);
+	if (skillid != 0) {
+		InventoryPacket::useSkillbook(player, skillid, newMaxLevel, true, succeed);
+	}
 }
+
 void InventoryHandler::useChair(Player *player, PacketReader &packet) {
 	int32_t chairid = packet.get<int32_t>();
 	player->setChair(chairid);

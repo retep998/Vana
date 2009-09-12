@@ -283,11 +283,11 @@ int16_t Levels::randMp() {
 }
 
 int16_t Levels::getX(Player *player, int32_t skillid) {
-	return SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x;
+	return player->getSkills()->getSkillInfo(skillid)->x;
 }
 
 int16_t Levels::getY(Player *player, int32_t skillid) {
-	return SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->y;
+	return player->getSkills()->getSkillInfo(skillid)->y;
 }
 
 int16_t Levels::apResetHp(bool isreset, bool issubtract, int16_t val, int16_t sval) {

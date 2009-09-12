@@ -39,6 +39,10 @@ namespace GameLogicUtilities {
 	inline bool isShield(int32_t itemid) { return (getItemType(itemid) == ArmorShield); }
 	inline bool is2hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 14); }
 	inline bool is1hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 13); }
+	inline bool isBow(int32_t itemid) { return (getItemType(itemid) == WeaponBow); }
+	inline bool isCrossbow(int32_t itemid) { return (getItemType(itemid) == WeaponCrossbow); }
+	inline bool isSword(int32_t itemid) { return (getItemType(itemid) == Weapon1hSword || getItemType(itemid) == Weapon2hSword); }
+	inline bool isMace(int32_t itemid) { return (getItemType(itemid) == Weapon1hMace || getItemType(itemid) == Weapon2hMace); }
 	inline bool isMount(int32_t itemid) { return (getItemType(itemid) == Mount); }
 	inline bool isValidInventory(int8_t inv) { return (inv > 0 && inv <= Inventories::InventoryCount); }
 
@@ -50,6 +54,7 @@ namespace GameLogicUtilities {
 	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y) && (test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)); }
 	inline bool isMaxDarkSight(int32_t skillid, uint8_t level) { return (skillid == Jobs::Rogue::DarkSight && level == 20 || skillid == Jobs::NightWalker::DarkSight && level == 10); }
 	inline bool skillMatchesJob(int32_t skillid, int16_t job) { return ((skillid / 1000000 == job / 100) && (skillid / 10000 <= job)); }
+	inline bool itemSkillMatchesJob(int32_t skillid, int16_t job) { return ((skillid / 10000) == job); }
 	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
 
 	// Mob skills

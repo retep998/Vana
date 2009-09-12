@@ -123,6 +123,12 @@ uint8_t PlayerSkills::getMaxSkillLevel(int32_t skillid) {
 	return 0;
 }
 
+SkillLevelInfo * PlayerSkills::getSkillInfo(int32_t skillid) {
+	if (playerskills.find(skillid) == playerskills.end())
+		return 0;
+	return SkillDataProvider::Instance()->getSkill(skillid, playerskills[skillid].level);
+}
+
 bool PlayerSkills::hasElementalAmp() {
 	int32_t sid = getElementalAmp();
 	return (sid != 0 && getSkillLevel(sid) > 0);

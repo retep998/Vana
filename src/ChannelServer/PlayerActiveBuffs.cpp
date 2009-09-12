@@ -218,6 +218,11 @@ void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
 	m_activelevels[skillid] = level;
 }
 
+SkillLevelInfo * PlayerActiveBuffs::getActiveSkillInfo(int32_t skillid) {
+	uint8_t level = getActiveSkillLevel(skillid);
+	return (level != 0 ? SkillDataProvider::Instance()->getSkill(skillid, level) : 0);
+}
+
 // Buff addition/removal
 void PlayerActiveBuffs::addBuffInfo(int32_t skillid, const vector<Buff> &buffs) {
 	for (size_t i = 0; i < buffs.size(); i++) {
@@ -255,7 +260,7 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 	if (m_battleshiphp <= 0) {
 		m_battleshiphp = 0;
 		int32_t skillid = Jobs::Corsair::Battleship;
-		int16_t cooltime = SkillDataProvider::Instance()->getSkill(skillid, m_player->getSkills()->getSkillLevel(skillid))->cooltime;
+		int16_t cooltime = getActiveSkillInfo(skillid)->cooltime;
 		Skills::startCooldown(m_player, skillid, cooltime);
 		Skills::stopSkill(m_player, skillid);
 	}
@@ -270,21 +275,32 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	if (sendPacket) {
 		int32_t skillid = m_player->getSkills()->getComboAttack();
 		int32_t timeleft = buffTimeLeft(skillid);
-		ActiveBuff playerskill = Buffs::parseBuffInfo(m_player, skillid, getActiveSkillLevel(skillid));
-		ActiveMapBuff mapskill = Buffs::parseBuffMapInfo(m_player, skillid, getActiveSkillLevel(skillid));
+		uint8_t level = getActiveSkillLevel(skillid);
+		ActiveBuff playerskill = Buffs::parseBuffInfo(m_player, skillid, level);
+		ActiveMapBuff mapskill = Buffs::parseBuffMapInfo(m_player, skillid, level);
 		BuffsPacket::useSkill(m_player, skillid, timeleft, playerskill, mapskill, 0);
 	}
 }
 
 void PlayerActiveBuffs::addCombo() { // Add orbs
 	int32_t skillid = m_player->getSkills()->getComboAttack();
-	if (getActiveSkillLevel(skillid) > 0) {
+	uint8_t clevel = getActiveSkillLevel(skillid);
+	if (clevel > 0) {
 		int32_t advskill = m_player->getSkills()->getAdvancedCombo();
-		int8_t advcombo = m_player->getSkills()->getSkillLevel(advskill);
-		int8_t maxcombo = (int8_t) SkillDataProvider::Instance()->getSkill((advcombo > 0 ? advskill : skillid), (advcombo > 0 ? advcombo : m_player->getSkills()->getSkillLevel(skillid)))->x;
+		uint8_t advcombo = m_player->getSkills()->getSkillLevel(advskill);
+		SkillLevelInfo *combo;
+		uint16_t prop = 0;
+		if (advcombo > 0) {
+			combo = SkillDataProvider::Instance()->getSkill(advskill, advcombo);
+			prop = combo->prop;
+		}
+		else {
+			combo = SkillDataProvider::Instance()->getSkill(skillid, clevel);
+		}
+		int8_t maxcombo = static_cast<int8_t>(combo->x);
 		if (m_combo == maxcombo)
 			return;
-		if (advcombo > 0 && Randomizer::Instance()->randShort(99) < SkillDataProvider::Instance()->getSkill(advskill, advcombo)->prop)
+		if (advcombo > 0 && Randomizer::Instance()->randShort(99) < prop)
 			m_combo += 1; // 4th job skill gives chance to add second orb
 		m_combo += 1;
 		if (m_combo > maxcombo)
@@ -322,7 +338,7 @@ void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 		if (m_player->getTimers()->checkTimer(id) > 0)
 			stopEnergyChargeTimer();
 		startEnergyChargeTimer();
-		m_energycharge += SkillDataProvider::Instance()->getSkill(skillid, m_player->getSkills()->getSkillLevel(skillid))->x * targets;
+		m_energycharge += m_player->getSkills()->getSkillInfo(skillid)->x * targets;
 		if (m_energycharge > 10000) {
 			m_energycharge = 10000;
 			stopEnergyChargeTimer();
@@ -381,14 +397,18 @@ void PlayerActiveBuffs::stopCharge() {
 }
 
 void PlayerActiveBuffs::stopBulletSkills() {
-	if (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0)
+	if (hasBuff(Jobs::Hunter::SoulArrow))
 		Skills::stopSkill(m_player, Jobs::Hunter::SoulArrow);
-	else if (getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0)
+	else if (hasBuff(Jobs::Crossbowman::SoulArrow))
 		Skills::stopSkill(m_player, Jobs::Crossbowman::SoulArrow);
-	else if (getActiveSkillLevel(Jobs::WindArcher::SoulArrow) > 0)
+	else if (hasBuff(Jobs::WindArcher::SoulArrow))
 		Skills::stopSkill(m_player, Jobs::WindArcher::SoulArrow);
-	else if (getActiveSkillLevel(Jobs::NightLord::ShadowStars) > 0)
+	else if (hasBuff(Jobs::NightLord::ShadowStars))
 		Skills::stopSkill(m_player, Jobs::NightLord::ShadowStars);
+}
+
+bool PlayerActiveBuffs::hasBuff(int32_t skillid) {
+	return (getActiveSkillLevel(skillid) > 0);
 }
 
 bool PlayerActiveBuffs::hasIceCharge() const {
@@ -396,55 +416,50 @@ bool PlayerActiveBuffs::hasIceCharge() const {
 }
 
 bool PlayerActiveBuffs::hasInfinity() {
-	return (getActiveSkillLevel(Jobs::FPArchMage::Infinity) > 0 || getActiveSkillLevel(Jobs::ILArchMage::Infinity) > 0 || getActiveSkillLevel(Jobs::Bishop::Infinity) > 0);
+	return (hasBuff(Jobs::FPArchMage::Infinity) || hasBuff(Jobs::ILArchMage::Infinity) || hasBuff(Jobs::Bishop::Infinity));
 }
 
 bool PlayerActiveBuffs::hasMesoUp() {
-	return getActiveSkillLevel(Jobs::Hermit::MesoUp) > 0;
+	return hasBuff(Jobs::Hermit::MesoUp);
 }
 
 bool PlayerActiveBuffs::hasMagicGuard() {
-	int32_t sid = getMagicGuard();
-	return (sid != 0 && getActiveSkillLevel(sid) > 0);
+	return (getMagicGuard() != 0);
 }
 
 bool PlayerActiveBuffs::hasMesoGuard() {
-	int32_t sid = getMesoGuard();
-	return (sid != 0 && getActiveSkillLevel(sid) > 0);
+	return (getMesoGuard() != 0);
 }
 
 bool PlayerActiveBuffs::hasHolySymbol() {
-	int32_t sid = getHolySymbol();
-	return (sid != 0 && getActiveSkillLevel(sid) > 0);
+	return (getHolySymbol() != 0);
 }
 
 bool PlayerActiveBuffs::hasPowerStance() {
-	int32_t sid = getPowerStance();
-	return (sid != 0 && getActiveSkillLevel(sid) > 0);
+	return (getPowerStance() != 0);
 }
 bool PlayerActiveBuffs::hasHyperBody() {
-	int32_t sid = getHyperBody();
-	return (sid != 0 && getActiveSkillLevel(sid) > 0);
+	return (getHyperBody() != 0);
 }
 
 bool PlayerActiveBuffs::isUsingHide() {
-	return (getActiveSkillLevel(Jobs::SuperGm::Hide) > 0);
+	return (hasBuff(Jobs::SuperGm::Hide));
 }
 
 bool PlayerActiveBuffs::hasShadowPartner() {
-	return (getActiveSkillLevel(Jobs::Hermit::ShadowPartner) > 0 || getActiveSkillLevel(Jobs::NightWalker::ShadowPartner) > 0);
+	return (hasBuff(Jobs::Hermit::ShadowPartner) || hasBuff(Jobs::NightWalker::ShadowPartner));
 }
 
 bool PlayerActiveBuffs::hasShadowStars() {
-	return (getActiveSkillLevel(Jobs::NightLord::ShadowStars) > 0);
+	return (hasBuff(Jobs::NightLord::ShadowStars));
 }
 
 bool PlayerActiveBuffs::hasSoulArrow() {
-	return (getActiveSkillLevel(Jobs::Hunter::SoulArrow) > 0 || getActiveSkillLevel(Jobs::Crossbowman::SoulArrow) > 0 || getActiveSkillLevel(Jobs::WindArcher::SoulArrow) > 0);
+	return (hasBuff(Jobs::Hunter::SoulArrow) || hasBuff(Jobs::Crossbowman::SoulArrow) || hasBuff(Jobs::WindArcher::SoulArrow));
 }
 
 bool PlayerActiveBuffs::hasHolyShield() {
-	return (getActiveSkillLevel(Jobs::Bishop::HolyShield) > 0);
+	return (hasBuff(Jobs::Bishop::HolyShield));
 }
 
 bool PlayerActiveBuffs::isCursed() {
@@ -459,64 +474,64 @@ int16_t PlayerActiveBuffs::getHolySymbolRate() {
 	int16_t val = 0;
 	if (hasHolySymbol()) {
 		int32_t hsid = getHolySymbol();
-		val = SkillDataProvider::Instance()->getSkill(hsid, getActiveSkillLevel(hsid))->x;
+		val = getActiveSkillInfo(hsid)->x;
 	}
 	return val;
 }
 int32_t PlayerActiveBuffs::getMagicGuard() {
 	int32_t id = 0;
-	if (getActiveSkillLevel(Jobs::Magician::MagicGuard) > 0)
+	if (hasBuff(Jobs::Magician::MagicGuard))
 		id = Jobs::Magician::MagicGuard;
-	else if (getActiveSkillLevel(Jobs::BlazeWizard::MagicGuard) > 0)
+	else if (hasBuff(Jobs::BlazeWizard::MagicGuard))
 		id = Jobs::BlazeWizard::MagicGuard;
 	return id;
 }
 
 int32_t PlayerActiveBuffs::getMesoGuard() {
 	int32_t id = 0;
-	if (getActiveSkillLevel(Jobs::ChiefBandit::MesoGuard) > 0)
+	if (hasBuff(Jobs::ChiefBandit::MesoGuard))
 		id = Jobs::ChiefBandit::MesoGuard;
 	return id;
 }
 
 int32_t PlayerActiveBuffs::getHolySymbol() {
 	int32_t id = 0;
-	if (getActiveSkillLevel(Jobs::Priest::HolySymbol) > 0)
+	if (hasBuff(Jobs::Priest::HolySymbol))
 		id = Jobs::Priest::HolySymbol;
-	else if (getActiveSkillLevel(Jobs::SuperGm::HolySymbol) > 0)
+	else if (hasBuff(Jobs::SuperGm::HolySymbol))
 		id = Jobs::SuperGm::HolySymbol;
 	return id;
 }
 
 int32_t PlayerActiveBuffs::getPowerStance() {
 	int32_t skillid = 0;
-	if (getActiveSkillLevel(Jobs::Hero::PowerStance) > 0)
+	if (hasBuff(Jobs::Hero::PowerStance))
 		skillid = Jobs::Hero::PowerStance;
-	else if (getActiveSkillLevel(Jobs::Paladin::PowerStance) > 0)
+	else if (hasBuff(Jobs::Paladin::PowerStance))
 		skillid = Jobs::Paladin::PowerStance;
-	else if (getActiveSkillLevel(Jobs::DarkKnight::PowerStance) > 0)
+	else if (hasBuff(Jobs::DarkKnight::PowerStance))
 		skillid = Jobs::DarkKnight::PowerStance;
-	else if (getActiveSkillLevel(Jobs::Marauder::EnergyCharge) > 0)
+	else if (hasBuff(Jobs::Marauder::EnergyCharge))
 		skillid = Jobs::Marauder::EnergyCharge;
-	else if (getActiveSkillLevel(Jobs::ThunderBreaker::EnergyCharge) > 0)
+	else if (hasBuff(Jobs::ThunderBreaker::EnergyCharge))
 		skillid = Jobs::ThunderBreaker::EnergyCharge;
 	return skillid;
 }
 
 int32_t PlayerActiveBuffs::getHyperBody() {
 	int32_t id = 0;
-	if (getActiveSkillLevel(Jobs::Spearman::HyperBody) > 0)
+	if (hasBuff(Jobs::Spearman::HyperBody))
 		id = Jobs::Spearman::HyperBody;
-	else if (getActiveSkillLevel(Jobs::SuperGm::HyperBody) > 0)
+	else if (hasBuff(Jobs::SuperGm::HyperBody))
 		id = Jobs::SuperGm::HyperBody;
 	return id;
 }
 
 int32_t PlayerActiveBuffs::getHomingBeacon() {
 	int32_t id = 0;
-	if (getActiveSkillLevel(Jobs::Outlaw::HomingBeacon) > 0)
+	if (hasBuff(Jobs::Outlaw::HomingBeacon))
 		id = Jobs::Outlaw::HomingBeacon;
-	else if (getActiveSkillLevel(Jobs::Corsair::Bullseye) > 0)
+	else if (hasBuff(Jobs::Corsair::Bullseye))
 		id = Jobs::Corsair::Bullseye;
 	return id;
 }

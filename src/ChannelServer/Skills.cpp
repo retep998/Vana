@@ -364,14 +364,13 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 	int16_t moneycon = skill->moneycon;
 	int32_t item = skill->item;
 	if (mpuse > 0) {
-		if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Concentrate) > 0) { // Reduced MP usage for Concentration
-			int16_t mprate = SkillDataProvider::Instance()->getSkill(Jobs::Bowmaster::Concentrate, player->getActiveBuffs()->getActiveSkillLevel(Jobs::Bowmaster::Concentrate))->x;
+		if (SkillLevelInfo *conc = player->getActiveBuffs()->getActiveSkillInfo(Jobs::Bowmaster::Concentrate)) { // Reduced MP usage for Concentration
+			int16_t mprate = conc->x;
 			int16_t mploss = (mpuse * mprate) / 100;
 			player->modifyMp(-mploss, true);
 		}
 		else if (elementalamp && player->getSkills()->hasElementalAmp()) {
-			int32_t sid = player->getSkills()->getElementalAmp();
-			player->modifyMp(-1 * (mpuse * SkillDataProvider::Instance()->getSkill(sid, player->getSkills()->getSkillLevel(sid))->x / 100), true);
+			player->modifyMp(-1 * (mpuse * player->getSkills()->getSkillInfo(player->getSkills()->getElementalAmp())->x / 100), true);
 		}
 		else {
 			player->modifyMp(-mpuse, true);
