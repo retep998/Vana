@@ -25,6 +25,7 @@ using std::tr1::unordered_map;
 
 class Player;
 class PacketCreator;
+struct SkillLevelInfo;
 
 struct PlayerSkillInfo {
 	PlayerSkillInfo() : level(0), maxlevel(0) {}
@@ -44,6 +45,7 @@ public:
 	uint8_t getSkillLevel(int32_t skillid);
 	uint8_t getMaxSkillLevel(int32_t skillid);
 	void setMaxSkillLevel(int32_t skillid, uint8_t maxlevel, bool sendpacket = true);
+	SkillLevelInfo * getSkillInfo(int32_t skillid);
 
 	bool hasElementalAmp();
 	bool hasEnergyCharge();

@@ -33,6 +33,7 @@ using std::vector;
 class PacketCreator;
 class PacketReader;
 class Player;
+struct SkillLevelInfo;
 
 namespace Timer {
 	class Container;
@@ -82,6 +83,7 @@ public:
 	uint8_t getActiveSkillLevel(int32_t skillid);
 	ActiveBuff removeBuffInfo(int32_t skillid, const vector<Buff> &buffs);
 	ActiveBuffsByType getBuffTypes() const { return m_activebuffsbytype; }
+	SkillLevelInfo * getActiveSkillInfo(int32_t skillid);
 
 	// Buff map info
 	void addMapEntryBuffInfo(ActiveMapBuff &buff);
@@ -178,6 +180,8 @@ public:
 	void getBuffTransferPacket(PacketCreator &packet);
 	void parseBuffTransferPacket(PacketReader &packet);
 private:
+	bool hasBuff(int32_t skillid);
+
 	Player *m_player;
 	uint8_t m_combo;
 	int16_t m_energycharge;

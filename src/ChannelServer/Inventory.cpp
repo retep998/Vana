@@ -161,7 +161,7 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 
 	int32_t skillid = player->getSkills()->getAlchemist();
 	if (player->getSkills()->getSkillLevel(skillid) > 0)
-		potency = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x;
+		potency = player->getSkills()->getSkillInfo(skillid)->x;
 
 	bool zombie = player->getActiveBuffs()->isZombified();
 

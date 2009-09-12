@@ -132,7 +132,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	if (damage > 0 && !player->hasGmEquip()) {
 		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) {
 			int32_t sid = player->getActiveBuffs()->getMesoGuard();
-			int16_t mesorate = SkillDataProvider::Instance()->getSkill(sid, player->getActiveBuffs()->getActiveSkillLevel(sid))->x; // Meso Guard meso %
+			int16_t mesorate = player->getActiveBuffs()->getActiveSkillInfo(sid)->x; // Meso Guard meso %
 			int16_t mesoloss = (int16_t)(mesorate * damage / 2 / 100);
 			int32_t mesos = player->getInventory()->getMesos();
 			int32_t newmesos = mesos - mesoloss;
@@ -172,7 +172,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 			else {
 				int32_t sid = player->getActiveBuffs()->getMagicGuard();
-				int16_t reduc = SkillDataProvider::Instance()->getSkill(sid, player->getActiveBuffs()->getActiveSkillLevel(sid))->x;
+				int16_t reduc = player->getActiveBuffs()->getActiveSkillInfo(sid)->x;
 				uint16_t mpdamage = (uint16_t)((damage * reduc) / 100);
 				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
 
@@ -189,7 +189,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		}
 		if (player->getSkills()->hasAchilles()) {
 			int32_t sid = player->getSkills()->getAchilles();
-			double red = (2.0 - SkillDataProvider::Instance()->getSkill(sid, player->getSkills()->getSkillLevel(sid))->x / 1000.0);
+			double red = (2.0 - player->getSkills()->getSkillInfo(sid)->x / 1000.0);
 
 			player->damageHp((uint16_t) (damage / red));
 
@@ -299,7 +299,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 		case Jobs::ChiefBandit::Chakra: { // Chakra
 			int16_t dex = player->getDex();
 			int16_t luk = player->getLuk();
-			int16_t recovery = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->y;
+			int16_t recovery = player->getSkills()->getSkillInfo(skillid)->y;
 			int16_t maximum = (luk * 66 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
 			int16_t minimum = (luk * 33 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
 			// Maximum = (luk * 6.6 + dex) * 0.2 * (recovery% / 100 + 1)
@@ -403,8 +403,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		}
 		if (targettotal > 0) {
 			if (mob != 0 && mob->getHp() > 0) {
-				uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-				MobHandler::handleMobStatus(player->getId(), mob, skillid, level, weapontype, connectedhits); // Mob status handler (freeze, stun, etc)
+				MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
 				if (mob->getHp() < mob->getSelfDestructHp()) {
 					mob->explode();
 				}
@@ -450,7 +449,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		}
 		case Jobs::Marauder::EnergyDrain:
 		case Jobs::ThunderBreaker::EnergyDrain: {
-			int32_t hpRecover = totaldmg * SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x / 100;
+			int32_t hpRecover = totaldmg * player->getSkills()->getSkillInfo(skillid)->x / 100;
 			if (hpRecover > player->getMHp())
 				player->setHp(player->getMHp());
 			else
@@ -484,7 +483,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::DragonKnight::Sacrifice: {
-			int16_t hp_damage_x = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x;
+			int16_t hp_damage_x = player->getSkills()->getSkillInfo(skillid)->x;
 			uint16_t hp_damage = (uint16_t) totaldmg * hp_damage_x / 100;
 			if ((player->getHp() - hp_damage) < 1)
 				player->setHp(1);
@@ -553,7 +552,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	int32_t mhp = 0;
 	uint32_t totaldmg = damageMobs(player, packet, targets, hits, skillid, mhp);
 	if (skillid == Jobs::Assassin::Drain) { // Drain
-		int16_t drain_x = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid))->x;
+		int16_t drain_x = player->getSkills()->getSkillInfo(skillid)->x;
 		int32_t hpRecover = totaldmg * drain_x / 100;
 		if (hpRecover > mhp)
 			hpRecover = mhp;
@@ -681,7 +680,7 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 				mob->mpEat(player, eater);
 			}
 			if (skillid == Jobs::Ranger::MortalBlow || skillid == Jobs::Sniper::MortalBlow) {
-				SkillLevelInfo *sk = SkillDataProvider::Instance()->getSkill(skillid, player->getSkills()->getSkillLevel(skillid));
+				SkillLevelInfo *sk = player->getSkills()->getSkillInfo(skillid);
 				int32_t hp_p = mob->getMHp() * sk->x / 100; // Percentage of HP required for Mortal Blow activation
 				if ((mob->getHp() < hp_p) && (Randomizer::Instance()->randShort(99) < sk->y)) {
 					damage = mob->getHp();
@@ -696,8 +695,7 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 				mob = 0;
 		}
 		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
-			uint8_t weapontype = (uint8_t) GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon));
-			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, weapontype, connectedhits, firsthit); // Mob status handler (freeze, stun, etc)
+			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits, firsthit); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
