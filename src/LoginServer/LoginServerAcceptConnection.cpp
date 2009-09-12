@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "RankingCalculator.h"
 #include "Worlds.h"
+#include <iostream>
 
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (worldId != -1) {

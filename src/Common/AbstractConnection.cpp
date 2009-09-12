@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
+#include <iostream>
 #include <functional>
 
 using std::tr1::bind;
