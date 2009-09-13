@@ -104,6 +104,20 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 	}
 }
 
+void Reactors::touchReactor(Player *player, PacketReader &packet) {
+	int32_t id = packet.get<int32_t>() - 200;
+	bool istouching = (packet.get<int8_t>() != 0);
+
+	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
+	int32_t reactorid = (reactor->getLink() != 0 ? reactor->getLink() : reactor->getReactorId());
+
+	if (reactor != 0 && reactor->isAlive()) {
+		int8_t newstate = reactor->getState() + (istouching ? 1 : -1);
+		ReactorPacket::triggerReactor(reactor);
+		reactor->setState(newstate, true);
+	}
+}
+
 struct Reaction {
 	void operator()() {
 		reactor->setState(state, true);

@@ -32,6 +32,7 @@ class PacketReader;
 
 namespace Reactors {
 	void hitReactor(Player *player, PacketReader &packet);
+	void touchReactor(Player *player, PacketReader &packet);
 	void checkDrop(Player *player, Drop *drop);
 	void checkLoot(Drop *drop);
 };

@@ -74,6 +74,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_GET_PLAYER_INFO 0x60
 #define RECV_PET_SUMMON 0x61
 #define RECV_CHANGE_MAP_SPECIAL 0x63
+#define RECV_USE_MAP_TELEPORT 0x64
 #define RECV_TELEPORT_ROCK_FUNCTION 0x65
 #define RECV_GET_QUEST 0x6a
 #define RECV_SKILL_MACRO 0x6d
@@ -92,9 +93,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define RECV_ATTACK_SUMMON 0xaa
 #define RECV_DAMAGE_SUMMON 0xab
 #define RECV_CONTROL_MOB 0xb2
+#define RECV_DISTANCE_TO_MOB 0xb3
 #define RECV_FRIENDLY_MOB_DAMAGED 0xb6
 #define RECV_MOB_BOMB_EXPLOSION 0xb7
 #define RECV_MOB_DAMAGE_MOB 0xb8 // For Hypnotize
 #define RECV_ANIMATE_NPC 0xbb
 #define RECV_LOOT_ITEM 0xc0
 #define RECV_HIT_REACTOR 0xc3
+#define RECV_TOUCH_REACTOR 0xc4

@@ -175,6 +175,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_SKILL_MACRO: changeSkillMacros(packet); break;
 		case RECV_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
 		case RECV_TELEPORT_ROCK_FUNCTION: InventoryHandler::handleRockFunctions(this, packet); break;
+		case RECV_TOUCH_REACTOR: Reactors::touchReactor(this, packet); break;
 		case RECV_USE_CASH_ITEM: InventoryHandler::useCashItem(this, packet); break;
 		case RECV_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
 		case RECV_USE_ITEM: InventoryHandler::useItem(this, packet); break;
@@ -574,21 +575,31 @@ void Player::changeChannel(int8_t channel) {
 }
 
 void Player::changeKey(PacketReader &packet) {
-	packet.skipBytes(4);
+	int32_t mode = packet.get<int32_t>();
 	int32_t howmany = packet.get<int32_t>();
+
 	if (howmany == 0)
 		return;
 
-	KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
-	for (int32_t i = 0; i < howmany; i++) {
-		int32_t pos = packet.get<int32_t>();
-		int8_t type = packet.get<int8_t>();
-		int32_t action = packet.get<int32_t>();
-		keyMaps.add(pos, new KeyMaps::KeyMap(type, action));
-	}
+	if (mode == 0) {
+		KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
+		for (int32_t i = 0; i < howmany; i++) {
+			int32_t pos = packet.get<int32_t>();
+			int8_t type = packet.get<int8_t>();
+			int32_t action = packet.get<int32_t>();
+			keyMaps.add(pos, new KeyMaps::KeyMap(type, action));
+		}
 
-	// Update to MySQL
-	keyMaps.save(this->id);
+		// Update to MySQL
+		keyMaps.save(this->id);
+	}
+	else if (mode == 1) {
+		// Update auto-HP potion
+	}
+	else if (mode == 2) {
+		// Update auto-MP potion
+	}
+	// howmany = potion ID for the above, deallocate on 0, I imagine
 }
 
 void Player::changeSkillMacros(PacketReader &packet) {
