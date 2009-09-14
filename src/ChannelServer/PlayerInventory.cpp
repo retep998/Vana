@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 
 /* Item struct */
-Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), flags(0), petid(0), name("") {
+Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), hammers(0), flags(0), petid(0), name("") {
 	EquipInfo ei = ItemDataProvider::Instance()->getEquipInfo(equipid);
 	slots = ei.slots;
 	if (!random) {
@@ -74,7 +74,8 @@ Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), f
 /* PlayerInventory class */
 PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos) :
 m_maxslots(maxslots),
-m_mesos(mesos), 
+m_mesos(mesos),
+m_hammer(-1),
 m_player(player)
 {
 	boost::array<int32_t, 2> g = {0};
@@ -95,7 +96,7 @@ PlayerInventory::~PlayerInventory() {
 
 void PlayerInventory::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid=pets.id WHERE charid = " << m_player->getId();
+	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid = pets.id WHERE charid = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	Item *item;
@@ -121,18 +122,19 @@ void PlayerInventory::load() {
 		item->ispeed = res[i][19];
 		item->ijump = res[i][20];
 		item->flags = (int8_t) res[i][21];
-		item->petid = res[i][22];
-		res[i][23].to_string(item->name);
+		item->hammers = res[i][22];
+		item->petid = res[i][23];
+		res[i][24].to_string(item->name);
 		addItem((int8_t) res[i][0], res[i][1], item);
 		if (item->petid != 0) {
 			Pet *pet = new Pet(
 				m_player,
 				item, // Item - Gives id and type to pet
-				(int8_t) res[i][24], // Index
-				(string) res[i][25], // Name
-				(uint8_t) res[i][26], // Level
-				(int16_t) res[i][27], // Closeness
-				(uint8_t) res[i][28], // Fullness
+				(int8_t) res[i][25], // Index
+				(string) res[i][26], // Name
+				(uint8_t) res[i][27], // Level
+				(int16_t) res[i][28], // Closeness
+				(uint8_t) res[i][29], // Fullness
 				(uint8_t) res[i][1] // Inventory Slot
 			);
 			m_player->getPets()->addPet(pet);
@@ -196,6 +198,7 @@ void PlayerInventory::save() {
 				<< item->ispeed << ","
 				<< item->ijump << ","
 				<< (int16_t) item->flags << ","
+				<< item->hammers << ","
 				<< item->petid << ","
 				<< mysqlpp::quote << item->name << ")";
 		}

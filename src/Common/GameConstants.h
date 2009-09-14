@@ -1075,7 +1075,8 @@ namespace Items {
 		ZetaNightmare = 5300002,
 		DiabloMessenger = 5390000,
 		Cloud9Messenger = 5390001,
-		LoveholicMessenger = 5390002
+		LoveholicMessenger = 5390002,
+		ViciousHammer = 5570000
 	};
 }
 

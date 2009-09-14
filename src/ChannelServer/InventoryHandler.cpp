@@ -826,6 +826,21 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			Inventory::useItem(player, itemid);
 			used = true;
 			break;
+		case Items::ViciousHammer: {
+			int8_t inventory = (int8_t) packet.get<int32_t>(); // How pointless...
+			int16_t slot = (int16_t) packet.get<int32_t>();
+			Item *f = player->getInventory()->getItem(inventory, slot);
+			if (f == 0 || f->hammers == 2) {
+				// Hacking, probably
+				return;
+			}
+			f->hammers++;
+			f->slots++;
+			InventoryPacket::sendHammerSlots(player, f->hammers);
+			player->getInventory()->setHammerSlot(slot);
+			used = true;
+			break;
+		}
 		default:
 			break;
 	}
@@ -911,4 +926,16 @@ bool InventoryHandler::handleRockTeleport(Player *player, int8_t type, int32_t i
 		}
 	}
 	return used;
+}
+
+void InventoryHandler::handleHammerTime(Player *player) {
+	if (!player->getInventory()->isHammering()) {
+		// Hacking
+		return;
+	}
+	int16_t hammerslot = player->getInventory()->getHammerSlot();
+	Item *item = player->getInventory()->getItem(Inventories::EquipInventory, hammerslot);
+	InventoryPacket::sendHammerUpdate(player);
+	InventoryPacket::sendHulkSmash(player, hammerslot, item);
+	player->getInventory()->setHammerSlot(-1);
 }

@@ -33,17 +33,18 @@ class Player;
 class PacketCreator;
 
 struct Item {
-	Item () : id(0), amount(1), slots(0), scrolls(0), flags(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
+	Item() : id(0), amount(1), hammers(0), slots(0), scrolls(0), flags(0), istr(0), idex(0), iint(0), iluk(0), ihp(0),
 		imp(0), iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0), petid(0), name("") { }
 
-	Item (int32_t itemid, int16_t amount) : id(itemid), amount(amount), slots(0), scrolls(0), flags(0), istr(0), idex(0), iint(0), iluk(0), ihp(0), imp(0),
+	Item(int32_t itemid, int16_t amount) : id(itemid), amount(amount), hammers(0), slots(0), scrolls(0), flags(0), istr(0), idex(0), iint(0), iluk(0), ihp(0), imp(0),
 		iwatk(0), imatk(0), iwdef(0), imdef(0), iacc(0), iavo(0), ihand(0), ijump(0), ispeed(0), petid(0), name("") { }
 
-	Item (int32_t equipid, bool random);
+	Item(int32_t equipid, bool random);
 
-	Item (Item *item) {
+	Item(Item *item) {
 		id = item->id;
 		amount = item->amount;
+		hammers = item->hammers;
 		slots = item->slots;
 		scrolls = item->scrolls;
 		istr = item->istr;
@@ -66,6 +67,7 @@ struct Item {
 		flags = item->flags;
 	}
 	int32_t id;
+	int32_t hammers;
 	int16_t amount;
 	int8_t slots;
 	int8_t scrolls;
@@ -124,6 +126,10 @@ public:
 
 	int32_t doShadowStars();
 
+	bool isHammering() const { return m_hammer != -1; }
+	int16_t getHammerSlot() const { return m_hammer; }
+	void setHammerSlot(int16_t hammer) { m_hammer = hammer; }
+
 	void addRockMap(int32_t mapid, int8_t type);
 	void delRockMap(int32_t mapid, int8_t type);
 	bool ensureRockDestination(int32_t mapid);
@@ -142,6 +148,7 @@ private:
 
 	unordered_map<int32_t, uint16_t> m_itemamounts;
 	int32_t m_mesos;
+	int16_t m_hammer;
 	Player *m_player;
 
 	void addEquipped(int16_t slot, int32_t itemid);
