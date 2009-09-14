@@ -51,6 +51,9 @@ namespace InventoryPacket {
 	void useCharm(Player *player, uint8_t charmsleft, uint8_t daysleft = 99);
 	void sendMesobagSucceed(Player *player, int32_t mesos);
 	void sendMesobagFailed(Player *player);
+	void sendHammerSlots(Player *player, int32_t slots);
+	void sendHulkSmash(Player *player, int16_t slot, Item *hammered);
+	void sendHammerUpdate(Player *player);
 	void blankUpdate(Player *player);
 };
 

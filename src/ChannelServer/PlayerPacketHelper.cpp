@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Pets.h"
 #include "Player.h"
+#include <cmath>
 
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) {
 	if (slot != 0) {
@@ -61,7 +62,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		packet.add<int8_t>(0); // Item level
 		packet.add<int16_t>(0);
 		packet.add<int16_t>(0); // Item EXP of.. some sort
-		packet.add<int32_t>(0); //  Hammer
+		packet.add<int32_t>(item->hammers); // Vicious' Hammer
 		packet.add<int64_t>(-1);
 		packet.addBytes("0040E0FD3B374F01"); // Always the same?
 		packet.add<int32_t>(-1);

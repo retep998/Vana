@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacket.h"
 #include "ChannelServer.h"
 #include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "InterHeader.h"
 #include "Inventory.h"
 #include "MapleSession.h"
@@ -72,6 +73,7 @@ void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item 
 	PlayerPacketHelper::addItemInfo(packet, slot, item, true);
 	player->getSession()->send(packet);
 }
+
 void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_ITEM);
@@ -282,5 +284,36 @@ void InventoryPacket::useCharm(Player *player, uint8_t charmsleft, uint8_t daysl
 	packet.add<int8_t>(0x01);
 	packet.add<uint8_t>(charmsleft);
 	packet.add<uint8_t>(daysleft);
+	player->getSession()->send(packet);
+}
+
+void InventoryPacket::sendHammerSlots(Player *player, int32_t slots) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_HAMMER_TIME);
+	packet.add<int8_t>(0x34); // No idea... mode of some sort, I think
+	packet.add<int32_t>(0x00);
+	packet.add<int32_t>(slots);
+	player->getSession()->send(packet);
+}
+
+void InventoryPacket::sendHulkSmash(Player *player, int16_t slot, Item *hammered) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int8_t>(0x00);
+	packet.add<int8_t>(0x02);
+	packet.add<int8_t>(0x03);
+	packet.add<int8_t>(GameLogicUtilities::getInventory(hammered->id));
+	packet.add<int16_t>(slot);
+	packet.add<int8_t>(0x00);
+	packet.add<int8_t>(0x01);
+	PlayerPacketHelper::addItemInfo(packet, slot, hammered, true);
+	player->getSession()->send(packet);
+}
+
+void InventoryPacket::sendHammerUpdate(Player *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_HAMMER_TIME);
+	packet.add<int8_t>(0x38); // No idea... mode of some sort, I think
+	packet.add<int32_t>(0x00);
 	player->getSession()->send(packet);
 }

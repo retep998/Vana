@@ -84,7 +84,7 @@ void PlayerStorage::load() {
 
 	items.reserve(slots);
 
-	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, name FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
+	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, name FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
 	res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		Item *item = new Item;
@@ -108,7 +108,8 @@ void PlayerStorage::load() {
 		item->ispeed = res[i][17];
 		item->ijump = res[i][18];
 		item->flags = (int8_t) res[i][19];
-		res[i][20].to_string(item->name);
+		item->hammers = res[i][20];
+		res[i][21].to_string(item->name);
 		addItem(item);
 	}
 }
@@ -161,6 +162,7 @@ void PlayerStorage::save() {
 			<< item->ispeed << ","
 			<< item->ijump << ","
 			<< (int16_t) item->flags << ","
+			<< item->hammers << ","
 			<< mysqlpp::quote << item->name << ")";
 	}
 	if (!firstrun)

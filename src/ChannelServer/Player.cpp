@@ -150,6 +150,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_GET_PLAYER_INFO: PlayerHandler::handleGetInfo(this, packet); break;
 		case RECV_GET_QUEST: Quests::getQuest(this, packet); break;
 		case RECV_GROUP_CHAT: ChatHandler::handleGroupChat(this, packet); break;
+		case RECV_HAMMER_TIME: InventoryHandler::handleHammerTime(this); break;
 		case RECV_HEAL_PLAYER: PlayerHandler::handleHeal(this, packet); break;
 		case RECV_HIT_REACTOR: Reactors::hitReactor(this, packet); break;
 		case RECV_KEYMAP: changeKey(packet); break;
