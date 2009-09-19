@@ -84,7 +84,7 @@ void Map::setMusic(const string &musicname) {
 // Players
 void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
-	if (info->fieldType == 82 || info->fieldType == 81) // Apple training maps/Showa spa
+	if (info->forcemapequip) // Apple training maps/Showa spa
 		MapPacket::forceMapEquip(player);
 	if (!player->getActiveBuffs()->isUsingHide())
 		MapPacket::showPlayer(player);
