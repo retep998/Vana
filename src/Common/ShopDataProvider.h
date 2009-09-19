@@ -61,6 +61,10 @@ private:
 	ShopDataProvider() {}
 	static ShopDataProvider *singleton;
 
+	void loadShops();
+	void loadShopItems();
+	void loadRechargeTiers();
+
 	unordered_map<int32_t, ShopInfo> shops;
 	unordered_map<int8_t, map<int32_t, double> > rechargecosts;
 };

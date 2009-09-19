@@ -49,7 +49,7 @@ void ReactorPacket::triggerReactor(Reactor *reactor) {
 	PacketCreator packet = PacketCreator();
 	packet.add<int16_t>(SEND_TRIGGER_REACTOR);
 	packet.add<int32_t>(reactor->getId());
-	packet.add<int8_t>(reactor->getState()); // State
+	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
 	packet.add<int32_t>(0);
 	Maps::getMap(reactor->getMapId())->sendPacket(packet);

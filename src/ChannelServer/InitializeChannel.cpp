@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
 #include "MobDataProvider.h"
-#include "PetDataProvider.h"
 #include "QuestDataProvider.h"
 #include "ReactorDataProvider.h"
 #include "ScriptDataProvider.h"
@@ -37,15 +36,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void Initializing::loadData() {
 	BuffDataProvider::Instance()->loadData();
 	ItemDataProvider::Instance()->loadData();
-	ShopDataProvider::Instance()->loadData();
 	MobDataProvider::Instance()->loadData();
 	DropDataProvider::Instance()->loadData();
 	BeautyDataProvider::Instance()->loadData();
 	ScriptDataProvider::Instance()->loadData();
+	ShopDataProvider::Instance()->loadData();
 	SkillDataProvider::Instance()->loadData();
-	PetDataProvider::Instance()->loadData();
-	ReactorDataProvider::Instance()->loadData();
 	QuestDataProvider::Instance()->loadData();
+	ReactorDataProvider::Instance()->loadData();
 
 	EventDataProvider::Instance()->loadEvents();
 	initializeChat();

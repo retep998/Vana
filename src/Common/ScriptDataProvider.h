@@ -38,12 +38,24 @@ public:
 	string getNpcScript(int32_t npcid);
 	string getReactorScript(int32_t reactorid);
 	string getQuestScript(int16_t questid, int8_t state);
+	string getItemScript(int32_t itemid);
+	string getMapEntryScript(int32_t mapid);
+	string getFirstMapEntryScript(int32_t mapid);
+	bool hasNpcScript(int32_t npcid);
+	bool hasReactorScript(int32_t reactorid);
+	bool hasQuestScript(int16_t questid, int8_t state);
+	bool hasItemScript(int32_t itemid);
+	bool hasMapEntryScript(int32_t mapid);
+	bool hasFirstMapEntryScript(int32_t mapid);
 private:
 	ScriptDataProvider() {}
 	static ScriptDataProvider *singleton;
 
 	unordered_map<int32_t, string> npcscripts;
 	unordered_map<int32_t, string> reactorscripts;
+	unordered_map<int32_t, string> mapentryscripts;
+	unordered_map<int32_t, string> firstmapentryscripts;
+	unordered_map<int32_t, string> itemscripts;
 	unordered_map<int16_t, unordered_map<int8_t, string> > questscripts;
 };
 

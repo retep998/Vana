@@ -15,21 +15,26 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SKILLDATA_H
-#define SKILLDATA_H
+#ifndef SKILLDATAPROVIDER_H
+#define SKILLDATAPROVIDER_H
 
+#include "GameConstants.h"
 #include "Pos.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
+#include <string>
 #include <vector>
 
+using std::string;
 using std::tr1::unordered_map;
 using std::vector;
 
 struct SkillLevelInfo {
 	int8_t mobcount;
 	int8_t hitcount;
+	int8_t mastery;
+	uint8_t criticaldamage;
 	int16_t mp;
 	int16_t hp;
 	int16_t itemcount;
@@ -39,6 +44,7 @@ struct SkillLevelInfo {
 	int16_t y;
 	int16_t speed;
 	int16_t jump;
+	int16_t str;
 	int16_t watk;
 	int16_t wdef;
 	int16_t matk;
@@ -48,11 +54,14 @@ struct SkillLevelInfo {
 	int16_t cooltime;
 	int16_t morph;
 	int16_t damage;
+	int16_t range;
 	uint16_t hpP;
 	uint16_t mpP;
 	uint16_t prop;
+	int32_t fixeddamage;
 	int32_t item;
 	int32_t time;
+	int32_t optionalitem;
 	Pos lt;
 	Pos rb;
 };
@@ -66,8 +75,8 @@ struct SpecialSkillInfo { // Hurricane, Big Bang, Monster Magnet, Pierce, etc.
 	int32_t skillid;
 };
 
-struct PGMRInfo { // Power Guard/Mana Reflection
-	PGMRInfo() : reduction(0), damage(0), mapmobid(0), isphysical(true), pos(0,0) { }
+struct ReturnDamageInfo { // Power Guard/Mana Reflection
+	ReturnDamageInfo() : reduction(0), damage(0), mapmobid(0), isphysical(true), pos(0,0) { }
 	uint8_t reduction;
 	int32_t damage;
 	int32_t mapmobid;
@@ -102,6 +111,13 @@ struct MobSkillLevelInfo {
 
 typedef unordered_map<uint8_t, MobSkillLevelInfo> MobSkillsLevelInfo;
 
+struct BanishField {
+	BanishField() : message(""), portal(""), field(Maps::NoMap) { }
+	string message;
+	string portal;
+	int32_t field;
+};
+
 class SkillDataProvider : boost::noncopyable {
 public:
 	static SkillDataProvider * Instance() {
@@ -115,13 +131,22 @@ public:
 	uint8_t getMaxLevel(int32_t skillid) { return (maxlevels.find(skillid) != maxlevels.end() ? maxlevels[skillid] : 0); }
 	SkillLevelInfo * getSkill(int32_t skill, uint8_t level);
 	MobSkillLevelInfo * getMobSkill(uint8_t skill, uint8_t level);
+
+	bool hasBanishData(int32_t mobid) { return banishinfo.find(mobid) != banishinfo.end(); }
+	BanishField * getBanishData(int32_t mobid) { return (hasBanishData(mobid) ? &banishinfo[mobid] : 0); }
 private:
 	SkillDataProvider() {}
 	static SkillDataProvider *singleton;
 
+	void loadPlayerSkills();
+	void loadMobSkills();
+	void loadMobSummons();
+	void loadBanishData();
+
 	unordered_map<uint8_t, MobSkillsLevelInfo> mobskills;
 	unordered_map<int32_t, SkillsLevelInfo> skills;
 	unordered_map<int32_t, uint8_t> maxlevels;
+	unordered_map<int32_t, BanishField> banishinfo;
 };
 
 #endif

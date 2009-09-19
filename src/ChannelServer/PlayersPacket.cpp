@@ -60,7 +60,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, int8_t bubbleOnl
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, uint8_t type, uint8_t stance, int32_t nodamageskill, PGMRInfo pgmr) {
+void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, uint8_t type, uint8_t stance, int32_t nodamageskill, const ReturnDamageInfo &pgmr) {
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;

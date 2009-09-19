@@ -27,14 +27,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::unordered_map;
 using std::vector;
 
-struct ReactorEventInfo {
-	bool repeat;
+struct ReactorStateInfo {
+	ReactorStateInfo() : type(0) { }
 	int8_t nextstate;
 	int16_t type;
+	int16_t itemquantity;
 	int32_t itemid;
 	int32_t timeout;
 	Pos lt;
 	Pos rb;
+	vector<int32_t> triggerskills;
+};
+
+struct ReactorData {
+	ReactorData() : removeinfieldset(false), activatebytouch(false) { }
+	bool removeinfieldset;
+	bool activatebytouch;
+	int8_t maxstates;
+	int32_t link;
+	unordered_map<int8_t, vector<ReactorStateInfo> > states;
 };
 
 class ReactorDataProvider : boost::noncopyable {
@@ -46,15 +57,16 @@ public:
 	}
 	void loadData();
 
-	int8_t getMaxState(int32_t reactorid) { return (maxstates.find(reactorid) != maxstates.end() ? maxstates[reactorid] : 0); }
-	int8_t getEventCount(int32_t reactorid, int8_t state);
-	ReactorEventInfo * getEvent(int32_t reactorid, int8_t state, int8_t specific = 0);
+	ReactorData * getReactorData(int32_t reactorid, bool respectLink = false);
 private:
 	ReactorDataProvider() {}
 	static ReactorDataProvider *singleton;
 
-	unordered_map<int32_t, unordered_map<int8_t,  vector<ReactorEventInfo> > > reactorinfo;
-	unordered_map<int32_t, int8_t> maxstates;
+	void loadReactors();
+	void loadStates();
+	void loadTriggerSkills();
+
+	unordered_map<int32_t, ReactorData> reactorinfo;
 };
 
 #endif

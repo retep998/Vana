@@ -19,12 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define STRINGUTILITIES_H
 
 #include "Types.h"
+#include <boost/tr1/functional.hpp>
 #include <string>
 
 using std::string;
+using std::tr1::function;
 
 namespace StringUtilities {
 	int32_t noCaseCompare(const string &s1, const string &s2);
+	void runFlags(const string &flags, function<void (string)> func);
+	int64_t atoli(char *str); // ASCII to long int
 }
 
 #endif

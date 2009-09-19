@@ -204,10 +204,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\Common\PetDataProvider.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Common\QuestDataProvider.cpp"
 					>
 				</File>
@@ -435,10 +431,6 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\MobDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\PetDataProvider.h"
 					>
 				</File>
 				<File

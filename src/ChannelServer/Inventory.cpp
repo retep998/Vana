@@ -156,37 +156,43 @@ void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t a
 }
 
 void Inventory::useItem(Player *player, int32_t itemid) {
-	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
-	int16_t potency = 100;
+	ConsumeInfo *item = ItemDataProvider::Instance()->getConsumeInfo(itemid);
 
+	if (item == 0) {
+		// No reason not to check
+		return;
+	}
+
+	int16_t potency = 100;
 	int32_t skillid = player->getSkills()->getAlchemist();
+
 	if (player->getSkills()->getSkillLevel(skillid) > 0)
 		potency = player->getSkills()->getSkillInfo(skillid)->x;
 
 	bool zombie = player->getActiveBuffs()->isZombified();
 
-	if (item.cons.hp > 0)
-		player->modifyHp(item.cons.hp * (zombie ? (potency / 2) : potency) / 100);
-	if (item.cons.mp > 0)
-		player->modifyMp(item.cons.mp * potency / 100);
+	if (item->hp > 0)
+		player->modifyHp(item->hp * (zombie ? (potency / 2) : potency) / 100);
+	if (item->mp > 0)
+		player->modifyMp(item->mp * potency / 100);
 	else
 		player->setMp(player->getMp(), true);
-	if (item.cons.hpr != 0)
-		player->modifyHp(item.cons.hpr * (zombie ? (player->getMHp() / 2) : player->getMHp()) / 100);
-	if (item.cons.mpr != 0)
-		player->modifyMp(item.cons.mpr * player->getMMp() / 100);
-	if (item.cons.ailment > 0)
-		player->getActiveBuffs()->useDebuffHealingItem(item.cons.ailment);
+	if (item->hpr != 0)
+		player->modifyHp(item->hpr * (zombie ? (player->getMHp() / 2) : player->getMHp()) / 100);
+	if (item->mpr != 0)
+		player->modifyMp(item->mpr * player->getMMp() / 100);
+	if (item->ailment > 0)
+		player->getActiveBuffs()->useDebuffHealingItem(item->ailment);
 
-	if (item.cons.time > 0 && item.cons.mcprob == 0) {
-		int32_t time = item.cons.time * potency / 100;
+	if (item->time > 0 && item->mcprob == 0) {
+		int32_t time = item->time * potency / 100;
 		Buffs::addBuff(player, itemid, time);
 	}
 	if (GameLogicUtilities::isMonsterCard(itemid)) {
 		bool isFull = player->getMonsterBook()->addCard(itemid); // Has a special buff for being full?
 		MonsterBookPacket::addCard(player, itemid, player->getMonsterBook()->getCardLevel(itemid), isFull);
-		if (item.cons.mcprob != 0 && Randomizer::Instance()->randShort(99) < item.cons.mcprob) {
-			Buffs::addBuff(player, itemid, item.cons.time);
+		if (item->mcprob != 0 && Randomizer::Instance()->randShort(99) < item->mcprob) {
+			Buffs::addBuff(player, itemid, item->time);
 		}
 	}
 }

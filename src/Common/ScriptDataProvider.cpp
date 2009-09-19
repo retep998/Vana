@@ -23,8 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <string>
 
-using MiscUtilities::atob;
+using FileUtilities::fileExists;
 using Initializing::outputWidth;
+using MiscUtilities::atob;
 
 ScriptDataProvider * ScriptDataProvider::singleton = 0;
 
@@ -34,29 +35,34 @@ void ScriptDataProvider::loadData() {
 	npcscripts.clear();
 	reactorscripts.clear();
 	questscripts.clear();
+	mapentryscripts.clear();
+	firstmapentryscripts.clear();
+	itemscripts.clear();
 
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM scriptdata");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM scripts");
 	mysqlpp::UseQueryResult res = query.use();
+	int32_t objectid;
+	string script;
+	string scripttype;
 
-	MYSQL_ROW Row;
-	enum ScriptColumns {
-		Id = 0,
-		IsNpc, IsReactor, IsQuest, State, ObjectId,
-		Script
+	enum ScriptData {
+		ScriptType = 0,
+		State, ObjectId, Script
 	};
-	while (Row = res.fetch_raw_row()) {
-		int32_t oid = atoi(Row[ObjectId]);
-		string script = Row[Script];
 
-		if (atob(Row[IsNpc])) {
-			npcscripts[oid] = script;
-		}
-		else if (atob(Row[IsReactor])) {
-			reactorscripts[oid] = script;
-		}
-		else if (atob(Row[IsQuest])) {
-			int8_t state = atoi(Row[State]);
-			questscripts[static_cast<int16_t>(oid)][state] = script;
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		objectid = atoi(row[ObjectId]);
+		scripttype = row[ScriptType];
+		script = row[Script];
+
+		if (scripttype == "npc") npcscripts[objectid] = script;
+		else if (scripttype == "reactor") reactorscripts[objectid] = script;
+		else if (scripttype == "map_enter") mapentryscripts[objectid] = script;
+		else if (scripttype == "map_first_enter") firstmapentryscripts[objectid] = script;
+		else if (scripttype == "item") itemscripts[objectid] = script;
+		else if (scripttype == "quest") {
+			int8_t state = atoi(row[State]);
+			questscripts[static_cast<int16_t>(objectid)][state] = script;
 		}
 	}
 
@@ -64,31 +70,103 @@ void ScriptDataProvider::loadData() {
 }
 
 string ScriptDataProvider::getNpcScript(int32_t npcid) {
-	string s = "scripts/npcs/" + (npcscripts.find(npcid) != npcscripts.end() ? npcscripts[npcid] : "") + ".lua";
-	if (s == "scripts/npcs/.lua" || !FileUtilities::fileExists(s)) { // File doesn't exist or NPC has no script replacement
-		std::ostringstream filestream;
-		filestream << "scripts/npcs/" << npcid << ".lua";
-		s = filestream.str();
+	if (hasNpcScript(npcid)) {
+		string s = "scripts/npcs/" + npcscripts[npcid] + ".lua";
+		if (fileExists(s)) {
+			return s;
+		}
 	}
-	return s;
+	std::ostringstream filestream;
+	filestream << "scripts/npcs/" << npcid << ".lua";
+	string g(filestream.str());
+	return g;
 }
 
 string ScriptDataProvider::getReactorScript(int32_t reactorid) {
-	string s = "scripts/reactors/" + (reactorscripts.find(reactorid) != reactorscripts.end() ? reactorscripts[reactorid] : "") + ".lua";
-	if (s == "scripts/reactors/.lua" || !FileUtilities::fileExists(s)) { // File doesn't exist or reactor has no script replacement
-		std::ostringstream filestream;
-		filestream << "scripts/reactors/" << reactorid << ".lua";
-		s = filestream.str();
+	if (hasReactorScript(reactorid)) {
+		string s = "scripts/reactors/" + reactorscripts[reactorid] + ".lua";
+		if (fileExists(s)) {
+			return s;
+		}
 	}
-	return s;
+	std::ostringstream filestream;
+	filestream << "scripts/reactors/" << reactorid << ".lua";
+	string g(filestream.str());
+	return g;
 }
 
 string ScriptDataProvider::getQuestScript(int16_t questid, int8_t state) {
-	string s = "scripts/npcs/" + (questscripts.find(questid) != questscripts.end() && questscripts[questid].find(state) != questscripts[questid].end() ? questscripts[questid][state] : "") + ".lua";
-	if (s == "scripts/npcs/.lua" || !FileUtilities::fileExists(s)) { // File doesn't exist or quest NPC has no script replacement
-		std::ostringstream filestream;
-		filestream << "scripts/npcs/" << questid << (state == 0 ? "s" : "e") << ".lua";
-		s = filestream.str();
+	if (hasQuestScript(questid, state)) {
+		string s = "scripts/quests/" + questscripts[questid][state] + ".lua";
+		if (fileExists(s)) {
+			return s;
+		}
 	}
-	return s;	
+	std::ostringstream filestream;
+	filestream << "scripts/quests/" << questid << (state == 0 ? "s" : "e") << ".lua";
+	string g(filestream.str());
+	return g;
+}
+
+string ScriptDataProvider::getItemScript(int32_t itemid) {
+	if (hasItemScript(itemid)) {
+		string s = "scripts/items/" + itemscripts[itemid] + ".lua";
+		if (fileExists(s)) {
+			return s;
+		}
+	}
+	std::ostringstream filestream;
+	filestream << "scripts/items/" << itemid << ".lua";
+	string g(filestream.str());
+	return g;
+}
+
+string ScriptDataProvider::getMapEntryScript(int32_t mapid) {
+	if (hasMapEntryScript(mapid)) {
+		string s = "scripts/map_entry/" + mapentryscripts[mapid] + ".lua";
+		if (fileExists(s)) {
+			return s;
+		}
+	}
+	std::ostringstream filestream;
+	filestream << "scripts/map_entry/" << mapid << ".lua";
+	string g(filestream.str());
+	return g;
+}
+
+string ScriptDataProvider::getFirstMapEntryScript(int32_t mapid) {
+	if (hasMapEntryScript(mapid)) {
+		string s = "scripts/first_map_entry/" + firstmapentryscripts[mapid] + ".lua";
+		if (fileExists(s)) {
+			return s;
+		}
+	}
+	std::ostringstream filestream;
+	filestream << "scripts/first_map_entry/" << mapid << ".lua";
+	string g(filestream.str());
+	return g;
+}
+
+bool ScriptDataProvider::hasNpcScript(int32_t npcid) {
+	return (npcscripts.find(npcid) != npcscripts.end());
+}
+
+bool ScriptDataProvider::hasReactorScript(int32_t reactorid) {
+	return (reactorscripts.find(reactorid) != reactorscripts.end());
+}
+
+bool ScriptDataProvider::hasQuestScript(int16_t questid, int8_t state) {
+	return (questscripts.find(questid) != questscripts.end());
+}
+
+bool ScriptDataProvider::hasItemScript(int32_t itemid) {
+	return (itemscripts.find(itemid) != itemscripts.end());
+}
+
+bool ScriptDataProvider::hasMapEntryScript(int32_t mapid) {
+	return (mapentryscripts.find(mapid) != mapentryscripts.end());
+}
+
+bool ScriptDataProvider::hasFirstMapEntryScript(int32_t mapid) {
+	return (firstmapentryscripts.find(mapid) != firstmapentryscripts.end());
 }

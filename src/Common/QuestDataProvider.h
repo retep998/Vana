@@ -23,20 +23,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <map>
+#include <string>
 #include <vector>
 
 using std::map;
+using std::string;
 using std::tr1::unordered_map;
 using std::vector;
 
 struct QuestRewardInfo {
+	QuestRewardInfo() :
+		ismesos(false),
+		isitem(false),
+		isexp(false),
+		isfame(false),
+		isskill(false),
+		isbuff(false),
+		masterlevelonly(false)
+		{ }
+
 	bool ismesos;
 	bool isitem;
 	bool isexp;
 	bool isfame;
 	bool isskill;
-	bool ismasterlevelonly;
 	bool isbuff;
+	bool masterlevelonly;
 	int8_t gender;
 	int16_t count;
 	int16_t masterlevel;
@@ -51,6 +63,7 @@ struct QuestRewardsInfo {
 	unordered_map<int16_t, Rewards> jobrewards;
 };
 
+typedef vector<int16_t> JobRequests;
 typedef map<int32_t, int16_t, std::less<int32_t> > MobRequests;
 typedef unordered_map<int32_t, int16_t> ItemRequests;
 typedef unordered_map<int16_t, int8_t> QuestRequests;
@@ -59,6 +72,7 @@ class Quest {
 public:
 	Quest() : nextquest(0) { }
 	void addReward(bool start, const QuestRewardInfo &info, int16_t job = -1);
+	void addValidJob(int16_t jobid);
 	void addMobRequest(int32_t mobid, int16_t quantity);
 	void addItemRequest(int32_t itemid, int16_t quantity);
 	void addQuestRequest(int16_t questid, int8_t state);
@@ -95,6 +109,7 @@ public:
 private:
 	MobRequests mobrequests;
 	ItemRequests itemrequests;
+	JobRequests jobrequests;
 	QuestRequests questrequests;
 	QuestRewardsInfo startrewards;
 	QuestRewardsInfo endrewards;
@@ -117,6 +132,12 @@ public:
 private:
 	QuestDataProvider() {}
 	static QuestDataProvider *singleton;
+
+	void loadQuestData();
+	void loadRequests();
+	void loadRequiredJobs();
+	void loadRewards();
+	int8_t getGenderId(const string &gender);
 
 	unordered_map<int16_t, Quest> quests;
 };

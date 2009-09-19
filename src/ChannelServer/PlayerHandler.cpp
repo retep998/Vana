@@ -62,7 +62,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zakum
 	int32_t nodamageid = 0;
 	Mob *mob = 0;
-	PGMRInfo pgmr;
+	ReturnDamageInfo pgmr;
 
 	if (type != MapDamage) {
 		packet.skipBytes(4); // Real mob ID, no reason to rely on the packet
@@ -675,13 +675,13 @@ uint32_t PlayerHandler::damageMobs(Player *player, PacketReader &packet, int8_t 
 				packet.skipBytes(4 * (hits - 1 - k));
 				break;
 			}
-			extra = mob->getMHp();
+			extra = mob->getMaxHp();
 			if (eater != 0 && damage != 0 && !eater->onlyonce) { // MP Eater
 				mob->mpEat(player, eater);
 			}
 			if (skillid == Jobs::Ranger::MortalBlow || skillid == Jobs::Sniper::MortalBlow) {
 				SkillLevelInfo *sk = player->getSkills()->getSkillInfo(skillid);
-				int32_t hp_p = mob->getMHp() * sk->x / 100; // Percentage of HP required for Mortal Blow activation
+				int32_t hp_p = mob->getMaxHp() * sk->x / 100; // Percentage of HP required for Mortal Blow activation
 				if ((mob->getHp() < hp_p) && (Randomizer::Instance()->randShort(99) < sk->y)) {
 					damage = mob->getHp();
 				}

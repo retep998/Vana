@@ -250,6 +250,15 @@ namespace MonsterCards {
 	const int32_t PlayerLevels[MaxPlayerLevel - 1] = {10, 30, 60, 100, 150, 210, 280};
 }
 
+namespace MobElements {
+	enum Modifiers {
+		Normal,
+		Immune,
+		Strong,
+		Weak
+	};
+}
+
 namespace FieldLimitBits {
 	enum Limit {
 		Jump = 0x01,

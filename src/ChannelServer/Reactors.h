@@ -39,7 +39,7 @@ namespace Reactors {
 
 class Reactor {
 public:
-	Reactor(int32_t mapid, int32_t reactorid, Pos pos, int32_t link);
+	Reactor(int32_t mapid, int32_t reactorid, const Pos &pos);
 	void kill() { this->alive = false; }
 	void revive() { this->alive = true; }
 	void setState(int8_t state, bool is);
@@ -49,7 +49,6 @@ public:
 	int32_t getId() const { return this->id; }
 	int32_t getReactorId() const { return this->reactorid; }
 	int32_t getMapId() const { return this->mapid; }
-	int32_t getLink() const { return this->link; }
 	bool isAlive() const { return this->alive; }
 	Pos getPos() const { return this->pos; }
 
@@ -60,7 +59,6 @@ private:
 	int32_t id;
 	int32_t reactorid;
 	int32_t mapid;
-	int32_t link;
 	bool alive;
 	Pos pos;
 };

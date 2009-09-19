@@ -15,10 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MOBDATA_H
-#define MOBDATA_H
+#ifndef MOBDATAPROVIDER_H
+#define MOBDATAPROVIDER_H
 
-#include "GameConstants.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
@@ -48,16 +47,55 @@ struct MobSkillInfo {
 };
 
 struct MobInfo {
-	uint8_t level;
-	int32_t hp;
-	int32_t mp;
-	int32_t hprecovery;
-	int32_t mprecovery;
-	int32_t exp;
+	MobInfo() :
+		boss(false),
+		canfreeze(false),
+		canpoison(false),
+		undead(false),
+		flying(false),
+		friendly(false),
+		publicreward(false),
+		explosivereward(false),
+		invincible(false),
+		onlynormalattacks(false),
+		keepcorpse(false),
+		autoaggro(false),
+		damageable(true),
+		candamage(true)
+		{ }
+	int8_t cp;
+	int8_t iceattr;
+	int8_t fireattr;
+	int8_t poisonattr;
+	int8_t lightningattr;
+	int8_t holyattr;
+	int8_t nonelemattr;
+	int8_t hpcolor;
+	int8_t hpbgcolor;
+	uint8_t skillcount;
+	int16_t watk;
+	int16_t wdef;
+	int16_t matk;
+	int16_t mdef;
+	int16_t acc;
+	int16_t avo;
+	int16_t speed;
+	int16_t chasespeed;
+	int16_t summontype;
+	uint16_t level;
 	int32_t selfdestruction;
 	int32_t buff;
 	int32_t link;
 	int32_t removeafter;
+	int32_t knockback;
+	int32_t fixeddamage;
+	int32_t damageskill;
+	int32_t damagemob;
+	uint32_t hp;
+	uint32_t mp;
+	uint32_t exp;
+	uint32_t hprecovery;
+	uint32_t mprecovery;
 	bool boss;
 	bool canfreeze;
 	bool canpoison;
@@ -66,18 +104,14 @@ struct MobInfo {
 	bool friendly;
 	bool publicreward;
 	bool explosivereward;
-	int8_t hpcolor;
-	int8_t hpbgcolor;
+	bool invincible;
+	bool damageable;
+	bool candamage;
+	bool autoaggro;
+	bool keepcorpse;
+	bool onlynormalattacks;
+	double traction;
 	vector<int32_t> summon;
-	vector<MobAttackInfo> attacks;
-	vector<MobSkillInfo> skills;
-};
-
-struct BanishField {
-	BanishField() : message(""), portal(""), field(Maps::NoMap) { }
-	string message;
-	string portal;
-	int32_t field;
 };
 
 class MobDataProvider : boost::noncopyable {
@@ -90,19 +124,23 @@ public:
 	void loadData();
 
 	bool mobExists(int32_t mobid) { return mobinfo.find(mobid) != mobinfo.end(); }
-	MobInfo const getMobInfo(int32_t mobid) { return mobinfo[mobid]; }
-	MobAttackInfo * getMobAttack(int32_t mobid, uint8_t type);
+	MobInfo * getMobInfo(int32_t mobid) { return &mobinfo[mobid]; }
+	MobAttackInfo * getMobAttack(int32_t mobid, uint8_t index);
 	MobSkillInfo * getMobSkill(int32_t mobid, uint8_t index);
-	bool hasBanishData(int32_t mobid) { return banishinfo.find(mobid) != banishinfo.end(); }
-	string getBanishMessage(int32_t mobid) { return banishinfo[mobid].message; }
-	string getBanishPortal(int32_t mobid) { return banishinfo[mobid].portal; }
-	int32_t getBanishMap(int32_t mobid) { return banishinfo[mobid].field; }
+	uint8_t getSkillCount(int32_t mobid);
 private:
 	MobDataProvider() {}
 	static MobDataProvider *singleton;
 
+	void loadMobs();
+	void loadAttacks();
+	void loadSkills();
+	void loadSummons();
+	int8_t getElemModifier(const string &elemattr);
+
 	unordered_map<int32_t, MobInfo> mobinfo;
-	unordered_map<int32_t, BanishField> banishinfo;
+	unordered_map<int32_t, vector<MobAttackInfo> > attacks;
+	unordered_map<int32_t, vector<MobSkillInfo> > skills;
 };
 
 #endif

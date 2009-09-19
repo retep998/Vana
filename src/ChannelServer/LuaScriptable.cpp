@@ -437,7 +437,7 @@ int LuaExports::spawnNPC(lua_State *luaVm) {
 	npc.pos = Pos(x, y);
 	npc.rx0 = x - 50;
 	npc.rx1 = x + 50;
-	npc.facingside = 1;
+	npc.facesleft = false;
 
 	lua_pushinteger(luaVm, Maps::getMap(mapid)->addNPC(npc));
 	return 1;
@@ -1224,7 +1224,7 @@ int LuaExports::getMobHP(lua_State *luaVm) {
 int LuaExports::getMobMHP(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
 	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMHp());
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMaxHp());
 	return 1;
 
 }
@@ -1232,7 +1232,7 @@ int LuaExports::getMobMHP(lua_State *luaVm) {
 int LuaExports::getMobMMP(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
 	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMMp());
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMaxMp());
 	return 1;
 }
 

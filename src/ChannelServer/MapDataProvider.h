@@ -38,38 +38,74 @@ class Map;
 class Player;
 
 struct MapInfo {
-	MapInfo() : left(0), top(0), bottom(0), right(0), musicname("") {}
+	MapInfo() :
+		lt(Pos(0,0)),
+		rb(Pos(0,0)),
+		timemob(0),
+		clock(false),
+		town(false),
+		swim(false),
+		fly(false),
+		everlast(false),
+		nopartyleaderpass(false),
+		shop(false),
+		scrolldisable(false),
+		shufflereactors(false),
+		forcemapequip(false)
+		{ }
 	bool clock;
 	bool town;
+	bool swim;
+	bool fly;
+	bool everlast;
+	bool nopartyleaderpass;
+	bool shop;
+	bool scrolldisable;
+	bool shufflereactors;
+	bool forcemapequip;
 	int8_t fieldType;
 	int8_t continent;
 	int8_t starthour;
 	int8_t endhour;
-	int16_t left;
-	int16_t top;
-	int16_t bottom;
-	int16_t right;
+	int8_t regenrate;
+	uint8_t minlevel;
+	uint8_t dechp;
+	uint16_t dps;
 	int32_t id;
 	int32_t rm;
 	int32_t forcedReturn;
-	int32_t shipInterval;
 	int32_t fieldLimit;
 	int32_t link;
 	int32_t timemob;
+	int32_t timelimit;
+	int32_t protectitem;
 	double spawnrate;
+	double traction;
 	string musicname;
+	string defaultmusic;
+	string shufflename;
 	string message;
+	Pos lt;
+	Pos rb;
 };
 typedef shared_ptr<MapInfo> MapInfoPtr;
 
 struct FootholdInfo {
+	FootholdInfo() : forbidjumpdown(false) { }
+
+	bool forbidjumpdown;
 	int16_t id;
+	int16_t dragforce;
+	int16_t next;
+	int16_t prev;
 	Pos pos1;
 	Pos pos2;
 };
 typedef vector<FootholdInfo> FootholdsInfo;
 
 struct PortalInfo {
+	PortalInfo() : onlyOnce(false) { }
+
 	int8_t id;
 	string name;
 	Pos pos;
@@ -82,27 +118,29 @@ typedef unordered_map<string, PortalInfo> PortalsInfo;
 typedef unordered_map<int8_t, PortalInfo> SpawnPoints;
 
 struct NPCSpawnInfo {
+	NPCSpawnInfo() : facesleft(false) { }
 	int32_t id;
 	Pos pos;
 	int16_t fh;
 	int16_t rx0;
 	int16_t rx1;
-	int8_t facingside;
+	bool facesleft;
 };
 typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 
 struct ReactorSpawnInfo {
-	ReactorSpawnInfo() : spawnat(-1), spawned(false) { }
+	ReactorSpawnInfo() : spawnat(-1), spawned(false), facesleft(false) { }
 	int32_t id;
 	int32_t time;
-	int32_t link;
 	clock_t spawnat;
 	bool spawned;
+	bool facesleft;
 	Pos pos;
 };
 typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
 
 struct SeatInfo {
+	SeatInfo() : occupant(0) { }
 	Pos pos;
 	Player *occupant;
 };
@@ -110,13 +148,13 @@ struct SeatInfo {
 typedef std::map<int16_t, SeatInfo> SeatsInfo;
 
 struct MobSpawnInfo {
-	MobSpawnInfo() : spawned(false), spawnat(-1) { }
-	int8_t facingside;
+	MobSpawnInfo() : spawned(false), facesleft(false), spawnat(-1) { }
+	bool facesleft;
+	bool spawned;
 	int16_t fh;
 	int32_t id;
 	int32_t time;
 	int32_t link;
-	bool spawned;
 	clock_t spawnat;
 	Pos pos;
 };
@@ -130,6 +168,7 @@ public:
 		return singleton;
 	}
 
+	void loadData();
 	Map * getMap(int32_t mapid);
 	int8_t getContinent(int32_t mapid);
 private:
@@ -137,6 +176,13 @@ private:
 	static MapDataProvider *singleton;
 	typedef boost::bimap<int8_t, boost::bimaps::unordered_multiset_of<int8_t> > continent_map;
 	typedef continent_map::value_type continent_info;
+
+	int32_t loadMapData(int32_t mapid, Map *&map);
+	void loadMapTimeMob(MapInfoPtr info);
+	void loadFootholds(Map *map, int32_t link);
+	void loadMapLife(Map *map, int32_t link);
+	void loadPortals(Map *map, int32_t link);
+	void loadSeats(Map *map, int32_t link);
 
 	unordered_map<int32_t, Map *> maps;
 	continent_map continents;

@@ -50,6 +50,10 @@ private:
 	BeautyDataProvider() {}
 	static BeautyDataProvider *singleton;
 
+	void loadSkins();
+	void loadHair();
+	void loadFaces();
+
 	vector<int32_t> malehair;
 	vector<int32_t> malefaces;
 	vector<int32_t> femalehair;
