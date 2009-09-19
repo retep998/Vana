@@ -540,7 +540,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						npc.pos = player->getPos();
 						npc.rx0 = npc.pos.x - 50;
 						npc.rx1 = npc.pos.x + 50;
-						npc.facingside = 1;
+						npc.facesleft = false;
 						Maps::getMap(player->getMap())->addNPC(npc);
 					}
 					else {
@@ -670,10 +670,10 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						if (type != 0 && type < 200) {
 							mysqlpp::Query query = Database::getDataDB().query();
 							if (type == 100) {
-								query << "SELECT objectid, name FROM stringdata WHERE objectid = " << matches[2];
+								query << "SELECT objectid, `name` FROM string_data WHERE objectid = " << matches[2];
 							}
 							else {
-								query << "SELECT objectid, name FROM stringdata WHERE type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+								query << "SELECT objectid, `name` FROM string_data WHERE object_type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
 							}
 
 							mysqlpp::StoreQueryResult res = query.store();
@@ -1063,7 +1063,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							message += ", HP: ";
 							message += boost::lexical_cast<string>(iter->second->getHp());
 							message += "/";
-							message += boost::lexical_cast<string>(iter->second->getMHp());
+							message += boost::lexical_cast<string>(iter->second->getMaxHp());
 							message += ")";
 							PlayerPacket::showMessage(player, message, 6);
 						}
@@ -1084,9 +1084,9 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							message += " HP: ";
 							message += boost::lexical_cast<string>(mob->getHp());
 							message += "/";
-							message += boost::lexical_cast<string>(mob->getMHp());
+							message += boost::lexical_cast<string>(mob->getMaxHp());
 							message += " (";
-							message += boost::lexical_cast<string>(static_cast<int64_t>(mob->getHp()) * 100 / mob->getMHp());
+							message += boost::lexical_cast<string>(static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp());
 							message += "%)";
 						}
 					}

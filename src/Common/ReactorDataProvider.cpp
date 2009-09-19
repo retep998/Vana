@@ -19,71 +19,133 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "InitializeCommon.h"
 #include "MiscUtilities.h"
+#include "StringUtilities.h"
 
 using Initializing::outputWidth;
 using MiscUtilities::atob;
+using StringUtilities::runFlags;
 
 ReactorDataProvider * ReactorDataProvider::singleton = 0;
 
 void ReactorDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Reactors... ";
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactoreventdata ORDER BY reactorid, state ASC");
-	mysqlpp::UseQueryResult res = query.use();
 
-	MYSQL_ROW reactorRow;
-	ReactorEventInfo revent;
-	reactorinfo.clear();
-	maxstates.clear();
-
-	enum ReactorEvent {
-		RowId = 0,
-		ReactorId, State, Type, ItemId, LTX,
-		LTY, RBX, RBY, NextState, Repeat,
-		Timeout
-	};
-
-	while (reactorRow = res.fetch_raw_row()) {
-		int32_t id = atoi(reactorRow[ReactorId]);
-		int8_t state = atoi(reactorRow[State]);
-
-		revent.type = atoi(reactorRow[Type]);
-		revent.itemid = atoi(reactorRow[ItemId]);
-		revent.lt.x = atoi(reactorRow[LTX]);
-		revent.lt.y = atoi(reactorRow[LTY]);
-		revent.rb.x = atoi(reactorRow[RBX]);
-		revent.rb.y = atoi(reactorRow[RBY]);
-		revent.nextstate = atoi(reactorRow[NextState]);
-		revent.repeat = atob(reactorRow[Repeat]);
-		revent.timeout = atoi(reactorRow[Timeout]);
-
-		if (maxstates.find(id) == maxstates.end()) {
-			maxstates[id] = revent.nextstate;	
-		}
-		else if (maxstates[id] < revent.nextstate) {
-			maxstates[id] = revent.nextstate;
-		}
-		reactorinfo[id][state].push_back(revent);
-	}
+	loadReactors();
+	loadStates();
+	loadTriggerSkills();
 
 	std::cout << "DONE" << std::endl;
 }
 
-int8_t ReactorDataProvider::getEventCount(int32_t reactorid, int8_t state) {
-	if (reactorinfo.find(reactorid) != reactorinfo.end()) {
-		if (reactorinfo[reactorid].find(state) != reactorinfo[reactorid].end()) {
-			return reactorinfo[reactorid][state].size();
+void ReactorDataProvider::loadReactors() {
+	reactorinfo.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_data");
+	mysqlpp::UseQueryResult res = query.use();
+	ReactorData react;
+	int32_t id;
+
+	struct FlagFunctor {
+		void operator()(const string &cmp) {
+			if (cmp == "remove_in_field_set") reactor->removeinfieldset = true;
+			else if (cmp == "activate_by_touch") reactor->activatebytouch = true;
 		}
-		return 0;
+		ReactorData *reactor;
+	};
+
+	enum Reactors {
+		ReactorId = 0,
+		MaxStates, Link, Flags
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		id = atoi(row[ReactorId]);
+		react = ReactorData();
+		FlagFunctor whoo = {&react};
+		runFlags(row[Flags], whoo);
+
+		react.maxstates = atoi(row[MaxStates]);
+		react.link = atoi(row[Link]);
+
+		reactorinfo[id] = react;
 	}
-	return 0;
 }
 
-ReactorEventInfo * ReactorDataProvider::getEvent(int32_t reactorid, int8_t state, int8_t specific) {
-	if (reactorinfo.find(reactorid) != reactorinfo.end()) {
-		if (reactorinfo[reactorid].find(state) != reactorinfo[reactorid].end()) {
-			return &reactorinfo[reactorid][state][specific];
+void ReactorDataProvider::loadStates() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_events ORDER BY reactorid, state ASC");
+	mysqlpp::UseQueryResult res = query.use();
+	ReactorStateInfo revent;
+	int32_t id;
+	int8_t state;
+	
+	struct TypeFunctor {
+		void operator()(const string &cmp) {
+			if (cmp == "plain_advance_state") reactor->type = 0;
+			else if (cmp == "no_clue") reactor->type = 0;
+			else if (cmp == "no_clue2") reactor->type = 0;
+			else if (cmp == "hit_from_left") reactor->type = 2;
+			else if (cmp == "hit_from_right") reactor->type = 3;
+			else if (cmp == "hit_by_skill") reactor->type = 5;
+			else if (cmp == "hit_by_item") reactor->type = 100;
 		}
-		return 0;
+		ReactorStateInfo *reactor;
+	};
+
+	enum ReactorEvent {
+		ReactorId = 0,
+		State, Type, Timeout, ItemId, Quantity,
+		LTX, LTY, RBX, RBY, NextState
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		id = atoi(row[ReactorId]);
+		state = atoi(row[State]);
+		revent = ReactorStateInfo();
+
+		TypeFunctor whoo = {&revent};
+		runFlags(row[Type], whoo);
+
+		revent.itemid = atoi(row[ItemId]);
+		revent.itemquantity = atoi(row[Quantity]);
+		revent.lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
+		revent.rb = Pos(atoi(row[RBX]), atoi(row[RBY]));
+		revent.nextstate = atoi(row[NextState]);
+		revent.timeout = atoi(row[Timeout]);
+
+		reactorinfo[id].states[state].push_back(revent);
+	}
+}
+
+void ReactorDataProvider::loadTriggerSkills() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_event_trigger_skills");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t id;
+	int8_t state;
+	int32_t skillid;
+	size_t i;
+
+	enum ReactorEvent {
+		ReactorId = 0,
+		State, SkillId
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		id = atoi(row[ReactorId]);
+		state = atoi(row[State]);
+		skillid = atoi(row[SkillId]);
+
+		for (i = 0; i < reactorinfo[id].states[state].size(); i++) {
+			reactorinfo[id].states[state][i].triggerskills.push_back(skillid);
+		}
+	}
+}
+
+ReactorData * ReactorDataProvider::getReactorData(int32_t reactorid, bool respectLink) {
+	if (reactorinfo.find(reactorid) != reactorinfo.end()) {
+		ReactorData *retval = &reactorinfo[reactorid];
+		if (respectLink && retval->link) {
+			return &reactorinfo[retval->link];
+		}
+		return retval;
 	}
 	return 0;
 }

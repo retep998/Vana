@@ -77,7 +77,7 @@ void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 		taker->applyDamage(playerid, damage);
 		Map *m = Maps::getMap(player->getMap());
 		if (m->getInstance() != 0) {
-			m->getInstance()->sendMessage(FriendlyMobHit, taker->getMobId(), taker->getId(), taker->getMapId(), taker->getHp(), taker->getMHp());
+			m->getInstance()->sendMessage(FriendlyMobHit, taker->getMobId(), taker->getId(), taker->getMapId(), taker->getHp(), taker->getMaxHp());
 		}
 	}
 }
@@ -104,7 +104,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 
 	if (useskill && (skill == -1 || skill == 0)) {
 		if (!mob->hasStatus(StatusEffects::Mob::Freeze) && !mob->hasStatus(StatusEffects::Mob::Stun)) {
-			int32_t size = mob->getSkillCount();
+			uint8_t size = mob->getSkillCount();
 			bool used = false;
 			if (size) {
 				bool stop = false;
@@ -155,7 +155,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 					if (ls == 0 || ((int16_t)(now - ls) > mobskill->interval)) {
 						mob->setLastSkillUse(realskill, now);
 						int64_t reqhp = mob->getHp() * 100;
-						reqhp /= mob->getMHp();
+						reqhp /= mob->getMaxHp();
 						if ((uint8_t)(reqhp) <= mobskill->hp) {
 							if (info->effectAfter == 0) {
 								handleMobSkill(mob, realskill, level, mobskill);
@@ -389,7 +389,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 			case Jobs::BlazeWizard::FlameGear:
 			case Jobs::NightWalker::PoisonBomb:	
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMHp() / (70 - level), skillid, skill->time));
+					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillid, skill->time));
 				}
 				break;
 		}
@@ -450,7 +450,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 				break;
 			case Jobs::ILArchMage::IceDemon:
 			case Jobs::FPArchMage::FireDemon:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMHp() / (70 - level), skillid, skill->time));
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillid, skill->time));
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillid, skill->x));
 				break;
 			case Jobs::Shadower::Taunt:

@@ -42,7 +42,7 @@ namespace MobsPacket {
 	void removeStatus(Mob *mob, int32_t status);
 	void showHp(Player *player, int32_t mobid, int8_t per);
 	void showHp(int32_t mapid, int32_t mobid, int8_t per);
-	void showBossHp(int32_t mapid, int32_t mobid, int32_t hp, const MobInfo &info); // For major bosses
+	void showBossHp(Mob *mob); // For major bosses
 	void dieMob(Mob *mob, int8_t death = 1);
 };
 

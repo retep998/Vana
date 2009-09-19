@@ -31,73 +31,76 @@ ShopDataProvider * ShopDataProvider::singleton = 0;
 
 void ShopDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
-	shops.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT shopdata.shopid, shopdata.npcid, shopdata.rechargetier FROM shopdata");
-	mysqlpp::UseQueryResult res = query.use();
 
-	MYSQL_ROW shopRow;
+	loadShops();
+	loadShopItems();
+	loadRechargeTiers();
+
+	std::cout << "DONE" << std::endl;
+}
+
+void ShopDataProvider::loadShops() {
+	shops.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM shop_data");
+	mysqlpp::UseQueryResult res = query.use(); 
 	ShopInfo shop;
-	while (shopRow = res.fetch_raw_row()) {
-		// Col0 : Shop ID
-		//    1 : NPC ID
-		//    2 : Recharge Tier
-		int32_t shopid = atoi(shopRow[0]);
-		shop.npc = atoi(shopRow[1]);
-		shop.rechargetier = atoi(shopRow[2]);
+	int32_t shopid;
+	enum ShopData {
+		ShopId = 0,
+		NpcId, RechargeTier
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		shopid = atoi(row[ShopId]);
+
+		shop.npc = atoi(row[NpcId]);
+		shop.rechargetier = atoi(row[RechargeTier]);
 		shops[shopid] = shop;
 	}
+}
 
-	query << "SELECT * FROM shopitemdata ORDER BY shopitemdata.shopid, shopitemdata.sort DESC";
-	res = query.use();
-
-	int32_t currentid = 0;
-	int32_t previousid = -1;
+void ShopDataProvider::loadShopItems() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM shop_items ORDER BY shopid, sort DESC");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t shopid;
 	ShopItemInfo item;
-	while (shopRow = res.fetch_raw_row()) {
-		// Col0 : Shop ID
-		//    1 : Item ID
-		//    2 : Quantity
-		//    3 : Price
-		//    4 : Sort
-		currentid = atoi(shopRow[0]);
-		if (previousid == -1) {
-			shop = shops[currentid];
-		}
-		else if (previousid != -1 && currentid != previousid) { // Add the items into the cache
-			shops[previousid] = shop;
-			shop = shops[currentid];
-		}
 
-		item.itemid = atoi(shopRow[1]);
-		item.quantity = atoi(shopRow[2]);
-		item.price = atoi(shopRow[3]);
+	enum ShopItemData {
+		ShopId = 0,
+		ItemId, Quantity, Price, Sort
+	};
 
-		shop.items.push_back(item);
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		shopid = atoi(row[ShopId]);
 
-		previousid = currentid;
+		item.itemid = atoi(row[ItemId]);
+		item.quantity = atoi(row[Quantity]);
+		item.price = atoi(row[Price]);
+
+		shops[shopid].items.push_back(item);
 	}
+}
 
-	if (previousid != -1) {
-		shop.items.push_back(item);
-		shops[previousid] = shop;
-	}
-
+void ShopDataProvider::loadRechargeTiers() {
 	rechargecosts.clear();
-	query << "SELECT * FROM rechargedata";
-	res = query.use();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM shop_recharge_data");
+	mysqlpp::UseQueryResult res = query.use();
+	int8_t rechargetier;
+	int32_t itemid;
+	double price;
 
-	while (shopRow = res.fetch_raw_row()) {
-		// Col0 : Recharge Tier ID
-		//    1 : Item ID
-		//    2 : Price
-		int8_t rechargetier = atoi(shopRow[0]);
-		int32_t itemid = atoi(shopRow[1]);
-		double price = atof(shopRow[2]);
+	enum RechargeData {
+		TierId = 0,
+		ItemId, Price
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		rechargetier = atoi(row[TierId]);
+		itemid = atoi(row[ItemId]);
+		price = atof(row[Price]);
 
 		rechargecosts[rechargetier][itemid] = price;
 	}
-
-	std::cout << "DONE" << std::endl;
 }
 
 void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCreator &packet) {

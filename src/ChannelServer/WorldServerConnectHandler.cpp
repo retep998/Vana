@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobDataProvider.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
-#include "PetDataProvider.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Players.h"
@@ -159,7 +158,6 @@ void WorldServerConnectHandler::reloadMcdb(PacketReader &packet) {
 		ScriptDataProvider::Instance()->loadData();
 		SkillDataProvider::Instance()->loadData();
 		ReactorDataProvider::Instance()->loadData();
-		PetDataProvider::Instance()->loadData();
 		QuestDataProvider::Instance()->loadData();
 	}
 	else if (args == "items") ItemDataProvider::Instance()->loadData();
@@ -170,6 +168,5 @@ void WorldServerConnectHandler::reloadMcdb(PacketReader &packet) {
 	else if (args == "scripts") ScriptDataProvider::Instance()->loadData();
 	else if (args == "skills") SkillDataProvider::Instance()->loadData();
 	else if (args == "reactors") ReactorDataProvider::Instance()->loadData();
-	else if (args == "pets") PetDataProvider::Instance()->loadData();
 	else if (args == "quest") QuestDataProvider::Instance()->loadData();
 }

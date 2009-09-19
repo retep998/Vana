@@ -246,21 +246,8 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	}
 	else {
 		Item dropitem = drop->getItem();
-		if (GameLogicUtilities::isEquip(dropitem.id) || !ItemDataProvider::Instance()->getItemInfo(dropitem.id).cons.autoconsume) {
-			Item *item = new Item(dropitem);
-			int16_t dropAmount = drop->getAmount();
-			int16_t amount = Inventory::addItem(player, item, true);
-			if (amount > 0) {
-				if (dropAmount - amount > 0) {
-					DropsPacket::takeNote(player, drop->getObjectId(), false, dropAmount - amount);
-					drop->setItemAmount(amount);
-				}
-				DropsPacket::takeNote(player, 0, 0, 0);
-				DropsPacket::dontTake(player);
-				return;
-			}
-		}
-		else {
+		ConsumeInfo *item = ItemDataProvider::Instance()->getConsumeInfo(dropitem.id);
+		if (item != 0 && item->autoconsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
 				if (player->getMonsterBook()->isFull(drop->getObjectId())) {
 					drop->takeDrop(player, petid);
@@ -273,6 +260,20 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 				return;
 			}
 			Inventory::useItem(player, dropitem.id);
+		}
+		else {
+			Item *item = new Item(dropitem);
+			int16_t dropAmount = drop->getAmount();
+			int16_t amount = Inventory::addItem(player, item, true);
+			if (amount > 0) {
+				if (dropAmount - amount > 0) {
+					DropsPacket::takeNote(player, drop->getObjectId(), false, dropAmount - amount);
+					drop->setItemAmount(amount);
+				}
+				DropsPacket::takeNote(player, 0, 0, 0);
+				DropsPacket::dontTake(player);
+				return;
+			}
 		}
 		DropsPacket::takeNote(player, drop->getObjectId(), false, drop->getAmount());
 	}

@@ -63,16 +63,11 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		}
 		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId(), true);
 		drop->setTime(0);
-		bool istradeable = true;
-		if (GameLogicUtilities::isEquip(droppeditem.id)) {
-			EquipInfo info = ItemDataProvider::Instance()->getEquipInfo(droppeditem.id);
-			istradeable = !(info.notrade || info.quest);
-		}
-		else {
-			ItemInfo info = ItemDataProvider::Instance()->getItemInfo(droppeditem.id);
-			istradeable = !(info.notrade || info.quest);
-		}
+
+		ItemInfo *info = ItemDataProvider::Instance()->getItemInfo(droppeditem.id);
+		bool istradeable = !(info->notrade || info->quest);
 		drop->setTradeable(istradeable);
+
 		drop->doDrop(player->getPos());
 		if (istradeable) // Drop is deleted otherwise, avoid like plague
 			Reactors::checkDrop(player, drop);
@@ -353,8 +348,13 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 
-	if (player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
-		// hacking
+	Item *it = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	if (it == 0 || it->id != itemid) {
+		// Hacking
+		return;
+	}
+	if (!ItemDataProvider::Instance()->skillItemExists(itemid)) {
+		// Hacking
 		return;
 	}
 
@@ -363,17 +363,20 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 	bool use = false;
 	bool succeed = false;
 
-	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
-	for (size_t i = 0; i < item.cons.skills.size(); i++) {
-		skillid = item.cons.skills[i].skillid;
-		newMaxLevel = item.cons.skills[i].maxlevel;
+	vector<Skillbook> *item = ItemDataProvider::Instance()->getItemSkills(itemid);
+	Skillbook s;
+
+	for (size_t i = 0; i < item->size(); i++) {
+		s = (*item)[i];
+		skillid = s.skillid;
+		newMaxLevel = s.maxlevel;
 		if (GameLogicUtilities::itemSkillMatchesJob(skillid, player->getJob())) {
 			// Make sure the skill is for the person's job
-			if (player->getSkills()->getSkillLevel(skillid) >= item.cons.skills[i].reqlevel) {
+			if (player->getSkills()->getSkillLevel(skillid) >= s.reqlevel) {
 				// I know the multiple levels of if aren't necessary, but they're large/verbose comparisons
 				if (player->getSkills()->getMaxSkillLevel(skillid) < newMaxLevel) {
 					// Don't want to break up this vertical spacing
-					if (Randomizer::Instance()->randShort(99) < item.cons.success) {
+					if (Randomizer::Instance()->randShort(99) < s.chance) {
 						player->getSkills()->setMaxSkillLevel(skillid, newMaxLevel);
 						succeed = true;
 					}
@@ -424,19 +427,26 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	Item *inventoryitem = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (!ItemDataProvider::Instance()->itemExists(itemid))
-		return;
-	if (inventoryitem == 0 || inventoryitem->id != itemid) {
-		// hacking
+
+	if (!ItemDataProvider::Instance()->summonBagExists(itemid)) {
+		// Most likely hacking
 		return;
 	}
+
+	Item *inventoryitem = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	if (inventoryitem == 0 || inventoryitem->id != itemid) {
+		// Hacking
+		return;
+	}
+
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 
-	ItemInfo item = ItemDataProvider::Instance()->getItemInfo(itemid);
-	for (size_t i = 0; i < item.cons.mobs.size(); i++) {
-		if (Randomizer::Instance()->randInt(100) <= item.cons.mobs[i].chance) {
-			Maps::getMap(player->getMap())->spawnMob(item.cons.mobs[i].mobid, player->getPos());
+	vector<SummonBag> *item = ItemDataProvider::Instance()->getItemSummons(itemid);
+	SummonBag s;
+	for (size_t i = 0; i < item->size(); i++) {
+		s = (*item)[i];
+		if (Randomizer::Instance()->randInt(99) < s.chance) {
+			Maps::getMap(player->getMap())->spawnMob(s.mobid, player->getPos());
 		}
 	}
 }
@@ -445,14 +455,19 @@ void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	if (player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
-		// hacking
+
+	Item *it = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	if (it == 0 || it->id != itemid) {
+		// Hacking
 		return;
 	}
-	if (!ItemDataProvider::Instance()->itemExists(itemid))
+	ConsumeInfo *info = ItemDataProvider::Instance()->getConsumeInfo(itemid);
+	if (info == 0) {
+		// Probably hacking
 		return;
+	}
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
-	int32_t map = ItemDataProvider::Instance()->getItemInfo(itemid).cons.moveTo;
+	int32_t map = info->moveTo;
 	player->setMap(map == Maps::NoMap ? Maps::getMap(player->getMap())->getInfo()->rm : map);
 }
 
@@ -465,23 +480,25 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	Item *equip = player->getInventory()->getItem(Inventories::EquipInventory, eslot);
-	if (item == 0 || equip == 0)
+	if (item == 0 || equip == 0) {
+		// Most likely hacking
 		return;
+	}
 
 	int32_t itemid = item->id;
 	int8_t succeed = -1;
 	bool cursed = false;
-	if (!ItemDataProvider::Instance()->itemExists(itemid))
+	if (!ItemDataProvider::Instance()->scrollExists(itemid))
 		return;
 
-	ItemInfo iteminfo = ItemDataProvider::Instance()->getItemInfo(itemid);
+	ScrollInfo *iteminfo = ItemDataProvider::Instance()->getScrollInfo(itemid);
 
-	if (iteminfo.cons.randstat) {
+	if (iteminfo->randstat) {
 		if (equip->slots > 0) {
 			succeed = 0;
 			if (wscroll)
 				Inventory::takeItem(player, Items::WhiteScroll, 1);
-			if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Add stats
+			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Add stats
 				int8_t n = -1; // Default - Decrease stats
 				if (Randomizer::Instance()->randShort(99) < 50U) // Increase
 					n = 1;
@@ -524,31 +541,31 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 				equip->slots--;
 		}
 	}
-	else if (iteminfo.cons.recover) {
-		if ((ItemDataProvider::Instance()->getEquipInfo(equip->id).slots - equip->scrolls) > equip->slots) {
-			if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) { // Give back a slot
+	else if (iteminfo->recover) {
+		EquipInfo *item = ItemDataProvider::Instance()->getEquipInfo(equip->id);
+		int8_t maxslots = item->slots + static_cast<int8_t>(equip->hammers);
+		if ((maxslots - equip->scrolls) > equip->slots) {
+			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Give back a slot
 				equip->slots++;
 				succeed = 1;
 			}
 			else {
-				if (Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
+				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed)
 					cursed = true;
 				succeed = 0;
 			}
 		}
 	}
-	else if (itemid == Items::ShoeSpikes || itemid == Items::CapeColdProtection) {
+	else if (iteminfo->preventslip) {
 		succeed = 0;
-		if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
-			// These do not take slots and can be used even after success
-			switch (itemid) {
-				case Items::ShoeSpikes:
-					equip->flags |= FlagSpikes;
-					break;
-				case Items::CapeColdProtection:
-					equip->flags |= FlagCold;
-					break;
-			}
+		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+			equip->flags |= FlagSpikes;
+			succeed = 1;
+		}
+	}
+	else if (iteminfo->warmsupport) {
+		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+			equip->flags |= FlagCold;
 			succeed = 1;
 		}
 	}
@@ -560,29 +577,29 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 		if (equip->slots > 0) {
 			if (wscroll)
 				Inventory::takeItem(player, Items::WhiteScroll, 1);
-			if (Randomizer::Instance()->randShort(99) < iteminfo.cons.success) {
+			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
 				succeed = 1;
-				equip->istr += iteminfo.cons.istr;
-				equip->idex += iteminfo.cons.idex;
-				equip->iint += iteminfo.cons.iint;
-				equip->iluk += iteminfo.cons.iluk;
-				equip->ihp += iteminfo.cons.ihp;
-				equip->imp += iteminfo.cons.imp;
-				equip->iwatk += iteminfo.cons.iwatk;
-				equip->imatk += iteminfo.cons.imatk;
-				equip->iwdef += iteminfo.cons.iwdef;
-				equip->imdef += iteminfo.cons.imdef;
-				equip->iacc += iteminfo.cons.iacc;
-				equip->iavo += iteminfo.cons.iavo;
-				equip->ihand += iteminfo.cons.ihand;
-				equip->ijump += iteminfo.cons.ijump;
-				equip->ispeed += iteminfo.cons.ispeed;
+				equip->istr += iteminfo->istr;
+				equip->idex += iteminfo->idex;
+				equip->iint += iteminfo->iint;
+				equip->iluk += iteminfo->iluk;
+				equip->ihp += iteminfo->ihp;
+				equip->imp += iteminfo->imp;
+				equip->iwatk += iteminfo->iwatk;
+				equip->imatk += iteminfo->imatk;
+				equip->iwdef += iteminfo->iwdef;
+				equip->imdef += iteminfo->imdef;
+				equip->iacc += iteminfo->iacc;
+				equip->iavo += iteminfo->iavo;
+				equip->ihand += iteminfo->ihand;
+				equip->ijump += iteminfo->ijump;
+				equip->ispeed += iteminfo->ispeed;
 				equip->scrolls++;
 				equip->slots--;
 			}
 			else {
 				succeed = 0;
-				if (Randomizer::Instance()->randShort(99) < iteminfo.cons.cursed)
+				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed)
 					cursed = true;
 				else if (!wscroll)
 					equip->slots--;

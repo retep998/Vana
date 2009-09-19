@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef DROPDATA_H
-#define DROPDATA_H
+#ifndef DROPDATAPROVIDER_H
+#define DROPDATAPROVIDER_H
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
@@ -38,13 +38,14 @@ struct DropInfo {
 typedef vector<DropInfo> DropsInfo;
 
 struct GlobalDrop {
-	GlobalDrop() : ismesos(false), itemid(0), minamount(0), maxamount(0), minlevel(1), maxlevel(200), questid(0), chance(0) { }
+	GlobalDrop() : ismesos(false), itemid(0), minamount(0), maxamount(0), minlevel(1), maxlevel(200), continent(-1), questid(0), chance(0) { }
 	bool ismesos;
 	int32_t itemid;
 	int32_t minamount;
 	int32_t maxamount;
 	uint8_t minlevel;
 	uint8_t maxlevel;
+	int8_t continent;
 	int16_t questid;
 	uint32_t chance;
 };
@@ -65,6 +66,9 @@ public:
 private:
 	DropDataProvider() {}
 	static DropDataProvider *singleton;
+
+	void loadDrops();
+	void loadGlobalDrops();
 
 	unordered_map<int32_t, DropsInfo> dropdata;
 	GlobalDrops globaldrops;

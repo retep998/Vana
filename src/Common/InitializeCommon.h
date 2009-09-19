@@ -26,7 +26,7 @@ namespace Initializing {
 	void setUsersOffline(int32_t onlineid);
 
 	const int32_t outputWidth = 26;
-	const int32_t McdbVersion = 3;
+	const int32_t McdbVersion = 4;
 	const int32_t McdbSubVersion = 0;
 };
 

@@ -862,10 +862,10 @@ void BuffDataProvider::addItemInfo(int32_t itemid, const ConsumeInfo &cons) {
 		bytes.push_back(Byte2);
 		values.push_back(cons.jump);
 	}
-	if (cons.morph > 0) {
+	if (cons.morphs.size() > 0) {
 		types.push_back(0x02);
 		bytes.push_back(Byte5);
-		values.push_back(cons.morph);
+		values.push_back(cons.morphs[0].morph); // TEMPORARY HACK UNTIL BUFF SYSTEM IS RESTRUCTURED
 	}
 	// Need some buff bytes/types for ALL of the following
 	if (cons.iceresist > 0) {
@@ -895,16 +895,16 @@ void BuffDataProvider::addItemInfo(int32_t itemid, const ConsumeInfo &cons) {
 	if (cons.sealdef > 0) {
 
 	}
-	if (cons.ignorewdef > 0) {
+	if (cons.ignorewdef) {
 
 	}
-	if (cons.ignoremdef > 0) {
+	if (cons.ignoremdef) {
 
 	}
-	if (cons.mesoup > 0) {
+	if (cons.mesoup) {
 
 	}
-	if (cons.dropup > 0) {
+	if (cons.dropup) {
 		switch (cons.dropup) {
 			case 1: // Regular drop rate increase for all items, the only one I can parse at the moment
 				break;

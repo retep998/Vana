@@ -103,10 +103,9 @@ controlstatus(Mobs::ControlStatus::ControlNormal)
 }
 
 void Mob::initMob() {
-	this->hp = info.hp;
-	this->mp = info.mp;
-	if (info.flying) {
-		setFh(0);
+	this->hp = getMaxHp();
+	this->mp = getMaxMp();
+	if (canFly()) {
 		originfh = 0;
 	}
 
@@ -133,30 +132,30 @@ void Mob::initMob() {
 	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
 	statuses[empty.status] = empty;
 
-	if (info.hprecovery > 0) {
-		new Timer::Timer(bind(&Mob::naturalHealHp, this, info.hprecovery),
+	if (info->hprecovery > 0) {
+		new Timer::Timer(bind(&Mob::naturalHealHp, this, info->hprecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
 			getTimers(), 0, 10 * 1000);
 	}
-	if (info.mprecovery > 0) {
-		new Timer::Timer(bind(&Mob::naturalHealMp, this, info.mprecovery),
+	if (info->mprecovery > 0) {
+		new Timer::Timer(bind(&Mob::naturalHealMp, this, info->mprecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 1, 1),
 			getTimers(), 0, 10 * 1000);
 	}
-	if (info.removeafter > 0) {
-		new Timer::Timer(bind(&Mob::applyDamage, this, 0, info.hp, false),
+	if (info->removeafter > 0) {
+		new Timer::Timer(bind(&Mob::applyDamage, this, 0, info->hp, false),
 			Timer::Id(Timer::Types::MobRemoveTimer, mobid, id),
-			map->getTimers(), Timer::Time::fromNow(info.removeafter * 1000));
+			map->getTimers(), Timer::Time::fromNow(info->removeafter * 1000));
 	}
 }
 
 void Mob::naturalHealHp(int32_t amount) {
-	if (getHp() < getMHp()) {
+	if (getHp() < getMaxHp()) {
 		int32_t hp = getHp() + amount;
 		int32_t sponge = amount;
-		if (hp < 0 || hp > getMHp()) {
-			sponge = getMHp() - getHp(); // This is the amount for the sponge
-			hp = getMHp();
+		if (hp < 0 || hp > getMaxHp()) {
+			sponge = getMaxHp() - getHp(); // This is the amount for the sponge
+			hp = getMaxHp();
 		}
 		setHp(hp);
 		totalhealth += sponge;
@@ -167,10 +166,10 @@ void Mob::naturalHealHp(int32_t amount) {
 }
 
 void Mob::naturalHealMp(int32_t amount) {
-	if (getMp() < getMMp()) {
+	if (getMp() < getMaxMp()) {
 		int32_t mp = getMp() + amount;
-		if (mp < 0 || mp > getMMp())
-			mp = getMMp();
+		if (mp < 0 || mp > getMaxMp())
+			mp = getMaxMp();
 		setMp(mp);
 	}
 }
@@ -187,15 +186,15 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	if (!poison) { // HP bar packet does nothing for showing damage when poison is damaging for whatever reason
 		Player *player = Players::Instance()->getPlayer(playerid);
 	
-		uint8_t percent = static_cast<uint8_t>(hp * 100 / info.hp);
+		uint8_t percent = static_cast<uint8_t>(hp * 100 / info->hp);
 
-		if (info.hpcolor > 0) { // Boss HP bars - Horntail's damage sponge isn't a boss in the data
-			MobsPacket::showBossHp(mapid, mobid, hp, info);
+		if (info->hpcolor > 0) { // Boss HP bars - Horntail's damage sponge isn't a boss in the data
+			MobsPacket::showBossHp(this);
 		}
-		else if (info.boss) { // Minibosses
+		else if (info->boss) { // Minibosses
 			MobsPacket::showHp(mapid, id, percent);
 		}
-		else if (info.friendly) {
+		else if (info->friendly) {
 			MobsPacket::damageFriendlyMob(this, damage);
 		}
 		else if (player != 0) {
@@ -240,7 +239,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 }
 
 void Mob::applyWebDamage() {
-	int32_t webdamage = getMHp() / (50 - weblevel);
+	int32_t webdamage = getMaxHp() / (50 - weblevel);
 	if (webdamage > hp)
 		webdamage = hp - 1; // Keep HP from hitting 0
 
@@ -430,7 +429,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	// Ending of death stuff
 	MobsPacket::dieMob(this, fromexplosion ? 4 : 1);
-	DropHandler::doDrops(highestdamager, mapid, info.level, mobid, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
+	DropHandler::doDrops(highestdamager, mapid, getLevel(), mobid, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
 
 	if (player != 0) {
 		Party *party = player->getParty();
@@ -445,8 +444,8 @@ void Mob::die(Player *player, bool fromexplosion) {
 		}
 	}
 
-	if (info.buff != 0) {
-		map->buffPlayers(info.buff);
+	if (getDeathBuff() != 0) {
+		map->buffPlayers(getDeathBuff());
 	}
 
 	Instance *instance = map->getInstance();
@@ -494,7 +493,7 @@ int32_t Mob::giveExp(Player *killer) {
 
 			damagerparty = damager->getParty();
 
-			uint32_t exp = static_cast<uint32_t>(info.exp * ((8 * iter->second / totalhealth) + (damager == killer ? 2 : 0)) / 10);
+			uint32_t exp = static_cast<uint32_t>(getExp() * ((8 * iter->second / totalhealth) + (damager == killer ? 2 : 0)) / 10);
 			if (damagerparty != 0) {
 				int32_t pid = damagerparty->getId();
 				if (parties.find(pid) != parties.end()) {
@@ -530,7 +529,7 @@ int32_t Mob::giveExp(Player *killer) {
 				uint16_t leechcount = 0;
 				for (size_t i = 0; i < partymembers.size(); i++) {
 					damager = partymembers[i];
-					if (damager->getLevel() < (partyiter->second.minhitlevel - 5) && damager->getLevel() < (info.level - 5)) {
+					if (damager->getLevel() < (partyiter->second.minhitlevel - 5) && damager->getLevel() < (getLevel() - 5)) {
 						continue;
 					}
 					totallevel += damager->getLevel();
@@ -538,10 +537,10 @@ int32_t Mob::giveExp(Player *killer) {
 				}
 				for (size_t i = 0; i < partymembers.size(); i++) {
 					damager = partymembers[i];
-					if (damager->getLevel() < (partyiter->second.minhitlevel - 5) && damager->getLevel() < (info.level - 5)) {
+					if (damager->getLevel() < (partyiter->second.minhitlevel - 5) && damager->getLevel() < (getLevel() - 5)) {
 						continue;
 					}
-					uint32_t exp = static_cast<uint32_t>(info.exp * ((8 * damager->getLevel() / totallevel) + (damager == partyiter->second.highestdamager ? 2 : 0)) / 10);
+					uint32_t exp = static_cast<uint32_t>(info->exp * ((8 * damager->getLevel() / totallevel) + (damager == partyiter->second.highestdamager ? 2 : 0)) / 10);
 					int16_t hsrate = damager->getActiveBuffs()->getHolySymbolRate();
 					exp = exp * getTauntEffect() / 100;
 					exp *= ChannelServer::Instance()->getExprate();
@@ -558,8 +557,8 @@ void Mob::spawnDeathMobs(Map *map) {
 	if (getMobId() == Mobs::SummonHorntail) { // Special Horntail logic to keep Horntail units linked
 		int32_t spongeid = 0;
 		vector<int32_t> parts;
-		for (size_t i = 0; i < info.summon.size(); i++) {
-			int32_t spawnid = info.summon[i];
+		for (size_t i = 0; i < info->summon.size(); i++) {
+			int32_t spawnid = info->summon[i];
 			if (spawnid == Mobs::HorntailSponge)
 				spongeid = map->spawnMob(spawnid, m_pos, getFh(), this);
 			else {
@@ -576,15 +575,15 @@ void Mob::spawnDeathMobs(Map *map) {
 	}
 	else if (getSponge() != 0) { // More special Horntail logic to keep units linked
 		getSponge()->removeSpawn(getId());
-		for (size_t i = 0; i < info.summon.size(); i++) {
-			int32_t ident = map->spawnMob(info.summon[i], m_pos, getFh(), this);
+		for (size_t i = 0; i < info->summon.size(); i++) {
+			int32_t ident = map->spawnMob(info->summon[i], m_pos, getFh(), this);
 			Mob *mob = map->getMob(ident);
 			getSponge()->addSpawn(ident, mob);
 		}
 	}
 	else {
-		for (size_t i = 0; i < info.summon.size(); i++) {
-			map->spawnMob(info.summon[i], m_pos, getFh(), this);
+		for (size_t i = 0; i < info->summon.size(); i++) {
+			map->spawnMob(info->summon[i], m_pos, getFh(), this);
 		}
 	}
 }
@@ -607,9 +606,9 @@ void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
 	int32_t amount = Randomizer::Instance()->randInt(healrange) + (basehealhp - (healrange / 2));
 	int32_t original = amount;
 
-	if (hp + amount > getMHp()) {
-		amount = getMHp() - hp;
-		hp = getMHp();
+	if (hp + amount > getMaxHp()) {
+		amount = getMaxHp() - hp;
+		hp = getMaxHp();
 	}
 	else {
 		hp += amount;
@@ -618,8 +617,8 @@ void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
 
 	if (getSponge() != 0) {
 		basehealhp = getSponge()->getHp() + amount;
-		if (basehealhp < 0 || basehealhp > getSponge()->getMHp()) {
-			basehealhp = getSponge()->getMHp();
+		if (basehealhp < 0 || basehealhp > getSponge()->getMaxHp()) {
+			basehealhp = getSponge()->getMaxHp();
 		}
 		getSponge()->setHp(basehealhp);
 	}
@@ -654,7 +653,7 @@ void Mob::doCrashSkill(int32_t skillid) {
 void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 	if ((mpeatercount < 3) && (getMp() > 0) && (Randomizer::Instance()->randInt(99) < mp->prop)) {
 		mp->onlyonce = true;
-		int32_t emp = getMMp() * mp->x / 100;
+		int32_t emp = getMaxMp() * mp->x / 100;
 
 		if (emp > getMp())
 			emp = getMp();

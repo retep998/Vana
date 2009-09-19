@@ -20,218 +20,261 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
 #include "MiscUtilities.h"
+#include "StringUtilities.h"
 
 using Initializing::outputWidth;
 using MiscUtilities::atob;
+using StringUtilities::runFlags;
 
 QuestDataProvider * QuestDataProvider::singleton = 0;
 
 void QuestDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Quests... ";
-	// Quests
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM questdata");
-	mysqlpp::UseQueryResult res = query.use();
-	quests.clear();
 
-	MYSQL_ROW Row;
+	loadQuestData();
+	loadRequests();
+	loadRequiredJobs();
+	loadRewards();
+
+	std::cout << "DONE" << std::endl;
+}
+
+void QuestDataProvider::loadQuestData() {
+	quests.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_data");
+	mysqlpp::UseQueryResult res = query.use();
 	Quest curquest;
+	int16_t questid;
 
 	enum QuestData {
-		QuestIdData = 0,
-		NextQuest
+		QuestId = 0,
+		NextQuest, MinLevel, MaxLevel, Interval, Fame
 	};
-	while (Row = res.fetch_raw_row()) {
-		int16_t questid = atoi(Row[QuestIdData]);
 
-		curquest.setNextQuest(atoi(Row[NextQuest]));
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		questid = atoi(row[QuestId]);
+
+		curquest.setNextQuest(atoi(row[NextQuest]));
 		curquest.setQuestId(questid);
 
 		quests[questid] = curquest;
 	}
+}
 
-	// Quest requests
-	int16_t currentid = 0;
-	int16_t previousid = -1;
+void QuestDataProvider::loadRequests() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_requests");
+	mysqlpp::UseQueryResult res = query.use();
+	int16_t questid;
+	int32_t reward;
+	int16_t count;
+	Quest *cur;
 
-	query << "SELECT * FROM questrequestdata ORDER BY questid, id ASC";
-	res = query.use();
-
-	enum QuestRequestData {
-		TableId = 0,
-		QuestId, IsMob, IsItem, IsQuest, ObjectIdRequest,
-		CountRequest
+	struct TypeFunctor {
+		void operator() (const string &cmp) {
+			if (cmp == "item") quest->addItemRequest(reqid, count);
+			else if (cmp == "mob") quest->addItemRequest(reqid, count);
+			else if (cmp == "quest") quest->addQuestRequest(static_cast<int16_t>(reqid), static_cast<int8_t>(count));
+		}
+		Quest *quest;
+		int32_t reqid;
+		int16_t count;
 	};
-	while (Row = res.fetch_raw_row()) {
-		currentid = atoi(Row[QuestId]);
 
-		if (previousid == -1) {
-			curquest = quests[currentid];
-		}
-		if (currentid != previousid && previousid != -1) {
-			quests[previousid] = curquest;
-			curquest = quests[currentid];
-		}
-		
-		bool ismob = atob(Row[IsMob]);
-		bool isitem = atob(Row[IsItem]);
-		bool isquest = atob(Row[IsQuest]);
-		int32_t id = atoi(Row[ObjectIdRequest]);
-		int16_t count = atoi(Row[CountRequest]);
+	enum RequestData {
+		QuestId = 0,
+		State, Type, ObjectId, Count
+	};
 
-		if (ismob) {
-			curquest.addMobRequest(id, count);
-		}
-		else if (isitem) {
-			curquest.addItemRequest(id, count);
-		}
-		else if (isquest) {
-			curquest.addQuestRequest(static_cast<int16_t>(id), static_cast<int8_t>(count));
-		}
+	// TODO: Process the state when you add quest requests
 
-		previousid = currentid;
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		questid = atoi(row[QuestId]);
+		cur = &quests[questid];
+
+		reward = atoi(row[ObjectId]);
+		count = atoi(row[Count]);
+
+		TypeFunctor whoo = {cur, reward, count};
 	}
-	if (previousid != -1) {
-		quests[previousid] = curquest;
+}
+
+void QuestDataProvider::loadRequiredJobs() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_required_jobs");
+	mysqlpp::UseQueryResult res = query.use();
+	int16_t questid;
+	Quest *cur;
+
+	enum QuestData {
+		QuestId = 0,
+		JobId
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		questid = atoi(row[QuestId]);
+		cur = &quests[questid];
+
+		cur->addValidJob(atoi(row[JobId]));
 	}
+}
 
-	// Quest Rewards
-	query << "SELECT * FROM questrewarddata ORDER BY questid ASC";
-	res = query.use();
-
-	currentid = 0;
-	previousid = -1;
+void QuestDataProvider::loadRewards() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_rewards");
+	mysqlpp::UseQueryResult res = query.use();
+	string jobtracks;
+	int16_t questid;
+	int16_t job;
+	bool start;
+	Quest *cur;
 	QuestRewardInfo rwa;
 
-	enum QuestRewardData {
-		RowId = 0,
-		QuestIdReward, Start, Item, Exp, Mesos,
-		Fame, Skill, MasterLevelOnly, Buff, ObjectIdReward,
-		CountReward, MasterLevel, Gender, Job, Prop
+	struct JobTrackFunctor {
+		void operator() (const string &cmp) {
+			if (cmp == "beginner") {
+				quest->addReward(start, *reward, Jobs::JobIds::Beginner);
+			}
+			else if (cmp == "warrior") {
+				quest->addReward(start, *reward, Jobs::JobIds::Swordsman);
+				quest->addReward(start, *reward, Jobs::JobIds::Fighter);
+				quest->addReward(start, *reward, Jobs::JobIds::Crusader);
+				quest->addReward(start, *reward, Jobs::JobIds::Hero);
+				quest->addReward(start, *reward, Jobs::JobIds::Page);
+				quest->addReward(start, *reward, Jobs::JobIds::WhiteKnight);
+				quest->addReward(start, *reward, Jobs::JobIds::Paladin);
+				quest->addReward(start, *reward, Jobs::JobIds::Spearman);
+				quest->addReward(start, *reward, Jobs::JobIds::DragonKnight);
+				quest->addReward(start, *reward, Jobs::JobIds::DarkKnight);
+			}
+			else if (cmp == "magician") {
+				quest->addReward(start, *reward, Jobs::JobIds::Magician);
+				quest->addReward(start, *reward, Jobs::JobIds::FPWizard);
+				quest->addReward(start, *reward, Jobs::JobIds::FPMage);
+				quest->addReward(start, *reward, Jobs::JobIds::FPArchMage);
+				quest->addReward(start, *reward, Jobs::JobIds::ILWizard);
+				quest->addReward(start, *reward, Jobs::JobIds::ILMage);
+				quest->addReward(start, *reward, Jobs::JobIds::ILArchMage);
+				quest->addReward(start, *reward, Jobs::JobIds::Cleric);
+				quest->addReward(start, *reward, Jobs::JobIds::Priest);
+				quest->addReward(start, *reward, Jobs::JobIds::Bishop);
+			}
+			else if (cmp == "bowman") {
+				quest->addReward(start, *reward, Jobs::JobIds::Archer);
+				quest->addReward(start, *reward, Jobs::JobIds::Hunter);
+				quest->addReward(start, *reward, Jobs::JobIds::Ranger);
+				quest->addReward(start, *reward, Jobs::JobIds::Bowmaster);
+				quest->addReward(start, *reward, Jobs::JobIds::Crossbowman);
+				quest->addReward(start, *reward, Jobs::JobIds::Sniper);
+				quest->addReward(start, *reward, Jobs::JobIds::Marksman);
+			}
+			else if (cmp == "thief") {
+				quest->addReward(start, *reward, Jobs::JobIds::Rogue);
+				quest->addReward(start, *reward, Jobs::JobIds::Assassin);
+				quest->addReward(start, *reward, Jobs::JobIds::Hermit);
+				quest->addReward(start, *reward, Jobs::JobIds::NightLord);
+				quest->addReward(start, *reward, Jobs::JobIds::Bandit);
+				quest->addReward(start, *reward, Jobs::JobIds::ChiefBandit);
+				quest->addReward(start, *reward, Jobs::JobIds::Shadower);
+			}
+			else if (cmp == "pirate") {
+				quest->addReward(start, *reward, Jobs::JobIds::Pirate);
+				quest->addReward(start, *reward, Jobs::JobIds::Brawler);
+				quest->addReward(start, *reward, Jobs::JobIds::Marauder);
+				quest->addReward(start, *reward, Jobs::JobIds::Buccaneer);
+				quest->addReward(start, *reward, Jobs::JobIds::Gunslinger);
+				quest->addReward(start, *reward, Jobs::JobIds::Outlaw);
+				quest->addReward(start, *reward, Jobs::JobIds::Corsair);
+			}
+			else if (cmp == "cygnus_beginner") {
+				quest->addReward(start, *reward, Jobs::JobIds::Noblesse);
+			}
+			else if (cmp == "cygnus_warrior") {
+				quest->addReward(start, *reward, Jobs::JobIds::DawnWarrior1);
+				quest->addReward(start, *reward, Jobs::JobIds::DawnWarrior2);
+				quest->addReward(start, *reward, Jobs::JobIds::DawnWarrior3);
+			}
+			else if (cmp == "cygnus_magician") {
+				quest->addReward(start, *reward, Jobs::JobIds::BlazeWizard1);
+				quest->addReward(start, *reward, Jobs::JobIds::BlazeWizard2);
+				quest->addReward(start, *reward, Jobs::JobIds::BlazeWizard3);
+			}
+			else if (cmp == "cygnus_bowman") {
+				quest->addReward(start, *reward, Jobs::JobIds::WindArcher1);
+				quest->addReward(start, *reward, Jobs::JobIds::WindArcher2);
+				quest->addReward(start, *reward, Jobs::JobIds::WindArcher3);
+			}
+			else if (cmp == "cygnus_thief") {
+				quest->addReward(start, *reward, Jobs::JobIds::NightWalker1);
+				quest->addReward(start, *reward, Jobs::JobIds::NightWalker2);
+				quest->addReward(start, *reward, Jobs::JobIds::NightWalker3);
+			}
+			else if (cmp == "cygnus_pirate") {
+				quest->addReward(start, *reward, Jobs::JobIds::ThunderBreaker1);
+				quest->addReward(start, *reward, Jobs::JobIds::ThunderBreaker2);
+				quest->addReward(start, *reward, Jobs::JobIds::ThunderBreaker3);
+			}
+		}
+		Quest *quest;
+		QuestRewardInfo *reward;
+		bool start;
 	};
-	while (Row = res.fetch_raw_row()) {
-		currentid = atoi(Row[QuestIdReward]);
-
-		if (currentid != previousid && previousid != -1) {
-			quests[previousid] = curquest;
-			curquest = quests[currentid];
+	struct FlagFunctor {
+		void operator() (const string &cmp) {
+			if (cmp == "master_level_only") reward->masterlevelonly = true;
 		}
-
-		int16_t job = atoi(Row[Job]);
-		bool start = !atob(Row[Start]);
-
-		rwa.isitem = atob(Row[Item]);
-		rwa.isexp = atob(Row[Exp]);
-		rwa.ismesos = atob(Row[Mesos]);
-		rwa.isfame = atob(Row[Fame]);
-		rwa.isskill = atob(Row[Skill]);
-		rwa.ismasterlevelonly = atob(Row[MasterLevelOnly]);
-		rwa.isbuff = atob(Row[Buff]);
-		rwa.id = atoi(Row[ObjectIdReward]);
-		rwa.count = atoi(Row[CountReward]);
-		rwa.masterlevel = atoi(Row[MasterLevel]); 
-		rwa.gender = atoi(Row[Gender]);
-		rwa.prop = atoi(Row[Prop]);
-
-		if ((job == -1) || (GameLogicUtilities::isNonBitJob(job))) {
-			curquest.addReward(start, rwa, job);
+		QuestRewardInfo *reward;
+	};
+	struct TypeFunctor {
+		void operator() (const string &cmp) {
+			if (cmp == "item") reward->isitem = true;
+			else if (cmp == "exp") reward->isexp = true;
+			else if (cmp == "mesos") reward->ismesos = true;
+			else if (cmp == "fame") reward->isfame = true;
+			else if (cmp == "skill") reward->isskill = true;
+			else if (cmp == "buff") reward->isbuff = true;
 		}
-		else { // Job tracks are indicated by series of bits between 1 and 32 and 1000+
-			 // Beginners
-			if ((job & 0x01) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::Beginner);
-			}
-			if ((job & 0x400) != 0) { // Not sure if this is the right parsing, but I think it is
-				curquest.addReward(start, rwa, Jobs::JobIds::Noblesse);
-			}
-			// Warriors
-			if ((job & 0x02) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::Swordsman);
-				curquest.addReward(start, rwa, Jobs::JobIds::Fighter);
-				curquest.addReward(start, rwa, Jobs::JobIds::Crusader);
-				curquest.addReward(start, rwa, Jobs::JobIds::Hero);
-				curquest.addReward(start, rwa, Jobs::JobIds::Page);
-				curquest.addReward(start, rwa, Jobs::JobIds::WhiteKnight);
-				curquest.addReward(start, rwa, Jobs::JobIds::Paladin);
-				curquest.addReward(start, rwa, Jobs::JobIds::Spearman);
-				curquest.addReward(start, rwa, Jobs::JobIds::DragonKnight);
-				curquest.addReward(start, rwa, Jobs::JobIds::DarkKnight);
-			}
-			if ((job & 0x800) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::DawnWarrior1);
-				curquest.addReward(start, rwa, Jobs::JobIds::DawnWarrior2);
-				curquest.addReward(start, rwa, Jobs::JobIds::DawnWarrior3);
-			}
-			// Magicians
-			if ((job & 0x04) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::Magician);
-				curquest.addReward(start, rwa, Jobs::JobIds::FPWizard);
-				curquest.addReward(start, rwa, Jobs::JobIds::FPMage);
-				curquest.addReward(start, rwa, Jobs::JobIds::FPArchMage);
-				curquest.addReward(start, rwa, Jobs::JobIds::ILWizard);
-				curquest.addReward(start, rwa, Jobs::JobIds::ILMage);
-				curquest.addReward(start, rwa, Jobs::JobIds::ILArchMage);
-				curquest.addReward(start, rwa, Jobs::JobIds::Cleric);
-				curquest.addReward(start, rwa, Jobs::JobIds::Priest);
-				curquest.addReward(start, rwa, Jobs::JobIds::Bishop);
-			}
-			if ((job & 0x1000) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::BlazeWizard1);
-				curquest.addReward(start, rwa, Jobs::JobIds::BlazeWizard2);
-				curquest.addReward(start, rwa, Jobs::JobIds::BlazeWizard3);
-			}
-			// Bowmen
-			if ((job & 0x08) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::Archer);
-				curquest.addReward(start, rwa, Jobs::JobIds::Hunter);
-				curquest.addReward(start, rwa, Jobs::JobIds::Ranger);
-				curquest.addReward(start, rwa, Jobs::JobIds::Bowmaster);
-				curquest.addReward(start, rwa, Jobs::JobIds::Crossbowman);
-				curquest.addReward(start, rwa, Jobs::JobIds::Sniper);
-				curquest.addReward(start, rwa, Jobs::JobIds::Marksman);
-			}
-			if ((job & 0x2000) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::WindArcher1);
-				curquest.addReward(start, rwa, Jobs::JobIds::WindArcher2);
-				curquest.addReward(start, rwa, Jobs::JobIds::WindArcher3);
-			}
-			// Thieves
-			if ((job & 0x10) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::Rogue);
-				curquest.addReward(start, rwa, Jobs::JobIds::Assassin);
-				curquest.addReward(start, rwa, Jobs::JobIds::Hermit);
-				curquest.addReward(start, rwa, Jobs::JobIds::NightLord);
-				curquest.addReward(start, rwa, Jobs::JobIds::Bandit);
-				curquest.addReward(start, rwa, Jobs::JobIds::ChiefBandit);
-				curquest.addReward(start, rwa, Jobs::JobIds::Shadower);
-			}
-			if ((job & 0x4000) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::NightWalker1);
-				curquest.addReward(start, rwa, Jobs::JobIds::NightWalker2);
-				curquest.addReward(start, rwa, Jobs::JobIds::NightWalker3);
-			}
-			// Pirates
-			if ((job & 0x20) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::Pirate);
-				curquest.addReward(start, rwa, Jobs::JobIds::Brawler);
-				curquest.addReward(start, rwa, Jobs::JobIds::Marauder);
-				curquest.addReward(start, rwa, Jobs::JobIds::Buccaneer);
-				curquest.addReward(start, rwa, Jobs::JobIds::Gunslinger);
-				curquest.addReward(start, rwa, Jobs::JobIds::Outlaw);
-				curquest.addReward(start, rwa, Jobs::JobIds::Corsair);
-			}
-			if ((job & 0x8000) != 0) {
-				curquest.addReward(start, rwa, Jobs::JobIds::ThunderBreaker1);
-				curquest.addReward(start, rwa, Jobs::JobIds::ThunderBreaker2);
-				curquest.addReward(start, rwa, Jobs::JobIds::ThunderBreaker3);
-			}
-		}
+		QuestRewardInfo *reward;
+	};
 
-		previousid = currentid;
+	enum RewardData {
+		Id = 0,
+		QuestId, State, Type, ObjectId, Count,
+		MasterLevel, Gender, JobTrackFlags, Job, Prop,
+		Flags
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		questid = atoi(row[QuestId]);
+		cur = &quests[questid];
+		rwa = QuestRewardInfo();
+		job = atoi(row[Job]);
+		jobtracks = row[JobTrackFlags];
+		start = (row[State] == "start");
+
+		TypeFunctor whoo = {&rwa};
+		FlagFunctor flags = {&rwa};
+		runFlags(row[Type], whoo);
+		runFlags(row[Flags], flags);
+
+		rwa.id = atoi(row[ObjectId]);
+		rwa.count = atoi(row[Count]);
+		rwa.masterlevel = atoi(row[MasterLevel]); 
+		rwa.gender = getGenderId(row[Gender]);
+		rwa.prop = atoi(row[Prop]);
+
+		if (job != -1 || jobtracks.length() == 0) {
+			cur->addReward(start, rwa, job);
+		}
+		else {
+			JobTrackFunctor ohyeah = {cur, &rwa, start};
+			runFlags(jobtracks, ohyeah);
+		}
 	}
-	if (previousid != -1) {
-		quests[previousid] = curquest;
-	}
-	std::cout << "DONE" << std::endl;
+}
+
+int8_t QuestDataProvider::getGenderId(const string &gender) {
+	if (gender == "male") return 0;
+	if (gender == "female") return 1;
+	if (gender == "both") return 2;
+	return -1;
 }
 
 int16_t QuestDataProvider::getItemRequest(int16_t questid, int32_t itemid) {
@@ -251,6 +294,10 @@ void Quest::addMobRequest(int32_t mobid, int16_t quantity) {
 
 void Quest::addQuestRequest(int16_t questid, int8_t state) {
 	questrequests[questid] = state;
+}
+
+void Quest::addValidJob(int16_t jobid) {
+	jobrequests.push_back(jobid);
 }
 
 void Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) {

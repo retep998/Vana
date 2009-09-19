@@ -162,7 +162,7 @@ void MobsPacket::damageFriendlyMob(Mob *mob, int32_t damage) {
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(damage);
 	packet.add<int32_t>(mob->getHp());
-	packet.add<int32_t>(mob->getMHp());
+	packet.add<int32_t>(mob->getMaxHp());
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
@@ -224,16 +224,16 @@ void MobsPacket::showHp(int32_t mapid, int32_t mobid, int8_t per) {
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
-void MobsPacket::showBossHp(int32_t mapid, int32_t mobid, int32_t hp, const MobInfo &info) {
+void MobsPacket::showBossHp(Mob *mob) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MAP_EFFECT);
 	packet.add<int8_t>(0x05);
-	packet.add<int32_t>(mobid);
-	packet.add<int32_t>(hp);
-	packet.add<int32_t>(info.hp);
-	packet.add<int8_t>(info.hpcolor);
-	packet.add<int8_t>(info.hpbgcolor);
-	Maps::getMap(mapid)->sendPacket(packet);
+	packet.add<int32_t>(mob->getMobId());
+	packet.add<int32_t>(mob->getHp());
+	packet.add<int32_t>(mob->getMaxHp());
+	packet.add<int8_t>(mob->getHpBarColor());
+	packet.add<int8_t>(mob->getHpBarBgColor());
+	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
 void MobsPacket::dieMob(Mob *mob, int8_t death) {

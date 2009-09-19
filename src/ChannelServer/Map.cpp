@@ -138,12 +138,11 @@ void Map::sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Po
 	string message = "";
 	PortalInfo *p = 0;
 	int32_t field = getInfo()->rm;
-	if (MobDataProvider::Instance()->hasBanishData(mobid)) {
-		field = MobDataProvider::Instance()->getBanishMap(mobid);
-		message = MobDataProvider::Instance()->getBanishMessage(mobid);
-		string portal = MobDataProvider::Instance()->getBanishPortal(mobid);
-		if (portal != "" && portal != "sp") {
-			p = Maps::getMap(field)->getPortal(portal);
+	if (BanishField *ban = SkillDataProvider::Instance()->getBanishData(mobid)) {
+		field = ban->field;
+		message = ban->message;
+		if (ban->portal != "" && ban->portal != "sp") {
+			p = Maps::getMap(field)->getPortal(ban->portal);
 		}
 	}
 	for (size_t i = 0; i < players.size(); i++) {
@@ -173,7 +172,7 @@ void Map::buffPlayers(int32_t buffid) {
 // Reactors
 void Map::addReactorSpawn(const ReactorSpawnInfo &spawn) {
 	reactorspawns.push_back(spawn);
-	Reactor *reactor = new Reactor(info->id, spawn.id, spawn.pos, spawn.link);
+	Reactor *reactor = new Reactor(info->id, spawn.id, spawn.pos);
 	ReactorPacket::spawnReactor(reactor);
 }
 
@@ -237,10 +236,10 @@ Pos Map::findFloor(const Pos &pos) {
 }
 
 Pos Map::findRandomPos() {
-	int16_t min_x = (info->left != 0 ? info->left : 0x8000);
-	int16_t max_x = (info->right != 0 ? info->right : 0x7FFF);
-	int16_t min_y = (info->top != 0 ? info->top : 0x8000);
-	int16_t max_y = (info->bottom != 0 ? info->bottom : 0x7FFF);
+	int16_t min_x = (info->lt.x != 0 ? info->lt.x : 0x8000);
+	int16_t max_x = (info->rb.x != 0 ? info->rb.x : 0x7FFF);
+	int16_t min_y = (info->lt.y != 0 ? info->lt.y : 0x8000);
+	int16_t max_y = (info->rb.y != 0 ? info->rb.y : 0x7FFF);
 	int16_t posx = 0;
 	int16_t posy = 0;
 	int16_t tempx = 0;
@@ -360,7 +359,7 @@ int32_t Map::spawnMob(int32_t mobid, const Pos &pos, int16_t fh, Mob *owner, int
 int32_t Map::spawnMob(int32_t spawnid, const MobSpawnInfo &info) {
 	int32_t id = objectids.next();
 
-	Mob *mob = new Mob(id, this->info->id, info.id, info.pos, spawnid, info.facingside, info.fh);
+	Mob *mob = new Mob(id, this->info->id, info.id, info.pos, spawnid, info.facesleft, info.fh);
 	mobs[id] = mob;
 	MobsPacket::spawnMob(0, mob, 0, 0, true);
 	updateMobControl(mob, true);

@@ -93,7 +93,10 @@ public:
 	int8_t getControlStatus() const { return controlstatus; }
 	int8_t getVenomCount() const { return venomcount; }
 	int8_t getFacingDirection() const { return facingdirection; }
+	int8_t getHpBarColor() const { return info->hpcolor; }
+	int8_t getHpBarBgColor() const { return info->hpbgcolor; }
 	int16_t getOriginFh() const { return originfh; }
+	uint16_t getLevel() const { return info->level; }
 	int32_t getWeaponReflection();
 	int32_t getMagicReflection();
 	int32_t getStatusValue(int32_t status);
@@ -103,22 +106,24 @@ public:
 	int32_t getSpawnId() const { return spawnid; }
 	int32_t getHp() const { return hp; }
 	int32_t getMp() const { return mp; }
-	int32_t getMHp() const { return info.hp; }
-	int32_t getMMp() const { return info.mp; }
-	int32_t getLink() const { return info.link; }
+	int32_t getMaxHp() const { return info->hp; }
+	int32_t getMaxMp() const { return info->mp; }
+	int32_t getLink() const { return info->link; }
+	int32_t getDeathBuff() const { return info->buff; }
+	int32_t getExp() const { return info->exp; }
 	int32_t getCounter() { return ++counter; }
-	int32_t getSelfDestructHp() const { return info.selfdestruction; }
+	int32_t getSelfDestructHp() const { return info->selfdestruction; }
 	int32_t getTauntEffect() const { return taunteffect; }
 	time_t getLastSkillUse(uint8_t skill) { return (skilluse.find(skill) != skilluse.end() ? skilluse[skill] : 0); }
-	bool isBoss() const { return info.boss; }
-	bool canFreeze() const { return info.canfreeze; }
-	bool canPoison() const { return info.canpoison; }
-	bool canFly() const { return info.flying; }
-	bool isFriendly() const { return info.friendly; }
-	bool isUndead() const { return info.undead; }
-	bool hasLink() const { return info.link != 0; }
-	bool hasExplosiveDrop() const { return info.explosivereward; }
-	bool hasFfaDrop() const { return info.publicreward; }
+	bool isBoss() const { return info->boss; }
+	bool canFreeze() const { return info->canfreeze; }
+	bool canPoison() const { return info->canpoison; }
+	bool canFly() const { return info->flying; }
+	bool isFriendly() const { return info->friendly; }
+	bool isUndead() const { return info->undead; }
+	bool hasLink() const { return info->link != 0; }
+	bool hasExplosiveDrop() const { return info->explosivereward; }
+	bool hasFfaDrop() const { return info->publicreward; }
 	bool hasImmunity() const;
 	bool hasReflect() const;
 	bool hasWeaponReflect() const;
@@ -127,8 +132,8 @@ public:
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return owner; }
 	Mob * getSponge() const { return sponge; }
-	const MobInfo * getInfo() const { return &info; }
-	int32_t getSkillCount() const { return info.skills.size(); }
+	const MobInfo * getInfo() const { return info; }
+	uint8_t getSkillCount() const { return info->skillcount; }
 	size_t getSpawnCount() const { return spawns.size(); }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
 
@@ -156,7 +161,7 @@ private:
 	uint64_t totalhealth;
 	Mob *owner;
 	Mob *sponge;
-	const MobInfo info;
+	const MobInfo *info;
 	map<int32_t, StatusInfo> statuses;
 	unordered_map<int32_t, uint64_t> damages;
 	unordered_map<uint8_t, time_t> skilluse;

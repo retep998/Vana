@@ -27,53 +27,76 @@ using Initializing::outputWidth;
 BeautyDataProvider * BeautyDataProvider::singleton = 0;
 
 void BeautyDataProvider::loadData() {
-	// Skin data
+	loadSkins();
+	loadHair();
+	loadFaces();
+}
+
+void BeautyDataProvider::loadSkins() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Skins... ";
 	skins.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skindata ORDER BY skinid ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_skin_data ORDER BY skinid ASC");
 	mysqlpp::UseQueryResult res = query.use();
-	MYSQL_ROW Row;
-	while (Row = res.fetch_raw_row()) {
-		// Col0 : Skin ID
-		skins.push_back(atoi(Row[0]));
+
+	enum SkinData {
+		Id = 0
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		skins.push_back(atoi(row[Id]));
 	}
 	std::cout << "DONE" << std::endl;
+}
 
-	// Hair data
+void BeautyDataProvider::loadHair() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Hair... ";
 	femalehair.clear();
 	malehair.clear();
-	query << "SELECT * FROM hairdata ORDER BY hairid ASC";
-	res = query.use();
-	bool female;
-	while (Row = res.fetch_raw_row()) {
-		// Col0 : Hair ID
-		//    1 : Gender
-		female = atob(Row[1]);
-		if (female) {
-			femalehair.push_back(atoi(Row[0]));
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_hair_data ORDER BY hairid ASC");
+	mysqlpp::UseQueryResult res = query.use();
+	string gender;
+	int32_t hair;
+
+	enum HairData {
+		Id = 0,
+		Gender
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		gender = row[Gender];
+		hair = atoi(row[Id]);
+		if (gender == "female") {
+			femalehair.push_back(hair);
 		}
 		else {
-			malehair.push_back(atoi(Row[0]));
+			malehair.push_back(hair);
 		}
 	}
 	std::cout << "DONE" << std::endl;
+}
 
-	// Face data
+void BeautyDataProvider::loadFaces() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Faces... ";
 	femalefaces.clear();
 	malefaces.clear();
-	query << "SELECT * FROM facedata ORDER BY faceid ASC";
-	res = query.use();
-	while (Row = res.fetch_raw_row()) {
-		// Col0 : Face ID
-		//    1 : Gender
-		female = atob(Row[1]);
-		if (female) {
-			femalefaces.push_back(atoi(Row[0]));
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_face_data ORDER BY faceid ASC");
+	mysqlpp::UseQueryResult res = query.use();
+	string gender;
+	int32_t face;
+
+	enum FaceData {
+		Id = 0,
+		Gender
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		gender = row[Gender];
+		face = atoi(row[Id]);
+		if (gender == "female") {
+			femalefaces.push_back(face);
 		}
 		else {
-			malefaces.push_back(atoi(Row[0]));
+			malefaces.push_back(face);
 		}
 	}
 	std::cout << "DONE" << std::endl;
