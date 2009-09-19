@@ -63,7 +63,6 @@ struct MapInfo {
 	bool scrolldisable;
 	bool shufflereactors;
 	bool forcemapequip;
-	int8_t fieldType;
 	int8_t continent;
 	int8_t starthour;
 	int8_t endhour;
