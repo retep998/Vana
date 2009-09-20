@@ -437,7 +437,6 @@ int LuaExports::spawnNPC(lua_State *luaVm) {
 	npc.pos = Pos(x, y);
 	npc.rx0 = x - 50;
 	npc.rx1 = x + 50;
-	npc.facesleft = false;
 
 	lua_pushinteger(luaVm, Maps::getMap(mapid)->addNPC(npc));
 	return 1;
