@@ -26,7 +26,7 @@ class PacketReader;
 
 class PlayerLogin : public AbstractConnection {
 public:
-	PlayerLogin() : status(PlayerStatus::NotLoggedIn), invalid_logins(0), quiet_ban_time(0) { }
+	PlayerLogin() : status(PlayerStatus::NotLoggedIn), invalid_logins(0), quiet_ban_time(0), quiet_ban_reason(0) { }
 
 	~PlayerLogin();
 
@@ -40,6 +40,7 @@ public:
 	void setStatus(PlayerStatus::PlayerStatus status) { this->status = status; }
 	void setPin(int32_t pin) { this->pin = pin; }
 	void setCharDeletePassword(int32_t char_delete_password) { this->char_delete_password = char_delete_password; }
+	void setQuietBanReason(int8_t reason) { quiet_ban_reason = reason; }
 	void setQuietBanTime(int64_t t) { quiet_ban_time = t; }
 	void setCreationTime(int64_t t) { user_creation = t; }
 
@@ -51,7 +52,7 @@ public:
 	PlayerStatus::PlayerStatus getStatus() const { return status; }
 	int32_t getPin() const { return pin; }
 	int32_t getCharDeletePassword() const { return char_delete_password; }
-	bool isQuietBanned() const { return (quiet_ban_time > 0); }
+	int8_t getQuietBanReason() const { return quiet_ban_reason; }
 	int64_t getQuietBanTime() const { return quiet_ban_time; }
 	int64_t getCreationTime() const { return user_creation; }
 
@@ -60,16 +61,17 @@ public:
 private:
 	int8_t gender;
 	int8_t world;
-	bool admin;
+	int8_t quiet_ban_reason;
 	uint16_t channel;
-	PlayerStatus::PlayerStatus status;
 	int32_t userid;
 	int32_t pin;
 	int32_t invalid_logins;
 	int32_t char_delete_password;
 	int64_t quiet_ban_time;
 	int64_t user_creation;
+	bool admin;
 	bool checked_pin;
+	PlayerStatus::PlayerStatus status;
 };
 
 class PlayerLoginFactory : public AbstractConnectionFactory {
