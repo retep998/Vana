@@ -30,11 +30,11 @@ struct ReturnDamageInfo;
 namespace PlayersPacket {
 	void showMoving(Player *player, unsigned char *buf, size_t size);
 	void faceExpression(Player *player, int32_t face);
-	void showChat(Player *player, const string &msg, int8_t bubbleOnly);
+	void showChat(Player *player, const string &msg, bool bubbleOnly);
 	void damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, uint8_t type, uint8_t stance, int32_t nodamageskill, const ReturnDamageInfo &pgmr);
 	void showMessage(const string &msg, int8_t type);
 	void showMessageWorld(const string &msg, int8_t type);
-	void showInfo(Player *player, Player *getinfo, uint8_t isself);
+	void showInfo(Player *player, Player *getinfo, bool isself);
 	void findPlayer(Player *player, const string &name, int32_t map, uint8_t is = 0, bool is_channel = 0);
 	void whisperPlayer(Player *target, const string &whisperer_name, uint16_t channel, const string &message);
 	void sendToPlayers(unsigned char *data, int32_t len);

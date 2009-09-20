@@ -128,14 +128,14 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
 		if (macro != 0) {
 			packet.addString(macro->name);
-			packet.add<int8_t>(macro->shout);
+			packet.addBool(macro->shout);
 			packet.add<int32_t>(macro->skill1);
 			packet.add<int32_t>(macro->skill2);
 			packet.add<int32_t>(macro->skill3);
 		}
 		else {
 			packet.addString("");
-			packet.add<int8_t>(0);
+			packet.addBool(false);
 			packet.add<int32_t>(0);
 			packet.add<int32_t>(0);
 			packet.add<int32_t>(0);
@@ -148,7 +148,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 void PlayerPacket::updateStatInt(Player *player, int32_t id, int32_t value, bool is) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_UPDATE_STAT);
-	packet.add<int8_t>(is);
+	packet.addBool(is);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(value);
 	player->getSession()->send(packet);
@@ -157,7 +157,7 @@ void PlayerPacket::updateStatInt(Player *player, int32_t id, int32_t value, bool
 void PlayerPacket::updateStatShort(Player *player, int32_t id, int16_t value, bool is) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_UPDATE_STAT);
-	packet.add<int8_t>(is);
+	packet.addBool(is);
 	packet.add<int32_t>(id);
 	packet.add<int16_t>(value);
 	player->getSession()->send(packet);
@@ -166,7 +166,7 @@ void PlayerPacket::updateStatShort(Player *player, int32_t id, int16_t value, bo
 void PlayerPacket::updateStatChar(Player *player, int32_t id, int8_t value, bool is) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_UPDATE_STAT);
-	packet.add<int8_t>(is);
+	packet.addBool(is);
 	packet.add<int32_t>(id);
 	packet.add<int8_t>(value);
 	player->getSession()->send(packet);

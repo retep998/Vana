@@ -113,7 +113,7 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, 
 	packet.add<int16_t>(SEND_MOVE_MOB_RESPONSE);
 	packet.add<int32_t>(mobid);
 	packet.add<int16_t>(moveid);
-	packet.add<int8_t>(useskill);
+	packet.addBool(useskill);
 	packet.add<int16_t>(static_cast<int16_t>(mp));
 	packet.add<uint8_t>(skill);
 	packet.add<uint8_t>(level);
@@ -124,7 +124,7 @@ void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int8_t sk
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_MOB);
 	packet.add<int32_t>(mobid);
-	packet.add<int8_t>(useskill);
+	packet.addBool(useskill);
 	packet.add<int8_t>(skill);
 	packet.addPos(projectiletarget);
 	packet.addBuffer(buf, len);

@@ -611,7 +611,7 @@ void Player::changeSkillMacros(PacketReader &packet) {
 	SkillMacros skillMacros;
 	for (uint8_t i = 0; i < num; i++) {
 		string name = packet.getString();
-		bool shout = packet.get<int8_t>() != 0;
+		bool shout = packet.getBool();
 		int32_t skill1 = packet.get<int32_t>();
 		int32_t skill2 = packet.get<int32_t>();
 		int32_t skill3 = packet.get<int32_t>();

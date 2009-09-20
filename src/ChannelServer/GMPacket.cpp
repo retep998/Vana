@@ -25,7 +25,7 @@ void GmPacket::beginHide(Player *player) {
 	PacketCreator packet = PacketCreator();
 	packet.add<int16_t>(SEND_GM_FUNCTION);
 	packet.add<int8_t>(0x10);
-	packet.add<int8_t>(1);
+	packet.addBool(true);
 	
 	player->getSession()->send(packet);
 }
@@ -34,7 +34,7 @@ void GmPacket::endHide(Player *player) {
 	PacketCreator packet = PacketCreator();
 	packet.add<int16_t>(SEND_GM_FUNCTION);
 	packet.add<int8_t>(0x10);
-	packet.add<int8_t>(0);
+	packet.addBool(false);
 	
 	player->getSession()->send(packet);
 }

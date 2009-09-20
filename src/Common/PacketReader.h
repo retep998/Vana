@@ -39,6 +39,7 @@ public:
 	string getString(size_t len);
 	unsigned char * getBuffer();
 	Pos getPos();
+	bool getBool();
 	size_t getBufferLength();
 
 	PacketReader & reset(int32_t len = 0);

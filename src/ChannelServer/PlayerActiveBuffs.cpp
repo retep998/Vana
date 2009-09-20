@@ -569,13 +569,13 @@ void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
 		packet.add<uint8_t>((uint8_t)(m_mapbuffs.values[i].size()));
 		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = m_mapbuffs.values[i].begin(); iter != m_mapbuffs.values[i].end(); iter++) {
 			packet.add<uint8_t>(iter->first);
-			packet.add<int8_t>(iter->second.debuff ? 1 : 0);
+			packet.addBool(iter->second.debuff);
 			if (iter->second.debuff) {
 				packet.add<int16_t>(iter->second.skill);
 				packet.add<int16_t>(iter->second.val);
 			}
 			else {
-				packet.add<int8_t>(iter->second.use ? 1 : 0);
+				packet.addBool(iter->second.use);
 				packet.add<int16_t>(iter->second.val);
 			}
 		}
@@ -616,13 +616,13 @@ void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
 		uint8_t size = packet.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
 			uint8_t type = packet.get<uint8_t>();
-			values.debuff = (packet.get<int8_t>() > 0);
+			values.debuff = packet.getBool();
 			if (values.debuff) {
 				values.skill = packet.get<int16_t>();
 				values.val = packet.get<int16_t>();
 			}
 			else {
-				values.use = packet.get<int8_t>() > 0;
+				values.use = packet.getBool();
 				values.val = packet.get<int16_t>();
 			}
 			m_mapbuffs.values[i][type] = values;

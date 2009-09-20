@@ -29,8 +29,8 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 	packet.add<int16_t>(SEND_PET_SUMMONED);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(index != -1 ? index : pet->getIndex());
-	packet.add<int8_t>(pet->isSummoned());
-	packet.add<int8_t>(kick); // Kick existing pet (only when player doesn't have follow the lead)
+	packet.addBool(pet->isSummoned());
+	packet.addBool(kick); // Kick existing pet (only when player doesn't have follow the lead)
 	if (pet->isSummoned()) {
 		packet.add<int32_t>(pet->getItemId());
 		packet.addString(pet->getName());
@@ -40,7 +40,12 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 		packet.add<int8_t>(pet->getStance());
 		packet.add<int32_t>(pet->getFh());
 	}
-	onlyPlayer ? player->getSession()->send(packet) : Maps::getMap(player->getMap())->sendPacket(packet);
+	if (onlyPlayer) {
+		player->getSession()->send(packet);
+	}
+	else {
+		Maps::getMap(player->getMap())->sendPacket(packet);
+	}
 }
 
 void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_t act) {
@@ -69,10 +74,14 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool 
 	packet.add<int16_t>(SEND_PET_ANIMATION);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex()); // Index for multiple pets
-	packet.add<int8_t>(animation == 1 && success);
+	packet.addBool(animation == 1 && success);
 	packet.add<int8_t>(animation);
-	animation == 1 ? packet.add<int8_t>(0) : packet.add<int16_t>(success);
-
+	if (animation == 1) {
+		packet.add<int8_t>(0);
+	}
+	else {
+		packet.add<int16_t>(success);
+	}
 	player->getSession()->send(packet);
 }
 

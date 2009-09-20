@@ -35,6 +35,10 @@ void PacketCreator::addPos(const Pos &pos) {
 	add<int16_t>(pos.y);
 }
 
+void PacketCreator::addBool(bool value) {
+	add<int8_t>(value ? 1 : 0);
+}
+
 void PacketCreator::addBuffer(PacketCreator &packet) {
 	addBuffer(packet.getBuffer(), packet.getSize());
 }

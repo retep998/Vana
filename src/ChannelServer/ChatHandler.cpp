@@ -312,7 +312,7 @@ void ChatHandler::showSyntax(Player *player, const string &command, bool fromHel
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	string message = packet.getString();
-	int8_t bubbleOnly = packet.get<int8_t>(); // Skill Macros only display chat bubbles
+	bool bubbleOnly = packet.getBool(); // Skill Macros only display chat bubbles
 
 	if (!ChatHandler::handleCommand(player, message)) { // Returns false if there was no command handled
 		PlayersPacket::showChat(player, message, bubbleOnly);

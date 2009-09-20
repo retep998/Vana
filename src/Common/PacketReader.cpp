@@ -64,3 +64,7 @@ Pos PacketReader::getPos() {
 	ret.y = get<int16_t>();
 	return ret;
 }
+
+bool PacketReader::getBool() {
+	return (get<int8_t>() != 0);
+}

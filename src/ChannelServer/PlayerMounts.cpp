@@ -123,12 +123,12 @@ void PlayerMounts::setCurrentTiredness(int8_t tiredness) {
 
 void PlayerMounts::mountInfoPacket(PacketCreator &packet) {
 	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
-		packet.add<int8_t>(1);
+		packet.addBool(true);
 		packet.add<int32_t>(getCurrentLevel());
 		packet.add<int32_t>(getCurrentExp());
 		packet.add<int32_t>(getCurrentTiredness());
 	}
 	else {
-		packet.add<int8_t>(0);
+		packet.addBool(false);
 	}
 }

@@ -145,7 +145,7 @@ void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapmobid, uint8_t s
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_SHOW_DRAGGED);
 	packet.add<int32_t>(mapmobid);
-	packet.add<int8_t>(success);
+	packet.add<uint8_t>(success);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -163,7 +163,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(Jobs::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
-	packet.add<int8_t>(on ? 1 : 0);
+	packet.addBool(on);
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
@@ -173,6 +173,6 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(Jobs::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
-	packet.add<int8_t>(on ? 1 : 0);
+	packet.addBool(on);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
