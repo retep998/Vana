@@ -41,7 +41,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, quiet_ban, creation_date, ban_reason, ban_expire, (ban_expire > NOW()) as banned, admin FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
+	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, creation_date, quiet_ban_reason, quiet_ban_expire, ban_reason, ban_expire, (ban_expire > NOW()) as banned, admin FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	query << "SELECT id FROM ipbans WHERE ip = " << mysqlpp::quote << ip << " LIMIT 1";	
 	mysqlpp::StoreQueryResult resIp = query.store();
@@ -59,7 +59,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	else if (res[0]["salt"].is_null()) {
 		// We have an unsalted password here
 		if (res[0]["password"] != password) {
-			LoginPacket::loginError(player, 0x04); //Invalid password
+			LoginPacket::loginError(player, 0x04); // Invalid password
 			valid = false;
 		}
 		// We have a valid password here, so lets hash the password
@@ -69,11 +69,11 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 		query.exec();
 	}
 	else if (res[0]["password"] != MiscUtilities::hashPassword(password, string(res[0]["salt"].data()))) {
-		LoginPacket::loginError(player, 0x04); //Invalid password
+		LoginPacket::loginError(player, 0x04); // Invalid password
 		valid = false;
 	}
 	else if (atoi(res[0]["online"]) != 0) {
-		LoginPacket::loginError(player, 0x07); //Already logged in
+		LoginPacket::loginError(player, 0x07); // Already logged in
 		valid = false;
 	}
 	else if (atoi(res[0]["banned"]) == 1) {
@@ -108,14 +108,15 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 		else
 			player->setGender((uint8_t) res[0]["gender"]);
 
-		time_t qban = (time_t) mysqlpp::DateTime(res[0]["quiet_ban"]);
+		time_t qban = (time_t) mysqlpp::DateTime(res[0]["quiet_ban_expire"]);
 		if (qban > 0) {
 			if (time(0) > qban) {
-				query << "UPDATE users SET quiet_ban = '0000-00-00 00:00:00' WHERE id = " << player->getUserId();
+				query << "UPDATE users SET quiet_ban_expire = '0000-00-00 00:00:00', quiet_ban_reason = 0 WHERE id = " << player->getUserId();
 				query.exec();
 			}
 			else {
 				player->setQuietBanTime(TimeUtilities::timeToTick(qban));
+				player->setQuietBanReason(atoi(res[0]["quiet_ban_reason"]));
 			}
 		}
 

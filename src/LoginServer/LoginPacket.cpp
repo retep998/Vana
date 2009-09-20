@@ -61,7 +61,7 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 	packet.add<int8_t>(0);
 	packet.addString(username);
 	packet.add<int8_t>(0);
-	packet.addBool(player->isQuietBanned());
+	packet.add<int8_t>(player->getQuietBanReason());
 	packet.add<int64_t>(player->getQuietBanTime());
 	packet.add<int64_t>(player->getCreationTime());
 	packet.add<int32_t>(0);
