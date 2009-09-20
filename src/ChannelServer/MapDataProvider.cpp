@@ -219,19 +219,19 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 
 	struct NpcFlags {
 		void operator()(const string &cmp) {
-			if (cmp == "faces_left") npc->facesleft = true;
+			if (cmp == "faces_left") npc->facesright = false;
 		}
 		NPCSpawnInfo *npc;
 	};
 	struct MobFlags {
 		void operator()(const string &cmp) {
-			if (cmp == "faces_left") mob->facesleft = true;
+			if (cmp == "faces_left") mob->facesright = false;
 		}
 		MobSpawnInfo *mob;
 	};
 	struct ReactorFlags {
 		void operator()(const string &cmp) {
-			if (cmp == "faces_left") reactor->facesleft = true;
+			if (cmp == "faces_left") reactor->facesright = false;
 		}
 		ReactorSpawnInfo *reactor;
 	};

@@ -359,7 +359,7 @@ int32_t Map::spawnMob(int32_t mobid, const Pos &pos, int16_t fh, Mob *owner, int
 int32_t Map::spawnMob(int32_t spawnid, const MobSpawnInfo &info) {
 	int32_t id = objectids.next();
 
-	Mob *mob = new Mob(id, this->info->id, info.id, info.pos, spawnid, info.facesleft, info.fh);
+	Mob *mob = new Mob(id, this->info->id, info.id, info.pos, spawnid, info.facesright, info.fh);
 	mobs[id] = mob;
 	MobsPacket::spawnMob(0, mob, 0, 0, true);
 	updateMobControl(mob, true);

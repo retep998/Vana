@@ -540,7 +540,6 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						npc.pos = player->getPos();
 						npc.rx0 = npc.pos.x - 50;
 						npc.rx1 = npc.pos.x + 50;
-						npc.facesleft = false;
 						Maps::getMap(player->getMap())->addNPC(npc);
 					}
 					else {

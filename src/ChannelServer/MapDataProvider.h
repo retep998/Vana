@@ -117,23 +117,23 @@ typedef unordered_map<string, PortalInfo> PortalsInfo;
 typedef unordered_map<int8_t, PortalInfo> SpawnPoints;
 
 struct NPCSpawnInfo {
-	NPCSpawnInfo() : facesleft(false) { }
+	NPCSpawnInfo() : facesright(true) { }
 	int32_t id;
 	Pos pos;
 	int16_t fh;
 	int16_t rx0;
 	int16_t rx1;
-	bool facesleft;
+	bool facesright;
 };
 typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
 
 struct ReactorSpawnInfo {
-	ReactorSpawnInfo() : spawnat(-1), spawned(false), facesleft(false) { }
+	ReactorSpawnInfo() : spawnat(-1), spawned(false), facesright(true) { }
 	int32_t id;
 	int32_t time;
 	clock_t spawnat;
 	bool spawned;
-	bool facesleft;
+	bool facesright;
 	Pos pos;
 };
 typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
@@ -147,8 +147,8 @@ struct SeatInfo {
 typedef std::map<int16_t, SeatInfo> SeatsInfo;
 
 struct MobSpawnInfo {
-	MobSpawnInfo() : spawned(false), facesleft(false), spawnat(-1) { }
-	bool facesleft;
+	MobSpawnInfo() : spawned(false), facesright(true), spawnat(-1) { }
+	bool facesright;
 	bool spawned;
 	int16_t fh;
 	int32_t id;
