@@ -34,7 +34,7 @@ public:
 
 	void setGender(int8_t gender) { this->gender=gender; }
 	void setWorld(int8_t world) { this->world = world; }
-	void setGmLevel(int8_t level) { gmlevel = level; }
+	void setAdmin(bool value) { admin = value; }
 	void setChannel(uint16_t channel) {	this->channel = channel; }
 	void setUserId(int32_t id) { this->userid = id; }
 	void setStatus(PlayerStatus::PlayerStatus status) { this->status = status; }
@@ -45,7 +45,7 @@ public:
 
 	int8_t getGender() const { return gender; }
 	int8_t getWorld() const { return world; }
-	int8_t getGmLevel() const { return gmlevel; }
+	bool isAdmin() const { return admin; }
 	uint16_t getChannel() const { return channel; }
 	int32_t getUserId() const { return userid; }
 	PlayerStatus::PlayerStatus getStatus() const { return status; }
@@ -60,7 +60,7 @@ public:
 private:
 	int8_t gender;
 	int8_t world;
-	int8_t gmlevel;
+	bool admin;
 	uint16_t channel;
 	PlayerStatus::PlayerStatus status;
 	int32_t userid;
