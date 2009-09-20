@@ -91,7 +91,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		pgmr.reduction = packet.get<int8_t>();
 		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
-			if (packet.get<int8_t>() == 0)
+			if (!packet.getBool())
 				pgmr.isphysical = false;
 			pgmr.mapmobid = packet.get<int32_t>();
 			packet.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
@@ -234,7 +234,7 @@ void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet)
 void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	if (Player *info = Players::Instance()->getPlayer(packet.get<int32_t>())) {
-		PlayersPacket::showInfo(player, info, packet.get<int8_t>());
+		PlayersPacket::showInfo(player, info, packet.getBool());
 	}
 }
 

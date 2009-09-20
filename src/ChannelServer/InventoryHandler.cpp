@@ -476,7 +476,7 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	int16_t eslot = packet.get<int16_t>();
 	bool wscroll = (packet.get<int16_t>() == 2);
-	bool legendary_spirit = (packet.get<int8_t>() != 0);
+	bool legendary_spirit = packet.getBool();
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	Item *equip = player->getInventory()->getItem(Inventories::EquipInventory, eslot);
@@ -674,7 +674,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		}
 		case Items::SuperMegaphone: {
 			string msg = player->getName() + " : " + packet.getString();
-			uint8_t whisper = packet.get<int8_t>();
+			bool whisper = packet.getBool();
 			InventoryPacket::showSuperMegaphone(player, msg, whisper);
 			used = true;
 			break;
@@ -693,9 +693,9 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		}
 		case Items::ItemMegaphone: {
 			string msg = player->getName() + " : " + packet.getString();
-			uint8_t whisper = packet.get<int8_t>();
+			uint8_t whisper = packet.getBool();
 			Item *item = 0;
-			if (packet.get<int8_t>() == 1) {
+			if (packet.getBool()) {
 				int8_t inv = (int8_t) packet.get<int32_t>();
 				int16_t slot = (int16_t) packet.get<int32_t>();
 				item = player->getInventory()->getItem(inv, slot);
@@ -718,7 +718,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			for (int8_t i = 0; i < lines; i++) {
 				text[i] = player->getName() + " : " + packet.getString();
 			}
-			uint8_t whisper = packet.get<int8_t>();
+			bool whisper = packet.getBool();
 			for (int8_t i = 0; i < lines; i++) {
 				InventoryPacket::showSuperMegaphone(player, text[i], whisper);
 			}

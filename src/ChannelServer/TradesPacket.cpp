@@ -76,7 +76,7 @@ void TradesPacket::sendTradeChat(Player *player, uint8_t blue, const string &cha
 	packet.add<int16_t>(SEND_PLAYER_ROOM_ACTION);
 	packet.add<int8_t>(0x06);
 	packet.add<int8_t>(0x08);
-	packet.add<int8_t>(blue);
+	packet.add<uint8_t>(blue);
 	packet.addString(chat);
 	player->getSession()->send(packet);
 }

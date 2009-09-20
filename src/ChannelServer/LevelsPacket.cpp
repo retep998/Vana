@@ -26,7 +26,7 @@ void LevelsPacket::showEXP(Player *player, int32_t exp, bool white, bool inChat)
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_NOTE);
 	packet.add<int8_t>(3);
-	packet.add<int8_t>(white);
+	packet.addBool(white);
 	packet.add<int32_t>(exp);
 	packet.add<int32_t>(inChat);
 	packet.add<int32_t>(0);

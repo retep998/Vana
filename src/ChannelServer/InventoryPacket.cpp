@@ -66,7 +66,7 @@ void InventoryPacket::bought(Player *player, uint8_t msg) {
 void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_ITEM);
-	packet.add<int8_t>(is);
+	packet.addBool(is);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(inv);
@@ -77,7 +77,7 @@ void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item 
 void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_MOVE_ITEM);
-	packet.add<int8_t>(is);
+	packet.addBool(is);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(inv);
@@ -147,8 +147,8 @@ void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bo
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_USE_SCROLL);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(succeed); // Succeed/Fail
-	packet.add<int8_t>(destroy); // Destroy/Not Destroy
+	packet.add<int8_t>(succeed); // Succeed/Fail/Large string of Korean garbage
+	packet.addBool(destroy); // Destroy/Not Destroy
 	packet.add<int16_t>(legendary_spirit);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
@@ -161,14 +161,14 @@ void InventoryPacket::showMegaphone(Player *player, const string &msg) {
 	Players::Instance()->sendPacket(packet); // In global, this sends to everyone on the current channel, not the map
 }
 
-void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, uint8_t whisper) {
+void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool whisper) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TO_PLAYERS);
 	packet.add<int16_t>(SEND_NOTICE);
 	packet.add<int8_t>(3);
 	packet.addString(msg);
 	packet.add<int8_t>((uint8_t) ChannelServer::Instance()->getChannel());
-	packet.add<int8_t>(whisper);
+	packet.addBool(whisper);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
@@ -187,14 +187,14 @@ void InventoryPacket::showMessenger(Player *player, const string &msg, const str
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void InventoryPacket::showItemMegaphone(Player *player, const string &msg, uint8_t whisper, Item *item) {
+void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool whisper, Item *item) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TO_PLAYERS);
 	packet.add<int16_t>(SEND_NOTICE);
 	packet.add<int8_t>(8);
 	packet.addString(msg);
 	packet.add<int8_t>((uint8_t) ChannelServer::Instance()->getChannel());
-	packet.add<int8_t>(whisper);
+	packet.addBool(whisper);
 	if (item == 0) {
 		packet.add<int8_t>(0);
 	}
@@ -211,8 +211,8 @@ void InventoryPacket::useSkillbook(Player *player, int32_t skillid, int32_t newM
 	packet.add<int8_t>(1); // Number of skills? Maybe just padding or random boolean
 	packet.add<int32_t>(skillid);
 	packet.add<int32_t>(newMaxLevel);
-	packet.add<int8_t>(use); // Use/cannot use
-	packet.add<int8_t>(succeed); // Pass/fail
+	packet.addBool(use); // Use/cannot use
+	packet.addBool(succeed); // Pass/fail
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 

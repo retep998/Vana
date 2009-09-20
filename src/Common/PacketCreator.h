@@ -40,6 +40,7 @@ public:
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
 	void addPos(const Pos &pos); // Positions
+	void addBool(bool value);
 	void addBytes(const char *hex);
 	void addBuffer(const unsigned char *bytes, size_t len);
 	void addBuffer(PacketCreator &packet);

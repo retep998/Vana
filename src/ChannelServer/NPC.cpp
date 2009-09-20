@@ -139,8 +139,8 @@ void NPC::sendDialog(bool back, bool next, bool save) {
 	}
 
 	PacketCreator packet = npcPacket(NPCDialogs::normal);
-	packet.add<int8_t>(back);
-	packet.add<int8_t>(next);
+	packet.addBool(back);
+	packet.addBool(next);
 	player->getSession()->send(packet);
 }
 

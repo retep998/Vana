@@ -92,7 +92,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	}
 
 	int16_t moveid = packet.get<int16_t>();
-	bool useskill = (packet.get<int8_t>() != 0);
+	bool useskill = packet.getBool();
 	int8_t skill = packet.get<int8_t>();
 	uint8_t realskill = 0;
 	uint8_t level = 0;

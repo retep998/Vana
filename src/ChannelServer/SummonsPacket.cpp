@@ -36,7 +36,7 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 	packet.add<int8_t>(1); // ?
 	packet.add<int8_t>(summon->getType()); // Movement type
 	packet.add<int8_t>(!GameLogicUtilities::isPuppet(summon->getSummonId())); // Attack or not
-	packet.add<int8_t>(!animated);
+	packet.addBool(!animated);
 	if (toplayer != 0)
 		toplayer->getSession()->send(packet);
 	else

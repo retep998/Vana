@@ -30,7 +30,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	packet.add<int16_t>(SEND_DROP_ITEM);
 	packet.add<int8_t>(type); // 3 = disappear during drop animation, 2 = show existing, 1 then 0 = show new
 	packet.add<int32_t>(drop->getId());
-	packet.add<int8_t>(drop->isMesos());
+	packet.addBool(drop->isMesos());
 	packet.add<int32_t>(drop->getObjectId());
 	packet.add<int32_t>(drop->getOwner()); // Owner of drop
 	packet.add<int8_t>(drop->getType()); // // 0 = timeout for non-owner, 1 = timeout for non-owner's party, 2 = FFA, 3 = explosive/FFA
@@ -43,7 +43,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	if (!drop->isMesos()) {
 		packet.addBytes("008005BB46E61702");
 	}
-	packet.add<int8_t>(!drop->isPlayerDrop()); // Determines whether pets can pick item up or not
+	packet.addBool(!drop->isPlayerDrop()); // Determines whether pets can pick item up or not
 	if (player != 0)
 		player->getSession()->send(packet);
 	else
@@ -61,7 +61,7 @@ void DropsPacket::takeNote(Player *player, int32_t id, bool ismesos, int16_t amo
 	if (id == 0)
 		packet.add<int8_t>(-1);
 	else {
-		packet.add<int8_t>(ismesos);
+		packet.addBool(ismesos);
 		packet.add<int32_t>(id);
 		if (ismesos) {
 			packet.add<int16_t>(0); // Internet Cafe Bonus

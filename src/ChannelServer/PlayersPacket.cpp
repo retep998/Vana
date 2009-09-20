@@ -50,13 +50,13 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void PlayersPacket::showChat(Player *player, const string &msg, int8_t bubbleOnly) {
+void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CHAT);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(player->isGm());
+	packet.addBool(player->isGm());
 	packet.addString(msg);
-	packet.add<int8_t>(bubbleOnly);
+	packet.addBool(bubbleOnly);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
@@ -115,17 +115,17 @@ void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void PlayersPacket::showInfo(Player *player, Player *getinfo, uint8_t isself) {
+void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_PLAYER_INFO);
 	packet.add<int32_t>(getinfo->getId());
 	packet.add<int8_t>(getinfo->getLevel());
 	packet.add<int16_t>(getinfo->getJob());
 	packet.add<int16_t>(getinfo->getFame());
-	packet.add<int8_t>(0); // Married
+	packet.addBool(false); // Married
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
-	packet.add<int8_t>(isself); // Is 1 when the character is clicking themselves
+	packet.addBool(isself); // Is 1 when the character is clicking themselves
 
 	getinfo->getPets()->petInfoPacket(packet);
 	getinfo->getMounts()->mountInfoPacket(packet);
