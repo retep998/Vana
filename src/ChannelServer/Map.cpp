@@ -659,7 +659,7 @@ void Map::setMapTimer(int32_t t) {
 
 void Map::showObjects(Player *player) { // Show all Map Objects
 	// Music
-	if (info->musicname.size() > 0)
+	if (info->musicname != info->defaultmusic)
 		MapPacket::setMusic(info->id, info->musicname);
 
 	// MapleTV messengers
