@@ -65,7 +65,6 @@ protected:
 		size_t bytes_transferred);
 	void handle_read_body(const boost::system::error_code &error,
 		size_t bytes_transferred);
-	void send_next_packet(); // Send the next packet in the queue
 
 	static const size_t connectHeaderLen = 2;
 	static const size_t headerLen = 4;
@@ -79,8 +78,6 @@ protected:
 	string m_connect_packet_unknown;
 
 	// Packet sending
-	queue<shared_array<unsigned char> > m_send_packet_queue; // This may not be the best way,
-	queue<uint32_t> m_send_size_queue;						// but it is the simplest way.
 	shared_array<unsigned char> m_send_packet;
 	boost::mutex m_send_mutex;
 };

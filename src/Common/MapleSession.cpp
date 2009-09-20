@@ -75,6 +75,7 @@ void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
 	boost::mutex::scoped_lock l(m_send_mutex);
 	size_t realLength = encrypt ? len + headerLen : len;
 	unsigned char *buffer = new unsigned char[realLength];
+	m_send_packet.reset(buffer);
 
 	if (encrypt) {
 		memcpy(buffer + headerLen, buf, len);
@@ -88,14 +89,10 @@ void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
 		memcpy(buffer, buf, len);
 	}
 
-	bool isWriting = (!m_send_packet_queue.empty() && !m_send_size_queue.empty());
-
-	m_send_packet_queue.push(shared_array<unsigned char>(buffer));
-	m_send_size_queue.push(realLength);
-
-	if (!isWriting) { // No write operation active
-		send_next_packet();
-	}
+	boost::asio::async_write(m_socket, boost::asio::buffer(buffer, realLength),
+		boost::bind(&MapleSession::handle_write, shared_from_this(),
+		boost::asio::placeholders::error,
+		boost::asio::placeholders::bytes_transferred));
 }
 
 void MapleSession::send(const PacketCreator &packet, bool encrypt) {
@@ -116,12 +113,7 @@ void MapleSession::start_read_header() {
 void MapleSession::handle_write(const boost::system::error_code &error,
 								size_t bytes_transferred) {
 	boost::mutex::scoped_lock l(m_send_mutex);
-	if (!error) {
-		if (!m_send_packet_queue.empty() && !m_send_size_queue.empty()) { // More packet(s) to send
-			send_next_packet();
-		}
-	}
-	else {
+	if (error) {
 		disconnect();
 	}
 }
@@ -163,16 +155,4 @@ void MapleSession::handle_read_body(const boost::system::error_code &error,
 	else {
 		disconnect();
 	}
-}
-
-void MapleSession::send_next_packet() {
-	m_send_packet = m_send_packet_queue.front();
-	m_send_packet_queue.pop();
-	uint32_t len = m_send_size_queue.front();
-	m_send_size_queue.pop();
-
-	boost::asio::async_write(m_socket, boost::asio::buffer(m_send_packet.get(), len),
-		boost::bind(&MapleSession::handle_write, shared_from_this(),
-		boost::asio::placeholders::error,
-		boost::asio::placeholders::bytes_transferred));
 }
