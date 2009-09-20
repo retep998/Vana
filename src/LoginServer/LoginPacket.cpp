@@ -35,22 +35,6 @@ void LoginPacket::loginError(PlayerLogin *player, int16_t errorid) {
 }
 
 void LoginPacket::loginBan(PlayerLogin *player, int8_t reason, int32_t expire) {
-	/* Reasons:
-		00 -> This is an ID that has been deleted or blocked from connection
-		01 -> Your account has been blocked for hacking or illegal use of third-party programs
-		02 -> Your account has been blocked for using macro/auto-keyboard
-		03 -> Your account has been blocked for illicit promotion or advertising
-		04 -> Your account has been blocked for harassment
-		05 -> Your account has been blocked for using profane language
-		06 -> Your account has been blocked for scamming
-		07 -> Your account has been blocked for misconduct
-		08 -> Your account has been blocked for illegal cash transaction
-		09 -> Your account has been blocked for illegal charging/funding. Please contact customer support for further details
-		10 -> Your account has been blocked for temporary request. Please contact customer support for further details
-		11 -> Your account has been blocked for impersonating GM
-		12 -> Your account has been blocked for using illegal programs or violating the game policy
-		13 -> Your account has been blocked for one of cursing, scamming, or illegal trading via Megaphones.
-	*/
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_LOGIN_INFO_REPLY);
 	packet.add<int16_t>(2);
@@ -72,12 +56,12 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 		case PlayerStatus::SetPin: packet.add<int8_t>(0x0b); break; // Pin Select
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
-	packet.add<int8_t>(0); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
+	packet.addBool(player->getGmLevel() == 3); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
 	packet.addString(username);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(player->isQuietBanned() ? 1 : 0);
+	packet.addBool(player->isQuietBanned());
 	packet.add<int64_t>(player->getQuietBanTime());
 	packet.add<int64_t>(player->getCreationTime());
 	packet.add<int32_t>(0);
