@@ -69,7 +69,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	boost::mutex::scoped_lock l(loadmap_mutex);
 
 	int32_t checkmap = loadMapData(mapid, map);
-	if (checkmap != 0) {
+	if (checkmap != -1) {
 		loadSeats(map, checkmap);
 		loadPortals(map, checkmap);
 		loadMapLife(map, checkmap);
@@ -147,7 +147,7 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 
 	maps[mapid] = map;
 	if (map == 0) // Map does not exist, so no need to run the rest of the code
-		return 0;
+		return -1;
 	return (link == 0 ? mapid : link);
 }
 
