@@ -80,7 +80,7 @@ m_player(player)
 {
 	boost::array<int32_t, 2> g = {0};
 
-	for (size_t i = 0; i < 50; i++) {
+	for (size_t i = 0; i < 51; i++) {
 		m_equipped[i] = g;
 	}
 

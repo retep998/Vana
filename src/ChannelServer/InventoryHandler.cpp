@@ -693,7 +693,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		}
 		case Items::ItemMegaphone: {
 			string msg = player->getName() + " : " + packet.getString();
-			uint8_t whisper = packet.getBool();
+			bool whisper = packet.getBool();
 			Item *item = 0;
 			if (packet.getBool()) {
 				int8_t inv = (int8_t) packet.get<int32_t>();
