@@ -56,7 +56,7 @@ void LoginPacket::loginConnect(PlayerLogin *player, const string &username) {
 		case PlayerStatus::SetPin: packet.add<int8_t>(0x0b); break; // Pin Select
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
-	packet.addBool(player->getGmLevel() == 3); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
+	packet.addBool(player->isAdmin()); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
 	packet.addString(username);
