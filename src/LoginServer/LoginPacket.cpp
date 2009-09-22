@@ -163,6 +163,12 @@ void LoginPacket::showCharacters(PlayerLogin *player, const vector<Character> &c
 	player->getSession()->send(packet);
 }
 
+void LoginPacket::channelOffline(PlayerLogin *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(SEND_SHOW_CHARACTERS);
+	packet.add<int8_t>(8);
+	player->getSession()->send(packet);
+}
 void LoginPacket::checkName(PlayerLogin *player, const string &name, bool taken) {
 	PacketCreator packet;
 	packet.add<int16_t>(SEND_CHECK_NAME);
