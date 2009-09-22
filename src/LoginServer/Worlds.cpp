@@ -57,9 +57,17 @@ void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
 		return;
 	}
 	packet.skipBytes(1);
-	player->setChannel(packet.get<int8_t>());
+	int8_t channel = packet.get<int8_t>();
+	
 	LoginPacket::channelSelect(player);
-	Characters::showCharacters(player);
+	World *world = worlds[player->getWorld()];
+	if (world->channels.find(channel) != world->channels.end()) {
+		player->setChannel(channel);
+		Characters::showCharacters(player);
+	}
+	else {
+		LoginPacket::channelOffline(player);
+	}
 }
 
 int8_t Worlds::connectWorldServer(LoginServerAcceptConnection *player) {
