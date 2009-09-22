@@ -37,7 +37,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 	packet.add<int8_t>(!GameLogicUtilities::isEquip(item->id) + 1);
 	packet.add<int32_t>(item->id);
 	packet.add<int8_t>(0);
-	packet.add<int64_t>(0); // Expiration, I think
+	packet.add<int64_t>(Items::NoExpiration); // Expiration, I think
 	if (GameLogicUtilities::isEquip(item->id)) {
 		packet.add<int8_t>(item->slots); // Slots
 		packet.add<int8_t>(item->scrolls); // Scrolls

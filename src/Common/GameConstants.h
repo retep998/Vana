@@ -1042,6 +1042,7 @@ namespace Jobs {
 }
 
 namespace Items {
+	const int64_t NoExpiration = 150842304000000000LL;
 	enum {
 		// Equip
 		GmHat = 1002140,
