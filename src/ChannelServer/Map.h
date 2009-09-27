@@ -47,7 +47,10 @@ namespace Timer {
 class Map {
 public:
 	Map(MapInfoPtr info);
+
 	// Map Info
+	static const int32_t NpcStart = 100;
+	static const int32_t ReactorStart = 200;
 	MapInfoPtr getInfo() const { return info; }
 	void setMusic(const string &musicname);
 

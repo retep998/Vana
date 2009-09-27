@@ -62,7 +62,7 @@ timers(new Timer::Container)
 {
 	new Timer::Timer(bind(&Map::runTimer, this), // Due to dynamic loading, we can now simply start the map timer once the object is created
 		Timer::Id(Timer::Types::MapTimer, info->id, 0),
-		getTimers(), 0, 10000);
+		getTimers(), 0, 10 * 1000);
 	if (info->timemob != 0) {
 		new Timer::Timer(bind(&Map::timeMob, this, false),
 			Timer::Id(Timer::Types::MapTimer, info->id, 1),
@@ -178,7 +178,7 @@ void Map::addReactorSpawn(const ReactorSpawnInfo &spawn) {
 
 void Map::addReactor(Reactor *reactor) {
 	this->reactors.push_back(reactor);
-	reactor->setId(this->reactors.size() - 1 + 200);
+	reactor->setId(this->reactors.size() - 1 + Map::ReactorStart);
 }
 
 void Map::removeReactor(int32_t id) {
@@ -200,7 +200,7 @@ void Map::killReactors(bool showpacket) {
 			if (showpacket) {
 				ReactorPacket::destroyReactor(r);
 			}
-			removeReactor(r->getId() - 200); 
+			removeReactor(r->getId() - Map::ReactorStart); 
 		}
 	}
 }
@@ -305,7 +305,7 @@ PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 // NPCs
 int32_t Map::addNPC(const NPCSpawnInfo &npc) {
 	npcs.push_back(npc);
-	NPCPacket::showNPC(getInfo()->id, npc, npcs.size() - 1);
+	NPCPacket::showNpc(getInfo()->id, npc, npcs.size() - 1 + Map::NpcStart);
 
 	if (MapleTVs::Instance()->isMapleTVNPC(npc.id))
 		MapleTVs::Instance()->addMap(this);
@@ -317,7 +317,7 @@ void Map::removeNPC(int32_t index) {
 	int32_t size = npcs.size();
 	if (index >= 0 && index < size) {
 		NPCSpawnInfo npc = npcs[index];
-		NPCPacket::showNPC(getInfo()->id, npc, size - 1, false);
+		NPCPacket::showNpc(getInfo()->id, npc, size - 1 + Map::NpcStart, false);
 		npcs.erase(npcs.begin() + index);
 	}
 }
@@ -682,7 +682,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	}
 	// NPCs
 	for (size_t i = 0; i < npcs.size(); i++) {
-		NPCPacket::showNPC(player, npcs[i], i);
+		NPCPacket::showNpc(player, npcs[i], i + Map::NpcStart);
 	}
 	// Reactors
 	for (size_t i = 0; i < reactors.size(); i++) {

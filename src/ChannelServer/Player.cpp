@@ -123,7 +123,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_ADD_SKILL: Skills::addSkill(this, packet); break;
 		case RECV_ADD_STAT: Levels::addStat(this, packet); break;
 		case RECV_ADD_STAT_MULTI: Levels::addStatMulti(this, packet); break;
-		case RECV_ANIMATE_NPC: NpcHandler::handleNPCAnimation(this, packet); break;
+		case RECV_ANIMATE_NPC: NpcHandler::handleNpcAnimation(this, packet); break;
 		case RECV_ATTACK_ENERGYCHARGE: PlayerHandler::useEnergyChargeAttack(this, packet); break;
 		case RECV_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, packet); break;
 		case RECV_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, packet); break;
@@ -162,8 +162,8 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case RECV_MOVE_PLAYER: PlayerHandler::handleMoving(this, packet); break;
 		case RECV_MOVE_SUMMON: Summons::moveSummon(this, packet); break;
 		case RECV_MTS_BUTTON: PlayerPacket::sendBlockedMessage(this, 0x03); break;
-		case RECV_NPC_TALK: NpcHandler::handleNPC(this, packet); break;
-		case RECV_NPC_TALK_CONT: NpcHandler::handleNPCIn(this, packet); break;
+		case RECV_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
+		case RECV_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, packet); break;
 		case RECV_PARTY_ACTION: PartyFunctions::handleRequest(this, packet); break;
 		case RECV_PET_CHAT: Pets::handleChat(this, packet); break;
 		case RECV_PET_COMMAND: Pets::handleCommand(this, packet); break;

@@ -26,12 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "ShopDataProvider.h"
 
-void NpcHandler::handleNPC(Player *player, PacketReader &packet) {
+void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	if (player->getNPC() != 0) {
 		return;
 	}
 
-	int32_t npcid = packet.get<int32_t>() - 100;
+	int32_t npcid = packet.get<int32_t>() - Map::NpcStart;
 
 	if (!Maps::getMap(player->getMap())->isValidNpcIndex(npcid)) {
 		// Shouldn't ever happen except in edited packets
@@ -46,7 +46,7 @@ void NpcHandler::handleNPC(Player *player, PacketReader &packet) {
 	npc->run();
 }
 
-void NpcHandler::handleQuestNPC(Player *player, int32_t npcid, bool start, int16_t questid) {
+void NpcHandler::handleQuestNpc(Player *player, int32_t npcid, bool start, int16_t questid) {
 	if (player->getNPC() != 0) {
 		return;
 	}
@@ -55,7 +55,7 @@ void NpcHandler::handleQuestNPC(Player *player, int32_t npcid, bool start, int16
 	npc->run();
 }
 
-void NpcHandler::handleNPCIn(Player *player, PacketReader &packet) {
+void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 	NPC *npc = player->getNPC();
 	if (npc == 0) {
 		return;
@@ -123,8 +123,8 @@ void NpcHandler::handleNPCIn(Player *player, PacketReader &packet) {
 	npc->checkEnd();
 }
 
-void NpcHandler::handleNPCAnimation(Player *player, PacketReader &packet) {
-	NPCPacket::animateNPC(player, packet);
+void NpcHandler::handleNpcAnimation(Player *player, PacketReader &packet) {
+	NPCPacket::animateNpc(player, packet);
 }
 
 bool NpcHandler::showShop(Player *player, int32_t shopid) {

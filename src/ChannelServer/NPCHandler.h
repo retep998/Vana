@@ -24,10 +24,10 @@ class PacketReader;
 class Player;
 
 namespace NpcHandler {
-	void handleNPC(Player *player, PacketReader &packet);
-	void handleNPCIn(Player *player, PacketReader &packet);
-	void handleNPCAnimation(Player *player, PacketReader &packet);
-	void handleQuestNPC(Player *player, int32_t npcid, bool start, int16_t questid = 0);
+	void handleNpc(Player *player, PacketReader &packet);
+	void handleNpcIn(Player *player, PacketReader &packet);
+	void handleNpcAnimation(Player *player, PacketReader &packet);
+	void handleQuestNpc(Player *player, int32_t npcid, bool start, int16_t questid = 0);
 	bool showShop(Player *player, int32_t shopid);
 }
 
