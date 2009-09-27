@@ -23,50 +23,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void NPCPacket::showNPC(Player *player, const NPCSpawnInfo &npc, int32_t i, bool show) {
+void NPCPacket::showNpc(Player *player, const NPCSpawnInfo &npc, int32_t id, bool show) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_SHOW_NPC);
-	packet.add<int32_t>(i + 0x64);
-	packet.add<int32_t>(npc.id);
-	packet.addPos(npc.pos);
-	packet.addBool(npc.facesright);
-	packet.add<int16_t>(npc.fh);
-	packet.add<int16_t>(npc.rx0);
-	packet.add<int16_t>(npc.rx1);
-	packet.addBool(show);
+	showNpc(packet, npc, id, show);
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
-	packet.add<int16_t>(SEND_CONTROL_NPC);
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(i + 0x64);
-	packet.add<int32_t>(npc.id);
-	packet.addPos(npc.pos);
-	packet.addBool(npc.facesright);
-	packet.add<int16_t>(npc.fh);
-	packet.add<int16_t>(npc.rx0);
-	packet.add<int16_t>(npc.rx1);
-	packet.addBool(show);
+	controlNpc(packet, npc, id, show);
 	player->getSession()->send(packet);
 }
 
-void NPCPacket::showNPC(int32_t mapid, const NPCSpawnInfo &npc, int32_t i, bool show) {
+void NPCPacket::showNpc(int32_t mapid, const NPCSpawnInfo &npc, int32_t id, bool show) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_SHOW_NPC);
-	packet.add<int32_t>(i + 0x64);
-	packet.add<int32_t>(npc.id);
-	packet.addPos(npc.pos);
-	packet.addBool(npc.facesright);
-	packet.add<int16_t>(npc.fh);
-	packet.add<int16_t>(npc.rx0);
-	packet.add<int16_t>(npc.rx1);
-	packet.addBool(show);
+	showNpc(packet, npc, id, show);
 	Maps::getMap(mapid)->sendPacket(packet);
 
 	packet = PacketCreator();
-	packet.add<int16_t>(SEND_CONTROL_NPC);
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(i + 0x64);
+	controlNpc(packet, npc, id, show);
+	Maps::getMap(mapid)->sendPacket(packet);
+}
+
+void NPCPacket::showNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t id, bool show) {
+	packet.add<int16_t>(SEND_SHOW_NPC);
+	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
 	packet.addBool(npc.facesright);
@@ -74,10 +53,22 @@ void NPCPacket::showNPC(int32_t mapid, const NPCSpawnInfo &npc, int32_t i, bool 
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
 	packet.addBool(show);
-	Maps::getMap(mapid)->sendPacket(packet);
 }
 
-void NPCPacket::animateNPC(Player *player, PacketReader &pack) {
+void NPCPacket::controlNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t id, bool show) {
+	packet.add<int16_t>(SEND_CONTROL_NPC);
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(id);
+	packet.add<int32_t>(npc.id);
+	packet.addPos(npc.pos);
+	packet.addBool(npc.facesright);
+	packet.add<int16_t>(npc.fh);
+	packet.add<int16_t>(npc.rx0);
+	packet.add<int16_t>(npc.rx1);
+	packet.addBool(show);
+}
+
+void NPCPacket::animateNpc(Player *player, PacketReader &pack) {
 	size_t len = pack.getBufferLength();
 
 	PacketCreator packet;
