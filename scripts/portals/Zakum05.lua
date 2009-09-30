@@ -40,7 +40,7 @@ else
 			msg = msg .. ", " .. channels[i];
 			i = i + 1;
 		end
-		msg = msg .. " and " .. channels[i];
+		msg = msg .. ", and " .. channels[i];
 		showMessage("You may only fight Zakum on channels " .. msg .. ".", 5);
 	end
 end
