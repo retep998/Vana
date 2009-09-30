@@ -66,6 +66,9 @@ struct World {
 	int16_t maxStats;
 	string eventMsg;
 	string scrollingHeader;
+	// Boss channels
+	vector<int8_t> zakumChannels;
+	vector<int8_t> horntailChannels;
 };
 
 namespace Worlds {

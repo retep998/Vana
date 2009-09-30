@@ -51,6 +51,8 @@ public:
 	void setDroprate(int32_t droprate) { this->droprate = droprate; }
 	void setMaxStats(int16_t max) { this->maxStats = max; }
 	void setScrollingHeader(const string &message);
+	void setZakumChannels(const vector<int8_t> &channels) { this->zakumChannels = channels; }
+	void setHorntailChannels(const vector<int8_t> &channels) { this->horntailChannels = channels; }
 
 	int8_t getWorldId() const { return worldId; }
 	uint8_t getMaxMultiLevel() const { return maxMultiLevel; }
@@ -62,10 +64,11 @@ public:
 	int32_t getMesorate() const { return mesorate; }
 	int32_t getDroprate() const { return droprate; }
 	int32_t getMaxChars() const { return maxChars; }
+	vector<int8_t> getZakumChannels() const { return zakumChannels; }
+	vector<int8_t> getHorntailChannels() const { return horntailChannels; }
 	LoginServerConnection * getLoginConnection() const { return loginPlayer; }
 	string getScrollingHeader() { return scrollingHeader.c_str(); }
 	bool isConnected() const { return worldId != -1; }
-
 private:
 	WorldServer() : worldId(-1) { }
 	static WorldServer *singleton;
@@ -83,6 +86,8 @@ private:
 	int32_t maxChars;
 	uint32_t login_ip;
 	string scrollingHeader;
+	vector<int8_t> zakumChannels;
+	vector<int8_t> horntailChannels;
 	LoginServerConnection *loginPlayer;
 };
 

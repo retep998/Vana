@@ -60,10 +60,31 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 	if (channel != -1) {
 		ChannelServer::Instance()->setChannel(channel);
 		uint16_t port = packet.get<uint16_t>();
+		vector<int8_t> bosschannels;
+		vector<int8_t>::iterator iter;
 		ChannelServer::Instance()->setPort(port);
 		ChannelServer::Instance()->setMaxMultiLevel(packet.get<int8_t>());
 		ChannelServer::Instance()->setMaxStats(packet.get<int16_t>());
 		ChannelServer::Instance()->setMaxChars(packet.get<int32_t>());
+
+		bosschannels = packet.getVector<int8_t>();
+		for (iter = bosschannels.begin(); iter != bosschannels.end(); iter++) { // Zakum channels
+			if (*iter == (channel + 1)) {
+				ChannelServer::Instance()->setZakumChannel(true);
+				break;
+			}
+		}
+		ChannelServer::Instance()->setZakumChannels(bosschannels);
+
+		bosschannels = packet.getVector<int8_t>();
+		for (iter = bosschannels.begin(); iter != bosschannels.end(); iter++) { // Zakum channels
+			if (*iter == (channel + 1)) {
+				ChannelServer::Instance()->setHorntailChannel(true);
+				break;
+			}
+		}
+		ChannelServer::Instance()->setHorntailChannels(bosschannels);
+
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
 	}

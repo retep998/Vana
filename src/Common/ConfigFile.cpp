@@ -90,6 +90,19 @@ vector<vector<uint32_t> > ConfigFile::getIpMatrix(const string &value) {
 	return matrix;
 }
 
+vector<int8_t> ConfigFile::getBossChannels(const string &value) {
+	vector<int8_t> channels;
+
+	lua_getglobal(luaVm, value.c_str());
+	lua_pushnil(luaVm);
+	while (lua_next(luaVm, -2)) {
+		channels.push_back(lua_tointeger(luaVm, -1));
+		lua_pop(luaVm, 1);
+	}
+
+	return channels;
+}
+
 bool ConfigFile::getBool(const string &value) {
 	lua_getglobal(luaVm, value.c_str());
 	return (lua_toboolean(luaVm, -1) != 0);

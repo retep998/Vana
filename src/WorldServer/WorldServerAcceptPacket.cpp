@@ -45,14 +45,16 @@ void WorldServerAcceptPacket::groupChat(WorldServerAcceptConnection *player, int
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats, int32_t maxChars) {
+void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_CHANNEL_CONNECT);
 	packet.add<int16_t>(channel);
 	packet.add<int16_t>(port);
-	packet.add<int8_t>(maxMultiLevel);
-	packet.add<int16_t>(maxStats);
-	packet.add<int32_t>(maxChars);
+	packet.add<int8_t>(WorldServer::Instance()->getMaxMultiLevel());
+	packet.add<int16_t>(WorldServer::Instance()->getMaxStats());
+	packet.add<int32_t>(WorldServer::Instance()->getMaxChars());
+	packet.addVector(WorldServer::Instance()->getZakumChannels());
+	packet.addVector(WorldServer::Instance()->getHorntailChannels());
 	player->getSession()->send(packet);
 }
 

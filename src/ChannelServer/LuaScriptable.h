@@ -65,6 +65,10 @@ namespace LuaExports {
 	int deleteChannelVariable(lua_State *luaVm);
 	int getChannel(lua_State *luaVm);
 	int getChannelVariable(lua_State *luaVm);
+	int getHorntailChannels(lua_State *luaVm);
+	int getZakumChannels(lua_State *luaVm);
+	int isHorntailChannel(lua_State *luaVm);
+	int isZakumChannel(lua_State *luaVm);
 	int setChannelVariable(lua_State *luaVm);
 	int showChannelMessage(lua_State *luaVm);
 
