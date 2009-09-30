@@ -19,12 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PACKETCREATOR_H
 
 #include "Types.h"
+#include <boost/shared_array.hpp>
 #include <cstring>
 #include <string>
-#include <boost/shared_array.hpp>
+#include <vector>
 
-using std::string;
 using boost::shared_array;
+using std::string;
+using std::vector;
 
 class PacketReader;
 struct Pos;
@@ -37,6 +39,8 @@ public:
 	void add(T value);
 	template <typename T>
 	void set(T value, size_t pos);
+	template <typename T>
+	void addVector(const vector<T> &vec);
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
 	void addPos(const Pos &pos); // Positions
@@ -67,6 +71,14 @@ void PacketCreator::add(T value) {
 template <typename T>
 void PacketCreator::set(T value, size_t pos) {
 	(*(T *) getBuffer(pos, sizeof(T))) = value;
+}
+
+template <typename T>
+void PacketCreator::addVector(const vector<T> &vec) {
+	add<uint32_t>(vec.size());
+	for (vector<T>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
+		add(*iter);
+	}
 }
 
 inline

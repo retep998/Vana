@@ -93,6 +93,12 @@ void LoginServer::loadConfig() {
 		formatter % i % "maxchars";
 		world->maxChars = config.getInt(formatter.str());
 
+		formatter % i % "zakum_channels";
+		world->zakumChannels = config.getBossChannels(formatter.str());
+
+		formatter % i % "horntail_channels";
+		world->horntailChannels = config.getBossChannels(formatter.str());
+
 		world->connected = false;
 		Worlds::worlds[world->id] = world;
 		i++;

@@ -42,6 +42,10 @@ world0_event_msg = "";
 -- Scrolling header
 world0_scrolling_header = "";
 
+-- Valid boss channels
+world0_zakum_channels = {3, 4, 5};
+world0_horntail_channels = {8};
+
 -- Uncomment for another world
 -- world1_name = "Bera";
 -- world1_channels = 1;
@@ -57,3 +61,5 @@ world0_scrolling_header = "";
 -- world1_port = 7200;
 -- world1_event_msg = "";
 -- world1_scrolling_header = "";
+-- world1_zakum_channels = {3, 4, 5};
+-- world1_horntail_channels = {8};

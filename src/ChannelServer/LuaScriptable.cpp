@@ -71,6 +71,10 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "deleteChannelVariable", &LuaExports::deleteChannelVariable);
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
 	lua_register(luaVm, "getChannelVariable", &LuaExports::getChannelVariable);
+	lua_register(luaVm, "getHorntailChannels", &LuaExports::getHorntailChannels);
+	lua_register(luaVm, "getZakumChannels", &LuaExports::getZakumChannels);
+	lua_register(luaVm, "isHorntailChannel", &LuaExports::isHorntailChannel);
+	lua_register(luaVm, "isZakumChannel", &LuaExports::isZakumChannel);
 	lua_register(luaVm, "setChannelVariable", &LuaExports::setChannelVariable);
 	lua_register(luaVm, "showChannelMessage", &LuaExports::showChannelMessage);
 
@@ -374,6 +378,40 @@ int LuaExports::getChannelVariable(lua_State *luaVm) {
 	else {
 		lua_pushstring(luaVm, val.c_str());
 	}
+	return 1;
+}
+
+int LuaExports::getHorntailChannels(lua_State *luaVm) {
+	vector<int8_t> channels = ChannelServer::Instance()->getHorntailChannels();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < channels.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, channels[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+int LuaExports::getZakumChannels(lua_State *luaVm) {
+	vector<int8_t> channels = ChannelServer::Instance()->getZakumChannels();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < channels.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, channels[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+int LuaExports::isHorntailChannel(lua_State *luaVm) {
+	lua_pushboolean(luaVm, ChannelServer::Instance()->isHorntailChannel());
+	return 1;
+}
+
+int LuaExports::isZakumChannel(lua_State *luaVm) {
+	lua_pushboolean(luaVm, ChannelServer::Instance()->isZakumChannel());
 	return 1;
 }
 

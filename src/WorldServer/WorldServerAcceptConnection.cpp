@@ -69,7 +69,7 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 		if (channel != -1) {
 			uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
 			Channels::Instance()->registerChannel(this, channel, getIp(), getExternalIp(), port);
-			WorldServerAcceptPacket::connect(this, channel, port, WorldServer::Instance()->getMaxMultiLevel(), WorldServer::Instance()->getMaxStats(), WorldServer::Instance()->getMaxChars());
+			WorldServerAcceptPacket::connect(this, channel, port);
 			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 			WorldServerAcceptPacket::sendParties(this);
@@ -77,7 +77,7 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 			std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 		}
 		else {
-			WorldServerAcceptPacket::connect(this, -1, 0, 0, 0, 0);
+			WorldServerAcceptPacket::connect(this, -1, 0);
 			std::cout << "Error: No more channel to assign." << std::endl;
 			getSession()->disconnect();
 		}

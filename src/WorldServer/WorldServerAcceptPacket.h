@@ -27,7 +27,7 @@ class WorldServerAcceptConnection;
 class PacketReader;
 
 namespace WorldServerAcceptPacket {
-	void connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port, uint8_t maxMultiLevel, int16_t maxStats, int32_t maxChars);
+	void connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port);
 	void sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer);
 	void sendHeldPacketRemoval(uint16_t channel, int32_t playerid);
 	void playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port);

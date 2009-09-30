@@ -21,8 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 struct Pos;
 
@@ -33,6 +35,8 @@ public:
 
 	template<typename T>
 	T get();
+	template<typename T>
+	vector<T> getVector();
 	void skipBytes(int32_t len);
 	int16_t getHeader(); // Basically getShort that always read at start
 	string getString();
@@ -41,7 +45,6 @@ public:
 	Pos getPos();
 	bool getBool();
 	size_t getBufferLength();
-
 	PacketReader & reset(int32_t len = 0);
 private:
 	unsigned char *m_buffer;
@@ -54,6 +57,16 @@ T PacketReader::get() {
 	T val = (*(T *)(m_buffer + m_pos));
 	m_pos += sizeof(T);
 	return val;
+}
+
+template<typename T>
+vector<T> PacketReader::getVector() {
+	vector<T> vec;
+	size_t size = get<uint32_t>();
+	for (size_t i = 0; i < size; i++) {
+		vec.push_back(get<T>());
+	}
+	return vec;
 }
 
 #endif
