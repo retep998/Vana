@@ -72,6 +72,13 @@ struct World {
 	vector<int8_t> zakumChannels;
 	vector<int8_t> horntailChannels;
 	vector<int8_t> pinkbeanChannels;
+	// Boss attempts
+	int16_t pianusAttempts;
+	int16_t papAttempts;
+	int16_t zakumAttempts;
+	int16_t horntailAttempts;
+	int16_t pinkbeanAttempts;
+
 };
 
 namespace Worlds {

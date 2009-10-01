@@ -111,6 +111,21 @@ void LoginServer::loadWorlds() {
 		formatter % i % "pinkbean_channels";
 		world->pinkbeanChannels = config.getBossChannels(formatter.str(), world->maxChannels);
 
+		formatter % i % "pianus_attempts";
+		world->pianusAttempts = config.getShort(formatter.str());
+
+		formatter % i % "pap_attempts";
+		world->papAttempts = config.getShort(formatter.str());
+
+		formatter % i % "zakum_attempts";
+		world->zakumAttempts = config.getShort(formatter.str());
+
+		formatter % i % "horntail_attempts";
+		world->horntailAttempts = config.getShort(formatter.str());
+
+		formatter % i % "pinkbean_attempts";
+		world->pinkbeanAttempts = config.getShort(formatter.str());
+
 		world->connected = false;
 		Worlds::worlds[world->id] = world;
 		i++;

@@ -68,6 +68,12 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		ChannelServer::Instance()->setMaxStats(packet.get<int16_t>());
 		ChannelServer::Instance()->setMaxChars(packet.get<int32_t>());
 
+		ChannelServer::Instance()->setPianusAttempts(packet.get<int16_t>());
+		ChannelServer::Instance()->setPapAttempts(packet.get<int16_t>());
+		ChannelServer::Instance()->setZakumAttempts(packet.get<int16_t>());
+		ChannelServer::Instance()->setHorntailAttempts(packet.get<int16_t>());
+		ChannelServer::Instance()->setPinkBeanAttempts(packet.get<int16_t>());
+
 		bosschannels = packet.getVector<int8_t>();
 		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(bosschannels, chid));
 		ChannelServer::Instance()->setPianusChannels(bosschannels);

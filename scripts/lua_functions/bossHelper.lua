@@ -23,6 +23,9 @@ function enterBoss(boss, maxentries)
 	if maxentries == -1 then
 		return true;
 	end
+	if maxentries == 0 then
+		return false;
+	end
 
 	time = getTime();
 	entered = false;
@@ -42,6 +45,9 @@ function getEntryCount(boss, maxentries)
 	if maxentries == -1 then
 		return 0;
 	end
+	if maxentries == 0 then
+		return 32767;
+	end
 
 	time = getTime();
 	count = 0;
@@ -56,7 +62,7 @@ function getEntryCount(boss, maxentries)
 end
 
 function getChannelString(channels)
-	s = "";
+	s = "no channels";
 	if #channels == 1 then
 		s = "channel " .. channels[1];
 	elseif #channels == 2 then

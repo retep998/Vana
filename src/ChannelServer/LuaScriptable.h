@@ -75,6 +75,11 @@ namespace LuaExports {
 
 	// Bosses
 	int getHorntailChannels(lua_State *luaVm);
+	int getMaxHorntailBattles(lua_State *luaVm);
+	int getMaxPapBattles(lua_State *luaVm);
+	int getMaxPianusBattles(lua_State *luaVm);
+	int getMaxPinkBeanBattles(lua_State *luaVm);
+	int getMaxZakumBattles(lua_State *luaVm);
 	int getPapChannels(lua_State *luaVm);
 	int getPianusChannels(lua_State *luaVm);
 	int getPinkBeanChannels(lua_State *luaVm);

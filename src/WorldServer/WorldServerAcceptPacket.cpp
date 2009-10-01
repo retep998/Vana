@@ -53,6 +53,12 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint1
 	packet.add<int8_t>(WorldServer::Instance()->getMaxMultiLevel());
 	packet.add<int16_t>(WorldServer::Instance()->getMaxStats());
 	packet.add<int32_t>(WorldServer::Instance()->getMaxChars());
+	// Boss junk
+	packet.add<int16_t>(WorldServer::Instance()->getPianusAttempts());
+	packet.add<int16_t>(WorldServer::Instance()->getPapAttempts());
+	packet.add<int16_t>(WorldServer::Instance()->getZakumAttempts());
+	packet.add<int16_t>(WorldServer::Instance()->getHorntailAttempts());
+	packet.add<int16_t>(WorldServer::Instance()->getPinkBeanAttempts());
 	packet.addVector(WorldServer::Instance()->getPianusChannels());
 	packet.addVector(WorldServer::Instance()->getPapChannels());
 	packet.addVector(WorldServer::Instance()->getZakumChannels());

@@ -35,12 +35,20 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 		WorldServer::Instance()->setMaxMultiLevel(packet.get<int8_t>());
 		WorldServer::Instance()->setMaxStats(packet.get<int16_t>());
 		WorldServer::Instance()->setScrollingHeader(packet.getString());
+
+		// Boss junk
+		WorldServer::Instance()->setPianusAttempts(packet.get<int16_t>());
+		WorldServer::Instance()->setPapAttempts(packet.get<int16_t>());
+		WorldServer::Instance()->setZakumAttempts(packet.get<int16_t>());
+		WorldServer::Instance()->setHorntailAttempts(packet.get<int16_t>());
+		WorldServer::Instance()->setPinkBeanAttempts(packet.get<int16_t>());
 		WorldServer::Instance()->setPianusChannels(packet.getVector<int8_t>());
 		WorldServer::Instance()->setPapChannels(packet.getVector<int8_t>());
 		WorldServer::Instance()->setZakumChannels(packet.getVector<int8_t>());
 		WorldServer::Instance()->setHorntailChannels(packet.getVector<int8_t>());
 		WorldServer::Instance()->setPinkBeanChannels(packet.getVector<int8_t>());
 
+		// Rates
 		int32_t ratesSetBit = packet.get<int32_t>();
 		if (ratesSetBit & Rates::SetBits::exp) {
 			WorldServer::Instance()->setExprate(packet.get<int32_t>());

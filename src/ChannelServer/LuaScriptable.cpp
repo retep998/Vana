@@ -81,6 +81,11 @@ void LuaScriptable::initialize() {
 
 	// Bosses
 	lua_register(luaVm, "getHorntailChannels", &LuaExports::getHorntailChannels);
+	lua_register(luaVm, "getMaxHorntailBattles", &LuaExports::getMaxHorntailBattles);
+	lua_register(luaVm, "getMaxPapBattles", &LuaExports::getMaxPapBattles);
+	lua_register(luaVm, "getMaxPianusBattles", &LuaExports::getMaxPianusBattles);
+	lua_register(luaVm, "getMaxPinkBeanBattles", &LuaExports::getMaxPinkBeanBattles);
+	lua_register(luaVm, "getMaxZakumBattles", &LuaExports::getMaxZakumBattles);
 	lua_register(luaVm, "getPapChannels", &LuaExports::getPapChannels);
 	lua_register(luaVm, "getPianusChannels", &LuaExports::getPianusChannels);
 	lua_register(luaVm, "getPinkBeanChannels", &LuaExports::getPinkBeanChannels);
@@ -438,6 +443,31 @@ int LuaExports::getHorntailChannels(lua_State *luaVm) {
 	    lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
 	}
+	return 1;
+}
+
+int LuaExports::getMaxHorntailBattles(lua_State *luaVm) {
+	lua_pushinteger(luaVm, ChannelServer::Instance()->getHorntailAttempts());
+	return 1;
+}
+
+int LuaExports::getMaxPapBattles(lua_State *luaVm) {
+	lua_pushinteger(luaVm, ChannelServer::Instance()->getPapAttempts());
+	return 1;
+}
+
+int LuaExports::getMaxPianusBattles(lua_State *luaVm) {
+	lua_pushinteger(luaVm, ChannelServer::Instance()->getPianusAttempts());
+	return 1;
+}
+
+int LuaExports::getMaxPinkBeanBattles(lua_State *luaVm) {
+	lua_pushinteger(luaVm, ChannelServer::Instance()->getPinkBeanAttempts());
+	return 1;
+}
+
+int LuaExports::getMaxZakumBattles(lua_State *luaVm) {
+	lua_pushinteger(luaVm, ChannelServer::Instance()->getZakumAttempts());
 	return 1;
 }
 
