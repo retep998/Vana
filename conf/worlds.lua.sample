@@ -43,6 +43,9 @@ world0_event_msg = "";
 world0_scrolling_header = "";
 
 -- Valid boss channels
+-- An empty list means the boss is disabled, -1 means all channels
+-- e.g. world0_zakum_channels = {};
+-- e.g. world0_zakum_channels = {-1};
 world0_zakum_channels = {4, 5, 6};
 world0_horntail_channels = {8};
 
