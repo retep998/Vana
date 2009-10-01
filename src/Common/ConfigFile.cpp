@@ -90,7 +90,7 @@ vector<vector<uint32_t> > ConfigFile::getIpMatrix(const string &value) {
 	return matrix;
 }
 
-vector<int8_t> ConfigFile::getBossChannels(const string &value) {
+vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChannels) {
 	vector<int8_t> channels;
 
 	lua_getglobal(luaVm, value.c_str());
@@ -100,6 +100,12 @@ vector<int8_t> ConfigFile::getBossChannels(const string &value) {
 		lua_pop(luaVm, 1);
 	}
 
+	if (channels.size() == 1 && channels[0] == -1) {
+		channels.clear();
+		for (size_t i = 1; i <= maxChannels; i++) {
+			channels.push_back(static_cast<int8_t>(i));
+		}
+	}
 	return channels;
 }
 

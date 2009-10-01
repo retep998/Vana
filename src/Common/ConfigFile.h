@@ -41,7 +41,7 @@ public:
 	int16_t getShort(const string &value);
 	string getString(const string &value);
 	vector<vector<uint32_t> > getIpMatrix(const string &value);
-	vector<int8_t> getBossChannels(const string &value);
+	vector<int8_t> getBossChannels(const string &value, size_t maxChannels);
 	bool getBool(const string &value);
 private:
 	lua_State *luaVm;
