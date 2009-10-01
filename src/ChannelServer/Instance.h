@@ -65,6 +65,7 @@ public:
 	// Players
 	vector<int32_t> getAllPlayerIds();
 	const string getPlayerByIndex(uint32_t index) const;
+	const string getBannedPlayerByIndex(uint32_t index) const;
 	void setMaxPlayers(int32_t maxplayers) { m_max_players = maxplayers; }
 	void addPlayer(Player *player);
 	void removePlayer(Player *player);
@@ -80,6 +81,7 @@ public:
 	int32_t getMaxPlayers() const { return m_max_players; }
 	size_t getPlayerNum() const { return m_players.size(); }
 	size_t getPlayerSignupNum() const { return m_players_order.size(); } // Number of players for the instance (squads, etc.)
+	size_t getBannedPlayerNum() const { return m_banned.size(); }
 
 	// Maps
 	void addMap(Map *map);

@@ -272,10 +272,13 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "createInstance", &LuaExports::createInstance);
 	lua_register(luaVm, "deleteInstanceVariable", &LuaExports::deleteInstanceVariable);
 	lua_register(luaVm, "getAllInstancePlayerIDs", &LuaExports::getAllInstancePlayerIDs);
+	lua_register(luaVm, "getBannedInstancePlayerByIndex", &LuaExports::getBannedInstancePlayerByIndex);
+	lua_register(luaVm, "getBannedInstancePlayerCount", &LuaExports::getBannedInstancePlayerCount);
 	lua_register(luaVm, "getInstanceMax", &LuaExports::getInstanceMax);
 	lua_register(luaVm, "getInstancePlayerByIndex", &LuaExports::getInstancePlayerByIndex);
 	lua_register(luaVm, "getInstancePlayerCount", &LuaExports::getInstancePlayerCount);
 	lua_register(luaVm, "getInstancePlayerId", &LuaExports::getInstancePlayerId);
+	lua_register(luaVm, "getInstanceSignupCount", &LuaExports::getInstanceSignupCount);
 	lua_register(luaVm, "getInstanceTime", &LuaExports::getInstanceTime);
 	lua_register(luaVm, "getInstanceVariable", &LuaExports::getInstanceVariable);
 	lua_register(luaVm, "isBannedInstancePlayer", &LuaExports::isBannedInstancePlayer);
@@ -1724,6 +1727,16 @@ int LuaExports::getAllInstancePlayerIDs(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getBannedInstancePlayerByIndex(lua_State *luaVm) {
+	lua_pushstring(luaVm, getInstance(luaVm)->getBannedPlayerByIndex(lua_tointeger(luaVm, -1)).c_str());
+	return 1;
+}
+
+int LuaExports::getBannedInstancePlayerCount(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getInstance(luaVm)->getBannedPlayerNum());
+	return 1;
+}
+
 int LuaExports::getInstanceMax(lua_State *luaVm) {
 	lua_pushinteger(luaVm, getInstance(luaVm)->getMaxPlayers());
 	return 1;
@@ -1746,6 +1759,11 @@ int LuaExports::getInstancePlayerId(lua_State *luaVm) {
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 	lua_pushinteger(luaVm, player->getId());
+	return 1;
+}
+
+int LuaExports::getInstanceSignupCount(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getInstance(luaVm)->getPlayerSignupNum());
 	return 1;
 }
 
