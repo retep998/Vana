@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "MapDataProvider.h"
 #include "MapleSession.h"
+#include "MiscUtilities.h"
 #include "MobDataProvider.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
@@ -61,29 +62,31 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		ChannelServer::Instance()->setChannel(channel);
 		uint16_t port = packet.get<uint16_t>();
 		vector<int8_t> bosschannels;
-		vector<int8_t>::iterator iter;
+		int8_t chid = channel + 1;
 		ChannelServer::Instance()->setPort(port);
 		ChannelServer::Instance()->setMaxMultiLevel(packet.get<int8_t>());
 		ChannelServer::Instance()->setMaxStats(packet.get<int16_t>());
 		ChannelServer::Instance()->setMaxChars(packet.get<int32_t>());
 
 		bosschannels = packet.getVector<int8_t>();
-		for (iter = bosschannels.begin(); iter != bosschannels.end(); iter++) { // Zakum channels
-			if (*iter == (channel + 1)) {
-				ChannelServer::Instance()->setZakumChannel(true);
-				break;
-			}
-		}
+		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(bosschannels, chid));
+		ChannelServer::Instance()->setPianusChannels(bosschannels);
+
+		bosschannels = packet.getVector<int8_t>();
+		ChannelServer::Instance()->setPapChannel(MiscUtilities::isBossChannel(bosschannels, chid));
+		ChannelServer::Instance()->setPapChannels(bosschannels);
+
+		bosschannels = packet.getVector<int8_t>();
+		ChannelServer::Instance()->setZakumChannel(MiscUtilities::isBossChannel(bosschannels, chid));
 		ChannelServer::Instance()->setZakumChannels(bosschannels);
 
 		bosschannels = packet.getVector<int8_t>();
-		for (iter = bosschannels.begin(); iter != bosschannels.end(); iter++) { // Zakum channels
-			if (*iter == (channel + 1)) {
-				ChannelServer::Instance()->setHorntailChannel(true);
-				break;
-			}
-		}
+		ChannelServer::Instance()->setHorntailChannel(MiscUtilities::isBossChannel(bosschannels, chid));
 		ChannelServer::Instance()->setHorntailChannels(bosschannels);
+
+		bosschannels = packet.getVector<int8_t>();
+		ChannelServer::Instance()->setPinkBeanChannel(MiscUtilities::isBossChannel(bosschannels, chid));
+		ChannelServer::Instance()->setPinkBeanChannels(bosschannels);
 
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;

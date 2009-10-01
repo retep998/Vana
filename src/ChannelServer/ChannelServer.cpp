@@ -60,14 +60,20 @@ void ChannelServer::loadConfig() {
 	login_ip = IpUtilities::stringToIp(config.getString("login_ip"));
 	login_inter_port = config.getShort("login_inter_port");
 
-	world = -1; // Will get from login server
-	port = -1; // Will get from world server
-	channel = -1; // Will get from world server
-	exprate = 1; // Will get from world server
-	questexprate = 1; // Will get from world server
-	mesorate = 1; // Will get from world server
-	droprate = 1; // Will get from world server
-	maxStats = 999; // Will get from world server
+	 // Will get from world server
+	world = -1;
+	port = -1;
+	channel = -1;
+	exprate = 1;
+	questexprate = 1;
+	mesorate = 1;
+	droprate = 1;
+	maxStats = 999;
+	pianusChannel = false;
+	papChannel = false;
+	zakumChannel = false;
+	horntailChannel = false;
+	pinkbeanChannel = false;
 }
 
 void ChannelServer::sendToWorld(PacketCreator &packet) {

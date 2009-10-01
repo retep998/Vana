@@ -19,11 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
-#include "MiscUtilities.h"
 #include "StringUtilities.h"
 
 using Initializing::outputWidth;
-using MiscUtilities::atob;
+using StringUtilities::atob;
 using StringUtilities::runFlags;
 
 QuestDataProvider * QuestDataProvider::singleton = 0;

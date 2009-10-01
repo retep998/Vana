@@ -54,10 +54,6 @@ public:
 	void setMesorate(int32_t mesorate) { this->mesorate = mesorate; }
 	void setDroprate(int32_t droprate) { this->droprate = droprate; }
 	void setMaxStats(int16_t max) { this->maxStats = max; }
-	void setZakumChannel(bool is) { this->zakumChannel = is; }
-	void setHorntailChannel(bool is) { this->horntailChannel = is; }
-	void setZakumChannels(const vector<int8_t> &channels) { this->zakumChannels = channels; }
-	void setHorntailChannels(const vector<int8_t> &channels) { this->horntailChannels = channels; }
 	void setScrollingHeader(const string &message);
 	void setWorldIp(uint32_t ip) { world_ip = ip; }
 
@@ -72,15 +68,33 @@ public:
 	int32_t getDroprate() const { return droprate; }
 	int32_t getMaxChars() const { return maxChars; }
 	string getScrollingHeader() const { return scrollingHeader; }
-	vector<int8_t> getZakumChannels() const { return zakumChannels; }
-	vector<int8_t> getHorntailChannels() const { return horntailChannels; }
 	WorldServerConnection * getWorldConnection() const { return worldPlayer; }
+	bool isConnected() const { return channel != -1; }
 	
+	// Specific bosses that can be battled on this channel
+	void setPianusChannel(bool is) { this->pianusChannel = is; }
+	void setPapChannel(bool is) { this->papChannel = is; }
+	void setZakumChannel(bool is) { this->zakumChannel = is; }
+	void setHorntailChannel(bool is) { this->horntailChannel = is; }
+	void setPinkBeanChannel(bool is) { this->pinkbeanChannel = is; }
+	bool isPianusChannel() const { return pianusChannel; }
+	bool isPapChannel() const { return papChannel; }
 	bool isZakumChannel() const { return zakumChannel; }
 	bool isHorntailChannel() const { return horntailChannel; }
-	bool isConnected() const { return channel != -1; }
+	bool isPinkBeanChannel() const { return pinkbeanChannel; }
+	// Boss channel lists
+	void setPianusChannels(const vector<int8_t> &channels) { this->pianusChannels = channels; }
+	void setPapChannels(const vector<int8_t> &channels) { this->papChannels = channels; }
+	void setZakumChannels(const vector<int8_t> &channels) { this->zakumChannels = channels; }
+	void setHorntailChannels(const vector<int8_t> &channels) { this->horntailChannels = channels; }
+	void setPinkBeanChannels(const vector<int8_t> &channels) { this->pinkbeanChannels = channels; }
+	vector<int8_t> getPianusChannels() const { return pianusChannels; }
+	vector<int8_t> getPapChannels() const { return papChannels; }
+	vector<int8_t> getZakumChannels() const { return zakumChannels; }
+	vector<int8_t> getHorntailChannels() const { return horntailChannels; }
+	vector<int8_t> getPinkBeanChannels() const { return pinkbeanChannels; }
 private:
-	ChannelServer() : channel(-1), zakumChannel(false), horntailChannel(false) {};
+	ChannelServer() : channel(-1) {};
 	static ChannelServer *singleton;
 
 	WorldServerConnection *worldPlayer;
@@ -100,10 +114,16 @@ private:
 	uint32_t login_ip;
 	uint32_t world_ip;
 	string scrollingHeader;
+	bool pianusChannel;
+	bool papChannel;
 	bool zakumChannel;
 	bool horntailChannel;
+	bool pinkbeanChannel;
+	vector<int8_t> pianusChannels;
+	vector<int8_t> papChannels;
 	vector<int8_t> zakumChannels;
 	vector<int8_t> horntailChannels;
+	vector<int8_t> pinkbeanChannels;
 };
 
 #endif

@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BeautyDataProvider.h"
 #include "Database.h"
 #include "InitializeCommon.h"
-#include "MiscUtilities.h"
 #include "Randomizer.h"
+#include "StringUtilities.h"
 
-using MiscUtilities::atob;
 using Initializing::outputWidth;
+using StringUtilities::atob;
 
 BeautyDataProvider * BeautyDataProvider::singleton = 0;
 

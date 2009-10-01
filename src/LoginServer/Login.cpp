@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerLogin.h"
 #include "PlayerStatus.h"
 #include "Randomizer.h"
+#include "StringUtilities.h"
 #include "TimeUtilities.h"
 #include <iostream>
 #include <boost/format.hpp>
@@ -122,7 +123,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 
 		player->setCreationTime(TimeUtilities::timeToTick((time_t) mysqlpp::DateTime(res[0]["creation_date"])));
 		player->setCharDeletePassword(res[0]["char_delete_password"]);
-		player->setAdmin(MiscUtilities::atob(res[0]["admin"]));
+		player->setAdmin(StringUtilities::atob(res[0]["admin"]));
 
 		LoginPacket::loginConnect(player, username);
 	}

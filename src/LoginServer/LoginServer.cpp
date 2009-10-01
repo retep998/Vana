@@ -42,8 +42,11 @@ void LoginServer::loadConfig() {
 	invalid_login_threshold = config.getInt("invalid_login_threshold");
 	to_listen = true;
 
-	// Let's load our worlds
-	config.loadFile("conf/worlds.lua");
+	loadWorlds();
+}
+
+void LoginServer::loadWorlds() {
+	ConfigFile config("conf/worlds.lua");
 	boost::format formatter("world%i_%s"); // The formater we'll be using
 	size_t i = 0;
 	while (1) {
@@ -93,11 +96,20 @@ void LoginServer::loadConfig() {
 		formatter % i % "maxchars";
 		world->maxChars = config.getInt(formatter.str());
 
+		formatter % i % "pianus_channels";
+		world->pianusChannels = config.getBossChannels(formatter.str(), world->maxChannels);
+
+		formatter % i % "pap_channels";
+		world->papChannels = config.getBossChannels(formatter.str(), world->maxChannels);
+
 		formatter % i % "zakum_channels";
 		world->zakumChannels = config.getBossChannels(formatter.str(), world->maxChannels);
 
 		formatter % i % "horntail_channels";
 		world->horntailChannels = config.getBossChannels(formatter.str(), world->maxChannels);
+
+		formatter % i % "pinkbean_channels";
+		world->pinkbeanChannels = config.getBossChannels(formatter.str(), world->maxChannels);
 
 		world->connected = false;
 		Worlds::worlds[world->id] = world;

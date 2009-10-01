@@ -51,8 +51,11 @@ public:
 	void setDroprate(int32_t droprate) { this->droprate = droprate; }
 	void setMaxStats(int16_t max) { this->maxStats = max; }
 	void setScrollingHeader(const string &message);
+	void setPianusChannels(const vector<int8_t> &channels) { this->pianusChannels = channels; }
+	void setPapChannels(const vector<int8_t> &channels) { this->papChannels = channels; }
 	void setZakumChannels(const vector<int8_t> &channels) { this->zakumChannels = channels; }
 	void setHorntailChannels(const vector<int8_t> &channels) { this->horntailChannels = channels; }
+	void setPinkBeanChannels(const vector<int8_t> &channels) { this->pinkbeanChannels = channels; }
 
 	int8_t getWorldId() const { return worldId; }
 	uint8_t getMaxMultiLevel() const { return maxMultiLevel; }
@@ -64,8 +67,11 @@ public:
 	int32_t getMesorate() const { return mesorate; }
 	int32_t getDroprate() const { return droprate; }
 	int32_t getMaxChars() const { return maxChars; }
+	vector<int8_t> getPianusChannels() const { return pianusChannels; }
+	vector<int8_t> getPapChannels() const { return papChannels; }
 	vector<int8_t> getZakumChannels() const { return zakumChannels; }
 	vector<int8_t> getHorntailChannels() const { return horntailChannels; }
+	vector<int8_t> getPinkBeanChannels() const { return pinkbeanChannels; }
 	LoginServerConnection * getLoginConnection() const { return loginPlayer; }
 	string getScrollingHeader() { return scrollingHeader.c_str(); }
 	bool isConnected() const { return worldId != -1; }
@@ -86,8 +92,11 @@ private:
 	int32_t maxChars;
 	uint32_t login_ip;
 	string scrollingHeader;
+	vector<int8_t> pianusChannels;
+	vector<int8_t> papChannels;
 	vector<int8_t> zakumChannels;
 	vector<int8_t> horntailChannels;
+	vector<int8_t> pinkbeanChannels;
 	LoginServerConnection *loginPlayer;
 };
 

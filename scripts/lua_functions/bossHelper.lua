@@ -20,6 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 secondsinday = 60 * 60 * 24;
 
 function enterBoss(boss, maxentries)
+	if maxentries == -1 then
+		return true;
+	end
+
 	time = getTime();
 	entered = false;
 	for i = 1, maxentries do
@@ -35,6 +39,10 @@ function enterBoss(boss, maxentries)
 end
 
 function getEntryCount(boss, maxentries)
+	if maxentries == -1 then
+		return 0;
+	end
+
 	time = getTime();
 	count = 0;
 	for i = 1, maxentries do
@@ -45,4 +53,21 @@ function getEntryCount(boss, maxentries)
 		end
 	end
 	return count;
+end
+
+function getChannelString(channels)
+	s = "";
+	if #channels == 1 then
+		s = "channel " .. channels[1];
+	elseif #channels == 2 then
+		s = "channels " .. channels[1] .. " and " .. channels[2];
+	elseif #channels > 0 then
+		s = "channels ";
+		max = #channels - 1;
+		for i = 1, max do
+			s = s .. channels[i] .. ", ";
+		end
+		s = s .. "and " .. channels[#channels];
+	end
+	return s;
 end

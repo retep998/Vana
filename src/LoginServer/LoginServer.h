@@ -36,6 +36,7 @@ public:
 	}
 	void loadData();
 	void loadConfig();
+	void loadWorlds();
 	void listen();
 
 	bool getPinEnabled() const { return pinEnabled; }

@@ -18,14 +18,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef MISCUTILITIES
 #define MISCUTILITIES
 
+#include "Types.h"
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 namespace MiscUtilities {
-	bool atob(const char *str);
 	string hashPassword(const string &password, const string &salt);
+	bool isBossChannel(const vector<int8_t> &vec, int8_t channelid);
 
 	// The following methods are used for deleting (freeing) pointers in an array
 	template<class T>
@@ -38,10 +41,5 @@ namespace MiscUtilities {
 		void operator()(T pair) { delete pair.second; } 
 	};
 };
-
-inline
-bool MiscUtilities::atob(const char *str) {
-	return atoi(str) != 0;
-}
 
 #endif

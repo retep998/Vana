@@ -17,30 +17,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Door to Zakum
 
-if isZakumChannel() then
-	if getReactorState(211042300, 2118002) == 1 then
-		showMessage("The battle with Zakum has already begun.", 5);
-	else
-		playPortalSE();
-		setMap(211042400, "west00");
-	end
-else
+dofile("scripts/lua_functions/bossHelper.lua");
+
+if not isZakumChannel() then
 	channels = getZakumChannels();
 	if #channels == 0 then
 		showMessage("You may not battle Zakum at this time.", 5);
-	elseif #channels == 1 then
-		showMessage("You may only fight Zakum on channel " .. channels[1] .. ".", 5);
-	elseif #channels == 2 then
-		showMessage("You may only fight Zakum on channels " .. channels[1] .. " and " .. channels[2] .. ".", 5);
 	else
-		local msg = channels[1];
-		local max = #channels - 1;
-		local i = 2;
-		for inc = 2, max do
-			msg = msg .. ", " .. channels[i];
-			i = i + 1;
-		end
-		msg = msg .. ", and " .. channels[i];
-		showMessage("You may only fight Zakum on channels " .. msg .. ".", 5);
+		showMessage("You may only battle Zakum on " .. getChannelString(channels) .. ".", 5);
+	end
+	return;
+end
+
+if getReactorState(211042300, 2118002) == 1 then
+	showMessage("The battle with Zakum has already begun.", 5);
+else
+	if getEntryCount("Zakum", 2) < 2 then
+		playPortalSE();
+		setMap(211042400, "west00");
+	else
+		showMessage("You may only battle Zakum twice per day.", 5);
 	end
 end

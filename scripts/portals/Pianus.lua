@@ -17,6 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Pianus portal
 
+dofile("scripts/lua_functions/bossHelper.lua");
+
+if not isPianusChannel() then
+	channels = getPianusChannels();
+	if #channels == 0 then
+		showMessage("You may not battle Pianus at this time.", 5);
+	else
+		showMessage("You may only battle Pianus on " .. getChannelString(channels) .. ".", 5);
+	end
+	return;
+end
+
 if getNumPlayers(230040420) < 10 then
 	playPortalSE();
 	setMap(230040420, "out00");
