@@ -82,7 +82,7 @@ struct Skillbook {
 };
 
 struct ScrollInfo {
-	ScrollInfo() : randstat(false), recover(false), warmsupport(false), preventslip(false) { }
+	ScrollInfo() : randstat(false), recover(false), warmsupport(false), preventslip(false), ihand(0) { }
 	bool warmsupport;
 	bool randstat;
 	bool recover;
