@@ -51,6 +51,11 @@ public:
 	void setDroprate(int32_t droprate) { this->droprate = droprate; }
 	void setMaxStats(int16_t max) { this->maxStats = max; }
 	void setScrollingHeader(const string &message);
+	void setPianusAttempts(int16_t attempts) { pianusAttempts = attempts; }
+	void setPapAttempts(int16_t attempts) { papAttempts = attempts; }
+	void setZakumAttempts(int16_t attempts) { zakumAttempts = attempts; }
+	void setHorntailAttempts(int16_t attempts) { horntailAttempts = attempts; }
+	void setPinkBeanAttempts(int16_t attempts) { pinkbeanAttempts = attempts; }
 	void setPianusChannels(const vector<int8_t> &channels) { this->pianusChannels = channels; }
 	void setPapChannels(const vector<int8_t> &channels) { this->papChannels = channels; }
 	void setZakumChannels(const vector<int8_t> &channels) { this->zakumChannels = channels; }
@@ -60,6 +65,11 @@ public:
 	int8_t getWorldId() const { return worldId; }
 	uint8_t getMaxMultiLevel() const { return maxMultiLevel; }
 	int16_t getMaxStats() const { return maxStats; }
+	int16_t getPianusAttempts() const { return pianusAttempts; }
+	int16_t getPapAttempts() const { return papAttempts; }
+	int16_t getZakumAttempts() const { return zakumAttempts; }
+	int16_t getHorntailAttempts() const { return horntailAttempts; }
+	int16_t getPinkBeanAttempts() const { return pinkbeanAttempts; }
 	uint16_t getInterPort() const { return inter_port; }
 	int32_t getMaxChannels() const { return maxChannels; }
 	int32_t getExprate() const { return exprate; }
@@ -82,6 +92,11 @@ private:
 	int8_t worldId;
 	uint8_t maxMultiLevel;
 	int16_t maxStats;
+	int16_t pianusAttempts;
+	int16_t papAttempts;
+	int16_t zakumAttempts;
+	int16_t horntailAttempts;
+	int16_t pinkbeanAttempts;
 	uint16_t login_inter_port;
 	uint16_t inter_port;
 	int32_t exprate;

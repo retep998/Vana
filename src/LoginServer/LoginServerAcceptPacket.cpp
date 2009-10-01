@@ -33,12 +33,18 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *player, World
 	packet.add<int8_t>(world->maxMultiLevel);
 	packet.add<int16_t>(world->maxStats);
 	packet.addString(world->scrollingHeader);
+	// Boss stuff
+	packet.add<int16_t>(world->pianusAttempts);
+	packet.add<int16_t>(world->papAttempts);
+	packet.add<int16_t>(world->zakumAttempts);
+	packet.add<int16_t>(world->horntailAttempts);
+	packet.add<int16_t>(world->pinkbeanAttempts);
 	packet.addVector(world->pianusChannels);
 	packet.addVector(world->papChannels);
 	packet.addVector(world->zakumChannels);
 	packet.addVector(world->horntailChannels);
 	packet.addVector(world->pinkbeanChannels);
-
+	// Rates
 	packet.add<int32_t>(Rates::SetBits::all);
 	packet.add<int32_t>(world->exprate);
 	packet.add<int32_t>(world->questexprate);

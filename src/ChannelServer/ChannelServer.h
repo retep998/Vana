@@ -54,6 +54,11 @@ public:
 	void setMesorate(int32_t mesorate) { this->mesorate = mesorate; }
 	void setDroprate(int32_t droprate) { this->droprate = droprate; }
 	void setMaxStats(int16_t max) { this->maxStats = max; }
+	void setPianusAttempts(int16_t attempts) { pianusAttempts = attempts; }
+	void setPapAttempts(int16_t attempts) { papAttempts = attempts; }
+	void setZakumAttempts(int16_t attempts) { zakumAttempts = attempts; }
+	void setHorntailAttempts(int16_t attempts) { horntailAttempts = attempts; }
+	void setPinkBeanAttempts(int16_t attempts) { pinkbeanAttempts = attempts; }
 	void setScrollingHeader(const string &message);
 	void setWorldIp(uint32_t ip) { world_ip = ip; }
 
@@ -67,6 +72,11 @@ public:
 	int32_t getMesorate() const { return mesorate; }
 	int32_t getDroprate() const { return droprate; }
 	int32_t getMaxChars() const { return maxChars; }
+	int16_t getPianusAttempts() const { return pianusAttempts; }
+	int16_t getPapAttempts() const { return papAttempts; }
+	int16_t getZakumAttempts() const { return zakumAttempts; }
+	int16_t getHorntailAttempts() const { return horntailAttempts; }
+	int16_t getPinkBeanAttempts() const { return pinkbeanAttempts; }
 	string getScrollingHeader() const { return scrollingHeader; }
 	WorldServerConnection * getWorldConnection() const { return worldPlayer; }
 	bool isConnected() const { return channel != -1; }
@@ -102,8 +112,13 @@ private:
 	int8_t world;
 	uint8_t maxMultiLevel;
 	int16_t maxStats;
-	uint16_t world_port;
 	int16_t channel;
+	int16_t pianusAttempts;
+	int16_t papAttempts;
+	int16_t zakumAttempts;
+	int16_t horntailAttempts;
+	int16_t pinkbeanAttempts;
+	uint16_t world_port;
 	uint16_t login_inter_port;
 	uint16_t port;
 	int32_t exprate;

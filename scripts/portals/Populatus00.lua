@@ -32,11 +32,16 @@ end
 if getItemAmount(4031172) > 0 then -- Medal
 	if getNumPlayers(220080001) < 12 then
 		if isInstance("papulatus") == false then
-			if enterBoss("Papulatus", 2) then
-				playPortalSE();
-				setMap(220080001, "st00");
+			x = getMaxPapBattles();
+			if x == 0 then
+				showMessage("You may not battle Papulatus at this time.", 5);
 			else
-				showMessage("You can only enter The Origin of Clocktower twice a day.", 5);
+				if enterBoss("Papulatus", x) then
+					playPortalSE();
+					setMap(220080001, "st00");
+				else
+					showMessage("You can only enter The Origin of Clocktower " .. x .. " times a day.", 5);
+				end
 			end
 		else
 			showMessage("The battle with Papulatus has already begun, so you cannot enter this place.", 5);

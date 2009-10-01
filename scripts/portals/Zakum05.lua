@@ -32,10 +32,15 @@ end
 if getReactorState(211042300, 2118002) == 1 then
 	showMessage("The battle with Zakum has already begun.", 5);
 else
-	if getEntryCount("Zakum", 2) < 2 then
-		playPortalSE();
-		setMap(211042400, "west00");
+	x = getMaxZakumBattles();
+	if x == 0 then
+		showMessage("You may not battle Zakum at this time.", 5);
 	else
-		showMessage("You may only battle Zakum twice per day.", 5);
+		if getEntryCount("Zakum", x) < x then
+			playPortalSE();
+			setMap(211042400, "west00");
+		else
+			showMessage("You may only battle Zakum twice per day.", 5);
+		end
 	end
 end
