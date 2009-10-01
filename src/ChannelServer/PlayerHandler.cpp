@@ -465,8 +465,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
 		case Jobs::Crusader::Shout:
-		case Jobs::Gm::SuperDragonRoar1:
-		case Jobs::Gm::SuperDragonRoar2:
+		case Jobs::Gm::SuperDragonRoar:
 		case Jobs::SuperGm::SuperDragonRoar:
 			break;
 		case Jobs::DragonKnight::DragonRoar: {

@@ -920,16 +920,9 @@ namespace Jobs {
 	}
 	namespace Gm {
 		enum Skills {
-			AntiMacro = 9001009,
-			Bless = 9101003,
-			Haste = 9101000,
-			Hide = 9001004,
-			HyperBody = 9001008,
-			Resurrection = 9001005,
-			SuperDragonRoar1 = 9001001,
-			SuperDragonRoar2 = 9001006,
-			Teleport1 = 9001002,
-			Teleport2 = 9001007
+			Haste = 9001000,
+			SuperDragonRoar = 9001001,
+			Teleport = 9001007
 		};
 	}
 	namespace SuperGm {
