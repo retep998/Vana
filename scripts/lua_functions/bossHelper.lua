@@ -77,3 +77,10 @@ function getChannelString(channels)
 	end
 	return s;
 end
+
+function timeString(times)
+	if times == 1 then
+		return "time";
+	end
+	return "times";
+end
