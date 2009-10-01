@@ -29,6 +29,12 @@ namespace StringUtilities {
 	int32_t noCaseCompare(const string &s1, const string &s2);
 	void runFlags(const string &flags, function<void (string)> func);
 	int64_t atoli(char *str); // ASCII to long int
+	bool atob(const char *str); // ASCII to bool
+}
+
+inline
+bool StringUtilities::atob(const char *str) {
+	return atoi(str) != 0;
 }
 
 #endif

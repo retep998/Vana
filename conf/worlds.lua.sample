@@ -46,8 +46,11 @@ world0_scrolling_header = "";
 -- An empty list means the boss is disabled, -1 means all channels
 -- e.g. world0_zakum_channels = {};
 -- e.g. world0_zakum_channels = {-1};
+world0_pianus_channels = {-1};
+world0_pap_channels = {-1};
 world0_zakum_channels = {4, 5, 6};
 world0_horntail_channels = {8};
+world0_pinkbean_channels = {9};
 
 -- Uncomment for another world
 -- world1_name = "Bera";
@@ -64,5 +67,8 @@ world0_horntail_channels = {8};
 -- world1_port = 7200;
 -- world1_event_msg = "";
 -- world1_scrolling_header = "";
+-- world1_pianus_channels = {-1};
+-- world1_pap_channels = {-1};
 -- world1_zakum_channels = {4, 5, 6};
 -- world1_horntail_channels = {8};
+-- world1_pinkbean_channels = {9};

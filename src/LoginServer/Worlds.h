@@ -67,8 +67,11 @@ struct World {
 	string eventMsg;
 	string scrollingHeader;
 	// Boss channels
+	vector<int8_t> pianusChannels;
+	vector<int8_t> papChannels;
 	vector<int8_t> zakumChannels;
 	vector<int8_t> horntailChannels;
+	vector<int8_t> pinkbeanChannels;
 };
 
 namespace Worlds {

@@ -19,13 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.h"
 #include "MapleTVs.h"
 #include "Database.h"
-#include "MiscUtilities.h"
 #include "StringUtilities.h"
 #include <string>
 
-using MiscUtilities::atob;
-using StringUtilities::runFlags;
 using std::string;
+using StringUtilities::atob;
+using StringUtilities::runFlags;
 
 MapDataProvider * MapDataProvider::singleton = 0;
 

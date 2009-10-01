@@ -65,12 +65,20 @@ namespace LuaExports {
 	int deleteChannelVariable(lua_State *luaVm);
 	int getChannel(lua_State *luaVm);
 	int getChannelVariable(lua_State *luaVm);
-	int getHorntailChannels(lua_State *luaVm);
-	int getZakumChannels(lua_State *luaVm);
 	int isHorntailChannel(lua_State *luaVm);
+	int isPapChannel(lua_State *luaVm);
+	int isPianusChannel(lua_State *luaVm);
+	int isPinkBeanChannel(lua_State *luaVm);
 	int isZakumChannel(lua_State *luaVm);
 	int setChannelVariable(lua_State *luaVm);
 	int showChannelMessage(lua_State *luaVm);
+
+	// Bosses
+	int getHorntailChannels(lua_State *luaVm);
+	int getPapChannels(lua_State *luaVm);
+	int getPianusChannels(lua_State *luaVm);
+	int getPinkBeanChannels(lua_State *luaVm);
+	int getZakumChannels(lua_State *luaVm);
 
 	// NPC
 	int isBusy(lua_State *luaVm);

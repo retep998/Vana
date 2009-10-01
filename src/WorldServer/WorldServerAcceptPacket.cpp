@@ -53,8 +53,11 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint1
 	packet.add<int8_t>(WorldServer::Instance()->getMaxMultiLevel());
 	packet.add<int16_t>(WorldServer::Instance()->getMaxStats());
 	packet.add<int32_t>(WorldServer::Instance()->getMaxChars());
+	packet.addVector(WorldServer::Instance()->getPianusChannels());
+	packet.addVector(WorldServer::Instance()->getPapChannels());
 	packet.addVector(WorldServer::Instance()->getZakumChannels());
 	packet.addVector(WorldServer::Instance()->getHorntailChannels());
+	packet.addVector(WorldServer::Instance()->getPinkBeanChannels());
 	player->getSession()->send(packet);
 }
 

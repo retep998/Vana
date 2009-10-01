@@ -19,6 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/bossHelper.lua");
 
+if not isPapChannel() then
+	channels = getPapChannels();
+	if #channels == 0 then
+		showMessage("You may not battle Papulatus at this time.", 5);
+	else
+		showMessage("You may only battle Papulatus on " .. getChannelString(channels) .. ".", 5);
+	end
+	return;
+end
+
 if getItemAmount(4031172) > 0 then -- Medal
 	if getNumPlayers(220080001) < 12 then
 		if isInstance("papulatus") == false then

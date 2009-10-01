@@ -71,12 +71,20 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "deleteChannelVariable", &LuaExports::deleteChannelVariable);
 	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
 	lua_register(luaVm, "getChannelVariable", &LuaExports::getChannelVariable);
-	lua_register(luaVm, "getHorntailChannels", &LuaExports::getHorntailChannels);
-	lua_register(luaVm, "getZakumChannels", &LuaExports::getZakumChannels);
 	lua_register(luaVm, "isHorntailChannel", &LuaExports::isHorntailChannel);
+	lua_register(luaVm, "isPapChannel", &LuaExports::isPapChannel);
+	lua_register(luaVm, "isPianusChannel", &LuaExports::isPianusChannel);
+	lua_register(luaVm, "isPinkBeanChannel", &LuaExports::isPinkBeanChannel);
 	lua_register(luaVm, "isZakumChannel", &LuaExports::isZakumChannel);
 	lua_register(luaVm, "setChannelVariable", &LuaExports::setChannelVariable);
 	lua_register(luaVm, "showChannelMessage", &LuaExports::showChannelMessage);
+
+	// Bosses
+	lua_register(luaVm, "getHorntailChannels", &LuaExports::getHorntailChannels);
+	lua_register(luaVm, "getPapChannels", &LuaExports::getPapChannels);
+	lua_register(luaVm, "getPianusChannels", &LuaExports::getPianusChannels);
+	lua_register(luaVm, "getPinkBeanChannels", &LuaExports::getPinkBeanChannels);
+	lua_register(luaVm, "getZakumChannels", &LuaExports::getZakumChannels);
 
 	// NPC
 	lua_register(luaVm, "isBusy", &LuaExports::isBusy);
@@ -381,32 +389,23 @@ int LuaExports::getChannelVariable(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaExports::getHorntailChannels(lua_State *luaVm) {
-	vector<int8_t> channels = ChannelServer::Instance()->getHorntailChannels();
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, channels[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
-}
-
-int LuaExports::getZakumChannels(lua_State *luaVm) {
-	vector<int8_t> channels = ChannelServer::Instance()->getZakumChannels();
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, channels[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
-}
-
 int LuaExports::isHorntailChannel(lua_State *luaVm) {
 	lua_pushboolean(luaVm, ChannelServer::Instance()->isHorntailChannel());
+	return 1;
+}
+
+int LuaExports::isPapChannel(lua_State *luaVm) {
+	lua_pushboolean(luaVm, ChannelServer::Instance()->isPapChannel());
+	return 1;
+}
+
+int LuaExports::isPianusChannel(lua_State *luaVm) {
+	lua_pushboolean(luaVm, ChannelServer::Instance()->isPianusChannel());
+	return 1;
+}
+
+int LuaExports::isPinkBeanChannel(lua_State *luaVm) {
+	lua_pushboolean(luaVm, ChannelServer::Instance()->isPinkBeanChannel());
 	return 1;
 }
 
@@ -427,6 +426,67 @@ int LuaExports::showChannelMessage(lua_State *luaVm) {
 	uint8_t type = lua_tointeger(luaVm, -1);
 	PlayersPacket::showMessage(msg, type);
 	return 0;
+}
+
+// Bosses
+int LuaExports::getHorntailChannels(lua_State *luaVm) {
+	vector<int8_t> channels = ChannelServer::Instance()->getHorntailChannels();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < channels.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, channels[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+int LuaExports::getPapChannels(lua_State *luaVm) {
+	vector<int8_t> channels = ChannelServer::Instance()->getPapChannels();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < channels.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, channels[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+int LuaExports::getPianusChannels(lua_State *luaVm) {
+	vector<int8_t> channels = ChannelServer::Instance()->getPianusChannels();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < channels.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, channels[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+int LuaExports::getPinkBeanChannels(lua_State *luaVm) {
+	vector<int8_t> channels = ChannelServer::Instance()->getPinkBeanChannels();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < channels.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, channels[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+int LuaExports::getZakumChannels(lua_State *luaVm) {
+	vector<int8_t> channels = ChannelServer::Instance()->getZakumChannels();
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < channels.size(); i++) {
+	    lua_pushinteger(luaVm, i + 1);
+	    lua_pushinteger(luaVm, channels[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
 }
 
 // NPC

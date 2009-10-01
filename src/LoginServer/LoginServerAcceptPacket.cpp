@@ -33,8 +33,11 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *player, World
 	packet.add<int8_t>(world->maxMultiLevel);
 	packet.add<int16_t>(world->maxStats);
 	packet.addString(world->scrollingHeader);
+	packet.addVector(world->pianusChannels);
+	packet.addVector(world->papChannels);
 	packet.addVector(world->zakumChannels);
 	packet.addVector(world->horntailChannels);
+	packet.addVector(world->pinkbeanChannels);
 
 	packet.add<int32_t>(Rates::SetBits::all);
 	packet.add<int32_t>(world->exprate);

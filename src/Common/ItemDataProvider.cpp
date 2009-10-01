@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
-#include "MiscUtilities.h"
 #include "ShopDataProvider.h"
 #include "StringUtilities.h"
 #include <iostream>
@@ -30,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using boost::bimap;
 using std::string;
 using Initializing::outputWidth;
-using MiscUtilities::atob;
+using StringUtilities::atob;
 using StringUtilities::runFlags;
 
 ItemDataProvider * ItemDataProvider::singleton = 0;
