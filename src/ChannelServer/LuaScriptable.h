@@ -266,10 +266,13 @@ namespace LuaExports {
 	int createInstance(lua_State *luaVm);
 	int deleteInstanceVariable(lua_State *luaVm);
 	int getAllInstancePlayerIDs(lua_State *luaVm);
+	int getBannedInstancePlayerByIndex(lua_State *luaVm);
+	int getBannedInstancePlayerCount(lua_State *luaVm);
 	int getInstanceMax(lua_State *luaVm);
 	int getInstancePlayerByIndex(lua_State *luaVm);
 	int getInstancePlayerCount(lua_State *luaVm);
 	int getInstancePlayerId(lua_State *luaVm);
+	int getInstanceSignupCount(lua_State *luaVm);
 	int getInstanceTime(lua_State *luaVm);
 	int getInstanceVariable(lua_State *luaVm);
 	int isBannedInstancePlayer(lua_State *luaVm);

@@ -80,6 +80,11 @@ Instance::~Instance() {
 	Instances::InstancePtr()->removeInstance(this);
 }
 
+const string Instance::getBannedPlayerByIndex(uint32_t index) const {
+	index--;
+	return m_banned[(index > m_banned.size() ? m_banned.size() : index)];
+}
+
 void Instance::setBanned(const string &name, bool isbanned) {
 	if (isbanned) {
 		m_banned.push_back(name);
@@ -329,6 +334,7 @@ void Instance::timerEnd(const string &name, bool fromTimer) {
 
 void Instance::instanceEnd(bool fromTimer) {
 	sendMessage(InstanceTimerNaturalEnd, fromTimer ? 1 : 0);
+	showTimer(false);
 	if (!getPersistence()) {
 		markForDelete();
 	}
