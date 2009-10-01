@@ -40,7 +40,7 @@ if getItemAmount(4031172) > 0 then -- Medal
 					playPortalSE();
 					setMap(220080001, "st00");
 				else
-					showMessage("You can only enter The Origin of Clocktower " .. x .. " times a day.", 5);
+					showMessage("You can only enter The Origin of Clocktower " .. x .. " " .. timeString(x) .. " a day.", 5);
 				end
 			end
 		else

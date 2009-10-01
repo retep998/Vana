@@ -40,7 +40,7 @@ else
 			playPortalSE();
 			setMap(211042400, "west00");
 		else
-			showMessage("You may only battle Zakum twice per day.", 5);
+			showMessage("You may only battle Zakum " .. x .. " " .. timeString(x) .. " per day.", 5);
 		end
 	end
 end

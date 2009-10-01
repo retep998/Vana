@@ -38,7 +38,7 @@ else
 			playPortalSE();
 			setMap(230040420, "out00");
 		else
-			showMessage("You may only enter the Cave of Pianus " .. x .. " times per day.", 5);
+			showMessage("You may only enter the Cave of Pianus " .. x .. " " .. timeString(x) .. " per day.", 5);
 		end
 	else
 		showMessage("The Cave of Pianus is currently full. Please come back later.", 5);
