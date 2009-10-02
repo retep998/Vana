@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, const Pos &origin) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_DROP_ITEM);
+	packet.add<int16_t>(SMSG_DROP_ITEM);
 	packet.add<int8_t>(type); // 3 = disappear during drop animation, 2 = show existing, 1 then 0 = show new
 	packet.add<int32_t>(drop->getId());
 	packet.addBool(drop->isMesos());
@@ -56,7 +56,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 
 void DropsPacket::takeNote(Player *player, int32_t id, bool ismesos, int16_t amount) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(0);
 	if (id == 0)
 		packet.add<int8_t>(-1);
@@ -78,7 +78,7 @@ void DropsPacket::takeNote(Player *player, int32_t id, bool ismesos, int16_t amo
 
 void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_TAKE_DROP);
+	packet.add<int16_t>(SMSG_DROP_PICKUP);
 	packet.add<int8_t>(pet_index != -1 ? 5 : 2);
 	packet.add<int32_t>(drop->getId());
 	packet.add<int32_t>(player->getId());
@@ -92,14 +92,14 @@ void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
 
 void DropsPacket::dontTake(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int16_t>(1);
 	player->getSession()->send(packet);
 }
 
 void DropsPacket::removeDrop(Drop *drop) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_TAKE_DROP);
+	packet.add<int16_t>(SMSG_DROP_PICKUP);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(drop->getId());
 	Maps::getMap(drop->getMap())->sendPacket(packet);
@@ -107,7 +107,7 @@ void DropsPacket::removeDrop(Drop *drop) {
 
 void DropsPacket::explodeDrop(Drop *drop) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_TAKE_DROP);
+	packet.add<int16_t>(SMSG_DROP_PICKUP);
 	packet.add<int8_t>(4);
 	packet.add<int32_t>(drop->getId());
 	packet.add<int16_t>(655);

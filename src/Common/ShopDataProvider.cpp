@@ -109,7 +109,7 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 	map<int32_t, double> rechargables = rechargecosts[rechargetier];
 	int16_t shopcount = shops[id].items.size() + rechargables.size();
 
-	packet.add<int16_t>(SEND_SHOP_OPEN);
+	packet.add<int16_t>(SMSG_SHOP);
 	packet.add<int32_t>(shops[id].npc);
 	packet.add<int16_t>(0); // To be set later
 

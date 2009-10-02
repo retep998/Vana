@@ -33,7 +33,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_MOVE_PLAYER);
+	packet.add<int16_t>(SMSG_PLAYER_MOVEMENT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(0);
 	packet.addBuffer(buf, size);
@@ -44,7 +44,7 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_FACE_EXPRESSION);
+	packet.add<int16_t>(SMSG_EMOTE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(face);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -52,7 +52,7 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 
 void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_CHAT);
+	packet.add<int16_t>(SMSG_PLAYER_CHAT);
 	packet.add<int32_t>(player->getId());
 	packet.addBool(player->isGm());
 	packet.addString(msg);
@@ -64,7 +64,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_DAMAGE_PLAYER);
+	packet.add<int16_t>(SMSG_PLAYER_DAMAGE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(type);
 	switch (type) {
@@ -96,7 +96,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 
 void PlayersPacket::showMessage(const string &msg, int8_t type) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NOTICE); 
+	packet.add<int16_t>(SMSG_MESSAGE); 
 	packet.add<int8_t>(type);
 	packet.addString(msg);
 	if (type == 6)
@@ -107,7 +107,7 @@ void PlayersPacket::showMessage(const string &msg, int8_t type) {
 void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TO_PLAYERS);
-	packet.add<int16_t>(SEND_NOTICE);
+	packet.add<int16_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(type);
 	packet.addString(msg);
 	if (type == 6)
@@ -117,7 +117,7 @@ void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
 
 void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_PLAYER_INFO);
+	packet.add<int16_t>(SMSG_PLAYER_INFO);
 	packet.add<int32_t>(getinfo->getId());
 	packet.add<int8_t>(getinfo->getLevel());
 	packet.add<int16_t>(getinfo->getJob());
@@ -137,7 +137,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
 
 void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, uint16_t channel, const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_COMMAND_RESPOND);
+	packet.add<int16_t>(SMSG_COMMAND);
 	packet.add<int8_t>(0x12);
 	packet.addString(whisperer_name);
 	packet.add<int16_t>(channel);
@@ -147,7 +147,7 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, 
 
 void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, uint8_t is, bool is_channel) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_COMMAND_RESPOND);
+	packet.add<int16_t>(SMSG_COMMAND);
 	if (map != -1) {
 		packet.add<int8_t>(0x09);
 		packet.addString(name);
@@ -184,7 +184,7 @@ void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {
 		mesoexplosion = true;
 	}
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_ATTACK_MELEE);
+	packet.add<int16_t>(SMSG_ATTACK_MELEE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
@@ -259,7 +259,7 @@ void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
 		pack.skipBytes(4); // Shadow Stars star ID
 	}
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_ATTACK_RANGED);
+	packet.add<int16_t>(SMSG_ATTACK_RANGED);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
@@ -316,7 +316,7 @@ void PlayersPacket::useSpellAttack(Player *player, PacketReader &pack) {
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_ATTACK_SPELL);
+	packet.add<int16_t>(SMSG_ATTACK_MAGIC);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(1); // Spells are always a skill
@@ -382,7 +382,7 @@ void PlayersPacket::useSummonAttack(Player *player, PacketReader &pack) {
 	pack.skipBytes(5);
 	int8_t targets = pack.get<int8_t>();
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_ATTACK_SUMMON);
+	packet.add<int16_t>(SMSG_SUMMON_ATTACK);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summonid);
 	packet.add<int8_t>(4);

@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer, int8_t index) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_PET_SUMMONED);
+	packet.add<int16_t>(SMSG_PET_SUMMON);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(index != -1 ? index : pet->getIndex());
 	packet.addBool(pet->isSummoned());
@@ -50,7 +50,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 
 void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_t act) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_PET_SHOW_CHAT);
+	packet.add<int16_t>(SMSG_PET_MESSAGE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex());
 	packet.add<int8_t>(0);
@@ -62,7 +62,7 @@ void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_
 
 void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t buflen) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_PET_SHOW_MOVING);
+	packet.add<int16_t>(SMSG_PET_MOVEMENT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex());
 	packet.addBuffer(buf, buflen);
@@ -71,7 +71,7 @@ void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int3
 
 void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool success) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_PET_ANIMATION);
+	packet.add<int16_t>(SMSG_PET_ANIMATION);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex()); // Index for multiple pets
 	packet.addBool(animation == 1 && success);
@@ -87,7 +87,7 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool 
 
 void PetsPacket::updatePet(Player *player, Pet *pet) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_MOVE_ITEM);
+	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(2);
 	packet.add<int8_t>(3);
@@ -103,14 +103,14 @@ void PetsPacket::updatePet(Player *player, Pet *pet) {
 
 void PetsPacket::levelUp(Player *player, Pet *pet) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_GAIN_ITEM);
+	packet.add<int16_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(4);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(pet->getIndex());
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
-	packet.add<int16_t>(SEND_SHOW_SKILL);
+	packet.add<int16_t>(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int16_t>(4);
 	packet.add<int8_t>(pet->getIndex());
@@ -119,7 +119,7 @@ void PetsPacket::levelUp(Player *player, Pet *pet) {
 
 void PetsPacket::changeName(Player *player, Pet *pet) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_PET_NAME_CHANGE);
+	packet.add<int16_t>(SMSG_PET_NAME_CHANGE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex());
 	packet.addString(pet->getName());
@@ -129,7 +129,7 @@ void PetsPacket::changeName(Player *player, Pet *pet) {
 
 void PetsPacket::showPet(Player *player, Pet *pet) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_PET_SHOW);
+	packet.add<int16_t>(SMSG_PET_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex());
 	packet.add<int32_t>(pet->getId());
@@ -140,7 +140,7 @@ void PetsPacket::showPet(Player *player, Pet *pet) {
 
 void PetsPacket::updateSummonedPets(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int8_t>(0);
 	packet.add<int16_t>(Stats::Pet);
 	packet.add<int16_t>(0x18);
@@ -159,7 +159,7 @@ void PetsPacket::updateSummonedPets(Player *player) {
 
 void PetsPacket::blankUpdate(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);

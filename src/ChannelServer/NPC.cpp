@@ -111,7 +111,7 @@ PacketCreator NPC::npcPacket(int8_t type) {
 	sentDialog = type;
 
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NPC_TALK);
+	packet.add<int16_t>(SMSG_NPC_TALK);
 	packet.add<int8_t>(4);
 	packet.add<int32_t>(npcid);
 	packet.add<int8_t>(type);

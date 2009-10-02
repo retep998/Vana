@@ -44,7 +44,7 @@ void NPCPacket::showNpc(int32_t mapid, const NPCSpawnInfo &npc, int32_t id, bool
 }
 
 void NPCPacket::showNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t id, bool show) {
-	packet.add<int16_t>(SEND_SHOW_NPC);
+	packet.add<int16_t>(SMSG_NPC_SHOW);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
@@ -56,7 +56,7 @@ void NPCPacket::showNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t 
 }
 
 void NPCPacket::controlNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t id, bool show) {
-	packet.add<int16_t>(SEND_CONTROL_NPC);
+	packet.add<int16_t>(SMSG_NPC_CONTROL);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
@@ -72,7 +72,7 @@ void NPCPacket::animateNpc(Player *player, PacketReader &pack) {
 	size_t len = pack.getBufferLength();
 
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_ANIMATE_NPC);
+	packet.add<int16_t>(SMSG_NPC_ANIMATE);
 	if (len == 6) { // NPC talking
 		packet.add<int32_t>(pack.get<int32_t>());
 		packet.add<int16_t>(pack.get<int16_t>());

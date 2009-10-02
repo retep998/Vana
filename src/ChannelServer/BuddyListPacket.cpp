@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void BuddyListPacket::error(Player *player, uint8_t error) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_BUDDYLIST);
+	packet.add<int16_t>(SMSG_BUDDY);
 	packet.add<int8_t>(error);
 	
 	player->getSession()->send(packet);
@@ -33,7 +33,7 @@ void BuddyListPacket::update(Player *player, uint8_t type) {
 	uint8_t size = buddyList->size();
 
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_BUDDYLIST);
+	packet.add<int16_t>(SMSG_BUDDY);
 	packet.add<int8_t>(type);
 	packet.add<int8_t>(size);
 
@@ -57,7 +57,7 @@ void BuddyListPacket::update(Player *player, uint8_t type) {
 void BuddyListPacket::showSize(Player *player) {
 	uint8_t size = static_cast<uint8_t>(player->getBuddyListSize());
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_BUDDYLIST);
+	packet.add<int16_t>(SMSG_BUDDY);
 	packet.add<int8_t>(0x15);
 	packet.add<int8_t>(size);
 	player->getSession()->send(packet);

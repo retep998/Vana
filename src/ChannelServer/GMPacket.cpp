@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void GmPacket::beginHide(Player *player) {
 	PacketCreator packet = PacketCreator();
-	packet.add<int16_t>(SEND_GM_FUNCTION);
+	packet.add<int16_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
 	packet.addBool(true);
 	
@@ -32,7 +32,7 @@ void GmPacket::beginHide(Player *player) {
 
 void GmPacket::endHide(Player *player) {
 	PacketCreator packet = PacketCreator();
-	packet.add<int16_t>(SEND_GM_FUNCTION);
+	packet.add<int16_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
 	packet.addBool(false);
 	

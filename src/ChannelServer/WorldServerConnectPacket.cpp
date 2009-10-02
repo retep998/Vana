@@ -170,7 +170,7 @@ void WorldServerConnectPacket::worldMessage(WorldServerConnection *player, const
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TO_CHANNELS);
 	packet.add<int16_t>(INTER_TO_PLAYERS);
-	packet.add<int16_t>(SEND_NOTICE); 
+	packet.add<int16_t>(SMSG_MESSAGE); 
 	packet.add<int8_t>(type);
 	packet.addString(message);
 	if (type == 6)
@@ -184,7 +184,7 @@ void WorldServerConnectPacket::globalMessage(WorldServerConnection *player, cons
 	packet.add<int16_t>(INTER_TO_WORLDS);
 	packet.add<int16_t>(INTER_TO_CHANNELS);
 	packet.add<int16_t>(INTER_TO_PLAYERS);
-	packet.add<int16_t>(SEND_NOTICE); 
+	packet.add<int16_t>(SMSG_MESSAGE); 
 	packet.add<int8_t>(type);
 	packet.addString(message);
 	if (type == 6)

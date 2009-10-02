@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Player *toplayer) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_SPAWN_SUMMON);
+	packet.add<int16_t>(SMSG_SUMMON_SPAWN);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summon->getId());
 	packet.add<int32_t>(summon->getSummonId());
@@ -45,7 +45,7 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 
 void SummonsPacket::moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t buflen) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_MOVE_SUMMON);
+	packet.add<int16_t>(SMSG_SUMMON_MOVEMENT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summon->getId());
 	packet.addPos(startPos);
@@ -55,7 +55,7 @@ void SummonsPacket::moveSummon(Player *player, Summon *summon, const Pos &startP
 
 void SummonsPacket::removeSummon(Player *player, Summon *summon, bool animated) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_REMOVE_SUMMON);
+	packet.add<int16_t>(SMSG_SUMMON_DESPAWN);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summon->getId());
 	packet.add<int8_t>(animated ? 4 : 1); // ?
@@ -64,7 +64,7 @@ void SummonsPacket::removeSummon(Player *player, Summon *summon, bool animated) 
 
 void SummonsPacket::damageSummon(Player *player, int32_t summonid, int8_t notsure, int32_t damage, int32_t mobid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_DAMAGE_SUMMON);
+	packet.add<int16_t>(SMSG_SUMMON_DAMAGE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summonid);
 	packet.add<int8_t>(notsure);
