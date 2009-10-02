@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void StoragePacket::showStorage(Player *player, int32_t npcid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int16_t>(SMSG_STORAGE);
 	packet.add<int8_t>(0x16); // Type of storage action
 	packet.add<int32_t>(npcid);
 	packet.add<int8_t>(player->getStorage()->getSlots());
@@ -46,7 +46,7 @@ void StoragePacket::showStorage(Player *player, int32_t npcid) {
 
 void StoragePacket::addItem(Player *player, int8_t inv) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int16_t>(SMSG_STORAGE);
 	packet.add<int8_t>(0x0d);
 	packet.add<int8_t>(player->getStorage()->getSlots());
 	int8_t type = (int8_t) pow((float) 2, (int32_t) inv) * 2; // Gotta work some magic on type, which starts as inventory
@@ -63,7 +63,7 @@ void StoragePacket::addItem(Player *player, int8_t inv) {
 
 void StoragePacket::takeItem(Player *player, int8_t inv) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int16_t>(SMSG_STORAGE);
 	packet.add<int8_t>(0x09);
 	packet.add<int8_t>(player->getStorage()->getSlots());
 	int8_t type = (int8_t) pow((float) 2, (int32_t) inv) * 2;
@@ -80,7 +80,7 @@ void StoragePacket::takeItem(Player *player, int8_t inv) {
 
 void StoragePacket::changeMesos(Player *player, int32_t mesos) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int16_t>(SMSG_STORAGE);
 	packet.add<int8_t>(0x13);
 	packet.add<int8_t>(player->getStorage()->getSlots());
 	packet.add<int16_t>(2);
@@ -92,14 +92,14 @@ void StoragePacket::changeMesos(Player *player, int32_t mesos) {
 
 void StoragePacket::storageFull(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int16_t>(SMSG_STORAGE);
 	packet.add<int8_t>(0x11);
 	player->getSession()->send(packet);
 }
 
 void StoragePacket::noMesos(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_STORAGE_ACTION);
+	packet.add<int16_t>(SMSG_STORAGE);
 	packet.add<int8_t>(0x10);
 	player->getSession()->send(packet);
 }

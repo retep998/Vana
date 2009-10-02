@@ -30,7 +30,7 @@ void PartyPacket::giveLeader(WorldServerAcceptConnection *player, int32_t player
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SEND_PARTY_ACTION);
+	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x1A);
 	packet.add<int32_t>(target);
 	packet.add<int8_t>(is);
@@ -41,7 +41,7 @@ void PartyPacket::invitePlayer(WorldServerAcceptConnection *player, int32_t play
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SEND_PARTY_ACTION);
+	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x04);
 	packet.add<int32_t>(Players::Instance()->getPlayerFromName(inviter)->party);
 	packet.addString(inviter);
@@ -54,7 +54,7 @@ void PartyPacket::createParty(WorldServerAcceptConnection *player, int32_t playe
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SEND_PARTY_ACTION);
+	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x08);
 	packet.add<int32_t>(partyplayer->party);
 	packet.add<int32_t>(999999999);
@@ -75,7 +75,7 @@ void PartyPacket::disbandParty(WorldServerAcceptConnection *player, int32_t play
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SEND_PARTY_ACTION);
+	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x0C);
 	packet.add<int32_t>(partyplayer->party);
 	packet.add<int32_t>(Parties::Instance()->getParty(partyplayer->party)->getLeader());
@@ -96,7 +96,7 @@ void PartyPacket::updateParty(WorldServerAcceptConnection *player, int8_t type, 
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SEND_PARTY_ACTION);
+	packet.add<int16_t>(SMSG_PARTY);
 	switch (type) {
 		case PARTY_JOIN: 
 			packet.add<int8_t>(0x0F);
@@ -137,7 +137,7 @@ void PartyPacket::partyError(WorldServerAcceptConnection *player, int32_t player
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SEND_PARTY_ACTION);
+	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(error);
 	player->getSession()->send(packet);
 }

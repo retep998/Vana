@@ -34,7 +34,7 @@ using std::tr1::unordered_map;
 
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_CHANGE_MAP);
+	packet.add<int16_t>(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel()); // Channel
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(1);
@@ -104,7 +104,7 @@ void PlayerPacket::connectData(Player *player) {
 
 void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_KEYMAP);
+	packet.add<int16_t>(SMSG_KEYMAP);
 	packet.add<int8_t>(0);
 	for (size_t i = 0; i < KeyMaps::size; i++) {
 		KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i);
@@ -122,7 +122,7 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 
 void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_SKILL_MACRO);
+	packet.add<int16_t>(SMSG_MACRO_LIST);
 	packet.add<int8_t>(macros->getMax() + 1);
 	for (int8_t i = 0; i <= macros->getMax();  i++) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
@@ -147,7 +147,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 
 void PlayerPacket::updateStatInt(Player *player, int32_t id, int32_t value, bool is) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
 	packet.addBool(is);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(value);
@@ -156,7 +156,7 @@ void PlayerPacket::updateStatInt(Player *player, int32_t id, int32_t value, bool
 
 void PlayerPacket::updateStatShort(Player *player, int32_t id, int16_t value, bool is) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
 	packet.addBool(is);
 	packet.add<int32_t>(id);
 	packet.add<int16_t>(value);
@@ -165,7 +165,7 @@ void PlayerPacket::updateStatShort(Player *player, int32_t id, int16_t value, bo
 
 void PlayerPacket::updateStatChar(Player *player, int32_t id, int8_t value, bool is) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
 	packet.addBool(is);
 	packet.add<int32_t>(id);
 	packet.add<int8_t>(value);
@@ -174,7 +174,7 @@ void PlayerPacket::updateStatChar(Player *player, int32_t id, int8_t value, bool
 
 void PlayerPacket::changeChannel(Player *player, uint32_t ip, int16_t port) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_CHANGE_CHANNEL);
+	packet.add<int16_t>(SMSG_CHANNEL_CHANGE);
 	packet.add<int8_t>(1);
 	packet.add<uint32_t>(htonl(ip)); // MapleStory accepts IP addresses in big-endian
 	packet.add<int16_t>(port);
@@ -183,7 +183,7 @@ void PlayerPacket::changeChannel(Player *player, uint32_t ip, int16_t port) {
 
 void PlayerPacket::showMessage(Player *player, const string &msg, int8_t type) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NOTICE); 
+	packet.add<int16_t>(SMSG_MESSAGE); 
 	packet.add<int8_t>(type);
 	packet.addString(msg);
 	if (type == 6)
@@ -200,7 +200,7 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 	}
 
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_INSTRUCTION_BUBBLE);
+	packet.add<int16_t>(SMSG_BUBBLE);
 	packet.addString(msg);
 	packet.add<int16_t>(width);
 	packet.add<int16_t>(height);
@@ -211,7 +211,7 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 
 void PlayerPacket::sendSound(Player *player, const string &soundname) { // Send Sound
 	PacketCreator packet = PacketCreator();
-	packet.add<int16_t>(SEND_MAP_EFFECT);
+	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x04);
 	packet.addString(soundname);
 	player->getSession()->send(packet);
@@ -219,7 +219,7 @@ void PlayerPacket::sendSound(Player *player, const string &soundname) { // Send 
 
 void PlayerPacket::showHpBar(Player *player, Player *target) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_PARTY_HP_BAR);
+	packet.add<int16_t>(SMSG_PARTY_HP_DISPLAY);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getHp());
 	packet.add<int32_t>(player->getMHp());
@@ -235,7 +235,7 @@ void PlayerPacket::sendBlockedMessage(Player *player, uint8_t type) {
 		0x05: You do not meet the minimum level requirement to access the Trade Shop.
 	*/
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_CC_BLOCKED);
+	packet.add<int16_t>(SMSG_CHANNEL_BLOCKED);
 	packet.add<uint8_t>(type);
 	player->getSession()->send(packet);
 }

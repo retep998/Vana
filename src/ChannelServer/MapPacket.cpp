@@ -35,7 +35,7 @@ using std::tr1::unordered_map;
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
 	MapEntryBuffs enter = player->getActiveBuffs()->getMapEntryBuffs();
-	packet.add<int16_t>(SEND_SHOW_PLAYER);
+	packet.add<int16_t>(SMSG_MAP_SPAWN_PLAYER);
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName());
 	packet.addString(""); // Guild
@@ -172,14 +172,14 @@ void MapPacket::showPlayer(Player *player) {
 
 void MapPacket::removePlayer(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_REMOVE_PLAYER);
+	packet.add<int16_t>(SMSG_MAP_REMOVE_PLAYER);
 	packet.add<int32_t>(player->getId());
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_CHANGE_MAP);
+	packet.add<int16_t>(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel()); // Channel
 	packet.add<int32_t>(0x02); // 2?
 	packet.add<int32_t>(player->getMap());
@@ -192,7 +192,7 @@ void MapPacket::changeMap(Player *player) {
 
 void MapPacket::portalBlocked(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_UPDATE_STAT);
+	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
@@ -200,7 +200,7 @@ void MapPacket::portalBlocked(Player *player) {
 
 void MapPacket::showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_TIME);
+	packet.add<int16_t>(SMSG_TIMER);
 	packet.add<int8_t>(0x01);
 	packet.add<int8_t>(hour);
 	packet.add<int8_t>(min);
@@ -211,12 +211,12 @@ void MapPacket::showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec
 void MapPacket::showTimer(int32_t mapid, int32_t sec) {
 	PacketCreator packet;
 	if (sec > 0) {
-		packet.add<int16_t>(SEND_TIME);
+		packet.add<int16_t>(SMSG_TIMER);
 		packet.add<int8_t>(0x02);
 		packet.add<int32_t>(sec);
 	}
 	else {
-		packet.add<int16_t>(SEND_STOP_TIME);
+		packet.add<int16_t>(SMSG_TIMER_OFF);
 	}
 	Maps::getMap(mapid)->sendPacket(packet);
 }
@@ -224,25 +224,25 @@ void MapPacket::showTimer(int32_t mapid, int32_t sec) {
 void MapPacket::showTimer(Player *player, int32_t sec) {
 	PacketCreator packet;
 	if (sec > 0) {
-		packet.add<int16_t>(SEND_TIME);
+		packet.add<int16_t>(SMSG_TIMER);
 		packet.add<int8_t>(0x02);
 		packet.add<int32_t>(sec);
 	}
 	else {
-		packet.add<int16_t>(SEND_STOP_TIME);
+		packet.add<int16_t>(SMSG_TIMER_OFF);
 	}
 	player->getSession()->send(packet);
 }
 
 void MapPacket::forceMapEquip(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_FORCE_MAP_EQUIP);
+	packet.add<int16_t>(SMSG_MAP_FORCE_EQUIPMENT);
 	player->getSession()->send(packet);
 }
 
 void MapPacket::setMusic(int32_t mapid, const string &musicname) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_MAP_EFFECT);
+	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x06);
 	packet.addString(musicname);
 	Maps::getMap(mapid)->sendPacket(packet);
@@ -256,7 +256,7 @@ void MapPacket::sendSound(int32_t mapid, const string &soundname) {
 	// Coconut/Victory = Victory
 	// Coconut/Failed = Lose 
 	PacketCreator packet = PacketCreator();
-	packet.add<int16_t>(SEND_MAP_EFFECT);
+	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x04);
 	packet.addString(soundname);
 	Maps::getMap(mapid)->sendPacket(packet);
@@ -270,7 +270,7 @@ void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
 	// event/coconut/victory = Victory
 	// event/coconut/lose = Lose
 	PacketCreator packet = PacketCreator();
-	packet.add<int16_t>(SEND_MAP_EFFECT);
+	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x03);
 	packet.addString(eventname);
 	Maps::getMap(mapid)->sendPacket(packet);
@@ -279,7 +279,7 @@ void MapPacket::sendEvent(int32_t mapid, const string &eventname) {
 void MapPacket::sendEffect(int32_t mapid, const string &effectname) {
 	// gate = KerningPQ Door
 	PacketCreator packet = PacketCreator();
-	packet.add<int16_t>(SEND_MAP_EFFECT);
+	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x02);
 	packet.addString(effectname);
 	Maps::getMap(mapid)->sendPacket(packet);
@@ -287,14 +287,14 @@ void MapPacket::sendEffect(int32_t mapid, const string &effectname) {
 
 void MapPacket::showEventInstructions(int32_t mapid) {
 	PacketCreator packet = PacketCreator();
-	packet.add<int16_t>(SEND_GM_EVENT_INSTRUCTIONS);
+	packet.add<int16_t>(SMSG_EVENT_INSTRUCTION);
 	packet.add<int8_t>(0x00);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
 void MapPacket::showMist(Player *player, Mist *mist) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_SPAWN_MIST);
+	packet.add<int16_t>(SMSG_MIST_SPAWN);
 	packet.add<int32_t>(mist->getId());
 	packet.add<int32_t>(mist->isMobMist() ? 0 : mist->isPoison() ? 1 : 2);
 	packet.add<int32_t>(mist->getOwnerId());
@@ -313,7 +313,7 @@ void MapPacket::showMist(Player *player, Mist *mist) {
 
 void MapPacket::spawnMist(int32_t mapid, Mist *mist) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_SPAWN_MIST);
+	packet.add<int16_t>(SMSG_MIST_SPAWN);
 	packet.add<int32_t>(mist->getId());
 	packet.add<int32_t>(mist->isMobMist() ? 0 : mist->isPoison() ? 1 : 2);
 	packet.add<int32_t>(mist->getOwnerId());
@@ -332,21 +332,21 @@ void MapPacket::spawnMist(int32_t mapid, Mist *mist) {
 
 void MapPacket::removeMist(int32_t mapid, int32_t id) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_REMOVE_MIST);
+	packet.add<int16_t>(SMSG_MIST_DESPAWN);
 	packet.add<int32_t>(id);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
 void MapPacket::playPortalSoundEffect(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_GAIN_ITEM);
+	packet.add<int16_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(0x07);
 	player->getSession()->send(packet);
 }
 
 void MapPacket::instantWarp(Player *player, int8_t pid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_MAP_TELEPORT);
+	packet.add<int16_t>(SMSG_MAP_TELEPORT);
 	packet.add<int8_t>(0x01);
 	packet.add<int8_t>(pid);
 	player->getSession()->send(packet);

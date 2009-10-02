@@ -30,7 +30,7 @@ using std::vector;
 
 void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(questid);
 	packet.add<int8_t>(1);
@@ -40,7 +40,7 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
-	packet.add<int16_t>(SEND_UPDATE_QUEST);
+	packet.add<int16_t>(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(8);
 	packet.add<int16_t>(questid);
 	packet.add<int32_t>(npcid);
@@ -50,7 +50,7 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 
 void QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(quest.id);
 	packet.add<int8_t>(1);
@@ -60,14 +60,14 @@ void QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) {
 
 void QuestsPacket::doneQuest(Player *player, int16_t questid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_FINISH_QUEST);
+	packet.add<int16_t>(SMSG_QUEST_COMPLETED);
 	packet.add<int16_t>(questid);
 	player->getSession()->send(packet);
 }
 
 void QuestsPacket::questError(Player *player, int16_t questid, int8_t errorcode) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_UPDATE_QUEST);
+	packet.add<int16_t>(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(errorcode);
 	packet.add<int16_t>(questid);
 	player->getSession()->send(packet);
@@ -75,7 +75,7 @@ void QuestsPacket::questError(Player *player, int16_t questid, int8_t errorcode)
 
 void QuestsPacket::questExpire(Player *player, int16_t questid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_UPDATE_QUEST);
+	packet.add<int16_t>(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(0x0F);
 	packet.add<int16_t>(questid);
 	player->getSession()->send(packet);
@@ -83,7 +83,7 @@ void QuestsPacket::questExpire(Player *player, int16_t questid) {
 
 void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, int16_t nextquest, int64_t time) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(questid);
 	packet.add<int8_t>(2);
@@ -91,7 +91,7 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
-	packet.add<int16_t>(SEND_UPDATE_QUEST);
+	packet.add<int16_t>(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(8);
 	packet.add<int16_t>(questid);
 	packet.add<int32_t>(npcid);
@@ -99,12 +99,12 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
-	packet.add<int16_t>(SEND_GAIN_ITEM);
+	packet.add<int16_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(9);
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
-	packet.add<int16_t>(SEND_SHOW_SKILL);
+	packet.add<int16_t>(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(9);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -112,7 +112,7 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 
 void QuestsPacket::forfeitQuest(Player *player, int16_t questid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(questid);
 	packet.add<int8_t>(0);
@@ -121,7 +121,7 @@ void QuestsPacket::forfeitQuest(Player *player, int16_t questid) {
 
 void QuestsPacket::giveItem(Player *player, int32_t itemid, int32_t amount) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_GAIN_ITEM);
+	packet.add<int16_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(3);
 	packet.add<int8_t>(1); // Number of different items (itemid and amount gets repeated)
 	packet.add<int32_t>(itemid);
@@ -131,7 +131,7 @@ void QuestsPacket::giveItem(Player *player, int32_t itemid, int32_t amount) {
 
 void QuestsPacket::giveMesos(Player *player, int32_t amount) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(5);
 	packet.add<int32_t>(amount);
 	player->getSession()->send(packet);
@@ -139,7 +139,7 @@ void QuestsPacket::giveMesos(Player *player, int32_t amount) {
 
 void QuestsPacket::giveFame(Player *player, int32_t amount) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_NOTE);
+	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(4);
 	packet.add<int32_t>(amount);
 	player->getSession()->send(packet);

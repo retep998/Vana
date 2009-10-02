@@ -139,7 +139,7 @@ void MapleTVs::getMapleTVEntryPacket(PacketCreator &packet) {
 }
 
 void MapleTVs::getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, int32_t timeleft) {
-	packet.add<int16_t>(SEND_SHOW_MAPLETV);
+	packet.add<int16_t>(SMSG_MAPLETV_ON);
 	packet.add<int8_t>(message.hasreceiver ? 3 : 1);
 	packet.add<int8_t>((int8_t)(message.megaphoneid - 5075000)); // Positively will be within -128 to 127
 	packet.addBuffer(message.senddisplay);
@@ -157,5 +157,5 @@ void MapleTVs::getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, 
 }
 
 void MapleTVs::endMapleTVPacket(PacketCreator &packet) {
-	packet.add<int16_t>(SEND_END_MAPLETV);
+	packet.add<int16_t>(SMSG_MAPLETV_OFF);
 }

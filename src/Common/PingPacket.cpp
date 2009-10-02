@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PingPacket::ping(AbstractConnection *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SEND_PING);
+	packet.add<int16_t>(SMSG_PING);
 	player->getSession()->send(packet);
 }
 
