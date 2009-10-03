@@ -41,6 +41,7 @@ void DropDataProvider::loadDrops() {
 	mysqlpp::UseQueryResult res = query.use();
 	DropInfo drop;
 	int32_t dropper;
+	MYSQL_ROW row;
 
 	struct DropFunctor {
 		void operator() (const string &cmp) {
@@ -55,7 +56,7 @@ void DropDataProvider::loadDrops() {
 		Quest, Chance
 	};
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
+	while (row = res.fetch_raw_row()) {
 		drop = DropInfo();
 		DropFunctor whoo = {&drop};
 		runFlags(row[Flags], whoo);
@@ -67,6 +68,33 @@ void DropDataProvider::loadDrops() {
 		drop.questid = atoi(row[Quest]);
 		drop.chance = atoi(row[Chance]);
 		dropdata[dropper].push_back(drop);
+	}
+
+	query << "SELECT * FROM user_drop_data ORDER BY dropperid";
+	res = query.use();
+	int32_t lastdropperid = -1;
+	bool dropped = false;
+
+	while (row = res.fetch_raw_row()) {
+		drop = DropInfo();
+		DropFunctor whoo = {&drop};
+		runFlags(row[Flags], whoo);
+
+		dropper = atoi(row[DropperId]);
+		if (dropper != lastdropperid) {
+			dropped = false;
+		}
+		drop.itemid = atoi(row[ItemId]);
+		drop.minamount = atoi(row[Minimum]);
+		drop.maxamount = atoi(row[Maximum]);
+		drop.questid = atoi(row[Quest]);
+		drop.chance = atoi(row[Chance]);
+		if (!dropped && dropdata.find(dropper) != dropdata.end()) {
+			dropdata.erase(dropper);
+			dropped = true;
+		}
+		dropdata[dropper].push_back(drop);
+		lastdropperid = dropper;
 	}
 }
 
