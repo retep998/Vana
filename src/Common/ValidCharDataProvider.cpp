@@ -56,7 +56,6 @@ void ValidCharDataProvider::loadCreationItems() {
 	regfemale.clear();
 	cygnusmale.clear();
 	cygnusfemale.clear();
-
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_creation_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t gender;

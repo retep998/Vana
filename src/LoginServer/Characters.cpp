@@ -347,7 +347,7 @@ bool Characters::ownerCheck(PlayerLogin *player, int32_t id) {
 
 bool Characters::nameIllegal(PlayerLogin *player, const string &name) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name  << " AND world_id = " << (int32_t) player->getWorld() << " LIMIT 1";
+	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name << " AND world_id = " << (int32_t) player->getWorld() << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	return ((res.num_rows() == 1) ? true : ValidCharDataProvider::Instance()->isForbiddenName(name));
