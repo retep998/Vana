@@ -137,7 +137,6 @@ private:
 	void loadRequests();
 	void loadRequiredJobs();
 	void loadRewards();
-	int8_t getGenderId(const string &gender);
 
 	unordered_map<int16_t, Quest> quests;
 };

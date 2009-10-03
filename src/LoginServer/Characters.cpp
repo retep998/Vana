@@ -17,12 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Characters.h"
 #include "Database.h"
+#include "GameConstants.h"
+#include "GameLogicUtilities.h"
+#include "ItemDataProvider.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
 #include "LoginServerAcceptPacket.h"
 #include "PacketReader.h"
 #include "PlayerLogin.h"
 #include "Randomizer.h"
+#include "ValidCharDataProvider.h"
 #include "Worlds.h"
 #include <boost/tr1/unordered_map.hpp>
 
@@ -65,7 +69,7 @@ void Characters::loadCharacter(Character &charc, const mysqlpp::Row &row) {
 	charc.map = row["map"];
 	charc.pos = (uint8_t) row["pos"];
 
-	if ((charc.job / 100) == 9) { // GMs can't have their rank sent other wise the client will crash
+	if (GameLogicUtilities::getJobTrack(charc.job) == Jobs::JobTracks::Gm) { // GMs can't have their rank sent otherwise the client will crash
 		charc.w_rank = 0;
 		charc.w_rankmove = 0;
 		charc.j_rank = 0;
@@ -102,7 +106,7 @@ void Characters::showAllCharacters(PlayerLogin *player) {
 		charsNum++;
 	}
 
-	uint32_t unk = charsNum + (3 - charsNum%3); // What I've observed O_o
+	uint32_t unk = charsNum + (3 - charsNum % 3); // What I've observed
 	LoginPacket::showAllCharactersInfo(player, chars.size(), unk);
 	for (CharsMap::const_iterator iter = chars.begin(); iter != chars.end(); iter++) {
 		LoginPacket::showCharactersWorld(player, iter->first, iter->second);
@@ -138,16 +142,39 @@ void Characters::checkCharacterName(PlayerLogin *player, PacketReader &packet) {
 		return;
 	}
 
-	LoginPacket::checkName(player, name, nameTaken(player, name));
+	LoginPacket::checkName(player, name, nameIllegal(player, name));
 }
 
-void Characters::createEquip(int32_t equipid, int32_t type, int32_t charid) {
+void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_t amount) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	switch (type) {
-		case 0x05: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef, name) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 3 << ",\"\")"; break;
-		case 0x06: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef, name) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 2 << ",\"\")"; break;
-		case 0x07: query << "INSERT INTO items (charid, inv, slot, itemid, iwdef, slots, name) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 3 << "," << 5 << ",\"\")"; break;
-		case 0x0b: query << "INSERT INTO items (charid, inv, slot, itemid, iwatk, name) VALUES (" << charid << "," << 1 << "," << -type << "," << equipid << "," << 17 << ",\"\")"; break;
+	int16_t inventory = GameLogicUtilities::getInventory(itemid);
+	if (inventory == Inventories::EquipInventory) {
+		EquipInfo *equip = ItemDataProvider::Instance()->getEquipInfo(itemid);
+		query << "INSERT INTO items (charid, inv, slot, itemid, slots, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name) VALUES ("
+			<< charid << ", "
+			<< inventory << ", "
+			<< slot << ", "
+			<< itemid << ", "
+			<< (int16_t) equip->slots << ", "
+			<< equip->istr << ", "
+			<< equip->idex << ", "
+			<< equip->iint << ", "
+			<< equip->iluk << ", "
+			<< equip->ihp << ", "
+			<< equip->imp << ", "
+			<< equip->iwatk << ", "
+			<< equip->imatk << ", "
+			<< equip->iwdef << ", "
+			<< equip->imdef << ", "
+			<< equip->iacc << ", "
+			<< equip->iavo << ", "
+			<< equip->ihand << ", "
+			<< equip->ispeed << ", "
+			<< equip->ijump << ", "
+			<< "\"\")";
+	}
+	else {
+		query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << charid << ", " << inventory << ", " << slot << ", " << itemid  << ", " << amount << ", \"\")";
 	}
 	query.exec();
 }
@@ -160,21 +187,37 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 	}
 
 	// Let's check our char name again just to be sure
-	if (nameTaken(player, name)) {
+	if (nameIllegal(player, name)) {
 		LoginPacket::checkName(player, name, true);
 		return;
 	}
 
 	int32_t eyes = packet.get<int32_t>();
-	int32_t hair = packet.get<int32_t>() + packet.get<int32_t>(); // Hair+hair colour
+	int32_t hair = packet.get<int32_t>();
+	int32_t haircolor = packet.get<int32_t>();
 	int32_t skin = packet.get<int32_t>();
-	packet.skipBytes(16);
+	int32_t top = packet.get<int32_t>();
+	int32_t bottom = packet.get<int32_t>();
+	int32_t shoes = packet.get<int32_t>();
+	int32_t weapon = packet.get<int32_t>();
+	int8_t gender = packet.get<int8_t>();
 
-	uint16_t gender = packet.get<int8_t>();
+	if (gender != Gender::Female && gender != Gender::Male) {
+		// Hacking
+		player->getSession()->disconnect();
+		return;
+	}
+
 	uint16_t str = 12;
 	uint16_t dex = 5;
 	uint16_t intt = 4;
 	uint16_t luk = 4;
+
+	if (!ValidCharDataProvider::Instance()->isValidCharacter(gender, hair, haircolor, eyes, skin, top, bottom, shoes, weapon)) {
+		// Hacking
+		player->getSession()->disconnect();
+		return;
+	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO characters (name, userid, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES ("
@@ -182,24 +225,22 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 			<< player->getUserId() << ","
 			<< (int32_t) player->getWorld() << ","
 			<< eyes << ","
-			<< hair << ","
+			<< hair + haircolor << ","
 			<< skin << ","
-			<< gender << ","
+			<< (int16_t) gender << ","
 			<< str << ","
 			<< dex << ","
 			<< intt << ","
 			<< luk << ")";
+
 	mysqlpp::SimpleResult res = query.execute();
 	int32_t id = (int32_t) res.insert_id();
 
-	packet.skipBytes(-17);
-	createEquip(packet.get<int32_t>(), 0x05, id);
-	createEquip(packet.get<int32_t>(), 0x06, id);
-	createEquip(packet.get<int32_t>(), 0x07, id);
-	createEquip(packet.get<int32_t>(), 0x0b, id);
-
-	query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << id << ", 4, 1, 4161001, 1, \"\")"; // Beginner Guide
-	query.exec();
+	createItem(top, id, -EquipSlots::Top);
+	createItem(bottom, id, -EquipSlots::Bottom);
+	createItem(shoes, id, -EquipSlots::Shoe);
+	createItem(weapon, id, -EquipSlots::Weapon);
+	createItem(Items::BeginnersGuidebook, id, 1);
 
 	query << "SELECT * FROM characters WHERE id = " << id << " LIMIT 1";
 	mysqlpp::StoreQueryResult res2 = query.store();
@@ -301,13 +342,13 @@ bool Characters::ownerCheck(PlayerLogin *player, int32_t id) {
 	query << "SELECT true FROM characters WHERE id = " << id << " AND userid = " << player->getUserId();
 	mysqlpp::StoreQueryResult res = query.store();
 
-	return (res.num_rows() == 1) ? 1 : 0 ;
+	return ((res.num_rows() == 1) ? true : false);
 }
 
-bool Characters::nameTaken(PlayerLogin *player, const string &name) {
+bool Characters::nameIllegal(PlayerLogin *player, const string &name) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name  << " AND world_id = " << (int32_t) player->getWorld() << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
-	return (res.num_rows() == 1) ? true : false ;
+	return ((res.num_rows() == 1) ? true : ValidCharDataProvider::Instance()->isForbiddenName(name));
 }

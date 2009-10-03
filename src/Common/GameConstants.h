@@ -126,6 +126,14 @@ enum SkillValues {
 	SkillLv
 };
 
+namespace Gender {
+	enum {
+		Male = 0,
+		Female = 1,
+		Both = 2
+	};
+}
+
 namespace BuffBytes {
 	const int8_t ByteQuantity = 16;
 	const int8_t EntryByteQuantity = 8;
@@ -418,6 +426,8 @@ namespace Jobs {
 			Bowman = 3,
 			Thief = 4,
 			Pirate = 5,
+
+			Gm = 9,
 
 			Noblesse = 10,
 			DawnWarrior = 11,
@@ -1049,6 +1059,9 @@ namespace Items {
 		CapeColdProtection = 2041058,
 		SpecialTeleportRock = 2320000,
 		WhiteScroll = 2340000,
+
+		// Etc.
+		BeginnersGuidebook = 4161001,
 
 		// Cash
 		TeleportRock = 5040000,

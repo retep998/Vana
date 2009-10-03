@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BeautyDataProvider.h"
 #include "Database.h"
+#include "GameConstants.h"
+#include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
 #include "Randomizer.h"
 #include "StringUtilities.h"
@@ -54,7 +56,7 @@ void BeautyDataProvider::loadHair() {
 	malehair.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_hair_data ORDER BY hairid ASC");
 	mysqlpp::UseQueryResult res = query.use();
-	string gender;
+	int8_t gender;
 	int32_t hair;
 
 	enum HairData {
@@ -63,9 +65,9 @@ void BeautyDataProvider::loadHair() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		gender = row[Gender];
+		gender = GameLogicUtilities::getGenderId(row[Gender]);
 		hair = atoi(row[Id]);
-		if (gender == "female") {
+		if (gender == Gender::Female) {
 			femalehair.push_back(hair);
 		}
 		else {
@@ -81,7 +83,7 @@ void BeautyDataProvider::loadFaces() {
 	malefaces.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_face_data ORDER BY faceid ASC");
 	mysqlpp::UseQueryResult res = query.use();
-	string gender;
+	int8_t gender;
 	int32_t face;
 
 	enum FaceData {
@@ -90,9 +92,9 @@ void BeautyDataProvider::loadFaces() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		gender = row[Gender];
+		gender = GameLogicUtilities::getGenderId(row[Gender]);
 		face = atoi(row[Id]);
-		if (gender == "female") {
+		if (gender == Gender::Female) {
 			femalefaces.push_back(face);
 		}
 		else {
@@ -107,13 +109,13 @@ int8_t BeautyDataProvider::getRandomSkin() {
 }
 
 int32_t BeautyDataProvider::getRandomHair(int8_t gender) {
-	if (gender == 1) // Female
+	if (gender == Gender::Female) // Female
 		return femalehair[Randomizer::Instance()->randInt(femalehair.size() - 1)];
 	return malehair[Randomizer::Instance()->randInt(malehair.size() - 1)];
 }
 
 int32_t BeautyDataProvider::getRandomFace(int8_t gender) {
-	if (gender == 1) // Female
+	if (gender == Gender::Female) // Female
 		return femalefaces[Randomizer::Instance()->randInt(femalefaces.size() - 1)];
 	return malefaces[Randomizer::Instance()->randInt(malefaces.size() - 1)];
 }
@@ -123,13 +125,13 @@ vector<int8_t> BeautyDataProvider::getSkins() {
 }
 
 vector<int32_t> BeautyDataProvider::getHair(int8_t gender) {
-	if (gender == 1)  // Female
+	if (gender == Gender::Female)  // Female
 		return femalehair;
 	return malehair;
 }
 
 vector<int32_t> BeautyDataProvider::getFaces(int8_t gender) {
-	if (gender == 1)  // Female
+	if (gender == Gender::Female)  // Female
 		return femalefaces;
 	return malefaces;
 }
