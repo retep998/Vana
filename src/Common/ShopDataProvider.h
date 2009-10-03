@@ -62,7 +62,7 @@ private:
 	static ShopDataProvider *singleton;
 
 	void loadShops();
-	void loadShopItems();
+	void loadUserShops();
 	void loadRechargeTiers();
 
 	unordered_map<int32_t, ShopInfo> shops;

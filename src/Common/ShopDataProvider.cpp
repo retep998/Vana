@@ -33,7 +33,7 @@ void ShopDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
 
 	loadShops();
-	loadShopItems();
+	loadUserShops();
 	loadRechargeTiers();
 
 	std::cout << "DONE" << std::endl;
@@ -45,33 +45,75 @@ void ShopDataProvider::loadShops() {
 	mysqlpp::UseQueryResult res = query.use(); 
 	ShopInfo shop;
 	int32_t shopid;
+	MYSQL_ROW row;
+
 	enum ShopData {
 		ShopId = 0,
 		NpcId, RechargeTier
 	};
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
+	while (row = res.fetch_raw_row()) {
 		shopid = atoi(row[ShopId]);
 
 		shop.npc = atoi(row[NpcId]);
 		shop.rechargetier = atoi(row[RechargeTier]);
 		shops[shopid] = shop;
 	}
-}
 
-void ShopDataProvider::loadShopItems() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM shop_items ORDER BY shopid, sort DESC");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t shopid;
+	query << "SELECT * FROM shop_items ORDER BY shopid, sort DESC";
+	res = query.use();
 	ShopItemInfo item;
 
 	enum ShopItemData {
-		ShopId = 0,
+		ItemShopId = 0,
 		ItemId, Quantity, Price, Sort
 	};
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
+	while (row = res.fetch_raw_row()) {
+		shopid = atoi(row[ItemShopId]);
+
+		item.itemid = atoi(row[ItemId]);
+		item.quantity = atoi(row[Quantity]);
+		item.price = atoi(row[Price]);
+
+		shops[shopid].items.push_back(item);
+	}
+}
+
+void ShopDataProvider::loadUserShops() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM user_shop_data");
+	mysqlpp::UseQueryResult res = query.use(); 
+	ShopInfo shop;
+	int32_t shopid;
+	MYSQL_ROW row;
+
+	enum ShopData {
+		ShopId = 0,
+		NpcId, RechargeTier
+	};
+
+	while (row = res.fetch_raw_row()) {
 		shopid = atoi(row[ShopId]);
+
+		shop.npc = atoi(row[NpcId]);
+		shop.rechargetier = atoi(row[RechargeTier]);
+		if (shops.find(shopid) != shops.end()) {
+			shops.erase(shopid);
+		}
+		shops[shopid] = shop;
+	}
+
+	query << "SELECT * FROM user_shop_items ORDER BY shopid, sort DESC";
+	res = query.use();
+	ShopItemInfo item;
+
+	enum ShopItemData {
+		ItemShopId = 0,
+		ItemId, Quantity, Price, Sort
+	};
+
+	while (row = res.fetch_raw_row()) {
+		shopid = atoi(row[ItemShopId]);
 
 		item.itemid = atoi(row[ItemId]);
 		item.quantity = atoi(row[Quantity]);
