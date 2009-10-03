@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryHandler.h"
 #include "Drop.h"
+#include "EquipDataProvider.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
@@ -542,7 +543,7 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 		}
 	}
 	else if (iteminfo->recover) {
-		EquipInfo *item = ItemDataProvider::Instance()->getEquipInfo(equip->id);
+		EquipInfo *item = EquipDataProvider::Instance()->getEquipInfo(equip->id);
 		int8_t maxslots = item->slots + static_cast<int8_t>(equip->hammers);
 		if ((maxslots - equip->scrolls) > equip->slots) {
 			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Give back a slot

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BuffDataProvider.h"
 #include "ChatHandler.h"
 #include "DropDataProvider.h"
+#include "EquipDataProvider.h"
 #include "EventDataProvider.h"
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
@@ -35,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void Initializing::loadData() {
 	BuffDataProvider::Instance()->loadData();
+	EquipDataProvider::Instance()->loadData();
 	ItemDataProvider::Instance()->loadData();
 	MobDataProvider::Instance()->loadData();
 	DropDataProvider::Instance()->loadData();

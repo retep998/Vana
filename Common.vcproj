@@ -194,6 +194,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\EquipDataProvider.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\InitializeCommon.cpp"
 					>
 				</File>
@@ -425,6 +429,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\DropDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\EquipDataProvider.h"
 					>
 				</File>
 				<File

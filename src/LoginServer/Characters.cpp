@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Characters.h"
 #include "Database.h"
+#include "EquipDataProvider.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
-#include "ItemDataProvider.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
 #include "LoginServerAcceptPacket.h"
@@ -149,7 +149,7 @@ void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_
 	mysqlpp::Query query = Database::getCharDB().query();
 	int16_t inventory = GameLogicUtilities::getInventory(itemid);
 	if (inventory == Inventories::EquipInventory) {
-		EquipInfo *equip = ItemDataProvider::Instance()->getEquipInfo(itemid);
+		EquipInfo *equip = EquipDataProvider::Instance()->getEquipInfo(itemid);
 		query << "INSERT INTO items (charid, inv, slot, itemid, slots, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name) VALUES ("
 			<< charid << ", "
 			<< inventory << ", "
