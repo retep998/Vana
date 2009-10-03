@@ -56,7 +56,6 @@ timer(0),
 timerstart(0),
 poisonmists(0),
 timemob(0),
-webbed(0),
 spawnmobs(-1),
 timers(new Timer::Container)
 {
@@ -482,22 +481,10 @@ void Map::statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos 
 }
 
 void Map::checkShadowWeb() {
-	int32_t wcount = getWebbedCount();
-	if (wcount > 0) {
-		unordered_map<int32_t, Mob *> mobmap = this->mobs;
-		int32_t done = 0;
-		for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
-			if (iter->second != 0 && iter->second->hasStatus(StatusEffects::Mob::ShadowWeb)) {
-				iter->second->applyWebDamage();
-				done++;
-			}
-			if (done == wcount) {
-				break;
-			}
+	if (webbed.size() > 0) {
+		for (unordered_map<int32_t, Mob *>::iterator iter = webbed.begin(); iter != webbed.end(); iter++) {
+			iter->second->applyWebDamage();
 		}
-	}
-	else if (wcount < 0) { // ??
-		setWebbedCount(0);
 	}
 }
 

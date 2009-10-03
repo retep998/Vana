@@ -265,7 +265,7 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 			case StatusEffects::Mob::ShadowWeb:
 				webplayerid = playerid;
 				weblevel = static_cast<uint8_t>(statusinfo[i].val);
-				Maps::getMap(mapid)->setWebbedCount(Maps::getMap(mapid)->getWebbedCount() + 1);
+				Maps::getMap(mapid)->addWebbedMob(this);
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
 				if (statusinfo[i].skillid == Jobs::NightLord::Taunt || statusinfo[i].skillid == Jobs::Shadower::Taunt) {
@@ -332,15 +332,15 @@ void Mob::statusPacket(PacketCreator &packet) {
 
 void Mob::removeStatus(int32_t status, bool fromTimer) {
 	if (hasStatus(status) && getHp() > 0) {
-		StatusInfo stat = statuses[status];
+		StatusInfo *stat = &statuses[status];
 		switch (status) {
 			case StatusEffects::Mob::ShadowWeb:
 				weblevel = 0;
 				webplayerid = 0;
-				Maps::getMap(mapid)->setWebbedCount(Maps::getMap(mapid)->getWebbedCount() - 1);
+				Maps::getMap(mapid)->removeWebbedMob(getId());
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
-				if (stat.skillid == Jobs::NightLord::Taunt || stat.skillid == Jobs::Shadower::Taunt) {
+				if (stat->skillid == Jobs::NightLord::Taunt || stat->skillid == Jobs::Shadower::Taunt) {
 					taunteffect = 100;
 				}
 				break;
@@ -424,7 +424,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 	updateSpawnLinks();
 
 	if (hasStatus(StatusEffects::Mob::ShadowWeb)) {
-		map->setWebbedCount(map->getWebbedCount() - 1);
+		map->removeWebbedMob(getId());
 	}
 
 	// Ending of death stuff

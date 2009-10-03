@@ -103,7 +103,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	MovementHandler::parseMovement(mob, packet);
 
 	if (useskill && (skill == -1 || skill == 0)) {
-		if (!mob->hasStatus(StatusEffects::Mob::Freeze) && !mob->hasStatus(StatusEffects::Mob::Stun)) {
+		if (!(mob->hasStatus(StatusEffects::Mob::Freeze) || mob->hasStatus(StatusEffects::Mob::Stun) || mob->hasStatus(StatusEffects::Mob::ShadowWeb))) {
 			uint8_t size = mob->getSkillCount();
 			bool used = false;
 			if (size) {
