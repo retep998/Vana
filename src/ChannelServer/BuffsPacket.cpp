@@ -249,6 +249,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
+	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
