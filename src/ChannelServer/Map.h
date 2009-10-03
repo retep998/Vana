@@ -88,17 +88,17 @@ public:
 	NPCSpawnInfo getNpc(int32_t id) const { return this->npcs[id]; }
 
 	// Mobs
-	void setWebbedCount(int32_t w) { webbed = w; }
+	void addWebbedMob(Mob *mob) { webbed[mob->getId()] = mob; }
+	void removeWebbedMob(int32_t id) { webbed.erase(id); }
+	void checkShadowWeb();
 	void addMobSpawn(const MobSpawnInfo &spawn);
 	void checkMobSpawn(clock_t time, bool spawnAll = false);
 	void removeMob(int32_t id, int32_t spawnid);
 	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
 	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
-	void checkShadowWeb();
 	void setMobSpawning(int32_t spawn) { spawnmobs = spawn; }
 	void spawnZakum(const Pos &pos, int16_t fh = 0);
 	void updateMobControl(Mob *mob, bool spawn = false, Player *display = 0);
-	int32_t getWebbedCount() const { return webbed; }
 	int32_t spawnShell(int32_t mobid, const Pos &pos, int16_t fh);
 	int32_t spawnMob(int32_t mobid, const Pos &pos, int16_t fh = 0, Mob *owner = 0, int8_t summoneffect = 0);
 	int32_t spawnMob(int32_t spawnid, const MobSpawnInfo &info);
@@ -169,6 +169,7 @@ private:
 	SeatsInfo seats;
 	vector<Player *> players;
 	vector<Reactor *> reactors;
+	unordered_map<int32_t, Mob *> webbed;
 	unordered_map<int32_t, Mob *> mobs;
 	unordered_map<int32_t, Drop *> drops;
 	unordered_map<int32_t, Mist *> mists;
@@ -179,7 +180,6 @@ private:
 	time_t timerstart;
 	int32_t timer;
 	int32_t poisonmists;
-	int32_t webbed;
 	int32_t timemob;
 	int32_t spawnmobs;
 
