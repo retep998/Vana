@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeLogin.h"
-#include "ItemDataProvider.h"
+#include "EquipDataProvider.h"
 #include "ValidCharDataProvider.h"
 
 void Initializing::loadData() {
-	ItemDataProvider::Instance()->loadData();
+	EquipDataProvider::Instance()->loadData();
 	ValidCharDataProvider::Instance()->loadData();
 }

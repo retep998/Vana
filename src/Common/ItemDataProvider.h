@@ -29,46 +29,6 @@ using std::tr1::unordered_map;
 using std::vector;
 using std::string;
 
-class Equip;
-
-struct EquipInfo {
-	EquipInfo() : tradeblockonequip(false), validslots(0) { }
-
-	bool tradeblockonequip;
-	int8_t slots;
-	int8_t attackspeed;
-	int8_t healing;
-	uint8_t tamingmob;
-	uint8_t icedamage;
-	uint8_t firedamage;
-	uint8_t lightningdamage;
-	uint8_t poisondamage;
-	uint8_t elementaldefault;
-	int16_t istr;
-	int16_t idex;
-	int16_t iint;
-	int16_t iluk;
-	int16_t ihp;
-	int16_t imp;
-	int16_t iwatk;
-	int16_t imatk;
-	int16_t iwdef;
-	int16_t imdef;
-	int16_t iacc;
-	int16_t iavo;
-	int16_t ihand;
-	int16_t ijump;
-	int16_t ispeed;
-	int16_t reqstr;
-	int16_t reqdex;
-	int16_t reqint;
-	int16_t reqluk;
-	int16_t reqfame;
-	int64_t validslots;
-	vector<int8_t> validjobs;
-	double traction;
-};
-
 struct SummonBag {
 	int32_t mobid;
 	uint32_t chance;
@@ -248,7 +208,6 @@ public:
 	int32_t getCardId(int32_t mobid);
 	int32_t getMobId(int32_t cardid);
 	bool itemExists(int32_t id) { return (items.find(id) != items.end()); }
-	bool equipExists(int32_t id) { return (equips.find(id) != equips.end()); }
 	bool petExists(int32_t itemid) { return (petsInfo.find(itemid) != petsInfo.end()); }
 	bool consumeInfoExists(int32_t itemid) { return (consumes.find(itemid) != consumes.end()); }
 	bool scrollExists(int32_t itemid) { return (scrolls.find(itemid) != scrolls.end()); }
@@ -259,7 +218,6 @@ public:
 	int32_t getHunger(int32_t itemid) {return (petExists(itemid) ? petsInfo[itemid].hunger : 0); }
 	string getItemName(int32_t itemid) { return (itemExists(itemid) ? items[itemid].name : ""); }
 
-	EquipInfo * getEquipInfo(int32_t equipid) { return &equips[equipid]; }
 	ItemInfo * getItemInfo(int32_t itemid) { return &items[itemid]; }
 	ConsumeInfo * getConsumeInfo(int32_t itemid) { return (consumeInfoExists(itemid) ? &consumes[itemid] : 0); }
 	ScrollInfo * getScrollInfo(int32_t itemid) { return &scrolls[itemid]; }
@@ -271,7 +229,6 @@ private:
 	ItemDataProvider() { }
 	static ItemDataProvider *singleton;
 
-	void loadEquips();
 	void loadItems();
 	void loadScrolls();
 	void loadConsumes();
@@ -286,7 +243,6 @@ private:
 	typedef bimap<int32_t, int32_t> card_map;
 	typedef card_map::value_type card_info;
 
-	unordered_map<int32_t, EquipInfo> equips;
 	unordered_map<int32_t, ItemInfo> items;
 	unordered_map<int32_t, ScrollInfo> scrolls;
 	unordered_map<int32_t, ConsumeInfo> consumes;
