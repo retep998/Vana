@@ -662,7 +662,7 @@ void BuffDataProvider::loadData() {
 	player.hasmapval = true;
 	skillsinfo[Jobs::Beginner::MonsterRider].player.push_back(player);
 	skillsinfo[Jobs::Noblesse::MonsterRider].player.push_back(player);
-	buff.type = 0x80;
+	buff.type = 0x40;
 	map.buff = buff;
 	skillsinfo[Jobs::Beginner::MonsterRider].map.push_back(map);
 	skillsinfo[Jobs::Noblesse::MonsterRider].map.push_back(map);
@@ -674,7 +674,7 @@ void BuffDataProvider::loadData() {
 	player.buff = buff;
 	player.hasmapval = true;
 	skillsinfo[Jobs::Corsair::Battleship].player.push_back(player);
-	buff.type = 0x80;
+	buff.type = 0x40;
 	map.buff = buff;
 	skillsinfo[Jobs::Corsair::Battleship].map.push_back(map);
 	// End mount buffs
