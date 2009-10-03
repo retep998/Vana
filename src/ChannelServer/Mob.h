@@ -134,7 +134,7 @@ public:
 	Mob * getSponge() const { return sponge; }
 	const MobInfo * getInfo() const { return info; }
 	uint8_t getSkillCount() const { return info->skillcount; }
-	size_t getSpawnCount() const { return spawns.size(); }
+	int16_t getSpawnCount() const { return static_cast<int16_t>(spawns.size()); }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
 
 	Timer::Container * getTimers() const { return timers.get(); }

@@ -140,11 +140,10 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 						stop = mob->hasStatus(StatusEffects::Mob::Speed);
 						break;
 					case MobSkills::Summon: {
-						int16_t spawns = (int16_t)(mob->getSpawnCount());
 						int16_t limit = mobskill->limit;
 						if (limit == 5000) // Custom limit based on number of players on map
 							limit = 30 + Maps::getMap(mob->getMapId())->getNumPlayers() * 2;
-						if (spawns >= limit)
+						if (mob->getSpawnCount() >= limit)
 							stop = true;
 						break;
 					}
@@ -152,7 +151,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 				if (!stop) {
 					time_t now = time(0);
 					time_t ls = mob->getLastSkillUse(realskill);
-					if (ls == 0 || ((int16_t)(now - ls) > mobskill->interval)) {
+					if (ls == 0 || ((int32_t)(now - ls) > mobskill->interval)) {
 						mob->setLastSkillUse(realskill, now);
 						int64_t reqhp = mob->getHp() * 100;
 						reqhp /= mob->getMaxHp();
