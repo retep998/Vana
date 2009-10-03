@@ -97,6 +97,11 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		}
 		else {
 			if (slot2 < 0) {
+				EquipInfo *e = EquipDataProvider::Instance()->getEquipInfo(item1->id);
+				if (!(e->validslots & (1LL << (-slot2 - 1)))) { // The bits coincide with the slot directly
+					// Hacking
+					return;
+				}
 				Item *remove = 0;
 				int16_t oldslot = 0;
 				bool weapon = -slot2 == EquipSlots::Weapon;
