@@ -225,6 +225,10 @@
 					RelativePath=".\src\Common\SkillDataProvider.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\src\Common\ValidCharDataProvider.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Database Manager"
@@ -453,6 +457,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\SkillDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ValidCharDataProvider.h"
 					>
 				</File>
 			</Filter>

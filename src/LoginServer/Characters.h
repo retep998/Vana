@@ -75,9 +75,9 @@ namespace Characters {
 	void showCharacters(PlayerLogin *player);
 	void loadCharacter(Character &charc, const mysqlpp::Row &row);
 	void loadEquips(int32_t id, vector<CharEquip> &vec);
-	void createEquip(int32_t equipid, int32_t type, int32_t charid);
+	void createItem(int32_t itemid, int32_t charid, int32_t slot, int16_t amount = 1);
 	bool ownerCheck(PlayerLogin *player, int32_t id);
-	bool nameTaken(PlayerLogin *player, const string &name);
+	bool nameIllegal(PlayerLogin *player, const string &name); // Name is taken or not valid
 };
 
 #endif

@@ -256,7 +256,7 @@ void QuestDataProvider::loadRewards() {
 		rwa.id = atoi(row[ObjectId]);
 		rwa.count = atoi(row[Count]);
 		rwa.masterlevel = atoi(row[MasterLevel]); 
-		rwa.gender = getGenderId(row[Gender]);
+		rwa.gender = GameLogicUtilities::getGenderId(row[Gender]);
 		rwa.prop = atoi(row[Prop]);
 
 		if (job != -1 || jobtracks.length() == 0) {
@@ -267,13 +267,6 @@ void QuestDataProvider::loadRewards() {
 			runFlags(jobtracks, ohyeah);
 		}
 	}
-}
-
-int8_t QuestDataProvider::getGenderId(const string &gender) {
-	if (gender == "male") return 0;
-	if (gender == "female") return 1;
-	if (gender == "both") return 2;
-	return -1;
 }
 
 int16_t QuestDataProvider::getItemRequest(int16_t questid, int32_t itemid) {

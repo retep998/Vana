@@ -20,6 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GameConstants.h"
 #include "Pos.h"
+#include <string>
+
+using std::string;
 
 namespace GameLogicUtilities {
 	// Inventory
@@ -45,6 +48,9 @@ namespace GameLogicUtilities {
 	inline bool isMace(int32_t itemid) { return (getItemType(itemid) == Weapon1hMace || getItemType(itemid) == Weapon2hMace); }
 	inline bool isMount(int32_t itemid) { return (getItemType(itemid) == Mount); }
 	inline bool isValidInventory(int8_t inv) { return (inv > 0 && inv <= Inventories::InventoryCount); }
+
+	// Player
+	inline int8_t getGenderId(const string &gender) { return static_cast<int8_t>(gender == "male" ? Gender::Male : (gender == "female" ? Gender::Female : (gender == "both" ? Gender::Both : -1))); }
 
 	// Player skills
 	inline bool isBeginnerSkill(int32_t skillid) { return ((skillid / 1000000) == (skillid < 10000000 ? 0 : 10)); }

@@ -274,6 +274,14 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="Database Loading"
+				>
+				<File
+					RelativePath=".\src\LoginServer\InitializeLogin.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

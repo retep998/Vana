@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
+#include "InitializeCommon.h"
+#include "InitializeLogin.h"
 #include "ConnectionManager.h"
 #include "RankingCalculator.h"
 #include "Worlds.h"
@@ -31,6 +33,7 @@ void LoginServer::listen() {
 void LoginServer::loadData() {
 	Initializing::checkSchemaVersion(true);
 	Initializing::setUsersOffline(1);
+	Initializing::loadData();
 	RankingCalculator::setTimer();
 }
 
