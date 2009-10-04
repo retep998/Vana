@@ -97,8 +97,10 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		}
 		else {
 			if (slot2 < 0) {
+				ItemInfo *i = ItemDataProvider::Instance()->getItemInfo(item1->id);
 				EquipInfo *e = EquipDataProvider::Instance()->getEquipInfo(item1->id);
-				if (!(e->validslots & (1LL << (-slot2 - 1))) && !(e->validslots & (1LL << (-slot2 - 101)))) { // The bits coincide with the slot directly. Fixme: Include cash boolean in item_equip_data for top-level checking.
+				uint8_t desiredslot = -(slot2 + (i->cash ? 100 : 0));
+				if (!(e->validslots & (1LL << (desiredslot - 1))) {
 					// Hacking
 					return;
 				}
