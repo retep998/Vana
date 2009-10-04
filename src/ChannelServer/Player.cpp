@@ -54,6 +54,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerPacket.h"
 #include "SkillMacros.h"
 #include "Skills.h"
+#include "StringUtilities.h"
 #include "Summons.h"
 #include "TimeUtilities.h"
 #include "TradeHandler.h"
@@ -120,6 +121,8 @@ Player::~Player() {
 
 void Player::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
+		case CMSG_ADMIN_COMMAND: CommandHandler::handleAdminCommand(this, packet); break;
+		case CMSG_ADMIN_MESSENGER: PlayerHandler::handleAdminMessenger(this, packet); break;
 		case CMSG_ATTACK_ENERGY_CHARGE: PlayerHandler::useEnergyChargeAttack(this, packet); break;
 		case CMSG_ATTACK_MAGIC: PlayerHandler::useSpellAttack(this, packet); break;
 		case CMSG_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, packet); break;
@@ -202,7 +205,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT characters.*, users.gm FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << id;
+	query << "SELECT characters.*, users.gm, users.admin FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << id;
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.empty()) {
@@ -216,6 +219,7 @@ void Player::playerConnect(PacketReader &packet) {
 	exp		= res[0]["exp"];
 	map		= res[0]["map"];
 	gm_level	= res[0]["gm"];
+	admin		= StringUtilities::atob(res[0]["admin"]);
 	eyes		= res[0]["eyes"];
 	hair		= res[0]["hair"];
 	world_id	= static_cast<int8_t>(res[0]["world_id"]);

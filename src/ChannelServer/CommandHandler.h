@@ -23,6 +23,7 @@ class PacketReader;
 
 namespace CommandHandler {
 	void handleCommand(Player *player, PacketReader &packet);
+	void handleAdminCommand(Player *player, PacketReader &packet);
 };
 
 #endif

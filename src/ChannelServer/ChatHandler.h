@@ -43,6 +43,7 @@ namespace ChatHandler {
 	void handleChat(Player *player, PacketReader &packet);
 	bool handleCommand(Player *player, const string &message);
 	int32_t getMap(const string &query, Player *player);
+	string getBanString(int8_t reason);
 	void handleGroupChat(Player *player, PacketReader &packet);
 };
 

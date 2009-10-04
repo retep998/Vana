@@ -95,6 +95,16 @@ void Map::addPlayer(Player *player) {
 		MapPacket::showTimer(player, instance->checkInstanceTimer());
 }
 
+string Map::getPlayerNames() {
+	string names = "";
+	for (size_t i = 0; i < players.size(); i++) {
+		if (Player *player = players[i]) {
+			names += player->getName() + " ";
+		}
+	}
+	return names;
+}
+
 void Map::removePlayer(Player *player) {
 	for (size_t i = 0; i < this->players.size(); i++) {
 		if (this->players[i] == player) {

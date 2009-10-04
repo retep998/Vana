@@ -82,6 +82,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_COMMAND 0x76 // / commands like "/find"
 #define CMSG_PLAYER_ROOM 0x79 // Trades, player shops, minigames, etc.
 #define CMSG_PARTY 0x7a
+#define CMSG_ADMIN_COMMAND 0x7e
+#define CMSG_ADMIN_COMMAND_LOG 0x7f // '/(command) (parameters)'
 #define CMSG_BUDDY 0x80
 #define CMSG_KEYMAP 0x85
 #define CMSG_MTS 0x9a
@@ -101,4 +103,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_ITEM_LOOT 0xc0
 #define CMSG_REACTOR_HIT 0xc3
 #define CMSG_REACTOR_TOUCH 0xc4
+#define CMSG_ADMIN_MESSENGER 0xeb
 #define CMSG_HAMMER 0xf8
