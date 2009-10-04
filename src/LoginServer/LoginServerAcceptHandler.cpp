@@ -38,6 +38,7 @@ void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *pla
 	int32_t population = packet.get<int32_t>();
 
 	Worlds::worlds[player->getWorldId()]->channels[channel]->population = population;
+	Worlds::calculatePlayerLoad(Worlds::worlds[player->getWorldId()]);
 }
 
 void LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *player, PacketReader &packet) {

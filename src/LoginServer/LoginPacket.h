@@ -40,7 +40,7 @@ namespace LoginPacket {
 	void genderDone(PlayerLogin *player, int8_t gender);
 	void showWorld(PlayerLogin *player, World *world);
 	void worldEnd(PlayerLogin *player);
-	void showChannels(PlayerLogin *player);
+	void showChannels(PlayerLogin *player, int8_t status);
 	void channelSelect(PlayerLogin *player);
 	void channelOffline(PlayerLogin *player);
 	void showAllCharactersInfo(PlayerLogin *player, uint32_t worlds, uint32_t unk);

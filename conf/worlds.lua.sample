@@ -42,6 +42,9 @@ world0_event_msg = "";
 -- Scrolling header
 world0_scrolling_header = "";
 
+-- Maximum player load on the worldserver
+world0_max_player_load = 1000;
+
 -- Valid boss channels
 -- An empty list means the boss is disabled, -1 means all channels
 -- e.g. world0_zakum_channels = {};
@@ -75,6 +78,7 @@ world0_pinkbean_attempts = 1;
 -- world1_port = 7200;
 -- world1_event_msg = "";
 -- world1_scrolling_header = "";
+-- world1_max_player_load = 1000;
 -- world1_pianus_channels = {-1};
 -- world1_pap_channels = {-1};
 -- world1_zakum_channels = {4, 5, 6};

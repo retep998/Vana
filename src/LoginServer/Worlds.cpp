@@ -47,8 +47,22 @@ void Worlds::selectWorld(PlayerLogin *player, PacketReader &packet) {
 		// hacking
 		return;
 	}
-	player->setWorld(packet.get<int8_t>());
-	LoginPacket::showChannels(player);
+	uint8_t worldId = packet.get<uint8_t>();
+	if (World *world = getWorld(worldId)) {
+		player->setWorld(worldId);
+		int32_t minMaxLoad = (world->maxPlayerLoad / 100) * 90; // 90% is enough for the many users warning, i think.
+		int8_t message = 0x00;
+		if (world->currentPlayerLoad >= minMaxLoad && world->currentPlayerLoad < world->maxPlayerLoad)
+			message = 0x01;
+		else if (world->currentPlayerLoad == world->maxPlayerLoad)
+			message = 0x02;
+
+		LoginPacket::showChannels(player, message);
+	}
+	else {
+		// hacking of some sort...
+		return;
+	}
 }
 
 void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
@@ -124,4 +138,16 @@ void Worlds::toWorlds(PacketCreator &packet) {
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
 		if (iter->second->connected == true)
 			iter->second->player->getSession()->send(packet);
+}
+
+void Worlds::calculatePlayerLoad(World *world) {
+	world->currentPlayerLoad = 0;
+	for (size_t i = 0; i < world->maxChannels; i++) {
+		if (world->channels.find(i) != world->channels.end())
+			world->currentPlayerLoad += world->channels[i]->population;
+	}
+}
+
+World * Worlds::getWorld(uint8_t id) {
+	return worlds.find(id) == worlds.end() ? 0 : worlds[id];
 }

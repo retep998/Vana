@@ -50,12 +50,12 @@ void LoginServer::loadConfig() {
 
 void LoginServer::loadWorlds() {
 	ConfigFile config("conf/worlds.lua");
-	boost::format formatter("world%i_%s"); // The formater we'll be using
+	boost::format formatter("world%i_%s"); // The formatter we'll be using
 	size_t i = 0;
 	while (1) {
 		formatter % i % "name";
 		if (!config.keyExist(formatter.str()))
-			break; //No more worlds
+			break; // No more worlds
 
 		World *world = new World();
 		world->name = config.getString(formatter.str());
@@ -96,6 +96,9 @@ void LoginServer::loadWorlds() {
 		formatter % i % "scrolling_header";
 		world->scrollingHeader = config.getString(formatter.str());
 
+		formatter % i % "max_player_load";
+		world->maxPlayerLoad = config.getInt(formatter.str());
+
 		formatter % i % "maxchars";
 		world->maxChars = config.getInt(formatter.str());
 
@@ -129,7 +132,6 @@ void LoginServer::loadWorlds() {
 		formatter % i % "pinkbean_attempts";
 		world->pinkbeanAttempts = config.getShort(formatter.str());
 
-		world->connected = false;
 		Worlds::worlds[world->id] = world;
 		i++;
 	}
