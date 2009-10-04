@@ -167,7 +167,7 @@ void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool
 	packet.add<int16_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(3);
 	packet.addString(msg);
-	packet.add<int8_t>((uint8_t) ChannelServer::Instance()->getChannel());
+	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
 	packet.addBool(whisper);
 	ChannelServer::Instance()->sendToWorld(packet);
 }

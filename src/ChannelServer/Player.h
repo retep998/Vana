@@ -142,6 +142,7 @@ public:
 	Party * getParty() const { return party; }
 	Instance * getInstance() const { return instance; }
 	bool isGm() const { return gm_level > 0; }
+	bool isAdmin() const { return admin; }
 	bool isTrading() const { return trade_state; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
@@ -215,6 +216,7 @@ private:
 	bool trade_state;
 	bool save_on_dc;
 	bool is_connect;
+	bool admin;
 	string name;
 	NPC *npc;
 	Instance *instance;

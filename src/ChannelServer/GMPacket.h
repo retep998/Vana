@@ -29,6 +29,9 @@ class PacketCreator;
 namespace GmPacket {
 	void beginHide(Player *player);
 	void endHide(Player *player);
+	void warning(Player *player, bool succeed);
+	void block(Player *player);
+	void invalidCharacterName(Player *player);
 };
 
 #endif

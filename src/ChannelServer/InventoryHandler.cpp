@@ -766,8 +766,11 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Items::MapleTvMessenger: {
+		case Items::MapleTvMessenger: 
+		case Items::Megassenger: {
 			bool hasreceiver = (packet.get<int8_t>() == 3);
+			bool show_whisper = itemid == Items::Megassenger ? packet.getBool() : false;
+
 			Player *receiver = Players::Instance()->getPlayer(packet.getString());
 			int32_t time = 15;
 			if ((hasreceiver && receiver != 0) || (!hasreceiver && receiver == 0)) {
@@ -777,24 +780,37 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
 				packet.get<int32_t>(); // Ticks
-				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time);
+				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
+				
+				if (itemid == Items::Megassenger)
+					InventoryPacket::showSuperMegaphone(player, player->getName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
+			
 				used = true;
 			}
 			break;
 		}
-		case Items::MapleTvStarMessenger: {
+		case Items::MapleTvStarMessenger: 
+		case Items::StarMegassenger: {
 			int32_t time = 30;
+			bool show_whisper = itemid == Items::StarMegassenger ? packet.getBool() : false;
 			string msg = packet.getString();
 			string msg2 = packet.getString();
 			string msg3 = packet.getString();
 			string msg4 = packet.getString();
 			string msg5 = packet.getString();
 			packet.get<int32_t>(); // Ticks
-			MapleTVs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid, time);
+			MapleTVs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
+			
+			if (itemid == Items::StarMegassenger)
+				InventoryPacket::showSuperMegaphone(player, player->getName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
+			
 			used = true;
 			break;
 		}
-		case Items::MapleTvHeartMessenger: {
+		case Items::MapleTvHeartMessenger:
+		case Items::HeartMegassenger: {
+			bool show_whisper = itemid == Items::HeartMegassenger ? packet.getBool() : false;
+
 			string name = packet.getString();
 			Player *receiver = Players::Instance()->getPlayer(name);
 			int32_t time = 60;
@@ -805,7 +821,9 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
 				packet.get<int32_t>(); // Ticks
-				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid, time);
+				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::HeartMegassenger ? 3 : 0), time);
+				if (itemid == Items::HeartMegassenger)
+					InventoryPacket::showSuperMegaphone(player, player->getName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
 				used = true;
 			}
 			break;

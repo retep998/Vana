@@ -38,3 +38,30 @@ void GmPacket::endHide(Player *player) {
 	
 	player->getSession()->send(packet);
 }
+
+void GmPacket::warning(Player *player, bool succeed) {
+	PacketCreator packet = PacketCreator();
+	packet.add<int16_t>(SMSG_GM);
+	packet.add<int8_t>(0x1d);
+	packet.addBool(succeed);
+	
+	player->getSession()->send(packet);
+}
+
+void GmPacket::block(Player *player) {
+	PacketCreator packet = PacketCreator();
+	packet.add<int16_t>(SMSG_GM);
+	packet.add<int8_t>(0x04);
+	packet.add<int8_t>(0); // Might be something like succeed but it isn't displayed
+	
+	player->getSession()->send(packet);
+}
+
+void GmPacket::invalidCharacterName(Player *player) {
+	PacketCreator packet = PacketCreator();
+	packet.add<int16_t>(SMSG_GM);
+	packet.add<int8_t>(0x06);
+	packet.add<int8_t>(1);
+	
+	player->getSession()->send(packet);
+}

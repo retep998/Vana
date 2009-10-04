@@ -320,6 +320,9 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 }
 
 bool ChatHandler::handleCommand(Player *player, const string &message) {
+	if (player->isAdmin() && message[0] == '/') // for preventing command 'printing' for Admins
+		return true;
+
 	if (player->isGm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
 		string command = strtok(chat + 1, " ");
@@ -378,24 +381,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
 						accbanquery.exec();
 
-						string banmsg = targetname + " has been banned";
-
-						switch (reason) {
-							case 0x01: banmsg += " for hacking."; break;
-							case 0x02: banmsg += " for using macro/auto-keyboard."; break;
-							case 0x03: banmsg += " for illicit promotion or advertising."; break;
-							case 0x04: banmsg += " for harassment."; break;
-							case 0x05: banmsg += " for using profane language."; break;
-							case 0x06: banmsg += " for scamming."; break;
-							case 0x07: banmsg += " for misconduct."; break;
-							case 0x08: banmsg += " for illegal cash transaction."; break;
-							case 0x09: banmsg += " for illegal charging/funding. Please contact customer support for further details."; break;
-							case 0x0A: banmsg += " for temporary request."; break;
-							case 0x0B: banmsg += " for impersonating GM."; break;
-							case 0x0C: banmsg += " for using illegal programs or violating the game policy."; break;
-							case 0x0D: banmsg += " for one of cursing, scamming, or illegal trading via Megaphones."; break;
-							default: banmsg += "."; break;
-						}
+						string banmsg = targetname + " has been banned" + getBanString(reason);
 						PlayersPacket::showMessage(banmsg, 0);
 					}
 					else {
@@ -419,24 +405,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							accipbanquery << "INSERT INTO `ipbans`(`id`, `ip`) VALUES (NULL, '" << targetip << "')";
 							accipbanquery.exec();
 
-							string banmsg = targetname + " has been IP banned";
-
-							switch (reason) {
-								case 0x01: banmsg += " for hacking."; break;
-								case 0x02: banmsg += " for using macro/auto-keyboard."; break;
-								case 0x03: banmsg += " for illicit promotion or advertising."; break;
-								case 0x04: banmsg += " for harassment."; break;
-								case 0x05: banmsg += " for using profane language."; break;
-								case 0x06: banmsg += " for scamming."; break;
-								case 0x07: banmsg += " for misconduct."; break;
-								case 0x08: banmsg += " for illegal cash transaction."; break;
-								case 0x09: banmsg += " for illegal charging/funding. Please contact customer support for further details."; break;
-								case 0x0A: banmsg += " for temporary request."; break;
-								case 0x0B: banmsg += " for impersonating GM."; break;
-								case 0x0C: banmsg += " for using illegal programs or violating the game policy."; break;
-								case 0x0D: banmsg += " for one of cursing, scamming, or illegal trading via Megaphones."; break;
-								default: banmsg += "."; break;
-							}
+							string banmsg = targetname + " has been IP banned" + getBanString(reason);
 							PlayersPacket::showMessage(banmsg, 0);
 						}
 					}
@@ -461,24 +430,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY) WHERE characters.name = '" << targetname << "'";
 						accbanquery.exec();
 
-						string banmsg = targetname + " has been banned";
-
-						switch (reason) {
-							case 0x01: banmsg += " for hacking."; break;
-							case 0x02: banmsg += " for using macro/auto-keyboard."; break;
-							case 0x03: banmsg += " for illicit promotion or advertising."; break;
-							case 0x04: banmsg += " for harassment."; break;
-							case 0x05: banmsg += " for using profane language."; break;
-							case 0x06: banmsg += " for scamming."; break;
-							case 0x07: banmsg += " for misconduct."; break;
-							case 0x08: banmsg += " for illegal cash transaction."; break;
-							case 0x09: banmsg += " for illegal charging/funding. Please contact customer support for further details."; break;
-							case 0x0A: banmsg += " for temporary request."; break;
-							case 0x0B: banmsg += " for impersonating GM."; break;
-							case 0x0C: banmsg += " for using illegal programs or violating the game policy."; break;
-							case 0x0D: banmsg += " for one of cursing, scamming, or illegal trading via Megaphones."; break;
-							default: banmsg += "."; break;
-						}
+						string banmsg = targetname + " has been banned" + getBanString(reason);
 						PlayersPacket::showMessage(banmsg, 0);
 					}
 					else {
@@ -1179,6 +1131,26 @@ int32_t ChatHandler::getMap(const string &query, Player *player) {
 		if (strlen(endptr) != 0) mapid = -1;
 	}
 	return mapid;
+}
+
+string ChatHandler::getBanString(int8_t reason) {
+	string banmsg = ".";
+	switch (reason) {
+		case 0x01: banmsg = " for hacking."; break;
+		case 0x02: banmsg = " for using macro/auto-keyboard."; break;
+		case 0x03: banmsg = " for illicit promotion or advertising."; break;
+		case 0x04: banmsg = " for harassment."; break;
+		case 0x05: banmsg = " for using profane language."; break;
+		case 0x06: banmsg = " for scamming."; break;
+		case 0x07: banmsg = " for misconduct."; break;
+		case 0x08: banmsg = " for illegal cash transaction."; break;
+		case 0x09: banmsg = " for illegal charging/funding. Please contact customer support for further details."; break;
+		case 0x0A: banmsg = " for temporary request."; break;
+		case 0x0B: banmsg = " for impersonating GM."; break;
+		case 0x0C: banmsg = " for using illegal programs or violating the game policy."; break;
+		case 0x0D: banmsg = " for one of cursing, scamming, or illegal trading via Megaphones."; break;
+	}
+	return banmsg;
 }
 
 void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {

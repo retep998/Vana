@@ -75,6 +75,7 @@ public:
 	void addPlayer(Player *player);
 	size_t getNumPlayers() const { return this->players.size(); }
 	Player * getPlayer(uint32_t i) const { return this->players[i]; }
+	string getPlayerNames();
 	void removePlayer(Player *player);
 	void dispelPlayers(int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
 	void statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);

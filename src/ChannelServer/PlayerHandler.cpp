@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropsPacket.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
+#include "InventoryPacket.h"
 #include "ItemDataProvider.h"
+#include "MapleTVs.h"
 #include "Maps.h"
 #include "Mist.h"
 #include "MobHandler.h"
@@ -329,6 +331,41 @@ void PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) {
 		player->getMonsterBook()->setCover(0);
 		MonsterBookPacket::changeCover(player, 0);
 	}
+}
+
+void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
+	if (!player->isAdmin()) {
+		// Hack
+		player->addWarning();
+		return;
+	}
+	Player *receiver = 0;
+	bool has_to_name = packet.get<int8_t>() == 2;
+	int8_t sort = packet.get<int8_t>();
+	bool use_whisper = packet.getBool();
+	int8_t type = packet.get<int8_t>();
+	int32_t character_id = packet.get<int32_t>();
+
+	if (player->getId() != character_id)
+		return;
+
+	string line1 = packet.getString();
+	string line2 = packet.getString();
+	string line3 = packet.getString();
+	string line4 = packet.getString();
+	string line5 = packet.getString();
+	if (has_to_name) 
+		receiver = Players::Instance()->getPlayer(packet.getString());
+
+	int32_t time = 15;
+	switch (type) {
+		case 1: time = 30; break;
+		case 2: time = 60; break;
+	}
+
+	MapleTVs::Instance()->addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
+	if (sort == 1)
+		InventoryPacket::showSuperMegaphone(player, player->getName() + " : " + line1 + line2 + line3 + line4 + line5, use_whisper);
 }
 
 void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
