@@ -47,7 +47,8 @@ void QuestDataProvider::loadQuestData() {
 
 	enum QuestData {
 		QuestId = 0,
-		NextQuest, MinLevel, MaxLevel, Interval, Fame
+		NextQuest, MinLevel, MaxLevel, PetCloseness, TamingMobLevel,
+		Interval, Fame
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {

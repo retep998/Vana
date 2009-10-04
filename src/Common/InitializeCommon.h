@@ -27,7 +27,7 @@ namespace Initializing {
 
 	const int32_t outputWidth = 26;
 	const int32_t McdbVersion = 4;
-	const int32_t McdbSubVersion = 0;
+	const int32_t McdbSubVersion = 1;
 };
 
 #endif
