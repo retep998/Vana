@@ -116,6 +116,8 @@ void LuaScriptable::initialize() {
 	// Skill
 	lua_register(luaVm, "addSkillLevel", &LuaExports::addSkillLevel);
 	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
+	lua_register(luaVm, "getMaxSkillLevel", &LuaExports::getMaxSkillLevel);
+	lua_register(luaVm, "setMaxSkillLevel", &LuaExports::setMaxSkillLevel);
 
 	// Quest
 	lua_register(luaVm, "getQuestData", &LuaExports::getQuestData);
@@ -656,8 +658,13 @@ int LuaExports::getBuddySlots(lua_State *luaVm) {
 
 // Skill
 int LuaExports::addSkillLevel(lua_State *luaVm) {
-	int32_t skillid = lua_tointeger(luaVm, -2);
-	uint8_t level = lua_tointeger(luaVm, -1);
+	int32_t skillid = lua_tointeger(luaVm, 1);
+	uint8_t level = lua_tointeger(luaVm, 2);
+
+	if (lua_isnumber(luaVm, 3)) { // Optional argument of increasing a skill's max level
+		getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillid, lua_tointeger(luaVm, 3));
+	}
+
 	getPlayer(luaVm)->getSkills()->addSkillLevel(skillid, level);
 	return 0;
 }
@@ -666,6 +673,19 @@ int LuaExports::getSkillLevel(lua_State *luaVm) {
 	int32_t skillid = lua_tointeger(luaVm, -1);
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getSkillLevel(skillid));
 	return 1;
+}
+
+int LuaExports::getMaxSkillLevel(lua_State *luaVm) {
+	int32_t skillid = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getMaxSkillLevel(skillid));
+	return 1;
+}
+
+int LuaExports::setMaxSkillLevel(lua_State *luaVm) {
+	int32_t skillid = lua_tointeger(luaVm, -2);
+	uint8_t level = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillid, level);
+	return 0;
 }
 
 // Quest

@@ -110,6 +110,8 @@ namespace LuaExports {
 	// Skill
 	int addSkillLevel(lua_State *luaVm);
 	int getSkillLevel(lua_State *luaVm);
+	int getMaxSkillLevel(lua_State *luaVm);
+	int setMaxSkillLevel(lua_State *luaVm);
 
 	// Quest
 	int getQuestData(lua_State *luaVm);
