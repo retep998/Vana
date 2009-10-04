@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define SMSG_AUTHENTICATION 0x00
 #define SMSG_WORLD_STATUS 0x03
-#define SMSG_GENDER_DONE 0x04
+#define SMSG_ACCOUNT_GENDER_DONE 0x04
 #define SMSG_PIN 0x06
 #define SMSG_PIN_ASSIGNED 0x07
 #define SMSG_PLAYER_GLOBAL_LIST 0x08
