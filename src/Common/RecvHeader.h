@@ -16,89 +16,89 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#define RECV_LOGIN_INFO 0x01
-#define RECV_SHOW_WORLD2 0x04 // Click back after select channel
-#define RECV_CHANNEL_SELECT 0x05
-#define RECV_WORLD_SELECT 0x06
-#define RECV_SET_GENDER 0x08
-#define RECV_LOGIN_PROCESS 0x09
-#define RECV_REGISTER_PIN 0x0a
-#define RECV_SHOW_WORLD 0x0b
-#define RECV_VIEW_ALL_CHAR 0x0d
-#define RECV_VIEW_ALL_CHAR_GET_CHANNEL_SERVER_INFO 0x0e
-#define RECV_GET_CHANNEL_SERVER_INFO 0x13
-#define RECV_CHANNEL_LOGIN 0x14
-#define RECV_CHECK_CHAR_NAME 0x15
-#define RECV_CREATE_CHAR 0x16
-#define RECV_DELETE_CHAR 0x18
-#define RECV_PONG 0x19
-#define RECV_RELOG 0x1d
-#define RECV_CHANGE_MAP 0x25
-#define RECV_CHANGE_CHANNEL 0x26
-#define RECV_CASH_BUTTON 0x27
-#define RECV_MOVE_PLAYER 0x28
-#define RECV_CHAIR_ACTION 0x29
-#define RECV_USE_CHAIR 0x2a
-#define RECV_ATTACK_MELEE 0x2b
-#define RECV_ATTACK_RANGED 0x2c
-#define RECV_ATTACK_SPELL 0x2d
-#define RECV_ATTACK_ENERGYCHARGE 0x2e
-#define RECV_DAMAGE_PLAYER 0x2f
-#define RECV_CHAT 0x30
-#define RECV_FACE_EXPRESSION 0x32
-#define RECV_USE_ITEM_EFFECT 0x33
-#define RECV_MONSTERBOOK 0x38
-#define RECV_NPC_TALK 0x39
-#define RECV_NPC_TALK_CONT 0x3b // i.e. clicking next on NPC
-#define RECV_SHOP_ENTER 0x3c
-#define RECV_USE_STORAGE 0x3d
-#define RECV_MOVE_ITEM 0x46
-#define RECV_USE_ITEM 0x47
-#define RECV_CANCEL_ITEM 0x48
-#define RECV_USE_SUMMON_BAG 0x4a
-#define RECV_PET_FEED 0x4b
-#define RECV_USE_CASH_ITEM 0x4e
-#define RECV_USE_SKILLBOOK 0x51
-#define RECV_USE_TELEPORT_ROCK 0x53 // Only the one in your Use
-#define RECV_USE_RETURN_SCROLL 0x54
-#define RECV_USE_SCROLL 0x55
-#define RECV_ADD_STAT 0x56
-#define RECV_ADD_STAT_MULTI 0x57 // The auto-assign button
-#define RECV_HEAL_PLAYER 0x58
-#define RECV_ADD_SKILL 0x59
-#define RECV_USE_SKILL 0x5a
-#define RECV_CANCEL_SKILL 0x5b
-#define RECV_SPECIAL_SKILL 0x5c // Chakra, Pierce, Monster Magnet, Big Bang
-#define RECV_DROP_MESO 0x5d
-#define RECV_FAME 0x5e
-#define RECV_GET_PLAYER_INFO 0x60
-#define RECV_PET_SUMMON 0x61
-#define RECV_CHANGE_MAP_SPECIAL 0x63
-#define RECV_USE_MAP_TELEPORT 0x64
-#define RECV_TELEPORT_ROCK_FUNCTION 0x65
-#define RECV_GET_QUEST 0x6a
-#define RECV_SKILL_MACRO 0x6d
-#define RECV_GROUP_CHAT 0x75 // Party, buddy and guild chat
-#define RECV_COMMAND 0x76 // / commands like "/find"
-#define RECV_PLAYER_ROOM_ACTION 0x79 // Trades, player shops, minigames, etc.
-#define RECV_PARTY_ACTION 0x7a
-#define RECV_BUDDYLIST 0x80
-#define RECV_KEYMAP 0x85
-#define RECV_MTS_BUTTON 0x9a
-#define RECV_PET_MOVE 0xa1
-#define RECV_PET_CHAT 0xa2
-#define RECV_PET_COMMAND 0xa3
-#define RECV_PET_LOOT 0xa4
-#define RECV_MOVE_SUMMON 0xa9
-#define RECV_ATTACK_SUMMON 0xaa
-#define RECV_DAMAGE_SUMMON 0xab
-#define RECV_CONTROL_MOB 0xb2
-#define RECV_DISTANCE_TO_MOB 0xb3
-#define RECV_FRIENDLY_MOB_DAMAGED 0xb6
-#define RECV_MOB_BOMB_EXPLOSION 0xb7
-#define RECV_MOB_DAMAGE_MOB 0xb8 // For Hypnotize
-#define RECV_ANIMATE_NPC 0xbb
-#define RECV_LOOT_ITEM 0xc0
-#define RECV_HIT_REACTOR 0xc3
-#define RECV_TOUCH_REACTOR 0xc4
-#define RECV_HAMMER_TIME 0xf8
+#define CMSG_AUTHENTICATION 0x01
+#define CMSG_WORLD_LIST_REFRESH 0x04 // Click back after select channel
+#define CMSG_PLAYER_LIST 0x05
+#define CMSG_WORLD_STATUS 0x06
+#define CMSG_ACCOUNT_GENDER 0x08
+#define CMSG_PIN 0x09
+#define CMSG_REGISTER_PIN 0x0a
+#define CMSG_WORLD_LIST 0x0b
+#define CMSG_PLAYER_GLOBAL_LIST 0x0d
+#define CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT 0x0e
+#define CMSG_CHANNEL_CONNECT 0x13
+#define CMSG_PLAYER_LOAD 0x14
+#define CMSG_PLAYER_NAME_CHECK 0x15
+#define CMSG_PLAYER_CREATE 0x16
+#define CMSG_PLAYER_DELETE 0x18
+#define CMSG_PONG 0x19
+#define CMSG_LOGIN_RETURN 0x1d
+#define CMSG_MAP_CHANGE 0x25
+#define CMSG_CHANNEL_CHANGE 0x26
+#define CMSG_CASH_SHOP 0x27
+#define CMSG_PLAYER_MOVE 0x28
+#define CMSG_CHAIR 0x29
+#define CMSG_USE_CHAIR 0x2a
+#define CMSG_ATTACK_MELEE 0x2b
+#define CMSG_ATTACK_RANGED 0x2c
+#define CMSG_ATTACK_MAGIC 0x2d
+#define CMSG_ATTACK_ENERGY_CHARGE 0x2e
+#define CMSG_PLAYER_DAMAGE 0x2f
+#define CMSG_PLAYER_CHAT 0x30
+#define CMSG_EMOTE 0x32
+#define CMSG_ITEM_EFFECT 0x33
+#define CMSG_MONSTER_BOOK 0x38
+#define CMSG_NPC_TALK 0x39
+#define CMSG_NPC_TALK_CONT 0x3b // i.e. clicking next on NPC
+#define CMSG_SHOP 0x3c
+#define CMSG_STORAGE 0x3d
+#define CMSG_ITEM_MOVE 0x46
+#define CMSG_ITEM_USE 0x47
+#define CMSG_ITEM_CANCEL 0x48
+#define CMSG_SUMMON_BAG_USE 0x4a
+#define CMSG_PET_FOOD_USE 0x4b
+#define CMSG_CASH_ITEM_USE 0x4e
+#define CMSG_SKILLBOOK_USE 0x51
+#define CMSG_TELEPORT_ROCK_USE 0x53 // Only the one in your Use
+#define CMSG_TOWN_SCROLL_USE 0x54
+#define CMSG_SCROLL_USE 0x55
+#define CMSG_STAT_ADDITION 0x56
+#define CMSG_MULTI_STAT_ADDITION 0x57 // The auto-assign button
+#define CMSG_PLAYER_HEAL 0x58
+#define CMSG_SKILL_ADD 0x59
+#define CMSG_SKILL_USE 0x5a
+#define CMSG_SKILL_CANCEL 0x5b
+#define CMSG_SPECIAL_SKILL 0x5c // Chakra, Pierce, Monster Magnet, Big Bang
+#define CMSG_DROP_MESOS 0x5d
+#define CMSG_FAME 0x5e
+#define CMSG_PLAYER_INFO 0x60
+#define CMSG_PET_SUMMON 0x61
+#define CMSG_MAP_CHANGE_SPECIAL 0x63
+#define CMSG_MAP_TELEPORT 0x64
+#define CMSG_TELEPORT_ROCK 0x65
+#define CMSG_QUEST_OBTAIN 0x6a
+#define CMSG_MACRO_LIST 0x6d
+#define CMSG_MESSAGE_GROUP 0x75 // Party, buddy and guild chat
+#define CMSG_COMMAND 0x76 // / commands like "/find"
+#define CMSG_PLAYER_ROOM 0x79 // Trades, player shops, minigames, etc.
+#define CMSG_PARTY 0x7a
+#define CMSG_BUDDY 0x80
+#define CMSG_KEYMAP 0x85
+#define CMSG_MTS 0x9a
+#define CMSG_PET_MOVEMENT 0xa1
+#define CMSG_PET_CHAT 0xa2
+#define CMSG_PET_COMMAND 0xa3
+#define CMSG_PET_LOOT 0xa4
+#define CMSG_SUMMON_MOVEMENT 0xa9
+#define CMSG_SUMMON_ATTACK 0xaa
+#define CMSG_SUMMON_DAMAGE 0xab
+#define CMSG_MOB_CONTROL 0xb2
+#define CMSG_PLAYER_MOB_DISTANCE 0xb3
+#define CMSG_FRIENDLY_MOB_DAMAGE 0xb6
+#define CMSG_MOB_EXPLOSION 0xb7
+#define CMSG_MOB_TURNCOAT_DAMAGE 0xb8 // For Hypnotize
+#define CMSG_NPC_ANIMATE 0xbb
+#define CMSG_ITEM_LOOT 0xc0
+#define CMSG_REACTOR_HIT 0xc3
+#define CMSG_REACTOR_TOUCH 0xc4
+#define CMSG_HAMMER 0xf8

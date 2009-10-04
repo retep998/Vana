@@ -84,7 +84,7 @@ void LoginPacket::pinAssigned(PlayerLogin *player) {
 
 void LoginPacket::genderDone(PlayerLogin *player, int8_t gender) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GENDER_DONE);
+	packet.add<int16_t>(SMSG_ACCOUNT_GENDER_DONE);
 	packet.add<int8_t>(gender);
 	packet.add<int8_t>(1);
 	player->getSession()->send(packet);

@@ -31,6 +31,6 @@ void PingPacket::ping(AbstractConnection *player) {
 
 void PingPacket::pong(AbstractConnection *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(RECV_PONG);
+	packet.add<int16_t>(CMSG_PONG);
 	player->getSession()->send(packet);
 }

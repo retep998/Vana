@@ -26,21 +26,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PlayerLogin::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
-		case RECV_LOGIN_INFO: Login::loginUser(this, packet); break;
-		case RECV_CHANNEL_SELECT: Worlds::channelSelect(this, packet); break;
-		case RECV_WORLD_SELECT: Worlds::selectWorld(this, packet); break;
-		case RECV_LOGIN_PROCESS: Login::handleLogin(this, packet); break;
-		case RECV_SHOW_WORLD:
-		case RECV_SHOW_WORLD2: Worlds::showWorld(this); break;
-		case RECV_GET_CHANNEL_SERVER_INFO: Characters::connectGame(this, packet); break;
-		case RECV_VIEW_ALL_CHAR: Characters::showAllCharacters(this); break;
-		case RECV_VIEW_ALL_CHAR_GET_CHANNEL_SERVER_INFO: Characters::connectGameWorld(this, packet); break;
-		case RECV_CHECK_CHAR_NAME: Characters::checkCharacterName(this, packet); break;
-		case RECV_CREATE_CHAR: Characters::createCharacter(this, packet); break;
-		case RECV_DELETE_CHAR: Characters::deleteCharacter(this, packet); break;
-		case RECV_SET_GENDER: Login::setGender(this, packet); break;
-		case RECV_REGISTER_PIN: Login::registerPin(this, packet); break;
-		case RECV_RELOG: LoginPacket::relogResponse(this);
+		case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
+		case CMSG_PLAYER_LIST: Worlds::channelSelect(this, packet); break;
+		case CMSG_WORLD_STATUS: Worlds::selectWorld(this, packet); break;
+		case CMSG_PIN: Login::handleLogin(this, packet); break;
+		case CMSG_WORLD_LIST:
+		case CMSG_WORLD_LIST_REFRESH: Worlds::showWorld(this); break;
+		case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
+		case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
+		case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
+		case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
+		case CMSG_PLAYER_CREATE: Characters::createCharacter(this, packet); break;
+		case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, packet); break;
+		case CMSG_ACCOUNT_GENDER: Login::setGender(this, packet); break;
+		case CMSG_REGISTER_PIN: Login::registerPin(this, packet); break;
+		case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this);
 	}
 }
 
