@@ -175,7 +175,6 @@ struct ItemInfo {
 	bool notrade;
 	bool quest;
 	bool cash;
-	
 };
 	
 struct PetInfo {
