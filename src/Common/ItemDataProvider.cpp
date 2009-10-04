@@ -52,7 +52,7 @@ void ItemDataProvider::loadData() {
 
 void ItemDataProvider::loadItems() {
 	items.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, string_data.name FROM item_data, string_data WHERE item_data.itemid = string_data.objectid AND string_data.object_type = \'item\'");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.name FROM item_data, strings WHERE item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	ItemInfo item;
@@ -74,7 +74,8 @@ void ItemDataProvider::loadItems() {
 	enum ItemData {
 		ItemId = 0,
 		ItemPrice, SlotMax, MaxAtOnce, MinLevel, MaxLevel,
-		Experience, MakerLevel, Flags, Name
+		Experience, Mesos, StateChange, MakerLevel, Flags,
+		Name
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
@@ -193,11 +194,12 @@ void ItemDataProvider::loadConsumes() {
 		ItemId = 0,
 		Flags, Ailments, Effect, Hp, Mp,
 		HpPercentage, MpPercentage, MoveTo, DecHunger, DecFatigue,
-		CarnivalPoints, Prob, Time, Watk, Matk,
-		Wdef, Mdef, Acc, Avo, Speed,
-		Jump, Morph, DropUp, DropUpItem, DropUpItemRange,
-		DropUpMapRanges, IceDef, FireDef, LightningDef, PoisonDef,
-		StunDef, WeaknessDef, CurseDef, DarknessDef, SealDef
+		CarnivalPoints, CreateItem, Prob, Time, Watk,
+		Matk, Wdef, Mdef, Acc, Avo,
+		Speed, Jump, Morph, DropUp, DropUpItem,
+		DropUpItemRange, DropUpMapRanges, IceDef, FireDef, LightningDef,
+		PoisonDef, StunDef, WeaknessDef, CurseDef, DarknessDef,
+		SealDef
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {

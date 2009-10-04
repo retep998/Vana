@@ -131,9 +131,9 @@ void MobDataProvider::loadMobs() {
 		MpRecovery, SelfDestruct, Exp, Link, SummonType,
 		Knockback, FixedDamage, DeathBuff, DeathAfter, Traction,
 		DamageSkill, DamageMob, HpBar, HpBarBg, CarnivalPoints,
-		IceMod, FireMod, PoisonMod, LightningMod, HolyMod,
-		NonElementalMod, PhysicalAtt, PhysicalDef, MagicAtt, MagicDef,
-		Accuracy, Avoidability, Speed, ChaseSpeed
+		PhysicalAtt, PhysicalDef, MagicAtt, MagicDef, Accuracy,
+		Avoidability, Speed, ChaseSpeed, IceMod, FireMod,
+		PoisonMod, LightningMod, HolyMod, NonElementalMod
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
