@@ -45,6 +45,7 @@ struct Channel {
 };
 
 struct World {
+	World() : connected(false), currentPlayerLoad(0) { }
 	string name;
 	unordered_map<int32_t, shared_ptr<Channel> > channels;
 	size_t maxChannels;
@@ -52,6 +53,7 @@ struct World {
 	int8_t ribbon;
 	bool connected;
 	int16_t port;
+	int32_t currentPlayerLoad;
 	LoginServerAcceptConnection *player;
 	// Rates
 	int32_t exprate;
@@ -66,6 +68,7 @@ struct World {
 	int16_t maxStats;
 	string eventMsg;
 	string scrollingHeader;
+	int32_t maxPlayerLoad;
 	// Boss channels
 	vector<int8_t> pianusChannels;
 	vector<int8_t> papChannels;
@@ -88,6 +91,8 @@ namespace Worlds {
 	int8_t connectWorldServer(LoginServerAcceptConnection *player); //Inter-server
 	int8_t connectChannelServer(LoginServerAcceptConnection *player); //Inter-server
 	void toWorlds(PacketCreator &packet);
+	void calculatePlayerLoad(World *world);
+	World *getWorld(uint8_t id);
 	extern map<uint8_t, World *> worlds;
 };
 

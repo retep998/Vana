@@ -131,7 +131,7 @@ void LoginPacket::worldEnd(PlayerLogin *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showChannels(PlayerLogin *player) {
+void LoginPacket::showChannels(PlayerLogin *player, int8_t status) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_WORLD_STATUS);
 	/*	Byte/short types:
@@ -139,7 +139,7 @@ void LoginPacket::showChannels(PlayerLogin *player) {
 		0x01 = "Since There Are Many Concurrent Users in This World, You May Encounter Some Difficulties During the Game Play."
 		0x02 = "The Concurrent Users in This World Have Reached the Max. Please Try Again Later."
 	*/
-	packet.add<int16_t>(0);
+	packet.add<int16_t>(status);
 	player->getSession()->send(packet);
 }
 
