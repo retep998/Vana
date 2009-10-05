@@ -100,7 +100,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 				ItemInfo *i = ItemDataProvider::Instance()->getItemInfo(item1->id);
 				EquipInfo *e = EquipDataProvider::Instance()->getEquipInfo(item1->id);
 				uint8_t desiredslot = -(slot2 + (i->cash ? 100 : 0));
-				if (!(e->validslots & (1LL << (desiredslot - 1))) {
+				if (!(e->validslots & (1LL << (desiredslot - 1)))) {
 					// Hacking
 					return;
 				}
