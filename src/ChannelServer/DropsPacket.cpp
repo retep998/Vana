@@ -41,7 +41,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 		packet.add<int16_t>(0);
 	}
 	if (!drop->isMesos()) {
-		packet.addBytes("008005BB46E61702");
+		packet.add<int64_t>(Items::NoExpiration);
 	}
 	packet.addBool(!drop->isPlayerDrop()); // Determines whether pets can pick item up or not
 	if (player != 0)
@@ -51,7 +51,6 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 
 	if (newdrop) {
 		showDrop(player, drop, 0, false, origin);
-
 	}
 }
 
@@ -129,7 +128,7 @@ void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool is
 }
 
 void DropsPacket::pickupDropSpecial(Player *player, int32_t id) {
-	// This packet is used for pq drops (maybe, got it from the Wing of the Wind item) and monstercards.
+	// This packet is used for PQ drops (maybe, got it from the Wing of the Wind item) and monster cards
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(0);

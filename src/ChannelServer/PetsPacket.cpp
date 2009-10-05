@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Pets.h"
+#include "GameConstants.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
@@ -171,12 +172,12 @@ void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(pet->getId());
 	packet.add<int32_t>(0);
-	packet.addBytes("008005BB46E61702");
+	packet.add<int64_t>(Items::NoExpiration);
 	packet.addString(pet->getName(), 13);
 	packet.add<int8_t>(pet->getLevel());
 	packet.add<int16_t>(pet->getCloseness());
 	packet.add<int8_t>(pet->getFullness());
-	packet.add<int64_t>(180000000000LL); // Item expiration
+	packet.add<int64_t>(Items::NoExpiration);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0); // Time to expire (for trial pet)
 }
