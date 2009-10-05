@@ -30,11 +30,13 @@ void KeyMaps::defaultMap() {
 	add(18, new KeyMap(4, 0));
 	add(19, new KeyMap(4, 4));
 	add(23, new KeyMap(4, 1));
+	add(24, new KeyMap(4, 25));
 	add(25, new KeyMap(4, 19));
 	add(26, new KeyMap(4, 14));
 	add(27, new KeyMap(4, 15));
 	add(29, new KeyMap(5, 52));
 	add(31, new KeyMap(4, 2));
+	add(33, new KeyMap(4, 26));
 	add(34, new KeyMap(4, 17));
 	add(35, new KeyMap(4, 11));
 	add(37, new KeyMap(4, 3));
