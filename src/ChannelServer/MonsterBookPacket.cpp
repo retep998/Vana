@@ -29,17 +29,22 @@ void MonsterBookPacket::addCard(Player *player, int32_t cardid, uint8_t level, b
 	packet.add<int32_t>(cardid);
 	packet.add<int32_t>(level);
 	player->getSession()->send(packet);
+
 	if (!full) {
 		packet = PacketCreator();
 		packet.add<int16_t>(SMSG_THEATRICS);
 		packet.add<int8_t>(0x0D);
 		player->getSession()->send(packet);
 
+		// GMS doesnt send the animation for others. 
+		// If you want to enable displaying it, just uncomment this VV
+		/*
 		packet = PacketCreator();
 		packet.add<int16_t>(SMSG_SKILL_SHOW);
 		packet.add<int32_t>(player->getId());
 		packet.add<int8_t>(0x0D);
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
+		*/
 	}
 }
 

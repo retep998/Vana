@@ -51,29 +51,8 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 
 	if (newdrop) {
 		showDrop(player, drop, 0, false, origin);
-	}
-}
 
-void DropsPacket::takeNote(Player *player, int32_t id, bool ismesos, int16_t amount) {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NOTE);
-	packet.add<int8_t>(0);
-	if (id == 0)
-		packet.add<int8_t>(-1);
-	else {
-		packet.addBool(ismesos);
-		packet.add<int32_t>(id);
-		if (ismesos) {
-			packet.add<int16_t>(0); // Internet Cafe Bonus
-		}
-		else if (GameLogicUtilities::getInventory(id) != Inventories::EquipInventory)
-			packet.add<int16_t>(amount);
 	}
-	if (!ismesos) {
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-	}
-	player->getSession()->send(packet);
 }
 
 void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
@@ -112,4 +91,49 @@ void DropsPacket::explodeDrop(Drop *drop) {
 	packet.add<int32_t>(drop->getId());
 	packet.add<int16_t>(655);
 	Maps::getMap(drop->getMap())->sendPacket(packet);
+}
+
+void DropsPacket::dropNotAvailableForPickup(Player *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_NOTE);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(-2);
+	player->getSession()->send(packet);	
+}
+
+void DropsPacket::cantGetAnymoreItems(Player *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_NOTE);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(-1);
+	player->getSession()->send(packet);	
+}
+
+void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos, int16_t cafeBonus) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_NOTE);
+	packet.add<int8_t>(0);
+	packet.addBool(isMesos);
+	packet.add<int32_t>(id);
+
+	if (isMesos) 
+		packet.add<int16_t>(cafeBonus);
+	else if (GameLogicUtilities::getInventory(id) != Inventories::EquipInventory)
+		packet.add<int16_t>(amount);
+
+	if (!isMesos) {
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+	}
+	player->getSession()->send(packet);	
+}
+
+void DropsPacket::pickupDropSpecial(Player *player, int32_t id) {
+	// This packet is used for pq drops (maybe, got it from the Wing of the Wind item) and monstercards.
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_NOTE);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(2);
+	packet.add<int32_t>(id);
+	player->getSession()->send(packet);	
 }
