@@ -102,7 +102,8 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 						continue;
 
 					int16_t request = QuestDataProvider::Instance()->getItemRequest(questid, itemid);
-					if (player->getInventory()->getItemAmount(itemid) >= request)
+					int16_t amount = player->getInventory()->getItemAmount(itemid);
+					if (amount >= request)
 						continue;
 				}
 
@@ -187,14 +188,14 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 
 	if (drop->isQuest()) {
 		if (!player->getQuests()->isQuestActive(drop->getQuest())) {
-			DropsPacket::takeNote(player, 0, false, 0);
+			DropsPacket::dropNotAvailableForPickup(player);
 			DropsPacket::dontTake(player);
 			return;
 		}
 
 		int16_t request = QuestDataProvider::Instance()->getItemRequest(drop->getQuest(), drop->getObjectId());
 		if (player->getInventory()->getItemAmount(drop->getObjectId()) >= request) {
-			DropsPacket::takeNote(player, 0, false, 0);
+			DropsPacket::dropNotAvailableForPickup(player);
 			DropsPacket::dontTake(player);
 			return;
 		}
@@ -210,7 +211,7 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 				mesos = mesos * playerrate / 100;
 
 				if (player->getInventory()->modifyMesos(mesos, true)) {
-					DropsPacket::takeNote(player, mesos, true, 0);
+					DropsPacket::pickupDrop(player, mesos, 0, true);
 				}
 				else {
 					DropsPacket::dontTake(player);
@@ -225,7 +226,7 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 					p = members[j];
 					if (p != player) {
 						if (p->getInventory()->modifyMesos(mesos, true)) {
-							DropsPacket::takeNote(p, mesos, true, 0);
+							DropsPacket::pickupDrop(p, mesos, 0, true);
 						}
 						else {
 							DropsPacket::dontTake(p);
@@ -236,7 +237,7 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		}
 		if (playerrate == 100) {
 			if (player->getInventory()->modifyMesos(mesos, true)) {
-				DropsPacket::takeNote(player, drop->getObjectId(), true, 0);
+				DropsPacket::pickupDrop(player, drop->getObjectId(), 0, true);
 			}
 			else {
 				DropsPacket::dontTake(player);
@@ -249,14 +250,10 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		ConsumeInfo *item = ItemDataProvider::Instance()->getConsumeInfo(dropitem.id);
 		if (item != 0 && item->autoconsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
-				if (player->getMonsterBook()->isFull(drop->getObjectId())) {
-					drop->takeDrop(player, petid);
-				}
-				else {
-					drop->removeDrop();
-				}
+				DropsPacket::pickupDropSpecial(player, drop->getObjectId());
 				Inventory::useItem(player, dropitem.id);
 				DropsPacket::dontTake(player);
+				drop->takeDrop(player, petid);
 				return;
 			}
 			Inventory::useItem(player, dropitem.id);
@@ -267,15 +264,15 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 			int16_t amount = Inventory::addItem(player, item, true);
 			if (amount > 0) {
 				if (dropAmount - amount > 0) {
-					DropsPacket::takeNote(player, drop->getObjectId(), false, dropAmount - amount);
+					DropsPacket::pickupDrop(player, drop->getObjectId(), dropAmount - amount);
 					drop->setItemAmount(amount);
 				}
-				DropsPacket::takeNote(player, 0, 0, 0);
+				DropsPacket::cantGetAnymoreItems(player);
 				DropsPacket::dontTake(player);
 				return;
 			}
 		}
-		DropsPacket::takeNote(player, drop->getObjectId(), false, drop->getAmount());
+		DropsPacket::pickupDrop(player, drop->getObjectId(), drop->getAmount());
 	}
 	Reactors::checkLoot(drop);
 	drop->takeDrop(player, petid);
