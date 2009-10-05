@@ -33,10 +33,10 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	packet.addBool(drop->isMesos());
 	packet.add<int32_t>(drop->getObjectId());
 	packet.add<int32_t>(drop->getOwner()); // Owner of drop
-	packet.add<int8_t>(drop->getType()); // // 0 = timeout for non-owner, 1 = timeout for non-owner's party, 2 = FFA, 3 = explosive/FFA
+	packet.add<int8_t>(drop->getType()); // 0 = timeout for non-owner, 1 = timeout for non-owner's party, 2 = FFA, 3 = explosive/FFA
 	packet.addPos(drop->getPos());
 	packet.add<int32_t>(drop->getTime());
-	if (type == 0 || type == 1 || type == 3) { // Give the point of origin for things that are just being dropped
+	if (type != 2) { // Give the point of origin for things that are just being dropped
 		packet.addPos(origin);
 		packet.add<int16_t>(0);
 	}
