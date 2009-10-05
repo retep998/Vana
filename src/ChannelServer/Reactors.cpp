@@ -77,9 +77,9 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 			// Not sure how this would happen, but whatever
 			return;
 		}
-		if (reactor->getState() < data->maxstates) {
+		if (reactor->getState() < (data->maxstates - 1)) {
 			ReactorStateInfo *revent = &(data->states[reactor->getState()][0]); // There's only one way to hit something
-			if (revent->nextstate < data->maxstates) {
+			if (revent->nextstate < (data->maxstates - 1)) {
 				if (revent->type == 100)
 					return;
 
@@ -143,7 +143,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 			// Not sure how this would happen, but whatever
 			continue;
 		}
-		if (reactor->getState() < data->maxstates) {
+		if (reactor->getState() < (data->maxstates - 1)) {
 			ReactorStateInfo *revent;
 			for (int8_t j = 0; j < static_cast<int8_t>(data->states[reactor->getState()].size()); j++) {
 				revent = &(data->states[reactor->getState()][j]);
