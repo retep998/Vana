@@ -118,7 +118,7 @@ void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool is
 	if (isMesos) 
 		packet.add<int16_t>(cafeBonus);
 	else if (GameLogicUtilities::getInventory(id) != Inventories::EquipInventory)
-		packet.add<int16_t>(amount);
+		packet.add<int16_t>(static_cast<int16_t>(amount));
 
 	if (!isMesos) {
 		packet.add<int32_t>(0);

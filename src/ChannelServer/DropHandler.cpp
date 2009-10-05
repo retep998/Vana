@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "ItemDataProvider.h"
+#include "MapDataProvider.h"
 #include "Maps.h"
 #include "PacketReader.h"
 #include "Party.h"
@@ -55,16 +56,19 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 	}
 	if (droppingLevel != 0 && gdrops != 0) { // Check for global drops, add to the vector if needed
 		DropInfo d;
+		int8_t continent = MapDataProvider::Instance()->getContinent(mapid);
 		for (GlobalDrops::iterator i = gdrops->begin(); i != gdrops->end(); i++) {
 			if (droppingLevel >= i->minlevel && droppingLevel <= i->maxlevel) {
-				d = DropInfo();
-				d.chance = i->chance;
-				d.ismesos = i->ismesos;
-				d.itemid = i->itemid;
-				d.minamount = i->minamount;
-				d.maxamount = i->maxamount;
-				d.questid = i->questid;
-				drops.push_back(d);
+				if (i->continent == 0 || (continent == i->continent)) {
+					d = DropInfo();
+					d.chance = i->chance;
+					d.ismesos = i->ismesos;
+					d.itemid = i->itemid;
+					d.minamount = i->minamount;
+					d.maxamount = i->maxamount;
+					d.questid = i->questid;
+					drops.push_back(d);
+				}
 			}
 		}
 	}
