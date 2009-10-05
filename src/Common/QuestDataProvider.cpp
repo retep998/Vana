@@ -72,7 +72,7 @@ void QuestDataProvider::loadRequests() {
 	struct TypeFunctor {
 		void operator() (const string &cmp) {
 			if (cmp == "item") quest->addItemRequest(reqid, count);
-			else if (cmp == "mob") quest->addItemRequest(reqid, count);
+			else if (cmp == "mob") quest->addMobRequest(reqid, count);
 			else if (cmp == "quest") quest->addQuestRequest(static_cast<int16_t>(reqid), static_cast<int8_t>(count));
 		}
 		Quest *quest;
@@ -95,6 +95,7 @@ void QuestDataProvider::loadRequests() {
 		count = atoi(row[Count]);
 
 		TypeFunctor whoo = {cur, reward, count};
+		runFlags(row[Type], whoo);
 	}
 }
 
