@@ -118,6 +118,15 @@ struct BanishField {
 	int32_t field;
 };
 
+struct MorphData {
+	MorphData() : superman(false) { }
+	uint8_t speed;
+	uint8_t jump;
+	double traction;
+	double swim;
+	bool superman;
+};
+
 class SkillDataProvider : boost::noncopyable {
 public:
 	static SkillDataProvider * Instance() {
@@ -132,8 +141,11 @@ public:
 	SkillLevelInfo * getSkill(int32_t skill, uint8_t level);
 	MobSkillLevelInfo * getMobSkill(uint8_t skill, uint8_t level);
 
-	bool hasBanishData(int32_t mobid) { return banishinfo.find(mobid) != banishinfo.end(); }
+	bool hasBanishData(int32_t mobid) { return (banishinfo.find(mobid) != banishinfo.end()); }
 	BanishField * getBanishData(int32_t mobid) { return (hasBanishData(mobid) ? &banishinfo[mobid] : 0); }
+
+	bool hasMorphData(int16_t morph) { return (morphinfo.find(morph) != morphinfo.end()); }
+	MorphData * getMorphData(int16_t morph) { return (hasMorphData(morph) ? &morphinfo[morph] : 0); }
 private:
 	SkillDataProvider() {}
 	static SkillDataProvider *singleton;
@@ -142,11 +154,13 @@ private:
 	void loadMobSkills();
 	void loadMobSummons();
 	void loadBanishData();
+	void loadMorphs();
 
 	unordered_map<uint8_t, MobSkillsLevelInfo> mobskills;
 	unordered_map<int32_t, SkillsLevelInfo> skills;
 	unordered_map<int32_t, uint8_t> maxlevels;
 	unordered_map<int32_t, BanishField> banishinfo;
+	unordered_map<int16_t, MorphData> morphinfo;
 };
 
 #endif

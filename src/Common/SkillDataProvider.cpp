@@ -18,9 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 #include "Database.h"
 #include "InitializeCommon.h"
-#include "MiscUtilities.h"
+#include "StringUtilities.h"
 
 using Initializing::outputWidth;
+using StringUtilities::runFlags;
 
 SkillDataProvider * SkillDataProvider::singleton = 0;
 
@@ -31,6 +32,7 @@ void SkillDataProvider::loadData() {
 	loadMobSkills();
 	loadMobSummons();
 	loadBanishData();
+	loadMorphs();
 
 	std::cout << "DONE" << std::endl;
 }
@@ -181,12 +183,46 @@ void SkillDataProvider::loadBanishData() {
 	}
 }
 
+void SkillDataProvider::loadMorphs() {
+	morphinfo.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM morph_data");
+	mysqlpp::UseQueryResult res = query.use();
+	MorphData morph;
+	int16_t morphid;
+
+	struct Functor {
+		void operator()(const string &cmp) {
+			if (cmp == "superman") morph->superman = true;
+		}
+		MorphData *morph;
+	};
+
+	enum MorphDataTable {
+		Id = 0,
+		Speed, Jump, Traction, Swim, Flags
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		morph = MorphData();
+		morphid = atoi(row[Id]);
+
+		Functor whoo = {&morph};
+		runFlags(row[Flags], whoo);
+
+		morph.speed = atoi(row[Speed]);
+		morph.jump = atoi(row[Jump]);
+		morph.traction = atof(row[Traction]);
+		morph.swim = atof(row[Swim]);
+
+		morphinfo[morphid] = morph;
+	}
+}
+
 SkillLevelInfo * SkillDataProvider::getSkill(int32_t skill, uint8_t level) {
 	if (skills.find(skill) != skills.end()) {
 		if (skills[skill].find(level) != skills[skill].end()) {
 			return &skills[skill][level];
 		}
-		return 0;
 	}
 	return 0;
 }
@@ -196,7 +232,6 @@ MobSkillLevelInfo * SkillDataProvider::getMobSkill(uint8_t skill, uint8_t level)
 		if (mobskills[skill].find(level) != mobskills[skill].end()) {
 			return &mobskills[skill][level];
 		}
-		return 0;
 	}
 	return 0;
 }
