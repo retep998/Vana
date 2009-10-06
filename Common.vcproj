@@ -262,7 +262,7 @@
 					>
 				</File>
 				<Filter
-					Name="ServerToServer"
+					Name="Inter-Server"
 					>
 					<File
 						RelativePath=".\src\Common\AuthenticationPacket.cpp"
