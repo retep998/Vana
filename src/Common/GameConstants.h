@@ -35,6 +35,7 @@ enum ItemTypes {
 	ArmorCape = 110,
 	ArmorRing = 111,
 	ArmorPendant = 112,
+	Medal = 114,
 	Weapon1hSword = 130,
 	Weapon1hAxe = 131,
 	Weapon1hMace = 132,
@@ -412,7 +413,8 @@ namespace EquipSlots {
 		QuoteRing = 15,
 		Pendant = 17,
 		Mount = 18,
-		Saddle = 19
+		Saddle = 19,
+		Medal = 49
 	};
 }
 

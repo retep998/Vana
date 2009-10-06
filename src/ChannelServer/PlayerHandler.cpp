@@ -365,7 +365,7 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 
 	MapleTVs::Instance()->addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
 	if (sort == 1)
-		InventoryPacket::showSuperMegaphone(player, player->getName() + " : " + line1 + line2 + line3 + line4 + line5, use_whisper);
+		InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + line1 + line2 + line3 + line4 + line5, use_whisper);
 }
 
 void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
