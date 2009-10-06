@@ -48,7 +48,7 @@ bool Quests::giveMesos(Player *player, int32_t amount) {
 }
 
 void Quests::giveFame(Player *player, int32_t amount) {
-	player->setFame(player->getFame() + static_cast<int16_t>(amount));
+	player->getStats()->setFame(player->getStats()->getFame() + static_cast<int16_t>(amount));
 	QuestsPacket::giveFame(player, amount);
 }
 

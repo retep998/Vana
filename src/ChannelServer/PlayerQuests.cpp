@@ -261,7 +261,7 @@ bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 	Rewards::iterator ejobiter;
 	Rewards::iterator iter;
 	bool jobrewards = false;
-	int16_t job = m_player->getJob();
+	int16_t job = m_player->getStats()->getJob();
 
 	if (start) {
 			startiter = questinfo->getStartRewardsBegin();
@@ -378,14 +378,14 @@ bool PlayerQuests::giveRewards(const QuestRewardInfo &info) {
 		}
 	}
 	else if (info.isexp) {
-		Levels::giveExp(m_player, info.id * ChannelServer::Instance()->getQuestExprate(), true);
+		m_player->getStats()->giveExp(info.id * ChannelServer::Instance()->getQuestExprate(), true);
 	}
 	else if (info.ismesos) {
 		m_player->getInventory()->modifyMesos(info.id);
 		QuestsPacket::giveMesos(m_player, info.id);
 	}
 	else if (info.isfame) {
-		m_player->setFame(m_player->getFame() + static_cast<int16_t>(info.id));
+		m_player->getStats()->setFame(m_player->getStats()->getFame() + static_cast<int16_t>(info.id));
 		QuestsPacket::giveFame(m_player, info.id);
 	}
 	else if (info.isbuff) {

@@ -282,7 +282,7 @@ bool Party::isWithinLevelRange(uint8_t lowbound, uint8_t highbound) {
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 		Player *m_player = iter->second;
 		if (m_player != 0) {
-			if (m_player->getLevel() < lowbound || m_player->getLevel() > highbound) {
+			if (m_player->getStats()->getLevel() < lowbound || m_player->getStats()->getLevel() > highbound) {
 				is = false;
 				break;
 			}

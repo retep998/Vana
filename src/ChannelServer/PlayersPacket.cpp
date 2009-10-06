@@ -119,9 +119,9 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_INFO);
 	packet.add<int32_t>(getinfo->getId());
-	packet.add<int8_t>(getinfo->getLevel());
-	packet.add<int16_t>(getinfo->getJob());
-	packet.add<int16_t>(getinfo->getFame());
+	packet.add<int8_t>(getinfo->getStats()->getLevel());
+	packet.add<int16_t>(getinfo->getStats()->getJob());
+	packet.add<int16_t>(getinfo->getStats()->getFame());
 	packet.addBool(false); // Married
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance

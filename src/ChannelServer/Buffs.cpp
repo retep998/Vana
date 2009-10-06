@@ -313,7 +313,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			break;
 		case Jobs::Spearman::HyperBody:
 		case Jobs::SuperGm::HyperBody:
-			player->setHyperBody(skill->x, skill->y);
+			player->getStats()->setHyperBody(skill->x, skill->y);
 			break;
 		case Jobs::Crusader::ComboAttack:
 		case Jobs::DawnWarrior::ComboAttack:
@@ -433,9 +433,9 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 			break;
 		case Jobs::Spearman::HyperBody:
 		case Jobs::SuperGm::HyperBody:
-			player->setHyperBody(0, 0);
-			player->setHp(player->getHp());
-			player->setMp(player->getMp());
+			player->getStats()->setHyperBody(0, 0);
+			player->getStats()->setHp(player->getStats()->getHp());
+			player->getStats()->setMp(player->getStats()->getMp());
 			break;
 		case Jobs::Marauder::EnergyCharge:
 		case Jobs::ThunderBreaker::EnergyCharge:

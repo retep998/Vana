@@ -480,17 +480,19 @@ int32_t Mob::giveExp(Player *killer) {
 
 	if (damages.size()) { // Don't really want to bother with construction of the iterators and stuff if we won't use them
 		unordered_map<int32_t, PartyExp> parties;
-		Party *damagerparty = 0;
 		Player *damager = 0;
+		uint8_t damagerlevel = 0;
+		Party *damagerparty = 0;
 		for (unordered_map<int32_t, uint64_t>::iterator iter = damages.begin(); iter != damages.end(); iter++) {
 			if (iter->second > highestdamage) { // Find the highest damager to give drop ownership
 				highestdamager = iter->first;
 				highestdamage = iter->second;
 			}
 			damager = Players::Instance()->getPlayer(iter->first);
-			if (damager == 0 || damager->getMap() != this->mapid || damager->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
+			if (damager == 0 || damager->getMap() != this->mapid || damager->getStats()->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
 
+			damagerlevel = damager->getStats()->getLevel();
 			damagerparty = damager->getParty();
 
 			uint32_t exp = static_cast<uint32_t>(getExp() * ((8 * iter->second / totalhealth) + (damager == killer ? 2 : 0)) / 10);
@@ -503,8 +505,8 @@ int32_t Mob::giveExp(Player *killer) {
 					parties[pid].totalexp = exp;
 					parties[pid].party = damagerparty;
 				}
-				if (damager->getLevel() < parties[pid].minhitlevel) {
-					parties[pid].minhitlevel = damager->getLevel();
+				if (damagerlevel < parties[pid].minhitlevel) {
+					parties[pid].minhitlevel = damagerlevel;
 				}
 				if (iter->second > parties[pid].highestdamage) {
 					parties[pid].highestdamager = damager;
@@ -517,7 +519,7 @@ int32_t Mob::giveExp(Player *killer) {
 				exp = exp * getTauntEffect() / 100;
 				exp *= ChannelServer::Instance()->getExprate();
 				exp += ((exp * hsrate) / 100);
-				Levels::giveExp(damager, exp, false, (damager == killer));
+				damager->getStats()->giveExp(exp, false, (damager == killer));
 			}
 		}
 		if (parties.size()) {
@@ -529,23 +531,23 @@ int32_t Mob::giveExp(Player *killer) {
 				uint16_t leechcount = 0;
 				for (size_t i = 0; i < partymembers.size(); i++) {
 					damager = partymembers[i];
-					if (damager->getLevel() < (partyiter->second.minhitlevel - 5) && damager->getLevel() < (getLevel() - 5)) {
+					if (damagerlevel < (partyiter->second.minhitlevel - 5) && damagerlevel < (getLevel() - 5)) {
 						continue;
 					}
-					totallevel += damager->getLevel();
+					totallevel += damagerlevel;
 					leechcount++;
 				}
 				for (size_t i = 0; i < partymembers.size(); i++) {
 					damager = partymembers[i];
-					if (damager->getLevel() < (partyiter->second.minhitlevel - 5) && damager->getLevel() < (getLevel() - 5)) {
+					if (damagerlevel < (partyiter->second.minhitlevel - 5) && damagerlevel < (getLevel() - 5)) {
 						continue;
 					}
-					uint32_t exp = static_cast<uint32_t>(info->exp * ((8 * damager->getLevel() / totallevel) + (damager == partyiter->second.highestdamager ? 2 : 0)) / 10);
+					uint32_t exp = static_cast<uint32_t>(info->exp * ((8 * damagerlevel / totallevel) + (damager == partyiter->second.highestdamager ? 2 : 0)) / 10);
 					int16_t hsrate = damager->getActiveBuffs()->getHolySymbolRate();
 					exp = exp * getTauntEffect() / 100;
 					exp *= ChannelServer::Instance()->getExprate();
 					exp += ((exp * hsrate) / 100);
-					Levels::giveExp(damager, exp, false, (damager == killer));
+					damager->getStats()->giveExp(exp, false, (damager == killer));
 				}
 			}
 		}
@@ -661,7 +663,7 @@ void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 
 		if (emp > 30000)
 			emp = 30000;
-		player->modifyMp(static_cast<int16_t>(emp));
+		player->getStats()->modifyMp(static_cast<int16_t>(emp));
 
 		SkillsPacket::showSkillEffect(player, mp->id);
 		mpeatercount++;
