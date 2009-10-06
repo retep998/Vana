@@ -90,7 +90,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 		break;
 		case 0x02: { // /exp (amount)
 			int32_t amount = packet.get<int32_t>();
-			Levels::giveExp(player, amount);
+			player->getStats()->giveExp(amount);
 		}
 		break;
 		case 0x03: { // /ban (character name)

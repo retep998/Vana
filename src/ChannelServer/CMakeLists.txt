@@ -63,6 +63,7 @@ set(SOURCES
 	PlayerQuests.h
 	Players.h
 	PlayerSkills.h
+	PlayerStats.h
 	PlayersPacket.h
 	PlayerStorage.h
 	PlayerSummons.h
@@ -148,6 +149,7 @@ set(SOURCES
 	PlayerQuests.cpp
 	Players.cpp
 	PlayerSkills.cpp
+	PlayerStats.cpp
 	PlayersPacket.cpp
 	PlayerStorage.cpp
 	PlayerSummons.cpp

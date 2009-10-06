@@ -110,7 +110,7 @@ void PlayerActiveBuffs::removeAct(int32_t skill) {
 
 // Debuffs
 void PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) {
-	if (m_player->getHp() > 0 && !hasHolyShield()) {
+	if (m_player->getStats()->getHp() > 0 && !hasHolyShield()) {
 		int32_t maskbit = calculateDebuffMaskBit(skill);
 		if (maskbit != 0 && (m_debuffmask & maskbit) == 0) { // Don't have the debuff, continue processing
 			m_debuffmask += maskbit;
@@ -267,7 +267,7 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 }
 
 void PlayerActiveBuffs::resetBattleshipHp() {
-	m_battleshiphp = (4000 * m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship)) + ((m_player->getLevel() - 120) * 2000);
+	m_battleshiphp = (4000 * m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship)) + ((m_player->getStats()->getLevel() - 120) * 2000);
 }
 
 void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
@@ -310,12 +310,12 @@ void PlayerActiveBuffs::addCombo() { // Add orbs
 }
 
 void PlayerActiveBuffs::checkBerserk(bool display) {
-	if (m_player->getJob() == Jobs::JobIds::DarkKnight) { // Berserk calculations
+	if (m_player->getStats()->getJob() == Jobs::JobIds::DarkKnight) { // Berserk calculations
 		int32_t skillid = Jobs::DarkKnight::Berserk;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
-			int16_t r_hp = m_player->getMHp() * SkillDataProvider::Instance()->getSkill(skillid, level)->x / 100;
-			int16_t hp = m_player->getHp();
+			int16_t r_hp = m_player->getStats()->getMHp() * SkillDataProvider::Instance()->getSkill(skillid, level)->x / 100;
+			int16_t hp = m_player->getStats()->getHp();
 			bool change = false;
 			if (m_berserk && hp > r_hp) { // If on and we're above Berserk HP, Berserk fails
 				m_berserk = false;

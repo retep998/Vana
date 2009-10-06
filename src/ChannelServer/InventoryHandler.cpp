@@ -338,7 +338,7 @@ void InventoryHandler::useItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
-	if (player->getHp() == 0 || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
+	if (player->getStats()->getHp() == 0 || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
 		// hacking
 		return;
 	}
@@ -378,7 +378,7 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 		s = (*item)[i];
 		skillid = s.skillid;
 		newMaxLevel = s.maxlevel;
-		if (GameLogicUtilities::itemSkillMatchesJob(skillid, player->getJob())) {
+		if (GameLogicUtilities::itemSkillMatchesJob(skillid, player->getStats()->getJob())) {
 			// Make sure the skill is for the person's job
 			if (player->getSkills()->getSkillLevel(skillid) >= s.reqlevel) {
 				// I know the multiple levels of if aren't necessary, but they're large/verbose comparisons
@@ -669,8 +669,8 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		case Items::ApReset: {
 			int32_t tostat = packet.get<int32_t>();
 			int32_t fromstat = packet.get<int32_t>();
-			Levels::addStat(player, tostat, 1, true);
-			Levels::addStat(player, fromstat, -1, true);
+			player->getStats()->addStat(tostat, 1, true);
+			player->getStats()->addStat(fromstat, -1, true);
 			used = true;
 			break;
 		}

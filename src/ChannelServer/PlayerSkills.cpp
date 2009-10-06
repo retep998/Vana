@@ -166,7 +166,7 @@ bool PlayerSkills::hasNoDamageSkill() {
 
 int32_t PlayerSkills::getElementalAmp() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::FPMage:
 		case Jobs::JobIds::FPArchMage:
 			skillid = Jobs::FPMage::ElementAmplification;
@@ -184,7 +184,7 @@ int32_t PlayerSkills::getElementalAmp() {
 
 int32_t PlayerSkills::getAchilles() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Hero:
 			skillid = Jobs::Hero::Achilles;
 			break;
@@ -200,7 +200,7 @@ int32_t PlayerSkills::getAchilles() {
 
 int32_t PlayerSkills::getEnergyCharge() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Marauder:
 		case Jobs::JobIds::Buccaneer:
 			skillid = Jobs::Marauder::EnergyCharge;
@@ -215,7 +215,7 @@ int32_t PlayerSkills::getEnergyCharge() {
 
 int32_t PlayerSkills::getComboAttack() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Crusader:
 		case Jobs::JobIds::Hero:
 			skillid = Jobs::Crusader::ComboAttack;
@@ -229,7 +229,7 @@ int32_t PlayerSkills::getComboAttack() {
 
 int32_t PlayerSkills::getAdvancedCombo() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Hero:
 			skillid = Jobs::Hero::AdvancedComboAttack;
 			break;
@@ -242,7 +242,7 @@ int32_t PlayerSkills::getAdvancedCombo() {
 
 int32_t PlayerSkills::getAlchemist() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Hermit:
 		case Jobs::JobIds::NightLord:
 			skillid = Jobs::Hermit::Alchemist;
@@ -256,7 +256,7 @@ int32_t PlayerSkills::getAlchemist() {
 
 int32_t PlayerSkills::getHpIncrease() {
 	int32_t skillid = 0;
-	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
 		case Jobs::JobTracks::Warrior:
 			skillid = Jobs::Swordsman::ImprovedMaxHpIncrease;
 			break;
@@ -267,7 +267,7 @@ int32_t PlayerSkills::getHpIncrease() {
 			skillid = Jobs::ThunderBreaker::ImproveMaxHp;
 			break;
 		case Jobs::JobTracks::Pirate:
-			if ((player->getJob() / 10) == (Jobs::JobIds::Brawler / 10))
+			if ((player->getStats()->getJob() / 10) == (Jobs::JobIds::Brawler / 10))
 				skillid = Jobs::Brawler::ImproveMaxHp;
 			break;
 	}
@@ -276,7 +276,7 @@ int32_t PlayerSkills::getHpIncrease() {
 
 int32_t PlayerSkills::getMpIncrease() {
 	int32_t skillid = 0;
-	switch (GameLogicUtilities::getJobTrack(player->getJob())) {
+	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
 		case Jobs::JobTracks::Magician:
 			skillid = Jobs::Magician::ImprovedMaxMpIncrease;
 			break;
@@ -292,7 +292,7 @@ int32_t PlayerSkills::getMastery() {
 	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
 		case Weapon1hSword:
 		case Weapon2hSword:
-			switch (player->getJob()) {
+			switch (player->getStats()->getJob()) {
 				case Jobs::JobIds::Fighter:
 				case Jobs::JobIds::Crusader:
 				case Jobs::JobIds::Hero:
@@ -343,7 +343,7 @@ int32_t PlayerSkills::getMastery() {
 
 int32_t PlayerSkills::getMpEater() {
 	int32_t skillid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::FPWizard:
 		case Jobs::JobIds::FPMage:
 		case Jobs::JobIds::FPArchMage:
@@ -365,7 +365,7 @@ int32_t PlayerSkills::getMpEater() {
 
 int32_t PlayerSkills::getVenomousWeapon() {
 	int32_t skill = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::NightLord:
 			skill = Jobs::NightLord::VenomousStar;
 			break;
@@ -378,7 +378,7 @@ int32_t PlayerSkills::getVenomousWeapon() {
 
 int32_t PlayerSkills::getNoDamageSkill() {
 	int32_t nodamageid = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::NightLord: nodamageid = Jobs::NightLord::ShadowShifter; break;
 		case Jobs::JobIds::Shadower: nodamageid = Jobs::Shadower::ShadowShifter; break;
 		case Jobs::JobIds::Hero: nodamageid = Jobs::Hero::Guardian; break;
@@ -389,7 +389,7 @@ int32_t PlayerSkills::getNoDamageSkill() {
 
 int16_t PlayerSkills::getRechargeableBonus() {
 	int16_t bonus = 0;
-	switch (player->getJob()) {
+	switch (player->getStats()->getJob()) {
 		case Jobs::JobIds::Assassin:
 		case Jobs::JobIds::Hermit:
 		case Jobs::JobIds::NightLord:

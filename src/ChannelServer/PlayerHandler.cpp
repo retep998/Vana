@@ -148,29 +148,29 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 
 			player->getInventory()->setMesos(newmesos);
-			player->damageHp((uint16_t) damage);
+			player->getStats()->damageHp((uint16_t) damage);
 
-			if (deadlyattack && player->getMp() > 0)
-				player->setMp(1);
+			if (deadlyattack && player->getStats()->getMp() > 0)
+				player->getStats()->setMp(1);
 			if (mpburn > 0)
-				player->damageMp(mpburn);
+				player->getStats()->damageMp(mpburn);
 
 			applieddamage = true;
 
 			SkillsPacket::showSkillEffect(player, sid);
 		}
 		if (player->getActiveBuffs()->hasMagicGuard()) {
-			int16_t mp = player->getMp();
-			int16_t hp = player->getHp();
+			int16_t mp = player->getStats()->getMp();
+			int16_t hp = player->getStats()->getHp();
 
 			if (deadlyattack) {
 				if (mp > 0)
-					player->setMp(1);
-				player->setHp(1);
+					player->getStats()->setMp(1);
+				player->getStats()->setHp(1);
 			}
 			else if (mpburn > 0) {
-				player->damageMp(mpburn);
-				player->damageHp((uint16_t) damage);
+				player->getStats()->damageMp(mpburn);
+				player->getStats()->damageHp((uint16_t) damage);
 			}
 			else {
 				int32_t sid = player->getActiveBuffs()->getMagicGuard();
@@ -179,12 +179,12 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
 
 				if (mpdamage < mp || player->getActiveBuffs()->hasInfinity()) {
-					player->damageMp(mpdamage);
-					player->damageHp(hpdamage);
+					player->getStats()->damageMp(mpdamage);
+					player->getStats()->damageHp(hpdamage);
 				}
 				else if (mpdamage >= mp) {
-					player->setMp(0);
-					player->damageHp(hpdamage + (mpdamage - mp));
+					player->getStats()->setMp(0);
+					player->getStats()->damageHp(hpdamage + (mpdamage - mp));
 				}
 			}
 			applieddamage = true;
@@ -193,35 +193,35 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			int32_t sid = player->getSkills()->getAchilles();
 			double red = (2.0 - player->getSkills()->getSkillInfo(sid)->x / 1000.0);
 
-			player->damageHp((uint16_t) (damage / red));
+			player->getStats()->damageHp((uint16_t) (damage / red));
 
-			if (deadlyattack && player->getMp() > 0)
-				player->setMp(1);
+			if (deadlyattack && player->getStats()->getMp() > 0)
+				player->getStats()->setMp(1);
 			if (mpburn > 0)
-				player->damageMp(mpburn);
+				player->getStats()->damageMp(mpburn);
 
 			applieddamage = true;
 		}
 
 		if (!applieddamage) {
 			if (deadlyattack) {
-				if (player->getMp() > 0)
-					player->setMp(1);
-				player->setHp(1);
+				if (player->getStats()->getMp() > 0)
+					player->getStats()->setMp(1);
+				player->getStats()->setHp(1);
 			}
 			else {
-				player->damageHp((uint16_t) damage);
+				player->getStats()->damageHp((uint16_t) damage);
 			}
 
 			if (mpburn > 0)
-				player->damageMp(mpburn);
+				player->getStats()->damageMp(mpburn);
 
 			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Corsair::Battleship) > 0) {
 				player->getActiveBuffs()->reduceBattleshipHp((uint16_t) damage);
 			}
 		}
 		int32_t morph = player->getActiveBuffs()->getCurrentMorph();
-		if (morph < 0  || (morph != 0 && player->getHp() == 0)) {
+		if (morph < 0  || (morph != 0 && player->getStats()->getHp() == 0)) {
 			player->getActiveBuffs()->endMorph();
 		}
 	}
@@ -244,12 +244,12 @@ void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t hp = packet.get<int16_t>();
 	int16_t mp = packet.get<int16_t>();
-	if (player->getHp() == 0 || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
+	if (player->getStats()->getHp() == 0 || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
 		// hacking
 		return;
 	}
-	player->modifyHp(hp);
-	player->modifyMp(mp);
+	player->getStats()->modifyHp(hp);
+	player->getStats()->modifyMp(mp);
 }
 
 void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
@@ -299,8 +299,8 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::ChiefBandit::Chakra: { // Chakra
-			int16_t dex = player->getDex();
-			int16_t luk = player->getLuk();
+			int16_t dex = player->getStats()->getDex();
+			int16_t luk = player->getStats()->getLuk();
 			int16_t recovery = player->getSkills()->getSkillInfo(skillid)->y;
 			int16_t maximum = (luk * 66 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
 			int16_t minimum = (luk * 33 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
@@ -308,7 +308,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 			// Minimum = (luk * 3.3 + dex) * 0.2 * (recovery% / 100 + 1)
 			// I used 66 / 10 and 2 / 10 respectively to get 6.6 and 0.2 without using floating points
 			int16_t range = maximum - minimum;
-			player->modifyHp(Randomizer::Instance()->randShort(range) + minimum);
+			player->getStats()->modifyHp(Randomizer::Instance()->randShort(range) + minimum);
 			break;
 		}
 	}
@@ -487,10 +487,10 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::Marauder::EnergyDrain:
 		case Jobs::ThunderBreaker::EnergyDrain: {
 			int32_t hpRecover = totaldmg * player->getSkills()->getSkillInfo(skillid)->x / 100;
-			if (hpRecover > player->getMHp())
-				player->setHp(player->getMHp());
+			if (hpRecover > player->getStats()->getMHp())
+				player->getStats()->setHp(player->getStats()->getMHp());
 			else
-				player->modifyHp((int16_t) hpRecover);
+				player->getStats()->modifyHp((int16_t) hpRecover);
 			break;
 		}
 		case Jobs::Crusader::SwordPanic: // Crusader finishers
@@ -508,9 +508,9 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::DragonKnight::DragonRoar: {
 			int8_t roarlv = player->getSkills()->getSkillLevel(skillid);
 			int16_t x_value = SkillDataProvider::Instance()->getSkill(skillid, roarlv)->x;
-			uint16_t reduction = (player->getMHp() / 100) * x_value;
-			if ((player->getHp() - reduction) > 0)
-				player->damageHp(reduction);
+			uint16_t reduction = (player->getStats()->getMHp() / 100) * x_value;
+			if ((player->getStats()->getHp() - reduction) > 0)
+				player->getStats()->damageHp(reduction);
 			else {
 				// Hacking
 				return;
@@ -521,10 +521,10 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::DragonKnight::Sacrifice: {
 			int16_t hp_damage_x = player->getSkills()->getSkillInfo(skillid)->x;
 			uint16_t hp_damage = (uint16_t) totaldmg * hp_damage_x / 100;
-			if ((player->getHp() - hp_damage) < 1)
-				player->setHp(1);
+			if ((player->getStats()->getHp() - hp_damage) < 1)
+				player->getStats()->setHp(1);
 			else
-				player->damageHp(hp_damage);
+				player->getStats()->damageHp(hp_damage);
 			break;
 		}
 		case Jobs::WhiteKnight::ChargeBlow: {
@@ -592,12 +592,12 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 		int32_t hpRecover = totaldmg * drain_x / 100;
 		if (hpRecover > mhp)
 			hpRecover = mhp;
-		if (hpRecover > (player->getMHp() / 2))
-			hpRecover = player->getMHp() / 2;
-		if (hpRecover > player->getMHp())
-			player->setHp(player->getMHp());
+		if (hpRecover > (player->getStats()->getMHp() / 2))
+			hpRecover = player->getStats()->getMHp() / 2;
+		if (hpRecover > player->getStats()->getMHp())
+			player->getStats()->setHp(player->getStats()->getMHp());
 		else
-			player->modifyHp((int16_t) hpRecover);
+			player->getStats()->modifyHp((int16_t) hpRecover);
 	}
 }
 

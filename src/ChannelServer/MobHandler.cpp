@@ -39,7 +39,7 @@ using std::tr1::bind;
 void MobHandler::handleBomb(Player *player, PacketReader &packet) {
 	int32_t mobid = packet.get<int32_t>();
 	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
-	if (player->getHp() == 0 || mob == 0) {
+	if (player->getStats()->getHp() == 0 || mob == 0) {
 		return;
 	}
 	if (mob->getSelfDestructHp() == 0) {
@@ -362,8 +362,8 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 					uint8_t vlevel = player->getSkills()->getSkillLevel(vskill);
 					SkillLevelInfo *venom = SkillDataProvider::Instance()->getSkill(vskill, vlevel);
 
-					int32_t part1 = player->getStr() + player->getLuk();
-					int32_t part2 = player->getDex() * 2;
+					int32_t part1 = player->getStats()->getStr() + player->getStats()->getLuk();
+					int32_t part2 = player->getStats()->getDex() * 2;
 					int16_t vatk = venom->matk;
 					int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
 					int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
@@ -468,7 +468,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 	switch (skillid) {
 		case Jobs::Shadower::NinjaAmbush:
 		case Jobs::NightLord::NinjaAmbush:
-			damage = 2 * (player->getStr() + player->getLuk()) * skill->damage / 100;
+			damage = 2 * (player->getStats()->getStr() + player->getStats()->getLuk()) * skill->damage / 100;
 			statuses.push_back(StatusInfo(StatusEffects::Mob::NinjaAmbush, damage, skillid, skill->time));
 			break;
 		case Jobs::Rogue::Disorder:

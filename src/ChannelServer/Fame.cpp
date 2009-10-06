@@ -32,8 +32,8 @@ void Fame::handleFame(Player *player, PacketReader &packet) {
 				FamePacket::sendError(player, checkResult);
 			else {
 				Player *famee = Players::Instance()->getPlayer(playerid);
-				int16_t newFame = famee->getFame() + (type == 1 ? 1 : -1); // Increase if type = 1, else decrease
-				famee->setFame(newFame);
+				int16_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1); // Increase if type = 1, else decrease
+				famee->getStats()->setFame(newFame);
 				addFameLog(player->getId(), playerid);
 				FamePacket::sendFame(player, famee, type, newFame);
 			}
@@ -49,7 +49,7 @@ void Fame::handleFame(Player *player, PacketReader &packet) {
 
 int32_t Fame::canFame(Player *player, int32_t to) {
 	int32_t from = player->getId();
-	if (player->getLevel() < 15)
+	if (player->getStats()->getLevel() < 15)
 		return 2;
 	if (getLastFameLog(from))
 		return 3;

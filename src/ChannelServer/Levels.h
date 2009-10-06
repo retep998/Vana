@@ -18,26 +18,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LEVELS_H
 #define LEVELS_H
 
-#include "Types.h"
-
-class Player;
-class PacketReader;
-
-namespace Levels {
-	void giveExp(Player *player, uint32_t exp, bool inChat = false, bool white = true);
-	void addStat(Player *player, PacketReader &packet);
-	void addStatMulti(Player *player, PacketReader &packet);
-	void addStat(Player *player, int32_t type, int16_t mod = 1, bool isreset = false);
-	int16_t randHp();
-	int16_t randMp();
-	int16_t levelHp(int16_t val, int16_t bonus = 0);
-	int16_t levelMp(int16_t val, int16_t bonus = 0);
-	int16_t apResetHp(bool isreset, bool issubtract, int16_t val, int16_t sval = 0);
-	int16_t apResetMp(bool isreset, bool issubtract, int16_t val, int16_t sval = 0);
-	int16_t getX(Player *player, int32_t skillid);
-	int16_t getY(Player *player, int32_t skillid);
-	uint32_t getExp(uint8_t level);
-	uint8_t getMaxLevel(int16_t jobid);
-};
-
 #endif

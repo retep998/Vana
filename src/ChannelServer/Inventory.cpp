@@ -172,15 +172,15 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	bool zombie = player->getActiveBuffs()->isZombified();
 
 	if (item->hp > 0)
-		player->modifyHp(item->hp * (zombie ? (potency / 2) : potency) / 100);
+		player->getStats()->modifyHp(item->hp * (zombie ? (potency / 2) : potency) / 100);
 	if (item->mp > 0)
-		player->modifyMp(item->mp * potency / 100);
+		player->getStats()->modifyMp(item->mp * potency / 100);
 	else
-		player->setMp(player->getMp(), true);
+		player->getStats()->setMp(player->getStats()->getMp(), true);
 	if (item->hpr != 0)
-		player->modifyHp(item->hpr * (zombie ? (player->getMHp() / 2) : player->getMHp()) / 100);
+		player->getStats()->modifyHp(item->hpr * (zombie ? (player->getStats()->getMHp() / 2) : player->getStats()->getMHp()) / 100);
 	if (item->mpr != 0)
-		player->modifyMp(item->mpr * player->getMMp() / 100);
+		player->getStats()->modifyMp(item->mpr * player->getStats()->getMMp() / 100);
 	if (item->ailment > 0)
 		player->getActiveBuffs()->useDebuffHealingItem(item->ailment);
 
