@@ -471,7 +471,7 @@ void Player::saveStats() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE characters SET "
 		<< "level = " << static_cast<int16_t>(stats->getLevel()) << "," // Queries have problems with int8_t due to being derived from ostream
-		<< "job = " << stats->getLevel() << ","
+		<< "job = " << stats->getJob() << ","
 		<< "str = " << stats->getStr() << ","
 		<< "dex = " << stats->getDex() << ","
 		<< "`int` = " << stats->getInt() << ","
