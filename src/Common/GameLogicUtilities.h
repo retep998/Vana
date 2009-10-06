@@ -47,6 +47,7 @@ namespace GameLogicUtilities {
 	inline bool isSword(int32_t itemid) { return (getItemType(itemid) == Weapon1hSword || getItemType(itemid) == Weapon2hSword); }
 	inline bool isMace(int32_t itemid) { return (getItemType(itemid) == Weapon1hMace || getItemType(itemid) == Weapon2hMace); }
 	inline bool isMount(int32_t itemid) { return (getItemType(itemid) == Mount); }
+	inline bool isMedal(int32_t itemid) { return (getItemType(itemid) == Medal); }
 	inline bool isValidInventory(int8_t inv) { return (inv > 0 && inv <= Inventories::InventoryCount); }
 
 	// Player

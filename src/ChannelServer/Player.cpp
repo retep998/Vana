@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "InventoryHandler.h"
 #include "InventoryPacket.h"
+#include "ItemDataProvider.h"
 #include "KeyMaps.h"
 #include "LevelsPacket.h"
 #include "MapleSession.h"
@@ -382,6 +383,17 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
 	MapPacket::changeMap(this);
 	Maps::addPlayer(this, mapid);
+}
+
+string Player::getMedalName() {
+	string ret;
+	if (int32_t itemid = getInventory()->getEquippedId(EquipSlots::Medal)) { // Check if there's an item at that slot
+		ret = "<";
+		ret += ItemDataProvider::Instance()->getItemName(itemid);
+		ret += "> ";
+	}
+	ret += getName();
+	return ret;
 }
 
 void Player::changeChannel(int8_t channel) {
