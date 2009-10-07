@@ -38,9 +38,9 @@ public:
 		uint16_t hpmp_ap,
 		int16_t sp,
 		int16_t hp,
-		int16_t rmhp,
+		int16_t mhp,
 		int16_t mp,
-		int16_t rmmp,
+		int16_t mmp,
 		int32_t exp);
 
 	// Data Modification
@@ -53,15 +53,14 @@ public:
 	void setMp(int16_t mp, bool is = false); // For example, Power Elixir at 30k HP = 30k + 30k = 60k, but wait! That's > 32767, so it's negative
 	void setMHp(int16_t mhp);
 	void setMMp(int16_t mmp);
-	void modifyRMHp(int16_t mod);
-	void modifyRMMp(int16_t mod);
-	void setRMHp(int16_t rmhp);
-	void setRMMp(int16_t rmmp);
+	void modifyMHp(int16_t mod);
+	void modifyMMp(int16_t mod);
 	void setHyperBody(int16_t modx, int16_t mody);
 	void setHpMpAp(uint16_t ap) { hpmp_ap = ap; }
 	void setExp(int32_t exp);
 	void setAp(int16_t ap);
 	void setSp(int16_t sp);
+
 	void setFame(int16_t fame);
 	void setJob(int16_t job);
 	void setStr(int16_t str);
@@ -91,39 +90,45 @@ public:
 	uint8_t getLevel() const { return level; }
 	int16_t getJob() const { return job; }
 	int32_t getExp() const { return exp; }
-	int16_t getStr() const { return str; }
-	int16_t getDex() const { return dex; }
-	int16_t getInt() const { return intt; }
-	int16_t getLuk() const { return luk; }
 	int16_t getAp() const { return ap; }
 	uint16_t getHpMpAp() const { return hpmp_ap; }
 	int16_t getSp() const { return sp; }
 	int16_t getFame() const { return fame; }
+
+	int16_t getStr(bool withbonus = false) const { return str + (withbonus ? str_bonus : 0); }
+	int16_t getDex(bool withbonus = false) const { return dex + (withbonus ? dex_bonus : 0); }
+	int16_t getInt(bool withbonus = false) const { return intt + (withbonus ? int_bonus : 0); }
+	int16_t getLuk(bool withbonus = false) const { return luk + (withbonus ? luk_bonus : 0); }
 	int16_t getHp() const { return hp; }
+	int16_t getMHp(bool withoutbonus = false);
 	int16_t getMp() const { return mp; }
-	int16_t getMHp() const { return mhp; }
-	int16_t getRMHp() const { return rmhp; }
-	int16_t getMMp() const { return mmp; }
-	int16_t getRMMp() const { return rmmp; }
+	int16_t getMMp(bool withoutbonus = false);
 private:
 	Player *player;
 	uint8_t level;
 	int16_t job;
-	int16_t fame;
-	int16_t str;
-	int16_t dex;
-	int16_t intt;
-	int16_t luk;
+	int32_t exp;
 	int16_t ap;
 	uint16_t hpmp_ap;
 	int16_t sp;
+	int16_t fame;
+
+	int16_t hp_bonus;
+	int16_t hb_hp;
 	int16_t hp;
 	int16_t mhp;
-	int16_t rmhp;
+	int16_t mp_bonus;
+	int16_t hb_mp;
 	int16_t mp;
 	int16_t mmp;
-	int16_t rmmp;
-	int32_t exp;
+	int16_t str_bonus;
+	int16_t str;
+	int16_t dex_bonus;
+	int16_t dex;
+	int16_t int_bonus;
+	int16_t intt;
+	int16_t luk_bonus;
+	int16_t luk;
 
 	void modifiedHp();
 };

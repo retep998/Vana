@@ -731,8 +731,6 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					break;
 				case CmdMaxStats:
 					player->getStats()->setFame(30000);
-					player->getStats()->setRMHp(30000);
-					player->getStats()->setRMMp(30000);
 					player->getStats()->setMHp(30000);
 					player->getStats()->setMMp(30000);
 					player->getStats()->setStr(32767);
@@ -759,7 +757,6 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 				case CmdHp:
 					if (args.length() != 0) {
 						uint16_t amount = atoi(args.c_str());
-						player->getStats()->setRMHp(amount);
 						player->getStats()->setMHp(amount);
 						if (player->getStats()->getHp() > amount)
 							player->getStats()->setHp(player->getStats()->getMHp());
@@ -768,7 +765,6 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 				case CmdMp:
 					if (args.length() != 0) {
 						uint16_t amount = atoi(args.c_str());
-						player->getStats()->setRMMp(amount);
 						player->getStats()->setMMp(amount);
 						if (player->getStats()->getMp() > amount)
 							player->getStats()->setMp(player->getStats()->getMMp());
