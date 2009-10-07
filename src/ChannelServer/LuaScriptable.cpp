@@ -945,12 +945,12 @@ int LuaExports::getPosY(lua_State *luaVm) {
 }
 
 int LuaExports::getRMHP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getRMHp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getMHp(true));
 	return 1;
 }
 
 int LuaExports::getRMMP(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getRMMp());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getMMp(true));
 	return 1;
 }
 
@@ -1137,13 +1137,13 @@ int LuaExports::setPlayerVariable(lua_State *luaVm) {
 
 int LuaExports::setRMHP(lua_State *luaVm) {
 	uint16_t hp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getStats()->setRMHp(hp);
+	getPlayer(luaVm)->getStats()->setMHp(hp);
 	return 0;
 }
 
 int LuaExports::setRMMP(lua_State *luaVm) {
 	uint16_t mp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getStats()->setRMMp(mp);
+	getPlayer(luaVm)->getStats()->setMMp(mp);
 	return 0;
 }
 

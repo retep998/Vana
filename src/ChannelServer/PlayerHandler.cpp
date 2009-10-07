@@ -299,8 +299,8 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::ChiefBandit::Chakra: { // Chakra
-			int16_t dex = player->getStats()->getDex();
-			int16_t luk = player->getStats()->getLuk();
+			int16_t dex = player->getStats()->getDex(true);
+			int16_t luk = player->getStats()->getLuk(true);
 			int16_t recovery = player->getSkills()->getSkillInfo(skillid)->y;
 			int16_t maximum = (luk * 66 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
 			int16_t minimum = (luk * 33 / 10 + dex) * 2 / 10 * (recovery / 100 + 1);
