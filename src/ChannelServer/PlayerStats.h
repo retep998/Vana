@@ -67,6 +67,7 @@ public:
 	void setDex(int16_t dex);
 	void setInt(int16_t intt);
 	void setLuk(int16_t luk);
+	void setMapleWarrior(int16_t modx);
 	void loseExp();
 
 	// Level Related Functions
@@ -122,12 +123,16 @@ private:
 	int16_t mp;
 	int16_t mmp;
 	int16_t str_bonus;
+	int16_t mw_str;
 	int16_t str;
 	int16_t dex_bonus;
+	int16_t mw_dex;
 	int16_t dex;
 	int16_t int_bonus;
+	int16_t mw_int;
 	int16_t intt;
 	int16_t luk_bonus;
+	int16_t mw_luk;
 	int16_t luk;
 
 	void modifiedHp();

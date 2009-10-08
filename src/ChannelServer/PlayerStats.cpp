@@ -55,7 +55,7 @@ PlayerStats::PlayerStats(Player *player,
 	int16_t mhp,
 	int16_t mp,
 	int16_t mmp,
-	int32_t exp) : player(player), level(level), job(job), fame(fame), str(str), dex(dex), intt(intt), luk(luk), ap(ap), hpmp_ap(hpmp_ap), sp(sp), hp(hp), mhp(mhp), mp(mp), mmp(mmp), exp(exp), hp_bonus(0), hb_hp(0), mp_bonus(0), hb_mp(0), str_bonus(0), dex_bonus(0), int_bonus(0), luk_bonus(0) {
+	int32_t exp) : player(player), level(level), job(job), fame(fame), str(str), dex(dex), intt(intt), luk(luk), ap(ap), hpmp_ap(hpmp_ap), sp(sp), hp(hp), mhp(mhp), mp(mp), mmp(mmp), exp(exp), hp_bonus(0), hb_hp(0), mp_bonus(0), hb_mp(0), str_bonus(0), mw_str(0), dex_bonus(0), mw_dex(0), int_bonus(0), mw_int(0), luk_bonus(0), mw_luk(0) {
 		if (this->hp == 0)
 			this->hp = 50;
 		else if (this->hp > mhp)
@@ -85,8 +85,8 @@ void PlayerStats::connectData(PacketCreator &packet) {
 
 int16_t PlayerStats::getMHp(bool withoutbonus) {
 	if (!withoutbonus) {
-		if ((hb_hp + hp_bonus + mhp) > 30000)
-			return 30000;
+		if ((hb_hp + hp_bonus + mhp) > Stats::MaxMaxHp)
+			return Stats::MaxMaxHp;
 		else
 			return (hb_hp + hp_bonus + mhp);
 	}
@@ -95,8 +95,8 @@ int16_t PlayerStats::getMHp(bool withoutbonus) {
 
 int16_t PlayerStats::getMMp(bool withoutbonus) {
 	if (!withoutbonus) {
-		if ((hb_mp + mp_bonus + mmp) > 30000)
-			return 30000;
+		if ((hb_mp + mp_bonus + mmp) > Stats::MaxMaxMp)
+			return Stats::MaxMaxMp;
 		else
 			return (hb_mp + mp_bonus + mmp);
 	}
@@ -220,6 +220,13 @@ void PlayerStats::setInt(int16_t intt) {
 void PlayerStats::setLuk(int16_t luk) {
 	this->luk = luk;
 	PlayerPacket::updateStatShort(player, Stats::Luk, luk);
+}
+
+void PlayerStats::setMapleWarrior(int16_t modx) {
+	mw_str = (str * modx) / 100;
+	mw_dex = (dex * modx) / 100;
+	mw_int = (intt * modx) / 100;
+	mw_luk = (luk * modx) / 100;
 }
 
 void PlayerStats::setMHp(int16_t mhp) {
