@@ -357,6 +357,20 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case Jobs::ThunderBreaker::LightningCharge:
 			player->getActiveBuffs()->setCharge(skillid); // Makes switching equips/Charged Blow easier
 			break;
+		case Jobs::Hero::MapleWarrior:
+		case Jobs::Paladin::MapleWarrior:
+		case Jobs::DarkKnight::MapleWarrior:
+		case Jobs::FPArchMage::MapleWarrior:
+		case Jobs::ILArchMage::MapleWarrior:
+		case Jobs::Bishop::MapleWarrior:
+		case Jobs::Bowmaster::MapleWarrior:
+		case Jobs::Marksman::MapleWarrior:
+		case Jobs::NightLord::MapleWarrior:
+		case Jobs::Shadower::MapleWarrior:
+		case Jobs::Buccaneer::MapleWarrior:
+		case Jobs::Corsair::MapleWarrior:
+			player->getStats()->setMapleWarrior(skill->x); // Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, or w/e else
+			break;
 	}
 	vector<Buff> buffs = parseBuffs(skillid, level);
 	ActiveBuff playerskill = parseBuffInfo(player, skillid, level);
@@ -477,6 +491,20 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Outlaw::HomingBeacon:
 		case Jobs::Corsair::Bullseye:
 			playerbuffs->setMarkedMonster(0);
+			break;
+		case Jobs::Hero::MapleWarrior:
+		case Jobs::Paladin::MapleWarrior:
+		case Jobs::DarkKnight::MapleWarrior:
+		case Jobs::FPArchMage::MapleWarrior:
+		case Jobs::ILArchMage::MapleWarrior:
+		case Jobs::Bishop::MapleWarrior:
+		case Jobs::Bowmaster::MapleWarrior:
+		case Jobs::Marksman::MapleWarrior:
+		case Jobs::NightLord::MapleWarrior:
+		case Jobs::Shadower::MapleWarrior:
+		case Jobs::Buccaneer::MapleWarrior:
+		case Jobs::Corsair::MapleWarrior:
+			player->getStats()->setMapleWarrior(0);
 			break;
 	}
 	uint8_t level = playerbuffs->getActiveSkillLevel(skill);
