@@ -730,9 +730,9 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						PlayersPacket::showMessage(args, 0);
 					break;
 				case CmdMaxStats:
-					player->getStats()->setFame(30000);
-					player->getStats()->setMHp(30000);
-					player->getStats()->setMMp(30000);
+					player->getStats()->setFame(Stats::MaxFame);
+					player->getStats()->setMHp(Stats::MaxMaxHp);
+					player->getStats()->setMMp(Stats::MaxMaxMp);
 					player->getStats()->setStr(32767);
 					player->getStats()->setDex(32767);
 					player->getStats()->setInt(32767);
