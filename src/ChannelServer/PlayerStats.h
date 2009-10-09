@@ -19,10 +19,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYER_STATS_H
 
 #include "Types.h"
+#include <boost/array.hpp>
+#include <map>
+
+using std::map;
 
 class Player;
 class PacketCreator;
 class PacketReader;
+
+enum Bonuses {
+	Hp = 0,
+	Mp,
+	Str,
+	Dex,
+	Int,
+	Luk
+};
 
 class PlayerStats {
 public:
@@ -96,10 +109,10 @@ public:
 	int16_t getSp() const { return sp; }
 	int16_t getFame() const { return fame; }
 
-	int16_t getStr(bool withbonus = false) const { return str + (withbonus ? str_bonus : 0); }
-	int16_t getDex(bool withbonus = false) const { return dex + (withbonus ? dex_bonus : 0); }
-	int16_t getInt(bool withbonus = false) const { return intt + (withbonus ? int_bonus : 0); }
-	int16_t getLuk(bool withbonus = false) const { return luk + (withbonus ? luk_bonus : 0); }
+	int16_t getStr(bool withbonus = false) const { return str + (withbonus ? bonus_totals[Str] : 0); }
+	int16_t getDex(bool withbonus = false) const { return dex + (withbonus ? bonus_totals[Dex] : 0); }
+	int16_t getInt(bool withbonus = false) const { return intt + (withbonus ? bonus_totals[Int] : 0); }
+	int16_t getLuk(bool withbonus = false) const { return luk + (withbonus ? bonus_totals[Luk] : 0); }
 	int16_t getHp() const { return hp; }
 	int16_t getMHp(bool withoutbonus = false);
 	int16_t getMp() const { return mp; }
@@ -114,26 +127,20 @@ private:
 	int16_t sp;
 	int16_t fame;
 
-	int16_t hp_bonus;
-	int16_t hb_hp;
 	int16_t hp;
 	int16_t mhp;
-	int16_t mp_bonus;
-	int16_t hb_mp;
 	int16_t mp;
 	int16_t mmp;
-	int16_t str_bonus;
-	int16_t mw_str;
 	int16_t str;
-	int16_t dex_bonus;
-	int16_t mw_dex;
 	int16_t dex;
-	int16_t int_bonus;
-	int16_t mw_int;
 	int16_t intt;
-	int16_t luk_bonus;
-	int16_t mw_luk;
 	int16_t luk;
+
+	map<int16_t, boost::array<int16_t, 6>> equip_bonuses;
+	boost::array<uint16_t, 6> buff_bonuses;
+	boost::array<uint16_t, 6> equip_totals;
+	boost::array<uint16_t, 6> bonus_totals;
+	void updateBonusTotals();
 
 	void modifiedHp();
 };

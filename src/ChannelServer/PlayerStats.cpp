@@ -55,7 +55,7 @@ PlayerStats::PlayerStats(Player *player,
 	int16_t mhp,
 	int16_t mp,
 	int16_t mmp,
-	int32_t exp) : player(player), level(level), job(job), fame(fame), str(str), dex(dex), intt(intt), luk(luk), ap(ap), hpmp_ap(hpmp_ap), sp(sp), hp(hp), mhp(mhp), mp(mp), mmp(mmp), exp(exp), hp_bonus(0), hb_hp(0), mp_bonus(0), hb_mp(0), str_bonus(0), mw_str(0), dex_bonus(0), mw_dex(0), int_bonus(0), mw_int(0), luk_bonus(0), mw_luk(0) {
+	int32_t exp) : player(player), level(level), job(job), fame(fame), str(str), dex(dex), intt(intt), luk(luk), ap(ap), hpmp_ap(hpmp_ap), sp(sp), hp(hp), mhp(mhp), mp(mp), mmp(mmp), exp(exp) {
 		if (this->hp == 0)
 			this->hp = 50;
 		else if (this->hp > mhp)
@@ -63,6 +63,32 @@ PlayerStats::PlayerStats(Player *player,
 
 		if (this->mp > mmp)
 			this->mp = mmp;
+
+		boost::array<uint16_t, 6> g = {0};
+		buff_bonuses = g;
+		equip_totals = g;
+		bonus_totals = g;
+}
+
+void PlayerStats::updateBonusTotals() {
+	boost::array<uint16_t, 6> g = {0};
+	equip_totals = g;
+	bonus_totals = g;
+	for (map<int16_t, boost::array<int16_t, 6>>::iterator iter = equip_bonuses.begin(); iter != equip_bonuses.end(); iter++) {
+		equip_totals[Hp] += iter->second[Hp];
+		equip_totals[Mp] += iter->second[Mp];
+		equip_totals[Str] += iter->second[Str];
+		equip_totals[Dex] += iter->second[Dex];
+		equip_totals[Int] += iter->second[Int];
+		equip_totals[Luk] += iter->second[Luk];
+	}
+
+	bonus_totals[Hp] = equip_totals[Hp] + buff_bonuses[Hp];
+	bonus_totals[Mp] = equip_totals[Mp] + buff_bonuses[Mp];
+	bonus_totals[Str] = equip_totals[Str] + buff_bonuses[Str];
+	bonus_totals[Dex] = equip_totals[Dex] + buff_bonuses[Dex];
+	bonus_totals[Int] = equip_totals[Int] + buff_bonuses[Int];
+	bonus_totals[Luk] = equip_totals[Luk] + buff_bonuses[Luk];
 }
 
 // Data Acquisition
@@ -85,20 +111,20 @@ void PlayerStats::connectData(PacketCreator &packet) {
 
 int16_t PlayerStats::getMHp(bool withoutbonus) {
 	if (!withoutbonus) {
-		if ((hb_hp + hp_bonus + mhp) > Stats::MaxMaxHp)
+		if ((bonus_totals[Hp] + mhp) > Stats::MaxMaxHp)
 			return Stats::MaxMaxHp;
 		else
-			return (hb_hp + hp_bonus + mhp);
+			return (bonus_totals[Hp] + mhp);
 	}
 	return mhp;
 }
 
 int16_t PlayerStats::getMMp(bool withoutbonus) {
 	if (!withoutbonus) {
-		if ((hb_mp + mp_bonus + mmp) > Stats::MaxMaxMp)
+		if ((bonus_totals[Mp] + mmp) > Stats::MaxMaxMp)
 			return Stats::MaxMaxMp;
 		else
-			return (hb_mp + mp_bonus + mmp);
+			return (bonus_totals[Mp] + mmp);
 	}
 	return mmp;
 }
@@ -223,10 +249,11 @@ void PlayerStats::setLuk(int16_t luk) {
 }
 
 void PlayerStats::setMapleWarrior(int16_t modx) {
-	mw_str = (str * modx) / 100;
-	mw_dex = (dex * modx) / 100;
-	mw_int = (intt * modx) / 100;
-	mw_luk = (luk * modx) / 100;
+	buff_bonuses[Str] = (str * modx) / 100;
+	buff_bonuses[Dex] = (dex * modx) / 100;
+	buff_bonuses[Int] = (intt * modx) / 100;
+	buff_bonuses[Luk] = (luk * modx) / 100;
+	updateBonusTotals();
 }
 
 void PlayerStats::setMHp(int16_t mhp) {
@@ -249,8 +276,9 @@ void PlayerStats::setMMp(int16_t mmp) {
 }
 
 void PlayerStats::setHyperBody(int16_t modx, int16_t mody) {
-	hb_hp = (((mhp + hp_bonus) * modx / 100) > Stats::MaxMaxHp ? Stats::MaxMaxHp : (mhp + hp_bonus) * modx / 100);
-	hb_mp = (((mmp + mp_bonus) * mody / 100) > Stats::MaxMaxMp ? Stats::MaxMaxMp : (mmp + mp_bonus) * mody / 100);
+	buff_bonuses[Hp] = (((mhp + equip_totals[Hp]) * modx / 100) > Stats::MaxMaxHp ? Stats::MaxMaxHp : (mhp + equip_totals[Hp]) * modx / 100);
+	buff_bonuses[Mp] = (((mmp + equip_totals[Mp]) * mody / 100) > Stats::MaxMaxMp ? Stats::MaxMaxMp : (mmp + equip_totals[Mp]) * mody / 100);
+	updateBonusTotals();
 	PlayerPacket::updateStatShort(player, Stats::MaxHp, mhp);
 	PlayerPacket::updateStatShort(player, Stats::MaxMp, mmp);
 	if (player->getParty())
