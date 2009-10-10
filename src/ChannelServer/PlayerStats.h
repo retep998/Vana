@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLAYER_STATS_H
 
 #include "Types.h"
-#include <boost/array.hpp>
 #include <map>
 
 using std::map;
@@ -27,15 +26,25 @@ using std::map;
 class Player;
 class PacketCreator;
 class PacketReader;
+struct Item;
 
-enum Bonuses {
-	Hp = 0,
-	Mp,
-	Str,
-	Dex,
-	Int,
-	Luk
+struct BonusSet {
+	uint16_t Hp,
+		Mp,
+		Str,
+		Dex,
+		Int,
+		Luk;
+
+	BonusSet() : Hp(0), Mp(0), Str(0), Dex(0), Int(0), Luk(0) {}
 };
+
+struct EquipBonus : public BonusSet {
+	int32_t Id;
+
+	EquipBonus() : Id(0) {}
+};
+typedef map<int16_t, EquipBonus> EquipBonuses;
 
 class PlayerStats {
 public:
@@ -57,6 +66,7 @@ public:
 		int32_t exp);
 
 	// Data Modification
+	void checkHpMp();
 	void setLevel(uint8_t level);
 	void modifyHp(int16_t hp, bool is = true); // Bases its calculations on current HP/MP
 	void modifyMp(int16_t mp, bool is = false);
@@ -82,6 +92,8 @@ public:
 	void setLuk(int16_t luk);
 	void setMapleWarrior(int16_t modx);
 	void loseExp();
+
+	void setEquip(int16_t slot, Item *equip, bool isLoading = false);
 
 	// Level Related Functions
 	void giveExp(uint32_t exp, bool inChat = false, bool white = true);
@@ -109,10 +121,10 @@ public:
 	int16_t getSp() const { return sp; }
 	int16_t getFame() const { return fame; }
 
-	int16_t getStr(bool withbonus = false) const { return str + (withbonus ? bonus_totals[Str] : 0); }
-	int16_t getDex(bool withbonus = false) const { return dex + (withbonus ? bonus_totals[Dex] : 0); }
-	int16_t getInt(bool withbonus = false) const { return intt + (withbonus ? bonus_totals[Int] : 0); }
-	int16_t getLuk(bool withbonus = false) const { return luk + (withbonus ? bonus_totals[Luk] : 0); }
+	int16_t getStr(bool withbonus = false);
+	int16_t getDex(bool withbonus = false);
+	int16_t getInt(bool withbonus = false);
+	int16_t getLuk(bool withbonus = false);
 	int16_t getHp() const { return hp; }
 	int16_t getMHp(bool withoutbonus = false);
 	int16_t getMp() const { return mp; }
@@ -136,11 +148,11 @@ private:
 	int16_t intt;
 	int16_t luk;
 
-	map<int16_t, boost::array<int16_t, 6>> equip_bonuses;
-	boost::array<uint16_t, 6> buff_bonuses;
-	boost::array<uint16_t, 6> equip_totals;
-	boost::array<uint16_t, 6> bonus_totals;
-	void updateBonusTotals();
+	EquipBonuses equipStats;
+	BonusSet equipBonuses;
+	int16_t hbx, hby, mw; // Keep track of Hyper Body X and Y values along with Maple Warrior's X value in order to update new amounts upon stat up
+	BonusSet buffBonuses;
+	void updateBonuses(bool updateEquips = false, bool isLoading = false);
 
 	void modifiedHp();
 };
