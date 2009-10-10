@@ -239,21 +239,6 @@ void Player::playerConnect(PacketReader &packet) {
 	m_stance = 0;
 	m_foothold = 0;
 
-	// Inventory
-	mounts.reset(new PlayerMounts(this));
-	pets.reset(new PlayerPets(this));
-	boost::array<uint8_t, Inventories::InventoryCount> maxslots;
-	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
-	maxslots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
-	maxslots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);
-	maxslots[3] = static_cast<uint8_t>(res[0]["etc_slots"]);
-	maxslots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
-	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
-	storage.reset(new PlayerStorage(this));
-
-	// Skills
-	skills.reset(new PlayerSkills(this));
-
 	// Stats
 	stats.reset(new PlayerStats(this, static_cast<uint8_t>(res[0]["level"]),
 		static_cast<int16_t>(res[0]["job"]),
@@ -270,6 +255,21 @@ void Player::playerConnect(PacketReader &packet) {
 		static_cast<int16_t>(res[0]["cmp"]),
 		static_cast<int16_t>(res[0]["mmp"]),
 		res[0]["exp"]));
+
+	// Inventory
+	mounts.reset(new PlayerMounts(this));
+	pets.reset(new PlayerPets(this));
+	boost::array<uint8_t, Inventories::InventoryCount> maxslots;
+	maxslots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
+	maxslots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
+	maxslots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);
+	maxslots[3] = static_cast<uint8_t>(res[0]["etc_slots"]);
+	maxslots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
+	inv.reset(new PlayerInventory(this, maxslots, res[0]["mesos"]));
+	storage.reset(new PlayerStorage(this));
+
+	// Skills
+	skills.reset(new PlayerSkills(this));
 
 	// Buffs/summons
 	activeBuffs.reset(new PlayerActiveBuffs(this));
@@ -312,6 +312,8 @@ void Player::playerConnect(PacketReader &packet) {
 
 	SkillMacros skillMacros;
 	skillMacros.load(id);
+
+	stats->checkHpMp(); // Adjust down HP or MP if necessary
 
 	PlayerPacket::connectData(this);
 

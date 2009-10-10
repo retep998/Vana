@@ -126,7 +126,7 @@ void PlayerInventory::load() {
 		item->hammers = res[i][22];
 		item->petid = res[i][23];
 		res[i][24].to_string(item->name);
-		addItem((int8_t) res[i][0], res[i][1], item);
+		addItem((int8_t) res[i][0], res[i][1], item, true);
 		if (item->petid != 0) {
 			Pet *pet = new Pet(
 				m_player,
@@ -263,14 +263,16 @@ bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
 	return true;
 }
 
-void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item) {
+void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item, bool isLoading) {
 	m_items[inv - 1][slot] = item;
 	if (m_itemamounts.find(item->id) != m_itemamounts.end())
 		m_itemamounts[item->id] += item->amount;
 	else
 		m_itemamounts[item->id] = item->amount;
-	if (slot < 0)
+	if (slot < 0) {
 		addEquipped(slot, item->id);
+		m_player->getStats()->setEquip(slot, item, isLoading);
+	}
 }
 
 Item * PlayerInventory::getItem(int8_t inv, int16_t slot) {
@@ -287,8 +289,10 @@ void PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) {
 	if (m_items[inv].find(slot) != m_items[inv].end()) {
 		if (updateAmount)
 			m_itemamounts[m_items[inv][slot]->id] -= m_items[inv][slot]->amount;
-		if (slot < 0)
+		if (slot < 0) {
 			addEquipped(slot, 0);
+			m_player->getStats()->setEquip(slot, 0);
+		}
 		delete m_items[inv][slot];
 		m_items[inv].erase(slot);
 	}
@@ -298,13 +302,17 @@ void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 	inv -= 1;
 	if (item == 0) {
 		m_items[inv].erase(slot);
-		if (slot < 0)
+		if (slot < 0) {
 			addEquipped(slot, 0);
+			m_player->getStats()->setEquip(slot, 0);
+		}
 	}
 	else {
 		m_items[inv][slot] = item;
-		if (slot < 0)
+		if (slot < 0) {
 			addEquipped(slot, item->id);
+			m_player->getStats()->setEquip(slot, item);
+		}
 	}
 }
 

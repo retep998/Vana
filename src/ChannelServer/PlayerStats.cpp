@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerStats.h"
 #include "ChannelServer.h"
+#include "EquipDataProvider.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Instance.h"
@@ -55,40 +56,56 @@ PlayerStats::PlayerStats(Player *player,
 	int16_t mhp,
 	int16_t mp,
 	int16_t mmp,
-	int32_t exp) : player(player), level(level), job(job), fame(fame), str(str), dex(dex), intt(intt), luk(luk), ap(ap), hpmp_ap(hpmp_ap), sp(sp), hp(hp), mhp(mhp), mp(mp), mmp(mmp), exp(exp) {
+	int32_t exp) : player(player), level(level), job(job), fame(fame), str(str), dex(dex), intt(intt), luk(luk), ap(ap), hpmp_ap(hpmp_ap), sp(sp), hp(hp), mhp(mhp), mp(mp), mmp(mmp), exp(exp), hbx(0), hby(0), mw(0) {
 		if (this->hp == 0)
 			this->hp = 50;
-		else if (this->hp > mhp)
-			this->hp = mhp;
-
-		if (this->mp > mmp)
-			this->mp = mmp;
-
-		boost::array<uint16_t, 6> g = {0};
-		buff_bonuses = g;
-		equip_totals = g;
-		bonus_totals = g;
 }
 
-void PlayerStats::updateBonusTotals() {
-	boost::array<uint16_t, 6> g = {0};
-	equip_totals = g;
-	bonus_totals = g;
-	for (map<int16_t, boost::array<int16_t, 6>>::iterator iter = equip_bonuses.begin(); iter != equip_bonuses.end(); iter++) {
-		equip_totals[Hp] += iter->second[Hp];
-		equip_totals[Mp] += iter->second[Mp];
-		equip_totals[Str] += iter->second[Str];
-		equip_totals[Dex] += iter->second[Dex];
-		equip_totals[Int] += iter->second[Int];
-		equip_totals[Luk] += iter->second[Luk];
+// Equip stat bonus handling
+void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
+	if (mw > 0)
+		setMapleWarrior(mw);
+
+	if (updateEquips) {
+		equipBonuses = BonusSet();
+		for (EquipBonuses::iterator iter = equipStats.begin(); iter != equipStats.end(); iter++) {
+			EquipInfo *e = EquipDataProvider::Instance()->getEquipInfo(iter->second.Id);
+			if (getStr(true) >= e->reqstr && getDex(true) >= e->reqdex && getInt(true) >= e->reqint && getLuk(true) >= e->reqluk && getFame() >= e->reqfame) {
+				equipBonuses.Hp += iter->second.Hp;
+				equipBonuses.Mp += iter->second.Mp;
+				equipBonuses.Str += iter->second.Str;
+				equipBonuses.Dex += iter->second.Dex;
+				equipBonuses.Int += iter->second.Int;
+				equipBonuses.Luk += iter->second.Luk;
+			}
+		}
 	}
 
-	bonus_totals[Hp] = equip_totals[Hp] + buff_bonuses[Hp];
-	bonus_totals[Mp] = equip_totals[Mp] + buff_bonuses[Mp];
-	bonus_totals[Str] = equip_totals[Str] + buff_bonuses[Str];
-	bonus_totals[Dex] = equip_totals[Dex] + buff_bonuses[Dex];
-	bonus_totals[Int] = equip_totals[Int] + buff_bonuses[Int];
-	bonus_totals[Luk] = equip_totals[Luk] + buff_bonuses[Luk];
+	if (hbx > 0 && hby > 0)
+		setHyperBody(hbx, hby);
+	if (!isLoading) { // Adjust current HP/MP down if necessary
+		if (getHp() > getMHp())
+			setHp(getHp());
+		if (getMp() > getMMp())
+			setMp(getMp());
+	}
+}
+
+void PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) {
+	slot = abs(slot);
+	if (equip != 0) {
+		equipStats[slot].Id = equip->id;
+		equipStats[slot].Hp = equip->ihp;
+		equipStats[slot].Mp = equip->imp;
+		equipStats[slot].Str = equip->istr;
+		equipStats[slot].Dex = equip->idex;
+		equipStats[slot].Int = equip->iint;
+		equipStats[slot].Luk = equip->iluk;
+	}
+	else
+		equipStats.erase(slot);
+
+	updateBonuses(true, isLoading);
 }
 
 // Data Acquisition
@@ -111,25 +128,61 @@ void PlayerStats::connectData(PacketCreator &packet) {
 
 int16_t PlayerStats::getMHp(bool withoutbonus) {
 	if (!withoutbonus) {
-		if ((bonus_totals[Hp] + mhp) > Stats::MaxMaxHp)
+		if ((mhp + equipBonuses.Hp + buffBonuses.Hp) > Stats::MaxMaxHp)
 			return Stats::MaxMaxHp;
 		else
-			return (bonus_totals[Hp] + mhp);
+			return (mhp + equipBonuses.Hp + buffBonuses.Hp);
 	}
 	return mhp;
 }
 
 int16_t PlayerStats::getMMp(bool withoutbonus) {
 	if (!withoutbonus) {
-		if ((bonus_totals[Mp] + mmp) > Stats::MaxMaxMp)
+		if ((mmp + equipBonuses.Mp + buffBonuses.Mp) > Stats::MaxMaxMp)
 			return Stats::MaxMaxMp;
 		else
-			return (bonus_totals[Mp] + mmp);
+			return (mmp + equipBonuses.Mp + buffBonuses.Mp);
 	}
 	return mmp;
 }
 
+int16_t PlayerStats::getStr(bool withbonus) {
+	if (withbonus)
+		return ((str + buffBonuses.Str + equipBonuses.Str) > SHRT_MAX ? SHRT_MAX : (str + buffBonuses.Str + equipBonuses.Str));
+
+	return str;
+}
+
+int16_t PlayerStats::getDex(bool withbonus) {
+	if (withbonus)
+		return ((dex + buffBonuses.Dex + equipBonuses.Dex) > SHRT_MAX ? SHRT_MAX : (dex + buffBonuses.Dex + equipBonuses.Dex));
+
+	return dex;
+}
+
+int16_t PlayerStats::getInt(bool withbonus) {
+	if (withbonus)
+		return ((intt + buffBonuses.Int + equipBonuses.Int) > SHRT_MAX ? SHRT_MAX : (intt + buffBonuses.Int + equipBonuses.Int));
+
+	return intt;
+}
+
+int16_t PlayerStats::getLuk(bool withbonus) {
+	if (withbonus)
+		return ((luk + buffBonuses.Luk + equipBonuses.Luk) > SHRT_MAX ? SHRT_MAX : (luk + buffBonuses.Luk + equipBonuses.Luk));
+
+	return luk;
+}
+
 // Data Modification
+void PlayerStats::checkHpMp() {
+	if (this->hp > getMHp())
+		this->hp = getMHp();
+
+	if (this->mp > getMMp())
+		this->mp = getMMp();
+}
+
 void PlayerStats::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(player, Stats::Level, level);
@@ -249,11 +302,14 @@ void PlayerStats::setLuk(int16_t luk) {
 }
 
 void PlayerStats::setMapleWarrior(int16_t modx) {
-	buff_bonuses[Str] = (str * modx) / 100;
-	buff_bonuses[Dex] = (dex * modx) / 100;
-	buff_bonuses[Int] = (intt * modx) / 100;
-	buff_bonuses[Luk] = (luk * modx) / 100;
-	updateBonusTotals();
+	buffBonuses.Str = (str * modx) / 100;
+	buffBonuses.Dex = (dex * modx) / 100;
+	buffBonuses.Int = (intt * modx) / 100;
+	buffBonuses.Luk = (luk * modx) / 100;
+	if (mw != modx) {
+		mw = modx;
+		updateBonuses();
+	}
 }
 
 void PlayerStats::setMHp(int16_t mhp) {
@@ -276,9 +332,10 @@ void PlayerStats::setMMp(int16_t mmp) {
 }
 
 void PlayerStats::setHyperBody(int16_t modx, int16_t mody) {
-	buff_bonuses[Hp] = (((mhp + equip_totals[Hp]) * modx / 100) > Stats::MaxMaxHp ? Stats::MaxMaxHp : (mhp + equip_totals[Hp]) * modx / 100);
-	buff_bonuses[Mp] = (((mmp + equip_totals[Mp]) * mody / 100) > Stats::MaxMaxMp ? Stats::MaxMaxMp : (mmp + equip_totals[Mp]) * mody / 100);
-	updateBonusTotals();
+	hbx = modx;
+	hby = mody;
+	buffBonuses.Hp = (((mhp + equipBonuses.Hp) * modx / 100) > Stats::MaxMaxHp ? Stats::MaxMaxHp : (mhp + equipBonuses.Hp) * modx / 100);
+	buffBonuses.Mp = (((mmp + equipBonuses.Mp) * mody / 100) > Stats::MaxMaxMp ? Stats::MaxMaxMp : (mmp + equipBonuses.Mp) * mody / 100);
 	PlayerPacket::updateStatShort(player, Stats::MaxHp, mhp);
 	PlayerPacket::updateStatShort(player, Stats::MaxMp, mmp);
 	if (player->getParty())
@@ -579,6 +636,7 @@ void PlayerStats::addStat(int32_t type, int16_t mod, bool isreset) {
 	}
 	if (!isreset)
 		setAp(getAp() - mod);
+	updateBonuses();
 }
 
 int16_t PlayerStats::randHp() {

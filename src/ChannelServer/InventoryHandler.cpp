@@ -617,8 +617,10 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 	if (succeed != -1) {
 		Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 		InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
-		if (!cursed)
+		if (!cursed) {
+			player->getStats()->setEquip(eslot, equip);
 			InventoryPacket::addNewItem(player, Inventories::EquipInventory, eslot, equip, true);
+		}
 		else {
 			InventoryPacket::moveItem(player, Inventories::EquipInventory, eslot, 0);
 			player->getInventory()->deleteItem(Inventories::EquipInventory, eslot);
