@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 using std::string;
-using StringUtilities::atob;
 using StringUtilities::runFlags;
 
 MapDataProvider * MapDataProvider::singleton = 0;

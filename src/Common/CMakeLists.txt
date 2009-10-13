@@ -54,6 +54,7 @@ set(SOURCES
 	Timer/Types.h
 	TimeUtilities.h
 	Types.h
+	ValidCharDataProvider.h
 	Variables.h
 	AbstractConnection.cpp 
 	AbstractServer.cpp
@@ -96,6 +97,7 @@ set(SOURCES
 	Timer/Thread.cpp
 	Timer/Timer.cpp
 	TimeUtilities.cpp
+	ValidCharDataProvider.cpp
 	Variables.cpp
 )
 
