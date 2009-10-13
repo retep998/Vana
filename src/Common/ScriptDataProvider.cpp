@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using FileUtilities::fileExists;
 using Initializing::outputWidth;
-using StringUtilities::atob;
 
 ScriptDataProvider * ScriptDataProvider::singleton = 0;
 

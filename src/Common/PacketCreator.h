@@ -76,7 +76,7 @@ void PacketCreator::set(T value, size_t pos) {
 template <typename T>
 void PacketCreator::addVector(const vector<T> &vec) {
 	add<uint32_t>(vec.size());
-	for (vector<T>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
+	for (typename vector<T>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
 		add(*iter);
 	}
 }
