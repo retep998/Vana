@@ -599,6 +599,8 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 		else
 			player->getStats()->modifyHp((int16_t) hpRecover);
 	}
+	else if (skillid == Jobs::DawnWarrior::SoulBlade && totaldmg > 0)
+		player->getActiveBuffs()->addCombo();
 }
 
 void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {

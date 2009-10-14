@@ -497,22 +497,27 @@ namespace Jobs {
 			DawnWarrior1 = 1100,
 			DawnWarrior2 = 1110,
 			DawnWarrior3 = 1111,
+			DawnWarrior4 = 1112,
 
 			BlazeWizard1 = 1200,
 			BlazeWizard2 = 1210,
 			BlazeWizard3 = 1211,
+			BlazeWizard4 = 1212,
 
 			WindArcher1 = 1300,
 			WindArcher2 = 1310,
 			WindArcher3 = 1311,
+			WindArcher4 = 1312,
 
 			NightWalker1 = 1400,
 			NightWalker2 = 1410,
 			NightWalker3 = 1411,
+			NightWalker4 = 1412,
 
 			ThunderBreaker1 = 1500,
 			ThunderBreaker2 = 1510,
-			ThunderBreaker3 = 1511
+			ThunderBreaker3 = 1511,
+			ThunderBreaker4 = 1512
 		};
 	}
 	namespace All {
@@ -971,6 +976,7 @@ namespace Jobs {
 			Panic = 11111002,
 			Rage = 11101003,
 			Soul = 11001004,
+			SoulBlade = 11101004,
 			SoulCharge = 11111007,
 			SwordBooster = 11101001,
 			SwordMastery = 11100000
