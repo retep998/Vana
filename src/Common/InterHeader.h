@@ -54,6 +54,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define INTER_TO_WORLDS 0x2022 // For sending a packet to all worlds via the loginserver
 #define INTER_TO_CHANNELS 0x2023 // For sending a packet from a channel to all channels via the WorldServer
 #define INTER_REFRESH_DATA 0x2024 // For reloading MCDB
+#define INTER_GUILD_OPERATION 0x2025
+#define INTER_BBS 0x2026
+#define INTER_ALLIANCE 0x2027
 
 enum {
 	InterLoginServer,

@@ -54,7 +54,9 @@ void WorldServerConnection::realHandleRequest(PacketReader &packet) {
 		case INTER_PARTY_SYNC: PartyFunctions::handleDataSync(packet); break;
 		case INTER_TRANSFER_PLAYER_PACKET: PlayerPacketHolder::Instance()->parseIncomingPacket(packet); break;
 		case INTER_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerPacketHolder::Instance()->removePacket(packet.get<int32_t>()); break;
-		case INTER_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet);
+		case INTER_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet); break;
+		case INTER_GUILD_OPERATION: WorldServerConnectHandler::guildPacketHandlerWorld(packet); break;
+		case INTER_ALLIANCE: WorldServerConnectHandler::alliancePacketHandlerWorld(packet); break;
 	}
 }
 

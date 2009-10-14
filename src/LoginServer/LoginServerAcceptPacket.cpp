@@ -76,3 +76,10 @@ void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *player, uin
 	packet.add<int32_t>(charid);
 	player->getSession()->send(packet);
 }
+
+void LoginServerAcceptPacket::removeCharacter(LoginServerAcceptConnection *player, int32_t charid) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_GUILD_OPERATION);
+	packet.add<int32_t>(charid);
+	player->getSession()->send(packet);
+}

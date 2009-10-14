@@ -67,6 +67,9 @@ public:
 	bool isLeader(int32_t playerid) const { return playerid == leaderid; }
 	map<int32_t, Player *> members;
 	vector<int32_t> oldLeader;
+	int8_t guildcontract;
+	int8_t voters;
+	string guildname;
 private:
 	int32_t leaderid;
 };

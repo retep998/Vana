@@ -45,6 +45,8 @@ namespace WorldServerAcceptPacket {
 	void sendSwitchPartyLeader(int32_t playerid, int32_t partyid);
 	void sendCreateParty(int32_t playerid, int32_t partyid);
 	void sendDisbandParty(int32_t partyid);
+	void sendGuilds(WorldServerAcceptConnection *player);
+	void sendAlliances(WorldServerAcceptConnection *player);
 };
 
 #endif

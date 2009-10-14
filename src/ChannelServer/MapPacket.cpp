@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Buffs.h"
 #include "ChannelServer.h"
+#include "Guilds.h"
 #include "Inventory.h"
 #include "MapleSession.h"
 #include "Maps.h"
@@ -38,12 +39,30 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int16_t>(SMSG_MAP_SPAWN_PLAYER);
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName());
-	packet.addString(""); // Guild
-	packet.add<int16_t>(0); // Guild icon garbage
-	packet.add<int8_t>(0); // Guild icon garbage
-	packet.add<int16_t>(0); // Guild icon garbage
-	packet.add<int8_t>(0); // Guild icon garbage
-
+	if (player->getGuildId() > 0) {
+		if (Guild * gi = Guilds::Instance()->getGuild(player->getGuildId())) {
+			packet.addString(gi->name);
+			packet.add<int16_t>(gi->logobg);
+			packet.add<uint8_t>(gi->logobgcolor);
+			packet.add<int16_t>(gi->logo);
+			packet.add<uint8_t>(gi->logocolor);
+		}
+		else {
+			packet.addString("");
+			packet.add<int16_t>(0);
+			packet.add<int8_t>(0);
+			packet.add<int16_t>(0);
+			packet.add<int8_t>(0);
+		}
+	}
+	else {
+		packet.addString("");
+		packet.add<int16_t>(0);
+		packet.add<int8_t>(0);
+		packet.add<int16_t>(0);
+		packet.add<int8_t>(0);
+	}
+	
 	packet.add<int32_t>(0);
 	packet.add<uint8_t>(0xf8);
 	packet.add<int8_t>(3);

@@ -136,6 +136,8 @@ namespace LuaExports {
 	// Player
 	int deletePlayerVariable(lua_State *luaVm);
 	int endMorph(lua_State *luaVm);
+	int getAllianceId(lua_State *luaVm);
+	int getAllianceRank(lua_State *luaVm);
 	int getAP(lua_State *luaVm);
 	int getDEX(lua_State *luaVm);
 	int getEXP(lua_State *luaVm);
@@ -144,6 +146,8 @@ namespace LuaExports {
 	int getFH(lua_State *luaVm);
 	int getGender(lua_State *luaVm);
 	int getGMLevel(lua_State *luaVm);
+	int getGuildId(lua_State *luaVm);
+	int getGuildRank(lua_State *luaVm);
 	int getHair(lua_State *luaVm);
 	int getHP(lua_State *luaVm);
 	int getHPMPAP(lua_State *luaVm);
@@ -301,6 +305,23 @@ namespace LuaExports {
 	int stopAllInstanceTimers(lua_State *luaVm);
 	int stopInstanceTimer(lua_State *luaVm);
 	int unbanInstancePlayer(lua_State *luaVm);
+
+	// Guild
+	int addGuildPoint(lua_State *luaVm);
+	int disbandGuild(lua_State *luaVm);
+	int displayGuildRankBoard(lua_State *luaVm);
+	int getGuildCapacity(lua_State *luaVm);
+	int hasEmblem(lua_State *luaVm);
+	int increaseGuildCapacity(lua_State *luaVm);
+	int removeEmblem(lua_State *luaVm);
+	int sendNewGuildWindow(lua_State *luaVm);
+	int sendChangeGuildEmblem(lua_State *luaVm);
+
+	// Alliance
+	int createAlliance(lua_State *luaVm);
+	int disbandAlliance(lua_State *luaVm);
+	int getAllianceCapacity(lua_State *luaVm);
+	int increaseAllianceCapacity(lua_State *luaVm);
 };
 
 #endif

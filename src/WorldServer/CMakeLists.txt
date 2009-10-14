@@ -1,6 +1,17 @@
 set(SOURCES 
+	Alliance.h
+	AllianceHandler.h
+	AlliancePacket.h
+	Alliances.h
+	BbsHandler.h
+	BbsPacket.h
 	ChannelChangeRequests.h
 	Channels.h
+	Guild.h
+	GuildBbs.h
+	GuildHandler.h
+	GuildPacket.h
+	Guilds.h
 	LoginServerConnection.h
 	LoginServerConnectHandler.h
 	LoginServerConnectPacket.h
@@ -13,8 +24,19 @@ set(SOURCES
 	WorldServerAcceptConnection.h
 	WorldServerAcceptHandler.h
 	WorldServerAcceptPacket.h
+	Alliance.cpp
+	AllianceHandler.cpp
+	AlliancePacket.cpp
+	Alliances.cpp
+	BbsHandler.cpp
+	BbsPacket.cpp
 	ChannelChangeRequests.cpp
 	Channels.cpp
+	Guild.cpp
+	GuildBbs.cpp
+	GuildHandler.cpp
+	GuildPacket.cpp
+	Guilds.cpp
 	LoginServerConnection.cpp
 	LoginServerConnectHandler.cpp
 	LoginServerConnectPacket.cpp
@@ -34,6 +56,8 @@ add_executable(WorldServer ${SOURCES})
 
 target_link_libraries(WorldServer
 	Common
+	${MYSQL_LIBRARIES}
+	${MYSQL++_LIBRARIES}
 	${LUA_LIBRARIES}
 	${CRYPTO++_LIBRARIES}
 	${Boost_SYSTEM_LIBRARY}

@@ -16,10 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.h"
+#include "AlliancePacket.h"
+#include "Alliances.h"
 #include "BeautyDataProvider.h"
 #include "ChannelServer.h"
 #include "Drop.h"
 #include "EventDataProvider.h"
+#include "GuildPacket.h"
+#include "Guilds.h"
 #include "Instance.h"
 #include "Instances.h"
 #include "Inventory.h"
@@ -142,6 +146,8 @@ void LuaScriptable::initialize() {
 	// Player
 	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
 	lua_register(luaVm, "endMorph", &LuaExports::endMorph);
+	lua_register(luaVm, "getAllianceId", &LuaExports::getAllianceId);
+	lua_register(luaVm, "getAllianceRank", &LuaExports::getAllianceRank);
 	lua_register(luaVm, "getAP", &LuaExports::getAP);
 	lua_register(luaVm, "getDEX", &LuaExports::getDEX);
 	lua_register(luaVm, "getEXP", &LuaExports::getEXP);
@@ -150,6 +156,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getFH", &LuaExports::getFH);
 	lua_register(luaVm, "getGender", &LuaExports::getGender);
 	lua_register(luaVm, "getGMLevel", &LuaExports::getGMLevel);
+	lua_register(luaVm, "getGuildId", &LuaExports::getGuildId);
+	lua_register(luaVm, "getGuildRank", &LuaExports::getGuildRank);
 	lua_register(luaVm, "getHair", &LuaExports::getHair);
 	lua_register(luaVm, "getHP", &LuaExports::getHP);
 	lua_register(luaVm, "getHPMPAP", &LuaExports::getHPMPAP);
@@ -307,6 +315,23 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "stopAllInstanceTimers", &LuaExports::stopAllInstanceTimers);
 	lua_register(luaVm, "stopInstanceTimer", &LuaExports::stopInstanceTimer);
 	lua_register(luaVm, "unbanInstancePlayer", &LuaExports::unbanInstancePlayer);
+
+	// Guild
+	lua_register(luaVm, "addGuildPoint", &LuaExports::addGuildPoint);
+	lua_register(luaVm, "disbandGuild", &LuaExports::disbandGuild);
+	lua_register(luaVm, "displayGuildRankBoard", &LuaExports::displayGuildRankBoard);
+	lua_register(luaVm, "getGuildCapacity", &LuaExports::getGuildCapacity);
+	lua_register(luaVm, "hasEmblem", &LuaExports::hasEmblem);
+	lua_register(luaVm, "removeEmblem", &LuaExports::removeEmblem);
+	lua_register(luaVm, "sendChangeGuildEmblem", &LuaExports::sendChangeGuildEmblem);
+	lua_register(luaVm, "sendIncreaseCapacity", &LuaExports::increaseGuildCapacity);
+	lua_register(luaVm, "sendNewGuildWindow", &LuaExports::sendNewGuildWindow);
+
+	// Alliance
+	lua_register(luaVm, "createAlliance", &LuaExports::createAlliance);
+	lua_register(luaVm, "disbandAlliance", &LuaExports::disbandAlliance);
+	lua_register(luaVm, "getAllianceCapacity", &LuaExports::getAllianceCapacity);
+	lua_register(luaVm, "increaseAllianceCapacity", &LuaExports::increaseAllianceCapacity);
 }
 
 bool LuaScriptable::run() {
@@ -809,6 +834,16 @@ int LuaExports::endMorph(lua_State *luaVm) {
 	return 0;
 }
 
+int LuaExports::getAllianceId(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getAllianceId());
+	return 1;
+}
+
+int LuaExports::getAllianceRank(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getAllianceRank());
+	return 1;
+}
+
 int LuaExports::getAP(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getAp());
 	return 1;
@@ -886,6 +921,16 @@ int LuaExports::getLevel(lua_State *luaVm) {
 
 int LuaExports::getLUK(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getLuk());
+	return 1;
+}
+
+int LuaExports::getGuildId(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getGuildId());
+	return 1;
+}
+
+int LuaExports::getGuildRank(lua_State *luaVm) {
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getGuildRank());
 	return 1;
 }
 
@@ -1978,5 +2023,81 @@ int LuaExports::unbanInstancePlayer(lua_State *luaVm) {
 	else
 		player = Players::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 	getInstance(luaVm)->setBanned(player->getName(), false);
+	return 0;
+}
+
+// Guilds
+int LuaExports::addGuildPoint(lua_State *luaVm) {
+	int32_t amount = 1;
+	if (lua_isnumber(luaVm, -1))
+		amount = lua_tointeger(luaVm, -1);
+	GuildPacket::addGuildPoint(getPlayer(luaVm)->getGuildId(), amount);
+	return 0;
+}
+
+int LuaExports::disbandGuild(lua_State *luaVm) {
+	GuildPacket::guildDisband(getPlayer(luaVm)->getGuildId());
+	return 0;
+}
+
+int LuaExports::displayGuildRankBoard(lua_State *luaVm) {
+	GuildPacket::displayGuildRankBoard(getPlayer(luaVm)->getId(), lua_tointeger(luaVm, -1));
+	return 0;
+}
+
+int LuaExports::getGuildCapacity(lua_State *luaVm) {
+	if (getPlayer(luaVm)->getGuildId() != 0)
+		lua_pushinteger(luaVm, Guilds::Instance()->getGuild(getPlayer(luaVm)->getGuildId())->capacity);
+	else
+		lua_pushinteger(luaVm, 0);
+	return 1;
+}
+
+int LuaExports::hasEmblem(lua_State *luaVm) {
+	lua_pushboolean(luaVm, Guilds::Instance()->hasEmblem(getPlayer(luaVm)->getGuildId()));
+	return 1;
+}
+
+int LuaExports::increaseGuildCapacity(lua_State *luaVm) {
+	GuildPacket::sendIncreaseCapacity(getPlayer(luaVm)->getGuildId(), getPlayer(luaVm)->getId());
+	return 0;
+}
+
+int LuaExports::removeEmblem(lua_State *luaVm) {
+	GuildPacket::sendRemoveEmblem(getPlayer(luaVm)->getGuildId(), getPlayer(luaVm)->getId());
+	return 0;
+}
+
+int LuaExports::sendNewGuildWindow(lua_State *luaVm) {
+	GuildPacket::sendCreateGuildWindow(getPlayer(luaVm));
+	return 0;
+}
+
+int LuaExports::sendChangeGuildEmblem(lua_State *luaVm) {
+	GuildPacket::sendChangeGuildEmblem(getPlayer(luaVm));
+	return 0;
+}
+
+// Alliance
+int LuaExports::createAlliance(lua_State *luaVm) {
+	string alliancename = lua_tostring(luaVm, -1);
+	AlliancePacket::sendCreateAlliance(getPlayer(luaVm)->getId(), alliancename);
+	return 1;
+}
+
+int LuaExports::getAllianceCapacity(lua_State *luaVm) {
+	if (Alliance *alliance = Alliances::Instance()->getAlliance(getPlayer(luaVm)->getAllianceId()))
+		lua_pushnumber(luaVm, alliance->capacity);
+	else
+		lua_pushnumber(luaVm, 2);
+	return 1;
+}
+int LuaExports::disbandAlliance(lua_State *luaVm) {
+	AlliancePacket::sendDisbandAlliance(getPlayer(luaVm)->getAllianceId(), getPlayer(luaVm)->getId());
+	return 0;
+}
+
+int LuaExports::increaseAllianceCapacity(lua_State *luaVm) {
+	AlliancePacket::increaseAllianceCapacity(getPlayer(luaVm)->getAllianceId(), getPlayer(luaVm)->getId());
 	return 0;
 }

@@ -258,10 +258,32 @@ void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
 		return;
 	}
 
-	bool success = false;
-	if (data == player->getCharDeletePassword()) {
-		mysqlpp::Query query = Database::getCharDB().query();
+	uint8_t result = 0x0; // Result of the deletion
+	/* Results:
+	00 = Deletion sucess
+	12 = "The 8-digit birthday code you have entered is incorrect. Please try again."
+	16 = "Cannot delete Guild Master Character. Please disband your guild before deleting."
+	18 = "Characters in the process of marriage or engagement can not be deleted."
+	1a = "You cannot delete a character that is currently going through the transfer." in popup box :S
+	*/
 
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT guild, guildrank, world_id FROM characters WHERE id = " << id << " LIMIT 1";
+	mysqlpp::StoreQueryResult res = query.store();
+
+	if ((int32_t) res[0]["guildrank"] == 1) {
+		result = 0x16;
+	}
+	else if (data == player->getCharDeletePassword()) {
+		if ((int32_t) res[0]["guild"] != 0) {
+			for (map<uint8_t, World *>::iterator iter = Worlds::worlds.begin(); iter != Worlds::worlds.end(); iter++)
+				if (iter->second->connected == true)
+					if (iter->second->id == (int32_t) res[0]["world_id"]) {
+						LoginServerAcceptPacket::removeCharacter(iter->second->player, id);
+						break;
+					}
+		}
+		
 		query << "DELETE FROM characters WHERE id = " << id;
 		query.exec();
 
@@ -304,9 +326,13 @@ void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
 		query << "DELETE FROM mounts WHERE charid = " << id;
 		query.exec();
 
-		success = true;
+		result = 0x0;
 	}
-	LoginPacket::deleteCharacter(player, id, success);
+	else {
+		result = 0x12;
+	}
+
+	LoginPacket::deleteCharacter(player, id, result);
 }
 
 void Characters::connectGame(PlayerLogin *player, int32_t charid) {

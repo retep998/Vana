@@ -207,11 +207,11 @@ void LoginPacket::showCharacter(PlayerLogin *player, const Character &charc) {
 	player->getSession()->send(packet);	
 }
 
-void LoginPacket::deleteCharacter(PlayerLogin *player, int32_t id, bool success) {
+void LoginPacket::deleteCharacter(PlayerLogin *player, int32_t id, uint8_t result) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_DELETE);
 	packet.add<int32_t>(id);
-	packet.add<int8_t>((success ? 0x00 : 0x12));
+	packet.add<uint8_t>(result);
 	player->getSession()->send(packet);
 }
 

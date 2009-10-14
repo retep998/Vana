@@ -44,12 +44,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_QUEST_COMPLETED 0x2e
 #define SMSG_SKILLBOOK 0x30 // Skillbooks
 #define SMSG_ITEM_EFFECT 0x31
+#define SMSG_BBS 0x38
 #define SMSG_PLAYER_INFO 0x3a
 #define SMSG_PARTY 0x3b
 #define SMSG_BUDDY 0x3c
+#define SMSG_GUILD 0x3e
+#define SMSG_ALLIANCE 0x3f
 #define SMSG_MESSAGE 0x41
 #define SMSG_MONSTER_BOOK_ADD 0x4f
 #define SMSG_MONSTER_BOOK_COVER 0x50
+#define SMSG_PLAYER_LEVEL_UPDATE 0x63 // Byte after it: 2 = guild, everything else = family
 #define SMSG_MESSENGER 0x67 // Also known as avatar megaphone
 #define SMSG_MACRO_LIST 0x71
 #define SMSG_CHANGE_MAP 0x72
@@ -91,6 +95,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_3RD_PARTY_SKILL 0xb5 // From other player
 #define SMSG_3RD_PARTY_BUFF_END 0xb6 // From other player
 #define SMSG_PARTY_HP_DISPLAY 0xb7
+#define SMSG_GUILD_NAME 0xb8 // Updates guildname from character :D
+#define SMSG_GUILD_EMBLEM 0xb9 // Updates guildemblem from character :D
 #define SMSG_CHAIR 0xbb
 #define SMSG_THEATRICS 0xbc // Gain item notice in chat
 #define SMSG_MAP_TELEPORT 0xbd // Instantaneous transfer

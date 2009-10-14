@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnection.h"
+#include "GuildHandler.h"
 #include "LoginServerConnectHandler.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
@@ -40,5 +41,6 @@ void LoginServerConnection::realHandleRequest(PacketReader &packet) {
 		case INTER_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
 		case INTER_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
 		case INTER_TO_CHANNELS: WorldServerAcceptHandler::toChannels(packet); break;
+		case INTER_GUILD_OPERATION: GuildHandler::handleLoginServerPacket(this, packet); break;
 	}
 }

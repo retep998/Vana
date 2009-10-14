@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-874"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="WorldServer"
 	ProjectGUID="{045746E8-6588-437D-B8F7-5B5E9E42B9EF}"
 	RootNamespace="WorldServer"
@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="src/Common;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/"
+				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -65,10 +65,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib lua_d.lib cryptlib_d.lib common.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp_d.lib lua_d.lib cryptlib_d.lib common.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(ConfigurationName)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(ProgramFiles)/boost/boost_1_39_0/lib"
+				AdditionalLibraryDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(ConfigurationName)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_39_0/lib"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				SubSystem="1"
@@ -124,7 +124,7 @@
 				AdditionalOptions="/MP"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="src/Common;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/"
+				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -145,10 +145,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib lua.lib cryptlib.lib common.lib"
+				AdditionalDependencies="ws2_32.lib libmysql.lib mysqlpp.lib lua.lib cryptlib.lib common.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(ConfigurationName)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(ProgramFiles)/boost/boost_1_39_0/lib"
+				AdditionalLibraryDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(ConfigurationName)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_39_0/lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -214,11 +214,31 @@
 				Name="WorldServer"
 				>
 				<File
+					RelativePath=".\src\WorldServer\Alliance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\Alliances.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\WorldServer\ChannelChangeRequests.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\WorldServer\Channels.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\Guild.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\GuildBbs.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\Guilds.cpp"
 					>
 				</File>
 				<File
@@ -237,6 +257,18 @@
 			<Filter
 				Name="Inter-Server"
 				>
+				<File
+					RelativePath=".\src\WorldServer\AlliancePacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\BbsPacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\GuildPacket.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\src\WorldServer\LoginServerConnection.cpp"
 					>
@@ -260,6 +292,18 @@
 				<Filter
 					Name="Handlers"
 					>
+					<File
+						RelativePath=".\src\WorldServer\AllianceHandler.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\BbsHandler.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\GuildHandler.cpp"
+						>
+					</File>
 					<File
 						RelativePath=".\src\WorldServer\LoginServerConnectHandler.cpp"
 						>
@@ -288,11 +332,31 @@
 				Name="WorldServer"
 				>
 				<File
+					RelativePath=".\src\WorldServer\Alliance.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\Alliances.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\WorldServer\ChannelChangeRequests.h"
 					>
 				</File>
 				<File
 					RelativePath=".\src\WorldServer\Channels.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\Guild.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\GuildBbs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\Guilds.h"
 					>
 				</File>
 				<File
@@ -311,6 +375,18 @@
 			<Filter
 				Name="Inter-Server"
 				>
+				<File
+					RelativePath=".\src\WorldServer\AlliancePacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\BbsPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\GuildPacket.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\WorldServer\LoginServerConnection.h"
 					>
@@ -334,6 +410,18 @@
 				<Filter
 					Name="Handlers"
 					>
+					<File
+						RelativePath=".\src\WorldServer\AllianceHandler.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\BbsHandler.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\GuildHandler.h"
+						>
+					</File>
 					<File
 						RelativePath=".\src\WorldServer\LoginServerConnectHandler.h"
 						>
