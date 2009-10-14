@@ -178,5 +178,5 @@ bool EquipDataProvider::canEquip(int32_t itemid, int16_t job, int16_t str, int16
 
 bool EquipDataProvider::validSlot(int32_t equipid, int16_t target) {
 	EquipInfo *e = getEquipInfo(equipid);
-	return (e->validslots == (1LL << (target - 1)));
+	return (e->validslots & (1LL << (target - 1)));
 }
