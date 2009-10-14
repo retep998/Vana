@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "Database.h"
 #include "GameLogicUtilities.h"
-#include "GmPacket.h"
+#include "GMPacket.h"
 #include "Inventory.h"
 #include "Levels.h"
 #include "Player.h"
