@@ -98,9 +98,8 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		else {
 			if (slot2 < 0) {
 				ItemInfo *i = ItemDataProvider::Instance()->getItemInfo(item1->id);
-				EquipInfo *e = EquipDataProvider::Instance()->getEquipInfo(item1->id);
 				uint8_t desiredslot = -(slot2 + (i->cash ? 100 : 0));
-				if (!(e->validslots & (1LL << (desiredslot - 1)))) {
+				if (!EquipDataProvider::Instance()->validSlot(item1->id, desiredslot)) {
 					// Hacking
 					return;
 				}
@@ -550,8 +549,7 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 		}
 	}
 	else if (iteminfo->recover) {
-		EquipInfo *item = EquipDataProvider::Instance()->getEquipInfo(equip->id);
-		int8_t maxslots = item->slots + static_cast<int8_t>(equip->hammers);
+		int8_t maxslots = EquipDataProvider::Instance()->getSlots(equip->id) + static_cast<int8_t>(equip->hammers);
 		if ((maxslots - equip->scrolls) > equip->slots) {
 			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Give back a slot
 				equip->slots++;

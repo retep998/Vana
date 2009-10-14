@@ -16,6 +16,7 @@ set(SOURCES
 	FileUtilities.h
 	GameConstants.h
 	GameLogicUtilities.h
+	GameObjects.h
 	InitializeCommon.h
 	InterHeader.h
 	IpUtilities.h
@@ -71,6 +72,7 @@ set(SOURCES
 	DropDataProvider.cpp
 	EquipDataProvider.cpp
 	FileUtilities.cpp
+	GameObjects.cpp
 	InitializeCommon.cpp
 	IpUtilities.cpp
 	ItemDataProvider.cpp

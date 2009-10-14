@@ -390,6 +390,10 @@
 				Name="Data Structures"
 				>
 				<File
+					RelativePath=".\src\Common\GameObjects.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Variables.cpp"
 					>
 				</File>
@@ -655,6 +659,10 @@
 			<Filter
 				Name="Data Structures"
 				>
+				<File
+					RelativePath=".\src\Common\GameObjects.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Common\Pos.h"
 					>

@@ -149,7 +149,7 @@ void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_
 	mysqlpp::Query query = Database::getCharDB().query();
 	int16_t inventory = GameLogicUtilities::getInventory(itemid);
 	if (inventory == Inventories::EquipInventory) {
-		EquipInfo *equip = EquipDataProvider::Instance()->getEquipInfo(itemid);
+		Item *equip = &Item(itemid, false);
 		query << "INSERT INTO items (charid, inv, slot, itemid, slots, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name) VALUES ("
 			<< charid << ", "
 			<< inventory << ", "
