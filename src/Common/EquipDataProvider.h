@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define EQUIPDATAPROVIDER_H
 
 #include "Types.h"
+#include "GameObjects.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
 
@@ -72,12 +73,16 @@ public:
 	}
 	void loadData();
 
-	EquipInfo * getEquipInfo(int32_t equipid) { return &equips[equipid]; }
+	void setEquipStats(Item *equip, bool random);
+	bool canEquip(int32_t itemid, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame);
+	bool validSlot(int32_t equipid, int16_t target);
+	int8_t getSlots(int32_t equipid) { return getEquipInfo(equipid)->slots; }
 private:
 	EquipDataProvider() { }
 	static EquipDataProvider *singleton;
 
 	void loadEquips();
+	EquipInfo * getEquipInfo(int32_t equipid) { return &equips[equipid]; }
 
 	unordered_map<int32_t, EquipInfo> equips;
 };

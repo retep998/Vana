@@ -69,8 +69,7 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 	if (updateEquips) {
 		equipBonuses = BonusSet();
 		for (EquipBonuses::iterator iter = equipStats.begin(); iter != equipStats.end(); iter++) {
-			EquipInfo *e = EquipDataProvider::Instance()->getEquipInfo(iter->second.Id);
-			if (getStr(true) >= e->reqstr && getDex(true) >= e->reqdex && getInt(true) >= e->reqint && getLuk(true) >= e->reqluk && getFame() >= e->reqfame) {
+			if (EquipDataProvider::Instance()->canEquip(iter->second.Id, getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
 				equipBonuses.Hp += iter->second.Hp;
 				equipBonuses.Mp += iter->second.Mp;
 				equipBonuses.Str += iter->second.Str;

@@ -30,47 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PlayerPacketHelper.h"
-#include "Randomizer.h"
-
-/* Item struct */
-Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), hammers(0), flags(0), petid(0), name("") {
-	EquipInfo *ei = EquipDataProvider::Instance()->getEquipInfo(equipid);
-	slots = ei->slots;
-	if (!random) {
-		istr = ei->istr;
-		idex = ei->idex;
-		iint = ei->iint;
-		iluk = ei->iluk;
-		ihp = ei->ihp;
-		imp = ei->imp;
-		iwatk = ei->iwatk;
-		imatk = ei->imatk;
-		iwdef = ei->iwdef;
-		imdef = ei->imdef;
-		iacc = ei->iacc;
-		iavo = ei->iavo;
-		ihand = ei->ihand;
-		ijump = ei->ijump;
-		ispeed = ei->ispeed;
-	}
-	else {
-		istr = ei->istr > 0 ? ei->istr + Randomizer::Instance()->randShort(2) - 1 : 0;
-		idex = ei->idex > 0 ? ei->idex + Randomizer::Instance()->randShort(2) - 1 : 0;
-		iint = ei->iint > 0 ? ei->iint + Randomizer::Instance()->randShort(2) - 1 : 0;
-		iluk = ei->iluk > 0 ? ei->iluk + Randomizer::Instance()->randShort(2) - 1 : 0;
-		ihp = ei->ihp > 0 ? ei->ihp + Randomizer::Instance()->randShort(10) - 5 : 0;
-		imp = ei->imp > 0 ? ei->imp + Randomizer::Instance()->randShort(10) - 5 : 0;
-		iwatk = ei->iwatk > 0 ? ei->iwatk + Randomizer::Instance()->randShort(10) - 5 : 0;
-		imatk = ei->imatk > 0 ? ei->imatk + Randomizer::Instance()->randShort(10) - 5 : 0;
-		iwdef = ei->iwdef > 0 ? ei->iwdef + Randomizer::Instance()->randShort(10) - 5 : 0;
-		imdef = ei->imdef > 0 ? ei->imdef + Randomizer::Instance()->randShort(10) - 5 : 0;
-		iacc = ei->iacc > 0 ? ei->iacc + Randomizer::Instance()->randShort(2) - 1 : 0;
-		iavo = ei->iavo > 0 ? ei->iavo + Randomizer::Instance()->randShort(2) - 1 : 0;
-		ihand = ei->ihand > 0 ? ei->ihand + Randomizer::Instance()->randShort(2) - 1 : 0;
-		ijump = ei->ijump > 0 ? ei->ijump + Randomizer::Instance()->randShort(2) - 1 : 0;
-		ispeed = ei->ispeed > 0 ? ei->ispeed + Randomizer::Instance()->randShort(2) - 1 : 0;
-	}
-}
 
 /* PlayerInventory class */
 PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos) :
