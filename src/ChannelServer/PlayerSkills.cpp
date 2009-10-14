@@ -221,6 +221,7 @@ int32_t PlayerSkills::getComboAttack() {
 			skillid = Jobs::Crusader::ComboAttack;
 			break;
 		case Jobs::JobIds::DawnWarrior3:
+		case Jobs::JobIds::DawnWarrior4:
 			skillid = Jobs::DawnWarrior::ComboAttack;
 			break;
 	}
@@ -234,6 +235,7 @@ int32_t PlayerSkills::getAdvancedCombo() {
 			skillid = Jobs::Hero::AdvancedComboAttack;
 			break;
 		case Jobs::JobIds::DawnWarrior3:
+		case Jobs::JobIds::DawnWarrior4:
 			skillid = Jobs::DawnWarrior::AdvancedCombo;
 			break;
 	}
