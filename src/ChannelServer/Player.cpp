@@ -16,8 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Player.h"
+#include "AlliancePacket.h"
 #include "BuddyListHandler.h"
 #include "BuddyListPacket.h"
+#include "BbsPacket.h"
 #include "ChannelServer.h"
 #include "ChatHandler.h"
 #include "CommandHandler.h"
@@ -27,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Fame.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
+#include "GuildPacket.h"
+#include "Guilds.h"
 #include "Instance.h"
 #include "Inventory.h"
 #include "InventoryHandler.h"
@@ -121,12 +125,15 @@ Player::~Player() {
 
 void Player::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
+		case CMSG_ALLIANCE: AlliancePacket::handlePacket(this, packet); break;
+		case CMSG_ALLIANCE_DENIED: AlliancePacket::handleDenyPacket(this, packet); break;		
 		case CMSG_ADMIN_COMMAND: CommandHandler::handleAdminCommand(this, packet); break;
 		case CMSG_ADMIN_MESSENGER: PlayerHandler::handleAdminMessenger(this, packet); break;
 		case CMSG_ATTACK_ENERGY_CHARGE: PlayerHandler::useEnergyChargeAttack(this, packet); break;
 		case CMSG_ATTACK_MAGIC: PlayerHandler::useSpellAttack(this, packet); break;
 		case CMSG_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, packet); break;
 		case CMSG_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, packet); break;
+		case CMSG_BBS: BbsPacket::handleBbsPacket(this, packet); break;
 		case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, packet); break;
 		case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, packet); break;
 		case CMSG_CASH_SHOP: PlayerPacket::sendBlockedMessage(this, 0x02); break;
@@ -137,6 +144,8 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case CMSG_EMOTE: PlayerHandler::handleFacialExpression(this, packet); break;
 		case CMSG_FAME: Fame::handleFame(this, packet); break;
 		case CMSG_FRIENDLY_MOB_DAMAGE: MobHandler::friendlyDamaged(this, packet); break;
+		case CMSG_GUILD: GuildPacket::handlePacket(this, packet); break;
+		case CMSG_GUILD_DENIED: GuildPacket::handleDenyPacket(this, packet); break;
 		case CMSG_HAMMER: InventoryHandler::handleHammerTime(this); break;
 		case CMSG_ITEM_CANCEL: InventoryHandler::cancelItem(this, packet); break;
 		case CMSG_ITEM_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
@@ -226,6 +235,10 @@ void Player::playerConnect(PacketReader &packet) {
 	skin		= static_cast<int8_t>(res[0]["skin"]);
 	map_pos		= static_cast<int8_t>(res[0]["pos"]);
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
+	guildid		= res[0]["guild"];
+	guildrank	= static_cast<uint8_t>(res[0]["guildrank"]);
+	alliancerank = static_cast<uint8_t>(res[0]["alliancerank"]);
+	allianceid = res[0]["alliance"];
 
 	if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
@@ -335,7 +348,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	setOnline(true);
 	is_connect = true;
-	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel());
+	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel(), guildid, guildrank, allianceid, alliancerank);
 }
 
 void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
@@ -512,6 +525,10 @@ void Player::saveStats() {
 		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EtcInventory)) << ","
 		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::CashInventory)) << ","
 		<< "buddylist_size = " << static_cast<int16_t>(buddylist_size) << ","
+		<< "guild = " << guildid << ","
+		<< "guildrank = " << static_cast<int16_t>(guildrank) << ","
+		<< "alliance = " << allianceid << ","
+		<< "alliancerank = " << static_cast<int16_t>(alliancerank) << ","
 		<< "monsterbookcover = " << getMonsterBook()->getCover() 
 		<< " WHERE id = " << id;
 	query.exec();

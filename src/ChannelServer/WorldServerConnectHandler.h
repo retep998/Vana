@@ -31,6 +31,8 @@ namespace WorldServerConnectHandler {
 	void newConnectable(PacketReader &packet);
 	void forwardPacket(PacketReader &packet);
 	void setRates(PacketReader &packet);
+	void guildPacketHandlerWorld(PacketReader &packet);
+	void alliancePacketHandlerWorld(PacketReader &packet);
 	void reloadMcdb(PacketReader &packet);
 }
 

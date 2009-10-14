@@ -50,6 +50,9 @@ void PartyHandler::createParty(WorldServerAcceptConnection *player, int32_t play
 		return; // hacking
 	}
 	Party *party = new Party;
+	party->guildname = "";
+	party->guildcontract = 0;
+	party->voters = 0;
 	party->addMember(pplayer);
 	party->setLeader(pplayer->id);
 	pplayer->party = Parties::Instance()->addParty(party);

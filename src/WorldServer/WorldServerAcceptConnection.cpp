@@ -16,7 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptConnection.h"
+#include "AllianceHandler.h"
+#include "BbsHandler.h"
 #include "Channels.h"
+#include "GuildHandler.h"
 #include "InterHeader.h"
 #include "LoginServerConnectPacket.h"
 #include "MapleSession.h"
@@ -60,6 +63,9 @@ void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 		case INTER_TO_LOGIN: WorldServerAcceptPacket::sendToLogin(packet.getBuffer(), packet.getBufferLength()); break;
 		case INTER_TRANSFER_PLAYER_PACKET: WorldServerAcceptHandler::handleChangeChannel(this, packet); break;
 		case INTER_TO_CHANNELS: WorldServerAcceptHandler::toChannels(packet); break;
+		case INTER_GUILD_OPERATION: GuildHandler::handlePacket(this, packet); break;
+		case INTER_BBS: BbsHandler::handlePacket(this, packet); break;
+		case INTER_ALLIANCE: AllianceHandler::handlePacket(this, packet); break;
 	}
 }
 
@@ -73,6 +79,8 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 			WorldServerAcceptPacket::sendParties(this);
+			WorldServerAcceptPacket::sendGuilds(this);
+			WorldServerAcceptPacket::sendAlliances(this);
 			LoginServerConnectPacket::registerChannel(WorldServer::Instance()->getLoginConnection(), channel, getIp(), getExternalIp(), port);
 			std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 		}

@@ -69,6 +69,10 @@ public:
 	void setBuddyListSize(uint8_t size);
 	void setConnectionTime(int64_t newtime) { online_time = newtime; }
 	void setTradeId(int32_t id) { this->trade_id = id; }
+	void setGuildId(int32_t id) { guildid = id; }
+	void setGuildRank(uint8_t rank) { guildrank = rank; }
+	void setAllianceId(int32_t id) { allianceid = id; }
+	void setAllianceRank(uint8_t rank) { alliancerank = rank; }
 	void setShop(int32_t shopid) { shop = shopid; }
 	void setNPC(NPC *npc) { this->npc = npc; }
 	void setParty(Party *party) { this->party = party; }
@@ -99,6 +103,10 @@ public:
 	int64_t getConnectedTime() const { return time(0) - online_time; }
 	string getMedalName();
 	string getName() const { return name; }
+	int32_t getGuildId() const { return guildid; }
+	uint8_t getGuildRank() const { return guildrank; }
+	int32_t getAllianceId() const { return allianceid; }
+	uint8_t getAllianceRank() const { return alliancerank; }
 	NPC * getNPC() const { return npc; }
 	Party * getParty() const { return party; }
 	Instance * getInstance() const { return instance; }
@@ -157,6 +165,10 @@ private:
 	int32_t trade_id;
 	int64_t online_time;
 	bool trade_state;
+	int32_t guildid;
+	uint8_t guildrank;
+	int32_t allianceid;
+	uint8_t alliancerank;
 	bool save_on_dc;
 	bool is_connect;
 	bool admin;

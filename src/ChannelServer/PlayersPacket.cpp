@@ -16,7 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayersPacket.h"
+#include "Alliances.h"
 #include "ChannelServer.h"
+#include "Guilds.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InterHeader.h"
@@ -123,8 +125,17 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
 	packet.add<int16_t>(getinfo->getStats()->getJob());
 	packet.add<int16_t>(getinfo->getStats()->getFame());
 	packet.addBool(false); // Married
-	packet.addString("-"); // Guild
-	packet.addString(""); // Guild Alliance
+	if (Guild * guild = Guilds::Instance()->getGuild(getinfo->getGuildId())) {
+		packet.addString(guild->name);
+		if (Alliance *alliance = Alliances::Instance()->getAlliance(guild->allianceid))
+			packet.addString(alliance->name);
+		else
+			packet.addString("");
+	}
+	else {
+		packet.addString("-");
+		packet.addString("");
+	}
 	packet.addBool(isself); // Is 1 when the character is clicking themselves
 
 	getinfo->getPets()->petInfoPacket(packet);
@@ -367,7 +378,7 @@ void PlayersPacket::useEnergyChargeAttack(Player *player, PacketReader &pack) {
 	// Not sure about this packet at the moment, will finish later
 
 	//PacketCreator packet;
-	//packet.add<int16_t>(SEND_ATTACK_ENERGYCHARGE);
+	//packet.add<int16_t>(SMSG_ATTACK_ENERGYCHARGE);
 	//packet.add<int32_t>(player->getId());
 	//packet.add<int8_t>(tbyte);
 	//packet.add<int8_t>(1);

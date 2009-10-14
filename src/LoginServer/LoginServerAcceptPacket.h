@@ -31,6 +31,7 @@ namespace LoginServerAcceptPacket {
 	void noMoreWorld(LoginServerAcceptConnection *player);
 	void connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, int16_t port);
 	void newPlayer(LoginServerAcceptConnection *player, uint16_t channel, int32_t charid);
+	void removeCharacter(LoginServerAcceptConnection *player, int32_t charid);
 };
 
 #endif

@@ -95,7 +95,7 @@ void WorldServerConnectPacket::playerChangeChannel(WorldServerConnection *player
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPacket::registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level) {
+void WorldServerConnectPacket::registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level, int32_t guildid, uint8_t guildrank, int32_t allianceid, uint8_t alliancerank) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_REGISTER_PLAYER);
 	packet.add<uint32_t>(ip);
@@ -104,6 +104,10 @@ void WorldServerConnectPacket::registerPlayer(WorldServerConnection *player, uin
 	packet.add<int32_t>(map);
 	packet.add<int32_t>(job);
 	packet.add<int32_t>(level);
+	packet.add<int32_t>(guildid);
+	packet.add<uint8_t>(guildrank);
+	packet.add<int32_t>(allianceid);
+	packet.add<uint8_t>(alliancerank);
 	player->getSession()->send(packet);
 }
 

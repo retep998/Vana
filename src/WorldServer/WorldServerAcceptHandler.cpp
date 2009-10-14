@@ -18,6 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptHandler.h"
 #include "ChannelChangeRequests.h"
 #include "Channels.h"
+#include "Guild.h"
+#include "Guilds.h"
+#include "GuildPacket.h"
 #include "IpUtilities.h"
 #include "PacketReader.h"
 #include "PartyHandler.h"
@@ -115,7 +118,11 @@ void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptConnection *playe
 	int32_t map = packet.get<int32_t>();
 	int32_t job = packet.get<int32_t>();
 	int32_t level = packet.get<int32_t>();
-	Players::Instance()->registerPlayer(ip, id, name, player->getChannel(), map, job, level);
+	int32_t guildid = packet.get<int32_t>();
+	uint8_t guildrank = packet.get<uint8_t>();
+	int32_t allianceid = packet.get<int32_t>();
+	uint8_t alliancerank = packet.get<uint8_t>();
+	Players::Instance()->registerPlayer(ip, id, name, player->getChannel(), map, job, level, guildid, guildrank, allianceid, alliancerank);
 }
 
 void WorldServerAcceptHandler::removePlayer(WorldServerAcceptConnection *player, PacketReader &packet) {
@@ -132,18 +139,28 @@ void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptConnection *play
 void WorldServerAcceptHandler::updateJob(WorldServerAcceptConnection *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	int32_t job = packet.get<int32_t>();
-	Players::Instance()->getPlayer(id)->job = job;
-	if (Players::Instance()->getPlayer(id)->party != 0) {
+	Player *plyr = Players::Instance()->getPlayer(id);
+	plyr->job = job;
+	if (plyr->party != 0) {
 		PartyHandler::silentUpdate(id);
+	}
+	if (plyr->guildid != 0) {
+		Guild *guild = Guilds::Instance()->getGuild(plyr->guildid);
+		GuildPacket::sendPlayerStatUpdate(guild, plyr, false);
 	}
 }
 
 void WorldServerAcceptHandler::updateLevel(WorldServerAcceptConnection *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	int32_t level = packet.get<int32_t>();
-	Players::Instance()->getPlayer(id)->level = level;
-	if (Players::Instance()->getPlayer(id)->party != 0) {
+	Player *plyr = Players::Instance()->getPlayer(id);
+	plyr->level = level;
+	if (plyr->party != 0) {
 		PartyHandler::silentUpdate(id);
+	}
+	if (plyr->guildid != 0) {
+		Guild *guild = Guilds::Instance()->getGuild(plyr->guildid);
+		GuildPacket::sendPlayerStatUpdate(guild, plyr, true);
 	}
 }
 

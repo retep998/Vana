@@ -1,4 +1,7 @@
 set(SOURCES
+	Alliances.h
+	AlliancePacket.h
+	BbsPacket.h
 	BuddyListHandler.h
 	BuddyListPacket.h
 	Buffs.h
@@ -16,6 +19,8 @@ set(SOURCES
 	Fame.h
 	FamePacket.h
 	GMPacket.h
+	Guilds.h
+	GuildPacket.h
 	InitializeChannel.h
 	Instance.h
 	InstanceMessageConstants.h
@@ -87,6 +92,9 @@ set(SOURCES
 	WorldServerConnection.h
 	WorldServerConnectHandler.h
 	WorldServerConnectPacket.h
+	Alliances.cpp
+	AlliancePacket.cpp
+	BbsPacket.cpp
 	BuddyListHandler.cpp
 	BuddyListPacket.cpp
 	Buffs.cpp
@@ -103,6 +111,8 @@ set(SOURCES
 	Fame.cpp
 	FamePacket.cpp
 	GMPacket.cpp
+	Guilds.cpp
+	GuildPacket.cpp
 	InitializeChannel.cpp
 	Instance.cpp
 	Instances.cpp

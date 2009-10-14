@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1255"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="ChannelServer"
 	ProjectGUID="{F07865A8-3A41-48D8-809C-056CC906A50B}"
 	RootNamespace="ChannelServer"
@@ -212,6 +212,10 @@
 				Name="ChannelServer"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\Alliances.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Buffs.cpp"
 					>
 				</File>
@@ -229,6 +233,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Fame.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Guilds.cpp"
 					>
 				</File>
 				<File
@@ -312,6 +320,14 @@
 				Name="Packets"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\AlliancePacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\BbsPacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\BuddyListPacket.cpp"
 					>
 				</File>
@@ -329,6 +345,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\GMPacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\GuildPacket.cpp"
 					>
 				</File>
 				<File
@@ -602,6 +622,18 @@
 				Name="ChannelServer"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\AlliancePacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Alliances.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\BbsPacket.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Buffs.h"
 					>
 				</File>
@@ -619,6 +651,14 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Fame.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\GuildPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\Guilds.h"
 					>
 				</File>
 				<File

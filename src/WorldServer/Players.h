@@ -18,13 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLAYERS_H
 #define PLAYERS_H
 
+#include "GuildHandler.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <string>
+#include <time.h>
 
 using std::string;
 using std::tr1::unordered_map;
+class Guild;
 
 struct Player {
 	uint32_t ip;
@@ -32,10 +35,17 @@ struct Player {
 	string name;
 	int16_t channel;
 	int32_t party;
+	int32_t guildid;
+	uint8_t guildrank;
 	int32_t map;
 	int32_t job;
 	int32_t level;
+	bool invited;
+	int32_t invite_guild;
+	time_t invite_time;
 	bool online;
+	int32_t allianceid;
+	uint8_t alliancerank;
 };
 
 class Players : boost::noncopyable {
@@ -45,7 +55,7 @@ public:
 			singleton = new Players;
 		return singleton;
 	}
-	void registerPlayer(uint32_t ip, int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level);
+	void registerPlayer(uint32_t ip, int32_t id, const string &name, uint16_t channel, int32_t map, int32_t job, int32_t level, int32_t guildid, uint8_t guildrank, int32_t allianceid, uint8_t alliancerank, bool online = true);
 	void remove(int32_t id, int16_t channel = -1);
 	void removeChannelPlayers(uint16_t channel);
 	Player * getPlayerFromName(const string &name, bool includeOffline = false);

@@ -65,6 +65,8 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 
 		WorldServer::Instance()->listen();
 		std::cout << "Handling world " << (int32_t) worldid << std::endl;
+
+		WorldServer::Instance()->loadGuilds();
 	}
 	else {
 		std::cout << "Error: No world to handle" << std::endl;

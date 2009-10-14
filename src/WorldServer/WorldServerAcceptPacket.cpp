@@ -16,7 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPacket.h"
+#include "Alliances.h"
 #include "Channels.h"
+#include "Guilds.h"
 #include "InterHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
@@ -226,4 +228,20 @@ void WorldServerAcceptPacket::sendDisbandParty(int32_t partyid) {
 	packet.add<int8_t>(PARTY_SYNC_DISBAND);
 	packet.add<int32_t>(partyid);
 	Channels::Instance()->sendToAll(packet);
+}
+
+void WorldServerAcceptPacket::sendGuilds(WorldServerAcceptConnection *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_GUILD_OPERATION);
+	packet.add<int8_t>(0x0a);
+	Guilds::Instance()->getChannelConnectPacket(packet);
+	player->getSession()->send(packet);
+}
+
+void WorldServerAcceptPacket::sendAlliances(WorldServerAcceptConnection *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(INTER_ALLIANCE);
+	packet.add<int8_t>(0x06);
+	Alliances::Instance()->getChannelConnectPacket(packet);
+	player->getSession()->send(packet);
 }
