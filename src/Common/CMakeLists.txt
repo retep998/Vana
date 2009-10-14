@@ -12,6 +12,7 @@ set(SOURCES
 	DatabaseMigrationRunner.h
 	Decoder.h
 	DropDataProvider.h
+	EquipDataProvider.h
 	FileUtilities.h
 	GameConstants.h
 	GameLogicUtilities.h
@@ -68,6 +69,7 @@ set(SOURCES
 	DatabaseMigrationRunner.cpp
 	Decoder.cpp
 	DropDataProvider.cpp
+	EquipDataProvider.cpp
 	FileUtilities.cpp
 	InitializeCommon.cpp
 	IpUtilities.cpp
