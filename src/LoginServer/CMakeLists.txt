@@ -14,6 +14,7 @@ set(SOURCES
 	RankingCalculator.h
 	Worlds.h
 	Characters.cpp
+	InitializeLogin.cpp
 	Login.cpp
 	LoginPacket.cpp
 	LoginPacketHelper.cpp
