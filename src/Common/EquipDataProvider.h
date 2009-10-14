@@ -72,7 +72,6 @@ public:
 	}
 	void loadData();
 
-	bool equipExists(int32_t id) { return (equips.find(id) != equips.end()); }
 	EquipInfo * getEquipInfo(int32_t equipid) { return &equips[equipid]; }
 private:
 	EquipDataProvider() { }
