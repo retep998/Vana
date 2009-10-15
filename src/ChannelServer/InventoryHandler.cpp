@@ -65,7 +65,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId(), true);
 		drop->setTime(0);
 
-		bool istradeable = ItemDataProvider::Instance()->canTrade(droppeditem.id);;
+		bool istradeable = ItemDataProvider::Instance()->isTradeable(droppeditem.id);;
 		drop->setTradeable(istradeable);
 
 		drop->doDrop(player->getPos());
