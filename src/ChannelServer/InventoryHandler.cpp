@@ -65,8 +65,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId(), true);
 		drop->setTime(0);
 
-		ItemInfo *info = ItemDataProvider::Instance()->getItemInfo(droppeditem.id);
-		bool istradeable = !(info->notrade || info->quest);
+		bool istradeable = ItemDataProvider::Instance()->canTrade(droppeditem.id);;
 		drop->setTradeable(istradeable);
 
 		drop->doDrop(player->getPos());
@@ -97,8 +96,8 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		}
 		else {
 			if (slot2 < 0) {
-				ItemInfo *i = ItemDataProvider::Instance()->getItemInfo(item1->id);
-				uint8_t desiredslot = -(slot2 + (i->cash ? 100 : 0));
+				bool iscash = ItemDataProvider::Instance()->isCash(item1->id);
+				uint8_t desiredslot = -(slot2 + (iscash ? 100 : 0));
 				if (!EquipDataProvider::Instance()->validSlot(item1->id, desiredslot)) {
 					// Hacking
 					return;
