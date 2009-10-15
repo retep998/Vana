@@ -34,17 +34,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void GuildPacket::handlePacket(Player *player, PacketReader &packet) {
 	switch(packet.get<int8_t>()) {
-		case 0x02:{ // Create guild
+		case 0x02: { // Create Guild
 			if (player->getGuildId() != 0) {
 				PlayerPacket::showMessage(player, "You can't create a guild while you are in one.", 1);
 				return;
 			}
-
 			if (player->getInventory()->getMesos() < 5000000) {
 				PlayerPacket::showMessage(player, "You have not enough mesos to create a guild. You need 5,000,000 mesos (5 million) to create a guild.", 1);
 				return;
 			}
-
 			PacketCreator pack;
 			pack.add<int16_t>(INTER_GUILD_OPERATION);
 			pack.add<int8_t>(0x0d);
@@ -53,84 +51,65 @@ void GuildPacket::handlePacket(Player *player, PacketReader &packet) {
 			pack.add<int8_t>(1);
 			pack.addString(packet.getString());
 			ChannelServer::Instance()->sendToWorld(pack);
+			break;
 		}
-		break;
-		case 0x05: // Invite someone
-		{
-			if (player->getGuildRank() > 2 || player->getGuildId() <= 0) {
-				std::cout << player->getName() << " wants to send a guild invitation without having permission... (Guildid = " << player->getGuildId() << ", GuildRank = " << player->getGuildRank() << ")" << std::endl;
+		case 0x05: { // Invite
+			if (player->getGuildId() <= 0 || player->getGuildRank() > 2) {
+				// Hacking
 				return;
 			}
-			
 			guildInvite(player->getGuildId(), player->getId(), packet.getString());
-				
+			break;
 		}
-		break;
 		case 0x06: guildInviteAccepted(player->getId()); break;
 		case 0x07: removeGuildPlayer(player->getGuildId(), player->getId(), player->getName(), false); break; // Leave
-		case 0x08: // Expelling
-		{
+		case 0x08: { // Expel
 			int32_t memid = packet.get<int32_t>();
 			string name = packet.getString();
-
-			if (player->getGuildRank() > 2) {
-				std::cout << player->getName() << " tries to expel a player without rank 1 or 2" << std::endl;
+			if (player->getGuildId() <= 0 || player->getGuildRank() > 2) {
+				// Hacking
 				return;
 			}
-
 			removeGuildPlayer(player->getGuildId(), memid, name, true);
-			
+			break;
 		}
-		break;
-		case 0x0d: // Change titles
-		{
+		case 0x0d: { // Change Rank Titles
 			if (player->getGuildId() <= 0 || player->getGuildRank() != 1) {
-				std::cout << player->getName() << " wants to change the rank titles..." << std::endl;
+				// Hacking
 				return;
 			}
-
 			sendNewGuildRankTitles(player->getGuildId(), packet);
-
+			break;
 		}
-		break;
-		case 0x0e: // Change rank
-		{
+		case 0x0e: { // Change Rank
 			int32_t charid = packet.get<int32_t>();
 			int8_t newrank = packet.get<int8_t>();
-
 			if (newrank <= 1 || newrank > 5)
 				return;
-
 			if (player->getGuildId() <= 0 || player->getGuildRank() > 2) {
-				std::cout << player->getName() << " wants to change the rank of player with id " << charid << std::endl;
+				// Hacking
 				return;
 			}
 			changeRankOfPlayer(player->getGuildId(), player->getId(), charid, newrank);
+			break;
 		}
-		break;
-		case 0x0f: // Make emblem
-		{
-
-			if (player->getGuildId() <= 0 || player->getGuildRank() != 1 || (!player->isGm() && player->getMap() != 200000301)) {
-				std::cout << player->getName() << " wants to change the guild emblem without being a guild leader!" << std::endl;
+		case 0x0f: { // Make Emblem
+			if (player->getGuildId() <= 0 || player->getGuildRank() != 1 || player->getMap() != 200000301) {
+				// Hacking
 				return;
 			}
-
 			sendEmblemChangeInfo(player->getGuildId(), player->getId(), packet);
+			break;
 		}
-		break;
-		case 0x10: // Change notice
-		{
+		case 0x10: { // Change Notice
 			if (player->getGuildId() <= 0 || player->getGuildRank() > 2) {
-				std::cout << player->getName() << " (rank " << (int16_t) player->getGuildRank() << ") Wants to change the notice..." << std::endl;
+				// Hacking
 				return;
 			}
-
 			changeGuildNotice(player->getGuildId(), packet.getString());
+			break;
 		}
-		break;
-		case 0x1e: // Guild Contract accepted/denied
-		{
+		case 0x1e: { // Guild Contract Accepted/Denied
 			PacketCreator pack;
 			pack.add<int16_t>(INTER_GUILD_OPERATION);
 			pack.add<int8_t>(0x0d);
@@ -140,13 +119,13 @@ void GuildPacket::handlePacket(Player *player, PacketReader &packet) {
 			pack.add<int32_t>(player->getParty()->getId());
 			pack.add<int8_t>(packet.get<int8_t>());
 			ChannelServer::Instance()->sendToWorld(pack);
+			break;
 		}
-		break;
 	}
 }
 
 void GuildPacket::handleDenyPacket(Player *player, PacketReader &packet) {
-	if (player->getGuildId() != 0) 
+	if (player->getGuildId() != 0)
 		return;
 	displayGuildDeny(packet);
 }
@@ -154,17 +133,13 @@ void GuildPacket::handleDenyPacket(Player *player, PacketReader &packet) {
 int8_t GuildPacket::checkGuildExist(string name) {
 	if (name.length() < 3 || name.length() > 12)
 		return 2;
-	else if (Guilds::Instance()->getGuild(name) != 0)
-		return 1;
-	else
-		return 0;
+	return ((Guilds::Instance()->getGuild(name) != 0) ? 1 : 0);
 }
 
 void GuildPacket::sendCreateGuildWindow(Player * player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_GUILD);
 	packet.add<int8_t>(0x01);
-	
 	player->getSession()->send(packet);
 }
 

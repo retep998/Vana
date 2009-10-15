@@ -52,7 +52,6 @@ void BbsPacket::newThread(Player *player, PacketReader &pack) {
 	packet.addString(pack.getString());
 	packet.addString(pack.getString());
 	packet.add<int32_t>(pack.get<int32_t>());
-
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
