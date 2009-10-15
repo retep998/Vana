@@ -58,7 +58,7 @@ public:
 	icon(icon),
 	title(title),
 	content(content),
-	listid(listid) { loadReplies(); };
+	listid(listid) { loadReplies(); }
 	~BbsThread() { m_replies.clear(); }
 	
 	void addReply(BbsReply *reply);
