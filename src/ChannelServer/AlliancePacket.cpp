@@ -33,50 +33,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnection.h"
 
 void AlliancePacket::handlePacket(Player *player, PacketReader &packet) {
-	switch (packet.get<int8_t>()){
+	switch (packet.get<int8_t>()) {
 		case 0x01: sendShowInfo(player->getAllianceId(), player->getId()); break;
-		case 0x02:{ // Leave alliance
-				if (player->getAllianceId() == 0 || player->getAllianceRank() != 2 || player->getGuildId() == 0 || player->getGuildRank() != 1) 
+		case 0x02: { // Leave Alliance
+				if (player->getAllianceId() == 0 || player->getAllianceRank() != 2 || player->getGuildId() == 0 || player->getGuildRank() != 1)
 					return;
-				sendChangeGuild(player->getAllianceId(), player->getId(), player->getGuildId(), 2);				
-			}
-			break;
+				sendChangeGuild(player->getAllianceId(), player->getId(), player->getGuildId(), 2);
+				break;
+		}
 		case 0x03: sendInvitation(player->getAllianceId(), player->getId(), packet.getString()); break;
-		case 0x04:{ // Invite accepted
+		case 0x04: { // Invite accepted
 				int32_t guildid = packet.get<int32_t>();
 				string guildname = packet.getString();
 				if (player->getAllianceId() != 0 || player->getGuildRank() != 1 || player->getGuildId() == 0) 
 					return;
 				sendChangeGuild(guildid, player->getId(), player->getGuildId(), 0);
-			}
-			break;
-		case 0x06:{ // Expel Guild
+				break;
+		}
+		case 0x06: { // Expel Guild
 				int32_t guildid = packet.get<int32_t>();
 				int32_t allianceid = packet.get<int32_t>();
 				if (player->getAllianceId() == 0 || player->getAllianceRank() != 1 || player->getAllianceId() != allianceid) 
 					return;
 				sendChangeGuild(allianceid, player->getId(), guildid, 1);
-			}
-			break;
-		case 0x07:{ // Change Alliance Leader
+				break;
+		}
+		case 0x07: { // Change Alliance Leader
 				if (player->getAllianceId() == 0 || player->getAllianceRank() != 1 || player->getGuildId() == 0 || player->getGuildRank() > 1)
 					return;
 				sendChangeLeader(player->getAllianceId(), player->getId(), packet.get<int32_t>());
-			}
-			break;
+				break;
+		}
 		case 0x08: sendChangeTitles(player->getAllianceId(), player->getId(), packet); break;
 		case 0x09: sendChangeRank(player->getAllianceId(), player->getId(), packet); break;
 		case 0x0a: sendChangeNotice(player->getAllianceId(), player->getId(), packet); break;
-		default:{
-			packet.reset(1);
-			int32_t length = packet.getBufferLength();
-			std::cout << "Unhandled Alliance Packet: ";
-			for(int32_t i = 0; i < length; i++){
-				std::cout << std::hex << static_cast<int16_t>(packet.get<int8_t>()) << " ";
-			}
-			std::cout << std::endl;
-		}
-		break;
 	}
 }
 
@@ -87,7 +77,6 @@ void AlliancePacket::handleDenyPacket(Player *player, PacketReader &packet) {
 	pack.add<int32_t>(0);
 	pack.add<int32_t>(player->getId());
 	pack.addBuffer(packet);
-	
 	ChannelServer::Instance()->sendToWorld(pack);
 }
 
@@ -97,7 +86,6 @@ void AlliancePacket::sendShowInfo(int32_t allianceid, int32_t playerid) {
 	packet.add<int8_t>(0x02);
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(playerid);
-
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
@@ -108,7 +96,6 @@ void AlliancePacket::sendChangeTitles(int32_t allianceid, int32_t playerid, Pack
 	pack.add<int32_t>(allianceid);
 	pack.add<int32_t>(playerid);
 	pack.addBuffer(packet);
-
 	ChannelServer::Instance()->sendToWorld(pack);
 }
 
@@ -119,7 +106,6 @@ void AlliancePacket::sendChangeNotice(int32_t allianceid, int32_t playerid, Pack
 	pack.add<int32_t>(allianceid);
 	pack.add<int32_t>(playerid);
 	pack.addString(packet.getString());
-
 	ChannelServer::Instance()->sendToWorld(pack);
 }
 
@@ -130,7 +116,6 @@ void AlliancePacket::sendInvitation(int32_t allianceid, int32_t playerid, const 
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(playerid);
 	packet.addString(guildname);
-
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
@@ -142,7 +127,6 @@ void AlliancePacket::sendChangeGuild(int32_t allianceid, int32_t playerid, int32
 	packet.add<int32_t>(guildid);
 	packet.add<int32_t>(playerid);
 	packet.add<uint8_t>(option);
-
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
@@ -153,7 +137,6 @@ void AlliancePacket::sendChangeLeader(int32_t allianceid, int32_t playerid, int3
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(playerid);
 	packet.add<int32_t>(victim);
-
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
@@ -165,7 +148,6 @@ void AlliancePacket::sendChangeRank(int32_t allianceid, int32_t playerid, Packet
 	pack.add<int32_t>(playerid);
 	pack.add<int32_t>(packet.get<int32_t>());
 	pack.add<uint8_t>(packet.get<uint8_t>());
-
 	ChannelServer::Instance()->sendToWorld(pack);
 }
 
@@ -176,7 +158,6 @@ void AlliancePacket::sendCreateAlliance(int32_t playerid, string alliancename) {
 	pack.add<int32_t>(0);
 	pack.add<int32_t>(playerid);
 	pack.addString(alliancename);
-
 	ChannelServer::Instance()->sendToWorld(pack);
 }
 
@@ -186,7 +167,6 @@ void AlliancePacket::increaseAllianceCapacity(int32_t allianceid, int32_t player
 	pack.add<int8_t>(0x0b);
 	pack.add<int32_t>(allianceid);
 	pack.add<int32_t>(playerid);
-
 	ChannelServer::Instance()->sendToWorld(pack);
 }
 
@@ -196,6 +176,5 @@ void AlliancePacket::sendDisbandAlliance(int32_t allianceid, int32_t playerid) {
 	pack.add<int8_t>(0x0c);
 	pack.add<int32_t>(allianceid);
 	pack.add<int32_t>(playerid);
-
 	ChannelServer::Instance()->sendToWorld(pack);
 }
