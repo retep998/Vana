@@ -212,13 +212,14 @@ public:
 	bool consumeInfoExists(int32_t itemid) { return (consumes.find(itemid) != consumes.end()); }
 	bool skillItemExists(int32_t itemid) { return (skills.find(itemid) != skills.end()); }
 	bool summonBagExists(int32_t itemid) { return (mobs.find(itemid) != mobs.end()); }
+	bool canTrade(int32_t itemid) { return (!(items[itemid].notrade || items[itemid].quest)); }
+	bool isCash(int32_t itemid) { return items[itemid].cash; }
 	int32_t getPrice(int32_t itemid) { return (itemExists(itemid) ? items[itemid].price : 0); }
 	uint16_t getMaxSlot(int32_t itemid) { return (itemExists(itemid) ? items[itemid].maxslot : 0); }
 	int32_t getHunger(int32_t itemid) {return (petExists(itemid) ? petsInfo[itemid].hunger : 0); }
 	string getItemName(int32_t itemid) { return (itemExists(itemid) ? items[itemid].name : ""); }
 
 	void scrollItem(int32_t scrollid, Item *equip, int8_t &succeed, bool &cursed, bool wscroll);
-	ItemInfo * getItemInfo(int32_t itemid) { return &items[itemid]; }
 	ConsumeInfo * getConsumeInfo(int32_t itemid) { return (consumeInfoExists(itemid) ? &consumes[itemid] : 0); }
 	PetInfo * getPetInfo(int32_t itemid) { return &petsInfo[itemid]; }
 	PetInteractInfo * getInteraction(int32_t itemid, int32_t action); 
