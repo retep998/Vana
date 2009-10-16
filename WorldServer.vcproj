@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-874"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="WorldServer"
 	ProjectGUID="{045746E8-6588-437D-B8F7-5B5E9E42B9EF}"
 	RootNamespace="WorldServer"
@@ -318,6 +318,14 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="Database Loading"
+				>
+				<File
+					RelativePath=".\src\WorldServer\InitializeWorld.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -435,6 +443,14 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Database Loading"
+				>
+				<File
+					RelativePath=".\src\WorldServer\InitializeWorld.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

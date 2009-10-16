@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.h"
+#include "InitializeWorld.h"
 #include "LoginServerConnection.h"
 #include "WorldServerAcceptPacket.h"
 #include "WorldServer.h"
@@ -66,7 +67,7 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 		WorldServer::Instance()->listen();
 		std::cout << "Handling world " << (int32_t) worldid << std::endl;
 
-		WorldServer::Instance()->loadGuilds();
+		Initializing::loadPostAssignment(worldid);
 	}
 	else {
 		std::cout << "Error: No world to handle" << std::endl;

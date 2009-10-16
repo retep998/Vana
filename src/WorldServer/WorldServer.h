@@ -39,7 +39,6 @@ public:
 	void loadData();
 	void loadConfig();
 	void listen();
-	void loadGuilds();
 
 	void setWorldId(int8_t id) { worldId = id; }
 	void setMaxMultiLevel(uint8_t level) { maxMultiLevel = level; }
