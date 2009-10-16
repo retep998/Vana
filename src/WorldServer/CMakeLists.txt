@@ -12,6 +12,7 @@ set(SOURCES
 	GuildHandler.h
 	GuildPacket.h
 	Guilds.h
+	InitializeWorld.h
 	LoginServerConnection.h
 	LoginServerConnectHandler.h
 	LoginServerConnectPacket.h
@@ -37,6 +38,7 @@ set(SOURCES
 	GuildHandler.cpp
 	GuildPacket.cpp
 	Guilds.cpp
+	InitializeWorld.cpp
 	LoginServerConnection.cpp
 	LoginServerConnectHandler.cpp
 	LoginServerConnectPacket.cpp
