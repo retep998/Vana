@@ -46,7 +46,8 @@ int main() {
 		ConnectionManager *connMan = ConnectionManager::Instance();
 
 		server->initialize();
-		
+		server->displayLaunchTime();
+
 #ifdef _WIN32
 		// Allow the server to stop on windows console events
 		console_ctrl_function = std::tr1::bind(&ConnectionManager::stop, connMan);

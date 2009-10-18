@@ -68,6 +68,8 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 		std::cout << "Handling world " << (int32_t) worldid << std::endl;
 
 		Initializing::loadPostAssignment(worldid);
+
+		WorldServer::Instance()->displayLaunchTime();
 	}
 	else {
 		std::cout << "Error: No world to handle" << std::endl;
