@@ -320,7 +320,7 @@ void GuildHandler::handleGuildCreation(PacketReader &packet) {
 		if (Guilds::Instance()->getGuild(guildname) != 0) {
 			GuildPacket::sendPlayerGuildMessage(player, 0x1c);
 		}
-		else{
+		else {
 			party->guildname = guildname;
 			for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++)
 				GuildPacket::sendGuildContract(iter->second, party->isLeader(iter->second->id), iter->second->party, player->name, guildname);
@@ -328,7 +328,7 @@ void GuildHandler::handleGuildCreation(PacketReader &packet) {
 	}
 	else if (option == 2) {
 		int32_t partyid = packet.get<int32_t>();
-		if (player->party != partyid) 
+		if (player->party != partyid)
 			return;
 		int8_t result = packet.get<int8_t>();
 		party->guildcontract += result;
@@ -337,13 +337,13 @@ void GuildHandler::handleGuildCreation(PacketReader &packet) {
 			if (party->guildcontract == 1) {
 				Player *leader = Players::Instance()->getPlayer(party->getLeader());
 				mysqlpp::Query query = Database::getCharDB().query();
-				query << "INSERT INTO guilds (`world`, `name`, `leaderid`, `notice`, `rank4title`, `rank5title`, `capacity`) VALUES (" 
-					<< static_cast<int16_t>(WorldServer::Instance()->getWorldId()) << ", " 
-					<< mysqlpp::quote << party->guildname << ", " 
-					<< party->getLeader() << ", "  
-					<< mysqlpp::quote << "" << ", " 
-					<< mysqlpp::quote << "" << ", " 
-					<< mysqlpp::quote << "" << ", " 
+				query << "INSERT INTO guilds (`world`, `name`, `leaderid`, `notice`, `rank4title`, `rank5title`, `capacity`) VALUES ("
+					<< static_cast<int16_t>(WorldServer::Instance()->getWorldId()) << ", "
+					<< mysqlpp::quote << party->guildname << ", "
+					<< party->getLeader() << ", "
+					<< mysqlpp::quote << "" << ", "
+					<< mysqlpp::quote << "" << ", "
+					<< mysqlpp::quote << "" << ", "
 					<< "10)";
 
 				if (!query.exec()) {
