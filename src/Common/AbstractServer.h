@@ -35,10 +35,13 @@ public:
 	virtual void loadData() = 0;
 	virtual void shutdown();
 	
+	clock_t getStartTime() const { return startTime; }
 	string getInterPassword() const { return inter_password; }
+	void displayLaunchTime() const;
 protected:
 	AbstractServer();
 
+	clock_t startTime;
 	bool to_listen;
 	string inter_password;
 	vector<vector<uint32_t> > external_ip;
