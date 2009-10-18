@@ -55,7 +55,7 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	packet.add<int32_t>(charc.eyes);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(charc.hair);
-	int32_t equips[50][2] = {0};
+	int32_t equips[51][2] = {0};
 	for (int16_t i = 0; i < (int16_t) charc.equips.size(); i++) {
 		int16_t slot = -charc.equips[i].slot;
 		if (slot > 100)
