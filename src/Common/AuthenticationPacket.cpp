@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerConnection.h"
 #include <algorithm>
 
-void AuthenticationPacket::sendPassword(AbstractServerConnection *player, string pass, vector<vector<uint32_t> > extIp) {
+void AuthenticationPacket::sendPassword(AbstractServerConnection *player, const string &pass, IpMatrix &extIp) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PASSWORD);
 	packet.addString(pass);

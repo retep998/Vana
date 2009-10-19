@@ -15,14 +15,31 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INITIALIZEWORLD_H
-#define INITIALIZEWORLD_H
+#include "Player.h"
+#include "GameConstants.h"
 
-#include "Types.h"
-
-namespace Initializing {
-	void loadData();
-	void worldEstablished();
+Player::Player() {
+	initialize();
 }
 
-#endif
+Player::Player(int32_t id) : id(id) {
+	initialize();
+}
+
+void Player::initialize() {
+	online = false;
+	cashShop = false;
+	guildRank = 0;
+	allianceRank = 0;
+	level = 0;
+	channel = -1;
+	job = -1;
+	map = Maps::NoMap;
+	inviteGuild = 0;
+	ip = 0;
+	onlineTime = 0;
+	inviteTime = 0;
+	party = 0;
+	guild = 0;
+	alliance = 0;
+}

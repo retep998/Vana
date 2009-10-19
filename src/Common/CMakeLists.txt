@@ -19,6 +19,7 @@ set(SOURCES
 	GameObjects.h
 	InitializeCommon.h
 	InterHeader.h
+	Ip.h
 	IpUtilities.h
 	ItemDataProvider.h
 	LoopingId.h

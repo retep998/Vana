@@ -15,16 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "BbsHandler.h"
 #include "BbsPacket.h"
 #include "Channels.h"
 #include "Database.h"
 #include "Guild.h"
 #include "GuildBbs.h"
-#include "Guilds.h"
 #include "PacketReader.h"
-#include "Players.h"
+#include "Player.h"
+#include "PlayerDataProvider.h"
 #include "WorldServerAcceptConnection.h"
 
 void BbsHandler::handlePacket(WorldServerAcceptConnection *player, PacketReader &packet) {
@@ -41,15 +40,15 @@ void BbsHandler::handlePacket(WorldServerAcceptConnection *player, PacketReader 
 void BbsHandler::handleNewThread(PacketReader &packet) {
 	int32_t guildid = packet.get<int32_t>();
 	int32_t playerid = packet.get<int32_t>();
-	Guild *guild = Guilds::Instance()->getGuild(guildid);
-	Player *player = Players::Instance()->getPlayer(playerid);
+	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (guild == 0 || player == 0)
 		return;
 
 	GuildBbs *bbs = guild->getBbs();
 
-	if (guildid != player->guildid) {
-		std::cout << player->name << " wants to post a new thread without being in the guild!" << std::endl;
+	if (guildid != player->getGuild()->getId()) {
+		std::cout << player->getName() << " wants to post a new thread without being in the guild!" << std::endl;
 		return;
 	}
 
@@ -105,16 +104,16 @@ void BbsHandler::handleNewThread(PacketReader &packet) {
 }
 
 void BbsHandler::handleShowThread(int32_t playerid, int32_t threadid) {
-	Player *player = Players::Instance()->getPlayer(playerid);
-	Guild *guild = Guilds::Instance()->getGuild(player->guildid);
-	if (player == 0 || player->guildid == 0 || guild == 0) 
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Guild *guild = player->getGuild();
+	if (player == 0 || guild == 0) 
 		return;
 
 	BbsThread *thread = guild->getBbs()->getThread(threadid);
 	if (thread == 0)
 		return;
 
-	BbsPacket::sendThreadData(Channels::Instance()->getChannel(player->channel)->player, thread, playerid);
+	BbsPacket::sendThreadData(player->getChannel(), thread, playerid);
 }
 
 void BbsHandler::handleShowThread(PacketReader &pack) {
@@ -122,16 +121,16 @@ void BbsHandler::handleShowThread(PacketReader &pack) {
 	int32_t guildid = pack.get<int32_t>();
 	int32_t threadid = pack.get<int32_t>();
 
-	Player *player = Players::Instance()->getPlayer(playerid);
-	Guild *guild = Guilds::Instance()->getGuild(guildid);
-	if (player == 0 || player->guildid == 0 || guild == 0) 
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
+	if (player == 0 || player->getGuild() == 0 || guild == 0) 
 		return;
 
 	BbsThread *thread = guild->getBbs()->getThread(threadid);
 	if (thread == 0)
 		return;
 
-	BbsPacket::sendThreadData(Channels::Instance()->getChannel(player->channel)->player, thread, playerid);
+	BbsPacket::sendThreadData(player->getChannel(), thread, playerid);
 }
 
 void BbsHandler::handleDeleteThread(PacketReader &packet) {
@@ -139,15 +138,15 @@ void BbsHandler::handleDeleteThread(PacketReader &packet) {
 	int32_t guildid = packet.get<int32_t>();
 	int32_t threadid = packet.get<int32_t>();
 
-	Player *player = Players::Instance()->getPlayer(playerid);
-	Guild *guild = Guilds::Instance()->getGuild(player->guildid);
-	if (player == 0 || player->guildid == 0 || guild == 0) 
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Guild *guild = player->getGuild();
+	if (player == 0 || guild == 0 || player->getGuild()->getId() != guildid) 
 		return;
 
 	GuildBbs *bbs = guild->getBbs();
 
 	BbsThread * thread = bbs->getThread(threadid);
-	if (thread == 0 || (thread->getUserId() != playerid && player->guildrank < 2)) 
+	if (thread == 0 || (thread->getUserId() != playerid && player->getGuildRank() < 2)) 
 		return;
 
 	bbs->removeThread(threadid);
@@ -159,13 +158,12 @@ void BbsHandler::handleShowThreadList(PacketReader &pack) {
 	int32_t guildid = pack.get<int32_t>();
 	int16_t page = pack.get<int16_t>();
 
-	Player *player = Players::Instance()->getPlayer(playerid);
-	Guild * guild = Guilds::Instance()->getGuild(guildid);
-	if (player == 0 || player->guildid == 0 || guild == 0) 
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Guild * guild = PlayerDataProvider::Instance()->getGuild(guildid);
+	if (player == 0 || player->getGuild() == 0 || guild == 0) 
 		return;
 
-	WorldServerAcceptConnection *channel = Channels::Instance()->getChannel(player->channel)->player;
-	BbsPacket::sendThreadList(channel, guild, playerid, page);
+	BbsPacket::sendThreadList(player->getChannel(), guild, playerid, page);
 }
 
 void BbsHandler::handleNewReply(PacketReader &packet) {
@@ -174,9 +172,9 @@ void BbsHandler::handleNewReply(PacketReader &packet) {
 	int32_t threadid = packet.get<int32_t>();
 	string replytext = packet.getString();
 
-	Player *player = Players::Instance()->getPlayer(playerid);
-	Guild * guild = Guilds::Instance()->getGuild(guildid);
-	if (player == 0 || player->guildid == 0 || guild == 0) 
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
+	if (player == 0 || player->getGuild() == 0 || guild == 0) 
 		return;
 
 	BbsThread * thread = guild->getBbs()->getThread(threadid);
@@ -203,17 +201,17 @@ void BbsHandler::handleDeleteReply(PacketReader &packet) {
 	int32_t threadid = packet.get<int32_t>();
 	int32_t replyid = packet.get<int32_t>();
 
-	Player *player = Players::Instance()->getPlayer(playerid);
-	Guild * guild = Guilds::Instance()->getGuild(guildid);
-	if (player == 0 || player->guildid == 0 || guild == 0) 
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
+	if (player == 0 || player->getGuild() == 0 || guild == 0) 
 		return;
 
-	BbsThread * thread = guild->getBbs()->getThread(threadid);
+	BbsThread *thread = guild->getBbs()->getThread(threadid);
 	if (thread == 0) 
 		return;
 
-	BbsReply * reply = thread->getReply(replyid);
-	if (reply == 0 || (reply->getUserId() != playerid && player->guildrank < 2))
+	BbsReply *reply = thread->getReply(replyid);
+	if (reply == 0 || (reply->getUserId() != playerid && player->getGuildRank() < 2))
 		return;
 
 	thread->removeReply(replyid);

@@ -664,6 +664,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\Ip.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Pos.h"
 					>
 				</File>

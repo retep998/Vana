@@ -16,89 +16,82 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Guild.h"
+#include "GameConstants.h"
 #include "GuildBbs.h"
 #include "Database.h"
-#include "Players.h"
+#include "Player.h"
 
-Guild::Guild(string name, string notice, int32_t id, int32_t leaderid, int32_t capacity, int16_t logo, uint8_t logocolor, int16_t logobg, uint8_t logobgcolor, int32_t gp, string title1, string title2, string title3, string title4, string title5, int32_t allianceid) : id(id),
-name(name),
-notice(notice),
-capacity(capacity),
-leaderid(leaderid),
-logo(logo),
-logocolor(logocolor),
-logobg(logobg),
-logobgcolor(logobgcolor),
-points(gp),
-allianceid(allianceid),
-invited(false) {
-	title[0] = title1;
-	title[1] = title2;
-	title[2] = title3;
-	title[3] = title4;
-	title[4] = title5;
-	bbs.reset(new GuildBbs(this));
+Guild::Guild(const string &name, const string &notice, int32_t id, int32_t leaderid, int32_t capacity, int32_t gp, const GuildLogo &logo, const GuildRanks &ranks, Alliance *alliance) :
+m_id(id),
+m_name(name),
+m_notice(notice),
+m_capacity(capacity),
+m_leaderId(leaderid),
+m_logo(logo),
+m_points(gp),
+m_alliance(alliance),
+m_titles(ranks),
+m_invited(false)
+{
+	m_bbs.reset(new GuildBbs(this));
 };
 
 void Guild::addPlayer(Player *player) {
 	if (player == 0) 
 		return;
 
-	m_players[player->id] = player;
+	m_players[player->getId()] = player;
 }
 
 void Guild::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
 
 	query << "UPDATE guilds SET " <<
-		"notice = " << mysqlpp::quote << notice << ", " <<
-		"capacity = " << capacity << ", " <<
-		"logo = " << logo << ", " <<
-		"logocolor = " << static_cast<int16_t>(logocolor) << ", " <<
-		"logobg = " << logobg << ", " <<
-		"logobgcolor = " << static_cast<int16_t>(logobgcolor) << ", " <<
-		"gp = " << points << ", " <<
-		"rank1title = " << mysqlpp::quote << title[0] << ", " <<
-		"rank2title = " << mysqlpp::quote << title[1] << ", " <<
-		"rank3title = " << mysqlpp::quote << title[2] << ", " <<
-		"rank4title = " << mysqlpp::quote << title[3] << ", " <<
-		"rank5title = " << mysqlpp::quote << title[4] << ", " <<
-		"leaderid = " << leaderid << " " <<
-		"WHERE id = " << id << " LIMIT 1";
+		"notice = " << mysqlpp::quote << m_notice << ", " <<
+		"capacity = " << m_capacity << ", " <<
+		"logo = " << m_logo.logo << ", " <<
+		"logocolor = " << static_cast<int16_t>(m_logo.color) << ", " <<
+		"logobg = " << m_logo.background << ", " <<
+		"logobgcolor = " << static_cast<int16_t>(m_logo.backgroundColor) << ", " <<
+		"gp = " << m_points << ", ";
+
+	for (int32_t i = 0; i < GuildsAndAlliances::RankQuantity; i++) {
+		query << "rank" << i << "title = " << mysqlpp::quote << m_titles[i] << ", ";
+	}
+
+	query << "leaderid = " << m_leaderId << " " <<
+		"WHERE id = " << m_id << " LIMIT 1";
 	query.exec();
 }
 
 void Guild::setInvite(int32_t guildid) {
-	invited = true;
-	invite_id = guildid;
-	invite_time = time(0);
+	m_invited = true;
+	m_inviteId = guildid;
+	m_inviteTime = time(0);
 }
 
 void Guild::removeInvite() {
-	invited = false;
-	invite_id = 0;
-	invite_time = 0;
+	m_invited = false;
+	m_inviteId = 0;
+	m_inviteTime = 0;
 }
 
 void Guild::removePlayer(Player *player) {
 	if (player == 0) 
 		return;
-	if (m_players.find(player->id) == m_players.end())
+	if (m_players.find(player->getId()) == m_players.end())
 		return;
 
-	m_players.erase(player->id);
+	m_players.erase(player->getId());
 }
 
 uint8_t Guild::getLowestRank() {
-	if (!title[3].empty()) {
-		if (!title[4].empty()) {
-			return 5; // ! title[4] = rank 5, not 4 !
-		}
-		else {
-			return 4;
+	uint8_t retval = GuildsAndAlliances::RankQuantity;
+	for (int32_t i = GuildsAndAlliances::RankQuantity; i > 0; i--) {
+		if (!m_titles[i].empty()) {
+			retval = static_cast<uint8_t>(i); // Cast until I learn more...
+			break;
 		}
 	}
-	else {
-		return 3;
-	}
+	return retval;
 }

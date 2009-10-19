@@ -16,15 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPacket.h"
-#include "Alliances.h"
 #include "Channels.h"
-#include "Guilds.h"
 #include "InterHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
-#include "Parties.h"
-#include "PartyHandler.h"
+#include "Party.h"
+#include "PartyHelper.h"
+#include "PlayerDataProvider.h"
 #include "Rates.h"
 #include "SendHeader.h"
 #include "TimeUtilities.h"
@@ -36,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::map;
 using std::tr1::unordered_map;
 
-void WorldServerAcceptPacket::groupChat(WorldServerAcceptConnection *player, int32_t playerid, int8_t type, const string &message, const string &sender) {
+void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerid, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
@@ -44,7 +43,7 @@ void WorldServerAcceptPacket::groupChat(WorldServerAcceptConnection *player, int
 	packet.add<int8_t>(type);
 	packet.addString(sender);
 	packet.addString(message);
-	player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
 void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port) {
@@ -74,14 +73,14 @@ void WorldServerAcceptPacket::sendPacketToChannelForHolding(uint16_t channel, in
 	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET);
 	packet.add<int32_t>(playerid);
 	packet.addBuffer(buffer);
-	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
 void WorldServerAcceptPacket::sendHeldPacketRemoval(uint16_t channel, int32_t playerid) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET_DISCONNECT);
 	packet.add<int32_t>(playerid);
-	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
 void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port) {
@@ -91,18 +90,6 @@ void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptConnection *p
 	packet.add<uint32_t>(ip);
 	packet.add<int16_t>(port);
 	player->getSession()->send(packet);
-}
-
-void WorldServerAcceptPacket::sendToChannels(unsigned char *data, int32_t len) {
-	PacketCreator packet;
-	packet.addBuffer(data, len);
-	Channels::Instance()->sendToAll(packet);
-}
-
-void WorldServerAcceptPacket::sendToLogin(unsigned char *data, int32_t len) {
-	PacketCreator packet;
-	packet.addBuffer(data, len);
-	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
 }
 
 void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
@@ -116,15 +103,15 @@ void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *player, in
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::whisperPlayer(WorldServerAcceptConnection *player, int32_t whisperee, const string &whisperer, uint16_t channel, const string &message) {
+void WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_WHISPER);
 	packet.add<int32_t>(whisperee);
 	packet.addString(whisperer);
-	packet.add<int16_t>(channel);
+	packet.add<int16_t>(whispererChannel);
 	packet.addString(message);
 
-	player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
 void WorldServerAcceptPacket::scrollingHeader(const string &message) {
@@ -140,7 +127,7 @@ void WorldServerAcceptPacket::newConnectable(uint16_t channel, int32_t playerid)
 	packet.add<int16_t>(INTER_NEW_CONNECTABLE);
 	packet.add<int32_t>(playerid);
 
-	Channels::Instance()->getChannel(channel)->player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
 void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *player, int32_t setBit) {
@@ -167,9 +154,9 @@ void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *player, int
 void WorldServerAcceptPacket::sendParties(WorldServerAcceptConnection *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PARTY_SYNC_CHANNEL_START);
+	packet.add<int8_t>(PartyActions::Sync::ChannelStart);
 
-	unordered_map<int32_t, Party *> parties = Parties::Instance()->getParties();
+	unordered_map<int32_t, Party *> parties = PlayerDataProvider::Instance()->getParties();
 	map<int32_t, Player *> players;
 
 	packet.add<int32_t>((int32_t)(parties.size()));
@@ -189,7 +176,7 @@ void WorldServerAcceptPacket::sendParties(WorldServerAcceptConnection *player) {
 void WorldServerAcceptPacket::sendRemovePartyPlayer(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PARTY_SYNC_REMOVE_MEMBER);
+	packet.add<int8_t>(PartyActions::Sync::RemoveMember);
 	packet.add<int32_t>(partyid);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->sendToAll(packet);
@@ -198,7 +185,7 @@ void WorldServerAcceptPacket::sendRemovePartyPlayer(int32_t playerid, int32_t pa
 void WorldServerAcceptPacket::sendAddPartyPlayer(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PARTY_SYNC_ADD_MEMBER);
+	packet.add<int8_t>(PartyActions::Sync::AddMember);
 	packet.add<int32_t>(partyid);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->sendToAll(packet);
@@ -207,7 +194,7 @@ void WorldServerAcceptPacket::sendAddPartyPlayer(int32_t playerid, int32_t party
 void WorldServerAcceptPacket::sendSwitchPartyLeader(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PARTY_SYNC_SWITCH_LEADER);
+	packet.add<int8_t>(PartyActions::Sync::SwitchLeader);
 	packet.add<int32_t>(partyid);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->sendToAll(packet);
@@ -216,7 +203,7 @@ void WorldServerAcceptPacket::sendSwitchPartyLeader(int32_t playerid, int32_t pa
 void WorldServerAcceptPacket::sendCreateParty(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PARTY_SYNC_CREATE);
+	packet.add<int8_t>(PartyActions::Sync::Create);
 	packet.add<int32_t>(partyid);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->sendToAll(packet);
@@ -225,7 +212,7 @@ void WorldServerAcceptPacket::sendCreateParty(int32_t playerid, int32_t partyid)
 void WorldServerAcceptPacket::sendDisbandParty(int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PARTY_SYNC_DISBAND);
+	packet.add<int8_t>(PartyActions::Sync::Disband);
 	packet.add<int32_t>(partyid);
 	Channels::Instance()->sendToAll(packet);
 }
@@ -234,7 +221,7 @@ void WorldServerAcceptPacket::sendGuilds(WorldServerAcceptConnection *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_GUILD_OPERATION);
 	packet.add<int8_t>(0x0a);
-	Guilds::Instance()->getChannelConnectPacket(packet);
+	PlayerDataProvider::Instance()->getChannelConnectPacketGuild(packet);
 	player->getSession()->send(packet);
 }
 
@@ -242,6 +229,6 @@ void WorldServerAcceptPacket::sendAlliances(WorldServerAcceptConnection *player)
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_ALLIANCE);
 	packet.add<int8_t>(0x06);
-	Alliances::Instance()->getChannelConnectPacket(packet);
+	PlayerDataProvider::Instance()->getChannelConnectPacketAlliance(packet);
 	player->getSession()->send(packet);
 }

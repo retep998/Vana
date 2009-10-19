@@ -15,25 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #ifndef ALLIANCEHANDLER_H
 #define ALLIANCEHANLDER_H
 
-#include "Alliances.h"
-#include "Players.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
 #include "Types.h"
-#include "WorldServerAcceptConnection.h"
 #include <string>
 
 using std::string;
 
-struct Player;
-class Alliance;
-class WorldServerAcceptConnection;
-class PacketReader;
+class Guild;
 class PacketCreator;
+class PacketReader;
+class Player;
+class WorldServerAcceptConnection;
 
 namespace AllianceHandler {
 	void handlePacket(WorldServerAcceptConnection *player, PacketReader &packet);

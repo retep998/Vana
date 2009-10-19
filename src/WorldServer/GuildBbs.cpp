@@ -106,7 +106,7 @@ void GuildBbs::addThread(BbsThread *thread) {
 void GuildBbs::removeThread(int32_t id) {
 	if (id == 0) {
 		delete notice;
-		notice = 0; // If we dont do this it will crash the server :/
+		notice = 0; // If we don't do this it will crash the server :/
 	}
 	else {
 		delete m_threads[id];
@@ -115,11 +115,10 @@ void GuildBbs::removeThread(int32_t id) {
 	save();
 }
 
-BbsThread *GuildBbs::getThread(int32_t threadid) {
+BbsThread * GuildBbs::getThread(int32_t threadid) {
 	if (threadid == 0)
 		return notice;
-	else
-		return m_threads.find(threadid) != m_threads.end() ? m_threads[threadid] : 0;
+	return m_threads.find(threadid) != m_threads.end() ? m_threads[threadid] : 0;
 }
 
 void BbsThread::addReply(BbsReply *reply) {

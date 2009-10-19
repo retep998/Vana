@@ -16,16 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BbsPacket.h"
+#include "Channels.h"
+#include "Guild.h"
 #include "GuildBbs.h"
 #include "InterHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
-#include "Players.h"
 #include "SendHeader.h"
 #include "TimeUtilities.h"
-#include "WorldServerAcceptConnection.h"
 
-void BbsPacket::sendThreadList(WorldServerAcceptConnection *player, Guild *guild, int32_t playerid, int16_t page) {
+void BbsPacket::sendThreadList(uint16_t channel, Guild *guild, int32_t playerid, int16_t page) {
 	GuildBbs *bbs = guild->getBbs();
 	int32_t threads = bbs->m_threads.size();
 	int16_t counter1 = 0;
@@ -69,10 +69,10 @@ void BbsPacket::sendThreadList(WorldServerAcceptConnection *player, Guild *guild
 		}
 	}
 
-	player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void BbsPacket::sendThreadData(WorldServerAcceptConnection *player, BbsThread *thread, int32_t playerid) {
+void BbsPacket::sendThreadData(uint16_t channel, BbsThread *thread, int32_t playerid) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
@@ -96,5 +96,5 @@ void BbsPacket::sendThreadData(WorldServerAcceptConnection *player, BbsThread *t
 		packet.addString(iter->second->getContent());
 	}
 
-	player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }

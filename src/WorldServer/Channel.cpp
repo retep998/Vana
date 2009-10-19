@@ -15,14 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INITIALIZEWORLD_H
-#define INITIALIZEWORLD_H
+#include "Channel.h"
 
-#include "Types.h"
-
-namespace Initializing {
-	void loadData();
-	void worldEstablished();
+Channel::Channel() :
+m_players(0),
+m_connection(0),
+m_id(0),
+m_ip(0),
+m_port(0)
+{
 }
-
-#endif

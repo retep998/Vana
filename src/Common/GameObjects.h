@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef GAMEOBJECTS_H
 #define GAMEOBJECTS_H
 
+#include "GameConstants.h"
 #include "Types.h"
+#include <boost/utility.hpp>
 #include <string>
 
 using std::string;
@@ -81,5 +83,17 @@ struct Item {
 	int32_t petid;
 	string name;
 };
+
+struct GuildLogo {
+	GuildLogo() : logo(0), color(0), background(0), backgroundColor(0) { }
+	GuildLogo(const GuildLogo &logo) : logo(logo.logo), color(logo.color), background(logo.background), backgroundColor(logo.backgroundColor) { }
+
+	int16_t logo;
+	int8_t color;
+	int16_t background;
+	int8_t backgroundColor;
+};
+
+typedef boost::array<string, GuildsAndAlliances::RankQuantity> GuildRanks;
 
 #endif

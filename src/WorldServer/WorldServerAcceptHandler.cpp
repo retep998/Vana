@@ -16,28 +16,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptHandler.h"
-#include "ChannelChangeRequests.h"
+#include "Channel.h"
 #include "Channels.h"
 #include "Guild.h"
-#include "Guilds.h"
 #include "GuildPacket.h"
 #include "IpUtilities.h"
 #include "PacketReader.h"
 #include "PartyHandler.h"
-#include "Players.h"
+#include "PartyHelper.h"
+#include "Player.h"
+#include "PlayerDataProvider.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptConnection.h"
 #include "WorldServerAcceptPacket.h"
 
 void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
-	int8_t type = packet.get<int8_t>(); // Buddy = 0 party = 1 guild = 2
+	int8_t type = packet.get<int8_t>(); // Buddy = 0, party = 1, guild = 2, alliance = 3
 	string message = packet.getString();
 	uint8_t receivers = packet.get<int8_t>();
-	string sender = Players::Instance()->getPlayer(playerid)->name;
+	string sender = PlayerDataProvider::Instance()->getPlayer(playerid)->getName();
 	for (size_t i = 0; i < receivers; i++) {
 		int32_t receiver = packet.get<int32_t>();
-		WorldServerAcceptConnection *channel = Channels::Instance()->getChannel(Players::Instance()->getPlayer(receiver)->channel)->player;
+		uint16_t channel = PlayerDataProvider::Instance()->getPlayer(receiver)->getChannel();
 		WorldServerAcceptPacket::groupChat(channel, receiver, type, message, sender);
 	}	
 }
@@ -59,8 +60,8 @@ void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptConnection *
 	int32_t playerid = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
 	if (chan) {
-		WorldServerAcceptPacket::sendPacketToChannelForHolding(chan->id, playerid, packet);
-		ChannelChangeRequests::Instance()->addPendingPlayer(playerid, chan->id);
+		WorldServerAcceptPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet);
+		PlayerDataProvider::Instance()->addPendingPlayer(playerid, chan->getId());
 	}
 	else { // Channel doesn't exist (offline)
 		WorldServerAcceptPacket::playerChangeChannel(player, playerid, 0, -1);
@@ -69,20 +70,20 @@ void WorldServerAcceptHandler::playerChangeChannel(WorldServerAcceptConnection *
 
 void WorldServerAcceptHandler::handleChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
-	Player *gamePlayer = Players::Instance()->getPlayer(playerid);
+	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (gamePlayer) {
-		uint16_t chanid = ChannelChangeRequests::Instance()->getPendingPlayerChannel(playerid);
+		uint16_t chanid = PlayerDataProvider::Instance()->getPendingPlayerChannel(playerid);
 		Channel *chan = Channels::Instance()->getChannel(chanid);
-		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->channel);
+		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->getChannel());
 		if (chan) {
-			WorldServerAcceptPacket::newConnectable(chan->id, playerid);
-			uint32_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->ip, chan->external_ip, chan->ip);
-			WorldServerAcceptPacket::playerChangeChannel(curchan->player, playerid, chanIp, chan->port);
+			WorldServerAcceptPacket::newConnectable(chan->getId(), playerid);
+			uint32_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), chan->getExternalIps(), chan->getIp());
+			WorldServerAcceptPacket::playerChangeChannel(curchan->getConnection(), playerid, chanIp, chan->getPort());
 		}
 		else {
-			WorldServerAcceptPacket::playerChangeChannel(curchan->player, playerid, 0, -1);
+			WorldServerAcceptPacket::playerChangeChannel(curchan->getConnection(), playerid, 0, -1);
 		}
-		ChannelChangeRequests::Instance()->removePendingPlayer(playerid);
+		PlayerDataProvider::Instance()->removePendingPlayer(playerid);
 	}
 }
 
@@ -90,11 +91,9 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *player, P
 	int32_t finder = packet.get<int32_t>();
 	string findee_name = packet.getString();
 
-	Player *findee = Players::Instance()->getPlayerFromName(findee_name);
-	if (findee->channel != -1)
-		WorldServerAcceptPacket::findPlayer(player, finder, findee->channel, findee->name);
-	else
-		WorldServerAcceptPacket::findPlayer(player, finder, findee->channel, findee_name);
+	Player *findee = PlayerDataProvider::Instance()->getPlayer(findee_name);
+
+	WorldServerAcceptPacket::findPlayer(player, finder, findee->getChannel(), (findee->isOnline() ? findee->getName() : findee_name));
 }
 
 void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *player, PacketReader &packet) {
@@ -102,33 +101,53 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *player
 	string whisperee_name = packet.getString();
 	string message = packet.getString();
 
-	Player *whisperee = Players::Instance()->getPlayerFromName(whisperee_name);
-	if (whisperee->channel != -1) {
-		WorldServerAcceptPacket::findPlayer(player, whisperer, -1, whisperee->name, 1);
-		WorldServerAcceptPacket::whisperPlayer(Channels::Instance()->getChannel(whisperee->channel)->player, whisperee->id, Players::Instance()->getPlayer(whisperer)->name, player->getChannel(),  message);
+	Player *whisperee = PlayerDataProvider::Instance()->getPlayer(whisperee_name);
+	if (whisperee->isOnline()) {
+		WorldServerAcceptPacket::findPlayer(player, whisperer, -1, whisperee->getName(), 1);
+		WorldServerAcceptPacket::whisperPlayer(whisperee->getChannel(), whisperee->getId(), PlayerDataProvider::Instance()->getPlayer(whisperer)->getName(), player->getChannel(),  message);
 	}
-	else
-		WorldServerAcceptPacket::findPlayer(player, whisperer, whisperee->channel, whisperee_name);
+	else {
+		WorldServerAcceptPacket::findPlayer(player, whisperer, whisperee->getChannel(), whisperee_name);
+	}
 }
 
-void WorldServerAcceptHandler::registerPlayer(WorldServerAcceptConnection *player, PacketReader &packet) {
+void WorldServerAcceptHandler::playerConnect(WorldServerAcceptConnection *player, PacketReader &packet) {
 	uint32_t ip = packet.get<uint32_t>();
 	int32_t id = packet.get<int32_t>();
 	string name = packet.getString();
 	int32_t map = packet.get<int32_t>();
-	int32_t job = packet.get<int32_t>();
-	int32_t level = packet.get<int32_t>();
+	int16_t job = static_cast<int16_t>(packet.get<int32_t>());
+	uint8_t level = static_cast<uint8_t>(packet.get<int32_t>());
 	int32_t guildid = packet.get<int32_t>();
 	uint8_t guildrank = packet.get<uint8_t>();
 	int32_t allianceid = packet.get<int32_t>();
 	uint8_t alliancerank = packet.get<uint8_t>();
-	Players::Instance()->registerPlayer(ip, id, name, player->getChannel(), map, job, level, guildid, guildrank, allianceid, alliancerank);
+	
+	Player *p = PlayerDataProvider::Instance()->getPlayer(id, true);
+	if (p == 0) {
+		p = new Player(id);
+	}
+	p->setIp(ip);
+	p->setName(name);
+	p->setMap(map);
+	p->setJob(job);
+	p->setLevel(level);
+	p->setGuild(PlayerDataProvider::Instance()->getGuild(guildid));
+	p->setGuildRank(guildrank);
+	p->setAlliance(PlayerDataProvider::Instance()->getAlliance(allianceid));
+	p->setAllianceRank(alliancerank);
+	p->setChannel(player->getChannel());
+	p->setOnline(true);
+	PlayerDataProvider::Instance()->registerPlayer(p);
 }
 
-void WorldServerAcceptHandler::removePlayer(WorldServerAcceptConnection *player, PacketReader &packet) {
+void WorldServerAcceptHandler::playerDisconnect(WorldServerAcceptConnection *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
-	Players::Instance()->remove(id, player->getChannel());
-	ChannelChangeRequests::Instance()->removePendingPlayerEarly(id);
+	PlayerDataProvider::Instance()->remove(id, player->getChannel());
+	int16_t channel = PlayerDataProvider::Instance()->removePendingPlayerEarly(id);
+	if (channel != -1) {
+		WorldServerAcceptPacket::sendHeldPacketRemoval(channel, id);
+	}
 }
 
 void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptConnection *player, PacketReader &packet) {
@@ -138,28 +157,28 @@ void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptConnection *play
 
 void WorldServerAcceptHandler::updateJob(WorldServerAcceptConnection *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
-	int32_t job = packet.get<int32_t>();
-	Player *plyr = Players::Instance()->getPlayer(id);
-	plyr->job = job;
-	if (plyr->party != 0) {
+	int16_t job = packet.get<int16_t>();
+	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id);
+	plyr->setJob(job);
+	if (plyr->getParty() != 0) {
 		PartyHandler::silentUpdate(id);
 	}
-	if (plyr->guildid != 0) {
-		Guild *guild = Guilds::Instance()->getGuild(plyr->guildid);
+	if (plyr->getGuild() != 0) {
+		Guild *guild = plyr->getGuild();
 		GuildPacket::sendPlayerStatUpdate(guild, plyr, false);
 	}
 }
 
 void WorldServerAcceptHandler::updateLevel(WorldServerAcceptConnection *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
-	int32_t level = packet.get<int32_t>();
-	Player *plyr = Players::Instance()->getPlayer(id);
-	plyr->level = level;
-	if (plyr->party != 0) {
+	uint8_t level = packet.get<uint8_t>();
+	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id);
+	plyr->setLevel(level);
+	if (plyr->getParty() != 0) {
 		PartyHandler::silentUpdate(id);
 	}
-	if (plyr->guildid != 0) {
-		Guild *guild = Guilds::Instance()->getGuild(plyr->guildid);
+	if (plyr->getGuild() != 0) {
+		Guild *guild = plyr->getGuild();
 		GuildPacket::sendPlayerStatUpdate(guild, plyr, true);
 	}
 }
@@ -167,14 +186,22 @@ void WorldServerAcceptHandler::updateLevel(WorldServerAcceptConnection *player, 
 void WorldServerAcceptHandler::updateMap(WorldServerAcceptConnection *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	int32_t map = packet.get<int32_t>();
-	Players::Instance()->getPlayer(id)->map = map;
-	if (Players::Instance()->getPlayer(id)->party != 0) {
-		PartyHandler::silentUpdate(id);
+	if (Player *p = PlayerDataProvider::Instance()->getPlayer(id)) {
+		p->setMap(map);
+		if (p->getParty() != 0) {
+			PartyHandler::silentUpdate(id);
+		}
 	}
 }
 
-void WorldServerAcceptHandler::toChannels(PacketReader &packet) {
+void WorldServerAcceptHandler::sendToChannels(PacketReader &packet) {
 	PacketCreator pack;
 	pack.addBuffer(packet);
 	Channels::Instance()->sendToAll(pack);
+}
+
+void WorldServerAcceptHandler::sendToLogin(PacketReader &packet) {
+	PacketCreator pack;
+	pack.addBuffer(packet);
+	WorldServer::Instance()->getLoginConnection()->getSession()->send(pack);
 }

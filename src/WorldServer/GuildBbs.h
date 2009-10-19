@@ -42,7 +42,6 @@ public:
 	int32_t getUserId() const { return user; }
 	time_t getTime() const { return time; }
 	string getContent() const { return content; }
-
 private:
 	int32_t id;
 	int32_t user;
@@ -52,7 +51,7 @@ private:
 
 class BbsThread {
 public:
-	BbsThread(int32_t id, int32_t listid, int32_t user, time_t time, int16_t icon, string title, string content) : id(id),
+	BbsThread(int32_t id, int32_t listid, int32_t user, time_t time, int16_t icon, const string &title, const string &content) : id(id),
 	user(user),
 	time(time),
 	icon(icon),

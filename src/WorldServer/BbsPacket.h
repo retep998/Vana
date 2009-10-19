@@ -18,19 +18,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef BBSPACKET_H
 #define BBSPACKET_H
 
-#include "Guild.h"
-#include "GuildBbs.h"
 #include "Types.h"
 #include <string>
 
 using std::string;
 
-class WorldServerAcceptConnection;
+class BbsThread;
 class Guild;
 
 namespace BbsPacket {
-	void sendThreadList(WorldServerAcceptConnection *player, Guild *guild, int32_t playerid, int16_t page = 0);
-	void sendThreadData(WorldServerAcceptConnection *player, BbsThread *thread, int32_t playerid);
+	void sendThreadList(uint16_t channel, Guild *guild, int32_t playerid, int16_t page = 0);
+	void sendThreadData(uint16_t channel, BbsThread *thread, int32_t playerid);
 };
 
 #endif

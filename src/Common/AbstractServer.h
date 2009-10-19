@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef ABSTRACTSERVER_H
 #define ABSTRACTSERVER_H
 
+#include "Ip.h"
 #include "Types.h"
 #include <string>
 #include <vector>
@@ -44,7 +45,7 @@ protected:
 	clock_t startTime;
 	bool to_listen;
 	string inter_password;
-	vector<vector<uint32_t> > external_ip;
+	IpMatrix external_ip;
 };
 
 #endif
