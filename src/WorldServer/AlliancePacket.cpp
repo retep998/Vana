@@ -16,13 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AlliancePacket.h"
+#include "Alliance.h"
+#include "Channel.h"
 #include "Channels.h"
 #include "Guild.h"
 #include "GuildPacket.h"
 #include "InterHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
-#include "Players.h"
+#include "Player.h"
+#include "PlayerDataProvider.h"
 #include "SendHeader.h"
 #include "TimeUtilities.h"
 #include "WorldServerAcceptConnection.h"
@@ -41,8 +44,8 @@ void AlliancePacket::InterServerPacket::changeAlliance(Alliance *alliance, int8_
 		packet.add<int32_t>(iter->second->getId());
 		packet.add<int32_t>(iter->second->m_players.size());
 		for (unordered_map<int32_t, Player *>::iterator iter2 = iter->second->m_players.begin(); iter2 != iter->second->m_players.end(); iter2++) {
-			packet.add<int32_t>(iter2->second->id);
-			packet.add<uint8_t>(type == 1 ? iter2->second->alliancerank : 0);
+			packet.add<int32_t>(iter2->second->getId());
+			packet.add<uint8_t>(type == 1 ? iter2->second->getAllianceRank() : 0);
 		}
 	}
 
@@ -59,8 +62,8 @@ void AlliancePacket::InterServerPacket::changeGuild(Alliance *alliance, Guild *g
 
 	unordered_map<int32_t, Player *>::iterator iter;
 	for (iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++) {
-		packet.add<int32_t>(iter->second->id);
-		packet.add<uint8_t>(alliance == 0 ? 5 : iter->second->alliancerank);
+		packet.add<int32_t>(iter->second->getId());
+		packet.add<uint8_t>(alliance == 0 ? 5 : iter->second->getAllianceRank());
 	}
 
 	Channels::Instance()->sendToAll(packet);
@@ -72,7 +75,7 @@ void AlliancePacket::InterServerPacket::changeLeader(Alliance *alliance, Player 
 	pack.add<int8_t>(0x02);
 
 	pack.add<int32_t>(alliance->getId());
-	pack.add<int32_t>(oldLeader->id);
+	pack.add<int32_t>(oldLeader->getId());
 	pack.add<int32_t>(alliance->getLeaderId());
 	Channels::Instance()->sendToAll(pack);
 }
@@ -83,8 +86,8 @@ void AlliancePacket::InterServerPacket::changePlayerRank(Alliance *alliance, Pla
 	pack.add<int8_t>(0x05);
 
 	pack.add<int32_t>(alliance->getId());
-	pack.add<int32_t>(player->id);
-	pack.add<int32_t>(player->alliancerank);
+	pack.add<int32_t>(player->getId());
+	pack.add<int32_t>(player->getAllianceRank());
 	Channels::Instance()->sendToAll(pack);
 }
 
@@ -100,56 +103,52 @@ void AlliancePacket::InterServerPacket::changeCapacity(Alliance *alliance) {
 
 // AlliancePacket namespace
 void AlliancePacket::sendAllianceInfo(Alliance *alliance, Player *requestee) {
-	WorldServerAcceptConnection *channel = Channels::Instance()->getChannel(requestee->channel)->player;
-	if (channel == 0)
-		return;
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
-	packet.add<int32_t>(requestee->id);
+	packet.add<int32_t>(requestee->getId());
 
 	packet.add<int16_t>(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x0c);
 
 	if (alliance == 0) {
-		std::cout << "Alliance not found: Player " << requestee->name << ", allianceid " << alliance->getId() << std::endl;
+		std::cout << "Alliance not found: Player " << requestee->getName() << ", allianceid " << alliance->getId() << std::endl;
 		packet.addBool(false);
-		channel->getSession()->send(packet);
-		return; // Dont send any packets
+
+		Channels::Instance()->sendToChannel(requestee->getChannel(), packet);
+		return; // Don't send any more packets
 	}
 
 	packet.addBool(true);
 
 	addAllianceInfo(packet, alliance);
 	
-	channel->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(requestee->getChannel(), packet);
 	
 	packet = PacketCreator();
 	packet.add<int16_t>(INTER_FORWARD_TO);
-	packet.add<int32_t>(requestee->id);
+	packet.add<int32_t>(requestee->getId());
 
 	packet.add<int16_t>(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x0D);
 
 	addGuildsInfo(packet, alliance);
 
-	channel->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(requestee->getChannel(), packet);
 }
 
 void AlliancePacket::sendInvite(Alliance *alliance, Player *inviter, Player *invitee) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
-	packet.add<int32_t>(invitee->id);
+	packet.add<int32_t>(invitee->getId());
 
 	packet.add<int16_t>(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x03);
 
-	packet.add<int32_t>(inviter->guildid);
-	packet.addString(inviter->name);
+	packet.add<int32_t>(inviter->getGuild()->getId());
+	packet.addString(inviter->getName());
 	packet.addString(alliance->getName());
 
-	WorldServerAcceptConnection *channel = Channels::Instance()->getChannel(invitee->channel)->player;
-	if (channel != 0)
-		channel->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(invitee->getChannel(), packet);
 }
 
 void AlliancePacket::sendInviteAccepted(Alliance *alliance, Guild *guild) {
@@ -166,21 +165,19 @@ void AlliancePacket::sendInviteAccepted(Alliance *alliance, Guild *guild) {
 }
 
 void AlliancePacket::sendInviteDenied(Alliance *alliance, Guild *guild) {
-	Player *leader = Players::Instance()->getPlayer(alliance->getLeaderId());
+	Player *leader = PlayerDataProvider::Instance()->getPlayer(alliance->getLeaderId());
 
 	// GMS doesnt have an actual deny packet. They just use the note packet...
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
-	packet.add<int32_t>(leader->id);
+	packet.add<int32_t>(leader->getId());
 
 	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(0x09);
 
 	packet.addString(guild->getName() + " Guild has rejected the Guild Union invitation.");
 
-	WorldServerAcceptConnection *channel = Channels::Instance()->getChannel(leader->channel)->player;
-	if (channel != 0)
-		channel->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(leader->getChannel(), packet);
 }
 
 void AlliancePacket::sendGuildLeft(Alliance *alliance, Guild *guild, bool expelled) {
@@ -225,7 +222,7 @@ void AlliancePacket::sendUpdateLeader(Alliance *alliance, Player *oldLeader) {
 	packet.add<int8_t>(0x19);
 
 	packet.add<int32_t>(alliance->getId());
-	packet.add<int32_t>(oldLeader->id); // From
+	packet.add<int32_t>(oldLeader->getId()); // From
 	packet.add<int32_t>(alliance->getLeaderId()); // To
 
 	sendToAlliance(packet, alliance);
@@ -238,25 +235,25 @@ void AlliancePacket::sendUpdatePlayer(Alliance *alliance, Player *player, uint8_
 	if (option == 0) {
 		packet.add<int8_t>(0x1b);
 
-		packet.add<int32_t>(player->id);
-		packet.add<uint8_t>(player->alliancerank);
+		packet.add<int32_t>(player->getId());
+		packet.add<uint8_t>(player->getAllianceRank());
 	}
 	else if (option == 1) {
 		packet.add<int8_t>(0x18);
 
 		packet.add<int32_t>(alliance->getId());
-		packet.add<int32_t>(player->guildid);
-		packet.add<int32_t>(player->id);
-		packet.add<int32_t>(player->level);
-		packet.add<int32_t>(player->job);
+		packet.add<int32_t>(player->getGuild()->getId());
+		packet.add<int32_t>(player->getId());
+		packet.add<int32_t>(player->getLevel());
+		packet.add<int32_t>(player->getJob());
 	}
 	else {
 		packet.add<int8_t>(0x0e);
 
 		packet.add<int32_t>(alliance->getId());
-		packet.add<int32_t>(player->guildid);
-		packet.add<int32_t>(player->id);
-		packet.add<uint8_t>(player->online);
+		packet.add<int32_t>(player->getGuild()->getId());
+		packet.add<int32_t>(player->getId());
+		packet.add<uint8_t>(player->isOnline());
 	}
 
 	sendToAlliance(packet, alliance, (option == 2 ? player : 0));
@@ -341,13 +338,14 @@ void AlliancePacket::sendToAlliance(PacketCreator &packet, Alliance *alliance, P
 
 	for (iter = guilds.begin(); iter != guilds.end(); iter++) {
 		for (iter2 = iter->second->m_players.begin(); iter2 != iter->second->m_players.end(); iter2++) {
-			if (!iter2->second->online || iter2->second == skipped) 
+			if (!iter2->second->isOnline() || iter2->second == skipped) 
 				continue;
 
-			pack.set<int32_t>(iter2->second->id, 2);
+			pack.set<int32_t>(iter2->second->getId(), 2);
 			
-			if (Channel *channel = Channels::Instance()->getChannel(iter2->second->channel)) 
-				channel->player->getSession()->send(pack);
+			if (Channel *channel = Channels::Instance()->getChannel(iter2->second->getChannel())) {
+				channel->getConnection()->getSession()->send(pack);
+			}
 		}
 	}
 }

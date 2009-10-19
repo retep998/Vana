@@ -15,14 +15,28 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INITIALIZEWORLD_H
-#define INITIALIZEWORLD_H
+#include "Party.h"
+#include "Player.h"
 
-#include "Types.h"
-
-namespace Initializing {
-	void loadData();
-	void worldEstablished();
+Party::Party(int32_t id) :
+m_id(id),
+m_leaderId(0),
+m_voters(0),
+m_guildContract(0)
+{
 }
 
-#endif
+void Party::addMember(Player *player) {
+	members[player->getId()] = player;
+}
+
+void Party::setLeader(int32_t playerId) {
+	m_oldLeaders.push_back(m_leaderId);
+	m_leaderId = playerId;
+}
+
+void Party::clearGuild() {
+	setVoters(0);
+	setGuildContract(0);
+	setGuildName("");
+}

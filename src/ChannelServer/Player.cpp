@@ -235,10 +235,10 @@ void Player::playerConnect(PacketReader &packet) {
 	skin		= static_cast<int8_t>(res[0]["skin"]);
 	map_pos		= static_cast<int8_t>(res[0]["pos"]);
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
-	guildid		= res[0]["guild"];
+	guildid		= res[0]["guildid"];
 	guildrank	= static_cast<uint8_t>(res[0]["guildrank"]);
 	alliancerank = static_cast<uint8_t>(res[0]["alliancerank"]);
-	allianceid = res[0]["alliance"];
+	allianceid = res[0]["allianceid"];
 
 	if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
@@ -525,9 +525,9 @@ void Player::saveStats() {
 		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EtcInventory)) << ","
 		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::CashInventory)) << ","
 		<< "buddylist_size = " << static_cast<int16_t>(buddylist_size) << ","
-		<< "guild = " << guildid << ","
+		<< "guildid = " << guildid << ","
 		<< "guildrank = " << static_cast<int16_t>(guildrank) << ","
-		<< "alliance = " << allianceid << ","
+		<< "allianceid = " << allianceid << ","
 		<< "alliancerank = " << static_cast<int16_t>(alliancerank) << ","
 		<< "monsterbookcover = " << getMonsterBook()->getCover() 
 		<< " WHERE id = " << id;

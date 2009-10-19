@@ -2,24 +2,22 @@ set(SOURCES
 	Alliance.h
 	AllianceHandler.h
 	AlliancePacket.h
-	Alliances.h
 	BbsHandler.h
 	BbsPacket.h
-	ChannelChangeRequests.h
+	Channel.h
 	Channels.h
 	Guild.h
 	GuildBbs.h
 	GuildHandler.h
 	GuildPacket.h
-	Guilds.h
 	InitializeWorld.h
 	LoginServerConnection.h
 	LoginServerConnectHandler.h
 	LoginServerConnectPacket.h
-	Parties.h
 	PartyHandler.h
+	PartyHelper.h
 	PartyPacket.h
-	Players.h
+	PlayerDataProvider.h
 	PrecompiledHeader.h
 	WorldServer.h
 	WorldServerAcceptConnection.h
@@ -28,25 +26,23 @@ set(SOURCES
 	Alliance.cpp
 	AllianceHandler.cpp
 	AlliancePacket.cpp
-	Alliances.cpp
 	BbsHandler.cpp
 	BbsPacket.cpp
-	ChannelChangeRequests.cpp
+	Channel.cpp
 	Channels.cpp
 	Guild.cpp
 	GuildBbs.cpp
 	GuildHandler.cpp
 	GuildPacket.cpp
-	Guilds.cpp
 	InitializeWorld.cpp
 	LoginServerConnection.cpp
 	LoginServerConnectHandler.cpp
 	LoginServerConnectPacket.cpp
 	main_world.cpp
-	Parties.cpp
+	Party.cpp
 	PartyHandler.cpp
 	PartyPacket.cpp
-	Players.cpp
+	PlayerDataProvider.cpp
 	PrecompiledHeader.cpp
 	WorldServer.cpp
 	WorldServerAcceptConnection.cpp

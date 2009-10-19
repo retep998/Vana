@@ -27,26 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 using std::tr1::unordered_map;
-class Guild;
 
-struct Player {
-	uint32_t ip;
-	int32_t id;
-	string name;
-	int16_t channel;
-	int32_t party;
-	int32_t guildid;
-	uint8_t guildrank;
-	int32_t map;
-	int32_t job;
-	int32_t level;
-	bool invited;
-	int32_t invite_guild;
-	time_t invite_time;
-	bool online;
-	int32_t allianceid;
-	uint8_t alliancerank;
-};
+class Guild;
+class Player;
 
 class Players : boost::noncopyable {
 public:

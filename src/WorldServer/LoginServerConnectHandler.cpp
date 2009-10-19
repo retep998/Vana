@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include "Channels.h"
 #include "PacketReader.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Rates.h"
 #include <iostream>
 
@@ -67,7 +67,7 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 		WorldServer::Instance()->listen();
 		std::cout << "Handling world " << (int32_t) worldid << std::endl;
 
-		Initializing::loadPostAssignment(worldid);
+		Initializing::worldEstablished();
 
 		WorldServer::Instance()->displayLaunchTime();
 	}
@@ -82,7 +82,7 @@ void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 
 	if (Channels::Instance()->getChannel(channel)) {
-		if (Players::Instance()->getPlayer(playerid) == 0) {
+		if (PlayerDataProvider::Instance()->getPlayer(playerid) == 0) {
 			// Do not create the connectable if the player is already online
 			// (extra security if the client ignores CC packet)
 			WorldServerAcceptPacket::newConnectable(channel, playerid);

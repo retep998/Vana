@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Channels.h"
+#include "Channel.h"
+#include "LoginServerConnectPacket.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "WorldServer.h"
@@ -23,13 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Channels * Channels::singleton = 0;
 
-void Channels::registerChannel(WorldServerAcceptConnection *player, uint16_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, uint16_t port) {
+void Channels::registerChannel(WorldServerAcceptConnection *player, uint16_t channel, uint32_t ip, const IpMatrix &extIp, uint16_t port) {
 	shared_ptr<Channel> chan(new Channel());
-	chan->player = player;
-	chan->id = channel;
-	chan->ip = ip;
-	chan->external_ip = extIp;
-	chan->port = port;
+	chan->setConnection(player);
+	chan->setId(channel);
+	chan->setIp(ip);
+	chan->setExternalIps(extIp);
+	chan->setPort(port);
 	channels[channel] = chan;
 }
 
@@ -43,8 +45,20 @@ Channel * Channels::getChannel(uint16_t num) {
 
 void Channels::sendToAll(PacketCreator &packet) {
 	for (unordered_map<uint16_t, shared_ptr<Channel> >::iterator iter = channels.begin(); iter != channels.end(); iter++) {
-		iter->second->player->getSession()->send(packet);
+		sendToChannel(iter->first, packet);
 	}
+}
+
+void Channels::sendToChannel(uint16_t channel, PacketCreator &packet) {
+	getChannel(channel)->getConnection()->getSession()->send(packet);
+}
+
+void Channels::increasePopulation(uint16_t channel) {
+	LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->increasePlayers());
+}
+
+void Channels::decreasePopulation(uint16_t channel) {
+	LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->decreasePlayers());
 }
 
 uint16_t Channels::size() {

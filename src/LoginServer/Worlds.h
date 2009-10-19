@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef WORLDS_H
 #define WORLDS_H
 
+#include "Ip.h"
 #include "Types.h"
 #include <map>
 #include <string>
@@ -39,7 +40,7 @@ class PacketReader;
 struct Channel {
 	Channel() : population(0) { }
 	uint32_t ip;
-	vector<vector<uint32_t> > external_ip;
+	IpMatrix external_ip;
 	int16_t port;
 	int32_t population;
 };

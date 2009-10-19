@@ -15,14 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INITIALIZEWORLD_H
-#define INITIALIZEWORLD_H
+#ifndef IP_H
+#define IP_H
 
 #include "Types.h"
+#include <vector>
 
-namespace Initializing {
-	void loadData();
-	void worldEstablished();
-}
+typedef std::vector<uint32_t> IpArray;
+typedef std::vector<IpArray> IpMatrix;
 
 #endif

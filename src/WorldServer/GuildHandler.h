@@ -15,25 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #ifndef GUILDHANDLER_H
 #define GUILDHANDLER_H
 
-#include "Guilds.h"
-#include "LoginServerConnection.h"
-#include "Players.h"
-#include "PacketReader.h"
 #include "Types.h"
-#include "WorldServerAcceptConnection.h"
 #include <string>
 
 using std::string;
 
-struct Player;
-class PacketCreator;
-class WorldServerAcceptConnection;
 class LoginServerConnection;
-class Guild;
+class PacketCreator;
+class PacketReader;
+class WorldServerAcceptConnection;
 
 namespace GuildHandler {
 	void handlePacket(WorldServerAcceptConnection *player, PacketReader &packet);

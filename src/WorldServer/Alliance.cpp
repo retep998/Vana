@@ -17,7 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Alliance.h"
 #include "Database.h"
+#include "GameConstants.h"
 #include "Guild.h"
+
+Alliance::Alliance(int32_t id, const string &name, const string &notice, const GuildRanks &ranks, int32_t capacity, int32_t leader) :
+m_id(id),
+m_name(name),
+m_notice(notice),
+m_capacity(capacity),
+m_titles(ranks),
+m_leader(leader)
+{
+}
 
 void Alliance::addGuild(Guild *guild) { 
 	m_guilds[guild->getId()] = guild; 
@@ -25,29 +36,27 @@ void Alliance::addGuild(Guild *guild) {
 
 void Alliance::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
+
 	query << "UPDATE alliances SET " <<
-		"notice = " << mysqlpp::quote << notice << ", " <<
-		"rank1title = " << mysqlpp::quote << title[0] << ", " <<
-		"rank2title = " << mysqlpp::quote << title[1] << ", " <<
-		"rank3title = " << mysqlpp::quote << title[2] << ", " <<
-		"rank4title = " << mysqlpp::quote << title[3] << ", " <<
-		"rank5title = " << mysqlpp::quote << title[4] << ", " <<
-		"capacity = " << capacity << ", " <<
-		"leader = " << leader << " " <<
-		"WHERE id = " << id;
+		"notice = " << mysqlpp::quote << m_notice << ",";
+
+	for (int32_t i = 0; i < GuildsAndAlliances::RankQuantity; i++) {
+		query << "rank" << i << "title = " << mysqlpp::quote << m_titles[i] << ", ";
+	}
+
+	query << "capacity = " << m_capacity << ", " <<
+		"leader = " << m_leader << " " <<
+		"WHERE id = " << m_id;
 	query.exec();
 }
 
 uint8_t Alliance::getLowestRank() {
-	if (!title[3].empty()) {
-		if (!title[4].empty()) {
-			return 5;
-		}
-		else {
-			return 4;
+	uint8_t retval = GuildsAndAlliances::RankQuantity;
+	for (int32_t i = GuildsAndAlliances::RankQuantity; i > 0; i--) {
+		if (!m_titles[i].empty()) {
+			retval = static_cast<uint8_t>(i); // Cast until I learn more...
+			break;
 		}
 	}
-	else {
-		return 3;
-	}
+	return retval;
 }

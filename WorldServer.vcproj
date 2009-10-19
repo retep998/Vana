@@ -218,11 +218,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\WorldServer\Alliances.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\ChannelChangeRequests.cpp"
+					RelativePath=".\src\WorldServer\Channel.cpp"
 					>
 				</File>
 				<File
@@ -238,15 +234,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\WorldServer\Guilds.cpp"
+					RelativePath=".\src\WorldServer\Party.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\WorldServer\Parties.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\Players.cpp"
+					RelativePath=".\src\WorldServer\Player.cpp"
 					>
 				</File>
 				<File
@@ -325,6 +317,10 @@
 					RelativePath=".\src\WorldServer\InitializeWorld.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\src\WorldServer\PlayerDataProvider.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -344,11 +340,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\WorldServer\Alliances.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\ChannelChangeRequests.h"
+					RelativePath=".\src\WorldServer\Channel.h"
 					>
 				</File>
 				<File
@@ -364,15 +356,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\WorldServer\Guilds.h"
+					RelativePath=".\src\WorldServer\Party.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\WorldServer\Parties.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\Players.h"
+					RelativePath=".\src\WorldServer\Player.h"
 					>
 				</File>
 				<File
@@ -443,12 +431,24 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Helpers"
+					>
+					<File
+						RelativePath=".\src\WorldServer\PartyHelper.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Database Loading"
 				>
 				<File
 					RelativePath=".\src\WorldServer\InitializeWorld.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\WorldServer\PlayerDataProvider.h"
 					>
 				</File>
 			</Filter>

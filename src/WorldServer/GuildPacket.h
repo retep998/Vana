@@ -18,10 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef GUILDPACKET_H
 #define GUILDPACKET_H
 
-#include "Alliances.h"
-#include "Guild.h"
-#include "GuildBbs.h"
-#include "PacketCreator.h"
 #include "Types.h"
 #include <string>
 
@@ -30,6 +26,7 @@ using std::string;
 class Alliance;
 class Guild;
 class PacketCreator;
+class Player;
 
 namespace GuildPacket {
 	namespace InterServerPacket {
