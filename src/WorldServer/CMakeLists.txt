@@ -15,7 +15,6 @@ set(SOURCES
 	LoginServerConnectHandler.h
 	LoginServerConnectPacket.h
 	PartyHandler.h
-	PartyHelper.h
 	PartyPacket.h
 	PlayerDataProvider.h
 	PrecompiledHeader.h
