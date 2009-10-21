@@ -33,7 +33,7 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int32_t npcid = packet.get<int32_t>() - Map::NpcStart;
+	uint32_t npcid = packet.get<uint32_t>() - Map::NpcStart;
 
 	if (!Maps::getMap(player->getMap())->isValidNpcIndex(npcid)) {
 		// Shouldn't ever happen except in edited packets
@@ -41,15 +41,17 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	}
 
 	NPCSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
+	if (NPC::hasScript(npcs.id, 0, false)) {
+		NPC *npc = new NPC(npcs.id, player, npcs.pos);
+		npc->run();
+		return;
+	}
 	if (NpcHandler::showShop(player, npcs.id)) {
 		return;
 	}
 	if (NpcHandler::showStorage(player, npcs.id)) {
 		return;
 	}
-
-	NPC *npc = new NPC(npcs.id, player, npcs.pos);
-	npc->run();
 }
 
 void NpcHandler::handleQuestNpc(Player *player, int32_t npcid, bool start, int16_t questid) {
