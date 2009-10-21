@@ -19,12 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "Map.h"
 #include "Maps.h"
+#include "NPCDataProvider.h"
 #include "NPCPacket.h"
 #include "NPC.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Player.h"
 #include "ShopDataProvider.h"
+#include "StoragePacket.h"
 
 void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	if (player->getNPC() != 0) {
@@ -39,8 +41,12 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	}
 
 	NPCSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
-	if (NpcHandler::showShop(player, npcs.id)) // Shop
+	if (NpcHandler::showShop(player, npcs.id)) {
 		return;
+	}
+	if (NpcHandler::showStorage(player, npcs.id)) {
+		return;
+	}
 
 	NPC *npc = new NPC(npcs.id, player, npcs.pos);
 	npc->run();
@@ -134,6 +140,14 @@ bool NpcHandler::showShop(Player *player, int32_t shopid) {
 		player->setShop(shopid);
 		player->getSession()->send(p);
 		return true;
+	}
+	return false;
+}
+
+bool NpcHandler::showStorage(Player *player, int32_t npcid) {
+	if (NpcDataProvider::Instance()->getStorageCost(npcid)) {
+		player->setShop(npcid);
+		StoragePacket::showStorage(player, npcid);
 	}
 	return false;
 }

@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
 #include "MobDataProvider.h"
+#include "NPCDataProvider.h"
 #include "QuestDataProvider.h"
 #include "ReactorDataProvider.h"
 #include "ScriptDataProvider.h"
@@ -39,6 +40,7 @@ void Initializing::loadData() {
 	EquipDataProvider::Instance()->loadData();
 	ItemDataProvider::Instance()->loadData();
 	MobDataProvider::Instance()->loadData();
+	NpcDataProvider::Instance()->loadData();
 	DropDataProvider::Instance()->loadData();
 	BeautyDataProvider::Instance()->loadData();
 	ScriptDataProvider::Instance()->loadData();

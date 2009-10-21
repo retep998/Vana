@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Levels.h"
 #include "Maps.h"
 #include "MapleTVs.h"
+#include "NPCDataProvider.h"
 #include "PacketReader.h"
 #include "Pets.h"
 #include "Player.h"
@@ -270,7 +271,16 @@ void InventoryHandler::useShop(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
+	if (player->getShop() == 0) {
+		// Hacking
+		return;
+	}
 	int8_t type = packet.get<int8_t>();
+	int32_t cost = NpcDataProvider::Instance()->getStorageCost(player->getShop());
+	if (cost == 0) {
+		// Hacking
+		return;
+	}
 	switch (type) {
 		case 4: { // Take item out
 			int8_t inv = packet.get<int8_t>(); // Inventory, as in equip, use, etc
@@ -289,7 +299,7 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			int16_t slot = packet.get<int16_t>();
 			int32_t itemid = packet.get<int32_t>();
 			int16_t amount = packet.get<int16_t>();
-			if (player->getInventory()->getMesos() < 100) {
+			if (player->getInventory()->getMesos() < cost) {
 				StoragePacket::noMesos(player); // We don't have enough mesos to store this item
 				return;
 			}
@@ -315,7 +325,7 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			// the one in the inventory to go bye bye.
 			// Else: For items we just create a new item based on the ID and amount.
 			Inventory::takeItemSlot(player, inv, slot, GameLogicUtilities::isRechargeable(itemid) ? item->amount : amount, true);
-			player->getInventory()->modifyMesos(-100); // Take 100 mesos for storage cost
+			player->getInventory()->modifyMesos(-cost);
 			StoragePacket::addItem(player, inv);
 			break;
 		}
@@ -327,7 +337,7 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			break;
 		}
 		case 8:
-			// 8 is close storage. For now we have no reason to handle this.
+			player->setShop(0);
 			break;
 	}
 }
@@ -657,7 +667,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		case Items::MapleTvMessenger: 
 		case Items::Megassenger: {
 			bool hasreceiver = (packet.get<int8_t>() == 3);
-			bool show_whisper = itemid == Items::Megassenger ? packet.getBool() : false;
+			bool show_whisper = (itemid == Items::Megassenger ? packet.getBool() : false);
 
 			Player *receiver = Players::Instance()->getPlayer(packet.getString());
 			int32_t time = 15;
@@ -668,7 +678,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
 				packet.get<int32_t>(); // Ticks
-				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
+				MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
 				
 				if (itemid == Items::Megassenger)
 					InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
@@ -680,14 +690,14 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		case Items::MapleTvStarMessenger: 
 		case Items::StarMegassenger: {
 			int32_t time = 30;
-			bool show_whisper = itemid == Items::StarMegassenger ? packet.getBool() : false;
+			bool show_whisper = (itemid == Items::StarMegassenger ? packet.getBool() : false);
 			string msg = packet.getString();
 			string msg2 = packet.getString();
 			string msg3 = packet.getString();
 			string msg4 = packet.getString();
 			string msg5 = packet.getString();
 			packet.get<int32_t>(); // Ticks
-			MapleTVs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
+			MapleTvs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
 			
 			if (itemid == Items::StarMegassenger)
 				InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
@@ -697,7 +707,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		}
 		case Items::MapleTvHeartMessenger:
 		case Items::HeartMegassenger: {
-			bool show_whisper = itemid == Items::HeartMegassenger ? packet.getBool() : false;
+			bool show_whisper = (itemid == Items::HeartMegassenger ? packet.getBool() : false);
 
 			string name = packet.getString();
 			Player *receiver = Players::Instance()->getPlayer(name);
@@ -709,7 +719,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
 				packet.get<int32_t>(); // Ticks
-				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::HeartMegassenger ? 3 : 0), time);
+				MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::HeartMegassenger ? 3 : 0), time);
 				if (itemid == Items::HeartMegassenger)
 					InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
 				used = true;

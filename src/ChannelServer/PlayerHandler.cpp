@@ -363,7 +363,7 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 		case 2: time = 60; break;
 	}
 
-	MapleTVs::Instance()->addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
+	MapleTvs::Instance()->addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
 	if (sort == 1)
 		InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + line1 + line2 + line3 + line4 + line5, use_whisper);
 }
