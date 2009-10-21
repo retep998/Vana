@@ -431,14 +431,6 @@
 						>
 					</File>
 				</Filter>
-				<Filter
-					Name="Helpers"
-					>
-					<File
-						RelativePath=".\src\WorldServer\PartyHelper.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Database Loading"

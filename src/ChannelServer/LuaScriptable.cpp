@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NPCHandler.h"
 #include "NPC.h"
 #include "Party.h"
+#include "PartyHandler.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Players.h"
@@ -1714,8 +1715,8 @@ int LuaExports::addInstanceMap(lua_State *luaVm) {
 
 int LuaExports::addInstanceParty(lua_State *luaVm) {
 	int32_t id = lua_tointeger(luaVm, -1);
-	if (PartyFunctions::parties.find(id) != PartyFunctions::parties.end()) {
-		Party *p = PartyFunctions::parties[id];
+	if (PartyHandler::parties.find(id) != PartyHandler::parties.end()) {
+		Party *p = PartyHandler::parties[id];
 		getInstance(luaVm)->addParty(p);
 	}
 	return 0;

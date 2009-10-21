@@ -47,6 +47,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NPCHandler.h"
 #include "PacketReader.h"
 #include "Party.h"
+#include "PartyHandler.h"
 #include "Pets.h"
 #include "PlayerHandler.h"
 #include "PlayerPacket.h"
@@ -166,7 +167,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
 		case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
 		case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, packet); break;
-		case CMSG_PARTY: PartyFunctions::handleRequest(this, packet); break;
+		case CMSG_PARTY: PartyHandler::handleRequest(this, packet); break;
 		case CMSG_PET_CHAT: Pets::handleChat(this, packet); break;
 		case CMSG_PET_COMMAND: Pets::handleCommand(this, packet); break;
 		case CMSG_PET_FOOD_USE: Pets::handleFeed(this, packet); break;

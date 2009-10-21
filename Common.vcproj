@@ -526,6 +526,10 @@
 						RelativePath=".\src\Common\AuthenticationPacket.h"
 						>
 					</File>
+					<File
+						RelativePath=".\src\Common\InterHelper.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
