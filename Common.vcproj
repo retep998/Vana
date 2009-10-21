@@ -182,57 +182,65 @@
 				Name="Database Loading"
 				>
 				<File
-					RelativePath=".\src\Common\BeautyDataProvider.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Common\BuffDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\DropDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\EquipDataProvider.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\Common\InitializeCommon.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\src\Common\ItemDataProvider.cpp"
+				<Filter
+					Name="MCDB"
 					>
-				</File>
-				<File
-					RelativePath=".\src\Common\MobDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\QuestDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\ReactorDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\ScriptDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\ShopDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\SkillDataProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\ValidCharDataProvider.cpp"
-					>
-				</File>
+					<File
+						RelativePath=".\src\Common\BeautyDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\DropDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\EquipDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ItemDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\MobDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\NPCDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\QuestDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ReactorDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ScriptDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ShopDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\SkillDataProvider.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ValidCharDataProvider.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Database Manager"
@@ -424,57 +432,65 @@
 				Name="Database Loading"
 				>
 				<File
-					RelativePath=".\src\Common\BeautyDataProvider.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\Common\BuffDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\DropDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\EquipDataProvider.h"
 					>
 				</File>
 				<File
 					RelativePath=".\src\Common\InitializeCommon.h"
 					>
 				</File>
-				<File
-					RelativePath=".\src\Common\ItemDataProvider.h"
+				<Filter
+					Name="MCDB"
 					>
-				</File>
-				<File
-					RelativePath=".\src\Common\MobDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\QuestDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\ReactorDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\ScriptDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\ShopDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\SkillDataProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Common\ValidCharDataProvider.h"
-					>
-				</File>
+					<File
+						RelativePath=".\src\Common\BeautyDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\DropDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\EquipDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ItemDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\MobDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\NPCDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\QuestDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ReactorDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ScriptDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ShopDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\SkillDataProvider.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\ValidCharDataProvider.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Database Manager"

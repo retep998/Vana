@@ -32,6 +32,7 @@ set(SOURCES
 	MersenneTwister.h
 	MiscUtilities.h
 	MobDataProvider.h
+	NPCDataProvider.h
 	PetDataProvider.h
 	PacketCreator.h
 	PacketReader.h
@@ -84,6 +85,7 @@ set(SOURCES
 	MapleSession.cpp
 	MiscUtilities.cpp
 	MobDataProvider.cpp
+	NPCDataProvider.cpp
 	PacketCreator.cpp
 	PacketReader.cpp
 	PetDataProvider.cpp

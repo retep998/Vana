@@ -25,7 +25,7 @@ struct Types {
 		BuffTimer,
 		CoolTimer,
 		InstanceTimer,
-		MapleTVTimer,
+		MapleTvTimer,
 		MapTimer,
 		MistTimer,
 		MobHealTimer,

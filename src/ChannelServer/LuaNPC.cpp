@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaNPC.h"
 #include "NPC.h"
+#include "NPCHandler.h"
 #include "Player.h"
 #include "Players.h"
 #include "Quests.h"
@@ -104,7 +105,7 @@ NPC * LuaExports::getNPC(lua_State *luaVm) {
 
 // Miscellaneous
 int LuaExports::showStorage(lua_State *luaVm) {
-	StoragePacket::showStorage(getPlayer(luaVm), getNPC(luaVm)->getNpcId());
+	NpcHandler::showStorage(getPlayer(luaVm), getNPC(luaVm)->getNpcId());
 	return 0;
 }
 

@@ -65,10 +65,8 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 		}
 
 		WorldServer::Instance()->listen();
-		std::cout << "Handling world " << (int32_t) worldid << std::endl;
-
 		Initializing::worldEstablished();
-
+		std::cout << "Handling world " << (int32_t) worldid << std::endl;
 		WorldServer::Instance()->displayLaunchTime();
 	}
 	else {
