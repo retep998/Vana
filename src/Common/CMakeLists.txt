@@ -33,7 +33,6 @@ set(SOURCES
 	MiscUtilities.h
 	MobDataProvider.h
 	NPCDataProvider.h
-	PetDataProvider.h
 	PacketCreator.h
 	PacketReader.h
 	PingPacket.h
@@ -88,7 +87,6 @@ set(SOURCES
 	NPCDataProvider.cpp
 	PacketCreator.cpp
 	PacketReader.cpp
-	PetDataProvider.cpp
 	PingPacket.cpp
 	PrecompiledHeader.cpp
 	QuestDataProvider.cpp
