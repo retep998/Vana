@@ -53,6 +53,7 @@ Instance::~Instance() {
 	for (size_t i = 0; i < getMapNum(); i++) {
 		Map *map = m_maps[i];
 		map->setInstance(0);
+		map->setMusic("default");
 		map->clearDrops(false);
 		map->killMobs(0, 0, false, false);
 		map->killReactors(false);

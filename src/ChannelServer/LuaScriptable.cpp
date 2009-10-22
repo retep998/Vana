@@ -1344,7 +1344,19 @@ int LuaExports::setMapSpawn(lua_State *luaVm) {
 }
 
 int LuaExports::setMusic(lua_State *luaVm) {
-	Maps::getMap(getPlayer(luaVm)->getMap())->setMusic(lua_tostring(luaVm, -1));
+	int32_t mapid = -1;
+	string music = lua_tostring(luaVm, 1);
+
+	if (lua_isnumber(luaVm, 2)) {
+		mapid = lua_tointeger(luaVm, 2);
+	}
+	else if (Player *player = getPlayer(luaVm)) {
+		mapid = player->getMap();
+	}
+
+	if (mapid != -1) {
+		Maps::getMap(mapid)->setMusic(music);
+	}
 	return 0;
 }
 
