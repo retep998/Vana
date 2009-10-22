@@ -1,35 +1,7 @@
-set(SOURCES 
-	Characters.h
-	InitializeLogin.h
-	Login.h
-	LoginPacket.h
-	LoginPacketHelper.h
-	LoginServer.h
-	LoginServerAcceptConnection.h
-	LoginServerAcceptHandler.h
-	LoginServerAcceptPacket.h
-	PlayerLogin.h
-	PlayerStatus.h
-	PrecompiledHeader.h
-	RankingCalculator.h
-	Worlds.h
-	Characters.cpp
-	InitializeLogin.cpp
-	Login.cpp
-	LoginPacket.cpp
-	LoginPacketHelper.cpp
-	LoginServer.cpp
-	LoginServerAcceptConnection.cpp
-	LoginServerAcceptHandler.cpp
-	LoginServerAcceptPacket.cpp
-	main_login.cpp
-	PlayerLogin.cpp
-	PrecompiledHeader.cpp
-	RankingCalculator.cpp
-	Worlds.cpp
-)
+file(GLOB LOGIN_SRC *.cpp)
+file(GLOB LOGIN_HEADERS *.h)
 
-add_executable(LoginServer ${SOURCES})
+add_executable(LoginServer ${LOGIN_SRC} ${LOGIN_HEADERS})
 
 target_link_libraries(LoginServer
 	Common
