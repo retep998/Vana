@@ -294,7 +294,7 @@ void PlayerDataProvider::getChannelConnectPacketGuild(PacketCreator &packet) {
 		packet.add<int16_t>(logo.background);
 		packet.add<uint8_t>(logo.backgroundColor);
 		packet.add<int32_t>(guild->getCapacity());
-		packet.add<int32_t>(guild->getAlliance()->getId());
+		packet.add<int32_t>(guild->getAlliance() ? guild->getAlliance()->getId() : 0);
 	}
 }
 
