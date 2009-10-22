@@ -177,7 +177,7 @@ void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(pet->getLevel());
 	packet.add<int16_t>(pet->getCloseness());
 	packet.add<int8_t>(pet->getFullness());
-	packet.add<int64_t>(Items::NoExpiration);
+	packet.add<int64_t>(0LL);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0); // Time to expire (for trial pet)
 }
