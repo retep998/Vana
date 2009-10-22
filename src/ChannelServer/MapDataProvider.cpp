@@ -173,18 +173,22 @@ void MapDataProvider::loadSeats(Map *map, int32_t link) {
 	}
 }
 
+namespace Functors {
+	struct PortalFlags {
+		void operator()(const string &cmp) {
+			if (cmp == "only_once") p->onlyOnce = true;
+		}
+		PortalInfo *p;
+	};
+}
+
 void MapDataProvider::loadPortals(Map *map, int32_t link) {
 	mysqlpp::Query query = Database::getDataDB().query();
 	query << "SELECT * FROM map_portals WHERE mapid = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	PortalInfo portal;
 
-	struct FlagFunctor {
-		void operator()(const string &cmp) {
-			if (cmp == "only_once") p->onlyOnce = true;
-		}
-		PortalInfo *p;
-	};
+	using namespace Functors;
 
 	enum Portals {
 		MapId = 0,
@@ -195,7 +199,7 @@ void MapDataProvider::loadPortals(Map *map, int32_t link) {
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		portal = PortalInfo();
 		
-		FlagFunctor whoo = {&portal};
+		PortalFlags whoo = {&portal};
 		runFlags(row[Flags], whoo);
 
 		portal.id = atoi(row[Id]);
@@ -209,16 +213,7 @@ void MapDataProvider::loadPortals(Map *map, int32_t link) {
 	}
 }
 
-void MapDataProvider::loadMapLife(Map *map, int32_t link) {
-	mysqlpp::Query query = Database::getDataDB().query();
-	query << "SELECT * FROM map_life WHERE mapid = " << link;
-	mysqlpp::UseQueryResult res = query.use();
-	NPCSpawnInfo npc;
-	MobSpawnInfo spawn;
-	ReactorSpawnInfo reactor;
-	string type;
-	Pos pos;
-
+namespace Functors {
 	struct NpcFlags {
 		void operator()(const string &cmp) {
 			if (cmp == "faces_left") npc->facesright = false;
@@ -237,6 +232,19 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 		}
 		ReactorSpawnInfo *reactor;
 	};
+}
+
+void MapDataProvider::loadMapLife(Map *map, int32_t link) {
+	mysqlpp::Query query = Database::getDataDB().query();
+	query << "SELECT * FROM map_life WHERE mapid = " << link;
+	mysqlpp::UseQueryResult res = query.use();
+	NPCSpawnInfo npc;
+	MobSpawnInfo spawn;
+	ReactorSpawnInfo reactor;
+	string type;
+	Pos pos;
+
+	using namespace Functors;
 
 	enum MapLife {
 		Id = 0,
@@ -288,18 +296,24 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 	}
 }
 
+namespace Functors {
+	struct FootholdFlags {
+		void operator()(const string &cmp) {
+			if (cmp == "forbid_downward_jump") foot->forbidjumpdown = true;
+		}
+		FootholdInfo *foot;
+	};
+}
+
+
 void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 	mysqlpp::Query query = Database::getDataDB().query();
 	query << "SELECT * FROM map_footholds WHERE mapid = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	FootholdInfo foot;
 
-	struct Functor {
-		void operator()(const string &cmp) {
-			if (cmp == "forbid_downward_jump") foot->forbidjumpdown = true;
-		}
-		FootholdInfo *foot;
-	};
+	using namespace Functors;
+
 	enum Footholds {
 		MapId = 0,
 		Id, X1, Y1, X2, Y2,
@@ -308,7 +322,7 @@ void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		foot = FootholdInfo();
-		Functor whoo = {&foot};
+		FootholdFlags whoo = {&foot};
 		runFlags(row[Flags], whoo);
 
 		foot.id = atoi(row[Id]);

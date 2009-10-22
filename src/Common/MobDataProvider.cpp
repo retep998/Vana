@@ -40,6 +40,15 @@ void MobDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
+namespace Functors {
+	struct MobAttackFlags {
+		void operator() (const string &cmp) {
+			if (cmp == "deadly") attack->deadlyattack = true;
+		}
+		MobAttackInfo *attack;
+	};
+}
+
 void MobDataProvider::loadAttacks() {
 	attacks.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mob_attacks");
@@ -47,12 +56,7 @@ void MobDataProvider::loadAttacks() {
 	int32_t mobid;
 	MobAttackInfo mobattack;
 
-	struct MobAttackFunctor {
-		void operator() (const string &cmp) {
-			if (cmp == "deadly") attack->deadlyattack = true;
-		}
-		MobAttackInfo *attack;
-	};
+	using namespace Functors;
 
 	enum AttackData {
 		MobId = 0,
@@ -62,7 +66,7 @@ void MobDataProvider::loadAttacks() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		mobattack = MobAttackInfo();
-		MobAttackFunctor whoo = {&mobattack};
+		MobAttackFlags whoo = {&mobattack};
 		runFlags(row[Flags], whoo);
 
 		mobid = atoi(row[MobId]);
@@ -99,14 +103,8 @@ void MobDataProvider::loadSkills() {
 	}
 }
 
-void MobDataProvider::loadMobs() {
-	mobinfo.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * from mob_data");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t mobid;
-	MobInfo mob;
-
-	struct MobDataFunctor {
+namespace Functors {
+	struct MobDataFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "boss") mob->boss = true;
 			else if (cmp == "undead") mob->undead = true;
@@ -123,6 +121,16 @@ void MobDataProvider::loadMobs() {
 		}
 		MobInfo *mob;
 	};
+}
+
+void MobDataProvider::loadMobs() {
+	mobinfo.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * from mob_data");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t mobid;
+	MobInfo mob;
+
+	using namespace Functors;
 
 	enum MobData {
 		MobId = 0,
@@ -137,7 +145,7 @@ void MobDataProvider::loadMobs() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		mob = MobInfo();
-		MobDataFunctor whoo = {&mob};
+		MobDataFlags whoo = {&mob};
 		runFlags(row[Flags], whoo);
 
 		mobid = atoi(row[MobId]);

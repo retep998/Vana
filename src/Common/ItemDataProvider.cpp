@@ -53,14 +53,8 @@ void ItemDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void ItemDataProvider::loadItems() {
-	items.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.name FROM item_data, strings WHERE item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
-	ItemInfo item;
-	
-	struct ItemFunctor {
+namespace Functors {
+	struct AllItemFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "time_limited") item->timelimited = true;
 			else if (cmp == "cash_item") item->cash = true;
@@ -73,6 +67,16 @@ void ItemDataProvider::loadItems() {
 		}
 		ItemInfo *item;
 	};
+}
+
+void ItemDataProvider::loadItems() {
+	items.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.name FROM item_data, strings WHERE item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t id;
+	ItemInfo item;
+	
+	using namespace Functors;
 
 	enum ItemData {
 		ItemId = 0,
@@ -83,7 +87,7 @@ void ItemDataProvider::loadItems() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		item = ItemInfo();
-		ItemFunctor whoo = {&item};
+		AllItemFlags whoo = {&item};
 		runFlags(row[Flags], whoo);
 
 		id = atoi(row[ItemId]);
@@ -100,14 +104,8 @@ void ItemDataProvider::loadItems() {
 	}
 }
 
-void ItemDataProvider::loadScrolls() {
-	scrolls.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_scroll_data");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
-	ScrollInfo item;
-
-	struct ScrollFunctor {
+namespace Functors {
+	struct ScrollFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "rand_stat") item->randstat = true;
 			else if (cmp == "recover_slot") item->recover = true;
@@ -116,6 +114,16 @@ void ItemDataProvider::loadScrolls() {
 		}
 		ScrollInfo *item;
 	};
+}
+
+void ItemDataProvider::loadScrolls() {
+	scrolls.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_scroll_data");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t id;
+	ScrollInfo item;
+
+	using namespace Functors;
 
 	enum ScrollData {
 		ItemId = 0,
@@ -127,7 +135,7 @@ void ItemDataProvider::loadScrolls() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		item = ScrollInfo();
-		ScrollFunctor whoo = {&item};
+		ScrollFlags whoo = {&item};
 		runFlags(row[Flags], whoo);
 
 		id = atoi(row[ItemId]);
@@ -152,18 +160,8 @@ void ItemDataProvider::loadScrolls() {
 	}
 }
 
-void ItemDataProvider::loadConsumes() {
-	consumes.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_consume_data");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
-	int16_t morphid;
-	ConsumeInfo item;
-	AilmentInfo ailment;
-	Morph morph;
-	string dropup;
-
-	struct ConsumeFunctor {
+namespace Functors {
+	struct ConsumeFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "auto_consume") item->autoconsume = true;
 			else if (cmp == "party_item") item->party = true;
@@ -181,8 +179,7 @@ void ItemDataProvider::loadConsumes() {
 		}
 		ConsumeInfo *item;
 	};
-
-	struct AilmentFunctor {
+	struct AilmentFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "darkness") item->darkness = true;
 			else if (cmp == "weakness") item->weakness = true;
@@ -192,6 +189,20 @@ void ItemDataProvider::loadConsumes() {
 		}
 		AilmentInfo *item;
 	};
+}
+
+void ItemDataProvider::loadConsumes() {
+	consumes.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_consume_data");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t id;
+	int16_t morphid;
+	ConsumeInfo item;
+	AilmentInfo ailment;
+	Morph morph;
+	string dropup;
+
+	using namespace Functors;
 
 	enum ConsumeableData {
 		ItemId = 0,
@@ -208,10 +219,10 @@ void ItemDataProvider::loadConsumes() {
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		item = ConsumeInfo();
 		ailment = AilmentInfo();
-		ConsumeFunctor whoot = {&item};
+		ConsumeFlags whoot = {&item};
 		runFlags(row[Flags], whoot);
 
-		AilmentFunctor whoo = {&ailment};
+		AilmentFlags whoo = {&ailment};
 		runFlags(row[Ailments], whoo);
 		if (ailment.darkness) item.ailment |= 0x01;
 		if (ailment.poison) item.ailment |= 0x02;
@@ -372,14 +383,8 @@ void ItemDataProvider::loadSummonBags() {
 	}
 }
 
-void ItemDataProvider::loadPets() {
-	petsInfo.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_pet_data");
-	mysqlpp::UseQueryResult res = query.use();
-	PetInfo pet;
-	int32_t itemid;
-
-	struct PetFunctor {
+namespace Functors {
+	struct PetFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "no_revive") item->norevive = true;
 			else if (cmp == "no_move_to_cash_shop") item->nostoreincashshop = true;
@@ -387,6 +392,16 @@ void ItemDataProvider::loadPets() {
 		}
 		PetInfo *item;
 	};
+}
+
+void ItemDataProvider::loadPets() {
+	petsInfo.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_pet_data");
+	mysqlpp::UseQueryResult res = query.use();
+	PetInfo pet;
+	int32_t itemid;
+
+	using namespace Functors;
 
 	enum PetData {
 		ItemId = 0,
@@ -396,7 +411,7 @@ void ItemDataProvider::loadPets() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		pet = PetInfo();
-		PetFunctor whoo = {&pet};
+		PetFlags whoo = {&pet};
 		runFlags(row[Flags], whoo);
 
 		itemid = atoi(row[ItemId]);
