@@ -1,5 +1,7 @@
 file(GLOB CHANNEL_SRC *.cpp)
 file(GLOB CHANNEL_HEADERS *.h)
+source_group("Channel Sources" FILES ${CHANNEL_SRC})
+source_group("Channel Headers" FILES ${CHANNEL_HEADERS})
 
 add_executable(ChannelServer ${CHANNEL_SRC} ${CHANNEL_HEADERS})
 

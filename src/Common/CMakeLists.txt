@@ -2,5 +2,7 @@ file(GLOB COMMON_SRC *.cpp)
 file(GLOB COMMON_HEADERS *.h)
 file(GLOB COMMON_TIMER_SRC Timer/*.cpp)
 file(GLOB COMMON_TIMER_HEADERS Timer/*.h)
+source_group("Common Sources" FILES ${COMMON_SRC} ${COMMON_TIMER_SRC})
+source_group("Common Headers" FILES ${COMMON_HEADERS} ${COMMON_TIMER_HEADERS})
 
 add_library(Common STATIC ${COMMON_SRC} ${COMMON_HEADERS} ${COMMON_TIMER_SRC} ${COMMON_TIMER_HEADERS})
