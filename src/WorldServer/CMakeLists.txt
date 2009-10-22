@@ -16,6 +16,7 @@ set(SOURCES
 	LoginServerConnectPacket.h
 	PartyHandler.h
 	PartyPacket.h
+	Player.h
 	PlayerDataProvider.h
 	PrecompiledHeader.h
 	WorldServer.h
@@ -41,6 +42,7 @@ set(SOURCES
 	Party.cpp
 	PartyHandler.cpp
 	PartyPacket.cpp
+	Player.cpp
 	PlayerDataProvider.cpp
 	PrecompiledHeader.cpp
 	WorldServer.cpp

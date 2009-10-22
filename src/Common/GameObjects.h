@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GameConstants.h"
 #include "Types.h"
-#include <boost/utility.hpp>
+#include <boost/array.hpp>
 #include <string>
 
 using std::string;
