@@ -1,57 +1,7 @@
-set(SOURCES 
-	Alliance.h
-	AllianceHandler.h
-	AlliancePacket.h
-	BbsHandler.h
-	BbsPacket.h
-	Channel.h
-	Channels.h
-	Guild.h
-	GuildBbs.h
-	GuildHandler.h
-	GuildPacket.h
-	InitializeWorld.h
-	LoginServerConnection.h
-	LoginServerConnectHandler.h
-	LoginServerConnectPacket.h
-	PartyHandler.h
-	PartyPacket.h
-	Player.h
-	PlayerDataProvider.h
-	PrecompiledHeader.h
-	WorldServer.h
-	WorldServerAcceptConnection.h
-	WorldServerAcceptHandler.h
-	WorldServerAcceptPacket.h
-	Alliance.cpp
-	AllianceHandler.cpp
-	AlliancePacket.cpp
-	BbsHandler.cpp
-	BbsPacket.cpp
-	Channel.cpp
-	Channels.cpp
-	Guild.cpp
-	GuildBbs.cpp
-	GuildHandler.cpp
-	GuildPacket.cpp
-	InitializeWorld.cpp
-	LoginServerConnection.cpp
-	LoginServerConnectHandler.cpp
-	LoginServerConnectPacket.cpp
-	main_world.cpp
-	Party.cpp
-	PartyHandler.cpp
-	PartyPacket.cpp
-	Player.cpp
-	PlayerDataProvider.cpp
-	PrecompiledHeader.cpp
-	WorldServer.cpp
-	WorldServerAcceptConnection.cpp
-	WorldServerAcceptHandler.cpp
-	WorldServerAcceptPacket.cpp
-)
+file(GLOB WORLD_SRC *.cpp)
+file(GLOB WORLD_HEADERS *.h)
 
-add_executable(WorldServer ${SOURCES})
+add_executable(WorldServer ${WORLD_SRC} ${WORLD_HEADERS})
 
 target_link_libraries(WorldServer
 	Common
