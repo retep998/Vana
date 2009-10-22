@@ -40,6 +40,27 @@ void EquipDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
+namespace Functors {
+	struct EquipFlags {
+		void operator() (const string &cmp) {
+			if (cmp == "wear_trade_block") item->tradeblockonequip = true;
+		}
+		EquipInfo *item;
+	};
+	struct JobFlags {
+		void operator() (const string &cmp) {
+			if (cmp == "common") item->validjobs.push_back(-1);
+			else if (cmp == "beginner") item->validjobs.push_back(Jobs::JobTracks::Beginner); // Respective job tracks
+			else if (cmp == "warrior") item->validjobs.push_back(Jobs::JobTracks::Warrior);
+			else if (cmp == "magician") item->validjobs.push_back(Jobs::JobTracks::Magician);
+			else if (cmp == "bowman") item->validjobs.push_back(Jobs::JobTracks::Bowman);
+			else if (cmp == "thief") item->validjobs.push_back(Jobs::JobTracks::Thief);
+			else if (cmp == "pirate") item->validjobs.push_back(Jobs::JobTracks::Pirate);
+		}
+		EquipInfo *item;
+	};
+}
+
 void EquipDataProvider::loadEquips() {
 	equips.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") FROM item_equip_data");
@@ -52,24 +73,7 @@ void EquipDataProvider::loadEquips() {
 	int64_t ibit;
 	EquipInfo equip;
 
-	struct EquipFunctor {
-		void operator() (const string &cmp) {
-			if (cmp == "wear_trade_block") item->tradeblockonequip = true;
-		}
-		EquipInfo *item;
-	};
-	struct JobFunctor {
-		void operator() (const string &cmp) {
-			if (cmp == "common") item->validjobs.push_back(-1);
-			else if (cmp == "beginner") item->validjobs.push_back(Jobs::JobTracks::Beginner); // Respective job tracks
-			else if (cmp == "warrior") item->validjobs.push_back(Jobs::JobTracks::Warrior);
-			else if (cmp == "magician") item->validjobs.push_back(Jobs::JobTracks::Magician);
-			else if (cmp == "bowman") item->validjobs.push_back(Jobs::JobTracks::Bowman);
-			else if (cmp == "thief") item->validjobs.push_back(Jobs::JobTracks::Thief);
-			else if (cmp == "pirate") item->validjobs.push_back(Jobs::JobTracks::Pirate);
-		}
-		EquipInfo *item;
-	};
+	using namespace Functors;
 
 	enum EquipData {
 		EquipId = 0,
@@ -84,9 +88,11 @@ void EquipDataProvider::loadEquips() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		equip = EquipInfo();
-		EquipFunctor whoo = {&equip};
+
+		EquipFlags whoo = {&equip};
 		runFlags(row[Flags], whoo);
-		JobFunctor whoot = {&equip};
+
+		JobFlags whoot = {&equip};
 		runFlags(row[ReqJob], whoot);
 
 		id = atoi(row[EquipId]);

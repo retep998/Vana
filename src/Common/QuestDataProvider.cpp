@@ -60,15 +60,8 @@ void QuestDataProvider::loadQuestData() {
 	}
 }
 
-void QuestDataProvider::loadRequests() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_requests");
-	mysqlpp::UseQueryResult res = query.use();
-	int16_t questid;
-	int32_t reward;
-	int16_t count;
-	Quest *cur;
-
-	struct TypeFunctor {
+namespace Functors {
+	struct RequestTypeFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "item") quest->addItemRequest(reqid, count);
 			else if (cmp == "mob") quest->addMobRequest(reqid, count);
@@ -78,6 +71,17 @@ void QuestDataProvider::loadRequests() {
 		int32_t reqid;
 		int16_t count;
 	};
+}
+
+void QuestDataProvider::loadRequests() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_requests");
+	mysqlpp::UseQueryResult res = query.use();
+	int16_t questid;
+	int32_t reward;
+	int16_t count;
+	Quest *cur;
+
+	using namespace Functors;
 
 	enum RequestData {
 		QuestId = 0,
@@ -93,7 +97,7 @@ void QuestDataProvider::loadRequests() {
 		reward = atoi(row[ObjectId]);
 		count = atoi(row[Count]);
 
-		TypeFunctor whoo = {cur, reward, count};
+		RequestTypeFlags whoo = {cur, reward, count};
 		runFlags(row[Type], whoo);
 	}
 }
@@ -117,17 +121,8 @@ void QuestDataProvider::loadRequiredJobs() {
 	}
 }
 
-void QuestDataProvider::loadRewards() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_rewards");
-	mysqlpp::UseQueryResult res = query.use();
-	string jobtracks;
-	int16_t questid;
-	int16_t job;
-	bool start;
-	Quest *cur;
-	QuestRewardInfo rwa;
-
-	struct JobTrackFunctor {
+namespace Functors {
+	struct JobTrackTypeFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "beginner") {
 				quest->addReward(start, *reward, Jobs::JobIds::Beginner);
@@ -216,13 +211,13 @@ void QuestDataProvider::loadRewards() {
 		QuestRewardInfo *reward;
 		bool start;
 	};
-	struct FlagFunctor {
+	struct RewardFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "master_level_only") reward->masterlevelonly = true;
 		}
 		QuestRewardInfo *reward;
 	};
-	struct TypeFunctor {
+	struct RewardTypeFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "item") reward->isitem = true;
 			else if (cmp == "exp") reward->isexp = true;
@@ -233,6 +228,19 @@ void QuestDataProvider::loadRewards() {
 		}
 		QuestRewardInfo *reward;
 	};
+}
+
+void QuestDataProvider::loadRewards() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_rewards");
+	mysqlpp::UseQueryResult res = query.use();
+	string jobtracks;
+	int16_t questid;
+	int16_t job;
+	bool start;
+	Quest *cur;
+	QuestRewardInfo rwa;
+
+	using namespace Functors;
 
 	enum RewardData {
 		Id = 0,
@@ -249,8 +257,8 @@ void QuestDataProvider::loadRewards() {
 		jobtracks = row[JobTrackFlags];
 		start = (row[State] == "start");
 
-		TypeFunctor whoo = {&rwa};
-		FlagFunctor flags = {&rwa};
+		RewardTypeFlags whoo = {&rwa};
+		RewardFlags flags = {&rwa};
 		runFlags(row[Type], whoo);
 		runFlags(row[Flags], flags);
 
@@ -264,7 +272,7 @@ void QuestDataProvider::loadRewards() {
 			cur->addReward(start, rwa, job);
 		}
 		else {
-			JobTrackFunctor ohyeah = {cur, &rwa, start};
+			JobTrackTypeFlags ohyeah = {cur, &rwa, start};
 			runFlags(jobtracks, ohyeah);
 		}
 	}
