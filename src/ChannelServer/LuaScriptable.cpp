@@ -65,7 +65,7 @@ void LuaScriptable::initialize() {
 	setVariable("playerid", playerid); // Pushing id for reference from static functions
 
 	Player *player = LuaExports::getPlayer(luaVm);
-	if (player->getInstance() != 0)
+	if (player != 0 && player->getInstance() != 0)
 		setVariable("instancename", player->getInstance()->getName());
 
 	// Miscellanous
@@ -299,6 +299,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "isPlayerSignedUp", &LuaExports::isPlayerSignedUp);
 	lua_register(luaVm, "markForDelete", &LuaExports::markForDelete);
 	lua_register(luaVm, "moveAllPlayers", &LuaExports::moveAllPlayers);
+	lua_register(luaVm, "passPlayersBetweenInstances", &LuaExports::passPlayersBetweenInstances);
 	lua_register(luaVm, "removeAllInstancePlayers", &LuaExports::removeAllInstancePlayers);
 	lua_register(luaVm, "removeInstancePlayer", &LuaExports::removeInstancePlayer);
 	lua_register(luaVm, "removePlayerSignUp", &LuaExports::removePlayerSignUp);
@@ -363,6 +364,11 @@ void LuaScriptable::printError(const string &error) {
 
 	Player *player = Players::Instance()->getPlayer(playerid);
 
+	if (player == 0) {
+		std::cout << "Script error in " << filename << ": " << error << std::endl;
+		return;
+	}
+
 	if (player->isGm()) {
 		PlayerPacket::showMessage(player, error, 6);
 	}
@@ -396,7 +402,7 @@ int LuaExports::consoleOutput(lua_State *luaVm) {
 // Channel
 int LuaExports::deleteChannelVariable(lua_State *luaVm) {
 	string key = string(lua_tostring(luaVm, -1));
-	EventDataProvider::Instance()->getVariables()->deleteVariable(key);
+	EventDataProvider::InstancePtr()->getVariables()->deleteVariable(key);
 	return 0;
 }
 
@@ -410,7 +416,7 @@ int LuaExports::getChannelVariable(lua_State *luaVm) {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	string val = EventDataProvider::Instance()->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	string val = EventDataProvider::InstancePtr()->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	if (integral) {
 		if (val == "") {
 			lua_pushnil(luaVm);
@@ -453,7 +459,7 @@ int LuaExports::isZakumChannel(lua_State *luaVm) {
 int LuaExports::setChannelVariable(lua_State *luaVm) {
 	string value = string(lua_tostring(luaVm, -1));
 	string key = string(lua_tostring(luaVm, -2));
-	EventDataProvider::Instance()->getVariables()->setVariable(key, value);
+	EventDataProvider::InstancePtr()->getVariables()->setVariable(key, value);
 	return 0;
 }
 
@@ -1763,14 +1769,23 @@ int LuaExports::createInstance(lua_State *luaVm) {
 	int32_t time = lua_tointeger(luaVm, 2);
 	bool showtimer = lua_toboolean(luaVm, 3) != 0;
 	int32_t persistent = 0;
+	Player *player = getPlayer(luaVm);
+	int32_t map = 0;
+	int32_t id = 0;
 	if (lua_isnumber(luaVm, 4)) {
 		persistent = lua_tointeger(luaVm, 4);
 	}
-	Instance *instance = new Instance(name, getPlayer(luaVm)->getMap(), getPlayer(luaVm)->getId(), time, persistent, showtimer);
+	if (player != 0) {
+		map = player->getMap();
+		id = player->getId();
+	}
+	Instance *instance = new Instance(name, map, id, time, persistent, showtimer);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
+
 	if (instance->showTimer())
 		instance->showTimer(true, true);
+
 	lua_pushstring(luaVm, name.c_str());
 	lua_setglobal(luaVm, "instancename");
 	return 0;
@@ -1834,7 +1849,7 @@ int LuaExports::getInstanceSignupCount(lua_State *luaVm) {
 }
 
 int LuaExports::getInstanceTime(lua_State *luaVm) {
-	lua_pushboolean(luaVm, getInstance(luaVm)->checkInstanceTimer());
+	lua_pushinteger(luaVm, getInstance(luaVm)->checkInstanceTimer());
 	return 1;
 }
 
@@ -1903,7 +1918,21 @@ int LuaExports::moveAllPlayers(lua_State *luaVm) {
 		portal = Maps::getMap(mapid)->getPortal(to);
 	}
 
-	getInstance(luaVm)->moveAllPlayers(mapid, portal);
+	getInstance(luaVm)->moveAllPlayers(mapid, true, portal);
+	return 0;
+}
+
+int LuaExports::passPlayersBetweenInstances(lua_State *luaVm) {
+	PortalInfo *portal = 0;
+	
+	int32_t mapid = lua_tointeger(luaVm, 1);
+
+	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+		string to = lua_tostring(luaVm, 2);
+		portal = Maps::getMap(mapid)->getPortal(to);
+	}
+
+	getInstance(luaVm)->moveAllPlayers(mapid, false, portal);
 	return 0;
 }
 

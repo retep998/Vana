@@ -123,10 +123,17 @@ bool TimeUtilities::getDST(time_t ctime) {
 
 int32_t TimeUtilities::getTimeZoneOffset() {
 	time_t ctime = time(0);
-	tm * ts = localtime(&ctime);
+	tm *ts = localtime(&ctime);
 	int32_t hour = ts->tm_hour; // C/C++ have extremely unsightly time handling, beware
 	ts = gmtime(&ctime);
 	return ((hour - ts->tm_hour) * 60 * 60);
+}
+
+int32_t TimeUtilities::getNearestMinuteMark(int32_t interval, time_t ctime) {
+	// Returns the closest interval minute mark in seconds
+	tm *timeinfo = localtime(&ctime);
+	int32_t result = (((timeinfo->tm_min / interval) + 1) * interval * 60);
+	return result;
 }
 
 #ifdef WIN32

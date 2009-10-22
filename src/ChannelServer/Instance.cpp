@@ -146,11 +146,12 @@ void Instance::removePlayerSignUp(const string &name) {
 	}
 }
 
-void Instance::moveAllPlayers(int32_t mapid, PortalInfo *portal) {
+void Instance::moveAllPlayers(int32_t mapid, bool respectInstances, PortalInfo *portal) {
 	if (!Maps::getMap(mapid))
 		return;
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
-		iter->second->setMap(mapid, portal, true);
+	unordered_map<int32_t, Player *> tmp = m_players; // Copy in the event that we don't respect instances
+	for (unordered_map<int32_t, Player *>::iterator iter = tmp.begin(); iter != tmp.end(); iter++) {
+		iter->second->setMap(mapid, portal, respectInstances);
 	}
 }
 

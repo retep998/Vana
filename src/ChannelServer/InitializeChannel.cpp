@@ -49,7 +49,7 @@ void Initializing::loadData() {
 	QuestDataProvider::Instance()->loadData();
 	ReactorDataProvider::Instance()->loadData();
 
-	EventDataProvider::Instance()->loadEvents();
+	EventDataProvider::InstancePtr()->loadData();
 	initializeChat();
 };
 
