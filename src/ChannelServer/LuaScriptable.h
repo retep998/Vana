@@ -288,6 +288,7 @@ namespace LuaExports {
 	int isPlayerSignedUp(lua_State *luaVm);
 	int markForDelete(lua_State *luaVm);
 	int moveAllPlayers(lua_State *luaVm);
+	int passPlayersBetweenInstances(lua_State *luaVm);
 	int removeAllInstancePlayers(lua_State *luaVm);
 	int removeInstancePlayer(lua_State *luaVm);
 	int removePlayerSignUp(lua_State *luaVm);

@@ -42,6 +42,7 @@ public:
 namespace LuaExports {
 	int revertPlayerInstance(lua_State *luaVm);
 	int setPlayerInstance(lua_State *luaVm);
+	int createInstanceInstance(lua_State *luaVm);
 }
 
 #endif
