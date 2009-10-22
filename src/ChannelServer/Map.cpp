@@ -77,8 +77,8 @@ timers(new Timer::Container)
 
 // Map Info
 void Map::setMusic(const string &musicname) {
-	getInfo()->musicname = musicname;
-	MapPacket::setMusic(getInfo()->id, musicname);
+	getInfo()->musicname = (musicname == "default" ? getInfo()->defaultmusic : musicname);
+	MapPacket::setMusic(getInfo()->id, getInfo()->musicname);
 }
 
 // Players
