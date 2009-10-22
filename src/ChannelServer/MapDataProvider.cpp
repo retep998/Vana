@@ -75,13 +75,8 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 	}
 }
 
-int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
-	mysqlpp::Query query = Database::getDataDB().query();
-	query << "SELECT *, (field_limitations + 0) FROM map_data WHERE mapid = " << mapid;
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t link = 0;
-
-	struct Functor {
+namespace Functors {
+	struct MapFlags {
 		void operator()(const string &cmp) {
 			if (cmp == "town") map->town = true;
 			else if (cmp == "clock") map->clock = true;
@@ -95,12 +90,21 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 		}
 		MapInfoPtr map;
 	};
-	struct FieldTypeFunctor {
+	struct FieldTypeFlags {
 		void operator()(const string &cmp) {
 			if (cmp == "force_map_equip") map->forcemapequip = true;
 		}
 		MapInfoPtr map;
 	};
+}
+
+int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
+	mysqlpp::Query query = Database::getDataDB().query();
+	query << "SELECT *, (field_limitations + 0) FROM map_data WHERE mapid = " << mapid;
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t link = 0;
+
+	using namespace Functors;
 
 	enum MapColumns {
 		MapId = 0,
@@ -117,8 +121,8 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 		mapinfo->link = link;
 		mapinfo->id = mapid;
 
-		FieldTypeFunctor f = {mapinfo};
-		Functor whoo = {mapinfo};
+		FieldTypeFlags f = {mapinfo};
+		MapFlags whoo = {mapinfo};
 		runFlags(row[FieldType], f);
 		runFlags(row[Flags], whoo);
 

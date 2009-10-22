@@ -26,6 +26,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::unordered_map;
 using std::vector;
 
+struct ValidLook {
+	void clear() {
+		hair.clear();
+		faces.clear();
+	}
+	vector<int32_t> hair;
+	vector<int32_t> faces;
+};
+
 class BeautyDataProvider : boost::noncopyable {
 public:
 	static BeautyDataProvider * Instance() {
@@ -53,11 +62,10 @@ private:
 	void loadSkins();
 	void loadHair();
 	void loadFaces();
+	ValidLook * getGender(int8_t gender);
 
-	vector<int32_t> malehair;
-	vector<int32_t> malefaces;
-	vector<int32_t> femalehair;
-	vector<int32_t> femalefaces;
+	ValidLook male;
+	ValidLook female;
 	vector<int8_t> skins;
 };
 

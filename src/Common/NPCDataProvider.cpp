@@ -27,6 +27,15 @@ using StringUtilities::runFlags;
 
 NpcDataProvider * NpcDataProvider::singleton = 0;
 
+namespace Functors {
+	struct FlagFunctor {
+		void operator()(const string &cmp) {
+			if (cmp == "maple_tv") npc->isMapleTv = true;
+		}
+		NpcData *npc;
+	};
+}
+
 void NpcDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing NPCs... ";
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM npc_data");
@@ -34,13 +43,8 @@ void NpcDataProvider::loadData() {
 	int32_t id;
 	NpcData npc;
 
-	struct FlagFunctor {
-		void operator()(const string &cmp) {
-			if (cmp == "maple_tv") npc->isMapleTv = true;
-		}
-		NpcData *npc;
-	};
-	
+	using namespace Functors;
+
 	enum NpcFields {
 		Id = 0,
 		StorageCost, Flags

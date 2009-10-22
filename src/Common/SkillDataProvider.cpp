@@ -183,6 +183,15 @@ void SkillDataProvider::loadBanishData() {
 	}
 }
 
+namespace Functors {
+	struct MorphFlags {
+		void operator()(const string &cmp) {
+			if (cmp == "superman") morph->superman = true;
+		}
+		MorphData *morph;
+	};
+}
+
 void SkillDataProvider::loadMorphs() {
 	morphinfo.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM morph_data");
@@ -190,12 +199,7 @@ void SkillDataProvider::loadMorphs() {
 	MorphData morph;
 	int16_t morphid;
 
-	struct Functor {
-		void operator()(const string &cmp) {
-			if (cmp == "superman") morph->superman = true;
-		}
-		MorphData *morph;
-	};
+	using namespace Functors;
 
 	enum MorphDataTable {
 		Id = 0,
@@ -206,7 +210,7 @@ void SkillDataProvider::loadMorphs() {
 		morph = MorphData();
 		morphid = atoi(row[Id]);
 
-		Functor whoo = {&morph};
+		MorphFlags whoo = {&morph};
 		runFlags(row[Flags], whoo);
 
 		morph.speed = atoi(row[Speed]);

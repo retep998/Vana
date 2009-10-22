@@ -28,6 +28,10 @@ BeautyDataProvider * BeautyDataProvider::singleton = 0;
 
 void BeautyDataProvider::loadData() {
 	loadSkins();
+
+	male.clear();
+	female.clear();
+
 	loadHair();
 	loadFaces();
 }
@@ -50,12 +54,12 @@ void BeautyDataProvider::loadSkins() {
 
 void BeautyDataProvider::loadHair() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Hair... ";
-	femalehair.clear();
-	malehair.clear();
+
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_hair_data ORDER BY hairid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t gender;
 	int32_t hair;
+	ValidLook *yes;
 
 	enum HairData {
 		Id = 0,
@@ -65,22 +69,19 @@ void BeautyDataProvider::loadHair() {
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		gender = GameLogicUtilities::getGenderId(row[Gender]);
 		hair = atoi(row[Id]);
-		if (gender == Gender::Female) {
-			femalehair.push_back(hair);
-		}
-		else {
-			malehair.push_back(hair);
-		}
+		yes = getGender(gender);
+		yes->hair.push_back(hair);
 	}
+
 	std::cout << "DONE" << std::endl;
 }
 
 void BeautyDataProvider::loadFaces() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Faces... ";
-	femalefaces.clear();
-	malefaces.clear();
+
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_face_data ORDER BY faceid ASC");
 	mysqlpp::UseQueryResult res = query.use();
+	ValidLook *yes;
 	int8_t gender;
 	int32_t face;
 
@@ -92,13 +93,10 @@ void BeautyDataProvider::loadFaces() {
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		gender = GameLogicUtilities::getGenderId(row[Gender]);
 		face = atoi(row[Id]);
-		if (gender == Gender::Female) {
-			femalefaces.push_back(face);
-		}
-		else {
-			malefaces.push_back(face);
-		}
+		yes = getGender(gender);
+		yes->faces.push_back(face);
 	}
+
 	std::cout << "DONE" << std::endl;
 }
 
@@ -107,15 +105,13 @@ int8_t BeautyDataProvider::getRandomSkin() {
 }
 
 int32_t BeautyDataProvider::getRandomHair(int8_t gender) {
-	if (gender == Gender::Female) // Female
-		return femalehair[Randomizer::Instance()->randInt(femalehair.size() - 1)];
-	return malehair[Randomizer::Instance()->randInt(malehair.size() - 1)];
+	ValidLook *yes = getGender(gender);
+	return yes->hair[Randomizer::Instance()->randInt(yes->hair.size() - 1)];
 }
 
 int32_t BeautyDataProvider::getRandomFace(int8_t gender) {
-	if (gender == Gender::Female) // Female
-		return femalefaces[Randomizer::Instance()->randInt(femalefaces.size() - 1)];
-	return malefaces[Randomizer::Instance()->randInt(malefaces.size() - 1)];
+	ValidLook *yes = getGender(gender);
+	return yes->faces[Randomizer::Instance()->randInt(yes->faces.size() - 1)];
 }
 
 vector<int8_t> BeautyDataProvider::getSkins() {
@@ -123,22 +119,18 @@ vector<int8_t> BeautyDataProvider::getSkins() {
 }
 
 vector<int32_t> BeautyDataProvider::getHair(int8_t gender) {
-	if (gender == Gender::Female)  // Female
-		return femalehair;
-	return malehair;
+	return getGender(gender)->hair;
 }
 
 vector<int32_t> BeautyDataProvider::getFaces(int8_t gender) {
-	if (gender == Gender::Female)  // Female
-		return femalefaces;
-	return malefaces;
+	return getGender(gender)->faces;
 }
 
 bool BeautyDataProvider::isValidHair(int8_t gender, int32_t hair) {
-	vector<int32_t> v = getHair(gender);
+	ValidLook *yes = getGender(gender);
 	bool valid = false;
-	for (size_t i = 0; i < v.size(); i++) {
-		if (hair == v[i]) {
+	for (size_t i = 0; i < yes->hair.size(); i++) {
+		if (hair == yes->hair[i]) {
 			valid = true;
 			break;
 		}
@@ -147,10 +139,10 @@ bool BeautyDataProvider::isValidHair(int8_t gender, int32_t hair) {
 }
 
 bool BeautyDataProvider::isValidFace(int8_t gender, int32_t face) {
-	vector<int32_t> v = getFaces(gender);
+	ValidLook *yes = getGender(gender);
 	bool valid = false;
-	for (size_t i = 0; i < v.size(); i++) {
-		if (face == v[i]) {
+	for (size_t i = 0; i < yes->faces.size(); i++) {
+		if (face == yes->faces[i]) {
 			valid = true;
 			break;
 		}
@@ -167,4 +159,10 @@ bool BeautyDataProvider::isValidSkin(int8_t skin) {
 		}
 	}
 	return valid;
+}
+
+ValidLook * BeautyDataProvider::getGender(int8_t gender) {
+	if (gender == Gender::Female)  // Female
+		return &female;
+	return &male;
 }
