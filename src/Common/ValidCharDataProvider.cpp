@@ -45,10 +45,28 @@ void ValidCharDataProvider::loadForbiddenNames() {
 	enum ForbiddenNameData {
 		Name
 	};
+
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		name = row[Name];
 		forbiddennames.push_back(name);
 	}
+}
+
+namespace Functors {
+	struct CreationItemFlags {
+		void operator()(const string &cmp) {
+			if (cmp == "face") items->faces.push_back(objectid);
+			else if (cmp == "hair") items->hair.push_back(objectid);
+			else if (cmp == "haircolor") items->haircolor.push_back(objectid);
+			else if (cmp == "skin") items->skin.push_back(objectid);
+			else if (cmp == "top") items->top.push_back(objectid);
+			else if (cmp == "bottom") items->bottom.push_back(objectid);
+			else if (cmp == "shoes") items->shoes.push_back(objectid);
+			else if (cmp == "weapon") items->weapons.push_back(objectid);		
+		}
+		ValidItems *items;
+		int32_t objectid;
+	};
 }
 
 void ValidCharDataProvider::loadCreationItems() {
@@ -63,20 +81,8 @@ void ValidCharDataProvider::loadCreationItems() {
 	int32_t objectid;
 	ValidItems *items;
 
-	struct Functor {
-		void operator()(const string &cmp) {
-			if (cmp == "face") items->faces.push_back(objectid);
-			else if (cmp == "hair") items->hair.push_back(objectid);
-			else if (cmp == "haircolor") items->haircolor.push_back(objectid);
-			else if (cmp == "skin") items->skin.push_back(objectid);
-			else if (cmp == "top") items->top.push_back(objectid);
-			else if (cmp == "bottom") items->bottom.push_back(objectid);
-			else if (cmp == "shoes") items->shoes.push_back(objectid);
-			else if (cmp == "weapon") items->weapons.push_back(objectid);		
-		}
-		ValidItems *items;
-		int32_t objectid;
-	};
+	using namespace Functors;
+
 	enum CreationData {
 		Id = 0,
 		CharacterType, Gender, ObjectType, ObjectId
@@ -88,7 +94,7 @@ void ValidCharDataProvider::loadCreationItems() {
 		objectid = atoi(row[ObjectId]);
 		items = getItems(gender, cygnus);
 
-		Functor whoo = {items, objectid};
+		CreationItemFlags whoo = {items, objectid};
 		runFlags(row[ObjectType], whoo);
 	}
 }
