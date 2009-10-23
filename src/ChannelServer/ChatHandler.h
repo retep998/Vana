@@ -34,9 +34,19 @@ class Player;
 class PacketReader;
 
 namespace ChatHandler {
-	extern unordered_map<string, pair<Commands, int32_t> > commandlist;
-	extern unordered_map<string, string> commandsyntax;
-	extern unordered_map<string, vector<string> > commandnotes;
+	struct ChatCommand {
+		ChatCommand addToMap() {
+			// Duplicates the command and then clears the data to ease addition syntax
+			ChatCommand x = *this;
+			notes.clear();
+			syntax = "";
+			return x;
+		}
+		pair<Commands, int32_t> command;
+		string syntax;
+		vector<string> notes;
+	};
+	extern unordered_map<string, ChatCommand> commandlist;
 
 	void initializeCommands();
 	void showSyntax(Player *player, const string &command, bool fromHelp = false);
