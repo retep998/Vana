@@ -36,7 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Pos.h"
 #include "ShopDataProvider.h"
-#include "StoragePacket.h"
 #include "WorldServerConnectPacket.h"
 #include <boost/tr1/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -1074,7 +1073,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						MapPacket::showEventInstructions(player->getMap());
 						break;
 					case CmdStorage:
-						StoragePacket::showStorage(player, 9900000);
+						NpcHandler::showStorage(player, 9900000);
 						break;
 					case CmdRankingCalc:
 						WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldConnection());
