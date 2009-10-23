@@ -204,7 +204,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["kill"] = command.addToMap();
 
 	command.command = CmdLookUp;
-	command.syntax = "<${item | skill | map | mob | npc | quest | continent | id}> <$search string | #id>";
+	command.syntax = "<${item | skill | map | mob | npc | quest | continent | id | scriptbyname | scriptbyid}> <$search string | #id>";
 	command.notes.push_back("Uses the database to give you the string values for an ID or the IDs for a given string value.");
 	command.notes.push_back("Use !help map to see valid string values for continent lookup.");
 	commandlist["lookup"] = command.addToMap();
@@ -737,44 +737,66 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							else if (matches[1] == "mob") type = 4;
 							else if (matches[1] == "npc") type = 5;
 							else if (matches[1] == "quest") type = 6;
-
 							else if (matches[1] == "id")  type = 100;
-
 							else if (matches[1] == "continent") type = 200;
+							else if (matches[1] == "scriptbyname") type = 300;
+							else if (matches[1] == "scriptbyid") type = 400;
 
-							if (type != 0 && type < 200) {
+							if (type != 0) {
 								mysqlpp::Query query = Database::getDataDB().query();
-								if (type == 100) {
-									query << "SELECT objectid, `name` FROM strings WHERE objectid = " << matches[2];
-								}
-								else {
-									query << "SELECT objectid, `name` FROM strings WHERE object_type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
-								}
+								mysqlpp::StoreQueryResult res;
+								if (type < 200) {
+									if (type == 100) {
+										query << "SELECT objectid, `name` FROM strings WHERE objectid = " << matches[2];
+									}
+									else {
+										query << "SELECT objectid, `name` FROM strings WHERE object_type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+									}
 
-								mysqlpp::StoreQueryResult res = query.store();
+									res = query.store();
 
-								if (res.num_rows() == 0) {
-									PlayerPacket::showMessage(player, "No results", 6);
+									if (res.num_rows() == 0) {
+										PlayerPacket::showMessage(player, "No results", 6);
+									}
+									else {
+										for (size_t i = 0; i < res.num_rows(); i++) {
+											string msg = (string) res[i][0] + " : " + (string) res[i][1];
+											PlayerPacket::showMessage(player, msg, 6);
+										}
+									}
 								}
-								else {
-									for (size_t i = 0; i < res.num_rows(); i++) {
-										string msg = (string) res[i][0] + " : " + (string) res[i][1];
-										PlayerPacket::showMessage(player, msg, 6);
+								else if (type == 200) {
+									int32_t mapid = getMap(matches[2], player);
+									if (Maps::getMap(mapid) != 0) {
+										string message = boost::lexical_cast<string>(mapid) + " : " + boost::lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
+										PlayerPacket::showMessage(player, message, 6);
+									}
+									else {
+										PlayerPacket::showMessage(player, "Invalid map", 6);
+									}
+								}
+								else if (type > 200) {
+									if (type == 300) {
+										query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << matches[2];
+									}
+									else if (type == 400) {
+										query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+									}
+									res = query.store();
+
+									if (res.num_rows() == 0) {
+										PlayerPacket::showMessage(player, "No results", 6);
+									}
+									else {
+										for (size_t i = 0; i < res.num_rows(); i++) {
+											string msg = (string) res[i][1] + " (" + (string) res[i][0] + "): " + (string) res[i][2];
+											PlayerPacket::showMessage(player, msg, 6);
+										}
 									}
 								}
 							}
-							else if (type == 200) {
-								int32_t mapid = getMap(matches[2], player);
-								if (Maps::getMap(mapid) != 0) {
-									string message = boost::lexical_cast<string>(mapid) + " : " + boost::lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
-									PlayerPacket::showMessage(player, message, 6);
-								}
-								else {
-									PlayerPacket::showMessage(player, "Invalid map", 6);
-								}
-							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id}", 6);
+								PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id, scriptbyname, scriptbyid}", 6);
 							}
 						}
 						else {
