@@ -111,7 +111,6 @@ void AlliancePacket::sendAllianceInfo(Alliance *alliance, Player *requestee) {
 	packet.add<int8_t>(0x0c);
 
 	if (alliance == 0) {
-		std::cout << "Alliance not found: Player " << requestee->getName() << ", allianceid " << alliance->getId() << std::endl;
 		packet.addBool(false);
 
 		Channels::Instance()->sendToChannel(requestee->getChannel(), packet);
