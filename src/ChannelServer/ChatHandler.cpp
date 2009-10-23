@@ -40,10 +40,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.h"
 #include <boost/tr1/regex.hpp>
 #include <boost/lexical_cast.hpp>
-#include <utility>
 #include <vector>
 
-using std::make_pair;
 using std::tr1::cmatch;
 using std::tr1::regex;
 using std::tr1::regex_match;
@@ -81,9 +79,9 @@ void ChatHandler::initializeCommands() {
 
 	// GM level 3
 #pragma region GM Level 3
-	int32_t GmLevel = 3;
+	command.level = 3;
 
-	command.command = make_pair(CmdBan, GmLevel);
+	command.command = CmdBan;
 	command.syntax = "<$playername> [#reason]";
 	command.notes.push_back("Permanently bans a player by name.");
 	command.notes.push_back("Reason codes:");
@@ -102,57 +100,57 @@ void ChatHandler::initializeCommands() {
 	command.notes.push_back("13 - Cursing, scamming, or illegal trading via megaphones");
 	commandlist["ban"] = command.addToMap();
 
-	command.command = make_pair(CmdIpBan, GmLevel);
+	command.command = CmdIpBan;
 	command.syntax = "<$playername> [#reason]";
 	command.notes.push_back("Permanently bans a player's IP based on their name. Does not ban the account for various reasons.");
 	command.notes.push_back("Use !help ban to see the applicable reason codes.");
 	commandlist["ipban"] = command.addToMap();
 
-	command.command = make_pair(CmdTempBan, GmLevel);
+	command.command = CmdTempBan;
 	command.syntax = "<$playername> <#reason> <#length in days>";
 	command.notes.push_back("Temporarily bans a player by name.");
 	command.notes.push_back("Use !help ban to see the applicable reason codes.");
 	commandlist["tempban"] = command.addToMap();
 
-	command.command = make_pair(CmdUnban, GmLevel);
+	command.command = CmdUnban;
 	command.syntax = "<$playername>";
 	command.notes.push_back("Removes a ban from the database.");
 	commandlist["unban"] = command.addToMap();
 
-	command.command = make_pair(CmdHeader, GmLevel);
+	command.command = CmdHeader;
 	command.syntax = "[$message]";
 	command.notes.push_back("Changes the scrolling message at the top of the screen.");
 	commandlist["header"] = command.addToMap();
 
-	command.command = make_pair(CmdShutdown, GmLevel);
+	command.command = CmdShutdown;
 	command.notes.push_back("Stops the current ChannelServer.");
 	commandlist["shutdown"] = command.addToMap();
 
-	command.command = make_pair(CmdPacket, GmLevel); 
+	command.command = CmdPacket; 
 	command.syntax = "<$hexbytes>";
 	command.notes.push_back("Sends a specific packet to yourself. Should only be used for testing.");
 	commandlist["packet"] = command.addToMap();
 
-	command.command = make_pair(CmdTimer, GmLevel);
+	command.command = CmdTimer;
 	command.syntax = "<#time in seconds>";
 	command.notes.push_back("Displays a timer at the top of the map.");
 	commandlist["timer"] = command.addToMap();
 
-	command.command = make_pair(CmdInstruction, GmLevel);
+	command.command = CmdInstruction;
 	command.syntax = "<$bubbletext>";
 	command.notes.push_back("Displays a bubble. With shiny text. Somewhat useless for managing players.");
 	commandlist["instruction"] = command.addToMap();
 
-	command.command = make_pair(CmdAddNpc, GmLevel);
+	command.command = CmdAddNpc;
 	command.syntax = "<#npcid>";
 	command.notes.push_back("Permanently adds an NPC to a map.");
 	commandlist["addnpc"] = command.addToMap();
 
-	command.command = make_pair(CmdRankingCalc, GmLevel);
+	command.command = CmdRankingCalc;
 	command.notes.push_back("Forces ranking recalculation.");
 	commandlist["dorankings"] = command.addToMap();
 
-	command.command = make_pair(CmdGlobalMessage, GmLevel);
+	command.command = CmdGlobalMessage;
 	command.syntax = "<${notice | popup | event | purple}> <$message string>";
 	command.notes.push_back("Displays a message to every channel on every world.");
 	commandlist["globalmessage"] = command.addToMap();
@@ -160,37 +158,37 @@ void ChatHandler::initializeCommands() {
 
 	// GM level 2
 #pragma region GM Level 2
-	GmLevel = 2;
+	command.level = 2;
 
-	command.command = make_pair(CmdMe, GmLevel);
+	command.command = CmdMe;
 	command.syntax = "<$message>";
 	command.notes.push_back("Displays a message to all other online GMs.");
 	commandlist["me"] = command.addToMap();
 
-	command.command = make_pair(CmdKick, GmLevel);
+	command.command = CmdKick;
 	command.syntax = "<$playername>";
 	command.notes.push_back("Forcibly disconnects a player, cannot be used on players that outrank you in GM level.");
 	commandlist["kick"] = command.addToMap();
 
-	command.command = make_pair(CmdWarp, GmLevel);
+	command.command = CmdWarp;
 	command.syntax = "<$playername> [#mapid]";
 	command.notes.push_back("Warps the specified player to your map or the map you specify.");
 	commandlist["warp"] = command.addToMap();
 
-	command.command = make_pair(CmdWarpAll, GmLevel);
+	command.command = CmdWarpAll;
 	command.syntax = "[#mapid]";
 	command.notes.push_back("Warps all players to your map or the map you specify.");
 	commandlist["warpall"] = command.addToMap();
 
-	command.command = make_pair(CmdKillAll, GmLevel);
+	command.command = CmdKillAll;
 	command.notes.push_back("Kills all mobs on the current map.");
 	commandlist["killall"] = command.addToMap();
 
-	command.command = make_pair(CmdClearDrops, GmLevel);
+	command.command = CmdClearDrops;
 	command.notes.push_back("Clears all drops from the current map.");
 	commandlist["cleardrops"] = command.addToMap();
 
-	command.command = make_pair(CmdWorldMessage, GmLevel);
+	command.command = CmdWorldMessage;
 	command.syntax = "<${notice | popup | event | purple}> <$message string>";
 	command.notes.push_back("Displays a message to every channel on the current world.");
 	commandlist["worldmessage"] = command.addToMap();
@@ -198,21 +196,21 @@ void ChatHandler::initializeCommands() {
 
 	// GM level 1
 #pragma region GM Level 1
-	GmLevel = 1;
+	command.level = 1;
 
-	command.command = make_pair(CmdKill, GmLevel);
+	command.command = CmdKill;
 	command.syntax = "<${players | gm | all | me} | $playername>";
 	command.notes.push_back("If you are GM level 1, you can only kill yourself with this.");
 	command.notes.push_back("If you are above GM level 1, you may kill GMs, players, everyone on a map, yourself, or the specified player.");
 	commandlist["kill"] = command.addToMap();
 
-	command.command = make_pair(CmdLookUp, GmLevel);
+	command.command = CmdLookUp;
 	command.syntax = "<${item | skill | map | mob | npc | quest | continent | id}> <$search string | #id>";
 	command.notes.push_back("Uses the database to give you the string values for an ID or the IDs for a given string value.");
 	command.notes.push_back("Use !help map to see valid string values for continent lookup.");
 	commandlist["lookup"] = command.addToMap();
 
-	command.command = make_pair(CmdMap, GmLevel);
+	command.command = CmdMap;
 	command.syntax = "<${town | mapstring | bossmapstring} | #mapid>";
 	command.notes.push_back("Warps you to a desired map.");
 	command.notes.push_back("Valid map strings:");
@@ -229,7 +227,7 @@ void ChatHandler::initializeCommands() {
 	command.notes.push_back("manon | griffey | jrbalrog | grandpa | anego | tengu | lilynouch | dodo | lyka");
 	commandlist["map"] = command.addToMap();
 
-	command.command = make_pair(CmdJob, GmLevel);
+	command.command = CmdJob;
 	command.syntax = "<${jobstring} | #jobid>";
 	command.notes.push_back("Sets your job.");
 	command.notes.push_back("Valid job strings:");
@@ -243,162 +241,162 @@ void ChatHandler::initializeCommands() {
 	command.notes.push_back("sgm");
 	commandlist["job"] = command.addToMap();
 
-	command.command = make_pair(CmdLevel, GmLevel);
+	command.command = CmdLevel;
 	command.syntax = "<#level>";
 	command.notes.push_back("Sets your player's level to the specified amount.");
 	commandlist["level"] = command.addToMap();
 
-	command.command = make_pair(CmdHp, GmLevel);
+	command.command = CmdHp;
 	command.syntax = "<#hp>";
 	command.notes.push_back("Sets your player's HP to the specified amount.");
 	commandlist["hp"] = command.addToMap();
 
-	command.command = make_pair(CmdMp, GmLevel);
+	command.command = CmdMp;
 	command.syntax = "<#mp>";
 	command.notes.push_back("Sets your player's MP to the specified amount.");
 	commandlist["mp"] = command.addToMap();
 
-	command.command = make_pair(CmdAp, GmLevel);
+	command.command = CmdAp;
 	command.syntax = "<#ap>";
 	command.notes.push_back("Sets your player's AP to the specified amount.");
 	commandlist["ap"] = command.addToMap();
 
-	command.command = make_pair(CmdSp, GmLevel);
+	command.command = CmdSp;
 	command.syntax = "<#sp>";
 	command.notes.push_back("Sets your player's SP to the specified amount.");
 	commandlist["sp"] = command.addToMap();
 
-	command.command = make_pair(CmdAddSp, GmLevel);
+	command.command = CmdAddSp;
 	command.syntax = "<#skillid> [#skillpoints]";
 	command.notes.push_back("Adds SP to the desired skill.");
 	commandlist["addsp"] = command.addToMap();
 
-	command.command = make_pair(CmdInt, GmLevel);
+	command.command = CmdInt;
 	command.syntax = "<#int>";
 	command.notes.push_back("Sets your player's INT to the specified amount.");
 	commandlist["int"] = command.addToMap();
 
-	command.command = make_pair(CmdLuk, GmLevel);
+	command.command = CmdLuk;
 	command.syntax = "<#luk>";
 	command.notes.push_back("Sets your player's LUK to the specified amount.");
 	commandlist["luk"] = command.addToMap();
 
-	command.command = make_pair(CmdDex, GmLevel);
+	command.command = CmdDex;
 	command.syntax = "<#dex>";
 	command.notes.push_back("Sets your player's DEX to the specified amount.");
 	commandlist["dex"] = command.addToMap();
 
-	command.command = make_pair(CmdStr, GmLevel);
+	command.command = CmdStr;
 	command.syntax = "<#str>";
 	command.notes.push_back("Sets your player's STR to the specified amount.");
 	commandlist["str"] = command.addToMap();
 
-	command.command = make_pair(CmdFame, GmLevel);
+	command.command = CmdFame;
 	command.syntax = "<#fame>";
 	command.notes.push_back("Sets your player's fame to the specified amount.");
 	commandlist["fame"] = command.addToMap();
 
-	command.command = make_pair(CmdMaxStats, GmLevel);
+	command.command = CmdMaxStats;
 	command.notes.push_back("Sets all your core stats to their maximum values.");
 	commandlist["maxstats"] = command.addToMap();
 
-	command.command = make_pair(CmdNpc, GmLevel);
+	command.command = CmdNpc;
 	command.syntax = "<#npcid>";
 	command.notes.push_back("Runs the NPC script of the NPC you specify.");
 	commandlist["npc"] = command.addToMap();
 
-	command.command = make_pair(CmdItem, GmLevel);
+	command.command = CmdItem;
 	command.syntax = "<#itemid> [#amount]";
 	command.notes.push_back("Gives you an item.");
 	commandlist["item"] = command.addToMap();
 
-	command.command = make_pair(CmdSummon, GmLevel);
+	command.command = CmdSummon;
 	command.syntax = "<#mobid> [#amount]";
 	command.notes.push_back("Spawns monsters.");
 	commandlist["summon"] = command;
 	commandlist["spawn"] = command.addToMap();
 
-	command.command = make_pair(CmdNotice, GmLevel);
+	command.command = CmdNotice;
 	command.syntax = "<$message>";
 	command.notes.push_back("Displays a blue GM notice.");
 	commandlist["notice"] = command.addToMap();
 
-	command.command = make_pair(CmdShop, GmLevel);
+	command.command = CmdShop;
 	command.syntax = "<${gear, scrolls, nx, face, ring, chair, mega, pet} | #shopid>";
 	command.notes.push_back("Shows you the desired shop.");
 	commandlist["shop"] = command.addToMap();
 
-	command.command = make_pair(CmdPos, GmLevel);
+	command.command = CmdPos;
 	command.notes.push_back("Displays your current position and foothold on the map.");
 	commandlist["pos"] = command.addToMap();
 
-	command.command = make_pair(CmdZakum, GmLevel);
+	command.command = CmdZakum;
 	command.notes.push_back("Spawns Zakum.");
 	commandlist["zakum"] = command.addToMap();
 
-	command.command = make_pair(CmdHorntail, GmLevel);
+	command.command = CmdHorntail;
 	command.notes.push_back("Spawns Horntail.");
 	commandlist["horntail"] = command.addToMap();
 
-	command.command = make_pair(CmdHeal, GmLevel);
+	command.command = CmdHeal;
 	command.notes.push_back("Sets your HP and MP to 100%.");
 	commandlist["heal"] = command.addToMap();
 
-	command.command = make_pair(CmdMesos, GmLevel);
+	command.command = CmdMesos;
 	command.syntax = "<#mesosamount>";
 	command.notes.push_back("Sets your mesos to the specified amount.");
 	commandlist["mesos"] = command.addToMap();
 
-	command.command = make_pair(CmdDisconnect, GmLevel);
+	command.command = CmdDisconnect;
 	command.notes.push_back("Disconnects yourself.");
 	commandlist["dc"] = command.addToMap();
 
-	command.command = make_pair(CmdMusic, GmLevel);
+	command.command = CmdMusic;
 	command.syntax = "[$musicname]";
 	command.notes.push_back("Sets the music for a given map.");
 	command.notes.push_back("Using \"default\" will reset the map to default music.");
 	commandlist["music"] = command.addToMap();
 
-	command.command = make_pair(CmdStorage, GmLevel);
+	command.command = CmdStorage;
 	command.notes.push_back("Shows your storage.");
 	commandlist["storage"] = command.addToMap();
 
-	command.command = make_pair(CmdEventInstruction, GmLevel);
+	command.command = CmdEventInstruction;
 	command.notes.push_back("Shows event instructions for Ola Ola, etc.");
 	commandlist["eventinstruct"] = command.addToMap();
 
-	command.command = make_pair(CmdRelog, GmLevel);
+	command.command = CmdRelog;
 	command.notes.push_back("Logs you back in to the current channel.");
 	commandlist["relog"] = command.addToMap();
 
-	command.command = make_pair(CmdSave, GmLevel);
+	command.command = CmdSave;
 	command.notes.push_back("Saves your stats.");
 	commandlist["save"] = command.addToMap();
 
-	command.command = make_pair(CmdWarpTo, GmLevel);
+	command.command = CmdWarpTo;
 	command.syntax = "<$playername>";
 	command.notes.push_back("Warps you to the specified player.");
 	commandlist["warpto"] = command.addToMap();
 
-	command.command = make_pair(CmdKillNpc, GmLevel);
+	command.command = CmdKillNpc;
 	command.notes.push_back("Used when scripts leave an NPC hanging. This command will clear the NPC and allow you to use other NPCs.");
 	commandlist["killnpc"] = command.addToMap();
 
-	command.command = make_pair(CmdListMobs, GmLevel);
+	command.command = CmdListMobs;
 	command.notes.push_back("Lists all the mobs on the map.");
 	commandlist["listmobs"] = command.addToMap();
 
-	command.command = make_pair(CmdGetMobHp, GmLevel);
+	command.command = CmdGetMobHp;
 	command.syntax = "<#mapmobid>";
 	command.notes.push_back("Gets the HP of a specific mob based on the map mob ID that you can get from !listmobs.");
 	commandlist["getmobhp"] = command.addToMap();
 
-	command.command = make_pair(CmdKillMob, GmLevel);
+	command.command = CmdKillMob;
 	command.syntax = "<#mapmobid>";
 	command.notes.push_back("Kills a specific mob based on the map mob ID that you can get from !listmobs.");
 	commandlist["killmob"] = command.addToMap();
 
-	command.command = make_pair(CmdReload, GmLevel);
+	command.command = CmdReload;
 	command.syntax = "<${all, items, drops, mobs, beauty, shops, scripts, reactors, pets, quests, skills}>";
 	command.notes.push_back("Reloads data from the database.");
 	commandlist["reload"] = command.addToMap();
@@ -406,9 +404,9 @@ void ChatHandler::initializeCommands() {
 
 	// No GM level needed
 #pragma region GM Level 0
-	GmLevel = 0;
+	command.level = 0;
 
-	command.command = make_pair(CmdHelp, GmLevel);
+	command.command = CmdHelp;
 	command.syntax = "[$command]";
 	command.notes.push_back("I wonder what it does?");
 	command.notes.push_back("Syntax for help display:");
@@ -460,11 +458,11 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 		}
 		else {
 			ChatCommand *cmd = &commandlist[command];
-			if (player->getGmLevel() < cmd->command.second) { // GM level for the command
+			if (player->getGmLevel() < cmd->level) { // GM level for the command
 				PlayerPacket::showMessage(player, "You are not at a high enough GM level to use the command.", 6);
 			}
 			else {
-				switch (cmd->command.first) { // CMD constant associated with command
+				switch (cmd->command) { // CMD constant associated with command
 					case CmdHelp: {
 						if (args.length() != 0) {
 							if (commandlist.find(args) != commandlist.end()) {
@@ -478,7 +476,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							string msg = "You may not use any commands.";
 							bool has = false;
 							for (unordered_map<string, ChatCommand>::iterator iter = commandlist.begin(); iter != commandlist.end(); iter++) {
-								if (player->getGmLevel() >= iter->second.command.second) {
+								if (player->getGmLevel() >= iter->second.level) {
 									if (!has) {
 										msg = "Available commands: ";
 										has = true;

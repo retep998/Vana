@@ -22,10 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <string>
-#include <utility>
 #include <vector>
 
-using std::pair;
 using std::string;
 using std::tr1::unordered_map;
 using std::vector;
@@ -42,7 +40,8 @@ namespace ChatHandler {
 			syntax = "";
 			return x;
 		}
-		pair<Commands, int32_t> command;
+		Commands command;
+		int32_t level;
 		string syntax;
 		vector<string> notes;
 	};
