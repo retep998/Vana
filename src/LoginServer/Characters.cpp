@@ -149,28 +149,28 @@ void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_
 	mysqlpp::Query query = Database::getCharDB().query();
 	int16_t inventory = GameLogicUtilities::getInventory(itemid);
 	if (inventory == Inventories::EquipInventory) {
-		Item *equip = &Item(itemid, false);
+		Item equip(itemid, false);
 		query << "INSERT INTO items (charid, inv, slot, itemid, slots, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name) VALUES ("
 			<< charid << ", "
 			<< inventory << ", "
 			<< slot << ", "
 			<< itemid << ", "
-			<< (int16_t) equip->slots << ", "
-			<< equip->istr << ", "
-			<< equip->idex << ", "
-			<< equip->iint << ", "
-			<< equip->iluk << ", "
-			<< equip->ihp << ", "
-			<< equip->imp << ", "
-			<< equip->iwatk << ", "
-			<< equip->imatk << ", "
-			<< equip->iwdef << ", "
-			<< equip->imdef << ", "
-			<< equip->iacc << ", "
-			<< equip->iavo << ", "
-			<< equip->ihand << ", "
-			<< equip->ispeed << ", "
-			<< equip->ijump << ", "
+			<< (int16_t) equip.slots << ", "
+			<< equip.istr << ", "
+			<< equip.idex << ", "
+			<< equip.iint << ", "
+			<< equip.iluk << ", "
+			<< equip.ihp << ", "
+			<< equip.imp << ", "
+			<< equip.iwatk << ", "
+			<< equip.imatk << ", "
+			<< equip.iwdef << ", "
+			<< equip.imdef << ", "
+			<< equip.iacc << ", "
+			<< equip.iavo << ", "
+			<< equip.ihand << ", "
+			<< equip.ispeed << ", "
+			<< equip.ijump << ", "
 			<< "\"\")";
 	}
 	else {
