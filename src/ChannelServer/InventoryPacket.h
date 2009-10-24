@@ -54,6 +54,7 @@ namespace InventoryPacket {
 	void sendHammerSlots(Player *player, int32_t slots);
 	void sendHulkSmash(Player *player, int16_t slot, Item *hammered);
 	void sendHammerUpdate(Player *player);
+	void sendChalkboardUpdate(Player *player, const string &msg = "");
 	void blankUpdate(Player *player);
 };
 

@@ -139,6 +139,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, packet); break;
 		case CMSG_CASH_SHOP: PlayerPacket::sendBlockedMessage(this, 0x02); break;
 		case CMSG_CHAIR: InventoryHandler::handleChair(this, packet); break;
+		case CMSG_CHALKBOARD: InventoryPacket::sendChalkboardUpdate(this); setChalkboard(""); break;
 		case CMSG_CHANNEL_CHANGE: changeChannel(packet.get<int8_t>()); break;
 		case CMSG_COMMAND: CommandHandler::handleCommand(this, packet); break;
 		case CMSG_DROP_MESOS: DropHandler::dropMesos(this, packet); break;
@@ -395,6 +396,9 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	}
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
+	}
+	if (!getChalkboard().empty() && (Maps::getMap(mapid)->getInfo()->fieldLimit & FieldLimitBits::Chalkboard) != 0) {
+		setChalkboard("");
 	}
 	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
 	MapPacket::changeMap(this);

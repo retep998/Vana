@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Id.h"
 #include "../Types.h"
+#include <boost/functional/hash.hpp>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
-#include <boost/functional/hash.hpp>
 
 namespace Timer {
 
