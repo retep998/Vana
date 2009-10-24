@@ -759,6 +759,13 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
+		case Items::Chalkboard:
+		case Items::Chalkboard2: {
+			string msg = packet.getString();
+			player->setChalkboard(msg);
+			InventoryPacket::sendChalkboardUpdate(player, msg);
+			break;
+		}
 		case Items::FungusScroll:
 		case Items::OinkerDelight:
 		case Items::ZetaNightmare:
