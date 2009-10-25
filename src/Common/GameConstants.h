@@ -252,6 +252,7 @@ namespace Inventories {
 	const uint8_t EtcInventory = 4;
 	const uint8_t CashInventory = 5;
 
+	const uint8_t EquippedSlots = 51;
 	const int8_t MaxPetCount = 3;
 	const uint8_t VipRockMax = 10;
 	const uint8_t TeleportRockMax = 5;
