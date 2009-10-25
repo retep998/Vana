@@ -53,7 +53,7 @@ void PlayerDataProvider::loadGuilds(int16_t worldId) {
 	for (int32_t i = 0; i < (int32_t) res.num_rows(); i++) {
 		logo.logo = static_cast<int16_t>(res[i]["logo"]);
 		logo.color = static_cast<uint8_t>(res[i]["logocolor"]);
-		logo.background = static_cast<int16_t>(res[i]["logobg"]); 
+		logo.background = static_cast<int16_t>(res[i]["logobg"]);
 		logo.backgroundColor = static_cast<uint8_t>(res[i]["logobgcolor"]);
 
 		ranks[0] = static_cast<string>(res[i]["rank1title"]);
