@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef NPCS_H
 #define NPCS_H
 
-#include "LuaNPC.h"
+#include "LuaNpc.h"
 #include "Pos.h"
 #include "Types.h"
 #include <boost/scoped_ptr.hpp>

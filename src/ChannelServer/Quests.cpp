@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quests.h"
 #include "Inventory.h"
-#include "NPCHandler.h"
+#include "NpcHandler.h"
 #include "Player.h"
 #include "QuestDataProvider.h"
 #include "QuestsPacket.h"

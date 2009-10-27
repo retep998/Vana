@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "NPCHandler.h"
+#include "NpcHandler.h"
 #include "Inventory.h"
 #include "Map.h"
 #include "Maps.h"
-#include "NPCDataProvider.h"
-#include "NPCPacket.h"
-#include "NPC.h"
+#include "NpcDataProvider.h"
+#include "NpcPacket.h"
+#include "Npc.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Player.h"
