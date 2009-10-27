@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropHandler.h"
 #include "GameConstants.h"
 #include "Instance.h"
-#include "Levels.h"
 #include "Maps.h"
 #include "MobsPacket.h"
 #include "PacketCreator.h"

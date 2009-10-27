@@ -28,7 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instances.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
-#include "Levels.h"
 #include "Maps.h"
 #include "MapPacket.h"
 #include "Mob.h"

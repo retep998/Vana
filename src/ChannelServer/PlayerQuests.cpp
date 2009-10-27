@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
-#include "Levels.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "QuestDataProvider.h"
