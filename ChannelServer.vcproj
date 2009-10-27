@@ -252,7 +252,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\MapleTVs.cpp"
+					RelativePath=".\src\ChannelServer\MapleTvs.cpp"
 					>
 				</File>
 				<File
@@ -268,7 +268,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\NPC.cpp"
+					RelativePath=".\src\ChannelServer\Npc.cpp"
 					>
 				</File>
 				<File
@@ -340,7 +340,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\GMPacket.cpp"
+					RelativePath=".\src\ChannelServer\GmPacket.cpp"
 					>
 				</File>
 				<File
@@ -368,7 +368,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\NPCPacket.cpp"
+					RelativePath=".\src\ChannelServer\NpcPacket.cpp"
 					>
 				</File>
 				<File
@@ -464,7 +464,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\LuaNPC.cpp"
+					RelativePath=".\src\ChannelServer\LuaNpc.cpp"
 					>
 				</File>
 				<File
@@ -596,7 +596,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\NPCHandler.cpp"
+					RelativePath=".\src\ChannelServer\NpcHandler.cpp"
 					>
 				</File>
 				<File
@@ -674,7 +674,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\MapleTVs.h"
+					RelativePath=".\src\ChannelServer\MapleTvs.h"
 					>
 				</File>
 				<File
@@ -694,7 +694,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\NPC.h"
+					RelativePath=".\src\ChannelServer\Npc.h"
 					>
 				</File>
 				<File
@@ -758,7 +758,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\GMPacket.h"
+					RelativePath=".\src\ChannelServer\GmPacket.h"
 					>
 				</File>
 				<File
@@ -782,7 +782,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\NPCPacket.h"
+					RelativePath=".\src\ChannelServer\NpcPacket.h"
 					>
 				</File>
 				<File
@@ -878,7 +878,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\LuaNPC.h"
+					RelativePath=".\src\ChannelServer\LuaNpc.h"
 					>
 				</File>
 				<File
@@ -1018,7 +1018,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\NPCHandler.h"
+					RelativePath=".\src\ChannelServer\NpcHandler.h"
 					>
 				</File>
 				<File
