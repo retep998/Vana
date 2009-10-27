@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapDataProvider.h"
 #include "Map.h"
-#include "MapleTVs.h"
+#include "MapleTvs.h"
 #include "Database.h"
 #include "StringUtilities.h"
 #include <string>

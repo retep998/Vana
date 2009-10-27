@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
-#include "GMPacket.h"
+#include "GmPacket.h"
 #include "Inventory.h"
 #include "MapPacket.h"
 #include "Maps.h"

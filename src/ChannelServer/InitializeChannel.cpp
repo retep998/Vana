@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
 #include "MobDataProvider.h"
-#include "NPCDataProvider.h"
+#include "NpcDataProvider.h"
 #include "QuestDataProvider.h"
 #include "ReactorDataProvider.h"
 #include "ScriptDataProvider.h"
