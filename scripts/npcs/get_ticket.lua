@@ -15,14 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Tommie (Orbis->Leafre waiting room)
+-- Numerous NPCs
 
-addText("Do you want to leave the waiting room? You can, but the ticket is NOT refundable. Are you sure you still want to leave this room?");
-yes = askYesNo();
+if getMap() == 240000111 then
+	-- Waiting room for Leafre -> Orbis
+	addText("Do you want to leave the waiting room? You can, but the ticket is NOT refundable. Are you sure you still want to leave this room?");
+	yes = askYesNo();
 
-if yes == 1 then
-	setMap(240000100);
-else
-	addText("You'll get to your destination in a few. Go ahead and talk to other people, and before you know it, you'll be there already.");
-	sendNext();
+	if yes == 1 then
+		setMap(240000100);
+	else
+		addText("You'll get to your destination in a few. Go ahead and talk to other people, and before you know it, you'll be there already.");
+		sendNext();
+	end
 end
