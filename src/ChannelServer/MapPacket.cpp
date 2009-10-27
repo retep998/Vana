@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Buffs.h"
 #include "ChannelServer.h"
-#include "Guilds.h"
 #include "Inventory.h"
 #include "MapleSession.h"
 #include "Maps.h"
@@ -26,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Pets.h"
 #include "Player.h"
+#include "PlayerDataProvider.h"
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
 #include "TimeUtilities.h"
@@ -40,12 +40,13 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName());
 	if (player->getGuildId() > 0) {
-		if (Guild * gi = Guilds::Instance()->getGuild(player->getGuildId())) {
+		if (Guild *gi = PlayerDataProvider::Instance()->getGuild(player->getGuildId())) {
 			packet.addString(gi->name);
-			packet.add<int16_t>(gi->logobg);
-			packet.add<uint8_t>(gi->logobgcolor);
-			packet.add<int16_t>(gi->logo);
-			packet.add<uint8_t>(gi->logocolor);
+			GuildLogo logo = gi->logo;
+			packet.add<int16_t>(logo.background);
+			packet.add<uint8_t>(logo.backgroundColor);
+			packet.add<int16_t>(logo.logo);
+			packet.add<uint8_t>(logo.color);
 		}
 		else {
 			packet.addString("");

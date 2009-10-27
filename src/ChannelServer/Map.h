@@ -48,6 +48,8 @@ class Map {
 public:
 	Map(MapInfoPtr info);
 
+	void boatDock(bool isDocked);
+
 	// Map Info
 	static const int32_t NpcStart = 100;
 	static const int32_t ReactorStart = 200;
@@ -183,6 +185,7 @@ private:
 	int32_t poisonmists;
 	int32_t timemob;
 	int32_t spawnmobs;
+	bool ship;
 
 	void updateMobControl(Player *player);
 	int32_t getTimeMobId() const { return timemob; }

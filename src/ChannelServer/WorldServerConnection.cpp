@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "PartyHandler.h"
 #include "PlayerActiveBuffs.h"
-#include "PlayerPacketHolder.h"
+#include "PlayerDataProvider.h"
 #include "PlayersPacket.h"
 #include "WorldServerConnectHandler.h"
 #include "WorldServerConnectPacket.h"
@@ -52,8 +52,8 @@ void WorldServerConnection::realHandleRequest(PacketReader &packet) {
 		case INTER_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
 		case INTER_PARTY_OPERATION: PartyHandler::handleResponse(packet); break;
 		case INTER_PARTY_SYNC: PartyHandler::handleDataSync(packet); break;
-		case INTER_TRANSFER_PLAYER_PACKET: PlayerPacketHolder::Instance()->parseIncomingPacket(packet); break;
-		case INTER_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerPacketHolder::Instance()->removePacket(packet.get<int32_t>()); break;
+		case INTER_TRANSFER_PLAYER_PACKET: PlayerDataProvider::Instance()->parseIncomingPacket(packet); break;
+		case INTER_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerDataProvider::Instance()->removePacket(packet.get<int32_t>()); break;
 		case INTER_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet); break;
 		case INTER_GUILD_OPERATION: WorldServerConnectHandler::guildPacketHandlerWorld(packet); break;
 		case INTER_ALLIANCE: WorldServerConnectHandler::alliancePacketHandlerWorld(packet); break;

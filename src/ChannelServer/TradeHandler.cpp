@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TradeHandler.h"
 #include "GameLogicUtilities.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "PacketReader.h"
 #include "Timer/Thread.h"
 #include "Timer/Time.h"
@@ -44,7 +44,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 				return;
 			}
 			int32_t recvid = packet.get<int32_t>();
-			Player *receiver = Players::Instance()->getPlayer(recvid);
+			Player *receiver = PlayerDataProvider::Instance()->getPlayer(recvid);
 			if (receiver != 0) {
 				if (!receiver->isTrading())
 					TradesPacket::sendTradeRequest(player, receiver, Trades::Instance()->newTrade(player, receiver));

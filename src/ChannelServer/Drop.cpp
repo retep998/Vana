@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Pets.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "TimeUtilities.h"
 #include <limits>
 
@@ -75,7 +75,7 @@ void Drop::doDrop(const Pos &origin) {
 		else
 			DropsPacket::showDrop(0, this, 1, true, origin);
 	}
-	else if (Player *player = Players::Instance()->getPlayer(playerid)) {
+	else if (Player *player = PlayerDataProvider::Instance()->getPlayer(playerid)) {
 		if (player->getMap() == this->mapid) {
 			DropsPacket::showDrop(player, this, 1, true, origin);
 		}

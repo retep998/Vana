@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Pos.h"
 #include "QuestDataProvider.h"
 #include "Randomizer.h"
@@ -44,7 +44,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 		return;
 	}
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
-	Player *player = Players::Instance()->getPlayer(playerid);
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	int16_t d = 0;
 	int32_t partyid = 0;
 	Pos pos;

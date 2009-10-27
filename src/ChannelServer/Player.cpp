@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "GuildPacket.h"
-#include "Guilds.h"
 #include "Instance.h"
 #include "Inventory.h"
 #include "InventoryHandler.h"
@@ -49,10 +48,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Party.h"
 #include "PartyHandler.h"
 #include "Pets.h"
+#include "PlayerDataProvider.h"
 #include "PlayerHandler.h"
 #include "PlayerPacket.h"
-#include "PlayerPacketHolder.h"
-#include "Players.h"
 #include "Quests.h"
 #include "Reactors.h"
 #include "RecvHeader.h"
@@ -120,7 +118,7 @@ Player::~Player() {
 			WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);	
 		}
 		Maps::getMap(map)->removePlayer(this);
-		Players::Instance()->removePlayer(this);
+		PlayerDataProvider::Instance()->removePlayer(this);
 	}
 }
 
@@ -291,8 +289,8 @@ void Player::playerConnect(PacketReader &packet) {
 	summons.reset(new PlayerSummons(this));
 
 	// Packet transferring on channel switch
-	if (PlayerPacketHolder::Instance()->checkPlayer(id)) {
-		PacketReader pack = PlayerPacketHolder::Instance()->getPacket(id);
+	if (PlayerDataProvider::Instance()->checkPlayer(id)) {
+		PacketReader pack = PlayerDataProvider::Instance()->getPacket(id);
 
 		setConnectionTime(pack.get<int64_t>());
 
@@ -306,7 +304,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 		getSummons()->parseSummonTransferPacket(pack);
 
-		PlayerPacketHolder::Instance()->removePacket(id);
+		PlayerDataProvider::Instance()->removePacket(id);
 	}
 	else {
 		// No packet, that means that they're connecting for the first time

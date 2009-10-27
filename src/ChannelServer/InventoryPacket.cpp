@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
+#include "PlayerDataProvider.h"
 #include "PlayerInventory.h"
 #include "PlayerPacketHelper.h"
-#include "Players.h"
 #include "SendHeader.h"
 
 void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_t slot2) {
@@ -158,7 +158,7 @@ void InventoryPacket::showMegaphone(Player *player, const string &msg) {
 	packet.add<int16_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(2);
 	packet.addString(msg);
-	Players::Instance()->sendPacket(packet); // In global, this sends to everyone on the current channel, not the map
+	PlayerDataProvider::Instance()->sendPacket(packet); // In global, this sends to everyone on the current channel, not the map
 }
 
 void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool whisper) {
