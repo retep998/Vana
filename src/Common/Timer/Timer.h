@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define TIMER_TIMER_H
 
 #include "Id.h"
-#include "../TimeUtilities.h"
 #include "../Types.h"
 #include <ctime>
 #include <boost/tr1/functional.hpp>
@@ -32,13 +31,12 @@ class Container;
 
 class Timer {
 public:
-	Timer(function<void ()> func, Id id, Container *container,
-		int64_t runAt, clock_t repeat = 0);
+	Timer(function<void ()> func, const Id &id, Container *container, int64_t runAt, clock_t repeat = 0);
 	~Timer();
 
 	Id getId() const { return m_id; }
 	int64_t getRunAt() const { return m_run_at; }
-	int64_t getTimeLeft() const { return m_run_at - TimeUtilities::getTickCount(); }
+	int64_t getTimeLeft() const;
 
 	void run();
 	void reset(); // Only available for repeated timers
