@@ -213,7 +213,7 @@
 						>
 					</File>
 					<File
-						RelativePath=".\src\Common\NPCDataProvider.cpp"
+						RelativePath=".\src\Common\NpcDataProvider.cpp"
 						>
 					</File>
 					<File
@@ -463,7 +463,7 @@
 						>
 					</File>
 					<File
-						RelativePath=".\src\Common\NPCDataProvider.h"
+						RelativePath=".\src\Common\NpcDataProvider.h"
 						>
 					</File>
 					<File
