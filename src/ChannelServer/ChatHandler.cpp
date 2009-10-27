@@ -777,10 +777,10 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								}
 								else if (type > 200) {
 									if (type == 300) {
-										query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << matches[2];
+										query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
 									}
 									else if (type == 400) {
-										query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+										query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << matches[2];
 									}
 									res = query.store();
 
