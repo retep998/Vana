@@ -17,12 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Timer.h"
 #include "Container.h"
+#include "../TimeUtilities.h"
 #include "Thread.h"
 
 namespace Timer {
 
-Timer::Timer(function<void ()> func, Id id,
-	Container *container, int64_t runAt, clock_t repeat) :
+Timer::Timer(function<void ()> func, const Id &id, Container *container, int64_t runAt, clock_t repeat) :
 m_id(id),
 m_container(container),
 m_run_at(runAt),
@@ -59,6 +59,10 @@ void Timer::run() {
 void Timer::reset() {
 	m_run_at = m_repeat + TimeUtilities::getTickCount();
 	Thread::Instance()->forceReSort();
+}
+
+int64_t Timer::getTimeLeft() const {
+	return m_run_at - TimeUtilities::getTickCount();
 }
 
 }

@@ -114,8 +114,8 @@ void PartyHandler::leaveParty(WorldServerAcceptConnection *player, int32_t playe
 				iter->second->setParty(0);
 			}
 		}
-		WorldServerAcceptPacket::sendDisbandParty(pplayer->getParty()->getId());
-		PlayerDataProvider::Instance()->removeParty(pplayer->getParty()->getId());
+		WorldServerAcceptPacket::sendDisbandParty(party->getId());
+		PlayerDataProvider::Instance()->removeParty(party->getId());
 	}
 	else {
 		WorldServerAcceptPacket::sendRemovePartyPlayer(pplayer->getId(), pplayer->getParty()->getId());
