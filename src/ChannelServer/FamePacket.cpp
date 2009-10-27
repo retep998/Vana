@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "SendHeader.h"
 
 void FamePacket::sendError(Player *player, int32_t reason) {

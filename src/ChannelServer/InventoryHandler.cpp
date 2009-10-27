@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Pets.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "ShopDataProvider.h"
@@ -668,7 +668,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			bool hasreceiver = (packet.get<int8_t>() == 3);
 			bool show_whisper = (itemid == Items::Megassenger ? packet.getBool() : false);
 
-			Player *receiver = Players::Instance()->getPlayer(packet.getString());
+			Player *receiver = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 			int32_t time = 15;
 			if ((hasreceiver && receiver != 0) || (!hasreceiver && receiver == 0)) {
 				string msg = packet.getString();
@@ -709,7 +709,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			bool show_whisper = (itemid == Items::HeartMegassenger ? packet.getBool() : false);
 
 			string name = packet.getString();
-			Player *receiver = Players::Instance()->getPlayer(name);
+			Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
 			int32_t time = 60;
 			if (receiver != 0) {
 				string msg = packet.getString();
@@ -833,7 +833,7 @@ bool InventoryHandler::handleRockTeleport(Player *player, int8_t type, int32_t i
 	}
 	else if (mode == 1) { // IGN
 		string tname = packet.getString();
-		Player *target = Players::Instance()->getPlayer(tname);
+		Player *target = PlayerDataProvider::Instance()->getPlayer(tname);
 		if (target != 0 && target != player) {
 			targetmapid = target->getMap();
 		}

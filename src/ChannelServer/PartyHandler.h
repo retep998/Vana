@@ -19,16 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PARTYHANDLER_H
 
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-
-using std::tr1::unordered_map;
 
 class PacketReader;
-class Party;
 class Player;
 
 namespace PartyHandler {
-	extern unordered_map<int32_t, Party *> parties;
 	void handleRequest(Player *player, PacketReader &packet);
 	void handleResponse(PacketReader &packet);
 	void handleDataSync(PacketReader &packet);

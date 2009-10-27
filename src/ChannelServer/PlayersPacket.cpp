@@ -16,9 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayersPacket.h"
-#include "Alliances.h"
 #include "ChannelServer.h"
-#include "Guilds.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InterHeader.h"
@@ -28,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Pets.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "SendHeader.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
@@ -103,7 +101,7 @@ void PlayersPacket::showMessage(const string &msg, int8_t type) {
 	packet.addString(msg);
 	if (type == 6)
 		packet.add<int32_t>(0);
-	Players::Instance()->sendPacket(packet);
+	PlayerDataProvider::Instance()->sendPacket(packet);
 }
 
 void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
@@ -125,9 +123,9 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
 	packet.add<int16_t>(getinfo->getStats()->getJob());
 	packet.add<int16_t>(getinfo->getStats()->getFame());
 	packet.addBool(false); // Married
-	if (Guild * guild = Guilds::Instance()->getGuild(getinfo->getGuildId())) {
+	if (Guild *guild = PlayerDataProvider::Instance()->getGuild(getinfo->getGuildId())) {
 		packet.addString(guild->name);
-		if (Alliance *alliance = Alliances::Instance()->getAlliance(guild->allianceid))
+		if (Alliance *alliance = PlayerDataProvider::Instance()->getAlliance(guild->allianceid))
 			packet.addString(alliance->name);
 		else
 			packet.addString("");
@@ -179,7 +177,7 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, 
 void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
 	PacketCreator packet;
 	packet.addBuffer(data, len);
-	Players::Instance()->sendPacket(packet);
+	PlayerDataProvider::Instance()->sendPacket(packet);
 }
 
 void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {

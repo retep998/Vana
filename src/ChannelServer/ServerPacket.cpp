@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "SendHeader.h"
 
 void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
@@ -37,7 +37,7 @@ void ServerPacket::changeScrollingHeader(const string &msg) {
 	packet.add<int8_t>(4);
 	packet.add<int8_t>(1);
 	packet.addString(msg);
-	Players::Instance()->sendPacket(packet);
+	PlayerDataProvider::Instance()->sendPacket(packet);
 }
 
 void ServerPacket::scrollingHeaderOff() {
@@ -45,5 +45,5 @@ void ServerPacket::scrollingHeaderOff() {
 	packet.add<int16_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(4);
 	packet.add<int8_t>(0);
-	Players::Instance()->sendPacket(packet);
+	PlayerDataProvider::Instance()->sendPacket(packet);
 }

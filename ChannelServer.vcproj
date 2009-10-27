@@ -212,10 +212,6 @@
 				Name="ChannelServer"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\Alliances.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Buffs.cpp"
 					>
 				</File>
@@ -233,10 +229,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Fame.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Guilds.cpp"
 					>
 				</File>
 				<File
@@ -277,10 +269,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Pets.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Players.cpp"
 					>
 				</File>
 				<File
@@ -496,6 +484,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerDataProvider.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.cpp"
 					>
 				</File>
@@ -505,10 +497,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerMounts.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\PlayerPacketHolder.cpp"
 					>
 				</File>
 				<File
@@ -626,10 +614,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Alliances.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\BbsPacket.h"
 					>
 				</File>
@@ -655,10 +639,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\GuildPacket.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Guilds.h"
 					>
 				</File>
 				<File
@@ -703,10 +683,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Pets.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\Players.h"
 					>
 				</File>
 				<File
@@ -910,6 +886,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerDataProvider.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.h"
 					>
 				</File>
@@ -919,10 +899,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerMounts.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\PlayerPacketHolder.h"
 					>
 				</File>
 				<File

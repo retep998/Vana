@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MovementHandler.h"
 #include "PacketReader.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Pos.h"
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
@@ -314,7 +314,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, MobSki
 }
 
 int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8_t level, int32_t weapon, int8_t hits, int32_t damage) {
-	Player *player = Players::Instance()->getPlayer(playerid);
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	vector<StatusInfo> statuses;
 	int16_t y = 0;
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);

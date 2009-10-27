@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
 #include "SkillsPacket.h"
@@ -297,7 +297,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
-				Player *target = Players::Instance()->getPlayer(playerid);
+				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
 				if (target != 0 && target != player) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
@@ -310,7 +310,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
-				Player *target = Players::Instance()->getPlayer(playerid);
+				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
 				if (target != 0 && target != player && target->getStats()->getHp() > 0) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
@@ -325,7 +325,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
-				Player *target = Players::Instance()->getPlayer(playerid);
+				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
 				if (target != 0 && target != player && target->getStats()->getHp() <= 0) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);

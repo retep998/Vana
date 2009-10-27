@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IpUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "ServerPacket.h"
 #include "WorldServerConnection.h"
 

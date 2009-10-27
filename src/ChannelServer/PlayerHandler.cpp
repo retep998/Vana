@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MonsterBookPacket.h"
 #include "MovementHandler.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "PlayerPacket.h"
 #include "PlayersPacket.h"
 #include "Randomizer.h"
@@ -235,7 +235,7 @@ void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet)
 
 void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
-	if (Player *info = Players::Instance()->getPlayer(packet.get<int32_t>())) {
+	if (Player *info = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>())) {
 		PlayersPacket::showInfo(player, info, packet.getBool());
 	}
 }
@@ -355,7 +355,7 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 	string line4 = packet.getString();
 	string line5 = packet.getString();
 	if (has_to_name) 
-		receiver = Players::Instance()->getPlayer(packet.getString());
+		receiver = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 
 	int32_t time = 15;
 	switch (type) {

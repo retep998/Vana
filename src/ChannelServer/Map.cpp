@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Party.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "PlayerPacket.h"
 #include "Randomizer.h"
 #include "ReactorPacket.h"
@@ -84,16 +84,31 @@ void Map::setMusic(const string &musicname) {
 // Players
 void Map::addPlayer(Player *player) {
 	this->players.push_back(player);
-	if (info->forcemapequip) // Apple training maps/Showa spa
+	if (info->forcemapequip) {
 		MapPacket::forceMapEquip(player);
-	if (!player->getActiveBuffs()->isUsingHide())
+	}
+	if (!player->getActiveBuffs()->isUsingHide()) {
 		MapPacket::showPlayer(player);
-	else
+	}
+	else {
 		GmPacket::beginHide(player);
-	if (timer > 0)
+	}
+	if (timer > 0) {
 		MapPacket::showTimer(player, timer - static_cast<int32_t>(time(0) - timerstart));
-	else if (instance != 0 && instance->showTimer() && instance->checkInstanceTimer() > 0)
+	}
+	else if (instance != 0 && instance->showTimer() && instance->checkInstanceTimer() > 0) {
 		MapPacket::showTimer(player, instance->checkInstanceTimer());
+	}
+	if (ship) {
+		// Boat packet, need to change this section slightly...
+	}
+}
+
+void Map::boatDock(bool isDocked) {
+	ship = isDocked;
+	PacketCreator packet;
+	// Fill boat packet
+	sendPacket(packet);
 }
 
 string Map::getPlayerNames() {

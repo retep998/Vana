@@ -18,15 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GuildPacket.h"
 #include "ChannelServer.h"
 #include "Database.h"
-#include "Guilds.h"
 #include "InterHeader.h"
 #include "Maps.h"
 #include "Party.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
-#include "PlayerPacket.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
+#include "PlayerPacket.h"
 #include "PlayersPacket.h"
 #include "SendHeader.h"
 #include "WorldServerConnection.h"
@@ -132,7 +131,7 @@ void GuildPacket::handleDenyPacket(Player *player, PacketReader &packet) {
 int8_t GuildPacket::checkGuildExist(string name) {
 	if (name.length() < 3 || name.length() > 12)
 		return 2;
-	return ((Guilds::Instance()->getGuild(name) != 0) ? 1 : 0);
+	return ((PlayerDataProvider::Instance()->getGuild(name) != 0) ? 1 : 0);
 }
 
 void GuildPacket::sendCreateGuildWindow(Player * player) {
@@ -273,31 +272,30 @@ void GuildPacket::sendRemoveEmblem(int32_t guildid, int32_t playerid) {
 }
 
 void GuildPacket::handleEmblemChange(PacketReader &packet) {
-	Guild * gi = Guilds::Instance()->getGuild(packet.get<int32_t>());
+	Guild *gi = PlayerDataProvider::Instance()->getGuild(packet.get<int32_t>());
 	if (gi == 0) 
 		return;
-	int16_t logo = packet.get<int16_t>();
-	uint8_t logocolor = packet.get<uint8_t>();
-	int16_t logobg = packet.get<int16_t>();
-	uint8_t logobgcolor = packet.get<uint8_t>();
+
+	GuildLogo logo;
+	logo.logo = packet.get<int16_t>();
+	logo.color = packet.get<uint8_t>();
+	logo.background = packet.get<int16_t>();
+	logo.backgroundColor = packet.get<uint8_t>();
 
 	gi->logo = logo;
-	gi->logocolor = logocolor;
-	gi->logobg = logobg;
-	gi->logobgcolor = logobgcolor;
 
 	int32_t playersToChange = packet.get<int32_t>();
 
 	for (int32_t i = 0; i < playersToChange; i++){
-		Player * player = Players::Instance()->getPlayer(packet.get<int32_t>());
+		Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
 		if (player == 0) continue;
 		PacketCreator pack;
 		pack.add<int16_t>(SMSG_GUILD_EMBLEM);
 		pack.add<int32_t>(player->getId());
-		pack.add<int16_t>(logobg);
-		pack.add<uint8_t>(logobgcolor);
-		pack.add<int16_t>(logo);
-		pack.add<uint8_t>(logocolor);
+		pack.add<int16_t>(logo.background);
+		pack.add<uint8_t>(logo.backgroundColor);
+		pack.add<int16_t>(logo.logo);
+		pack.add<uint8_t>(logo.color);
 		Maps::getMap(player->getMap())->sendPacket(pack, player);	
 	}
 }
@@ -308,8 +306,9 @@ void GuildPacket::handleNameChange(PacketReader &packet) {
 	int32_t playersToChange = packet.get<int32_t>();
 
 	for (int32_t i = 0; i < playersToChange; i++) {
-		Player * player = Players::Instance()->getPlayer(packet.get<int32_t>());
-		if (player == 0) continue;
+		Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
+		if (player == 0)
+			continue;
 		player->setGuildId(guildid);
 		player->setGuildRank(packet.get<uint8_t>());
 

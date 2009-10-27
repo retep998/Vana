@@ -15,12 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "AlliancePacket.h"
 #include "ChannelServer.h"
 #include "Database.h"
 #include "GuildPacket.h"
-#include "Guilds.h"
 #include "InterHeader.h"
 #include "Maps.h"
 #include "PacketCreator.h"
@@ -28,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "PlayersPacket.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "SendHeader.h"
 #include "WorldServerConnection.h"
 

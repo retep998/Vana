@@ -239,6 +239,7 @@ namespace LuaExports {
 	int getHour(lua_State *luaVm);
 	int getMinute(lua_State *luaVm);
 	int getMonth(lua_State *luaVm);
+	int getNearestMinute(lua_State *luaVm);
 	int getSecond(lua_State *luaVm);
 	int getTime(lua_State *luaVm);
 	int getTimeZoneOffset(lua_State *luaVm);

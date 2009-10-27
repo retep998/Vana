@@ -21,10 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "WorldServerConnectPacket.h"
-
-unordered_map<int32_t, Party *> PartyHandler::parties;
 
 void PartyHandler::handleRequest(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
@@ -48,8 +46,8 @@ void PartyHandler::handleResponse(PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 	int32_t playerid = packet.get<int32_t>();
 	int32_t partyid = packet.get<int32_t>();
-	Player *player = Players::Instance()->getPlayer(playerid);
-	Party *party = parties.find(partyid) != parties.end() ? parties[partyid] : 0;
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Party *party = PlayerDataProvider::Instance()->getParty(partyid);
 	if (player == 0 || party == 0)
 		return;
 	switch (type) {
@@ -85,7 +83,7 @@ void PartyHandler::handleDataSync(PacketReader &packet) {
 			int32_t partyid = packet.get<int32_t>();
 			int32_t leaderid = packet.get<int32_t>();
 			Party *party = new Party(partyid);
-			Player *leader = Players::Instance()->getPlayer(leaderid);
+			Player *leader = PlayerDataProvider::Instance()->getPlayer(leaderid);
 			if (leader == 0) {
 				party->addMember(leaderid);
 			}
@@ -93,13 +91,12 @@ void PartyHandler::handleDataSync(PacketReader &packet) {
 				party->addMember(leader);
 			}
 			party->setLeader(leaderid, true);
-			parties[partyid] = party;
+			PlayerDataProvider::Instance()->addParty(party);
 			break;
 		}
 		case PartyActions::Sync::SwitchLeader: {
 			int32_t partyid = packet.get<int32_t>();
-			if (parties.find(partyid) != parties.end()) {
-				Party *party = parties[partyid];
+			if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
 				int32_t newleader = packet.get<int32_t>();
 				party->setLeader(newleader);
 			}
@@ -107,10 +104,9 @@ void PartyHandler::handleDataSync(PacketReader &packet) {
 		}
 		case PartyActions::Sync::RemoveMember: {
 			int32_t partyid = packet.get<int32_t>();
-			if (parties.find(partyid) != parties.end()) {
-				Party *party = parties[partyid];
+			if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
 				int32_t playerid = packet.get<int32_t>();
-				Player *member = Players::Instance()->getPlayer(playerid);
+				Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
 				if (member == 0) {
 					party->deleteMember(playerid);
 				}
@@ -122,10 +118,9 @@ void PartyHandler::handleDataSync(PacketReader &packet) {
 		}
 		case PartyActions::Sync::AddMember: {
 			int32_t partyid = packet.get<int32_t>();
-			if (parties.find(partyid) != parties.end()) {
-				Party *party = parties[partyid];
+			if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
 				int32_t playerid = packet.get<int32_t>();
-				Player *member = Players::Instance()->getPlayer(playerid);
+				Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
 				if (member == 0) {
 					party->addMember(playerid);
 				}
@@ -150,16 +145,14 @@ void PartyHandler::handleChannelStart(PacketReader &packet) {
 		}
 		int32_t leaderid = packet.get<int32_t>();
 		party->setLeader(leaderid, true);
-		parties[partyid] = party;
+		PlayerDataProvider::Instance()->addParty(party);
 	}
 }
 
 void PartyHandler::disbandParty(PacketReader &packet) {
 	int32_t partyid = packet.get<int32_t>();
-	if (parties.find(partyid) != parties.end()) {
-		Party *party = parties[partyid];
+	if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
 		party->disband();
-		delete party;
-		parties.erase(partyid);
+		PlayerDataProvider::Instance()->removeParty(party->getId());
 	}
 }
