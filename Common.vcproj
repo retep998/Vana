@@ -688,6 +688,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\MapObjects.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Pos.h"
 					>
 				</File>
