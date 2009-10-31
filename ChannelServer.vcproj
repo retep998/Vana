@@ -427,19 +427,23 @@
 			<Filter
 				Name="Inter-Server"
 				>
-				<File
-					RelativePath=".\src\ChannelServer\WorldServerConnection.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\WorldServerConnectPacket.cpp"
-					>
-				</File>
 				<Filter
-					Name="Handlers"
+					Name="Sync"
+					>
+				</Filter>
+				<Filter
+					Name="World"
 					>
 					<File
 						RelativePath=".\src\ChannelServer\WorldServerConnectHandler.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\ChannelServer\WorldServerConnection.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.cpp"
 						>
 					</File>
 				</Filter>
@@ -829,19 +833,23 @@
 			<Filter
 				Name="Inter-Server"
 				>
-				<File
-					RelativePath=".\src\ChannelServer\WorldServerConnection.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\WorldServerConnectPacket.h"
-					>
-				</File>
 				<Filter
-					Name="Handlers"
+					Name="Sync"
+					>
+				</Filter>
+				<Filter
+					Name="World"
 					>
 					<File
 						RelativePath=".\src\ChannelServer\WorldServerConnectHandler.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\ChannelServer\WorldServerConnection.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\ChannelServer\WorldServerConnectPacket.h"
 						>
 					</File>
 				</Filter>

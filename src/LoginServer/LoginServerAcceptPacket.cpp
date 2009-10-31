@@ -16,40 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptPacket.h"
+#include "Configuration.h"
+#include "ConfigurationPacket.h"
 #include "InterHeader.h"
 #include "LoginServerAcceptConnection.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Rates.h"
+#include "World.h"
 #include "Worlds.h"
 
 void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *player, World *world) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_WORLD_CONNECT);
-	packet.add<int8_t>(world->id);
-	packet.add<int16_t>(world->port);
-	packet.add<int32_t>(world->maxChannels);
-	packet.add<int32_t>(world->maxChars);
-	packet.add<int8_t>(world->maxMultiLevel);
-	packet.add<int16_t>(world->maxStats);
-	packet.addString(world->scrollingHeader);
-	// Boss stuff
-	packet.add<int16_t>(world->pianusAttempts);
-	packet.add<int16_t>(world->papAttempts);
-	packet.add<int16_t>(world->zakumAttempts);
-	packet.add<int16_t>(world->horntailAttempts);
-	packet.add<int16_t>(world->pinkbeanAttempts);
-	packet.addVector(world->pianusChannels);
-	packet.addVector(world->papChannels);
-	packet.addVector(world->zakumChannels);
-	packet.addVector(world->horntailChannels);
-	packet.addVector(world->pinkbeanChannels);
-	// Rates
-	packet.add<int32_t>(Rates::SetBits::all);
-	packet.add<int32_t>(world->exprate);
-	packet.add<int32_t>(world->questexprate);
-	packet.add<int32_t>(world->mesorate);
-	packet.add<int32_t>(world->droprate);
+	packet.add<int8_t>(world->getId());
+	packet.add<uint16_t>(world->getPort());
+
+	ConfigurationPacket::addConfig(world->getConfig(), packet);
+
 	player->getSession()->send(packet);
 }
 
@@ -60,12 +44,12 @@ void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, int16_t port) {
+void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, uint16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_LOGIN_CHANNEL_CONNECT);
 	packet.add<int8_t>(worldid);
 	packet.add<uint32_t>(ip);
-	packet.add<int16_t>(port);
+	packet.add<uint16_t>(port);
 	player->getSession()->send(packet);
 }
 

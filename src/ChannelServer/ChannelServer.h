@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CHANNELSERVER_H
 
 #include "AbstractServer.h"
+#include "Configuration.h"
 #include "Types.h"
 #include <boost/utility.hpp>
 #include <string>
@@ -43,102 +44,73 @@ public:
 	void connectWorld();
 	void sendToWorld(PacketCreator &packet);
 
-	void setWorld(int8_t id) { world = id; }
-	void setMaxMultiLevel(uint8_t level) { maxMultiLevel = level; }
-	void setMaxChars(int32_t chars) { maxChars = chars; }
-	void setWorldPort(uint16_t port) { world_port = port; }
-	void setPort(uint16_t port) { this->port = port; }
-	void setChannel(int16_t channel) { this->channel = channel; }
-	void setExprate(int32_t exprate) { this->exprate = exprate; }
-	void setQuestExprate(int32_t questexprate) { this->questexprate = questexprate; }
-	void setMesorate(int32_t mesorate) { this->mesorate = mesorate; }
-	void setDroprate(int32_t droprate) { this->droprate = droprate; }
-	void setMaxStats(int16_t max) { this->maxStats = max; }
-	void setPianusAttempts(int16_t attempts) { pianusAttempts = attempts; }
-	void setPapAttempts(int16_t attempts) { papAttempts = attempts; }
-	void setZakumAttempts(int16_t attempts) { zakumAttempts = attempts; }
-	void setHorntailAttempts(int16_t attempts) { horntailAttempts = attempts; }
-	void setPinkBeanAttempts(int16_t attempts) { pinkbeanAttempts = attempts; }
+	void setPianusChannel(bool isChannel) { m_pianusChannel = isChannel; }
+	void setPapChannel(bool isChannel) { m_papChannel = isChannel; }
+	void setZakumChannel(bool isChannel) { m_zakumChannel = isChannel; }
+	void setHorntailChannel(bool isChannel) {m_horntailChannel = isChannel; }
+	void setPinkBeanChannel(bool isChannel) { m_pinkbeanChannel = isChannel; }
+	void setChannel(int16_t channel) { m_channel = channel; }
+	void setWorld(int8_t id) { m_world = id; }
+	void setWorldPort(uint16_t port) { m_worldPort = port; }
+	void setPort(uint16_t port) { m_port = port; }
 	void setScrollingHeader(const string &message);
-	void setWorldIp(uint32_t ip) { world_ip = ip; }
+	void setWorldIp(uint32_t ip) { m_worldIp = ip; }
+	void setExpRate(int32_t rate) { m_config.expRate = rate; }
+	void setQuestExpRate(int32_t rate) { m_config.questExpRate = rate; }
+	void setDropRate(int32_t rate) { m_config.dropRate = rate; }
+	void setMesoRate(int32_t rate) { m_config.mesoRate = rate; }
+	void setConfig(const Configuration &config) { m_config = config; }
 
-	int8_t getWorld() const { return world; }
-	uint8_t getMaxMultiLevel() const { return maxMultiLevel; }
-	int16_t getMaxStats() const { return maxStats; }
-	int16_t getChannel() const { return channel; }
-	int32_t getOnlineId() const { return 20000 + (int32_t) world * 100 + channel; }
-	int32_t getExprate() const { return exprate; }
-	int32_t getQuestExprate() const { return questexprate; }
-	int32_t getMesorate() const { return mesorate; }
-	int32_t getDroprate() const { return droprate; }
-	int32_t getMaxChars() const { return maxChars; }
-	int16_t getPianusAttempts() const { return pianusAttempts; }
-	int16_t getPapAttempts() const { return papAttempts; }
-	int16_t getZakumAttempts() const { return zakumAttempts; }
-	int16_t getHorntailAttempts() const { return horntailAttempts; }
-	int16_t getPinkBeanAttempts() const { return pinkbeanAttempts; }
-	string getScrollingHeader() const { return scrollingHeader; }
-	WorldServerConnection * getWorldConnection() const { return worldPlayer; }
-	bool isConnected() const { return channel != -1; }
-	
+	bool isConnected() const { return m_channel != -1; }
+	int8_t getWorld() const { return m_world; }
+	uint8_t getMaxMultiLevel() const { return m_config.maxMultiLevel; }
+	int16_t getMaxStats() const { return m_config.maxStats; }
+	int16_t getChannel() const { return m_channel; }
+	int32_t getOnlineId() const { return 20000 + (int32_t) m_world * 100 + m_channel; }
+	int32_t getExpRate() const { return m_config.expRate; }
+	int32_t getQuestExpRate() const { return m_config.questExpRate; }
+	int32_t getMesoRate() const { return m_config.mesoRate; }
+	int32_t getDropRate() const { return m_config.dropRate; }
+	int32_t getMaxChars() const { return m_config.maxChars; }
+	int16_t getPianusAttempts() const { return m_config.pianusAttempts; }
+	int16_t getPapAttempts() const { return m_config.papAttempts; }
+	int16_t getZakumAttempts() const { return m_config.zakumAttempts; }
+	int16_t getHorntailAttempts() const { return m_config.horntailAttempts; }
+	int16_t getPinkBeanAttempts() const { return m_config.pinkbeanAttempts; }
+	string getScrollingHeader() const { return m_config.scrollingHeader; }
+	WorldServerConnection * getWorldConnection() const { return m_worldConnection; }
+
 	// Specific bosses that can be battled on this channel
-	void setPianusChannel(bool is) { this->pianusChannel = is; }
-	void setPapChannel(bool is) { this->papChannel = is; }
-	void setZakumChannel(bool is) { this->zakumChannel = is; }
-	void setHorntailChannel(bool is) { this->horntailChannel = is; }
-	void setPinkBeanChannel(bool is) { this->pinkbeanChannel = is; }
-	bool isPianusChannel() const { return pianusChannel; }
-	bool isPapChannel() const { return papChannel; }
-	bool isZakumChannel() const { return zakumChannel; }
-	bool isHorntailChannel() const { return horntailChannel; }
-	bool isPinkBeanChannel() const { return pinkbeanChannel; }
+	bool isPianusChannel() const { return m_pianusChannel; }
+	bool isPapChannel() const { return m_papChannel; }
+	bool isZakumChannel() const { return m_zakumChannel; }
+	bool isHorntailChannel() const { return m_horntailChannel; }
+	bool isPinkBeanChannel() const { return m_pinkbeanChannel; }
 	// Boss channel lists
-	void setPianusChannels(const vector<int8_t> &channels) { this->pianusChannels = channels; }
-	void setPapChannels(const vector<int8_t> &channels) { this->papChannels = channels; }
-	void setZakumChannels(const vector<int8_t> &channels) { this->zakumChannels = channels; }
-	void setHorntailChannels(const vector<int8_t> &channels) { this->horntailChannels = channels; }
-	void setPinkBeanChannels(const vector<int8_t> &channels) { this->pinkbeanChannels = channels; }
-	vector<int8_t> getPianusChannels() const { return pianusChannels; }
-	vector<int8_t> getPapChannels() const { return papChannels; }
-	vector<int8_t> getZakumChannels() const { return zakumChannels; }
-	vector<int8_t> getHorntailChannels() const { return horntailChannels; }
-	vector<int8_t> getPinkBeanChannels() const { return pinkbeanChannels; }
+	vector<int8_t> getPianusChannels() const { return m_config.pianusChannels; }
+	vector<int8_t> getPapChannels() const { return m_config.papChannels; }
+	vector<int8_t> getZakumChannels() const { return m_config.zakumChannels; }
+	vector<int8_t> getHorntailChannels() const { return m_config.horntailChannels; }
+	vector<int8_t> getPinkBeanChannels() const { return m_config.pinkbeanChannels; }
 private:
-	ChannelServer() : channel(-1) {};
+	ChannelServer() : m_channel(-1) {};
 	static ChannelServer *singleton;
 
-	WorldServerConnection *worldPlayer;
+	WorldServerConnection *m_worldConnection;
 
-	int8_t world;
-	uint8_t maxMultiLevel;
-	int16_t maxStats;
-	int16_t channel;
-	int16_t pianusAttempts;
-	int16_t papAttempts;
-	int16_t zakumAttempts;
-	int16_t horntailAttempts;
-	int16_t pinkbeanAttempts;
-	uint16_t world_port;
-	uint16_t login_inter_port;
-	uint16_t port;
-	int32_t exprate;
-	int32_t questexprate;
-	int32_t mesorate;
-	int32_t droprate;
-	int32_t maxChars;
-	uint32_t login_ip;
-	uint32_t world_ip;
-	string scrollingHeader;
-	bool pianusChannel;
-	bool papChannel;
-	bool zakumChannel;
-	bool horntailChannel;
-	bool pinkbeanChannel;
-	vector<int8_t> pianusChannels;
-	vector<int8_t> papChannels;
-	vector<int8_t> zakumChannels;
-	vector<int8_t> horntailChannels;
-	vector<int8_t> pinkbeanChannels;
+	bool m_pianusChannel;
+	bool m_papChannel;
+	bool m_zakumChannel;
+	bool m_horntailChannel;
+	bool m_pinkbeanChannel;
+	int8_t m_world;
+	int16_t m_channel;
+	uint16_t m_worldPort;
+	uint16_t m_loginPort;
+	uint16_t m_port;
+	uint32_t m_worldIp;
+	uint32_t m_loginIp;
+	Configuration m_config;
 };
 
 #endif

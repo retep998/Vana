@@ -82,7 +82,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 		}
 		else {
 			chance = chance * taunt / 100;
-			chance *= ChannelServer::Instance()->getDroprate();
+			chance *= ChannelServer::Instance()->getDropRate();
 		}
 		if (Randomizer::Instance()->randInt(999999) < chance) {
 			if (explosive) {
@@ -122,7 +122,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			else {
 				int32_t mesos = amount;
 				if (!isSteal) {
-					mesos *= ChannelServer::Instance()->getMesorate();
+					mesos *= ChannelServer::Instance()->getMesoRate();
 					if (player != 0 && player->getActiveBuffs()->hasMesoUp()) { // Account for Meso Up
 						mesos = (mesos * player->getActiveBuffs()->getActiveSkillInfo(Jobs::Hermit::MesoUp)->x) / 100;
 					}

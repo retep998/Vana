@@ -1572,22 +1572,22 @@ int LuaExports::getYear(lua_State *luaVm) {
 
 // Rates
 int LuaExports::getDropRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getDroprate());
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getDropRate());
 	return 1;
 }
 
 int LuaExports::getEXPRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getExprate());
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getExpRate());
 	return 1;
 }
 
 int LuaExports::getQuestEXPRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getQuestExprate());
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getQuestExpRate());
 	return 1;
 }
 
 int LuaExports::getMesoRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getMesorate());
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getMesoRate());
 	return 1;
 }
 

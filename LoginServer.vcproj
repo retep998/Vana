@@ -214,6 +214,10 @@
 				Name="LoginServer"
 				>
 				<File
+					RelativePath=".\src\LoginServer\Channel.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\LoginServer\Characters.cpp"
 					>
 				</File>
@@ -226,11 +230,15 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\LoginServer\PlayerLogin.cpp"
+					RelativePath=".\src\LoginServer\Player.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\LoginServer\RankingCalculator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\LoginServer\World.cpp"
 					>
 				</File>
 				<File
@@ -262,17 +270,13 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\LoginServer\LoginServerAcceptHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\LoginServer\LoginServerAcceptPacket.cpp"
 					>
 				</File>
-				<Filter
-					Name="Handlers"
-					>
-					<File
-						RelativePath=".\src\LoginServer\LoginServerAcceptHandler.cpp"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Database Loading"
@@ -312,6 +316,10 @@
 				Name="LoginServer"
 				>
 				<File
+					RelativePath=".\src\LoginServer\Channel.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\LoginServer\Characters.h"
 					>
 				</File>
@@ -324,7 +332,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\LoginServer\PlayerLogin.h"
+					RelativePath=".\src\LoginServer\Player.h"
 					>
 				</File>
 				<File
@@ -333,6 +341,10 @@
 				</File>
 				<File
 					RelativePath=".\src\LoginServer\RankingCalculator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\LoginServer\World.h"
 					>
 				</File>
 				<File
@@ -356,17 +368,13 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\LoginServer\LoginServerAcceptHandler.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\LoginServer\LoginServerAcceptPacket.h"
 					>
 				</File>
-				<Filter
-					Name="Handlers"
-					>
-					<File
-						RelativePath=".\src\LoginServer\LoginServerAcceptHandler.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 		</Filter>
 	</Files>

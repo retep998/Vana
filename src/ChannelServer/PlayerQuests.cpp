@@ -377,7 +377,7 @@ bool PlayerQuests::giveRewards(const QuestRewardInfo &info) {
 		}
 	}
 	else if (info.isexp) {
-		m_player->getStats()->giveExp(info.id * ChannelServer::Instance()->getQuestExprate(), true);
+		m_player->getStats()->giveExp(info.id * ChannelServer::Instance()->getQuestExpRate(), true);
 	}
 	else if (info.ismesos) {
 		m_player->getInventory()->modifyMesos(info.id);

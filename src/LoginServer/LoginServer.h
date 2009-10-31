@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConfigFile.h"
 #include "InitializeLogin.h"
 #include "LoginServerAcceptConnection.h"
-#include "PlayerLogin.h"
+#include "Player.h"
 #include "Types.h"
 #include <boost/utility.hpp>
 
@@ -39,17 +39,17 @@ public:
 	void loadWorlds();
 	void listen();
 
-	bool getPinEnabled() const { return pinEnabled; }
-	void setPinEnabled(bool enabled) { pinEnabled = enabled; }
-	int32_t getInvalidLoginThreshold() const { return invalid_login_threshold; }
+	bool getPinEnabled() const { return m_pinEnabled; }
+	void setPinEnabled(bool enabled) { m_pinEnabled = enabled; }
+	int32_t getInvalidLoginThreshold() const { return m_maxInvalidLogins; }
 private:
 	LoginServer() {};
 	static LoginServer *singleton;
 
-	bool pinEnabled;
-	int16_t port;
-	int16_t inter_port;
-	int32_t invalid_login_threshold;
+	bool m_pinEnabled;
+	int16_t m_port;
+	int16_t m_interPort;
+	int32_t m_maxInvalidLogins;
 };
 
 #endif

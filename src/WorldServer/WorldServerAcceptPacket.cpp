@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptPacket.h"
 #include "Channels.h"
+#include "Configuration.h"
+#include "ConfigurationPacket.h"
 #include "InterHeader.h"
 #include "InterHelper.h"
 #include "MapleSession.h"
@@ -50,21 +52,10 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint1
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_CHANNEL_CONNECT);
 	packet.add<int16_t>(channel);
-	packet.add<int16_t>(port);
-	packet.add<int8_t>(WorldServer::Instance()->getMaxMultiLevel());
-	packet.add<int16_t>(WorldServer::Instance()->getMaxStats());
-	packet.add<int32_t>(WorldServer::Instance()->getMaxChars());
-	// Boss junk
-	packet.add<int16_t>(WorldServer::Instance()->getPianusAttempts());
-	packet.add<int16_t>(WorldServer::Instance()->getPapAttempts());
-	packet.add<int16_t>(WorldServer::Instance()->getZakumAttempts());
-	packet.add<int16_t>(WorldServer::Instance()->getHorntailAttempts());
-	packet.add<int16_t>(WorldServer::Instance()->getPinkBeanAttempts());
-	packet.addVector(WorldServer::Instance()->getPianusChannels());
-	packet.addVector(WorldServer::Instance()->getPapChannels());
-	packet.addVector(WorldServer::Instance()->getZakumChannels());
-	packet.addVector(WorldServer::Instance()->getHorntailChannels());
-	packet.addVector(WorldServer::Instance()->getPinkBeanChannels());
+	packet.add<uint16_t>(port);
+
+	ConfigurationPacket::addConfig(WorldServer::Instance()->getConfig(), packet);
+
 	player->getSession()->send(packet);
 }
 
@@ -135,17 +126,18 @@ void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *player, int
 	packet.add<int16_t>(INTER_SET_RATES);
 	packet.add<int32_t>(setBit);
 
+	Configuration conf = WorldServer::Instance()->getConfig();
 	if (setBit & Rates::SetBits::exp) {
-		packet.add<int32_t>(WorldServer::Instance()->getExprate());
+		packet.add<int32_t>(conf.expRate);
 	}
 	if (setBit & Rates::SetBits::questExp) {
-		packet.add<int32_t>(WorldServer::Instance()->getQuestExprate());
+		packet.add<int32_t>(conf.questExpRate);
 	}
 	if (setBit & Rates::SetBits::meso) {
-		packet.add<int32_t>(WorldServer::Instance()->getMesorate());
+		packet.add<int32_t>(conf.mesoRate);
 	}
 	if (setBit & Rates::SetBits::drop) {
-		packet.add<int32_t>(WorldServer::Instance()->getDroprate());
+		packet.add<int32_t>(conf.dropRate);
 	}
 
 	player->getSession()->send(packet);

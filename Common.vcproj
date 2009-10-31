@@ -276,6 +276,10 @@
 						RelativePath=".\src\Common\AuthenticationPacket.cpp"
 						>
 					</File>
+					<File
+						RelativePath=".\src\Common\ConfigurationPacket.cpp"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -543,6 +547,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\Common\ConfigurationPacket.h"
+						>
+					</File>
+					<File
 						RelativePath=".\src\Common\InterHelper.h"
 						>
 					</File>
@@ -679,6 +687,10 @@
 			<Filter
 				Name="Data Structures"
 				>
+				<File
+					RelativePath=".\src\Common\Configuration.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Common\GameObjects.h"
 					>

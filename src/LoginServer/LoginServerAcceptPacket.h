@@ -24,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class LoginServerAcceptConnection;
-struct World;
+class World;
 
 namespace LoginServerAcceptPacket {
 	void connect(LoginServerAcceptConnection *player, World *world);
 	void noMoreWorld(LoginServerAcceptConnection *player);
-	void connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, int16_t port);
+	void connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, uint16_t port);
 	void newPlayer(LoginServerAcceptConnection *player, uint16_t channel, int32_t charid);
 	void removeCharacter(LoginServerAcceptConnection *player, int32_t charid);
 };
