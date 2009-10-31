@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instance.h"
 #include "LuaPortal.h"
 #include "MapDataProvider.h"
+#include "MapObjects.h"
 #include "MapPacket.h"
 #include "PacketReader.h"
 #include "Pets.h"
@@ -69,15 +70,15 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	}
 	else {
 		// Normal portal
-		Map *tomap = getMap(portal->tomap);
+		Map *tomap = getMap(portal->toMap);
 		if (tomap == 0) {
 			string message = "Bzzt. The map you're attempting to travel to doesn't exist.";
 			PlayerPacket::showMessage(player, message, 5);
 			MapPacket::portalBlocked(player);
 			return;
 		}
-		PortalInfo *nextportal = tomap->getPortal(portal->toname);
-		player->setMap(portal->tomap, nextportal);
+		PortalInfo *nextportal = tomap->getPortal(portal->toName);
+		player->setMap(portal->toMap, nextportal);
 	}
 }
 

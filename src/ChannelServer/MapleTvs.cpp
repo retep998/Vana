@@ -36,7 +36,7 @@ m_hasmessage(false)
 }
 
 void MapleTvs::addMap(Map *map) {
-	m_maps[map->getInfo()->id] = map;
+	m_maps[map->getId()] = map;
 }
 
 void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time) {

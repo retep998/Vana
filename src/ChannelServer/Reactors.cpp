@@ -67,7 +67,7 @@ void Reactor::drop(Player *player) {
 
 // Reactors namespace
 void Reactors::hitReactor(Player *player, PacketReader &packet) {
-	int32_t id = packet.get<int32_t>() - Map::ReactorStart;
+	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
 
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 
@@ -107,7 +107,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 }
 
 void Reactors::touchReactor(Player *player, PacketReader &packet) {
-	int32_t id = packet.get<int32_t>() - Map::ReactorStart;
+	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
 	bool istouching = packet.getBool();
 
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
@@ -124,7 +124,7 @@ struct Reaction {
 		reactor->setState(state, true);
 		drop->removeDrop();
 		string filename = ScriptDataProvider::Instance()->getReactorScript(reactor->getReactorId());
-		LuaReactor(filename, player->getId(), reactor->getId() - Map::ReactorStart, reactor->getMapId());
+		LuaReactor(filename, player->getId(), Map::makeReactorId(reactor->getId()), reactor->getMapId());
 		return;
 	}
 	Reactor *reactor;
