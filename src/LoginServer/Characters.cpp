@@ -268,20 +268,22 @@ void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
 	*/
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT guild, guildrank, world_id FROM characters WHERE id = " << id << " LIMIT 1";
+	query << "SELECT guildid, guildrank, world_id FROM characters WHERE id = " << id << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if ((int32_t) res[0]["guildrank"] == 1) {
 		result = 0x16;
 	}
 	else if (data == player->getCharDeletePassword()) {
-		if ((int32_t) res[0]["guild"] != 0) {
-			for (map<uint8_t, World *>::iterator iter = Worlds::worlds.begin(); iter != Worlds::worlds.end(); iter++)
-				if (iter->second->connected == true)
+		if ((int32_t) res[0]["guildid"] != 0) {
+			for (map<uint8_t, World *>::iterator iter = Worlds::worlds.begin(); iter != Worlds::worlds.end(); iter++) {
+				if (iter->second->connected == true) {
 					if (iter->second->id == (int32_t) res[0]["world_id"]) {
 						LoginServerAcceptPacket::removeCharacter(iter->second->player, id);
 						break;
 					}
+				}
+			}
 		}
 		
 		query << "DELETE FROM characters WHERE id = " << id;
