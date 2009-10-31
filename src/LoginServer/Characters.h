@@ -26,7 +26,7 @@ using std::string;
 using std::vector;
 
 namespace mysqlpp { class Row; };
-class PlayerLogin;
+class Player;
 class PacketReader;
 
 struct CharEquip {
@@ -65,19 +65,19 @@ struct Character {
 };
 
 namespace Characters {
-	void connectGame(PlayerLogin *player, int32_t charid);
-	void connectGame(PlayerLogin *player, PacketReader &packet);
-	void connectGameWorld(PlayerLogin *player, PacketReader &packet); // From "view all character"
-	void checkCharacterName(PlayerLogin *player, PacketReader &packet);
-	void createCharacter(PlayerLogin *player, PacketReader &packet);
-	void deleteCharacter(PlayerLogin *player, PacketReader &packet);
-	void showAllCharacters(PlayerLogin *player);
-	void showCharacters(PlayerLogin *player);
+	void connectGame(Player *player, int32_t charid);
+	void connectGame(Player *player, PacketReader &packet);
+	void connectGameWorld(Player *player, PacketReader &packet); // From "view all character"
+	void checkCharacterName(Player *player, PacketReader &packet);
+	void createCharacter(Player *player, PacketReader &packet);
+	void deleteCharacter(Player *player, PacketReader &packet);
+	void showAllCharacters(Player *player);
+	void showCharacters(Player *player);
 	void loadCharacter(Character &charc, const mysqlpp::Row &row);
 	void loadEquips(int32_t id, vector<CharEquip> &vec);
 	void createItem(int32_t itemid, int32_t charid, int32_t slot, int16_t amount = 1);
-	bool ownerCheck(PlayerLogin *player, int32_t id);
-	bool nameIllegal(PlayerLogin *player, const string &name); // Name is taken or not valid
+	bool ownerCheck(Player *player, int32_t id);
+	bool nameIllegal(Player *player, const string &name); // Name is taken or not valid
 };
 
 #endif

@@ -24,9 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.h"
 #include "LoginServerAcceptPacket.h"
 #include "PacketReader.h"
-#include "PlayerLogin.h"
+#include "Player.h"
 #include "Randomizer.h"
 #include "ValidCharDataProvider.h"
+#include "World.h"
 #include "Worlds.h"
 #include <boost/tr1/unordered_map.hpp>
 
@@ -84,7 +85,7 @@ void Characters::loadCharacter(Character &charc, const mysqlpp::Row &row) {
 	loadEquips(charc.id, charc.equips);
 }
 
-void Characters::showAllCharacters(PlayerLogin *player) {
+void Characters::showAllCharacters(Player *player) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT * FROM characters WHERE userid = " << player->getUserId();
 	mysqlpp::StoreQueryResult res = query.store();
@@ -95,7 +96,7 @@ void Characters::showAllCharacters(PlayerLogin *player) {
 	uint32_t charsNum = 0; // I want to reference this later
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		uint8_t worldid = res[i]["world_id"];
-		if (!Worlds::worlds[worldid]->connected) {
+		if (!Worlds::Instance()->getWorld(worldid)->isConnected()) {
 			// World is not connected
 			continue;
 		}
@@ -113,7 +114,7 @@ void Characters::showAllCharacters(PlayerLogin *player) {
 	}
 }
 
-void Characters::showCharacters(PlayerLogin *player) {
+void Characters::showCharacters(Player *player) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT * FROM characters WHERE userid = " << player->getUserId() << " AND world_id = " << (int32_t) player->getWorld();
 	mysqlpp::StoreQueryResult res = query.store();
@@ -136,7 +137,7 @@ void Characters::showCharacters(PlayerLogin *player) {
 	LoginPacket::showCharacters(player, chars, max);
 }
 
-void Characters::checkCharacterName(PlayerLogin *player, PacketReader &packet) {
+void Characters::checkCharacterName(Player *player, PacketReader &packet) {
 	string name = packet.getString();
 	if (name.size() > 15 || name.size() < 4) {
 		return;
@@ -179,7 +180,7 @@ void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_
 	query.exec();
 }
 
-void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
+void Characters::createCharacter(Player *player, PacketReader &packet) {
 	Character charc;
 	string name = packet.getString();
 	if (name.size() > 15 || name.size() < 4) {
@@ -249,7 +250,21 @@ void Characters::createCharacter(PlayerLogin *player, PacketReader &packet) {
 	LoginPacket::showCharacter(player, charc);
 }
 
-void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
+namespace Functors {
+	struct CharDeleteFunctor {
+		bool operator()(World *world) {
+			if (world->isConnected() && world->getId() == worldId) {
+				LoginServerAcceptPacket::removeCharacter(world->getConnection(), playerId);
+				return true;
+			}
+			return false;
+		}
+		int32_t playerId;
+		int32_t worldId;
+	};
+}
+
+void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	int32_t data = packet.get<int32_t>();
 	int32_t id = packet.get<int32_t>();
 
@@ -276,14 +291,8 @@ void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
 	}
 	else if (data == player->getCharDeletePassword()) {
 		if ((int32_t) res[0]["guildid"] != 0) {
-			for (map<uint8_t, World *>::iterator iter = Worlds::worlds.begin(); iter != Worlds::worlds.end(); iter++) {
-				if (iter->second->connected == true) {
-					if (iter->second->id == (int32_t) res[0]["world_id"]) {
-						LoginServerAcceptPacket::removeCharacter(iter->second->player, id);
-						break;
-					}
-				}
-			}
+			Functors::CharDeleteFunctor func = {id, (int32_t) res[0]["world_id"]};
+			Worlds::Instance()->runFunction(func);
 		}
 		
 		query << "DELETE FROM characters WHERE id = " << id;
@@ -337,35 +346,35 @@ void Characters::deleteCharacter(PlayerLogin *player, PacketReader &packet) {
 	LoginPacket::deleteCharacter(player, id, result);
 }
 
-void Characters::connectGame(PlayerLogin *player, int32_t charid) {
+void Characters::connectGame(Player *player, int32_t charid) {
 	if (!ownerCheck(player, charid)) {
 		// hacking
 		return;
 	}
 
-	LoginServerAcceptPacket::newPlayer(Worlds::worlds[player->getWorld()]->player, player->getChannel(), charid);
+	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charid);
 	LoginPacket::connectIp(player, charid);
 }
 
-void Characters::connectGame(PlayerLogin *player, PacketReader &packet) {
+void Characters::connectGame(Player *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 
 	connectGame(player, id);
 }
 
-void Characters::connectGameWorld(PlayerLogin *player, PacketReader &packet) {
+void Characters::connectGameWorld(Player *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	int8_t worldid = (int8_t) packet.get<int32_t>();
 	player->setWorld(worldid);
 
 	// Take the player to a random channel
-	uint16_t channel = Randomizer::Instance()->randShort((uint16_t)(Worlds::worlds[worldid]->maxChannels - 1));
+	uint16_t channel = static_cast<uint16_t>(Randomizer::Instance()->randInt(Worlds::Instance()->getWorld(worldid)->getMaxChannels() - 1));
 	player->setChannel(channel);
 
 	connectGame(player, id);
 }
 
-bool Characters::ownerCheck(PlayerLogin *player, int32_t id) {
+bool Characters::ownerCheck(Player *player, int32_t id) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT true FROM characters WHERE id = " << id << " AND userid = " << player->getUserId();
 	mysqlpp::StoreQueryResult res = query.store();
@@ -373,7 +382,7 @@ bool Characters::ownerCheck(PlayerLogin *player, int32_t id) {
 	return ((res.num_rows() == 1) ? true : false);
 }
 
-bool Characters::nameIllegal(PlayerLogin *player, const string &name) {
+bool Characters::nameIllegal(Player *player, const string &name) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT true FROM characters WHERE name = " << mysqlpp::quote << name << " AND world_id = " << (int32_t) player->getWorld() << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();

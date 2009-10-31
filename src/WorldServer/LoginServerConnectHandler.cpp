@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.h"
+#include "Configuration.h"
+#include "ConfigurationPacket.h"
 #include "InitializeWorld.h"
 #include "LoginServerConnection.h"
 #include "WorldServerAcceptPacket.h"
@@ -30,39 +32,10 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 	int8_t worldid = packet.get<int8_t>();
 	if (worldid != -1) {
 		WorldServer::Instance()->setWorldId(worldid);
-		WorldServer::Instance()->setInterPort(packet.get<int16_t>());
-		WorldServer::Instance()->setMaxChannels(packet.get<int32_t>());
-		WorldServer::Instance()->setMaxChars(packet.get<int32_t>());
-		WorldServer::Instance()->setMaxMultiLevel(packet.get<int8_t>());
-		WorldServer::Instance()->setMaxStats(packet.get<int16_t>());
-		WorldServer::Instance()->setScrollingHeader(packet.getString());
+		WorldServer::Instance()->setInterPort(packet.get<uint16_t>());
 
-		// Boss junk
-		WorldServer::Instance()->setPianusAttempts(packet.get<int16_t>());
-		WorldServer::Instance()->setPapAttempts(packet.get<int16_t>());
-		WorldServer::Instance()->setZakumAttempts(packet.get<int16_t>());
-		WorldServer::Instance()->setHorntailAttempts(packet.get<int16_t>());
-		WorldServer::Instance()->setPinkBeanAttempts(packet.get<int16_t>());
-		WorldServer::Instance()->setPianusChannels(packet.getVector<int8_t>());
-		WorldServer::Instance()->setPapChannels(packet.getVector<int8_t>());
-		WorldServer::Instance()->setZakumChannels(packet.getVector<int8_t>());
-		WorldServer::Instance()->setHorntailChannels(packet.getVector<int8_t>());
-		WorldServer::Instance()->setPinkBeanChannels(packet.getVector<int8_t>());
-
-		// Rates
-		int32_t ratesSetBit = packet.get<int32_t>();
-		if (ratesSetBit & Rates::SetBits::exp) {
-			WorldServer::Instance()->setExprate(packet.get<int32_t>());
-		}
-		if (ratesSetBit & Rates::SetBits::questExp) {
-			WorldServer::Instance()->setQuestExprate(packet.get<int32_t>());
-		}
-		if (ratesSetBit & Rates::SetBits::meso) {
-			WorldServer::Instance()->setMesorate(packet.get<int32_t>());
-		}
-		if (ratesSetBit & Rates::SetBits::drop) {
-			WorldServer::Instance()->setDroprate(packet.get<int32_t>());
-		}
+		Configuration conf = ConfigurationPacket::getConfig(packet);
+		WorldServer::Instance()->setConfig(conf);
 
 		WorldServer::Instance()->listen();
 		Initializing::worldEstablished();

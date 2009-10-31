@@ -18,16 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LOGIN_H
 #define LOGIN_H
 
-class PlayerLogin;
+class Player;
 class PacketReader;
 
 namespace Login {
-	void loginUser(PlayerLogin *player, PacketReader &packet);
-	void setGender(PlayerLogin *player, PacketReader &packet);
-	void handleLogin(PlayerLogin *player, PacketReader &packet);
-	void registerPin(PlayerLogin *player, PacketReader &packet);
-	void loginBack(PlayerLogin *player);
-	void checkPin(PlayerLogin *player, PacketReader &packet);
+	void loginUser(Player *player, PacketReader &packet);
+	void setGender(Player *player, PacketReader &packet);
+	void handleLogin(Player *player, PacketReader &packet);
+	void registerPin(Player *player, PacketReader &packet);
+	void loginBack(Player *player);
+	void checkPin(Player *player, PacketReader &packet);
 };
 
 #endif

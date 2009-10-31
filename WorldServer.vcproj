@@ -249,43 +249,15 @@
 			<Filter
 				Name="Inter-Server"
 				>
-				<File
-					RelativePath=".\src\WorldServer\AlliancePacket.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\BbsPacket.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\GuildPacket.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\LoginServerConnection.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\LoginServerConnectPacket.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\PartyPacket.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\WorldServerAcceptConnection.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\WorldServerAcceptPacket.cpp"
-					>
-				</File>
 				<Filter
-					Name="Handlers"
+					Name="Sync"
 					>
 					<File
 						RelativePath=".\src\WorldServer\AllianceHandler.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\AlliancePacket.cpp"
 						>
 					</File>
 					<File
@@ -293,11 +265,15 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\WorldServer\BbsPacket.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\src\WorldServer\GuildHandler.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\LoginServerConnectHandler.cpp"
+						RelativePath=".\src\WorldServer\GuildPacket.cpp"
 						>
 					</File>
 					<File
@@ -305,7 +281,39 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\WorldServer\PartyPacket.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Login"
+					>
+					<File
+						RelativePath=".\src\WorldServer\LoginServerConnectHandler.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\LoginServerConnection.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\LoginServerConnectPacket.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Channel"
+					>
+					<File
+						RelativePath=".\src\WorldServer\WorldServerAcceptConnection.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\src\WorldServer\WorldServerAcceptHandler.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\WorldServerAcceptPacket.cpp"
 						>
 					</File>
 				</Filter>
@@ -371,43 +379,15 @@
 			<Filter
 				Name="Inter-Server"
 				>
-				<File
-					RelativePath=".\src\WorldServer\AlliancePacket.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\BbsPacket.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\GuildPacket.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\LoginServerConnection.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\LoginServerConnectPacket.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\PartyPacket.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\WorldServerAcceptConnection.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\WorldServer\WorldServerAcceptPacket.h"
-					>
-				</File>
 				<Filter
-					Name="Handlers"
+					Name="Sync"
 					>
 					<File
 						RelativePath=".\src\WorldServer\AllianceHandler.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\AlliancePacket.h"
 						>
 					</File>
 					<File
@@ -415,11 +395,15 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\WorldServer\BbsPacket.h"
+						>
+					</File>
+					<File
 						RelativePath=".\src\WorldServer\GuildHandler.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\WorldServer\LoginServerConnectHandler.h"
+						RelativePath=".\src\WorldServer\GuildPacket.h"
 						>
 					</File>
 					<File
@@ -427,7 +411,39 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\WorldServer\PartyPacket.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Channel"
+					>
+					<File
+						RelativePath=".\src\WorldServer\WorldServerAcceptConnection.h"
+						>
+					</File>
+					<File
 						RelativePath=".\src\WorldServer\WorldServerAcceptHandler.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\WorldServerAcceptPacket.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Login"
+					>
+					<File
+						RelativePath=".\src\WorldServer\LoginServerConnectHandler.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\LoginServerConnection.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\WorldServer\LoginServerConnectPacket.h"
 						>
 					</File>
 				</Filter>
