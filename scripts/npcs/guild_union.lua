@@ -17,8 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Lenario
 
-reaction = -1;
-
 addText("Hello there! I'm #bLenario#k.\r\n");
 addText("#b#L0#Can you please tell me what Guild Union is all about?#l\r\n");
 addText("#L1#How do I make a Guild Union?#l\r\n");
@@ -33,10 +31,10 @@ if reaction == 0 then
 elseif reaction == 1 then
 	addText("To make a Guild Union, 2 Guild Masters need to be in a party. The leader of this party will be assigned as the Guild Union Master.");
 	sendNext();
-	
+
 	addText("If the 2 Guild Masters are present, then I need 5,000,000 mesos. It's the fee you'll need to pay in order to register for a Guild Union.");
 	sendBackNext();
-	
+
 	addText("Oh, and one more thing! It's obvious, but you can't create a new Guild Union if you are already a member of another one!");
 	sendBackNext();
 elseif reaction == 2 then
@@ -46,7 +44,7 @@ elseif reaction == 2 then
 	elseif getPartyID() == 0 then
 		addText("You may not create an alliance until you get into a party of 2 people.");
 		sendNext();
-	elseif isPartyLeader() ~= true then
+	elseif not isPartyLeader() then
 		addText("Please let the partyleader talk to me if you want to create an union.");
 		sendNext();
 	elseif getGuildRank() ~= 1 then
@@ -61,11 +59,11 @@ elseif reaction == 2 then
 	else
 		addText("Oh, are you interested in forming a Guild Union?");
 		reaction = askYesNo();
-		
+
 		if reaction == 1 then
 			addText("Now please enter the name of your new Guild Union. (max. 12 letters)");
 			allianceName = askText(4, 12);
-			
+
 			addText("Will " .. allianceName .. " be the name of your Guild Union?");
 			reaction = askAcceptDecline();
 			if reaction == 1 then
