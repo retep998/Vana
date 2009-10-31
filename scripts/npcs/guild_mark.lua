@@ -25,16 +25,16 @@ else
 	addText("#b#L0#I'd like to register a guild emblem.#l\r\n");
 	addText("#L1#I'd like to delete a guild emblem.#l");
 	reaction = askChoice();
-	
+
 	if reaction == 0 then
 		if hasEmblem() == true then
 			addText("Guild Emblem has already been made. Please delete the guild emblem, first and make it, again.");
 			sendNext();
 		else
 			addText("You need #r5,000,000 Mesos#k to make a guild emblem. To explain it more, guild emblem is an unique pattern for each guild. It will appear right next to the guild name in the game\r\nSo are you going to make a guild emblem?");
-			reaction = askYesNo();
-			
-			if reaction == 1 then
+			choice = askYesNo();
+
+			if choice == 1 then
 				if getMesos() < 5000000 then
 					addText("Oh... You don't have enough mesos to create an emblem...");
 					sendOK();
@@ -47,14 +47,14 @@ else
 			end
 		end
 	else
-		if hasEmblem() == false then
+		if not hasEmblem() then
 			addText("huh? weird... you don't have a guild emblem to delete...");
 			sendOK();
 		else
 			addText("If you delete the current guild emblem, you can make a new guild emblem. You will need #r1,000,000 Mesos#k to delete a guild emblem. Would you like to do it?");
-			reaction = askYesNo();
-			
-			if reaction == 1 then
+			choice = askYesNo();
+
+			if choice == 1 then
 				if getMesos() < 1000000 then 
 					addText("You don't have enough Mesos for deleting a guild emblem. You need #b1,000,000 Mesos#k to delete a guild emblem.");
 					sendNext();
