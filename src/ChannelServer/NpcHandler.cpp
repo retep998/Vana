@@ -33,14 +33,14 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	uint32_t npcid = packet.get<uint32_t>() - Map::NpcStart;
+	uint32_t npcid = Map::makeNpcId(packet.get<uint32_t>());
 
 	if (!Maps::getMap(player->getMap())->isValidNpcIndex(npcid)) {
 		// Shouldn't ever happen except in edited packets
 		return;
 	}
 
-	NPCSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
+	NpcSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
 	if (NPC::hasScript(npcs.id, 0, false)) {
 		NPC *npc = new NPC(npcs.id, player, npcs.pos);
 		npc->run();
@@ -132,7 +132,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 }
 
 void NpcHandler::handleNpcAnimation(Player *player, PacketReader &packet) {
-	NPCPacket::animateNpc(player, packet);
+	NpcPacket::animateNpc(player, packet);
 }
 
 bool NpcHandler::showShop(Player *player, int32_t shopid) {

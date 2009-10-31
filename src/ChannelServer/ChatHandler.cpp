@@ -610,13 +610,13 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdAddNpc: {
 						if (args.length() != 0) {
-							NPCSpawnInfo npc;
+							NpcSpawnInfo npc;
 							npc.id = atoi(args.c_str());
-							npc.fh = 0;
+							npc.foothold = 0;
 							npc.pos = player->getPos();
 							npc.rx0 = npc.pos.x - 50;
 							npc.rx1 = npc.pos.x + 50;
-							Maps::getMap(player->getMap())->addNPC(npc);
+							Maps::getMap(player->getMap())->addNpc(npc);
 						}
 						else {
 							showSyntax(player, command);

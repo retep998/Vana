@@ -561,8 +561,8 @@ int LuaExports::isBusy(lua_State *luaVm) {
 
 int LuaExports::removeNPC(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t index = lua_tointeger(luaVm, 2);
-	Maps::getMap(mapid)->removeNPC(index);
+	uint32_t index = lua_tointeger(luaVm, 2);
+	Maps::getMap(mapid)->removeNpc(index);
 	return 0;
 }
 
@@ -593,14 +593,14 @@ int LuaExports::spawnNPC(lua_State *luaVm) {
 	int16_t x = lua_tointeger(luaVm, 3);
 	int16_t y = lua_tointeger(luaVm, 4);
 
-	NPCSpawnInfo npc;
+	NpcSpawnInfo npc;
 	npc.id = npcid;
-	npc.fh = 0;
+	npc.foothold = 0;
 	npc.pos = Pos(x, y);
 	npc.rx0 = x - 50;
 	npc.rx1 = x + 50;
 
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->addNPC(npc));
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->addNpc(npc));
 	return 1;
 }
 
