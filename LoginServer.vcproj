@@ -214,10 +214,6 @@
 				Name="LoginServer"
 				>
 				<File
-					RelativePath=".\src\LoginServer\Channel.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\LoginServer\Characters.cpp"
 					>
 				</File>
