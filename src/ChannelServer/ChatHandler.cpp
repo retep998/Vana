@@ -815,8 +815,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							}
 						}
 						else {
-							char msg[60];
-							sprintf(msg, "Current Map: %i", player->getMap());
+							string msg = "Current Map: " + boost::lexical_cast<string>(player->getMap());
 							PlayerPacket::showMessage(player, msg, 6);
 						}
 						break;
@@ -961,8 +960,11 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					}
 					case CmdPos: {
-						char msg[50];
-						sprintf(msg, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFh());
+						Pos p = player->getPos();
+						string msg = "(FH, X, Y): (";
+						msg += boost::lexical_cast<string>(player->getFh()) + ", ";
+						msg += boost::lexical_cast<string>(p.x) + ", ";
+						msg += boost::lexical_cast<string>(p.y) + ")";
 						PlayerPacket::showMessage(player, msg, 6);
 						break;
 					}
@@ -1041,8 +1043,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								player->getStats()->setJob(job);
 						}
 						else {
-							char msg[60];
-							sprintf(msg, "Current Job: %i", player->getStats()->getJob());
+							string msg = "Current Job: " + boost::lexical_cast<string>(player->getStats()->getJob());
 							PlayerPacket::showMessage(player, msg, 6);
 						}
 						break;

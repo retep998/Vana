@@ -251,8 +251,8 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	}
 	else {
 		Item dropitem = drop->getItem();
-		ConsumeInfo *item = ItemDataProvider::Instance()->getConsumeInfo(dropitem.id);
-		if (item != 0 && item->autoconsume) {
+		ConsumeInfo *cons = ItemDataProvider::Instance()->getConsumeInfo(dropitem.id);
+		if (cons != 0 && cons->autoconsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
 				DropsPacket::pickupDropSpecial(player, drop->getObjectId());
 				Inventory::useItem(player, dropitem.id);
@@ -267,7 +267,7 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 			int16_t dropAmount = drop->getAmount();
 			int16_t amount = Inventory::addItem(player, item, true);
 			if (amount > 0) {
-				if (dropAmount - amount > 0) {
+				if ((dropAmount - amount) > 0) {
 					DropsPacket::pickupDrop(player, drop->getObjectId(), dropAmount - amount);
 					drop->setItemAmount(amount);
 				}
