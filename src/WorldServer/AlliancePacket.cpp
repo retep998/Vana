@@ -30,81 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include "WorldServerAcceptConnection.h"
 
-// AlliancePacket InterServerPacket namespace
-void AlliancePacket::InterServerPacket::changeAlliance(Alliance *alliance, int8_t type) {
-	unordered_map<int32_t, Guild *> guilds = alliance->getGuilds();
-
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_ALLIANCE);
-	packet.add<int8_t>(0x01);
-	packet.add<uint8_t>(type);
-	packet.add<int32_t>(type == 1 ? alliance->getId() : 0);
-	packet.add<uint8_t>(alliance->getSize());
-	for (unordered_map<int32_t, Guild *>::iterator iter = guilds.begin(); iter != guilds.end(); iter++) {
-		packet.add<int32_t>(iter->second->getId());
-		packet.add<int32_t>(iter->second->m_players.size());
-		for (unordered_map<int32_t, Player *>::iterator iter2 = iter->second->m_players.begin(); iter2 != iter->second->m_players.end(); iter2++) {
-			packet.add<int32_t>(iter2->second->getId());
-			packet.add<uint8_t>(type == 1 ? iter2->second->getAllianceRank() : 0);
-		}
-	}
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void AlliancePacket::InterServerPacket::changeGuild(Alliance *alliance, Guild *guild) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_ALLIANCE);
-	packet.add<int8_t>(0x04);
-	packet.add<int32_t>(alliance == 0 ? 0 : alliance->getId());
-	packet.add<int32_t>(guild->getId());
-	packet.add<int32_t>(guild->m_players.size());
-
-	unordered_map<int32_t, Player *>::iterator iter;
-	for (iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++) {
-		packet.add<int32_t>(iter->second->getId());
-		packet.add<uint8_t>(alliance == 0 ? 5 : iter->second->getAllianceRank());
-	}
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void AlliancePacket::InterServerPacket::changeLeader(Alliance *alliance, Player *oldLeader) {
-	PacketCreator pack;
-	pack.add<int16_t>(INTER_ALLIANCE);
-	pack.add<int8_t>(0x02);
-
-	pack.add<int32_t>(alliance->getId());
-	pack.add<int32_t>(oldLeader->getId());
-	pack.add<int32_t>(alliance->getLeaderId());
-	Channels::Instance()->sendToAll(pack);
-}
-
-void AlliancePacket::InterServerPacket::changePlayerRank(Alliance *alliance, Player *player) {
-	PacketCreator pack;
-	pack.add<int16_t>(INTER_ALLIANCE);
-	pack.add<int8_t>(0x05);
-
-	pack.add<int32_t>(alliance->getId());
-	pack.add<int32_t>(player->getId());
-	pack.add<int32_t>(player->getAllianceRank());
-	Channels::Instance()->sendToAll(pack);
-}
-
-void AlliancePacket::InterServerPacket::changeCapacity(Alliance *alliance) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_ALLIANCE);
-	packet.add<int8_t>(0x03);
-
-	packet.add<int32_t>(alliance->getId());
-	packet.add<int32_t>(alliance->getCapacity());
-	Channels::Instance()->sendToAll(packet);
-}
-
-// AlliancePacket namespace
 void AlliancePacket::sendAllianceInfo(Alliance *alliance, Player *requestee) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(requestee->getId());
 
 	packet.add<int16_t>(SMSG_ALLIANCE);
@@ -124,7 +52,7 @@ void AlliancePacket::sendAllianceInfo(Alliance *alliance, Player *requestee) {
 	Channels::Instance()->sendToChannel(requestee->getChannel(), packet);
 	
 	packet = PacketCreator();
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(requestee->getId());
 
 	packet.add<int16_t>(SMSG_ALLIANCE);
@@ -137,7 +65,7 @@ void AlliancePacket::sendAllianceInfo(Alliance *alliance, Player *requestee) {
 
 void AlliancePacket::sendInvite(Alliance *alliance, Player *inviter, Player *invitee) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(invitee->getId());
 
 	packet.add<int16_t>(SMSG_ALLIANCE);
@@ -168,7 +96,7 @@ void AlliancePacket::sendInviteDenied(Alliance *alliance, Guild *guild) {
 
 	// GMS doesnt have an actual deny packet. They just use the note packet...
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(leader->getId());
 
 	packet.add<int16_t>(SMSG_NOTE);
@@ -328,7 +256,7 @@ void AlliancePacket::sendToAlliance(PacketCreator &packet, Alliance *alliance, P
 	unordered_map<int32_t, Guild *> guilds = alliance->getGuilds();
 
 	PacketCreator pack;
-	pack.add<int16_t>(INTER_FORWARD_TO);
+	pack.add<int16_t>(IMSG_FORWARD_TO);
 	pack.add<int32_t>(-1); // Set the playerid to -1, this will be changed later in the packet
 	pack.addBuffer(packet);
 

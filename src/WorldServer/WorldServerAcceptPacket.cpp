@@ -39,7 +39,7 @@ using std::tr1::unordered_map;
 
 void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerid, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
 	packet.add<int16_t>(SMSG_MESSAGE_GROUP);
 	packet.add<int8_t>(type);
@@ -50,7 +50,7 @@ void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerid, int8
 
 void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_CHANNEL_CONNECT);
+	packet.add<int16_t>(IMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(channel);
 	packet.add<uint16_t>(port);
 
@@ -61,7 +61,7 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint1
 
 void WorldServerAcceptPacket::sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET);
+	packet.add<int16_t>(IMSG_TRANSFER_PLAYER_PACKET);
 	packet.add<int32_t>(playerid);
 	packet.addBuffer(buffer);
 	Channels::Instance()->sendToChannel(channel, packet);
@@ -69,14 +69,14 @@ void WorldServerAcceptPacket::sendPacketToChannelForHolding(uint16_t channel, in
 
 void WorldServerAcceptPacket::sendHeldPacketRemoval(uint16_t channel, int32_t playerid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_TRANSFER_PLAYER_PACKET_DISCONNECT);
+	packet.add<int16_t>(IMSG_TRANSFER_PLAYER_PACKET_DISCONNECT);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
 void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_PLAYER_CHANGE_CHANNEL);
+	packet.add<int16_t>(IMSG_PLAYER_CHANGE_CHANNEL);
 	packet.add<int32_t>(playerid);
 	packet.add<uint32_t>(ip);
 	packet.add<int16_t>(port);
@@ -85,7 +85,7 @@ void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptConnection *p
 
 void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FIND);
+	packet.add<int16_t>(IMSG_FIND);
 	packet.add<int32_t>(finder);
 	packet.add<int16_t>(channel);
 	packet.addString(findee);
@@ -96,7 +96,7 @@ void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *player, in
 
 void WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_WHISPER);
+	packet.add<int16_t>(IMSG_WHISPER);
 	packet.add<int32_t>(whisperee);
 	packet.addString(whisperer);
 	packet.add<int16_t>(whispererChannel);
@@ -107,7 +107,7 @@ void WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, 
 
 void WorldServerAcceptPacket::scrollingHeader(const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_SCROLLING_HEADER);
+	packet.add<int16_t>(IMSG_SCROLLING_HEADER);
 	packet.addString(message);
 
 	Channels::Instance()->sendToAll(packet);
@@ -115,7 +115,7 @@ void WorldServerAcceptPacket::scrollingHeader(const string &message) {
 
 void WorldServerAcceptPacket::newConnectable(uint16_t channel, int32_t playerid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_NEW_CONNECTABLE);
+	packet.add<int16_t>(IMSG_NEW_CONNECTABLE);
 	packet.add<int32_t>(playerid);
 
 	Channels::Instance()->sendToChannel(channel, packet);
@@ -123,7 +123,7 @@ void WorldServerAcceptPacket::newConnectable(uint16_t channel, int32_t playerid)
 
 void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *player, int32_t setBit) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_SET_RATES);
+	packet.add<int16_t>(IMSG_SET_RATES);
 	packet.add<int32_t>(setBit);
 
 	Configuration conf = WorldServer::Instance()->getConfig();
@@ -145,8 +145,8 @@ void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *player, int
 
 void WorldServerAcceptPacket::sendParties(WorldServerAcceptConnection *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PartyActions::Sync::ChannelStart);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::ChannelStart);
 
 	unordered_map<int32_t, Party *> parties = PlayerDataProvider::Instance()->getParties();
 	map<int32_t, Player *> players;
@@ -167,8 +167,8 @@ void WorldServerAcceptPacket::sendParties(WorldServerAcceptConnection *player) {
 
 void WorldServerAcceptPacket::sendRemovePartyPlayer(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PartyActions::Sync::RemoveMember);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::RemoveMember);
 	packet.add<int32_t>(partyid);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->sendToAll(packet);
@@ -176,8 +176,8 @@ void WorldServerAcceptPacket::sendRemovePartyPlayer(int32_t playerid, int32_t pa
 
 void WorldServerAcceptPacket::sendAddPartyPlayer(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PartyActions::Sync::AddMember);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::AddMember);
 	packet.add<int32_t>(partyid);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->sendToAll(packet);
@@ -185,8 +185,8 @@ void WorldServerAcceptPacket::sendAddPartyPlayer(int32_t playerid, int32_t party
 
 void WorldServerAcceptPacket::sendSwitchPartyLeader(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PartyActions::Sync::SwitchLeader);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::SwitchLeader);
 	packet.add<int32_t>(partyid);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->sendToAll(packet);
@@ -194,8 +194,8 @@ void WorldServerAcceptPacket::sendSwitchPartyLeader(int32_t playerid, int32_t pa
 
 void WorldServerAcceptPacket::sendCreateParty(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PartyActions::Sync::Create);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::Create);
 	packet.add<int32_t>(partyid);
 	packet.add<int32_t>(playerid);
 	Channels::Instance()->sendToAll(packet);
@@ -203,15 +203,15 @@ void WorldServerAcceptPacket::sendCreateParty(int32_t playerid, int32_t partyid)
 
 void WorldServerAcceptPacket::sendDisbandParty(int32_t partyid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_PARTY_SYNC);
-	packet.add<int8_t>(PartyActions::Sync::Disband);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::Disband);
 	packet.add<int32_t>(partyid);
 	Channels::Instance()->sendToAll(packet);
 }
 
 void WorldServerAcceptPacket::sendGuilds(WorldServerAcceptConnection *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
+	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x0a);
 	PlayerDataProvider::Instance()->getChannelConnectPacketGuild(packet);
 	player->getSession()->send(packet);
@@ -219,7 +219,7 @@ void WorldServerAcceptPacket::sendGuilds(WorldServerAcceptConnection *player) {
 
 void WorldServerAcceptPacket::sendAlliances(WorldServerAcceptConnection *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_ALLIANCE);
+	packet.add<int16_t>(IMSG_ALLIANCE);
 	packet.add<int8_t>(0x06);
 	PlayerDataProvider::Instance()->getChannelConnectPacketAlliance(packet);
 	player->getSession()->send(packet);

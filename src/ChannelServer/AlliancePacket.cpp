@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009 Vana Development Team
+Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -70,7 +70,7 @@ void AlliancePacket::handlePacket(Player *player, PacketReader &packet) {
 
 void AlliancePacket::handleDenyPacket(Player *player, PacketReader &packet) {
 	PacketCreator pack;
-	pack.add<int16_t>(INTER_ALLIANCE);
+	pack.add<int16_t>(IMSG_ALLIANCE);
 	pack.add<int8_t>(0x01);
 	pack.add<int32_t>(0);
 	pack.add<int32_t>(player->getId());
@@ -80,7 +80,7 @@ void AlliancePacket::handleDenyPacket(Player *player, PacketReader &packet) {
 
 void AlliancePacket::sendShowInfo(int32_t allianceid, int32_t playerid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_ALLIANCE);
+	packet.add<int16_t>(IMSG_ALLIANCE);
 	packet.add<int8_t>(0x02);
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(playerid);
@@ -89,7 +89,7 @@ void AlliancePacket::sendShowInfo(int32_t allianceid, int32_t playerid) {
 
 void AlliancePacket::sendChangeTitles(int32_t allianceid, int32_t playerid, PacketReader &packet) {
 	PacketCreator pack;
-	pack.add<int16_t>(INTER_ALLIANCE);
+	pack.add<int16_t>(IMSG_ALLIANCE);
 	pack.add<int8_t>(0x03);
 	pack.add<int32_t>(allianceid);
 	pack.add<int32_t>(playerid);
@@ -99,7 +99,7 @@ void AlliancePacket::sendChangeTitles(int32_t allianceid, int32_t playerid, Pack
 
 void AlliancePacket::sendChangeNotice(int32_t allianceid, int32_t playerid, PacketReader &packet) {
 	PacketCreator pack;
-	pack.add<int16_t>(INTER_ALLIANCE);
+	pack.add<int16_t>(IMSG_ALLIANCE);
 	pack.add<int8_t>(0x04);
 	pack.add<int32_t>(allianceid);
 	pack.add<int32_t>(playerid);
@@ -109,7 +109,7 @@ void AlliancePacket::sendChangeNotice(int32_t allianceid, int32_t playerid, Pack
 
 void AlliancePacket::sendInvitation(int32_t allianceid, int32_t playerid, const string &guildname) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_ALLIANCE);
+	packet.add<int16_t>(IMSG_ALLIANCE);
 	packet.add<int8_t>(0x05);
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(playerid);
@@ -119,7 +119,7 @@ void AlliancePacket::sendInvitation(int32_t allianceid, int32_t playerid, const 
 
 void AlliancePacket::sendChangeGuild(int32_t allianceid, int32_t playerid, int32_t guildid, uint8_t option) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_ALLIANCE);
+	packet.add<int16_t>(IMSG_ALLIANCE);
 	packet.add<int8_t>(0x07);
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(guildid);
@@ -130,7 +130,7 @@ void AlliancePacket::sendChangeGuild(int32_t allianceid, int32_t playerid, int32
 
 void AlliancePacket::sendChangeLeader(int32_t allianceid, int32_t playerid, int32_t victim) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_ALLIANCE);
+	packet.add<int16_t>(IMSG_ALLIANCE);
 	packet.add<int8_t>(0x08);
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(playerid);
@@ -140,7 +140,7 @@ void AlliancePacket::sendChangeLeader(int32_t allianceid, int32_t playerid, int3
 
 void AlliancePacket::sendChangeRank(int32_t allianceid, int32_t playerid, PacketReader &packet) {
 	PacketCreator pack;
-	pack.add<int16_t>(INTER_ALLIANCE);
+	pack.add<int16_t>(IMSG_ALLIANCE);
 	pack.add<int8_t>(0x09);
 	pack.add<int32_t>(allianceid);
 	pack.add<int32_t>(playerid);
@@ -151,7 +151,7 @@ void AlliancePacket::sendChangeRank(int32_t allianceid, int32_t playerid, Packet
 
 void AlliancePacket::sendCreateAlliance(int32_t playerid, string alliancename) {
 	PacketCreator pack;
-	pack.add<int16_t>(INTER_ALLIANCE);
+	pack.add<int16_t>(IMSG_ALLIANCE);
 	pack.add<int8_t>(0x0a);
 	pack.add<int32_t>(0);
 	pack.add<int32_t>(playerid);
@@ -161,7 +161,7 @@ void AlliancePacket::sendCreateAlliance(int32_t playerid, string alliancename) {
 
 void AlliancePacket::increaseAllianceCapacity(int32_t allianceid, int32_t playerid) {
 	PacketCreator pack;
-	pack.add<int16_t>(INTER_ALLIANCE);
+	pack.add<int16_t>(IMSG_ALLIANCE);
 	pack.add<int8_t>(0x0b);
 	pack.add<int32_t>(allianceid);
 	pack.add<int32_t>(playerid);
@@ -170,7 +170,7 @@ void AlliancePacket::increaseAllianceCapacity(int32_t allianceid, int32_t player
 
 void AlliancePacket::sendDisbandAlliance(int32_t allianceid, int32_t playerid) {
 	PacketCreator pack;
-	pack.add<int16_t>(INTER_ALLIANCE);
+	pack.add<int16_t>(IMSG_ALLIANCE);
 	pack.add<int8_t>(0x0c);
 	pack.add<int32_t>(allianceid);
 	pack.add<int32_t>(playerid);

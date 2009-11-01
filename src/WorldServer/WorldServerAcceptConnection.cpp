@@ -16,17 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerAcceptConnection.h"
-#include "AllianceHandler.h"
-#include "BbsHandler.h"
 #include "Channels.h"
-#include "GuildHandler.h"
 #include "InterHeader.h"
 #include "LoginServerConnectPacket.h"
 #include "MapleSession.h"
 #include "MiscUtilities.h"
-#include "Rates.h"
 #include "PacketReader.h"
 #include "PlayerDataProvider.h"
+#include "Rates.h"
+#include "SyncHandler.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include "WorldServerAcceptPacket.h"
@@ -48,25 +46,25 @@ WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
 	switch (packet.get<int16_t>()) {
-		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet); break;
-		case INTER_TRANSFER_PLAYER_PACKET: WorldServerAcceptHandler::handleChangeChannel(this, packet); break;
-		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::playerConnect(this, packet); break;
-		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::playerDisconnect(this, packet); break;
-		case INTER_PARTY_OPERATION: WorldServerAcceptHandler::partyOperation(this, packet); break;
-		case INTER_UPDATE_LEVEL: WorldServerAcceptHandler::updateLevel(this, packet); break;
-		case INTER_UPDATE_JOB: WorldServerAcceptHandler::updateJob(this, packet); break;
-		case INTER_UPDATE_MAP: WorldServerAcceptHandler::updateMap(this, packet); break;
+		case IMSG_PLAYER_CHANGE_CHANNEL: SyncHandler::playerChangeChannel(this, packet); break;
+		case IMSG_TRANSFER_PLAYER_PACKET: SyncHandler::handleChangeChannel(this, packet); break;
+		case IMSG_REGISTER_PLAYER: SyncHandler::playerConnect(this, packet); break;
+		case IMSG_REMOVE_PLAYER: SyncHandler::playerDisconnect(this, packet); break;
+		case IMSG_SYNC_OPERATION: SyncHandler::partyOperation(this, packet); break;
+		case IMSG_UPDATE_LEVEL: SyncHandler::updateLevel(this, packet); break;
+		case IMSG_UPDATE_JOB: SyncHandler::updateJob(this, packet); break;
+		case IMSG_UPDATE_MAP: SyncHandler::updateMap(this, packet); break;
+		case IMSG_GUILD_OPERATION: SyncHandler::handleGuildPacket(this, packet); break;
+		case IMSG_BBS: SyncHandler::handleBbsPacket(this, packet); break;
+		case IMSG_ALLIANCE: SyncHandler::handleAlliancePacket(this, packet); break;
 
-		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
-		case INTER_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
-		case INTER_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet); break;
-		case INTER_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
-		case INTER_GUILD_OPERATION: GuildHandler::handlePacket(this, packet); break;
-		case INTER_BBS: BbsHandler::handlePacket(this, packet); break;
-		case INTER_ALLIANCE: AllianceHandler::handlePacket(this, packet); break;
-		case INTER_TO_LOGIN: WorldServerAcceptHandler::sendToLogin(packet); break;
-		case INTER_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
-		case INTER_TO_PLAYERS: packet.reset(); WorldServerAcceptHandler::sendToChannels(packet); break;
+		case IMSG_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
+		case IMSG_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
+		case IMSG_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet); break;
+		case IMSG_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
+		case IMSG_TO_LOGIN: WorldServerAcceptHandler::sendToLogin(packet); break;
+		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
+		case IMSG_TO_PLAYERS: packet.reset(); WorldServerAcceptHandler::sendToChannels(packet); break;
 	}
 }
 

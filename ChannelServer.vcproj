@@ -430,6 +430,14 @@
 				<Filter
 					Name="Sync"
 					>
+					<File
+						RelativePath=".\src\ChannelServer\SyncHandler.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\ChannelServer\SyncPacket.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="World"
@@ -836,6 +844,14 @@
 				<Filter
 					Name="Sync"
 					>
+					<File
+						RelativePath=".\src\ChannelServer\SyncHandler.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\ChannelServer\SyncPacket.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="World"

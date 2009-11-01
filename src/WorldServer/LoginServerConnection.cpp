@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnection.h"
-#include "GuildHandler.h"
-#include "LoginServerConnectHandler.h"
 #include "InterHeader.h"
+#include "LoginServerConnectHandler.h"
 #include "PacketReader.h"
+#include "SyncHandler.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include <iostream>
@@ -38,9 +38,9 @@ LoginServerConnection::~LoginServerConnection() {
 
 void LoginServerConnection::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
-		case INTER_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
-		case INTER_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
-		case INTER_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
-		case INTER_GUILD_OPERATION: GuildHandler::handleLoginServerPacket(this, packet); break;
+		case IMSG_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
+		case IMSG_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
+		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
+		case IMSG_GUILD_OPERATION: SyncHandler::handleLoginServerPacket(this, packet); break;
 	}
 }

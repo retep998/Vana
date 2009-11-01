@@ -59,10 +59,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "StringUtilities.h"
 #include "Summons.h"
+#include "SyncPacket.h"
 #include "TimeUtilities.h"
 #include "TradeHandler.h"
-#include "WorldServerConnection.h"
-#include "WorldServerConnectPacket.h"
 #include <boost/array.hpp>
 
 Player::Player() :
@@ -115,7 +114,7 @@ Player::~Player() {
 			setOnline(false);
 		}
 		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
-			WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);	
+			SyncPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);	
 		}
 		Maps::getMap(map)->removePlayer(this);
 		PlayerDataProvider::Instance()->removePlayer(this);
@@ -349,7 +348,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	setOnline(true);
 	is_connect = true;
-	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel(), guildid, guildrank, allianceid, alliancerank);
+	SyncPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel(), guildid, guildrank, allianceid, alliancerank);
 }
 
 void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
@@ -396,10 +395,10 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
 	}
-	if (!getChalkboard().empty() && (Maps::getMap(mapid)->getInfo()->fieldLimit & FieldLimitBits::Chalkboard) != 0) {
+	if (!getChalkboard().empty() && (newmap->getInfo()->fieldLimit & FieldLimitBits::Chalkboard) != 0) {
 		setChalkboard("");
 	}
-	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
+	SyncPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
 	MapPacket::changeMap(this);
 	Maps::addPlayer(this, mapid);
 }
@@ -416,7 +415,7 @@ string Player::getMedalName() {
 }
 
 void Player::changeChannel(int8_t channel) {
-	ChannelServer::Instance()->getWorldConnection()->playerChangeChannel(this, channel);
+	SyncPacket::playerChangeChannel(ChannelServer::Instance()->getWorldConnection(), this, channel);
 }
 
 void Player::changeKey(PacketReader &packet) {

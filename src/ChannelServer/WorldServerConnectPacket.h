@@ -30,18 +30,9 @@ class Player;
 class WorldServerConnection;
 
 namespace WorldServerConnectPacket {
-	void playerChangeChannel(WorldServerConnection *player, Player *info, uint16_t channel);
-	void playerBuffsTransferred(WorldServerConnection *player, int32_t playerid);
-	void registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level, int32_t guildid, uint8_t guildrank, int32_t allianceid, uint8_t alliancerank);
-	void removePlayer(WorldServerConnection *player, int32_t playerid);
 	void findPlayer(WorldServerConnection *player, int32_t playerid, const string &findee_name);
 	void whisperPlayer(WorldServerConnection *player, int32_t playerid, const string &whisperee, const string &message);
 	void scrollingHeader(WorldServerConnection *player, const string &message);
-	void partyOperation(WorldServerConnection *player, int8_t type, int32_t playerid, int32_t target = 0);
-	void partyInvite(WorldServerConnection *player, int32_t playerid, const string &invitee);
-	void updateLevel(WorldServerConnection *player, int32_t playerid, int32_t level);
-	void updateJob(WorldServerConnection *player, int32_t playerid, int32_t job);
-	void updateMap(WorldServerConnection *player, int32_t playerid, int32_t map);
 	void groupChat(WorldServerConnection *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat);
 	void rankingCalculation(WorldServerConnection *player);
 	void toChannels(WorldServerConnection *player, PacketCreator &packet);

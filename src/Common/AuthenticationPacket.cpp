@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void AuthenticationPacket::sendPassword(AbstractServerConnection *player, const string &pass, IpMatrix &extIp) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_PASSWORD);
+	packet.add<int16_t>(IMSG_PASSWORD);
 	packet.addString(pass);
 
 	packet.add<uint32_t>(extIp.size());
