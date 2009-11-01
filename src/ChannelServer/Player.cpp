@@ -315,6 +315,7 @@ void Player::playerConnect(PacketReader &packet) {
 	variables.reset(new PlayerVariables(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
+	randStream.reset(new PlayerRandStream(this));
 	monsterBook.reset(new PlayerMonsterBook(this));
 
 	getMonsterBook()->setCover(res[0]["monsterbookcover"]);
