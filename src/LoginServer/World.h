@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channel.h"
 #include "Configuration.h"
 #include "Types.h"
+#include <boost/tr1/functional.hpp>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
-#include <functional>
 #include <string>
 #include <vector>
 
