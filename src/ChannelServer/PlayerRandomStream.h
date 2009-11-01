@@ -27,15 +27,15 @@ class PlayerRandStream {
 public:
 	PlayerRandStream(Player *p);
 
-	void reset(int32_t seed1, int32_t seed2, int32_t seed3);
-	int32_t next();
+	void reset(uint32_t seed1, uint32_t seed2, uint32_t seed3);
+	uint32_t next();
 
 	void connectData(PacketCreator &packet);
 private:
 	Player *m_player;
-	int32_t m_seed1;
-	int32_t m_seed2;
-	int32_t m_seed3;
+	uint32_t m_seed1;
+	uint32_t m_seed2;
+	uint32_t m_seed3;
 };
 
 #endif
