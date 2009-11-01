@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "FileUtilities.h"
 #include "Instance.h"
+#include "Inventory.h"
 #include "LuaPortal.h"
 #include "MapDataProvider.h"
 #include "MapObjects.h"
@@ -92,6 +93,11 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 				packet.getString(); // Useless here.
 				packet.skipBytes(1); // Useless
 				bool wheel = packet.getBool();
+				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
+					player->acceptDeath(false);
+					return;
+				}
+				Inventory::takeItem(player, Items::WheelOfDestiny, 1);
 				player->acceptDeath(wheel);
 			}
 			break;
