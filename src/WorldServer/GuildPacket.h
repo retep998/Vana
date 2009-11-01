@@ -26,22 +26,10 @@ using std::string;
 class Alliance;
 class Guild;
 class PacketCreator;
+class Party;
 class Player;
 
 namespace GuildPacket {
-	namespace InterServerPacket {
-		void updatePlayers(Guild *guild, bool remove);
-		void updatePlayer(Guild *guild, Player *player);
-		void updatePlayerRank(Player *player);
-		void updatePlayerMesos(Player *player, int32_t amount);
-		void updateEmblem(Guild *guild);
-		void updateCapacity(Guild *guild);
-		void loadGuild(int32_t guildid);
-		void unloadGuild(int32_t guildid);
-		void addPlayer(Player *player);
-		void removePlayer(Player *player);
-	};
-
 	void sendGuildInfo(Guild *guild, Player *requestee, bool isNew = false);
 	void sendInvite(Player *inviter, Player *invitee);
 	void sendCapacityUpdate(Guild *guild);

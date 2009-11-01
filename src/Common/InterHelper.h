@@ -28,14 +28,19 @@ namespace PartyActions {
 		LogInOrOut = 0x05,
 		Expel = 0x06	
 	};
-	namespace Sync {
+}
+
+namespace Sync {
+	enum Sync {
+		ChannelStart = 0x00
+	};
+	namespace Party {
 		enum PartySync {
-			ChannelStart = 0x01,
-			Disband = 0x02,
-			Create = 0x03,
-			SwitchLeader = 0x04,
-			RemoveMember = 0x05,
-			AddMember = 0x06
+			Disband = 0x01,
+			Create = 0x02,
+			SwitchLeader = 0x03,
+			RemoveMember = 0x04,
+			AddMember = 0x05
 		};
 	}
 }

@@ -38,11 +38,11 @@ LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 void LoginServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
 	switch (packet.get<int16_t>()) {
-		case INTER_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
-		case INTER_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
-		case INTER_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
-		case INTER_CALCULATE_RANKING: RankingCalculator::runThread(); break;
-		case INTER_TO_WORLDS: LoginServerAcceptHandler::toWorlds(this, packet); break;
+		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
+		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
+		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
+		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
+		case IMSG_TO_WORLDS: LoginServerAcceptHandler::toWorlds(this, packet); break;
 	}
 }
 

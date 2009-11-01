@@ -29,14 +29,6 @@ class PacketCreator;
 class Player;
 
 namespace AlliancePacket {
-	namespace InterServerPacket {
-		void changeAlliance(Alliance *alliance, int8_t type);
-		void changeGuild(Alliance *alliance, Guild *guild);
-		void changeLeader(Alliance *alliance, Player *oldLeader);
-		void changePlayerRank(Alliance *alliance, Player *player);
-		void changeCapacity(Alliance *alliance);
-	};
-	
 	void sendAllianceInfo(Alliance *alliance, Player *requestee);
 	void sendInvite(Alliance *alliance, Player *inviter, Player *invitee);
 	void sendInviteAccepted(Alliance *alliance, Guild *guild);

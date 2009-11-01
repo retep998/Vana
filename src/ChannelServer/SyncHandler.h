@@ -15,17 +15,25 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PARTYHANDLER_H
-#define PARTYHANDLER_H
+#ifndef SYNCHANDLER_H
+#define SYNCHANLDER_H
 
 #include "Types.h"
+#include <string>
 
+using std::string;
+
+class WorldServerConnection;
 class PacketReader;
-class Player;
 
-namespace PartyHandler {
-	void handleRequest(Player *player, PacketReader &packet);
-	void handleResponse(PacketReader &packet);
+namespace SyncHandler {
+	void playerChangeChannel(WorldServerConnection *player, PacketReader &packet);
+	void newConnectable(PacketReader &packet);
+	void guildPacketHandlerWorld(PacketReader &packet);
+	void alliancePacketHandlerWorld(PacketReader &packet);
+	void handleDataSync(PacketReader &packet);
+	void handleChannelStart(PacketReader &packet);
+	void disbandParty(PacketReader &packet);
 };
 
 #endif

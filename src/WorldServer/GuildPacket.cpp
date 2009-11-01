@@ -22,165 +22,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "GameObjects.h"
 #include "Guild.h"
-#include "GuildHandler.h"
 #include "InterHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "SendHeader.h"
+#include "SyncHandler.h"
 #include "TimeUtilities.h"
 #include "WorldServerAcceptConnection.h"
 
-// GuildPacket InterServerPacket namespace
-void GuildPacket::InterServerPacket::updatePlayers(Guild *guild, bool remove) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x08);
-
-	if (remove) {
-		packet.addString("");
-		packet.add<int32_t>(0);
-	}
-	else {
-		packet.addString(guild->getName());
-		packet.add<int32_t>(guild->getId());
-	}
-	packet.add<int32_t>(guild->m_players.size());
-
-	for (unordered_map<int32_t, Player*>::iterator iter = guild->m_players.begin(); iter !=  guild->m_players.end(); iter++) {
-		packet.add<int32_t>(iter->second->getId());
-		packet.add<uint8_t>(remove ? 5 : iter->second->getGuildRank());
-	}
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void GuildPacket::InterServerPacket::updatePlayer(Guild *guild, Player *player) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x08);
-
-	if (guild == 0) { // Expel/leave
-		packet.addString("");
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(1);
-		packet.add<int32_t>(player->getId());
-		packet.add<uint8_t>(5);
-	}
-	else {
-		packet.addString(guild->getName());
-		packet.add<int32_t>(guild->getId());
-		packet.add<int32_t>(1);
-		packet.add<int32_t>(player->getId());
-		packet.add<uint8_t>(guild->getLowestRank());
-	}
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void GuildPacket::InterServerPacket::updatePlayerRank(Player *player) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x05);
-
-	packet.add<int32_t>(player->getId());
-	packet.add<uint8_t>(player->getGuildRank());
-	packet.add<uint8_t>(player->getAllianceRank());
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void GuildPacket::InterServerPacket::updatePlayerMesos(Player *player, int32_t amount) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x06);
-
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(amount);
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void GuildPacket::InterServerPacket::updateEmblem(Guild *guild) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x02);
-
-	GuildLogo logo = guild->getLogo();
-	packet.add<int32_t>(guild->getId());
-	packet.add<int16_t>(logo.logo);
-	packet.add<uint8_t>(logo.color);
-	packet.add<int16_t>(logo.background);
-	packet.add<uint8_t>(logo.backgroundColor);
-	packet.add<int32_t>(guild->m_players.size());
-	
-	for (unordered_map<int32_t, Player *>::iterator iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++)
-		packet.add<int32_t>(iter->second->getId());
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void GuildPacket::InterServerPacket::updateCapacity(Guild *guild) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x07);
-
-	packet.add<int32_t>(guild->getId());
-	packet.add<int32_t>(guild->getCapacity());
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void GuildPacket::InterServerPacket::loadGuild(int32_t guildid) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x09);
-
-	packet.add<int32_t>(guildid);
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void GuildPacket::InterServerPacket::unloadGuild(int32_t guildid) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x01);
-
-	packet.add<int32_t>(guildid);
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-
-void GuildPacket::InterServerPacket::removePlayer(Player *player) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x03);
-
-	packet.add<int32_t>(player->getId());
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-void GuildPacket::InterServerPacket::addPlayer(Player *player) {
-	PacketCreator packet;
-	packet.add<int16_t>(INTER_GUILD_OPERATION);
-	packet.add<int8_t>(0x04);
-
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(player->getGuild()->getId());
-	packet.add<uint8_t>(player->getGuildRank());
-	packet.add<int32_t>(player->getAlliance()->getId());
-	packet.add<uint8_t>(player->getAllianceRank());
-
-	Channels::Instance()->sendToAll(packet);
-}
-
-// GuildPacket namespace
 void GuildPacket::sendGuildInfo(Guild *guild, Player *requestee, bool isNew) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(requestee->getId());
 
 	packet.add<int16_t>(SMSG_GUILD);
@@ -203,7 +57,7 @@ void GuildPacket::sendGuildInfo(Guild *guild, Player *requestee, bool isNew) {
 
 void GuildPacket::sendInvite(Player *inviter, Player *invitee) {
 	PacketCreator pack;
-	pack.add<int16_t>(INTER_FORWARD_TO);
+	pack.add<int16_t>(IMSG_FORWARD_TO);
 	pack.add<int32_t>(invitee->getId());
 
 	pack.add<int16_t>(SMSG_GUILD);
@@ -371,7 +225,7 @@ void GuildPacket::sendGuildDisband(Guild *guild) {
 
 void GuildPacket::sendGuildContract(Player *player, bool isLeader, int32_t partyId, const string &creator, const string &guildName) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
 	packet.add<int16_t>(SMSG_GUILD);
@@ -388,7 +242,7 @@ void GuildPacket::sendGuildContract(Player *player, bool isLeader, int32_t party
 
 void GuildPacket::sendGuildDenyResult(Player *inviter, Player *invitee, uint8_t result) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(inviter->getId());
 	packet.add<int16_t>(SMSG_GUILD);
 
@@ -400,7 +254,7 @@ void GuildPacket::sendGuildDenyResult(Player *inviter, Player *invitee, uint8_t 
 
 void GuildPacket::sendPlayerGuildMessage(Player *player, uint8_t type) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
 	packet.add<int16_t>(SMSG_GUILD);
@@ -411,7 +265,7 @@ void GuildPacket::sendPlayerGuildMessage(Player *player, uint8_t type) {
 
 void GuildPacket::sendPlayerMessage(Player *player, uint8_t sort, const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
 	packet.add<int16_t>(SMSG_NOTE); 
@@ -423,7 +277,7 @@ void GuildPacket::sendPlayerMessage(Player *player, uint8_t sort, const string &
 
 void GuildPacket::sendGuildRankBoard(Player *player, int32_t npcid) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_FORWARD_TO);
+	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
 	packet.add<int16_t>(SMSG_GUILD);
@@ -512,7 +366,7 @@ void GuildPacket::sendToGuild(PacketCreator &packet, Guild *guild, Player *playe
 		if ((player != 0 && iter->second == player) || !iter->second->isOnline()) 
 			continue;
 		PacketCreator pack;
-		pack.add<int16_t>(INTER_FORWARD_TO);
+		pack.add<int16_t>(IMSG_FORWARD_TO);
 		pack.add<int32_t>(iter->second->getId());
 
 		pack.addBuffer(packet);

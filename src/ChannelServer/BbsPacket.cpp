@@ -39,7 +39,7 @@ void BbsPacket::handleBbsPacket(Player *player, PacketReader &packet) {
 
 void BbsPacket::newThread(Player *player, PacketReader &pack) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_BBS);
+	packet.add<int16_t>(IMSG_BBS);
 	packet.add<int8_t>(0x01);
 	packet.add<int32_t>(player->getGuildId());
 	packet.add<int32_t>(player->getId());
@@ -57,7 +57,7 @@ void BbsPacket::newThread(Player *player, PacketReader &pack) {
 
 void BbsPacket::deleteThread(Player *player, PacketReader &pack) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_BBS);
+	packet.add<int16_t>(IMSG_BBS);
 	packet.add<int8_t>(0x02);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
@@ -67,7 +67,7 @@ void BbsPacket::deleteThread(Player *player, PacketReader &pack) {
 
 void BbsPacket::newReply(Player *player, PacketReader &pack) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_BBS);
+	packet.add<int16_t>(IMSG_BBS);
 	packet.add<int8_t>(0x03);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
@@ -78,7 +78,7 @@ void BbsPacket::newReply(Player *player, PacketReader &pack) {
 
 void BbsPacket::deleteReply(Player *player, PacketReader &pack) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_BBS);
+	packet.add<int16_t>(IMSG_BBS);
 	packet.add<int8_t>(0x04);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
@@ -89,7 +89,7 @@ void BbsPacket::deleteReply(Player *player, PacketReader &pack) {
 
 void BbsPacket::sendThreadList(int16_t beginId, Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_BBS);
+	packet.add<int16_t>(IMSG_BBS);
 	packet.add<int8_t>(0x05);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
@@ -99,7 +99,7 @@ void BbsPacket::sendThreadList(int16_t beginId, Player *player) {
 
 void BbsPacket::showThread(int32_t id, Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_BBS);
+	packet.add<int16_t>(IMSG_BBS);
 	packet.add<int8_t>(0x06);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
