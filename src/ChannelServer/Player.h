@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerMounts.h"
 #include "PlayerPets.h"
 #include "PlayerQuests.h"
+#include "PlayerRandomStream.h"
 #include "PlayerSkills.h"
 #include "PlayerStats.h"
 #include "PlayerStorage.h"
@@ -126,6 +127,7 @@ public:
 	PlayerMounts * getMounts() const { return mounts.get(); }
 	PlayerPets * getPets() const { return pets.get(); }
 	PlayerQuests * getQuests() const { return quests.get(); }
+	PlayerRandStream * getRandStream() const { return randStream.get(); }
 	PlayerSkills * getSkills() const { return skills.get(); }
 	PlayerStats * getStats() const { return stats.get(); }
 	PlayerStorage * getStorage() const { return storage.get(); }
@@ -190,6 +192,7 @@ private:
 	scoped_ptr<PlayerMounts> mounts;
 	scoped_ptr<PlayerPets> pets;
 	scoped_ptr<PlayerQuests> quests;
+	scoped_ptr<PlayerRandStream> randStream;
 	scoped_ptr<PlayerSkills> skills;
 	scoped_ptr<PlayerStats> stats;
 	scoped_ptr<PlayerStorage> storage;

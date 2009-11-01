@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pets.h"
 #include "Player.h"
 #include "PlayerPacketHelper.h"
-#include "Randomizer.h"
 #include "SendHeader.h"
 #include "SkillMacros.h"
 #include "Skills.h"
@@ -39,9 +38,9 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(0);
-	packet.add<int32_t>(Randomizer::Instance()->randInt()); //
-	packet.add<int32_t>(Randomizer::Instance()->randInt()); // Possibly seeding maple's rng
-	packet.add<int32_t>(Randomizer::Instance()->randInt()); //
+
+	player->getRandStream()->connectData(packet); // Seeding RNG
+
 	packet.add<int32_t>(-1);
 	packet.add<int32_t>(-1);
 	packet.add<int32_t>(player->getId());
