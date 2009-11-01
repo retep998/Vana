@@ -142,7 +142,7 @@ public:
 	void saveAll(bool savecooldowns = false);
 	void setOnline(bool online);
 	void setLevelDate();
-	void acceptDeath();
+	void acceptDeath(bool wheel);
 private:
 	void playerConnect(PacketReader &packet);
 	void changeKey(PacketReader &packet);
