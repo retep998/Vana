@@ -89,7 +89,10 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	switch (opcode) {
 		case 0: // Dead
 			if (player->getStats()->getHp() == 0) { // else, hacking
-				player->acceptDeath();
+				packet.getString(); // Useless here.
+				packet.skipBytes(1); // Useless
+				bool wheel = packet.getBool();
+				player->acceptDeath(wheel);
 			}
 			break;
 		case -1: {
