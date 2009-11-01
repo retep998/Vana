@@ -21,13 +21,24 @@ map = getMap();
 cost = 5000;
 item = 0;
 
+function isNoob()
+	return getLevel() <= 10;
+end
+
+if isNoob() then
+	cost = 1000;
+end
+
 if map == 103000100 then
 	addText("Hi, I can take you to New Leaf City (NLC) for only #b" .. cost .. " mesos#k. Would you like to go?");
 	yes = askYesNo();
 
 	if yes == 1 then
-		-- TODO: Figure out the conditions under which a different ticket is given out and how much it costs
-		item = 4031711;
+		if isNoob() then
+			item = 4031711;
+		else
+			item = 4031712;
+		end
 	else
 		addText("Ok, come talk to me again when you want to go to NLC.");
 		sendOK();
@@ -37,16 +48,35 @@ elseif map == 600010001 then
 	yes = askYesNo();
 
 	if yes == 1 then
-		-- TODO: Figure out the conditions under which a different ticket is given out and how much it costs
-		item = 4031713;
+		if isNoob() then
+			item = 4031713;
+		else
+			item = 4031714;
+		end
 	else
 		addText("Ok, come talk to me again when you want to go back to Kerning City.");
 		sendOK();
 	end
 elseif map == 600010004 then
-	-- Need Bell's exit text
-elseif map == 600010003 then
-	-- Same here
+	addText("Do you want to go back to Kerning City subway station now?");
+	yes = askYesNo();
+
+	if yes == 0 then
+		addText("Okay, Please wait~!");
+		sendNext();
+	else
+		setMap(103000100);
+	end
+elseif map == 600010002 then
+	addText("Do you want to go back to New Leaf City subway station now?");
+	yes = askYesNo();
+
+	if yes == 0 then
+		addText("Okay, Please wait~!");
+		sendNext();
+	else
+		setMap(600010001);
+	end
 end
 
 if item ~= 0 then
