@@ -183,6 +183,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case CMSG_QUEST_OBTAIN: Quests::getQuest(this, packet); break;
 		case CMSG_REACTOR_HIT: Reactors::hitReactor(this, packet); break;
 		case CMSG_REACTOR_TOUCH: Reactors::touchReactor(this, packet); break;
+		case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
 		case CMSG_SCROLL_USE: InventoryHandler::useScroll(this, packet); break;
 		case CMSG_SHOP: InventoryHandler::useShop(this, packet); break;
 		case CMSG_SKILL_ADD: Skills::addSkill(this, packet); break;
@@ -563,8 +564,11 @@ void Player::setLevelDate() {
 	query.exec();
 }
 
-void Player::acceptDeath() {
+void Player::acceptDeath(bool wheel) {
 	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
+	if (wheel) {
+		tomap = this->getMap();
+	}
 	stats->setHp(50, false);
 	getActiveBuffs()->removeBuff();
 	setMap(tomap);
