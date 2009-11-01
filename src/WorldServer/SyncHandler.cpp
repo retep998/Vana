@@ -194,13 +194,13 @@ void SyncHandler::sendChangeGuild(int32_t allianceid, PacketReader &packet) {
 			int16_t lowestAllianceRank = alliance->getLowestRank();
 
 			mysqlpp::Query query = Database::getCharDB().query();
-			query << "UPDATE characters SET alliance = " << allianceid << ", alliancerank = " << lowestAllianceRank << " WHERE guild = " << guild->getId();
+			query << "UPDATE characters SET allianceid = " << allianceid << ", alliancerank = " << lowestAllianceRank << " WHERE guildid = " << guild->getId();
 			query.exec();
 
 			query << "UPDATE characters SET alliancerank = 2 WHERE id = " << guild->getLeader(); // Make the leader jr master
 			query.exec();
 
-			query << "UPDATE guilds SET alliance = " << allianceid << " WHERE id = " << guild->getId(); // Update the guild in the database
+			query << "UPDATE guilds SET allianceid = " << allianceid << " WHERE id = " << guild->getId(); // Update the guild in the database
 			query.exec();
 
 			SyncPacket::AlliancePacket::changeGuild(alliance, guild);
@@ -230,10 +230,10 @@ void SyncHandler::sendChangeGuild(int32_t allianceid, PacketReader &packet) {
 		}
 
 		mysqlpp::Query query = Database::getCharDB().query();
-		query << "UPDATE characters SET alliance = 0, alliancerank = 5 WHERE guild = " << guild->getId();
+		query << "UPDATE characters SET allianceid = 0, alliancerank = 5 WHERE guildid = " << guild->getId();
 		query.exec();
 
-		query << "UPDATE guilds SET alliance = 0 WHERE id = " << guild->getId(); // Update the guild in the database
+		query << "UPDATE guilds SET allianceid = 0 WHERE id = " << guild->getId(); // Update the guild in the database
 		query.exec();
 
 		alliance->removeGuild(guild);
@@ -274,11 +274,8 @@ void SyncHandler::sendTitleUpdate(int32_t allianceid, PacketReader &packet) {
 	if (player == 0 || player->getAllianceRank() > 1 || player->getGuild() == 0) 
 		return;
 
-	alliance->setTitle(0, packet.getString());
-	alliance->setTitle(1, packet.getString());
-	alliance->setTitle(2, packet.getString());
-	alliance->setTitle(3, packet.getString());
-	alliance->setTitle(4, packet.getString());
+	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++)
+		alliance->setTitle(i - 1, packet.getString());
 
 	alliance->save();
 
@@ -363,10 +360,10 @@ void SyncHandler::sendAllianceDisband(int32_t allianceid, int32_t playerid) {
 	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE characters SET alliance = 0, alliancerank = 5 WHERE alliance = " << allianceid;
+	query << "UPDATE characters SET allianceid = 0, alliancerank = 5 WHERE allianceid = " << allianceid;
 	query.exec();
 
-	query << "UPDATE guilds SET alliance = 0 WHERE alliance = " << allianceid; // Update the guild in the database
+	query << "UPDATE guilds SET allianceid = 0 WHERE allianceid = " << allianceid; // Update the guild in the database
 	query.exec();
 
 	query << "DELETE FROM alliances WHERE id = " << allianceid; // Update the guild in the database
@@ -443,10 +440,10 @@ void SyncHandler::removeGuild(Guild *guild) {
 	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE characters SET alliance = 0, alliancerank = 5 WHERE guild = " << guild->getId();
+	query << "UPDATE characters SET allianceid = 0, alliancerank = 5 WHERE guildid = " << guild->getId();
 	query.exec();
 
-	query << "UPDATE guilds SET alliance = 0 WHERE id = " << guild->getId(); // Update the guild in the database
+	query << "UPDATE guilds SET allianceid = 0 WHERE id = " << guild->getId(); // Update the guild in the database
 	query.exec();
 
 	alliance->removeGuild(guild);
@@ -777,14 +774,14 @@ void SyncHandler::handleGuildPacket(WorldServerAcceptConnection *player, PacketR
 			deleteQuery << "DELETE FROM guild_bbs_threads WHERE guild = " << guildid;
 			deleteQuery.exec();
 
-			deleteQuery << "UPDATE characters SET guild = 0, guildrank = 5, alliance = 0, alliancerank = 5 WHERE guild = " << guildid;
+			deleteQuery << "UPDATE characters SET guildid = 0, guildrank = 5, allianceid = 0, alliancerank = 5 WHERE guildid = " << guildid;
 			deleteQuery.exec();
 			}
 		break;
 		case 0x09: { // Invite Denied
 			uint8_t result = packet.get<uint8_t>();
-			Player *invitee = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 			Player *inviter = PlayerDataProvider::Instance()->getPlayer(packet.getString());
+			Player *invitee = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 			if (invitee == 0 || inviter == 0 || !invitee->isInvitedToGuild()) 
 				return;
 
@@ -909,10 +906,10 @@ void SyncHandler::loadGuild(int32_t id) {
 		res[0]["id"],
 		res[0]["leaderid"],
 		res[0]["capacity"],
-		res[0]["gp"],
+		res[0]["points"],
 		logo,
 		ranks,
-		PlayerDataProvider::Instance()->getAlliance(res[0]["alliance"]));
+		PlayerDataProvider::Instance()->getAlliance(res[0]["allianceid"]));
 }
 
 void SyncHandler::handleGuildCreation(PacketReader &packet) {
@@ -952,18 +949,14 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 		int8_t voters = party->getVoters() + 1;
 		party->setGuildContract(guildcontract);
 		party->setVoters(voters);
-		if (voters == 1) {
-			if (guildcontract == 1) {
+		if (voters == 5) {
+			if (guildcontract == 5) {
 				Player *leader = PlayerDataProvider::Instance()->getPlayer(party->getLeader());
 				mysqlpp::Query query = Database::getCharDB().query();
-				query << "INSERT INTO guilds (`world`, `name`, `leaderid`, `notice`, `rank4title`, `rank5title`, `capacity`) VALUES ("
+				query << "INSERT INTO guilds (`worldid`, `name`, `leaderid`) VALUES ("
 					<< static_cast<int16_t>(WorldServer::Instance()->getWorldId()) << ", "
 					<< mysqlpp::quote << party->getGuildName() << ", "
-					<< party->getLeader() << ", "
-					<< mysqlpp::quote << "" << ", "
-					<< mysqlpp::quote << "" << ", "
-					<< mysqlpp::quote << "" << ", "
-					<< "10)";
+					<< party->getLeader() << ")";
 
 				if (!query.exec()) {
 					std::cout << "/a[ALERT] The server cant create a guild! MySQL error: " << query.error() << std::endl;
@@ -994,7 +987,7 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 				for (map<int32_t, Player*>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 					iter->second->setGuild(guild);
 					iter->second->setGuildRank(party->isLeader(iter->second->getId()) ? 1 : guild->getLowestRank());
-					query << "UPDATE characters SET guild = " << gid << ", guildrank = " << static_cast<int16_t>(iter->second->getGuildRank()) << " WHERE id = " << iter->second->getId() << " LIMIT 1;";
+					query << "UPDATE characters SET guildid = " << gid << ", guildrank = " << static_cast<int16_t>(iter->second->getGuildRank()) << " WHERE id = " << iter->second->getId() << " LIMIT 1;";
 					query.exec();
 					guild->addPlayer(iter->second);
 				}
@@ -1026,10 +1019,10 @@ void SyncHandler::sendNewPlayer(int32_t guildid, int32_t pid, bool newGuild) {
 
 	mysqlpp::Query update = Database::getCharDB().query();
 	update << "UPDATE characters SET " 
-		<< "guild = " << guild->getId() << ", "
-		<< "guildrank = " <<  static_cast<int16_t>(player->getGuildRank()) << ", "
-		<< "alliance = " << guild->getAlliance()->getId() << ", "
-		<< "alliancerank = " <<  static_cast<int16_t>(player->getAllianceRank())
+		<< "guildid = " << guild->getId() << ", "
+		<< "guildrank = " << static_cast<int16_t>(player->getGuildRank()) << ", "
+		<< "allianceid = " << (guild->getAlliance() == 0 ? 0 : guild->getAlliance()->getId()) << ", "
+		<< "alliancerank = " << static_cast<int16_t>(player->getAllianceRank())
 		<< " WHERE ID = " << pid;
 	update.exec();
 	
@@ -1064,7 +1057,7 @@ void SyncHandler::sendDeletePlayer(int32_t guildid, int32_t pid, const string &n
 	player->setAllianceRank(0);
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE characters SET guild = 0, guildrank = 5, alliance = 0, alliancerank = 5 WHERE id = " << pid << " LIMIT 1";
+	query << "UPDATE characters SET guildid = 0, guildrank = 5, allianceid = 0, alliancerank = 5 WHERE id = " << pid << " LIMIT 1";
 	query.exec();
 
 	GuildPacket::sendPlayerUpdate(guild, player, (expelled ? 2 : 1));
@@ -1277,6 +1270,9 @@ void SyncHandler::playerConnect(WorldServerAcceptConnection *player, PacketReade
 	if (p == 0) {
 		p = new Player(id);
 	}
+
+	int16_t oldJob = p->getJob();
+
 	p->setIp(ip);
 	p->setName(name);
 	p->setMap(map);
@@ -1289,6 +1285,16 @@ void SyncHandler::playerConnect(WorldServerAcceptConnection *player, PacketReade
 	p->setChannel(player->getChannel());
 	p->setOnline(true);
 	PlayerDataProvider::Instance()->registerPlayer(p);
+	if (guildid != 0) {
+		GuildPacket::sendGuildInfo(p->getGuild(), p);
+		if (oldJob == -1) // Didn't come online till now...
+			GuildPacket::sendPlayerStatUpdate(p->getGuild(), p, false, true);
+		if (allianceid != 0) {
+			AlliancePacket::sendAllianceInfo(p->getAlliance(), p);
+			if (oldJob == -1) 
+				AlliancePacket::sendUpdatePlayer(p->getAlliance(), p, 1);
+		}
+	}
 }
 
 void SyncHandler::playerDisconnect(WorldServerAcceptConnection *player, PacketReader &packet) {

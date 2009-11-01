@@ -40,8 +40,8 @@ void Alliance::save() {
 	query << "UPDATE alliances SET " <<
 		"notice = " << mysqlpp::quote << m_notice << ",";
 
-	for (int32_t i = 0; i < GuildsAndAlliances::RankQuantity; i++) {
-		query << "rank" << i << "title = " << mysqlpp::quote << m_titles[i] << ", ";
+	for (int32_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++) {
+		query << "rank" << i << "title = " << mysqlpp::quote << m_titles[i - 1] << ", ";
 	}
 
 	query << "capacity = " << m_capacity << ", " <<
@@ -53,7 +53,7 @@ void Alliance::save() {
 uint8_t Alliance::getLowestRank() {
 	uint8_t retval = GuildsAndAlliances::RankQuantity;
 	for (int32_t i = GuildsAndAlliances::RankQuantity; i > 0; i--) {
-		if (!m_titles[i].empty()) {
+		if (!m_titles[i - 1].empty()) {
 			retval = static_cast<uint8_t>(i); // Cast until I learn more...
 			break;
 		}

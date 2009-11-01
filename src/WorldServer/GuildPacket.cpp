@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channel.h"
 #include "Channels.h"
 #include "Database.h"
+#include "GameConstants.h"
 #include "GameObjects.h"
 #include "Guild.h"
 #include "InterHeader.h"
@@ -119,7 +120,7 @@ void GuildPacket::sendTitlesUpdate(Guild *guild) {
 	packet.add<int8_t>(0x3e);
 
 	packet.add<int32_t>(guild->getId());
-	for (uint8_t i = 0; i < 5; i++)
+	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++)
 		packet.addString(guild->getTitle(i));
 
 	sendToGuild(packet, guild);
@@ -171,7 +172,7 @@ void GuildPacket::sendPlayerStatUpdate(Guild *guild, Player *player, bool levelM
 	}
 }
 
-void GuildPacket::sendPlayerUpdate(Guild *guild, Player *player, uint8_t type) {
+void GuildPacket::sendPlayerUpdate(Guild *guild, Player *player, uint8_t type, bool toSelf) {
 	/* Types are:
 		0 = New player
 		1 = Leave player
@@ -209,7 +210,7 @@ void GuildPacket::sendPlayerUpdate(Guild *guild, Player *player, uint8_t type) {
 		packet.add<int8_t>(player->isOnline() ? 1 : 0);
 	}
 
-	sendToGuild(packet, guild, (type == 3 ? player : 0));
+	sendToGuild(packet, guild, (toSelf ? 0 : player));
 }
 
 void GuildPacket::sendGuildDisband(Guild *guild) {
@@ -284,14 +285,14 @@ void GuildPacket::sendGuildRankBoard(Player *player, int32_t npcid) {
 	packet.add<int8_t>(0x49);
 	packet.add<int32_t>(npcid);
 	
-	mysqlpp::Query query = Database::getCharDB().query("SELECT name, gp, logo, logobg, logocolor, logobgcolor FROM guilds ORDER BY gp DESC LIMIT 50");
+	mysqlpp::Query query = Database::getCharDB().query("SELECT name, points, logo, logobg, logocolor, logobgcolor FROM guilds ORDER BY points DESC LIMIT 50");
 	mysqlpp::StoreQueryResult res = query.store();
 
 	packet.add<int32_t>((int32_t) res.num_rows());
 
 	for (int32_t i = 0; i < (int32_t) res.num_rows(); i++) {
 		packet.addString((string) res[i]["name"]);
-		packet.add<int32_t>((int32_t) res[i]["gp"]);
+		packet.add<int32_t>((int32_t) res[i]["points"]);
 		packet.add<int32_t>((int32_t) res[i]["logo"]);
 		packet.add<int32_t>((int32_t) res[i]["logocolor"]);
 		packet.add<int32_t>((int32_t) res[i]["logobg"]);
@@ -311,7 +312,7 @@ void GuildPacket::addGuildInformation(PacketCreator &packet, Guild *guild) {
 	packet.add<int32_t>(guild->getId());
 	packet.addString(guild->getName());
 
-	for (uint8_t i = 0; i < 5; i++) 
+	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++) 
 		packet.addString(guild->getTitle(i));
 	
 	packet.add<int8_t>(guild->m_players.size());
@@ -328,7 +329,7 @@ void GuildPacket::addGuildInformation(PacketCreator &packet, Guild *guild) {
 	if (leader != 0) {
 		packet.addString(leader->getName(), 13);
 		packet.add<int32_t>(leader->getJob());
-		packet.add<int32_t>(leader->getLevel());
+		packet.add<int32_t>(leader->isOnline() ? leader->getLevel() : -1); // FIXME
 		packet.add<int32_t>(leader->getGuildRank());
 		packet.add<int32_t>(leader->isOnline() ? 1 : 0);
 		packet.addBytes("91940491");
@@ -339,7 +340,7 @@ void GuildPacket::addGuildInformation(PacketCreator &packet, Guild *guild) {
 		if (iter->second->getId() != guild->getLeader()) {
 			packet.addString(iter->second->getName(), 13);
 			packet.add<int32_t>(iter->second->getJob());
-			packet.add<int32_t>(iter->second->getLevel());
+			packet.add<int32_t>(iter->second->isOnline() ? iter->second->getLevel() : -1); // FIXME
 			packet.add<int32_t>(iter->second->getGuildRank());
 			packet.add<int32_t>(iter->second->isOnline() ? 1 : 0);
 			packet.addBytes("91940491");
@@ -356,7 +357,7 @@ void GuildPacket::addGuildInformation(PacketCreator &packet, Guild *guild) {
 	packet.add<uint8_t>(logo.color);
 	packet.addString(guild->getNotice());
 	packet.add<int32_t>(guild->getGuildPoints());
-	packet.add<int32_t>(guild->getAlliance()->getId());
+	packet.add<int32_t>(guild->getAlliance() == 0 ? 0 : guild->getAlliance()->getId());
 }
 
 void GuildPacket::sendToGuild(PacketCreator &packet, Guild *guild, Player *player) {

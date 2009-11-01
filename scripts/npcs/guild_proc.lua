@@ -51,34 +51,36 @@ if getGuildId() == 0 then
 			if getPartyID() == 0 then
 				addText("I don't care how tough you think you are... In order to form a guild, you need to be in a party of 6. Create a party of 6, and then bring all your party members back here if you are indeed serious about forming a guild.");
 				sendNext();
-			elseif getPartyCount() < 2 then
-				addText("It seems like either you don't have enough members in your party, or some of your members are not here. I need all 6 party members here to register you as a guild. If your party can't even coordinate this simple task, you should think twice about forming a guild.");
-				sendNext();
 			elseif not isPartyLeader() then
 				addText("Please let the party leader talk to me if you want to create a guild.");
 				sendNext();
-			elseif getPartyCount() >= 2 then
-				partyMembers = getAllPartyPlayerIDs();
-				stoppedName = "";
-				for i = 1, #partyMembers do
-					if setPlayer(partyMembers[i]) then
+			elseif getLevel() < 10 then
+				addText("Hmm ... I don't think you have the qualifications to be a master of the guild. Please train more to become the Master of the guild.");
+				sendNext();
+			elseif getPartyMapCount(200000301) < 6 then
+				addText("It seems like either you don't have enough members in your party, or some of your members are not here. I need all 6 party members here to register you as a guild. If your party can't even coordinate this simple task, you should think twice about forming a guild.");
+				sendNext();
+			else
+				ids = getAllPartyPlayerIDs();
+				success = true;
+				for i = 1, #ids do
+					if setPlayer(ids[i]) then
 						if getGuildId() ~= 0 then
-							stoppedName = getName();
-							revertPlayer();
-							break;
+							success = false;
 						end
 						revertPlayer();
+						if not success then break; end
 					end
 				end
-				if stoppedName ~= "" then
-					addText(stoppedName .. " is already in a guild. You can't make a guild with a partymember that is already in a guild.");
-					sendNext();
-				else
+				if success then
 					addText("Enter the name of your guild and your guild will be created.\r\n");
 					addText("The guild will also be officially registered under our Guild Headquarters, so best of luck to you and your guild!");	
 					sendNext();
-				
+
 					sendNewGuildWindow();
+				else
+					addText("There seems to be a traitor among us. Someone in your party is already part of another guild. To form a guild, all of your party members must be out of their guild. Come back when you have solved the problem with the traitor.");
+					sendNext();
 				end
 			end
 		end
@@ -92,53 +94,54 @@ else
 	if getGuildRank() ~= 1 then
 		addText("Hey, you're not the Guild Master!! This decision can only be made by the Guild Master.");
 		sendOK();
-	end
+	else
+		if reaction == 0 then
+			-- Expanding
+			capacity = getGuildCapacity();
+			if capacity == 100 then
+				addText("Your guild seems to have grown quite a bit. I cannot expand your guild any longer...");
+				sendNext();
+			else
+				addText("Are you here to expand your guild? Your guild must have grown quite a bit~ To expand your guild, the guild has to be re-registered in our Guiild Headquarters, and that'll require some service fee .....");
+				sendNext();
+				
+				-- Let's calculate the increasement fee
+				fee = 500000;
+				if capacity == 15 then
+					fee = fee * 3;
+				elseif capacity == 20 then
+					fee = fee * 5;
+				elseif capacity >= 25 then
+					fee = fee * 7;
+				end
 
-	if reaction == 0 then
-		capacity = getGuildCapacity();
-		if capacity == 100 then
-			addText("Your guild seems to have grown quite a bit. I cannot expand your guild any longer...");
-			sendNext();
-		end
-
-		-- Expanding
-		addText("Are you here to expand your guild? Your guild must have grown quite a bit~ To expand your guild, the guild has to be re-registered in our Guiild Headquarters, and that'll require some service fee .....");
-		sendNext();
-		
-		-- Let's calculate the increasement fee
-		fee = 500000;
-		if capacity == 15 then
-			fee = fee * 3;
-		elseif capacity == 20 then
-			fee = fee * 5;
-		elseif capacity >= 25 then
-			fee = fee * 7;
-		end
-		
-		if capacity ~= 0 then
-			addText("The service fee will only cost you #r" .. fee .. " mesos#k. Would you like to expand your guild?");
-			choice = askYesNo();
-			if choice == 1 then
-				if getMesos() >= fee then
-					sendIncreaseCapacity();
-				else
-					addText("Please check again. You'll need to pay the service fee in order to expand your guild and re-register it....");
-					sendOK();
+				if capacity ~= 0 then
+					addText("The service fee will only cost you #r" .. fee .. " mesos#k. Would you like to expand your guild?");
+					choice = askYesNo();
+					if choice == 1 then
+						if getMesos() >= fee then
+							sendIncreaseCapacity();
+						else
+							addText("Please check again. You'll need to pay the service fee in order to expand your guild and re-register it....");
+							sendOK();
+						end
+					end
 				end
 			end
-		end
 
-	elseif reaction == 1 then
-		-- Disbanding
-		if getAllianceRank() == 1 then
-			addText("You need to pass the alliance leadership first before you disband the guild.");
-			sendOK();
-		end
-		addText("Are you sure you want to break up your guild? Really ... just remember, once you break up your guild, that guild will be gone forever. Oh, and one thing. If you want to break up your guild, you'll have to pay a 200,000 meso service fee. Are you sure you still want to do it?");
-		choice = askYesNo();
+		elseif reaction == 1 then
+			-- Disbanding
+			if getAllianceRank() == 1 then
+				addText("You need to pass the alliance leadership first before you disband the guild.");
+				sendOK();
+			else
+				addText("Are you sure you want to break up your guild? Really ... just remember, once you break up your guild, that guild will be gone forever. Oh, and one thing. If you want to break up your guild, you'll have to pay a 200,000 meso service fee. Are you sure you still want to do it?");
+				choice = askYesNo();
 
-		if choice == 1 then
-			disbandGuild();
+				if choice == 1 then
+					disbandGuild();
+				end
+			end
 		end
 	end
 end

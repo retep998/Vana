@@ -240,7 +240,7 @@ void SyncPacket::GuildPacket::addPlayer(Player *player) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuild()->getId());
 	packet.add<uint8_t>(player->getGuildRank());
-	packet.add<int32_t>(player->getAlliance()->getId());
+	packet.add<int32_t>(player->getAlliance() == 0 ? 0 : player->getAlliance()->getId());
 	packet.add<uint8_t>(player->getAllianceRank());
 
 	Channels::Instance()->sendToAll(packet);
