@@ -213,11 +213,8 @@ void AlliancePacket::sendUpdateTitles(Alliance *alliance) {
 	packet.add<int8_t>(0x1a);
 
 	packet.add<int32_t>(alliance->getId());
-	packet.addString(alliance->getTitle(0));
-	packet.addString(alliance->getTitle(1));
-	packet.addString(alliance->getTitle(2));
-	packet.addString(alliance->getTitle(3));
-	packet.addString(alliance->getTitle(4));
+	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++)
+		packet.addString(alliance->getTitle(i));
 
 	sendToAlliance(packet, alliance);
 }
@@ -228,7 +225,7 @@ void AlliancePacket::addAllianceInfo(PacketCreator &packet, Alliance *alliance) 
 	packet.add<int32_t>(alliance->getId());
 	packet.addString(alliance->getName());
 	
-	for (int8_t i = 0; i < 5; i++)
+	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++)
 		packet.addString(alliance->getTitle(i));
 
 	packet.add<int8_t>(alliance->getSize());

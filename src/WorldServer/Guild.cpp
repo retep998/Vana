@@ -53,10 +53,10 @@ void Guild::save() {
 		"logocolor = " << static_cast<int16_t>(m_logo.color) << ", " <<
 		"logobg = " << m_logo.background << ", " <<
 		"logobgcolor = " << static_cast<int16_t>(m_logo.backgroundColor) << ", " <<
-		"gp = " << m_points << ", ";
+		"points = " << m_points << ", ";
 
-	for (int32_t i = 0; i < GuildsAndAlliances::RankQuantity; i++) {
-		query << "rank" << i << "title = " << mysqlpp::quote << m_titles[i] << ", ";
+	for (int32_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++) {
+		query << "rank" << i << "title = " << mysqlpp::quote << m_titles[i - 1] << ", ";
 	}
 
 	query << "leaderid = " << m_leaderId << " " <<
@@ -88,7 +88,7 @@ void Guild::removePlayer(Player *player) {
 uint8_t Guild::getLowestRank() {
 	uint8_t retval = GuildsAndAlliances::RankQuantity;
 	for (int32_t i = GuildsAndAlliances::RankQuantity; i > 0; i--) {
-		if (!m_titles[i].empty()) {
+		if (!m_titles[i - 1].empty()) {
 			retval = static_cast<uint8_t>(i); // Cast until I learn more...
 			break;
 		}

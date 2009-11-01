@@ -17,15 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerDataProvider.h"
 #include "Alliance.h"
+#include "AlliancePacket.h"
 #include "Database.h"
 #include "Channels.h"
 #include "GameObjects.h"
 #include "Guild.h"
+#include "GuildPacket.h"
 #include "InitializeCommon.h"
 #include "PacketCreator.h"
 #include "Party.h"
 #include "Player.h"
 #include "StringUtilities.h"
+#include "SyncHandler.h"
 #include "WorldServer.h"
 
 using Initializing::outputWidth;
@@ -34,8 +37,8 @@ PlayerDataProvider * PlayerDataProvider::singleton = 0;
 
 void PlayerDataProvider::loadData() {
 	int16_t worldid = WorldServer::Instance()->getWorldId();
-	loadGuilds(worldid);
 	loadAlliances(worldid);
+	loadGuilds(worldid);
 	loadPlayers(worldid);
 }
 
@@ -63,24 +66,21 @@ void PlayerDataProvider::loadGuilds(int16_t worldId) {
 		ranks[4] = static_cast<string>(res[i]["rank5title"]);
 
 		guild = res[i]["id"];
-		alliance = res[i]["alliance"];
+		alliance = res[i]["allianceid"];
+		Alliance *all = getAlliance(alliance);
 
 		createGuild(static_cast<string>(res[i]["name"]),
 			static_cast<string>(res[i]["notice"]),
 			guild,
 			res[i]["leaderid"],
 			res[i]["capacity"],
-			res[i]["gp"],
+			res[i]["points"],
 			logo,
 			ranks,
-			0);
-			//alliance);
+			all);
 
-		if (alliance > 0) {
-			Alliance *all = getAlliance(alliance);
-			if (all != 0)
-				all->addGuild(getGuild(guild));
-		}
+		if (all != 0) 
+			all->addGuild(getGuild(guild));
 	}
 
 	std::cout << "DONE" << std::endl;
@@ -142,6 +142,9 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 		p->setAllianceRank(static_cast<uint8_t>(res[i]["alliancerank"]));
 
 		registerPlayer(p, false);
+		if (guildid != 0) {
+			guild->addPlayer(p);
+		}
 	}
 
 	std::cout << "DONE" << std::endl;
@@ -153,24 +156,30 @@ void PlayerDataProvider::registerPlayer(Player *player, bool online) {
 		m_players[player->getId()] = player;
 	}
 	if (online) {
+		if (player->getParty() != 0) {
+			SyncHandler::logInLogOut(player->getId());
+		}
+		if (player->getGuild() != 0) {
+			GuildPacket::sendPlayerUpdate(player->getGuild(), player, 3, false);
+			if (player->getAlliance() != 0)
+				AlliancePacket::sendUpdatePlayer(player->getAlliance(), player, 2);
+		}
 		Channels::Instance()->increasePopulation(player->getChannel());
 	}
 }
 
 void PlayerDataProvider::remove(int32_t id, int16_t channel) {
-	if (channel == -1 || m_players[id]->getChannel() == channel) {
-		m_players[id]->setOnline(false);
-		/*
-		// FIXME AT SOME POINT
-		if (m_players[id]->getParty() != 0) {
-			PartyHandler::logInLogOut(id);
+	Player *player = m_players[id];
+	if (channel == -1 || player->getChannel() == channel) {
+		player->setOnline(false);
+		if (player->getParty() != 0) {
+			SyncHandler::logInLogOut(id);
 		}
-		if (m_players[id]->getGuild() != 0) {
-			GuildPacket::sendPlayerUpdate(m_players[id]->getGuild(), m_players[id], 3);
-			if (m_players[id]->getAlliance() != 0)
-				AlliancePacket::sendUpdatePlayer(m_players[id]->getAlliance(), m_players[id], 2);
+		if (player->getGuild() != 0) {
+			GuildPacket::sendPlayerUpdate(player->getGuild(), player, 3, false);
+			if (player->getAlliance() != 0)
+				AlliancePacket::sendUpdatePlayer(player->getAlliance(), player, 2);
 		}
-		*/
 		Channels::Instance()->decreasePopulation(channel);
 	}
 }
