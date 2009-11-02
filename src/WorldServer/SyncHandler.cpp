@@ -39,7 +39,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptConnection.h"
 #include "WorldServerAcceptPacket.h"
 
-void SyncHandler::handleAlliancePacket(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::handle(WorldServerAcceptConnection *connection, PacketReader &packet) {
+	switch (packet.get<int16_t>()) {
+		case IMSG_PLAYER_CHANGE_CHANNEL: playerChangeChannel(connection, packet); break;
+		case IMSG_TRANSFER_PLAYER_PACKET: handleChangeChannel(connection, packet); break;
+		case IMSG_REGISTER_PLAYER: playerConnect(connection->getChannel(), packet); break;
+		case IMSG_REMOVE_PLAYER: playerDisconnect(connection->getChannel(), packet); break;
+		case IMSG_UPDATE_LEVEL: updateLevel(packet); break;
+		case IMSG_UPDATE_JOB: updateJob(packet); break;
+		case IMSG_UPDATE_MAP: updateMap(packet); break;
+		case IMSG_GUILD_OPERATION: handleGuildPacket(packet); break;
+		case IMSG_SYNC_OPERATION: partyOperation(packet); break;
+		case IMSG_BBS: handleBbsPacket(packet); break;
+		case IMSG_ALLIANCE: handleAlliancePacket(packet); break;
+	}
+}
+
+void SyncHandler::handleAlliancePacket(PacketReader &packet) {
 	int8_t option = packet.get<int8_t>();
 	int32_t allianceid = packet.get<int32_t>();
 	switch (option) {
@@ -66,12 +82,15 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 		return;
 
 	Party *party = player->getParty();
-	if (party->members.size() != 2) 
+	if (party->members.size() != 2) {
 		return;
+	}
 
-	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++)
-		if (iter->second->getAlliance() != 0 || iter->second->getGuild() == 0)
+	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+		if (iter->second->getAlliance() != 0 || iter->second->getGuild() == 0) {
 			return;
+		}
+	}
 	
 	// There we go, create an alliance...
 
@@ -216,8 +235,6 @@ void SyncHandler::sendChangeGuild(int32_t allianceid, PacketReader &packet) {
 
 			AlliancePacket::sendInviteAccepted(alliance, guild);
 		}
-		else
-			return;
 	}
 	else {
 		guild->setAlliance(0);
@@ -450,7 +467,7 @@ void SyncHandler::removeGuild(Guild *guild) {
 	AlliancePacket::sendGuildLeft(alliance, guild, false);
 }
 
-void SyncHandler::handleBbsPacket(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::handleBbsPacket(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
 		case 0x01: handleNewThread(packet); break;
 		case 0x02: handleDeleteThread(packet); break;
@@ -645,7 +662,7 @@ void SyncHandler::handleDeleteReply(PacketReader &packet) {
 	handleShowThread(playerid, thread->getListId());
 }
 
-void SyncHandler::handleGuildPacket(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::handleGuildPacket(PacketReader &packet) {
 	int32_t option = packet.get<int8_t>();
 	int32_t guildid = packet.get<int32_t>();
 	switch(option) {
@@ -776,8 +793,8 @@ void SyncHandler::handleGuildPacket(WorldServerAcceptConnection *player, PacketR
 
 			deleteQuery << "UPDATE characters SET guildid = 0, guildrank = 5, allianceid = 0, alliancerank = 5 WHERE guildid = " << guildid;
 			deleteQuery.exec();
-			}
-		break;
+			break;
+		}
 		case 0x09: { // Invite Denied
 			uint8_t result = packet.get<uint8_t>();
 			Player *inviter = PlayerDataProvider::Instance()->getPlayer(packet.getString());
@@ -1128,7 +1145,7 @@ void SyncHandler::logInLogOut(int32_t playerid) {
 	}
 }
 
-void SyncHandler::createParty(WorldServerAcceptConnection *player, int32_t playerid) {
+void SyncHandler::createParty(int32_t playerid) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (pplayer->getParty() != 0) {
 		// Hacking
@@ -1141,11 +1158,10 @@ void SyncHandler::createParty(WorldServerAcceptConnection *player, int32_t playe
 	pplayer->setParty(party);
 
 	SyncPacket::PartyPacket::createParty(pplayer->getChannel(), playerid);
-
-	WorldServerAcceptPacket::sendCreateParty(pplayer->getId(), pplayer->getParty()->getId());
+	SyncPacket::PlayerPacket::sendCreateParty(pplayer->getId(), pplayer->getParty()->getId());
 }
 
-void SyncHandler::giveLeader(WorldServerAcceptConnection *player, int32_t playerid, int32_t target, bool is) {
+void SyncHandler::giveLeader(int32_t playerid, int32_t target, bool is) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (pplayer->getParty() == 0 || !pplayer->getParty()->isLeader(playerid)) {
 		// Hacking
@@ -1158,10 +1174,10 @@ void SyncHandler::giveLeader(WorldServerAcceptConnection *player, int32_t player
 			SyncPacket::PartyPacket::giveLeader(iter->second->getChannel(), iter->second->getId(), target, is);
 		}
 	}
-	WorldServerAcceptPacket::sendSwitchPartyLeader(target, pplayer->getParty()->getId());
+	SyncPacket::PlayerPacket::sendSwitchPartyLeader(target, pplayer->getParty()->getId());
 }
 
-void SyncHandler::expelPlayer(WorldServerAcceptConnection *player, int32_t playerid, int32_t target) {
+void SyncHandler::expelPlayer(int32_t playerid, int32_t target) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Player *tplayer = PlayerDataProvider::Instance()->getPlayer(target);
 	if (pplayer->getParty() == 0 || !pplayer->getParty()->isLeader(playerid)) {
@@ -1178,11 +1194,11 @@ void SyncHandler::expelPlayer(WorldServerAcceptConnection *player, int32_t playe
 	if (tplayer != 0) {
 		SyncPacket::PartyPacket::updateParty(tplayer->getChannel(), PartyActions::Expel, target, target);
 	}
-	WorldServerAcceptPacket::sendRemovePartyPlayer(target, pplayer->getParty()->getId());
+	SyncPacket::PlayerPacket::sendRemovePartyPlayer(target, pplayer->getParty()->getId());
 	PlayerDataProvider::Instance()->getPlayer(target, true)->setParty(0);
 }
 
-void SyncHandler::leaveParty(WorldServerAcceptConnection *player, int32_t playerid) {
+void SyncHandler::leaveParty(int32_t playerid) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (pplayer->getParty() == 0) {
 		// Hacking
@@ -1196,11 +1212,11 @@ void SyncHandler::leaveParty(WorldServerAcceptConnection *player, int32_t player
 				iter->second->setParty(0);
 			}
 		}
-		WorldServerAcceptPacket::sendDisbandParty(party->getId());
+		SyncPacket::PlayerPacket::sendDisbandParty(party->getId());
 		PlayerDataProvider::Instance()->removeParty(party->getId());
 	}
 	else {
-		WorldServerAcceptPacket::sendRemovePartyPlayer(pplayer->getId(), pplayer->getParty()->getId());
+		SyncPacket::PlayerPacket::sendRemovePartyPlayer(pplayer->getId(), pplayer->getParty()->getId());
 		party->deleteMember(pplayer->getId());
 		for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 			if (iter->second->isOnline()) {
@@ -1212,7 +1228,7 @@ void SyncHandler::leaveParty(WorldServerAcceptConnection *player, int32_t player
 	}
 }
 
-void SyncHandler::joinParty(WorldServerAcceptConnection *player, int32_t playerid, int32_t partyid) {
+void SyncHandler::joinParty(int32_t playerid, int32_t partyid) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (pplayer->getParty() != 0) {
 		// Hacking
@@ -1230,11 +1246,11 @@ void SyncHandler::joinParty(WorldServerAcceptConnection *player, int32_t playeri
 				SyncPacket::PartyPacket::updateParty(iter->second->getChannel(), PartyActions::Join, iter->second->getId(), playerid);
 			}
 		}
-		WorldServerAcceptPacket::sendAddPartyPlayer(playerid, partyid);
+		SyncPacket::PlayerPacket::sendAddPartyPlayer(playerid, partyid);
 	}
 }
 
-void SyncHandler::invitePlayer(WorldServerAcceptConnection *player, int32_t playerid, const string &invitee) {
+void SyncHandler::invitePlayer(int32_t playerid, const string &invitee) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (pplayer->getParty() == 0 || !pplayer->getParty()->isLeader(playerid)) {
 		// Hacking
@@ -1254,7 +1270,7 @@ void SyncHandler::invitePlayer(WorldServerAcceptConnection *player, int32_t play
 	}
 }
 
-void SyncHandler::playerConnect(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::playerConnect(uint16_t channel, PacketReader &packet) {
 	uint32_t ip = packet.get<uint32_t>();
 	int32_t id = packet.get<int32_t>();
 	string name = packet.getString();
@@ -1282,7 +1298,7 @@ void SyncHandler::playerConnect(WorldServerAcceptConnection *player, PacketReade
 	p->setGuildRank(guildrank);
 	p->setAlliance(PlayerDataProvider::Instance()->getAlliance(allianceid));
 	p->setAllianceRank(alliancerank);
-	p->setChannel(player->getChannel());
+	p->setChannel(channel);
 	p->setOnline(true);
 	PlayerDataProvider::Instance()->registerPlayer(p);
 	if (guildid != 0) {
@@ -1297,24 +1313,25 @@ void SyncHandler::playerConnect(WorldServerAcceptConnection *player, PacketReade
 	}
 }
 
-void SyncHandler::playerDisconnect(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::playerDisconnect(uint16_t channel, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
-	PlayerDataProvider::Instance()->remove(id, player->getChannel());
-	int16_t channel = PlayerDataProvider::Instance()->removePendingPlayerEarly(id);
-	if (channel != -1) {
-		WorldServerAcceptPacket::sendHeldPacketRemoval(channel, id);
+	PlayerDataProvider::Instance()->remove(id, channel);
+	int16_t chan = PlayerDataProvider::Instance()->removePendingPlayerEarly(id);
+	if (chan != -1) {
+		SyncPacket::PlayerPacket::sendHeldPacketRemoval(chan, id);
 	}
 }
-void SyncHandler::partyOperation(WorldServerAcceptConnection *player, PacketReader &packet) {
+
+void SyncHandler::partyOperation(PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 	int32_t playerid = packet.get<int32_t>();
 	switch (type) {
-		case 0x01: SyncHandler::createParty(player, playerid); break;
-		case 0x02: SyncHandler::leaveParty(player, playerid); break;
-		case 0x03: SyncHandler::joinParty(player, playerid, packet.get<int32_t>()); break;
-		case 0x04: SyncHandler::invitePlayer(player, playerid, packet.getString()); break;
-		case 0x05: SyncHandler::expelPlayer(player, playerid, packet.get<int32_t>()); break;
-		case 0x06: SyncHandler::giveLeader(player, playerid, packet.get<int32_t>(), 0); break;
+		case PartyActions::Create: createParty(playerid); break;
+		case PartyActions::Leave: leaveParty(playerid); break;
+		case PartyActions::Join: joinParty(playerid, packet.get<int32_t>()); break;
+		case PartyActions::Invite: invitePlayer(playerid, packet.getString()); break;
+		case PartyActions::Expel: expelPlayer(playerid, packet.get<int32_t>()); break;
+		case PartyActions::SetLeader: giveLeader(playerid, packet.get<int32_t>(), 0); break;
 	}
 }
 
@@ -1322,11 +1339,11 @@ void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *player, Packe
 	int32_t playerid = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
 	if (chan) {
-		WorldServerAcceptPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet);
+		SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet);
 		PlayerDataProvider::Instance()->addPendingPlayer(playerid, chan->getId());
 	}
 	else { // Channel doesn't exist (offline)
-		WorldServerAcceptPacket::playerChangeChannel(player, playerid, 0, -1);
+		SyncPacket::PlayerPacket::playerChangeChannel(player, playerid, 0, -1);
 	}
 }
 
@@ -1338,18 +1355,18 @@ void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *player, Packe
 		Channel *chan = Channels::Instance()->getChannel(chanid);
 		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->getChannel());
 		if (chan) {
-			WorldServerAcceptPacket::newConnectable(chan->getId(), playerid);
+			SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerid);
 			uint32_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), chan->getExternalIps(), chan->getIp());
-			WorldServerAcceptPacket::playerChangeChannel(curchan->getConnection(), playerid, chanIp, chan->getPort());
+			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, chanIp, chan->getPort());
 		}
 		else {
-			WorldServerAcceptPacket::playerChangeChannel(curchan->getConnection(), playerid, 0, -1);
+			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, 0, -1);
 		}
 		PlayerDataProvider::Instance()->removePendingPlayer(playerid);
 	}
 }
 
-void SyncHandler::updateJob(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::updateJob(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	int16_t job = packet.get<int16_t>();
 	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id);
@@ -1363,7 +1380,7 @@ void SyncHandler::updateJob(WorldServerAcceptConnection *player, PacketReader &p
 	}
 }
 
-void SyncHandler::updateLevel(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::updateLevel(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	uint8_t level = packet.get<uint8_t>();
 	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id);
@@ -1377,7 +1394,7 @@ void SyncHandler::updateLevel(WorldServerAcceptConnection *player, PacketReader 
 	}
 }
 
-void SyncHandler::updateMap(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::updateMap(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	int32_t map = packet.get<int32_t>();
 	if (Player *p = PlayerDataProvider::Instance()->getPlayer(id)) {

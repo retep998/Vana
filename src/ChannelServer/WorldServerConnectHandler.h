@@ -29,6 +29,7 @@ namespace WorldServerConnectHandler {
 	void scrollingHeader(PacketReader &packet);
 	void forwardPacket(PacketReader &packet);
 	void setRates(PacketReader &packet);
+	void sendToPlayers(PacketReader &packet);
 	void reloadMcdb(PacketReader &packet);
 }
 

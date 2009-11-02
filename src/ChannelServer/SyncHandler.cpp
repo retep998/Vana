@@ -29,12 +29,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "SendHeader.h"
 #include "SyncPacket.h"
-#include "WorldServerConnection.h"
 
-void SyncHandler::playerChangeChannel(WorldServerConnection *player, PacketReader &packet) {
+void SyncHandler::handle(PacketReader &packet) {
+	switch (packet.get<int16_t>()) {
+		case IMSG_SYNC: handleDataSync(packet); break;
+		case IMSG_SYNC_OPERATION: handlePartyResponse(packet); break;
+		case IMSG_GUILD_OPERATION: guildPacketHandlerWorld(packet); break;
+		case IMSG_ALLIANCE: alliancePacketHandlerWorld(packet); break;
+		case IMSG_NEW_CONNECTABLE: newConnectable(packet); break;
+		case IMSG_PLAYER_CHANGE_CHANNEL: playerChangeChannel(packet); break;
+		case IMSG_TRANSFER_PLAYER_PACKET: PlayerDataProvider::Instance()->parseIncomingPacket(packet); break;
+		case IMSG_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerDataProvider::Instance()->removePacket(packet.get<int32_t>()); break;
+	}
+}
+
+void SyncHandler::playerChangeChannel(PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	uint32_t ip = packet.get<uint32_t>();
-	int16_t port = packet.get<int16_t>();
+	uint16_t port = packet.get<uint16_t>();
 
 	Player *ccPlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (!ccPlayer) {
@@ -291,5 +303,33 @@ void SyncHandler::disbandParty(PacketReader &packet) {
 	if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
 		party->disband();
 		PlayerDataProvider::Instance()->removeParty(party->getId());
+	}
+}
+
+void SyncHandler::handlePartyResponse(PacketReader &packet) {
+	int8_t type = packet.get<int8_t>();
+	int32_t playerid = packet.get<int32_t>();
+	int32_t partyid = packet.get<int32_t>();
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Party *party = PlayerDataProvider::Instance()->getParty(partyid);
+	if (player == 0 || party == 0)
+		return;
+	switch (type) {
+		case PartyActions::Leave: // Leave / Disband
+		case PartyActions::Expel: // Expel
+			party->deleteMember(player);
+			break;
+		case PartyActions::Join: // Create / Join
+			player->setParty(party);
+			party->addMember(player);
+			party->showHpBar(player);
+			party->receiveHpBar(player);
+			break;
+		case PartyActions::LogInOrOut: // LogInLogOut
+			player->setParty(party);
+			party->setMember(player->getId(), player);
+			party->showHpBar(player);
+			party->receiveHpBar(player);
+			break;
 	}
 }

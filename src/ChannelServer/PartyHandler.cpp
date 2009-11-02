@@ -19,53 +19,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "InterHelper.h"
 #include "PacketReader.h"
-#include "Party.h"
 #include "Player.h"
-#include "PlayerDataProvider.h"
 #include "SyncPacket.h"
 
 void PartyHandler::handleRequest(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 	switch (type) {
-		case 0x01: // Create party
-		case 0x02: // Leave party
+		case PartyActions::Create: // Create party
+		case PartyActions::Leave: // Leave party
 			SyncPacket::partyOperation(ChannelServer::Instance()->getWorldConnection(), type, player->getId());
 			break;
-		case 0x03: // Join party
-		case 0x05: // Expel Player
-		case 0x06: // Give leader rights
+		case PartyActions::Join: // Join party
+		case PartyActions::Expel: // Expel Player
+		case PartyActions::SetLeader: // Give leader rights
 			SyncPacket::partyOperation(ChannelServer::Instance()->getWorldConnection(), type, player->getId(), packet.get<int32_t>());
 			break;
-		case 0x04: // Invite
+		case PartyActions::Invite: // Invite
 			SyncPacket::partyInvite(ChannelServer::Instance()->getWorldConnection(), player->getId(), packet.getString());
-			break;
-	}
-}
-
-void PartyHandler::handleResponse(PacketReader &packet) {
-	int8_t type = packet.get<int8_t>();
-	int32_t playerid = packet.get<int32_t>();
-	int32_t partyid = packet.get<int32_t>();
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-	Party *party = PlayerDataProvider::Instance()->getParty(partyid);
-	if (player == 0 || party == 0)
-		return;
-	switch (type) {
-		case 0x01: // Leave / Disband
-		case 0x06: // Expel
-			party->deleteMember(player);
-			break;
-		case 0x02: // Create / Join
-			player->setParty(party);
-			party->addMember(player);
-			party->showHpBar(player);
-			party->receiveHpBar(player);
-			break;
-		case 0x05: // LogInLogOut
-			player->setParty(party);
-			party->setMember(player->getId(), player);
-			party->showHpBar(player);
-			party->receiveHpBar(player);
 			break;
 	}
 }

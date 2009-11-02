@@ -21,26 +21,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Specific packet constants that are shared between servers
 namespace PartyActions {
 	enum PartyActions {
-		Leave = 0x01,
-		Join = 0x02,
-		SetLeader = 0x03,
-		SilentUpdate = 0x04,
-		LogInOrOut = 0x05,
-		Expel = 0x06	
+		Create = 0x01,
+		Leave = 0x02,
+		Join = 0x03,
+		Invite = 0x04,
+		Expel = 0x05,
+		SetLeader = 0x06,
+		SilentUpdate,
+		LogInOrOut
 	};
 }
 
 namespace Sync {
 	enum Sync {
-		ChannelStart = 0x00
+		ChannelStart = 0x7F
 	};
 	namespace Party {
 		enum PartySync {
-			Disband = 0x01,
-			Create = 0x02,
-			SwitchLeader = 0x03,
-			RemoveMember = 0x04,
-			AddMember = 0x05
+			Disband,
+			Create,
+			SwitchLeader,
+			RemoveMember,
+			AddMember
 		};
 	}
 }

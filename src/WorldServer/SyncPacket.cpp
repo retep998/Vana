@@ -36,6 +36,7 @@ void SyncPacket::AlliancePacket::changeAlliance(Alliance *alliance, int8_t type)
 	unordered_map<int32_t, Guild *> guilds = alliance->getGuilds();
 
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_ALLIANCE);
 	packet.add<int8_t>(0x01);
 	packet.add<uint8_t>(type);
@@ -55,6 +56,7 @@ void SyncPacket::AlliancePacket::changeAlliance(Alliance *alliance, int8_t type)
 
 void SyncPacket::AlliancePacket::changeGuild(Alliance *alliance, Guild *guild) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_ALLIANCE);
 	packet.add<int8_t>(0x04);
 	packet.add<int32_t>(alliance == 0 ? 0 : alliance->getId());
@@ -71,29 +73,32 @@ void SyncPacket::AlliancePacket::changeGuild(Alliance *alliance, Guild *guild) {
 }
 
 void SyncPacket::AlliancePacket::changeLeader(Alliance *alliance, Player *oldLeader) {
-	PacketCreator pack;
-	pack.add<int16_t>(IMSG_ALLIANCE);
-	pack.add<int8_t>(0x02);
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_ALLIANCE);
+	packet.add<int8_t>(0x02);
 
-	pack.add<int32_t>(alliance->getId());
-	pack.add<int32_t>(oldLeader->getId());
-	pack.add<int32_t>(alliance->getLeaderId());
-	Channels::Instance()->sendToAll(pack);
+	packet.add<int32_t>(alliance->getId());
+	packet.add<int32_t>(oldLeader->getId());
+	packet.add<int32_t>(alliance->getLeaderId());
+	Channels::Instance()->sendToAll(packet);
 }
 
 void SyncPacket::AlliancePacket::changePlayerRank(Alliance *alliance, Player *player) {
-	PacketCreator pack;
-	pack.add<int16_t>(IMSG_ALLIANCE);
-	pack.add<int8_t>(0x05);
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_ALLIANCE);
+	packet.add<int8_t>(0x05);
 
-	pack.add<int32_t>(alliance->getId());
-	pack.add<int32_t>(player->getId());
-	pack.add<int32_t>(player->getAllianceRank());
-	Channels::Instance()->sendToAll(pack);
+	packet.add<int32_t>(alliance->getId());
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(player->getAllianceRank());
+	Channels::Instance()->sendToAll(packet);
 }
 
 void SyncPacket::AlliancePacket::changeCapacity(Alliance *alliance) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_ALLIANCE);
 	packet.add<int8_t>(0x03);
 
@@ -104,6 +109,7 @@ void SyncPacket::AlliancePacket::changeCapacity(Alliance *alliance) {
 
 void SyncPacket::GuildPacket::updatePlayers(Guild *guild, bool remove) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x08);
 
@@ -127,6 +133,7 @@ void SyncPacket::GuildPacket::updatePlayers(Guild *guild, bool remove) {
 
 void SyncPacket::GuildPacket::updatePlayer(Guild *guild, Player *player) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x08);
 
@@ -150,6 +157,7 @@ void SyncPacket::GuildPacket::updatePlayer(Guild *guild, Player *player) {
 
 void SyncPacket::GuildPacket::updatePlayerRank(Player *player) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x05);
 
@@ -162,6 +170,7 @@ void SyncPacket::GuildPacket::updatePlayerRank(Player *player) {
 
 void SyncPacket::GuildPacket::updatePlayerMesos(Player *player, int32_t amount) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x06);
 
@@ -173,6 +182,7 @@ void SyncPacket::GuildPacket::updatePlayerMesos(Player *player, int32_t amount) 
 
 void SyncPacket::GuildPacket::updateEmblem(Guild *guild) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x02);
 
@@ -192,6 +202,7 @@ void SyncPacket::GuildPacket::updateEmblem(Guild *guild) {
 
 void SyncPacket::GuildPacket::updateCapacity(Guild *guild) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x07);
 
@@ -203,6 +214,7 @@ void SyncPacket::GuildPacket::updateCapacity(Guild *guild) {
 
 void SyncPacket::GuildPacket::loadGuild(int32_t guildid) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x09);
 
@@ -213,6 +225,7 @@ void SyncPacket::GuildPacket::loadGuild(int32_t guildid) {
 
 void SyncPacket::GuildPacket::unloadGuild(int32_t guildid) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x01);
 
@@ -224,6 +237,7 @@ void SyncPacket::GuildPacket::unloadGuild(int32_t guildid) {
 
 void SyncPacket::GuildPacket::removePlayer(Player *player) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x03);
 
@@ -234,6 +248,7 @@ void SyncPacket::GuildPacket::removePlayer(Player *player) {
 
 void SyncPacket::GuildPacket::addPlayer(Player *player) {
 	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_GUILD_OPERATION);
 	packet.add<int8_t>(0x04);
 
@@ -262,16 +277,14 @@ void SyncPacket::BbsPacket::sendThreadList(uint16_t channel, Guild *guild, int32
 	packet.add<int8_t>(0x06);
 	
 	BbsThread *notice = bbs->getNotice();
+	packet.addBool(notice != 0);
 	if (notice != 0) {
-		packet.addBool(true);
 		packet.add<int32_t>(notice->getListId());
 		packet.add<int32_t>(notice->getUserId());
 		packet.addString(notice->getTitle());
 		packet.add<int64_t>(TimeUtilities::timeToTick(notice->getTime()));
 		packet.add<int32_t>(notice->getIcon());
 		packet.add<int32_t>(notice->getSize());
-	} else {
-		packet.addBool(false);
 	}
 
 	packet.add<int32_t>(threads);
@@ -357,6 +370,7 @@ void SyncPacket::PartyPacket::createParty(uint16_t channel, int32_t playerid) {
 	Channels::Instance()->sendToChannel(channel, packet);
 
 	packet = PacketCreator();
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_SYNC_OPERATION);
 	packet.add<int8_t>(PartyActions::Join);
 	packet.add<int32_t>(playerid);
@@ -378,6 +392,7 @@ void SyncPacket::PartyPacket::disbandParty(uint16_t channel, int32_t playerid) {
 	Channels::Instance()->sendToChannel(channel, packet);
 
 	packet = PacketCreator();
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_SYNC_OPERATION);
 	packet.add<int8_t>(PartyActions::Leave);
 	packet.add<int32_t>(playerid);
@@ -420,6 +435,7 @@ void SyncPacket::PartyPacket::updateParty(uint16_t channel, int8_t type, int32_t
 	target = target == 0 ? playerid : target;
 
 	packet = PacketCreator();
+	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int16_t>(IMSG_SYNC_OPERATION);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(target);
@@ -514,4 +530,130 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 		packet.add<int32_t>(-1);
 		packet.add<int32_t>(-1);
 	}
+}
+
+void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_NEW_CONNECTABLE);
+	packet.add<int32_t>(playerid);
+
+	Channels::Instance()->sendToChannel(channel, packet);
+}
+
+void SyncPacket::PlayerPacket::sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_TRANSFER_PLAYER_PACKET);
+	packet.add<int32_t>(playerid);
+	packet.addBuffer(buffer);
+	Channels::Instance()->sendToChannel(channel, packet);
+}
+
+void SyncPacket::PlayerPacket::sendHeldPacketRemoval(uint16_t channel, int32_t playerid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_TRANSFER_PLAYER_PACKET_DISCONNECT);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->sendToChannel(channel, packet);
+}
+
+void SyncPacket::PlayerPacket::playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_PLAYER_CHANGE_CHANNEL);
+	packet.add<int32_t>(playerid);
+	packet.add<uint32_t>(ip);
+	packet.add<int16_t>(port);
+	player->getSession()->send(packet);
+}
+
+void SyncPacket::PlayerPacket::sendParties(WorldServerAcceptConnection *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::ChannelStart);
+
+	unordered_map<int32_t, Party *> parties = PlayerDataProvider::Instance()->getParties();
+	map<int32_t, Player *> players;
+
+	packet.add<int32_t>((int32_t)(parties.size()));
+	for (unordered_map<int32_t, Party *>::iterator iter = parties.begin(); iter != parties.end(); iter++) {
+		packet.add<int32_t>(iter->first);
+		players = iter->second->members;
+		packet.add<int8_t>((int8_t)(players.size()));
+		for (map<int32_t, Player *>::iterator playeriter = players.begin(); playeriter != players.end(); playeriter++) {
+			packet.add<int32_t>(playeriter->first);
+		}
+		packet.add<int32_t>(iter->second->getLeader());
+	}
+
+	player->getSession()->send(packet);
+}
+
+void SyncPacket::PlayerPacket::sendRemovePartyPlayer(int32_t playerid, int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::RemoveMember);
+	packet.add<int32_t>(partyid);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void SyncPacket::PlayerPacket::sendAddPartyPlayer(int32_t playerid, int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::AddMember);
+	packet.add<int32_t>(partyid);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void SyncPacket::PlayerPacket::sendSwitchPartyLeader(int32_t playerid, int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::SwitchLeader);
+	packet.add<int32_t>(partyid);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void SyncPacket::PlayerPacket::sendCreateParty(int32_t playerid, int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::Create);
+	packet.add<int32_t>(partyid);
+	packet.add<int32_t>(playerid);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void SyncPacket::PlayerPacket::sendDisbandParty(int32_t partyid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::Party::Disband);
+	packet.add<int32_t>(partyid);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void SyncPacket::PlayerPacket::sendGuilds(WorldServerAcceptConnection *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_GUILD_OPERATION);
+	packet.add<int8_t>(0x0a);
+	PlayerDataProvider::Instance()->getChannelConnectPacketGuild(packet);
+	player->getSession()->send(packet);
+}
+
+void SyncPacket::PlayerPacket::sendAlliances(WorldServerAcceptConnection *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int16_t>(IMSG_ALLIANCE);
+	packet.add<int8_t>(0x06);
+	PlayerDataProvider::Instance()->getChannelConnectPacketAlliance(packet);
+	player->getSession()->send(packet);
 }

@@ -28,25 +28,13 @@ class PacketReader;
 
 namespace WorldServerAcceptPacket {
 	void connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port);
-	void sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer);
-	void sendHeldPacketRemoval(uint16_t channel, int32_t playerid);
-	void playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port);
 	void findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
 	void whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message);
 	void scrollingHeader(const string &message);
 	void groupChat(uint16_t channel, int32_t playerid, int8_t type, const string &message, const string &sender);
 
 	// I have my eye on you...
-	void newConnectable(uint16_t channel, int32_t playerid);
 	void sendRates(WorldServerAcceptConnection *player, int32_t setBit);
-	void sendParties(WorldServerAcceptConnection *player);
-	void sendRemovePartyPlayer(int32_t playerid, int32_t partyid);
-	void sendAddPartyPlayer(int32_t playerid, int32_t partyid);
-	void sendSwitchPartyLeader(int32_t playerid, int32_t partyid);
-	void sendCreateParty(int32_t playerid, int32_t partyid);
-	void sendDisbandParty(int32_t partyid);
-	void sendGuilds(WorldServerAcceptConnection *player);
-	void sendAlliances(WorldServerAcceptConnection *player);
 };
 
 #endif
