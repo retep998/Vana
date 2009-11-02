@@ -252,6 +252,7 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 		life.time = atoi(row[RespawnTime]);
 
 		if (type == "npc") {
+			npc = NpcSpawnInfo();
 			npc.setSpawnInfo(life);
 			npc.rx0 = atoi(row[MinClickPos]);
 			npc.rx1 = atoi(row[MaxClickPos]);
@@ -259,11 +260,13 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 			map->addNpc(npc);
 		}
 		else if (type == "mob") {
+			spawn = MobSpawnInfo();
 			spawn.setSpawnInfo(life);
 
 			map->addMobSpawn(spawn);
 		}
 		else if (type == "reactor") {
+			reactor = ReactorSpawnInfo();
 			reactor.setSpawnInfo(life);
 			reactor.name = (row[Name] != 0 ? row[Name] : "");
 

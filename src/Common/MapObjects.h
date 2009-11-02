@@ -77,7 +77,7 @@ struct NpcSpawnInfo : public SpawnInfo {
 };
 
 struct MobSpawnInfo : public SpawnInfo {
-	MobSpawnInfo() : SpawnInfo() { }
+	MobSpawnInfo() : SpawnInfo(), link(0) { }
 
 	int32_t link;
 };
