@@ -240,14 +240,18 @@ void Player::playerConnect(PacketReader &packet) {
 	alliancerank = static_cast<uint8_t>(res[0]["alliancerank"]);
 	allianceid = res[0]["allianceid"];
 
-	if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
+	if (isGm() || isAdmin()) {
+		map = Maps::GmMap;
+		map_pos = -1;
+	}
+	else if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
-		map_pos = 0;
+		map_pos = -1;
 	}
 	else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
 		map = Maps::getMap(map)->getInfo()->rm;
+		map_pos = -1;
 	}
-
 	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
 	m_stance = 0;
 	m_foothold = 0;
