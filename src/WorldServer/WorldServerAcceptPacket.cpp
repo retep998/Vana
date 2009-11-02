@@ -59,30 +59,6 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint1
 	player->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_TRANSFER_PLAYER_PACKET);
-	packet.add<int32_t>(playerid);
-	packet.addBuffer(buffer);
-	Channels::Instance()->sendToChannel(channel, packet);
-}
-
-void WorldServerAcceptPacket::sendHeldPacketRemoval(uint16_t channel, int32_t playerid) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_TRANSFER_PLAYER_PACKET_DISCONNECT);
-	packet.add<int32_t>(playerid);
-	Channels::Instance()->sendToChannel(channel, packet);
-}
-
-void WorldServerAcceptPacket::playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_PLAYER_CHANGE_CHANNEL);
-	packet.add<int32_t>(playerid);
-	packet.add<uint32_t>(ip);
-	packet.add<int16_t>(port);
-	player->getSession()->send(packet);
-}
-
 void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FIND);
@@ -113,14 +89,6 @@ void WorldServerAcceptPacket::scrollingHeader(const string &message) {
 	Channels::Instance()->sendToAll(packet);
 }
 
-void WorldServerAcceptPacket::newConnectable(uint16_t channel, int32_t playerid) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_NEW_CONNECTABLE);
-	packet.add<int32_t>(playerid);
-
-	Channels::Instance()->sendToChannel(channel, packet);
-}
-
 void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *player, int32_t setBit) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SET_RATES);
@@ -140,87 +108,5 @@ void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *player, int
 		packet.add<int32_t>(conf.dropRate);
 	}
 
-	player->getSession()->send(packet);
-}
-
-void WorldServerAcceptPacket::sendParties(WorldServerAcceptConnection *player) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::ChannelStart);
-
-	unordered_map<int32_t, Party *> parties = PlayerDataProvider::Instance()->getParties();
-	map<int32_t, Player *> players;
-
-	packet.add<int32_t>((int32_t)(parties.size()));
-	for (unordered_map<int32_t, Party *>::iterator iter = parties.begin(); iter != parties.end(); iter++) {
-		packet.add<int32_t>(iter->first);
-		players = iter->second->members;
-		packet.add<int8_t>((int8_t)(players.size()));
-		for (map<int32_t, Player *>::iterator playeriter = players.begin(); playeriter != players.end(); playeriter++) {
-			packet.add<int32_t>(playeriter->first);
-		}
-		packet.add<int32_t>(iter->second->getLeader());
-	}
-
-	player->getSession()->send(packet);
-}
-
-void WorldServerAcceptPacket::sendRemovePartyPlayer(int32_t playerid, int32_t partyid) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::Party::RemoveMember);
-	packet.add<int32_t>(partyid);
-	packet.add<int32_t>(playerid);
-	Channels::Instance()->sendToAll(packet);
-}
-
-void WorldServerAcceptPacket::sendAddPartyPlayer(int32_t playerid, int32_t partyid) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::Party::AddMember);
-	packet.add<int32_t>(partyid);
-	packet.add<int32_t>(playerid);
-	Channels::Instance()->sendToAll(packet);
-}
-
-void WorldServerAcceptPacket::sendSwitchPartyLeader(int32_t playerid, int32_t partyid) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::Party::SwitchLeader);
-	packet.add<int32_t>(partyid);
-	packet.add<int32_t>(playerid);
-	Channels::Instance()->sendToAll(packet);
-}
-
-void WorldServerAcceptPacket::sendCreateParty(int32_t playerid, int32_t partyid) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::Party::Create);
-	packet.add<int32_t>(partyid);
-	packet.add<int32_t>(playerid);
-	Channels::Instance()->sendToAll(packet);
-}
-
-void WorldServerAcceptPacket::sendDisbandParty(int32_t partyid) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::Party::Disband);
-	packet.add<int32_t>(partyid);
-	Channels::Instance()->sendToAll(packet);
-}
-
-void WorldServerAcceptPacket::sendGuilds(WorldServerAcceptConnection *player) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_GUILD_OPERATION);
-	packet.add<int8_t>(0x0a);
-	PlayerDataProvider::Instance()->getChannelConnectPacketGuild(packet);
-	player->getSession()->send(packet);
-}
-
-void WorldServerAcceptPacket::sendAlliances(WorldServerAcceptConnection *player) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_ALLIANCE);
-	packet.add<int8_t>(0x06);
-	PlayerDataProvider::Instance()->getChannelConnectPacketAlliance(packet);
 	player->getSession()->send(packet);
 }

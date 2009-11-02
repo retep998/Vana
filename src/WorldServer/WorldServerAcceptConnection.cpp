@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "Rates.h"
 #include "SyncHandler.h"
+#include "SyncPacket.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include "WorldServerAcceptPacket.h"
@@ -46,18 +47,7 @@ WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
 	switch (packet.get<int16_t>()) {
-		case IMSG_PLAYER_CHANGE_CHANNEL: SyncHandler::playerChangeChannel(this, packet); break;
-		case IMSG_TRANSFER_PLAYER_PACKET: SyncHandler::handleChangeChannel(this, packet); break;
-		case IMSG_REGISTER_PLAYER: SyncHandler::playerConnect(this, packet); break;
-		case IMSG_REMOVE_PLAYER: SyncHandler::playerDisconnect(this, packet); break;
-		case IMSG_SYNC_OPERATION: SyncHandler::partyOperation(this, packet); break;
-		case IMSG_UPDATE_LEVEL: SyncHandler::updateLevel(this, packet); break;
-		case IMSG_UPDATE_JOB: SyncHandler::updateJob(this, packet); break;
-		case IMSG_UPDATE_MAP: SyncHandler::updateMap(this, packet); break;
-		case IMSG_GUILD_OPERATION: SyncHandler::handleGuildPacket(this, packet); break;
-		case IMSG_BBS: SyncHandler::handleBbsPacket(this, packet); break;
-		case IMSG_ALLIANCE: SyncHandler::handleAlliancePacket(this, packet); break;
-
+		case IMSG_SYNC: SyncHandler::handle(this, packet); break;
 		case IMSG_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
 		case IMSG_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
 		case IMSG_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet); break;
@@ -77,9 +67,9 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 			WorldServerAcceptPacket::connect(this, channel, port);
 			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
-			WorldServerAcceptPacket::sendParties(this);
-			WorldServerAcceptPacket::sendGuilds(this);
-			WorldServerAcceptPacket::sendAlliances(this);
+			SyncPacket::PlayerPacket::sendParties(this);
+			SyncPacket::PlayerPacket::sendGuilds(this);
+			SyncPacket::PlayerPacket::sendAlliances(this);
 			LoginServerConnectPacket::registerChannel(channel, getIp(), getExternalIp(), port);
 			std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 		}

@@ -25,7 +25,6 @@ class Player;
 
 namespace PartyHandler {
 	void handleRequest(Player *player, PacketReader &packet);
-	void handleResponse(PacketReader &packet);
 };
 
 #endif

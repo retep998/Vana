@@ -23,17 +23,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class WorldServerConnection;
 class PacketReader;
 
 namespace SyncHandler {
-	void playerChangeChannel(WorldServerConnection *player, PacketReader &packet);
+	void handle(PacketReader &packet);
+	void playerChangeChannel(PacketReader &packet);
 	void newConnectable(PacketReader &packet);
 	void guildPacketHandlerWorld(PacketReader &packet);
 	void alliancePacketHandlerWorld(PacketReader &packet);
 	void handleDataSync(PacketReader &packet);
 	void handleChannelStart(PacketReader &packet);
 	void disbandParty(PacketReader &packet);
+	void handlePartyResponse(PacketReader &packet);
 };
 
 #endif

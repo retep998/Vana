@@ -20,9 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "PacketReader.h"
 #include "PartyHandler.h"
-#include "PlayerActiveBuffs.h"
-#include "PlayerDataProvider.h"
-#include "PlayersPacket.h"
 #include "SyncHandler.h"
 #include "WorldServerConnectHandler.h"
 #include "WorldServerConnectPacket.h"
@@ -43,7 +40,7 @@ void WorldServerConnection::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
 		case IMSG_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
 		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
-		case IMSG_TO_PLAYERS: PlayersPacket::sendToPlayers(packet.getBuffer(), packet.getBufferLength()); break;
+		case IMSG_TO_PLAYERS: WorldServerConnectHandler::sendToPlayers(packet); break;
 		case IMSG_FIND: WorldServerConnectHandler::findPlayer(packet); break;
 		case IMSG_WHISPER: WorldServerConnectHandler::whisperPlayer(packet); break;
 		case IMSG_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet); break;
@@ -51,13 +48,6 @@ void WorldServerConnection::realHandleRequest(PacketReader &packet) {
 		case IMSG_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
 		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet); break;
 
-		case IMSG_SYNC: SyncHandler::handleDataSync(packet); break;
-		case IMSG_SYNC_OPERATION: PartyHandler::handleResponse(packet); break;
-		case IMSG_TRANSFER_PLAYER_PACKET: PlayerDataProvider::Instance()->parseIncomingPacket(packet); break;
-		case IMSG_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerDataProvider::Instance()->removePacket(packet.get<int32_t>()); break;
-		case IMSG_GUILD_OPERATION: SyncHandler::guildPacketHandlerWorld(packet); break;
-		case IMSG_ALLIANCE: SyncHandler::alliancePacketHandlerWorld(packet); break;
-		case IMSG_NEW_CONNECTABLE: SyncHandler::newConnectable(packet); break;
-		case IMSG_PLAYER_CHANGE_CHANNEL: SyncHandler::playerChangeChannel(this, packet); break;
+		case IMSG_SYNC: SyncHandler::handle(packet); break;
 	}
 }

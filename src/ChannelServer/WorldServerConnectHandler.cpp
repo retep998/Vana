@@ -125,6 +125,10 @@ void WorldServerConnectHandler::forwardPacket(PacketReader &packet) {
 	}
 }
 
+void WorldServerConnectHandler::sendToPlayers(PacketReader &packet) {
+	PlayersPacket::sendToPlayers(packet.getBuffer(), packet.getBufferLength());
+}
+
 void WorldServerConnectHandler::setRates(PacketReader &packet) {
 	int32_t ratesSetBit = packet.get<int32_t>();
 	if (ratesSetBit & Rates::SetBits::exp) {

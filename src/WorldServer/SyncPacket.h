@@ -27,8 +27,10 @@ class Alliance;
 class BbsThread;
 class Guild;
 class PacketCreator;
+class PacketReader;
 class Party;
 class Player;
+class WorldServerAcceptConnection;
 
 namespace SyncPacket {
 	namespace AlliancePacket {
@@ -62,6 +64,20 @@ namespace SyncPacket {
 		void invitePlayer(uint16_t channel, int32_t playerid, const string &inviter);
 		void updateParty(uint16_t channel, int8_t type, int32_t playerid, int32_t target = 0);
 		void addParty(PacketCreator &packet, Party *party, int32_t tochan);
+	}
+	namespace PlayerPacket {
+		void sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer);
+		void sendHeldPacketRemoval(uint16_t channel, int32_t playerid);
+		void playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port);
+		void newConnectable(uint16_t channel, int32_t playerid);
+		void sendParties(WorldServerAcceptConnection *player);
+		void sendRemovePartyPlayer(int32_t playerid, int32_t partyid);
+		void sendAddPartyPlayer(int32_t playerid, int32_t partyid);
+		void sendSwitchPartyLeader(int32_t playerid, int32_t partyid);
+		void sendCreateParty(int32_t playerid, int32_t partyid);
+		void sendDisbandParty(int32_t partyid);
+		void sendGuilds(WorldServerAcceptConnection *player);
+		void sendAlliances(WorldServerAcceptConnection *player);
 	}
 }
 

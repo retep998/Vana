@@ -31,8 +31,10 @@ class Player;
 class WorldServerAcceptConnection;
 
 namespace SyncHandler {
+	// Dispatch
+	void handle(WorldServerAcceptConnection *connection, PacketReader &packet);
 	// Alliance
-	void handleAlliancePacket(WorldServerAcceptConnection *player, PacketReader &packet);
+	void handleAlliancePacket(PacketReader &packet);
 	void handleAllianceCreation(PacketReader &packet);
 	void loadAlliance(int32_t allianceid);
 	void sendAllianceInfo(int32_t playerid, int32_t allianceid);
@@ -49,7 +51,7 @@ namespace SyncHandler {
 	void sendDenyPacket(PacketReader &packet);
 	void removeGuild(Guild *guild);
 	// BBS
-	void handleBbsPacket(WorldServerAcceptConnection *player, PacketReader &packet);
+	void handleBbsPacket(PacketReader &packet);
 	void handleNewThread(PacketReader &packet);
 	void handleDeleteThread(PacketReader &packet);
 	void handleNewReply(PacketReader &packet);
@@ -58,7 +60,7 @@ namespace SyncHandler {
 	void handleShowThread(PacketReader &pack);
 	void handleShowThread(int32_t playerid, int32_t threadid);
 	// Guild
-	void handleGuildPacket(WorldServerAcceptConnection *player, PacketReader &packet);
+	void handleGuildPacket(PacketReader &packet);
 	void handleLoginServerPacket(LoginServerConnection *player, PacketReader &packet);
 	void loadGuild(int32_t id);
 	void handleGuildCreation(PacketReader &packet);
@@ -68,23 +70,23 @@ namespace SyncHandler {
 	void sendUpdateOfTitles(int32_t guildid, PacketReader &packet);
 	void sendGuildNotice(int32_t guildid, PacketReader &packet);
 	// Party
-	void createParty(WorldServerAcceptConnection *player, int32_t playerid);
-	void leaveParty(WorldServerAcceptConnection *player, int32_t playerid);
-	void invitePlayer(WorldServerAcceptConnection *player, int32_t playerid, const string &invitee);
-	void joinParty(WorldServerAcceptConnection *player, int32_t playerid, int32_t partyid);
-	void giveLeader(WorldServerAcceptConnection *player, int32_t playerid, int32_t target, bool is);
-	void expelPlayer(WorldServerAcceptConnection *player, int32_t playerid, int32_t target);
+	void partyOperation(PacketReader &packet);
+	void createParty(int32_t playerid);
+	void leaveParty(int32_t playerid);
+	void invitePlayer(int32_t playerid, const string &invitee);
+	void joinParty(int32_t playerid, int32_t partyid);
+	void giveLeader(int32_t playerid, int32_t target, bool is);
+	void expelPlayer(int32_t playerid, int32_t target);
 	void silentUpdate(int32_t playerid);
 	void logInLogOut(int32_t playerid);
 	// Stuff
-	void playerConnect(WorldServerAcceptConnection *player, PacketReader &packet);
-	void playerDisconnect(WorldServerAcceptConnection *player, PacketReader &packet);
+	void playerConnect(uint16_t channel, PacketReader &packet);
+	void playerDisconnect(uint16_t channel, PacketReader &packet);
 	void playerChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet);
 	void handleChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet);
-	void partyOperation(WorldServerAcceptConnection *player, PacketReader &packet);
-	void updateLevel(WorldServerAcceptConnection *player, PacketReader &packet);
-	void updateJob(WorldServerAcceptConnection *player, PacketReader &packet);
-	void updateMap(WorldServerAcceptConnection *player, PacketReader &packet);
+	void updateLevel(PacketReader &packet);
+	void updateJob(PacketReader &packet);
+	void updateMap(PacketReader &packet);
 };
 
 #endif
