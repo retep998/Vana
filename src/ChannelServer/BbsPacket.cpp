@@ -44,15 +44,7 @@ void BbsPacket::newThread(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(0x01);
 	packet.add<int32_t>(player->getGuildId());
 	packet.add<int32_t>(player->getId());
-	int8_t edit = pack.get<int8_t>();
-	packet.add<int8_t>(edit);
-	if (edit == 1)
-		packet.add<int32_t>(pack.get<int32_t>());
-
-	packet.add<int8_t>(pack.get<int8_t>());
-	packet.addString(pack.getString());
-	packet.addString(pack.getString());
-	packet.add<int32_t>(pack.get<int32_t>());
+	packet.addBuffer(pack);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 

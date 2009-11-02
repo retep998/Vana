@@ -76,9 +76,10 @@ void SyncHandler::newConnectable(PacketReader &packet) {
 
 void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
-		case 0x01: PlayerDataProvider::Instance()->unloadGuild(packet.get<int32_t>()); break;
-		case 0x02: GuildPacket::handleEmblemChange(packet); break;
-		case 0x03: { // Remove player guild info
+		case Sync::Guild::Unload: PlayerDataProvider::Instance()->unloadGuild(packet.get<int32_t>()); break;
+		case Sync::Guild::Load: PlayerDataProvider::Instance()->loadGuild(packet.get<int32_t>()); break;
+		case Sync::Guild::ChangeEmblem: GuildPacket::handleEmblemChange(packet); break;
+		case Sync::Guild::RemovePlayer: {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
 			if (player == 0) 
 				return;
@@ -87,7 +88,7 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 			player->setGuildRank(5);
 			break;
 		}
-		case 0x04: { // Add guild to player
+		case Sync::Guild::AddPlayer: {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
 			if (player == 0) 
 				return;
@@ -98,7 +99,7 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 			player->setAllianceRank(packet.get<uint8_t>());
 			break;
 		}
-		case 0x05: { // Update player guild and alliance rank
+		case Sync::Guild::ChangePlayer: {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
 			if (player == 0) 
 				return;
@@ -107,7 +108,7 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 			player->setAllianceRank(packet.get<uint8_t>());
 			break;
 		}
-		case 0x06: { // Remove/add money from/to the player
+		case Sync::Guild::ChangePlayerMoney: {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
 			if (player == 0) 
 				return;
@@ -115,16 +116,15 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 			Quests::giveMesos(player, packet.get<int32_t>());
 			break;
 		}
-		case 0x07: { // Change guild capacity
+		case Sync::Guild::ChangeCapacity: {
 			Guild *gi = PlayerDataProvider::Instance()->getGuild(packet.get<int32_t>());
 			if (gi == 0) 
 				return;
 			gi->capacity = packet.get<int32_t>();
 			break;
 		}
-		case 0x08: GuildPacket::handleNameChange(packet); break;
-		case 0x09: PlayerDataProvider::Instance()->loadGuild(packet.get<int32_t>()); break;
-		case 0x0a: {
+		case Sync::Guild::ChangePlayerGuildName: GuildPacket::handleNameChange(packet); break;
+		case Sync::Guild::ChannelConnect: {
 			int32_t guilds = packet.get<int32_t>();
 			int32_t id, capacity, alliance;
 			string name;
@@ -140,15 +140,15 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 				alliance = packet.get<int32_t>();
 
 				PlayerDataProvider::Instance()->addGuild(id, name, logo, capacity, alliance);
-				break;
 			}
+			break;
 		}
 	}
 }
 
 void SyncHandler::alliancePacketHandlerWorld(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
-		case 0x01: { // (un)Load Alliance and set the allianceids and ranks
+		case Sync::Alliance::ChangeAlliance: { // (un)Load Alliance and set the allianceids and ranks
 			uint8_t option = packet.get<uint8_t>();
 			int32_t allianceid = packet.get<int32_t>();
 			if (option == 0)
@@ -172,7 +172,7 @@ void SyncHandler::alliancePacketHandlerWorld(PacketReader &packet) {
 			}
 			break;
 		}
-		case 0x02: { // Changing the Alliance Leader
+		case Sync::Alliance::ChangeLeader: { // Changing the leader
 			int32_t allianceid = packet.get<int32_t>();
 			Player *to = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
 			Player *from = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
@@ -184,25 +184,29 @@ void SyncHandler::alliancePacketHandlerWorld(PacketReader &packet) {
 				from->setAllianceRank(1);
 			break;
 		}
-		case 0x03: { // Changing the Alliance Capacity
+		case Sync::Alliance::ChangeCapacity: { // Changing the Capacity
 			if (Alliance *alliance = PlayerDataProvider::Instance()->getAlliance(packet.get<int32_t>())) 
 				alliance->capacity = packet.get<int32_t>();
 			break;
 		}
-		case 0x04: { // Changing the alliance id and rank
+		case Sync::Alliance::ChangeGuild: { // Changing the id and rank of multiple players
 			int32_t allianceid = packet.get<int32_t>();
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(packet.get<int32_t>());
 			guild->allianceid = allianceid;
 			int32_t players = packet.get<int32_t>();
-			for (int32_t i_2 = 0; i_2 < players; i_2++) {
-				if (Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>())) {
+			int32_t playerid = 0;
+			uint8_t rank = 0;
+			for (int32_t i = 0; i < players; i++) {
+				playerid = packet.get<int32_t>();
+				rank = packet.get<uint8_t>();
+				if (Player *player = PlayerDataProvider::Instance()->getPlayer(playerid)) {
 					player->setAllianceId(allianceid);
-					player->setAllianceRank(packet.get<uint8_t>());
+					player->setAllianceRank(rank);
 				}
 			}
 			break;
 		}
-		case 0x05: { // Changing the rank of someone
+		case Sync::Alliance::ChangeRank: { // Changing the rank of someone
 			int32_t allianceid = packet.get<int32_t>();
 			Player *victim = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
 			if (victim != 0 || victim->getAllianceId() != allianceid || victim->getGuildId() == 0) 
@@ -210,7 +214,7 @@ void SyncHandler::alliancePacketHandlerWorld(PacketReader &packet) {
 			victim->setAllianceRank(packet.get<uint8_t>());
 			break;
 		}
-		case 0x06: { // Channel Server Alliance Data Packet
+		case Sync::Alliance::ChannelConnect: { // Channel Server Alliance Data Packet
 			int32_t alliances = packet.get<int32_t>();
 			int32_t id, capacity;
 			string name;
